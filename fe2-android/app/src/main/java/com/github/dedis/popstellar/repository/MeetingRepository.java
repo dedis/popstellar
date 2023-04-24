@@ -22,7 +22,7 @@ import static java.util.Collections.unmodifiableSet;
 /**
  * This class is the repository of the meetings events
  *
- * <p>Its main purpose is to store meetings
+ * <p>Its main purpose is to store meetings by lao
  */
 @Singleton
 public class MeetingRepository {
@@ -56,13 +56,13 @@ public class MeetingRepository {
    * This provides an observable of a meeting that triggers an update when modified
    *
    * @param laoId the id of the Lao
-   * @param persistentId the persistent id of the meeting
+   * @param id the id of the meeting
    * @return the observable wrapping the wanted meeting
    * @throws UnknownMeetingException if no meeting with the provided id could be found
    */
-  public Observable<Meeting> getMeetingObservable(String laoId, String persistentId)
+  public Observable<Meeting> getMeetingObservable(String laoId, String id)
       throws UnknownMeetingException {
-    return getLaoMeetings(laoId).getMeetingObservable(persistentId);
+    return getLaoMeetings(laoId).getMeetingObservable(id);
   }
 
   public Meeting getMeetingWithId(String laoId, String meetingId) throws UnknownMeetingException {

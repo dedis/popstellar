@@ -51,7 +51,7 @@ public class MeetingHandler {
         .setStart(createMeeting.getStart())
         .setEnd(createMeeting.getEnd())
         .setName(createMeeting.getName())
-        .setLocation(createMeeting.getLocation())
+        .setLocation(createMeeting.getLocation().orElse(""))
         .setLastModified(createMeeting.getCreation());
 
     Meeting meeting = builder.build();

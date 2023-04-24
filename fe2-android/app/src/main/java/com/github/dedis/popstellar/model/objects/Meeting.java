@@ -18,7 +18,7 @@ public class Meeting extends Event {
   private final String location;
   private final long lastModified;
 
-  // To implement when adding the StateMeeting functionality
+  // TODO: to implement when adding the StateMeeting functionality
   private final String modificationId = null;
   private final List<String> modificationSignatures = null;
 
@@ -88,6 +88,11 @@ public class Meeting extends Event {
 
   @Override
   public EventState getState() {
+    // The meeting is considered closed when the end time is in the past
+    // This info is just used to display the correct text in the event list
+    if (isEndPassed()) {
+      return EventState.CLOSED;
+    }
     return EventState.CREATED;
   }
 

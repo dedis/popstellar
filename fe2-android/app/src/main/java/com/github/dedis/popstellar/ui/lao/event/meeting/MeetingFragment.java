@@ -41,8 +41,6 @@ public class MeetingFragment extends Fragment {
   private LaoViewModel laoViewModel;
   private Meeting meeting;
 
-  private MeetingViewModel meetingViewModel;
-
   public MeetingFragment() {
     // Empty constructor
   }
@@ -61,7 +59,7 @@ public class MeetingFragment extends Fragment {
     // Inflate the layout for this fragment
     binding = MeetingFragmentBinding.inflate(inflater, container, false);
     laoViewModel = LaoActivity.obtainViewModel(requireActivity());
-    meetingViewModel =
+    MeetingViewModel meetingViewModel =
         LaoActivity.obtainMeetingViewModel(requireActivity(), laoViewModel.getLaoId());
 
     try {
@@ -109,7 +107,13 @@ public class MeetingFragment extends Fragment {
   private void setUpStateDependantContent() {
     setupTime();
     binding.meetingTitle.setText(meeting.getName());
-    binding.meetingLocationText.setText(meeting.getLocation());
+
+    // Set location visible if present
+    if (meeting.getLocation().isEmpty()) {
+      binding.meetingLocationTitle.setVisibility(View.GONE);
+    } else {
+      binding.meetingLocationText.setText(meeting.getLocation());
+    }
   }
 
   private void setupTime() {

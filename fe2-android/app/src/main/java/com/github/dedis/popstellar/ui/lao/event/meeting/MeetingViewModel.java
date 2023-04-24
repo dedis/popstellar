@@ -9,7 +9,6 @@ import androidx.lifecycle.AndroidViewModel;
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.network.method.message.data.meeting.CreateMeeting;
 import com.github.dedis.popstellar.model.objects.Meeting;
-import com.github.dedis.popstellar.model.objects.Wallet;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.MeetingRepository;
@@ -17,7 +16,6 @@ import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.utility.error.*;
 import com.github.dedis.popstellar.utility.scheduler.SchedulerProvider;
 import com.github.dedis.popstellar.utility.security.KeyManager;
-import com.google.gson.Gson;
 
 import javax.inject.Inject;
 
@@ -36,8 +34,6 @@ public class MeetingViewModel extends AndroidViewModel {
   private final GlobalNetworkManager networkManager;
   private final KeyManager keyManager;
   private final SchedulerProvider schedulerProvider;
-  private final Wallet wallet;
-  private final Gson gson;
 
   @Inject
   public MeetingViewModel(
@@ -46,17 +42,13 @@ public class MeetingViewModel extends AndroidViewModel {
       MeetingRepository meetingRepo,
       GlobalNetworkManager networkManager,
       KeyManager keyManager,
-      Wallet wallet,
-      SchedulerProvider schedulerProvider,
-      Gson gson) {
+      SchedulerProvider schedulerProvider) {
     super(application);
     this.laoRepo = laoRepo;
     this.meetingRepo = meetingRepo;
     this.networkManager = networkManager;
     this.keyManager = keyManager;
-    this.wallet = wallet;
     this.schedulerProvider = schedulerProvider;
-    this.gson = gson;
   }
 
   public void setLaoId(String laoId) {

@@ -2,6 +2,7 @@ package com.github.dedis.popstellar.model.objects.event;
 
 import com.github.dedis.popstellar.model.objects.Meeting;
 
+/** This class is a builder for the Meeting object */
 public class MeetingBuilder {
   private String id;
   private String name;
@@ -11,7 +12,11 @@ public class MeetingBuilder {
   private String location;
   private long lastModified;
 
-  public MeetingBuilder() {}
+  // TODO: this class could be extended with signatures when implementing StateMeeting
+
+  public MeetingBuilder() {
+    // Empty constructor required
+  }
 
   public MeetingBuilder(Meeting meeting) {
     this.id = meeting.getId();

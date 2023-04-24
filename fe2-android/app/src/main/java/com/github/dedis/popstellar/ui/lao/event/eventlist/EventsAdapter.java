@@ -123,7 +123,7 @@ public abstract class EventsAdapter extends RecyclerView.Adapter<RecyclerView.Vi
     if (event instanceof RollCall) {
       location = ", at " + ((RollCall) event).getLocation();
     }
-    if (event instanceof Meeting) {
+    if (event instanceof Meeting && !((Meeting) event).getLocation().isEmpty()) {
       location = ", at " + ((Meeting) event).getLocation();
     }
     String timeText;

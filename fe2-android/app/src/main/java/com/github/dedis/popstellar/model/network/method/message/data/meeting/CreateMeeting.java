@@ -4,6 +4,10 @@ import com.github.dedis.popstellar.model.Immutable;
 import com.github.dedis.popstellar.model.network.method.message.data.*;
 import com.github.dedis.popstellar.model.objects.Meeting;
 
+import java.util.Optional;
+
+import javax.annotation.Nullable;
+
 /** Data sent to create a new meeting */
 @Immutable
 public class CreateMeeting extends Data {
@@ -11,7 +15,7 @@ public class CreateMeeting extends Data {
   private final String id;
   private final String name;
   private final long creation;
-  private final String location;
+  @Nullable private final String location;
   private final long start;
   private final long end;
 
@@ -28,7 +32,13 @@ public class CreateMeeting extends Data {
    * @throws IllegalArgumentException if the id is invalid
    */
   public CreateMeeting(
-      String laoId, String id, String name, long creation, String location, long start, long end) {
+      String laoId,
+      String id,
+      String name,
+      long creation,
+      @Nullable String location,
+      long start,
+      long end) {
     if (!id.equals(Meeting.generateCreateMeetingId(laoId, creation, name))) {
       throw new IllegalArgumentException(
           "CreateMeeting id must be Hash(\"M\"||laoId||creation||name)");
@@ -42,7 +52,7 @@ public class CreateMeeting extends Data {
   }
 
   public CreateMeeting(
-      String laoId, String name, long creation, String location, long start, long end) {
+      String laoId, String name, long creation, @Nullable String location, long start, long end) {
     id = Meeting.generateCreateMeetingId(laoId, creation, name);
     this.name = name;
     this.creation = creation;
@@ -63,8 +73,8 @@ public class CreateMeeting extends Data {
     return creation;
   }
 
-  public String getLocation() {
-    return location;
+  public Optional<String> getLocation() {
+    return Optional.ofNullable(location);
   }
 
   public long getStart() {

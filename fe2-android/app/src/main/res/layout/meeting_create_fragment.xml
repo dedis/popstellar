@@ -72,7 +72,7 @@
             android:id="@+id/meeting_event_location_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/rc_location_title"
+            android:hint="@string/meeting_location_not_required"
             android:gravity="start"
             android:inputType="textMultiLine"
             android:maxLines="10" />

@@ -86,6 +86,7 @@
 
   <!-- Meeting Event -->
   <string name="meeting_title_required">Meeting Title*</string>
+  <string name="meeting_location_not_required">Location</string>
 
   <!-- QR code -->
   <string name="qrcode_scanning_add_witness">Scan personal QR code of the witness to add</string>

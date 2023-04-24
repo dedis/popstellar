@@ -46,13 +46,8 @@ public class MeetingCreationFragment extends AbstractEventCreationFragment {
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
           String meetingTitle = meetingTitleEditText.getText().toString().trim();
-          String location =
-              Objects.requireNonNull(binding.meetingEventLocationText.getText()).toString().trim();
           boolean areFieldsFilled =
-              !meetingTitle.isEmpty()
-                  && !getStartDate().isEmpty()
-                  && !getStartTime().isEmpty()
-                  && !location.isEmpty();
+              !meetingTitle.isEmpty() && !getStartDate().isEmpty() && !getStartTime().isEmpty();
 
           confirmButton.setEnabled(areFieldsFilled);
         }
@@ -118,7 +113,8 @@ public class MeetingCreationFragment extends AbstractEventCreationFragment {
     }
 
     String title = Objects.requireNonNull(binding.meetingTitleText.getText()).toString();
-    String location = Objects.requireNonNull(binding.meetingEventLocationText.getText()).toString();
+    Editable locationBox = binding.meetingEventLocationText.getText();
+    String location = locationBox == null ? null : locationBox.toString();
     Single<String> createMeeting =
         meetingViewModel.createNewMeeting(
             title, location, creationTimeInSeconds, startTimeInSeconds, endTimeInSeconds);
