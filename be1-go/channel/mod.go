@@ -50,6 +50,15 @@ type Sockets struct {
 	store map[string]socket.Socket
 }
 
+// GetAddresses returns the addresses of all sockets.
+func (s *Sockets) GetAddresses() []string {
+	addresses := make([]string, 0, len(s.store))
+	for _, sock := range s.store {
+		addresses = append(addresses, sock.Address())
+	}
+	return addresses
+}
+
 // Len returns the numbre of sockets.
 func (s *Sockets) Len() int {
 	return len(s.store)
@@ -100,6 +109,7 @@ type HubFunctionalities interface {
 	GetServerNumber() int
 	SendAndHandleMessage(method.Broadcast) error
 	GetServerAddress() string
+	GetPeerAddresses() []string
 }
 
 // Broadcastable defines a channel that can broadcast

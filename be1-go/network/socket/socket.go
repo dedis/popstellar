@@ -56,6 +56,16 @@ func (s *baseSocket) Type() SocketType {
 	return s.socketType
 }
 
+func (s *baseSocket) Address() string {
+	s.log.Info().
+		Str("is", s.conn.RemoteAddr().String()).
+		Msg("Peer remote address")
+	s.log.Info().
+		Str("is", s.conn.LocalAddr().String()).
+		Msg("Peer local address")
+	return s.conn.RemoteAddr().String()
+}
+
 // ReadPump starts the reader loop for the socket.
 func (s *baseSocket) ReadPump() {
 	defer func() {

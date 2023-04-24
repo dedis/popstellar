@@ -547,6 +547,11 @@ func (h *Hub) GetServerAddress() string {
 	return h.serverAdress
 }
 
+// GetPeerAddresses implements channel.HubFunctionalities
+func (h *Hub) GetPeerAddresses() []string {
+	return h.serverSockets.GetAddresses()
+}
+
 // Sign implements channel.HubFunctionalities
 func (h *Hub) Sign(data []byte) ([]byte, error) {
 	signatureBuf, err := schnorr.Sign(crypto.Suite, h.secKeyServ, data)

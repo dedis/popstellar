@@ -128,7 +128,7 @@ func NewChannel(channelID string, hub channel.HubFunctionalities, msg message.Me
 
 	newChannel.registry = newChannel.NewLAORegistry()
 
-	err := newChannel.createAndSendLAOGreet()
+	err := newChannel.createAndSendLAOGreet(hub)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to send the greeting message: %v", err)
 	}
@@ -658,11 +658,18 @@ func compareLaoUpdateAndState(update messagedata.LaoUpdate, state messagedata.La
 	return nil
 }
 
-func (c *Channel) createAndSendLAOGreet() error {
+func (c *Channel) createAndSendLAOGreet(hub channel.HubFunctionalities) error {
 	// Marshalls the organizer's public key
 	orgPkBuf, err := c.organizerPubKey.MarshalBinary()
 	if err != nil {
 		return xerrors.Errorf("failed to marshal the organizer key: %v", err)
+	}
+
+	peers := []messagedata.Peer{}
+
+	for _, address := range hub.GetPeerAddresses() {
+		peers = append(peers, messagedata.Peer{Address: address})
+		c.log.Info().Msgf("Adding peer %s", address)
 	}
 
 	msgData := messagedata.LaoGreet{
@@ -671,8 +678,10 @@ func (c *Channel) createAndSendLAOGreet() error {
 		LaoID:    c.extractLaoID(),
 		Frontend: base64.URLEncoding.EncodeToString(orgPkBuf),
 		Address:  fmt.Sprintf("wss://%s/client", c.hub.GetServerAddress()),
-		Peers:    []messagedata.Peer{},
+		Peers:    peers,
 	}
+
+	c.log.Info().Msgf("Sending LAO Greet with address %s", msgData.Address)
 
 	// Marshalls the message data
 	dataBuf, err := json.Marshal(&msgData)

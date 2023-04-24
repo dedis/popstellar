@@ -29,11 +29,14 @@ const (
 // another client
 type Socket interface {
 	// ID denotes a unique ID of the socket. This allows us to store
-	// sockets in maps
+	// sockets in maps.
 	ID() string
 
 	// Type denotes the type of socket.
 	Type() SocketType
+
+	// Address denotes the address.
+	Address() string
 
 	// ReadPump is a lower level method for reading messages from the socket.
 	ReadPump()
