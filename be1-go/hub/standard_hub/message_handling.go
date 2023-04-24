@@ -493,8 +493,6 @@ func (h *Hub) handleHeartbeat(socket socket.Socket,
 
 	receivedIds := heartbeat.Params
 
-	h.updateRecords()
-
 	missingIds := getMissingIds(receivedIds, h.messageIdsByChannel)
 
 	if len(missingIds) > 0 {
