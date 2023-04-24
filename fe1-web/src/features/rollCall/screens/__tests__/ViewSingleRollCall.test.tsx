@@ -128,7 +128,7 @@ describe('EventRollCall', () => {
       it('closed roll calls', testRender(mockRollCallClosed, false));
     });
 
-    // test to verify that if same attendee present multiple times, only one is displayed (here: attendee1)
+    // test to verify that there are no duplicate shown if same pop tokens present in route params and roll call state
     describe('no duplicate attendees', () => {
       it('opened roll calls', testRender(mockRollCallOpened, false, ['attendee1', 'attendee2']));
       it(
