@@ -1,6 +1,6 @@
 package ch.epfl.pop.decentralized
 
-import akka.actor.{Actor, ActorLogging, ActorRef, Props}
+import akka.actor.{Actor, ActorLogging, Props}
 import akka.pattern.AskableActorRef
 import ch.epfl.pop.model.network.method.Heartbeat
 import ch.epfl.pop.model.objects.{Channel, DbActorNAckException, Hash}
@@ -34,8 +34,8 @@ case class HeartbeatGenerator(dbRef: AskableActorRef) extends Actor with ActorLo
     var heartbeatMap: HashMap[Channel, Set[Hash]] = HashMap()
     setOfChannels.foreach(channel => {
       val askChannelData = dbRef ? DbActor.ReadChannelData(channel)
-      val listOfIds: List[Hash] = Await.ready(askChannelData, duration).value match {
-        case Some(Success(DbActor.DbActorReadChannelDataAck(channelData))) => channelData.messages
+      val setOfIds: Set[Hash] = Await.ready(askChannelData, duration).value match {
+        case Some(Success(DbActor.DbActorReadChannelDataAck(channelData))) => channelData.messages.toSet
         case Some(Failure(ex: DbActorNAckException)) =>
           log.error(s"Heartbeat generation failed with: ${ex.message}")
           return None
@@ -44,8 +44,10 @@ case class HeartbeatGenerator(dbRef: AskableActorRef) extends Actor with ActorLo
           return None
 
       }
-      heartbeatMap = heartbeatMap + (channel -> listOfIds.toSet)
+      if (setOfIds.nonEmpty)
+      heartbeatMap = heartbeatMap + (channel -> setOfIds)
     })
+
     Some(heartbeatMap)
   }
 
