@@ -1648,8 +1648,7 @@ func Test_Send_Heartbeat_Message(t *testing.T) {
 	hub.messageIdsByChannel["/root"] = idsRoot
 	hub.messageIdsByChannel["/root/channel1"] = idsChannel1
 
-	err = hub.sendHeartbeatToServers()
-	require.NoError(t, err)
+	hub.sendHeartbeatToServers()
 
 	heartbeatMsg := sock.msg
 
