@@ -1,5 +1,8 @@
 package com.github.dedis.popstellar.repository.remote;
 
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+
 import com.github.dedis.popstellar.di.DataRegistryModuleHelper;
 import com.github.dedis.popstellar.di.JsonModule;
 import com.github.dedis.popstellar.model.network.GenericMessage;
@@ -16,20 +19,26 @@ import com.github.dedis.popstellar.utility.error.*;
 import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
 import com.github.dedis.popstellar.utility.handler.MessageHandler;
 import com.github.dedis.popstellar.utility.scheduler.TestSchedulerProvider;
+import com.google.gson.Gson;
 import com.tinder.scarlet.WebSocket;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
+import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnit;
 import org.mockito.stubbing.Answer;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.testing.HiltAndroidRule;
+import dagger.hilt.android.testing.HiltAndroidTest;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.observers.TestObserver;
 import io.reactivex.schedulers.TestScheduler;
 import io.reactivex.subjects.BehaviorSubject;
 
@@ -38,7 +47,8 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-@RunWith(MockitoJUnitRunner.class)
+@HiltAndroidTest
+@RunWith(AndroidJUnit4.class)
 public class LAONetworkManagerTest {
 
   private static final Channel CHANNEL = Channel.ROOT.subChannel("channel");
@@ -48,11 +58,20 @@ public class LAONetworkManagerTest {
   private final BehaviorSubject<WebSocket.Event> events = BehaviorSubject.create();
   private final BehaviorSubject<GenericMessage> messages = BehaviorSubject.create();
 
+  private final HiltAndroidRule hiltRule = new HiltAndroidRule(this);
+
+  @Rule public RuleChain rule = RuleChain.outerRule(hiltRule).around(MockitoJUnit.testRule(this));
+
+  @Rule public InstantTaskExecutorRule executorRule = new InstantTaskExecutorRule();
+
+  @Inject Gson gson;
+
   @Mock MessageHandler handler;
   @Mock MultiConnection connection;
 
   @Before
   public void setup() {
+    hiltRule.inject();
     when(connection.observeMessage()).thenReturn(messages);
     when(connection.observeConnectionEvents()).thenReturn(events);
 
@@ -347,9 +366,11 @@ public class LAONetworkManagerTest {
             schedulerProvider,
             new HashSet<>());
 
+    Broadcast broadcast = new Broadcast(CHANNEL, new MessageGeneral(KEY_PAIR, DATA, gson));
+
     Answer<?> answer =
         args -> {
-          messages.onNext(mock(Broadcast.class));
+          messages.onNext(broadcast);
           return null;
         };
     doAnswer(answer).when(connection).sendMessage(any());
@@ -364,9 +385,15 @@ public class LAONetworkManagerTest {
       testScheduler.advanceTimeBy(5, TimeUnit.SECONDS);
     }
 
+    // After MAX_REPROCESSING times check the message is discarded permanently
+    // Create a TestObserver for the unprocessed subject
+    TestObserver<GenericMessage> testObserver = networkManager.testUnprocessed();
+
+    // Assert that the TestObserver has received no values
+    testObserver.assertNoValues();
+
+    testObserver.dispose();
     disposable.dispose();
     networkManager.dispose();
-    // After MAX_REPROCESSING times check the message is discarded
-
   }
 }

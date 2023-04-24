@@ -2,6 +2,8 @@ package com.github.dedis.popstellar.repository.remote;
 
 import android.util.Log;
 
+import androidx.annotation.VisibleForTesting;
+
 import com.github.dedis.popstellar.model.network.GenericMessage;
 import com.github.dedis.popstellar.model.network.answer.Error;
 import com.github.dedis.popstellar.model.network.answer.*;
@@ -26,6 +28,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import io.reactivex.Observable;
 import io.reactivex.*;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.observers.TestObserver;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.subjects.Subject;
 
@@ -202,7 +205,7 @@ public class LAONetworkManager implements MessageSender {
         | UnknownRollCallException
         | NoRollCallException
         | UnknownElectionException e) {
-      Log.e(TAG, "Error while handling received message", e);
+      Log.e(TAG, "Error while handling received message, will try to reprocess it later", e);
       reprocessMessage(broadcast);
     }
   }
@@ -267,6 +270,7 @@ public class LAONetworkManager implements MessageSender {
       reprocessingCounter.put(message, count + 1);
       unprocessed.onNext(message);
     } else {
+      Log.d(TAG, "Message " + message + " has been reprocessed too many times, it's now dropped");
       // Discard the message
       reprocessingCounter.remove(message);
     }
@@ -281,5 +285,10 @@ public class LAONetworkManager implements MessageSender {
   @Override
   public boolean isDisposed() {
     return disposables.isDisposed();
+  }
+
+  @VisibleForTesting
+  public TestObserver<GenericMessage> testUnprocessed() {
+    return unprocessed.test();
   }
 }
