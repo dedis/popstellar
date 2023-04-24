@@ -13,7 +13,6 @@ import com.github.dedis.popstellar.model.objects.Meeting;
 import com.github.dedis.popstellar.repository.MeetingRepository;
 import com.github.dedis.popstellar.ui.lao.LaoActivity;
 import com.github.dedis.popstellar.ui.lao.LaoViewModel;
-import com.github.dedis.popstellar.utility.Constants;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.UnknownMeetingException;
 import com.google.gson.Gson;
@@ -27,7 +26,6 @@ import javax.inject.Inject;
 import dagger.hilt.android.AndroidEntryPoint;
 
 import static com.github.dedis.popstellar.utility.Constants.MEETING_ID;
-import static com.github.dedis.popstellar.utility.Constants.ROLL_CALL_ID;
 
 @AndroidEntryPoint
 public class MeetingFragment extends Fragment {
@@ -49,10 +47,10 @@ public class MeetingFragment extends Fragment {
     // Empty constructor
   }
 
-  public static MeetingFragment newInstance(String persistentId) {
+  public static MeetingFragment newInstance(String id) {
     MeetingFragment fragment = new MeetingFragment();
     Bundle bundle = new Bundle(1);
-    bundle.putString(Constants.MEETING_ID, persistentId);
+    bundle.putString(MEETING_ID, id);
     fragment.setArguments(bundle);
     return fragment;
   }
@@ -68,7 +66,7 @@ public class MeetingFragment extends Fragment {
 
     try {
       meeting =
-          meetingRepo.getMeetingWithPersistentId(
+          meetingRepo.getMeetingWithId(
               laoViewModel.getLaoId(), requireArguments().getString(MEETING_ID));
     } catch (UnknownMeetingException e) {
       ErrorUtils.logAndShow(requireContext(), TAG, e, R.string.unknown_meeting_exception);
@@ -79,7 +77,7 @@ public class MeetingFragment extends Fragment {
 
     laoViewModel.addDisposable(
         meetingViewModel
-            .getMeetingObservable(meeting.getPersistentId())
+            .getMeetingObservable(meeting.getId())
             .subscribe(
                 m -> {
                   Log.d(TAG, "Received meeting update: " + m);
@@ -101,8 +99,8 @@ public class MeetingFragment extends Fragment {
     laoViewModel.setIsTab(false);
     try {
       meeting =
-          meetingRepo.getMeetingWithPersistentId(
-              laoViewModel.getLaoId(), requireArguments().getString(ROLL_CALL_ID));
+          meetingRepo.getMeetingWithId(
+              laoViewModel.getLaoId(), requireArguments().getString(MEETING_ID));
     } catch (UnknownMeetingException e) {
       ErrorUtils.logAndShow(requireContext(), TAG, e, R.string.unknown_meeting_exception);
     }

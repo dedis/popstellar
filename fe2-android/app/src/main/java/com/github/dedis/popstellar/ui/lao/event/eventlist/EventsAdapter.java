@@ -17,6 +17,7 @@ import com.github.dedis.popstellar.model.objects.event.EventType;
 import com.github.dedis.popstellar.ui.lao.LaoActivity;
 import com.github.dedis.popstellar.ui.lao.LaoViewModel;
 import com.github.dedis.popstellar.ui.lao.event.election.fragments.ElectionFragment;
+import com.github.dedis.popstellar.ui.lao.event.meeting.MeetingFragment;
 import com.github.dedis.popstellar.ui.lao.event.rollcall.RollCallFragment;
 
 import org.ocpsoft.prettytime.PrettyTime;
@@ -80,6 +81,8 @@ public abstract class EventsAdapter extends RecyclerView.Adapter<RecyclerView.Vi
       handleElectionContent(eventViewHolder, (Election) event);
     } else if (event.getType().equals(EventType.ROLL_CALL)) {
       handleRollCallContent(eventViewHolder, (RollCall) event);
+    } else if (event.getType().equals(EventType.MEETING)) {
+      handleMeetingContent(eventViewHolder, (Meeting) event);
     }
     eventViewHolder.eventTitle.setText(event.getName());
     handleTimeAndLocation(eventViewHolder, event);
@@ -112,13 +115,16 @@ public abstract class EventsAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             LaoActivity.setCurrentFragment(
                 activity.getSupportFragmentManager(),
                 R.id.fragment_meeting,
-                () -> RollCallFragment.newInstance(meeting.getPersistentId())));
+                () -> MeetingFragment.newInstance(meeting.getId())));
   }
 
   private void handleTimeAndLocation(EventViewHolder viewHolder, Event event) {
     String location = "";
     if (event instanceof RollCall) {
       location = ", at " + ((RollCall) event).getLocation();
+    }
+    if (event instanceof Meeting) {
+      location = ", at " + ((Meeting) event).getLocation();
     }
     String timeText;
     switch (event.getState()) {

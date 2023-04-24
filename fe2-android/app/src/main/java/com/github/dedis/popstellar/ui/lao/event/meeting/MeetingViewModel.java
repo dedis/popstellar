@@ -63,13 +63,11 @@ public class MeetingViewModel extends AndroidViewModel {
     this.laoId = laoId;
   }
 
-  public Observable<Meeting> getMeetingObservable(String persistentId) {
+  public Observable<Meeting> getMeetingObservable(String id) {
     try {
-      return meetingRepo
-          .getMeetingObservable(laoId, persistentId)
-          .observeOn(schedulerProvider.mainThread());
+      return meetingRepo.getMeetingObservable(laoId, id).observeOn(schedulerProvider.mainThread());
     } catch (UnknownMeetingException e) {
-      return Observable.error(new UnknownMeetingException(persistentId));
+      return Observable.error(new UnknownMeetingException(id));
     }
   }
 

@@ -26,7 +26,7 @@ import static java.util.Collections.unmodifiableSet;
  */
 @Singleton
 public class MeetingRepository {
-  public static final String TAG = RollCallRepository.class.getSimpleName();
+  public static final String TAG = MeetingRepository.class.getSimpleName();
   private final Map<String, LaoMeetings> meetingsByLao = new HashMap<>();
 
   @Inject
@@ -35,20 +35,20 @@ public class MeetingRepository {
   }
 
   /**
-   * This either updates the meeting in the repository or adds it if absent
+   * This add the meeting in the repository
    *
-   * @param meeting the meeting to update/add
+   * @param meeting the meeting to add
    */
-  public void updateMeeting(String laoId, Meeting meeting) {
+  public void addMeeting(String laoId, Meeting meeting) {
     if (laoId == null) {
       throw new IllegalArgumentException("Lao id is null");
     }
     if (meeting == null) {
       throw new IllegalArgumentException("Meeting is null");
     }
-    Log.d(TAG, "Updating meeting on lao " + laoId + " : " + meeting);
+    Log.d(TAG, "Adding meeting on lao " + laoId + " : " + meeting);
 
-    // Retrieve Lao data and add the roll call to it
+    // Retrieve Lao data and add the meeting to it
     getLaoMeetings(laoId).update(meeting);
   }
 
@@ -65,22 +65,8 @@ public class MeetingRepository {
     return getLaoMeetings(laoId).getMeetingObservable(persistentId);
   }
 
-  public Meeting getMeetingWithPersistentId(String laoId, String persistentId)
-      throws UnknownMeetingException {
-    return getLaoMeetings(laoId).getMeetingWithPersistentId(persistentId);
-  }
-
   public Meeting getMeetingWithId(String laoId, String meetingId) throws UnknownMeetingException {
     return getLaoMeetings(laoId).getMeetingWithId(meetingId);
-  }
-
-  /**
-   * @param laoId the id of the Lao whose roll calls we want to observe
-   * @return an observable set of ids who correspond to the set of roll calls published on the given
-   *     lao
-   */
-  public Observable<Set<Meeting>> getMeetingsObservableInLao(String laoId) {
-    return getLaoMeetings(laoId).getMeetingsSubject();
   }
 
   @NonNull
@@ -88,12 +74,16 @@ public class MeetingRepository {
     return meetingsByLao.computeIfAbsent(laoId, lao -> new MeetingRepository.LaoMeetings());
   }
 
-  private static final class LaoMeetings {
-    private final Map<String, Meeting> meetingByPersistentId = new HashMap<>();
+  /**
+   * @param laoId the id of the Lao whose meetings we want to observe
+   * @return observable set of ids, corresponding to the set of meetings published on the given lao
+   */
+  public Observable<Set<Meeting>> getMeetingsObservableInLao(String laoId) {
+    return getLaoMeetings(laoId).getMeetingsSubject();
+  }
 
-    // This maps a meeting id, which is state dependent,
-    // to its persistentId which is fixed at creation
-    private final Map<String, String> meetingIdAlias = new HashMap<>();
+  private static final class LaoMeetings {
+    private final Map<String, Meeting> meetingById = new HashMap<>();
 
     // This allows to observe a specific meeting(s)
     private final Map<String, Subject<Meeting>> meetingSubjects = new HashMap<>();
@@ -109,39 +99,28 @@ public class MeetingRepository {
      */
     public synchronized void update(Meeting meeting) {
       // Updating repo data
-      String persistentId = meeting.getPersistentId();
-      meetingByPersistentId.put(persistentId, meeting);
-
-      // We update the alias map with
-      meetingIdAlias.put(meeting.getId(), meeting.getPersistentId());
+      String id = meeting.getId();
+      meetingById.put(id, meeting);
 
       // Publish new values on subjects
-      if (meetingSubjects.containsKey(persistentId)) {
+      if (meetingSubjects.containsKey(id)) {
         // If it exist we update the subject
         Log.d(TAG, "Updating existing meeting " + meeting.getName());
-        meetingSubjects.get(persistentId).onNext(meeting);
+        meetingSubjects.get(id).onNext(meeting);
       } else {
         // If it does not, we create a new subject
         Log.d(TAG, "New meeting, subject created for " + meeting.getName());
-        meetingSubjects.put(persistentId, BehaviorSubject.createDefault(meeting));
+        meetingSubjects.put(id, BehaviorSubject.createDefault(meeting));
       }
 
-      meetingsSubject.onNext(unmodifiableSet(new HashSet<>(meetingByPersistentId.values())));
-    }
-
-    public Meeting getMeetingWithPersistentId(String persistentId) throws UnknownMeetingException {
-      if (!meetingByPersistentId.containsKey(persistentId)) {
-        throw new UnknownMeetingException(persistentId);
-      }
-      return meetingByPersistentId.get(persistentId);
+      meetingsSubject.onNext(unmodifiableSet(new HashSet<>(meetingById.values())));
     }
 
     public Meeting getMeetingWithId(String id) throws UnknownMeetingException {
-      if (!meetingIdAlias.containsKey(id)) {
+      if (!meetingById.containsKey(id)) {
         throw new UnknownMeetingException(id);
       }
-      String persistentId = meetingIdAlias.get(id);
-      return getMeetingWithPersistentId(persistentId);
+      return meetingById.get(id);
     }
 
     public Observable<Meeting> getMeetingObservable(String id) throws UnknownMeetingException {

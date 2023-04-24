@@ -11,10 +11,6 @@ import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.MeetingRepository;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
-import com.github.dedis.popstellar.utility.error.UnknownMeetingException;
-
-import java.util.ArrayList;
-import java.util.Arrays;
 
 import javax.inject.Inject;
 
@@ -51,61 +47,23 @@ public class MeetingHandler {
     MeetingBuilder builder = new MeetingBuilder();
     builder
         .setId(createMeeting.getId())
-        .setPersistentId(createMeeting.getId())
         .setCreation(createMeeting.getCreation())
         .setStart(createMeeting.getStart())
         .setEnd(createMeeting.getEnd())
         .setName(createMeeting.getName())
         .setLocation(createMeeting.getLocation())
-        .setLastModified(createMeeting.getCreation())
-        .setModificationId("")
-        .setModificationSignatures(new ArrayList<>());
+        .setLastModified(createMeeting.getCreation());
 
     Meeting meeting = builder.build();
     Lao lao = laoView.createLaoCopy();
     lao.updateWitnessMessage(messageId, createMeetingWitnessMessage(messageId, meeting));
 
-    meetingRepo.updateMeeting(laoView.getId(), meeting);
+    meetingRepo.addMeeting(laoView.getId(), meeting);
     laoRepo.updateLao(lao);
   }
 
-  public void handleStateMeeting(HandlerContext context, StateMeeting stateMeeting)
-      throws UnknownLaoException {
-    Channel channel = context.getChannel();
-    MessageID messageId = context.getMessageId();
-
-    Log.d(TAG, "handleStateMeeting: " + channel + " name " + stateMeeting.getName());
-    LaoView laoView = laoRepo.getLaoViewByChannel(channel);
-
-    Meeting existingMeeting;
-    try {
-      existingMeeting = meetingRepo.getMeetingWithId(laoView.getId(), stateMeeting.getId());
-    } catch (UnknownMeetingException e) {
-      existingMeeting = null;
-    }
-
-    String persistentId =
-        existingMeeting == null ? stateMeeting.getId() : existingMeeting.getPersistentId();
-
-    MeetingBuilder builder = new MeetingBuilder();
-    builder
-        .setId(stateMeeting.getId())
-        .setPersistentId(persistentId)
-        .setCreation(stateMeeting.getCreation())
-        .setStart(stateMeeting.getStart())
-        .setEnd(stateMeeting.getEnd())
-        .setName(stateMeeting.getName())
-        .setLocation(stateMeeting.getLocation())
-        .setLastModified(stateMeeting.getLastModified())
-        .setModificationId(stateMeeting.getModificationId())
-        .setModificationSignatures(stateMeeting.getModificationSignatures());
-
-    Meeting meeting = builder.build();
-    Lao lao = laoView.createLaoCopy();
-    lao.updateWitnessMessage(messageId, stateMeetingWitnessMessage(messageId, meeting));
-
-    meetingRepo.updateMeeting(laoView.getId(), meeting);
-    laoRepo.updateLao(lao);
+  public void handleStateMeeting(HandlerContext context, StateMeeting stateMeeting) {
+    // TODO in the future
   }
 
   public static WitnessMessage createMeetingWitnessMessage(MessageID messageId, Meeting meeting) {
@@ -128,24 +86,7 @@ public class MeetingHandler {
   }
 
   public static WitnessMessage stateMeetingWitnessMessage(MessageID messageId, Meeting meeting) {
-    WitnessMessage message = new WitnessMessage(messageId);
-    message.setTitle("A meeting was stated");
-    message.setDescription(
-        MEETING_NAME
-            + meeting.getName()
-            + "\n"
-            + "Meeting ID : "
-            + meeting.getId()
-            + "\n"
-            + "Modification ID : "
-            + meeting.getModificationId()
-            + "\n"
-            + "Modification signatures : "
-            + Arrays.toString(meeting.getModificationSignatures().toArray())
-            + "\n"
-            + MESSAGE_ID
-            + messageId);
-
-    return message;
+    // TODO in the future
+    return null;
   }
 }

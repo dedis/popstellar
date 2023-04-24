@@ -149,7 +149,7 @@
       android:id="@+id/add_meeting"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:src="@drawable/ic_roll_call"
+      android:src="@drawable/ic_meeting"
       android:layout_marginBottom="@dimen/mini_fab_bottom_margin"
       android:backgroundTint="@color/white"
       app:borderWidth="@dimen/fab_border_width"

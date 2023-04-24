@@ -6,51 +6,41 @@ import com.github.dedis.popstellar.model.Immutable;
 import com.github.dedis.popstellar.model.objects.event.*;
 import com.github.dedis.popstellar.utility.security.Hash;
 
-import java.util.Arrays;
 import java.util.List;
 
 @Immutable
 public class Meeting extends Event {
   private final String id;
-  private final String persistentId;
   private final String name;
   private final long creation;
   private final long start;
   private final long end;
   private final String location;
   private final long lastModified;
-  private final String modificationId;
-  private final List<String> modificationSignatures;
+
+  // To implement when adding the StateMeeting functionality
+  private final String modificationId = null;
+  private final List<String> modificationSignatures = null;
 
   public Meeting(
       String id,
-      String persistentId,
       String name,
       long creation,
       long start,
       long end,
       String location,
-      long lastModified,
-      String modificationId,
-      List<String> modificationSignatures) {
+      long lastModified) {
     this.id = id;
-    this.persistentId = persistentId;
     this.name = name;
     this.creation = creation;
     this.start = start;
     this.end = end;
     this.location = location;
     this.lastModified = lastModified;
-    this.modificationId = modificationId;
-    this.modificationSignatures = modificationSignatures;
   }
 
   public String getId() {
     return id;
-  }
-
-  public String getPersistentId() {
-    return persistentId;
   }
 
   @Override
@@ -76,14 +66,6 @@ public class Meeting extends Event {
 
   public long getLastModified() {
     return lastModified;
-  }
-
-  public String getModificationId() {
-    return modificationId;
-  }
-
-  public List<String> getModificationSignatures() {
-    return modificationSignatures;
   }
 
   @Override
@@ -142,9 +124,6 @@ public class Meeting extends Event {
         + "id='"
         + id
         + '\''
-        + ", persistentId='"
-        + persistentId
-        + '\''
         + ", name='"
         + name
         + '\''
@@ -157,14 +136,8 @@ public class Meeting extends Event {
         + ", location='"
         + location
         + '\''
-        + ", lastModified='"
+        + ", lastModified="
         + lastModified
-        + '\''
-        + ", modificationId='"
-        + modificationId
-        + '\''
-        + ", modificationSignatures="
-        + Arrays.toString(modificationSignatures.toArray())
         + '}';
   }
 }
