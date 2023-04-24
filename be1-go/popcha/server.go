@@ -236,14 +236,6 @@ func (as *AuthorizationServer) Shutdown() error {
 	return nil
 }
 
-// WSConnStatus returns the number of ongoing requests on the authorization server
-func (as *AuthorizationServer) WSConnStatus() int {
-	as.connsMutex.Lock()
-	conns := len(as.internalConns)
-	as.connsMutex.Unlock()
-	return conns
-}
-
 // newChallengeServer creates a new HTTP Server containing a multiplexing router,
 // given the request endpoint.
 func (as *AuthorizationServer) newChallengeServer(endpoint string) *http.Server {

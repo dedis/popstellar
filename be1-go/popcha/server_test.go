@@ -221,7 +221,7 @@ func TestAuthorizationServerWebsocket(t *testing.T) {
 	// instantiating websocket connection
 	client, err := newWSClient(popChaWsURL)
 	require.NoError(t, err)
-	time.Sleep(2 * time.Second)
+	time.Sleep(time.Second)
 
 	//creating fake redirect URI parameters, for example just with the clientID. We are not
 	// testing the validity of the parameters here, but rather that the websocket protocol doesn't
@@ -231,7 +231,7 @@ func TestAuthorizationServerWebsocket(t *testing.T) {
 	err = client.conn.WriteMessage(websocket.TextMessage, []byte(fakeParams.Encode()))
 	require.NoError(t, err)
 
-	time.Sleep(2 * time.Second)
+	time.Sleep(time.Second)
 
 	err = s.Shutdown()
 	require.NoError(t, err)
@@ -321,7 +321,9 @@ func validClientParams(c clientParams) bool {
 		// no developer mode by default
 		!c.DevMode() &&
 		// responseType is correct
-		c.ResponseTypes()[0] == ResTypeMulti
+		c.ResponseTypes()[0] == ResTypeMulti &&
+		// clock skew is set at 0
+		c.ClockSkew() == 0
 
 }
 
