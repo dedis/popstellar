@@ -7,7 +7,6 @@ import ch.epfl.pop.model.objects.{Channel, DbActorNAckException, Hash}
 import ch.epfl.pop.pubsub.AskPatternConstants
 import ch.epfl.pop.pubsub.graph.ErrorCodes
 import ch.epfl.pop.storage.DbActor
-
 import scala.util.{Failure, Success}
 import scala.collection.immutable.HashMap
 import scala.concurrent.Await
