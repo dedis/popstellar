@@ -7,7 +7,9 @@ import ch.epfl.pop.storage.DbActor
 
 class FailingToyDbActor extends Actor {
   override def receive: Receive = {
-    case _ => DbActorNAckException(0, "")
+    case _ => {
+      sender() ! DbActorNAckException(0, "")
+    }
   }
 
 }
