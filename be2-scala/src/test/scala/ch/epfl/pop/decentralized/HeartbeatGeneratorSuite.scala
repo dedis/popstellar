@@ -42,7 +42,7 @@ class HeartbeatGeneratorSuite extends TestKit(ActorSystem("HeartbeatGeneratorSui
     testProbe.expectMsg(timeout, Heartbeat(expected))
   }
 
-  test("generator should send nothing when failing to query the data base"){
+  test("generator should send nothing when failing to query the data base") {
     val generatorRef: ActorRef = system.actorOf(HeartbeatGenerator.props(failingToyDbActorRef))
     val testProbe = TestProbe()
     generatorRef ! Monitor.GenerateAndSendHeartbeat(testProbe.ref)
@@ -50,4 +50,3 @@ class HeartbeatGeneratorSuite extends TestKit(ActorSystem("HeartbeatGeneratorSui
   }
 
 }
-

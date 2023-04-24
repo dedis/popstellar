@@ -44,7 +44,7 @@ case class HeartbeatGenerator(dbRef: AskableActorRef) extends Actor with ActorLo
 
       }
       if (setOfIds.nonEmpty)
-      heartbeatMap = heartbeatMap + (channel -> setOfIds)
+        heartbeatMap = heartbeatMap + (channel -> setOfIds)
     })
 
     Some(heartbeatMap)
