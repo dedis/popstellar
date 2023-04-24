@@ -2,7 +2,7 @@
 Feature: Update a LAO
 
   Background:
-    # This is feature will be called to test Update LAO messages
+    # This feature will be called to test Update LAO messages
     # This call makes this feature and server.feature share the same scope
     # Meaning they share def variables, configurations ...
     # Especially JS functions defined in server.feature can be directly used here thanks to Karate shared scopes

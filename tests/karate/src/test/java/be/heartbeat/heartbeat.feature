@@ -2,7 +2,7 @@
 Feature: Send heartbeats to other servers
 
   Background:
-    # This is feature will be called to test sending heartbeats to other servers.
+    # This feature will be called to test sending heartbeats to other servers.
     # This call makes this feature and server.feature share the same scope
     # Meaning they share def variables, configurations ...
     # Especially JS functions defined in server.feature can be directly used here thanks to Karate shared scopes
@@ -13,9 +13,9 @@ Feature: Send heartbeats to other servers
     * call read('classpath:be/utils/simpleScenarios.feature@name=valid_lao')
     * string channel = "/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA="
 
-    # After lao creation, wait (10 seconds for now) and check that a heartbeat message was received
+    # After lao creation, wait (6 seconds for now) and check that a heartbeat message was received
   Scenario: Server should send heartbeat messages
-    Given wait(10)
+    Given wait(6)
     When def heartbeatMessages = frontend.getMessagesByMethod('heartbeat')
     Then assert heartbeatMessages.length > 0
 

@@ -117,9 +117,9 @@ public class MultiMsgWebSocketClient extends WebSocketClient {
   }
 
   /**
-   * Returns all messages received that are of a given type of method
-   * @param method the type of method
-   * @return list of all received messages of with that method
+   * Retrieves all messages with the specified method type from the messages buffer.
+   * @param method The method type to filter the messages by.
+   * @return A list containing all received messages that match the specified method type.
    */
   public List<String> getMessagesByMethod(String method) {
     List<String> messages = new ArrayList<>();

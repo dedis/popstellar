@@ -1,7 +1,7 @@
 @env=go,scala
 Feature: Setup an Election
   Background:
-        # This is feature will be called to test Election Setup
+        # This feature will be called to test Election Setup
         # For every test a file containing the json representation of the message is read
         # then sent to the backend and stored there.
         # This is done via :
