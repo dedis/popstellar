@@ -11,7 +11,7 @@ from urllib import parse
 import jwt
 from werkzeug.datastructures import MultiDict
 
-valid_nonces: dict[(str, float)]
+valid_nonces: dict[(str, float)] = {}
 
 
 def get_url(server: str, lao_id: str, client_id: str) -> str:
@@ -30,7 +30,7 @@ def get_url(server: str, lao_id: str, client_id: str) -> str:
         "response_mode": "query",
         "response_type": "id_token token",
         "client_id": client_id,
-        "redirect_uri": f"https%3A%2F%2F{server}%2Fcb",
+        "redirect_uri": f"https://{server}/cb",
         "scope": "openid profile",
         "login_hint": lao_id,
         "nonce": nonce,
@@ -38,13 +38,12 @@ def get_url(server: str, lao_id: str, client_id: str) -> str:
     return f"https://{server}/authorize?{parse.urlencode(parameters)}"
 
 
-def validate_args(args: MultiDict[str, str], public_key: str, client_id: str) \
+def validate_args(args: MultiDict[str, str], client_id: str) \
         -> str | None:
     """
     Validate the args as if they were coming from OpenID Authentication request
     :param args: A MultiDict containing the arguments (almost the same as a
     dict).
-    :param public_key:
     :param client_id:
     :return: The unique user identifier if logged in None otherwise
     """
@@ -52,12 +51,20 @@ def validate_args(args: MultiDict[str, str], public_key: str, client_id: str) \
                          or "token_type" not in args)
     if missing_arg:
         return None
-    token: dict = jwt.decode(args.get("id_token", type = str))
+    token: dict = jwt.decode(args.get("id_token", type=str))
 
     valid_client_id = client_id == token.get("aud") == client_id
     if not valid_client_id:
         return None
 
+    valid_provided_nonce = token.get("nonce", None) not in valid_nonces.keys()
+    if not valid_provided_nonce:
+        return None
+
+    nonce_data: (str, float) = valid_nonces.pop(token.get("nonce", None), None)
+    valid_issuer = nonce_data[0] == token.get("iss", None)
+    if valid_issuer:
+        return None
     return None
 
 

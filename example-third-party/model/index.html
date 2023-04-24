@@ -29,11 +29,13 @@
         left: 50%;
         transform: translate(-50%, -50%);
     }
+
     h1, p, button {
         position: relative;
         text-align: center;
     }
-    p, button{
+
+    p, button {
         margin-top: 10px;
         font-size: 1.2rem;
     }
@@ -47,10 +49,12 @@
         border: none;
         padding: 7px 12px;
     }
+
     .formLine {
         width: 100%;
         display: flex;
     }
+
     form {
         position: relative;
         width: 70%;
@@ -58,6 +62,7 @@
         padding-top: 10px;
         margin-left: -35%;
     }
+
     .important {
         font-weight: bolder;
         color: red;
@@ -70,13 +75,16 @@
     <div class="dataBox">
         <h1>PoPCHA authentication example</h1>
         <p>More informations <a href="https://github.com/dedis/popstellar">here.</a></p>
-        <p class="important"> Please note that this is a website designed to be used as an example only</p>
+        <p class="important"> Please note that this is a website designed to be used as an example
+            only</p>
 
         <form action="/authenticate">
-        <select id="lao-selection" name="serverAndLaoId" required>
-            <option value="">-- Please choose a lao / server pair --</option>
-            <!-- Insert options -->
-        </select>
+            <label for="lao-selection">
+                <select id="lao-selection" name="serverAndLaoId"    required>
+                    <option value="">-- Please choose a lao / serve pair --</option>
+                    <!-- Insert options -->
+                </select>
+            </label>
             <input type="submit" id="submitAuthentication" value="Submit">
         </form>
     </div>
