@@ -2,21 +2,14 @@ package ch.epfl.pop.decentralized
 
 import akka.actor.{ActorRef, ActorSystem, Props}
 import akka.pattern.AskableActorRef
-import akka.stream.scaladsl.Source
 import akka.testkit.{TestKit, TestProbe}
-import ch.epfl.pop.model.network.method.{Heartbeat, ParamsWithMap}
-import ch.epfl.pop.model.network.{JsonRpcRequest, MethodType}
+import ch.epfl.pop.model.network.method.Heartbeat
 import ch.epfl.pop.model.objects.{Base64Data, Channel, Hash}
-import ch.epfl.pop.pubsub.graph.validators.RpcValidator
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.funsuite.{AnyFunSuiteLike => FunSuiteLike}
 import org.scalatest.matchers.should.Matchers
-import util.examples.JsonRpcRequestExample
 import ch.epfl.pop.pubsub.AskPatternConstants
 
-import scala.concurrent.Await
-import scala.concurrent.duration.DurationInt
-import scala.util.Success
 
 class HeartbeatGeneratorSuite extends TestKit(ActorSystem("HeartbeatGeneratorSuiteSystem")) with FunSuiteLike with Matchers with BeforeAndAfterAll with AskPatternConstants {
   final val CHANNEL1_NAME: String = "/root/wex/lao1Id"
