@@ -109,7 +109,7 @@ public class ElectionPublicKey {
     } catch (IOException e) {
       Timber.tag(TAG)
           .d(
-              "Something happened during the encryption, could concatenate the final result into a byte array");
+              "Something happened during the encryption, could NOT concatenate the final result into a byte array");
       result = null;
     }
     if (Objects.isNull(result)) {
