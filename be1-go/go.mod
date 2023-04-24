@@ -11,6 +11,7 @@ require (
 	github.com/gorilla/websocket v1.4.2
 	github.com/rs/xid v1.3.0
 	github.com/rs/zerolog v1.25.0
+	github.com/rzajac/zltest v0.12.0
 	github.com/santhosh-tekuri/jsonschema/v3 v3.0.1
 	github.com/stretchr/testify v1.8.2
 	github.com/urfave/cli/v2 v2.3.0

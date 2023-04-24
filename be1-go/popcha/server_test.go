@@ -5,6 +5,7 @@ import (
 	"github.com/gorilla/websocket"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
+	"github.com/rzajac/zltest"
 	"github.com/stretchr/testify/require"
 	"github.com/zitadel/oidc/v2/pkg/oidc"
 	"github.com/zitadel/oidc/v2/pkg/op"
@@ -118,7 +119,9 @@ func createAuthRequestURL(nonce string, clientID string, scope string, loginHint
 
 // TestAuthRequestFails tries different scenarios in which the authorization request should not be validated
 func TestAuthRequestFails(t *testing.T) {
-	l := popstellar.Logger
+	logTester := zltest.New(t)
+
+	l := zerolog.New(logTester).With().Timestamp().Logger()
 	s, err := NewAuthServer(fakeHub{}, "authorize", "localhost",
 		3003, "random_string", l)
 	require.NoError(t, err, "could not create AuthServer")
@@ -137,6 +140,10 @@ func TestAuthRequestFails(t *testing.T) {
 	log.Info().Msg(emptyURL)
 	require.NoError(t, err)
 
+	lastEntry := logTester.LastEntry()
+	lastEntry.ExpLevel(zerolog.ErrorLevel)
+	lastEntry.ExpMsg("Error while verifying the parameters of the request")
+
 	bodyBytes := helperValidateGetAndParseBody(t, res)
 
 	// we require that in the error response, the number of missing arguments is equal to 6
@@ -153,6 +160,9 @@ func TestAuthRequestFails(t *testing.T) {
 	log.Info().Msg(partialURL)
 	require.NoError(t, err)
 
+	lastEntry = logTester.LastEntry()
+	lastEntry.ExpLevel(zerolog.ErrorLevel)
+	lastEntry.ExpMsg("Error while verifying the parameters of the request")
 	bodyBytes = helperValidateGetAndParseBody(t, res)
 	// we require that there are 5 missing arguments
 	helperMissingArgs(t, bodyBytes, 5)
@@ -302,6 +312,7 @@ func invalidResponseTypeClientParam() clientParams {
 
 // property checker method for clientParams
 func validClientParams(c clientParams) bool {
+
 	// boolean formula validating client parameters.
 	// ClientID must be present
 	return c.GetID() != "" &&
@@ -323,7 +334,9 @@ func validClientParams(c clientParams) bool {
 		// responseType is correct
 		c.ResponseTypes()[0] == ResTypeMulti &&
 		// clock skew is set at 0
-		c.ClockSkew() == 0
+		c.ClockSkew() == 0 &&
+		// ID Token lifetime duration is valid
+		c.IDTokenLifetime() > 0
 
 }
 
