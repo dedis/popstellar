@@ -37,11 +37,7 @@ object Validator {
         case _: GetMessagesById => graphMessage // No check necessary
         case _                  => Left(validationError(jsonRpcRequest.id))
       }
-    case Right(jsonRpcResponse: JsonRpcResponse) => Left(PipelineError(
-        ErrorCodes.SERVER_ERROR.id,
-        "Unsupported action: MethodValidator was given a response message",
-        jsonRpcResponse.id
-      ))
+
     case _ => graphMessage
   }
 
@@ -63,7 +59,6 @@ object Validator {
     case Right(_) => validateJsonRpcContent(graphMessage) match {
         case Right(_) => validateMethodContent(graphMessage) match {
             case Right(_) => validateMessageContent(graphMessage) match {
-                case Right(_)         => graphMessage
                 case graphMessage @ _ => graphMessage
               }
             case graphMessage @ _ => graphMessage
