@@ -177,7 +177,7 @@ deploy_popcha_example:
       # Use rsync to deploy the new website (no build is necessary)
       - name: Sync
         env:
-            dest: "popCHAExample@${{secrets.POPCHA_EXAMPLE_DEPLOY_ADDR}}:www"
+            dest: "popdemo@${{secrets.POPCHA_EXAMPLE_DEPLOY_ADDR}}:example-third-party"
         run: |
             echo "${{secrets.POPCHA_EXAMPLE_DEPLOY_KEY}}" > deploy_key
             chmod 600 ./deploy_key
