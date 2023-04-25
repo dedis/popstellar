@@ -1,7 +1,5 @@
 package com.github.dedis.popstellar.repository.remote;
 
-import android.util.Log;
-
 import com.github.dedis.popstellar.model.network.GenericMessage;
 import com.github.dedis.popstellar.model.network.answer.Error;
 import com.github.dedis.popstellar.model.network.answer.*;
@@ -27,6 +25,7 @@ import io.reactivex.*;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.subjects.Subject;
+import timber.log.Timber;
 
 /** This class handles the JSON-RPC layer of the protocol */
 public class LAONetworkManager implements MessageSender {
@@ -80,10 +79,12 @@ public class LAONetworkManager implements MessageSender {
                                 subscribe(channel)
                                     .subscribe(
                                         () ->
-                                            Log.d(TAG, "resubscription successful to :" + channel),
+                                            Timber.tag(TAG)
+                                                .d("resubscription successful to : %s", channel),
                                         error ->
-                                            Log.d(TAG, "error on resubscription to" + error)))),
-                error -> Log.d(TAG, "Error on resubscription : " + error)));
+                                            Timber.tag(TAG)
+                                                .d(error, "error on resubscription to")))),
+                error -> Timber.tag(TAG).d(error, "Error on resubscription")));
   }
 
   private void processIncomingMessages() {
@@ -100,20 +101,21 @@ public class LAONetworkManager implements MessageSender {
             .subscribeOn(schedulerProvider.newThread())
             .subscribe(
                 this::handleBroadcast,
-                error -> Log.d(TAG, "Error on processing message: " + error)));
+                error -> Timber.tag(TAG).d(error, "Error on processing message")));
   }
 
   @Override
   public Completable catchup(Channel channel) {
-    Log.d(TAG, "sending a catchup to the channel " + channel);
+    Timber.tag(TAG).d("sending a catchup to the channel %s", channel);
     Catchup catchup = new Catchup(channel, requestCounter.incrementAndGet());
 
     return request(catchup)
         .map(ResultMessages.class::cast)
         .map(ResultMessages::getMessages)
-        .doOnError(error -> Log.d(TAG, "Error in catchup :" + error))
+        .doOnError(error -> Timber.tag(TAG).d(error, "Error in catchup"))
         .doOnSuccess(
-            msgs -> Log.d(TAG, "Received catchup response on " + channel + ", retrieved : " + msgs))
+            msgs ->
+                Timber.tag(TAG).d("Received catchup response on %s, retrieved : %s", channel, msgs))
         .doOnSuccess(messages -> handleMessages(messages, channel))
         .ignoreElement();
   }
@@ -125,45 +127,45 @@ public class LAONetworkManager implements MessageSender {
 
   @Override
   public Completable publish(Channel channel, MessageGeneral msg) {
-    Log.d(TAG, "sending a publish " + msg.getData().getClass() + " to the channel " + channel);
+    Timber.tag(TAG).d("sending a publish %s to the channel %s", msg.getData().getClass(), channel);
     Publish publish = new Publish(channel, requestCounter.incrementAndGet(), msg);
     return request(publish)
         .ignoreElement()
-        .doOnComplete(() -> Log.d(TAG, "Successfully published " + msg));
+        .doOnComplete(() -> Timber.tag(TAG).d("Successfully published %s", msg));
   }
 
   @Override
   public Completable subscribe(Channel channel) {
-    Log.d(TAG, "sending a subscribe on the channel " + channel);
+    Timber.tag(TAG).d("sending a subscribe on the channel %s", channel);
     Subscribe subscribe = new Subscribe(channel, requestCounter.incrementAndGet());
     return request(subscribe)
         // This is used when reconnecting after a lost connection
         .doOnSuccess(
             answer -> {
-              Log.d(TAG, "Adding " + channel + " to subscriptions");
+              Timber.tag(TAG).d("Adding %s to subscriptions", channel);
               subscribedChannels.add(channel);
             })
-        .doOnError(error -> Log.d(TAG, "error in subscribe : ", error))
+        .doOnError(error -> Timber.tag(TAG).d(error, "error in subscribe"))
         // Catchup already sent messages after the subscription to the channel is complete
         // This allows for the completion of the returned completable only when both subscribe
         // and catchup are completed
         .flatMapCompletable(answer -> catchup(channel))
         .doOnComplete(
-            () -> Log.d(TAG, "Successfully subscribed and catchup to channel " + channel));
+            () -> Timber.tag(TAG).d("Successfully subscribed and catchup to channel %s", channel));
   }
 
   @Override
   public Completable unsubscribe(Channel channel) {
-    Log.d(TAG, "sending an unsubscribe on the channel " + channel);
+    Timber.tag(TAG).d("sending an unsubscribe on the channel %s", channel);
     Unsubscribe unsubscribe = new Unsubscribe(channel, requestCounter.incrementAndGet());
     return request(unsubscribe)
         // This is used when reconnecting after a lost connection
         .doOnSuccess(
             answer -> {
-              Log.d(TAG, "Removing " + channel + " from subscriptions");
+              Timber.tag(TAG).d("Removing %s from subscriptions", channel);
               subscribedChannels.remove(channel);
             })
-        .doOnError(error -> Log.d(TAG, "error unsubscribing : ", error))
+        .doOnError(error -> Timber.tag(TAG).d(error, "error unsubscribing"))
         .ignoreElement();
   }
 
@@ -189,7 +191,7 @@ public class LAONetworkManager implements MessageSender {
   }
 
   private void handleBroadcast(Broadcast broadcast) {
-    Log.d(TAG, "handling broadcast msg : " + broadcast);
+    Timber.tag(TAG).d("handling broadcast msg : %s", broadcast);
     try {
       messageHandler.handleMessage(this, broadcast.getChannel(), broadcast.getMessage());
     } catch (DataHandlingException
@@ -197,7 +199,7 @@ public class LAONetworkManager implements MessageSender {
         | UnknownRollCallException
         | NoRollCallException
         | UnknownElectionException e) {
-      Log.e(TAG, "Error while handling received message", e);
+      Timber.tag(TAG).e(e, "Error while handling received message");
       unprocessed.onNext(broadcast);
     }
   }
@@ -211,7 +213,7 @@ public class LAONetworkManager implements MessageSender {
           | UnknownRollCallException
           | NoRollCallException
           | UnknownElectionException e) {
-        Log.e(TAG, "Error while handling received catchup message", e);
+        Timber.tag(TAG).e(e, "Error while handling received catchup message");
       }
     }
   }
@@ -227,7 +229,7 @@ public class LAONetworkManager implements MessageSender {
         .map(Answer.class::cast)
         // This specific request has an id, only let the related Answer pass
         .filter(answer -> answer.getId() == query.getRequestId())
-        .doOnNext(answer -> Log.d(TAG, "request id: " + answer.getId()))
+        .doOnNext(answer -> Timber.tag(TAG).d("request id: %s", answer.getId()))
         // Transform from an Observable to a Single
         // This Means that we expect a result before the source is disposed and an error
         // will be produced if no value is received.

@@ -1,7 +1,5 @@
 package com.github.dedis.popstellar.model.objects.security;
 
-import android.util.Log;
-
 import com.github.dedis.popstellar.model.Immutable;
 import com.google.crypto.tink.PublicKeyVerify;
 import com.google.crypto.tink.subtle.Ed25519Verify;
@@ -9,6 +7,8 @@ import com.google.crypto.tink.subtle.Ed25519Verify;
 import java.security.*;
 import java.util.Arrays;
 import java.util.Base64;
+
+import timber.log.Timber;
 
 /** A public key that can be used to verify a signature */
 @Immutable
@@ -33,7 +33,7 @@ public class PublicKey extends Base64URLData {
       verifier.verify(signature.getData(), data.getData());
       return true;
     } catch (GeneralSecurityException e) {
-      Log.d(TAG, "failed to verify witness signature " + e.getMessage());
+      Timber.tag(TAG).d("failed to verify witness signature %s", e.getMessage());
       return false;
     }
   }
@@ -44,13 +44,13 @@ public class PublicKey extends Base64URLData {
    * @return String which correspond to the SHA256 Hash
    */
   public String computeHash() {
-    MessageDigest digest = null;
+    MessageDigest digest;
     try {
       digest = MessageDigest.getInstance("SHA-256");
       byte[] hash = digest.digest(this.getData());
       return Base64.getUrlEncoder().encodeToString(Arrays.copyOf(hash, 20));
     } catch (NoSuchAlgorithmException e) {
-      Log.e(TAG, "Something is wrong by hashing the String element ");
+      Timber.tag(TAG).e(e, "Something is wrong by hashing the String element");
       throw new IllegalArgumentException("Error in computing the hash in public key");
     }
   }

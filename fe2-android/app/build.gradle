@@ -219,6 +219,8 @@ dependencies {
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'me.relex:circleindicator:2.1.6'
+    implementation "androidx.preference:preference:1.2.0"
+    implementation 'com.takisoft.preferencex:preferencex:1.1.0'
 
     // ================ Rx Java =================
     implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'
@@ -276,6 +278,9 @@ dependencies {
     // ================= SLF4J =================
     testImplementation "org.slf4j:slf4j-api:$slf4j_version"
     testImplementation "org.slf4j:slf4j-simple:$slf4j_version"
+
+    // ================== Timber =================
+    implementation 'com.jakewharton.timber:timber:5.0.1'
 
     // ================= Pretty Time =================
     implementation 'org.ocpsoft.prettytime:prettytime:5.0.4.Final'

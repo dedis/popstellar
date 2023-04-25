@@ -1,7 +1,6 @@
 package com.github.dedis.popstellar.ui.lao.event.eventlist;
 
 import android.annotation.SuppressLint;
-import android.util.Log;
 import android.view.*;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -20,6 +19,7 @@ import com.github.dedis.popstellar.ui.lao.event.LaoDetailAnimation;
 import java.util.*;
 
 import io.reactivex.Observable;
+import timber.log.Timber;
 
 import static com.github.dedis.popstellar.model.objects.event.EventCategory.PAST;
 import static com.github.dedis.popstellar.model.objects.event.EventCategory.PRESENT;
@@ -160,7 +160,7 @@ public class EventListAdapter extends EventsAdapter {
       return Objects.requireNonNull(eventsMap.get(PAST))
           .get(position - eventAccumulator - secondSectionOffset);
     }
-    Log.e(TAG, "position was " + position);
+    Timber.tag(TAG).e("position was %d", position);
     throw new IllegalStateException("no event matches");
   }
 
@@ -184,7 +184,7 @@ public class EventListAdapter extends EventsAdapter {
     if (position == eventAccumulator + 1) {
       return PAST;
     }
-    Log.e(TAG, "Illegal position " + position);
+    Timber.tag(TAG).e("Illegal position %d", position);
     throw new IllegalStateException("No event category");
   }
 

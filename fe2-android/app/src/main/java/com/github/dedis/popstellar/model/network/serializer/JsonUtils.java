@@ -1,7 +1,5 @@
 package com.github.dedis.popstellar.model.network.serializer;
 
-import android.util.Log;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonObject;
@@ -11,6 +9,8 @@ import com.networknt.schema.*;
 import java.net.URI;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+
+import timber.log.Timber;
 
 /** Json utility class */
 public final class JsonUtils {
@@ -71,7 +71,7 @@ public final class JsonUtils {
    * @throws JsonParseException if the json is invalid or cannot be parsed
    */
   public static void verifyJson(String schemaPath, String json) throws JsonParseException {
-    Log.d(TAG, "verifyJson for : " + json);
+    Timber.tag(TAG).d("verifyJson for : %s", json);
 
     JsonSchema schema = loadSchema(schemaPath);
 

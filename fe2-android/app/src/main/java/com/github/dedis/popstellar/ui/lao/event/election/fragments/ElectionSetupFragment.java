@@ -3,7 +3,6 @@ package com.github.dedis.popstellar.ui.lao.event.election.fragments;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.*;
 import android.widget.*;
 import android.widget.AdapterView.OnItemSelectedListener;
@@ -31,6 +30,7 @@ import java.util.stream.Collectors;
 
 import dagger.hilt.android.AndroidEntryPoint;
 import me.relex.circleindicator.CircleIndicator3;
+import timber.log.Timber;
 
 @AndroidEntryPoint
 public class ElectionSetupFragment extends AbstractEventCreationFragment {
@@ -227,16 +227,15 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
 
           String electionName = electionNameText.getText().toString();
 
-          Log.d(
-              TAG,
-              String.format(
+          Timber.tag(TAG)
+              .d(
                   "Creating election with version %s, name %s, creation time %d, start time %d, end time %d, questions %s",
                   electionVersion,
                   electionName,
                   creationTimeInSeconds,
                   startTimeInSeconds,
                   endTimeInSeconds,
-                  filteredQuestions));
+                  filteredQuestions);
 
           laoViewModel.addDisposable(
               electionViewModel
