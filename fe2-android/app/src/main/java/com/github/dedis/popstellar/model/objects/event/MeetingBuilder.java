@@ -22,8 +22,8 @@ public class MeetingBuilder {
     this.id = meeting.getId();
     this.name = meeting.getName();
     this.creation = meeting.getCreation();
-    this.start = meeting.getStart();
-    this.end = meeting.getEnd();
+    this.start = meeting.getStartTimestamp();
+    this.end = meeting.getEndTimestamp();
     this.location = meeting.getLocation();
     this.lastModified = meeting.getLastModified();
   }

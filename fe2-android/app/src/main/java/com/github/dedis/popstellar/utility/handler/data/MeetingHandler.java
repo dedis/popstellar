@@ -3,7 +3,6 @@ package com.github.dedis.popstellar.utility.handler.data;
 import android.util.Log;
 
 import com.github.dedis.popstellar.model.network.method.message.data.meeting.CreateMeeting;
-import com.github.dedis.popstellar.model.network.method.message.data.meeting.StateMeeting;
 import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.event.MeetingBuilder;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
@@ -62,9 +61,10 @@ public class MeetingHandler {
     laoRepo.updateLao(lao);
   }
 
-  public void handleStateMeeting(HandlerContext context, StateMeeting stateMeeting) {
-    // TODO in the future
-  }
+  // TODO in the future
+  /*
+  public void handleStateMeeting(HandlerContext context, StateMeeting stateMeeting) {}
+  */
 
   public static WitnessMessage createMeetingWitnessMessage(MessageID messageId, Meeting meeting) {
     WitnessMessage message = new WitnessMessage(messageId);
@@ -85,8 +85,8 @@ public class MeetingHandler {
     return message;
   }
 
-  public static WitnessMessage stateMeetingWitnessMessage(MessageID messageId, Meeting meeting) {
-    // TODO in the future
-    return null;
-  }
+  // TODO in the future
+  /*
+  public static WitnessMessage stateMeetingWitnessMessage(MessageID messageId, Meeting meeting) {}
+  */
 }

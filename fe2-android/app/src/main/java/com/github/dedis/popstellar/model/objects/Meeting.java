@@ -6,8 +6,6 @@ import com.github.dedis.popstellar.model.Immutable;
 import com.github.dedis.popstellar.model.objects.event.*;
 import com.github.dedis.popstellar.utility.security.Hash;
 
-import java.util.List;
-
 @Immutable
 public class Meeting extends Event {
   private final String id;
@@ -19,8 +17,10 @@ public class Meeting extends Event {
   private final long lastModified;
 
   // TODO: to implement when adding the StateMeeting functionality
+  /*
   private final String modificationId = null;
   private final List<String> modificationSignatures = null;
+  */
 
   public Meeting(
       String id,
@@ -50,14 +50,6 @@ public class Meeting extends Event {
 
   public long getCreation() {
     return creation;
-  }
-
-  public long getStart() {
-    return start;
-  }
-
-  public long getEnd() {
-    return end;
   }
 
   public String getLocation() {
