@@ -1,7 +1,5 @@
 package com.github.dedis.popstellar.utility.handler.data;
 
-import android.util.Log;
-
 import androidx.annotation.NonNull;
 
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
@@ -16,6 +14,8 @@ import com.github.dedis.popstellar.utility.error.*;
 import java.util.*;
 
 import javax.inject.Inject;
+
+import timber.log.Timber;
 
 import static com.github.dedis.popstellar.model.objects.event.EventState.*;
 
@@ -52,7 +52,8 @@ public final class ElectionHandler {
     }
 
     LaoView laoView = laoRepo.getLaoViewByChannel(channel);
-    Log.d(TAG, "handleElectionSetup: channel " + channel + " name " + electionSetup.getName());
+    Timber.tag(TAG)
+        .d("handleElectionSetup: channel: %s, name: %s", channel, electionSetup.getName());
 
     Election election =
         new Election.ElectionBuilder(
@@ -72,11 +73,12 @@ public final class ElectionHandler {
         .getMessageSender()
         .subscribe(election.getChannel())
         .doOnError(
-            err -> Log.e(TAG, "An error occurred while subscribing to election channel", err))
+            err ->
+                Timber.tag(TAG).e(err, "An error occurred while subscribing to election channel"))
         .onErrorComplete()
         .subscribe();
 
-    Log.d(TAG, "election id " + election.getId());
+    Timber.tag(TAG).d("election id %s", election.getId());
 
     Lao lao = laoView.createLaoCopy();
     lao.updateWitnessMessage(messageId, electionSetupWitnessMessage(messageId, election));
@@ -93,10 +95,10 @@ public final class ElectionHandler {
       throws UnknownElectionException {
     Channel channel = context.getChannel();
 
-    Log.d(TAG, "handling election result");
+    Timber.tag(TAG).d("handling election result");
 
     List<ElectionResultQuestion> resultsQuestions = electionResult.getElectionQuestionResults();
-    Log.d(TAG, "size of resultsQuestions is " + resultsQuestions.size());
+    Timber.tag(TAG).d("size of resultsQuestions is %d", resultsQuestions.size());
     // No need to check here that resultsQuestions is not empty, as it is already done at the
     // creation of the ElectionResult Data
 
@@ -134,7 +136,7 @@ public final class ElectionHandler {
       throws InvalidStateException, UnknownElectionException {
     Channel channel = context.getChannel();
 
-    Log.d(TAG, "handleOpenElection: channel " + channel);
+    Timber.tag(TAG).d("handleOpenElection: channel %s", channel);
     Election election = electionRepository.getElectionByChannel(channel);
 
     // If the state is not created, then this message is invalid
@@ -147,7 +149,7 @@ public final class ElectionHandler {
     Election updated =
         election.builder().setState(OPENED).setStart(openElection.getOpenedAt()).build();
 
-    Log.d(TAG, "election opened " + updated.getStartTimestamp());
+    Timber.tag(TAG).d("election opened %d", updated.getStartTimestamp());
     electionRepository.updateElection(updated);
   }
 
@@ -162,7 +164,7 @@ public final class ElectionHandler {
       throws UnknownElectionException {
     Channel channel = context.getChannel();
 
-    Log.d(TAG, "handleElectionEnd: channel " + channel);
+    Timber.tag(TAG).d("handleElectionEnd: channel %s", channel);
     Election election =
         electionRepository.getElectionByChannel(channel).builder().setState(CLOSED).build();
 
@@ -181,7 +183,7 @@ public final class ElectionHandler {
     MessageID messageId = context.getMessageId();
     PublicKey senderPk = context.getSenderPk();
 
-    Log.d(TAG, "handleCastVote: channel " + channel);
+    Timber.tag(TAG).d("handleCastVote: channel %s", channel);
     Election election = electionRepository.getElectionByChannel(channel);
     // Verify the vote was created before the end of the election or the election is not closed yet
     if (election.getEndTimestamp() >= castVote.getCreation() || election.getState() != CLOSED) {
@@ -255,7 +257,7 @@ public final class ElectionHandler {
       throws UnknownElectionException {
     Channel channel = context.getChannel();
 
-    Log.d(TAG, "handleElectionKey: channel " + channel);
+    Timber.tag(TAG).d("handleElectionKey: channel %s", channel);
 
     Election election =
         electionRepository
@@ -266,6 +268,6 @@ public final class ElectionHandler {
 
     electionRepository.updateElection(election);
 
-    Log.d(TAG, "handleElectionKey: election key has been set ");
+    Timber.tag(TAG).d("handleElectionKey: election key has been set");
   }
 }

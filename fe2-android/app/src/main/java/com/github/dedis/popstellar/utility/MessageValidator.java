@@ -14,6 +14,9 @@ public abstract class MessageValidator {
   private static final Pattern BASE64_PATTERN =
       Pattern.compile("^(?:[A-Za-z0-9-_]{4})*(?:[A-Za-z0-9-_]{2}==|[A-Za-z0-9-_]{3}=)?$");
 
+  private static final Pattern URL_PATTERN =
+      Pattern.compile("\\b(?:http|ws)s?:\\/\\/\\S*[^\\s.\"]");
+
   /** Prevent instantiations */
   private MessageValidator() {}
 
@@ -136,6 +139,17 @@ public abstract class MessageValidator {
         throw new IllegalArgumentException("List has duplicates");
       }
       return this;
+
+    public MessageValidatorBuilder checkValidUrl(String input) {
+      if (input == null || !URL_PATTERN.matcher(input).matches()) {
+        throw new IllegalArgumentException("Input is not a url");
+      }
+      return this;
+    }
+
+    private static boolean isInFuture(long creationTime) {
+      return (creationTime > Instant.now().getEpochSecond());
+
     }
   }
 }

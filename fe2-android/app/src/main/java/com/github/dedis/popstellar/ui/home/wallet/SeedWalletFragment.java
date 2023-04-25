@@ -3,7 +3,6 @@ package com.github.dedis.popstellar.ui.home.wallet;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.*;
 import android.widget.Toast;
 
@@ -25,6 +24,7 @@ import java.util.Objects;
 import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
+import timber.log.Timber;
 
 /** Fragment used to display the new seed UI */
 @AndroidEntryPoint
@@ -68,6 +68,7 @@ public class SeedWalletFragment extends Fragment {
   public void onResume() {
     super.onResume();
     viewModel.setPageTitle(R.string.wallet_setup);
+    viewModel.setIsHome(false);
   }
 
   private void setupConfirmSeedButton() {
@@ -86,7 +87,7 @@ public class SeedWalletFragment extends Fragment {
                   HomeActivity.setCurrentFragment(
                       getParentFragmentManager(), R.id.fragment_home, HomeFragment::newInstance);
                 } catch (GeneralSecurityException | SeedValidationException e) {
-                  Log.e(TAG, "Error importing key", e);
+                  Timber.tag(TAG).e(e, "Error importing key");
                   Toast.makeText(
                           requireContext().getApplicationContext(),
                           String.format(

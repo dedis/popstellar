@@ -1,7 +1,5 @@
 package com.github.dedis.popstellar.repository.remote;
 
-import android.util.Log;
-
 import com.github.dedis.popstellar.model.network.GenericMessage;
 import com.github.dedis.popstellar.model.network.method.Message;
 import com.tinder.scarlet.*;
@@ -10,6 +8,7 @@ import com.tinder.scarlet.WebSocket.Event.*;
 import io.reactivex.Observable;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.subjects.BehaviorSubject;
+import timber.log.Timber;
 
 /** Represents a single websocket connection that can be closed */
 public class Connection {
@@ -33,7 +32,7 @@ public class Connection {
     disposables.add(
         laoService
             .observeMessage()
-            .doOnNext(msg -> Log.d(TAG, "Received a new message from remote: " + msg))
+            .doOnNext(msg -> Timber.tag(TAG).d("Received a new message from remote: %s", msg))
             .subscribe(messagesSubject::onNext, messagesSubject::onError));
 
     // Add logs on connection state events
@@ -42,7 +41,7 @@ public class Connection {
             .observeWebsocket()
             .subscribe(
                 event -> logEvent(event, url),
-                err -> Log.d(TAG, "Error in connection " + url, err)));
+                err -> Timber.tag(TAG).d(err, "Error in connection %s", url)));
   }
 
   protected Connection(Connection connection) {
@@ -56,16 +55,16 @@ public class Connection {
     String baseMsg = "Connection to " + url;
 
     if (event instanceof OnConnectionOpened) {
-      Log.i(TAG, baseMsg + " opened");
+      Timber.tag(TAG).i("%s opened", baseMsg);
     } else if (event instanceof OnConnectionClosed) {
       ShutdownReason reason = ((OnConnectionClosed) event).getShutdownReason();
-      Log.i(TAG, baseMsg + " closed: " + reason);
+      Timber.tag(TAG).i("%s closed: %s", baseMsg, reason);
     } else if (event instanceof OnConnectionFailed) {
       Throwable error = ((OnConnectionFailed) event).getThrowable();
-      Log.d(TAG, baseMsg + " failed", error);
+      Timber.tag(TAG).d(error, "%s failed", baseMsg);
     } else if (event instanceof OnConnectionClosing) {
       ShutdownReason reason = ((OnConnectionClosing) event).getShutdownReason();
-      Log.d(TAG, baseMsg + " is closing: " + reason);
+      Timber.tag(TAG).d("%s is closing: %s", baseMsg, reason);
     }
   }
 

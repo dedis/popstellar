@@ -7,7 +7,6 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.*;
 import android.widget.*;
 
@@ -46,6 +45,7 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
+import timber.log.Timber;
 
 import static com.github.dedis.popstellar.utility.Constants.*;
 
@@ -171,7 +171,7 @@ public class RollCallFragment extends Fragment {
             .getRollCallObservable(rollCall.getPersistentId())
             .subscribe(
                 rc -> {
-                  Log.d(TAG, "Received rc update: " + rc);
+                  Timber.tag(TAG).d("Received rc update: %s", rc);
                   rollCall = rc;
                   setUpStateDependantContent();
                 },
@@ -360,7 +360,7 @@ public class RollCallFragment extends Fragment {
     }
 
     String pk = popToken.getPublicKey().getEncoded();
-    Log.d(TAG, "key displayed is " + pk);
+    Timber.tag(TAG).d("key displayed is %s", pk);
 
     // Set the QR visible only if the rollcall is opened and the user isn't the organizer
     binding.rollCallPkQrCode.setVisibility((rollCall.isOpen()) ? View.VISIBLE : View.INVISIBLE);

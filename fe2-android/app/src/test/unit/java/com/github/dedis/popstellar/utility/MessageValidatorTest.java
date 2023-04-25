@@ -21,16 +21,17 @@ public class MessageValidatorTest {
 
   @Test
   public void testCheckValidLaoId() {
+    MessageValidator.MessageValidatorBuilder validator = MessageValidator.verify();
     String invalid1 = "invalidID";
     String invalid2 = "A" + ID.substring(1);
 
-    MessageValidator.verify().validLaoId(ID, ORGANIZER, CREATION, NAME);
+    validator.validLaoId(ID, ORGANIZER, CREATION, NAME);
     assertThrows(
         IllegalArgumentException.class,
-        () -> MessageValidator.verify().validLaoId(invalid1, ORGANIZER, CREATION, NAME));
+        () -> validator.validLaoId(invalid1, ORGANIZER, CREATION, NAME));
     assertThrows(
         IllegalArgumentException.class,
-        () -> MessageValidator.verify().validLaoId(invalid2, ORGANIZER, CREATION, NAME));
+        () -> validator.validLaoId(invalid2, ORGANIZER, CREATION, NAME));
   }
 
   @Test
@@ -61,45 +62,49 @@ public class MessageValidatorTest {
 
   @Test
   public void testCheckBase64() {
+    MessageValidator.MessageValidatorBuilder validator = MessageValidator.verify();
     String validBase64 = Base64.getEncoder().encodeToString("test data".getBytes());
     String invalidBase64 = "This is not a valid Base64 string!";
     String field = "testField";
 
-    MessageValidator.verify().isBase64(validBase64, field);
+    validator.isBase64(validBase64, field);
     assertThrows(
         IllegalArgumentException.class,
-        () -> MessageValidator.verify().isBase64(invalidBase64, field));
+        () -> validator.isBase64(invalidBase64, field));
     assertThrows(
-        IllegalArgumentException.class, () -> MessageValidator.verify().isBase64(null, field));
+        IllegalArgumentException.class, () -> validator.isBase64(null, field));
   }
 
   @Test
   public void testCheckStringNotEmpty() {
+    MessageValidator.MessageValidatorBuilder validator = MessageValidator.verify();
     String validString = "test string";
     String emptyString = "";
     String field = "testField";
 
-    MessageValidator.verify().stringNotEmpty(validString, field);
+    validator.stringNotEmpty(validString, field);
     assertThrows(
         IllegalArgumentException.class,
-        () -> MessageValidator.verify().stringNotEmpty(emptyString, field));
+        () -> validator.stringNotEmpty(emptyString, field));
     assertThrows(
         IllegalArgumentException.class,
-        () -> MessageValidator.verify().stringNotEmpty(null, field));
+        () -> validator.stringNotEmpty(null, field));
+
   }
 
   @Test
   public void testCheckListNotEmpty() {
+    MessageValidator.MessageValidatorBuilder validator = MessageValidator.verify();
     List<Integer> valid1 = Arrays.asList(1, 2, 3);
     List<String> valid2 = Arrays.asList("a", "b");
     List<String> invalid = new ArrayList<>();
 
-    MessageValidator.verify().listNotEmpty(valid1);
-    MessageValidator.verify().listNotEmpty(valid2);
+    validator.listNotEmpty(valid1);
+    validator.listNotEmpty(valid2);
     assertThrows(
-        IllegalArgumentException.class, () -> MessageValidator.verify().listNotEmpty(invalid));
+        IllegalArgumentException.class, () -> validator.listNotEmpty(invalid));
     assertThrows(
-        IllegalArgumentException.class, () -> MessageValidator.verify().listNotEmpty(null));
+        IllegalArgumentException.class, () -> validator.listNotEmpty(null));
   }
 
   @Test
@@ -129,5 +134,24 @@ public class MessageValidatorTest {
 
     assertThrows(IllegalArgumentException.class, () -> validator.noListDuplicates(invalid1));
     assertThrows(IllegalArgumentException.class, () -> validator.noListDuplicates(invalid2));
+  }
+
+  @Test
+  public void testCheckValidUrl() {
+    MessageValidator.MessageValidatorBuilder validator = MessageValidator.verify();
+
+    validator.checkValidUrl("http://example.com");
+    validator.checkValidUrl("https://example.com");
+    validator.checkValidUrl("ws://example.com");
+    validator.checkValidUrl("wss://10.0.2.2:8000/path");
+    validator.checkValidUrl("https://example.com/path/to/file.html");
+    validator.checkValidUrl("wss://example.com/path/to/file");
+
+    assertThrows(IllegalArgumentException.class, () -> validator.checkValidUrl("Random String"));
+    assertThrows(IllegalArgumentException.class, () -> validator.checkValidUrl("example.com"));
+    assertThrows(IllegalArgumentException.class, () -> validator.checkValidUrl("http:example.com"));
+    assertThrows(IllegalArgumentException.class, () -> validator.checkValidUrl("://example.com"));
+    assertThrows(IllegalArgumentException.class, () -> validator.checkValidUrl("http://example."));
+
   }
 }

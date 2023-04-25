@@ -1,7 +1,5 @@
 package com.github.dedis.popstellar.utility.security;
 
-import android.util.Log;
-
 import androidx.annotation.VisibleForTesting;
 
 import com.github.dedis.popstellar.model.objects.RollCall;
@@ -23,6 +21,8 @@ import java.util.Base64;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import timber.log.Timber;
+
 import static com.github.dedis.popstellar.di.KeysetModule.DeviceKeyset;
 
 /** Service managing keys and providing easy access to the main device key and PoP Tokens */
@@ -42,9 +42,9 @@ public class KeyManager {
 
     try {
       cacheMainKey();
-      Log.d(TAG, "Public Key = " + getMainPublicKey().getEncoded());
+      Timber.tag(TAG).d("Public Key = %s", getMainPublicKey().getEncoded());
     } catch (IOException | GeneralSecurityException e) {
-      Log.e(TAG, "Failed to retrieve device's key", e);
+      Timber.tag(TAG).e(e, "Failed to retrieve device's key");
       throw new IllegalStateException("Failed to retrieve device's key", e);
     }
   }

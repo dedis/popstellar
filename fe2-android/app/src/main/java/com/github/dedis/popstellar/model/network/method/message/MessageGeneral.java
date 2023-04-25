@@ -1,7 +1,5 @@
 package com.github.dedis.popstellar.model.network.method.message;
 
-import android.util.Log;
-
 import androidx.annotation.NonNull;
 
 import com.github.dedis.popstellar.model.Immutable;
@@ -13,6 +11,8 @@ import com.google.gson.Gson;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.util.*;
+
+import timber.log.Timber;
 
 /**
  * Container of a high level message.
@@ -51,7 +51,7 @@ public final class MessageGeneral {
     sender = keyPair.getPublicKey();
     this.data = data;
     String dataJson = gson.toJson(data, Data.class);
-    Log.d(TAG, dataJson);
+    Timber.tag(TAG).d(dataJson);
     dataBuf = new Base64URLData(dataJson.getBytes(StandardCharsets.UTF_8));
 
     generateSignature(keyPair.getPrivateKey());
@@ -68,7 +68,7 @@ public final class MessageGeneral {
     try {
       signature = signer.sign(dataBuf);
     } catch (GeneralSecurityException e) {
-      Log.d(TAG, "failed to generate signature", e);
+      Timber.tag(TAG).d(e, "failed to generate signature");
     }
   }
 

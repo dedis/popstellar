@@ -2,7 +2,6 @@ package com.github.dedis.popstellar.ui.qrcode;
 
 import android.Manifest;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.*;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -22,6 +21,8 @@ import com.google.mlkit.vision.barcode.common.Barcode;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Executor;
+
+import timber.log.Timber;
 
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 import static androidx.camera.view.CameraController.COORDINATE_SYSTEM_VIEW_REFERENCED;
@@ -172,7 +173,7 @@ public class QrScannerFragment extends Fragment {
             result -> {
               List<Barcode> barcodes = result.getValue(barcodeScanner);
               if (barcodes != null && !barcodes.isEmpty()) {
-                Log.d(TAG, "barcode raw value :" + barcodes.get(0).getRawValue());
+                Timber.tag(TAG).d("barcode raw value : %s", barcodes.get(0).getRawValue());
                 onResult(barcodes.get(0));
               }
             }));
