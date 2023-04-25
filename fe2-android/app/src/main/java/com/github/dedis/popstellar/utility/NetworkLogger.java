@@ -65,7 +65,7 @@ public class NetworkLogger extends Timber.Tree {
     application.registerActivityLifecycleCallbacks(
         new Application.ActivityLifecycleCallbacks() {
 
-          private final boolean saveEnergy = false;
+          private static final boolean saveEnergy = false;
 
           @Override
           public void onActivityCreated(
