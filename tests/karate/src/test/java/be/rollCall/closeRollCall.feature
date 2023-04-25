@@ -1,7 +1,7 @@
 @env=go,scala
 Feature: Close a Roll Call
   Background:
-        # This is feature will be called to test Roll Call close
+        # This feature will be called to test Roll Call close
         # For every test a file containing the json representation of the message is read
         # and is sent to the backend this is done via :
         # eval frontend.send(<message>) where a mock frontend sends a message to backend

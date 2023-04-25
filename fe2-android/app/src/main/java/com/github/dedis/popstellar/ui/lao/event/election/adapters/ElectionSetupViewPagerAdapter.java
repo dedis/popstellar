@@ -3,7 +3,6 @@ package com.github.dedis.popstellar.ui.lao.event.election.adapters;
 import android.content.Context;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.*;
 import android.widget.*;
 
@@ -17,6 +16,8 @@ import com.github.dedis.popstellar.ui.lao.event.election.fragments.ElectionSetup
 
 import java.util.*;
 import java.util.stream.Collectors;
+
+import timber.log.Timber;
 
 /** This is where whe define behaviour of the ViewPager of election setup */
 public class ElectionSetupViewPagerAdapter
@@ -249,7 +250,7 @@ public class ElectionSetupViewPagerAdapter
             }
             // Keeps the list of string updated when the user changes the text
             ballotOptions.get(position).set(ballotIndex, editable.toString());
-            Log.d(TAG, "Postion is " + position + " ballot options are" + ballotOptions);
+            Timber.tag(TAG).d("Postion is %s ballot options are %s", position, ballotOptions);
             boolean areFieldsFilled = numberBallotOptions.get(position) >= 2;
             if (areFieldsFilled) {
               listOfValidBallots.add(position);

@@ -1,7 +1,6 @@
 package com.github.dedis.popstellar.ui.lao.digitalcash;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.*;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
@@ -26,6 +25,7 @@ import java.time.Instant;
 import java.util.*;
 
 import io.reactivex.Completable;
+import timber.log.Timber;
 
 /**
  * A simple {@link Fragment} subclass. Use the {@link DigitalCashSendFragment#newInstance} factory
@@ -98,7 +98,7 @@ public class DigitalCashSendFragment extends Fragment {
                                         R.id.fragment_digital_cash_receipt,
                                         DigitalCashReceiptFragment::newInstance);
                                   },
-                                  error -> Log.d(TAG, "error posting transaction", error)));
+                                  error -> Timber.tag(TAG).d(error, "error posting transaction")));
                     }
 
                   } catch (KeyException keyException) {
@@ -129,7 +129,7 @@ public class DigitalCashSendFragment extends Fragment {
   public boolean canPostTransaction(PublicKey publicKey, int amount) {
     long currentBalance = digitalCashViewModel.getUserBalance(publicKey);
     if (currentBalance < amount) {
-      Log.d(TAG, "Current Balance: " + currentBalance + " amount: " + amount);
+      Timber.tag(TAG).d("Current Balance: %s amount: %s", currentBalance, amount);
       Toast.makeText(
               requireContext(), R.string.digital_cash_warning_not_enough_money, Toast.LENGTH_SHORT)
           .show();
@@ -178,7 +178,7 @@ public class DigitalCashSendFragment extends Fragment {
     try {
       members.remove(digitalCashViewModel.getValidToken().getPublicKey().getEncoded());
     } catch (KeyException e) {
-      Log.e(TAG, getResources().getString(R.string.error_retrieve_own_token));
+      Timber.tag(TAG).e(e, getResources().getString(R.string.error_retrieve_own_token));
     }
   }
 

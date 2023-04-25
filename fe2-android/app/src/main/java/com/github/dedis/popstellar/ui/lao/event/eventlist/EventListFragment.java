@@ -1,7 +1,6 @@
 package com.github.dedis.popstellar.ui.lao.event.eventlist;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.*;
 
 import androidx.annotation.NonNull;
@@ -31,6 +30,7 @@ import java.util.Set;
 import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
+import timber.log.Timber;
 
 /** Fragment used to display the list of events */
 @AndroidEntryPoint
@@ -163,7 +163,7 @@ public class EventListFragment extends Fragment {
                 R.id.fragment_setup_election_event,
                 ElectionSetupFragment::newInstance);
       default:
-        return v -> Log.d(TAG, "unknown event type: " + type);
+        return v -> Timber.tag(TAG).d("unknown event type: %s", type);
     }
   }
 
@@ -185,7 +185,7 @@ public class EventListFragment extends Fragment {
 
     EventListAdapter eventListAdapter =
         new EventListAdapter(laoViewModel, eventsViewModel.getEvents(), requireActivity());
-    Log.d(TAG, "created adapter");
+    Timber.tag(TAG).d("created adapter");
     LinearLayoutManager mLayoutManager = new LinearLayoutManager(getContext());
     eventList.setLayoutManager(mLayoutManager);
 

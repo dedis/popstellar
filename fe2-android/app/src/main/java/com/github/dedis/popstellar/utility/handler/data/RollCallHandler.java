@@ -1,7 +1,6 @@
 package com.github.dedis.popstellar.utility.handler.data;
 
 import android.annotation.SuppressLint;
-import android.util.Log;
 
 import com.github.dedis.popstellar.model.network.method.message.data.rollcall.*;
 import com.github.dedis.popstellar.model.objects.*;
@@ -17,6 +16,8 @@ import com.github.dedis.popstellar.utility.error.UnknownRollCallException;
 import java.util.Set;
 
 import javax.inject.Inject;
+
+import timber.log.Timber;
 
 /** Roll Call messages handler class */
 public final class RollCallHandler {
@@ -51,7 +52,8 @@ public final class RollCallHandler {
     Channel channel = context.getChannel();
     MessageID messageId = context.getMessageId();
 
-    Log.d(TAG, "handleCreateRollCall: " + channel + " name " + createRollCall.getName());
+    Timber.tag(TAG)
+        .d("handleCreateRollCall: channel: %s, name: %s", channel, createRollCall.getName());
     LaoView laoView = laoRepo.getLaoViewByChannel(channel);
 
     RollCallBuilder builder = new RollCallBuilder();
@@ -86,7 +88,7 @@ public final class RollCallHandler {
     Channel channel = context.getChannel();
     MessageID messageId = context.getMessageId();
 
-    Log.d(TAG, "handleOpenRollCall: " + channel + " msg=" + openRollCall);
+    Timber.tag(TAG).d("handleOpenRollCall: channel: %s, msg: %s", channel, openRollCall);
     LaoView laoView = laoRepo.getLaoViewByChannel(channel);
 
     String updateId = openRollCall.getUpdateId();
@@ -126,7 +128,7 @@ public final class RollCallHandler {
     Channel channel = context.getChannel();
     MessageID messageId = context.getMessageId();
 
-    Log.d(TAG, "handleCloseRollCall: " + channel);
+    Timber.tag(TAG).d("handleCloseRollCall: channel: %s", channel);
     LaoView laoView = laoRepo.getLaoViewByChannel(channel);
 
     String updateId = closeRollCall.getUpdateId();
@@ -168,8 +170,8 @@ public final class RollCallHandler {
                     .getMessageSender()
                     .subscribe(channel.subChannel("social").subChannel(token.getEncoded()))
                     .subscribe(
-                        () -> Log.d(TAG, "subscription a success"),
-                        error -> Log.d(TAG, "subscription error")));
+                        () -> Timber.tag(TAG).d("subscription a success"),
+                        error -> Timber.tag(TAG).d(error, "subscription error")));
 
     laoRepo.updateLao(lao);
   }
