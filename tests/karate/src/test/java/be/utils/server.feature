@@ -4,17 +4,17 @@ Feature: This feature starts a server and stops it after every scenario.
   Background:
     * def MAX_CONNECTION_ATTEMPTS = 3
 
-  Scenario: Start the server and configure Karate
-        # Handler can be used to filter websocket messages
-    * def handle = function(msg){ karate.signal(msg); return msg.startsWith('{')}
-
-        # Method that waits/pauses for x seconds
+    # Method that waits/pauses for x seconds
     * def wait =
             """
                 function(secs) {
                     java.lang.Thread.sleep(secs*1000)
                 }
             """
+
+  Scenario: Start the server and configure Karate
+        # Handler can be used to filter websocket messages
+    * def handle = function(msg){ karate.signal(msg); return msg.startsWith('{')}
 
         # Get the server depending on the environment
     * def GoServer = Java.type("be.utils.GoServer")

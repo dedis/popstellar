@@ -2,7 +2,7 @@
 Feature: Create a pop LAO
 
   Background:
-        # This is feature will be called  to test an LAO creation
+        # This feature will be called to test LAO creation
         # This call makes this feature and server.feature share the same scope
         # Meaning they share def variables, configurations ...
         # Especially JS functions defined in server.feature can be directly used here thanks to Karate shared scopes
