@@ -61,7 +61,7 @@ public class StateMeetingTest {
 
   @Test
   public void getLocation() {
-    assertEquals(LOCATION, STATE_MEETING.getLocation());
+    assertEquals(LOCATION, STATE_MEETING.getLocation().orElse(""));
   }
 
   @Test

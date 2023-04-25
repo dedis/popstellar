@@ -40,7 +40,7 @@ public class CreateMeetingTest {
 
   @Test
   public void getLocation() {
-    assertEquals(LOCATION, CREATE_MEETING.getLocation());
+    assertEquals(LOCATION, CREATE_MEETING.getLocation().orElse(""));
   }
 
   @Test
