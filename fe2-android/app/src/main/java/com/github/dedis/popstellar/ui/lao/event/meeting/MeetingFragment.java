@@ -1,7 +1,6 @@
 package com.github.dedis.popstellar.ui.lao.event.meeting;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.*;
 
 import androidx.annotation.NonNull;
@@ -24,6 +23,7 @@ import java.util.Locale;
 import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
+import timber.log.Timber;
 
 import static com.github.dedis.popstellar.utility.Constants.MEETING_ID;
 
@@ -78,7 +78,7 @@ public class MeetingFragment extends Fragment {
             .getMeetingObservable(meeting.getId())
             .subscribe(
                 m -> {
-                  Log.d(TAG, "Received meeting update: " + m);
+                  Timber.tag(TAG).d("Received meeting update: %s", m);
                   meeting = m;
                   setUpStateDependantContent();
                 },

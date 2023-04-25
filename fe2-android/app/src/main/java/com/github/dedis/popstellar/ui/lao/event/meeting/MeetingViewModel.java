@@ -1,7 +1,6 @@
 package com.github.dedis.popstellar.ui.lao.event.meeting;
 
 import android.app.Application;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
@@ -22,6 +21,7 @@ import javax.inject.Inject;
 import dagger.hilt.android.lifecycle.HiltViewModel;
 import io.reactivex.Observable;
 import io.reactivex.Single;
+import timber.log.Timber;
 
 @HiltViewModel
 public class MeetingViewModel extends AndroidViewModel {
@@ -69,7 +69,7 @@ public class MeetingViewModel extends AndroidViewModel {
 
   public Single<String> createNewMeeting(
       String title, String location, long creation, long proposedStart, long proposedEnd) {
-    Log.d(TAG, "creating a new meeting with title " + title);
+    Timber.tag(TAG).d("creating a new meeting with title %s", title);
 
     LaoView laoView;
     try {

@@ -52,13 +52,14 @@ public final class RollCallCreationFragment extends AbstractEventCreationFragmen
     confirmButton = binding.rollCallConfirm;
     confirmButton.setEnabled(false);
 
+    setDateAndTimeView(binding.getRoot());
+
+    rollCallTitleEditText = binding.rollCallTitleText;
+
     TextWatcher confirmTextWatcher =
         getConfirmTextWatcher(rollCallTitleEditText, binding.rollCallEventLocationText);
 
-    setDateAndTimeView(binding.getRoot());
     addStartDateAndTimeListener(confirmTextWatcher);
-
-    rollCallTitleEditText = binding.rollCallTitleText;
     rollCallTitleEditText.addTextChangedListener(confirmTextWatcher);
     binding.rollCallEventLocationText.addTextChangedListener(confirmTextWatcher);
 

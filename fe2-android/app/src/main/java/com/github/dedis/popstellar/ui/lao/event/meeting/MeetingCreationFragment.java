@@ -52,12 +52,13 @@ public class MeetingCreationFragment extends AbstractEventCreationFragment {
     confirmButton = binding.meetingConfirm;
     confirmButton.setEnabled(false);
 
-    TextWatcher confirmTextWatcher = getConfirmTextWatcher(meetingTitleEditText);
-
     setDateAndTimeView(binding.getRoot());
-    addStartDateAndTimeListener(confirmTextWatcher);
 
     meetingTitleEditText = binding.meetingTitleText;
+
+    TextWatcher confirmTextWatcher = getConfirmTextWatcher(meetingTitleEditText);
+
+    addStartDateAndTimeListener(confirmTextWatcher);
     meetingTitleEditText.addTextChangedListener(confirmTextWatcher);
     binding.meetingEventLocationText.addTextChangedListener(confirmTextWatcher);
 

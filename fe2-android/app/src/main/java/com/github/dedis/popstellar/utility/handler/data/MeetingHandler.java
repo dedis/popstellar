@@ -1,7 +1,5 @@
 package com.github.dedis.popstellar.utility.handler.data;
 
-import android.util.Log;
-
 import com.github.dedis.popstellar.model.network.method.message.data.meeting.CreateMeeting;
 import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.event.MeetingBuilder;
@@ -12,6 +10,8 @@ import com.github.dedis.popstellar.repository.MeetingRepository;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 
 import javax.inject.Inject;
+
+import timber.log.Timber;
 
 public class MeetingHandler {
 
@@ -40,7 +40,8 @@ public class MeetingHandler {
     Channel channel = context.getChannel();
     MessageID messageId = context.getMessageId();
 
-    Log.d(TAG, "handleCreateMeeting: " + channel + " name " + createMeeting.getName());
+    Timber.tag(TAG)
+        .d("handleCreateMeeting: channel: %s, name: %s", channel, createMeeting.getName());
     LaoView laoView = laoRepo.getLaoViewByChannel(channel);
 
     MeetingBuilder builder = new MeetingBuilder();

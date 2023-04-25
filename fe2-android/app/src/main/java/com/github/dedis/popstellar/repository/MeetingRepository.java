@@ -1,7 +1,5 @@
 package com.github.dedis.popstellar.repository;
 
-import android.util.Log;
-
 import androidx.annotation.NonNull;
 
 import com.github.dedis.popstellar.model.objects.Meeting;
@@ -15,6 +13,7 @@ import javax.inject.Singleton;
 import io.reactivex.Observable;
 import io.reactivex.subjects.BehaviorSubject;
 import io.reactivex.subjects.Subject;
+import timber.log.Timber;
 
 import static java.util.Collections.emptySet;
 import static java.util.Collections.unmodifiableSet;
@@ -46,7 +45,7 @@ public class MeetingRepository {
     if (meeting == null) {
       throw new IllegalArgumentException("Meeting is null");
     }
-    Log.d(TAG, "Adding meeting on lao " + laoId + " : " + meeting);
+    Timber.tag(TAG).d("Adding meeting on lao %s : %s", laoId, meeting);
 
     // Retrieve Lao data and add the meeting to it
     getLaoMeetings(laoId).update(meeting);
@@ -105,11 +104,11 @@ public class MeetingRepository {
       // Publish new values on subjects
       if (meetingSubjects.containsKey(id)) {
         // If it exist we update the subject
-        Log.d(TAG, "Updating existing meeting " + meeting.getName());
+        Timber.tag(TAG).d("Updating existing meeting %s", meeting.getName());
         meetingSubjects.get(id).onNext(meeting);
       } else {
         // If it does not, we create a new subject
-        Log.d(TAG, "New meeting, subject created for " + meeting.getName());
+        Timber.tag(TAG).d("New meeting, subject created for %s", meeting.getName());
         meetingSubjects.put(id, BehaviorSubject.createDefault(meeting));
       }
 
