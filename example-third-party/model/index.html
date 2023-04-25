@@ -45,10 +45,10 @@
     }
     form {
         position: relative;
-        width: 70%;
+        width: 90%;
         left: 50%;
         padding-top: 10px;
-        margin-left: -35%;
+        margin-left: -45%;
     }
     .important {
         font-weight: bolder;
@@ -58,6 +58,9 @@
     .error{
         color: red;
         font-size: 0.9em;
+    }
+    option{
+        font-family:monospace;
     }
 </style>
 <body>
@@ -72,7 +75,7 @@
             <label for="lao-selection">
                 <select id="lao-selection" name="serverAndLaoId"    required>
                     <option value="">-- Please choose a lao / serve pair --</option>
-                    <!-- Insert options here -->
+                    <!-- Insert providers here -->
                 </select>
             </label>
             <input type="submit" id="submitAuthentication" value="Submit">

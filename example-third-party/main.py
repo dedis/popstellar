@@ -154,6 +154,26 @@ def app_route():
     else:
         return html
 
+# WARNING: This code is used since it is an example app, but it is UNSAFE
+@app.route("/add_provider")
+def add_provider():
+    """
+    WARNING: This call is unsafe and allows to easily add new providers. It
+    is intended for example server that do not really need to provide
+    complete security
+    """
+    global providers
+    args = request.args
+    valid_request = ("domain" in args and "lao_id" in args
+                     and "public_key" in args)
+    if valid_request:
+        provider = {"domain": args["domain"],
+                    "lao_id": args["lao_id"],
+                    "public_key": args["public_key"]
+                   }
+        if check_provider(provider):
+            providers.append(provider)
+    redirect("/")
 
 
 # Step 0: Starts the server

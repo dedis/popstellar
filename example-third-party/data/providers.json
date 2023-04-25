@@ -1,17 +1,17 @@
 [
   {
     "domain": "valid.example",
-    "lao_id": "FirstLaoID",
-    "public_key": ""
+    "lao_id": "1SZa21kpmmlkjuIJ2WqB9-C3v7GfU3dkga1yz1xuhdo=",
+    "public_key": "d"
   },
   {
     "domain": "valid2.server.example:8000",
-    "lao_id": "SecondLaoID",
-    "public_key": ""
+    "lao_id": "5ie-bfxMwsqCtZRY1WuQzhturCoQ3MIvCyX5yAhsyvQ=",
+    "public_key": "ddd"
   },
   {
     "domain": "http://invalid.server.example:8000",
     "lao_id": "ThirdLaoID",
-    "public_key": ""
+    "public_key": "ddd"
   }
 ]
