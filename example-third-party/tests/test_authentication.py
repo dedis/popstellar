@@ -12,7 +12,7 @@ class TestQuery:
     def test_get_url_returns_valid_one(self):
         url: str = authentication.get_url("server.example", "custom_lao_id",
                                           "custom_client_id")
-        generated_nonce = list(authentication.valid_nonces.keys())[0]
+        generated_nonce = list(authentication.login_nonces.keys())[0]
         reference = "https://server.example/authorize?response_mode=query" \
                     "&response_type=id_token+token&client_id" \
                     "=custom_client_id&redirect_uri=https%3A%2F%2Fserver" \

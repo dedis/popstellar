@@ -15,6 +15,14 @@ home_page_html: str = ""
 config: dict = {}
 providers: list = []
 
+def replace_in_model( model: str, **kwargs) -> str:
+    """
+    Replace the comment "Insert arg here" in the model by its value
+    """
+    for key in kwargs:
+        model = model.replace(f"<!-- Insert {key} here -->", kwargs[key])
+    return model
+
 
 def check_config(config_file: IO) -> bool:
     """
@@ -80,17 +88,7 @@ def on_startup() -> None:
         if not check_config(config_file):
             config_file.seek(0)
             config = json.loads(config_file.read())
-    providers_html = [
-        f'<option value="{str(i)}">{provider.get("lao_id")}@'
-        f'{provider.get("domain")}</option>'
-        for
-        i, provider
-        in enumerate(providers)]
-    base_home_html = open("model/index.html", "r").read()
-    home_page_html = base_home_html.replace(
-        "<!-- Insert options -->",
-        ''.join(providers_html)
-    )
+    home_page_html = open("model/index.html", "r").read()
 
 
 app = Flask("Example_authentication_server")
@@ -104,7 +102,15 @@ def root() -> str:
     Get the homepage.
     :return: The homepage HTML
     """
-    return home_page_html
+    providers_html = [
+        f'<option value="{str(i)}">{provider.get("lao_id")}@'
+        f'{provider.get("domain")}</option>'
+        for
+        i, provider
+        in enumerate(providers)]
+    ''.join(providers_html)
+    return replace_in_model(home_page_html, providers=providers_html,
+                            errors="test")
 
 
 # Step2: Process user connection data prepare the OIDC request

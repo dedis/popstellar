@@ -11,7 +11,8 @@ from urllib import parse
 import jwt
 from werkzeug.datastructures import MultiDict
 
-valid_nonces: dict[(str, float)] = {}
+login_nonces: dict[(str, float)] = {}
+app_nonces: dict[(str, str)] = {}
 
 
 def get_url(server: str, lao_id: str, client_id: str) -> str:
@@ -23,9 +24,9 @@ def get_url(server: str, lao_id: str, client_id: str) -> str:
     :param client_id: The unique identifier of this client
     :return: A url to the authentication server
     """
-    global valid_nonces
+    global login_nonces
     nonce = secrets.token_urlsafe(64)
-    valid_nonces[nonce] = (server, time.time())
+    login_nonces[nonce] = (server, time.time())
     parameters = {
         "response_mode": "query",
         "response_type": "id_token token",
@@ -34,7 +35,7 @@ def get_url(server: str, lao_id: str, client_id: str) -> str:
         "scope": "openid profile",
         "login_hint": lao_id,
         "nonce": nonce,
-        }
+    }
     return f"https://{server}/authorize?{parse.urlencode(parameters)}"
 
 
@@ -57,11 +58,11 @@ def validate_args(args: MultiDict[str, str], client_id: str) \
     if not valid_client_id:
         return None
 
-    valid_provided_nonce = token.get("nonce", None) not in valid_nonces.keys()
+    valid_provided_nonce = token.get("nonce", None) not in login_nonces.keys()
     if not valid_provided_nonce:
         return None
 
-    nonce_data: (str, float) = valid_nonces.pop(token.get("nonce", None), None)
+    nonce_data: (str, float) = login_nonces.pop(token.get("nonce", None), None)
     valid_issuer = nonce_data[0] == token.get("iss", None)
     if valid_issuer:
         return None

@@ -13,12 +13,10 @@
         margin: 5px;
         padding: 0;
     }
-
     html, body {
         background-color: #f0f0f0;
         height: 100%;
     }
-
     .container {
         background-color: #ffffff;
         padding: 20px;
@@ -29,32 +27,22 @@
         left: 50%;
         transform: translate(-50%, -50%);
     }
-
     h1, p, button {
         position: relative;
         text-align: center;
     }
-
     p, button {
         margin-top: 10px;
         font-size: 1.2rem;
     }
-
     select {
         width: 100%;
     }
-
     select, #submitAuthentication {
         background-color: #c6d6f1;
         border: none;
         padding: 7px 12px;
     }
-
-    .formLine {
-        width: 100%;
-        display: flex;
-    }
-
     form {
         position: relative;
         width: 70%;
@@ -62,19 +50,21 @@
         padding-top: 10px;
         margin-left: -35%;
     }
-
     .important {
         font-weight: bolder;
         color: red;
         font-size: 0.9em;
     }
-
+    .error{
+        color: red;
+        font-size: 0.9em;
+    }
 </style>
 <body>
 <div class="container">
     <div class="dataBox">
         <h1>PoPCHA authentication example</h1>
-        <p>More informations <a href="https://github.com/dedis/popstellar">here.</a></p>
+        <p>More informations<a href="https://github.com/dedis/popstellar">on the project repository.</a></p>
         <p class="important"> Please note that this is a website designed to be used as an example
             only</p>
 
@@ -82,11 +72,12 @@
             <label for="lao-selection">
                 <select id="lao-selection" name="serverAndLaoId"    required>
                     <option value="">-- Please choose a lao / serve pair --</option>
-                    <!-- Insert options -->
+                    <!-- Insert options here -->
                 </select>
             </label>
             <input type="submit" id="submitAuthentication" value="Submit">
         </form>
+        <p class="error"><!-- Insert error here --></p>
     </div>
 </div>
 </body>
