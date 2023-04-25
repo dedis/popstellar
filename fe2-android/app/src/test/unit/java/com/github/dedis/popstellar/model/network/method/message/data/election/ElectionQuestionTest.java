@@ -23,11 +23,15 @@ public class ElectionQuestionTest {
   private static final String VOTING_METHOD = "Plurality";
   private static final String QUESTION = "Question";
   private static final List<String> BALLOT_OPTIONS = Arrays.asList("a", "b");
+  private static final ElectionQuestion.Question QUESTION1 =
+      new ElectionQuestion.Question("Question", VOTING_METHOD, BALLOT_OPTIONS, false);
+  private static final ElectionQuestion.Question QUESTION2 =
+      new ElectionQuestion.Question("Question2", VOTING_METHOD, BALLOT_OPTIONS, false);
+  private static final ElectionQuestion.Question QUESTION3 =
+      new ElectionQuestion.Question("Question2", VOTING_METHOD, BALLOT_OPTIONS, false);
 
   private static final List<ElectionQuestion.Question> QUESTIONS =
-      Arrays.asList(
-          new ElectionQuestion.Question("Question", VOTING_METHOD, BALLOT_OPTIONS, false),
-          new ElectionQuestion.Question("Question2", VOTING_METHOD, BALLOT_OPTIONS, false));
+      Arrays.asList(QUESTION1, QUESTION2);
 
   private static final ElectionSetup ELECTION_SETUP =
       new ElectionSetup(NAME, NOW, NOW, END, LAO_ID, VERSION, QUESTIONS);
@@ -59,6 +63,12 @@ public class ElectionQuestionTest {
   @Test
   public void electionQuestionGetterReturnsCorrectBallotOptions() {
     assertThat(ELECTION_QUESTION.getBallotOptions(), is(BALLOT_OPTIONS));
+  }
+
+  @Test
+  public void testEquals() {
+    assertThat(QUESTION1.equals(QUESTION2), is(false));
+    assertThat(QUESTION2.equals(QUESTION3), is(true));
   }
 
   @Test

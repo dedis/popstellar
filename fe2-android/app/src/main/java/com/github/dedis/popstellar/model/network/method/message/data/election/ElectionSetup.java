@@ -6,6 +6,7 @@ import com.github.dedis.popstellar.model.Immutable;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.network.method.message.data.*;
 import com.github.dedis.popstellar.model.objects.Election;
+import com.github.dedis.popstellar.utility.MessageValidator;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.*;
@@ -49,10 +50,13 @@ public class ElectionSetup extends Data {
       @NonNull String laoId,
       @NonNull ElectionVersion electionVersion,
       @NonNull List<ElectionQuestion.Question> questions) {
-    // we don't need to check if end < 0 or start < 0 as it is already covered by other statements
-    if (creation < 0 || start < creation || end < start) {
-      throw new IllegalArgumentException("Timestamp cannot be negative");
-    }
+    // The lao id is checked to be a known lao in the election setup handler
+    MessageValidator.verify()
+        .orderedTimes(creation, start, end)
+        .validPastTimes(creation)
+        .stringNotEmpty(name, "election name")
+        .isBase64(laoId, "lao id")
+        .noListDuplicates(questions);
 
     this.name = name;
     this.createdAt = creation;

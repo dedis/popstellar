@@ -1,5 +1,6 @@
 package com.github.dedis.popstellar.utility;
 
+import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionQuestion;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.testutils.Base64DataUtils;
@@ -23,43 +24,39 @@ public class MessageValidatorTest {
     String invalid1 = "invalidID";
     String invalid2 = "A" + ID.substring(1);
 
-    MessageValidator.verify().checkValidLaoId(ID, ORGANIZER, CREATION, NAME);
+    MessageValidator.verify().validLaoId(ID, ORGANIZER, CREATION, NAME);
     assertThrows(
         IllegalArgumentException.class,
-        () -> MessageValidator.verify().checkValidLaoId(invalid1, ORGANIZER, CREATION, NAME));
+        () -> MessageValidator.verify().validLaoId(invalid1, ORGANIZER, CREATION, NAME));
     assertThrows(
         IllegalArgumentException.class,
-        () -> MessageValidator.verify().checkValidLaoId(invalid2, ORGANIZER, CREATION, NAME));
+        () -> MessageValidator.verify().validLaoId(invalid2, ORGANIZER, CREATION, NAME));
   }
 
   @Test
-  public void testCheckValidTime() {
+  public void testCheckValidPastTimes() {
+    MessageValidator.MessageValidatorBuilder validator = MessageValidator.verify();
     long currentTime = Instant.now().getEpochSecond();
+    // time that is too far in the past to be considered valid
+    long pastTime = currentTime - validator.VALID_DELAY - 1;
     long futureTime = currentTime + DELTA_TIME;
 
-    MessageValidator.verify().checkValidTime(currentTime);
-    assertThrows(
-        IllegalArgumentException.class, () -> MessageValidator.verify().checkValidTime(futureTime));
-    assertThrows(
-        IllegalArgumentException.class, () -> MessageValidator.verify().checkValidTime(-1));
+    validator.validPastTimes(currentTime);
+    assertThrows(IllegalArgumentException.class, () -> validator.validPastTimes(futureTime));
+    assertThrows(IllegalArgumentException.class, () -> validator.validPastTimes(pastTime));
   }
 
   @Test
-  public void testCheckValidOrderedTimes() {
+  public void testCheckOrderedTimes() {
+    MessageValidator.MessageValidatorBuilder validator = MessageValidator.verify();
     long currentTime = Instant.now().getEpochSecond();
     long futureTime = currentTime + DELTA_TIME;
     long pastTime = currentTime - DELTA_TIME;
 
-    MessageValidator.verify().checkValidOrderedTimes(pastTime, currentTime);
+    validator.orderedTimes(pastTime, currentTime, futureTime);
     assertThrows(
         IllegalArgumentException.class,
-        () -> MessageValidator.verify().checkValidOrderedTimes(futureTime, currentTime));
-    assertThrows(
-        IllegalArgumentException.class,
-        () -> MessageValidator.verify().checkValidOrderedTimes(pastTime, futureTime));
-    assertThrows(
-        IllegalArgumentException.class,
-        () -> MessageValidator.verify().checkValidOrderedTimes(-1, currentTime));
+        () -> validator.orderedTimes(pastTime, futureTime, currentTime));
   }
 
   @Test
@@ -68,12 +65,12 @@ public class MessageValidatorTest {
     String invalidBase64 = "This is not a valid Base64 string!";
     String field = "testField";
 
-    MessageValidator.verify().checkBase64(validBase64, field);
+    MessageValidator.verify().isBase64(validBase64, field);
     assertThrows(
         IllegalArgumentException.class,
-        () -> MessageValidator.verify().checkBase64(invalidBase64, field));
+        () -> MessageValidator.verify().isBase64(invalidBase64, field));
     assertThrows(
-        IllegalArgumentException.class, () -> MessageValidator.verify().checkBase64(null, field));
+        IllegalArgumentException.class, () -> MessageValidator.verify().isBase64(null, field));
   }
 
   @Test
@@ -82,13 +79,13 @@ public class MessageValidatorTest {
     String emptyString = "";
     String field = "testField";
 
-    MessageValidator.verify().checkStringNotEmpty(validString, field);
+    MessageValidator.verify().stringNotEmpty(validString, field);
     assertThrows(
         IllegalArgumentException.class,
-        () -> MessageValidator.verify().checkStringNotEmpty(emptyString, field));
+        () -> MessageValidator.verify().stringNotEmpty(emptyString, field));
     assertThrows(
         IllegalArgumentException.class,
-        () -> MessageValidator.verify().checkStringNotEmpty(null, field));
+        () -> MessageValidator.verify().stringNotEmpty(null, field));
   }
 
   @Test
@@ -97,11 +94,40 @@ public class MessageValidatorTest {
     List<String> valid2 = Arrays.asList("a", "b");
     List<String> invalid = new ArrayList<>();
 
-    MessageValidator.verify().checkListNotEmpty(valid1);
-    MessageValidator.verify().checkListNotEmpty(valid2);
+    MessageValidator.verify().listNotEmpty(valid1);
+    MessageValidator.verify().listNotEmpty(valid2);
     assertThrows(
-        IllegalArgumentException.class, () -> MessageValidator.verify().checkListNotEmpty(invalid));
+        IllegalArgumentException.class, () -> MessageValidator.verify().listNotEmpty(invalid));
     assertThrows(
-        IllegalArgumentException.class, () -> MessageValidator.verify().checkListNotEmpty(null));
+        IllegalArgumentException.class, () -> MessageValidator.verify().listNotEmpty(null));
+  }
+
+  @Test
+  public void testCheckNoListDuplicates() {
+    MessageValidator.MessageValidatorBuilder validator = MessageValidator.verify();
+
+    ElectionQuestion.Question q1 =
+        new ElectionQuestion.Question(
+            "Which is the best ?", "Plurality", Arrays.asList("Option a", "Option b"), false);
+    ElectionQuestion.Question q2 =
+        new ElectionQuestion.Question(
+            "Which is the best ?", "Plurality", Arrays.asList("Option a", "Option b"), false);
+    ElectionQuestion.Question q3 =
+        new ElectionQuestion.Question(
+            "Not the same question ?", "Plurality", Arrays.asList("Option c", "Option d"), true);
+
+    List<Integer> valid1 = Arrays.asList(1, 2, 3);
+    List<ElectionQuestion.Question> valid2 = Arrays.asList(q1, q3);
+    List<String> valid3 = new ArrayList<>();
+
+    List<Integer> invalid1 = Arrays.asList(1, 2, 2);
+    List<ElectionQuestion.Question> invalid2 = Arrays.asList(q1, q2);
+
+    validator.noListDuplicates(valid1);
+    validator.noListDuplicates(valid2);
+    validator.noListDuplicates(valid3);
+
+    assertThrows(IllegalArgumentException.class, () -> validator.noListDuplicates(invalid1));
+    assertThrows(IllegalArgumentException.class, () -> validator.noListDuplicates(invalid2));
   }
 }
