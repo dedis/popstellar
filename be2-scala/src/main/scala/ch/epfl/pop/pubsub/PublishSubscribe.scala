@@ -7,9 +7,9 @@ import akka.pattern.AskableActorRef
 import akka.stream.FlowShape
 import akka.stream.scaladsl.{Broadcast, Flow, GraphDSL, Merge, Partition}
 import ch.epfl.pop.decentralized.Monitor
-import ch.epfl.pop.model.network.JsonRpcRequest
+import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse}
 import ch.epfl.pop.pubsub.graph._
-import ch.epfl.pop.pubsub.graph.handlers.{ParamsWithChannelHandler, ParamsWithMapHandler, ParamsWithMessageHandler}
+import ch.epfl.pop.pubsub.graph.handlers.{GetMessagesByIdResponseHandler, ParamsWithChannelHandler, ParamsWithMapHandler, ParamsWithMessageHandler}
 
 object PublishSubscribe {
 
@@ -37,7 +37,8 @@ object PublishSubscribe {
         val portParamsWithMessage = 1
         val portParamsWithChannel = 2
         val portParamsWithMap = 3
-        val totalPorts = 4
+        val portResponseHandler = 4
+        val totalPorts = 5
 
         /* building blocks */
         // input message from the client
@@ -54,6 +55,7 @@ object PublishSubscribe {
             case Right(m: JsonRpcRequest) if m.hasParamsMessage => portParamsWithMessage // Publish and Broadcast messages
             case Right(m: JsonRpcRequest) if m.hasParamsChannel => portParamsWithChannel
             case Right(_: JsonRpcRequest)                       => portParamsWithMap
+            case Right(_: JsonRpcResponse)                      => portResponseHandler
             case _                                              => portPipelineError // Pipeline error goes directly in merger
           }
         ))
@@ -61,6 +63,7 @@ object PublishSubscribe {
         val hasMessagePartition = builder.add(ParamsWithMessageHandler.graph(messageRegistry))
         val hasChannelPartition = builder.add(ParamsWithChannelHandler.graph(clientActorRef))
         val hasMapPartition = builder.add(ParamsWithMapHandler.graph(dbActorRef))
+        val responsePartition = builder.add(GetMessagesByIdResponseHandler.graph(dbActorRef.actorRef))
 
         val merger = builder.add(Merge[GraphMessage](totalPorts))
         val broadcast = builder.add(Broadcast[GraphMessage](2))
@@ -79,6 +82,7 @@ object PublishSubscribe {
         methodPartitioner.out(portParamsWithMessage) ~> hasMessagePartition ~> merger
         methodPartitioner.out(portParamsWithChannel) ~> hasChannelPartition ~> merger
         methodPartitioner.out(portParamsWithMap) ~> hasMapPartition ~> merger
+        methodPartitioner.out(portResponseHandler) ~> responsePartition ~> merger
 
         merger ~> broadcast
         broadcast ~> jsonRpcAnswerGenerator ~> jsonRpcAnswerer ~> output
