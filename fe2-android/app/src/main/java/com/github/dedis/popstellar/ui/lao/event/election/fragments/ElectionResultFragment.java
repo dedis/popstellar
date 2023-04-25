@@ -1,10 +1,8 @@
 package com.github.dedis.popstellar.ui.lao.event.election.fragments;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.*;
 
-import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
@@ -17,6 +15,7 @@ import com.github.dedis.popstellar.repository.ElectionRepository;
 import com.github.dedis.popstellar.ui.lao.LaoActivity;
 import com.github.dedis.popstellar.ui.lao.LaoViewModel;
 import com.github.dedis.popstellar.ui.lao.event.election.adapters.ElectionResultPagerAdapter;
+import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.error.*;
 
 import javax.inject.Inject;
@@ -99,13 +98,11 @@ public class ElectionResultFragment extends Fragment {
     LaoActivity.addBackNavigationCallback(
         requireActivity(),
         getViewLifecycleOwner(),
-        new OnBackPressedCallback(true) {
-          @Override
-          public void handleOnBackPressed() {
-            Log.d(TAG, "Back pressed, going to election");
-            ElectionFragment.openFragment(
-                getParentFragmentManager(), requireArguments().getString(ELECTION_ID));
-          }
-        });
+        ActivityUtils.buildBackButtonCallback(
+            TAG,
+            "election",
+            () ->
+                ElectionFragment.openFragment(
+                    getParentFragmentManager(), requireArguments().getString(ELECTION_ID))));
   }
 }

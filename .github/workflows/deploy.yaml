@@ -233,7 +233,7 @@ jobs:
               $(pwd)/app/build/outputs/apk/debug/${{ env.app_name }}-${{ steps.get_version.outputs.version }}.apk ${{env.dest}}
 
 deploy_popcha_example:
-    name: Release and deploy the example PoPCHA client
+    name: Deploy the example PoPCHA client
 
     if:  ${{ startsWith(github.event.release.tag_name, 'example-') || startsWith(github.event.release.tag_name, 'all-') }}
     runs-on: ubuntu-latest

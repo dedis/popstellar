@@ -19,18 +19,22 @@ const styles = StyleSheet.create({
       error correction level H (https://www.qrcode.com/en/about/error_correction.html)
       assuming the qr code is a square, this means we can cover a width of 50%
       and a height of 50%. centering this gives us 25% margin on every side
+
+      The above computation might not take into account the area covered by the mouse
+      and some squares that are partially hidden by the overlay (MeKHell, 13.04.2023)
     */
     position: 'absolute',
-    top: '25%',
-    left: '25%',
-    right: '25%',
-    bottom: '25%',
+    padding: '4',
+    top: '26%',
+    left: '26%',
+    right: '26%',
+    bottom: '26%',
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: Color.accent,
     overflow: 'hidden',
-    borderRadius: 1000,
+    borderRadius: 100,
   },
 });
 

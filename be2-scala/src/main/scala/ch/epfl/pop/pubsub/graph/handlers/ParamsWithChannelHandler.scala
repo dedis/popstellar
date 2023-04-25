@@ -14,7 +14,7 @@ import ch.epfl.pop.pubsub.{AskPatternConstants, ClientActor, PubSubMediator}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
 
-object ParamsHandler extends AskPatternConstants {
+object ParamsWithChannelHandler extends AskPatternConstants {
 
   def graph(clientActorRef: ActorRef): Flow[GraphMessage, GraphMessage, NotUsed] = Flow.fromGraph(GraphDSL.create() {
     implicit builder: GraphDSL.Builder[NotUsed] =>
@@ -32,7 +32,7 @@ object ParamsHandler extends AskPatternConstants {
         val handlerPartitioner = builder.add(Partition[GraphMessage](
           totalPorts,
           {
-            case Left(jsonRpcMessage: JsonRpcRequest) => jsonRpcMessage.getParams match {
+            case Right(jsonRpcMessage: JsonRpcRequest) => jsonRpcMessage.getParams match {
                 case _: Subscribe   => portSubscribe
                 case _: Unsubscribe => portUnsubscribe
                 case _: Catchup     => portCatchup
@@ -41,9 +41,9 @@ object ParamsHandler extends AskPatternConstants {
           }
         ))
 
-        val subscribeHandler = builder.add(ParamsHandler.subscribeHandler(clientActorRef))
-        val unsubscribeHandler = builder.add(ParamsHandler.unsubscribeHandler(clientActorRef))
-        val catchupHandler = builder.add(ParamsHandler.catchupHandler(clientActorRef))
+        val subscribeHandler = builder.add(ParamsWithChannelHandler.subscribeHandler(clientActorRef))
+        val unsubscribeHandler = builder.add(ParamsWithChannelHandler.unsubscribeHandler(clientActorRef))
+        val catchupHandler = builder.add(ParamsWithChannelHandler.catchupHandler(clientActorRef))
 
         val handlerMerger = builder.add(Merge[GraphMessage](totalPorts))
 
@@ -61,54 +61,54 @@ object ParamsHandler extends AskPatternConstants {
   final case class Asking(g: GraphMessage, replyTo: ActorRef)
 
   def subscribeHandler(clientActorRef: AskableActorRef): Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map {
-    case Left(jsonRpcMessage: JsonRpcRequest) =>
+    case Right(jsonRpcMessage: JsonRpcRequest) =>
       val channel: Channel = jsonRpcMessage.getParams.channel
       val ask: Future[GraphMessage] = (clientActorRef ? ClientActor.SubscribeTo(jsonRpcMessage.getParams.channel)).map {
         case PubSubMediator.SubscribeToAck(returnedChannel) if returnedChannel == channel =>
-          Left(jsonRpcMessage)
+          Right(jsonRpcMessage)
         case PubSubMediator.SubscribeToAck(returnedChannel) =>
-          Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"PubSubMediator subscribed client to channel '$returnedChannel' instead of '$channel'", jsonRpcMessage.id))
+          Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"PubSubMediator subscribed client to channel '$returnedChannel' instead of '$channel'", jsonRpcMessage.id))
         case PubSubMediator.SubscribeToNAck(returnedChannel, reason) if returnedChannel == channel =>
-          Right(PipelineError(ErrorCodes.INVALID_ACTION.id, s"Could not subscribe client to channel '$returnedChannel': $reason", jsonRpcMessage.id))
-        case PubSubMediator.SubscribeToNAck(returnedChannel, reason) => Right(PipelineError(
+          Left(PipelineError(ErrorCodes.INVALID_ACTION.id, s"Could not subscribe client to channel '$returnedChannel': $reason", jsonRpcMessage.id))
+        case PubSubMediator.SubscribeToNAck(returnedChannel, reason) => Left(PipelineError(
             ErrorCodes.SERVER_ERROR.id,
             s"PubSubMediator tried to subscribe client to channel '$returnedChannel' instead of '$channel' but could not: $reason",
             jsonRpcMessage.id
           ))
         case _ =>
-          Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "Client actor returned an unknown answer", jsonRpcMessage.id))
+          Left(PipelineError(ErrorCodes.SERVER_ERROR.id, "Client actor returned an unknown answer", jsonRpcMessage.id))
       }
 
       Await.result(ask, duration)
 
-    case Left(jsonRpcMessage: JsonRpcResponse) =>
-      Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "SubscribeHandler received a 'JsonRpcResponse'", jsonRpcMessage.id))
+    case Right(jsonRpcMessage: JsonRpcResponse) =>
+      Left(PipelineError(ErrorCodes.SERVER_ERROR.id, "SubscribeHandler received a 'JsonRpcResponse'", jsonRpcMessage.id))
     case graphMessage @ _ => graphMessage
   }
 
   def unsubscribeHandler(clientActorRef: AskableActorRef): Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map {
-    case Left(jsonRpcMessage: JsonRpcRequest) =>
+    case Right(jsonRpcMessage: JsonRpcRequest) =>
       val channel: Channel = jsonRpcMessage.getParams.channel
       val ask: Future[GraphMessage] = (clientActorRef ? ClientActor.UnsubscribeFrom(channel)).map {
         case PubSubMediator.UnsubscribeFromAck(returnedChannel) if returnedChannel == channel =>
-          Left(jsonRpcMessage)
+          Right(jsonRpcMessage)
         case PubSubMediator.UnsubscribeFromAck(returnedChannel) =>
-          Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"PubSubMediator unsubscribe client from channel '$returnedChannel' instead of '$channel'", jsonRpcMessage.id))
+          Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"PubSubMediator unsubscribe client from channel '$returnedChannel' instead of '$channel'", jsonRpcMessage.id))
         case PubSubMediator.UnsubscribeFromNAck(returnedChannel, reason) if returnedChannel == channel =>
-          Right(PipelineError(ErrorCodes.INVALID_ACTION.id, s"Could not unsubscribe client from channel '$returnedChannel': $reason", jsonRpcMessage.id))
-        case PubSubMediator.UnsubscribeFromNAck(returnedChannel, reason) => Right(PipelineError(
+          Left(PipelineError(ErrorCodes.INVALID_ACTION.id, s"Could not unsubscribe client from channel '$returnedChannel': $reason", jsonRpcMessage.id))
+        case PubSubMediator.UnsubscribeFromNAck(returnedChannel, reason) => Left(PipelineError(
             ErrorCodes.SERVER_ERROR.id,
             s"PubSubMediator tried to unsubscribe client from channel '$returnedChannel' instead of '$channel' but could not: $reason",
             jsonRpcMessage.id
           ))
         case _ =>
-          Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "Client actor returned an unknown answer", jsonRpcMessage.id))
+          Left(PipelineError(ErrorCodes.SERVER_ERROR.id, "Client actor returned an unknown answer", jsonRpcMessage.id))
       }
 
       Await.result(ask, duration)
 
-    case Left(jsonRpcMessage: JsonRpcResponse) =>
-      Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "UnsubscribeHandler received a 'JsonRpcResponse'", jsonRpcMessage.id))
+    case Right(jsonRpcMessage: JsonRpcResponse) =>
+      Left(PipelineError(ErrorCodes.SERVER_ERROR.id, "UnsubscribeHandler received a 'JsonRpcResponse'", jsonRpcMessage.id))
     case graphMessage @ _ => graphMessage
   }
 

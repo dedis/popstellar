@@ -1,12 +1,10 @@
 package com.github.dedis.popstellar.ui.lao.digitalcash;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.*;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
-import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -16,6 +14,7 @@ import com.github.dedis.popstellar.databinding.DigitalCashIssueFragmentBinding;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.ui.lao.LaoActivity;
 import com.github.dedis.popstellar.ui.lao.LaoViewModel;
+import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
@@ -26,6 +25,7 @@ import java.time.Instant;
 import java.util.*;
 
 import dagger.hilt.android.AndroidEntryPoint;
+import timber.log.Timber;
 
 /**
  * A simple {@link Fragment} subclass. Use the {@link DigitalCashIssueFragment#newInstance} factory
@@ -165,7 +165,7 @@ public class DigitalCashIssueFragment extends Fragment {
     try {
       myArray = digitalCashViewModel.getAttendeesFromTheRollCallList();
     } catch (NoRollCallException e) {
-      Log.d(TAG, getString(R.string.error_no_rollcall_closed_in_LAO));
+      Timber.tag(TAG).d(getString(R.string.error_no_rollcall_closed_in_LAO));
       Toast.makeText(
               requireContext(),
               getString(R.string.digital_cash_please_enter_roll_call),
@@ -220,15 +220,13 @@ public class DigitalCashIssueFragment extends Fragment {
         .getOnBackPressedDispatcher()
         .addCallback(
             getViewLifecycleOwner(),
-            new OnBackPressedCallback(true) {
-              @Override
-              public void handleOnBackPressed() {
-                Log.d(TAG, "Back pressed, going to digital cash home");
-                LaoActivity.setCurrentFragment(
-                    getParentFragmentManager(),
-                    R.id.fragment_digital_cash_home,
-                    DigitalCashHomeFragment::new);
-              }
-            });
+            ActivityUtils.buildBackButtonCallback(
+                TAG,
+                "digital cash home",
+                () ->
+                    LaoActivity.setCurrentFragment(
+                        getParentFragmentManager(),
+                        R.id.fragment_digital_cash_home,
+                        DigitalCashHomeFragment::new)));
   }
 }

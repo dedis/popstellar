@@ -11,13 +11,14 @@ import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.SocialMediaSearchFragmentBinding;
 import com.github.dedis.popstellar.ui.lao.LaoActivity;
 import com.github.dedis.popstellar.ui.lao.LaoViewModel;
+import com.github.dedis.popstellar.utility.ActivityUtils;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
 /** Fragment that let us search for chirps and users */
 @AndroidEntryPoint
 public class SocialMediaSearchFragment extends Fragment {
-
+  public static final String TAG = SocialMediaSearchFragment.class.getSimpleName();
   private LaoViewModel laoViewModel;
 
   public static SocialMediaSearchFragment newInstance() {
@@ -40,7 +41,7 @@ public class SocialMediaSearchFragment extends Fragment {
 
     binding.setViewModel(socialMediaViewModel);
     binding.setLifecycleOwner(getViewLifecycleOwner());
-
+    handleBackNav();
     return binding.getRoot();
   }
 
@@ -49,5 +50,15 @@ public class SocialMediaSearchFragment extends Fragment {
     super.onResume();
     laoViewModel.setPageTitle(R.string.search);
     laoViewModel.setIsTab(true);
+  }
+
+  private void handleBackNav() {
+    LaoActivity.addBackNavigationCallback(
+        requireActivity(),
+        getViewLifecycleOwner(),
+        ActivityUtils.buildBackButtonCallback(
+            TAG,
+            "social media home",
+            () -> SocialMediaHomeFragment.openFragment(getParentFragmentManager())));
   }
 }

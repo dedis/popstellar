@@ -2,10 +2,9 @@ package com.github.dedis.popstellar.model.objects;
 
 import androidx.annotation.NonNull;
 
-import java.io.Serializable;
-
 import com.github.dedis.popstellar.model.Immutable;
 
+import java.io.Serializable;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
@@ -61,17 +60,19 @@ public class Channel implements Serializable {
   private Channel(String... segments) {
     this.segments = Arrays.asList(segments);
 
-    if (!CHANNEL_VALIDATOR.test(getAsString()))
+    if (!CHANNEL_VALIDATOR.test(getAsString())) {
       throw new IllegalArgumentException(getAsString() + " is not a valid channel");
+    }
   }
 
   private Channel(Channel base, String subSegments) {
     List<String> newSegments = new ArrayList<>(base.segments);
     newSegments.add(subSegments);
-    this.segments = Collections.unmodifiableList(newSegments);
+    segments = Collections.unmodifiableList(newSegments);
 
-    if (!CHANNEL_VALIDATOR.test(getAsString()))
+    if (!CHANNEL_VALIDATOR.test(getAsString())) {
       throw new IllegalArgumentException(getAsString() + " is not a valid channel");
+    }
   }
 
   /**
@@ -109,10 +110,10 @@ public class Channel implements Serializable {
    * @return the LAO ID contained in this channel
    */
   public String extractLaoId() {
-    if (segments.isEmpty())
+    if (segments.isEmpty()) {
       throw new IllegalStateException(
           "This channel is the root channel and does not contain any LAO ID");
-
+    }
     // In the current implementation of the protocol, the first element of the channel (if present)
     // is always the LAO id
     return segments.get(0);
@@ -127,8 +128,9 @@ public class Channel implements Serializable {
    * @return the election id contained in this channel
    */
   public String extractElectionId() {
-    if (segments.size() < 2)
+    if (segments.size() < 2) {
       throw new IllegalStateException("This channel is not an election channel");
+    }
 
     return segments.get(1);
   }
@@ -142,8 +144,12 @@ public class Channel implements Serializable {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
     Channel channel = (Channel) o;
     return segments.equals(channel.segments);
   }

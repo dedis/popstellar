@@ -1,8 +1,10 @@
 package com.github.dedis.popstellar.utility;
 
 import android.content.Context;
-import android.util.Log;
+import android.content.res.Configuration;
+import android.graphics.Color;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.*;
 
@@ -15,8 +17,11 @@ import com.github.dedis.popstellar.utility.error.ErrorUtils;
 
 import java.io.*;
 import java.security.GeneralSecurityException;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.function.Supplier;
+
+import timber.log.Timber;
 
 public class ActivityUtils {
   private static final String TAG = ActivityUtils.class.getSimpleName();
@@ -27,7 +32,17 @@ public class ActivityUtils {
       FragmentManager manager, int containerId, int id, Supplier<Fragment> fragmentSupplier) {
     Fragment fragment = manager.findFragmentById(id);
     // If the fragment was not created yet, create it now
-    if (fragment == null) fragment = fragmentSupplier.get();
+    if (fragment == null) {
+      fragment = fragmentSupplier.get();
+    }
+
+    // Set the new fragment in the container
+    ActivityUtils.replaceFragmentInActivity(manager, fragment, containerId);
+  }
+
+  public static void setFragmentInContainer(
+      FragmentManager manager, int containerId, Supplier<Fragment> fragmentSupplier) {
+    Fragment fragment = fragmentSupplier.get();
 
     // Set the new fragment in the container
     ActivityUtils.replaceFragmentInActivity(manager, fragment, containerId);
@@ -40,14 +55,15 @@ public class ActivityUtils {
     transaction.commit();
   }
 
-    /**
-     * Store data in the phone's persistent storage
-     * @param context of the UI
-     * @param data the data to store
-     * @return true if the storage process was a success; false otherwise
-     */
+  /**
+   * Store data in the phone's persistent storage
+   *
+   * @param context of the UI
+   * @param data the data to store
+   * @return true if the storage process was a success; false otherwise
+   */
   public static boolean storePersistentData(Context context, PersistentData data) {
-    Log.d(TAG, "Initiating storage of " + data);
+    Timber.tag(TAG).d("Initiating storage of %s", data);
 
     try (ObjectOutputStream oos =
         new ObjectOutputStream(
@@ -57,17 +73,18 @@ public class ActivityUtils {
       ErrorUtils.logAndShow(context, TAG, e, R.string.error_storing_data);
       return false;
     }
-    Log.d(TAG, "storage successful");
+    Timber.tag(TAG).d("storage successful");
     return true;
   }
 
-    /**
-     * Load the persistent data from the phone's persistent storage
-     * @param context of the UI
-     * @return the data if found, null otherwise
-     */
+  /**
+   * Load the persistent data from the phone's persistent storage
+   *
+   * @param context of the UI
+   * @return the data if found, null otherwise
+   */
   public static PersistentData loadPersistentData(Context context) {
-    Log.d(TAG, "Initiating loading of data");
+    Timber.tag(TAG).d("Initiating loading of data");
 
     PersistentData persistentData;
     try (ObjectInputStream ois =
@@ -81,30 +98,32 @@ public class ActivityUtils {
       return null;
     }
 
-    Log.d(TAG, "loading of " + persistentData);
+    Timber.tag(TAG).d("loading of %s", persistentData);
     return persistentData;
   }
 
-    /**
-     * Clear the phone's persistent storage for the PoP app
-     * @param context of the UI
-     * @return true if the clearing was a success; false otherwise
-     */
+  /**
+   * Clear the phone's persistent storage for the PoP app
+   *
+   * @param context of the UI
+   * @return true if the clearing was a success; false otherwise
+   */
   public static boolean clearStorage(Context context) {
-    Log.d(TAG, "clearing data");
+    Timber.tag(TAG).d("clearing data");
 
     File file = new File(context.getFilesDir(), PERSISTENT_DATA_FILE_NAME);
     return file.delete();
   }
 
-    /**
-     * This performs the steps of getting and storing persistently the needed data
-     * @param networkManager, the singleton used across the app
-     * @param wallet, the singleton used across the app
-     * @param context of the UI
-     * @return true if the saving process was a success; false otherwise
-     * @throws GeneralSecurityException
-     */
+  /**
+   * This performs the steps of getting and storing persistently the needed data
+   *
+   * @param networkManager, the singleton used across the app
+   * @param wallet, the singleton used across the app
+   * @param context of the UI
+   * @return true if the saving process was a success; false otherwise
+   * @throws GeneralSecurityException
+   */
   public static boolean activitySavingRoutine(
       GlobalNetworkManager networkManager, Wallet wallet, Context context)
       throws GeneralSecurityException {
@@ -118,14 +137,44 @@ public class ActivityUtils {
     }
 
     String[] seed = wallet.exportSeed();
-    Log.d(
-        TAG,
-        "seed length"
-            + seed.length
-            + " address "
-            + serverAddress
-            + " subscriptions "
-            + subscriptions);
+    Timber.tag(TAG)
+        .d(
+            "seed length: %d, address: %s, subscriptions: %s",
+            seed.length, serverAddress, subscriptions);
     return storePersistentData(context, new PersistentData(seed, serverAddress, subscriptions));
+  }
+
+  /**
+   * The following function creates an object of type OnBackPressedCallback given a specific
+   * callback function. This avoids code repetitions.
+   *
+   * @param tag String tag for the log
+   * @param message String message for the log
+   * @param callback Runnable function to use * as callback
+   * @return the callback object
+   */
+  public static OnBackPressedCallback buildBackButtonCallback(
+      String tag, String message, Runnable callback) {
+    return new OnBackPressedCallback(true) {
+      @Override
+      public void handleOnBackPressed() {
+        Timber.tag(tag).d("Back pressed, going to %s", message);
+        callback.run();
+      }
+    };
+  }
+
+  /**
+   * Gets the color of the QR code based on the night mode configuration of the current context.
+   *
+   * @return the color of the QR code (either Color.WHITE or Color.BLACK)
+   */
+  public static int getQRCodeColor(Context context) {
+    Configuration configuration = context.getResources().getConfiguration();
+    int nightModeFlags = configuration.uiMode & Configuration.UI_MODE_NIGHT_MASK;
+    if (nightModeFlags == Configuration.UI_MODE_NIGHT_YES) {
+      return Color.WHITE;
+    }
+    return Color.BLACK;
   }
 }

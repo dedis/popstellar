@@ -5,12 +5,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.IdRes;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.app.AppCompatDelegate;
 import androidx.fragment.app.*;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -26,6 +24,7 @@ import java.security.GeneralSecurityException;
 import java.util.function.Supplier;
 
 import dagger.hilt.android.AndroidEntryPoint;
+import timber.log.Timber;
 
 /** HomeActivity represents the entry point for the application. */
 @AndroidEntryPoint
@@ -67,15 +66,58 @@ public class HomeActivity extends AppCompatActivity {
           .setNeutralButton(R.string.ok, (dialog, which) -> dialog.dismiss())
           .show();
     }
-
-    // Temporary fix to disable dark mode, addressing issue #1381 (UI elements not displaying
-    // correctly in dark mode)
-    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
   }
 
   private void handleTopAppBar() {
     viewModel.getPageTitle().observe(this, binding.topAppBar::setTitle);
 
+    setNavigation();
+    setMenuItemListener();
+    observeWallet();
+  }
+
+  private void setNavigation() {
+    // Observe whether the home icon or back arrow should be displayed
+    viewModel
+        .isHome()
+        .observe(
+            this,
+            isHome -> {
+              if (Boolean.TRUE.equals(isHome)) {
+                binding.topAppBar.setNavigationIcon(R.drawable.home_icon);
+                binding.topAppBar.getMenu().setGroupVisible(0, true);
+              } else {
+                Fragment fragment =
+                    getSupportFragmentManager().findFragmentById(R.id.fragment_container_home);
+                // If the fragment is not the seed wallet then make the back arrow appear
+                if (fragment instanceof SeedWalletFragment) {
+                  binding.topAppBar.setNavigationIcon(null);
+                } else {
+                  binding.topAppBar.setNavigationIcon(R.drawable.back_arrow_icon);
+                }
+                // Disable the overflow menu
+                binding.topAppBar.getMenu().setGroupVisible(0, false);
+              }
+            });
+
+    // Listen to click on left icon of toolbar
+    binding.topAppBar.setNavigationOnClickListener(
+        view -> {
+          if (Boolean.FALSE.equals(viewModel.isHome().getValue())) {
+            // Press back arrow
+            onBackPressed();
+          } else {
+            // If the user presses on the home button display the general info about the app
+            new MaterialAlertDialogBuilder(this)
+                .setTitle(R.string.app_name)
+                .setMessage(R.string.app_info)
+                .setNeutralButton(R.string.ok, (dialog, which) -> dialog.dismiss())
+                .show();
+          }
+        });
+  }
+
+  private void setMenuItemListener() {
     // Set menu items behaviour
     binding.topAppBar.setOnMenuItemClickListener(
         item -> {
@@ -83,10 +125,14 @@ public class HomeActivity extends AppCompatActivity {
             handleWalletSettings();
           } else if (item.getItemId() == R.id.clear_storage) {
             handleClearing();
+          } else if (item.getItemId() == R.id.home_settings) {
+            handleSettings();
           }
           return true;
         });
+  }
 
+  private void observeWallet() {
     // Listen to wallet status to adapt the menu item title
     viewModel
         .getIsWalletSetUpEvent()
@@ -111,7 +157,7 @@ public class HomeActivity extends AppCompatActivity {
       viewModel.savePersistentData();
     } catch (GeneralSecurityException e) {
       // We do not display the security error to the user
-      Log.d(TAG, "Storage was unsuccessful due to wallet error " + e);
+      Timber.tag(TAG).d(e, "Storage was unsuccessful due to wallet error");
       Toast.makeText(this, R.string.error_storage_wallet, Toast.LENGTH_SHORT).show();
     }
   }
@@ -120,7 +166,12 @@ public class HomeActivity extends AppCompatActivity {
   public void onBackPressed() {
     Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container_home);
     if (!(fragment instanceof SeedWalletFragment)) {
-      setCurrentFragment(getSupportFragmentManager(), R.id.fragment_home, HomeFragment::new);
+      setCurrentFragment(
+          getSupportFragmentManager(), R.id.fragment_home, HomeFragment::newInstance);
+    }
+    // Move the application to background if back button is pressed on home
+    if (fragment instanceof HomeFragment) {
+      moveTaskToBack(true);
     }
   }
 
@@ -136,13 +187,13 @@ public class HomeActivity extends AppCompatActivity {
                 setCurrentFragment(
                     getSupportFragmentManager(),
                     R.id.fragment_seed_wallet,
-                    SeedWalletFragment::new);
+                    SeedWalletFragment::newInstance);
               })
           .setNegativeButton(R.string.cancel, (dialog, which) -> dialog.dismiss())
           .show();
     } else {
       setCurrentFragment(
-          getSupportFragmentManager(), R.id.fragment_seed_wallet, SeedWalletFragment::new);
+          getSupportFragmentManager(), R.id.fragment_seed_wallet, SeedWalletFragment::newInstance);
     }
   }
 
@@ -169,6 +220,11 @@ public class HomeActivity extends AppCompatActivity {
         .show();
   }
 
+  private void handleSettings() {
+    ActivityUtils.setFragmentInContainer(
+        getSupportFragmentManager(), R.id.fragment_container_home, SettingsFragment::newInstance);
+  }
+
   private void restoreStoredState() {
     PersistentData data = ActivityUtils.loadPersistentData(this);
     viewModel.restoreConnections(data);
@@ -176,6 +232,10 @@ public class HomeActivity extends AppCompatActivity {
 
   public static HomeViewModel obtainViewModel(FragmentActivity activity) {
     return new ViewModelProvider(activity).get(HomeViewModel.class);
+  }
+
+  public static SettingsViewModel obtainSettingsViewModel(FragmentActivity activity) {
+    return new ViewModelProvider(activity).get(SettingsViewModel.class);
   }
 
   /** Factory method to create a fresh Intent that opens an HomeActivity */

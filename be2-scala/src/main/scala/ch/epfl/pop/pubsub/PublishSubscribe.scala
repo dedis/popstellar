@@ -8,7 +8,7 @@ import akka.stream.FlowShape
 import akka.stream.scaladsl.{Flow, GraphDSL, Merge, Partition}
 import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.pubsub.graph._
-import ch.epfl.pop.pubsub.graph.handlers.{ParamsHandler, ParamsWithMessageHandler}
+import ch.epfl.pop.pubsub.graph.handlers.{ParamsWithChannelHandler, ParamsWithMessageHandler}
 
 object PublishSubscribe {
 
@@ -27,7 +27,7 @@ object PublishSubscribe {
         /* partitioner port numbers */
         val portPipelineError = 0
         val portParamsWithMessage = 1
-        val portParams = 2
+        val portParamsWithChannel = 2
         val totalPorts = 3
 
         /* building blocks */
@@ -42,14 +42,14 @@ object PublishSubscribe {
         val methodPartitioner = builder.add(Partition[GraphMessage](
           totalPorts,
           {
-            case Left(m: JsonRpcRequest) if m.hasParamsMessage => portParamsWithMessage // Publish and Broadcast messages
-            case Left(_)                                       => portParams
-            case _                                             => portPipelineError // Pipeline error goes directly in merger
+            case Right(m: JsonRpcRequest) if m.hasParamsMessage => portParamsWithMessage // Publish and Broadcast messages
+            case Right(m: JsonRpcRequest) if m.hasParamsChannel => portParamsWithChannel
+            case _                                              => portPipelineError // Pipeline error goes directly in merger
           }
         ))
 
         val hasMessagePartition = builder.add(ParamsWithMessageHandler.graph(messageRegistry))
-        val noMessagePartition = builder.add(ParamsHandler.graph(clientActorRef))
+        val hasChannelPartition = builder.add(ParamsWithChannelHandler.graph(clientActorRef))
 
         val merger = builder.add(Merge[GraphMessage](totalPorts))
 
@@ -64,7 +64,7 @@ object PublishSubscribe {
 
         methodPartitioner.out(portPipelineError) ~> merger
         methodPartitioner.out(portParamsWithMessage) ~> hasMessagePartition ~> merger
-        methodPartitioner.out(portParams) ~> noMessagePartition ~> merger
+        methodPartitioner.out(portParamsWithChannel) ~> hasChannelPartition ~> merger
 
         merger ~> jsonRpcAnswerGenerator ~> jsonRpcAnswerer ~> output
 

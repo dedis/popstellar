@@ -1,7 +1,12 @@
 package com.github.dedis.popstellar.ui.home;
 
+import android.content.res.Configuration;
+
+import androidx.fragment.app.Fragment;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
+
+import com.github.dedis.popstellar.R;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -22,6 +27,7 @@ import static com.github.dedis.popstellar.testutils.pages.home.LaoCreatePageObje
 import static com.github.dedis.popstellar.testutils.pages.home.WalletPageObject.confirmButton;
 import static com.github.dedis.popstellar.testutils.pages.home.WalletPageObject.walletId;
 import static org.hamcrest.Matchers.allOf;
+import static org.junit.Assert.assertEquals;
 
 @HiltAndroidTest
 @RunWith(AndroidJUnit4.class)
@@ -83,6 +89,27 @@ public class HomeActivityTest {
                 confirmButton().perform(click());
                 dialogPositiveButton().performClick();
               }
+            });
+  }
+
+  @Test
+  public void handleRotationTest() {
+    activityScenarioRule
+        .getScenario()
+        .onActivity(
+            activity -> {
+              Fragment before =
+                  activity
+                      .getSupportFragmentManager()
+                      .findFragmentById(R.id.fragment_container_home);
+              Configuration config = new Configuration(activity.getResources().getConfiguration());
+              config.orientation = Configuration.ORIENTATION_LANDSCAPE;
+              activity.onConfigurationChanged(config);
+              assertEquals(
+                  activity
+                      .getSupportFragmentManager()
+                      .findFragmentById(R.id.fragment_container_home),
+                  before);
             });
   }
 }

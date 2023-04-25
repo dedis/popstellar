@@ -8,4 +8,8 @@
     android:id="@+id/clear_storage"
     android:title="@string/clear_text"
     />
+  <item
+    android:id="@+id/home_settings"
+    android:title="@string/settings"
+    />
 </menu>

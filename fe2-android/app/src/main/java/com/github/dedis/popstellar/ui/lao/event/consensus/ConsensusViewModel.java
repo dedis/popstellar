@@ -1,7 +1,6 @@
 package com.github.dedis.popstellar.ui.lao.event.consensus;
 
 import android.app.Application;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
@@ -26,6 +25,7 @@ import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
 import io.reactivex.*;
+import timber.log.Timber;
 
 @HiltViewModel
 public class ConsensusViewModel extends AndroidViewModel {
@@ -66,11 +66,8 @@ public class ConsensusViewModel extends AndroidViewModel {
    */
   public Single<MessageGeneral> sendConsensusElect(
       long creation, String objId, String type, String property, Object value) {
-    Log.d(
-        TAG,
-        String.format(
-            "creating a new consensus for type: %s, property: %s, value: %s",
-            type, property, value));
+    Timber.tag(TAG)
+        .d("creating a new consensus for type: %s, property: %s, value: %s", type, property, value);
 
     LaoView laoView;
     try {
@@ -98,12 +95,10 @@ public class ConsensusViewModel extends AndroidViewModel {
    */
   public Completable sendConsensusElectAccept(ElectInstance electInstance, boolean accept) {
     MessageID messageId = electInstance.getMessageId();
-    Log.d(
-        TAG,
-        "sending a new elect_accept for consensus with messageId : "
-            + messageId
-            + " with value "
-            + accept);
+    Timber.tag(TAG)
+        .d(
+            "sending a new elect_accept for consensus with messageId : %s with value %s",
+            messageId, accept);
 
     ConsensusElectAccept consensusElectAccept =
         new ConsensusElectAccept(electInstance.getInstanceId(), messageId, accept);

@@ -1,6 +1,7 @@
 package com.github.dedis.popstellar.ui.lao;
 
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.*;
 
@@ -13,6 +14,7 @@ import com.github.dedis.popstellar.databinding.InviteFragmentBinding;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.model.qrcode.ConnectToLao;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
+import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.google.gson.Gson;
@@ -55,7 +57,12 @@ public class InviteFragment extends Fragment {
       LaoView laoView = laoViewModel.getLao();
 
       ConnectToLao data = new ConnectToLao(networkManager.getCurrentUrl(), laoView.getId());
-      Bitmap myBitmap = QRCode.from(gson.toJson(data)).withSize(QR_SIDE, QR_SIDE).bitmap();
+
+      Bitmap myBitmap =
+          QRCode.from(gson.toJson(data))
+              .withSize(QR_SIDE, QR_SIDE)
+              .withColor(ActivityUtils.getQRCodeColor(requireContext()), Color.TRANSPARENT)
+              .bitmap();
       binding.channelQrCode.setImageBitmap(myBitmap);
       binding.laoPropertiesNameText.setText(laoView.getName());
 
@@ -69,6 +76,8 @@ public class InviteFragment extends Fragment {
       ErrorUtils.logAndShow(requireContext(), TAG, e, R.string.unknown_lao_exception);
       return null;
     }
+
+    handleBackNav();
     return binding.getRoot();
   }
 
@@ -77,5 +86,9 @@ public class InviteFragment extends Fragment {
     super.onResume();
     laoViewModel.setPageTitle(R.string.invite);
     laoViewModel.setIsTab(true);
+  }
+
+  private void handleBackNav() {
+    LaoActivity.addBackNavigationCallbackToEvents(requireActivity(), getViewLifecycleOwner(), TAG);
   }
 }

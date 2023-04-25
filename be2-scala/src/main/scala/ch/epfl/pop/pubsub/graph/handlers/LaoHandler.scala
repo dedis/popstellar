@@ -4,7 +4,6 @@ import ch.epfl.pop.config.RuntimeEnvironment.appConf
 import ch.epfl.pop.config.ServerConf
 import ch.epfl.pop.json.MessageDataProtocol.GreetLaoFormat
 import ch.epfl.pop.model.network.JsonRpcRequest
-import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.network.method.message.data.lao.{CreateLao, GreetLao, StateLao}
 import ch.epfl.pop.model.objects.{Channel, DbActorNAckException, Hash}
@@ -29,7 +28,7 @@ case object LaoHandler extends MessageHandler {
         reactionChannel: Channel = Channel(s"$laoChannel${Channel.REACTIONS_CHANNEL_PREFIX}")
         // we get access to the canonical address of the server
         config = ServerConf(appConf)
-        address: Option[String] = Some(f"ws://${config.interface}:${config.port}/${config.path}")
+        address: Option[String] = Some(f"ws://${config.interface}:${config.port}/${config.clientPath}")
 
         // check whether the lao already exists in db
         _ <- dbActor ? DbActor.AssertChannelMissing(laoChannel)
@@ -50,9 +49,9 @@ case object LaoHandler extends MessageHandler {
       } yield ()
 
     Await.ready(ask, duration).value.get match {
-      case Success(_)                        => Left(rpcMessage)
-      case Failure(ex: DbActorNAckException) => Right(PipelineError(ex.code, s"handleCreateLao failed : ${ex.message}", rpcMessage.getId))
-      case reply                             => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleCreateLao failed : unexpected DbActor reply '$reply'", rpcMessage.getId))
+      case Success(_)                        => Right(rpcMessage)
+      case Failure(ex: DbActorNAckException) => Left(PipelineError(ex.code, s"handleCreateLao failed : ${ex.message}", rpcMessage.getId))
+      case reply                             => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleCreateLao failed : unexpected DbActor reply '$reply'", rpcMessage.getId))
     }
   }
 
@@ -63,7 +62,7 @@ case object LaoHandler extends MessageHandler {
 
   def handleStateLao(rpcMessage: JsonRpcRequest): GraphMessage = {
     val modificationId: Hash = rpcMessage.getDecodedData.asInstanceOf[StateLao].modification_id
-    Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "NOT IMPLEMENTED : handleStateLao is not implemented", rpcMessage.id))
+    Left(PipelineError(ErrorCodes.SERVER_ERROR.id, "NOT IMPLEMENTED : handleStateLao is not implemented", rpcMessage.id))
   }
 
   def handleUpdateLao(rpcMessage: JsonRpcRequest): GraphMessage = {

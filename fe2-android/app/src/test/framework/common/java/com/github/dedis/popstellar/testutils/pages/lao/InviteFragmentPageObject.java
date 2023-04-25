@@ -24,4 +24,8 @@ public class InviteFragmentPageObject {
   public static ViewInteraction laoNameText() {
     return onView(withId(R.id.lao_properties_name_text));
   }
+
+  public static ViewInteraction channelQRCode() {
+    return onView(withId(R.id.channel_qr_code));
+  }
 }

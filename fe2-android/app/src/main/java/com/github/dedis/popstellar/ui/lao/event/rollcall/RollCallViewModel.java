@@ -1,7 +1,6 @@
 package com.github.dedis.popstellar.ui.lao.event.rollcall;
 
 import android.app.Application;
-import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -32,6 +31,7 @@ import javax.inject.Inject;
 import dagger.hilt.android.lifecycle.HiltViewModel;
 import io.reactivex.Observable;
 import io.reactivex.*;
+import timber.log.Timber;
 
 @HiltViewModel
 public class RollCallViewModel extends AndroidViewModel implements QRCodeScanningViewModel {
@@ -74,7 +74,7 @@ public class RollCallViewModel extends AndroidViewModel implements QRCodeScannin
   public void setLaoId(String laoId) {
     this.laoId = laoId;
 
-    this.attendedRollCalls =
+    attendedRollCalls =
         rollCallRepo
             .getRollCallsObservableInLao(laoId)
             .map(
@@ -105,7 +105,7 @@ public class RollCallViewModel extends AndroidViewModel implements QRCodeScannin
       long creation,
       long proposedStart,
       long proposedEnd) {
-    Log.d(TAG, "creating a new roll call with title " + title);
+    Timber.tag(TAG).d("creating a new roll call with title %s", title);
 
     LaoView laoView;
     try {
@@ -133,7 +133,7 @@ public class RollCallViewModel extends AndroidViewModel implements QRCodeScannin
    * @param id the roll call id to open
    */
   public Completable openRollCall(String id) {
-    Log.d(TAG, "call openRollCall with id " + id);
+    Timber.tag(TAG).d("call openRollCall with id %s", id);
 
     LaoView laoView;
     try {
@@ -144,12 +144,10 @@ public class RollCallViewModel extends AndroidViewModel implements QRCodeScannin
     }
 
     if (!rollCallRepo.canOpenRollCall(laoId)) {
-      Log.d(
-          TAG,
-          "failed to open roll call with id "
-              + id
-              + " because another roll call was already opened, laoID: "
-              + laoView.getId());
+      Timber.tag(TAG)
+          .d(
+              "failed to open roll call with id %s because another roll call was already opened, laoID: %s",
+              id, laoView.getId());
       return Completable.error(new DoubleOpenedRollCallException(id));
     }
 
@@ -157,7 +155,7 @@ public class RollCallViewModel extends AndroidViewModel implements QRCodeScannin
 
     RollCall rollCall;
     try {
-      Log.d(TAG, "failed to retrieve roll call with id " + id + ", laoID: " + laoView.getId());
+      Timber.tag(TAG).d("failed to retrieve roll call with id %s, laoID: %s", id, laoView.getId());
       rollCall = rollCallRepo.getRollCallWithId(laoId, id);
     } catch (UnknownRollCallException e) {
       return Completable.error(new UnknownRollCallException(id));
@@ -174,7 +172,7 @@ public class RollCallViewModel extends AndroidViewModel implements QRCodeScannin
   }
 
   private void openRollCall(String currentId, LaoView laoView, RollCall rollCall) {
-    Log.d(TAG, "opening rollcall with id " + currentId);
+    Timber.tag(TAG).d("opening rollcall with id %s", currentId);
     attendees.addAll(rollCall.getAttendees());
 
     try {
@@ -193,7 +191,7 @@ public class RollCallViewModel extends AndroidViewModel implements QRCodeScannin
    * <p>Publish a GeneralMessage containing CloseRollCall data.
    */
   public Completable closeRollCall(String id) {
-    Log.d(TAG, "call closeRollCall");
+    Timber.tag(TAG).d("call closeRollCall");
 
     LaoView laoView;
     try {
@@ -213,7 +211,7 @@ public class RollCallViewModel extends AndroidViewModel implements QRCodeScannin
         .publish(keyManager.getMainKeyPair(), channel, closeRollCall)
         .doOnComplete(
             () -> {
-              Log.d(TAG, "closed the roll call with id " + id);
+              Timber.tag(TAG).d("closed the roll call with id %s", id);
               attendees.clear();
             });
   }
@@ -277,7 +275,7 @@ public class RollCallViewModel extends AndroidViewModel implements QRCodeScannin
     }
 
     attendees.add(publicKey);
-    Log.d(TAG, "Attendee " + publicKey + " successfully added");
+    Timber.tag(TAG).d("Attendee %s successfully added", publicKey);
     Toast.makeText(getApplication(), R.string.attendee_scan_success, Toast.LENGTH_SHORT).show();
     nbScanned.postValue(attendees.size());
   }
@@ -285,5 +283,9 @@ public class RollCallViewModel extends AndroidViewModel implements QRCodeScannin
   @Override
   public LiveData<Integer> getNbScanned() {
     return nbScanned;
+  }
+
+  public Set<PublicKey> getAttendees() {
+    return attendees;
   }
 }

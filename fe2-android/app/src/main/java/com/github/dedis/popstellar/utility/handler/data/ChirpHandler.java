@@ -1,7 +1,5 @@
 package com.github.dedis.popstellar.utility.handler.data;
 
-import android.util.Log;
-
 import com.github.dedis.popstellar.model.network.method.message.data.socialmedia.AddChirp;
 import com.github.dedis.popstellar.model.network.method.message.data.socialmedia.DeleteChirp;
 import com.github.dedis.popstellar.model.objects.Channel;
@@ -15,6 +13,8 @@ import com.github.dedis.popstellar.utility.error.InvalidMessageIdException;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 
 import javax.inject.Inject;
+
+import timber.log.Timber;
 
 /** Chirp messages handler class */
 public final class ChirpHandler {
@@ -41,7 +41,7 @@ public final class ChirpHandler {
     MessageID messageId = context.getMessageId();
     PublicKey senderPk = context.getSenderPk();
 
-    Log.d(TAG, "handleChirpAdd: " + channel + " id " + addChirp.getParentId());
+    Timber.tag(TAG).d("handleChirpAdd: channel: %s, id: %s", channel, addChirp.getParentId());
     LaoView laoView = laoRepo.getLaoViewByChannel(channel);
     Chirp chirp =
         new Chirp(
@@ -64,7 +64,7 @@ public final class ChirpHandler {
       throws UnknownLaoException, InvalidMessageIdException {
     Channel channel = context.getChannel();
 
-    Log.d(TAG, "handleDeleteChirp: " + channel + " id " + deleteChirp.getChirpId());
+    Timber.tag(TAG).d("handleDeleteChirp: channel: %s, id: %s", channel, deleteChirp.getChirpId());
 
     LaoView laoView = laoRepo.getLaoViewByChannel(channel);
     boolean chirpExist = socialMediaRepo.deleteChirp(laoView.getId(), deleteChirp.getChirpId());

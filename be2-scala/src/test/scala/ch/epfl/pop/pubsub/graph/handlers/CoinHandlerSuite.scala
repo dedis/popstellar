@@ -29,7 +29,7 @@ class CoinHandlerSuite extends TestKit(ActorSystem("SocialMedia-DB-System")) wit
     val rc = CoinHandler
     val request = postTransaction
 
-    rc.handlePostTransaction(request) should equal(Left(request))
+    rc.handlePostTransaction(request) should equal(Right(request))
   }
 
 }

@@ -1,7 +1,6 @@
 package com.github.dedis.popstellar.ui.lao.witness;
 
 import android.app.Application;
-import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -35,6 +34,7 @@ import io.reactivex.Completable;
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
+import timber.log.Timber;
 
 @HiltViewModel
 public class WitnessingViewModel extends AndroidViewModel implements QRCodeScanningViewModel {
@@ -102,12 +102,12 @@ public class WitnessingViewModel extends AndroidViewModel implements QRCodeScann
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 laoView -> {
-                  Log.d(TAG, "got an update for lao: " + laoView);
+                  Timber.tag(TAG).d("got an update for lao: %s", laoView);
 
                   setWitnessMessages(new ArrayList<>(laoView.getWitnessMessages().values()));
                   setWitnesses(new ArrayList<>(laoView.getWitnesses()));
                 },
-                error -> Log.d(TAG, "error updating LAO :" + error)));
+                error -> Timber.tag(TAG).d(error, "error updating LAO")));
   }
 
   @Override
@@ -122,7 +122,7 @@ public class WitnessingViewModel extends AndroidViewModel implements QRCodeScann
   }
 
   protected Completable signMessage(WitnessMessage witnessMessage) {
-    Log.d(TAG, "signing message with ID " + witnessMessage.getMessageId());
+    Timber.tag(TAG).d("signing message with ID %s", witnessMessage.getMessageId());
     final LaoView laoView;
     try {
       laoView = getLao();
@@ -137,7 +137,7 @@ public class WitnessingViewModel extends AndroidViewModel implements QRCodeScann
               // Generate the signature of the message
               Signature signature = keyPair.sign(witnessMessage.getMessageId());
 
-              Log.d(TAG, "Signed message id, resulting signature : " + signature);
+              Timber.tag(TAG).d("Signed message id, resulting signature : %s", signature);
               WitnessMessageSignature signatureMessage =
                   new WitnessMessageSignature(witnessMessage.getMessageId(), signature);
 
@@ -146,8 +146,6 @@ public class WitnessingViewModel extends AndroidViewModel implements QRCodeScann
                   .publish(keyManager.getMainKeyPair(), laoView.getChannel(), signatureMessage);
             });
   }
-
-
 
   @Override
   public void handleData(String data) {
@@ -167,14 +165,15 @@ public class WitnessingViewModel extends AndroidViewModel implements QRCodeScann
 
     scannedWitnesses.add(publicKey);
     nbScanned.setValue(scannedWitnesses.size());
-    Log.d(TAG, "Witness " + publicKey + " successfully scanned");
+    Timber.tag(TAG).d("Witness %s successfully scanned", publicKey);
     Toast.makeText(getApplication(), R.string.witness_scan_success, Toast.LENGTH_SHORT).show();
     disposables.add(
         updateLaoWitnesses()
             .subscribe(
                 () -> {
-                  String networkSuccess = "Witness " + publicKey + " successfully added to LAO";
-                  Log.d(TAG, networkSuccess);
+                  String networkSuccess =
+                      String.format(getApplication().getString(R.string.witness_added), publicKey);
+                  Timber.tag(TAG).d(networkSuccess);
                   Toast.makeText(getApplication(), networkSuccess, Toast.LENGTH_SHORT).show();
                 },
                 error -> {
@@ -185,7 +184,7 @@ public class WitnessingViewModel extends AndroidViewModel implements QRCodeScann
   }
 
   private Completable updateLaoWitnesses() {
-    Log.d(TAG, "Updating lao witnesses ");
+    Timber.tag(TAG).d("Updating lao witnesses ");
 
     LaoView laoView;
     try {
@@ -210,7 +209,7 @@ public class WitnessingViewModel extends AndroidViewModel implements QRCodeScann
     return networkManager
         .getMessageSender()
         .publish(channel, msg)
-        .doOnComplete(() -> Log.d(TAG, "updated lao witnesses"))
+        .doOnComplete(() -> Timber.tag(TAG).d("updated lao witnesses"))
         .andThen(dispatchLaoUpdate(updateLao, laoView, channel, msg));
   }
 
@@ -230,7 +229,7 @@ public class WitnessingViewModel extends AndroidViewModel implements QRCodeScann
     return networkManager
         .getMessageSender()
         .publish(keyManager.getMainKeyPair(), channel, stateLao)
-        .doOnComplete(() -> Log.d(TAG, "updated lao with " + stateLao));
+        .doOnComplete(() -> Timber.tag(TAG).d("updated lao with %s", stateLao));
   }
 
   private LaoView getLao() throws UnknownLaoException {

@@ -11,13 +11,14 @@ import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.SocialMediaProfileFragmentBinding;
 import com.github.dedis.popstellar.ui.lao.LaoActivity;
 import com.github.dedis.popstellar.ui.lao.LaoViewModel;
+import com.github.dedis.popstellar.utility.ActivityUtils;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
 /** Fragment of the user's profile page */
 @AndroidEntryPoint
 public class SocialMediaProfileFragment extends Fragment {
-
+  public static final String TAG = SocialMediaProfileFragment.class.getSimpleName();
   private LaoViewModel laoViewModel;
 
   public static SocialMediaProfileFragment newInstance() {
@@ -40,7 +41,7 @@ public class SocialMediaProfileFragment extends Fragment {
 
     binding.setViewModel(socialMediaViewModel);
     binding.setLifecycleOwner(getViewLifecycleOwner());
-
+    handleBackNav();
     return binding.getRoot();
   }
 
@@ -49,5 +50,15 @@ public class SocialMediaProfileFragment extends Fragment {
     super.onResume();
     laoViewModel.setPageTitle(R.string.profile);
     laoViewModel.setIsTab(true);
+  }
+
+  private void handleBackNav() {
+    LaoActivity.addBackNavigationCallback(
+        requireActivity(),
+        getViewLifecycleOwner(),
+        ActivityUtils.buildBackButtonCallback(
+            TAG,
+            "social media home",
+            () -> SocialMediaHomeFragment.openFragment(getParentFragmentManager())));
   }
 }

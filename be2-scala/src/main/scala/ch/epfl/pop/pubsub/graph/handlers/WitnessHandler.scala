@@ -40,9 +40,9 @@ class WitnessHandler(dbRef: => AskableActorRef) extends MessageHandler {
       } yield ()
 
     Await.ready(combined, duration).value.get match {
-      case Success(_)                        => Left(rpcMessage)
-      case Failure(ex: DbActorNAckException) => Right(PipelineError(ex.code, s"handleWitnessMessage failed : ${ex.message}", rpcMessage.getId))
-      case reply                             => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleWitnessMessage failed : unknown DbActor reply $reply", rpcMessage.getId))
+      case Success(_)                        => Right(rpcMessage)
+      case Failure(ex: DbActorNAckException) => Left(PipelineError(ex.code, s"handleWitnessMessage failed : ${ex.message}", rpcMessage.getId))
+      case reply                             => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleWitnessMessage failed : unknown DbActor reply $reply", rpcMessage.getId))
     }
   }
 }

@@ -1,9 +1,13 @@
 package com.github.dedis.popstellar.ui.home;
 
+import android.content.res.Configuration;
+
+import androidx.fragment.app.Fragment;
 import androidx.test.espresso.intent.Intents;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
+import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.testutils.*;
@@ -24,6 +28,7 @@ import static androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static com.github.dedis.popstellar.testutils.pages.home.ConnectingPageObject.*;
+import static org.junit.Assert.assertEquals;
 
 @HiltAndroidTest
 @RunWith(AndroidJUnit4.class)
@@ -80,5 +85,26 @@ public class ConnectingActivityTest {
     cancelButton().perform(click());
     intended(hasComponent(HomeActivity.class.getName()));
     Intents.release();
+  }
+
+  @Test
+  public void handleRotationTest() {
+    activityScenarioRule
+        .getScenario()
+        .onActivity(
+            activity -> {
+              Fragment before =
+                  activity
+                      .getSupportFragmentManager()
+                      .findFragmentById(R.id.fragment_container_connecting);
+              Configuration config = new Configuration(activity.getResources().getConfiguration());
+              config.orientation = Configuration.ORIENTATION_LANDSCAPE;
+              activity.onConfigurationChanged(config);
+              assertEquals(
+                  activity
+                      .getSupportFragmentManager()
+                      .findFragmentById(R.id.fragment_container_connecting),
+                  before);
+            });
   }
 }

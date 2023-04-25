@@ -22,6 +22,10 @@ public class SendPageObject {
     return onView(withId(R.id.digital_cash_send_spinner_tv));
   }
 
+  public static ViewInteraction setAmount() {
+    return onView(withId(R.id.digital_cash_send_amount));
+  }
+
   @IdRes
   public static int fragmentDigitalCashSendId() {
     return R.id.fragment_digital_cash_send;

@@ -1,10 +1,8 @@
 package com.github.dedis.popstellar.ui.lao.digitalcash;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.*;
 
-import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -13,6 +11,7 @@ import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.DigitalCashReceiptFragmentBinding;
 import com.github.dedis.popstellar.ui.lao.LaoActivity;
 import com.github.dedis.popstellar.ui.lao.LaoViewModel;
+import com.github.dedis.popstellar.utility.ActivityUtils;
 
 /**
  * A simple {@link Fragment} subclass. Use the {@link DigitalCashReceiptFragment} factory method to
@@ -67,7 +66,9 @@ public class DigitalCashReceiptFragment extends Fragment {
               String address = stringEvent.getContentIfNotHandled();
               if (address != null) {
                 binding.digitalCashReceiptBeneficiary.setText(
-                    String.format("Beneficary : %n %s", address));
+                    String.format(
+                        getResources().getString(R.string.digital_cash_beneficiary_address),
+                        address));
               }
             });
   }
@@ -83,12 +84,9 @@ public class DigitalCashReceiptFragment extends Fragment {
     LaoActivity.addBackNavigationCallback(
         requireActivity(),
         getViewLifecycleOwner(),
-        new OnBackPressedCallback(true) {
-          @Override
-          public void handleOnBackPressed() {
-            Log.d(TAG, "Back pressed, going to digital cash home");
-            DigitalCashHomeFragment.openFragment(getParentFragmentManager());
-          }
-        });
+        ActivityUtils.buildBackButtonCallback(
+            TAG,
+            "digital cash home",
+            () -> DigitalCashHomeFragment.openFragment(getParentFragmentManager())));
   }
 }

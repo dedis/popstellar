@@ -1,11 +1,11 @@
 package com.github.dedis.popstellar.utility.security;
 
-import android.util.Log;
-
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
+
+import timber.log.Timber;
 
 /** SHA256 Hashing Class */
 public class Hash {
@@ -39,7 +39,7 @@ public class Hash {
       byte[] digestBuf = digest.digest();
       return Base64.getUrlEncoder().encodeToString(digestBuf);
     } catch (NoSuchAlgorithmException e) {
-      Log.e(TAG, "failed to hash", e);
+      Timber.tag(TAG).e(e, "failed to hash");
       throw new UnsupportedOperationException("failed to retrieve SHA-256 instance", e);
     }
   }

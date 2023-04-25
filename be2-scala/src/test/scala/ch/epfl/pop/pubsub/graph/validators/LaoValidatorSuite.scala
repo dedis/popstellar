@@ -44,77 +44,77 @@ class LaoValidatorSuite extends TestKit(ActorSystem("laoValidatorTestActorSystem
 
   test("LAO creation works as intended") {
     val message: GraphMessage = LaoValidator.validateCreateLao(CREATE_LAO_RPC)
-    message should equal(Left(CREATE_LAO_RPC))
+    message should equal(Right(CREATE_LAO_RPC))
   }
 
   test("LAO creation fails with wrong channel") {
     val message: GraphMessage = LaoValidator.validateCreateLao(CREATE_LAO_WRONG_CHANNEL_RPC)
-    message shouldBe a[Right[_, PipelineError]]
+    message shouldBe a[Left[_, PipelineError]]
   }
 
   test("LAO creation fails with stale Timestamp") {
     val message: GraphMessage = LaoValidator.validateCreateLao(CREATE_LAO_WRONG_TIMESTAMP_RPC)
-    message shouldBe a[Right[_, PipelineError]]
+    message shouldBe a[Left[_, PipelineError]]
   }
 
   test("LAO creation fails with duplicate witnesses") {
     val message: GraphMessage = LaoValidator.validateCreateLao(CREATE_LAO_WRONG_WITNESSES_RPC)
-    message shouldBe a[Right[_, PipelineError]]
+    message shouldBe a[Left[_, PipelineError]]
   }
 
   test("LAO creation fails with wrong id") {
     val message: GraphMessage = LaoValidator.validateCreateLao(CREATE_LAO_WRONG_ID_RPC)
-    message shouldBe a[Right[_, PipelineError]]
+    message shouldBe a[Left[_, PipelineError]]
   }
 
   test("LAO creation fails with wrong sender") {
     val message: GraphMessage = LaoValidator.validateCreateLao(CREATE_LAO_WRONG_SENDER_RPC)
-    message shouldBe a[Right[_, PipelineError]]
+    message shouldBe a[Left[_, PipelineError]]
   }
 
   test("LAO creation fails with empty name") {
     val message: GraphMessage = LaoValidator.validateCreateLao(CREATE_LAO_EMPTY_NAME_RPC)
-    message shouldBe a[Right[_, PipelineError]]
+    message shouldBe a[Left[_, PipelineError]]
   }
 
   test("LAO creation fails without ParamsWithMessage") {
     val message: GraphMessage = LaoValidator.validateCreateLao(RPC_NO_PARAMS)
-    message shouldBe a[Right[_, PipelineError]]
+    message shouldBe a[Left[_, PipelineError]]
   }
 
   // GreetLao tests
   test("LAO greeting works as intended") {
     val message: GraphMessage = LaoValidator.validateGreetLao(GREET_LAO_RPC)
-    message should equal(Left(GREET_LAO_RPC))
+    message should equal(Right(GREET_LAO_RPC))
   }
 
   test("LAO greeting fails with wrong lao id") {
     val message: GraphMessage = LaoValidator.validateGreetLao(GREET_LAO_WRONG_LAO_RPC)
-    message shouldBe a[Right[_, PipelineError]]
+    message shouldBe a[Left[_, PipelineError]]
   }
 
   test("LAO greeting fails with wrong frontend") {
     val message: GraphMessage = LaoValidator.validateGreetLao(GREET_LAO_WRONG_FRONTEND_RPC)
-    message shouldBe a[Right[_, PipelineError]]
+    message shouldBe a[Left[_, PipelineError]]
   }
 
   test("LAO greeting fails with wrong address") {
     val message: GraphMessage = LaoValidator.validateGreetLao(GREET_LAO_WRONG_ADDRESS_RPC)
-    message shouldBe a[Right[_, PipelineError]]
+    message shouldBe a[Left[_, PipelineError]]
   }
 
   test("LAO greeting fails with wrong sender") {
     val message: GraphMessage = LaoValidator.validateGreetLao(GREET_LAO_WRONG_SENDER_RPC)
-    message shouldBe a[Right[_, PipelineError]]
+    message shouldBe a[Left[_, PipelineError]]
   }
 
   test("LAO greeting fails with wrong channel") {
     val message: GraphMessage = LaoValidator.validateGreetLao(GREET_LAO_WRONG_CHANNEL_RPC)
-    message shouldBe a[Right[_, PipelineError]]
+    message shouldBe a[Left[_, PipelineError]]
   }
 
   test("LAO greeting fails without ParamsWithMessage") {
     val message: GraphMessage = LaoValidator.validateCreateLao(RPC_NO_PARAMS)
-    message shouldBe a[Right[_, PipelineError]]
+    message shouldBe a[Left[_, PipelineError]]
   }
 }

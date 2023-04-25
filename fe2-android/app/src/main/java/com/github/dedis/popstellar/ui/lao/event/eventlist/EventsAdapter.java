@@ -1,6 +1,5 @@
 package com.github.dedis.popstellar.ui.lao.event.eventlist;
 
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -26,8 +25,10 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import io.reactivex.Observable;
+import timber.log.Timber;
 
 public abstract class EventsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+
   private List<Event> events;
   private final LaoViewModel laoViewModel;
   private final FragmentActivity activity;
@@ -48,7 +49,9 @@ public abstract class EventsAdapter extends RecyclerView.Adapter<RecyclerView.Vi
     this.laoViewModel.addDisposable(
         observable
             .map(eventList -> eventList.stream().sorted().collect(Collectors.toList()))
-            .subscribe(this::updateEventSet, err -> Log.e(tag, "ERROR", err)));
+            .subscribe(
+                this::updateEventSet,
+                err -> Timber.tag(tag).e(err, "Error subscribing to event set")));
   }
 
   public abstract void updateEventSet(List<Event> events);
@@ -111,14 +114,17 @@ public abstract class EventsAdapter extends RecyclerView.Adapter<RecyclerView.Vi
     if (event instanceof RollCall) {
       location = ", at " + ((RollCall) event).getLocation();
     }
-    String timeText = "";
+    String timeText;
     switch (event.getState()) {
       case CREATED:
         if (event.isStartPassed()) {
           timeText = getActivity().getString(R.string.start_anytime);
         } else {
           long eventTime = event.getStartTimestampInMillis();
-          timeText = "Starting " + new PrettyTime().format(new Date(eventTime));
+          timeText =
+              String.format(
+                  getActivity().getString(R.string.start_at),
+                  new PrettyTime().format(new Date(eventTime)));
         }
         break;
       case OPENED:
@@ -127,8 +133,12 @@ public abstract class EventsAdapter extends RecyclerView.Adapter<RecyclerView.Vi
 
       case CLOSED:
       case RESULTS_READY:
+      default:
         long eventTime = event.getEndTimestampInMillis();
-        timeText = "Closed " + new PrettyTime().format(new Date(eventTime));
+        timeText =
+            String.format(
+                getActivity().getString(R.string.close_at),
+                new PrettyTime().format(new Date(eventTime)));
     }
     String textToDisplay = timeText + location;
     viewHolder.eventTimeAndLoc.setText(textToDisplay);

@@ -25,7 +25,7 @@ public class CreateRollCall extends Data {
 
   private final String location;
 
-  @Nullable private final transient String description;
+  @Nullable private final String description;
 
   /**
    * Constructor for a data Create Roll-Call Event
@@ -56,7 +56,7 @@ public class CreateRollCall extends Data {
     }
     this.location = location;
     this.description = description;
-    this.id = RollCall.generateCreateRollCallId(laoId, creation, name);
+    id = RollCall.generateCreateRollCallId(laoId, creation, name);
   }
 
   public CreateRollCall(

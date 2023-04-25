@@ -501,7 +501,7 @@ func Test_DeleteReaction_Out_of_Order(t *testing.T) {
 	// Publishing the reaction with some delay in a go routine
 	go func() {
 		time.Sleep(50 * time.Millisecond)
-		err = cha.Publish(pub, socket.ClientSocket{})
+		err := cha.Publish(pub, socket.ClientSocket{})
 		require.NoError(t, err)
 	}()
 
@@ -544,7 +544,7 @@ func Test_DeleteReaction_Out_of_Order(t *testing.T) {
 
 	// Wait before storing a new message to be able to have a unique
 	// timestamp for each message
-	time.Sleep(time.Millisecond)
+	time.Sleep(10 * time.Millisecond)
 
 	// If there is no error, the delete request has been properly received
 	require.NoError(t, cha.Publish(pub2, socket.ClientSocket{}))
@@ -702,7 +702,7 @@ func (f *fakeSocket) Send(msg []byte) {
 }
 
 // SendResult implements socket.Socket
-func (f *fakeSocket) SendResult(id int, res []message.Message) {
+func (f *fakeSocket) SendResult(id int, res []message.Message, missingMsgs map[string][]message.Message) {
 	f.resultID = id
 	f.res = res
 }

@@ -74,7 +74,7 @@ class PubSubMediator extends Actor with ActorLogging with AskPatternConstants {
     def generateAnswer(): GraphMessage = {
       val broadcast: Broadcast = Broadcast(channel, message)
       val answer: JsonRpcRequest = JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, MethodType.BROADCAST, broadcast, None)
-      Left(answer)
+      Right(answer)
     }
 
     channelMap.get(channel) match {

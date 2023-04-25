@@ -13,10 +13,13 @@ public class PersistentData implements Serializable {
   private final String serverAddress;
   private final Set<Channel> subscriptions;
 
-  public PersistentData(@NonNull String[] walletSeed, @NonNull String serverAddress, @NonNull Set<Channel> subscription) {
+  public PersistentData(
+      @NonNull String[] walletSeed,
+      @NonNull String serverAddress,
+      @NonNull Set<Channel> subscription) {
     this.walletSeed = Collections.unmodifiableList(Arrays.asList(walletSeed));
     this.serverAddress = serverAddress;
-    this.subscriptions = new HashSet<>(subscription);
+    subscriptions = new HashSet<>(subscription);
   }
 
   public String[] getWalletSeed() {

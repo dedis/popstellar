@@ -56,9 +56,9 @@ class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
       } yield ()
 
     Await.ready(ask, duration).value match {
-      case Some(Success(_))                        => Left(rpcRequest)
-      case Some(Failure(ex: DbActorNAckException)) => Right(PipelineError(ex.code, s"handleCreateRollCall failed : ${ex.message}", rpcRequest.getId))
-      case reply                                   => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleCreateRollCall failed : unexpected DbActor reply '$reply'", rpcRequest.getId))
+      case Some(Success(_))                        => Right(rpcRequest)
+      case Some(Failure(ex: DbActorNAckException)) => Left(PipelineError(ex.code, s"handleCreateRollCall failed : ${ex.message}", rpcRequest.getId))
+      case reply                                   => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleCreateRollCall failed : unexpected DbActor reply '$reply'", rpcRequest.getId))
     }
   }
 
@@ -76,9 +76,9 @@ class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
       } yield ()
 
     Await.ready(ask, duration).value match {
-      case Some(Success(_))                        => Left(rpcRequest)
-      case Some(Failure(ex: DbActorNAckException)) => Right(PipelineError(ex.code, s"handleOpenRollCall failed : ${ex.message}", rpcRequest.getId))
-      case reply                                   => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleOpenRollCall failed : unexpected DbActor reply '$reply'", rpcRequest.getId))
+      case Some(Success(_))                        => Right(rpcRequest)
+      case Some(Failure(ex: DbActorNAckException)) => Left(PipelineError(ex.code, s"handleOpenRollCall failed : ${ex.message}", rpcRequest.getId))
+      case reply                                   => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleOpenRollCall failed : unexpected DbActor reply '$reply'", rpcRequest.getId))
     }
   }
 
@@ -91,9 +91,9 @@ class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
     } yield ()
 
     Await.ready(ask, duration).value match {
-      case Some(Success(_))                        => Left(rpcRequest)
-      case Some(Failure(ex: DbActorNAckException)) => Right(PipelineError(ex.code, s"handleReOpenRollCall failed : ${ex.message}", rpcRequest.getId))
-      case reply                                   => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleRepenRollCall failed : unexpected DbActor reply '$reply'", rpcRequest.getId))
+      case Some(Success(_))                        => Right(rpcRequest)
+      case Some(Failure(ex: DbActorNAckException)) => Left(PipelineError(ex.code, s"handleReOpenRollCall failed : ${ex.message}", rpcRequest.getId))
+      case reply                                   => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleRepenRollCall failed : unexpected DbActor reply '$reply'", rpcRequest.getId))
     }
   }
 
@@ -108,8 +108,8 @@ class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
 
     Await.ready(combined, duration).value match {
       case Some(Success(_))                        => createAttendeeChannels(rpcRequest)
-      case Some(Failure(ex: DbActorNAckException)) => Right(PipelineError(ex.code, s"handleCloseRollCall failed : ${ex.message}", rpcRequest.getId))
-      case reply                                   => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleCloseRollCall failed : unexpected DbActor reply '$reply'", rpcRequest.getId))
+      case Some(Failure(ex: DbActorNAckException)) => Left(PipelineError(ex.code, s"handleCloseRollCall failed : ${ex.message}", rpcRequest.getId))
+      case reply                                   => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleCloseRollCall failed : unexpected DbActor reply '$reply'", rpcRequest.getId))
     }
   }
 
@@ -126,9 +126,9 @@ class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
     val askCreateChannels = dbActor ? DbActor.CreateChannelsFromList(listAttendeeChannels)
 
     Await.ready(askCreateChannels, duration).value match {
-      case Some(Success(_))                        => Left(rpcRequest)
-      case Some(Failure(ex: DbActorNAckException)) => Right(PipelineError(ex.code, s"handleCloseRollCall failed : ${ex.message}", rpcRequest.getId))
-      case reply                                   => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleCloseRollCall failed : unexpected DbActor reply '$reply'", rpcRequest.getId))
+      case Some(Success(_))                        => Right(rpcRequest)
+      case Some(Failure(ex: DbActorNAckException)) => Left(PipelineError(ex.code, s"handleCloseRollCall failed : ${ex.message}", rpcRequest.getId))
+      case reply                                   => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleCloseRollCall failed : unexpected DbActor reply '$reply'", rpcRequest.getId))
     }
   }
 }

@@ -1,7 +1,6 @@
 package com.github.dedis.popstellar.ui.lao.digitalcash;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.*;
 
 import androidx.annotation.NonNull;
@@ -16,6 +15,7 @@ import com.github.dedis.popstellar.ui.lao.LaoViewModel;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import timber.log.Timber;
 
 /**
  * A simple {@link Fragment} subclass. Use the {@link DigitalCashHomeFragment#newInstance} factory
@@ -53,6 +53,7 @@ public class DigitalCashHomeFragment extends Fragment {
     subscribeToRole();
     setupReceiveButton();
     setupSendButton();
+    handleBackNav();
     return binding.getRoot();
   }
 
@@ -70,7 +71,7 @@ public class DigitalCashHomeFragment extends Fragment {
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 transactions -> {
-                  Log.d(TAG, "updating transactions " + transactions);
+                  Timber.tag(TAG).d("updating transactions %s", transactions);
                   long totalAmount = digitalCashViewModel.getOwnBalance();
                   binding.coinAmountText.setText(String.valueOf(totalAmount));
                 },
@@ -126,5 +127,9 @@ public class DigitalCashHomeFragment extends Fragment {
   public static void openFragment(FragmentManager manager) {
     LaoActivity.setCurrentFragment(
         manager, R.id.fragment_digital_cash_home, DigitalCashHomeFragment::new);
+  }
+
+  private void handleBackNav() {
+    LaoActivity.addBackNavigationCallbackToEvents(requireActivity(), getViewLifecycleOwner(), TAG);
   }
 }

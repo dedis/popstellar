@@ -6,9 +6,9 @@ import com.github.dedis.popstellar.model.Immutable;
 import com.github.dedis.popstellar.model.network.method.message.PublicKeySignaturePair;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.network.method.message.data.*;
-import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
+import com.github.dedis.popstellar.utility.MessageValidator;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.*;
@@ -34,29 +34,35 @@ public class StateLao extends Data {
   private final List<PublicKeySignaturePair> modificationSignatures;
 
   /**
-   * Constructor for a data State LAO
+   * Constructor for a Data StateLao
    *
    * @param id of the LAO state message, Hash(organizer||creation||name)
    * @param name name of the LAO
    * @param creation time of creation
    * @param lastModified time of last modification
    * @param organizer id of the LAO's organizer
+   * @param modificationId id of the modification (either creation/update)
    * @param witnesses list of witnesses of the LAO
-   * @throws IllegalArgumentException if the id is not valid
+   * @param modificationSignatures signatures of the witnesses on the modification message (either
+   *     creation/update)
+   * @throws IllegalArgumentException if arguments are invalid
    */
   @Immutable
   public StateLao(
-      String id,
-      String name,
+      @NonNull String id,
+      @NonNull String name,
       long creation,
       long lastModified,
-      PublicKey organizer,
-      MessageID modificationId,
-      Set<PublicKey> witnesses,
+      @NonNull PublicKey organizer,
+      @NonNull MessageID modificationId,
+      @NonNull Set<PublicKey> witnesses,
       List<PublicKeySignaturePair> modificationSignatures) {
-    if (!id.equals(Lao.generateLaoId(organizer, creation, name))) {
-      throw new IllegalArgumentException("StateLao id must be Hash(organizer||creation||name)");
-    }
+    // Organizer and witnesses are checked to be base64 at deserialization
+    MessageValidator.verify()
+        .checkValidOrderedTimes(creation, lastModified)
+        .checkValidLaoId(id, organizer, creation, name)
+        .checkBase64(modificationId.getEncoded(), "Modification ID");
+
     this.id = id;
     this.name = name;
     this.creation = creation;
