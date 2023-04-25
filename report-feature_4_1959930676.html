@@ -74,7 +74,7 @@ $(document).ready(function() {
   <tbody>
     <tr class="info">
       <td>go</td>
-      <td>24 Apr 2023, 04:38</td>
+      <td>25 Apr 2023, 04:06</td>
     </tr>
   </tbody>
 </table>
@@ -127,18 +127,18 @@ $(document).ready(function() {
         <tbody>
         <tr>
           <td class="tagname">be/rollCall/openRollCall.feature</td>
-          <td      class="passed"    >5</td>
+          <td      class="passed"    >15</td>
           <td      class="failed"    >10</td>
-          <td     class="skipped"   >49</td>
+          <td     class="skipped"   >44</td>
           <td >0</td>
           <td >0</td>
-          <td class="total">64</td>
+          <td class="total">69</td>
 
           <td >0</td>
           <td  class="failed"    >5</td>
           <td class="total">5</td>
 
-          <td class="duration" data-value="383188811436">6:23.188</td>
+          <td class="duration" data-value="281414378">0.281</td>
           <td class="failed">Failed</td>
         </tr>
         </tbody>
@@ -191,7 +191,7 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">1:16.651</span>
+  <span class="lead-duration duration">0.044</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-1">
@@ -230,11 +230,11 @@ $(document).ready(function() {
       <div class="step">
 
 
-<div class="brief step-name-* failed">
+<div class="brief step-name-* passed">
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/utils/server.feature')</span>
 
-  <span class="lead-duration duration">38.336</span>
+  <span class="lead-duration duration">0.009</span>
 
 </div>
 
@@ -243,37 +243,9 @@ $(document).ready(function() {
 
 
 
-  <div class="inner-level">
-    <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-3">
-          <a>Failed</a>
-      </div>
-      <div id="msg-3" class="collapse collapsable-details  in ">
-        <pre>Failed waiting for ws://127.0.0.1:9000/organizer/client
-classpath:be/utils/server.feature:82
-classpath:be/rollCall/openRollCall.feature:16</pre>
-      </div>
-    </div>
-  </div>
 
 
 
-
-  <div class="inner-level">
-    <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-4">
-          <a>Doc string</a>
-      </div>
-      <div id="msg-4" class="collapse collapsable-details">
-        <pre>04:35:34.582 classpath:be/rollCall/openRollCall.feature:16
-* call read('classpath:be/utils/server.feature')
-Failed waiting for ws://127.0.0.1:9000/organizer/client
-classpath:be/utils/server.feature:82
-classpath:be/rollCall/openRollCall.feature:16
-</pre>
-      </div>
-    </div>
-  </div>
 
 
 
@@ -312,11 +284,11 @@ classpath:be/rollCall/openRollCall.feature:16
       <div class="step">
 
 
-<div class="brief step-name-&amp;gt; * failed">
-  <span class="keyword indention">&gt; *</span>
-  <span class="name">call waitForPort</span>
+<div class="brief step-name-* failed">
+  <span class="keyword indention">*</span>
+  <span class="name">call read('classpath:be/mockFrontEnd.feature')</span>
 
-  <span class="lead-duration duration">38.314</span>
+  <span class="lead-duration duration">0.019</span>
 
 </div>
 
@@ -327,15 +299,92 @@ classpath:be/rollCall/openRollCall.feature:16
 
   <div class="inner-level">
     <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-5">
-          <a>Failed</a>
+      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-3">
+          <a>js</a>
       </div>
-      <div id="msg-5" class="collapse collapsable-details  in ">
-        <pre>Failed waiting for ws://127.0.0.1:9000/organizer/client
-classpath:be/utils/server.feature:82</pre>
+      <div id="msg-3" class="collapse collapsable-details  in ">
+        <pre>js failed:
+&gt;&gt;&gt;&gt;
+01: function(){
+02:   var MultiMsg = Java.type('common.net.MultiMsgWebSocketClient')
+03:   var Logg = Java.type('com.intuit.karate.Logger')
+04:   var logg =  new Logg()
+05:   var Queue = Java.type(&quot;common.net.MessageQueue&quot;)
+06:   var q =  new Queue()
+07:   var WebSocketOptions = Java.type('com.intuit.karate.http.WebSocketOptions')
+08:   var wso =  new WebSocketOptions(wsURL)
+09:   return new MultiMsg(wso,logg,q)
+10: }
+&lt;&lt;&lt;&lt;
+org.graalvm.polyglot.PolyglotException: karate.io.netty.handler.codec.http.websocketx.WebSocketClientHandshakeException: Invalid handshake response getStatus: 404 Not Found
+- com.intuit.karate.http.WebSocketClient.&lt;init&gt;(WebSocketClient.java:148)
+- common.net.MultiMsgWebSocketClient.&lt;init&gt;(MultiMsgWebSocketClient.java:26)
+- &lt;js&gt;.:anonymous(Unnamed:9)
+
+classpath:be/mockFrontEnd.feature:18
+classpath:be/rollCall/openRollCall.feature:17</pre>
       </div>
     </div>
   </div>
+
+
+
+
+  <div class="inner-level">
+    <div class="docstring indention">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-4">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-4" class="collapse collapsable-details">
+        <pre>04:06:16.099 classpath:be/rollCall/openRollCall.feature:17
+* call read('classpath:be/mockFrontEnd.feature')
+js failed:
+&gt;&gt;&gt;&gt;
+01: function(){
+02:   var MultiMsg = Java.type('common.net.MultiMsgWebSocketClient')
+03:   var Logg = Java.type('com.intuit.karate.Logger')
+04:   var logg =  new Logg()
+05:   var Queue = Java.type(&quot;common.net.MessageQueue&quot;)
+06:   var q =  new Queue()
+07:   var WebSocketOptions = Java.type('com.intuit.karate.http.WebSocketOptions')
+08:   var wso =  new WebSocketOptions(wsURL)
+09:   return new MultiMsg(wso,logg,q)
+10: }
+&lt;&lt;&lt;&lt;
+org.graalvm.polyglot.PolyglotException: karate.io.netty.handler.codec.http.websocketx.WebSocketClientHandshakeException: Invalid handshake response getStatus: 404 Not Found
+- com.intuit.karate.http.WebSocketClient.&lt;init&gt;(WebSocketClient.java:148)
+- common.net.MultiMsgWebSocketClient.&lt;init&gt;(MultiMsgWebSocketClient.java:26)
+- &lt;js&gt;.:anonymous(Unnamed:9)
+
+classpath:be/mockFrontEnd.feature:18
+classpath:be/rollCall/openRollCall.feature:17
+</pre>
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name- passed">
+  <span class="keyword indention"></span>
+  <span class="name">be/mockFrontEnd.feature</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
 
 
 
@@ -351,11 +400,11 @@ classpath:be/utils/server.feature:82</pre>
       <div class="step">
 
 
-<div class="brief step-name-* skipped">
-  <span class="keyword indention">*</span>
-  <span class="name">call read('classpath:be/mockFrontEnd.feature')</span>
+<div class="brief step-name-&amp;gt; * failed">
+  <span class="keyword indention">&gt; *</span>
+  <span class="name">def frontend = call getMultiMsgSocket</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">0.015</span>
 
 </div>
 
@@ -363,6 +412,35 @@ classpath:be/utils/server.feature:82</pre>
 
 
 
+
+  <div class="inner-level">
+    <div class="message indention">
+      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-5">
+          <a>js</a>
+      </div>
+      <div id="msg-5" class="collapse collapsable-details  in ">
+        <pre>js failed:
+&gt;&gt;&gt;&gt;
+01: function(){
+02:   var MultiMsg = Java.type('common.net.MultiMsgWebSocketClient')
+03:   var Logg = Java.type('com.intuit.karate.Logger')
+04:   var logg =  new Logg()
+05:   var Queue = Java.type(&quot;common.net.MessageQueue&quot;)
+06:   var q =  new Queue()
+07:   var WebSocketOptions = Java.type('com.intuit.karate.http.WebSocketOptions')
+08:   var wso =  new WebSocketOptions(wsURL)
+09:   return new MultiMsg(wso,logg,q)
+10: }
+&lt;&lt;&lt;&lt;
+org.graalvm.polyglot.PolyglotException: karate.io.netty.handler.codec.http.websocketx.WebSocketClientHandshakeException: Invalid handshake response getStatus: 404 Not Found
+- com.intuit.karate.http.WebSocketClient.&lt;init&gt;(WebSocketClient.java:148)
+- common.net.MultiMsgWebSocketClient.&lt;init&gt;(MultiMsgWebSocketClient.java:26)
+- &lt;js&gt;.:anonymous(Unnamed:9)
+
+classpath:be/mockFrontEnd.feature:18</pre>
+      </div>
+    </div>
+  </div>
 
 
 
@@ -681,7 +759,7 @@ classpath:be/utils/server.feature:82</pre>
 </div>
 
 
-  <span class="lead-duration duration">1:16.630</span>
+  <span class="lead-duration duration">0.060</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-9">
@@ -720,11 +798,11 @@ classpath:be/utils/server.feature:82</pre>
       <div class="step">
 
 
-<div class="brief step-name-* failed">
+<div class="brief step-name-* passed">
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/utils/server.feature')</span>
 
-  <span class="lead-duration duration">38.318</span>
+  <span class="lead-duration duration">0.021</span>
 
 </div>
 
@@ -733,37 +811,9 @@ classpath:be/utils/server.feature:82</pre>
 
 
 
-  <div class="inner-level">
-    <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-11">
-          <a>Failed</a>
-      </div>
-      <div id="msg-11" class="collapse collapsable-details  in ">
-        <pre>Failed waiting for ws://127.0.0.1:9000/organizer/client
-classpath:be/utils/server.feature:82
-classpath:be/rollCall/openRollCall.feature:16</pre>
-      </div>
-    </div>
-  </div>
 
 
 
-
-  <div class="inner-level">
-    <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-12">
-          <a>Doc string</a>
-      </div>
-      <div id="msg-12" class="collapse collapsable-details">
-        <pre>04:36:12.906 classpath:be/rollCall/openRollCall.feature:16
-* call read('classpath:be/utils/server.feature')
-Failed waiting for ws://127.0.0.1:9000/organizer/client
-classpath:be/utils/server.feature:82
-classpath:be/rollCall/openRollCall.feature:16
-</pre>
-      </div>
-    </div>
-  </div>
 
 
 
@@ -802,11 +852,11 @@ classpath:be/rollCall/openRollCall.feature:16
       <div class="step">
 
 
-<div class="brief step-name-&amp;gt; * failed">
-  <span class="keyword indention">&gt; *</span>
-  <span class="name">call waitForPort</span>
+<div class="brief step-name-* failed">
+  <span class="keyword indention">*</span>
+  <span class="name">call read('classpath:be/mockFrontEnd.feature')</span>
 
-  <span class="lead-duration duration">38.311</span>
+  <span class="lead-duration duration">0.022</span>
 
 </div>
 
@@ -817,15 +867,92 @@ classpath:be/rollCall/openRollCall.feature:16
 
   <div class="inner-level">
     <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-13">
-          <a>Failed</a>
+      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-11">
+          <a>js</a>
       </div>
-      <div id="msg-13" class="collapse collapsable-details  in ">
-        <pre>Failed waiting for ws://127.0.0.1:9000/organizer/client
-classpath:be/utils/server.feature:82</pre>
+      <div id="msg-11" class="collapse collapsable-details  in ">
+        <pre>js failed:
+&gt;&gt;&gt;&gt;
+01: function(){
+02:   var MultiMsg = Java.type('common.net.MultiMsgWebSocketClient')
+03:   var Logg = Java.type('com.intuit.karate.Logger')
+04:   var logg =  new Logg()
+05:   var Queue = Java.type(&quot;common.net.MessageQueue&quot;)
+06:   var q =  new Queue()
+07:   var WebSocketOptions = Java.type('com.intuit.karate.http.WebSocketOptions')
+08:   var wso =  new WebSocketOptions(wsURL)
+09:   return new MultiMsg(wso,logg,q)
+10: }
+&lt;&lt;&lt;&lt;
+org.graalvm.polyglot.PolyglotException: karate.io.netty.handler.codec.http.websocketx.WebSocketClientHandshakeException: Invalid handshake response getStatus: 404 Not Found
+- com.intuit.karate.http.WebSocketClient.&lt;init&gt;(WebSocketClient.java:148)
+- common.net.MultiMsgWebSocketClient.&lt;init&gt;(MultiMsgWebSocketClient.java:26)
+- &lt;js&gt;.:anonymous(Unnamed:9)
+
+classpath:be/mockFrontEnd.feature:18
+classpath:be/rollCall/openRollCall.feature:17</pre>
       </div>
     </div>
   </div>
+
+
+
+
+  <div class="inner-level">
+    <div class="docstring indention">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-12">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-12" class="collapse collapsable-details">
+        <pre>04:06:16.145 classpath:be/rollCall/openRollCall.feature:17
+* call read('classpath:be/mockFrontEnd.feature')
+js failed:
+&gt;&gt;&gt;&gt;
+01: function(){
+02:   var MultiMsg = Java.type('common.net.MultiMsgWebSocketClient')
+03:   var Logg = Java.type('com.intuit.karate.Logger')
+04:   var logg =  new Logg()
+05:   var Queue = Java.type(&quot;common.net.MessageQueue&quot;)
+06:   var q =  new Queue()
+07:   var WebSocketOptions = Java.type('com.intuit.karate.http.WebSocketOptions')
+08:   var wso =  new WebSocketOptions(wsURL)
+09:   return new MultiMsg(wso,logg,q)
+10: }
+&lt;&lt;&lt;&lt;
+org.graalvm.polyglot.PolyglotException: karate.io.netty.handler.codec.http.websocketx.WebSocketClientHandshakeException: Invalid handshake response getStatus: 404 Not Found
+- com.intuit.karate.http.WebSocketClient.&lt;init&gt;(WebSocketClient.java:148)
+- common.net.MultiMsgWebSocketClient.&lt;init&gt;(MultiMsgWebSocketClient.java:26)
+- &lt;js&gt;.:anonymous(Unnamed:9)
+
+classpath:be/mockFrontEnd.feature:18
+classpath:be/rollCall/openRollCall.feature:17
+</pre>
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name- passed">
+  <span class="keyword indention"></span>
+  <span class="name">be/mockFrontEnd.feature</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
 
 
 
@@ -841,11 +968,11 @@ classpath:be/utils/server.feature:82</pre>
       <div class="step">
 
 
-<div class="brief step-name-* skipped">
-  <span class="keyword indention">*</span>
-  <span class="name">call read('classpath:be/mockFrontEnd.feature')</span>
+<div class="brief step-name-&amp;gt; * failed">
+  <span class="keyword indention">&gt; *</span>
+  <span class="name">def frontend = call getMultiMsgSocket</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">0.016</span>
 
 </div>
 
@@ -853,6 +980,35 @@ classpath:be/utils/server.feature:82</pre>
 
 
 
+
+  <div class="inner-level">
+    <div class="message indention">
+      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-13">
+          <a>js</a>
+      </div>
+      <div id="msg-13" class="collapse collapsable-details  in ">
+        <pre>js failed:
+&gt;&gt;&gt;&gt;
+01: function(){
+02:   var MultiMsg = Java.type('common.net.MultiMsgWebSocketClient')
+03:   var Logg = Java.type('com.intuit.karate.Logger')
+04:   var logg =  new Logg()
+05:   var Queue = Java.type(&quot;common.net.MessageQueue&quot;)
+06:   var q =  new Queue()
+07:   var WebSocketOptions = Java.type('com.intuit.karate.http.WebSocketOptions')
+08:   var wso =  new WebSocketOptions(wsURL)
+09:   return new MultiMsg(wso,logg,q)
+10: }
+&lt;&lt;&lt;&lt;
+org.graalvm.polyglot.PolyglotException: karate.io.netty.handler.codec.http.websocketx.WebSocketClientHandshakeException: Invalid handshake response getStatus: 404 Not Found
+- com.intuit.karate.http.WebSocketClient.&lt;init&gt;(WebSocketClient.java:148)
+- common.net.MultiMsgWebSocketClient.&lt;init&gt;(MultiMsgWebSocketClient.java:26)
+- &lt;js&gt;.:anonymous(Unnamed:9)
+
+classpath:be/mockFrontEnd.feature:18</pre>
+      </div>
+    </div>
+  </div>
 
 
 
@@ -1198,7 +1354,7 @@ classpath:be/utils/server.feature:82</pre>
 </div>
 
 
-  <span class="lead-duration duration">1:16.638</span>
+  <span class="lead-duration duration">0.065</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-17">
@@ -1237,11 +1393,11 @@ classpath:be/utils/server.feature:82</pre>
       <div class="step">
 
 
-<div class="brief step-name-* failed">
+<div class="brief step-name-* passed">
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/utils/server.feature')</span>
 
-  <span class="lead-duration duration">38.321</span>
+  <span class="lead-duration duration">0.017</span>
 
 </div>
 
@@ -1250,37 +1406,9 @@ classpath:be/utils/server.feature:82</pre>
 
 
 
-  <div class="inner-level">
-    <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-19">
-          <a>Failed</a>
-      </div>
-      <div id="msg-19" class="collapse collapsable-details  in ">
-        <pre>Failed waiting for ws://127.0.0.1:9000/organizer/client
-classpath:be/utils/server.feature:82
-classpath:be/rollCall/openRollCall.feature:16</pre>
-      </div>
-    </div>
-  </div>
 
 
 
-
-  <div class="inner-level">
-    <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-20">
-          <a>Doc string</a>
-      </div>
-      <div id="msg-20" class="collapse collapsable-details">
-        <pre>04:36:51.230 classpath:be/rollCall/openRollCall.feature:16
-* call read('classpath:be/utils/server.feature')
-Failed waiting for ws://127.0.0.1:9000/organizer/client
-classpath:be/utils/server.feature:82
-classpath:be/rollCall/openRollCall.feature:16
-</pre>
-      </div>
-    </div>
-  </div>
 
 
 
@@ -1319,11 +1447,11 @@ classpath:be/rollCall/openRollCall.feature:16
       <div class="step">
 
 
-<div class="brief step-name-&amp;gt; * failed">
-  <span class="keyword indention">&gt; *</span>
-  <span class="name">call waitForPort</span>
+<div class="brief step-name-* failed">
+  <span class="keyword indention">*</span>
+  <span class="name">call read('classpath:be/mockFrontEnd.feature')</span>
 
-  <span class="lead-duration duration">38.316</span>
+  <span class="lead-duration duration">0.025</span>
 
 </div>
 
@@ -1334,15 +1462,92 @@ classpath:be/rollCall/openRollCall.feature:16
 
   <div class="inner-level">
     <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-21">
-          <a>Failed</a>
+      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-19">
+          <a>js</a>
       </div>
-      <div id="msg-21" class="collapse collapsable-details  in ">
-        <pre>Failed waiting for ws://127.0.0.1:9000/organizer/client
-classpath:be/utils/server.feature:82</pre>
+      <div id="msg-19" class="collapse collapsable-details  in ">
+        <pre>js failed:
+&gt;&gt;&gt;&gt;
+01: function(){
+02:   var MultiMsg = Java.type('common.net.MultiMsgWebSocketClient')
+03:   var Logg = Java.type('com.intuit.karate.Logger')
+04:   var logg =  new Logg()
+05:   var Queue = Java.type(&quot;common.net.MessageQueue&quot;)
+06:   var q =  new Queue()
+07:   var WebSocketOptions = Java.type('com.intuit.karate.http.WebSocketOptions')
+08:   var wso =  new WebSocketOptions(wsURL)
+09:   return new MultiMsg(wso,logg,q)
+10: }
+&lt;&lt;&lt;&lt;
+org.graalvm.polyglot.PolyglotException: karate.io.netty.handler.codec.http.websocketx.WebSocketClientHandshakeException: Invalid handshake response getStatus: 404 Not Found
+- com.intuit.karate.http.WebSocketClient.&lt;init&gt;(WebSocketClient.java:148)
+- common.net.MultiMsgWebSocketClient.&lt;init&gt;(MultiMsgWebSocketClient.java:26)
+- &lt;js&gt;.:anonymous(Unnamed:9)
+
+classpath:be/mockFrontEnd.feature:18
+classpath:be/rollCall/openRollCall.feature:17</pre>
       </div>
     </div>
   </div>
+
+
+
+
+  <div class="inner-level">
+    <div class="docstring indention">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-20">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-20" class="collapse collapsable-details">
+        <pre>04:06:16.191 classpath:be/rollCall/openRollCall.feature:17
+* call read('classpath:be/mockFrontEnd.feature')
+js failed:
+&gt;&gt;&gt;&gt;
+01: function(){
+02:   var MultiMsg = Java.type('common.net.MultiMsgWebSocketClient')
+03:   var Logg = Java.type('com.intuit.karate.Logger')
+04:   var logg =  new Logg()
+05:   var Queue = Java.type(&quot;common.net.MessageQueue&quot;)
+06:   var q =  new Queue()
+07:   var WebSocketOptions = Java.type('com.intuit.karate.http.WebSocketOptions')
+08:   var wso =  new WebSocketOptions(wsURL)
+09:   return new MultiMsg(wso,logg,q)
+10: }
+&lt;&lt;&lt;&lt;
+org.graalvm.polyglot.PolyglotException: karate.io.netty.handler.codec.http.websocketx.WebSocketClientHandshakeException: Invalid handshake response getStatus: 404 Not Found
+- com.intuit.karate.http.WebSocketClient.&lt;init&gt;(WebSocketClient.java:148)
+- common.net.MultiMsgWebSocketClient.&lt;init&gt;(MultiMsgWebSocketClient.java:26)
+- &lt;js&gt;.:anonymous(Unnamed:9)
+
+classpath:be/mockFrontEnd.feature:18
+classpath:be/rollCall/openRollCall.feature:17
+</pre>
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name- passed">
+  <span class="keyword indention"></span>
+  <span class="name">be/mockFrontEnd.feature</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
 
 
 
@@ -1358,11 +1563,11 @@ classpath:be/utils/server.feature:82</pre>
       <div class="step">
 
 
-<div class="brief step-name-* skipped">
-  <span class="keyword indention">*</span>
-  <span class="name">call read('classpath:be/mockFrontEnd.feature')</span>
+<div class="brief step-name-&amp;gt; * failed">
+  <span class="keyword indention">&gt; *</span>
+  <span class="name">def frontend = call getMultiMsgSocket</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">0.021</span>
 
 </div>
 
@@ -1370,6 +1575,35 @@ classpath:be/utils/server.feature:82</pre>
 
 
 
+
+  <div class="inner-level">
+    <div class="message indention">
+      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-21">
+          <a>js</a>
+      </div>
+      <div id="msg-21" class="collapse collapsable-details  in ">
+        <pre>js failed:
+&gt;&gt;&gt;&gt;
+01: function(){
+02:   var MultiMsg = Java.type('common.net.MultiMsgWebSocketClient')
+03:   var Logg = Java.type('com.intuit.karate.Logger')
+04:   var logg =  new Logg()
+05:   var Queue = Java.type(&quot;common.net.MessageQueue&quot;)
+06:   var q =  new Queue()
+07:   var WebSocketOptions = Java.type('com.intuit.karate.http.WebSocketOptions')
+08:   var wso =  new WebSocketOptions(wsURL)
+09:   return new MultiMsg(wso,logg,q)
+10: }
+&lt;&lt;&lt;&lt;
+org.graalvm.polyglot.PolyglotException: karate.io.netty.handler.codec.http.websocketx.WebSocketClientHandshakeException: Invalid handshake response getStatus: 404 Not Found
+- com.intuit.karate.http.WebSocketClient.&lt;init&gt;(WebSocketClient.java:148)
+- common.net.MultiMsgWebSocketClient.&lt;init&gt;(MultiMsgWebSocketClient.java:26)
+- &lt;js&gt;.:anonymous(Unnamed:9)
+
+classpath:be/mockFrontEnd.feature:18</pre>
+      </div>
+    </div>
+  </div>
 
 
 
@@ -1688,7 +1922,7 @@ classpath:be/utils/server.feature:82</pre>
 </div>
 
 
-  <span class="lead-duration duration">1:16.632</span>
+  <span class="lead-duration duration">0.048</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-25">
@@ -1727,11 +1961,11 @@ classpath:be/utils/server.feature:82</pre>
       <div class="step">
 
 
-<div class="brief step-name-* failed">
+<div class="brief step-name-* passed">
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/utils/server.feature')</span>
 
-  <span class="lead-duration duration">38.318</span>
+  <span class="lead-duration duration">0.014</span>
 
 </div>
 
@@ -1740,37 +1974,9 @@ classpath:be/utils/server.feature:82</pre>
 
 
 
-  <div class="inner-level">
-    <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-27">
-          <a>Failed</a>
-      </div>
-      <div id="msg-27" class="collapse collapsable-details  in ">
-        <pre>Failed waiting for ws://127.0.0.1:9000/organizer/client
-classpath:be/utils/server.feature:82
-classpath:be/rollCall/openRollCall.feature:16</pre>
-      </div>
-    </div>
-  </div>
 
 
 
-
-  <div class="inner-level">
-    <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-28">
-          <a>Doc string</a>
-      </div>
-      <div id="msg-28" class="collapse collapsable-details">
-        <pre>04:37:29.552 classpath:be/rollCall/openRollCall.feature:16
-* call read('classpath:be/utils/server.feature')
-Failed waiting for ws://127.0.0.1:9000/organizer/client
-classpath:be/utils/server.feature:82
-classpath:be/rollCall/openRollCall.feature:16
-</pre>
-      </div>
-    </div>
-  </div>
 
 
 
@@ -1809,11 +2015,11 @@ classpath:be/rollCall/openRollCall.feature:16
       <div class="step">
 
 
-<div class="brief step-name-&amp;gt; * failed">
-  <span class="keyword indention">&gt; *</span>
-  <span class="name">call waitForPort</span>
+<div class="brief step-name-* failed">
+  <span class="keyword indention">*</span>
+  <span class="name">call read('classpath:be/mockFrontEnd.feature')</span>
 
-  <span class="lead-duration duration">38.313</span>
+  <span class="lead-duration duration">0.018</span>
 
 </div>
 
@@ -1824,15 +2030,92 @@ classpath:be/rollCall/openRollCall.feature:16
 
   <div class="inner-level">
     <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-29">
-          <a>Failed</a>
+      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-27">
+          <a>js</a>
       </div>
-      <div id="msg-29" class="collapse collapsable-details  in ">
-        <pre>Failed waiting for ws://127.0.0.1:9000/organizer/client
-classpath:be/utils/server.feature:82</pre>
+      <div id="msg-27" class="collapse collapsable-details  in ">
+        <pre>js failed:
+&gt;&gt;&gt;&gt;
+01: function(){
+02:   var MultiMsg = Java.type('common.net.MultiMsgWebSocketClient')
+03:   var Logg = Java.type('com.intuit.karate.Logger')
+04:   var logg =  new Logg()
+05:   var Queue = Java.type(&quot;common.net.MessageQueue&quot;)
+06:   var q =  new Queue()
+07:   var WebSocketOptions = Java.type('com.intuit.karate.http.WebSocketOptions')
+08:   var wso =  new WebSocketOptions(wsURL)
+09:   return new MultiMsg(wso,logg,q)
+10: }
+&lt;&lt;&lt;&lt;
+org.graalvm.polyglot.PolyglotException: karate.io.netty.handler.codec.http.websocketx.WebSocketClientHandshakeException: Invalid handshake response getStatus: 404 Not Found
+- com.intuit.karate.http.WebSocketClient.&lt;init&gt;(WebSocketClient.java:148)
+- common.net.MultiMsgWebSocketClient.&lt;init&gt;(MultiMsgWebSocketClient.java:26)
+- &lt;js&gt;.:anonymous(Unnamed:9)
+
+classpath:be/mockFrontEnd.feature:18
+classpath:be/rollCall/openRollCall.feature:17</pre>
       </div>
     </div>
   </div>
+
+
+
+
+  <div class="inner-level">
+    <div class="docstring indention">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-28">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-28" class="collapse collapsable-details">
+        <pre>04:06:16.229 classpath:be/rollCall/openRollCall.feature:17
+* call read('classpath:be/mockFrontEnd.feature')
+js failed:
+&gt;&gt;&gt;&gt;
+01: function(){
+02:   var MultiMsg = Java.type('common.net.MultiMsgWebSocketClient')
+03:   var Logg = Java.type('com.intuit.karate.Logger')
+04:   var logg =  new Logg()
+05:   var Queue = Java.type(&quot;common.net.MessageQueue&quot;)
+06:   var q =  new Queue()
+07:   var WebSocketOptions = Java.type('com.intuit.karate.http.WebSocketOptions')
+08:   var wso =  new WebSocketOptions(wsURL)
+09:   return new MultiMsg(wso,logg,q)
+10: }
+&lt;&lt;&lt;&lt;
+org.graalvm.polyglot.PolyglotException: karate.io.netty.handler.codec.http.websocketx.WebSocketClientHandshakeException: Invalid handshake response getStatus: 404 Not Found
+- com.intuit.karate.http.WebSocketClient.&lt;init&gt;(WebSocketClient.java:148)
+- common.net.MultiMsgWebSocketClient.&lt;init&gt;(MultiMsgWebSocketClient.java:26)
+- &lt;js&gt;.:anonymous(Unnamed:9)
+
+classpath:be/mockFrontEnd.feature:18
+classpath:be/rollCall/openRollCall.feature:17
+</pre>
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name- passed">
+  <span class="keyword indention"></span>
+  <span class="name">be/mockFrontEnd.feature</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
 
 
 
@@ -1848,11 +2131,11 @@ classpath:be/utils/server.feature:82</pre>
       <div class="step">
 
 
-<div class="brief step-name-* skipped">
-  <span class="keyword indention">*</span>
-  <span class="name">call read('classpath:be/mockFrontEnd.feature')</span>
+<div class="brief step-name-&amp;gt; * failed">
+  <span class="keyword indention">&gt; *</span>
+  <span class="name">def frontend = call getMultiMsgSocket</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">0.014</span>
 
 </div>
 
@@ -1860,6 +2143,35 @@ classpath:be/utils/server.feature:82</pre>
 
 
 
+
+  <div class="inner-level">
+    <div class="message indention">
+      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-29">
+          <a>js</a>
+      </div>
+      <div id="msg-29" class="collapse collapsable-details  in ">
+        <pre>js failed:
+&gt;&gt;&gt;&gt;
+01: function(){
+02:   var MultiMsg = Java.type('common.net.MultiMsgWebSocketClient')
+03:   var Logg = Java.type('com.intuit.karate.Logger')
+04:   var logg =  new Logg()
+05:   var Queue = Java.type(&quot;common.net.MessageQueue&quot;)
+06:   var q =  new Queue()
+07:   var WebSocketOptions = Java.type('com.intuit.karate.http.WebSocketOptions')
+08:   var wso =  new WebSocketOptions(wsURL)
+09:   return new MultiMsg(wso,logg,q)
+10: }
+&lt;&lt;&lt;&lt;
+org.graalvm.polyglot.PolyglotException: karate.io.netty.handler.codec.http.websocketx.WebSocketClientHandshakeException: Invalid handshake response getStatus: 404 Not Found
+- com.intuit.karate.http.WebSocketClient.&lt;init&gt;(WebSocketClient.java:148)
+- common.net.MultiMsgWebSocketClient.&lt;init&gt;(MultiMsgWebSocketClient.java:26)
+- &lt;js&gt;.:anonymous(Unnamed:9)
+
+classpath:be/mockFrontEnd.feature:18</pre>
+      </div>
+    </div>
+  </div>
 
 
 
@@ -2178,7 +2490,7 @@ classpath:be/utils/server.feature:82</pre>
 </div>
 
 
-  <span class="lead-duration duration">1:16.636</span>
+  <span class="lead-duration duration">0.063</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-33">
@@ -2217,11 +2529,11 @@ classpath:be/utils/server.feature:82</pre>
       <div class="step">
 
 
-<div class="brief step-name-* failed">
+<div class="brief step-name-* passed">
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/utils/server.feature')</span>
 
-  <span class="lead-duration duration">38.321</span>
+  <span class="lead-duration duration">0.019</span>
 
 </div>
 
@@ -2230,37 +2542,9 @@ classpath:be/utils/server.feature:82</pre>
 
 
 
-  <div class="inner-level">
-    <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-35">
-          <a>Failed</a>
-      </div>
-      <div id="msg-35" class="collapse collapsable-details  in ">
-        <pre>Failed waiting for ws://127.0.0.1:9000/organizer/client
-classpath:be/utils/server.feature:82
-classpath:be/rollCall/openRollCall.feature:16</pre>
-      </div>
-    </div>
-  </div>
 
 
 
-
-  <div class="inner-level">
-    <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-36">
-          <a>Doc string</a>
-      </div>
-      <div id="msg-36" class="collapse collapsable-details">
-        <pre>04:38:07.876 classpath:be/rollCall/openRollCall.feature:16
-* call read('classpath:be/utils/server.feature')
-Failed waiting for ws://127.0.0.1:9000/organizer/client
-classpath:be/utils/server.feature:82
-classpath:be/rollCall/openRollCall.feature:16
-</pre>
-      </div>
-    </div>
-  </div>
 
 
 
@@ -2299,11 +2583,11 @@ classpath:be/rollCall/openRollCall.feature:16
       <div class="step">
 
 
-<div class="brief step-name-&amp;gt; * failed">
-  <span class="keyword indention">&gt; *</span>
-  <span class="name">call waitForPort</span>
+<div class="brief step-name-* failed">
+  <span class="keyword indention">*</span>
+  <span class="name">call read('classpath:be/mockFrontEnd.feature')</span>
 
-  <span class="lead-duration duration">38.315</span>
+  <span class="lead-duration duration">0.023</span>
 
 </div>
 
@@ -2314,15 +2598,92 @@ classpath:be/rollCall/openRollCall.feature:16
 
   <div class="inner-level">
     <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-37">
-          <a>Failed</a>
+      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-35">
+          <a>js</a>
       </div>
-      <div id="msg-37" class="collapse collapsable-details  in ">
-        <pre>Failed waiting for ws://127.0.0.1:9000/organizer/client
-classpath:be/utils/server.feature:82</pre>
+      <div id="msg-35" class="collapse collapsable-details  in ">
+        <pre>js failed:
+&gt;&gt;&gt;&gt;
+01: function(){
+02:   var MultiMsg = Java.type('common.net.MultiMsgWebSocketClient')
+03:   var Logg = Java.type('com.intuit.karate.Logger')
+04:   var logg =  new Logg()
+05:   var Queue = Java.type(&quot;common.net.MessageQueue&quot;)
+06:   var q =  new Queue()
+07:   var WebSocketOptions = Java.type('com.intuit.karate.http.WebSocketOptions')
+08:   var wso =  new WebSocketOptions(wsURL)
+09:   return new MultiMsg(wso,logg,q)
+10: }
+&lt;&lt;&lt;&lt;
+org.graalvm.polyglot.PolyglotException: karate.io.netty.handler.codec.http.websocketx.WebSocketClientHandshakeException: Invalid handshake response getStatus: 404 Not Found
+- com.intuit.karate.http.WebSocketClient.&lt;init&gt;(WebSocketClient.java:148)
+- common.net.MultiMsgWebSocketClient.&lt;init&gt;(MultiMsgWebSocketClient.java:26)
+- &lt;js&gt;.:anonymous(Unnamed:9)
+
+classpath:be/mockFrontEnd.feature:18
+classpath:be/rollCall/openRollCall.feature:17</pre>
       </div>
     </div>
   </div>
+
+
+
+
+  <div class="inner-level">
+    <div class="docstring indention">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-36">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-36" class="collapse collapsable-details">
+        <pre>04:06:16.274 classpath:be/rollCall/openRollCall.feature:17
+* call read('classpath:be/mockFrontEnd.feature')
+js failed:
+&gt;&gt;&gt;&gt;
+01: function(){
+02:   var MultiMsg = Java.type('common.net.MultiMsgWebSocketClient')
+03:   var Logg = Java.type('com.intuit.karate.Logger')
+04:   var logg =  new Logg()
+05:   var Queue = Java.type(&quot;common.net.MessageQueue&quot;)
+06:   var q =  new Queue()
+07:   var WebSocketOptions = Java.type('com.intuit.karate.http.WebSocketOptions')
+08:   var wso =  new WebSocketOptions(wsURL)
+09:   return new MultiMsg(wso,logg,q)
+10: }
+&lt;&lt;&lt;&lt;
+org.graalvm.polyglot.PolyglotException: karate.io.netty.handler.codec.http.websocketx.WebSocketClientHandshakeException: Invalid handshake response getStatus: 404 Not Found
+- com.intuit.karate.http.WebSocketClient.&lt;init&gt;(WebSocketClient.java:148)
+- common.net.MultiMsgWebSocketClient.&lt;init&gt;(MultiMsgWebSocketClient.java:26)
+- &lt;js&gt;.:anonymous(Unnamed:9)
+
+classpath:be/mockFrontEnd.feature:18
+classpath:be/rollCall/openRollCall.feature:17
+</pre>
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name- passed">
+  <span class="keyword indention"></span>
+  <span class="name">be/mockFrontEnd.feature</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
 
 
 
@@ -2338,11 +2699,11 @@ classpath:be/utils/server.feature:82</pre>
       <div class="step">
 
 
-<div class="brief step-name-* skipped">
-  <span class="keyword indention">*</span>
-  <span class="name">call read('classpath:be/mockFrontEnd.feature')</span>
+<div class="brief step-name-&amp;gt; * failed">
+  <span class="keyword indention">&gt; *</span>
+  <span class="name">def frontend = call getMultiMsgSocket</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">0.020</span>
 
 </div>
 
@@ -2350,6 +2711,35 @@ classpath:be/utils/server.feature:82</pre>
 
 
 
+
+  <div class="inner-level">
+    <div class="message indention">
+      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-37">
+          <a>js</a>
+      </div>
+      <div id="msg-37" class="collapse collapsable-details  in ">
+        <pre>js failed:
+&gt;&gt;&gt;&gt;
+01: function(){
+02:   var MultiMsg = Java.type('common.net.MultiMsgWebSocketClient')
+03:   var Logg = Java.type('com.intuit.karate.Logger')
+04:   var logg =  new Logg()
+05:   var Queue = Java.type(&quot;common.net.MessageQueue&quot;)
+06:   var q =  new Queue()
+07:   var WebSocketOptions = Java.type('com.intuit.karate.http.WebSocketOptions')
+08:   var wso =  new WebSocketOptions(wsURL)
+09:   return new MultiMsg(wso,logg,q)
+10: }
+&lt;&lt;&lt;&lt;
+org.graalvm.polyglot.PolyglotException: karate.io.netty.handler.codec.http.websocketx.WebSocketClientHandshakeException: Invalid handshake response getStatus: 404 Not Found
+- com.intuit.karate.http.WebSocketClient.&lt;init&gt;(WebSocketClient.java:148)
+- common.net.MultiMsgWebSocketClient.&lt;init&gt;(MultiMsgWebSocketClient.java:26)
+- &lt;js&gt;.:anonymous(Unnamed:9)
+
+classpath:be/mockFrontEnd.feature:18</pre>
+      </div>
+    </div>
+  </div>
 
 
 
