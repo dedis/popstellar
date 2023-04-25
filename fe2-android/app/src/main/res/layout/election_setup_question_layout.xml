@@ -56,11 +56,13 @@
     tools:ignore="UseSwitchCompatOrMaterialXml" />
 
   <ScrollView
-    android:layout_width="wrap_content"
+    android:layout_width="0dp"
     android:layout_height="wrap_content"
     android:layout_marginStart="@dimen/election_setup_text_field_margin_lateral"
+    android:layout_marginEnd="@dimen/election_setup_text_field_margin_lateral"
     app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toBottomOf="@+id/add_ballot_option">
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintTop_toBottomOf="@+id/write_in">
 
     <LinearLayout
       android:id="@+id/election_setup_ballot_options_ll"
@@ -77,6 +79,6 @@
     android:layout_marginStart="@dimen/election_setup_text_field_margin_lateral"
     android:text="@string/add_ballot_options_button_text"
     app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toBottomOf="@+id/election_question" />
+    app:layout_constraintTop_toBottomOf="@+id/voting_method" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -37,7 +37,7 @@ public class RollCallBuilder {
     this.state = rollCall.getState();
     this.attendees = new HashSet<>(rollCall.getAttendees());
     this.location = rollCall.getLocation();
-    this.description = rollCall.getLocation();
+    this.description = rollCall.getDescription();
   }
 
   public RollCallBuilder setPersistentId(String id) {

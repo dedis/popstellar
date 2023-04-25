@@ -3,7 +3,6 @@ package com.github.dedis.popstellar.ui.home;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.*;
 
 import androidx.annotation.NonNull;
@@ -19,6 +18,7 @@ import java.util.Objects;
 import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
+import timber.log.Timber;
 
 /** Fragment used to display the Launch UI */
 @AndroidEntryPoint
@@ -58,6 +58,7 @@ public final class LaoCreateFragment extends Fragment {
   public void onResume() {
     super.onResume();
     viewModel.setPageTitle(R.string.lao_create_title);
+    viewModel.setIsHome(false);
   }
 
   TextWatcher launchWatcher =
@@ -103,7 +104,7 @@ public final class LaoCreateFragment extends Fragment {
               Objects.requireNonNull(binding.serverUrlEntryEditText.getText()).toString();
           String laoName =
               Objects.requireNonNull(binding.laoNameEntryEditText.getText()).toString();
-          Log.d(TAG, "creating lao with name " + laoName);
+          Timber.tag(TAG).d("creating lao with name %s", laoName);
 
           networkManager.connect(serverAddress);
           requireActivity()

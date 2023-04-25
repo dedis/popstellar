@@ -1,7 +1,6 @@
 package com.github.dedis.popstellar.utility.handler.data;
 
 import android.annotation.SuppressLint;
-import android.util.Log;
 
 import com.github.dedis.popstellar.model.network.method.message.PublicKeySignaturePair;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.*;
@@ -16,6 +15,8 @@ import com.github.dedis.popstellar.utility.security.KeyManager;
 import java.util.*;
 
 import javax.inject.Inject;
+
+import timber.log.Timber;
 
 /** Lao messages handler class */
 public final class LaoHandler {
@@ -50,7 +51,7 @@ public final class LaoHandler {
       throws UnknownLaoException {
     Channel channel = context.getChannel();
 
-    Log.d(TAG, "handleCreateLao: channel " + channel + ", msg=" + createLao);
+    Timber.tag(TAG).d("handleCreateLao: channel: %s, msg: %s", channel, createLao);
     Lao lao = new Lao(createLao.getId());
 
     lao.setName(createLao.getName());
@@ -70,8 +71,9 @@ public final class LaoHandler {
           .subscribe(lao.getChannel().subChannel("consensus"))
           .subscribe( // For now if we receive an error, we assume that it is because the server
               // running is the scala one which does not implement consensus
-              () -> Log.d(TAG, "subscription to consensus channel was a success"),
-              error -> Log.d(TAG, "error while trying to subscribe to consensus channel", error));
+              () -> Timber.tag(TAG).d("subscription to consensus channel was a success"),
+              error ->
+                  Timber.tag(TAG).d(error, "error while trying to subscribe to consensus channel"));
     }
 
     /* Creation channel coin*/
@@ -79,8 +81,8 @@ public final class LaoHandler {
         .getMessageSender()
         .subscribe(channel.subChannel("coin"))
         .subscribe(
-            () -> Log.d(TAG, "subscription to the coin channel was a success"),
-            error -> Log.d(TAG, "error while trying  to subscribe to coin channel", error));
+            () -> Timber.tag(TAG).d("subscription to the coin channel was a success"),
+            error -> Timber.tag(TAG).d(error, "error while trying  to subscribe to coin channel"));
 
     laoRepo.updateNodes(channel);
   }
@@ -96,7 +98,7 @@ public final class LaoHandler {
     Channel channel = context.getChannel();
     MessageID messageId = context.getMessageId();
 
-    Log.d(TAG, " Receive Update Lao Broadcast msg=" + updateLao);
+    Timber.tag(TAG).d("Receive Update Lao Broadcast msg: %s", updateLao);
     LaoView laoView = laoRepo.getLaoViewByChannel(channel);
 
     if (laoView.getLastModified() > updateLao.getLastModified()) {
@@ -111,7 +113,7 @@ public final class LaoHandler {
     } else if (!laoView.areWitnessSetsEqual(updateLao.getWitnesses())) {
       message = updateLaoWitnessesWitnessMessage(messageId, updateLao, laoView);
     } else {
-      Log.d(TAG, "Cannot set the witness message title to update lao");
+      Timber.tag(TAG).d("Cannot set the witness message title to update lao");
       throw new DataHandlingException(
           updateLao, "Cannot set the witness message title to update lao");
     }
@@ -139,24 +141,24 @@ public final class LaoHandler {
       throws DataHandlingException, UnknownLaoException {
     Channel channel = context.getChannel();
 
-    Log.d(TAG, "Receive State Lao Broadcast msg=" + stateLao);
+    Timber.tag(TAG).d("Receive State Lao Broadcast msg: %s", stateLao);
     LaoView laoView = laoRepo.getLaoViewByChannel(channel);
 
-    Log.d(TAG, "Receive State Lao Broadcast " + stateLao.getName());
+    Timber.tag(TAG).d("Receive State Lao Broadcast %s", stateLao.getName());
     if (!messageRepo.isMessagePresent(stateLao.getModificationId())) {
-      Log.d(TAG, "Can't find modification id : " + stateLao.getModificationId());
+      Timber.tag(TAG).d("Can't find modification id : %s", stateLao.getModificationId());
       // queue it if we haven't received the update message yet
       throw new InvalidMessageIdException(stateLao, stateLao.getModificationId());
     }
 
-    Log.d(TAG, "Verifying signatures");
+    Timber.tag(TAG).d("Verifying signatures");
     for (PublicKeySignaturePair pair : stateLao.getModificationSignatures()) {
       if (!pair.getWitness().verify(pair.getSignature(), stateLao.getModificationId())) {
         throw new InvalidSignatureException(stateLao, pair.getSignature());
       }
     }
 
-    Log.d(TAG, "Success to verify state lao signatures");
+    Timber.tag(TAG).d("Success to verify state lao signatures");
 
     // TODO: verify if lao/state_lao is consistent with the lao/update message
 
@@ -173,8 +175,8 @@ public final class LaoHandler {
           .getMessageSender()
           .subscribe(laoView.getChannel().subChannel("consensus"))
           .subscribe(
-              () -> Log.d(TAG, "Successful subscribe to consensus channel"),
-              e -> Log.d(TAG, "Unsuccessful subscribe to consensus channel : " + e));
+              () -> Timber.tag(TAG).d("Successful subscribe to consensus channel"),
+              e -> Timber.tag(TAG).d(e, "Unsuccessful subscribe to consensus channel"));
     }
 
     // Now we're going to remove all pending updates which came prior to this state lao
@@ -222,26 +224,23 @@ public final class LaoHandler {
   public void handleGreetLao(HandlerContext context, GreetLao greetLao) throws UnknownLaoException {
     Channel channel = context.getChannel();
 
-    Log.d(TAG, "handleGreetLao: channel " + channel + ", msg=" + greetLao);
+    Timber.tag(TAG).d("handleGreetLao: channel: %s, msg: %s", channel, greetLao);
     LaoView laoView = laoRepo.getLaoViewByChannel(channel);
 
     // Check the correctness of the LAO id
     if (!laoView.getId().equals(greetLao.getId())) {
-      Log.d(
-          TAG,
-          "Current lao id "
-              + laoView.getId()
-              + " doesn't match the lao id from greetLao message ("
-              + greetLao.getId()
-              + ")");
+      Timber.tag(TAG)
+          .d(
+              "Current lao id %s doesn't match the lao id from greetLao message (%s)",
+              laoView.getId(), greetLao.getId());
       throw new IllegalArgumentException(
           "Current lao doesn't match the lao id from the greetLao message");
     }
-    Log.d(TAG, "Creating a server with IP: " + greetLao.getAddress());
+    Timber.tag(TAG).d("Creating a server with IP: %s", greetLao.getAddress());
 
     Server server = new Server(greetLao.getAddress(), greetLao.getFrontendKey());
 
-    Log.d(TAG, "Adding the server to the repository for lao id : " + laoView.getId());
+    Timber.tag(TAG).d("Adding the server to the repository for lao id : %s", laoView.getId());
     serverRepo.addServer(greetLao.getId(), server);
 
     // Extend the current connection by connecting to the peers of the main server

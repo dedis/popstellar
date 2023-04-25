@@ -1,7 +1,6 @@
 package com.github.dedis.popstellar.ui.lao.digitalcash;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.*;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
@@ -26,6 +25,7 @@ import java.time.Instant;
 import java.util.*;
 
 import dagger.hilt.android.AndroidEntryPoint;
+import timber.log.Timber;
 
 /**
  * A simple {@link Fragment} subclass. Use the {@link DigitalCashIssueFragment#newInstance} factory
@@ -165,7 +165,7 @@ public class DigitalCashIssueFragment extends Fragment {
     try {
       myArray = digitalCashViewModel.getAttendeesFromTheRollCallList();
     } catch (NoRollCallException e) {
-      Log.d(TAG, getString(R.string.error_no_rollcall_closed_in_LAO));
+      Timber.tag(TAG).d(getString(R.string.error_no_rollcall_closed_in_LAO));
       Toast.makeText(
               requireContext(),
               getString(R.string.digital_cash_please_enter_roll_call),

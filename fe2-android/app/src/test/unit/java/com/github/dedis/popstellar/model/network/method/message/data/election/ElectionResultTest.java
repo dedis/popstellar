@@ -1,16 +1,13 @@
 package com.github.dedis.popstellar.model.network.method.message.data.election;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+
 import com.github.dedis.popstellar.model.network.JsonTestUtils;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
-
-import org.junit.Test;
-
 import java.util.*;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertThrows;
+import org.junit.Test;
 
 public class ElectionResultTest {
 
@@ -20,15 +17,15 @@ public class ElectionResultTest {
       Collections.singletonList(new ElectionResultQuestion("question id", results));
   private final ElectionResult electionResult = new ElectionResult(questions);
 
-  @Test
+  @Test(expected = IllegalArgumentException.class)
   public void questionsCantBeNull() {
-    assertThrows(IllegalArgumentException.class, () -> new ElectionResult(null));
+    new ElectionResult(null);
   }
 
-  @Test
+  @Test(expected = IllegalArgumentException.class)
   public void questionsCantBeEmpty() {
     List<ElectionResultQuestion> emptyList = new ArrayList<>();
-    assertThrows(IllegalArgumentException.class, () -> new ElectionResult(emptyList));
+    new ElectionResult(emptyList);
   }
 
   @Test

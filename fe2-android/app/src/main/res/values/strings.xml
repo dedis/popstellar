@@ -1,5 +1,5 @@
 <resources>
-  <string name="app_name">popstellar</string>
+  <string name="app_name">Popstellar</string>
 
   <!--  General-->
   <string name="yes">Yes</string>
@@ -28,6 +28,18 @@
   <string name="create">Create</string>
   <string name="server_url">Server URL</string>
   <string name="no_lao_text">OOPS, Looks like you don\'t have any Local Autonomous Organization (LAO) yet.\n Join or Create one with the buttons below</string>
+  <string name="app_info">Welcome to POPstellar, a Proof-Of-Personhood system developed by the DEDIS lab!</string>
+
+  <!-- Settings -->
+  <string name="settings">Settings</string>
+  <string name="settings_debugging">Debugging</string>
+  <string name="settings_logging_key">enable_logging</string>
+  <string name="settings_server_url_key">server_url</string>
+  <string name="settings_logging">Logging</string>
+  <string name="settings_logging_summary_off">Check the box if you want to send logs to the above server for remote debugging</string>
+  <string name="settings_logging_summary_on">Uncheck the box if you want to stop sending logs for remote debugging</string>
+  <string name="settings_remote_server">Remote server address</string>
+  <string name="settings_remote_server_info">Insert the URL of the remote server to enable logging</string>
 
   <!-- Connect -->
   <string name="allow_camera_text">Please allow the camera to be used by the app</string>
@@ -121,6 +133,8 @@
   <string name="add_attendee_title">Add Attendee</string>
   <string name="roll_call_attendees">Attendees : %1$d</string>
   <string name="roll_call_scanned">Scanned tokens : %1$d</string>
+  <string name="roll_call_description_title">Description</string>
+  <string name="roll_call_location_title">Location</string>
 
   <!-- Election Event -->
   <string name="election_title">Election</string>
@@ -300,6 +314,7 @@
   <string name="error_importing_key">"Error importing key : %1$s\nTry again</string>
   <string name="error_election_duplicate_question_name">Two different questions can\'t have the same name</string>
   <string name="error_election_duplicate_ballot_name">Two different ballot options can\'t have the same name</string>
+  <string name="error_settings_url_server">Invalid URL! Please insert a valid one (http, https, ws, wss are supported)</string>
 
   <!-- Exception -->
   <string name="json_rpc_exception">An error response was replied by the server\nError %1$d - %2$s</string>

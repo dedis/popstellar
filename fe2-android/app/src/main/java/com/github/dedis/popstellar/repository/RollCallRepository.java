@@ -1,7 +1,5 @@
 package com.github.dedis.popstellar.repository;
 
-import android.util.Log;
-
 import androidx.annotation.NonNull;
 
 import com.github.dedis.popstellar.model.objects.RollCall;
@@ -18,6 +16,7 @@ import javax.inject.Singleton;
 import io.reactivex.Observable;
 import io.reactivex.subjects.BehaviorSubject;
 import io.reactivex.subjects.Subject;
+import timber.log.Timber;
 
 import static java.util.Collections.emptySet;
 import static java.util.Collections.unmodifiableSet;
@@ -49,7 +48,7 @@ public class RollCallRepository {
     if (rollCall == null) {
       throw new IllegalArgumentException("Roll call is null");
     }
-    Log.d(TAG, "Updating roll call on lao " + laoId + " : " + rollCall);
+    Timber.tag(TAG).d("Updating roll call on lao %s : %s", laoId, rollCall);
 
     // Retrieve Lao data and add the roll call to it
     getLaoRollCalls(laoId).update(rollCall);
@@ -150,11 +149,11 @@ public class RollCallRepository {
       // Publish new values on subjects
       if (rollCallSubjects.containsKey(persistentId)) {
         // If it exist we update the subject
-        Log.d(TAG, "Updating existing roll call " + rollCall.getName());
+        Timber.tag(TAG).d("Updating existing roll call %s", rollCall.getName());
         rollCallSubjects.get(persistentId).onNext(rollCall);
       } else {
         // If it does not, we create a new subject
-        Log.d(TAG, "New roll call, subject created for " + rollCall.getName());
+        Timber.tag(TAG).d("New roll call, subject created for %s", rollCall.getName());
         rollCallSubjects.put(persistentId, BehaviorSubject.createDefault(rollCall));
       }
 
