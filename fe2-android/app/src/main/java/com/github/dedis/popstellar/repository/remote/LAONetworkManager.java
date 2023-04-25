@@ -272,7 +272,8 @@ public class LAONetworkManager implements MessageSender {
       reprocessingCounter.put(message, count + 1);
       unprocessed.onNext(message);
     } else {
-      Timber.log(TAG).d("Message %s has been reprocessed too many times, it's now dropped", message);
+      Timber.tag(TAG)
+          .d("Message %s has been reprocessed too many times, it's now dropped", message);
       // Discard the message
       reprocessingCounter.remove(message);
     }
