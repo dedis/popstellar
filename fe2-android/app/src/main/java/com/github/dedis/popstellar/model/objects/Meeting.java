@@ -80,10 +80,15 @@ public class Meeting extends Event {
 
   @Override
   public EventState getState() {
-    // The meeting is considered closed when the end time is in the past
     // This info is just used to display the correct text in the event list
+
+    // The meeting is considered closed when the end time is in the past
     if (isEndPassed()) {
       return EventState.CLOSED;
+    }
+    // Open if still not closed and start has passed
+    if (isStartPassed()) {
+      return EventState.OPENED;
     }
     return EventState.CREATED;
   }

@@ -54,7 +54,9 @@ public abstract class AbstractEventCreationFragment extends Fragment {
   @Override
   public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
-    confirmButton.setOnClickListener(v -> createEvent());
+    if (confirmButton != null) {
+      confirmButton.setOnClickListener(v -> createEvent());
+    }
   }
 
   protected void createEvent() {

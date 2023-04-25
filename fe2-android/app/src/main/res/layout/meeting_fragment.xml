@@ -15,7 +15,7 @@
       android:contentDescription="@string/time_icon_description"
       android:src="@drawable/ic_time"
       app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintTop_toBottomOf="@id/meeting_title" />
+      app:layout_constraintTop_toBottomOf="@id/meeting_status" />
 
     <ImageView
       android:id="@+id/meeting_end_time_icon"
@@ -35,6 +35,27 @@
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+      android:id="@+id/meeting_status_icon"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:contentDescription="@string/status_icon_description"
+      android:src="@drawable/ic_lock"
+      app:layout_constraintBottom_toBottomOf="@id/meeting_status"
+      app:layout_constraintEnd_toStartOf="@id/meeting_status"
+      app:layout_constraintTop_toTopOf="@id/meeting_status" />
+
+    <TextView
+      android:id="@+id/meeting_status"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="@dimen/status_margin_top"
+      android:text="@string/closed"
+      android:textColor="@color/red"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="@id/meeting_title" />
 
     <TextView
       android:id="@+id/meeting_fragment_start_time_title"

@@ -4,21 +4,15 @@ import android.os.Bundle;
 import android.view.*;
 
 import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.MeetingFragmentBinding;
 import com.github.dedis.popstellar.model.objects.Meeting;
 import com.github.dedis.popstellar.repository.MeetingRepository;
 import com.github.dedis.popstellar.ui.lao.LaoActivity;
-import com.github.dedis.popstellar.ui.lao.LaoViewModel;
+import com.github.dedis.popstellar.ui.lao.event.AbstractEventFragment;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.UnknownMeetingException;
-import com.google.gson.Gson;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
 
 import javax.inject.Inject;
 
@@ -28,17 +22,13 @@ import timber.log.Timber;
 import static com.github.dedis.popstellar.utility.Constants.MEETING_ID;
 
 @AndroidEntryPoint
-public class MeetingFragment extends Fragment {
+public class MeetingFragment extends AbstractEventFragment {
   private static final String TAG = MeetingFragment.class.getSimpleName();
-  @Inject Gson gson;
-  @Inject MeetingRepository meetingRepo;
 
-  private final SimpleDateFormat dateFormat =
-      new SimpleDateFormat("dd/MM/yyyy HH:mm z", Locale.ENGLISH);
+  @Inject MeetingRepository meetingRepo;
 
   private MeetingFragmentBinding binding;
 
-  private LaoViewModel laoViewModel;
   private Meeting meeting;
 
   public MeetingFragment() {
@@ -86,15 +76,14 @@ public class MeetingFragment extends Fragment {
                     ErrorUtils.logAndShow(
                         requireContext(), TAG, error, R.string.unknown_meeting_exception)));
 
-    handleBackNav();
+    handleBackNav(TAG);
     return binding.getRoot();
   }
 
   @Override
   public void onResume() {
     super.onResume();
-    laoViewModel.setPageTitle(R.string.meeting_title);
-    laoViewModel.setIsTab(false);
+    setTab(R.string.meeting_title);
     try {
       meeting =
           meetingRepo.getMeetingWithId(
@@ -105,7 +94,8 @@ public class MeetingFragment extends Fragment {
   }
 
   private void setUpStateDependantContent() {
-    setupTime();
+    setupTime(meeting, binding.meetingStartTime, binding.meetingEndTime);
+    setStatus(meeting.getState(), binding.meetingStatusIcon, binding.meetingStatus);
     binding.meetingTitle.setText(meeting.getName());
 
     // Set location visible if present
@@ -114,20 +104,5 @@ public class MeetingFragment extends Fragment {
     } else {
       binding.meetingLocationText.setText(meeting.getLocation());
     }
-  }
-
-  private void setupTime() {
-    if (meeting == null) {
-      return;
-    }
-    Date startTime = new Date(meeting.getStartTimestampInMillis());
-    Date endTime = new Date(meeting.getEndTimestampInMillis());
-
-    binding.meetingStartTime.setText(dateFormat.format(startTime));
-    binding.meetingEndTime.setText(dateFormat.format(endTime));
-  }
-
-  private void handleBackNav() {
-    LaoActivity.addBackNavigationCallbackToEvents(requireActivity(), getViewLifecycleOwner(), TAG);
   }
 }
