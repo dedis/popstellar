@@ -8,20 +8,14 @@ from typing import IO
 
 from flask import Flask, redirect, request, Response
 
+from app import get_new_login_params, init_app, html_on_param
 from authentication import get_url, validate_args
+from util import replace_in_model
 
 # Define the global variables
 home_page_html: str = ""
 config: dict = {}
 providers: list = []
-
-def replace_in_model( model: str, **kwargs) -> str:
-    """
-    Replace the comment "Insert arg here" in the model by its value
-    """
-    for key in kwargs:
-        model = model.replace(f"<!-- Insert {key} here -->", kwargs[key])
-    return model
 
 
 def check_config(config_file: IO) -> bool:
@@ -80,6 +74,7 @@ def on_startup() -> None:
     homepage HTML code or the
     """
     global home_page_html, providers, config
+    init_app()
     with open("data/providers.json") as provider_file:
         providers = json.loads(provider_file.read())
         filter_providers()
@@ -88,7 +83,8 @@ def on_startup() -> None:
         if not check_config(config_file):
             config_file.seek(0)
             config = json.loads(config_file.read())
-    home_page_html = open("model/index.html", "r").read()
+    with  open("model/index.html", "r") as home_page_file:
+        home_page_html = home_page_file.read()
 
 
 app = Flask("Example_authentication_server")
@@ -108,7 +104,7 @@ def root() -> str:
         for
         i, provider
         in enumerate(providers)]
-    ''.join(providers_html)
+    providers_html = ''.join(providers_html)
     return replace_in_model(home_page_html, providers=providers_html,
                             errors="test")
 
@@ -139,11 +135,26 @@ def authentication_callback() -> Response:
     :return: A response which redirects the user to the homePage if the login
     is not valid or to a new "app" page if the login answer is valid
     """
-    valid_answer: bool = validate_args(request.args)
-    if valid_answer:
-        return redirect(valid_login_url(request.args))
+    user_id: str = validate_args(request.args, config["client_id"])
+    if user_id is not None:
+        return redirect(f"/app{get_new_login_params(user_id)}")
     else:
         return redirect("/")
+
+@app.route("/app")
+def app_route():
+    """
+    The main part of the app (very light since it is only an example)
+    :return: The HTML data returned based on the app module logic or a
+    redirection if this path is called without valid query arguments
+    """
+    html = html_on_param(request.args)
+    if html == "":
+        return redirect("/")
+    else:
+        return html
+
+
 
 # Step 0: Starts the server
 if __name__ == "__main__":

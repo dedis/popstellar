@@ -64,16 +64,11 @@ def validate_args(args: MultiDict[str, str], client_id: str) \
 
     nonce_data: (str, float) = login_nonces.pop(token.get("nonce", None), None)
     valid_issuer = nonce_data[0] == token.get("iss", None)
-    if valid_issuer:
+    if not valid_issuer:
         return None
-    return None
-
-
-def valid_login_url(args: MultiDict[str, str]) -> str:
-    """
-    Generates the url the user will be redirected to if they have a
-    successful login.
-    :param args: The arguments of the successful login request
-    :return: The correct
-    """
-    return args.get()
+    # Nonce is not older than 5 minutes
+    recent_nonce = time.time() - nonce_data[1] < 300
+    if not recent_nonce:
+        return None
+    user_id: str = token.get("sub")
+    return f"{user_id}@{nonce_data[0]}"
