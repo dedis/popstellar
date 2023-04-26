@@ -15,9 +15,9 @@ import java.util.stream.Collectors;
 @Immutable
 public class ElectionSetup extends Data {
 
-  private final String electionId;
+  private final String id;
   private final String name;
-  private final String laoId;
+  private final String lao;
 
   @SerializedName(value = "created_at")
   private final long createdAt;
@@ -62,13 +62,11 @@ public class ElectionSetup extends Data {
     this.createdAt = creation;
     this.startTime = start;
     this.endTime = end;
-    this.laoId = laoId;
+    this.lao = laoId;
     this.electionVersion = electionVersion;
-    this.electionId = Election.generateElectionSetupId(laoId, createdAt, name);
+    this.id = Election.generateElectionSetupId(laoId, createdAt, name);
     this.questions =
-        questions.stream()
-            .map(q -> new ElectionQuestion(this.electionId, q))
-            .collect(Collectors.toList());
+        questions.stream().map(q -> new ElectionQuestion(this.id, q)).collect(Collectors.toList());
   }
 
   @Override
@@ -82,7 +80,7 @@ public class ElectionSetup extends Data {
   }
 
   public String getElectionId() {
-    return electionId;
+    return id;
   }
 
   public String getName() {
@@ -106,7 +104,7 @@ public class ElectionSetup extends Data {
   }
 
   public String getLaoId() {
-    return laoId;
+    return lao;
   }
 
   public ElectionVersion getElectionVersion() {
@@ -146,10 +144,10 @@ public class ElectionSetup extends Data {
         + electionVersion
         + '\''
         + ", id='"
-        + electionId
+        + id
         + '\''
         + ", lao='"
-        + laoId
+        + lao
         + '\''
         + ", name='"
         + name

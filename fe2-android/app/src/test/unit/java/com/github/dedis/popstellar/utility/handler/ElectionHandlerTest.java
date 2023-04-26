@@ -29,6 +29,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -48,18 +49,19 @@ public class ElectionHandlerTest {
 
   private static final KeyPair SENDER_KEY = generateKeyPair();
   private static final PublicKey SENDER = SENDER_KEY.getPublicKey();
-
   private static final KeyPair ATTENDEE_KEY = generateKeyPair();
-
-  private static final CreateLao CREATE_LAO = new CreateLao("Lao", SENDER);
-  private static final Lao LAO =
-      new Lao(CREATE_LAO.getName(), CREATE_LAO.getOrganizer(), CREATE_LAO.getCreation());
+  private static final String LAO_NAME = "lao name";
+  private static final long CREATION = Instant.now().getEpochSecond() - 100;
+  private static final String LAO_ID = Lao.generateLaoId(SENDER, CREATION, LAO_NAME);
+  private static final CreateLao CREATE_LAO =
+      new CreateLao(LAO_ID, LAO_NAME, CREATION, SENDER, new ArrayList<>());
+  private static final Lao LAO = new Lao(LAO_NAME, SENDER, CREATION);
   private static final Channel LAO_CHANNEL = Channel.ROOT.subChannel(LAO.getId());
 
-  private static final long CREATED_AT = CREATE_LAO.getCreation() + 10 * 1000; // 10 seconds later
-  private static final long STARTED_AT = CREATE_LAO.getCreation() + 20 * 1000; // 20 seconds later
-  private static final long OPENED_AT = CREATE_LAO.getCreation() + 30 * 1000; // 30 seconds later
-  private static final long END_AT = CREATE_LAO.getCreation() + 60 * 1000; // 60 seconds later
+  private static final long CREATED_AT = CREATION + 10; // 10 seconds later
+  private static final long STARTED_AT = CREATION + 20; // 20 seconds later
+  private static final long OPENED_AT = CREATION + 30; // 30 seconds later
+  private static final long END_AT = CREATION + 60; // 60 seconds later
 
   private static final String ELECTION_NAME = "Election Name";
   private static final String ELECTION_ID =
