@@ -21,12 +21,14 @@ case class HeartbeatGenerator(dbRef: AskableActorRef) extends Actor with ActorLo
   private def retrieveHeartbeatContent(): Option[HashMap[Channel, Set[Hash]]] = {
     val askForChannels = dbRef ? DbActor.GetAllChannels()
     val setOfChannels: Set[Channel] = Await.ready(askForChannels, duration).value match {
-      case Some(Success(DbActor.DbActorGetAllChannelsAck(set))) => set
+      case Some(Success(DbActor.DbActorGetAllChannelsAck(set))) =>
+        set
       case Some(Failure(ex: DbActorNAckException)) =>
         log.error(s"Heartbeat generation failed with: ${ex.message}")
         return None
       case reply =>
-        log.error(s"${ErrorCodes.SERVER_ERROR.id}, retrieveHeartbeatContent failed : unknown DbActor reply $reply")
+        log.error(s"${ErrorCodes.SERVER_ERROR.id}," +
+          s" retrieveHeartbeatContent failed : unknown DbActor reply $reply")
         return None
     }
 
@@ -34,12 +36,14 @@ case class HeartbeatGenerator(dbRef: AskableActorRef) extends Actor with ActorLo
     setOfChannels.foreach(channel => {
       val askChannelData = dbRef ? DbActor.ReadChannelData(channel)
       val setOfIds: Set[Hash] = Await.ready(askChannelData, duration).value match {
-        case Some(Success(DbActor.DbActorReadChannelDataAck(channelData))) => channelData.messages.toSet
+        case Some(Success(DbActor.DbActorReadChannelDataAck(channelData))) =>
+          channelData.messages.toSet
         case Some(Failure(ex: DbActorNAckException)) =>
           log.error(s"Heartbeat generation failed with: ${ex.message}")
           return None
         case reply =>
-          log.error(s"${ErrorCodes.SERVER_ERROR.id}, retrieveHeartbeatContent failed : unknown DbActor reply $reply")
+          log.error(s"${ErrorCodes.SERVER_ERROR.id}," +
+            s" retrieveHeartbeatContent failed : unknown DbActor reply $reply")
           return None
 
       }
