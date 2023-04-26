@@ -3,6 +3,7 @@ package popcha
 import (
 	"bytes"
 	"github.com/gorilla/websocket"
+	"github.com/rs/xid"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"github.com/rzajac/zltest"
@@ -128,7 +129,7 @@ func TestAuthRequestFails(t *testing.T) {
 	s.Start()
 	<-s.Started
 	// let the server properly start
-	time.Sleep(1 * time.Second)
+	time.Sleep(200 * time.Millisecond)
 
 	// init parameters map
 	params := url.Values{}
@@ -143,13 +144,12 @@ func TestAuthRequestFails(t *testing.T) {
 	lastEntry := logTester.LastEntry()
 	lastEntry.ExpLevel(zerolog.ErrorLevel)
 	lastEntry.ExpMsg("Error while verifying the parameters of the request")
-
 	bodyBytes := helperValidateGetAndParseBody(t, res)
 
 	// we require that in the error response, the number of missing arguments is equal to 6
 	helperMissingArgs(t, bodyBytes, 6)
 
-	time.Sleep(time.Second)
+	time.Sleep(200 * time.Millisecond)
 
 	// add a nonce
 	params.Add(Nonce, "some_n0nc3")
@@ -167,6 +167,33 @@ func TestAuthRequestFails(t *testing.T) {
 	// we require that there are 5 missing arguments
 	helperMissingArgs(t, bodyBytes, 5)
 
+	time.Sleep(200 * time.Millisecond)
+
+	// testing request with valid number of parameters, but invalid scope
+
+	invalidScopeURL := createAuthRequestURL("n", "c", "invalid", "l", "localhost:3001", ResTypeMulti, " ")
+	res, err = http.Get(invalidScopeURL)
+
+	// no error from the get request
+	require.NoError(t, err)
+
+	lastEntry = logTester.LastEntry()
+	lastEntry.ExpLevel(zerolog.ErrorLevel)
+	lastEntry.ExpMsg("Error while validating the auth request")
+
+	time.Sleep(200 * time.Millisecond)
+
+	// testing request with wrong response type
+	invalidResTypeURL := createAuthRequestURL("n", "c", OpenID, "l", "localhost:3001", "invalid", " ")
+
+	res, err = http.Get(invalidResTypeURL)
+
+	// no error from the get request
+	require.NoError(t, err)
+
+	lastEntry = logTester.LastEntry()
+	lastEntry.ExpLevel(zerolog.ErrorLevel)
+	lastEntry.ExpErr(oidc.ErrInvalidRequest().WithDescription(errValidAuthFormat, errInvalidResponseType))
 	err = s.Shutdown()
 	require.NoError(t, err)
 	<-s.Stopped
@@ -246,6 +273,40 @@ func TestAuthorizationServerWebsocket(t *testing.T) {
 	err = s.Shutdown()
 	require.NoError(t, err)
 	<-s.Stopped
+}
+
+func TestGenerateQrCodeOnEdgeCases(t *testing.T) {
+	// create authorization server
+	l := zerolog.New(io.Discard)
+	s, err := NewAuthServer(fakeHub{}, "authorize", "localhost",
+		3003, "random_string", l)
+	require.NoError(t, err, "could not create AuthServer")
+
+	// testing that the QRCode can't be generated if the data is too long
+	longURL := &url.URL{
+		Scheme: "http",
+		Host:   "example.com",
+		Path:   "client_id=" + strings.Repeat("c", 3000),
+	}
+
+	var req = &http.Request{
+		Method: http.MethodGet,
+		URL:    longURL,
+	}
+
+	err = s.generateQRCode(&fakeResponseWriter{}, req, "l", "c", "n", "")
+	require.Error(t, err)
+
+	// testing that the QRCode can be generated with special characters, due to URL encoding
+	specialCharURL := &url.URL{
+		Scheme: "http",
+		Host:   "example.com",
+		Path:   "client_id=" + strings.Repeat("ち💆🏻‍ҨऔȢЖ", 3),
+	}
+
+	req.URL = specialCharURL
+	err = s.generateQRCode(&fakeResponseWriter{}, req, "l", "c", "n", "")
+	require.NoError(t, err)
 }
 
 // TestClientParams tests the validity of the client parameters
@@ -348,6 +409,7 @@ type fakeHub struct {
 }
 
 type fakeWSClient struct {
+	id   string
 	conn *websocket.Conn
 }
 
@@ -356,6 +418,26 @@ func newWSClient(urlPath url.URL) (*fakeWSClient, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &fakeWSClient{conn: conn}, nil
+	return &fakeWSClient{
+		id:   xid.New().String(),
+		conn: conn,
+	}, nil
 
 }
+
+// implements http.ResponseWriter
+type fakeResponseWriter struct{}
+
+/*
+Set of methods of http.ResponseWriter interface. In that case, it does nothing.
+*/
+
+func (f *fakeResponseWriter) Header() http.Header {
+	return http.Header{}
+}
+
+func (f *fakeResponseWriter) Write(_ []byte) (int, error) {
+	return 0, nil
+}
+
+func (f *fakeResponseWriter) WriteHeader(_ int) {}

@@ -38,7 +38,7 @@ const (
 	tokenLifeTimeHour = 24
 
 	// qrCodeWebPage file path for valid QRCode Displaying page
-	qrCodeWebPage = "resources/popcha.html"
+	qrCodeWebPage = "qrcode/popcha.html"
 
 	// qrSize size of QRCode SVG
 	qrSize = 10
@@ -108,10 +108,6 @@ func (c clientParams) GrantTypes() []oidc.GrantType {
 	return []oidc.GrantType{oidc.GrantTypeImplicit}
 }
 
-func (c clientParams) LoginURL(_ string) string {
-	panic(errUnimplementedMethod)
-}
-
 // AccessTokenType returns the standard type of token used in PoPCHA
 func (c clientParams) AccessTokenType() op.AccessTokenType {
 	return op.AccessTokenTypeBearer
@@ -134,6 +130,11 @@ func (c clientParams) ClockSkew() time.Duration {
 	return 0
 }
 
+// IsScopeAllowed returns whether the given scope is allowed. We set it to false by default for any additional scope
+func (c clientParams) IsScopeAllowed(_ string) bool {
+	return false
+}
+
 /*
 
  Unimplemented methods
@@ -152,9 +153,7 @@ func (c clientParams) RestrictAdditionalAccessTokenScopes() func(scopes []string
 	panic(errUnimplementedMethod)
 }
 
-// IsScopeAllowed returns whether the given scope is allowed. We disable this feature by default to restrict the scopes
-// to a pre-defined set.
-func (c clientParams) IsScopeAllowed(_ string) bool {
+func (c clientParams) LoginURL(_ string) string {
 	panic(errUnimplementedMethod)
 }
 
@@ -345,7 +344,7 @@ func (as *AuthorizationServer) generateQRCode(w http.ResponseWriter, req *http.R
 }
 
 // helper method used for handling redirect uri by the Webpage websocket. Requests on the /response endpoint are
-// solely. handled through websocket. Because of the protocol, the first websocket to send a request will be the JS
+// solely handled through websocket. Because of the protocol, the first websocket to send a request will be the JS
 // one.
 func (as *AuthorizationServer) responseEndpoint(w http.ResponseWriter, r *http.Request) {
 
@@ -355,25 +354,40 @@ func (as *AuthorizationServer) responseEndpoint(w http.ResponseWriter, r *http.R
 		as.log.Error().Msgf("Error while trying to upgrade connection to Websocket: %v", err)
 		return
 	}
-	p := r.URL.Path[len("/response/"):]
+	p := r.URL.Path[len("/response"):]
 	// if the path is empty, send an error and return
 	if p == "" {
 		as.log.Error().Msg("Error while receiving a request on /response: empty path")
 		return
 	} else {
-		as.connsMutex.Lock()
-		_, ok := as.internalConns[p]
-		// if no connection on that path has been made, add it to the map
-		if !ok {
-			as.internalConns[p] = c
-			as.connsMutex.Unlock()
-			// the first connection is the javascript websocket. It will simply receive a message
-			// from the client.
+		// if it is the first connection on that path, we register it and return
+		if as.isFirstConnection(p, c) {
 			return
 		}
-		as.connsMutex.Unlock()
 	}
 
+	as.handleClientResponse(p, c)
+
+}
+
+// helper method checking whether the given connection is the first one on the given path.
+func (as *AuthorizationServer) isFirstConnection(path string, c *websocket.Conn) bool {
+	as.connsMutex.Lock()
+	_, ok := as.internalConns[path]
+	// if no connection on that path has been made, add it to the map
+	if !ok {
+		as.internalConns[path] = c
+		as.connsMutex.Unlock()
+		// the first connection is the javascript websocket. It will simply receive a message
+		// from the client.
+		return true
+	}
+	as.connsMutex.Unlock()
+	return false
+}
+
+// helper method handling client messages, and sending them to the JS websocket connection.
+func (as *AuthorizationServer) handleClientResponse(path string, c *websocket.Conn) {
 	// the server will read the messages from the client, and write it to the javascript websocket.
 	mt, message, err := c.ReadMessage()
 	if err != nil {
@@ -381,15 +395,16 @@ func (as *AuthorizationServer) responseEndpoint(w http.ResponseWriter, r *http.R
 		return
 	}
 	as.connsMutex.Lock()
-	co, ok := as.internalConns[p]
+	co, ok := as.internalConns[path]
 	// verifying that the javascript connection has not been deleted
 	if string(message) != "" && ok {
 		err = co.WriteMessage(mt, message)
 		if err != nil {
 			as.log.Error().Msgf("Error while writing websocket message on /response: %v", err)
+			return
 		}
 		//once the message has been sent to the javascript websocket, delete the connection from the map
-		delete(as.internalConns, p)
+		delete(as.internalConns, path)
 	}
 	as.connsMutex.Unlock()
 }
