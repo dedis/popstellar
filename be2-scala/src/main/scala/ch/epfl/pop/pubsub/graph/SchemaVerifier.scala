@@ -14,10 +14,10 @@ import scala.util.{Failure, Success, Try}
 object SchemaVerifier {
   private final val objectMapper: ObjectMapper = new ObjectMapper()
 
-  private final val querySchemaPath = "protocol/query/query.json" // with respect to resources folder
+  private final val jsonSchemaPath = "protocol/jsonRPC.json" // with respect to resources folder
   private final val dataSchemasPath = "protocol/query/method/message/data" // with respect to resources folder
 
-  private final val querySchema: JsonSchema = setupSchemaVerification(querySchemaPath)
+  private final val jsonSchema: JsonSchema = setupSchemaVerification(jsonSchemaPath)
 
   def setupSchemaVerification(jsonPath: String): JsonSchema = {
     // get input stream of protocol's query.json file from resources folder
@@ -60,7 +60,7 @@ object SchemaVerifier {
     *   a [[GraphMessage]] containing the input if successful, or a [[PipelineError]] otherwise
     */
   def verifyRpcSchema(jsonString: JsonString): Either[PipelineError, JsonString] = {
-    verifySchema(querySchema, jsonString) match {
+    verifySchema(jsonSchema, jsonString) match {
       case Success(_) => Right(jsonString)
       case Failure(ex) =>
         val rpcId = Try(jsonString.parseJson.asJsObject.getFields("id")) match {

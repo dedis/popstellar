@@ -1,7 +1,6 @@
 package com.github.dedis.popstellar.ui.lao.event.consensus;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.*;
 import android.widget.GridView;
 
@@ -28,6 +27,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 import io.reactivex.Observable;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.functions.Consumer;
+import timber.log.Timber;
 
 import static io.reactivex.android.schedulers.AndroidSchedulers.mainThread;
 
@@ -110,7 +110,8 @@ public class ElectionStartFragment extends Fragment {
 
       if (ownNode == null) {
         // Only possible if the user wasn't an acceptor, but shouldn't have access to this fragment
-        Log.e(TAG, "Couldn't find the Node with public key : " + laoViewModel.getPublicKey());
+        Timber.tag(TAG)
+            .e("Couldn't find the Node with public key : %s", laoViewModel.getPublicKey());
         throw new IllegalStateException(
             "Only acceptors are allowed to access ElectionStartFragment");
       }

@@ -2,7 +2,7 @@ package ch.epfl.pop.json
 
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.{ParamsWithChannel, ParamsWithMap, ParamsWithMessage}
-import ch.epfl.pop.model.network.{JsonRpcRequest, MethodType}
+import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse, MethodType, ResultObject}
 import ch.epfl.pop.model.objects._
 import ch.epfl.pop.pubsub.graph.validators.RpcValidator
 import org.scalatest.Inspectors.forEvery
@@ -219,6 +219,28 @@ class HighLevelProtocolSuite extends FunSuite with Matchers {
     broadcastFromJson.id should equal(None)
   }
 
+  test("parse correctly get_messages_by_id answers") {
+
+    val chan1 = Channel("/root/nLghr9_P406lfkMjaNWqyohLxOiGlQee8zad4qAfj18=/social/8qlv4aUT5-tBodKp4RszY284CFYVaoDZK6XKiw9isSw=")
+
+    val id: String = "f1jTxH8TU2UGUBnikGU3wRTHjhOmIEQVmxZBK55QpsE="
+    val sender: String = "to_klZLtiHV446Fv98OLNdNmi-EP5OaTtbBkotTYLic="
+    val signature: String = "2VDJCWg11eNPUvZOnvq5YhqqIKLBcik45n-6o87aUKefmiywagivzD4o_YmjWHzYcb9qg-OgDBZbBNWSUgJICA=="
+    val data: String = "eyJjcmVhdGlvbiI6MTYzMTg4NzQ5NiwiaWQiOiJ4aWdzV0ZlUG1veGxkd2txMUt1b0wzT1ZhODl4amdYalRPZEJnSldjR1drPSIsIm5hbWUiOiJoZ2dnZ2dnIiwib3JnYW5pemVyIjoidG9fa2xaTHRpSFY0NDZGdjk4T0xOZE5taS1FUDVPYVR0YkJrb3RUWUxpYz0iLCJ3aXRuZXNzZXMiOltdLCJvYmplY3QiOiJsYW8iLCJhY3Rpb24iOiJjcmVhdGUifQ=="
+    val message1: Message = buildExpected(id, sender, signature, data)
+
+    val resultObject = new ResultObject(Map((chan1, Set(message1))))
+    val rpcId = Some(2)
+
+    val answerJsValue = HighLevelProtocol.jsonRpcResponseFormat.write(JsonRpcResponse(RpcValidator.JSON_RPC_VERSION, resultObject, rpcId))
+    val answerFromJson = JsonRpcResponse.buildFromJson(answerJsValue.prettyPrint)
+
+    // Test
+    answerFromJson.jsonrpc should equal(RpcValidator.JSON_RPC_VERSION)
+    answerFromJson.id should equal(rpcId)
+    answerFromJson.result.get should equal(resultObject)
+    answerFromJson.error should equal(None)
+  }
 }
 
 object MsgField extends Enumeration {

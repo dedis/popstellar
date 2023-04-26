@@ -1,7 +1,6 @@
 package com.github.dedis.popstellar.ui.lao.digitalcash;
 
 import android.app.Application;
-import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -36,6 +35,7 @@ import javax.inject.Inject;
 import dagger.hilt.android.lifecycle.HiltViewModel;
 import io.reactivex.Observable;
 import io.reactivex.*;
+import timber.log.Timber;
 
 @HiltViewModel
 public class DigitalCashViewModel extends AndroidViewModel {
@@ -157,7 +157,7 @@ public class DigitalCashViewModel extends AndroidViewModel {
       outputs.add(addOutput);
       return amount;
     } catch (Exception e) {
-      Log.e(TAG, RECEIVER_KEY_ERROR, e);
+      Timber.tag(TAG).e(e, RECEIVER_KEY_ERROR);
       return 0;
     }
   }
@@ -177,7 +177,7 @@ public class DigitalCashViewModel extends AndroidViewModel {
     try {
       laoView = getLao();
     } catch (UnknownLaoException e) {
-      Log.e(TAG, LAO_FAILURE_MESSAGE);
+      Timber.tag(TAG).e(e, LAO_FAILURE_MESSAGE);
       return Completable.error(new UnknownLaoException());
     }
 
@@ -193,7 +193,9 @@ public class DigitalCashViewModel extends AndroidViewModel {
                   .getMessageSender()
                   .publish(channel, msg)
                   .doOnComplete(
-                      () -> Log.d(TAG, "Successfully sent post transaction message : " + postTxn));
+                      () ->
+                          Timber.tag(TAG)
+                              .d("Successfully sent post transaction message : %s", postTxn));
             });
   }
 

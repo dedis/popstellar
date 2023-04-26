@@ -18,7 +18,8 @@
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:theme="@style/toolbar_style"
-        app:menu="@menu/options_menu" />
+        app:menu="@menu/options_menu"
+        app:navigationIcon="@drawable/home_icon" />
     </com.google.android.material.appbar.AppBarLayout>
 
     <FrameLayout

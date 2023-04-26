@@ -1,7 +1,5 @@
 package com.github.dedis.popstellar.model.objects.security.elGamal;
 
-import android.util.Log;
-
 import com.github.dedis.popstellar.model.objects.security.Base64URLData;
 
 import java.io.ByteArrayOutputStream;
@@ -12,9 +10,12 @@ import java.util.Objects;
 import ch.epfl.dedis.lib.crypto.*;
 import ch.epfl.dedis.lib.exception.CothorityCryptoException;
 import io.reactivex.annotations.NonNull;
+import timber.log.Timber;
 
 /** Represents a private key meant for El-Gam */
 public class ElectionPublicKey {
+
+  private static final String TAG = ElectionPublicKey.class.getSimpleName();
 
   // Point is generate with given public key
   private final Point publicKey;
@@ -106,9 +107,9 @@ public class ElectionPublicKey {
       output.write(C.toBytes());
       result = output.toByteArray();
     } catch (IOException e) {
-      Log.d(
-          "Encryption: ",
-          "Something happened during the encryption, could concatenate the final result into a byte array");
+      Timber.tag(TAG)
+          .d(
+              "Something happened during the encryption, could NOT concatenate the final result into a byte array");
       result = null;
     }
     if (Objects.isNull(result)) {

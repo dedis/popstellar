@@ -3,7 +3,6 @@ package com.github.dedis.popstellar.utility;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Color;
-import android.util.Log;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
@@ -22,6 +21,8 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Supplier;
 
+import timber.log.Timber;
+
 public class ActivityUtils {
   private static final String TAG = ActivityUtils.class.getSimpleName();
 
@@ -31,7 +32,17 @@ public class ActivityUtils {
       FragmentManager manager, int containerId, int id, Supplier<Fragment> fragmentSupplier) {
     Fragment fragment = manager.findFragmentById(id);
     // If the fragment was not created yet, create it now
-    if (fragment == null) fragment = fragmentSupplier.get();
+    if (fragment == null) {
+      fragment = fragmentSupplier.get();
+    }
+
+    // Set the new fragment in the container
+    ActivityUtils.replaceFragmentInActivity(manager, fragment, containerId);
+  }
+
+  public static void setFragmentInContainer(
+      FragmentManager manager, int containerId, Supplier<Fragment> fragmentSupplier) {
+    Fragment fragment = fragmentSupplier.get();
 
     // Set the new fragment in the container
     ActivityUtils.replaceFragmentInActivity(manager, fragment, containerId);
@@ -52,7 +63,7 @@ public class ActivityUtils {
    * @return true if the storage process was a success; false otherwise
    */
   public static boolean storePersistentData(Context context, PersistentData data) {
-    Log.d(TAG, "Initiating storage of " + data);
+    Timber.tag(TAG).d("Initiating storage of %s", data);
 
     try (ObjectOutputStream oos =
         new ObjectOutputStream(
@@ -62,7 +73,7 @@ public class ActivityUtils {
       ErrorUtils.logAndShow(context, TAG, e, R.string.error_storing_data);
       return false;
     }
-    Log.d(TAG, "storage successful");
+    Timber.tag(TAG).d("storage successful");
     return true;
   }
 
@@ -73,7 +84,7 @@ public class ActivityUtils {
    * @return the data if found, null otherwise
    */
   public static PersistentData loadPersistentData(Context context) {
-    Log.d(TAG, "Initiating loading of data");
+    Timber.tag(TAG).d("Initiating loading of data");
 
     PersistentData persistentData;
     try (ObjectInputStream ois =
@@ -87,7 +98,7 @@ public class ActivityUtils {
       return null;
     }
 
-    Log.d(TAG, "loading of " + persistentData);
+    Timber.tag(TAG).d("loading of %s", persistentData);
     return persistentData;
   }
 
@@ -98,7 +109,7 @@ public class ActivityUtils {
    * @return true if the clearing was a success; false otherwise
    */
   public static boolean clearStorage(Context context) {
-    Log.d(TAG, "clearing data");
+    Timber.tag(TAG).d("clearing data");
 
     File file = new File(context.getFilesDir(), PERSISTENT_DATA_FILE_NAME);
     return file.delete();
@@ -126,14 +137,10 @@ public class ActivityUtils {
     }
 
     String[] seed = wallet.exportSeed();
-    Log.d(
-        TAG,
-        "seed length"
-            + seed.length
-            + " address "
-            + serverAddress
-            + " subscriptions "
-            + subscriptions);
+    Timber.tag(TAG)
+        .d(
+            "seed length: %d, address: %s, subscriptions: %s",
+            seed.length, serverAddress, subscriptions);
     return storePersistentData(context, new PersistentData(seed, serverAddress, subscriptions));
   }
 
@@ -151,7 +158,7 @@ public class ActivityUtils {
     return new OnBackPressedCallback(true) {
       @Override
       public void handleOnBackPressed() {
-        Log.d(tag, "Back pressed, going to " + message);
+        Timber.tag(tag).d("Back pressed, going to %s", message);
         callback.run();
       }
     };

@@ -2,6 +2,7 @@ package com.github.dedis.popstellar.utility;
 
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
+
 import java.time.Instant;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -10,8 +11,11 @@ import java.util.regex.Pattern;
 public abstract class MessageValidator {
 
   /** URL-safe base64 pattern */
-  public static final Pattern BASE64_PATTERN =
+  private static final Pattern BASE64_PATTERN =
       Pattern.compile("^(?:[A-Za-z0-9-_]{4})*(?:[A-Za-z0-9-_]{2}==|[A-Za-z0-9-_]{3}=)?$");
+
+  private static final Pattern URL_PATTERN =
+      Pattern.compile("\\b(?:http|ws)s?:\\/\\/\\S*[^\\s.\"]");
 
   /** Prevent instantiations */
   private MessageValidator() {}
@@ -111,6 +115,13 @@ public abstract class MessageValidator {
     public MessageValidatorBuilder checkListNotEmpty(List<?> list) {
       if (list == null || list.isEmpty()) {
         throw new IllegalArgumentException("List cannot be empty");
+      }
+      return this;
+    }
+
+    public MessageValidatorBuilder checkValidUrl(String input) {
+      if (input == null || !URL_PATTERN.matcher(input).matches()) {
+        throw new IllegalArgumentException("Input is not a url");
       }
       return this;
     }
