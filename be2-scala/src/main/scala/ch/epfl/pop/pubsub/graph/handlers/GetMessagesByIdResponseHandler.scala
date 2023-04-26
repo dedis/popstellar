@@ -84,10 +84,4 @@ object GetMessagesByIdResponseHandler extends AskPatternConstants {
     }
   }
 
-  private def retry[T](n: Int)(fn: => Future[T]): Future[T] = {
-    fn recoverWith {
-      case _ if n > 1 => retry(n - 1)(fn)
-    }
-  }
-
 }
