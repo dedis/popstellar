@@ -327,15 +327,6 @@ func (h *Hub) handlePublish(socket socket.Socket, byteMessage []byte) (int, erro
 			expectedMessageID, messageID)
 	}
 
-	alreadyReceived, err := h.broadcastToServers(publish.Params.Message, publish.Params.Channel)
-	if alreadyReceived {
-		return publish.ID, xerrors.Errorf("message %s was already received", publish.Params.Message.MessageID)
-	}
-
-	if err != nil {
-		return -1, xerrors.Errorf("failed to broadcast message: %v", err)
-	}
-
 	if publish.Params.Channel == rootChannel {
 		err := h.handleRootChannelPublishMessage(socket, publish)
 		if err != nil {
@@ -569,10 +560,6 @@ func (h *Hub) handleReceivedMessage(socket socket.Socket, publish method.Publish
 		h.Unlock()
 		return xerrors.Errorf("already stored this message")
 	}
-	h.hubInbox.StoreMessage(publish.Params.Message)
-	h.globalInbox.StoreMessage(publish.Params.Message)
-	h.addMessageId(publish.Params.Channel, publish.Params.Message.MessageID)
-	h.log.Info().Msgf("Added %s to %s", publish.Params.Message.MessageID, publish.Params.Channel)
 	h.Unlock()
 
 	if publish.Params.Channel == rootChannel {
@@ -592,6 +579,13 @@ func (h *Hub) handleReceivedMessage(socket socket.Socket, publish method.Publish
 	if err != nil {
 		return xerrors.Errorf(publishError, err)
 	}
+
+	h.Lock()
+	h.hubInbox.StoreMessage(publish.Params.Message)
+	h.globalInbox.StoreMessage(publish.Params.Message)
+	h.addMessageId(publish.Params.Channel, publish.Params.Message.MessageID)
+	h.log.Info().Msgf("Added %s to %s", publish.Params.Message.MessageID, publish.Params.Channel)
+	h.Unlock()
 
 	return nil
 }

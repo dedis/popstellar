@@ -45,7 +45,7 @@ const (
 
 	// heartbeatDelay represents the number of seconds
 	// between heartbeat messages
-	heartbeatDelay = 4 * time.Second
+	heartbeatDelay = 30 * time.Second
 )
 
 var suite = crypto.Suite
@@ -86,7 +86,7 @@ type Hub struct {
 	rootInbox inbox.Inbox
 	queries   queries
 
-	//globalInboy is used to remember all messages
+	//globalInbox is used to remember all messages
 	globalInbox inbox.Inbox
 
 	// messageIdsByChannel stores all the message ids and the corresponding channel ids
@@ -115,36 +115,6 @@ type queries struct {
 	getMessagesByIdQueries map[int]method.GetMessagesById
 	// nextID store the ID of the next query
 	nextID int
-}
-
-func (q *queries) getNextCatchupMessage(channel string) method.Catchup {
-	q.Lock()
-	defer q.Unlock()
-
-	catchupID := q.nextID
-
-	baseValue := false
-	q.state[catchupID] = &baseValue
-
-	rpcMessage := method.Catchup{
-		Base: query.Base{
-			JSONRPCBase: jsonrpc.JSONRPCBase{
-				JSONRPC: "2.0",
-			},
-			Method: "catchup",
-		},
-		ID: catchupID,
-		Params: struct {
-			Channel string "json:\"channel\""
-		}{
-			channel,
-		},
-	}
-
-	q.catchupQueries[catchupID] = rpcMessage
-	q.nextID++
-
-	return rpcMessage
 }
 
 // NewHub returns a new Hub.
@@ -245,13 +215,9 @@ func (h *Hub) Receiver() chan<- socket.IncomingMessage {
 	return h.messageChan
 }
 
-// NotifyNewServer adds a socket to the sockets known by the hub and query a
-// catchup from the new server
-func (h *Hub) NotifyNewServer(socket socket.Socket) error {
+// NotifyNewServer adds a socket to the sockets known by the hub
+func (h *Hub) NotifyNewServer(socket socket.Socket) {
 	h.serverSockets.Upsert(socket)
-
-	err := h.catchupToServer(socket, rootChannel)
-	return err
 }
 
 // GetServerNumber returns the number of servers known by this one
@@ -278,21 +244,6 @@ func (h *Hub) SendAndHandleMessage(msg method.Broadcast) error {
 			h.log.Err(err).Msgf("Failed to handle self-produced message")
 		}
 	}()
-
-	return nil
-}
-
-// catchupToServer sends a catchup query to another server
-func (h *Hub) catchupToServer(socket socket.Socket, channel string) error {
-
-	rpcMessage := h.queries.getNextCatchupMessage(channel)
-
-	buf, err := json.Marshal(&rpcMessage)
-	if err != nil {
-		return xerrors.Errorf("server failed to marshal catchup query: %v", err)
-	}
-
-	socket.Send(buf)
 
 	return nil
 }
@@ -360,6 +311,7 @@ func (h *Hub) handleMessageFromClient(incomingMessage *socket.IncomingMessage) e
 	switch queryBase.Method {
 	case query.MethodPublish:
 		id, handlerErr = h.handlePublish(socket, byteMessage)
+		h.sendHeartbeatToServers()
 	case query.MethodSubscribe:
 		id, handlerErr = h.handleSubscribe(socket, byteMessage)
 	case query.MethodUnsubscribe:
@@ -435,21 +387,17 @@ func (h *Hub) handleMessageFromServer(incomingMessage *socket.IncomingMessage) e
 	}
 
 	var id int
-	var msgs []message.Message
 	var msgsByChannel map[string][]message.Message
 	var handlerErr error
 
 	switch queryBase.Method {
 	case query.MethodPublish:
 		id, handlerErr = h.handlePublish(socket, byteMessage)
+		h.sendHeartbeatToServers()
 	case query.MethodSubscribe:
 		id, handlerErr = h.handleSubscribe(socket, byteMessage)
 	case query.MethodUnsubscribe:
 		id, handlerErr = h.handleUnsubscribe(socket, byteMessage)
-	case query.MethodCatchUp:
-		msgs, id, handlerErr = h.handleCatchup(socket, byteMessage)
-	case query.MethodBroadcast:
-		handlerErr = h.handleBroadcast(socket, byteMessage)
 	case query.MethodHeartbeat:
 		handlerErr = h.handleHeartbeat(socket, byteMessage)
 	case query.MethodGetMessagesById:
@@ -465,11 +413,6 @@ func (h *Hub) handleMessageFromServer(incomingMessage *socket.IncomingMessage) e
 		err := answer.NewErrorf(-4, "failed to handle method: %v", handlerErr)
 		socket.SendError(&id, err)
 		return err
-	}
-
-	if queryBase.Method == query.MethodCatchUp {
-		socket.SendResult(id, msgs, nil)
-		return nil
 	}
 
 	if queryBase.Method == query.MethodGetMessagesById {
@@ -558,45 +501,6 @@ func (h *Hub) sendHeartbeatToServers() {
 	}
 }
 
-// broadcastToServers broadcast a message to all other known servers
-func (h *Hub) broadcastToServers(msg message.Message, channel string) (bool, error) {
-	h.Lock()
-	defer h.Unlock()
-
-	_, ok := h.hubInbox.GetMessage(msg.MessageID)
-	if ok {
-		return true, nil
-	}
-
-	broadcastMessage := method.Broadcast{
-		Base: query.Base{
-			JSONRPCBase: jsonrpc.JSONRPCBase{
-				JSONRPC: "2.0",
-			},
-			Method: "broadcast",
-		},
-		Params: struct {
-			Channel string          `json:"channel"`
-			Message message.Message `json:"message"`
-		}{
-			channel,
-			msg,
-		},
-	}
-
-	buf, err := json.Marshal(broadcastMessage)
-	if err != nil {
-		return false, xerrors.Errorf("failed to marshal broadcast query: %v", err)
-	}
-
-	h.serverSockets.SendToAll(buf)
-	h.hubInbox.StoreMessage(msg)
-	h.globalInbox.StoreMessage(msg)
-	h.addMessageId(channel, msg.MessageID)
-
-	return false, nil
-}
-
 // createLao creates a new LAO using the data in the publish parameter.
 func (h *Hub) createLao(msg message.Message, laoCreate messagedata.LaoCreate,
 	socket socket.Socket) error {
@@ -671,11 +575,6 @@ func (h *Hub) NotifyNewChannel(channelID string, channel channel.Channel, sock s
 	h.Lock()
 	h.channelByID[channelID] = channel
 	h.Unlock()
-
-	if sock.Type() == socket.ServerSocketType {
-		h.log.Info().Msgf("catching up on channel %v", channelID)
-		h.catchupToServer(sock, channelID)
-	}
 }
 
 func generateKeys() (kyber.Point, kyber.Scalar) {
