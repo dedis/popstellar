@@ -31,7 +31,6 @@ public final class RollCallCreationFragment extends AbstractEventCreationFragmen
   private RollCallCreateFragmentBinding binding;
   private LaoViewModel laoViewModel;
   private RollCallViewModel rollCallViewModel;
-  private EditText rollCallTitleEditText;
 
   public static RollCallCreationFragment newInstance() {
     return new RollCallCreationFragment();
@@ -54,7 +53,7 @@ public final class RollCallCreationFragment extends AbstractEventCreationFragmen
 
     setDateAndTimeView(binding.getRoot());
 
-    rollCallTitleEditText = binding.rollCallTitleText;
+    EditText rollCallTitleEditText = binding.rollCallTitleText;
 
     TextWatcher confirmTextWatcher =
         getConfirmTextWatcher(rollCallTitleEditText, binding.rollCallEventLocationText);

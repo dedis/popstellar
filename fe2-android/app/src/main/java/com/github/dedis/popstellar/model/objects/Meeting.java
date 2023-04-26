@@ -17,7 +17,6 @@ public class Meeting extends Event {
   private final long end;
   private final String location;
   private final long lastModified;
-
   private final String modificationId;
   private final List<String> modificationSignatures;
 
