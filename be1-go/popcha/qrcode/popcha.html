@@ -13,12 +13,8 @@
             }
             // when receiving the parameters, construct the redirect URI
             socket.onmessage = (event) => {
-                let redir = "{{.RedirectHost}}";
-                if (redir.startsWith("localhost")) {
-                    redir = "http://" + redir
-                }
                 //redirect webpage
-                window.location.href = redir + event.data;
+                window.location.href = "{{.RedirectHost}}" + event.data;
             };
             socket.onerror = (event) => {
                 console.log("Error encountered during the webSocket connection: " + event);

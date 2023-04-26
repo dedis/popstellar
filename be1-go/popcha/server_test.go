@@ -239,7 +239,7 @@ func TestAuthorizationServerWebsocket(t *testing.T) {
 	laoID := "lao"
 	nonce := "nonce"
 	state := "state"
-	redirectURI := "localhost:3003/authorize?"
+	redirectURI := "https://example.com/"
 	scope := strings.Join([]string{OpenID, Profile}, " ")
 	resType := ResTypeMulti
 
