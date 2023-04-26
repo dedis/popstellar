@@ -19,20 +19,20 @@ class GetMessagesByIdResponseHandlerSuite extends TestKit(ActorSystem("GetMessag
 
   class TestDb(testProbe: ActorRef) extends Actor {
     override def receive: Receive = {
-      case DbActor.Write(channel, message) =>
+      case DbActor.WriteAndPropagate(channel, message) =>
         testProbe ! (channel, message)
         sender() ! DbActor.DbActorAck()
     }
   }
   class FailingTestDb(testProbe: ActorRef) extends Actor {
     override def receive: Receive = {
-      case DbActor.Write(channel, message) =>
+      case DbActor.WriteAndPropagate(channel, message) =>
         testProbe ! (channel, message)
         sender() ! DbActorNAckException(0, "")
     }
   }
 
-  val testProbe = TestProbe()
+  private val testProbe = TestProbe()
   final val CHANNEL1: Channel = Channel("/root/wex/lao1Id")
   final val CHANNEL2: Channel = Channel("/root/wex/lao2Id")
   final val MESSAGE1_ID: Hash = Hash(Base64Data.encode("message1Id"))

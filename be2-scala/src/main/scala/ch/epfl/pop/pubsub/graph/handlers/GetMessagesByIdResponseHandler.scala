@@ -39,7 +39,9 @@ object GetMessagesByIdResponseHandler extends AskPatternConstants {
             case Right(jsonRpcMessage: JsonRpcResponse) => jsonRpcMessage.result match {
                 case Some(result) => result.resultMap match {
                     case Some(_) => portResponseHandler
+                    case _         => portPipelineError
                   }
+                case _         => portPipelineError
               }
             case _ => portPipelineError // Pipeline error goes directly in handlerMerger
           }
@@ -72,7 +74,7 @@ object GetMessagesByIdResponseHandler extends AskPatternConstants {
  @tailrec
   private def writeOnDb(channel: Channel, message: Message, dbActorRef: AskableActorRef, remainingAttempts: Int): Unit = {
     if (remainingAttempts != 0) {
-      val ask = dbActorRef ? DbActor.Write(channel, message)
+      val ask = dbActorRef ? DbActor.WriteAndPropagate(channel, message)
       Await.ready(ask, duration).value match {
         case Some(Success(DbActorNAckException(_, _))) =>
           writeOnDb(channel, message, dbActorRef, remainingAttempts - 1)
