@@ -5,17 +5,18 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.Meeting;
-import com.github.dedis.popstellar.model.objects.security.*;
+import com.github.dedis.popstellar.model.objects.security.KeyPair;
+import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.MeetingRepository;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
-import com.github.dedis.popstellar.testutils.*;
+import com.github.dedis.popstellar.testutils.BundleBuilder;
+import com.github.dedis.popstellar.testutils.MessageSenderHelper;
 import com.github.dedis.popstellar.testutils.fragment.ActivityFragmentScenarioRule;
 import com.github.dedis.popstellar.ui.lao.LaoActivity;
 import com.github.dedis.popstellar.utility.Constants;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
-import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 
 import org.junit.Rule;
@@ -71,8 +72,6 @@ public class MeetingFragmentTest {
   private static final Meeting MEETING =
       new Meeting(MEETING_ID, MEETING_TITLE, CREATION, START, END, LOCATION, CREATION);
 
-  private static final PoPToken POP_TOKEN = Base64DataUtils.generatePoPToken();
-
   @Inject MeetingRepository meetingRepository;
 
   @BindValue @Mock LAORepository laoRepo;
@@ -93,7 +92,7 @@ public class MeetingFragmentTest {
   public final ExternalResource setupRule =
       new ExternalResource() {
         @Override
-        protected void before() throws UnknownLaoException, KeyException {
+        protected void before() throws UnknownLaoException {
           hiltRule.inject();
           when(laoRepo.getLaoObservable(anyString())).thenReturn(laoSubject);
           when(laoRepo.getLaoView(any())).thenAnswer(invocation -> new LaoView(LAO));

@@ -31,7 +31,8 @@ public class MeetingTest {
 
   @Test
   public void testCreateState() {
-    Meeting meeting = new Meeting(ID, NAME, CREATION, START, END, LOCATION, LAST_MODIFIED);
+    Meeting meeting =
+        new Meeting(ID, NAME, CREATION, START + 10, END + 10, LOCATION, LAST_MODIFIED);
     assertEquals(meeting.getState(), EventState.CREATED);
   }
 
