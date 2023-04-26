@@ -172,7 +172,7 @@ func TestAuthRequestFails(t *testing.T) {
 	// testing request with valid number of parameters, but invalid scope
 
 	invalidScopeURL := createAuthRequestURL("n", "c", "invalid", "l", "localhost:3001", ResTypeMulti, " ")
-	res, err = http.Get(invalidScopeURL)
+	_, err = http.Get(invalidScopeURL)
 
 	// no error from the get request
 	require.NoError(t, err)
@@ -186,7 +186,7 @@ func TestAuthRequestFails(t *testing.T) {
 	// testing request with wrong response type
 	invalidResTypeURL := createAuthRequestURL("n", "c", OpenID, "l", "localhost:3001", "invalid", " ")
 
-	res, err = http.Get(invalidResTypeURL)
+	_, err = http.Get(invalidResTypeURL)
 
 	// no error from the get request
 	require.NoError(t, err)
