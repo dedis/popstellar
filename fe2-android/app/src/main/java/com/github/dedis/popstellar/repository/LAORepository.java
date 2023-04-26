@@ -45,6 +45,12 @@ public class LAORepository {
     return laoById.get(channel.extractLaoId());
   }
 
+  /**
+   * Checks that a LAO with the given id exists in the repo
+   *
+   * @param laoId the LAO id to check
+   * @return true if a LAO with the given id exists
+   */
   public boolean containsLao(String laoId) {
     return laoById.containsKey(laoId);
   }

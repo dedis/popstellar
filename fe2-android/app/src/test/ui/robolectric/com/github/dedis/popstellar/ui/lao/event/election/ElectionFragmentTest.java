@@ -63,7 +63,7 @@ public class ElectionFragmentTest {
   private static final String LAO_NAME = "lao";
   private static final KeyPair SENDER_KEY = generateKeyPair();
   private static final PublicKey SENDER = SENDER_KEY.getPublicKey();
-  private static final long CREATION = Instant.now().getEpochSecond();
+  private static final long CREATION = Instant.now().getEpochSecond() - 1000;
   private static final Lao LAO = new Lao(LAO_NAME, SENDER, CREATION);
   private static final String LAO_ID = LAO.getId();
   private static final String TITLE = "Election name";
