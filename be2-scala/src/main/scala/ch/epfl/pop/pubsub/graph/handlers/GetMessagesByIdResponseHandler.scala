@@ -15,6 +15,7 @@ import ch.epfl.pop.model.objects.{Channel, DbActorNAckException}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
 import scala.util.Success
+import scala.util.control.Breaks.break
 
 /** This object's job is to handle responses it receives from other servers after sending a heartbeat. When receiving the missing messages, the server's job is to write them on the data base.
   */

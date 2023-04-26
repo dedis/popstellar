@@ -21,6 +21,7 @@ class GetMessagesByIdResponseHandlerSuite extends TestKit(ActorSystem("GetMessag
     override def receive: Receive = {
       case DbActor.Write(channel, message) =>
         testProbe ! (channel, message)
+        sender() ! DbActor.DbActorAck()
     }
   }
   class FailingTestDb(testProbe: ActorRef) extends Actor {
