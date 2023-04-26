@@ -171,8 +171,12 @@ const RollCallOpen = ({
       {!isOrganizer && (
         <>
           <Text style={Typography.paragraph}>{STRINGS.roll_call_open_attendee}</Text>
+          {/* Spaces are added in the QRCode's content to spread the data on the surface
+           *  See comment in QRCode.tsx for more information */}
           <QRCode
-            value={ScannablePopToken.encodePopToken({ pop_token: popToken })}
+            value={`${ScannablePopToken.encodePopToken({
+              pop_token: popToken,
+            })}                    `}
             overlayText={STRINGS.roll_call_qrcode_text}
           />
         </>

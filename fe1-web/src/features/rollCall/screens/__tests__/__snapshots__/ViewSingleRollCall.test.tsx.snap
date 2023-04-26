@@ -382,7 +382,7 @@ exports[`EventRollCall render correctly non organizers closed roll calls 1`] = `
                               >
                                 myRollCall
                               </Text>
-                              
+
 
                               <Text>
                                 location
@@ -403,7 +403,7 @@ exports[`EventRollCall render correctly non organizers closed roll calls 1`] = `
                                 <Text>
                                   2022-05-28
                                 </Text>
-                                
+
 
                                 <Text>
                                   00:00:00 - 00:00:00
@@ -1256,7 +1256,7 @@ exports[`EventRollCall render correctly non organizers created roll calls 1`] = 
                               >
                                 myRollCall
                               </Text>
-                              
+
 
                               <Text>
                                 location
@@ -1277,7 +1277,7 @@ exports[`EventRollCall render correctly non organizers created roll calls 1`] = 
                                 <Text>
                                   2022-05-28
                                 </Text>
-                                
+
 
                                 <Text>
                                   00:00:00 - 00:00:00
@@ -1682,7 +1682,7 @@ exports[`EventRollCall render correctly non organizers opened roll calls 1`] = `
                               >
                                 myRollCall
                               </Text>
-                              
+
 
                               <Text>
                                 location
@@ -1700,7 +1700,7 @@ exports[`EventRollCall render correctly non organizers opened roll calls 1`] = `
                               }
                             >
                               Ending
-                               
+
                               <time
                                 dateTime="2021-05-07T03:20:00.000Z"
                                 title="2021-05-07 03:20"
@@ -1723,7 +1723,7 @@ exports[`EventRollCall render correctly non organizers opened roll calls 1`] = `
                             </Text>
                             <qrcode
                               overlayText="Scan to add attendee"
-                              value="{"pop_token":""}"
+                              value="{"pop_token":""}                    "
                             />
                             <View
                               style={
@@ -2571,7 +2571,7 @@ exports[`EventRollCall render correctly non organizers re-opened roll calls 1`] 
                               >
                                 myRollCall
                               </Text>
-                              
+
 
                               <Text>
                                 location
@@ -2589,7 +2589,7 @@ exports[`EventRollCall render correctly non organizers re-opened roll calls 1`] 
                               }
                             >
                               Ending
-                               
+
                               <time
                                 dateTime="2021-05-07T03:20:00.000Z"
                                 title="2021-05-07 03:20"
@@ -2612,7 +2612,7 @@ exports[`EventRollCall render correctly non organizers re-opened roll calls 1`] 
                             </Text>
                             <qrcode
                               overlayText="Scan to add attendee"
-                              value="{"pop_token":""}"
+                              value="{"pop_token":""}                    "
                             />
                             <View
                               style={
@@ -3460,7 +3460,7 @@ exports[`EventRollCall render correctly organizers closed roll calls 1`] = `
                               >
                                 myRollCall
                               </Text>
-                              
+
 
                               <Text>
                                 location
@@ -3481,7 +3481,7 @@ exports[`EventRollCall render correctly organizers closed roll calls 1`] = `
                                 <Text>
                                   2022-05-28
                                 </Text>
-                                
+
 
                                 <Text>
                                   00:00:00 - 00:00:00
@@ -4424,7 +4424,7 @@ exports[`EventRollCall render correctly organizers created roll calls 1`] = `
                               >
                                 myRollCall
                               </Text>
-                              
+
 
                               <Text>
                                 location
@@ -4445,7 +4445,7 @@ exports[`EventRollCall render correctly organizers created roll calls 1`] = `
                                 <Text>
                                   2022-05-28
                                 </Text>
-                                
+
 
                                 <Text>
                                   00:00:00 - 00:00:00
@@ -4940,7 +4940,7 @@ exports[`EventRollCall render correctly organizers opened roll calls 1`] = `
                               >
                                 myRollCall
                               </Text>
-                              
+
 
                               <Text>
                                 location
@@ -4958,7 +4958,7 @@ exports[`EventRollCall render correctly organizers opened roll calls 1`] = `
                               }
                             >
                               Ending
-                               
+
                               <time
                                 dateTime="2021-05-07T03:20:00.000Z"
                                 title="2021-05-07 03:20"
@@ -5983,7 +5983,7 @@ exports[`EventRollCall render correctly organizers re-opened roll calls 1`] = `
                               >
                                 myRollCall
                               </Text>
-                              
+
 
                               <Text>
                                 location
@@ -6001,7 +6001,7 @@ exports[`EventRollCall render correctly organizers re-opened roll calls 1`] = `
                               }
                             >
                               Ending
-                               
+
                               <time
                                 dateTime="2021-05-07T03:20:00.000Z"
                                 title="2021-05-07 03:20"
