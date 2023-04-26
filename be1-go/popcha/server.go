@@ -44,6 +44,9 @@ const (
 	qrSize = 10
 
 	badRequestCode = 400
+
+	//endpoint for websocket communication
+	responseEndpoint = "/response"
 )
 
 // constant parameter names
@@ -243,7 +246,7 @@ func (as *AuthorizationServer) newChallengeServer(endpoint string) *http.Server 
 	// handler for request endpoint
 	r.PathPrefix(fmt.Sprintf("/%s", endpoint)).HandlerFunc(as.HandleRequest)
 	//handler for pop backend communication endpoint
-	r.PathPrefix("/response").HandlerFunc(as.responseEndpoint)
+	r.PathPrefix(responseEndpoint).HandlerFunc(as.responseEndpoint)
 
 	srv := &http.Server{
 		Addr:    as.challengeServAddr,
@@ -322,7 +325,7 @@ func (as *AuthorizationServer) generateQRCode(w http.ResponseWriter, req *http.R
 		RedirectHost  string
 	}{
 		SVGImage:      template.HTML(buffer.String()),
-		WebSocketAddr: "ws://" + req.Host + strings.Join([]string{"/response", laoID, "authentication", clientID, nonce}, "/"),
+		WebSocketAddr: "ws://" + req.Host + strings.Join([]string{responseEndpoint, laoID, "authentication", clientID, nonce}, "/"),
 		RedirectHost:  redirectHost,
 	}
 
@@ -354,7 +357,7 @@ func (as *AuthorizationServer) responseEndpoint(w http.ResponseWriter, r *http.R
 		as.log.Error().Msgf("Error while trying to upgrade connection to Websocket: %v", err)
 		return
 	}
-	p := r.URL.Path[len("/response"):]
+	p := r.URL.Path[len(responseEndpoint):]
 	// if the path is empty, send an error and return
 	if p == "" {
 		as.log.Error().Msg("Error while receiving a request on /response: empty path")

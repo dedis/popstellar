@@ -253,7 +253,7 @@ func TestAuthorizationServerWebsocket(t *testing.T) {
 	time.Sleep(2 * time.Second)
 
 	// constructing the unique URL endpoint of the PopCHA Websocket server.
-	popChaPath := strings.Join([]string{"/response", laoID, "authentication", clientID, nonce}, "/")
+	popChaPath := strings.Join([]string{responseEndpoint, laoID, "authentication", clientID, nonce}, "/")
 
 	//  ws://popcha.example/response/lao/authentication/client/nonce
 	popChaWsURL := url.URL{Scheme: "ws", Host: "localhost:3003", Path: popChaPath}
@@ -294,7 +294,7 @@ func TestAuthorizationServerWorkflow(t *testing.T) {
 	time.Sleep(200 * time.Millisecond)
 
 	// test error on /response with empty path suffix
-	emptyPathURL := url.URL{Scheme: "ws", Host: "localhost:3003", Path: "/response"}
+	emptyPathURL := url.URL{Scheme: "ws", Host: "localhost:3003", Path: responseEndpoint}
 	emptyPathClient, err := newWSClient(emptyPathURL)
 	require.NoError(t, err)
 
@@ -306,7 +306,7 @@ func TestAuthorizationServerWorkflow(t *testing.T) {
 	time.Sleep(200 * time.Millisecond)
 
 	// create two clients, a sender and a receiver, on a valid path
-	validPath := strings.Join([]string{"/response", "laoid", "authentication", "clientid", "nonce"}, "/")
+	validPath := strings.Join([]string{responseEndpoint, "laoid", "authentication", "clientid", "nonce"}, "/")
 
 	validURL := url.URL{Scheme: "ws", Host: "localhost:3003", Path: validPath}
 
