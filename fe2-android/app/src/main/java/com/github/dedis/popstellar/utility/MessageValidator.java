@@ -28,7 +28,7 @@ public abstract class MessageValidator {
 
     // Defines how old messages can be to be considered valid, keeping it non-restrictive here for
     // now
-    public static final long VALID_DELAY = 10000000;
+    public static final long VALID_DELAY = 100000000;
     private final long CURRENT_TIME = Instant.now().getEpochSecond();
     private final long VALID_PAST_TIME = CURRENT_TIME - VALID_DELAY;
 

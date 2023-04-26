@@ -192,7 +192,7 @@ public class ElectionFragmentTest {
     InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
     verify(messageSenderHelper.getMockedSender())
-        .publish(any(), eq(ELECTION.getChannel()), any(OpenElection.class));
+        .publish(any(), eq(ELECTION.getChannel()), any(ElectionOpen.class));
     messageSenderHelper.assertSubscriptions();
   }
 

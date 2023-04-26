@@ -45,6 +45,10 @@ public class LAORepository {
     return laoById.get(channel.extractLaoId());
   }
 
+  public boolean containsLao(String laoId) {
+    return laoById.containsKey(laoId);
+  }
+
   public Observable<List<String>> getAllLaoIds() {
     return laosSubject;
   }

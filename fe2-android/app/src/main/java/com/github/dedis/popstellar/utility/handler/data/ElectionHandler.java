@@ -47,6 +47,11 @@ public final class ElectionHandler {
     Channel channel = context.getChannel();
     MessageID messageId = context.getMessageId();
 
+    String laoId = electionSetup.getLaoId();
+    if (!laoRepo.containsLao(laoId)) {
+      throw new UnknownLaoException(laoId);
+    }
+
     if (!channel.isLaoChannel()) {
       throw new InvalidChannelException(electionSetup, "an lao channel", channel);
     }
@@ -126,28 +131,34 @@ public final class ElectionHandler {
   }
 
   /**
-   * Process an OpenElection message.
+   * Process an ElectionOpen message.
    *
    * @param context the HandlerContext of the message
-   * @param openElection the message that was received
+   * @param electionOpen the message that was received
    */
   @SuppressWarnings("unused")
-  public void handleElectionOpen(HandlerContext context, OpenElection openElection)
-      throws InvalidStateException, UnknownElectionException {
+  public void handleElectionOpen(HandlerContext context, ElectionOpen electionOpen)
+      throws InvalidStateException, UnknownElectionException, UnknownLaoException {
     Channel channel = context.getChannel();
 
     Timber.tag(TAG).d("handleOpenElection: channel %s", channel);
+
+    String laoId = electionOpen.getLaoId();
+    if (!laoRepo.containsLao(laoId)) {
+      throw new UnknownLaoException(laoId);
+    }
+
     Election election = electionRepository.getElectionByChannel(channel);
 
     // If the state is not created, then this message is invalid
     if (election.getState() != CREATED) {
       throw new InvalidStateException(
-          openElection, "election", election.getState().name(), CREATED.name());
+          electionOpen, "election", election.getState().name(), CREATED.name());
     }
 
     // Sets the start time to now
     Election updated =
-        election.builder().setState(OPENED).setStart(openElection.getOpenedAt()).build();
+        election.builder().setState(OPENED).setStart(electionOpen.getOpenedAt()).build();
 
     Timber.tag(TAG).d("election opened %d", updated.getStartTimestamp());
     electionRepository.updateElection(updated);

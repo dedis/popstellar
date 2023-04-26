@@ -166,9 +166,9 @@ public class ElectionHandlerTest {
   private void handleElectionOpen(Election election)
       throws UnknownElectionException, UnknownRollCallException, UnknownLaoException,
           DataHandlingException, NoRollCallException {
-    OpenElection openElection = new OpenElection(LAO.getId(), election.getId(), OPENED_AT);
+    ElectionOpen electionOpen = new ElectionOpen(LAO.getId(), election.getId(), OPENED_AT);
 
-    MessageGeneral message = new MessageGeneral(SENDER_KEY, openElection, gson);
+    MessageGeneral message = new MessageGeneral(SENDER_KEY, electionOpen, gson);
     messageHandler.handleMessage(messageSender, election.getChannel(), message);
   }
 

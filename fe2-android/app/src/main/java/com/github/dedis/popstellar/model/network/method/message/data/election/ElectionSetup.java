@@ -15,9 +15,9 @@ import java.util.stream.Collectors;
 @Immutable
 public class ElectionSetup extends Data {
 
-  private final String id;
+  private final String electionId;
   private final String name;
-  private final String lao;
+  private final String laoId;
 
   @SerializedName(value = "created_at")
   private final long createdAt;
@@ -40,7 +40,7 @@ public class ElectionSetup extends Data {
    * @param end end timestamp
    * @param laoId id of the LAO
    * @param electionVersion version of the election
-   * @param questions information
+   * @param questions list of election questions
    */
   public ElectionSetup(
       @NonNull String name,
@@ -62,11 +62,13 @@ public class ElectionSetup extends Data {
     this.createdAt = creation;
     this.startTime = start;
     this.endTime = end;
-    this.lao = laoId;
+    this.laoId = laoId;
     this.electionVersion = electionVersion;
-    this.id = Election.generateElectionSetupId(laoId, createdAt, name);
+    this.electionId = Election.generateElectionSetupId(laoId, createdAt, name);
     this.questions =
-        questions.stream().map(q -> new ElectionQuestion(this.id, q)).collect(Collectors.toList());
+        questions.stream()
+            .map(q -> new ElectionQuestion(this.electionId, q))
+            .collect(Collectors.toList());
   }
 
   @Override
@@ -79,8 +81,8 @@ public class ElectionSetup extends Data {
     return Action.SETUP.getAction();
   }
 
-  public String getId() {
-    return id;
+  public String getElectionId() {
+    return electionId;
   }
 
   public String getName() {
@@ -103,8 +105,8 @@ public class ElectionSetup extends Data {
     return new ArrayList<>(questions);
   }
 
-  public String getLao() {
-    return lao;
+  public String getLaoId() {
+    return laoId;
   }
 
   public ElectionVersion getElectionVersion() {
@@ -123,7 +125,7 @@ public class ElectionSetup extends Data {
     return getCreation() == that.getCreation()
         && getElectionVersion() == that.getElectionVersion()
         && startTime == that.getStartTime()
-        && java.util.Objects.equals(getId(), that.getId())
+        && java.util.Objects.equals(getElectionId(), that.getElectionId())
         && createdAt == that.getCreation()
         && java.util.Objects.equals(getName(), that.getName())
         && endTime == that.getEndTime()
@@ -133,7 +135,7 @@ public class ElectionSetup extends Data {
   @Override
   public int hashCode() {
     return java.util.Objects.hash(
-        getId(), getName(), getCreation(), getStartTime(), getEndTime(), getQuestions());
+        getElectionId(), getName(), getCreation(), getStartTime(), getEndTime(), getQuestions());
   }
 
   @NonNull
@@ -144,10 +146,10 @@ public class ElectionSetup extends Data {
         + electionVersion
         + '\''
         + ", id='"
-        + id
+        + electionId
         + '\''
         + ", lao='"
-        + lao
+        + laoId
         + '\''
         + ", name='"
         + name

@@ -108,7 +108,7 @@ public class ElectionViewModel extends AndroidViewModel {
   }
 
   /**
-   * Opens the election and publish opening message triggers OpenElection event on success or logs
+   * Opens the election and publish opening message triggers ElectionOpen event on success or logs
    * appropriate error
    *
    * @param election election to be opened
@@ -127,12 +127,12 @@ public class ElectionViewModel extends AndroidViewModel {
     String laoViewId = laoView.getId();
 
     // The time will have to be modified on the backend
-    OpenElection openElection =
-        new OpenElection(laoViewId, election.getId(), election.getStartTimestamp());
+    ElectionOpen electionOpen =
+        new ElectionOpen(laoViewId, election.getId(), election.getStartTimestamp());
 
     return networkManager
         .getMessageSender()
-        .publish(keyManager.getMainKeyPair(), channel, openElection);
+        .publish(keyManager.getMainKeyPair(), channel, electionOpen);
   }
 
   public Completable endElection(Election election) {
