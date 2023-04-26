@@ -1,7 +1,7 @@
 package ch.epfl.pop.authentication
 
 import akka.http.scaladsl.model.StatusCodes.ClientError
-import akka.http.scaladsl.model.{AttributeKey, HttpRequest, HttpResponse}
+import akka.http.scaladsl.model.{AttributeKey, HttpRequest, HttpResponse, StatusCodes}
 import akka.http.scaladsl.server
 import akka.http.scaladsl.server.Directives._
 import ch.epfl.pop.authentication.Authenticate.verifyResponseType
@@ -12,7 +12,7 @@ object Authenticate {
 
   type VerificationState = Either[(String, String), Unit]
 
-  val FAILURE_ERROR_CODE = 302
+  private val mandatoryParameters =  Set("response_type", "client_id", "redirect_uri", "scope", "login_hint", "nonce")
 
   def buildRoute(): server.Route = {
     extractRequest { request =>
@@ -33,7 +33,14 @@ object Authenticate {
             case Right(_) => complete(generateChallenge(request))
           }
         }
-      } ~ complete(authenticationFailure("invalid_request", "invalid request parameters", None))
+      } ~ extractUri { uri =>
+        complete {
+          val attributesKeys = uri.query().toMap.keys.toSet
+          val missingParams = mandatoryParameters.diff(attributesKeys).map(name => s"[$name]")
+          val errorDescription = missingParams.mkString("Missing parameters: ", " ", "")
+          authenticationFailure("invalid_request", errorDescription, None)
+        }
+      }
     }
   }
 
@@ -58,14 +65,14 @@ object Authenticate {
   }
 
   def generateChallenge(request: HttpRequest): HttpResponse =
-    HttpResponse(entity= request.toString()) // TODO: add code for generating the challenge qrcode page
+    HttpResponse(status = StatusCodes.OK, entity= request.toString()) // TODO: add code for generating the challenge qrcode page
 
   def authenticationFailure(error: String, errorDescription: String, state: Option[String]): HttpResponse = {
-  val response = HttpResponse(status= ClientError(FAILURE_ERROR_CODE)(error, "Found"))
-    response.addAttribute(AttributeKey("error"), error)
-    response.addAttribute(AttributeKey("error_description"), errorDescription)
+    var response = HttpResponse(status= StatusCodes.Found)
+      .addAttribute(AttributeKey("error"), error)
+      .addAttribute(AttributeKey("error_description"), errorDescription)
     if (state.isDefined)
-      response.addAttribute(AttributeKey("state"), state)
+      response = response.addAttribute(AttributeKey("state"), state)
     response
   }
 }
