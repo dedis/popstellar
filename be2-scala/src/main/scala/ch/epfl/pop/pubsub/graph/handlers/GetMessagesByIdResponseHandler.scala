@@ -12,10 +12,9 @@ import akka.stream.FlowShape
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.objects.{Channel, DbActorNAckException}
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.{Await, Future}
+import scala.annotation.tailrec
+import scala.concurrent.Await
 import scala.util.Success
-import scala.util.control.Breaks.break
 
 /** This object's job is to handle responses it receives from other servers after sending a heartbeat. When receiving the missing messages, the server's job is to write them on the data base.
   */
@@ -40,9 +39,7 @@ object GetMessagesByIdResponseHandler extends AskPatternConstants {
             case Right(jsonRpcMessage: JsonRpcResponse) => jsonRpcMessage.result match {
                 case Some(result) => result.resultMap match {
                     case Some(_) => portResponseHandler
-                    case _       => portPipelineError
                   }
-                case _ => portPipelineError
               }
             case _ => portPipelineError // Pipeline error goes directly in handlerMerger
           }
@@ -57,7 +54,6 @@ object GetMessagesByIdResponseHandler extends AskPatternConstants {
 
         /* close the shape */
         FlowShape(handlerPartitioner.in, handlerMerger.out)
-
       }
   })
 
@@ -71,8 +67,9 @@ object GetMessagesByIdResponseHandler extends AskPatternConstants {
       })
       Right(jsonRpcMessage)
     case value @ _ => value
-  }.filter(_ => false)
+  }.filter(_ => false) // instead of implementing a Sink[GraphMessage], we chose to implement it as a Flow and filter every single outgoing graphMessage
 
+ @tailrec
   private def writeOnDb(channel: Channel, message: Message, dbActorRef: AskableActorRef, remainingAttempts: Int): Unit = {
     if (remainingAttempts != 0) {
       val ask = dbActorRef ? DbActor.Write(channel, message)
