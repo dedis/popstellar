@@ -30,6 +30,9 @@ const (
 	MaxChecks     = 100000
 	ValidAlphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
 	BaseURL       = "http://localhost:3003/authorize?"
+
+	//message content for the websocket workflow test
+	wsData = "Hello receiver!"
 )
 
 // genString is a helper method generating a string in the alphanumerical alphabet
@@ -275,6 +278,79 @@ func TestAuthorizationServerWebsocket(t *testing.T) {
 	<-s.Stopped
 }
 
+// TestAuthorizationServerWorkflow tests the control flow of the websocket communication.
+// It tries to connect on /response endpoint without any additional path, and then
+// tests the protocol with well-behaved clients using a valid path.
+func TestAuthorizationServerWorkflow(t *testing.T) {
+	logTester := zltest.New(t)
+
+	l := zerolog.New(logTester).With().Timestamp().Logger()
+	s, err := NewAuthServer(fakeHub{}, "authorize", "localhost",
+		3003, "random_string", l)
+	require.NoError(t, err, "could not create AuthServer")
+	s.Start()
+	<-s.Started
+	// let the server properly start
+	time.Sleep(200 * time.Millisecond)
+
+	// test error on /response with empty path suffix
+	emptyPathURL := url.URL{Scheme: "ws", Host: "localhost:3003", Path: "/response"}
+	emptyPathClient, err := newWSClient(emptyPathURL)
+	require.NoError(t, err)
+
+	// send any message to the websocket server
+	err = emptyPathClient.conn.WriteMessage(websocket.TextMessage, []byte("test"))
+	logTester.LastEntry().ExpMsg("Error while receiving a request on /response: empty path")
+	require.NoError(t, err)
+
+	time.Sleep(200 * time.Millisecond)
+
+	// create two clients, a sender and a receiver, on a valid path
+	validPath := strings.Join([]string{"/response", "laoid", "authentication", "clientid", "nonce"}, "/")
+
+	validURL := url.URL{Scheme: "ws", Host: "localhost:3003", Path: validPath}
+
+	// creating the clients
+
+	// the receiver instantiates the connection first. The server will keep this connection in memory
+	clientReceiver, err := newWSClient(validURL)
+	require.NoError(t, err)
+
+	// the sender's connection is not saved, but the server will wait for a message from it.
+	clientSender, err := newWSClient(validURL)
+	require.NoError(t, err)
+
+	// checking the two clients are different
+	require.NotEqual(t, clientSender.id, clientReceiver.id)
+
+	received := make(chan int)
+	go func() {
+		mt, message, err := clientReceiver.conn.ReadMessage()
+		require.NoError(t, err)
+		require.Equal(t, websocket.TextMessage, mt)
+		require.Equal(t, wsData, string(message))
+		l.Info().Msg("Received the correct message from the sender client.")
+		received <- 1
+	}()
+
+	err = clientSender.conn.WriteMessage(websocket.TextMessage, []byte(wsData))
+	require.NoError(t, err)
+
+	<-received
+
+	logTester.LastEntry().ExpLevel(zerolog.InfoLevel)
+
+	time.Sleep(time.Second)
+
+	require.NoError(t, clientReceiver.conn.Close())
+	require.NoError(t, clientSender.conn.Close())
+	err = s.Shutdown()
+	require.NoError(t, err)
+	<-s.Stopped
+
+}
+
+// TestGenerateQrCodeOnEdgeCases tests long inputs, or special characters on the generateQrCode method
 func TestGenerateQrCodeOnEdgeCases(t *testing.T) {
 	// create authorization server
 	l := zerolog.New(io.Discard)
