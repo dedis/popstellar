@@ -34,11 +34,11 @@ public class MeetingRepository {
   }
 
   /**
-   * This add the meeting in the repository
+   * This add/replace the meeting in the repository
    *
-   * @param meeting the meeting to add
+   * @param meeting the meeting to add/replace
    */
-  public void addMeeting(String laoId, Meeting meeting) {
+  public void updateMeeting(String laoId, Meeting meeting) {
     if (laoId == null) {
       throw new IllegalArgumentException("Lao id is null");
     }

@@ -50,8 +50,7 @@ public abstract class DataRegistryModule {
     // Meeting
     builder
         .add(MEETING, CREATE, CreateMeeting.class, meetingHandler::handleCreateMeeting)
-        // TODO: Replace with meetingHandler::handleStateMeeting
-        .add(MEETING, STATE, StateMeeting.class, null);
+        .add(MEETING, STATE, StateMeeting.class, meetingHandler::handleStateMeeting);
 
     // Message
     builder.add(MESSAGE, WITNESS, WitnessMessageSignature.class, null);

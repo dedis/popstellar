@@ -2,6 +2,8 @@ package com.github.dedis.popstellar.model.objects.event;
 
 import com.github.dedis.popstellar.model.objects.Meeting;
 
+import java.util.List;
+
 /** This class is a builder for the Meeting object */
 public class MeetingBuilder {
   private String id;
@@ -11,21 +13,23 @@ public class MeetingBuilder {
   private long end;
   private String location;
   private long lastModified;
-
-  // TODO: this class could be extended with signatures when implementing StateMeeting
+  private String modificationId;
+  private List<String> modificationSignatures;
 
   public MeetingBuilder() {
     // Empty constructor required
   }
 
   public MeetingBuilder(Meeting meeting) {
-    this.id = meeting.getId();
-    this.name = meeting.getName();
-    this.creation = meeting.getCreation();
-    this.start = meeting.getStartTimestamp();
-    this.end = meeting.getEndTimestamp();
-    this.location = meeting.getLocation();
-    this.lastModified = meeting.getLastModified();
+    id = meeting.getId();
+    name = meeting.getName();
+    creation = meeting.getCreation();
+    start = meeting.getStartTimestamp();
+    end = meeting.getEndTimestamp();
+    location = meeting.getLocation();
+    lastModified = meeting.getLastModified();
+    modificationId = meeting.getModificationId();
+    modificationSignatures = meeting.getModificationSignatures();
   }
 
   public MeetingBuilder setId(String id) {
@@ -66,10 +70,41 @@ public class MeetingBuilder {
     return this;
   }
 
+  public MeetingBuilder setModificationId(String modificationId) {
+    if (modificationId == null) {
+      throw new IllegalArgumentException("Modification Id is null");
+    }
+    this.modificationId = modificationId;
+    return this;
+  }
+
+  public MeetingBuilder setModificationSignatures(List<String> modificationSignatures) {
+    if (modificationSignatures == null) {
+      throw new IllegalArgumentException("Modification signatures list is null");
+    }
+    this.modificationSignatures = modificationSignatures;
+    return this;
+  }
+
   public Meeting build() {
     if (location == null) {
       throw new IllegalStateException("Location is null");
     }
-    return new Meeting(id, name, creation, start, end, location, lastModified);
+    if (modificationId == null) {
+      throw new IllegalArgumentException("Modification Id is null");
+    }
+    if (modificationSignatures == null) {
+      throw new IllegalArgumentException("Modification signatures list is null");
+    }
+    return new Meeting(
+        id,
+        name,
+        creation,
+        start,
+        end,
+        location,
+        lastModified,
+        modificationId,
+        modificationSignatures);
   }
 }

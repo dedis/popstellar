@@ -6,6 +6,8 @@ import com.github.dedis.popstellar.model.Immutable;
 import com.github.dedis.popstellar.model.objects.event.*;
 import com.github.dedis.popstellar.utility.security.Hash;
 
+import java.util.List;
+
 @Immutable
 public class Meeting extends Event {
   private final String id;
@@ -16,11 +18,8 @@ public class Meeting extends Event {
   private final String location;
   private final long lastModified;
 
-  // TODO: to implement when adding the StateMeeting functionality
-  /*
-  private final String modificationId = null;
-  private final List<String> modificationSignatures = null;
-  */
+  private final String modificationId;
+  private final List<String> modificationSignatures;
 
   public Meeting(
       String id,
@@ -29,7 +28,9 @@ public class Meeting extends Event {
       long start,
       long end,
       String location,
-      long lastModified) {
+      long lastModified,
+      String modificationId,
+      List<String> modificationSignatures) {
     this.id = id;
     this.name = name;
     this.creation = creation;
@@ -37,6 +38,8 @@ public class Meeting extends Event {
     this.end = end;
     this.location = location;
     this.lastModified = lastModified;
+    this.modificationId = modificationId;
+    this.modificationSignatures = modificationSignatures;
   }
 
   public String getId() {
@@ -58,6 +61,14 @@ public class Meeting extends Event {
 
   public long getLastModified() {
     return lastModified;
+  }
+
+  public String getModificationId() {
+    return modificationId;
+  }
+
+  public List<String> getModificationSignatures() {
+    return modificationSignatures;
   }
 
   @Override
@@ -140,6 +151,12 @@ public class Meeting extends Event {
         + '\''
         + ", lastModified="
         + lastModified
+        + ", modificationId='"
+        + modificationId
+        + '\''
+        + ", modificationSignatures='"
+        + modificationSignatures
+        + '\''
         + '}';
   }
 }

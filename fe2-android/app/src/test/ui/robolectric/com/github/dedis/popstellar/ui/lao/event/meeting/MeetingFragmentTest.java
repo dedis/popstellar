@@ -29,8 +29,7 @@ import org.mockito.junit.MockitoTestRule;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
+import java.util.*;
 
 import javax.inject.Inject;
 
@@ -60,6 +59,8 @@ public class MeetingFragmentTest {
   private static final long START = CREATION + 10;
   private static final long END = START + 10;
   private static final String LOCATION = "EPFL";
+  private static final String MODIFICATION_ID = "MOD_ID";
+  private static final List<String> MODIFICATION_SIGNATURES = new ArrayList<>();
   private static final BehaviorSubject<LaoView> laoSubject =
       BehaviorSubject.createDefault(new LaoView(LAO));
 
@@ -70,7 +71,16 @@ public class MeetingFragmentTest {
       Meeting.generateCreateMeetingId(LAO_ID, CREATION, MEETING_TITLE);
 
   private static final Meeting MEETING =
-      new Meeting(MEETING_ID, MEETING_TITLE, CREATION, START, END, LOCATION, CREATION);
+      new Meeting(
+          MEETING_ID,
+          MEETING_TITLE,
+          CREATION,
+          START,
+          END,
+          LOCATION,
+          CREATION,
+          MODIFICATION_ID,
+          MODIFICATION_SIGNATURES);
 
   @Inject MeetingRepository meetingRepository;
 
@@ -97,7 +107,7 @@ public class MeetingFragmentTest {
           when(laoRepo.getLaoObservable(anyString())).thenReturn(laoSubject);
           when(laoRepo.getLaoView(any())).thenAnswer(invocation -> new LaoView(LAO));
 
-          meetingRepository.addMeeting(LAO_ID, MEETING);
+          meetingRepository.updateMeeting(LAO_ID, MEETING);
 
           when(keyManager.getMainPublicKey()).thenReturn(SENDER);
 
@@ -136,8 +146,16 @@ public class MeetingFragmentTest {
     long timeSec = System.currentTimeMillis() / 1000;
     Meeting meeting =
         new Meeting(
-            MEETING_ID, MEETING_TITLE, timeSec, timeSec + 10, timeSec + 20, LOCATION, timeSec);
-    meetingRepository.addMeeting(LAO_ID, meeting);
+            MEETING_ID,
+            MEETING_TITLE,
+            timeSec,
+            timeSec + 10,
+            timeSec + 20,
+            LOCATION,
+            timeSec,
+            MODIFICATION_ID,
+            MODIFICATION_SIGNATURES);
+    meetingRepository.updateMeeting(LAO_ID, meeting);
     meetingStatusText().check(matches(withText("Not yet opened")));
   }
 
@@ -145,8 +163,17 @@ public class MeetingFragmentTest {
   public void statusOpenedTest() {
     long timeSec = System.currentTimeMillis() / 1000;
     Meeting meeting =
-        new Meeting(MEETING_ID, MEETING_TITLE, timeSec, timeSec, timeSec + 10, LOCATION, timeSec);
-    meetingRepository.addMeeting(LAO_ID, meeting);
+        new Meeting(
+            MEETING_ID,
+            MEETING_TITLE,
+            timeSec,
+            timeSec,
+            timeSec + 10,
+            LOCATION,
+            timeSec,
+            MODIFICATION_ID,
+            MODIFICATION_SIGNATURES);
+    meetingRepository.updateMeeting(LAO_ID, meeting);
 
     meetingStatusText().check(matches(withText("Open")));
   }
@@ -155,8 +182,17 @@ public class MeetingFragmentTest {
   public void statusClosedTest() {
     long timeSec = System.currentTimeMillis() / 1000 - 10;
     Meeting meeting =
-        new Meeting(MEETING_ID, MEETING_TITLE, timeSec, timeSec, timeSec + 5, LOCATION, timeSec);
-    meetingRepository.addMeeting(LAO_ID, meeting);
+        new Meeting(
+            MEETING_ID,
+            MEETING_TITLE,
+            timeSec,
+            timeSec,
+            timeSec + 5,
+            LOCATION,
+            timeSec,
+            MODIFICATION_ID,
+            MODIFICATION_SIGNATURES);
+    meetingRepository.updateMeeting(LAO_ID, meeting);
 
     meetingStatusText().check(matches(withText("Closed")));
   }

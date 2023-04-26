@@ -29,7 +29,11 @@ public abstract class AbstractEventFragment extends Fragment {
 
   protected LaoViewModel laoViewModel;
 
-  protected final SimpleDateFormat dateFormat =
+  private final EnumMap<EventState, Integer> statusTextMap = buildStatusTextMap();
+  private final EnumMap<EventState, Integer> statusIconMap = buildStatusIconMap();
+  private final EnumMap<EventState, Integer> statusColorMap = buildStatusColorMap();
+
+  private final SimpleDateFormat dateFormat =
       new SimpleDateFormat("dd/MM/yyyy HH:mm z", Locale.ENGLISH);
 
   protected void setTab(@StringRes int pageTitle) {
@@ -65,10 +69,6 @@ public abstract class AbstractEventFragment extends Fragment {
   private void setImageColor(ImageView imageView, int colorId) {
     ImageViewCompat.setImageTintList(imageView, getResources().getColorStateList(colorId, null));
   }
-
-  private final EnumMap<EventState, Integer> statusTextMap = buildStatusTextMap();
-  private final EnumMap<EventState, Integer> statusIconMap = buildStatusIconMap();
-  private final EnumMap<EventState, Integer> statusColorMap = buildStatusColorMap();
 
   private EnumMap<EventState, Integer> buildStatusTextMap() {
     EnumMap<EventState, Integer> map = new EnumMap<>(EventState.class);

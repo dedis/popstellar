@@ -26,6 +26,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Optional;
 
 import io.reactivex.Completable;
@@ -87,8 +88,8 @@ public class MeetingHandlerTest {
     long now = Instant.now().getEpochSecond();
     String name = "NAME";
     String ID = Meeting.generateCreateMeetingId(LAO.getId(), now, name);
-    meeting = new Meeting(ID, name, now, now + 1, now + 2, "", now);
-    meetingRepo.addMeeting(LAO.getId(), meeting);
+    meeting = new Meeting(ID, name, now, now + 1, now + 2, "", now, "", new ArrayList<>());
+    meetingRepo.updateMeeting(LAO.getId(), meeting);
 
     // Add the LAO to the LAORepository
     laoRepo.updateLao(LAO);

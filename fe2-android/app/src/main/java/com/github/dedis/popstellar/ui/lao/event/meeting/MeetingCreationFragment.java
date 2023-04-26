@@ -31,7 +31,6 @@ public class MeetingCreationFragment extends AbstractEventCreationFragment {
   private MeetingCreateFragmentBinding binding;
   private LaoViewModel laoViewModel;
   private MeetingViewModel meetingViewModel;
-  private EditText meetingTitleEditText;
 
   public static MeetingCreationFragment newInstance() {
     return new MeetingCreationFragment();
@@ -54,7 +53,7 @@ public class MeetingCreationFragment extends AbstractEventCreationFragment {
 
     setDateAndTimeView(binding.getRoot());
 
-    meetingTitleEditText = binding.meetingTitleText;
+    EditText meetingTitleEditText = binding.meetingTitleText;
 
     TextWatcher confirmTextWatcher = getConfirmTextWatcher(meetingTitleEditText);
 

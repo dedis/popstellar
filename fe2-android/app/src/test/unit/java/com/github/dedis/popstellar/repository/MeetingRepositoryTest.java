@@ -9,7 +9,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.util.Set;
+import java.util.*;
 
 import io.reactivex.observers.TestObserver;
 
@@ -27,12 +27,23 @@ public class MeetingRepositoryTest {
   private static final long START = CREATION + 1000;
   private static final long END = START + 1000;
   private static final long LAST_MODIFIED = CREATION;
+  private static final String MODIFICATION_ID = "MOD_ID";
+  private static final List<String> MODIFICATION_SIGNATURES = new ArrayList<>();
   private static final Meeting meeting =
-      new Meeting(ID, NAME, CREATION, START, END, LOCATION, LAST_MODIFIED);
+      new Meeting(
+          ID,
+          NAME,
+          CREATION,
+          START,
+          END,
+          LOCATION,
+          LAST_MODIFIED,
+          MODIFICATION_ID,
+          MODIFICATION_SIGNATURES);
 
   @Before
   public void setUp() {
-    meetingRepository.addMeeting(LAO_ID, meeting);
+    meetingRepository.updateMeeting(LAO_ID, meeting);
   }
 
   @Test
@@ -43,12 +54,12 @@ public class MeetingRepositoryTest {
 
   @Test(expected = IllegalArgumentException.class)
   public void addMeetingThrowsExceptionWhenLaoIdIsNull() {
-    meetingRepository.addMeeting(null, meeting);
+    meetingRepository.updateMeeting(null, meeting);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void addMeetingThrowsExceptionWhenMeetingIsNull() {
-    meetingRepository.addMeeting(LAO_ID, null);
+    meetingRepository.updateMeeting(LAO_ID, null);
   }
 
   @Test(expected = UnknownMeetingException.class)
