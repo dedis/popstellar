@@ -16,11 +16,12 @@ object ServerConf {
     val serverInterface = serverConf.getString("interface")
     val serverPort = serverConf.getInt("port")
     val path = serverConf.getString("path")
+    val authenticationPath = serverConf.getString("authenticationPath")
 
-    new ServerConf(serverInterface, serverPort, path)
+    new ServerConf(serverInterface, serverPort, path, authenticationPath)
   }
 
 }
 
 /* Note: Can be upgraded for future configs :) */
-final case class ServerConf(interface: String, port: Int, path: String)
+final case class ServerConf(interface: String, port: Int, path: String, authenticationPath: String)

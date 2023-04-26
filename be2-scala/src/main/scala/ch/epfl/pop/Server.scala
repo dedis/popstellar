@@ -9,6 +9,7 @@ import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.{RequestContext, RouteResult}
 import akka.pattern.AskableActorRef
 import akka.util.Timeout
+import ch.epfl.pop.authentication.{Authenticate, GetRequestHandler}
 import ch.epfl.pop.config.{RuntimeEnvironment, ServerConf}
 import ch.epfl.pop.pubsub.{MessageRegistry, PubSubMediator, PublishSubscribe}
 import ch.epfl.pop.storage.DbActor
@@ -50,12 +51,21 @@ object Server {
         handleWebSocketMessages(PublishSubscribe.buildGraph(pubSubMediatorRef, dbActorRef, messageRegistry)(system))
       }
 
+      def getRequestsRoute = GetRequestHandler.buildRoutes(config)
+
+      def allRoutes = concat(
+        getRequestsRoute,
+        publishSubscribeRoute
+      )
+
       implicit val executionContext: ExecutionContextExecutor = typedSystem.executionContext
       /* Setup http server with bind and route config*/
-      val bindingFuture = Http().newServerAt(config.interface, config.port).bindFlow(publishSubscribeRoute)
+      val bindingFuture = Http().newServerAt(config.interface, config.port).bindFlow(allRoutes)
 
       bindingFuture.onComplete {
-        case Success(_) => println(f"ch.epfl.pop.Server online at ws://${config.interface}:${config.port}/${config.path}")
+        case Success(_) =>
+          println(f"ch.epfl.pop.Server online at ws://${config.interface}:${config.port}/${config.path}")
+          println(f"ch.epfl.pop.Server auth server online at http://${config.interface}:${config.port}/${config.authenticationPath}")
         case Failure(_) =>
           logger.error(
             "ch.epfl.pop.Server failed to start. Terminating actor system"
