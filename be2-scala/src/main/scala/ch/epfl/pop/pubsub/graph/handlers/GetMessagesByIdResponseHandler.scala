@@ -10,17 +10,17 @@ import ch.epfl.pop.pubsub.AskPatternConstants
 import ch.epfl.pop.storage.DbActor
 import akka.stream.FlowShape
 import ch.epfl.pop.model.network.method.message.Message
-import ch.epfl.pop.model.objects.Channel
+import ch.epfl.pop.model.objects.{Channel, DbActorNAckException}
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{Await, Future}
+import scala.util.Success
 
 /** This object's job is to handle responses it receives from other servers after sending a heartbeat. When receiving the missing messages, the server's job is to write them on the data base.
   */
 object GetMessagesByIdResponseHandler extends AskPatternConstants {
 
-  private final val MAX_ATTEMPT : Int = 3
-
+  private final val MAX_ATTEMPT: Int = 3
 
   def graph(dbActorRef: ActorRef): Flow[GraphMessage, GraphMessage, NotUsed] = Flow.fromGraph(GraphDSL.create() {
     implicit builder: GraphDSL.Builder[NotUsed] =>
@@ -39,7 +39,7 @@ object GetMessagesByIdResponseHandler extends AskPatternConstants {
             case Right(jsonRpcMessage: JsonRpcResponse) => jsonRpcMessage.result match {
                 case Some(result) => result.resultMap match {
                     case Some(_) => portResponseHandler
-                    case _         => portPipelineError
+                    case _       => portPipelineError
                   }
                 case _ => portPipelineError
               }
@@ -65,16 +65,21 @@ object GetMessagesByIdResponseHandler extends AskPatternConstants {
       val receivedResponse = jsonRpcMessage.result.get.resultMap.get
       receivedResponse.keys.foreach(channel => {
         receivedResponse(channel).foreach(message => {
-          writeOnDb(channel,message,dbActorRef)
+          writeOnDb(channel, message, dbActorRef, MAX_ATTEMPT)
         })
       })
       Right(jsonRpcMessage)
     case value @ _ => value
   }.filter(_ => false)
 
-  private def writeOnDb(channel : Channel, message : Message, dbActorRef: AskableActorRef): Unit = {
-    retry(MAX_ATTEMPT){
-      dbActorRef ? DbActor.Write(channel, message)
+  private def writeOnDb(channel: Channel, message: Message, dbActorRef: AskableActorRef, remainingAttempts: Int): Unit = {
+    if (remainingAttempts != 0) {
+      val ask = dbActorRef ? DbActor.Write(channel, message)
+      Await.ready(ask, duration).value match {
+        case Some(Success(DbActorNAckException(_, _))) =>
+          writeOnDb(channel, message, dbActorRef, remainingAttempts - 1)
+        case _ =>
+      }
     }
   }
 

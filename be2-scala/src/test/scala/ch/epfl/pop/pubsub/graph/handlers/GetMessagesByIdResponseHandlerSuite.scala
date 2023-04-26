@@ -27,7 +27,7 @@ class GetMessagesByIdResponseHandlerSuite extends TestKit(ActorSystem("GetMessag
     override def receive: Receive = {
       case DbActor.Write(channel, message) =>
         testProbe ! (channel, message)
-        throw(DbActorNAckException(0,""))
+        sender() ! DbActorNAckException(0, "")
     }
   }
 
@@ -50,13 +50,18 @@ class GetMessagesByIdResponseHandlerSuite extends TestKit(ActorSystem("GetMessag
     testProbe.expectMsgAllOf((CHANNEL1, MESSAGE1), (CHANNEL2, MESSAGE2))
   }
 
-
   test("failing to write a get messages by id response in the data base retries exactly three times before giving up") {
     val boxUnderTest: Flow[GraphMessage, GraphMessage, NotUsed] = GetMessagesByIdResponseHandler.graph(system.actorOf(Props(new FailingTestDb(testProbe.ref))))
     val input: List[GraphMessage] = List(Right(receivedResponse))
     val source = Source(input)
     val s = source.via(boxUnderTest).runWith(Sink.seq[GraphMessage])
     Await.ready(s, duration)
-    testProbe.expectMsgAllOf((CHANNEL1, MESSAGE1),(CHANNEL1, MESSAGE1),(CHANNEL1, MESSAGE1),(CHANNEL2, MESSAGE2),(CHANNEL2, MESSAGE2),(CHANNEL2, MESSAGE2))
+    testProbe.expectMsg((CHANNEL1, MESSAGE1))
+    testProbe.expectMsg((CHANNEL1, MESSAGE1))
+    testProbe.expectMsg((CHANNEL1, MESSAGE1))
+    testProbe.expectMsg((CHANNEL2, MESSAGE2))
+    testProbe.expectMsg((CHANNEL2, MESSAGE2))
+    testProbe.expectMsg((CHANNEL2, MESSAGE2))
+
   }
 }
