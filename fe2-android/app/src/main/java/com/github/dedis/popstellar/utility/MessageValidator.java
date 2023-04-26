@@ -139,17 +139,13 @@ public abstract class MessageValidator {
         throw new IllegalArgumentException("List has duplicates");
       }
       return this;
+    }
 
     public MessageValidatorBuilder checkValidUrl(String input) {
       if (input == null || !URL_PATTERN.matcher(input).matches()) {
         throw new IllegalArgumentException("Input is not a url");
       }
       return this;
-    }
-
-    private static boolean isInFuture(long creationTime) {
-      return (creationTime > Instant.now().getEpochSecond());
-
     }
   }
 }
