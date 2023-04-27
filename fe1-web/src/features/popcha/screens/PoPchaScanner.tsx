@@ -31,35 +31,57 @@ const PoPchaScanner = () => {
   const [textScanned, setTextScanned] = useState('');
 
   const toast = useToast();
-  const verifyScannedInfo = (data: string) => {
-    // data of format: "ip_address:port_number/authorize?item1=value1&item2=value2..."
-    if (!data.includes('/authorize?')) {
-      toast.show('Invalid QR code data format', {
-        type: 'warning',
-        placement: 'bottom',
-        duration: FOUR_SECONDS,
-      });
-      return false;
-    }
-    const address = data.split('/')[0];
-    const params = data.split('/')[1].split('?')[1].split('&');
-    const paramsDict: { [key: string]: string } = {};
-    params.forEach((param) => {
-      const key = param.split('=')[0];
-      const value = param.split('=')[1];
-      paramsDict[key] = value;
-    });
-    setTextScanned(`address: ${address} params: ${JSON.stringify(paramsDict)}`);
 
-    // verify it is the correct lao id
-    if (paramsDict.lao_id !== laoId.toString()) {
-      toast.show('Invalid Lao ID', {
-        type: 'warning',
-        placement: 'bottom',
-        duration: FOUR_SECONDS,
-      });
+  /**
+   * Display a toast warning message
+   * @param message the message to display
+   */
+  const showErrorMessage = (message: string) => {
+    toast.show(message, {
+      type: 'warning',
+      placement: 'bottom',
+      duration: FOUR_SECONDS,
+    });
+  };
+
+  /**
+   * Verify the scanned info (url)
+   * @param data the scanned data
+   * @returns true if the scanned info is valid, false otherwise
+   */
+  const verifyScannedInfo = (data: string) => {
+    const url = new URL(data);
+
+    if (!url.hostname || !url.port) {
+      showErrorMessage('Invalid url format');
       return false;
     }
+
+    const urlArg = url.searchParams;
+
+    const requiredArguments = [
+      'client_id',
+      'redirect_uri',
+      'login_hint',
+      'nonce',
+      'response_type',
+      'scope',
+      'state',
+    ];
+
+    for (const arg of requiredArguments) {
+      if (!urlArg.has(arg)) {
+        showErrorMessage(`Missing argument ${arg}`);
+        return false;
+      }
+    }
+
+    if (urlArg.get('login_hint') !== laoId.toString()) {
+      showErrorMessage('Invalid lao id');
+      console.log(`Scanned lao id: ${urlArg.get('login_hint')}, current lao id: ${laoId}`);
+      return false;
+    }
+
     return true;
   };
 
