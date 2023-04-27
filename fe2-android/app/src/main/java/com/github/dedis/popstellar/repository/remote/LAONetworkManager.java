@@ -36,7 +36,10 @@ public class LAONetworkManager implements MessageSender {
 
   private static final String TAG = LAONetworkManager.class.getSimpleName();
 
+  /** Constants to tune the reprocessing of unhandled messages */
   public static final int MAX_REPROCESSING = 5;
+
+  public static final int REPROCESSING_DELAY = 5;
 
   private final MessageHandler messageHandler;
   private final MultiConnection multiConnection;
@@ -103,7 +106,8 @@ public class LAONetworkManager implements MessageSender {
                 // Packets that could not be processed (maybe due to a reordering),
                 // this is merged into incoming message,
                 // with a delay of 5 seconds to give priority to new messages.
-                unprocessed.delay(5, TimeUnit.SECONDS, schedulerProvider.computation()))
+                unprocessed.delay(
+                    REPROCESSING_DELAY, TimeUnit.SECONDS, schedulerProvider.computation()))
             .filter(Broadcast.class::isInstance) // Filter the Broadcast
             .map(Broadcast.class::cast)
             .subscribeOn(schedulerProvider.newThread())
@@ -254,7 +258,7 @@ public class LAONetworkManager implements MessageSender {
         .subscribeOn(schedulerProvider.io())
         .observeOn(schedulerProvider.mainThread())
         // Add a timeout to automatically dispose of the flow and end with a failure
-        .timeout(5, TimeUnit.SECONDS)
+        .timeout(REPROCESSING_DELAY, TimeUnit.SECONDS)
         .cache();
   }
 

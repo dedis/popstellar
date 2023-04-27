@@ -42,6 +42,7 @@ import io.reactivex.observers.TestObserver;
 import io.reactivex.schedulers.TestScheduler;
 import io.reactivex.subjects.BehaviorSubject;
 
+import static com.github.dedis.popstellar.repository.remote.LAONetworkManager.REPROCESSING_DELAY;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -113,7 +114,7 @@ public class LAONetworkManagerTest {
 
     // Actual test
     Disposable disposable = networkManager.subscribe(CHANNEL).subscribe();
-    testScheduler.advanceTimeBy(5, TimeUnit.SECONDS);
+    testScheduler.advanceTimeBy(REPROCESSING_DELAY, TimeUnit.SECONDS);
 
     disposable.dispose();
     networkManager.dispose();
@@ -149,7 +150,7 @@ public class LAONetworkManagerTest {
 
     // Actual test
     Disposable disposable = networkManager.unsubscribe(CHANNEL).subscribe();
-    testScheduler.advanceTimeBy(5, TimeUnit.SECONDS);
+    testScheduler.advanceTimeBy(REPROCESSING_DELAY, TimeUnit.SECONDS);
 
     disposable.dispose();
     networkManager.dispose();
@@ -186,7 +187,7 @@ public class LAONetworkManagerTest {
 
     // Actual test
     Disposable disposable = networkManager.publish(KEY_PAIR, CHANNEL, DATA).subscribe();
-    testScheduler.advanceTimeBy(5, TimeUnit.SECONDS);
+    testScheduler.advanceTimeBy(REPROCESSING_DELAY, TimeUnit.SECONDS);
 
     disposable.dispose();
     networkManager.dispose();
@@ -229,7 +230,7 @@ public class LAONetworkManagerTest {
                   throw new IllegalAccessException("The subscription should have failed.");
                 },
                 err -> assertTrue(err instanceof JsonRPCErrorException));
-    testScheduler.advanceTimeBy(5, TimeUnit.SECONDS);
+    testScheduler.advanceTimeBy(REPROCESSING_DELAY, TimeUnit.SECONDS);
 
     disposable.dispose();
     networkManager.dispose();
@@ -254,7 +255,7 @@ public class LAONetworkManagerTest {
             new HashSet<>());
 
     networkManager.subscribe(CHANNEL).subscribe(); // First subscribe
-    testScheduler.advanceTimeBy(5, TimeUnit.SECONDS);
+    testScheduler.advanceTimeBy(REPROCESSING_DELAY, TimeUnit.SECONDS);
 
     verify(connection).sendMessage(any(Subscribe.class));
     verify(connection).sendMessage(any(Catchup.class));
@@ -271,7 +272,7 @@ public class LAONetworkManagerTest {
 
     // Push Connection open event
     events.onNext(new WebSocket.Event.OnConnectionOpened<>(mock(WebSocket.class)));
-    testScheduler.advanceTimeBy(5, TimeUnit.SECONDS);
+    testScheduler.advanceTimeBy(REPROCESSING_DELAY, TimeUnit.SECONDS);
 
     networkManager.dispose();
 
@@ -377,12 +378,12 @@ public class LAONetworkManagerTest {
 
     // Actual test
     Disposable disposable = networkManager.publish(KEY_PAIR, CHANNEL, DATA).subscribe();
-    testScheduler.advanceTimeBy(5, TimeUnit.SECONDS);
+    testScheduler.advanceTimeBy(REPROCESSING_DELAY, TimeUnit.SECONDS);
 
     // Now as the message fails to be handled it should be placed in unprocessed
     // Every 5 seconds reprocessing takes place
     for (int i = 0; i < LAONetworkManager.MAX_REPROCESSING; i++) {
-      testScheduler.advanceTimeBy(5, TimeUnit.SECONDS);
+      testScheduler.advanceTimeBy(REPROCESSING_DELAY, TimeUnit.SECONDS);
     }
 
     // After MAX_REPROCESSING times check the message is discarded permanently
