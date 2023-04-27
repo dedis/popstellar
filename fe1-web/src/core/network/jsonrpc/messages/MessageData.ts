@@ -37,7 +37,7 @@ export enum ActionType {
   POST_TRANSACTION = 'post_transaction',
   GREET = 'greet',
   KEY = 'key',
-  AUTH = 'auth',
+  AUTH = 'authenticate',
 }
 
 /** Enumeration of all possible signatures of a message */
