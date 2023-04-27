@@ -25,7 +25,7 @@ object QRCodeChallengeGenerator {
     HttpEntity(ContentTypes.`text/html(UTF-8)`, challengePage)
   }
 
-  def fromMatrixToHTML(matrix: BitMatrix): String = {
+  private def fromMatrixToHTML(matrix: BitMatrix): String = {
     matrix.toString
   }
 }
