@@ -1,7 +1,6 @@
 package com.github.dedis.popstellar.ui.lao.socialmedia;
 
 import android.app.Application;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -34,6 +33,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.disposables.CompositeDisposable;
+import timber.log.Timber;
 
 @HiltViewModel
 public class SocialMediaViewModel extends AndroidViewModel {
@@ -126,20 +126,20 @@ public class SocialMediaViewModel extends AndroidViewModel {
    */
   public Single<MessageGeneral> sendChirp(
       String text, @Nullable MessageID parentId, long timestamp) {
-    Log.d(TAG, "Sending a chirp");
+    Timber.tag(TAG).d("Sending a chirp");
 
     LaoView laoView;
     try {
       laoView = getLao();
     } catch (UnknownLaoException e) {
-      Log.e(TAG, LAO_FAILURE_MESSAGE);
+      Timber.tag(TAG).e(e, LAO_FAILURE_MESSAGE);
       return Single.error(new UnknownLaoException());
     }
 
     AddChirp addChirp = new AddChirp(text, parentId, timestamp);
 
     return Single.fromCallable(this::getValidPoPToken)
-        .doOnSuccess(token -> Log.d(TAG, "Retrieved PoPToken to send Chirp : " + token))
+        .doOnSuccess(token -> Timber.tag(TAG).d("Retrieved PoPToken to send Chirp : %s", token))
         .flatMap(
             token -> {
               Channel channel =
@@ -154,20 +154,20 @@ public class SocialMediaViewModel extends AndroidViewModel {
   }
 
   public Single<MessageGeneral> deleteChirp(MessageID chirpId, long timestamp) {
-    Log.d(TAG, "Deleting the chirp with id: " + chirpId);
+    Timber.tag(TAG).d("Deleting the chirp with id: %s", chirpId);
 
     final LaoView laoView;
     try {
       laoView = getLao();
     } catch (UnknownLaoException e) {
-      Log.e(TAG, LAO_FAILURE_MESSAGE);
+      Timber.tag(TAG).e(e, LAO_FAILURE_MESSAGE);
       return Single.error(new UnknownLaoException());
     }
 
     DeleteChirp deleteChirp = new DeleteChirp(chirpId, timestamp);
 
     return Single.fromCallable(this::getValidPoPToken)
-        .doOnSuccess(token -> Log.d(TAG, "Retrieved PoPToken to delete Chirp : " + token))
+        .doOnSuccess(token -> Timber.tag(TAG).d("Retrieved PoPToken to delete Chirp : %s", token))
         .flatMap(
             token -> {
               Channel channel =
@@ -217,7 +217,7 @@ public class SocialMediaViewModel extends AndroidViewModel {
    * @return true if the sender is the current user
    */
   public boolean isOwner(String sender) {
-    Log.d(TAG, "Testing if the sender is also the owner");
+    Timber.tag(TAG).d("Testing if the sender is also the owner");
 
     try {
       PoPToken token = getValidPoPToken();

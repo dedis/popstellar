@@ -13,6 +13,7 @@ import com.google.gson.JsonParseException;
 import org.junit.Test;
 import org.mockito.internal.util.collections.Sets;
 
+import java.time.Instant;
 import java.util.*;
 
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.*;
@@ -43,20 +44,85 @@ public class StateLaoTest {
           witnesses,
           modificationSignatures);
 
-  @Test
-  public void wrongIdTest() {
-    assertThrows(
-        IllegalArgumentException.class,
-        () ->
-            new StateLao(
-                "wrong id",
-                name,
-                creation,
-                lastModified,
-                organizer,
-                modificationId,
-                witnesses,
-                modificationSignatures));
+  @Test(expected = IllegalArgumentException.class)
+  public void constructorFailsIdNotBase64Test() {
+    new StateLao(
+        "wrong id",
+        name,
+        creation,
+        lastModified,
+        organizer,
+        modificationId,
+        witnesses,
+        modificationSignatures);
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void constructorFailsInvalidIdHashTest() {
+    String wrongId = "A" + id.substring(1);
+    new StateLao(
+        wrongId,
+        name,
+        creation,
+        lastModified,
+        organizer,
+        modificationId,
+        witnesses,
+        modificationSignatures);
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void constructorFailsEmptyNameTest() {
+    new StateLao(
+        id,
+        "",
+        creation,
+        lastModified,
+        organizer,
+        modificationId,
+        witnesses,
+        modificationSignatures);
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void constructorFailsFutureCreationTimeTest() {
+    long futureCreation = Instant.now().getEpochSecond() + 1000;
+    new StateLao(
+        id,
+        name,
+        futureCreation,
+        lastModified,
+        organizer,
+        modificationId,
+        witnesses,
+        modificationSignatures);
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void constructorFailsFutureModificationTimeTest() {
+    long futureModification = Instant.now().getEpochSecond() + 1000;
+    new StateLao(
+        id,
+        name,
+        creation,
+        futureModification,
+        organizer,
+        modificationId,
+        witnesses,
+        modificationSignatures);
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void constructorFailsModificationBeforeCreationTimeTest() {
+    new StateLao(
+        id,
+        name,
+        creation,
+        creation - 10,
+        organizer,
+        modificationId,
+        witnesses,
+        modificationSignatures);
   }
 
   @Test
@@ -208,7 +274,19 @@ public class StateLaoTest {
     String jsonInvalid1 =
         JsonTestUtils.loadFile(pathDir + "wrong_lao_state_additional_params.json");
     String jsonInvalid2 = JsonTestUtils.loadFile(pathDir + "wrong_lao_state_missing_params.json");
+
+    String jsonInvalid3 = JsonTestUtils.loadFile(pathDir + "bad_lao_state_creation_negative.json");
+    String jsonInvalid4 =
+        JsonTestUtils.loadFile(pathDir + "bad_lao_state_last_modified_negative.json");
+    String jsonInvalid5 =
+        JsonTestUtils.loadFile(pathDir + "bad_lao_state_organizer_not_base64.json");
+    String jsonInvalid6 = JsonTestUtils.loadFile(pathDir + "bad_lao_state_witness_not_base64.json");
+
     assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid1));
     assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid2));
+    assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid3));
+    assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid4));
+    assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid5));
+    assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid6));
   }
 }

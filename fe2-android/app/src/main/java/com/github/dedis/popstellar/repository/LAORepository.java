@@ -1,7 +1,5 @@
 package com.github.dedis.popstellar.repository;
 
-import android.util.Log;
-
 import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
@@ -14,6 +12,7 @@ import javax.inject.Singleton;
 import io.reactivex.Observable;
 import io.reactivex.subjects.BehaviorSubject;
 import io.reactivex.subjects.Subject;
+import timber.log.Timber;
 
 @Singleton
 public class LAORepository {
@@ -42,7 +41,7 @@ public class LAORepository {
    * @return the Lao corresponding to this channel
    */
   public Lao getLaoByChannel(Channel channel) {
-    Log.d(TAG, "querying lao for channel " + channel);
+    Timber.tag(TAG).d("querying lao for channel %s", channel);
     return laoById.get(channel.extractLaoId());
   }
 
@@ -69,7 +68,7 @@ public class LAORepository {
   }
 
   public synchronized void updateLao(Lao lao) {
-    Log.d(TAG, "updating Lao " + lao);
+    Timber.tag(TAG).d("updating Lao %s", lao);
     if (lao == null) {
       throw new IllegalArgumentException();
     }

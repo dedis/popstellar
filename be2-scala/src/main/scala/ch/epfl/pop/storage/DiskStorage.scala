@@ -5,7 +5,7 @@ import java.nio.charset.StandardCharsets
 
 import ch.epfl.pop.model.objects.DbActorNAckException
 import ch.epfl.pop.pubsub.graph.ErrorCodes
-import org.iq80.leveldb.impl.Iq80DBFactory.factory
+import org.iq80.leveldb.impl.Iq80DBFactory.{asString, factory}
 import org.iq80.leveldb.{DB, Options, WriteBatch}
 import org.slf4j.{Logger, LoggerFactory}
 
@@ -62,6 +62,38 @@ class DiskStorage(val databaseFolder: String = DiskStorage.DATABASE_FOLDER) exte
         )
     } finally {
       batch.close()
+    }
+  }
+
+  /** Get the set of all keys that start with some prefix
+    *
+    * @param prefix
+    *   prefix we are interested in
+    * @return
+    *   the set of keys that match the prefix
+    */
+  @throws[DbActorNAckException]
+  def filterKeysByPrefix(prefix: String): Set[String] = {
+    var set: Set[String] = Set()
+    val iterator = db.iterator()
+
+    try {
+      iterator.seekToFirst()
+
+      while (iterator.hasNext) {
+        val key = asString(iterator.next().getKey)
+        if (key.startsWith(prefix))
+          set += key
+      }
+
+      set
+    } catch {
+      case ex: Throwable => throw DbActorNAckException(
+          ErrorCodes.SERVER_ERROR.id,
+          s"could not retrieve keys from DiskStorage : ${ex.getMessage}"
+        )
+    } finally {
+      iterator.close()
     }
   }
 

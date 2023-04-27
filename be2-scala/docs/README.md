@@ -431,7 +431,7 @@ You can then set a title and description to your PR as well as set a label (e.g.
 
 The best way to "intercept" a `GraphMessage` being processed in the graph is to launch the server in debug mode, and then sending an isolated message to the server triggering the bug.
 
-:information_source: [Hoppscotch](https://hoppscotch.io/realtime/) (Realtime => WebSocket => `ws://localhost:8000/`) is a useful tool to achieve this result
+:information_source: [Hoppscotch](https://hoppscotch.io/realtime/) (Realtime => WebSocket => `ws://localhost:8000/client`) is a useful tool to achieve this result
 
 
 ## 6.	Coding Styles

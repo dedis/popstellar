@@ -43,25 +43,25 @@ public class Chirp implements Copyable<Chirp> {
     this.text = text;
     this.timestamp = timestamp;
     this.parentId = parentId;
-    this.isDeleted = false;
+    isDeleted = false;
   }
 
   public Chirp(Chirp chirp, boolean deleted) {
-    this.id = chirp.id;
-    this.sender = chirp.sender;
-    this.text = "";
-    this.timestamp = chirp.timestamp;
-    this.parentId = chirp.parentId;
-    this.isDeleted = deleted;
+    id = chirp.id;
+    sender = chirp.sender;
+    text = "";
+    timestamp = chirp.timestamp;
+    parentId = chirp.parentId;
+    isDeleted = deleted;
   }
 
   public Chirp(Chirp chirp) {
-    this.id = chirp.id;
-    this.sender = chirp.sender;
-    this.text = chirp.text;
-    this.timestamp = chirp.timestamp;
-    this.isDeleted = chirp.isDeleted;
-    this.parentId = chirp.parentId;
+    id = chirp.id;
+    sender = chirp.sender;
+    text = chirp.text;
+    timestamp = chirp.timestamp;
+    isDeleted = chirp.isDeleted;
+    parentId = chirp.parentId;
   }
 
   public MessageID getId() {
@@ -102,8 +102,12 @@ public class Chirp implements Copyable<Chirp> {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
     Chirp chirp = (Chirp) o;
     return timestamp == chirp.timestamp
         && isDeleted == chirp.isDeleted

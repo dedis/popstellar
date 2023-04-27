@@ -1,19 +1,21 @@
 package com.github.dedis.popstellar.model.network.serializer;
 
-import android.util.Log;
-
 import com.github.dedis.popstellar.model.network.method.*;
 import com.google.gson.*;
 
 import java.lang.reflect.Type;
 
+import timber.log.Timber;
+
 /** Json serializer and deserializer for the low level messages */
 public class JsonMessageSerializer implements JsonSerializer<Message>, JsonDeserializer<Message> {
+
+  private static final String TAG = JsonMessageSerializer.class.getSimpleName();
 
   @Override
   public Message deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
       throws JsonParseException {
-    Log.d("deserializer", "deserializing message");
+    Timber.tag(TAG).d("deserializing message");
     JSONRPCRequest container = context.deserialize(json, JSONRPCRequest.class);
     JsonUtils.testRPCVersion(container.getJsonrpc());
 

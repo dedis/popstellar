@@ -4,7 +4,6 @@ import ch.epfl.pop.config.RuntimeEnvironment.appConf
 import ch.epfl.pop.config.ServerConf
 import ch.epfl.pop.json.MessageDataProtocol.GreetLaoFormat
 import ch.epfl.pop.model.network.JsonRpcRequest
-import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.network.method.message.data.lao.{CreateLao, GreetLao, StateLao}
 import ch.epfl.pop.model.objects.{Channel, DbActorNAckException, Hash}
@@ -29,7 +28,7 @@ case object LaoHandler extends MessageHandler {
         reactionChannel: Channel = Channel(s"$laoChannel${Channel.REACTIONS_CHANNEL_PREFIX}")
         // we get access to the canonical address of the server
         config = ServerConf(appConf)
-        address: Option[String] = Some(f"ws://${config.interface}:${config.port}/${config.path}")
+        address: Option[String] = Some(f"ws://${config.interface}:${config.port}/${config.clientPath}")
 
         // check whether the lao already exists in db
         _ <- dbActor ? DbActor.AssertChannelMissing(laoChannel)

@@ -8,6 +8,7 @@ import com.intuit.karate.http.WebSocketOptions;
 import io.opencensus.trace.Link;
 
 import java.util.*;
+import java.util.function.Predicate;
 
 /** A WebSocketClient that can handle multiple received messages */
 public class MultiMsgWebSocketClient extends WebSocketClient {
@@ -113,6 +114,25 @@ public class MultiMsgWebSocketClient extends WebSocketClient {
     }
     assert false;
     throw new IllegalArgumentException("No election results where received");
+  }
+
+  /**
+   * Retrieves all messages with the specified method type from the messages buffer.
+   * @param method The method type to filter the messages by.
+   * @return A list containing all received messages that match the specified method type.
+   */
+  public List<String> getMessagesByMethod(String method) {
+    List<String> messages = new ArrayList<>();
+    Predicate<String> filter = MessageFilters.withMethod(method);
+
+    String message = getBuffer().takeTimeout(5000);
+    while (message != null) {
+      if (filter.test(message)) {
+        messages.add(message);
+      }
+      message = getBuffer().takeTimeout(5000);
+    }
+    return messages;
   }
 
   public boolean receiveNoMoreResponses(){

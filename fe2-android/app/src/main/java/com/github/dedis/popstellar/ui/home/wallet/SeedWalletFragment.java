@@ -3,7 +3,6 @@ package com.github.dedis.popstellar.ui.home.wallet;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.*;
 import android.widget.Toast;
 
@@ -25,6 +24,7 @@ import java.util.Objects;
 import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
+import timber.log.Timber;
 
 /** Fragment used to display the new seed UI */
 @AndroidEntryPoint
@@ -68,6 +68,7 @@ public class SeedWalletFragment extends Fragment {
   public void onResume() {
     super.onResume();
     viewModel.setPageTitle(R.string.wallet_setup);
+    viewModel.setIsHome(false);
   }
 
   private void setupConfirmSeedButton() {
@@ -77,25 +78,26 @@ public class SeedWalletFragment extends Fragment {
             seedAlert.dismiss();
           }
           AlertDialog.Builder builder = new AlertDialog.Builder(requireActivity());
-          builder.setTitle("You are sure you have saved the words somewhere?");
+          builder.setTitle(R.string.wallet_confirm_text);
           builder.setPositiveButton(
-              "Yes",
+              R.string.yes,
               (dialog, which) -> {
                 try {
                   viewModel.importSeed(binding.seedWalletText.getText().toString());
                   HomeActivity.setCurrentFragment(
                       getParentFragmentManager(), R.id.fragment_home, HomeFragment::newInstance);
-
                 } catch (GeneralSecurityException | SeedValidationException e) {
-                  Log.e(TAG, "Error importing key", e);
+                  Timber.tag(TAG).e(e, "Error importing key");
                   Toast.makeText(
                           requireContext().getApplicationContext(),
-                          "Error importing key : " + e.getMessage() + "\ntry again",
+                          String.format(
+                              getResources().getString(R.string.error_importing_key),
+                              e.getMessage()),
                           Toast.LENGTH_LONG)
                       .show();
                 }
               });
-          builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
+          builder.setNegativeButton(R.string.cancel, (dialog, which) -> dialog.cancel());
           seedAlert = builder.create();
           seedAlert.show();
         });

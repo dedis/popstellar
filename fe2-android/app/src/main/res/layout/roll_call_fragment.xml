@@ -133,31 +133,142 @@
       app:layout_constraintStart_toStartOf="@id/roll_call_start_time"
       app:layout_constraintTop_toTopOf="@id/end_time_icon" />
 
+    <androidx.constraintlayout.widget.ConstraintLayout
+      android:id="@+id/roll_call_metadata_container"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginHorizontal="@dimen/roll_call_container_margin_horizontal"
+      android:layout_marginTop="@dimen/roll_call_container_margin_top"
+      app:layout_constraintTop_toBottomOf="@id/end_time_icon">
+
+      <com.google.android.material.card.MaterialCardView
+        android:id="@+id/roll_call_location_card"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        app:cardCornerRadius="@dimen/roll_call_card_corner_radius"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:paddingVertical="@dimen/padding_standard">
+
+          <ImageView
+            android:id="@+id/roll_call_location_arrow"
+            android:layout_width="@dimen/expand_arrow_image_side"
+            android:layout_height="@dimen/expand_arrow_image_side"
+            android:layout_marginEnd="@dimen/expand_arrow_end_margin"
+            android:contentDescription="@string/event_right_arrow"
+            android:src="@drawable/ic_arrow_expand"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+          <TextView
+            style="@style/explication_text_style"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/roll_call_card_lateral_margin"
+            android:text="@string/roll_call_location_title"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+      </com.google.android.material.card.MaterialCardView>
+
+      <TextView
+        android:id="@+id/roll_call_location_text"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/roll_call_expand_text_margin_top"
+        android:layout_marginHorizontal="@dimen/roll_call_expand_text_margin_horizontal"
+        app:layout_constraintTop_toBottomOf="@id/roll_call_location_card"
+        android:visibility="gone" />
+
+      <com.google.android.material.card.MaterialCardView
+        android:id="@+id/roll_call_description_card"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:layout_marginTop="@dimen/roll_call_container_margin_top"
+        app:cardCornerRadius="@dimen/roll_call_card_corner_radius"
+        app:layout_constraintTop_toBottomOf="@id/roll_call_location_text">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:paddingVertical="@dimen/padding_standard">
+
+          <ImageView
+            android:id="@+id/roll_call_description_arrow"
+            android:layout_width="@dimen/expand_arrow_image_side"
+            android:layout_height="@dimen/expand_arrow_image_side"
+            android:layout_marginEnd="@dimen/expand_arrow_end_margin"
+            android:contentDescription="@string/event_right_arrow"
+            android:src="@drawable/ic_arrow_expand"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+          <TextView
+            style="@style/explication_text_style"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/roll_call_card_lateral_margin"
+            android:text="@string/roll_call_description_title"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+      </com.google.android.material.card.MaterialCardView>
+
+      <TextView
+        android:id="@+id/roll_call_description_text"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/roll_call_expand_text_margin_top"
+        android:layout_marginHorizontal="@dimen/roll_call_expand_text_margin_horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/roll_call_description_card"
+        android:visibility="gone" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
     <TextView
       android:id="@+id/roll_call_attendees_text"
       style="@style/explication_text_style"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:text="@string/roll_call_attendees"
-      app:layout_constraintBottom_toTopOf="@+id/list_view_attendees"
+      android:layout_marginTop="@dimen/roll_call_attendees_margin_top"
+      app:layout_constraintBottom_toTopOf="@id/roll_call_management_button"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintTop_toBottomOf="@+id/roll_call_fragment_end_time_title" />
+      app:layout_constraintTop_toBottomOf="@id/roll_call_metadata_container"
+      app:layout_constraintVertical_bias="@dimen/roll_call_attendees_text_vertical_bias" />
+
     <ListView
       android:id="@+id/list_view_attendees"
       android:scrollbarStyle="outsideOverlay"
-      android:layout_width="@dimen/qr_rollcall_img"
-      android:layout_height="@dimen/qr_rollcall_img"
-      android:layout_marginEnd="@dimen/roll_call_attendees_end_margin"
+      android:layout_width="@dimen/roll_call_attendees_list_width"
+      android:layout_height="0dp"
+      android:layout_marginHorizontal="@dimen/roll_call_attendees_margin"
+      android:layout_marginTop="@dimen/roll_call_attendees_list_margin_top"
+      android:layout_marginBottom="@dimen/roll_call_attendees_list_margin_bottom"
+      android:layout_centerHorizontal="true"
       android:fadeScrollbars="true"
-      android:scrollbarSize="@dimen/event_layout_arrow_end_margin"
+      android:scrollbarSize="@dimen/roll_call_attendees_scrollbar_size"
       android:scrollbars="vertical"
       android:scrollingCache="true"
       android:smoothScrollbar="true"
       app:layout_constraintBottom_toTopOf="@+id/roll_call_management_button"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintTop_toTopOf="@+id/roll_call_pk_qr_code" />
+      app:layout_constraintTop_toBottomOf="@+id/roll_call_attendees_text"
+      app:layout_constraintVertical_bias="@dimen/roll_call_attendees_list_vertical_bias" />
 
   </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

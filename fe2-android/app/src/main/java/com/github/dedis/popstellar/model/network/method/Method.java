@@ -51,11 +51,6 @@ public enum Method {
    * @return the corresponding enum method
    */
   public static Method find(String searched) {
-    for (Method method : ALL) {
-      if (method.method.equals(searched)) {
-        return method;
-      }
-    }
-    return null;
+    return ALL.stream().filter(method -> method.method.equals(searched)).findFirst().orElse(null);
   }
 }

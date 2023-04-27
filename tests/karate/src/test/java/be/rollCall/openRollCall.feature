@@ -1,7 +1,7 @@
 @env=go,scala
 Feature: Roll Call Open
   Background:
-        # This is feature will be called to test Roll call open
+        # This feature will be called to test Roll call open
         # The following calls makes this feature, mockFrontEnd.feature and server.feature
         # share the same scope
         # For every test a file containing the json representation of the message is read

@@ -27,12 +27,12 @@ public class ChirpListAdapter extends BaseAdapter {
   private List<Chirp> chirps;
 
   public ChirpListAdapter(
-      Context ctx, SocialMediaViewModel socialMediaViewModel, LaoViewModel viewModel) {
-    this.context = ctx;
+      Context context, SocialMediaViewModel socialMediaViewModel, LaoViewModel viewModel) {
+    this.context = context;
     this.socialMediaViewModel = socialMediaViewModel;
     this.laoViewModel = viewModel;
 
-    layoutInflater = LayoutInflater.from(ctx);
+    layoutInflater = LayoutInflater.from(context);
     viewModel.addDisposable(
         socialMediaViewModel
             .getChirps()
@@ -89,7 +89,8 @@ public class ChirpListAdapter extends BaseAdapter {
                       .deleteChirp(chirp.getId(), Instant.now().getEpochSecond())
                       .subscribe(
                           msg ->
-                              Toast.makeText(context, "Deleted chirp!", Toast.LENGTH_LONG).show(),
+                              Toast.makeText(context, R.string.deleted_chirp, Toast.LENGTH_LONG)
+                                  .show(),
                           error ->
                               ErrorUtils.logAndShow(
                                   context, TAG, error, R.string.error_delete_chirp))));
@@ -98,7 +99,7 @@ public class ChirpListAdapter extends BaseAdapter {
     }
 
     if (chirp.isDeleted()) {
-      text = "Chirp is deleted.";
+      text = context.getString(R.string.deleted_chirp_2);
       deleteChirp.setVisibility(View.GONE);
       itemText.setTextColor(Color.GRAY);
     } else {

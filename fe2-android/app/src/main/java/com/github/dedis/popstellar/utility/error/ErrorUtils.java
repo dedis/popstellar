@@ -2,7 +2,6 @@ package com.github.dedis.popstellar.utility.error;
 
 import android.content.Context;
 import android.os.Handler;
-import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.StringRes;
@@ -13,7 +12,11 @@ import org.bouncycastle.util.Arrays;
 
 import java.util.concurrent.TimeoutException;
 
+import timber.log.Timber;
+
 public class ErrorUtils {
+
+  private static final String TAG = ErrorUtils.class.getSimpleName();
 
   private ErrorUtils() throws IllegalAccessException {
     throw new IllegalAccessException();
@@ -29,7 +32,7 @@ public class ErrorUtils {
   public static void logAndShow(Context context, String tag, @StringRes int action) {
     String message = context.getString(action);
 
-    Log.e(tag, message);
+    Timber.tag(tag).e(message);
     displayToast(context, message);
   }
 
@@ -51,7 +54,7 @@ public class ErrorUtils {
       Context context, String tag, Throwable error, @StringRes int action, String... actionArgs) {
     String exceptionMsg = getLocalizedMessage(context, error, action, actionArgs);
 
-    Log.e(tag, exceptionMsg, error);
+    Timber.tag(tag).e(error);
     displayToast(context, exceptionMsg);
   }
 
@@ -78,9 +81,7 @@ public class ErrorUtils {
     } else {
       // It is not a known error, let's log it but not show information to
       // the average user as it will not be useful to him.
-      Log.d(
-          ErrorUtils.class.getSimpleName(),
-          "Error " + error.getClass() + " is not a know error type.");
+      Timber.tag(TAG).d("Error %s is not a know error type", error.getClass());
       return "";
     }
   }

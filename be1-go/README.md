@@ -110,7 +110,7 @@ executing
 if you want to enforce the rule that only the server owner can creates LAO, specify the option --pk (as written below)
 
 ```
-./pop organizer --pk "<base64url encoded pk of server owner>" serve
+./pop server --pk "<base64url encoded pk of server owner>" serve
 ```
 
 Please use the `-cp` and `-sp` flags to specify an alternative port, respectively

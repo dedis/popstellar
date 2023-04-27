@@ -1,7 +1,6 @@
 package com.github.dedis.popstellar.ui.lao.digitalcash;
 
 import android.annotation.SuppressLint;
-import android.util.Log;
 import android.view.*;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -20,6 +19,8 @@ import com.github.dedis.popstellar.utility.error.keys.KeyException;
 
 import java.util.*;
 import java.util.stream.Collectors;
+
+import timber.log.Timber;
 
 public class HistoryListAdapter extends RecyclerView.Adapter<HistoryListAdapter.HistoryViewHolder> {
   private static final String TAG = HistoryListAdapter.class.getSimpleName();
@@ -46,7 +47,7 @@ public class HistoryListAdapter extends RecyclerView.Adapter<HistoryListAdapter.
   public void onBindViewHolder(@NonNull HistoryViewHolder holder, int position) {
     TransactionHistoryElement element = transactions.get(position);
     if (element == null) {
-      Log.d(TAG, "element is null");
+      Timber.tag(TAG).d("element is null");
       return;
     }
     String transactionId = element.getId();
@@ -68,7 +69,7 @@ public class HistoryListAdapter extends RecyclerView.Adapter<HistoryListAdapter.
 
     View.OnClickListener listener =
         v -> {
-          Log.d(TAG, "transaction is " + transactionId + " position is " + position);
+          Timber.tag(TAG).d("transaction is %s position is %s", transactionId, position);
           boolean expandStatus = expandMap.get(transactionId);
           expandMap.put(transactionId, !expandStatus);
           notifyItemChanged(position);
