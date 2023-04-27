@@ -1,5 +1,10 @@
 package com.github.dedis.popstellar.model.network.method.message.data.lao;
 
+import static com.github.dedis.popstellar.testutils.Base64DataUtils.generatePublicKey;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.*;
+
 import com.github.dedis.popstellar.model.network.JsonTestUtils;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
@@ -8,17 +13,11 @@ import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.testutils.Base64DataUtils;
 import com.github.dedis.popstellar.utility.security.Hash;
 import com.google.gson.JsonParseException;
-
-import org.junit.Test;
-
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-
-import static com.github.dedis.popstellar.testutils.Base64DataUtils.generatePublicKey;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.*;
+import org.junit.Test;
 
 public class CreateLaoTest {
 
@@ -29,11 +28,26 @@ public class CreateLaoTest {
   private final String id = Lao.generateLaoId(organizer, creation, name);
   private final CreateLao createLao = new CreateLao(id, name, creation, organizer, witnesses);
 
-  @Test
-  public void wrongIdTest() {
-    assertThrows(
-        IllegalArgumentException.class,
-        () -> new CreateLao("wrong Id", name, creation, organizer, witnesses));
+  @Test(expected = IllegalArgumentException.class)
+  public void constructorFailsIdNotBase64Test() {
+    new CreateLao("wrong Id", name, creation, organizer, witnesses);
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void constructorFailsInvalidIdHashTest() {
+    String wrongId = "A" + id.substring(1);
+    new CreateLao(wrongId, name, creation, organizer, witnesses);
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void constructorFailsEmptyNameTest() {
+    new CreateLao(id, "", creation, organizer, witnesses);
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void constructorFailsFutureCreationTimeTest() {
+    long futureCreation = Instant.now().getEpochSecond() + 1000;
+    new CreateLao(id, name, futureCreation, organizer, witnesses);
   }
 
   @Test
@@ -100,7 +114,15 @@ public class CreateLaoTest {
     String jsonInvalid1 =
         JsonTestUtils.loadFile(pathDir + "wrong_lao_create_additional_params.json");
     String jsonInvalid2 = JsonTestUtils.loadFile(pathDir + "wrong_lao_create_missing_params.json");
+    String jsonInvalid3 = JsonTestUtils.loadFile(pathDir + "bad_lao_create_creation_negative.json");
+    String jsonInvalid4 =
+        JsonTestUtils.loadFile(pathDir + "bad_lao_create_organizer_not_base64.json");
+    String jsonInvalid5 =
+        JsonTestUtils.loadFile(pathDir + "bad_lao_create_witness_not_base64.json");
     assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid1));
     assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid2));
+    assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid3));
+    assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid4));
+    assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid5));
   }
 }

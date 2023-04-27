@@ -8,17 +8,16 @@ import com.networknt.schema._
 import spray.json._
 
 import java.io.InputStream
-import java.util
 import scala.jdk.CollectionConverters._
 import scala.util.{Failure, Success, Try}
 
 object SchemaVerifier {
   private final val objectMapper: ObjectMapper = new ObjectMapper()
 
-  private final val querySchemaPath = "protocol/query/query.json" // with respect to resources folder
+  private final val jsonSchemaPath = "protocol/jsonRPC.json" // with respect to resources folder
   private final val dataSchemasPath = "protocol/query/method/message/data" // with respect to resources folder
 
-  private final val querySchema: JsonSchema = setupSchemaVerification(querySchemaPath)
+  private final val jsonSchema: JsonSchema = setupSchemaVerification(jsonSchemaPath)
 
   def setupSchemaVerification(jsonPath: String): JsonSchema = {
     // get input stream of protocol's query.json file from resources folder
@@ -27,25 +26,13 @@ object SchemaVerifier {
     // creation of a JsonSchemaFactory that supports the DraftV07 with the schema obtained from a node created from query.json
     val factory: JsonSchemaFactory = JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V7)
 
-    val config = new SchemaValidatorsConfig()
-    val mapping = new util.HashMap[String, String]()
-    mapping.put(
-      "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/heartbeat.json",
-      "resource:/protocol/query/method/heartbeat.json"
-    )
-    mapping.put(
-      "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/get_messages_by_id.json",
-      "resource:/protocol/query/method/get_messages_by_id.json"
-    )
-    config.setUriMappings(mapping)
-
     // creation of a JsonNode using the readTree function from the file query.json (at queryPath)
     // closing the stream is done by readTree
     // FIXME: error handling for queryPath
     lazy val jsonNode: JsonNode = objectMapper.readTree(queryFile)
 
     // creation of a JsonSchema from the previously created factory and JsonNode
-    factory.getSchema(jsonNode, config)
+    factory.getSchema(jsonNode)
   }
 
   private def verifySchema(schema: JsonSchema, jsonString: JsonString): Try[Unit] = {
@@ -73,7 +60,7 @@ object SchemaVerifier {
     *   a [[GraphMessage]] containing the input if successful, or a [[PipelineError]] otherwise
     */
   def verifyRpcSchema(jsonString: JsonString): Either[PipelineError, JsonString] = {
-    verifySchema(querySchema, jsonString) match {
+    verifySchema(jsonSchema, jsonString) match {
       case Success(_) => Right(jsonString)
       case Failure(ex) =>
         val rpcId = Try(jsonString.parseJson.asJsObject.getFields("id")) match {

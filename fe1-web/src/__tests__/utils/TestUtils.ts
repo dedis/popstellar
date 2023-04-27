@@ -34,8 +34,10 @@ export const org = new PublicKey(mockPublicKey);
 
 // MOCK LAO
 export const mockLaoName = 'MyLao';
+export const mockLaoName2 = 'MySecondLao';
 export const mockLaoCreationTime = new Timestamp(1600000000);
 export const mockLaoId: Hash = Hash.fromArray(org, mockLaoCreationTime, mockLaoName);
+export const mockLaoId2: Hash = Hash.fromArray(org, mockLaoCreationTime, mockLaoName2);
 
 export const serializedMockLaoId: string = mockLaoId.valueOf();
 
@@ -74,6 +76,7 @@ export const mockKeyPairRegistry = {
 } as unknown as KeyPairRegistry;
 
 export const mockChannel: Channel = `${ROOT_CHANNEL}/${mockLaoId}`;
+export const mockChannel2: Channel = `${ROOT_CHANNEL}/${mockLaoId2}`;
 export const mockAddress = 'wss://some-address.com:8000/';
 
 export const mockJsonRequest: Partial<JsonRpcRequest> = {

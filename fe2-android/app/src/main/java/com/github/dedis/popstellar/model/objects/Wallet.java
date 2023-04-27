@@ -1,7 +1,5 @@
 package com.github.dedis.popstellar.model.objects;
 
-import android.util.Log;
-
 import androidx.annotation.NonNull;
 
 import com.github.dedis.popstellar.di.KeysetModule.WalletKeyset;
@@ -26,6 +24,7 @@ import javax.inject.Singleton;
 import io.github.novacrypto.bip39.*;
 import io.github.novacrypto.bip39.Validation.*;
 import io.github.novacrypto.bip39.wordlists.English;
+import timber.log.Timber;
 
 /**
  * This class represent a wallet that will enable users to store their PoP tokens with reasonable,
@@ -47,7 +46,7 @@ public class Wallet {
     try {
       aead = keysetManager.getKeysetHandle().getPrimitive(Aead.class);
     } catch (GeneralSecurityException e) {
-      Log.e(TAG, "Failed to initialize the Wallet", e);
+      Timber.tag(TAG).e(e, "Failed to initialize the Wallet");
       throw new IllegalStateException("Failed to initialize the Wallet", e);
     }
   }
@@ -73,7 +72,7 @@ public class Wallet {
             convertDataToPath(laoID),
             convertDataToPath(rollCallID));
 
-    Log.d(TAG, "Generated path: " + res);
+    Timber.tag(TAG).d("Generated path: %s", res);
 
     return generateKeyFromPath(res);
   }
@@ -95,8 +94,11 @@ public class Wallet {
       @NonNull String laoID, @NonNull String rollCallID, @NonNull Set<PublicKey> rollCallTokens)
       throws KeyGenerationException, UninitializedWalletException, InvalidPoPTokenException {
     PoPToken token = generatePoPToken(laoID, rollCallID);
-    if (rollCallTokens.contains(token.getPublicKey())) return token;
-    else throw new InvalidPoPTokenException(token);
+    if (rollCallTokens.contains(token.getPublicKey())) {
+      return token;
+    } else {
+      throw new InvalidPoPTokenException(token);
+    }
   }
 
   /**
@@ -108,7 +110,7 @@ public class Wallet {
     }
     byte[] decryptedBytes = aead.decrypt(encryptedMnemonic, new byte[0]);
     String words = new String(decryptedBytes, StandardCharsets.UTF_8);
-    Log.d(TAG, "Mnemonic words successfully decrypted for export");
+    Timber.tag(TAG).d("Mnemonic words successfully decrypted for export");
     return words.split(" ");
   }
 
@@ -119,7 +121,6 @@ public class Wallet {
    */
   public void importSeed(@NonNull String words)
       throws SeedValidationException, GeneralSecurityException {
-
     try {
       MnemonicValidator.ofWordList(English.INSTANCE).validate(words);
     } catch (InvalidChecksumException
@@ -129,7 +130,7 @@ public class Wallet {
       throw new SeedValidationException(e);
     }
     storeEncrypted(words);
-    Log.d(TAG, "Mnemonic words were successfully imported");
+    Timber.tag(TAG).d("Mnemonic words were successfully imported");
   }
 
   /**
@@ -143,14 +144,13 @@ public class Wallet {
 
   /** Logout the wallet by replacing the seed by a random one */
   public void logout() {
-    Log.d(TAG, "Logged out of wallet");
+    Timber.tag(TAG).d("Logged out of wallet");
     encryptedSeed = null;
     encryptedMnemonic = null;
   }
 
-  /** Generates mnemonic seed but does not store it*/
+  /** Generates mnemonic seed but does not store it */
   public String newSeed() {
-
     StringBuilder sb = new StringBuilder();
     byte[] entropy = new byte[Words.TWELVE.byteLength()];
     new SecureRandom().nextBytes(entropy);
@@ -164,7 +164,7 @@ public class Wallet {
     encryptedSeed =
         aead.encrypt(
             new SeedCalculator().calculateSeed(String.join("", mnemonicWords), ""), new byte[0]);
-    Log.d(TAG, "Mnemonic words and seed successfully encrypted");
+    Timber.tag(TAG).d("Mnemonic words and seed successfully encrypted");
   }
 
   /**
@@ -195,7 +195,9 @@ public class Wallet {
     }
 
     // If the path is not complete, add the remaining bytes to the joiner
-    if (curPath.length() > 0) joiner.add(curPath.toString());
+    if (curPath.length() > 0) {
+      joiner.add(curPath.toString());
+    }
 
     return joiner.toString();
   }

@@ -1,14 +1,13 @@
 package com.github.dedis.popstellar.model.network.method.message.data.lao;
 
 import androidx.annotation.NonNull;
-
 import com.github.dedis.popstellar.model.Immutable;
-import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.network.method.message.data.*;
+import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
+import com.github.dedis.popstellar.utility.MessageValidator;
 import com.google.gson.annotations.SerializedName;
-
 import java.util.*;
 
 /** Data sent to update the lao specifications */
@@ -24,20 +23,27 @@ public class UpdateLao extends Data {
   private final Set<PublicKey> witnesses;
 
   /**
-   * Constructor for a data Update LAO
+   * Constructor for a Data UpdateLao
    *
    * @param organizer public key of the LAO
    * @param creation creation time
    * @param name name of the LAO
    * @param lastModified time of last modification
    * @param witnesses list of witnesses of the LAO
+   * @throws IllegalArgumentException if arguments are invalid
    */
   public UpdateLao(
-      PublicKey organizer,
+      @NonNull PublicKey organizer,
       long creation,
-      String name,
+      @NonNull String name,
       long lastModified,
       Set<PublicKey> witnesses) {
+    // Witnesses are checked to be base64 at deserialization, but not organizer
+    MessageValidator.verify()
+        .checkBase64(organizer.getEncoded(), "organizer")
+        .checkStringNotEmpty(name, "name")
+        .checkValidOrderedTimes(creation, lastModified);
+
     this.id = Lao.generateLaoId(organizer, creation, name);
     this.name = name;
     this.lastModified = lastModified;

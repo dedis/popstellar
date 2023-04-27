@@ -24,6 +24,7 @@ class JsonRpcRequest(
   def getParamsChannel: Channel = params.channel
 
   def hasParamsMessage: Boolean = params.hasMessage
+  def hasParamsChannel: Boolean = params.hasChannel
 
   def getParamsMessage: Option[Message] = Try(params.asInstanceOf[ParamsWithMessage].message) match {
     case Success(message) => Some(message)

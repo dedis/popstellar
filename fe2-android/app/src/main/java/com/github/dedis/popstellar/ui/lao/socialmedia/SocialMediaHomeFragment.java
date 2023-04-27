@@ -1,7 +1,6 @@
 package com.github.dedis.popstellar.ui.lao.socialmedia;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.*;
 
 import androidx.annotation.*;
@@ -17,6 +16,7 @@ import com.github.dedis.popstellar.utility.ActivityUtils;
 import java.util.function.Supplier;
 
 import dagger.hilt.android.AndroidEntryPoint;
+import timber.log.Timber;
 
 /**
  * The purpose of this fragment is to provide a bottom nav bar and fragment container to social
@@ -58,7 +58,7 @@ public class SocialMediaHomeFragment extends Fragment {
     binding.socialMediaNavBar.setOnItemSelectedListener(
         item -> {
           SocialMediaTab tab = SocialMediaTab.findByMenu(item.getItemId());
-          Log.i(TAG, "Opening tab : " + tab.getName());
+          Timber.tag(TAG).i("Opening tab : %s", tab.getName());
           openBottomTab(tab);
           return true;
         });

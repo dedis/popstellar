@@ -4,7 +4,6 @@ import android.content.*;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.*;
 import android.widget.Toast;
 
@@ -33,6 +32,7 @@ import net.glxn.qrgen.android.QRCode;
 import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
+import timber.log.Timber;
 
 @AndroidEntryPoint
 public class TokenFragment extends Fragment {
@@ -74,7 +74,7 @@ public class TokenFragment extends Fragment {
       RollCall rollCall =
           rollCallRepo.getRollCallWithPersistentId(
               laoViewModel.getLaoId(), requireArguments().getString(Constants.ROLL_CALL_ID));
-      Log.d(TAG, "token displayed from roll call: " + rollCall);
+      Timber.tag(TAG).d("token displayed from roll call: %s", rollCall);
 
       PoPToken poPToken = keyManager.getValidPoPToken(laoViewModel.getLaoId(), rollCall);
       PopTokenData data = new PopTokenData(poPToken.getPublicKey());

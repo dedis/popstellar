@@ -56,4 +56,10 @@ public class Constants {
 
   /** Number of milliseconds in a day */
   public static final long MS_IN_A_DAY = 1000 * 60 * 60 * 24L;
+
+  /** Orientation up along the x axis */
+  public static final float ORIENTATION_UP = 0f;
+
+  /** Orientation down along the x axis */
+  public static final float ORIENTATION_DOWN = 180f;
 }
