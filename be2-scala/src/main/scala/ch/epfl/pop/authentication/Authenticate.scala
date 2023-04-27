@@ -64,8 +64,10 @@ object Authenticate {
       Left("invalid_scope" -> s"expected scope to contain \"$expectedScope\" but received \"$scope\"")
   }
 
-  def generateChallenge(request: HttpRequest): HttpResponse =
-    HttpResponse(status = StatusCodes.OK, entity= request.toString()) // TODO: add code for generating the challenge qrcode page
+  def generateChallenge(request: HttpRequest): HttpResponse = {
+    val challengeEntity = QRCodeChallengeGenerator.generateChallengeContent(request.uri.toString())
+    HttpResponse(status = StatusCodes.OK, entity= challengeEntity) // TODO: add code for generating the challenge qrcode page
+  }
 
   def authenticationFailure(error: String, errorDescription: String, state: Option[String]): HttpResponse = {
     var response = HttpResponse(status= StatusCodes.Found)
