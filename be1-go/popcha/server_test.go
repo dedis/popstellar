@@ -22,7 +22,6 @@ import (
 	"strings"
 	"testing"
 	"testing/quick"
-	"time"
 )
 
 const (
@@ -76,14 +75,10 @@ func TestAuthorizationServerHandleValidateRequest(t *testing.T) {
 	require.NoError(t, err, "could not create AuthServer")
 	s.Start()
 	<-s.Started
-	// let the server properly start
-	time.Sleep(1 * time.Second)
 
 	// send a valid mock authorization request
 	res, err := sendValidAuthRequest()
 	require.NoError(t, err)
-
-	time.Sleep(time.Second)
 
 	require.Equal(t, 200, res.StatusCode)
 	err = s.Shutdown()
@@ -131,8 +126,6 @@ func TestAuthRequestFails(t *testing.T) {
 	require.NoError(t, err, "could not create AuthServer")
 	s.Start()
 	<-s.Started
-	// let the server properly start
-	time.Sleep(200 * time.Millisecond)
 
 	// init parameters map
 	params := url.Values{}
@@ -152,8 +145,6 @@ func TestAuthRequestFails(t *testing.T) {
 	// we require that in the error response, the number of missing arguments is equal to 6
 	helperMissingArgs(t, bodyBytes, 6)
 
-	time.Sleep(200 * time.Millisecond)
-
 	// add a nonce
 	params.Add(Nonce, "some_n0nc3")
 
@@ -170,8 +161,6 @@ func TestAuthRequestFails(t *testing.T) {
 	// we require that there are 5 missing arguments
 	helperMissingArgs(t, bodyBytes, 5)
 
-	time.Sleep(200 * time.Millisecond)
-
 	// testing request with valid number of parameters, but invalid scope
 
 	invalidScopeURL := createAuthRequestURL("n", "c", "invalid", "l", "localhost:3001", ResTypeMulti, " ")
@@ -183,8 +172,6 @@ func TestAuthRequestFails(t *testing.T) {
 	lastEntry = logTester.LastEntry()
 	lastEntry.ExpLevel(zerolog.ErrorLevel)
 	lastEntry.ExpMsg("Error while validating the auth request")
-
-	time.Sleep(200 * time.Millisecond)
 
 	// testing request with wrong response type
 	invalidResTypeURL := createAuthRequestURL("n", "c", OpenID, "l", "localhost:3001", "invalid", " ")
@@ -231,8 +218,6 @@ func TestAuthorizationServerWebsocket(t *testing.T) {
 	require.NoError(t, err, "could not create AuthServer")
 	s.Start()
 	<-s.Started
-	// let the server properly start
-	time.Sleep(1 * time.Second)
 
 	//parameters definition for the unit test
 	clientID := "client"
@@ -250,8 +235,6 @@ func TestAuthorizationServerWebsocket(t *testing.T) {
 	require.NoError(t, err)
 	l.Info().Msg(u)
 
-	time.Sleep(2 * time.Second)
-
 	// constructing the unique URL endpoint of the PopCHA Websocket server.
 	popChaPath := strings.Join([]string{responseEndpoint, laoID, "authentication", clientID, nonce}, "/")
 
@@ -261,7 +244,6 @@ func TestAuthorizationServerWebsocket(t *testing.T) {
 	// instantiating websocket connection
 	client, err := newWSClient(popChaWsURL)
 	require.NoError(t, err)
-	time.Sleep(time.Second)
 
 	//creating fake redirect URI parameters, for example just with the clientID. We are not
 	// testing the validity of the parameters here, but rather that the websocket protocol doesn't
@@ -270,8 +252,6 @@ func TestAuthorizationServerWebsocket(t *testing.T) {
 	fakeParams.Add("client_id", clientID)
 	err = client.conn.WriteMessage(websocket.TextMessage, []byte(fakeParams.Encode()))
 	require.NoError(t, err)
-
-	time.Sleep(time.Second)
 
 	err = s.Shutdown()
 	require.NoError(t, err)
@@ -290,8 +270,6 @@ func TestAuthorizationServerWorkflow(t *testing.T) {
 	require.NoError(t, err, "could not create AuthServer")
 	s.Start()
 	<-s.Started
-	// let the server properly start
-	time.Sleep(200 * time.Millisecond)
 
 	// test error on /response with empty path suffix
 	emptyPathURL := url.URL{Scheme: "ws", Host: "localhost:3003", Path: responseEndpoint}
@@ -302,8 +280,6 @@ func TestAuthorizationServerWorkflow(t *testing.T) {
 	err = emptyPathClient.conn.WriteMessage(websocket.TextMessage, []byte("test"))
 	logTester.LastEntry().ExpMsg("Error while receiving a request on /response: empty path")
 	require.NoError(t, err)
-
-	time.Sleep(200 * time.Millisecond)
 
 	// create two clients, a sender and a receiver, on a valid path
 	validPath := strings.Join([]string{responseEndpoint, "laoid", "authentication", "clientid", "nonce"}, "/")
@@ -339,8 +315,6 @@ func TestAuthorizationServerWorkflow(t *testing.T) {
 	<-received
 
 	logTester.LastEntry().ExpLevel(zerolog.InfoLevel)
-
-	time.Sleep(time.Second)
 
 	require.NoError(t, clientReceiver.conn.Close())
 	require.NoError(t, clientSender.conn.Close())
@@ -393,8 +367,6 @@ func TestClientParams(t *testing.T) {
 	require.NoError(t, err, "could not create AuthServer")
 	s.Start()
 	<-s.Started
-	// let the server properly start
-	time.Sleep(1 * time.Second)
 
 	// create a property generating random, valid client parameters (valid because only
 	// the ClientID is random, and only uses alphanumerical alphabet).
