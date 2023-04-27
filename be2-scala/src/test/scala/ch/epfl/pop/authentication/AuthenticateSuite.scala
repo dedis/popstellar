@@ -26,13 +26,12 @@ class AuthenticateSuite extends AnyFunSuite with Matchers with ScalatestRouteTes
 
   private val parametersNames = List("response_type", "client_id", "redirect_uri", "scope", "state", "response_mode", "login_hint", "nonce")
 
-  private def buildRequest(params: List[(String,String)]): HttpRequest = {
+  private def buildRequest(params: List[(String, String)]): HttpRequest = {
     val parameters = params.filter(pair => pair._2.nonEmpty).toMap
     Get().withUri(Uri(routeName).withQuery(Query(parameters)))
   }
 
-  private def buildRequest(response_type: String, client_id: String, redirect_uri: String, scope: String,
-                   state: String, response_mode: String, login_hint: String, nonce: String): HttpRequest = {
+  private def buildRequest(response_type: String, client_id: String, redirect_uri: String, scope: String, state: String, response_mode: String, login_hint: String, nonce: String): HttpRequest = {
     val params = parametersNames.zip(
       List(response_type, client_id, redirect_uri, scope, state, response_mode, login_hint, nonce)
     )
@@ -48,7 +47,14 @@ class AuthenticateSuite extends AnyFunSuite with Matchers with ScalatestRouteTes
   test("good requests succeeds") {
     val route = Authenticate.buildRoute()
     val request = buildRequest(
-      goodResponseType, clientID, redirect_uir, goodScope, state, response_mode, login_hint, nonce
+      goodResponseType,
+      clientID,
+      redirect_uir,
+      goodScope,
+      state,
+      response_mode,
+      login_hint,
+      nonce
     )
 
     request ~> route ~> check {
@@ -59,7 +65,14 @@ class AuthenticateSuite extends AnyFunSuite with Matchers with ScalatestRouteTes
   test("good requests without optional params succeeds") {
     val route = Authenticate.buildRoute()
     val request = buildRequest(
-      goodResponseType, clientID, redirect_uir, goodScope, "", "", login_hint, nonce
+      goodResponseType,
+      clientID,
+      redirect_uir,
+      goodScope,
+      "",
+      "",
+      login_hint,
+      nonce
     )
 
     println(request)
@@ -72,7 +85,14 @@ class AuthenticateSuite extends AnyFunSuite with Matchers with ScalatestRouteTes
   test("invalid response type fails request") {
     val route = Authenticate.buildRoute()
     val request = buildRequest(
-      badResponseType, clientID, redirect_uir, goodScope, state, response_mode, login_hint, nonce
+      badResponseType,
+      clientID,
+      redirect_uir,
+      goodScope,
+      state,
+      response_mode,
+      login_hint,
+      nonce
     )
 
     request ~> route ~> check {
@@ -84,7 +104,14 @@ class AuthenticateSuite extends AnyFunSuite with Matchers with ScalatestRouteTes
   test("invalid scope fails request") {
     val route = Authenticate.buildRoute()
     val request = buildRequest(
-      goodResponseType, clientID, redirect_uir, badScope, state, response_mode, login_hint, nonce
+      goodResponseType,
+      clientID,
+      redirect_uir,
+      badScope,
+      state,
+      response_mode,
+      login_hint,
+      nonce
     )
 
     request ~> route ~> check {
@@ -100,7 +127,7 @@ class AuthenticateSuite extends AnyFunSuite with Matchers with ScalatestRouteTes
     val mandatoryValues = List(goodResponseType, clientID, redirect_uir, goodScope, login_hint, nonce)
     val mandatoryParams = mandatoryNames.zip(mandatoryValues)
 
-    mandatoryNames.foreach{ name =>
+    mandatoryNames.foreach { name =>
       val subParams = mandatoryParams.filter(_._1 != name)
       val request = buildRequest(subParams)
 

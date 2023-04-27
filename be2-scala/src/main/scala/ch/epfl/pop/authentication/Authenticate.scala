@@ -7,12 +7,11 @@ import akka.http.scaladsl.server.Directives._
 import ch.epfl.pop.authentication.Authenticate.verifyResponseType
 
 object Authenticate {
-  case class RequestParameters(response_type: String, client_id: String, redirect_uri: String, scope: String,
-                               state: Option[String], response_mode: Option[String], login_hint: String, nonce: String)
+  case class RequestParameters(response_type: String, client_id: String, redirect_uri: String, scope: String, state: Option[String], response_mode: Option[String], login_hint: String, nonce: String)
 
   type VerificationState = Either[(String, String), Unit]
 
-  private val mandatoryParameters =  Set("response_type", "client_id", "redirect_uri", "scope", "login_hint", "nonce")
+  private val mandatoryParameters = Set("response_type", "client_id", "redirect_uri", "scope", "login_hint", "nonce")
 
   def buildRoute(): server.Route = {
     extractRequest { request =>
@@ -26,13 +25,14 @@ object Authenticate {
         "login_hint",
         "nonce"
       ) {
-        (response_type, client_id, redirect_uri, scope, state, response_mode, login_hint, nonce) => {
-          val params = RequestParameters(response_type, client_id, redirect_uri, scope, state, response_mode, login_hint, nonce)
-          verifyParameters(params) match {
-            case Left(error -> errorDescription) => complete(authenticationFailure(error, errorDescription, state))
-            case Right(_) => complete(generateChallenge(request))
+        (response_type, client_id, redirect_uri, scope, state, response_mode, login_hint, nonce) =>
+          {
+            val params = RequestParameters(response_type, client_id, redirect_uri, scope, state, response_mode, login_hint, nonce)
+            verifyParameters(params) match {
+              case Left(error -> errorDescription) => complete(authenticationFailure(error, errorDescription, state))
+              case Right(_)                        => complete(generateChallenge(request))
+            }
           }
-        }
       } ~ extractUri { uri =>
         complete {
           val attributesKeys = uri.query().toMap.keys.toSet
@@ -53,22 +53,24 @@ object Authenticate {
 
   def verifyResponseType(response_type: String): VerificationState = {
     val expectedResponseType = "id_token token"
-    if (response_type == expectedResponseType) Right(()) else
+    if (response_type == expectedResponseType) Right(())
+    else
       Left("unsupported_response_type" -> s"expected \"$expectedResponseType\" but received \"$response_type\"")
   }
 
   def verifyScope(scope: String): VerificationState = {
     val expectedScope = "openid"
     val scopes = scope.split(" ")
-    if (scopes.contains(expectedScope)) Right(()) else
+    if (scopes.contains(expectedScope)) Right(())
+    else
       Left("invalid_scope" -> s"expected scope to contain \"$expectedScope\" but received \"$scope\"")
   }
 
   def generateChallenge(request: HttpRequest): HttpResponse =
-    HttpResponse(status = StatusCodes.OK, entity= request.toString()) // TODO: add code for generating the challenge qrcode page
+    HttpResponse(status = StatusCodes.OK, entity = request.toString()) // TODO: add code for generating the challenge qrcode page
 
   def authenticationFailure(error: String, errorDescription: String, state: Option[String]): HttpResponse = {
-    var response = HttpResponse(status= StatusCodes.Found)
+    var response = HttpResponse(status = StatusCodes.Found)
       .addAttribute(AttributeKey("error"), error)
       .addAttribute(AttributeKey("error_description"), errorDescription)
     if (state.isDefined)
