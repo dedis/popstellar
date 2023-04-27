@@ -16,7 +16,9 @@ Feature: Create a Roll Call
     * call read('classpath:be/utils/server.feature')
     * call read('classpath:be/mockFrontEnd.feature')
     * call read('classpath:be/constants.feature')
-    * string laoChannel = "/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA="
+    * def organizer = createUser()
+    * string laoChannel = generateLaoId(organizer)
+
   # Testing if after setting up a valid lao, subscribing to it and sending a catchup
   # we send a valid roll call create request and expect to receive a valid response
   # from the backend
@@ -184,6 +186,7 @@ Feature: Create a Roll Call
     And json answer = frontend.getBackendResponse(JSON.stringify(validCreateRollCall))
     Then match answer contains INVALID_MESSAGE_FIELD
     And match frontend.receiveNoMoreResponses() == true
+
   # Setting up the lao correctly but send an invalid roll call create request, containing
   # an invalid roll_call id should result in an error message from the backend.
   Scenario: Roll Call Creation with invalid roll_call id should return an error
@@ -204,5 +207,28 @@ Feature: Create a Roll Call
       """
     When frontend.publish(JSON.stringify(validCreateRollCall), laoChannel)
     And json answer = frontend.getBackendResponse(JSON.stringify(validCreateRollCall))
+    Then match answer contains INVALID_MESSAGE_FIELD
+    And match frontend.receiveNoMoreResponses() == true
+
+  # Setting up the lao correctly but send an invalid roll call create request, containing
+  # an invalid roll_call id should result in an error message from the backend.
+  Scenario: Roll Call Creation with invalid roll_call id should return an error
+    Given call createValidLao(organizer)
+    And def invalidCreateRollCall =
+      """
+        {
+          "object": "roll_call",
+          "action": "create",
+          "id": '#(getRollCallInvalidId)',
+          "name": "Roll Call ",
+          "creation": '#(getValidCreationTime)',
+          "proposed_start": '#(getValidCStartTime)',
+          "proposed_end": '#(getValidEndTime)',
+          "location": "EPFL",
+          "description": "Food is welcome!"
+        }
+      """
+    When organizer.publish(invalidCreateRollCall, laoChannel)
+    And json answer = organizer.getBackendResponse(invalidCreateRollCall)
     Then match answer contains INVALID_MESSAGE_FIELD
     And match frontend.receiveNoMoreResponses() == true

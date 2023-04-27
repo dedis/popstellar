@@ -15,12 +15,17 @@ Feature: Cast a vote
     * call read('classpath:be/utils/server.feature')
     * call read('classpath:be/mockFrontEnd.feature')
     * call read('classpath:be/constants.feature')
-    * string electionChannel = "/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=/rdv-0minecREM9XidNxnQotO7nxtVVnx-Zkmfm7hm2w="
-    * string laoChannel = "/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA="
+
+    * def organizer = createUser()
+    * def attendee = createUser()
+    * string laoId = generateLaoId(organizer)
+    * string electionId = generateElectionSetupId(laoId)
+    * string laoChannel = "/root/" + laoId
+    * string electionChannel =  "/root/" + laoId  + "/" + electionId
 
   # Testing if after creating an election correctly, casting a valid vote succeeds
   Scenario: Casting a valid vote on a started election
-    Given call read('classpath:be/utils/simpleScenarios.feature@name=election_open')
+    Given call openElection(organizer)
     And def validCastVote =
       """
         {
@@ -196,3 +201,28 @@ Feature: Cast a vote
     And json answer = frontend.getBackendResponse(JSON.stringify(invalidCastVote))
     Then match answer contains INVALID_MESSAGE_FIELD
     And match frontend.receiveNoMoreResponses() == true
+
+  # Testing if casting a valid vote at a time after election creation should fail
+  Scenario: Casting a valid vote before time should fail
+    Given call setUpElection(organizer)
+    And def invalidCastVote =
+      """
+        {
+          "object": "election",
+          "action": "cast_vote",
+          "lao": '#(laoId)',
+          "election": '#(electionId)',
+          "created_at": '#(getValidCreationTime)',
+          "votes": [
+            {
+              "id": '#(getIsThisProjectFunVoteIdVoteYes)',
+              "question": '#(getIsThisProjectFunQuestionId)',
+              "vote": 0
+            }
+          ]
+        }
+      """
+    When attendee.publish(invalidCastVote, electionChannel)
+    And json answer = frontend.getBackendResponse(invalidCastVote)
+    Then match answer contains INVALID_MESSAGE_FIELD
+    And match attendee.receiveNoMoreResponses() == true

@@ -11,6 +11,11 @@ Feature: Create a pop LAO
     * call read('classpath:be/constants.feature')
     * string channel = "/root"
 
+    * def organizer = createUser()
+    * def attendee = createUser()
+    * string laoId = generateLaoId(organizer)
+    * string laoChannel = "/root/" + laoId
+
   Scenario: Create Lao request with empty lao name should fail with an error response 2
     Given def badLaoReq =
       """
@@ -120,3 +125,22 @@ Feature: Create a pop LAO
     And json answer = frontend.getBackendResponse(JSON.stringify(laoCreateRequest))
     Then match answer contains ACCESS_DENIED
     And match frontend.receiveNoMoreResponses() == true
+
+
+  Scenario: Create Lao with different public key from the organizer should fail with error response
+    Given def laoCreateRequest =
+      """
+        {
+          "object": "lao",
+          "action": "create",
+          "id": '#(laoId)',
+          "name": "LAO",
+          "creation": // needs to be the one laoId was created with,
+          "organizer": '#(organizer.getPublicKey)',
+          "witnesses": []
+        }
+      """
+    When attendee.publish(laoCreateRequest, channel)
+    And json answer = attendee.getBackendResponse(laoCreateRequest)
+    Then match answer contains ACCESS_DENIED
+    And match attendee.receiveNoMoreResponses() == true

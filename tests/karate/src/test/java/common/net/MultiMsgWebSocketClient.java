@@ -5,7 +5,6 @@ import com.intuit.karate.Json;
 import com.intuit.karate.Logger;
 import com.intuit.karate.http.WebSocketClient;
 import com.intuit.karate.http.WebSocketOptions;
-import io.opencensus.trace.Link;
 
 import java.util.*;
 import java.util.function.Predicate;
@@ -21,6 +20,8 @@ public class MultiMsgWebSocketClient extends WebSocketClient {
   private HashMap<String, Integer> idAssociatedWithSentMessages = new HashMap<>();
   private HashMap<Integer, String> idAssociatedWithAnswers = new HashMap<>();
   private ArrayList<String> broadcasts = new ArrayList<>();
+
+
 
   public MultiMsgWebSocketClient(WebSocketOptions options, Logger logger, MessageQueue queue) {
     super(options, logger);
@@ -122,15 +123,19 @@ public class MultiMsgWebSocketClient extends WebSocketClient {
    * @return A list containing all received messages that match the specified method type.
    */
   public List<String> getMessagesByMethod(String method) {
+    logger.info("Getting messages with method '" + method  + "'");
     List<String> messages = new ArrayList<>();
     Predicate<String> filter = MessageFilters.withMethod(method);
 
-    String message = getBuffer().takeTimeout(5000);
+    logger.info("before timeout");
+    String message = getBuffer().takeTimeout(10000);
+    logger.info("after timeout, message: " + message);
     while (message != null) {
+      logger.trace("message: " + message);
       if (filter.test(message)) {
         messages.add(message);
       }
-      message = getBuffer().takeTimeout(5000);
+      message = getBuffer().takeTimeout(10000);
     }
     return messages;
   }

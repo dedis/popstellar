@@ -76,7 +76,8 @@ Feature: Constants
     * def getLaoIdNegativeTime = constructLaoId(getLaoValidName, getLaoInvalidCreationTime)
     * def getLaoIdEmptyName = constructLaoId(getLaoValidName, getLaoValidCreationTime)
 
-    * def constructRollCallId =
+    * def
+    constructRollCallId =
       """
         function(laoId, rollCallName, time){
           var JsonConverter = Java.type('be.utils.JsonConverter')
