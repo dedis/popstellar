@@ -41,7 +41,7 @@ $(document).ready(function() {
 
 
 
-<title>Cucumber Reports  - Feature: be/LAO/create.feature</title>
+<title>Cucumber Reports  - Feature: be/election/electionOpen.feature</title>
 
 </head>
 <body>
@@ -74,7 +74,7 @@ $(document).ready(function() {
   <tbody>
     <tr class="info">
       <td>go</td>
-      <td>26 Apr 2023, 04:06</td>
+      <td>27 Apr 2023, 04:06</td>
     </tr>
   </tbody>
 </table>
@@ -126,19 +126,19 @@ $(document).ready(function() {
 
         <tbody>
         <tr>
-          <td class="tagname">be/LAO/create.feature</td>
-          <td      class="passed"    >18</td>
-          <td      class="failed"    >12</td>
-          <td     class="skipped"   >44</td>
+          <td class="tagname">be/election/electionOpen.feature</td>
+          <td      class="passed"    >15</td>
+          <td      class="failed"    >10</td>
+          <td     class="skipped"   >46</td>
           <td >0</td>
           <td >0</td>
-          <td class="total">74</td>
+          <td class="total">71</td>
 
           <td >0</td>
-          <td  class="failed"    >6</td>
-          <td class="total">6</td>
+          <td  class="failed"    >5</td>
+          <td class="total">5</td>
 
-          <td class="duration" data-value="1506943623">1.506</td>
+          <td class="duration" data-value="301627916">0.301</td>
           <td class="failed">Failed</td>
         </tr>
         </tbody>
@@ -175,12 +175,12 @@ $(document).ready(function() {
 
 <div class="brief failed">
   <span class="keyword indention">Feature</span>
-  <span class="name">be/LAO/create.feature</span>
+  <span class="name">be/election/electionOpen.feature</span>
 
 
 </div>
 
-        <div class="description indention">Create a pop LAO</div>
+        <div class="description indention">Open an Election</div>
 
         <div class="elements inner-level">
 
@@ -191,7 +191,7 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">0.938</span>
+  <span class="lead-duration duration">0.060</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-1">
@@ -234,7 +234,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/utils/server.feature')</span>
 
-  <span class="lead-duration duration">0.411</span>
+  <span class="lead-duration duration">0.024</span>
 
 </div>
 
@@ -288,7 +288,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/mockFrontEnd.feature')</span>
 
-  <span class="lead-duration duration">0.274</span>
+  <span class="lead-duration duration">0.022</span>
 
 </div>
 
@@ -322,7 +322,7 @@ org.graalvm.polyglot.PolyglotException: karate.io.netty.handler.codec.http.webso
 - &lt;js&gt;.:anonymous(Unnamed:9)
 
 classpath:be/mockFrontEnd.feature:18
-classpath:be/LAO/create.feature:10</pre>
+classpath:be/election/electionOpen.feature:16</pre>
       </div>
     </div>
   </div>
@@ -336,7 +336,7 @@ classpath:be/LAO/create.feature:10</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-4" class="collapse collapsable-details">
-        <pre>04:06:36.770 classpath:be/LAO/create.feature:10
+        <pre>04:06:30.256 classpath:be/election/electionOpen.feature:16
 * call read('classpath:be/mockFrontEnd.feature')
 js failed:
 &gt;&gt;&gt;&gt;
@@ -357,7 +357,7 @@ org.graalvm.polyglot.PolyglotException: karate.io.netty.handler.codec.http.webso
 - &lt;js&gt;.:anonymous(Unnamed:9)
 
 classpath:be/mockFrontEnd.feature:18
-classpath:be/LAO/create.feature:10
+classpath:be/election/electionOpen.feature:16
 </pre>
       </div>
     </div>
@@ -404,7 +404,7 @@ classpath:be/LAO/create.feature:10
   <span class="keyword indention">&gt; *</span>
   <span class="name">def frontend = call getMultiMsgSocket</span>
 
-  <span class="lead-duration duration">0.253</span>
+  <span class="lead-duration duration">0.014</span>
 
 </div>
 
@@ -485,7 +485,34 @@ classpath:be/mockFrontEnd.feature:18</pre>
 
 <div class="brief step-name-* skipped">
   <span class="keyword indention">*</span>
-  <span class="name">string channel = &quot;/root&quot;</span>
+  <span class="name">string electionChannel = &quot;/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=/rdv-0minecREM9XidNxnQotO7nxtVVnx-Zkmfm7hm2w=&quot;</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-* skipped">
+  <span class="keyword indention">*</span>
+  <span class="name">string laoChannel = &quot;/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=&quot;</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -534,7 +561,7 @@ classpath:be/mockFrontEnd.feature:18</pre>
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
-  <span class="name">Create Lao request with empty lao name should fail with an error response 2</span>
+  <span class="name">Opening a valid election</span>
 
 
      <i class="chevron fa fa-fw"></i>
@@ -568,7 +595,34 @@ classpath:be/mockFrontEnd.feature:18</pre>
 
 <div class="brief step-name-Given skipped">
   <span class="keyword indention">Given</span>
-  <span class="name">def badLaoReq =</span>
+  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=election_setup')</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And skipped">
+  <span class="keyword indention">And</span>
+  <span class="name">def validElectionOpen =</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -589,13 +643,11 @@ classpath:be/mockFrontEnd.feature:18</pre>
       </div>
       <div id="msg-8" class="collapse collapsable-details">
         <pre>{
-  &quot;object&quot;: &quot;lao&quot;,
-  &quot;action&quot;: &quot;create&quot;,
-  &quot;id&quot;: '#(getLaoIdEmptyName)',
-  &quot;name&quot;: &quot;&quot;,
-  &quot;creation&quot;: 1633098234,
-  &quot;organizer&quot;: '#(getOrganizer)',
-  &quot;witnesses&quot;: []
+    &quot;object&quot;: &quot;election&quot;,
+    &quot;action&quot;: &quot;open&quot;,
+    &quot;lao&quot;: '#(getLaoValid)',
+    &quot;election&quot;: '#(getValidElectionSetupId)',
+    &quot;opened_at&quot;: 1633098944
 }</pre>
       </div>
     </div>
@@ -613,7 +665,7 @@ classpath:be/mockFrontEnd.feature:18</pre>
 
 <div class="brief step-name-When skipped">
   <span class="keyword indention">When</span>
-  <span class="name">frontend.publish(JSON.stringify(badLaoReq), channel)</span>
+  <span class="name">frontend.publish(JSON.stringify(validElectionOpen), electionChannel)</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -640,1636 +692,7 @@ classpath:be/mockFrontEnd.feature:18</pre>
 
 <div class="brief step-name-And skipped">
   <span class="keyword indention">And</span>
-  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(badLaoReq))</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-Then skipped">
-  <span class="keyword indention">Then</span>
-  <span class="name">match answer contains INVALID_MESSAGE_FIELD</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And skipped">
-  <span class="keyword indention">And</span>
-  <span class="name">match frontend.receiveNoMoreResponses() == true</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-  </div>
-</div>
-
-
-
-
-
-  </div>
-</div>
-
-
-<div class="element">
-
-
-<div class="tags indention">
-</div>
-
-
-  <span class="lead-duration duration">0.123</span>
-
-
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-9">
-
-<div class="brief failed">
-  <span class="keyword indention">Background</span>
-  <span class="name"></span>
-
-
-     <i class="chevron fa fa-fw"></i>
-</div>
-
-  </span>
-  <div class="description indention"></div>
-
-  <div id="element-9" class="collapse collapsable-details  in ">
-
-
-
-
-
-<div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-10">
-
-<div class="brief failed">
-  <span class="keyword indention">Steps</span>
-  <span class="name"></span>
-
-
-     <i class="chevron fa fa-fw"></i>
-</div>
-
-  </div>
-
-  <div id="steps-10" class="inner-level collapse collapsable-details  in ">
-      <div class="step">
-
-
-<div class="brief step-name-* passed">
-  <span class="keyword indention">*</span>
-  <span class="name">call read('classpath:be/utils/server.feature')</span>
-
-  <span class="lead-duration duration">0.031</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name- passed">
-  <span class="keyword indention"></span>
-  <span class="name">be/utils/server.feature</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* failed">
-  <span class="keyword indention">*</span>
-  <span class="name">call read('classpath:be/mockFrontEnd.feature')</span>
-
-  <span class="lead-duration duration">0.060</span>
-
-</div>
-
-
-
-
-
-
-  <div class="inner-level">
-    <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-11">
-          <a>js</a>
-      </div>
-      <div id="msg-11" class="collapse collapsable-details  in ">
-        <pre>js failed:
-&gt;&gt;&gt;&gt;
-01: function(){
-02:   var MultiMsg = Java.type('common.net.MultiMsgWebSocketClient')
-03:   var Logg = Java.type('com.intuit.karate.Logger')
-04:   var logg =  new Logg()
-05:   var Queue = Java.type(&quot;common.net.MessageQueue&quot;)
-06:   var q =  new Queue()
-07:   var WebSocketOptions = Java.type('com.intuit.karate.http.WebSocketOptions')
-08:   var wso =  new WebSocketOptions(wsURL)
-09:   return new MultiMsg(wso,logg,q)
-10: }
-&lt;&lt;&lt;&lt;
-org.graalvm.polyglot.PolyglotException: karate.io.netty.handler.codec.http.websocketx.WebSocketClientHandshakeException: Invalid handshake response getStatus: 404 Not Found
-- com.intuit.karate.http.WebSocketClient.&lt;init&gt;(WebSocketClient.java:148)
-- common.net.MultiMsgWebSocketClient.&lt;init&gt;(MultiMsgWebSocketClient.java:26)
-- &lt;js&gt;.:anonymous(Unnamed:9)
-
-classpath:be/mockFrontEnd.feature:18
-classpath:be/LAO/create.feature:10</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-  <div class="inner-level">
-    <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-12">
-          <a>Doc string</a>
-      </div>
-      <div id="msg-12" class="collapse collapsable-details">
-        <pre>04:06:36.877 classpath:be/LAO/create.feature:10
-* call read('classpath:be/mockFrontEnd.feature')
-js failed:
-&gt;&gt;&gt;&gt;
-01: function(){
-02:   var MultiMsg = Java.type('common.net.MultiMsgWebSocketClient')
-03:   var Logg = Java.type('com.intuit.karate.Logger')
-04:   var logg =  new Logg()
-05:   var Queue = Java.type(&quot;common.net.MessageQueue&quot;)
-06:   var q =  new Queue()
-07:   var WebSocketOptions = Java.type('com.intuit.karate.http.WebSocketOptions')
-08:   var wso =  new WebSocketOptions(wsURL)
-09:   return new MultiMsg(wso,logg,q)
-10: }
-&lt;&lt;&lt;&lt;
-org.graalvm.polyglot.PolyglotException: karate.io.netty.handler.codec.http.websocketx.WebSocketClientHandshakeException: Invalid handshake response getStatus: 404 Not Found
-- com.intuit.karate.http.WebSocketClient.&lt;init&gt;(WebSocketClient.java:148)
-- common.net.MultiMsgWebSocketClient.&lt;init&gt;(MultiMsgWebSocketClient.java:26)
-- &lt;js&gt;.:anonymous(Unnamed:9)
-
-classpath:be/mockFrontEnd.feature:18
-classpath:be/LAO/create.feature:10
-</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name- passed">
-  <span class="keyword indention"></span>
-  <span class="name">be/mockFrontEnd.feature</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-&amp;gt; * failed">
-  <span class="keyword indention">&gt; *</span>
-  <span class="name">def frontend = call getMultiMsgSocket</span>
-
-  <span class="lead-duration duration">0.031</span>
-
-</div>
-
-
-
-
-
-
-  <div class="inner-level">
-    <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-13">
-          <a>js</a>
-      </div>
-      <div id="msg-13" class="collapse collapsable-details  in ">
-        <pre>js failed:
-&gt;&gt;&gt;&gt;
-01: function(){
-02:   var MultiMsg = Java.type('common.net.MultiMsgWebSocketClient')
-03:   var Logg = Java.type('com.intuit.karate.Logger')
-04:   var logg =  new Logg()
-05:   var Queue = Java.type(&quot;common.net.MessageQueue&quot;)
-06:   var q =  new Queue()
-07:   var WebSocketOptions = Java.type('com.intuit.karate.http.WebSocketOptions')
-08:   var wso =  new WebSocketOptions(wsURL)
-09:   return new MultiMsg(wso,logg,q)
-10: }
-&lt;&lt;&lt;&lt;
-org.graalvm.polyglot.PolyglotException: karate.io.netty.handler.codec.http.websocketx.WebSocketClientHandshakeException: Invalid handshake response getStatus: 404 Not Found
-- com.intuit.karate.http.WebSocketClient.&lt;init&gt;(WebSocketClient.java:148)
-- common.net.MultiMsgWebSocketClient.&lt;init&gt;(MultiMsgWebSocketClient.java:26)
-- &lt;js&gt;.:anonymous(Unnamed:9)
-
-classpath:be/mockFrontEnd.feature:18</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* skipped">
-  <span class="keyword indention">*</span>
-  <span class="name">call read('classpath:be/constants.feature')</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* skipped">
-  <span class="keyword indention">*</span>
-  <span class="name">string channel = &quot;/root&quot;</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-  </div>
-</div>
-
-
-
-
-
-  </div>
-</div>
-
-
-<div class="element">
-
-
-<div class="tags indention">
-    <b>Tags:</b>
-       <a href="report-tag_524961969.html">@env=go,scala</a>
-</div>
-
-
-  <span class="lead-duration duration">0.000</span>
-
-
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-14">
-
-<div class="brief failed">
-  <span class="keyword indention">Scenario</span>
-  <span class="name">Create Lao with negative time should fail with an error response</span>
-
-
-     <i class="chevron fa fa-fw"></i>
-</div>
-
-  </span>
-  <div class="description indention"></div>
-
-  <div id="element-14" class="collapse collapsable-details  in ">
-
-
-
-
-
-<div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-15">
-
-<div class="brief failed">
-  <span class="keyword indention">Steps</span>
-  <span class="name"></span>
-
-
-     <i class="chevron fa fa-fw"></i>
-</div>
-
-  </div>
-
-  <div id="steps-15" class="inner-level collapse collapsable-details  in ">
-      <div class="step">
-
-
-<div class="brief step-name-Given skipped">
-  <span class="keyword indention">Given</span>
-  <span class="name">def badLaoReq =</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-  <div class="inner-level">
-    <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-16">
-          <a>Doc string</a>
-      </div>
-      <div id="msg-16" class="collapse collapsable-details">
-        <pre>{
-  &quot;object&quot;: &quot;lao&quot;,
-  &quot;action&quot;: &quot;create&quot;,
-  &quot;id&quot;: '#(getLaoIdNegativeTime)',
-  &quot;name&quot;: &quot;LAO&quot;,
-  &quot;creation&quot;: -1633098234,
-  &quot;organizer&quot;: '#(getOrganizer)',
-  &quot;witnesses&quot;: []
-}</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-When skipped">
-  <span class="keyword indention">When</span>
-  <span class="name">frontend.publish(JSON.stringify(badLaoReq), channel)</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And skipped">
-  <span class="keyword indention">And</span>
-  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(badLaoReq))</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-Then skipped">
-  <span class="keyword indention">Then</span>
-  <span class="name">match answer contains INVALID_MESSAGE_FIELD</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And skipped">
-  <span class="keyword indention">And</span>
-  <span class="name">match frontend.receiveNoMoreResponses() == true</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-  </div>
-</div>
-
-
-
-
-
-  </div>
-</div>
-
-
-<div class="element">
-
-
-<div class="tags indention">
-</div>
-
-
-  <span class="lead-duration duration">0.140</span>
-
-
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-17">
-
-<div class="brief failed">
-  <span class="keyword indention">Background</span>
-  <span class="name"></span>
-
-
-     <i class="chevron fa fa-fw"></i>
-</div>
-
-  </span>
-  <div class="description indention"></div>
-
-  <div id="element-17" class="collapse collapsable-details  in ">
-
-
-
-
-
-<div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-18">
-
-<div class="brief failed">
-  <span class="keyword indention">Steps</span>
-  <span class="name"></span>
-
-
-     <i class="chevron fa fa-fw"></i>
-</div>
-
-  </div>
-
-  <div id="steps-18" class="inner-level collapse collapsable-details  in ">
-      <div class="step">
-
-
-<div class="brief step-name-* passed">
-  <span class="keyword indention">*</span>
-  <span class="name">call read('classpath:be/utils/server.feature')</span>
-
-  <span class="lead-duration duration">0.037</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name- passed">
-  <span class="keyword indention"></span>
-  <span class="name">be/utils/server.feature</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* failed">
-  <span class="keyword indention">*</span>
-  <span class="name">call read('classpath:be/mockFrontEnd.feature')</span>
-
-  <span class="lead-duration duration">0.063</span>
-
-</div>
-
-
-
-
-
-
-  <div class="inner-level">
-    <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-19">
-          <a>js</a>
-      </div>
-      <div id="msg-19" class="collapse collapsable-details  in ">
-        <pre>js failed:
-&gt;&gt;&gt;&gt;
-01: function(){
-02:   var MultiMsg = Java.type('common.net.MultiMsgWebSocketClient')
-03:   var Logg = Java.type('com.intuit.karate.Logger')
-04:   var logg =  new Logg()
-05:   var Queue = Java.type(&quot;common.net.MessageQueue&quot;)
-06:   var q =  new Queue()
-07:   var WebSocketOptions = Java.type('com.intuit.karate.http.WebSocketOptions')
-08:   var wso =  new WebSocketOptions(wsURL)
-09:   return new MultiMsg(wso,logg,q)
-10: }
-&lt;&lt;&lt;&lt;
-org.graalvm.polyglot.PolyglotException: karate.io.netty.handler.codec.http.websocketx.WebSocketClientHandshakeException: Invalid handshake response getStatus: 404 Not Found
-- com.intuit.karate.http.WebSocketClient.&lt;init&gt;(WebSocketClient.java:148)
-- common.net.MultiMsgWebSocketClient.&lt;init&gt;(MultiMsgWebSocketClient.java:26)
-- &lt;js&gt;.:anonymous(Unnamed:9)
-
-classpath:be/mockFrontEnd.feature:18
-classpath:be/LAO/create.feature:10</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-  <div class="inner-level">
-    <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-20">
-          <a>Doc string</a>
-      </div>
-      <div id="msg-20" class="collapse collapsable-details">
-        <pre>04:06:36.986 classpath:be/LAO/create.feature:10
-* call read('classpath:be/mockFrontEnd.feature')
-js failed:
-&gt;&gt;&gt;&gt;
-01: function(){
-02:   var MultiMsg = Java.type('common.net.MultiMsgWebSocketClient')
-03:   var Logg = Java.type('com.intuit.karate.Logger')
-04:   var logg =  new Logg()
-05:   var Queue = Java.type(&quot;common.net.MessageQueue&quot;)
-06:   var q =  new Queue()
-07:   var WebSocketOptions = Java.type('com.intuit.karate.http.WebSocketOptions')
-08:   var wso =  new WebSocketOptions(wsURL)
-09:   return new MultiMsg(wso,logg,q)
-10: }
-&lt;&lt;&lt;&lt;
-org.graalvm.polyglot.PolyglotException: karate.io.netty.handler.codec.http.websocketx.WebSocketClientHandshakeException: Invalid handshake response getStatus: 404 Not Found
-- com.intuit.karate.http.WebSocketClient.&lt;init&gt;(WebSocketClient.java:148)
-- common.net.MultiMsgWebSocketClient.&lt;init&gt;(MultiMsgWebSocketClient.java:26)
-- &lt;js&gt;.:anonymous(Unnamed:9)
-
-classpath:be/mockFrontEnd.feature:18
-classpath:be/LAO/create.feature:10
-</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name- passed">
-  <span class="keyword indention"></span>
-  <span class="name">be/mockFrontEnd.feature</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-&amp;gt; * failed">
-  <span class="keyword indention">&gt; *</span>
-  <span class="name">def frontend = call getMultiMsgSocket</span>
-
-  <span class="lead-duration duration">0.040</span>
-
-</div>
-
-
-
-
-
-
-  <div class="inner-level">
-    <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-21">
-          <a>js</a>
-      </div>
-      <div id="msg-21" class="collapse collapsable-details  in ">
-        <pre>js failed:
-&gt;&gt;&gt;&gt;
-01: function(){
-02:   var MultiMsg = Java.type('common.net.MultiMsgWebSocketClient')
-03:   var Logg = Java.type('com.intuit.karate.Logger')
-04:   var logg =  new Logg()
-05:   var Queue = Java.type(&quot;common.net.MessageQueue&quot;)
-06:   var q =  new Queue()
-07:   var WebSocketOptions = Java.type('com.intuit.karate.http.WebSocketOptions')
-08:   var wso =  new WebSocketOptions(wsURL)
-09:   return new MultiMsg(wso,logg,q)
-10: }
-&lt;&lt;&lt;&lt;
-org.graalvm.polyglot.PolyglotException: karate.io.netty.handler.codec.http.websocketx.WebSocketClientHandshakeException: Invalid handshake response getStatus: 404 Not Found
-- com.intuit.karate.http.WebSocketClient.&lt;init&gt;(WebSocketClient.java:148)
-- common.net.MultiMsgWebSocketClient.&lt;init&gt;(MultiMsgWebSocketClient.java:26)
-- &lt;js&gt;.:anonymous(Unnamed:9)
-
-classpath:be/mockFrontEnd.feature:18</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* skipped">
-  <span class="keyword indention">*</span>
-  <span class="name">call read('classpath:be/constants.feature')</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* skipped">
-  <span class="keyword indention">*</span>
-  <span class="name">string channel = &quot;/root&quot;</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-  </div>
-</div>
-
-
-
-
-
-  </div>
-</div>
-
-
-<div class="element">
-
-
-<div class="tags indention">
-    <b>Tags:</b>
-       <a href="report-tag_524961969.html">@env=go,scala</a>
-</div>
-
-
-  <span class="lead-duration duration">0.000</span>
-
-
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-22">
-
-<div class="brief failed">
-  <span class="keyword indention">Scenario</span>
-  <span class="name">Create Lao with invalid id hash should fail with an error response</span>
-
-
-     <i class="chevron fa fa-fw"></i>
-</div>
-
-  </span>
-  <div class="description indention"></div>
-
-  <div id="element-22" class="collapse collapsable-details  in ">
-
-
-
-
-
-<div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-23">
-
-<div class="brief failed">
-  <span class="keyword indention">Steps</span>
-  <span class="name"></span>
-
-
-     <i class="chevron fa fa-fw"></i>
-</div>
-
-  </div>
-
-  <div id="steps-23" class="inner-level collapse collapsable-details  in ">
-      <div class="step">
-
-
-<div class="brief step-name-Given skipped">
-  <span class="keyword indention">Given</span>
-  <span class="name">def badLaoReq =</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-  <div class="inner-level">
-    <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-24">
-          <a>Doc string</a>
-      </div>
-      <div id="msg-24" class="collapse collapsable-details">
-        <pre>{
-  &quot;object&quot;: &quot;lao&quot;,
-  &quot;action&quot;: &quot;create&quot;,
-  &quot;id&quot;: '#(getOrganizer)',
-  &quot;name&quot;: &quot;LAO&quot;,
-  &quot;creation&quot;: 1633098234,
-  &quot;organizer&quot;: '#(getOrganizer)',
-  &quot;witnesses&quot;: []
-}</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-When skipped">
-  <span class="keyword indention">When</span>
-  <span class="name">frontend.publish(JSON.stringify(badLaoReq), channel)</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And skipped">
-  <span class="keyword indention">And</span>
-  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(badLaoReq))</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-Then skipped">
-  <span class="keyword indention">Then</span>
-  <span class="name">match answer contains INVALID_MESSAGE_FIELD</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And skipped">
-  <span class="keyword indention">And</span>
-  <span class="name">match frontend.receiveNoMoreResponses() == true</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-  </div>
-</div>
-
-
-
-
-
-  </div>
-</div>
-
-
-<div class="element">
-
-
-<div class="tags indention">
-</div>
-
-
-  <span class="lead-duration duration">0.111</span>
-
-
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-25">
-
-<div class="brief failed">
-  <span class="keyword indention">Background</span>
-  <span class="name"></span>
-
-
-     <i class="chevron fa fa-fw"></i>
-</div>
-
-  </span>
-  <div class="description indention"></div>
-
-  <div id="element-25" class="collapse collapsable-details  in ">
-
-
-
-
-
-<div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-26">
-
-<div class="brief failed">
-  <span class="keyword indention">Steps</span>
-  <span class="name"></span>
-
-
-     <i class="chevron fa fa-fw"></i>
-</div>
-
-  </div>
-
-  <div id="steps-26" class="inner-level collapse collapsable-details  in ">
-      <div class="step">
-
-
-<div class="brief step-name-* passed">
-  <span class="keyword indention">*</span>
-  <span class="name">call read('classpath:be/utils/server.feature')</span>
-
-  <span class="lead-duration duration">0.021</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name- passed">
-  <span class="keyword indention"></span>
-  <span class="name">be/utils/server.feature</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* failed">
-  <span class="keyword indention">*</span>
-  <span class="name">call read('classpath:be/mockFrontEnd.feature')</span>
-
-  <span class="lead-duration duration">0.058</span>
-
-</div>
-
-
-
-
-
-
-  <div class="inner-level">
-    <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-27">
-          <a>js</a>
-      </div>
-      <div id="msg-27" class="collapse collapsable-details  in ">
-        <pre>js failed:
-&gt;&gt;&gt;&gt;
-01: function(){
-02:   var MultiMsg = Java.type('common.net.MultiMsgWebSocketClient')
-03:   var Logg = Java.type('com.intuit.karate.Logger')
-04:   var logg =  new Logg()
-05:   var Queue = Java.type(&quot;common.net.MessageQueue&quot;)
-06:   var q =  new Queue()
-07:   var WebSocketOptions = Java.type('com.intuit.karate.http.WebSocketOptions')
-08:   var wso =  new WebSocketOptions(wsURL)
-09:   return new MultiMsg(wso,logg,q)
-10: }
-&lt;&lt;&lt;&lt;
-org.graalvm.polyglot.PolyglotException: karate.io.netty.handler.codec.http.websocketx.WebSocketClientHandshakeException: Invalid handshake response getStatus: 404 Not Found
-- com.intuit.karate.http.WebSocketClient.&lt;init&gt;(WebSocketClient.java:148)
-- common.net.MultiMsgWebSocketClient.&lt;init&gt;(MultiMsgWebSocketClient.java:26)
-- &lt;js&gt;.:anonymous(Unnamed:9)
-
-classpath:be/mockFrontEnd.feature:18
-classpath:be/LAO/create.feature:10</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-  <div class="inner-level">
-    <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-28">
-          <a>Doc string</a>
-      </div>
-      <div id="msg-28" class="collapse collapsable-details">
-        <pre>04:06:37.073 classpath:be/LAO/create.feature:10
-* call read('classpath:be/mockFrontEnd.feature')
-js failed:
-&gt;&gt;&gt;&gt;
-01: function(){
-02:   var MultiMsg = Java.type('common.net.MultiMsgWebSocketClient')
-03:   var Logg = Java.type('com.intuit.karate.Logger')
-04:   var logg =  new Logg()
-05:   var Queue = Java.type(&quot;common.net.MessageQueue&quot;)
-06:   var q =  new Queue()
-07:   var WebSocketOptions = Java.type('com.intuit.karate.http.WebSocketOptions')
-08:   var wso =  new WebSocketOptions(wsURL)
-09:   return new MultiMsg(wso,logg,q)
-10: }
-&lt;&lt;&lt;&lt;
-org.graalvm.polyglot.PolyglotException: karate.io.netty.handler.codec.http.websocketx.WebSocketClientHandshakeException: Invalid handshake response getStatus: 404 Not Found
-- com.intuit.karate.http.WebSocketClient.&lt;init&gt;(WebSocketClient.java:148)
-- common.net.MultiMsgWebSocketClient.&lt;init&gt;(MultiMsgWebSocketClient.java:26)
-- &lt;js&gt;.:anonymous(Unnamed:9)
-
-classpath:be/mockFrontEnd.feature:18
-classpath:be/LAO/create.feature:10
-</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name- passed">
-  <span class="keyword indention"></span>
-  <span class="name">be/mockFrontEnd.feature</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-&amp;gt; * failed">
-  <span class="keyword indention">&gt; *</span>
-  <span class="name">def frontend = call getMultiMsgSocket</span>
-
-  <span class="lead-duration duration">0.031</span>
-
-</div>
-
-
-
-
-
-
-  <div class="inner-level">
-    <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-29">
-          <a>js</a>
-      </div>
-      <div id="msg-29" class="collapse collapsable-details  in ">
-        <pre>js failed:
-&gt;&gt;&gt;&gt;
-01: function(){
-02:   var MultiMsg = Java.type('common.net.MultiMsgWebSocketClient')
-03:   var Logg = Java.type('com.intuit.karate.Logger')
-04:   var logg =  new Logg()
-05:   var Queue = Java.type(&quot;common.net.MessageQueue&quot;)
-06:   var q =  new Queue()
-07:   var WebSocketOptions = Java.type('com.intuit.karate.http.WebSocketOptions')
-08:   var wso =  new WebSocketOptions(wsURL)
-09:   return new MultiMsg(wso,logg,q)
-10: }
-&lt;&lt;&lt;&lt;
-org.graalvm.polyglot.PolyglotException: karate.io.netty.handler.codec.http.websocketx.WebSocketClientHandshakeException: Invalid handshake response getStatus: 404 Not Found
-- com.intuit.karate.http.WebSocketClient.&lt;init&gt;(WebSocketClient.java:148)
-- common.net.MultiMsgWebSocketClient.&lt;init&gt;(MultiMsgWebSocketClient.java:26)
-- &lt;js&gt;.:anonymous(Unnamed:9)
-
-classpath:be/mockFrontEnd.feature:18</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* skipped">
-  <span class="keyword indention">*</span>
-  <span class="name">call read('classpath:be/constants.feature')</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* skipped">
-  <span class="keyword indention">*</span>
-  <span class="name">string channel = &quot;/root&quot;</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-  </div>
-</div>
-
-
-
-
-
-  </div>
-</div>
-
-
-<div class="element">
-
-
-<div class="tags indention">
-    <b>Tags:</b>
-       <a href="report-tag_524961969.html">@env=go,scala</a>
-</div>
-
-
-  <span class="lead-duration duration">0.000</span>
-
-
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-30">
-
-<div class="brief failed">
-  <span class="keyword indention">Scenario</span>
-  <span class="name">Create should succeed with a valid creation request</span>
-
-
-     <i class="chevron fa fa-fw"></i>
-</div>
-
-  </span>
-  <div class="description indention"></div>
-
-  <div id="element-30" class="collapse collapsable-details  in ">
-
-
-
-
-
-<div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-31">
-
-<div class="brief failed">
-  <span class="keyword indention">Steps</span>
-  <span class="name"></span>
-
-
-     <i class="chevron fa fa-fw"></i>
-</div>
-
-  </div>
-
-  <div id="steps-31" class="inner-level collapse collapsable-details  in ">
-      <div class="step">
-
-
-<div class="brief step-name-Given skipped">
-  <span class="keyword indention">Given</span>
-  <span class="name">def laoCreateRequest =</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-  <div class="inner-level">
-    <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-32">
-          <a>Doc string</a>
-      </div>
-      <div id="msg-32" class="collapse collapsable-details">
-        <pre>{
-  &quot;object&quot;: &quot;lao&quot;,
-  &quot;action&quot;: &quot;create&quot;,
-  &quot;id&quot;: '#(getLaoValid)',
-  &quot;name&quot;: &quot;LAO&quot;,
-  &quot;creation&quot;: '#(getLaoValidCreationTime)',
-  &quot;organizer&quot;: '#(getOrganizer)',
-  &quot;witnesses&quot;: []
-}</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-When skipped">
-  <span class="keyword indention">When</span>
-  <span class="name">frontend.publish(JSON.stringify(laoCreateRequest), channel)</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And skipped">
-  <span class="keyword indention">And</span>
-  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(laoCreateRequest))</span>
+  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(validElectionOpen))</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -2363,10 +786,10 @@ classpath:be/mockFrontEnd.feature:18</pre>
 </div>
 
 
-  <span class="lead-duration duration">0.097</span>
+  <span class="lead-duration duration">0.062</span>
 
 
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-33">
+  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-9">
 
 <div class="brief failed">
   <span class="keyword indention">Background</span>
@@ -2379,14 +802,14 @@ classpath:be/mockFrontEnd.feature:18</pre>
   </span>
   <div class="description indention"></div>
 
-  <div id="element-33" class="collapse collapsable-details  in ">
+  <div id="element-9" class="collapse collapsable-details  in ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-34">
+  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-10">
 
 <div class="brief failed">
   <span class="keyword indention">Steps</span>
@@ -2398,7 +821,7 @@ classpath:be/mockFrontEnd.feature:18</pre>
 
   </div>
 
-  <div id="steps-34" class="inner-level collapse collapsable-details  in ">
+  <div id="steps-10" class="inner-level collapse collapsable-details  in ">
       <div class="step">
 
 
@@ -2406,7 +829,7 @@ classpath:be/mockFrontEnd.feature:18</pre>
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/utils/server.feature')</span>
 
-  <span class="lead-duration duration">0.041</span>
+  <span class="lead-duration duration">0.042</span>
 
 </div>
 
@@ -2460,7 +883,7 @@ classpath:be/mockFrontEnd.feature:18</pre>
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/mockFrontEnd.feature')</span>
 
-  <span class="lead-duration duration">0.039</span>
+  <span class="lead-duration duration">0.013</span>
 
 </div>
 
@@ -2471,10 +894,10 @@ classpath:be/mockFrontEnd.feature:18</pre>
 
   <div class="inner-level">
     <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-35">
+      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-11">
           <a>js</a>
       </div>
-      <div id="msg-35" class="collapse collapsable-details  in ">
+      <div id="msg-11" class="collapse collapsable-details  in ">
         <pre>js failed:
 &gt;&gt;&gt;&gt;
 01: function(){
@@ -2494,7 +917,7 @@ org.graalvm.polyglot.PolyglotException: karate.io.netty.handler.codec.http.webso
 - &lt;js&gt;.:anonymous(Unnamed:9)
 
 classpath:be/mockFrontEnd.feature:18
-classpath:be/LAO/create.feature:10</pre>
+classpath:be/election/electionOpen.feature:16</pre>
       </div>
     </div>
   </div>
@@ -2504,11 +927,11 @@ classpath:be/LAO/create.feature:10</pre>
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-36">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-12">
           <a>Doc string</a>
       </div>
-      <div id="msg-36" class="collapse collapsable-details">
-        <pre>04:06:37.161 classpath:be/LAO/create.feature:10
+      <div id="msg-12" class="collapse collapsable-details">
+        <pre>04:06:30.315 classpath:be/election/electionOpen.feature:16
 * call read('classpath:be/mockFrontEnd.feature')
 js failed:
 &gt;&gt;&gt;&gt;
@@ -2529,7 +952,7 @@ org.graalvm.polyglot.PolyglotException: karate.io.netty.handler.codec.http.webso
 - &lt;js&gt;.:anonymous(Unnamed:9)
 
 classpath:be/mockFrontEnd.feature:18
-classpath:be/LAO/create.feature:10
+classpath:be/election/electionOpen.feature:16
 </pre>
       </div>
     </div>
@@ -2576,7 +999,7 @@ classpath:be/LAO/create.feature:10
   <span class="keyword indention">&gt; *</span>
   <span class="name">def frontend = call getMultiMsgSocket</span>
 
-  <span class="lead-duration duration">0.016</span>
+  <span class="lead-duration duration">0.006</span>
 
 </div>
 
@@ -2587,10 +1010,10 @@ classpath:be/LAO/create.feature:10
 
   <div class="inner-level">
     <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-37">
+      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-13">
           <a>js</a>
       </div>
-      <div id="msg-37" class="collapse collapsable-details  in ">
+      <div id="msg-13" class="collapse collapsable-details  in ">
         <pre>js failed:
 &gt;&gt;&gt;&gt;
 01: function(){
@@ -2657,7 +1080,34 @@ classpath:be/mockFrontEnd.feature:18</pre>
 
 <div class="brief step-name-* skipped">
   <span class="keyword indention">*</span>
-  <span class="name">string channel = &quot;/root&quot;</span>
+  <span class="name">string electionChannel = &quot;/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=/rdv-0minecREM9XidNxnQotO7nxtVVnx-Zkmfm7hm2w=&quot;</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-* skipped">
+  <span class="keyword indention">*</span>
+  <span class="name">string laoChannel = &quot;/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=&quot;</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -2702,11 +1152,11 @@ classpath:be/mockFrontEnd.feature:18</pre>
   <span class="lead-duration duration">0.000</span>
 
 
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-38">
+  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-14">
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
-  <span class="name">Create should fail if signature is invalid</span>
+  <span class="name">Opening the election without a setup should result in an error</span>
 
 
      <i class="chevron fa fa-fw"></i>
@@ -2715,14 +1165,14 @@ classpath:be/mockFrontEnd.feature:18</pre>
   </span>
   <div class="description indention"></div>
 
-  <div id="element-38" class="collapse collapsable-details  in ">
+  <div id="element-14" class="collapse collapsable-details  in ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-39">
+  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-15">
 
 <div class="brief failed">
   <span class="keyword indention">Steps</span>
@@ -2734,85 +1184,13 @@ classpath:be/mockFrontEnd.feature:18</pre>
 
   </div>
 
-  <div id="steps-39" class="inner-level collapse collapsable-details  in ">
+  <div id="steps-15" class="inner-level collapse collapsable-details  in ">
       <div class="step">
 
 
 <div class="brief step-name-Given skipped">
   <span class="keyword indention">Given</span>
-  <span class="name">def laoCreateRequest =</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-  <div class="inner-level">
-    <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-40">
-          <a>Doc string</a>
-      </div>
-      <div id="msg-40" class="collapse collapsable-details">
-        <pre>{
-  &quot;object&quot;: &quot;lao&quot;,
-  &quot;action&quot;: &quot;create&quot;,
-  &quot;id&quot;: '#(getLaoValid)',
-  &quot;name&quot;: &quot;LAO&quot;,
-  &quot;creation&quot;: 1633035721,
-  &quot;organizer&quot;: '#(getOrganizer)',
-  &quot;witnesses&quot;: []
-}</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* skipped">
-  <span class="keyword indention">*</span>
-  <span class="name">frontend.setWrongSignature()</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-When skipped">
-  <span class="keyword indention">When</span>
-  <span class="name">frontend.publish(JSON.stringify(laoCreateRequest), channel)</span>
+  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=close_roll_call')</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -2839,7 +1217,77 @@ classpath:be/mockFrontEnd.feature:18</pre>
 
 <div class="brief step-name-And skipped">
   <span class="keyword indention">And</span>
-  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(laoCreateRequest))</span>
+  <span class="name">def validElectionOpen =</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+  <div class="inner-level">
+    <div class="docstring indention">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-16">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-16" class="collapse collapsable-details">
+        <pre>{
+    &quot;object&quot;: &quot;election&quot;,
+    &quot;action&quot;: &quot;open&quot;,
+    &quot;lao&quot;: '#(getLaoValid)',
+    &quot;election&quot;: '#(getValidElectionSetupId)',
+    &quot;opened_at&quot;: 1633098944
+}</pre>
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-When skipped">
+  <span class="keyword indention">When</span>
+  <span class="name">frontend.publish(JSON.stringify(validElectionOpen), electionChannel)</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And skipped">
+  <span class="keyword indention">And</span>
+  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(validElectionOpen))</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -2933,10 +1381,10 @@ classpath:be/mockFrontEnd.feature:18</pre>
 </div>
 
 
-  <span class="lead-duration duration">0.093</span>
+  <span class="lead-duration duration">0.059</span>
 
 
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-41">
+  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-17">
 
 <div class="brief failed">
   <span class="keyword indention">Background</span>
@@ -2949,14 +1397,14 @@ classpath:be/mockFrontEnd.feature:18</pre>
   </span>
   <div class="description indention"></div>
 
-  <div id="element-41" class="collapse collapsable-details  in ">
+  <div id="element-17" class="collapse collapsable-details  in ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-42">
+  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-18">
 
 <div class="brief failed">
   <span class="keyword indention">Steps</span>
@@ -2968,7 +1416,7 @@ classpath:be/mockFrontEnd.feature:18</pre>
 
   </div>
 
-  <div id="steps-42" class="inner-level collapse collapsable-details  in ">
+  <div id="steps-18" class="inner-level collapse collapsable-details  in ">
       <div class="step">
 
 
@@ -2976,7 +1424,7 @@ classpath:be/mockFrontEnd.feature:18</pre>
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/utils/server.feature')</span>
 
-  <span class="lead-duration duration">0.032</span>
+  <span class="lead-duration duration">0.028</span>
 
 </div>
 
@@ -3030,7 +1478,7 @@ classpath:be/mockFrontEnd.feature:18</pre>
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/mockFrontEnd.feature')</span>
 
-  <span class="lead-duration duration">0.036</span>
+  <span class="lead-duration duration">0.018</span>
 
 </div>
 
@@ -3041,10 +1489,10 @@ classpath:be/mockFrontEnd.feature:18</pre>
 
   <div class="inner-level">
     <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-43">
+      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-19">
           <a>js</a>
       </div>
-      <div id="msg-43" class="collapse collapsable-details  in ">
+      <div id="msg-19" class="collapse collapsable-details  in ">
         <pre>js failed:
 &gt;&gt;&gt;&gt;
 01: function(){
@@ -3064,7 +1512,7 @@ org.graalvm.polyglot.PolyglotException: karate.io.netty.handler.codec.http.webso
 - &lt;js&gt;.:anonymous(Unnamed:9)
 
 classpath:be/mockFrontEnd.feature:18
-classpath:be/LAO/create.feature:10</pre>
+classpath:be/election/electionOpen.feature:16</pre>
       </div>
     </div>
   </div>
@@ -3074,11 +1522,11 @@ classpath:be/LAO/create.feature:10</pre>
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-44">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-20">
           <a>Doc string</a>
       </div>
-      <div id="msg-44" class="collapse collapsable-details">
-        <pre>04:06:37.237 classpath:be/LAO/create.feature:10
+      <div id="msg-20" class="collapse collapsable-details">
+        <pre>04:06:30.376 classpath:be/election/electionOpen.feature:16
 * call read('classpath:be/mockFrontEnd.feature')
 js failed:
 &gt;&gt;&gt;&gt;
@@ -3099,7 +1547,7 @@ org.graalvm.polyglot.PolyglotException: karate.io.netty.handler.codec.http.webso
 - &lt;js&gt;.:anonymous(Unnamed:9)
 
 classpath:be/mockFrontEnd.feature:18
-classpath:be/LAO/create.feature:10
+classpath:be/election/electionOpen.feature:16
 </pre>
       </div>
     </div>
@@ -3146,7 +1594,7 @@ classpath:be/LAO/create.feature:10
   <span class="keyword indention">&gt; *</span>
   <span class="name">def frontend = call getMultiMsgSocket</span>
 
-  <span class="lead-duration duration">0.024</span>
+  <span class="lead-duration duration">0.012</span>
 
 </div>
 
@@ -3157,10 +1605,10 @@ classpath:be/LAO/create.feature:10
 
   <div class="inner-level">
     <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-45">
+      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-21">
           <a>js</a>
       </div>
-      <div id="msg-45" class="collapse collapsable-details  in ">
+      <div id="msg-21" class="collapse collapsable-details  in ">
         <pre>js failed:
 &gt;&gt;&gt;&gt;
 01: function(){
@@ -3227,7 +1675,34 @@ classpath:be/mockFrontEnd.feature:18</pre>
 
 <div class="brief step-name-* skipped">
   <span class="keyword indention">*</span>
-  <span class="name">string channel = &quot;/root&quot;</span>
+  <span class="name">string electionChannel = &quot;/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=/rdv-0minecREM9XidNxnQotO7nxtVVnx-Zkmfm7hm2w=&quot;</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-* skipped">
+  <span class="keyword indention">*</span>
+  <span class="name">string laoChannel = &quot;/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=&quot;</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -3272,11 +1747,11 @@ classpath:be/mockFrontEnd.feature:18</pre>
   <span class="lead-duration duration">0.000</span>
 
 
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-46">
+  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-22">
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
-  <span class="name">Create Lao with different public key from the organizer should fail with error response</span>
+  <span class="name">Opening the election too early results in an error</span>
 
 
      <i class="chevron fa fa-fw"></i>
@@ -3285,14 +1760,14 @@ classpath:be/mockFrontEnd.feature:18</pre>
   </span>
   <div class="description indention"></div>
 
-  <div id="element-46" class="collapse collapsable-details  in ">
+  <div id="element-22" class="collapse collapsable-details  in ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-47">
+  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-23">
 
 <div class="brief failed">
   <span class="keyword indention">Steps</span>
@@ -3304,13 +1779,40 @@ classpath:be/mockFrontEnd.feature:18</pre>
 
   </div>
 
-  <div id="steps-47" class="inner-level collapse collapsable-details  in ">
+  <div id="steps-23" class="inner-level collapse collapsable-details  in ">
       <div class="step">
 
 
 <div class="brief step-name-Given skipped">
   <span class="keyword indention">Given</span>
-  <span class="name">def laoCreateRequest =</span>
+  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=election_setup')</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And skipped">
+  <span class="keyword indention">And</span>
+  <span class="name">def validElectionOpen =</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -3326,18 +1828,16 @@ classpath:be/mockFrontEnd.feature:18</pre>
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-48">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-24">
           <a>Doc string</a>
       </div>
-      <div id="msg-48" class="collapse collapsable-details">
+      <div id="msg-24" class="collapse collapsable-details">
         <pre>{
-  &quot;object&quot;: &quot;lao&quot;,
-  &quot;action&quot;: &quot;create&quot;,
-  &quot;id&quot;: '#(getLaoValid)',
-  &quot;name&quot;: &quot;LAO&quot;,
-  &quot;creation&quot;: 1633035721,
-  &quot;organizer&quot;: '#(getOrganizer)',
-  &quot;witnesses&quot;: []
+    &quot;object&quot;: &quot;election&quot;,
+    &quot;action&quot;: &quot;open&quot;,
+    &quot;lao&quot;: '#(getLaoValid)',
+    &quot;election&quot;: '#(getValidElectionSetupId)',
+    &quot;opened_at&quot;: 1620000000
 }</pre>
       </div>
     </div>
@@ -3353,8 +1853,603 @@ classpath:be/mockFrontEnd.feature:18</pre>
       <div class="step">
 
 
+<div class="brief step-name-When skipped">
+  <span class="keyword indention">When</span>
+  <span class="name">frontend.publish(JSON.stringify(validElectionOpen), electionChannel)</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And skipped">
+  <span class="keyword indention">And</span>
+  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(validElectionOpen))</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-Then skipped">
+  <span class="keyword indention">Then</span>
+  <span class="name">match answer contains INVALID_MESSAGE_FIELD</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And skipped">
+  <span class="keyword indention">And</span>
+  <span class="name">match frontend.receiveNoMoreResponses() == true</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+  </div>
+</div>
+
+
+
+
+
+  </div>
+</div>
+
+
+<div class="element">
+
+
+<div class="tags indention">
+</div>
+
+
+  <span class="lead-duration duration">0.067</span>
+
+
+  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-25">
+
+<div class="brief failed">
+  <span class="keyword indention">Background</span>
+  <span class="name"></span>
+
+
+     <i class="chevron fa fa-fw"></i>
+</div>
+
+  </span>
+  <div class="description indention"></div>
+
+  <div id="element-25" class="collapse collapsable-details  in ">
+
+
+
+
+
+<div class="steps inner-level">
+  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-26">
+
+<div class="brief failed">
+  <span class="keyword indention">Steps</span>
+  <span class="name"></span>
+
+
+     <i class="chevron fa fa-fw"></i>
+</div>
+
+  </div>
+
+  <div id="steps-26" class="inner-level collapse collapsable-details  in ">
+      <div class="step">
+
+
+<div class="brief step-name-* passed">
+  <span class="keyword indention">*</span>
+  <span class="name">call read('classpath:be/utils/server.feature')</span>
+
+  <span class="lead-duration duration">0.029</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name- passed">
+  <span class="keyword indention"></span>
+  <span class="name">be/utils/server.feature</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-* failed">
+  <span class="keyword indention">*</span>
+  <span class="name">call read('classpath:be/mockFrontEnd.feature')</span>
+
+  <span class="lead-duration duration">0.021</span>
+
+</div>
+
+
+
+
+
+
+  <div class="inner-level">
+    <div class="message indention">
+      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-27">
+          <a>js</a>
+      </div>
+      <div id="msg-27" class="collapse collapsable-details  in ">
+        <pre>js failed:
+&gt;&gt;&gt;&gt;
+01: function(){
+02:   var MultiMsg = Java.type('common.net.MultiMsgWebSocketClient')
+03:   var Logg = Java.type('com.intuit.karate.Logger')
+04:   var logg =  new Logg()
+05:   var Queue = Java.type(&quot;common.net.MessageQueue&quot;)
+06:   var q =  new Queue()
+07:   var WebSocketOptions = Java.type('com.intuit.karate.http.WebSocketOptions')
+08:   var wso =  new WebSocketOptions(wsURL)
+09:   return new MultiMsg(wso,logg,q)
+10: }
+&lt;&lt;&lt;&lt;
+org.graalvm.polyglot.PolyglotException: karate.io.netty.handler.codec.http.websocketx.WebSocketClientHandshakeException: Invalid handshake response getStatus: 404 Not Found
+- com.intuit.karate.http.WebSocketClient.&lt;init&gt;(WebSocketClient.java:148)
+- common.net.MultiMsgWebSocketClient.&lt;init&gt;(MultiMsgWebSocketClient.java:26)
+- &lt;js&gt;.:anonymous(Unnamed:9)
+
+classpath:be/mockFrontEnd.feature:18
+classpath:be/election/electionOpen.feature:16</pre>
+      </div>
+    </div>
+  </div>
+
+
+
+
+  <div class="inner-level">
+    <div class="docstring indention">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-28">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-28" class="collapse collapsable-details">
+        <pre>04:06:30.436 classpath:be/election/electionOpen.feature:16
+* call read('classpath:be/mockFrontEnd.feature')
+js failed:
+&gt;&gt;&gt;&gt;
+01: function(){
+02:   var MultiMsg = Java.type('common.net.MultiMsgWebSocketClient')
+03:   var Logg = Java.type('com.intuit.karate.Logger')
+04:   var logg =  new Logg()
+05:   var Queue = Java.type(&quot;common.net.MessageQueue&quot;)
+06:   var q =  new Queue()
+07:   var WebSocketOptions = Java.type('com.intuit.karate.http.WebSocketOptions')
+08:   var wso =  new WebSocketOptions(wsURL)
+09:   return new MultiMsg(wso,logg,q)
+10: }
+&lt;&lt;&lt;&lt;
+org.graalvm.polyglot.PolyglotException: karate.io.netty.handler.codec.http.websocketx.WebSocketClientHandshakeException: Invalid handshake response getStatus: 404 Not Found
+- com.intuit.karate.http.WebSocketClient.&lt;init&gt;(WebSocketClient.java:148)
+- common.net.MultiMsgWebSocketClient.&lt;init&gt;(MultiMsgWebSocketClient.java:26)
+- &lt;js&gt;.:anonymous(Unnamed:9)
+
+classpath:be/mockFrontEnd.feature:18
+classpath:be/election/electionOpen.feature:16
+</pre>
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name- passed">
+  <span class="keyword indention"></span>
+  <span class="name">be/mockFrontEnd.feature</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-&amp;gt; * failed">
+  <span class="keyword indention">&gt; *</span>
+  <span class="name">def frontend = call getMultiMsgSocket</span>
+
+  <span class="lead-duration duration">0.017</span>
+
+</div>
+
+
+
+
+
+
+  <div class="inner-level">
+    <div class="message indention">
+      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-29">
+          <a>js</a>
+      </div>
+      <div id="msg-29" class="collapse collapsable-details  in ">
+        <pre>js failed:
+&gt;&gt;&gt;&gt;
+01: function(){
+02:   var MultiMsg = Java.type('common.net.MultiMsgWebSocketClient')
+03:   var Logg = Java.type('com.intuit.karate.Logger')
+04:   var logg =  new Logg()
+05:   var Queue = Java.type(&quot;common.net.MessageQueue&quot;)
+06:   var q =  new Queue()
+07:   var WebSocketOptions = Java.type('com.intuit.karate.http.WebSocketOptions')
+08:   var wso =  new WebSocketOptions(wsURL)
+09:   return new MultiMsg(wso,logg,q)
+10: }
+&lt;&lt;&lt;&lt;
+org.graalvm.polyglot.PolyglotException: karate.io.netty.handler.codec.http.websocketx.WebSocketClientHandshakeException: Invalid handshake response getStatus: 404 Not Found
+- com.intuit.karate.http.WebSocketClient.&lt;init&gt;(WebSocketClient.java:148)
+- common.net.MultiMsgWebSocketClient.&lt;init&gt;(MultiMsgWebSocketClient.java:26)
+- &lt;js&gt;.:anonymous(Unnamed:9)
+
+classpath:be/mockFrontEnd.feature:18</pre>
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
 <div class="brief step-name-* skipped">
   <span class="keyword indention">*</span>
+  <span class="name">call read('classpath:be/constants.feature')</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-* skipped">
+  <span class="keyword indention">*</span>
+  <span class="name">string electionChannel = &quot;/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=/rdv-0minecREM9XidNxnQotO7nxtVVnx-Zkmfm7hm2w=&quot;</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-* skipped">
+  <span class="keyword indention">*</span>
+  <span class="name">string laoChannel = &quot;/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=&quot;</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+  </div>
+</div>
+
+
+
+
+
+  </div>
+</div>
+
+
+<div class="element">
+
+
+<div class="tags indention">
+    <b>Tags:</b>
+       <a href="report-tag_524961969.html">@env=go,scala</a>
+</div>
+
+
+  <span class="lead-duration duration">0.000</span>
+
+
+  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-30">
+
+<div class="brief failed">
+  <span class="keyword indention">Scenario</span>
+  <span class="name">Non organizer opening the election should result in an error</span>
+
+
+     <i class="chevron fa fa-fw"></i>
+</div>
+
+  </span>
+  <div class="description indention"></div>
+
+  <div id="element-30" class="collapse collapsable-details  in ">
+
+
+
+
+
+<div class="steps inner-level">
+  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-31">
+
+<div class="brief failed">
+  <span class="keyword indention">Steps</span>
+  <span class="name"></span>
+
+
+     <i class="chevron fa fa-fw"></i>
+</div>
+
+  </div>
+
+  <div id="steps-31" class="inner-level collapse collapsable-details  in ">
+      <div class="step">
+
+
+<div class="brief step-name-Given skipped">
+  <span class="keyword indention">Given</span>
+  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=election_setup')</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And skipped">
+  <span class="keyword indention">And</span>
+  <span class="name">def validElectionOpen =</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+  <div class="inner-level">
+    <div class="docstring indention">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-32">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-32" class="collapse collapsable-details">
+        <pre>{
+    &quot;object&quot;: &quot;election&quot;,
+    &quot;action&quot;: &quot;open&quot;,
+    &quot;lao&quot;: '#(getLaoValid)',
+    &quot;election&quot;: '#(getValidElectionSetupId)',
+    &quot;opened_at&quot;: 1633098944
+}</pre>
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And skipped">
+  <span class="keyword indention">And</span>
   <span class="name">frontend.changeSenderToBeNonAttendee()</span>
 
   <span class="lead-duration duration">0.000</span>
@@ -3382,7 +2477,7 @@ classpath:be/mockFrontEnd.feature:18</pre>
 
 <div class="brief step-name-When skipped">
   <span class="keyword indention">When</span>
-  <span class="name">frontend.publish(JSON.stringify(laoCreateRequest), channel)</span>
+  <span class="name">frontend.publish(JSON.stringify(validElectionOpen), electionChannel)</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -3409,7 +2504,7 @@ classpath:be/mockFrontEnd.feature:18</pre>
 
 <div class="brief step-name-And skipped">
   <span class="keyword indention">And</span>
-  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(laoCreateRequest))</span>
+  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(validElectionOpen))</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -3436,7 +2531,602 @@ classpath:be/mockFrontEnd.feature:18</pre>
 
 <div class="brief step-name-Then skipped">
   <span class="keyword indention">Then</span>
-  <span class="name">match answer contains ACCESS_DENIED</span>
+  <span class="name">match answer contains INVALID_MESSAGE_FIELD</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And skipped">
+  <span class="keyword indention">And</span>
+  <span class="name">match frontend.receiveNoMoreResponses() == true</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+  </div>
+</div>
+
+
+
+
+
+  </div>
+</div>
+
+
+<div class="element">
+
+
+<div class="tags indention">
+</div>
+
+
+  <span class="lead-duration duration">0.050</span>
+
+
+  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-33">
+
+<div class="brief failed">
+  <span class="keyword indention">Background</span>
+  <span class="name"></span>
+
+
+     <i class="chevron fa fa-fw"></i>
+</div>
+
+  </span>
+  <div class="description indention"></div>
+
+  <div id="element-33" class="collapse collapsable-details  in ">
+
+
+
+
+
+<div class="steps inner-level">
+  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-34">
+
+<div class="brief failed">
+  <span class="keyword indention">Steps</span>
+  <span class="name"></span>
+
+
+     <i class="chevron fa fa-fw"></i>
+</div>
+
+  </div>
+
+  <div id="steps-34" class="inner-level collapse collapsable-details  in ">
+      <div class="step">
+
+
+<div class="brief step-name-* passed">
+  <span class="keyword indention">*</span>
+  <span class="name">call read('classpath:be/utils/server.feature')</span>
+
+  <span class="lead-duration duration">0.018</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name- passed">
+  <span class="keyword indention"></span>
+  <span class="name">be/utils/server.feature</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-* failed">
+  <span class="keyword indention">*</span>
+  <span class="name">call read('classpath:be/mockFrontEnd.feature')</span>
+
+  <span class="lead-duration duration">0.018</span>
+
+</div>
+
+
+
+
+
+
+  <div class="inner-level">
+    <div class="message indention">
+      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-35">
+          <a>js</a>
+      </div>
+      <div id="msg-35" class="collapse collapsable-details  in ">
+        <pre>js failed:
+&gt;&gt;&gt;&gt;
+01: function(){
+02:   var MultiMsg = Java.type('common.net.MultiMsgWebSocketClient')
+03:   var Logg = Java.type('com.intuit.karate.Logger')
+04:   var logg =  new Logg()
+05:   var Queue = Java.type(&quot;common.net.MessageQueue&quot;)
+06:   var q =  new Queue()
+07:   var WebSocketOptions = Java.type('com.intuit.karate.http.WebSocketOptions')
+08:   var wso =  new WebSocketOptions(wsURL)
+09:   return new MultiMsg(wso,logg,q)
+10: }
+&lt;&lt;&lt;&lt;
+org.graalvm.polyglot.PolyglotException: karate.io.netty.handler.codec.http.websocketx.WebSocketClientHandshakeException: Invalid handshake response getStatus: 404 Not Found
+- com.intuit.karate.http.WebSocketClient.&lt;init&gt;(WebSocketClient.java:148)
+- common.net.MultiMsgWebSocketClient.&lt;init&gt;(MultiMsgWebSocketClient.java:26)
+- &lt;js&gt;.:anonymous(Unnamed:9)
+
+classpath:be/mockFrontEnd.feature:18
+classpath:be/election/electionOpen.feature:16</pre>
+      </div>
+    </div>
+  </div>
+
+
+
+
+  <div class="inner-level">
+    <div class="docstring indention">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-36">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-36" class="collapse collapsable-details">
+        <pre>04:06:30.476 classpath:be/election/electionOpen.feature:16
+* call read('classpath:be/mockFrontEnd.feature')
+js failed:
+&gt;&gt;&gt;&gt;
+01: function(){
+02:   var MultiMsg = Java.type('common.net.MultiMsgWebSocketClient')
+03:   var Logg = Java.type('com.intuit.karate.Logger')
+04:   var logg =  new Logg()
+05:   var Queue = Java.type(&quot;common.net.MessageQueue&quot;)
+06:   var q =  new Queue()
+07:   var WebSocketOptions = Java.type('com.intuit.karate.http.WebSocketOptions')
+08:   var wso =  new WebSocketOptions(wsURL)
+09:   return new MultiMsg(wso,logg,q)
+10: }
+&lt;&lt;&lt;&lt;
+org.graalvm.polyglot.PolyglotException: karate.io.netty.handler.codec.http.websocketx.WebSocketClientHandshakeException: Invalid handshake response getStatus: 404 Not Found
+- com.intuit.karate.http.WebSocketClient.&lt;init&gt;(WebSocketClient.java:148)
+- common.net.MultiMsgWebSocketClient.&lt;init&gt;(MultiMsgWebSocketClient.java:26)
+- &lt;js&gt;.:anonymous(Unnamed:9)
+
+classpath:be/mockFrontEnd.feature:18
+classpath:be/election/electionOpen.feature:16
+</pre>
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name- passed">
+  <span class="keyword indention"></span>
+  <span class="name">be/mockFrontEnd.feature</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-&amp;gt; * failed">
+  <span class="keyword indention">&gt; *</span>
+  <span class="name">def frontend = call getMultiMsgSocket</span>
+
+  <span class="lead-duration duration">0.013</span>
+
+</div>
+
+
+
+
+
+
+  <div class="inner-level">
+    <div class="message indention">
+      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-37">
+          <a>js</a>
+      </div>
+      <div id="msg-37" class="collapse collapsable-details  in ">
+        <pre>js failed:
+&gt;&gt;&gt;&gt;
+01: function(){
+02:   var MultiMsg = Java.type('common.net.MultiMsgWebSocketClient')
+03:   var Logg = Java.type('com.intuit.karate.Logger')
+04:   var logg =  new Logg()
+05:   var Queue = Java.type(&quot;common.net.MessageQueue&quot;)
+06:   var q =  new Queue()
+07:   var WebSocketOptions = Java.type('com.intuit.karate.http.WebSocketOptions')
+08:   var wso =  new WebSocketOptions(wsURL)
+09:   return new MultiMsg(wso,logg,q)
+10: }
+&lt;&lt;&lt;&lt;
+org.graalvm.polyglot.PolyglotException: karate.io.netty.handler.codec.http.websocketx.WebSocketClientHandshakeException: Invalid handshake response getStatus: 404 Not Found
+- com.intuit.karate.http.WebSocketClient.&lt;init&gt;(WebSocketClient.java:148)
+- common.net.MultiMsgWebSocketClient.&lt;init&gt;(MultiMsgWebSocketClient.java:26)
+- &lt;js&gt;.:anonymous(Unnamed:9)
+
+classpath:be/mockFrontEnd.feature:18</pre>
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-* skipped">
+  <span class="keyword indention">*</span>
+  <span class="name">call read('classpath:be/constants.feature')</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-* skipped">
+  <span class="keyword indention">*</span>
+  <span class="name">string electionChannel = &quot;/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=/rdv-0minecREM9XidNxnQotO7nxtVVnx-Zkmfm7hm2w=&quot;</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-* skipped">
+  <span class="keyword indention">*</span>
+  <span class="name">string laoChannel = &quot;/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=&quot;</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+  </div>
+</div>
+
+
+
+
+
+  </div>
+</div>
+
+
+<div class="element">
+
+
+<div class="tags indention">
+    <b>Tags:</b>
+       <a href="report-tag_524961969.html">@env=go,scala</a>
+</div>
+
+
+  <span class="lead-duration duration">0.000</span>
+
+
+  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-38">
+
+<div class="brief failed">
+  <span class="keyword indention">Scenario</span>
+  <span class="name">Opening the election with wrong election id should result in an error</span>
+
+
+     <i class="chevron fa fa-fw"></i>
+</div>
+
+  </span>
+  <div class="description indention"></div>
+
+  <div id="element-38" class="collapse collapsable-details  in ">
+
+
+
+
+
+<div class="steps inner-level">
+  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-39">
+
+<div class="brief failed">
+  <span class="keyword indention">Steps</span>
+  <span class="name"></span>
+
+
+     <i class="chevron fa fa-fw"></i>
+</div>
+
+  </div>
+
+  <div id="steps-39" class="inner-level collapse collapsable-details  in ">
+      <div class="step">
+
+
+<div class="brief step-name-Given skipped">
+  <span class="keyword indention">Given</span>
+  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=election_setup')</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And skipped">
+  <span class="keyword indention">And</span>
+  <span class="name">def validElectionOpen =</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+  <div class="inner-level">
+    <div class="docstring indention">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-40">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-40" class="collapse collapsable-details">
+        <pre>{
+    &quot;object&quot;: &quot;election&quot;,
+    &quot;action&quot;: &quot;open&quot;,
+    &quot;lao&quot;: '#(getLaoIdNegativeTime)',
+    &quot;election&quot;: '#(getValidElectionSetupId)',
+    &quot;opened_at&quot;: 1633098944
+}</pre>
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-When skipped">
+  <span class="keyword indention">When</span>
+  <span class="name">frontend.publish(JSON.stringify(validElectionOpen), electionChannel)</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And skipped">
+  <span class="keyword indention">And</span>
+  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(validElectionOpen))</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-Then skipped">
+  <span class="keyword indention">Then</span>
+  <span class="name">match answer contains INVALID_MESSAGE_FIELD</span>
 
   <span class="lead-duration duration">0.000</span>
 

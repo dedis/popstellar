@@ -41,7 +41,7 @@ $(document).ready(function() {
 
 
 
-<title>Cucumber Reports  - Feature: be/digitalCash/transaction.feature</title>
+<title>Cucumber Reports  - Feature: be/LAO/update.feature</title>
 
 </head>
 <body>
@@ -74,7 +74,7 @@ $(document).ready(function() {
   <tbody>
     <tr class="info">
       <td>go</td>
-      <td>26 Apr 2023, 04:06</td>
+      <td>27 Apr 2023, 04:06</td>
     </tr>
   </tbody>
 </table>
@@ -126,19 +126,19 @@ $(document).ready(function() {
 
         <tbody>
         <tr>
-          <td class="tagname">be/digitalCash/transaction.feature</td>
-          <td      class="passed"    >15</td>
-          <td      class="failed"    >10</td>
-          <td     class="skipped"   >45</td>
+          <td class="tagname">be/LAO/update.feature</td>
+          <td      class="passed"    >9</td>
+          <td      class="failed"    >6</td>
+          <td     class="skipped"   >24</td>
           <td >0</td>
           <td >0</td>
-          <td class="total">70</td>
+          <td class="total">39</td>
 
           <td >0</td>
-          <td  class="failed"    >5</td>
-          <td class="total">5</td>
+          <td  class="failed"    >3</td>
+          <td class="total">3</td>
 
-          <td class="duration" data-value="426265394">0.426</td>
+          <td class="duration" data-value="270056032">0.270</td>
           <td class="failed">Failed</td>
         </tr>
         </tbody>
@@ -175,12 +175,12 @@ $(document).ready(function() {
 
 <div class="brief failed">
   <span class="keyword indention">Feature</span>
-  <span class="name">be/digitalCash/transaction.feature</span>
+  <span class="name">be/LAO/update.feature</span>
 
 
 </div>
 
-        <div class="description indention">Simple Transactions for digital cash</div>
+        <div class="description indention">Update a LAO</div>
 
         <div class="elements inner-level">
 
@@ -191,7 +191,7 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">0.055</span>
+  <span class="lead-duration duration">0.086</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-1">
@@ -234,7 +234,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/utils/server.feature')</span>
 
-  <span class="lead-duration duration">0.012</span>
+  <span class="lead-duration duration">0.025</span>
 
 </div>
 
@@ -288,7 +288,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/mockFrontEnd.feature')</span>
 
-  <span class="lead-duration duration">0.026</span>
+  <span class="lead-duration duration">0.035</span>
 
 </div>
 
@@ -322,7 +322,7 @@ org.graalvm.polyglot.PolyglotException: karate.io.netty.handler.codec.http.webso
 - &lt;js&gt;.:anonymous(Unnamed:9)
 
 classpath:be/mockFrontEnd.feature:18
-classpath:be/digitalCash/transaction.feature:17</pre>
+classpath:be/LAO/update.feature:10</pre>
       </div>
     </div>
   </div>
@@ -336,7 +336,7 @@ classpath:be/digitalCash/transaction.feature:17</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-4" class="collapse collapsable-details">
-        <pre>04:06:39.350 classpath:be/digitalCash/transaction.feature:17
+        <pre>04:06:27.656 classpath:be/LAO/update.feature:10
 * call read('classpath:be/mockFrontEnd.feature')
 js failed:
 &gt;&gt;&gt;&gt;
@@ -357,7 +357,7 @@ org.graalvm.polyglot.PolyglotException: karate.io.netty.handler.codec.http.webso
 - &lt;js&gt;.:anonymous(Unnamed:9)
 
 classpath:be/mockFrontEnd.feature:18
-classpath:be/digitalCash/transaction.feature:17
+classpath:be/LAO/update.feature:10
 </pre>
       </div>
     </div>
@@ -404,7 +404,7 @@ classpath:be/digitalCash/transaction.feature:17
   <span class="keyword indention">&gt; *</span>
   <span class="name">def frontend = call getMultiMsgSocket</span>
 
-  <span class="lead-duration duration">0.017</span>
+  <span class="lead-duration duration">0.024</span>
 
 </div>
 
@@ -485,7 +485,7 @@ classpath:be/mockFrontEnd.feature:18</pre>
 
 <div class="brief step-name-* skipped">
   <span class="keyword indention">*</span>
-  <span class="name">string laoChannel =  &quot;/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=&quot;</span>
+  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=valid_lao')</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -512,7 +512,7 @@ classpath:be/mockFrontEnd.feature:18</pre>
 
 <div class="brief step-name-* skipped">
   <span class="keyword indention">*</span>
-  <span class="name">string cashChannel = &quot;/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=/coin&quot;</span>
+  <span class="name">string channel = &quot;/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=&quot;</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -561,7 +561,7 @@ classpath:be/mockFrontEnd.feature:18</pre>
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
-  <span class="name">Valid transaction: issue 32 mini-Laos to an attendee</span>
+  <span class="name">Update Lao should succeed with a valid update request</span>
 
 
      <i class="chevron fa fa-fw"></i>
@@ -595,34 +595,7 @@ classpath:be/mockFrontEnd.feature:18</pre>
 
 <div class="brief step-name-Given skipped">
   <span class="keyword indention">Given</span>
-  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=setup_coin_channel')</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And skipped">
-  <span class="keyword indention">And</span>
-  <span class="name">def validTransaction =</span>
+  <span class="name">def updateLaoRequest =</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -643,23 +616,12 @@ classpath:be/mockFrontEnd.feature:18</pre>
       </div>
       <div id="msg-8" class="collapse collapsable-details">
         <pre>{
-    &quot;object&quot;: &quot;coin&quot;,
-    &quot;action&quot;: &quot;post_transaction&quot;,
-    &quot;transaction_id&quot;: &quot;yVMgw2E9IMX7JtNfizTqTOR1scMVSHfEe8WBbiAgsA8=&quot;,
-    &quot;transaction&quot;: {
-      &quot;version&quot;: 1,
-      &quot;inputs&quot;: [{
-        &quot;tx_out_hash&quot;: '#(getTrxHashForCoinIssuance)',
-        &quot;tx_out_index&quot;: 0,
-        &quot;script&quot;: {
-          &quot;type&quot;: &quot;P2PKH&quot;,
-          &quot;pubkey&quot;: '#(getCoinIssuancePubKey)',
-          &quot;sig&quot;: &quot;Wsu3pJj7CpBzw4v__21k4pVtSKBeouz1vd0sXFiLQX9iaEERDDwwMuBFwRKk6E6nwxejH-lrsiprLJSojOvPCQ==&quot;
-        }
-      }],
-      &quot;outputs&quot;: '#(getValidOutputs)',
-      &quot;lock_time&quot;: 0
-    }
+  &quot;object&quot;: &quot;lao&quot;,
+  &quot;action&quot;: &quot;update_properties&quot;,
+  &quot;id&quot;: &quot;p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=&quot;,
+  &quot;name&quot;: &quot;LAO2&quot;,
+  &quot;last_modified&quot;: 1633099140,
+  &quot;witnesses&quot;: []
 }</pre>
       </div>
     </div>
@@ -677,7 +639,7 @@ classpath:be/mockFrontEnd.feature:18</pre>
 
 <div class="brief step-name-When skipped">
   <span class="keyword indention">When</span>
-  <span class="name">frontend.publish(JSON.stringify(validTransaction), cashChannel)</span>
+  <span class="name">frontend.publish(JSON.stringify(updateLaoRequest), channel)</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -704,7 +666,7 @@ classpath:be/mockFrontEnd.feature:18</pre>
 
 <div class="brief step-name-And skipped">
   <span class="keyword indention">And</span>
-  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(validTransaction))</span>
+  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(updateLaoRequest))</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -798,7 +760,7 @@ classpath:be/mockFrontEnd.feature:18</pre>
 </div>
 
 
-  <span class="lead-duration duration">0.086</span>
+  <span class="lead-duration duration">0.096</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-9">
@@ -841,7 +803,7 @@ classpath:be/mockFrontEnd.feature:18</pre>
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/utils/server.feature')</span>
 
-  <span class="lead-duration duration">0.032</span>
+  <span class="lead-duration duration">0.039</span>
 
 </div>
 
@@ -895,7 +857,7 @@ classpath:be/mockFrontEnd.feature:18</pre>
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/mockFrontEnd.feature')</span>
 
-  <span class="lead-duration duration">0.039</span>
+  <span class="lead-duration duration">0.033</span>
 
 </div>
 
@@ -929,7 +891,7 @@ org.graalvm.polyglot.PolyglotException: karate.io.netty.handler.codec.http.webso
 - &lt;js&gt;.:anonymous(Unnamed:9)
 
 classpath:be/mockFrontEnd.feature:18
-classpath:be/digitalCash/transaction.feature:17</pre>
+classpath:be/LAO/update.feature:10</pre>
       </div>
     </div>
   </div>
@@ -943,7 +905,7 @@ classpath:be/digitalCash/transaction.feature:17</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-12" class="collapse collapsable-details">
-        <pre>04:06:39.427 classpath:be/digitalCash/transaction.feature:17
+        <pre>04:06:27.736 classpath:be/LAO/update.feature:10
 * call read('classpath:be/mockFrontEnd.feature')
 js failed:
 &gt;&gt;&gt;&gt;
@@ -964,7 +926,7 @@ org.graalvm.polyglot.PolyglotException: karate.io.netty.handler.codec.http.webso
 - &lt;js&gt;.:anonymous(Unnamed:9)
 
 classpath:be/mockFrontEnd.feature:18
-classpath:be/digitalCash/transaction.feature:17
+classpath:be/LAO/update.feature:10
 </pre>
       </div>
     </div>
@@ -1011,7 +973,7 @@ classpath:be/digitalCash/transaction.feature:17
   <span class="keyword indention">&gt; *</span>
   <span class="name">def frontend = call getMultiMsgSocket</span>
 
-  <span class="lead-duration duration">0.015</span>
+  <span class="lead-duration duration">0.023</span>
 
 </div>
 
@@ -1092,7 +1054,7 @@ classpath:be/mockFrontEnd.feature:18</pre>
 
 <div class="brief step-name-* skipped">
   <span class="keyword indention">*</span>
-  <span class="name">string laoChannel =  &quot;/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=&quot;</span>
+  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=valid_lao')</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -1119,7 +1081,7 @@ classpath:be/mockFrontEnd.feature:18</pre>
 
 <div class="brief step-name-* skipped">
   <span class="keyword indention">*</span>
-  <span class="name">string cashChannel = &quot;/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=/coin&quot;</span>
+  <span class="name">string channel = &quot;/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=&quot;</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -1168,7 +1130,7 @@ classpath:be/mockFrontEnd.feature:18</pre>
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
-  <span class="name">Transfer valid amount should work</span>
+  <span class="name">Update Lao request with empty lao name should fail with an error response</span>
 
 
      <i class="chevron fa fa-fw"></i>
@@ -1202,34 +1164,7 @@ classpath:be/mockFrontEnd.feature:18</pre>
 
 <div class="brief step-name-Given skipped">
   <span class="keyword indention">Given</span>
-  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=valid_coin_issuance')</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And skipped">
-  <span class="keyword indention">And</span>
-  <span class="name">def validTransfer =</span>
+  <span class="name">def badUpdateLaoReq =</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -1250,29 +1185,12 @@ classpath:be/mockFrontEnd.feature:18</pre>
       </div>
       <div id="msg-16" class="collapse collapsable-details">
         <pre>{
-    &quot;object&quot;: &quot;coin&quot;,
-    &quot;action&quot;: &quot;post_transaction&quot;,
-    &quot;transaction_id&quot;: &quot;X6dMVyy-4YZ3jyePMlqyo53-eYBkO-gVgy7TybVgd78=&quot;,
-    &quot;transaction&quot;: {
-      &quot;version&quot;: 1,
-      &quot;inputs&quot;: [{
-        &quot;tx_out_hash&quot;: &quot;yVMgw2E9IMX7JtNfizTqTOR1scMVSHfEe8WBbiAgsA8=&quot;,
-        &quot;tx_out_index&quot;: 1,
-        &quot;script&quot;: {
-          &quot;type&quot;: &quot;P2PKH&quot;,
-          &quot;pubkey&quot;: '#(getCoinIssuancePubKey)',
-          &quot;sig&quot;: &quot;uTrQk9yt-pmG7eWA0dQ50Q4_aloIAwkY_smQml1lswjHp8ckUXAF3Th6xxJY_3-7uLNxpRtTzwBcAixPGjThDg==&quot;
-        }
-      }],
-      &quot;outputs&quot;: [{
-        &quot;value&quot;: 20,
-        &quot;script&quot;: {
-          &quot;type&quot;: &quot;P2PKH&quot;,
-          &quot;pubkey_hash&quot;: &quot;-_qR4IHwsiq50raa8jURNArds54=&quot;
-        }
-      }],
-      &quot;lock_time&quot;: 0
-    }
+  &quot;object&quot;: &quot;lao&quot;,
+  &quot;action&quot;: &quot;update_properties&quot;,
+  &quot;id&quot;: &quot;p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=&quot;,
+  &quot;name&quot;: &quot;&quot;,
+  &quot;last_modified&quot;: 1633099140,
+  &quot;witnesses&quot;: []
 }</pre>
       </div>
     </div>
@@ -1290,7 +1208,7 @@ classpath:be/mockFrontEnd.feature:18</pre>
 
 <div class="brief step-name-When skipped">
   <span class="keyword indention">When</span>
-  <span class="name">frontend.publish(JSON.stringify(validTransfer), cashChannel)</span>
+  <span class="name">frontend.publish(JSON.stringify(badUpdateLaoReq), channel)</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -1317,1221 +1235,7 @@ classpath:be/mockFrontEnd.feature:18</pre>
 
 <div class="brief step-name-And skipped">
   <span class="keyword indention">And</span>
-  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(validTransfer))</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-Then skipped">
-  <span class="keyword indention">Then</span>
-  <span class="name">match answer contains VALID_MESSAGE</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And skipped">
-  <span class="keyword indention">And</span>
-  <span class="name">match frontend.receiveNoMoreResponses() == true</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-  </div>
-</div>
-
-
-
-
-
-  </div>
-</div>
-
-
-<div class="element">
-
-
-<div class="tags indention">
-</div>
-
-
-  <span class="lead-duration duration">0.104</span>
-
-
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-17">
-
-<div class="brief failed">
-  <span class="keyword indention">Background</span>
-  <span class="name"></span>
-
-
-     <i class="chevron fa fa-fw"></i>
-</div>
-
-  </span>
-  <div class="description indention"></div>
-
-  <div id="element-17" class="collapse collapsable-details  in ">
-
-
-
-
-
-<div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-18">
-
-<div class="brief failed">
-  <span class="keyword indention">Steps</span>
-  <span class="name"></span>
-
-
-     <i class="chevron fa fa-fw"></i>
-</div>
-
-  </div>
-
-  <div id="steps-18" class="inner-level collapse collapsable-details  in ">
-      <div class="step">
-
-
-<div class="brief step-name-* passed">
-  <span class="keyword indention">*</span>
-  <span class="name">call read('classpath:be/utils/server.feature')</span>
-
-  <span class="lead-duration duration">0.034</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name- passed">
-  <span class="keyword indention"></span>
-  <span class="name">be/utils/server.feature</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* failed">
-  <span class="keyword indention">*</span>
-  <span class="name">call read('classpath:be/mockFrontEnd.feature')</span>
-
-  <span class="lead-duration duration">0.041</span>
-
-</div>
-
-
-
-
-
-
-  <div class="inner-level">
-    <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-19">
-          <a>js</a>
-      </div>
-      <div id="msg-19" class="collapse collapsable-details  in ">
-        <pre>js failed:
-&gt;&gt;&gt;&gt;
-01: function(){
-02:   var MultiMsg = Java.type('common.net.MultiMsgWebSocketClient')
-03:   var Logg = Java.type('com.intuit.karate.Logger')
-04:   var logg =  new Logg()
-05:   var Queue = Java.type(&quot;common.net.MessageQueue&quot;)
-06:   var q =  new Queue()
-07:   var WebSocketOptions = Java.type('com.intuit.karate.http.WebSocketOptions')
-08:   var wso =  new WebSocketOptions(wsURL)
-09:   return new MultiMsg(wso,logg,q)
-10: }
-&lt;&lt;&lt;&lt;
-org.graalvm.polyglot.PolyglotException: karate.io.netty.handler.codec.http.websocketx.WebSocketClientHandshakeException: Invalid handshake response getStatus: 404 Not Found
-- com.intuit.karate.http.WebSocketClient.&lt;init&gt;(WebSocketClient.java:148)
-- common.net.MultiMsgWebSocketClient.&lt;init&gt;(MultiMsgWebSocketClient.java:26)
-- &lt;js&gt;.:anonymous(Unnamed:9)
-
-classpath:be/mockFrontEnd.feature:18
-classpath:be/digitalCash/transaction.feature:17</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-  <div class="inner-level">
-    <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-20">
-          <a>Doc string</a>
-      </div>
-      <div id="msg-20" class="collapse collapsable-details">
-        <pre>04:06:39.509 classpath:be/digitalCash/transaction.feature:17
-* call read('classpath:be/mockFrontEnd.feature')
-js failed:
-&gt;&gt;&gt;&gt;
-01: function(){
-02:   var MultiMsg = Java.type('common.net.MultiMsgWebSocketClient')
-03:   var Logg = Java.type('com.intuit.karate.Logger')
-04:   var logg =  new Logg()
-05:   var Queue = Java.type(&quot;common.net.MessageQueue&quot;)
-06:   var q =  new Queue()
-07:   var WebSocketOptions = Java.type('com.intuit.karate.http.WebSocketOptions')
-08:   var wso =  new WebSocketOptions(wsURL)
-09:   return new MultiMsg(wso,logg,q)
-10: }
-&lt;&lt;&lt;&lt;
-org.graalvm.polyglot.PolyglotException: karate.io.netty.handler.codec.http.websocketx.WebSocketClientHandshakeException: Invalid handshake response getStatus: 404 Not Found
-- com.intuit.karate.http.WebSocketClient.&lt;init&gt;(WebSocketClient.java:148)
-- common.net.MultiMsgWebSocketClient.&lt;init&gt;(MultiMsgWebSocketClient.java:26)
-- &lt;js&gt;.:anonymous(Unnamed:9)
-
-classpath:be/mockFrontEnd.feature:18
-classpath:be/digitalCash/transaction.feature:17
-</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name- passed">
-  <span class="keyword indention"></span>
-  <span class="name">be/mockFrontEnd.feature</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-&amp;gt; * failed">
-  <span class="keyword indention">&gt; *</span>
-  <span class="name">def frontend = call getMultiMsgSocket</span>
-
-  <span class="lead-duration duration">0.028</span>
-
-</div>
-
-
-
-
-
-
-  <div class="inner-level">
-    <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-21">
-          <a>js</a>
-      </div>
-      <div id="msg-21" class="collapse collapsable-details  in ">
-        <pre>js failed:
-&gt;&gt;&gt;&gt;
-01: function(){
-02:   var MultiMsg = Java.type('common.net.MultiMsgWebSocketClient')
-03:   var Logg = Java.type('com.intuit.karate.Logger')
-04:   var logg =  new Logg()
-05:   var Queue = Java.type(&quot;common.net.MessageQueue&quot;)
-06:   var q =  new Queue()
-07:   var WebSocketOptions = Java.type('com.intuit.karate.http.WebSocketOptions')
-08:   var wso =  new WebSocketOptions(wsURL)
-09:   return new MultiMsg(wso,logg,q)
-10: }
-&lt;&lt;&lt;&lt;
-org.graalvm.polyglot.PolyglotException: karate.io.netty.handler.codec.http.websocketx.WebSocketClientHandshakeException: Invalid handshake response getStatus: 404 Not Found
-- com.intuit.karate.http.WebSocketClient.&lt;init&gt;(WebSocketClient.java:148)
-- common.net.MultiMsgWebSocketClient.&lt;init&gt;(MultiMsgWebSocketClient.java:26)
-- &lt;js&gt;.:anonymous(Unnamed:9)
-
-classpath:be/mockFrontEnd.feature:18</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* skipped">
-  <span class="keyword indention">*</span>
-  <span class="name">call read('classpath:be/constants.feature')</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* skipped">
-  <span class="keyword indention">*</span>
-  <span class="name">string laoChannel =  &quot;/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=&quot;</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* skipped">
-  <span class="keyword indention">*</span>
-  <span class="name">string cashChannel = &quot;/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=/coin&quot;</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-  </div>
-</div>
-
-
-
-
-
-  </div>
-</div>
-
-
-<div class="element">
-
-
-<div class="tags indention">
-    <b>Tags:</b>
-       <a href="report-tag_524961969.html">@env=go,scala</a>
-</div>
-
-
-  <span class="lead-duration duration">0.000</span>
-
-
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-22">
-
-<div class="brief failed">
-  <span class="keyword indention">Scenario</span>
-  <span class="name">Post transaction with invalid transaction id should fail</span>
-
-
-     <i class="chevron fa fa-fw"></i>
-</div>
-
-  </span>
-  <div class="description indention"></div>
-
-  <div id="element-22" class="collapse collapsable-details  in ">
-
-
-
-
-
-<div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-23">
-
-<div class="brief failed">
-  <span class="keyword indention">Steps</span>
-  <span class="name"></span>
-
-
-     <i class="chevron fa fa-fw"></i>
-</div>
-
-  </div>
-
-  <div id="steps-23" class="inner-level collapse collapsable-details  in ">
-      <div class="step">
-
-
-<div class="brief step-name-Given skipped">
-  <span class="keyword indention">Given</span>
-  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=setup_coin_channel')</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And skipped">
-  <span class="keyword indention">And</span>
-  <span class="name">def validTransaction =</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-  <div class="inner-level">
-    <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-24">
-          <a>Doc string</a>
-      </div>
-      <div id="msg-24" class="collapse collapsable-details">
-        <pre>{
-    &quot;object&quot;: &quot;coin&quot;,
-    &quot;action&quot;: &quot;post_transaction&quot;,
-    &quot;transaction_id&quot;: &quot;47DEQpj8HBSa--TImW-5JCeuQeRkm5NMpJWZG3hSuFU=&quot;,
-    &quot;transaction&quot;: {
-      &quot;version&quot;: 1,
-      &quot;inputs&quot;: [{
-        &quot;tx_out_hash&quot;: &quot;yVMgw2E9IMX7JtNfizTqTOR1scMVSHfEe8WBbiAgsA8=&quot;,
-        &quot;tx_out_index&quot;: 1,
-        &quot;script&quot;: {
-          &quot;type&quot;: &quot;P2PKH&quot;,
-          &quot;pubkey&quot;: '#(getCoinIssuancePubKey)',
-          &quot;sig&quot;: '#(getCreateSignatureForCoinIssuance)'
-        }
-      }],
-      &quot;outputs&quot;: '#(getValidOutputs)',
-      &quot;lock_time&quot;: 0
-    }
-}</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-When skipped">
-  <span class="keyword indention">When</span>
-  <span class="name">frontend.publish(JSON.stringify(validTransaction), cashChannel)</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And skipped">
-  <span class="keyword indention">And</span>
-  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(validTransaction))</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-Then skipped">
-  <span class="keyword indention">Then</span>
-  <span class="name">match answer contains VALID_MESSAGE</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And skipped">
-  <span class="keyword indention">And</span>
-  <span class="name">match frontend.receiveNoMoreResponses() == true</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-  </div>
-</div>
-
-
-
-
-
-  </div>
-</div>
-
-
-<div class="element">
-
-
-<div class="tags indention">
-</div>
-
-
-  <span class="lead-duration duration">0.100</span>
-
-
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-25">
-
-<div class="brief failed">
-  <span class="keyword indention">Background</span>
-  <span class="name"></span>
-
-
-     <i class="chevron fa fa-fw"></i>
-</div>
-
-  </span>
-  <div class="description indention"></div>
-
-  <div id="element-25" class="collapse collapsable-details  in ">
-
-
-
-
-
-<div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-26">
-
-<div class="brief failed">
-  <span class="keyword indention">Steps</span>
-  <span class="name"></span>
-
-
-     <i class="chevron fa fa-fw"></i>
-</div>
-
-  </div>
-
-  <div id="steps-26" class="inner-level collapse collapsable-details  in ">
-      <div class="step">
-
-
-<div class="brief step-name-* passed">
-  <span class="keyword indention">*</span>
-  <span class="name">call read('classpath:be/utils/server.feature')</span>
-
-  <span class="lead-duration duration">0.036</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name- passed">
-  <span class="keyword indention"></span>
-  <span class="name">be/utils/server.feature</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* failed">
-  <span class="keyword indention">*</span>
-  <span class="name">call read('classpath:be/mockFrontEnd.feature')</span>
-
-  <span class="lead-duration duration">0.042</span>
-
-</div>
-
-
-
-
-
-
-  <div class="inner-level">
-    <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-27">
-          <a>js</a>
-      </div>
-      <div id="msg-27" class="collapse collapsable-details  in ">
-        <pre>js failed:
-&gt;&gt;&gt;&gt;
-01: function(){
-02:   var MultiMsg = Java.type('common.net.MultiMsgWebSocketClient')
-03:   var Logg = Java.type('com.intuit.karate.Logger')
-04:   var logg =  new Logg()
-05:   var Queue = Java.type(&quot;common.net.MessageQueue&quot;)
-06:   var q =  new Queue()
-07:   var WebSocketOptions = Java.type('com.intuit.karate.http.WebSocketOptions')
-08:   var wso =  new WebSocketOptions(wsURL)
-09:   return new MultiMsg(wso,logg,q)
-10: }
-&lt;&lt;&lt;&lt;
-org.graalvm.polyglot.PolyglotException: karate.io.netty.handler.codec.http.websocketx.WebSocketClientHandshakeException: Invalid handshake response getStatus: 404 Not Found
-- com.intuit.karate.http.WebSocketClient.&lt;init&gt;(WebSocketClient.java:148)
-- common.net.MultiMsgWebSocketClient.&lt;init&gt;(MultiMsgWebSocketClient.java:26)
-- &lt;js&gt;.:anonymous(Unnamed:9)
-
-classpath:be/mockFrontEnd.feature:18
-classpath:be/digitalCash/transaction.feature:17</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-  <div class="inner-level">
-    <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-28">
-          <a>Doc string</a>
-      </div>
-      <div id="msg-28" class="collapse collapsable-details">
-        <pre>04:06:39.600 classpath:be/digitalCash/transaction.feature:17
-* call read('classpath:be/mockFrontEnd.feature')
-js failed:
-&gt;&gt;&gt;&gt;
-01: function(){
-02:   var MultiMsg = Java.type('common.net.MultiMsgWebSocketClient')
-03:   var Logg = Java.type('com.intuit.karate.Logger')
-04:   var logg =  new Logg()
-05:   var Queue = Java.type(&quot;common.net.MessageQueue&quot;)
-06:   var q =  new Queue()
-07:   var WebSocketOptions = Java.type('com.intuit.karate.http.WebSocketOptions')
-08:   var wso =  new WebSocketOptions(wsURL)
-09:   return new MultiMsg(wso,logg,q)
-10: }
-&lt;&lt;&lt;&lt;
-org.graalvm.polyglot.PolyglotException: karate.io.netty.handler.codec.http.websocketx.WebSocketClientHandshakeException: Invalid handshake response getStatus: 404 Not Found
-- com.intuit.karate.http.WebSocketClient.&lt;init&gt;(WebSocketClient.java:148)
-- common.net.MultiMsgWebSocketClient.&lt;init&gt;(MultiMsgWebSocketClient.java:26)
-- &lt;js&gt;.:anonymous(Unnamed:9)
-
-classpath:be/mockFrontEnd.feature:18
-classpath:be/digitalCash/transaction.feature:17
-</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name- passed">
-  <span class="keyword indention"></span>
-  <span class="name">be/mockFrontEnd.feature</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-&amp;gt; * failed">
-  <span class="keyword indention">&gt; *</span>
-  <span class="name">def frontend = call getMultiMsgSocket</span>
-
-  <span class="lead-duration duration">0.022</span>
-
-</div>
-
-
-
-
-
-
-  <div class="inner-level">
-    <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-29">
-          <a>js</a>
-      </div>
-      <div id="msg-29" class="collapse collapsable-details  in ">
-        <pre>js failed:
-&gt;&gt;&gt;&gt;
-01: function(){
-02:   var MultiMsg = Java.type('common.net.MultiMsgWebSocketClient')
-03:   var Logg = Java.type('com.intuit.karate.Logger')
-04:   var logg =  new Logg()
-05:   var Queue = Java.type(&quot;common.net.MessageQueue&quot;)
-06:   var q =  new Queue()
-07:   var WebSocketOptions = Java.type('com.intuit.karate.http.WebSocketOptions')
-08:   var wso =  new WebSocketOptions(wsURL)
-09:   return new MultiMsg(wso,logg,q)
-10: }
-&lt;&lt;&lt;&lt;
-org.graalvm.polyglot.PolyglotException: karate.io.netty.handler.codec.http.websocketx.WebSocketClientHandshakeException: Invalid handshake response getStatus: 404 Not Found
-- com.intuit.karate.http.WebSocketClient.&lt;init&gt;(WebSocketClient.java:148)
-- common.net.MultiMsgWebSocketClient.&lt;init&gt;(MultiMsgWebSocketClient.java:26)
-- &lt;js&gt;.:anonymous(Unnamed:9)
-
-classpath:be/mockFrontEnd.feature:18</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* skipped">
-  <span class="keyword indention">*</span>
-  <span class="name">call read('classpath:be/constants.feature')</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* skipped">
-  <span class="keyword indention">*</span>
-  <span class="name">string laoChannel =  &quot;/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=&quot;</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* skipped">
-  <span class="keyword indention">*</span>
-  <span class="name">string cashChannel = &quot;/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=/coin&quot;</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-  </div>
-</div>
-
-
-
-
-
-  </div>
-</div>
-
-
-<div class="element">
-
-
-<div class="tags indention">
-    <b>Tags:</b>
-       <a href="report-tag_524961969.html">@env=go,scala</a>
-</div>
-
-
-  <span class="lead-duration duration">0.000</span>
-
-
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-30">
-
-<div class="brief failed">
-  <span class="keyword indention">Scenario</span>
-  <span class="name">Post transaction with invalid tx_out_hash should fail</span>
-
-
-     <i class="chevron fa fa-fw"></i>
-</div>
-
-  </span>
-  <div class="description indention"></div>
-
-  <div id="element-30" class="collapse collapsable-details  in ">
-
-
-
-
-
-<div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-31">
-
-<div class="brief failed">
-  <span class="keyword indention">Steps</span>
-  <span class="name"></span>
-
-
-     <i class="chevron fa fa-fw"></i>
-</div>
-
-  </div>
-
-  <div id="steps-31" class="inner-level collapse collapsable-details  in ">
-      <div class="step">
-
-
-<div class="brief step-name-Given skipped">
-  <span class="keyword indention">Given</span>
-  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=setup_coin_channel')</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And skipped">
-  <span class="keyword indention">And</span>
-  <span class="name">def invalidTransaction =</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-  <div class="inner-level">
-    <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-32">
-          <a>Doc string</a>
-      </div>
-      <div id="msg-32" class="collapse collapsable-details">
-        <pre>{
-    &quot;object&quot;: &quot;coin&quot;,
-    &quot;action&quot;: &quot;post_transaction&quot;,
-    &quot;transaction_id&quot;: &quot;fcDVZofQwuSUs5jz_LXGRtSz-xAV8ss4axY4GsHWnVM=&quot;,
-    &quot;transaction&quot;: {
-      &quot;version&quot;: 1,
-      &quot;inputs&quot;: [{
-        &quot;tx_out_hash&quot;: &quot;_6BPyKnSBFUdMdUxZivzC2BLzM7j5d667BdQ4perTvc=&quot;,
-        &quot;tx_out_index&quot;: 0,
-        &quot;script&quot;: {
-          &quot;type&quot;: &quot;P2PKH&quot;,
-          &quot;pubkey&quot;: '#(getCoinIssuancePubKey)',
-          &quot;sig&quot;: '#(getCreateSignatureForCoinIssuance)'
-        }
-      }],
-      &quot;outputs&quot;: '#(getValidOutputs)',
-      &quot;lock_time&quot;: 0
-    }
-}</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-When skipped">
-  <span class="keyword indention">When</span>
-  <span class="name">frontend.publish(JSON.stringify(invalidTransaction), cashChannel)</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And skipped">
-  <span class="keyword indention">And</span>
-  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(invalidTransaction))</span>
+  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(badUpdateLaoReq))</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -2625,10 +1329,10 @@ classpath:be/mockFrontEnd.feature:18</pre>
 </div>
 
 
-  <span class="lead-duration duration">0.077</span>
+  <span class="lead-duration duration">0.087</span>
 
 
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-33">
+  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-17">
 
 <div class="brief failed">
   <span class="keyword indention">Background</span>
@@ -2641,14 +1345,14 @@ classpath:be/mockFrontEnd.feature:18</pre>
   </span>
   <div class="description indention"></div>
 
-  <div id="element-33" class="collapse collapsable-details  in ">
+  <div id="element-17" class="collapse collapsable-details  in ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-34">
+  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-18">
 
 <div class="brief failed">
   <span class="keyword indention">Steps</span>
@@ -2660,7 +1364,7 @@ classpath:be/mockFrontEnd.feature:18</pre>
 
   </div>
 
-  <div id="steps-34" class="inner-level collapse collapsable-details  in ">
+  <div id="steps-18" class="inner-level collapse collapsable-details  in ">
       <div class="step">
 
 
@@ -2668,7 +1372,7 @@ classpath:be/mockFrontEnd.feature:18</pre>
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/utils/server.feature')</span>
 
-  <span class="lead-duration duration">0.026</span>
+  <span class="lead-duration duration">0.028</span>
 
 </div>
 
@@ -2722,7 +1426,7 @@ classpath:be/mockFrontEnd.feature:18</pre>
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/mockFrontEnd.feature')</span>
 
-  <span class="lead-duration duration">0.036</span>
+  <span class="lead-duration duration">0.032</span>
 
 </div>
 
@@ -2733,10 +1437,10 @@ classpath:be/mockFrontEnd.feature:18</pre>
 
   <div class="inner-level">
     <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-35">
+      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-19">
           <a>js</a>
       </div>
-      <div id="msg-35" class="collapse collapsable-details  in ">
+      <div id="msg-19" class="collapse collapsable-details  in ">
         <pre>js failed:
 &gt;&gt;&gt;&gt;
 01: function(){
@@ -2756,7 +1460,7 @@ org.graalvm.polyglot.PolyglotException: karate.io.netty.handler.codec.http.webso
 - &lt;js&gt;.:anonymous(Unnamed:9)
 
 classpath:be/mockFrontEnd.feature:18
-classpath:be/digitalCash/transaction.feature:17</pre>
+classpath:be/LAO/update.feature:10</pre>
       </div>
     </div>
   </div>
@@ -2766,11 +1470,11 @@ classpath:be/digitalCash/transaction.feature:17</pre>
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-36">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-20">
           <a>Doc string</a>
       </div>
-      <div id="msg-36" class="collapse collapsable-details">
-        <pre>04:06:39.675 classpath:be/digitalCash/transaction.feature:17
+      <div id="msg-20" class="collapse collapsable-details">
+        <pre>04:06:27.801 classpath:be/LAO/update.feature:10
 * call read('classpath:be/mockFrontEnd.feature')
 js failed:
 &gt;&gt;&gt;&gt;
@@ -2791,7 +1495,7 @@ org.graalvm.polyglot.PolyglotException: karate.io.netty.handler.codec.http.webso
 - &lt;js&gt;.:anonymous(Unnamed:9)
 
 classpath:be/mockFrontEnd.feature:18
-classpath:be/digitalCash/transaction.feature:17
+classpath:be/LAO/update.feature:10
 </pre>
       </div>
     </div>
@@ -2838,7 +1542,7 @@ classpath:be/digitalCash/transaction.feature:17
   <span class="keyword indention">&gt; *</span>
   <span class="name">def frontend = call getMultiMsgSocket</span>
 
-  <span class="lead-duration duration">0.014</span>
+  <span class="lead-duration duration">0.025</span>
 
 </div>
 
@@ -2849,10 +1553,10 @@ classpath:be/digitalCash/transaction.feature:17
 
   <div class="inner-level">
     <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-37">
+      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-21">
           <a>js</a>
       </div>
-      <div id="msg-37" class="collapse collapsable-details  in ">
+      <div id="msg-21" class="collapse collapsable-details  in ">
         <pre>js failed:
 &gt;&gt;&gt;&gt;
 01: function(){
@@ -2919,7 +1623,7 @@ classpath:be/mockFrontEnd.feature:18</pre>
 
 <div class="brief step-name-* skipped">
   <span class="keyword indention">*</span>
-  <span class="name">string laoChannel =  &quot;/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=&quot;</span>
+  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=valid_lao')</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -2946,7 +1650,7 @@ classpath:be/mockFrontEnd.feature:18</pre>
 
 <div class="brief step-name-* skipped">
   <span class="keyword indention">*</span>
-  <span class="name">string cashChannel = &quot;/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=/coin&quot;</span>
+  <span class="name">string channel = &quot;/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=&quot;</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -2991,11 +1695,11 @@ classpath:be/mockFrontEnd.feature:18</pre>
   <span class="lead-duration duration">0.000</span>
 
 
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-38">
+  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-22">
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
-  <span class="name">Post transaction with invalid output pubKey should fail</span>
+  <span class="name">Update Lao with negative last_modified should fail with an error response</span>
 
 
      <i class="chevron fa fa-fw"></i>
@@ -3004,14 +1708,14 @@ classpath:be/mockFrontEnd.feature:18</pre>
   </span>
   <div class="description indention"></div>
 
-  <div id="element-38" class="collapse collapsable-details  in ">
+  <div id="element-22" class="collapse collapsable-details  in ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-39">
+  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-23">
 
 <div class="brief failed">
   <span class="keyword indention">Steps</span>
@@ -3023,40 +1727,13 @@ classpath:be/mockFrontEnd.feature:18</pre>
 
   </div>
 
-  <div id="steps-39" class="inner-level collapse collapsable-details  in ">
+  <div id="steps-23" class="inner-level collapse collapsable-details  in ">
       <div class="step">
 
 
 <div class="brief step-name-Given skipped">
   <span class="keyword indention">Given</span>
-  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=setup_coin_channel')</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And skipped">
-  <span class="keyword indention">And</span>
-  <span class="name">def invalidTransaction =</span>
+  <span class="name">def badUpdateLaoReq =</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -3072,28 +1749,17 @@ classpath:be/mockFrontEnd.feature:18</pre>
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-40">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-24">
           <a>Doc string</a>
       </div>
-      <div id="msg-40" class="collapse collapsable-details">
+      <div id="msg-24" class="collapse collapsable-details">
         <pre>{
-    &quot;object&quot;: &quot;coin&quot;,
-    &quot;action&quot;: &quot;post_transaction&quot;,
-    &quot;transaction_id&quot;: &quot;S-UTUqrPfUVw8Ywv6AOb7Qv0M01s7-BcYCSa4SIl9bQ=&quot;,
-    &quot;transaction&quot;: {
-      &quot;version&quot;: 1,
-      &quot;inputs&quot;: [{
-        &quot;tx_out_hash&quot;: &quot;47DEQpj8HBSa--TImW-5JCeuQeRkm5NMpJWZG3hSuFU=&quot;,
-        &quot;tx_out_index&quot;: 0,
-        &quot;script&quot;: {
-          &quot;type&quot;: &quot;P2PKH&quot;,
-          &quot;pubkey&quot;: '#(getCoinIssuancePubKey)',
-          &quot;sig&quot;: '#(getCreateSignatureForCoinIssuance)'
-        }
-      }],
-      &quot;outputs&quot;: '#(getInvalidOutputs)',
-      &quot;lock_time&quot;: 0
-    }
+  &quot;object&quot;: &quot;lao&quot;,
+  &quot;action&quot;: &quot;update_properties&quot;,
+  &quot;id&quot;: &quot;p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=&quot;,
+  &quot;name&quot;: &quot;LAO&quot;,
+  &quot;last_modified&quot;: -1633099140,
+  &quot;witnesses&quot;: []
 }</pre>
       </div>
     </div>
@@ -3111,7 +1777,7 @@ classpath:be/mockFrontEnd.feature:18</pre>
 
 <div class="brief step-name-When skipped">
   <span class="keyword indention">When</span>
-  <span class="name">frontend.publish(JSON.stringify(invalidTransaction), cashChannel)</span>
+  <span class="name">frontend.publish(JSON.stringify(badUpdateLaoReq), channel)</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -3138,7 +1804,7 @@ classpath:be/mockFrontEnd.feature:18</pre>
 
 <div class="brief step-name-And skipped">
   <span class="keyword indention">And</span>
-  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(invalidTransaction))</span>
+  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(badUpdateLaoReq))</span>
 
   <span class="lead-duration duration">0.000</span>
 

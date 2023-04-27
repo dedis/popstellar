@@ -41,7 +41,7 @@ $(document).ready(function() {
 
 
 
-<title>Cucumber Reports  - Feature: be/election/castVote.feature</title>
+<title>Cucumber Reports  - Feature: be/election/electionSetup.feature</title>
 
 </head>
 <body>
@@ -74,7 +74,7 @@ $(document).ready(function() {
   <tbody>
     <tr class="info">
       <td>go</td>
-      <td>26 Apr 2023, 04:06</td>
+      <td>27 Apr 2023, 04:06</td>
     </tr>
   </tbody>
 </table>
@@ -126,19 +126,19 @@ $(document).ready(function() {
 
         <tbody>
         <tr>
-          <td class="tagname">be/election/castVote.feature</td>
-          <td      class="passed"    >21</td>
-          <td      class="failed"    >14</td>
-          <td     class="skipped"   >64</td>
+          <td class="tagname">be/election/electionSetup.feature</td>
+          <td      class="passed"    >15</td>
+          <td      class="failed"    >10</td>
+          <td     class="skipped"   >40</td>
           <td >0</td>
           <td >0</td>
-          <td class="total">99</td>
+          <td class="total">65</td>
 
           <td >0</td>
-          <td  class="failed"    >7</td>
-          <td class="total">7</td>
+          <td  class="failed"    >5</td>
+          <td class="total">5</td>
 
-          <td class="duration" data-value="573395702">0.573</td>
+          <td class="duration" data-value="316669177">0.316</td>
           <td class="failed">Failed</td>
         </tr>
         </tbody>
@@ -175,12 +175,12 @@ $(document).ready(function() {
 
 <div class="brief failed">
   <span class="keyword indention">Feature</span>
-  <span class="name">be/election/castVote.feature</span>
+  <span class="name">be/election/electionSetup.feature</span>
 
 
 </div>
 
-        <div class="description indention">Cast a vote</div>
+        <div class="description indention">Setup an Election</div>
 
         <div class="elements inner-level">
 
@@ -191,7 +191,7 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">0.084</span>
+  <span class="lead-duration duration">0.067</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-1">
@@ -234,7 +234,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/utils/server.feature')</span>
 
-  <span class="lead-duration duration">0.029</span>
+  <span class="lead-duration duration">0.011</span>
 
 </div>
 
@@ -288,7 +288,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/mockFrontEnd.feature')</span>
 
-  <span class="lead-duration duration">0.037</span>
+  <span class="lead-duration duration">0.029</span>
 
 </div>
 
@@ -322,7 +322,7 @@ org.graalvm.polyglot.PolyglotException: karate.io.netty.handler.codec.http.webso
 - &lt;js&gt;.:anonymous(Unnamed:9)
 
 classpath:be/mockFrontEnd.feature:18
-classpath:be/election/castVote.feature:16</pre>
+classpath:be/election/electionSetup.feature:16</pre>
       </div>
     </div>
   </div>
@@ -336,7 +336,7 @@ classpath:be/election/castVote.feature:16</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-4" class="collapse collapsable-details">
-        <pre>04:06:40.290 classpath:be/election/castVote.feature:16
+        <pre>04:06:30.747 classpath:be/election/electionSetup.feature:16
 * call read('classpath:be/mockFrontEnd.feature')
 js failed:
 &gt;&gt;&gt;&gt;
@@ -357,7 +357,7 @@ org.graalvm.polyglot.PolyglotException: karate.io.netty.handler.codec.http.webso
 - &lt;js&gt;.:anonymous(Unnamed:9)
 
 classpath:be/mockFrontEnd.feature:18
-classpath:be/election/castVote.feature:16
+classpath:be/election/electionSetup.feature:16
 </pre>
       </div>
     </div>
@@ -404,7 +404,7 @@ classpath:be/election/castVote.feature:16
   <span class="keyword indention">&gt; *</span>
   <span class="name">def frontend = call getMultiMsgSocket</span>
 
-  <span class="lead-duration duration">0.017</span>
+  <span class="lead-duration duration">0.025</span>
 
 </div>
 
@@ -485,33 +485,6 @@ classpath:be/mockFrontEnd.feature:18</pre>
 
 <div class="brief step-name-* skipped">
   <span class="keyword indention">*</span>
-  <span class="name">string electionChannel = &quot;/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=/rdv-0minecREM9XidNxnQotO7nxtVVnx-Zkmfm7hm2w=&quot;</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* skipped">
-  <span class="keyword indention">*</span>
   <span class="name">string laoChannel = &quot;/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=&quot;</span>
 
   <span class="lead-duration duration">0.000</span>
@@ -561,7 +534,7 @@ classpath:be/mockFrontEnd.feature:18</pre>
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
-  <span class="name">Casting a valid vote on a started election</span>
+  <span class="name">Setting up a valid election should succeed</span>
 
 
      <i class="chevron fa fa-fw"></i>
@@ -595,7 +568,7 @@ classpath:be/mockFrontEnd.feature:18</pre>
 
 <div class="brief step-name-Given skipped">
   <span class="keyword indention">Given</span>
-  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=election_open')</span>
+  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=valid_roll_call')</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -622,7 +595,7 @@ classpath:be/mockFrontEnd.feature:18</pre>
 
 <div class="brief step-name-And skipped">
   <span class="keyword indention">And</span>
-  <span class="name">def validCastVote =</span>
+  <span class="name">def validElectionSetup =</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -644,15 +617,21 @@ classpath:be/mockFrontEnd.feature:18</pre>
       <div id="msg-8" class="collapse collapsable-details">
         <pre>{
   &quot;object&quot;: &quot;election&quot;,
-  &quot;action&quot;: &quot;cast_vote&quot;,
+  &quot;action&quot;: &quot;setup&quot;,
+  &quot;id&quot;: '#(getValidElectionSetupId)',
   &quot;lao&quot;: '#(getLaoValid)',
-  &quot;election&quot;: '#(getValidElectionSetupId)',
+  &quot;name&quot;: &quot;Election&quot;,
+  &quot;version&quot;: &quot;OPEN_BALLOT&quot;,
   &quot;created_at&quot;: 1633098941,
-  &quot;votes&quot;: [
+  &quot;start_time&quot;: 1633098941,
+  &quot;end_time&quot;: 1633099812,
+  &quot;questions&quot;: [
     {
-      &quot;id&quot;: '#(getIsThisProjectFunVoteIdVoteYes)',
-      &quot;question&quot;: '#(getIsThisProjectFunQuestionId)',
-      &quot;vote&quot;: 0
+      &quot;id&quot;: '#(getIsThisProjectFunQuestionId)',
+      &quot;question&quot;: &quot;Is this project fun?&quot;,
+      &quot;voting_method&quot;: &quot;Plurality&quot;,
+      &quot;ballot_options&quot;: [&quot;Yes&quot;, &quot;No&quot;],
+      &quot;write_in&quot;: false
     }
   ]
 }</pre>
@@ -672,7 +651,7 @@ classpath:be/mockFrontEnd.feature:18</pre>
 
 <div class="brief step-name-When skipped">
   <span class="keyword indention">When</span>
-  <span class="name">frontend.publish(JSON.stringify(validCastVote), electionChannel)</span>
+  <span class="name">frontend.publish(JSON.stringify(validElectionSetup), laoChannel)</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -699,7 +678,7 @@ classpath:be/mockFrontEnd.feature:18</pre>
 
 <div class="brief step-name-And skipped">
   <span class="keyword indention">And</span>
-  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(validCastVote))</span>
+  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(validElectionSetup))</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -793,7 +772,7 @@ classpath:be/mockFrontEnd.feature:18</pre>
 </div>
 
 
-  <span class="lead-duration duration">0.064</span>
+  <span class="lead-duration duration">0.050</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-9">
@@ -836,7 +815,7 @@ classpath:be/mockFrontEnd.feature:18</pre>
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/utils/server.feature')</span>
 
-  <span class="lead-duration duration">0.022</span>
+  <span class="lead-duration duration">0.010</span>
 
 </div>
 
@@ -890,7 +869,7 @@ classpath:be/mockFrontEnd.feature:18</pre>
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/mockFrontEnd.feature')</span>
 
-  <span class="lead-duration duration">0.024</span>
+  <span class="lead-duration duration">0.025</span>
 
 </div>
 
@@ -924,7 +903,7 @@ org.graalvm.polyglot.PolyglotException: karate.io.netty.handler.codec.http.webso
 - &lt;js&gt;.:anonymous(Unnamed:9)
 
 classpath:be/mockFrontEnd.feature:18
-classpath:be/election/castVote.feature:16</pre>
+classpath:be/election/electionSetup.feature:16</pre>
       </div>
     </div>
   </div>
@@ -938,7 +917,7 @@ classpath:be/election/castVote.feature:16</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-12" class="collapse collapsable-details">
-        <pre>04:06:40.342 classpath:be/election/castVote.feature:16
+        <pre>04:06:30.789 classpath:be/election/electionSetup.feature:16
 * call read('classpath:be/mockFrontEnd.feature')
 js failed:
 &gt;&gt;&gt;&gt;
@@ -959,7 +938,7 @@ org.graalvm.polyglot.PolyglotException: karate.io.netty.handler.codec.http.webso
 - &lt;js&gt;.:anonymous(Unnamed:9)
 
 classpath:be/mockFrontEnd.feature:18
-classpath:be/election/castVote.feature:16
+classpath:be/election/electionSetup.feature:16
 </pre>
       </div>
     </div>
@@ -1006,7 +985,7 @@ classpath:be/election/castVote.feature:16
   <span class="keyword indention">&gt; *</span>
   <span class="name">def frontend = call getMultiMsgSocket</span>
 
-  <span class="lead-duration duration">0.017</span>
+  <span class="lead-duration duration">0.015</span>
 
 </div>
 
@@ -1087,33 +1066,6 @@ classpath:be/mockFrontEnd.feature:18</pre>
 
 <div class="brief step-name-* skipped">
   <span class="keyword indention">*</span>
-  <span class="name">string electionChannel = &quot;/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=/rdv-0minecREM9XidNxnQotO7nxtVVnx-Zkmfm7hm2w=&quot;</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* skipped">
-  <span class="keyword indention">*</span>
   <span class="name">string laoChannel = &quot;/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=&quot;</span>
 
   <span class="lead-duration duration">0.000</span>
@@ -1163,7 +1115,7 @@ classpath:be/mockFrontEnd.feature:18</pre>
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
-  <span class="name">Casting a vote on a lao channel should return an error</span>
+  <span class="name">Setting up an election with invalid election id should fail</span>
 
 
      <i class="chevron fa fa-fw"></i>
@@ -1197,7 +1149,7 @@ classpath:be/mockFrontEnd.feature:18</pre>
 
 <div class="brief step-name-Given skipped">
   <span class="keyword indention">Given</span>
-  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=election_open')</span>
+  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=valid_roll_call')</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -1224,7 +1176,7 @@ classpath:be/mockFrontEnd.feature:18</pre>
 
 <div class="brief step-name-And skipped">
   <span class="keyword indention">And</span>
-  <span class="name">def validCastVote =</span>
+  <span class="name">def validElectionSetup =</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -1246,15 +1198,21 @@ classpath:be/mockFrontEnd.feature:18</pre>
       <div id="msg-16" class="collapse collapsable-details">
         <pre>{
   &quot;object&quot;: &quot;election&quot;,
-  &quot;action&quot;: &quot;cast_vote&quot;,
+  &quot;action&quot;: &quot;setup&quot;,
+  &quot;id&quot;: '#(getInvalidElectionSetupId)',
   &quot;lao&quot;: '#(getLaoValid)',
-  &quot;election&quot;: '#(getValidElectionSetupId)',
+  &quot;name&quot;: &quot;Election&quot;,
+  &quot;version&quot;: &quot;OPEN_BALLOT&quot;,
   &quot;created_at&quot;: 1633098941,
-  &quot;votes&quot;: [
+  &quot;start_time&quot;: 1633098941,
+  &quot;end_time&quot;: 1633099812,
+  &quot;questions&quot;: [
     {
-      &quot;id&quot;: '#(getIsThisProjectFunVoteIdVoteYes)',
-      &quot;question&quot;: '#(getIsThisProjectFunQuestionId)',
-      &quot;vote&quot;: 0
+      &quot;id&quot;: '#(getIsThisProjectFunQuestionId)',
+      &quot;question&quot;: &quot;Is this project fun?&quot;,
+      &quot;voting_method&quot;: &quot;Plurality&quot;,
+      &quot;ballot_options&quot;: [&quot;Yes&quot;, &quot;No&quot;],
+      &quot;write_in&quot;: false
     }
   ]
 }</pre>
@@ -1274,7 +1232,7 @@ classpath:be/mockFrontEnd.feature:18</pre>
 
 <div class="brief step-name-When skipped">
   <span class="keyword indention">When</span>
-  <span class="name">frontend.publish(JSON.stringify(validCastVote), laoChannel)</span>
+  <span class="name">frontend.publish(JSON.stringify(validElectionSetup), laoChannel)</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -1301,7 +1259,7 @@ classpath:be/mockFrontEnd.feature:18</pre>
 
 <div class="brief step-name-And skipped">
   <span class="keyword indention">And</span>
-  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(validCastVote))</span>
+  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(validElectionSetup))</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -1395,7 +1353,7 @@ classpath:be/mockFrontEnd.feature:18</pre>
 </div>
 
 
-  <span class="lead-duration duration">0.073</span>
+  <span class="lead-duration duration">0.096</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-17">
@@ -1438,7 +1396,7 @@ classpath:be/mockFrontEnd.feature:18</pre>
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/utils/server.feature')</span>
 
-  <span class="lead-duration duration">0.011</span>
+  <span class="lead-duration duration">0.036</span>
 
 </div>
 
@@ -1492,7 +1450,7 @@ classpath:be/mockFrontEnd.feature:18</pre>
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/mockFrontEnd.feature')</span>
 
-  <span class="lead-duration duration">0.036</span>
+  <span class="lead-duration duration">0.034</span>
 
 </div>
 
@@ -1526,7 +1484,7 @@ org.graalvm.polyglot.PolyglotException: karate.io.netty.handler.codec.http.webso
 - &lt;js&gt;.:anonymous(Unnamed:9)
 
 classpath:be/mockFrontEnd.feature:18
-classpath:be/election/castVote.feature:16</pre>
+classpath:be/election/electionSetup.feature:16</pre>
       </div>
     </div>
   </div>
@@ -1540,7 +1498,7 @@ classpath:be/election/castVote.feature:16</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-20" class="collapse collapsable-details">
-        <pre>04:06:40.393 classpath:be/election/castVote.feature:16
+        <pre>04:06:30.862 classpath:be/election/electionSetup.feature:16
 * call read('classpath:be/mockFrontEnd.feature')
 js failed:
 &gt;&gt;&gt;&gt;
@@ -1561,7 +1519,7 @@ org.graalvm.polyglot.PolyglotException: karate.io.netty.handler.codec.http.webso
 - &lt;js&gt;.:anonymous(Unnamed:9)
 
 classpath:be/mockFrontEnd.feature:18
-classpath:be/election/castVote.feature:16
+classpath:be/election/electionSetup.feature:16
 </pre>
       </div>
     </div>
@@ -1689,33 +1647,6 @@ classpath:be/mockFrontEnd.feature:18</pre>
 
 <div class="brief step-name-* skipped">
   <span class="keyword indention">*</span>
-  <span class="name">string electionChannel = &quot;/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=/rdv-0minecREM9XidNxnQotO7nxtVVnx-Zkmfm7hm2w=&quot;</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* skipped">
-  <span class="keyword indention">*</span>
   <span class="name">string laoChannel = &quot;/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=&quot;</span>
 
   <span class="lead-duration duration">0.000</span>
@@ -1765,7 +1696,7 @@ classpath:be/mockFrontEnd.feature:18</pre>
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
-  <span class="name">Casting a valid vote on non existent election should return an error</span>
+  <span class="name">Setting up an election with invalid question id should fail</span>
 
 
      <i class="chevron fa fa-fw"></i>
@@ -1799,7 +1730,7 @@ classpath:be/mockFrontEnd.feature:18</pre>
 
 <div class="brief step-name-Given skipped">
   <span class="keyword indention">Given</span>
-  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=election_open')</span>
+  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=valid_roll_call')</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -1826,7 +1757,7 @@ classpath:be/mockFrontEnd.feature:18</pre>
 
 <div class="brief step-name-And skipped">
   <span class="keyword indention">And</span>
-  <span class="name">def validCastVote =</span>
+  <span class="name">def validElectionSetup =</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -1848,15 +1779,21 @@ classpath:be/mockFrontEnd.feature:18</pre>
       <div id="msg-24" class="collapse collapsable-details">
         <pre>{
   &quot;object&quot;: &quot;election&quot;,
-  &quot;action&quot;: &quot;cast_vote&quot;,
+  &quot;action&quot;: &quot;setup&quot;,
+  &quot;id&quot;: '#(getValidElectionSetupId)',
   &quot;lao&quot;: '#(getLaoValid)',
-  &quot;election&quot;: '#(getInvalidElectionSetupId)',
+  &quot;name&quot;: &quot;Election&quot;,
+  &quot;version&quot;: &quot;OPEN_BALLOT&quot;,
   &quot;created_at&quot;: 1633098941,
-  &quot;votes&quot;: [
+  &quot;start_time&quot;: 1633098941,
+  &quot;end_time&quot;: 1633099812,
+  &quot;questions&quot;: [
     {
-      &quot;id&quot;: '#(getIsThisProjectFunVoteIdVoteYes)',
-      &quot;question&quot;: '#(getIsThisProjectFunQuestionId)',
-      &quot;vote&quot;: 0
+      &quot;id&quot;: '#(getInvalidQuestionId)',
+      &quot;question&quot;: &quot;Is this project fun?&quot;,
+      &quot;voting_method&quot;: &quot;Plurality&quot;,
+      &quot;ballot_options&quot;: [&quot;Yes&quot;, &quot;No&quot;],
+      &quot;write_in&quot;: false
     }
   ]
 }</pre>
@@ -1876,7 +1813,7 @@ classpath:be/mockFrontEnd.feature:18</pre>
 
 <div class="brief step-name-When skipped">
   <span class="keyword indention">When</span>
-  <span class="name">frontend.publish(JSON.stringify(validCastVote), electionChannel)</span>
+  <span class="name">frontend.publish(JSON.stringify(validElectionSetup), laoChannel)</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -1903,7 +1840,7 @@ classpath:be/mockFrontEnd.feature:18</pre>
 
 <div class="brief step-name-And skipped">
   <span class="keyword indention">And</span>
-  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(validCastVote))</span>
+  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(validElectionSetup))</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -1997,7 +1934,7 @@ classpath:be/mockFrontEnd.feature:18</pre>
 </div>
 
 
-  <span class="lead-duration duration">0.072</span>
+  <span class="lead-duration duration">0.055</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-25">
@@ -2040,7 +1977,7 @@ classpath:be/mockFrontEnd.feature:18</pre>
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/utils/server.feature')</span>
 
-  <span class="lead-duration duration">0.021</span>
+  <span class="lead-duration duration">0.017</span>
 
 </div>
 
@@ -2094,7 +2031,7 @@ classpath:be/mockFrontEnd.feature:18</pre>
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/mockFrontEnd.feature')</span>
 
-  <span class="lead-duration duration">0.036</span>
+  <span class="lead-duration duration">0.024</span>
 
 </div>
 
@@ -2128,7 +2065,7 @@ org.graalvm.polyglot.PolyglotException: karate.io.netty.handler.codec.http.webso
 - &lt;js&gt;.:anonymous(Unnamed:9)
 
 classpath:be/mockFrontEnd.feature:18
-classpath:be/election/castVote.feature:16</pre>
+classpath:be/election/electionSetup.feature:16</pre>
       </div>
     </div>
   </div>
@@ -2142,7 +2079,7 @@ classpath:be/election/castVote.feature:16</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-28" class="collapse collapsable-details">
-        <pre>04:06:40.455 classpath:be/election/castVote.feature:16
+        <pre>04:06:30.907 classpath:be/election/electionSetup.feature:16
 * call read('classpath:be/mockFrontEnd.feature')
 js failed:
 &gt;&gt;&gt;&gt;
@@ -2163,7 +2100,7 @@ org.graalvm.polyglot.PolyglotException: karate.io.netty.handler.codec.http.webso
 - &lt;js&gt;.:anonymous(Unnamed:9)
 
 classpath:be/mockFrontEnd.feature:18
-classpath:be/election/castVote.feature:16
+classpath:be/election/electionSetup.feature:16
 </pre>
       </div>
     </div>
@@ -2210,7 +2147,7 @@ classpath:be/election/castVote.feature:16
   <span class="keyword indention">&gt; *</span>
   <span class="name">def frontend = call getMultiMsgSocket</span>
 
-  <span class="lead-duration duration">0.014</span>
+  <span class="lead-duration duration">0.013</span>
 
 </div>
 
@@ -2291,33 +2228,6 @@ classpath:be/mockFrontEnd.feature:18</pre>
 
 <div class="brief step-name-* skipped">
   <span class="keyword indention">*</span>
-  <span class="name">string electionChannel = &quot;/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=/rdv-0minecREM9XidNxnQotO7nxtVVnx-Zkmfm7hm2w=&quot;</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* skipped">
-  <span class="keyword indention">*</span>
   <span class="name">string laoChannel = &quot;/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=&quot;</span>
 
   <span class="lead-duration duration">0.000</span>
@@ -2367,7 +2277,7 @@ classpath:be/mockFrontEnd.feature:18</pre>
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
-  <span class="name">Casting a vote with wrong vote id should return an error</span>
+  <span class="name">Setting up an election with a question containing empty ballot options should return an error</span>
 
 
      <i class="chevron fa fa-fw"></i>
@@ -2401,7 +2311,7 @@ classpath:be/mockFrontEnd.feature:18</pre>
 
 <div class="brief step-name-Given skipped">
   <span class="keyword indention">Given</span>
-  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=election_open')</span>
+  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=valid_roll_call')</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -2428,7 +2338,7 @@ classpath:be/mockFrontEnd.feature:18</pre>
 
 <div class="brief step-name-And skipped">
   <span class="keyword indention">And</span>
-  <span class="name">def invalidCastVote =</span>
+  <span class="name">def validElectionSetup =</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -2450,15 +2360,21 @@ classpath:be/mockFrontEnd.feature:18</pre>
       <div id="msg-32" class="collapse collapsable-details">
         <pre>{
   &quot;object&quot;: &quot;election&quot;,
-  &quot;action&quot;: &quot;cast_vote&quot;,
+  &quot;action&quot;: &quot;setup&quot;,
+  &quot;id&quot;: '#(getValidElectionSetupId)',
   &quot;lao&quot;: '#(getLaoValid)',
-  &quot;election&quot;: '#(getValidElectionSetupId)',
+  &quot;name&quot;: &quot;Election&quot;,
+  &quot;version&quot;: &quot;OPEN_BALLOT&quot;,
   &quot;created_at&quot;: 1633098941,
-  &quot;votes&quot;: [
+  &quot;start_time&quot;: 1633098941,
+  &quot;end_time&quot;: 1633099812,
+  &quot;questions&quot;: [
     {
-      &quot;id&quot;: '#(getInvalidVoteId)',
-      &quot;question&quot;: '#(getIsThisProjectFunQuestionId)',
-      &quot;vote&quot;: 0
+      &quot;id&quot;: '#(getIsThisProjectFunQuestionId)',
+      &quot;question&quot;: &quot;Is this project fun?&quot;,
+      &quot;voting_method&quot;: &quot;Plurality&quot;,
+      &quot;ballot_options&quot;: [],
+      &quot;write_in&quot;: false
     }
   ]
 }</pre>
@@ -2478,7 +2394,7 @@ classpath:be/mockFrontEnd.feature:18</pre>
 
 <div class="brief step-name-When skipped">
   <span class="keyword indention">When</span>
-  <span class="name">frontend.publish(JSON.stringify(invalidCastVote), electionChannel)</span>
+  <span class="name">frontend.publish(JSON.stringify(validElectionSetup), laoChannel)</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -2505,7 +2421,7 @@ classpath:be/mockFrontEnd.feature:18</pre>
 
 <div class="brief step-name-And skipped">
   <span class="keyword indention">And</span>
-  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(invalidCastVote))</span>
+  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(validElectionSetup))</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -2599,7 +2515,7 @@ classpath:be/mockFrontEnd.feature:18</pre>
 </div>
 
 
-  <span class="lead-duration duration">0.091</span>
+  <span class="lead-duration duration">0.046</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-33">
@@ -2642,7 +2558,7 @@ classpath:be/mockFrontEnd.feature:18</pre>
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/utils/server.feature')</span>
 
-  <span class="lead-duration duration">0.010</span>
+  <span class="lead-duration duration">0.018</span>
 
 </div>
 
@@ -2696,7 +2612,7 @@ classpath:be/mockFrontEnd.feature:18</pre>
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/mockFrontEnd.feature')</span>
 
-  <span class="lead-duration duration">0.044</span>
+  <span class="lead-duration duration">0.018</span>
 
 </div>
 
@@ -2730,7 +2646,7 @@ org.graalvm.polyglot.PolyglotException: karate.io.netty.handler.codec.http.webso
 - &lt;js&gt;.:anonymous(Unnamed:9)
 
 classpath:be/mockFrontEnd.feature:18
-classpath:be/election/castVote.feature:16</pre>
+classpath:be/election/electionSetup.feature:16</pre>
       </div>
     </div>
   </div>
@@ -2744,7 +2660,7 @@ classpath:be/election/castVote.feature:16</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-36" class="collapse collapsable-details">
-        <pre>04:06:40.512 classpath:be/election/castVote.feature:16
+        <pre>04:06:30.948 classpath:be/election/electionSetup.feature:16
 * call read('classpath:be/mockFrontEnd.feature')
 js failed:
 &gt;&gt;&gt;&gt;
@@ -2765,7 +2681,7 @@ org.graalvm.polyglot.PolyglotException: karate.io.netty.handler.codec.http.webso
 - &lt;js&gt;.:anonymous(Unnamed:9)
 
 classpath:be/mockFrontEnd.feature:18
-classpath:be/election/castVote.feature:16
+classpath:be/election/electionSetup.feature:16
 </pre>
       </div>
     </div>
@@ -2812,7 +2728,7 @@ classpath:be/election/castVote.feature:16
   <span class="keyword indention">&gt; *</span>
   <span class="name">def frontend = call getMultiMsgSocket</span>
 
-  <span class="lead-duration duration">0.036</span>
+  <span class="lead-duration duration">0.010</span>
 
 </div>
 
@@ -2893,33 +2809,6 @@ classpath:be/mockFrontEnd.feature:18</pre>
 
 <div class="brief step-name-* skipped">
   <span class="keyword indention">*</span>
-  <span class="name">string electionChannel = &quot;/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=/rdv-0minecREM9XidNxnQotO7nxtVVnx-Zkmfm7hm2w=&quot;</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* skipped">
-  <span class="keyword indention">*</span>
   <span class="name">string laoChannel = &quot;/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=&quot;</span>
 
   <span class="lead-duration duration">0.000</span>
@@ -2969,7 +2858,7 @@ classpath:be/mockFrontEnd.feature:18</pre>
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
-  <span class="name">Casting a vote with lao id as vote id should return an error</span>
+  <span class="name">Setting up an election with a non-supported voting method should return an error</span>
 
 
      <i class="chevron fa fa-fw"></i>
@@ -3003,7 +2892,7 @@ classpath:be/mockFrontEnd.feature:18</pre>
 
 <div class="brief step-name-Given skipped">
   <span class="keyword indention">Given</span>
-  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=election_open')</span>
+  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=valid_roll_call')</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -3030,7 +2919,7 @@ classpath:be/mockFrontEnd.feature:18</pre>
 
 <div class="brief step-name-And skipped">
   <span class="keyword indention">And</span>
-  <span class="name">def invalidCastVote =</span>
+  <span class="name">def validElectionSetup =</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -3052,15 +2941,21 @@ classpath:be/mockFrontEnd.feature:18</pre>
       <div id="msg-40" class="collapse collapsable-details">
         <pre>{
   &quot;object&quot;: &quot;election&quot;,
-  &quot;action&quot;: &quot;cast_vote&quot;,
+  &quot;action&quot;: &quot;setup&quot;,
+  &quot;id&quot;: '#(getValidElectionSetupId)',
   &quot;lao&quot;: '#(getLaoValid)',
-  &quot;election&quot;: '#(getValidElectionSetupId)',
+  &quot;name&quot;: &quot;Election&quot;,
+  &quot;version&quot;: &quot;OPEN_BALLOT&quot;,
   &quot;created_at&quot;: 1633098941,
-  &quot;votes&quot;: [
+  &quot;start_time&quot;: 1633098941,
+  &quot;end_time&quot;: 1633099812,
+  &quot;questions&quot;: [
     {
-      &quot;id&quot;: '#(getLaoValid)',
-      &quot;question&quot;: '#(getIsThisProjectFunQuestionId)',
-      &quot;vote&quot;: 0
+      &quot;id&quot;: '#(getIsThisProjectFunQuestionId)',
+      &quot;question&quot;: &quot;Is this project fun?&quot;,
+      &quot;voting_method&quot;: &quot;Random&quot;,
+      &quot;ballot_options&quot;: [&quot;Yes&quot;, &quot;No&quot;],
+      &quot;write_in&quot;: false
     }
   ]
 }</pre>
@@ -3080,7 +2975,7 @@ classpath:be/mockFrontEnd.feature:18</pre>
 
 <div class="brief step-name-When skipped">
   <span class="keyword indention">When</span>
-  <span class="name">frontend.publish(JSON.stringify(invalidCastVote), electionChannel)</span>
+  <span class="name">frontend.publish(JSON.stringify(validElectionSetup), laoChannel)</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -3107,1238 +3002,7 @@ classpath:be/mockFrontEnd.feature:18</pre>
 
 <div class="brief step-name-And skipped">
   <span class="keyword indention">And</span>
-  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(invalidCastVote))</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-Then skipped">
-  <span class="keyword indention">Then</span>
-  <span class="name">match answer contains INVALID_MESSAGE_FIELD</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And skipped">
-  <span class="keyword indention">And</span>
-  <span class="name">match frontend.receiveNoMoreResponses() == true</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-  </div>
-</div>
-
-
-
-
-
-  </div>
-</div>
-
-
-<div class="element">
-
-
-<div class="tags indention">
-</div>
-
-
-  <span class="lead-duration duration">0.100</span>
-
-
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-41">
-
-<div class="brief failed">
-  <span class="keyword indention">Background</span>
-  <span class="name"></span>
-
-
-     <i class="chevron fa fa-fw"></i>
-</div>
-
-  </span>
-  <div class="description indention"></div>
-
-  <div id="element-41" class="collapse collapsable-details  in ">
-
-
-
-
-
-<div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-42">
-
-<div class="brief failed">
-  <span class="keyword indention">Steps</span>
-  <span class="name"></span>
-
-
-     <i class="chevron fa fa-fw"></i>
-</div>
-
-  </div>
-
-  <div id="steps-42" class="inner-level collapse collapsable-details  in ">
-      <div class="step">
-
-
-<div class="brief step-name-* passed">
-  <span class="keyword indention">*</span>
-  <span class="name">call read('classpath:be/utils/server.feature')</span>
-
-  <span class="lead-duration duration">0.019</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name- passed">
-  <span class="keyword indention"></span>
-  <span class="name">be/utils/server.feature</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* failed">
-  <span class="keyword indention">*</span>
-  <span class="name">call read('classpath:be/mockFrontEnd.feature')</span>
-
-  <span class="lead-duration duration">0.043</span>
-
-</div>
-
-
-
-
-
-
-  <div class="inner-level">
-    <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-43">
-          <a>js</a>
-      </div>
-      <div id="msg-43" class="collapse collapsable-details  in ">
-        <pre>js failed:
-&gt;&gt;&gt;&gt;
-01: function(){
-02:   var MultiMsg = Java.type('common.net.MultiMsgWebSocketClient')
-03:   var Logg = Java.type('com.intuit.karate.Logger')
-04:   var logg =  new Logg()
-05:   var Queue = Java.type(&quot;common.net.MessageQueue&quot;)
-06:   var q =  new Queue()
-07:   var WebSocketOptions = Java.type('com.intuit.karate.http.WebSocketOptions')
-08:   var wso =  new WebSocketOptions(wsURL)
-09:   return new MultiMsg(wso,logg,q)
-10: }
-&lt;&lt;&lt;&lt;
-org.graalvm.polyglot.PolyglotException: karate.io.netty.handler.codec.http.websocketx.WebSocketClientHandshakeException: Invalid handshake response getStatus: 404 Not Found
-- com.intuit.karate.http.WebSocketClient.&lt;init&gt;(WebSocketClient.java:148)
-- common.net.MultiMsgWebSocketClient.&lt;init&gt;(MultiMsgWebSocketClient.java:26)
-- &lt;js&gt;.:anonymous(Unnamed:9)
-
-classpath:be/mockFrontEnd.feature:18
-classpath:be/election/castVote.feature:16</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-  <div class="inner-level">
-    <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-44">
-          <a>Doc string</a>
-      </div>
-      <div id="msg-44" class="collapse collapsable-details">
-        <pre>04:06:40.578 classpath:be/election/castVote.feature:16
-* call read('classpath:be/mockFrontEnd.feature')
-js failed:
-&gt;&gt;&gt;&gt;
-01: function(){
-02:   var MultiMsg = Java.type('common.net.MultiMsgWebSocketClient')
-03:   var Logg = Java.type('com.intuit.karate.Logger')
-04:   var logg =  new Logg()
-05:   var Queue = Java.type(&quot;common.net.MessageQueue&quot;)
-06:   var q =  new Queue()
-07:   var WebSocketOptions = Java.type('com.intuit.karate.http.WebSocketOptions')
-08:   var wso =  new WebSocketOptions(wsURL)
-09:   return new MultiMsg(wso,logg,q)
-10: }
-&lt;&lt;&lt;&lt;
-org.graalvm.polyglot.PolyglotException: karate.io.netty.handler.codec.http.websocketx.WebSocketClientHandshakeException: Invalid handshake response getStatus: 404 Not Found
-- com.intuit.karate.http.WebSocketClient.&lt;init&gt;(WebSocketClient.java:148)
-- common.net.MultiMsgWebSocketClient.&lt;init&gt;(MultiMsgWebSocketClient.java:26)
-- &lt;js&gt;.:anonymous(Unnamed:9)
-
-classpath:be/mockFrontEnd.feature:18
-classpath:be/election/castVote.feature:16
-</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name- passed">
-  <span class="keyword indention"></span>
-  <span class="name">be/mockFrontEnd.feature</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-&amp;gt; * failed">
-  <span class="keyword indention">&gt; *</span>
-  <span class="name">def frontend = call getMultiMsgSocket</span>
-
-  <span class="lead-duration duration">0.037</span>
-
-</div>
-
-
-
-
-
-
-  <div class="inner-level">
-    <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-45">
-          <a>js</a>
-      </div>
-      <div id="msg-45" class="collapse collapsable-details  in ">
-        <pre>js failed:
-&gt;&gt;&gt;&gt;
-01: function(){
-02:   var MultiMsg = Java.type('common.net.MultiMsgWebSocketClient')
-03:   var Logg = Java.type('com.intuit.karate.Logger')
-04:   var logg =  new Logg()
-05:   var Queue = Java.type(&quot;common.net.MessageQueue&quot;)
-06:   var q =  new Queue()
-07:   var WebSocketOptions = Java.type('com.intuit.karate.http.WebSocketOptions')
-08:   var wso =  new WebSocketOptions(wsURL)
-09:   return new MultiMsg(wso,logg,q)
-10: }
-&lt;&lt;&lt;&lt;
-org.graalvm.polyglot.PolyglotException: karate.io.netty.handler.codec.http.websocketx.WebSocketClientHandshakeException: Invalid handshake response getStatus: 404 Not Found
-- com.intuit.karate.http.WebSocketClient.&lt;init&gt;(WebSocketClient.java:148)
-- common.net.MultiMsgWebSocketClient.&lt;init&gt;(MultiMsgWebSocketClient.java:26)
-- &lt;js&gt;.:anonymous(Unnamed:9)
-
-classpath:be/mockFrontEnd.feature:18</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* skipped">
-  <span class="keyword indention">*</span>
-  <span class="name">call read('classpath:be/constants.feature')</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* skipped">
-  <span class="keyword indention">*</span>
-  <span class="name">string electionChannel = &quot;/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=/rdv-0minecREM9XidNxnQotO7nxtVVnx-Zkmfm7hm2w=&quot;</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* skipped">
-  <span class="keyword indention">*</span>
-  <span class="name">string laoChannel = &quot;/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=&quot;</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-  </div>
-</div>
-
-
-
-
-
-  </div>
-</div>
-
-
-<div class="element">
-
-
-<div class="tags indention">
-    <b>Tags:</b>
-       <a href="report-tag_524961969.html">@env=go,scala</a>
-</div>
-
-
-  <span class="lead-duration duration">0.000</span>
-
-
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-46">
-
-<div class="brief failed">
-  <span class="keyword indention">Scenario</span>
-  <span class="name">Non attendee casting a vote should return an error</span>
-
-
-     <i class="chevron fa fa-fw"></i>
-</div>
-
-  </span>
-  <div class="description indention"></div>
-
-  <div id="element-46" class="collapse collapsable-details  in ">
-
-
-
-
-
-<div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-47">
-
-<div class="brief failed">
-  <span class="keyword indention">Steps</span>
-  <span class="name"></span>
-
-
-     <i class="chevron fa fa-fw"></i>
-</div>
-
-  </div>
-
-  <div id="steps-47" class="inner-level collapse collapsable-details  in ">
-      <div class="step">
-
-
-<div class="brief step-name-Given skipped">
-  <span class="keyword indention">Given</span>
-  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=election_open')</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And skipped">
-  <span class="keyword indention">And</span>
-  <span class="name">def invalidCastVote =</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-  <div class="inner-level">
-    <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-48">
-          <a>Doc string</a>
-      </div>
-      <div id="msg-48" class="collapse collapsable-details">
-        <pre>{
-  &quot;object&quot;: &quot;election&quot;,
-  &quot;action&quot;: &quot;cast_vote&quot;,
-  &quot;lao&quot;: '#(getLaoValid)',
-  &quot;election&quot;: '#(getValidElectionSetupId)',
-  &quot;created_at&quot;: 1633098941,
-  &quot;votes&quot;: [
-    {
-      &quot;id&quot;: '#(getIsThisProjectFunVoteIdVoteYes)',
-      &quot;question&quot;: '#(getIsThisProjectFunQuestionId)',
-      &quot;vote&quot;: 0
-    }
-  ]
-}</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And skipped">
-  <span class="keyword indention">And</span>
-  <span class="name">frontend.changeSenderToBeNonAttendee()</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-When skipped">
-  <span class="keyword indention">When</span>
-  <span class="name">frontend.publish(JSON.stringify(invalidCastVote), electionChannel)</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And skipped">
-  <span class="keyword indention">And</span>
-  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(invalidCastVote))</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-Then skipped">
-  <span class="keyword indention">Then</span>
-  <span class="name">match answer contains INVALID_MESSAGE_FIELD</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And skipped">
-  <span class="keyword indention">And</span>
-  <span class="name">match frontend.receiveNoMoreResponses() == true</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-  </div>
-</div>
-
-
-
-
-
-  </div>
-</div>
-
-
-<div class="element">
-
-
-<div class="tags indention">
-</div>
-
-
-  <span class="lead-duration duration">0.086</span>
-
-
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-49">
-
-<div class="brief failed">
-  <span class="keyword indention">Background</span>
-  <span class="name"></span>
-
-
-     <i class="chevron fa fa-fw"></i>
-</div>
-
-  </span>
-  <div class="description indention"></div>
-
-  <div id="element-49" class="collapse collapsable-details  in ">
-
-
-
-
-
-<div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-50">
-
-<div class="brief failed">
-  <span class="keyword indention">Steps</span>
-  <span class="name"></span>
-
-
-     <i class="chevron fa fa-fw"></i>
-</div>
-
-  </div>
-
-  <div id="steps-50" class="inner-level collapse collapsable-details  in ">
-      <div class="step">
-
-
-<div class="brief step-name-* passed">
-  <span class="keyword indention">*</span>
-  <span class="name">call read('classpath:be/utils/server.feature')</span>
-
-  <span class="lead-duration duration">0.019</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name- passed">
-  <span class="keyword indention"></span>
-  <span class="name">be/utils/server.feature</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* failed">
-  <span class="keyword indention">*</span>
-  <span class="name">call read('classpath:be/mockFrontEnd.feature')</span>
-
-  <span class="lead-duration duration">0.039</span>
-
-</div>
-
-
-
-
-
-
-  <div class="inner-level">
-    <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-51">
-          <a>js</a>
-      </div>
-      <div id="msg-51" class="collapse collapsable-details  in ">
-        <pre>js failed:
-&gt;&gt;&gt;&gt;
-01: function(){
-02:   var MultiMsg = Java.type('common.net.MultiMsgWebSocketClient')
-03:   var Logg = Java.type('com.intuit.karate.Logger')
-04:   var logg =  new Logg()
-05:   var Queue = Java.type(&quot;common.net.MessageQueue&quot;)
-06:   var q =  new Queue()
-07:   var WebSocketOptions = Java.type('com.intuit.karate.http.WebSocketOptions')
-08:   var wso =  new WebSocketOptions(wsURL)
-09:   return new MultiMsg(wso,logg,q)
-10: }
-&lt;&lt;&lt;&lt;
-org.graalvm.polyglot.PolyglotException: karate.io.netty.handler.codec.http.websocketx.WebSocketClientHandshakeException: Invalid handshake response getStatus: 404 Not Found
-- com.intuit.karate.http.WebSocketClient.&lt;init&gt;(WebSocketClient.java:148)
-- common.net.MultiMsgWebSocketClient.&lt;init&gt;(MultiMsgWebSocketClient.java:26)
-- &lt;js&gt;.:anonymous(Unnamed:9)
-
-classpath:be/mockFrontEnd.feature:18
-classpath:be/election/castVote.feature:16</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-  <div class="inner-level">
-    <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-52">
-          <a>Doc string</a>
-      </div>
-      <div id="msg-52" class="collapse collapsable-details">
-        <pre>04:06:40.641 classpath:be/election/castVote.feature:16
-* call read('classpath:be/mockFrontEnd.feature')
-js failed:
-&gt;&gt;&gt;&gt;
-01: function(){
-02:   var MultiMsg = Java.type('common.net.MultiMsgWebSocketClient')
-03:   var Logg = Java.type('com.intuit.karate.Logger')
-04:   var logg =  new Logg()
-05:   var Queue = Java.type(&quot;common.net.MessageQueue&quot;)
-06:   var q =  new Queue()
-07:   var WebSocketOptions = Java.type('com.intuit.karate.http.WebSocketOptions')
-08:   var wso =  new WebSocketOptions(wsURL)
-09:   return new MultiMsg(wso,logg,q)
-10: }
-&lt;&lt;&lt;&lt;
-org.graalvm.polyglot.PolyglotException: karate.io.netty.handler.codec.http.websocketx.WebSocketClientHandshakeException: Invalid handshake response getStatus: 404 Not Found
-- com.intuit.karate.http.WebSocketClient.&lt;init&gt;(WebSocketClient.java:148)
-- common.net.MultiMsgWebSocketClient.&lt;init&gt;(MultiMsgWebSocketClient.java:26)
-- &lt;js&gt;.:anonymous(Unnamed:9)
-
-classpath:be/mockFrontEnd.feature:18
-classpath:be/election/castVote.feature:16
-</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name- passed">
-  <span class="keyword indention"></span>
-  <span class="name">be/mockFrontEnd.feature</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-&amp;gt; * failed">
-  <span class="keyword indention">&gt; *</span>
-  <span class="name">def frontend = call getMultiMsgSocket</span>
-
-  <span class="lead-duration duration">0.027</span>
-
-</div>
-
-
-
-
-
-
-  <div class="inner-level">
-    <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-53">
-          <a>js</a>
-      </div>
-      <div id="msg-53" class="collapse collapsable-details  in ">
-        <pre>js failed:
-&gt;&gt;&gt;&gt;
-01: function(){
-02:   var MultiMsg = Java.type('common.net.MultiMsgWebSocketClient')
-03:   var Logg = Java.type('com.intuit.karate.Logger')
-04:   var logg =  new Logg()
-05:   var Queue = Java.type(&quot;common.net.MessageQueue&quot;)
-06:   var q =  new Queue()
-07:   var WebSocketOptions = Java.type('com.intuit.karate.http.WebSocketOptions')
-08:   var wso =  new WebSocketOptions(wsURL)
-09:   return new MultiMsg(wso,logg,q)
-10: }
-&lt;&lt;&lt;&lt;
-org.graalvm.polyglot.PolyglotException: karate.io.netty.handler.codec.http.websocketx.WebSocketClientHandshakeException: Invalid handshake response getStatus: 404 Not Found
-- com.intuit.karate.http.WebSocketClient.&lt;init&gt;(WebSocketClient.java:148)
-- common.net.MultiMsgWebSocketClient.&lt;init&gt;(MultiMsgWebSocketClient.java:26)
-- &lt;js&gt;.:anonymous(Unnamed:9)
-
-classpath:be/mockFrontEnd.feature:18</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* skipped">
-  <span class="keyword indention">*</span>
-  <span class="name">call read('classpath:be/constants.feature')</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* skipped">
-  <span class="keyword indention">*</span>
-  <span class="name">string electionChannel = &quot;/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=/rdv-0minecREM9XidNxnQotO7nxtVVnx-Zkmfm7hm2w=&quot;</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* skipped">
-  <span class="keyword indention">*</span>
-  <span class="name">string laoChannel = &quot;/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=&quot;</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-  </div>
-</div>
-
-
-
-
-
-  </div>
-</div>
-
-
-<div class="element">
-
-
-<div class="tags indention">
-    <b>Tags:</b>
-       <a href="report-tag_524961969.html">@env=go,scala</a>
-</div>
-
-
-  <span class="lead-duration duration">0.000</span>
-
-
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-54">
-
-<div class="brief failed">
-  <span class="keyword indention">Scenario</span>
-  <span class="name">Casting a valid vote before time should fail</span>
-
-
-     <i class="chevron fa fa-fw"></i>
-</div>
-
-  </span>
-  <div class="description indention"></div>
-
-  <div id="element-54" class="collapse collapsable-details  in ">
-
-
-
-
-
-<div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-55">
-
-<div class="brief failed">
-  <span class="keyword indention">Steps</span>
-  <span class="name"></span>
-
-
-     <i class="chevron fa fa-fw"></i>
-</div>
-
-  </div>
-
-  <div id="steps-55" class="inner-level collapse collapsable-details  in ">
-      <div class="step">
-
-
-<div class="brief step-name-Given skipped">
-  <span class="keyword indention">Given</span>
-  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=election_open')</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And skipped">
-  <span class="keyword indention">And</span>
-  <span class="name">def invalidCastVote =</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-  <div class="inner-level">
-    <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-56">
-          <a>Doc string</a>
-      </div>
-      <div id="msg-56" class="collapse collapsable-details">
-        <pre>{
-  &quot;object&quot;: &quot;election&quot;,
-  &quot;action&quot;: &quot;cast_vote&quot;,
-  &quot;lao&quot;: '#(getLaoValid)',
-  &quot;election&quot;: '#(getValidElectionSetupId)',
-  &quot;created_at&quot;: 1633098900,
-  &quot;votes&quot;: [
-    {
-      &quot;id&quot;: '#(getIsThisProjectFunVoteIdVoteYes)',
-      &quot;question&quot;: '#(getIsThisProjectFunQuestionId)',
-      &quot;vote&quot;: 0
-    }
-  ]
-}</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-When skipped">
-  <span class="keyword indention">When</span>
-  <span class="name">frontend.publish(JSON.stringify(invalidCastVote), electionChannel)</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And skipped">
-  <span class="keyword indention">And</span>
-  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(invalidCastVote))</span>
+  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(validElectionSetup))</span>
 
   <span class="lead-duration duration">0.000</span>
 
