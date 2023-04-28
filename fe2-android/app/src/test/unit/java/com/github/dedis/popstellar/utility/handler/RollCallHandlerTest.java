@@ -104,7 +104,7 @@ public class RollCallHandlerTest {
 
     // Add the CreateLao message to the LAORepository
     MessageGeneral createLaoMessage = new MessageGeneral(SENDER_KEY, CREATE_LAO, gson);
-    messageRepo.addMessage(createLaoMessage);
+    messageRepo.addMessage(createLaoMessage, false);
   }
 
   @Test

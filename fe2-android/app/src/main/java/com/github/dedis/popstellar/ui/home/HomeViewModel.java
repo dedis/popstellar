@@ -1,6 +1,7 @@
 package com.github.dedis.popstellar.ui.home;
 
 import android.app.Application;
+import android.content.Context;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -11,7 +12,8 @@ import com.github.dedis.popstellar.model.objects.Wallet;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.model.qrcode.ConnectToLao;
 import com.github.dedis.popstellar.repository.LAORepository;
-import com.github.dedis.popstellar.repository.local.PersistentData;
+import com.github.dedis.popstellar.repository.database.AppDatabase;
+import com.github.dedis.popstellar.repository.database.core.CoreEntity;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.ui.PopViewModel;
 import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningViewModel;
@@ -56,6 +58,8 @@ public class HomeViewModel extends AndroidViewModel
   private final GlobalNetworkManager networkManager;
   private final LAORepository laoRepository;
 
+  private final AppDatabase appDatabase;
+
   private final CompositeDisposable disposables = new CompositeDisposable();
 
   @Inject
@@ -64,13 +68,15 @@ public class HomeViewModel extends AndroidViewModel
       Gson gson,
       Wallet wallet,
       LAORepository laoRepository,
-      GlobalNetworkManager networkManager) {
+      GlobalNetworkManager networkManager,
+      AppDatabase appDatabase) {
     super(application);
 
     this.gson = gson;
     this.wallet = wallet;
     this.networkManager = networkManager;
     this.laoRepository = laoRepository;
+    this.appDatabase = appDatabase;
 
     laoIdList =
         LiveDataReactiveStreams.fromPublisher(
@@ -118,22 +124,24 @@ public class HomeViewModel extends AndroidViewModel
                 getApplication().getApplicationContext(), laoData.lao));
   }
 
-  protected void restoreConnections(PersistentData data) {
-    if (data == null) {
+  protected void restoreConnections(Context context) {
+    CoreEntity coreEntity = appDatabase.coreDao().getSettings();
+    if (coreEntity == null) {
+      ErrorUtils.logAndShow(context, TAG, R.string.nothing_stored);
       return;
     }
-    Timber.tag(TAG).d("Saved state found : %s", data);
+    Timber.tag(TAG).d("Saved state found : %s", coreEntity);
 
     if (!isWalletSetUp()) {
       Timber.tag(TAG).d("Restoring wallet");
-      String[] seed = data.getWalletSeed();
+      String[] seed = coreEntity.getWalletSeedArray();
       Timber.tag(TAG).d("seed is %s", Arrays.toString(seed));
       if (seed.length == 0) {
         ErrorUtils.logAndShow(
             getApplication().getApplicationContext(), TAG, R.string.no_seed_storage_found);
         return;
       }
-      String appended = String.join(" ", data.getWalletSeed());
+      String appended = String.join(" ", seed);
       try {
         importSeed(appended);
       } catch (GeneralSecurityException | SeedValidationException e) {
@@ -142,20 +150,26 @@ public class HomeViewModel extends AndroidViewModel
       }
     }
 
-    if (data.getSubscriptions().equals(networkManager.getMessageSender().getSubscriptions())) {
+    if (coreEntity
+        .getSubscriptions()
+        .equals(networkManager.getMessageSender().getSubscriptions())) {
       Timber.tag(TAG).d("current state is up to date");
       return;
     }
     Timber.tag(TAG).d("restoring connections");
-    networkManager.connect(data.getServerAddress(), data.getSubscriptions());
+    networkManager.connect(coreEntity.getServerAddress(), coreEntity.getSubscriptionsCopy());
     getApplication()
         .startActivity(
             ConnectingActivity.newIntentForHome(getApplication().getApplicationContext()));
   }
 
   public void savePersistentData() throws GeneralSecurityException {
-    ActivityUtils.activitySavingRoutine(
-        networkManager, wallet, getApplication().getApplicationContext());
+    ActivityUtils.activitySavingRoutine(networkManager, wallet, appDatabase.coreDao());
+  }
+
+  public void clearStorage() {
+    laoRepository.deleteRepository();
+    appDatabase.clearAllTables();
   }
 
   public void importSeed(String seed) throws GeneralSecurityException, SeedValidationException {

@@ -58,6 +58,6 @@ public final class MessageHandler {
         dataAction);
 
     // Put the message in the state
-    messageRepo.addMessage(message);
+    messageRepo.addMessage(message, dataAction.isStoreNeededByAction());
   }
 }

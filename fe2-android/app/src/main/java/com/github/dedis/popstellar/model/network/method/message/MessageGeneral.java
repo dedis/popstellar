@@ -32,6 +32,10 @@ public final class MessageGeneral {
   private Signature signature;
   private List<PublicKeySignaturePair> witnessSignatures = new ArrayList<>();
 
+  public static MessageGeneral emptyMessage(MessageID messageID) {
+    return new MessageGeneral(null, null, null, null, messageID, new ArrayList<>());
+  }
+
   public MessageGeneral(
       PublicKey sender,
       Base64URLData dataBuf,

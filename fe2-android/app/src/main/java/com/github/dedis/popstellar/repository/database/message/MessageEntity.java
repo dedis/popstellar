@@ -6,6 +6,8 @@ import androidx.room.*;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 
+import javax.annotation.Nullable;
+
 @Entity(tableName = "messages")
 public class MessageEntity {
 
@@ -15,10 +17,10 @@ public class MessageEntity {
   private MessageID messageId;
 
   @ColumnInfo(name = "message")
-  @NonNull
+  @Nullable
   private MessageGeneral content;
 
-  public MessageEntity(@NonNull MessageID messageId, @NonNull MessageGeneral content) {
+  public MessageEntity(@NonNull MessageID messageId, @Nullable MessageGeneral content) {
     this.messageId = messageId;
     this.content = content;
   }
@@ -32,12 +34,12 @@ public class MessageEntity {
     this.messageId = messageId;
   }
 
-  @NonNull
+  @Nullable
   public MessageGeneral getContent() {
     return content;
   }
 
-  public void setContent(@NonNull MessageGeneral content) {
+  public void setContent(@Nullable MessageGeneral content) {
     this.content = content;
   }
 }

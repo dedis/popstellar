@@ -1,5 +1,6 @@
 package com.github.dedis.popstellar.model.network.method.message.data;
 
+import java.util.Objects;
 import java.util.*;
 
 /** Enumerates all possible messages actions */
@@ -59,5 +60,10 @@ public enum Action {
         .filter(action -> action.getAction().equals(searched))
         .findFirst()
         .orElse(null);
+  }
+
+  public boolean isStoreNeededByAction() {
+    // So far only the cast vote message relies on a previous message retrieval
+    return Objects.equals(action, CAST_VOTE.action);
   }
 }

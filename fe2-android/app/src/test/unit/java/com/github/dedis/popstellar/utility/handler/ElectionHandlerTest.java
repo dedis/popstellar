@@ -120,7 +120,7 @@ public class ElectionHandlerTest {
 
     // Add the CreateLao message to the LAORepository
     MessageGeneral createLaoMessage = new MessageGeneral(SENDER_KEY, CREATE_LAO, gson);
-    messageRepo.addMessage(createLaoMessage);
+    messageRepo.addMessage(createLaoMessage, false);
   }
 
   private MessageID handleElectionSetup(Election election, Channel channel)
@@ -399,7 +399,7 @@ public class ElectionHandlerTest {
 
     // Create an invalid message with null data and add it to the message repo
     MessageGeneral nullData = new MessageGeneral(SENDER_KEY, null, gson);
-    messageRepo.addMessage(nullData);
+    messageRepo.addMessage(nullData, true);
 
     // Update the messageMap in this election to contain the invalid message
     Election prevElection = electionRepo.getElectionByChannel(OPEN_BALLOT_ELECTION.getChannel());
@@ -424,7 +424,7 @@ public class ElectionHandlerTest {
 
     // Create an invalid message with data that is not a CastVote and add it to the message repo
     MessageGeneral invalidData = new MessageGeneral(SENDER_KEY, CREATE_LAO, gson);
-    messageRepo.addMessage(invalidData);
+    messageRepo.addMessage(invalidData, true);
 
     // Update the messageMap in this election to contain the invalid message
     Election prevElection = electionRepo.getElectionByChannel(OPEN_BALLOT_ELECTION.getChannel());

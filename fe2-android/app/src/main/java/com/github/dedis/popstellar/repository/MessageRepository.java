@@ -11,6 +11,9 @@ import com.github.dedis.popstellar.repository.database.message.MessageEntity;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
+
 @Singleton
 public class MessageRepository {
 
@@ -46,11 +49,20 @@ public class MessageRepository {
     return null;
   }
 
-  public void addMessage(MessageGeneral message) {
+  public void addMessage(MessageGeneral message, boolean isStoringNeeded) {
+    MessageID messageID = message.getMessageId();
+    if (!isStoringNeeded) {
+      // No need to store the content here
+      message = MessageGeneral.emptyMessage(messageID);
+    }
     // Add the message to the cache and the database asynchronously
-    messageCache.put(message.getMessageId(), message);
+    messageCache.put(messageID, message);
     // Add to the database only the messages we want to persist
-    messageDao.insert(new MessageEntity(message.getMessageId(), message));
+    messageDao
+        .insert(new MessageEntity(messageID, message))
+        .subscribeOn(Schedulers.io())
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe();
   }
 
   public boolean isMessagePresent(MessageID messageID) {

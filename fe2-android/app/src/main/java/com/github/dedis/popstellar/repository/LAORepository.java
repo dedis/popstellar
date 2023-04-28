@@ -8,12 +8,13 @@ import com.github.dedis.popstellar.repository.database.lao.LAOEntity;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.BehaviorSubject;
 import io.reactivex.subjects.Subject;
 import timber.log.Timber;
@@ -39,16 +40,23 @@ public class LAORepository {
   @Inject
   public LAORepository(AppDatabase appDatabase) {
     laoDao = appDatabase.laoDao();
-    // On start load all the laos in the memory, no need to cache as usually there are few laos
+    loadPersistentStorage();
+  }
+
+  private void loadPersistentStorage() {
+    // On start load all the laos in the memory
+    // Cache isn't strictly needed as usually there are a few laos
     List<LAOEntity> laos = laoDao.getAllLaos();
     if (laos != null) {
-      laosSubject.onNext(laos.stream().map(LAOEntity::getLaoId).collect(Collectors.toList()));
+      List<String> ids = new ArrayList<>();
       laos.forEach(
           lao -> {
+            laoById.put(lao.getLaoId(), lao.getLao());
             subjectById.put(
                 lao.getLaoId(), BehaviorSubject.createDefault(new LaoView(lao.getLao())));
-            laoById.put(lao.getLaoId(), lao.getLao());
+            ids.add(lao.getLaoId());
           });
+      laosSubject.onNext(ids);
     }
   }
 
@@ -93,8 +101,12 @@ public class LAORepository {
     LaoView laoView = new LaoView(lao);
 
     LAOEntity laoEntity = new LAOEntity(lao.getId(), lao);
-    // Update the persistent storage
-    laoDao.insert(laoEntity);
+    // Update the persistent storage (replace if already existing)
+    laoDao
+        .insert(laoEntity)
+        .subscribeOn(Schedulers.io())
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe();
 
     if (laoById.containsKey(lao.getId())) {
       // If the lao already exists, we can push the next update
@@ -111,6 +123,12 @@ public class LAORepository {
       laosSubject.onNext(new ArrayList<>(laoById.keySet()));
       subjectById.put(lao.getId(), BehaviorSubject.createDefault(laoView));
     }
+  }
+
+  public void deleteRepository() {
+    laoById.clear();
+    subjectById.clear();
+    laosSubject.onNext(new ArrayList<>());
   }
 
   // ============ Lao Unrelated functions ===============

@@ -15,7 +15,6 @@ import androidx.lifecycle.ViewModelProvider;
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.HomeActivityBinding;
 import com.github.dedis.popstellar.model.network.serializer.JsonUtils;
-import com.github.dedis.popstellar.repository.local.PersistentData;
 import com.github.dedis.popstellar.ui.home.wallet.SeedWalletFragment;
 import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -204,15 +203,14 @@ public class HomeActivity extends AppCompatActivity {
         .setPositiveButton(
             R.string.yes,
             (dialogInterface, i) -> {
-              boolean success = ActivityUtils.clearStorage(this);
-              Toast.makeText(
-                      this,
-                      success ? R.string.clear_success : R.string.clear_failure,
-                      Toast.LENGTH_LONG)
-                  .show();
+              viewModel.clearStorage();
+              Toast.makeText(this, R.string.clear_success, Toast.LENGTH_LONG).show();
 
               // Restart activity
               Intent intent = HomeActivity.newIntent(this);
+              // Free memory
+              intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+              intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
               startActivity(intent);
               finish();
             })
@@ -226,8 +224,7 @@ public class HomeActivity extends AppCompatActivity {
   }
 
   private void restoreStoredState() {
-    PersistentData data = ActivityUtils.loadPersistentData(this);
-    viewModel.restoreConnections(data);
+    viewModel.restoreConnections(this);
   }
 
   public static HomeViewModel obtainViewModel(FragmentActivity activity) {
