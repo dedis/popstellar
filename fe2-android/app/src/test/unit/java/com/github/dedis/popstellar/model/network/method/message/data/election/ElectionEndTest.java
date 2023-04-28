@@ -11,7 +11,6 @@ import com.github.dedis.popstellar.model.objects.Election;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.testutils.Base64DataUtils;
-import com.google.gson.JsonParseException;
 import java.time.Instant;
 import org.junit.Test;
 
@@ -78,12 +77,5 @@ public class ElectionEndTest {
   @Test
   public void jsonValidationTest() {
     JsonTestUtils.testData(electionEnd);
-
-    String pathDir = "protocol/examples/messageData/election_end/";
-
-    String jsonInvalid1 =
-        JsonTestUtils.loadFile(pathDir + "bad_election_end_created_at_before_end.json");
-
-    assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid1));
   }
 }

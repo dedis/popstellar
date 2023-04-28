@@ -1,31 +1,42 @@
 package com.github.dedis.popstellar.utility;
 
+import static org.junit.Assert.assertThrows;
+
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionQuestion;
+import com.github.dedis.popstellar.model.network.method.message.data.election.PlainVote;
+import com.github.dedis.popstellar.model.network.method.message.data.election.Vote;
+import com.github.dedis.popstellar.model.objects.Election;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.testutils.Base64DataUtils;
-
-import org.junit.Test;
-
 import java.time.Instant;
 import java.util.*;
-
-import static org.junit.Assert.assertThrows;
+import org.junit.Test;
 
 public class MessageValidatorTest {
   private static final int DELTA_TIME = 100;
+
+  // LAO constants
   private static final PublicKey ORGANIZER = Base64DataUtils.generatePublicKey();
   private static final String NAME = "lao name";
   private static final long CREATION = Instant.now().getEpochSecond();
-  private static final String ID = Lao.generateLaoId(ORGANIZER, CREATION, NAME);
+  private static final String LAO_ID = Lao.generateLaoId(ORGANIZER, CREATION, NAME);
+
+  // Election constants
+  private static final String ELECTION_ID =
+      Election.generateElectionSetupId(LAO_ID, CREATION, "election name");
+  private final String QUESTION_ID1 =
+      Election.generateElectionQuestionId(ELECTION_ID, "Question 1");
+  private final String QUESTION_ID2 =
+      Election.generateElectionQuestionId(ELECTION_ID, "Question 2");
 
   @Test
-  public void testCheckValidLaoId() {
+  public void testValidLaoId() {
     MessageValidator.MessageValidatorBuilder validator = MessageValidator.verify();
     String invalid1 = "invalidID";
-    String invalid2 = "A" + ID.substring(1);
+    String invalid2 = "A" + LAO_ID.substring(1);
 
-    validator.validLaoId(ID, ORGANIZER, CREATION, NAME);
+    validator.validLaoId(LAO_ID, ORGANIZER, CREATION, NAME);
     assertThrows(
         IllegalArgumentException.class,
         () -> validator.validLaoId(invalid1, ORGANIZER, CREATION, NAME));
@@ -35,7 +46,7 @@ public class MessageValidatorTest {
   }
 
   @Test
-  public void testCheckValidPastTimes() {
+  public void testValidPastTimes() {
     MessageValidator.MessageValidatorBuilder validator = MessageValidator.verify();
     long currentTime = Instant.now().getEpochSecond();
     // time that is too far in the past to be considered valid
@@ -48,7 +59,7 @@ public class MessageValidatorTest {
   }
 
   @Test
-  public void testCheckOrderedTimes() {
+  public void testOrderedTimes() {
     MessageValidator.MessageValidatorBuilder validator = MessageValidator.verify();
     long currentTime = Instant.now().getEpochSecond();
     long futureTime = currentTime + DELTA_TIME;
@@ -61,22 +72,19 @@ public class MessageValidatorTest {
   }
 
   @Test
-  public void testCheckBase64() {
+  public void testIsBase64() {
     MessageValidator.MessageValidatorBuilder validator = MessageValidator.verify();
     String validBase64 = Base64.getEncoder().encodeToString("test data".getBytes());
     String invalidBase64 = "This is not a valid Base64 string!";
     String field = "testField";
 
     validator.isBase64(validBase64, field);
-    assertThrows(
-        IllegalArgumentException.class,
-        () -> validator.isBase64(invalidBase64, field));
-    assertThrows(
-        IllegalArgumentException.class, () -> validator.isBase64(null, field));
+    assertThrows(IllegalArgumentException.class, () -> validator.isBase64(invalidBase64, field));
+    assertThrows(IllegalArgumentException.class, () -> validator.isBase64(null, field));
   }
 
   @Test
-  public void testCheckStringNotEmpty() {
+  public void testStringNotEmpty() {
     MessageValidator.MessageValidatorBuilder validator = MessageValidator.verify();
     String validString = "test string";
     String emptyString = "";
@@ -84,16 +92,12 @@ public class MessageValidatorTest {
 
     validator.stringNotEmpty(validString, field);
     assertThrows(
-        IllegalArgumentException.class,
-        () -> validator.stringNotEmpty(emptyString, field));
-    assertThrows(
-        IllegalArgumentException.class,
-        () -> validator.stringNotEmpty(null, field));
-
+        IllegalArgumentException.class, () -> validator.stringNotEmpty(emptyString, field));
+    assertThrows(IllegalArgumentException.class, () -> validator.stringNotEmpty(null, field));
   }
 
   @Test
-  public void testCheckListNotEmpty() {
+  public void testListNotEmpty() {
     MessageValidator.MessageValidatorBuilder validator = MessageValidator.verify();
     List<Integer> valid1 = Arrays.asList(1, 2, 3);
     List<String> valid2 = Arrays.asList("a", "b");
@@ -101,14 +105,12 @@ public class MessageValidatorTest {
 
     validator.listNotEmpty(valid1);
     validator.listNotEmpty(valid2);
-    assertThrows(
-        IllegalArgumentException.class, () -> validator.listNotEmpty(invalid));
-    assertThrows(
-        IllegalArgumentException.class, () -> validator.listNotEmpty(null));
+    assertThrows(IllegalArgumentException.class, () -> validator.listNotEmpty(invalid));
+    assertThrows(IllegalArgumentException.class, () -> validator.listNotEmpty(null));
   }
 
   @Test
-  public void testCheckNoListDuplicates() {
+  public void testNoListDuplicates() {
     MessageValidator.MessageValidatorBuilder validator = MessageValidator.verify();
 
     ElectionQuestion.Question q1 =
@@ -137,7 +139,23 @@ public class MessageValidatorTest {
   }
 
   @Test
-  public void testCheckValidUrl() {
+  public void testValidVotesWithPlainVotes() {
+    MessageValidator.MessageValidatorBuilder validator = MessageValidator.verify();
+
+    PlainVote plainVote1 = new PlainVote(QUESTION_ID1, 1, false, "something", ELECTION_ID);
+    PlainVote plainVote2 = new PlainVote(QUESTION_ID2, 2, false, "something else", ELECTION_ID);
+    List<Vote> validPlainVotes = Arrays.asList(plainVote1, plainVote2);
+
+    validator.validVotes(validPlainVotes);
+
+    PlainVote plainVote3 = new PlainVote("not base 64", 1, false, "something", ELECTION_ID);
+
+    assertThrows(
+        IllegalArgumentException.class, () -> validator.validVotes(Arrays.asList(plainVote3)));
+  }
+
+  @Test
+  public void testValidUrl() {
     MessageValidator.MessageValidatorBuilder validator = MessageValidator.verify();
 
     validator.checkValidUrl("http://example.com");
@@ -152,6 +170,5 @@ public class MessageValidatorTest {
     assertThrows(IllegalArgumentException.class, () -> validator.checkValidUrl("http:example.com"));
     assertThrows(IllegalArgumentException.class, () -> validator.checkValidUrl("://example.com"));
     assertThrows(IllegalArgumentException.class, () -> validator.checkValidUrl("http://example."));
-
   }
 }
