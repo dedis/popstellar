@@ -148,6 +148,11 @@ public abstract class MessageValidator {
      * @throws IllegalArgumentException if the list has invalid votes
      */
     public MessageValidatorBuilder validVotes(List<? extends Vote> votes) {
+      // votes is null if it is an open ballot election
+      if (votes == null) {
+        return this;
+      }
+
       noListDuplicates(votes);
 
       for (Vote vote : votes) {
