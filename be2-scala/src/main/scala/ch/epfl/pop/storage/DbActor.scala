@@ -285,7 +285,7 @@ final case class DbActor(
         case failure           => sender() ! failure.recover(Status.Failure(_))
       }
 
-    case GetAllChannels =>
+    case GetAllChannels() =>
       log.info(s"Actor $self (db) receveid a GetAllChannels request")
       Try(getAllChannels) match {
         case Success(setOfChannels) => sender() ! DbActorGetAllChannelsAck(setOfChannels)
