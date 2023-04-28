@@ -1,20 +1,20 @@
 package com.github.dedis.popstellar.model.network.method.message.data.election;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertThrows;
-
 import com.github.dedis.popstellar.model.network.JsonTestUtils;
 import com.github.dedis.popstellar.model.objects.Election;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.testutils.Base64DataUtils;
 import com.google.gson.JsonParseException;
+
+import org.junit.Test;
+
 import java.time.Instant;
 import java.util.*;
-import org.junit.Test;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.*;
 
 public class CastVoteTest {
 
@@ -88,7 +88,8 @@ public class CastVoteTest {
 
   @Test
   public void constructorAllowsNullVotesTest() {
-    new CastVote(null, electionId, laoId, creation);
+    CastVote castVote = new CastVote(null, electionId, laoId, creation);
+    assertNull(castVote.getVotes());
   }
 
   @Test

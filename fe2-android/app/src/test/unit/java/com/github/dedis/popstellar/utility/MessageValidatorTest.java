@@ -1,17 +1,17 @@
 package com.github.dedis.popstellar.utility;
 
-import static org.junit.Assert.assertThrows;
-
-import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionQuestion;
-import com.github.dedis.popstellar.model.network.method.message.data.election.PlainVote;
-import com.github.dedis.popstellar.model.network.method.message.data.election.Vote;
+import com.github.dedis.popstellar.model.network.method.message.data.election.*;
 import com.github.dedis.popstellar.model.objects.Election;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.testutils.Base64DataUtils;
+
+import org.junit.Test;
+
 import java.time.Instant;
 import java.util.*;
-import org.junit.Test;
+
+import static org.junit.Assert.assertThrows;
 
 public class MessageValidatorTest {
   private static final int DELTA_TIME = 100;
@@ -149,9 +149,9 @@ public class MessageValidatorTest {
     validator.validVotes(validPlainVotes);
 
     PlainVote plainVote3 = new PlainVote("not base 64", 1, false, "something", ELECTION_ID);
+    List<Vote> invalidPlainVotes = Arrays.asList(plainVote1, plainVote3);
 
-    assertThrows(
-        IllegalArgumentException.class, () -> validator.validVotes(Arrays.asList(plainVote3)));
+    assertThrows(IllegalArgumentException.class, () -> validator.validVotes(invalidPlainVotes));
   }
 
   @Test
