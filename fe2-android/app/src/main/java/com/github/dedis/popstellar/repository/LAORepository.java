@@ -2,9 +2,13 @@ package com.github.dedis.popstellar.repository;
 
 import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
+import com.github.dedis.popstellar.repository.database.AppDatabase;
+import com.github.dedis.popstellar.repository.database.lao.LAODao;
+import com.github.dedis.popstellar.repository.database.lao.LAOEntity;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -19,7 +23,10 @@ public class LAORepository {
 
   private static final String TAG = LAORepository.class.getSimpleName();
 
+  private final LAODao laoDao;
+
   private final Map<String, Lao> laoById = new HashMap<>();
+
   private final Map<String, Subject<LaoView>> subjectById = new HashMap<>();
   private final BehaviorSubject<List<String>> laosSubject = BehaviorSubject.create();
 
@@ -30,8 +37,19 @@ public class LAORepository {
       new HashMap<>();
 
   @Inject
-  public LAORepository() {
-    // Constructor required by Hilt
+  public LAORepository(AppDatabase appDatabase) {
+    laoDao = appDatabase.laoDao();
+    // On start load all the laos in the memory, no need to cache as usually there are few laos
+    List<LAOEntity> laos = laoDao.getAllLaos();
+    if (laos != null) {
+      laosSubject.onNext(laos.stream().map(LAOEntity::getLaoId).collect(Collectors.toList()));
+      laos.forEach(
+          lao -> {
+            subjectById.put(
+                lao.getLaoId(), BehaviorSubject.createDefault(new LaoView(lao.getLao())));
+            laoById.put(lao.getLaoId(), lao.getLao());
+          });
+    }
   }
 
   /**
@@ -73,6 +91,10 @@ public class LAORepository {
       throw new IllegalArgumentException();
     }
     LaoView laoView = new LaoView(lao);
+
+    LAOEntity laoEntity = new LAOEntity(lao.getId(), lao);
+    // Update the persistent storage
+    laoDao.insert(laoEntity);
 
     if (laoById.containsKey(lao.getId())) {
       // If the lao already exists, we can push the next update
