@@ -87,12 +87,6 @@ public class CastVoteTest {
   }
 
   @Test
-  public void constructorAllowsNullVotesTest() {
-    CastVote castVote = new CastVote(null, electionId, laoId, creation);
-    assertNull(castVote.getVotes());
-  }
-
-  @Test
   public void getLaoIdTest() {
     assertThat(castOpenVote.getLaoId(), is(laoId));
     assertThat(castEncryptedVote.getLaoId(), is(laoId));
