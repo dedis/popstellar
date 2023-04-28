@@ -1,7 +1,15 @@
 package com.github.dedis.popstellar.utility.handler;
 
-import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
+import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
+import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateRandomBase64String;
+import static com.github.dedis.popstellar.utility.handler.data.ElectionHandler.electionSetupWitnessMessage;
+import static java.util.Collections.singletonList;
+import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.when;
 
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import com.github.dedis.popstellar.di.DataRegistryModuleHelper;
 import com.github.dedis.popstellar.di.JsonModule;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
@@ -21,28 +29,17 @@ import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
 import com.github.dedis.popstellar.utility.security.Hash;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
-
-import org.junit.*;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
-
+import io.reactivex.Completable;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import io.reactivex.Completable;
-
-import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
-import static com.github.dedis.popstellar.utility.handler.data.ElectionHandler.electionSetupWitnessMessage;
-import static java.util.Collections.singletonList;
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.lenient;
-import static org.mockito.Mockito.when;
+import org.junit.*;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ElectionHandlerTest {
@@ -78,7 +75,7 @@ public class ElectionHandlerTest {
       new PlainVote(QUESTION.getId(), 1, false, null, ELECTION_ID);
   private static final PlainVote VOTE3 =
       new PlainVote(QUESTION.getId(), 0, false, null, ELECTION_ID);
-  private static final String ELECTION_KEY = "JsS0bXJU8yMT9jvIeTfoS6RJPZ8YopuAUPkxssHaoTQ";
+  private static final String ELECTION_KEY = generateRandomBase64String();
   private static final Election OPEN_BALLOT_ELECTION =
       new Election.ElectionBuilder(LAO.getId(), CREATED_AT, ELECTION_NAME)
           .setElectionVersion(ElectionVersion.OPEN_BALLOT)
@@ -126,8 +123,11 @@ public class ElectionHandlerTest {
   }
 
   private MessageID handleElectionSetup(Election election, Channel channel)
-      throws UnknownElectionException, UnknownRollCallException, UnknownLaoException,
-          DataHandlingException, NoRollCallException {
+      throws UnknownElectionException,
+          UnknownRollCallException,
+          UnknownLaoException,
+          DataHandlingException,
+          NoRollCallException {
     List<Question> questions =
         election.getElectionQuestions().stream()
             .map(
@@ -156,8 +156,11 @@ public class ElectionHandlerTest {
   }
 
   private void handleElectionKey(Election election, String key)
-      throws UnknownElectionException, UnknownRollCallException, UnknownLaoException,
-          DataHandlingException, NoRollCallException {
+      throws UnknownElectionException,
+          UnknownRollCallException,
+          UnknownLaoException,
+          DataHandlingException,
+          NoRollCallException {
     // Create the election key message
     ElectionKey electionKey = new ElectionKey(election.getId(), key);
 
@@ -166,8 +169,11 @@ public class ElectionHandlerTest {
   }
 
   private void handleElectionOpen(Election election)
-      throws UnknownElectionException, UnknownRollCallException, UnknownLaoException,
-          DataHandlingException, NoRollCallException {
+      throws UnknownElectionException,
+          UnknownRollCallException,
+          UnknownLaoException,
+          DataHandlingException,
+          NoRollCallException {
     ElectionOpen electionOpen = new ElectionOpen(LAO.getId(), election.getId(), OPENED_AT);
 
     MessageGeneral message = new MessageGeneral(SENDER_KEY, electionOpen, gson);
@@ -175,8 +181,11 @@ public class ElectionHandlerTest {
   }
 
   private MessageID handleCastVote(Vote vote, KeyPair senderKey, Long creation)
-      throws UnknownElectionException, UnknownRollCallException, UnknownLaoException,
-          DataHandlingException, NoRollCallException {
+      throws UnknownElectionException,
+          UnknownRollCallException,
+          UnknownLaoException,
+          DataHandlingException,
+          NoRollCallException {
 
     CastVote castVote =
         new CastVote(
@@ -188,8 +197,11 @@ public class ElectionHandlerTest {
   }
 
   private void handleElectionEnd()
-      throws UnknownElectionException, UnknownRollCallException, UnknownLaoException,
-          DataHandlingException, NoRollCallException {
+      throws UnknownElectionException,
+          UnknownRollCallException,
+          UnknownLaoException,
+          DataHandlingException,
+          NoRollCallException {
     // Retrieve current election to use the correct vote hash
     Election current = electionRepo.getElection(LAO.getId(), ELECTION_ID);
     ElectionEnd endElection =
@@ -200,8 +212,11 @@ public class ElectionHandlerTest {
   }
 
   private void handleElectionResults(Set<QuestionResult> results, Channel electionChannel)
-      throws UnknownElectionException, UnknownRollCallException, UnknownLaoException,
-          DataHandlingException, NoRollCallException {
+      throws UnknownElectionException,
+          UnknownRollCallException,
+          UnknownLaoException,
+          DataHandlingException,
+          NoRollCallException {
     ElectionResultQuestion electionResultQuestion =
         new ElectionResultQuestion(QUESTION.getId(), results);
     ElectionResult electionResult = new ElectionResult(singletonList(electionResultQuestion));
@@ -213,8 +228,11 @@ public class ElectionHandlerTest {
 
   @Test
   public void testHandleElectionSetup()
-      throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
-          UnknownElectionException, NoRollCallException {
+      throws DataHandlingException,
+          UnknownLaoException,
+          UnknownRollCallException,
+          UnknownElectionException,
+          NoRollCallException {
     MessageID messageID = handleElectionSetup(OPEN_BALLOT_ELECTION, LAO_CHANNEL);
 
     // Check the Election is present and has correct values
@@ -249,8 +267,11 @@ public class ElectionHandlerTest {
 
   @Test
   public void testElectionKey()
-      throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
-          UnknownElectionException, NoRollCallException {
+      throws DataHandlingException,
+          UnknownLaoException,
+          UnknownRollCallException,
+          UnknownElectionException,
+          NoRollCallException {
 
     handleElectionSetup(OPEN_BALLOT_ELECTION, LAO_CHANNEL);
     handleElectionKey(OPEN_BALLOT_ELECTION, ELECTION_KEY);
@@ -261,8 +282,11 @@ public class ElectionHandlerTest {
 
   @Test
   public void testHandleElectionResult()
-      throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
-          UnknownElectionException, NoRollCallException {
+      throws DataHandlingException,
+          UnknownLaoException,
+          UnknownRollCallException,
+          UnknownElectionException,
+          NoRollCallException {
     Set<QuestionResult> results = Collections.singleton(new QuestionResult(OPTION_1, 1));
 
     handleElectionSetup(OPEN_BALLOT_ELECTION, LAO_CHANNEL);
@@ -280,8 +304,11 @@ public class ElectionHandlerTest {
 
   @Test
   public void testHandleElectionOpen()
-      throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
-          UnknownElectionException, NoRollCallException {
+      throws DataHandlingException,
+          UnknownLaoException,
+          UnknownRollCallException,
+          UnknownElectionException,
+          NoRollCallException {
     handleElectionSetup(OPEN_BALLOT_ELECTION, LAO_CHANNEL);
     handleElectionKey(OPEN_BALLOT_ELECTION, ELECTION_KEY);
     handleElectionOpen(OPEN_BALLOT_ELECTION);
@@ -293,8 +320,11 @@ public class ElectionHandlerTest {
 
   @Test
   public void testHandleElectionOpenInvalidState()
-      throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
-          UnknownElectionException, NoRollCallException {
+      throws DataHandlingException,
+          UnknownLaoException,
+          UnknownRollCallException,
+          UnknownElectionException,
+          NoRollCallException {
     handleElectionSetup(OPEN_BALLOT_ELECTION, LAO_CHANNEL);
     handleElectionKey(OPEN_BALLOT_ELECTION, ELECTION_KEY);
 
@@ -317,8 +347,11 @@ public class ElectionHandlerTest {
 
   @Test
   public void testHandleElectionEnd()
-      throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
-          UnknownElectionException, NoRollCallException {
+      throws DataHandlingException,
+          UnknownLaoException,
+          UnknownRollCallException,
+          UnknownElectionException,
+          NoRollCallException {
     handleElectionSetup(OPEN_BALLOT_ELECTION, LAO_CHANNEL);
     handleElectionKey(OPEN_BALLOT_ELECTION, ELECTION_KEY);
     handleElectionOpen(OPEN_BALLOT_ELECTION);
@@ -330,8 +363,11 @@ public class ElectionHandlerTest {
 
   @Test
   public void castVoteWithOpenBallotScenario()
-      throws UnknownElectionException, UnknownRollCallException, UnknownLaoException,
-          DataHandlingException, NoRollCallException {
+      throws UnknownElectionException,
+          UnknownRollCallException,
+          UnknownLaoException,
+          DataHandlingException,
+          NoRollCallException {
     handleElectionSetup(OPEN_BALLOT_ELECTION, LAO_CHANNEL);
     handleElectionKey(OPEN_BALLOT_ELECTION, ELECTION_KEY);
     handleElectionOpen(OPEN_BALLOT_ELECTION);
@@ -349,8 +385,11 @@ public class ElectionHandlerTest {
 
   @Test
   public void castVoteOnlyKeepsLastVote()
-      throws UnknownElectionException, UnknownRollCallException, UnknownLaoException,
-          DataHandlingException, NoRollCallException {
+      throws UnknownElectionException,
+          UnknownRollCallException,
+          UnknownLaoException,
+          DataHandlingException,
+          NoRollCallException {
     handleElectionSetup(OPEN_BALLOT_ELECTION, LAO_CHANNEL);
     handleElectionKey(OPEN_BALLOT_ELECTION, ELECTION_KEY);
     handleElectionOpen(OPEN_BALLOT_ELECTION);
@@ -370,8 +409,11 @@ public class ElectionHandlerTest {
 
   @Test
   public void castVoteDiscardsStaleVote()
-      throws UnknownElectionException, UnknownRollCallException, UnknownLaoException,
-          DataHandlingException, NoRollCallException {
+      throws UnknownElectionException,
+          UnknownRollCallException,
+          UnknownLaoException,
+          DataHandlingException,
+          NoRollCallException {
     handleElectionSetup(OPEN_BALLOT_ELECTION, LAO_CHANNEL);
     handleElectionKey(OPEN_BALLOT_ELECTION, ELECTION_KEY);
     handleElectionOpen(OPEN_BALLOT_ELECTION);
@@ -391,8 +433,11 @@ public class ElectionHandlerTest {
 
   @Test
   public void castVoteFailsOnPreviousMessageDataNull()
-      throws UnknownElectionException, UnknownRollCallException, UnknownLaoException,
-          DataHandlingException, NoRollCallException {
+      throws UnknownElectionException,
+          UnknownRollCallException,
+          UnknownLaoException,
+          DataHandlingException,
+          NoRollCallException {
     // This test checks that the handler fails if the messageMap of the election already has a
     // message (previously sent by the same sender) that contains null data.
     handleElectionSetup(OPEN_BALLOT_ELECTION, LAO_CHANNEL);
@@ -416,8 +461,11 @@ public class ElectionHandlerTest {
 
   @Test
   public void castVoteFailsOnPreviousMessageDataInvalid()
-      throws UnknownElectionException, UnknownRollCallException, UnknownLaoException,
-          DataHandlingException, NoRollCallException {
+      throws UnknownElectionException,
+          UnknownRollCallException,
+          UnknownLaoException,
+          DataHandlingException,
+          NoRollCallException {
     // This test checks that the handler fails if the messageMap of the election already has a
     // message (previously sent by the same sender) that contains data that is not a CastVote.
     handleElectionSetup(OPEN_BALLOT_ELECTION, LAO_CHANNEL);
@@ -441,8 +489,11 @@ public class ElectionHandlerTest {
 
   @Test
   public void castVoteIgnoresVoteOnClosedElection()
-      throws UnknownElectionException, UnknownRollCallException, UnknownLaoException,
-          DataHandlingException, NoRollCallException {
+      throws UnknownElectionException,
+          UnknownRollCallException,
+          UnknownLaoException,
+          DataHandlingException,
+          NoRollCallException {
     handleElectionSetup(OPEN_BALLOT_ELECTION, LAO_CHANNEL);
     handleElectionKey(OPEN_BALLOT_ELECTION, ELECTION_KEY);
     handleElectionOpen(OPEN_BALLOT_ELECTION);
@@ -460,8 +511,11 @@ public class ElectionHandlerTest {
 
   @Test
   public void castVoteWithSecretBallotScenario()
-      throws UnknownElectionException, UnknownRollCallException, UnknownLaoException,
-          DataHandlingException, NoRollCallException {
+      throws UnknownElectionException,
+          UnknownRollCallException,
+          UnknownLaoException,
+          DataHandlingException,
+          NoRollCallException {
     ElectionKeyPair keys = ElectionKeyPair.generateKeyPair();
     ElectionPublicKey pubKey = keys.getEncryptionScheme();
     Base64URLData encodedKey = new Base64URLData(pubKey.getPublicKey().toBytes());
