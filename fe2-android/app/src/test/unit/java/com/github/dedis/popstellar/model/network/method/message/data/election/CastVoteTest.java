@@ -1,24 +1,32 @@
 package com.github.dedis.popstellar.model.network.method.message.data.election;
 
-import com.github.dedis.popstellar.model.network.JsonTestUtils;
-
-import org.junit.Test;
-
-import java.util.*;
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertThrows;
+
+import com.github.dedis.popstellar.model.network.JsonTestUtils;
+import com.github.dedis.popstellar.model.objects.Election;
+import com.github.dedis.popstellar.model.objects.Lao;
+import com.github.dedis.popstellar.model.objects.security.PublicKey;
+import com.github.dedis.popstellar.testutils.Base64DataUtils;
+import com.google.gson.JsonParseException;
+import java.time.Instant;
+import java.util.*;
+import org.junit.Test;
 
 public class CastVoteTest {
 
-  private final String questionId1 = " myQuestion1";
-  private final String questionId2 = " myQuestion2";
-  private final String laoId = "myLao";
-  private final String electionId = " myElection";
+  private final PublicKey organizer = Base64DataUtils.generatePublicKey();
+  private final long creation = Instant.now().getEpochSecond();
+  private final String laoId = Lao.generateLaoId(organizer, creation, "lao name");
+  private final String electionId =
+      Election.generateElectionSetupId(laoId, creation, "electionName");
+
+  private final String questionId1 = Election.generateElectionQuestionId(electionId, "Question 1");
+  private final String questionId2 = Election.generateElectionQuestionId(electionId, "Question 2");
   private final boolean writeInEnabled = false;
-  private final long timestamp = 10;
   private final String write_in = "My write in ballot option";
 
   // Set up a open ballot election
@@ -38,9 +46,45 @@ public class CastVoteTest {
   // Create the cast votes messages
   private final CastVote castOpenVote = new CastVote(plainVotes, electionId, laoId);
   private final CastVote castVoteWithTimestamp =
-      new CastVote(plainVotes, electionId, laoId, timestamp);
+      new CastVote(plainVotes, electionId, laoId, creation);
   private final CastVote castEncryptedVote =
       new CastVote(electionEncryptedVotes, electionId, laoId);
+
+  @Test(expected = IllegalArgumentException.class)
+  public void constructorFailsElectionIdNotBase64Test() {
+    new CastVote(plainVotes, "not base 64", laoId, creation);
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void constructorFailsLaoIdNotBase64Test() {
+    new CastVote(plainVotes, electionId, "not base 64", creation);
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void constructorFailsCreationTooOldTest() {
+    new CastVote(plainVotes, electionId, laoId, 1L);
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void constructorFailsCreationInFutureTest() {
+    new CastVote(plainVotes, electionId, laoId, creation + 1000);
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void constructorFailsWithDuplicateVotesTest() {
+    PlainVote duplicate = new PlainVote(questionId1, 1, writeInEnabled, write_in, electionId);
+    List<Vote> duplicateVotes = Arrays.asList(plainVote1, plainVote2, duplicate);
+
+    new CastVote(duplicateVotes, electionId, laoId, creation);
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void constructorFailsWithVoteQuestionIdNotBase64Test() {
+    PlainVote invalid = new PlainVote("not base 64", 1, writeInEnabled, write_in, electionId);
+    List<Vote> invalidVotes = Arrays.asList(plainVote1, plainVote2, invalid);
+
+    new CastVote(invalidVotes, electionId, laoId, creation);
+  }
 
   @Test
   public void getLaoIdTest() {
@@ -65,13 +109,14 @@ public class CastVoteTest {
     // Test an OPEN_BALLOT cast vote
     assertEquals(castOpenVote, new CastVote(plainVotes, electionId, laoId));
     assertEquals(castOpenVote, castOpenVote);
+    String randomId = Election.generateElectionSetupId(laoId, creation, "random");
     assertNotEquals(
         castOpenVote, new CastVote(Collections.singletonList(plainVote1), electionId, laoId));
     assertNotEquals(
-        castOpenVote, new CastVote(Collections.singletonList(plainVote1), "random", laoId));
+        castOpenVote, new CastVote(Collections.singletonList(plainVote1), randomId, laoId));
     assertNotEquals(
-        castOpenVote, new CastVote(Collections.singletonList(plainVote1), electionId, "random"));
-    assertEquals(castVoteWithTimestamp, new CastVote(plainVotes, electionId, laoId, timestamp));
+        castOpenVote, new CastVote(Collections.singletonList(plainVote1), electionId, randomId));
+    assertEquals(castVoteWithTimestamp, new CastVote(plainVotes, electionId, laoId, creation));
 
     // Test a SECRET_BALLOT cast vote
     assertEquals(castEncryptedVote, new CastVote(electionEncryptedVotes, electionId, laoId));
@@ -81,10 +126,10 @@ public class CastVoteTest {
         new CastVote(Collections.singletonList(encryptedVote1), electionId, laoId));
     assertNotEquals(
         castEncryptedVote,
-        new CastVote(Collections.singletonList(encryptedVote1), "random", laoId));
+        new CastVote(Collections.singletonList(encryptedVote1), randomId, laoId));
     assertNotEquals(
         castEncryptedVote,
-        new CastVote(Collections.singletonList(encryptedVote1), electionId, "random"));
+        new CastVote(Collections.singletonList(encryptedVote1), electionId, randomId));
   }
 
   /** Deserialization needs a specific generic type to match correctly the class */
@@ -94,5 +139,16 @@ public class CastVoteTest {
     // Should use the custom deserializer
     JsonTestUtils.testData(castEncryptedVote);
     JsonTestUtils.testData(castOpenVote);
+
+    String pathDir = "protocol/examples/messageData/vote_cast_vote/";
+    String jsonValid1 = JsonTestUtils.loadFile(pathDir + "vote_cast_vote.json");
+    String jsonValid2 = JsonTestUtils.loadFile(pathDir + "vote_cast_vote_encrypted.json");
+    JsonTestUtils.parse(jsonValid1);
+    JsonTestUtils.parse(jsonValid2);
+
+    String jsonInvalid1 =
+        JsonTestUtils.loadFile(pathDir + "wrong_vote_cast_vote_created_at_negative.json");
+
+    assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid1));
   }
 }

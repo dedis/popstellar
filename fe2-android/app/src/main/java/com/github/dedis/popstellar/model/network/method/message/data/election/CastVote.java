@@ -1,11 +1,10 @@
 package com.github.dedis.popstellar.model.network.method.message.data.election;
 
 import androidx.annotation.NonNull;
-
-import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.network.method.message.data.*;
+import com.github.dedis.popstellar.model.network.method.message.data.Objects;
+import com.github.dedis.popstellar.utility.MessageValidator;
 import com.google.gson.annotations.SerializedName;
-
 import java.time.Instant;
 import java.util.*;
 
@@ -31,6 +30,12 @@ public class CastVote extends Data {
    * @param laoId lao id
    */
   public CastVote(List<? extends Vote> votes, String electionId, String laoId) {
+    // Lao id and election id are checked to match existing ones in the cast vote handler
+    MessageValidator.verify()
+        .isBase64(electionId, "election id")
+        .isBase64(laoId, "lao id")
+        .validVotes(votes);
+
     this.createdAt = Instant.now().getEpochSecond();
     this.electionId = electionId;
     this.laoId = laoId;
@@ -46,6 +51,13 @@ public class CastVote extends Data {
    * @param createdAt timestamp for creation
    */
   public CastVote(List<? extends Vote> votes, String electionId, String laoId, Long createdAt) {
+    // Lao id and election id are checked to match existing ones in the cast vote handler
+    MessageValidator.verify()
+        .isBase64(electionId, "election id")
+        .isBase64(laoId, "lao id")
+        .validVotes(votes)
+        .validPastTimes(createdAt);
+
     this.createdAt = createdAt;
     this.electionId = electionId;
     this.laoId = laoId;

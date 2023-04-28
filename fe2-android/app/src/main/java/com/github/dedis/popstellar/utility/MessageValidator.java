@@ -1,8 +1,8 @@
 package com.github.dedis.popstellar.utility;
 
+import com.github.dedis.popstellar.model.network.method.message.data.election.Vote;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
-
 import java.time.Instant;
 import java.util.*;
 import java.util.regex.Pattern;
@@ -137,6 +137,22 @@ public abstract class MessageValidator {
 
       if (uniqueElements.size() != list.size()) {
         throw new IllegalArgumentException("List has duplicates");
+      }
+      return this;
+    }
+
+    /**
+     * Helper method to check that a list of votes has no duplicates and their ids are base 64.
+     *
+     * @param votes the list to check
+     * @throws IllegalArgumentException if the list has invalid votes
+     */
+    public MessageValidatorBuilder validVotes(List<? extends Vote> votes) {
+      noListDuplicates(votes);
+
+      for (Vote vote : votes) {
+        isBase64(vote.getQuestionId(), "question id");
+        isBase64(vote.getId(), "vote id");
       }
       return this;
     }

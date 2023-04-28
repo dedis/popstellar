@@ -1,7 +1,8 @@
 package com.github.dedis.popstellar.utility.handler.data;
 
-import androidx.annotation.NonNull;
+import static com.github.dedis.popstellar.model.objects.event.EventState.*;
 
+import androidx.annotation.NonNull;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.election.*;
 import com.github.dedis.popstellar.model.objects.*;
@@ -10,14 +11,9 @@ import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.*;
 import com.github.dedis.popstellar.utility.error.*;
-
 import java.util.*;
-
 import javax.inject.Inject;
-
 import timber.log.Timber;
-
-import static com.github.dedis.popstellar.model.objects.event.EventState.*;
 
 /** Election messages handler class */
 public final class ElectionHandler {
@@ -189,13 +185,25 @@ public final class ElectionHandler {
    * @param castVote the message that was received
    */
   public void handleCastVote(HandlerContext context, CastVote castVote)
-      throws UnknownElectionException, DataHandlingException {
+      throws UnknownElectionException, DataHandlingException, UnknownLaoException {
     Channel channel = context.getChannel();
     MessageID messageId = context.getMessageId();
     PublicKey senderPk = context.getSenderPk();
 
     Timber.tag(TAG).d("handleCastVote: channel %s", channel);
+
+    String laoId = castVote.getLaoId();
+    if (!laoRepo.containsLao(laoId)) {
+      throw new UnknownLaoException(laoId);
+    }
+
+    // Election id validity is checked with this
     Election election = electionRepository.getElectionByChannel(channel);
+
+    if (election.getCreation() > castVote.getCreation()) {
+      throw new DataHandlingException(castVote, "vote cannot be older than election creation");
+    }
+
     // Verify the vote was created before the end of the election or the election is not closed yet
     if (election.getEndTimestamp() >= castVote.getCreation() || election.getState() != CLOSED) {
       // Retrieve previous cast vote message stored for the given sender
