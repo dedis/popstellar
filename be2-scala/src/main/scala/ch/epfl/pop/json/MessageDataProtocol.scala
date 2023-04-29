@@ -8,6 +8,7 @@ import ch.epfl.pop.model.network.method.message.data.election.VersionType.Versio
 import ch.epfl.pop.model.network.method.message.data.election._
 import ch.epfl.pop.model.network.method.message.data.lao._
 import ch.epfl.pop.model.network.method.message.data.meeting._
+import ch.epfl.pop.model.network.method.message.data.popcha.Authenticate
 import ch.epfl.pop.model.network.method.message.data.rollCall._
 import ch.epfl.pop.model.network.method.message.data.socialMedia._
 import ch.epfl.pop.model.network.method.message.data.witness._
@@ -414,6 +415,40 @@ object MessageDataProtocol extends DefaultJsonProtocol {
       PARAM_PRIVATE_KEY -> obj.privateKey.toJson,
       PARAM_PUBLIC_KEY -> obj.publicKey.toJson,
       PARAM_WITNESSES -> obj.witnesses.toJson
+    )
+  }
+
+  implicit object AuthenticateDataFormat extends JsonFormat[Authenticate] {
+    final private val CLIENT_ID = "client_id"
+    final private val NONCE = "nonce"
+    final private val IDENTIFIER = "identifier"
+    final private val IDENTIFIER_PROOF = "identifier_proof"
+    final private val STATE = "state"
+    final private val RESPONSE_MODE = "response_mode"
+    final private val POPCHA_ADDRESS = "popcha_address"
+
+    override def read(json: JsValue): Authenticate = json.asJsObject().getFields(CLIENT_ID, NONCE, IDENTIFIER, IDENTIFIER_PROOF,
+      STATE, RESPONSE_MODE, POPCHA_ADDRESS) match {
+      case Seq(clientId @ JsString(_), nonce @ JsString(_), identifier @ JsString(_), identifierProof @ JsString(_),
+        state @ JsString(_), responseMode @ JsString(_), popchaAddress @ JsString(_)) => Authenticate(
+        clientId.convertTo[String],
+        nonce.convertTo[String],
+        identifier.convertTo[PublicKey],
+        identifierProof.convertTo[Signature],
+        state.convertTo[String],
+        responseMode.convertTo[String],
+        popchaAddress.convertTo[String]
+      )
+    }
+
+    override def write(obj: Authenticate): JsValue = JsObject(
+      CLIENT_ID -> obj.clientId.toJson,
+      NONCE -> obj.nonce.toJson,
+      IDENTIFIER -> obj.identifier.toJson,
+      IDENTIFIER_PROOF -> obj.identifierProof.toJson,
+      STATE -> obj.state.toJson,
+      RESPONSE_MODE -> obj.responseMode.toJson,
+      POPCHA_ADDRESS -> obj.popchaAddress.toJson
     )
   }
 }
