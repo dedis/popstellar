@@ -427,18 +427,16 @@ object MessageDataProtocol extends DefaultJsonProtocol {
     final private val RESPONSE_MODE = "response_mode"
     final private val POPCHA_ADDRESS = "popcha_address"
 
-    override def read(json: JsValue): Authenticate = json.asJsObject().getFields(CLIENT_ID, NONCE, IDENTIFIER, IDENTIFIER_PROOF,
-      STATE, RESPONSE_MODE, POPCHA_ADDRESS) match {
-      case Seq(clientId @ JsString(_), nonce @ JsString(_), identifier @ JsString(_), identifierProof @ JsString(_),
-        state @ JsString(_), responseMode @ JsString(_), popchaAddress @ JsString(_)) => Authenticate(
-        clientId.convertTo[String],
-        nonce.convertTo[String],
-        identifier.convertTo[PublicKey],
-        identifierProof.convertTo[Signature],
-        state.convertTo[String],
-        responseMode.convertTo[String],
-        popchaAddress.convertTo[String]
-      )
+    override def read(json: JsValue): Authenticate = json.asJsObject().getFields(CLIENT_ID, NONCE, IDENTIFIER, IDENTIFIER_PROOF, STATE, RESPONSE_MODE, POPCHA_ADDRESS) match {
+      case Seq(clientId @ JsString(_), nonce @ JsString(_), identifier @ JsString(_), identifierProof @ JsString(_), state @ JsString(_), responseMode @ JsString(_), popchaAddress @ JsString(_)) => Authenticate(
+          clientId.convertTo[String],
+          nonce.convertTo[String],
+          identifier.convertTo[PublicKey],
+          identifierProof.convertTo[Signature],
+          state.convertTo[String],
+          responseMode.convertTo[String],
+          popchaAddress.convertTo[String]
+        )
     }
 
     override def write(obj: Authenticate): JsValue = JsObject(
