@@ -1,39 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`QrCode  looks good with long text and no overlay 1`] = `
-<View
-  style={
-    {
-      "flexDirection": "row",
-      "justifyContent": "center",
-    }
-  }
->
-  <View
-    style={
-      {
-        "position": "relative",
-      }
-    }
-  >
-    <qrcode
-      level="L"
-      size={256}
-      style={
-        {
-          "height": "auto",
-          "maxWidth": "300px",
-          "width": "100%",
-        }
-      }
-      value="8eFmp65HHy7HjJjfTVqfx9t6x5xNqG6MaqRJ2xQaSPvs5vSj5j5RQjU5aSx"
-      viewBox="0 0 256 256"
-    />
-  </View>
-</View>
-`;
-
-exports[`QrCode  looks good with short text and an overlay 1`] = `
+exports[`QrCode  looks good with long text and an overlay 1`] = `
 <View
   style={
     {
@@ -59,7 +26,7 @@ exports[`QrCode  looks good with short text and an overlay 1`] = `
           "width": "100%",
         }
       }
-      value="8eFmp65HHy7HjJjfTVqfx9t6x5xNqG6MaqRJ2xQaSPvs5vSj5j5RQjU5aS"
+      value="8eFmp65HHy7HjJjfTVqfx9t6x5xNqG6MaqRJ2xQaSPvs5vSj5j5RQjU5aSx"
       viewBox="0 0 256 256"
     />
     <View
@@ -101,6 +68,40 @@ exports[`QrCode  looks good with short text and an overlay 1`] = `
         OverlayText
       </Text>
     </View>
+  </View>
+</View>
+`;
+
+
+exports[`QrCode  looks good with short text and no overlay 1`] = `
+<View
+  style={
+    {
+      "flexDirection": "row",
+      "justifyContent": "center",
+    }
+  }
+>
+  <View
+    style={
+      {
+        "position": "relative",
+      }
+    }
+  >
+    <qrcode
+      level="L"
+      size={256}
+      style={
+        {
+          "height": "auto",
+          "maxWidth": "300px",
+          "width": "100%",
+        }
+      }
+      value="8eFmp65HHy7HjJjfTVqfx9t6x5xNqG6MaqRJ2xQaSPvs5vSj5j5RQjU5aS"
+      viewBox="0 0 256 256"
+    />
   </View>
 </View>
 `;
