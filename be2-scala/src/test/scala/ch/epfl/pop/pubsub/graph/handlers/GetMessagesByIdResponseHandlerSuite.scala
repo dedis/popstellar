@@ -42,7 +42,7 @@ class GetMessagesByIdResponseHandlerSuite extends TestKit(ActorSystem("GetMessag
   final val missingMessages = Map((CHANNEL1, Set(MESSAGE1)), (CHANNEL2, Set(MESSAGE2)))
   final val receivedResponse: JsonRpcResponse = JsonRpcResponse(RpcValidator.JSON_RPC_VERSION, new ResultObject(missingMessages), None)
 
-  test("receiving a get messages by id response sends a write message to the data base") {
+  test("by receiving a get_messages_by_id response, it sends a write message to the database") {
     val boxUnderTest: Flow[GraphMessage, GraphMessage, NotUsed] = GetMessagesByIdResponseHandler.graph(system.actorOf(Props(new TestDb(testProbe.ref))))
     val input: List[GraphMessage] = List(Right(receivedResponse))
     val source = Source(input)
@@ -51,7 +51,7 @@ class GetMessagesByIdResponseHandlerSuite extends TestKit(ActorSystem("GetMessag
     testProbe.expectMsgAllOf((CHANNEL1, MESSAGE1), (CHANNEL2, MESSAGE2))
   }
 
-  test("failing to write a get messages by id response in the data base retries exactly three times before giving up") {
+  test("by failing to write a  get_messages_by_id response in the database, it retries exactly three times before giving up") {
     val boxUnderTest: Flow[GraphMessage, GraphMessage, NotUsed] = GetMessagesByIdResponseHandler.graph(system.actorOf(Props(new FailingTestDb(testProbe.ref))))
     val input: List[GraphMessage] = List(Right(receivedResponse))
     val source = Source(input)
