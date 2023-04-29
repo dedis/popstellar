@@ -40,7 +40,7 @@ class AuthenticateSuite extends AnyFunSuite with Matchers with ScalatestRouteTes
     attributesWithName.get(key)
   }
 
-  test("good requests succeeds") {
+  test("valid request succeeds") {
     val route = Authenticate.buildRoute()
     val request = buildRequest(
       responseType,
@@ -58,7 +58,7 @@ class AuthenticateSuite extends AnyFunSuite with Matchers with ScalatestRouteTes
     }
   }
 
-  test("good requests without optional params succeeds") {
+  test("valid request without optional params succeeds") {
     val route = Authenticate.buildRoute()
     val request = buildRequest(
       responseType,
@@ -127,7 +127,7 @@ class AuthenticateSuite extends AnyFunSuite with Matchers with ScalatestRouteTes
     val mandatoryValues = List(responseType, clientID, redirectUri, scope, loginHint, nonce)
     val mandatoryParams = mandatoryNames.zip(mandatoryValues)
 
-    mandatoryNames.foreach { name =>
+    for (name <- mandatoryNames) {
       val subParams = mandatoryParams.filter(_._1 != name)
       val request = buildRequest(subParams)
 
@@ -172,6 +172,49 @@ class AuthenticateSuite extends AnyFunSuite with Matchers with ScalatestRouteTes
     )
 
     request2 ~> route ~> check {
+      status shouldBe Found
+      getAttributeValue(response, "error") shouldBe Some("invalid_request")
+    }
+  }
+
+  test("all valid response modes are accepted") {
+    val responseModes = List("query", "fragment")
+
+    for (mode <- responseModes) {
+      val route = Authenticate.buildRoute()
+      val request = buildRequest(
+        responseType,
+        clientID,
+        redirectUri,
+        scope,
+        state,
+        mode,
+        loginHint,
+        nonce
+      )
+
+      request ~> route ~> check {
+        status shouldBe OK
+      }
+    }
+  }
+
+  test("invalid response mode fails request") {
+    val badResponseMode = "wrong_mode"
+
+    val route = Authenticate.buildRoute()
+    val request = buildRequest(
+      responseType,
+      clientID,
+      redirectUri,
+      scope,
+      state,
+      badResponseMode,
+      loginHint,
+      nonce
+    )
+
+    request ~> route ~> check {
       status shouldBe Found
       getAttributeValue(response, "error") shouldBe Some("invalid_request")
     }

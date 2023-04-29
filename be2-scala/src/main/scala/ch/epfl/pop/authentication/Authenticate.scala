@@ -48,7 +48,8 @@ object Authenticate {
     for {
       _ <- verifyResponseType(params.response_type)
       _ <- verifyScope(params.scope)
-      result <- verifyRedirectUri(params.redirect_uri)
+      _ <- verifyRedirectUri(params.redirect_uri)
+      result <- verifyResponseMode(params.response_mode)
     } yield result
   }
 
@@ -75,6 +76,13 @@ object Authenticate {
     if (uri.matches(httpRegex)) Right(())
     else
       Left("invalid_request" -> s"expected http or https url format for redirect uri")
+  }
+
+  private def verifyResponseMode(mode: Option[String]): VerificationState = {
+    val supportedModes = List("query", "fragment")
+    if (mode.isEmpty || supportedModes.contains(mode.get)) Right(())
+    else
+      Left("invalid_request" -> s"only [${supportedModes.mkString(",")}] response modes are supported but received $mode")
   }
 
   private def generateChallenge(request: HttpRequest): HttpResponse =
