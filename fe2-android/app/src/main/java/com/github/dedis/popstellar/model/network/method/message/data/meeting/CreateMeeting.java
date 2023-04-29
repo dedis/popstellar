@@ -3,6 +3,7 @@ package com.github.dedis.popstellar.model.network.method.message.data.meeting;
 import com.github.dedis.popstellar.model.Immutable;
 import com.github.dedis.popstellar.model.network.method.message.data.*;
 import com.github.dedis.popstellar.model.objects.Meeting;
+import com.github.dedis.popstellar.utility.MessageValidator;
 
 import java.util.Optional;
 
@@ -39,16 +40,20 @@ public class CreateMeeting extends Data {
       @Nullable String location,
       long start,
       long end) {
-    if (!id.equals(Meeting.generateCreateMeetingId(laoId, creation, name))) {
-      throw new IllegalArgumentException(
-          "CreateMeeting id must be Hash(\"M\"||laoId||creation||name)");
-    }
+    MessageValidator.verify()
+        .checkBase64(laoId, "lao id")
+        .checkValidCreateMeetingId(id, laoId, creation, name);
+
     this.id = id;
     this.name = name;
     this.creation = creation;
     this.location = location;
     this.start = start;
-    this.end = end;
+    if (end != 0) {
+      this.end = end;
+    } else {
+      this.end = start + 3600;
+    }
   }
 
   public CreateMeeting(

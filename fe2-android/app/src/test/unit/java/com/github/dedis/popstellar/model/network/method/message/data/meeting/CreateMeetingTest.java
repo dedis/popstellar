@@ -1,22 +1,26 @@
 package com.github.dedis.popstellar.model.network.method.message.data.meeting;
 
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
+import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.event.EventType;
 import com.github.dedis.popstellar.utility.security.Hash;
 
 import org.junit.Test;
 
+import java.time.Instant;
 import java.util.Objects;
 
+import static com.github.dedis.popstellar.testutils.Base64DataUtils.generatePublicKey;
 import static org.junit.Assert.*;
 
 public class CreateMeetingTest {
-  private static final String LAO_ID = "some lao id";
+  private static final String LAO_ID =
+      Lao.generateLaoId(generatePublicKey(), Instant.now().getEpochSecond(), "Lao name");
   private static final String NAME = "name";
   private static final String LOCATION = "location";
-  private static final long CREATION = 1L;
-  private static final long START = 2L;
-  private static final long END = 6L;
+  private static final long CREATION = Instant.now().getEpochSecond();
+  private static final long START = CREATION + 1;
+  private static final long END = START + 5;
   private static final String ID =
       Hash.hash(EventType.MEETING.getSuffix(), LAO_ID, Long.toString(CREATION), NAME);
 
@@ -81,7 +85,7 @@ public class CreateMeetingTest {
   public void testToString() {
     String expected =
         String.format(
-            "CreateMeeting{id='%s', name='%s', creation=%x, location='%s', start=%x, end=%x}",
+            "CreateMeeting{id='%s', name='%s', creation=%d, location='%s', start=%d, end=%d}",
             ID, NAME, CREATION, LOCATION, START, END);
     assertEquals(expected, CREATE_MEETING.toString());
   }
