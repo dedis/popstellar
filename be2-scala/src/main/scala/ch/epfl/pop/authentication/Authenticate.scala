@@ -44,21 +44,22 @@ object Authenticate {
     }
   }
 
-  def verifyParameters(params: RequestParameters): VerificationState = {
+  private def verifyParameters(params: RequestParameters): VerificationState = {
     for {
       _ <- verifyResponseType(params.response_type)
-      result <- verifyScope(params.scope)
+      _ <- verifyScope(params.scope)
+      result <- verifyRedirectUri(params.redirect_uri)
     } yield result
   }
 
-  def verifyResponseType(response_type: String): VerificationState = {
+  private def verifyResponseType(response_type: String): VerificationState = {
     val expectedResponseType = "id_token token"
     if (response_type == expectedResponseType) Right(())
     else
       Left("unsupported_response_type" -> s"expected \"$expectedResponseType\" but received \"$response_type\"")
   }
 
-  def verifyScope(scope: String): VerificationState = {
+  private def verifyScope(scope: String): VerificationState = {
     val expectedScope = "openid"
     val scopes = scope.split(" ")
     if (scopes.contains(expectedScope)) Right(())
@@ -66,10 +67,20 @@ object Authenticate {
       Left("invalid_scope" -> s"expected scope to contain \"$expectedScope\" but received \"$scope\"")
   }
 
-  def generateChallenge(request: HttpRequest): HttpResponse =
+  private def verifyRedirectUri(uri: String): VerificationState = {
+    // Checks that the uri is a http or https format uri
+    // see https://stackoverflow.com/questions/3809401/what-is-a-good-regular-expression-to-match-a-url for regex source
+    val httpRegex =
+      "https?:\\/\\/(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b([-a-zA-Z0-9()@:%_\\+.~#?&//=]*)"
+    if (uri.matches(httpRegex)) Right(())
+    else
+      Left("invalid_request" -> s"expected http or https url format for redirect uri")
+  }
+
+  private def generateChallenge(request: HttpRequest): HttpResponse =
     HttpResponse(status = StatusCodes.OK, entity = request.toString()) // TODO: add code for generating the challenge qrcode page
 
-  def authenticationFailure(error: String, errorDescription: String, state: Option[String]): HttpResponse = {
+  private def authenticationFailure(error: String, errorDescription: String, state: Option[String]): HttpResponse = {
     var response = HttpResponse(status = StatusCodes.Found)
       .addAttribute(AttributeKey("error"), error)
       .addAttribute(AttributeKey("error_description"), errorDescription)
