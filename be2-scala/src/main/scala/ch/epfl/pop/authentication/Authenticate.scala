@@ -66,7 +66,7 @@ object Authenticate {
 
   def generateChallenge(request: HttpRequest): HttpResponse = {
     val challengeEntity = QRCodeChallengeGenerator.generateChallengeContent(request.uri.toString())
-    HttpResponse(status = StatusCodes.OK, entity= challengeEntity) // TODO: add code for generating the challenge qrcode page
+    HttpResponse(status = StatusCodes.OK, entity= challengeEntity)
   }
 
   def authenticationFailure(error: String, errorDescription: String, state: Option[String]): HttpResponse = {
