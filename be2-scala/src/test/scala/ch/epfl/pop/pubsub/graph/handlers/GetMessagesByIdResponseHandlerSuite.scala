@@ -34,18 +34,19 @@ class GetMessagesByIdResponseHandlerSuite extends TestKit(ActorSystem("GetMessag
 
   class FailingThenSucceedingTestDb(testProbe: ActorRef) extends Actor {
 
-    private var numberOfTrials = 0
-    override def receive: Receive = {
+    def counter(numberOfTrials: Int): Receive = {
       case DbActor.WriteAndPropagate(channel, message) =>
-        if(numberOfTrials == 0) {
+        if (numberOfTrials == 0) {
           testProbe ! (channel, message)
           sender() ! DbActorNAckException(0, "")
+          context.become(counter(numberOfTrials + 1))
         } else {
           testProbe ! (channel, message)
           sender() ! DbActor.DbActorAck()
+          context.become(counter(0))
         }
-        numberOfTrials += 1
     }
+    def receive: Receive = counter(0)
   }
 
   private val testProbe = TestProbe()
@@ -65,6 +66,7 @@ class GetMessagesByIdResponseHandlerSuite extends TestKit(ActorSystem("GetMessag
     val s = source.via(boxUnderTest).runWith(Sink.seq[GraphMessage])
     Await.ready(s, duration)
     testProbe.expectMsgAllOf((CHANNEL1, MESSAGE1), (CHANNEL2, MESSAGE2))
+    testProbe.expectNoMessage()
   }
 
   test("by failing to write a  get_messages_by_id response in the database, it retries exactly three times before giving up") {
@@ -79,10 +81,10 @@ class GetMessagesByIdResponseHandlerSuite extends TestKit(ActorSystem("GetMessag
     testProbe.expectMsg((CHANNEL2, MESSAGE2))
     testProbe.expectMsg((CHANNEL2, MESSAGE2))
     testProbe.expectMsg((CHANNEL2, MESSAGE2))
-
+    testProbe.expectNoMessage()
   }
 
-  test("by succeeding to write on the db, it doesn't retry to write on it"){
+  test("by succeeding to write on the db, it doesn't retry to write on it") {
     val boxUnderTest: Flow[GraphMessage, GraphMessage, NotUsed] = GetMessagesByIdResponseHandler.graph(system.actorOf(Props(new FailingThenSucceedingTestDb(testProbe.ref))))
     val input: List[GraphMessage] = List(Right(receivedResponse))
     val source = Source(input)
@@ -90,6 +92,7 @@ class GetMessagesByIdResponseHandlerSuite extends TestKit(ActorSystem("GetMessag
     Await.ready(s, duration)
     testProbe.expectMsg((CHANNEL1, MESSAGE1))
     testProbe.expectMsg((CHANNEL1, MESSAGE1))
+    testProbe.expectMsg((CHANNEL2, MESSAGE2))
     testProbe.expectMsg((CHANNEL2, MESSAGE2))
     testProbe.expectNoMessage()
   }
