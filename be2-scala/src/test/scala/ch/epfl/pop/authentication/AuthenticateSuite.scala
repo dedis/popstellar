@@ -13,7 +13,7 @@ class AuthenticateSuite extends AnyFunSuite with Matchers with ScalatestRouteTes
 
   private val responseType = "id_token token"
   private val clientID = "abc"
-  private val redirectUri = "https://wikipedia.org"
+  private val redirectUri = "https://example.com"
   private val scope = "openid profile"
   private val state = "some_state"
   private val responseMode = "query"
@@ -78,7 +78,7 @@ class AuthenticateSuite extends AnyFunSuite with Matchers with ScalatestRouteTes
     }
   }
 
-  test("invalid response type fails request") {
+  test("invalid response type fails the request") {
     val badResponseType = "invalid"
 
     val route = Authenticate.buildRoute()
@@ -99,7 +99,7 @@ class AuthenticateSuite extends AnyFunSuite with Matchers with ScalatestRouteTes
     }
   }
 
-  test("invalid scope fails request") {
+  test("invalid scope fails the request") {
     val badScope = "invalid x y"
 
     val route = Authenticate.buildRoute()
@@ -120,60 +120,45 @@ class AuthenticateSuite extends AnyFunSuite with Matchers with ScalatestRouteTes
     }
   }
 
-  test("missing parameter fails request") {
+  test("any missing parameter fails the request") {
     val route = Authenticate.buildRoute()
 
     val mandatoryNames = parametersNames.filter(name => name != "state" && name != "response_mode")
     val mandatoryValues = List(responseType, clientID, redirectUri, scope, loginHint, nonce)
     val mandatoryParams = mandatoryNames.zip(mandatoryValues)
 
-    for (name <- mandatoryNames) {
-      val subParams = mandatoryParams.filter(_._1 != name)
-      val request = buildRequest(subParams)
+    for (paramToRemove <- mandatoryParams) {
+      val paramsLeft = mandatoryParams.filter(_ != paramToRemove)
+      val request = buildRequest(paramsLeft)
 
       request ~> route ~> check {
         status shouldBe Found
         getAttributeValue(response, "error") shouldBe Some("invalid_request")
-        getAttributeValue(response, "error_description") shouldBe Some(s"Missing parameters: [$name]")
+        getAttributeValue(response, "error_description") shouldBe Some(s"Missing parameters: [${paramToRemove._1}]")
       }
     }
   }
 
-  test("invalid redirect uri fails request") {
-    val badRedirectUri1 = "https:google.com"
-    val badRedirectUri2 = "www.cool.com"
-
+  test("invalid redirect uri fails the request") {
+    val badRedirectUris = List("https:example.com", "www.example.com")
     val route = Authenticate.buildRoute()
-    val request1 = buildRequest(
-      responseType,
-      clientID,
-      badRedirectUri1,
-      scope,
-      state,
-      responseMode,
-      loginHint,
-      nonce
-    )
 
-    request1 ~> route ~> check {
-      status shouldBe Found
-      getAttributeValue(response, "error") shouldBe Some("invalid_request")
-    }
+    for (badUri <- badRedirectUris) {
+      val request = buildRequest(
+        responseType,
+        clientID,
+        badUri,
+        scope,
+        state,
+        responseMode,
+        loginHint,
+        nonce
+      )
 
-    val request2 = buildRequest(
-      responseType,
-      clientID,
-      badRedirectUri2,
-      scope,
-      state,
-      responseMode,
-      loginHint,
-      nonce
-    )
-
-    request2 ~> route ~> check {
-      status shouldBe Found
-      getAttributeValue(response, "error") shouldBe Some("invalid_request")
+      request ~> route ~> check {
+        status shouldBe Found
+        getAttributeValue(response, "error") shouldBe Some("invalid_request")
+      }
     }
   }
 
@@ -199,7 +184,7 @@ class AuthenticateSuite extends AnyFunSuite with Matchers with ScalatestRouteTes
     }
   }
 
-  test("invalid response mode fails request") {
+  test("invalid response mode fails the request") {
     val badResponseMode = "wrong_mode"
 
     val route = Authenticate.buildRoute()
