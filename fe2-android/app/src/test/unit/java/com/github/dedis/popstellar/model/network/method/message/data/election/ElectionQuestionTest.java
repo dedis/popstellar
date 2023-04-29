@@ -1,17 +1,17 @@
 package com.github.dedis.popstellar.model.network.method.message.data.election;
 
-import com.github.dedis.popstellar.model.network.JsonTestUtils;
-import com.github.dedis.popstellar.utility.security.Hash;
-
-import org.junit.Test;
-
-import java.time.Instant;
-import java.util.Arrays;
-import java.util.List;
-
 import static com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVersion.OPEN_BALLOT;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+
+import com.github.dedis.popstellar.model.network.JsonTestUtils;
+import com.github.dedis.popstellar.utility.security.Hash;
+import java.time.Instant;
+import java.util.Arrays;
+import java.util.List;
+import org.junit.Test;
 
 public class ElectionQuestionTest {
 
@@ -67,8 +67,8 @@ public class ElectionQuestionTest {
 
   @Test
   public void testEquals() {
-    assertThat(QUESTION1.equals(QUESTION2), is(false));
-    assertThat(QUESTION2.equals(QUESTION3), is(true));
+    assertNotEquals(QUESTION1, QUESTION2);
+    assertEquals(QUESTION2, QUESTION3);
   }
 
   @Test
