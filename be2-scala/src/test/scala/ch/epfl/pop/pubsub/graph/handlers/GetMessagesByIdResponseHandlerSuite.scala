@@ -32,6 +32,22 @@ class GetMessagesByIdResponseHandlerSuite extends TestKit(ActorSystem("GetMessag
     }
   }
 
+  class FailingThenSucceedingTestDb(testProbe: ActorRef) extends Actor {
+
+    private var numberOfTrials = 0
+    override def receive: Receive = {
+      case DbActor.WriteAndPropagate(channel, message) =>
+        if(numberOfTrials == 0) {
+          testProbe ! (channel, message)
+          sender() ! DbActorNAckException(0, "")
+        } else {
+          testProbe ! (channel, message)
+          sender() ! DbActor.DbActorAck()
+        }
+        numberOfTrials += 1
+    }
+  }
+
   private val testProbe = TestProbe()
   final val CHANNEL1: Channel = Channel("/root/wex/lao1Id")
   final val CHANNEL2: Channel = Channel("/root/wex/lao2Id")
@@ -64,5 +80,17 @@ class GetMessagesByIdResponseHandlerSuite extends TestKit(ActorSystem("GetMessag
     testProbe.expectMsg((CHANNEL2, MESSAGE2))
     testProbe.expectMsg((CHANNEL2, MESSAGE2))
 
+  }
+
+  test("by succeeding to write on the db, it doesn't retry to write on it"){
+    val boxUnderTest: Flow[GraphMessage, GraphMessage, NotUsed] = GetMessagesByIdResponseHandler.graph(system.actorOf(Props(new FailingThenSucceedingTestDb(testProbe.ref))))
+    val input: List[GraphMessage] = List(Right(receivedResponse))
+    val source = Source(input)
+    val s = source.via(boxUnderTest).runWith(Sink.seq[GraphMessage])
+    Await.ready(s, duration)
+    testProbe.expectMsg((CHANNEL1, MESSAGE1))
+    testProbe.expectMsg((CHANNEL1, MESSAGE1))
+    testProbe.expectMsg((CHANNEL2, MESSAGE2))
+    testProbe.expectNoMessage()
   }
 }
