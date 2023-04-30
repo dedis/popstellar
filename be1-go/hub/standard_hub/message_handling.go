@@ -3,7 +3,6 @@ package standard_hub
 import (
 	"encoding/base64"
 	"encoding/json"
-	"github.com/rs/zerolog/log"
 	"popstellar/crypto"
 	jsonrpc "popstellar/message"
 	"popstellar/message/answer"
@@ -21,6 +20,7 @@ import (
 )
 
 const publishError = "failed to publish: %v"
+const wrongMessageIdError = "message_id is wrong: expected %q found %q"
 
 // handleRootChannelPublishMessage handles an incoming publish message on the root channel.
 func (h *Hub) handleRootChannelPublishMessage(sock socket.Socket, publish method.Publish) error {
@@ -71,8 +71,6 @@ func (h *Hub) handleRootChannelPublishMessage(sock socket.Socket, publish method
 		h.log.Err(err).Msg("failed to create lao")
 		return err
 	}
-
-	log.Debug().Msgf("created lao from message id %s", publish.Params.Message.MessageID)
 
 	h.rootInbox.StoreMessage(publish.Params.Message)
 	h.globalInbox.StoreMessage(publish.Params.Message)
@@ -239,7 +237,7 @@ func (h *Hub) handleGetMessagesByIdAnswer(senderSocket socket.Socket, answerMsg 
 
 			expectedMessageID := messagedata.Hash(data, signature)
 			if expectedMessageID != messageID {
-				return xerrors.Errorf("message_id is wrong: expected %q found %q",
+				return xerrors.Errorf(wrongMessageIdError,
 					expectedMessageID, messageID)
 			}
 
@@ -340,7 +338,7 @@ func (h *Hub) handlePublish(socket socket.Socket, byteMessage []byte) (int, erro
 
 	expectedMessageID := messagedata.Hash(data, signature)
 	if expectedMessageID != messageID {
-		return publish.ID, answer.NewInvalidMessageFieldError("message_id is wrong: expected %q found %q",
+		return publish.ID, answer.NewInvalidMessageFieldError(wrongMessageIdError,
 			expectedMessageID, messageID)
 	}
 
@@ -388,7 +386,7 @@ func (h *Hub) handleBroadcast(socket socket.Socket, byteMessage []byte) error {
 
 	expectedMessageID := messagedata.Hash(data, signature)
 	if expectedMessageID != messageID {
-		return xerrors.Errorf("message_id is wrong: expected %q found %q",
+		return xerrors.Errorf(wrongMessageIdError,
 			expectedMessageID, messageID)
 	}
 
