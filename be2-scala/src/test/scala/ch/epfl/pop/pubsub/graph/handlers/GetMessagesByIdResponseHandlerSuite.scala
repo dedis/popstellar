@@ -28,8 +28,7 @@ class GetMessagesByIdResponseHandlerSuite extends TestKit(ActorSystem("GetMessag
     override def receive: Receive = {
       case DbActor.WriteAndPropagate(channel, message) =>
         testProbe ! (channel, message)
-        sender() ! Status.Failure(DbActorNAckException(ErrorCodes.INVALID_ACTION.id,
-          s"channel '$channel' does not exist in db"))
+        sender() ! Status.Failure(DbActorNAckException(ErrorCodes.INVALID_ACTION.id, s"channel '$channel' does not exist in db"))
     }
   }
 
@@ -39,8 +38,7 @@ class GetMessagesByIdResponseHandlerSuite extends TestKit(ActorSystem("GetMessag
       case DbActor.WriteAndPropagate(channel, message) =>
         if (numberOfTrials == 0) {
           testProbe ! (channel, message)
-          sender() ! Status.Failure(DbActorNAckException(ErrorCodes.INVALID_ACTION.id,
-            s"channel '$channel' does not exist in db"))
+          sender() ! Status.Failure(DbActorNAckException(ErrorCodes.INVALID_ACTION.id, s"channel '$channel' does not exist in db"))
           context.become(counter(numberOfTrials + 1))
         } else {
           testProbe ! (channel, message)
