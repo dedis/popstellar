@@ -78,16 +78,12 @@ type Hub struct {
 
 	serverSockets channel.Sockets
 
-	// hubInbox is used to remember which messages were broadcast by the
-	// server to avoid broadcast loops
+	// hubInbox is used to remember the messages that the hub received
 	hubInbox inbox.Inbox
 
 	// rootInbox and queries are used to help servers catchup to each other
 	rootInbox inbox.Inbox
 	queries   queries
-
-	//globalInbox is used to remember all messages
-	globalInbox inbox.Inbox
 
 	// messageIdsByChannel stores all the message ids and the corresponding channel ids
 	// to help servers determine in which channel the message ids go
@@ -143,7 +139,6 @@ func NewHub(pubKeyOwner kyber.Point, serverAddress string, log zerolog.Logger,
 		serverSockets:       channel.NewSockets(),
 		hubInbox:            *inbox.NewInbox(rootChannel),
 		rootInbox:           *inbox.NewInbox(rootChannel),
-		globalInbox:         *inbox.NewInbox(rootChannel),
 		queries:             newQueries(),
 		messageIdsByChannel: make(map[string][]string),
 	}
@@ -477,7 +472,6 @@ func (h *Hub) sendGetMessagesByIdToServer(socket socket.Socket, missingIds map[s
 func (h *Hub) sendHeartbeatToServers() {
 	h.Lock()
 	defer h.Unlock()
-	h.updateRecords()
 	if len(h.messageIdsByChannel) > 0 {
 		heartbeatMessage := method.Heartbeat{
 			Base: query.Base{
@@ -592,35 +586,4 @@ func (h *Hub) addMessageId(channelId string, messageId string) {
 			h.messageIdsByChannel[channelId] = append(h.messageIdsByChannel[channelId], messageId)
 		}
 	}
-}
-
-// updateRecords updates the hub's globalInbox and messageIdsByChannel to have all the messages ready
-// for heartbeats by locally catching up on channels and store the messages in the hub
-func (h *Hub) updateRecords() {
-	for channelId, channel := range h.channelByID {
-		catchupQuery := method.Catchup{
-			Base: query.Base{
-				JSONRPCBase: jsonrpc.JSONRPCBase{
-					JSONRPC: "2.0",
-				},
-				Method: "catchup",
-			},
-			ID: 0,
-			Params: struct {
-				Channel string "json:\"channel\""
-			}{
-				channelId,
-			},
-		}
-		messages := channel.Catchup(catchupQuery)
-
-		for _, msg := range messages {
-			_, alreadyStored := h.globalInbox.GetMessage(msg.MessageID)
-			if !alreadyStored {
-				h.globalInbox.StoreMessage(msg)
-				h.addMessageId(channelId, msg.MessageID)
-			}
-		}
-	}
-
 }

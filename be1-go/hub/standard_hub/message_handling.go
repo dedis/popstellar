@@ -73,13 +73,13 @@ func (h *Hub) handleRootChannelPublishMessage(sock socket.Socket, publish method
 	}
 
 	h.rootInbox.StoreMessage(publish.Params.Message)
-	h.globalInbox.StoreMessage(publish.Params.Message)
+	h.hubInbox.StoreMessage(publish.Params.Message)
 	h.addMessageId(publish.Params.Channel, publish.Params.Message.MessageID)
 
 	return nil
 }
 
-// handleRootChannelPublishMesssage handles an incoming publish message on the root channel.
+// handleRootChannelPublishMessage handles an incoming publish message on the root channel.
 func (h *Hub) handleRootChannelBroadcastMessage(sock socket.Socket,
 	broadcast method.Broadcast) error {
 
@@ -138,7 +138,7 @@ func (h *Hub) handleRootChannelBroadcastMessage(sock socket.Socket,
 	}
 
 	h.rootInbox.StoreMessage(broadcast.Params.Message)
-	h.globalInbox.StoreMessage(broadcast.Params.Message)
+	h.hubInbox.StoreMessage(broadcast.Params.Message)
 	h.addMessageId(broadcast.Params.Channel, broadcast.Params.Message.MessageID)
 
 	return nil
@@ -304,7 +304,6 @@ func (h *Hub) handlePublish(socket socket.Socket, byteMessage []byte) (int, erro
 			return publish.ID, err
 		}
 		h.hubInbox.StoreMessage(publish.Params.Message)
-		h.globalInbox.StoreMessage(publish.Params.Message)
 		h.addMessageId(publish.Params.Channel, publish.Params.Message.MessageID)
 		return publish.ID, nil
 	}
@@ -325,7 +324,6 @@ func (h *Hub) handlePublish(socket socket.Socket, byteMessage []byte) (int, erro
 	}
 
 	h.hubInbox.StoreMessage(publish.Params.Message)
-	h.globalInbox.StoreMessage(publish.Params.Message)
 	h.addMessageId(publish.Params.Channel, publish.Params.Message.MessageID)
 
 	return publish.ID, nil
@@ -356,7 +354,6 @@ func (h *Hub) handleBroadcast(socket socket.Socket, byteMessage []byte) error {
 		return nil
 	}
 	h.hubInbox.StoreMessage(broadcast.Params.Message)
-	h.globalInbox.StoreMessage(broadcast.Params.Message)
 	h.addMessageId(broadcast.Params.Channel, broadcast.Params.Message.MessageID)
 
 	h.Unlock()
@@ -524,7 +521,7 @@ func (h *Hub) getMissingMessages(missingIds map[string][]string) (map[string][]m
 	missingMsgs := make(map[string][]message.Message)
 	for channelId, messageIds := range missingIds {
 		for _, messageId := range messageIds {
-			msg, exists := h.globalInbox.GetMessage(messageId)
+			msg, exists := h.hubInbox.GetMessage(messageId)
 			if !exists {
 				return nil, xerrors.Errorf("Message %s not found in hub inbox", messageId)
 			}
@@ -565,7 +562,6 @@ func (h *Hub) handleReceivedMessage(socket socket.Socket, publish method.Publish
 
 	h.Lock()
 	h.hubInbox.StoreMessage(publish.Params.Message)
-	h.globalInbox.StoreMessage(publish.Params.Message)
 	h.addMessageId(publish.Params.Channel, publish.Params.Message.MessageID)
 	h.Unlock()
 
