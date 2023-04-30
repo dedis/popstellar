@@ -14,7 +14,7 @@ import ch.epfl.pop.model.objects.{Channel, DbActorNAckException}
 
 import scala.annotation.tailrec
 import scala.concurrent.Await
-import scala.util.Success
+import scala.util.Failure
 
 /** This object's job is to handle responses it receives from other servers after sending a heartbeat. When receiving the missing messages, the server's job is to write them on the data base.
   */
@@ -76,7 +76,7 @@ object GetMessagesByIdResponseHandler extends AskPatternConstants {
     if (remainingAttempts != 0) {
       val ask = dbActorRef ? DbActor.WriteAndPropagate(channel, message)
       Await.ready(ask, duration).value match {
-        case Some(Success(DbActorNAckException(_, _))) =>
+        case Some(Failure(_: DbActorNAckException)) =>
           writeOnDb(channel, message, dbActorRef, remainingAttempts - 1)
         case _ =>
       }

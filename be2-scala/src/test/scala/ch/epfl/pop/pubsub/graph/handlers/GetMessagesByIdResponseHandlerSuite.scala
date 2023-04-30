@@ -1,14 +1,14 @@
 package ch.epfl.pop.pubsub.graph.handlers
 
 import akka.NotUsed
-import akka.actor.{Actor, ActorRef, ActorSystem, Props}
+import akka.actor.{Actor, ActorRef, ActorSystem, Props, Status}
 import akka.stream.scaladsl.{Flow, Sink, Source}
 import akka.testkit.{TestKit, TestProbe}
 import ch.epfl.pop.model.network.{JsonRpcResponse, ResultObject}
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.objects.{Base64Data, Channel, DbActorNAckException, Hash}
 import ch.epfl.pop.pubsub.AskPatternConstants
-import ch.epfl.pop.pubsub.graph.GraphMessage
+import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage}
 import ch.epfl.pop.pubsub.graph.validators.RpcValidator
 import ch.epfl.pop.storage.DbActor
 import org.scalatest.funsuite.AnyFunSuiteLike
@@ -28,7 +28,8 @@ class GetMessagesByIdResponseHandlerSuite extends TestKit(ActorSystem("GetMessag
     override def receive: Receive = {
       case DbActor.WriteAndPropagate(channel, message) =>
         testProbe ! (channel, message)
-        sender() ! DbActorNAckException(0, "")
+        sender() ! Status.Failure(DbActorNAckException(ErrorCodes.INVALID_ACTION.id,
+          s"channel '$channel' does not exist in db"))
     }
   }
 
@@ -38,7 +39,8 @@ class GetMessagesByIdResponseHandlerSuite extends TestKit(ActorSystem("GetMessag
       case DbActor.WriteAndPropagate(channel, message) =>
         if (numberOfTrials == 0) {
           testProbe ! (channel, message)
-          sender() ! DbActorNAckException(0, "")
+          sender() ! Status.Failure(DbActorNAckException(ErrorCodes.INVALID_ACTION.id,
+            s"channel '$channel' does not exist in db"))
           context.become(counter(numberOfTrials + 1))
         } else {
           testProbe ! (channel, message)
