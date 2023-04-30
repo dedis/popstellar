@@ -11,28 +11,23 @@ class AuthenticateSuite extends AnyFunSuite with Matchers with ScalatestRouteTes
 
   private val routeName = "authenticate/"
 
-  private val goodResponseType = "id_token token"
-  private val badResponseType = "invalid"
-
-  private val goodScope = "openid profile"
-  private val badScope = "invalid x y"
-
+  private val responseType = "id_token token"
   private val clientID = "abc"
-  private val redirect_uir = "https://wikipedia.org"
+  private val redirectUri = "https://example.com"
+  private val scope = "openid profile"
   private val state = "some_state"
-  private val response_mode = "query"
-  private val login_hint = "some_hint"
+  private val responseMode = "query"
+  private val loginHint = "some_hint"
   private val nonce = "1234"
 
   private val parametersNames = List("response_type", "client_id", "redirect_uri", "scope", "state", "response_mode", "login_hint", "nonce")
 
-  private def buildRequest(params: List[(String,String)]): HttpRequest = {
+  private def buildRequest(params: List[(String, String)]): HttpRequest = {
     val parameters = params.filter(pair => pair._2.nonEmpty).toMap
     Get().withUri(Uri(routeName).withQuery(Query(parameters)))
   }
 
-  private def buildRequest(response_type: String, client_id: String, redirect_uri: String, scope: String,
-                   state: String, response_mode: String, login_hint: String, nonce: String): HttpRequest = {
+  private def buildRequest(response_type: String, client_id: String, redirect_uri: String, scope: String, state: String, response_mode: String, login_hint: String, nonce: String): HttpRequest = {
     val params = parametersNames.zip(
       List(response_type, client_id, redirect_uri, scope, state, response_mode, login_hint, nonce)
     )
@@ -45,10 +40,17 @@ class AuthenticateSuite extends AnyFunSuite with Matchers with ScalatestRouteTes
     attributesWithName.get(key)
   }
 
-  test("good requests succeeds") {
+  test("valid request succeeds") {
     val route = Authenticate.buildRoute()
     val request = buildRequest(
-      goodResponseType, clientID, redirect_uir, goodScope, state, response_mode, login_hint, nonce
+      responseType,
+      clientID,
+      redirectUri,
+      scope,
+      state,
+      responseMode,
+      loginHint,
+      nonce
     )
 
     request ~> route ~> check {
@@ -56,10 +58,17 @@ class AuthenticateSuite extends AnyFunSuite with Matchers with ScalatestRouteTes
     }
   }
 
-  test("good requests without optional params succeeds") {
+  test("valid request without optional params succeeds") {
     val route = Authenticate.buildRoute()
     val request = buildRequest(
-      goodResponseType, clientID, redirect_uir, goodScope, "", "", login_hint, nonce
+      responseType,
+      clientID,
+      redirectUri,
+      scope,
+      "",
+      "",
+      loginHint,
+      nonce
     )
 
     println(request)
@@ -69,10 +78,19 @@ class AuthenticateSuite extends AnyFunSuite with Matchers with ScalatestRouteTes
     }
   }
 
-  test("invalid response type fails request") {
+  test("invalid response type fails the request") {
+    val badResponseType = "invalid"
+
     val route = Authenticate.buildRoute()
     val request = buildRequest(
-      badResponseType, clientID, redirect_uir, goodScope, state, response_mode, login_hint, nonce
+      badResponseType,
+      clientID,
+      redirectUri,
+      scope,
+      state,
+      responseMode,
+      loginHint,
+      nonce
     )
 
     request ~> route ~> check {
@@ -81,10 +99,19 @@ class AuthenticateSuite extends AnyFunSuite with Matchers with ScalatestRouteTes
     }
   }
 
-  test("invalid scope fails request") {
+  test("invalid scope fails the request") {
+    val badScope = "invalid x y"
+
     val route = Authenticate.buildRoute()
     val request = buildRequest(
-      goodResponseType, clientID, redirect_uir, badScope, state, response_mode, login_hint, nonce
+      responseType,
+      clientID,
+      redirectUri,
+      badScope,
+      state,
+      responseMode,
+      loginHint,
+      nonce
     )
 
     request ~> route ~> check {
@@ -93,22 +120,88 @@ class AuthenticateSuite extends AnyFunSuite with Matchers with ScalatestRouteTes
     }
   }
 
-  test("missing parameter fails request") {
+  test("any missing parameter fails the request") {
     val route = Authenticate.buildRoute()
 
     val mandatoryNames = parametersNames.filter(name => name != "state" && name != "response_mode")
-    val mandatoryValues = List(goodResponseType, clientID, redirect_uir, goodScope, login_hint, nonce)
+    val mandatoryValues = List(responseType, clientID, redirectUri, scope, loginHint, nonce)
     val mandatoryParams = mandatoryNames.zip(mandatoryValues)
 
-    mandatoryNames.foreach{ name =>
-      val subParams = mandatoryParams.filter(_._1 != name)
-      val request = buildRequest(subParams)
+    for (paramToRemove <- mandatoryParams) {
+      val paramsLeft = mandatoryParams.filter(_ != paramToRemove)
+      val request = buildRequest(paramsLeft)
 
       request ~> route ~> check {
         status shouldBe Found
         getAttributeValue(response, "error") shouldBe Some("invalid_request")
-        getAttributeValue(response, "error_description") shouldBe Some(s"Missing parameters: [$name]")
+        getAttributeValue(response, "error_description") shouldBe Some(s"Missing parameters: [${paramToRemove._1}]")
       }
+    }
+  }
+
+  test("invalid redirect uri fails the request") {
+    val badRedirectUris = List("https:example.com", "www.example.com")
+    val route = Authenticate.buildRoute()
+
+    for (badUri <- badRedirectUris) {
+      val request = buildRequest(
+        responseType,
+        clientID,
+        badUri,
+        scope,
+        state,
+        responseMode,
+        loginHint,
+        nonce
+      )
+
+      request ~> route ~> check {
+        status shouldBe Found
+        getAttributeValue(response, "error") shouldBe Some("invalid_request")
+      }
+    }
+  }
+
+  test("all valid response modes are accepted") {
+    val responseModes = List("query", "fragment")
+
+    for (mode <- responseModes) {
+      val route = Authenticate.buildRoute()
+      val request = buildRequest(
+        responseType,
+        clientID,
+        redirectUri,
+        scope,
+        state,
+        mode,
+        loginHint,
+        nonce
+      )
+
+      request ~> route ~> check {
+        status shouldBe OK
+      }
+    }
+  }
+
+  test("invalid response mode fails the request") {
+    val badResponseMode = "wrong_mode"
+
+    val route = Authenticate.buildRoute()
+    val request = buildRequest(
+      responseType,
+      clientID,
+      redirectUri,
+      scope,
+      state,
+      badResponseMode,
+      loginHint,
+      nonce
+    )
+
+    request ~> route ~> check {
+      status shouldBe Found
+      getAttributeValue(response, "error") shouldBe Some("invalid_request")
     }
   }
 }
