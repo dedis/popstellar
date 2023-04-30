@@ -801,12 +801,10 @@ func Test_Handle_Answer(t *testing.T) {
 
 	queryState := false
 	hub.queries.state[1] = &queryState
-	hub.queries.catchupQueries[1] = method.Catchup{
-		Params: struct {
-			Channel string "json:\"channel\""
-		}{
-			Channel: "/root",
-		},
+	hub.queries.getMessagesByIdQueries[1] = method.GetMessagesById{
+		Base:   query.Base{},
+		ID:     1,
+		Params: nil,
 	}
 
 	sock := &fakeSocket{}

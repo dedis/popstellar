@@ -181,7 +181,7 @@ func (h *Hub) handleAnswer(senderSocket socket.Socket, byteMessage []byte) error
 		return nil
 	}
 	if answerMsg.Result.IsEmpty() {
-		h.log.Info().Msg("result isn't an answer to a catchup, nothing to handle")
+		h.log.Info().Msg("result isn't an answer to a query, nothing to handle")
 		return nil
 	}
 
@@ -198,21 +198,12 @@ func (h *Hub) handleAnswer(senderSocket socket.Socket, byteMessage []byte) error
 		return xerrors.Errorf("query %v already got an answer", answerMsg.ID)
 	}
 
-	catchUpQuery, isCatchupQuery := h.queries.catchupQueries[*answerMsg.ID]
-	_, isGetMessagesByIdQuery := h.queries.getMessagesByIdQueries[*answerMsg.ID]
-
 	*h.queries.state[*answerMsg.ID] = true
 	h.queries.Unlock()
 
-	if isCatchupQuery {
-		h.handleCatchupAnswer(senderSocket, answerMsg, catchUpQuery)
-	} else if isGetMessagesByIdQuery {
-		err = h.handleGetMessagesByIdAnswer(senderSocket, answerMsg)
-		if err != nil {
-			return err
-		}
-	} else {
-		return xerrors.Errorf("query %v is not catchup or getMessagesById", answerMsg.ID)
+	err = h.handleGetMessagesByIdAnswer(senderSocket, answerMsg)
+	if err != nil {
+		return err
 	}
 
 	return nil
@@ -268,41 +259,6 @@ func (h *Hub) handleGetMessagesByIdAnswer(senderSocket socket.Socket, answerMsg 
 	return nil
 }
 
-func (h *Hub) handleCatchupAnswer(senderSocket socket.Socket, answerMsg answer.Answer, catchUpQuery method.Catchup) {
-	messages := answerMsg.Result.GetData()
-	for msg := range messages {
-
-		var messageData message.Message
-		err := json.Unmarshal(messages[msg], &messageData)
-		if err != nil {
-			h.log.Error().Msgf("failed to unmarshal message during catchup: %v", err)
-			continue
-		}
-
-		publish := method.Publish{
-			Base: query.Base{
-				JSONRPCBase: jsonrpc.JSONRPCBase{
-					JSONRPC: "2.0",
-				},
-				Method: "publish",
-			},
-
-			Params: struct {
-				Channel string          `json:"channel"`
-				Message message.Message `json:"message"`
-			}{
-				Channel: catchUpQuery.Params.Channel,
-				Message: messageData,
-			},
-		}
-
-		err = h.handleReceivedMessage(senderSocket, publish)
-		if err != nil {
-			h.log.Error().Msgf("failed to handle message during catchup: %v", err)
-		}
-	}
-}
-
 func (h *Hub) handlePublish(socket socket.Socket, byteMessage []byte) (int, error) {
 	var publish method.Publish
 
@@ -347,6 +303,9 @@ func (h *Hub) handlePublish(socket socket.Socket, byteMessage []byte) (int, erro
 		if err != nil {
 			return publish.ID, err
 		}
+		h.hubInbox.StoreMessage(publish.Params.Message)
+		h.globalInbox.StoreMessage(publish.Params.Message)
+		h.addMessageId(publish.Params.Channel, publish.Params.Message.MessageID)
 		return publish.ID, nil
 	}
 

@@ -98,7 +98,6 @@ type Hub struct {
 func newQueries() queries {
 	return queries{
 		state:                  make(map[int]*bool),
-		catchupQueries:         make(map[int]method.Catchup),
 		getMessagesByIdQueries: make(map[int]method.GetMessagesById),
 	}
 }
@@ -109,8 +108,6 @@ type queries struct {
 	// state stores the ID of the server's queries and their state. False for a
 	// query not yet answered, else true.
 	state map[int]*bool
-	// catchupQueries stores the server's catchup queries by their ID.
-	catchupQueries map[int]method.Catchup
 	// getMessagesByIdQueries stores the server's getMessagesByIds queries by their ID.
 	getMessagesByIdQueries map[int]method.GetMessagesById
 	// nextID store the ID of the next query
