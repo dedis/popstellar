@@ -86,7 +86,7 @@ class GetMessagesByIdResponseHandlerSuite extends TestKit(ActorSystem("GetMessag
     testProbe.expectNoMessage()
   }
 
-  test("by succeeding to write on the db, it doesn't retry to write on it") {
+  test("by succeeding to write a get_messages_by_id on the db, it doesn't retry to write on it") {
     val boxUnderTest: Flow[GraphMessage, GraphMessage, NotUsed] = GetMessagesByIdResponseHandler.graph(system.actorOf(Props(new FailingThenSucceedingTestDb(testProbe.ref))))
     val input: List[GraphMessage] = List(Right(receivedResponse))
     val source = Source(input)
