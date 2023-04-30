@@ -1,5 +1,7 @@
 package com.github.dedis.popstellar.utility.handler;
 
+import android.annotation.SuppressLint;
+
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.*;
 import com.github.dedis.popstellar.model.objects.Channel;
@@ -12,6 +14,7 @@ import com.github.dedis.popstellar.utility.handler.data.HandlerContext;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import io.reactivex.exceptions.Exceptions;
 import timber.log.Timber;
 
 /** General message handler class */
@@ -36,28 +39,37 @@ public final class MessageHandler {
    * @param channel the channel on which the message was received
    * @param message the message that was received
    */
+  @SuppressLint("CheckResult")
   public void handleMessage(MessageSender messageSender, Channel channel, MessageGeneral message)
       throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
           UnknownElectionException, NoRollCallException {
     Timber.tag(TAG).d("handle incoming message");
 
-    if (messageRepo.isMessagePresent(message.getMessageId())) {
-      Timber.tag(TAG).d("the message has already been handled in the past");
-      return;
-    }
-
     Data data = message.getData();
     Timber.tag(TAG).d("data with class: %s", data.getClass());
     Objects dataObj = Objects.find(data.getObject());
     Action dataAction = Action.find(data.getAction());
+    boolean toPersist = dataObj.hasToBePersisted();
+    boolean toBeStored = dataAction.isStoreNeededByAction();
 
-    registry.handle(
-        new HandlerContext(message.getMessageId(), message.getSender(), channel, messageSender),
-        data,
-        dataObj,
-        dataAction);
+    messageRepo
+        .isMessagePresent(message.getMessageId(), toPersist)
+        .subscribe(
+            isPresent -> {
+              if (isPresent) {
+                Timber.tag(TAG).d("the message has already been handled in the past");
+              } else {
+                registry.handle(
+                    new HandlerContext(
+                        message.getMessageId(), message.getSender(), channel, messageSender),
+                    data,
+                    dataObj,
+                    dataAction);
 
-    // Put the message in the state
-    messageRepo.addMessage(message, dataAction.isStoreNeededByAction());
+                // Put the message in the state
+                messageRepo.addMessage(message, toBeStored, toPersist);
+              }
+            },
+            Exceptions::propagate);
   }
 }

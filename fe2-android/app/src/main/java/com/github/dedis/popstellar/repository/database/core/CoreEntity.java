@@ -10,6 +10,8 @@ import java.util.*;
 @Entity(tableName = "core")
 public class CoreEntity {
 
+  private static final CoreEntity EMPTY = new CoreEntity("", new ArrayList<>(0), new HashSet<>(0));
+
   @PrimaryKey(autoGenerate = true)
   private int id;
 
@@ -45,22 +47,22 @@ public class CoreEntity {
     return serverAddress;
   }
 
-  public void setServerAddress(@NonNull String serverAddress) {
-    this.serverAddress = serverAddress;
-  }
-
   @NonNull
   public List<String> getWalletSeed() {
     return walletSeed;
   }
 
-  public void setWalletSeed(@NonNull List<String> walletSeed) {
-    this.walletSeed = walletSeed;
-  }
-
   @NonNull
   public Set<Channel> getSubscriptions() {
     return subscriptions;
+  }
+
+  public void setServerAddress(@NonNull String serverAddress) {
+    this.serverAddress = serverAddress;
+  }
+
+  public void setWalletSeed(@NonNull List<String> walletSeed) {
+    this.walletSeed = walletSeed;
   }
 
   public void setSubscriptions(@NonNull Set<Channel> subscriptions) {
@@ -73,6 +75,10 @@ public class CoreEntity {
 
   public Set<Channel> getSubscriptionsCopy() {
     return new HashSet<>(subscriptions);
+  }
+
+  public static CoreEntity getEmptyEntity() {
+    return EMPTY;
   }
 
   @NonNull

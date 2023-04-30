@@ -42,4 +42,19 @@ public enum Objects {
         .findFirst()
         .orElse(null);
   }
+
+  public boolean hasToBePersisted() {
+    switch (object) {
+      case "lao":
+        // TODO: add persistence for election, coin and roll calls
+        // case "election":
+        // case "coin":
+        // case "roll_call":
+        // Persist LAO, ELECTION, COIN, ROLL CALL
+        return true;
+      default:
+        // Don't persist MEETING, WITNESSING, SOCIAL MEDIA, CONSENSUS
+        return false;
+    }
+  }
 }

@@ -56,6 +56,33 @@ public final class Lao implements Copyable<Lao> {
     this.creation = creation;
   }
 
+  public Lao(
+      Channel channel,
+      String id,
+      String name,
+      Long lastModified,
+      Long creation,
+      PublicKey organizer,
+      MessageID modificationId,
+      Set<PublicKey> witnesses,
+      Map<MessageID, WitnessMessage> witnessMessages,
+      Set<PendingUpdate> pendingUpdates,
+      Map<MessageID, ElectInstance> messageIdToElectInstance,
+      Map<PublicKey, ConsensusNode> keyToNode) {
+    this.channel = channel;
+    this.id = id;
+    this.name = name;
+    this.lastModified = lastModified;
+    this.creation = creation;
+    this.organizer = organizer;
+    this.modificationId = modificationId;
+    this.witnesses = witnesses;
+    this.witnessMessages = witnessMessages;
+    this.pendingUpdates = pendingUpdates;
+    this.messageIdToElectInstance = messageIdToElectInstance;
+    this.keyToNode = keyToNode;
+  }
+
   /**
    * Copy constructor
    *
@@ -239,6 +266,10 @@ public final class Lao implements Copyable<Lao> {
 
   public Map<MessageID, WitnessMessage> getWitnessMessages() {
     return witnessMessages;
+  }
+
+  public Map<PublicKey, ConsensusNode> getKeyToNode() {
+    return keyToNode;
   }
 
   /**

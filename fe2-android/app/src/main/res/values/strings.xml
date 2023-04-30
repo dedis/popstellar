@@ -258,7 +258,7 @@
   <string name="deleted_chirp_2">Chirp is deleted.</string>
 
   <!--  Storage-->
-  <string name="nothing_stored">no stored data found</string>
+  <string name="nothing_stored">No stored data found</string>
   <string name="clear_text">Clear all storage</string>
   <string name="clear_confirmation_text">Are you sure you want to clear stored data ? This action is irreversible</string>
   <string name="clear_success">Clearing was successful</string>

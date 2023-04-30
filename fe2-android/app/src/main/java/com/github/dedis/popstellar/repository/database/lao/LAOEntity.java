@@ -7,25 +7,14 @@ import com.github.dedis.popstellar.model.objects.Lao;
 
 @Entity(tableName = "laos")
 public class LAOEntity {
-  @ColumnInfo(name = "lao_id")
+
+  @ColumnInfo(name = "lao")
   @PrimaryKey
   @NonNull
-  private String laoId;
+  private Lao lao;
 
-  @NonNull private Lao lao;
-
-  public LAOEntity(@NonNull String laoId, @NonNull Lao lao) {
-    this.laoId = laoId;
+  public LAOEntity(@NonNull Lao lao) {
     this.lao = lao;
-  }
-
-  @NonNull
-  public String getLaoId() {
-    return laoId;
-  }
-
-  public void setLaoId(@NonNull String laoId) {
-    this.laoId = laoId;
   }
 
   @NonNull

@@ -1,5 +1,7 @@
 package com.github.dedis.popstellar.repository;
 
+import android.annotation.SuppressLint;
+
 import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.database.AppDatabase;
@@ -8,6 +10,8 @@ import com.github.dedis.popstellar.repository.database.lao.LAOEntity;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -26,9 +30,8 @@ public class LAORepository {
 
   private final LAODao laoDao;
 
-  private final Map<String, Lao> laoById = new HashMap<>();
-
-  private final Map<String, Subject<LaoView>> subjectById = new HashMap<>();
+  private final ConcurrentHashMap<String, Lao> laoById = new ConcurrentHashMap<>();
+  private final ConcurrentHashMap<String, Subject<LaoView>> subjectById = new ConcurrentHashMap<>();
   private final BehaviorSubject<List<String>> laosSubject = BehaviorSubject.create();
 
   // ============ Lao Unrelated data ===============
@@ -43,21 +46,32 @@ public class LAORepository {
     loadPersistentStorage();
   }
 
+  /*
+  On start load all the laos in the memory as they must be displayed in the home list.
+  Given the fact that we load every lao in memory at the beginning there's no need for a cache.
+  This is also possible memory-wise as usually the number of laos is very limited.
+  This call is asynchronous so not to block the main thread.
+  */
+  @SuppressLint("CheckResult")
   private void loadPersistentStorage() {
-    // On start load all the laos in the memory
-    // Cache isn't strictly needed as usually there are a few laos
-    List<LAOEntity> laos = laoDao.getAllLaos();
-    if (laos != null) {
-      List<String> ids = new ArrayList<>();
-      laos.forEach(
-          lao -> {
-            laoById.put(lao.getLaoId(), lao.getLao());
-            subjectById.put(
-                lao.getLaoId(), BehaviorSubject.createDefault(new LaoView(lao.getLao())));
-            ids.add(lao.getLaoId());
-          });
-      laosSubject.onNext(ids);
-    }
+    laoDao
+        .getAllLaos()
+        .subscribeOn(Schedulers.io())
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(
+            laos -> {
+              if (laos.isEmpty()) {
+                Timber.tag(TAG).d("No LAO has been found in the database");
+                return;
+              }
+              laos.forEach(
+                  lao -> {
+                    laoById.put(lao.getId(), lao);
+                    subjectById.put(lao.getId(), BehaviorSubject.createDefault(new LaoView(lao)));
+                  });
+              laosSubject.onNext(laos.stream().map(Lao::getId).collect(Collectors.toList()));
+              Timber.tag(TAG).d("Loaded all the LAOs from database");
+            });
   }
 
   /**
@@ -98,14 +112,16 @@ public class LAORepository {
     if (lao == null) {
       throw new IllegalArgumentException();
     }
-    LaoView laoView = new LaoView(lao);
 
-    LAOEntity laoEntity = new LAOEntity(lao.getId(), lao);
-    // Update the persistent storage (replace if already existing)
+    LaoView laoView = new LaoView(lao);
+    LAOEntity laoEntity = new LAOEntity(lao);
+
+    // Update the persistent storage in background (replace if already existing)
     laoDao
         .insert(laoEntity)
         .subscribeOn(Schedulers.io())
         .observeOn(AndroidSchedulers.mainThread())
+        .doOnComplete(() -> Timber.tag(TAG).d("Persisted Lao %s", lao))
         .subscribe();
 
     if (laoById.containsKey(lao.getId())) {
@@ -125,7 +141,8 @@ public class LAORepository {
     }
   }
 
-  public void deleteRepository() {
+  public void clearRepository() {
+    Timber.tag(TAG).d("Clearing LAORepository");
     laoById.clear();
     subjectById.clear();
     laosSubject.onNext(new ArrayList<>());

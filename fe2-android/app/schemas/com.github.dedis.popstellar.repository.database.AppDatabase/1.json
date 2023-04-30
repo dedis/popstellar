@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "bc23ff3aca4477bbdd9039ef685dda49",
+    "identityHash": "8b75bd1bc931f9a3d83b0db13191f977",
     "entities": [
       {
         "tableName": "messages",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`message_id` TEXT NOT NULL, `message` TEXT NOT NULL, PRIMARY KEY(`message_id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`message_id` TEXT NOT NULL, `message` TEXT, PRIMARY KEY(`message_id`))",
         "fields": [
           {
             "fieldPath": "messageId",
@@ -18,7 +18,7 @@
             "fieldPath": "content",
             "columnName": "message",
             "affinity": "TEXT",
-            "notNull": true
+            "notNull": false
           }
         ],
         "primaryKey": {
@@ -32,14 +32,8 @@
       },
       {
         "tableName": "laos",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`lao_id` TEXT NOT NULL, `lao` TEXT NOT NULL, PRIMARY KEY(`lao_id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`lao` TEXT NOT NULL, PRIMARY KEY(`lao`))",
         "fields": [
-          {
-            "fieldPath": "laoId",
-            "columnName": "lao_id",
-            "affinity": "TEXT",
-            "notNull": true
-          },
           {
             "fieldPath": "lao",
             "columnName": "lao",
@@ -49,9 +43,47 @@
         ],
         "primaryKey": {
           "columnNames": [
-            "lao_id"
+            "lao"
           ],
           "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "core",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `server_address` TEXT NOT NULL, `wallet_seed` TEXT NOT NULL, `subscriptions` TEXT NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "serverAddress",
+            "columnName": "server_address",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "walletSeed",
+            "columnName": "wallet_seed",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "subscriptions",
+            "columnName": "subscriptions",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": true
         },
         "indices": [],
         "foreignKeys": []
@@ -60,7 +92,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'bc23ff3aca4477bbdd9039ef685dda49')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '8b75bd1bc931f9a3d83b0db13191f977')"
     ]
   }
 }

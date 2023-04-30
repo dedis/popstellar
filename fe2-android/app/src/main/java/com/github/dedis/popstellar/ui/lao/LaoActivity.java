@@ -77,7 +77,7 @@ public class LaoActivity extends AppCompatActivity {
   /*
    Normally the saving routine should be called onStop, such as is done in other activities,
    Yet here for unknown reasons the subscriptions set in LAONetworkManager is empty when going
-   to HomeActivity. This fixes it. Since our persistence is light for now (13.02.2023) - i.e.
+   to HomeActivity. This fixes it. Since the persisted data is light for now (13.02.2023) - i.e.
    server address, wallet seed and channel list - and not computationally intensive this will not
    be a problem at the moment
   */
@@ -85,10 +85,10 @@ public class LaoActivity extends AppCompatActivity {
     super.onPause();
 
     try {
-      laoViewModel.savePersistentData();
+      laoViewModel.saveCoreData();
     } catch (GeneralSecurityException e) {
       // We do not display the security error to the user
-      Timber.tag(TAG).d(e, "Storage was unsuccessful du to wallet error");
+      Timber.tag(TAG).d(e, "Storage was unsuccessful due to wallet error");
       Toast.makeText(this, R.string.error_storage_wallet, Toast.LENGTH_SHORT).show();
     }
   }

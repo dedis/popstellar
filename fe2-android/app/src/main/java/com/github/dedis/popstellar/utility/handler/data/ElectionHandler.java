@@ -1,5 +1,7 @@
 package com.github.dedis.popstellar.utility.handler.data;
 
+import android.annotation.SuppressLint;
+
 import androidx.annotation.NonNull;
 
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
@@ -15,6 +17,7 @@ import java.util.*;
 
 import javax.inject.Inject;
 
+import io.reactivex.exceptions.Exceptions;
 import timber.log.Timber;
 
 import static com.github.dedis.popstellar.model.objects.event.EventState.*;
@@ -177,6 +180,7 @@ public final class ElectionHandler {
    * @param context the HandlerContext of the message
    * @param castVote the message that was received
    */
+  @SuppressLint("CheckResult")
   public void handleCastVote(HandlerContext context, CastVote castVote)
       throws UnknownElectionException, DataHandlingException {
     Channel channel = context.getChannel();
@@ -197,23 +201,29 @@ public final class ElectionHandler {
       }
 
       // Retrieve previous message and make sure it is a CastVote
-      Data previousData = messageRepo.getMessage(previousMessageId).getData();
-      if (previousData == null) {
-        throw new IllegalStateException(
-            "The message corresponding to " + messageId + " does not exist");
-      }
+      messageRepo
+          .getMessage(previousMessageId)
+          .subscribe(
+              message -> {
+                if (message == null) {
+                  throw new IllegalStateException(
+                      "The message corresponding to " + messageId + " does not exist");
+                }
+                Data previousData = message.getData();
 
-      if (!(previousData instanceof CastVote)) {
-        throw new DataHandlingException(
-            previousData, "The previous message of a cast vote was not a CastVote");
-      }
+                if (!(previousData instanceof CastVote)) {
+                  throw new DataHandlingException(
+                      previousData, "The previous message of a cast vote was not a CastVote");
+                }
 
-      CastVote previousCastVote = (CastVote) previousData;
+                CastVote previousCastVote = (CastVote) previousData;
 
-      // Verify the current cast vote message is the last one received
-      if (previousCastVote.getCreation() <= castVote.getCreation()) {
-        updateElectionWithVotes(castVote, messageId, senderPk, election);
-      }
+                // Verify the current cast vote message is the last one received
+                if (previousCastVote.getCreation() <= castVote.getCreation()) {
+                  updateElectionWithVotes(castVote, messageId, senderPk, election);
+                }
+              },
+              Exceptions::propagate);
     }
   }
 

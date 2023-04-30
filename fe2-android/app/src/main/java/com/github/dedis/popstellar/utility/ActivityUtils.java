@@ -1,5 +1,6 @@
 package com.github.dedis.popstellar.utility;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Color;
@@ -7,6 +8,7 @@ import android.graphics.Color;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.*;
+import androidx.room.EmptyResultSetException;
 
 import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.model.objects.Wallet;
@@ -18,6 +20,7 @@ import java.security.GeneralSecurityException;
 import java.util.*;
 import java.util.function.Supplier;
 
+import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
@@ -58,6 +61,7 @@ public class ActivityUtils {
    * @param networkManager, the singleton used across the app
    * @param wallet, the singleton used across the app
    */
+  @SuppressLint("CheckResult")
   public static void activitySavingRoutine(
       GlobalNetworkManager networkManager, Wallet wallet, CoreDao coreDao)
       throws GeneralSecurityException {
@@ -69,28 +73,43 @@ public class ActivityUtils {
     if (subscriptions == null) {
       subscriptions = new HashSet<>();
     }
-
     String[] seed = wallet.exportSeed();
-    Timber.tag(TAG)
-        .d(
-            "seed length: %d, address: %s, subscriptions: %s",
-            seed.length, serverAddress, subscriptions);
 
-    // Search if previous entry was there
-    CoreEntity prev = coreDao.getSettings();
     CoreEntity coreEntity =
         new CoreEntity(
             serverAddress, Collections.unmodifiableList(Arrays.asList(seed)), subscriptions);
-    if (prev != null) {
-      // Use same id such that we can replace the entry
-      coreEntity.setId(prev.getId());
-    }
 
+    // Search if previous entry was there
     coreDao
-        .insert(coreEntity)
+        .getSettings()
         .subscribeOn(Schedulers.io())
         .observeOn(AndroidSchedulers.mainThread())
-        .subscribe();
+        .onErrorResumeNext(
+            err -> {
+              if (err instanceof EmptyResultSetException) {
+                return Single.just(CoreEntity.getEmptyEntity());
+              } else {
+                return Single.error(err);
+              }
+            })
+        .subscribe(
+            entity -> {
+              // Use same id such that we can replace the entry
+              if (!entity.equals(CoreEntity.getEmptyEntity())) {
+                coreEntity.setId(entity.getId());
+              }
+              coreDao
+                  .insert(coreEntity)
+                  .subscribeOn(Schedulers.io())
+                  .observeOn(AndroidSchedulers.mainThread())
+                  .doOnComplete(
+                      () ->
+                          Timber.tag(TAG)
+                              .d(
+                                  "Persisted seed length: %d, address: %s, subscriptions: %s",
+                                  seed.length, serverAddress, coreEntity.getSubscriptions()))
+                  .subscribe();
+            });
   }
 
   /**

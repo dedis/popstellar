@@ -1,5 +1,6 @@
 package com.github.dedis.popstellar.ui.home;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -23,6 +24,8 @@ import java.security.GeneralSecurityException;
 import java.util.function.Supplier;
 
 import dagger.hilt.android.AndroidEntryPoint;
+import io.reactivex.Single;
+import io.reactivex.exceptions.Exceptions;
 import timber.log.Timber;
 
 /** HomeActivity represents the entry point for the application. */
@@ -34,6 +37,7 @@ public class HomeActivity extends AppCompatActivity {
   private HomeViewModel viewModel;
   private HomeActivityBinding binding;
 
+  @SuppressLint("CheckResult")
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -54,17 +58,24 @@ public class HomeActivity extends AppCompatActivity {
     // At start of Activity we display home fragment
     setCurrentFragment(getSupportFragmentManager(), R.id.fragment_home, HomeFragment::newInstance);
 
-    restoreStoredState();
+    restoreStoredState()
+        .subscribe(
+            isWalletSetUp -> {
+              if (isWalletSetUp) {
+                return;
+              }
+              // Open the wallet fragment if no wallet is set up
+              setCurrentFragment(
+                  getSupportFragmentManager(),
+                  R.id.fragment_seed_wallet,
+                  SeedWalletFragment::newInstance);
 
-    if (!viewModel.isWalletSetUp()) {
-      setCurrentFragment(
-          getSupportFragmentManager(), R.id.fragment_seed_wallet, SeedWalletFragment::newInstance);
-
-      new MaterialAlertDialogBuilder(this)
-          .setMessage(R.string.wallet_init_message)
-          .setNeutralButton(R.string.ok, (dialog, which) -> dialog.dismiss())
-          .show();
-    }
+              new MaterialAlertDialogBuilder(this)
+                  .setMessage(R.string.wallet_init_message)
+                  .setNeutralButton(R.string.ok, (dialog, which) -> dialog.dismiss())
+                  .show();
+            },
+            Exceptions::propagate);
   }
 
   private void handleTopAppBar() {
@@ -153,7 +164,7 @@ public class HomeActivity extends AppCompatActivity {
     super.onStop();
 
     try {
-      viewModel.savePersistentData();
+      viewModel.saveCoreData();
     } catch (GeneralSecurityException e) {
       // We do not display the security error to the user
       Timber.tag(TAG).d(e, "Storage was unsuccessful due to wallet error");
@@ -223,8 +234,8 @@ public class HomeActivity extends AppCompatActivity {
         getSupportFragmentManager(), R.id.fragment_container_home, SettingsFragment::newInstance);
   }
 
-  private void restoreStoredState() {
-    viewModel.restoreConnections(this);
+  private Single<Boolean> restoreStoredState() {
+    return viewModel.restoreConnections(this);
   }
 
   public static HomeViewModel obtainViewModel(FragmentActivity activity) {

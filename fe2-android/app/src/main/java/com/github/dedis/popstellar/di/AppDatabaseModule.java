@@ -24,6 +24,7 @@ public class AppDatabaseModule {
   public static AppDatabase provideAppDatabase(Application application) {
     return Room.databaseBuilder(application, AppDatabase.class, "POP-Database")
         .fallbackToDestructiveMigration()
+        // Comment out next line for debugging
         .allowMainThreadQueries()
         .build();
   }

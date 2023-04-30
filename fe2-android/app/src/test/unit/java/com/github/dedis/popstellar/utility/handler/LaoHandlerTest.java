@@ -102,7 +102,7 @@ public class LaoHandlerTest {
 
     // Add the CreateLao message to the LAORepository
     createLaoMessage = new MessageGeneral(SENDER_KEY1, CREATE_LAO1, gson);
-    messageRepo.addMessage(createLaoMessage, false);
+    messageRepo.addMessage(createLaoMessage, false, false);
   }
 
   @Test

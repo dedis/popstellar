@@ -23,6 +23,8 @@ import timber.log.Timber;
 public final class MessageGeneral {
 
   private static final String TAG = MessageGeneral.class.getSimpleName();
+  private static final MessageGeneral EMPTY =
+      new MessageGeneral(null, null, null, null, null, new ArrayList<>());
 
   private final PublicKey sender;
   private final Base64URLData dataBuf;
@@ -32,8 +34,8 @@ public final class MessageGeneral {
   private Signature signature;
   private List<PublicKeySignaturePair> witnessSignatures = new ArrayList<>();
 
-  public static MessageGeneral emptyMessage(MessageID messageID) {
-    return new MessageGeneral(null, null, null, null, messageID, new ArrayList<>());
+  public static MessageGeneral emptyMessage() {
+    return EMPTY;
   }
 
   public MessageGeneral(

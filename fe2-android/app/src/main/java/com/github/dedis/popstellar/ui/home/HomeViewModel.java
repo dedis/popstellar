@@ -6,6 +6,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.*;
+import androidx.room.EmptyResultSetException;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.objects.Wallet;
@@ -25,15 +26,18 @@ import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
 
 import java.security.GeneralSecurityException;
-import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.Executors;
 
 import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
 import io.reactivex.BackpressureStrategy;
+import io.reactivex.Single;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
 @HiltViewModel
@@ -124,52 +128,74 @@ public class HomeViewModel extends AndroidViewModel
                 getApplication().getApplicationContext(), laoData.lao));
   }
 
-  protected void restoreConnections(Context context) {
-    CoreEntity coreEntity = appDatabase.coreDao().getSettings();
-    if (coreEntity == null) {
-      ErrorUtils.logAndShow(context, TAG, R.string.nothing_stored);
-      return;
-    }
-    Timber.tag(TAG).d("Saved state found : %s", coreEntity);
+  protected Single<Boolean> restoreConnections(Context context) {
+    return appDatabase
+        .coreDao()
+        .getSettings()
+        .subscribeOn(Schedulers.io())
+        .observeOn(AndroidSchedulers.mainThread())
+        .onErrorResumeNext(
+            err -> {
+              if (err instanceof EmptyResultSetException) {
+                return Single.just(CoreEntity.getEmptyEntity());
+              } else {
+                return Single.error(err);
+              }
+            })
+        .flatMap(
+            entity -> {
+              if (entity.equals(CoreEntity.getEmptyEntity())) {
+                ErrorUtils.logAndShow(context, TAG, R.string.nothing_stored);
+                return Single.just(false);
+              }
 
-    if (!isWalletSetUp()) {
-      Timber.tag(TAG).d("Restoring wallet");
-      String[] seed = coreEntity.getWalletSeedArray();
-      Timber.tag(TAG).d("seed is %s", Arrays.toString(seed));
-      if (seed.length == 0) {
-        ErrorUtils.logAndShow(
-            getApplication().getApplicationContext(), TAG, R.string.no_seed_storage_found);
-        return;
-      }
-      String appended = String.join(" ", seed);
-      try {
-        importSeed(appended);
-      } catch (GeneralSecurityException | SeedValidationException e) {
-        Timber.tag(TAG).e(e, "error importing seed from storage");
-        return;
-      }
-    }
+              Timber.tag(TAG).d("Saved state found : %s", entity);
 
-    if (coreEntity
-        .getSubscriptions()
-        .equals(networkManager.getMessageSender().getSubscriptions())) {
-      Timber.tag(TAG).d("current state is up to date");
-      return;
-    }
-    Timber.tag(TAG).d("restoring connections");
-    networkManager.connect(coreEntity.getServerAddress(), coreEntity.getSubscriptionsCopy());
-    getApplication()
-        .startActivity(
-            ConnectingActivity.newIntentForHome(getApplication().getApplicationContext()));
+              if (!isWalletSetUp()) {
+                Timber.tag(TAG).d("Restoring wallet");
+                String[] seed = entity.getWalletSeedArray();
+                if (seed.length == 0) {
+                  ErrorUtils.logAndShow(
+                      getApplication().getApplicationContext(),
+                      TAG,
+                      R.string.no_seed_storage_found);
+                  return Single.just(false);
+                }
+                String appended = String.join(" ", seed);
+                Timber.tag(TAG).d("Seed is %s", appended);
+                try {
+                  importSeed(appended);
+                } catch (GeneralSecurityException | SeedValidationException e) {
+                  Timber.tag(TAG).e(e, "Error importing seed from storage");
+                  return Single.just(false);
+                }
+              }
+
+              if (entity
+                  .getSubscriptions()
+                  .equals(networkManager.getMessageSender().getSubscriptions())) {
+                Timber.tag(TAG).d("current state is up to date");
+                return Single.just(true);
+              }
+
+              Timber.tag(TAG).d("restoring connections");
+              networkManager.connect(entity.getServerAddress(), entity.getSubscriptionsCopy());
+              getApplication()
+                  .startActivity(
+                      ConnectingActivity.newIntentForHome(
+                          getApplication().getApplicationContext()));
+              return Single.just(true);
+            });
   }
 
-  public void savePersistentData() throws GeneralSecurityException {
+  public void saveCoreData() throws GeneralSecurityException {
     ActivityUtils.activitySavingRoutine(networkManager, wallet, appDatabase.coreDao());
   }
 
   public void clearStorage() {
-    laoRepository.deleteRepository();
-    appDatabase.clearAllTables();
+    laoRepository.clearRepository();
+    Timber.tag(TAG).d("Clearing all databases in a background thread");
+    Executors.newCachedThreadPool().execute(appDatabase::clearAllTables);
   }
 
   public void importSeed(String seed) throws GeneralSecurityException, SeedValidationException {

@@ -5,6 +5,7 @@ import androidx.room.*;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 
 import io.reactivex.Completable;
+import io.reactivex.Single;
 
 @Dao
 public interface MessageDao {
@@ -13,5 +14,5 @@ public interface MessageDao {
   Completable insert(MessageEntity message);
 
   @Query("SELECT * FROM messages WHERE message_id = :messageId")
-  MessageEntity getMessageById(MessageID messageId);
+  Single<MessageEntity> getMessageById(MessageID messageId);
 }

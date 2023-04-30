@@ -11,6 +11,8 @@ import javax.annotation.Nullable;
 @Entity(tableName = "messages")
 public class MessageEntity {
 
+  private static final MessageEntity EMPTY = new MessageEntity(new MessageID(""), null);
+
   @ColumnInfo(name = "message_id")
   @PrimaryKey
   @NonNull
@@ -41,5 +43,9 @@ public class MessageEntity {
 
   public void setContent(@Nullable MessageGeneral content) {
     this.content = content;
+  }
+
+  public static MessageEntity getEmptyEntity() {
+    return EMPTY;
   }
 }

@@ -16,6 +16,7 @@ import java.util.*;
 
 import javax.inject.Inject;
 
+import io.reactivex.exceptions.Exceptions;
 import timber.log.Timber;
 
 /** Lao messages handler class */
@@ -145,47 +146,55 @@ public final class LaoHandler {
     LaoView laoView = laoRepo.getLaoViewByChannel(channel);
 
     Timber.tag(TAG).d("Receive State Lao Broadcast %s", stateLao.getName());
-    if (!messageRepo.isMessagePresent(stateLao.getModificationId())) {
-      Timber.tag(TAG).d("Can't find modification id : %s", stateLao.getModificationId());
-      // queue it if we haven't received the update message yet
-      throw new InvalidMessageIdException(stateLao, stateLao.getModificationId());
-    }
 
-    Timber.tag(TAG).d("Verifying signatures");
-    for (PublicKeySignaturePair pair : stateLao.getModificationSignatures()) {
-      if (!pair.getWitness().verify(pair.getSignature(), stateLao.getModificationId())) {
-        throw new InvalidSignatureException(stateLao, pair.getSignature());
-      }
-    }
+    messageRepo
+        .isMessagePresent(stateLao.getModificationId(), true)
+        .subscribe(
+            isPresent -> {
+              if (!isPresent) {
+                Timber.tag(TAG).d("Can't find modification id : %s", stateLao.getModificationId());
+                // queue it if we haven't received the update message yet
+                throw new InvalidMessageIdException(stateLao, stateLao.getModificationId());
+              } else {
+                Timber.tag(TAG).d("Verifying signatures");
+                for (PublicKeySignaturePair pair : stateLao.getModificationSignatures()) {
+                  if (!pair.getWitness()
+                      .verify(pair.getSignature(), stateLao.getModificationId())) {
+                    throw new InvalidSignatureException(stateLao, pair.getSignature());
+                  }
+                }
 
-    Timber.tag(TAG).d("Success to verify state lao signatures");
+                Timber.tag(TAG).d("Success to verify state lao signatures");
 
-    // TODO: verify if lao/state_lao is consistent with the lao/update message
+                // TODO: verify if lao/state_lao is consistent with the lao/update message
 
-    Lao lao = laoView.createLaoCopy();
-    lao.setId(stateLao.getId());
-    lao.setWitnesses(stateLao.getWitnesses());
-    lao.setName(stateLao.getName());
-    lao.setLastModified(stateLao.getLastModified());
-    lao.setModificationId(stateLao.getModificationId());
+                Lao lao = laoView.createLaoCopy();
+                lao.setId(stateLao.getId());
+                lao.setWitnesses(stateLao.getWitnesses());
+                lao.setName(stateLao.getName());
+                lao.setLastModified(stateLao.getLastModified());
+                lao.setModificationId(stateLao.getModificationId());
 
-    PublicKey publicKey = keyManager.getMainPublicKey();
-    if (laoView.isOrganizer(publicKey) || laoView.isWitness(publicKey)) {
-      context
-          .getMessageSender()
-          .subscribe(laoView.getChannel().subChannel("consensus"))
-          .subscribe(
-              () -> Timber.tag(TAG).d("Successful subscribe to consensus channel"),
-              e -> Timber.tag(TAG).d(e, "Unsuccessful subscribe to consensus channel"));
-    }
+                PublicKey publicKey = keyManager.getMainPublicKey();
+                if (laoView.isOrganizer(publicKey) || laoView.isWitness(publicKey)) {
+                  context
+                      .getMessageSender()
+                      .subscribe(laoView.getChannel().subChannel("consensus"))
+                      .subscribe(
+                          () -> Timber.tag(TAG).d("Successful subscribe to consensus channel"),
+                          e -> Timber.tag(TAG).d(e, "Unsuccessful subscribe to consensus channel"));
+                }
 
-    // Now we're going to remove all pending updates which came prior to this state lao
-    long targetTime = stateLao.getLastModified();
-    lao.getPendingUpdates()
-        .removeIf(pendingUpdate -> pendingUpdate.getModificationTime() <= targetTime);
+                // Now we're going to remove all pending updates which came prior to this state lao
+                long targetTime = stateLao.getLastModified();
+                lao.getPendingUpdates()
+                    .removeIf(pendingUpdate -> pendingUpdate.getModificationTime() <= targetTime);
 
-    laoRepo.updateLao(lao);
-    laoRepo.updateNodes(channel);
+                laoRepo.updateLao(lao);
+                laoRepo.updateNodes(channel);
+              }
+            },
+            Exceptions::propagate);
   }
 
   public static WitnessMessage updateLaoNameWitnessMessage(
