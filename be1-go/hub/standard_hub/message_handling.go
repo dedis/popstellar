@@ -3,6 +3,7 @@ package standard_hub
 import (
 	"encoding/base64"
 	"encoding/json"
+	"github.com/rs/zerolog/log"
 	"popstellar/crypto"
 	jsonrpc "popstellar/message"
 	"popstellar/message/answer"
@@ -70,6 +71,8 @@ func (h *Hub) handleRootChannelPublishMessage(sock socket.Socket, publish method
 		h.log.Err(err).Msg("failed to create lao")
 		return err
 	}
+
+	log.Debug().Msgf("created lao from message id %s", publish.Params.Message.MessageID)
 
 	h.rootInbox.StoreMessage(publish.Params.Message)
 	h.globalInbox.StoreMessage(publish.Params.Message)
@@ -206,7 +209,10 @@ func (h *Hub) handleAnswer(senderSocket socket.Socket, byteMessage []byte) error
 	if isCatchupQuery {
 		h.handleCatchupAnswer(senderSocket, answerMsg, catchUpQuery)
 	} else if isGetMessagesByIdQuery {
-		h.handleGetMessagesByIdAnswer(senderSocket, answerMsg)
+		err = h.handleGetMessagesByIdAnswer(senderSocket, answerMsg)
+		if err != nil {
+			return err
+		}
 	} else {
 		return xerrors.Errorf("query %v is not catchup or getMessagesById", answerMsg.ID)
 	}
@@ -214,7 +220,7 @@ func (h *Hub) handleAnswer(senderSocket socket.Socket, byteMessage []byte) error
 	return nil
 }
 
-func (h *Hub) handleGetMessagesByIdAnswer(senderSocket socket.Socket, answerMsg answer.Answer) {
+func (h *Hub) handleGetMessagesByIdAnswer(senderSocket socket.Socket, answerMsg answer.Answer) error {
 	messages := answerMsg.Result.GetMessagesByChannel()
 	for channel, messageArray := range messages {
 		for _, msg := range messageArray {
@@ -225,6 +231,16 @@ func (h *Hub) handleGetMessagesByIdAnswer(senderSocket socket.Socket, answerMsg 
 			if err != nil {
 				h.log.Error().Msgf("failed to unmarshal message during getMessagesById answer handling: %v", err)
 				continue
+			}
+
+			signature := messageData.Signature
+			messageID := messageData.MessageID
+			data := messageData.Data
+
+			expectedMessageID := messagedata.Hash(data, signature)
+			if expectedMessageID != messageID {
+				return xerrors.Errorf("message_id is wrong: expected %q found %q",
+					expectedMessageID, messageID)
 			}
 
 			publish := method.Publish{
@@ -251,6 +267,7 @@ func (h *Hub) handleGetMessagesByIdAnswer(senderSocket socket.Socket, answerMsg 
 			}
 		}
 	}
+	return nil
 }
 
 func (h *Hub) handleCatchupAnswer(senderSocket socket.Socket, answerMsg answer.Answer, catchUpQuery method.Catchup) {
@@ -335,6 +352,11 @@ func (h *Hub) handlePublish(socket socket.Socket, byteMessage []byte) (int, erro
 		return publish.ID, nil
 	}
 
+	_, alreadyReceived := h.hubInbox.GetMessage(publish.Params.Message.MessageID)
+	if alreadyReceived {
+		return publish.ID, xerrors.Errorf("message %s was already received", publish.Params.Message.MessageID)
+	}
+
 	channel, err := h.getChan(publish.Params.Channel)
 	if err != nil {
 		return publish.ID, answer.NewInvalidMessageFieldError(getChannelErr, err)
@@ -344,6 +366,10 @@ func (h *Hub) handlePublish(socket socket.Socket, byteMessage []byte) (int, erro
 	if err != nil {
 		return publish.ID, answer.NewInvalidMessageFieldError(publishError, err)
 	}
+
+	h.hubInbox.StoreMessage(publish.Params.Message)
+	h.globalInbox.StoreMessage(publish.Params.Message)
+	h.addMessageId(publish.Params.Channel, publish.Params.Message.MessageID)
 
 	return publish.ID, nil
 }
@@ -551,8 +577,8 @@ func (h *Hub) getMissingMessages(missingIds map[string][]string) (map[string][]m
 	return missingMsgs, nil
 }
 
-// handleReceivedMessage handle a message obtained by the server catching up or receiving a
-// getMessagesById answer
+// handleReceivedMessage handle a message obtained by the server receiving a
+// getMessagesById result
 func (h *Hub) handleReceivedMessage(socket socket.Socket, publish method.Publish) error {
 	h.Lock()
 	_, stored := h.hubInbox.GetMessage(publish.Params.Message.MessageID)
@@ -584,7 +610,6 @@ func (h *Hub) handleReceivedMessage(socket socket.Socket, publish method.Publish
 	h.hubInbox.StoreMessage(publish.Params.Message)
 	h.globalInbox.StoreMessage(publish.Params.Message)
 	h.addMessageId(publish.Params.Channel, publish.Params.Message.MessageID)
-	h.log.Info().Msgf("Added %s to %s", publish.Params.Message.MessageID, publish.Params.Channel)
 	h.Unlock()
 
 	return nil

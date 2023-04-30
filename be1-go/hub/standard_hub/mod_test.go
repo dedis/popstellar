@@ -36,8 +36,7 @@ func Test_Add_Server_Socket(t *testing.T) {
 	sock := &fakeSocket{id: "fakeID"}
 
 	hub.NotifyNewServer(sock)
-	require.NotNil(t, hub.queries.catchupQueries[0])
-	require.Equal(t, 1, hub.queries.nextID)
+	require.Equal(t, 1, hub.serverSockets.Len())
 }
 
 func Test_Create_LAO_Bad_Key(t *testing.T) {
@@ -736,45 +735,6 @@ func Test_Wrong_Root_Publish(t *testing.T) {
 	require.Error(t, sock.err, "only lao#create is allowed on root, but found %s#%s", data.Object, data.Action)
 }
 
-func Test_Handle_Server_Catchup(t *testing.T) {
-	keypair := generateKeyPair(t)
-
-	hub, err := NewHub(keypair.public, "", nolog, nil)
-	require.NoError(t, err)
-
-	serverCatchup := method.Catchup{
-		Base: query.Base{
-			JSONRPCBase: jsonrpc.JSONRPCBase{
-				JSONRPC: "2.0",
-			},
-
-			Method: query.MethodCatchUp,
-		},
-
-		ID: 1,
-
-		Params: struct {
-			Channel string `json:"channel"`
-		}{
-			Channel: "/root",
-		},
-	}
-
-	publishBuf, err := json.Marshal(serverCatchup)
-	require.NoError(t, err)
-
-	sock := &fakeSocket{}
-
-	hub.handleMessageFromServer(&socket.IncomingMessage{
-		Socket:  sock,
-		Message: publishBuf,
-	})
-
-	// check the socket
-	require.NoError(t, sock.err)
-	require.Equal(t, serverCatchup.ID, sock.resultID)
-}
-
 func Test_Handle_Answer(t *testing.T) {
 	keypair := generateKeyPair(t)
 	publicKey64 := base64.URLEncoding.EncodeToString(keypair.publicBuf)
@@ -1097,84 +1057,8 @@ func Test_Receive_Publish_Twice(t *testing.T) {
 	require.Error(t, sock.err, "message %s was already received", publish.Params.Message.MessageID)
 }
 
-// Check that if the server receives a broadcast message, it will call the
-// broadcast function on the appropriate channel.
-func Test_Handle_Broadcast(t *testing.T) {
-	keypair := generateKeyPair(t)
-
-	c := &fakeChannel{}
-
-	hub, err := NewHub(keypair.public, "", nolog, nil)
-	require.NoError(t, err)
-
-	laoID := "XXX"
-
-	hub.channelByID[rootPrefix+laoID] = c
-
-	signature, err := schnorr.Sign(suite, keypair.private, []byte("XXX"))
-	require.NoError(t, err)
-
-	dataBase64 := base64.URLEncoding.EncodeToString([]byte("XXX"))
-	signatureBase64 := base64.URLEncoding.EncodeToString(signature)
-
-	msg := message.Message{
-		Data:              dataBase64,
-		Sender:            base64.URLEncoding.EncodeToString(keypair.publicBuf),
-		Signature:         signatureBase64,
-		MessageID:         messagedata.Hash(dataBase64, signatureBase64),
-		WitnessSignatures: []message.WitnessSignature{},
-	}
-
-	broadcast := method.Broadcast{
-		Base: query.Base{
-			JSONRPCBase: jsonrpc.JSONRPCBase{
-				JSONRPC: "2.0",
-			},
-
-			Method: query.MethodBroadcast,
-		},
-
-		Params: struct {
-			Channel string          `json:"channel"`
-			Message message.Message `json:"message"`
-		}{
-			Channel: rootPrefix + laoID,
-			Message: msg,
-		},
-	}
-
-	broadcastBuf, err := json.Marshal(&broadcast)
-	require.NoError(t, err)
-
-	sock := &fakeSocket{}
-
-	hub.handleMessageFromClient(&socket.IncomingMessage{
-		Socket:  sock,
-		Message: broadcastBuf,
-	})
-
-	// Check the socket
-	require.Error(t, sock.err, "unexpected method: 'broadcast'")
-
-	// Emtpy the socket
-	sock.err = nil
-
-	// Check that there is no errors with messages from witness too
-	hub.handleMessageFromServer(&socket.IncomingMessage{
-		Socket:  sock,
-		Message: broadcastBuf,
-	})
-
-	// Check the socket
-	require.NoError(t, sock.err)
-	require.Equal(t, 0, sock.resultID)
-
-	// Check that the channel has been called with the publish message
-	require.Equal(t, broadcast, c.broadcast)
-}
-
-// Test that a LAO is correctly created when receiveing a broadcast message
-func Test_Create_LAO_Broadcast(t *testing.T) {
+// Test that a LAO is correctly created when receiving a getMessagesById answer
+func Test_Create_LAO_GetMessagesById_Result(t *testing.T) {
 	keypair := generateKeyPair(t)
 
 	fakeChannelFac := &fakeChannelFac{
@@ -1218,32 +1102,44 @@ func Test_Create_LAO_Broadcast(t *testing.T) {
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
-	broadcast := method.Broadcast{
+	result := make(map[string][]message.Message)
+	result["/root"] = []message.Message{msg}
+
+	missingMessages := make(map[string][]string)
+	missingMessages["/root"] = []string{msg.MessageID}
+
+	getMessagesByIdQuery := method.GetMessagesById{
 		Base: query.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
 			},
-
-			Method: query.MethodBroadcast,
-		},
-
-		Params: struct {
-			Channel string          `json:"channel"`
-			Message message.Message `json:"message"`
-		}{
-			Channel: "/root",
-			Message: msg,
-		},
+			Method: query.MethodGetMessagesById,
+		}, ID: 1,
+		Params: missingMessages,
 	}
 
-	publishBuf, err := json.Marshal(&broadcast)
+	queryState := false
+	hub.queries.state[1] = &queryState
+	hub.queries.getMessagesByIdQueries[1] = getMessagesByIdQuery
+
+	ans := struct {
+		JSONRPC string                       `json:"jsonrpc"`
+		ID      int                          `json:"id"`
+		Result  map[string][]message.Message `json:"result"`
+	}{
+		JSONRPC: "2.0",
+		ID:      1,
+		Result:  result,
+	}
+
+	answerBuf, err := json.Marshal(ans)
 	require.NoError(t, err)
 
 	sock := &fakeSocket{}
 
 	hub.handleMessageFromServer(&socket.IncomingMessage{
 		Socket:  sock,
-		Message: publishBuf,
+		Message: answerBuf,
 	})
 
 	require.Equal(t, 0, sock.resultID)
@@ -1263,8 +1159,8 @@ func Test_Create_LAO_Broadcast(t *testing.T) {
 	require.Equal(t, fakeChannelFac.c, hub.channelByID[rootPrefix+data.ID])
 }
 
-// Tests that a broadcast without a valid message id returns an error
-func Test_Create_LAO_Broadcast_Wrong_MessageID(t *testing.T) {
+// Tests that an answer to a getMessagesById without a valid message id returns an error
+func Test_Create_LAO_GetMessagesById_Wrong_MessageID(t *testing.T) {
 	keypair := generateKeyPair(t)
 
 	fakeChannelFac := &fakeChannelFac{
@@ -1309,36 +1205,48 @@ func Test_Create_LAO_Broadcast_Wrong_MessageID(t *testing.T) {
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
-	broadcast := method.Broadcast{
+	result := make(map[string][]message.Message)
+	result["/root"] = []message.Message{msg}
+
+	missingMessages := make(map[string][]string)
+	missingMessages["/root"] = []string{msg.MessageID}
+
+	getMessagesByIdQuery := method.GetMessagesById{
 		Base: query.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
 			},
-
-			Method: query.MethodBroadcast,
-		},
-
-		Params: struct {
-			Channel string          `json:"channel"`
-			Message message.Message `json:"message"`
-		}{
-			Channel: "/root",
-			Message: msg,
-		},
+			Method: query.MethodGetMessagesById,
+		}, ID: 1,
+		Params: missingMessages,
 	}
 
-	publishBuf, err := json.Marshal(&broadcast)
+	queryState := false
+	hub.queries.state[1] = &queryState
+	hub.queries.getMessagesByIdQueries[1] = getMessagesByIdQuery
+
+	ans := struct {
+		JSONRPC string                       `json:"jsonrpc"`
+		ID      int                          `json:"id"`
+		Result  map[string][]message.Message `json:"result"`
+	}{
+		JSONRPC: "2.0",
+		ID:      1,
+		Result:  result,
+	}
+
+	answerBuf, err := json.Marshal(ans)
 	require.NoError(t, err)
 
 	sock := &fakeSocket{}
 
 	hub.handleMessageFromServer(&socket.IncomingMessage{
 		Socket:  sock,
-		Message: publishBuf,
+		Message: answerBuf,
 	})
 
 	expectedMessageID := messagedata.Hash(dataBase64, signatureBase64)
-	require.EqualError(t, sock.err, fmt.Sprintf("failed to handle method: message_id is wrong: expected %q found %q", expectedMessageID, fakeMessageID))
+	require.EqualError(t, sock.err, fmt.Sprintf("failed to handle answer message: message_id is wrong: expected %q found %q", expectedMessageID, fakeMessageID))
 }
 
 // Check that if the server receives a subscribe message, it will call the
@@ -1527,16 +1435,6 @@ func TestServer_Handle_Catchup(t *testing.T) {
 	// check that the channel has been called with the publish message
 	require.Equal(t, catchup, c.catchup)
 	require.Equal(t, fakeMessages, c.msgs)
-
-	// check that there is no errors with messages from witness too
-	hub.handleMessageFromServer(&socket.IncomingMessage{
-		Socket:  sock,
-		Message: publishBuf,
-	})
-
-	// check the socket
-	require.NoError(t, sock.err)
-	require.Equal(t, catchup.ID, sock.resultID)
 
 	// check that the channel has been called with the publish message
 	require.Equal(t, catchup, c.catchup)
