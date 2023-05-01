@@ -3,6 +3,7 @@ package ch.epfl.pop.pubsub
 import akka.actor.{Actor, ActorLogging, ActorRef, Props}
 import akka.event.LoggingReceive
 import akka.pattern.AskableActorRef
+import ch.epfl.pop.decentralized.ConnectionMediator
 import ch.epfl.pop.model.objects.Channel
 import ch.epfl.pop.pubsub.ClientActor._
 import ch.epfl.pop.pubsub.PubSubMediator._
@@ -20,6 +21,10 @@ final case class ClientActor(mediator: ActorRef, connectionMediatorRef: ActorRef
 
   private val mediatorAskable: AskableActorRef = mediator
 
+  // Tell connectionMediator we are online
+  if (isServer)
+    connectionMediatorRef ! ConnectionMediator.NewServerConnected(self)
+
   private def messageWsHandle(event: ClientActorMessage): Unit = event match {
     case ClientAnswer(graphMessage) => wsHandle.fold(())(_ ! graphMessage)
   }
@@ -30,7 +35,10 @@ final case class ClientActor(mediator: ActorRef, connectionMediatorRef: ActorRef
           log.info(s"Connecting wsHandle $wsClient to actor ${this.self}")
           wsHandle = Some(wsClient)
 
-        case DisconnectWsHandle => subscribedChannels.foreach(channel => mediator ! PubSubMediator.UnsubscribeFrom(channel, this.self))
+        case DisconnectWsHandle =>
+          if (isServer)
+            connectionMediatorRef ! ConnectionMediator.ServerLeft(self)
+          subscribedChannels.foreach(channel => mediator ! PubSubMediator.UnsubscribeFrom(channel, this.self))
 
         case ClientActor.SubscribeTo(channel) =>
           val ask: Future[PubSubMediatorMessage] = (mediatorAskable ? PubSubMediator.SubscribeTo(channel, this.self)).map {
