@@ -33,7 +33,7 @@ export const sendPopchaAuthRequest = (
       nonce: nonce,
       identifier: t.publicKey.toString(),
       identifier_proof: signedToken.toString(),
-      popcha_address: popcha_address,
+      popcha_address: popcha_address /* to add response_mode */,
       state: state,
     });
     return publish(popchaChannel, message);

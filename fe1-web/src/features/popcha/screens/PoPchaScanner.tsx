@@ -13,6 +13,8 @@ import { FOUR_SECONDS } from '../../../resources/const';
 import STRINGS from '../../../resources/strings';
 import { PoPchaHooks } from '../hooks';
 import { PoPchaFeature } from '../interface';
+import { PopchaAuthMsg } from '../network/messages/PopchaAuthMsg';
+import { sendPopchaAuthRequest } from '../network/PopchaMessageApi';
 
 const styles = StyleSheet.create({
   container: {
@@ -83,6 +85,28 @@ const PoPchaScanner = () => {
     }
 
     return true;
+  };
+
+  const sendAuthRequest = async (data: string) => {
+    if (!verifyScannedInfo(data)) {
+      return;
+    }
+
+    const url = new URL(data);
+    const urlArg = url.searchParams;
+
+    const authRequest: PopchaAuthMsg = {
+      client_id: urlArg.get('client_id')!,
+      popcha_address: urlArg.get('redirect_uri')!,
+      nonce: urlArg.get('nonce')!,
+      state: urlArg.get('state')!,
+    };
+
+    // const authResponse = await sendPopchaAuthRequest(authRequest);
+    //
+    // if (authResponse) {
+    //   setTextScanned(authResponse);
+    // }
   };
 
   return (
