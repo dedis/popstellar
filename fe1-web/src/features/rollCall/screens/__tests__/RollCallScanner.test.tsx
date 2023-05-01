@@ -236,9 +236,10 @@ describe('RollCallOpened', () => {
   it('shows the correct number of attendees', async () => {
     const mockAttendeePopTokens = [mockPopToken.publicKey.valueOf()];
 
-    const { getByText } = renderRollCallOpened(mockAttendeePopTokens);
+    const { toJSON } = renderRollCallOpened(mockAttendeePopTokens);
 
-    expect(getByText(`${STRINGS.roll_call_scan_counter}: 0`)).toBeTruthy();
+    // counter should be at 0
+    expect(toJSON()).toMatchSnapshot();
 
     await waitFor(() => {
       fakeQrReaderScan(ScannablePopToken.encodePopToken({ pop_token: mockPublicKey2.valueOf() }));
@@ -246,6 +247,7 @@ describe('RollCallOpened', () => {
       expect(mockGenerateToken).toHaveBeenCalled();
     });
 
-    expect(getByText(`${STRINGS.roll_call_scan_counter}: 2`)).toBeTruthy();
+    // counter should be at 2
+    expect(toJSON()).toMatchSnapshot();
   });
 });
