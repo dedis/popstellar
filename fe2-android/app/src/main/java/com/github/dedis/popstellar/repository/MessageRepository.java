@@ -28,8 +28,7 @@ public class MessageRepository {
   private static final String TAG = MessageRepository.class.getSimpleName();
 
   private final Map<MessageID, MessageGeneral> ephemeralMessages = new HashMap<>();
-  private final LruCache<MessageID, MessageGeneral> messageCache =
-      new LruCache<>(CACHED_MESSAGES); // cache up to CACHED_MESSAGES messages
+  private final LruCache<MessageID, MessageGeneral> messageCache = new LruCache<>(CACHED_MESSAGES);
 
   private final MessageDao messageDao;
 

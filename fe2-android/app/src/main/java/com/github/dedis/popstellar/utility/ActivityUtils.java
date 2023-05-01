@@ -69,10 +69,15 @@ public class ActivityUtils {
     if (serverAddress == null) {
       return;
     }
-    Set<Channel> subscriptions = networkManager.getMessageSender().getSubscriptions();
-    if (subscriptions == null) {
+
+    Set<Channel> subscriptions;
+    if (networkManager.getNullableMessageSender() == null
+        || networkManager.getMessageSender().getSubscriptions() == null) {
       subscriptions = new HashSet<>();
+    } else {
+      subscriptions = networkManager.getMessageSender().getSubscriptions();
     }
+
     String[] seed = wallet.exportSeed();
 
     CoreEntity coreEntity =
@@ -107,7 +112,7 @@ public class ActivityUtils {
                           Timber.tag(TAG)
                               .d(
                                   "Persisted seed length: %d, address: %s, subscriptions: %s",
-                                  seed.length, serverAddress, coreEntity.getSubscriptions()))
+                                  seed.length, serverAddress, subscriptions))
                   .subscribe();
             });
   }

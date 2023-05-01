@@ -76,6 +76,10 @@ public class GlobalNetworkManager implements Disposable {
     return networkManager;
   }
 
+  public MessageSender getNullableMessageSender() {
+    return networkManager;
+  }
+
   @Override
   public void dispose() {
     if (networkManager != null) {

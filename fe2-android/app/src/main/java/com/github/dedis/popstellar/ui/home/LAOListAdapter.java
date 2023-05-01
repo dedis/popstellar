@@ -49,7 +49,6 @@ public class LAOListAdapter extends RecyclerView.Adapter<LAOListAdapter.LAOListI
 
   @Override
   public void onBindViewHolder(@NonNull LAOListItemViewHolder holder, int position) {
-
     final String laoId = laoIdList.get(position);
 
     CardView cardView = holder.cardView;

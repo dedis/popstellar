@@ -138,8 +138,7 @@ public final class LaoHandler {
    * @param stateLao the message that was received
    */
   @SuppressLint("CheckResult")
-  public void handleStateLao(HandlerContext context, StateLao stateLao)
-      throws DataHandlingException, UnknownLaoException {
+  public void handleStateLao(HandlerContext context, StateLao stateLao) throws UnknownLaoException {
     Channel channel = context.getChannel();
 
     Timber.tag(TAG).d("Receive State Lao Broadcast msg: %s", stateLao);
@@ -194,7 +193,7 @@ public final class LaoHandler {
                 laoRepo.updateNodes(channel);
               }
             },
-            Exceptions::propagate);
+            Exceptions::throwIfFatal);
   }
 
   public static WitnessMessage updateLaoNameWitnessMessage(

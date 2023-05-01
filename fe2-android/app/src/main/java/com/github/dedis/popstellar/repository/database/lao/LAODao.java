@@ -17,4 +17,7 @@ public interface LAODao {
 
   @Query("SELECT lao FROM laos")
   Single<List<Lao>> getAllLaos();
+
+  @Query("SELECT lao FROM laos WHERE lao_id = :laoId")
+  Single<Lao> getLaoById(String laoId);
 }

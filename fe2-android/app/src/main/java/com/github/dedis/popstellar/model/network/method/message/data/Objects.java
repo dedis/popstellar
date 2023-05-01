@@ -46,8 +46,8 @@ public enum Objects {
   public boolean hasToBePersisted() {
     switch (object) {
       case "lao":
-        // TODO: add persistence for election, coin and roll calls
-        // case "election":
+      case "election":
+        // TODO: add persistence for coin and roll calls
         // case "coin":
         // case "roll_call":
         // Persist LAO, ELECTION, COIN, ROLL CALL

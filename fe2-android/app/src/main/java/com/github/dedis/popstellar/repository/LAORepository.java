@@ -114,7 +114,7 @@ public class LAORepository {
     }
 
     LaoView laoView = new LaoView(lao);
-    LAOEntity laoEntity = new LAOEntity(lao);
+    LAOEntity laoEntity = new LAOEntity(lao.getId(), lao);
 
     // Update the persistent storage in background (replace if already existing)
     laoDao

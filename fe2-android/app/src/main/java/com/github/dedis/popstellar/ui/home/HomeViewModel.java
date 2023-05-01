@@ -193,6 +193,7 @@ public class HomeViewModel extends AndroidViewModel
   }
 
   public void clearStorage() {
+    networkManager.dispose();
     laoRepository.clearRepository();
     Timber.tag(TAG).d("Clearing all databases in a background thread");
     Executors.newCachedThreadPool().execute(appDatabase::clearAllTables);
