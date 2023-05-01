@@ -29,8 +29,6 @@ public abstract class MessageValidator {
     // Defines how old messages can be to be considered valid, keeping it non-restrictive here for
     // now
     public static final long VALID_DELAY = 100000000;
-    private final long CURRENT_TIME = Instant.now().getEpochSecond();
-    private final long VALID_PAST_TIME = CURRENT_TIME - VALID_DELAY;
 
     /**
      * Helper method to check that a LAO id is valid.
@@ -50,18 +48,21 @@ public abstract class MessageValidator {
     }
 
     /**
-     * Helper method to check that times are reasonably recent.The time values provided are assumed
-     * to be in Unix epoch time (UTC).
+     * Helper method to check that times are reasonably recent and not in the future. The time
+     * values provided are assumed to be in Unix epoch time (UTC).
      *
      * @param times time values to be checked
-     * @throws IllegalArgumentException if times are too far in the past
+     * @throws IllegalArgumentException if times are too far in the past or in the future
      */
     public MessageValidatorBuilder validPastTimes(Long... times) {
+      long currentTime = Instant.now().getEpochSecond();
+      long validPastTime = currentTime - VALID_DELAY;
+
       for (long time : times) {
-        if (time < VALID_PAST_TIME) {
+        if (time < validPastTime) {
           throw new IllegalArgumentException("Time cannot be too far in the past");
         }
-        if (time > CURRENT_TIME) {
+        if (time > currentTime) {
           throw new IllegalArgumentException("Time cannot be in the future");
         }
       }
@@ -72,8 +73,8 @@ public abstract class MessageValidator {
      * Helper method to check that times in a Data are ordered. The time values provided are assumed
      * to be in Unix epoch time (UTC).
      *
-     * @param times time values to be checked
-     * @throws IllegalArgumentException if the times are not in ascending order second
+     * @param times time values in the desired ascending order
+     * @throws IllegalArgumentException if the times are not in ascending order
      */
     public MessageValidatorBuilder orderedTimes(Long... times) {
       for (int i = 0; i < times.length - 1; i++) {
