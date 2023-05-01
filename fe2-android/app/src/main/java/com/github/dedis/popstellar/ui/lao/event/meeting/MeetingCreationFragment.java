@@ -36,6 +36,10 @@ public class MeetingCreationFragment extends AbstractEventCreationFragment {
     return new MeetingCreationFragment();
   }
 
+  public MeetingCreationFragment() {
+    // Required empty public constructor
+  }
+
   @Override
   public View onCreateView(
       @NonNull LayoutInflater inflater,

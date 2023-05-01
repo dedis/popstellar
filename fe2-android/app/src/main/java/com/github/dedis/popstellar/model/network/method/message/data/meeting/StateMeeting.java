@@ -68,7 +68,7 @@ public class StateMeeting extends Data {
     if (end != 0) {
       this.end = end;
     } else {
-      this.end = start + 3600;
+      this.end = start + 60 * 60;
     }
     this.modificationId = modificationId;
     this.modificationSignatures = new ArrayList<>(modificationSignatures);

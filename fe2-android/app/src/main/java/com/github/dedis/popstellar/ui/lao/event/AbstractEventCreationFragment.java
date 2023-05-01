@@ -59,9 +59,7 @@ public abstract class AbstractEventCreationFragment extends Fragment {
     }
   }
 
-  protected void createEvent() {
-    // Do nothing here, as it needs to be overridden
-  }
+  protected abstract void createEvent();
 
   public void setDateAndTimeView(View view) {
     long currentMillis = System.currentTimeMillis();

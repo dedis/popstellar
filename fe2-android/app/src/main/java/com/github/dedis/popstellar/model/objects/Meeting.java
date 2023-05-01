@@ -6,6 +6,7 @@ import com.github.dedis.popstellar.model.Immutable;
 import com.github.dedis.popstellar.model.objects.event.*;
 import com.github.dedis.popstellar.utility.security.Hash;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Immutable
@@ -38,7 +39,7 @@ public class Meeting extends Event {
     this.location = location;
     this.lastModified = lastModified;
     this.modificationId = modificationId;
-    this.modificationSignatures = modificationSignatures;
+    this.modificationSignatures = new ArrayList<>(modificationSignatures);
   }
 
   public String getId() {

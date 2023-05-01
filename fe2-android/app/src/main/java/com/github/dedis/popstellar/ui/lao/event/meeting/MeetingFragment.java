@@ -32,7 +32,7 @@ public class MeetingFragment extends AbstractEventFragment {
   private Meeting meeting;
 
   public MeetingFragment() {
-    // Empty constructor
+    // Required empty public constructor
   }
 
   public static MeetingFragment newInstance(String id) {

@@ -55,13 +55,13 @@ public class MeetingRepository {
    * This provides an observable of a meeting that triggers an update when modified
    *
    * @param laoId the id of the Lao
-   * @param id the id of the meeting
+   * @param meetingId the id of the meeting
    * @return the observable wrapping the wanted meeting
    * @throws UnknownMeetingException if no meeting with the provided id could be found
    */
-  public Observable<Meeting> getMeetingObservable(String laoId, String id)
+  public Observable<Meeting> getMeetingObservable(String laoId, String meetingId)
       throws UnknownMeetingException {
-    return getLaoMeetings(laoId).getMeetingObservable(id);
+    return getLaoMeetings(laoId).getMeetingObservable(meetingId);
   }
 
   public Meeting getMeetingWithId(String laoId, String meetingId) throws UnknownMeetingException {

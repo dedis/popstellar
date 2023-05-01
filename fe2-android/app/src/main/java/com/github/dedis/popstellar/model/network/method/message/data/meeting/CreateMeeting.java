@@ -52,7 +52,7 @@ public class CreateMeeting extends Data {
     if (end != 0) {
       this.end = end;
     } else {
-      this.end = start + 3600;
+      this.end = start + 60 * 60;
     }
   }
 
