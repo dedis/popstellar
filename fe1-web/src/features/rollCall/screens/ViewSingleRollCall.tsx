@@ -41,13 +41,14 @@ const ViewSingleRollCall = () => {
   const isConnected = RollCallHooks.useConnectedToLao();
   const rollCall = useSelector(selectRollCall);
 
-  const attendeePopTokens = useMemo(
-    () => [
-      ...(attendeePopTokensStrings?.map((k) => new PublicKey(k)) || []),
-      ...(rollCall?.attendees || []),
-    ],
-    [attendeePopTokensStrings, rollCall?.attendees],
-  );
+  const attendeePopTokens = useMemo(() => {
+    // if attendeePopTokens is defined, it means we come from the scanner -> take the tokens from there
+    // otherwise, take the tokens from the roll call
+    if (attendeePopTokensStrings) {
+      return attendeePopTokensStrings.map((k) => new PublicKey(k));
+    }
+    return rollCall?.attendees || [];
+  }, [attendeePopTokensStrings, rollCall?.attendees]);
 
   if (!rollCall) {
     throw new Error(`Could not find a roll call with id ${rollCallId}`);
