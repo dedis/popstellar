@@ -51,7 +51,8 @@ public class MultiMsgWebSocketClient extends WebSocketClient {
   }
 
 
-  public void publish(String data, String channel){
+  public void publish(Json dataJason, String channel){
+    String data = dataJason.toString();
     Random random = new Random();
     int id = random.nextInt();
     idAssociatedWithSentMessages.put(data, id);
@@ -64,11 +65,12 @@ public class MultiMsgWebSocketClient extends WebSocketClient {
     jsonConverter.setSenderPk(nonAttendeePk);
   }
 
-  public String getBackendResponse(String data){
-    return getBackendResponseWithOrWithoutBroadcasts(data, false);
+  public String getBackendResponse(Json dataJson){
+    return getBackendResponseWithOrWithoutBroadcasts(dataJson, false);
   }
 
-  public String getBackendResponseWithOrWithoutBroadcasts(String data, boolean withBroadcasts){
+  public String getBackendResponseWithOrWithoutBroadcasts(Json dataJson, boolean withBroadcasts){
+    String data = dataJson.toString();
     assert idAssociatedWithSentMessages.containsKey(data);
     int idData = idAssociatedWithSentMessages.get(data);
     if (idAssociatedWithAnswers.containsKey(idData)){

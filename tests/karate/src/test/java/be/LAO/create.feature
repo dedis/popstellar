@@ -47,6 +47,7 @@ Feature: Create a pop LAO
     And json answer = frontend.getBackendResponse(JSON.stringify(badLaoReq))
     Then match answer contains INVALID_MESSAGE_FIELD
     And match frontend.receiveNoMoreResponses() == true
+
   Scenario: Create Lao with invalid id hash should fail with an error response
     Given def badLaoReq =
       """
@@ -64,6 +65,7 @@ Feature: Create a pop LAO
     And json answer = frontend.getBackendResponse(JSON.stringify(badLaoReq))
     Then match answer contains INVALID_MESSAGE_FIELD
     And match frontend.receiveNoMoreResponses() == true
+
   Scenario: Create should succeed with a valid creation request
     Given def laoCreateRequest =
       """
