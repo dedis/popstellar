@@ -23,7 +23,6 @@ import { ROLLCALL_FEATURE_IDENTIFIER, RollCallReactContext } from 'features/roll
 import { RollCall } from 'features/rollCall/objects';
 import { addRollCall, rollCallReducer } from 'features/rollCall/reducer';
 import { getWalletState, walletReducer } from 'features/wallet/reducer';
-import STRINGS from 'resources/strings';
 
 import { requestCloseRollCall as mockRequestCloseRollCall } from '../../network/RollCallMessageApi';
 import RollCallScanner, { RollCallOpenedHeaderLeft } from '../RollCallScanner';
