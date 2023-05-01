@@ -38,8 +38,8 @@ Feature: Cast a vote
           ]
         }
       """
-    When frontend.publish(JSON.stringify(validCastVote), electionChannel)
-    And json answer = frontend.getBackendResponse(JSON.stringify(validCastVote))
+    When frontend.publish(validCastVote, electionChannel)
+    And json answer = frontend.getBackendResponse(validCastVote)
     Then match answer contains VALID_MESSAGE
     And match frontend.receiveNoMoreResponses() == true
 
@@ -64,8 +64,8 @@ Feature: Cast a vote
           ]
         }
       """
-    When frontend.publish(JSON.stringify(validCastVote), laoChannel)
-    And json answer = frontend.getBackendResponse(JSON.stringify(validCastVote))
+    When frontend.publish(validCastVote, laoChannel)
+    And json answer = frontend.getBackendResponse(validCastVote)
     Then match answer contains INVALID_MESSAGE_FIELD
     And match frontend.receiveNoMoreResponses() == true
 
@@ -90,10 +90,11 @@ Feature: Cast a vote
           ]
         }
       """
-    When frontend.publish(JSON.stringify(validCastVote), electionChannel)
-    And json answer = frontend.getBackendResponse(JSON.stringify(validCastVote))
+    When frontend.publish(validCastVote, electionChannel)
+    And json answer = frontend.getBackendResponse(validCastVote)
     Then match answer contains INVALID_MESSAGE_FIELD
     And match frontend.receiveNoMoreResponses() == true
+
   # Testing if after creating an election correctly, the backend returns an error
   # upon casting a vote but with wrong vote id
   Scenario: Casting a vote with wrong vote id should return an error
@@ -115,10 +116,11 @@ Feature: Cast a vote
           ]
         }
       """
-    When frontend.publish(JSON.stringify(invalidCastVote), electionChannel)
-    And json answer = frontend.getBackendResponse(JSON.stringify(invalidCastVote))
+    When frontend.publish(invalidCastVote, electionChannel)
+    And json answer = frontend.getBackendResponse(invalidCastVote)
     Then match answer contains INVALID_MESSAGE_FIELD
     And match frontend.receiveNoMoreResponses() == true
+
   # Testing if after creating an election correctly, the backend returns an error
   # upon casting a vote but with lao id as vote id
   Scenario: Casting a vote with lao id as vote id should return an error
@@ -140,8 +142,8 @@ Feature: Cast a vote
           ]
         }
       """
-    When frontend.publish(JSON.stringify(invalidCastVote), electionChannel)
-    And json answer = frontend.getBackendResponse(JSON.stringify(invalidCastVote))
+    When frontend.publish(invalidCastVote, electionChannel)
+    And json answer = frontend.getBackendResponse(invalidCastVote)
     Then match answer contains INVALID_MESSAGE_FIELD
     And match frontend.receiveNoMoreResponses() == true
 
@@ -167,8 +169,8 @@ Feature: Cast a vote
         }
       """
     And frontend.changeSenderToBeNonAttendee()
-    When frontend.publish(JSON.stringify(invalidCastVote), electionChannel)
-    And json answer = frontend.getBackendResponse(JSON.stringify(invalidCastVote))
+    When frontend.publish(invalidCastVote, electionChannel)
+    And json answer = frontend.getBackendResponse(invalidCastVote)
     Then match answer contains INVALID_MESSAGE_FIELD
     And match frontend.receiveNoMoreResponses() == true
 
@@ -192,7 +194,7 @@ Feature: Cast a vote
           ]
         }
       """
-    When frontend.publish(JSON.stringify(invalidCastVote), electionChannel)
-    And json answer = frontend.getBackendResponse(JSON.stringify(invalidCastVote))
+    When frontend.publish(invalidCastVote, electionChannel)
+    And json answer = frontend.getBackendResponse(invalidCastVote)
     Then match answer contains INVALID_MESSAGE_FIELD
     And match frontend.receiveNoMoreResponses() == true
