@@ -51,7 +51,9 @@ public class MultiMsgWebSocketClient extends WebSocketClient {
   }
 
 
-  public void publish(String data, String channel){
+  public void publish(Map<String, Object> jsonDataMap, String channel){
+    Json dataJson = Json.of(jsonDataMap);
+    String data = dataJson.toString();
     Random random = new Random();
     int id = random.nextInt();
     idAssociatedWithSentMessages.put(data, id);
@@ -64,11 +66,13 @@ public class MultiMsgWebSocketClient extends WebSocketClient {
     jsonConverter.setSenderPk(nonAttendeePk);
   }
 
-  public String getBackendResponse(String data){
-    return getBackendResponseWithOrWithoutBroadcasts(data, false);
+  public String getBackendResponse(Map<String, Object> jsonDataMap){
+    return getBackendResponseWithOrWithoutBroadcasts(jsonDataMap, false);
   }
 
-  public String getBackendResponseWithOrWithoutBroadcasts(String data, boolean withBroadcasts){
+  public String getBackendResponseWithOrWithoutBroadcasts(Map<String, Object> jsonDataMap, boolean withBroadcasts){
+    Json dataJson = Json.of(jsonDataMap);
+    String data = dataJson.toString();
     assert idAssociatedWithSentMessages.containsKey(data);
     int idData = idAssociatedWithSentMessages.get(data);
     if (idAssociatedWithAnswers.containsKey(idData)){
@@ -98,8 +102,8 @@ public class MultiMsgWebSocketClient extends WebSocketClient {
     throw new IllegalArgumentException("No answer from the backend");
   }
 
-  public String getBackendResponseWithElectionResults(String data){
-    String answer = getBackendResponseWithOrWithoutBroadcasts(data, true);
+  public String getBackendResponseWithElectionResults(Map<String, Object> jsonDataMap){
+    String answer = getBackendResponseWithOrWithoutBroadcasts(jsonDataMap, true);
     Base64.Decoder decoder = Base64.getDecoder();
     for (String broadcast : broadcasts) {
       String base64Data =
