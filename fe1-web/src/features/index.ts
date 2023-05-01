@@ -127,6 +127,7 @@ export function configureFeatures() {
 
   const popchaConfiguration = popcha.configure({
     useCurrentLaoId: laoConfiguration.hooks.useCurrentLaoId,
+    generateToken: walletConfiguration.functions.generateToken,
   });
 
   // compose features

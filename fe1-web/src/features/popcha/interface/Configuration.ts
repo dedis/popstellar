@@ -1,10 +1,11 @@
-import { Hash } from '../../../core/objects';
+import { Hash, PopToken } from '../../../core/objects';
 import FeatureInterface from '../../../core/objects/FeatureInterface';
 import { PoPchaFeature } from './Features';
 
 export const POPCHA_FEATURE_IDENTIFIER = 'popcha';
 
 export interface PoPchaConfiguration {
+  generateToken: (laoId: Hash, clientId: Hash | undefined) => Promise<PopToken>;
   useCurrentLaoId: () => Hash;
 }
 
