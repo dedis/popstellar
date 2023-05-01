@@ -79,8 +79,8 @@ Feature: Create a pop LAO
           "witnesses": []
         }
       """
-    When frontend.publish(JSON.stringify(laoCreateRequest), channel)
-    And json answer = frontend.getBackendResponse(JSON.stringify(laoCreateRequest))
+    When frontend.publish(laoCreateRequest, channel)
+    And json answer = frontend.getBackendResponse(laoCreateRequest)
     Then match answer contains VALID_MESSAGE
     And match frontend.receiveNoMoreResponses() == true
 
