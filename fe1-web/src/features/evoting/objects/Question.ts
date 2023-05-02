@@ -1,6 +1,8 @@
 import { Hash, HashState, ProtocolError } from 'core/objects';
 import { OmitMethods } from 'core/types';
 
+import Strings from '../../../resources/strings';
+
 export interface QuestionState {
   id: HashState;
   question: string;
@@ -8,6 +10,15 @@ export interface QuestionState {
   ballot_options: string[];
   write_in: boolean;
 }
+
+export const EMPTY_QUESTION: QuestionState = {
+  question: '',
+  id: '',
+  // for now only plurality voting is supported (2022-03-16, Tyratox) (Comment moved, 2023-04-05, MeKHell)
+  voting_method: Strings.election_method_Plurality,
+  ballot_options: [],
+  write_in: false,
+};
 
 export class Question {
   public readonly id: Hash;

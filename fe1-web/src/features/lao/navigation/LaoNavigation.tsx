@@ -9,7 +9,7 @@ import {
 import React, { useMemo } from 'react';
 import { StyleSheet, Text, View, ViewStyle } from 'react-native';
 
-import NavigationPadding from 'core/components/NavigationPadding';
+import ButtonPadding from 'core/components/ButtonPadding';
 import { makeIcon } from 'core/components/PoPIcon';
 import { AppScreen } from 'core/navigation/AppNavigation';
 import { drawerNavigationOptions } from 'core/navigation/ScreenOptions';
@@ -121,7 +121,7 @@ const LaoNavigation: React.FC<unknown> = () => {
           Icon: makeIcon('invite'),
           Component: InviteScreen,
           headerShown: true,
-          headerRight: NavigationPadding,
+          headerRight: ButtonPadding,
           order: -1,
         } as LaoFeature.LaoScreen,
         {
