@@ -22,8 +22,9 @@ final case class ClientActor(mediator: ActorRef, connectionMediatorRef: ActorRef
   private val mediatorAskable: AskableActorRef = mediator
 
   // Tell connectionMediator we are online
-  if (isServer)
+  if (isServer) {
     connectionMediatorRef ! ConnectionMediator.NewServerConnected(self)
+  }
 
   private def messageWsHandle(event: ClientActorMessage): Unit = event match {
     case ClientAnswer(graphMessage) => wsHandle.fold(())(_ ! graphMessage)
@@ -36,9 +37,10 @@ final case class ClientActor(mediator: ActorRef, connectionMediatorRef: ActorRef
           wsHandle = Some(wsClient)
 
         case DisconnectWsHandle =>
-          if (isServer)
-            connectionMediatorRef ! ConnectionMediator.ServerLeft(self)
           subscribedChannels.foreach(channel => mediator ! PubSubMediator.UnsubscribeFrom(channel, this.self))
+          if (isServer) {
+            connectionMediatorRef ! ConnectionMediator.ServerLeft(self)
+          }
 
         case ClientActor.SubscribeTo(channel) =>
           val ask: Future[PubSubMediatorMessage] = (mediatorAskable ? PubSubMediator.SubscribeTo(channel, this.self)).map {

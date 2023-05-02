@@ -40,6 +40,8 @@ object PublishSubscribe {
         val portResponseHandler = 4
         val totalPorts = 5
 
+        val totalBroadcastPort = 2
+
         /* building blocks */
         // input message from the client
         val input = builder.add(Flow[Message].collect { case TextMessage.Strict(s) => println(s">>> Incoming message : $s"); s })
@@ -66,7 +68,7 @@ object PublishSubscribe {
         val responsePartition = builder.add(GetMessagesByIdResponseHandler.graph(dbActorRef.actorRef))
 
         val merger = builder.add(Merge[GraphMessage](totalPorts))
-        val broadcast = builder.add(Broadcast[GraphMessage](2))
+        val broadcast = builder.add(Broadcast[GraphMessage](totalBroadcastPort))
 
         val monitorSink = builder.add(Monitor.sink(monitorRef))
         val jsonRpcAnswerGenerator = builder.add(AnswerGenerator.generator)
