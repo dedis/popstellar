@@ -6,6 +6,7 @@ import { View } from 'react-native';
 import { PoPIcon } from 'core/components';
 import { PublicKey } from 'core/objects';
 import { Color, Icon, List, Typography } from 'core/styles';
+import STRINGS from 'resources/strings';
 
 const AttendeeList = ({ popTokens }: IPropTypes) => {
   return (
@@ -15,7 +16,7 @@ const AttendeeList = ({ popTokens }: IPropTypes) => {
         content={
           <ListItem.Content>
             <ListItem.Title style={[Typography.base, Typography.important]}>
-              Attendees
+              {STRINGS.roll_call_attendees}
             </ListItem.Title>
           </ListItem.Content>
         }
