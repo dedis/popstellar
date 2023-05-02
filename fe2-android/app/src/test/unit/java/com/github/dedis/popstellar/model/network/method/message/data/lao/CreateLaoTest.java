@@ -1,10 +1,5 @@
 package com.github.dedis.popstellar.model.network.method.message.data.lao;
 
-import static com.github.dedis.popstellar.testutils.Base64DataUtils.generatePublicKey;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.*;
-
 import com.github.dedis.popstellar.model.network.JsonTestUtils;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
@@ -13,16 +8,23 @@ import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.testutils.Base64DataUtils;
 import com.github.dedis.popstellar.utility.security.Hash;
 import com.google.gson.JsonParseException;
+
+import org.junit.Test;
+
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import org.junit.Test;
+
+import static com.github.dedis.popstellar.testutils.Base64DataUtils.generatePublicKey;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.*;
 
 public class CreateLaoTest {
 
   private final String name = " Lao name";
-  private final long creation = 0xC972;
+  private final long creation = Instant.now().getEpochSecond();
   private final PublicKey organizer = generatePublicKey();
   private final List<PublicKey> witnesses = Arrays.asList(generatePublicKey(), generatePublicKey());
   private final String id = Lao.generateLaoId(organizer, creation, name);
@@ -35,7 +37,7 @@ public class CreateLaoTest {
 
   @Test(expected = IllegalArgumentException.class)
   public void constructorFailsInvalidIdHashTest() {
-    String wrongId = "A" + id.substring(1);
+    String wrongId = "?" + id.substring(1);
     new CreateLao(wrongId, name, creation, organizer, witnesses);
   }
 

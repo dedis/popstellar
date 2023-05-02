@@ -31,6 +31,7 @@ import org.mockito.junit.MockitoTestRule;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.*;
 
 import javax.inject.Inject;
@@ -62,12 +63,12 @@ public class ElectionFragmentTest {
   private static final String LAO_NAME = "lao";
   private static final KeyPair SENDER_KEY = generateKeyPair();
   private static final PublicKey SENDER = SENDER_KEY.getPublicKey();
-  private static final Lao LAO = new Lao(LAO_NAME, SENDER, 10223421);
+  private static final long CREATION = Instant.now().getEpochSecond() - 1000;
+  private static final Lao LAO = new Lao(LAO_NAME, SENDER, CREATION);
   private static final String LAO_ID = LAO.getId();
   private static final String TITLE = "Election name";
-  private static final long CREATION = 10323411;
-  private static final long START = 10323421;
-  private static final long END = 10323431;
+  private static final long START = CREATION + 10;
+  private static final long END = CREATION + 20;
   private static final String ROLL_CALL_DESC = "";
   private static final String LOCATION = "EPFL";
   private final RollCall ROLL_CALL =
@@ -192,7 +193,7 @@ public class ElectionFragmentTest {
     InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
     verify(messageSenderHelper.getMockedSender())
-        .publish(any(), eq(ELECTION.getChannel()), any(OpenElection.class));
+        .publish(any(), eq(ELECTION.getChannel()), any(ElectionOpen.class));
     messageSenderHelper.assertSubscriptions();
   }
 

@@ -101,7 +101,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
           String newUrl = (String) newValue;
 
           try {
-            MessageValidator.verify().checkValidUrl(newUrl);
+            MessageValidator.verify().validUrl(newUrl);
             // Save the server url
             NetworkLogger.setServerUrl(newUrl);
             // Enable the switch preference based on URL validity

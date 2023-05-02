@@ -55,9 +55,12 @@ public class StateMeeting extends Data {
       long end,
       String modificationId,
       List<String> modificationSignatures) {
-    MessageValidator.verify()
-        .checkBase64(laoId, "lao id")
-        .checkValidStateMeetingId(id, laoId, creation, name);
+    MessageValidator.MessageValidatorBuilder builder =
+        MessageValidator.verify()
+            .isBase64(laoId, "lao id")
+            .validStateMeetingId(id, laoId, creation, name)
+            .validPastTimes(creation)
+            .orderedTimes(creation, start);
 
     this.id = id;
     this.name = name;
@@ -66,6 +69,7 @@ public class StateMeeting extends Data {
     this.location = location;
     this.start = start;
     if (end != 0) {
+      builder.orderedTimes(start, end);
       this.end = end;
     } else {
       this.end = start + 60 * 60;

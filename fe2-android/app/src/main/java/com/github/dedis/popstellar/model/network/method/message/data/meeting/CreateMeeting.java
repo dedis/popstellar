@@ -1,5 +1,7 @@
 package com.github.dedis.popstellar.model.network.method.message.data.meeting;
 
+import androidx.annotation.NonNull;
+
 import com.github.dedis.popstellar.model.Immutable;
 import com.github.dedis.popstellar.model.network.method.message.data.*;
 import com.github.dedis.popstellar.model.objects.Meeting;
@@ -33,16 +35,19 @@ public class CreateMeeting extends Data {
    * @throws IllegalArgumentException if the id is invalid
    */
   public CreateMeeting(
-      String laoId,
-      String id,
-      String name,
+      @NonNull String laoId,
+      @NonNull String id,
+      @NonNull String name,
       long creation,
       @Nullable String location,
       long start,
       long end) {
-    MessageValidator.verify()
-        .checkBase64(laoId, "lao id")
-        .checkValidCreateMeetingId(id, laoId, creation, name);
+    MessageValidator.MessageValidatorBuilder builder =
+        MessageValidator.verify()
+            .isBase64(laoId, "lao id")
+            .validCreateMeetingId(id, laoId, creation, name)
+            .validPastTimes(creation)
+            .orderedTimes(creation, start);
 
     this.id = id;
     this.name = name;
@@ -50,6 +55,7 @@ public class CreateMeeting extends Data {
     this.location = location;
     this.start = start;
     if (end != 0) {
+      builder.orderedTimes(start, end);
       this.end = end;
     } else {
       this.end = start + 60 * 60;

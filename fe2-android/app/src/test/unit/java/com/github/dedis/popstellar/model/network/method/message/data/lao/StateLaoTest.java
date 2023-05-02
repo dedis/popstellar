@@ -24,8 +24,8 @@ import static org.junit.Assert.*;
 public class StateLaoTest {
 
   private final String name = " Lao name";
-  private final long creation = 0x10;
-  private final long lastModified = 0x999;
+  private final long creation = Instant.now().getEpochSecond() - 10000;
+  private final long lastModified = creation + 1;
   private final PublicKey organizer = generatePublicKey();
   private final MessageID modificationId = generateMessageID();
   private final Set<PublicKey> witnesses = Sets.newSet(generatePublicKey(), generatePublicKey());
@@ -230,13 +230,13 @@ public class StateLaoTest {
             modificationId,
             witnesses,
             modificationSignatures));
-    newId = Lao.generateLaoId(organizer, 99, name);
+    newId = Lao.generateLaoId(organizer, creation - 1, name);
     assertNotEquals(
         stateLao,
         new StateLao(
             newId,
             name,
-            99,
+            creation - 1,
             lastModified,
             organizer,
             modificationId,
@@ -248,7 +248,7 @@ public class StateLaoTest {
             id,
             name,
             creation,
-            1000,
+            creation + 10,
             organizer,
             modificationId,
             witnesses,

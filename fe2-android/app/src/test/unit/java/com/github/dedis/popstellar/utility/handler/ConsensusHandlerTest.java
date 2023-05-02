@@ -26,6 +26,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.time.Instant;
 import java.util.*;
 
 import io.reactivex.Completable;
@@ -48,7 +49,7 @@ public class ConsensusHandlerTest {
   private static final PublicKey NODE_2 = NODE_2_KEY.getPublicKey();
   private static final PublicKey NODE_3 = NODE_3_KEY.getPublicKey();
 
-  private static final long CREATION_TIME = 946684800;
+  private static final long CREATION_TIME = Instant.now().getEpochSecond();
   private static final String LAO_NAME = "laoName";
   private static final String LAO_ID = Lao.generateLaoId(ORGANIZER, CREATION_TIME, LAO_NAME);
   private static final Channel CONSENSUS_CHANNEL =
@@ -151,7 +152,7 @@ public class ConsensusHandlerTest {
   // election)
   private void handleConsensusElectTest()
       throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
-          UnknownElectionException, NoRollCallException  {
+          UnknownElectionException, NoRollCallException {
     messageHandler.handleMessage(messageSender, CONSENSUS_CHANNEL, electMsg);
 
     Lao updatedLao = laoRepo.getLaoViewByChannel(Channel.getLaoChannel(LAO_ID)).createLaoCopy();
