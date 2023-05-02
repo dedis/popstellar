@@ -1,5 +1,7 @@
 package com.github.dedis.popstellar.di;
 
+import android.content.Context;
+
 import com.github.dedis.popstellar.model.network.method.message.data.DataRegistry;
 import com.github.dedis.popstellar.repository.*;
 import com.github.dedis.popstellar.utility.handler.data.*;
@@ -7,47 +9,60 @@ import com.github.dedis.popstellar.utility.security.KeyManager;
 
 import org.mockito.Mockito;
 
+import javax.inject.Singleton;
+
 /** This class helps in the creation of the DataRegistry */
+@Singleton
 public class DataRegistryModuleHelper {
 
-  public static DataRegistry buildRegistry() {
-    return buildRegistry(new LAORepository(), Mockito.mock(KeyManager.class));
+  public static DataRegistry buildRegistry(Context context) {
+    return buildRegistry(
+        context,
+        new LAORepository(AppDatabaseModuleHelper.getAppDatabase(context)),
+        Mockito.mock(KeyManager.class));
   }
 
-  public static DataRegistry buildRegistry(LAORepository laoRepository, KeyManager keyManager) {
+  public static DataRegistry buildRegistry(
+      Context context, LAORepository laoRepository, KeyManager keyManager) {
     return buildRegistry(
         laoRepository,
         new SocialMediaRepository(),
         new ElectionRepository(),
         new RollCallRepository(),
         new DigitalCashRepository(),
-        new MessageRepository(),
+        new MessageRepository(AppDatabaseModuleHelper.getAppDatabase(context)),
         keyManager,
         new ServerRepository());
   }
 
   public static DataRegistry buildRegistry(
-      LAORepository laoRepository, KeyManager keyManager, RollCallRepository rollCallRepo) {
+      Context context,
+      LAORepository laoRepository,
+      KeyManager keyManager,
+      RollCallRepository rollCallRepo) {
     return buildRegistry(
         laoRepository,
         new SocialMediaRepository(),
         new ElectionRepository(),
         rollCallRepo,
         new DigitalCashRepository(),
-        new MessageRepository(),
+        new MessageRepository(AppDatabaseModuleHelper.getAppDatabase(context)),
         keyManager,
         new ServerRepository());
   }
 
   public static DataRegistry buildRegistry(
-      LAORepository laoRepository, ElectionRepository electionRepo, KeyManager keyManager) {
+      Context context,
+      LAORepository laoRepository,
+      ElectionRepository electionRepo,
+      KeyManager keyManager) {
     return buildRegistry(
         laoRepository,
         new SocialMediaRepository(),
         electionRepo,
         new RollCallRepository(),
         new DigitalCashRepository(),
-        new MessageRepository(),
+        new MessageRepository(AppDatabaseModuleHelper.getAppDatabase(context)),
         keyManager,
         new ServerRepository());
   }
@@ -69,6 +84,7 @@ public class DataRegistryModuleHelper {
   }
 
   public static DataRegistry buildRegistry(
+      Context context,
       LAORepository laoRepo,
       SocialMediaRepository socialMediaRepo,
       RollCallRepository rollCallRepo,
@@ -79,7 +95,7 @@ public class DataRegistryModuleHelper {
         new ElectionRepository(),
         rollCallRepo,
         new DigitalCashRepository(),
-        new MessageRepository(),
+        new MessageRepository(AppDatabaseModuleHelper.getAppDatabase(context)),
         keyManager,
         new ServerRepository());
   }
@@ -101,14 +117,14 @@ public class DataRegistryModuleHelper {
   }
 
   public static DataRegistry buildRegistry(
-      DigitalCashRepository digitalCashRepo, KeyManager keyManager) {
+      Context context, DigitalCashRepository digitalCashRepo, KeyManager keyManager) {
     return buildRegistry(
-        new LAORepository(),
+        new LAORepository(AppDatabaseModuleHelper.getAppDatabase(context)),
         new SocialMediaRepository(),
         new ElectionRepository(),
         new RollCallRepository(),
         digitalCashRepo,
-        new MessageRepository(),
+        new MessageRepository(AppDatabaseModuleHelper.getAppDatabase(context)),
         keyManager,
         new ServerRepository());
   }

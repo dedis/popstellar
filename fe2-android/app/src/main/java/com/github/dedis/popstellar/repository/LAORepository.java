@@ -69,8 +69,9 @@ public class LAORepository {
                     laoById.put(lao.getId(), lao);
                     subjectById.put(lao.getId(), BehaviorSubject.createDefault(new LaoView(lao)));
                   });
-              laosSubject.onNext(laos.stream().map(Lao::getId).collect(Collectors.toList()));
-              Timber.tag(TAG).d("Loaded all the LAOs from database");
+              List<String> laoIds = laos.stream().map(Lao::getId).collect(Collectors.toList());
+              laosSubject.onNext(laoIds);
+              Timber.tag(TAG).d("Loaded all the LAOs from database: %s", laoIds);
             });
   }
 

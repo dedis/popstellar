@@ -2,9 +2,8 @@ package com.github.dedis.popstellar.utility.handler.data;
 
 import android.annotation.SuppressLint;
 
-import static com.github.dedis.popstellar.model.objects.event.EventState.*;
-
 import androidx.annotation.NonNull;
+
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.election.*;
 import com.github.dedis.popstellar.model.objects.*;
@@ -13,11 +12,14 @@ import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.*;
 import com.github.dedis.popstellar.utility.error.*;
+
 import java.util.*;
+
 import javax.inject.Inject;
 
-import io.reactivex.exceptions.Exceptions;
 import timber.log.Timber;
+
+import static com.github.dedis.popstellar.model.objects.event.EventState.*;
 
 /** Election messages handler class */
 public final class ElectionHandler {
@@ -221,29 +223,23 @@ public final class ElectionHandler {
       }
 
       // Retrieve previous message and make sure it is a CastVote
-      messageRepo
-          .getMessage(previousMessageId)
-          .subscribe(
-              message -> {
-                if (message == null) {
-                  throw new IllegalStateException(
-                      "The message corresponding to " + messageId + " does not exist");
-                }
-                Data previousData = message.getData();
+      Data previousData = messageRepo.getMessage(previousMessageId).getData();
+      if (previousData == null) {
+        throw new IllegalStateException(
+            "The message corresponding to " + messageId + " does not exist");
+      }
 
-                if (!(previousData instanceof CastVote)) {
-                  throw new DataHandlingException(
-                      previousData, "The previous message of a cast vote was not a CastVote");
-                }
+      if (!(previousData instanceof CastVote)) {
+        throw new DataHandlingException(
+            previousData, "The previous message of a cast vote was not a CastVote");
+      }
 
-                CastVote previousCastVote = (CastVote) previousData;
+      CastVote previousCastVote = (CastVote) previousData;
 
-                // Verify the current cast vote message is the last one received
-                if (previousCastVote.getCreation() <= castVote.getCreation()) {
-                  updateElectionWithVotes(castVote, messageId, senderPk, election);
-                }
-              },
-              Exceptions::propagate);
+      // Verify the current cast vote message is the last one received
+      if (previousCastVote.getCreation() <= castVote.getCreation()) {
+        updateElectionWithVotes(castVote, messageId, senderPk, election);
+      }
     }
   }
 

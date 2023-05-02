@@ -46,14 +46,16 @@ public enum Objects {
   public boolean hasToBePersisted() {
     switch (object) {
       case "lao":
-      case "election":
-        // TODO: add persistence for coin and roll calls
-        // case "coin":
-        // case "roll_call":
-        // Persist LAO, ELECTION, COIN, ROLL CALL
         return true;
+        // TODO: add persistence for other repos
+      case "election":
+      case "coin":
+      case "roll_call":
+      case "meeting":
+      case "consensus":
+      case "chirp":
+      case "message":
       default:
-        // Don't persist MEETING, WITNESSING, SOCIAL MEDIA, CONSENSUS
         return false;
     }
   }

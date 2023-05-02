@@ -6,7 +6,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.*;
-import androidx.room.EmptyResultSetException;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.objects.Wallet;
@@ -33,11 +32,8 @@ import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
 import io.reactivex.BackpressureStrategy;
-import io.reactivex.Single;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
 @HiltViewModel
@@ -128,64 +124,45 @@ public class HomeViewModel extends AndroidViewModel
                 getApplication().getApplicationContext(), laoData.lao));
   }
 
-  protected Single<Boolean> restoreConnections(Context context) {
-    return appDatabase
-        .coreDao()
-        .getSettings()
-        .subscribeOn(Schedulers.io())
-        .observeOn(AndroidSchedulers.mainThread())
-        .onErrorResumeNext(
-            err -> {
-              if (err instanceof EmptyResultSetException) {
-                return Single.just(CoreEntity.getEmptyEntity());
-              } else {
-                return Single.error(err);
-              }
-            })
-        .flatMap(
-            entity -> {
-              if (entity.equals(CoreEntity.getEmptyEntity())) {
-                ErrorUtils.logAndShow(context, TAG, R.string.nothing_stored);
-                return Single.just(false);
-              }
+  public boolean restoreConnections(Context context) {
+    CoreEntity coreEntity = appDatabase.coreDao().getSettings();
+    if (coreEntity == null) {
+      ErrorUtils.logAndShow(context, TAG, R.string.nothing_stored);
+      return false;
+    }
 
-              Timber.tag(TAG).d("Saved state found : %s", entity);
+    Timber.tag(TAG).d("Saved state found : %s", coreEntity);
 
-              if (!isWalletSetUp()) {
-                Timber.tag(TAG).d("Restoring wallet");
-                String[] seed = entity.getWalletSeedArray();
-                if (seed.length == 0) {
-                  ErrorUtils.logAndShow(
-                      getApplication().getApplicationContext(),
-                      TAG,
-                      R.string.no_seed_storage_found);
-                  return Single.just(false);
-                }
-                String appended = String.join(" ", seed);
-                Timber.tag(TAG).d("Seed is %s", appended);
-                try {
-                  importSeed(appended);
-                } catch (GeneralSecurityException | SeedValidationException e) {
-                  Timber.tag(TAG).e(e, "Error importing seed from storage");
-                  return Single.just(false);
-                }
-              }
+    if (!isWalletSetUp()) {
+      Timber.tag(TAG).d("Restoring wallet");
+      String[] seed = coreEntity.getWalletSeedArray();
+      if (seed.length == 0) {
+        ErrorUtils.logAndShow(
+            getApplication().getApplicationContext(), TAG, R.string.no_seed_storage_found);
+        return false;
+      }
+      String appended = String.join(" ", seed);
+      Timber.tag(TAG).d("Seed is %s", appended);
+      try {
+        importSeed(appended);
+      } catch (GeneralSecurityException | SeedValidationException e) {
+        Timber.tag(TAG).e(e, "Error importing seed from storage");
+        return false;
+      }
+    }
 
-              if (entity
-                  .getSubscriptions()
-                  .equals(networkManager.getMessageSender().getSubscriptions())) {
-                Timber.tag(TAG).d("current state is up to date");
-                return Single.just(true);
-              }
-
-              Timber.tag(TAG).d("restoring connections");
-              networkManager.connect(entity.getServerAddress(), entity.getSubscriptionsCopy());
-              getApplication()
-                  .startActivity(
-                      ConnectingActivity.newIntentForHome(
-                          getApplication().getApplicationContext()));
-              return Single.just(true);
-            });
+    if (coreEntity
+        .getSubscriptions()
+        .equals(networkManager.getMessageSender().getSubscriptions())) {
+      Timber.tag(TAG).d("Current state is up to date");
+    } else {
+      Timber.tag(TAG).d("Restoring connections");
+      networkManager.connect(coreEntity.getServerAddress(), coreEntity.getSubscriptionsCopy());
+      getApplication()
+          .startActivity(
+              ConnectingActivity.newIntentForHome(getApplication().getApplicationContext()));
+    }
+    return true;
   }
 
   public void saveCoreData() throws GeneralSecurityException {

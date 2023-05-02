@@ -2,6 +2,7 @@ package com.github.dedis.popstellar.repository.remote;
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import com.github.dedis.popstellar.di.DataRegistryModuleHelper;
 import com.github.dedis.popstellar.di.JsonModule;
@@ -99,7 +100,9 @@ public class LAONetworkManagerTest {
         new LAONetworkManager(
             handler,
             connection,
-            JsonModule.provideGson(DataRegistryModuleHelper.buildRegistry()),
+            JsonModule.provideGson(
+                DataRegistryModuleHelper.buildRegistry(
+                    InstrumentationRegistry.getInstrumentation().getContext())),
             schedulerProvider,
             new HashSet<>());
 
@@ -135,7 +138,9 @@ public class LAONetworkManagerTest {
         new LAONetworkManager(
             handler,
             connection,
-            JsonModule.provideGson(DataRegistryModuleHelper.buildRegistry()),
+            JsonModule.provideGson(
+                DataRegistryModuleHelper.buildRegistry(
+                    InstrumentationRegistry.getInstrumentation().getContext())),
             schedulerProvider,
             new HashSet<>());
 
@@ -170,7 +175,9 @@ public class LAONetworkManagerTest {
         new LAONetworkManager(
             handler,
             connection,
-            JsonModule.provideGson(DataRegistryModuleHelper.buildRegistry()),
+            JsonModule.provideGson(
+                DataRegistryModuleHelper.buildRegistry(
+                    InstrumentationRegistry.getInstrumentation().getContext())),
             schedulerProvider,
             new HashSet<>());
 
@@ -207,7 +214,9 @@ public class LAONetworkManagerTest {
         new LAONetworkManager(
             handler,
             connection,
-            JsonModule.provideGson(DataRegistryModuleHelper.buildRegistry()),
+            JsonModule.provideGson(
+                DataRegistryModuleHelper.buildRegistry(
+                    InstrumentationRegistry.getInstrumentation().getContext())),
             schedulerProvider,
             new HashSet<>());
 
@@ -250,7 +259,9 @@ public class LAONetworkManagerTest {
         new LAONetworkManager(
             handler,
             connection,
-            JsonModule.provideGson(DataRegistryModuleHelper.buildRegistry()),
+            JsonModule.provideGson(
+                DataRegistryModuleHelper.buildRegistry(
+                    InstrumentationRegistry.getInstrumentation().getContext())),
             schedulerProvider,
             new HashSet<>());
 
@@ -292,7 +303,9 @@ public class LAONetworkManagerTest {
         new LAONetworkManager(
             handler,
             connection,
-            JsonModule.provideGson(DataRegistryModuleHelper.buildRegistry()),
+            JsonModule.provideGson(
+                DataRegistryModuleHelper.buildRegistry(
+                    InstrumentationRegistry.getInstrumentation().getContext())),
             schedulerProvider,
             new HashSet<>());
 
@@ -363,7 +376,9 @@ public class LAONetworkManagerTest {
         new LAONetworkManager(
             handler,
             connection,
-            JsonModule.provideGson(DataRegistryModuleHelper.buildRegistry()),
+            JsonModule.provideGson(
+                DataRegistryModuleHelper.buildRegistry(
+                    InstrumentationRegistry.getInstrumentation().getContext())),
             schedulerProvider,
             new HashSet<>());
 

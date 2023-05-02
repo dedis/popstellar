@@ -8,7 +8,6 @@ import android.graphics.Color;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.*;
-import androidx.room.EmptyResultSetException;
 
 import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.model.objects.Wallet;
@@ -20,7 +19,6 @@ import java.security.GeneralSecurityException;
 import java.util.*;
 import java.util.function.Supplier;
 
-import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
@@ -84,37 +82,22 @@ public class ActivityUtils {
         new CoreEntity(
             serverAddress, Collections.unmodifiableList(Arrays.asList(seed)), subscriptions);
 
-    // Search if previous entry was there
+    // Search if previous entry was there, in case take same id to replace
+    CoreEntity previous = coreDao.getSettings();
+    if (previous != null) {
+      coreEntity.setId(previous.getId());
+    }
+
     coreDao
-        .getSettings()
+        .insert(coreEntity)
         .subscribeOn(Schedulers.io())
         .observeOn(AndroidSchedulers.mainThread())
-        .onErrorResumeNext(
-            err -> {
-              if (err instanceof EmptyResultSetException) {
-                return Single.just(CoreEntity.getEmptyEntity());
-              } else {
-                return Single.error(err);
-              }
-            })
         .subscribe(
-            entity -> {
-              // Use same id such that we can replace the entry
-              if (!entity.equals(CoreEntity.getEmptyEntity())) {
-                coreEntity.setId(entity.getId());
-              }
-              coreDao
-                  .insert(coreEntity)
-                  .subscribeOn(Schedulers.io())
-                  .observeOn(AndroidSchedulers.mainThread())
-                  .doOnComplete(
-                      () ->
-                          Timber.tag(TAG)
-                              .d(
-                                  "Persisted seed length: %d, address: %s, subscriptions: %s",
-                                  seed.length, serverAddress, subscriptions))
-                  .subscribe();
-            });
+            () ->
+                Timber.tag(TAG)
+                    .d(
+                        "Persisted seed length: %d, address: %s, subscriptions: %s",
+                        seed.length, serverAddress, subscriptions));
   }
 
   /**

@@ -10,20 +10,18 @@ import java.util.*;
 @Entity(tableName = "core")
 public class CoreEntity {
 
-  private static final CoreEntity EMPTY = new CoreEntity("", new ArrayList<>(0), new HashSet<>(0));
-
   @PrimaryKey(autoGenerate = true)
   private int id;
 
   @ColumnInfo(name = "server_address")
   @NonNull
-  private String serverAddress;
+  private final String serverAddress;
 
   @ColumnInfo(name = "wallet_seed")
   @NonNull
-  private List<String> walletSeed;
+  private final List<String> walletSeed;
 
-  @NonNull private Set<Channel> subscriptions;
+  @NonNull private final Set<Channel> subscriptions;
 
   public CoreEntity(
       @NonNull String serverAddress,
@@ -57,28 +55,12 @@ public class CoreEntity {
     return subscriptions;
   }
 
-  public void setServerAddress(@NonNull String serverAddress) {
-    this.serverAddress = serverAddress;
-  }
-
-  public void setWalletSeed(@NonNull List<String> walletSeed) {
-    this.walletSeed = walletSeed;
-  }
-
-  public void setSubscriptions(@NonNull Set<Channel> subscriptions) {
-    this.subscriptions = subscriptions;
-  }
-
   public String[] getWalletSeedArray() {
     return walletSeed.toArray(new String[0]);
   }
 
   public Set<Channel> getSubscriptionsCopy() {
     return new HashSet<>(subscriptions);
-  }
-
-  public static CoreEntity getEmptyEntity() {
-    return EMPTY;
   }
 
   @NonNull

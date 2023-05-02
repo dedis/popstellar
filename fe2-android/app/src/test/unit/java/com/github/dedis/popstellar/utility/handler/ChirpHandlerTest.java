@@ -1,21 +1,27 @@
 package com.github.dedis.popstellar.utility.handler;
 
+import android.content.Context;
+
+import androidx.test.core.app.ApplicationProvider;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+
+import com.github.dedis.popstellar.di.AppDatabaseModuleHelper;
 import com.github.dedis.popstellar.model.network.method.message.data.socialmedia.AddChirp;
 import com.github.dedis.popstellar.model.network.method.message.data.socialmedia.DeleteChirp;
 import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.security.*;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.SocialMediaRepository;
+import com.github.dedis.popstellar.repository.database.AppDatabase;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.utility.error.*;
 import com.github.dedis.popstellar.utility.handler.data.ChirpHandler;
 import com.github.dedis.popstellar.utility.handler.data.HandlerContext;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.MockitoAnnotations;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -28,7 +34,7 @@ import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.*;
 
 @HiltAndroidTest
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(AndroidJUnit4.class)
 public class ChirpHandlerTest {
 
   private static final KeyPair SENDER_KEY = generateKeyPair();
@@ -53,6 +59,7 @@ public class ChirpHandlerTest {
   private static final DeleteChirp DELETE_CHIRP = new DeleteChirp(CHIRP_ID, DELETION_TIME);
 
   private ChirpHandler handler;
+  private AppDatabase appDatabase;
 
   @Mock MessageSender messageSender;
   @Mock SocialMediaRepository socialMediaRepo;
@@ -61,9 +68,17 @@ public class ChirpHandlerTest {
   public void setup()
       throws GeneralSecurityException, DataHandlingException, IOException, UnknownLaoException {
     // Instantiate the dependencies here such that they are reset for each test
-    LAORepository laoRepo = new LAORepository();
+    MockitoAnnotations.openMocks(this);
+    Context context = ApplicationProvider.getApplicationContext();
+    appDatabase = AppDatabaseModuleHelper.getAppDatabase(context);
+    LAORepository laoRepo = new LAORepository(appDatabase);
     laoRepo.updateLao(LAO);
     handler = new ChirpHandler(laoRepo, socialMediaRepo);
+  }
+
+  @After
+  public void tearDown() {
+    appDatabase.close();
   }
 
   @Test

@@ -24,8 +24,6 @@ import java.security.GeneralSecurityException;
 import java.util.function.Supplier;
 
 import dagger.hilt.android.AndroidEntryPoint;
-import io.reactivex.Single;
-import io.reactivex.exceptions.Exceptions;
 import timber.log.Timber;
 
 /** HomeActivity represents the entry point for the application. */
@@ -58,24 +56,16 @@ public class HomeActivity extends AppCompatActivity {
     // At start of Activity we display home fragment
     setCurrentFragment(getSupportFragmentManager(), R.id.fragment_home, HomeFragment::newInstance);
 
-    restoreStoredState()
-        .subscribe(
-            isWalletSetUp -> {
-              if (isWalletSetUp) {
-                return;
-              }
-              // Open the wallet fragment if no wallet is set up
-              setCurrentFragment(
-                  getSupportFragmentManager(),
-                  R.id.fragment_seed_wallet,
-                  SeedWalletFragment::newInstance);
+    if (!restoreStoredState()) {
+      // Open the wallet fragment if no wallet is set up
+      setCurrentFragment(
+          getSupportFragmentManager(), R.id.fragment_seed_wallet, SeedWalletFragment::newInstance);
 
-              new MaterialAlertDialogBuilder(this)
-                  .setMessage(R.string.wallet_init_message)
-                  .setNeutralButton(R.string.ok, (dialog, which) -> dialog.dismiss())
-                  .show();
-            },
-            Exceptions::propagate);
+      new MaterialAlertDialogBuilder(this)
+          .setMessage(R.string.wallet_init_message)
+          .setNeutralButton(R.string.ok, (dialog, which) -> dialog.dismiss())
+          .show();
+    }
   }
 
   private void handleTopAppBar() {
@@ -234,7 +224,7 @@ public class HomeActivity extends AppCompatActivity {
         getSupportFragmentManager(), R.id.fragment_container_home, SettingsFragment::newInstance);
   }
 
-  private Single<Boolean> restoreStoredState() {
+  private boolean restoreStoredState() {
     return viewModel.restoreConnections(this);
   }
 

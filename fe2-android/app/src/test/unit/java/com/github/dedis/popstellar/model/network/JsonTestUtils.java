@@ -1,5 +1,7 @@
 package com.github.dedis.popstellar.model.network;
 
+import android.content.Context;
+
 import com.github.dedis.popstellar.di.DataRegistryModuleHelper;
 import com.github.dedis.popstellar.di.JsonModule;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
@@ -14,7 +16,11 @@ import static org.junit.Assert.assertEquals;
 
 public class JsonTestUtils {
 
-  private static final Gson GSON = JsonModule.provideGson(DataRegistryModuleHelper.buildRegistry());
+  private static Gson GSON;
+
+  public static void loadGSON(Context context) {
+    GSON = JsonModule.provideGson(DataRegistryModuleHelper.buildRegistry(context));
+  }
 
   public static String loadFile(String path) {
     InputStream is = JsonTestUtils.class.getClassLoader().getResourceAsStream(path);
