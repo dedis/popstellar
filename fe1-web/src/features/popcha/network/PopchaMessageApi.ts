@@ -35,7 +35,7 @@ export const sendPopchaAuthRequest = (
       nonce: nonce,
       identifier: t.publicKey.toString(),
       identifier_proof: signedToken.toString(),
-      popcha_address: popcha_address /* to add response_mode */,
+      popcha_address: popcha_address,
       state: state || undefined,
       response_mode: response_mode || undefined,
     });
