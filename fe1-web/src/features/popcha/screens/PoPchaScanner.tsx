@@ -15,7 +15,6 @@ import { FOUR_SECONDS } from '../../../resources/const';
 import STRINGS from '../../../resources/strings';
 import { PoPchaHooks } from '../hooks';
 import { PoPchaFeature } from '../interface';
-import { PopchaAuthMsg } from '../network/messages/PopchaAuthMsg';
 import { sendPopchaAuthRequest } from '../network/PopchaMessageApi';
 
 const styles = StyleSheet.create({
