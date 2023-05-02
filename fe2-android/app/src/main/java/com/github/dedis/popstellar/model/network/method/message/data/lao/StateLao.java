@@ -59,9 +59,10 @@ public class StateLao extends Data {
       List<PublicKeySignaturePair> modificationSignatures) {
     // Organizer and witnesses are checked to be base64 at deserialization
     MessageValidator.verify()
-        .checkValidOrderedTimes(creation, lastModified)
-        .checkValidLaoId(id, organizer, creation, name)
-        .checkBase64(modificationId.getEncoded(), "Modification ID");
+        .orderedTimes(creation, lastModified)
+        .validPastTimes(creation, lastModified)
+        .validLaoId(id, organizer, creation, name)
+        .isBase64(modificationId.getEncoded(), "Modification ID");
 
     this.id = id;
     this.name = name;

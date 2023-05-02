@@ -395,7 +395,7 @@ public class ElectionSetupFragmentTest {
     assertEquals(expectedEndTime, electionSetup.getEndTime());
 
     assertEquals(ELECTION_NAME, electionSetup.getName());
-    assertEquals(LAO.getId(), electionSetup.getLao());
+    assertEquals(LAO.getId(), electionSetup.getLaoId());
 
     List<ElectionQuestion> questionList = electionSetup.getQuestions();
     assertEquals(2, questionList.size());

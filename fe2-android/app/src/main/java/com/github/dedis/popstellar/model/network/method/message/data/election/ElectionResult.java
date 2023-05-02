@@ -1,9 +1,10 @@
 package com.github.dedis.popstellar.model.network.method.message.data.election;
 
+import androidx.annotation.NonNull;
 import com.github.dedis.popstellar.model.Immutable;
-import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.network.method.message.data.*;
-
+import com.github.dedis.popstellar.model.network.method.message.data.Objects;
+import com.github.dedis.popstellar.utility.MessageValidator;
 import java.util.*;
 
 @Immutable
@@ -11,10 +12,9 @@ public class ElectionResult extends Data {
 
   private final List<ElectionResultQuestion> questions;
 
-  public ElectionResult(List<ElectionResultQuestion> questions) {
-    if (questions == null || questions.isEmpty()) {
-      throw new IllegalArgumentException();
-    }
+  public ElectionResult(@NonNull List<ElectionResultQuestion> questions) {
+    MessageValidator.verify().listNotEmpty(questions).noListDuplicates(questions);
+
     this.questions = Collections.unmodifiableList(questions);
   }
 

@@ -39,9 +39,7 @@ public class CreateLao extends Data {
       @NonNull PublicKey organizer,
       @NonNull List<PublicKey> witnesses) {
     // Organizer and witnesses are checked to be base64 at deserialization
-    MessageValidator.verify()
-        .checkValidLaoId(id, organizer, creation, name)
-        .checkValidTime(creation);
+    MessageValidator.verify().validLaoId(id, organizer, creation, name).validPastTimes(creation);
 
     this.id = id;
     this.name = name;

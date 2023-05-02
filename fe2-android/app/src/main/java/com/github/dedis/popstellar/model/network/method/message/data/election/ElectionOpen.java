@@ -4,10 +4,11 @@ import androidx.annotation.NonNull;
 
 import com.github.dedis.popstellar.model.Immutable;
 import com.github.dedis.popstellar.model.network.method.message.data.*;
+import com.github.dedis.popstellar.utility.MessageValidator;
 import com.google.gson.annotations.SerializedName;
 
 @Immutable
-public final class OpenElection extends Data {
+public final class ElectionOpen extends Data {
 
   @NonNull
   @SerializedName("lao")
@@ -20,7 +21,18 @@ public final class OpenElection extends Data {
   @SerializedName("opened_at")
   private final long openedAt;
 
-  public OpenElection(@NonNull String laoId, @NonNull String electionId, long openedAt) {
+  /**
+   * @param laoId id of the LAO
+   * @param electionId id of the election
+   * @param openedAt timestamp of election opening
+   */
+  public ElectionOpen(@NonNull String laoId, @NonNull String electionId, long openedAt) {
+    // The election open handler checks that lao and election id match with an existing lao
+    MessageValidator.verify()
+        .isBase64(laoId, "lao id")
+        .isBase64(electionId, "election id")
+        .validPastTimes(openedAt);
+
     this.laoId = laoId;
     this.electionId = electionId;
     this.openedAt = openedAt;
@@ -58,7 +70,7 @@ public final class OpenElection extends Data {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    OpenElection election = (OpenElection) o;
+    ElectionOpen election = (ElectionOpen) o;
 
     return openedAt == election.openedAt
         && laoId.equals(election.laoId)
@@ -74,6 +86,6 @@ public final class OpenElection extends Data {
   @Override
   public String toString() {
     return String.format(
-        "OpenElection{lao='%s', election='%s', opened_at=%s}", laoId, electionId, openedAt);
+        "ElectionOpen{lao='%s', election='%s', opened_at=%s}", laoId, electionId, openedAt);
   }
 }
