@@ -109,7 +109,7 @@ export const afterMessageProcessingHandler =
  * being called after every dispatch(). Thus it is possible that a
  * message has skipped unprocessedIds and we have to check allIds as well
  * @param store The redux store
- * @param getCurrentLaoId The current LAO id
+ * @param getCurrentLaoId A function that returns the current LAO id
  * @param afterProcessingHandler The function to execute
  * @returns The listener that can be passed to store.subscribe()
  */
@@ -165,12 +165,11 @@ export const makeWitnessStoreWatcher = (
 
     if (laoId !== lastLaoId) {
       lastLaoId = laoId;
-      messagesToWitness = messagesToWitness.concat(laoToWitnessableId[laoId.valueOf()] || []);
+      messagesToWitness = [...messagesToWitness, ...(laoToWitnessableId[laoId.valueOf()] || [])];
       laoToWitnessableId[laoId.valueOf()] = [];
     }
     /*
-      We remove the message that are not part of the current lao.
-      This should not be a problem
+      We keep track of the messages that are not in this LaoId
      */
     messagesToWitness
       .map((msgId) => ExtendedMessage.fromState(msgState.byId[msgId]))
