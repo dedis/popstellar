@@ -14,6 +14,7 @@ import { PopchaAuthMsg } from './messages/PopchaAuthMsg';
  * @param nonce nonce
  * @param popcha_address address of the popcha server
  * @param state state
+ * @param response_mode response mode (optional) ('query' or 'fragment')
  * @param laoId id of the lao
  * @returns A promise that resolves when the message has been sent
  */
@@ -21,7 +22,8 @@ export const sendPopchaAuthRequest = (
   client_id: Hash,
   nonce: string,
   popcha_address: string,
-  state: string,
+  state: string | null,
+  response_mode: string | null,
   laoId: Hash,
 ): Promise<void> => {
   const token = generateToken(laoId, client_id);
@@ -34,7 +36,8 @@ export const sendPopchaAuthRequest = (
       identifier: t.publicKey.toString(),
       identifier_proof: signedToken.toString(),
       popcha_address: popcha_address /* to add response_mode */,
-      state: state,
+      state: state || undefined,
+      response_mode: response_mode || undefined,
     });
     return publish(popchaChannel, message);
   });

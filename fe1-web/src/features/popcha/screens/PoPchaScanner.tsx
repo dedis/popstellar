@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { StyleSheet, Text, View, ViewStyle } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 
+import { Hash } from 'core/objects';
+
 import { makeIcon } from '../../../core/components/PoPIcon';
 import PoPTouchableOpacity from '../../../core/components/PoPTouchableOpacity';
 import QrCodeScanner, {
@@ -68,12 +70,35 @@ const PoPchaScanner = () => {
       'nonce',
       'response_type',
       'scope',
-      'state',
     ];
 
+    // Check if all required arguments are present
     for (const arg of requiredArguments) {
       if (!urlArg.has(arg)) {
         showErrorMessage(`Missing argument ${arg}`);
+        return false;
+      }
+    }
+
+    // Check if the response respects openid standard
+    if (urlArg.get('response_type') !== 'id_token token') {
+      showErrorMessage('Invalid response type');
+      return false;
+    }
+
+    if (!(urlArg.get('scope')!.includes('openid') && urlArg.get('scope')!.includes('profile'))) {
+      showErrorMessage('Invalid scope');
+      return false;
+    }
+
+    if (urlArg.has('resonse_mode')) {
+      if (
+        !(
+          urlArg.get('response_mode')!.includes('query') ||
+          urlArg.get('response_mode')!.includes('fragment')
+        )
+      ) {
+        showErrorMessage('Invalid response mode');
         return false;
       }
     }
@@ -87,26 +112,36 @@ const PoPchaScanner = () => {
     return true;
   };
 
+  /**
+   * Send an auth request to the server
+   * @param data the scanned data
+   * @returns true if the auth request was sent successfully, false otherwise
+   */
   const sendAuthRequest = async (data: string) => {
     if (!verifyScannedInfo(data)) {
-      return;
+      return false;
     }
 
     const url = new URL(data);
     const urlArg = url.searchParams;
 
-    const authRequest: PopchaAuthMsg = {
-      client_id: urlArg.get('client_id')!,
-      popcha_address: urlArg.get('redirect_uri')!,
-      nonce: urlArg.get('nonce')!,
-      state: urlArg.get('state')!,
-    };
+    const authResponse = sendPopchaAuthRequest(
+      Hash.fromString(urlArg.get('client_id')!),
+      urlArg.get('nonce')!,
+      urlArg.get('redirect_uri')!,
+      urlArg.get('state'),
+      urlArg.get('response_mode'),
+      laoId,
+    );
 
-    // const authResponse = await sendPopchaAuthRequest(authRequest);
-    //
-    // if (authResponse) {
-    //   setTextScanned(authResponse);
-    // }
+    return authResponse
+      .then(() => {
+        return true;
+      })
+      .catch((error) => {
+        showErrorMessage(`Could not send auth request: ${error}`);
+        return false;
+      });
   };
 
   return (
@@ -114,7 +149,7 @@ const PoPchaScanner = () => {
       <QrCodeScanner
         showCamera={showScanner}
         handleScan={(data: string | null) =>
-          data && verifyScannedInfo(data) && setShowScanner(false)
+          data && sendAuthRequest(data).then((success) => success && setTextScanned(data))
         }>
         <View style={styles.container}>
           <View>

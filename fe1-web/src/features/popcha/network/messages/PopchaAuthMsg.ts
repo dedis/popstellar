@@ -17,9 +17,11 @@ export class PopchaAuthMsg implements MessageData {
 
   public readonly identifier_proof: string;
 
-  public readonly state: string;
-
   public readonly popcha_address: string;
+
+  public readonly state: string | undefined;
+
+  public readonly response_mode: string;
 
   constructor(msg: Partial<PopchaAuthMsg>) {
     if (!msg.nonce) {
@@ -53,9 +55,16 @@ export class PopchaAuthMsg implements MessageData {
     }
     this.popcha_address = msg.popcha_address;
 
-    if (!msg.state) {
-      throw new ProtocolError("Undefined 'state' parameter encountered during 'PopchaAuthMsg'");
+    // optional parameters
+    if (msg.state) {
+      this.state = msg.state;
     }
-    this.state = msg.state;
+
+    if (msg.response_mode) {
+      this.response_mode = msg.response_mode;
+    } else {
+      // TODO: check if this is the default value
+      this.response_mode = 'fragment';
+    }
   }
 }
