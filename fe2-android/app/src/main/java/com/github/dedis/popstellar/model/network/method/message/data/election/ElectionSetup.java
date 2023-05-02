@@ -6,6 +6,7 @@ import com.github.dedis.popstellar.model.Immutable;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.network.method.message.data.*;
 import com.github.dedis.popstellar.model.objects.Election;
+import com.github.dedis.popstellar.utility.MessageValidator;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.*;
@@ -39,7 +40,7 @@ public class ElectionSetup extends Data {
    * @param end end timestamp
    * @param laoId id of the LAO
    * @param electionVersion version of the election
-   * @param questions information
+   * @param questions list of election questions
    */
   public ElectionSetup(
       @NonNull String name,
@@ -49,10 +50,13 @@ public class ElectionSetup extends Data {
       @NonNull String laoId,
       @NonNull ElectionVersion electionVersion,
       @NonNull List<ElectionQuestion.Question> questions) {
-    // we don't need to check if end < 0 or start < 0 as it is already covered by other statements
-    if (creation < 0 || start < creation || end < start) {
-      throw new IllegalArgumentException("Timestamp cannot be negative");
-    }
+    // The lao id is checked to be a known lao in the election setup handler
+    MessageValidator.verify()
+        .orderedTimes(creation, start, end)
+        .validPastTimes(creation)
+        .stringNotEmpty(name, "election name")
+        .isBase64(laoId, "lao id")
+        .noListDuplicates(questions);
 
     this.name = name;
     this.createdAt = creation;
@@ -75,7 +79,7 @@ public class ElectionSetup extends Data {
     return Action.SETUP.getAction();
   }
 
-  public String getId() {
+  public String getElectionId() {
     return id;
   }
 
@@ -99,7 +103,7 @@ public class ElectionSetup extends Data {
     return new ArrayList<>(questions);
   }
 
-  public String getLao() {
+  public String getLaoId() {
     return lao;
   }
 
@@ -119,7 +123,7 @@ public class ElectionSetup extends Data {
     return getCreation() == that.getCreation()
         && getElectionVersion() == that.getElectionVersion()
         && startTime == that.getStartTime()
-        && java.util.Objects.equals(getId(), that.getId())
+        && java.util.Objects.equals(getElectionId(), that.getElectionId())
         && createdAt == that.getCreation()
         && java.util.Objects.equals(getName(), that.getName())
         && endTime == that.getEndTime()
@@ -129,7 +133,7 @@ public class ElectionSetup extends Data {
   @Override
   public int hashCode() {
     return java.util.Objects.hash(
-        getId(), getName(), getCreation(), getStartTime(), getEndTime(), getQuestions());
+        getElectionId(), getName(), getCreation(), getStartTime(), getEndTime(), getQuestions());
   }
 
   @NonNull

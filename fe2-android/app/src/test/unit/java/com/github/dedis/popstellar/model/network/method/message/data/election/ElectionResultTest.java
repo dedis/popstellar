@@ -13,8 +13,10 @@ public class ElectionResultTest {
 
   private final Set<QuestionResult> results =
       Collections.singleton(new QuestionResult("Candidate1", 40));
-  private final List<ElectionResultQuestion> questions =
-      Collections.singletonList(new ElectionResultQuestion("question id", results));
+
+  private final ElectionResultQuestion question =
+      new ElectionResultQuestion("question id", results);
+  private final List<ElectionResultQuestion> questions = Collections.singletonList(question);
   private final ElectionResult electionResult = new ElectionResult(questions);
 
   @Test(expected = IllegalArgumentException.class)
@@ -26,6 +28,13 @@ public class ElectionResultTest {
   public void questionsCantBeEmpty() {
     List<ElectionResultQuestion> emptyList = new ArrayList<>();
     new ElectionResult(emptyList);
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void questionsCantHaveDuplicates() {
+    ElectionResultQuestion duplicate = new ElectionResultQuestion("question id", results);
+    List<ElectionResultQuestion> duplicatesList = Arrays.asList(question, duplicate);
+    new ElectionResult(duplicatesList);
   }
 
   @Test

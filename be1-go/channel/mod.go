@@ -44,13 +44,13 @@ func NewSockets() Sockets {
 	}
 }
 
-// Sockets provides thread-funcionalities around a socket store.
+// Sockets provides thread-functionalities around a socket store.
 type Sockets struct {
 	sync.RWMutex
 	store map[string]socket.Socket
 }
 
-// Len returns the numbre of sockets.
+// Len returns the number of sockets.
 func (s *Sockets) Len() int {
 	return len(s.store)
 }

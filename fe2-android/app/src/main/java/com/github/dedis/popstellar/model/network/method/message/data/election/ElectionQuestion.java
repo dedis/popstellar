@@ -63,10 +63,7 @@ public class ElectionQuestion {
     }
     ElectionQuestion that = (ElectionQuestion) o;
     return java.util.Objects.equals(getQuestion(), that.getQuestion())
-        && getWriteIn() == that.getWriteIn()
-        && java.util.Objects.equals(getId(), that.getId())
-        && java.util.Objects.equals(getBallotOptions(), that.getBallotOptions())
-        && java.util.Objects.equals(getVotingMethod(), that.getVotingMethod());
+        && java.util.Objects.equals(getId(), that.getId());
   }
 
   @Override
@@ -114,6 +111,26 @@ public class ElectionQuestion {
       this.votingMethod = votingMethod;
       this.ballotOptions = ballotOptions;
       this.writeIn = writeIn;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) {
+        return true;
+      }
+      if (o == null || getClass() != o.getClass()) {
+        return false;
+      }
+      Question that = (Question) o;
+      return writeIn == that.writeIn
+          && java.util.Objects.equals(title, that.title)
+          && java.util.Objects.equals(votingMethod, that.votingMethod)
+          && java.util.Objects.equals(ballotOptions, that.ballotOptions);
+    }
+
+    @Override
+    public int hashCode() {
+      return java.util.Objects.hash(title, votingMethod, ballotOptions, writeIn);
     }
 
     @NonNull

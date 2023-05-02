@@ -11,7 +11,7 @@ import (
 // and handle clients.
 type Hub interface {
 	// NotifyNewServer add a socket for the hub to send message to other servers
-	NotifyNewServer(socket.Socket) error
+	NotifyNewServer(socket.Socket)
 
 	// Start invokes the processing loop for the hub.
 	Start()

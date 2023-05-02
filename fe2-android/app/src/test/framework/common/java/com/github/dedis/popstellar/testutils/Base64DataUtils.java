@@ -96,4 +96,13 @@ public class Base64DataUtils {
       if (!key.equals(other)) return key;
     }
   }
+
+  /**
+   * @return a pseudo randomly generated base 64 string
+   */
+  public static String generateRandomBase64String() {
+    byte[] randomBytes = new byte[KEY_LENGTH];
+    RANDOM.nextBytes(randomBytes);
+    return Base64.getUrlEncoder().encodeToString(randomBytes);
+  }
 }
