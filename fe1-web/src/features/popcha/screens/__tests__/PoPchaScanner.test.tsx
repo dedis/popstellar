@@ -1,9 +1,9 @@
 import { render } from '@testing-library/react-native';
 import React from 'react';
 
+import { mockLaoId } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
 
-import { mockLaoId } from '../../../../__tests__/utils';
 import { POPCHA_FEATURE_IDENTIFIER, PoPchaReactContext } from '../../interface';
 import PoPchaScanner from '../PoPchaScanner';
 

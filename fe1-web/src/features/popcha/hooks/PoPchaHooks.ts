@@ -1,6 +1,7 @@
 import { useContext } from 'react';
 
-import FeatureContext from '../../../core/contexts/FeatureContext';
+import FeatureContext from 'core/contexts/FeatureContext';
+
 import { POPCHA_FEATURE_IDENTIFIER, PoPchaReactContext } from '../interface';
 
 export namespace PoPchaHooks {

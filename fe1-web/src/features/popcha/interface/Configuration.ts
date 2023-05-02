@@ -1,5 +1,6 @@
-import { Hash, PopToken } from '../../../core/objects';
-import FeatureInterface from '../../../core/objects/FeatureInterface';
+import { Hash, PopToken } from 'core/objects';
+import FeatureInterface from 'core/objects/FeatureInterface';
+
 import { PoPchaFeature } from './Features';
 
 export const POPCHA_FEATURE_IDENTIFIER = 'popcha';
