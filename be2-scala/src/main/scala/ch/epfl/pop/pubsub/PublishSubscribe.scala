@@ -65,7 +65,7 @@ object PublishSubscribe {
         val hasMessagePartition = builder.add(ParamsWithMessageHandler.graph(messageRegistry))
         val hasChannelPartition = builder.add(ParamsWithChannelHandler.graph(clientActorRef))
         val hasMapPartition = builder.add(ParamsWithMapHandler.graph(dbActorRef))
-        val responsePartition = builder.add(GetMessagesByIdResponseHandler.graph(dbActorRef.actorRef))
+        val responsePartition = builder.add(GetMessagesByIdResponseHandler.graph(mediatorActorRef, messageRegistry))
 
         val merger = builder.add(Merge[GraphMessage](totalPorts))
         val broadcast = builder.add(Broadcast[GraphMessage](totalBroadcastPort))
