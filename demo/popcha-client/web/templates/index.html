@@ -35,13 +35,16 @@
         margin-top: 10px;
         font-size: 1.2rem;
     }
-    select {
+    select, option {
         width: 100%;
+        font-family:monospace;
+        cursor: pointer;
     }
     select, #submitAuthentication {
         background-color: #c6d6f1;
         border: none;
         padding: 7px 12px;
+        cursor: pointer;
     }
     form {
         position: relative;
@@ -59,8 +62,8 @@
         color: red;
         font-size: 0.9em;
     }
-    option{
-        font-family:monospace;
+    a {
+        cursor: pointer;
     }
 </style>
 <body>
@@ -75,12 +78,12 @@
             <label for="lao-selection">
                 <select id="lao-selection" name="serverAndLaoId"    required>
                     <option value="">-- Please choose a lao / serve pair --</option>
-                    <!-- Insert providers here -->
+                    {% include 'providers.html' %}
                 </select>
             </label>
             <input type="submit" id="submitAuthentication" value="Submit">
         </form>
-        <p class="error"><!-- Insert errors here --></p>
+        <p class="error">{{ error }}</p>
     </div>
 </div>
 </body>

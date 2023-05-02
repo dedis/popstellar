@@ -12,7 +12,6 @@ import jwt
 from werkzeug.datastructures import MultiDict
 
 login_nonces: dict[(str, float)] = {}
-app_nonces: dict[(str, str)] = {}
 
 
 def get_url(server: str, lao_id: str, client_id: str) -> str:

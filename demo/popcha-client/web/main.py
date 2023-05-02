@@ -4,19 +4,18 @@ HTTP/S requests.
 """
 import json
 import secrets
+import urllib.parse
 from typing import IO
 
-from flask import Flask, redirect, request, Response
+from flask import Flask, redirect, request, Response, render_template
 
-from app import get_new_login_params, init_app, html_on_param
+from counterApp import CounterApp
 from authentication import get_url, validate_args
-from util import replace_in_model
 
 # Define the global variables
-home_page_html: str = ""
 config: dict = {}
 providers: list = []
-
+core_app: CounterApp
 
 def check_config(config_file: IO) -> bool:
     """
@@ -43,6 +42,7 @@ def check_config(config_file: IO) -> bool:
     return True
 
 
+
 def check_provider(provider: dict) -> bool:
     """
     Check that a single provider is valid. It only performs static checks and
@@ -60,31 +60,35 @@ def check_provider(provider: dict) -> bool:
 
 def filter_providers() -> None:
     """
-    Keeps only the providers that are valid
+    Keeps only the providers.html that are valid
     """
     global providers
     providers = [provider for provider in providers if check_provider(provider)]
 
+def load_providers():
+    """
+    Loads the providers from the configuration file
+    """
+    global providers
+    with open("data/providers.json") as provider_file:
+        providers = json.loads(provider_file.read())
 
 def on_startup() -> None:
     """
     Prepare the data needed by the client authentication server (This
     server). This includes the list of authorized
-    Open ID providers, as well as basic config information such as the
+    Open ID providers.html, as well as basic config information such as the
     homepage HTML code or the
     """
-    global home_page_html, providers, config
-    init_app()
-    with open("data/providers.json") as provider_file:
-        providers = json.loads(provider_file.read())
-        filter_providers()
+    global providers, config, core_app
+    core_app = CounterApp()
+    load_providers()
+    filter_providers()
     with open("data/config.json", "r+") as config_file:
         config = json.loads(config_file.read())
         if not check_config(config_file):
             config_file.seek(0)
-            config = json.loads(config_file.read())
-    with  open("model/index.html", "r") as home_page_file:
-        home_page_html = home_page_file.read()
+            config_file.write(json.dumps(config))
 
 
 app = Flask("Example_authentication_server")
@@ -98,15 +102,13 @@ def root() -> str:
     Get the homepage.
     :return: The homepage HTML
     """
-    providers_html = [
-        f'<option value="{str(i)}">{provider.get("lao_id")}@'
-        f'{provider.get("domain")}</option>'
-        for
-        i, provider
-        in enumerate(providers)]
-    providers_html = ''.join(providers_html)
-    return replace_in_model(home_page_html, providers=providers_html,
-                            errors="test")
+    providers_string = [f'{provider.get("lao_id")}@{provider.get("domain")}'
+                        for provider in providers]
+    error: str = ""
+    if "error" in request.args:
+        error = f'Error: {request.args.get("error", default="", type=str)}'
+    return render_template('index.html', providers=providers_string,
+                           error=error)
 
 
 # Step2: Process user connection data prepare the OIDC request
@@ -137,7 +139,8 @@ def authentication_callback() -> Response:
     """
     user_id: str = validate_args(request.args, config["client_id"])
     if user_id is not None:
-        return redirect(f"/app{get_new_login_params(user_id)}")
+        params = urllib.parse.urlencode(core_app.get_new_login_params(user_id))
+        return redirect(f'/app?{params}')
     else:
         return redirect("/")
 
@@ -148,7 +151,7 @@ def app_route():
     :return: The HTML data returned based on the app module logic or a
     redirection if this path is called without valid query arguments
     """
-    html = html_on_param(request.args)
+    html: str = core_app.process(request.args)
     if html == "":
         return redirect("/")
     else:
@@ -158,7 +161,7 @@ def app_route():
 @app.route("/add_provider")
 def add_provider():
     """
-    WARNING: This call is unsafe and allows to easily add new providers. It
+    WARNING: This call is unsafe and allows to easily add new providers.html. It
     is intended for example server that do not really need to provide
     complete security
     """
@@ -173,7 +176,8 @@ def add_provider():
                    }
         if check_provider(provider):
             providers.append(provider)
-    redirect("/")
+            return redirect("/")
+    return redirect("/?error=Invalid%20provider")
 
 
 # Step 0: Starts the server
