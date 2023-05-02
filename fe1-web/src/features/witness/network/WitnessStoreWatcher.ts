@@ -165,7 +165,7 @@ export const makeWitnessStoreWatcher = (
 
     if (laoId !== lastLaoId) {
       lastLaoId = laoId;
-      messagesToWitness = messagesToWitness.concat(laoToWitnessableId[laoId.valueOf()]);
+      messagesToWitness = messagesToWitness.concat(laoToWitnessableId[laoId.valueOf()] || []);
       laoToWitnessableId[laoId.valueOf()] = [];
     }
     /*
