@@ -157,7 +157,7 @@ export const makeWitnessStoreWatcher = (
       return;
     }
 
-    const messagesToWitness = currentAllIds.filter(
+    let messagesToWitness = currentAllIds.filter(
       (msgId) =>
         !currentUnprocessedIds.includes(msgId) &&
         (!previousAllIds.includes(msgId) || previousUnprocessedIds.includes(msgId)),
@@ -165,7 +165,7 @@ export const makeWitnessStoreWatcher = (
 
     if (laoId !== lastLaoId) {
       lastLaoId = laoId;
-      messagesToWitness.concat(laoToWitnessableId[laoId.valueOf()]);
+      messagesToWitness = messagesToWitness.concat(laoToWitnessableId[laoId.valueOf()]);
       laoToWitnessableId[laoId.valueOf()] = [];
     }
     /*
