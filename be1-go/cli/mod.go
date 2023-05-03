@@ -24,6 +24,15 @@ import (
 	"golang.org/x/xerrors"
 )
 
+const (
+	// connectionRetryMaxDelay is the maximum time to wait before retrying to connect to a server
+	connectionRetryMaxDelay = 32 * time.Second
+
+	connectionRetryInitialDelay = 2 * time.Second
+
+	connectionRetryRate = 2
+)
+
 // Serve parses the CLI arguments and spawns a hub and a websocket server for
 // the server
 func Serve(cliCtx *cli.Context) error {
@@ -73,13 +82,14 @@ func Serve(cliCtx *cli.Context) error {
 	wg := &sync.WaitGroup{}
 	done := make(chan struct{})
 
-	// connect to given remote servers
+	// create the map of servers and their connection status
+	connectedServers := make(map[string]bool)
 	for _, serverAddress := range otherServers {
-		err = connectToSocket(serverAddress, h, wg, done)
-		if err != nil {
-			return xerrors.Errorf("failed to connect to server: %v", err)
-		}
+		connectedServers[serverAddress] = false
 	}
+
+	// start the connection to servers loop
+	go serverConnectionLoop(h, wg, done, connectedServers)
 
 	// Wait for a Ctrl-C
 	err = network.WaitAndShutdownServers(cliCtx.Context, clientSrv, serverSrv)
@@ -107,6 +117,56 @@ func Serve(cliCtx *cli.Context) error {
 		log.Error().Msg("channs didn't close after timeout, exiting")
 	}
 
+	return nil
+}
+
+// serverConnectionLoop tries to connect to the remote servers following an exponential backoff strategy
+func serverConnectionLoop(h hub.Hub, wg *sync.WaitGroup, done chan struct{}, connectedServers map[string]bool) {
+	// first connection to the servers
+	_ = connectToServers(h, wg, done, connectedServers)
+
+	// define the delay between connection retries
+	delay := connectionRetryInitialDelay
+
+	ticker := time.NewTicker(delay)
+	defer ticker.Stop()
+
+	for {
+		select {
+		case <-ticker.C:
+			// try to connect to servers
+			err := connectToServers(h, wg, done, connectedServers)
+			if err != nil {
+				increaseDelay(&delay)
+				log.Info().Msgf("Increasing delay to %v", delay)
+			}
+		}
+	}
+}
+
+// increaseDelay increases the delay between connection retries following an exponential backoff
+func increaseDelay(delay *time.Duration) {
+	if *delay > connectionRetryMaxDelay {
+		*delay = connectionRetryMaxDelay
+	} else {
+		*delay = *delay * connectionRetryRate
+	}
+}
+
+// connectToServers connects to the given remote servers
+func connectToServers(h hub.Hub, wg *sync.WaitGroup, done chan struct{}, connectedServers map[string]bool) error {
+	log.Info().Msg("Connecting to servers")
+	for serverAddress, connected := range connectedServers {
+		if !connected {
+			err := connectToSocket(serverAddress, h, wg, done)
+			if err == nil {
+				connectedServers[serverAddress] = true
+				log.Info().Msgf("connected to server %s", serverAddress)
+			} else {
+				log.Error().Msgf("failed to connect to server %s: %v", serverAddress, err)
+			}
+		}
+	}
 	return nil
 }
 
