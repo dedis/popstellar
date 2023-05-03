@@ -119,7 +119,7 @@ public class LAORepository {
   }
 
   public synchronized void updateLao(Lao lao) {
-    Timber.tag(TAG).d("updating Lao %s", lao);
+    Timber.tag(TAG).d("Updating Lao %s", lao);
     if (lao == null) {
       throw new IllegalArgumentException();
     }

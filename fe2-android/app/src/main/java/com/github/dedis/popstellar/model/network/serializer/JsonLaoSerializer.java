@@ -9,7 +9,7 @@ import java.lang.reflect.Type;
 import java.util.*;
 
 /** This class serializes the LAO in a JSON string to be stored in the database */
-public class LaoSerializer implements JsonSerializer<Lao>, JsonDeserializer<Lao> {
+public class JsonLaoSerializer implements JsonSerializer<Lao>, JsonDeserializer<Lao> {
 
   @Override
   public Lao deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
@@ -24,7 +24,8 @@ public class LaoSerializer implements JsonSerializer<Lao>, JsonDeserializer<Lao>
     String name = jsonObject.get("name").getAsString();
     Long lastModified = jsonObject.get("lastModified").getAsLong();
     Long creation = jsonObject.get("creation").getAsLong();
-    PublicKey organizer = new PublicKey(jsonObject.get("organizer").getAsString());
+
+    PublicKey organizer = context.deserialize(jsonObject.get("organizer"), PublicKey.class);
     MessageID modificationId =
         context.deserialize(jsonObject.get("modificationId"), MessageID.class);
 
@@ -32,7 +33,7 @@ public class LaoSerializer implements JsonSerializer<Lao>, JsonDeserializer<Lao>
     JsonArray witnessesJsonArray = jsonObject.get("witnesses").getAsJsonArray();
     Set<PublicKey> witnesses = new HashSet<>();
     for (JsonElement witnessJsonElement : witnessesJsonArray) {
-      witnesses.add(new PublicKey(witnessJsonElement.getAsString()));
+      witnesses.add(context.deserialize(witnessJsonElement, PublicKey.class));
     }
 
     // Deserialize the Map of witnessMessages
@@ -44,6 +45,36 @@ public class LaoSerializer implements JsonSerializer<Lao>, JsonDeserializer<Lao>
           context.deserialize(entry.getValue(), WitnessMessage.class));
     }
 
+    // Deserialize the Set of PendingUpdate
+    JsonArray pendingUpdatesJsonArray = jsonObject.get("pendingUpdates").getAsJsonArray();
+    Set<PendingUpdate> pendingUpdates = new HashSet<>();
+    for (JsonElement pendingUpdatesJsonElement : pendingUpdatesJsonArray) {
+      pendingUpdates.add(context.deserialize(pendingUpdatesJsonElement, PendingUpdate.class));
+    }
+
+    // Deserialize the Map of messageIdToElectInstance
+    JsonObject messageIdToElectInstanceJsonObject =
+        jsonObject.get("messageIdToElectInstance").getAsJsonObject();
+    Map<MessageID, ElectInstance> messageIdToElectInstance = new HashMap<>();
+    for (Map.Entry<String, JsonElement> entry : messageIdToElectInstanceJsonObject.entrySet()) {
+      messageIdToElectInstance.put(
+          new MessageID(entry.getKey()),
+          context.deserialize(entry.getValue(), ElectInstance.class));
+    }
+
+    // FIXME : The keyToNode is not serialized as the public keys are in base 28, they throw an
+    // error when encoded and decoded
+    /*
+    // Deserialize the Map of keyToNode
+    JsonObject keyToNodeJsonObject = jsonObject.get("keyToNode").getAsJsonObject();
+    Map<PublicKey, ConsensusNode> keyToNode = new HashMap<>();
+    for (Map.Entry<String, JsonElement> entry : keyToNodeJsonObject.entrySet()) {
+      keyToNode.put(
+          new PublicKey(entry.getKey()),
+          context.deserialize(entry.getValue(), ConsensusNode.class));
+    }
+    */
+
     return new LaoBuilder()
         .setChannel(channel)
         .setId(id)
@@ -54,6 +85,9 @@ public class LaoSerializer implements JsonSerializer<Lao>, JsonDeserializer<Lao>
         .setModificationId(modificationId)
         .setWitnesses(witnesses)
         .setWitnessMessages(witnessMessages)
+        .setPendingUpdates(pendingUpdates)
+        .setMessageIdToElectInstance(messageIdToElectInstance)
+        // .setKeyToNode(keyToNode)
         .build();
   }
 
@@ -69,14 +103,14 @@ public class LaoSerializer implements JsonSerializer<Lao>, JsonDeserializer<Lao>
     jsonObject.addProperty("name", lao.getName());
     jsonObject.addProperty("lastModified", lao.getLastModified());
     jsonObject.addProperty("creation", lao.getCreation());
-    jsonObject.addProperty("organizer", lao.getOrganizer().getEncoded());
 
+    jsonObject.add("organizer", context.serialize(lao.getOrganizer(), PublicKey.class));
     jsonObject.add("modificationId", context.serialize(lao.getModificationId(), MessageID.class));
 
     // Serialize the Set of Witnesses
     JsonArray witnessesJsonArray = new JsonArray();
     for (PublicKey witness : lao.getWitnesses()) {
-      witnessesJsonArray.add(context.serialize(witness, WitnessMessage.class));
+      witnessesJsonArray.add(context.serialize(witness, PublicKey.class));
     }
     jsonObject.add("witnesses", witnessesJsonArray);
 
@@ -87,6 +121,31 @@ public class LaoSerializer implements JsonSerializer<Lao>, JsonDeserializer<Lao>
           entry.getKey().getEncoded(), context.serialize(entry.getValue(), WitnessMessage.class));
     }
     jsonObject.add("witnessMessages", witnessMessagesJsonObject);
+
+    // Serialize the Set of PendingUpdate
+    JsonArray pendingUpdateJsonArray = new JsonArray();
+    for (PendingUpdate pendingUpdate : lao.getPendingUpdates()) {
+      pendingUpdateJsonArray.add(context.serialize(pendingUpdate, PendingUpdate.class));
+    }
+    jsonObject.add("pendingUpdates", pendingUpdateJsonArray);
+
+    // Serialize the Map of messageIdToElectInstance
+    JsonObject messageIdToElectInstanceJsonObject = new JsonObject();
+    for (Map.Entry<MessageID, ElectInstance> entry : lao.getMessageIdToElectInstance().entrySet()) {
+      messageIdToElectInstanceJsonObject.add(
+          entry.getKey().getEncoded(), context.serialize(entry.getValue(), ElectInstance.class));
+    }
+    jsonObject.add("messageIdToElectInstance", messageIdToElectInstanceJsonObject);
+
+    /*
+    // Serialize the Map of keyToNode
+    JsonObject keyToNodeJsonObject = new JsonObject();
+    for (Map.Entry<PublicKey, ConsensusNode> entry : lao.getKeyToNode().entrySet()) {
+      keyToNodeJsonObject.add(
+          entry.getKey().getEncoded(), context.serialize(entry.getValue(), ConsensusNode.class));
+    }
+    jsonObject.add("keyToNode", keyToNodeJsonObject);
+     */
 
     return jsonObject;
   }
