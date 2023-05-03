@@ -1,9 +1,12 @@
 package com.github.dedis.popstellar.utility.handler;
 
-import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
+import android.content.Context;
 
-import com.github.dedis.popstellar.di.DataRegistryModuleHelper;
-import com.github.dedis.popstellar.di.JsonModule;
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
+import androidx.test.core.app.ApplicationProvider;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+
+import com.github.dedis.popstellar.di.*;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.DataRegistry;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.CreateLao;
@@ -11,6 +14,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.meeting.Cre
 import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.security.*;
 import com.github.dedis.popstellar.repository.*;
+import com.github.dedis.popstellar.repository.database.AppDatabase;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.utility.error.*;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
@@ -21,7 +25,7 @@ import com.google.gson.Gson;
 import org.junit.*;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.MockitoAnnotations;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -39,7 +43,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.lenient;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(AndroidJUnit4.class)
 public class MeetingHandlerTest {
 
   private static final KeyPair SENDER_KEY = generateKeyPair();
@@ -54,6 +58,7 @@ public class MeetingHandlerTest {
   private static MeetingRepository meetingRepo;
   private static MessageHandler messageHandler;
   private static Gson gson;
+  private AppDatabase appDatabase;
 
   private static Meeting meeting;
 
@@ -65,18 +70,22 @@ public class MeetingHandlerTest {
   @Before
   public void setup()
       throws GeneralSecurityException, IOException, KeyException, UnknownRollCallException {
+    MockitoAnnotations.openMocks(this);
+    Context context = ApplicationProvider.getApplicationContext();
+    appDatabase = AppDatabaseModuleHelper.getAppDatabase(context);
+
     lenient().when(keyManager.getMainKeyPair()).thenReturn(SENDER_KEY);
     lenient().when(keyManager.getMainPublicKey()).thenReturn(SENDER);
     lenient().when(keyManager.getValidPoPToken(any(), any())).thenReturn(POP_TOKEN);
 
     lenient().when(messageSender.subscribe(any())).then(args -> Completable.complete());
 
-    laoRepo = new LAORepository();
+    laoRepo = new LAORepository(appDatabase);
     meetingRepo = new MeetingRepository();
 
     DataRegistry dataRegistry =
-        DataRegistryModuleHelper.buildRegistry(laoRepo, keyManager, meetingRepo);
-    MessageRepository messageRepo = new MessageRepository();
+        DataRegistryModuleHelper.buildRegistry(context, laoRepo, keyManager, meetingRepo);
+    MessageRepository messageRepo = new MessageRepository(appDatabase);
     gson = JsonModule.provideGson(dataRegistry);
     messageHandler = new MessageHandler(messageRepo, dataRegistry);
 
@@ -96,7 +105,13 @@ public class MeetingHandlerTest {
 
     // Add the CreateLao message to the LAORepository
     MessageGeneral createLaoMessage = new MessageGeneral(SENDER_KEY, CREATE_LAO, gson);
-    messageRepo.addMessage(createLaoMessage);
+    messageRepo.addMessage(createLaoMessage, true, true);
+  }
+
+  @After
+  public void tearDown() {
+    appDatabase.clearAllTables();
+    appDatabase.close();
   }
 
   @Test

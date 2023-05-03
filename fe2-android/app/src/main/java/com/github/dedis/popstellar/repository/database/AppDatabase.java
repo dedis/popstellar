@@ -14,7 +14,7 @@ import javax.inject.Singleton;
 @Singleton
 @Database(
     entities = {MessageEntity.class, LAOEntity.class, CoreEntity.class},
-    version = 1)
+    version = 2)
 @TypeConverters(CustomTypeConverters.class)
 public abstract class AppDatabase extends RoomDatabase {
   public abstract MessageDao messageDao();

@@ -49,13 +49,16 @@ public class DataRegistryModuleHelper {
         rollCallRepo,
         new MeetingRepository(),
         new DigitalCashRepository(),
-        new MessageRepository(),
+        new MessageRepository(AppDatabaseModuleHelper.getAppDatabase(context)),
         keyManager,
         new ServerRepository());
   }
 
   public static DataRegistry buildRegistry(
-      LAORepository laoRepository, KeyManager keyManager, MeetingRepository meetingRepo) {
+      Context context,
+      LAORepository laoRepository,
+      KeyManager keyManager,
+      MeetingRepository meetingRepo) {
     return buildRegistry(
         laoRepository,
         new SocialMediaRepository(),
