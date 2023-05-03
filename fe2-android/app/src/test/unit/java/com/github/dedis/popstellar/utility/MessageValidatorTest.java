@@ -158,17 +158,17 @@ public class MessageValidatorTest {
   public void testValidUrl() {
     MessageValidator.MessageValidatorBuilder validator = MessageValidator.verify();
 
-    validator.checkValidUrl("http://example.com");
-    validator.checkValidUrl("https://example.com");
-    validator.checkValidUrl("ws://example.com");
-    validator.checkValidUrl("wss://10.0.2.2:8000/path");
-    validator.checkValidUrl("https://example.com/path/to/file.html");
-    validator.checkValidUrl("wss://example.com/path/to/file");
+    validator.validUrl("http://example.com");
+    validator.validUrl("https://example.com");
+    validator.validUrl("ws://example.com");
+    validator.validUrl("wss://10.0.2.2:8000/path");
+    validator.validUrl("https://example.com/path/to/file.html");
+    validator.validUrl("wss://example.com/path/to/file");
 
-    assertThrows(IllegalArgumentException.class, () -> validator.checkValidUrl("Random String"));
-    assertThrows(IllegalArgumentException.class, () -> validator.checkValidUrl("example.com"));
-    assertThrows(IllegalArgumentException.class, () -> validator.checkValidUrl("http:example.com"));
-    assertThrows(IllegalArgumentException.class, () -> validator.checkValidUrl("://example.com"));
-    assertThrows(IllegalArgumentException.class, () -> validator.checkValidUrl("http://example."));
+    assertThrows(IllegalArgumentException.class, () -> validator.validUrl("Random String"));
+    assertThrows(IllegalArgumentException.class, () -> validator.validUrl("example.com"));
+    assertThrows(IllegalArgumentException.class, () -> validator.validUrl("http:example.com"));
+    assertThrows(IllegalArgumentException.class, () -> validator.validUrl("://example.com"));
+    assertThrows(IllegalArgumentException.class, () -> validator.validUrl("http://example."));
   }
 }

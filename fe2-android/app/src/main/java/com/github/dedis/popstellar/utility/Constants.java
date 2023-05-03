@@ -14,6 +14,9 @@ public class Constants {
   /** The extra key given to transmit a roll call id */
   public static final String ROLL_CALL_ID = "roll_call_id";
 
+  /** The extra key given to transmit a roll call id */
+  public static final String MEETING_ID = "meeting_id";
+
   /** The extra key given to the LaoDetailActivity when opened */
   public static final String FRAGMENT_TO_OPEN_EXTRA = "fragment_to_open";
 

@@ -2,7 +2,9 @@ package com.github.dedis.popstellar.utility;
 
 import com.github.dedis.popstellar.model.network.method.message.data.election.Vote;
 import com.github.dedis.popstellar.model.objects.Lao;
+import com.github.dedis.popstellar.model.objects.Meeting;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
+
 import java.time.Instant;
 import java.util.*;
 import java.util.regex.Pattern;
@@ -43,6 +45,44 @@ public abstract class MessageValidator {
       // If any of the arguments are empty or null this throws an exception
       if (!id.equals(Lao.generateLaoId(organizer, creation, name))) {
         throw new IllegalArgumentException("CreateLao id must be Hash(organizer||creation||name)");
+      }
+      return this;
+    }
+
+    /**
+     * Helper method to check that a CreateMeeting id is valid.
+     *
+     * @param id the id of the CreateMeeting
+     * @param laoId the lao identifier
+     * @param creation the CreateMeeting creation time
+     * @param name the CreateMeeting name
+     * @throws IllegalArgumentException if the id is invalid
+     */
+    public MessageValidatorBuilder validCreateMeetingId(
+        String id, String laoId, long creation, String name) {
+      // If any of the arguments are empty or null this throws an exception
+      if (!id.equals(Meeting.generateCreateMeetingId(laoId, creation, name))) {
+        throw new IllegalArgumentException(
+            "CreateMeeting id must be Hash(\"M\"||laoId||creation||name)");
+      }
+      return this;
+    }
+
+    /**
+     * Helper method to check that a StateMeeting id is valid.
+     *
+     * @param id the id of the StateMeeting
+     * @param laoId the lao identifier
+     * @param creation the StateMeeting creation time
+     * @param name the StateMeeting name
+     * @throws IllegalArgumentException if the id is invalid
+     */
+    public MessageValidatorBuilder validStateMeetingId(
+        String id, String laoId, long creation, String name) {
+      // If any of the arguments are empty or null this throws an exception
+      if (!id.equals(Meeting.generateStateMeetingId(laoId, creation, name))) {
+        throw new IllegalArgumentException(
+            "StateMeeting id must be Hash(\"M\"||laoId||creation||name)");
       }
       return this;
     }
@@ -163,7 +203,7 @@ public abstract class MessageValidator {
       return this;
     }
 
-    public MessageValidatorBuilder checkValidUrl(String input) {
+    public MessageValidatorBuilder validUrl(String input) {
       if (input == null || !URL_PATTERN.matcher(input).matches()) {
         throw new IllegalArgumentException("Input is not a url");
       }

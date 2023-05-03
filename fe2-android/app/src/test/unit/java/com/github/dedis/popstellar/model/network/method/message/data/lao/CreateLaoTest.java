@@ -37,7 +37,7 @@ public class CreateLaoTest {
 
   @Test(expected = IllegalArgumentException.class)
   public void constructorFailsInvalidIdHashTest() {
-    String wrongId = "A" + id.substring(1);
+    String wrongId = "?" + id.substring(1);
     new CreateLao(wrongId, name, creation, organizer, witnesses);
   }
 

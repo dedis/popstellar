@@ -58,6 +58,7 @@
   <!--  Lao Detail-->
   <string name="add_election">New Election</string>
   <string name="add_roll_call">New Roll Call</string>
+  <string name="add_meeting">New Meeting</string>
   <string name="present_header_title">Current Events</string>
   <string name="future_header_title">Upcoming Events</string>
   <string name="past_header_title">Past Events</string>
@@ -94,6 +95,10 @@
   <string name="roll_call_title_required">Roll Call Title*</string>
   <string name="reopen_rollcall">REOPEN</string>
   <string name="rc_manual_hint">Attendee token</string>
+
+  <!-- Meeting Event -->
+  <string name="meeting_title_required">Meeting Title*</string>
+  <string name="meeting_location_not_required">Location</string>
 
   <!-- QR code -->
   <string name="qrcode_scanning_add_witness">Scan personal QR code of the witness to add</string>
@@ -135,6 +140,10 @@
   <string name="roll_call_scanned">Scanned tokens : %1$d</string>
   <string name="roll_call_description_title">Description</string>
   <string name="roll_call_location_title">Location</string>
+
+  <!-- Meeting -->
+  <string name="meeting_title">Meeting</string>
+  <string name="meeting_setup_title">Meeting Setup</string>
 
   <!-- Election Event -->
   <string name="election_title">Election</string>
@@ -274,6 +283,7 @@
   <string name="add_event_description">Add Event</string>
   <string name="add_election_description">Add Election</string>
   <string name="add_rc_description">Add Roll call</string>
+  <string name="add_meeting_description">Add Meeting</string>
   <string name="rc_qr_description">Roll call qr code</string>
   <string name="add_witness_description">Add Witness</string>
   <string name="qr_code_icon_description">An icon representing a qr code</string>
@@ -294,6 +304,7 @@
   <string name="error_send_vote">Could not send the vote\n%1$s</string>
   <string name="error_create_election">Could not create the election\n%1$s</string>
   <string name="error_create_rollcall">Could not create the rollcall\n%1$s</string>
+  <string name="error_create_meeting">Could not create the meeting\n%1$s</string>
   <string name="error_start_election">Could not start the election\n%1$s</string>
   <string name="error_consensus_accept">Could not accept the consensus\n%1$s</string>
   <string name="error_open_rollcall">Could not open the rollcall\n%1$s</string>
@@ -329,6 +340,7 @@
   <string name="unknown_election_exception">Unknown election</string>
   <string name="unknown_chirp_exception">Unknown Chirp</string>
   <string name="unknown_roll_call_exception">Unknown Roll Call</string>
+  <string name="unknown_meeting_exception">Unknown Meeting</string>
   <string name="already_open_roll_call_exception">Another Roll Call is already open</string>
   <string name="lao_coins">LAO coins</string>
   <string name="invalid_qrcode_data">Invalid QRCode laoData</string>
