@@ -43,8 +43,8 @@ Feature: Simple Transactions for digital cash
             }
         }
       """
-    When frontend.publish(JSON.stringify(validTransaction), cashChannel)
-    And json answer = frontend.getBackendResponse(JSON.stringify(validTransaction))
+    When frontend.publish(validTransaction, cashChannel)
+    And json answer = frontend.getBackendResponse(validTransaction)
     Then match answer contains VALID_MESSAGE
     And match frontend.receiveNoMoreResponses() == true
 
@@ -78,8 +78,8 @@ Feature: Simple Transactions for digital cash
             }
         }
       """
-    When frontend.publish(JSON.stringify(validTransfer), cashChannel)
-    And json answer = frontend.getBackendResponse(JSON.stringify(validTransfer))
+    When frontend.publish(validTransfer, cashChannel)
+    And json answer = frontend.getBackendResponse(validTransfer)
     Then match answer contains VALID_MESSAGE
     And match frontend.receiveNoMoreResponses() == true
 
@@ -107,8 +107,8 @@ Feature: Simple Transactions for digital cash
             }
         }
       """
-    When frontend.publish(JSON.stringify(validTransaction), cashChannel)
-    And json answer = frontend.getBackendResponse(JSON.stringify(validTransaction))
+    When frontend.publish(validTransaction, cashChannel)
+    And json answer = frontend.getBackendResponse(validTransaction)
     Then match answer contains VALID_MESSAGE
     And match frontend.receiveNoMoreResponses() == true
 
@@ -136,8 +136,8 @@ Feature: Simple Transactions for digital cash
             }
         }
       """
-    When frontend.publish(JSON.stringify(invalidTransaction), cashChannel)
-    And json answer = frontend.getBackendResponse(JSON.stringify(invalidTransaction))
+    When frontend.publish(invalidTransaction, cashChannel)
+    And json answer = frontend.getBackendResponse(invalidTransaction)
     Then match answer contains INVALID_MESSAGE_FIELD
     And match frontend.receiveNoMoreResponses() == true
 
@@ -165,7 +165,7 @@ Feature: Simple Transactions for digital cash
             }
         }
       """
-    When frontend.publish(JSON.stringify(invalidTransaction), cashChannel)
-    And json answer = frontend.getBackendResponse(JSON.stringify(invalidTransaction))
+    When frontend.publish(invalidTransaction, cashChannel)
+    And json answer = frontend.getBackendResponse(invalidTransaction)
     Then match answer contains INVALID_MESSAGE_FIELD
     And match frontend.receiveNoMoreResponses() == true
