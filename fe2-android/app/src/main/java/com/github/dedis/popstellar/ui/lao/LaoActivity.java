@@ -24,6 +24,7 @@ import com.github.dedis.popstellar.ui.lao.event.EventsViewModel;
 import com.github.dedis.popstellar.ui.lao.event.consensus.ConsensusViewModel;
 import com.github.dedis.popstellar.ui.lao.event.election.ElectionViewModel;
 import com.github.dedis.popstellar.ui.lao.event.eventlist.EventListFragment;
+import com.github.dedis.popstellar.ui.lao.event.meeting.MeetingViewModel;
 import com.github.dedis.popstellar.ui.lao.event.rollcall.RollCallViewModel;
 import com.github.dedis.popstellar.ui.lao.socialmedia.SocialMediaHomeFragment;
 import com.github.dedis.popstellar.ui.lao.socialmedia.SocialMediaViewModel;
@@ -318,6 +319,12 @@ public class LaoActivity extends AppCompatActivity {
         new ViewModelProvider(activity).get(RollCallViewModel.class);
     rollCallViewModel.setLaoId(laoId);
     return rollCallViewModel;
+  }
+
+  public static MeetingViewModel obtainMeetingViewModel(FragmentActivity activity, String laoId) {
+    MeetingViewModel meetingViewModel = new ViewModelProvider(activity).get(MeetingViewModel.class);
+    meetingViewModel.setLaoId(laoId);
+    return meetingViewModel;
   }
 
   public static WitnessingViewModel obtainWitnessingViewModel(

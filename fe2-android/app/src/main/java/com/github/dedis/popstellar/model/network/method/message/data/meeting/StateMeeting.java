@@ -2,11 +2,12 @@ package com.github.dedis.popstellar.model.network.method.message.data.meeting;
 
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.network.method.message.data.*;
-import com.github.dedis.popstellar.model.objects.event.EventType;
-import com.github.dedis.popstellar.utility.security.Hash;
+import com.github.dedis.popstellar.utility.MessageValidator;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.*;
+
+import javax.annotation.Nullable;
 
 /** Data received to track the state of a meeting */
 public class StateMeeting extends Data {
@@ -18,7 +19,7 @@ public class StateMeeting extends Data {
   @SerializedName("last_modified")
   private final long lastModified;
 
-  private final String location;
+  @Nullable private final String location;
   private final long start;
   private final long end;
 
@@ -49,23 +50,30 @@ public class StateMeeting extends Data {
       String name,
       long creation,
       long lastModified,
-      String location,
+      @Nullable String location,
       long start,
       long end,
       String modificationId,
       List<String> modificationSignatures) {
-    if (!id.equals(
-        Hash.hash(EventType.MEETING.getSuffix(), laoId, Long.toString(creation), name))) {
-      throw new IllegalArgumentException(
-          "StateMeeting id must be Hash(\"M\"||laoId||creation||name)");
-    }
+    MessageValidator.MessageValidatorBuilder builder =
+        MessageValidator.verify()
+            .isBase64(laoId, "lao id")
+            .validStateMeetingId(id, laoId, creation, name)
+            .validPastTimes(creation)
+            .orderedTimes(creation, start);
+
     this.id = id;
     this.name = name;
     this.creation = creation;
     this.lastModified = lastModified;
     this.location = location;
     this.start = start;
-    this.end = end;
+    if (end != 0) {
+      builder.orderedTimes(start, end);
+      this.end = end;
+    } else {
+      this.end = start + 60 * 60;
+    }
     this.modificationId = modificationId;
     this.modificationSignatures = new ArrayList<>(modificationSignatures);
   }
@@ -86,8 +94,8 @@ public class StateMeeting extends Data {
     return lastModified;
   }
 
-  public String getLocation() {
-    return location;
+  public Optional<String> getLocation() {
+    return Optional.ofNullable(location);
   }
 
   public long getStart() {

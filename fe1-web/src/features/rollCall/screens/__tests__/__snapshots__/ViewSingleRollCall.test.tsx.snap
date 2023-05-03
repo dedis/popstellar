@@ -421,10 +421,75 @@ exports[`EventRollCall render correctly no duplicate attendees opened roll calls
                             >
                               The Roll Call is currently open and you as an attendee should let the organizer scan your PoP token encoded in the QR Code below.
                             </Text>
-                            <qrcode
-                              overlayText="Scan to add attendee"
-                              value="{"pop_token":""}"
-                            />
+                            <View
+                              style={
+                                {
+                                  "flexDirection": "row",
+                                  "justifyContent": "center",
+                                }
+                              }
+                            >
+                              <View
+                                style={
+                                  {
+                                    "position": "relative",
+                                  }
+                                }
+                              >
+                                <qrcode
+                                  level="H"
+                                  size={256}
+                                  style={
+                                    {
+                                      "height": "auto",
+                                      "maxWidth": "300px",
+                                      "width": "100%",
+                                    }
+                                  }
+                                  value="{"pop_token":""}"
+                                  viewBox="0 0 256 256"
+                                />
+                                <View
+                                  style={
+                                    {
+                                      "alignItems": "center",
+                                      "backgroundColor": "#3742fa",
+                                      "borderRadius": 100,
+                                      "bottom": "27.9%",
+                                      "display": "flex",
+                                      "justifyContent": "center",
+                                      "left": "27.9%",
+                                      "overflow": "hidden",
+                                      "padding": "4",
+                                      "position": "absolute",
+                                      "right": "27.9%",
+                                      "top": "27.9%",
+                                    }
+                                  }
+                                >
+                                  <Text
+                                    style={
+                                      [
+                                        {
+                                          "color": "#000",
+                                          "fontSize": 20,
+                                          "lineHeight": 26,
+                                          "textAlign": "left",
+                                        },
+                                        {
+                                          "textAlign": "center",
+                                        },
+                                        {
+                                          "color": "#fff",
+                                        },
+                                      ]
+                                    }
+                                  >
+                                    Scan to add attendee
+                                  </Text>
+                                </View>
+                              </View>
+                            </View>
                             <View
                               style={
                                 {
@@ -1310,10 +1375,75 @@ exports[`EventRollCall render correctly no duplicate attendees re-opened roll ca
                             >
                               The Roll Call is currently open and you as an attendee should let the organizer scan your PoP token encoded in the QR Code below.
                             </Text>
-                            <qrcode
-                              overlayText="Scan to add attendee"
-                              value="{"pop_token":""}"
-                            />
+                            <View
+                              style={
+                                {
+                                  "flexDirection": "row",
+                                  "justifyContent": "center",
+                                }
+                              }
+                            >
+                              <View
+                                style={
+                                  {
+                                    "position": "relative",
+                                  }
+                                }
+                              >
+                                <qrcode
+                                  level="H"
+                                  size={256}
+                                  style={
+                                    {
+                                      "height": "auto",
+                                      "maxWidth": "300px",
+                                      "width": "100%",
+                                    }
+                                  }
+                                  value="{"pop_token":""}"
+                                  viewBox="0 0 256 256"
+                                />
+                                <View
+                                  style={
+                                    {
+                                      "alignItems": "center",
+                                      "backgroundColor": "#3742fa",
+                                      "borderRadius": 100,
+                                      "bottom": "27.9%",
+                                      "display": "flex",
+                                      "justifyContent": "center",
+                                      "left": "27.9%",
+                                      "overflow": "hidden",
+                                      "padding": "4",
+                                      "position": "absolute",
+                                      "right": "27.9%",
+                                      "top": "27.9%",
+                                    }
+                                  }
+                                >
+                                  <Text
+                                    style={
+                                      [
+                                        {
+                                          "color": "#000",
+                                          "fontSize": 20,
+                                          "lineHeight": 26,
+                                          "textAlign": "left",
+                                        },
+                                        {
+                                          "textAlign": "center",
+                                        },
+                                        {
+                                          "color": "#fff",
+                                        },
+                                      ]
+                                    }
+                                  >
+                                    Scan to add attendee
+                                  </Text>
+                                </View>
+                              </View>
+                            </View>
                             <View
                               style={
                                 {
