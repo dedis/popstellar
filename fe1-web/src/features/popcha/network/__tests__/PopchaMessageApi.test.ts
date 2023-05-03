@@ -3,6 +3,7 @@ import { publish as mockPublish } from 'core/network';
 import { Hash } from 'core/objects';
 
 import { sendPopchaAuthRequest } from '../PopchaMessageApi';
+import { generateToken } from '../../../wallet/objects';
 
 const mockClientId = new Hash('mockClientId');
 const mockNonce = 'mockNonce';
@@ -26,6 +27,7 @@ describe('PopchaMessageApi', () => {
       mockState,
       mockResponseMode,
       mockLaoId,
+      generateToken,
     );
 
     expect(publishMock).toHaveBeenCalledTimes(1);

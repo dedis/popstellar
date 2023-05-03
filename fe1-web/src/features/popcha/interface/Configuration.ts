@@ -10,7 +10,7 @@ export interface PoPchaConfiguration {
   useCurrentLaoId: () => Hash;
 }
 
-export type PoPchaReactContext = Pick<PoPchaConfiguration, 'useCurrentLaoId'>;
+export type PoPchaReactContext = Pick<PoPchaConfiguration, 'useCurrentLaoId' | 'generateToken'>;
 
 export interface PoPchaInterface extends FeatureInterface {
   laoScreens: PoPchaFeature.LaoScreen[];

@@ -3,6 +3,7 @@ import { useContext } from 'react';
 import FeatureContext from 'core/contexts/FeatureContext';
 
 import { POPCHA_FEATURE_IDENTIFIER, PoPchaReactContext } from '../interface';
+import { Hash } from 'core/objects';
 
 export namespace PoPchaHooks {
   export const usePoPchaContext = (): PoPchaReactContext => {
@@ -15,4 +16,7 @@ export namespace PoPchaHooks {
   };
 
   export const useCurrentLaoId = () => usePoPchaContext().useCurrentLaoId();
+
+  export const useGenerateToken = (laoId: Hash, clientId: Hash | undefined) =>
+    usePoPchaContext().generateToken(laoId, clientId);
 }

@@ -27,6 +27,7 @@ const styles = StyleSheet.create({
 });
 const PoPchaScanner = () => {
   const laoId = PoPchaHooks.useCurrentLaoId();
+  const generateToken = PoPchaHooks.useGenerateToken;
 
   const [showScanner, setShowScanner] = useState(false);
   const [textScanned, setTextScanned] = useState('');
@@ -51,10 +52,12 @@ const PoPchaScanner = () => {
    * @returns true if the scanned info is valid, false otherwise
    */
   const verifyScannedInfo = (data: string) => {
-    const url = new URL(data);
-
-    if (!url.hostname || !url.port) {
-      showErrorMessage('Invalid url format');
+    let url: URL;
+    try {
+      url = new URL(data);
+    } catch (e) {
+      console.log(`Error with scanned url: ${e}`);
+      showErrorMessage('Invalid url');
       return false;
     }
 
@@ -129,6 +132,7 @@ const PoPchaScanner = () => {
       urlArg.get('state'),
       urlArg.get('response_mode'),
       laoId,
+      generateToken,
     );
 
     return authResponse
