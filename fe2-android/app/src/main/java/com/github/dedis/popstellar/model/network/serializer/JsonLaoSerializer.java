@@ -22,7 +22,9 @@ public class JsonLaoSerializer implements JsonSerializer<Lao>, JsonDeserializer<
     // Deserialize the other properties of the Lao object
     String id = jsonObject.get("id").getAsString();
     String name = jsonObject.get("name").getAsString();
-    Long lastModified = jsonObject.get("lastModified").getAsLong();
+    // LastModified could be absent
+    JsonElement lastModifiedElement = jsonObject.get("lastModified");
+    Long lastModified = lastModifiedElement == null ? null : lastModifiedElement.getAsLong();
     Long creation = jsonObject.get("creation").getAsLong();
 
     PublicKey organizer = context.deserialize(jsonObject.get("organizer"), PublicKey.class);
