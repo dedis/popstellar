@@ -76,6 +76,7 @@
   <dimen name="roll_call_card_corner_radius">10dp</dimen>
   <dimen name="roll_call_container_margin_horizontal">15dp</dimen>
   <dimen name="roll_call_container_margin_top">10dp</dimen>
+  <dimen name="meeting_location_margin_top">30dp</dimen>
 
   <!--  Event layout-->
   <dimen name="event_layout_type_image_side">30dp</dimen>

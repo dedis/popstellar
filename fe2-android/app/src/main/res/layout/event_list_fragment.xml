@@ -127,7 +127,7 @@
       android:visibility="gone"
       app:layout_constraintStart_toStartOf="@id/add_event"
       app:layout_constraintEnd_toEndOf="@id/add_event"
-      app:layout_constraintBottom_toTopOf="@id/add_election"
+      app:layout_constraintBottom_toTopOf="@id/add_meeting"
       android:contentDescription="@string/add_rc_description" />
 
     <TextView
@@ -144,6 +144,39 @@
       app:layout_constraintTop_toTopOf="@id/add_roll_call"
       app:layout_constraintBottom_toBottomOf="@id/add_roll_call"
       app:layout_constraintEnd_toStartOf="@id/add_roll_call" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+      android:id="@+id/add_meeting"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:src="@drawable/ic_meeting"
+      android:layout_marginBottom="@dimen/mini_fab_bottom_margin"
+      android:backgroundTint="@color/white"
+      app:borderWidth="@dimen/fab_border_width"
+      app:backgroundTint="@color/black"
+      android:tint="@color/black"
+      app:fabSize="mini"
+      android:elevation="@dimen/floating_action_button_elevation"
+      android:visibility="gone"
+      app:layout_constraintStart_toStartOf="@id/add_event"
+      app:layout_constraintEnd_toEndOf="@id/add_event"
+      app:layout_constraintBottom_toTopOf="@id/add_election"
+      android:contentDescription="@string/add_meeting_description" />
+
+    <TextView
+      android:id="@+id/add_meeting_text"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="@string/add_meeting"
+      android:fontFamily="sans-serif-medium"
+      android:textColor="@color/black"
+      android:textStyle="bold"
+      android:textSize="@dimen/add_event_texts_size"
+      android:layout_marginEnd="@dimen/add_button_margin_end"
+      android:visibility="gone"
+      app:layout_constraintTop_toTopOf="@id/add_meeting"
+      app:layout_constraintBottom_toBottomOf="@id/add_meeting"
+      app:layout_constraintEnd_toStartOf="@id/add_meeting" />
 
     <LinearLayout
       android:id="@+id/empty_events_layout"

@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto">
+
+  <androidx.constraintlayout.widget.ConstraintLayout
+    android:id="@+id/fragment_create_meeting_event"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+      android:id="@+id/meeting_title"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginHorizontal="@dimen/margin_text_horizontal"
+      android:orientation="vertical"
+      app:layout_constraintTop_toTopOf="parent">
+
+      <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/meeting_title_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_text"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+        <com.google.android.material.textfield.TextInputEditText
+          android:id="@+id/meeting_title_text"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:gravity="start|top"
+          android:hint="@string/meeting_title_required"
+
+          android:inputType="text" />
+      </com.google.android.material.textfield.TextInputLayout>
+
+      <include
+        android:id="@+id/meeting_date"
+        layout="@layout/event_enter_date_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/margin_text"
+        app:layout_constrainedHeight="true"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/roll_call_title" />
+
+      <include
+        android:id="@+id/meeting_time"
+        layout="@layout/event_enter_time_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/margin_text"
+        app:layout_constrainedHeight="true"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/date" />
+
+      <LinearLayout
+        android:id="@+id/meeting_event_description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="vertical"
+        android:layout_marginTop="@dimen/margin_text"
+        app:layout_constrainedHeight="true"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/time">
+
+        <com.google.android.material.textfield.TextInputLayout
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+          <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/meeting_event_location_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/meeting_location_not_required"
+            android:gravity="start"
+            android:inputType="textMultiLine"
+            android:maxLines="10" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+      </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+      android:id="@+id/meeting_confirm_cancel"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:orientation="horizontal"
+      android:layout_margin="@dimen/main_horizontal_margin"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintRight_toRightOf="parent">
+
+      <Button
+        android:id="@+id/meeting_confirm"
+        android:layout_width="match_parent"
+        android:textAllCaps="false"
+        android:padding="@dimen/padding_standard"
+        android:layout_height="wrap_content"
+        android:text="@string/confirm_button" />
+
+    </LinearLayout>
+
+  </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
