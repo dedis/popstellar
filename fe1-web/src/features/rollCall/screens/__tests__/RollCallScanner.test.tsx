@@ -231,4 +231,22 @@ describe('RollCallOpened', () => {
       ],
     });
   });
+
+  it('shows the correct number of attendees', async () => {
+    const mockAttendeePopTokens = [mockPopToken.publicKey.valueOf()];
+
+    const { toJSON } = renderRollCallOpened(mockAttendeePopTokens);
+
+    // counter should be at 0
+    expect(toJSON()).toMatchSnapshot();
+
+    await waitFor(() => {
+      fakeQrReaderScan(ScannablePopToken.encodePopToken({ pop_token: mockPublicKey2.valueOf() }));
+      fakeQrReaderScan(ScannablePopToken.encodePopToken({ pop_token: mockPublicKey3.valueOf() }));
+      expect(mockGenerateToken).toHaveBeenCalled();
+    });
+
+    // counter should be at 2
+    expect(toJSON()).toMatchSnapshot();
+  });
 });
