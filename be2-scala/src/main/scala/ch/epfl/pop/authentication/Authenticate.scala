@@ -13,6 +13,10 @@ object Authenticate {
 
   private val mandatoryParameters = Set("response_type", "client_id", "redirect_uri", "scope", "login_hint", "nonce")
 
+  val INVALID_REQUEST_ERROR: String = "invalid_request"
+  val UNSUPPORTED_RESPONSE_TYPE_ERROR: String = "unsupported_response_type"
+  val INVALID_SCOPE_ERROR: String = "invalid_scope"
+
   /** Builds a route that can handle an authentication request
     * @return
     *   A route either successfully handling a given authentication request or rejecting it with an error
@@ -45,7 +49,7 @@ object Authenticate {
           val parametersFound = uri.query().toMap.keys.toSet
           val missingParams = mandatoryParameters.diff(parametersFound)
           val errorDescription = missingParams.map(name => s"[$name]").mkString("Missing parameters: ", " ", "")
-          authenticationFailure("invalid_request", errorDescription, None)
+          authenticationFailure(INVALID_REQUEST_ERROR, errorDescription, None)
         }
       }
 
@@ -67,7 +71,7 @@ object Authenticate {
     if (response_type == expectedResponseType)
       Right(())
     else
-      Left("unsupported_response_type" -> s"expected \"$expectedResponseType\" but received \"$response_type\"")
+      Left(UNSUPPORTED_RESPONSE_TYPE_ERROR -> s"expected \"$expectedResponseType\" but received \"$response_type\"")
   }
 
   private def verifyScope(scope: String): VerificationState = {
@@ -76,7 +80,7 @@ object Authenticate {
     if (scopes.contains(expectedScope))
       Right(())
     else
-      Left("invalid_scope" -> s"expected scope to contain \"$expectedScope\" but received \"$scope\"")
+      Left(INVALID_SCOPE_ERROR -> s"expected scope to contain \"$expectedScope\" but received \"$scope\"")
   }
 
   private def verifyRedirectUri(uri: String): VerificationState = {
@@ -87,7 +91,7 @@ object Authenticate {
     if (uri.matches(httpRegex))
       Right(())
     else
-      Left("invalid_request" -> s"expected http or https url format for redirect uri")
+      Left(INVALID_REQUEST_ERROR -> s"expected http or https url format for redirect uri")
   }
 
   private def verifyResponseMode(mode: Option[String]): VerificationState = {
@@ -95,7 +99,7 @@ object Authenticate {
     if (mode.isEmpty || supportedModes.contains(mode.get))
       Right(())
     else
-      Left("invalid_request" -> s"only [${supportedModes.mkString(",")}] response modes are supported but received $mode")
+      Left(INVALID_REQUEST_ERROR -> s"only [${supportedModes.mkString(",")}] response modes are supported but received $mode")
   }
 
   private def generateChallenge(request: HttpRequest): HttpResponse =
