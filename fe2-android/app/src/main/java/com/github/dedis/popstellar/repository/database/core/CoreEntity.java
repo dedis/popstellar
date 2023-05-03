@@ -10,8 +10,9 @@ import java.util.*;
 @Entity(tableName = "core")
 public class CoreEntity {
 
-  @PrimaryKey(autoGenerate = true)
-  private int id;
+  @ColumnInfo(name = "id")
+  @PrimaryKey
+  private final int id;
 
   @ColumnInfo(name = "server_address")
   @NonNull
@@ -21,23 +22,23 @@ public class CoreEntity {
   @NonNull
   private final List<String> walletSeed;
 
-  @NonNull private final Set<Channel> subscriptions;
+  @ColumnInfo(name = "subscription")
+  @NonNull
+  private final Set<Channel> subscriptions;
 
   public CoreEntity(
+      int id,
       @NonNull String serverAddress,
       @NonNull List<String> walletSeed,
       @NonNull Set<Channel> subscriptions) {
-    this.walletSeed = walletSeed;
+    this.id = id;
     this.serverAddress = serverAddress;
+    this.walletSeed = walletSeed;
     this.subscriptions = new HashSet<>(subscriptions);
   }
 
   public int getId() {
     return id;
-  }
-
-  public void setId(int id) {
-    this.id = id;
   }
 
   @NonNull
@@ -61,6 +62,25 @@ public class CoreEntity {
 
   public Set<Channel> getSubscriptionsCopy() {
     return new HashSet<>(subscriptions);
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    CoreEntity that = (CoreEntity) o;
+    return serverAddress.equals(that.serverAddress)
+        && walletSeed.equals(that.walletSeed)
+        && subscriptions.equals(that.subscriptions);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(serverAddress, walletSeed, subscriptions);
   }
 
   @NonNull

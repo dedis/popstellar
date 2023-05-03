@@ -77,7 +77,7 @@ public class LaoViewModel extends AndroidViewModel implements PopViewModel {
     this.networkManager = networkManager;
     this.keyManager = keyManager;
     this.wallet = wallet;
-    coreDao = appDatabase.coreDao();
+    this.coreDao = appDatabase.coreDao();
   }
 
   @Override

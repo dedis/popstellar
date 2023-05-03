@@ -6,12 +6,12 @@ import androidx.room.*;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 
+import java.util.Objects;
+
 import javax.annotation.Nullable;
 
 @Entity(tableName = "messages")
 public class MessageEntity {
-
-  private static final MessageEntity EMPTY = new MessageEntity(new MessageID(""), null);
 
   @ColumnInfo(name = "message_id")
   @PrimaryKey
@@ -45,7 +45,20 @@ public class MessageEntity {
     this.content = content;
   }
 
-  public static MessageEntity getEmptyEntity() {
-    return EMPTY;
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    MessageEntity that = (MessageEntity) o;
+    return messageId.equals(that.messageId) && Objects.equals(content, that.content);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(messageId, content);
   }
 }

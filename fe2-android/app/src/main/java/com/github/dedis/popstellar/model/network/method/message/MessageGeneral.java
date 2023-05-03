@@ -23,6 +23,7 @@ import timber.log.Timber;
 public final class MessageGeneral {
 
   private static final String TAG = MessageGeneral.class.getSimpleName();
+
   private static final MessageGeneral EMPTY =
       new MessageGeneral(null, null, null, null, null, new ArrayList<>());
 

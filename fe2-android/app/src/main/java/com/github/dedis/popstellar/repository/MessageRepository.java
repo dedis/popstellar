@@ -16,6 +16,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
@@ -32,7 +33,7 @@ public class MessageRepository {
 
   @Inject
   public MessageRepository(AppDatabase appDatabase) {
-    messageDao = appDatabase.messageDao();
+    this.messageDao = appDatabase.messageDao();
     loadCache();
   }
 
@@ -45,7 +46,13 @@ public class MessageRepository {
         .subscribe(
             messageEntities ->
                 messageEntities.forEach(
-                    msg -> messageCache.put(msg.getMessageId(), msg.getContent())));
+                    msg ->
+                        messageCache.put(
+                            msg.getMessageId(),
+                            msg.getContent() == null
+                                ? MessageGeneral.emptyMessage()
+                                : msg.getContent())),
+            Exceptions::propagate);
   }
 
   public MessageGeneral getMessage(MessageID messageID) {
@@ -76,14 +83,14 @@ public class MessageRepository {
     MessageID messageID = message.getMessageId();
     if (!isStoringNeeded) {
       // No need to store the content of the message, just the id is needed
-      message = MessageGeneral.emptyMessage();
+      message = null;
     }
 
     if (!toPersist) {
       ephemeralMessages.put(messageID, message);
     } else {
-      // Add the message to the cache
-      messageCache.put(messageID, message);
+      // Add the message to the cache (cache cannot accept a null value)
+      messageCache.put(messageID, message == null ? MessageGeneral.emptyMessage() : message);
 
       // Add asynchronously the messages to the database
       messageDao

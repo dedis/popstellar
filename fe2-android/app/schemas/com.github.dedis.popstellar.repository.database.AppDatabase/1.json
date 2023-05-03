@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "26db860151840d604e10c5094fa498da",
+    "identityHash": "ab555514df990aef2acef1a0123ebb4c",
     "entities": [
       {
         "tableName": "messages",
@@ -58,7 +58,7 @@
       },
       {
         "tableName": "core",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `server_address` TEXT NOT NULL, `wallet_seed` TEXT NOT NULL, `subscriptions` TEXT NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `server_address` TEXT NOT NULL, `wallet_seed` TEXT NOT NULL, `subscription` TEXT NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -80,7 +80,7 @@
           },
           {
             "fieldPath": "subscriptions",
-            "columnName": "subscriptions",
+            "columnName": "subscription",
             "affinity": "TEXT",
             "notNull": true
           }
@@ -89,7 +89,7 @@
           "columnNames": [
             "id"
           ],
-          "autoGenerate": true
+          "autoGenerate": false
         },
         "indices": [],
         "foreignKeys": []
@@ -98,7 +98,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '26db860151840d604e10c5094fa498da')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'ab555514df990aef2acef1a0123ebb4c')"
     ]
   }
 }

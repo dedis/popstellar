@@ -5,6 +5,7 @@ import android.app.Application;
 import androidx.room.Room;
 
 import com.github.dedis.popstellar.repository.database.AppDatabase;
+import com.github.dedis.popstellar.repository.database.CustomTypeConverters;
 
 import javax.inject.Singleton;
 
@@ -17,6 +18,8 @@ import dagger.hilt.components.SingletonComponent;
 @InstallIn(SingletonComponent.class)
 public class AppDatabaseModule {
 
+  private static final String DATABASE_NAME = "POP-Database";
+
   private AppDatabaseModule() {
     // Private empty constructor
   }
@@ -24,7 +27,16 @@ public class AppDatabaseModule {
   @Provides
   @Singleton
   public static AppDatabase provideAppDatabase(Application application) {
-    return Room.databaseBuilder(application, AppDatabase.class, "POP-Database")
+    /*
+    Injecting the DataRegistry (or the Gson directly) would create a dependency cycle,
+    since AppDatabase -> Gson -> DataRegistry -> Handlers -> Repositories -> AppDatabase.
+    So to avoid overcomplicated solutions here it's created a DataRegistry with null handlers,
+    as the only function is to get the object's type for the Gson serializer
+     */
+    return Room.databaseBuilder(application, AppDatabase.class, DATABASE_NAME)
+        .addTypeConverter(
+            new CustomTypeConverters(
+                JsonModule.provideGson(DataRegistryModule.provideDataRegistryForGson())))
         .fallbackToDestructiveMigration()
         .allowMainThreadQueries()
         .build();

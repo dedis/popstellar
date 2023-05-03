@@ -79,14 +79,9 @@ public class ActivityUtils {
     String[] seed = wallet.exportSeed();
 
     CoreEntity coreEntity =
+        // Constant id as we need to store only 1 entry (next insert must replace)
         new CoreEntity(
-            serverAddress, Collections.unmodifiableList(Arrays.asList(seed)), subscriptions);
-
-    // Search if previous entry was there, in case take same id to replace
-    CoreEntity previous = coreDao.getSettings();
-    if (previous != null) {
-      coreEntity.setId(previous.getId());
-    }
+            0, serverAddress, Collections.unmodifiableList(Arrays.asList(seed)), subscriptions);
 
     coreDao
         .insert(coreEntity)

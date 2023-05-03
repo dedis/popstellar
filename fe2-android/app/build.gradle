@@ -275,6 +275,7 @@ dependencies {
     implementation "androidx.room:room-runtime:$room_version"
     annotationProcessor "androidx.room:room-compiler:$room_version"
     implementation "androidx.room:room-rxjava2:$room_version"
+    testImplementation "androidx.room:room-testing:$room_version"
 
     // ================= SLF4J =================
     testImplementation "org.slf4j:slf4j-api:$slf4j_version"

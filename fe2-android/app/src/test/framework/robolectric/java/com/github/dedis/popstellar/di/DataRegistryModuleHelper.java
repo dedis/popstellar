@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.github.dedis.popstellar.model.network.method.message.data.DataRegistry;
 import com.github.dedis.popstellar.repository.*;
+import com.github.dedis.popstellar.repository.database.AppDatabase;
 import com.github.dedis.popstellar.utility.handler.data.*;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 
@@ -118,13 +119,14 @@ public class DataRegistryModuleHelper {
 
   public static DataRegistry buildRegistry(
       Context context, DigitalCashRepository digitalCashRepo, KeyManager keyManager) {
+    AppDatabase appDatabase = AppDatabaseModuleHelper.getAppDatabase(context);
     return buildRegistry(
-        new LAORepository(AppDatabaseModuleHelper.getAppDatabase(context)),
+        new LAORepository(appDatabase),
         new SocialMediaRepository(),
         new ElectionRepository(),
         new RollCallRepository(),
         digitalCashRepo,
-        new MessageRepository(AppDatabaseModuleHelper.getAppDatabase(context)),
+        new MessageRepository(appDatabase),
         keyManager,
         new ServerRepository());
   }

@@ -291,6 +291,46 @@ public final class Lao implements Copyable<Lao> {
     return new Lao(this);
   }
 
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    Lao lao = (Lao) o;
+    return Objects.equals(channel, lao.channel)
+        && Objects.equals(id, lao.id)
+        && Objects.equals(name, lao.name)
+        && Objects.equals(lastModified, lao.lastModified)
+        && Objects.equals(creation, lao.creation)
+        && Objects.equals(organizer, lao.organizer)
+        && Objects.equals(modificationId, lao.modificationId)
+        && Objects.equals(witnesses, lao.witnesses)
+        && Objects.equals(witnessMessages, lao.witnessMessages)
+        && Objects.equals(pendingUpdates, lao.pendingUpdates)
+        && Objects.equals(messageIdToElectInstance, lao.messageIdToElectInstance)
+        && Objects.equals(keyToNode, lao.keyToNode);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(
+        channel,
+        id,
+        name,
+        lastModified,
+        creation,
+        organizer,
+        modificationId,
+        witnesses,
+        witnessMessages,
+        pendingUpdates,
+        messageIdToElectInstance,
+        keyToNode);
+  }
+
   @NonNull
   @Override
   public String toString() {

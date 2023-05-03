@@ -42,7 +42,7 @@ public class LAORepository {
 
   @Inject
   public LAORepository(AppDatabase appDatabase) {
-    laoDao = appDatabase.laoDao();
+    this.laoDao = appDatabase.laoDao();
     loadPersistentStorage();
   }
 

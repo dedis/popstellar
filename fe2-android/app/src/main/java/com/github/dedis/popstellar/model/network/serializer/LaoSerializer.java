@@ -8,6 +8,7 @@ import com.google.gson.*;
 import java.lang.reflect.Type;
 import java.util.*;
 
+/** This class serializes the LAO in a JSON string to be stored in the database */
 public class LaoSerializer implements JsonSerializer<Lao>, JsonDeserializer<Lao> {
 
   @Override
@@ -43,19 +44,17 @@ public class LaoSerializer implements JsonSerializer<Lao>, JsonDeserializer<Lao>
           context.deserialize(entry.getValue(), WitnessMessage.class));
     }
 
-    return new Lao(
-        channel,
-        id,
-        name,
-        lastModified,
-        creation,
-        organizer,
-        modificationId,
-        witnesses,
-        witnessMessages,
-        new HashSet<>(),
-        new HashMap<>(),
-        new HashMap<>());
+    return new LaoBuilder()
+        .setChannel(channel)
+        .setId(id)
+        .setName(name)
+        .setLastModified(lastModified)
+        .setCreation(creation)
+        .setOrganizer(organizer)
+        .setModificationId(modificationId)
+        .setWitnesses(witnesses)
+        .setWitnessMessages(witnessMessages)
+        .build();
   }
 
   @Override
