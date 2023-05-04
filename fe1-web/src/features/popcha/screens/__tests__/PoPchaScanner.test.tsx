@@ -37,6 +37,10 @@ mockUrl.searchParams.append('nonce', mockNonce);
 mockUrl.searchParams.append('response_type', mockResponseType);
 mockUrl.searchParams.append('scope', mockScope);
 
+beforeEach(() => {
+  jest.clearAllMocks();
+});
+
 /**
  * Test that the scanner shows an error message when the url is invalid
  * @param url an invalid url to test
@@ -53,6 +57,7 @@ const testInvalidUrl = async (url: string) => {
   fireScan(url);
   await waitFor(() => expect(mockToastShow).toHaveBeenCalledTimes(1));
 };
+
 describe('PoPcha scanner', () => {
   describe('scanner renders correctly', () => {
     it('closed scanner renders correctly', () => {
@@ -71,7 +76,7 @@ describe('PoPcha scanner', () => {
         </FeatureContext.Provider>,
       );
       const button = getByTestId('popcha_scanner_button');
-      button.props.onPress();
+      fireEvent.press(button);
       expect(toJSON()).toMatchSnapshot();
     });
   });
