@@ -1,0 +1,45 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataGreetServer.json",
+  "description": "Match a server greeting query",
+  "$comment": "A message the back-end sends to clients when they subscribe to a LAO. It informs clients about the servers public key and its peers for this lao",
+  "type": "object",
+  "properties": {
+    "object": {
+      "const": "server"
+    },
+    "action": {
+      "const": "greet"
+    },
+    "public_key": {
+      "type": "string",
+      "contentEncoding": "base64",
+      "$comment": "Public key of the server"
+    },
+    "server_address": {
+      "description": "Canonical address of the server with a protocol prefix and the port number",
+      "type": "string"
+    },
+    "client_address": {
+      "description": "Canonical address of the server with a protocol prefix and the port number",
+      "type": "string"
+    },
+    "peers": {
+      "description": "A list of peers the server is connected to (excluding itself). These can be other organizers or witnesses",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "address": {
+            "description": "Canonical address of the peer with a protocol prefix and the port number",
+            "type": "string"
+          }
+        },
+        "required": ["address"]
+      }
+    }
+  },
+  "additionalProperties": false,
+  "required": ["object", "action", "public_key","server_address", "client_address", "peers"]
+}

@@ -1,0 +1,15 @@
+{
+  "object": "server",
+  "action": "greet",
+  "public_key" : "public_key_hash",
+  "client_address": "wss://address/client",
+  "server_address": "wss://address/server",
+  "peers": [
+    {
+      "address": "peer1"
+    },
+    {
+      "address": "peer2"
+    }
+  ]
+}

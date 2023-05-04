@@ -1,6 +1,6 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/data.json",
+    "$id": "https://raw.githubusercontent.com/dedis/popstellar/work-decentralizedcommunication-mariembaccari-add_server_greet_schema/protocol/query/method/message/data/data.json",
     "description": "Match one type of data",
     "type": "object",
     "oneOf": [
@@ -96,6 +96,9 @@
         },
         {
             "$ref": "dataPostTransactionCoin.json"
+        },
+        {
+            "$ref": "dataGreetServer.json"
         }
     ]
 }
