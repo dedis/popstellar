@@ -8,7 +8,7 @@ import ch.epfl.pop.model.network.method.message.data.election._
 import ch.epfl.pop.model.objects.ElectionChannel._
 import ch.epfl.pop.model.objects.{Channel, Hash}
 import ch.epfl.pop.pubsub.graph.validators.MessageValidator._
-import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
+import ch.epfl.pop.pubsub.graph.{GraphMessage, PipelineError}
 import ch.epfl.pop.storage.DbActor
 
 import scala.concurrent.Await
@@ -254,9 +254,9 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
     }
   }
 
-  // not implemented since the back end does not receive a ResultElection message coming from the front end
+// TODO: Proper validation
   def validateResultElection(rpcMessage: JsonRpcRequest): GraphMessage = {
-    Left(PipelineError(ErrorCodes.SERVER_ERROR.id, "NOT IMPLEMENTED: ElectionValidator cannot handle ResultElection messages yet", rpcMessage.id))
+    Right(rpcMessage)
   }
 
   def validateEndElection(rpcMessage: JsonRpcRequest): GraphMessage = {
