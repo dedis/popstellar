@@ -43,7 +43,7 @@ public class MessageRepository {
     loadCache();
   }
 
-  /** This function is called on creation to asynchronously full the cache */
+  /** This function is called at creation to fill the cache asynchronously */
   @SuppressLint("CheckResult")
   private void loadCache() {
     messageDao
@@ -117,6 +117,7 @@ public class MessageRepository {
           .subscribeOn(Schedulers.io())
           .observeOn(AndroidSchedulers.mainThread())
           .doOnComplete(() -> Timber.tag(TAG).d("Persisted message %s", messageID))
+          .doOnError(err -> Timber.tag(TAG).e(err, "Error persisting the message %s", messageID))
           .subscribe();
     }
   }

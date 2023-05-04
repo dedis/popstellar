@@ -72,7 +72,8 @@ public class LAORepository {
               List<String> laoIds = laos.stream().map(Lao::getId).collect(Collectors.toList());
               laosSubject.onNext(laoIds);
               Timber.tag(TAG).d("Loaded all the LAOs from database: %s", laoIds);
-            });
+            },
+            err -> Timber.tag(TAG).e(err, "Error loading the LAOs from the database"));
   }
 
   /**
