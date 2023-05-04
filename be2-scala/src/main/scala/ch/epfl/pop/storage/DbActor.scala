@@ -136,7 +136,13 @@ final case class DbActor(
     }
 
     val channelData: ChannelData = readChannelData(channel)
-    buildCatchupList(channelData.messages, Nil)
+    readCreateLao(channel) match {
+      case Some(msg) =>
+        msg :: buildCatchupList(channelData.messages, Nil)
+      case None =>
+        log.error("Critical error encountered: no create_lao message was found in the db")
+        buildCatchupList(channelData.messages, Nil)
+    }
   }
 
   @throws[DbActorNAckException]
