@@ -69,7 +69,7 @@ public class ActivityUtils {
     }
 
     Set<Channel> subscriptions;
-    if (networkManager.getNullableMessageSender() == null
+    if (networkManager.isDisposed()
         || networkManager.getMessageSender().getSubscriptions() == null) {
       subscriptions = new HashSet<>();
     } else {

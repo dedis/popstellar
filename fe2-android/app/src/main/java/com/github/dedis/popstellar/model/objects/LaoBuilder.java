@@ -20,7 +20,24 @@ public class LaoBuilder {
   private Map<MessageID, ElectInstance> messageIdToElectInstance = new HashMap<>();
   private Map<PublicKey, ConsensusNode> keyToNode = new HashMap<>();
 
-  public LaoBuilder() {}
+  public LaoBuilder() {
+    // Empty public constructor
+  }
+
+  public LaoBuilder(Lao lao) {
+    this.channel = lao.getChannel();
+    this.id = lao.getId();
+    this.name = lao.getName();
+    this.lastModified = lao.getLastModified();
+    this.creation = lao.getCreation();
+    this.organizer = lao.getOrganizer();
+    this.modificationId = lao.getModificationId();
+    this.witnesses = lao.getWitnesses();
+    this.witnessMessages = lao.getWitnessMessages();
+    this.pendingUpdates = lao.getPendingUpdates();
+    this.messageIdToElectInstance = lao.getMessageIdToElectInstance();
+    this.keyToNode = lao.getKeyToNode();
+  }
 
   public LaoBuilder setChannel(Channel channel) {
     if (channel == null) {

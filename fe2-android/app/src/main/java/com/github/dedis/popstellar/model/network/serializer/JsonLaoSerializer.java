@@ -64,17 +64,10 @@ public class JsonLaoSerializer implements JsonSerializer<Lao>, JsonDeserializer<
           context.deserialize(entry.getValue(), ElectInstance.class));
     }
 
-    // FIXME : The keyToNode is not serialized as the public keys are in base 28, they throw an
-    // error when encoded and decoded
     /*
-    // Deserialize the Map of keyToNode
-    JsonObject keyToNodeJsonObject = jsonObject.get("keyToNode").getAsJsonObject();
-    Map<PublicKey, ConsensusNode> keyToNode = new HashMap<>();
-    for (Map.Entry<String, JsonElement> entry : keyToNodeJsonObject.entrySet()) {
-      keyToNode.put(
-          new PublicKey(entry.getKey()),
-          context.deserialize(entry.getValue(), ConsensusNode.class));
-    }
+    TODO: The keyToNode is not serialized as the public keys are in base 28,
+       they throw an error when encoded and decoded, so far it's not a problem as
+       consensus is not used but it has to be fixed in the future
     */
 
     return new LaoBuilder()
@@ -139,15 +132,7 @@ public class JsonLaoSerializer implements JsonSerializer<Lao>, JsonDeserializer<
     }
     jsonObject.add("messageIdToElectInstance", messageIdToElectInstanceJsonObject);
 
-    /*
-    // Serialize the Map of keyToNode
-    JsonObject keyToNodeJsonObject = new JsonObject();
-    for (Map.Entry<PublicKey, ConsensusNode> entry : lao.getKeyToNode().entrySet()) {
-      keyToNodeJsonObject.add(
-          entry.getKey().getEncoded(), context.serialize(entry.getValue(), ConsensusNode.class));
-    }
-    jsonObject.add("keyToNode", keyToNodeJsonObject);
-     */
+    // TODO: add the keyToNode serialization when the deserialization will work
 
     return jsonObject;
   }

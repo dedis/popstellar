@@ -34,7 +34,7 @@ public class CoreEntity {
     this.id = id;
     this.serverAddress = serverAddress;
     this.walletSeed = walletSeed;
-    this.subscriptions = new HashSet<>(subscriptions);
+    this.subscriptions = subscriptions;
   }
 
   public int getId() {
