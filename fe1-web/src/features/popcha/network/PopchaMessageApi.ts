@@ -29,7 +29,7 @@ export const sendPopchaAuthRequest = (
 ): Promise<void> => {
   const token = generateToken(laoId, client_id);
   return token.then((t) => {
-    const signedToken = t.privateKey.sign(new Base64UrlData(nonce));
+    const signedToken = t.sign(new Base64UrlData(nonce));
     const popchaChannel = getPopchaAuthenticationChannel(laoId);
     const message = new PopchaAuthMsg({
       client_id: client_id.toString(),

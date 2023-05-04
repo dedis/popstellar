@@ -26,8 +26,8 @@ const mockClientId = 'mockClientId';
 const mockRedirectUri = 'mockRedirectUri';
 const mockLoginHint = mockLaoId.toString();
 const mockNonce = 'mockNonce';
-const mockResponseType = 'query';
-const mockScope = 'scope openid';
+const mockResponseType = 'id_token token';
+const mockScope = 'openid profile';
 
 const mockUrl = new URL('https://valid2.server.example:8000');
 mockUrl.searchParams.append('client_id', mockClientId);
@@ -114,6 +114,27 @@ describe('PoPcha scanner', () => {
       const url = new URL(mockUrl.toString());
       url.searchParams.delete('scope');
       await testInvalidUrl(url.toString());
+    });
+
+    it('login_hint does not match current laoId shows error message', async () => {
+      const url = new URL(mockUrl.toString());
+      url.searchParams.set('login_hint', 'invalid login hint');
+      await testInvalidUrl(url.toString());
+    });
+  });
+
+  describe('valid url sends correct response', () => {
+    it('valid url sends correct response', async () => {
+      const { getByTestId } = render(
+        <FeatureContext.Provider value={contextValue}>
+          <PoPchaScanner />
+        </FeatureContext.Provider>,
+      );
+
+      const scannerButton = getByTestId('popcha_scanner_button');
+      fireEvent.press(scannerButton);
+      fireScan(mockUrl.toString());
+      await waitFor(() => expect(mockToastShow).toHaveBeenCalledTimes(0));
     });
   });
 });

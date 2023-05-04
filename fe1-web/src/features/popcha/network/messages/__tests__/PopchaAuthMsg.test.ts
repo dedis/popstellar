@@ -1,11 +1,11 @@
-import { ProtocolError } from '../../../../../core/objects';
+import { Hash, ProtocolError } from '../../../../../core/objects';
 import { PopchaAuthMsg } from '../PopchaAuthMsg';
 
 const CLIENT_ID = 'client-id';
 const NONCE = 'nonce';
 const POPCHA_ADDRESS = 'popcha-address';
-const IDENTIFIER = 'identifier';
-const IDENTIFIER_PROOF = 'identifier-proof';
+const IDENTIFIER = new Hash('mock-identifier');
+const IDENTIFIER_PROOF = new Hash('mock-identifier-proof');
 const STATE = 'state';
 const RESPONSE_MODE = 'response-mode';
 
