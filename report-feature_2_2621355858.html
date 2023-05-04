@@ -74,7 +74,7 @@ $(document).ready(function() {
   <tbody>
     <tr class="info">
       <td>go</td>
-      <td>03 May 2023, 04:06</td>
+      <td>04 May 2023, 04:11</td>
     </tr>
   </tbody>
 </table>
@@ -127,18 +127,18 @@ $(document).ready(function() {
         <tbody>
         <tr>
           <td class="tagname">be/rollCall/closeRollCall.feature</td>
-          <td      class="passed"    >12</td>
-          <td      class="failed"    >8</td>
-          <td     class="skipped"   >33</td>
+          <td      class="passed"    >53</td>
+          <td      class="failed"    >1</td>
+          <td     class="skipped"   >3</td>
           <td >0</td>
           <td >0</td>
-          <td class="total">53</td>
+          <td class="total">57</td>
 
-          <td >0</td>
-          <td  class="failed"    >4</td>
+          <td  class="passed"    >3</td>
+          <td  class="failed"    >1</td>
           <td class="total">4</td>
 
-          <td class="duration" data-value="199317023">0.199</td>
+          <td class="duration" data-value="16401150138">16.401</td>
           <td class="failed">Failed</td>
         </tr>
         </tbody>
@@ -191,12 +191,12 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">0.037</span>
+  <span class="lead-duration duration">0.293</span>
 
 
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-1">
+  <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-1">
 
-<div class="brief failed">
+<div class="brief passed">
   <span class="keyword indention">Background</span>
   <span class="name"></span>
 
@@ -207,16 +207,16 @@ $(document).ready(function() {
   </span>
   <div class="description indention"></div>
 
-  <div id="element-1" class="collapse collapsable-details  in ">
+  <div id="element-1" class="collapse collapsable-details ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-2">
+  <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-2">
 
-<div class="brief failed">
+<div class="brief passed">
   <span class="keyword indention">Steps</span>
   <span class="name"></span>
 
@@ -226,7 +226,7 @@ $(document).ready(function() {
 
   </div>
 
-  <div id="steps-2" class="inner-level collapse collapsable-details  in ">
+  <div id="steps-2" class="inner-level collapse collapsable-details ">
       <div class="step">
 
 
@@ -234,7 +234,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/utils/server.feature')</span>
 
-  <span class="lead-duration duration">0.008</span>
+  <span class="lead-duration duration">0.259</span>
 
 </div>
 
@@ -284,11 +284,11 @@ $(document).ready(function() {
       <div class="step">
 
 
-<div class="brief step-name-* failed">
+<div class="brief step-name-* passed">
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/mockFrontEnd.feature')</span>
 
-  <span class="lead-duration duration">0.016</span>
+  <span class="lead-duration duration">0.009</span>
 
 </div>
 
@@ -297,71 +297,9 @@ $(document).ready(function() {
 
 
 
-  <div class="inner-level">
-    <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-3">
-          <a>js</a>
-      </div>
-      <div id="msg-3" class="collapse collapsable-details  in ">
-        <pre>js failed:
-&gt;&gt;&gt;&gt;
-01: function(){
-02:   var MultiMsg = Java.type('common.net.MultiMsgWebSocketClient')
-03:   var Logg = Java.type('com.intuit.karate.Logger')
-04:   var logg =  new Logg()
-05:   var Queue = Java.type(&quot;common.net.MessageQueue&quot;)
-06:   var q =  new Queue()
-07:   var WebSocketOptions = Java.type('com.intuit.karate.http.WebSocketOptions')
-08:   var wso =  new WebSocketOptions(wsURL)
-09:   return new MultiMsg(wso,logg,q)
-10: }
-&lt;&lt;&lt;&lt;
-org.graalvm.polyglot.PolyglotException: karate.io.netty.handler.codec.http.websocketx.WebSocketClientHandshakeException: Invalid handshake response getStatus: 404 Not Found
-- com.intuit.karate.http.WebSocketClient.&lt;init&gt;(WebSocketClient.java:148)
-- common.net.MultiMsgWebSocketClient.&lt;init&gt;(MultiMsgWebSocketClient.java:26)
-- &lt;js&gt;.:anonymous(Unnamed:9)
-
-classpath:be/mockFrontEnd.feature:18
-classpath:be/rollCall/closeRollCall.feature:15</pre>
-      </div>
-    </div>
-  </div>
 
 
 
-
-  <div class="inner-level">
-    <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-4">
-          <a>Doc string</a>
-      </div>
-      <div id="msg-4" class="collapse collapsable-details">
-        <pre>04:06:16.671 classpath:be/rollCall/closeRollCall.feature:15
-* call read('classpath:be/mockFrontEnd.feature')
-js failed:
-&gt;&gt;&gt;&gt;
-01: function(){
-02:   var MultiMsg = Java.type('common.net.MultiMsgWebSocketClient')
-03:   var Logg = Java.type('com.intuit.karate.Logger')
-04:   var logg =  new Logg()
-05:   var Queue = Java.type(&quot;common.net.MessageQueue&quot;)
-06:   var q =  new Queue()
-07:   var WebSocketOptions = Java.type('com.intuit.karate.http.WebSocketOptions')
-08:   var wso =  new WebSocketOptions(wsURL)
-09:   return new MultiMsg(wso,logg,q)
-10: }
-&lt;&lt;&lt;&lt;
-org.graalvm.polyglot.PolyglotException: karate.io.netty.handler.codec.http.websocketx.WebSocketClientHandshakeException: Invalid handshake response getStatus: 404 Not Found
-- com.intuit.karate.http.WebSocketClient.&lt;init&gt;(WebSocketClient.java:148)
-- common.net.MultiMsgWebSocketClient.&lt;init&gt;(MultiMsgWebSocketClient.java:26)
-- &lt;js&gt;.:anonymous(Unnamed:9)
-
-classpath:be/mockFrontEnd.feature:18
-classpath:be/rollCall/closeRollCall.feature:15
-</pre>
-      </div>
-    </div>
-  </div>
 
 
 
@@ -400,11 +338,11 @@ classpath:be/rollCall/closeRollCall.feature:15
       <div class="step">
 
 
-<div class="brief step-name-&amp;gt; * failed">
-  <span class="keyword indention">&gt; *</span>
-  <span class="name">def frontend = call getMultiMsgSocket</span>
+<div class="brief step-name-* passed">
+  <span class="keyword indention">*</span>
+  <span class="name">call read('classpath:be/constants.feature')</span>
 
-  <span class="lead-duration duration">0.012</span>
+  <span class="lead-duration duration">0.023</span>
 
 </div>
 
@@ -412,35 +350,6 @@ classpath:be/rollCall/closeRollCall.feature:15
 
 
 
-
-  <div class="inner-level">
-    <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-5">
-          <a>js</a>
-      </div>
-      <div id="msg-5" class="collapse collapsable-details  in ">
-        <pre>js failed:
-&gt;&gt;&gt;&gt;
-01: function(){
-02:   var MultiMsg = Java.type('common.net.MultiMsgWebSocketClient')
-03:   var Logg = Java.type('com.intuit.karate.Logger')
-04:   var logg =  new Logg()
-05:   var Queue = Java.type(&quot;common.net.MessageQueue&quot;)
-06:   var q =  new Queue()
-07:   var WebSocketOptions = Java.type('com.intuit.karate.http.WebSocketOptions')
-08:   var wso =  new WebSocketOptions(wsURL)
-09:   return new MultiMsg(wso,logg,q)
-10: }
-&lt;&lt;&lt;&lt;
-org.graalvm.polyglot.PolyglotException: karate.io.netty.handler.codec.http.websocketx.WebSocketClientHandshakeException: Invalid handshake response getStatus: 404 Not Found
-- com.intuit.karate.http.WebSocketClient.&lt;init&gt;(WebSocketClient.java:148)
-- common.net.MultiMsgWebSocketClient.&lt;init&gt;(MultiMsgWebSocketClient.java:26)
-- &lt;js&gt;.:anonymous(Unnamed:9)
-
-classpath:be/mockFrontEnd.feature:18</pre>
-      </div>
-    </div>
-  </div>
 
 
 
@@ -456,9 +365,9 @@ classpath:be/mockFrontEnd.feature:18</pre>
       <div class="step">
 
 
-<div class="brief step-name-* skipped">
-  <span class="keyword indention">*</span>
-  <span class="name">call read('classpath:be/constants.feature')</span>
+<div class="brief step-name- passed">
+  <span class="keyword indention"></span>
+  <span class="name">be/constants.feature</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -483,7 +392,7 @@ classpath:be/mockFrontEnd.feature:18</pre>
       <div class="step">
 
 
-<div class="brief step-name-* skipped">
+<div class="brief step-name-* passed">
   <span class="keyword indention">*</span>
   <span class="name">string laoChannel = &quot;/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=&quot;</span>
 
@@ -527,12 +436,12 @@ classpath:be/mockFrontEnd.feature:18</pre>
 </div>
 
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">5.054</span>
 
 
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-6">
+  <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-3">
 
-<div class="brief failed">
+<div class="brief passed">
   <span class="keyword indention">Scenario</span>
   <span class="name">Close a valid roll should succeed</span>
 
@@ -543,16 +452,16 @@ classpath:be/mockFrontEnd.feature:18</pre>
   </span>
   <div class="description indention"></div>
 
-  <div id="element-6" class="collapse collapsable-details  in ">
+  <div id="element-3" class="collapse collapsable-details ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-7">
+  <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-4">
 
-<div class="brief failed">
+<div class="brief passed">
   <span class="keyword indention">Steps</span>
   <span class="name"></span>
 
@@ -562,13 +471,40 @@ classpath:be/mockFrontEnd.feature:18</pre>
 
   </div>
 
-  <div id="steps-7" class="inner-level collapse collapsable-details  in ">
+  <div id="steps-4" class="inner-level collapse collapsable-details ">
       <div class="step">
 
 
-<div class="brief step-name-Given skipped">
+<div class="brief step-name-Given passed">
   <span class="keyword indention">Given</span>
   <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=open_roll_call')</span>
+
+  <span class="lead-duration duration">0.050</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name- passed">
+  <span class="keyword indention"></span>
+  <span class="name">be/utils/simpleScenarios.feature</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -593,7 +529,7 @@ classpath:be/mockFrontEnd.feature:18</pre>
       <div class="step">
 
 
-<div class="brief step-name-And skipped">
+<div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
   <span class="name">def validCloseRollCall =</span>
 
@@ -611,10 +547,10 @@ classpath:be/mockFrontEnd.feature:18</pre>
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-8">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-5">
           <a>Doc string</a>
       </div>
-      <div id="msg-8" class="collapse collapsable-details">
+      <div id="msg-5" class="collapse collapsable-details">
         <pre>{
   &quot;object&quot;: &quot;roll_call&quot;,
   &quot;action&quot;: &quot;close&quot;,
@@ -637,11 +573,11 @@ classpath:be/mockFrontEnd.feature:18</pre>
       <div class="step">
 
 
-<div class="brief step-name-When skipped">
+<div class="brief step-name-When passed">
   <span class="keyword indention">When</span>
-  <span class="name">frontend.publish(JSON.stringify(validCloseRollCall), laoChannel)</span>
+  <span class="name">frontend.publish(validCloseRollCall, laoChannel)</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">0.001</span>
 
 </div>
 
@@ -664,11 +600,11 @@ classpath:be/mockFrontEnd.feature:18</pre>
       <div class="step">
 
 
-<div class="brief step-name-And skipped">
+<div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
-  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(validCloseRollCall))</span>
+  <span class="name">json answer = frontend.getBackendResponse(validCloseRollCall)</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">0.001</span>
 
 </div>
 
@@ -691,7 +627,7 @@ classpath:be/mockFrontEnd.feature:18</pre>
       <div class="step">
 
 
-<div class="brief step-name-Then skipped">
+<div class="brief step-name-Then passed">
   <span class="keyword indention">Then</span>
   <span class="name">match answer contains VALID_MESSAGE</span>
 
@@ -718,11 +654,11 @@ classpath:be/mockFrontEnd.feature:18</pre>
       <div class="step">
 
 
-<div class="brief step-name-And skipped">
+<div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
   <span class="name">match frontend.receiveNoMoreResponses() == true</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">5.000</span>
 
 </div>
 
@@ -760,12 +696,12 @@ classpath:be/mockFrontEnd.feature:18</pre>
 </div>
 
 
-  <span class="lead-duration duration">0.057</span>
+  <span class="lead-duration duration">0.285</span>
 
 
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-9">
+  <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-6">
 
-<div class="brief failed">
+<div class="brief passed">
   <span class="keyword indention">Background</span>
   <span class="name"></span>
 
@@ -776,16 +712,16 @@ classpath:be/mockFrontEnd.feature:18</pre>
   </span>
   <div class="description indention"></div>
 
-  <div id="element-9" class="collapse collapsable-details  in ">
+  <div id="element-6" class="collapse collapsable-details ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-10">
+  <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-7">
 
-<div class="brief failed">
+<div class="brief passed">
   <span class="keyword indention">Steps</span>
   <span class="name"></span>
 
@@ -795,7 +731,7 @@ classpath:be/mockFrontEnd.feature:18</pre>
 
   </div>
 
-  <div id="steps-10" class="inner-level collapse collapsable-details  in ">
+  <div id="steps-7" class="inner-level collapse collapsable-details ">
       <div class="step">
 
 
@@ -803,7 +739,7 @@ classpath:be/mockFrontEnd.feature:18</pre>
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/utils/server.feature')</span>
 
-  <span class="lead-duration duration">0.024</span>
+  <span class="lead-duration duration">0.258</span>
 
 </div>
 
@@ -853,11 +789,11 @@ classpath:be/mockFrontEnd.feature:18</pre>
       <div class="step">
 
 
-<div class="brief step-name-* failed">
+<div class="brief step-name-* passed">
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/mockFrontEnd.feature')</span>
 
-  <span class="lead-duration duration">0.019</span>
+  <span class="lead-duration duration">0.012</span>
 
 </div>
 
@@ -866,71 +802,9 @@ classpath:be/mockFrontEnd.feature:18</pre>
 
 
 
-  <div class="inner-level">
-    <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-11">
-          <a>js</a>
-      </div>
-      <div id="msg-11" class="collapse collapsable-details  in ">
-        <pre>js failed:
-&gt;&gt;&gt;&gt;
-01: function(){
-02:   var MultiMsg = Java.type('common.net.MultiMsgWebSocketClient')
-03:   var Logg = Java.type('com.intuit.karate.Logger')
-04:   var logg =  new Logg()
-05:   var Queue = Java.type(&quot;common.net.MessageQueue&quot;)
-06:   var q =  new Queue()
-07:   var WebSocketOptions = Java.type('com.intuit.karate.http.WebSocketOptions')
-08:   var wso =  new WebSocketOptions(wsURL)
-09:   return new MultiMsg(wso,logg,q)
-10: }
-&lt;&lt;&lt;&lt;
-org.graalvm.polyglot.PolyglotException: karate.io.netty.handler.codec.http.websocketx.WebSocketClientHandshakeException: Invalid handshake response getStatus: 404 Not Found
-- com.intuit.karate.http.WebSocketClient.&lt;init&gt;(WebSocketClient.java:148)
-- common.net.MultiMsgWebSocketClient.&lt;init&gt;(MultiMsgWebSocketClient.java:26)
-- &lt;js&gt;.:anonymous(Unnamed:9)
-
-classpath:be/mockFrontEnd.feature:18
-classpath:be/rollCall/closeRollCall.feature:15</pre>
-      </div>
-    </div>
-  </div>
 
 
 
-
-  <div class="inner-level">
-    <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-12">
-          <a>Doc string</a>
-      </div>
-      <div id="msg-12" class="collapse collapsable-details">
-        <pre>04:06:16.718 classpath:be/rollCall/closeRollCall.feature:15
-* call read('classpath:be/mockFrontEnd.feature')
-js failed:
-&gt;&gt;&gt;&gt;
-01: function(){
-02:   var MultiMsg = Java.type('common.net.MultiMsgWebSocketClient')
-03:   var Logg = Java.type('com.intuit.karate.Logger')
-04:   var logg =  new Logg()
-05:   var Queue = Java.type(&quot;common.net.MessageQueue&quot;)
-06:   var q =  new Queue()
-07:   var WebSocketOptions = Java.type('com.intuit.karate.http.WebSocketOptions')
-08:   var wso =  new WebSocketOptions(wsURL)
-09:   return new MultiMsg(wso,logg,q)
-10: }
-&lt;&lt;&lt;&lt;
-org.graalvm.polyglot.PolyglotException: karate.io.netty.handler.codec.http.websocketx.WebSocketClientHandshakeException: Invalid handshake response getStatus: 404 Not Found
-- com.intuit.karate.http.WebSocketClient.&lt;init&gt;(WebSocketClient.java:148)
-- common.net.MultiMsgWebSocketClient.&lt;init&gt;(MultiMsgWebSocketClient.java:26)
-- &lt;js&gt;.:anonymous(Unnamed:9)
-
-classpath:be/mockFrontEnd.feature:18
-classpath:be/rollCall/closeRollCall.feature:15
-</pre>
-      </div>
-    </div>
-  </div>
 
 
 
@@ -969,11 +843,11 @@ classpath:be/rollCall/closeRollCall.feature:15
       <div class="step">
 
 
-<div class="brief step-name-&amp;gt; * failed">
-  <span class="keyword indention">&gt; *</span>
-  <span class="name">def frontend = call getMultiMsgSocket</span>
+<div class="brief step-name-* passed">
+  <span class="keyword indention">*</span>
+  <span class="name">call read('classpath:be/constants.feature')</span>
 
-  <span class="lead-duration duration">0.013</span>
+  <span class="lead-duration duration">0.014</span>
 
 </div>
 
@@ -981,35 +855,6 @@ classpath:be/rollCall/closeRollCall.feature:15
 
 
 
-
-  <div class="inner-level">
-    <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-13">
-          <a>js</a>
-      </div>
-      <div id="msg-13" class="collapse collapsable-details  in ">
-        <pre>js failed:
-&gt;&gt;&gt;&gt;
-01: function(){
-02:   var MultiMsg = Java.type('common.net.MultiMsgWebSocketClient')
-03:   var Logg = Java.type('com.intuit.karate.Logger')
-04:   var logg =  new Logg()
-05:   var Queue = Java.type(&quot;common.net.MessageQueue&quot;)
-06:   var q =  new Queue()
-07:   var WebSocketOptions = Java.type('com.intuit.karate.http.WebSocketOptions')
-08:   var wso =  new WebSocketOptions(wsURL)
-09:   return new MultiMsg(wso,logg,q)
-10: }
-&lt;&lt;&lt;&lt;
-org.graalvm.polyglot.PolyglotException: karate.io.netty.handler.codec.http.websocketx.WebSocketClientHandshakeException: Invalid handshake response getStatus: 404 Not Found
-- com.intuit.karate.http.WebSocketClient.&lt;init&gt;(WebSocketClient.java:148)
-- common.net.MultiMsgWebSocketClient.&lt;init&gt;(MultiMsgWebSocketClient.java:26)
-- &lt;js&gt;.:anonymous(Unnamed:9)
-
-classpath:be/mockFrontEnd.feature:18</pre>
-      </div>
-    </div>
-  </div>
 
 
 
@@ -1025,9 +870,9 @@ classpath:be/mockFrontEnd.feature:18</pre>
       <div class="step">
 
 
-<div class="brief step-name-* skipped">
-  <span class="keyword indention">*</span>
-  <span class="name">call read('classpath:be/constants.feature')</span>
+<div class="brief step-name- passed">
+  <span class="keyword indention"></span>
+  <span class="name">be/constants.feature</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -1052,7 +897,7 @@ classpath:be/mockFrontEnd.feature:18</pre>
       <div class="step">
 
 
-<div class="brief step-name-* skipped">
+<div class="brief step-name-* passed">
   <span class="keyword indention">*</span>
   <span class="name">string laoChannel = &quot;/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=&quot;</span>
 
@@ -1096,10 +941,10 @@ classpath:be/mockFrontEnd.feature:18</pre>
 </div>
 
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">0.053</span>
 
 
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-14">
+  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-8">
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
@@ -1112,14 +957,14 @@ classpath:be/mockFrontEnd.feature:18</pre>
   </span>
   <div class="description indention"></div>
 
-  <div id="element-14" class="collapse collapsable-details  in ">
+  <div id="element-8" class="collapse collapsable-details  in ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-15">
+  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-9">
 
 <div class="brief failed">
   <span class="keyword indention">Steps</span>
@@ -1131,13 +976,40 @@ classpath:be/mockFrontEnd.feature:18</pre>
 
   </div>
 
-  <div id="steps-15" class="inner-level collapse collapsable-details  in ">
+  <div id="steps-9" class="inner-level collapse collapsable-details  in ">
       <div class="step">
 
 
-<div class="brief step-name-Given skipped">
+<div class="brief step-name-Given passed">
   <span class="keyword indention">Given</span>
   <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=open_roll_call')</span>
+
+  <span class="lead-duration duration">0.045</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name- passed">
+  <span class="keyword indention"></span>
+  <span class="name">be/utils/simpleScenarios.feature</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -1162,7 +1034,7 @@ classpath:be/mockFrontEnd.feature:18</pre>
       <div class="step">
 
 
-<div class="brief step-name-And skipped">
+<div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
   <span class="name">def validCloseRollCall =</span>
 
@@ -1180,10 +1052,10 @@ classpath:be/mockFrontEnd.feature:18</pre>
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-16">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-10">
           <a>Doc string</a>
       </div>
-      <div id="msg-16" class="collapse collapsable-details">
+      <div id="msg-10" class="collapse collapsable-details">
         <pre>{
   &quot;object&quot;: &quot;roll_call&quot;,
   &quot;action&quot;: &quot;close&quot;,
@@ -1206,7 +1078,7 @@ classpath:be/mockFrontEnd.feature:18</pre>
       <div class="step">
 
 
-<div class="brief step-name-* skipped">
+<div class="brief step-name-* passed">
   <span class="keyword indention">*</span>
   <span class="name">frontend.changeSenderToBeNonAttendee()</span>
 
@@ -1233,11 +1105,11 @@ classpath:be/mockFrontEnd.feature:18</pre>
       <div class="step">
 
 
-<div class="brief step-name-When skipped">
+<div class="brief step-name-When failed">
   <span class="keyword indention">When</span>
-  <span class="name">frontend.publish(JSON.stringify(validCloseRollCall), laoChannel)</span>
+  <span class="name">frontend.publish((validCloseRollCall, laoChannel)</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">0.007</span>
 
 </div>
 
@@ -1246,9 +1118,65 @@ classpath:be/mockFrontEnd.feature:18</pre>
 
 
 
+  <div class="inner-level">
+    <div class="message indention">
+      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-11">
+          <a>js</a>
+      </div>
+      <div id="msg-11" class="collapse collapsable-details  in ">
+        <pre>js failed:
+&gt;&gt;&gt;&gt;
+01: frontend.publish((validCloseRollCall, laoChannel)
+&lt;&lt;&lt;&lt;
+org.graalvm.polyglot.PolyglotException: SyntaxError: Unnamed:1:49 Expected , but found eof
+frontend.publish((validCloseRollCall, laoChannel)
+                                                 ^
+
+- org.graalvm.polyglot.Context.eval(Context.java:401)
+- com.intuit.karate.graal.JsEngine.evalForValue(JsEngine.java:141)
+- com.intuit.karate.graal.JsEngine.eval(JsEngine.java:137)
+- com.intuit.karate.core.ScenarioEngine.evalJs(ScenarioEngine.java:1252)
+- com.intuit.karate.ScenarioActions.eval(ScenarioActions.java:376)
+- jdk.internal.reflect.GeneratedMethodAccessor16.invoke(Unknown Source)
+- java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+
+classpath:be/rollCall/closeRollCall.feature:54</pre>
+      </div>
+    </div>
+  </div>
 
 
 
+
+  <div class="inner-level">
+    <div class="docstring indention">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-12">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-12" class="collapse collapsable-details">
+        <pre>04:10:14.741 classpath:be/rollCall/closeRollCall.feature:54
+When frontend.publish((validCloseRollCall, laoChannel)
+js failed:
+&gt;&gt;&gt;&gt;
+01: frontend.publish((validCloseRollCall, laoChannel)
+&lt;&lt;&lt;&lt;
+org.graalvm.polyglot.PolyglotException: SyntaxError: Unnamed:1:49 Expected , but found eof
+frontend.publish((validCloseRollCall, laoChannel)
+                                                 ^
+
+- org.graalvm.polyglot.Context.eval(Context.java:401)
+- com.intuit.karate.graal.JsEngine.evalForValue(JsEngine.java:141)
+- com.intuit.karate.graal.JsEngine.eval(JsEngine.java:137)
+- com.intuit.karate.core.ScenarioEngine.evalJs(ScenarioEngine.java:1252)
+- com.intuit.karate.ScenarioActions.eval(ScenarioActions.java:376)
+- jdk.internal.reflect.GeneratedMethodAccessor16.invoke(Unknown Source)
+- java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+
+classpath:be/rollCall/closeRollCall.feature:54
+</pre>
+      </div>
+    </div>
+  </div>
 
 
 
@@ -1262,7 +1190,7 @@ classpath:be/mockFrontEnd.feature:18</pre>
 
 <div class="brief step-name-And skipped">
   <span class="keyword indention">And</span>
-  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(validCloseRollCall))</span>
+  <span class="name">json answer = frontend.getBackendResponse(validCloseRollCall)</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -1356,12 +1284,12 @@ classpath:be/mockFrontEnd.feature:18</pre>
 </div>
 
 
-  <span class="lead-duration duration">0.053</span>
+  <span class="lead-duration duration">0.292</span>
 
 
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-17">
+  <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-13">
 
-<div class="brief failed">
+<div class="brief passed">
   <span class="keyword indention">Background</span>
   <span class="name"></span>
 
@@ -1372,16 +1300,16 @@ classpath:be/mockFrontEnd.feature:18</pre>
   </span>
   <div class="description indention"></div>
 
-  <div id="element-17" class="collapse collapsable-details  in ">
+  <div id="element-13" class="collapse collapsable-details ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-18">
+  <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-14">
 
-<div class="brief failed">
+<div class="brief passed">
   <span class="keyword indention">Steps</span>
   <span class="name"></span>
 
@@ -1391,7 +1319,7 @@ classpath:be/mockFrontEnd.feature:18</pre>
 
   </div>
 
-  <div id="steps-18" class="inner-level collapse collapsable-details  in ">
+  <div id="steps-14" class="inner-level collapse collapsable-details ">
       <div class="step">
 
 
@@ -1399,7 +1327,7 @@ classpath:be/mockFrontEnd.feature:18</pre>
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/utils/server.feature')</span>
 
-  <span class="lead-duration duration">0.016</span>
+  <span class="lead-duration duration">0.257</span>
 
 </div>
 
@@ -1449,11 +1377,11 @@ classpath:be/mockFrontEnd.feature:18</pre>
       <div class="step">
 
 
-<div class="brief step-name-* failed">
+<div class="brief step-name-* passed">
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/mockFrontEnd.feature')</span>
 
-  <span class="lead-duration duration">0.020</span>
+  <span class="lead-duration duration">0.010</span>
 
 </div>
 
@@ -1462,71 +1390,9 @@ classpath:be/mockFrontEnd.feature:18</pre>
 
 
 
-  <div class="inner-level">
-    <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-19">
-          <a>js</a>
-      </div>
-      <div id="msg-19" class="collapse collapsable-details  in ">
-        <pre>js failed:
-&gt;&gt;&gt;&gt;
-01: function(){
-02:   var MultiMsg = Java.type('common.net.MultiMsgWebSocketClient')
-03:   var Logg = Java.type('com.intuit.karate.Logger')
-04:   var logg =  new Logg()
-05:   var Queue = Java.type(&quot;common.net.MessageQueue&quot;)
-06:   var q =  new Queue()
-07:   var WebSocketOptions = Java.type('com.intuit.karate.http.WebSocketOptions')
-08:   var wso =  new WebSocketOptions(wsURL)
-09:   return new MultiMsg(wso,logg,q)
-10: }
-&lt;&lt;&lt;&lt;
-org.graalvm.polyglot.PolyglotException: karate.io.netty.handler.codec.http.websocketx.WebSocketClientHandshakeException: Invalid handshake response getStatus: 404 Not Found
-- com.intuit.karate.http.WebSocketClient.&lt;init&gt;(WebSocketClient.java:148)
-- common.net.MultiMsgWebSocketClient.&lt;init&gt;(MultiMsgWebSocketClient.java:26)
-- &lt;js&gt;.:anonymous(Unnamed:9)
-
-classpath:be/mockFrontEnd.feature:18
-classpath:be/rollCall/closeRollCall.feature:15</pre>
-      </div>
-    </div>
-  </div>
 
 
 
-
-  <div class="inner-level">
-    <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-20">
-          <a>Doc string</a>
-      </div>
-      <div id="msg-20" class="collapse collapsable-details">
-        <pre>04:06:16.756 classpath:be/rollCall/closeRollCall.feature:15
-* call read('classpath:be/mockFrontEnd.feature')
-js failed:
-&gt;&gt;&gt;&gt;
-01: function(){
-02:   var MultiMsg = Java.type('common.net.MultiMsgWebSocketClient')
-03:   var Logg = Java.type('com.intuit.karate.Logger')
-04:   var logg =  new Logg()
-05:   var Queue = Java.type(&quot;common.net.MessageQueue&quot;)
-06:   var q =  new Queue()
-07:   var WebSocketOptions = Java.type('com.intuit.karate.http.WebSocketOptions')
-08:   var wso =  new WebSocketOptions(wsURL)
-09:   return new MultiMsg(wso,logg,q)
-10: }
-&lt;&lt;&lt;&lt;
-org.graalvm.polyglot.PolyglotException: karate.io.netty.handler.codec.http.websocketx.WebSocketClientHandshakeException: Invalid handshake response getStatus: 404 Not Found
-- com.intuit.karate.http.WebSocketClient.&lt;init&gt;(WebSocketClient.java:148)
-- common.net.MultiMsgWebSocketClient.&lt;init&gt;(MultiMsgWebSocketClient.java:26)
-- &lt;js&gt;.:anonymous(Unnamed:9)
-
-classpath:be/mockFrontEnd.feature:18
-classpath:be/rollCall/closeRollCall.feature:15
-</pre>
-      </div>
-    </div>
-  </div>
 
 
 
@@ -1565,11 +1431,11 @@ classpath:be/rollCall/closeRollCall.feature:15
       <div class="step">
 
 
-<div class="brief step-name-&amp;gt; * failed">
-  <span class="keyword indention">&gt; *</span>
-  <span class="name">def frontend = call getMultiMsgSocket</span>
+<div class="brief step-name-* passed">
+  <span class="keyword indention">*</span>
+  <span class="name">call read('classpath:be/constants.feature')</span>
 
-  <span class="lead-duration duration">0.016</span>
+  <span class="lead-duration duration">0.024</span>
 
 </div>
 
@@ -1577,35 +1443,6 @@ classpath:be/rollCall/closeRollCall.feature:15
 
 
 
-
-  <div class="inner-level">
-    <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-21">
-          <a>js</a>
-      </div>
-      <div id="msg-21" class="collapse collapsable-details  in ">
-        <pre>js failed:
-&gt;&gt;&gt;&gt;
-01: function(){
-02:   var MultiMsg = Java.type('common.net.MultiMsgWebSocketClient')
-03:   var Logg = Java.type('com.intuit.karate.Logger')
-04:   var logg =  new Logg()
-05:   var Queue = Java.type(&quot;common.net.MessageQueue&quot;)
-06:   var q =  new Queue()
-07:   var WebSocketOptions = Java.type('com.intuit.karate.http.WebSocketOptions')
-08:   var wso =  new WebSocketOptions(wsURL)
-09:   return new MultiMsg(wso,logg,q)
-10: }
-&lt;&lt;&lt;&lt;
-org.graalvm.polyglot.PolyglotException: karate.io.netty.handler.codec.http.websocketx.WebSocketClientHandshakeException: Invalid handshake response getStatus: 404 Not Found
-- com.intuit.karate.http.WebSocketClient.&lt;init&gt;(WebSocketClient.java:148)
-- common.net.MultiMsgWebSocketClient.&lt;init&gt;(MultiMsgWebSocketClient.java:26)
-- &lt;js&gt;.:anonymous(Unnamed:9)
-
-classpath:be/mockFrontEnd.feature:18</pre>
-      </div>
-    </div>
-  </div>
 
 
 
@@ -1621,9 +1458,9 @@ classpath:be/mockFrontEnd.feature:18</pre>
       <div class="step">
 
 
-<div class="brief step-name-* skipped">
-  <span class="keyword indention">*</span>
-  <span class="name">call read('classpath:be/constants.feature')</span>
+<div class="brief step-name- passed">
+  <span class="keyword indention"></span>
+  <span class="name">be/constants.feature</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -1648,7 +1485,7 @@ classpath:be/mockFrontEnd.feature:18</pre>
       <div class="step">
 
 
-<div class="brief step-name-* skipped">
+<div class="brief step-name-* passed">
   <span class="keyword indention">*</span>
   <span class="name">string laoChannel = &quot;/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=&quot;</span>
 
@@ -1692,12 +1529,12 @@ classpath:be/mockFrontEnd.feature:18</pre>
 </div>
 
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">5.076</span>
 
 
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-22">
+  <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-15">
 
-<div class="brief failed">
+<div class="brief passed">
   <span class="keyword indention">Scenario</span>
   <span class="name">Close a valid roll call with wrong update_id should return an error message</span>
 
@@ -1708,16 +1545,16 @@ classpath:be/mockFrontEnd.feature:18</pre>
   </span>
   <div class="description indention"></div>
 
-  <div id="element-22" class="collapse collapsable-details  in ">
+  <div id="element-15" class="collapse collapsable-details ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-23">
+  <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-16">
 
-<div class="brief failed">
+<div class="brief passed">
   <span class="keyword indention">Steps</span>
   <span class="name"></span>
 
@@ -1727,13 +1564,40 @@ classpath:be/mockFrontEnd.feature:18</pre>
 
   </div>
 
-  <div id="steps-23" class="inner-level collapse collapsable-details  in ">
+  <div id="steps-16" class="inner-level collapse collapsable-details ">
       <div class="step">
 
 
-<div class="brief step-name-Given skipped">
+<div class="brief step-name-Given passed">
   <span class="keyword indention">Given</span>
   <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=open_roll_call')</span>
+
+  <span class="lead-duration duration">0.068</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name- passed">
+  <span class="keyword indention"></span>
+  <span class="name">be/utils/simpleScenarios.feature</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -1758,7 +1622,7 @@ classpath:be/mockFrontEnd.feature:18</pre>
       <div class="step">
 
 
-<div class="brief step-name-And skipped">
+<div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
   <span class="name">def validCloseRollCall =</span>
 
@@ -1776,10 +1640,10 @@ classpath:be/mockFrontEnd.feature:18</pre>
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-24">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-17">
           <a>Doc string</a>
       </div>
-      <div id="msg-24" class="collapse collapsable-details">
+      <div id="msg-17" class="collapse collapsable-details">
         <pre>{
   &quot;object&quot;: &quot;roll_call&quot;,
   &quot;action&quot;: &quot;close&quot;,
@@ -1802,11 +1666,11 @@ classpath:be/mockFrontEnd.feature:18</pre>
       <div class="step">
 
 
-<div class="brief step-name-When skipped">
+<div class="brief step-name-When passed">
   <span class="keyword indention">When</span>
-  <span class="name">frontend.publish(JSON.stringify(validCloseRollCall), laoChannel)</span>
+  <span class="name">frontend.publish(validCloseRollCall, laoChannel)</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">0.006</span>
 
 </div>
 
@@ -1829,9 +1693,9 @@ classpath:be/mockFrontEnd.feature:18</pre>
       <div class="step">
 
 
-<div class="brief step-name-And skipped">
+<div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
-  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(validCloseRollCall))</span>
+  <span class="name">json answer = frontend.getBackendResponse(validCloseRollCall)</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -1856,7 +1720,7 @@ classpath:be/mockFrontEnd.feature:18</pre>
       <div class="step">
 
 
-<div class="brief step-name-Then skipped">
+<div class="brief step-name-Then passed">
   <span class="keyword indention">Then</span>
   <span class="name">match answer contains INVALID_MESSAGE_FIELD</span>
 
@@ -1883,11 +1747,11 @@ classpath:be/mockFrontEnd.feature:18</pre>
       <div class="step">
 
 
-<div class="brief step-name-And skipped">
+<div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
   <span class="name">match frontend.receiveNoMoreResponses() == true</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">5.000</span>
 
 </div>
 
@@ -1925,12 +1789,12 @@ classpath:be/mockFrontEnd.feature:18</pre>
 </div>
 
 
-  <span class="lead-duration duration">0.051</span>
+  <span class="lead-duration duration">0.286</span>
 
 
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-25">
+  <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-18">
 
-<div class="brief failed">
+<div class="brief passed">
   <span class="keyword indention">Background</span>
   <span class="name"></span>
 
@@ -1941,16 +1805,16 @@ classpath:be/mockFrontEnd.feature:18</pre>
   </span>
   <div class="description indention"></div>
 
-  <div id="element-25" class="collapse collapsable-details  in ">
+  <div id="element-18" class="collapse collapsable-details ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-26">
+  <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-19">
 
-<div class="brief failed">
+<div class="brief passed">
   <span class="keyword indention">Steps</span>
   <span class="name"></span>
 
@@ -1960,7 +1824,7 @@ classpath:be/mockFrontEnd.feature:18</pre>
 
   </div>
 
-  <div id="steps-26" class="inner-level collapse collapsable-details  in ">
+  <div id="steps-19" class="inner-level collapse collapsable-details ">
       <div class="step">
 
 
@@ -1968,7 +1832,7 @@ classpath:be/mockFrontEnd.feature:18</pre>
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/utils/server.feature')</span>
 
-  <span class="lead-duration duration">0.020</span>
+  <span class="lead-duration duration">0.258</span>
 
 </div>
 
@@ -2018,11 +1882,11 @@ classpath:be/mockFrontEnd.feature:18</pre>
       <div class="step">
 
 
-<div class="brief step-name-* failed">
+<div class="brief step-name-* passed">
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/mockFrontEnd.feature')</span>
 
-  <span class="lead-duration duration">0.020</span>
+  <span class="lead-duration duration">0.009</span>
 
 </div>
 
@@ -2031,71 +1895,9 @@ classpath:be/mockFrontEnd.feature:18</pre>
 
 
 
-  <div class="inner-level">
-    <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-27">
-          <a>js</a>
-      </div>
-      <div id="msg-27" class="collapse collapsable-details  in ">
-        <pre>js failed:
-&gt;&gt;&gt;&gt;
-01: function(){
-02:   var MultiMsg = Java.type('common.net.MultiMsgWebSocketClient')
-03:   var Logg = Java.type('com.intuit.karate.Logger')
-04:   var logg =  new Logg()
-05:   var Queue = Java.type(&quot;common.net.MessageQueue&quot;)
-06:   var q =  new Queue()
-07:   var WebSocketOptions = Java.type('com.intuit.karate.http.WebSocketOptions')
-08:   var wso =  new WebSocketOptions(wsURL)
-09:   return new MultiMsg(wso,logg,q)
-10: }
-&lt;&lt;&lt;&lt;
-org.graalvm.polyglot.PolyglotException: karate.io.netty.handler.codec.http.websocketx.WebSocketClientHandshakeException: Invalid handshake response getStatus: 404 Not Found
-- com.intuit.karate.http.WebSocketClient.&lt;init&gt;(WebSocketClient.java:148)
-- common.net.MultiMsgWebSocketClient.&lt;init&gt;(MultiMsgWebSocketClient.java:26)
-- &lt;js&gt;.:anonymous(Unnamed:9)
-
-classpath:be/mockFrontEnd.feature:18
-classpath:be/rollCall/closeRollCall.feature:15</pre>
-      </div>
-    </div>
-  </div>
 
 
 
-
-  <div class="inner-level">
-    <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-28">
-          <a>Doc string</a>
-      </div>
-      <div id="msg-28" class="collapse collapsable-details">
-        <pre>04:06:16.799 classpath:be/rollCall/closeRollCall.feature:15
-* call read('classpath:be/mockFrontEnd.feature')
-js failed:
-&gt;&gt;&gt;&gt;
-01: function(){
-02:   var MultiMsg = Java.type('common.net.MultiMsgWebSocketClient')
-03:   var Logg = Java.type('com.intuit.karate.Logger')
-04:   var logg =  new Logg()
-05:   var Queue = Java.type(&quot;common.net.MessageQueue&quot;)
-06:   var q =  new Queue()
-07:   var WebSocketOptions = Java.type('com.intuit.karate.http.WebSocketOptions')
-08:   var wso =  new WebSocketOptions(wsURL)
-09:   return new MultiMsg(wso,logg,q)
-10: }
-&lt;&lt;&lt;&lt;
-org.graalvm.polyglot.PolyglotException: karate.io.netty.handler.codec.http.websocketx.WebSocketClientHandshakeException: Invalid handshake response getStatus: 404 Not Found
-- com.intuit.karate.http.WebSocketClient.&lt;init&gt;(WebSocketClient.java:148)
-- common.net.MultiMsgWebSocketClient.&lt;init&gt;(MultiMsgWebSocketClient.java:26)
-- &lt;js&gt;.:anonymous(Unnamed:9)
-
-classpath:be/mockFrontEnd.feature:18
-classpath:be/rollCall/closeRollCall.feature:15
-</pre>
-      </div>
-    </div>
-  </div>
 
 
 
@@ -2134,11 +1936,11 @@ classpath:be/rollCall/closeRollCall.feature:15
       <div class="step">
 
 
-<div class="brief step-name-&amp;gt; * failed">
-  <span class="keyword indention">&gt; *</span>
-  <span class="name">def frontend = call getMultiMsgSocket</span>
+<div class="brief step-name-* passed">
+  <span class="keyword indention">*</span>
+  <span class="name">call read('classpath:be/constants.feature')</span>
 
-  <span class="lead-duration duration">0.011</span>
+  <span class="lead-duration duration">0.018</span>
 
 </div>
 
@@ -2146,35 +1948,6 @@ classpath:be/rollCall/closeRollCall.feature:15
 
 
 
-
-  <div class="inner-level">
-    <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-29">
-          <a>js</a>
-      </div>
-      <div id="msg-29" class="collapse collapsable-details  in ">
-        <pre>js failed:
-&gt;&gt;&gt;&gt;
-01: function(){
-02:   var MultiMsg = Java.type('common.net.MultiMsgWebSocketClient')
-03:   var Logg = Java.type('com.intuit.karate.Logger')
-04:   var logg =  new Logg()
-05:   var Queue = Java.type(&quot;common.net.MessageQueue&quot;)
-06:   var q =  new Queue()
-07:   var WebSocketOptions = Java.type('com.intuit.karate.http.WebSocketOptions')
-08:   var wso =  new WebSocketOptions(wsURL)
-09:   return new MultiMsg(wso,logg,q)
-10: }
-&lt;&lt;&lt;&lt;
-org.graalvm.polyglot.PolyglotException: karate.io.netty.handler.codec.http.websocketx.WebSocketClientHandshakeException: Invalid handshake response getStatus: 404 Not Found
-- com.intuit.karate.http.WebSocketClient.&lt;init&gt;(WebSocketClient.java:148)
-- common.net.MultiMsgWebSocketClient.&lt;init&gt;(MultiMsgWebSocketClient.java:26)
-- &lt;js&gt;.:anonymous(Unnamed:9)
-
-classpath:be/mockFrontEnd.feature:18</pre>
-      </div>
-    </div>
-  </div>
 
 
 
@@ -2190,9 +1963,9 @@ classpath:be/mockFrontEnd.feature:18</pre>
       <div class="step">
 
 
-<div class="brief step-name-* skipped">
-  <span class="keyword indention">*</span>
-  <span class="name">call read('classpath:be/constants.feature')</span>
+<div class="brief step-name- passed">
+  <span class="keyword indention"></span>
+  <span class="name">be/constants.feature</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -2217,7 +1990,7 @@ classpath:be/mockFrontEnd.feature:18</pre>
       <div class="step">
 
 
-<div class="brief step-name-* skipped">
+<div class="brief step-name-* passed">
   <span class="keyword indention">*</span>
   <span class="name">string laoChannel = &quot;/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=&quot;</span>
 
@@ -2261,12 +2034,12 @@ classpath:be/mockFrontEnd.feature:18</pre>
 </div>
 
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">5.057</span>
 
 
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-30">
+  <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-20">
 
-<div class="brief failed">
+<div class="brief passed">
   <span class="keyword indention">Scenario</span>
   <span class="name">Close a valid roll call that was never opened should return an error</span>
 
@@ -2277,16 +2050,16 @@ classpath:be/mockFrontEnd.feature:18</pre>
   </span>
   <div class="description indention"></div>
 
-  <div id="element-30" class="collapse collapsable-details  in ">
+  <div id="element-20" class="collapse collapsable-details ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-31">
+  <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-21">
 
-<div class="brief failed">
+<div class="brief passed">
   <span class="keyword indention">Steps</span>
   <span class="name"></span>
 
@@ -2296,13 +2069,40 @@ classpath:be/mockFrontEnd.feature:18</pre>
 
   </div>
 
-  <div id="steps-31" class="inner-level collapse collapsable-details  in ">
+  <div id="steps-21" class="inner-level collapse collapsable-details ">
       <div class="step">
 
 
-<div class="brief step-name-Given skipped">
+<div class="brief step-name-Given passed">
   <span class="keyword indention">Given</span>
   <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=valid_roll_call')</span>
+
+  <span class="lead-duration duration">0.053</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name- passed">
+  <span class="keyword indention"></span>
+  <span class="name">be/utils/simpleScenarios.feature</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -2327,7 +2127,7 @@ classpath:be/mockFrontEnd.feature:18</pre>
       <div class="step">
 
 
-<div class="brief step-name-And skipped">
+<div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
   <span class="name">def validCloseRollCall =</span>
 
@@ -2345,10 +2145,10 @@ classpath:be/mockFrontEnd.feature:18</pre>
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-32">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-22">
           <a>Doc string</a>
       </div>
-      <div id="msg-32" class="collapse collapsable-details">
+      <div id="msg-22" class="collapse collapsable-details">
         <pre>{
   &quot;object&quot;: &quot;roll_call&quot;,
   &quot;action&quot;: &quot;close&quot;,
@@ -2371,11 +2171,11 @@ classpath:be/mockFrontEnd.feature:18</pre>
       <div class="step">
 
 
-<div class="brief step-name-When skipped">
+<div class="brief step-name-When passed">
   <span class="keyword indention">When</span>
-  <span class="name">frontend.publish(JSON.stringify(validCloseRollCall), laoChannel)</span>
+  <span class="name">frontend.publish(validCloseRollCall, laoChannel)</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">0.001</span>
 
 </div>
 
@@ -2398,11 +2198,11 @@ classpath:be/mockFrontEnd.feature:18</pre>
       <div class="step">
 
 
-<div class="brief step-name-And skipped">
+<div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
-  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(validCloseRollCall))</span>
+  <span class="name">json answer = frontend.getBackendResponse(validCloseRollCall)</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">0.001</span>
 
 </div>
 
@@ -2425,7 +2225,7 @@ classpath:be/mockFrontEnd.feature:18</pre>
       <div class="step">
 
 
-<div class="brief step-name-Then skipped">
+<div class="brief step-name-Then passed">
   <span class="keyword indention">Then</span>
   <span class="name">match answer contains INVALID_MESSAGE_FIELD</span>
 
@@ -2452,11 +2252,11 @@ classpath:be/mockFrontEnd.feature:18</pre>
       <div class="step">
 
 
-<div class="brief step-name-And skipped">
+<div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
   <span class="name">match frontend.receiveNoMoreResponses() == true</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">5.000</span>
 
 </div>
 
