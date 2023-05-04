@@ -40,7 +40,7 @@ case object LaoHandler extends MessageHandler {
           (reactionChannel, ObjectType.REACTION)
         ))
         // write lao creation message
-        _ <- dbActor ? DbActor.Write(laoChannel, message)
+        _ <- dbActor ? DbActor.WriteCreateLaoMessage(laoChannel, message)
         // write lao data
         _ <- dbActor ? DbActor.WriteLaoData(laoChannel, message, address)
         // after creating the lao, we need to send a lao#greet message to the frontend
