@@ -13,6 +13,7 @@ import com.google.gson.reflect.TypeToken;
 import java.util.List;
 import java.util.Set;
 
+/** Class used by the database to convert all the fields in Entities into Strings and vice versa */
 @ProvidedTypeConverter
 public class CustomTypeConverters {
 

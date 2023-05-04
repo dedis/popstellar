@@ -83,6 +83,7 @@ public class ActivityUtils {
         new CoreEntity(
             0, serverAddress, Collections.unmodifiableList(Arrays.asList(seed)), subscriptions);
 
+    // Save in the database the state
     coreDao
         .insert(coreEntity)
         .subscribeOn(Schedulers.io())

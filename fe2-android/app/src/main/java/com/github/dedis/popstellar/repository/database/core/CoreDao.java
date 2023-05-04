@@ -4,6 +4,10 @@ import androidx.room.*;
 
 import io.reactivex.Completable;
 
+/**
+ * Interface to query the table containing the core information (server address, wallet seed and
+ * subscriptions)
+ */
 @Dao
 public interface CoreDao {
 

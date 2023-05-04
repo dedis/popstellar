@@ -57,7 +57,7 @@ public class HomeActivity extends AppCompatActivity {
     setCurrentFragment(getSupportFragmentManager(), R.id.fragment_home, HomeFragment::newInstance);
 
     if (!restoreStoredState()) {
-      // Open the wallet fragment if no wallet is set up
+      // If the state restore fails it means that no wallet is set up
       setCurrentFragment(
           getSupportFragmentManager(), R.id.fragment_seed_wallet, SeedWalletFragment::newInstance);
 
@@ -209,9 +209,11 @@ public class HomeActivity extends AppCompatActivity {
 
               // Restart activity
               Intent intent = HomeActivity.newIntent(this);
-              // Free memory
+
+              // Flags to clear data structures and free memory
               intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
               intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
               startActivity(intent);
               finish();
             })

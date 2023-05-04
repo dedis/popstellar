@@ -46,12 +46,12 @@ public class LAORepository {
     loadPersistentStorage();
   }
 
-  /*
-  On start load all the laos in the memory as they must be displayed in the home list.
-  Given the fact that we load every lao in memory at the beginning there's no need for a cache.
-  This is also possible memory-wise as usually the number of laos is very limited.
-  This call is asynchronous so not to block the main thread.
-  */
+  /**
+   * This functions is called on start to load all the laos in memory as they must be displayed in
+   * the home list. Given the fact that we load every lao in memory at the beginning a cache is not
+   * necessary. This is also possible memory-wise as usually the number of laos is very limited.
+   * This call is asynchronous so it's performed in background not blocking the main thread.
+   */
   @SuppressLint("CheckResult")
   private void loadPersistentStorage() {
     laoDao
@@ -108,7 +108,17 @@ public class LAORepository {
   public LaoView getLaoView(String id) throws UnknownLaoException {
     Lao lao = laoById.get(id);
     if (lao == null) {
-      throw new UnknownLaoException(id);
+      // In some Android devices after putting the application in the
+      // background or locking the screen it happens that the lao is not found.
+      // This could be due to the ram being cleared, so a I/O check could help avoiding this
+      // scenario.
+      Lao laoFromDb = laoDao.getLaoById(id);
+      if (laoFromDb == null) {
+        throw new UnknownLaoException(id);
+      } else {
+        // Restore the lao
+        updateLao(laoFromDb);
+      }
     }
 
     return new LaoView(lao);
@@ -152,10 +162,12 @@ public class LAORepository {
     }
   }
 
+  /**
+   * This function removes from the home all the laos displayed when the user wants to clear the
+   * data storage. The maps are automatically cleared by the intent flags.
+   */
   public void clearRepository() {
     Timber.tag(TAG).d("Clearing LAORepository");
-    laoById.clear();
-    subjectById.clear();
     laosSubject.onNext(new ArrayList<>());
   }
 

@@ -5,6 +5,7 @@ import com.github.dedis.popstellar.model.objects.security.PublicKey;
 
 import java.util.*;
 
+/** Builder for the LAO object */
 public class LaoBuilder {
 
   private Channel channel;

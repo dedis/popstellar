@@ -124,7 +124,14 @@ public class HomeViewModel extends AndroidViewModel
                 getApplication().getApplicationContext(), laoData.lao));
   }
 
+  /**
+   * Function to restore the state of the application.
+   *
+   * @param context activity context
+   * @return true if the wallet is correctly restored, false otherwise
+   */
   public boolean restoreConnections(Context context) {
+    // Retrieve from the database the saved state
     CoreEntity coreEntity = appDatabase.coreDao().getSettings();
     if (coreEntity == null) {
       ErrorUtils.logAndShow(context, TAG, R.string.nothing_stored);
@@ -137,8 +144,7 @@ public class HomeViewModel extends AndroidViewModel
       Timber.tag(TAG).d("Restoring wallet");
       String[] seed = coreEntity.getWalletSeedArray();
       if (seed.length == 0) {
-        ErrorUtils.logAndShow(
-            getApplication().getApplicationContext(), TAG, R.string.no_seed_storage_found);
+        ErrorUtils.logAndShow(context, TAG, R.string.no_seed_storage_found);
         return false;
       }
       String appended = String.join(" ", seed);
@@ -162,6 +168,7 @@ public class HomeViewModel extends AndroidViewModel
           .startActivity(
               ConnectingActivity.newIntentForHome(getApplication().getApplicationContext()));
     }
+
     return true;
   }
 
@@ -170,10 +177,14 @@ public class HomeViewModel extends AndroidViewModel
   }
 
   public void clearStorage() {
+    Executors.newCachedThreadPool()
+        .execute(
+            () -> {
+              appDatabase.clearAllTables();
+              Timber.tag(TAG).d("All the tables in the database have been cleared");
+            });
     networkManager.dispose();
     laoRepository.clearRepository();
-    Timber.tag(TAG).d("Clearing all databases in a background thread");
-    Executors.newCachedThreadPool().execute(appDatabase::clearAllTables);
   }
 
   public void importSeed(String seed) throws GeneralSecurityException, SeedValidationException {

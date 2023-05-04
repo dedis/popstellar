@@ -10,6 +10,7 @@ import java.util.*;
 @Entity(tableName = "core")
 public class CoreEntity {
 
+  // The id is used to keep always at most one entry in the database
   @ColumnInfo(name = "id")
   @PrimaryKey
   private final int id;

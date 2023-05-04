@@ -30,8 +30,8 @@ public class AppDatabaseModule {
     /*
     Injecting the DataRegistry (or the Gson directly) would create a dependency cycle,
     since AppDatabase -> Gson -> DataRegistry -> Handlers -> Repositories -> AppDatabase.
-    So to avoid overcomplicated solutions here it's created a DataRegistry with null handlers,
-    as the only function is to get the object's type for the Gson serializer
+    In order to avoid overcomplicated solutions here it's created a DataRegistry with null handlers,
+    as the only function needed is the one to get the object's type for the Gson serializer
      */
     return Room.databaseBuilder(application, AppDatabase.class, DATABASE_NAME)
         .addTypeConverter(

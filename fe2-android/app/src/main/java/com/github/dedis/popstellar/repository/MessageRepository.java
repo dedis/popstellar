@@ -23,12 +23,18 @@ import timber.log.Timber;
 @Singleton
 public class MessageRepository {
 
-  private static final int CACHED_MESSAGES = 150;
   private static final String TAG = MessageRepository.class.getSimpleName();
 
-  private final Map<MessageID, MessageGeneral> ephemeralMessages = new HashMap<>();
-  private final LruCache<MessageID, MessageGeneral> messageCache = new LruCache<>(CACHED_MESSAGES);
+  /** Size of the LRU cache */
+  private static final int CACHED_MESSAGES = 150;
 
+  /**
+   * Ephemeral messages are all those messages which are not needed to be persisted. So far only the
+   * laos messages are persistent, but they will be extended in the future
+   */
+  private final Map<MessageID, MessageGeneral> ephemeralMessages = new HashMap<>();
+
+  private final LruCache<MessageID, MessageGeneral> messageCache = new LruCache<>(CACHED_MESSAGES);
   private final MessageDao messageDao;
 
   @Inject
@@ -37,6 +43,7 @@ public class MessageRepository {
     loadCache();
   }
 
+  /** This function is called on creation to asynchronously full the cache */
   @SuppressLint("CheckResult")
   private void loadCache() {
     messageDao
@@ -49,6 +56,8 @@ public class MessageRepository {
                     msg ->
                         messageCache.put(
                             msg.getMessageId(),
+                            // Cache doesn't accept null as value, so an empty message is used
+                            // instead
                             msg.getContent() == null
                                 ? MessageGeneral.emptyMessage()
                                 : msg.getContent())),
@@ -56,7 +65,7 @@ public class MessageRepository {
   }
 
   public MessageGeneral getMessage(MessageID messageID) {
-    // Check if it's an ephemeral message
+    // Check if it's an ephemeral message, so no need to look up in the db
     MessageGeneral ephemeralMessage = ephemeralMessages.get(messageID);
     if (ephemeralMessage != null) {
       return ephemeralMessage;
@@ -68,6 +77,7 @@ public class MessageRepository {
       return cachedMessage;
     }
 
+    // Search in the db
     MessageEntity messageEntity = messageDao.getMessageById(messageID);
     if (messageEntity != null) {
       MessageGeneral messageGeneral = messageEntity.getContent();
@@ -79,6 +89,15 @@ public class MessageRepository {
     return null;
   }
 
+  /**
+   * This function adds a message to the repository.
+   *
+   * @param message message to add to the repository
+   * @param isStoringNeeded boolean that specifies whether the content of the message is useful to
+   *     be stored (true) or if it's not needed and memory could be saved (false)
+   * @param toPersist boolean that specifies whether the message has to be persisted and saved in
+   *     the db (true) or only loaded in memory (false)
+   */
   public void addMessage(MessageGeneral message, boolean isStoringNeeded, boolean toPersist) {
     MessageID messageID = message.getMessageId();
     if (!isStoringNeeded) {
