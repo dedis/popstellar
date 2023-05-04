@@ -137,10 +137,7 @@ func connectToSocket(address string, h hub.Hub,
 	go remoteSocket.WritePump()
 	go remoteSocket.ReadPump()
 
-	err = h.NotifyNewServer(remoteSocket)
-	if err != nil {
-		return xerrors.Errorf("error while trying to catchup to server: %v", err)
-	}
+	h.NotifyNewServer(remoteSocket)
 
 	return nil
 }

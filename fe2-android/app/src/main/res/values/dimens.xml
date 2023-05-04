@@ -39,12 +39,18 @@
   <dimen name="standard_button_text_size">16dp</dimen>
   <dimen name="big_button_text_size">22sp</dimen>
 
+  <!-- Expand Arrow -->
+  <dimen name="expand_arrow_image_side">20dp</dimen>
+  <dimen name="expand_arrow_end_margin">8dp</dimen>
+
   <!--  Lao Detail -->
   <dimen name="properties_section_margin">16dp</dimen>
   <dimen name="properties_title_margin">8dp</dimen>
 
   <!-- Event -->
   <dimen name="election_setup_question_margin">20dp</dimen>
+  <dimen name="election_results_margin">20dp</dimen>
+  <dimen name="election_results_space">10dp</dimen>
   <dimen name="election_setup_text_field_margin_lateral">10dp</dimen>
   <dimen name="event_button_text_size">14sp</dimen>
   <dimen name="event_button_margin">24dp</dimen>
@@ -56,11 +62,23 @@
   <dimen name="status_margin_top">16dp</dimen>
   <dimen name="event_header_between_texts_margin">5dp</dimen>
   <dimen name="pickers_horizontal_margin">16dp</dimen>
-  <dimen name="roll_call_attendees_end_margin">10dp</dimen>
+  <dimen name="roll_call_attendees_margin">5dp</dimen>
+  <dimen name="roll_call_attendees_scrollbar_size">6dp</dimen>
+  <dimen name="roll_call_attendees_list_width">320dp</dimen>
+  <dimen name="roll_call_attendees_text_vertical_bias">0.015</dimen>
+  <dimen name="roll_call_attendees_list_vertical_bias">0.15</dimen>
+  <dimen name="roll_call_attendees_list_margin_top">10dp</dimen>
+  <dimen name="roll_call_attendees_list_margin_bottom">5dp</dimen>
+  <dimen name="roll_call_attendees_margin_top">10dp</dimen>
+  <dimen name="roll_call_expand_text_margin_top">10dp</dimen>
+  <dimen name="roll_call_expand_text_margin_horizontal">10dp</dimen>
+  <dimen name="roll_call_card_lateral_margin">10dp</dimen>
+  <dimen name="roll_call_card_corner_radius">10dp</dimen>
+  <dimen name="roll_call_container_margin_horizontal">15dp</dimen>
+  <dimen name="roll_call_container_margin_top">10dp</dimen>
+  <dimen name="meeting_location_margin_top">30dp</dimen>
 
   <!--  Event layout-->
-  <dimen name="event_layout_arrow_end_margin">8dp</dimen>
-  <dimen name="event_layout_arrow_image_side">20dp</dimen>
   <dimen name="event_layout_type_image_side">30dp</dimen>
   <dimen name="event_layout_type_start_margin">8dp</dimen>
 
@@ -72,6 +90,7 @@
 
   <!--  Election fragment dimension-->
   <dimen name="inter_buttons_margin">8dp</dimen>
+  <dimen name="election_encrypting_text_offset">45dp</dimen>
 
   <!-- Election setup dimensions -->
   <dimen name="election_setup_spinner_width">150dp</dimen>

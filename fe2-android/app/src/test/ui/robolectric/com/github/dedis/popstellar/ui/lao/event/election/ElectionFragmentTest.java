@@ -5,13 +5,12 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import com.github.dedis.popstellar.model.network.method.message.data.election.*;
-import com.github.dedis.popstellar.model.objects.Election;
-import com.github.dedis.popstellar.model.objects.Lao;
+import com.github.dedis.popstellar.model.objects.*;
+import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.model.objects.security.KeyPair;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
-import com.github.dedis.popstellar.repository.ElectionRepository;
-import com.github.dedis.popstellar.repository.LAORepository;
+import com.github.dedis.popstellar.repository.*;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.testutils.BundleBuilder;
 import com.github.dedis.popstellar.testutils.MessageSenderHelper;
@@ -19,6 +18,7 @@ import com.github.dedis.popstellar.testutils.fragment.ActivityFragmentScenarioRu
 import com.github.dedis.popstellar.ui.lao.LaoActivity;
 import com.github.dedis.popstellar.ui.lao.event.election.fragments.ElectionFragment;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
+import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 
 import org.junit.Rule;
@@ -31,6 +31,7 @@ import org.mockito.junit.MockitoTestRule;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.*;
 
 import javax.inject.Inject;
@@ -62,12 +63,26 @@ public class ElectionFragmentTest {
   private static final String LAO_NAME = "lao";
   private static final KeyPair SENDER_KEY = generateKeyPair();
   private static final PublicKey SENDER = SENDER_KEY.getPublicKey();
-  private static final Lao LAO = new Lao(LAO_NAME, SENDER, 10223421);
+  private static final long CREATION = Instant.now().getEpochSecond() - 1000;
+  private static final Lao LAO = new Lao(LAO_NAME, SENDER, CREATION);
   private static final String LAO_ID = LAO.getId();
   private static final String TITLE = "Election name";
-  private static final long CREATION = 10323411;
-  private static final long START = 10323421;
-  private static final long END = 10323431;
+  private static final long START = CREATION + 10;
+  private static final long END = CREATION + 20;
+  private static final String ROLL_CALL_DESC = "";
+  private static final String LOCATION = "EPFL";
+  private final RollCall ROLL_CALL =
+      new RollCall(
+          LAO.getId(),
+          LAO.getId(),
+          TITLE,
+          CREATION,
+          START,
+          END,
+          EventState.CLOSED,
+          new HashSet<>(),
+          LOCATION,
+          ROLL_CALL_DESC);
 
   private static final String ELECTION_ID = generateElectionSetupId(LAO_ID, CREATION, TITLE);
   private static final ElectionQuestion ELECTION_QUESTION_1 =
@@ -98,6 +113,7 @@ public class ElectionFragmentTest {
 
   @Inject ElectionRepository electionRepository;
 
+  @Inject RollCallRepository rollCallRepo;
   @BindValue @Mock LAORepository repository;
   @BindValue @Mock GlobalNetworkManager networkManager;
   @BindValue @Mock KeyManager keyManager;
@@ -123,6 +139,8 @@ public class ElectionFragmentTest {
 
           when(repository.getLaoObservable(anyString())).thenReturn(laoSubject);
           when(repository.getLaoView(any())).thenAnswer(invocation -> new LaoView(LAO));
+
+          rollCallRepo.updateRollCall(LAO_ID, ROLL_CALL);
 
           when(keyManager.getMainPublicKey()).thenReturn(SENDER);
           when(networkManager.getMessageSender()).thenReturn(messageSenderHelper.getMockedSender());
@@ -175,7 +193,7 @@ public class ElectionFragmentTest {
     InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
     verify(messageSenderHelper.getMockedSender())
-        .publish(any(), eq(ELECTION.getChannel()), any(OpenElection.class));
+        .publish(any(), eq(ELECTION.getChannel()), any(ElectionOpen.class));
     messageSenderHelper.assertSubscriptions();
   }
 
@@ -207,7 +225,32 @@ public class ElectionFragmentTest {
   }
 
   @Test
-  public void actionButtonOpenTest() {
+  public void actionButtonNotEnabledOpenTest() throws KeyException {
+    doAnswer(
+            invocation -> {
+              throw new KeyException("") {
+                @Override
+                public int getUserMessage() {
+                  return 0;
+                }
+
+                @Override
+                public Object[] getUserMessageArguments() {
+                  return new Object[0];
+                }
+              };
+            })
+        .when(keyManager)
+        .getValidPoPToken(any(), any());
+    activityScenarioRule.getScenario().recreate();
+    openElection();
+
+    electionActionButton().check(matches(withText("VOTE")));
+    electionActionButton().check(matches(isNotEnabled()));
+  }
+
+  @Test
+  public void actionButtonEnabledOpenTest() {
     openElection();
 
     electionActionButton().check(matches(withText("VOTE")));

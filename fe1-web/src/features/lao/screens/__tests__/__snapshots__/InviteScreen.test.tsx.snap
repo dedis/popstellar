@@ -362,10 +362,63 @@ exports[`LaoHomeScreen renders correctly 1`] = `
                                   }
                                 }
                               >
-                                <qrcode
-                                  overlayText="Scan to connect"
-                                  value="{"lao":"-M259c5JlakLVlXBRa893pcE-4s7ssO8Jv5gXOvtreE="}"
-                                />
+                                <View
+                                  style={
+                                    {
+                                      "flexDirection": "row",
+                                      "justifyContent": "center",
+                                    }
+                                  }
+                                >
+                                  <View
+                                    style={
+                                      {
+                                        "position": "relative",
+                                      }
+                                    }
+                                  >
+                                    [QrCode {"value":"{\\"lao\\":\\"-M259c5JlakLVlXBRa893pcE-4s7ssO8Jv5gXOvtreE=\\"}","size":256,"style":{"height":"auto","maxWidth":"300px","width":"100%"},"level":"H","viewBox":"0 0 256 256"}]
+                                    <View
+                                      style={
+                                        {
+                                          "alignItems": "center",
+                                          "backgroundColor": "#3742fa",
+                                          "borderRadius": 100,
+                                          "bottom": "27.9%",
+                                          "display": "flex",
+                                          "justifyContent": "center",
+                                          "left": "27.9%",
+                                          "overflow": "hidden",
+                                          "padding": "4",
+                                          "position": "absolute",
+                                          "right": "27.9%",
+                                          "top": "27.9%",
+                                        }
+                                      }
+                                    >
+                                      <Text
+                                        style={
+                                          [
+                                            {
+                                              "color": "#000",
+                                              "fontSize": 20,
+                                              "lineHeight": 26,
+                                              "textAlign": "left",
+                                            },
+                                            {
+                                              "textAlign": "center",
+                                            },
+                                            {
+                                              "color": "#fff",
+                                            },
+                                          ]
+                                        }
+                                      >
+                                        Scan to connect
+                                      </Text>
+                                    </View>
+                                  </View>
+                                </View>
                               </View>
                               <Text
                                 style={

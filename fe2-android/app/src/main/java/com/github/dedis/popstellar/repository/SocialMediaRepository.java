@@ -1,7 +1,5 @@
 package com.github.dedis.popstellar.repository;
 
-import android.util.Log;
-
 import androidx.annotation.NonNull;
 
 import com.github.dedis.popstellar.model.objects.Chirp;
@@ -16,6 +14,7 @@ import javax.inject.Singleton;
 import io.reactivex.Observable;
 import io.reactivex.subjects.BehaviorSubject;
 import io.reactivex.subjects.Subject;
+import timber.log.Timber;
 
 /**
  * This class is the repository of the social media feature
@@ -43,7 +42,7 @@ public class SocialMediaRepository {
    * @param chirp to add
    */
   public void addChirp(String laoId, Chirp chirp) {
-    Log.d(TAG, "Adding new chirp on lao " + laoId + " : " + chirp);
+    Timber.tag(TAG).d("Adding new chirp on lao %s : %s", laoId, chirp);
     // Retrieve Lao data and add the chirp to it
     getLaoChirps(laoId).add(chirp);
   }
@@ -55,7 +54,7 @@ public class SocialMediaRepository {
    * @return true if a chirp with given id existed
    */
   public boolean deleteChirp(String laoId, MessageID id) {
-    Log.d(TAG, "Deleting chirp on lao " + laoId + " with id " + id);
+    Timber.tag(TAG).d("Deleting chirp on lao %s with id %s", laoId, id);
     return getLaoChirps(laoId).delete(id);
   }
 
@@ -100,7 +99,7 @@ public class SocialMediaRepository {
       MessageID id = chirp.getId();
       Chirp old = chirps.get(id);
       if (old != null) {
-        Log.w(TAG, "A chirp with id " + id + " already exist : " + old);
+        Timber.tag(TAG).w("A chirp with id %s already exist : %s", id, old);
         return;
       }
 
@@ -119,7 +118,7 @@ public class SocialMediaRepository {
       }
 
       if (chirp.isDeleted()) {
-        Log.d(TAG, "The chirp with id " + id + " is already deleted");
+        Timber.tag(TAG).d("The chirp with id %s is already deleted", id);
       } else {
         Subject<Chirp> subject = chirpSubjects.get(id);
         if (subject == null) {

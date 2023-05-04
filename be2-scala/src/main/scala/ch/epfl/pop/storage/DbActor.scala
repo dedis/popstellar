@@ -6,8 +6,8 @@ import akka.pattern.AskableActorRef
 import ch.epfl.pop.json.MessageDataProtocol
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ActionType.ActionType
-import ch.epfl.pop.model.objects.Channel.{CHANNEL_SEPARATOR, ROLL_CALL_DATA_PREFIX, ROOT_CHANNEL_PREFIX}
 import ch.epfl.pop.model.network.method.message.data.{ActionType, ObjectType}
+import ch.epfl.pop.model.objects.Channel.ROOT_CHANNEL_PREFIX
 import ch.epfl.pop.model.objects._
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, JsonString}
 import ch.epfl.pop.pubsub.{MessageRegistry, PubSubMediator, PublishSubscribe}
@@ -39,15 +39,15 @@ final case class DbActor(
     this.synchronized {
       val channelData: ChannelData = readChannelData(channel)
       storage.write(
-        (channel.toString, channelData.addMessage(message.message_id).toJsonString),
-        (s"$channel${Channel.DATA_SEPARATOR}${message.message_id}", message.toJsonString)
+        (storage.CHANNEL_DATA_KEY + channel.toString, channelData.addMessage(message.message_id).toJsonString),
+        (storage.DATA_KEY + s"$channel${Channel.DATA_SEPARATOR}${message.message_id}", message.toJsonString)
       )
     }
   }
 
   @throws[DbActorNAckException]
   private def read(channel: Channel, messageId: Hash): Option[Message] = {
-    Try(storage.read(s"$channel${Channel.DATA_SEPARATOR}$messageId")) match {
+    Try(storage.read(storage.DATA_KEY + s"$channel${Channel.DATA_SEPARATOR}$messageId")) match {
       case Success(Some(json)) =>
         val msg = Message.buildFromJson(json)
         val data: JsonString = msg.data.decodeToString()
@@ -66,7 +66,7 @@ final case class DbActor(
 
   @throws[DbActorNAckException]
   private def readChannelData(channel: Channel): ChannelData = {
-    Try(storage.read(channel.toString)) match {
+    Try(storage.read(storage.CHANNEL_DATA_KEY + channel.toString)) match {
       case Success(Some(json)) => ChannelData.buildFromJson(json)
       case Success(None)       => throw DbActorNAckException(ErrorCodes.SERVER_ERROR.id, s"ChannelData for channel $channel not in the database")
       case Failure(ex)         => throw ex
@@ -74,8 +74,8 @@ final case class DbActor(
   }
 
   @throws[DbActorNAckException]
-  private def readElectionData(electionId: Hash): ElectionData = {
-    Try(storage.read(s"${ROOT_CHANNEL_PREFIX}private/${electionId.toString}")) match {
+  private def readElectionData(laoId: Hash, electionId: Hash): ElectionData = {
+    Try(storage.read(storage.DATA_KEY + s"${ROOT_CHANNEL_PREFIX}${laoId.toString}/private/${electionId.toString}")) match {
       case Success(Some(json)) => ElectionData.buildFromJson(json)
       case Success(None)       => throw DbActorNAckException(ErrorCodes.SERVER_ERROR.id, s"ElectionData for election $electionId not in the database")
       case Failure(ex)         => throw ex
@@ -125,6 +125,12 @@ final case class DbActor(
   }
 
   @throws[DbActorNAckException]
+  private def getAllChannels: Set[Channel] = {
+    storage.filterKeysByPrefix(storage.CHANNEL_DATA_KEY)
+      .map(key => Channel(key.replaceFirst(storage.CHANNEL_DATA_KEY, "")))
+  }
+
+  @throws[DbActorNAckException]
   private def writeAndPropagate(channel: Channel, message: Message): Unit = {
     write(channel, message)
     mediatorRef ! PubSubMediator.Propagate(channel, message)
@@ -133,16 +139,16 @@ final case class DbActor(
   @throws[DbActorNAckException]
   private def createChannel(channel: Channel, objectType: ObjectType.ObjectType): Unit = {
     if (!checkChannelExistence(channel)) {
-      val pair = channel.toString -> ChannelData(objectType, List.empty).toJsonString
+      val pair = (storage.CHANNEL_DATA_KEY + channel.toString) -> ChannelData(objectType, List.empty).toJsonString
       storage.write(pair)
     }
   }
 
   @throws[DbActorNAckException]
-  private def createElectionData(electionId: Hash, keyPair: KeyPair): Unit = {
-    val channel = Channel(s"${ROOT_CHANNEL_PREFIX}private/${electionId.toString}")
+  private def createElectionData(laoId: Hash, electionId: Hash, keyPair: KeyPair): Unit = {
+    val channel = Channel(s"${ROOT_CHANNEL_PREFIX}${laoId.toString}/private/${electionId.toString}")
     if (!checkChannelExistence(channel)) {
-      val pair = channel.toString -> ElectionData(electionId, keyPair).toJsonString
+      val pair = (storage.DATA_KEY + channel.toString) -> ElectionData(electionId, keyPair).toJsonString
       storage.write(pair)
     }
   }
@@ -169,13 +175,13 @@ final case class DbActor(
     // removing channels already present in the db from the list
     val filtered: List[(Channel, ObjectType.ObjectType)] = filterExistingChannels(channels, Nil)
     // creating ChannelData from the filtered input
-    val mapped: List[(String, String)] = filtered.map { case (c, o) => (c.toString, ChannelData(o, List.empty).toJsonString) }
+    val mapped: List[(String, String)] = filtered.map { case (c, o) => (storage.CHANNEL_DATA_KEY + c.toString, ChannelData(o, List.empty).toJsonString) }
 
     Try(storage.write(mapped: _*))
   }
 
   private def checkChannelExistence(channel: Channel): Boolean = {
-    Try(storage.read(channel.toString)) match {
+    Try(storage.read(storage.CHANNEL_DATA_KEY + channel.toString)) match {
       case Success(option) => option.isDefined
       case _               => false
     }
@@ -196,7 +202,7 @@ final case class DbActor(
   @throws[DbActorNAckException]
   private def generateLaoDataKey(channel: Channel): String = {
     channel.decodeChannelLaoId match {
-      case Some(data) => s"${Channel.ROOT_CHANNEL_PREFIX}$data${Channel.LAO_DATA_LOCATION}"
+      case Some(data) => storage.DATA_KEY + s"${Channel.ROOT_CHANNEL_PREFIX}$data${Channel.LAO_DATA_LOCATION}"
       case None =>
         log.error(s"Actor $self (db) encountered a problem while decoding LAO channel from '$channel'")
         throw DbActorNAckException(ErrorCodes.SERVER_ERROR.id, s"Could not extract the LAO id for channel $channel")
@@ -205,7 +211,7 @@ final case class DbActor(
 
   // generates the key of the RollCallData to store in the database
   private def generateRollCallDataKey(laoId: Hash): String = {
-    s"${ROLL_CALL_DATA_PREFIX}${laoId.toString}"
+    storage.DATA_KEY + s"${ROOT_CHANNEL_PREFIX}${laoId.toString}/rollcall"
   }
 
   @throws[DbActorNAckException]
@@ -251,9 +257,9 @@ final case class DbActor(
         case failure              => sender() ! failure.recover(Status.Failure(_))
       }
 
-    case ReadElectionData(electionId) =>
+    case ReadElectionData(laoId, electionId) =>
       log.info(s"Actor $self (db) received a ReadElectionData request for election '$electionId'")
-      Try(readElectionData(electionId)) match {
+      Try(readElectionData(laoId, electionId)) match {
         case Success(electionData) => sender() ! DbActorReadElectionDataAck(electionData)
         case failure               => sender() ! failure.recover(Status.Failure(_))
       }
@@ -279,6 +285,13 @@ final case class DbActor(
         case failure           => sender() ! failure.recover(Status.Failure(_))
       }
 
+    case GetAllChannels() =>
+      log.info(s"Actor $self (db) receveid a GetAllChannels request")
+      Try(getAllChannels) match {
+        case Success(setOfChannels) => sender() ! DbActorGetAllChannelsAck(setOfChannels)
+        case failure                => sender() ! failure.recover(Status.Failure(_))
+      }
+
     case WriteAndPropagate(channel, message) =>
       log.info(s"Actor $self (db) received a WriteAndPropagate request on channel '$channel'")
       Try(writeAndPropagate(channel, message)) match {
@@ -293,11 +306,11 @@ final case class DbActor(
         case failure    => sender() ! failure.recover(Status.Failure(_))
       }
 
-    case CreateElectionData(id, keyPair) =>
+    case CreateElectionData(laoId, id, keyPair) =>
       log.info(s"Actor $self (db) received an CreateElection request for election '$id'" +
         s"\n\tprivate key = ${keyPair.privateKey.toString}" +
         s"\n\tpublic key = ${keyPair.publicKey.toString}")
-      Try(createElectionData(id, keyPair)) match {
+      Try(createElectionData(laoId, id, keyPair)) match {
         case Success(_) => sender() ! DbActorAck()
         case failure    => sender() ! failure.recover(Status.Failure(_))
       }
@@ -391,7 +404,7 @@ object DbActor {
     * @param electionId
     *   the election unique id
     */
-  final case class ReadElectionData(electionId: Hash) extends Event
+  final case class ReadElectionData(laoId: Hash, electionId: Hash) extends Event
 
   /** Request to read the laoData of the LAO, with key laoId
     *
@@ -415,6 +428,10 @@ object DbActor {
     *   the channel where the messages should be fetched
     */
   final case class Catchup(channel: Channel) extends Event
+
+  /** Request to get all locally stored channels
+    */
+  final case class GetAllChannels() extends Event
 
   /** Request to write a <message> in the database and propagate said message to clients subscribed to the <channel>
     *
@@ -441,7 +458,7 @@ object DbActor {
     * @param keyPair
     *   the keypair of the election
     */
-  final case class CreateElectionData(id: Hash, keyPair: KeyPair) extends Event
+  final case class CreateElectionData(laoId: Hash, id: Hash, keyPair: KeyPair) extends Event
 
   /** Request to create List of channels in the db with given types
     *
@@ -551,7 +568,14 @@ object DbActor {
     */
   final case class DbActorCatchupAck(messages: List[Message]) extends DbActorMessage
 
-  /** Response for a [[ReadRollcallData]] db request Receiving [[DbActorReadRollcallDataAck]] works as an acknowledgement that the request was successful
+  /** Response for [[GetAllChannels]] db request Receiving [[DbActorGetAllChannelsAck]] works as an acknowledgement that the getAllChannels request was successful
+    *
+    * @param setOfChannels
+    *   requested channels
+    */
+  final case class DbActorGetAllChannelsAck(setOfChannels: Set[Channel]) extends DbActorMessage
+
+  /** Response for a [[ReadRollCallData]] db request Receiving [[DbActorReadRollCallDataAck]] works as an acknowledgement that the request was successful
     *
     * @param rollcallData
     *   requested channel data

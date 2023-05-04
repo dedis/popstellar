@@ -3,7 +3,6 @@ package com.github.dedis.popstellar.ui.lao;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,6 +24,7 @@ import com.github.dedis.popstellar.ui.lao.event.EventsViewModel;
 import com.github.dedis.popstellar.ui.lao.event.consensus.ConsensusViewModel;
 import com.github.dedis.popstellar.ui.lao.event.election.ElectionViewModel;
 import com.github.dedis.popstellar.ui.lao.event.eventlist.EventListFragment;
+import com.github.dedis.popstellar.ui.lao.event.meeting.MeetingViewModel;
 import com.github.dedis.popstellar.ui.lao.event.rollcall.RollCallViewModel;
 import com.github.dedis.popstellar.ui.lao.socialmedia.SocialMediaHomeFragment;
 import com.github.dedis.popstellar.ui.lao.socialmedia.SocialMediaViewModel;
@@ -37,10 +37,11 @@ import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 
 import java.security.GeneralSecurityException;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Supplier;
 
 import dagger.hilt.android.AndroidEntryPoint;
+import timber.log.Timber;
 
 @AndroidEntryPoint
 public class LaoActivity extends AppCompatActivity {
@@ -48,6 +49,7 @@ public class LaoActivity extends AppCompatActivity {
 
   LaoViewModel laoViewModel;
   LaoActivityBinding binding;
+  private final Deque<Fragment> fragmentStack = new LinkedList<>();
 
   @Override
   protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -87,7 +89,7 @@ public class LaoActivity extends AppCompatActivity {
       laoViewModel.savePersistentData();
     } catch (GeneralSecurityException e) {
       // We do not display the security error to the user
-      Log.d(TAG, "Storage was unsuccessful du to wallet error " + e);
+      Timber.tag(TAG).d(e, "Storage was unsuccessful du to wallet error");
       Toast.makeText(this, R.string.error_storage_wallet, Toast.LENGTH_SHORT).show();
     }
   }
@@ -136,21 +138,24 @@ public class LaoActivity extends AppCompatActivity {
               }
             });
 
+    // Listener for the transaction button
     binding.laoAppBar.setOnMenuItemClickListener(
         menuItem -> {
           if (menuItem.getItemId() == R.id.history_menu_toolbar) {
-            binding.laoNavigationDrawer.setCheckedItem(MainMenuTab.DIGITAL_CASH.getMenuId());
             // If the user clicks on the button when the transaction history is
             // already displayed, then consider it as a back button pressed
             Fragment fragment =
                 getSupportFragmentManager().findFragmentById(R.id.fragment_container_lao);
             if (!(fragment instanceof DigitalCashHistoryFragment)) {
+              // Push onto the stack the current fragment to restore it upon exit
+              fragmentStack.push(fragment);
               setCurrentFragment(
                   getSupportFragmentManager(),
                   R.id.fragment_digital_cash_history,
                   DigitalCashHistoryFragment::newInstance);
             } else {
-              openDigitalCashTab();
+              // Restore the fragment pushed on the stack before opening the transaction history
+              resetLastFragment();
             }
             return true;
           }
@@ -172,13 +177,13 @@ public class LaoActivity extends AppCompatActivity {
     binding.laoNavigationDrawer.setNavigationItemSelectedListener(
         item -> {
           MainMenuTab tab = MainMenuTab.findByMenu(item.getItemId());
-          Log.i(TAG, "Opening tab : " + tab.getName());
+          Timber.tag(TAG).i("Opening tab : %s", tab.getName());
           boolean selected = openTab(tab);
           if (selected) {
-            Log.d(TAG, "The tab was successfully opened");
+            Timber.tag(TAG).d("The tab was successfully opened");
             laoViewModel.setCurrentTab(tab);
           } else {
-            Log.d(TAG, "The tab wasn't opened");
+            Timber.tag(TAG).d("The tab wasn't opened");
           }
           binding.laoDrawerLayout.close();
           return selected;
@@ -232,7 +237,7 @@ public class LaoActivity extends AppCompatActivity {
         startActivity(HomeActivity.newIntent(this));
         return true;
       default:
-        Log.w(TAG, "Unhandled tab type : " + tab);
+        Timber.tag(TAG).w("Unhandled tab type : %s", tab);
         return false;
     }
   }
@@ -273,6 +278,15 @@ public class LaoActivity extends AppCompatActivity {
     openEventsTab();
   }
 
+  /** Restore the fragment contained in the stack as container of the current lao */
+  public void resetLastFragment() {
+    Fragment fragment = fragmentStack.pop();
+    getSupportFragmentManager()
+        .beginTransaction()
+        .replace(R.id.fragment_container_lao, fragment)
+        .commit();
+  }
+
   public static LaoViewModel obtainViewModel(FragmentActivity activity) {
     return new ViewModelProvider(activity).get(LaoViewModel.class);
   }
@@ -305,6 +319,12 @@ public class LaoActivity extends AppCompatActivity {
         new ViewModelProvider(activity).get(RollCallViewModel.class);
     rollCallViewModel.setLaoId(laoId);
     return rollCallViewModel;
+  }
+
+  public static MeetingViewModel obtainMeetingViewModel(FragmentActivity activity, String laoId) {
+    MeetingViewModel meetingViewModel = new ViewModelProvider(activity).get(MeetingViewModel.class);
+    meetingViewModel.setLaoId(laoId);
+    return meetingViewModel;
   }
 
   public static WitnessingViewModel obtainWitnessingViewModel(

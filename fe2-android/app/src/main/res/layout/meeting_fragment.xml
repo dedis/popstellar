@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto">
+
+  <androidx.constraintlayout.widget.ConstraintLayout
+    android:id="@+id/fragment_meeting"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+      android:id="@+id/meeting_start_time_icon"
+      android:layout_width="@dimen/event_clock_icon_side"
+      android:layout_height="@dimen/event_clock_icon_side"
+      android:layout_marginTop="@dimen/clock_icon_margin_top"
+      android:contentDescription="@string/time_icon_description"
+      android:src="@drawable/ic_time"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="@id/meeting_status" />
+
+    <ImageView
+      android:id="@+id/meeting_end_time_icon"
+      android:layout_width="@dimen/event_clock_icon_side"
+      android:layout_height="@dimen/event_clock_icon_side"
+      android:layout_marginTop="@dimen/in_between_clocks_icon_margin_top"
+      android:contentDescription="@string/time_icon_description"
+      android:src="@drawable/ic_time"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="@id/meeting_start_time_icon" />
+
+    <TextView
+      android:id="@+id/meeting_title"
+      style="@style/title_style"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+      android:id="@+id/meeting_status_icon"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:contentDescription="@string/status_icon_description"
+      android:src="@drawable/ic_lock"
+      app:layout_constraintBottom_toBottomOf="@id/meeting_status"
+      app:layout_constraintEnd_toStartOf="@id/meeting_status"
+      app:layout_constraintTop_toTopOf="@id/meeting_status" />
+
+    <TextView
+      android:id="@+id/meeting_status"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="@dimen/status_margin_top"
+      android:text="@string/closed"
+      android:textColor="@color/red"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="@id/meeting_title" />
+
+    <TextView
+      android:id="@+id/meeting_fragment_start_time_title"
+      style="@style/explication_text_style"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginStart="@dimen/clock_icon_margin_start"
+      android:text="@string/start"
+      app:layout_constraintBottom_toBottomOf="@id/meeting_start_time_icon"
+      app:layout_constraintStart_toEndOf="@id/meeting_start_time_icon"
+      app:layout_constraintTop_toTopOf="@id/meeting_start_time_icon" />
+
+    <TextView
+      android:id="@+id/meeting_start_time"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginStart="@dimen/clock_icon_margin_start"
+      app:layout_constraintBottom_toBottomOf="@id/meeting_start_time_icon"
+      app:layout_constraintStart_toEndOf="@id/meeting_fragment_start_time_title"
+      app:layout_constraintTop_toTopOf="@id/meeting_start_time_icon" />
+
+    <TextView
+      android:id="@+id/meeting_fragment_end_time_title"
+      style="@style/explication_text_style"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginStart="@dimen/clock_icon_margin_start"
+      android:text="@string/end"
+      app:layout_constraintBottom_toBottomOf="@id/meeting_end_time_icon"
+      app:layout_constraintStart_toEndOf="@id/meeting_end_time_icon"
+      app:layout_constraintTop_toTopOf="@id/meeting_end_time_icon" />
+
+    <TextView
+      android:id="@+id/meeting_end_time"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      app:layout_constraintBottom_toBottomOf="@id/meeting_end_time_icon"
+      app:layout_constraintStart_toStartOf="@id/meeting_start_time"
+      app:layout_constraintTop_toTopOf="@id/meeting_end_time_icon" />
+
+    <TextView
+      android:id="@+id/meeting_location_title"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginStart="@dimen/clock_icon_margin_start"
+      android:layout_marginTop="@dimen/meeting_location_margin_top"
+      style="@style/explication_text_style"
+      android:text="@string/roll_call_location_title"
+      app:layout_constraintTop_toBottomOf="@id/meeting_end_time_icon"
+      app:layout_constraintStart_toEndOf="@id/meeting_end_time_icon" />
+
+    <TextView
+      android:id="@+id/meeting_location_text"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginStart="@dimen/clock_icon_margin_start"
+      android:layout_marginTop="@dimen/roll_call_expand_text_margin_top"
+      app:layout_constraintStart_toEndOf="@id/meeting_end_time_icon"
+      app:layout_constraintTop_toBottomOf="@id/meeting_location_title" />
+
+  </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

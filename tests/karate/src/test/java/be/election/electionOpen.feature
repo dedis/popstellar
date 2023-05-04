@@ -1,7 +1,7 @@
 @env=go,scala
 Feature: Open an Election
   Background:
-        # This is feature will be called to test Election Open
+        # This feature will be called to test Election Open
         # For every test a file containing the json representation of the message is read
         # then sent to the backend and stored there.
         # This is done via :
@@ -32,8 +32,8 @@ Feature: Open an Election
             "opened_at": 1633098944
         }
       """
-    When frontend.publish(JSON.stringify(validElectionOpen), electionChannel)
-    And json answer = frontend.getBackendResponse(JSON.stringify(validElectionOpen))
+    When frontend.publish(validElectionOpen, electionChannel)
+    And json answer = frontend.getBackendResponse(validElectionOpen)
     Then match answer contains VALID_MESSAGE
     And match frontend.receiveNoMoreResponses() == true
 
@@ -51,8 +51,8 @@ Feature: Open an Election
             "opened_at": 1633098944
         }
       """
-    When frontend.publish(JSON.stringify(validElectionOpen), electionChannel)
-    And json answer = frontend.getBackendResponse(JSON.stringify(validElectionOpen))
+    When frontend.publish(validElectionOpen, electionChannel)
+    And json answer = frontend.getBackendResponse(validElectionOpen)
     Then match answer contains INVALID_MESSAGE_FIELD
     And match frontend.receiveNoMoreResponses() == true
 
@@ -70,8 +70,8 @@ Feature: Open an Election
             "opened_at": 1620000000
         }
       """
-    When frontend.publish(JSON.stringify(validElectionOpen), electionChannel)
-    And json answer = frontend.getBackendResponse(JSON.stringify(validElectionOpen))
+    When frontend.publish(validElectionOpen, electionChannel)
+    And json answer = frontend.getBackendResponse(validElectionOpen)
     Then match answer contains INVALID_MESSAGE_FIELD
     And match frontend.receiveNoMoreResponses() == true
 
@@ -90,8 +90,8 @@ Feature: Open an Election
         }
       """
     And frontend.changeSenderToBeNonAttendee()
-    When frontend.publish(JSON.stringify(validElectionOpen), electionChannel)
-    And json answer = frontend.getBackendResponse(JSON.stringify(validElectionOpen))
+    When frontend.publish(validElectionOpen, electionChannel)
+    And json answer = frontend.getBackendResponse(validElectionOpen)
     Then match answer contains INVALID_MESSAGE_FIELD
     And match frontend.receiveNoMoreResponses() == true
 
@@ -109,8 +109,8 @@ Feature: Open an Election
             "opened_at": 1633098944
         }
       """
-    When frontend.publish(JSON.stringify(validElectionOpen), electionChannel)
-    And json answer = frontend.getBackendResponse(JSON.stringify(validElectionOpen))
+    When frontend.publish(validElectionOpen, electionChannel)
+    And json answer = frontend.getBackendResponse(validElectionOpen)
     Then match answer contains INVALID_MESSAGE_FIELD
     And match frontend.receiveNoMoreResponses() == true
 

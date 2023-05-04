@@ -30,13 +30,13 @@ public class OpenRollCall extends Data {
    * @param state the state in which the roll call is when this instance is created
    */
   public OpenRollCall(String laoId, String opens, long openedAt, EventState state) {
-    this.updateId = RollCall.generateOpenRollCallId(laoId, opens, openedAt);
+    updateId = RollCall.generateOpenRollCallId(laoId, opens, openedAt);
     this.opens = opens;
     this.openedAt = openedAt;
     if (state == EventState.CLOSED) {
-      this.action = Action.REOPEN.getAction();
+      action = Action.REOPEN.getAction();
     } else {
-      this.action = Action.OPEN.getAction();
+      action = Action.OPEN.getAction();
     }
   }
 

@@ -1,7 +1,7 @@
 @env=go,scala
 Feature: Setup an Election
   Background:
-        # This is feature will be called to test Election Setup
+        # This feature will be called to test Election Setup
         # For every test a file containing the json representation of the message is read
         # then sent to the backend and stored there.
         # This is done via :
@@ -44,8 +44,8 @@ Feature: Setup an Election
           ]
         }
       """
-    When frontend.publish(JSON.stringify(validElectionSetup), laoChannel)
-    And json answer = frontend.getBackendResponse(JSON.stringify(validElectionSetup))
+    When frontend.publish(validElectionSetup, laoChannel)
+    And json answer = frontend.getBackendResponse(validElectionSetup)
     Then match answer contains VALID_MESSAGE
     And match frontend.receiveNoMoreResponses() == true
 
@@ -77,10 +77,11 @@ Feature: Setup an Election
           ]
         }
       """
-    When frontend.publish(JSON.stringify(validElectionSetup), laoChannel)
-    And json answer = frontend.getBackendResponse(JSON.stringify(validElectionSetup))
+    When frontend.publish(validElectionSetup, laoChannel)
+    And json answer = frontend.getBackendResponse(validElectionSetup)
     Then match answer contains INVALID_MESSAGE_FIELD
     And match frontend.receiveNoMoreResponses() == true
+
   # Testing if after a successful roll call, sending an election setup message
   # invalid question id results in an error message from the backend
   Scenario: Setting up an election with invalid question id should fail
@@ -108,10 +109,11 @@ Feature: Setup an Election
           ]
         }
       """
-    When frontend.publish(JSON.stringify(validElectionSetup), laoChannel)
-    And json answer = frontend.getBackendResponse(JSON.stringify(validElectionSetup))
+    When frontend.publish(validElectionSetup, laoChannel)
+    And json answer = frontend.getBackendResponse(validElectionSetup)
     Then match answer contains INVALID_MESSAGE_FIELD
     And match frontend.receiveNoMoreResponses() == true
+
 #  # Testing if after a successful roll call, sending an election setup message
 #  # containing empty ballot options results in an error message from the backend
   Scenario: Setting up an election with a question containing empty ballot options should return an error
@@ -139,10 +141,11 @@ Feature: Setup an Election
           ]
         }
       """
-    When frontend.publish(JSON.stringify(validElectionSetup), laoChannel)
-    And json answer = frontend.getBackendResponse(JSON.stringify(validElectionSetup))
+    When frontend.publish(validElectionSetup, laoChannel)
+    And json answer = frontend.getBackendResponse(validElectionSetup)
     Then match answer contains INVALID_MESSAGE_FIELD
     And match frontend.receiveNoMoreResponses() == true
+
 #  # Testing if after a successful roll call, sending an election setup message
 #  # with a non supported voting method results in an error message from the backend
   Scenario: Setting up an election with a non-supported voting method should return an error
@@ -170,7 +173,7 @@ Feature: Setup an Election
           ]
         }
       """
-    When frontend.publish(JSON.stringify(validElectionSetup), laoChannel)
-    And json answer = frontend.getBackendResponse(JSON.stringify(validElectionSetup))
+    When frontend.publish(validElectionSetup, laoChannel)
+    And json answer = frontend.getBackendResponse(validElectionSetup)
     Then match answer contains INVALID_MESSAGE_FIELD
     And match frontend.receiveNoMoreResponses() == true

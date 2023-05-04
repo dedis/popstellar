@@ -7,6 +7,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.network.method.message.data.*;
 import com.github.dedis.popstellar.model.objects.PeerAddress;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
+import com.github.dedis.popstellar.utility.MessageValidator;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.*;
@@ -33,28 +34,36 @@ public class GreetLao extends Data {
   private final List<PeerAddress> peers;
 
   /**
-   * Constructor for a Greeting Message
+   * Constructor for a Data GreetLao
    *
-   * @throws IllegalArgumentException if channel is null
+   * @param id id of the lao
+   * @param frontend public key of the frontend of the server owner
+   * @param address canonical address of the server with a protocol prefix and the port number
+   * @param peers list of peers the server is connected to (excluding itself). These can be other
+   *     organizers or witnesses
+   * @throws IllegalArgumentException if arguments are invalid
    */
   public GreetLao(
-      @NonNull String lao,
+      @NonNull String id,
       @NonNull String frontend,
       @NonNull String address,
-      List<PeerAddress> peers) {
-    // Peers can be empty and address can be the same
-    this.peers = new ArrayList<>(peers);
-    this.address = address;
+      @NonNull List<PeerAddress> peers) {
+    MessageValidator.verify().isBase64(id, "id");
+    // Checking that the id matches the current lao id is done in the GreetLao handler
+    this.id = id;
 
-    // Check the validity of the public key should is done via the Public Key class
+    // Checking the validity of the public key is done via the Public Key class
     try {
-      this.frontendKey = new PublicKey(frontend);
+      frontendKey = new PublicKey(frontend);
     } catch (Exception e) {
       throw new IllegalArgumentException("Please provide a valid public key");
     }
 
-    // Assume the id of the LAO will be checked via the handler
-    this.id = lao;
+    // Validity of the address is checked at deserialization
+    this.address = address;
+
+    // Peers can be empty
+    this.peers = new ArrayList<>(peers);
   }
 
   // Set of getters for t
@@ -79,7 +88,6 @@ public class GreetLao extends Data {
 
   @Override
   public boolean equals(Object o) {
-
     if (this == o) {
       return true;
     }
@@ -92,7 +100,7 @@ public class GreetLao extends Data {
     boolean checkId = that.getId().equals(getId());
     boolean checkAddress = that.getAddress().equals(getAddress());
     boolean checkSendKey = that.getFrontendKey().equals(getFrontendKey());
-    boolean checkPeers = that.getPeers().containsAll(getPeers());
+    boolean checkPeers = new HashSet<>(that.getPeers()).containsAll(getPeers());
 
     return checkId && checkPeers && checkSendKey && checkAddress;
   }

@@ -1,7 +1,6 @@
 package com.github.dedis.popstellar.ui.lao;
 
 import android.app.Application;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
@@ -32,6 +31,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
+import timber.log.Timber;
 
 @HiltViewModel
 public class LaoViewModel extends AndroidViewModel implements PopViewModel {
@@ -165,7 +165,7 @@ public class LaoViewModel extends AndroidViewModel implements PopViewModel {
   protected void updateRole() {
     Role currentRole = determineRole();
     if (role.getValue() != currentRole) {
-      this.role.setValue(currentRole);
+      role.setValue(currentRole);
     }
   }
 
@@ -179,7 +179,7 @@ public class LaoViewModel extends AndroidViewModel implements PopViewModel {
    * @param disposable to add
    */
   public void addDisposable(Disposable disposable) {
-    this.disposables.add(disposable);
+    disposables.add(disposable);
   }
 
   @Override
@@ -213,14 +213,14 @@ public class LaoViewModel extends AndroidViewModel implements PopViewModel {
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 laoView -> {
-                  Log.d(TAG, "got an update for lao: " + laoView);
+                  Timber.tag(TAG).d("got an update for lao: %s", laoView);
 
                   setIsOrganizer(laoView.getOrganizer().equals(keyManager.getMainPublicKey()));
                   setIsWitness(laoView.getWitnesses().contains(keyManager.getMainPublicKey()));
 
                   updateRole();
                 },
-                error -> Log.d(TAG, "error updating LAO :" + error)));
+                error -> Timber.tag(TAG).d(error, "error updating LAO")));
   }
 
   protected void observeRollCalls(String laoId) {
@@ -253,7 +253,7 @@ public class LaoViewModel extends AndroidViewModel implements PopViewModel {
       PublicKey pk = wallet.generatePoPToken(laoId, rollcall.getPersistentId()).getPublicKey();
       return rollcall.isClosed() && rollcall.getAttendees().contains(pk);
     } catch (KeyGenerationException | UninitializedWalletException e) {
-      Log.e(TAG, "failed to retrieve public key from wallet", e);
+      Timber.tag(TAG).e(e, "failed to retrieve public key from wallet");
       return false;
     }
   }

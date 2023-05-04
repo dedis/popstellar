@@ -8,6 +8,7 @@ import com.intuit.karate.http.WebSocketOptions;
 import io.opencensus.trace.Link;
 
 import java.util.*;
+import java.util.function.Predicate;
 
 /** A WebSocketClient that can handle multiple received messages */
 public class MultiMsgWebSocketClient extends WebSocketClient {
@@ -27,6 +28,10 @@ public class MultiMsgWebSocketClient extends WebSocketClient {
     this.queue = queue;
 
     setTextHandler(m -> true);
+  }
+
+  public void send(Map<String, Object> jsonDataMap){
+    this.send(Json.of(jsonDataMap).toString());
   }
 
   @Override
@@ -50,7 +55,9 @@ public class MultiMsgWebSocketClient extends WebSocketClient {
   }
 
 
-  public void publish(String data, String channel){
+  public void publish(Map<String, Object> jsonDataMap, String channel){
+    Json dataJson = Json.of(jsonDataMap);
+    String data = dataJson.toString();
     Random random = new Random();
     int id = random.nextInt();
     idAssociatedWithSentMessages.put(data, id);
@@ -63,11 +70,13 @@ public class MultiMsgWebSocketClient extends WebSocketClient {
     jsonConverter.setSenderPk(nonAttendeePk);
   }
 
-  public String getBackendResponse(String data){
-    return getBackendResponseWithOrWithoutBroadcasts(data, false);
+  public String getBackendResponse(Map<String, Object> jsonDataMap){
+    return getBackendResponseWithOrWithoutBroadcasts(jsonDataMap, false);
   }
 
-  public String getBackendResponseWithOrWithoutBroadcasts(String data, boolean withBroadcasts){
+  public String getBackendResponseWithOrWithoutBroadcasts(Map<String, Object> jsonDataMap, boolean withBroadcasts){
+    Json dataJson = Json.of(jsonDataMap);
+    String data = dataJson.toString();
     assert idAssociatedWithSentMessages.containsKey(data);
     int idData = idAssociatedWithSentMessages.get(data);
     if (idAssociatedWithAnswers.containsKey(idData)){
@@ -97,8 +106,8 @@ public class MultiMsgWebSocketClient extends WebSocketClient {
     throw new IllegalArgumentException("No answer from the backend");
   }
 
-  public String getBackendResponseWithElectionResults(String data){
-    String answer = getBackendResponseWithOrWithoutBroadcasts(data, true);
+  public String getBackendResponseWithElectionResults(Map<String, Object> jsonDataMap){
+    String answer = getBackendResponseWithOrWithoutBroadcasts(jsonDataMap, true);
     Base64.Decoder decoder = Base64.getDecoder();
     for (String broadcast : broadcasts) {
       String base64Data =
@@ -113,6 +122,25 @@ public class MultiMsgWebSocketClient extends WebSocketClient {
     }
     assert false;
     throw new IllegalArgumentException("No election results where received");
+  }
+
+  /**
+   * Retrieves all messages with the specified method type from the messages buffer.
+   * @param method The method type to filter the messages by.
+   * @return A list containing all received messages that match the specified method type.
+   */
+  public List<String> getMessagesByMethod(String method) {
+    List<String> messages = new ArrayList<>();
+    Predicate<String> filter = MessageFilters.withMethod(method);
+
+    String message = getBuffer().takeTimeout(5000);
+    while (message != null) {
+      if (filter.test(message)) {
+        messages.add(message);
+      }
+      message = getBuffer().takeTimeout(5000);
+    }
+    return messages;
   }
 
   public boolean receiveNoMoreResponses(){

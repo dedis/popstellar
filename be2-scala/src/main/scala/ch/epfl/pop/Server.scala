@@ -10,6 +10,7 @@ import akka.http.scaladsl.server.{RequestContext, RouteResult}
 import akka.pattern.AskableActorRef
 import akka.util.Timeout
 import ch.epfl.pop.config.{RuntimeEnvironment, ServerConf}
+import ch.epfl.pop.decentralized.{ConnectionMediator, HeartbeatGenerator, Monitor}
 import ch.epfl.pop.pubsub.{MessageRegistry, PubSubMediator, PublishSubscribe}
 import ch.epfl.pop.storage.DbActor
 import org.iq80.leveldb.Options
@@ -46,8 +47,36 @@ object Server {
       val pubSubMediatorRef: ActorRef = system.actorOf(PubSubMediator.props, "PubSubMediator")
       val dbActorRef: AskableActorRef = system.actorOf(Props(DbActor(pubSubMediatorRef, messageRegistry)), "DbActor")
 
-      def publishSubscribeRoute: RequestContext => Future[RouteResult] = path(config.path) {
-        handleWebSocketMessages(PublishSubscribe.buildGraph(pubSubMediatorRef, dbActorRef, messageRegistry)(system))
+      // Create necessary actors for server-server communications
+      val heartbeatGenRef: ActorRef = system.actorOf(HeartbeatGenerator.props(dbActorRef))
+      val monitorRef: ActorRef = system.actorOf(Monitor.props(heartbeatGenRef))
+      val connectionMediatorRef: ActorRef = system.actorOf(ConnectionMediator.props(monitorRef, pubSubMediatorRef, dbActorRef, messageRegistry))
+
+      // Setup routes
+      def publishSubscribeRoute: RequestContext => Future[RouteResult] = {
+        path(config.clientPath) {
+          handleWebSocketMessages(
+            PublishSubscribe.buildGraph(
+              pubSubMediatorRef,
+              dbActorRef,
+              messageRegistry,
+              monitorRef,
+              connectionMediatorRef,
+              isServer = false
+            )(system)
+          )
+        } ~ path(config.serverPath) {
+          handleWebSocketMessages(
+            PublishSubscribe.buildGraph(
+              pubSubMediatorRef,
+              dbActorRef,
+              messageRegistry,
+              monitorRef,
+              connectionMediatorRef,
+              isServer = true
+            )(system)
+          )
+        }
       }
 
       implicit val executionContext: ExecutionContextExecutor = typedSystem.executionContext
@@ -55,7 +84,10 @@ object Server {
       val bindingFuture = Http().newServerAt(config.interface, config.port).bindFlow(publishSubscribeRoute)
 
       bindingFuture.onComplete {
-        case Success(_) => println(f"ch.epfl.pop.Server online at ws://${config.interface}:${config.port}/${config.path}")
+        case Success(_) =>
+          println(f"[Client] ch.epfl.pop.Server online at ws://${config.interface}:${config.port}/${config.clientPath}")
+          println(f"[Server] ch.epfl.pop.Server online at ws://${config.interface}:${config.port}/${config.serverPath}")
+
         case Failure(_) =>
           logger.error(
             "ch.epfl.pop.Server failed to start. Terminating actor system"

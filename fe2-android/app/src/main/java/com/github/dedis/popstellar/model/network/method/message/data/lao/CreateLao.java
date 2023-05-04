@@ -7,6 +7,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.network.method.message.data.*;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
+import com.github.dedis.popstellar.utility.MessageValidator;
 
 import java.time.Instant;
 import java.util.*;
@@ -22,20 +23,24 @@ public class CreateLao extends Data {
   private final List<PublicKey> witnesses;
 
   /**
-   * Constructor for a data Create LAO
+   * Constructor for a Data CreateLao
    *
    * @param id of the LAO creation message, Hash(organizer||creation||name)
    * @param name name of the LAO
    * @param creation time of creation
    * @param organizer id of the LAO's organizer
    * @param witnesses list of witnesses of the LAO
-   * @throws IllegalArgumentException if the id is not valid
+   * @throws IllegalArgumentException if arguments are invalid
    */
   public CreateLao(
-      String id, String name, long creation, PublicKey organizer, List<PublicKey> witnesses) {
-    if (!id.equals(Lao.generateLaoId(organizer, creation, name))) {
-      throw new IllegalArgumentException("CreateLao id must be Hash(organizer||creation||name)");
-    }
+      @NonNull String id,
+      @NonNull String name,
+      long creation,
+      @NonNull PublicKey organizer,
+      @NonNull List<PublicKey> witnesses) {
+    // Organizer and witnesses are checked to be base64 at deserialization
+    MessageValidator.verify().validLaoId(id, organizer, creation, name).validPastTimes(creation);
+
     this.id = id;
     this.name = name;
     this.creation = creation;
@@ -46,9 +51,10 @@ public class CreateLao extends Data {
   public CreateLao(String name, PublicKey organizer) {
     this.name = name;
     this.organizer = organizer;
-    this.creation = Instant.now().getEpochSecond();
-    this.id = Lao.generateLaoId(organizer, creation, name);
-    this.witnesses = new ArrayList<>();
+    creation = Instant.now().getEpochSecond();
+    // This checks that name and organizer are not empty or null
+    id = Lao.generateLaoId(organizer, creation, name);
+    witnesses = new ArrayList<>();
   }
 
   @Override

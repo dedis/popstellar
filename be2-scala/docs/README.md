@@ -206,8 +206,8 @@ Summary of the keys used to retrieve data:
 - for a message: `channel#message_id`
 - for ChannelData: `channel`
 - for LaoData: `root/lao_id#laodata`
-- for RollCallData: `root/rollcall/lao_id`
-- for ElectionData: `root/private/election_id`
+- for RollCallData: `root/lao_id/rollcall`
+- for ElectionData: `root/lao_id/private/election_id`
 
 We use `/` as a separator for parts of a channel and `#` as a separator for data objects when needed.
 
@@ -306,7 +306,7 @@ final case class DbActorReadLaoDataAck(laoData: LaoData) extends DbActorMessage
 For the Social Media functionality, each user has their own channel with the identifier `root/lao_id/own_pop_token` and each broadcast containing the message_id of a post will be written to `root/lao_id/posts`.
 
 For the Election functionality, we need to have a key pair stored safely somewhere so that we can encrypt/decrypt messages. That is why we use a `ElectionData` object to store the key pairs for the corresponding election.
-The path root is `root/private/election_id` as stated above.
+The path root is `root/lao_id/private/election_id` as stated above.
 The key pair can be stored and retrieved by the following functions.
 
 ```scala
@@ -431,7 +431,7 @@ You can then set a title and description to your PR as well as set a label (e.g.
 
 The best way to "intercept" a `GraphMessage` being processed in the graph is to launch the server in debug mode, and then sending an isolated message to the server triggering the bug.
 
-:information_source: [Hoppscotch](https://hoppscotch.io/realtime/) (Realtime => WebSocket => `ws://localhost:8000/`) is a useful tool to achieve this result
+:information_source: [Hoppscotch](https://hoppscotch.io/realtime/) (Realtime => WebSocket => `ws://localhost:8000/client`) is a useful tool to achieve this result
 
 
 ## 6.	Coding Styles

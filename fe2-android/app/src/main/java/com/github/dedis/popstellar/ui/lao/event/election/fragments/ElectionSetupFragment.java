@@ -3,7 +3,6 @@ package com.github.dedis.popstellar.ui.lao.event.election.fragments;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.*;
 import android.widget.*;
 import android.widget.AdapterView.OnItemSelectedListener;
@@ -31,6 +30,7 @@ import java.util.stream.Collectors;
 
 import dagger.hilt.android.AndroidEntryPoint;
 import me.relex.circleindicator.CircleIndicator3;
+import timber.log.Timber;
 
 @AndroidEntryPoint
 public class ElectionSetupFragment extends AbstractEventCreationFragment {
@@ -39,7 +39,6 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
 
   // mandatory fields for submitting
   private EditText electionNameText;
-  private Button submitButton;
   private ElectionSetupViewPagerAdapter viewPagerAdapter;
   private LaoViewModel laoViewModel;
   private ElectionViewModel electionViewModel;
@@ -79,11 +78,15 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
         public void afterTextChanged(Editable s) {
           // On each change of election level information, we check that at least one question is
           // complete to know if submit is allowed
-          submitButton.setEnabled(
+          confirmButton.setEnabled(
               isElectionLevelInputValid()
                   && Boolean.TRUE.equals(viewPagerAdapter.isAnInputValid().getValue()));
         }
       };
+
+  public ElectionSetupFragment() {
+    // Required empty public constructor
+  }
 
   public static ElectionSetupFragment newInstance() {
     return new ElectionSetupFragment();
@@ -109,7 +112,7 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
     addEndDateAndTimeListener(submitTextWatcher);
     addStartDateAndTimeListener(submitTextWatcher);
 
-    submitButton = binding.electionSubmitButton;
+    confirmButton = binding.electionSubmitButton;
     electionNameText = binding.electionSetupName;
 
     // Add text watchers on the fields that need to be filled
@@ -134,7 +137,7 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
         .isAnInputValid()
         .observe(
             getViewLifecycleOwner(),
-            aBoolean -> submitButton.setEnabled(aBoolean && isElectionLevelInputValid()));
+            aBoolean -> confirmButton.setEnabled(aBoolean && isElectionLevelInputValid()));
 
     Button addQuestion = binding.addQuestion;
     addQuestion.setOnClickListener(
@@ -176,8 +179,8 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
         };
     setUpElectionVersionSpinner(versionSpinner, listener);
 
+    createEvent();
     binding.setLifecycleOwner(getActivity());
-    setupElectionSubmitButton();
 
     handleBackNav();
     return binding.getRoot();
@@ -191,12 +194,13 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
   }
 
   /** Setups the submit button that creates the new election */
-  private void setupElectionSubmitButton() {
-    submitButton.setOnClickListener(
+  @Override
+  protected void createEvent() {
+    confirmButton.setOnClickListener(
         v -> {
           // We "deactivate" the button on click, to prevent the user from creating multiple
           // elections at once
-          submitButton.setEnabled(false);
+          confirmButton.setEnabled(false);
 
           // When submitting, we compute the timestamps for the selected start and end time
           if (!computeTimesInSeconds()) {
@@ -227,16 +231,15 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
 
           String electionName = electionNameText.getText().toString();
 
-          Log.d(
-              TAG,
-              String.format(
+          Timber.tag(TAG)
+              .d(
                   "Creating election with version %s, name %s, creation time %d, start time %d, end time %d, questions %s",
                   electionVersion,
                   electionName,
                   creationTimeInSeconds,
                   startTimeInSeconds,
                   endTimeInSeconds,
-                  filteredQuestions));
+                  filteredQuestions);
 
           laoViewModel.addDisposable(
               electionViewModel

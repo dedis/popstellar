@@ -37,19 +37,19 @@ public final class ElectInstance implements Copyable<ElectInstance> {
     this.proposer = proposer;
     this.elect = elect;
     this.nodes = Collections.unmodifiableSet(nodes);
-    this.acceptorToMessageId = new HashMap<>();
+    acceptorToMessageId = new HashMap<>();
 
-    this.state = State.STARTING;
+    state = State.STARTING;
   }
 
   public ElectInstance(ElectInstance electInstance) {
-    this.messageId = electInstance.messageId;
-    this.channel = electInstance.channel;
-    this.proposer = electInstance.proposer;
-    this.elect = electInstance.elect;
-    this.nodes = electInstance.nodes;
-    this.acceptorToMessageId = new HashMap<>(electInstance.acceptorToMessageId);
-    this.state = electInstance.state;
+    messageId = electInstance.messageId;
+    channel = electInstance.channel;
+    proposer = electInstance.proposer;
+    elect = electInstance.elect;
+    nodes = electInstance.nodes;
+    acceptorToMessageId = new HashMap<>(electInstance.acceptorToMessageId);
+    state = electInstance.state;
   }
 
   public MessageID getMessageId() {

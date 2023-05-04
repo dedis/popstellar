@@ -5,10 +5,11 @@ import akka.actor.{ActorRef, ActorSystem}
 import akka.http.scaladsl.model.ws.{Message, TextMessage}
 import akka.pattern.AskableActorRef
 import akka.stream.FlowShape
-import akka.stream.scaladsl.{Flow, GraphDSL, Merge, Partition}
-import ch.epfl.pop.model.network.JsonRpcRequest
+import akka.stream.scaladsl.{Broadcast, Flow, GraphDSL, Merge, Partition}
+import ch.epfl.pop.decentralized.Monitor
+import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse}
 import ch.epfl.pop.pubsub.graph._
-import ch.epfl.pop.pubsub.graph.handlers.{ParamsHandler, ParamsWithMessageHandler}
+import ch.epfl.pop.pubsub.graph.handlers.{GetMessagesByIdResponseHandler, ParamsWithChannelHandler, ParamsWithMapHandler, ParamsWithMessageHandler}
 
 object PublishSubscribe {
 
@@ -16,19 +17,30 @@ object PublishSubscribe {
 
   def getDbActorRef: AskableActorRef = dbActorRef
 
-  def buildGraph(mediatorActorRef: ActorRef, dbActorRefT: AskableActorRef, messageRegistry: MessageRegistry)(implicit system: ActorSystem): Flow[Message, Message, NotUsed] = Flow.fromGraph(GraphDSL.create() {
+  def buildGraph(
+      mediatorActorRef: ActorRef,
+      dbActorRefT: AskableActorRef,
+      messageRegistry: MessageRegistry,
+      monitorRef: ActorRef,
+      connectionMediatorRef: ActorRef,
+      isServer: Boolean
+  )(implicit system: ActorSystem): Flow[Message, Message, NotUsed] = Flow.fromGraph(GraphDSL.create() {
     implicit builder: GraphDSL.Builder[NotUsed] =>
       {
         import GraphDSL.Implicits._
 
-        val clientActorRef: ActorRef = system.actorOf(ClientActor.props(mediatorActorRef))
+        val clientActorRef: ActorRef = system.actorOf(ClientActor.props(mediatorActorRef, connectionMediatorRef, isServer))
         dbActorRef = dbActorRefT
 
         /* partitioner port numbers */
         val portPipelineError = 0
         val portParamsWithMessage = 1
-        val portParams = 2
-        val totalPorts = 3
+        val portParamsWithChannel = 2
+        val portParamsWithMap = 3
+        val portResponseHandler = 4
+        val totalPorts = 5
+
+        val totalBroadcastPort = 2
 
         /* building blocks */
         // input message from the client
@@ -43,16 +55,22 @@ object PublishSubscribe {
           totalPorts,
           {
             case Right(m: JsonRpcRequest) if m.hasParamsMessage => portParamsWithMessage // Publish and Broadcast messages
-            case Right(_)                                       => portParams
+            case Right(m: JsonRpcRequest) if m.hasParamsChannel => portParamsWithChannel
+            case Right(_: JsonRpcRequest)                       => portParamsWithMap
+            case Right(_: JsonRpcResponse)                      => portResponseHandler
             case _                                              => portPipelineError // Pipeline error goes directly in merger
           }
         ))
 
         val hasMessagePartition = builder.add(ParamsWithMessageHandler.graph(messageRegistry))
-        val noMessagePartition = builder.add(ParamsHandler.graph(clientActorRef))
+        val hasChannelPartition = builder.add(ParamsWithChannelHandler.graph(clientActorRef))
+        val hasMapPartition = builder.add(ParamsWithMapHandler.graph(dbActorRef))
+        val responsePartition = builder.add(GetMessagesByIdResponseHandler.graph(dbActorRef.actorRef))
 
         val merger = builder.add(Merge[GraphMessage](totalPorts))
+        val broadcast = builder.add(Broadcast[GraphMessage](totalBroadcastPort))
 
+        val monitorSink = builder.add(Monitor.sink(monitorRef))
         val jsonRpcAnswerGenerator = builder.add(AnswerGenerator.generator)
         val jsonRpcAnswerer = builder.add(Answerer.answerer(clientActorRef, mediatorActorRef))
 
@@ -64,9 +82,13 @@ object PublishSubscribe {
 
         methodPartitioner.out(portPipelineError) ~> merger
         methodPartitioner.out(portParamsWithMessage) ~> hasMessagePartition ~> merger
-        methodPartitioner.out(portParams) ~> noMessagePartition ~> merger
+        methodPartitioner.out(portParamsWithChannel) ~> hasChannelPartition ~> merger
+        methodPartitioner.out(portParamsWithMap) ~> hasMapPartition ~> merger
+        methodPartitioner.out(portResponseHandler) ~> responsePartition ~> merger
 
-        merger ~> jsonRpcAnswerGenerator ~> jsonRpcAnswerer ~> output
+        merger ~> broadcast
+        broadcast ~> jsonRpcAnswerGenerator ~> jsonRpcAnswerer ~> output
+        broadcast ~> monitorSink
 
         /* close the shape */
         FlowShape(input.in, output.out)

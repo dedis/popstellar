@@ -1,9 +1,15 @@
 package com.github.dedis.popstellar.model.network.method.message.data.meeting;
 
+import androidx.annotation.NonNull;
+
 import com.github.dedis.popstellar.model.Immutable;
 import com.github.dedis.popstellar.model.network.method.message.data.*;
-import com.github.dedis.popstellar.model.objects.event.EventType;
-import com.github.dedis.popstellar.utility.security.Hash;
+import com.github.dedis.popstellar.model.objects.Meeting;
+import com.github.dedis.popstellar.utility.MessageValidator;
+
+import java.util.Optional;
+
+import javax.annotation.Nullable;
 
 /** Data sent to create a new meeting */
 @Immutable
@@ -12,7 +18,7 @@ public class CreateMeeting extends Data {
   private final String id;
   private final String name;
   private final long creation;
-  private final String location;
+  @Nullable private final String location;
   private final long start;
   private final long end;
 
@@ -29,23 +35,36 @@ public class CreateMeeting extends Data {
    * @throws IllegalArgumentException if the id is invalid
    */
   public CreateMeeting(
-      String laoId, String id, String name, long creation, String location, long start, long end) {
-    if (!id.equals(
-        Hash.hash(EventType.MEETING.getSuffix(), laoId, Long.toString(creation), name))) {
-      throw new IllegalArgumentException(
-          "CreateMeeting id must be Hash(\"M\"||laoId||creation||name)");
-    }
+      @NonNull String laoId,
+      @NonNull String id,
+      @NonNull String name,
+      long creation,
+      @Nullable String location,
+      long start,
+      long end) {
+    MessageValidator.MessageValidatorBuilder builder =
+        MessageValidator.verify()
+            .isBase64(laoId, "lao id")
+            .validCreateMeetingId(id, laoId, creation, name)
+            .validPastTimes(creation)
+            .orderedTimes(creation, start);
+
     this.id = id;
     this.name = name;
     this.creation = creation;
     this.location = location;
     this.start = start;
-    this.end = end;
+    if (end != 0) {
+      builder.orderedTimes(start, end);
+      this.end = end;
+    } else {
+      this.end = start + 60 * 60;
+    }
   }
 
   public CreateMeeting(
-      String laoId, String name, long creation, String location, long start, long end) {
-    this.id = Hash.hash(EventType.MEETING.getSuffix(), laoId, Long.toString(creation), name);
+      String laoId, String name, long creation, @Nullable String location, long start, long end) {
+    id = Meeting.generateCreateMeetingId(laoId, creation, name);
     this.name = name;
     this.creation = creation;
     this.location = location;
@@ -65,8 +84,8 @@ public class CreateMeeting extends Data {
     return creation;
   }
 
-  public String getLocation() {
-    return location;
+  public Optional<String> getLocation() {
+    return Optional.ofNullable(location);
   }
 
   public long getStart() {

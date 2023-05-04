@@ -15,23 +15,29 @@ const styles = StyleSheet.create({
   },
   overlay: {
     /*
-      we are only allowed to cover < 30% (lets say 25% to be safe) for
+      We are only allowed to cover < 30% of the data (lets say 25% to be safe) for
       error correction level H (https://www.qrcode.com/en/about/error_correction.html)
-      assuming the qr code is a square, this means we can cover a width of 50%
-      and a height of 50%. centering this gives us 25% margin on every side
+      Following https://www.maketecheasier.com/assets/uploads/2019/07/qr-code-anatomy-overview.png.webp
+      and https://www.qrcode.com/en/about/version.html for version 7 only 1583 squares of 2025 are used to store data.
+      This leads to 25 * 1583 = 2025 * x where x is the max covered size in terms of QrCode surface percentage.
+      x = 19,543 % = 0.19543. Since we need the result for a line given the squared proportion we can cover
+      sqrt(0.19543) = 0.442 => (100-44.2) / 2 = 27.9
+
+      The above computation takes into account the area covered by
+      position, alignment and timing patterns; and version and format information; which are not data
     */
     position: 'absolute',
     padding: '4',
-    top: '25%',
-    left: '25%',
-    right: '25%',
-    bottom: '25%',
+    top: '27.9%',
+    left: '27.9%',
+    right: '27.9%',
+    bottom: '27.9%',
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: Color.accent,
     overflow: 'hidden',
-    borderRadius: 1000,
+    borderRadius: 100,
   },
 });
 
@@ -48,6 +54,13 @@ const QRCode = ({ value, visible, overlayText }: IPropTypes) => {
 
   // highest error correction if there is an overlay
   const errorCorrectionLevel = overlayText ? 'H' : 'L';
+
+  // Warns that the overlay is too big if the text is too small
+  if (overlayText && value && value.length < 59) {
+    console.warn(
+      'An overlay text has been added on a QRCode whose represents a too short text (length < 50)',
+    );
+  }
 
   return (
     <View style={styles.container}>

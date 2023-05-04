@@ -7,6 +7,7 @@ import {
   mockChannel,
   mockKeyPair,
   mockLaoId,
+  mockChannel2,
 } from '__tests__/utils';
 import {
   addMessages,
@@ -94,6 +95,58 @@ describe('makeWitnessStoreWatcher', () => {
     expect(mockAfterProcessingHandler).toHaveBeenCalledWith(
       expect.objectContaining({
         message_id: msg.message_id,
+      }),
+    );
+  });
+  it('calls afterProcessingHandler only on the message of this lao', () => {
+    const watcher = makeWitnessStoreWatcher(mockStore, () => mockLaoId, mockAfterProcessingHandler);
+    const msg1 = ExtendedMessage.fromMessage(
+      ExtendedMessage.fromData(
+        {
+          object: ObjectType.CHIRP,
+          action: ActionType.ADD,
+          text: 'hi',
+          timestamp: t,
+        } as AddChirp,
+        mockKeyPair,
+        mockChannel,
+      ),
+      mockAddress,
+      mockChannel,
+      t,
+    );
+
+    const msg2 = ExtendedMessage.fromMessage(
+      ExtendedMessage.fromData(
+        {
+          object: ObjectType.CHIRP,
+          action: ActionType.ADD,
+          text: 'hello',
+          timestamp: t,
+        } as AddChirp,
+        mockKeyPair,
+        mockChannel2,
+      ),
+      mockAddress,
+      mockChannel2,
+      t,
+    );
+    mockStore.subscribe(watcher);
+    mockStore.dispatch(addMessages([msg1.toState()]));
+    mockStore.dispatch(addMessages([msg2.toState()]));
+    mockStore.dispatch(processMessages([msg1.message_id]));
+    mockStore.dispatch(processMessages([msg2.message_id]));
+
+    expect(msg1.message_id).not.toBe(msg2.message_id);
+    expect(mockAfterProcessingHandler).toHaveBeenCalledTimes(1);
+    expect(mockAfterProcessingHandler).toHaveBeenCalledWith(
+      expect.objectContaining({
+        message_id: msg1.message_id,
+      }),
+    );
+    expect(mockAfterProcessingHandler).not.toHaveBeenCalledWith(
+      expect.objectContaining({
+        message_id: msg2.message_id,
       }),
     );
   });

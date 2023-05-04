@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/base64"
 	"encoding/json"
+	"golang.org/x/exp/slices"
 	"popstellar/channel"
 	"popstellar/crypto"
 	"popstellar/inbox"
@@ -17,6 +18,7 @@ import (
 	"popstellar/validation"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/rs/zerolog"
 	"go.dedis.ch/kyber/v3"
@@ -40,6 +42,10 @@ const (
 	// numWorkers denote the number of worker go-routines
 	// allowed to process requests concurrently.
 	numWorkers = 10
+
+	// heartbeatDelay represents the number of seconds
+	// between heartbeat messages
+	heartbeatDelay = 30 * time.Second
 )
 
 var suite = crypto.Suite
@@ -72,20 +78,23 @@ type Hub struct {
 
 	serverSockets channel.Sockets
 
-	// hubInbox is used to remember which messages were broadcast by the
-	// server to avoid broadcast loops
+	// hubInbox is used to remember the messages that the hub received
 	hubInbox inbox.Inbox
 
 	// rootInbox and queries are used to help servers catchup to each other
 	rootInbox inbox.Inbox
 	queries   queries
+
+	// messageIdsByChannel stores all the message ids and the corresponding channel ids
+	// to help servers determine in which channel the message ids go
+	messageIdsByChannel map[string][]string
 }
 
 // newQueries creates a new queries struct
 func newQueries() queries {
 	return queries{
-		state:   make(map[int]*bool),
-		queries: make(map[int]method.Catchup),
+		state:                  make(map[int]*bool),
+		getMessagesByIdQueries: make(map[int]method.GetMessagesById),
 	}
 }
 
@@ -95,41 +104,10 @@ type queries struct {
 	// state stores the ID of the server's queries and their state. False for a
 	// query not yet answered, else true.
 	state map[int]*bool
-	// queries stores the server's queries by their ID.
-	queries map[int]method.Catchup
-
+	// getMessagesByIdQueries stores the server's getMessagesByIds queries by their ID.
+	getMessagesByIdQueries map[int]method.GetMessagesById
 	// nextID store the ID of the next query
 	nextID int
-}
-
-func (q *queries) getNextCatchupMessage(channel string) method.Catchup {
-	q.Lock()
-	defer q.Unlock()
-
-	catchupID := q.nextID
-
-	baseValue := false
-	q.state[catchupID] = &baseValue
-
-	rpcMessage := method.Catchup{
-		Base: query.Base{
-			JSONRPCBase: jsonrpc.JSONRPCBase{
-				JSONRPC: "2.0",
-			},
-			Method: "catchup",
-		},
-		ID: catchupID,
-		Params: struct {
-			Channel string "json:\"channel\""
-		}{
-			channel,
-		},
-	}
-
-	q.queries[catchupID] = rpcMessage
-	q.nextID++
-
-	return rpcMessage
 }
 
 // NewHub returns a new Hub.
@@ -146,22 +124,23 @@ func NewHub(pubKeyOwner kyber.Point, serverAddress string, log zerolog.Logger,
 	pubServ, secServ := generateKeys()
 
 	hub := Hub{
-		serverAdress:    serverAddress,
-		messageChan:     make(chan socket.IncomingMessage),
-		channelByID:     make(map[string]channel.Channel),
-		closedSockets:   make(chan string),
-		pubKeyOwner:     pubKeyOwner,
-		pubKeyServ:      pubServ,
-		secKeyServ:      secServ,
-		schemaValidator: schemaValidator,
-		stop:            make(chan struct{}),
-		workers:         semaphore.NewWeighted(numWorkers),
-		log:             log,
-		laoFac:          laoFac,
-		serverSockets:   channel.NewSockets(),
-		hubInbox:        *inbox.NewInbox(rootChannel),
-		rootInbox:       *inbox.NewInbox(rootChannel),
-		queries:         newQueries(),
+		serverAdress:        serverAddress,
+		messageChan:         make(chan socket.IncomingMessage),
+		channelByID:         make(map[string]channel.Channel),
+		closedSockets:       make(chan string),
+		pubKeyOwner:         pubKeyOwner,
+		pubKeyServ:          pubServ,
+		secKeyServ:          secServ,
+		schemaValidator:     schemaValidator,
+		stop:                make(chan struct{}),
+		workers:             semaphore.NewWeighted(numWorkers),
+		log:                 log,
+		laoFac:              laoFac,
+		serverSockets:       channel.NewSockets(),
+		hubInbox:            *inbox.NewInbox(rootChannel),
+		rootInbox:           *inbox.NewInbox(rootChannel),
+		queries:             newQueries(),
+		messageIdsByChannel: make(map[string][]string),
 	}
 
 	return &hub, nil
@@ -170,6 +149,22 @@ func NewHub(pubKeyOwner kyber.Point, serverAddress string, log zerolog.Logger,
 // Start implements hub.Hub
 func (h *Hub) Start() {
 	go func() {
+		ticker := time.NewTicker(heartbeatDelay)
+		defer ticker.Stop()
+
+		for {
+			select {
+			case <-ticker.C:
+				h.sendHeartbeatToServers()
+			case <-h.stop:
+				h.log.Info().Msg("stopping the hub")
+				return
+			}
+		}
+	}()
+
+	go func() {
+		h.log.Info().Msg("Start check messages")
 		for {
 			select {
 			case incomingMessage := <-h.messageChan:
@@ -212,13 +207,9 @@ func (h *Hub) Receiver() chan<- socket.IncomingMessage {
 	return h.messageChan
 }
 
-// NotifyNewServer adds a socket to the sockets known by the hub and query a
-// catchup from the new server
-func (h *Hub) NotifyNewServer(socket socket.Socket) error {
+// NotifyNewServer adds a socket to the sockets known by the hub
+func (h *Hub) NotifyNewServer(socket socket.Socket) {
 	h.serverSockets.Upsert(socket)
-
-	err := h.catchupToServer(socket, rootChannel)
-	return err
 }
 
 // GetServerNumber returns the number of servers known by this one
@@ -245,21 +236,6 @@ func (h *Hub) SendAndHandleMessage(msg method.Broadcast) error {
 			h.log.Err(err).Msgf("Failed to handle self-produced message")
 		}
 	}()
-
-	return nil
-}
-
-// catchupToServer sends a catchup query to another server
-func (h *Hub) catchupToServer(socket socket.Socket, channel string) error {
-
-	rpcMessage := h.queries.getNextCatchupMessage(channel)
-
-	buf, err := json.Marshal(&rpcMessage)
-	if err != nil {
-		return xerrors.Errorf("server failed to marshal catchup query: %v", err)
-	}
-
-	socket.Send(buf)
 
 	return nil
 }
@@ -327,6 +303,7 @@ func (h *Hub) handleMessageFromClient(incomingMessage *socket.IncomingMessage) e
 	switch queryBase.Method {
 	case query.MethodPublish:
 		id, handlerErr = h.handlePublish(socket, byteMessage)
+		h.sendHeartbeatToServers()
 	case query.MethodSubscribe:
 		id, handlerErr = h.handleSubscribe(socket, byteMessage)
 	case query.MethodUnsubscribe:
@@ -345,11 +322,11 @@ func (h *Hub) handleMessageFromClient(incomingMessage *socket.IncomingMessage) e
 	}
 
 	if queryBase.Method == query.MethodCatchUp {
-		socket.SendResult(id, msgs)
+		socket.SendResult(id, msgs, nil)
 		return nil
 	}
 
-	socket.SendResult(id, nil)
+	socket.SendResult(id, nil, nil)
 
 	return nil
 }
@@ -402,20 +379,22 @@ func (h *Hub) handleMessageFromServer(incomingMessage *socket.IncomingMessage) e
 	}
 
 	var id int
-	var msgs []message.Message
+	var msgsByChannel map[string][]message.Message
 	var handlerErr error
 
 	switch queryBase.Method {
 	case query.MethodPublish:
 		id, handlerErr = h.handlePublish(socket, byteMessage)
+		h.sendHeartbeatToServers()
 	case query.MethodSubscribe:
 		id, handlerErr = h.handleSubscribe(socket, byteMessage)
 	case query.MethodUnsubscribe:
 		id, handlerErr = h.handleUnsubscribe(socket, byteMessage)
-	case query.MethodCatchUp:
-		msgs, id, handlerErr = h.handleCatchup(socket, byteMessage)
-	case query.MethodBroadcast:
-		handlerErr = h.handleBroadcast(socket, byteMessage)
+	case query.MethodHeartbeat:
+		handlerErr = h.handleHeartbeat(socket, byteMessage)
+	case query.MethodGetMessagesById:
+		msgsByChannel, id, handlerErr = h.handleGetMessagesById(socket, byteMessage)
+
 	default:
 		err = answer.NewErrorf(-2, "unexpected method: '%s'", queryBase.Method)
 		socket.SendError(nil, err)
@@ -428,12 +407,12 @@ func (h *Hub) handleMessageFromServer(incomingMessage *socket.IncomingMessage) e
 		return err
 	}
 
-	if queryBase.Method == query.MethodCatchUp {
-		socket.SendResult(id, msgs)
+	if queryBase.Method == query.MethodGetMessagesById {
+		socket.SendResult(id, nil, msgsByChannel)
 		return nil
 	}
 
-	socket.SendResult(id, nil)
+	socket.SendResult(id, nil, nil)
 
 	return nil
 }
@@ -456,41 +435,61 @@ func (h *Hub) handleIncomingMessage(incomingMessage *socket.IncomingMessage) err
 
 }
 
-// broadcastToServers broadcast a message to all other known servers
-func (h *Hub) broadcastToServers(msg message.Message, channel string) (bool, error) {
+// sendGetMessagesByIdToServer sends a getMessagesById message to a server
+func (h *Hub) sendGetMessagesByIdToServer(socket socket.Socket, missingIds map[string][]string) error {
 	h.Lock()
 	defer h.Unlock()
 
-	_, ok := h.hubInbox.GetMessage(msg.MessageID)
-	if ok {
-		return true, nil
-	}
+	queryId := h.queries.nextID
+	baseValue := false
+	h.queries.state[queryId] = &baseValue
 
-	broadcastMessage := method.Broadcast{
+	getMessagesById := method.GetMessagesById{
 		Base: query.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
 			},
-			Method: "broadcast",
+			Method: "get_messages_by_id",
 		},
-		Params: struct {
-			Channel string          `json:"channel"`
-			Message message.Message `json:"message"`
-		}{
-			channel,
-			msg,
-		},
+		ID:     queryId,
+		Params: missingIds,
 	}
 
-	buf, err := json.Marshal(broadcastMessage)
+	buf, err := json.Marshal(getMessagesById)
 	if err != nil {
-		return false, xerrors.Errorf("failed to marshal broadcast query: %v", err)
+		return xerrors.Errorf("failed to marshal getMessagesById query: %v", err)
 	}
 
-	h.serverSockets.SendToAll(buf)
-	h.hubInbox.StoreMessage(msg)
+	h.queries.getMessagesByIdQueries[queryId] = getMessagesById
+	h.queries.nextID++
 
-	return false, nil
+	socket.Send(buf)
+
+	return nil
+}
+
+// sendHeartbeatToServers sends a heartbeat message to all servers
+func (h *Hub) sendHeartbeatToServers() {
+	h.Lock()
+	defer h.Unlock()
+	if len(h.messageIdsByChannel) > 0 {
+		heartbeatMessage := method.Heartbeat{
+			Base: query.Base{
+				JSONRPCBase: jsonrpc.JSONRPCBase{
+					JSONRPC: "2.0",
+				},
+				Method: "heartbeat",
+			},
+			Params: h.messageIdsByChannel,
+		}
+
+		buf, err := json.Marshal(heartbeatMessage)
+		if err != nil {
+			h.log.Err(err).Msg("Failed to marshal and send heartbeat query")
+		}
+
+		h.serverSockets.SendToAll(buf)
+	}
 }
 
 // createLao creates a new LAO using the data in the publish parameter.
@@ -567,11 +566,6 @@ func (h *Hub) NotifyNewChannel(channelID string, channel channel.Channel, sock s
 	h.Lock()
 	h.channelByID[channelID] = channel
 	h.Unlock()
-
-	if sock.Type() == socket.ServerSocketType {
-		h.log.Info().Msgf("catching up on channel %v", channelID)
-		h.catchupToServer(sock, channelID)
-	}
 }
 
 func generateKeys() (kyber.Point, kyber.Scalar) {
@@ -579,4 +573,17 @@ func generateKeys() (kyber.Point, kyber.Scalar) {
 	point := suite.Point().Mul(secret, nil)
 
 	return point, secret
+}
+
+// addMessageId adds a message ID to the map of messageIds by channel of the hub
+func (h *Hub) addMessageId(channelId string, messageId string) {
+	messageIds, channelStored := h.messageIdsByChannel[channelId]
+	if !channelStored {
+		h.messageIdsByChannel[channelId] = append(h.messageIdsByChannel[channelId], messageId)
+	} else {
+		alreadyStored := slices.Contains(messageIds, messageId)
+		if !alreadyStored {
+			h.messageIdsByChannel[channelId] = append(h.messageIdsByChannel[channelId], messageId)
+		}
+	}
 }

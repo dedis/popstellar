@@ -1,0 +1,107 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`QrCode  looks good with long text and an overlay 1`] = `
+<View
+  style={
+    {
+      "flexDirection": "row",
+      "justifyContent": "center",
+    }
+  }
+>
+  <View
+    style={
+      {
+        "position": "relative",
+      }
+    }
+  >
+    <qrcode
+      level="H"
+      size={256}
+      style={
+        {
+          "height": "auto",
+          "maxWidth": "300px",
+          "width": "100%",
+        }
+      }
+      value="8eFmp65HHy7HjJjfTVqfx9t6x5xNqG6MaqRJ2xQaSPvs5vSj5j5RQjU5aSx"
+      viewBox="0 0 256 256"
+    />
+    <View
+      style={
+        {
+          "alignItems": "center",
+          "backgroundColor": "#3742fa",
+          "borderRadius": 100,
+          "bottom": "27.9%",
+          "display": "flex",
+          "justifyContent": "center",
+          "left": "27.9%",
+          "overflow": "hidden",
+          "padding": "4",
+          "position": "absolute",
+          "right": "27.9%",
+          "top": "27.9%",
+        }
+      }
+    >
+      <Text
+        style={
+          [
+            {
+              "color": "#000",
+              "fontSize": 20,
+              "lineHeight": 26,
+              "textAlign": "left",
+            },
+            {
+              "textAlign": "center",
+            },
+            {
+              "color": "#fff",
+            },
+          ]
+        }
+      >
+        OverlayText
+      </Text>
+    </View>
+  </View>
+</View>
+`;
+
+
+exports[`QrCode  looks good with short text and no overlay 1`] = `
+<View
+  style={
+    {
+      "flexDirection": "row",
+      "justifyContent": "center",
+    }
+  }
+>
+  <View
+    style={
+      {
+        "position": "relative",
+      }
+    }
+  >
+    <qrcode
+      level="L"
+      size={256}
+      style={
+        {
+          "height": "auto",
+          "maxWidth": "300px",
+          "width": "100%",
+        }
+      }
+      value="8eFmp65HHy7HjJjfTVqfx9t6x5xNqG6MaqRJ2xQaSPvs5vSj5j5RQjU5aS"
+      viewBox="0 0 256 256"
+    />
+  </View>
+</View>
+`;

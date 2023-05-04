@@ -14,6 +14,9 @@ public class Constants {
   /** The extra key given to transmit a roll call id */
   public static final String ROLL_CALL_ID = "roll_call_id";
 
+  /** The extra key given to transmit a roll call id */
+  public static final String MEETING_ID = "meeting_id";
+
   /** The extra key given to the LaoDetailActivity when opened */
   public static final String FRAGMENT_TO_OPEN_EXTRA = "fragment_to_open";
 
@@ -56,4 +59,10 @@ public class Constants {
 
   /** Number of milliseconds in a day */
   public static final long MS_IN_A_DAY = 1000 * 60 * 60 * 24L;
+
+  /** Orientation up along the x axis */
+  public static final float ORIENTATION_UP = 0f;
+
+  /** Orientation down along the x axis */
+  public static final float ORIENTATION_DOWN = 180f;
 }

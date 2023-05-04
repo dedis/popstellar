@@ -1,7 +1,6 @@
 package com.github.dedis.popstellar.ui.lao.event.eventlist;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.*;
 
 import androidx.annotation.NonNull;
@@ -20,6 +19,7 @@ import com.github.dedis.popstellar.ui.lao.LaoActivity;
 import com.github.dedis.popstellar.ui.lao.LaoViewModel;
 import com.github.dedis.popstellar.ui.lao.event.*;
 import com.github.dedis.popstellar.ui.lao.event.election.fragments.ElectionSetupFragment;
+import com.github.dedis.popstellar.ui.lao.event.meeting.MeetingCreationFragment;
 import com.github.dedis.popstellar.ui.lao.event.rollcall.RollCallCreationFragment;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -30,6 +30,7 @@ import java.util.Set;
 import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
+import timber.log.Timber;
 
 /** Fragment used to display the list of events */
 @AndroidEntryPoint
@@ -74,6 +75,8 @@ public class EventListFragment extends Fragment {
     binding.addElectionText.setOnClickListener(openCreateEvent(EventType.ELECTION));
     binding.addRollCall.setOnClickListener(openCreateEvent(EventType.ROLL_CALL));
     binding.addRollCallText.setOnClickListener(openCreateEvent(EventType.ROLL_CALL));
+    binding.addMeeting.setOnClickListener(openCreateEvent(EventType.MEETING));
+    binding.addMeetingText.setOnClickListener(openCreateEvent(EventType.MEETING));
 
     // Observing events so that we know when to display the upcoming events card and displaying the
     // Empty events text
@@ -116,16 +119,24 @@ public class EventListFragment extends Fragment {
         isRotated = LaoDetailAnimation.rotateFab(view, !isRotated);
         if (isRotated) {
           LaoDetailAnimation.showIn(binding.addRollCall);
+          LaoDetailAnimation.showIn(binding.addMeeting);
           LaoDetailAnimation.showIn(binding.addElection);
-          LaoDetailAnimation.showIn(binding.addElectionText);
+
           LaoDetailAnimation.showIn(binding.addRollCallText);
+          LaoDetailAnimation.showIn(binding.addMeetingText);
+          LaoDetailAnimation.showIn(binding.addElectionText);
+
           LaoDetailAnimation.fadeOut(laoContainer, 1.0f, 0.2f, 300);
           laoContainer.setEnabled(false);
         } else {
           LaoDetailAnimation.showOut(binding.addRollCall);
+          LaoDetailAnimation.showOut(binding.addMeeting);
           LaoDetailAnimation.showOut(binding.addElection);
-          LaoDetailAnimation.showOut(binding.addElectionText);
+
           LaoDetailAnimation.showOut(binding.addRollCallText);
+          LaoDetailAnimation.showOut(binding.addMeetingText);
+          LaoDetailAnimation.showOut(binding.addElectionText);
+
           LaoDetailAnimation.fadeIn(laoContainer, 0.2f, 1.0f, 300);
           laoContainer.setEnabled(true);
         }
@@ -139,6 +150,12 @@ public class EventListFragment extends Fragment {
                 getParentFragmentManager(),
                 R.id.fragment_create_roll_call_event,
                 RollCallCreationFragment::newInstance);
+      case MEETING:
+        return v ->
+            LaoActivity.setCurrentFragment(
+                getParentFragmentManager(),
+                R.id.fragment_create_meeting_event,
+                MeetingCreationFragment::newInstance);
       case ELECTION:
         return v ->
             LaoActivity.setCurrentFragment(
@@ -146,7 +163,7 @@ public class EventListFragment extends Fragment {
                 R.id.fragment_setup_election_event,
                 ElectionSetupFragment::newInstance);
       default:
-        return v -> Log.d(TAG, "unknown event type: " + type);
+        return v -> Timber.tag(TAG).d("unknown event type: %s", type);
     }
   }
 
@@ -168,7 +185,7 @@ public class EventListFragment extends Fragment {
 
     EventListAdapter eventListAdapter =
         new EventListAdapter(laoViewModel, eventsViewModel.getEvents(), requireActivity());
-    Log.d(TAG, "created adapter");
+    Timber.tag(TAG).d("created adapter");
     LinearLayoutManager mLayoutManager = new LinearLayoutManager(getContext());
     eventList.setLayoutManager(mLayoutManager);
 
@@ -191,6 +208,7 @@ public class EventListFragment extends Fragment {
   }
 
   public static void openFragment(FragmentManager manager) {
-    LaoActivity.setCurrentFragment(manager, R.id.fragment_event_list, EventListFragment::new);
+    LaoActivity.setCurrentFragment(
+        manager, R.id.fragment_event_list, EventListFragment::newInstance);
   }
 }

@@ -1,7 +1,7 @@
 @env=go,scala
 Feature: Close a Roll Call
   Background:
-        # This is feature will be called to test Roll Call close
+        # This feature will be called to test Roll Call close
         # For every test a file containing the json representation of the message is read
         # and is sent to the backend this is done via :
         # eval frontend.send(<message>) where a mock frontend sends a message to backend
@@ -32,8 +32,8 @@ Feature: Close a Roll Call
           "attendees": ['#(getAttendee)']
         }
       """
-    When frontend.publish(JSON.stringify(validCloseRollCall), laoChannel)
-    And json answer = frontend.getBackendResponse(JSON.stringify(validCloseRollCall))
+    When frontend.publish(validCloseRollCall, laoChannel)
+    And json answer = frontend.getBackendResponse(validCloseRollCall)
     Then match answer contains VALID_MESSAGE
     And match frontend.receiveNoMoreResponses() == true
 
@@ -51,8 +51,8 @@ Feature: Close a Roll Call
         }
       """
     * frontend.changeSenderToBeNonAttendee()
-    When frontend.publish(JSON.stringify(validCloseRollCall), laoChannel)
-    And json answer = frontend.getBackendResponse(JSON.stringify(validCloseRollCall))
+    When frontend.publish((validCloseRollCall, laoChannel)
+    And json answer = frontend.getBackendResponse(validCloseRollCall)
     Then match answer contains INVALID_MESSAGE_FIELD
     And match frontend.receiveNoMoreResponses() == true
 
@@ -71,10 +71,11 @@ Feature: Close a Roll Call
           "attendees": ['#(getAttendee)']
         }
       """
-    When frontend.publish(JSON.stringify(validCloseRollCall), laoChannel)
-    And json answer = frontend.getBackendResponse(JSON.stringify(validCloseRollCall))
+    When frontend.publish(validCloseRollCall, laoChannel)
+    And json answer = frontend.getBackendResponse(validCloseRollCall)
     Then match answer contains INVALID_MESSAGE_FIELD
     And match frontend.receiveNoMoreResponses() == true
+
   # After the usual setup, create a roll cal but never open it. Then trying to send a valid
   # roll call close message should result in an error sent by the backend
   Scenario: Close a valid roll call that was never opened should return an error
@@ -90,8 +91,8 @@ Feature: Close a Roll Call
           "attendees": ['#(getAttendee)']
         }
       """
-    When frontend.publish(JSON.stringify(validCloseRollCall), laoChannel)
-    And json answer = frontend.getBackendResponse(JSON.stringify(validCloseRollCall))
+    When frontend.publish(validCloseRollCall, laoChannel)
+    And json answer = frontend.getBackendResponse(validCloseRollCall)
     Then match answer contains INVALID_MESSAGE_FIELD
     And match frontend.receiveNoMoreResponses() == true
 

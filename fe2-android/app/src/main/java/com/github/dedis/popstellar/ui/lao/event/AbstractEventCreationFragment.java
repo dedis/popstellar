@@ -1,14 +1,11 @@
 package com.github.dedis.popstellar.ui.lao.event;
 
 import android.os.Bundle;
-import android.text.InputType;
-import android.text.TextWatcher;
+import android.text.*;
 import android.view.View;
-import android.widget.EditText;
-import android.widget.Toast;
+import android.widget.*;
 
-import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
+import androidx.annotation.*;
 import androidx.appcompat.app.AppCompatDialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentResultListener;
@@ -52,13 +49,24 @@ public abstract class AbstractEventCreationFragment extends Fragment {
   private EditText startTimeEditText;
   private EditText endTimeEditText;
 
+  protected Button confirmButton;
+
+  @Override
+  public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    super.onViewCreated(view, savedInstanceState);
+    if (confirmButton != null && !confirmButton.hasOnClickListeners()) {
+      confirmButton.setOnClickListener(v -> createEvent());
+    }
+  }
+
+  protected abstract void createEvent();
+
   public void setDateAndTimeView(View view) {
     long currentMillis = System.currentTimeMillis();
     long suggestedEndMillis = currentMillis + ONE_HOUR; // Adding one hour
     startDate = new GregorianCalendar();
     startTime = new GregorianCalendar();
-    Date dCurrent =
-        new java.util.Date(currentMillis); // Get's the date based on the unix time stamp
+    Date dCurrent = new java.util.Date(currentMillis); // Gets the date based on the unix time stamp
     startDate.setTime(dCurrent);
     startTime.setTime(dCurrent);
     Date dSuggestedEnd = new Date(suggestedEndMillis);
@@ -253,7 +261,9 @@ public abstract class AbstractEventCreationFragment extends Fragment {
 
   private Calendar getSelection(Bundle bundle) {
     Calendar value = (Calendar) bundle.getSerializable(PickerConstant.RESPONSE_KEY);
-    if (value == null) throw new IllegalStateException("Bundle does not contain selection");
+    if (value == null) {
+      throw new IllegalStateException("Bundle does not contain selection");
+    }
     return value;
   }
 
@@ -337,5 +347,35 @@ public abstract class AbstractEventCreationFragment extends Fragment {
     }
     endTimeInSeconds = 0;
     return true;
+  }
+
+  /**
+   * Function which enables the confirm button based on the required fields to be filled.
+   *
+   * @param requiredTexts variable length parameters representing the EditText required to confirm
+   * @return the TextWatcher object which enables dynamically the confirm button
+   */
+  protected TextWatcher getConfirmTextWatcher(EditText... requiredTexts) {
+    return new TextWatcher() {
+      @Override
+      public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        // Nothing needed here
+      }
+
+      @Override
+      public void onTextChanged(CharSequence s, int start, int before, int count) {
+        // Check that all text fields are not empty
+        boolean areAllFieldsFilled =
+            Arrays.stream(requiredTexts).noneMatch(text -> text.getText().toString().isEmpty());
+
+        confirmButton.setEnabled(
+            areAllFieldsFilled && !getStartDate().isEmpty() && !getStartTime().isEmpty());
+      }
+
+      @Override
+      public void afterTextChanged(Editable s) {
+        // Nothing needed here
+      }
+    };
   }
 }

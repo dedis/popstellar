@@ -34,9 +34,9 @@
 
     <ImageView
       android:id="@+id/history_transaction_expand_icon"
-      android:layout_width="@dimen/event_layout_arrow_image_side"
-      android:layout_height="@dimen/event_layout_arrow_image_side"
-      android:layout_marginEnd="@dimen/event_layout_arrow_end_margin"
+      android:layout_width="@dimen/expand_arrow_image_side"
+      android:layout_height="@dimen/expand_arrow_image_side"
+      android:layout_marginEnd="@dimen/expand_arrow_end_margin"
       android:src="@drawable/ic_arrow_expand"
       android:clickable="true"
       app:layout_constraintBottom_toBottomOf="@+id/history_transaction_type_value"

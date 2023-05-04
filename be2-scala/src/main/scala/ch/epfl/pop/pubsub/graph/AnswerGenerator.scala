@@ -3,8 +3,8 @@ package ch.epfl.pop.pubsub.graph
 import akka.NotUsed
 import akka.pattern.AskableActorRef
 import akka.stream.scaladsl.Flow
-import ch.epfl.pop.model.network.method.{Broadcast, Catchup}
-import ch.epfl.pop.model.network.{ResultObject, _}
+import ch.epfl.pop.model.network.method.{Broadcast, Catchup, GetMessagesById}
+import ch.epfl.pop.model.network._
 import ch.epfl.pop.model.objects.DbActorNAckException
 import ch.epfl.pop.pubsub.AskPatternConstants
 import ch.epfl.pop.pubsub.graph.validators.RpcValidator
@@ -48,6 +48,9 @@ class AnswerGenerator(dbActor: => AskableActorRef) extends AskPatternConstants {
             rpcRequest.id
           ))
 
+        // Let get_messages_by_id request go through
+        case GetMessagesById(_) => graphMessage
+
         // Standard answer res == 0
         case _ => Right(JsonRpcResponse(
             RpcValidator.JSON_RPC_VERSION,
@@ -56,6 +59,9 @@ class AnswerGenerator(dbActor: => AskableActorRef) extends AskPatternConstants {
             rpcRequest.id
           ))
       }
+
+    // Let get_messages_by_id answer go through
+    case Right(_: JsonRpcResponse) => graphMessage
 
     // Convert PipelineErrors into negative JsonRpcResponses
     case Left(pipelineError: PipelineError) => Right(JsonRpcResponse(

@@ -26,6 +26,8 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoTestRule;
 
+import java.time.Instant;
+
 import dagger.hilt.android.testing.*;
 import io.reactivex.subjects.BehaviorSubject;
 
@@ -49,7 +51,9 @@ public class WitnessAddTest {
   private static final String LAO_NAME = "lao";
   private static final KeyPair SENDER_KEY = generateKeyPair();
   private static final PublicKey SENDER = SENDER_KEY.getPublicKey();
-  private static final Lao LAO = new Lao(LAO_NAME, SENDER, 10223421);
+
+  private static final long CREATION = Instant.now().getEpochSecond();
+  private static final Lao LAO = new Lao(LAO_NAME, SENDER, CREATION);
   private static final String LAO_ID = LAO.getId();
   private static final String POP_TOKEN =
       Base64DataUtils.generatePoPToken().getPublicKey().getEncoded();

@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"golang.org/x/exp/slices"
 	"io"
 	"os"
 	"path/filepath"
@@ -34,10 +35,8 @@ func Test_Add_Server_Socket(t *testing.T) {
 
 	sock := &fakeSocket{id: "fakeID"}
 
-	err = hub.NotifyNewServer(sock)
-	require.NoError(t, err)
-	require.NotNil(t, hub.queries.queries[0])
-	require.Equal(t, 1, hub.queries.nextID)
+	hub.NotifyNewServer(sock)
+	require.Equal(t, 1, hub.serverSockets.Len())
 }
 
 func Test_Create_LAO_Bad_Key(t *testing.T) {
@@ -736,45 +735,6 @@ func Test_Wrong_Root_Publish(t *testing.T) {
 	require.Error(t, sock.err, "only lao#create is allowed on root, but found %s#%s", data.Object, data.Action)
 }
 
-func Test_Handle_Server_Catchup(t *testing.T) {
-	keypair := generateKeyPair(t)
-
-	hub, err := NewHub(keypair.public, "", nolog, nil)
-	require.NoError(t, err)
-
-	serverCatchup := method.Catchup{
-		Base: query.Base{
-			JSONRPCBase: jsonrpc.JSONRPCBase{
-				JSONRPC: "2.0",
-			},
-
-			Method: query.MethodCatchUp,
-		},
-
-		ID: 1,
-
-		Params: struct {
-			Channel string `json:"channel"`
-		}{
-			Channel: "/root",
-		},
-	}
-
-	publishBuf, err := json.Marshal(serverCatchup)
-	require.NoError(t, err)
-
-	sock := &fakeSocket{}
-
-	hub.handleMessageFromServer(&socket.IncomingMessage{
-		Socket:  sock,
-		Message: publishBuf,
-	})
-
-	// check the socket
-	require.NoError(t, sock.err)
-	require.Equal(t, serverCatchup.ID, sock.resultID)
-}
-
 func Test_Handle_Answer(t *testing.T) {
 	keypair := generateKeyPair(t)
 	publicKey64 := base64.URLEncoding.EncodeToString(keypair.publicBuf)
@@ -841,12 +801,10 @@ func Test_Handle_Answer(t *testing.T) {
 
 	queryState := false
 	hub.queries.state[1] = &queryState
-	hub.queries.queries[1] = method.Catchup{
-		Params: struct {
-			Channel string "json:\"channel\""
-		}{
-			Channel: "/root",
-		},
+	hub.queries.getMessagesByIdQueries[1] = method.GetMessagesById{
+		Base:   query.Base{},
+		ID:     1,
+		Params: nil,
 	}
 
 	sock := &fakeSocket{}
@@ -1097,84 +1055,8 @@ func Test_Receive_Publish_Twice(t *testing.T) {
 	require.Error(t, sock.err, "message %s was already received", publish.Params.Message.MessageID)
 }
 
-// Check that if the server receives a broadcast message, it will call the
-// broadcast function on the appropriate channel.
-func Test_Handle_Broadcast(t *testing.T) {
-	keypair := generateKeyPair(t)
-
-	c := &fakeChannel{}
-
-	hub, err := NewHub(keypair.public, "", nolog, nil)
-	require.NoError(t, err)
-
-	laoID := "XXX"
-
-	hub.channelByID[rootPrefix+laoID] = c
-
-	signature, err := schnorr.Sign(suite, keypair.private, []byte("XXX"))
-	require.NoError(t, err)
-
-	dataBase64 := base64.URLEncoding.EncodeToString([]byte("XXX"))
-	signatureBase64 := base64.URLEncoding.EncodeToString(signature)
-
-	msg := message.Message{
-		Data:              dataBase64,
-		Sender:            base64.URLEncoding.EncodeToString(keypair.publicBuf),
-		Signature:         signatureBase64,
-		MessageID:         messagedata.Hash(dataBase64, signatureBase64),
-		WitnessSignatures: []message.WitnessSignature{},
-	}
-
-	broadcast := method.Broadcast{
-		Base: query.Base{
-			JSONRPCBase: jsonrpc.JSONRPCBase{
-				JSONRPC: "2.0",
-			},
-
-			Method: query.MethodBroadcast,
-		},
-
-		Params: struct {
-			Channel string          `json:"channel"`
-			Message message.Message `json:"message"`
-		}{
-			Channel: rootPrefix + laoID,
-			Message: msg,
-		},
-	}
-
-	broadcastBuf, err := json.Marshal(&broadcast)
-	require.NoError(t, err)
-
-	sock := &fakeSocket{}
-
-	hub.handleMessageFromClient(&socket.IncomingMessage{
-		Socket:  sock,
-		Message: broadcastBuf,
-	})
-
-	// Check the socket
-	require.Error(t, sock.err, "unexpected method: 'broadcast'")
-
-	// Emtpy the socket
-	sock.err = nil
-
-	// Check that there is no errors with messages from witness too
-	hub.handleMessageFromServer(&socket.IncomingMessage{
-		Socket:  sock,
-		Message: broadcastBuf,
-	})
-
-	// Check the socket
-	require.NoError(t, sock.err)
-	require.Equal(t, 0, sock.resultID)
-
-	// Check that the channel has been called with the publish message
-	require.Equal(t, broadcast, c.broadcast)
-}
-
-// Test that a LAO is correctly created when receiveing a broadcast message
-func Test_Create_LAO_Broadcast(t *testing.T) {
+// Test that a LAO is correctly created when receiving a getMessagesById answer
+func Test_Create_LAO_GetMessagesById_Result(t *testing.T) {
 	keypair := generateKeyPair(t)
 
 	fakeChannelFac := &fakeChannelFac{
@@ -1218,32 +1100,44 @@ func Test_Create_LAO_Broadcast(t *testing.T) {
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
-	broadcast := method.Broadcast{
+	result := make(map[string][]message.Message)
+	result["/root"] = []message.Message{msg}
+
+	missingMessages := make(map[string][]string)
+	missingMessages["/root"] = []string{msg.MessageID}
+
+	getMessagesByIdQuery := method.GetMessagesById{
 		Base: query.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
 			},
-
-			Method: query.MethodBroadcast,
-		},
-
-		Params: struct {
-			Channel string          `json:"channel"`
-			Message message.Message `json:"message"`
-		}{
-			Channel: "/root",
-			Message: msg,
-		},
+			Method: query.MethodGetMessagesById,
+		}, ID: 1,
+		Params: missingMessages,
 	}
 
-	publishBuf, err := json.Marshal(&broadcast)
+	queryState := false
+	hub.queries.state[1] = &queryState
+	hub.queries.getMessagesByIdQueries[1] = getMessagesByIdQuery
+
+	ans := struct {
+		JSONRPC string                       `json:"jsonrpc"`
+		ID      int                          `json:"id"`
+		Result  map[string][]message.Message `json:"result"`
+	}{
+		JSONRPC: "2.0",
+		ID:      1,
+		Result:  result,
+	}
+
+	answerBuf, err := json.Marshal(ans)
 	require.NoError(t, err)
 
 	sock := &fakeSocket{}
 
 	hub.handleMessageFromServer(&socket.IncomingMessage{
 		Socket:  sock,
-		Message: publishBuf,
+		Message: answerBuf,
 	})
 
 	require.Equal(t, 0, sock.resultID)
@@ -1263,8 +1157,8 @@ func Test_Create_LAO_Broadcast(t *testing.T) {
 	require.Equal(t, fakeChannelFac.c, hub.channelByID[rootPrefix+data.ID])
 }
 
-// Tests that a broadcast without a valid message id returns an error
-func Test_Create_LAO_Broadcast_Wrong_MessageID(t *testing.T) {
+// Tests that an answer to a getMessagesById without a valid message id returns an error
+func Test_Create_LAO_GetMessagesById_Wrong_MessageID(t *testing.T) {
 	keypair := generateKeyPair(t)
 
 	fakeChannelFac := &fakeChannelFac{
@@ -1309,36 +1203,48 @@ func Test_Create_LAO_Broadcast_Wrong_MessageID(t *testing.T) {
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
-	broadcast := method.Broadcast{
+	result := make(map[string][]message.Message)
+	result["/root"] = []message.Message{msg}
+
+	missingMessages := make(map[string][]string)
+	missingMessages["/root"] = []string{msg.MessageID}
+
+	getMessagesByIdQuery := method.GetMessagesById{
 		Base: query.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
 			},
-
-			Method: query.MethodBroadcast,
-		},
-
-		Params: struct {
-			Channel string          `json:"channel"`
-			Message message.Message `json:"message"`
-		}{
-			Channel: "/root",
-			Message: msg,
-		},
+			Method: query.MethodGetMessagesById,
+		}, ID: 1,
+		Params: missingMessages,
 	}
 
-	publishBuf, err := json.Marshal(&broadcast)
+	queryState := false
+	hub.queries.state[1] = &queryState
+	hub.queries.getMessagesByIdQueries[1] = getMessagesByIdQuery
+
+	ans := struct {
+		JSONRPC string                       `json:"jsonrpc"`
+		ID      int                          `json:"id"`
+		Result  map[string][]message.Message `json:"result"`
+	}{
+		JSONRPC: "2.0",
+		ID:      1,
+		Result:  result,
+	}
+
+	answerBuf, err := json.Marshal(ans)
 	require.NoError(t, err)
 
 	sock := &fakeSocket{}
 
 	hub.handleMessageFromServer(&socket.IncomingMessage{
 		Socket:  sock,
-		Message: publishBuf,
+		Message: answerBuf,
 	})
 
 	expectedMessageID := messagedata.Hash(dataBase64, signatureBase64)
-	require.EqualError(t, sock.err, fmt.Sprintf("failed to handle method: message_id is wrong: expected %q found %q", expectedMessageID, fakeMessageID))
+	require.EqualError(t, sock.err, fmt.Sprintf("failed to handle answer message: message_id is wrong: expected %q found %q", expectedMessageID, fakeMessageID))
 }
 
 // Check that if the server receives a subscribe message, it will call the
@@ -1528,16 +1434,6 @@ func TestServer_Handle_Catchup(t *testing.T) {
 	require.Equal(t, catchup, c.catchup)
 	require.Equal(t, fakeMessages, c.msgs)
 
-	// check that there is no errors with messages from witness too
-	hub.handleMessageFromServer(&socket.IncomingMessage{
-		Socket:  sock,
-		Message: publishBuf,
-	})
-
-	// check the socket
-	require.NoError(t, sock.err)
-	require.Equal(t, catchup.ID, sock.resultID)
-
 	// check that the channel has been called with the publish message
 	require.Equal(t, catchup, c.catchup)
 	require.Equal(t, fakeMessages, c.msgs)
@@ -1627,6 +1523,163 @@ func Test_Send_And_Handle_Message(t *testing.T) {
 	c.Lock()
 	require.Equal(t, broadcast, c.broadcast)
 	c.Unlock()
+}
+
+// Test that the correct heartbeat message is sent
+func Test_Send_Heartbeat_Message(t *testing.T) {
+	keypair := generateKeyPair(t)
+
+	hub, err := NewHub(keypair.public, "", nolog, nil)
+	require.NoError(t, err)
+
+	sock := &fakeSocket{}
+
+	hub.serverSockets.Upsert(sock)
+
+	hub.hubInbox.StoreMessage(msg1)
+	hub.hubInbox.StoreMessage(msg2)
+	hub.hubInbox.StoreMessage(msg3)
+
+	hub.messageIdsByChannel["/root"] = idsRoot
+	hub.messageIdsByChannel["/root/channel1"] = idsChannel1
+
+	hub.sendHeartbeatToServers()
+
+	heartbeatMsg := sock.msg
+
+	var heartbeat method.Heartbeat
+
+	err = json.Unmarshal(heartbeatMsg, &heartbeat)
+	require.NoError(t, err)
+
+	messageIdsSent := heartbeat.Params
+
+	//Check that all the stored messages where sent
+	for storedChannel, storedIds := range hub.messageIdsByChannel {
+		sentIds, exists := messageIdsSent[storedChannel]
+		require.True(t, exists)
+		for _, storedId := range storedIds {
+			require.True(t, slices.Contains(sentIds, storedId))
+		}
+	}
+
+}
+
+// Test that the heartbeat messages are properly handled
+func Test_Handle_Heartbeat(t *testing.T) {
+	keypair := generateKeyPair(t)
+
+	hub, err := NewHub(keypair.public, "", nolog, nil)
+	require.NoError(t, err)
+
+	hub.hubInbox.StoreMessage(msg1)
+
+	hub.messageIdsByChannel["/root"] = []string{msg1.MessageID}
+
+	sock := &fakeSocket{}
+
+	//The message Ids sent in hearbeat message
+	messageIds := make(map[string][]string)
+	messageIds["/root"] = idsRoot
+	messageIds["/root/channel1"] = idsChannel1
+
+	//The missing Ids the server should request
+	missingIds := make(map[string][]string)
+	missingIds["/root"] = []string{msg2.MessageID}
+	missingIds["/root/channel1"] = idsChannel1
+
+	heartbeatMessage := method.Heartbeat{
+		Base: query.Base{
+			JSONRPCBase: jsonrpc.JSONRPCBase{
+				JSONRPC: "2.0",
+			},
+			Method: query.MethodHeartbeat,
+		},
+		Params: messageIds,
+	}
+
+	msg, err := json.Marshal(heartbeatMessage)
+	require.NoError(t, err)
+
+	err = hub.handleMessageFromServer(&socket.IncomingMessage{
+		Socket:  sock,
+		Message: msg,
+	})
+	require.NoError(t, err)
+	require.NoError(t, sock.err)
+
+	//socket should receive a getMessagesById query after handling of heartbeat
+	var getMessagesById method.GetMessagesById
+
+	err = json.Unmarshal(sock.msg, &getMessagesById)
+	require.NoError(t, err)
+
+	requestedIds := getMessagesById.Params
+
+	for channelId, messageIds := range missingIds {
+		requestedIds, exists := requestedIds[channelId]
+		require.True(t, exists)
+		for _, storedId := range messageIds {
+			require.True(t, slices.Contains(requestedIds, storedId))
+		}
+	}
+}
+
+// Test that the getMessagesById messages are properly handled
+func Test_Handle_GetMessagesById(t *testing.T) {
+	keypair := generateKeyPair(t)
+
+	hub, err := NewHub(keypair.public, "", nolog, nil)
+	require.NoError(t, err)
+
+	sock := &fakeSocket{}
+
+	hub.serverSockets.Upsert(sock)
+
+	hub.hubInbox.StoreMessage(msg1)
+	hub.hubInbox.StoreMessage(msg2)
+	hub.hubInbox.StoreMessage(msg3)
+
+	hub.messageIdsByChannel["/root"] = idsRoot
+	hub.messageIdsByChannel["/root/channel1"] = idsChannel1
+
+	//The missing Ids requested by the server
+	missingIds := make(map[string][]string)
+	missingIds["/root"] = []string{msg2.MessageID}
+	missingIds["/root/channel1"] = idsChannel1
+
+	//The missing messages the server should receive
+	missingMessages := make(map[string][]message.Message)
+	missingMessages["/root"] = []message.Message{msg2}
+	missingMessages["/root/channel1"] = res2
+
+	getMessagesById := method.GetMessagesById{
+		Base: query.Base{
+			JSONRPCBase: jsonrpc.JSONRPCBase{
+				JSONRPC: "2.0",
+			},
+			Method: query.MethodGetMessagesById,
+		}, ID: 5,
+		Params: missingIds,
+	}
+
+	msg, err := json.Marshal(getMessagesById)
+	require.NoError(t, err)
+
+	err = hub.handleMessageFromServer(&socket.IncomingMessage{
+		Socket:  sock,
+		Message: msg,
+	})
+	require.NoError(t, err)
+
+	require.Equal(t, getMessagesById.ID, sock.resultID)
+
+	receivedMessages := sock.missingMsgs
+	for receivedChannelIds, receivedMessagesForChannel := range receivedMessages {
+		for _, msg := range receivedMessagesForChannel {
+			require.Contains(t, missingMessages[receivedChannelIds], msg)
+		}
+	}
 }
 
 // -----------------------------------------------------------------------------
@@ -1746,9 +1799,10 @@ type fakeSocket struct {
 	sync.Mutex
 	socket.Socket
 
-	resultID int
-	res      []message.Message
-	msg      []byte
+	resultID    int
+	res         []message.Message
+	missingMsgs map[string][]message.Message
+	msg         []byte
 
 	err error
 
@@ -1765,12 +1819,13 @@ func (f *fakeSocket) Send(msg []byte) {
 }
 
 // SendResult implements socket.Socket
-func (f *fakeSocket) SendResult(id int, res []message.Message) {
+func (f *fakeSocket) SendResult(id int, res []message.Message, missingMsgs map[string][]message.Message) {
 	f.Lock()
 	defer f.Unlock()
 
 	f.resultID = id
 	f.res = res
+	f.missingMsgs = missingMsgs
 }
 
 // SendError implements socket.Socket
@@ -1791,3 +1846,34 @@ func (f *fakeSocket) ID() string {
 func (f *fakeSocket) Type() socket.SocketType {
 	return socket.ClientSocketType
 }
+
+// -------------------------------------
+// Test variables definition
+
+var msg1 = message.Message{
+	Data:              "data1",
+	Sender:            "sender1",
+	Signature:         "signature1",
+	MessageID:         "message1",
+	WitnessSignatures: nil,
+}
+var msg2 = message.Message{
+	Data:              "data2",
+	Sender:            "sender2",
+	Signature:         "signature2",
+	MessageID:         "message2",
+	WitnessSignatures: nil,
+}
+
+var msg3 = message.Message{
+	Data:              "data3",
+	Sender:            "sender3",
+	Signature:         "signature3",
+	MessageID:         "message3",
+	WitnessSignatures: nil,
+}
+
+var res2 = []message.Message{msg3}
+
+var idsRoot = []string{msg1.MessageID, msg2.MessageID}
+var idsChannel1 = []string{msg3.MessageID}
