@@ -1,9 +1,10 @@
 import { CompositeScreenProps } from '@react-navigation/core';
 import { useNavigation } from '@react-navigation/native';
 import { StackScreenProps } from '@react-navigation/stack';
-import React, { useState } from 'react';
-import { Platform, Text, View } from 'react-native';
+import React, { useMemo, useState } from 'react';
+import { Platform, StyleSheet, Text, View, ViewStyle } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
+import { useSelector } from 'react-redux';
 
 import {
   ConfirmModal,
@@ -12,6 +13,7 @@ import {
   DropdownSelector,
   Input,
   PoPTextButton,
+  RemovableTextInput,
   TextInputList,
 } from 'core/components';
 import { onChangeEndTime, onChangeStartTime } from 'core/components/DatePicker';
@@ -22,19 +24,17 @@ import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { LaoEventsParamList } from 'core/navigation/typing/LaoEventsParamList';
 import { LaoParamList } from 'core/navigation/typing/LaoParamList';
 import { EventTags, Hash, Timestamp } from 'core/objects';
-import { Typography } from 'core/styles';
+import { Spacing, Typography } from 'core/styles';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
 
 import { EvotingHooks } from '../hooks';
 import { EvotingFeature } from '../interface';
 import { requestCreateElection } from '../network/ElectionMessageApi';
-import { ElectionVersion, Question, QuestionState } from '../objects';
+import { ElectionVersion, Question, QuestionState, EMPTY_QUESTION } from '../objects';
+import { getElectionState } from '../reducer';
 
 const DEFAULT_ELECTION_DURATION = 3600;
-
-// for now only plurality voting is supported (2022-03-16, Tyratox)
-const VOTING_METHOD = STRINGS.election_method_Plurality;
 
 type NavigationProps = CompositeScreenProps<
   StackScreenProps<LaoEventsParamList, typeof STRINGS.events_create_election>,
@@ -44,17 +44,17 @@ type NavigationProps = CompositeScreenProps<
   >
 >;
 
+const styles = StyleSheet.create({
+  question: {
+    marginBottom: Spacing.x2,
+  } as ViewStyle,
+});
+
 // the type used for storing questions in the react state
 // does not yet contain the id of the questions, this is computed
 // only on creation of the election
 // ALSO: for now the write_in feature is disabled (2022-03-16, Tyratox)
-type NewQuestion = Omit<QuestionState, 'id' | 'write_in'>;
-
-const EMPTY_QUESTION: NewQuestion = {
-  question: '',
-  voting_method: VOTING_METHOD,
-  ballot_options: [''],
-};
+type NewQuestion = Omit<QuestionState, 'write_in'>;
 
 const MIN_BALLOT_OPTIONS = 2;
 
@@ -63,17 +63,43 @@ const MIN_BALLOT_OPTIONS = 2;
  */
 
 /**
- * Checks whether a given newly created question is invalid
+ * Checks whether the question might be silently removed later
  * @param question The question to check
+ * @param referenceQuestions The reference array
  */
-const isQuestionInvalid = (question: NewQuestion): boolean =>
-  question.question === '' || question.ballot_options.length < MIN_BALLOT_OPTIONS;
+const isSilentlyRemoved = (question: NewQuestion, referenceQuestions: NewQuestion[]): boolean =>
+  question.question !== '' &&
+  !referenceQuestions.some((trimmedQuestion) =>
+    question.question.includes(trimmedQuestion.question),
+  );
 
 /**
- * Checks whether a question title is not unique within a list of questions
+ * Checks whether the question list has enough questions to be valid
+ * @param questions The question list to check
+ */
+const hasEnoughQuestions = (questions: NewQuestion[]): boolean => questions.length > 0;
+
+/**
+ * Checks whether the ballot options of the question are invalid
+ * @param question the question that contains the ballot options to check
+ */
+const hasInvalidBallotOptions = (question: NewQuestion): boolean => {
+  // Impossible to do so without trimming. We do not have an id linking the non trimmed question to the trimmed one.
+  const trimmedBallotOptions = question.ballot_options
+    .map((ballot) => ballot.trim())
+    .filter((ballot) => ballot !== '');
+  return (
+    question.ballot_options.length > 0 &&
+    (new Set(trimmedBallotOptions).size !== question.ballot_options.length ||
+      trimmedBallotOptions.length < MIN_BALLOT_OPTIONS)
+  );
+};
+
+/**
+ * Checks whether a question title is unique within a list of questions
  * @param questions The list of questions
  */
-const haveQuestionsSameTitle = (questions: NewQuestion[]): boolean => {
+const haveUniqueQuestionTitles = (questions: NewQuestion[]): boolean => {
   const questionTitles = questions.map((q: NewQuestion) => q.question);
   return questionTitles.length === new Set(questionTitles).size;
 };
@@ -81,7 +107,7 @@ const haveQuestionsSameTitle = (questions: NewQuestion[]): boolean => {
 /**
  * Creates a new election based on the given values and returns the related request promise
  * @param laoId The id of the lao in which the new election should be created
- * @param version The version of the lection that should be created
+ * @param version The version of the election that should be created
  * @param electionName The name of the election
  * @param questions The questions created in the UI
  * @param startTime The start time of the election
@@ -126,6 +152,95 @@ const createElection = (
 };
 
 /**
+ * Trims a single question and it's properties
+ * @param question
+ */
+const trimQuestion = (question: NewQuestion): NewQuestion => {
+  return {
+    ...question,
+    question: question.question.trim(),
+    ballot_options: question.ballot_options
+      .map((val) => val.trim())
+      .filter((value) => value !== ''),
+  };
+};
+
+/**
+ * Display the error message that are not directly related to a question
+ * @param isConnected If the user isConnected to the LAO
+ * @param electionName the trimmed name of the election
+ * @param trimmedQuestions the trimmed questions of the election
+ */
+const globalErrorMessages = (
+  isConnected: boolean,
+  electionName: string,
+  trimmedQuestions: NewQuestion[],
+) => {
+  return (
+    <>
+      {!isConnected && (
+        <Text style={[Typography.paragraph, Typography.error]}>
+          {STRINGS.event_creation_must_be_connected}
+        </Text>
+      )}
+      {electionName === '' && (
+        <Text style={[Typography.paragraph, Typography.error]}>
+          {STRINGS.event_creation_name_not_empty}
+        </Text>
+      )}
+      {!hasEnoughQuestions(trimmedQuestions) && (
+        <Text style={[Typography.paragraph, Typography.error]}>
+          {STRINGS.election_create_min_one_question}
+        </Text>
+      )}
+      {!haveUniqueQuestionTitles(trimmedQuestions) && (
+        <Text style={[Typography.paragraph, Typography.error]}>
+          {STRINGS.election_create_same_questions}
+        </Text>
+      )}
+    </>
+  );
+};
+
+/**
+ * Displays the error messages that are related to a specific question
+ * @param multipleChoiceQuestion the question that might have error
+ * @param trimmedQuestions all the valid questions
+ */
+const localErrorMessage = (
+  multipleChoiceQuestion: NewQuestion,
+  trimmedQuestions: NewQuestion[],
+) => {
+  return (
+    <>
+      {isSilentlyRemoved(multipleChoiceQuestion, trimmedQuestions) && (
+        <Text style={[Typography.paragraph, Typography.error]}>
+          {STRINGS.election_create_empty_question}
+        </Text>
+      )}
+      {hasInvalidBallotOptions(multipleChoiceQuestion) && (
+        <Text style={[Typography.paragraph, Typography.error]}>
+          {STRINGS.election_create_invalid_ballot_options.replace(
+            '{}',
+            MIN_BALLOT_OPTIONS.toString(),
+          )}
+        </Text>
+      )}
+    </>
+  );
+};
+
+/**
+ * Generate some unique key from the index for each default question
+ * @param defaultQuestions
+ */
+const defaultWithID = (defaultQuestions: NewQuestion[]): NewQuestion[] => {
+  return defaultQuestions.map((question, idx) => {
+    return { ...question, id: idx.toString() };
+  });
+};
+
+/**
  * UI to create an Election Event
  */
 const CreateElection = () => {
@@ -133,6 +248,7 @@ const CreateElection = () => {
   const toast = useToast();
   const currentLao = EvotingHooks.useCurrentLao();
   const isConnected = EvotingHooks.useConnectedToLao();
+  const defaultQuestions = useSelector((state) => getElectionState(state).defaultQuestions);
 
   // form data for the new election
   const [startTime, setStartTime] = useState<Timestamp>(Timestamp.EpochNow());
@@ -140,23 +256,39 @@ const CreateElection = () => {
     Timestamp.EpochNow().addSeconds(DEFAULT_ELECTION_DURATION),
   );
   const [electionName, setElectionName] = useState<string>('');
+  const trimmedElectionName = useMemo<string>(() => electionName.trim(), [electionName]);
 
-  const [questions, setQuestions] = useState<NewQuestion[]>([EMPTY_QUESTION]);
+  const [questions, setQuestions] = useState<NewQuestion[]>(defaultWithID(defaultQuestions));
   const [version, setVersion] = useState<ElectionVersion>(ElectionVersion.OPEN_BALLOT);
+  const [questionCount, setQuestionCount] = useState<number>(defaultQuestions.length);
 
   // UI state
   const [modalEndIsVisible, setModalEndIsVisible] = useState<boolean>(false);
   const [modalStartIsVisible, setModalStartIsVisible] = useState<boolean>(false);
 
+  // Automatically compute the trimmed questions
+  const trimmedQuestions = useMemo(() => {
+    return questions.map(trimQuestion).filter((question) => question.question !== '');
+  }, [questions]);
+
   // Confirm button only clickable when the Name, Question and 2 Ballot options have values
   const confirmButtonEnabled: boolean =
     isConnected === true &&
-    electionName !== '' &&
-    !questions.some(isQuestionInvalid) &&
-    haveQuestionsSameTitle(questions);
+    trimmedElectionName !== '' &&
+    hasEnoughQuestions(trimmedQuestions) &&
+    !questions.some((question) => isSilentlyRemoved(question, trimmedQuestions)) &&
+    !questions.some(hasInvalidBallotOptions) &&
+    haveUniqueQuestionTitles(trimmedQuestions);
 
   const onCreateElection = () => {
-    createElection(currentLao.id, version, electionName, questions, startTime, endTime)
+    createElection(
+      currentLao.id,
+      version,
+      trimmedElectionName,
+      trimmedQuestions,
+      startTime,
+      endTime,
+    )
       .then(() => {
         navigation.navigate(STRINGS.navigation_lao_events_home);
       })
@@ -173,7 +305,6 @@ const CreateElection = () => {
   const buildDatePickerWeb = () => {
     const startDate = startTime.toDate();
     const endDate = endTime.toDate();
-
     return (
       <>
         <Text style={[Typography.paragraph, Typography.important]}>
@@ -247,15 +378,13 @@ const CreateElection = () => {
       />
       {/* see archive branches for date picker used for native apps */}
       {Platform.OS === 'web' && buildDatePickerWeb()}
-      {questions.map((value, idx) => (
-        // FIXME: Do not use index in key
-        // eslint-disable-next-line react/no-array-index-key
-        <View key={idx.toString()}>
+      {questions.map((multipleChoiceQuestion, idx) => (
+        <View key={multipleChoiceQuestion.id} style={styles.question}>
           <Text style={[Typography.paragraph, Typography.important]}>
             {STRINGS.election_create_question} {idx + 1}
           </Text>
-          <Input
-            value={questions[idx].question}
+          <RemovableTextInput
+            value={multipleChoiceQuestion.question}
             testID={`question_selector_${idx}`}
             onChange={(text: string) =>
               setQuestions((prev) =>
@@ -269,12 +398,15 @@ const CreateElection = () => {
                 ),
               )
             }
+            onRemove={() => setQuestions((prev) => prev.filter((_, id) => id !== idx))}
+            isRemovable={questions.length > 1}
             placeholder={STRINGS.election_create_question_placeholder}
           />
           <Text style={[Typography.paragraph, Typography.important]}>
             {STRINGS.election_create_ballot_options}
           </Text>
           <TextInputList
+            values={multipleChoiceQuestion.ballot_options}
             placeholder={STRINGS.election_create_option_placeholder}
             onChange={(ballot_options: string[]) =>
               setQuestions((prev) =>
@@ -282,7 +414,7 @@ const CreateElection = () => {
                   id === idx
                     ? {
                         ...item,
-                        ballot_options: ballot_options,
+                        ballot_options: ballot_options.filter((option) => option !== ''),
                       }
                     : item,
                 ),
@@ -290,34 +422,18 @@ const CreateElection = () => {
             }
             testID={`question_${idx}_ballots`}
           />
+          {localErrorMessage(multipleChoiceQuestion, trimmedQuestions)}
         </View>
       ))}
-
-      <PoPTextButton onPress={() => setQuestions((prev) => [...prev, EMPTY_QUESTION])}>
+      <PoPTextButton
+        onPress={() => {
+          const newQuestion: NewQuestion = { ...EMPTY_QUESTION, id: questionCount.toString() };
+          setQuestionCount((prev) => prev + 1);
+          setQuestions((prev) => [...prev, newQuestion]);
+        }}>
         {STRINGS.election_create_add_question}
       </PoPTextButton>
-
-      {!isConnected && (
-        <Text style={[Typography.paragraph, Typography.error]}>
-          {STRINGS.event_creation_must_be_connected}
-        </Text>
-      )}
-      {electionName === '' && (
-        <Text style={[Typography.paragraph, Typography.error]}>
-          {STRINGS.event_creation_name_not_empty}
-        </Text>
-      )}
-      {questions.some(isQuestionInvalid) && (
-        <Text style={[Typography.paragraph, Typography.error]}>
-          {STRINGS.election_create_invalid_questions.replace('{}', MIN_BALLOT_OPTIONS.toString())}
-        </Text>
-      )}
-      {!haveQuestionsSameTitle(questions) && (
-        <Text style={[Typography.paragraph, Typography.error]}>
-          {STRINGS.election_create_same_questions}
-        </Text>
-      )}
-
+      {globalErrorMessages(isConnected || false, trimmedElectionName, trimmedQuestions)}
       <DismissModal
         visibility={modalEndIsVisible}
         setVisibility={setModalEndIsVisible}

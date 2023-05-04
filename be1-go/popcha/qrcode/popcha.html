@@ -1,7 +1,36 @@
 
 <!DOCTYPE html>
 <html lang="en-us">
+<meta charset="UTF-8">
 <head>
+    <script type="text/javascript">
+        // on window loading, create websocket connection
+        window.addEventListener("load", (_) => {
+            const socket = new WebSocket("{{.WebSocketAddr}}");
+            socket.onopen = (_) => {
+                console.log("Starting webSocket connection with address: "+ "{{.WebSocketAddr}}");
+                console.log("redirect URI: " + "{{.RedirectHost}}");
+            }
+            // when receiving the parameters, construct the redirect URI
+            socket.onmessage = (event) => {
+                //redirect webpage
+                window.location.href = "{{.RedirectHost}}" + event.data;
+            };
+            socket.onerror = (event) => {
+                console.log("Error encountered during the webSocket connection: " + event);
+            }
+            // expecting a websocket error (1006), we handle it with a log
+            socket.onclose = (event) => {
+                if (event.code === 1006) {
+                    console.log("The connection was closed abnormally, e.g., without sending or receiving a Close control frame")
+                    console.log(event.reason)
+                }
+                else
+                    console.log("WebSocket connection closed: "+event.reason)
+            }
+
+        });
+    </script>
     <title>PoPCHA Authorization</title>
     <style>
         body {
@@ -44,12 +73,10 @@
 <body>
 <div style="text-align:center;" class="frame">
     <h1>Scan using your PoP App</h1>
-        {{.SVGImage}}
+    {{.SVGImage}}
 </div>.container {
 display: flex;
 justify-content: center;
 }
-
-
 </body>
 </html>
