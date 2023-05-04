@@ -34,8 +34,8 @@ export const sendPopchaAuthRequest = (
     const message = new PopchaAuthMsg({
       client_id: client_id.toString(),
       nonce: nonce,
-      identifier: t.publicKey.toString(),
-      identifier_proof: signedToken.toString(),
+      identifier: t.publicKey,
+      identifier_proof: signedToken,
       popcha_address: popcha_address,
       state: state || undefined,
       response_mode: response_mode || undefined,

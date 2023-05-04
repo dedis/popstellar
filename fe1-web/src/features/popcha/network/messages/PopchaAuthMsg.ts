@@ -1,5 +1,5 @@
 import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages';
-import { ProtocolError } from 'core/objects';
+import { Hash, ProtocolError } from 'core/objects';
 
 /**
  * Data sent to authenticate a user
@@ -13,15 +13,15 @@ export class PopchaAuthMsg implements MessageData {
 
   public readonly nonce: string;
 
-  public readonly identifier: string;
+  public readonly identifier: Hash;
 
-  public readonly identifier_proof: string;
-
-  public readonly popcha_address: string;
+  public readonly identifier_proof: Hash;
 
   public readonly state: string | undefined;
 
   public readonly response_mode: string;
+
+  public readonly popcha_address: string;
 
   constructor(msg: Partial<PopchaAuthMsg>) {
     if (!msg.nonce) {

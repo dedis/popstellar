@@ -25,6 +25,10 @@ const styles = StyleSheet.create({
     opacity: 0.5,
   } as ViewStyle,
 });
+
+/**
+ * A scanner to scan QR code to send an authentication request
+ */
 const PoPchaScanner = () => {
   const laoId = PoPchaHooks.useCurrentLaoId();
   const generateToken = PoPchaHooks.useGenerateToken;
@@ -91,7 +95,7 @@ const PoPchaScanner = () => {
       return false;
     }
 
-    if (urlArg.has('resonse_mode')) {
+    if (urlArg.has('response_mode')) {
       if (
         !(
           urlArg.get('response_mode')!.includes('query') ||
