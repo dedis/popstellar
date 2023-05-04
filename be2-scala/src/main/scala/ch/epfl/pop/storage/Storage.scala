@@ -2,10 +2,10 @@ package ch.epfl.pop.storage
 
 trait Storage {
 
-  /** List of prefix to the keys
-    */
+  /* List of prefix to the keys */
   final val CHANNEL_DATA_KEY = "ChannelData:"
   final val DATA_KEY = "Data:"
+  final val CREATE_LAO_KEY = "CreateLaoId:"
 
   /** Optionally returns the value associated with a key
     *

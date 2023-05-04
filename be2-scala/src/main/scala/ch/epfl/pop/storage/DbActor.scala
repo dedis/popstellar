@@ -46,6 +46,21 @@ final case class DbActor(
   }
 
   @throws[DbActorNAckException]
+  private def writeCreateLao(channel: Channel, message: Message): Unit = {
+    createChannel(channel, ObjectType.LAO)
+    storage.write((storage.DATA_KEY + storage.CREATE_LAO_KEY + channel.toString, message.message_id.toString()))
+    write(Channel.ROOT_CHANNEL, message)
+  }
+
+  @throws[DbActorNAckException]
+  private def readCreateLao(channel: Channel): Option[Message] = {
+    storage.read(storage.DATA_KEY + storage.CREATE_LAO_KEY + channel.toString) match {
+      case Some(msg_id) => read(Channel.ROOT_CHANNEL, Hash(Base64Data(msg_id)))
+      case _            => None
+    }
+  }
+
+  @throws[DbActorNAckException]
   private def read(channel: Channel, messageId: Hash): Option[Message] = {
     Try(storage.read(storage.DATA_KEY + s"$channel${Channel.DATA_SEPARATOR}$messageId")) match {
       case Success(Some(json)) =>
@@ -278,6 +293,13 @@ final case class DbActor(
         case failure    => sender() ! failure.recover(Status.Failure(_))
       }
 
+    case WriteCreateLaoMessage(channel, message) =>
+      log.info(s"Actor $self (db) received a WriteCreateLaoMessage request")
+      Try(writeCreateLao(channel, message)) match {
+        case Success(_) => sender() ! DbActorAck()
+        case failure    => sender() ! failure.recover(Status.Failure(_))
+      }
+
     case Catchup(channel) =>
       log.info(s"Actor $self (db) received a CATCHUP request for channel '$channel'")
       Try(catchupChannel(channel)) match {
@@ -412,6 +434,15 @@ object DbActor {
     *   the channel we need the LAO's data for
     */
   final case class ReadLaoData(channel: Channel) extends Event
+
+  /** Request to write a "CreateLao" message in the db
+    *
+    * @param channel
+    *   the channel part of the LAO the CreateLao refers to
+    * @param message
+    *   the actual CreateLao message we want to write in the db
+    */
+  final case class WriteCreateLaoMessage(channel: Channel, message: Message) extends Event
 
   /** Request to update the laoData of the LAO, with key laoId and given message
     *
