@@ -16,6 +16,8 @@ import scala.annotation.tailrec
 // When receiving the missing messages, the server's job is to write them on the database.
 object GetMessagesByIdResponseHandler extends AskPatternConstants {
 
+  private final val MAX_RETRY = 5
+
   def graph(mediatorActorRef: ActorRef, messageRegistry: MessageRegistry)(implicit system: ActorSystem): Flow[GraphMessage, GraphMessage, NotUsed] =
     Flow.fromGraph(GraphDSL.create() {
       implicit builder: GraphDSL.Builder[NotUsed] =>
@@ -112,29 +114,29 @@ object GetMessagesByIdResponseHandler extends AskPatternConstants {
           val publishMessagesSet: Set[GraphMessage] = messagesSet.map(message =>
             Right(JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, MethodType.PUBLISH, new Publish(channel, message), Some(0)))
           )
-          passThroughPipeline(validatorFlow, publishMessagesSet, 3)
+          passThroughPipeline(validatorFlow, publishMessagesSet, MAX_RETRY)
       }
       Right(jsonRpcMessage)
     case value @ _ => value
   }.filter(_ => false) // instead of implementing a Sink[GraphMessage], we chose to implement it as a Flow and filter every single outgoing graphMessage
 
   @tailrec
-  private def passThroughPipeline(
-      validator: Flow[GraphMessage, GraphMessage, NotUsed],
-      messageSet: Set[GraphMessage],
-      remainingAttempts: Int
-  )(implicit system: ActorSystem): Unit = {
-    if (messageSet.isEmpty || remainingAttempts <= 0)
+  private def passThroughPipeline(validator: Flow[GraphMessage, GraphMessage, NotUsed], messageSet: Set[GraphMessage], remainingAttempts: Int)(implicit system: ActorSystem): Unit = {
+    if (remainingAttempts <= 0)
       return
 
     var failedGraphMessages: Set[GraphMessage] = Set()
     messageSet.foreach { message =>
       Source.single(message).via(validator).runWith(Sink.foreach {
-        case Left(_) => failedGraphMessages += message
-        case _       => /* Nothing to do */
+        case Left(_) =>
+          failedGraphMessages += message
+        case _ => /* Nothing to do */
       })
     }
 
-    passThroughPipeline(validator, failedGraphMessages, remainingAttempts - 1)
+    if (failedGraphMessages.nonEmpty) {
+      println(s"Error in the pipe ($remainingAttempts left): " + "\nOn msg: " + failedGraphMessages)
+      passThroughPipeline(validator, failedGraphMessages, remainingAttempts - 1)
+    }
   }
 }
