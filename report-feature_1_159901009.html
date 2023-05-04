@@ -74,7 +74,7 @@ $(document).ready(function() {
   <tbody>
     <tr class="info">
       <td>scala</td>
-      <td>03 May 2023, 04:13</td>
+      <td>04 May 2023, 04:13</td>
     </tr>
   </tbody>
 </table>
@@ -127,18 +127,18 @@ $(document).ready(function() {
         <tbody>
         <tr>
           <td class="tagname">be/LAO/update.feature</td>
-          <td      class="passed"    >36</td>
-          <td      class="failed"    >2</td>
+          <td      class="passed"    >35</td>
+          <td      class="failed"    >3</td>
           <td     class="skipped"   >4</td>
           <td >0</td>
           <td >0</td>
           <td class="total">42</td>
 
-          <td  class="passed"    >1</td>
-          <td  class="failed"    >2</td>
+          <td >0</td>
+          <td  class="failed"    >3</td>
           <td class="total">3</td>
 
-          <td class="duration" data-value="25735867232">25.735</td>
+          <td class="duration" data-value="26473743391">26.473</td>
           <td class="failed">Failed</td>
         </tr>
         </tbody>
@@ -191,7 +191,7 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">3.628</span>
+  <span class="lead-duration duration">4.260</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-1">
@@ -234,7 +234,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/utils/server.feature')</span>
 
-  <span class="lead-duration duration">2.531</span>
+  <span class="lead-duration duration">3.032</span>
 
 </div>
 
@@ -288,7 +288,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/mockFrontEnd.feature')</span>
 
-  <span class="lead-duration duration">0.280</span>
+  <span class="lead-duration duration">0.389</span>
 
 </div>
 
@@ -342,7 +342,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/constants.feature')</span>
 
-  <span class="lead-duration duration">0.120</span>
+  <span class="lead-duration duration">0.088</span>
 
 </div>
 
@@ -396,7 +396,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=valid_lao')</span>
 
-  <span class="lead-duration duration">0.696</span>
+  <span class="lead-duration duration">0.750</span>
 
 </div>
 
@@ -490,7 +490,7 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">5.008</span>
+  <span class="lead-duration duration">5.019</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-3">
@@ -575,9 +575,9 @@ $(document).ready(function() {
 
 <div class="brief step-name-When passed">
   <span class="keyword indention">When</span>
-  <span class="name">frontend.publish(JSON.stringify(updateLaoRequest), channel)</span>
+  <span class="name">frontend.publish(updateLaoRequest, channel)</span>
 
-  <span class="lead-duration duration">0.002</span>
+  <span class="lead-duration duration">0.011</span>
 
 </div>
 
@@ -602,9 +602,9 @@ $(document).ready(function() {
 
 <div class="brief step-name-And failed">
   <span class="keyword indention">And</span>
-  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(updateLaoRequest))</span>
+  <span class="name">json answer = frontend.getBackendResponse(updateLaoRequest)</span>
 
-  <span class="lead-duration duration">5.005</span>
+  <span class="lead-duration duration">5.008</span>
 
 </div>
 
@@ -621,11 +621,11 @@ $(document).ready(function() {
       <div id="msg-6" class="collapse collapsable-details  in ">
         <pre>js failed:
 &gt;&gt;&gt;&gt;
-01: frontend.getBackendResponse(JSON.stringify(updateLaoRequest))
+01: frontend.getBackendResponse(updateLaoRequest)
 &lt;&lt;&lt;&lt;
 org.graalvm.polyglot.PolyglotException
-- common.net.MultiMsgWebSocketClient.getBackendResponseWithOrWithoutBroadcasts(MultiMsgWebSocketClient.java:97)
-- common.net.MultiMsgWebSocketClient.getBackendResponse(MultiMsgWebSocketClient.java:68)
+- common.net.MultiMsgWebSocketClient.getBackendResponseWithOrWithoutBroadcasts(MultiMsgWebSocketClient.java:105)
+- common.net.MultiMsgWebSocketClient.getBackendResponse(MultiMsgWebSocketClient.java:74)
 - &lt;js&gt;.:program(Unnamed:1)
 
 classpath:be/LAO/update.feature:28</pre>
@@ -642,15 +642,15 @@ classpath:be/LAO/update.feature:28</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-7" class="collapse collapsable-details">
-        <pre>04:06:41.531 classpath:be/LAO/update.feature:28
-And json answer = frontend.getBackendResponse(JSON.stringify(updateLaoRequest))
+        <pre>04:07:31.377 classpath:be/LAO/update.feature:28
+And json answer = frontend.getBackendResponse(updateLaoRequest)
 js failed:
 &gt;&gt;&gt;&gt;
-01: frontend.getBackendResponse(JSON.stringify(updateLaoRequest))
+01: frontend.getBackendResponse(updateLaoRequest)
 &lt;&lt;&lt;&lt;
 org.graalvm.polyglot.PolyglotException
-- common.net.MultiMsgWebSocketClient.getBackendResponseWithOrWithoutBroadcasts(MultiMsgWebSocketClient.java:97)
-- common.net.MultiMsgWebSocketClient.getBackendResponse(MultiMsgWebSocketClient.java:68)
+- common.net.MultiMsgWebSocketClient.getBackendResponseWithOrWithoutBroadcasts(MultiMsgWebSocketClient.java:105)
+- common.net.MultiMsgWebSocketClient.getBackendResponse(MultiMsgWebSocketClient.java:74)
 - &lt;js&gt;.:program(Unnamed:1)
 
 classpath:be/LAO/update.feature:28
@@ -738,7 +738,7 @@ classpath:be/LAO/update.feature:28
 </div>
 
 
-  <span class="lead-duration duration">3.462</span>
+  <span class="lead-duration duration">4.649</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-8">
@@ -781,7 +781,7 @@ classpath:be/LAO/update.feature:28
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/utils/server.feature')</span>
 
-  <span class="lead-duration duration">2.520</span>
+  <span class="lead-duration duration">3.269</span>
 
 </div>
 
@@ -835,7 +835,7 @@ classpath:be/LAO/update.feature:28
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/mockFrontEnd.feature')</span>
 
-  <span class="lead-duration duration">0.243</span>
+  <span class="lead-duration duration">0.378</span>
 
 </div>
 
@@ -889,7 +889,7 @@ classpath:be/LAO/update.feature:28
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/constants.feature')</span>
 
-  <span class="lead-duration duration">0.041</span>
+  <span class="lead-duration duration">0.139</span>
 
 </div>
 
@@ -943,7 +943,7 @@ classpath:be/LAO/update.feature:28
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=valid_lao')</span>
 
-  <span class="lead-duration duration">0.657</span>
+  <span class="lead-duration duration">0.862</span>
 
 </div>
 
@@ -1037,7 +1037,7 @@ classpath:be/LAO/update.feature:28
 </div>
 
 
-  <span class="lead-duration duration">5.023</span>
+  <span class="lead-duration duration">5.004</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-10">
@@ -1122,9 +1122,9 @@ classpath:be/LAO/update.feature:28
 
 <div class="brief step-name-When passed">
   <span class="keyword indention">When</span>
-  <span class="name">frontend.publish(JSON.stringify(badUpdateLaoReq), channel)</span>
+  <span class="name">frontend.publish(badUpdateLaoReq, channel)</span>
 
-  <span class="lead-duration duration">0.014</span>
+  <span class="lead-duration duration">0.002</span>
 
 </div>
 
@@ -1149,9 +1149,9 @@ classpath:be/LAO/update.feature:28
 
 <div class="brief step-name-And failed">
   <span class="keyword indention">And</span>
-  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(badUpdateLaoReq))</span>
+  <span class="name">json answer = frontend.getBackendResponse(badUpdateLaoReq)</span>
 
-  <span class="lead-duration duration">5.008</span>
+  <span class="lead-duration duration">5.001</span>
 
 </div>
 
@@ -1168,11 +1168,11 @@ classpath:be/LAO/update.feature:28
       <div id="msg-13" class="collapse collapsable-details  in ">
         <pre>js failed:
 &gt;&gt;&gt;&gt;
-01: frontend.getBackendResponse(JSON.stringify(badUpdateLaoReq))
+01: frontend.getBackendResponse(badUpdateLaoReq)
 &lt;&lt;&lt;&lt;
 org.graalvm.polyglot.PolyglotException
-- common.net.MultiMsgWebSocketClient.getBackendResponseWithOrWithoutBroadcasts(MultiMsgWebSocketClient.java:97)
-- common.net.MultiMsgWebSocketClient.getBackendResponse(MultiMsgWebSocketClient.java:68)
+- common.net.MultiMsgWebSocketClient.getBackendResponseWithOrWithoutBroadcasts(MultiMsgWebSocketClient.java:105)
+- common.net.MultiMsgWebSocketClient.getBackendResponse(MultiMsgWebSocketClient.java:74)
 - &lt;js&gt;.:program(Unnamed:1)
 
 classpath:be/LAO/update.feature:45</pre>
@@ -1189,15 +1189,15 @@ classpath:be/LAO/update.feature:45</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-14" class="collapse collapsable-details">
-        <pre>04:06:50.041 classpath:be/LAO/update.feature:45
-And json answer = frontend.getBackendResponse(JSON.stringify(badUpdateLaoReq))
+        <pre>04:07:41.375 classpath:be/LAO/update.feature:45
+And json answer = frontend.getBackendResponse(badUpdateLaoReq)
 js failed:
 &gt;&gt;&gt;&gt;
-01: frontend.getBackendResponse(JSON.stringify(badUpdateLaoReq))
+01: frontend.getBackendResponse(badUpdateLaoReq)
 &lt;&lt;&lt;&lt;
 org.graalvm.polyglot.PolyglotException
-- common.net.MultiMsgWebSocketClient.getBackendResponseWithOrWithoutBroadcasts(MultiMsgWebSocketClient.java:97)
-- common.net.MultiMsgWebSocketClient.getBackendResponse(MultiMsgWebSocketClient.java:68)
+- common.net.MultiMsgWebSocketClient.getBackendResponseWithOrWithoutBroadcasts(MultiMsgWebSocketClient.java:105)
+- common.net.MultiMsgWebSocketClient.getBackendResponse(MultiMsgWebSocketClient.java:74)
 - &lt;js&gt;.:program(Unnamed:1)
 
 classpath:be/LAO/update.feature:45
@@ -1285,7 +1285,7 @@ classpath:be/LAO/update.feature:45
 </div>
 
 
-  <span class="lead-duration duration">3.585</span>
+  <span class="lead-duration duration">4.551</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-15">
@@ -1328,7 +1328,7 @@ classpath:be/LAO/update.feature:45
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/utils/server.feature')</span>
 
-  <span class="lead-duration duration">2.514</span>
+  <span class="lead-duration duration">3.277</span>
 
 </div>
 
@@ -1382,7 +1382,7 @@ classpath:be/LAO/update.feature:45
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/mockFrontEnd.feature')</span>
 
-  <span class="lead-duration duration">0.264</span>
+  <span class="lead-duration duration">0.317</span>
 
 </div>
 
@@ -1436,7 +1436,7 @@ classpath:be/LAO/update.feature:45
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/constants.feature')</span>
 
-  <span class="lead-duration duration">0.084</span>
+  <span class="lead-duration duration">0.062</span>
 
 </div>
 
@@ -1490,7 +1490,7 @@ classpath:be/LAO/update.feature:45
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=valid_lao')</span>
 
-  <span class="lead-duration duration">0.721</span>
+  <span class="lead-duration duration">0.893</span>
 
 </div>
 
@@ -1584,12 +1584,12 @@ classpath:be/LAO/update.feature:45
 </div>
 
 
-  <span class="lead-duration duration">5.027</span>
+  <span class="lead-duration duration">2.988</span>
 
 
-  <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-17">
+  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-17">
 
-<div class="brief passed">
+<div class="brief failed">
   <span class="keyword indention">Scenario</span>
   <span class="name">Update Lao with negative last_modified should fail with an error response</span>
 
@@ -1600,16 +1600,16 @@ classpath:be/LAO/update.feature:45
   </span>
   <div class="description indention"></div>
 
-  <div id="element-17" class="collapse collapsable-details ">
+  <div id="element-17" class="collapse collapsable-details  in ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-18">
+  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-18">
 
-<div class="brief passed">
+<div class="brief failed">
   <span class="keyword indention">Steps</span>
   <span class="name"></span>
 
@@ -1619,7 +1619,7 @@ classpath:be/LAO/update.feature:45
 
   </div>
 
-  <div id="steps-18" class="inner-level collapse collapsable-details ">
+  <div id="steps-18" class="inner-level collapse collapsable-details  in ">
       <div class="step">
 
 
@@ -1669,9 +1669,9 @@ classpath:be/LAO/update.feature:45
 
 <div class="brief step-name-When passed">
   <span class="keyword indention">When</span>
-  <span class="name">frontend.publish(JSON.stringify(badUpdateLaoReq), channel)</span>
+  <span class="name">frontend.publish(badUpdateLaoReq, channel)</span>
 
-  <span class="lead-duration duration">0.007</span>
+  <span class="lead-duration duration">0.009</span>
 
 </div>
 
@@ -1696,9 +1696,9 @@ classpath:be/LAO/update.feature:45
 
 <div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
-  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(badUpdateLaoReq))</span>
+  <span class="name">json answer = frontend.getBackendResponse(badUpdateLaoReq)</span>
 
-  <span class="lead-duration duration">0.018</span>
+  <span class="lead-duration duration">0.009</span>
 
 </div>
 
@@ -1748,11 +1748,11 @@ classpath:be/LAO/update.feature:45
       <div class="step">
 
 
-<div class="brief step-name-And passed">
+<div class="brief step-name-And failed">
   <span class="keyword indention">And</span>
   <span class="name">match frontend.receiveNoMoreResponses() == true</span>
 
-  <span class="lead-duration duration">5.001</span>
+  <span class="lead-duration duration">2.968</span>
 
 </div>
 
@@ -1761,9 +1761,43 @@ classpath:be/LAO/update.feature:45
 
 
 
+  <div class="inner-level">
+    <div class="message indention">
+      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-20">
+          <a>match</a>
+      </div>
+      <div id="msg-20" class="collapse collapsable-details  in ">
+        <pre>match failed: EQUALS
+  $ | not equal (BOOLEAN:BOOLEAN)
+  false
+  true
+
+classpath:be/LAO/update.feature:65</pre>
+      </div>
+    </div>
+  </div>
 
 
 
+
+  <div class="inner-level">
+    <div class="docstring indention">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-21">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-21" class="collapse collapsable-details">
+        <pre>04:07:49.262 classpath:be/LAO/update.feature:65
+And match frontend.receiveNoMoreResponses() == true
+match failed: EQUALS
+  $ | not equal (BOOLEAN:BOOLEAN)
+  false
+  true
+
+classpath:be/LAO/update.feature:65
+</pre>
+      </div>
+    </div>
+  </div>
 
 
 
