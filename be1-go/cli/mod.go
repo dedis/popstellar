@@ -3,8 +3,10 @@ package main
 
 import (
 	"encoding/base64"
+	"encoding/json"
 	"fmt"
 	"net/url"
+	"os"
 	popstellar "popstellar"
 	"popstellar/channel/lao"
 	"popstellar/crypto"
@@ -33,30 +35,71 @@ const (
 	connectionRetryRate = 2
 )
 
+// ServerConfig contains the configuration for the server
+type ServerConfig struct {
+	PublicKey      string   `json:"public-key"`
+	PublicAddress  string   `json:"server-public-address"`
+	PrivateAddress string   `json:"server-listen-address"`
+	ClientPort     int      `json:"client-port"`
+	ServerPort     int      `json:"server-port"`
+	OtherServers   []string `json:"other-servers"`
+}
+
+func startWithConfigFile(configFilename string) (ServerConfig, error) {
+	if configFilename == "" {
+		return ServerConfig{}, xerrors.Errorf("no config file specified")
+	}
+	bytes, err := os.ReadFile(configFilename)
+	if err != nil {
+		return ServerConfig{}, xerrors.Errorf("could not read config file: %w", err)
+	}
+	var config ServerConfig
+	err = json.Unmarshal(bytes, &config)
+	if err != nil {
+		return ServerConfig{}, xerrors.Errorf("could not unmarshal config file: %w", err)
+	}
+	return config, nil
+}
+
+func startWithFlags(cliCtx *cli.Context) (ServerConfig, error) {
+	// get command line args which specify public key, addresses, port to use for clients
+	// and servers, remote servers address
+	clientPort := cliCtx.Int("client-port")
+	serverPort := cliCtx.Int("server-port")
+	log.Info().Msgf("Starting server with client port %d and server port %d", clientPort, serverPort)
+	if clientPort == serverPort {
+		return ServerConfig{}, xerrors.Errorf("client and server ports must be different")
+	}
+	return ServerConfig{
+		PublicKey:      cliCtx.String("public-key"),
+		PublicAddress:  cliCtx.String("server-public-address"),
+		PrivateAddress: cliCtx.String("server-listen-address"),
+		ClientPort:     clientPort,
+		ServerPort:     serverPort,
+		OtherServers:   cliCtx.StringSlice("other-servers"),
+	}, nil
+}
+
 // Serve parses the CLI arguments and spawns a hub and a websocket server for
 // the server
 func Serve(cliCtx *cli.Context) error {
 	log := popstellar.Logger
 
-	// get command line args which specify public key, addresses, port to use for clients
-	// and servers, remote servers address
-	publicAddress := cliCtx.String("server-public-address")
-	privateAddress := cliCtx.String("server-listen-address")
+	configFilePath := cliCtx.String("config-file")
+	var serverConfig ServerConfig
+	var err error
 
-	clientPort := cliCtx.Int("client-port")
-	serverPort := cliCtx.Int("server-port")
-	if clientPort == serverPort {
-		return xerrors.Errorf("client and server ports must be different")
+	serverConfig, err = startWithConfigFile(configFilePath)
+	if err != nil {
+		log.Error().Msgf("Could not start with config file: %v", err)
+		serverConfig, err = startWithFlags(cliCtx)
 	}
-	otherServers := cliCtx.StringSlice("other-servers")
-
-	pk := cliCtx.String("public-key")
 
 	// compute the client server address
-	clientServerAddress := fmt.Sprintf("%s:%d", publicAddress, clientPort)
+	clientServerAddress := fmt.Sprintf("%s:%d", serverConfig.PublicAddress, serverConfig.ClientPort)
 
 	var point kyber.Point = nil
-	ownerKey(pk, &point)
+	ownerKey(serverConfig.PublicKey, &point)
 
 	// create user hub
 	h, err := standard_hub.NewHub(point, clientServerAddress, log.With().Str("role", "server").Logger(),
@@ -69,12 +112,12 @@ func Serve(cliCtx *cli.Context) error {
 	h.Start()
 
 	// Start websocket server for clients
-	clientSrv := network.NewServer(h, privateAddress, clientPort, socket.ClientSocketType,
+	clientSrv := network.NewServer(h, serverConfig.PrivateAddress, serverConfig.ClientPort, socket.ClientSocketType,
 		log.With().Str("role", "client websocket").Logger())
 	clientSrv.Start()
 
 	// Start a websocket server for remote servers
-	serverSrv := network.NewServer(h, privateAddress, serverPort, socket.ServerSocketType,
+	serverSrv := network.NewServer(h, serverConfig.PrivateAddress, serverConfig.ServerPort, socket.ServerSocketType,
 		log.With().Str("role", "server websocket").Logger())
 	serverSrv.Start()
 
@@ -84,7 +127,7 @@ func Serve(cliCtx *cli.Context) error {
 
 	// create the map of servers and their connection status
 	connectedServers := make(map[string]bool)
-	for _, serverAddress := range otherServers {
+	for _, serverAddress := range serverConfig.OtherServers {
 		connectedServers[serverAddress] = false
 	}
 
