@@ -12,6 +12,9 @@ import androidx.fragment.app.Fragment;
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.LaoCreateFragmentBinding;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
+import com.github.dedis.popstellar.ui.lao.witness.WitnessingViewModel;
+import com.github.dedis.popstellar.ui.qrcode.QrScannerFragment;
+import com.github.dedis.popstellar.ui.qrcode.ScanningAction;
 
 import java.util.Objects;
 
@@ -29,6 +32,7 @@ public final class LaoCreateFragment extends Fragment {
   @Inject GlobalNetworkManager networkManager;
 
   private HomeViewModel viewModel;
+  private WitnessingViewModel witnessingViewModel;
   private LaoCreateFragmentBinding binding;
   private String initialUrl;
 
@@ -46,9 +50,11 @@ public final class LaoCreateFragment extends Fragment {
     binding.setLifecycleOwner(getActivity());
     initialUrl = networkManager.getCurrentUrl();
     viewModel = HomeActivity.obtainViewModel(requireActivity());
+    witnessingViewModel = HomeActivity.obtainWitnessingViewModel(requireActivity());
 
     setupCancelButton();
     setupTextFields();
+    setupAddWitnesses();
     setupCreateButton();
 
     return binding.getRoot();
@@ -95,6 +101,17 @@ public final class LaoCreateFragment extends Fragment {
     binding.serverUrlEntryEditText.setText(initialUrl);
     binding.serverUrlEntryEditText.addTextChangedListener(launchWatcher);
     binding.laoNameEntryEditText.addTextChangedListener(launchWatcher);
+  }
+
+  private void setupAddWitnesses() {
+    binding.addWitnessButton.setOnClickListener(
+        v -> {
+          Timber.tag(TAG).d("Opening scanner fragment");
+          HomeActivity.setCurrentFragment(
+              getParentFragmentManager(),
+              R.id.fragment_qr_scanner,
+              () -> QrScannerFragment.newInstance(ScanningAction.ADD_WITNESS));
+        });
   }
 
   private void setupCreateButton() {

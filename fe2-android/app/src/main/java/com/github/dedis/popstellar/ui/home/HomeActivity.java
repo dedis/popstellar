@@ -17,6 +17,7 @@ import com.github.dedis.popstellar.databinding.HomeActivityBinding;
 import com.github.dedis.popstellar.model.network.serializer.JsonUtils;
 import com.github.dedis.popstellar.repository.local.PersistentData;
 import com.github.dedis.popstellar.ui.home.wallet.SeedWalletFragment;
+import com.github.dedis.popstellar.ui.lao.witness.WitnessingViewModel;
 import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
@@ -104,6 +105,7 @@ public class HomeActivity extends AppCompatActivity {
     binding.topAppBar.setNavigationOnClickListener(
         view -> {
           if (Boolean.FALSE.equals(viewModel.isHome().getValue())) {
+            Timber.tag(TAG).d("Going back to home");
             // Press back arrow
             onBackPressed();
           } else {
@@ -236,6 +238,10 @@ public class HomeActivity extends AppCompatActivity {
 
   public static SettingsViewModel obtainSettingsViewModel(FragmentActivity activity) {
     return new ViewModelProvider(activity).get(SettingsViewModel.class);
+  }
+
+  public static WitnessingViewModel obtainWitnessingViewModel(FragmentActivity activity) {
+    return new ViewModelProvider(activity).get(WitnessingViewModel.class);
   }
 
   /** Factory method to create a fresh Intent that opens an HomeActivity */

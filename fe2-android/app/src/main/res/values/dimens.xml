@@ -21,8 +21,9 @@
   <dimen name="margin_top_title">50dp</dimen>
 
   <!--  Home -->
-  <dimen name="home_button_horizontal_margin">50dp</dimen>
+  <dimen name="home_button_horizontal_margin">30dp</dimen>
   <dimen name="home_button_vertical_margin">30dp</dimen>
+  <dimen name="home_button_vertical_central_margin">20dp</dimen>
 
   <!-- Camera preview -->
   <dimen name="qr_rollcall_img">320dp</dimen>

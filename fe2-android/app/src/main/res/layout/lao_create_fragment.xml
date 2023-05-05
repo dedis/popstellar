@@ -44,6 +44,33 @@
 
       </com.google.android.material.textfield.TextInputLayout>
 
+      <TextView
+        android:id="@+id/witnesses_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/explication_text_style"
+        android:text="@string/witnesses"
+        android:visibility="gone"
+        android:layout_marginTop="@dimen/margin_text"
+        app:layout_constraintTop_toBottomOf="@id/server_url_entry_edit_text" />
+
+      <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/witnesses_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_text"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintTop_toBottomOf="@id/witnesses_title"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+      <Button
+        android:id="@+id/add_witness_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/lao_create_witnesses_button"
+        android:layout_gravity="center_horizontal" />
+
       <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

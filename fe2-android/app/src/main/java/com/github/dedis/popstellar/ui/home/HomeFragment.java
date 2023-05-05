@@ -10,8 +10,7 @@ import androidx.recyclerview.widget.*;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.HomeFragmentBinding;
-import com.github.dedis.popstellar.ui.qrcode.QrScannerFragment;
-import com.github.dedis.popstellar.ui.qrcode.ScanningAction;
+import com.github.dedis.popstellar.ui.qrcode.*;
 
 import dagger.hilt.android.AndroidEntryPoint;
 import timber.log.Timber;
@@ -70,6 +69,13 @@ public final class HomeFragment extends Fragment {
               R.id.fragment_qr_scanner,
               () -> QrScannerFragment.newInstance(ScanningAction.ADD_LAO_PARTICIPANT));
           viewModel.setIsHome(false);
+        });
+
+    binding.homeQrButton.setOnClickListener(
+        v -> {
+          Timber.tag(TAG).d("Opening QR fragment");
+          HomeActivity.setCurrentFragment(
+              getParentFragmentManager(), R.id.fragment_qr, QrFragment::newInstance);
         });
   }
 
