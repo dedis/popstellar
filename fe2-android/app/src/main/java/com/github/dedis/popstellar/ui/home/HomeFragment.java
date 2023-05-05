@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.*;
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.HomeFragmentBinding;
 import com.github.dedis.popstellar.ui.qrcode.*;
+import com.github.dedis.popstellar.utility.ActivityUtils;
 
 import dagger.hilt.android.AndroidEntryPoint;
 import timber.log.Timber;
@@ -43,6 +44,7 @@ public final class HomeFragment extends Fragment {
     setupListUpdates();
     setupButtonsActions();
 
+    handleBackNav();
     return binding.getRoot();
   }
 
@@ -108,5 +110,13 @@ public final class HomeFragment extends Fragment {
     recyclerView.addItemDecoration(dividerItemDecoration);
 
     recyclerView.setAdapter(laoListAdapter);
+  }
+
+  private void handleBackNav() {
+    HomeActivity.addBackNavigationCallback(
+        requireActivity(),
+        getViewLifecycleOwner(),
+        ActivityUtils.buildBackButtonCallback(
+            TAG, "put the app in background", () -> requireActivity().moveTaskToBack(true)));
   }
 }

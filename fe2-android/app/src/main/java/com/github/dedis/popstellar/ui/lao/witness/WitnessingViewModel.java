@@ -164,9 +164,12 @@ public class WitnessingViewModel extends AndroidViewModel implements QRCodeScann
     }
 
     scannedWitnesses.add(publicKey);
+    witnesses.setValue(new ArrayList<>(scannedWitnesses));
     nbScanned.setValue(scannedWitnesses.size());
     Timber.tag(TAG).d("Witness %s successfully scanned", publicKey);
     Toast.makeText(getApplication(), R.string.witness_scan_success, Toast.LENGTH_SHORT).show();
+    // So far the update Lao it's not used, we simply add the witnesses at creation time
+    /*
     disposables.add(
         updateLaoWitnesses()
             .subscribe(
@@ -181,6 +184,7 @@ public class WitnessingViewModel extends AndroidViewModel implements QRCodeScann
                   nbScanned.setValue(scannedWitnesses.size());
                   ErrorUtils.logAndShow(getApplication(), TAG, error, R.string.error_update_lao);
                 }));
+     */
   }
 
   private Completable updateLaoWitnesses() {

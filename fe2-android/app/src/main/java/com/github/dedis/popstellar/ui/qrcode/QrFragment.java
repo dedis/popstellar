@@ -12,7 +12,7 @@ import androidx.fragment.app.Fragment;
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.QrFragmentBinding;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
-import com.github.dedis.popstellar.model.qrcode.PopTokenData;
+import com.github.dedis.popstellar.model.qrcode.MainPublicKeyData;
 import com.github.dedis.popstellar.ui.home.HomeActivity;
 import com.github.dedis.popstellar.ui.home.HomeViewModel;
 import com.github.dedis.popstellar.utility.ActivityUtils;
@@ -59,6 +59,7 @@ public class QrFragment extends Fragment {
     // Add the public key in form of text and QR
     setQRFromPublicKey();
 
+    handleBackNav();
     return binding.getRoot();
   }
 
@@ -73,11 +74,16 @@ public class QrFragment extends Fragment {
     PublicKey pk = keyManager.getMainPublicKey();
     binding.pkText.setText(pk.getEncoded());
 
-    PopTokenData data = new PopTokenData(pk);
+    // Display the QR code
+    MainPublicKeyData data = new MainPublicKeyData(pk);
     Bitmap myBitmap =
         QRCode.from(gson.toJson(data))
             .withColor(ActivityUtils.getQRCodeColor(requireContext()), Color.TRANSPARENT)
             .bitmap();
     binding.pkQrCode.setImageBitmap(myBitmap);
+  }
+
+  private void handleBackNav() {
+    HomeActivity.addBackNavigationCallbackToHome(requireActivity(), getViewLifecycleOwner(), TAG);
   }
 }

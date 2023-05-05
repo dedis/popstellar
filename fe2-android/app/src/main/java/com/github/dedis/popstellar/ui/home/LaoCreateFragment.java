@@ -8,14 +8,18 @@ import android.view.*;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.LaoCreateFragmentBinding;
+import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.ui.lao.witness.WitnessingViewModel;
 import com.github.dedis.popstellar.ui.qrcode.QrScannerFragment;
 import com.github.dedis.popstellar.ui.qrcode.ScanningAction;
 
+import java.util.List;
 import java.util.Objects;
 
 import javax.inject.Inject;
@@ -35,6 +39,7 @@ public final class LaoCreateFragment extends Fragment {
   private WitnessingViewModel witnessingViewModel;
   private LaoCreateFragmentBinding binding;
   private String initialUrl;
+  private WitnessesListAdapter witnessesListAdapter;
 
   public static LaoCreateFragment newInstance() {
     return new LaoCreateFragment();
@@ -55,8 +60,10 @@ public final class LaoCreateFragment extends Fragment {
     setupCancelButton();
     setupTextFields();
     setupAddWitnesses();
+    setupWitnessesUpdates();
     setupCreateButton();
 
+    handleBackNav();
     return binding.getRoot();
   }
 
@@ -110,8 +117,32 @@ public final class LaoCreateFragment extends Fragment {
           HomeActivity.setCurrentFragment(
               getParentFragmentManager(),
               R.id.fragment_qr_scanner,
-              () -> QrScannerFragment.newInstance(ScanningAction.ADD_WITNESS));
+              () -> QrScannerFragment.newInstance(ScanningAction.ADD_WITNESS_AT_START));
         });
+
+    witnessesListAdapter = new WitnessesListAdapter();
+
+    LinearLayoutManager mLayoutManager = new LinearLayoutManager(getContext());
+    binding.witnessesList.setLayoutManager(mLayoutManager);
+
+    DividerItemDecoration dividerItemDecoration =
+        new DividerItemDecoration(requireContext(), mLayoutManager.getOrientation());
+    binding.witnessesList.addItemDecoration(dividerItemDecoration);
+
+    binding.witnessesList.setAdapter(witnessesListAdapter);
+  }
+
+  private void setupWitnessesUpdates() {
+    witnessingViewModel
+        .getWitnesses()
+        .observe(
+            requireActivity(),
+            publicKeys -> {
+              witnessesListAdapter.setList(publicKeys);
+              if (!publicKeys.isEmpty()) {
+                binding.witnessesTitle.setVisibility(View.VISIBLE);
+              }
+            });
   }
 
   private void setupCreateButton() {
@@ -122,11 +153,14 @@ public final class LaoCreateFragment extends Fragment {
           String laoName =
               Objects.requireNonNull(binding.laoNameEntryEditText.getText()).toString();
           Timber.tag(TAG).d("creating lao with name %s", laoName);
+          List<PublicKey> witnesses =
+              Objects.requireNonNull(witnessingViewModel.getWitnesses().getValue());
 
           networkManager.connect(serverAddress);
           requireActivity()
               .startActivity(
-                  ConnectingActivity.newIntentForCreatingDetail(requireContext(), laoName));
+                  ConnectingActivity.newIntentForCreatingDetail(
+                      requireContext(), laoName, witnesses));
         });
   }
 
@@ -137,5 +171,9 @@ public final class LaoCreateFragment extends Fragment {
           HomeActivity.setCurrentFragment(
               getParentFragmentManager(), R.id.fragment_home, HomeFragment::newInstance);
         });
+  }
+
+  private void handleBackNav() {
+    HomeActivity.addBackNavigationCallbackToHome(requireActivity(), getViewLifecycleOwner(), TAG);
   }
 }

@@ -12,12 +12,17 @@ import com.github.dedis.popstellar.databinding.ConnectingActivityBinding;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.CreateLao;
 import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.model.objects.Lao;
+import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.ui.lao.LaoActivity;
 import com.github.dedis.popstellar.utility.Constants;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.tinder.scarlet.WebSocket;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -120,7 +125,11 @@ public class ConnectingActivity extends AppCompatActivity {
 
     if (isCreation) {
       String laoName = getIntent().getExtras().getString(Constants.LAO_NAME);
-      CreateLao createLao = new CreateLao(laoName, keyManager.getMainPublicKey());
+      List<String> witnessesList = getIntent().getStringArrayListExtra(Constants.WITNESSES);
+      List<PublicKey> witnesses =
+          witnessesList.stream().map(PublicKey::new).collect(Collectors.toList());
+
+      CreateLao createLao = new CreateLao(laoName, keyManager.getMainPublicKey(), witnesses);
       Lao lao = new Lao(createLao.getId());
       Timber.tag(TAG).d("Creating Lao %s", lao.getId());
       disposables.add(
@@ -177,9 +186,14 @@ public class ConnectingActivity extends AppCompatActivity {
     return intent;
   }
 
-  public static Intent newIntentForCreatingDetail(Context ctx, String laoName) {
+  public static Intent newIntentForCreatingDetail(
+      Context ctx, String laoName, List<PublicKey> witnesses) {
     Intent intent = new Intent(ctx, ConnectingActivity.class);
     intent.putExtra(Constants.LAO_NAME, laoName);
+    intent.putStringArrayListExtra(
+        Constants.WITNESSES,
+        new ArrayList<>(
+            witnesses.stream().map(PublicKey::getEncoded).collect(Collectors.toList())));
     intent.putExtra(Constants.CONNECTION_PURPOSE_EXTRA, Constants.CREATING_EXTRA);
     intent.putExtra(Constants.ACTIVITY_TO_OPEN_EXTRA, Constants.LAO_DETAIL_EXTRA);
     intent.addFlags(FLAG_ACTIVITY_NEW_TASK);
