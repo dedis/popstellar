@@ -26,7 +26,8 @@
   <string name="home_title">My LAOs</string>
   <string name="join">Join</string>
   <string name="create">Create</string>
-  <string name="qr_title">My QR</string>
+  <string name="witness_qr">Become witness</string>
+  <string name="my_public_key">My public key:</string>
   <string name="server_url">Server URL</string>
   <string name="no_lao_text">OOPS, Looks like you don\'t have any Local Autonomous Organization (LAO) yet.\n Join or Create one with the buttons below</string>
   <string name="app_info">Welcome to POPstellar, a Proof-Of-Personhood system developed by the DEDIS lab!</string>

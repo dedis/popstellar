@@ -1,4 +1,4 @@
-package com.github.dedis.popstellar.ui.qrcode;
+package com.github.dedis.popstellar.ui.home;
 
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -13,8 +13,6 @@ import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.QrFragmentBinding;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.model.qrcode.MainPublicKeyData;
-import com.github.dedis.popstellar.ui.home.HomeActivity;
-import com.github.dedis.popstellar.ui.home.HomeViewModel;
 import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
@@ -66,7 +64,7 @@ public class QrFragment extends Fragment {
   @Override
   public void onResume() {
     super.onResume();
-    viewModel.setPageTitle(R.string.qr_title);
+    viewModel.setPageTitle(R.string.witness_qr);
     viewModel.setIsHome(false);
   }
 
