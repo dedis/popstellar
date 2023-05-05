@@ -87,6 +87,10 @@ public class WitnessingViewModel extends AndroidViewModel implements QRCodeScann
     this.witnesses.setValue(witnesses);
   }
 
+  public List<PublicKey> getScannedWitnesses() {
+    return new ArrayList<>(scannedWitnesses);
+  }
+
   /*
   // TODO refactor this away
    This is done so because of the absence of witnessing repository. It should be added
@@ -164,7 +168,6 @@ public class WitnessingViewModel extends AndroidViewModel implements QRCodeScann
     }
 
     scannedWitnesses.add(publicKey);
-    witnesses.setValue(new ArrayList<>(scannedWitnesses));
     nbScanned.setValue(scannedWitnesses.size());
     Timber.tag(TAG).d("Witness %s successfully scanned", publicKey);
     Toast.makeText(getApplication(), R.string.witness_scan_success, Toast.LENGTH_SHORT).show();

@@ -60,7 +60,6 @@ public final class LaoCreateFragment extends Fragment {
     setupCancelButton();
     setupTextFields();
     setupAddWitnesses();
-    setupWitnessesUpdates();
     setupCreateButton();
 
     handleBackNav();
@@ -130,19 +129,11 @@ public final class LaoCreateFragment extends Fragment {
     binding.witnessesList.addItemDecoration(dividerItemDecoration);
 
     binding.witnessesList.setAdapter(witnessesListAdapter);
-  }
-
-  private void setupWitnessesUpdates() {
-    witnessingViewModel
-        .getWitnesses()
-        .observe(
-            requireActivity(),
-            publicKeys -> {
-              witnessesListAdapter.setList(publicKeys);
-              if (!publicKeys.isEmpty()) {
-                binding.witnessesTitle.setVisibility(View.VISIBLE);
-              }
-            });
+    List<PublicKey> witnesses = witnessingViewModel.getScannedWitnesses();
+    if (!witnesses.isEmpty()) {
+      binding.witnessesTitle.setVisibility(View.VISIBLE);
+    }
+    witnessesListAdapter.setList(witnesses);
   }
 
   private void setupCreateButton() {
@@ -153,8 +144,7 @@ public final class LaoCreateFragment extends Fragment {
           String laoName =
               Objects.requireNonNull(binding.laoNameEntryEditText.getText()).toString();
           Timber.tag(TAG).d("creating lao with name %s", laoName);
-          List<PublicKey> witnesses =
-              Objects.requireNonNull(witnessingViewModel.getWitnesses().getValue());
+          List<PublicKey> witnesses = witnessingViewModel.getScannedWitnesses();
 
           networkManager.connect(serverAddress);
           requireActivity()
