@@ -5,6 +5,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"golang.org/x/exp/slices"
 	"net/url"
 	"os"
 	popstellar "popstellar"
@@ -22,6 +23,7 @@ import (
 
 	"github.com/gorilla/websocket"
 
+	"github.com/fsnotify/fsnotify"
 	"github.com/urfave/cli/v2"
 	"golang.org/x/xerrors"
 )
@@ -30,8 +32,10 @@ const (
 	// connectionRetryMaxDelay is the maximum time to wait before retrying to connect to a server
 	connectionRetryMaxDelay = 32 * time.Second
 
+	// connectionRetryInitialDelay is the initial time to wait before retrying to connect to a server
 	connectionRetryInitialDelay = 2 * time.Second
 
+	// connectionRetryRate is the rate at which the time to wait before retrying to connect to a server increases
 	connectionRetryRate = 2
 )
 
@@ -45,41 +49,6 @@ type ServerConfig struct {
 	OtherServers   []string `json:"other-servers"`
 }
 
-func startWithConfigFile(configFilename string) (ServerConfig, error) {
-	if configFilename == "" {
-		return ServerConfig{}, xerrors.Errorf("no config file specified")
-	}
-	bytes, err := os.ReadFile(configFilename)
-	if err != nil {
-		return ServerConfig{}, xerrors.Errorf("could not read config file: %w", err)
-	}
-	var config ServerConfig
-	err = json.Unmarshal(bytes, &config)
-	if err != nil {
-		return ServerConfig{}, xerrors.Errorf("could not unmarshal config file: %w", err)
-	}
-	return config, nil
-}
-
-func startWithFlags(cliCtx *cli.Context) (ServerConfig, error) {
-	// get command line args which specify public key, addresses, port to use for clients
-	// and servers, remote servers address
-	clientPort := cliCtx.Int("client-port")
-	serverPort := cliCtx.Int("server-port")
-	log.Info().Msgf("Starting server with client port %d and server port %d", clientPort, serverPort)
-	if clientPort == serverPort {
-		return ServerConfig{}, xerrors.Errorf("client and server ports must be different")
-	}
-	return ServerConfig{
-		PublicKey:      cliCtx.String("public-key"),
-		PublicAddress:  cliCtx.String("server-public-address"),
-		PrivateAddress: cliCtx.String("server-listen-address"),
-		ClientPort:     clientPort,
-		ServerPort:     serverPort,
-		OtherServers:   cliCtx.StringSlice("other-servers"),
-	}, nil
-}
-
 // Serve parses the CLI arguments and spawns a hub and a websocket server for
 // the server
 func Serve(cliCtx *cli.Context) error {
@@ -89,10 +58,30 @@ func Serve(cliCtx *cli.Context) error {
 	var serverConfig ServerConfig
 	var err error
 
+	// try to start using a config file
 	serverConfig, err = startWithConfigFile(configFilePath)
 	if err != nil {
 		log.Error().Msgf("Could not start with config file: %v", err)
+		// try to start using flags instead
 		serverConfig, err = startWithFlags(cliCtx)
+		if err != nil {
+			return xerrors.Errorf("Could not start server: %v", err)
+		}
+	} else {
+		// if the config file was used, start watching the other-servers field for changes
+		watcher, err := fsnotify.NewWatcher()
+		if err != nil {
+			return xerrors.Errorf("Could not create watcher: %v", err)
+		}
+		defer watcher.Close()
+
+		err = watcher.Add(configFilePath)
+		if err != nil {
+			return xerrors.Errorf("Could not watch config file: %v", err)
+		}
+
+		// start watching goroutine
+		go watchConfigFile(watcher, configFilePath, &serverConfig.OtherServers)
 	}
 
 	// compute the client server address
@@ -132,7 +121,7 @@ func Serve(cliCtx *cli.Context) error {
 	}
 
 	// start the connection to servers loop
-	go serverConnectionLoop(h, wg, done, connectedServers)
+	go serverConnectionLoop(h, wg, done, connectedServers, &serverConfig.OtherServers)
 
 	// Wait for a Ctrl-C
 	err = network.WaitAndShutdownServers(cliCtx.Context, clientSrv, serverSrv)
@@ -164,7 +153,7 @@ func Serve(cliCtx *cli.Context) error {
 }
 
 // serverConnectionLoop tries to connect to the remote servers following an exponential backoff strategy
-func serverConnectionLoop(h hub.Hub, wg *sync.WaitGroup, done chan struct{}, connectedServers map[string]bool) {
+func serverConnectionLoop(h hub.Hub, wg *sync.WaitGroup, done chan struct{}, connectedServers map[string]bool, otherServers *[]string) {
 	// first connection to the servers
 	_ = connectToServers(h, wg, done, connectedServers)
 
@@ -174,15 +163,13 @@ func serverConnectionLoop(h hub.Hub, wg *sync.WaitGroup, done chan struct{}, con
 	ticker := time.NewTicker(delay)
 	defer ticker.Stop()
 
-	for {
-		select {
-		case <-ticker.C:
-			// try to connect to servers
-			err := connectToServers(h, wg, done, connectedServers)
-			if err != nil {
-				increaseDelay(&delay)
-				log.Info().Msgf("Increasing delay to %v", delay)
-			}
+	for range ticker.C {
+		// try to connect to servers
+		log.Info().Msgf("Trying to connect to servers: %v", *otherServers)
+		err := connectToServers(h, wg, done, connectedServers)
+		if err != nil {
+			increaseDelay(&delay)
+			log.Info().Msgf("Increasing delay to %v", delay)
 		}
 	}
 }
@@ -265,4 +252,76 @@ func ownerKey(pk string, point *kyber.Point) error {
 	}
 
 	return nil
+}
+
+// startWithConfigFile returns the ServerConfig from the config file
+func startWithConfigFile(configFilename string) (ServerConfig, error) {
+	if configFilename == "" {
+		return ServerConfig{}, xerrors.Errorf("no config file specified")
+	}
+	return loadConfig(configFilename)
+}
+
+// loadConfig loads the config file
+func loadConfig(configFilename string) (ServerConfig, error) {
+	bytes, err := os.ReadFile(configFilename)
+	if err != nil {
+		return ServerConfig{}, xerrors.Errorf("could not read config file: %w", err)
+	}
+	var config ServerConfig
+	err = json.Unmarshal(bytes, &config)
+	if err != nil {
+		return ServerConfig{}, xerrors.Errorf("could not unmarshal config file: %w", err)
+	}
+	return config, nil
+}
+
+// startWithFlags returns the ServerConfig using the command line flags
+func startWithFlags(cliCtx *cli.Context) (ServerConfig, error) {
+	// get command line args which specify public key, addresses, port to use for clients
+	// and servers, remote servers address
+	clientPort := cliCtx.Int("client-port")
+	serverPort := cliCtx.Int("server-port")
+	log.Info().Msgf("Starting server with client port %d and server port %d", clientPort, serverPort)
+	if clientPort == serverPort {
+		return ServerConfig{}, xerrors.Errorf("client and server ports must be different")
+	}
+	return ServerConfig{
+		PublicKey:      cliCtx.String("public-key"),
+		PublicAddress:  cliCtx.String("server-public-address"),
+		PrivateAddress: cliCtx.String("server-listen-address"),
+		ClientPort:     clientPort,
+		ServerPort:     serverPort,
+		OtherServers:   cliCtx.StringSlice("other-servers"),
+	}, nil
+}
+
+// watchConfigFile watches the config file for changes and updates the other servers list if necessary
+func watchConfigFile(watcher *fsnotify.Watcher, configFilePath string, otherServers *[]string) {
+	for event := range watcher.Events {
+		if event.Op&fsnotify.Write == fsnotify.Write {
+			updatedConfig, err := loadConfig(configFilePath)
+			if err != nil {
+				log.Error().Msgf("Could not load config file: %v", err)
+				return
+			}
+			if newServersAdded(updatedConfig.OtherServers, otherServers) {
+				log.Info().Msgf("New servers added to config file: %v", updatedConfig.OtherServers)
+				*otherServers = updatedConfig.OtherServers
+			}
+		}
+	}
+}
+
+// newServersAdded returns true if there are new servers in the newServers slice
+func newServersAdded(newServers []string, oldServers *[]string) bool {
+	if len(newServers) != len(*oldServers) {
+		return true
+	}
+	for _, newServer := range newServers {
+		if !slices.Contains(*oldServers, newServer) {
+			return true
+		}
+	}
+	return false
 }
