@@ -9,6 +9,7 @@ Feature: Create a pop LAO
     * call read('classpath:be/utils/server.feature')
     * call read('classpath:be/mockFrontEnd.feature')
     * call read('classpath:be/constants.feature')
+    * def frontend = call createFrontend
     * string channel = "/root"
 
   Scenario: Create Lao request with empty lao name should fail with an error response 2

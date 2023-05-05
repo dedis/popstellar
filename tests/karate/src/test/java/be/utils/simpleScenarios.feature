@@ -5,12 +5,14 @@
     # This file contains a set of simple scenarios that can be used when
     # testing the validity of other features. By calling one scenario from
     # this file simply use the allocated name for the particular feature.
+      * call read('classpath:be/mockFrontEnd.feature')
       * def laoCreateId = 1
       * def rollCallCreateId = 3
       * def openRollCallId = 32
       * def closeRollCallId = 33
       * def electionSetupId = 4
       * def castVoteId = 41
+      * def frontend = call createFrontend
     @name=valid_lao
     Scenario: Creates valid lao
 
