@@ -35,6 +35,14 @@ final case class Channel(channel: String) {
 
   def isRootChannel: Boolean = channel == Channel.ROOT_CHANNEL.channel
 
+  def isRootLaoChannel: Boolean = {
+    val laoId = Channel(channel).decodeChannelLaoId
+    if (laoId.isDefined) {
+      return laoId.get == Channel(channel).extractChildChannel
+    }
+    false
+  }
+
   def isSubChannel: Boolean = channel.startsWith(Channel.ROOT_CHANNEL_PREFIX)
 
   override def equals(that: Any): Boolean = that match {
