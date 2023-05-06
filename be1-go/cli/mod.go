@@ -58,6 +58,8 @@ func Serve(cliCtx *cli.Context) error {
 	var serverConfig ServerConfig
 	var err error
 
+	startedWithConfigFile := false
+
 	// try to start using a config file
 	serverConfig, err = startWithConfigFile(configFilePath)
 	if err != nil {
@@ -68,20 +70,7 @@ func Serve(cliCtx *cli.Context) error {
 			return xerrors.Errorf("Could not start server: %v", err)
 		}
 	} else {
-		// if the config file was used, start watching the other-servers field for changes
-		watcher, err := fsnotify.NewWatcher()
-		if err != nil {
-			return xerrors.Errorf("Could not create watcher: %v", err)
-		}
-		defer watcher.Close()
-
-		err = watcher.Add(configFilePath)
-		if err != nil {
-			return xerrors.Errorf("Could not watch config file: %v", err)
-		}
-
-		// start watching goroutine
-		go watchConfigFile(watcher, configFilePath, &serverConfig.OtherServers)
+		startedWithConfigFile = true
 	}
 
 	// compute the client server address
@@ -114,14 +103,32 @@ func Serve(cliCtx *cli.Context) error {
 	wg := &sync.WaitGroup{}
 	done := make(chan struct{})
 
-	// create the map of servers and their connection status
-	connectedServers := make(map[string]bool)
-	for _, serverAddress := range serverConfig.OtherServers {
-		connectedServers[serverAddress] = false
+	updatedServersChan := make(chan []string)
+
+	// if the config file was used, start watching the other-servers field for changes
+	if startedWithConfigFile {
+		watcher, err := fsnotify.NewWatcher()
+		if err != nil {
+			return xerrors.Errorf("Could not create watcher: %v", err)
+		}
+		defer watcher.Close()
+
+		err = watcher.Add(configFilePath)
+		if err != nil {
+			return xerrors.Errorf("Could not watch config file: %v", err)
+		}
+
+		// start watching goroutine
+		go watchConfigFile(watcher, configFilePath, &serverConfig.OtherServers, updatedServersChan)
 	}
 
-	// start the connection to servers loop
-	go serverConnectionLoop(h, wg, done, connectedServers, &serverConfig.OtherServers)
+	connectedServers := make(map[string]bool)
+
+	for _, server := range serverConfig.OtherServers {
+		connectedServers[server] = false
+	}
+
+	go serverConnectionLoop(h, wg, done, serverConfig.OtherServers, updatedServersChan, &connectedServers)
 
 	// Wait for a Ctrl-C
 	err = network.WaitAndShutdownServers(cliCtx.Context, clientSrv, serverSrv)
@@ -153,9 +160,10 @@ func Serve(cliCtx *cli.Context) error {
 }
 
 // serverConnectionLoop tries to connect to the remote servers following an exponential backoff strategy
-func serverConnectionLoop(h hub.Hub, wg *sync.WaitGroup, done chan struct{}, connectedServers map[string]bool, otherServers *[]string) {
+// it also listens for updates in the other-servers field and tries to connect to the new servers
+func serverConnectionLoop(h hub.Hub, wg *sync.WaitGroup, done chan struct{}, otherServers []string, updatedServersChan chan []string, connectedServers *map[string]bool) {
 	// first connection to the servers
-	_ = connectToServers(h, wg, done, connectedServers)
+	_ = connectToServers(h, wg, done, otherServers, connectedServers)
 
 	// define the delay between connection retries
 	delay := connectionRetryInitialDelay
@@ -163,13 +171,25 @@ func serverConnectionLoop(h hub.Hub, wg *sync.WaitGroup, done chan struct{}, con
 	ticker := time.NewTicker(delay)
 	defer ticker.Stop()
 
-	for range ticker.C {
-		// try to connect to servers
-		log.Info().Msgf("Trying to connect to servers: %v", *otherServers)
-		err := connectToServers(h, wg, done, connectedServers)
-		if err != nil {
-			increaseDelay(&delay)
-			log.Info().Msgf("Increasing delay to %v", delay)
+	for {
+		select {
+		case <-ticker.C:
+			// try to connect to servers
+			log.Info().Msgf("Trying to connect to servers: %v", connectedServers)
+			err := connectToServers(h, wg, done, otherServers, connectedServers)
+			if err != nil {
+				increaseDelay(&delay)
+				ticker.Reset(delay)
+			} else {
+				ticker.Stop()
+			}
+		case newServersList := <-updatedServersChan:
+			log.Info().Msgf("Received servers update")
+			delay = connectionRetryInitialDelay
+			log.Info().Msgf("Resetting delay to %v", delay)
+			ticker.Reset(delay)
+			log.Info().Msgf("New servers list: %v", newServersList)
+			_ = connectToServers(h, wg, done, newServersList, connectedServers)
 		}
 	}
 }
@@ -183,21 +203,34 @@ func increaseDelay(delay *time.Duration) {
 	}
 }
 
+// updateServersState updates the state of the servers in the connectedServers map
+func updateServersState(servers []string, connectedServers *map[string]bool) {
+	for _, server := range servers {
+		if _, ok := (*connectedServers)[server]; !ok {
+			log.Info().Msgf("Adding server %s to unconnected servers", server)
+			(*connectedServers)[server] = false
+		}
+	}
+}
+
 // connectToServers connects to the given remote servers
-func connectToServers(h hub.Hub, wg *sync.WaitGroup, done chan struct{}, connectedServers map[string]bool) error {
+func connectToServers(h hub.Hub, wg *sync.WaitGroup, done chan struct{}, servers []string, connectedServers *map[string]bool) error {
 	log.Info().Msg("Connecting to servers")
-	for serverAddress, connected := range connectedServers {
+	updateServersState(servers, connectedServers)
+	var returnErr error
+	for serverAddress, connected := range *connectedServers {
 		if !connected {
 			err := connectToSocket(serverAddress, h, wg, done)
 			if err == nil {
-				connectedServers[serverAddress] = true
+				(*connectedServers)[serverAddress] = true
 				log.Info().Msgf("connected to server %s", serverAddress)
 			} else {
+				returnErr = err
 				log.Error().Msgf("failed to connect to server %s: %v", serverAddress, err)
 			}
 		}
 	}
-	return nil
+	return returnErr
 }
 
 // connectToSocket establishes a connection to another server's server
@@ -273,6 +306,9 @@ func loadConfig(configFilename string) (ServerConfig, error) {
 	if err != nil {
 		return ServerConfig{}, xerrors.Errorf("could not unmarshal config file: %w", err)
 	}
+	if config.ServerPort == config.ClientPort {
+		return ServerConfig{}, xerrors.Errorf("client and server ports must be different")
+	}
 	return config, nil
 }
 
@@ -282,7 +318,6 @@ func startWithFlags(cliCtx *cli.Context) (ServerConfig, error) {
 	// and servers, remote servers address
 	clientPort := cliCtx.Int("client-port")
 	serverPort := cliCtx.Int("server-port")
-	log.Info().Msgf("Starting server with client port %d and server port %d", clientPort, serverPort)
 	if clientPort == serverPort {
 		return ServerConfig{}, xerrors.Errorf("client and server ports must be different")
 	}
@@ -297,7 +332,7 @@ func startWithFlags(cliCtx *cli.Context) (ServerConfig, error) {
 }
 
 // watchConfigFile watches the config file for changes and updates the other servers list if necessary
-func watchConfigFile(watcher *fsnotify.Watcher, configFilePath string, otherServers *[]string) {
+func watchConfigFile(watcher *fsnotify.Watcher, configFilePath string, otherServers *[]string, updatedServersChan chan []string) {
 	for event := range watcher.Events {
 		if event.Op&fsnotify.Write == fsnotify.Write {
 			updatedConfig, err := loadConfig(configFilePath)
@@ -308,6 +343,8 @@ func watchConfigFile(watcher *fsnotify.Watcher, configFilePath string, otherServ
 			if newServersAdded(updatedConfig.OtherServers, otherServers) {
 				log.Info().Msgf("New servers added to config file: %v", updatedConfig.OtherServers)
 				*otherServers = updatedConfig.OtherServers
+				log.Info().Msgf("Sending signal to update servers")
+				updatedServersChan <- updatedConfig.OtherServers
 			}
 		}
 	}

@@ -46,3 +46,28 @@ func TestConnectToSocket(t *testing.T) {
 	close(wDone)
 	wg.Wait()
 }
+
+// TestLoadConfigFile tests the loadConfig function is able to load the config file
+// and parse it into a ServerConfig struct
+func TestLoadConfigFile(t *testing.T) {
+	ServerConfig, err := startWithConfigFile("test_config_files/valid_config.json")
+	require.NoError(t, err)
+	require.Equal(t, "", ServerConfig.PublicKey)
+	require.Equal(t, "localhost", ServerConfig.PublicAddress)
+	require.Equal(t, "localhost", ServerConfig.PrivateAddress)
+	require.Equal(t, 9000, ServerConfig.ClientPort)
+	require.Equal(t, 9001, ServerConfig.ServerPort)
+	require.Equal(t, []string{}, ServerConfig.OtherServers)
+}
+
+// TestLoadInvalidConfigFilename tests that loading a config file with an invalid filename fails
+func TestLoadInvalidConfigFilename(t *testing.T) {
+	_, err := startWithConfigFile("invalid_filename.json")
+	require.Error(t, err)
+}
+
+// TestLoadConfigFileWithInvalidPorts tests that loading a config file with the same client and server ports fails
+func TestLoadConfigFileWithInvalidPorts(t *testing.T) {
+	_, err := startWithConfigFile("test_config_files/invalid_config_equal_client_server_ports.json")
+	require.Error(t, err)
+}
