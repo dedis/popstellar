@@ -50,7 +50,8 @@ public class InviteFragment extends Fragment {
     InviteFragmentBinding binding = InviteFragmentBinding.inflate(inflater, container, false);
     laoViewModel = LaoActivity.obtainViewModel(requireActivity());
 
-    binding.laoPropertiesIdentifierText.setText(laoViewModel.getPublicKey().getEncoded());
+    // Display the LAO identifier, not the client's public key
+    binding.laoPropertiesIdentifierText.setText(laoViewModel.getLaoId());
     binding.laoPropertiesServerText.setText(networkManager.getCurrentUrl());
 
     try {
