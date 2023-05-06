@@ -39,7 +39,6 @@ public final class LaoCreateFragment extends Fragment {
   private WitnessingViewModel witnessingViewModel;
   private LaoCreateFragmentBinding binding;
   private String initialUrl;
-  private WitnessesListAdapter witnessesListAdapter;
 
   public static LaoCreateFragment newInstance() {
     return new LaoCreateFragment();
@@ -119,7 +118,7 @@ public final class LaoCreateFragment extends Fragment {
               () -> QrScannerFragment.newInstance(ScanningAction.ADD_WITNESS_AT_START));
         });
 
-    witnessesListAdapter = new WitnessesListAdapter();
+    WitnessesListAdapter witnessesListAdapter = new WitnessesListAdapter();
 
     LinearLayoutManager mLayoutManager = new LinearLayoutManager(getContext());
     binding.witnessesList.setLayoutManager(mLayoutManager);

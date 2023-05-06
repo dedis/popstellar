@@ -11,6 +11,7 @@
       android:id="@+id/pk_qr_code"
       android:layout_width="@dimen/qr_rollcall_img"
       android:layout_height="@dimen/qr_rollcall_img"
+      android:contentDescription="@string/witness"
       app:layout_constraintTop_toTopOf="parent"
       app:layout_constraintBottom_toBottomOf="parent"
       app:layout_constraintStart_toStartOf="parent"
