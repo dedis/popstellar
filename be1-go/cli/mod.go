@@ -196,7 +196,7 @@ func serverConnectionLoop(h hub.Hub, wg *sync.WaitGroup, done chan struct{}, oth
 
 // increaseDelay increases the delay between connection retries following an exponential backoff
 func increaseDelay(delay *time.Duration) {
-	if *delay > connectionRetryMaxDelay {
+	if *delay >= connectionRetryMaxDelay {
 		*delay = connectionRetryMaxDelay
 	} else {
 		*delay = *delay * connectionRetryRate
@@ -333,8 +333,10 @@ func startWithFlags(cliCtx *cli.Context) (ServerConfig, error) {
 
 // watchConfigFile watches the config file for changes and updates the other servers list if necessary
 func watchConfigFile(watcher *fsnotify.Watcher, configFilePath string, otherServers *[]string, updatedServersChan chan []string) {
+	log.Info().Msgf("Watching config file %s for changes", configFilePath)
 	for event := range watcher.Events {
 		if event.Op&fsnotify.Write == fsnotify.Write {
+			log.Info().Msgf("Config file %s changed", configFilePath)
 			updatedConfig, err := loadConfig(configFilePath)
 			if err != nil {
 				log.Error().Msgf("Could not load config file: %v", err)

@@ -1,8 +1,1 @@
-{
-    "public-key"                           : "",
-    "server-public-address"                : "localhost",
-    "server-listen-address"                : "localhost",
-    "client-port"                          : 9000,
-    "server-port"                          : 9001,
-    "other-servers": []
-}
+{"public-key":"","server-public-address":"localhost","server-listen-address":"localhost","client-port":9000,"server-port":9001,"other-servers":[]}
