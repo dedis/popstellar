@@ -4,5 +4,5 @@
     "server-listen-address"                : "localhost",
     "client-port"                          : 9000,
     "server-port"                          : 9001,
-    "other-servers": []
+    "other-servers": ["localhost:9003", "localhost:9005"]
 }

@@ -146,6 +146,14 @@ func TestIncreaseDelay(t *testing.T) {
 	require.Equal(t, connectionRetryMaxDelay, delay)
 }
 
+// TestNewServersAdded tests that the function correctly returns true if the
+// new servers are different from the old servers
+func TestNewServersAdded(t *testing.T) {
+	oldServers := []string{"server1", "server2"}
+	newServers := []string{"server1", "server2", "server4"}
+	require.True(t, newServersAdded(oldServers, &newServers))
+}
+
 /**
  * -----------------------
  * Util functions

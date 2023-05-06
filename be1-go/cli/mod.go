@@ -60,11 +60,11 @@ func Serve(cliCtx *cli.Context) error {
 
 	startedWithConfigFile := false
 
-	// try to start using a config file
+	// by default, start using a config file
 	serverConfig, err = startWithConfigFile(configFilePath)
 	if err != nil {
-		log.Error().Msgf("Could not start with config file: %v", err)
-		// try to start using flags instead
+		log.Error().Msgf("Could not start server with config file: %v. Starting with flags.", err)
+		// start by using flags instead
 		serverConfig, err = startWithFlags(cliCtx)
 		if err != nil {
 			return xerrors.Errorf("Could not start server: %v", err)
@@ -103,6 +103,7 @@ func Serve(cliCtx *cli.Context) error {
 	wg := &sync.WaitGroup{}
 	done := make(chan struct{})
 
+	// create channel for updated servers from the config file
 	updatedServersChan := make(chan []string)
 
 	// if the config file was used, start watching the other-servers field for changes
@@ -122,6 +123,7 @@ func Serve(cliCtx *cli.Context) error {
 		go watchConfigFile(watcher, configFilePath, &serverConfig.OtherServers, updatedServersChan)
 	}
 
+	// map to keep track of the connection status of the servers
 	connectedServers := make(map[string]bool)
 
 	for _, server := range serverConfig.OtherServers {
@@ -163,7 +165,8 @@ func Serve(cliCtx *cli.Context) error {
 // it also listens for updates in the other-servers field and tries to connect to the new servers
 func serverConnectionLoop(h hub.Hub, wg *sync.WaitGroup, done chan struct{}, otherServers []string, updatedServersChan chan []string, connectedServers *map[string]bool) {
 	// first connection to the servers
-	_ = connectToServers(h, wg, done, otherServers, connectedServers)
+	serversToConnect := otherServers
+	_ = connectToServers(h, wg, done, serversToConnect, connectedServers)
 
 	// define the delay between connection retries
 	delay := connectionRetryInitialDelay
@@ -175,8 +178,8 @@ func serverConnectionLoop(h hub.Hub, wg *sync.WaitGroup, done chan struct{}, oth
 		select {
 		case <-ticker.C:
 			// try to connect to servers
-			log.Info().Msgf("Trying to connect to servers: %v", connectedServers)
-			err := connectToServers(h, wg, done, otherServers, connectedServers)
+			log.Info().Msgf("Trying to connect to servers: %v", serversToConnect)
+			err := connectToServers(h, wg, done, serversToConnect, connectedServers)
 			if err != nil {
 				increaseDelay(&delay)
 				ticker.Reset(delay)
@@ -184,38 +187,16 @@ func serverConnectionLoop(h hub.Hub, wg *sync.WaitGroup, done chan struct{}, oth
 				ticker.Stop()
 			}
 		case newServersList := <-updatedServersChan:
-			log.Info().Msgf("Received servers update")
 			delay = connectionRetryInitialDelay
-			log.Info().Msgf("Resetting delay to %v", delay)
 			ticker.Reset(delay)
-			log.Info().Msgf("New servers list: %v", newServersList)
-			_ = connectToServers(h, wg, done, newServersList, connectedServers)
-		}
-	}
-}
-
-// increaseDelay increases the delay between connection retries following an exponential backoff
-func increaseDelay(delay *time.Duration) {
-	if *delay >= connectionRetryMaxDelay {
-		*delay = connectionRetryMaxDelay
-	} else {
-		*delay = *delay * connectionRetryRate
-	}
-}
-
-// updateServersState updates the state of the servers in the connectedServers map
-func updateServersState(servers []string, connectedServers *map[string]bool) {
-	for _, server := range servers {
-		if _, ok := (*connectedServers)[server]; !ok {
-			log.Info().Msgf("Adding server %s to unconnected servers", server)
-			(*connectedServers)[server] = false
+			serversToConnect = newServersList
+			_ = connectToServers(h, wg, done, serversToConnect, connectedServers)
 		}
 	}
 }
 
 // connectToServers connects to the given remote servers
 func connectToServers(h hub.Hub, wg *sync.WaitGroup, done chan struct{}, servers []string, connectedServers *map[string]bool) error {
-	log.Info().Msg("Connecting to servers")
 	updateServersState(servers, connectedServers)
 	var returnErr error
 	for serverAddress, connected := range *connectedServers {
@@ -223,7 +204,6 @@ func connectToServers(h hub.Hub, wg *sync.WaitGroup, done chan struct{}, servers
 			err := connectToSocket(serverAddress, h, wg, done)
 			if err == nil {
 				(*connectedServers)[serverAddress] = true
-				log.Info().Msgf("connected to server %s", serverAddress)
 			} else {
 				returnErr = err
 				log.Error().Msgf("failed to connect to server %s: %v", serverAddress, err)
@@ -332,20 +312,17 @@ func startWithFlags(cliCtx *cli.Context) (ServerConfig, error) {
 }
 
 // watchConfigFile watches the config file for changes and updates the other servers list if necessary
-func watchConfigFile(watcher *fsnotify.Watcher, configFilePath string, otherServers *[]string, updatedServersChan chan []string) {
-	log.Info().Msgf("Watching config file %s for changes", configFilePath)
+func watchConfigFile(watcher *fsnotify.Watcher, configFilePath string, otherServersField *[]string, updatedServersChan chan []string) {
 	for event := range watcher.Events {
 		if event.Op&fsnotify.Write == fsnotify.Write {
-			log.Info().Msgf("Config file %s changed", configFilePath)
 			updatedConfig, err := loadConfig(configFilePath)
 			if err != nil {
 				log.Error().Msgf("Could not load config file: %v", err)
-				return
-			}
-			if newServersAdded(updatedConfig.OtherServers, otherServers) {
-				log.Info().Msgf("New servers added to config file: %v", updatedConfig.OtherServers)
-				*otherServers = updatedConfig.OtherServers
-				log.Info().Msgf("Sending signal to update servers")
+			} else if newServersAdded(updatedConfig.OtherServers, otherServersField) {
+				log.Info().Msgf("New servers list: %v", updatedConfig.OtherServers)
+				// update the other servers field of the config
+				*otherServersField = updatedConfig.OtherServers
+				// send the updated other servers list to the channel
 				updatedServersChan <- updatedConfig.OtherServers
 			}
 		}
@@ -363,4 +340,22 @@ func newServersAdded(newServers []string, oldServers *[]string) bool {
 		}
 	}
 	return false
+}
+
+// increaseDelay increases the delay between connection retries following an exponential backoff
+func increaseDelay(delay *time.Duration) {
+	if *delay >= connectionRetryMaxDelay {
+		*delay = connectionRetryMaxDelay
+	} else {
+		*delay = *delay * connectionRetryRate
+	}
+}
+
+// updateServersState updates the state of the servers in the connectedServers map
+func updateServersState(servers []string, connectedServers *map[string]bool) {
+	for _, server := range servers {
+		if _, ok := (*connectedServers)[server]; !ok {
+			(*connectedServers)[server] = false
+		}
+	}
 }
