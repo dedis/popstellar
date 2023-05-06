@@ -23,6 +23,10 @@ public class Frontend {
     this.multiMsgSocket.send(jsonDataMap);
   }
 
+  public void send(String data){
+    this.multiMsgSocket.send(data);
+  }
+
   public void publish(Map<String, Object> jsonDataMap, String channel) {
     this.multiMsgSocket.publish(jsonDataMap, channel);
   }
@@ -41,6 +45,9 @@ public class Frontend {
 
   public MessageBuffer getBuffer() {
     return this.multiMsgSocket.getBuffer();
+  }
+  public void takeTimeout(long timeout) {
+    this.multiMsgSocket.getBuffer().takeTimeout(timeout);
   }
 
 }

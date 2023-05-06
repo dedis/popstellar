@@ -34,6 +34,8 @@ public class MultiMsgWebSocketClient extends WebSocketClient {
     this.send(Json.of(jsonDataMap).toString());
   }
 
+
+
   @Override
   public void signal(Object result) {
     logger.trace("signal called: {}", result);

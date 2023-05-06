@@ -13,12 +13,13 @@
       * def electionSetupId = 4
       * def castVoteId = 41
       * def frontend = call createFrontend
+
     @name=valid_lao
     Scenario: Creates valid lao
 
       * string laoCreateReq  = read('classpath:data/lao/valid_lao_create.json')
       * eval frontend.send(laoCreateReq)
-      * frontend_buffer.takeTimeout(timeout)
+      * frontend.takeTimeout(timeout)
 
       * def subscribe =
         """
@@ -32,7 +33,7 @@
           }
         """
       * frontend.send(subscribe)
-      * def subs = frontend_buffer.takeTimeout(timeout)
+      * def subs = frontend.takeTimeout(timeout)
       * karate.log("subscribe message received : " + subs)
       * def catchup =
         """
@@ -46,7 +47,7 @@
           }
         """
       * frontend.send(catchup)
-      * def catchup_response = frontend_buffer.takeTimeout(timeout)
+      * def catchup_response = frontend.takeTimeout(timeout)
       * karate.log("catchup message received : " + catchup_response)
 
     @name=valid_roll_call
@@ -159,7 +160,7 @@
           }
         """
       * frontend.send(subscribe)
-      * def subs = frontend_buffer.takeTimeout(timeout)
+      * def subs = frontend.takeTimeout(timeout)
       * def catchup =
         """
           {
@@ -172,7 +173,7 @@
            }
         """
       * frontend.send(catchup)
-      * def catchup_response = frontend_buffer.takeTimeout(timeout)
+      * def catchup_response = frontend.takeTimeout(timeout)
 
     @name=election_open
     Scenario: Opens an election
@@ -227,7 +228,7 @@
           }
         """
       * frontend.send(subscribe)
-      * def subs = frontend_buffer.takeTimeout(timeout)
+      * def subs = frontend.takeTimeout(timeout)
       * karate.log("subscribe message received : " + subs)
       * def catchup =
         """
@@ -241,7 +242,7 @@
           }
         """
       * frontend.send(catchup)
-      * def catchup_response = frontend_buffer.takeTimeout(timeout)
+      * def catchup_response = frontend.takeTimeout(timeout)
 
     @name=valid_coin_issuance
     Scenario: Issues a certain amount of coins to an attendee
