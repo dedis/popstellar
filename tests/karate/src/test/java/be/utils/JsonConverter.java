@@ -14,16 +14,12 @@ import java.util.Map;
 
 public class JsonConverter {
 
-  private String senderPk = "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=";
-  private String privateKeyHex = "d257820c1a249652572974fbda9b27a85e54605551c6773504d0d2858d392874";
-  private String signatureForced =
-      "ONylxgHA9cbsB_lwdfbn3iyzRd4aTpJhBMnvEKhmJF_niE_pUHdmjxDXjEwFyvo5WiH1NZXWyXG27SYEpkasCA==";
+  public String senderPk;
+  public String privateKeyHex;
+  public String signature;
   private boolean isSignatureForced = false;
   private String messageIdForced = "";
 
-  public Json fromMapToJson(Map<String, String> map) {
-    return Json.of(map);
-  }
 
   /** Produces the base64 variant of the json file passed as argument */
   public String convertJsonToBase64(Json json) {
@@ -33,11 +29,23 @@ public class JsonConverter {
     return encoder.encodeToString(jsonBytes);
   }
 
+  public JsonConverter(){
+    this.senderPk = "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=";
+    this.privateKeyHex = "d257820c1a249652572974fbda9b27a85e54605551c6773504d0d2858d392874";
+    this.signature = "ONylxgHA9cbsB_lwdfbn3iyzRd4aTpJhBMnvEKhmJF_niE_pUHdmjxDXjEwFyvo5WiH1NZXWyXG27SYEpkasCA==";
+  }
+  public JsonConverter(String senderPk, String privateKeyHex, String signature){
+    this.senderPk = senderPk;
+    this.privateKeyHex = privateKeyHex;
+    this.signature = signature;
+  }
+
+
   /**
    * Produces a valid Json representation of a message given the message data, the id of the message
    * and the channel where the message is supposed to be sent
    */
-  public Json publishМessageFromData(String stringData, int id, String channel) {
+  public Json publishMessageFromData(String stringData, int id, String channel) {
     Json messageData = Json.object();
     messageData.set("method", "publish");
     messageData.set("id", id);
@@ -59,7 +67,7 @@ public class JsonConverter {
     String messageDataBase64 = convertJsonToBase64(messageData);
     String signature = constructSignature(stringData);
     if(isSignatureForced){
-      signature = signatureForced;
+      signature = this.signature;
       isSignatureForced = false;
     }
     String messageId = hash(messageDataBase64.getBytes(), signature.getBytes());
@@ -92,28 +100,6 @@ public class JsonConverter {
       PublicKeySign publicKeySign = new Ed25519Sign(privateKeyBytes);
       byte[] signBytes = publicKeySign.sign(messageData.getBytes(StandardCharsets.UTF_8));
       return Base64.getUrlEncoder().encodeToString(signBytes);
-  }
-
-  /** If want to test a sender that is not the organizer we can change the sender public key */
-  public void setSenderPk(String newSenderPk) {
-    this.senderPk = newSenderPk;
-  }
-
-  /**
-   * If we want to test having a secret key that does not match the private key we can set a
-   * different private key
-   */
-  public void setSenderSk(String newSenderSkHex) {
-    this.privateKeyHex = newSenderSkHex;
-  }
-
-  /**
-   * If we want to test having a signature that does not match the data and private key we can set
-   * it by force
-   */
-  public void setSignature(String newSignature) {
-    isSignatureForced = true;
-    this.signatureForced = newSignature;
   }
 
   /**

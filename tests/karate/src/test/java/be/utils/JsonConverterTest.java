@@ -29,7 +29,7 @@ public class JsonConverterTest {
     Map<String, Object> testMap = new LinkedHashMap<>();
     testMap.put("test1", "test2");
     Json testJson = Json.of(testMap);
-    Json testConverter = jsonConverter.publishМessageFromData(testJson.toString(), 2, "/root");
+    Json testConverter = jsonConverter.publishMessageFromData(testJson.toString(), 2, "/root");
     String jsonString = testConverter.toString();
     System.out.println(jsonString);
   }
@@ -50,7 +50,7 @@ public class JsonConverterTest {
   public void constructJsonMessageFromDataCorrespondsToTrueJsonMessage() {
     String laoDataJsonString = constructJsonDataForValidLao().toString();
     JsonConverter jsonConverter = new JsonConverter();
-    Json jsonValidLaoMessage = jsonConverter.publishМessageFromData(laoDataJsonString, 1, "/root");
+    Json jsonValidLaoMessage = jsonConverter.publishMessageFromData(laoDataJsonString, 1, "/root");
     Map<String, Object> validStringMessage = new LinkedHashMap<>();
     validStringMessage.put("method", "publish");
     validStringMessage.put("id", 1);

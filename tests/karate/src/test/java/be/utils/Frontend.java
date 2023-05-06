@@ -1,53 +1,40 @@
 package be.utils;
 
-import com.intuit.karate.Json;
 import com.intuit.karate.http.WebSocketOptions;
 import com.intuit.karate.Logger;
-import common.net.MessageBuffer;
 import common.net.MessageQueue;
 import common.net.MultiMsgWebSocketClient;
+import common.utils.Base64Utils;
 
-import java.util.Map;
+import java.time.Instant;
 
-public class Frontend {
-  private MultiMsgWebSocketClient multiMsgSocket;
 
-  public Frontend(String wsURL) {
-    Logger logg = new Logger();
-    MessageQueue q = new MessageQueue();
-    WebSocketOptions wso = new WebSocketOptions(wsURL);
-    this.multiMsgSocket = new MultiMsgWebSocketClient(wso, logg, q);
-  }
+public class Frontend extends MultiMsgWebSocketClient {
 
-  public void send(Map<String, Object> jsonDataMap){
-    this.multiMsgSocket.send(jsonDataMap);
-  }
+    String senderPk;
+    String privateKeyHex;
+    String signature;
 
-  public void send(String data){
-    this.multiMsgSocket.send(data);
-  }
+    private JsonConverter jsonConverter = new JsonConverter();;
 
-  public void publish(Map<String, Object> jsonDataMap, String channel) {
-    this.multiMsgSocket.publish(jsonDataMap, channel);
-  }
 
-  public String getBackendResponse(Map<String, Object> jsonDataMap) {
-    return this.multiMsgSocket.getBackendResponse(jsonDataMap);
-  }
+    public Frontend(String wsURL) {
+      super(new WebSocketOptions(wsURL), new Logger(), new MessageQueue());
 
-  public boolean receiveNoMoreResponses() {
-    return this.multiMsgSocket.receiveNoMoreResponses();
-  }
+      // How to pass this up to the converter? Keep hardcoded for now
+      this.senderPk = "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=";
+      this.privateKeyHex = "d257820c1a249652572974fbda9b27a85e54605551c6773504d0d2858d392874";
+      this.signature = "ONylxgHA9cbsB_lwdfbn3iyzRd4aTpJhBMnvEKhmJF_niE_pUHdmjxDXjEwFyvo5WiH1NZXWyXG27SYEpkasCA==";
 
-  public void close() {
-    this.multiMsgSocket.close();
-  }
+/*      this.senderPk = Base64Utils.generateSenderPk();
+      this.privateKeyHex = Base64Utils.generatePrivateKeyHex();
+      this.signature = Base64Utils.generateSignature();*/
 
-  public MessageBuffer getBuffer() {
-    return this.multiMsgSocket.getBuffer();
-  }
-  public void takeTimeout(long timeout) {
-    this.multiMsgSocket.getBuffer().takeTimeout(timeout);
-  }
+    }
+
+    public Lao createLaoWithName(String name){
+      return new Lao(senderPk, Instant.now().getEpochSecond(), name);
+    }
+
 
 }

@@ -13,15 +13,16 @@ Feature: Create a pop LAO
     * string channel = "/root"
 
   Scenario: Create Lao request with empty lao name should fail with an error response 2
+    * def lao = frontend.createLaoWithName("")
     Given def badLaoReq =
       """
         {
           "object": "lao",
           "action": "create",
-          "id": '#(getLaoIdEmptyName)',
+          "id": "#(lao.getLaoId())",
           "name": "",
-          "creation": 1633098234,
-          "organizer": '#(getOrganizer)',
+          "creation": "#(lao.getCreation())",
+          "organizer": "#(lao.getOrganizerPublicKey())",
           "witnesses": []
         }
       """
