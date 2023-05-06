@@ -118,6 +118,7 @@ public final class LaoCreateFragment extends Fragment {
               () -> QrScannerFragment.newInstance(ScanningAction.ADD_WITNESS_AT_START));
         });
 
+    // Setup the adapter for the witnesses list
     WitnessesListAdapter witnessesListAdapter = new WitnessesListAdapter();
 
     LinearLayoutManager mLayoutManager = new LinearLayoutManager(getContext());
@@ -128,10 +129,14 @@ public final class LaoCreateFragment extends Fragment {
     binding.witnessesList.addItemDecoration(dividerItemDecoration);
 
     binding.witnessesList.setAdapter(witnessesListAdapter);
+    // No need to have a LiveData as the fragment is recreated upon exiting the scanner
     List<PublicKey> witnesses = witnessingViewModel.getScannedWitnesses();
+
+    // Show the witnesses title only if there's at least one witness
     if (!witnesses.isEmpty()) {
       binding.witnessesTitle.setVisibility(View.VISIBLE);
     }
+
     witnessesListAdapter.setList(witnesses);
   }
 
