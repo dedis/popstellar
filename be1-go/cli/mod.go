@@ -195,7 +195,8 @@ func serverConnectionLoop(h hub.Hub, wg *sync.WaitGroup, done chan struct{}, oth
 	}
 }
 
-// connectToServers connects to the given remote servers
+// connectToServers updates the connection status of the servers and tries to connect to the ones that are not connected
+// it returns an error if at least one connection fails
 func connectToServers(h hub.Hub, wg *sync.WaitGroup, done chan struct{}, servers []string, connectedServers *map[string]bool) error {
 	updateServersState(servers, connectedServers)
 	var returnErr error
@@ -311,7 +312,9 @@ func startWithFlags(cliCtx *cli.Context) (ServerConfig, error) {
 	}, nil
 }
 
-// watchConfigFile watches the config file for changes and updates the other servers list if necessary
+// watchConfigFile watches the config file for changes, updates the other servers list in the config if necessary
+// and sends the updated other servers list to the updatedServersChan so that the connection to servers loop can
+// connect to them and update their connection status
 func watchConfigFile(watcher *fsnotify.Watcher, configFilePath string, otherServersField *[]string, updatedServersChan chan []string) {
 	for event := range watcher.Events {
 		if event.Op&fsnotify.Write == fsnotify.Write {
@@ -329,7 +332,7 @@ func watchConfigFile(watcher *fsnotify.Watcher, configFilePath string, otherServ
 	}
 }
 
-// newServersAdded returns true if there are new servers in the newServers slice
+// newServersAdded returns true if the new servers and old servers slices are different
 func newServersAdded(newServers []string, oldServers *[]string) bool {
 	if len(newServers) != len(*oldServers) {
 		return true
@@ -351,7 +354,7 @@ func increaseDelay(delay *time.Duration) {
 	}
 }
 
-// updateServersState updates the state of the servers in the connectedServers map
+// updateServersState adds servers to the connected servers map if they are not already in it
 func updateServersState(servers []string, connectedServers *map[string]bool) {
 	for _, server := range servers {
 		if _, ok := (*connectedServers)[server]; !ok {
