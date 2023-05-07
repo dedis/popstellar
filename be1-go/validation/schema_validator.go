@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"embed"
 	"encoding/base64"
+	"github.com/rs/zerolog/log"
 	"io"
 	"io/fs"
 	"path/filepath"
@@ -62,8 +63,10 @@ func (s SchemaValidator) VerifyJSON(msg []byte, st SchemaType) error {
 	switch st {
 	case GenericMessage:
 		schema = s.genericMessageSchema
+		log.Info().Msg("Message is generic")
 	case Data:
 		schema = s.dataSchema
+		log.Info().Msg("Message is data")
 	default:
 		return answer.NewErrorf(-6, "unsupported schema type: %v", st)
 	}
