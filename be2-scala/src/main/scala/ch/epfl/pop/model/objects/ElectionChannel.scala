@@ -9,7 +9,8 @@ import ch.epfl.pop.storage.DbActor
 import java.nio.ByteBuffer
 import scala.collection.mutable
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{Await, Future}
+import scala.util.{Success, Failure}
 
 object ElectionChannel {
   implicit class ElectionChannelExtensionMethods(channel: Channel) extends AskPatternConstants {
@@ -40,8 +41,18 @@ object ElectionChannel {
       * @return
       *   the SetupElection message
       */
-    def getSetupMessage(dbActor: AskableActorRef = DbActor.getInstance): Future[SetupElection] =
-      extractMessages[SetupElection](dbActor).map(_.head._2)
+    def getSetupMessage(dbActor: AskableActorRef = DbActor.getInstance): Future[SetupElection] = {
+      val ask = dbActor ? DbActor.ReadSetupElectionMessage(channel)
+      Await.ready(ask, duration).value.get match {
+        case Success(DbActor.DbActorReadAck(Some(msg))) =>
+          msg.decodedData match {
+            case Some(messageData) => Future(messageData.asInstanceOf[SetupElection])
+            case _ => Future.failed(new IllegalArgumentException("messageData couldn't be decoded"))
+        }
+        case Failure(exception) => Future.failed(exception)
+        case _ => Future.failed(new UnknownError("unknown error in getSetupMessage()"))
+      }
+    }
 
     /** Read every castvote in the channel and keep the last per attendee
       *

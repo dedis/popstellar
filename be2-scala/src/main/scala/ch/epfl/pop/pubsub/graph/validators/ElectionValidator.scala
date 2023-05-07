@@ -12,6 +12,7 @@ import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
 import ch.epfl.pop.storage.DbActor
 
 import scala.concurrent.Await
+import scala.util.Success
 
 //Similarly to the handlers, we create a ElectionValidator object which creates a ElectionValidator class instance.
 //The defaults dbActorRef is used in the object, but the class can now be mocked with a custom dbActorRef for testing purpose
@@ -194,7 +195,10 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
         val (casteVote, laoId, senderPK, channel) = extractData[CastVoteElection](rpcMessage)
 
         val electionId = channel.extractChildChannel
-        val questions = Await.result(channel.getSetupMessage(dbActorRef), duration).questions
+        val questions = Await.ready(channel.getSetupMessage(dbActorRef), duration).value.get match {
+          case Success(setupElection) => setupElection.questions
+          case _ => return Left(validationError("Trying to cast vote on ..."))
+        }
 
         runChecks(
           checkTimestampStaleness(
