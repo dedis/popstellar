@@ -545,6 +545,57 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
     failingMessage should equal(None)
   }
 
+  test("WriteSetupElectionMessage() should be write on main lao channel only") {
+    // arrange
+    val initialStorage: InMemoryStorage = InMemoryStorage()
+    val dbActor: AskableActorRef = system.actorOf(Props(DbActor(mediatorRef, MessageRegistry(), initialStorage)))
+    val channel = Channel("/root/lao_id/election_id")
+
+    // Write some message using WriteCreateLaoMessage
+    val writeAsk = dbActor ? DbActor.WriteSetupElectionMessage(channel, MESSAGE)
+    val writeAnswer = Await.result(writeAsk, duration)
+
+    // assert
+    writeAnswer shouldBe a[DbActor.DbActorAck]
+
+    // Message written should appear only in the root channel
+    val failingReadAsk = dbActor ? DbActor.Read(channel, MESSAGE.message_id)
+    val successReadAsk = dbActor ? DbActor.Read(channel.extractLaoChannel.get, MESSAGE.message_id)
+
+    val successAnswer = Await.result(successReadAsk, duration)
+    val failingAnswer = Await.result(failingReadAsk, duration)
+
+    // assert
+    val successMessage = successAnswer.asInstanceOf[DbActor.DbActorReadAck].message
+    val failingMessage = failingAnswer.asInstanceOf[DbActor.DbActorReadAck].message
+
+    successMessage should equal(Some(MESSAGE))
+    failingMessage should equal(None)
+  }
+
+  test("ReadSetupElectionMessage() reads correctly from /root/lao_id/election_id channels") {
+    // arrange
+    val initialStorage: InMemoryStorage = InMemoryStorage()
+    val dbActor: AskableActorRef = system.actorOf(Props(DbActor(mediatorRef, MessageRegistry(), initialStorage)))
+    val channel = Channel("/root/lao_id/election_id")
+
+    // Write some message using WriteCreateLaoMessage
+    val writeAsk = dbActor ? DbActor.WriteSetupElectionMessage(channel, MESSAGE)
+    val writeAnswer = Await.result(writeAsk, duration)
+
+    // assert
+    writeAnswer shouldBe a[DbActor.DbActorAck]
+
+    // Message written should appear only in the root channel
+    val successReadAsk = dbActor ? DbActor.ReadSetupElectionMessage(channel)
+    val successAnswer = Await.result(successReadAsk, duration)
+
+    // assert
+    val successMessage = successAnswer.asInstanceOf[DbActor.DbActorReadAck].message
+
+    successMessage should equal(Some(MESSAGE))
+  }
+
   test("GetAllChannels returns all locally available channels") {
 
     // arrange
