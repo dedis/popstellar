@@ -8,5 +8,6 @@
     {
       "address": "wss://popdemo.dedis.ch:9000/second-organizer-demo"
     }
-  ]
+  ],
+  "additional_prop": "additional_data"
 }

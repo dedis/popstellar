@@ -7,7 +7,7 @@ const ajv = require("./main");
 const rootSchema =
     "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/jsonRPC.json";
 const messageDataSchema =
-    "https://raw.githubusercontent.com/dedis/popstellar/work-decentralizedcommunication-mariembaccari-add_server_greet_schema/protocol/query/method/message/data/data.json";
+    "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/data.json";
 
 // custom validator to display better error message.
 expect.extend({
