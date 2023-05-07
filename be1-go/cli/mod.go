@@ -44,12 +44,7 @@ func Serve(cliCtx *cli.Context) error {
 	pk := cliCtx.String("public-key")
 
 	// compute the client server address
-	clientServerAddress := ""
-	if publicAddress == "localhost" {
-		clientServerAddress = fmt.Sprintf("%s:%d", publicAddress, clientPort)
-	} else {
-		clientServerAddress = fmt.Sprintf("%s/client", publicAddress)
-	}
+	clientServerAddress := fmt.Sprintf("%s:%d", publicAddress, clientPort)
 
 	var point kyber.Point = nil
 	ownerKey(pk, &point)
