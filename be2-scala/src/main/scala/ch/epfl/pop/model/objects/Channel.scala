@@ -38,7 +38,12 @@ final case class Channel(channel: String) {
   def isRootLaoChannel: Boolean = {
     val laoId = Channel(channel).decodeChannelLaoId
     if (laoId.isDefined) {
-      return laoId.get == Channel(channel).extractChildChannel
+      return channel.replace(
+        Channel.ROOT_CHANNEL.channel
+          + Channel.CHANNEL_SEPARATOR.toString
+          + laoId.get.toString,
+        ""
+      ).isEmpty
     }
     false
   }
