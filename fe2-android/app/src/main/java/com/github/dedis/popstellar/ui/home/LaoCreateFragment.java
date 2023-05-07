@@ -4,12 +4,11 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.*;
+import android.widget.ArrayAdapter;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.LaoCreateFragmentBinding;
@@ -118,17 +117,6 @@ public final class LaoCreateFragment extends Fragment {
               () -> QrScannerFragment.newInstance(ScanningAction.ADD_WITNESS_AT_START));
         });
 
-    // Setup the adapter for the witnesses list
-    WitnessesListAdapter witnessesListAdapter = new WitnessesListAdapter();
-
-    LinearLayoutManager mLayoutManager = new LinearLayoutManager(getContext());
-    binding.witnessesList.setLayoutManager(mLayoutManager);
-
-    DividerItemDecoration dividerItemDecoration =
-        new DividerItemDecoration(requireContext(), mLayoutManager.getOrientation());
-    binding.witnessesList.addItemDecoration(dividerItemDecoration);
-
-    binding.witnessesList.setAdapter(witnessesListAdapter);
     // No need to have a LiveData as the fragment is recreated upon exiting the scanner
     List<PublicKey> witnesses = witnessingViewModel.getScannedWitnesses();
 
@@ -137,7 +125,9 @@ public final class LaoCreateFragment extends Fragment {
       binding.witnessesTitle.setVisibility(View.VISIBLE);
     }
 
-    witnessesListAdapter.setList(witnesses);
+    ArrayAdapter<PublicKey> witnessesListAdapter =
+        new ArrayAdapter<>(requireContext(), android.R.layout.simple_list_item_1, witnesses);
+    binding.witnessesList.setAdapter(witnessesListAdapter);
   }
 
   private void setupCreateButton() {
