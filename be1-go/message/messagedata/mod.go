@@ -64,15 +64,7 @@ const (
 	// RootPrefix denotes the prefix for the root channel, used to verify the
 	// channel of origin of some message
 	RootPrefix = "/root/"
-
-	ServerObject      = "server"
-	ServerActionGreet = "greet"
 )
-
-// Peer defines a peer server for the LAO
-type Peer struct {
-	Address string `json:"address"`
-}
 
 // MessageData defines a common interface for message data to be used with a
 // registry.

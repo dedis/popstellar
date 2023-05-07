@@ -10,6 +10,11 @@ type LaoGreet struct {
 	Peers    []Peer `json:"peers"`
 }
 
+// Peer defines a peer server for the LAO
+type Peer struct {
+	Address string `json:"address"`
+}
+
 // GetObject implements MessageData
 func (LaoGreet) GetObject() string {
 	return LAOObject
