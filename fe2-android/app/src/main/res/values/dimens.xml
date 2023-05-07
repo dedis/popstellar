@@ -23,7 +23,7 @@
   <!--  Home -->
   <dimen name="home_button_horizontal_margin">30dp</dimen>
   <dimen name="home_button_vertical_margin">30dp</dimen>
-  <dimen name="home_witness_list_height">300dp</dimen>
+  <dimen name="home_witness_list_height">150dp</dimen>
 
   <!-- Camera preview -->
   <dimen name="qr_rollcall_img">320dp</dimen>
