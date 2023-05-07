@@ -3,6 +3,7 @@ package com.github.dedis.popstellar.repository;
 import androidx.annotation.NonNull;
 
 import com.github.dedis.popstellar.model.objects.Chirp;
+import com.github.dedis.popstellar.model.objects.Reaction;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.utility.error.UnknownChirpException;
 
@@ -83,6 +84,33 @@ public class SocialMediaRepository {
   }
 
   /**
+   * Add a reaction to a given chirp.
+   *
+   * @param laoId id of the lao the reaction was sent on
+   * @param reaction reaction to add
+   * @return true if the chirp associated with the given reaction exists and it's not deleted, false
+   *     otherwise
+   */
+  public boolean addReaction(String laoId, Reaction reaction) {
+    Timber.tag(TAG).d("Adding new reaction on lao %s : %s", laoId, reaction);
+    // Retrieve Lao data and add the reaction to it
+    return getLaoChirps(laoId).addReaction(reaction);
+  }
+
+  /**
+   * Delete a reaction based on its id.
+   *
+   * @param laoId id of the lao the reaction was sent on
+   * @param reactionID identifier of the reaction to delete
+   * @return true if the reaction with the given id exists, false otherwise
+   */
+  public boolean deleteReaction(String laoId, MessageID reactionID) {
+    Timber.tag(TAG).d("Deleting reaction on lao %s : %s", laoId, reactionID);
+    // Retrieve Lao data and delete the reaction from it
+    return getLaoChirps(laoId).deleteReaction(reactionID);
+  }
+
+  /**
    * This class holds the social media data of a specific lao
    *
    * <p>Its purpose is to hold data in a way that it is easier to handle and understand. It is also
@@ -94,6 +122,9 @@ public class SocialMediaRepository {
     private final Map<MessageID, Subject<Chirp>> chirpSubjects = new HashMap<>();
     private final Subject<Set<MessageID>> chirpsSubject =
         BehaviorSubject.createDefault(Collections.emptySet());
+
+    private final Map<MessageID, Set<MessageID>> reactionIdsByChirpId = new HashMap<>();
+    private final Map<MessageID, Reaction> reactions = new HashMap<>();
 
     public synchronized void add(Chirp chirp) {
       MessageID id = chirp.getId();
@@ -109,6 +140,21 @@ public class SocialMediaRepository {
       // Publish new values on subjects
       chirpSubjects.put(id, BehaviorSubject.createDefault(chirp));
       chirpsSubject.onNext(chirps.keySet());
+    }
+
+    public synchronized boolean addReaction(Reaction reaction) {
+      // Check if the associated chirp is present and not deleted
+      Chirp chirp = chirps.get(reaction.getChirpId());
+      if (chirp == null || chirp.isDeleted()) {
+        return false;
+      }
+
+      // Update repository data
+      reactionIdsByChirpId.putIfAbsent(chirp.getId(), new HashSet<>());
+      reactionIdsByChirpId.get(chirp.getId()).add(reaction.getId());
+      reactions.put(reaction.getId(), reaction);
+
+      return true;
     }
 
     public synchronized boolean delete(MessageID id) {
@@ -130,6 +176,22 @@ public class SocialMediaRepository {
         chirps.put(id, deleted);
         subject.onNext(deleted);
       }
+      return true;
+    }
+
+    public synchronized boolean deleteReaction(MessageID reactionId) {
+      // Check if the associated reaction is present
+      Reaction reaction = reactions.get(reactionId);
+      if (reaction == null) {
+        return false;
+      }
+
+      Chirp chirp = chirps.get(reaction.getChirpId());
+
+      // Update the repository data
+      reactionIdsByChirpId.get(chirp.getId()).remove(reaction.getId());
+      reactions.remove(reactionId);
+
       return true;
     }
 

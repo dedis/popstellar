@@ -1,18 +1,21 @@
 package com.github.dedis.popstellar.model.network.method.message.data.socialmedia;
 
 import com.github.dedis.popstellar.model.network.method.message.data.*;
+import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.utility.MessageValidator;
 import com.google.gson.annotations.SerializedName;
 
 public class DeleteReaction extends Data {
 
   @SerializedName("reaction_id")
-  private final String reactionID;
+  private final MessageID reactionID;
 
   private final long timestamp;
 
-  public DeleteReaction(String reactionID, long timestamp) {
-    MessageValidator.verify().isBase64(reactionID, "reaction id").validPastTimes(timestamp);
+  public DeleteReaction(MessageID reactionID, long timestamp) {
+    MessageValidator.verify()
+        .isBase64(reactionID.getEncoded(), "reaction id")
+        .validPastTimes(timestamp);
     this.reactionID = reactionID;
     this.timestamp = timestamp;
   }
@@ -27,7 +30,7 @@ public class DeleteReaction extends Data {
     return Action.DELETE.getAction();
   }
 
-  public String getReactionID() {
+  public MessageID getReactionID() {
     return reactionID;
   }
 
