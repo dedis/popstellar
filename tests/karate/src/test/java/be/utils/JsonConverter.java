@@ -16,7 +16,7 @@ public class JsonConverter {
 
   public String senderPk;
   public String privateKeyHex;
-  public String signature;
+  public String signature = "ONylxgHA9cbsB_lwdfbn3iyzRd4aTpJhBMnvEKhmJF_niE_pUHdmjxDXjEwFyvo5WiH1NZXWyXG27SYEpkasCA==";
   private boolean isSignatureForced = false;
   private String messageIdForced = "";
 
@@ -32,7 +32,6 @@ public class JsonConverter {
   public JsonConverter(){
     this.senderPk = "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=";
     this.privateKeyHex = "d257820c1a249652572974fbda9b27a85e54605551c6773504d0d2858d392874";
-    this.signature = "ONylxgHA9cbsB_lwdfbn3iyzRd4aTpJhBMnvEKhmJF_niE_pUHdmjxDXjEwFyvo5WiH1NZXWyXG27SYEpkasCA==";
   }
   public JsonConverter(String senderPk, String privateKeyHex, String signature){
     this.senderPk = senderPk;

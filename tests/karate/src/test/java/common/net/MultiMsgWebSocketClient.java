@@ -1,6 +1,7 @@
 package common.net;
 
 import be.utils.JsonConverter;
+import be.utils.KeyPair;
 import com.intuit.karate.Json;
 import com.intuit.karate.Logger;
 import com.intuit.karate.http.WebSocketClient;
@@ -13,22 +14,30 @@ import java.util.function.Predicate;
 /** A WebSocketClient that can handle multiple received messages */
 public class MultiMsgWebSocketClient extends WebSocketClient {
 
+  public String senderPk;
+  public String privateKeyHex;
+  public String signature;
+
   private final MessageQueue queue;
   private final Logger logger;
-  private JsonConverter jsonConverter = new JsonConverter();
+  private JsonConverter jsonConverter;
   private HashMap<String, Integer> idAssociatedWithSentMessages = new HashMap<>();
   private HashMap<Integer, String> idAssociatedWithAnswers = new HashMap<>();
   private ArrayList<String> broadcasts = new ArrayList<>();
 
   public MultiMsgWebSocketClient(WebSocketOptions options, Logger logger, MessageQueue queue) {
     super(options, logger);
-
-
-
     this.logger = logger;
     this.queue = queue;
-    //this.jsonConverter = new JsonConverter(senderPk, privateKeyHex, signature);
-    this.jsonConverter = new JsonConverter();
+
+    KeyPair keyPair = new KeyPair();
+    this.senderPk = keyPair.getPublicKey();
+    this.privateKeyHex = keyPair.getPrivateKeyHex();
+
+    logger.info("sender public key is: " + senderPk);
+    logger.info("sender private key is: " + privateKeyHex);
+
+    this.jsonConverter = new JsonConverter("J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=", "d257820c1a249652572974fbda9b27a85e54605551c6773504d0d2858d392874", "lNylxgHA9cbsB_lwdfbn3iyzRd4aTpJhBMnvEKhmJF_niE_pUHdmjxDXjEwFyvo5WiH1NZXWyXG27SYEpkasCA==");
 
     setTextHandler(m -> true);
   }

@@ -1,16 +1,23 @@
 package be.utils;
 
 public class Lao {
-  private String id;
-  private String name;
-  private String organizerPublicKey;
-  private long creation;
+  public String id;
+  public String name;
 
-  public Lao(String organizerPublicKey, Long creation, String name){
+  // Organizer public key
+  public String organizerPk;
+  public long creation;
+
+  public Lao(String organizerPk, Long creation, String name){
     this.creation = creation;
-    this.organizerPublicKey = organizerPublicKey;
+    this.organizerPk = organizerPk;
     this.name = name;
-    this.id = generateLaoId(organizerPublicKey, creation, name);
+
+    if(name.isEmpty()){
+      // Cannot create id with empty name
+      name = "empty";
+    }
+    this.id = generateLaoId(organizerPk, creation, name);
   }
 
   /**
@@ -27,19 +34,13 @@ public class Lao {
     return Hash.hash(organizerPublicKey, Long.toString(creation), name);
   }
 
-  public String getName(){
-    return name;
+
+  public Lao setName(String newName) {
+    return new Lao(organizerPk, creation, newName);
   }
 
-  public String getOrganizerPublicKey(){
-    return organizerPublicKey;
+  public Lao setCreation(long creation) {
+    return new Lao(organizerPk, creation, name);
   }
 
-  public String getLaoId(){
-    return id;
-  }
-
-  public long getCreation(){
-    return creation;
-  }
 }

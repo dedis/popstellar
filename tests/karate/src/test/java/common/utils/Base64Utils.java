@@ -11,25 +11,4 @@ public class Base64Utils {
     public static byte[] convertB64URLToByteArray(String text){
     return Base64.getUrlDecoder().decode(text.getBytes());
   }
-
-  /**
-   * @return the converted byte array
-   */
-  public static String generateSenderPk(){
-    return "";
-  }
-
-  /**
-   * @return the converted byte array
-   */
-  public static String generatePrivateKeyHex(){
-    return "";
-  }
-
-  /**
-   * @return the converted byte array
-   */
-  public static String generateSignature(){
-    return "";
-  }
 }
