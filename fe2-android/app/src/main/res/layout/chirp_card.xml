@@ -42,6 +42,7 @@
       android:textColor="@color/gray" />
 
     <LinearLayout
+      android:id="@+id/chirp_card_buttons"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:orientation="horizontal">
@@ -104,7 +105,7 @@
         android:layout_height="@dimen/social_media_card_button"
         android:contentDescription="@string/delete_button"
         android:src="@drawable/ic_social_media_delete_foreground"
-        android:visibility="visible" />
+        android:visibility="gone" />
     </LinearLayout>
 
   </LinearLayout>

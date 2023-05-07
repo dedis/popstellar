@@ -68,6 +68,19 @@ public class SocialMediaRepository {
   }
 
   /**
+   * @return the observable of a specific chirp's reactions
+   */
+  @NonNull
+  public Observable<Set<Reaction>> getReactions(String laoId, MessageID chirpId)
+      throws UnknownChirpException {
+    return getLaoChirps(laoId).getReactions(chirpId);
+  }
+
+  public Set<Reaction> getReactionsByChirp(String laoId, MessageID chirpId) {
+    return getLaoChirps(laoId).reactionByChirpId.get(chirpId);
+  }
+
+  /**
    * @param laoId of the lao we want to observe the chirp list
    * @return an observable set of message ids whose correspond to the set of chirp published on the
    *     given lao
@@ -125,8 +138,10 @@ public class SocialMediaRepository {
         BehaviorSubject.createDefault(Collections.emptySet());
 
     // Reactions
-    private final Map<MessageID, Set<MessageID>> reactionIdsByChirpId = new HashMap<>();
+    private final Map<MessageID, Set<Reaction>> reactionByChirpId = new HashMap<>();
     private final Map<MessageID, Reaction> reactions = new HashMap<>();
+    private final Map<MessageID, Subject<Set<Reaction>>> reactionSubjectsByChirpId =
+        new HashMap<>();
 
     public synchronized void add(Chirp chirp) {
       MessageID id = chirp.getId();
@@ -138,6 +153,8 @@ public class SocialMediaRepository {
 
       // Update repository data
       chirps.put(id, chirp);
+      reactionByChirpId.putIfAbsent(chirp.getId(), new HashSet<>());
+      reactionSubjectsByChirpId.putIfAbsent(chirp.getId(), BehaviorSubject.create());
 
       // Publish new values on subjects
       chirpSubjects.put(id, BehaviorSubject.createDefault(chirp));
@@ -152,9 +169,9 @@ public class SocialMediaRepository {
       }
 
       // Update repository data
-      reactionIdsByChirpId.putIfAbsent(chirp.getId(), new HashSet<>());
-      reactionIdsByChirpId.get(chirp.getId()).add(reaction.getId());
+      reactionByChirpId.get(chirp.getId()).add(reaction);
       reactions.put(reaction.getId(), reaction);
+      reactionSubjectsByChirpId.get(chirp.getId()).onNext(reactionByChirpId.get(chirp.getId()));
 
       return true;
     }
@@ -191,8 +208,9 @@ public class SocialMediaRepository {
       Chirp chirp = chirps.get(reaction.getChirpId());
 
       // Update the repository data
-      reactionIdsByChirpId.get(chirp.getId()).remove(reaction.getId());
+      reactionByChirpId.get(chirp.getId()).remove(reaction);
       reactions.remove(reactionId);
+      reactionSubjectsByChirpId.get(chirp.getId()).onNext(reactionByChirpId.get(chirp.getId()));
 
       return true;
     }
@@ -208,6 +226,14 @@ public class SocialMediaRepository {
       } else {
         return observable;
       }
+    }
+
+    public Observable<Set<Reaction>> getReactions(MessageID chirpId) throws UnknownChirpException {
+      Observable<Set<Reaction>> observable = reactionSubjectsByChirpId.get(chirpId);
+      if (observable == null) {
+        throw new UnknownChirpException(chirpId);
+      }
+      return observable;
     }
   }
 }

@@ -11,6 +11,23 @@ import java.util.Objects;
 
 public class Reaction implements Copyable<Reaction> {
 
+  // Supported Emoji
+  public enum Emoji {
+    UPVOTE("U+1F44D"),
+    DOWNVOTE("U+1F44E"),
+    LOVE("U+2764");
+
+    private final String unicode;
+
+    Emoji(String unicode) {
+      this.unicode = unicode;
+    }
+
+    public String getUnicode() {
+      return unicode;
+    }
+  }
+
   private final MessageID id;
   private final PublicKey sender;
   private final String codepoint;

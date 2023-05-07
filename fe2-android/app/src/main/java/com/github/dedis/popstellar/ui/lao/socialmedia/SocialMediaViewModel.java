@@ -8,17 +8,14 @@ import androidx.lifecycle.*;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
-import com.github.dedis.popstellar.model.network.method.message.data.socialmedia.AddChirp;
-import com.github.dedis.popstellar.model.network.method.message.data.socialmedia.DeleteChirp;
-import com.github.dedis.popstellar.model.objects.Channel;
-import com.github.dedis.popstellar.model.objects.Chirp;
+import com.github.dedis.popstellar.model.network.method.message.data.socialmedia.*;
+import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PoPToken;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.*;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
-import com.github.dedis.popstellar.utility.error.ErrorUtils;
-import com.github.dedis.popstellar.utility.error.UnknownLaoException;
+import com.github.dedis.popstellar.utility.error.*;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.scheduler.SchedulerProvider;
 import com.github.dedis.popstellar.utility.security.KeyManager;
@@ -40,6 +37,7 @@ public class SocialMediaViewModel extends AndroidViewModel {
   public static final String TAG = SocialMediaViewModel.class.getSimpleName();
   private static final String LAO_FAILURE_MESSAGE = "failed to retrieve lao";
   private static final String SOCIAL = "social";
+  private static final String REACTIONS = "reactions";
   public static final Integer MAX_CHAR_NUMBERS = 300;
 
   private String laoId;
@@ -115,6 +113,7 @@ public class SocialMediaViewModel extends AndroidViewModel {
       bottomNavigationTab.setValue(tab);
     }
   }
+
   /**
    * Send a chirp to your own channel.
    *
@@ -153,6 +152,31 @@ public class SocialMediaViewModel extends AndroidViewModel {
             });
   }
 
+  public Single<MessageGeneral> sendReaction(
+      String codepoint, @NonNull MessageID chirpId, long timestamp) {
+    Timber.tag(TAG).d("Sending a reaction to the chirp %s", chirpId);
+
+    LaoView laoView;
+    try {
+      laoView = getLao();
+    } catch (UnknownLaoException e) {
+      Timber.tag(TAG).e(e, LAO_FAILURE_MESSAGE);
+      return Single.error(new UnknownLaoException());
+    }
+
+    AddReaction addReaction = new AddReaction(codepoint, chirpId, timestamp);
+
+    return Single.fromCallable(this::getValidPoPToken)
+        .doOnSuccess(token -> Timber.tag(TAG).d("Retrieved PoPToken to send Reaction : %s", token))
+        .flatMap(
+            token -> {
+              Channel channel = laoView.getChannel().subChannel(SOCIAL).subChannel(REACTIONS);
+              MessageGeneral msg = new MessageGeneral(token, addReaction, gson);
+
+              return networkManager.getMessageSender().publish(channel, msg).toSingleDefault(msg);
+            });
+  }
+
   public Single<MessageGeneral> deleteChirp(MessageID chirpId, long timestamp) {
     Timber.tag(TAG).d("Deleting the chirp with id: %s", chirpId);
 
@@ -176,6 +200,42 @@ public class SocialMediaViewModel extends AndroidViewModel {
                       .subChannel(SOCIAL)
                       .subChannel(token.getPublicKey().getEncoded());
               MessageGeneral msg = new MessageGeneral(token, deleteChirp, gson);
+
+              return networkManager.getMessageSender().publish(channel, msg).toSingleDefault(msg);
+            });
+  }
+
+  public Single<MessageGeneral> deleteReaction(
+      @NonNull MessageID chirpId, long timestamp, Reaction.Emoji emoji) {
+    Timber.tag(TAG).d("Deleting reaction of chirp %s", chirpId);
+
+    LaoView laoView;
+    try {
+      laoView = getLao();
+    } catch (UnknownLaoException e) {
+      Timber.tag(TAG).e(e, LAO_FAILURE_MESSAGE);
+      return Single.error(new UnknownLaoException());
+    }
+
+    return Single.fromCallable(this::getValidPoPToken)
+        .doOnSuccess(
+            token -> Timber.tag(TAG).d("Retrieved PoPToken to delete Reaction : %s", token))
+        .flatMap(
+            token -> {
+              Channel channel = laoView.getChannel().subChannel(SOCIAL).subChannel(REACTIONS);
+              // Find the reaction id (reaction sent from self matching the emoji)
+              Set<Reaction> reactions = socialMediaRepository.getReactionsByChirp(laoId, chirpId);
+              MessageID reactionId =
+                  reactions.stream()
+                      .filter(
+                          reaction ->
+                              reaction.getCodepoint().equals(emoji.getUnicode())
+                                  && reaction.getSender().equals(token.getPublicKey()))
+                      .findFirst()
+                      .get()
+                      .getId();
+              DeleteReaction deleteReaction = new DeleteReaction(reactionId, timestamp);
+              MessageGeneral msg = new MessageGeneral(token, deleteReaction, gson);
 
               return networkManager.getMessageSender().publish(channel, msg).toSingleDefault(msg);
             });
@@ -226,6 +286,12 @@ public class SocialMediaViewModel extends AndroidViewModel {
       ErrorUtils.logAndShow(getApplication(), TAG, e, R.string.error_retrieve_own_token);
       return false;
     }
+  }
+
+  public Observable<Set<Reaction>> getReactions(MessageID chirpId) throws UnknownChirpException {
+    return socialMediaRepository
+        .getReactions(laoId, chirpId)
+        .observeOn(schedulerProvider.mainThread());
   }
 
   public void setLaoId(String laoId) {
