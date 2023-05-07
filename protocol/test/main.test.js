@@ -78,7 +78,8 @@ describe("Check root schema", () => {
             "query/publish",
             "query/catchup",
             "query/heartbeat",
-            "query/get_messages_by_id"
+            "query/get_messages_by_id",
+            "query/greet_server"
         ],
         rootSchema
     );
@@ -86,10 +87,6 @@ describe("Check root schema", () => {
 
 describe("Check message schema", () => {
     checkDirectoriesAgainstSchema(["messageData/lao_greet"], messageDataSchema);
-});
-
-describe("Check message data schema", () => {
-    checkDirectoriesAgainstSchema(["messageData/server_greet"], messageDataSchema);
 });
 
 test("message data: lao", () => {

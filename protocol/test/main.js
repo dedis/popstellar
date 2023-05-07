@@ -15,6 +15,7 @@ const method_catchup_schema = require("../query/method/catchup.json");
 
 const method_heartbeat_schema = require("../query/method/heartbeat.json");
 const method_get_messages_by_id_schema = require("../query/method/get_messages_by_id.json");
+const method_greet_server_schema = require("../query/method/greet_server.json");
 
 const message_data_schema = require("../query/method/message/data/data.json");
 const message_data_roll_call_close_schema = require("../query/method/message/data/dataCloseRollCall.json");
@@ -53,8 +54,6 @@ const message_data_failure_schema = require("../query/method/message/data/dataFa
 
 const message_data_coin_post_transaction = require("../query/method/message/data/dataPostTransactionCoin.json");
 
-const message_data_server_greet_schema = require("../query/method/message/data/dataGreetServer.json");
-
 const ajv = new Ajv({ allErrors: true, strict: false });
 
 ajv.addSchema([
@@ -72,6 +71,7 @@ ajv.addSchema([
 
     method_heartbeat_schema,
     method_get_messages_by_id_schema,
+    method_greet_server_schema,
 
     message_data_schema,
 
@@ -113,8 +113,6 @@ ajv.addSchema([
     message_data_failure_schema,
 
     message_data_coin_post_transaction,
-
-    message_data_server_greet_schema
 ]);
 
 module.exports = ajv;
