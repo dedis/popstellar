@@ -34,7 +34,7 @@ func TestConnectToSocket(t *testing.T) {
 	wh.Start()
 
 	wg := &sync.WaitGroup{}
-	err = connectToSocket("localhost:9001", wh, wg, wDone)
+	err = connectToSocket("localhost:9001", wh, wg, wDone, "")
 	require.NoError(t, err)
 
 	err = remoteSrv.Shutdown()

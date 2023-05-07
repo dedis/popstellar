@@ -3,6 +3,7 @@ package main
 
 import (
 	"encoding/base64"
+	"encoding/json"
 	"fmt"
 	"net/url"
 	popstellar "popstellar"
@@ -10,6 +11,9 @@ import (
 	"popstellar/crypto"
 	"popstellar/hub"
 	"popstellar/hub/standard_hub"
+	jsonrpc "popstellar/message"
+	"popstellar/message/query"
+	"popstellar/message/query/method"
 	"popstellar/network"
 	"popstellar/network/socket"
 	"sync"
@@ -80,7 +84,7 @@ func Serve(cliCtx *cli.Context) error {
 
 	// connect to given remote servers
 	for _, serverAddress := range otherServers {
-		err = connectToSocket(serverAddress, h, wg, done)
+		err = connectToSocket(serverAddress, h, wg, done, pk)
 		if err != nil {
 			return xerrors.Errorf("failed to connect to server: %v", err)
 		}
@@ -118,7 +122,7 @@ func Serve(cliCtx *cli.Context) error {
 // connectToSocket establishes a connection to another server's server
 // endpoint.
 func connectToSocket(address string, h hub.Hub,
-	wg *sync.WaitGroup, done chan struct{}) error {
+	wg *sync.WaitGroup, done chan struct{}, pk string) error {
 
 	log := popstellar.Logger
 
@@ -139,8 +143,32 @@ func connectToSocket(address string, h hub.Hub,
 		h.OnSocketClose(), ws, wg, done, log)
 	wg.Add(2)
 
+	serverInfo := method.ServerInfo{
+		PublicKey:     pk,
+		ServerAddress: "wss://popdemo.dedis.ch:9001/server",
+		ClientAddress: "wss://popdemo.dedis.ch:9000/client",
+	}
+
+	serverGreet := &method.GreetServer{
+		Base: query.Base{
+			JSONRPCBase: jsonrpc.JSONRPCBase{
+				JSONRPC: "2.0",
+			},
+			Method: query.MethodGreetServer,
+		},
+		ID:     0,
+		Params: serverInfo,
+	}
+
+	buf, err := json.Marshal(serverGreet)
+	if err != nil {
+		return xerrors.Errorf("failed to marshal server greet: %v", err)
+	}
+
 	go remoteSocket.WritePump()
 	go remoteSocket.ReadPump()
+
+	remoteSocket.Send(buf)
 
 	h.NotifyNewServer(remoteSocket)
 
