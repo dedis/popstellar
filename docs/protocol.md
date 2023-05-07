@@ -11,6 +11,7 @@
   - [Concatenation for hashing](#concatenation-for-hashing)
 - [JSON RPC (low-level)](#json-rpc-low-level)
   - [Query](#query)
+    - [Greeting a server](#greeting-a-server)
     - [Subscribing to a channel](#subscribing-to-a-channel)
     - [Unsubscribing from a channel](#unsubscribing-from-a-channel)
     - [Publishing a message on a channel](#publishing-a-message-on-a-channel)
@@ -184,6 +185,9 @@ and its arguments (`params`).
         },
         {
           "$ref": "method/get_messages_by_id.json"
+        },
+        {
+            "$ref": "method/greet_server.json"
         }
     ],
 
@@ -196,6 +200,7 @@ and its arguments (`params`).
 
 Here are the different methods that can be called:
 
+* GreetServer
 * Subscribe
 * Unsubscribe
 * Catchup
@@ -203,6 +208,32 @@ Here are the different methods that can be called:
 * Publish
 * Heartbeat
 * GetMessagesById
+
+### Greeting a server
+🧭 **RPC Message** > **Query** > **Greet Server**
+
+By executing a greet server action, a server can send its public key as well as the 
+addresses of its client and server endpoints to another server.
+
+This action should be executed by the server that opens a connection with another server. The 
+latter should then reply with a `GreetServer` answer containing its own information.
+
+RPC
+
+```json5
+// ../protocol/examples/query/greet_server/greet_server.json
+
+{
+    "jsonrpc": "2.0",
+    "id": 7,
+    "method": "greet_server",
+    "params": {
+        "public_key": "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=",
+        "client_address": "wss://popdemo.dedis.ch:9000/client",
+        "server_address": "wss://popdemo.dedis.ch:9001/server"
+    }
+}
+```
 
 ### Subscribing to a channel
 
