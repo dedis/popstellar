@@ -47,10 +47,10 @@ object ElectionChannel {
         case Success(DbActor.DbActorReadAck(Some(msg))) =>
           msg.decodedData match {
             case Some(messageData) => Future(messageData.asInstanceOf[SetupElection])
-            case _ => Future.failed(new IllegalArgumentException("messageData couldn't be decoded"))
-        }
+            case _                 => Future.failed(new IllegalArgumentException("messageData couldn't be decoded"))
+          }
         case Failure(exception) => Future.failed(exception)
-        case _ => Future.failed(new UnknownError("unknown error in getSetupMessage()"))
+        case _                  => Future.failed(new UnknownError("unknown error in getSetupMessage()"))
       }
     }
 

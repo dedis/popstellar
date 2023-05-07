@@ -197,7 +197,7 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
         val electionId = channel.extractChildChannel
         val questions = Await.ready(channel.getSetupMessage(dbActorRef), duration).value.get match {
           case Success(setupElection) => setupElection.questions
-          case _ => return Left(validationError("Trying to cast vote on ..."))
+          case _                      => return Left(validationError("Trying to cast vote on ..."))
         }
 
         runChecks(
