@@ -88,6 +88,10 @@ describe("Check message schema", () => {
     checkDirectoriesAgainstSchema(["messageData/lao_greet"], messageDataSchema);
 });
 
+describe("Check message data schema", () => {
+    checkDirectoriesAgainstSchema(["messageData/server_greet"], messageDataSchema);
+});
+
 test("message data: lao", () => {
     lao_create = require("../examples/messageData/lao_create/lao_create.json");
     expect(lao_create).toBeValid(messageDataSchema);

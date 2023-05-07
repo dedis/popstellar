@@ -53,6 +53,8 @@ const message_data_failure_schema = require("../query/method/message/data/dataFa
 
 const message_data_coin_post_transaction = require("../query/method/message/data/dataPostTransactionCoin.json");
 
+const message_data_server_greet_schema = require("../query/method/message/data/dataGreetServer.json");
+
 const ajv = new Ajv({ allErrors: true, strict: false });
 
 ajv.addSchema([
@@ -110,7 +112,9 @@ ajv.addSchema([
     message_data_learn_schema,
     message_data_failure_schema,
 
-    message_data_coin_post_transaction
+    message_data_coin_post_transaction,
+
+    message_data_server_greet_schema
 ]);
 
 module.exports = ajv;
