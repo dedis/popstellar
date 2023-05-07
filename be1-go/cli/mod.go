@@ -3,7 +3,6 @@ package main
 
 import (
 	"encoding/base64"
-	"encoding/json"
 	"fmt"
 	"net/url"
 	popstellar "popstellar"
@@ -11,7 +10,6 @@ import (
 	"popstellar/crypto"
 	"popstellar/hub"
 	"popstellar/hub/standard_hub"
-	"popstellar/message/messagedata"
 	"popstellar/network"
 	"popstellar/network/socket"
 	"sync"
@@ -136,22 +134,6 @@ func connectToSocket(address string, h hub.Hub,
 	}
 
 	log.Info().Msgf("connected to server at %s", urlString)
-
-	greet := messagedata.ServerGreet{
-		Object:        "server", //replace by constant
-		Action:        "greet",
-		PublicKey:     "replaceByKey",
-		ClientAddress: "localhost:9000/client",
-		ServerAddress: "localhost:9001/Server",
-		Peers:         nil,
-	}
-
-	buf, err := json.Marshal(greet)
-	if err != nil {
-		return xerrors.Errorf("failed to marshal greet message: %v", err)
-	}
-
-	err = ws.WriteMessage(websocket.TextMessage, buf)
 
 	remoteSocket := socket.NewServerSocket(h.Receiver(),
 		h.OnSocketClose(), ws, wg, done, log)
