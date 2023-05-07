@@ -112,7 +112,7 @@ ajv.addSchema([
     message_data_learn_schema,
     message_data_failure_schema,
 
-    message_data_coin_post_transaction,
+    message_data_coin_post_transaction
 ]);
 
 module.exports = ajv;
