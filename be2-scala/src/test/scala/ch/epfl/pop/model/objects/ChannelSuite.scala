@@ -143,6 +143,16 @@ class ChannelSuite extends FunSuite with Matchers {
     channel.decodeChannelLaoId should equal(expected)
   }
 
+  test("extractLaoChannel() correctly extract main lao channel") {
+    val chan1 = Channel("/root/wex")
+    val chan2 = Channel("/root/wex/xyz")
+    val chan3 = Channel("/root")
+
+    chan1.extractLaoChannel should equal(Some(chan1))
+    chan2.extractLaoChannel should equal(Some(chan1))
+    chan3.extractLaoChannel should equal(None)
+  }
+
   test("isRootLaoChannel() on /root/lao_id return true ") {
     val rootLaoId = Channel("/root/wex")
 

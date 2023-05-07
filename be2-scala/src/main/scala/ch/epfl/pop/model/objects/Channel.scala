@@ -1,5 +1,7 @@
 package ch.epfl.pop.model.objects
 
+import ch.epfl.pop.model.objects.Channel.CHANNEL_SEPARATOR
+
 import scala.util.{Success, Try}
 
 final case class Channel(channel: String) {
@@ -36,16 +38,17 @@ final case class Channel(channel: String) {
   def isRootChannel: Boolean = channel == Channel.ROOT_CHANNEL.channel
 
   def isRootLaoChannel: Boolean = {
-    val laoId = Channel(channel).decodeChannelLaoId
-    if (laoId.isDefined) {
-      return channel.replace(
-        Channel.ROOT_CHANNEL.channel
-          + Channel.CHANNEL_SEPARATOR.toString
-          + laoId.get.toString,
-        ""
-      ).isEmpty
+    Channel(channel).extractLaoChannel match {
+      case Some(laoChannel) => laoChannel.toString == channel
+      case None             => false
     }
-    false
+  }
+
+  def extractLaoChannel: Option[Channel] = {
+    Channel(channel).decodeChannelLaoId match {
+      case Some(laoId) => Some(Channel(s"${Channel.ROOT_CHANNEL}$CHANNEL_SEPARATOR$laoId"))
+      case _           => None
+    }
   }
 
   def isSubChannel: Boolean = channel.startsWith(Channel.ROOT_CHANNEL_PREFIX)
