@@ -3,6 +3,7 @@ package be.utils;
 import com.google.crypto.tink.PublicKeySign;
 import com.google.crypto.tink.subtle.Ed25519Sign;
 import com.intuit.karate.Json;
+import common.utils.Base64Utils;
 
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
@@ -14,9 +15,10 @@ import java.util.Map;
 
 public class JsonConverter {
 
-  public String senderPk;
-  public String privateKeyHex;
-  public String signature = "ONylxgHA9cbsB_lwdfbn3iyzRd4aTpJhBMnvEKhmJF_niE_pUHdmjxDXjEwFyvo5WiH1NZXWyXG27SYEpkasCA==";
+  public String publicKey;
+  public byte [] privateKey;
+
+  private String signatureForced;
   private boolean isSignatureForced = false;
   private String messageIdForced = "";
 
@@ -30,13 +32,16 @@ public class JsonConverter {
   }
 
   public JsonConverter(){
-    this.senderPk = "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=";
-    this.privateKeyHex = "d257820c1a249652572974fbda9b27a85e54605551c6773504d0d2858d392874";
+    this.publicKey = "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=";
+    //this.privateKeyHex = "d257820c1a249652572974fbda9b27a85e54605551c6773504d0d2858d392874";
   }
-  public JsonConverter(String senderPk, String privateKeyHex, String signature){
-    this.senderPk = senderPk;
-    this.privateKeyHex = privateKeyHex;
-    this.signature = signature;
+  public JsonConverter(String publicKey, byte [] privateKey){
+    this.publicKey = publicKey;
+    this.privateKey = privateKey;
+
+
+    System.out.println("privateKey in socket: " + Base64Utils.encode(privateKey));
+    System.out.println("publicKey in socket: " + publicKey);
   }
 
 
@@ -66,14 +71,16 @@ public class JsonConverter {
     String messageDataBase64 = convertJsonToBase64(messageData);
     String signature = constructSignature(stringData);
     if(isSignatureForced){
-      signature = this.signature;
+      signature = this.signatureForced;
       isSignatureForced = false;
     }
+    System.out.println("signature used was: " + signature);
     String messageId = hash(messageDataBase64.getBytes(), signature.getBytes());
     String[] witness = new String[0];
 
     messagePart.put("data", messageDataBase64);
-    messagePart.put("sender", senderPk);
+    System.out.println("publicKey used was : " + publicKey);
+    messagePart.put("sender", publicKey);
     messagePart.put("signature", signature);
     messagePart.put("message_id", messageId);
     System.out.println("message id is : " + messageId);
@@ -95,10 +102,18 @@ public class JsonConverter {
   /** Constructs a valid signature on given data */
   public String constructSignature(String messageData) throws GeneralSecurityException {
       // Hex representation of the private key
-      byte[] privateKeyBytes = getPrivateKeyBytes();
-      PublicKeySign publicKeySign = new Ed25519Sign(privateKeyBytes);
+      PublicKeySign publicKeySign = new Ed25519Sign(privateKey);
       byte[] signBytes = publicKeySign.sign(messageData.getBytes(StandardCharsets.UTF_8));
       return Base64.getUrlEncoder().encodeToString(signBytes);
+  }
+
+  /**
+   * If we want to test having a signature that does not match the data and private key we can set
+   * it by force
+   */
+  public void setSignature(String newSignature) {
+    isSignatureForced = true;
+    this.signatureForced = newSignature;
   }
 
   /**
@@ -119,15 +134,4 @@ public class JsonConverter {
       return Base64.getUrlEncoder().encodeToString(digest.digest());
   }
 
-  private byte[] getPrivateKeyBytes(){
-    byte[] privateKeyBytes = new byte[privateKeyHex.length() / 2];
-
-    for (int i = 0; i < privateKeyBytes.length; i++) {
-      int index = i * 2;
-
-      int val = Integer.parseInt(privateKeyHex.substring(index, index + 2), 16);
-      privateKeyBytes[i] = (byte) val;
-    }
-    return privateKeyBytes;
-  }
 }

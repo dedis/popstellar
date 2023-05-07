@@ -14,13 +14,13 @@ import java.util.function.Predicate;
 /** A WebSocketClient that can handle multiple received messages */
 public class MultiMsgWebSocketClient extends WebSocketClient {
 
-  public String senderPk;
-  public String privateKeyHex;
-  public String signature;
+  public String publicKey;
+  public byte [] privateKey;
+  public JsonConverter jsonConverter;
 
   private final MessageQueue queue;
-  private final Logger logger;
-  private JsonConverter jsonConverter;
+  public final Logger logger;
+
   private HashMap<String, Integer> idAssociatedWithSentMessages = new HashMap<>();
   private HashMap<Integer, String> idAssociatedWithAnswers = new HashMap<>();
   private ArrayList<String> broadcasts = new ArrayList<>();
@@ -31,13 +31,13 @@ public class MultiMsgWebSocketClient extends WebSocketClient {
     this.queue = queue;
 
     KeyPair keyPair = new KeyPair();
-    this.senderPk = keyPair.getPublicKey();
-    this.privateKeyHex = keyPair.getPrivateKeyHex();
+    this.publicKey = keyPair.getPublicKey();
+    this.privateKey = keyPair.getPrivateKeyBytes();
 
-    logger.info("sender public key is: " + senderPk);
-    logger.info("sender private key is: " + privateKeyHex);
+    System.out.println("privateKey in socket: " + Base64Utils.encode(privateKey));
+    System.out.println("publicKey in socket: " + publicKey);
 
-    this.jsonConverter = new JsonConverter("J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=", "d257820c1a249652572974fbda9b27a85e54605551c6773504d0d2858d392874", "lNylxgHA9cbsB_lwdfbn3iyzRd4aTpJhBMnvEKhmJF_niE_pUHdmjxDXjEwFyvo5WiH1NZXWyXG27SYEpkasCA==");
+    this.jsonConverter = new JsonConverter(publicKey, privateKey);
 
     setTextHandler(m -> true);
   }
@@ -74,6 +74,7 @@ public class MultiMsgWebSocketClient extends WebSocketClient {
     int id = random.nextInt();
     idAssociatedWithSentMessages.put(data, id);
     Json request =  jsonConverter.publishMessageFromData(data, id, channel);
+    System.out.println("The final sent request is : " + request.toString());
     this.send(request.toString());
   }
 

@@ -11,4 +11,8 @@ public class Base64Utils {
     public static byte[] convertB64URLToByteArray(String text){
     return Base64.getUrlDecoder().decode(text.getBytes());
   }
+
+  public static String encode(byte[] data) {
+    return Base64.getUrlEncoder().encodeToString(data);
+  }
 }

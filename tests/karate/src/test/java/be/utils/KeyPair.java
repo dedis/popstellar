@@ -1,14 +1,14 @@
 package be.utils;
 
+import common.utils.Base64Utils;
 import karate.com.linecorp.armeria.internal.shaded.bouncycastle.crypto.params.Ed25519PrivateKeyParameters;
 import karate.com.linecorp.armeria.internal.shaded.bouncycastle.crypto.params.Ed25519PublicKeyParameters;
 
-import java.util.Base64;
 import java.util.Random;
 
 public class KeyPair {
 
-  private static final long SEED = 2023;
+  private static final long SEED = 2024;
   private static final Random RANDOM = new Random(SEED);
   private static final int KEY_LENGTH = 32;
   private byte[] publicKey;
@@ -28,30 +28,25 @@ public class KeyPair {
 
     this.privateKey = privateKey;
     this.publicKey = publicKeyParameters.getEncoded();
+
+    System.out.println("generated privateKey: " + Base64Utils.encode(privateKey));
+    System.out.println("generated publicKey: " + Base64Utils.encode(publicKey));
   }
 
-  public String getPublicKey(){
-    return Base64.getUrlEncoder().encodeToString(publicKey);
+  public byte [] getPublicKeyBytes(){
+    return publicKey;
   }
 
-  public String getPrivateKey(){
-    return Base64.getUrlEncoder().encodeToString(privateKey);
-  }
-
-  public byte[] getPrivateKeyBytes(){
+  public byte [] getPrivateKeyBytes(){
     return privateKey;
   }
 
-  public String getPrivateKeyHex(){
-    return bytesToHex(privateKey);
+  public String getPublicKey(){
+    return Base64Utils.encode(publicKey);
   }
 
-
-  private static String bytesToHex(byte[] bytes) {
-    StringBuilder sb = new StringBuilder();
-    for (byte b : bytes) {
-      sb.append(String.format("%02x", b));
-    }
-    return sb.toString();
+  public String getPrivateKey(){
+    return Base64Utils.encode(privateKey);
   }
+
 }
