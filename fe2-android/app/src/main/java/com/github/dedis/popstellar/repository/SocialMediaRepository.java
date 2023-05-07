@@ -118,11 +118,13 @@ public class SocialMediaRepository {
    */
   private static final class LaoChirps {
 
+    // Chirps
     private final Map<MessageID, Chirp> chirps = new HashMap<>();
     private final Map<MessageID, Subject<Chirp>> chirpSubjects = new HashMap<>();
     private final Subject<Set<MessageID>> chirpsSubject =
         BehaviorSubject.createDefault(Collections.emptySet());
 
+    // Reactions
     private final Map<MessageID, Set<MessageID>> reactionIdsByChirpId = new HashMap<>();
     private final Map<MessageID, Reaction> reactions = new HashMap<>();
 

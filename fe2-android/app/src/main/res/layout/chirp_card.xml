@@ -47,12 +47,64 @@
       android:orientation="horizontal">
 
       <ImageButton
+        android:id="@+id/upvote_button"
+        android:layout_width="@dimen/social_media_card_button"
+        android:layout_height="@dimen/social_media_card_button"
+        android:contentDescription="@string/upvote_button"
+        android:src="@drawable/ic_social_media_upvote" />
+
+      <TextView
+        android:id="@+id/upvote_counter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/social_media_counter_margin"
+        android:text="0"
+        android:layout_gravity="center" />
+
+      <ImageButton
+        android:id="@+id/downvote_button"
+        android:layout_width="@dimen/social_media_card_button"
+        android:layout_height="@dimen/social_media_card_button"
+        android:contentDescription="@string/downvote_button"
+        android:layout_marginStart="@dimen/social_media_button_margin"
+        android:src="@drawable/ic_social_media_downvote" />
+
+      <TextView
+        android:id="@+id/downvote_counter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="0"
+        android:layout_marginStart="@dimen/social_media_counter_margin"
+        android:layout_gravity="center" />
+
+      <ImageButton
+        android:id="@+id/love_button"
+        android:layout_width="@dimen/social_media_card_button"
+        android:layout_height="@dimen/social_media_card_button"
+        android:contentDescription="@string/love_button"
+        android:layout_marginStart="@dimen/social_media_button_margin"
+        android:src="@drawable/ic_social_media_love" />
+
+      <TextView
+        android:id="@+id/love_counter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="0"
+        android:layout_marginStart="@dimen/social_media_counter_margin"
+        android:layout_gravity="center" />
+
+      <View
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+      <ImageButton
         android:id="@+id/delete_chirp_button"
-        android:layout_width="@dimen/social_media_delete"
-        android:layout_height="@dimen/social_media_delete"
+        android:layout_width="@dimen/social_media_card_button"
+        android:layout_height="@dimen/social_media_card_button"
         android:contentDescription="@string/delete_button"
         android:src="@drawable/ic_social_media_delete_foreground"
-        android:visibility="gone" />
+        android:visibility="visible" />
     </LinearLayout>
 
   </LinearLayout>

@@ -263,6 +263,9 @@
   <string name="text">text</string>
   <string name="chirp_list">Chirp List</string>
   <string name="delete_button">delete button</string>
+  <string name="upvote_button">upvote button</string>
+  <string name="downvote_button">downvote button</string>
+  <string name="love_button">love button</string>
   <string name="deleted_chirp">Deleted chirp!</string>
   <string name="deleted_chirp_2">Chirp is deleted.</string>
 
