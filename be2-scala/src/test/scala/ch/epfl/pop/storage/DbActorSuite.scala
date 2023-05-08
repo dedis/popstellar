@@ -517,7 +517,7 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
     list should contain(MESSAGE)
   }
 
-  test("WriteCreateLao() should be write on root channel only") {
+  test("WriteCreateLao should only be written on root channel") {
     // arrange
     val initialStorage: InMemoryStorage = InMemoryStorage()
     val dbActor: AskableActorRef = system.actorOf(Props(DbActor(mediatorRef, MessageRegistry(), initialStorage)))
@@ -545,7 +545,7 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
     failingMessage should equal(None)
   }
 
-  test("WriteSetupElectionMessage() should be write on main lao channel only") {
+  test("SetupElection messages should only be written on main lao channel") {
     // arrange
     val initialStorage: InMemoryStorage = InMemoryStorage()
     val dbActor: AskableActorRef = system.actorOf(Props(DbActor(mediatorRef, MessageRegistry(), initialStorage)))
