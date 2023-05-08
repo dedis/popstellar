@@ -4,6 +4,7 @@
 package hub
 
 import (
+	"popstellar/message/query/method"
 	"popstellar/network/socket"
 )
 
@@ -26,4 +27,7 @@ type Hub interface {
 	// close events. This allows the hub to cleanup clients which close without
 	// sending an unsubscribe message
 	OnSocketClose() chan<- string
+
+	// SendGreetServer sends a greet server message in the socket
+	SendGreetServer(socket.Socket, method.ServerInfo) error
 }

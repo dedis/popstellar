@@ -95,6 +95,7 @@ func newQueries() queries {
 	return queries{
 		state:                  make(map[int]*bool),
 		getMessagesByIdQueries: make(map[int]method.GetMessagesById),
+		greetServerQueries:     make(map[int]method.GreetServer),
 	}
 }
 
@@ -106,6 +107,8 @@ type queries struct {
 	state map[int]*bool
 	// getMessagesByIdQueries stores the server's getMessagesByIds queries by their ID.
 	getMessagesByIdQueries map[int]method.GetMessagesById
+	// greetServerQueries stores the server's greetServer queries by their ID.
+	greetServerQueries map[int]method.GreetServer
 	// nextID store the ID of the next query
 	nextID int
 }
@@ -243,6 +246,38 @@ func (h *Hub) SendAndHandleMessage(msg method.Broadcast) error {
 // OnSocketClose implements hub.Hub
 func (h *Hub) OnSocketClose() chan<- string {
 	return h.closedSockets
+}
+
+// SendGreetServer implements hub.Hub
+func (h *Hub) SendGreetServer(socket socket.Socket, serverInfo method.ServerInfo) error {
+	h.Lock()
+	defer h.Unlock()
+
+	queryId := h.queries.nextID
+	baseValue := false
+	h.queries.state[queryId] = &baseValue
+
+	serverGreet := &method.GreetServer{
+		Base: query.Base{
+			JSONRPCBase: jsonrpc.JSONRPCBase{
+				JSONRPC: "2.0",
+			},
+			Method: query.MethodGreetServer,
+		},
+		ID:     queryId,
+		Params: serverInfo,
+	}
+
+	buf, err := json.Marshal(serverGreet)
+	if err != nil {
+		return xerrors.Errorf("failed to marshal server greet: %v", err)
+	}
+
+	h.queries.greetServerQueries[queryId] = *serverGreet
+	h.queries.nextID++
+
+	socket.Send(buf)
+	return nil
 }
 
 func (h *Hub) getChan(channelPath string) (channel.Channel, error) {
@@ -383,6 +418,8 @@ func (h *Hub) handleMessageFromServer(incomingMessage *socket.IncomingMessage) e
 	var handlerErr error
 
 	switch queryBase.Method {
+	case query.MethodGreetServer:
+		id, handlerErr = h.handleGreetServer(socket, byteMessage)
 	case query.MethodPublish:
 		id, handlerErr = h.handlePublish(socket, byteMessage)
 		h.sendHeartbeatToServers()
