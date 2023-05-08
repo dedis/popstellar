@@ -1,40 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto">
 
-  <LinearLayout
+  <com.google.android.material.card.MaterialCardView
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal">
+    app:cardElevation="@dimen/card_view_elevation"
+    android:layout_margin="@dimen/main_horizontal_margin"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintTop_toTopOf="parent"
+    app:cardCornerRadius="@dimen/corner_radius_small">
 
-    <LinearLayout
-      android:id="@+id/witness_message_layout"
-      android:layout_width="256dp"
+    <androidx.constraintlayout.widget.ConstraintLayout
+      android:layout_width="match_parent"
       android:layout_height="match_parent"
-      android:orientation="vertical">
+      android:paddingVertical="@dimen/padding_standard">
 
-      <TextView
-        android:id="@+id/message_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="@dimen/margin_text"
-        android:gravity="center"
-        android:textSize="18sp"
-        android:textStyle="bold" />
+      <Button
+        android:id="@+id/sign_message_button"
+        android:layout_width="@dimen/standard_button_width"
+        android:layout_height="match_parent"
+        android:text="@string/Sign"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/witness_message_layout" />
 
-      <TextView
-        android:id="@+id/message_description"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="@dimen/margin_text"
-        android:textSize="13sp" />
+      <LinearLayout
+        android:id="@+id/witness_message_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-    </LinearLayout>
+        <TextView
+          android:id="@+id/message_title"
+          android:text="empty"
+          android:textColor="@color/black"
+          android:textStyle="bold"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginHorizontal="@dimen/margin_text_small"
+          android:gravity="center"
+          android:textSize="@dimen/size_body" />
 
-    <Button
-      android:id="@+id/sign_message_button"
-      android:layout_width="153dp"
-      android:layout_height="match_parent" />
+        <TextView
+          android:id="@+id/message_description"
+          android:text="empty"
+          android:textColor="@color/black"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginHorizontal="@dimen/margin_text_small"
+          android:textSize="@dimen/history_card_title" />
 
-  </LinearLayout>
+      </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+  </com.google.android.material.card.MaterialCardView>
 
 </layout>

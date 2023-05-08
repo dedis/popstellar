@@ -124,6 +124,7 @@
   <string name="messages">Messages</string>
   <string name="witnesses">Witnesses</string>
   <string name="witness_added">Witness %1$s successfully added to LAO</string>
+  <string name="Sign">Sign</string>
 
   <!-- Witness -->
   <string name="button_text">Cast Vote</string>
