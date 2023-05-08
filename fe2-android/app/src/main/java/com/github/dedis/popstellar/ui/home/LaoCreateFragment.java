@@ -5,11 +5,9 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.*;
 import android.widget.ArrayAdapter;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.LaoCreateFragmentBinding;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
@@ -17,13 +15,11 @@ import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.ui.lao.witness.WitnessingViewModel;
 import com.github.dedis.popstellar.ui.qrcode.QrScannerFragment;
 import com.github.dedis.popstellar.ui.qrcode.ScanningAction;
-
+import dagger.hilt.android.AndroidEntryPoint;
 import java.util.List;
 import java.util.Objects;
-
+import java.util.stream.Collectors;
 import javax.inject.Inject;
-
-import dagger.hilt.android.AndroidEntryPoint;
 import timber.log.Timber;
 
 /** Fragment used to display the Launch UI */
@@ -118,14 +114,17 @@ public final class LaoCreateFragment extends Fragment {
         });
 
     // No need to have a LiveData as the fragment is recreated upon exiting the scanner
-    List<PublicKey> witnesses = witnessingViewModel.getScannedWitnesses();
+    List<String> witnesses =
+        witnessingViewModel.getScannedWitnesses().stream()
+            .map(publicKey -> publicKey.getEncoded())
+            .collect(Collectors.toList());
 
     // Show the witnesses title only if there's at least one witness
     if (!witnesses.isEmpty()) {
       binding.witnessesTitle.setVisibility(View.VISIBLE);
     }
 
-    ArrayAdapter<PublicKey> witnessesListAdapter =
+    ArrayAdapter<String> witnessesListAdapter =
         new ArrayAdapter<>(requireContext(), android.R.layout.simple_list_item_1, witnesses);
     binding.witnessesList.setAdapter(witnessesListAdapter);
   }

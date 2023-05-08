@@ -90,6 +90,7 @@
           android:textColor="@color/black"
           android:layout_margin="@dimen/witnessing_expand_text_margin"
           android:visibility="gone"
+          android:paddingBottom="@dimen/message_card_margin"
           app:layout_constraintTop_toBottomOf="@id/message_description_card" />
 
         <TextView

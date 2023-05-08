@@ -37,6 +37,7 @@
   <!-- Button -->
   <dimen name="standard_button_height">55dp</dimen>
   <dimen name="standard_button_width">105dp</dimen>
+  <dimen name="small_button_width">90dp</dimen>
   <dimen name="standard_button_text_size">16dp</dimen>
   <dimen name="big_button_text_size">22sp</dimen>
 

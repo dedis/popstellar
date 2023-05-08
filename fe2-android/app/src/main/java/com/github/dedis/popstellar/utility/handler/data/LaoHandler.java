@@ -1,7 +1,6 @@
 package com.github.dedis.popstellar.utility.handler.data;
 
 import android.annotation.SuppressLint;
-
 import com.github.dedis.popstellar.model.network.method.message.PublicKeySignaturePair;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.*;
 import com.github.dedis.popstellar.model.objects.*;
@@ -11,11 +10,8 @@ import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.*;
 import com.github.dedis.popstellar.utility.error.*;
 import com.github.dedis.popstellar.utility.security.KeyManager;
-
 import java.util.*;
-
 import javax.inject.Inject;
-
 import timber.log.Timber;
 
 /** Lao messages handler class */
@@ -27,6 +23,12 @@ public final class LaoHandler {
   private final LAORepository laoRepo;
   private final KeyManager keyManager;
   private final ServerRepository serverRepo;
+
+  private static final String OLD_NAME = "Old Lao Name : ";
+  private static final String NEW_NAME = "New Lao Name : ";
+  private static final String LAO_NAME = "Lao Name : ";
+  private static final String MESSAGE_ID = "Message ID : ";
+  private static final String WITNESS_ID = "New Witness ID : ";
 
   @Inject
   public LaoHandler(
@@ -193,13 +195,16 @@ public final class LaoHandler {
     WitnessMessage message = new WitnessMessage(messageId);
     message.setTitle("Update Lao Name ");
     message.setDescription(
-        "Old Name : "
+        OLD_NAME
+            + "\n"
             + laoView.getName()
+            + "\n\n"
+            + NEW_NAME
             + "\n"
-            + "New Name : "
             + updateLao.getName()
+            + "\n\n"
+            + MESSAGE_ID
             + "\n"
-            + "Message ID : "
             + messageId);
     return message;
   }
@@ -210,14 +215,17 @@ public final class LaoHandler {
     List<PublicKey> tempList = new ArrayList<>(updateLao.getWitnesses());
     message.setTitle("Update Lao Witnesses");
     message.setDescription(
-        "Lao Name : "
+        LAO_NAME
+            + "\n"
             + laoView.getName()
+            + "\n\n"
+            + WITNESS_ID
             + "\n"
-            + "Message ID : "
-            + messageId
+            + tempList.get(tempList.size() - 1)
+            + "\n\n"
+            + MESSAGE_ID
             + "\n"
-            + "New Witness ID : "
-            + tempList.get(tempList.size() - 1));
+            + messageId);
     return message;
   }
 
