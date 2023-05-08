@@ -1,6 +1,5 @@
 {
   "jsonrpc": "2.0",
-  "id": 7,
   "method": "greet_server",
   "params": {
     "client_address": "wss://popdemo.dedis.ch:9000/client",
