@@ -6,23 +6,27 @@ import static com.github.dedis.popstellar.utility.Constants.ORIENTATION_UP;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Color;
+
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.*;
+
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.model.objects.Wallet;
 import com.github.dedis.popstellar.repository.local.PersistentData;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
+
 import java.io.*;
 import java.security.GeneralSecurityException;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Supplier;
+
 import timber.log.Timber;
 
 public class ActivityUtils {

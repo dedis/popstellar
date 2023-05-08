@@ -1,7 +1,5 @@
 package com.github.dedis.popstellar.ui.lao.event.rollcall;
 
-import static com.github.dedis.popstellar.utility.Constants.*;
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.pm.ActivityInfo;
@@ -11,9 +9,11 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.*;
 import android.widget.*;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
+
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.RollCallFragmentBinding;
 import com.github.dedis.popstellar.model.objects.RollCall;
@@ -32,13 +32,19 @@ import com.github.dedis.popstellar.utility.Constants;
 import com.github.dedis.popstellar.utility.error.*;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
-import dagger.hilt.android.AndroidEntryPoint;
+
+import net.glxn.qrgen.android.QRCode;
+
 import java.util.EnumMap;
 import java.util.List;
 import java.util.stream.Collectors;
+
 import javax.inject.Inject;
-import net.glxn.qrgen.android.QRCode;
+
+import dagger.hilt.android.AndroidEntryPoint;
 import timber.log.Timber;
+
+import static com.github.dedis.popstellar.utility.Constants.*;
 
 @AndroidEntryPoint
 public class RollCallFragment extends AbstractEventFragment {

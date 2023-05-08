@@ -1,6 +1,7 @@
 package com.github.dedis.popstellar.utility.handler.data;
 
 import android.annotation.SuppressLint;
+
 import com.github.dedis.popstellar.model.network.method.message.data.rollcall.*;
 import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.event.EventState;
@@ -11,8 +12,11 @@ import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.*;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.github.dedis.popstellar.utility.error.UnknownRollCallException;
+
 import java.util.Set;
+
 import javax.inject.Inject;
+
 import timber.log.Timber;
 
 /** Roll Call messages handler class */

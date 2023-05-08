@@ -1,6 +1,7 @@
 package com.github.dedis.popstellar.utility.handler.data;
 
 import android.annotation.SuppressLint;
+
 import com.github.dedis.popstellar.model.network.method.message.PublicKeySignaturePair;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.*;
 import com.github.dedis.popstellar.model.objects.*;
@@ -10,8 +11,11 @@ import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.*;
 import com.github.dedis.popstellar.utility.error.*;
 import com.github.dedis.popstellar.utility.security.KeyManager;
+
 import java.util.*;
+
 import javax.inject.Inject;
+
 import timber.log.Timber;
 
 /** Lao messages handler class */

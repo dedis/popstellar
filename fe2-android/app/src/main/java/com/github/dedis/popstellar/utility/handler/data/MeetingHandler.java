@@ -9,8 +9,11 @@ import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.MeetingRepository;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
+
 import java.util.ArrayList;
+
 import javax.inject.Inject;
+
 import timber.log.Timber;
 
 public class MeetingHandler {

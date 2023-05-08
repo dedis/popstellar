@@ -1,9 +1,11 @@
 package com.github.dedis.popstellar.model.objects;
 
 import androidx.annotation.NonNull;
+
 import com.github.dedis.popstellar.model.Copyable;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
+
 import java.util.HashSet;
 import java.util.Set;
 

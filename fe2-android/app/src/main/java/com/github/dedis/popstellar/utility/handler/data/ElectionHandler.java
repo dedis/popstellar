@@ -26,6 +26,8 @@ public final class ElectionHandler {
 
   private static final String ELECTION_NAME = "Election Name : ";
   private static final String MESSAGE_ID = "Message ID : ";
+  private static final String ELECTION_ID = "Election ID : ";
+  private static final String QUESTION = "Question : ";
 
   @Inject
   public ElectionHandler(
@@ -259,15 +261,15 @@ public final class ElectionHandler {
             + "\n"
             + election.getName()
             + "\n\n"
-            + "Election ID : "
+            + ELECTION_ID
             + "\n"
             + election.getId()
             + "\n\n"
-            + "Question : "
+            + QUESTION
             + "\n"
             + election.getElectionQuestions().get(0).getQuestion()
             + "\n\n"
-            + "Message ID : "
+            + MESSAGE_ID
             + "\n"
             + messageId.getEncoded());
     return message;
