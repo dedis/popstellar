@@ -88,6 +88,12 @@ type Hub struct {
 	// messageIdsByChannel stores all the message ids and the corresponding channel ids
 	// to help servers determine in which channel the message ids go
 	messageIdsByChannel map[string][]string
+
+	// peersInfo stores the info of the peers: public key, client and server endpoints
+	peersInfo map[socket.Socket]method.ServerInfo
+
+	// peersGreeted stores the peers that the hub has greeted
+	peersGreeted []socket.Socket
 }
 
 // newQueries creates a new queries struct
@@ -144,6 +150,8 @@ func NewHub(pubKeyOwner kyber.Point, serverAddress string, log zerolog.Logger,
 		rootInbox:           *inbox.NewInbox(rootChannel),
 		queries:             newQueries(),
 		messageIdsByChannel: make(map[string][]string),
+		peersInfo:           make(map[socket.Socket]method.ServerInfo),
+		peersGreeted:        make([]socket.Socket, 0),
 	}
 
 	return &hub, nil
@@ -249,13 +257,15 @@ func (h *Hub) OnSocketClose() chan<- string {
 }
 
 // SendGreetServer implements hub.Hub
-func (h *Hub) SendGreetServer(socket socket.Socket, serverInfo method.ServerInfo) error {
+func (h *Hub) SendGreetServer(socket socket.Socket) error {
 	h.Lock()
 	defer h.Unlock()
 
-	queryId := h.queries.nextID
-	baseValue := false
-	h.queries.state[queryId] = &baseValue
+	serverInfo := method.ServerInfo{
+		PublicKey:     h.pubKeyServ.String(),
+		ServerAddress: "wss://localhost:9001",
+		ClientAddress: "wss://localhost:9000",
+	}
 
 	serverGreet := &method.GreetServer{
 		Base: query.Base{
@@ -264,7 +274,6 @@ func (h *Hub) SendGreetServer(socket socket.Socket, serverInfo method.ServerInfo
 			},
 			Method: query.MethodGreetServer,
 		},
-		ID:     queryId,
 		Params: serverInfo,
 	}
 
@@ -273,10 +282,9 @@ func (h *Hub) SendGreetServer(socket socket.Socket, serverInfo method.ServerInfo
 		return xerrors.Errorf("failed to marshal server greet: %v", err)
 	}
 
-	h.queries.greetServerQueries[queryId] = *serverGreet
-	h.queries.nextID++
-
 	socket.Send(buf)
+
+	h.peersGreeted = append(h.peersGreeted, socket)
 	return nil
 }
 
@@ -419,7 +427,7 @@ func (h *Hub) handleMessageFromServer(incomingMessage *socket.IncomingMessage) e
 
 	switch queryBase.Method {
 	case query.MethodGreetServer:
-		id, handlerErr = h.handleGreetServer(socket, byteMessage)
+		handlerErr = h.handleGreetServer(socket, byteMessage)
 	case query.MethodPublish:
 		id, handlerErr = h.handlePublish(socket, byteMessage)
 		h.sendHeartbeatToServers()

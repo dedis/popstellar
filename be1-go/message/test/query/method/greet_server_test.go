@@ -35,7 +35,6 @@ func Test_GreetServer(t *testing.T) {
 
 	require.Equal(t, "greet_server", greetServer.Method)
 	require.Equal(t, "2.0", greetServer.JSONRPC)
-	require.Equal(t, 7, greetServer.ID)
 
 	serverInfo := greetServer.Params
 

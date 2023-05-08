@@ -494,24 +494,32 @@ func (h *Hub) handleGetMessagesById(socket socket.Socket,
 	return missingMessages, getMessagesById.ID, nil
 }
 
-func (h *Hub) handleGreetServer(socket socket.Socket, byteMessage []byte) (int, error) {
+func (h *Hub) handleGreetServer(socket socket.Socket, byteMessage []byte) error {
 	var greetServer method.GreetServer
 
 	err := json.Unmarshal(byteMessage, &greetServer)
 	if err != nil {
-		return -1, xerrors.Errorf("failed to unmarshal greetServer message: %v", err)
+		return xerrors.Errorf("failed to unmarshal greetServer message: %v", err)
 	}
 
 	// check if this answers an existing greet server query
 
 	h.log.Info().Msg("greetServer message received")
 
-	err = h.SendGreetServer(socket)
-	if err != nil {
-		return greetServer.ID, xerrors.Errorf("failed to send greetServer message: %v", err)
+	// store information about the server
+	h.peersInfo[socket] = greetServer.Params
+
+	if slices.Contains(h.peersGreeted, socket) {
+		h.log.Info().Msg("peer already greeted")
+		return nil
 	}
 
-	return greetServer.ID, nil
+	err = h.SendGreetServer(socket)
+	if err != nil {
+		return xerrors.Errorf("failed to send greetServer message: %v", err)
+	}
+
+	return nil
 }
 
 //-----------------------Helper methods for message handling---------------------------

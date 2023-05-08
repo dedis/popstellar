@@ -11,8 +11,6 @@ type ServerInfo struct {
 // GreetServer defines a JSON RPC greetServer message
 type GreetServer struct {
 	query.Base
-
-	ID int `json:"id"`
-
+	
 	Params ServerInfo `json:"params"`
 }
