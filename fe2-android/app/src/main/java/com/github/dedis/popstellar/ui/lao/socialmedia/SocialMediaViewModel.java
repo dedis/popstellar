@@ -225,16 +225,19 @@ public class SocialMediaViewModel extends AndroidViewModel {
               Channel channel = laoView.getChannel().subChannel(SOCIAL).subChannel(REACTIONS);
               // Find the reaction id (reaction sent from self matching the emoji)
               Set<Reaction> reactions = socialMediaRepository.getReactionsByChirp(laoId, chirpId);
-              MessageID reactionId =
+              Reaction previousReaction =
                   reactions.stream()
                       .filter(
                           reaction ->
                               reaction.getCodepoint().equals(emoji.getUnicode())
                                   && reaction.getSender().equals(token.getPublicKey()))
                       .findFirst()
-                      .get()
-                      .getId();
-              DeleteReaction deleteReaction = new DeleteReaction(reactionId, timestamp);
+                      .orElse(null);
+              if (previousReaction == null) {
+                throw new UnknownReactionException();
+              }
+              DeleteReaction deleteReaction =
+                  new DeleteReaction(previousReaction.getId(), timestamp);
               MessageGeneral msg = new MessageGeneral(token, deleteReaction, gson);
 
               return networkManager.getMessageSender().publish(channel, msg).toSingleDefault(msg);
