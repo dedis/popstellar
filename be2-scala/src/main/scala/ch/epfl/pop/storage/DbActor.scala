@@ -52,6 +52,9 @@ final case class DbActor(
     write(Channel.ROOT_CHANNEL, message)
   }
 
+  // this function (and its write companion) is necessary so that createLao messages appear in their correct channels (/root)
+  // while also being able to find the message when running a catchup on lao_channel
+  // as the client needs it to connect
   @throws[DbActorNAckException]
   private def readCreateLao(channel: Channel): Option[Message] = {
     storage.read(storage.DATA_KEY + storage.CREATE_LAO_KEY + channel.toString) match {
@@ -72,6 +75,8 @@ final case class DbActor(
     }
   }
 
+  // This function (its write companion) is necessary so SetupElection messages are stored on the main lao channel
+  // while being easy to find from their related election channel
   @throws[DbActorNAckException]
   private def readSetupElectionMessage(channel: Channel): Option[Message] = {
     channel.extractLaoChannel match {
