@@ -27,14 +27,12 @@
         app:layout_constraintTop_toBottomOf="@+id/message_metadata_container" />
 
       <TextView
+        style="@style/text_medium_title"
         android:id="@+id/message_title"
-        android:textStyle="bold"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/message_card_margin"
         android:layout_marginHorizontal="@dimen/margin_text_small"
-        android:textColor="@color/black"
-        android:textSize="16dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

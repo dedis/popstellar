@@ -15,7 +15,6 @@ import com.github.dedis.popstellar.ui.lao.LaoViewModel;
 import java.util.ArrayList;
 
 import dagger.hilt.android.AndroidEntryPoint;
-
 import timber.log.Timber;
 
 @AndroidEntryPoint
