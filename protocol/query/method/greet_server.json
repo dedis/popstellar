@@ -20,14 +20,14 @@
           "contentEncoding": "base64"
         },
         "server_address": {
-          "description": "[String] canonical address of the server with a protocol prefix and the port number for connecting as a server",
+          "description": "[String] canonical address of the server with a protocol prefix and (optionally) the port number for connecting as a server",
           "type": "string",
-          "pattern": "^.*:\\/\\/.*:\\d{0,5}\\/.*$"
+          "pattern": "^(ws|wss):\\/\\/.*(:\\d{0,5})?\\/.*$"
         },
         "client_address": {
-          "description": "[String] canonical address of the server with a protocol prefix and the port number for connecting as a client",
+          "description": "[String] canonical address of the server with a protocol prefix and (optionally) the port number for connecting as a client",
           "type": "string",
-          "pattern": "^.*:\\/\\/.*:\\d{0,5}\\/.*$"
+          "pattern": "^(ws|wss):\\/\\/.*(:\\d{0,5})?\\/.*$"
         }
       },
 
@@ -36,11 +36,8 @@
 
     "jsonrpc": {
       "$comment": "Defined by the parent, but needed here for the validation"
-    },
-    "id": {
-      "type": "integer"
     }
   },
 
-  "required": ["method", "params", "id","jsonrpc"]
+  "required": ["method", "params","jsonrpc"]
 }

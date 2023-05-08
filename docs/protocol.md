@@ -212,11 +212,11 @@ Here are the different methods that can be called:
 ### Greeting a server
 🧭 **RPC Message** > **Query** > **Greet Server**
 
-By executing a greet server action, a server can send its public key as well as the 
+By sending a greet server message, a server can transmit its public key as well as the 
 addresses of its client and server endpoints to another server.
 
-This action should be executed by the server that opens a connection with another server. The 
-latter should then reply with a `GreetServer` answer containing its own information.
+This message should be sent by the server that opens a connection with another server. It should trigger
+a `GreetServer` message from the server that receives the connection containing its own information. 
 
 RPC
 
@@ -225,7 +225,6 @@ RPC
 
 {
     "jsonrpc": "2.0",
-    "id": 7,
     "method": "greet_server",
     "params": {
         "public_key": "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=",
@@ -234,6 +233,56 @@ RPC
     }
 }
 ```
+
+<details>
+<summary>
+💡 See the full specification
+</summary>
+
+```json5
+{
+  $schema: 'http://json-schema.org/draft-07/schema#',
+  $id: 'https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/greet_server.json',
+  description: 'Sent by the server to the other server when it connects to it. It informs the other server about its public key and client / server endpoints',
+  type: 'object',
+  additionalProperties: false,
+  properties: {
+    method: {
+      description: '[String] operation to be performed by the query',
+      const: 'greet_server',
+    },
+    params: {
+      type: 'object',
+      additionalProperties: false,
+      properties: {
+        public_key: {
+          description: '[String] public key of the server',
+          type: 'string',
+          contentEncoding: 'base64',
+        },
+        server_address: {
+          description: '[String] canonical address of the server with a protocol prefix and (optionally) the port number for connecting as a server',
+          type: 'string',
+          pattern: '^(ws|wss):\\/\\/.*(:\\d{0,5})?\\/.*$',
+        },
+        client_address: {
+          description: '[String] canonical address of the server with a protocol prefix and (optionally) the port number for connecting as a client',
+          type: 'string',
+          pattern: '^(ws|wss):\\/\\/.*(:\\d{0,5})?\\/.*$',
+        },
+      },
+      required: ['public_key', 'server_address', 'client_address']
+    },
+    jsonrpc: {
+      $comment: 'Defined by the parent, but needed here for the validation',
+    },
+  },
+  required: ['method', 'params', 'jsonrpc']
+}
+
+```
+
+</details>
 
 ### Subscribing to a channel
 
