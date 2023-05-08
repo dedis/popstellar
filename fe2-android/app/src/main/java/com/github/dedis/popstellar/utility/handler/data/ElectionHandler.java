@@ -24,6 +24,9 @@ public final class ElectionHandler {
   private final MessageRepository messageRepo;
   private final ElectionRepository electionRepository;
 
+  private static final String ELECTION_NAME = "Election Name : ";
+  private static final String MESSAGE_ID = "Message ID : ";
+
   @Inject
   public ElectionHandler(
       MessageRepository messageRepo, LAORepository laoRepo, ElectionRepository electionRepository) {
@@ -252,17 +255,21 @@ public final class ElectionHandler {
     WitnessMessage message = new WitnessMessage(messageId);
     message.setTitle("New Election Setup");
     message.setDescription(
-        "Name : "
+        ELECTION_NAME
+            + "\n"
             + election.getName()
-            + "\n"
+            + "\n\n"
             + "Election ID : "
+            + "\n"
             + election.getId()
-            + "\n"
+            + "\n\n"
             + "Question : "
-            + election.getElectionQuestions().get(0).getQuestion()
             + "\n"
+            + election.getElectionQuestions().get(0).getQuestion()
+            + "\n\n"
             + "Message ID : "
-            + messageId);
+            + "\n"
+            + messageId.getEncoded());
     return message;
   }
 

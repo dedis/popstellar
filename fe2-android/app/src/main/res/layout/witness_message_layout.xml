@@ -20,6 +20,7 @@
         android:id="@+id/sign_message_button"
         android:layout_width="@dimen/standard_button_width"
         android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/margin_top"
         android:text="@string/Sign"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -51,6 +52,7 @@
           android:textColor="@color/black"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
+          android:layout_marginTop="@dimen/margin_top"
           android:layout_marginHorizontal="@dimen/margin_text_small"
           android:textSize="@dimen/history_card_title" />
 

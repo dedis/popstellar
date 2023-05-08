@@ -4,17 +4,14 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.view.*;
 import android.widget.BaseAdapter;
-
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.FragmentActivity;
-
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.WitnessMessageLayoutBinding;
 import com.github.dedis.popstellar.model.objects.WitnessMessage;
 import com.github.dedis.popstellar.ui.lao.LaoActivity;
 import com.github.dedis.popstellar.ui.lao.LaoViewModel;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
-
 import java.util.List;
 
 /** Adapter to show the messages that have to be signed by the witnesses */
@@ -79,6 +76,10 @@ public class WitnessMessageListViewAdapter extends BaseAdapter {
     if (binding == null) {
       throw new IllegalStateException("Binding could not be find in the view");
     }
+
+    WitnessMessage message = messages.get(position);
+    binding.messageTitle.setText(message.getTitle());
+    binding.messageDescription.setText(message.getDescription());
 
     Context context = parent.getContext();
     View.OnClickListener listener =
