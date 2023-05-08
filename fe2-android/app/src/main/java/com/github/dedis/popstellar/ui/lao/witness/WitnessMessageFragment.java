@@ -3,18 +3,14 @@ package com.github.dedis.popstellar.ui.lao.witness;
 import android.os.Bundle;
 import android.view.*;
 import android.widget.ListView;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-
 import com.github.dedis.popstellar.databinding.WitnessMessageFragmentBinding;
 import com.github.dedis.popstellar.ui.lao.LaoActivity;
 import com.github.dedis.popstellar.ui.lao.LaoViewModel;
-
-import java.util.ArrayList;
-
 import dagger.hilt.android.AndroidEntryPoint;
+import java.util.ArrayList;
 import timber.log.Timber;
 
 @AndroidEntryPoint

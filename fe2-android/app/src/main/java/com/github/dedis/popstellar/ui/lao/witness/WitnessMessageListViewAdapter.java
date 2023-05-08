@@ -9,10 +9,14 @@ import androidx.fragment.app.FragmentActivity;
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.WitnessMessageLayoutBinding;
 import com.github.dedis.popstellar.model.objects.WitnessMessage;
+import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.ui.lao.LaoActivity;
 import com.github.dedis.popstellar.ui.lao.LaoViewModel;
+import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /** Adapter to show the messages that have to be signed by the witnesses */
 public class WitnessMessageListViewAdapter extends BaseAdapter {
@@ -24,6 +28,7 @@ public class WitnessMessageListViewAdapter extends BaseAdapter {
   private List<WitnessMessage> messages;
 
   private final FragmentActivity activity;
+  private static final String NO_SIGNATURES = "No signatures yet";
 
   public WitnessMessageListViewAdapter(List<WitnessMessage> messages, FragmentActivity activity) {
     laoViewModel = LaoActivity.obtainViewModel(activity);
@@ -74,12 +79,28 @@ public class WitnessMessageListViewAdapter extends BaseAdapter {
     }
 
     if (binding == null) {
-      throw new IllegalStateException("Binding could not be find in the view");
+      throw new IllegalStateException("Binding could not be found in the view");
     }
 
     WitnessMessage message = messages.get(position);
+
+    // Set message title and description
     binding.messageTitle.setText(message.getTitle());
-    binding.messageDescription.setText(message.getDescription());
+    binding.messageDescriptionText.setText(message.getDescription());
+
+    // Set witness signatures text
+    String formattedSignatures = formatPublicKeys(message.getWitnesses());
+    binding.witnessesText.setText(formattedSignatures);
+
+    // Set message description dropdown
+    binding.messageDescriptionCard.setOnClickListener(
+        v ->
+            ActivityUtils.handleExpandArrow(
+                binding.messageDescriptionArrow, binding.messageDescriptionText));
+
+    // Set signatures dropdown
+    binding.signaturesCard.setOnClickListener(
+        v -> ActivityUtils.handleExpandArrow(binding.signaturesArrow, binding.witnessesText));
 
     Context context = parent.getContext();
     View.OnClickListener listener =
@@ -116,5 +137,15 @@ public class WitnessMessageListViewAdapter extends BaseAdapter {
     binding.setLifecycleOwner(activity);
 
     return binding.getRoot();
+  }
+
+  private static String formatPublicKeys(Set<PublicKey> witnesses) {
+    if (witnesses.isEmpty()) {
+      return NO_SIGNATURES;
+    } else {
+      return witnesses.stream()
+          .map(publicKey -> publicKey.getEncoded())
+          .collect(Collectors.joining("\n"));
+    }
   }
 }

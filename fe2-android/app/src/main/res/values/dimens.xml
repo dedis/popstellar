@@ -111,6 +111,9 @@
 
   <!--  Witnessing dimensions -->
   <dimen name="tab_layout_top_margin">20dp</dimen>
+  <dimen name="message_card_margin">10dp</dimen>
+  <dimen name="message_card_corner_radius">10dp</dimen>
+  <dimen name="witnessing_expand_text_margin">14dp</dimen>
 
   <!--  Event List Fragment dimensions -->
   <dimen name="add_event_texts_size">18sp</dimen>

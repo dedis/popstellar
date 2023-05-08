@@ -1,5 +1,7 @@
 package com.github.dedis.popstellar.ui.lao.event.rollcall;
 
+import static com.github.dedis.popstellar.utility.Constants.*;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.pm.ActivityInfo;
@@ -9,11 +11,9 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.*;
 import android.widget.*;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
-
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.RollCallFragmentBinding;
 import com.github.dedis.popstellar.model.objects.RollCall;
@@ -32,19 +32,13 @@ import com.github.dedis.popstellar.utility.Constants;
 import com.github.dedis.popstellar.utility.error.*;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
-
-import net.glxn.qrgen.android.QRCode;
-
+import dagger.hilt.android.AndroidEntryPoint;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import javax.inject.Inject;
-
-import dagger.hilt.android.AndroidEntryPoint;
+import net.glxn.qrgen.android.QRCode;
 import timber.log.Timber;
-
-import static com.github.dedis.popstellar.utility.Constants.*;
 
 @AndroidEntryPoint
 public class RollCallFragment extends AbstractEventFragment {
@@ -96,11 +90,15 @@ public class RollCallFragment extends AbstractEventFragment {
 
     // Set the description dropdown
     binding.rollCallDescriptionCard.setOnClickListener(
-        v -> handleExpandArrow(binding.rollCallDescriptionArrow, binding.rollCallDescriptionText));
+        v ->
+            ActivityUtils.handleExpandArrow(
+                binding.rollCallDescriptionArrow, binding.rollCallDescriptionText));
 
     // Set the location dropdown
     binding.rollCallLocationCard.setOnClickListener(
-        v -> handleExpandArrow(binding.rollCallLocationArrow, binding.rollCallLocationText));
+        v ->
+            ActivityUtils.handleExpandArrow(
+                binding.rollCallLocationArrow, binding.rollCallLocationText));
 
     binding.rollCallManagementButton.setOnClickListener(
         v -> {
@@ -343,24 +341,6 @@ public class RollCallFragment extends AbstractEventFragment {
             .withColor(ActivityUtils.getQRCodeColor(requireContext()), Color.TRANSPARENT)
             .bitmap();
     binding.rollCallPkQrCode.setImageBitmap(myBitmap);
-  }
-
-  /** Callback function for the card listener to expand and shrink a text box */
-  private void handleExpandArrow(ImageView arrow, TextView text) {
-    float newRotation;
-    int visibility;
-    // If the arrow is pointing up, then rotate down and make visible the text
-    if (arrow.getRotation() == ORIENTATION_UP) {
-      newRotation = ORIENTATION_DOWN;
-      visibility = View.VISIBLE;
-    } else { // Otherwise rotate up and hide the text
-      newRotation = ORIENTATION_UP;
-      visibility = View.GONE;
-    }
-
-    // Use an animation to rotate smoothly
-    arrow.animate().rotation(newRotation).setDuration(300).start();
-    text.setVisibility(visibility);
   }
 
   private EnumMap<EventState, Integer> buildManagementTextMap() {

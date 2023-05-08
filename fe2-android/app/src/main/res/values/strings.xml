@@ -124,7 +124,6 @@
   <string name="messages">Messages</string>
   <string name="witnesses">Witnesses</string>
   <string name="witness_added">Witness %1$s successfully added to LAO</string>
-  <string name="Sign">Sign</string>
 
   <!-- Witness -->
   <string name="button_text">Cast Vote</string>
@@ -135,6 +134,9 @@
   <string name="not_a_witness">You\'re not a witness</string>
   <string name="not_a_witness_explanation">You need to be a witness in order to sign this message</string>
   <string name="confirm_to_sign">Are you sure you want to sign message with ID : %1$s</string>
+  <string name="message_description_title">Description</string>
+  <string name="signatures_title">Signatures</string>
+  <string name="Sign">Sign</string>
 
   <!--  Roll Call -->
   <string name="roll_call_setup_title">Roll Call Setup</string>

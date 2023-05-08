@@ -1,26 +1,28 @@
 package com.github.dedis.popstellar.utility;
 
+import static com.github.dedis.popstellar.utility.Constants.ORIENTATION_DOWN;
+import static com.github.dedis.popstellar.utility.Constants.ORIENTATION_UP;
+
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Color;
-
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.*;
-
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.model.objects.Wallet;
 import com.github.dedis.popstellar.repository.local.PersistentData;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
-
 import java.io.*;
 import java.security.GeneralSecurityException;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Supplier;
-
 import timber.log.Timber;
 
 public class ActivityUtils {
@@ -176,5 +178,23 @@ public class ActivityUtils {
       return Color.WHITE;
     }
     return Color.BLACK;
+  }
+
+  /** Callback function for the card listener to expand and shrink a text box */
+  public static void handleExpandArrow(ImageView arrow, TextView text) {
+    float newRotation;
+    int visibility;
+    // If the arrow is pointing up, then rotate down and make visible the text
+    if (arrow.getRotation() == ORIENTATION_UP) {
+      newRotation = ORIENTATION_DOWN;
+      visibility = View.VISIBLE;
+    } else { // Otherwise rotate up and hide the text
+      newRotation = ORIENTATION_UP;
+      visibility = View.GONE;
+    }
+
+    // Use an animation to rotate smoothly
+    arrow.animate().rotation(newRotation).setDuration(300).start();
+    text.setVisibility(visibility);
   }
 }
