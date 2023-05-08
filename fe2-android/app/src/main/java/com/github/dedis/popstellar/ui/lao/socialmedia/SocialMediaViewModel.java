@@ -294,6 +294,14 @@ public class SocialMediaViewModel extends AndroidViewModel {
         .observeOn(schedulerProvider.mainThread());
   }
 
+  public boolean isReactionPresent(MessageID chirpId, Reaction.Emoji emoji) {
+    return socialMediaRepository.getReactionsByChirp(laoId, chirpId).stream()
+        .anyMatch(
+            reaction ->
+                isOwner(reaction.getSender().getEncoded())
+                    && reaction.getCodepoint().equals(emoji.getUnicode()));
+  }
+
   public void setLaoId(String laoId) {
     this.laoId = laoId;
   }

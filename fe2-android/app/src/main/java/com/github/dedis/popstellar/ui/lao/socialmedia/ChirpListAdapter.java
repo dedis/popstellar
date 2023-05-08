@@ -22,7 +22,6 @@ import com.github.dedis.popstellar.utility.error.UnknownChirpException;
 import java.time.Instant;
 import java.util.List;
 import java.util.Locale;
-import java.util.stream.Stream;
 
 import static android.text.format.DateUtils.getRelativeTimeSpanString;
 
@@ -103,9 +102,8 @@ public class ChirpListAdapter extends BaseAdapter {
               .getReactions(chirp.getId())
               .subscribe(
                   reactions -> {
-                    Stream<Reaction> reactionStream = reactions.stream();
                     long upVotes =
-                        reactionStream
+                        reactions.stream()
                             .filter(
                                 reaction ->
                                     reaction
@@ -113,7 +111,7 @@ public class ChirpListAdapter extends BaseAdapter {
                                         .equals(Reaction.Emoji.UPVOTE.getUnicode()))
                             .count();
                     long downVotes =
-                        reactionStream
+                        reactions.stream()
                             .filter(
                                 reaction ->
                                     reaction
@@ -121,7 +119,7 @@ public class ChirpListAdapter extends BaseAdapter {
                                         .equals(Reaction.Emoji.DOWNVOTE.getUnicode()))
                             .count();
                     long loves =
-                        reactionStream
+                        reactions.stream()
                             .filter(
                                 reaction ->
                                     reaction
@@ -139,24 +137,60 @@ public class ChirpListAdapter extends BaseAdapter {
       throw new IllegalArgumentException("The chirp does not exist");
     }
 
+    // Set the selection of the button based on my own previous reactions
+    upvoteChirp.setSelected(
+        socialMediaViewModel.isReactionPresent(chirp.getId(), Reaction.Emoji.UPVOTE));
+    setItemSelection(
+        upvoteChirp, R.drawable.ic_social_media_upvote_selected, R.drawable.ic_social_media_upvote);
+    downvoteChirp.setSelected(
+        socialMediaViewModel.isReactionPresent(chirp.getId(), Reaction.Emoji.DOWNVOTE));
+    setItemSelection(
+        downvoteChirp,
+        R.drawable.ic_social_media_downvote_selected,
+        R.drawable.ic_social_media_downvote);
+    loveChirp.setSelected(
+        socialMediaViewModel.isReactionPresent(chirp.getId(), Reaction.Emoji.LOVE));
+    setItemSelection(
+        loveChirp, R.drawable.ic_social_media_love_selected, R.drawable.ic_social_media_love);
+
     // Set the listener for the reaction buttons
     upvoteChirp.setOnClickListener(
-        v ->
-            reactionListener(
-                upvoteChirp,
-                R.drawable.ic_social_media_upvote_selected,
-                R.drawable.ic_social_media_upvote,
-                Reaction.Emoji.UPVOTE,
-                chirp.getId()));
-
-    downvoteChirp.setOnClickListener(
-        v ->
+        v -> {
+          reactionListener(
+              upvoteChirp,
+              R.drawable.ic_social_media_upvote_selected,
+              R.drawable.ic_social_media_upvote,
+              Reaction.Emoji.UPVOTE,
+              chirp.getId());
+          if (downvoteChirp.isSelected() && upvoteChirp.isSelected()) {
+            // Remove the downvote reaction
             reactionListener(
                 downvoteChirp,
                 R.drawable.ic_social_media_downvote_selected,
                 R.drawable.ic_social_media_downvote,
                 Reaction.Emoji.DOWNVOTE,
-                chirp.getId()));
+                chirp.getId());
+          }
+        });
+
+    downvoteChirp.setOnClickListener(
+        v -> {
+          reactionListener(
+              downvoteChirp,
+              R.drawable.ic_social_media_downvote_selected,
+              R.drawable.ic_social_media_downvote,
+              Reaction.Emoji.DOWNVOTE,
+              chirp.getId());
+          if (downvoteChirp.isSelected() && upvoteChirp.isSelected()) {
+            // Remove the upvote reaction
+            reactionListener(
+                upvoteChirp,
+                R.drawable.ic_social_media_upvote_selected,
+                R.drawable.ic_social_media_upvote,
+                Reaction.Emoji.UPVOTE,
+                chirp.getId());
+          }
+        });
 
     loveChirp.setOnClickListener(
         v ->
@@ -206,22 +240,37 @@ public class ChirpListAdapter extends BaseAdapter {
       @DrawableRes int notSelected,
       Reaction.Emoji emoji,
       @NonNull MessageID chirpId) {
-    // Invert selection
+
     boolean selection = !button.isSelected();
     button.setSelected(selection);
 
+    setItemSelection(button, selected, notSelected);
+
+    if (selection) {
+      laoViewModel.addDisposable(
+          socialMediaViewModel
+              .sendReaction(emoji.getUnicode(), chirpId, Instant.now().getEpochSecond())
+              .doOnError(
+                  err -> ErrorUtils.logAndShow(context, TAG, err, R.string.error_sending_reaction))
+              .subscribe());
+    } else {
+      laoViewModel.addDisposable(
+          socialMediaViewModel
+              .deleteReaction(chirpId, Instant.now().getEpochSecond(), emoji)
+              .doOnError(
+                  err -> ErrorUtils.logAndShow(context, TAG, err, R.string.error_delete_reaction))
+              .subscribe());
+    }
+  }
+
+  private void setItemSelection(
+      ImageButton button, @DrawableRes int selected, @DrawableRes int notSelected) {
+    boolean selection = button.isSelected();
     // Choose either the selected or not icon
     Drawable icon =
         selection
             ? ResourcesCompat.getDrawable(context.getResources(), selected, context.getTheme())
             : ResourcesCompat.getDrawable(context.getResources(), notSelected, context.getTheme());
     button.setImageDrawable(icon);
-
-    if (selection) {
-      socialMediaViewModel.sendReaction(
-          emoji.getUnicode(), chirpId, Instant.now().getEpochSecond());
-    } else {
-      socialMediaViewModel.deleteReaction(chirpId, Instant.now().getEpochSecond(), emoji);
-    }
   }
 }
