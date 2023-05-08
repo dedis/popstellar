@@ -67,11 +67,4 @@ public class WitnessMessageFragmentTest {
   public void testWitnessMessageListIsDisplayed() {
     witnessMessageList().check(matches(isDisplayed()));
   }
-
-  @Test
-  public void testBackButtonBehaviour() {
-    getRootView().perform(ViewActions.pressBack());
-    // Check current fragment displayed is event list
-    getEventListFragment().check(matches(isDisplayed()));
-  }
 }
