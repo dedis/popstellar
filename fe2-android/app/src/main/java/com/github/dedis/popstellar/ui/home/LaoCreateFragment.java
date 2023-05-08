@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.*;
+import android.widget.ArrayAdapter;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -11,8 +12,13 @@ import androidx.fragment.app.Fragment;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.LaoCreateFragmentBinding;
+import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
+import com.github.dedis.popstellar.ui.lao.witness.WitnessingViewModel;
+import com.github.dedis.popstellar.ui.qrcode.QrScannerFragment;
+import com.github.dedis.popstellar.ui.qrcode.ScanningAction;
 
+import java.util.List;
 import java.util.Objects;
 
 import javax.inject.Inject;
@@ -29,6 +35,7 @@ public final class LaoCreateFragment extends Fragment {
   @Inject GlobalNetworkManager networkManager;
 
   private HomeViewModel viewModel;
+  private WitnessingViewModel witnessingViewModel;
   private LaoCreateFragmentBinding binding;
   private String initialUrl;
 
@@ -46,11 +53,14 @@ public final class LaoCreateFragment extends Fragment {
     binding.setLifecycleOwner(getActivity());
     initialUrl = networkManager.getCurrentUrl();
     viewModel = HomeActivity.obtainViewModel(requireActivity());
+    witnessingViewModel = HomeActivity.obtainWitnessingViewModel(requireActivity());
 
     setupCancelButton();
     setupTextFields();
+    setupAddWitnesses();
     setupCreateButton();
 
+    handleBackNav();
     return binding.getRoot();
   }
 
@@ -97,6 +107,29 @@ public final class LaoCreateFragment extends Fragment {
     binding.laoNameEntryEditText.addTextChangedListener(launchWatcher);
   }
 
+  private void setupAddWitnesses() {
+    binding.addWitnessButton.setOnClickListener(
+        v -> {
+          Timber.tag(TAG).d("Opening scanner fragment");
+          HomeActivity.setCurrentFragment(
+              getParentFragmentManager(),
+              R.id.fragment_qr_scanner,
+              () -> QrScannerFragment.newInstance(ScanningAction.ADD_WITNESS_AT_START));
+        });
+
+    // No need to have a LiveData as the fragment is recreated upon exiting the scanner
+    List<PublicKey> witnesses = witnessingViewModel.getScannedWitnesses();
+
+    // Show the witnesses title only if there's at least one witness
+    if (!witnesses.isEmpty()) {
+      binding.witnessesTitle.setVisibility(View.VISIBLE);
+    }
+
+    ArrayAdapter<PublicKey> witnessesListAdapter =
+        new ArrayAdapter<>(requireContext(), android.R.layout.simple_list_item_1, witnesses);
+    binding.witnessesList.setAdapter(witnessesListAdapter);
+  }
+
   private void setupCreateButton() {
     binding.buttonCreate.setOnClickListener(
         v -> {
@@ -105,11 +138,13 @@ public final class LaoCreateFragment extends Fragment {
           String laoName =
               Objects.requireNonNull(binding.laoNameEntryEditText.getText()).toString();
           Timber.tag(TAG).d("creating lao with name %s", laoName);
+          List<PublicKey> witnesses = witnessingViewModel.getScannedWitnesses();
 
           networkManager.connect(serverAddress);
           requireActivity()
               .startActivity(
-                  ConnectingActivity.newIntentForCreatingDetail(requireContext(), laoName));
+                  ConnectingActivity.newIntentForCreatingDetail(
+                      requireContext(), laoName, witnesses));
         });
   }
 
@@ -120,5 +155,9 @@ public final class LaoCreateFragment extends Fragment {
           HomeActivity.setCurrentFragment(
               getParentFragmentManager(), R.id.fragment_home, HomeFragment::newInstance);
         });
+  }
+
+  private void handleBackNav() {
+    HomeActivity.addBackNavigationCallbackToHome(requireActivity(), getViewLifecycleOwner(), TAG);
   }
 }

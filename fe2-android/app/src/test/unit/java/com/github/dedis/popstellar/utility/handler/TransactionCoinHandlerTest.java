@@ -26,8 +26,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import io.reactivex.Completable;
 
@@ -41,7 +40,7 @@ import static org.mockito.Mockito.lenient;
 public class TransactionCoinHandlerTest {
   private static final KeyPair SENDER_KEY = generateKeyPair();
   private static final PublicKey SENDER = SENDER_KEY.getPublicKey();
-  private static final CreateLao CREATE_LAO = new CreateLao("lao", SENDER);
+  private static final CreateLao CREATE_LAO = new CreateLao("lao", SENDER, new ArrayList<>());
 
   // Version
   private static final int VERSION = 1;
