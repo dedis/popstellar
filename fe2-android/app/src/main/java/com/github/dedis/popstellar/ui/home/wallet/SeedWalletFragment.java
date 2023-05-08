@@ -15,6 +15,7 @@ import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.WalletSeedFragmentBinding;
 import com.github.dedis.popstellar.model.objects.Wallet;
 import com.github.dedis.popstellar.ui.home.*;
+import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.keys.SeedValidationException;
 
@@ -53,6 +54,8 @@ public class SeedWalletFragment extends Fragment {
     HomeActivity activity = (HomeActivity) getActivity();
     viewModel = HomeActivity.obtainViewModel(activity);
     binding.setLifecycleOwner(activity);
+
+    handleBackNav();
     return binding.getRoot();
   }
 
@@ -137,5 +140,13 @@ public class SeedWalletFragment extends Fragment {
           HomeActivity.setCurrentFragment(
               getParentFragmentManager(), R.id.fragment_home, HomeFragment::new);
         });
+  }
+
+  private void handleBackNav() {
+    HomeActivity.addBackNavigationCallback(
+        requireActivity(),
+        getViewLifecycleOwner(),
+        ActivityUtils.buildBackButtonCallback(
+            TAG, "put the app in background", () -> requireActivity().moveTaskToBack(true)));
   }
 }

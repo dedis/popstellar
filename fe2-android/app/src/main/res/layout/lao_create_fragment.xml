@@ -44,12 +44,49 @@
 
       </com.google.android.material.textfield.TextInputLayout>
 
+      <TextView
+        android:id="@+id/witnesses_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/explication_text_style"
+        android:text="@string/witnesses"
+        android:visibility="gone"
+        android:layout_marginTop="@dimen/margin_text"
+        app:layout_constraintTop_toBottomOf="@id/server_url_entry_edit_text" />
+
+      <ListView
+        android:id="@+id/witnesses_list"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/home_witness_list_height"
+        android:layout_marginTop="@dimen/margin_text"
+        android:scrollbarStyle="outsideOverlay"
+        android:fadeScrollbars="true"
+        android:scrollbarSize="@dimen/roll_call_attendees_scrollbar_size"
+        android:scrollbars="vertical"
+        android:scrollingCache="true"
+        android:smoothScrollbar="true" />
+
+      <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_horizontal"
+        android:layout_marginTop="@dimen/margin_button">
+        <Button
+          android:id="@+id/add_witness_button"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="@string/lao_create_witnesses_button" />
+      </LinearLayout>
+
       <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginVertical="@dimen/margin_button"
         android:gravity="center_horizontal"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@id/add_witness_button"
+        app:layout_constraintBottom_toBottomOf="parent">
 
         <Button
           android:id="@+id/button_cancel_launch"
