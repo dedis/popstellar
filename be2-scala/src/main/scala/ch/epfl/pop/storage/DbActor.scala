@@ -69,7 +69,7 @@ final case class DbActor(
       case Some(mainLaoChan) =>
         createChannel(channel, ObjectType.ELECTION)
         storage.write((storage.DATA_KEY + storage.SETUP_ELECTION_KEY + channel.toString, message.message_id.toString()))
-        write(mainLaoChan, message)
+        writeAndPropagate(mainLaoChan, message)
 
       case _ => log.info("Error: Trying to write an ElectionSetup message on an invalid channel")
     }
