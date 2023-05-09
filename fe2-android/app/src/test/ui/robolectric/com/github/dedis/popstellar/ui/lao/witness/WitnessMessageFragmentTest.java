@@ -3,12 +3,10 @@ package com.github.dedis.popstellar.ui.lao.witness;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
+import static com.github.dedis.popstellar.testutils.pages.lao.witness.WitnessMessageFragmentPageObject.witnessMessageFragment;
 import static com.github.dedis.popstellar.testutils.pages.lao.witness.WitnessMessageFragmentPageObject.witnessMessageList;
-import static com.github.dedis.popstellar.testutils.pages.lao.witness.WitnessingFragmentPageObject.getEventListFragment;
-import static com.github.dedis.popstellar.testutils.pages.lao.witness.WitnessingFragmentPageObject.getRootView;
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
-import androidx.test.espresso.action.ViewActions;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.CreateLao;
 import com.github.dedis.popstellar.model.objects.security.KeyPair;
@@ -65,6 +63,7 @@ public class WitnessMessageFragmentTest {
 
   @Test
   public void testWitnessMessageListIsDisplayed() {
+    witnessMessageFragment().check(matches(isDisplayed()));
     witnessMessageList().check(matches(isDisplayed()));
   }
 }

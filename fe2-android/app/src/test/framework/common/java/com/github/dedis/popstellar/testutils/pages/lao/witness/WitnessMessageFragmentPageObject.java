@@ -15,5 +15,8 @@ public class WitnessMessageFragmentPageObject {
   public static ViewInteraction witnessMessageList() {
     return onView(withId(R.id.witness_message_list));
   }
-  
+
+  public static ViewInteraction witnessMessageFragment() {
+    return onView(withId(R.id.fragment_witness_message));
+  }
 }
