@@ -60,17 +60,19 @@ func Serve(cliCtx *cli.Context) error {
 
 	startedWithConfigFile := false
 
-	// by default, start using a config file
-	serverConfig, err = startWithConfigFile(configFilePath)
-	if err != nil {
-		log.Error().Msgf("Could not start server with config file: %v. Starting with flags.", err)
-		// start by using flags instead
+	// start using a config file if a file path was provided
+	if configFilePath != "" {
+		serverConfig, err = startWithConfigFile(configFilePath)
+		if err != nil {
+			return xerrors.Errorf("Could not start server with config file: %v", err)
+		}
+		startedWithConfigFile = true
+	} else {
+		// otherwise start using the flags
 		serverConfig, err = startWithFlags(cliCtx)
 		if err != nil {
-			return xerrors.Errorf("Could not start server: %v", err)
+			return xerrors.Errorf("Could not start server using flags: %v", err)
 		}
-	} else {
-		startedWithConfigFile = true
 	}
 
 	// compute the client server address
@@ -130,6 +132,7 @@ func Serve(cliCtx *cli.Context) error {
 		connectedServers[server] = false
 	}
 
+	wg.Add(1)
 	go serverConnectionLoop(h, wg, done, serverConfig.OtherServers, updatedServersChan, &connectedServers)
 
 	// Wait for a Ctrl-C
@@ -191,6 +194,10 @@ func serverConnectionLoop(h hub.Hub, wg *sync.WaitGroup, done chan struct{}, oth
 			ticker.Reset(delay)
 			serversToConnect = newServersList
 			_ = connectToServers(h, wg, done, serversToConnect, connectedServers)
+		case <-done:
+			log.Info().Msg("Stopping the server connection loop")
+			wg.Done()
+			return
 		}
 	}
 }
