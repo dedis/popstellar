@@ -4,7 +4,6 @@
 package hub
 
 import (
-	"popstellar/message/query/method"
 	"popstellar/network/socket"
 )
 
@@ -29,5 +28,5 @@ type Hub interface {
 	OnSocketClose() chan<- string
 
 	// SendGreetServer sends a greet server message in the socket
-	SendGreetServer(socket.Socket, method.ServerInfo) error
+	SendGreetServer(socket.Socket) error
 }

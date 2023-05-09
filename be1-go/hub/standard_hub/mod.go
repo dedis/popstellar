@@ -52,7 +52,8 @@ var suite = crypto.Suite
 
 // Hub implements the Hub interface.
 type Hub struct {
-	serverAdress string
+	clientServerAddress string
+	serverServerAddress string
 
 	messageChan chan socket.IncomingMessage
 
@@ -90,10 +91,10 @@ type Hub struct {
 	messageIdsByChannel map[string][]string
 
 	// peersInfo stores the info of the peers: public key, client and server endpoints
-	peersInfo map[socket.Socket]method.ServerInfo
+	peersInfo map[string]method.ServerInfo
 
 	// peersGreeted stores the peers that the hub has greeted
-	peersGreeted []socket.Socket
+	peersGreeted []string
 }
 
 // newQueries creates a new queries struct
@@ -120,7 +121,7 @@ type queries struct {
 }
 
 // NewHub returns a new Hub.
-func NewHub(pubKeyOwner kyber.Point, serverAddress string, log zerolog.Logger,
+func NewHub(pubKeyOwner kyber.Point, clientServerAddress string, serverServerAddress string, log zerolog.Logger,
 	laoFac channel.LaoFactory) (*Hub, error) {
 
 	schemaValidator, err := validation.NewSchemaValidator(log)
@@ -133,7 +134,8 @@ func NewHub(pubKeyOwner kyber.Point, serverAddress string, log zerolog.Logger,
 	pubServ, secServ := generateKeys()
 
 	hub := Hub{
-		serverAdress:        serverAddress,
+		clientServerAddress: clientServerAddress,
+		serverServerAddress: serverServerAddress,
 		messageChan:         make(chan socket.IncomingMessage),
 		channelByID:         make(map[string]channel.Channel),
 		closedSockets:       make(chan string),
@@ -150,8 +152,8 @@ func NewHub(pubKeyOwner kyber.Point, serverAddress string, log zerolog.Logger,
 		rootInbox:           *inbox.NewInbox(rootChannel),
 		queries:             newQueries(),
 		messageIdsByChannel: make(map[string][]string),
-		peersInfo:           make(map[socket.Socket]method.ServerInfo),
-		peersGreeted:        make([]socket.Socket, 0),
+		peersInfo:           make(map[string]method.ServerInfo),
+		peersGreeted:        make([]string, 0),
 	}
 
 	return &hub, nil
@@ -263,8 +265,8 @@ func (h *Hub) SendGreetServer(socket socket.Socket) error {
 
 	serverInfo := method.ServerInfo{
 		PublicKey:     h.pubKeyServ.String(),
-		ServerAddress: "wss://localhost:9001",
-		ClientAddress: "wss://localhost:9000",
+		ServerAddress: h.serverServerAddress,
+		ClientAddress: h.clientServerAddress,
 	}
 
 	serverGreet := &method.GreetServer{
@@ -284,7 +286,7 @@ func (h *Hub) SendGreetServer(socket socket.Socket) error {
 
 	socket.Send(buf)
 
-	h.peersGreeted = append(h.peersGreeted, socket)
+	h.peersGreeted = append(h.peersGreeted, socket.ID())
 	return nil
 }
 
@@ -588,7 +590,7 @@ func (h *Hub) GetPubKeyServ() kyber.Point {
 
 // GetServerAddress implements channel.HubFunctionalities
 func (h *Hub) GetServerAddress() string {
-	return h.serverAdress
+	return h.clientServerAddress
 }
 
 // Sign implements channel.HubFunctionalities
@@ -611,6 +613,18 @@ func (h *Hub) NotifyNewChannel(channelID string, channel channel.Channel, sock s
 	h.Lock()
 	h.channelByID[channelID] = channel
 	h.Unlock()
+}
+
+func (h *Hub) GetPeersInfo() []method.ServerInfo {
+	h.Lock()
+	defer h.Unlock()
+
+	var peersInfo []method.ServerInfo
+	for _, info := range h.peersInfo {
+		peersInfo = append(peersInfo, info)
+	}
+
+	return peersInfo
 }
 
 func generateKeys() (kyber.Point, kyber.Scalar) {

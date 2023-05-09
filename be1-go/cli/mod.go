@@ -3,7 +3,6 @@ package main
 
 import (
 	"encoding/base64"
-	"encoding/json"
 	"fmt"
 	"net/url"
 	popstellar "popstellar"
@@ -11,9 +10,6 @@ import (
 	"popstellar/crypto"
 	"popstellar/hub"
 	"popstellar/hub/standard_hub"
-	jsonrpc "popstellar/message"
-	"popstellar/message/query"
-	"popstellar/message/query/method"
 	"popstellar/network"
 	"popstellar/network/socket"
 	"sync"
@@ -48,18 +44,15 @@ func Serve(cliCtx *cli.Context) error {
 	pk := cliCtx.String("public-key")
 
 	// compute the client server address
-	clientServerAddress := ""
-	if publicAddress == "localhost" {
-		clientServerAddress = fmt.Sprintf("%s:%d", publicAddress, clientPort)
-	} else {
-		clientServerAddress = fmt.Sprintf("%s/client", publicAddress)
-	}
+	clientServerAddress := fmt.Sprintf("wss://%s:%d/client", publicAddress, clientPort)
+	// compute the server server address
+	serverServerAddress := fmt.Sprintf("wss://%s:%d/server", publicAddress, serverPort)
 
 	var point kyber.Point = nil
 	ownerKey(pk, &point)
 
 	// create user hub
-	h, err := standard_hub.NewHub(point, clientServerAddress, log.With().Str("role", "server").Logger(),
+	h, err := standard_hub.NewHub(point, clientServerAddress, serverServerAddress, log.With().Str("role", "server").Logger(),
 		lao.NewChannel)
 	if err != nil {
 		return xerrors.Errorf("failed create the hub: %v", err)
@@ -143,32 +136,13 @@ func connectToSocket(address string, h hub.Hub,
 		h.OnSocketClose(), ws, wg, done, log)
 	wg.Add(2)
 
-	serverInfo := method.ServerInfo{
-		PublicKey:     pk,
-		ServerAddress: "wss://popdemo.dedis.ch:9001/server",
-		ClientAddress: "wss://popdemo.dedis.ch:9000/client",
-	}
-
-	serverGreet := &method.GreetServer{
-		Base: query.Base{
-			JSONRPCBase: jsonrpc.JSONRPCBase{
-				JSONRPC: "2.0",
-			},
-			Method: query.MethodGreetServer,
-		},
-		ID:     0,
-		Params: serverInfo,
-	}
-
-	buf, err := json.Marshal(serverGreet)
-	if err != nil {
-		return xerrors.Errorf("failed to marshal server greet: %v", err)
-	}
-
 	go remoteSocket.WritePump()
 	go remoteSocket.ReadPump()
 
-	remoteSocket.Send(buf)
+	err = h.SendGreetServer(remoteSocket)
+	if err != nil {
+		return xerrors.Errorf("failed to send greet to server: %v", err)
+	}
 
 	h.NotifyNewServer(remoteSocket)
 

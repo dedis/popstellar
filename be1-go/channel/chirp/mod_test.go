@@ -622,6 +622,11 @@ func (h *fakeHub) Sign(data []byte) ([]byte, error) {
 	return signatureBuf, nil
 }
 
+// GetPeersInfo implements channel.HubFunctionalities
+func (h *fakeHub) GetPeersInfo() []method.ServerInfo {
+	return nil
+}
+
 func (h *fakeHub) GetSchemaValidator() validation.SchemaValidator {
 	return *h.schemaValidator
 }

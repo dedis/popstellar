@@ -507,9 +507,9 @@ func (h *Hub) handleGreetServer(socket socket.Socket, byteMessage []byte) error 
 	h.log.Info().Msg("greetServer message received")
 
 	// store information about the server
-	h.peersInfo[socket] = greetServer.Params
+	h.peersInfo[socket.ID()] = greetServer.Params
 
-	if slices.Contains(h.peersGreeted, socket) {
+	if slices.Contains(h.peersGreeted, socket.ID()) {
 		h.log.Info().Msg("peer already greeted")
 		return nil
 	}

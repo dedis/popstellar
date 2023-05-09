@@ -100,6 +100,7 @@ type HubFunctionalities interface {
 	GetServerNumber() int
 	SendAndHandleMessage(method.Broadcast) error
 	GetServerAddress() string
+	GetPeersInfo() []method.ServerInfo
 }
 
 // Broadcastable defines a channel that can broadcast

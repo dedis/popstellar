@@ -81,6 +81,8 @@ type Channel struct {
 	log zerolog.Logger
 
 	registry registry.MessageRegistry
+
+	peers []method.ServerInfo
 }
 
 // rollCallState denotes the state of the roll call.
@@ -665,13 +667,22 @@ func (c *Channel) createAndSendLAOGreet() error {
 		return xerrors.Errorf("failed to marshal the organizer key: %v", err)
 	}
 
+	peers := []messagedata.Peer{}
+
+	for _, info := range c.hub.GetPeersInfo() {
+		log.Info().Msgf("storing new greet lao peer '%s' ", info.ClientAddress)
+		peers = append(peers, messagedata.Peer{
+			Address: info.ClientAddress,
+		})
+	}
+
 	msgData := messagedata.LaoGreet{
 		Object:   messagedata.LAOObject,
 		Action:   messagedata.LAOActionGreet,
 		LaoID:    c.extractLaoID(),
 		Frontend: base64.URLEncoding.EncodeToString(orgPkBuf),
-		Address:  fmt.Sprintf("wss://%s/client", c.hub.GetServerAddress()),
-		Peers:    []messagedata.Peer{},
+		Address:  c.hub.GetServerAddress(),
+		Peers:    peers,
 	}
 
 	// Marshalls the message data
