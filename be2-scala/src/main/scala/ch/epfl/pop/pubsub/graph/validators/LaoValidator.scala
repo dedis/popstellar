@@ -149,12 +149,6 @@ object LaoValidator extends MessageDataContentValidator {
               greetLao.lao,
               validationError("unexpected id, was " + greetLao.lao + " but expected " + expectedHash)
             ),
-            checkMsgSenderKey(
-              rpcMessage,
-              greetLao.frontend,
-              senderPK,
-              validationError(s"unexpected frontend public key ${greetLao.frontend}")
-            ),
             checkStringPattern(
               rpcMessage,
               greetLao.address,
