@@ -283,13 +283,13 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_BE2 }}
         run: sbt sonarScan
 
-  protocol:
-    name: protocol examples test
+  popcha-example-client:
+    name: popcha-example-web-client
     runs-on: ubuntu-latest
 
     defaults:
       run:
-        working-directory: ./protocol/test
+        working-directory: demo/popcha-client/web
 
     steps:
       - name: Setup repo
@@ -297,32 +297,30 @@ jobs:
         with:
           fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of Sonar analysis
 
-      - name: Setup node 12.x
-        uses: actions/setup-node@v1
+      - name: Setup python
+        uses: actions/setup-python@v4
         with:
-          node-version: 12.x
+          python-version: '3.9'
 
-      - name: Setup node cache
-        uses: actions/cache@v2
+      - name: Setup pip dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install ruff pytest tox
+          pip install -r requirements.txt
+
+      - name: Lint with ruff
+        run: |
+          # stop the build if there are Python syntax errors or undefined names
+          ruff --format=github --select=E9,F63,F7,F82 --target-version=py39 .
+          # default set of ruff rules with GitHub Annotations
+          ruff --format=github --target-version=py39 .
+      - name: Run tests with tox
+        run: tox -e py
+      - name: Run SonarCloud Analysis
+        if: ${{ !startsWith(github.head_ref, 'dependabot/') }} # execute even if previous steps failed
+        uses: SonarSource/sonarcloud-github-action@master
+        with:
+          projectBaseDir: demo/popcha-client/web 
         env:
-          cache-name: cache-node-modules
-        with:
-          # npm cache files are stored in `~/.npm` on Linux/macOS
-          path: ~/.npm
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
-
-      - name: Setup npm dependencies
-        run: |
-          npm install
-
-      - name: Check npm security issues
-        run: |
-          npm audit fix
-
-      - name: Run test
-        run: |
-          npm run test
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_POPCHA_WEB_CLIENT }}
