@@ -78,7 +78,8 @@ describe("Check root schema", () => {
             "query/publish",
             "query/catchup",
             "query/heartbeat",
-            "query/get_messages_by_id"
+            "query/get_messages_by_id",
+            "query/greet_server"
         ],
         rootSchema
     );
