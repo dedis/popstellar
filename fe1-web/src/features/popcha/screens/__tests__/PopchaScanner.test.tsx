@@ -6,7 +6,7 @@ import { mockLaoId } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
 
 import { POPCHA_FEATURE_IDENTIFIER, PopchaReactContext } from '../../interface';
-// import { sendPopchaAuthRequest } from '../../network/PopchaMessageApi';
+import { sendPopchaAuthRequest } from '../../network/PopchaMessageApi';
 import PopchaScanner from '../PopchaScanner';
 
 const contextValue = {
@@ -176,39 +176,39 @@ describe('Popcha scanner', () => {
 
   // TODO: fix these tests
 
-  // describe('correct behavior when sending request', () => {
-  //   it('successful request closes scanner', async () => {
-  //     const url = new URL(mockUrl.toString());
-  //     (sendPopchaAuthRequest as jest.Mock).mockReturnValue(Promise.resolve());
-  //     const { getByTestId, toJSON } = render(
-  //       <FeatureContext.Provider value={contextValue}>
-  //         <PopchaScanner />
-  //       </FeatureContext.Provider>,
-  //     );
-  //     const scannerButton = getByTestId('popcha_scanner_button');
-  //     fireEvent.press(scannerButton);
-  //     fireScan(url.toString());
-  //     await waitFor(() => {
-  //       expect(mockToastShow).toHaveBeenCalledTimes(0);
-  //       expect(toJSON()).toMatchSnapshot();
-  //     });
-  //   });
-  //
-  //   it('failed request shows error message', async () => {
-  //     const url = new URL(mockUrl.toString());
-  //     (sendPopchaAuthRequest as jest.Mock).mockReturnValue(Promise.reject(new Error('error')));
-  //     const { getByTestId, toJSON } = render(
-  //       <FeatureContext.Provider value={contextValue}>
-  //         <PopchaScanner />
-  //       </FeatureContext.Provider>,
-  //     );
-  //     const scannerButton = getByTestId('popcha_scanner_button');
-  //     fireEvent.press(scannerButton);
-  //     fireScan(url.toString());
-  //     await waitFor(() => {
-  //       expect(toJSON()).toMatchSnapshot();
-  //       expect(mockToastShow).toHaveBeenCalledTimes(1);
-  //     });
-  //   });
-  // });
+  describe('correct behavior when sending request', () => {
+    it('successful request closes scanner', async () => {
+      const url = new URL(mockUrl.toString());
+      (sendPopchaAuthRequest as jest.Mock).mockReturnValue(Promise.resolve());
+      const { getByTestId, toJSON } = render(
+        <FeatureContext.Provider value={contextValue}>
+          <PopchaScanner />
+        </FeatureContext.Provider>,
+      );
+      const scannerButton = getByTestId('popcha_scanner_button');
+      fireEvent.press(scannerButton);
+      fireScan(url.toString());
+      await waitFor(() => {
+        expect(mockToastShow).toHaveBeenCalledTimes(0);
+        expect(toJSON()).toMatchSnapshot();
+      });
+    });
+
+    it('failed request shows error message', async () => {
+      const url = new URL(mockUrl.toString());
+      (sendPopchaAuthRequest as jest.Mock).mockReturnValue(Promise.reject(new Error('error')));
+      const { getByTestId, toJSON } = render(
+        <FeatureContext.Provider value={contextValue}>
+          <PopchaScanner />
+        </FeatureContext.Provider>,
+      );
+      const scannerButton = getByTestId('popcha_scanner_button');
+      fireEvent.press(scannerButton);
+      fireScan(url.toString());
+      await waitFor(() => {
+        expect(toJSON()).toMatchSnapshot();
+        expect(mockToastShow).toHaveBeenCalledTimes(1);
+      });
+    });
+  });
 });
