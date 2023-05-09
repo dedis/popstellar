@@ -177,7 +177,7 @@ describe('PoPcha scanner', () => {
   describe('correct behavior when sending request', () => {
     it('successful request closes scanner', async () => {
       const url = new URL(mockUrl.toString());
-
+      (sendPopchaAuthRequest as jest.Mock).mockImplementation(() => Promise.resolve());
       const { getByTestId, toJSON } = render(
         <FeatureContext.Provider value={contextValue}>
           <PopchaScanner />
@@ -186,7 +186,10 @@ describe('PoPcha scanner', () => {
       const scannerButton = getByTestId('popcha_scanner_button');
       fireEvent.press(scannerButton);
       fireScan(url.toString());
-      await waitFor(() => expect(toJSON()).toMatchSnapshot());
+      await waitFor(() => {
+        expect(mockToastShow).toHaveBeenCalledTimes(0);
+        expect(toJSON()).toMatchSnapshot();
+      });
     });
 
     it('failed request shows error message', async () => {

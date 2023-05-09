@@ -154,7 +154,13 @@ const PopchaScanner = () => {
       <QrCodeScanner
         showCamera={showScanner}
         handleScan={(data: string | null) =>
-          data && sendAuthRequest(data).then((success) => success && setTextScanned(data))
+          data &&
+          sendAuthRequest(data).then((success) => {
+            if (success) {
+              setTextScanned(data);
+              setShowScanner(false);
+            }
+          })
         }>
         <View style={styles.container}>
           <View>
