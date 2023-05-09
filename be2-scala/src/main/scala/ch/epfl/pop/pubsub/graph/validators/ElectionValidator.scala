@@ -259,9 +259,9 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
     }
   }
 
-  // not implemented since the back end does not receive a ResultElection message coming from the front end
+// TODO: Proper validation
   def validateResultElection(rpcMessage: JsonRpcRequest): GraphMessage = {
-    Left(PipelineError(ErrorCodes.SERVER_ERROR.id, "NOT IMPLEMENTED: ElectionValidator cannot handle ResultElection messages yet", rpcMessage.id))
+    Right(rpcMessage)
   }
 
   def validateEndElection(rpcMessage: JsonRpcRequest): GraphMessage = {
