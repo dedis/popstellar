@@ -11,8 +11,8 @@ import { Typography } from 'core/styles';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
 
-import { PoPchaHooks } from '../hooks';
-import { PoPchaFeature } from '../interface';
+import { PopchaHooks } from '../hooks';
+import { PopchaFeature } from '../interface';
 import { sendPopchaAuthRequest } from '../network/PopchaMessageApi';
 
 const styles = StyleSheet.create({
@@ -29,9 +29,9 @@ const styles = StyleSheet.create({
 /**
  * A scanner to scan QR code to send an authentication request
  */
-const PoPchaScanner = () => {
-  const laoId = PoPchaHooks.useCurrentLaoId();
-  const generateToken = PoPchaHooks.useGenerateToken;
+const PopchaScanner = () => {
+  const laoId = PopchaHooks.useCurrentLaoId();
+  const generateToken = PopchaHooks.useGenerateToken;
 
   const [showScanner, setShowScanner] = useState(false);
   const [textScanned, setTextScanned] = useState('');
@@ -183,11 +183,11 @@ const PoPchaScanner = () => {
   );
 };
 
-export default PoPchaScanner;
+export default PopchaScanner;
 
-export const popchaScannerScreen: PoPchaFeature.LaoScreen = {
+export const popchaScannerScreen: PopchaFeature.LaoScreen = {
   id: STRINGS.navigation_lao_popcha,
   Icon: makeIcon('scan'),
-  Component: PoPchaScanner,
+  Component: PopchaScanner,
   order: 100000,
 };

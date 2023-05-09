@@ -1,7 +1,7 @@
-import { POPCHA_FEATURE_IDENTIFIER, PoPchaConfiguration, PoPchaInterface } from './interface';
-import { popchaScannerScreen } from './screens/PoPchaScanner';
+import { POPCHA_FEATURE_IDENTIFIER, PopchaConfiguration, PopchaInterface } from './interface';
+import { popchaScannerScreen } from './screens/PopchaScanner';
 
-export const configure = (configuration: PoPchaConfiguration): PoPchaInterface => {
+export const configure = (configuration: PopchaConfiguration): PopchaInterface => {
   return {
     identifier: POPCHA_FEATURE_IDENTIFIER,
     context: {

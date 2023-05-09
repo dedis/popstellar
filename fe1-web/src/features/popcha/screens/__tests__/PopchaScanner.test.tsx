@@ -5,13 +5,13 @@ import { fireScan } from '__mocks__/expo-camera';
 import { mockLaoId } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
 
-import { POPCHA_FEATURE_IDENTIFIER, PoPchaReactContext } from '../../interface';
-import PoPchaScanner from '../PoPchaScanner';
+import { POPCHA_FEATURE_IDENTIFIER, PopchaReactContext } from '../../interface';
+import PopchaScanner from '../PopchaScanner';
 
 const contextValue = {
   [POPCHA_FEATURE_IDENTIFIER]: {
     useCurrentLaoId: () => mockLaoId,
-  } as PoPchaReactContext,
+  } as PopchaReactContext,
 };
 
 const mockToastShow = jest.fn();
@@ -48,7 +48,7 @@ beforeEach(() => {
 const testInvalidUrl = async (url: string) => {
   const { getByTestId } = render(
     <FeatureContext.Provider value={contextValue}>
-      <PoPchaScanner />
+      <PopchaScanner />
     </FeatureContext.Provider>,
   );
 
@@ -63,7 +63,7 @@ describe('PoPcha scanner', () => {
     it('closed scanner renders correctly', () => {
       const component = render(
         <FeatureContext.Provider value={contextValue}>
-          <PoPchaScanner />
+          <PopchaScanner />
         </FeatureContext.Provider>,
       ).toJSON();
       expect(component).toMatchSnapshot();
@@ -72,7 +72,7 @@ describe('PoPcha scanner', () => {
     it('opened scanner renders correctly', () => {
       const { getByTestId, toJSON } = render(
         <FeatureContext.Provider value={contextValue}>
-          <PoPchaScanner />
+          <PopchaScanner />
         </FeatureContext.Provider>,
       );
       const button = getByTestId('popcha_scanner_button');
@@ -132,7 +132,7 @@ describe('PoPcha scanner', () => {
     it('valid url sends correct response', async () => {
       const { getByTestId } = render(
         <FeatureContext.Provider value={contextValue}>
-          <PoPchaScanner />
+          <PopchaScanner />
         </FeatureContext.Provider>,
       );
 

@@ -8,14 +8,14 @@ import { mockLaoId, mockPopToken } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
 import { Hash } from 'core/objects';
 
-import { POPCHA_FEATURE_IDENTIFIER, PoPchaReactContext } from '../../interface';
-import { PoPchaHooks } from '../PoPchaHooks';
+import { POPCHA_FEATURE_IDENTIFIER, PopchaReactContext } from '../../interface';
+import { PopchaHooks } from '../PopchaHooks';
 
 const contextValue = {
   [POPCHA_FEATURE_IDENTIFIER]: {
     useCurrentLaoId: () => mockLaoId,
     generateToken: () => Promise.resolve(mockPopToken),
-  } as PoPchaReactContext,
+  } as PopchaReactContext,
 };
 
 const wrapper = ({ children }: { children: React.ReactNode }) => (
@@ -25,13 +25,13 @@ const wrapper = ({ children }: { children: React.ReactNode }) => (
 describe('PoPcha hooks', () => {
   describe('useCurrentLaoId', () => {
     it('should return the current lao id', () => {
-      const { result } = renderHook(() => PoPchaHooks.useCurrentLaoId(), { wrapper });
+      const { result } = renderHook(() => PopchaHooks.useCurrentLaoId(), { wrapper });
       expect(result.current).toEqual(mockLaoId);
     });
   });
   describe('generateToken', () => {
     it('should return a token', async () => {
-      const { result } = renderHook(() => PoPchaHooks.useGenerateToken({} as Hash, undefined), {
+      const { result } = renderHook(() => PopchaHooks.useGenerateToken({} as Hash, undefined), {
         wrapper,
       });
       await result.current.then((token) => expect(token).toEqual(mockPopToken)).catch(assert.fail);

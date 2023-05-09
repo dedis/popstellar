@@ -1,11 +1,11 @@
 import { Hash, PopToken } from 'core/objects';
 import FeatureInterface from 'core/objects/FeatureInterface';
 
-import { PoPchaFeature } from './Features';
+import { PopchaFeature } from './Features';
 
 export const POPCHA_FEATURE_IDENTIFIER = 'popcha';
 
-export interface PoPchaConfiguration {
+export interface PopchaConfiguration {
   /**
    * Generates a long term identifier (token) for the given lao id and client id
    * @param laoId the current lao id
@@ -20,9 +20,9 @@ export interface PoPchaConfiguration {
   useCurrentLaoId: () => Hash;
 }
 
-export type PoPchaReactContext = Pick<PoPchaConfiguration, 'useCurrentLaoId' | 'generateToken'>;
+export type PopchaReactContext = Pick<PopchaConfiguration, 'useCurrentLaoId' | 'generateToken'>;
 
-export interface PoPchaInterface extends FeatureInterface {
-  laoScreens: PoPchaFeature.LaoScreen[];
-  context: PoPchaReactContext;
+export interface PopchaInterface extends FeatureInterface {
+  laoScreens: PopchaFeature.LaoScreen[];
+  context: PopchaReactContext;
 }

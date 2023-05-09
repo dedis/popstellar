@@ -1,1 +1,1 @@
-export * from './PoPchaHooks';
+export * from './PopchaHooks';
