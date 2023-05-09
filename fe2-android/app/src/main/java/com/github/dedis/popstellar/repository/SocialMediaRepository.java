@@ -76,7 +76,7 @@ public class SocialMediaRepository {
     return getLaoChirps(laoId).getReactions(chirpId);
   }
 
-  public Set<Reaction> getReactionsByChirp(String laoId, MessageID chirpId) {
+  public synchronized Set<Reaction> getReactionsByChirp(String laoId, MessageID chirpId) {
     return getLaoChirps(laoId).reactionByChirpId.get(chirpId);
   }
 
@@ -162,16 +162,24 @@ public class SocialMediaRepository {
     }
 
     public synchronized boolean addReaction(Reaction reaction) {
-      // Check if the associated chirp is present and not deleted
+      // Check if the associated chirp is present
       Chirp chirp = chirps.get(reaction.getChirpId());
-      if (chirp == null || chirp.isDeleted()) {
+      if (chirp == null) {
         return false;
       }
 
+      Set<Reaction> chirpReactions = Objects.requireNonNull(reactionByChirpId.get(chirp.getId()));
+
+      // Search for a previous deleted reaction
+      Reaction deleted = reactions.get(reaction.getId());
+      if (deleted != null) {
+        chirpReactions.remove(deleted);
+      }
+
       // Update repository data
-      reactionByChirpId.get(chirp.getId()).add(reaction);
       reactions.put(reaction.getId(), reaction);
-      reactionSubjectsByChirpId.get(chirp.getId()).onNext(reactionByChirpId.get(chirp.getId()));
+      chirpReactions.add(reaction);
+      Objects.requireNonNull(reactionSubjectsByChirpId.get(chirp.getId())).onNext(chirpReactions);
 
       return true;
     }
@@ -206,12 +214,22 @@ public class SocialMediaRepository {
       }
 
       Chirp chirp = chirps.get(reaction.getChirpId());
+      // If the chirp the reaction refers to it's not present then throw an error
+      if (chirp == null) {
+        throw new IllegalStateException("The reaction refers to a not existing chirp");
+      }
 
-      // Update the repository data
-      reactionByChirpId.get(chirp.getId()).remove(reaction);
-      reactions.remove(reactionId);
-      reactionSubjectsByChirpId.get(chirp.getId()).onNext(reactionByChirpId.get(chirp.getId()));
-
+      if (reaction.isDeleted()) {
+        Timber.tag(TAG).d("The reaction with id %s is already deleted", reactionId);
+      } else {
+        // Update the repository data
+        Reaction deleted = reaction.deleted();
+        reactions.put(reactionId, deleted);
+        Set<Reaction> chirpReactions = Objects.requireNonNull(reactionByChirpId.get(chirp.getId()));
+        chirpReactions.remove(reaction);
+        chirpReactions.add(deleted);
+        Objects.requireNonNull(reactionSubjectsByChirpId.get(chirp.getId())).onNext(chirpReactions);
+      }
       return true;
     }
 

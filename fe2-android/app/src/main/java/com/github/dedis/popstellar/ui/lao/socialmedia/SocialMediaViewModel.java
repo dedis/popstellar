@@ -207,7 +207,7 @@ public class SocialMediaViewModel extends AndroidViewModel {
 
   public Single<MessageGeneral> deleteReaction(
       @NonNull MessageID chirpId, long timestamp, Reaction.Emoji emoji) {
-    Timber.tag(TAG).d("Deleting reaction of chirp %s", chirpId);
+    Timber.tag(TAG).d("Deleting reaction %s of chirp %s", emoji, chirpId);
 
     LaoView laoView;
     try {
@@ -223,19 +223,22 @@ public class SocialMediaViewModel extends AndroidViewModel {
         .flatMap(
             token -> {
               Channel channel = laoView.getChannel().subChannel(SOCIAL).subChannel(REACTIONS);
+
               // Find the reaction id (reaction sent from self matching the emoji)
               Set<Reaction> reactions = socialMediaRepository.getReactionsByChirp(laoId, chirpId);
               Reaction previousReaction =
                   reactions.stream()
                       .filter(
                           reaction ->
-                              reaction.getCodepoint().equals(emoji.getUnicode())
+                              !reaction.isDeleted()
+                                  && reaction.getCodepoint().equals(emoji.getUnicode())
                                   && reaction.getSender().equals(token.getPublicKey()))
                       .findFirst()
                       .orElse(null);
               if (previousReaction == null) {
                 throw new UnknownReactionException();
               }
+
               DeleteReaction deleteReaction =
                   new DeleteReaction(previousReaction.getId(), timestamp);
               MessageGeneral msg = new MessageGeneral(token, deleteReaction, gson);
@@ -301,7 +304,8 @@ public class SocialMediaViewModel extends AndroidViewModel {
     return socialMediaRepository.getReactionsByChirp(laoId, chirpId).stream()
         .anyMatch(
             reaction ->
-                isOwner(reaction.getSender().getEncoded())
+                !reaction.isDeleted()
+                    && isOwner(reaction.getSender().getEncoded())
                     && reaction.getCodepoint().equals(emoji.getUnicode()));
   }
 

@@ -33,6 +33,7 @@ public class Reaction implements Copyable<Reaction> {
   private final String codepoint;
   private final MessageID chirpId;
   private final long timestamp;
+  private final boolean isDeleted;
 
   public Reaction(
       @NonNull MessageID id,
@@ -42,7 +43,6 @@ public class Reaction implements Copyable<Reaction> {
       long timestamp) {
     MessageValidator.verify()
         .stringNotEmpty(codepoint, "codepoint")
-        .validPastTimes(timestamp)
         .isBase64(id.getEncoded(), "reaction id")
         .isBase64(chirpId.getEncoded(), "chirp id");
     this.id = id;
@@ -50,6 +50,7 @@ public class Reaction implements Copyable<Reaction> {
     this.codepoint = codepoint;
     this.chirpId = chirpId;
     this.timestamp = timestamp;
+    isDeleted = false;
   }
 
   public Reaction(Reaction reaction) {
@@ -58,6 +59,16 @@ public class Reaction implements Copyable<Reaction> {
     codepoint = reaction.codepoint;
     chirpId = reaction.chirpId;
     timestamp = reaction.timestamp;
+    isDeleted = reaction.isDeleted;
+  }
+
+  public Reaction(Reaction reaction, boolean deleted) {
+    id = reaction.id;
+    sender = reaction.sender;
+    codepoint = reaction.codepoint;
+    chirpId = reaction.chirpId;
+    timestamp = reaction.timestamp;
+    isDeleted = deleted;
   }
 
   public MessageID getId() {
@@ -80,9 +91,17 @@ public class Reaction implements Copyable<Reaction> {
     return timestamp;
   }
 
+  public boolean isDeleted() {
+    return isDeleted;
+  }
+
   @Override
   public Reaction copy() {
     return new Reaction(this);
+  }
+
+  public Reaction deleted() {
+    return new Reaction(this, true);
   }
 
   @Override

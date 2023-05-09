@@ -13,9 +13,7 @@ public class DeleteReaction extends Data {
   private final long timestamp;
 
   public DeleteReaction(MessageID reactionID, long timestamp) {
-    MessageValidator.verify()
-        .isBase64(reactionID.getEncoded(), "reaction id")
-        .validPastTimes(timestamp);
+    MessageValidator.verify().isBase64(reactionID.getEncoded(), "reaction id");
     this.reactionID = reactionID;
     this.timestamp = timestamp;
   }

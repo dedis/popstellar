@@ -18,10 +18,14 @@ import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.ui.lao.LaoViewModel;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.UnknownChirpException;
+import com.github.dedis.popstellar.utility.error.keys.KeyException;
 
 import java.time.Instant;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+
+import timber.log.Timber;
 
 import static android.text.format.DateUtils.getRelativeTimeSpanString;
 
@@ -76,6 +80,14 @@ public class ChirpListAdapter extends BaseAdapter {
       chirpView = layoutInflater.inflate(R.layout.chirp_card, viewGroup, false);
     }
 
+    // If the user has no valid pop token then it's not possible to react
+    try {
+      socialMediaViewModel.getValidPoPToken();
+      chirpView.findViewById(R.id.chirp_card_buttons).setVisibility(View.VISIBLE);
+    } catch (KeyException e) {
+      chirpView.findViewById(R.id.chirp_card_buttons).setVisibility(View.GONE);
+    }
+
     Chirp chirp = getItem(position);
     if (chirp == null) {
       throw new IllegalArgumentException("The chirp does not exist");
@@ -102,30 +114,19 @@ public class ChirpListAdapter extends BaseAdapter {
               .getReactions(chirp.getId())
               .subscribe(
                   reactions -> {
+                    Map<String, Long> codepointToCountMap =
+                        reactions.stream()
+                            // Filter just non deleted reactions
+                            .filter(((Predicate<Reaction>) Reaction::isDeleted).negate())
+                            .collect(
+                                Collectors.groupingBy(
+                                    Reaction::getCodepoint, Collectors.counting()));
                     long upVotes =
-                        reactions.stream()
-                            .filter(
-                                reaction ->
-                                    reaction
-                                        .getCodepoint()
-                                        .equals(Reaction.Emoji.UPVOTE.getUnicode()))
-                            .count();
+                        codepointToCountMap.getOrDefault(Reaction.Emoji.UPVOTE.getUnicode(), 0l);
                     long downVotes =
-                        reactions.stream()
-                            .filter(
-                                reaction ->
-                                    reaction
-                                        .getCodepoint()
-                                        .equals(Reaction.Emoji.DOWNVOTE.getUnicode()))
-                            .count();
+                        codepointToCountMap.getOrDefault(Reaction.Emoji.DOWNVOTE.getUnicode(), 0l);
                     long loves =
-                        reactions.stream()
-                            .filter(
-                                reaction ->
-                                    reaction
-                                        .getCodepoint()
-                                        .equals(Reaction.Emoji.LOVE.getUnicode()))
-                            .count();
+                        codepointToCountMap.getOrDefault(Reaction.Emoji.LOVE.getUnicode(), 0l);
 
                     upvoteCounter.setText(String.format(Locale.US, "%d", upVotes));
                     downvoteCounter.setText(String.format(Locale.US, "%d", downVotes));
@@ -250,16 +251,17 @@ public class ChirpListAdapter extends BaseAdapter {
       laoViewModel.addDisposable(
           socialMediaViewModel
               .sendReaction(emoji.getUnicode(), chirpId, Instant.now().getEpochSecond())
-              .doOnError(
-                  err -> ErrorUtils.logAndShow(context, TAG, err, R.string.error_sending_reaction))
-              .subscribe());
+              .subscribe(
+                  msg -> Timber.tag(TAG).d("Added reaction to chirp %s", chirpId),
+                  err ->
+                      ErrorUtils.logAndShow(context, TAG, err, R.string.error_sending_reaction)));
     } else {
       laoViewModel.addDisposable(
           socialMediaViewModel
               .deleteReaction(chirpId, Instant.now().getEpochSecond(), emoji)
-              .doOnError(
-                  err -> ErrorUtils.logAndShow(context, TAG, err, R.string.error_delete_reaction))
-              .subscribe());
+              .subscribe(
+                  msg -> Timber.tag(TAG).d("Deleted reaction of chirp %s", chirpId),
+                  err -> ErrorUtils.logAndShow(context, TAG, err, R.string.error_delete_reaction)));
     }
   }
 
