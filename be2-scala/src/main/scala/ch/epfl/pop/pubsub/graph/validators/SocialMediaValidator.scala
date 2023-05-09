@@ -71,7 +71,7 @@ sealed class SocialMediaValidator(dbActorRef: => AskableActorRef) extends Messag
           ),
           checkStringPattern(
             rpcMessage,
-            addChirp.text,
+            addChirp.text.trim,
             MAX_CHIRP_TEXT_SIZE_REGEX,
             validationError(s"Text is too long (over 300 characters).")
           ),
