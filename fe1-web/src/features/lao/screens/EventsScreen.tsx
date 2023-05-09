@@ -2,8 +2,8 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useSelector } from 'react-redux';
 
+import ButtonPadding from 'core/components/ButtonPadding';
 import DrawerMenuButton from 'core/components/DrawerMenuButton';
-import NavigationPadding from 'core/components/NavigationPadding';
 import ScreenWrapper from 'core/components/ScreenWrapper';
 import { Icon } from 'core/styles';
 
@@ -70,7 +70,7 @@ export const EventsScreenHeaderRight = () => {
           <CreateEventButton />
         </View>
       ) : (
-        <NavigationPadding />
+        <ButtonPadding />
       )}
     </View>
   );

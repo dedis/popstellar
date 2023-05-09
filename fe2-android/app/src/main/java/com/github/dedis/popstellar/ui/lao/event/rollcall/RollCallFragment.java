@@ -13,8 +13,6 @@ import android.widget.*;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
-import androidx.core.widget.ImageViewCompat;
-import androidx.fragment.app.Fragment;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.RollCallFragmentBinding;
@@ -25,7 +23,7 @@ import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.model.qrcode.PopTokenData;
 import com.github.dedis.popstellar.repository.RollCallRepository;
 import com.github.dedis.popstellar.ui.lao.LaoActivity;
-import com.github.dedis.popstellar.ui.lao.LaoViewModel;
+import com.github.dedis.popstellar.ui.lao.event.AbstractEventFragment;
 import com.github.dedis.popstellar.ui.lao.event.eventlist.EventListFragment;
 import com.github.dedis.popstellar.ui.qrcode.QrScannerFragment;
 import com.github.dedis.popstellar.ui.qrcode.ScanningAction;
@@ -34,12 +32,11 @@ import com.github.dedis.popstellar.utility.Constants;
 import com.github.dedis.popstellar.utility.error.*;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
-import com.google.gson.Gson;
 
 import net.glxn.qrgen.android.QRCode;
 
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.EnumMap;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -50,28 +47,20 @@ import timber.log.Timber;
 import static com.github.dedis.popstellar.utility.Constants.*;
 
 @AndroidEntryPoint
-public class RollCallFragment extends Fragment {
+public class RollCallFragment extends AbstractEventFragment {
 
   public static final String TAG = RollCallFragment.class.getSimpleName();
 
-  @Inject Gson gson;
   @Inject RollCallRepository rollCallRepo;
-
-  private final SimpleDateFormat dateFormat =
-      new SimpleDateFormat("dd/MM/yyyy HH:mm z", Locale.ENGLISH);
 
   private RollCallFragmentBinding binding;
 
-  private LaoViewModel laoViewModel;
   private RollCall rollCall;
 
   private RollCallViewModel rollCallViewModel;
 
   private final EnumMap<EventState, Integer> managementTextMap = buildManagementTextMap();
-  private final EnumMap<EventState, Integer> statusTextMap = buildStatusTextMap();
-  private final EnumMap<EventState, Integer> statusIconMap = buildStatusIconMap();
   private final EnumMap<EventState, Integer> managementIconMap = buildManagementIconMap();
-  private final EnumMap<EventState, Integer> statusColorMap = buildStatusColorMap();
 
   public RollCallFragment() {
     // Required empty public constructor
@@ -179,15 +168,14 @@ public class RollCallFragment extends Fragment {
                     ErrorUtils.logAndShow(
                         requireContext(), TAG, error, R.string.unknown_roll_call_exception)));
 
-    handleBackNav();
+    handleBackNav(TAG);
     return binding.getRoot();
   }
 
   @Override
   public void onResume() {
     super.onResume();
-    laoViewModel.setPageTitle(R.string.roll_call_title);
-    laoViewModel.setIsTab(false);
+    setTab(R.string.roll_call_title);
     try {
       rollCall =
           rollCallRepo.getRollCallWithPersistentId(
@@ -210,7 +198,11 @@ public class RollCallFragment extends Fragment {
   }
 
   private void setUpStateDependantContent() {
-    setupTime(); // Suggested time is updated in case of early/late close/open/reopen
+    setupTime(
+        rollCall,
+        binding.rollCallStartTime,
+        binding
+            .rollCallEndTime); // Suggested time is updated in case of early/late close/open/reopen
 
     EventState rcState = rollCall.getState();
     boolean isOrganizer = laoViewModel.isOrganizer();
@@ -255,13 +247,7 @@ public class RollCallFragment extends Fragment {
     binding.rollCallManagementButton.setCompoundDrawablesWithIntrinsicBounds(
         imgManagement, null, null, null);
 
-    Drawable imgStatus = getDrawableFromContext(statusIconMap.getOrDefault(rcState, ID_NULL));
-    binding.rollCallStatusIcon.setImageDrawable(imgStatus);
-    setImageColor(binding.rollCallStatusIcon, statusColorMap.getOrDefault(rcState, ID_NULL));
-
-    binding.rollCallStatus.setText(statusTextMap.getOrDefault(rcState, ID_NULL));
-    binding.rollCallStatus.setTextColor(
-        getResources().getColor(statusColorMap.getOrDefault(rcState, ID_NULL), null));
+    setStatus(rcState, binding.rollCallStatusIcon, binding.rollCallStatus);
 
     // Show scanning button only if the current state is Opened
     if (rcState == EventState.OPENED && isOrganizer) {
@@ -334,25 +320,6 @@ public class RollCallFragment extends Fragment {
     }
   }
 
-  private void setupTime() {
-    if (rollCall == null) {
-      return;
-    }
-    Date startTime = new Date(rollCall.getStartTimestampInMillis());
-    Date endTime = new Date(rollCall.getEndTimestampInMillis());
-
-    binding.rollCallStartTime.setText(dateFormat.format(startTime));
-    binding.rollCallEndTime.setText(dateFormat.format(endTime));
-  }
-
-  private Drawable getDrawableFromContext(int id) {
-    return AppCompatResources.getDrawable(requireContext(), id);
-  }
-
-  private void setImageColor(ImageView imageView, int colorId) {
-    ImageViewCompat.setImageTintList(imageView, getResources().getColorStateList(colorId, null));
-  }
-
   private void retrieveAndDisplayPublicKey() {
     PoPToken popToken = getPopToken();
     if (popToken == null) {
@@ -404,40 +371,12 @@ public class RollCallFragment extends Fragment {
     return map;
   }
 
-  private EnumMap<EventState, Integer> buildStatusTextMap() {
-    EnumMap<EventState, Integer> map = new EnumMap<>(EventState.class);
-    map.put(EventState.CREATED, R.string.created_displayed_text);
-    map.put(EventState.OPENED, R.string.open);
-    map.put(EventState.CLOSED, R.string.closed);
-    return map;
-  }
-
-  private EnumMap<EventState, Integer> buildStatusIconMap() {
-    EnumMap<EventState, Integer> map = new EnumMap<>(EventState.class);
-    map.put(EventState.CREATED, R.drawable.ic_lock);
-    map.put(EventState.OPENED, R.drawable.ic_unlock);
-    map.put(EventState.CLOSED, R.drawable.ic_lock);
-    return map;
-  }
-
-  private EnumMap<EventState, Integer> buildStatusColorMap() {
-    EnumMap<EventState, Integer> map = new EnumMap<>(EventState.class);
-    map.put(EventState.CREATED, R.color.red);
-    map.put(EventState.OPENED, R.color.green);
-    map.put(EventState.CLOSED, R.color.red);
-    return map;
-  }
-
   private EnumMap<EventState, Integer> buildManagementIconMap() {
     EnumMap<EventState, Integer> map = new EnumMap<>(EventState.class);
     map.put(EventState.CREATED, R.drawable.ic_unlock);
     map.put(EventState.OPENED, R.drawable.ic_lock);
     map.put(EventState.CLOSED, R.drawable.ic_unlock);
     return map;
-  }
-
-  private void handleBackNav() {
-    LaoActivity.addBackNavigationCallbackToEvents(requireActivity(), getViewLifecycleOwner(), TAG);
   }
 
   /**

@@ -39,9 +39,7 @@ public class CreateLao extends Data {
       @NonNull PublicKey organizer,
       @NonNull List<PublicKey> witnesses) {
     // Organizer and witnesses are checked to be base64 at deserialization
-    MessageValidator.verify()
-        .checkValidLaoId(id, organizer, creation, name)
-        .checkValidTime(creation);
+    MessageValidator.verify().validLaoId(id, organizer, creation, name).validPastTimes(creation);
 
     this.id = id;
     this.name = name;
@@ -50,13 +48,13 @@ public class CreateLao extends Data {
     this.witnesses = new ArrayList<>(witnesses);
   }
 
-  public CreateLao(String name, PublicKey organizer) {
+  public CreateLao(String name, PublicKey organizer, List<PublicKey> witnesses) {
     this.name = name;
     this.organizer = organizer;
     creation = Instant.now().getEpochSecond();
     // This checks that name and organizer are not empty or null
     id = Lao.generateLaoId(organizer, creation, name);
-    witnesses = new ArrayList<>();
+    this.witnesses = new ArrayList<>(witnesses);
   }
 
   @Override

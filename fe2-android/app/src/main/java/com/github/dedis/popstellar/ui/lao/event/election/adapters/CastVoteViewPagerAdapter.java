@@ -67,6 +67,12 @@ public class CastVoteViewPagerAdapter
           votes.put(question.getId(), listPosition);
           voteButton.setEnabled(areEveryQuestionChecked());
         });
+
+    // Ensure that the selection is not lost
+    Integer index = votes.get(question.getId());
+    if (index != null && index >= 0 && index < question.getBallotOptions().size()) {
+      holder.ballotsListView.setItemChecked(index, true);
+    }
   }
 
   @Override

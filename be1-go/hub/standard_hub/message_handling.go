@@ -20,6 +20,7 @@ import (
 )
 
 const publishError = "failed to publish: %v"
+const wrongMessageIdError = "message_id is wrong: expected %q found %q"
 
 // handleRootChannelPublishMessage handles an incoming publish message on the root channel.
 func (h *Hub) handleRootChannelPublishMessage(sock socket.Socket, publish method.Publish) error {
@@ -72,13 +73,13 @@ func (h *Hub) handleRootChannelPublishMessage(sock socket.Socket, publish method
 	}
 
 	h.rootInbox.StoreMessage(publish.Params.Message)
-	h.globalInbox.StoreMessage(publish.Params.Message)
+	h.hubInbox.StoreMessage(publish.Params.Message)
 	h.addMessageId(publish.Params.Channel, publish.Params.Message.MessageID)
 
 	return nil
 }
 
-// handleRootChannelPublishMesssage handles an incoming publish message on the root channel.
+// handleRootChannelPublishMessage handles an incoming publish message on the root channel.
 func (h *Hub) handleRootChannelBroadcastMessage(sock socket.Socket,
 	broadcast method.Broadcast) error {
 
@@ -137,7 +138,7 @@ func (h *Hub) handleRootChannelBroadcastMessage(sock socket.Socket,
 	}
 
 	h.rootInbox.StoreMessage(broadcast.Params.Message)
-	h.globalInbox.StoreMessage(broadcast.Params.Message)
+	h.hubInbox.StoreMessage(broadcast.Params.Message)
 	h.addMessageId(broadcast.Params.Channel, broadcast.Params.Message.MessageID)
 
 	return nil
@@ -180,7 +181,7 @@ func (h *Hub) handleAnswer(senderSocket socket.Socket, byteMessage []byte) error
 		return nil
 	}
 	if answerMsg.Result.IsEmpty() {
-		h.log.Info().Msg("result isn't an answer to a catchup, nothing to handle")
+		h.log.Info().Msg("result isn't an answer to a query, nothing to handle")
 		return nil
 	}
 
@@ -197,24 +198,18 @@ func (h *Hub) handleAnswer(senderSocket socket.Socket, byteMessage []byte) error
 		return xerrors.Errorf("query %v already got an answer", answerMsg.ID)
 	}
 
-	catchUpQuery, isCatchupQuery := h.queries.catchupQueries[*answerMsg.ID]
-	_, isGetMessagesByIdQuery := h.queries.getMessagesByIdQueries[*answerMsg.ID]
-
 	*h.queries.state[*answerMsg.ID] = true
 	h.queries.Unlock()
 
-	if isCatchupQuery {
-		h.handleCatchupAnswer(senderSocket, answerMsg, catchUpQuery)
-	} else if isGetMessagesByIdQuery {
-		h.handleGetMessagesByIdAnswer(senderSocket, answerMsg)
-	} else {
-		return xerrors.Errorf("query %v is not catchup or getMessagesById", answerMsg.ID)
+	err = h.handleGetMessagesByIdAnswer(senderSocket, answerMsg)
+	if err != nil {
+		return err
 	}
 
 	return nil
 }
 
-func (h *Hub) handleGetMessagesByIdAnswer(senderSocket socket.Socket, answerMsg answer.Answer) {
+func (h *Hub) handleGetMessagesByIdAnswer(senderSocket socket.Socket, answerMsg answer.Answer) error {
 	messages := answerMsg.Result.GetMessagesByChannel()
 	for channel, messageArray := range messages {
 		for _, msg := range messageArray {
@@ -225,6 +220,16 @@ func (h *Hub) handleGetMessagesByIdAnswer(senderSocket socket.Socket, answerMsg 
 			if err != nil {
 				h.log.Error().Msgf("failed to unmarshal message during getMessagesById answer handling: %v", err)
 				continue
+			}
+
+			signature := messageData.Signature
+			messageID := messageData.MessageID
+			data := messageData.Data
+
+			expectedMessageID := messagedata.Hash(data, signature)
+			if expectedMessageID != messageID {
+				return xerrors.Errorf(wrongMessageIdError,
+					expectedMessageID, messageID)
 			}
 
 			publish := method.Publish{
@@ -251,41 +256,7 @@ func (h *Hub) handleGetMessagesByIdAnswer(senderSocket socket.Socket, answerMsg 
 			}
 		}
 	}
-}
-
-func (h *Hub) handleCatchupAnswer(senderSocket socket.Socket, answerMsg answer.Answer, catchUpQuery method.Catchup) {
-	messages := answerMsg.Result.GetData()
-	for msg := range messages {
-
-		var messageData message.Message
-		err := json.Unmarshal(messages[msg], &messageData)
-		if err != nil {
-			h.log.Error().Msgf("failed to unmarshal message during catchup: %v", err)
-			continue
-		}
-
-		publish := method.Publish{
-			Base: query.Base{
-				JSONRPCBase: jsonrpc.JSONRPCBase{
-					JSONRPC: "2.0",
-				},
-				Method: "publish",
-			},
-
-			Params: struct {
-				Channel string          `json:"channel"`
-				Message message.Message `json:"message"`
-			}{
-				Channel: catchUpQuery.Params.Channel,
-				Message: messageData,
-			},
-		}
-
-		err = h.handleReceivedMessage(senderSocket, publish)
-		if err != nil {
-			h.log.Error().Msgf("failed to handle message during catchup: %v", err)
-		}
-	}
+	return nil
 }
 
 func (h *Hub) handlePublish(socket socket.Socket, byteMessage []byte) (int, error) {
@@ -323,17 +294,8 @@ func (h *Hub) handlePublish(socket socket.Socket, byteMessage []byte) (int, erro
 
 	expectedMessageID := messagedata.Hash(data, signature)
 	if expectedMessageID != messageID {
-		return publish.ID, answer.NewInvalidMessageFieldError("message_id is wrong: expected %q found %q",
+		return publish.ID, answer.NewInvalidMessageFieldError(wrongMessageIdError,
 			expectedMessageID, messageID)
-	}
-
-	alreadyReceived, err := h.broadcastToServers(publish.Params.Message, publish.Params.Channel)
-	if alreadyReceived {
-		return publish.ID, xerrors.Errorf("message %s was already received", publish.Params.Message.MessageID)
-	}
-
-	if err != nil {
-		return -1, xerrors.Errorf("failed to broadcast message: %v", err)
 	}
 
 	if publish.Params.Channel == rootChannel {
@@ -341,7 +303,14 @@ func (h *Hub) handlePublish(socket socket.Socket, byteMessage []byte) (int, erro
 		if err != nil {
 			return publish.ID, err
 		}
+		h.hubInbox.StoreMessage(publish.Params.Message)
+		h.addMessageId(publish.Params.Channel, publish.Params.Message.MessageID)
 		return publish.ID, nil
+	}
+
+	_, alreadyReceived := h.hubInbox.GetMessage(publish.Params.Message.MessageID)
+	if alreadyReceived {
+		return publish.ID, xerrors.Errorf("message %s was already received", publish.Params.Message.MessageID)
 	}
 
 	channel, err := h.getChan(publish.Params.Channel)
@@ -353,6 +322,9 @@ func (h *Hub) handlePublish(socket socket.Socket, byteMessage []byte) (int, erro
 	if err != nil {
 		return publish.ID, answer.NewInvalidMessageFieldError(publishError, err)
 	}
+
+	h.hubInbox.StoreMessage(publish.Params.Message)
+	h.addMessageId(publish.Params.Channel, publish.Params.Message.MessageID)
 
 	return publish.ID, nil
 }
@@ -371,7 +343,7 @@ func (h *Hub) handleBroadcast(socket socket.Socket, byteMessage []byte) error {
 
 	expectedMessageID := messagedata.Hash(data, signature)
 	if expectedMessageID != messageID {
-		return xerrors.Errorf("message_id is wrong: expected %q found %q",
+		return xerrors.Errorf(wrongMessageIdError,
 			expectedMessageID, messageID)
 	}
 
@@ -382,7 +354,6 @@ func (h *Hub) handleBroadcast(socket socket.Socket, byteMessage []byte) error {
 		return nil
 	}
 	h.hubInbox.StoreMessage(broadcast.Params.Message)
-	h.globalInbox.StoreMessage(broadcast.Params.Message)
 	h.addMessageId(broadcast.Params.Channel, broadcast.Params.Message.MessageID)
 
 	h.Unlock()
@@ -550,7 +521,7 @@ func (h *Hub) getMissingMessages(missingIds map[string][]string) (map[string][]m
 	missingMsgs := make(map[string][]message.Message)
 	for channelId, messageIds := range missingIds {
 		for _, messageId := range messageIds {
-			msg, exists := h.globalInbox.GetMessage(messageId)
+			msg, exists := h.hubInbox.GetMessage(messageId)
 			if !exists {
 				return nil, xerrors.Errorf("Message %s not found in hub inbox", messageId)
 			}
@@ -560,8 +531,8 @@ func (h *Hub) getMissingMessages(missingIds map[string][]string) (map[string][]m
 	return missingMsgs, nil
 }
 
-// handleReceivedMessage handle a message obtained by the server catching up or receiving a
-// getMessagesById answer
+// handleReceivedMessage handle a message obtained by the server receiving a
+// getMessagesById result
 func (h *Hub) handleReceivedMessage(socket socket.Socket, publish method.Publish) error {
 	h.Lock()
 	_, stored := h.hubInbox.GetMessage(publish.Params.Message.MessageID)
@@ -569,10 +540,6 @@ func (h *Hub) handleReceivedMessage(socket socket.Socket, publish method.Publish
 		h.Unlock()
 		return xerrors.Errorf("already stored this message")
 	}
-	h.hubInbox.StoreMessage(publish.Params.Message)
-	h.globalInbox.StoreMessage(publish.Params.Message)
-	h.addMessageId(publish.Params.Channel, publish.Params.Message.MessageID)
-	h.log.Info().Msgf("Added %s to %s", publish.Params.Message.MessageID, publish.Params.Channel)
 	h.Unlock()
 
 	if publish.Params.Channel == rootChannel {
@@ -592,6 +559,11 @@ func (h *Hub) handleReceivedMessage(socket socket.Socket, publish method.Publish
 	if err != nil {
 		return xerrors.Errorf(publishError, err)
 	}
+
+	h.Lock()
+	h.hubInbox.StoreMessage(publish.Params.Message)
+	h.addMessageId(publish.Params.Channel, publish.Params.Message.MessageID)
+	h.Unlock()
 
 	return nil
 }

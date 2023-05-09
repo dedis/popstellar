@@ -1,17 +1,17 @@
 package com.github.dedis.popstellar.model.network.method.message.data.election;
 
-import com.github.dedis.popstellar.model.network.JsonTestUtils;
-import com.github.dedis.popstellar.utility.security.Hash;
-
-import org.junit.Test;
-
-import java.time.Instant;
-import java.util.Arrays;
-import java.util.List;
-
 import static com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVersion.OPEN_BALLOT;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+
+import com.github.dedis.popstellar.model.network.JsonTestUtils;
+import com.github.dedis.popstellar.utility.security.Hash;
+import java.time.Instant;
+import java.util.Arrays;
+import java.util.List;
+import org.junit.Test;
 
 public class ElectionQuestionTest {
 
@@ -23,11 +23,15 @@ public class ElectionQuestionTest {
   private static final String VOTING_METHOD = "Plurality";
   private static final String QUESTION = "Question";
   private static final List<String> BALLOT_OPTIONS = Arrays.asList("a", "b");
+  private static final ElectionQuestion.Question QUESTION1 =
+      new ElectionQuestion.Question("Question", VOTING_METHOD, BALLOT_OPTIONS, false);
+  private static final ElectionQuestion.Question QUESTION2 =
+      new ElectionQuestion.Question("Question2", VOTING_METHOD, BALLOT_OPTIONS, false);
+  private static final ElectionQuestion.Question QUESTION3 =
+      new ElectionQuestion.Question("Question2", VOTING_METHOD, BALLOT_OPTIONS, false);
 
   private static final List<ElectionQuestion.Question> QUESTIONS =
-      Arrays.asList(
-          new ElectionQuestion.Question("Question", VOTING_METHOD, BALLOT_OPTIONS, false),
-          new ElectionQuestion.Question("Question2", VOTING_METHOD, BALLOT_OPTIONS, false));
+      Arrays.asList(QUESTION1, QUESTION2);
 
   private static final ElectionSetup ELECTION_SETUP =
       new ElectionSetup(NAME, NOW, NOW, END, LAO_ID, VERSION, QUESTIONS);
@@ -37,7 +41,7 @@ public class ElectionQuestionTest {
   @Test
   public void electionQuestionGetterReturnsCorrectId() {
     // Hash(“Question”||election_id||question)
-    String expectedId = Hash.hash("Question", ELECTION_SETUP.getId(), QUESTION);
+    String expectedId = Hash.hash("Question", ELECTION_SETUP.getElectionId(), QUESTION);
     assertThat(ELECTION_SETUP.getQuestions().get(0).getId(), is(expectedId));
   }
 
@@ -59,6 +63,12 @@ public class ElectionQuestionTest {
   @Test
   public void electionQuestionGetterReturnsCorrectBallotOptions() {
     assertThat(ELECTION_QUESTION.getBallotOptions(), is(BALLOT_OPTIONS));
+  }
+
+  @Test
+  public void testEquals() {
+    assertNotEquals(QUESTION1, QUESTION2);
+    assertEquals(QUESTION2, QUESTION3);
   }
 
   @Test

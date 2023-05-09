@@ -81,6 +81,6 @@ public class InviteFragmentTest {
   public void displayedInfoIsCorrect() {
     roleText().check(matches(withText("Organizer")));
     laoNameText().check(matches(withText(LAO_NAME)));
-    identifierText().check(matches(withText(PK.getEncoded())));
+    identifierText().check(matches(withText(LAO.getId())));
   }
 }

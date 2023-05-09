@@ -71,8 +71,6 @@ class AuthenticateSuite extends AnyFunSuite with Matchers with ScalatestRouteTes
       nonce
     )
 
-    println(request)
-
     request ~> route ~> check {
       status shouldBe OK
     }
@@ -95,7 +93,7 @@ class AuthenticateSuite extends AnyFunSuite with Matchers with ScalatestRouteTes
 
     request ~> route ~> check {
       status shouldBe Found
-      getAttributeValue(response, "error") shouldBe Some("unsupported_response_type")
+      getAttributeValue(response, "error") shouldBe Some(Authenticate.UNSUPPORTED_RESPONSE_TYPE_ERROR)
     }
   }
 
@@ -116,7 +114,7 @@ class AuthenticateSuite extends AnyFunSuite with Matchers with ScalatestRouteTes
 
     request ~> route ~> check {
       status shouldBe Found
-      getAttributeValue(response, "error") shouldBe Some("invalid_scope")
+      getAttributeValue(response, "error") shouldBe Some(Authenticate.INVALID_SCOPE_ERROR)
     }
   }
 
@@ -133,7 +131,7 @@ class AuthenticateSuite extends AnyFunSuite with Matchers with ScalatestRouteTes
 
       request ~> route ~> check {
         status shouldBe Found
-        getAttributeValue(response, "error") shouldBe Some("invalid_request")
+        getAttributeValue(response, "error") shouldBe Some(Authenticate.INVALID_REQUEST_ERROR)
         getAttributeValue(response, "error_description") shouldBe Some(s"Missing parameters: [${paramToRemove._1}]")
       }
     }
@@ -157,7 +155,7 @@ class AuthenticateSuite extends AnyFunSuite with Matchers with ScalatestRouteTes
 
       request ~> route ~> check {
         status shouldBe Found
-        getAttributeValue(response, "error") shouldBe Some("invalid_request")
+        getAttributeValue(response, "error") shouldBe Some(Authenticate.INVALID_REQUEST_ERROR)
       }
     }
   }
@@ -201,7 +199,7 @@ class AuthenticateSuite extends AnyFunSuite with Matchers with ScalatestRouteTes
 
     request ~> route ~> check {
       status shouldBe Found
-      getAttributeValue(response, "error") shouldBe Some("invalid_request")
+      getAttributeValue(response, "error") shouldBe Some(Authenticate.INVALID_REQUEST_ERROR)
     }
   }
 }

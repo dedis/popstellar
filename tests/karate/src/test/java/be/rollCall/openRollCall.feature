@@ -36,8 +36,8 @@ Feature: Roll Call Open
           "opened_at": '#(getRollCallOpenValidCreationTime)'
         }
       """
-    When frontend.publish(JSON.stringify(validOpenRollCall), laoChannel)
-    And json answer = frontend.getBackendResponse(JSON.stringify(validOpenRollCall))
+    When frontend.publish(validOpenRollCall, laoChannel)
+    And json answer = frontend.getBackendResponse(validOpenRollCall)
     Then match answer contains VALID_MESSAGE
     And match frontend.receiveNoMoreResponses() == true
 
@@ -54,8 +54,8 @@ Feature: Roll Call Open
         }
       """
     * frontend.changeSenderToBeNonAttendee()
-    When frontend.publish(JSON.stringify(validOpenRollCall), laoChannel)
-    And json answer = frontend.getBackendResponse(JSON.stringify(validOpenRollCall))
+    When frontend.publish(validOpenRollCall, laoChannel)
+    And json answer = frontend.getBackendResponse(validOpenRollCall)
     Then match answer contains INVALID_MESSAGE_FIELD
     And match frontend.receiveNoMoreResponses() == true
 
@@ -74,8 +74,8 @@ Feature: Roll Call Open
           "opened_at": '#(getRollCallOpenValidCreationTime)'
         }
       """
-    When frontend.publish(JSON.stringify(validOpenRollCall), laoChannel)
-    And json answer = frontend.getBackendResponse(JSON.stringify(validOpenRollCall))
+    When frontend.publish(validOpenRollCall, laoChannel)
+    And json answer = frontend.getBackendResponse(validOpenRollCall)
     Then match answer contains INVALID_MESSAGE_FIELD
     And match frontend.receiveNoMoreResponses() == true
 
@@ -93,8 +93,8 @@ Feature: Roll Call Open
           "opened_at": '#(getRollCallOpenValidCreationTime)'
         }
       """
-    When frontend.publish(JSON.stringify(validOpenRollCall), laoChannel)
-    And json answer = frontend.getBackendResponse(JSON.stringify(validOpenRollCall))
+    When frontend.publish(validOpenRollCall, laoChannel)
+    And json answer = frontend.getBackendResponse(validOpenRollCall)
     Then match answer contains INVALID_MESSAGE_FIELD
     And match frontend.receiveNoMoreResponses() == true
 
@@ -111,11 +111,11 @@ Feature: Roll Call Open
           "opened_at": '#(getRollCallOpenValidCreationTime)'
         }
       """
-    When frontend.publish(JSON.stringify(validOpenRollCall), laoChannel)
-    And json answer = frontend.getBackendResponse(JSON.stringify(validOpenRollCall))
+    When frontend.publish(validOpenRollCall, laoChannel)
+    And json answer = frontend.getBackendResponse(validOpenRollCall)
     Then match answer contains INVALID_MESSAGE_FIELD
-    When frontend.publish(JSON.stringify(validOpenRollCall), laoChannel)
-    And json answer = frontend.getBackendResponse(JSON.stringify(validOpenRollCall))
+    When frontend.publish(validOpenRollCall, laoChannel)
+    And json answer = frontend.getBackendResponse(validOpenRollCall)
     And match answer contains INVALID_MESSAGE_FIELD
     And match frontend.receiveNoMoreResponses() == true
 

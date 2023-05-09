@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 
 import com.github.dedis.popstellar.model.Immutable;
 import com.github.dedis.popstellar.model.network.method.message.data.*;
+import com.github.dedis.popstellar.utility.MessageValidator;
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -22,6 +23,10 @@ public class ElectionKey extends Data {
   private final String electionVoteKey;
 
   public ElectionKey(@NonNull String electionId, @NonNull String electionVoteKey) {
+    MessageValidator.verify()
+        .isBase64(electionId, "election id")
+        .isBase64(electionVoteKey, "election vote key");
+
     this.electionId = electionId;
     this.electionVoteKey = electionVoteKey;
   }

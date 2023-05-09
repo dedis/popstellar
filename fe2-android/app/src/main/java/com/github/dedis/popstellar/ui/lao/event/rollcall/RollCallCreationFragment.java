@@ -1,10 +1,8 @@
 package com.github.dedis.popstellar.ui.lao.event.rollcall;
 
 import android.os.Bundle;
-import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.*;
-import android.widget.Button;
 import android.widget.EditText;
 
 import androidx.annotation.NonNull;
@@ -33,34 +31,6 @@ public final class RollCallCreationFragment extends AbstractEventCreationFragmen
   private RollCallCreateFragmentBinding binding;
   private LaoViewModel laoViewModel;
   private RollCallViewModel rollCallViewModel;
-  private EditText rollCallTitleEditText;
-  private Button confirmButton;
-
-  private final TextWatcher confirmTextWatcher =
-      new TextWatcher() {
-        @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-          // Nothing needed here
-        }
-
-        @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
-          String rcTitle = rollCallTitleEditText.getText().toString().trim();
-          String location = binding.rollCallEventLocationText.getText().toString().trim();
-          boolean areFieldsFilled =
-              !rcTitle.isEmpty()
-                  && !getStartDate().isEmpty()
-                  && !getStartTime().isEmpty()
-                  && !location.isEmpty();
-
-          confirmButton.setEnabled(areFieldsFilled);
-        }
-
-        @Override
-        public void afterTextChanged(Editable s) {
-          // Nothing needed here
-        }
-      };
 
   public static RollCallCreationFragment newInstance() {
     return new RollCallCreationFragment();
@@ -78,26 +48,24 @@ public final class RollCallCreationFragment extends AbstractEventCreationFragmen
     rollCallViewModel =
         LaoActivity.obtainRollCallViewModel(requireActivity(), laoViewModel.getLaoId());
 
-    setDateAndTimeView(binding.getRoot());
-    addStartDateAndTimeListener(confirmTextWatcher);
-
-    rollCallTitleEditText = binding.rollCallTitleText;
-    rollCallTitleEditText.addTextChangedListener(confirmTextWatcher);
-    binding.rollCallEventLocationText.addTextChangedListener(confirmTextWatcher);
-
     confirmButton = binding.rollCallConfirm;
     confirmButton.setEnabled(false);
+
+    setDateAndTimeView(binding.getRoot());
+
+    EditText rollCallTitleEditText = binding.rollCallTitleText;
+
+    TextWatcher confirmTextWatcher =
+        getConfirmTextWatcher(rollCallTitleEditText, binding.rollCallEventLocationText);
+
+    addStartDateAndTimeListener(confirmTextWatcher);
+    rollCallTitleEditText.addTextChangedListener(confirmTextWatcher);
+    binding.rollCallEventLocationText.addTextChangedListener(confirmTextWatcher);
 
     binding.setLifecycleOwner(getActivity());
 
     handleBackNav();
     return binding.getRoot();
-  }
-
-  @Override
-  public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-    super.onViewCreated(view, savedInstanceState);
-    setupConfirmButton();
   }
 
   @Override
@@ -107,11 +75,8 @@ public final class RollCallCreationFragment extends AbstractEventCreationFragmen
     laoViewModel.setIsTab(false);
   }
 
-  private void setupConfirmButton() {
-    confirmButton.setOnClickListener(v -> createRollCall());
-  }
-
-  private void createRollCall() {
+  @Override
+  protected void createEvent() {
     if (!computeTimesInSeconds()) {
       return;
     }

@@ -28,29 +28,29 @@ object Validator {
 
   private def validateMethodContent(graphMessage: GraphMessage): GraphMessage = graphMessage match {
     case Right(jsonRpcRequest: JsonRpcRequest) => jsonRpcRequest.getParams match {
-        case _: Broadcast   => validateBroadcast(jsonRpcRequest)
-        case _: Catchup     => validateCatchup(jsonRpcRequest)
-        case _: Publish     => validatePublish(jsonRpcRequest)
-        case _: Subscribe   => validateSubscribe(jsonRpcRequest)
-        case _: Unsubscribe => validateUnsubscribe(jsonRpcRequest)
-        case _              => Left(validationError(jsonRpcRequest.id))
+        case _: Broadcast       => validateBroadcast(jsonRpcRequest)
+        case _: Catchup         => validateCatchup(jsonRpcRequest)
+        case _: Publish         => validatePublish(jsonRpcRequest)
+        case _: Subscribe       => validateSubscribe(jsonRpcRequest)
+        case _: Unsubscribe     => validateUnsubscribe(jsonRpcRequest)
+        case _: Heartbeat       => graphMessage // No check necessary
+        case _: GetMessagesById => graphMessage // No check necessary
+        case _                  => Left(validationError(jsonRpcRequest.id))
       }
-    case Right(jsonRpcResponse: JsonRpcResponse) => Left(PipelineError(
-        ErrorCodes.SERVER_ERROR.id,
-        "Unsupported action: MethodValidator was given a response message",
-        jsonRpcResponse.id
-      ))
+
     case _ => graphMessage
   }
 
   private def validateMessageContent(graphMessage: GraphMessage): GraphMessage = graphMessage match {
     case Right(jsonRpcRequest: JsonRpcRequest) => jsonRpcRequest.getParams match {
-        case _: Broadcast   => validateMessage(jsonRpcRequest)
-        case _: Catchup     => graphMessage
-        case _: Publish     => validateMessage(jsonRpcRequest)
-        case _: Subscribe   => graphMessage
-        case _: Unsubscribe => graphMessage
-        case _              => Left(validationError(jsonRpcRequest.id))
+        case _: Broadcast       => validateMessage(jsonRpcRequest)
+        case _: Catchup         => graphMessage
+        case _: Publish         => validateMessage(jsonRpcRequest)
+        case _: Subscribe       => graphMessage
+        case _: Unsubscribe     => graphMessage
+        case _: Heartbeat       => graphMessage
+        case _: GetMessagesById => graphMessage
+        case _                  => Left(validationError(jsonRpcRequest.id))
       }
     case graphMessage @ _ => graphMessage
   }
@@ -59,7 +59,6 @@ object Validator {
     case Right(_) => validateJsonRpcContent(graphMessage) match {
         case Right(_) => validateMethodContent(graphMessage) match {
             case Right(_) => validateMessageContent(graphMessage) match {
-                case Right(_)         => graphMessage
                 case graphMessage @ _ => graphMessage
               }
             case graphMessage @ _ => graphMessage

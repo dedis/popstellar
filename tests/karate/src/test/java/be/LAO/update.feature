@@ -24,8 +24,8 @@ Feature: Update a LAO
           "witnesses": []
         }
       """
-    When frontend.publish(JSON.stringify(updateLaoRequest), channel)
-    And json answer = frontend.getBackendResponse(JSON.stringify(updateLaoRequest))
+    When frontend.publish(updateLaoRequest, channel)
+    And json answer = frontend.getBackendResponse(updateLaoRequest)
     Then match answer contains VALID_MESSAGE
     And match frontend.receiveNoMoreResponses() == true
 
@@ -41,8 +41,8 @@ Feature: Update a LAO
           "witnesses": []
         }
       """
-    When frontend.publish(JSON.stringify(badUpdateLaoReq), channel)
-    And json answer = frontend.getBackendResponse(JSON.stringify(badUpdateLaoReq))
+    When frontend.publish(badUpdateLaoReq, channel)
+    And json answer = frontend.getBackendResponse(badUpdateLaoReq)
     Then match answer contains INVALID_MESSAGE_FIELD
     And match frontend.receiveNoMoreResponses() == true
 
@@ -59,8 +59,8 @@ Feature: Update a LAO
           "witnesses": []
         }
       """
-    When frontend.publish(JSON.stringify(badUpdateLaoReq), channel)
-    And json answer = frontend.getBackendResponse(JSON.stringify(badUpdateLaoReq))
+    When frontend.publish(badUpdateLaoReq, channel)
+    And json answer = frontend.getBackendResponse(badUpdateLaoReq)
     Then match answer contains INVALID_MESSAGE_FIELD
     And match frontend.receiveNoMoreResponses() == true
 

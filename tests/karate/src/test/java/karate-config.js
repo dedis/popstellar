@@ -17,7 +17,7 @@ function fn() {
   if (env === 'go') {
     // customize
     config.host = '127.0.0.1';
-    config.port = 9001;
+    config.port = 9000;
     config.path = 'client';
     config.wsURL = `ws://${config.host}:${config.port}/${config.path}`;
   } else if (env === 'scala') {

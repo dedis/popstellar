@@ -97,22 +97,24 @@ public class UpdateLaoTest {
   public void isEqual() {
     assertEquals(updateLao, new UpdateLao(organizer, creation, name, lastModified, witnesses));
     // different creation time so the id won't be the same
-    assertNotEquals(updateLao, new UpdateLao(organizer, 20, name, lastModified, witnesses));
+    assertNotEquals(
+        updateLao, new UpdateLao(organizer, creation - 20, name, lastModified, witnesses));
     // different organizer so the id won't be the same
     assertNotEquals(
         updateLao,
         new UpdateLao(
             Base64DataUtils.generatePublicKeyOtherThan(organizer),
-            10,
+            creation,
             name,
             lastModified,
             witnesses));
     // different name
-    assertNotEquals(updateLao, new UpdateLao(organizer, 10, "random", lastModified, witnesses));
+    assertNotEquals(
+        updateLao, new UpdateLao(organizer, creation, "random", lastModified, witnesses));
     // different witnesses
     assertNotEquals(
         updateLao,
-        new UpdateLao(organizer, 10, name, lastModified, Sets.newSet(generatePublicKey())));
+        new UpdateLao(organizer, creation, name, lastModified, Sets.newSet(generatePublicKey())));
   }
 
   @Test

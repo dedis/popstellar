@@ -101,6 +101,8 @@ public class LaoCreateFragmentTest {
     laoNameEntry().check(matches(isDisplayed()));
     cancelButtonLaunch().check(matches(isDisplayed()));
     confirmButtonLaunch().check(matches(isDisplayed()));
+    addWitnessButton().check(matches(isDisplayed()));
+    witnessTitle().check(matches(withEffectiveVisibility(Visibility.GONE)));
   }
 
   @Test
@@ -119,5 +121,11 @@ public class LaoCreateFragmentTest {
   public void cancelButtonGoesToHome() {
     cancelButtonLaunch().perform(click());
     fragmentContainer().check(matches(withChild(withId(homeFragmentId()))));
+  }
+
+  @Test
+  public void addWitnessButtonGoesToScanner() {
+    addWitnessButton().perform(click());
+    fragmentContainer().check(matches(withChild(withId(qrScannerFragmentId()))));
   }
 }
