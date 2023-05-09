@@ -7,9 +7,9 @@ import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.network.method.message.data.election._
 import ch.epfl.pop.model.objects.ElectionChannel._
 import ch.epfl.pop.model.objects.{Channel, Hash}
+import ch.epfl.pop.pubsub.PublishSubscribe
 import ch.epfl.pop.pubsub.graph.validators.MessageValidator._
-import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
-import ch.epfl.pop.storage.DbActor
+import ch.epfl.pop.pubsub.graph.{GraphMessage, PipelineError}
 
 import scala.concurrent.Await
 import scala.util.{Success, Failure}
@@ -18,7 +18,7 @@ import scala.util.{Success, Failure}
 //The defaults dbActorRef is used in the object, but the class can now be mocked with a custom dbActorRef for testing purpose
 object ElectionValidator extends MessageDataContentValidator with EventValidator {
 
-  val electionValidator = new ElectionValidator(DbActor.getInstance)
+  val electionValidator = new ElectionValidator(PublishSubscribe.getDbActorRef)
 
   override val EVENT_HASH_PREFIX: String = electionValidator.EVENT_HASH_PREFIX
 

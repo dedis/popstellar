@@ -5,15 +5,15 @@ import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.network.method.message.data.socialMedia._
 import ch.epfl.pop.model.objects.{Channel, Hash}
+import ch.epfl.pop.pubsub.PublishSubscribe
 import ch.epfl.pop.pubsub.graph.validators.MessageValidator._
 import ch.epfl.pop.pubsub.graph.{GraphMessage, PipelineError}
-import ch.epfl.pop.storage.DbActor
 
 // Similarly to the handlers, we create a SocialMediaValidator object which creates a SocialMediaValidator class instance.
 // The default dbActorRef is used in the object, but the class can now be mocked with a custom dbActorRef for testing purposes.
 object SocialMediaValidator extends MessageDataContentValidator with EventValidator {
 
-  val socialMediaValidator = new SocialMediaValidator(DbActor.getInstance)
+  val socialMediaValidator = new SocialMediaValidator(PublishSubscribe.getDbActorRef)
 
   override val EVENT_HASH_PREFIX: String = socialMediaValidator.EVENT_HASH_PREFIX
 

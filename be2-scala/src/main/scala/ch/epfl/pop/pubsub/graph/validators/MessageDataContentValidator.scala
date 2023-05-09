@@ -2,10 +2,9 @@ package ch.epfl.pop.pubsub.graph.validators
 
 import akka.pattern.AskableActorRef
 import ch.epfl.pop.model.network.JsonRpcRequest
-import ch.epfl.pop.model.objects.{Channel, Hash, PublicKey, Timestamp, WitnessSignaturePair}
-import ch.epfl.pop.pubsub.AskPatternConstants
+import ch.epfl.pop.model.objects._
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
-import ch.epfl.pop.storage.DbActor
+import ch.epfl.pop.pubsub.{AskPatternConstants, PublishSubscribe}
 import ch.epfl.pop.storage.DbActor.Read
 
 import scala.concurrent.Await
@@ -13,7 +12,7 @@ import scala.util.Success
 import scala.util.matching.Regex
 
 trait MessageDataContentValidator extends ContentValidator with AskPatternConstants {
-  implicit lazy val dbActor: AskableActorRef = DbActor.getInstance
+  implicit lazy val dbActor: AskableActorRef = PublishSubscribe.getDbActorRef
 
   def validationErrorNoMessage(rpcId: Option[Int]): PipelineError = PipelineError(ErrorCodes.INVALID_DATA.id, s"RPC-params does not contain any message", rpcId)
 
