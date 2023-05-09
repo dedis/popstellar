@@ -466,7 +466,7 @@ Last but not least, the greeting message contains a list of peers that tells cli
             "$comment": "Note: the string is encoded in Base64"
         },
         "address": {
-            "description": "Canonical address of the server with a protocol prefix and (optionally) the port number",
+          "description": "Canonical address of the server with a protocol prefix and (optionally) the port number which is by default 80 and 443 for ws and wss respectively",
             "type": "string",
             "pattern": "^(ws|wss):\/\/.*(:\d{0,5})?\/.*$"
         },
@@ -478,7 +478,7 @@ Last but not least, the greeting message contains a list of peers that tells cli
                 "additionalProperties": false,
                 "properties": {
                     "address": {
-                        "description": "Canonical address of the peer with a protocol prefix and (optionally) the port number",
+                      "description": "Canonical address of the server with a protocol prefix and (optionally) the port number which is by default 80 and 443 for ws and wss respectively",
                         "type": "string",
                         "pattern": "^(ws|wss):\/\/.*(:\d{0,5})?\/.*$"
                     }

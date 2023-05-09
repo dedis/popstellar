@@ -20,12 +20,12 @@
           "contentEncoding": "base64"
         },
         "server_address": {
-          "description": "[String] canonical address of the server with a protocol prefix and (optionally) the port number for connecting as a server",
+          "description": "Canonical address of the server with a protocol prefix and (optionally) the port number which is by default 80 and 443 for ws and wss respectively",
           "type": "string",
           "pattern": "^(ws|wss):\\/\\/.*(:\\d{0,5})?\\/.*$"
         },
         "client_address": {
-          "description": "[String] canonical address of the server with a protocol prefix and (optionally) the port number for connecting as a client",
+          "description": "Canonical address of the server with a protocol prefix and (optionally) the port number which is by default 80 and 443 for ws and wss respectively",
           "type": "string",
           "pattern": "^(ws|wss):\\/\\/.*(:\\d{0,5})?\\/.*$"
         }
