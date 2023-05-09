@@ -24,7 +24,7 @@ jest.mock('react-native-toast-notifications', () => ({
 }));
 
 jest.mock('../../network/PopchaMessageApi', () => ({
-  sendPopchaAuthRequest: jest.fn(Promise.resolve),
+  sendPopchaAuthRequest: jest.fn(() => Promise.resolve()),
 }));
 
 const mockClientId = 'mockClientId';
@@ -62,7 +62,7 @@ const testInvalidUrl = async (url: string) => {
   await waitFor(() => expect(mockToastShow).toHaveBeenCalledTimes(1));
 };
 
-describe('PoPcha scanner', () => {
+describe('Popcha scanner', () => {
   describe('scanner renders correctly', () => {
     it('closed scanner renders correctly', () => {
       const component = render(
@@ -177,7 +177,7 @@ describe('PoPcha scanner', () => {
   describe('correct behavior when sending request', () => {
     it('successful request closes scanner', async () => {
       const url = new URL(mockUrl.toString());
-      (sendPopchaAuthRequest as jest.Mock).mockImplementation(() => Promise.resolve());
+      (sendPopchaAuthRequest as jest.Mock).mockReturnValue(Promise.resolve());
       const { getByTestId, toJSON } = render(
         <FeatureContext.Provider value={contextValue}>
           <PopchaScanner />
@@ -194,9 +194,7 @@ describe('PoPcha scanner', () => {
 
     it('failed request shows error message', async () => {
       const url = new URL(mockUrl.toString());
-      (sendPopchaAuthRequest as jest.Mock).mockImplementation(() =>
-        Promise.reject(new Error('error')),
-      );
+      (sendPopchaAuthRequest as jest.Mock).mockReturnValue(Promise.reject(new Error('error')));
       const { getByTestId, toJSON } = render(
         <FeatureContext.Provider value={contextValue}>
           <PopchaScanner />
