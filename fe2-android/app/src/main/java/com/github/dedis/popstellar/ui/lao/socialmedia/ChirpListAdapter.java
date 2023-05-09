@@ -124,9 +124,9 @@ public class ChirpListAdapter extends BaseAdapter {
                             .collect(
                                 Collectors.groupingBy(
                                     Reaction::getCodepoint, Collectors.counting()));
-                    long upVotes = codepointToCountMap.getOrDefault(UPVOTE, 0l);
-                    long downVotes = codepointToCountMap.getOrDefault(DOWNVOTE, 0l);
-                    long hearts = codepointToCountMap.getOrDefault(HEART, 0l);
+                    long upVotes = codepointToCountMap.getOrDefault(UPVOTE.getCode(), 0L);
+                    long downVotes = codepointToCountMap.getOrDefault(DOWNVOTE.getCode(), 0L);
+                    long hearts = codepointToCountMap.getOrDefault(HEART.getCode(), 0L);
 
                     upvoteCounter.setText(String.format(Locale.US, "%d", upVotes));
                     downvoteCounter.setText(String.format(Locale.US, "%d", downVotes));

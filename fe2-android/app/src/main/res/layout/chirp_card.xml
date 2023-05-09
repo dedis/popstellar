@@ -59,7 +59,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/social_media_counter_margin"
-        android:text="0"
         android:layout_gravity="center" />
 
       <ImageButton
@@ -74,7 +73,6 @@
         android:id="@+id/downvote_counter"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="0"
         android:layout_marginStart="@dimen/social_media_counter_margin"
         android:layout_gravity="center" />
 
@@ -90,7 +88,6 @@
         android:id="@+id/heart_counter"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="0"
         android:layout_marginStart="@dimen/social_media_counter_margin"
         android:layout_gravity="center" />
 

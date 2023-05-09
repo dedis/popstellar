@@ -17,6 +17,7 @@ public class ReactionTest {
   private static final PublicKey SENDER = generatePublicKey();
   private static final String EMOJI = "\uD83D\uDC4D";
   private static final long TIMESTAMP = Instant.now().getEpochSecond();
+  private static final MessageID EMPTY_MESSAGE_ID = generateMessageID();
   private static final Reaction REACTION =
       new Reaction(REACTION_ID, SENDER, EMOJI, CHIRP_ID, TIMESTAMP);
 
@@ -24,14 +25,14 @@ public class ReactionTest {
   public void createReactionWithEmptyIdFails() {
     assertThrows(
         IllegalArgumentException.class,
-        () -> new Reaction(new MessageID(""), SENDER, EMOJI, CHIRP_ID, TIMESTAMP));
+        () -> new Reaction(EMPTY_MESSAGE_ID, SENDER, EMOJI, CHIRP_ID, TIMESTAMP));
   }
 
   @Test
   public void createReactionWithEmptyChirpIdFails() {
     assertThrows(
         IllegalArgumentException.class,
-        () -> new Reaction(REACTION_ID, SENDER, EMOJI, new MessageID(""), TIMESTAMP));
+        () -> new Reaction(REACTION_ID, SENDER, EMOJI, EMPTY_MESSAGE_ID, TIMESTAMP));
   }
 
   @Test
