@@ -70,6 +70,7 @@
               app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
+              android:id="@+id/message_description_title"
               style="@style/text_high_emphasis"
               android:layout_width="wrap_content"
               android:layout_height="wrap_content"
