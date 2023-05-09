@@ -7,8 +7,7 @@ import androidx.fragment.app.FragmentManager;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.ui.PopViewModel;
-import com.github.dedis.popstellar.ui.home.HomeActivity;
-import com.github.dedis.popstellar.ui.home.HomeFragment;
+import com.github.dedis.popstellar.ui.home.*;
 import com.github.dedis.popstellar.ui.lao.LaoActivity;
 import com.github.dedis.popstellar.ui.lao.event.rollcall.RollCallFragment;
 import com.github.dedis.popstellar.ui.lao.witness.WitnessingFragment;
@@ -21,6 +20,17 @@ import java.util.function.Function;
  * strings to display and functions, i.e. to obtain view models and on back press behaviour
  */
 public enum ScanningAction {
+  ADD_WITNESS_AT_START(
+      R.string.qrcode_scanning_add_witness,
+      R.string.scanned_witness,
+      R.string.add_witness_title,
+      R.string.manual_witness_hint,
+      R.string.add_witness_title,
+      (activity, unused) -> HomeActivity.obtainWitnessingViewModel(activity),
+      HomeActivity::obtainViewModel,
+      (manager, unused) ->
+          HomeActivity.setCurrentFragment(
+              manager, R.id.fragment_lao_create, LaoCreateFragment::new)),
   ADD_WITNESS(
       R.string.qrcode_scanning_add_witness,
       R.string.scanned_witness,

@@ -30,14 +30,28 @@ import { makeRollCallSelector } from '../reducer';
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
     justifyContent: 'space-between',
     marginVertical: Spacing.contentSpacing,
   } as ViewStyle,
   qrCode: {
+    alignItems: 'center',
     opacity: 0.5,
   } as ViewStyle,
-  enterManually: {} as ViewStyle,
+  counter: {
+    alignItems: 'flex-start',
+    alignSelf: 'flex-start',
+    marginTop: Spacing.x1,
+    backgroundColor: Color.contrast,
+    padding: Spacing.x05,
+  } as ViewStyle,
+  enterButton: {
+    ...QrCodeScannerUIElementContainer,
+    borderColor: Color.blue,
+    borderWidth: Spacing.x025,
+  } as ViewStyle,
+  scannerTextItems: {
+    alignItems: 'center',
+  } as ViewStyle,
 });
 
 type NavigationProps = CompositeScreenProps<
@@ -68,6 +82,8 @@ const RollCallOpened = () => {
   // is never changed, i.e. the bound variables stay the same during the scanner's lifetime
   // this is due to a react-camera bug and is hopefully fixed at some point in the future
   const attendeePopTokens = useRef(navigationAttendeePopTokens);
+  const [, updateState] = React.useState<unknown>();
+  const forceUpdate = React.useCallback(() => updateState({}), []);
 
   // re-enable scanner on focus events
   useEffect(() => {
@@ -119,6 +135,8 @@ const RollCallOpened = () => {
 
       // update mutable reference that allows us to check for duplicates the next time this function is called
       attendeePopTokens.current = newTokens;
+      // trigger a state change to re-render the component
+      forceUpdate();
       // also change the navigation parameters so that when pressing the back button, the right parameters are passed
       navigation.setParams({
         attendeePopTokens: newTokens,
@@ -126,7 +144,7 @@ const RollCallOpened = () => {
 
       return true;
     },
-    [navigation, attendeePopTokens],
+    [navigation, attendeePopTokens, forceUpdate],
   );
 
   const addAttendeePopTokenAndShowToast = (popToken: string) => {
@@ -173,15 +191,21 @@ const RollCallOpened = () => {
           <View style={styles.qrCode}>
             <QrCodeScanOverlay width={300} height={300} />
           </View>
-          <View style={styles.enterManually}>
-            <View style={QrCodeScannerUIElementContainer}>
+          <View style={styles.scannerTextItems}>
+            <View style={styles.enterButton}>
               <PoPTouchableOpacity
                 testID="roll_call_open_add_manually"
                 onPress={() => setInputModalIsVisible(true)}>
-                <Text style={[Typography.base, Typography.accent]}>
+                <Text style={[Typography.base, Typography.accent, Typography.centered]}>
                   {STRINGS.general_enter_manually}
                 </Text>
               </PoPTouchableOpacity>
+            </View>
+            <View style={styles.counter}>
+              <Text style={Typography.base}>
+                {/* -1 because we don't count the organizer */}
+                {STRINGS.roll_call_scan_counter}: {attendeePopTokens.current.length - 1}
+              </Text>
             </View>
           </View>
         </View>
