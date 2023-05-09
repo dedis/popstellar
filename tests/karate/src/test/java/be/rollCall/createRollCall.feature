@@ -36,8 +36,8 @@ Feature: Create a Roll Call
           "description": "Food is welcome!"
         }
       """
-    When frontend.publish(JSON.stringify(validCreateRollCall), laoChannel)
-    And json answer = frontend.getBackendResponse(JSON.stringify(validCreateRollCall))
+    When frontend.publish(validCreateRollCall, laoChannel)
+    And json answer = frontend.getBackendResponse(validCreateRollCall)
     Then match answer contains VALID_MESSAGE
     And match frontend.receiveNoMoreResponses() == true
 
@@ -59,8 +59,8 @@ Feature: Create a Roll Call
           "description": "Food is welcome!"
         }
       """
-    When frontend.publish(JSON.stringify(validCreateRollCall), laoChannel)
-    And json answer = frontend.getBackendResponse(JSON.stringify(validCreateRollCall))
+    When frontend.publish(validCreateRollCall, laoChannel)
+    And json answer = frontend.getBackendResponse(validCreateRollCall)
     Then match answer contains INVALID_MESSAGE_FIELD
     And match frontend.receiveNoMoreResponses() == true
 
@@ -83,8 +83,8 @@ Feature: Create a Roll Call
         }
       """
     * frontend.changeSenderToBeNonAttendee()
-    When frontend.publish(JSON.stringify(validCreateRollCall), laoChannel)
-    And json answer = frontend.getBackendResponse(JSON.stringify(validCreateRollCall))
+    When frontend.publish(validCreateRollCall, laoChannel)
+    And json answer = frontend.getBackendResponse(validCreateRollCall)
     Then match answer contains INVALID_MESSAGE_FIELD
     And match frontend.receiveNoMoreResponses() == true
 
@@ -107,8 +107,8 @@ Feature: Create a Roll Call
         }
       """
     * string rootChannel = "/root"
-    When frontend.publish(JSON.stringify(validCreateRollCall), rootChannel)
-    And json answer = frontend.getBackendResponse(JSON.stringify(validCreateRollCall))
+    When frontend.publish(validCreateRollCall, rootChannel)
+    And json answer = frontend.getBackendResponse(validCreateRollCall)
     Then match answer contains INVALID_MESSAGE_FIELD
     And match frontend.receiveNoMoreResponses() == true
 
@@ -132,8 +132,8 @@ Feature: Create a Roll Call
           "description": "Food is welcome!"
         }
       """
-    When frontend.publish(JSON.stringify(validCreateRollCall), laoChannel)
-    And json answer = frontend.getBackendResponse(JSON.stringify(validCreateRollCall))
+    When frontend.publish(validCreateRollCall, laoChannel)
+    And json answer = frontend.getBackendResponse(validCreateRollCall)
     Then match answer contains INVALID_MESSAGE_FIELD
     And match frontend.receiveNoMoreResponses() == true
 
@@ -155,8 +155,8 @@ Feature: Create a Roll Call
           "description": "Food is welcome!"
         }
       """
-    When frontend.publish(JSON.stringify(validCreateRollCall), laoChannel)
-    And json answer = frontend.getBackendResponse(JSON.stringify(validCreateRollCall))
+    When frontend.publish(validCreateRollCall, laoChannel)
+    And json answer = frontend.getBackendResponse(validCreateRollCall)
     Then match answer contains INVALID_MESSAGE_FIELD
     And match frontend.receiveNoMoreResponses() == true
 
@@ -180,10 +180,11 @@ Feature: Create a Roll Call
           "description": "Food is welcome!"
         }
       """
-    When frontend.publish(JSON.stringify(validCreateRollCall), laoChannel)
-    And json answer = frontend.getBackendResponse(JSON.stringify(validCreateRollCall))
+    When frontend.publish(validCreateRollCall, laoChannel)
+    And json answer = frontend.getBackendResponse(validCreateRollCall)
     Then match answer contains INVALID_MESSAGE_FIELD
     And match frontend.receiveNoMoreResponses() == true
+
   # Setting up the lao correctly but send an invalid roll call create request, containing
   # an invalid roll_call id should result in an error message from the backend.
   Scenario: Roll Call Creation with invalid roll_call id should return an error
@@ -202,7 +203,7 @@ Feature: Create a Roll Call
           "description": "Food is welcome!"
         }
       """
-    When frontend.publish(JSON.stringify(validCreateRollCall), laoChannel)
-    And json answer = frontend.getBackendResponse(JSON.stringify(validCreateRollCall))
+    When frontend.publish(validCreateRollCall, laoChannel)
+    And json answer = frontend.getBackendResponse(validCreateRollCall)
     Then match answer contains INVALID_MESSAGE_FIELD
     And match frontend.receiveNoMoreResponses() == true

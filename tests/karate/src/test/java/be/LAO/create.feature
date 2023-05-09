@@ -24,8 +24,8 @@ Feature: Create a pop LAO
           "witnesses": []
         }
       """
-    When frontend.publish(JSON.stringify(badLaoReq), channel)
-    And json answer = frontend.getBackendResponse(JSON.stringify(badLaoReq))
+    When frontend.publish(badLaoReq, channel)
+    And json answer = frontend.getBackendResponse(badLaoReq)
     Then match answer contains INVALID_MESSAGE_FIELD
     And match frontend.receiveNoMoreResponses() == true
 
@@ -43,10 +43,11 @@ Feature: Create a pop LAO
           "witnesses": []
         }
       """
-    When frontend.publish(JSON.stringify(badLaoReq), channel)
-    And json answer = frontend.getBackendResponse(JSON.stringify(badLaoReq))
+    When frontend.publish(badLaoReq, channel)
+    And json answer = frontend.getBackendResponse(badLaoReq)
     Then match answer contains INVALID_MESSAGE_FIELD
     And match frontend.receiveNoMoreResponses() == true
+
   Scenario: Create Lao with invalid id hash should fail with an error response
     Given def badLaoReq =
       """
@@ -60,10 +61,11 @@ Feature: Create a pop LAO
           "witnesses": []
         }
       """
-    When frontend.publish(JSON.stringify(badLaoReq), channel)
-    And json answer = frontend.getBackendResponse(JSON.stringify(badLaoReq))
+    When frontend.publish(badLaoReq, channel)
+    And json answer = frontend.getBackendResponse(badLaoReq)
     Then match answer contains INVALID_MESSAGE_FIELD
     And match frontend.receiveNoMoreResponses() == true
+
   Scenario: Create should succeed with a valid creation request
     Given def laoCreateRequest =
       """
@@ -77,8 +79,8 @@ Feature: Create a pop LAO
           "witnesses": []
         }
       """
-    When frontend.publish(JSON.stringify(laoCreateRequest), channel)
-    And json answer = frontend.getBackendResponse(JSON.stringify(laoCreateRequest))
+    When frontend.publish(laoCreateRequest, channel)
+    And json answer = frontend.getBackendResponse(laoCreateRequest)
     Then match answer contains VALID_MESSAGE
     And match frontend.receiveNoMoreResponses() == true
 
@@ -96,8 +98,8 @@ Feature: Create a pop LAO
         }
       """
     * frontend.setWrongSignature()
-    When frontend.publish(JSON.stringify(laoCreateRequest), channel)
-    And json answer = frontend.getBackendResponse(JSON.stringify(laoCreateRequest))
+    When frontend.publish(laoCreateRequest, channel)
+    And json answer = frontend.getBackendResponse(laoCreateRequest)
     Then match answer contains INVALID_MESSAGE_FIELD
     And match frontend.receiveNoMoreResponses() == true
 
@@ -116,7 +118,7 @@ Feature: Create a pop LAO
       """
 
     * frontend.changeSenderToBeNonAttendee()
-    When frontend.publish(JSON.stringify(laoCreateRequest), channel)
-    And json answer = frontend.getBackendResponse(JSON.stringify(laoCreateRequest))
+    When frontend.publish(laoCreateRequest, channel)
+    And json answer = frontend.getBackendResponse(laoCreateRequest)
     Then match answer contains ACCESS_DENIED
     And match frontend.receiveNoMoreResponses() == true

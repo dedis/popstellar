@@ -38,14 +38,14 @@ import dagger.hilt.android.testing.*;
 import io.reactivex.subjects.BehaviorSubject;
 
 import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.action.ViewActions.swipeLeft;
+import static androidx.test.espresso.action.ViewActions.*;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.*;
 import static com.github.dedis.popstellar.model.objects.Election.generateElectionSetupId;
 import static com.github.dedis.popstellar.model.objects.event.EventState.CREATED;
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.generatePoPToken;
+import static com.github.dedis.popstellar.testutils.MatcherUtils.PageMatcher;
 import static com.github.dedis.popstellar.testutils.pages.lao.LaoActivityPageObject.containerId;
 import static com.github.dedis.popstellar.testutils.pages.lao.LaoActivityPageObject.laoIdExtra;
 import static com.github.dedis.popstellar.testutils.pages.lao.event.election.CastVoteFragmentPageObject.*;
@@ -200,5 +200,14 @@ public class CastVoteOpenBallotFragmentTest {
 
     verify(messageSenderHelper.getMockedSender())
         .publish(any(), eq(ELECTION.getChannel()), any(CastVote.class));
+  }
+
+  @Test
+  public void swipeDoNotClearSelectionTest() {
+    onView(withText(ELECTION_BALLOT_TEXT11)).perform(click());
+    castVotePager().perform(swipeLeft());
+    castVotePager().perform(swipeRight());
+    InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+    castVotePager().check(matches(PageMatcher(0)));
   }
 }

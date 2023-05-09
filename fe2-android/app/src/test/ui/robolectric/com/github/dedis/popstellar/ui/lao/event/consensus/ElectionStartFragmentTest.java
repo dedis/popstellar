@@ -197,7 +197,7 @@ public class ElectionStartFragmentTest {
   @Test
   public void displayWithUpdatesIsCorrect()
       throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
-          UnknownElectionException, NoRollCallException {
+          UnknownElectionException, NoRollCallException, UnknownMeetingException {
     setElectionStart(PAST_TIME);
 
     // Election start time has passed, should display that it's ready and start button enabled
@@ -285,7 +285,7 @@ public class ElectionStartFragmentTest {
   @Test
   public void acceptButtonSendElectAcceptMessageTest()
       throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
-          UnknownElectionException, NoRollCallException {
+          UnknownElectionException, NoRollCallException, UnknownMeetingException {
     setElectionStart(PAST_TIME);
 
     // Nodes 3 try to start
@@ -308,7 +308,7 @@ public class ElectionStartFragmentTest {
   @Test
   public void failureTest()
       throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
-          UnknownElectionException, NoRollCallException {
+          UnknownElectionException, NoRollCallException, UnknownMeetingException {
     setElectionStart(PAST_TIME);
 
     // Nodes 3 try to start and failed

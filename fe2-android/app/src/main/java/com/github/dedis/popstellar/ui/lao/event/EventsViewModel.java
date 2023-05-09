@@ -6,8 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 
 import com.github.dedis.popstellar.model.objects.event.Event;
-import com.github.dedis.popstellar.repository.ElectionRepository;
-import com.github.dedis.popstellar.repository.RollCallRepository;
+import com.github.dedis.popstellar.repository.*;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -25,6 +24,7 @@ public class EventsViewModel extends AndroidViewModel {
 
   private final ElectionRepository electionRepo;
   private final RollCallRepository rollCallRepo;
+  private final MeetingRepository meetingRepo;
 
   private Observable<Set<Event>> events;
 
@@ -32,9 +32,11 @@ public class EventsViewModel extends AndroidViewModel {
   public EventsViewModel(
       @NonNull Application application,
       RollCallRepository rollCallRepo,
+      MeetingRepository meetingRepo,
       ElectionRepository electionRepo) {
     super(application);
     this.rollCallRepo = rollCallRepo;
+    this.meetingRepo = meetingRepo;
     this.electionRepo = electionRepo;
   }
 
@@ -42,10 +44,12 @@ public class EventsViewModel extends AndroidViewModel {
     this.events =
         Observable.combineLatest(
                 rollCallRepo.getRollCallsObservableInLao(laoId),
+                meetingRepo.getMeetingsObservableInLao(laoId),
                 electionRepo.getElectionsObservableInLao(laoId),
-                (rcs, elecs) -> {
+                (rcs, meets, elects) -> {
                   Set<Event> union = new HashSet<>(rcs);
-                  union.addAll(elecs);
+                  union.addAll(elects);
+                  union.addAll(meets);
                   return union;
                 })
             // Only dispatch the latest element once every 50 milliseconds
