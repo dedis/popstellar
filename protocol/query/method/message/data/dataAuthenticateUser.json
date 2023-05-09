@@ -42,5 +42,5 @@
     }
   },
   "additionalProperties": false,
-  "required": ["object", "action","client_id","nonce","identifier","identifier_proof","state","response_mode","popcha_address"]
+  "required": ["object", "action","client_id","nonce","identifier","identifier_proof","popcha_address"]
 }
