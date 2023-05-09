@@ -32,12 +32,16 @@ public class HomePageObject {
     return onView(withId(R.id.home_create_button));
   }
 
-  public static ViewInteraction walletSetupMenuItem(){
-      return onView(withText(R.string.wallet_setup));
+  public static ViewInteraction witnessButton() {
+    return onView(withId(R.id.home_qr_button));
   }
 
-  public static ViewInteraction walletLogOutMenuItem(){
-      return onView(withText(R.string.logout_title));
+  public static ViewInteraction walletSetupMenuItem() {
+    return onView(withText(R.string.wallet_setup));
+  }
+
+  public static ViewInteraction walletLogOutMenuItem() {
+    return onView(withText(R.string.logout_title));
   }
 
   public static ViewInteraction clearDataMenuItem() {
@@ -47,6 +51,11 @@ public class HomePageObject {
   @IdRes
   public static int homeFragmentId() {
     return R.id.fragment_home;
+  }
+
+  @IdRes
+  public static int qrScannerFragmentId() {
+    return R.id.fragment_qr_scanner;
   }
 
   @IdRes

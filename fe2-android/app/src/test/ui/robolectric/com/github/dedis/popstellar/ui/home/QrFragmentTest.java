@@ -1,48 +1,43 @@
-package com.github.dedis.popstellar.ui.lao;
+package com.github.dedis.popstellar.ui.home;
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
+import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
-import androidx.test.filters.SmallTest;
 
-import com.github.dedis.popstellar.model.objects.Lao;
+import com.github.dedis.popstellar.di.DataRegistryModuleHelper;
+import com.github.dedis.popstellar.di.JsonModule;
 import com.github.dedis.popstellar.model.objects.security.KeyPair;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
-import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.testutils.Base64DataUtils;
-import com.github.dedis.popstellar.testutils.BundleBuilder;
-import com.github.dedis.popstellar.testutils.fragment.ActivityFragmentScenarioRule;
 import com.github.dedis.popstellar.utility.security.KeyManager;
+import com.google.gson.Gson;
 
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.rules.ExternalResource;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoTestRule;
 
-import javax.inject.Inject;
-
 import dagger.hilt.android.testing.*;
 
+import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
-import static com.github.dedis.popstellar.testutils.pages.lao.InviteFragmentPageObject.*;
-import static com.github.dedis.popstellar.testutils.pages.lao.LaoActivityPageObject.containerId;
-import static com.github.dedis.popstellar.testutils.pages.lao.LaoActivityPageObject.laoIdExtra;
+import static com.github.dedis.popstellar.testutils.pages.home.HomePageObject.witnessButton;
+import static com.github.dedis.popstellar.testutils.pages.home.QrPageObject.privateKey;
+import static com.github.dedis.popstellar.testutils.pages.home.QrPageObject.qrCode;
 import static org.mockito.Mockito.when;
 
-@SmallTest
 @HiltAndroidTest
 @RunWith(AndroidJUnit4.class)
-public class InviteFragmentTest {
-  private static final String LAO_NAME = "LAO";
+public class QrFragmentTest {
+
   private static final KeyPair KEY_PAIR = Base64DataUtils.generateKeyPair();
   private static final PublicKey PK = KEY_PAIR.getPublicKey();
 
-  private static final Lao LAO = new Lao(LAO_NAME, PK, 44444444);
-
-  @Inject LAORepository laoRepository;
+  private static Gson gson;
 
   @BindValue @Mock KeyManager keyManager;
 
@@ -60,27 +55,31 @@ public class InviteFragmentTest {
         @Override
         protected void before() {
           hiltRule.inject();
-
-          laoRepository.updateLao(LAO);
-
-          when(keyManager.getMainKeyPair()).thenReturn(KEY_PAIR);
           when(keyManager.getMainPublicKey()).thenReturn(PK);
+          when(keyManager.getMainKeyPair()).thenReturn(KEY_PAIR);
+          gson = JsonModule.provideGson(DataRegistryModuleHelper.buildRegistry());
         }
       };
 
   @Rule(order = 3)
-  public ActivityFragmentScenarioRule<LaoActivity, InviteFragment> activityScenarioRule =
-      ActivityFragmentScenarioRule.launchIn(
-          LaoActivity.class,
-          new BundleBuilder().putString(laoIdExtra(), LAO.getId()).build(),
-          containerId(),
-          InviteFragment.class,
-          InviteFragment::newInstance);
+  public ActivityScenarioRule<HomeActivity> activityScenarioRule =
+      new ActivityScenarioRule<>(HomeActivity.class);
+
+  @Before
+  public void setup() {
+    // Open the launch tab
+    HomeActivityTest.initializeWallet(activityScenarioRule);
+    witnessButton().perform(click());
+  }
 
   @Test
-  public void displayedInfoIsCorrect() {
-    roleText().check(matches(withText("Organizer")));
-    laoNameText().check(matches(withText(LAO_NAME)));
-    identifierText().check(matches(withText(LAO.getId())));
+  public void elementsAreDisplayedTest() {
+    qrCode().check(matches(isDisplayed()));
+    privateKey().check(matches(isDisplayed()));
+  }
+
+  @Test
+  public void publicKeyIsCorrectTest() {
+    privateKey().check(matches(withText(keyManager.getMainPublicKey().getEncoded())));
   }
 }

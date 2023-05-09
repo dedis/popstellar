@@ -54,7 +54,7 @@ public class CreateLaoTest {
 
   @Test
   public void generateCreateLaoIdTest() {
-    CreateLao createLao = new CreateLao(name, organizer);
+    CreateLao createLao = new CreateLao(name, organizer, witnesses);
     // Hash(organizer||creation||name)
     String expectedId =
         Hash.hash(
@@ -91,10 +91,10 @@ public class CreateLaoTest {
 
   @Test
   public void isEqual() {
-    CreateLao createLao1 = new CreateLao(name, organizer);
+    CreateLao createLao1 = new CreateLao(name, organizer, witnesses);
     try {
       TimeUnit.SECONDS.sleep(1);
-      CreateLao createLao2 = new CreateLao(name, organizer);
+      CreateLao createLao2 = new CreateLao(name, organizer, witnesses);
 
       // they don't have the same creation time
       assertNotEquals(createLao1, createLao2);
@@ -102,10 +102,12 @@ public class CreateLaoTest {
       e.printStackTrace();
     }
     assertEquals(createLao, new CreateLao(id, name, creation, organizer, witnesses));
-    assertEquals(new CreateLao(name, organizer), new CreateLao(name, organizer));
-    assertNotEquals(createLao1, new CreateLao("random", organizer));
+    assertEquals(
+        new CreateLao(name, organizer, witnesses), new CreateLao(name, organizer, witnesses));
+    assertNotEquals(createLao1, new CreateLao("random", organizer, witnesses));
     assertNotEquals(
-        createLao1, new CreateLao(name, Base64DataUtils.generatePublicKeyOtherThan(organizer)));
+        createLao1,
+        new CreateLao(name, Base64DataUtils.generatePublicKeyOtherThan(organizer), witnesses));
   }
 
   @Test
