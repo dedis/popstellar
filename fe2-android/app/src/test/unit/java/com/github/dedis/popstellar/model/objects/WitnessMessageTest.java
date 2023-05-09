@@ -18,11 +18,10 @@ public class WitnessMessageTest {
   private static final String DESCRIPTION = "description";
   private static final String TITLE = "title";
   private static final MessageID MESSAGE_ID1 = Base64DataUtils.generateMessageID();
-  private static final MessageID MESSAGE_ID2 = MESSAGE_ID1;
   private static final MessageID MESSAGE_ID3 = Base64DataUtils.generateMessageID();
 
   private static final WitnessMessage MESSAGE1 = new WitnessMessage(MESSAGE_ID1);
-  private static final WitnessMessage MESSAGE2 = new WitnessMessage(MESSAGE_ID2);
+  private static final WitnessMessage MESSAGE2 = MESSAGE1.copy();
   private static final WitnessMessage MESSAGE3 = new WitnessMessage(MESSAGE_ID3);
 
   @Test
@@ -68,6 +67,8 @@ public class WitnessMessageTest {
     message2 = new WitnessMessage(message1);
     message2.setTitle("new title");
     assertNotEquals(message1, message2);
+
+    assertNotEquals(message1, null);
   }
 
   @Test

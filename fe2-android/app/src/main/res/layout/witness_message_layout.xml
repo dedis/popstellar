@@ -4,6 +4,7 @@
   xmlns:app="http://schemas.android.com/apk/res-auto">
 
   <com.google.android.material.card.MaterialCardView
+    android:id="@+id/witness_message_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     app:cardElevation="@dimen/card_view_elevation"
