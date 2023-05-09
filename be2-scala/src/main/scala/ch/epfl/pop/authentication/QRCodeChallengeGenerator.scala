@@ -6,10 +6,8 @@ import com.google.zxing.qrcode.encoder.{ByteMatrix, Encoder}
 
 import scala.reflect.io.File
 
-/**
- * Generates an http response that holds a web page with any desired challenge content in the form of a displayed qrcode
- * The html/svg representation of the qrcode is inspired from https://github.com/svg/svgo
- */
+/** Generates an http response that holds a web page with any desired challenge content in the form of a displayed qrcode The html/svg representation of the qrcode is inspired from https://github.com/svg/svgo
+  */
 object QRCodeChallengeGenerator {
 
   private val templateFileName = "src/main/web/AuthenticationPageTemplate.html"
@@ -19,11 +17,12 @@ object QRCodeChallengeGenerator {
   private val qrcodeTotalSize = 650
   private val qrcodeMargin = 25
 
-  /**
-   * Generates an html response representing a web page with a qrcode holding the content provided
-   * @param content data to insert in the qrcode
-   * @return a web page in the form of an http-html response
-   */
+  /** Generates an html response representing a web page with a qrcode holding the content provided
+    * @param content
+    *   data to insert in the qrcode
+    * @return
+    *   a web page in the form of an http-html response
+    */
   def generateChallengeContent(content: String): ResponseEntity = {
     val encodedContent = Encoder.encode(content, ErrorCorrectionLevel.H)
     val htmlQRCode = fromMatrixToHTML(encodedContent.getMatrix)
