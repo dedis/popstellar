@@ -6,6 +6,7 @@ import { mockLaoId } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
 
 import { POPCHA_FEATURE_IDENTIFIER, PopchaReactContext } from '../../interface';
+import { sendPopchaAuthRequest } from '../../network/PopchaMessageApi';
 import PopchaScanner from '../PopchaScanner';
 
 const contextValue = {
@@ -20,6 +21,10 @@ const mockToastRet = {
 };
 jest.mock('react-native-toast-notifications', () => ({
   useToast: () => mockToastRet,
+}));
+
+jest.mock('../../network/PopchaMessageApi', () => ({
+  sendPopchaAuthRequest: jest.fn(Promise.resolve),
 }));
 
 const mockClientId = 'mockClientId';
@@ -51,7 +56,6 @@ const testInvalidUrl = async (url: string) => {
       <PopchaScanner />
     </FeatureContext.Provider>,
   );
-
   const scannerButton = getByTestId('popcha_scanner_button');
   fireEvent.press(scannerButton);
   fireScan(url);
@@ -82,7 +86,7 @@ describe('PoPcha scanner', () => {
   });
   describe('scanner verifies correctly', () => {
     it('invalid url format shows error message', async () => {
-      testInvalidUrl('invalid url');
+      await testInvalidUrl('invalid url');
     });
 
     it('url without client_id shows error message', async () => {
@@ -121,6 +125,18 @@ describe('PoPcha scanner', () => {
       await testInvalidUrl(url.toString());
     });
 
+    it('url with invalid response_type shows error message', async () => {
+      const url = new URL(mockUrl.toString());
+      url.searchParams.set('response_type', 'scope invalid response type');
+      await testInvalidUrl(url.toString());
+    });
+
+    it('url with invalid response_mode shows error message', async () => {
+      const url = new URL(mockUrl.toString());
+      url.searchParams.set('response_mode', 'invalid response mode');
+      await testInvalidUrl(url.toString());
+    });
+
     it('login_hint does not match current laoId shows error message', async () => {
       const url = new URL(mockUrl.toString());
       url.searchParams.set('login_hint', 'invalid login hint');
@@ -140,6 +156,56 @@ describe('PoPcha scanner', () => {
       fireEvent.press(scannerButton);
       fireScan(mockUrl.toString());
       await waitFor(() => expect(mockToastShow).toHaveBeenCalledTimes(0));
+    });
+
+    it('valid reponse mode does not show error message', async () => {
+      const url = new URL(mockUrl.toString());
+      url.searchParams.set('response_mode', 'query');
+      const { getByTestId } = render(
+        <FeatureContext.Provider value={contextValue}>
+          <PopchaScanner />
+        </FeatureContext.Provider>,
+      );
+
+      const scannerButton = getByTestId('popcha_scanner_button');
+      fireEvent.press(scannerButton);
+      fireScan(url.toString());
+      await waitFor(() => expect(mockToastShow).toHaveBeenCalledTimes(0));
+    });
+  });
+
+  describe('correct behavior when sending request', () => {
+    it('successful request closes scanner', async () => {
+      const url = new URL(mockUrl.toString());
+
+      const { getByTestId, toJSON } = render(
+        <FeatureContext.Provider value={contextValue}>
+          <PopchaScanner />
+        </FeatureContext.Provider>,
+      );
+      const scannerButton = getByTestId('popcha_scanner_button');
+      fireEvent.press(scannerButton);
+      fireScan(url.toString());
+      await waitFor(() => expect(toJSON()).toMatchSnapshot());
+    });
+
+    it('failed request shows error message', async () => {
+      const url = new URL(mockUrl.toString());
+      (sendPopchaAuthRequest as jest.Mock).mockImplementation(() =>
+        Promise.reject(new Error('error')),
+      );
+      const { getByTestId, toJSON } = render(
+        <FeatureContext.Provider value={contextValue}>
+          <PopchaScanner />
+        </FeatureContext.Provider>,
+      );
+      const scannerButton = getByTestId('popcha_scanner_button');
+      fireEvent.press(scannerButton);
+      fireScan(url.toString());
+      await waitFor(() => {
+        expect(toJSON()).toMatchSnapshot();
+        expect(mockToastShow).toHaveBeenCalledTimes(1);
+      });
     });
   });
 });
