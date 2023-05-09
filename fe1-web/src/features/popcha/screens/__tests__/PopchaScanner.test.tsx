@@ -158,7 +158,7 @@ describe('Popcha scanner', () => {
       await waitFor(() => expect(mockToastShow).toHaveBeenCalledTimes(0));
     });
 
-    it('valid reponse mode does not show error message', async () => {
+    it('valid response mode does not show error message', async () => {
       const url = new URL(mockUrl.toString());
       url.searchParams.set('response_mode', 'query');
       const { getByTestId } = render(
