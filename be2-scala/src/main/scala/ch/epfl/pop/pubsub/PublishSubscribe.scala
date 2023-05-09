@@ -5,7 +5,7 @@ import akka.actor.{ActorRef, ActorSystem}
 import akka.http.scaladsl.model.ws.{Message, TextMessage}
 import akka.pattern.AskableActorRef
 import akka.stream.FlowShape
-import akka.stream.scaladsl.{Broadcast, Flow, GraphDSL, Merge, Partition}
+import akka.stream.scaladsl.{Broadcast, Flow, GraphDSL, Merge, Partition, Sink}
 import ch.epfl.pop.decentralized.Monitor
 import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse}
 import ch.epfl.pop.pubsub.graph._
@@ -65,9 +65,9 @@ object PublishSubscribe {
         val hasMessagePartition = builder.add(ParamsWithMessageHandler.graph(messageRegistry))
         val hasChannelPartition = builder.add(ParamsWithChannelHandler.graph(clientActorRef))
         val hasMapPartition = builder.add(ParamsWithMapHandler.graph(dbActorRef))
-        val responsePartition = builder.add(GetMessagesByIdResponseHandler.graph(dbActorRef.actorRef))
+        val responsePartition = builder.add(GetMessagesByIdResponseHandler.graph(mediatorActorRef, messageRegistry))
 
-        val merger = builder.add(Merge[GraphMessage](totalPorts))
+        val merger = builder.add(Merge[GraphMessage](totalPorts - 1))
         val broadcast = builder.add(Broadcast[GraphMessage](totalBroadcastPort))
 
         val monitorSink = builder.add(Monitor.sink(monitorRef))
@@ -76,6 +76,7 @@ object PublishSubscribe {
 
         // output message (answer) for the client
         val output = builder.add(Flow[Message])
+        val droppingSink = builder.add(Sink.foreach(println))
 
         /* glue the components together */
         input ~> schemaVerifier ~> jsonRpcDecoder ~> jsonRpcContentValidator ~> methodPartitioner
@@ -84,7 +85,7 @@ object PublishSubscribe {
         methodPartitioner.out(portParamsWithMessage) ~> hasMessagePartition ~> merger
         methodPartitioner.out(portParamsWithChannel) ~> hasChannelPartition ~> merger
         methodPartitioner.out(portParamsWithMap) ~> hasMapPartition ~> merger
-        methodPartitioner.out(portResponseHandler) ~> responsePartition ~> merger
+        methodPartitioner.out(portResponseHandler) ~> responsePartition ~> droppingSink
 
         merger ~> broadcast
         broadcast ~> jsonRpcAnswerGenerator ~> jsonRpcAnswerer ~> output
