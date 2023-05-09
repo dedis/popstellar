@@ -213,12 +213,13 @@ Here are the different methods that can be called:
 🧭 **RPC Message** > **Query** > **Greet Server**
 
 By sending a greet server message, a server can transmit its public key as well as the 
-addresses of its client and server endpoints to another server.
+addresses of its client and server endpoints to another server. For this purpose, the server sends
+out a JSON-RPC 2.0 *notification* as defined below.
 
 This message should be sent by the server that opens a connection with another server. It should trigger
 a `GreetServer` message from the server that receives the connection containing its own information. 
 
-RPC
+Notification
 
 ```json5
 // ../protocol/examples/query/greet_server/greet_server.json
