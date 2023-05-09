@@ -61,6 +61,7 @@ func Serve(cliCtx *cli.Context) error {
 	startedWithConfigFile := false
 
 	// start using a config file if a file path was provided
+	// otherwise start using the flags
 	if configFilePath != "" {
 		serverConfig, err = startWithConfigFile(configFilePath)
 		if err != nil {
@@ -68,7 +69,6 @@ func Serve(cliCtx *cli.Context) error {
 		}
 		startedWithConfigFile = true
 	} else {
-		// otherwise start using the flags
 		serverConfig, err = startWithFlags(cliCtx)
 		if err != nil {
 			return xerrors.Errorf("Could not start server using flags: %v", err)
