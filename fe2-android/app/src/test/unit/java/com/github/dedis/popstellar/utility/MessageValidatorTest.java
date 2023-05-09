@@ -14,7 +14,8 @@ import java.util.*;
 import static org.junit.Assert.assertThrows;
 
 public class MessageValidatorTest {
-  private static final int DELTA_TIME = 100;
+  private static final long DELTA_TIME =
+      MessageValidator.MessageValidatorBuilder.VALID_FUTURE_DELAY + 100;
 
   // LAO constants
   private static final PublicKey ORGANIZER = Base64DataUtils.generatePublicKey();
@@ -50,7 +51,7 @@ public class MessageValidatorTest {
     MessageValidator.MessageValidatorBuilder validator = MessageValidator.verify();
     long currentTime = Instant.now().getEpochSecond();
     // time that is too far in the past to be considered valid
-    long pastTime = currentTime - validator.VALID_DELAY - 1;
+    long pastTime = currentTime - MessageValidator.MessageValidatorBuilder.VALID_PAST_DELAY - 1;
     long futureTime = currentTime + DELTA_TIME;
 
     validator.validPastTimes(currentTime);

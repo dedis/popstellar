@@ -154,7 +154,8 @@ public class SocialMediaRepository {
       // Update repository data
       chirps.put(id, chirp);
       reactionByChirpId.putIfAbsent(chirp.getId(), new HashSet<>());
-      reactionSubjectsByChirpId.putIfAbsent(chirp.getId(), BehaviorSubject.create());
+      reactionSubjectsByChirpId.putIfAbsent(
+          chirp.getId(), BehaviorSubject.createDefault(new HashSet<>()));
 
       // Publish new values on subjects
       chirpSubjects.put(id, BehaviorSubject.createDefault(chirp));

@@ -54,9 +54,10 @@ public class Reaction implements Copyable<Reaction> {
       @NonNull MessageID chirpId,
       long timestamp) {
     MessageValidator.verify()
-        .isBase64(id.getEncoded(), "reaction id")
-        .isBase64(chirpId.getEncoded(), "chirp id")
-        .isValidEmoji(codepoint, "codepoint");
+        .isNotEmptyBase64(id.getEncoded(), "reaction id")
+        .isNotEmptyBase64(chirpId.getEncoded(), "chirp id")
+        .isValidEmoji(codepoint, "codepoint")
+        .validPastTimes(timestamp);
     this.id = id;
     this.sender = sender;
     this.codepoint = codepoint;

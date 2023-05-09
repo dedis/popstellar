@@ -20,7 +20,7 @@ import static org.junit.Assert.*;
 @RunWith(AndroidJUnit4.class)
 public class AddReactionTest {
 
-  private static final String CODE_POINT = "U+1F600";
+  private static final String CODE_POINT = "\uD83D\uDC4D";
   private static final MessageID CHIRP_ID = generateMessageID();
   private static final long TIMESTAMP = Instant.now().getEpochSecond();
 
@@ -56,7 +56,7 @@ public class AddReactionTest {
     assertEquals(ADD_REACTION, new AddReaction(CODE_POINT, CHIRP_ID, TIMESTAMP));
 
     assertNotEquals(
-        ADD_REACTION, new AddReaction("U+1F603", generateMessageIDOtherThan(CHIRP_ID), TIMESTAMP));
+        ADD_REACTION, new AddReaction("❤", generateMessageIDOtherThan(CHIRP_ID), TIMESTAMP));
     assertNotEquals(
         ADD_REACTION, new AddReaction(CODE_POINT, generateMessageIDOtherThan(CHIRP_ID), TIMESTAMP));
     assertNotEquals(ADD_REACTION, new AddReaction(CODE_POINT, CHIRP_ID, TIMESTAMP + 1));
