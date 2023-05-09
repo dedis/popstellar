@@ -79,15 +79,15 @@
         android:layout_gravity="center" />
 
       <ImageButton
-        android:id="@+id/love_button"
+        android:id="@+id/heart_button"
         android:layout_width="@dimen/social_media_card_button"
         android:layout_height="@dimen/social_media_card_button"
         android:contentDescription="@string/love_button"
         android:layout_marginStart="@dimen/social_media_button_margin"
-        android:src="@drawable/ic_social_media_love" />
+        android:src="@drawable/ic_social_media_heart" />
 
       <TextView
-        android:id="@+id/love_counter"
+        android:id="@+id/heart_counter"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="0"

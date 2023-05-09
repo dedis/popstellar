@@ -7,24 +7,36 @@ import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.utility.MessageValidator;
 
+import java.util.Arrays;
 import java.util.Objects;
 
 public class Reaction implements Copyable<Reaction> {
 
-  // Supported Emoji
-  public enum Emoji {
-    UPVOTE("U+1F44D"),
-    DOWNVOTE("U+1F44E"),
-    LOVE("U+2764");
+  /** Enum representing the supported emoji for the reaction */
+  public enum ReactionEmoji {
+    UPVOTE("\uD83D\uDC4D"),
+    DOWNVOTE("\uD83D\uDC4E"),
+    HEART("❤");
 
-    private final String unicode;
+    private final String code;
 
-    Emoji(String unicode) {
-      this.unicode = unicode;
+    ReactionEmoji(String code) {
+      this.code = code;
     }
 
-    public String getUnicode() {
-      return unicode;
+    public String getCode() {
+      return code;
+    }
+
+    /**
+     * Method to validate whether a certain emoji is supported for reactions.
+     *
+     * @param emoji unicode string of the emoji to test
+     * @return true if it's supported, false otherwise
+     */
+    public static boolean isSupported(String emoji) {
+      return Arrays.stream(ReactionEmoji.values())
+          .anyMatch(reactionEmoji -> reactionEmoji.code.equals(emoji));
     }
   }
 
@@ -42,9 +54,9 @@ public class Reaction implements Copyable<Reaction> {
       @NonNull MessageID chirpId,
       long timestamp) {
     MessageValidator.verify()
-        .stringNotEmpty(codepoint, "codepoint")
         .isBase64(id.getEncoded(), "reaction id")
-        .isBase64(chirpId.getEncoded(), "chirp id");
+        .isBase64(chirpId.getEncoded(), "chirp id")
+        .isValidEmoji(codepoint, "codepoint");
     this.id = id;
     this.sender = sender;
     this.codepoint = codepoint;

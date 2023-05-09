@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 import timber.log.Timber;
 
 import static android.text.format.DateUtils.getRelativeTimeSpanString;
+import static com.github.dedis.popstellar.model.objects.Reaction.ReactionEmoji.*;
 
 public class ChirpListAdapter extends BaseAdapter {
 
@@ -80,7 +81,13 @@ public class ChirpListAdapter extends BaseAdapter {
       chirpView = layoutInflater.inflate(R.layout.chirp_card, viewGroup, false);
     }
 
+    Chirp chirp = getItem(position);
+    if (chirp == null) {
+      throw new IllegalArgumentException("The chirp does not exist");
+    }
+
     // If the user has no valid pop token then it's not possible to react
+    // (make invisible the buttons)
     try {
       socialMediaViewModel.getValidPoPToken();
       chirpView.findViewById(R.id.chirp_card_buttons).setVisibility(View.VISIBLE);
@@ -88,10 +95,6 @@ public class ChirpListAdapter extends BaseAdapter {
       chirpView.findViewById(R.id.chirp_card_buttons).setVisibility(View.GONE);
     }
 
-    Chirp chirp = getItem(position);
-    if (chirp == null) {
-      throw new IllegalArgumentException("The chirp does not exist");
-    }
     PublicKey sender = chirp.getSender();
     long timestamp = chirp.getTimestamp();
     String text;
@@ -102,12 +105,12 @@ public class ChirpListAdapter extends BaseAdapter {
     ImageButton deleteChirp = chirpView.findViewById(R.id.delete_chirp_button);
     ImageButton upvoteChirp = chirpView.findViewById(R.id.upvote_button);
     ImageButton downvoteChirp = chirpView.findViewById(R.id.downvote_button);
-    ImageButton loveChirp = chirpView.findViewById(R.id.love_button);
+    ImageButton heartChirp = chirpView.findViewById(R.id.heart_button);
     TextView upvoteCounter = chirpView.findViewById(R.id.upvote_counter);
     TextView downvoteCounter = chirpView.findViewById(R.id.downvote_counter);
-    TextView loveCounter = chirpView.findViewById(R.id.love_counter);
+    TextView heartCounter = chirpView.findViewById(R.id.heart_counter);
 
-    // Set dynamically the counter of reactions
+    // Set dynamically the counter of each reaction
     try {
       laoViewModel.addDisposable(
           socialMediaViewModel
@@ -121,16 +124,13 @@ public class ChirpListAdapter extends BaseAdapter {
                             .collect(
                                 Collectors.groupingBy(
                                     Reaction::getCodepoint, Collectors.counting()));
-                    long upVotes =
-                        codepointToCountMap.getOrDefault(Reaction.Emoji.UPVOTE.getUnicode(), 0l);
-                    long downVotes =
-                        codepointToCountMap.getOrDefault(Reaction.Emoji.DOWNVOTE.getUnicode(), 0l);
-                    long loves =
-                        codepointToCountMap.getOrDefault(Reaction.Emoji.LOVE.getUnicode(), 0l);
+                    long upVotes = codepointToCountMap.getOrDefault(UPVOTE, 0l);
+                    long downVotes = codepointToCountMap.getOrDefault(DOWNVOTE, 0l);
+                    long hearts = codepointToCountMap.getOrDefault(HEART, 0l);
 
                     upvoteCounter.setText(String.format(Locale.US, "%d", upVotes));
                     downvoteCounter.setText(String.format(Locale.US, "%d", downVotes));
-                    loveCounter.setText(String.format(Locale.US, "%d", loves));
+                    heartCounter.setText(String.format(Locale.US, "%d", hearts));
                   },
                   err ->
                       ErrorUtils.logAndShow(context, TAG, err, R.string.unknown_chirp_exception)));
@@ -138,38 +138,39 @@ public class ChirpListAdapter extends BaseAdapter {
       throw new IllegalArgumentException("The chirp does not exist");
     }
 
-    // Set the selection of the button based on my own previous reactions
+    // Set the buttons selected if they were previously pressed
     upvoteChirp.setSelected(
-        socialMediaViewModel.isReactionPresent(chirp.getId(), Reaction.Emoji.UPVOTE));
+        socialMediaViewModel.isReactionPresent(chirp.getId(), UPVOTE.getCode()));
+    downvoteChirp.setSelected(
+        socialMediaViewModel.isReactionPresent(chirp.getId(), DOWNVOTE.getCode()));
+    heartChirp.setSelected(socialMediaViewModel.isReactionPresent(chirp.getId(), HEART.getCode()));
+
+    // Based on the selection of the buttons choose the correct drawable
     setItemSelection(
         upvoteChirp, R.drawable.ic_social_media_upvote_selected, R.drawable.ic_social_media_upvote);
-    downvoteChirp.setSelected(
-        socialMediaViewModel.isReactionPresent(chirp.getId(), Reaction.Emoji.DOWNVOTE));
     setItemSelection(
         downvoteChirp,
         R.drawable.ic_social_media_downvote_selected,
         R.drawable.ic_social_media_downvote);
-    loveChirp.setSelected(
-        socialMediaViewModel.isReactionPresent(chirp.getId(), Reaction.Emoji.LOVE));
     setItemSelection(
-        loveChirp, R.drawable.ic_social_media_love_selected, R.drawable.ic_social_media_love);
+        heartChirp, R.drawable.ic_social_media_heart_selected, R.drawable.ic_social_media_heart);
 
-    // Set the listener for the reaction buttons
+    // Set the listener for the reaction buttons to add and delete reactions
     upvoteChirp.setOnClickListener(
         v -> {
           reactionListener(
               upvoteChirp,
               R.drawable.ic_social_media_upvote_selected,
               R.drawable.ic_social_media_upvote,
-              Reaction.Emoji.UPVOTE,
+              UPVOTE,
               chirp.getId());
+          // Implement the exclusivity of upvote and downvote (i.e. disable downvote if upvote)
           if (downvoteChirp.isSelected() && upvoteChirp.isSelected()) {
-            // Remove the downvote reaction
             reactionListener(
                 downvoteChirp,
                 R.drawable.ic_social_media_downvote_selected,
                 R.drawable.ic_social_media_downvote,
-                Reaction.Emoji.DOWNVOTE,
+                DOWNVOTE,
                 chirp.getId());
           }
         });
@@ -180,26 +181,26 @@ public class ChirpListAdapter extends BaseAdapter {
               downvoteChirp,
               R.drawable.ic_social_media_downvote_selected,
               R.drawable.ic_social_media_downvote,
-              Reaction.Emoji.DOWNVOTE,
+              DOWNVOTE,
               chirp.getId());
+          // Implement the exclusivity of upvote and downvote (i.e. disable upvote if downvote)
           if (downvoteChirp.isSelected() && upvoteChirp.isSelected()) {
-            // Remove the upvote reaction
             reactionListener(
                 upvoteChirp,
                 R.drawable.ic_social_media_upvote_selected,
                 R.drawable.ic_social_media_upvote,
-                Reaction.Emoji.UPVOTE,
+                UPVOTE,
                 chirp.getId());
           }
         });
 
-    loveChirp.setOnClickListener(
+    heartChirp.setOnClickListener(
         v ->
             reactionListener(
-                loveChirp,
-                R.drawable.ic_social_media_love_selected,
-                R.drawable.ic_social_media_love,
-                Reaction.Emoji.LOVE,
+                heartChirp,
+                R.drawable.ic_social_media_heart_selected,
+                R.drawable.ic_social_media_heart,
+                HEART,
                 chirp.getId()));
 
     if (socialMediaViewModel.isOwner(sender.getEncoded())) {
@@ -235,22 +236,34 @@ public class ChirpListAdapter extends BaseAdapter {
     return chirpView;
   }
 
+  /**
+   * Function that sets the listener of the reaction buttons. It inverts the button selection,
+   * changes the aspect of the drawable and send the correct message.
+   *
+   * @param button reaction button pressed
+   * @param selected drawable resource if button is selected
+   * @param notSelected drawable resource if button is not selected
+   * @param emoji type of reaction
+   * @param chirpId chirp to which react
+   */
   private void reactionListener(
       ImageButton button,
       @DrawableRes int selected,
       @DrawableRes int notSelected,
-      Reaction.Emoji emoji,
+      Reaction.ReactionEmoji emoji,
       @NonNull MessageID chirpId) {
-
+    // Invert the selection
     boolean selection = !button.isSelected();
     button.setSelected(selection);
 
+    // Set the aspect based on the selection
     setItemSelection(button, selected, notSelected);
 
+    // Send the proper message
     if (selection) {
       laoViewModel.addDisposable(
           socialMediaViewModel
-              .sendReaction(emoji.getUnicode(), chirpId, Instant.now().getEpochSecond())
+              .sendReaction(emoji.getCode(), chirpId, Instant.now().getEpochSecond())
               .subscribe(
                   msg -> Timber.tag(TAG).d("Added reaction to chirp %s", chirpId),
                   err ->
@@ -258,7 +271,7 @@ public class ChirpListAdapter extends BaseAdapter {
     } else {
       laoViewModel.addDisposable(
           socialMediaViewModel
-              .deleteReaction(chirpId, Instant.now().getEpochSecond(), emoji)
+              .deleteReaction(chirpId, Instant.now().getEpochSecond(), emoji.getCode())
               .subscribe(
                   msg -> Timber.tag(TAG).d("Deleted reaction of chirp %s", chirpId),
                   err -> ErrorUtils.logAndShow(context, TAG, err, R.string.error_delete_reaction)));

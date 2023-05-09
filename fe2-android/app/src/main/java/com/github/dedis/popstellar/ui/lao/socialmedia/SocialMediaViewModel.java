@@ -152,6 +152,15 @@ public class SocialMediaViewModel extends AndroidViewModel {
             });
   }
 
+  /**
+   * Send a reaction to the channel social/reactions
+   *
+   * <p>Publish a MessageGeneral containing AddReaction data.
+   *
+   * @param codepoint unicode string of the reaction
+   * @param chirpId chirp identifier to which the reaction is referred
+   * @param timestamp the time at which the reaction has been generated
+   */
   public Single<MessageGeneral> sendReaction(
       String codepoint, @NonNull MessageID chirpId, long timestamp) {
     Timber.tag(TAG).d("Sending a reaction to the chirp %s", chirpId);
@@ -205,8 +214,17 @@ public class SocialMediaViewModel extends AndroidViewModel {
             });
   }
 
+  /**
+   * Delete a reaction through the channel social/reactions
+   *
+   * <p>Publish a MessageGeneral containing DeleteReaction data.
+   *
+   * @param chirpId chirp identifier to which the reaction is referred
+   * @param timestamp the time at which the reaction has been deleted
+   * @param emoji unicode string of the reaction to delete
+   */
   public Single<MessageGeneral> deleteReaction(
-      @NonNull MessageID chirpId, long timestamp, Reaction.Emoji emoji) {
+      @NonNull MessageID chirpId, long timestamp, String emoji) {
     Timber.tag(TAG).d("Deleting reaction %s of chirp %s", emoji, chirpId);
 
     LaoView laoView;
@@ -224,14 +242,14 @@ public class SocialMediaViewModel extends AndroidViewModel {
             token -> {
               Channel channel = laoView.getChannel().subChannel(SOCIAL).subChannel(REACTIONS);
 
-              // Find the reaction id (reaction sent from self matching the emoji)
+              // Find the reaction id (alive reaction sent from myself matching the emoji)
               Set<Reaction> reactions = socialMediaRepository.getReactionsByChirp(laoId, chirpId);
               Reaction previousReaction =
                   reactions.stream()
                       .filter(
                           reaction ->
                               !reaction.isDeleted()
-                                  && reaction.getCodepoint().equals(emoji.getUnicode())
+                                  && reaction.getCodepoint().equals(emoji)
                                   && reaction.getSender().equals(token.getPublicKey()))
                       .findFirst()
                       .orElse(null);
@@ -276,6 +294,12 @@ public class SocialMediaViewModel extends AndroidViewModel {
         .observeOn(schedulerProvider.mainThread());
   }
 
+  public Observable<Set<Reaction>> getReactions(MessageID chirpId) throws UnknownChirpException {
+    return socialMediaRepository
+        .getReactions(laoId, chirpId)
+        .observeOn(schedulerProvider.mainThread());
+  }
+
   /**
    * Check whether the sender of a chirp is the current user
    *
@@ -294,19 +318,21 @@ public class SocialMediaViewModel extends AndroidViewModel {
     }
   }
 
-  public Observable<Set<Reaction>> getReactions(MessageID chirpId) throws UnknownChirpException {
-    return socialMediaRepository
-        .getReactions(laoId, chirpId)
-        .observeOn(schedulerProvider.mainThread());
-  }
-
-  public boolean isReactionPresent(MessageID chirpId, Reaction.Emoji emoji) {
+  /**
+   * Check whether the current user has an active reaction on a given chirp.
+   *
+   * @param chirpId chirp identifier of the reaction to check
+   * @param emoji unicode string of the reaction emoji
+   * @return true if the user has reacted with the given emoji to the given chirp (and the reaction
+   *     is not deleted) , false otherwise
+   */
+  public boolean isReactionPresent(MessageID chirpId, String emoji) {
     return socialMediaRepository.getReactionsByChirp(laoId, chirpId).stream()
         .anyMatch(
             reaction ->
                 !reaction.isDeleted()
                     && isOwner(reaction.getSender().getEncoded())
-                    && reaction.getCodepoint().equals(emoji.getUnicode()));
+                    && reaction.getCodepoint().equals(emoji));
   }
 
   public void setLaoId(String laoId) {

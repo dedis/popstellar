@@ -1,9 +1,9 @@
 package com.github.dedis.popstellar.utility;
 
 import com.github.dedis.popstellar.model.network.method.message.data.election.Vote;
-import com.github.dedis.popstellar.model.objects.Lao;
-import com.github.dedis.popstellar.model.objects.Meeting;
+import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
+import com.vdurmont.emoji.EmojiManager;
 
 import java.time.Instant;
 import java.util.*;
@@ -135,6 +135,23 @@ public abstract class MessageValidator {
     public MessageValidatorBuilder isBase64(String input, String field) {
       if (input == null || !BASE64_PATTERN.matcher(input).matches()) {
         throw new IllegalArgumentException(field + " must be a base 64 encoded string");
+      }
+      return this;
+    }
+
+    /**
+     * Helper method to check that a string represents a valid unicode emoji supported for reactions
+     *
+     * @param input the string to check
+     * @param field name of the field (to print in case of error)
+     * @throws IllegalArgumentException if the string is not representing a valid codepoint
+     */
+    public MessageValidatorBuilder isValidEmoji(String input, String field) {
+      if (!EmojiManager.isEmoji(input)) {
+        throw new IllegalArgumentException(field + " must be a unicode emoji");
+      }
+      if (!Reaction.ReactionEmoji.isSupported(input)) {
+        throw new IllegalArgumentException(field + " is not a supported unicode emoji");
       }
       return this;
     }

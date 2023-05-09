@@ -171,4 +171,20 @@ public class MessageValidatorTest {
     assertThrows(IllegalArgumentException.class, () -> validator.validUrl("://example.com"));
     assertThrows(IllegalArgumentException.class, () -> validator.validUrl("http://example."));
   }
+
+  @Test
+  public void testValidEmoji() {
+    MessageValidator.MessageValidatorBuilder validator = MessageValidator.verify();
+    String field = "testField";
+
+    validator.isValidEmoji("\uD83D\uDC4D", field);
+    validator.isValidEmoji("\uD83D\uDC4E", field);
+    validator.isValidEmoji("❤", field);
+
+    assertThrows(
+        IllegalArgumentException.class, () -> validator.isValidEmoji("\uD83D\uDE00", field));
+    assertThrows(IllegalArgumentException.class, () -> validator.isValidEmoji("U+1F600", field));
+    assertThrows(
+        IllegalArgumentException.class, () -> validator.isValidEmoji("random string", field));
+  }
 }

@@ -18,7 +18,7 @@ public class AddReaction extends Data {
   public AddReaction(String codepoint, MessageID chirpId, long timestamp) {
     MessageValidator.verify()
         .isBase64(chirpId.getEncoded(), "chirp id")
-        .stringNotEmpty(codepoint, "reaction codepoint");
+        .isValidEmoji(codepoint, "reaction codepoint");
     this.codepoint = codepoint;
     this.chirpId = chirpId;
     this.timestamp = timestamp;
