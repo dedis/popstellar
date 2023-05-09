@@ -1,9 +1,6 @@
 package com.github.dedis.popstellar.ui.lao.witness;
 
-import android.view.View;
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
-import androidx.test.espresso.UiController;
-import androidx.test.espresso.ViewAction;
 import androidx.test.espresso.action.ViewActions;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
@@ -16,9 +13,6 @@ import com.github.dedis.popstellar.testutils.pages.lao.LaoActivityPageObject;
 import com.github.dedis.popstellar.ui.lao.LaoActivity;
 import com.github.dedis.popstellar.utility.Constants;
 
-import com.google.android.material.tabs.TabLayout;
-import java.time.Instant;
-import org.hamcrest.Matcher;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExternalResource;
@@ -26,19 +20,17 @@ import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoTestRule;
 
+import java.time.Instant;
+
 import dagger.hilt.android.testing.HiltAndroidRule;
 import dagger.hilt.android.testing.HiltAndroidTest;
 
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.generatePoPToken;
-import static com.github.dedis.popstellar.testutils.pages.lao.witness.WitnessingFragmentPageObject.getEventListFragment;
-import static com.github.dedis.popstellar.testutils.pages.lao.witness.WitnessingFragmentPageObject.getRootView;
-import static com.github.dedis.popstellar.testutils.pages.lao.witness.WitnessingFragmentPageObject.witnessMessageFragment;
-import static com.github.dedis.popstellar.testutils.pages.lao.witness.WitnessingFragmentPageObject.witnessesFragment;
-import static com.github.dedis.popstellar.testutils.pages.lao.witness.WitnessingFragmentPageObject.witnessingTabs;
+import static com.github.dedis.popstellar.testutils.MatcherUtils.selectTabAtPosition;
+import static com.github.dedis.popstellar.testutils.pages.lao.witness.WitnessingFragmentPageObject.*;
 
 @HiltAndroidTest
 @RunWith(AndroidJUnit4.class)
@@ -107,28 +99,4 @@ public class WitnessingFragmentTest {
     witnessMessageFragment().check(doesNotExist());
     witnessesFragment().check(matches(isDisplayed()));
   }
-
-  private static ViewAction selectTabAtPosition(final int tabIndex) {
-    return new ViewAction() {
-      @Override
-      public Matcher<View> getConstraints() {
-        return isAssignableFrom(TabLayout.class);
-      }
-
-      @Override
-      public String getDescription() {
-        return "select tab at index " + tabIndex;
-      }
-
-      @Override
-      public void perform(UiController uiController, View view) {
-        TabLayout tabLayout = (TabLayout) view;
-        TabLayout.Tab tab = tabLayout.getTabAt(tabIndex);
-        if (tab != null) {
-          tab.select();
-        }
-      }
-    };
-  }
-
 }

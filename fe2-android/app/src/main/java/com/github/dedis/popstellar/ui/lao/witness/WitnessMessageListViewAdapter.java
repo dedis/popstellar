@@ -11,7 +11,6 @@ import androidx.fragment.app.FragmentActivity;
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.WitnessMessageLayoutBinding;
 import com.github.dedis.popstellar.model.objects.WitnessMessage;
-import com.github.dedis.popstellar.model.objects.security.Base64URLData;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.ui.lao.LaoActivity;
 import com.github.dedis.popstellar.ui.lao.LaoViewModel;
@@ -21,6 +20,8 @@ import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import timber.log.Timber;
 
 /** Adapter to show the messages that have to be signed by the witnesses */
 public class WitnessMessageListViewAdapter extends BaseAdapter {
@@ -141,7 +142,9 @@ public class WitnessMessageListViewAdapter extends BaseAdapter {
                   witnessingViewModel
                       .signMessage(message)
                       .subscribe(
-                          () -> {},
+                          () -> {
+                            Timber.tag(TAG).d("Witness message successfully signed");
+                          },
                           error ->
                               ErrorUtils.logAndShow(
                                   activity, TAG, error, R.string.error_sign_message))));
@@ -154,7 +157,7 @@ public class WitnessMessageListViewAdapter extends BaseAdapter {
     if (witnesses.isEmpty()) {
       return NO_SIGNATURES;
     } else {
-      return witnesses.stream().map(Base64URLData::getEncoded).collect(Collectors.joining("\n"));
+      return witnesses.stream().map(PublicKey::getEncoded).collect(Collectors.joining("\n"));
     }
   }
 }
