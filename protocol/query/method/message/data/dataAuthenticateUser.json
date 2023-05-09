@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataSendAuthMessage.json",
+  "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataAuthenticateUser.json",
   "description": "Authenticate a user in PoPCHA protocol",
   "type": "object",
   "properties": {
@@ -33,11 +33,11 @@
         "type": "string"
     },
     "response_mode": {
-        "description": "typeof http response",
+        "description": "type of http response",
         "type": "string"
     },
     "popcha_address": {
-        "description": "host of the popcha authorization server",
+        "description": "host address of the PoPCHA authorization server",
         "type": "string"
     }
   },
