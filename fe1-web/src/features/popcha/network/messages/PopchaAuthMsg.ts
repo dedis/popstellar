@@ -19,7 +19,7 @@ export class PopchaAuthMsg implements MessageData {
 
   public readonly state: string | undefined;
 
-  public readonly response_mode: string;
+  public readonly response_mode: string | undefined;
 
   public readonly popcha_address: string;
 
@@ -62,9 +62,6 @@ export class PopchaAuthMsg implements MessageData {
 
     if (msg.response_mode) {
       this.response_mode = msg.response_mode;
-    } else {
-      // TODO: check if this is the default value
-      this.response_mode = 'fragment';
     }
   }
 }
