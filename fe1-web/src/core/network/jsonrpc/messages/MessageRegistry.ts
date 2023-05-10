@@ -6,7 +6,7 @@ import { ProcessableMessage } from './ProcessableMessage';
 type HandleFunction = (msg: ProcessableMessage) => boolean;
 type BuildFunction = (data: MessageData, laoId?: Hash) => MessageData;
 
-const { LAO, MEETING, ROLL_CALL, ELECTION, MESSAGE, CHIRP, REACTION, COIN } = ObjectType;
+const { LAO, MEETING, ROLL_CALL, ELECTION, MESSAGE, CHIRP, REACTION, COIN, POPCHA } = ObjectType;
 const {
   CREATE,
   STATE,
@@ -26,6 +26,7 @@ const {
   DELETE,
   NOTIFY_DELETE,
   POST_TRANSACTION,
+  AUTH,
 } = ActionType;
 const { KEYPAIR, POP_TOKEN } = SignatureType;
 
@@ -92,6 +93,8 @@ export class MessageRegistry {
 
     // Coin
     [k(COIN, POST_TRANSACTION), { signature: KEYPAIR }],
+
+    [k(POPCHA, AUTH), { signature: KEYPAIR }],
   ]);
 
   /**
