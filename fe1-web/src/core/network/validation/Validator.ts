@@ -70,7 +70,7 @@ const schemaIds: Record<ObjectType, Record<string, string>> = {
     [ActionType.POST_TRANSACTION]: 'postTransaction',
   },
   [ObjectType.POPCHA]: {
-    [ActionType.AUTH]: 'authenticate',
+    [ActionType.AUTH]: 'dataAuthenticateUser',
   },
 };
 
