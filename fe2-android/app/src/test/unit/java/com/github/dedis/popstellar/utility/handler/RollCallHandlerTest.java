@@ -79,13 +79,13 @@ public class RollCallHandlerTest {
 
     lenient().when(messageSender.subscribe(any())).then(args -> Completable.complete());
 
-    laoRepo = new LAORepository(AppDatabaseModuleHelper.getAppDatabase(context));
+    laoRepo = new LAORepository(appDatabase, ApplicationProvider.getApplicationContext());
     rollCallRepo = new RollCallRepository();
 
     DataRegistry dataRegistry =
         DataRegistryModuleHelper.buildRegistry(context, laoRepo, keyManager, rollCallRepo);
     MessageRepository messageRepo =
-        new MessageRepository(AppDatabaseModuleHelper.getAppDatabase(context));
+        new MessageRepository(appDatabase, ApplicationProvider.getApplicationContext());
     gson = JsonModule.provideGson(dataRegistry);
     messageHandler = new MessageHandler(messageRepo, dataRegistry);
 

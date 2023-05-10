@@ -95,9 +95,10 @@ public class LaoHandlerTest {
 
     when(messageSender.subscribe(any())).then(args -> Completable.complete());
 
-    laoRepo = new LAORepository(appDatabase);
+    laoRepo = new LAORepository(appDatabase, ApplicationProvider.getApplicationContext());
     serverRepository = new ServerRepository();
-    MessageRepository messageRepo = new MessageRepository(appDatabase);
+    MessageRepository messageRepo =
+        new MessageRepository(appDatabase, ApplicationProvider.getApplicationContext());
 
     DataRegistry dataRegistry =
         DataRegistryModuleHelper.buildRegistry(laoRepo, messageRepo, keyManager, serverRepository);

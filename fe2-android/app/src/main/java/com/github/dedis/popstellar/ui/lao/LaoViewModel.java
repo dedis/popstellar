@@ -194,7 +194,10 @@ public class LaoViewModel extends AndroidViewModel implements PopViewModel {
   }
 
   public void saveCoreData() throws GeneralSecurityException {
-    ActivityUtils.activitySavingRoutine(networkManager, wallet, coreDao);
+    Disposable toDispose = ActivityUtils.activitySavingRoutine(networkManager, wallet, coreDao);
+    if (toDispose != null) {
+      addDisposable(toDispose);
+    }
   }
 
   protected Role determineRole() {

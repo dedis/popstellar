@@ -227,7 +227,7 @@ public class HomeActivity extends AppCompatActivity {
   }
 
   private boolean restoreStoredState() {
-    return viewModel.restoreConnections(this);
+    return viewModel.restoreConnections();
   }
 
   public static HomeViewModel obtainViewModel(FragmentActivity activity) {

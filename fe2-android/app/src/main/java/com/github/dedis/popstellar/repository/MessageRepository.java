@@ -1,6 +1,7 @@
 package com.github.dedis.popstellar.repository;
 
-import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.app.Application;
 import android.util.LruCache;
 
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
@@ -8,14 +9,17 @@ import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.repository.database.AppDatabase;
 import com.github.dedis.popstellar.repository.database.message.MessageDao;
 import com.github.dedis.popstellar.repository.database.message.MessageEntity;
+import com.github.dedis.popstellar.utility.ActivityUtils;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.BiConsumer;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
@@ -37,31 +41,46 @@ public class MessageRepository {
   private final LruCache<MessageID, MessageGeneral> messageCache = new LruCache<>(CACHED_MESSAGES);
   private final MessageDao messageDao;
 
+  private final CompositeDisposable disposables = new CompositeDisposable();
+
   @Inject
-  public MessageRepository(AppDatabase appDatabase) {
-    this.messageDao = appDatabase.messageDao();
+  public MessageRepository(AppDatabase appDatabase, Application application) {
+    messageDao = appDatabase.messageDao();
+    BiConsumer<Activity, Application.ActivityLifecycleCallbacks> consumer =
+        (activity, callback) -> {
+          if (activity.isFinishing()) {
+            if (!disposables.isDisposed()) {
+              disposables.dispose();
+            }
+
+            // Unregister the lifecycle observer
+            application.unregisterActivityLifecycleCallbacks(callback);
+          }
+        };
+    application.registerActivityLifecycleCallbacks(
+        ActivityUtils.buildLifecycleCallbackOnDestroy(consumer));
     loadCache();
   }
 
   /** This function is called at creation to fill the cache asynchronously */
-  @SuppressLint("CheckResult")
   private void loadCache() {
-    messageDao
-        .takeFirstNMessages(CACHED_MESSAGES)
-        .subscribeOn(Schedulers.io())
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(
-            messageEntities ->
-                messageEntities.forEach(
-                    msg ->
-                        messageCache.put(
-                            msg.getMessageId(),
-                            // Cache doesn't accept null as value, so an empty message is used
-                            // instead
-                            msg.getContent() == null
-                                ? MessageGeneral.emptyMessage()
-                                : msg.getContent())),
-            Exceptions::propagate);
+    disposables.add(
+        messageDao
+            .takeFirstNMessages(CACHED_MESSAGES)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                messageEntities ->
+                    messageEntities.forEach(
+                        msg ->
+                            messageCache.put(
+                                msg.getMessageId(),
+                                // Cache doesn't accept null as value, so an empty message is used
+                                // instead
+                                msg.getContent() == null
+                                    ? MessageGeneral.emptyMessage()
+                                    : msg.getContent())),
+                Exceptions::propagate));
   }
 
   public MessageGeneral getMessage(MessageID messageID) {
@@ -112,13 +131,14 @@ public class MessageRepository {
       messageCache.put(messageID, message == null ? MessageGeneral.emptyMessage() : message);
 
       // Add asynchronously the messages to the database
-      messageDao
-          .insert(new MessageEntity(messageID, message))
-          .subscribeOn(Schedulers.io())
-          .observeOn(AndroidSchedulers.mainThread())
-          .doOnComplete(() -> Timber.tag(TAG).d("Persisted message %s", messageID))
-          .doOnError(err -> Timber.tag(TAG).e(err, "Error persisting the message %s", messageID))
-          .subscribe();
+      disposables.add(
+          messageDao
+              .insert(new MessageEntity(messageID, message))
+              .subscribeOn(Schedulers.io())
+              .observeOn(AndroidSchedulers.mainThread())
+              .subscribe(
+                  () -> Timber.tag(TAG).d("Persisted message %s", messageID),
+                  err -> Timber.tag(TAG).e(err, "Error persisting the message %s", messageID)));
     }
   }
 

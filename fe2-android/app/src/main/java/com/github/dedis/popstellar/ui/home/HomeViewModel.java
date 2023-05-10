@@ -1,7 +1,6 @@
 package com.github.dedis.popstellar.ui.home;
 
 import android.app.Application;
-import android.content.Context;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -127,14 +126,13 @@ public class HomeViewModel extends AndroidViewModel
   /**
    * Function to restore the state of the application.
    *
-   * @param context activity context
    * @return true if the wallet is correctly restored, false otherwise
    */
-  public boolean restoreConnections(Context context) {
+  public boolean restoreConnections() {
     // Retrieve from the database the saved state
     CoreEntity coreEntity = appDatabase.coreDao().getSettings();
     if (coreEntity == null) {
-      ErrorUtils.logAndShow(context, TAG, R.string.nothing_stored);
+      ErrorUtils.logAndShow(getApplication().getApplicationContext(), TAG, R.string.nothing_stored);
       return false;
     }
 
@@ -144,7 +142,8 @@ public class HomeViewModel extends AndroidViewModel
       Timber.tag(TAG).d("Restoring wallet");
       String[] seed = coreEntity.getWalletSeedArray();
       if (seed.length == 0) {
-        ErrorUtils.logAndShow(context, TAG, R.string.no_seed_storage_found);
+        ErrorUtils.logAndShow(
+            getApplication().getApplicationContext(), TAG, R.string.no_seed_storage_found);
         return false;
       }
       String appended = String.join(" ", seed);
@@ -163,7 +162,7 @@ public class HomeViewModel extends AndroidViewModel
       Timber.tag(TAG).d("Current state is up to date");
     } else {
       Timber.tag(TAG).d("Restoring connections");
-      networkManager.connect(coreEntity.getServerAddress(), coreEntity.getSubscriptionsCopy());
+      networkManager.connect(coreEntity.getServerAddress(), coreEntity.getSubscriptions());
       getApplication()
           .startActivity(
               ConnectingActivity.newIntentForHome(getApplication().getApplicationContext()));
@@ -173,7 +172,11 @@ public class HomeViewModel extends AndroidViewModel
   }
 
   public void saveCoreData() throws GeneralSecurityException {
-    ActivityUtils.activitySavingRoutine(networkManager, wallet, appDatabase.coreDao());
+    Disposable toDispose =
+        ActivityUtils.activitySavingRoutine(networkManager, wallet, appDatabase.coreDao());
+    if (toDispose != null) {
+      addDisposable(toDispose);
+    }
   }
 
   public void clearStorage() {
@@ -256,6 +259,6 @@ public class HomeViewModel extends AndroidViewModel
    * @param disposable to add
    */
   public void addDisposable(Disposable disposable) {
-    this.disposables.add(disposable);
+    disposables.add(disposable);
   }
 }

@@ -1,12 +1,15 @@
 package com.github.dedis.popstellar.utility;
 
-import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.app.Application;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Color;
+import android.os.Bundle;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.*;
 
 import com.github.dedis.popstellar.model.objects.Channel;
@@ -17,9 +20,11 @@ import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 
 import java.security.GeneralSecurityException;
 import java.util.*;
+import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
@@ -59,13 +64,12 @@ public class ActivityUtils {
    * @param networkManager, the singleton used across the app
    * @param wallet, the singleton used across the app
    */
-  @SuppressLint("CheckResult")
-  public static void activitySavingRoutine(
+  public static Disposable activitySavingRoutine(
       GlobalNetworkManager networkManager, Wallet wallet, CoreDao coreDao)
       throws GeneralSecurityException {
     String serverAddress = networkManager.getCurrentUrl();
     if (serverAddress == null) {
-      return;
+      return null;
     }
 
     Set<Channel> subscriptions;
@@ -84,7 +88,7 @@ public class ActivityUtils {
             0, serverAddress, Collections.unmodifiableList(Arrays.asList(seed)), subscriptions);
 
     // Save in the database the state
-    coreDao
+    return coreDao
         .insert(coreEntity)
         .subscribeOn(Schedulers.io())
         .observeOn(AndroidSchedulers.mainThread())
@@ -112,6 +116,55 @@ public class ActivityUtils {
       public void handleOnBackPressed() {
         Timber.tag(tag).d("Back pressed, going to %s", message);
         callback.run();
+      }
+    };
+  }
+
+  /**
+   * This function returns a callback to register to the application lifecycle that applies a
+   * consumer function on the application's onDestroy().
+   *
+   * @param consumer callback for the onDestroy method
+   * @return the lifecycle callback
+   */
+  public static Application.ActivityLifecycleCallbacks buildLifecycleCallbackOnDestroy(
+      BiConsumer<Activity, Application.ActivityLifecycleCallbacks> consumer) {
+    return new Application.ActivityLifecycleCallbacks() {
+      @Override
+      public void onActivityCreated(
+          @NonNull Activity activity, @Nullable Bundle savedInstanceState) {
+        // Do nothing here
+      }
+
+      @Override
+      public void onActivityStarted(@NonNull Activity activity) {
+        // Do nothing here
+      }
+
+      @Override
+      public void onActivityResumed(@NonNull Activity activity) {
+        // Do nothing here
+      }
+
+      @Override
+      public void onActivityPaused(@NonNull Activity activity) {
+        // Do nothing here
+      }
+
+      @Override
+      public void onActivityStopped(@NonNull Activity activity) {
+        // Do nothing here
+      }
+
+      @Override
+      public void onActivitySaveInstanceState(
+          @NonNull Activity activity, @NonNull Bundle outState) {
+        // Do nothing here
+      }
+
+      @Override
+      public void onActivityDestroyed(@NonNull Activity activity) {
+        consumer.accept(activity, this);
       }
     };
   }

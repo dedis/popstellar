@@ -80,12 +80,13 @@ public class MeetingHandlerTest {
 
     lenient().when(messageSender.subscribe(any())).then(args -> Completable.complete());
 
-    laoRepo = new LAORepository(appDatabase);
+    laoRepo = new LAORepository(appDatabase, ApplicationProvider.getApplicationContext());
     meetingRepo = new MeetingRepository();
 
     DataRegistry dataRegistry =
         DataRegistryModuleHelper.buildRegistry(context, laoRepo, keyManager, meetingRepo);
-    MessageRepository messageRepo = new MessageRepository(appDatabase);
+    MessageRepository messageRepo =
+        new MessageRepository(appDatabase, ApplicationProvider.getApplicationContext());
     gson = JsonModule.provideGson(dataRegistry);
     messageHandler = new MessageHandler(messageRepo, dataRegistry);
 

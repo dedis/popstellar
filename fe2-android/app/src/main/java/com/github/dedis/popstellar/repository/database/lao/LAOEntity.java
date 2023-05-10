@@ -33,10 +33,10 @@ public class LAOEntity {
 
   @NonNull
   public Lao getLao() {
-    return lao;
+    return lao.copy();
   }
 
   public void setLao(@NonNull Lao lao) {
-    this.lao = lao;
+    this.lao = lao.copy();
   }
 }

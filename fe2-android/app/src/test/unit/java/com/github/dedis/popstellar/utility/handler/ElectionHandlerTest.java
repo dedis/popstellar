@@ -118,10 +118,10 @@ public class ElectionHandlerTest {
 
     when(messageSender.subscribe(any())).then(args -> Completable.complete());
 
-    laoRepo = new LAORepository(appDatabase);
+    laoRepo = new LAORepository(appDatabase, ApplicationProvider.getApplicationContext());
     electionRepo = new ElectionRepository();
 
-    messageRepo = new MessageRepository(appDatabase);
+    messageRepo = new MessageRepository(appDatabase, ApplicationProvider.getApplicationContext());
     DataRegistry dataRegistry =
         DataRegistryModuleHelper.buildRegistry(laoRepo, electionRepo, keyManager, messageRepo);
 

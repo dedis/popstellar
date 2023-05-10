@@ -49,20 +49,16 @@ public class CoreEntity {
 
   @NonNull
   public List<String> getWalletSeed() {
-    return walletSeed;
+    return new ArrayList<>(walletSeed);
   }
 
   @NonNull
   public Set<Channel> getSubscriptions() {
-    return subscriptions;
+    return new HashSet<>(subscriptions);
   }
 
   public String[] getWalletSeedArray() {
     return walletSeed.toArray(new String[0]);
-  }
-
-  public Set<Channel> getSubscriptionsCopy() {
-    return new HashSet<>(subscriptions);
   }
 
   @Override

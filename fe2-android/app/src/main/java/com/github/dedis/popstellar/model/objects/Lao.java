@@ -76,11 +76,11 @@ public final class Lao implements Copyable<Lao> {
     this.creation = creation;
     this.organizer = organizer;
     this.modificationId = modificationId;
-    this.witnesses = witnesses;
-    this.witnessMessages = witnessMessages;
-    this.pendingUpdates = pendingUpdates;
-    this.messageIdToElectInstance = messageIdToElectInstance;
-    this.keyToNode = keyToNode;
+    this.witnesses = new HashSet<>(witnesses);
+    this.witnessMessages = new HashMap<>(witnessMessages);
+    this.pendingUpdates = new HashSet<>(pendingUpdates);
+    this.messageIdToElectInstance = new HashMap<>(messageIdToElectInstance);
+    this.keyToNode = Copyable.copy(keyToNode);
   }
 
   /**

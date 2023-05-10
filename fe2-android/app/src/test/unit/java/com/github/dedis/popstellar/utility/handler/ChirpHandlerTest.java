@@ -71,7 +71,8 @@ public class ChirpHandlerTest {
     MockitoAnnotations.openMocks(this);
     Context context = ApplicationProvider.getApplicationContext();
     appDatabase = AppDatabaseModuleHelper.getAppDatabase(context);
-    LAORepository laoRepo = new LAORepository(appDatabase);
+    LAORepository laoRepo =
+        new LAORepository(appDatabase, ApplicationProvider.getApplicationContext());
     laoRepo.updateLao(LAO);
     handler = new ChirpHandler(laoRepo, socialMediaRepo);
   }

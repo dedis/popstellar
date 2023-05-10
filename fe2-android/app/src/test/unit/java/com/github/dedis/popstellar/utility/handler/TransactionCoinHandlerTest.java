@@ -107,7 +107,8 @@ public class TransactionCoinHandlerTest {
     digitalCashRepo = new DigitalCashRepository();
     DataRegistry dataRegistry =
         DataRegistryModuleHelper.buildRegistry(context, digitalCashRepo, keyManager);
-    MessageRepository messageRepo = new MessageRepository(appDatabase);
+    MessageRepository messageRepo =
+        new MessageRepository(appDatabase, ApplicationProvider.getApplicationContext());
     gson = JsonModule.provideGson(dataRegistry);
     messageHandler = new MessageHandler(messageRepo, dataRegistry);
 

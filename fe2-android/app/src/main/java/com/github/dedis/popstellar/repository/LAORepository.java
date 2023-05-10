@@ -1,16 +1,19 @@
 package com.github.dedis.popstellar.repository;
 
-import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.app.Application;
 
 import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.database.AppDatabase;
 import com.github.dedis.popstellar.repository.database.lao.LAODao;
 import com.github.dedis.popstellar.repository.database.lao.LAOEntity;
+import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -18,6 +21,7 @@ import javax.inject.Singleton;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.BehaviorSubject;
 import io.reactivex.subjects.Subject;
@@ -40,9 +44,24 @@ public class LAORepository {
   private final Map<Channel, BehaviorSubject<List<ConsensusNode>>> channelToNodesSubject =
       new HashMap<>();
 
+  private final CompositeDisposable disposables = new CompositeDisposable();
+
   @Inject
-  public LAORepository(AppDatabase appDatabase) {
-    this.laoDao = appDatabase.laoDao();
+  public LAORepository(AppDatabase appDatabase, Application application) {
+    laoDao = appDatabase.laoDao();
+    BiConsumer<Activity, Application.ActivityLifecycleCallbacks> consumer =
+        (activity, callback) -> {
+          if (activity.isFinishing()) {
+            if (!disposables.isDisposed()) {
+              disposables.dispose();
+            }
+
+            // Unregister the lifecycle observer
+            application.unregisterActivityLifecycleCallbacks(callback);
+          }
+        };
+    application.registerActivityLifecycleCallbacks(
+        ActivityUtils.buildLifecycleCallbackOnDestroy(consumer));
     loadPersistentStorage();
   }
 
@@ -52,28 +71,29 @@ public class LAORepository {
    * necessary. This is also possible memory-wise as usually the number of laos is very limited.
    * This call is asynchronous so it's performed in background not blocking the main thread.
    */
-  @SuppressLint("CheckResult")
   private void loadPersistentStorage() {
-    laoDao
-        .getAllLaos()
-        .subscribeOn(Schedulers.io())
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(
-            laos -> {
-              if (laos.isEmpty()) {
-                Timber.tag(TAG).d("No LAO has been found in the database");
-                return;
-              }
-              laos.forEach(
-                  lao -> {
-                    laoById.put(lao.getId(), lao);
-                    subjectById.put(lao.getId(), BehaviorSubject.createDefault(new LaoView(lao)));
-                  });
-              List<String> laoIds = laos.stream().map(Lao::getId).collect(Collectors.toList());
-              laosSubject.onNext(laoIds);
-              Timber.tag(TAG).d("Loaded all the LAOs from database: %s", laoIds);
-            },
-            err -> Timber.tag(TAG).e(err, "Error loading the LAOs from the database"));
+    disposables.add(
+        laoDao
+            .getAllLaos()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                laos -> {
+                  if (laos.isEmpty()) {
+                    Timber.tag(TAG).d("No LAO has been found in the database");
+                    return;
+                  }
+                  laos.forEach(
+                      lao -> {
+                        laoById.put(lao.getId(), lao);
+                        subjectById.put(
+                            lao.getId(), BehaviorSubject.createDefault(new LaoView(lao)));
+                      });
+                  List<String> laoIds = laos.stream().map(Lao::getId).collect(Collectors.toList());
+                  laosSubject.onNext(laoIds);
+                  Timber.tag(TAG).d("Loaded all the LAOs from database: %s", laoIds);
+                },
+                err -> Timber.tag(TAG).e(err, "Error loading the LAOs from the database")));
   }
 
   /**
@@ -139,12 +159,12 @@ public class LAORepository {
     LAOEntity laoEntity = new LAOEntity(lao.getId(), lao);
 
     // Update the persistent storage in background (replace if already existing)
-    laoDao
-        .insert(laoEntity)
-        .subscribeOn(Schedulers.io())
-        .observeOn(AndroidSchedulers.mainThread())
-        .doOnComplete(() -> Timber.tag(TAG).d("Persisted Lao %s", lao))
-        .subscribe();
+    disposables.add(
+        laoDao
+            .insert(laoEntity)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(() -> Timber.tag(TAG).d("Persisted Lao %s", lao)));
 
     if (laoById.containsKey(lao.getId())) {
       // If the lao already exists, we can push the next update
