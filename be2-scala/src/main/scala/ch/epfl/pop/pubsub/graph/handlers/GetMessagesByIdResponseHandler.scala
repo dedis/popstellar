@@ -19,6 +19,7 @@ import scala.concurrent.Await
 object GetMessagesByIdResponseHandler extends AskPatternConstants {
 
   private final val MAX_RETRY = 5
+  private final val SUCCESS = 0
 
   // This function packs each message into a publish before pushing them into the pipeline
   def responseHandler(
@@ -31,7 +32,7 @@ object GetMessagesByIdResponseHandler extends AskPatternConstants {
           val receivedResponse: Map[Channel, Set[GraphMessage]] = wrapMsgInPublish(resultMap)
           val success: Boolean = passThroughPipeline(receivedResponse, PublishSubscribe.validateRequests(mediatorActorRef, messageRegistry), MAX_RETRY)
           if (success) {
-            Right(JsonRpcResponse(RpcValidator.JSON_RPC_VERSION, new ResultObject(0), None))
+            Right(JsonRpcResponse(RpcValidator.JSON_RPC_VERSION, new ResultObject(SUCCESS), None))
           } else {
             Left(PipelineError(ErrorCodes.SERVER_ERROR.id, "GetMessagesById handler failed to process some messages", None))
           }
@@ -51,44 +52,45 @@ object GetMessagesByIdResponseHandler extends AskPatternConstants {
       validatorFlow: Flow[GraphMessage, GraphMessage, NotUsed],
       remainingAttempts: Int
   )(implicit system: ActorSystem): Boolean = {
-    if (receivedResponse.isEmpty || remainingAttempts <= 0)
+    if (receivedResponse.isEmpty || remainingAttempts <= 0) {
       return receivedResponse.isEmpty
+    }
 
     var failedMessages: Map[Channel, Set[GraphMessage]] = Map.empty
     receivedResponse.foreach {
       case (channel, messagesSet) =>
-        val (failedMsgSet, errListPair) = messageThroughPipeline(validatorFlow, messagesSet)
-        if (failedMsgSet.nonEmpty) {
-          failedMessages += channel -> failedMsgSet
-        }
-        // only log a during last attempt
-        if (remainingAttempts == 1 && errListPair.nonEmpty) {
-          println("Errors: " + errListPair.map(pair => pair._1.toString + "\n On:\n" + prettyPrinter(pair._2)))
+        val failedMessageMap = messagesThroughPipeline(validatorFlow, messagesSet)
+        if (failedMessageMap.nonEmpty) {
+          failedMessages += channel -> failedMessageMap.keySet
+          // only log a during last attempt
+          if (remainingAttempts == 1) {
+            println("Errors: " + failedMessageMap.map {
+              case (msg, error) => error.toString + "\n On:\n" + prettyPrinter(msg)
+            })
+          }
         }
     }
 
     passThroughPipeline(failedMessages, validatorFlow, remainingAttempts - 1)
   }
 
-  // Push a set of message through the pipeline
-  private def messageThroughPipeline(
+  // Push a set of message corresponding to one channel through the pipeline
+  private def messagesThroughPipeline(
       validator: Flow[GraphMessage, GraphMessage, NotUsed],
       messageSet: Set[GraphMessage]
-  )(implicit system: ActorSystem): (Set[GraphMessage], List[(PipelineError, GraphMessage)]) = {
-    var failedGraphMessages: Set[GraphMessage] = Set()
-    var errList: List[(PipelineError, GraphMessage)] = Nil
+  )(implicit system: ActorSystem): Map[GraphMessage, PipelineError] = {
+    var failedGraphMessages: Map[GraphMessage, PipelineError] = Map.empty
     messageSet.foreach { message =>
       val singleRun = Source.single(message).via(validator).runWith(Sink.foreach {
         case Left(err: PipelineError) =>
-          failedGraphMessages += message
-          errList ::= err -> message
+          failedGraphMessages += message -> err
 
         case _ => /* Nothing to do */
       })
       Await.ready(singleRun, duration)
     }
 
-    (failedGraphMessages, errList)
+    failedGraphMessages
   }
 
   private def wrapMsgInPublish(map: Map[Channel, Set[Message]]): Map[Channel, Set[GraphMessage]] = {
