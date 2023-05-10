@@ -1,5 +1,6 @@
 import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages';
 import { Hash, ProtocolError } from 'core/objects';
+// import { validateDataObject } from '../../../../core/network/validation';
 
 /**
  * Data sent to authenticate a user
@@ -63,5 +64,18 @@ export class PopchaAuthMsg implements MessageData {
     if (msg.response_mode) {
       this.response_mode = msg.response_mode;
     }
+  }
+
+  public static fromJson(msg: any): PopchaAuthMsg {
+    // TODO: for now now json to validate to
+
+    // const { errors } = validateDataObject(ObjectType.POPCHA, ActionType.AUTH, msg);
+    //
+    // if (errors !== null){
+    //   throw new ProtocolError(`Invalid 'PopchaAuthMsg' received: ${errors}`);
+    // }
+
+    console.log('PopchaAuthMsg.fromJson: ', msg);
+    return new PopchaAuthMsg({ ...msg });
   }
 }

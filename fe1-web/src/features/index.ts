@@ -126,6 +126,7 @@ export function configureFeatures() {
   });
 
   const popchaConfiguration = popcha.configure({
+    messageRegistry: messageRegistry,
     useCurrentLaoId: laoConfiguration.hooks.useCurrentLaoId,
     generateToken: walletConfiguration.functions.generateToken,
   });
