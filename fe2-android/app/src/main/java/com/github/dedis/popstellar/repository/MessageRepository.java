@@ -13,8 +13,7 @@ import com.github.dedis.popstellar.repository.database.message.MessageDao;
 import com.github.dedis.popstellar.repository.database.message.MessageEntity;
 import com.github.dedis.popstellar.utility.ActivityUtils;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Consumer;
 
 import javax.inject.Inject;
@@ -47,7 +46,7 @@ public class MessageRepository {
   @Inject
   public MessageRepository(AppDatabase appDatabase, Application application) {
     messageDao = appDatabase.messageDao();
-    Map<Lifecycle.Event, Consumer<Activity>> consumerMap = new HashMap<>();
+    Map<Lifecycle.Event, Consumer<Activity>> consumerMap = new EnumMap<>(Lifecycle.Event.class);
     consumerMap.put(
         Lifecycle.Event.ON_DESTROY,
         activity -> {

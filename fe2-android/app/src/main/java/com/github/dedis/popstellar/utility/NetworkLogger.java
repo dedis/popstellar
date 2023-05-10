@@ -13,7 +13,7 @@ import androidx.preference.PreferenceManager;
 import com.github.dedis.popstellar.R;
 
 import java.time.Clock;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
@@ -67,7 +67,7 @@ public class NetworkLogger extends Timber.Tree {
             .getString(context.getString(R.string.settings_server_url_key), ""));
 
     // Register the callback for a graceful shutdown
-    Map<Lifecycle.Event, Consumer<Activity>> consumerMap = new HashMap<>();
+    Map<Lifecycle.Event, Consumer<Activity>> consumerMap = new EnumMap<>(Lifecycle.Event.class);
     consumerMap.put(Lifecycle.Event.ON_DESTROY, activity -> closeWebSocket());
     Consumer<Activity> saverConsumer =
         activity -> {

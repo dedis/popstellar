@@ -51,7 +51,7 @@ public class LAORepository {
   @Inject
   public LAORepository(AppDatabase appDatabase, Application application) {
     laoDao = appDatabase.laoDao();
-    Map<Lifecycle.Event, Consumer<Activity>> consumerMap = new HashMap<>();
+    Map<Lifecycle.Event, Consumer<Activity>> consumerMap = new EnumMap<>(Lifecycle.Event.class);
     consumerMap.put(
         Lifecycle.Event.ON_DESTROY,
         activity -> {
