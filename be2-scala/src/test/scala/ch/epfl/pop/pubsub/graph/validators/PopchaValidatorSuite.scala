@@ -1,34 +1,95 @@
 package ch.epfl.pop.pubsub.graph.validators
 
-import ch.epfl.pop.pubsub.AskPatternConstants
+import akka.actor.{Actor, ActorRef, ActorSystem, Props}
+import akka.pattern.AskableActorRef
+import akka.testkit.TestKit
+import akka.util.Timeout
+import ch.epfl.pop.model.objects.{LaoData, PrivateKey, PublicKey}
 import ch.epfl.pop.pubsub.graph.{GraphMessage, PipelineError}
-import org.scalatest.funsuite.{AnyFunSuite => FunSuite}
+import ch.epfl.pop.pubsub.{AskPatternConstants, MessageRegistry, PubSubMediator}
+import ch.epfl.pop.storage.{DbActor, InMemoryStorage}
+import org.scalatest.BeforeAndAfterAll
+import org.scalatest.funsuite.{AnyFunSuiteLike => FunSuiteLike}
 import org.scalatest.matchers.should.Matchers
-import util.examples.JsonRpcRequestExample.{AUTHENTICATE_INVALID_CHANNEL_RPC, AUTHENTICATE_INVALID_RESPONSE_MODE_RPC, AUTHENTICATE_INVALID_SIGNATURE_RPC, AUTHENTICATE_OTHER_RESPONSE_MODE_RPC, AUTHENTICATE_RPC}
+import util.examples.JsonRpcRequestExample._
+import util.examples.MessageExample
 
-class PopchaValidatorSuite extends FunSuite with Matchers with AskPatternConstants {
+import java.io.File
+import java.util.concurrent.TimeUnit
+import scala.reflect.io.Directory
+
+class PopchaValidatorSuite extends TestKit(ActorSystem("electionValidatorTestActorSystem")) with FunSuiteLike
+    with Matchers with BeforeAndAfterAll with AskPatternConstants {
+
+  final val DB_TEST_FOLDER: String = "databasePopchaTest"
+
+  // Implicit for system actors
+  implicit val timeout: Timeout = Timeout(1, TimeUnit.SECONDS)
+
+  private val userIdentifier = MessageExample.PUBLIC_KEY
+  private val otherUser = PublicKey(MessageExample.SEED)
+  private val laoSeed = MessageExample.SEED
+
+  private val laoDataWithUser = LaoData(userIdentifier, List(userIdentifier), PrivateKey(laoSeed), PublicKey(laoSeed), List())
+  private val laoDataWithoutUser = LaoData(otherUser, List(otherUser), PrivateKey(laoSeed), PublicKey(laoSeed), List())
+
+  override def afterAll(): Unit = {
+    // Stops the testKit
+    TestKit.shutdownActorSystem(system)
+
+    // Deletes the test database
+    val directory = new Directory(new File(DB_TEST_FOLDER))
+    directory.deleteRecursively()
+  }
+
+  private def setupMockDB(includeUser: Boolean): AskableActorRef = {
+    val laoDataToSend: LaoData = if (includeUser) laoDataWithUser else laoDataWithoutUser
+    val dbActorMock = Props(new Actor() {
+      override def receive: Receive = {
+        case DbActor.ReadLaoData(_) =>
+          sender() ! DbActor.DbActorReadLaoDataAck(laoDataToSend)
+      }
+    })
+    system.actorOf(dbActorMock)
+  }
+
+  private val mockDBWithUser: AskableActorRef = setupMockDB(true)
+
+  private val mockDBWithoutUser: AskableActorRef = setupMockDB(false)
+
   test("Authenticate works") {
-    val message: GraphMessage = PopchaValidator.validateAuthenticateRequest(AUTHENTICATE_RPC)
+    val dbActorRef = mockDBWithUser
+    val message: GraphMessage = new PopchaValidator(dbActorRef).validateAuthenticateRequest(AUTHENTICATE_RPC)
     message should equal(Right(AUTHENTICATE_RPC))
   }
 
   test("Authenticate works with other response mode") {
-    val message: GraphMessage = PopchaValidator.validateAuthenticateRequest(AUTHENTICATE_OTHER_RESPONSE_MODE_RPC)
+    val dbActorRef = mockDBWithUser
+    val message: GraphMessage = new PopchaValidator(dbActorRef).validateAuthenticateRequest(AUTHENTICATE_OTHER_RESPONSE_MODE_RPC)
     message should equal(Right(AUTHENTICATE_OTHER_RESPONSE_MODE_RPC))
   }
 
   test("Authenticate with wrong channel fails") {
-    val message: GraphMessage = PopchaValidator.validateAuthenticateRequest(AUTHENTICATE_INVALID_CHANNEL_RPC)
+    val dbActorRef = mockDBWithUser
+    val message: GraphMessage = new PopchaValidator(dbActorRef).validateAuthenticateRequest(AUTHENTICATE_INVALID_CHANNEL_RPC)
     message shouldBe a[Left[_, PipelineError]]
   }
 
   test("Authenticate with wrong signature fails") {
-    val message: GraphMessage = PopchaValidator.validateAuthenticateRequest(AUTHENTICATE_INVALID_SIGNATURE_RPC)
+    val dbActorRef = mockDBWithUser
+    val message: GraphMessage = new PopchaValidator(dbActorRef).validateAuthenticateRequest(AUTHENTICATE_INVALID_SIGNATURE_RPC)
     message shouldBe a[Left[_, PipelineError]]
   }
 
   test("Authenticate with wrong response mode fails") {
-    val message: GraphMessage = PopchaValidator.validateAuthenticateRequest(AUTHENTICATE_INVALID_RESPONSE_MODE_RPC)
+    val dbActorRef = mockDBWithUser
+    val message: GraphMessage = new PopchaValidator(dbActorRef).validateAuthenticateRequest(AUTHENTICATE_INVALID_RESPONSE_MODE_RPC)
+    message shouldBe a[Left[_, PipelineError]]
+  }
+
+  test("Authenticate with user not in last lao's rollcall fails") {
+    val dbActorRef = mockDBWithoutUser
+    val message: GraphMessage = new PopchaValidator(dbActorRef).validateAuthenticateRequest(AUTHENTICATE_INVALID_CHANNEL_RPC)
     message shouldBe a[Left[_, PipelineError]]
   }
 }

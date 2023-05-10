@@ -21,9 +21,8 @@ import util.examples.socialMedia.AddReactionExamples._
 import util.examples.socialMedia.DeleteChirpExamples._
 import util.examples.socialMedia.DeleteReactionExamples._
 
-/**
- * Holds json rpc response examples of various kinds for testing purpose in validators' test suites
- */
+/** Holds json rpc response examples of various kinds for testing purpose in validators' test suites
+  */
 object JsonRpcRequestExample {
 
   private final val rpc: String = "rpc"

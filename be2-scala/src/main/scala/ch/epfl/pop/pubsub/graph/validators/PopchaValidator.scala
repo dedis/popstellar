@@ -6,22 +6,22 @@ import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.popcha.Authenticate
 import ch.epfl.pop.model.objects.{Base64Data, Channel, Hash, PublicKey, Signature}
 import ch.epfl.pop.pubsub.graph.validators.CoinValidator.validationErrorNoMessage
-import ch.epfl.pop.pubsub.graph.validators.MessageValidator.extractData
+import ch.epfl.pop.pubsub.graph.validators.MessageValidator.{checkAttendee, extractData}
 import ch.epfl.pop.pubsub.graph.{GraphMessage, PipelineError}
 import ch.epfl.pop.storage.DbActor
 
-/**
- * Validator for Popcha messages' data contents
- */
+/** Validator for Popcha messages' data contents
+  */
 case object PopchaValidator extends MessageDataContentValidator {
 
   private val popchaValidator = new PopchaValidator(DbActor.getInstance)
 
-  /**
-   * Validates a Popcha Authenticate message data content
-   * @param rpcMessage Message received
-   * @return A graph message representing the result of the validation
-   */
+  /** Validates a Popcha Authenticate message data content
+    * @param rpcMessage
+    *   Message received
+    * @return
+    *   A graph message representing the result of the validation
+    */
   def validateAuthenticateRequest(rpcMessage: JsonRpcRequest): GraphMessage = popchaValidator.validateAuthenticateRequest(rpcMessage)
 }
 sealed class PopchaValidator(dbActorRef: => AskableActorRef) extends MessageDataContentValidator {
@@ -36,8 +36,14 @@ sealed class PopchaValidator(dbActorRef: => AskableActorRef) extends MessageData
         for {
           _ <- checkResponseMode(rpcMessage, authenticate.responseMode, validationError(s"Invalid response mode ${authenticate.responseMode}"))
           _ <- checkChannelName(rpcMessage, channel, laoId, validationError(s"Incorrect channel $channel for lao $laoId"))
-          _ <- checkIdentifierProof(rpcMessage, authenticate.identifier, authenticate.identifierProof, authenticate.nonce,
-            validationError("Failed to verify the identifier proof with the given identifier/nonce pair"))
+          _ <- checkAttendee(rpcMessage, sender, channel, dbActorRef, validationError(s"User doesn't belong to the requested lao $laoId"))
+          _ <- checkIdentifierProof(
+            rpcMessage,
+            authenticate.identifier,
+            authenticate.identifierProof,
+            authenticate.nonce,
+            validationError("Failed to verify the identifier proof with the given identifier/nonce pair")
+          )
           result <- checkNoDuplicateIdentifiers(rpcMessage, sender, authenticate.identifier, validationError("An identifier is already paired with this user token"))
         } yield result
 
@@ -60,8 +66,7 @@ sealed class PopchaValidator(dbActorRef: => AskableActorRef) extends MessageData
       Left(error)
   }
 
-  private def checkIdentifierProof(rpcMessage: JsonRpcMessage, identifier: PublicKey, identifierProof: Signature, nonce: String,
-                           error: PipelineError): GraphMessage = {
+  private def checkIdentifierProof(rpcMessage: JsonRpcMessage, identifier: PublicKey, identifierProof: Signature, nonce: String, error: PipelineError): GraphMessage = {
     val verified = identifierProof.verify(identifier, Base64Data.encode(nonce))
     if (verified)
       Right(rpcMessage)
