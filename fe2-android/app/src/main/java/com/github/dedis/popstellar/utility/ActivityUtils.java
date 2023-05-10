@@ -20,7 +20,7 @@ import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 
 import java.security.GeneralSecurityException;
 import java.util.*;
-import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -69,6 +69,7 @@ public class ActivityUtils {
       throws GeneralSecurityException {
     String serverAddress = networkManager.getCurrentUrl();
     if (serverAddress == null) {
+      Timber.tag(TAG).d("No persisted core data found!");
       return null;
     }
 
@@ -97,7 +98,8 @@ public class ActivityUtils {
                 Timber.tag(TAG)
                     .d(
                         "Persisted seed length: %d, address: %s, subscriptions: %s",
-                        seed.length, serverAddress, subscriptions));
+                        seed.length, serverAddress, subscriptions),
+            err -> Timber.tag(TAG).e(err, "Error persisting the core data"));
   }
 
   /**
@@ -128,7 +130,7 @@ public class ActivityUtils {
    * @return the lifecycle callback
    */
   public static Application.ActivityLifecycleCallbacks buildLifecycleCallbackOnDestroy(
-      BiConsumer<Activity, Application.ActivityLifecycleCallbacks> consumer) {
+      Consumer<Activity> consumer) {
     return new Application.ActivityLifecycleCallbacks() {
       @Override
       public void onActivityCreated(
@@ -164,7 +166,7 @@ public class ActivityUtils {
 
       @Override
       public void onActivityDestroyed(@NonNull Activity activity) {
-        consumer.accept(activity, this);
+        consumer.accept(activity);
       }
     };
   }

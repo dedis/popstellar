@@ -13,14 +13,13 @@ import com.github.dedis.popstellar.utility.ActivityUtils;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.exceptions.Exceptions;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
@@ -46,15 +45,10 @@ public class MessageRepository {
   @Inject
   public MessageRepository(AppDatabase appDatabase, Application application) {
     messageDao = appDatabase.messageDao();
-    BiConsumer<Activity, Application.ActivityLifecycleCallbacks> consumer =
-        (activity, callback) -> {
-          if (activity.isFinishing()) {
-            if (!disposables.isDisposed()) {
-              disposables.dispose();
-            }
-
-            // Unregister the lifecycle observer
-            application.unregisterActivityLifecycleCallbacks(callback);
+    Consumer<Activity> consumer =
+        (activity) -> {
+          if (!disposables.isDisposed()) {
+            disposables.dispose();
           }
         };
     application.registerActivityLifecycleCallbacks(
@@ -80,7 +74,7 @@ public class MessageRepository {
                                 msg.getContent() == null
                                     ? MessageGeneral.emptyMessage()
                                     : msg.getContent())),
-                Exceptions::propagate));
+                err -> Timber.tag(TAG).e(err, "Error loading message repository cache")));
   }
 
   public MessageGeneral getMessage(MessageID messageID) {

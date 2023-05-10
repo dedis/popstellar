@@ -13,7 +13,7 @@ import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -49,15 +49,10 @@ public class LAORepository {
   @Inject
   public LAORepository(AppDatabase appDatabase, Application application) {
     laoDao = appDatabase.laoDao();
-    BiConsumer<Activity, Application.ActivityLifecycleCallbacks> consumer =
-        (activity, callback) -> {
-          if (activity.isFinishing()) {
-            if (!disposables.isDisposed()) {
-              disposables.dispose();
-            }
-
-            // Unregister the lifecycle observer
-            application.unregisterActivityLifecycleCallbacks(callback);
+    Consumer<Activity> consumer =
+        (activity) -> {
+          if (!disposables.isDisposed()) {
+            disposables.dispose();
           }
         };
     application.registerActivityLifecycleCallbacks(
@@ -164,7 +159,9 @@ public class LAORepository {
             .insert(laoEntity)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(() -> Timber.tag(TAG).d("Persisted Lao %s", lao)));
+            .subscribe(
+                () -> Timber.tag(TAG).d("Persisted Lao %s", lao),
+                err -> Timber.tag(TAG).e(err, "Error persisting Lao %s", lao)));
 
     if (laoById.containsKey(lao.getId())) {
       // If the lao already exists, we can push the next update
@@ -189,6 +186,8 @@ public class LAORepository {
    */
   public void clearRepository() {
     Timber.tag(TAG).d("Clearing LAORepository");
+    laoById.clear();
+    subjectById.clear();
     laosSubject.onNext(new ArrayList<>());
   }
 
