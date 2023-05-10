@@ -4,7 +4,7 @@ Test file for authentication.py
 from werkzeug.datastructures import MultiDict
 from time import time
 
-import authentication
+from src import authentication
 
 
 class TestQuery:
@@ -17,7 +17,7 @@ class TestQuery:
                                           "custom_client_id")
         generated_nonce = list(authentication.login_nonces.keys())[0]
         reference = "https://server.example/authorize?response_mode=query" \
-                    "&response_type=id_token+token&client_id" \
+                    "&response_type=id_token&client_id" \
                     "=custom_client_id&redirect_uri=https%3A%2F%2Fserver" \
                     ".example%2Fcb&scope=openid+profile&login_hint" \
                     f"=custom_lao_id&nonce={generated_nonce}"
@@ -57,7 +57,7 @@ class TestAuthenticationResponse:
         authentication.login_nonces["n0nc3"] = ("https://server.example.com",
                                                 time())
         assert (authentication.validate_args(self.args, "cID122dw",
-                                            self.pub_key)
+                                             self.pub_key)
                 == 'ppid12564@https://server.example.com')
 
     def test_validate_args_fails_if_a_required_arg_is_missing(self):
