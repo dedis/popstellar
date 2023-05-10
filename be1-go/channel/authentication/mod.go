@@ -177,6 +177,7 @@ func (c *Channel) auhenticateUser(msg message.Message, msgData interface{},
 	// verify signatures and validity of the pop Token.
 	err := c.verifyAuthMessage(msg, *data)
 	if err != nil {
+		c.log.Err(err).Msg("Error: invalid authentication messsage received")
 		return xerrors.Errorf("failed to verify add chirp message: %v", err)
 	}
 
@@ -191,6 +192,7 @@ func (c *Channel) auhenticateUser(msg message.Message, msgData interface{},
 	//  ws://popcha.example/lao_id/client_id/nonce
 	popChaWsURL := url.URL{Scheme: "ws", Host: data.PopchaAddress, Path: popChaPath}
 
+	c.log.Info().Msg("Sending the parameters to the webpage websocket")
 	// instantiate connection with the popcha authorization server
 	conn, _, err := websocket.DefaultDialer.Dial(popChaWsURL.String(), nil)
 	if err != nil {
@@ -238,6 +240,9 @@ func loadRSAKeys() (*rsa.PrivateKey, *rsa.PublicKey, error) {
 
 // constructRedirectURIParams computes the redirect URI given the authentication message
 func constructRedirectURIParams(c *Channel, data *messagedata.AuthenticateUser) (string, error) {
+
+	c.log.Info().Msg("Constructing the URI Parameters")
+
 	sk, _, err := loadRSAKeys()
 	if err != nil {
 		return "", xerrors.Errorf("error while parsing RSA keys: %v", err)
@@ -249,8 +254,10 @@ func constructRedirectURIParams(c *Channel, data *messagedata.AuthenticateUser) 
 	// add the ppid entry for tracking the given identifier
 	c.addPPIDEntry(identifier(data.Identifier), identifier(ppid))
 
+	c.log.Info().Msg("Signing the JWT Token")
 	idTokenString, err := createJWTString(data.PopchaAddress, ppid, data.ClientID, data.Nonce, sk)
 	if err != nil {
+		c.log.Err(err).Msg("Error while creating the JWT token")
 		return "", xerrors.Errorf("Error while creating JWT token: %v", err)
 	}
 
