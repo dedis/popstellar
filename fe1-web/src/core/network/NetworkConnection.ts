@@ -122,7 +122,14 @@ export class NetworkConnection {
       // dead. this signals the rest of the class to ignore
       // any further data that is received
       this.alive = false;
-      this.disconnect();
+
+      // this.ws might not be set yet
+      if (this.ws) {
+        this.ws.close();
+      }
+      if (this.onConnectionDeathCallback) {
+        this.onConnectionDeathCallback();
+      }
 
       if (onInitialOpenTimeout) {
         onInitialOpenTimeout();
@@ -158,13 +165,13 @@ export class NetworkConnection {
     onConnectionDeathCallback: () => void,
     websocketConnectionTimeout?: number,
     websocketMessageTimeout?: number,
-  ): Promise<NetworkConnection> {
-    return new Promise((resolve, reject) => {
+  ): Promise<[NetworkConnection, NetworkError | null]> {
+    return new Promise((resolve) => {
       const nc: NetworkConnection = new NetworkConnection(
         address,
         handler,
-        () => resolve(nc),
-        () => reject(new NetworkError(`Connecting to ${address} timed out.`)),
+        () => resolve([nc, null]),
+        () => resolve([nc, new NetworkError(`Connecting to ${address} timed out.`)]),
         onConnectionDeathCallback,
         websocketConnectionTimeout,
         websocketMessageTimeout,
@@ -197,6 +204,10 @@ export class NetworkConnection {
           resolve();
           clearTimeout(connectionTimeout);
         };
+
+        // reset state
+        this.alive = true;
+        this.closeIntent = false;
         this.ws = this.establishConnection(this.address);
       });
     }
@@ -531,7 +542,7 @@ export class NetworkConnection {
         } else {
           // the connection broke for good
           reject(
-            new NetworkConnection(
+            new NetworkError(
               `Connection broke for good and cannot re-established in the near future`,
             ),
           );
