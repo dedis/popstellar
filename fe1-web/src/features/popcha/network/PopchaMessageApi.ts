@@ -15,7 +15,7 @@ import { PopchaAuthMsg } from './messages/PopchaAuthMsg';
  * @param state state
  * @param response_mode response mode (optional) ('query' or 'fragment')
  * @param laoId id of the lao
- * @param generateToken function to generate a long term token
+ * @param generateToken function to deterministically generate a long term token
  * @returns A promise that resolves when the message has been sent
  */
 export const sendPopchaAuthRequest = (

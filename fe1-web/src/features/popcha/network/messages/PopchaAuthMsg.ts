@@ -36,7 +36,7 @@ export class PopchaAuthMsg implements MessageData {
 
     if (!msg.identifier) {
       throw new ProtocolError(
-        "Undefined 'identifier_' parameter encountered during 'PopchaAuthMsg'",
+        "Undefined 'identifier' parameter encountered during 'PopchaAuthMsg'",
       );
     }
     this.identifier = msg.identifier;

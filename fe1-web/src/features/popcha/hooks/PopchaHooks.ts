@@ -6,7 +6,7 @@ import { Hash } from 'core/objects';
 import { POPCHA_FEATURE_IDENTIFIER, PopchaReactContext } from '../interface';
 
 export namespace PopchaHooks {
-  export const usePoPchaContext = (): PopchaReactContext => {
+  export const usePopchaContext = (): PopchaReactContext => {
     const featureContext = useContext(FeatureContext);
 
     if (!(POPCHA_FEATURE_IDENTIFIER in featureContext)) {
@@ -15,8 +15,8 @@ export namespace PopchaHooks {
     return featureContext[POPCHA_FEATURE_IDENTIFIER] as PopchaReactContext;
   };
 
-  export const useCurrentLaoId = () => usePoPchaContext().useCurrentLaoId();
+  export const useCurrentLaoId = () => usePopchaContext().useCurrentLaoId();
 
   export const useGenerateToken = (laoId: Hash, clientId: Hash | undefined) =>
-    usePoPchaContext().generateToken(laoId, clientId);
+    usePopchaContext().generateToken(laoId, clientId);
 }

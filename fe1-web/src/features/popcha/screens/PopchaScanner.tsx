@@ -85,7 +85,7 @@ const PopchaScanner = () => {
     }
 
     // Check if the response respects openid standard
-    if (urlArg.get('response_type') !== 'id_token token') {
+    if (urlArg.get('response_type') !== 'id_token') {
       showErrorMessage('Invalid response type');
       return false;
     }

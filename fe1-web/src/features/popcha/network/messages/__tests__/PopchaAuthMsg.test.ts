@@ -1,4 +1,5 @@
-import { Hash, ProtocolError } from '../../../../../core/objects';
+import { Hash, ProtocolError } from 'core/objects';
+
 import { PopchaAuthMsg } from '../PopchaAuthMsg';
 
 const CLIENT_ID = 'client-id';

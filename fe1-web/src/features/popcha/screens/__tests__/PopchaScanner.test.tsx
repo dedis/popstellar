@@ -31,7 +31,7 @@ const mockClientId = 'mockClientId';
 const mockRedirectUri = 'mockRedirectUri';
 const mockLoginHint = mockLaoId.toString();
 const mockNonce = 'mockNonce';
-const mockResponseType = 'id_token token';
+const mockResponseType = 'id_token';
 const mockScope = 'openid profile';
 
 const mockUrl = new URL('https://valid2.server.example:8000');
@@ -65,12 +65,12 @@ const testInvalidUrl = async (url: string) => {
 describe('Popcha scanner', () => {
   describe('scanner renders correctly', () => {
     it('closed scanner renders correctly', () => {
-      const component = render(
+      const { toJSON } = render(
         <FeatureContext.Provider value={contextValue}>
           <PopchaScanner />
         </FeatureContext.Provider>,
-      ).toJSON();
-      expect(component).toMatchSnapshot();
+      );
+      expect(toJSON()).toMatchSnapshot();
     });
 
     it('opened scanner renders correctly', () => {
