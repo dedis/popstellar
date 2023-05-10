@@ -84,7 +84,7 @@ public class MeetingHandlerTest {
     meetingRepo = new MeetingRepository();
 
     DataRegistry dataRegistry =
-        DataRegistryModuleHelper.buildRegistry(context, laoRepo, keyManager, meetingRepo);
+        DataRegistryModuleHelper.buildRegistry(laoRepo, keyManager, meetingRepo);
     MessageRepository messageRepo =
         new MessageRepository(appDatabase, ApplicationProvider.getApplicationContext());
     gson = JsonModule.provideGson(dataRegistry);

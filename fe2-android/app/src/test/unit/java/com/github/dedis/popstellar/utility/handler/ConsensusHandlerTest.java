@@ -98,8 +98,7 @@ public class ConsensusHandlerTest {
     when(messageSender.subscribe(any())).then(args -> Completable.complete());
 
     laoRepo = new LAORepository(appDatabase, ApplicationProvider.getApplicationContext());
-    DataRegistry dataRegistry =
-        DataRegistryModuleHelper.buildRegistry(context, laoRepo, keyManager);
+    DataRegistry dataRegistry = DataRegistryModuleHelper.buildRegistry(laoRepo, keyManager);
     MessageRepository messageRepo =
         new MessageRepository(appDatabase, ApplicationProvider.getApplicationContext());
     gson = JsonModule.provideGson(dataRegistry);

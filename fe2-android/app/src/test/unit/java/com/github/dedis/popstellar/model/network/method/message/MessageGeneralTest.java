@@ -1,6 +1,5 @@
 package com.github.dedis.popstellar.model.network.method.message;
 
-import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.github.dedis.popstellar.di.DataRegistryModuleHelper;
@@ -28,9 +27,7 @@ import static org.junit.Assert.assertEquals;
 @RunWith(AndroidJUnit4.class)
 public class MessageGeneralTest {
 
-  private static final Gson GSON =
-      JsonModule.provideGson(
-          DataRegistryModuleHelper.buildRegistry(ApplicationProvider.getApplicationContext()));
+  private static final Gson GSON = JsonModule.provideGson(DataRegistryModuleHelper.buildRegistry());
 
   private static final PublicKey ORGANIZER =
       new PublicKey("Z3DYtBxooGs6KxOAqCWD3ihR8M6ZPBjAmWp_w5VBaws=");

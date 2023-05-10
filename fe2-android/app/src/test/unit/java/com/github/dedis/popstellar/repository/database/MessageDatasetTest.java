@@ -16,6 +16,8 @@ import com.google.gson.Gson;
 import org.junit.*;
 import org.junit.runner.RunWith;
 
+import java.util.ArrayList;
+
 import javax.inject.Inject;
 
 import dagger.hilt.android.testing.HiltAndroidRule;
@@ -50,7 +52,7 @@ public class MessageDatasetTest {
   @Test
   public void insertAndGetTest() {
     MessageID messageID = Base64DataUtils.generateMessageID();
-    Data data = new CreateLao("name", Base64DataUtils.generatePublicKey());
+    Data data = new CreateLao("name", Base64DataUtils.generatePublicKey(), new ArrayList<>());
     MessageGeneral messageGeneral =
         new MessageGeneral(Base64DataUtils.generateKeyPair(), data, gson);
     MessageEntity message = new MessageEntity(messageID, messageGeneral);

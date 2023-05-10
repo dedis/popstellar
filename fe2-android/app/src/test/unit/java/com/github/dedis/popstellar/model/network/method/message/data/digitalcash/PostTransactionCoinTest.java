@@ -1,7 +1,6 @@
 package com.github.dedis.popstellar.model.network.method.message.data.digitalcash;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
-import androidx.test.platform.app.InstrumentationRegistry;
 
 import com.github.dedis.popstellar.di.DataRegistryModuleHelper;
 import com.github.dedis.popstellar.di.JsonModule;
@@ -82,10 +81,7 @@ public class PostTransactionCoinTest {
 
   @Test
   public void jsonValidationTest() {
-    Gson GSON =
-        JsonModule.provideGson(
-            DataRegistryModuleHelper.buildRegistry(
-                InstrumentationRegistry.getInstrumentation().getContext()));
+    Gson GSON = JsonModule.provideGson(DataRegistryModuleHelper.buildRegistry());
     String json = GSON.toJson(POST_TRANSACTION, Data.class);
     JsonUtils.verifyJson("protocol/query/method/message/data/dataPostTransactionCoin.json", json);
     PostTransactionCoin res = GSON.fromJson(json, PostTransactionCoin.class);

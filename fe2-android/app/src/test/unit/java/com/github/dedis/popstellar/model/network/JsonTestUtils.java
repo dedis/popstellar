@@ -19,7 +19,7 @@ public class JsonTestUtils {
   private static Gson GSON;
 
   public static void loadGSON(Context context) {
-    GSON = JsonModule.provideGson(DataRegistryModuleHelper.buildRegistry(context));
+    GSON = JsonModule.provideGson(DataRegistryModuleHelper.buildRegistry());
   }
 
   public static String loadFile(String path) {
