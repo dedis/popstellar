@@ -107,7 +107,7 @@ exports[`Popcha scanner correct behavior when sending request failed request sho
             E
             =
           </Text>
-          <text />
+          <Text />
         </View>
         <View
           style={
@@ -407,7 +407,7 @@ exports[`Popcha scanner correct behavior when sending request failed request sho
             E
             =
           </Text>
-          <text />
+          <Text />
         </View>
         <View
           style={
@@ -707,7 +707,7 @@ exports[`Popcha scanner correct behavior when sending request successful request
             E
             =
           </Text>
-          <text />
+          <Text />
         </View>
         <View
           style={
@@ -1005,7 +1005,7 @@ exports[`Popcha scanner scanner renders correctly closed scanner renders correct
             E
             =
           </Text>
-          <text />
+          <Text />
         </View>
         <View>
           <View
@@ -1254,7 +1254,7 @@ exports[`Popcha scanner scanner renders correctly opened scanner renders correct
             E
             =
           </Text>
-          <text />
+          <Text />
         </View>
         <View
           style={
