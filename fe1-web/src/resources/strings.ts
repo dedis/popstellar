@@ -236,8 +236,10 @@ namespace STRINGS {
   export const election_create_question = 'Question';
   export const election_create_question_placeholder = 'What is your favorite color?';
   export const election_create_option_placeholder = 'Blue';
-  export const election_create_invalid_questions =
-    'All questions must have a title and at least {} different ballot options.';
+  export const election_create_min_one_question = 'At least one question is needed';
+  export const election_create_empty_question = 'A question can not be blank.';
+  export const election_create_invalid_ballot_options =
+    'All questions must have at least {} different ballot options and no blank options.';
   export const election_create_same_questions = 'Two or more questions are the same.';
 
   export const election_create_add_question = 'Add Question';
@@ -283,6 +285,10 @@ namespace STRINGS {
   /* --- Cast Vote Strings --- */
   export const cast_vote = 'Cast Vote';
   export const cast_vote_success = 'Successfully casted vote';
+
+  /* --- Roll-Call default screen Strings --- */
+
+  export const roll_call_attendees = 'Attendees';
 
   /* --- Roll-Call Feature Strings --- */
   export const roll_call_event_name = 'Roll-Call';
@@ -331,6 +337,7 @@ namespace STRINGS {
   export const roll_call_scan_participant_twice = 'Participant already scanned';
   export const roll_call_scan_close = 'Close Roll-Call';
   export const roll_call_scan_close_confirmation = 'Do you confirm to close the roll-call ?';
+  export const roll_call_scan_counter = 'Scanned attendees';
 
   /* --- Roll-call manually add attendee manually Strings --- */
   export const roll_call_add_attendee_manually = 'Add an attendee manually';

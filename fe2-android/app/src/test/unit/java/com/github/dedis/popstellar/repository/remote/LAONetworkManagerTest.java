@@ -1,5 +1,8 @@
 package com.github.dedis.popstellar.repository.remote;
 
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+
 import com.github.dedis.popstellar.di.DataRegistryModuleHelper;
 import com.github.dedis.popstellar.di.JsonModule;
 import com.github.dedis.popstellar.model.network.GenericMessage;
@@ -12,46 +15,65 @@ import com.github.dedis.popstellar.model.network.method.message.data.lao.CreateL
 import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.model.objects.security.KeyPair;
 import com.github.dedis.popstellar.testutils.Base64DataUtils;
-import com.github.dedis.popstellar.utility.error.JsonRPCErrorException;
+import com.github.dedis.popstellar.utility.error.*;
+import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
 import com.github.dedis.popstellar.utility.handler.MessageHandler;
 import com.github.dedis.popstellar.utility.scheduler.TestSchedulerProvider;
+import com.google.gson.Gson;
 import com.tinder.scarlet.WebSocket;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
+import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnit;
 import org.mockito.stubbing.Answer;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.testing.HiltAndroidRule;
+import dagger.hilt.android.testing.HiltAndroidTest;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.observers.TestObserver;
 import io.reactivex.schedulers.TestScheduler;
 import io.reactivex.subjects.BehaviorSubject;
 
+import static com.github.dedis.popstellar.repository.remote.LAONetworkManager.REPROCESSING_DELAY;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-@RunWith(MockitoJUnitRunner.class)
+@HiltAndroidTest
+@RunWith(AndroidJUnit4.class)
 public class LAONetworkManagerTest {
 
   private static final Channel CHANNEL = Channel.ROOT.subChannel("channel");
   private static final KeyPair KEY_PAIR = Base64DataUtils.generateKeyPair();
-  private static final Data DATA = new CreateLao("LaoName", KEY_PAIR.getPublicKey());
+  private static final Data DATA =
+      new CreateLao("LaoName", KEY_PAIR.getPublicKey(), new ArrayList<>());
 
   private final BehaviorSubject<WebSocket.Event> events = BehaviorSubject.create();
   private final BehaviorSubject<GenericMessage> messages = BehaviorSubject.create();
+
+  private final HiltAndroidRule hiltRule = new HiltAndroidRule(this);
+
+  @Rule public RuleChain rule = RuleChain.outerRule(hiltRule).around(MockitoJUnit.testRule(this));
+
+  @Rule public InstantTaskExecutorRule executorRule = new InstantTaskExecutorRule();
+
+  @Inject Gson gson;
 
   @Mock MessageHandler handler;
   @Mock MultiConnection connection;
 
   @Before
   public void setup() {
+    hiltRule.inject();
     when(connection.observeMessage()).thenReturn(messages);
     when(connection.observeConnectionEvents()).thenReturn(events);
 
@@ -93,7 +115,7 @@ public class LAONetworkManagerTest {
 
     // Actual test
     Disposable disposable = networkManager.subscribe(CHANNEL).subscribe();
-    testScheduler.advanceTimeBy(5, TimeUnit.SECONDS);
+    testScheduler.advanceTimeBy(REPROCESSING_DELAY, TimeUnit.SECONDS);
 
     disposable.dispose();
     networkManager.dispose();
@@ -129,7 +151,7 @@ public class LAONetworkManagerTest {
 
     // Actual test
     Disposable disposable = networkManager.unsubscribe(CHANNEL).subscribe();
-    testScheduler.advanceTimeBy(5, TimeUnit.SECONDS);
+    testScheduler.advanceTimeBy(REPROCESSING_DELAY, TimeUnit.SECONDS);
 
     disposable.dispose();
     networkManager.dispose();
@@ -166,7 +188,7 @@ public class LAONetworkManagerTest {
 
     // Actual test
     Disposable disposable = networkManager.publish(KEY_PAIR, CHANNEL, DATA).subscribe();
-    testScheduler.advanceTimeBy(5, TimeUnit.SECONDS);
+    testScheduler.advanceTimeBy(REPROCESSING_DELAY, TimeUnit.SECONDS);
 
     disposable.dispose();
     networkManager.dispose();
@@ -209,7 +231,7 @@ public class LAONetworkManagerTest {
                   throw new IllegalAccessException("The subscription should have failed.");
                 },
                 err -> assertTrue(err instanceof JsonRPCErrorException));
-    testScheduler.advanceTimeBy(5, TimeUnit.SECONDS);
+    testScheduler.advanceTimeBy(REPROCESSING_DELAY, TimeUnit.SECONDS);
 
     disposable.dispose();
     networkManager.dispose();
@@ -234,7 +256,7 @@ public class LAONetworkManagerTest {
             new HashSet<>());
 
     networkManager.subscribe(CHANNEL).subscribe(); // First subscribe
-    testScheduler.advanceTimeBy(5, TimeUnit.SECONDS);
+    testScheduler.advanceTimeBy(REPROCESSING_DELAY, TimeUnit.SECONDS);
 
     verify(connection).sendMessage(any(Subscribe.class));
     verify(connection).sendMessage(any(Catchup.class));
@@ -251,7 +273,7 @@ public class LAONetworkManagerTest {
 
     // Push Connection open event
     events.onNext(new WebSocket.Event.OnConnectionOpened<>(mock(WebSocket.class)));
-    testScheduler.advanceTimeBy(5, TimeUnit.SECONDS);
+    testScheduler.advanceTimeBy(REPROCESSING_DELAY, TimeUnit.SECONDS);
 
     networkManager.dispose();
 
@@ -324,5 +346,56 @@ public class LAONetworkManagerTest {
     verify(connection).observeConnectionEvents();
     verify(connection).close();
     verifyNoMoreInteractions(connection);
+  }
+
+  @Test
+  public void identifyUnrecoverableFailures()
+      throws UnknownElectionException, UnknownRollCallException, UnknownLaoException,
+          DataHandlingException, NoRollCallException {
+    TestSchedulerProvider schedulerProvider = new TestSchedulerProvider();
+    TestScheduler testScheduler = schedulerProvider.getTestScheduler();
+
+    // Mock to be not able to handle any broadcast message
+    doThrow(UnknownLaoException.class)
+        .when(handler)
+        .handleMessage(any(), any(), any(MessageGeneral.class));
+
+    LAONetworkManager networkManager =
+        new LAONetworkManager(
+            handler,
+            connection,
+            JsonModule.provideGson(DataRegistryModuleHelper.buildRegistry()),
+            schedulerProvider,
+            new HashSet<>());
+
+    Broadcast broadcast = new Broadcast(CHANNEL, new MessageGeneral(KEY_PAIR, DATA, gson));
+
+    Answer<?> answer =
+        args -> {
+          messages.onNext(broadcast);
+          return null;
+        };
+    doAnswer(answer).when(connection).sendMessage(any());
+
+    // Actual test
+    Disposable disposable = networkManager.publish(KEY_PAIR, CHANNEL, DATA).subscribe();
+    testScheduler.advanceTimeBy(REPROCESSING_DELAY, TimeUnit.SECONDS);
+
+    // Now as the message fails to be handled it should be placed in unprocessed
+    // Every 5 seconds reprocessing takes place
+    for (int i = 0; i < LAONetworkManager.MAX_REPROCESSING; i++) {
+      testScheduler.advanceTimeBy(REPROCESSING_DELAY, TimeUnit.SECONDS);
+    }
+
+    // After MAX_REPROCESSING times check the message is discarded permanently
+    // Create a TestObserver for the unprocessed subject
+    TestObserver<GenericMessage> testObserver = networkManager.testUnprocessed();
+
+    // Assert that the TestObserver has received no values
+    testObserver.assertNoValues();
+
+    testObserver.dispose();
+    disposable.dispose();
+    networkManager.dispose();
   }
 }

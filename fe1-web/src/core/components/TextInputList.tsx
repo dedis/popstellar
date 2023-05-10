@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { useState } from 'react';
+import React, { useMemo } from 'react';
 import { View } from 'react-native';
 
 import RemovableTextInput from './RemovableTextInput';
@@ -12,68 +12,38 @@ import RemovableTextInput from './RemovableTextInput';
  * Output: Array of the unique, nonempty values inputted by the user
  */
 
-const TextInputList = (props: IPropTypes) => {
-  const { onChange, placeholder, testID } = props;
-  const [idCount, setIdCount] = useState(1);
-  const [userInputs, setUserInputs] = useState([{ id: 0, value: '' }]);
-
-  const updateParent = (options: { id: number; value: string }[]) => {
-    // Gets the distinct options which are not empty ('')
-    const distinctValues = [...new Set(options.map((option) => option.value))].filter(
-      (value) => value !== '',
-    );
-    // Updates the values in the parent component
-    onChange(distinctValues);
-  };
-
-  const addInput = () => {
-    // Makes sure each component has a unique ID
-    const newOption = { id: idCount, value: '' };
-    const newOptions = [...userInputs, newOption];
-    setUserInputs(newOptions);
-    setIdCount(idCount + 1);
-  };
-
-  const updateInput = (id: number, value: string) => {
-    const optionIndex = userInputs.findIndex((option) => option.id === id);
-    userInputs[optionIndex] = { id: id, value: value };
-    setUserInputs(userInputs);
-    updateParent(userInputs);
-    // If the currently modified text field is the last in the list
-    // then it adds a new text input field below
-    if (userInputs.filter((option) => option.id > id).length === 0) {
-      addInput();
-    }
-  };
-
-  const removeInput = (id: number) => {
-    // This makes sure that when the last textInput is empty, it can't be deleted
-    if (userInputs.filter((option) => option.id > id).length !== 0) {
-      // This removes the option
-      const filteredOptions = userInputs.filter((option) => option.id !== id);
-      setUserInputs(filteredOptions);
-      updateParent(filteredOptions);
-    }
-  };
+const TextInputList = ({ values, onChange, placeholder, testID }: IPropTypes) => {
+  const displayedValues = useMemo(() => {
+    return [...values, ''];
+  }, [values]);
 
   return (
     <View>
-      {userInputs.map((option, idx) => (
-        <RemovableTextInput
-          onChange={updateInput}
-          onRemove={removeInput}
-          id={option.id}
-          value={option.value}
-          placeholder={placeholder}
-          key={option.id}
-          testID={testID ? `${testID}_option_${idx}` : undefined}
-        />
+      {displayedValues.map((text, idx) => (
+        // FIXME: Do not use index in key
+        // eslint-disable-next-line react/no-array-index-key
+        <View key={idx.toString()}>
+          <RemovableTextInput
+            onChange={(newVal) => {
+              // remove last element of displayedValues which is always ''
+              const newValues = displayedValues.slice(0, -1);
+              newValues[idx] = newVal;
+              onChange(newValues);
+            }}
+            onRemove={() => onChange(values.filter((_, id) => idx !== id))}
+            value={text || ''}
+            isRemovable={idx !== displayedValues.length - 1}
+            placeholder={placeholder}
+            testID={testID ? `${testID}_option_${idx}` : undefined}
+          />
+        </View>
       ))}
     </View>
   );
 };
 
 const propTypes = {
+  values: PropTypes.arrayOf(PropTypes.string.isRequired).isRequired,
   onChange: PropTypes.func.isRequired,
   placeholder: PropTypes.string,
   testID: PropTypes.string,

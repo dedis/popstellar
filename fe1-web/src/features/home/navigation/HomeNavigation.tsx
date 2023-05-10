@@ -1,7 +1,7 @@
 import { createStackNavigator } from '@react-navigation/stack';
 import React, { useMemo } from 'react';
 
-import NavigationPadding from 'core/components/NavigationPadding';
+import ButtonPadding from 'core/components/ButtonPadding';
 import { AppScreen } from 'core/navigation/AppNavigation';
 import { stackScreenOptionsWithHeader } from 'core/navigation/ScreenOptions';
 import { HomeParamList } from 'core/navigation/typing/HomeParamList';
@@ -18,7 +18,7 @@ const homeScreens: HomeFeature.HomeScreen[] = [
     id: STRINGS.navigation_home_home,
     title: STRINGS.home_navigation_title,
     Component: Home,
-    headerLeft: () => <NavigationPadding paddingAmount={1} />,
+    headerLeft: () => <ButtonPadding paddingAmount={1} />,
     headerRight: HomeHeaderRight,
   } as HomeFeature.HomeScreen,
   {

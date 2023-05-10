@@ -130,13 +130,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		go server.ReadPump()
 		go server.WritePump()
 
-		err = s.hub.NotifyNewServer(server)
-		if err != nil {
-			s.log.Err(err).Msg("error while trying to catchup to server")
-
-			http.Error(w, "failed to add socket: "+err.Error(), http.StatusInternalServerError)
-			return
-		}
+		s.hub.NotifyNewServer(server)
 	}
 }
 

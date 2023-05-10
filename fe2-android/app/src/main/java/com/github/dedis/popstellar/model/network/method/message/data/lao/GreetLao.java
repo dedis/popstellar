@@ -48,7 +48,7 @@ public class GreetLao extends Data {
       @NonNull String frontend,
       @NonNull String address,
       @NonNull List<PeerAddress> peers) {
-    MessageValidator.verify().checkBase64(id, "id");
+    MessageValidator.verify().isBase64(id, "id");
     // Checking that the id matches the current lao id is done in the GreetLao handler
     this.id = id;
 

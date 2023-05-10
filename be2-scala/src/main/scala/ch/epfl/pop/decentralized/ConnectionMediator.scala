@@ -31,7 +31,10 @@ final case class ConnectionMediator(
           PublishSubscribe.buildGraph(
             mediatorRef,
             dbActorRef,
-            messageRegistry
+            messageRegistry,
+            monitorRef,
+            self,
+            isServer = true
           )
         )
       )

@@ -44,4 +44,8 @@ public abstract class Event implements Comparable<Event> {
   public boolean isStartPassed() {
     return System.currentTimeMillis() >= getStartTimestampInMillis();
   }
+
+  public boolean isEndPassed() {
+    return System.currentTimeMillis() >= getEndTimestampInMillis();
+  }
 }

@@ -7,7 +7,7 @@ import { createSelector, createSlice, Draft, PayloadAction } from '@reduxjs/tool
 
 import { Hash } from 'core/objects';
 
-import { Election, ElectionState } from '../objects';
+import { Election, ElectionState, EMPTY_QUESTION, QuestionState } from '../objects';
 
 /**
  * Reducer & associated function implementation to store all known elections
@@ -16,11 +16,13 @@ import { Election, ElectionState } from '../objects';
 export interface ElectionReducerState {
   byId: Record<string, ElectionState>;
   allIds: string[];
+  defaultQuestions: QuestionState[];
 }
 
 const initialState: ElectionReducerState = {
   byId: {},
   allIds: [],
+  defaultQuestions: [EMPTY_QUESTION],
 };
 
 export const ELECTION_REDUCER_PATH = 'election';
@@ -60,10 +62,14 @@ const electionSlice = createSlice({
       delete state.byId[electionId];
       state.allIds = state.allIds.filter((id) => id !== electionId);
     },
+    setDefaultQuestions: (state, action: PayloadAction<QuestionState[]>) => {
+      state.defaultQuestions = action.payload;
+    },
   },
 });
 
-export const { addElection, updateElection, removeElection } = electionSlice.actions;
+export const { addElection, updateElection, removeElection, setDefaultQuestions } =
+  electionSlice.actions;
 
 export const getElectionState = (state: any): ElectionReducerState => state[ELECTION_REDUCER_PATH];
 

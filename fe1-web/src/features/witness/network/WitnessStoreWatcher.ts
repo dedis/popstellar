@@ -109,6 +109,8 @@ export const afterMessageProcessingHandler =
  * being called after every dispatch(). Thus it is possible that a
  * message has skipped unprocessedIds and we have to check allIds as well
  * @param store The redux store
+ * @param getCurrentLaoId A function that returns the current LAO id
+ * @param afterProcessingHandler The function to execute
  * @returns The listener that can be passed to store.subscribe()
  */
 export const makeWitnessStoreWatcher = (
@@ -121,6 +123,9 @@ export const makeWitnessStoreWatcher = (
 
   let currentAllIds: string[] = [];
   let currentUnprocessedIds: string[] = [];
+  const laoToWitnessableId: Record<string, string[]> = {};
+  let lastLaoId: Hash | undefined;
+
   return () => {
     const laoId = getCurrentLaoId();
     // we have to be careful with ExtendedMessage.fromState
@@ -135,7 +140,7 @@ export const makeWitnessStoreWatcher = (
 
     const msgState = getMessagesState(state);
     const allIds = msgState?.allIds || [];
-    previousAllIds = currentAllIds || [];
+    previousAllIds = currentAllIds;
     currentAllIds = allIds;
 
     const unprocessedIds = msgState?.unprocessedIds || [];
@@ -152,21 +157,31 @@ export const makeWitnessStoreWatcher = (
       return;
     }
 
-    const messagesToWitness = currentAllIds.filter(
+    let messagesToWitness = currentAllIds.filter(
       (msgId) =>
         !currentUnprocessedIds.includes(msgId) &&
         (!previousAllIds.includes(msgId) || previousUnprocessedIds.includes(msgId)),
     );
-    // get all message ids that are part of currentAllIds
 
-    for (const msgId of messagesToWitness) {
-      const msg = ExtendedMessage.fromState(msgState.byId[msgId]);
-      // The message is witnessed only if it comes from the current lao
-      if (msg.laoId?.valueOf() === laoId.valueOf()) {
-        afterProcessingHandler(msg);
-      } else {
-        currentAllIds = currentAllIds.filter((id) => id !== msgId);
-      }
+    if (laoId !== lastLaoId) {
+      lastLaoId = laoId;
+      messagesToWitness = [...messagesToWitness, ...(laoToWitnessableId[laoId.valueOf()] || [])];
+      laoToWitnessableId[laoId.valueOf()] = [];
     }
+    /*
+      We keep track of the messages that are not in this LaoId
+     */
+    messagesToWitness
+      .map((msgId) => ExtendedMessage.fromState(msgState.byId[msgId]))
+      .forEach((m) => {
+        if (m.laoId?.equals(laoId)) {
+          afterProcessingHandler(m);
+        } else if (m.laoId) {
+          laoToWitnessableId[m.laoId.valueOf()] = [
+            ...(laoToWitnessableId[m.laoId.valueOf()] || []),
+            m.message_id.valueOf(),
+          ];
+        }
+      });
   };
 };

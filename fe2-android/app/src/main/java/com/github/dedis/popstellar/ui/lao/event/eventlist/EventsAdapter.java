@@ -10,13 +10,13 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.dedis.popstellar.R;
-import com.github.dedis.popstellar.model.objects.Election;
-import com.github.dedis.popstellar.model.objects.RollCall;
+import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.event.Event;
 import com.github.dedis.popstellar.model.objects.event.EventType;
 import com.github.dedis.popstellar.ui.lao.LaoActivity;
 import com.github.dedis.popstellar.ui.lao.LaoViewModel;
 import com.github.dedis.popstellar.ui.lao.event.election.fragments.ElectionFragment;
+import com.github.dedis.popstellar.ui.lao.event.meeting.MeetingFragment;
 import com.github.dedis.popstellar.ui.lao.event.rollcall.RollCallFragment;
 
 import org.ocpsoft.prettytime.PrettyTime;
@@ -84,6 +84,8 @@ public abstract class EventsAdapter extends RecyclerView.Adapter<RecyclerView.Vi
       handleElectionContent(eventViewHolder, (Election) event);
     } else if (event.getType().equals(EventType.ROLL_CALL)) {
       handleRollCallContent(eventViewHolder, (RollCall) event);
+    } else if (event.getType().equals(EventType.MEETING)) {
+      handleMeetingContent(eventViewHolder, (Meeting) event);
     }
     eventViewHolder.eventTitle.setText(event.getName());
     handleTimeAndLocation(eventViewHolder, event);
@@ -109,10 +111,23 @@ public abstract class EventsAdapter extends RecyclerView.Adapter<RecyclerView.Vi
                 () -> RollCallFragment.newInstance(rollCall.getPersistentId())));
   }
 
+  private void handleMeetingContent(EventViewHolder eventViewHolder, Meeting meeting) {
+    eventViewHolder.eventIcon.setImageResource(R.drawable.ic_meeting);
+    eventViewHolder.eventCard.setOnClickListener(
+        view ->
+            LaoActivity.setCurrentFragment(
+                activity.getSupportFragmentManager(),
+                R.id.fragment_meeting,
+                () -> MeetingFragment.newInstance(meeting.getId())));
+  }
+
   private void handleTimeAndLocation(EventViewHolder viewHolder, Event event) {
     String location = "";
     if (event instanceof RollCall) {
       location = ", at " + ((RollCall) event).getLocation();
+    }
+    if (event instanceof Meeting && !((Meeting) event).getLocation().isEmpty()) {
+      location = ", at " + ((Meeting) event).getLocation();
     }
     String timeText;
     switch (event.getState()) {

@@ -1,5 +1,7 @@
 package com.github.dedis.popstellar.repository.remote;
 
+import androidx.annotation.VisibleForTesting;
+
 import com.github.dedis.popstellar.model.network.GenericMessage;
 import com.github.dedis.popstellar.model.network.answer.Error;
 import com.github.dedis.popstellar.model.network.answer.*;
@@ -17,12 +19,14 @@ import com.google.gson.Gson;
 import com.tinder.scarlet.WebSocket;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import io.reactivex.Observable;
 import io.reactivex.*;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.observers.TestObserver;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.subjects.Subject;
 import timber.log.Timber;
@@ -32,6 +36,11 @@ public class LAONetworkManager implements MessageSender {
 
   private static final String TAG = LAONetworkManager.class.getSimpleName();
 
+  /** Constants to tune the reprocessing of unhandled messages */
+  public static final int MAX_REPROCESSING = 5;
+
+  public static final int REPROCESSING_DELAY = 5;
+
   private final MessageHandler messageHandler;
   private final MultiConnection multiConnection;
   public final AtomicInteger requestCounter = new AtomicInteger();
@@ -40,6 +49,8 @@ public class LAONetworkManager implements MessageSender {
 
   // A subject that represents unprocessed messages
   private final Subject<GenericMessage> unprocessed = PublishSubject.create();
+  private final ConcurrentHashMap<GenericMessage, Integer> reprocessingCounter =
+      new ConcurrentHashMap<>();
   private final Set<Channel> subscribedChannels;
   private final CompositeDisposable disposables = new CompositeDisposable();
 
@@ -95,7 +106,8 @@ public class LAONetworkManager implements MessageSender {
                 // Packets that could not be processed (maybe due to a reordering),
                 // this is merged into incoming message,
                 // with a delay of 5 seconds to give priority to new messages.
-                unprocessed.delay(5, TimeUnit.SECONDS, schedulerProvider.computation()))
+                unprocessed.delay(
+                    REPROCESSING_DELAY, TimeUnit.SECONDS, schedulerProvider.computation()))
             .filter(Broadcast.class::isInstance) // Filter the Broadcast
             .map(Broadcast.class::cast)
             .subscribeOn(schedulerProvider.newThread())
@@ -199,8 +211,8 @@ public class LAONetworkManager implements MessageSender {
         | UnknownRollCallException
         | NoRollCallException
         | UnknownElectionException e) {
-      Timber.tag(TAG).e(e, "Error while handling received message");
-      unprocessed.onNext(broadcast);
+      Timber.tag(TAG).e(e, "Error while handling received message, will try to reprocess it later");
+      reprocessMessage(broadcast);
     }
   }
 
@@ -246,8 +258,29 @@ public class LAONetworkManager implements MessageSender {
         .subscribeOn(schedulerProvider.io())
         .observeOn(schedulerProvider.mainThread())
         // Add a timeout to automatically dispose of the flow and end with a failure
-        .timeout(5, TimeUnit.SECONDS)
+        .timeout(REPROCESSING_DELAY, TimeUnit.SECONDS)
         .cache();
+  }
+
+  /**
+   * This function distinguishes an unrecoverable failure according to the number of reprocessing
+   * attempts.
+   *
+   * @param message Message failed to be handled to be reprocessed
+   */
+  private void reprocessMessage(GenericMessage message) {
+    // Check that the message hasn't already reprocessed more than the threshold of dropout
+    int count = reprocessingCounter.getOrDefault(message, 0);
+    if (count < MAX_REPROCESSING) {
+      // Increase the counter and reprocess
+      reprocessingCounter.put(message, count + 1);
+      unprocessed.onNext(message);
+    } else {
+      Timber.tag(TAG)
+          .d("Message %s has been reprocessed too many times, it's now dropped", message);
+      // Discard the message
+      reprocessingCounter.remove(message);
+    }
   }
 
   @Override
@@ -259,5 +292,10 @@ public class LAONetworkManager implements MessageSender {
   @Override
   public boolean isDisposed() {
     return disposables.isDisposed();
+  }
+
+  @VisibleForTesting
+  public TestObserver<GenericMessage> testUnprocessed() {
+    return unprocessed.test();
   }
 }

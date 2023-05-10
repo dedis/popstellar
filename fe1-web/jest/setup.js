@@ -13,7 +13,7 @@ jest.mock('@rneui/base/dist/Icon');
 jest.mock('react-blockies', () => 'blockies');
 
 // qr codes are svgs and thus generate huge snapshot files
-jest.mock('core/components/QRCode.tsx', () => 'qrcode');
+jest.mock('react-qr-code', () => 'qrcode');
 
 // make functions return a value independent of the CI locale
 jest.spyOn(Date.prototype, 'toLocaleDateString').mockReturnValue('2022-05-28');

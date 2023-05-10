@@ -33,8 +33,8 @@ Feature: Terminate an election
           "registered_votes": '#(getValidRegisteredVotes)'
         }
       """
-    When frontend.publish(JSON.stringify(validElectionEnd), electionChannel)
-    And json answer = frontend.getBackendResponseWithElectionResults(JSON.stringify(validElectionEnd))
+    When frontend.publish(validElectionEnd, electionChannel)
+    And json answer = frontend.getBackendResponseWithElectionResults(validElectionEnd)
     Then match answer contains ELECTION_RESULTS
     And match frontend.receiveNoMoreResponses() == true
 
@@ -53,10 +53,11 @@ Feature: Terminate an election
           "registered_votes": '#(getValidRegisteredVotes)'
         }
       """
-    When frontend.publish(JSON.stringify(invalidElectionEnd), electionChannel)
-    And json answer = frontend.getBackendResponse(JSON.stringify(invalidElectionEnd))
+    When frontend.publish(invalidElectionEnd, electionChannel)
+    And json answer = frontend.getBackendResponse(invalidElectionEnd)
     Then match answer contains INVALID_MESSAGE_FIELD
     And match frontend.receiveNoMoreResponses() == true
+
   # After having a successful election setup and vote casts, sending an election end
   # message with a wrongly computed registered votes field should return an error form the backend
   Scenario: Sending an election end message with invalid registered votes field should return an error
@@ -72,10 +73,11 @@ Feature: Terminate an election
           "registered_votes": '#(getInvalidRegisteredVotes)'
         }
       """
-    When frontend.publish(JSON.stringify(invalidElectionEnd), electionChannel)
-    And json answer = frontend.getBackendResponse(JSON.stringify(invalidElectionEnd))
+    When frontend.publish(invalidElectionEnd, electionChannel)
+    And json answer = frontend.getBackendResponse(invalidElectionEnd)
     Then match answer contains INVALID_MESSAGE_FIELD
     And match frontend.receiveNoMoreResponses() == true
+
   # After having a successful election setup and vote casts, sending an election end
   # message with a wrongly computed registered votes field should return an error form the backend
   Scenario: Sending an election end message with registered votes field set to valid election setup id should return an error
@@ -91,8 +93,8 @@ Feature: Terminate an election
           "registered_votes": '#(getValidElectionSetupId)'
         }
       """
-    When frontend.publish(JSON.stringify(invalidElectionEnd), electionChannel)
-    And json answer = frontend.getBackendResponse(JSON.stringify(invalidElectionEnd))
+    When frontend.publish(invalidElectionEnd, electionChannel)
+    And json answer = frontend.getBackendResponse(invalidElectionEnd)
     Then match answer contains INVALID_MESSAGE_FIELD
     And match frontend.receiveNoMoreResponses() == true
 
@@ -111,7 +113,7 @@ Feature: Terminate an election
           "registered_votes": '#(getValidRegisteredVotes)'
         }
       """
-    When frontend.publish(JSON.stringify(invalidElectionEnd), electionChannel)
-    And json answer = frontend.getBackendResponse(JSON.stringify(invalidElectionEnd))
+    When frontend.publish(invalidElectionEnd, electionChannel)
+    And json answer = frontend.getBackendResponse(invalidElectionEnd)
     Then match answer contains INVALID_MESSAGE_FIELD
     And match frontend.receiveNoMoreResponses() == true
