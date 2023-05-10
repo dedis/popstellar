@@ -232,7 +232,7 @@ object MessageRegistry {
     // popcha
     register.add(
       (ObjectType.POPCHA, ActionType.AUTHENTICATE),
-      createSchemaVerifier("authenticateUser.json"),
+      createSchemaVerifier("dataAuthenticateUser.json"),
       Authenticate.buildFromJson,
       PopchaValidator.validateAuthenticateRequest,
       PopchaHandler.handleAuthentication
