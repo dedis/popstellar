@@ -62,6 +62,14 @@ export function getReactionChannel(laoIdHash: Hash): Channel {
   return `${ROOT_CHANNEL}/${laoIdHash.valueOf()}/social/reactions`;
 }
 
+/**
+ * Returns the channel popcha channel for authentication of specific LAO
+ * @param laoId - The id of the Lao in which to authenticate
+ */
+export function getPopchaAuthenticationChannel(laoId: Hash): Channel {
+  return `${ROOT_CHANNEL}/${laoId.valueOf()}/authentication`;
+}
+
 /** Returns the last part of the channel which is usually an event id
  * Example:
  * Input: /root/laoID/electionID
