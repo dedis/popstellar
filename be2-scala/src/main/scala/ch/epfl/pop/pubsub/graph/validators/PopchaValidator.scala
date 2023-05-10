@@ -24,6 +24,7 @@ case object PopchaValidator extends MessageDataContentValidator {
     */
   def validateAuthenticateRequest(rpcMessage: JsonRpcRequest): GraphMessage = popchaValidator.validateAuthenticateRequest(rpcMessage)
 }
+
 sealed class PopchaValidator(dbActorRef: => AskableActorRef) extends MessageDataContentValidator {
 
   def validateAuthenticateRequest(rpcMessage: JsonRpcRequest): GraphMessage = {

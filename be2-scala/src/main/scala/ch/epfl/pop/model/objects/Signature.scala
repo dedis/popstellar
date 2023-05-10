@@ -9,13 +9,9 @@ import scala.util.{Success, Try}
   * @param signature
   *   data resulting from an encryption using a private key
   * @note
-  *   Warning: The PrivateKey/PublicKey pair used through the signature process should be generated using Ed25519Sign.KeyPair Usage example (from SignatureSuite.scala): val pair = Ed25519Sign.KeyPair.newKeyPair() val publicKey: PublicKey = PublicKey(Base64Data.encode(pair.getPublicKey)) val privateKey: PrivateKey = PrivateKey(Base64Data.encode(pair.getPrivateKey))
-  *
-  * val data = "EPFL" val dataEncoded = Base64Data.encode(data)
-  *
-  * val signature = privateKey.signData(dataEncoded) val verified = signature.verify(publicKey, dataEncoded)
-  *
-  * verified shouldBe true
+  *   Warning: The PrivateKey/PublicKey pair used through the signature process should be generated using Ed25519Sign.KeyPair.
+  * @example
+  *   For a walk through example, see test "Basic walk through signing works" in SignatureSuite.scala
   */
 final case class Signature(signature: Base64Data) {
 

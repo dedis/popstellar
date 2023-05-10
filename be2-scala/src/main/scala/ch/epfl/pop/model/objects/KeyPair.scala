@@ -1,7 +1,6 @@
 package ch.epfl.pop.model.objects
 
 import ch.epfl.dedis.lib.crypto.Ed25519Pair
-import com.google.crypto.tink.subtle.Ed25519Sign
 
 /** Pair of public/private keys for encrypt/decrypt purpose
   * @param privateKey

@@ -1,12 +1,20 @@
 package ch.epfl.pop.pubsub.graph.handlers
 
-import akka.pattern.AskableActorRef
 import ch.epfl.pop.model.network.JsonRpcRequest
-import ch.epfl.pop.pubsub.AskPatternConstants
 import ch.epfl.pop.pubsub.graph.GraphMessage
 
+/** Handler for Popcha related messages
+  */
 object PopchaHandler extends MessageHandler {
+
+  /** Handles authentication messages
+    * @param rpcMessage
+    *   message received
+    * @return
+    *   a graph message representing the message's state after handling
+    */
   def handleAuthentication(rpcMessage: JsonRpcRequest): GraphMessage = {
+    // TODO: add actual handling
     Right(rpcMessage)
   }
 }
