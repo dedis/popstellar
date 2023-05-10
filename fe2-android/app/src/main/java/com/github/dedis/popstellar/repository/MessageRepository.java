@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.app.Application;
 import android.util.LruCache;
 
+import androidx.lifecycle.Lifecycle;
+
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.repository.database.AppDatabase;
@@ -45,14 +47,16 @@ public class MessageRepository {
   @Inject
   public MessageRepository(AppDatabase appDatabase, Application application) {
     messageDao = appDatabase.messageDao();
-    Consumer<Activity> consumer =
-        (activity) -> {
+    Map<Lifecycle.Event, Consumer<Activity>> consumerMap = new HashMap<>();
+    consumerMap.put(
+        Lifecycle.Event.ON_DESTROY,
+        activity -> {
           if (!disposables.isDisposed()) {
             disposables.dispose();
           }
-        };
+        });
     application.registerActivityLifecycleCallbacks(
-        ActivityUtils.buildLifecycleCallbackOnDestroy(consumer));
+        ActivityUtils.buildLifecycleCallback(consumerMap));
     loadCache();
   }
 

@@ -11,6 +11,7 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.*;
+import androidx.lifecycle.Lifecycle;
 
 import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.model.objects.Wallet;
@@ -123,39 +124,53 @@ public class ActivityUtils {
   }
 
   /**
-   * This function returns a callback to register to the application lifecycle that applies a
-   * consumer function on the application's onDestroy().
+   * This function returns a callback to be registered to the application lifecycle.
    *
-   * @param consumer callback for the onDestroy method
+   * @param consumers map that has as key the method to override, as value the consumer to apply
    * @return the lifecycle callback
    */
-  public static Application.ActivityLifecycleCallbacks buildLifecycleCallbackOnDestroy(
-      Consumer<Activity> consumer) {
+  public static Application.ActivityLifecycleCallbacks buildLifecycleCallback(
+      Map<Lifecycle.Event, Consumer<Activity>> consumers) {
     return new Application.ActivityLifecycleCallbacks() {
       @Override
       public void onActivityCreated(
           @NonNull Activity activity, @Nullable Bundle savedInstanceState) {
-        // Do nothing here
+        Consumer<Activity> consumer = consumers.get(Lifecycle.Event.ON_CREATE);
+        if (consumer != null) {
+          consumer.accept(activity);
+        }
       }
 
       @Override
       public void onActivityStarted(@NonNull Activity activity) {
-        // Do nothing here
+        Consumer<Activity> consumer = consumers.get(Lifecycle.Event.ON_START);
+        if (consumer != null) {
+          consumer.accept(activity);
+        }
       }
 
       @Override
       public void onActivityResumed(@NonNull Activity activity) {
-        // Do nothing here
+        Consumer<Activity> consumer = consumers.get(Lifecycle.Event.ON_RESUME);
+        if (consumer != null) {
+          consumer.accept(activity);
+        }
       }
 
       @Override
       public void onActivityPaused(@NonNull Activity activity) {
-        // Do nothing here
+        Consumer<Activity> consumer = consumers.get(Lifecycle.Event.ON_PAUSE);
+        if (consumer != null) {
+          consumer.accept(activity);
+        }
       }
 
       @Override
       public void onActivityStopped(@NonNull Activity activity) {
-        // Do nothing here
+        Consumer<Activity> consumer = consumers.get(Lifecycle.Event.ON_STOP);
+        if (consumer != null) {
+          consumer.accept(activity);
+        }
       }
 
       @Override
@@ -166,7 +181,10 @@ public class ActivityUtils {
 
       @Override
       public void onActivityDestroyed(@NonNull Activity activity) {
-        consumer.accept(activity);
+        Consumer<Activity> consumer = consumers.get(Lifecycle.Event.ON_DESTROY);
+        if (consumer != null) {
+          consumer.accept(activity);
+        }
       }
     };
   }

@@ -3,6 +3,8 @@ package com.github.dedis.popstellar.repository;
 import android.app.Activity;
 import android.app.Application;
 
+import androidx.lifecycle.Lifecycle;
+
 import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.database.AppDatabase;
@@ -49,14 +51,16 @@ public class LAORepository {
   @Inject
   public LAORepository(AppDatabase appDatabase, Application application) {
     laoDao = appDatabase.laoDao();
-    Consumer<Activity> consumer =
-        (activity) -> {
+    Map<Lifecycle.Event, Consumer<Activity>> consumerMap = new HashMap<>();
+    consumerMap.put(
+        Lifecycle.Event.ON_DESTROY,
+        activity -> {
           if (!disposables.isDisposed()) {
             disposables.dispose();
           }
-        };
+        });
     application.registerActivityLifecycleCallbacks(
-        ActivityUtils.buildLifecycleCallbackOnDestroy(consumer));
+        ActivityUtils.buildLifecycleCallback(consumerMap));
     loadPersistentStorage();
   }
 
