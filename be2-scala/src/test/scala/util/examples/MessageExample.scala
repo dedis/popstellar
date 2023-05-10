@@ -14,7 +14,7 @@ object MessageExample {
 
   private final val SEED: Base64Data = Base64Data("to_klZLtiHV446Fv98OLNdNmi-EP5OaTtbBkotTYLic=")
   private final val PUBLIC_KEY: PublicKey = PublicKey(Base64Data("jsNj23IHALvppqV1xQfP71_3IyAHzivxiCz236_zzQc="))
-  private final val PRIVATEKEY: PrivateKey = PrivateKey(Base64Data("qRfms3wzSLkxAeBz6UtwA-L1qP0h8D9XI1FSvY68t7Y="))
+  private final val PRIVATE_KEY: PrivateKey = PrivateKey(Base64Data("qRfms3wzSLkxAeBz6UtwA-L1qP0h8D9XI1FSvY68t7Y="))
 
   private final val EMPTY_SIGNATURE: Signature = Signature(Base64Data(""))
   private final val EMPTY_HASH: Hash = Hash(Base64Data(""))
@@ -43,7 +43,7 @@ object MessageExample {
     PublicKey(SEED),
     Signature(Base64Data("2VDJCWg11eNPUvZOnvq5YhqqIKLBcik45n-6o87aUKefmiywagivzD4o_YmjWHzYcb9qg-OgDBZbBNWSUgJICA==")),
     Hash(Base64Data("f1jTxH8TU2UGUBnikGU3wRTHjhOmIEQVmxZBK55QpsE=")),
-    WitnessSignaturePair(PUBLIC_KEY, PRIVATEKEY.signData(Base64Data("f1jTxH8TU2UGUBnikGU3wRTHjhOmIEQVmxZBK55QpsE="))) :: Nil
+    WitnessSignaturePair(PUBLIC_KEY, PRIVATE_KEY.signData(Base64Data("f1jTxH8TU2UGUBnikGU3wRTHjhOmIEQVmxZBK55QpsE="))) :: Nil
   )
 
   // message with an invalid Ed25519Sign WitnessSignaturePair
@@ -52,7 +52,7 @@ object MessageExample {
     PublicKey(SEED),
     Signature(Base64Data("2VDJCWg11eNPUvZOnvq5YhqqIKLBcik45n-6o87aUKefmiywagivzD4o_YmjWHzYcb9qg-OgDBZbBNWSUgJICA==")),
     Hash(Base64Data.encode("invalid")),
-    WitnessSignaturePair(PUBLIC_KEY, PRIVATEKEY.signData(Base64Data("f1jTxH8TU2UGUBnikGU3wRTHjhOmIEQVmxZBK55QpsE="))) :: Nil
+    WitnessSignaturePair(PUBLIC_KEY, PRIVATE_KEY.signData(Base64Data("f1jTxH8TU2UGUBnikGU3wRTHjhOmIEQVmxZBK55QpsE="))) :: Nil
   )
 
   // message with an invalid Signature
@@ -61,7 +61,7 @@ object MessageExample {
     PublicKey(SEED),
     Signature(Base64Data.encode("invalid")),
     Hash(Base64Data("f1jTxH8TU2UGUBnikGU3wRTHjhOmIEQVmxZBK55QpsE=")),
-    WitnessSignaturePair(PUBLIC_KEY, PRIVATEKEY.signData(Base64Data("f1jTxH8TU2UGUBnikGU3wRTHjhOmIEQVmxZBK55QpsE="))) :: Nil
+    WitnessSignaturePair(PUBLIC_KEY, PRIVATE_KEY.signData(Base64Data("f1jTxH8TU2UGUBnikGU3wRTHjhOmIEQVmxZBK55QpsE="))) :: Nil
   )
 
   // CreateLao
@@ -75,7 +75,7 @@ object MessageExample {
   val idInvalid: Hash = Hash.fromStrings(organizer.base64Data.toString, creationWorking.toString, nameInvalid)
   val workingWitnessList: List[PublicKey] = PUBLIC_KEY :: Nil
   val invalidWitnessList: List[PublicKey] = PUBLIC_KEY :: PUBLIC_KEY :: Nil
-  val workingWSPairList: List[WitnessSignaturePair] = WitnessSignaturePair(PUBLIC_KEY, PRIVATEKEY.signData(Base64Data("f1jTxH8TU2UGUBnikGU3wRTHjhOmIEQVmxZBK55QpsE="))) :: Nil
+  val workingWSPairList: List[WitnessSignaturePair] = WitnessSignaturePair(PUBLIC_KEY, PRIVATE_KEY.signData(Base64Data("f1jTxH8TU2UGUBnikGU3wRTHjhOmIEQVmxZBK55QpsE="))) :: Nil
 
   private final val createLaoCorrect: CreateLao = CreateLao(idWorking, name, creationWorking, organizer, workingWitnessList)
   final val MESSAGE_CREATELAO_WORKING: Message = new Message(
@@ -450,18 +450,20 @@ object MessageExample {
   )
 
   // Popcha
-  private val identifier: PublicKey = PublicKey(SEED)
-  private val longTermIdentifier: PrivateKey = PrivateKey(SEED)
-  private val nonce = "EPFL"
-  private val responseMode = "query"
-  final val validAuthenticate = Authenticate(
-    "client",
+  private final val EMPTY_STATE = ""
+  private final val POPCHA_ADDRESS = ""
+  private final val clientId = "some client"
+  private final val nonce = "EPFL"
+  private final val signature = PRIVATE_KEY.signData(Base64Data.encode(nonce))
+  private final val responseMode = "query"
+  private final val validAuthenticate = Authenticate(
+    clientId,
     nonce,
-    identifier,
-    longTermIdentifier.signData(Base64Data.encode(nonce)),
-    "",
+    PUBLIC_KEY,
+    signature,
+    EMPTY_STATE,
     responseMode,
-    ""
+    POPCHA_ADDRESS
   )
   final val MESSAGE_AUTHENTICATE: Message = new Message(
     Base64Data.encode(validAuthenticate.toJson.toString()),
@@ -470,5 +472,56 @@ object MessageExample {
     EMPTY_HASH,
     List.empty,
     Some(validAuthenticate)
+  )
+  private final val validAuthenticateOtherResponseMode = Authenticate(
+    clientId,
+    nonce,
+    PUBLIC_KEY,
+    signature,
+    EMPTY_STATE,
+    "fragment",
+    POPCHA_ADDRESS
+  )
+  final val MESSAGE_AUTHENTICATE_OTHER_RESPONSE_MODE: Message = new Message(
+    Base64Data.encode(validAuthenticateOtherResponseMode.toJson.toString()),
+    PUBLIC_KEY,
+    EMPTY_SIGNATURE,
+    EMPTY_HASH,
+    List.empty,
+    Some(validAuthenticateOtherResponseMode)
+  )
+  private final val invalidAuthenticateWrongSignature = Authenticate(
+    clientId,
+    nonce,
+    PUBLIC_KEY,
+    Signature(Base64Data.encode("wrong_signature")),
+    EMPTY_STATE,
+    responseMode,
+    POPCHA_ADDRESS
+  )
+  final val MESSAGE_AUTHENTICATE_WRONG_SIGNATURE: Message = new Message(
+    Base64Data.encode(invalidAuthenticateWrongSignature.toJson.toString()),
+    PUBLIC_KEY,
+    EMPTY_SIGNATURE,
+    EMPTY_HASH,
+    List.empty,
+    Some(invalidAuthenticateWrongSignature)
+  )
+  private final val invalidAuthenticateWrongResponseMode = Authenticate(
+    clientId,
+    nonce,
+    PUBLIC_KEY,
+    signature,
+    EMPTY_STATE,
+    "invalid_response_mode",
+    POPCHA_ADDRESS
+  )
+  final val MESSAGE_AUTHENTICATE_WRONG_RESPONSE_MODE: Message = new Message(
+    Base64Data.encode(invalidAuthenticateWrongResponseMode.toJson.toString()),
+    PUBLIC_KEY,
+    EMPTY_SIGNATURE,
+    EMPTY_HASH,
+    List.empty,
+    Some(invalidAuthenticateWrongResponseMode)
   )
 }

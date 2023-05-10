@@ -269,9 +269,17 @@ object JsonRpcRequestExample {
 
   // For Popcha testing
   private final val authenticationChannel: Channel = Channel(Channel.ROOT_CHANNEL_PREFIX + Base64Data.encode("laoid") + Channel.POPCHA_AUTHENTICATION_LOCATION)
-  private final val authenticationChannelWrong: Channel = Channel(Channel.ROOT_CHANNEL_PREFIX + Base64Data.encode("laoid") + "wrong_sub_channel")
+  private final val authenticationChannelWrong: Channel = Channel(Channel.ROOT_CHANNEL_PREFIX + Base64Data.encode("laoid") + "/wrong_sub_channel")
   private final val paramsWithAuthenticate: ParamsWithMessage = new ParamsWithMessage(authenticationChannel, MESSAGE_AUTHENTICATE)
+  private final val paramsWithAuthenticateOtherResponseMode: ParamsWithMessage = new ParamsWithMessage(authenticationChannel, MESSAGE_AUTHENTICATE_OTHER_RESPONSE_MODE)
+  private final val paramsWithAuthenticateWrongChannel: ParamsWithMessage = new ParamsWithMessage(authenticationChannelWrong, MESSAGE_AUTHENTICATE)
+  private final val paramsWithAuthenticateWrongSignature: ParamsWithMessage = new ParamsWithMessage(authenticationChannel, MESSAGE_AUTHENTICATE_WRONG_SIGNATURE)
+  private final val paramsWithAuthenticateWrongResponseMode: ParamsWithMessage = new ParamsWithMessage(authenticationChannel, MESSAGE_AUTHENTICATE_WRONG_RESPONSE_MODE)
   final val AUTHENTICATE_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithAuthenticate, id)
+  final val AUTHENTICATE_OTHER_RESPONSE_MODE_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithAuthenticateOtherResponseMode, id)
+  final val AUTHENTICATE_INVALID_CHANNEL_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithAuthenticateWrongChannel, id)
+  final val AUTHENTICATE_INVALID_SIGNATURE_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithAuthenticateWrongSignature, id)
+  final val AUTHENTICATE_INVALID_RESPONSE_MODE_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithAuthenticateWrongResponseMode, id)
 
   // broadcast JsonRpcRequest
   final val broadcastRpcRequest: JsonRpcRequest = JsonRpcRequest(rpc, MethodType.BROADCAST, paramsWithMessage, None)
