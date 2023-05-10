@@ -22,15 +22,13 @@ object GetMessagesByIdResponseHandler extends AskPatternConstants {
   private final val SUCCESS = 0
 
   // This function packs each message into a publish before pushing them into the pipeline
-  def responseHandler(
-      mediatorActorRef: ActorRef,
-      messageRegistry: MessageRegistry
-  )(implicit system: ActorSystem): Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map {
+  def responseHandler(messageRegistry: MessageRegistry)(implicit system: ActorSystem): Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map {
     case Right(JsonRpcResponse(_, Some(resultObject), None, _)) =>
       resultObject.resultMap match {
         case Some(resultMap) =>
           val receivedResponse: Map[Channel, Set[GraphMessage]] = wrapMsgInPublish(resultMap)
-          val success: Boolean = passThroughPipeline(receivedResponse, PublishSubscribe.validateRequests(mediatorActorRef, messageRegistry), MAX_RETRY)
+          val validator = PublishSubscribe.validateRequests(ActorRef.noSender, messageRegistry)
+          val success: Boolean = passThroughPipeline(receivedResponse, validator, MAX_RETRY)
           if (success) {
             Right(JsonRpcResponse(RpcValidator.JSON_RPC_VERSION, new ResultObject(SUCCESS), None))
           } else {
@@ -59,12 +57,13 @@ object GetMessagesByIdResponseHandler extends AskPatternConstants {
     var failedMessages: Map[Channel, Set[GraphMessage]] = Map.empty
     receivedResponse.foreach {
       case (channel, messagesSet) =>
-        val failedMessageMap = messagesThroughPipeline(validatorFlow, messagesSet)
-        if (failedMessageMap.nonEmpty) {
-          failedMessages += channel -> failedMessageMap.keySet
+        val failedMsgErrorMap = messagesThroughPipeline(validatorFlow, messagesSet)
+        if (failedMsgErrorMap.nonEmpty) {
+          failedMessages += channel -> failedMsgErrorMap.keySet
+
           // only log a during last attempt
           if (remainingAttempts == 1) {
-            println("Errors: " + failedMessageMap.map {
+            println("Errors: " + failedMsgErrorMap.map {
               case (msg, error) => error.toString + "\n On:\n" + prettyPrinter(msg)
             })
           }
@@ -94,18 +93,15 @@ object GetMessagesByIdResponseHandler extends AskPatternConstants {
   }
 
   private def wrapMsgInPublish(map: Map[Channel, Set[Message]]): Map[Channel, Set[GraphMessage]] = {
-    map.map {
-      case (channel, set) =>
-        channel -> set.map(msg =>
-          Right(
-            JsonRpcRequest(
-              RpcValidator.JSON_RPC_VERSION,
-              MethodType.PUBLISH,
-              new Publish(channel, msg),
-              Some(0)
-            )
-          )
-        )
+    map.map { case (channel, set) =>
+      channel -> set.map(msg =>
+        Right(JsonRpcRequest(
+          RpcValidator.JSON_RPC_VERSION,
+          MethodType.PUBLISH,
+          new Publish(channel, msg),
+          Some(0)
+        ))
+      )
     }
   }
 }
