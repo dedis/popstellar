@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataSendAuthMessage.json",
+  "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataAuthenticateUser.json",
   "description": "Authenticate a user in PoPCHA protocol",
   "type": "object",
   "properties": {
