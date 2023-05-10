@@ -57,7 +57,7 @@ class GetMessagesByIdResponseHandlerSuite extends TestKit(ActorSystem("GetMessag
   val getMessagesByIdResponse: JsonRpcResponse = JsonRpcResponse.buildFromJson(lines)
 
   test("get_messages_by_id response should be processed without errors") {
-    val handler = GetMessagesByIdResponseHandler.graph(pubSubMediatorRef, MessageRegistry())
+    val handler = GetMessagesByIdResponseHandler.responseHandler(pubSubMediatorRef, MessageRegistry())
     val output = Source.single(Right(getMessagesByIdResponse)).via(handler).runWith(Sink.head)
 
     Await.ready(output, duration).value.get match {
