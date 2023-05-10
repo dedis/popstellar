@@ -32,7 +32,9 @@ object QRCodeChallengeGenerator {
       line <- templateFile.getLines()
       substitutedLine = line.replace(webTemplateQRCodeTemplate, htmlQRCode)
     } yield substitutedLine
+
     val challengePage = lines.mkString("\n")
+    templateFile.close()
 
     HttpEntity(ContentTypes.`text/html(UTF-8)`, challengePage)
   }
