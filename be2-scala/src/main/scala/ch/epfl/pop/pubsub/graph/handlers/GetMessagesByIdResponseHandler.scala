@@ -2,14 +2,14 @@ package ch.epfl.pop.pubsub.graph.handlers
 
 import akka.NotUsed
 import akka.actor.{ActorRef, ActorSystem}
-import akka.stream.FlowShape
-import akka.stream.scaladsl.{Flow, GraphDSL, Merge, Partition, Sink, Source}
+import akka.stream.scaladsl.{Flow, Sink, Source}
 import ch.epfl.pop.model.network.method.Publish
+import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse, MethodType, ResultObject}
 import ch.epfl.pop.model.objects.Channel
 import ch.epfl.pop.pubsub.graph.validators.RpcValidator
-import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError, Validator}
-import ch.epfl.pop.pubsub.{AskPatternConstants, ClientActor, MessageRegistry}
+import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError, prettyPrinter}
+import ch.epfl.pop.pubsub.{AskPatternConstants, MessageRegistry, PublishSubscribe}
 
 import scala.annotation.tailrec
 import scala.concurrent.Await
@@ -20,60 +20,23 @@ object GetMessagesByIdResponseHandler extends AskPatternConstants {
 
   private final val MAX_RETRY = 5
 
-  def graph(mediatorActorRef: ActorRef, messageRegistry: MessageRegistry)(implicit system: ActorSystem): Flow[GraphMessage, GraphMessage, NotUsed] =
-    Flow.fromGraph(GraphDSL.create() {
-      implicit builder: GraphDSL.Builder[NotUsed] =>
-        {
-          import GraphDSL.Implicits._
-
-          /* partitioner port numbers */
-          val portPipelineError = 0
-          val portResponseHandler = 1
-          val totalPorts = 2
-
-          /* building blocks */
-          val handlerPartitioner = builder.add(Partition[GraphMessage](
-            totalPorts,
-            {
-              case Right(jsonRpcMessage: JsonRpcResponse) => jsonRpcMessage.result match {
-                  case Some(result) => result.resultMap match {
-                      case Some(_) => portResponseHandler
-                      case _       => portPipelineError
-                    }
-                  case _ => portPipelineError
-                }
-              case _ => portPipelineError // Pipeline error goes directly in handlerMerger
-            }
-          ))
-
-          val responseHandler = builder.add(GetMessagesByIdResponseHandler.responseHandler(mediatorActorRef, messageRegistry)(system))
-          val handlerMerger = builder.add(Merge[GraphMessage](totalPorts))
-
-          /* glue the components together */
-          handlerPartitioner.out(portPipelineError) ~> handlerMerger
-          handlerPartitioner.out(portResponseHandler) ~> responseHandler ~> handlerMerger
-
-          /* close the shape */
-          FlowShape(handlerPartitioner.in, handlerMerger.out)
-        }
-    })
-
-  // This function packs each message into a publish before pushing into the pipeline
-  private def responseHandler(mediatorActorRef: ActorRef, messageRegistry: MessageRegistry)(implicit system: ActorSystem): Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map {
-    case Right(jsonRpcMessage: JsonRpcResponse) =>
-      val validatorFlow = validator(mediatorActorRef, messageRegistry)
-      val receivedResponse: Map[Channel, Set[GraphMessage]] =
-        jsonRpcMessage.result.get
-          .resultMap.get
-          .map {
-            case (channel, set) => (channel, set.map(msg => Right(JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, MethodType.PUBLISH, new Publish(channel, msg), Some(0)))))
+  // This function packs each message into a publish before pushing them into the pipeline
+  def responseHandler(
+      mediatorActorRef: ActorRef,
+      messageRegistry: MessageRegistry
+  )(implicit system: ActorSystem): Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map {
+    case Right(JsonRpcResponse(_, Some(resultObject), None, _)) =>
+      resultObject.resultMap match {
+        case Some(resultMap) =>
+          val receivedResponse: Map[Channel, Set[GraphMessage]] = wrapMsgInPublish(resultMap)
+          val success: Boolean = passThroughPipeline(receivedResponse, PublishSubscribe.validateRequests(mediatorActorRef, messageRegistry), MAX_RETRY)
+          if (success) {
+            Right(JsonRpcResponse(RpcValidator.JSON_RPC_VERSION, new ResultObject(0), None))
+          } else {
+            Left(PipelineError(ErrorCodes.SERVER_ERROR.id, "GetMessagesById handler failed to process some messages", None))
           }
 
-      val failedMessages = passThroughPipeline(receivedResponse, validatorFlow, MAX_RETRY)
-      if (failedMessages.values.forall(set => set.isEmpty)) {
-        Right(JsonRpcResponse(RpcValidator.JSON_RPC_VERSION, new ResultObject(0), None))
-      } else {
-        Left(PipelineError(ErrorCodes.SERVER_ERROR.id, "GetMessagesById handler failed to process some messages", None))
+        case _ => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, "GetMessagesById handler received an unexpected response message", None))
       }
 
     // Will end up in a Sink.ignore, safe to let through
@@ -83,33 +46,42 @@ object GetMessagesByIdResponseHandler extends AskPatternConstants {
   // This function will try to digest the set of messages for an entire channel
   // It will go channel by channel until it finished processing messages or MAX_RETRY is reached
   @tailrec
-  private def passThroughPipeline(receivedResponse: Map[Channel, Set[GraphMessage]], validatorFlow: Flow[GraphMessage, GraphMessage, NotUsed], remainingAttempts: Int)(implicit system: ActorSystem): Map[Channel, Set[GraphMessage]] = {
+  private def passThroughPipeline(
+      receivedResponse: Map[Channel, Set[GraphMessage]],
+      validatorFlow: Flow[GraphMessage, GraphMessage, NotUsed],
+      remainingAttempts: Int
+  )(implicit system: ActorSystem): Boolean = {
     if (receivedResponse.isEmpty || remainingAttempts <= 0)
-      return receivedResponse
+      return receivedResponse.isEmpty
 
     var failedMessages: Map[Channel, Set[GraphMessage]] = Map.empty
     receivedResponse.foreach {
       case (channel, messagesSet) =>
-        val result = messageThroughPipeline(validatorFlow, messagesSet)
-        failedMessages += channel -> result._1
+        val (failedMsgSet, errListPair) = messageThroughPipeline(validatorFlow, messagesSet)
+        if (failedMsgSet.nonEmpty) {
+          failedMessages += channel -> failedMsgSet
+        }
         // only log a during last attempt
-        if (remainingAttempts == 1 && result._2.nonEmpty) {
-          println("Errors: " + result._2)
+        if (remainingAttempts == 1 && errListPair.nonEmpty) {
+          println("Errors: " + errListPair.map(pair => pair._1.toString + "\n On:\n" + prettyPrinter(pair._2)))
         }
     }
 
     passThroughPipeline(failedMessages, validatorFlow, remainingAttempts - 1)
   }
 
-  // Push a single message through the pipeline
-  private def messageThroughPipeline(validator: Flow[GraphMessage, GraphMessage, NotUsed], messageSet: Set[GraphMessage])(implicit system: ActorSystem): (Set[GraphMessage], List[PipelineError]) = {
+  // Push a set of message through the pipeline
+  private def messageThroughPipeline(
+      validator: Flow[GraphMessage, GraphMessage, NotUsed],
+      messageSet: Set[GraphMessage]
+  )(implicit system: ActorSystem): (Set[GraphMessage], List[(PipelineError, GraphMessage)]) = {
     var failedGraphMessages: Set[GraphMessage] = Set()
-    var errList: List[PipelineError] = Nil
+    var errList: List[(PipelineError, GraphMessage)] = Nil
     messageSet.foreach { message =>
       val singleRun = Source.single(message).via(validator).runWith(Sink.foreach {
         case Left(err: PipelineError) =>
           failedGraphMessages += message
-          errList ::= err
+          errList ::= err -> message
 
         case _ => /* Nothing to do */
       })
@@ -119,52 +91,19 @@ object GetMessagesByIdResponseHandler extends AskPatternConstants {
     (failedGraphMessages, errList)
   }
 
-  // A partial graph to replay messages from get_message_by_id answers
-  private def validator(mediatorActorRef: ActorRef, messageRegistry: MessageRegistry)(implicit system: ActorSystem): Flow[GraphMessage, GraphMessage, NotUsed] =
-    Flow.fromGraph(GraphDSL.create() {
-      implicit builder: GraphDSL.Builder[NotUsed] =>
-        {
-          import GraphDSL.Implicits._
-
-          val input = builder.add(Flow[GraphMessage].collect { case msg: GraphMessage => msg })
-
-          val localClient: ActorRef = system.actorOf(ClientActor.props(mediatorActorRef, ActorRef.noSender, isServer = false))
-
-          /* partitioner port numbers */
-          val portPipelineError = 0
-          val portParamsWithMessage = 1
-          val portParamsWithChannel = 2
-          val totalPorts = 3
-
-          val methodPartitioner = builder.add(Partition[GraphMessage](
-            totalPorts,
-            {
-              case Right(m: JsonRpcRequest) if m.hasParamsMessage => portParamsWithMessage // Publish and Broadcast messages
-              case Right(m: JsonRpcRequest) if m.hasParamsChannel => portParamsWithChannel
-              case _                                              => portPipelineError // Pipeline error goes directly in merger
-            }
-          ))
-
-          val jsonRpcContentValidator = builder.add(Validator.jsonRpcContentValidator)
-          val hasMessagePartition = builder.add(ParamsWithMessageHandler.graph(messageRegistry))
-          val hasChannelPartition = builder.add(ParamsWithChannelHandler.graph(localClient))
-
-          val merger = builder.add(Merge[GraphMessage](totalPorts))
-
-          // output message (answer) for the client
-          val output = builder.add(Flow[GraphMessage])
-
-          /* glue the components together */
-          input ~> jsonRpcContentValidator ~> methodPartitioner
-
-          methodPartitioner.out(portPipelineError) ~> merger
-          methodPartitioner.out(portParamsWithMessage) ~> hasMessagePartition ~> merger
-          methodPartitioner.out(portParamsWithChannel) ~> hasChannelPartition ~> merger
-          merger ~> output
-
-          /* close the shape */
-          FlowShape(input.in, output.out)
-        }
-    })
-
+  private def wrapMsgInPublish(map: Map[Channel, Set[Message]]): Map[Channel, Set[GraphMessage]] = {
+    map.map {
+      case (channel, set) =>
+        channel -> set.map(msg =>
+          Right(
+            JsonRpcRequest(
+              RpcValidator.JSON_RPC_VERSION,
+              MethodType.PUBLISH,
+              new Publish(channel, msg),
+              Some(0)
+            )
+          )
+        )
+    }
+  }
 }
