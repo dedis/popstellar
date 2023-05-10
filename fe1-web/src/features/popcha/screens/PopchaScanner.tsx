@@ -165,7 +165,7 @@ const PopchaScanner = () => {
         <View style={styles.container}>
           <View>
             <Text style={Typography.paragraph}>Hello, here is your laoID: {laoId}</Text>
-            <text>{textScanned}</text>
+            <Text>{textScanned}</Text>
           </View>
           {showScanner && (
             <View style={styles.qrCode}>
