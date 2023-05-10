@@ -5,8 +5,8 @@
 import { publish } from 'core/network';
 import { Base64UrlData, getPopchaAuthenticationChannel, Hash, PopToken } from 'core/objects';
 
-import { PopchaAuthMsg } from './messages/PopchaAuthMsg';
 import { generateToken } from '../../wallet/objects';
+import { PopchaAuthMsg } from './messages/PopchaAuthMsg';
 
 /**
  * Sends a message to the server to authenticate that the user belongs to the lao
@@ -27,6 +27,7 @@ export const sendPopchaAuthRequest = (
   response_mode: string | null,
   laoId: Hash,
   // TODO: hook currently throwing error
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   generateToken_: (laoId: Hash, clientId: Hash | undefined) => Promise<PopToken>,
 ): Promise<void> => {
   const token = generateToken(laoId, client_id);
