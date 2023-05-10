@@ -100,13 +100,13 @@ class GetMessagesByIdResponseHandlerSuite extends TestKit(ActorSystem("GetMessag
     val channelsInResponse = getMessagesByIdResponse.result.get.resultMap.get.keySet
     channelsInResponse.diff(channelsInDb) should equal(Set.empty)
 
+    val messagesInDb: Set[Message] = channelsInDb.foldLeft(Set.empty: Set[Message])((acc, channel) => acc ++ getMessages(channel))
     val messagesInResponse = getMessagesByIdResponse.result.get.resultMap.get.values.foldLeft(Set.empty: Set[Message])((acc, set) => acc ++ set)
-    val allMessages: Set[Message] = channelsInDb.foldLeft(Set.empty: Set[Message])((acc, channel) => acc ++ getMessages(channel))
 
-    messagesInResponse.diff(allMessages) should equal(Set.empty)
+    messagesInResponse.diff(messagesInDb) should equal(Set.empty)
   }
 
-  test("wrong get_messages_by_id response with error should fail") {
+  test("get_messages_by_id with invalid data should fail to process") {
     // remove all message from previous tests
     inMemoryStorage.elements = Map.empty
 
