@@ -174,7 +174,7 @@ final case class DbActor(
         msg :: buildCatchupList(channelData.messages, Nil)
 
       case None =>
-        if (channel.isRootLaoChannel) {
+        if (channel.isMainLaoChannel) {
           log.error("Critical error encountered: no create_lao message was found in the db")
         }
         buildCatchupList(channelData.messages, Nil)
@@ -350,7 +350,7 @@ final case class DbActor(
       }
 
     case ReadSetupElectionMessage(channel) =>
-      log.info(s"Actor $self (db) received a WriteSetupElectionMessage request")
+      log.info(s"Actor $self (db) received a ReadSetupElectionMessage request")
       Try(readSetupElectionMessage(channel)) match {
         case Success(msg) => sender() ! DbActorReadAck(msg)
         case failure      => sender() ! failure.recover(Status.Failure(_))

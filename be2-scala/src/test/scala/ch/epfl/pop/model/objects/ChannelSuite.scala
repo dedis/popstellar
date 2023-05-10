@@ -156,12 +156,12 @@ class ChannelSuite extends FunSuite with Matchers {
   test("isRootLaoChannel() on /root/lao_id return true ") {
     val rootLaoId = Channel("/root/wex")
 
-    rootLaoId.isRootLaoChannel should equal(true)
+    rootLaoId.isMainLaoChannel should equal(true)
   }
 
   test("isRootLaoChannel() on /root/lao_id/sub return false ") {
     val rootLaoIdSub = Channel("/root/wex/sub")
 
-    rootLaoIdSub.isRootLaoChannel should equal(false)
+    rootLaoIdSub.isMainLaoChannel should equal(false)
   }
 }

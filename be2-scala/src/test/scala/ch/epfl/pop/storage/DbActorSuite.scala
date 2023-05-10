@@ -551,14 +551,14 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
     val dbActor: AskableActorRef = system.actorOf(Props(DbActor(mediatorRef, MessageRegistry(), initialStorage)))
     val channel = Channel("/root/lao_id/election_id")
 
-    // Write some message using WriteCreateLaoMessage
+    // Write some message using WriteSetupElectionMessage
     val writeAsk = dbActor ? DbActor.WriteSetupElectionMessage(channel, MESSAGE)
     val writeAnswer = Await.result(writeAsk, duration)
 
     // assert
     writeAnswer shouldBe a[DbActor.DbActorAck]
 
-    // Message written should appear only in the root channel
+    // Message written should appear only in the lao channel
     val failingReadAsk = dbActor ? DbActor.Read(channel, MESSAGE.message_id)
     val successReadAsk = dbActor ? DbActor.Read(channel.extractLaoChannel.get, MESSAGE.message_id)
 
@@ -579,14 +579,14 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
     val dbActor: AskableActorRef = system.actorOf(Props(DbActor(mediatorRef, MessageRegistry(), initialStorage)))
     val channel = Channel("/root/lao_id/election_id")
 
-    // Write some message using WriteCreateLaoMessage
+    // Write some message using WriteSetupElectionMessage
     val writeAsk = dbActor ? DbActor.WriteSetupElectionMessage(channel, MESSAGE)
     val writeAnswer = Await.result(writeAsk, duration)
 
     // assert
     writeAnswer shouldBe a[DbActor.DbActorAck]
 
-    // Message written should appear only in the root channel
+    // Message written should be readable from the election channel
     val successReadAsk = dbActor ? DbActor.ReadSetupElectionMessage(channel)
     val successAnswer = Await.result(successReadAsk, duration)
 
