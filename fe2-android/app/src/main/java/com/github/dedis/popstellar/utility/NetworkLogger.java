@@ -71,8 +71,8 @@ public class NetworkLogger extends Timber.Tree {
     consumerMap.put(Lifecycle.Event.ON_DESTROY, activity -> closeWebSocket());
     Consumer<Activity> saverConsumer =
         activity -> {
+          // Close the websocket on pause and stop only if we we want to save battery
           if (SAVE_ENERGY) {
-            closeWebSocket();
             closeWebSocket();
           }
         };
