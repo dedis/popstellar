@@ -70,6 +70,7 @@ namespace STRINGS {
   export const navigation_lao_wallet_title = 'Tokens';
   export const navigation_lao_digital_cash = 'Digital Cash';
   export const navigation_lao_digital_cash_title = 'Digital Cash';
+  export const navigation_lao_popcha = 'PoPCHA';
 
   export const navigation_lao_disconnect_title = 'Disconnect';
 
