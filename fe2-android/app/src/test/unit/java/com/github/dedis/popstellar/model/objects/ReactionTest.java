@@ -17,7 +17,7 @@ public class ReactionTest {
   private static final PublicKey SENDER = generatePublicKey();
   private static final String EMOJI = "\uD83D\uDC4D";
   private static final long TIMESTAMP = Instant.now().getEpochSecond();
-  private static final MessageID EMPTY_MESSAGE_ID = generateMessageID();
+  private static final MessageID EMPTY_MESSAGE_ID = new MessageID("");
   private static final Reaction REACTION =
       new Reaction(REACTION_ID, SENDER, EMOJI, CHIRP_ID, TIMESTAMP);
 
