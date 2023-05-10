@@ -7,13 +7,14 @@ import PoPTouchableOpacity from 'core/components/PoPTouchableOpacity';
 import QrCodeScanner, { QrCodeScannerUIElementContainer } from 'core/components/QrCodeScanner';
 import QrCodeScanOverlay from 'core/components/QrCodeScanOverlay';
 import { Hash } from 'core/objects';
-import { Typography } from 'core/styles';
+import { Color, Spacing, Typography } from 'core/styles';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
 
 import { PopchaHooks } from '../hooks';
 import { PopchaFeature } from '../interface';
 import { sendPopchaAuthRequest } from '../network/PopchaMessageApi';
+import { ConfirmModal } from '../../../core/components';
 
 const styles = StyleSheet.create({
   container: {
@@ -23,6 +24,11 @@ const styles = StyleSheet.create({
   } as ViewStyle,
   qrCode: {
     opacity: 0.5,
+  } as ViewStyle,
+  enterButton: {
+    ...QrCodeScannerUIElementContainer,
+    borderColor: Color.blue,
+    borderWidth: Spacing.x025,
   } as ViewStyle,
 });
 
@@ -35,6 +41,7 @@ const PopchaScanner = () => {
 
   const [showScanner, setShowScanner] = useState(false);
   const [textScanned, setTextScanned] = useState('');
+  const [showInputModal, setInputModalIsVisible] = useState(false);
 
   const toast = useToast();
 
@@ -165,12 +172,23 @@ const PopchaScanner = () => {
         <View style={styles.container}>
           <View>
             <Text style={Typography.paragraph}>Hello, here is your laoID: {laoId}</Text>
-            <text>{textScanned}</text>
+            <Text>{textScanned}</Text>
           </View>
           {showScanner && (
-            <View style={styles.qrCode}>
-              <QrCodeScanOverlay width={300} height={300} />
-            </View>
+            <>
+              <View style={styles.qrCode}>
+                <QrCodeScanOverlay width={300} height={300} />
+              </View>
+              <View style={styles.enterButton}>
+                <PoPTouchableOpacity
+                  testID="roll_call_open_add_manually"
+                  onPress={() => setInputModalIsVisible(true)}>
+                  <Text style={[Typography.base, Typography.accent, Typography.centered]}>
+                    {STRINGS.general_enter_manually}
+                  </Text>
+                </PoPTouchableOpacity>
+              </View>
+            </>
           )}
           <View>
             <View style={QrCodeScannerUIElementContainer}>
@@ -185,6 +203,16 @@ const PopchaScanner = () => {
           </View>
         </View>
       </QrCodeScanner>
+      <ConfirmModal
+        visibility={showInputModal}
+        setVisibility={setInputModalIsVisible}
+        title="Enter url"
+        description="Enter the url you want to scan"
+        onConfirmPress={sendAuthRequest}
+        buttonConfirmText={STRINGS.general_add}
+        hasTextInput
+        textInputPlaceholder="Url"
+      />
     </>
   );
 };
