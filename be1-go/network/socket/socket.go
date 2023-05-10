@@ -2,6 +2,7 @@ package socket
 
 import (
 	"encoding/json"
+	"errors"
 	jsonrpc "popstellar/message"
 
 	"popstellar/message/answer"
@@ -12,7 +13,6 @@ import (
 	"github.com/gorilla/websocket"
 	"github.com/rs/xid"
 	"github.com/rs/zerolog"
-	"golang.org/x/xerrors"
 )
 
 // SocketType represents different socket types
@@ -169,7 +169,7 @@ func (s *baseSocket) Send(msg []byte) {
 func (s *baseSocket) SendError(id *int, err error) {
 	msgError := &answer.Error{}
 
-	if !xerrors.As(err, &msgError) {
+	if !errors.As(err, &msgError) {
 		msgError = answer.NewError(-6, err.Error())
 	}
 

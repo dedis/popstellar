@@ -55,7 +55,8 @@ public class LAONetworkManagerTest {
 
   private static final Channel CHANNEL = Channel.ROOT.subChannel("channel");
   private static final KeyPair KEY_PAIR = Base64DataUtils.generateKeyPair();
-  private static final Data DATA = new CreateLao("LaoName", KEY_PAIR.getPublicKey());
+  private static final Data DATA =
+      new CreateLao("LaoName", KEY_PAIR.getPublicKey(), new ArrayList<>());
 
   private final BehaviorSubject<WebSocket.Event> events = BehaviorSubject.create();
   private final BehaviorSubject<GenericMessage> messages = BehaviorSubject.create();

@@ -11,6 +11,7 @@
   - [Concatenation for hashing](#concatenation-for-hashing)
 - [JSON RPC (low-level)](#json-rpc-low-level)
   - [Query](#query)
+    - [Greeting a server](#greeting-a-server)
     - [Subscribing to a channel](#subscribing-to-a-channel)
     - [Unsubscribing from a channel](#unsubscribing-from-a-channel)
     - [Publishing a message on a channel](#publishing-a-message-on-a-channel)
@@ -184,6 +185,9 @@ and its arguments (`params`).
         },
         {
           "$ref": "method/get_messages_by_id.json"
+        },
+        {
+            "$ref": "method/greet_server.json"
         }
     ],
 
@@ -196,6 +200,7 @@ and its arguments (`params`).
 
 Here are the different methods that can be called:
 
+* GreetServer
 * Subscribe
 * Unsubscribe
 * Catchup
@@ -203,6 +208,82 @@ Here are the different methods that can be called:
 * Publish
 * Heartbeat
 * GetMessagesById
+
+### Greeting a server
+🧭 **RPC Message** > **Query** > **Greet Server**
+
+By sending a greet server message, a server can transmit its public key as well as the 
+addresses of its client and server endpoints to another server. For this purpose, the server sends
+out a JSON-RPC 2.0 *notification* as defined below.
+
+This message should be sent by the server that opens a connection with another server. It should trigger
+a `GreetServer` message from the server that receives the connection containing its own information. 
+
+Notification
+
+```json5
+// ../protocol/examples/query/greet_server/greet_server.json
+
+{
+    "jsonrpc": "2.0",
+    "method": "greet_server",
+    "params": {
+        "public_key": "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=",
+        "client_address": "wss://popdemo.dedis.ch:9000/client",
+        "server_address": "wss://popdemo.dedis.ch:9001/server"
+    }
+}
+```
+
+<details>
+<summary>
+💡 See the full specification
+</summary>
+
+```json5
+{
+  $schema: 'http://json-schema.org/draft-07/schema#',
+  $id: 'https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/greet_server.json',
+  description: 'Sent by the server to the other server when it connects to it. It informs the other server about its public key and client / server endpoints',
+  type: 'object',
+  additionalProperties: false,
+  properties: {
+    method: {
+      description: '[String] operation to be performed by the query',
+      const: 'greet_server',
+    },
+    params: {
+      type: 'object',
+      additionalProperties: false,
+      properties: {
+        public_key: {
+          description: '[String] public key of the server',
+          type: 'string',
+          contentEncoding: 'base64',
+        },
+        server_address: {
+          description: '[String] canonical address of the server with a protocol prefix and (optionally) the port number for connecting as a server',
+          type: 'string',
+          pattern: '^(ws|wss):\\/\\/.*(:\\d{0,5})?\\/.*$',
+        },
+        client_address: {
+          description: '[String] canonical address of the server with a protocol prefix and (optionally) the port number for connecting as a client',
+          type: 'string',
+          pattern: '^(ws|wss):\\/\\/.*(:\\d{0,5})?\\/.*$',
+        },
+      },
+      required: ['public_key', 'server_address', 'client_address']
+    },
+    jsonrpc: {
+      $comment: 'Defined by the parent, but needed here for the validation',
+    },
+  },
+  required: ['method', 'params', 'jsonrpc']
+}
+
+```
+
+</details>
 
 ### Subscribing to a channel
 

@@ -8,15 +8,18 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.IdRes;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.*;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.HomeActivityBinding;
 import com.github.dedis.popstellar.model.network.serializer.JsonUtils;
 import com.github.dedis.popstellar.ui.home.wallet.SeedWalletFragment;
+import com.github.dedis.popstellar.ui.lao.witness.WitnessingViewModel;
 import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
@@ -104,6 +107,7 @@ public class HomeActivity extends AppCompatActivity {
     binding.topAppBar.setNavigationOnClickListener(
         view -> {
           if (Boolean.FALSE.equals(viewModel.isHome().getValue())) {
+            Timber.tag(TAG).d("Going back to home");
             // Press back arrow
             onBackPressed();
           } else {
@@ -159,19 +163,6 @@ public class HomeActivity extends AppCompatActivity {
       // We do not display the security error to the user
       Timber.tag(TAG).d(e, "Storage was unsuccessful due to wallet error");
       Toast.makeText(this, R.string.error_storage_wallet, Toast.LENGTH_SHORT).show();
-    }
-  }
-
-  @Override
-  public void onBackPressed() {
-    Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container_home);
-    if (!(fragment instanceof SeedWalletFragment)) {
-      setCurrentFragment(
-          getSupportFragmentManager(), R.id.fragment_home, HomeFragment::newInstance);
-    }
-    // Move the application to background if back button is pressed on home
-    if (fragment instanceof HomeFragment) {
-      moveTaskToBack(true);
     }
   }
 
@@ -238,6 +229,10 @@ public class HomeActivity extends AppCompatActivity {
     return new ViewModelProvider(activity).get(SettingsViewModel.class);
   }
 
+  public static WitnessingViewModel obtainWitnessingViewModel(FragmentActivity activity) {
+    return new ViewModelProvider(activity).get(WitnessingViewModel.class);
+  }
+
   /** Factory method to create a fresh Intent that opens an HomeActivity */
   public static Intent newIntent(Context ctx) {
     return new Intent(ctx, HomeActivity.class);
@@ -254,5 +249,25 @@ public class HomeActivity extends AppCompatActivity {
       FragmentManager manager, @IdRes int id, Supplier<Fragment> fragmentSupplier) {
     ActivityUtils.setFragmentInContainer(
         manager, R.id.fragment_container_home, id, fragmentSupplier);
+  }
+
+  /** Adds a callback that describes the action to take the next time the back button is pressed */
+  public static void addBackNavigationCallback(
+      FragmentActivity activity, LifecycleOwner lifecycleOwner, OnBackPressedCallback callback) {
+    activity.getOnBackPressedDispatcher().addCallback(lifecycleOwner, callback);
+  }
+
+  /** Adds a specific callback for the back button that opens the home fragment */
+  public static void addBackNavigationCallbackToHome(
+      FragmentActivity activity, LifecycleOwner lifecycleOwner, String tag) {
+    addBackNavigationCallback(
+        activity,
+        lifecycleOwner,
+        ActivityUtils.buildBackButtonCallback(
+            tag,
+            "home fragment",
+            () ->
+                setCurrentFragment(
+                    activity.getSupportFragmentManager(), R.id.fragment_home, HomeFragment::new)));
   }
 }
