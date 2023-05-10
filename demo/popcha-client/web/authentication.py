@@ -61,11 +61,12 @@ def validate_args(args: MultiDict[str, str], client_id: str,
                              options={"verify_signature":False}
                              )
 
-    valid_client_id = client_id in token.get("aud")
+    valid_client_id = (client_id in token.get("aud") or
+                       client_id == token.get("aud"))
     if not valid_client_id:
         return None
 
-    valid_provided_nonce = token.get("nonce", None) not in login_nonces.keys()
+    valid_provided_nonce = token.get("nonce", None) in login_nonces.keys()
     if not valid_provided_nonce:
         return None
 

@@ -28,15 +28,17 @@ class TestAuthenticationResponse:
     """
     Simple test class for the authentication response related functions
     """
-    jwt: str = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL3Nl" \
-               "cnZlci5leGFtcGxlLmNvbSIsInN1YiI6IjEyMzQ1Njc4IiwiYXVkIjpbImNsM" \
-               "WVudCJdLCJleHAiOjE2ODM2NDY0NjAsImlhdCI6MTY4MzY0Mjg2MH0.cSfvw8" \
-               "zhBXNJ6YWrtb7e2hBRye45q5eXpBWRia1KMEwz9E3Ka2qlsLRNQ7VpTJrBDL-" \
-               "so_ESOUwDLl34JjJCvJWxtLg56r1jUQNyp8CTKX64xWT9kBFOF8VNi45MpAVX" \
-               "fgY7TkLgaSiqZzboAP8q_P8rB1FFgHN42FcRvLFIT6u7KkOyiyfo_yba0DL5g" \
-               "dHGDiORoG9O-DUZNr0HAyj2TZHqDn81j8Rg2eZ4w8yzjFu4wERsvlYyR1wL2-" \
-               "tBGI25XSAbCLjrLr4vLjDrl6Ztw7LdlD1bMyLNShnjtg0dArkNw07LtQmxLMb" \
-               "AblYEOXD1QFhwiBoLA21TDKl1KibbMQ"
+    jwt: str = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJjSUQxMjJkdyIs" \
+               "ImF1dGhfdGltZSI6MTY4MzcwNzM4OSwiZXhwIjoxNjgzNzEwOTg5LCJpYXQiO" \
+               "jE2ODM3MDczODksImlzcyI6Imh0dHBzOi8vc2VydmVyLmV4YW1wbGUuY29tIi" \
+               "wibm9uY2UiOiJuMG5jMyIsInN1YiI6InBwaWQxMjU2NCJ9.Wx5VJQ1ASRd-bp" \
+               "SRZUdRRfSRmVcML4_pKmBbNYHCbvNUJCUiOin7MVn_9XYtZG0Dsi0SXovWAqt" \
+               "xZnm5E-z4ptUAn5LWHfA6DQaCYY0q7YjQige-7RCacvGhdTCTvWGvb8g-S5tV" \
+               "BMjtxnh602Y7YkmWv1jeN-qcmgdavszmFLdYmln77kifvN26XXoV3X-x2mm44" \
+               "6KJeBk_Voa3ytK7do4AdmcP3uBxo6DGA2C2HNfO44z7WSyNgLtok1IxS3PNcn" \
+               "DU-DiPeXUNK3wkoiwjNHSBwWCxXffn1Lqfa2A02Pnf4Avz2XIXrmYJWwMUEiy" \
+               "HhP5t30JdzwV2XthROJcnQg"
+
     pub_key: str = b"-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOC" \
                    b"AQ8AMIIBCgKCAQEAsbR9Ip84tR4vc1IEefBJdHMlQAQm1UltYE3vs875" \
                    b"eY8ASZ4lzlLG6iVRe7LH4VN6j7GB4Tjj2EtgUFUAQqbFs5mn7cFO7DR9" \
@@ -52,9 +54,11 @@ class TestAuthenticationResponse:
 
 
     def test_validate_args_validates_a_correct_one(self):
-        authentication.login_nonces["n0nce"] = ("https://server.example.com", time())
-        assert authentication.validate_args(self.args, "cl1ent",
-                                            self.pub_key) is not None
+        authentication.login_nonces["n0nc3"] = ("https://server.example.com",
+                                                time())
+        assert (authentication.validate_args(self.args, "cID122dw",
+                                            self.pub_key)
+                == 'ppid12564@https://server.example.com')
 
     def test_validate_args_fails_if_a_required_arg_is_missing(self):
         assert 0 == 0
