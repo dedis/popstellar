@@ -1,0 +1,10 @@
+{
+  "object": "popcha",
+  "action": "authenticate",
+  "client_id": "cid",
+  "nonce": "n0nce",
+  "identifier": "",
+  "identifier_proof": "",
+  "state": "n5LERR4EDWizD",
+  "response_mode": "query"
+}

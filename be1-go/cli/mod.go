@@ -15,6 +15,7 @@ import (
 	"popstellar/hub/standard_hub"
 	"popstellar/network"
 	"popstellar/network/socket"
+	"popstellar/popcha"
 	"sync"
 	"time"
 
@@ -37,6 +38,8 @@ const (
 
 	// connectionRetryRate is the rate at which the time to wait before retrying to connect to a server increases
 	connectionRetryRate = 2
+
+	popchaHTMLPath = "popcha/qrcode/popcha.html"
 )
 
 // ServerConfig contains the configuration for the server
@@ -101,6 +104,12 @@ func Serve(cliCtx *cli.Context) error {
 		log.With().Str("role", "server websocket").Logger())
 	serverSrv.Start()
 
+	// Start the PoPCHA Authorization Server
+	authorizationSrv := popcha.NewAuthServer(h, "localhost", 9432, popchaHTMLPath,
+		log.With().Str("role", "authorization server").Logger())
+	authorizationSrv.Start()
+	<-authorizationSrv.Started
+
 	// create wait group which waits for goroutines to finish
 	wg := &sync.WaitGroup{}
 	done := make(chan struct{})
@@ -136,7 +145,7 @@ func Serve(cliCtx *cli.Context) error {
 	go serverConnectionLoop(h, wg, done, serverConfig.OtherServers, updatedServersChan, &connectedServers)
 
 	// Wait for a Ctrl-C
-	err = network.WaitAndShutdownServers(cliCtx.Context, clientSrv, serverSrv)
+	err = network.WaitAndShutdownServers(cliCtx.Context, authorizationSrv, clientSrv, serverSrv)
 	if err != nil {
 		return err
 	}
@@ -144,6 +153,7 @@ func Serve(cliCtx *cli.Context) error {
 	h.Stop()
 	<-clientSrv.Stopped
 	<-serverSrv.Stopped
+	<-authorizationSrv.Stopped
 
 	// notify channs to stop
 	close(done)
