@@ -4,7 +4,7 @@ import akka.http.scaladsl.model.{ContentTypes, HttpEntity, ResponseEntity}
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel
 import com.google.zxing.qrcode.encoder.{ByteMatrix, Encoder}
 
-import scala.reflect.io.File
+import scala.io.Source
 
 /** Generates an http response that holds a web page with any desired challenge content in the form of a displayed qrcode The html/svg representation of the qrcode is inspired from https://github.com/svg/svgo
   */
@@ -27,9 +27,9 @@ object QRCodeChallengeGenerator {
     val encodedContent = Encoder.encode(content, ErrorCorrectionLevel.H)
     val htmlQRCode = fromMatrixToHTML(encodedContent.getMatrix)
 
-    val templateFile = File(templateFileName)
+    val templateFile = Source.fromFile(templateFileName)
     val lines = for {
-      line <- templateFile.lines()
+      line <- templateFile.getLines()
       substitutedLine = line.replace(webTemplateQRCodeTemplate, htmlQRCode)
     } yield substitutedLine
     val challengePage = lines.mkString("\n")
