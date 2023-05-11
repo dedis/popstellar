@@ -66,7 +66,7 @@ final case class Monitor(
 }
 
 object Monitor {
-  def props(heartbeatGenRef: ActorRef, heartbeatRate: FiniteDuration = 30.seconds, messageDelay: FiniteDuration = 3.seconds): Props =
+  def props(heartbeatGenRef: ActorRef, heartbeatRate: FiniteDuration = 15.seconds, messageDelay: FiniteDuration = 1.seconds): Props =
     Props(new Monitor(heartbeatGenRef, heartbeatRate, messageDelay))
 
   def sink(monitorRef: ActorRef): Sink[GraphMessage, NotUsed] = {
