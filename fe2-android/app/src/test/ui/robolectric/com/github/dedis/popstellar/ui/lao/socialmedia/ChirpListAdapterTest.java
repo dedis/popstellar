@@ -13,7 +13,9 @@ import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.model.objects.security.*;
 import com.github.dedis.popstellar.repository.RollCallRepository;
 import com.github.dedis.popstellar.repository.SocialMediaRepository;
+import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.testutils.BundleBuilder;
+import com.github.dedis.popstellar.testutils.MessageSenderHelper;
 import com.github.dedis.popstellar.testutils.fragment.ActivityFragmentScenarioRule;
 import com.github.dedis.popstellar.testutils.pages.lao.LaoActivityPageObject;
 import com.github.dedis.popstellar.ui.lao.LaoActivity;
@@ -97,7 +99,10 @@ public class ChirpListAdapterTest {
 
   @Inject SocialMediaRepository socialMediaRepository;
   @Inject RollCallRepository rollCallRepository;
+  @BindValue @Mock GlobalNetworkManager networkManager;
   @BindValue @Mock KeyManager keyManager;
+
+  MessageSenderHelper messageSenderHelper = new MessageSenderHelper();
 
   @Rule public InstantTaskExecutorRule rule = new InstantTaskExecutorRule();
 
@@ -119,6 +124,10 @@ public class ChirpListAdapterTest {
           socialMediaRepository.addChirp(LAO_ID, CHIRP_2);
           socialMediaRepository.addReaction(LAO_ID, REACTION);
 
+          messageSenderHelper.setupMock();
+          when(networkManager.getMessageSender()).thenReturn(messageSenderHelper.getMockedSender());
+
+          when(keyManager.getMainPublicKey()).thenReturn(SENDER_KEY_1.getPublicKey());
           when(keyManager.getValidPoPToken(anyString(), any(RollCall.class)))
               .thenReturn((PoPToken) SENDER_KEY_1);
         }
@@ -275,7 +284,7 @@ public class ChirpListAdapterTest {
   }
 
   @Test
-  public void getViewReactionTest() {
+  public void getViewButtonTest() {
     List<Chirp> chirps = createChirpList();
     activityScenarioRule
         .getScenario()
@@ -297,11 +306,26 @@ public class ChirpListAdapterTest {
               View view1 = chirpListAdapter.getView(0, null, layout);
               assertNotNull(view1);
 
-              TextView upvoteCount = view1.findViewById(R.id.upvote_counter);
-              assertNotNull(upvoteCount);
+              // Verify the upvote is set
               ImageButton upvoteButton = view1.findViewById(R.id.upvote_button);
               assertNotNull(upvoteButton);
               assertTrue(upvoteButton.isSelected());
+              upvoteButton.callOnClick();
+              assertFalse(upvoteButton.isSelected());
+
+              // Verify the downvote is not set
+              ImageButton downvoteButton = view1.findViewById(R.id.downvote_button);
+              assertNotNull(downvoteButton);
+              assertFalse(downvoteButton.isSelected());
+              downvoteButton.callOnClick();
+              assertTrue(downvoteButton.isSelected());
+
+              // Verify the heart is not set
+              ImageButton heartButton = view1.findViewById(R.id.heart_button);
+              assertNotNull(heartButton);
+              assertFalse(heartButton.isSelected());
+              heartButton.callOnClick();
+              assertTrue(heartButton.isSelected());
             });
   }
 
