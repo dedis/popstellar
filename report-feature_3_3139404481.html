@@ -41,7 +41,7 @@ $(document).ready(function() {
 
 
 
-<title>Cucumber Reports  - Feature: be/rollCall/openRollCall.feature</title>
+<title>Cucumber Reports  - Feature: be/election/electionSetup.feature</title>
 
 </head>
 <body>
@@ -74,7 +74,7 @@ $(document).ready(function() {
   <tbody>
     <tr class="info">
       <td>scala</td>
-      <td>10 May 2023, 04:12</td>
+      <td>11 May 2023, 04:12</td>
     </tr>
   </tbody>
 </table>
@@ -126,19 +126,19 @@ $(document).ready(function() {
 
         <tbody>
         <tr>
-          <td class="tagname">be/rollCall/openRollCall.feature</td>
-          <td      class="passed"    >69</td>
+          <td class="tagname">be/election/electionSetup.feature</td>
+          <td      class="passed"    >65</td>
           <td      class="failed"    >5</td>
           <td >0</td>
           <td >0</td>
           <td >0</td>
-          <td class="total">74</td>
+          <td class="total">70</td>
 
           <td >0</td>
           <td  class="failed"    >5</td>
           <td class="total">5</td>
 
-          <td class="duration" data-value="32894428932">32.894</td>
+          <td class="duration" data-value="32177861044">32.177</td>
           <td class="failed">Failed</td>
         </tr>
         </tbody>
@@ -175,12 +175,12 @@ $(document).ready(function() {
 
 <div class="brief failed">
   <span class="keyword indention">Feature</span>
-  <span class="name">be/rollCall/openRollCall.feature</span>
+  <span class="name">be/election/electionSetup.feature</span>
 
 
 </div>
 
-        <div class="description indention">Roll Call Open</div>
+        <div class="description indention">Setup an Election</div>
 
         <div class="elements inner-level">
 
@@ -191,7 +191,7 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">2.784</span>
+  <span class="lead-duration duration">2.770</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-1">
@@ -234,7 +234,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/utils/server.feature')</span>
 
-  <span class="lead-duration duration">2.513</span>
+  <span class="lead-duration duration">2.511</span>
 
 </div>
 
@@ -288,7 +288,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/mockFrontEnd.feature')</span>
 
-  <span class="lead-duration duration">0.245</span>
+  <span class="lead-duration duration">0.238</span>
 
 </div>
 
@@ -342,7 +342,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/constants.feature')</span>
 
-  <span class="lead-duration duration">0.024</span>
+  <span class="lead-duration duration">0.019</span>
 
 </div>
 
@@ -436,14 +436,14 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">3.775</span>
+  <span class="lead-duration duration">3.607</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-3">
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
-  <span class="name">Open a valid Roll Call</span>
+  <span class="name">Setting up a valid election should succeed</span>
 
 
      <i class="chevron fa fa-fw"></i>
@@ -479,7 +479,7 @@ $(document).ready(function() {
   <span class="keyword indention">Given</span>
   <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=valid_roll_call')</span>
 
-  <span class="lead-duration duration">0.835</span>
+  <span class="lead-duration duration">0.656</span>
 
 </div>
 
@@ -531,7 +531,7 @@ $(document).ready(function() {
 
 <div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
-  <span class="name">def validOpenRollCall =</span>
+  <span class="name">def validElectionSetup =</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -552,11 +552,24 @@ $(document).ready(function() {
       </div>
       <div id="msg-5" class="collapse collapsable-details">
         <pre>{
-  &quot;object&quot;: &quot;roll_call&quot;,
-  &quot;action&quot;: &quot;open&quot;,
-  &quot;update_id&quot;: '#(getRollCallOpenValidUpdateId)',
-  &quot;opens&quot;: '#(getRollCallOpenValidId)',
-  &quot;opened_at&quot;: '#(getRollCallOpenValidCreationTime)'
+  &quot;object&quot;: &quot;election&quot;,
+  &quot;action&quot;: &quot;setup&quot;,
+  &quot;id&quot;: '#(getValidElectionSetupId)',
+  &quot;lao&quot;: '#(getLaoValid)',
+  &quot;name&quot;: &quot;Election&quot;,
+  &quot;version&quot;: &quot;OPEN_BALLOT&quot;,
+  &quot;created_at&quot;: 1633098941,
+  &quot;start_time&quot;: 1633098941,
+  &quot;end_time&quot;: 1633099812,
+  &quot;questions&quot;: [
+    {
+      &quot;id&quot;: '#(getIsThisProjectFunQuestionId)',
+      &quot;question&quot;: &quot;Is this project fun?&quot;,
+      &quot;voting_method&quot;: &quot;Plurality&quot;,
+      &quot;ballot_options&quot;: [&quot;Yes&quot;, &quot;No&quot;],
+      &quot;write_in&quot;: false
+    }
+  ]
 }</pre>
       </div>
     </div>
@@ -574,9 +587,9 @@ $(document).ready(function() {
 
 <div class="brief step-name-When passed">
   <span class="keyword indention">When</span>
-  <span class="name">frontend.publish(validOpenRollCall, laoChannel)</span>
+  <span class="name">frontend.publish(validElectionSetup, laoChannel)</span>
 
-  <span class="lead-duration duration">0.001</span>
+  <span class="lead-duration duration">0.004</span>
 
 </div>
 
@@ -601,9 +614,9 @@ $(document).ready(function() {
 
 <div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
-  <span class="name">json answer = frontend.getBackendResponse(validOpenRollCall)</span>
+  <span class="name">json answer = frontend.getBackendResponse(validElectionSetup)</span>
 
-  <span class="lead-duration duration">0.018</span>
+  <span class="lead-duration duration">0.059</span>
 
 </div>
 
@@ -657,7 +670,7 @@ $(document).ready(function() {
   <span class="keyword indention">And</span>
   <span class="name">match frontend.receiveNoMoreResponses() == true</span>
 
-  <span class="lead-duration duration">2.919</span>
+  <span class="lead-duration duration">2.887</span>
 
 </div>
 
@@ -677,7 +690,7 @@ $(document).ready(function() {
   false
   true
 
-classpath:be/rollCall/openRollCall.feature:42</pre>
+classpath:be/election/electionSetup.feature:50</pre>
       </div>
     </div>
   </div>
@@ -691,14 +704,14 @@ classpath:be/rollCall/openRollCall.feature:42</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-7" class="collapse collapsable-details">
-        <pre>04:12:15.642 classpath:be/rollCall/openRollCall.feature:42
+        <pre>04:09:49.034 classpath:be/election/electionSetup.feature:50
 And match frontend.receiveNoMoreResponses() == true
 match failed: EQUALS
   $ | not equal (BOOLEAN:BOOLEAN)
   false
   true
 
-classpath:be/rollCall/openRollCall.feature:42
+classpath:be/election/electionSetup.feature:50
 </pre>
       </div>
     </div>
@@ -729,7 +742,7 @@ classpath:be/rollCall/openRollCall.feature:42
 </div>
 
 
-  <span class="lead-duration duration">2.782</span>
+  <span class="lead-duration duration">2.790</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-8">
@@ -772,7 +785,558 @@ classpath:be/rollCall/openRollCall.feature:42
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/utils/server.feature')</span>
 
-  <span class="lead-duration duration">2.510</span>
+  <span class="lead-duration duration">2.509</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name- passed">
+  <span class="keyword indention"></span>
+  <span class="name">be/utils/server.feature</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-* passed">
+  <span class="keyword indention">*</span>
+  <span class="name">call read('classpath:be/mockFrontEnd.feature')</span>
+
+  <span class="lead-duration duration">0.270</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name- passed">
+  <span class="keyword indention"></span>
+  <span class="name">be/mockFrontEnd.feature</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-* passed">
+  <span class="keyword indention">*</span>
+  <span class="name">call read('classpath:be/constants.feature')</span>
+
+  <span class="lead-duration duration">0.010</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name- passed">
+  <span class="keyword indention"></span>
+  <span class="name">be/constants.feature</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-* passed">
+  <span class="keyword indention">*</span>
+  <span class="name">string laoChannel = &quot;/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=&quot;</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+  </div>
+</div>
+
+
+
+
+
+  </div>
+</div>
+
+
+<div class="element">
+
+
+<div class="tags indention">
+    <b>Tags:</b>
+       <a href="report-tag_524961969.html">@env=go,scala</a>
+</div>
+
+
+  <span class="lead-duration duration">3.686</span>
+
+
+  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-10">
+
+<div class="brief failed">
+  <span class="keyword indention">Scenario</span>
+  <span class="name">Setting up an election with invalid election id should fail</span>
+
+
+     <i class="chevron fa fa-fw"></i>
+</div>
+
+  </span>
+  <div class="description indention"></div>
+
+  <div id="element-10" class="collapse collapsable-details  in ">
+
+
+
+
+
+<div class="steps inner-level">
+  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-11">
+
+<div class="brief failed">
+  <span class="keyword indention">Steps</span>
+  <span class="name"></span>
+
+
+     <i class="chevron fa fa-fw"></i>
+</div>
+
+  </div>
+
+  <div id="steps-11" class="inner-level collapse collapsable-details  in ">
+      <div class="step">
+
+
+<div class="brief step-name-Given passed">
+  <span class="keyword indention">Given</span>
+  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=valid_roll_call')</span>
+
+  <span class="lead-duration duration">0.745</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name- passed">
+  <span class="keyword indention"></span>
+  <span class="name">be/utils/simpleScenarios.feature</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And passed">
+  <span class="keyword indention">And</span>
+  <span class="name">def validElectionSetup =</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+  <div class="inner-level">
+    <div class="docstring indention">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-12">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-12" class="collapse collapsable-details">
+        <pre>{
+  &quot;object&quot;: &quot;election&quot;,
+  &quot;action&quot;: &quot;setup&quot;,
+  &quot;id&quot;: '#(getInvalidElectionSetupId)',
+  &quot;lao&quot;: '#(getLaoValid)',
+  &quot;name&quot;: &quot;Election&quot;,
+  &quot;version&quot;: &quot;OPEN_BALLOT&quot;,
+  &quot;created_at&quot;: 1633098941,
+  &quot;start_time&quot;: 1633098941,
+  &quot;end_time&quot;: 1633099812,
+  &quot;questions&quot;: [
+    {
+      &quot;id&quot;: '#(getIsThisProjectFunQuestionId)',
+      &quot;question&quot;: &quot;Is this project fun?&quot;,
+      &quot;voting_method&quot;: &quot;Plurality&quot;,
+      &quot;ballot_options&quot;: [&quot;Yes&quot;, &quot;No&quot;],
+      &quot;write_in&quot;: false
+    }
+  ]
+}</pre>
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-When passed">
+  <span class="keyword indention">When</span>
+  <span class="name">frontend.publish(validElectionSetup, laoChannel)</span>
+
+  <span class="lead-duration duration">0.004</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And passed">
+  <span class="keyword indention">And</span>
+  <span class="name">json answer = frontend.getBackendResponse(validElectionSetup)</span>
+
+  <span class="lead-duration duration">0.014</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-Then passed">
+  <span class="keyword indention">Then</span>
+  <span class="name">match answer contains INVALID_MESSAGE_FIELD</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And failed">
+  <span class="keyword indention">And</span>
+  <span class="name">match frontend.receiveNoMoreResponses() == true</span>
+
+  <span class="lead-duration duration">2.920</span>
+
+</div>
+
+
+
+
+
+
+  <div class="inner-level">
+    <div class="message indention">
+      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-13">
+          <a>match</a>
+      </div>
+      <div id="msg-13" class="collapse collapsable-details  in ">
+        <pre>match failed: EQUALS
+  $ | not equal (BOOLEAN:BOOLEAN)
+  false
+  true
+
+classpath:be/election/electionSetup.feature:83</pre>
+      </div>
+    </div>
+  </div>
+
+
+
+
+  <div class="inner-level">
+    <div class="docstring indention">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-14">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-14" class="collapse collapsable-details">
+        <pre>04:09:55.864 classpath:be/election/electionSetup.feature:83
+And match frontend.receiveNoMoreResponses() == true
+match failed: EQUALS
+  $ | not equal (BOOLEAN:BOOLEAN)
+  false
+  true
+
+classpath:be/election/electionSetup.feature:83
+</pre>
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+
+
+      </div>
+  </div>
+</div>
+
+
+
+
+
+  </div>
+</div>
+
+
+<div class="element">
+
+
+<div class="tags indention">
+</div>
+
+
+  <span class="lead-duration duration">2.783</span>
+
+
+  <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-15">
+
+<div class="brief passed">
+  <span class="keyword indention">Background</span>
+  <span class="name"></span>
+
+
+     <i class="chevron fa fa-fw"></i>
+</div>
+
+  </span>
+  <div class="description indention"></div>
+
+  <div id="element-15" class="collapse collapsable-details ">
+
+
+
+
+
+<div class="steps inner-level">
+  <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-16">
+
+<div class="brief passed">
+  <span class="keyword indention">Steps</span>
+  <span class="name"></span>
+
+
+     <i class="chevron fa fa-fw"></i>
+</div>
+
+  </div>
+
+  <div id="steps-16" class="inner-level collapse collapsable-details ">
+      <div class="step">
+
+
+<div class="brief step-name-* passed">
+  <span class="keyword indention">*</span>
+  <span class="name">call read('classpath:be/utils/server.feature')</span>
+
+  <span class="lead-duration duration">2.511</span>
 
 </div>
 
@@ -880,7 +1444,7 @@ classpath:be/rollCall/openRollCall.feature:42
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/constants.feature')</span>
 
-  <span class="lead-duration duration">0.012</span>
+  <span class="lead-duration duration">0.010</span>
 
 </div>
 
@@ -974,14 +1538,14 @@ classpath:be/rollCall/openRollCall.feature:42
 </div>
 
 
-  <span class="lead-duration duration">3.767</span>
+  <span class="lead-duration duration">3.708</span>
 
 
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-10">
+  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-17">
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
-  <span class="name">Opening a roll call with non-organizer as sender should fail</span>
+  <span class="name">Setting up an election with invalid question id should fail</span>
 
 
      <i class="chevron fa fa-fw"></i>
@@ -990,14 +1554,14 @@ classpath:be/rollCall/openRollCall.feature:42
   </span>
   <div class="description indention"></div>
 
-  <div id="element-10" class="collapse collapsable-details  in ">
+  <div id="element-17" class="collapse collapsable-details  in ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-11">
+  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-18">
 
 <div class="brief failed">
   <span class="keyword indention">Steps</span>
@@ -1009,7 +1573,7 @@ classpath:be/rollCall/openRollCall.feature:42
 
   </div>
 
-  <div id="steps-11" class="inner-level collapse collapsable-details  in ">
+  <div id="steps-18" class="inner-level collapse collapsable-details  in ">
       <div class="step">
 
 
@@ -1017,7 +1581,7 @@ classpath:be/rollCall/openRollCall.feature:42
   <span class="keyword indention">Given</span>
   <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=valid_roll_call')</span>
 
-  <span class="lead-duration duration">0.813</span>
+  <span class="lead-duration duration">0.749</span>
 
 </div>
 
@@ -1069,7 +1633,7 @@ classpath:be/rollCall/openRollCall.feature:42
 
 <div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
-  <span class="name">def validOpenRollCall =</span>
+  <span class="name">def validElectionSetup =</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -1085,16 +1649,29 @@ classpath:be/rollCall/openRollCall.feature:42
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-12">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-19">
           <a>Doc string</a>
       </div>
-      <div id="msg-12" class="collapse collapsable-details">
+      <div id="msg-19" class="collapse collapsable-details">
         <pre>{
-  &quot;object&quot;: &quot;roll_call&quot;,
-  &quot;action&quot;: &quot;open&quot;,
-  &quot;update_id&quot;: '#(getRollCallOpenValidUpdateId)',
-  &quot;opens&quot;: '#(getRollCallOpenValidId)',
-  &quot;opened_at&quot;: '#(getRollCallOpenValidCreationTime)'
+  &quot;object&quot;: &quot;election&quot;,
+  &quot;action&quot;: &quot;setup&quot;,
+  &quot;id&quot;: '#(getValidElectionSetupId)',
+  &quot;lao&quot;: '#(getLaoValid)',
+  &quot;name&quot;: &quot;Election&quot;,
+  &quot;version&quot;: &quot;OPEN_BALLOT&quot;,
+  &quot;created_at&quot;: 1633098941,
+  &quot;start_time&quot;: 1633098941,
+  &quot;end_time&quot;: 1633099812,
+  &quot;questions&quot;: [
+    {
+      &quot;id&quot;: '#(getInvalidQuestionId)',
+      &quot;question&quot;: &quot;Is this project fun?&quot;,
+      &quot;voting_method&quot;: &quot;Plurality&quot;,
+      &quot;ballot_options&quot;: [&quot;Yes&quot;, &quot;No&quot;],
+      &quot;write_in&quot;: false
+    }
+  ]
 }</pre>
       </div>
     </div>
@@ -1110,36 +1687,9 @@ classpath:be/rollCall/openRollCall.feature:42
       <div class="step">
 
 
-<div class="brief step-name-* passed">
-  <span class="keyword indention">*</span>
-  <span class="name">frontend.changeSenderToBeNonAttendee()</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
 <div class="brief step-name-When passed">
   <span class="keyword indention">When</span>
-  <span class="name">frontend.publish(validOpenRollCall, laoChannel)</span>
+  <span class="name">frontend.publish(validElectionSetup, laoChannel)</span>
 
   <span class="lead-duration duration">0.001</span>
 
@@ -1166,9 +1716,9 @@ classpath:be/rollCall/openRollCall.feature:42
 
 <div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
-  <span class="name">json answer = frontend.getBackendResponse(validOpenRollCall)</span>
+  <span class="name">json answer = frontend.getBackendResponse(validElectionSetup)</span>
 
-  <span class="lead-duration duration">0.009</span>
+  <span class="lead-duration duration">0.018</span>
 
 </div>
 
@@ -1222,7 +1772,7 @@ classpath:be/rollCall/openRollCall.feature:42
   <span class="keyword indention">And</span>
   <span class="name">match frontend.receiveNoMoreResponses() == true</span>
 
-  <span class="lead-duration duration">2.942</span>
+  <span class="lead-duration duration">2.938</span>
 
 </div>
 
@@ -1233,16 +1783,16 @@ classpath:be/rollCall/openRollCall.feature:42
 
   <div class="inner-level">
     <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-13">
+      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-20">
           <a>match</a>
       </div>
-      <div id="msg-13" class="collapse collapsable-details  in ">
+      <div id="msg-20" class="collapse collapsable-details  in ">
         <pre>match failed: EQUALS
   $ | not equal (BOOLEAN:BOOLEAN)
   false
   true
 
-classpath:be/rollCall/openRollCall.feature:60</pre>
+classpath:be/election/electionSetup.feature:115</pre>
       </div>
     </div>
   </div>
@@ -1252,18 +1802,18 @@ classpath:be/rollCall/openRollCall.feature:60</pre>
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-14">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-21">
           <a>Doc string</a>
       </div>
-      <div id="msg-14" class="collapse collapsable-details">
-        <pre>04:12:22.547 classpath:be/rollCall/openRollCall.feature:60
+      <div id="msg-21" class="collapse collapsable-details">
+        <pre>04:10:02.699 classpath:be/election/electionSetup.feature:115
 And match frontend.receiveNoMoreResponses() == true
 match failed: EQUALS
   $ | not equal (BOOLEAN:BOOLEAN)
   false
   true
 
-classpath:be/rollCall/openRollCall.feature:60
+classpath:be/election/electionSetup.feature:115
 </pre>
       </div>
     </div>
@@ -1294,10 +1844,10 @@ classpath:be/rollCall/openRollCall.feature:60
 </div>
 
 
-  <span class="lead-duration duration">2.800</span>
+  <span class="lead-duration duration">2.755</span>
 
 
-  <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-15">
+  <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-22">
 
 <div class="brief passed">
   <span class="keyword indention">Background</span>
@@ -1310,14 +1860,14 @@ classpath:be/rollCall/openRollCall.feature:60
   </span>
   <div class="description indention"></div>
 
-  <div id="element-15" class="collapse collapsable-details ">
+  <div id="element-22" class="collapse collapsable-details ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-16">
+  <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-23">
 
 <div class="brief passed">
   <span class="keyword indention">Steps</span>
@@ -1329,7 +1879,7 @@ classpath:be/rollCall/openRollCall.feature:60
 
   </div>
 
-  <div id="steps-16" class="inner-level collapse collapsable-details ">
+  <div id="steps-23" class="inner-level collapse collapsable-details ">
       <div class="step">
 
 
@@ -1391,7 +1941,7 @@ classpath:be/rollCall/openRollCall.feature:60
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/mockFrontEnd.feature')</span>
 
-  <span class="lead-duration duration">0.266</span>
+  <span class="lead-duration duration">0.228</span>
 
 </div>
 
@@ -1445,7 +1995,7 @@ classpath:be/rollCall/openRollCall.feature:60
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/constants.feature')</span>
 
-  <span class="lead-duration duration">0.021</span>
+  <span class="lead-duration duration">0.014</span>
 
 </div>
 
@@ -1539,14 +2089,14 @@ classpath:be/rollCall/openRollCall.feature:60
 </div>
 
 
-  <span class="lead-duration duration">3.818</span>
+  <span class="lead-duration duration">3.627</span>
 
 
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-17">
+  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-24">
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
-  <span class="name">Opening a Roll Call that does not exist should return an error</span>
+  <span class="name">Setting up an election with a question containing empty ballot options should return an error</span>
 
 
      <i class="chevron fa fa-fw"></i>
@@ -1555,14 +2105,14 @@ classpath:be/rollCall/openRollCall.feature:60
   </span>
   <div class="description indention"></div>
 
-  <div id="element-17" class="collapse collapsable-details  in ">
+  <div id="element-24" class="collapse collapsable-details  in ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-18">
+  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-25">
 
 <div class="brief failed">
   <span class="keyword indention">Steps</span>
@@ -1574,15 +2124,15 @@ classpath:be/rollCall/openRollCall.feature:60
 
   </div>
 
-  <div id="steps-18" class="inner-level collapse collapsable-details  in ">
+  <div id="steps-25" class="inner-level collapse collapsable-details  in ">
       <div class="step">
 
 
 <div class="brief step-name-Given passed">
   <span class="keyword indention">Given</span>
-  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=valid_lao')</span>
+  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=valid_roll_call')</span>
 
-  <span class="lead-duration duration">0.817</span>
+  <span class="lead-duration duration">0.664</span>
 
 </div>
 
@@ -1634,7 +2184,7 @@ classpath:be/rollCall/openRollCall.feature:60
 
 <div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
-  <span class="name">def validOpenRollCall =</span>
+  <span class="name">def validElectionSetup =</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -1650,16 +2200,29 @@ classpath:be/rollCall/openRollCall.feature:60
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-19">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-26">
           <a>Doc string</a>
       </div>
-      <div id="msg-19" class="collapse collapsable-details">
+      <div id="msg-26" class="collapse collapsable-details">
         <pre>{
-  &quot;object&quot;: &quot;roll_call&quot;,
-  &quot;action&quot;: &quot;open&quot;,
-  &quot;update_id&quot;: '#(getRollCallOpenValidUpdateId)',
-  &quot;opens&quot;: '#(getRollCallOpenValidId)',
-  &quot;opened_at&quot;: '#(getRollCallOpenValidCreationTime)'
+  &quot;object&quot;: &quot;election&quot;,
+  &quot;action&quot;: &quot;setup&quot;,
+  &quot;id&quot;: '#(getValidElectionSetupId)',
+  &quot;lao&quot;: '#(getLaoValid)',
+  &quot;name&quot;: &quot;Election&quot;,
+  &quot;version&quot;: &quot;OPEN_BALLOT&quot;,
+  &quot;created_at&quot;: 1633098941,
+  &quot;start_time&quot;: 1633098941,
+  &quot;end_time&quot;: 1633099812,
+  &quot;questions&quot;: [
+    {
+      &quot;id&quot;: '#(getIsThisProjectFunQuestionId)',
+      &quot;question&quot;: &quot;Is this project fun?&quot;,
+      &quot;voting_method&quot;: &quot;Plurality&quot;,
+      &quot;ballot_options&quot;: [],
+      &quot;write_in&quot;: false
+    }
+  ]
 }</pre>
       </div>
     </div>
@@ -1677,7 +2240,7 @@ classpath:be/rollCall/openRollCall.feature:60
 
 <div class="brief step-name-When passed">
   <span class="keyword indention">When</span>
-  <span class="name">frontend.publish(validOpenRollCall, laoChannel)</span>
+  <span class="name">frontend.publish(validElectionSetup, laoChannel)</span>
 
   <span class="lead-duration duration">0.001</span>
 
@@ -1704,9 +2267,9 @@ classpath:be/rollCall/openRollCall.feature:60
 
 <div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
-  <span class="name">json answer = frontend.getBackendResponse(validOpenRollCall)</span>
+  <span class="name">json answer = frontend.getBackendResponse(validElectionSetup)</span>
 
-  <span class="lead-duration duration">0.027</span>
+  <span class="lead-duration duration">0.015</span>
 
 </div>
 
@@ -1760,7 +2323,7 @@ classpath:be/rollCall/openRollCall.feature:60
   <span class="keyword indention">And</span>
   <span class="name">match frontend.receiveNoMoreResponses() == true</span>
 
-  <span class="lead-duration duration">2.971</span>
+  <span class="lead-duration duration">2.945</span>
 
 </div>
 
@@ -1771,16 +2334,16 @@ classpath:be/rollCall/openRollCall.feature:60
 
   <div class="inner-level">
     <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-20">
+      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-27">
           <a>match</a>
       </div>
-      <div id="msg-20" class="collapse collapsable-details  in ">
+      <div id="msg-27" class="collapse collapsable-details  in ">
         <pre>match failed: EQUALS
   $ | not equal (BOOLEAN:BOOLEAN)
   false
   true
 
-classpath:be/rollCall/openRollCall.feature:80</pre>
+classpath:be/election/electionSetup.feature:147</pre>
       </div>
     </div>
   </div>
@@ -1790,18 +2353,18 @@ classpath:be/rollCall/openRollCall.feature:80</pre>
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-21">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-28">
           <a>Doc string</a>
       </div>
-      <div id="msg-21" class="collapse collapsable-details">
-        <pre>04:12:29.534 classpath:be/rollCall/openRollCall.feature:80
+      <div id="msg-28" class="collapse collapsable-details">
+        <pre>04:10:09.116 classpath:be/election/electionSetup.feature:147
 And match frontend.receiveNoMoreResponses() == true
 match failed: EQUALS
   $ | not equal (BOOLEAN:BOOLEAN)
   false
   true
 
-classpath:be/rollCall/openRollCall.feature:80
+classpath:be/election/electionSetup.feature:147
 </pre>
       </div>
     </div>
@@ -1832,10 +2395,10 @@ classpath:be/rollCall/openRollCall.feature:80
 </div>
 
 
-  <span class="lead-duration duration">2.798</span>
+  <span class="lead-duration duration">2.818</span>
 
 
-  <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-22">
+  <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-29">
 
 <div class="brief passed">
   <span class="keyword indention">Background</span>
@@ -1848,14 +2411,14 @@ classpath:be/rollCall/openRollCall.feature:80
   </span>
   <div class="description indention"></div>
 
-  <div id="element-22" class="collapse collapsable-details ">
+  <div id="element-29" class="collapse collapsable-details ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-23">
+  <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-30">
 
 <div class="brief passed">
   <span class="keyword indention">Steps</span>
@@ -1867,7 +2430,7 @@ classpath:be/rollCall/openRollCall.feature:80
 
   </div>
 
-  <div id="steps-23" class="inner-level collapse collapsable-details ">
+  <div id="steps-30" class="inner-level collapse collapsable-details ">
       <div class="step">
 
 
@@ -1875,7 +2438,7 @@ classpath:be/rollCall/openRollCall.feature:80
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/utils/server.feature')</span>
 
-  <span class="lead-duration duration">2.512</span>
+  <span class="lead-duration duration">2.509</span>
 
 </div>
 
@@ -1929,7 +2492,7 @@ classpath:be/rollCall/openRollCall.feature:80
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/mockFrontEnd.feature')</span>
 
-  <span class="lead-duration duration">0.269</span>
+  <span class="lead-duration duration">0.296</span>
 
 </div>
 
@@ -1983,7 +2546,7 @@ classpath:be/rollCall/openRollCall.feature:80
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/constants.feature')</span>
 
-  <span class="lead-duration duration">0.015</span>
+  <span class="lead-duration duration">0.013</span>
 
 </div>
 
@@ -2077,14 +2640,14 @@ classpath:be/rollCall/openRollCall.feature:80
 </div>
 
 
-  <span class="lead-duration duration">3.801</span>
+  <span class="lead-duration duration">3.628</span>
 
 
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-24">
+  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-31">
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
-  <span class="name">Opening a Roll Call with invalid update_id should return an error</span>
+  <span class="name">Setting up an election with a non-supported voting method should return an error</span>
 
 
      <i class="chevron fa fa-fw"></i>
@@ -2093,14 +2656,14 @@ classpath:be/rollCall/openRollCall.feature:80
   </span>
   <div class="description indention"></div>
 
-  <div id="element-24" class="collapse collapsable-details  in ">
+  <div id="element-31" class="collapse collapsable-details  in ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-25">
+  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-32">
 
 <div class="brief failed">
   <span class="keyword indention">Steps</span>
@@ -2112,7 +2675,7 @@ classpath:be/rollCall/openRollCall.feature:80
 
   </div>
 
-  <div id="steps-25" class="inner-level collapse collapsable-details  in ">
+  <div id="steps-32" class="inner-level collapse collapsable-details  in ">
       <div class="step">
 
 
@@ -2120,7 +2683,7 @@ classpath:be/rollCall/openRollCall.feature:80
   <span class="keyword indention">Given</span>
   <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=valid_roll_call')</span>
 
-  <span class="lead-duration duration">0.871</span>
+  <span class="lead-duration duration">0.700</span>
 
 </div>
 
@@ -2172,7 +2735,7 @@ classpath:be/rollCall/openRollCall.feature:80
 
 <div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
-  <span class="name">def validOpenRollCall =</span>
+  <span class="name">def validElectionSetup =</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -2188,16 +2751,29 @@ classpath:be/rollCall/openRollCall.feature:80
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-26">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-33">
           <a>Doc string</a>
       </div>
-      <div id="msg-26" class="collapse collapsable-details">
+      <div id="msg-33" class="collapse collapsable-details">
         <pre>{
-  &quot;object&quot;: &quot;roll_call&quot;,
-  &quot;action&quot;: &quot;open&quot;,
-  &quot;update_id&quot;: '#(getRollCallOpenInvalidUpdateId)',
-  &quot;opens&quot;: '#(getRollCallOpenValidId)',
-  &quot;opened_at&quot;: '#(getRollCallOpenValidCreationTime)'
+  &quot;object&quot;: &quot;election&quot;,
+  &quot;action&quot;: &quot;setup&quot;,
+  &quot;id&quot;: '#(getValidElectionSetupId)',
+  &quot;lao&quot;: '#(getLaoValid)',
+  &quot;name&quot;: &quot;Election&quot;,
+  &quot;version&quot;: &quot;OPEN_BALLOT&quot;,
+  &quot;created_at&quot;: 1633098941,
+  &quot;start_time&quot;: 1633098941,
+  &quot;end_time&quot;: 1633099812,
+  &quot;questions&quot;: [
+    {
+      &quot;id&quot;: '#(getIsThisProjectFunQuestionId)',
+      &quot;question&quot;: &quot;Is this project fun?&quot;,
+      &quot;voting_method&quot;: &quot;Random&quot;,
+      &quot;ballot_options&quot;: [&quot;Yes&quot;, &quot;No&quot;],
+      &quot;write_in&quot;: false
+    }
+  ]
 }</pre>
       </div>
     </div>
@@ -2215,9 +2791,9 @@ classpath:be/rollCall/openRollCall.feature:80
 
 <div class="brief step-name-When passed">
   <span class="keyword indention">When</span>
-  <span class="name">frontend.publish(validOpenRollCall, laoChannel)</span>
+  <span class="name">frontend.publish(validElectionSetup, laoChannel)</span>
 
-  <span class="lead-duration duration">0.010</span>
+  <span class="lead-duration duration">0.001</span>
 
 </div>
 
@@ -2242,9 +2818,9 @@ classpath:be/rollCall/openRollCall.feature:80
 
 <div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
-  <span class="name">json answer = frontend.getBackendResponse(validOpenRollCall)</span>
+  <span class="name">json answer = frontend.getBackendResponse(validElectionSetup)</span>
 
-  <span class="lead-duration duration">0.007</span>
+  <span class="lead-duration duration">0.015</span>
 
 </div>
 
@@ -2309,625 +2885,6 @@ classpath:be/rollCall/openRollCall.feature:80
 
   <div class="inner-level">
     <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-27">
-          <a>match</a>
-      </div>
-      <div id="msg-27" class="collapse collapsable-details  in ">
-        <pre>match failed: EQUALS
-  $ | not equal (BOOLEAN:BOOLEAN)
-  false
-  true
-
-classpath:be/rollCall/openRollCall.feature:99</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-  <div class="inner-level">
-    <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-28">
-          <a>Doc string</a>
-      </div>
-      <div id="msg-28" class="collapse collapsable-details">
-        <pre>04:12:36.498 classpath:be/rollCall/openRollCall.feature:99
-And match frontend.receiveNoMoreResponses() == true
-match failed: EQUALS
-  $ | not equal (BOOLEAN:BOOLEAN)
-  false
-  true
-
-classpath:be/rollCall/openRollCall.feature:99
-</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-
-
-
-      </div>
-  </div>
-</div>
-
-
-
-
-
-  </div>
-</div>
-
-
-<div class="element">
-
-
-<div class="tags indention">
-</div>
-
-
-  <span class="lead-duration duration">2.773</span>
-
-
-  <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-29">
-
-<div class="brief passed">
-  <span class="keyword indention">Background</span>
-  <span class="name"></span>
-
-
-     <i class="chevron fa fa-fw"></i>
-</div>
-
-  </span>
-  <div class="description indention"></div>
-
-  <div id="element-29" class="collapse collapsable-details ">
-
-
-
-
-
-<div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-30">
-
-<div class="brief passed">
-  <span class="keyword indention">Steps</span>
-  <span class="name"></span>
-
-
-     <i class="chevron fa fa-fw"></i>
-</div>
-
-  </div>
-
-  <div id="steps-30" class="inner-level collapse collapsable-details ">
-      <div class="step">
-
-
-<div class="brief step-name-* passed">
-  <span class="keyword indention">*</span>
-  <span class="name">call read('classpath:be/utils/server.feature')</span>
-
-  <span class="lead-duration duration">2.511</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name- passed">
-  <span class="keyword indention"></span>
-  <span class="name">be/utils/server.feature</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* passed">
-  <span class="keyword indention">*</span>
-  <span class="name">call read('classpath:be/mockFrontEnd.feature')</span>
-
-  <span class="lead-duration duration">0.246</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name- passed">
-  <span class="keyword indention"></span>
-  <span class="name">be/mockFrontEnd.feature</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* passed">
-  <span class="keyword indention">*</span>
-  <span class="name">call read('classpath:be/constants.feature')</span>
-
-  <span class="lead-duration duration">0.015</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name- passed">
-  <span class="keyword indention"></span>
-  <span class="name">be/constants.feature</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* passed">
-  <span class="keyword indention">*</span>
-  <span class="name">string laoChannel = &quot;/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=&quot;</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-  </div>
-</div>
-
-
-
-
-
-  </div>
-</div>
-
-
-<div class="element">
-
-
-<div class="tags indention">
-    <b>Tags:</b>
-       <a href="report-tag_524961969.html">@env=go,scala</a>
-</div>
-
-
-  <span class="lead-duration duration">3.792</span>
-
-
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-31">
-
-<div class="brief failed">
-  <span class="keyword indention">Scenario</span>
-  <span class="name">Opening a Roll Call for which with already received an error should return an error again</span>
-
-
-     <i class="chevron fa fa-fw"></i>
-</div>
-
-  </span>
-  <div class="description indention"></div>
-
-  <div id="element-31" class="collapse collapsable-details  in ">
-
-
-
-
-
-<div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-32">
-
-<div class="brief failed">
-  <span class="keyword indention">Steps</span>
-  <span class="name"></span>
-
-
-     <i class="chevron fa fa-fw"></i>
-</div>
-
-  </div>
-
-  <div id="steps-32" class="inner-level collapse collapsable-details  in ">
-      <div class="step">
-
-
-<div class="brief step-name-Given passed">
-  <span class="keyword indention">Given</span>
-  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=valid_roll_call')</span>
-
-  <span class="lead-duration duration">0.826</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name- passed">
-  <span class="keyword indention"></span>
-  <span class="name">be/utils/simpleScenarios.feature</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And passed">
-  <span class="keyword indention">And</span>
-  <span class="name">def validOpenRollCall =</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-  <div class="inner-level">
-    <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-33">
-          <a>Doc string</a>
-      </div>
-      <div id="msg-33" class="collapse collapsable-details">
-        <pre>{
-  &quot;object&quot;: &quot;roll_call&quot;,
-  &quot;action&quot;: &quot;open&quot;,
-  &quot;update_id&quot;: '#(getRollCallOpenInvalidUpdateId)',
-  &quot;opens&quot;: '#(getRollCallOpenValidId)',
-  &quot;opened_at&quot;: '#(getRollCallOpenValidCreationTime)'
-}</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-When passed">
-  <span class="keyword indention">When</span>
-  <span class="name">frontend.publish(validOpenRollCall, laoChannel)</span>
-
-  <span class="lead-duration duration">0.001</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And passed">
-  <span class="keyword indention">And</span>
-  <span class="name">json answer = frontend.getBackendResponse(validOpenRollCall)</span>
-
-  <span class="lead-duration duration">0.012</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-Then passed">
-  <span class="keyword indention">Then</span>
-  <span class="name">match answer contains INVALID_MESSAGE_FIELD</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-When passed">
-  <span class="keyword indention">When</span>
-  <span class="name">frontend.publish(validOpenRollCall, laoChannel)</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And passed">
-  <span class="keyword indention">And</span>
-  <span class="name">json answer = frontend.getBackendResponse(validOpenRollCall)</span>
-
-  <span class="lead-duration duration">0.014</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And passed">
-  <span class="keyword indention">And</span>
-  <span class="name">match answer contains INVALID_MESSAGE_FIELD</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And failed">
-  <span class="keyword indention">And</span>
-  <span class="name">match frontend.receiveNoMoreResponses() == true</span>
-
-  <span class="lead-duration duration">2.936</span>
-
-</div>
-
-
-
-
-
-
-  <div class="inner-level">
-    <div class="message indention">
       <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-34">
           <a>match</a>
       </div>
@@ -2937,7 +2894,7 @@ classpath:be/rollCall/openRollCall.feature:99
   false
   true
 
-classpath:be/rollCall/openRollCall.feature:120</pre>
+classpath:be/election/electionSetup.feature:179</pre>
       </div>
     </div>
   </div>
@@ -2951,14 +2908,14 @@ classpath:be/rollCall/openRollCall.feature:120</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-35" class="collapse collapsable-details">
-        <pre>04:12:43.437 classpath:be/rollCall/openRollCall.feature:120
+        <pre>04:10:15.933 classpath:be/election/electionSetup.feature:179
 And match frontend.receiveNoMoreResponses() == true
 match failed: EQUALS
   $ | not equal (BOOLEAN:BOOLEAN)
   false
   true
 
-classpath:be/rollCall/openRollCall.feature:120
+classpath:be/election/electionSetup.feature:179
 </pre>
       </div>
     </div>
