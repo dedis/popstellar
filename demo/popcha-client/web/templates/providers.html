@@ -1,3 +1,3 @@
 {% for provider in providers %}
-    <option value="{{ loop.index }}">{{ provider }}</option>
+    <option value="{{ loop.index - 1 }}">{{ provider }}</option>
 {% endfor %}
