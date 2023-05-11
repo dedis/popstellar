@@ -19,7 +19,6 @@ import org.scalatest.matchers.should.Matchers.{convertToAnyShouldWrapper, equal}
 
 import scala.concurrent.Await
 import scala.concurrent.duration.{DurationInt, FiniteDuration}
-import scala.io.BufferedSource
 import scala.io.Source.fromFile
 import scala.util.Success
 
@@ -40,30 +39,18 @@ class GetMessagesByIdResponseHandlerSuite extends TestKit(ActorSystem("GetMessag
   // handler we want to test
   val responseHandler: Flow[GraphMessage, GraphMessage, NotUsed] = GetMessagesByIdResponseHandler.responseHandler(MessageRegistry())
 
-  // loading the valid json
-  val sourceCorrectGetMessageById: BufferedSource =
-    fromFile("src/test/scala/util/examples/json/get_messages_by_id_answer.json")
+  // loading the files
+  val pathIncorrectGetMessageById: String = "src/test/scala/util/examples/json/get_messages_by_id_answer_with_wrong_messages.json"
+  val pathCorrectGetMessageById: String = "src/test/scala/util/examples/json/get_messages_by_id_answer.json"
 
-  val linesCorrectJson: String =
-    try {
-      sourceCorrectGetMessageById.mkString
-    } finally {
-      sourceCorrectGetMessageById.close()
-    }
+  val incorrectGetMessagesByIdResponse: JsonRpcResponse =
+    JsonRpcResponse.buildFromJson(
+      readJsonFromPath(pathIncorrectGetMessageById)
+    )
 
-  // loading the invalid json
-  val sourceIncorrectGetMessageById: BufferedSource =
-    fromFile("src/test/scala/util/examples/json/get_messages_by_id_answer_with_wrong_messages.json")
-
-  val linesIncorrectJson: String =
-    try {
-      sourceIncorrectGetMessageById.mkString
-    } finally {
-      sourceIncorrectGetMessageById.close()
-    }
-
-  val incorrectGetMessagesByIdResponse: JsonRpcResponse = JsonRpcResponse.buildFromJson(linesIncorrectJson)
-  val getMessagesByIdResponse: JsonRpcResponse = JsonRpcResponse.buildFromJson(linesCorrectJson)
+  val getMessagesByIdResponse: JsonRpcResponse = JsonRpcResponse.buildFromJson(
+    readJsonFromPath(pathCorrectGetMessageById)
+  )
 
   // Helper function
   // Get rid of decoded data to compare against original message
@@ -74,6 +61,19 @@ class GetMessagesByIdResponseHandlerSuite extends TestKit(ActorSystem("GetMessag
           .map(msg => Message(msg.data, msg.sender, msg.signature, msg.message_id, msg.witness_signatures, None)).toSet
       case _ => Matchers.fail(s"Couldn't catchup on channel: $channel")
     }
+  }
+
+  // Helper function to read json file into string
+  private def readJsonFromPath(path: String): String = {
+    val source = fromFile(path)
+    val jsonString: String = {
+      try {
+        source.mkString
+      } finally {
+        source.close()
+      }
+    }
+    jsonString
   }
 
   override def afterAll(): Unit = {
