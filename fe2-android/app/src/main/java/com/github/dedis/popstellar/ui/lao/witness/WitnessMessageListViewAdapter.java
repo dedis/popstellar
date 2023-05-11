@@ -142,9 +142,7 @@ public class WitnessMessageListViewAdapter extends BaseAdapter {
                   witnessingViewModel
                       .signMessage(message)
                       .subscribe(
-                          () -> {
-                            Timber.tag(TAG).d("Witness message successfully signed");
-                          },
+                          () -> Timber.tag(TAG).d("Witness message successfully signed"),
                           error ->
                               ErrorUtils.logAndShow(
                                   activity, TAG, error, R.string.error_sign_message))));
