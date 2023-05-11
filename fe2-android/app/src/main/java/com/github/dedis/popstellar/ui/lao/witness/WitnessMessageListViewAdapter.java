@@ -109,8 +109,7 @@ public class WitnessMessageListViewAdapter extends BaseAdapter {
     binding.signaturesCard.setOnClickListener(
         v -> ActivityUtils.handleExpandArrow(binding.signaturesArrow, binding.witnessesText));
 
-    // Display the sign button for witnesses and the organizer
-    if (isWitness || laoViewModel.isOrganizer()) {
+    if (isWitness) {
       Context context = parent.getContext();
       View.OnClickListener listener = setUpSignButtonClickListener(context, witnessMessage);
       binding.signMessageButton.setOnClickListener(listener);
