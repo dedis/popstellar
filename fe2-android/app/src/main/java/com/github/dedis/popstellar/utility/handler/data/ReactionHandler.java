@@ -30,6 +30,12 @@ public class ReactionHandler {
     this.socialMediaRepo = socialMediaRepo;
   }
 
+  /**
+   * Process a AddReaction message.
+   *
+   * @param context the HandlerContext of the message
+   * @param addReaction the message that was received
+   */
   public void handleAddReaction(HandlerContext context, AddReaction addReaction)
       throws UnknownLaoException, InvalidMessageIdException {
     Channel channel = context.getChannel();
@@ -53,6 +59,12 @@ public class ReactionHandler {
     }
   }
 
+  /**
+   * Process a DeleteReaction message.
+   *
+   * @param context the HandlerContext of the message
+   * @param deleteReaction the message that was received
+   */
   public void handleDeleteReaction(HandlerContext context, DeleteReaction deleteReaction)
       throws UnknownLaoException, InvalidMessageIdException {
     Channel channel = context.getChannel();

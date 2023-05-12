@@ -101,8 +101,7 @@ public class SocialMediaRepository {
    *
    * @param laoId id of the lao the reaction was sent on
    * @param reaction reaction to add
-   * @return true if the chirp associated with the given reaction exists and it's not deleted, false
-   *     otherwise
+   * @return true if the chirp associated with the given reaction exists, false otherwise
    */
   public boolean addReaction(String laoId, Reaction reaction) {
     Timber.tag(TAG).d("Adding new reaction on lao %s : %s", laoId, reaction);
@@ -115,7 +114,8 @@ public class SocialMediaRepository {
    *
    * @param laoId id of the lao the reaction was sent on
    * @param reactionID identifier of the reaction to delete
-   * @return true if the reaction with the given id exists, false otherwise
+   * @return true if the reaction with the given id exists and that reaction refers to an existing
+   *     chirp, false otherwise
    */
   public boolean deleteReaction(String laoId, MessageID reactionID) {
     Timber.tag(TAG).d("Deleting reaction on lao %s : %s", laoId, reactionID);
