@@ -131,9 +131,10 @@
   <string name="manual_witness_hint">Witness public key</string>
   <string name="add_witness_title">Add Witness</string>
   <string name="sign_message">Sign message</string>
-  <string name="not_a_witness">You\'re not a witness</string>
-  <string name="not_a_witness_explanation">You need to be a witness in order to sign this message</string>
   <string name="confirm_to_sign">Are you sure you want to sign message with ID : %1$s</string>
+  <string name="message_description_title">Description</string>
+  <string name="signatures_title">Signatures</string>
+  <string name="Sign">Sign</string>
 
   <!--  Roll Call -->
   <string name="roll_call_setup_title">Roll Call Setup</string>

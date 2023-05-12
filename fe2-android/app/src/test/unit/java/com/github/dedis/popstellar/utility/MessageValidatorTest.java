@@ -34,7 +34,8 @@ public class MessageValidatorTest {
   public void testValidLaoId() {
     MessageValidator.MessageValidatorBuilder validator = MessageValidator.verify();
     String invalid1 = "invalidID";
-    String invalid2 = "A" + LAO_ID.substring(1);
+    String invalid2 =
+        Lao.generateLaoId(Base64DataUtils.generatePublicKeyOtherThan(ORGANIZER), 0, "name");
 
     validator.validLaoId(LAO_ID, ORGANIZER, CREATION, NAME);
     assertThrows(

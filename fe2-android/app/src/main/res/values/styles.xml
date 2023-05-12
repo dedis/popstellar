@@ -123,6 +123,12 @@
     <item name="android:textStyle">normal</item>
   </style>
 
+  <style name="text_medium_title">
+    <item name="android:textColor">@color/textOnBackground</item>
+    <item name="android:textStyle">bold</item>
+    <item name="android:textSize">@dimen/card_element_text_size</item>
+  </style>
+
   <!-- Toolbar styles -->
   <style name="toolbar_style" parent="Widget.MaterialComponents.Toolbar">
     <item name="android:textColorPrimary">@color/white</item>
