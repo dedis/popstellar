@@ -11,6 +11,7 @@ public enum Objects {
   ELECTION("election"),
   CONSENSUS("consensus"),
   CHIRP("chirp"),
+  REACTION("reaction"),
   COIN("coin");
 
   private static final List<Objects> ALL = Collections.unmodifiableList(Arrays.asList(values()));

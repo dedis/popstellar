@@ -173,6 +173,14 @@ public final class RollCallHandler {
                         () -> Timber.tag(TAG).d("subscription a success"),
                         error -> Timber.tag(TAG).d(error, "subscription error")));
 
+    // Subscribe to reactions
+    context
+        .getMessageSender()
+        .subscribe(channel.subChannel("social").subChannel("reactions"))
+        .subscribe(
+            () -> Timber.tag(TAG).d("subscription a success"),
+            error -> Timber.tag(TAG).d(error, "subscription error"));
+
     laoRepo.updateLao(lao);
   }
 

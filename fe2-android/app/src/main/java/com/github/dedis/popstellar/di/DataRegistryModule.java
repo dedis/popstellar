@@ -37,6 +37,7 @@ public abstract class DataRegistryModule {
       ElectionHandler electionHandler,
       ConsensusHandler consensusHandler,
       ChirpHandler chirpHandler,
+      ReactionHandler reactionHandler,
       TransactionCoinHandler transactionCoinHandler) {
     DataRegistry.Builder builder = new DataRegistry.Builder();
 
@@ -88,10 +89,14 @@ public abstract class DataRegistryModule {
 
     // Social Media
     builder
+        // Chirps
         .add(CHIRP, ADD, AddChirp.class, chirpHandler::handleChirpAdd)
         .add(CHIRP, NOTIFY_ADD, NotifyAddChirp.class, null)
         .add(CHIRP, DELETE, DeleteChirp.class, chirpHandler::handleDeleteChirp)
-        .add(CHIRP, NOTIFY_DELETE, NotifyDeleteChirp.class, null);
+        .add(CHIRP, NOTIFY_DELETE, NotifyDeleteChirp.class, null)
+        // Reactions
+        .add(REACTION, ADD, AddReaction.class, reactionHandler::handleAddReaction)
+        .add(REACTION, DELETE, DeleteReaction.class, reactionHandler::handleDeleteReaction);
 
     // Digital Cash
     builder.add(

@@ -57,7 +57,7 @@ public class StateMeeting extends Data {
       List<String> modificationSignatures) {
     MessageValidator.MessageValidatorBuilder builder =
         MessageValidator.verify()
-            .isBase64(laoId, "lao id")
+            .isNotEmptyBase64(laoId, "lao id")
             .validStateMeetingId(id, laoId, creation, name)
             .validPastTimes(creation)
             .orderedTimes(creation, start);
