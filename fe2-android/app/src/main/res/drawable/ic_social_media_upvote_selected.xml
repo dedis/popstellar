@@ -3,7 +3,7 @@
   android:height="24dp"
   android:viewportWidth="512"
   android:viewportHeight="512"
-  android:tint="#6200EE">
+  android:tint="@color/colorPrimary">
   <group
     android:scaleX="0.9135"
     android:scaleY="0.9135"
@@ -13,7 +13,7 @@
       android:pathData="M320,458.16S304,464 256,464s-74,-16 -96,-32H96a64,64 0,0 1,-64 -64v-48a64,64 0,0 1,64 -64h30a32.34,32.34 0,0 0,27.37 -15.4S162,221.81 188,176.78 264,64 272,48c29,0 43,22 34,47.71 -10.28,29.39 -23.71,54.38 -27.46,87.09 -0.54,4.78 3.14,12 7.95,12L416,205"
       android:strokeLineJoin="round"
       android:strokeWidth="32"
-      android:fillColor="#6200EE"
+      android:fillColor="@color/colorPrimary"
       android:strokeColor="@color/white"
       android:strokeLineCap="round" />
     <path
