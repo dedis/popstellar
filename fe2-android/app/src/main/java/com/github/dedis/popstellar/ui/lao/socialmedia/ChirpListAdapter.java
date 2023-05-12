@@ -115,12 +115,14 @@ public class ChirpListAdapter extends BaseAdapter {
       laoViewModel.addDisposable(
           socialMediaViewModel
               .getReactions(chirp.getId())
+              // Each time the observable changes the counter is notified
               .subscribe(
                   reactions -> {
                     Map<String, Long> codepointToCountMap =
                         reactions.stream()
                             // Filter just non deleted reactions
                             .filter(((Predicate<Reaction>) Reaction::isDeleted).negate())
+                            // Then collect by emoji type and count the occurrences
                             .collect(
                                 Collectors.groupingBy(
                                     Reaction::getCodepoint, Collectors.counting()));
@@ -138,71 +140,9 @@ public class ChirpListAdapter extends BaseAdapter {
       throw new IllegalArgumentException("The chirp does not exist");
     }
 
-    // Set the buttons selected if they were previously pressed
-    upvoteChirp.setSelected(
-        socialMediaViewModel.isReactionPresent(chirp.getId(), UPVOTE.getCode()));
-    downvoteChirp.setSelected(
-        socialMediaViewModel.isReactionPresent(chirp.getId(), DOWNVOTE.getCode()));
-    heartChirp.setSelected(socialMediaViewModel.isReactionPresent(chirp.getId(), HEART.getCode()));
+    setupReactionButtons(chirp.getId(), upvoteChirp, downvoteChirp, heartChirp);
 
-    // Based on the selection of the buttons choose the correct drawable
-    setItemSelection(
-        upvoteChirp, R.drawable.ic_social_media_upvote_selected, R.drawable.ic_social_media_upvote);
-    setItemSelection(
-        downvoteChirp,
-        R.drawable.ic_social_media_downvote_selected,
-        R.drawable.ic_social_media_downvote);
-    setItemSelection(
-        heartChirp, R.drawable.ic_social_media_heart_selected, R.drawable.ic_social_media_heart);
-
-    // Set the listener for the reaction buttons to add and delete reactions
-    upvoteChirp.setOnClickListener(
-        v -> {
-          reactionListener(
-              upvoteChirp,
-              R.drawable.ic_social_media_upvote_selected,
-              R.drawable.ic_social_media_upvote,
-              UPVOTE,
-              chirp.getId());
-          // Implement the exclusivity of upvote and downvote (i.e. disable downvote if upvote)
-          if (downvoteChirp.isSelected() && upvoteChirp.isSelected()) {
-            reactionListener(
-                downvoteChirp,
-                R.drawable.ic_social_media_downvote_selected,
-                R.drawable.ic_social_media_downvote,
-                DOWNVOTE,
-                chirp.getId());
-          }
-        });
-
-    downvoteChirp.setOnClickListener(
-        v -> {
-          reactionListener(
-              downvoteChirp,
-              R.drawable.ic_social_media_downvote_selected,
-              R.drawable.ic_social_media_downvote,
-              DOWNVOTE,
-              chirp.getId());
-          // Implement the exclusivity of upvote and downvote (i.e. disable upvote if downvote)
-          if (downvoteChirp.isSelected() && upvoteChirp.isSelected()) {
-            reactionListener(
-                upvoteChirp,
-                R.drawable.ic_social_media_upvote_selected,
-                R.drawable.ic_social_media_upvote,
-                UPVOTE,
-                chirp.getId());
-          }
-        });
-
-    heartChirp.setOnClickListener(
-        v ->
-            reactionListener(
-                heartChirp,
-                R.drawable.ic_social_media_heart_selected,
-                R.drawable.ic_social_media_heart,
-                HEART,
-                chirp.getId()));
-
+    // Show the delete button only if the user is the owner of the chirp
     if (socialMediaViewModel.isOwner(sender.getEncoded())) {
       deleteChirp.setVisibility(View.VISIBLE);
       deleteChirp.setOnClickListener(
@@ -221,6 +161,7 @@ public class ChirpListAdapter extends BaseAdapter {
       deleteChirp.setVisibility(View.GONE);
     }
 
+    // If the chirp has been deleted display a special text and hide the rest
     if (chirp.isDeleted()) {
       text = context.getString(R.string.deleted_chirp_2);
       chirpView.findViewById(R.id.chirp_card_buttons).setVisibility(View.GONE);
@@ -234,6 +175,86 @@ public class ChirpListAdapter extends BaseAdapter {
     itemText.setText(text);
 
     return chirpView;
+  }
+
+  /**
+   * Function to setup the three reactions buttons (upvote, downvote and heart). It sets the buttons
+   * selection, their relative drawables and listeners.
+   *
+   * @param chirpId identifier of the chirp to which reacting
+   * @param upvoteChirp button for upvote reaction
+   * @param downvoteChirp button for downvote reaction
+   * @param heartChirp button for heart reaction
+   */
+  private void setupReactionButtons(
+      MessageID chirpId,
+      ImageButton upvoteChirp,
+      ImageButton downvoteChirp,
+      ImageButton heartChirp) {
+    // Set the buttons selected if they were previously pressed
+    upvoteChirp.setSelected(socialMediaViewModel.isReactionPresent(chirpId, UPVOTE.getCode()));
+    downvoteChirp.setSelected(socialMediaViewModel.isReactionPresent(chirpId, DOWNVOTE.getCode()));
+    heartChirp.setSelected(socialMediaViewModel.isReactionPresent(chirpId, HEART.getCode()));
+
+    // Based on the selection of the buttons choose the correct drawable
+    setItemSelection(
+        upvoteChirp, R.drawable.ic_social_media_upvote_selected, R.drawable.ic_social_media_upvote);
+    setItemSelection(
+        downvoteChirp,
+        R.drawable.ic_social_media_downvote_selected,
+        R.drawable.ic_social_media_downvote);
+    setItemSelection(
+        heartChirp, R.drawable.ic_social_media_heart_selected, R.drawable.ic_social_media_heart);
+
+    // Set the listener for the upvote button to add and delete reaction
+    upvoteChirp.setOnClickListener(
+        v -> {
+          reactionListener(
+              upvoteChirp,
+              R.drawable.ic_social_media_upvote_selected,
+              R.drawable.ic_social_media_upvote,
+              UPVOTE,
+              chirpId);
+          // Implement the exclusivity of upvote and downvote (i.e. disable downvote if upvote)
+          if (downvoteChirp.isSelected() && upvoteChirp.isSelected()) {
+            reactionListener(
+                downvoteChirp,
+                R.drawable.ic_social_media_downvote_selected,
+                R.drawable.ic_social_media_downvote,
+                DOWNVOTE,
+                chirpId);
+          }
+        });
+
+    // Set the listener for the downvote button to add and delete reaction
+    downvoteChirp.setOnClickListener(
+        v -> {
+          reactionListener(
+              downvoteChirp,
+              R.drawable.ic_social_media_downvote_selected,
+              R.drawable.ic_social_media_downvote,
+              DOWNVOTE,
+              chirpId);
+          // Implement the exclusivity of upvote and downvote (i.e. disable upvote if downvote)
+          if (downvoteChirp.isSelected() && upvoteChirp.isSelected()) {
+            reactionListener(
+                upvoteChirp,
+                R.drawable.ic_social_media_upvote_selected,
+                R.drawable.ic_social_media_upvote,
+                UPVOTE,
+                chirpId);
+          }
+        });
+
+    // Set the listener for the heart button to add and delete reaction
+    heartChirp.setOnClickListener(
+        v ->
+            reactionListener(
+                heartChirp,
+                R.drawable.ic_social_media_heart_selected,
+                R.drawable.ic_social_media_heart,
+                HEART,
+                chirpId));
   }
 
   /**
@@ -278,6 +299,13 @@ public class ChirpListAdapter extends BaseAdapter {
     }
   }
 
+  /**
+   * This function selects the correct drawable for the button based on its selection status.
+   *
+   * @param button button for which changing the drawable
+   * @param selected drawable resource for the selected status
+   * @param notSelected drawable resource for the not selected status
+   */
   private void setItemSelection(
       ImageButton button, @DrawableRes int selected, @DrawableRes int notSelected) {
     boolean selection = button.isSelected();

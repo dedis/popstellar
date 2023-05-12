@@ -227,10 +227,12 @@ public class SocialMediaRepository {
         Reaction deleted = reaction.deleted();
         reactions.put(reactionId, deleted);
         Set<Reaction> chirpReactions = Objects.requireNonNull(reactionByChirpId.get(chirp.getId()));
+        // Replace the old reaction with the deleted one
         chirpReactions.remove(reaction);
         chirpReactions.add(deleted);
         Objects.requireNonNull(reactionSubjectsByChirpId.get(chirp.getId())).onNext(chirpReactions);
       }
+
       return true;
     }
 
