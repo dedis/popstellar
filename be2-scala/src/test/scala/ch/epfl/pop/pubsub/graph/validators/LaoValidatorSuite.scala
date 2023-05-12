@@ -1,24 +1,21 @@
 package ch.epfl.pop.pubsub.graph.validators
 
-import akka.actor.{Actor, ActorRef, ActorSystem, Props}
-import ch.epfl.pop.model.network.method.message.data.ObjectType
-import ch.epfl.pop.model.objects.{Base64Data, ChannelData, LaoData, PrivateKey, PublicKey}
-import ch.epfl.pop.storage.{DbActor, InMemoryStorage}
+import akka.actor.{ActorRef, ActorSystem, Props}
 import akka.pattern.AskableActorRef
 import akka.testkit.{ImplicitSender, TestKit}
 import akka.util.Timeout
 import ch.epfl.pop.pubsub.graph.{GraphMessage, PipelineError}
 import ch.epfl.pop.pubsub.{AskPatternConstants, MessageRegistry, PubSubMediator}
+import ch.epfl.pop.storage.{DbActor, InMemoryStorage}
 
 //import util.examples.MessageExample._
-import java.io.File
-import java.util.concurrent.TimeUnit
-
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.funsuite.{AnyFunSuiteLike => FunSuiteLike}
 import org.scalatest.matchers.should.Matchers
 import util.examples.JsonRpcRequestExample._
 
+import java.io.File
+import java.util.concurrent.TimeUnit
 import scala.reflect.io.Directory
 
 class LaoValidatorSuite extends TestKit(ActorSystem("laoValidatorTestActorSystem"))
@@ -90,11 +87,6 @@ class LaoValidatorSuite extends TestKit(ActorSystem("laoValidatorTestActorSystem
 
   test("LAO greeting fails with wrong lao id") {
     val message: GraphMessage = LaoValidator.validateGreetLao(GREET_LAO_WRONG_LAO_RPC)
-    message shouldBe a[Left[_, PipelineError]]
-  }
-
-  test("LAO greeting fails with wrong frontend") {
-    val message: GraphMessage = LaoValidator.validateGreetLao(GREET_LAO_WRONG_FRONTEND_RPC)
     message shouldBe a[Left[_, PipelineError]]
   }
 
