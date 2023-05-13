@@ -175,6 +175,7 @@ public class DataRegistryModuleHelper {
     ElectionHandler electionHandler = new ElectionHandler(msgRepo, laoRepo, electionRepo);
     ConsensusHandler consensusHandler = new ConsensusHandler(laoRepo);
     ChirpHandler chirpHandler = new ChirpHandler(laoRepo, socialMediaRepo);
+    ReactionHandler reactionHandler = new ReactionHandler(laoRepo, socialMediaRepo);
     TransactionCoinHandler transactionCoinHandler = new TransactionCoinHandler(digitalCashRepo);
 
     return DataRegistryModule.provideDataRegistry(
@@ -184,6 +185,7 @@ public class DataRegistryModuleHelper {
         electionHandler,
         consensusHandler,
         chirpHandler,
+        reactionHandler,
         transactionCoinHandler);
   }
 }

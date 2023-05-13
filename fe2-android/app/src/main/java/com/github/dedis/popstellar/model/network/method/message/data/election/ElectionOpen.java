@@ -29,8 +29,8 @@ public final class ElectionOpen extends Data {
   public ElectionOpen(@NonNull String laoId, @NonNull String electionId, long openedAt) {
     // The election open handler checks that lao and election id match with an existing lao
     MessageValidator.verify()
-        .isBase64(laoId, "lao id")
-        .isBase64(electionId, "election id")
+        .isNotEmptyBase64(laoId, "lao id")
+        .isNotEmptyBase64(electionId, "election id")
         .validPastTimes(openedAt);
 
     this.laoId = laoId;
