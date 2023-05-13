@@ -164,7 +164,7 @@ public class WitnessMessageFragmentTest {
   }
 
   @Test
-  @Ignore
+  @Ignore("suppressed")
   public void testWitnessMessageSignaturesDropdown() {
     witnessingViewModel = new ViewModelProvider(getLaoActivity()).get(WitnessingViewModel.class);
     witnessingViewModel.setWitnessMessages(witnessMessages);
