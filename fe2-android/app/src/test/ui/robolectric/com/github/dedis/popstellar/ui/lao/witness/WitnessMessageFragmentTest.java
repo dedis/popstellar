@@ -3,6 +3,7 @@ package com.github.dedis.popstellar.ui.lao.witness;
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.WitnessMessage;
@@ -156,6 +157,8 @@ public class WitnessMessageFragmentTest {
         .onChildView(messageDescriptionArrowMatcher())
         .perform(click());
 
+    InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
     // Check that correct message description is displayed
     messageDescriptionText().check(matches(withEffectiveVisibility(Visibility.VISIBLE)));
     onData(anything())
@@ -184,6 +187,8 @@ public class WitnessMessageFragmentTest {
         .atPosition(0)
         .onChildView(messageSignaturesArrowMatcher())
         .perform(click());
+
+    InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
     // Check that correct signatures are displayed
     witnessSignaturesText().check(matches(withEffectiveVisibility(Visibility.VISIBLE)));
