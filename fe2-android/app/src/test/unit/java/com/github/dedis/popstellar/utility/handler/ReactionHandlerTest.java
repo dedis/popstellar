@@ -1,21 +1,27 @@
 package com.github.dedis.popstellar.utility.handler;
 
+import android.content.Context;
+
+import androidx.test.core.app.ApplicationProvider;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+
+import com.github.dedis.popstellar.di.AppDatabaseModuleHelper;
 import com.github.dedis.popstellar.model.network.method.message.data.socialmedia.AddReaction;
 import com.github.dedis.popstellar.model.network.method.message.data.socialmedia.DeleteReaction;
 import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.security.*;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.SocialMediaRepository;
+import com.github.dedis.popstellar.repository.database.AppDatabase;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.utility.error.*;
 import com.github.dedis.popstellar.utility.handler.data.HandlerContext;
 import com.github.dedis.popstellar.utility.handler.data.ReactionHandler;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.MockitoAnnotations;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -29,7 +35,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @HiltAndroidTest
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(AndroidJUnit4.class)
 public class ReactionHandlerTest {
   private static final KeyPair SENDER_KEY = generateKeyPair();
   private static final PublicKey SENDER = SENDER_KEY.getPublicKey();
@@ -53,6 +59,7 @@ public class ReactionHandlerTest {
       new DeleteReaction(REACTION_ID, DELETION_TIME);
 
   private ReactionHandler handler;
+  private AppDatabase appDatabase;
 
   @Mock MessageSender messageSender;
   @Mock SocialMediaRepository socialMediaRepo;
@@ -60,9 +67,19 @@ public class ReactionHandlerTest {
   @Before
   public void setup()
       throws GeneralSecurityException, DataHandlingException, IOException, UnknownLaoException {
-    LAORepository laoRepo = new LAORepository();
+    MockitoAnnotations.openMocks(this);
+    Context context = ApplicationProvider.getApplicationContext();
+    appDatabase = AppDatabaseModuleHelper.getAppDatabase(context);
+    LAORepository laoRepo =
+        new LAORepository(appDatabase, ApplicationProvider.getApplicationContext());
     laoRepo.updateLao(LAO);
     handler = new ReactionHandler(laoRepo, socialMediaRepo);
+  }
+
+  @After
+  public void tearDown() {
+    appDatabase.clearAllTables();
+    appDatabase.close();
   }
 
   @Test
