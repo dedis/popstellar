@@ -67,15 +67,12 @@ export class PopchaAuthMsg implements MessageData {
   }
 
   public static fromJson(msg: any): PopchaAuthMsg {
-    // TODO: for now now json to validate to
-
     const { errors } = validateDataObject(ObjectType.POPCHA, ActionType.AUTH, msg);
 
     if (errors !== null){
       throw new ProtocolError(`Invalid 'PopchaAuthMsg' received: ${errors}`);
     }
 
-    console.log('PopchaAuthMsg.fromJson: ', msg);
     return new PopchaAuthMsg({ ...msg });
   }
 }
