@@ -317,6 +317,8 @@ func startWithFlags(cliCtx *cli.Context) (ServerConfig, error) {
 	}
 	return ServerConfig{
 		PublicKey:      cliCtx.String("public-key"),
+		ClientAddress:  cliCtx.String("client-address"),
+		ServerAddress:  cliCtx.String("server-address"),
 		PublicAddress:  cliCtx.String("server-public-address"),
 		PrivateAddress: cliCtx.String("server-listen-address"),
 		ClientPort:     clientPort,
