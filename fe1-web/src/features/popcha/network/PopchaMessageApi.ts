@@ -6,7 +6,6 @@ import { publish } from 'core/network';
 import { Base64UrlData, getPopchaAuthenticationChannel, Hash, PopToken } from 'core/objects';
 
 import { PopchaAuthMsg } from './messages/PopchaAuthMsg';
-import { generateToken } from '../../wallet/objects';
 
 /**
  * Sends a message to the server to authenticate that the user belongs to the lao
@@ -27,7 +26,7 @@ export const sendPopchaAuthRequest = (
   response_mode: string | null,
   laoId: Hash,
   // TODO: hook currently throwing error
-  generateToken_: (laoId: Hash, clientId: Hash | undefined) => Promise<PopToken>,
+  generateToken: (laoId: Hash, clientId: Hash | undefined) => Promise<PopToken>,
 ): Promise<void> => {
   const token = generateToken(laoId, client_id);
   return token.then((t) => {
