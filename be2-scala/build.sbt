@@ -136,6 +136,7 @@ libraryDependencies ++= Seq(
 
     "ch.qos.logback" % "logback-classic" % "1.1.3" % Runtime,   // Akka logging library
     "com.typesafe.akka" %% "akka-testkit" % AkkaVersion % Test, // Akka actor test kit (akka actor testing library)
+    "com.typesafe.akka" %% "akka-http-testkit" % AkkaHttpVersion // Akka http test kit
 )
 
 // LevelDB database
@@ -159,5 +160,8 @@ libraryDependencies += "com.fasterxml.jackson.core" % "jackson-databind" % "2.0.
 
 // Scala file system handling
 libraryDependencies += "org.scala-lang" % "scala-reflect" % scalaVersion.value
+
+// QRCODE generation library
+libraryDependencies += "com.google.zxing" % "core" % "3.5.1"
 
 conflictManager := ConflictManager.latestCompatible

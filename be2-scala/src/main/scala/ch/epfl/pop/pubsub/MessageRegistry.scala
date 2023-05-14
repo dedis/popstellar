@@ -3,8 +3,8 @@ package ch.epfl.pop.pubsub
 import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.data.ActionType.ActionType
 import ch.epfl.pop.model.network.method.message.data.ObjectType.ObjectType
-import ch.epfl.pop.model.network.method.message.data.election.{CastVoteElection, EndElection, KeyElection, OpenElection, ResultElection, SetupElection}
 import ch.epfl.pop.model.network.method.message.data.coin.PostTransaction
+import ch.epfl.pop.model.network.method.message.data.election._
 import ch.epfl.pop.model.network.method.message.data.lao.{CreateLao, GreetLao, StateLao, UpdateLao}
 import ch.epfl.pop.model.network.method.message.data.meeting.{CreateMeeting, StateMeeting}
 import ch.epfl.pop.model.network.method.message.data.rollCall.{CloseRollCall, CreateRollCall, OpenRollCall, ReopenRollCall}
@@ -163,6 +163,13 @@ object MessageRegistry {
       KeyElection.buildFromJson,
       ElectionValidator.validateKeyElection,
       ElectionHandler.handleKeyElection
+    )
+    register.add(
+      (ObjectType.ELECTION, ActionType.RESULT),
+      createSchemaVerifier("dataResultElection.json"),
+      ResultElection.buildFromJson,
+      ElectionValidator.validateResultElection,
+      ElectionHandler.handleResultElection
     )
 
     // data witness

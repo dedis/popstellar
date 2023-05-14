@@ -6,6 +6,7 @@ import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.network.method.message.data.lao.{CreateLao, GreetLao, StateLao, UpdateLao}
 import ch.epfl.pop.model.objects.{Channel, DbActorNAckException, Hash}
+import ch.epfl.pop.pubsub.PublishSubscribe
 import ch.epfl.pop.pubsub.graph.validators.MessageValidator._
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
 import ch.epfl.pop.storage.DbActor
@@ -15,7 +16,7 @@ import scala.util.{Failure, Success}
 
 object LaoValidator extends MessageDataContentValidator {
 
-  val laoValidator = new LaoValidator(DbActor.getInstance)
+  val laoValidator = new LaoValidator(PublishSubscribe.getDbActorRef)
 
   def validateCreateLao(rpcMessage: JsonRpcRequest): GraphMessage = laoValidator.validateCreateLao(rpcMessage)
 
@@ -147,12 +148,6 @@ object LaoValidator extends MessageDataContentValidator {
               expectedHash,
               greetLao.lao,
               validationError("unexpected id, was " + greetLao.lao + " but expected " + expectedHash)
-            ),
-            checkMsgSenderKey(
-              rpcMessage,
-              greetLao.frontend,
-              senderPK,
-              validationError(s"unexpected frontend public key ${greetLao.frontend}")
             ),
             checkStringPattern(
               rpcMessage,

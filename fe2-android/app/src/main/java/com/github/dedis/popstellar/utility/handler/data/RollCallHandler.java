@@ -173,6 +173,14 @@ public final class RollCallHandler {
                         () -> Timber.tag(TAG).d("subscription a success"),
                         error -> Timber.tag(TAG).d(error, "subscription error")));
 
+    // Subscribe to reactions
+    context
+        .getMessageSender()
+        .subscribe(channel.subChannel("social").subChannel("reactions"))
+        .subscribe(
+            () -> Timber.tag(TAG).d("subscription a success"),
+            error -> Timber.tag(TAG).d(error, "subscription error"));
+
     laoRepo.updateLao(lao);
   }
 
@@ -182,48 +190,57 @@ public final class RollCallHandler {
     message.setTitle("New Roll Call was created");
     message.setDescription(
         ROLL_CALL_NAME
+            + "\n"
             + rollCall.getName()
-            + "\n"
+            + "\n\n"
             + "Roll Call ID : "
+            + "\n"
             + rollCall.getId()
-            + "\n"
+            + "\n\n"
             + "Location : "
-            + rollCall.getLocation()
             + "\n"
+            + rollCall.getLocation()
+            + "\n\n"
             + MESSAGE_ID
-            + messageId);
+            + "\n"
+            + messageId.getEncoded());
 
     return message;
   }
 
   public static WitnessMessage openRollCallWitnessMessage(MessageID messageId, RollCall rollCall) {
     WitnessMessage message = new WitnessMessage(messageId);
-    message.setTitle("A Roll Call was opened");
+    message.setTitle("Roll Call was opened");
     message.setDescription(
         ROLL_CALL_NAME
+            + "\n"
             + rollCall.getName()
+            + "\n\n"
+            + "Updated Roll Call ID :"
             + "\n"
-            + "Updated ID : "
             + rollCall.getId()
-            + "\n"
+            + "\n\n"
             + MESSAGE_ID
-            + messageId);
+            + "\n"
+            + messageId.getEncoded());
 
     return message;
   }
 
   public static WitnessMessage closeRollCallWitnessMessage(MessageID messageId, RollCall rollCall) {
     WitnessMessage message = new WitnessMessage(messageId);
-    message.setTitle("A Roll Call was closed");
+    message.setTitle("Roll Call was closed");
     message.setDescription(
         ROLL_CALL_NAME
+            + "\n"
             + rollCall.getName()
-            + "\n"
-            + "Updated ID : "
+            + "\n\n"
+            + "Updated Roll Call ID : "
             + rollCall.getId()
-            + "\n"
+            + "\n\n"
             + MESSAGE_ID
-            + messageId);
+            + "\n"
+            + messageId.getEncoded());
 
     return message;
   }

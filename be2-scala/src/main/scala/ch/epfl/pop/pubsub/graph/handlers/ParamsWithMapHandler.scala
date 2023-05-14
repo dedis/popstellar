@@ -114,7 +114,8 @@ object ParamsWithMapHandler extends AskPatternConstants {
         Await.ready(ask, duration).value match {
           case Some(Success(DbActor.DbActorCatchupAck(messages))) =>
             val missingMessages = messages.filter(message => receivedRequest(channel).contains(message.message_id)).toSet
-            response += (channel -> missingMessages)
+            if (missingMessages.nonEmpty)
+              response += (channel -> missingMessages)
           case Some(Failure(ex: DbActorNAckException)) =>
             Left(PipelineError(ex.code, s"getMessagesByIdHandler failed : ${ex.message}", jsonRpcMessage.getId))
           case reply =>

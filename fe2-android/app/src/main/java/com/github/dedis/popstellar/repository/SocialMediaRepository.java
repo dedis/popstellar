@@ -3,6 +3,7 @@ package com.github.dedis.popstellar.repository;
 import androidx.annotation.NonNull;
 
 import com.github.dedis.popstellar.model.objects.Chirp;
+import com.github.dedis.popstellar.model.objects.Reaction;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.utility.error.UnknownChirpException;
 
@@ -67,6 +68,19 @@ public class SocialMediaRepository {
   }
 
   /**
+   * @return the observable of a specific chirp's reactions
+   */
+  @NonNull
+  public Observable<Set<Reaction>> getReactions(String laoId, MessageID chirpId)
+      throws UnknownChirpException {
+    return getLaoChirps(laoId).getReactions(chirpId);
+  }
+
+  public synchronized Set<Reaction> getReactionsByChirp(String laoId, MessageID chirpId) {
+    return getLaoChirps(laoId).reactionByChirpId.get(chirpId);
+  }
+
+  /**
    * @param laoId of the lao we want to observe the chirp list
    * @return an observable set of message ids whose correspond to the set of chirp published on the
    *     given lao
@@ -83,6 +97,33 @@ public class SocialMediaRepository {
   }
 
   /**
+   * Add a reaction to a given chirp.
+   *
+   * @param laoId id of the lao the reaction was sent on
+   * @param reaction reaction to add
+   * @return true if the chirp associated with the given reaction exists, false otherwise
+   */
+  public boolean addReaction(String laoId, Reaction reaction) {
+    Timber.tag(TAG).d("Adding new reaction on lao %s : %s", laoId, reaction);
+    // Retrieve Lao data and add the reaction to it
+    return getLaoChirps(laoId).addReaction(reaction);
+  }
+
+  /**
+   * Delete a reaction based on its id.
+   *
+   * @param laoId id of the lao the reaction was sent on
+   * @param reactionID identifier of the reaction to delete
+   * @return true if the reaction with the given id exists and that reaction refers to an existing
+   *     chirp, false otherwise
+   */
+  public boolean deleteReaction(String laoId, MessageID reactionID) {
+    Timber.tag(TAG).d("Deleting reaction on lao %s : %s", laoId, reactionID);
+    // Retrieve Lao data and delete the reaction from it
+    return getLaoChirps(laoId).deleteReaction(reactionID);
+  }
+
+  /**
    * This class holds the social media data of a specific lao
    *
    * <p>Its purpose is to hold data in a way that it is easier to handle and understand. It is also
@@ -90,10 +131,17 @@ public class SocialMediaRepository {
    */
   private static final class LaoChirps {
 
+    // Chirps
     private final Map<MessageID, Chirp> chirps = new HashMap<>();
     private final Map<MessageID, Subject<Chirp>> chirpSubjects = new HashMap<>();
     private final Subject<Set<MessageID>> chirpsSubject =
         BehaviorSubject.createDefault(Collections.emptySet());
+
+    // Reactions
+    private final Map<MessageID, Set<Reaction>> reactionByChirpId = new HashMap<>();
+    private final Map<MessageID, Reaction> reactions = new HashMap<>();
+    private final Map<MessageID, Subject<Set<Reaction>>> reactionSubjectsByChirpId =
+        new HashMap<>();
 
     public synchronized void add(Chirp chirp) {
       MessageID id = chirp.getId();
@@ -105,10 +153,36 @@ public class SocialMediaRepository {
 
       // Update repository data
       chirps.put(id, chirp);
+      reactionByChirpId.putIfAbsent(chirp.getId(), new HashSet<>());
+      reactionSubjectsByChirpId.putIfAbsent(
+          chirp.getId(), BehaviorSubject.createDefault(new HashSet<>()));
 
       // Publish new values on subjects
       chirpSubjects.put(id, BehaviorSubject.createDefault(chirp));
       chirpsSubject.onNext(chirps.keySet());
+    }
+
+    public synchronized boolean addReaction(Reaction reaction) {
+      // Check if the associated chirp is present
+      Chirp chirp = chirps.get(reaction.getChirpId());
+      if (chirp == null) {
+        return false;
+      }
+
+      Set<Reaction> chirpReactions = Objects.requireNonNull(reactionByChirpId.get(chirp.getId()));
+
+      // Search for a previous deleted reaction
+      Reaction deleted = reactions.get(reaction.getId());
+      if (deleted != null) {
+        chirpReactions.remove(deleted);
+      }
+
+      // Update repository data
+      reactions.put(reaction.getId(), reaction);
+      chirpReactions.add(reaction);
+      Objects.requireNonNull(reactionSubjectsByChirpId.get(chirp.getId())).onNext(chirpReactions);
+
+      return true;
     }
 
     public synchronized boolean delete(MessageID id) {
@@ -133,6 +207,35 @@ public class SocialMediaRepository {
       return true;
     }
 
+    public synchronized boolean deleteReaction(MessageID reactionId) {
+      // Check if the associated reaction is present
+      Reaction reaction = reactions.get(reactionId);
+      if (reaction == null) {
+        return false;
+      }
+
+      Chirp chirp = chirps.get(reaction.getChirpId());
+      // If the chirp the reaction refers to it's not present then throw an error
+      if (chirp == null) {
+        throw new IllegalStateException("The reaction refers to a not existing chirp");
+      }
+
+      if (reaction.isDeleted()) {
+        Timber.tag(TAG).d("The reaction with id %s is already deleted", reactionId);
+      } else {
+        // Update the repository data
+        Reaction deleted = reaction.deleted();
+        reactions.put(reactionId, deleted);
+        Set<Reaction> chirpReactions = Objects.requireNonNull(reactionByChirpId.get(chirp.getId()));
+        // Replace the old reaction with the deleted one
+        chirpReactions.remove(reaction);
+        chirpReactions.add(deleted);
+        Objects.requireNonNull(reactionSubjectsByChirpId.get(chirp.getId())).onNext(chirpReactions);
+      }
+
+      return true;
+    }
+
     public Observable<Set<MessageID>> getChirpsSubject() {
       return chirpsSubject;
     }
@@ -144,6 +247,14 @@ public class SocialMediaRepository {
       } else {
         return observable;
       }
+    }
+
+    public Observable<Set<Reaction>> getReactions(MessageID chirpId) throws UnknownChirpException {
+      Observable<Set<Reaction>> observable = reactionSubjectsByChirpId.get(chirpId);
+      if (observable == null) {
+        throw new UnknownChirpException(chirpId);
+      }
+      return observable;
     }
   }
 }

@@ -24,8 +24,8 @@ public class ElectionKey extends Data {
 
   public ElectionKey(@NonNull String electionId, @NonNull String electionVoteKey) {
     MessageValidator.verify()
-        .isBase64(electionId, "election id")
-        .isBase64(electionVoteKey, "election vote key");
+        .isNotEmptyBase64(electionId, "election id")
+        .isNotEmptyBase64(electionVoteKey, "election vote key");
 
     this.electionId = electionId;
     this.electionVoteKey = electionVoteKey;

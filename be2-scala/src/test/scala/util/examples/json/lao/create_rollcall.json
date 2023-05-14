@@ -1,0 +1,15 @@
+{
+  "jsonrpc": "2.0",
+  "id": 4,
+  "method": "publish",
+  "params": {
+    "channel": "/root/o3nyIIvrmDriwYXnH5-8CmYdyZcz4BPNT99W7dcrk9M=",
+    "message": {
+      "data": "eyJvYmplY3QiOiJyb2xsX2NhbGwiLCJhY3Rpb24iOiJjcmVhdGUiLCJuYW1lIjoicm9sbGNhbGwgIiwiY3JlYXRpb24iOjE2ODMzMTYyNzcsInByb3Bvc2VkX3N0YXJ0IjoxNjgzMzE2Mjc3LCJwcm9wb3NlZF9lbmQiOjE2ODMzMTk4NjAsImxvY2F0aW9uIjoiQkM0MTAiLCJkZXNjcmlwdGlvbiI6Im5vdCBhIHJvYm90IiwiaWQiOiJxUUtDWWdhbjFRLVZ4QW02RzlTUHNCQWU5OFhCYm9QWkpXdkJQbUswQ2NZPSJ9",
+      "message_id": "SzErSVrALRSJmx_dY2osAbRYPcoFtcxLvHZkiNoUTAw=",
+      "sender": "Uuvr9cFe0r7j8f64aPvrk7Z65Jt4kv9nGz4HXgoy38Q=",
+      "signature": "S0BpcAUBmoXUWDBk_UBYAn-OtOtm-KkTKKLo0bxufcwyjYYoTVq6YbrR5GDA9ApOw7l_8dcsUq2KhegJnA45AQ==",
+      "witness_signatures": []
+    }
+  }
+}

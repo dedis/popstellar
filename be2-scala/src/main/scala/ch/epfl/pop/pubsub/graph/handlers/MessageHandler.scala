@@ -4,7 +4,7 @@ import akka.pattern.AskableActorRef
 import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.objects.{Base64Data, Channel, Hash, Signature}
-import ch.epfl.pop.pubsub.AskPatternConstants
+import ch.epfl.pop.pubsub.{AskPatternConstants, PublishSubscribe}
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
 import ch.epfl.pop.storage.DbActor
 import ch.epfl.pop.storage.DbActor.DbActorReadLaoDataAck
@@ -18,7 +18,7 @@ trait MessageHandler extends AskPatternConstants {
 
   /** May be overridden by the reference of the used DbActor
     */
-  def dbActor: AskableActorRef = DbActor.getInstance
+  def dbActor: AskableActorRef = PublishSubscribe.getDbActorRef
 
   def extractParameters[T](rpcRequest: JsonRpcRequest, errorMsg: String): Future[(GraphMessage, Message, Option[T])] = {
     rpcRequest.getParamsMessage match {
