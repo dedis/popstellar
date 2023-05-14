@@ -285,6 +285,8 @@ dependencies {
     // ================= Pretty Time =================
     implementation 'org.ocpsoft.prettytime:prettytime:5.0.4.Final'
 
+    implementation 'com.vdurmont:emoji-java:5.1.1'
+
     // ============= Test Framework ============
     debugImplementation 'junit:junit:4.13.2'
     // Android framework

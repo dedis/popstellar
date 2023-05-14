@@ -9,6 +9,7 @@ import ch.epfl.pop.pubsub.AskPatternConstants
 import ch.epfl.pop.pubsub.graph.{GraphMessage, PipelineError}
 import ch.epfl.pop.storage.DbActor
 
+import scala.annotation.tailrec
 import scala.concurrent.Await
 import scala.util.Success
 
@@ -38,8 +39,9 @@ object MessageValidator extends ContentValidator with AskPatternConstants {
     * @return
     *   GraphMessage: passes the rpcMessages to Right if successful Left with pipeline error
     */
+  @tailrec
   def runChecks(checks: GraphMessage*): GraphMessage = {
-    if (checks.head.isRight && !checks.tail.isEmpty)
+    if (checks.head.isRight && checks.tail.nonEmpty)
       runChecks(checks.tail: _*)
     else
       checks.head

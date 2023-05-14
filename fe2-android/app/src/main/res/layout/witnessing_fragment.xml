@@ -4,35 +4,30 @@
   xmlns:tools="http://schemas.android.com/tools"
   android:layout_width="match_parent"
   android:layout_height="match_parent"
+  android:background="@color/background_gray"
   xmlns:app="http://schemas.android.com/apk/res-auto"
   tools:context=".ui.lao.witness.WitnessingFragment">
 
-  <TextView
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:id="@+id/witness_title"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintTop_toTopOf="parent"
-    style="@style/title_style"
-    android:text="@string/witnessing" />
-
   <com.google.android.material.tabs.TabLayout
     android:id="@+id/witnessing_tab_layout"
+    android:layout_margin="@dimen/container_margin"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="@dimen/tab_layout_top_margin"
     android:layout_marginHorizontal="@dimen/container_margin"
-    app:layout_constraintTop_toBottomOf="@id/witness_title" />
+    android:background="@color/background_gray"
+    app:layout_constraintTop_toTopOf="parent"
+    tools:layout_editor_absoluteX="8dp" />
 
   <androidx.viewpager2.widget.ViewPager2
     android:id="@+id/witnessing_view_pager"
     android:layout_width="match_parent"
     android:layout_height="0dp"
     android:layout_weight="1"
-    android:layout_margin="@dimen/container_margin"
+    android:layout_margin="@dimen/main_horizontal_margin"
+    app:layout_constraintBottom_toBottomOf="parent"
     app:layout_constraintTop_toBottomOf="@id/witnessing_tab_layout"
-    app:layout_constraintBottom_toBottomOf="parent">
+    app:layout_constraintVertical_bias="0.0"
+    tools:layout_editor_absoluteX="8dp">
 
   </androidx.viewpager2.widget.ViewPager2>
 

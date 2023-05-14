@@ -24,9 +24,9 @@
           android:id="@+id/witness_message_list"
           android:layout_width="match_parent"
           android:layout_height="match_parent"
+          android:divider="@color/background_gray"
           android:layout_marginLeft="@dimen/margin_button"
           android:layout_marginRight="@dimen/margin_button"
-          android:divider="@color/white"
           android:dividerHeight="@dimen/margin_top" />
       </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
     </LinearLayout>

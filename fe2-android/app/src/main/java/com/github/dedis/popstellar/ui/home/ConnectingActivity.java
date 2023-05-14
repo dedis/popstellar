@@ -129,6 +129,9 @@ public class ConnectingActivity extends AppCompatActivity {
       List<PublicKey> witnesses =
           witnessesList.stream().map(PublicKey::new).collect(Collectors.toList());
 
+      // Add the organizer to the list of witnesses
+      witnesses.add(keyManager.getMainPublicKey());
+
       CreateLao createLao = new CreateLao(laoName, keyManager.getMainPublicKey(), witnesses);
       Lao lao = new Lao(createLao.getId());
       Timber.tag(TAG).d("Creating Lao %s", lao.getId());
