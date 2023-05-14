@@ -1,6 +1,6 @@
 import { ListItem } from '@rneui/themed';
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useState } from 'react';
 import { View } from 'react-native';
 
 import { PoPIcon } from 'core/components';
@@ -9,6 +9,7 @@ import { Color, Icon, List, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
 const AttendeeList = ({ popTokens }: IPropTypes) => {
+  const [showItems, setShowItems] = useState(true);
   return (
     <View style={List.container}>
       <ListItem.Accordion
@@ -20,7 +21,8 @@ const AttendeeList = ({ popTokens }: IPropTypes) => {
             </ListItem.Title>
           </ListItem.Content>
         }
-        isExpanded>
+        isExpanded={showItems}
+        onPress={() => setShowItems(!showItems)}>
         {popTokens.map((token, idx) => {
           const listStyle = List.getListItemStyles(idx === 0, idx === popTokens.length - 1);
 
