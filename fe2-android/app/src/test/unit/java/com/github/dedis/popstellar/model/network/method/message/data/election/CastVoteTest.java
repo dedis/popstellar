@@ -1,5 +1,8 @@
 package com.github.dedis.popstellar.model.network.method.message.data.election;
 
+import androidx.test.core.app.ApplicationProvider;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+
 import com.github.dedis.popstellar.model.network.JsonTestUtils;
 import com.github.dedis.popstellar.model.objects.Election;
 import com.github.dedis.popstellar.model.objects.Lao;
@@ -7,7 +10,9 @@ import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.testutils.Base64DataUtils;
 import com.google.gson.JsonParseException;
 
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import java.time.Instant;
 import java.util.*;
@@ -16,6 +21,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.*;
 
+@RunWith(AndroidJUnit4.class)
 public class CastVoteTest {
 
   private final PublicKey organizer = Base64DataUtils.generatePublicKey();
@@ -49,6 +55,11 @@ public class CastVoteTest {
       new CastVote(plainVotes, electionId, laoId, creation);
   private final CastVote castEncryptedVote =
       new CastVote(electionEncryptedVotes, electionId, laoId);
+
+  @Before
+  public void setup() {
+    JsonTestUtils.loadGSON(ApplicationProvider.getApplicationContext());
+  }
 
   @Test(expected = IllegalArgumentException.class)
   public void constructorFailsElectionIdNotBase64Test() {
