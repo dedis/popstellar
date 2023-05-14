@@ -1702,10 +1702,10 @@ func Test_Send_GreetServer_Message(t *testing.T) {
 	var greetServer method.GreetServer
 	err = json.Unmarshal(greetServerMsg, &greetServer)
 	require.NoError(t, err)
-	require.Equal(t, greetServer.Method, query.MethodGreetServer)
-	require.Equal(t, greetServer.Params.PublicKey, pk)
-	require.Equal(t, greetServer.Params.ServerAddress, "ws://localhost:9001/server")
-	require.Equal(t, greetServer.Params.ClientAddress, "ws://localhost:9000/client")
+	require.Equal(t, query.MethodGreetServer, greetServer.Method)
+	require.Equal(t, pk, greetServer.Params.PublicKey)
+	require.Equal(t, "ws://localhost:9001/server", greetServer.Params.ServerAddress)
+	require.Equal(t, "ws://localhost:9000/client", greetServer.Params.ClientAddress)
 }
 
 // Test that the greet server messages received from non greeted servers are properly handled
@@ -1753,10 +1753,10 @@ func Test_Handle_GreetServer_First_Time(t *testing.T) {
 	err = json.Unmarshal(sock.msg, &serverGreetResponse)
 	require.NoError(t, err)
 
-	require.Equal(t, serverGreetResponse.Method, query.MethodGreetServer)
-	require.Equal(t, serverGreetResponse.Params.PublicKey, pk)
-	require.Equal(t, serverGreetResponse.Params.ServerAddress, "ws://localhost:9001/server")
-	require.Equal(t, serverGreetResponse.Params.ClientAddress, "ws://localhost:9000/client")
+	require.Equal(t, query.MethodGreetServer, serverGreetResponse.Method)
+	require.Equal(t, pk, serverGreetResponse.Params.PublicKey)
+	require.Equal(t, "ws://localhost:9001/server", serverGreetResponse.Params.ServerAddress)
+	require.Equal(t, "ws://localhost:9000/client", serverGreetResponse.Params.ClientAddress)
 }
 
 // Test that the greet server messages received from already greeted servers are properly handled

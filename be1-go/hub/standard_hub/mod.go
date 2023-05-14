@@ -292,7 +292,6 @@ func (h *Hub) SendGreetServer(socket socket.Socket) error {
 	socket.Send(buf)
 
 	h.peersGreeted = append(h.peersGreeted, socket.ID())
-	h.log.Info().Msgf("Greeted server %s", socket.ID())
 	return nil
 }
 

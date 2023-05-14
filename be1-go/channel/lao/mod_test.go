@@ -33,7 +33,7 @@ const protocolRelativePath string = "../../../protocol"
 func TestLAOChannel_Subscribe(t *testing.T) {
 	keypair := generateKeyPair(t)
 
-	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
+	fakeHub, err := NewFakeHub("", keypair.public, nolog, nil)
 	require.NoError(t, err)
 
 	m := message.Message{MessageID: "0"}
@@ -66,7 +66,7 @@ func TestLAOChannel_Subscribe(t *testing.T) {
 func TestLAOChannel_Unsubscribe(t *testing.T) {
 	keypair := generateKeyPair(t)
 
-	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
+	fakeHub, err := NewFakeHub("", keypair.public, nolog, nil)
 	require.NoError(t, err)
 
 	m := message.Message{MessageID: "0"}
@@ -102,7 +102,7 @@ func TestLAOChannel_Unsubscribe(t *testing.T) {
 func TestLAOChannel_wrongUnsubscribe(t *testing.T) {
 	keypair := generateKeyPair(t)
 
-	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
+	fakeHub, err := NewFakeHub("", keypair.public, nolog, nil)
 	require.NoError(t, err)
 
 	m := message.Message{MessageID: "0"}
@@ -129,7 +129,7 @@ func TestLAOChannel_Broadcast(t *testing.T) {
 	keypair := generateKeyPair(t)
 	publicKey64 := base64.URLEncoding.EncodeToString(keypair.publicBuf)
 
-	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
+	fakeHub, err := NewFakeHub("", keypair.public, nolog, nil)
 	require.NoError(t, err)
 
 	m := message.Message{MessageID: "0"}
@@ -193,7 +193,7 @@ func TestLAOChannel_Catchup(t *testing.T) {
 	// Create the hub
 	keypair := generateKeyPair(t)
 
-	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
+	fakeHub, err := NewFakeHub("", keypair.public, nolog, nil)
 	require.NoError(t, err)
 
 	// Create the messages
@@ -244,7 +244,7 @@ func TestLAOChannel_Publish_LaoUpdate(t *testing.T) {
 	keypair := generateKeyPair(t)
 	publicKey64 := base64.URLEncoding.EncodeToString(keypair.publicBuf)
 
-	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
+	fakeHub, err := NewFakeHub("", keypair.public, nolog, nil)
 	require.NoError(t, err)
 
 	m := message.Message{MessageID: "0"}
@@ -290,7 +290,7 @@ func TestLAOChannel_Publish_LaoState(t *testing.T) {
 	keypair := generateKeyPair(t)
 	publicKey64 := base64.URLEncoding.EncodeToString(keypair.publicBuf)
 
-	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
+	fakeHub, err := NewFakeHub("", keypair.public, nolog, nil)
 	require.NoError(t, err)
 
 	m := message.Message{MessageID: "0"}
@@ -368,7 +368,7 @@ func TestBaseChannel_ConsensusIsCreated(t *testing.T) {
 	// Create the hub
 	keypair := generateKeyPair(t)
 
-	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
+	fakeHub, err := NewFakeHub("", keypair.public, nolog, nil)
 	require.NoError(t, err)
 
 	m := message.Message{MessageID: "0"}
@@ -392,7 +392,7 @@ func TestBaseChannel_SimulateRollCall(t *testing.T) {
 	publicKey64 := base64.URLEncoding.EncodeToString(keypair.publicBuf)
 
 	// Create the hub
-	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
+	fakeHub, err := NewFakeHub("", keypair.public, nolog, nil)
 	require.NoError(t, err)
 
 	m := message.Message{MessageID: "0"}
@@ -492,7 +492,7 @@ func TestLAOChannel_Election_Creation(t *testing.T) {
 	keypair := generateKeyPair(t)
 	publicKey64 := base64.URLEncoding.EncodeToString(keypair.publicBuf)
 
-	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
+	fakeHub, err := NewFakeHub("", keypair.public, nolog, nil)
 	require.NoError(t, err)
 
 	m := message.Message{MessageID: "0"}
@@ -538,8 +538,13 @@ func TestLAOChannel_Sends_Greeting(t *testing.T) {
 	keypair := generateKeyPair(t)
 	publicKey64 := base64.URLEncoding.EncodeToString(keypair.publicBuf)
 
-	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
+	fakeHub, err := NewFakeHub("ws://localhost:9000/client", keypair.public, nolog, nil)
 	require.NoError(t, err)
+
+	peerAddresses := []string{}
+	for _, serverInfo := range fakeHub.GetPeersInfo() {
+		peerAddresses = append(peerAddresses, serverInfo.ClientAddress)
+	}
 
 	m := message.Message{MessageID: "0"}
 	channel, err := NewChannel("/root/fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=", fakeHub, m, nolog, keypair.public, nil)
@@ -560,6 +565,10 @@ func TestLAOChannel_Sends_Greeting(t *testing.T) {
 	require.Equal(t, messagedata.LAOActionGreet, laoGreet.Action)
 	require.Equal(t, "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=", laoGreet.LaoID)
 	require.Equal(t, publicKey64, laoGreet.Frontend)
+	require.Equal(t, "ws://localhost:9000/client", laoGreet.Address)
+	for _, peer := range laoGreet.Peers {
+		require.Contains(t, peerAddresses, peer.Address)
+	}
 }
 
 // -----------------------------------------------------------------------------
@@ -585,6 +594,8 @@ func generateKeyPair(t *testing.T) keypair {
 }
 
 type fakeHub struct {
+	clientAddress string
+
 	messageChan chan socket.IncomingMessage
 
 	sync.RWMutex
@@ -609,7 +620,7 @@ type fakeHub struct {
 }
 
 // NewFakeHub returns a fake Hub.
-func NewFakeHub(publicOrg kyber.Point, log zerolog.Logger, laoFac channel.LaoFactory) (*fakeHub, error) {
+func NewFakeHub(clientAddress string, publicOrg kyber.Point, log zerolog.Logger, laoFac channel.LaoFactory) (*fakeHub, error) {
 
 	schemaValidator, err := validation.NewSchemaValidator(log)
 	if err != nil {
@@ -621,6 +632,7 @@ func NewFakeHub(publicOrg kyber.Point, log zerolog.Logger, laoFac channel.LaoFac
 	pubServ, secServ := generateKeys()
 
 	hub := fakeHub{
+		clientAddress:   clientAddress,
 		messageChan:     make(chan socket.IncomingMessage),
 		channelByID:     make(map[string]channel.Channel),
 		closedSockets:   make(chan string),
@@ -662,7 +674,7 @@ func (h *fakeHub) GetPubKeyServ() kyber.Point {
 
 // GetServerAddress implements channel.HubFunctionalities
 func (h *fakeHub) GetServerAddress() string {
-	return ""
+	return h.clientAddress
 }
 
 // Sign implements channel.HubFunctionalities
@@ -672,7 +684,18 @@ func (h *fakeHub) Sign(data []byte) ([]byte, error) {
 
 // GetPeersInfo implements channel.HubFunctionalities
 func (h *fakeHub) GetPeersInfo() []method.ServerInfo {
-	return nil
+	peer1 := method.ServerInfo{
+		PublicKey:     "",
+		ClientAddress: "wss://localhost:9002/client",
+		ServerAddress: "",
+	}
+
+	peer2 := method.ServerInfo{
+		PublicKey:     "",
+		ClientAddress: "wss://localhost:9004/client",
+		ServerAddress: "",
+	}
+	return []method.ServerInfo{peer1, peer2}
 }
 
 func (h *fakeHub) GetSchemaValidator() validation.SchemaValidator {

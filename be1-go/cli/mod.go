@@ -77,14 +77,7 @@ func Serve(cliCtx *cli.Context) error {
 		}
 	}
 
-	// compute the client server address if it wasn't provided
-	if serverConfig.ClientAddress == "" {
-		serverConfig.ClientAddress = fmt.Sprintf("%s:%d/client", serverConfig.PublicAddress, serverConfig.ClientPort)
-	}
-	// compute the server server address if it wasn't provided
-	if serverConfig.ServerAddress == "" {
-		serverConfig.ServerAddress = fmt.Sprintf("%s:%d/server", serverConfig.PublicAddress, serverConfig.ServerPort)
-	}
+	computeAddresses(&serverConfig)
 
 	var point kyber.Point = nil
 	ownerKey(serverConfig.PublicKey, &point)
@@ -257,13 +250,11 @@ func connectToSocket(address string, h hub.Hub,
 	go remoteSocket.ReadPump()
 
 	err = h.SendGreetServer(remoteSocket)
-	log.Info().Msgf("sent greet to server")
 	if err != nil {
 		return xerrors.Errorf("failed to send greet to server: %v", err)
 	}
 
 	h.NotifyNewServer(remoteSocket)
-	log.Info().Msgf("notified hub of new server and returning")
 
 	return nil
 }
@@ -382,5 +373,17 @@ func updateServersState(servers []string, connectedServers *map[string]bool) {
 		if _, ok := (*connectedServers)[server]; !ok {
 			(*connectedServers)[server] = false
 		}
+	}
+}
+
+// computeAddresses computes the client and server addresses if they were not provided
+func computeAddresses(serverConfig *ServerConfig) {
+	// compute the client server address if it wasn't provided
+	if serverConfig.ClientAddress == "" {
+		serverConfig.ClientAddress = fmt.Sprintf("%s:%d/client", serverConfig.PublicAddress, serverConfig.ClientPort)
+	}
+	// compute the server server address if it wasn't provided
+	if serverConfig.ServerAddress == "" {
+		serverConfig.ServerAddress = fmt.Sprintf("%s:%d/server", serverConfig.PublicAddress, serverConfig.ServerPort)
 	}
 }
