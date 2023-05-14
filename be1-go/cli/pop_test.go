@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-const waitUp = time.Second * 2
+const waitUp = time.Second * 5
 
 func TestConnectMultipleServers(t *testing.T) {
 

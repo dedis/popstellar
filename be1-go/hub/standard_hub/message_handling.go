@@ -502,23 +502,21 @@ func (h *Hub) handleGreetServer(socket socket.Socket, byteMessage []byte) error 
 		return xerrors.Errorf("failed to unmarshal greetServer message: %v", err)
 	}
 
-	// check if this answers an existing greet server query
-
-	h.log.Info().Msg("greetServer message received")
-
 	// store information about the server
 	h.peersInfo[socket.ID()] = greetServer.Params
 
+	// check if the server is already greeted
 	if slices.Contains(h.peersGreeted, socket.ID()) {
 		h.log.Info().Msg("peer already greeted")
 		return nil
 	}
 
+	h.log.Info().Msg("peer greeting back")
 	err = h.SendGreetServer(socket)
 	if err != nil {
 		return xerrors.Errorf("failed to send greetServer message: %v", err)
 	}
-
+	h.log.Info().Msg("greet server handled successfully")
 	return nil
 }
 

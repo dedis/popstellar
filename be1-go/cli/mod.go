@@ -140,11 +140,13 @@ func connectToSocket(address string, h hub.Hub,
 	go remoteSocket.ReadPump()
 
 	err = h.SendGreetServer(remoteSocket)
+	log.Info().Msgf("sent greet to server")
 	if err != nil {
 		return xerrors.Errorf("failed to send greet to server: %v", err)
 	}
 
 	h.NotifyNewServer(remoteSocket)
+	log.Info().Msgf("notified hub of new server and returning")
 
 	return nil
 }
