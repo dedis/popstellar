@@ -5,7 +5,6 @@ import (
 	"sync"
 	"time"
 
-	"popstellar/message/answer"
 	"popstellar/message/query/method/message"
 )
 
@@ -17,19 +16,21 @@ type messageInfo struct {
 
 // Inbox represents an in-memory data store to record incoming messages.
 type Inbox struct {
-	mutex     sync.RWMutex
-	msgsMap   map[string]*messageInfo
-	msgsArray []*messageInfo
-	channelID string
+	mutex             sync.RWMutex
+	msgsMap           map[string]*messageInfo
+	msgsArray         []*messageInfo
+	channelID         string
+	pendingSignatures map[string][]message.WitnessSignature
 }
 
 // NewInbox returns a new initialized inbox
 func NewInbox(channelID string) *Inbox {
 	return &Inbox{
-		mutex:     sync.RWMutex{},
-		msgsMap:   make(map[string]*messageInfo),
-		msgsArray: make([]*messageInfo, 0),
-		channelID: channelID,
+		mutex:             sync.RWMutex{},
+		msgsMap:           make(map[string]*messageInfo),
+		msgsArray:         make([]*messageInfo, 0),
+		channelID:         channelID,
+		pendingSignatures: make(map[string][]message.WitnessSignature),
 	}
 }
 
@@ -38,15 +39,15 @@ func NewInbox(channelID string) *Inbox {
 // returns false
 func (i *Inbox) AddWitnessSignature(messageID string, public string, signature string) error {
 	msg, ok := i.GetMessage(messageID)
-	if !ok {
-		// TODO: We received a witness signature before the message itself. We
-		// ignore it for now but it might be worth keeping it until we actually
-		// receive the message
-		return answer.NewErrorf(-4, "failed to find message_id %q for witness message", messageID)
-	}
-
 	i.mutex.Lock()
 	defer i.mutex.Unlock()
+	if !ok {
+		// Add the signature to the pending signatures
+		i.pendingSignatures[messageID] = append(i.pendingSignatures[messageID], message.WitnessSignature{
+			Witness:   public,
+			Signature: signature,
+		})
+	}
 
 	msg.WitnessSignatures = append(msg.WitnessSignatures, message.WitnessSignature{
 		Witness:   public,
@@ -70,6 +71,14 @@ func (i *Inbox) StoreMessage(msg message.Message) {
 
 	i.msgsMap[msg.MessageID] = messageInfo
 	i.msgsArray = append(i.msgsArray, messageInfo)
+
+	// Check if we have pending signatures for this message and add them
+	if pendingSignatures, exist := i.pendingSignatures[msg.MessageID]; exist {
+		for _, sig := range pendingSignatures {
+			msg.WitnessSignatures = append(msg.WitnessSignatures, sig)
+		}
+		delete(i.pendingSignatures, msg.MessageID)
+	}
 }
 
 // GetSortedMessages returns all messages stored sorted by stored time.
