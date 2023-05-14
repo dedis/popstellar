@@ -7,9 +7,11 @@ export const configureNetwork = (configuration: PopchaConfiguration) => {
   configuration.messageRegistry.add(
     ObjectType.POPCHA,
     ActionType.AUTH,
-    // TODO: for now we don't process such messages
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    (_: ProcessableMessage) => true,
+    // We cannot subsribe subsribe on this channel, so we should not recieve any message
+    (_: ProcessableMessage) => {
+      console.log(`Received unprocessed popcha auth message${JSON.stringify(_)}`);
+      return true;
+    },
     PopchaAuthMsg.fromJson,
   );
 };
