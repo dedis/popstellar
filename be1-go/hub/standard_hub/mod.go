@@ -264,6 +264,9 @@ func (h *Hub) SendGreetServer(socket socket.Socket) error {
 	defer h.Unlock()
 
 	pk, err := h.pubKeyServ.MarshalBinary()
+	if err != nil {
+		return xerrors.Errorf("failed to marshal server public key: %v", err)
+	}
 
 	serverInfo := method.ServerInfo{
 		PublicKey:     base64.URLEncoding.EncodeToString(pk),

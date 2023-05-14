@@ -1690,6 +1690,7 @@ func Test_Send_GreetServer_Message(t *testing.T) {
 	require.NoError(t, err)
 
 	pkServ, err := hub.pubKeyServ.MarshalBinary()
+	require.NoError(t, err)
 	pk := base64.URLEncoding.EncodeToString(pkServ)
 
 	sock := &fakeSocket{}
@@ -1715,6 +1716,7 @@ func Test_Handle_GreetServer_First_Time(t *testing.T) {
 	require.NoError(t, err)
 
 	pkServ, err := hub.pubKeyServ.MarshalBinary()
+	require.NoError(t, err)
 	pk := base64.URLEncoding.EncodeToString(pkServ)
 
 	sock := &fakeSocket{}

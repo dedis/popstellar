@@ -42,6 +42,8 @@ const (
 // ServerConfig contains the configuration for the server
 type ServerConfig struct {
 	PublicKey      string   `json:"public-key"`
+	ClientAddress  string   `json:"client-address"`
+	ServerAddress  string   `json:"server-address"`
 	PublicAddress  string   `json:"server-public-address"`
 	PrivateAddress string   `json:"server-listen-address"`
 	ClientPort     int      `json:"client-port"`
@@ -55,8 +57,8 @@ func Serve(cliCtx *cli.Context) error {
 	log := popstellar.Logger
 
 	configFilePath := cliCtx.String("config-file")
-	var err error
 	var serverConfig ServerConfig
+	var err error
 
 	startedWithConfigFile := false
 
@@ -75,16 +77,20 @@ func Serve(cliCtx *cli.Context) error {
 		}
 	}
 
-	// compute the client server address
-	clientServerAddress := fmt.Sprintf("wss://%s:%d/client", serverConfig.PublicAddress, serverConfig.ClientPort)
-	// compute the server server address
-	serverServerAddress := fmt.Sprintf("wss://%s:%d/server", serverConfig.PublicAddress, serverConfig.ServerPort)
+	// compute the client server address if it wasn't provided
+	if serverConfig.ClientAddress == "" {
+		serverConfig.ClientAddress = fmt.Sprintf("%s:%d/client", serverConfig.PublicAddress, serverConfig.ClientPort)
+	}
+	// compute the server server address if it wasn't provided
+	if serverConfig.ServerAddress == "" {
+		serverConfig.ServerAddress = fmt.Sprintf("%s:%d/server", serverConfig.PublicAddress, serverConfig.ServerPort)
+	}
 
 	var point kyber.Point = nil
 	ownerKey(serverConfig.PublicKey, &point)
 
 	// create user hub
-	h, err := standard_hub.NewHub(point, clientServerAddress, serverServerAddress, log.With().Str("role", "server").Logger(),
+	h, err := standard_hub.NewHub(point, serverConfig.ClientAddress, serverConfig.ServerAddress, log.With().Str("role", "server").Logger(),
 		lao.NewChannel)
 	if err != nil {
 		return xerrors.Errorf("failed create the hub: %v", err)

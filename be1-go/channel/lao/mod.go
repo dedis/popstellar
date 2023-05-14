@@ -81,8 +81,6 @@ type Channel struct {
 	log zerolog.Logger
 
 	registry registry.MessageRegistry
-
-	peers []method.ServerInfo
 }
 
 // rollCallState denotes the state of the roll call.
