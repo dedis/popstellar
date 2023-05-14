@@ -7,7 +7,7 @@ export const configureNetwork = (configuration: PopchaConfiguration) => {
   configuration.messageRegistry.add(
     ObjectType.POPCHA,
     ActionType.AUTH,
-    // We cannot subsribe subsribe on this channel, so we should not recieve any message
+    // We cannot subscribe on this channel, so we should not receive any message
     (_: ProcessableMessage) => {
       console.log(`Received unprocessed popcha auth message${JSON.stringify(_)}`);
       return true;
