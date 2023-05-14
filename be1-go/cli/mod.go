@@ -380,10 +380,10 @@ func updateServersState(servers []string, connectedServers *map[string]bool) {
 func computeAddresses(serverConfig *ServerConfig) {
 	// compute the client server address if it wasn't provided
 	if serverConfig.ClientAddress == "" {
-		serverConfig.ClientAddress = fmt.Sprintf("%s:%d/client", serverConfig.PublicAddress, serverConfig.ClientPort)
+		serverConfig.ClientAddress = fmt.Sprintf("ws://%s:%d/client", serverConfig.PublicAddress, serverConfig.ClientPort)
 	}
 	// compute the server server address if it wasn't provided
 	if serverConfig.ServerAddress == "" {
-		serverConfig.ServerAddress = fmt.Sprintf("%s:%d/server", serverConfig.PublicAddress, serverConfig.ServerPort)
+		serverConfig.ServerAddress = fmt.Sprintf("ws://%s:%d/server", serverConfig.PublicAddress, serverConfig.ServerPort)
 	}
 }
