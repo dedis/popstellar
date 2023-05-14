@@ -1,8 +1,9 @@
 package com.github.dedis.popstellar.utility.handler.data;
 
-import static com.github.dedis.popstellar.model.objects.event.EventState.*;
+import android.annotation.SuppressLint;
 
 import androidx.annotation.NonNull;
+
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.election.*;
 import com.github.dedis.popstellar.model.objects.*;
@@ -11,9 +12,14 @@ import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.*;
 import com.github.dedis.popstellar.utility.error.*;
+
 import java.util.*;
+
 import javax.inject.Inject;
+
 import timber.log.Timber;
+
+import static com.github.dedis.popstellar.model.objects.event.EventState.*;
 
 /** Election messages handler class */
 public final class ElectionHandler {
@@ -189,6 +195,7 @@ public final class ElectionHandler {
    * @param context the HandlerContext of the message
    * @param castVote the message that was received
    */
+  @SuppressLint("CheckResult")
   public void handleCastVote(HandlerContext context, CastVote castVote)
       throws UnknownElectionException, DataHandlingException, UnknownLaoException {
     Channel channel = context.getChannel();

@@ -1,5 +1,6 @@
 package com.github.dedis.popstellar.ui.home;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -17,7 +18,6 @@ import androidx.lifecycle.ViewModelProvider;
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.HomeActivityBinding;
 import com.github.dedis.popstellar.model.network.serializer.JsonUtils;
-import com.github.dedis.popstellar.repository.local.PersistentData;
 import com.github.dedis.popstellar.ui.home.wallet.SeedWalletFragment;
 import com.github.dedis.popstellar.ui.lao.witness.WitnessingViewModel;
 import com.github.dedis.popstellar.utility.ActivityUtils;
@@ -38,6 +38,7 @@ public class HomeActivity extends AppCompatActivity {
   private HomeViewModel viewModel;
   private HomeActivityBinding binding;
 
+  @SuppressLint("CheckResult")
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -58,9 +59,8 @@ public class HomeActivity extends AppCompatActivity {
     // At start of Activity we display home fragment
     setCurrentFragment(getSupportFragmentManager(), R.id.fragment_home, HomeFragment::newInstance);
 
-    restoreStoredState();
-
-    if (!viewModel.isWalletSetUp()) {
+    if (!restoreStoredState()) {
+      // If the state restore fails it means that no wallet is set up
       setCurrentFragment(
           getSupportFragmentManager(), R.id.fragment_seed_wallet, SeedWalletFragment::newInstance);
 
@@ -158,7 +158,7 @@ public class HomeActivity extends AppCompatActivity {
     super.onStop();
 
     try {
-      viewModel.savePersistentData();
+      viewModel.saveCoreData();
     } catch (GeneralSecurityException e) {
       // We do not display the security error to the user
       Timber.tag(TAG).d(e, "Storage was unsuccessful due to wallet error");
@@ -195,15 +195,16 @@ public class HomeActivity extends AppCompatActivity {
         .setPositiveButton(
             R.string.yes,
             (dialogInterface, i) -> {
-              boolean success = ActivityUtils.clearStorage(this);
-              Toast.makeText(
-                      this,
-                      success ? R.string.clear_success : R.string.clear_failure,
-                      Toast.LENGTH_LONG)
-                  .show();
+              viewModel.clearStorage();
+              Toast.makeText(this, R.string.clear_success, Toast.LENGTH_LONG).show();
 
               // Restart activity
               Intent intent = HomeActivity.newIntent(this);
+
+              // Flags to clear data structures and free memory
+              intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+              intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
               startActivity(intent);
               finish();
             })
@@ -216,9 +217,8 @@ public class HomeActivity extends AppCompatActivity {
         getSupportFragmentManager(), R.id.fragment_container_home, SettingsFragment::newInstance);
   }
 
-  private void restoreStoredState() {
-    PersistentData data = ActivityUtils.loadPersistentData(this);
-    viewModel.restoreConnections(data);
+  private boolean restoreStoredState() {
+    return viewModel.restoreConnections();
   }
 
   public static HomeViewModel obtainViewModel(FragmentActivity activity) {

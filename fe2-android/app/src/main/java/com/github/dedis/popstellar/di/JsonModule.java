@@ -9,6 +9,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.DataRegistr
 import com.github.dedis.popstellar.model.network.method.message.data.election.Vote;
 import com.github.dedis.popstellar.model.network.serializer.*;
 import com.github.dedis.popstellar.model.objects.Channel;
+import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.security.*;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -39,6 +40,7 @@ public class JsonModule {
         .registerTypeAdapter(Answer.class, new JsonAnswerSerializer())
         .registerTypeAdapter(MessageGeneral.class, new JsonMessageGeneralSerializer())
         .registerTypeAdapter(Channel.class, new JsonChannelSerializer())
+        .registerTypeAdapter(Lao.class, new JsonLaoSerializer())
         // Base64URLData serializers
         .registerTypeAdapter(
             Base64URLData.class, new JsonBase64DataSerializer<>(Base64URLData::new))
