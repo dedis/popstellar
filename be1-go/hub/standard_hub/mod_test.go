@@ -1682,6 +1682,128 @@ func Test_Handle_GetMessagesById(t *testing.T) {
 	}
 }
 
+// Test that the correct greet server message is sent
+func Test_Send_GreetServer_Message(t *testing.T) {
+	keypair := generateKeyPair(t)
+
+	hub, err := NewHub(keypair.public, "ws://localhost:9000/client", "ws://localhost:9001/server", nolog, nil)
+	require.NoError(t, err)
+
+	pkServ, err := hub.pubKeyServ.MarshalBinary()
+	pk := base64.URLEncoding.EncodeToString(pkServ)
+
+	sock := &fakeSocket{}
+	err = hub.SendGreetServer(sock)
+	require.NoError(t, err)
+
+	greetServerMsg := sock.msg
+
+	var greetServer method.GreetServer
+	err = json.Unmarshal(greetServerMsg, &greetServer)
+	require.NoError(t, err)
+	require.Equal(t, greetServer.Method, query.MethodGreetServer)
+	require.Equal(t, greetServer.Params.PublicKey, pk)
+	require.Equal(t, greetServer.Params.ServerAddress, "ws://localhost:9001/server")
+	require.Equal(t, greetServer.Params.ClientAddress, "ws://localhost:9000/client")
+}
+
+// Test that the greet server messages received from non greeted servers are properly handled
+func Test_Handle_GreetServer_First_Time(t *testing.T) {
+	keypair := generateKeyPair(t)
+
+	hub, err := NewHub(keypair.public, "ws://localhost:9000/client", "ws://localhost:9001/server", nolog, nil)
+	require.NoError(t, err)
+
+	pkServ, err := hub.pubKeyServ.MarshalBinary()
+	pk := base64.URLEncoding.EncodeToString(pkServ)
+
+	sock := &fakeSocket{}
+
+	serverInfo := method.ServerInfo{
+		PublicKey:     "",
+		ServerAddress: "ws://localhost:9003/server",
+		ClientAddress: "ws://localhost:9002/client",
+	}
+
+	serverGreet := method.GreetServer{
+		Base: query.Base{
+			JSONRPCBase: jsonrpc.JSONRPCBase{
+				JSONRPC: "2.0",
+			},
+			Method: query.MethodGreetServer,
+		},
+		Params: serverInfo,
+	}
+
+	msg, err := json.Marshal(serverGreet)
+	require.NoError(t, err)
+
+	err = hub.handleMessageFromServer(&socket.IncomingMessage{
+		Socket:  sock,
+		Message: msg,
+	})
+	require.NoError(t, err)
+	require.NoError(t, sock.err)
+
+	//socket should receive a server greet back after handling of server greet
+	var serverGreetResponse method.GreetServer
+
+	err = json.Unmarshal(sock.msg, &serverGreetResponse)
+	require.NoError(t, err)
+
+	require.Equal(t, serverGreetResponse.Method, query.MethodGreetServer)
+	require.Equal(t, serverGreetResponse.Params.PublicKey, pk)
+	require.Equal(t, serverGreetResponse.Params.ServerAddress, "ws://localhost:9001/server")
+	require.Equal(t, serverGreetResponse.Params.ClientAddress, "ws://localhost:9000/client")
+}
+
+// Test that the greet server messages received from already greeted servers are properly handled
+// and that the server is not greeted again to avoid loops
+func Test_Handle_GreetServer_Already_Greeted(t *testing.T) {
+	keypair := generateKeyPair(t)
+
+	hub, err := NewHub(keypair.public, "ws://localhost:9000/client", "ws://localhost:9001/server", nolog, nil)
+	require.NoError(t, err)
+
+	sock := &fakeSocket{}
+
+	err = hub.SendGreetServer(sock)
+	require.NoError(t, err)
+	require.True(t, slices.Contains(hub.peersGreeted, sock.ID()))
+
+	//reset socket message
+	sock.msg = nil
+
+	serverInfo := method.ServerInfo{
+		PublicKey:     "",
+		ServerAddress: "ws://localhost:9003/server",
+		ClientAddress: "ws://localhost:9002/client",
+	}
+
+	serverGreet := method.GreetServer{
+		Base: query.Base{
+			JSONRPCBase: jsonrpc.JSONRPCBase{
+				JSONRPC: "2.0",
+			},
+			Method: query.MethodGreetServer,
+		},
+		Params: serverInfo,
+	}
+
+	msg, err := json.Marshal(serverGreet)
+	require.NoError(t, err)
+
+	err = hub.handleMessageFromServer(&socket.IncomingMessage{
+		Socket:  sock,
+		Message: msg,
+	})
+	require.NoError(t, err)
+	require.NoError(t, sock.err)
+
+	//socket should not receive anything back after handling of server greet
+	require.Nil(t, sock.msg)
+}
+
 // -----------------------------------------------------------------------------
 // Utility functions
 

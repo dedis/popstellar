@@ -263,8 +263,10 @@ func (h *Hub) SendGreetServer(socket socket.Socket) error {
 	h.Lock()
 	defer h.Unlock()
 
+	pk, err := h.pubKeyServ.MarshalBinary()
+
 	serverInfo := method.ServerInfo{
-		PublicKey:     h.pubKeyServ.String(),
+		PublicKey:     base64.URLEncoding.EncodeToString(pk),
 		ServerAddress: h.serverServerAddress,
 		ClientAddress: h.clientServerAddress,
 	}
