@@ -668,7 +668,6 @@ func (c *Channel) createAndSendLAOGreet() error {
 	peers := []messagedata.Peer{}
 
 	for _, info := range c.hub.GetPeersInfo() {
-		log.Info().Msgf("storing new greet lao peer '%s' ", info.ClientAddress)
 		peers = append(peers, messagedata.Peer{
 			Address: info.ClientAddress,
 		})
@@ -679,7 +678,7 @@ func (c *Channel) createAndSendLAOGreet() error {
 		Action:   messagedata.LAOActionGreet,
 		LaoID:    c.extractLaoID(),
 		Frontend: base64.URLEncoding.EncodeToString(orgPkBuf),
-		Address:  c.hub.GetServerAddress(),
+		Address:  c.hub.GetClientServerAddress(),
 		Peers:    peers,
 	}
 

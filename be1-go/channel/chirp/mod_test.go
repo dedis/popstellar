@@ -608,8 +608,8 @@ func (h *fakeHub) GetPubKeyServ() kyber.Point {
 	return h.pubKeyServ
 }
 
-// GetServerAddress implements channel.HubFunctionalities
-func (h *fakeHub) GetServerAddress() string {
+// GetClientServerAddress implements channel.HubFunctionalities
+func (h *fakeHub) GetClientServerAddress() string {
 	return ""
 }
 

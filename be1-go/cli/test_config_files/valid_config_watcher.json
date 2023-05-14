@@ -1,2 +1,1 @@
-{"public-key":"","client-address":"ws://localhost:9000/client", "server-address":"ws://localhost:9001/server","server-public-address":"localhost","server-listen-address":"localhost","client-port":9000,"server-port":9001,"other-servers":[]}
-
+{"public-key":"","client-address":"ws://localhost:9000/client","server-address":"ws://localhost:9001/server","server-public-address":"localhost","server-listen-address":"localhost","client-port":9000,"server-port":9001,"other-servers":[]}

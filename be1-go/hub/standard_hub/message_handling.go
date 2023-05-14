@@ -508,6 +508,7 @@ func (h *Hub) handleGreetServer(socket socket.Socket, byteMessage []byte) error 
 
 	// check if the server is already greeted
 	if slices.Contains(h.peersGreeted, socket.ID()) {
+		h.Unlock()
 		return nil
 	}
 	h.Unlock()

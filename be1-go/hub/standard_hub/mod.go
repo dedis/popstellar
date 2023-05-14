@@ -90,10 +90,10 @@ type Hub struct {
 	// to help servers determine in which channel the message ids go
 	messageIdsByChannel map[string][]string
 
-	// peersInfo stores the info of the peers: public key, client and server endpoints
+	// peersInfo stores the info of the peers: public key, client and server endpoints associated with the socket ID
 	peersInfo map[string]method.ServerInfo
 
-	// peersGreeted stores the peers that the hub has greeted
+	// peersGreeted stores the peers that were greeted by the socket ID
 	peersGreeted []string
 }
 
@@ -102,7 +102,6 @@ func newQueries() queries {
 	return queries{
 		state:                  make(map[int]*bool),
 		getMessagesByIdQueries: make(map[int]method.GetMessagesById),
-		greetServerQueries:     make(map[int]method.GreetServer),
 	}
 }
 
@@ -114,8 +113,6 @@ type queries struct {
 	state map[int]*bool
 	// getMessagesByIdQueries stores the server's getMessagesByIds queries by their ID.
 	getMessagesByIdQueries map[int]method.GetMessagesById
-	// greetServerQueries stores the server's greetServer queries by their ID.
-	greetServerQueries map[int]method.GreetServer
 	// nextID store the ID of the next query
 	nextID int
 }
@@ -593,8 +590,8 @@ func (h *Hub) GetPubKeyServ() kyber.Point {
 	return h.pubKeyServ
 }
 
-// GetServerAddress implements channel.HubFunctionalities
-func (h *Hub) GetServerAddress() string {
+// GetClientServerAddress implements channel.HubFunctionalities
+func (h *Hub) GetClientServerAddress() string {
 	return h.clientServerAddress
 }
 
