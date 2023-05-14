@@ -160,6 +160,9 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
           sender() ! DbActor.DbActorReadAck(Some(MESSAGE_OPEN_ELECTION_WORKING))
         case DbActor.Catchup(_) =>
           sender() ! DbActor.DbActorCatchupAck(messagesNotEnd)
+        case DbActor.ReadSetupElectionMessage(_) =>
+          sender() ! DbActor.DbActorReadAck(Some(MESSAGE_SETUPELECTION_OPEN_BALLOT_WORKING))
+
       }
     })
     system.actorOf(dbActorMock)
@@ -182,6 +185,8 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
           sender() ! DbActor.DbActorReadAck(Some(MESSAGE_OPEN_ELECTION_WORKING))
         case DbActor.Catchup(_) =>
           sender() ! DbActor.DbActorCatchupAck(messages)
+        case DbActor.ReadSetupElectionMessage(_) =>
+          sender() ! DbActor.DbActorReadAck(Some(MESSAGE_SETUPELECTION_OPEN_BALLOT_WORKING))
       }
     })
     system.actorOf(dbActorMock)
@@ -204,6 +209,8 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
           sender() ! DbActor.DbActorReadAck(Some(MESSAGE_OPEN_ELECTION_WORKING))
         case DbActor.Catchup(_) =>
           sender() ! DbActor.DbActorCatchupAck(messages)
+        case DbActor.ReadSetupElectionMessage(_) =>
+          sender() ! DbActor.DbActorReadAck(Some(MESSAGE_SETUPELECTION_OPEN_BALLOT_WORKING))
       }
     })
     system.actorOf(dbActorMock)
@@ -226,6 +233,8 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
           sender() ! DbActor.DbActorReadAck(Some(MESSAGE_OPEN_ELECTION_WORKING))
         case DbActor.Catchup(_) =>
           sender() ! DbActor.DbActorCatchupAck(messages)
+        case DbActor.ReadSetupElectionMessage(_) =>
+          sender() ! DbActor.DbActorReadAck(Some(MESSAGE_SETUPELECTION_OPEN_BALLOT_WORKING))
       }
     })
     system.actorOf(dbActorMock)
@@ -250,6 +259,8 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
           sender() ! DbActor.DbActorReadAck(Some(MESSAGE_END_ELECTION_WORKING))
         case DbActor.Catchup(_) =>
           sender() ! DbActor.DbActorCatchupAck(messages)
+        case DbActor.ReadSetupElectionMessage(_) =>
+          sender() ! DbActor.DbActorReadAck(Some(MESSAGE_SETUPELECTION_OPEN_BALLOT_WORKING))
       }
     })
     system.actorOf(dbActorMock)

@@ -1,0 +1,15 @@
+{
+  "jsonrpc": "2.0",
+  "id": 4,
+  "method": "publish",
+  "params": {
+    "channel":  "/root/o3nyIIvrmDriwYXnH5-8CmYdyZcz4BPNT99W7dcrk9M=/social/nAHrfl9nLW9OO_sRr1q9mkfdA_S_ig5156aAMykzAu0=",
+    "message": {
+      "data": "eyJvYmplY3QiOiJjaGlycCIsImFjdGlvbiI6ImFkZCIsInRleHQiOiJDaGlycCAyIiwidGltZXN0YW1wIjoxNjgzMzE2MzUzfQ==",
+      "message_id": "4KR6LpgzziWI8bxA2MFwyvcD7VY20-sh1fWuIY6M_Uk=",
+      "sender": "nAHrfl9nLW9OO_sRr1q9mkfdA_S_ig5156aAMykzAu0=",
+      "signature": "7zMIKJ1-QxVDDRSvbXuqMU2aRhi4ojH0EFo1BrmVM1f-is4V7ozhm4hMkHGJexOZnrK9GG4fyKNnoLgnCEFKAA==",
+      "witness_signatures": []
+    }
+  }
+}

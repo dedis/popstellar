@@ -1,0 +1,15 @@
+{
+  "jsonrpc": "2.0",
+  "id": 4,
+  "method": "publish",
+  "params": {
+    "channel": "/root/o3nyIIvrmDriwYXnH5-8CmYdyZcz4BPNT99W7dcrk9M=/iNBfwu7qLstfwC9aF0Jm9fyZGCJYqfE12PCkA5Ic5JE=",
+    "message": {
+      "data": "eyJvYmplY3QiOiJlbGVjdGlvbiIsImFjdGlvbiI6ImNhc3Rfdm90ZSIsImxhbyI6Im8zbnlJSXZybURyaXdZWG5INS04Q21ZZHlaY3o0QlBOVDk5VzdkY3JrOU09IiwiY3JlYXRlZF9hdCI6MTY4MzMxNjQ3NCwidm90ZXMiOlt7ImlkIjoiTFpwSnkxWVpqSW91eElwOU1YbF9PVFU0Zl96Sm96a2lJVGo2ZVlob2ppbz0iLCJxdWVzdGlvbiI6InFmVk9HVzQxcmwtQ09nWVZMYmxUVnlFOTBmSXpRcmZRS0gyMXJ3eXFoMUE9Iiwidm90ZSI6MH0seyJpZCI6ImZoelB4cmVLY19lalVMZkNKZ0NlQUxqRXo3b2Z6OGN3bHZzMzJFQXFzTnc9IiwicXVlc3Rpb24iOiI1U1h0Yi16TmFic0ZIUFdRbjRNU1pzRWswRHFjRUVYejBOVExNNVNaLTJZPSIsInZvdGUiOjB9XSwiZWxlY3Rpb24iOiJpTkJmd3U3cUxzdGZ3QzlhRjBKbTlmeVpHQ0pZcWZFMTJQQ2tBNUljNUpFPSJ9",
+      "message_id": "ADnsFmRBIDm_w337Xvnk0hjlRFKFdAGRgODbK_nq5cw=",
+      "sender": "VHfxTlbM3nTnLQuKnKfs1fGP2cwVT8KJkc-sRGs_2KM=",
+      "signature": "FBe3_zRlDE3lLuKBid-kSmuTGe3tD8I5_OkhPj9RpDhquJhY8ZvM9ImD5A4EjNYXj0u-9h3-GXHc6nwrnF_kCw==",
+      "witness_signatures": []
+    }
+  }
+}
