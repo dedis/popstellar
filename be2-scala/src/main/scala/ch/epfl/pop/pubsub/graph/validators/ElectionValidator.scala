@@ -6,11 +6,11 @@ import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.network.method.message.data.election._
 import ch.epfl.pop.model.objects.ElectionChannel._
-import ch.epfl.pop.model.objects.{Channel, Hash}
+import ch.epfl.pop.model.objects.{Channel, DbActorNAckException, Hash, LaoData}
 import ch.epfl.pop.pubsub.PublishSubscribe
 import ch.epfl.pop.pubsub.graph.validators.MessageValidator._
-import ch.epfl.pop.pubsub.graph.{GraphMessage, PipelineError}
-
+import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
+import ch.epfl.pop.storage.DbActor
 import scala.concurrent.Await
 import scala.util.{Success, Failure}
 
@@ -259,9 +259,36 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
     }
   }
 
-// TODO: Proper validation
+  // not implemented since the back end does not receive a ResultElection message coming from the front end
   def validateResultElection(rpcMessage: JsonRpcRequest): GraphMessage = {
-    Right(rpcMessage)
+    def validationError(reason: String): PipelineError = super.validationError(reason, "ResultElection", rpcMessage.id)
+    rpcMessage.getParamsMessage match {
+      case Some(_: Message) =>
+        val (resultElection, laoId, senderPk, channel) = extractData[ResultElection](rpcMessage)
+        val electionQuestionResult = resultElection.questions
+        val electionId = channel.extractChildChannel
+        val electionQuestions = extractElectionQuestions(channel,dbActorRef)
+        runChecks(
+          checkNumberOfVotes(
+            rpcMessage,
+            channel,
+            electionQuestionResult,
+            dbActorRef,
+            validationError(s"trying to send a ResultElection message with an invalid number of votes.")),
+          checkElectionEnded(
+            rpcMessage,
+            channel,
+            dbActorRef,
+            validationError("trying to send a ResultElection while Election is not ended yet.")),
+          checkQuestionId(
+            rpcMessage,
+            electionQuestions,
+            electionId,
+            validationError(s"trying to send a ResultElection message with invalid question ids."))
+        )
+
+      case _ => Left(validationErrorNoMessage(rpcMessage.id))
+    }
   }
 
   def validateEndElection(rpcMessage: JsonRpcRequest): GraphMessage = {
@@ -346,6 +373,30 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
     Await.result(electionChannel.extractMessages[EndElection](dbActorRef), duration) match {
       case h :: _ => Left(error)
       case _      => Right(rpcMessage)
+    }
+
+  /** Does the opposite of the above function, i.e : checks if the election has ended
+    *
+    * @param rpcMessage
+    *   the rpc message to validate
+    * @param electionChannel
+    *   the election channel
+    * @param dbActorRef
+    *   the dbActor to ask for end election message
+    * @param error
+    *   the error to forward in case the election has ended
+    * @return
+    *   GraphMessage: passes the rpcMessages to Right if successful else Left with pipeline error
+    */
+  private def checkElectionEnded(
+      rpcMessage: JsonRpcRequest,
+      electionChannel: Channel,
+      dbActorRef: AskableActorRef,
+      error: PipelineError
+  ): GraphMessage =
+    Await.result(electionChannel.extractMessages[EndElection](dbActorRef), duration) match {
+      case h :: _ => Right(rpcMessage)
+      case _      => Left(error)
     }
 
   /** checks if the votes are valid: valid question ids, valid ballot options and valid vote ids
@@ -470,4 +521,58 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
     else
       Left(error)
   }
+
+  /** checks that for each question, the number of votes is greater or equal than 0, and less that or equal than the number of attendees to the election.
+    *
+    * @param rpcMessage
+    *   the rpc message to validate.
+    * @param result
+    *   the list of the election results.
+    * @param dbActorRef
+    *   the dbActor to ask for the number of attendees.
+    * @param channel
+    *   the channel we need the LAO's data for
+    * @param error
+    *   the error to forward in case where the number of votes is incoherent.
+    * @return
+    *   GraphMessage: passes the rpcMessages to Right if successful else Left with pipeline error
+    */
+  private def checkNumberOfVotes(rpcMessage: JsonRpcRequest, channel: Channel, result: List[ElectionQuestionResult], dbActorRef: AskableActorRef, error: PipelineError): GraphMessage = {
+    val askLaoData = dbActorRef ? DbActor.ReadLaoData(channel)
+    Await.ready(askLaoData, duration).value match {
+      case Some(Success(DbActor.DbActorReadLaoDataAck(laoData: LaoData))) =>
+        val numberOfAttendees = laoData.attendees.size
+        val correct: Boolean =
+          result.forall(electionQuestionResult =>
+            !((countNumberOfVotes(electionQuestionResult) > numberOfAttendees) || (!allBallotCountsArePositive(electionQuestionResult)))
+          )
+        if (correct) {
+          Right(rpcMessage)
+        } else {
+          Left(error)
+        }
+      case Some(Failure(ex: DbActorNAckException)) => Left(PipelineError(ex.code, s"validation of ResultElection failed, could not retrieve laoData : ${ex.message}", rpcMessage.getId))
+      case reply                                   => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"ElectionValidator failed : unexpected DbActor reply '$reply'", rpcMessage.getId))
+    }
+  }
+
+  private def countNumberOfVotes(electionQuestionResult: ElectionQuestionResult): Int = {
+    electionQuestionResult.result.map(_.count).foldLeft(0)(_ + _)
+  }
+
+  private def allBallotCountsArePositive(electionQuestionResult: ElectionQuestionResult): Boolean = {
+    electionQuestionResult.result.forall(electionBallotVotes => electionBallotVotes.count >= 0)
+  }
+
+  private def extractElectionQuestions(electionChannel : Channel, dbActorRef : AskableActorRef): List[ElectionQuestion] = {
+    val askForSetupElectionMessage = dbActorRef ? DbActor.ReadSetupElectionMessage(electionChannel)
+    val listOfQuestions: List[ElectionQuestion] = Await.ready(askForSetupElectionMessage, duration).value match {
+      case Some(Success(DbActor.DbActorReadAck(message))) =>
+        message.get.asInstanceOf[SetupElection].questions
+      case _ => List.empty
+    }
+    listOfQuestions
+
+  }
+
 }
