@@ -277,6 +277,8 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
           sender() ! DbActor.DbActorReadLaoDataAck(laoDataForResultElection)
         case DbActor.Catchup(channel)  =>
           sender() ! DbActor.DbActorCatchupAck(List(MESSAGE_END_ELECTION_WORKING))
+        case DbActor.ReadSetupElectionMessage(channel) =>
+          sender() ! DbActor.DbActorReadAck(Some(MESSAGE_SETUPELECTION_OPEN_BALLOT_WORKING))
       }
     })
     system.actorOf(dbActorMock)

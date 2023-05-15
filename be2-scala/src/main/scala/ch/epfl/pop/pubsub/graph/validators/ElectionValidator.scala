@@ -486,10 +486,16 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
       electionId: Hash,
       error: PipelineError
   ): GraphMessage = {
-    val isQuestionIdValid: Boolean =
+    print(electionId)
+
+    val isQuestionIdValid: Boolean = {
+      questions.foreach(q =>
+        print(q.id.toString + "\n" + Hash.fromStrings("Question", electionId.toString, q.question).toString + "\n")
+      )
       questions.forall(q =>
         q.id == Hash.fromStrings("Question", electionId.toString, q.question)
       )
+    }
 
     if (isQuestionIdValid)
       Right(rpcMessage)
@@ -568,7 +574,7 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
     val askForSetupElectionMessage = dbActorRef ? DbActor.ReadSetupElectionMessage(electionChannel)
     val listOfQuestions: List[ElectionQuestion] = Await.ready(askForSetupElectionMessage, duration).value match {
       case Some(Success(DbActor.DbActorReadAck(message))) =>
-        message.get.asInstanceOf[SetupElection].questions
+        message.get.decodedData.get.asInstanceOf[SetupElection].questions
       case _ => List.empty
     }
     listOfQuestions
