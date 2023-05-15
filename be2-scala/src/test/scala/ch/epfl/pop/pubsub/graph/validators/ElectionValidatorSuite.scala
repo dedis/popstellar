@@ -282,29 +282,7 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
     system.actorOf(dbActorMock)
   }
 
-  private def mockDbElectionNotEnded: AskableActorRef = {
-    val dbActorMock = Props(new Actor() {
-      override def receive: Receive = {
-        case DbActor.ReadLaoData(channel) =>
-          sender() ! DbActor.DbActorReadLaoDataAck(laoDataForResultElection)
-        case DbActor.Catchup(channel) =>
-          sender() ! DbActor.DbActorCatchupAck(List.empty)
-      }
-    })
-    system.actorOf(dbActorMock)
-  }
 
-  private def mockDbForResultElection: AskableActorRef = {
-    val dbActorMock = Props(new Actor() {
-      override def receive: Receive = {
-        case DbActor.ReadLaoData(channel) =>
-          sender() ! DbActor.DbActorReadLaoDataAck(laoDataForResultElection)
-        case DbActor.Catchup(channel)  =>
-          sender() ! DbActor.DbActorCatchupAck(List(MESSAGE_END_ELECTION_WORKING))
-      }
-    })
-    system.actorOf(dbActorMock)
-  }
 
   private def mockDbElectionNotEnded: AskableActorRef = {
     val dbActorMock = Props(new Actor() {
@@ -684,28 +662,28 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
   }
 
   test("Receiving the result of an election works as intended") {
-    val dbActorRef = mockDbForResultElection
+    val dbActorRef : AskableActorRef = mockDbForResultElection
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateResultElection(RESULT_ELECTION_RPC)
     message should equal(Right(RESULT_ELECTION_RPC))
     system.stop(dbActorRef.actorRef)
   }
 
   test("ResultElection with negative number of votes does not work in validateResultElection") {
-    val dbActorRef = mockDbForResultElection
+    val dbActorRef : AskableActorRef = mockDbForResultElection
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateResultElection(RESULT_ELECTION_RPC_WRONG)
     message shouldBe a[Left[PipelineError, _]]
     system.stop(dbActorRef.actorRef)
   }
 
   test("ResultElection with number of votes exceeding the number of attendees does not work in validateResultElection") {
-    val dbActorRef = mockDbForResultElection
+    val dbActorRef : AskableActorRef = mockDbForResultElection
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateResultElection(RESULT_ELECTION_RPC_TOO_MUCH_VOTES)
     message shouldBe a[Left[PipelineError, _]]
     system.stop(dbActorRef.actorRef)
   }
 
   test("ResultElection with election not ended does not work in validateResultElection ") {
-    val dbActorRef = mockDbElectionNotEnded
+    val dbActorRef : AskableActorRef = mockDbElectionNotEnded
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateResultElection(RESULT_ELECTION_RPC)
     message shouldBe a[Left[PipelineError, _]]
     system.stop(dbActorRef.actorRef)
