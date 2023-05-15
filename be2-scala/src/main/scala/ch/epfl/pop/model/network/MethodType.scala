@@ -15,6 +15,7 @@ object MethodType extends Enumeration {
   val HEARTBEAT: Value = MatchingValue("heartbeat")
   val GET_MESSAGES_BY_ID: Value = MatchingValue("get_messages_by_id")
 
+  val GREET_SERVER: Value = MatchingValue("greet_server")
   def MatchingValue(v: String): Value with Matching = new Val(nextId, v) with Matching
 
   def unapply(s: String): Option[Value] = values.find(s == _.toString)
