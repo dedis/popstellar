@@ -195,6 +195,10 @@ const iconNameMap = {
     iconName: 'ios-eye',
     IconFamily: Ionicons,
   } as IonIcon,
+  key: {
+    iconName: 'vpn-key',
+    IconFamily: MaterialIcons,
+  } as MaterialIcon,
 };
 
 export type PopIconName = keyof typeof iconNameMap;

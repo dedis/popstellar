@@ -193,7 +193,7 @@ export default PopchaScanner;
 
 export const popchaScannerScreen: PopchaFeature.LaoScreen = {
   id: STRINGS.navigation_lao_popcha,
-  Icon: makeIcon('scan'),
+  Icon: makeIcon('key'),
   Component: PopchaScanner,
   order: 100000,
 };
