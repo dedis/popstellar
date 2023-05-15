@@ -33,7 +33,7 @@ object RuntimeEnvironment {
 
     val virtualMachineParam = "scala.config"
     val pathConfig = sp(virtualMachineParam)
-    if (pathConfig != null && !pathConfig.trim.isEmpty) {
+    if (pathConfig != null && pathConfig.trim.nonEmpty) {
       pathConfig.trim
     } else {
       throw new RuntimeException(s"-D$virtualMachineParam was not provided.")
