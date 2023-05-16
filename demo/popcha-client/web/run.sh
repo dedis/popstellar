@@ -5,4 +5,4 @@ source venv/bin/activate;
 echo "Installing dependencies"
 pip install -r requirements.txt;
 echo "Starting server"
-gunicorn -w 4 "main:app" | tee log.out;
+gunicorn -w 4 --chdir src "main:app" | tee -a log.out;
