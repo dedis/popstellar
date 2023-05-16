@@ -1,16 +1,14 @@
 package com.github.dedis.popstellar.model.network.method.message.data.lao;
 
-import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
-import com.github.dedis.popstellar.model.network.JsonTestUtils;
+import com.github.dedis.popstellar.model.network.JsonUtilsTest;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.objects.PeerAddress;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.google.gson.JsonParseException;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -30,11 +28,6 @@ public class GreetLaoTest {
 
   public static GreetLao GREETING_MSG =
       new GreetLao(LAO_ID, RANDOM_KEY, RANDOM_ADDRESS, RANDOM_PEER_LIST);
-
-  @Before
-  public void setup() {
-    JsonTestUtils.loadGSON(ApplicationProvider.getApplicationContext());
-  }
 
   @Test(expected = IllegalArgumentException.class)
   public void constructorFailsWrongPublicKeyTest() {
@@ -108,32 +101,32 @@ public class GreetLaoTest {
 
   @Test
   public void jsonValidationTest() {
-    JsonTestUtils.testData(GREETING_MSG);
+    JsonUtilsTest.testData(GREETING_MSG);
 
     String pathDir = "protocol/examples/messageData/lao_greet/";
     String jsonInvalid1 =
-        JsonTestUtils.loadFile(pathDir + "wrong_greeting_additional_property_0.json");
+        JsonUtilsTest.loadFile(pathDir + "wrong_greeting_additional_property_0.json");
     String jsonInvalid2 =
-        JsonTestUtils.loadFile(pathDir + "wrong_greeting_additional_property_2.json");
-    String jsonInvalid3 = JsonTestUtils.loadFile(pathDir + "wrong_greeting_invalid_address_2.json");
-    String jsonInvalid4 = JsonTestUtils.loadFile(pathDir + "wrong_greeting_invalid_address.json");
-    String jsonInvalid5 = JsonTestUtils.loadFile(pathDir + "wrong_greeting_missing_action.json");
-    String jsonInvalid6 = JsonTestUtils.loadFile(pathDir + "wrong_greeting_missing_address_0.json");
-    String jsonInvalid7 = JsonTestUtils.loadFile(pathDir + "wrong_greeting_missing_address_1.json");
-    String jsonInvalid8 = JsonTestUtils.loadFile(pathDir + "wrong_greeting_missing_frontend.json");
-    String jsonInvalid9 = JsonTestUtils.loadFile(pathDir + "wrong_greeting_missing_lao.json");
-    String jsonInvalid10 = JsonTestUtils.loadFile(pathDir + "wrong_greeting_missing_object.json");
-    String jsonInvalid11 = JsonTestUtils.loadFile(pathDir + "wrong_greeting_missing_peers.json");
-    assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid1));
-    assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid2));
-    assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid3));
-    assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid4));
-    assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid5));
-    assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid6));
-    assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid7));
-    assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid8));
-    assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid9));
-    assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid10));
-    assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid11));
+        JsonUtilsTest.loadFile(pathDir + "wrong_greeting_additional_property_2.json");
+    String jsonInvalid3 = JsonUtilsTest.loadFile(pathDir + "wrong_greeting_invalid_address_2.json");
+    String jsonInvalid4 = JsonUtilsTest.loadFile(pathDir + "wrong_greeting_invalid_address.json");
+    String jsonInvalid5 = JsonUtilsTest.loadFile(pathDir + "wrong_greeting_missing_action.json");
+    String jsonInvalid6 = JsonUtilsTest.loadFile(pathDir + "wrong_greeting_missing_address_0.json");
+    String jsonInvalid7 = JsonUtilsTest.loadFile(pathDir + "wrong_greeting_missing_address_1.json");
+    String jsonInvalid8 = JsonUtilsTest.loadFile(pathDir + "wrong_greeting_missing_frontend.json");
+    String jsonInvalid9 = JsonUtilsTest.loadFile(pathDir + "wrong_greeting_missing_lao.json");
+    String jsonInvalid10 = JsonUtilsTest.loadFile(pathDir + "wrong_greeting_missing_object.json");
+    String jsonInvalid11 = JsonUtilsTest.loadFile(pathDir + "wrong_greeting_missing_peers.json");
+    assertThrows(JsonParseException.class, () -> JsonUtilsTest.parse(jsonInvalid1));
+    assertThrows(JsonParseException.class, () -> JsonUtilsTest.parse(jsonInvalid2));
+    assertThrows(JsonParseException.class, () -> JsonUtilsTest.parse(jsonInvalid3));
+    assertThrows(JsonParseException.class, () -> JsonUtilsTest.parse(jsonInvalid4));
+    assertThrows(JsonParseException.class, () -> JsonUtilsTest.parse(jsonInvalid5));
+    assertThrows(JsonParseException.class, () -> JsonUtilsTest.parse(jsonInvalid6));
+    assertThrows(JsonParseException.class, () -> JsonUtilsTest.parse(jsonInvalid7));
+    assertThrows(JsonParseException.class, () -> JsonUtilsTest.parse(jsonInvalid8));
+    assertThrows(JsonParseException.class, () -> JsonUtilsTest.parse(jsonInvalid9));
+    assertThrows(JsonParseException.class, () -> JsonUtilsTest.parse(jsonInvalid10));
+    assertThrows(JsonParseException.class, () -> JsonUtilsTest.parse(jsonInvalid11));
   }
 }

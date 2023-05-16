@@ -1,15 +1,13 @@
 package com.github.dedis.popstellar.model.network.method.message.data.election;
 
-import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
-import com.github.dedis.popstellar.model.network.JsonTestUtils;
+import com.github.dedis.popstellar.model.network.JsonUtilsTest;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.testutils.Base64DataUtils;
 import com.google.gson.JsonParseException;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -27,11 +25,6 @@ public class ElectionKeyTest {
 
   public static ElectionKey ELECTION_KEY1 = new ElectionKey(ELEC_ID1, KEY1);
   public static ElectionKey ELECTION_KEY2 = new ElectionKey(ELEC_ID2, KEY2);
-
-  @Before
-  public void setup() {
-    JsonTestUtils.loadGSON(ApplicationProvider.getApplicationContext());
-  }
 
   @Test(expected = IllegalArgumentException.class)
   public void constructorFailsElectionIdNotBase64Test() {
@@ -81,27 +74,27 @@ public class ElectionKeyTest {
 
   @Test
   public void jsonValidationTest() {
-    JsonTestUtils.testData(ELECTION_KEY1);
+    JsonUtilsTest.testData(ELECTION_KEY1);
     String pathDir = "protocol/examples/messageData/election_key/";
-    String valid1 = JsonTestUtils.loadFile(pathDir + "election_key.json");
-    JsonTestUtils.parse(valid1);
+    String valid1 = JsonUtilsTest.loadFile(pathDir + "election_key.json");
+    JsonUtilsTest.parse(valid1);
 
     // Check that invalid data is rejected
     String jsonInvalid1 =
-        JsonTestUtils.loadFile(pathDir + "wrong_election_key_additional_property.json");
+        JsonUtilsTest.loadFile(pathDir + "wrong_election_key_additional_property.json");
     String jsonInvalid2 =
-        JsonTestUtils.loadFile(pathDir + "wrong_election_key_missing_action.json");
+        JsonUtilsTest.loadFile(pathDir + "wrong_election_key_missing_action.json");
     String jsonInvalid3 =
-        JsonTestUtils.loadFile(pathDir + "wrong_election_key_missing_election.json");
+        JsonUtilsTest.loadFile(pathDir + "wrong_election_key_missing_election.json");
     String jsonInvalid4 =
-        JsonTestUtils.loadFile(pathDir + "wrong_election_key_missing_election_key.json");
+        JsonUtilsTest.loadFile(pathDir + "wrong_election_key_missing_election_key.json");
     String jsonInvalid5 =
-        JsonTestUtils.loadFile(pathDir + "wrong_election_key_missing_object.json");
+        JsonUtilsTest.loadFile(pathDir + "wrong_election_key_missing_object.json");
 
-    assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid1));
-    assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid2));
-    assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid3));
-    assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid4));
-    assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid5));
+    assertThrows(JsonParseException.class, () -> JsonUtilsTest.parse(jsonInvalid1));
+    assertThrows(JsonParseException.class, () -> JsonUtilsTest.parse(jsonInvalid2));
+    assertThrows(JsonParseException.class, () -> JsonUtilsTest.parse(jsonInvalid3));
+    assertThrows(JsonParseException.class, () -> JsonUtilsTest.parse(jsonInvalid4));
+    assertThrows(JsonParseException.class, () -> JsonUtilsTest.parse(jsonInvalid5));
   }
 }

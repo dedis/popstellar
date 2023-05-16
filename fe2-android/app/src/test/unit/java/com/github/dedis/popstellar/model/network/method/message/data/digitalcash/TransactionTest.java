@@ -1,12 +1,10 @@
 package com.github.dedis.popstellar.model.network.method.message.data.digitalcash;
 
-import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
-import com.github.dedis.popstellar.model.network.JsonTestUtils;
+import com.github.dedis.popstellar.model.network.JsonUtilsTest;
 import com.github.dedis.popstellar.model.objects.security.*;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -48,11 +46,6 @@ public class TransactionTest {
   private static final Transaction TRANSACTION =
       new Transaction(VERSION, TX_INS, TX_OUTS, TIMESTAMP);
 
-  @Before
-  public void setup() {
-    JsonTestUtils.loadGSON(ApplicationProvider.getApplicationContext());
-  }
-
   @Test
   public void testGetVersion() {
     assertEquals(VERSION, TRANSACTION.getVersion());
@@ -91,8 +84,8 @@ public class TransactionTest {
   @Test
   public void computeIdTest() {
     String path = "protocol/examples/messageData/coin/post_transaction_coinbase.json";
-    String validJson = JsonTestUtils.loadFile(path);
-    PostTransactionCoin postTransactionModel = (PostTransactionCoin) JsonTestUtils.parse(validJson);
+    String validJson = JsonUtilsTest.loadFile(path);
+    PostTransactionCoin postTransactionModel = (PostTransactionCoin) JsonUtilsTest.parse(validJson);
     Transaction transactionModel = postTransactionModel.getTransaction();
 
     assertEquals(postTransactionModel.getTransactionId(), transactionModel.computeId());
@@ -101,8 +94,8 @@ public class TransactionTest {
   @Test
   public void verifySignature() {
     String path = "protocol/examples/messageData/coin/post_transaction_coinbase.json";
-    String validJson = JsonTestUtils.loadFile(path);
-    PostTransactionCoin postTransactionModel = (PostTransactionCoin) JsonTestUtils.parse(validJson);
+    String validJson = JsonUtilsTest.loadFile(path);
+    PostTransactionCoin postTransactionModel = (PostTransactionCoin) JsonUtilsTest.parse(validJson);
     Transaction transactionModel = postTransactionModel.getTransaction();
     Input single = transactionModel.getInputs().get(0);
 
@@ -119,8 +112,8 @@ public class TransactionTest {
                     .getBytes(StandardCharsets.UTF_8))));
 
     path = "protocol/examples/messageData/coin/post_transaction_bad_signature.json";
-    validJson = JsonTestUtils.loadFile(path);
-    postTransactionModel = (PostTransactionCoin) JsonTestUtils.parse(validJson);
+    validJson = JsonUtilsTest.loadFile(path);
+    postTransactionModel = (PostTransactionCoin) JsonUtilsTest.parse(validJson);
     transactionModel = postTransactionModel.getTransaction();
     single = transactionModel.getInputs().get(0);
 

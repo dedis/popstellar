@@ -1,9 +1,8 @@
 package com.github.dedis.popstellar.model.network.method.message.data.lao;
 
-import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
-import com.github.dedis.popstellar.model.network.JsonTestUtils;
+import com.github.dedis.popstellar.model.network.JsonUtilsTest;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.objects.Lao;
@@ -12,7 +11,6 @@ import com.github.dedis.popstellar.testutils.Base64DataUtils;
 import com.github.dedis.popstellar.utility.security.Hash;
 import com.google.gson.JsonParseException;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -35,11 +33,6 @@ public class CreateLaoTest {
   private final List<PublicKey> witnesses = Arrays.asList(generatePublicKey(), generatePublicKey());
   private final String id = Lao.generateLaoId(organizer, creation, name);
   private final CreateLao createLao = new CreateLao(id, name, creation, organizer, witnesses);
-
-  @Before
-  public void setup() {
-    JsonTestUtils.loadGSON(ApplicationProvider.getApplicationContext());
-  }
 
   @Test(expected = IllegalArgumentException.class)
   public void constructorFailsIdNotBase64Test() {
@@ -123,21 +116,21 @@ public class CreateLaoTest {
 
   @Test
   public void jsonValidationTest() {
-    JsonTestUtils.testData(createLao);
+    JsonUtilsTest.testData(createLao);
 
     String pathDir = "protocol/examples/messageData/lao_create/";
     String jsonInvalid1 =
-        JsonTestUtils.loadFile(pathDir + "wrong_lao_create_additional_params.json");
-    String jsonInvalid2 = JsonTestUtils.loadFile(pathDir + "wrong_lao_create_missing_params.json");
-    String jsonInvalid3 = JsonTestUtils.loadFile(pathDir + "bad_lao_create_creation_negative.json");
+        JsonUtilsTest.loadFile(pathDir + "wrong_lao_create_additional_params.json");
+    String jsonInvalid2 = JsonUtilsTest.loadFile(pathDir + "wrong_lao_create_missing_params.json");
+    String jsonInvalid3 = JsonUtilsTest.loadFile(pathDir + "bad_lao_create_creation_negative.json");
     String jsonInvalid4 =
-        JsonTestUtils.loadFile(pathDir + "bad_lao_create_organizer_not_base64.json");
+        JsonUtilsTest.loadFile(pathDir + "bad_lao_create_organizer_not_base64.json");
     String jsonInvalid5 =
-        JsonTestUtils.loadFile(pathDir + "bad_lao_create_witness_not_base64.json");
-    assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid1));
-    assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid2));
-    assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid3));
-    assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid4));
-    assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid5));
+        JsonUtilsTest.loadFile(pathDir + "bad_lao_create_witness_not_base64.json");
+    assertThrows(JsonParseException.class, () -> JsonUtilsTest.parse(jsonInvalid1));
+    assertThrows(JsonParseException.class, () -> JsonUtilsTest.parse(jsonInvalid2));
+    assertThrows(JsonParseException.class, () -> JsonUtilsTest.parse(jsonInvalid3));
+    assertThrows(JsonParseException.class, () -> JsonUtilsTest.parse(jsonInvalid4));
+    assertThrows(JsonParseException.class, () -> JsonUtilsTest.parse(jsonInvalid5));
   }
 }

@@ -1,16 +1,14 @@
 package com.github.dedis.popstellar.model.network.method.message.data.consensus;
 
-import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
-import com.github.dedis.popstellar.model.network.JsonTestUtils;
+import com.github.dedis.popstellar.model.network.JsonUtilsTest;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.testutils.Base64DataUtils;
 import com.google.gson.JsonParseException;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -26,11 +24,6 @@ public class ConsensusPrepareTest {
 
   private static final ConsensusPrepare prepare =
       new ConsensusPrepare(instanceId, messageId, timeInSeconds, proposedTry);
-
-  @Before
-  public void setup() {
-    JsonTestUtils.loadGSON(ApplicationProvider.getApplicationContext());
-  }
 
   @Test
   public void getObjectTest() {
@@ -103,12 +96,12 @@ public class ConsensusPrepareTest {
 
   @Test
   public void jsonValidationTest() {
-    JsonTestUtils.testData(prepare);
+    JsonUtilsTest.testData(prepare);
 
     String dir = "protocol/examples/messageData/consensus_prepare/";
-    String jsonInvalid1 = JsonTestUtils.loadFile(dir + "wrong_prepare_negative_created_at.json");
-    String jsonInvalid2 = JsonTestUtils.loadFile(dir + "wrong_prepare_negative_proposed_try.json");
-    assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid1));
-    assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid2));
+    String jsonInvalid1 = JsonUtilsTest.loadFile(dir + "wrong_prepare_negative_created_at.json");
+    String jsonInvalid2 = JsonUtilsTest.loadFile(dir + "wrong_prepare_negative_proposed_try.json");
+    assertThrows(JsonParseException.class, () -> JsonUtilsTest.parse(jsonInvalid1));
+    assertThrows(JsonParseException.class, () -> JsonUtilsTest.parse(jsonInvalid2));
   }
 }

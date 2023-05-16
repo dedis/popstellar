@@ -1,15 +1,13 @@
 package com.github.dedis.popstellar.model.network.method.message.data.socialmedia;
 
-import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
-import com.github.dedis.popstellar.model.network.JsonTestUtils;
+import com.github.dedis.popstellar.model.network.JsonUtilsTest;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.google.gson.JsonParseException;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -24,11 +22,6 @@ public class DeleteChirpTest {
   private static final long TIMESTAMP = 1631280815;
 
   private static final DeleteChirp DELETE_CHIRP = new DeleteChirp(CHIRP_ID, TIMESTAMP);
-
-  @Before
-  public void setup() {
-    JsonTestUtils.loadGSON(ApplicationProvider.getApplicationContext());
-  }
 
   @Test
   public void getObjectTest() {
@@ -60,14 +53,14 @@ public class DeleteChirpTest {
 
   @Test
   public void jsonValidationTest() {
-    JsonTestUtils.testData(DELETE_CHIRP);
+    JsonUtilsTest.testData(DELETE_CHIRP);
 
     String pathDir = "protocol/examples/messageData/chirp_delete_publish/";
     String jsonInvalid1 =
-        JsonTestUtils.loadFile(pathDir + "wrong_chirp_delete_publish_negative_time.json");
+        JsonUtilsTest.loadFile(pathDir + "wrong_chirp_delete_publish_negative_time.json");
     String jsonInvalid2 =
-        JsonTestUtils.loadFile(pathDir + "wrong_chirp_delete_publish_not_base_64_chirp_id.json");
-    assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid1));
-    assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid2));
+        JsonUtilsTest.loadFile(pathDir + "wrong_chirp_delete_publish_not_base_64_chirp_id.json");
+    assertThrows(JsonParseException.class, () -> JsonUtilsTest.parse(jsonInvalid1));
+    assertThrows(JsonParseException.class, () -> JsonUtilsTest.parse(jsonInvalid2));
   }
 }

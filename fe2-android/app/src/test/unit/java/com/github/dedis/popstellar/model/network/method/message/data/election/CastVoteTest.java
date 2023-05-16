@@ -1,16 +1,14 @@
 package com.github.dedis.popstellar.model.network.method.message.data.election;
 
-import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
-import com.github.dedis.popstellar.model.network.JsonTestUtils;
+import com.github.dedis.popstellar.model.network.JsonUtilsTest;
 import com.github.dedis.popstellar.model.objects.Election;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.testutils.Base64DataUtils;
 import com.google.gson.JsonParseException;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -55,11 +53,6 @@ public class CastVoteTest {
       new CastVote(plainVotes, electionId, laoId, creation);
   private final CastVote castEncryptedVote =
       new CastVote(electionEncryptedVotes, electionId, laoId);
-
-  @Before
-  public void setup() {
-    JsonTestUtils.loadGSON(ApplicationProvider.getApplicationContext());
-  }
 
   @Test(expected = IllegalArgumentException.class)
   public void constructorFailsElectionIdNotBase64Test() {
@@ -148,18 +141,18 @@ public class CastVoteTest {
   public void jsonValidationTest() {
     // Schema should be valid with both vote lists
     // Should use the custom deserializer
-    JsonTestUtils.testData(castEncryptedVote);
-    JsonTestUtils.testData(castOpenVote);
+    JsonUtilsTest.testData(castEncryptedVote);
+    JsonUtilsTest.testData(castOpenVote);
 
     String pathDir = "protocol/examples/messageData/vote_cast_vote/";
-    String jsonValid1 = JsonTestUtils.loadFile(pathDir + "vote_cast_vote.json");
-    String jsonValid2 = JsonTestUtils.loadFile(pathDir + "vote_cast_vote_encrypted.json");
-    JsonTestUtils.parse(jsonValid1);
-    JsonTestUtils.parse(jsonValid2);
+    String jsonValid1 = JsonUtilsTest.loadFile(pathDir + "vote_cast_vote.json");
+    String jsonValid2 = JsonUtilsTest.loadFile(pathDir + "vote_cast_vote_encrypted.json");
+    JsonUtilsTest.parse(jsonValid1);
+    JsonUtilsTest.parse(jsonValid2);
 
     String jsonInvalid1 =
-        JsonTestUtils.loadFile(pathDir + "wrong_vote_cast_vote_created_at_negative.json");
+        JsonUtilsTest.loadFile(pathDir + "wrong_vote_cast_vote_created_at_negative.json");
 
-    assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid1));
+    assertThrows(JsonParseException.class, () -> JsonUtilsTest.parse(jsonInvalid1));
   }
 }

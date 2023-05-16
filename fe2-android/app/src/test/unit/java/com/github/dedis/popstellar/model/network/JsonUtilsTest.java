@@ -1,7 +1,5 @@
 package com.github.dedis.popstellar.model.network;
 
-import android.content.Context;
-
 import com.github.dedis.popstellar.di.DataRegistryModuleHelper;
 import com.github.dedis.popstellar.di.JsonModule;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
@@ -10,20 +8,18 @@ import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
 
 import java.io.*;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
 
-public class JsonTestUtils {
+public class JsonUtilsTest {
 
-  private static Gson GSON;
-
-  public static void loadGSON(Context context) {
-    GSON = JsonModule.provideGson(DataRegistryModuleHelper.buildRegistry());
-  }
+  private static final Gson GSON = JsonModule.provideGson(DataRegistryModuleHelper.buildRegistry());
 
   public static String loadFile(String path) {
-    InputStream is = JsonTestUtils.class.getClassLoader().getResourceAsStream(path);
+    InputStream is =
+        Objects.requireNonNull(JsonUtilsTest.class.getClassLoader()).getResourceAsStream(path);
     BufferedReader reader = new BufferedReader(new InputStreamReader(is));
     return reader.lines().collect(Collectors.joining("\n"));
   }

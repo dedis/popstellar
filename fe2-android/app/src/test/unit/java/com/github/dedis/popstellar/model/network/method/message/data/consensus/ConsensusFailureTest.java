@@ -1,16 +1,14 @@
 package com.github.dedis.popstellar.model.network.method.message.data.consensus;
 
-import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
-import com.github.dedis.popstellar.model.network.JsonTestUtils;
+import com.github.dedis.popstellar.model.network.JsonUtilsTest;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.testutils.Base64DataUtils;
 import com.google.gson.JsonParseException;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -25,11 +23,6 @@ public class ConsensusFailureTest {
   private static final long timeInSeconds = 1635277619;
   private static final ConsensusFailure failure =
       new ConsensusFailure(instanceId, messageId, timeInSeconds);
-
-  @Before
-  public void setup() {
-    JsonTestUtils.loadGSON(ApplicationProvider.getApplicationContext());
-  }
 
   @Test
   public void getInstanceId() {
@@ -67,10 +60,10 @@ public class ConsensusFailureTest {
 
   @Test
   public void jsonValidationTest() {
-    JsonTestUtils.testData(failure);
+    JsonUtilsTest.testData(failure);
 
     String pathDir = "protocol/examples/messageData/consensus_failure/";
-    String jsonInvalid = JsonTestUtils.loadFile(pathDir + "wrong_failure_negative_created_at.json");
-    assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid));
+    String jsonInvalid = JsonUtilsTest.loadFile(pathDir + "wrong_failure_negative_created_at.json");
+    assertThrows(JsonParseException.class, () -> JsonUtilsTest.parse(jsonInvalid));
   }
 }

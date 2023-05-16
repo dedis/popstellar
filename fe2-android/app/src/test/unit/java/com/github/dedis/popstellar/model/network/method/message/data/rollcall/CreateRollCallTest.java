@@ -1,15 +1,13 @@
 package com.github.dedis.popstellar.model.network.method.message.data.rollcall;
 
-import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
-import com.github.dedis.popstellar.model.network.JsonTestUtils;
+import com.github.dedis.popstellar.model.network.JsonUtilsTest;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.objects.event.EventType;
 import com.github.dedis.popstellar.utility.security.Hash;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -32,11 +30,6 @@ public class CreateRollCallTest {
       new CreateRollCall(NAME, NOW, NOW, END, LOCATION, null, LAO_ID);
   private static final String ID =
       Hash.hash(EventType.ROLL_CALL.getSuffix(), LAO_ID, Long.toString(NOW), NAME);
-
-  @Before
-  public void setup() {
-    JsonTestUtils.loadGSON(ApplicationProvider.getApplicationContext());
-  }
 
   @Test
   public void generateCreateRollCallIdTest() {
@@ -82,7 +75,7 @@ public class CreateRollCallTest {
 
   @Test
   public void jsonValidationTest() {
-    JsonTestUtils.testData(CREATE_ROLL_CALL);
+    JsonUtilsTest.testData(CREATE_ROLL_CALL);
   }
 
   @Test

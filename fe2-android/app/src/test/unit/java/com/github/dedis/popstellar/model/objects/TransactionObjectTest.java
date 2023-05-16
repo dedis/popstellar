@@ -1,15 +1,13 @@
 package com.github.dedis.popstellar.model.objects;
 
-import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
-import com.github.dedis.popstellar.model.network.JsonTestUtils;
+import com.github.dedis.popstellar.model.network.JsonUtilsTest;
 import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.*;
 import com.github.dedis.popstellar.model.objects.digitalcash.*;
 import com.github.dedis.popstellar.model.objects.security.*;
 import com.github.dedis.popstellar.utility.security.Hash;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -23,11 +21,6 @@ import static org.junit.Assert.*;
 public class TransactionObjectTest {
   KeyPair senderKey = generateKeyPair();
   PublicKey sender = senderKey.getPublicKey();
-
-  @Before
-  public void setup() {
-    JsonTestUtils.loadGSON(ApplicationProvider.getApplicationContext());
-  }
 
   @Test
   public void getChannelTest() throws GeneralSecurityException {
@@ -208,8 +201,8 @@ public class TransactionObjectTest {
   @Test
   public void computeIdTest() throws GeneralSecurityException {
     String path = "protocol/examples/messageData/coin/post_transaction_coinbase.json";
-    String validJson = JsonTestUtils.loadFile(path);
-    PostTransactionCoin postTransactionModel = (PostTransactionCoin) JsonTestUtils.parse(validJson);
+    String validJson = JsonUtilsTest.loadFile(path);
+    PostTransactionCoin postTransactionModel = (PostTransactionCoin) JsonUtilsTest.parse(validJson);
     Transaction transactionModel = postTransactionModel.getTransaction();
 
     TransactionObjectBuilder builder = getValidTransactionBuilder();
