@@ -17,7 +17,6 @@ func TestInbox_AddWitnessSignature(t *testing.T) {
 
 	// Add a message to the inbox
 	inbox.StoreMessage(msg)
-
 	require.Equal(t, 1, len(inbox.msgsMap))
 
 	// Add the witness signature to the message in the inbox
@@ -26,7 +25,6 @@ func TestInbox_AddWitnessSignature(t *testing.T) {
 	// Check if the message was updated
 	storedMsg, ok := inbox.GetMessage(msg.MessageID)
 	require.True(t, ok)
-
 	require.Equal(t, 1, len(storedMsg.WitnessSignatures))
 }
 
@@ -35,12 +33,11 @@ func TestInbox_AddWitnessSignature_MessageNotReceivedYet(t *testing.T) {
 
 	msg := newMessage(t, "123", "123", nil, "")
 
-	// Add the witness signature to the message in the inbox
+	// Add the witness signatures to a message that is not in the inbox yet
 	inbox.AddWitnessSignature(msg.MessageID, "456", "789")
-
 	inbox.AddWitnessSignature(msg.MessageID, "345", "678")
 
-	// Check that the message is not in the inbox
+	// Check that the message is not in the inbox and that the signatures are pending
 	_, ok := inbox.GetMessage(msg.MessageID)
 	require.False(t, ok)
 	require.Equal(t, 0, len(inbox.msgsMap))
@@ -49,10 +46,9 @@ func TestInbox_AddWitnessSignature_MessageNotReceivedYet(t *testing.T) {
 	// Add the message to the inbox
 	inbox.StoreMessage(msg)
 
-	// Check if the message was added with all the signatures
+	// Check if the message was added with all the signatures and that the pending signatures are removed
 	storedMsg, ok := inbox.GetMessage(msg.MessageID)
 	require.True(t, ok)
-
 	require.Equal(t, 2, len(storedMsg.WitnessSignatures))
 	require.Equal(t, 0, len(inbox.pendingSignatures[msg.MessageID]))
 }

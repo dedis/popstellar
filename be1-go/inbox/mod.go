@@ -35,8 +35,8 @@ func NewInbox(channelID string) *Inbox {
 }
 
 // AddWitnessSignature adds a signature of witness to a message of ID
-// `messageID`. if the signature was correctly added return true otherwise
-// returns false
+// `messageID`. If the message was not yet received, the signature is added
+// to the pending signatures map.
 func (i *Inbox) AddWitnessSignature(messageID string, public string, signature string) {
 	msg, ok := i.GetMessage(messageID)
 	i.mutex.Lock()

@@ -770,7 +770,7 @@ func (f *fakeSocket) ID() string {
 }
 
 // -----------------------------------------------------------------------------
-// Useful data extracted from an actual pop party
+// Useful data extracted from a simulation
 
 var sampleLao = "/root/QNNTcGQk-rnehNjgizdzi9IT1nIlmXsOXy1BCWsNaVE="
 var organizerPublicKey = "A2nPAZfsvBRPb5uOb1_hUVuAKt5YKPRZdiFq1g0TLr0="
