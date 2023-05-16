@@ -10,12 +10,12 @@ from typing import IO
 from flask import Flask, redirect, request, Response, render_template
 
 from counterApp import CounterApp
-from authentication import get_url, validate_args
+from authentication import Authentication
 
 # Define the global variables
 config: dict = {}
-providers: list = []
 core_app: CounterApp
+authenticationProvider: Authentication
 
 def check_config(config_file: IO) -> bool:
     """
@@ -58,20 +58,21 @@ def check_provider(provider: dict) -> bool:
     return valid_lao_id and valid_domain and valid_public_key
 
 
-def filter_providers() -> None:
+def filter_providers(providers: list) -> list:
     """
-    Keeps only the providers.html that are valid
+    Keeps only the providers that are valid from the original list
+    :param providers: The original list of providers
+    :return: The valid providers of the original list
     """
-    global providers
-    providers = [provider for provider in providers if check_provider(provider)]
+    return [provider for provider in providers if check_provider(provider)]
 
-def load_providers():
+def load_providers() -> list:
     """
-    Loads the providers from the configuration file
+    Loads the providers from the configuration file and returns them
+    :return: The providers present in the configuration files
     """
-    global providers
-    with open("data/providers.json") as provider_file:
-        providers = json.loads(provider_file.read())
+    with open("../data/providers.json") as provider_file:
+        return json.loads(provider_file.read())
 
 def on_startup() -> None:
     """
@@ -80,11 +81,12 @@ def on_startup() -> None:
     Open ID providers.html, as well as basic config information such as the
     homepage HTML code or the
     """
-    global providers, config, core_app
+    global config, core_app, authenticationProvider
     core_app = CounterApp()
-    load_providers()
-    filter_providers()
-    with open("data/config.json", "r+") as config_file:
+    authenticationProvider = Authentication()
+    providers = load_providers()
+    authenticationProvider.providers = filter_providers(providers)
+    with open("../data/config.json", "r+") as config_file:
         config = json.loads(config_file.read())
         if not check_config(config_file):
             config_file.seek(0)
@@ -107,7 +109,8 @@ def root() -> str:
     error: str = ""
     if "error" in request.args:
         error = f'Error: {request.args.get("error", default="", type=str)}'
-    return render_template('index.html', providers=providers_string,
+    return render_template('index.html',
+                           providers=providers_string,
                            error=error)
 
 
@@ -121,7 +124,7 @@ def authentication() -> Response:
     provider_id: int = request.args.get("serverAndLaoId", -1, type=int)
     if provider_id < 0:  # if serverAndLaoId is not an int
         return redirect("/")
-    url = get_url(
+    url = authenticationProvider.get_url(
         providers[provider_id]["domain"],
         providers[provider_id]["lao_id"],
         config["client_id"]
@@ -137,7 +140,8 @@ def authentication_callback() -> Response:
     :return: A response which redirects the user to the homePage if the login
     is not valid or to a new "app" page if the login answer is valid
     """
-    user_id: str = validate_args(request.args, config["client_id"])
+    user_id: str = authenticationProvider.validate_args(request.args, config[
+        "client_id"], )
     if user_id is not None:
         params = urllib.parse.urlencode(core_app.get_new_login_params(user_id))
         return redirect(f'/app?{params}')
@@ -161,11 +165,10 @@ def app_route():
 @app.route("/add_provider")
 def add_provider():
     """
+    !!! DANGER ZONE !!!
     WARNING: This call is unsafe and allows to easily add new providers.html. It
-    is intended for example server that do not really need to provide
-    complete security
+    is intended for example / showcase servers that do not provide security.
     """
-    global providers
     args = request.args
     valid_request = ("domain" in args and "lao_id" in args
                      and "public_key" in args)
@@ -175,11 +178,16 @@ def add_provider():
                     "public_key": args["public_key"]
                    }
         if check_provider(provider):
-            providers.append(provider)
+            authenticationProvider.providers.append(provider)
             return redirect("/")
     return redirect("/?error=Invalid%20provider")
 
+def run():
+    """
+    Launches the flask server
+    """
+    app.run(host=config["host_url"], port=config["host_port"], debug=True)
 
 # Step 0: Starts the server
 if __name__ == "__main__":
-    app.run(host=config["host_url"], port=config["host_port"], debug=True)
+    run()
