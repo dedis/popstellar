@@ -35,7 +35,6 @@ final case class Monitor(
   override def receive: Receive = LoggingReceive {
 
     case Monitor.AtLeastOneServerConnected =>
-      connectionMediatorRef = sender()
       if (!someServerConnected) {
         timers.startTimerWithFixedDelay(periodicHbKey, TriggerHeartbeat, heartbeatRate)
         someServerConnected = true
@@ -60,6 +59,11 @@ final case class Monitor(
             timers.startSingleTimer(singleHbKey, TriggerHeartbeat, messageDelay)
           }
       }
+
+    case ConnectionMediator.Ping() =>
+      log.info("Received ConnectionMediator ping")
+      connectionMediatorRef = sender()
+      new Thread(new FileMonitor(connectionMediatorRef)).start()
 
     case _ => /* DO NOTHING */
   }
