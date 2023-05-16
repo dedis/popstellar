@@ -66,9 +66,7 @@ func (i *Inbox) StoreMessage(msg message.Message) {
 
 	// Check if we have pending signatures for this message and add them
 	if pendingSignatures, exist := i.pendingSignatures[msg.MessageID]; exist {
-		for _, sig := range pendingSignatures {
-			msg.WitnessSignatures = append(msg.WitnessSignatures, sig)
-		}
+		msg.WitnessSignatures = append(msg.WitnessSignatures, pendingSignatures...)
 		delete(i.pendingSignatures, msg.MessageID)
 	}
 

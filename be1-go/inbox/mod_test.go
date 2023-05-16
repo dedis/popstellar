@@ -10,8 +10,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-const messageID = "oJYBapM5ZuVrnggAwzQMa3oBLrFSjEQY-hv_JQRgs1U="
-
 func TestInbox_AddWitnessSignature(t *testing.T) {
 	inbox := NewInbox("")
 
