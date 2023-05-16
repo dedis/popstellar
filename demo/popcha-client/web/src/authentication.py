@@ -17,8 +17,11 @@ class Authentication:
     """
     Class that allows users to authenticate
     """
-    providers: list = []
-    login_states: dict[(str, str, float)] = {}
+
+    def __init__(self):
+        self.providers: list = []
+        self.login_states: dict[(str, str, float)] = {}
+
     def get_url(self, server: str, lao_id: str, client_id: str) -> str:
         """
         Generates the url to contact the authentication server. It contains all
@@ -40,7 +43,7 @@ class Authentication:
             "login_hint": lao_id,
             "nonce": nonce,
             "state": state
-        }
+            }
         return f"https://{server}/authorize?{parse.urlencode(parameters)}"
 
     def validate_args(self, args: MultiDict[str, str], client_id: str) \
@@ -63,29 +66,21 @@ class Authentication:
         nonce_data = self.login_states.pop(args.get("state"))
         server_pub_key = self.public_key_from_iss(nonce_data[1])
         try:
-            token: dict = jwt.decode(jwt=args.get("id_token", type=str),
-                                     key=server_pub_key,
-                                     algorithms=['RS256'],
-                                     audience=client_id
-                                     )
+            token: dict = jwt.decode(
+                jwt = args.get("id_token", type = str),
+                key = server_pub_key,
+                algorithms = ['RS256'],
+                audience = client_id
+                )
         except PyJWTError:
             return None
 
-        valid_client_id = (client_id in token.get("aud") or
-                           client_id == token.get("aud"))
-        if not valid_client_id:
-            return None
-
-        valid_provided_nonce = (token.get("nonce", None) == nonce_data[0])
+        valid_provided_nonce = (token.get("nonce") == nonce_data[0])
         if not valid_provided_nonce:
             return None
 
         valid_issuer = nonce_data[1] == token.get("iss")
         if not valid_issuer:
-            return None
-        # Nonce is not older than 5 minutes
-        recent_nonce = time.time() - nonce_data[2] < 300
-        if not recent_nonce:
             return None
         user_id: str = token.get("sub")
         return f"{user_id}@{nonce_data[1]}"
@@ -97,4 +92,5 @@ class Authentication:
         :return: The public key
         """
         return ([p for p in self.providers if p.get("domain") == iss][0]).get(
-            "public_key")
+                "public_key"
+                )

@@ -17,8 +17,10 @@ class TestQuery:
 
     def test_get_url_returns_valid_one(self):
         authentication = Authentication()
-        url: str = authentication.get_url("server.example", "custom_lao_id",
-                                          "custom_client_id")
+        url: str = authentication.get_url(
+                "server.example", "custom_lao_id",
+                "custom_client_id"
+                )
         generated_state = list(authentication.login_states.keys())[0]
         generated_nonce = authentication.login_states.get(generated_state)[0]
         reference = "https://server.example/authorize?response_mode=query" \
@@ -29,14 +31,15 @@ class TestQuery:
                     f"={generated_state}"
         assert reference == url
 
+
 @freeze_time("2023-05-10 09:00:00")
 class TestAuthenticationResponse:
     """
     Simple test class for the authentication response related functions
     """
     # This JWT has been provided by be1 for cross-validation
-    jwt: str = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9" \
-                ".eyJhdWQiOiJjSUQxMjJkdyIs" \
+    be1_go_jwt: str = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9" \
+               ".eyJhdWQiOiJjSUQxMjJkdyIs" \
                "ImF1dGhfdGltZSI6MTY4MzcwNzM4OSwiZXhwIjoxNjgzNzEwOTg5LCJpYXQiO" \
                "jE2ODM3MDczODksImlzcyI6Imh0dHBzOi8vc2VydmVyLmV4YW1wbGUuY29tIi" \
                "wibm9uY2UiOiJuMG5jMyIsInN1YiI6InBwaWQxMjU2NCJ9.Wx5VJQ1ASRd-bp" \
@@ -92,24 +95,26 @@ class TestAuthenticationResponse:
     client_id = "cID122dw"
 
     claimset = {
-          "aud": client_id,
-          "auth_time": 1683707389,
-          "exp": 1683710989,
-          "iat": 1683707389,
-          "iss": domain,
-          "nonce": "n0nc3",
-          "sub": "ppid12564"
-    }
+        "aud": client_id,
+        "auth_time": 1683707389,
+        "exp": 1683710989,
+        "iat": 1683707389,
+        "iss": domain,
+        "nonce": "n0nc3",
+        "sub": "ppid12564"
+        }
 
     def get_args(self, jwt):
         """
         No doc
         """
-        return MultiDict({
-        "id_token": jwt,
-        "token_type": "bearer",
-        "state": "stat3"
-    })
+        return MultiDict(
+                {
+                    "id_token": jwt,
+                    "token_type": "bearer",
+                    "state": "stat3"
+                    }
+                )
 
     @pytest.fixture
     def authentication(self):
@@ -121,44 +126,74 @@ class TestAuthenticationResponse:
             "domain": self.domain,
             "lao_id": "mmm",
             "public_key": self.pub_key
-        }]
+            }]
         authentication.login_states["stat3"] = ("n0nc3",
                                                 self.domain,
                                                 time())
         return authentication
 
-
     def test_validate_args_validates_a_correct_one(self, authentication):
-        encoded = jwt.encode(self.claimset, self.priv_key,
-                             algorithm="RS256")
-        assert (authentication.validate_args(self.get_args(encoded),
-                                             self.client_id)
+        encoded = jwt.encode(
+                self.claimset, self.priv_key,
+                algorithm = "RS256"
+                )
+        assert (authentication.validate_args(
+                self.get_args(encoded),
+                self.client_id
+                )
                 == 'ppid12564@https://server.example.com')
 
     def test_validate_other_systems_token(self, authentication):
-        assert (authentication.validate_args(self.get_args(self.jwt),
-                                             self.client_id)
+        assert (authentication.validate_args(
+                self.get_args(self.be1_go_jwt),
+                self.client_id
+                )
                 == 'ppid12564@https://server.example.com')
+
     def test_validate_fails_on_missing_required_arg(self, authentication):
-        encoded = jwt.encode(self.claimset, self.priv_key,
-                             algorithm="RS256")
+        encoded = jwt.encode(
+                self.claimset, self.priv_key,
+                algorithm = "RS256"
+                )
         args = self.get_args(encoded).pop("token_type")
         assert (authentication.validate_args(args, self.client_id) is None)
 
-    def test_validate_args_fails_on_wrong_client_id(self, authentication):
-        self.claimset["aud"] = "WrongOne"
-        encoded = jwt.encode(self.claimset, self.priv_key, algorithm="RS256")
-        assert (authentication.validate_args(self.get_args(encoded), self.client_id)
+    def test_validate_args_fails_on_wrong_state(self, authentication):
+        encoded = jwt.encode(self.claimset, self.priv_key, algorithm = "RS256")
+        args = self.get_args(encoded)
+        args["state"] = "wrong state"
+        assert (authentication.validate_args(
+                args,
+                self.client_id
+                )
                 is None)
-    def test_validate_args_fails_on_missing_nonce(self, authentication):
-        self.claimset.pop("nonce")
-        encoded = jwt.encode(self.claimset, self.priv_key, algorithm="RS256")
-        assert (authentication.validate_args(self.get_args(encoded), self.client_id)
+
+    def test_validate_args_fails_on_altered_audience(self, authentication):
+        claimset = self.claimset.copy()
+        claimset["aud"] = "altered audience"
+        encoded = jwt.encode(claimset, self.priv_key, algorithm = "RS256")
+        assert (authentication.validate_args(
+                self.get_args(encoded),
+                self.client_id
+                )
+                is None)
+
+    def test_validate_args_fails_on_altered_nonce(self, authentication):
+        claimset = self.claimset.copy()
+        claimset["nonce"] = "wrong nonce"
+        encoded = jwt.encode(claimset, self.priv_key, algorithm = "RS256")
+        assert (authentication.validate_args(
+                self.get_args(encoded),
+                self.client_id
+                )
                 is None)
 
     def test_validate_args_fails_on_invalid_issuer(self, authentication):
-        self.claimset["iss"] = "invalid issuer"
-        encoded = jwt.encode(self.claimset, self.priv_key, algorithm="RS256")
-        assert (authentication.validate_args(self.get_args(encoded), self.client_id)
+        claimset = self.claimset.copy()
+        claimset["iss"] = "invalid issuer"
+        encoded = jwt.encode(claimset, self.priv_key, algorithm = "RS256")
+        assert (authentication.validate_args(
+                self.get_args(encoded),
+                self.client_id
+                )
                 is None)
-
