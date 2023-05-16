@@ -11,7 +11,12 @@ import STRINGS from 'resources/strings';
 
 import { getLaoById } from '../functions/lao';
 import { resubscribeToLao } from '../functions/network';
-import { addSubscribedChannel, reconnectLao, removeSubscribedChannel, selectCurrentLaoId } from '../reducer';
+import {
+  addSubscribedChannel,
+  reconnectLao,
+  removeSubscribedChannel,
+  selectCurrentLaoId,
+} from '../reducer';
 import { storeBackendAndConnectToPeers, makeLaoGreetStoreWatcher } from './LaoGreetWatcher';
 import {
   handleLaoCreateMessage,
