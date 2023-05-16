@@ -147,6 +147,7 @@ public class WitnessMessageListViewAdapter extends BaseAdapter {
                           () -> {
                             Timber.tag(TAG).d("Witness message successfully signed");
                             button.setEnabled(false);
+                            button.setText("Signed");
                           },
                           error ->
                               ErrorUtils.logAndShow(
