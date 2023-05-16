@@ -4,17 +4,19 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
-import android.os.Bundle;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import androidx.lifecycle.Lifecycle;
 import androidx.preference.PreferenceManager;
 
 import com.github.dedis.popstellar.R;
 
 import java.time.Clock;
+import java.util.EnumMap;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
 
 import okhttp3.*;
 import timber.log.Timber;
@@ -26,6 +28,9 @@ import timber.log.Timber;
 public class NetworkLogger extends Timber.Tree {
 
   private static final String TAG = NetworkLogger.class.getSimpleName();
+
+  /** Boolean flag whether to close the websocket connection whenever the application pauses */
+  private static final boolean SAVE_ENERGY = false;
 
   /** URL of the remote server to which sending the logs */
   private static final StringBuilder serverUrl = new StringBuilder();
@@ -62,52 +67,19 @@ public class NetworkLogger extends Timber.Tree {
             .getString(context.getString(R.string.settings_server_url_key), ""));
 
     // Register the callback for a graceful shutdown
-    application.registerActivityLifecycleCallbacks(
-        new Application.ActivityLifecycleCallbacks() {
-
-          private static final boolean SAVE_ENERGY = false;
-
-          @Override
-          public void onActivityCreated(
-              @NonNull Activity activity, @Nullable Bundle savedInstanceState) {
-            // Nothing
-          }
-
-          @Override
-          public void onActivityStarted(@NonNull Activity activity) {
-            // Nothing
-          }
-
-          @Override
-          public void onActivityResumed(@NonNull Activity activity) {
-            // Nothing
-          }
-
-          @Override
-          public void onActivityPaused(@NonNull Activity activity) {
-            if (SAVE_ENERGY) {
-              closeWebSocket();
-            }
-          }
-
-          @Override
-          public void onActivityStopped(@NonNull Activity activity) {
-            if (SAVE_ENERGY) {
-              closeWebSocket();
-            }
-          }
-
-          @Override
-          public void onActivitySaveInstanceState(
-              @NonNull Activity activity, @NonNull Bundle outState) {
-            // Nothing
-          }
-
-          @Override
-          public void onActivityDestroyed(@NonNull Activity activity) {
+    Map<Lifecycle.Event, Consumer<Activity>> consumerMap = new EnumMap<>(Lifecycle.Event.class);
+    consumerMap.put(Lifecycle.Event.ON_DESTROY, activity -> closeWebSocket());
+    Consumer<Activity> saverConsumer =
+        activity -> {
+          // Close the websocket on pause and stop only if we we want to save battery
+          if (SAVE_ENERGY) {
             closeWebSocket();
           }
-        });
+        };
+    consumerMap.put(Lifecycle.Event.ON_PAUSE, saverConsumer);
+    consumerMap.put(Lifecycle.Event.ON_STOP, saverConsumer);
+    application.registerActivityLifecycleCallbacks(
+        ActivityUtils.buildLifecycleCallback(consumerMap));
   }
 
   @Override

@@ -37,6 +37,7 @@ public abstract class DataRegistryModule {
       ElectionHandler electionHandler,
       ConsensusHandler consensusHandler,
       ChirpHandler chirpHandler,
+      ReactionHandler reactionHandler,
       TransactionCoinHandler transactionCoinHandler) {
     DataRegistry.Builder builder = new DataRegistry.Builder();
 
@@ -88,10 +89,14 @@ public abstract class DataRegistryModule {
 
     // Social Media
     builder
+        // Chirps
         .add(CHIRP, ADD, AddChirp.class, chirpHandler::handleChirpAdd)
         .add(CHIRP, NOTIFY_ADD, NotifyAddChirp.class, null)
         .add(CHIRP, DELETE, DeleteChirp.class, chirpHandler::handleDeleteChirp)
-        .add(CHIRP, NOTIFY_DELETE, NotifyDeleteChirp.class, null);
+        .add(CHIRP, NOTIFY_DELETE, NotifyDeleteChirp.class, null)
+        // Reactions
+        .add(REACTION, ADD, AddReaction.class, reactionHandler::handleAddReaction)
+        .add(REACTION, DELETE, DeleteReaction.class, reactionHandler::handleDeleteReaction);
 
     // Digital Cash
     builder.add(
@@ -99,6 +104,70 @@ public abstract class DataRegistryModule {
         POST_TRANSACTION,
         PostTransactionCoin.class,
         transactionCoinHandler::handlePostTransactionCoin);
+
+    return builder.build();
+  }
+
+  /**
+   * Provides a DataRegistry to catalogue data (handlers are not used)
+   *
+   * @return DataRegistry to be used to create a Gson
+   */
+  @Singleton
+  public static DataRegistry provideDataRegistryForGson() {
+    DataRegistry.Builder builder = new DataRegistry.Builder();
+
+    // Lao
+    builder
+        .add(LAO, CREATE, CreateLao.class, null)
+        .add(LAO, UPDATE, UpdateLao.class, null)
+        .add(LAO, STATE, StateLao.class, null)
+        .add(LAO, GREET, GreetLao.class, null);
+
+    // Meeting
+    builder
+        .add(MEETING, CREATE, CreateMeeting.class, null)
+        .add(MEETING, STATE, StateMeeting.class, null);
+
+    // Message
+    builder.add(MESSAGE, WITNESS, WitnessMessageSignature.class, null);
+
+    // Roll Call
+    builder
+        .add(ROLL_CALL, CREATE, CreateRollCall.class, null)
+        .add(ROLL_CALL, OPEN, OpenRollCall.class, null)
+        .add(ROLL_CALL, REOPEN, OpenRollCall.class, null)
+        .add(ROLL_CALL, CLOSE, CloseRollCall.class, null);
+
+    // Election
+    builder
+        .add(ELECTION, SETUP, ElectionSetup.class, null)
+        .add(ELECTION, OPEN, ElectionOpen.class, null)
+        .add(ELECTION, CAST_VOTE, CastVote.class, null)
+        .add(ELECTION, END, ElectionEnd.class, null)
+        .add(ELECTION, RESULT, ElectionResult.class, null)
+        .add(ELECTION, KEY, ElectionKey.class, null);
+
+    // Consensus
+    builder
+        .add(CONSENSUS, ELECT, ConsensusElect.class, null)
+        .add(CONSENSUS, ELECT_ACCEPT, ConsensusElectAccept.class, null)
+        .add(CONSENSUS, PREPARE, ConsensusPrepare.class, null)
+        .add(CONSENSUS, PROMISE, ConsensusPromise.class, null)
+        .add(CONSENSUS, PROPOSE, ConsensusPropose.class, null)
+        .add(CONSENSUS, ACCEPT, ConsensusAccept.class, null)
+        .add(CONSENSUS, LEARN, ConsensusLearn.class, null)
+        .add(CONSENSUS, FAILURE, ConsensusFailure.class, null);
+
+    // Social Media
+    builder
+        .add(CHIRP, ADD, AddChirp.class, null)
+        .add(CHIRP, NOTIFY_ADD, NotifyAddChirp.class, null)
+        .add(CHIRP, DELETE, DeleteChirp.class, null)
+        .add(CHIRP, NOTIFY_DELETE, NotifyDeleteChirp.class, null);
+
+    // Digital Cash
+    builder.add(COIN, POST_TRANSACTION, PostTransactionCoin.class, null);
 
     return builder.build();
   }

@@ -9,6 +9,7 @@ class ChannelSuite extends FunSuite with Matchers {
     channel.isRootChannel should be(true)
     channel.isSubChannel should be(false)
   }
+
   test("Root/Sub channel test (2)") {
     def channel = Channel("/root/not/")
 
@@ -19,7 +20,6 @@ class ChannelSuite extends FunSuite with Matchers {
     def channel = Channel(Channel.ROOT_CHANNEL_PREFIX)
 
     an[IllegalArgumentException] shouldBe thrownBy(channel)
-
   }
 
   test("Root/Sub channel test (4)") {
@@ -47,12 +47,14 @@ class ChannelSuite extends FunSuite with Matchers {
     noException shouldBe thrownBy(channel)
     channel.extractChildChannel should equal(expected)
   }
+
   test("Root empty child channel test") {
     def channel = Channel.ROOT_CHANNEL
 
     val expected = Hash(Base64Data("root"))
     channel.extractChildChannel should equal(expected)
   }
+
   test("Root + 3 children channel test") {
     def channel = Channel("/root/to/ultra/test")
 
@@ -60,6 +62,7 @@ class ChannelSuite extends FunSuite with Matchers {
     noException shouldBe thrownBy(channel)
     channel.extractChildChannel should equal(expected)
   }
+
   test("Root + 2 children channel test") {
     def channel = Channel("/root/full/pop")
 
@@ -67,6 +70,7 @@ class ChannelSuite extends FunSuite with Matchers {
     an[IllegalArgumentException] shouldNot be(thrownBy(channel))
     channel.extractChildChannel should equal(expected)
   }
+
   test("Encoded LaoId extraction channel test") {
     val laoId = "base64_lao_id"
 
@@ -137,5 +141,27 @@ class ChannelSuite extends FunSuite with Matchers {
     val expected = None
     noException shouldBe thrownBy(channel)
     channel.decodeChannelLaoId should equal(expected)
+  }
+
+  test("extractLaoChannel() correctly extract main lao channel") {
+    val chan1 = Channel("/root/wex")
+    val chan2 = Channel("/root/wex/xyz")
+    val chan3 = Channel("/root")
+
+    chan1.extractLaoChannel should equal(Some(chan1))
+    chan2.extractLaoChannel should equal(Some(chan1))
+    chan3.extractLaoChannel should equal(None)
+  }
+
+  test("isRootLaoChannel() on /root/lao_id return true ") {
+    val rootLaoId = Channel("/root/wex")
+
+    rootLaoId.isMainLaoChannel should equal(true)
+  }
+
+  test("isRootLaoChannel() on /root/lao_id/sub return false ") {
+    val rootLaoIdSub = Channel("/root/wex/sub")
+
+    rootLaoIdSub.isMainLaoChannel should equal(false)
   }
 }

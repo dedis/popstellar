@@ -121,6 +121,26 @@ a witness `ws://host:serverport/server/`.
 Using the `-os` flag as many times as necessary, you can specify you can specify
 the `address:port` of each of the other servers.
 
+You can also use the `-cf` flag to specify a configuration file. If used, this flag
+will override all other flags and only the fields configuration file will be used for the
+server. JSON files are the only formats currently supported for go backend configuration
+and the file must contain the same fields as the following example:
+
+```json
+{
+   "public-key"                           : "",
+   "server-public-address"                : "localhost",
+   "server-listen-address"                : "localhost",
+   "client-port"                          : 9002,
+   "server-port"                          : 9003,
+   "other-servers": [
+      "localhost:9001", "localhost:9005"
+   ]
+}
+```
+
+The "other-servers" field is optional.
+
 ## Unit-tests
 
 Some unit-tests exist directly in their corresponding packages, as per Go

@@ -46,6 +46,53 @@ final case class DbActor(
   }
 
   @throws[DbActorNAckException]
+  private def writeCreateLao(channel: Channel, message: Message): Unit = {
+    createChannel(channel, ObjectType.LAO)
+    storage.write((storage.DATA_KEY + storage.CREATE_LAO_KEY + channel.toString, message.message_id.toString()))
+    write(Channel.ROOT_CHANNEL, message)
+  }
+
+  // this function (and its write companion) is necessary so that createLao messages appear in their correct channels (/root)
+  // while also being able to find the message when running a catchup on lao_channel
+  // as the client needs it to connect
+  @throws[DbActorNAckException]
+  private def readCreateLao(channel: Channel): Option[Message] = {
+    storage.read(storage.DATA_KEY + storage.CREATE_LAO_KEY + channel.toString) match {
+      case Some(msg_id) => read(Channel.ROOT_CHANNEL, Hash(Base64Data(msg_id)))
+      case _            => None
+    }
+  }
+
+  @throws[DbActorNAckException]
+  private def writeSetupElectionMessage(channel: Channel, message: Message): Unit = {
+    channel.extractLaoChannel match {
+      case Some(mainLaoChan) =>
+        createChannel(channel, ObjectType.ELECTION)
+        storage.write((storage.DATA_KEY + storage.SETUP_ELECTION_KEY + channel.toString, message.message_id.toString()))
+        writeAndPropagate(mainLaoChan, message)
+
+      case _ => log.info("Error: Trying to write an ElectionSetup message on an invalid channel")
+    }
+  }
+
+  // This function (its write companion) is necessary so SetupElection messages are stored on the main lao channel
+  // while being easy to find from their related election channel
+  @throws[DbActorNAckException]
+  private def readSetupElectionMessage(channel: Channel): Option[Message] = {
+    channel.extractLaoChannel match {
+      case Some(mainLaoChannel) =>
+        storage.read(storage.DATA_KEY + storage.SETUP_ELECTION_KEY + channel.toString) match {
+          case Some(msg_id) => read(mainLaoChannel, Hash(Base64Data(msg_id)))
+          case _            => None
+        }
+
+      case _ =>
+        log.info("Error: Trying to read an ElectionSetup message from an invalid channel")
+        None
+    }
+  }
+
+  @throws[DbActorNAckException]
   private def read(channel: Channel, messageId: Hash): Option[Message] = {
     Try(storage.read(storage.DATA_KEY + s"$channel${Channel.DATA_SEPARATOR}$messageId")) match {
       case Success(Some(json)) =>
@@ -121,7 +168,17 @@ final case class DbActor(
     }
 
     val channelData: ChannelData = readChannelData(channel)
-    buildCatchupList(channelData.messages, Nil)
+
+    readCreateLao(channel) match {
+      case Some(msg) =>
+        msg :: buildCatchupList(channelData.messages, Nil)
+
+      case None =>
+        if (channel.isMainLaoChannel) {
+          log.error("Critical error encountered: no create_lao message was found in the db")
+        }
+        buildCatchupList(channelData.messages, Nil)
+    }
   }
 
   @throws[DbActorNAckException]
@@ -278,6 +335,27 @@ final case class DbActor(
         case failure    => sender() ! failure.recover(Status.Failure(_))
       }
 
+    case WriteCreateLaoMessage(channel, message) =>
+      log.info(s"Actor $self (db) received a WriteCreateLaoMessage request")
+      Try(writeCreateLao(channel, message)) match {
+        case Success(_) => sender() ! DbActorAck()
+        case failure    => sender() ! failure.recover(Status.Failure(_))
+      }
+
+    case WriteSetupElectionMessage(channel, message) =>
+      log.info(s"Actor $self (db) received a WriteSetupElectionMessage request")
+      Try(writeSetupElectionMessage(channel, message)) match {
+        case Success(_) => sender() ! DbActorAck()
+        case failure    => sender() ! failure.recover(Status.Failure(_))
+      }
+
+    case ReadSetupElectionMessage(channel) =>
+      log.info(s"Actor $self (db) received a ReadSetupElectionMessage request")
+      Try(readSetupElectionMessage(channel)) match {
+        case Success(msg) => sender() ! DbActorReadAck(msg)
+        case failure      => sender() ! failure.recover(Status.Failure(_))
+      }
+
     case Catchup(channel) =>
       log.info(s"Actor $self (db) received a CATCHUP request for channel '$channel'")
       Try(catchupChannel(channel)) match {
@@ -412,6 +490,31 @@ object DbActor {
     *   the channel we need the LAO's data for
     */
   final case class ReadLaoData(channel: Channel) extends Event
+
+  /** Request to write a "CreateLao" message in the db
+    *
+    * @param channel
+    *   the channel part of the LAO the CreateLao refers to
+    * @param message
+    *   the actual CreateLao message we want to write in the db
+    */
+  final case class WriteCreateLaoMessage(channel: Channel, message: Message) extends Event
+
+  /** Request to write a "SetupElection" message in the db
+    *
+    * @param channel
+    *   the channel the SetupElection refers to
+    * @param message
+    *   the actual SetupElection message we want to write in the db
+    */
+  final case class WriteSetupElectionMessage(channel: Channel, message: Message) extends Event
+
+  /** Request to read a "SetupElection" message from the db
+    *
+    * @param channel
+    *   the channel the SetupElection refers to
+    */
+  final case class ReadSetupElectionMessage(channel: Channel) extends Event
 
   /** Request to update the laoData of the LAO, with key laoId and given message
     *

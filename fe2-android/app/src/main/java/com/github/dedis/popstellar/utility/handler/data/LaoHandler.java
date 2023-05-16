@@ -28,6 +28,12 @@ public final class LaoHandler {
   private final KeyManager keyManager;
   private final ServerRepository serverRepo;
 
+  private static final String OLD_NAME = "Old Lao Name : ";
+  private static final String NEW_NAME = "New Lao Name : ";
+  private static final String LAO_NAME = "Lao Name : ";
+  private static final String MESSAGE_ID = "Message ID : ";
+  private static final String WITNESS_ID = "New Witness ID : ";
+
   @Inject
   public LaoHandler(
       KeyManager keyManager,
@@ -138,14 +144,15 @@ public final class LaoHandler {
    */
   @SuppressLint("CheckResult")
   public void handleStateLao(HandlerContext context, StateLao stateLao)
-      throws DataHandlingException, UnknownLaoException {
+      throws UnknownLaoException, InvalidMessageIdException, InvalidSignatureException {
     Channel channel = context.getChannel();
 
     Timber.tag(TAG).d("Receive State Lao Broadcast msg: %s", stateLao);
     LaoView laoView = laoRepo.getLaoViewByChannel(channel);
 
     Timber.tag(TAG).d("Receive State Lao Broadcast %s", stateLao.getName());
-    if (!messageRepo.isMessagePresent(stateLao.getModificationId())) {
+
+    if (!messageRepo.isMessagePresent(stateLao.getModificationId(), true)) {
       Timber.tag(TAG).d("Can't find modification id : %s", stateLao.getModificationId());
       // queue it if we haven't received the update message yet
       throw new InvalidMessageIdException(stateLao, stateLao.getModificationId());
@@ -193,13 +200,16 @@ public final class LaoHandler {
     WitnessMessage message = new WitnessMessage(messageId);
     message.setTitle("Update Lao Name ");
     message.setDescription(
-        "Old Name : "
+        OLD_NAME
+            + "\n"
             + laoView.getName()
+            + "\n\n"
+            + NEW_NAME
             + "\n"
-            + "New Name : "
             + updateLao.getName()
+            + "\n\n"
+            + MESSAGE_ID
             + "\n"
-            + "Message ID : "
             + messageId);
     return message;
   }
@@ -210,14 +220,17 @@ public final class LaoHandler {
     List<PublicKey> tempList = new ArrayList<>(updateLao.getWitnesses());
     message.setTitle("Update Lao Witnesses");
     message.setDescription(
-        "Lao Name : "
+        LAO_NAME
+            + "\n"
             + laoView.getName()
+            + "\n\n"
+            + WITNESS_ID
             + "\n"
-            + "Message ID : "
-            + messageId
+            + tempList.get(tempList.size() - 1)
+            + "\n\n"
+            + MESSAGE_ID
             + "\n"
-            + "New Witness ID : "
-            + tempList.get(tempList.size() - 1));
+            + messageId);
     return message;
   }
 

@@ -7,17 +7,18 @@ import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.network.method.message.data.election._
 import ch.epfl.pop.model.objects.ElectionChannel._
 import ch.epfl.pop.model.objects.{Channel, Hash}
+import ch.epfl.pop.pubsub.PublishSubscribe
 import ch.epfl.pop.pubsub.graph.validators.MessageValidator._
-import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
-import ch.epfl.pop.storage.DbActor
+import ch.epfl.pop.pubsub.graph.{GraphMessage, PipelineError}
 
 import scala.concurrent.Await
+import scala.util.{Success, Failure}
 
 //Similarly to the handlers, we create a ElectionValidator object which creates a ElectionValidator class instance.
 //The defaults dbActorRef is used in the object, but the class can now be mocked with a custom dbActorRef for testing purpose
 object ElectionValidator extends MessageDataContentValidator with EventValidator {
 
-  val electionValidator = new ElectionValidator(DbActor.getInstance)
+  val electionValidator = new ElectionValidator(PublishSubscribe.getDbActorRef)
 
   override val EVENT_HASH_PREFIX: String = electionValidator.EVENT_HASH_PREFIX
 
@@ -194,7 +195,11 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
         val (casteVote, laoId, senderPK, channel) = extractData[CastVoteElection](rpcMessage)
 
         val electionId = channel.extractChildChannel
-        val questions = Await.result(channel.getSetupMessage(dbActorRef), duration).questions
+        val questions = Await.ready(channel.getSetupMessage(dbActorRef), duration).value.get match {
+          case Success(setupElection) => setupElection.questions
+          case Failure(exception)     => return Left(validationError("Failed to get election questions: " + exception.getMessage))
+          case err @ _                => return Left(validationError("Unknown error: " + err.toString))
+        }
 
         runChecks(
           checkTimestampStaleness(
@@ -254,9 +259,9 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
     }
   }
 
-  // not implemented since the back end does not receive a ResultElection message coming from the front end
+// TODO: Proper validation
   def validateResultElection(rpcMessage: JsonRpcRequest): GraphMessage = {
-    Left(PipelineError(ErrorCodes.SERVER_ERROR.id, "NOT IMPLEMENTED: ElectionValidator cannot handle ResultElection messages yet", rpcMessage.id))
+    Right(rpcMessage)
   }
 
   def validateEndElection(rpcMessage: JsonRpcRequest): GraphMessage = {

@@ -1,0 +1,10 @@
+{
+    "public-key"                           : "",
+    "server-public-address"                : "localhost",
+    "server-listen-address"                : "localhost",
+    "client-port"                          : 9002,
+    "server-port"                          : 9003,
+    "other-servers": [
+        "localhost:9001"
+    ]
+}

@@ -1,5 +1,7 @@
 package com.github.dedis.popstellar.model.network.method.message.data.digitalcash;
 
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+
 import com.github.dedis.popstellar.di.DataRegistryModuleHelper;
 import com.github.dedis.popstellar.di.JsonModule;
 import com.github.dedis.popstellar.model.network.method.message.data.*;
@@ -11,12 +13,14 @@ import com.networknt.schema.JsonSchemaFactory;
 import com.networknt.schema.SpecVersion;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import java.util.Collections;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
+@RunWith(AndroidJUnit4.class)
 public class PostTransactionCoinTest {
   // Version
   private static final int VERSION = 1;

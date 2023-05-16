@@ -11,6 +11,7 @@ public enum Objects {
   ELECTION("election"),
   CONSENSUS("consensus"),
   CHIRP("chirp"),
+  REACTION("reaction"),
   COIN("coin");
 
   private static final List<Objects> ALL = Collections.unmodifiableList(Arrays.asList(values()));
@@ -41,5 +42,27 @@ public enum Objects {
         .filter(object -> object.getObject().equals(searched))
         .findFirst()
         .orElse(null);
+  }
+
+  /**
+   * Function that tells whether the given object type has to be persisted.
+   *
+   * @return true if it is going to be saved on disk, false if only in memory
+   */
+  public boolean hasToBePersisted() {
+    switch (object) {
+      case "lao":
+        return true;
+        // TODO: add persistence for other repos in next PRs
+      case "election":
+      case "coin":
+      case "roll_call":
+      case "meeting":
+      case "consensus":
+      case "chirp":
+      case "message":
+      default:
+        return false;
+    }
   }
 }

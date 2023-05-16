@@ -66,6 +66,11 @@ func run(ctx context.Context, args []string) {
 		Aliases: []string{"os"},
 		Usage:   "address and port to connect to other servers",
 	}
+	configFileFlag := &cli.StringFlag{
+		Name:    "config-file",
+		Aliases: []string{"cf"},
+		Usage:   "path to the config file which will override other flags if present",
+	}
 
 	app := &cli.App{
 		Name:  "pop",
@@ -87,6 +92,7 @@ func run(ctx context.Context, args []string) {
 							clientPortFlag,
 							serverPortFlag,
 							otherServersFlag,
+							configFileFlag,
 						},
 						Action: func(c *cli.Context) error {
 							err := Serve(c)

@@ -20,6 +20,7 @@ import com.github.dedis.popstellar.ui.qrcode.ScanningAction;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -118,14 +119,17 @@ public final class LaoCreateFragment extends Fragment {
         });
 
     // No need to have a LiveData as the fragment is recreated upon exiting the scanner
-    List<PublicKey> witnesses = witnessingViewModel.getScannedWitnesses();
+    List<String> witnesses =
+        witnessingViewModel.getScannedWitnesses().stream()
+            .map(PublicKey::getEncoded)
+            .collect(Collectors.toList());
 
     // Show the witnesses title only if there's at least one witness
     if (!witnesses.isEmpty()) {
       binding.witnessesTitle.setVisibility(View.VISIBLE);
     }
 
-    ArrayAdapter<PublicKey> witnessesListAdapter =
+    ArrayAdapter<String> witnessesListAdapter =
         new ArrayAdapter<>(requireContext(), android.R.layout.simple_list_item_1, witnesses);
     binding.witnessesList.setAdapter(witnessesListAdapter);
   }

@@ -1,5 +1,8 @@
 package com.github.dedis.popstellar.model.network.method.message.data.lao;
 
+import androidx.test.core.app.ApplicationProvider;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+
 import com.github.dedis.popstellar.model.network.JsonTestUtils;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
@@ -7,12 +10,15 @@ import com.github.dedis.popstellar.model.objects.PeerAddress;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.google.gson.JsonParseException;
 
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import java.util.*;
 
 import static org.junit.Assert.*;
 
+@RunWith(AndroidJUnit4.class)
 public class GreetLaoTest {
 
   public static final String LAO_ID = "p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=";
@@ -24,6 +30,11 @@ public class GreetLaoTest {
 
   public static GreetLao GREETING_MSG =
       new GreetLao(LAO_ID, RANDOM_KEY, RANDOM_ADDRESS, RANDOM_PEER_LIST);
+
+  @Before
+  public void setup() {
+    JsonTestUtils.loadGSON(ApplicationProvider.getApplicationContext());
+  }
 
   @Test(expected = IllegalArgumentException.class)
   public void constructorFailsWrongPublicKeyTest() {

@@ -29,7 +29,9 @@
   <dimen name="qr_rollcall_img">320dp</dimen>
   <dimen name="margin_button">16dp</dimen>
   <dimen name="rounded_corner_size">10dp</dimen>
-  <dimen name="social_media_delete">40dp</dimen>
+  <dimen name="social_media_counter_margin">5dp</dimen>
+  <dimen name="social_media_button_margin">15dp</dimen>
+  <dimen name="social_media_card_button">48dp</dimen>
   <dimen name="qr_code_size">200dp</dimen>
   <dimen name="scanned_text_size">16sp</dimen>
   <dimen name="scanned_text_bottom_margin">50dp</dimen>
@@ -37,6 +39,7 @@
   <!-- Button -->
   <dimen name="standard_button_height">55dp</dimen>
   <dimen name="standard_button_width">105dp</dimen>
+  <dimen name="small_button_width">90dp</dimen>
   <dimen name="standard_button_text_size">16dp</dimen>
   <dimen name="big_button_text_size">22sp</dimen>
 
@@ -110,7 +113,9 @@
   <dimen name="lone_bottom_button_top_margin">30dp</dimen>
 
   <!--  Witnessing dimensions -->
-  <dimen name="tab_layout_top_margin">20dp</dimen>
+  <dimen name="message_card_margin">10dp</dimen>
+  <dimen name="message_card_corner_radius">10dp</dimen>
+  <dimen name="witnessing_expand_text_margin">14dp</dimen>
 
   <!--  Event List Fragment dimensions -->
   <dimen name="add_event_texts_size">18sp</dimen>

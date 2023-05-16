@@ -1,99 +1,119 @@
 package ch.epfl.pop.pubsub.graph.handlers
 
 import akka.NotUsed
-import akka.actor.{Actor, ActorRef, ActorSystem, Props, Status}
+import akka.actor.{ActorRef, ActorSystem, Props}
+import akka.pattern.AskableActorRef
 import akka.stream.scaladsl.{Flow, Sink, Source}
-import akka.testkit.{TestKit, TestProbe}
-import ch.epfl.pop.model.network.{JsonRpcResponse, ResultObject}
+import akka.testkit.TestKit
+import akka.util.Timeout
+import ch.epfl.pop.model.network.JsonRpcResponse
 import ch.epfl.pop.model.network.method.message.Message
-import ch.epfl.pop.model.objects.{Base64Data, Channel, DbActorNAckException, Hash}
-import ch.epfl.pop.pubsub.AskPatternConstants
-import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage}
-import ch.epfl.pop.pubsub.graph.validators.RpcValidator
-import ch.epfl.pop.storage.DbActor
+import ch.epfl.pop.model.objects.Channel
+import ch.epfl.pop.pubsub.graph.GraphMessage
+import ch.epfl.pop.pubsub.{AskPatternConstants, MessageRegistry, PubSubMediator, PublishSubscribe}
+import ch.epfl.pop.storage.{DbActor, InMemoryStorage}
+import org.scalatest.BeforeAndAfterAll
 import org.scalatest.funsuite.AnyFunSuiteLike
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.matchers.should.Matchers.{convertToAnyShouldWrapper, equal}
 
 import scala.concurrent.Await
+import scala.concurrent.duration.{DurationInt, FiniteDuration}
+import scala.io.Source.fromFile
+import scala.util.Success
 
-class GetMessagesByIdResponseHandlerSuite extends TestKit(ActorSystem("GetMessagesByIdResponseHandlerSuiteSystem")) with AnyFunSuiteLike with AskPatternConstants {
+class GetMessagesByIdResponseHandlerSuite extends TestKit(ActorSystem("GetMessagesByIdResponseHandlerSuiteSystem")) with AnyFunSuiteLike with AskPatternConstants with BeforeAndAfterAll {
 
-  class TestDb(testProbe: ActorRef) extends Actor {
-    override def receive: Receive = {
-      case DbActor.WriteAndPropagate(channel, message) =>
-        testProbe ! (channel, message)
-        sender() ! DbActor.DbActorAck()
+  // Implicit for system actors
+  implicit val timeout: Timeout = Timeout(1.seconds)
+
+  val MAX_TIME: FiniteDuration = 2 * duration
+  val inMemoryStorage: InMemoryStorage = InMemoryStorage()
+  val messageRegistry: MessageRegistry = MessageRegistry()
+  val pubSubMediatorRef: ActorRef = system.actorOf(PubSubMediator.props, "PubSubMediator")
+  val dbActorRef: AskableActorRef = system.actorOf(Props(DbActor(pubSubMediatorRef, messageRegistry, inMemoryStorage)), "DbActor")
+
+  // Inject dbActor above
+  PublishSubscribe.buildGraph(pubSubMediatorRef, dbActorRef, messageRegistry, ActorRef.noSender, ActorRef.noSender, isServer = false)
+
+  // handler we want to test
+  val responseHandler: Flow[GraphMessage, GraphMessage, NotUsed] = GetMessagesByIdResponseHandler.responseHandler(MessageRegistry())
+
+  // loading the files
+  val pathIncorrectGetMessageById: String = "src/test/scala/util/examples/json/get_messages_by_id_answer_with_wrong_messages.json"
+  val pathCorrectGetMessageById: String = "src/test/scala/util/examples/json/get_messages_by_id_answer.json"
+
+  val incorrectGetMessagesByIdResponse: JsonRpcResponse =
+    JsonRpcResponse.buildFromJson(
+      readJsonFromPath(pathIncorrectGetMessageById)
+    )
+
+  val getMessagesByIdResponse: JsonRpcResponse = JsonRpcResponse.buildFromJson(
+    readJsonFromPath(pathCorrectGetMessageById)
+  )
+
+  // Helper function
+  // Get rid of decoded data to compare against original message
+  private def getMessages(channel: Channel): Set[Message] = {
+    val ask = dbActorRef ? DbActor.Catchup(channel)
+    Await.result(ask, MAX_TIME) match {
+      case DbActor.DbActorCatchupAck(list) => list
+          .map(msg => Message(msg.data, msg.sender, msg.signature, msg.message_id, msg.witness_signatures, None)).toSet
+      case _ => Matchers.fail(s"Couldn't catchup on channel: $channel")
     }
   }
-  class FailingTestDb(testProbe: ActorRef) extends Actor {
-    override def receive: Receive = {
-      case DbActor.WriteAndPropagate(channel, message) =>
-        testProbe ! (channel, message)
-        sender() ! Status.Failure(DbActorNAckException(ErrorCodes.INVALID_ACTION.id, s"channel '$channel' does not exist in db"))
+
+  // Helper function to read json file into string
+  private def readJsonFromPath(path: String): String = {
+    val source = fromFile(path)
+    val jsonString: String = {
+      try {
+        source.mkString
+      } finally {
+        source.close()
+      }
+    }
+    jsonString
+  }
+
+  override def afterAll(): Unit = {
+    // Stops the testKit
+    TestKit.shutdownActorSystem(system)
+  }
+
+  test("get_messages_by_id response should be processed without errors") {
+    val output = Source.single(Right(getMessagesByIdResponse)).via(responseHandler).runWith(Sink.head)
+
+    Await.ready(output, MAX_TIME).value.get match {
+      case Success(Right(_)) => 0 should equal(0)
+      case err @ _           => Matchers.fail(err.toString)
     }
   }
 
-  class FailingThenSucceedingTestDb(testProbe: ActorRef) extends Actor {
-
-    def counter(numberOfTrials: Int): Receive = {
-      case DbActor.WriteAndPropagate(channel, message) =>
-        if (numberOfTrials == 0) {
-          testProbe ! (channel, message)
-          sender() ! Status.Failure(DbActorNAckException(ErrorCodes.INVALID_ACTION.id, s"channel '$channel' does not exist in db"))
-          context.become(counter(numberOfTrials + 1))
-        } else {
-          testProbe ! (channel, message)
-          sender() ! DbActor.DbActorAck()
-          context.become(counter(0))
-        }
+  test("After processing a correct get_messages_by_id response the db should contain all the channels and messages from it") {
+    val ask = dbActorRef ? DbActor.GetAllChannels()
+    val channelsInDb = Await.result(ask, MAX_TIME) match {
+      case DbActor.DbActorGetAllChannelsAck(channels) => channels
+      case err @ _                                    => Matchers.fail("Error: " + err.toString)
     }
-    def receive: Receive = counter(0)
+
+    val channelsInResponse = getMessagesByIdResponse.result.get.resultMap.get.keySet
+    channelsInResponse.diff(channelsInDb) should equal(Set.empty)
+
+    val messagesInDb: Set[Message] = channelsInDb.foldLeft(Set.empty: Set[Message])((acc, channel) => acc ++ getMessages(channel))
+    val messagesInResponse = getMessagesByIdResponse.result.get.resultMap.get.values.foldLeft(Set.empty: Set[Message])((acc, set) => acc ++ set)
+
+    messagesInResponse.diff(messagesInDb) should equal(Set.empty)
   }
 
-  private val testProbe = TestProbe()
-  final val CHANNEL1: Channel = Channel("/root/wex/lao1Id")
-  final val CHANNEL2: Channel = Channel("/root/wex/lao2Id")
-  final val MESSAGE1_ID: Hash = Hash(Base64Data.encode("message1Id"))
-  final val MESSAGE2_ID: Hash = Hash(Base64Data.encode("message2Id"))
-  final val MESSAGE1: Message = Message(null, null, null, MESSAGE1_ID, null, null)
-  final val MESSAGE2: Message = Message(null, null, null, MESSAGE2_ID, null, null)
-  final val missingMessages = Map((CHANNEL1, Set(MESSAGE1)), (CHANNEL2, Set(MESSAGE2)))
-  final val receivedResponse: JsonRpcResponse = JsonRpcResponse(RpcValidator.JSON_RPC_VERSION, new ResultObject(missingMessages), None)
+  test("get_messages_by_id with invalid data should fail to process") {
+    // remove all message from previous tests
+    inMemoryStorage.elements = Map.empty
 
-  test("by receiving a get_messages_by_id response, it sends a write message to the database") {
-    val boxUnderTest: Flow[GraphMessage, GraphMessage, NotUsed] = GetMessagesByIdResponseHandler.graph(system.actorOf(Props(new TestDb(testProbe.ref))))
-    val input: List[GraphMessage] = List(Right(receivedResponse))
-    val source = Source(input)
-    val s = source.via(boxUnderTest).runWith(Sink.seq[GraphMessage])
-    Await.ready(s, duration)
-    testProbe.expectMsgAllOf((CHANNEL1, MESSAGE1), (CHANNEL2, MESSAGE2))
-    testProbe.expectNoMessage()
-  }
-
-  test("by failing to write a  get_messages_by_id response in the database, it retries exactly three times before giving up") {
-    val boxUnderTest: Flow[GraphMessage, GraphMessage, NotUsed] = GetMessagesByIdResponseHandler.graph(system.actorOf(Props(new FailingTestDb(testProbe.ref))))
-    val input: List[GraphMessage] = List(Right(receivedResponse))
-    val source = Source(input)
-    val s = source.via(boxUnderTest).runWith(Sink.seq[GraphMessage])
-    Await.ready(s, duration)
-    testProbe.expectMsg((CHANNEL1, MESSAGE1))
-    testProbe.expectMsg((CHANNEL1, MESSAGE1))
-    testProbe.expectMsg((CHANNEL1, MESSAGE1))
-    testProbe.expectMsg((CHANNEL2, MESSAGE2))
-    testProbe.expectMsg((CHANNEL2, MESSAGE2))
-    testProbe.expectMsg((CHANNEL2, MESSAGE2))
-    testProbe.expectNoMessage()
-  }
-
-  test("by succeeding to write a get_messages_by_id on the db, it doesn't retry to write on it") {
-    val boxUnderTest: Flow[GraphMessage, GraphMessage, NotUsed] = GetMessagesByIdResponseHandler.graph(system.actorOf(Props(new FailingThenSucceedingTestDb(testProbe.ref))))
-    val input: List[GraphMessage] = List(Right(receivedResponse))
-    val source = Source(input)
-    val s = source.via(boxUnderTest).runWith(Sink.seq[GraphMessage])
-    Await.ready(s, duration)
-    testProbe.expectMsg((CHANNEL1, MESSAGE1))
-    testProbe.expectMsg((CHANNEL1, MESSAGE1))
-    testProbe.expectMsg((CHANNEL2, MESSAGE2))
-    testProbe.expectMsg((CHANNEL2, MESSAGE2))
-    testProbe.expectNoMessage()
+    val output = Source.single(Right(incorrectGetMessagesByIdResponse)).via(responseHandler).runWith(Sink.head)
+    Await.ready(output, MAX_TIME).value.get match {
+      case Success(Left(_)) => 0 should equal(0)
+      case _                => Matchers.fail("Should fail")
+    }
   }
 }
