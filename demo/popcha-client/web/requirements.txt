@@ -1,4 +1,5 @@
 Flask>=2.3.2
+Flask-WTF>=1.1.1
 Werkzeug>=2.3.4
 PyJWT>=2.7.0
 cryptography>=40.0.2

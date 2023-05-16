@@ -8,6 +8,7 @@ import urllib.parse
 from typing import IO
 
 from flask import Flask, redirect, request, Response, render_template
+from flask_wtf import CSRFProtect
 
 from counterApp import CounterApp
 from authentication import Authentication
@@ -94,6 +95,8 @@ def on_startup() -> None:
 
 
 app = Flask("Example_authentication_server")
+csrf = CSRFProtect()
+csrf.init_app(app)
 on_startup()
 
 
