@@ -1,19 +1,32 @@
 package com.github.dedis.popstellar.repository;
 
+import android.app.Activity;
+import android.app.Application;
+
 import androidx.annotation.NonNull;
+import androidx.lifecycle.Lifecycle;
 
 import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.model.objects.Election;
+import com.github.dedis.popstellar.repository.database.AppDatabase;
+import com.github.dedis.popstellar.repository.database.event.election.ElectionDao;
+import com.github.dedis.popstellar.repository.database.event.election.ElectionEntity;
+import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.error.UnknownElectionException;
 
 import java.util.*;
+import java.util.function.Consumer;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.BehaviorSubject;
 import io.reactivex.subjects.Subject;
+import timber.log.Timber;
 
 /**
  * This class is the repository of the elections events
@@ -23,11 +36,27 @@ import io.reactivex.subjects.Subject;
 @Singleton
 public class ElectionRepository {
 
+  private static final String TAG = ElectionRepository.class.getSimpleName();
+
   private final Map<String, LaoElections> electionsByLao = new HashMap<>();
 
+  private final ElectionDao electionDao;
+
+  private final CompositeDisposable disposables = new CompositeDisposable();
+
   @Inject
-  public ElectionRepository() {
-    // Constructor required by Hilt
+  public ElectionRepository(AppDatabase appDatabase, Application application) {
+    electionDao = appDatabase.electionDao();
+    Map<Lifecycle.Event, Consumer<Activity>> consumerMap = new EnumMap<>(Lifecycle.Event.class);
+    consumerMap.put(
+        Lifecycle.Event.ON_DESTROY,
+        activity -> {
+          if (!disposables.isDisposed()) {
+            disposables.dispose();
+          }
+        });
+    application.registerActivityLifecycleCallbacks(
+        ActivityUtils.buildLifecycleCallback(consumerMap));
   }
 
   /**
@@ -38,6 +67,17 @@ public class ElectionRepository {
    * @param election the election to update
    */
   public void updateElection(@NonNull Election election) {
+    ElectionEntity electionEntity =
+        new ElectionEntity(election.getId(), election.getChannel().extractLaoId(), election);
+    // Persist the election
+    // disposables.add(
+    electionDao
+        .insert(electionEntity)
+        .subscribeOn(Schedulers.io())
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(
+            () -> Timber.tag(TAG).d("Successfully persisted election %s", election.getId()),
+            err -> Timber.tag(TAG).e(err, "Error in persisting election %s", election.getId()));
     getLaoElections(election.getChannel().extractLaoId()).updateElection(election);
   }
 
@@ -90,28 +130,32 @@ public class ElectionRepository {
    */
   @NonNull
   public Observable<Set<Election>> getElectionsObservableInLao(@NonNull String laoId) {
-    return getLaoElections(laoId).getElectionsSubject();
+    return getLaoElections(laoId).getElectionsSubject(this);
   }
 
   @NonNull
   private synchronized LaoElections getLaoElections(String laoId) {
     // Create the lao elections object if it is not present yet
-    return electionsByLao.computeIfAbsent(laoId, lao -> new LaoElections());
+    return electionsByLao.computeIfAbsent(laoId, lao -> new LaoElections(laoId));
   }
 
   private static final class LaoElections {
+    private final String laoId;
     private final Map<String, Election> electionById = new HashMap<>();
     private final Map<String, Subject<Election>> electionSubjects = new HashMap<>();
     private final BehaviorSubject<Set<Election>> electionsSubject =
         BehaviorSubject.createDefault(Collections.emptySet());
+
+    public LaoElections(String laoId) {
+      this.laoId = laoId;
+    }
 
     public synchronized void updateElection(@NonNull Election election) {
       String id = election.getId();
 
       electionById.put(id, election);
       electionSubjects.putIfAbsent(id, BehaviorSubject.create());
-      //noinspection ConstantConditions
-      electionSubjects.get(id).onNext(election);
+      Objects.requireNonNull(electionSubjects.get(id)).onNext(election);
 
       electionsSubject.onNext(Collections.unmodifiableSet(new HashSet<>(electionById.values())));
     }
@@ -126,7 +170,24 @@ public class ElectionRepository {
       }
     }
 
-    public Observable<Set<Election>> getElectionsSubject() {
+    public Observable<Set<Election>> getElectionsSubject(ElectionRepository repository) {
+      // Load in memory the elections from the disk only when the user
+      // clicks on the respective LAO
+      // repository.disposables.add(
+      repository
+          .electionDao
+          .getElectionsByLaoId(laoId, electionById.keySet())
+          .subscribeOn(Schedulers.io())
+          .observeOn(AndroidSchedulers.mainThread())
+          .subscribe(
+              elections ->
+                  elections.forEach(
+                      electionEntity -> {
+                        updateElection(electionEntity.getElection());
+                        Timber.tag(TAG)
+                            .d("Retrieved from db election %s", electionEntity.getElectionId());
+                      }),
+              err -> Timber.tag(TAG).e(err, "No election found in the storage for lao %s", laoId));
       return electionsSubject;
     }
 

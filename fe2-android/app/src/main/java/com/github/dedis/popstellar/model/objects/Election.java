@@ -131,6 +131,14 @@ public class Election extends Event {
     return messageMap;
   }
 
+  public Map<PublicKey, List<Vote>> getVotesBySender() {
+    return votesBySender;
+  }
+
+  public Map<String, Set<QuestionResult>> getResults() {
+    return results;
+  }
+
   public String getId() {
     return id;
   }

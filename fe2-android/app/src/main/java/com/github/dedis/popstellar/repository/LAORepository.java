@@ -71,28 +71,27 @@ public class LAORepository {
    * This call is asynchronous so it's performed in background not blocking the main thread.
    */
   private void loadPersistentStorage() {
-    disposables.add(
-        laoDao
-            .getAllLaos()
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(
-                laos -> {
-                  if (laos.isEmpty()) {
-                    Timber.tag(TAG).d("No LAO has been found in the database");
-                    return;
-                  }
-                  laos.forEach(
-                      lao -> {
-                        laoById.put(lao.getId(), lao);
-                        subjectById.put(
-                            lao.getId(), BehaviorSubject.createDefault(new LaoView(lao)));
-                      });
-                  List<String> laoIds = laos.stream().map(Lao::getId).collect(Collectors.toList());
-                  laosSubject.onNext(laoIds);
-                  Timber.tag(TAG).d("Loaded all the LAOs from database: %s", laoIds);
-                },
-                err -> Timber.tag(TAG).e(err, "Error loading the LAOs from the database")));
+    // disposables.add(
+    laoDao
+        .getAllLaos()
+        .subscribeOn(Schedulers.io())
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(
+            laos -> {
+              if (laos.isEmpty()) {
+                Timber.tag(TAG).d("No LAO has been found in the database");
+                return;
+              }
+              laos.forEach(
+                  lao -> {
+                    laoById.put(lao.getId(), lao);
+                    subjectById.put(lao.getId(), BehaviorSubject.createDefault(new LaoView(lao)));
+                  });
+              List<String> laoIds = laos.stream().map(Lao::getId).collect(Collectors.toList());
+              laosSubject.onNext(laoIds);
+              Timber.tag(TAG).d("Loaded all the LAOs from database: %s", laoIds);
+            },
+            err -> Timber.tag(TAG).e(err, "Error loading the LAOs from the database"));
   }
 
   /**
@@ -158,14 +157,14 @@ public class LAORepository {
     LAOEntity laoEntity = new LAOEntity(lao.getId(), lao);
 
     // Update the persistent storage in background (replace if already existing)
-    disposables.add(
-        laoDao
-            .insert(laoEntity)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(
-                () -> Timber.tag(TAG).d("Persisted Lao %s", lao),
-                err -> Timber.tag(TAG).e(err, "Error persisting Lao %s", lao)));
+    // disposables.add(
+    laoDao
+        .insert(laoEntity)
+        .subscribeOn(Schedulers.io())
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(
+            () -> Timber.tag(TAG).d("Persisted Lao %s", lao),
+            err -> Timber.tag(TAG).e(err, "Error persisting Lao %s", lao));
 
     if (laoById.containsKey(lao.getId())) {
       // If the lao already exists, we can push the next update
