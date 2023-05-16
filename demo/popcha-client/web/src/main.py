@@ -105,7 +105,7 @@ def root() -> str:
     :return: The homepage HTML
     """
     providers_string = [f'{provider.get("lao_id")}@{provider.get("domain")}'
-                        for provider in providers]
+                        for provider in authenticationProvider.providers]
     error: str = ""
     if "error" in request.args:
         error = f'Error: {request.args.get("error", default="", type=str)}'
@@ -125,8 +125,8 @@ def authentication() -> Response:
     if provider_id < 0:  # if serverAndLaoId is not an int
         return redirect("/")
     url = authenticationProvider.get_url(
-        providers[provider_id]["domain"],
-        providers[provider_id]["lao_id"],
+        authenticationProvider.providers[provider_id]["domain"],
+        authenticationProvider.providers[provider_id]["lao_id"],
         config["client_id"]
     )
     return redirect(url)
