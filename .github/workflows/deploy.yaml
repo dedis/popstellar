@@ -247,10 +247,10 @@ jobs:
       # Use rsync to deploy the new website (no build is necessary)
       - name: Sync
         env:
-            dest: "popdemo@${{secrets.POPCHA_EXAMPLE_DEPLOY_ADDR}}:${{ env.base_folder }}/"
+            dest: "popdemo@${{secrets.POPDEMO_DEPLOY_ADDR}}:demo/popcha-client/web/"
         run: |
-            echo "${{secrets.POPCHA_EXAMPLE_DEPLOY_KEY}}" > deploy_key
+            echo "${{secrets.POPDEMO_DEPLOY_KEY}}" > deploy_key
             chmod 600 ./deploy_key
             rsync -chav --delete \
-              -e 'ssh -p ${{secrets.POPCHA_EXAMPLE_DEPLOY_PORT}} -i ./deploy_key -o StrictHostKeyChecking=no' \
+              -e 'ssh -p ${{secrets.POPDEMO_DEPLOY_PORT}} -i ./deploy_key -o StrictHostKeyChecking=no' \
               ./${{ env.base_folder }} ${{ env.dest }}
