@@ -21,8 +21,7 @@ func TestInbox_AddWitnessSignature(t *testing.T) {
 	require.Equal(t, 1, len(inbox.msgsMap))
 
 	// Add the witness signature to the message in the inbox
-	err := inbox.AddWitnessSignature(msg.MessageID, "456", "789")
-	require.NoError(t, err)
+	inbox.AddWitnessSignature(msg.MessageID, "456", "789")
 
 	// Check if the message was updated
 	storedMsg, ok := inbox.GetMessage(msg.MessageID)
@@ -37,11 +36,9 @@ func TestInbox_AddWitnessSignature_MessageNotReceivedYet(t *testing.T) {
 	msg := newMessage(t, "123", "123", nil, "")
 
 	// Add the witness signature to the message in the inbox
-	err := inbox.AddWitnessSignature(msg.MessageID, "456", "789")
-	require.NoError(t, err)
+	inbox.AddWitnessSignature(msg.MessageID, "456", "789")
 
-	err = inbox.AddWitnessSignature(msg.MessageID, "345", "678")
-	require.NoError(t, err)
+	inbox.AddWitnessSignature(msg.MessageID, "345", "678")
 
 	// Check that the message is not in the inbox
 	_, ok := inbox.GetMessage(msg.MessageID)
@@ -73,8 +70,7 @@ func TestInbox_AddWitnessSignatures(t *testing.T) {
 	signaturesNumber := 100
 	for i := 0; i < signaturesNumber; i++ {
 		// Add the witness signature to the message in the inbox
-		err := inbox.AddWitnessSignature(msg.MessageID, fmt.Sprintf("%d", i), fmt.Sprintf("%d", i))
-		require.NoError(t, err)
+		inbox.AddWitnessSignature(msg.MessageID, fmt.Sprintf("%d", i), fmt.Sprintf("%d", i))
 	}
 
 	// Check if the message was updated

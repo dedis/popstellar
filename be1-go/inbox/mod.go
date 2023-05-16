@@ -37,7 +37,7 @@ func NewInbox(channelID string) *Inbox {
 // AddWitnessSignature adds a signature of witness to a message of ID
 // `messageID`. if the signature was correctly added return true otherwise
 // returns false
-func (i *Inbox) AddWitnessSignature(messageID string, public string, signature string) error {
+func (i *Inbox) AddWitnessSignature(messageID string, public string, signature string) {
 	msg, ok := i.GetMessage(messageID)
 	i.mutex.Lock()
 	defer i.mutex.Unlock()
@@ -47,14 +47,12 @@ func (i *Inbox) AddWitnessSignature(messageID string, public string, signature s
 			Witness:   public,
 			Signature: signature,
 		})
-		return nil
+	} else {
+		msg.WitnessSignatures = append(msg.WitnessSignatures, message.WitnessSignature{
+			Witness:   public,
+			Signature: signature,
+		})
 	}
-	msg.WitnessSignatures = append(msg.WitnessSignatures, message.WitnessSignature{
-		Witness:   public,
-		Signature: signature,
-	})
-
-	return nil
 }
 
 // StoreMessage stores a message inside the inbox

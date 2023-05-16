@@ -478,7 +478,6 @@ func (c *Channel) processElectionObject(msg message.Message, msgData interface{}
 // processMessageWitness handles a message object.
 func (c *Channel) processMessageWitness(msg message.Message, msgData interface{},
 	_ socket.Socket) error {
-
 	_, ok := msgData.(*messagedata.MessageWitness)
 	if !ok {
 		return xerrors.Errorf("message %v isn't a message#witness message", msgData)
@@ -511,15 +510,8 @@ func (c *Channel) processMessageWitness(msg message.Message, msgData interface{}
 		return answer.NewError(-4, "invalid witness signature")
 	}
 
-	err = c.inbox.AddWitnessSignature(witnessData.MessageID, msg.Sender, witnessData.Signature)
-	if err != nil {
-		return xerrors.Errorf("failed to add witness signature: %w", err)
-	}
-
-	err = c.hub.NotifyWitnessMessage(witnessData.MessageID, msg.Sender, witnessData.Signature)
-	if err != nil {
-		return xerrors.Errorf("failed to notify the hub of witness message: %w", err)
-	}
+	c.inbox.AddWitnessSignature(witnessData.MessageID, msg.Sender, witnessData.Signature)
+	c.hub.NotifyWitnessMessage(witnessData.MessageID, msg.Sender, witnessData.Signature)
 
 	return nil
 }

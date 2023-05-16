@@ -623,9 +623,7 @@ func (h *fakeHub) Sign(data []byte) ([]byte, error) {
 }
 
 // NotifyWitnessMessage implements channel.HubFunctionalities
-func (h *fakeHub) NotifyWitnessMessage(messageId string, publicKey string, signature string) error {
-	return nil
-}
+func (h *fakeHub) NotifyWitnessMessage(messageId string, publicKey string, signature string) {}
 
 func (h *fakeHub) GetSchemaValidator() validation.SchemaValidator {
 	return *h.schemaValidator

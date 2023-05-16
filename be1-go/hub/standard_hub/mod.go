@@ -569,15 +569,10 @@ func (h *Hub) NotifyNewChannel(channelID string, channel channel.Channel, sock s
 }
 
 // NotifyWitnessMessage implements channel.HubFunctionalities
-func (h *Hub) NotifyWitnessMessage(messageId string, publicKey string, signature string) error {
+func (h *Hub) NotifyWitnessMessage(messageId string, publicKey string, signature string) {
 	h.Lock()
-	err := h.hubInbox.AddWitnessSignature(messageId, publicKey, signature)
-	if err != nil {
-		return xerrors.Errorf("failed to add witness signature to hub inbox: %v", err)
-	}
-	//add to map too ?
+	h.hubInbox.AddWitnessSignature(messageId, publicKey, signature)
 	h.Unlock()
-	return nil
 }
 
 func generateKeys() (kyber.Point, kyber.Scalar) {
