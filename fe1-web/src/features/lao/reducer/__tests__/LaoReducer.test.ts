@@ -39,7 +39,8 @@ import {
   addLaoServerAddress,
   addSubscribedChannel,
   removeSubscribedChannel,
-  selectConnectedToLao, reconnectLao
+  selectConnectedToLao,
+  reconnectLao,
 } from '../LaoReducer';
 
 const rollCallId = new Hash('1234');
