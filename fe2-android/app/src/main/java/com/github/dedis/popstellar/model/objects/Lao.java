@@ -116,11 +116,6 @@ public final class Lao implements Copyable<Lao> {
     witnessMessages.put(witnessMessage.getMessageId(), witnessMessage);
   }
 
-  public void removeWitnessMessage(MessageID prevId, WitnessMessage witnessMessage) {
-    witnessMessages.remove(prevId);
-    witnessMessages.put(witnessMessage.getMessageId(), witnessMessage);
-  }
-
   public Optional<ElectInstance> getElectInstance(MessageID messageId) {
     return Optional.ofNullable(messageIdToElectInstance.get(messageId));
   }
