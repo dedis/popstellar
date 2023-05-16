@@ -47,8 +47,8 @@ func (i *Inbox) AddWitnessSignature(messageID string, public string, signature s
 			Witness:   public,
 			Signature: signature,
 		})
+		return nil
 	}
-
 	msg.WitnessSignatures = append(msg.WitnessSignatures, message.WitnessSignature{
 		Witness:   public,
 		Signature: signature,
@@ -64,14 +64,6 @@ func (i *Inbox) StoreMessage(msg message.Message) {
 
 	storedTime := time.Now().UnixNano()
 
-	messageInfo := &messageInfo{
-		message:    msg,
-		storedTime: storedTime,
-	}
-
-	i.msgsMap[msg.MessageID] = messageInfo
-	i.msgsArray = append(i.msgsArray, messageInfo)
-
 	// Check if we have pending signatures for this message and add them
 	if pendingSignatures, exist := i.pendingSignatures[msg.MessageID]; exist {
 		for _, sig := range pendingSignatures {
@@ -79,6 +71,14 @@ func (i *Inbox) StoreMessage(msg message.Message) {
 		}
 		delete(i.pendingSignatures, msg.MessageID)
 	}
+
+	messageInfo := &messageInfo{
+		message:    msg,
+		storedTime: storedTime,
+	}
+
+	i.msgsMap[msg.MessageID] = messageInfo
+	i.msgsArray = append(i.msgsArray, messageInfo)
 }
 
 // GetSortedMessages returns all messages stored sorted by stored time.
