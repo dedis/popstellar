@@ -324,3 +324,47 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_POPCHA_WEB_CLIENT }}
+          
+  protocol:
+    name: protocol examples test
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ./protocol/test
+
+    steps:
+      - name: Setup repo
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of Sonar analysis
+
+      - name: Setup node 12.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12.x
+
+      - name: Setup node cache
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-node-modules
+        with:
+          # npm cache files are stored in `~/.npm` on Linux/macOS
+          path: ~/.npm
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+
+      - name: Setup npm dependencies
+        run: |
+          npm install
+
+      - name: Check npm security issues
+        run: |
+          npm audit fix
+
+      - name: Run test
+        run: |
+          npm run test
