@@ -568,6 +568,18 @@ func (h *Hub) NotifyNewChannel(channelID string, channel channel.Channel, sock s
 	h.Unlock()
 }
 
+// NotifyWitnessMessage implements channel.HubFunctionalities
+func (h *Hub) NotifyWitnessMessage(messageId string, publicKey string, signature string) error {
+	h.Lock()
+	err := h.hubInbox.AddWitnessSignature(messageId, publicKey, signature)
+	if err != nil {
+		return xerrors.Errorf("failed to add witness signature to hub inbox: %v", err)
+	}
+	//add to map too ?
+	h.Unlock()
+	return nil
+}
+
 func generateKeys() (kyber.Point, kyber.Scalar) {
 	secret := suite.Scalar().Pick(suite.RandomStream())
 	point := suite.Point().Mul(secret, nil)
