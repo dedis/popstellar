@@ -246,6 +246,17 @@ const laosSlice = createSlice({
         }
       },
     },
+    reconnectLao: {
+      prepare: (laoId: Hash) => ({
+        payload: { laoId: laoId.valueOf() },
+      }),
+      reducer: (state, action: PayloadAction<{ laoId: string }>) => {
+        const { laoId } = action.payload;
+        if (laoId in state.byId) {
+          state.connected = true;
+        }
+      },
+    },
   },
   extraReducers: (builder) => {
     // this is called by the persistence layer of Redux, upon starting the application
@@ -279,6 +290,7 @@ export const {
   addLaoServerAddress,
   addSubscribedChannel,
   removeSubscribedChannel,
+  reconnectLao,
 } = laosSlice.actions;
 
 export const getLaosState = (state: any): LaoReducerState => state[LAO_REDUCER_PATH];

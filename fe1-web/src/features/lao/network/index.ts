@@ -11,7 +11,7 @@ import STRINGS from 'resources/strings';
 
 import { getLaoById } from '../functions/lao';
 import { resubscribeToLao } from '../functions/network';
-import { addSubscribedChannel, removeSubscribedChannel, selectCurrentLaoId } from '../reducer';
+import { addSubscribedChannel, reconnectLao, removeSubscribedChannel, selectCurrentLaoId } from '../reducer';
 import { storeBackendAndConnectToPeers, makeLaoGreetStoreWatcher } from './LaoGreetWatcher';
 import {
   handleLaoCreateMessage,
@@ -64,7 +64,11 @@ export function configureNetwork(registry: MessageRegistry) {
       return;
     }
 
-    await resubscribeToLao(lao, store.dispatch);
+    await resubscribeToLao(lao, store.dispatch).then(() => {
+      // update the state in redux show user is now online
+      store.dispatch(reconnectLao(laoId));
+      console.log('Successfully re-connected to LAO');
+    });
   });
   getNetworkManager().addConnectionDeathHandler((address) => {
     const laoId = selectCurrentLaoId(getStore().getState());
