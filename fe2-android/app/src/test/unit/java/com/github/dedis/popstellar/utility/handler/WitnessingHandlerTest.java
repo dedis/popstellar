@@ -161,7 +161,7 @@ public class WitnessingHandlerTest {
     MessageGeneral message = new MessageGeneral(invalidKeyPair, witnessMessageSignature, gson);
 
     assertThrows(
-        DataHandlingException.class,
+        InvalidWitnessException.class,
         () -> messageHandler.handleMessage(messageSender, LAO_CHANNEL, message));
   }
 
@@ -188,7 +188,7 @@ public class WitnessingHandlerTest {
     MessageGeneral message = new MessageGeneral(ORGANIZER_KEY, witnessMessageSignature, gson);
 
     assertThrows(
-        DataHandlingException.class,
+        InvalidWitnessMessageException.class,
         () -> messageHandler.handleMessage(messageSender, LAO_CHANNEL, message));
   }
 }

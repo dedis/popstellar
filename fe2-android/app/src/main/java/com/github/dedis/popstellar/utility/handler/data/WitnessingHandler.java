@@ -37,17 +37,14 @@ public class WitnessingHandler {
 
     // Check that the sender of the message is a witness
     if (!laoView.getWitnesses().contains(witnessPk)) {
-      throw new DataHandlingException(
-          witnessMessageSignature, "The sender of the WitnessMessageSignature is not a witness");
+      throw new InvalidWitnessException(witnessMessageSignature, witnessPk);
     }
 
     // Check that a witness message with the given message id exists in the lao
     MessageID messageID = witnessMessageSignature.getMessageId();
     WitnessMessage witnessMessage = laoView.getWitnessMessages().get(messageID);
     if (witnessMessage == null) {
-      throw new DataHandlingException(
-          witnessMessageSignature,
-          "No witness witness message with id " + messageID + " exists in the lao");
+      throw new InvalidWitnessMessageException(witnessMessageSignature, messageID);
     }
 
     // Check that the signature of the message id is correct
