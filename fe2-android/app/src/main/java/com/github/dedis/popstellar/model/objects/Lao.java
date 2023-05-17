@@ -56,6 +56,33 @@ public final class Lao implements Copyable<Lao> {
     this.creation = creation;
   }
 
+  public Lao(
+      Channel channel,
+      String id,
+      String name,
+      Long lastModified,
+      Long creation,
+      PublicKey organizer,
+      MessageID modificationId,
+      Set<PublicKey> witnesses,
+      Map<MessageID, WitnessMessage> witnessMessages,
+      Set<PendingUpdate> pendingUpdates,
+      Map<MessageID, ElectInstance> messageIdToElectInstance,
+      Map<PublicKey, ConsensusNode> keyToNode) {
+    this.channel = channel;
+    this.id = id;
+    this.name = name;
+    this.lastModified = lastModified;
+    this.creation = creation;
+    this.organizer = organizer;
+    this.modificationId = modificationId;
+    this.witnesses = new HashSet<>(witnesses);
+    this.witnessMessages = new HashMap<>(witnessMessages);
+    this.pendingUpdates = new HashSet<>(pendingUpdates);
+    this.messageIdToElectInstance = new HashMap<>(messageIdToElectInstance);
+    this.keyToNode = Copyable.copy(keyToNode);
+  }
+
   /**
    * Copy constructor
    *
@@ -241,6 +268,10 @@ public final class Lao implements Copyable<Lao> {
     return witnessMessages;
   }
 
+  public Map<PublicKey, ConsensusNode> getKeyToNode() {
+    return keyToNode;
+  }
+
   /**
    * Generate the id for dataCreateLao and dataUpdateLao.
    * https://github.com/dedis/popstellar/blob/master/protocol/query/method/message/data/dataCreateLao.json
@@ -258,6 +289,46 @@ public final class Lao implements Copyable<Lao> {
   @Override
   public Lao copy() {
     return new Lao(this);
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    Lao lao = (Lao) o;
+    return Objects.equals(channel, lao.channel)
+        && Objects.equals(id, lao.id)
+        && Objects.equals(name, lao.name)
+        && Objects.equals(lastModified, lao.lastModified)
+        && Objects.equals(creation, lao.creation)
+        && Objects.equals(organizer, lao.organizer)
+        && Objects.equals(modificationId, lao.modificationId)
+        && Objects.equals(witnesses, lao.witnesses)
+        && Objects.equals(witnessMessages, lao.witnessMessages)
+        && Objects.equals(pendingUpdates, lao.pendingUpdates)
+        && Objects.equals(messageIdToElectInstance, lao.messageIdToElectInstance)
+        && Objects.equals(keyToNode, lao.keyToNode);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(
+        channel,
+        id,
+        name,
+        lastModified,
+        creation,
+        organizer,
+        modificationId,
+        witnesses,
+        witnessMessages,
+        pendingUpdates,
+        messageIdToElectInstance,
+        keyToNode);
   }
 
   @NonNull

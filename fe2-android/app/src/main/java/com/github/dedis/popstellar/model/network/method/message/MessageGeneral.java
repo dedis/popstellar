@@ -24,6 +24,9 @@ public final class MessageGeneral {
 
   private static final String TAG = MessageGeneral.class.getSimpleName();
 
+  private static final MessageGeneral EMPTY =
+      new MessageGeneral(null, null, null, null, null, new ArrayList<>());
+
   private final PublicKey sender;
   private final Base64URLData dataBuf;
   private final Data data;
@@ -31,6 +34,10 @@ public final class MessageGeneral {
 
   private Signature signature;
   private List<PublicKeySignaturePair> witnessSignatures = new ArrayList<>();
+
+  public static MessageGeneral emptyMessage() {
+    return EMPTY;
+  }
 
   public MessageGeneral(
       PublicKey sender,

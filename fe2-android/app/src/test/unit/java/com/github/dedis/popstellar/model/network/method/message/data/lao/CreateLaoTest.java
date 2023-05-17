@@ -1,5 +1,8 @@
 package com.github.dedis.popstellar.model.network.method.message.data.lao;
 
+import androidx.test.core.app.ApplicationProvider;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+
 import com.github.dedis.popstellar.model.network.JsonTestUtils;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
@@ -9,7 +12,9 @@ import com.github.dedis.popstellar.testutils.Base64DataUtils;
 import com.github.dedis.popstellar.utility.security.Hash;
 import com.google.gson.JsonParseException;
 
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import java.time.Instant;
 import java.util.Arrays;
@@ -21,6 +26,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.*;
 
+@RunWith(AndroidJUnit4.class)
 public class CreateLaoTest {
 
   private final String name = " Lao name";
@@ -29,6 +35,11 @@ public class CreateLaoTest {
   private final List<PublicKey> witnesses = Arrays.asList(generatePublicKey(), generatePublicKey());
   private final String id = Lao.generateLaoId(organizer, creation, name);
   private final CreateLao createLao = new CreateLao(id, name, creation, organizer, witnesses);
+
+  @Before
+  public void setup() {
+    JsonTestUtils.loadGSON(ApplicationProvider.getApplicationContext());
+  }
 
   @Test(expected = IllegalArgumentException.class)
   public void constructorFailsIdNotBase64Test() {
