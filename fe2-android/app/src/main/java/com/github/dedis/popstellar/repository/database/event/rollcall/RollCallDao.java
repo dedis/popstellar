@@ -2,6 +2,8 @@ package com.github.dedis.popstellar.repository.database.event.rollcall;
 
 import androidx.room.*;
 
+import com.github.dedis.popstellar.model.objects.RollCall;
+
 import java.util.List;
 import java.util.Set;
 
@@ -21,8 +23,9 @@ public interface RollCallDao {
    *
    * @param laoId identifier of the lao where to search the rollcalls
    * @param filteredIds ids of the rollcall to exclude from the search
-   * @return an emitter of a list of rollcall entities (entries in the db)
+   * @return an emitter of a list of rollcalls
    */
-  @Query("SELECT * FROM rollcalls WHERE lao_id = :laoId AND rollcall_id NOT IN (:filteredIds)")
-  Single<List<RollCallEntity>> getRollCallsByLaoId(String laoId, Set<String> filteredIds);
+  @Query(
+      "SELECT rollcall FROM rollcalls WHERE lao_id = :laoId AND rollcall_id NOT IN (:filteredIds)")
+  Single<List<RollCall>> getRollCallsByLaoId(String laoId, Set<String> filteredIds);
 }

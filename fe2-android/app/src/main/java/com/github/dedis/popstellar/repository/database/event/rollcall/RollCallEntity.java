@@ -28,6 +28,11 @@ public class RollCallEntity {
     this.rollCall = rollCall;
   }
 
+  @Ignore
+  public RollCallEntity(@NonNull String laoId, @NonNull RollCall rollCall) {
+    this(rollCall.getPersistentId(), laoId, rollCall);
+  }
+
   @NonNull
   public String getRollcallId() {
     return rollcallId;

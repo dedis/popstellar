@@ -28,13 +28,14 @@ public class JsonElectionSerializer
     long creation = jsonObject.get("creation").getAsLong();
     long start = jsonObject.get("start").getAsLong();
     long end = jsonObject.get("end").getAsLong();
-    String electionKey =
-        jsonObject.get("electionKey") == null ? null : jsonObject.get("electionKey").getAsString();
+    JsonElement electionKeyElement = jsonObject.get("electionKey");
+    String electionKey = electionKeyElement == null ? null : electionKeyElement.getAsString();
 
     // Deserialize the enums
     ElectionVersion electionVersion =
         ElectionVersion.valueOf(jsonObject.get("electionVersion").getAsString());
-    EventState state = EventState.valueOf(jsonObject.get("state").getAsString());
+    String stateString = jsonObject.get("state").getAsString();
+    EventState state = stateString.isEmpty() ? null : EventState.valueOf(stateString);
 
     // Deserialize collections
     JsonArray electionQuestionsJsonArray = jsonObject.get("electionQuestions").getAsJsonArray();
@@ -106,7 +107,8 @@ public class JsonElectionSerializer
     jsonObject.addProperty("end", election.getEndTimestamp());
     jsonObject.addProperty("electionKey", election.getElectionKey());
 
-    jsonObject.addProperty("state", election.getState().name());
+    EventState state = election.getState();
+    jsonObject.addProperty("state", state == null ? "" : state.name());
     jsonObject.addProperty("electionVersion", election.getElectionVersion().name());
 
     JsonArray electionQuestionsJsonArray = new JsonArray();

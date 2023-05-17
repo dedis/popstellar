@@ -2,6 +2,8 @@ package com.github.dedis.popstellar.repository.database.event.election;
 
 import androidx.room.*;
 
+import com.github.dedis.popstellar.model.objects.Election;
+
 import java.util.List;
 import java.util.Set;
 
@@ -21,8 +23,9 @@ public interface ElectionDao {
    *
    * @param laoId identifier of the lao where to search the elections
    * @param filteredIds ids of the election to exclude from the search
-   * @return an emitter of a list of election entities (entries in the db)
+   * @return an emitter of a list of elections
    */
-  @Query("SELECT * FROM elections WHERE lao_id = :laoId AND election_id NOT IN (:filteredIds)")
-  Single<List<ElectionEntity>> getElectionsByLaoId(String laoId, Set<String> filteredIds);
+  @Query(
+      "SELECT election FROM elections WHERE lao_id = :laoId AND election_id NOT IN (:filteredIds)")
+  Single<List<Election>> getElectionsByLaoId(String laoId, Set<String> filteredIds);
 }

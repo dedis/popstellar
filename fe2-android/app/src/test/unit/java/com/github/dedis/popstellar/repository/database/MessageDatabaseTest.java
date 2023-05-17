@@ -23,7 +23,7 @@ import io.reactivex.observers.TestObserver;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(AndroidJUnit4.class)
-public class MessageDatasetTest {
+public class MessageDatabaseTest {
 
   private static AppDatabase appDatabase;
   private static MessageDao messageDao;

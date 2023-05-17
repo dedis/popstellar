@@ -289,6 +289,48 @@ public class Election extends Event {
     return encryptedVotes;
   }
 
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    Election election = (Election) o;
+    return creation == election.creation
+        && start == election.start
+        && end == election.end
+        && Objects.equals(channel, election.channel)
+        && Objects.equals(id, election.id)
+        && Objects.equals(name, election.name)
+        && Objects.equals(electionQuestions, election.electionQuestions)
+        && Objects.equals(electionKey, election.electionKey)
+        && electionVersion == election.electionVersion
+        && Objects.equals(votesBySender, election.votesBySender)
+        && Objects.equals(messageMap, election.messageMap)
+        && state == election.state
+        && Objects.equals(results, election.results);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(
+        channel,
+        id,
+        name,
+        creation,
+        start,
+        end,
+        electionQuestions,
+        electionKey,
+        electionVersion,
+        votesBySender,
+        messageMap,
+        state,
+        results);
+  }
+
   @NonNull
   @Override
   public String toString() {

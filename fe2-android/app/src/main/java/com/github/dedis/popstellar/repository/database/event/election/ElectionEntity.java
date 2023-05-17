@@ -28,6 +28,12 @@ public class ElectionEntity {
     this.election = election;
   }
 
+  // Ignore the constructor for Room
+  @Ignore
+  public ElectionEntity(@NonNull Election election) {
+    this(election.getId(), election.getChannel().extractLaoId(), election);
+  }
+
   @NonNull
   public String getElectionId() {
     return electionId;

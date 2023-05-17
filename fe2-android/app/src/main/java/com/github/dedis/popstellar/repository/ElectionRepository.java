@@ -61,8 +61,7 @@ public class ElectionRepository {
    * @param election the election to update
    */
   public void updateElection(@NonNull Election election) {
-    ElectionEntity electionEntity =
-        new ElectionEntity(election.getId(), election.getChannel().extractLaoId(), election);
+    ElectionEntity electionEntity = new ElectionEntity(election);
     // Persist the election
     disposables.add(
         electionDao
@@ -136,7 +135,6 @@ public class ElectionRepository {
 
   private static final class LaoElections {
     private final String laoId;
-    private boolean retrievedFromDisk = false;
     private final Map<String, Election> electionById = new HashMap<>();
     private final Map<String, Subject<Election>> electionSubjects = new HashMap<>();
     private final BehaviorSubject<Set<Election>> electionsSubject =
@@ -169,28 +167,22 @@ public class ElectionRepository {
     public Observable<Set<Election>> getElectionsSubject(ElectionRepository repository) {
       // Load in memory the elections from the disk only when the user
       // clicks on the respective LAO, just needed one time only
-      if (!retrievedFromDisk) {
-        repository.disposables.add(
-            repository
-                .electionDao
-                .getElectionsByLaoId(laoId, electionById.keySet())
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                    elections ->
-                        elections.forEach(
-                            electionEntity -> {
-                              updateElection(electionEntity.getElection());
-                              Timber.tag(TAG)
-                                  .d(
-                                      "Retrieved from db election %s",
-                                      electionEntity.getElectionId());
-                            }),
-                    err ->
-                        Timber.tag(TAG)
-                            .e(err, "No election found in the storage for lao %s", laoId)));
-        retrievedFromDisk = true;
-      }
+      repository.disposables.add(
+          repository
+              .electionDao
+              .getElectionsByLaoId(laoId, electionById.keySet())
+              .subscribeOn(Schedulers.io())
+              .observeOn(AndroidSchedulers.mainThread())
+              .subscribe(
+                  elections ->
+                      elections.forEach(
+                          election -> {
+                            updateElection(election);
+                            Timber.tag(TAG).d("Retrieved from db election %s", election.getId());
+                          }),
+                  err ->
+                      Timber.tag(TAG)
+                          .e(err, "No election found in the storage for lao %s", laoId)));
       return electionsSubject;
     }
 

@@ -71,7 +71,7 @@ public class RollCallRepository {
     }
     Timber.tag(TAG).d("Updating roll call on lao %s : %s", laoId, rollCall);
 
-    RollCallEntity rollCallEntity = new RollCallEntity(rollCall.getPersistentId(), laoId, rollCall);
+    RollCallEntity rollCallEntity = new RollCallEntity(laoId, rollCall);
     // Persist the rollcall
     disposables.add(
         rollCallDao
@@ -157,7 +157,6 @@ public class RollCallRepository {
 
   private static final class LaoRollCalls {
     private final String laoId;
-    private boolean retrievedFromDisk = false;
     private final Map<String, RollCall> rollCallByPersistentId = new HashMap<>();
 
     // This maps a roll call id, which is state dependant,
@@ -230,28 +229,23 @@ public class RollCallRepository {
     public Observable<Set<RollCall>> getRollCallsSubject(RollCallRepository repository) {
       // Load in memory the rollcalls from the disk only when the user
       // clicks on the respective LAO, just needed one time only
-      if (!retrievedFromDisk) {
-        repository.disposables.add(
-            repository
-                .rollCallDao
-                .getRollCallsByLaoId(laoId, rollCallByPersistentId.keySet())
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                    rollcalls ->
-                        rollcalls.forEach(
-                            rollCallEntity -> {
-                              update(rollCallEntity.getRollCall());
-                              Timber.tag(TAG)
-                                  .d(
-                                      "Retrieved from db rollcall %s",
-                                      rollCallEntity.getRollcallId());
-                            }),
-                    err ->
-                        Timber.tag(TAG)
-                            .e(err, "No rollcall found in the storage for lao %s", laoId)));
-        retrievedFromDisk = true;
-      }
+      repository.disposables.add(
+          repository
+              .rollCallDao
+              .getRollCallsByLaoId(laoId, rollCallByPersistentId.keySet())
+              .subscribeOn(Schedulers.io())
+              .observeOn(AndroidSchedulers.mainThread())
+              .subscribe(
+                  rollcalls ->
+                      rollcalls.forEach(
+                          rollCall -> {
+                            update(rollCall);
+                            Timber.tag(TAG)
+                                .d("Retrieved from db rollcall %s", rollCall.getPersistentId());
+                          }),
+                  err ->
+                      Timber.tag(TAG)
+                          .e(err, "No rollcall found in the storage for lao %s", laoId)));
       return rollCallsSubject;
     }
 
