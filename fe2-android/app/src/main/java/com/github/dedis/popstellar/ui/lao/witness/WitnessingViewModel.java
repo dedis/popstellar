@@ -91,6 +91,8 @@ public class WitnessingViewModel extends AndroidViewModel implements QRCodeScann
     return new ArrayList<>(scannedWitnesses);
   }
 
+  public PublicKey getOwnPublicKey(){ return keyManager.getMainPublicKey(); }
+
   /*
   // TODO refactor this away
    This is done so because of the absence of witnessing repository. It should be added

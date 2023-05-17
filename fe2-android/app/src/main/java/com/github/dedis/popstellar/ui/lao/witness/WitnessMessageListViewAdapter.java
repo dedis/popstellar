@@ -114,7 +114,17 @@ public class WitnessMessageListViewAdapter extends BaseAdapter {
       Context context = parent.getContext();
       View.OnClickListener listener =
           setUpSignButtonClickListener(context, witnessMessage, binding.signMessageButton);
-      binding.signMessageButton.setOnClickListener(listener);
+
+      Set<PublicKey> witnessSignatures = witnessMessage.getWitnesses();
+
+      if(witnessSignatures.contains(witnessingViewModel.getOwnPublicKey())){
+        // The user already signed the message
+        binding.signMessageButton.setEnabled(false);
+        binding.signMessageButton.setText("Signed");
+      } else {
+        binding.signMessageButton.setOnClickListener(listener);
+      }
+
     } else {
       // Don't show the sign button if the user is not a witness
       binding.signMessageButton.setVisibility(View.GONE);
