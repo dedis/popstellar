@@ -117,7 +117,7 @@ public class WitnessMessageListViewAdapter extends BaseAdapter {
 
       Set<PublicKey> witnessSignatures = witnessMessage.getWitnesses();
 
-      if(witnessSignatures.contains(witnessingViewModel.getOwnPublicKey())){
+      if (witnessSignatures.contains(laoViewModel.getPublicKey())) {
         // The user already signed the message
         binding.signMessageButton.setEnabled(false);
         binding.signMessageButton.setText("Signed");
