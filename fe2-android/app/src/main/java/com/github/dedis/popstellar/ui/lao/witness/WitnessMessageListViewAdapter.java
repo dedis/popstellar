@@ -119,6 +119,8 @@ public class WitnessMessageListViewAdapter extends BaseAdapter {
         binding.signMessageButton.setEnabled(false);
         binding.signMessageButton.setText("Signed");
       } else {
+        binding.signMessageButton.setEnabled(true);
+        binding.signMessageButton.setText("Sign");
         View.OnClickListener listener =
             setUpSignButtonClickListener(context, witnessMessage, binding.signMessageButton);
         binding.signMessageButton.setOnClickListener(listener);
