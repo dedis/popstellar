@@ -1,7 +1,6 @@
 import { useContext } from 'react';
 
 import FeatureContext from 'core/contexts/FeatureContext';
-import { Hash } from 'core/objects';
 
 import { POPCHA_FEATURE_IDENTIFIER, PopchaReactContext } from '../interface';
 
@@ -17,6 +16,5 @@ export namespace PopchaHooks {
 
   export const useCurrentLaoId = () => usePopchaContext().useCurrentLaoId();
 
-  export const useGenerateToken = (laoId: Hash, clientId: Hash | undefined) =>
-    usePopchaContext().generateToken(laoId, clientId);
+  export const useGenerateToken = () => usePopchaContext().generateToken;
 }

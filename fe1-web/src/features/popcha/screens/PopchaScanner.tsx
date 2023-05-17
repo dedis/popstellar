@@ -31,7 +31,7 @@ const styles = StyleSheet.create({
  */
 const PopchaScanner = () => {
   const laoId = PopchaHooks.useCurrentLaoId();
-  const generateToken = PopchaHooks.useGenerateToken;
+  const generateToken = PopchaHooks.useGenerateToken();
 
   const [showScanner, setShowScanner] = useState(false);
   const [textScanned, setTextScanned] = useState('');
