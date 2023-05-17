@@ -43,7 +43,7 @@ public final class Lao implements Copyable<Lao> {
     this.id = id;
     keyToNode = new HashMap<>();
     messageIdToElectInstance = new HashMap<>();
-    witnessMessages = new HashMap<>();
+    witnessMessages = new LinkedHashMap<>();
     witnesses = new HashSet<>();
     pendingUpdates = new HashSet<>();
   }
@@ -77,7 +77,7 @@ public final class Lao implements Copyable<Lao> {
     this.organizer = organizer;
     this.modificationId = modificationId;
     this.witnesses = new HashSet<>(witnesses);
-    this.witnessMessages = new HashMap<>(witnessMessages);
+    this.witnessMessages = new LinkedHashMap<>(witnessMessages);
     this.pendingUpdates = new HashSet<>(pendingUpdates);
     this.messageIdToElectInstance = new HashMap<>(messageIdToElectInstance);
     this.keyToNode = Copyable.copy(keyToNode);
@@ -97,7 +97,7 @@ public final class Lao implements Copyable<Lao> {
     organizer = lao.organizer;
     modificationId = lao.modificationId;
     witnesses = new HashSet<>(lao.witnesses);
-    witnessMessages = new HashMap<>(lao.witnessMessages);
+    witnessMessages = new LinkedHashMap<>(lao.witnessMessages);
     pendingUpdates = new HashSet<>(lao.pendingUpdates);
     // FIXME We need to keep the ElectInstance because the current consensus relies on references
     // (Gabriel Fleischer 11.08.22)
