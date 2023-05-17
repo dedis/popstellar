@@ -212,7 +212,8 @@ public class WitnessMessageFragmentTest {
     onData(anything())
         .inAdapterView(witnessMessageListMatcher())
         .atPosition(0)
-        .check(matches(hasDescendant(withText(SIGNATURES_TEXT))));
+        .check(matches(hasDescendant(withSubstring(WITNESS1.getEncoded()))))
+        .check(matches(hasDescendant(withSubstring(WITNESS2.getEncoded()))));
   }
 
   private LaoActivity getLaoActivity() {
