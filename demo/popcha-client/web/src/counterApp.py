@@ -4,7 +4,6 @@ and  management
 """
 import secrets
 import time
-from os import path
 
 from flask import render_template
 from werkzeug.datastructures import MultiDict
