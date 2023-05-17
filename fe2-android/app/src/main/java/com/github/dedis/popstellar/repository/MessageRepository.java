@@ -47,13 +47,7 @@ public class MessageRepository {
   public MessageRepository(AppDatabase appDatabase, Application application) {
     messageDao = appDatabase.messageDao();
     Map<Lifecycle.Event, Consumer<Activity>> consumerMap = new EnumMap<>(Lifecycle.Event.class);
-    consumerMap.put(
-        Lifecycle.Event.ON_DESTROY,
-        activity -> {
-          if (!disposables.isDisposed()) {
-            disposables.dispose();
-          }
-        });
+    consumerMap.put(Lifecycle.Event.ON_STOP, activity -> disposables.clear());
     application.registerActivityLifecycleCallbacks(
         ActivityUtils.buildLifecycleCallback(consumerMap));
     loadCache();
@@ -61,23 +55,23 @@ public class MessageRepository {
 
   /** This function is called at creation to fill the cache asynchronously */
   private void loadCache() {
-    // disposables.add(
-    messageDao
-        .takeFirstNMessages(CACHED_MESSAGES)
-        .subscribeOn(Schedulers.io())
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(
-            messageEntities ->
-                messageEntities.forEach(
-                    msg ->
-                        messageCache.put(
-                            msg.getMessageId(),
-                            // Cache doesn't accept null as value, so an empty message is used
-                            // instead
-                            msg.getContent() == null
-                                ? MessageGeneral.emptyMessage()
-                                : msg.getContent())),
-            err -> Timber.tag(TAG).e(err, "Error loading message repository cache"));
+    disposables.add(
+        messageDao
+            .takeFirstNMessages(CACHED_MESSAGES)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                messageEntities ->
+                    messageEntities.forEach(
+                        msg ->
+                            messageCache.put(
+                                msg.getMessageId(),
+                                // Cache doesn't accept null as value, so an empty message is used
+                                // instead
+                                msg.getContent() == null
+                                    ? MessageGeneral.emptyMessage()
+                                    : msg.getContent())),
+                err -> Timber.tag(TAG).e(err, "Error loading message repository cache")));
   }
 
   public MessageGeneral getMessage(MessageID messageID) {
@@ -128,14 +122,14 @@ public class MessageRepository {
       messageCache.put(messageID, message == null ? MessageGeneral.emptyMessage() : message);
 
       // Add asynchronously the messages to the database
-      // disposables.add(
-      messageDao
-          .insert(new MessageEntity(messageID, message))
-          .subscribeOn(Schedulers.io())
-          .observeOn(AndroidSchedulers.mainThread())
-          .subscribe(
-              () -> Timber.tag(TAG).d("Persisted message %s", messageID),
-              err -> Timber.tag(TAG).e(err, "Error persisting the message %s", messageID));
+      disposables.add(
+          messageDao
+              .insert(new MessageEntity(messageID, message))
+              .subscribeOn(Schedulers.io())
+              .observeOn(AndroidSchedulers.mainThread())
+              .subscribe(
+                  () -> Timber.tag(TAG).d("Persisted message %s", messageID),
+                  err -> Timber.tag(TAG).e(err, "Error persisting the message %s", messageID)));
     }
   }
 

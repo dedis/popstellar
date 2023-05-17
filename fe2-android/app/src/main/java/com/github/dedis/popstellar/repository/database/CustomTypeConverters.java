@@ -53,6 +53,11 @@ public class CustomTypeConverters {
     return gson.fromJson(value, Election.class);
   }
 
+  @TypeConverter
+  public RollCall rollcallFromString(String value) {
+    return gson.fromJson(value, RollCall.class);
+  }
+
   /* ----  From Object to String  ---- */
   @TypeConverter
   public String messageToString(MessageGeneral messageGeneral) {
@@ -82,5 +87,10 @@ public class CustomTypeConverters {
   @TypeConverter
   public String electionToString(Election election) {
     return gson.toJson(election, Election.class);
+  }
+
+  @TypeConverter
+  public String rollcallToString(RollCall rollCall) {
+    return gson.toJson(rollCall, RollCall.class);
   }
 }

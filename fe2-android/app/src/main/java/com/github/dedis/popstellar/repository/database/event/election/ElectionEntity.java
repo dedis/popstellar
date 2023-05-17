@@ -4,17 +4,8 @@ import androidx.annotation.NonNull;
 import androidx.room.*;
 
 import com.github.dedis.popstellar.model.objects.Election;
-import com.github.dedis.popstellar.repository.database.lao.LAOEntity;
 
-@Entity(
-    tableName = "elections",
-    foreignKeys = {
-      @ForeignKey(
-          entity = LAOEntity.class,
-          parentColumns = "lao_id",
-          childColumns = "lao_id",
-          onDelete = ForeignKey.CASCADE)
-    })
+@Entity(tableName = "elections")
 public class ElectionEntity {
 
   @PrimaryKey

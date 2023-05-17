@@ -17,7 +17,7 @@ public interface ElectionDao {
   /**
    * This function is a query execution to search for elections that match a given lao but have
    * their ids different from a specified set to exclude (this represents the elections already in
-   * memory and useless to retrieve.
+   * memory and useless to retrieve).
    *
    * @param laoId identifier of the lao where to search the elections
    * @param filteredIds ids of the election to exclude from the search
@@ -25,7 +25,4 @@ public interface ElectionDao {
    */
   @Query("SELECT * FROM elections WHERE lao_id = :laoId AND election_id NOT IN (:filteredIds)")
   Single<List<ElectionEntity>> getElectionsByLaoId(String laoId, Set<String> filteredIds);
-
-  @Query("SELECT * FROM elections")
-  Single<List<ElectionEntity>> getAllElections();
 }

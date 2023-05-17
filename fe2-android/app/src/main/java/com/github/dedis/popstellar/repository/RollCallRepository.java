@@ -1,19 +1,31 @@
 package com.github.dedis.popstellar.repository;
 
+import android.app.Activity;
+import android.app.Application;
+
 import androidx.annotation.NonNull;
+import androidx.lifecycle.Lifecycle;
 
 import com.github.dedis.popstellar.model.objects.RollCall;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
+import com.github.dedis.popstellar.repository.database.AppDatabase;
+import com.github.dedis.popstellar.repository.database.event.rollcall.RollCallDao;
+import com.github.dedis.popstellar.repository.database.event.rollcall.RollCallEntity;
+import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.error.UnknownRollCallException;
 import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
 
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.BehaviorSubject;
 import io.reactivex.subjects.Subject;
 import timber.log.Timber;
@@ -28,12 +40,21 @@ import static java.util.Collections.unmodifiableSet;
  */
 @Singleton
 public class RollCallRepository {
+
   public static final String TAG = RollCallRepository.class.getSimpleName();
   private final Map<String, LaoRollCalls> rollCallsByLao = new HashMap<>();
 
+  private final RollCallDao rollCallDao;
+
+  private final CompositeDisposable disposables = new CompositeDisposable();
+
   @Inject
-  public RollCallRepository() {
-    // Constructor required by Hilt
+  public RollCallRepository(AppDatabase appDatabase, Application application) {
+    rollCallDao = appDatabase.rollCallDao();
+    Map<Lifecycle.Event, Consumer<Activity>> consumerMap = new EnumMap<>(Lifecycle.Event.class);
+    consumerMap.put(Lifecycle.Event.ON_STOP, activity -> disposables.clear());
+    application.registerActivityLifecycleCallbacks(
+        ActivityUtils.buildLifecycleCallback(consumerMap));
   }
 
   /**
@@ -49,6 +70,21 @@ public class RollCallRepository {
       throw new IllegalArgumentException("Roll call is null");
     }
     Timber.tag(TAG).d("Updating roll call on lao %s : %s", laoId, rollCall);
+
+    RollCallEntity rollCallEntity = new RollCallEntity(rollCall.getPersistentId(), laoId, rollCall);
+    // Persist the rollcall
+    disposables.add(
+        rollCallDao
+            .insert(rollCallEntity)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                () ->
+                    Timber.tag(TAG)
+                        .d("Successfully persisted rollcall %s", rollCall.getPersistentId()),
+                err ->
+                    Timber.tag(TAG)
+                        .e(err, "Error in persisting rollcall %s", rollCall.getPersistentId())));
 
     // Retrieve Lao data and add the roll call to it
     getLaoRollCalls(laoId).update(rollCall);
@@ -83,7 +119,7 @@ public class RollCallRepository {
    *     lao
    */
   public Observable<Set<RollCall>> getRollCallsObservableInLao(String laoId) {
-    return getLaoRollCalls(laoId).getRollCallsSubject();
+    return getLaoRollCalls(laoId).getRollCallsSubject(this);
   }
 
   /**
@@ -105,7 +141,7 @@ public class RollCallRepository {
 
   @NonNull
   private synchronized LaoRollCalls getLaoRollCalls(String laoId) {
-    return rollCallsByLao.computeIfAbsent(laoId, lao -> new LaoRollCalls());
+    return rollCallsByLao.computeIfAbsent(laoId, lao -> new LaoRollCalls(laoId));
   }
 
   /**
@@ -120,6 +156,8 @@ public class RollCallRepository {
   }
 
   private static final class LaoRollCalls {
+    private final String laoId;
+    private boolean retrievedFromDisk = false;
     private final Map<String, RollCall> rollCallByPersistentId = new HashMap<>();
 
     // This maps a roll call id, which is state dependant,
@@ -132,6 +170,10 @@ public class RollCallRepository {
     // This allows to observe the collection of roll calls as a whole
     private final Subject<Set<RollCall>> rollCallsSubject =
         BehaviorSubject.createDefault(unmodifiableSet(emptySet()));
+
+    public LaoRollCalls(String laoId) {
+      this.laoId = laoId;
+    }
 
     /**
      * This either updates the roll call in the repository or adds it if absent
@@ -185,7 +227,31 @@ public class RollCallRepository {
       }
     }
 
-    public Observable<Set<RollCall>> getRollCallsSubject() {
+    public Observable<Set<RollCall>> getRollCallsSubject(RollCallRepository repository) {
+      // Load in memory the rollcalls from the disk only when the user
+      // clicks on the respective LAO, just needed one time only
+      if (!retrievedFromDisk) {
+        repository.disposables.add(
+            repository
+                .rollCallDao
+                .getRollCallsByLaoId(laoId, rollCallByPersistentId.keySet())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                    rollcalls ->
+                        rollcalls.forEach(
+                            rollCallEntity -> {
+                              update(rollCallEntity.getRollCall());
+                              Timber.tag(TAG)
+                                  .d(
+                                      "Retrieved from db rollcall %s",
+                                      rollCallEntity.getRollcallId());
+                            }),
+                    err ->
+                        Timber.tag(TAG)
+                            .e(err, "No rollcall found in the storage for lao %s", laoId)));
+        retrievedFromDisk = true;
+      }
       return rollCallsSubject;
     }
 

@@ -53,10 +53,10 @@ public enum Objects {
     switch (object) {
       case "lao":
       case "election":
+      case "roll_call":
         return true;
         // TODO: add persistence for other repos in next PRs
       case "coin":
-      case "roll_call":
       case "meeting":
       case "consensus":
       case "chirp":

@@ -48,13 +48,7 @@ public class ElectionRepository {
   public ElectionRepository(AppDatabase appDatabase, Application application) {
     electionDao = appDatabase.electionDao();
     Map<Lifecycle.Event, Consumer<Activity>> consumerMap = new EnumMap<>(Lifecycle.Event.class);
-    consumerMap.put(
-        Lifecycle.Event.ON_DESTROY,
-        activity -> {
-          if (!disposables.isDisposed()) {
-            disposables.dispose();
-          }
-        });
+    consumerMap.put(Lifecycle.Event.ON_STOP, activity -> disposables.clear());
     application.registerActivityLifecycleCallbacks(
         ActivityUtils.buildLifecycleCallback(consumerMap));
   }
@@ -70,14 +64,15 @@ public class ElectionRepository {
     ElectionEntity electionEntity =
         new ElectionEntity(election.getId(), election.getChannel().extractLaoId(), election);
     // Persist the election
-    // disposables.add(
-    electionDao
-        .insert(electionEntity)
-        .subscribeOn(Schedulers.io())
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(
-            () -> Timber.tag(TAG).d("Successfully persisted election %s", election.getId()),
-            err -> Timber.tag(TAG).e(err, "Error in persisting election %s", election.getId()));
+    disposables.add(
+        electionDao
+            .insert(electionEntity)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                () -> Timber.tag(TAG).d("Successfully persisted election %s", election.getId()),
+                err ->
+                    Timber.tag(TAG).e(err, "Error in persisting election %s", election.getId())));
     getLaoElections(election.getChannel().extractLaoId()).updateElection(election);
   }
 
@@ -141,6 +136,7 @@ public class ElectionRepository {
 
   private static final class LaoElections {
     private final String laoId;
+    private boolean retrievedFromDisk = false;
     private final Map<String, Election> electionById = new HashMap<>();
     private final Map<String, Subject<Election>> electionSubjects = new HashMap<>();
     private final BehaviorSubject<Set<Election>> electionsSubject =
@@ -172,22 +168,29 @@ public class ElectionRepository {
 
     public Observable<Set<Election>> getElectionsSubject(ElectionRepository repository) {
       // Load in memory the elections from the disk only when the user
-      // clicks on the respective LAO
-      // repository.disposables.add(
-      repository
-          .electionDao
-          .getElectionsByLaoId(laoId, electionById.keySet())
-          .subscribeOn(Schedulers.io())
-          .observeOn(AndroidSchedulers.mainThread())
-          .subscribe(
-              elections ->
-                  elections.forEach(
-                      electionEntity -> {
-                        updateElection(electionEntity.getElection());
+      // clicks on the respective LAO, just needed one time only
+      if (!retrievedFromDisk) {
+        repository.disposables.add(
+            repository
+                .electionDao
+                .getElectionsByLaoId(laoId, electionById.keySet())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                    elections ->
+                        elections.forEach(
+                            electionEntity -> {
+                              updateElection(electionEntity.getElection());
+                              Timber.tag(TAG)
+                                  .d(
+                                      "Retrieved from db election %s",
+                                      electionEntity.getElectionId());
+                            }),
+                    err ->
                         Timber.tag(TAG)
-                            .d("Retrieved from db election %s", electionEntity.getElectionId());
-                      }),
-              err -> Timber.tag(TAG).e(err, "No election found in the storage for lao %s", laoId));
+                            .e(err, "No election found in the storage for lao %s", laoId)));
+        retrievedFromDisk = true;
+      }
       return electionsSubject;
     }
 
