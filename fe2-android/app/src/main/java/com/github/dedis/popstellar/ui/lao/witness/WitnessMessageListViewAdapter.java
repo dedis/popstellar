@@ -112,9 +112,6 @@ public class WitnessMessageListViewAdapter extends BaseAdapter {
 
     if (isWitness) {
       Context context = parent.getContext();
-      View.OnClickListener listener =
-          setUpSignButtonClickListener(context, witnessMessage, binding.signMessageButton);
-
       Set<PublicKey> witnessSignatures = witnessMessage.getWitnesses();
 
       if (witnessSignatures.contains(laoViewModel.getPublicKey())) {
@@ -122,6 +119,8 @@ public class WitnessMessageListViewAdapter extends BaseAdapter {
         binding.signMessageButton.setEnabled(false);
         binding.signMessageButton.setText("Signed");
       } else {
+        View.OnClickListener listener =
+            setUpSignButtonClickListener(context, witnessMessage, binding.signMessageButton);
         binding.signMessageButton.setOnClickListener(listener);
       }
 
