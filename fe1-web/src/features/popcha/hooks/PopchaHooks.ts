@@ -17,6 +17,5 @@ export namespace PopchaHooks {
 
   export const useCurrentLaoId = () => usePoPchaContext().useCurrentLaoId();
 
-  export const useGenerateToken = (laoId: Hash, clientId: Hash | undefined) =>
-    usePoPchaContext().generateToken(laoId, clientId);
+  export const useGenerateToken = () => usePoPchaContext().generateToken;
 }
