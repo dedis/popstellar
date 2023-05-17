@@ -1,5 +1,8 @@
 package com.github.dedis.popstellar.model.network.method.message.data.socialmedia;
 
+import androidx.test.core.app.ApplicationProvider;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+
 import com.github.dedis.popstellar.model.network.JsonTestUtils;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
@@ -7,12 +10,15 @@ import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.google.gson.JsonParseException;
 
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateMessageID;
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateMessageIDOtherThan;
 import static org.junit.Assert.*;
 
+@RunWith(AndroidJUnit4.class)
 public class NotifyAddChirpTest {
 
   private static final MessageID CHIRP_ID = generateMessageID();
@@ -21,6 +27,11 @@ public class NotifyAddChirpTest {
 
   private static final NotifyAddChirp NOTIFY_ADD_CHIRP =
       new NotifyAddChirp(CHIRP_ID, CHANNEL, TIMESTAMP);
+
+  @Before
+  public void setup() {
+    JsonTestUtils.loadGSON(ApplicationProvider.getApplicationContext());
+  }
 
   @Test
   public void getObjectTest() {

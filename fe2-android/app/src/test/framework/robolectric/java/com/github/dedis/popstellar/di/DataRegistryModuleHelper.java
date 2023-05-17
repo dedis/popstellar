@@ -1,17 +1,30 @@
 package com.github.dedis.popstellar.di;
 
+import android.content.Context;
+
+import androidx.test.core.app.ApplicationProvider;
+
 import com.github.dedis.popstellar.model.network.method.message.data.DataRegistry;
 import com.github.dedis.popstellar.repository.*;
+import com.github.dedis.popstellar.repository.database.AppDatabase;
 import com.github.dedis.popstellar.utility.handler.data.*;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 
 import org.mockito.Mockito;
 
+import javax.inject.Singleton;
+
 /** This class helps in the creation of the DataRegistry */
+@Singleton
 public class DataRegistryModuleHelper {
 
   public static DataRegistry buildRegistry() {
-    return buildRegistry(new LAORepository(), Mockito.mock(KeyManager.class));
+    Context applicationContext = ApplicationProvider.getApplicationContext();
+    return buildRegistry(
+        new LAORepository(
+            AppDatabaseModuleHelper.getAppDatabase(applicationContext),
+            ApplicationProvider.getApplicationContext()),
+        Mockito.mock(KeyManager.class));
   }
 
   public static DataRegistry buildRegistry(LAORepository laoRepository, KeyManager keyManager) {
@@ -22,7 +35,9 @@ public class DataRegistryModuleHelper {
         new RollCallRepository(),
         new MeetingRepository(),
         new DigitalCashRepository(),
-        new MessageRepository(),
+        new MessageRepository(
+            AppDatabaseModuleHelper.getAppDatabase(ApplicationProvider.getApplicationContext()),
+            ApplicationProvider.getApplicationContext()),
         keyManager,
         new ServerRepository());
   }
@@ -36,7 +51,9 @@ public class DataRegistryModuleHelper {
         rollCallRepo,
         new MeetingRepository(),
         new DigitalCashRepository(),
-        new MessageRepository(),
+        new MessageRepository(
+            AppDatabaseModuleHelper.getAppDatabase(ApplicationProvider.getApplicationContext()),
+            ApplicationProvider.getApplicationContext()),
         keyManager,
         new ServerRepository());
   }
@@ -50,7 +67,9 @@ public class DataRegistryModuleHelper {
         new RollCallRepository(),
         meetingRepo,
         new DigitalCashRepository(),
-        new MessageRepository(),
+        new MessageRepository(
+            AppDatabaseModuleHelper.getAppDatabase(ApplicationProvider.getApplicationContext()),
+            ApplicationProvider.getApplicationContext()),
         keyManager,
         new ServerRepository());
   }
@@ -64,7 +83,9 @@ public class DataRegistryModuleHelper {
         new RollCallRepository(),
         new MeetingRepository(),
         new DigitalCashRepository(),
-        new MessageRepository(),
+        new MessageRepository(
+            AppDatabaseModuleHelper.getAppDatabase(ApplicationProvider.getApplicationContext()),
+            ApplicationProvider.getApplicationContext()),
         keyManager,
         new ServerRepository());
   }
@@ -98,7 +119,9 @@ public class DataRegistryModuleHelper {
         rollCallRepo,
         new MeetingRepository(),
         new DigitalCashRepository(),
-        new MessageRepository(),
+        new MessageRepository(
+            AppDatabaseModuleHelper.getAppDatabase(ApplicationProvider.getApplicationContext()),
+            ApplicationProvider.getApplicationContext()),
         keyManager,
         new ServerRepository());
   }
@@ -122,14 +145,16 @@ public class DataRegistryModuleHelper {
 
   public static DataRegistry buildRegistry(
       DigitalCashRepository digitalCashRepo, KeyManager keyManager) {
+    AppDatabase appDatabase =
+        AppDatabaseModuleHelper.getAppDatabase(ApplicationProvider.getApplicationContext());
     return buildRegistry(
-        new LAORepository(),
+        new LAORepository(appDatabase, ApplicationProvider.getApplicationContext()),
         new SocialMediaRepository(),
         new ElectionRepository(),
         new RollCallRepository(),
         new MeetingRepository(),
         digitalCashRepo,
-        new MessageRepository(),
+        new MessageRepository(appDatabase, ApplicationProvider.getApplicationContext()),
         keyManager,
         new ServerRepository());
   }

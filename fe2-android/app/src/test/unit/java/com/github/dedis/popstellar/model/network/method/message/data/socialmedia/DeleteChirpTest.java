@@ -1,23 +1,34 @@
 package com.github.dedis.popstellar.model.network.method.message.data.socialmedia;
 
+import androidx.test.core.app.ApplicationProvider;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+
 import com.github.dedis.popstellar.model.network.JsonTestUtils;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.google.gson.JsonParseException;
 
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateMessageID;
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateMessageIDOtherThan;
 import static org.junit.Assert.*;
 
+@RunWith(AndroidJUnit4.class)
 public class DeleteChirpTest {
 
   private static final MessageID CHIRP_ID = generateMessageID();
   private static final long TIMESTAMP = 1631280815;
 
   private static final DeleteChirp DELETE_CHIRP = new DeleteChirp(CHIRP_ID, TIMESTAMP);
+
+  @Before
+  public void setup() {
+    JsonTestUtils.loadGSON(ApplicationProvider.getApplicationContext());
+  }
 
   @Test
   public void getObjectTest() {

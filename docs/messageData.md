@@ -436,7 +436,7 @@ Last but not least, the greeting message contains a list of peers that tells cli
 
 ```
 
-<details>
+</details>
 
 ```json5
 // ../protocol/query/method/message/data/dataGreetLao.json
