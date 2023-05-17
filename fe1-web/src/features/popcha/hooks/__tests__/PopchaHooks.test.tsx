@@ -31,10 +31,14 @@ describe('PoPcha hooks', () => {
   });
   describe('generateToken', () => {
     it('should return a token', async () => {
-      const { result } = renderHook(() => PopchaHooks.useGenerateToken({} as Hash, undefined), {
+      const { result } = renderHook(() => PopchaHooks.useGenerateToken(), {
         wrapper,
       });
-      await result.current.then((token) => expect(token).toEqual(mockPopToken)).catch(assert.fail);
+      await result
+        // call with mock params
+        .current({} as Hash, undefined)
+        .then((token) => expect(token).toEqual(mockPopToken))
+        .catch(assert.fail);
     });
   });
 });
