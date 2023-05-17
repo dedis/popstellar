@@ -19,16 +19,17 @@ class TestQuery:
         authentication = Authentication()
         url: str = authentication.get_url(
                 "server.example", "custom_lao_id",
+                "127.0.0.1",
+                8000,
                 "custom_client_id"
                 )
         generated_state = list(authentication.login_states.keys())[0]
         generated_nonce = authentication.login_states.get(generated_state)[0]
         reference = "https://server.example/authorize?response_mode=query" \
-                    "&response_type=id_token&client_id" \
-                    "=custom_client_id&redirect_uri=https%3A%2F%2Fserver" \
-                    ".example%2Fcb&scope=openid+profile&login_hint" \
-                    f"=custom_lao_id&nonce={generated_nonce}&state" \
-                    f"={generated_state}"
+                    "&response_type=id_token&client_id=custom_client_id&" \
+                    "redirect_uri=https%3A%2F%2F127.0.0.1%3A8000%2Fcb&scope=" \
+                    "openid+profile&login_hint=custom_lao_id&nonce=" \
+                    f"{generated_nonce}&state={generated_state}"
         assert reference == url
 
 
