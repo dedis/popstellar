@@ -2,7 +2,7 @@ package com.github.dedis.popstellar.model.objects;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
-import com.github.dedis.popstellar.model.network.JsonUtilsTest;
+import com.github.dedis.popstellar.model.network.JsonTestUtils;
 import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.*;
 import com.github.dedis.popstellar.model.objects.digitalcash.*;
 import com.github.dedis.popstellar.model.objects.security.*;
@@ -201,8 +201,8 @@ public class TransactionObjectTest {
   @Test
   public void computeIdTest() throws GeneralSecurityException {
     String path = "protocol/examples/messageData/coin/post_transaction_coinbase.json";
-    String validJson = JsonUtilsTest.loadFile(path);
-    PostTransactionCoin postTransactionModel = (PostTransactionCoin) JsonUtilsTest.parse(validJson);
+    String validJson = JsonTestUtils.loadFile(path);
+    PostTransactionCoin postTransactionModel = (PostTransactionCoin) JsonTestUtils.parse(validJson);
     Transaction transactionModel = postTransactionModel.getTransaction();
 
     TransactionObjectBuilder builder = getValidTransactionBuilder();

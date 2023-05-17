@@ -2,7 +2,7 @@ package com.github.dedis.popstellar.model.network.method.message.data.consensus;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
-import com.github.dedis.popstellar.model.network.JsonUtilsTest;
+import com.github.dedis.popstellar.model.network.JsonTestUtils;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
@@ -121,15 +121,15 @@ public class ConsensusPromiseTest {
 
   @Test
   public void jsonValidationTest() {
-    JsonUtilsTest.testData(promise);
+    JsonTestUtils.testData(promise);
 
     String dir = "protocol/examples/messageData/consensus_promise/";
-    String jsonInvalid1 = JsonUtilsTest.loadFile(dir + "wrong_promise_negative_created_at.json");
-    String jsonInvalid2 = JsonUtilsTest.loadFile(dir + "wrong_promise_negative_accepted_try.json");
-    String jsonInvalid3 = JsonUtilsTest.loadFile(dir + "wrong_promise_negative_promised_try.json");
+    String jsonInvalid1 = JsonTestUtils.loadFile(dir + "wrong_promise_negative_created_at.json");
+    String jsonInvalid2 = JsonTestUtils.loadFile(dir + "wrong_promise_negative_accepted_try.json");
+    String jsonInvalid3 = JsonTestUtils.loadFile(dir + "wrong_promise_negative_promised_try.json");
 
-    assertThrows(JsonParseException.class, () -> JsonUtilsTest.parse(jsonInvalid1));
-    assertThrows(JsonParseException.class, () -> JsonUtilsTest.parse(jsonInvalid2));
-    assertThrows(JsonParseException.class, () -> JsonUtilsTest.parse(jsonInvalid3));
+    assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid1));
+    assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid2));
+    assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid3));
   }
 }

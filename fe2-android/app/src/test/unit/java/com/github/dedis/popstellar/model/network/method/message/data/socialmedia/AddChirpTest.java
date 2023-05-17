@@ -2,7 +2,7 @@ package com.github.dedis.popstellar.model.network.method.message.data.socialmedi
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
-import com.github.dedis.popstellar.model.network.JsonUtilsTest;
+import com.github.dedis.popstellar.model.network.JsonTestUtils;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
@@ -74,11 +74,11 @@ public class AddChirpTest {
 
   @Test
   public void jsonValidationTest() {
-    JsonUtilsTest.testData(ADD_CHIRP);
+    JsonTestUtils.testData(ADD_CHIRP);
 
     String path =
         "protocol/examples/messageData/chirp_add_publish/wrong_chirp_add_publish_negative_time.json";
-    String invalidJson = JsonUtilsTest.loadFile(path);
-    assertThrows(JsonParseException.class, () -> JsonUtilsTest.parse(invalidJson));
+    String invalidJson = JsonTestUtils.loadFile(path);
+    assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(invalidJson));
   }
 }

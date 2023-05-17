@@ -2,7 +2,7 @@ package com.github.dedis.popstellar.model.network.method.message.data.election;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
-import com.github.dedis.popstellar.model.network.JsonUtilsTest;
+import com.github.dedis.popstellar.model.network.JsonTestUtils;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.testutils.Base64DataUtils;
@@ -74,27 +74,27 @@ public class ElectionKeyTest {
 
   @Test
   public void jsonValidationTest() {
-    JsonUtilsTest.testData(ELECTION_KEY1);
+    JsonTestUtils.testData(ELECTION_KEY1);
     String pathDir = "protocol/examples/messageData/election_key/";
-    String valid1 = JsonUtilsTest.loadFile(pathDir + "election_key.json");
-    JsonUtilsTest.parse(valid1);
+    String valid1 = JsonTestUtils.loadFile(pathDir + "election_key.json");
+    JsonTestUtils.parse(valid1);
 
     // Check that invalid data is rejected
     String jsonInvalid1 =
-        JsonUtilsTest.loadFile(pathDir + "wrong_election_key_additional_property.json");
+        JsonTestUtils.loadFile(pathDir + "wrong_election_key_additional_property.json");
     String jsonInvalid2 =
-        JsonUtilsTest.loadFile(pathDir + "wrong_election_key_missing_action.json");
+        JsonTestUtils.loadFile(pathDir + "wrong_election_key_missing_action.json");
     String jsonInvalid3 =
-        JsonUtilsTest.loadFile(pathDir + "wrong_election_key_missing_election.json");
+        JsonTestUtils.loadFile(pathDir + "wrong_election_key_missing_election.json");
     String jsonInvalid4 =
-        JsonUtilsTest.loadFile(pathDir + "wrong_election_key_missing_election_key.json");
+        JsonTestUtils.loadFile(pathDir + "wrong_election_key_missing_election_key.json");
     String jsonInvalid5 =
-        JsonUtilsTest.loadFile(pathDir + "wrong_election_key_missing_object.json");
+        JsonTestUtils.loadFile(pathDir + "wrong_election_key_missing_object.json");
 
-    assertThrows(JsonParseException.class, () -> JsonUtilsTest.parse(jsonInvalid1));
-    assertThrows(JsonParseException.class, () -> JsonUtilsTest.parse(jsonInvalid2));
-    assertThrows(JsonParseException.class, () -> JsonUtilsTest.parse(jsonInvalid3));
-    assertThrows(JsonParseException.class, () -> JsonUtilsTest.parse(jsonInvalid4));
-    assertThrows(JsonParseException.class, () -> JsonUtilsTest.parse(jsonInvalid5));
+    assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid1));
+    assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid2));
+    assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid3));
+    assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid4));
+    assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid5));
   }
 }

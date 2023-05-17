@@ -4,6 +4,7 @@ import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.github.dedis.popstellar.di.AppDatabaseModuleHelper;
+import com.github.dedis.popstellar.model.network.JsonTestUtils;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.CreateLao;
@@ -11,34 +12,24 @@ import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.repository.database.message.MessageDao;
 import com.github.dedis.popstellar.repository.database.message.MessageEntity;
 import com.github.dedis.popstellar.testutils.Base64DataUtils;
-import com.google.gson.Gson;
 
 import org.junit.*;
 import org.junit.runner.RunWith;
 
 import java.util.ArrayList;
 
-import javax.inject.Inject;
-
-import dagger.hilt.android.testing.HiltAndroidRule;
-import dagger.hilt.android.testing.HiltAndroidTest;
 import io.reactivex.observers.TestObserver;
 
 import static org.junit.Assert.assertEquals;
 
-@HiltAndroidTest
 @RunWith(AndroidJUnit4.class)
 public class MessageDatasetTest {
 
-  @Inject Gson gson;
   private static AppDatabase appDatabase;
   private static MessageDao messageDao;
 
-  @Rule public HiltAndroidRule hiltRule = new HiltAndroidRule(this);
-
   @Before
   public void before() {
-    hiltRule.inject();
     appDatabase =
         AppDatabaseModuleHelper.getAppDatabase(ApplicationProvider.getApplicationContext());
     messageDao = appDatabase.messageDao();
@@ -54,7 +45,7 @@ public class MessageDatasetTest {
     MessageID messageID = Base64DataUtils.generateMessageID();
     Data data = new CreateLao("name", Base64DataUtils.generatePublicKey(), new ArrayList<>());
     MessageGeneral messageGeneral =
-        new MessageGeneral(Base64DataUtils.generateKeyPair(), data, gson);
+        new MessageGeneral(Base64DataUtils.generateKeyPair(), data, JsonTestUtils.GSON);
     MessageEntity message = new MessageEntity(messageID, messageGeneral);
     TestObserver<Void> testObserver = messageDao.insert(message).test();
 

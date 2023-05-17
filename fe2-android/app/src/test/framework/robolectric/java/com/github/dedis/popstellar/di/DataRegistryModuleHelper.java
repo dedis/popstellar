@@ -1,6 +1,6 @@
 package com.github.dedis.popstellar.di;
 
-import android.content.Context;
+import android.app.Application;
 
 import androidx.test.core.app.ApplicationProvider;
 
@@ -18,26 +18,28 @@ import javax.inject.Singleton;
 @Singleton
 public class DataRegistryModuleHelper {
 
+  private static final Application application = ApplicationProvider.getApplicationContext();
+  private static final AppDatabase appDatabase =
+      AppDatabaseModuleHelper.getAppDatabase(application);
+
+  static {
+    appDatabase.close();
+  }
+
   public static DataRegistry buildRegistry() {
-    Context applicationContext = ApplicationProvider.getApplicationContext();
     return buildRegistry(
-        new LAORepository(
-            AppDatabaseModuleHelper.getAppDatabase(applicationContext),
-            ApplicationProvider.getApplicationContext()),
-        Mockito.mock(KeyManager.class));
+        new LAORepository(appDatabase, application), Mockito.mock(KeyManager.class));
   }
 
   public static DataRegistry buildRegistry(LAORepository laoRepository, KeyManager keyManager) {
     return buildRegistry(
         laoRepository,
         new SocialMediaRepository(),
-        new ElectionRepository(),
+        new ElectionRepository(appDatabase, application),
         new RollCallRepository(),
         new MeetingRepository(),
         new DigitalCashRepository(),
-        new MessageRepository(
-            AppDatabaseModuleHelper.getAppDatabase(ApplicationProvider.getApplicationContext()),
-            ApplicationProvider.getApplicationContext()),
+        new MessageRepository(appDatabase, application),
         keyManager,
         new ServerRepository());
   }
@@ -47,13 +49,11 @@ public class DataRegistryModuleHelper {
     return buildRegistry(
         laoRepository,
         new SocialMediaRepository(),
-        new ElectionRepository(),
+        new ElectionRepository(appDatabase, application),
         rollCallRepo,
         new MeetingRepository(),
         new DigitalCashRepository(),
-        new MessageRepository(
-            AppDatabaseModuleHelper.getAppDatabase(ApplicationProvider.getApplicationContext()),
-            ApplicationProvider.getApplicationContext()),
+        new MessageRepository(appDatabase, application),
         keyManager,
         new ServerRepository());
   }
@@ -63,13 +63,11 @@ public class DataRegistryModuleHelper {
     return buildRegistry(
         laoRepository,
         new SocialMediaRepository(),
-        new ElectionRepository(),
+        new ElectionRepository(appDatabase, application),
         new RollCallRepository(),
         meetingRepo,
         new DigitalCashRepository(),
-        new MessageRepository(
-            AppDatabaseModuleHelper.getAppDatabase(ApplicationProvider.getApplicationContext()),
-            ApplicationProvider.getApplicationContext()),
+        new MessageRepository(appDatabase, application),
         keyManager,
         new ServerRepository());
   }
@@ -83,9 +81,7 @@ public class DataRegistryModuleHelper {
         new RollCallRepository(),
         new MeetingRepository(),
         new DigitalCashRepository(),
-        new MessageRepository(
-            AppDatabaseModuleHelper.getAppDatabase(ApplicationProvider.getApplicationContext()),
-            ApplicationProvider.getApplicationContext()),
+        new MessageRepository(appDatabase, application),
         keyManager,
         new ServerRepository());
   }
@@ -115,13 +111,11 @@ public class DataRegistryModuleHelper {
     return buildRegistry(
         laoRepo,
         socialMediaRepo,
-        new ElectionRepository(),
+        new ElectionRepository(appDatabase, application),
         rollCallRepo,
         new MeetingRepository(),
         new DigitalCashRepository(),
-        new MessageRepository(
-            AppDatabaseModuleHelper.getAppDatabase(ApplicationProvider.getApplicationContext()),
-            ApplicationProvider.getApplicationContext()),
+        new MessageRepository(appDatabase, application),
         keyManager,
         new ServerRepository());
   }
@@ -134,7 +128,7 @@ public class DataRegistryModuleHelper {
     return buildRegistry(
         laoRepo,
         new SocialMediaRepository(),
-        new ElectionRepository(),
+        new ElectionRepository(appDatabase, application),
         new RollCallRepository(),
         new MeetingRepository(),
         new DigitalCashRepository(),
@@ -145,16 +139,14 @@ public class DataRegistryModuleHelper {
 
   public static DataRegistry buildRegistry(
       DigitalCashRepository digitalCashRepo, KeyManager keyManager) {
-    AppDatabase appDatabase =
-        AppDatabaseModuleHelper.getAppDatabase(ApplicationProvider.getApplicationContext());
     return buildRegistry(
-        new LAORepository(appDatabase, ApplicationProvider.getApplicationContext()),
+        new LAORepository(appDatabase, application),
         new SocialMediaRepository(),
-        new ElectionRepository(),
+        new ElectionRepository(appDatabase, application),
         new RollCallRepository(),
         new MeetingRepository(),
         digitalCashRepo,
-        new MessageRepository(appDatabase, ApplicationProvider.getApplicationContext()),
+        new MessageRepository(appDatabase, application),
         keyManager,
         new ServerRepository());
   }

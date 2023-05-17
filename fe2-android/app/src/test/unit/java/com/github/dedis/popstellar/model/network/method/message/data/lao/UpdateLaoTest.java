@@ -2,7 +2,7 @@ package com.github.dedis.popstellar.model.network.method.message.data.lao;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
-import com.github.dedis.popstellar.model.network.JsonUtilsTest;
+import com.github.dedis.popstellar.model.network.JsonTestUtils;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.objects.Lao;
@@ -123,19 +123,19 @@ public class UpdateLaoTest {
 
   @Test
   public void jsonValidationTest() {
-    JsonUtilsTest.testData(updateLao);
+    JsonTestUtils.testData(updateLao);
 
     String pathDir = "protocol/examples/messageData/lao_update/";
     String jsonInvalid1 =
-        JsonUtilsTest.loadFile(pathDir + "wrong_lao_update_additional_params.json");
-    String jsonInvalid2 = JsonUtilsTest.loadFile(pathDir + "wrong_lao_update_missing_params.json");
+        JsonTestUtils.loadFile(pathDir + "wrong_lao_update_additional_params.json");
+    String jsonInvalid2 = JsonTestUtils.loadFile(pathDir + "wrong_lao_update_missing_params.json");
     String jsonInvalid3 =
-        JsonUtilsTest.loadFile(pathDir + "bad_lao_update_negative_last_modified.json");
+        JsonTestUtils.loadFile(pathDir + "bad_lao_update_negative_last_modified.json");
     String jsonInvalid4 =
-        JsonUtilsTest.loadFile(pathDir + "bad_lao_update_witness_not_base64.json");
-    assertThrows(JsonParseException.class, () -> JsonUtilsTest.parse(jsonInvalid1));
-    assertThrows(JsonParseException.class, () -> JsonUtilsTest.parse(jsonInvalid2));
-    assertThrows(JsonParseException.class, () -> JsonUtilsTest.parse(jsonInvalid3));
-    assertThrows(JsonParseException.class, () -> JsonUtilsTest.parse(jsonInvalid4));
+        JsonTestUtils.loadFile(pathDir + "bad_lao_update_witness_not_base64.json");
+    assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid1));
+    assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid2));
+    assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid3));
+    assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid4));
   }
 }

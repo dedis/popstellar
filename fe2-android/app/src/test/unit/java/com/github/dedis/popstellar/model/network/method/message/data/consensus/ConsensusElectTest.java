@@ -2,7 +2,7 @@ package com.github.dedis.popstellar.model.network.method.message.data.consensus;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
-import com.github.dedis.popstellar.model.network.JsonUtilsTest;
+import com.github.dedis.popstellar.model.network.JsonTestUtils;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.utility.security.Hash;
@@ -78,10 +78,10 @@ public class ConsensusElectTest {
 
   @Test
   public void jsonValidationTest() {
-    JsonUtilsTest.testData(consensusElect);
+    JsonTestUtils.testData(consensusElect);
     String jsonInvalid =
-        JsonUtilsTest.loadFile(
+        JsonTestUtils.loadFile(
             "protocol/examples/messageData/consensus_elect/wrong_elect_negative_created_at.json");
-    assertThrows(JsonParseException.class, () -> JsonUtilsTest.parse(jsonInvalid));
+    assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid));
   }
 }

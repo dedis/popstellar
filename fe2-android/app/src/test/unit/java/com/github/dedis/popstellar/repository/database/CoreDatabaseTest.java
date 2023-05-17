@@ -13,13 +13,10 @@ import org.junit.runner.RunWith;
 
 import java.util.*;
 
-import dagger.hilt.android.testing.HiltAndroidRule;
-import dagger.hilt.android.testing.HiltAndroidTest;
 import io.reactivex.observers.TestObserver;
 
 import static org.junit.Assert.*;
 
-@HiltAndroidTest
 @RunWith(AndroidJUnit4.class)
 public class CoreDatabaseTest {
   private static AppDatabase appDatabase;
@@ -30,11 +27,8 @@ public class CoreDatabaseTest {
   private static final Set<Channel> CHANNELS =
       new HashSet<>(Collections.singletonList(Channel.ROOT));
 
-  @Rule public HiltAndroidRule hiltRule = new HiltAndroidRule(this);
-
   @Before
   public void before() {
-    hiltRule.inject();
     appDatabase =
         AppDatabaseModuleHelper.getAppDatabase(ApplicationProvider.getApplicationContext());
     coreDao = appDatabase.coreDao();

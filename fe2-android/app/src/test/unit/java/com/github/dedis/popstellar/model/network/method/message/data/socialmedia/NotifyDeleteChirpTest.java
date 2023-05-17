@@ -2,7 +2,7 @@ package com.github.dedis.popstellar.model.network.method.message.data.socialmedi
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
-import com.github.dedis.popstellar.model.network.JsonUtilsTest;
+import com.github.dedis.popstellar.model.network.JsonTestUtils;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
@@ -64,14 +64,14 @@ public class NotifyDeleteChirpTest {
 
   @Test
   public void jsonValidationTest() {
-    JsonUtilsTest.testData(NOTIFY_DELETE_CHIRP);
+    JsonTestUtils.testData(NOTIFY_DELETE_CHIRP);
 
     String pathDir = "protocol/examples/messageData/chirp_notify_delete/";
     String jsonInvalid1 =
-        JsonUtilsTest.loadFile(pathDir + "wrong_chirp_notify_delete_negative_time.json");
+        JsonTestUtils.loadFile(pathDir + "wrong_chirp_notify_delete_negative_time.json");
     String jsonInvalid2 =
-        JsonUtilsTest.loadFile(pathDir + "wrong_chirp_notify_delete_not_base_64_chirp_id.json");
-    assertThrows(JsonParseException.class, () -> JsonUtilsTest.parse(jsonInvalid1));
-    assertThrows(JsonParseException.class, () -> JsonUtilsTest.parse(jsonInvalid2));
+        JsonTestUtils.loadFile(pathDir + "wrong_chirp_notify_delete_not_base_64_chirp_id.json");
+    assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid1));
+    assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid2));
   }
 }

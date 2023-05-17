@@ -2,7 +2,7 @@ package com.github.dedis.popstellar.model.network.method.message.data.consensus;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
-import com.github.dedis.popstellar.model.network.JsonUtilsTest;
+import com.github.dedis.popstellar.model.network.JsonTestUtils;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
@@ -106,13 +106,13 @@ public class ConsensusAcceptTest {
 
   @Test
   public void jsonValidationTest() {
-    JsonUtilsTest.testData(accept);
+    JsonTestUtils.testData(accept);
 
     String pathDir = "protocol/examples/messageData/consensus_accept/";
-    String jsonInvalid1 = JsonUtilsTest.loadFile(pathDir + "wrong_accept_negative_created_at.json");
+    String jsonInvalid1 = JsonTestUtils.loadFile(pathDir + "wrong_accept_negative_created_at.json");
     String jsonInvalid2 =
-        JsonUtilsTest.loadFile(pathDir + "wrong_accept_negative_accepted_try.json");
-    assertThrows(JsonParseException.class, () -> JsonUtilsTest.parse(jsonInvalid1));
-    assertThrows(JsonParseException.class, () -> JsonUtilsTest.parse(jsonInvalid2));
+        JsonTestUtils.loadFile(pathDir + "wrong_accept_negative_accepted_try.json");
+    assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid1));
+    assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid2));
   }
 }

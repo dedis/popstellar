@@ -2,7 +2,7 @@ package com.github.dedis.popstellar.model.network.method.message.data.rollcall;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
-import com.github.dedis.popstellar.model.network.JsonUtilsTest;
+import com.github.dedis.popstellar.model.network.JsonTestUtils;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.objects.event.EventState;
@@ -73,7 +73,7 @@ public class CloseRollCallTest {
 
   @Test
   public void jsonValidationTest() {
-    JsonUtilsTest.testData(CLOSE_ROLL_CALL);
+    JsonTestUtils.testData(CLOSE_ROLL_CALL);
   }
 
   @Test

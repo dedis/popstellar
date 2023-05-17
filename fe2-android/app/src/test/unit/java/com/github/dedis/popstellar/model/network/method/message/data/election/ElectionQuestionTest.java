@@ -2,7 +2,7 @@ package com.github.dedis.popstellar.model.network.method.message.data.election;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
-import com.github.dedis.popstellar.model.network.JsonUtilsTest;
+import com.github.dedis.popstellar.model.network.JsonTestUtils;
 import com.github.dedis.popstellar.utility.security.Hash;
 
 import org.junit.Test;
@@ -79,6 +79,6 @@ public class ElectionQuestionTest {
 
   @Test
   public void jsonValidationTest() {
-    JsonUtilsTest.testData(ELECTION_SETUP);
+    JsonTestUtils.testData(ELECTION_SETUP);
   }
 }

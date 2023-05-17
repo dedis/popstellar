@@ -2,7 +2,7 @@ package com.github.dedis.popstellar.model.network.method.message.data.lao;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
-import com.github.dedis.popstellar.model.network.JsonUtilsTest;
+import com.github.dedis.popstellar.model.network.JsonTestUtils;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.objects.Lao;
@@ -116,21 +116,21 @@ public class CreateLaoTest {
 
   @Test
   public void jsonValidationTest() {
-    JsonUtilsTest.testData(createLao);
+    JsonTestUtils.testData(createLao);
 
     String pathDir = "protocol/examples/messageData/lao_create/";
     String jsonInvalid1 =
-        JsonUtilsTest.loadFile(pathDir + "wrong_lao_create_additional_params.json");
-    String jsonInvalid2 = JsonUtilsTest.loadFile(pathDir + "wrong_lao_create_missing_params.json");
-    String jsonInvalid3 = JsonUtilsTest.loadFile(pathDir + "bad_lao_create_creation_negative.json");
+        JsonTestUtils.loadFile(pathDir + "wrong_lao_create_additional_params.json");
+    String jsonInvalid2 = JsonTestUtils.loadFile(pathDir + "wrong_lao_create_missing_params.json");
+    String jsonInvalid3 = JsonTestUtils.loadFile(pathDir + "bad_lao_create_creation_negative.json");
     String jsonInvalid4 =
-        JsonUtilsTest.loadFile(pathDir + "bad_lao_create_organizer_not_base64.json");
+        JsonTestUtils.loadFile(pathDir + "bad_lao_create_organizer_not_base64.json");
     String jsonInvalid5 =
-        JsonUtilsTest.loadFile(pathDir + "bad_lao_create_witness_not_base64.json");
-    assertThrows(JsonParseException.class, () -> JsonUtilsTest.parse(jsonInvalid1));
-    assertThrows(JsonParseException.class, () -> JsonUtilsTest.parse(jsonInvalid2));
-    assertThrows(JsonParseException.class, () -> JsonUtilsTest.parse(jsonInvalid3));
-    assertThrows(JsonParseException.class, () -> JsonUtilsTest.parse(jsonInvalid4));
-    assertThrows(JsonParseException.class, () -> JsonUtilsTest.parse(jsonInvalid5));
+        JsonTestUtils.loadFile(pathDir + "bad_lao_create_witness_not_base64.json");
+    assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid1));
+    assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid2));
+    assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid3));
+    assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid4));
+    assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid5));
   }
 }
