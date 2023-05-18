@@ -63,6 +63,16 @@ public class CustomTypeConverters {
     return gson.fromJson(value, Meeting.class);
   }
 
+  @TypeConverter
+  public Chirp chirpFromString(String value) {
+    return gson.fromJson(value, Chirp.class);
+  }
+
+  @TypeConverter
+  public Reaction reactionFromString(String value) {
+    return gson.fromJson(value, Reaction.class);
+  }
+
   /* ----  From Object to String  ---- */
   @TypeConverter
   public String messageToString(MessageGeneral messageGeneral) {
@@ -102,5 +112,15 @@ public class CustomTypeConverters {
   @TypeConverter
   public String meetingToString(Meeting meeting) {
     return gson.toJson(meeting, Meeting.class);
+  }
+
+  @TypeConverter
+  public String chirpToString(Chirp chirp) {
+    return gson.toJson(chirp, Chirp.class);
+  }
+
+  @TypeConverter
+  public String reactionToString(Reaction reaction) {
+    return gson.toJson(reaction, Reaction.class);
   }
 }

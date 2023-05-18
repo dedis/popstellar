@@ -1,12 +1,16 @@
 package com.github.dedis.popstellar.repository;
 
+import android.app.Application;
+
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
+import com.github.dedis.popstellar.di.AppDatabaseModuleHelper;
 import com.github.dedis.popstellar.model.objects.Meeting;
+import com.github.dedis.popstellar.repository.database.AppDatabase;
 import com.github.dedis.popstellar.utility.error.UnknownMeetingException;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
 
 import java.util.*;
@@ -18,7 +22,11 @@ import static org.junit.Assert.assertTrue;
 
 @RunWith(AndroidJUnit4.class)
 public class MeetingRepositoryTest {
-  private static final MeetingRepository meetingRepository = new MeetingRepository();
+  private static final Application APPLICATION = ApplicationProvider.getApplicationContext();
+  private static final AppDatabase APP_DATABASE =
+      AppDatabaseModuleHelper.getAppDatabase(APPLICATION);
+  private static final MeetingRepository meetingRepository =
+      new MeetingRepository(APP_DATABASE, APPLICATION);
   private static final String LAO_ID = "LAO_ID";
   private static final String ID = "ID";
   private static final String NAME = "MEETING_NAME";
@@ -44,6 +52,11 @@ public class MeetingRepositoryTest {
   @Before
   public void setUp() {
     meetingRepository.updateMeeting(LAO_ID, meeting);
+  }
+
+  @After
+  public void tearDown() {
+    APP_DATABASE.close();
   }
 
   @Test

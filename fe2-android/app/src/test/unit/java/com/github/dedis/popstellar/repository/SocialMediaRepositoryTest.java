@@ -1,12 +1,19 @@
 package com.github.dedis.popstellar.repository;
 
+import android.app.Application;
+
+import androidx.test.core.app.ApplicationProvider;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+
+import com.github.dedis.popstellar.di.AppDatabaseModuleHelper;
 import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
+import com.github.dedis.popstellar.repository.database.AppDatabase;
 import com.github.dedis.popstellar.utility.error.UnknownChirpException;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
+import org.junit.runner.RunWith;
 
 import java.time.Instant;
 import java.util.HashSet;
@@ -20,8 +27,12 @@ import static java.util.Collections.addAll;
 import static java.util.Collections.emptySet;
 import static org.junit.Assert.*;
 
+@RunWith(AndroidJUnit4.class)
 public class SocialMediaRepositoryTest {
 
+  private static final Application APPLICATION = ApplicationProvider.getApplicationContext();
+  private static final AppDatabase APP_DATABASE =
+      AppDatabaseModuleHelper.getAppDatabase(APPLICATION);
   private static final String LAO_ID = Lao.generateLaoId(generatePublicKey(), 1000, "LAO");
 
   private static final PublicKey SENDER = generatePublicKey();
@@ -48,7 +59,12 @@ public class SocialMediaRepositoryTest {
 
   @Before
   public void setup() {
-    repo = new SocialMediaRepository();
+    repo = new SocialMediaRepository(APP_DATABASE, APPLICATION);
+  }
+
+  @After
+  public void tearDown() {
+    APP_DATABASE.close();
   }
 
   @Test

@@ -48,6 +48,8 @@ public class JsonModule {
         .registerTypeAdapter(Election.class, new JsonElectionSerializer())
         .registerTypeAdapter(RollCall.class, new JsonRollCallSerializer())
         .registerTypeAdapter(Meeting.class, new JsonMeetingSerializer())
+        .registerTypeAdapter(Reaction.class, new JsonReactionSerializer())
+        .registerTypeAdapter(Chirp.class, new JsonChirpSerializer())
         // Base64URLData serializers
         .registerTypeAdapter(
             Base64URLData.class, new JsonBase64DataSerializer<>(Base64URLData::new))

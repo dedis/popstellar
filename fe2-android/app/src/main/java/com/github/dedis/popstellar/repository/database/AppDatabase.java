@@ -4,8 +4,6 @@ import androidx.room.*;
 
 import com.github.dedis.popstellar.repository.database.core.CoreDao;
 import com.github.dedis.popstellar.repository.database.core.CoreEntity;
-import com.github.dedis.popstellar.repository.database.digitalcash.DigitalCashDao;
-import com.github.dedis.popstellar.repository.database.digitalcash.DigitalCashEntity;
 import com.github.dedis.popstellar.repository.database.event.election.ElectionDao;
 import com.github.dedis.popstellar.repository.database.event.election.ElectionEntity;
 import com.github.dedis.popstellar.repository.database.event.meeting.MeetingDao;
@@ -16,6 +14,7 @@ import com.github.dedis.popstellar.repository.database.lao.LAODao;
 import com.github.dedis.popstellar.repository.database.lao.LAOEntity;
 import com.github.dedis.popstellar.repository.database.message.MessageDao;
 import com.github.dedis.popstellar.repository.database.message.MessageEntity;
+import com.github.dedis.popstellar.repository.database.socialmedia.*;
 
 import javax.inject.Singleton;
 
@@ -28,7 +27,8 @@ import javax.inject.Singleton;
       ElectionEntity.class,
       RollCallEntity.class,
       MeetingEntity.class,
-      DigitalCashEntity.class
+      ChirpEntity.class,
+      ReactionEntity.class
     },
     version = 2)
 @TypeConverters(CustomTypeConverters.class)
@@ -45,5 +45,7 @@ public abstract class AppDatabase extends RoomDatabase {
 
   public abstract MeetingDao meetingDao();
 
-  public abstract DigitalCashDao digitalCashDao();
+  public abstract ChirpDao chirpDao();
+
+  public abstract ReactionDao reactionDao();
 }
