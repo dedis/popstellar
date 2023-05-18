@@ -30,7 +30,7 @@ import javax.inject.Singleton;
       ChirpEntity.class,
       ReactionEntity.class
     },
-    version = 2)
+    version = 1)
 @TypeConverters(CustomTypeConverters.class)
 public abstract class AppDatabase extends RoomDatabase {
   public abstract MessageDao messageDao();
