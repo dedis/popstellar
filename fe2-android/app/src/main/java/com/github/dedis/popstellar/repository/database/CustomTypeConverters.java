@@ -58,6 +58,11 @@ public class CustomTypeConverters {
     return gson.fromJson(value, RollCall.class);
   }
 
+  @TypeConverter
+  public Meeting meetingFromString(String value) {
+    return gson.fromJson(value, Meeting.class);
+  }
+
   /* ----  From Object to String  ---- */
   @TypeConverter
   public String messageToString(MessageGeneral messageGeneral) {
@@ -92,5 +97,10 @@ public class CustomTypeConverters {
   @TypeConverter
   public String rollcallToString(RollCall rollCall) {
     return gson.toJson(rollCall, RollCall.class);
+  }
+
+  @TypeConverter
+  public String meetingToString(Meeting meeting) {
+    return gson.toJson(meeting, Meeting.class);
   }
 }

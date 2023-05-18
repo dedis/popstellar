@@ -1,4 +1,4 @@
-package com.github.dedis.popstellar.model.network.serializer;
+package com.github.dedis.popstellar.model.network.serializer.database;
 
 import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.security.MessageID;

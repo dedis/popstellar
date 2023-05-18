@@ -4,8 +4,12 @@ import androidx.room.*;
 
 import com.github.dedis.popstellar.repository.database.core.CoreDao;
 import com.github.dedis.popstellar.repository.database.core.CoreEntity;
+import com.github.dedis.popstellar.repository.database.digitalcash.DigitalCashDao;
+import com.github.dedis.popstellar.repository.database.digitalcash.DigitalCashEntity;
 import com.github.dedis.popstellar.repository.database.event.election.ElectionDao;
 import com.github.dedis.popstellar.repository.database.event.election.ElectionEntity;
+import com.github.dedis.popstellar.repository.database.event.meeting.MeetingDao;
+import com.github.dedis.popstellar.repository.database.event.meeting.MeetingEntity;
 import com.github.dedis.popstellar.repository.database.event.rollcall.RollCallDao;
 import com.github.dedis.popstellar.repository.database.event.rollcall.RollCallEntity;
 import com.github.dedis.popstellar.repository.database.lao.LAODao;
@@ -22,9 +26,11 @@ import javax.inject.Singleton;
       LAOEntity.class,
       CoreEntity.class,
       ElectionEntity.class,
-      RollCallEntity.class
+      RollCallEntity.class,
+      MeetingEntity.class,
+      DigitalCashEntity.class
     },
-    version = 1)
+    version = 2)
 @TypeConverters(CustomTypeConverters.class)
 public abstract class AppDatabase extends RoomDatabase {
   public abstract MessageDao messageDao();
@@ -36,4 +42,8 @@ public abstract class AppDatabase extends RoomDatabase {
   public abstract ElectionDao electionDao();
 
   public abstract RollCallDao rollCallDao();
+
+  public abstract MeetingDao meetingDao();
+
+  public abstract DigitalCashDao digitalCashDao();
 }

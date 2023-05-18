@@ -14,7 +14,7 @@ import io.reactivex.Single;
 public interface RollCallDao {
 
   @Insert(onConflict = OnConflictStrategy.REPLACE)
-  Completable insert(RollCallEntity electionEntity);
+  Completable insert(RollCallEntity rollCallEntity);
 
   /**
    * This function is a query execution to search for rollcalls that match a given lao but have

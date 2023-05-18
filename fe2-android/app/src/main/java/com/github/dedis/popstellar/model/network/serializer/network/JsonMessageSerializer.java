@@ -1,6 +1,7 @@
-package com.github.dedis.popstellar.model.network.serializer;
+package com.github.dedis.popstellar.model.network.serializer.network;
 
 import com.github.dedis.popstellar.model.network.method.*;
+import com.github.dedis.popstellar.model.network.serializer.JsonUtils;
 import com.google.gson.*;
 
 import java.lang.reflect.Type;

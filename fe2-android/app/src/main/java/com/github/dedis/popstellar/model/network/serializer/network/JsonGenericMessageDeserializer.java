@@ -1,4 +1,4 @@
-package com.github.dedis.popstellar.model.network.serializer;
+package com.github.dedis.popstellar.model.network.serializer.network;
 
 import com.github.dedis.popstellar.model.network.GenericMessage;
 import com.github.dedis.popstellar.model.network.answer.Answer;
