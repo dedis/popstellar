@@ -22,7 +22,6 @@ export function configureFeatures() {
   // configure features
   const eventConfiguration = events.configure();
   const walletConfiguration = wallet.configure();
-  const digitalCashConfiguration = digitalCash.configure();
 
   const notificationConfiguration = notification.configure();
   const laoConfiguration = lao.configure({ registry: messageRegistry });
@@ -167,12 +166,7 @@ export function configureFeatures() {
     /* connect */
     encodeLaoConnectionForQRCode: homeComposition.functions.encodeLaoConnectionForQRCode,
     /* navigation */
-    laoNavigationScreens: [
-      ...socialConfiguration.laoScreens,
-      ...notificationConfiguration.laoScreens,
-      ...walletComposition.laoScreens,
-      ...digitalCashConfiguration.laoScreens,
-    ],
+    laoNavigationScreens: [...socialConfiguration.laoScreens, ...walletComposition.laoScreens],
     eventsNavigationScreens: [
       ...eventConfiguration.laoEventScreens,
       ...meetingConfiguration.laoEventScreens,
