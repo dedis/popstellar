@@ -1,8 +1,10 @@
 package ch.epfl.pop.decentralized
 
-import akka.actor.ActorSystem
+import akka.actor.{ActorRef, ActorSystem}
 import akka.stream.scaladsl.Source
 import akka.testkit.{TestKit, TestProbe}
+import ch.epfl.pop.config.RuntimeEnvironment.serverPeersListPath
+import ch.epfl.pop.config.RuntimeEnvironmentTestingHelper.testWriteToServerPeersConfig
 import ch.epfl.pop.model.network.method.ParamsWithMap
 import ch.epfl.pop.model.network.{JsonRpcRequest, MethodType}
 import ch.epfl.pop.pubsub.graph.validators.RpcValidator
@@ -10,6 +12,9 @@ import org.scalatest.BeforeAndAfterAll
 import org.scalatest.funsuite.{AnyFunSuiteLike => FunSuiteLike}
 import org.scalatest.matchers.should.Matchers
 import util.examples.JsonRpcRequestExample
+
+import java.io.{File, PrintWriter}
+import java.nio.file.Path
 import scala.concurrent.duration.DurationInt
 
 class MonitorSuite extends TestKit(ActorSystem("MonitorSuiteActorSystem")) with FunSuiteLike with Matchers with BeforeAndAfterAll {
@@ -98,5 +103,40 @@ class MonitorSuite extends TestKit(ActorSystem("MonitorSuiteActorSystem")) with 
     // Connect a server and check for heartbeats again
     testProbe.send(monitorRef, Monitor.AtLeastOneServerConnected)
     testProbe.expectMsgType[Monitor.GenerateAndSendHeartbeat](timeout)
+  }
+
+  test("monitor should send ConnectTo() requests to ConnectionMediator upon relevant config file change") {
+    val mockConnectionMediator = TestProbe()
+    val monitorRef = system.actorOf(Monitor.props(ActorRef.noSender))
+
+    // Ping monitor to inform it of ConnectionMediatorRef
+    mockConnectionMediator.send(monitorRef, ConnectionMediator.Ping())
+
+    // Expect no message as long as the server peers list is untouched
+    mockConnectionMediator.expectNoMessage(timeout)
+
+    val newContent = List("some", "strings")
+    testWriteToServerPeersConfig(newContent)
+
+    mockConnectionMediator.expectMsgType[ConnectionMediator.ConnectTo](timeout)
+  }
+
+  test("monitor should not react upon non relevant events in config directory") {
+    val mockConnectionMediator = TestProbe()
+    val monitorRef = system.actorOf(Monitor.props(ActorRef.noSender))
+
+    // Ping monitor to inform it of ConnectionMediatorRef
+    mockConnectionMediator.send(monitorRef, ConnectionMediator.Ping())
+
+    // Create new file in the directory
+    val filePath = Path.of(serverPeersListPath).getParent.toString + File.separator + "DELETE_ME"
+    val file = new PrintWriter(filePath)
+    file.write("Hello")
+    file.close()
+
+    // Set the file we created to delete itself after the jvm shutdown
+    new File(filePath).deleteOnExit()
+
+    mockConnectionMediator.expectNoMessage(timeout)
   }
 }
