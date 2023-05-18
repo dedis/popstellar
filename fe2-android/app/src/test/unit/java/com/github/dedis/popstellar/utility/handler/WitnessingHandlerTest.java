@@ -91,7 +91,7 @@ public class WitnessingHandlerTest {
     LAO = new Lao(CREATE_LAO.getName(), CREATE_LAO.getOrganizer(), CREATE_LAO.getCreation());
     LAO.setLastModified(LAO.getCreation());
     LAO.setWitnesses(new HashSet<>(CREATE_LAO.getWitnesses()));
-    LAO.updateWitnessMessage(MESSAGE_ID, WITNESS_MESSAGE);
+    LAO.addWitnessMessage(WITNESS_MESSAGE);
 
     // Add the LAO to the LAORepository
     laoRepo.updateLao(LAO);
@@ -161,7 +161,7 @@ public class WitnessingHandlerTest {
     MessageGeneral message = new MessageGeneral(invalidKeyPair, witnessMessageSignature, gson);
 
     assertThrows(
-        InvalidWitnessException.class,
+        InvalidWitnessingException.class,
         () -> messageHandler.handleMessage(messageSender, LAO_CHANNEL, message));
   }
 
@@ -188,7 +188,7 @@ public class WitnessingHandlerTest {
     MessageGeneral message = new MessageGeneral(ORGANIZER_KEY, witnessMessageSignature, gson);
 
     assertThrows(
-        InvalidWitnessMessageException.class,
+        InvalidWitnessingException.class,
         () -> messageHandler.handleMessage(messageSender, LAO_CHANNEL, message));
   }
 }

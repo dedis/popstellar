@@ -37,14 +37,14 @@ public class WitnessingHandler {
 
     // Check that the sender of the message is a witness
     if (!laoView.getWitnesses().contains(witnessPk)) {
-      throw new InvalidWitnessException(witnessMessageSignature, witnessPk);
+      throw new InvalidWitnessingException(witnessMessageSignature, witnessPk);
     }
 
     // Check that a witness message with the given message id exists in the lao
     MessageID messageID = witnessMessageSignature.getMessageId();
     WitnessMessage witnessMessage = laoView.getWitnessMessages().get(messageID);
     if (witnessMessage == null) {
-      throw new InvalidWitnessMessageException(witnessMessageSignature, messageID);
+      throw new InvalidWitnessingException(witnessMessageSignature, messageID);
     }
 
     // Check that the signature of the message id is correct
@@ -55,7 +55,7 @@ public class WitnessingHandler {
 
     witnessMessage.addWitness(witnessPk);
     Lao lao = laoView.createLaoCopy();
-    lao.updateWitnessMessage(messageID, witnessMessage);
+    lao.addWitnessMessage(witnessMessage);
 
     laoRepo.updateLao(lao);
   }

@@ -92,7 +92,7 @@ public final class ElectionHandler {
     Timber.tag(TAG).d("election id %s", election.getId());
 
     Lao lao = laoView.createLaoCopy();
-    lao.updateWitnessMessage(messageId, electionSetupWitnessMessage(messageId, election));
+    lao.addWitnessMessage(electionSetupWitnessMessage(messageId, election));
     laoRepo.updateLao(lao);
   }
 

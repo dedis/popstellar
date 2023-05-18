@@ -117,10 +117,12 @@ public class WitnessMessageListViewAdapter extends BaseAdapter {
       if (witnessSignatures.contains(laoViewModel.getPublicKey())) {
         // The user already signed the message
         binding.signMessageButton.setEnabled(false);
-        binding.signMessageButton.setText("Signed");
+        String signed = activity.getString(R.string.signed);
+        binding.signMessageButton.setText(signed);
       } else {
         binding.signMessageButton.setEnabled(true);
-        binding.signMessageButton.setText("Sign");
+        String sign = activity.getString(R.string.sign);
+        binding.signMessageButton.setText(sign);
         View.OnClickListener listener =
             setUpSignButtonClickListener(context, witnessMessage, binding.signMessageButton);
         binding.signMessageButton.setOnClickListener(listener);
@@ -158,7 +160,8 @@ public class WitnessMessageListViewAdapter extends BaseAdapter {
                           () -> {
                             Timber.tag(TAG).d("Witness message successfully signed");
                             button.setEnabled(false);
-                            button.setText("Signed");
+                            String signed = activity.getString(R.string.signed);
+                            button.setText(signed);
                           },
                           error ->
                               ErrorUtils.logAndShow(

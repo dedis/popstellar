@@ -125,7 +125,7 @@ public class LaoTest {
   public void witnessMapTest() {
     MessageID messageID = new MessageID("foo");
     WitnessMessage witnessMessage = new WitnessMessage(messageID);
-    LAO_1.updateWitnessMessage(messageID, witnessMessage);
+    LAO_1.addWitnessMessage(witnessMessage);
     assertEquals(LAO_1.getWitnessMessages().get(messageID), witnessMessage);
   }
 }
