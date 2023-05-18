@@ -1,9 +1,9 @@
 package ch.epfl.pop.config
 
 import java.io.File
-
 import com.typesafe.config.{Config, ConfigFactory}
 
+import scala.io.Source.fromFile
 import scala.reflect.io.Directory
 import scala.sys.SystemProperties
 
@@ -40,7 +40,28 @@ object RuntimeEnvironment {
     }
   }
 
-  private lazy val appConfFile = getConfDir + File.separator + "application.conf"
+  private def testMode: Boolean = {
+    val testParam = sp("test")
+    if (testParam != null && testParam.trim.nonEmpty) {
+      testParam.toLowerCase match {
+        case "true" => true
+        case _      => false
+      }
+    } else {
+      false
+    }
+  }
+
+  private lazy val confDir: String = getConfDir
+  private lazy val appConfFile = confDir + File.separator + "application.conf"
+
+  lazy val isTestMode: Boolean = testMode
+  lazy val serverPeersList: String =
+    if (isTestMode) {
+      confDir + File.separator + "server-peers-list-TEST.conf"
+    } else {
+      confDir + File.separator + "server-peers-list.conf"
+    }
 
   lazy val appConf: Config = ConfigFactory.parseFile(new File(appConfFile))
 
