@@ -10,9 +10,9 @@ object RuntimeEnvironmentTestingHelper {
     }
   }
 
-  def testWriteToServerPeersConfig(list: List[String], path: String): Unit = {
+  def testWriteToServerPeersConfig(list: List[String]): Unit = {
     ensureTestingMode()
-    val file = new BufferedWriter(new FileWriter(path))
+    val file = new BufferedWriter(new FileWriter(RuntimeEnvironment.serverPeersList))
     list.foreach {
       str =>
         file.write(str)

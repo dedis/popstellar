@@ -16,7 +16,7 @@ class RuntimeEnvironmentSuite extends FunSuite {
       "ws://127.0.0.1:9000/client"
     )
 
-    testWriteToServerPeersConfig(addressList, RuntimeEnvironment.serverPeersList)
+    testWriteToServerPeersConfig(addressList)
 
     // Verify it works as expected
     readServerPeers() should equal(addressList.tail)
