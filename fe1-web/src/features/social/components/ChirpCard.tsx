@@ -27,6 +27,7 @@ import {
 } from '../network/SocialMessageApi';
 import { Chirp } from '../objects';
 import { makeReactedSelector, makeReactionCountsSelector } from '../reducer';
+import chirpCardPolyfill from './ChirpCardPolyfill';
 
 type NavigationProps = CompositeScreenProps<
   StackScreenProps<
@@ -85,6 +86,9 @@ const ChirpCard = ({ chirp, isFirstItem, isLastItem }: IPropTypes) => {
   const isConnected = SocialHooks.useConnectedToLao();
   const navigation = useNavigation<NavigationProps['navigation']>();
 
+  // This ensures that long chirps are not cut off (by adding css style word-break: break-word)
+  chirpCardPolyfill();
+
   const { currentUserPopTokenPublicKey } = useContext(SocialMediaContext);
 
   if (laoId === undefined) {
@@ -111,6 +115,7 @@ const ChirpCard = ({ chirp, isFirstItem, isLastItem }: IPropTypes) => {
     '👍': !isConnected || !currentUserPopTokenPublicKey,
     '👎': !isConnected || !currentUserPopTokenPublicKey,
     '❤️': !isConnected || !currentUserPopTokenPublicKey,
+    delete: !isConnected || !currentUserPopTokenPublicKey,
   };
   const addReaction = (reaction_codepoint: string) => {
     requestAddReaction(reaction_codepoint, chirp.id, laoId).catch((err) => {
@@ -264,6 +269,7 @@ const ChirpCard = ({ chirp, isFirstItem, isLastItem }: IPropTypes) => {
                     name="delete"
                     testID="delete_chirp"
                     onPress={() => setShowDeleteConfirmation(true)}
+                    disabled={reactionsDisabled.delete}
                     size="small"
                     buttonStyle="secondary"
                     toolbar
