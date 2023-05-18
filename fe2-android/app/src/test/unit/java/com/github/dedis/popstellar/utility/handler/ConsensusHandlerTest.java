@@ -1,7 +1,11 @@
 package com.github.dedis.popstellar.utility.handler;
 
-import com.github.dedis.popstellar.di.DataRegistryModuleHelper;
-import com.github.dedis.popstellar.di.JsonModule;
+import android.content.Context;
+
+import androidx.test.core.app.ApplicationProvider;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+
+import com.github.dedis.popstellar.di.*;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.DataRegistry;
@@ -11,18 +15,18 @@ import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.security.*;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.MessageRepository;
+import com.github.dedis.popstellar.repository.database.AppDatabase;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.utility.error.*;
 import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.mockito.internal.util.collections.Sets;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -38,7 +42,7 @@ import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(AndroidJUnit4.class)
 public class ConsensusHandlerTest {
 
   private static final KeyPair ORGANIZER_KEY = generateKeyPair();
@@ -72,6 +76,7 @@ public class ConsensusHandlerTest {
   private LAORepository laoRepo;
   private MessageHandler messageHandler;
   private Gson gson;
+  private AppDatabase appDatabase;
 
   private MessageGeneral electMsg;
   private MessageID messageId;
@@ -83,14 +88,19 @@ public class ConsensusHandlerTest {
   public void setup()
       throws GeneralSecurityException, DataHandlingException, IOException, UnknownLaoException,
           UnknownRollCallException, UnknownElectionException, NoRollCallException {
+    MockitoAnnotations.openMocks(this);
+    Context context = ApplicationProvider.getApplicationContext();
+    appDatabase = AppDatabaseModuleHelper.getAppDatabase(context);
+
     lenient().when(keyManager.getMainKeyPair()).thenReturn(ORGANIZER_KEY);
     lenient().when(keyManager.getMainPublicKey()).thenReturn(ORGANIZER);
 
     when(messageSender.subscribe(any())).then(args -> Completable.complete());
 
-    laoRepo = new LAORepository();
+    laoRepo = new LAORepository(appDatabase, ApplicationProvider.getApplicationContext());
     DataRegistry dataRegistry = DataRegistryModuleHelper.buildRegistry(laoRepo, keyManager);
-    MessageRepository messageRepo = new MessageRepository();
+    MessageRepository messageRepo =
+        new MessageRepository(appDatabase, ApplicationProvider.getApplicationContext());
     gson = JsonModule.provideGson(dataRegistry);
     messageHandler = new MessageHandler(messageRepo, dataRegistry);
 
@@ -100,6 +110,12 @@ public class ConsensusHandlerTest {
 
     electMsg = getMsg(NODE_2_KEY, elect);
     messageId = electMsg.getMessageId();
+  }
+
+  @After
+  public void tearDown() {
+    appDatabase.clearAllTables();
+    appDatabase.close();
   }
 
   /**

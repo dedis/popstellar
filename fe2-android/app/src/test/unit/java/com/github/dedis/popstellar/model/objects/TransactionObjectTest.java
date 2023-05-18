@@ -1,12 +1,17 @@
 package com.github.dedis.popstellar.model.objects;
 
+import androidx.test.core.app.ApplicationProvider;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+
 import com.github.dedis.popstellar.model.network.JsonTestUtils;
 import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.*;
 import com.github.dedis.popstellar.model.objects.digitalcash.*;
 import com.github.dedis.popstellar.model.objects.security.*;
 import com.github.dedis.popstellar.utility.security.Hash;
 
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import java.security.GeneralSecurityException;
 import java.util.*;
@@ -14,9 +19,15 @@ import java.util.*;
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
 import static org.junit.Assert.*;
 
+@RunWith(AndroidJUnit4.class)
 public class TransactionObjectTest {
   KeyPair senderKey = generateKeyPair();
   PublicKey sender = senderKey.getPublicKey();
+
+  @Before
+  public void setup() {
+    JsonTestUtils.loadGSON(ApplicationProvider.getApplicationContext());
+  }
 
   @Test
   public void getChannelTest() throws GeneralSecurityException {

@@ -144,14 +144,15 @@ public final class LaoHandler {
    */
   @SuppressLint("CheckResult")
   public void handleStateLao(HandlerContext context, StateLao stateLao)
-      throws DataHandlingException, UnknownLaoException {
+      throws UnknownLaoException, InvalidMessageIdException, InvalidSignatureException {
     Channel channel = context.getChannel();
 
     Timber.tag(TAG).d("Receive State Lao Broadcast msg: %s", stateLao);
     LaoView laoView = laoRepo.getLaoViewByChannel(channel);
 
     Timber.tag(TAG).d("Receive State Lao Broadcast %s", stateLao.getName());
-    if (!messageRepo.isMessagePresent(stateLao.getModificationId())) {
+
+    if (!messageRepo.isMessagePresent(stateLao.getModificationId(), true)) {
       Timber.tag(TAG).d("Can't find modification id : %s", stateLao.getModificationId());
       // queue it if we haven't received the update message yet
       throw new InvalidMessageIdException(stateLao, stateLao.getModificationId());

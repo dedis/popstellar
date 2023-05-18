@@ -15,6 +15,8 @@ import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.RollCallRepository;
+import com.github.dedis.popstellar.repository.database.AppDatabase;
+import com.github.dedis.popstellar.repository.database.core.CoreDao;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.ui.PopViewModel;
 import com.github.dedis.popstellar.utility.ActivityUtils;
@@ -58,6 +60,7 @@ public class LaoViewModel extends AndroidViewModel implements PopViewModel {
   private final GlobalNetworkManager networkManager;
   private final KeyManager keyManager;
   private final Wallet wallet;
+  private final CoreDao coreDao;
 
   @Inject
   public LaoViewModel(
@@ -66,13 +69,15 @@ public class LaoViewModel extends AndroidViewModel implements PopViewModel {
       RollCallRepository rollCallRepo,
       GlobalNetworkManager networkManager,
       KeyManager keyManager,
-      Wallet wallet) {
+      Wallet wallet,
+      AppDatabase appDatabase) {
     super(application);
     this.laoRepo = laoRepository;
     this.rollCallRepo = rollCallRepo;
     this.networkManager = networkManager;
     this.keyManager = keyManager;
     this.wallet = wallet;
+    this.coreDao = appDatabase.coreDao();
   }
 
   @Override
@@ -188,9 +193,11 @@ public class LaoViewModel extends AndroidViewModel implements PopViewModel {
     disposables.dispose();
   }
 
-  public void savePersistentData() throws GeneralSecurityException {
-    ActivityUtils.activitySavingRoutine(
-        networkManager, wallet, getApplication().getApplicationContext());
+  public void saveCoreData() throws GeneralSecurityException {
+    Disposable toDispose = ActivityUtils.activitySavingRoutine(networkManager, wallet, coreDao);
+    if (toDispose != null) {
+      addDisposable(toDispose);
+    }
   }
 
   protected Role determineRole() {

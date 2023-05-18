@@ -1,15 +1,30 @@
 package com.github.dedis.popstellar.repository;
 
+import android.app.Activity;
+import android.app.Application;
+
+import androidx.lifecycle.Lifecycle;
+
 import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
+import com.github.dedis.popstellar.repository.database.AppDatabase;
+import com.github.dedis.popstellar.repository.database.lao.LAODao;
+import com.github.dedis.popstellar.repository.database.lao.LAOEntity;
+import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.BehaviorSubject;
 import io.reactivex.subjects.Subject;
 import timber.log.Timber;
@@ -19,8 +34,10 @@ public class LAORepository {
 
   private static final String TAG = LAORepository.class.getSimpleName();
 
-  private final Map<String, Lao> laoById = new HashMap<>();
-  private final Map<String, Subject<LaoView>> subjectById = new HashMap<>();
+  private final LAODao laoDao;
+
+  private final ConcurrentHashMap<String, Lao> laoById = new ConcurrentHashMap<>();
+  private final ConcurrentHashMap<String, Subject<LaoView>> subjectById = new ConcurrentHashMap<>();
   private final BehaviorSubject<List<String>> laosSubject = BehaviorSubject.create();
 
   // ============ Lao Unrelated data ===============
@@ -29,9 +46,53 @@ public class LAORepository {
   private final Map<Channel, BehaviorSubject<List<ConsensusNode>>> channelToNodesSubject =
       new HashMap<>();
 
+  private final CompositeDisposable disposables = new CompositeDisposable();
+
   @Inject
-  public LAORepository() {
-    // Constructor required by Hilt
+  public LAORepository(AppDatabase appDatabase, Application application) {
+    laoDao = appDatabase.laoDao();
+    Map<Lifecycle.Event, Consumer<Activity>> consumerMap = new EnumMap<>(Lifecycle.Event.class);
+    consumerMap.put(
+        Lifecycle.Event.ON_DESTROY,
+        activity -> {
+          if (!disposables.isDisposed()) {
+            disposables.dispose();
+          }
+        });
+    application.registerActivityLifecycleCallbacks(
+        ActivityUtils.buildLifecycleCallback(consumerMap));
+    loadPersistentStorage();
+  }
+
+  /**
+   * This functions is called on start to load all the laos in memory as they must be displayed in
+   * the home list. Given the fact that we load every lao in memory at the beginning a cache is not
+   * necessary. This is also possible memory-wise as usually the number of laos is very limited.
+   * This call is asynchronous so it's performed in background not blocking the main thread.
+   */
+  private void loadPersistentStorage() {
+    disposables.add(
+        laoDao
+            .getAllLaos()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                laos -> {
+                  if (laos.isEmpty()) {
+                    Timber.tag(TAG).d("No LAO has been found in the database");
+                    return;
+                  }
+                  laos.forEach(
+                      lao -> {
+                        laoById.put(lao.getId(), lao);
+                        subjectById.put(
+                            lao.getId(), BehaviorSubject.createDefault(new LaoView(lao)));
+                      });
+                  List<String> laoIds = laos.stream().map(Lao::getId).collect(Collectors.toList());
+                  laosSubject.onNext(laoIds);
+                  Timber.tag(TAG).d("Loaded all the LAOs from database: %s", laoIds);
+                },
+                err -> Timber.tag(TAG).e(err, "Error loading the LAOs from the database")));
   }
 
   /**
@@ -67,7 +128,17 @@ public class LAORepository {
   public LaoView getLaoView(String id) throws UnknownLaoException {
     Lao lao = laoById.get(id);
     if (lao == null) {
-      throw new UnknownLaoException(id);
+      // In some Android devices after putting the application in the
+      // background or locking the screen it happens that the lao is not found.
+      // This could be due to the ram being cleared, so a I/O check could help avoiding this
+      // scenario.
+      Lao laoFromDb = laoDao.getLaoById(id);
+      if (laoFromDb == null) {
+        throw new UnknownLaoException(id);
+      } else {
+        // Restore the lao
+        updateLao(laoFromDb);
+      }
     }
 
     return new LaoView(lao);
@@ -78,11 +149,23 @@ public class LAORepository {
   }
 
   public synchronized void updateLao(Lao lao) {
-    Timber.tag(TAG).d("updating Lao %s", lao);
+    Timber.tag(TAG).d("Updating Lao %s", lao);
     if (lao == null) {
       throw new IllegalArgumentException();
     }
+
     LaoView laoView = new LaoView(lao);
+    LAOEntity laoEntity = new LAOEntity(lao.getId(), lao);
+
+    // Update the persistent storage in background (replace if already existing)
+    disposables.add(
+        laoDao
+            .insert(laoEntity)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                () -> Timber.tag(TAG).d("Persisted Lao %s", lao),
+                err -> Timber.tag(TAG).e(err, "Error persisting Lao %s", lao)));
 
     if (laoById.containsKey(lao.getId())) {
       // If the lao already exists, we can push the next update
@@ -99,6 +182,17 @@ public class LAORepository {
       laosSubject.onNext(new ArrayList<>(laoById.keySet()));
       subjectById.put(lao.getId(), BehaviorSubject.createDefault(laoView));
     }
+  }
+
+  /**
+   * This function removes from the home all the laos displayed when the user wants to clear the
+   * data storage. The maps are automatically cleared by the intent flags.
+   */
+  public void clearRepository() {
+    Timber.tag(TAG).d("Clearing LAORepository");
+    laoById.clear();
+    subjectById.clear();
+    laosSubject.onNext(new ArrayList<>());
   }
 
   // ============ Lao Unrelated functions ===============

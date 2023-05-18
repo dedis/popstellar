@@ -652,8 +652,8 @@ func (h *fakeHub) GetPubKeyServ() kyber.Point {
 	return h.pubKeyServ
 }
 
-// GetServerAddress implements channel.HubFunctionalities
-func (h *fakeHub) GetServerAddress() string {
+// GetClientServerAddress implements channel.HubFunctionalities
+func (h *fakeHub) GetClientServerAddress() string {
 	return ""
 }
 
@@ -668,6 +668,11 @@ func (h *fakeHub) Sign(data []byte) ([]byte, error) {
 
 // NotifyWitnessMessage implements channel.HubFunctionalities
 func (h *fakeHub) NotifyWitnessMessage(messageId string, publicKey string, signature string) {}
+
+// GetPeersInfo implements channel.HubFunctionalities
+func (h *fakeHub) GetPeersInfo() []method.ServerInfo {
+	return nil
+}
 
 func (h *fakeHub) GetSchemaValidator() validation.SchemaValidator {
 	return *h.schemaValidator
