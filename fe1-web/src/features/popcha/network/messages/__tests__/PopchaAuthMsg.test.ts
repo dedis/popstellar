@@ -1,3 +1,4 @@
+import { validateDataObject } from 'core/network/validation';
 import { Hash, ProtocolError } from 'core/objects';
 
 import { PopchaAuthMsg } from '../PopchaAuthMsg';
@@ -9,6 +10,20 @@ const IDENTIFIER = new Hash('mock-identifier');
 const IDENTIFIER_PROOF = new Hash('mock-identifier-proof');
 const STATE = 'state';
 const RESPONSE_MODE = 'response-mode';
+
+const VALID_POPCHA_AUTH_MSG = {
+  client_id: CLIENT_ID,
+  nonce: NONCE,
+  popcha_address: POPCHA_ADDRESS,
+  identifier: IDENTIFIER,
+  identifier_proof: IDENTIFIER_PROOF,
+  state: STATE,
+  response_mode: RESPONSE_MODE,
+};
+
+jest.mock('core/network/validation', () => ({
+  validateDataObject: jest.fn(),
+}));
 
 describe('PopchaAuthMsg', () => {
   describe('constructor', () => {
@@ -107,6 +122,17 @@ describe('PopchaAuthMsg', () => {
             popcha_address: POPCHA_ADDRESS,
           }),
       ).not.toThrow(ProtocolError);
+    });
+  });
+
+  describe('from JSON', () => {
+    it('invalid JSON should throw an error', () => {
+      (validateDataObject as jest.Mock).mockReturnValue({ errors: 'error' });
+      expect(() => PopchaAuthMsg.fromJson('invalid')).toThrow(ProtocolError);
+    });
+    it('valid JSON should return a PopchaAuthMsg', () => {
+      (validateDataObject as jest.Mock).mockReturnValue({ errors: null });
+      expect(PopchaAuthMsg.fromJson(VALID_POPCHA_AUTH_MSG)).toBeInstanceOf(PopchaAuthMsg);
     });
   });
 });

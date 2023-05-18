@@ -125,6 +125,12 @@ describe('Popcha scanner', () => {
       await testInvalidUrl(url.toString());
     });
 
+    it('url with invalid scope shows error message', async () => {
+      const url = new URL(mockUrl.toString());
+      url.searchParams.set('scope', 'invalid');
+      await testInvalidUrl(url.toString());
+    });
+
     it('url with invalid response_type shows error message', async () => {
       const url = new URL(mockUrl.toString());
       url.searchParams.set('response_type', 'scope invalid response type');

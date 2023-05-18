@@ -46,4 +46,26 @@ describe('PopchaMessageApi', () => {
     });
     expect(mockPopToken.sign(new Base64UrlData(mockNonce))).toEqual(message.identifier_proof);
   });
+
+  it('should create correct message with null state and response mode', async () => {
+    await sendPopchaAuthRequest(
+      mockClientId,
+      mockNonce,
+      mockPopchaAddress,
+      null,
+      null,
+      mockLaoId,
+      mockGenerateToken,
+    );
+
+    expect(publishMock).toHaveBeenCalledTimes(1);
+    const [channel, message] = publishMock.mock.calls[0];
+    expect(channel).toBe(`/root/${mockLaoId}/authentication`);
+    expect(message).toMatchObject({
+      client_id: mockClientId.toString(),
+      nonce: mockNonce,
+      identifier: mockPopToken.publicKey,
+      popcha_address: mockPopchaAddress,
+    });
+  });
 });
