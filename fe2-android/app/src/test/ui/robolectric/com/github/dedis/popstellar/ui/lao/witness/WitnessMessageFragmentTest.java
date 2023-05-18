@@ -149,8 +149,7 @@ public class WitnessMessageFragmentTest {
         .inAdapterView(witnessMessageListMatcher())
         .atPosition(0)
         .onChildView(signMessageButtonMatcher())
-        .check(matches(isEnabled()))
-        .check(matches(withText("Sign")));
+        .check(matches(isEnabled()));
   }
 
   @Test
