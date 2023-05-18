@@ -22,29 +22,32 @@ class Authentication:
         self.providers: list = []
         self.login_states: dict[(str, str, float)] = {}
 
-    def get_url(self, server: str, lao_id: str, client_id: str) -> str:
+    def get_url(self, auth_server:str, lao_id: str, host_server: str, 
+                host_port: str | int, client_id: str) -> str:
         """
         Generates the url to contact the authentication server. It contains all
         the information required by the authentication server
-        :param server: The current server domain
+        :param auth_server: The auth server domain
         :param lao_id: The LAO ID the user wants to connect with
+        :param host_server: The current host server
+        :param host_port: The port the host server is running on
         :param client_id: The unique identifier of this client
         :return: A url to the authentication server
         """
         nonce = secrets.token_urlsafe(64)
         state = secrets.token_urlsafe(64)
-        self.login_states[state] = (nonce, server, time.time())
+        self.login_states[state] = (nonce, auth_server, time.time())
         parameters = {
             "response_mode": "query",
             "response_type": "id_token",
             "client_id": client_id,
-            "redirect_uri": f"https://{server}/cb",
+            "redirect_uri": f"https://{host_server}:{str(host_port)}/cb",
             "scope": "openid profile",
             "login_hint": lao_id,
             "nonce": nonce,
             "state": state
             }
-        return f"https://{server}/authorize?{parse.urlencode(parameters)}"
+        return f"https://{auth_server}/authorize?{parse.urlencode(parameters)}"
 
     def validate_args(self, args: MultiDict[str, str], client_id: str) \
             -> str | None:

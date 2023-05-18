@@ -149,8 +149,9 @@ def authentication() -> Response:
     url = authenticationProvider.get_url(
             authenticationProvider.providers[provider_id]["domain"],
             authenticationProvider.providers[provider_id]["lao_id"],
-            config["client_id"]
-            )
+            config["host_url"],
+            config["host_port"],
+            config["client_id"])
     return redirect(url)
 
 
