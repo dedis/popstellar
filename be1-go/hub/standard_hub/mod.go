@@ -617,6 +617,13 @@ func (h *Hub) NotifyNewChannel(channelID string, channel channel.Channel, sock s
 	h.Unlock()
 }
 
+// NotifyWitnessMessage implements channel.HubFunctionalities
+func (h *Hub) NotifyWitnessMessage(messageId string, publicKey string, signature string) {
+	h.Lock()
+	h.hubInbox.AddWitnessSignature(messageId, publicKey, signature)
+	h.Unlock()
+}
+
 func (h *Hub) GetPeersInfo() []method.ServerInfo {
 	h.Lock()
 	defer h.Unlock()

@@ -293,7 +293,7 @@ func (c *Channel) processLaoState(rawMessage message.Message, msgData interface{
 		err := schnorr.VerifyWithChecks(crypto.Suite, []byte(pair.Witness),
 			[]byte(data.ModificationID), []byte(pair.Signature))
 		if err != nil {
-			return answer.NewErrorf(-4, "signature verfication failed for witness: %s",
+			return answer.NewErrorf(-4, "signature verification failed for witness: %s",
 				pair.Witness)
 		}
 	}
@@ -478,7 +478,6 @@ func (c *Channel) processElectionObject(msg message.Message, msgData interface{}
 // processMessageWitness handles a message object.
 func (c *Channel) processMessageWitness(msg message.Message, msgData interface{},
 	_ socket.Socket) error {
-
 	_, ok := msgData.(*messagedata.MessageWitness)
 	if !ok {
 		return xerrors.Errorf("message %v isn't a message#witness message", msgData)
@@ -491,16 +490,28 @@ func (c *Channel) processMessageWitness(msg message.Message, msgData interface{}
 		return xerrors.Errorf("failed to unmarshal witness data: %v", err)
 	}
 
-	err = schnorr.VerifyWithChecks(crypto.Suite, []byte(msg.Sender), []byte(witnessData.MessageID),
-		[]byte(witnessData.Signature))
+	senderPkDecoded, err := base64.URLEncoding.DecodeString(msg.Sender)
+	if err != nil {
+		return xerrors.Errorf("failed to decode sender public key: %v", err)
+	}
+
+	messageIdDecoded, err := base64.URLEncoding.DecodeString(witnessData.MessageID)
+	if err != nil {
+		return xerrors.Errorf("failed to decode message id: %v", err)
+	}
+
+	signatureDecoded, err := base64.URLEncoding.DecodeString(witnessData.Signature)
+	if err != nil {
+		return xerrors.Errorf("failed to decode witness signature: %v", err)
+	}
+
+	err = schnorr.VerifyWithChecks(crypto.Suite, senderPkDecoded, messageIdDecoded, signatureDecoded)
 	if err != nil {
 		return answer.NewError(-4, "invalid witness signature")
 	}
 
-	err = c.inbox.AddWitnessSignature(witnessData.MessageID, msg.Sender, witnessData.Signature)
-	if err != nil {
-		return xerrors.Errorf("failed to add witness signature: %w", err)
-	}
+	c.inbox.AddWitnessSignature(witnessData.MessageID, msg.Sender, witnessData.Signature)
+	c.hub.NotifyWitnessMessage(witnessData.MessageID, msg.Sender, witnessData.Signature)
 
 	return nil
 }

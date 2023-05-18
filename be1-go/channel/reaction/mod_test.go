@@ -666,6 +666,9 @@ func (h *fakeHub) Sign(data []byte) ([]byte, error) {
 	return signatureBuf, nil
 }
 
+// NotifyWitnessMessage implements channel.HubFunctionalities
+func (h *fakeHub) NotifyWitnessMessage(messageId string, publicKey string, signature string) {}
+
 // GetPeersInfo implements channel.HubFunctionalities
 func (h *fakeHub) GetPeersInfo() []method.ServerInfo {
 	return nil

@@ -99,6 +99,7 @@ type HubFunctionalities interface {
 	NotifyNewChannel(channelID string, channel Channel, socket socket.Socket)
 	GetServerNumber() int
 	SendAndHandleMessage(method.Broadcast) error
+	NotifyWitnessMessage(messageId string, publicKey string, signature string)
 	GetClientServerAddress() string
 	GetPeersInfo() []method.ServerInfo
 }
