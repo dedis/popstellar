@@ -37,6 +37,16 @@ func run(ctx context.Context, args []string) {
 		Aliases: []string{"pk"},
 		Usage:   "base64url encoded server's public key",
 	}
+	serverAddressFlag := &cli.StringFlag{
+		Name:    "server-address",
+		Aliases: []string{"sa"},
+		Usage:   "address of the server endpoint",
+	}
+	clientAddressFlag := &cli.StringFlag{
+		Name:    "client-address",
+		Aliases: []string{"ca"},
+		Usage:   "address of the client endpoint",
+	}
 	serverPublicAddressFlag := &cli.StringFlag{
 		Name:    "server-public-address",
 		Aliases: []string{"spa"},
@@ -87,6 +97,8 @@ func run(ctx context.Context, args []string) {
 						Name:  "serve",
 						Usage: "start the server",
 						Flags: []cli.Flag{
+							serverAddressFlag,
+							clientAddressFlag,
 							serverPublicAddressFlag,
 							serverListenAddressFlag,
 							clientPortFlag,

@@ -42,6 +42,8 @@ const (
 // ServerConfig contains the configuration for the server
 type ServerConfig struct {
 	PublicKey      string   `json:"public-key"`
+	ClientAddress  string   `json:"client-address"`
+	ServerAddress  string   `json:"server-address"`
 	PublicAddress  string   `json:"server-public-address"`
 	PrivateAddress string   `json:"server-listen-address"`
 	ClientPort     int      `json:"client-port"`
@@ -75,14 +77,13 @@ func Serve(cliCtx *cli.Context) error {
 		}
 	}
 
-	// compute the client server address
-	clientServerAddress := fmt.Sprintf("%s:%d", serverConfig.PublicAddress, serverConfig.ClientPort)
+	computeAddresses(&serverConfig)
 
 	var point kyber.Point = nil
 	ownerKey(serverConfig.PublicKey, &point)
 
 	// create user hub
-	h, err := standard_hub.NewHub(point, clientServerAddress, log.With().Str("role", "server").Logger(),
+	h, err := standard_hub.NewHub(point, serverConfig.ClientAddress, serverConfig.ServerAddress, log.With().Str("role", "server").Logger(),
 		lao.NewChannel)
 	if err != nil {
 		return xerrors.Errorf("failed create the hub: %v", err)
@@ -248,6 +249,11 @@ func connectToSocket(address string, h hub.Hub,
 	go remoteSocket.WritePump()
 	go remoteSocket.ReadPump()
 
+	err = h.SendGreetServer(remoteSocket)
+	if err != nil {
+		return xerrors.Errorf("failed to send greet to server: %v", err)
+	}
+
 	h.NotifyNewServer(remoteSocket)
 
 	return nil
@@ -311,6 +317,8 @@ func startWithFlags(cliCtx *cli.Context) (ServerConfig, error) {
 	}
 	return ServerConfig{
 		PublicKey:      cliCtx.String("public-key"),
+		ClientAddress:  cliCtx.String("client-address"),
+		ServerAddress:  cliCtx.String("server-address"),
 		PublicAddress:  cliCtx.String("server-public-address"),
 		PrivateAddress: cliCtx.String("server-listen-address"),
 		ClientPort:     clientPort,
@@ -367,5 +375,17 @@ func updateServersState(servers []string, connectedServers *map[string]bool) {
 		if _, ok := (*connectedServers)[server]; !ok {
 			(*connectedServers)[server] = false
 		}
+	}
+}
+
+// computeAddresses computes the client and server addresses if they were not provided
+func computeAddresses(serverConfig *ServerConfig) {
+	// compute the client server address if it wasn't provided
+	if serverConfig.ClientAddress == "" {
+		serverConfig.ClientAddress = fmt.Sprintf("ws://%s:%d/client", serverConfig.PublicAddress, serverConfig.ClientPort)
+	}
+	// compute the server server address if it wasn't provided
+	if serverConfig.ServerAddress == "" {
+		serverConfig.ServerAddress = fmt.Sprintf("ws://%s:%d/server", serverConfig.PublicAddress, serverConfig.ServerPort)
 	}
 }

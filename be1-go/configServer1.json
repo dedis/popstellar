@@ -1,8 +1,10 @@
 {
     "public-key"                           : "",
+    "server-address"                       : "ws://127.0.0.1:9001/server",
+    "client-address"                       : "ws://127.0.0.1:9000/client",
     "server-public-address"                : "localhost",
     "server-listen-address"                : "localhost",
     "client-port"                          : 9000,
     "server-port"                          : 9001,
-    "other-servers": ["localhost:9003", "localhost:9005"]
+    "other-servers": []
 }

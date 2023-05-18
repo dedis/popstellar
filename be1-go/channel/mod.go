@@ -99,7 +99,8 @@ type HubFunctionalities interface {
 	NotifyNewChannel(channelID string, channel Channel, socket socket.Socket)
 	GetServerNumber() int
 	SendAndHandleMessage(method.Broadcast) error
-	GetServerAddress() string
+	GetClientServerAddress() string
+	GetPeersInfo() []method.ServerInfo
 }
 
 // Broadcastable defines a channel that can broadcast
