@@ -498,7 +498,20 @@ exports[`EventRollCall render correctly no duplicate attendees opened roll calls
                                 }
                               }
                             >
-                              <View>
+                              <View
+                                accessible={true}
+                                collapsable={false}
+                                focusable={true}
+                                onBlur={[Function]}
+                                onClick={[Function]}
+                                onFocus={[Function]}
+                                onResponderGrant={[Function]}
+                                onResponderMove={[Function]}
+                                onResponderRelease={[Function]}
+                                onResponderTerminate={[Function]}
+                                onResponderTerminationRequest={[Function]}
+                                onStartShouldSetResponder={[Function]}
+                              >
                                 <View
                                   style={
                                     {
@@ -1452,7 +1465,20 @@ exports[`EventRollCall render correctly no duplicate attendees re-opened roll ca
                                 }
                               }
                             >
-                              <View>
+                              <View
+                                accessible={true}
+                                collapsable={false}
+                                focusable={true}
+                                onBlur={[Function]}
+                                onClick={[Function]}
+                                onFocus={[Function]}
+                                onResponderGrant={[Function]}
+                                onResponderMove={[Function]}
+                                onResponderRelease={[Function]}
+                                onResponderTerminate={[Function]}
+                                onResponderTerminationRequest={[Function]}
+                                onStartShouldSetResponder={[Function]}
+                              >
                                 <View
                                   style={
                                     {
@@ -2326,7 +2352,20 @@ exports[`EventRollCall render correctly non organizers closed roll calls 1`] = `
                                 }
                               }
                             >
-                              <View>
+                              <View
+                                accessible={true}
+                                collapsable={false}
+                                focusable={true}
+                                onBlur={[Function]}
+                                onClick={[Function]}
+                                onFocus={[Function]}
+                                onResponderGrant={[Function]}
+                                onResponderMove={[Function]}
+                                onResponderRelease={[Function]}
+                                onResponderTerminate={[Function]}
+                                onResponderTerminationRequest={[Function]}
+                                onStartShouldSetResponder={[Function]}
+                              >
                                 <View
                                   style={
                                     {
@@ -3706,7 +3745,20 @@ exports[`EventRollCall render correctly non organizers opened roll calls 1`] = `
                                 }
                               }
                             >
-                              <View>
+                              <View
+                                accessible={true}
+                                collapsable={false}
+                                focusable={true}
+                                onBlur={[Function]}
+                                onClick={[Function]}
+                                onFocus={[Function]}
+                                onResponderGrant={[Function]}
+                                onResponderMove={[Function]}
+                                onResponderRelease={[Function]}
+                                onResponderTerminate={[Function]}
+                                onResponderTerminationRequest={[Function]}
+                                onStartShouldSetResponder={[Function]}
+                              >
                                 <View
                                   style={
                                     {
@@ -4660,7 +4712,20 @@ exports[`EventRollCall render correctly non organizers re-opened roll calls 1`] 
                                 }
                               }
                             >
-                              <View>
+                              <View
+                                accessible={true}
+                                collapsable={false}
+                                focusable={true}
+                                onBlur={[Function]}
+                                onClick={[Function]}
+                                onFocus={[Function]}
+                                onResponderGrant={[Function]}
+                                onResponderMove={[Function]}
+                                onResponderRelease={[Function]}
+                                onResponderTerminate={[Function]}
+                                onResponderTerminationRequest={[Function]}
+                                onStartShouldSetResponder={[Function]}
+                              >
                                 <View
                                   style={
                                     {
@@ -5534,7 +5599,20 @@ exports[`EventRollCall render correctly organizers closed roll calls 1`] = `
                                 }
                               }
                             >
-                              <View>
+                              <View
+                                accessible={true}
+                                collapsable={false}
+                                focusable={true}
+                                onBlur={[Function]}
+                                onClick={[Function]}
+                                onFocus={[Function]}
+                                onResponderGrant={[Function]}
+                                onResponderMove={[Function]}
+                                onResponderRelease={[Function]}
+                                onResponderTerminate={[Function]}
+                                onResponderTerminationRequest={[Function]}
+                                onStartShouldSetResponder={[Function]}
+                              >
                                 <View
                                   style={
                                     {
@@ -7012,7 +7090,20 @@ exports[`EventRollCall render correctly organizers opened roll calls 1`] = `
                                 }
                               }
                             >
-                              <View>
+                              <View
+                                accessible={true}
+                                collapsable={false}
+                                focusable={true}
+                                onBlur={[Function]}
+                                onClick={[Function]}
+                                onFocus={[Function]}
+                                onResponderGrant={[Function]}
+                                onResponderMove={[Function]}
+                                onResponderRelease={[Function]}
+                                onResponderTerminate={[Function]}
+                                onResponderTerminationRequest={[Function]}
+                                onStartShouldSetResponder={[Function]}
+                              >
                                 <View
                                   style={
                                     {
@@ -8055,7 +8146,20 @@ exports[`EventRollCall render correctly organizers re-opened roll calls 1`] = `
                                 }
                               }
                             >
-                              <View>
+                              <View
+                                accessible={true}
+                                collapsable={false}
+                                focusable={true}
+                                onBlur={[Function]}
+                                onClick={[Function]}
+                                onFocus={[Function]}
+                                onResponderGrant={[Function]}
+                                onResponderMove={[Function]}
+                                onResponderRelease={[Function]}
+                                onResponderTerminate={[Function]}
+                                onResponderTerminationRequest={[Function]}
+                                onStartShouldSetResponder={[Function]}
+                              >
                                 <View
                                   style={
                                     {
