@@ -573,7 +573,7 @@ func TestLAOChannel_Sends_Greeting(t *testing.T) {
 
 func Test_LAOChannel_Witness_Message(t *testing.T) {
 	keypair := generateKeyPair(t)
-	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
+	fakeHub, err := NewFakeHub("", keypair.public, nolog, nil)
 	require.NoError(t, err)
 
 	// Create new Lao channel
@@ -594,7 +594,7 @@ func Test_LAOChannel_Witness_Message(t *testing.T) {
 
 func Test_LAOChannel_Witness_Message_Not_Received_Yet(t *testing.T) {
 	keypair := generateKeyPair(t)
-	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
+	fakeHub, err := NewFakeHub("", keypair.public, nolog, nil)
 	require.NoError(t, err)
 
 	// Create new Lao channel
