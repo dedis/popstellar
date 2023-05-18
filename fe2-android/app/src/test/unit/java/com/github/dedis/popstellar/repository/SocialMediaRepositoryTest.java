@@ -31,8 +31,7 @@ import static org.junit.Assert.*;
 public class SocialMediaRepositoryTest {
 
   private static final Application APPLICATION = ApplicationProvider.getApplicationContext();
-  private static final AppDatabase APP_DATABASE =
-      AppDatabaseModuleHelper.getAppDatabase(APPLICATION);
+  private static AppDatabase appDatabase;
   private static final String LAO_ID = Lao.generateLaoId(generatePublicKey(), 1000, "LAO");
 
   private static final PublicKey SENDER = generatePublicKey();
@@ -59,12 +58,13 @@ public class SocialMediaRepositoryTest {
 
   @Before
   public void setup() {
-    repo = new SocialMediaRepository(APP_DATABASE, APPLICATION);
+    appDatabase = AppDatabaseModuleHelper.getAppDatabase(APPLICATION);
+    repo = new SocialMediaRepository(appDatabase, APPLICATION);
   }
 
   @After
   public void tearDown() {
-    APP_DATABASE.close();
+    appDatabase.close();
   }
 
   @Test

@@ -23,10 +23,8 @@ import static org.junit.Assert.assertTrue;
 @RunWith(AndroidJUnit4.class)
 public class MeetingRepositoryTest {
   private static final Application APPLICATION = ApplicationProvider.getApplicationContext();
-  private static final AppDatabase APP_DATABASE =
-      AppDatabaseModuleHelper.getAppDatabase(APPLICATION);
-  private static final MeetingRepository meetingRepository =
-      new MeetingRepository(APP_DATABASE, APPLICATION);
+  private static AppDatabase appDatabase;
+  private static MeetingRepository meetingRepository;
   private static final String LAO_ID = "LAO_ID";
   private static final String ID = "ID";
   private static final String NAME = "MEETING_NAME";
@@ -51,12 +49,14 @@ public class MeetingRepositoryTest {
 
   @Before
   public void setUp() {
+    appDatabase = AppDatabaseModuleHelper.getAppDatabase(APPLICATION);
+    meetingRepository = new MeetingRepository(appDatabase, APPLICATION);
     meetingRepository.updateMeeting(LAO_ID, meeting);
   }
 
   @After
   public void tearDown() {
-    APP_DATABASE.close();
+    appDatabase.close();
   }
 
   @Test
