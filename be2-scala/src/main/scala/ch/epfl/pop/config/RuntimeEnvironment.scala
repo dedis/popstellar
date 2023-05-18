@@ -41,15 +41,7 @@ object RuntimeEnvironment {
   }
 
   private def testMode: Boolean = {
-    val testParam = sp("test")
-    if (testParam != null && testParam.trim.nonEmpty) {
-      testParam.toLowerCase match {
-        case "true" => true
-        case _      => false
-      }
-    } else {
-      false
-    }
+    sp("test") != null
   }
 
   private lazy val confDir: String = getConfDir

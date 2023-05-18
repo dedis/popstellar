@@ -6,7 +6,7 @@ object RuntimeEnvironmentTestingHelper {
 
   private def ensureTestingMode(): Unit = {
     if (!RuntimeEnvironment.isTestMode) {
-      throw new ExceptionInInitializerError("Argument -Dtest=\"true\" missing")
+      throw new ExceptionInInitializerError("Argument \"-Dtest\" missing")
     }
   }
 
