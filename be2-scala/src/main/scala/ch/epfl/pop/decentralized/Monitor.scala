@@ -4,12 +4,16 @@ import akka.NotUsed
 import akka.actor.{Actor, ActorLogging, ActorRef, Props, Timers}
 import akka.event.LoggingReceive
 import akka.stream.scaladsl.Sink
+import ch.epfl.pop.config.RuntimeEnvironment.{readServerPeers, serverPeersListPath}
 import ch.epfl.pop.decentralized.Monitor.TriggerHeartbeat
 import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.ParamsWithMap
 import ch.epfl.pop.pubsub.graph.GraphMessage
 
+import java.nio.file.{Path, WatchService}
+import java.nio.file.StandardWatchEventKinds.{ENTRY_CREATE, ENTRY_MODIFY}
 import scala.concurrent.duration.{DurationInt, FiniteDuration}
+import scala.jdk.CollectionConverters.CollectionHasAsScala
 
 //This actor is tasked with scheduling heartbeats.
 // To that end it sees every messages the system receives.
@@ -89,4 +93,36 @@ object Monitor {
   final case class GenerateAndSendHeartbeat(connectionMediatorRef: ActorRef) extends Event
   final case class TriggerHeartbeat() extends Event
   private final case class DoNothing() extends Event
+}
+
+// This class watch the list of server peers config file and upon changes
+// tells connectionMediator about it
+private class FileMonitor(mediatorRef: ActorRef) extends Runnable {
+
+  // getParent to exclude the filename from the path, i.e get the config directory path
+  private val directory: Path = Path.of(serverPeersListPath).getParent
+  private val watchService: WatchService = directory.getFileSystem.newWatchService()
+  directory.register(watchService, ENTRY_CREATE, ENTRY_MODIFY)
+
+  override def run(): Unit = {
+    try {
+      while (!Thread.currentThread().isInterrupted) {
+        // Blocks until an event happen
+        val watchKey = watchService.take()
+
+        // For any event, read the file and send it
+        for (event <- watchKey.pollEvents().asScala.toList) {
+          if (serverPeersListPath.endsWith(event.context().toString)) {
+            mediatorRef ! ConnectionMediator.ConnectTo(readServerPeers())
+          }
+          watchKey.reset()
+        }
+      }
+    } catch {
+      case _: InterruptedException =>
+        println("File watch service interrupted")
+    } finally {
+      watchService.close()
+    }
+  }
 }
