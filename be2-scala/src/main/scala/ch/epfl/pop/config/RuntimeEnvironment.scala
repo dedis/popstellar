@@ -65,4 +65,23 @@ object RuntimeEnvironment {
 
   lazy val appConf: Config = ConfigFactory.parseFile(new File(appConfFile))
 
+  // Regex from dataGreetLao.json
+  private val addressPattern = "^(ws|wss)://.*(:d{0,5})?/.*$"
+
+  def readServerPeers(): List[String] = {
+    val source =
+      try {
+        fromFile(serverPeersList)
+      } catch {
+        case ex: Throwable =>
+          println("RuntimeEnvironment: " + ex.toString)
+          return Nil
+      }
+
+    val addressList = source.getLines().map(_.trim).filter(_.matches(addressPattern)).toList
+    source.close()
+
+    addressList
+  }
+
 }
