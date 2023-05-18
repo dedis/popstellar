@@ -48,7 +48,7 @@ object RuntimeEnvironment {
   private lazy val appConfFile = confDir + File.separator + "application.conf"
 
   lazy val isTestMode: Boolean = testMode
-  lazy val serverPeersList: String =
+  lazy val serverPeersListPath: String =
     if (isTestMode) {
       confDir + File.separator + "server-peers-list-TEST.conf"
     } else {
@@ -63,7 +63,7 @@ object RuntimeEnvironment {
   def readServerPeers(): List[String] = {
     val source =
       try {
-        fromFile(serverPeersList)
+        fromFile(serverPeersListPath)
       } catch {
         case ex: Throwable =>
           println("RuntimeEnvironment: " + ex.toString)

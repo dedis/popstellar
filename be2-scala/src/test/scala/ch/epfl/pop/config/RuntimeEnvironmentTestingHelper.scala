@@ -12,7 +12,7 @@ object RuntimeEnvironmentTestingHelper {
 
   def testWriteToServerPeersConfig(list: List[String]): Unit = {
     ensureTestingMode()
-    val file = new BufferedWriter(new FileWriter(RuntimeEnvironment.serverPeersList))
+    val file = new BufferedWriter(new FileWriter(RuntimeEnvironment.serverPeersListPath))
     list.foreach {
       str =>
         file.write(str)
@@ -23,7 +23,7 @@ object RuntimeEnvironmentTestingHelper {
 
   def deleteTestConfig(): Unit = {
     ensureTestingMode()
-    new File(RuntimeEnvironment.serverPeersList).delete()
+    new File(RuntimeEnvironment.serverPeersListPath).delete()
   }
 
 }
