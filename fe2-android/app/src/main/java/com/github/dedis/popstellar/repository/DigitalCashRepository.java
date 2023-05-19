@@ -103,7 +103,7 @@ public class DigitalCashRepository {
     public synchronized void initializeDigitalCash(List<PublicKey> attendees) {
       Timber.tag(TAG).d("initializing digital cash with attendees %s", attendees);
       // Clear the database for the given lao
-      repository.disposables.add(
+      repository.disposables.addAll(
           repository
               .transactionDao
               .deleteByLaoId(laoId)
@@ -112,8 +112,7 @@ public class DigitalCashRepository {
               .subscribe(
                   () -> Timber.tag(TAG).d("Cleared the transactions in the db for lao %s", laoId),
                   err ->
-                      Timber.tag(TAG).e(err, "Error in clearing transactions for lao %s", laoId)));
-      repository.disposables.add(
+                      Timber.tag(TAG).e(err, "Error in clearing transactions for lao %s", laoId)),
           repository
               .hashDao
               .deleteByLaoId(laoId)
@@ -132,30 +131,29 @@ public class DigitalCashRepository {
       transactionsSubject.clear();
 
       // Reset the hash dictionary
+      List<HashEntity> hashEntities = new ArrayList<>();
       attendees.forEach(
           publicKey -> {
             String hash = publicKey.computeHash();
             hashDictionary.put(hash, publicKey);
-            // Save the mapping in the db
+            // Save the mapping in a list
             HashEntity hashEntity = new HashEntity(hash, laoId, publicKey);
-            repository.disposables.add(
-                repository
-                    .hashDao
-                    .insert(hashEntity)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(
-                        () ->
-                            Timber.tag(TAG)
-                                .d("Persisted hash %s in the db for lao %s", hash, laoId),
-                        err ->
-                            Timber.tag(TAG)
-                                .e(
-                                    err,
-                                    "Error in persisting the hash %s for lao %s",
-                                    hash,
-                                    laoId)));
+            hashEntities.add(hashEntity);
           });
+
+      // Save all the entries at once to minimize I/O accesses
+      repository.disposables.add(
+          repository
+              .hashDao
+              .insert(hashEntities)
+              .subscribeOn(Schedulers.io())
+              .observeOn(AndroidSchedulers.mainThread())
+              .subscribe(
+                  () ->
+                      Timber.tag(TAG).d("Successfully persisted hash dictionary for lao %s", laoId),
+                  err ->
+                      Timber.tag(TAG)
+                          .e(err, "Error in persisting the hash dictionary for lao %s", laoId)));
     }
 
     public synchronized void updateTransactions(TransactionObject transaction, boolean toBeStored)
@@ -165,6 +163,7 @@ public class DigitalCashRepository {
       }
 
       if (toBeStored) {
+        // Store it in the db if the flag is true
         TransactionEntity transactionEntity = new TransactionEntity(laoId, transaction);
         repository.disposables.add(
             repository
@@ -172,7 +171,18 @@ public class DigitalCashRepository {
                 .insert(transactionEntity)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(() -> {}, err -> {}));
+                .subscribe(
+                    () ->
+                        Timber.tag(TAG)
+                            .d(
+                                "Successfully persisted transaction %s",
+                                transaction.getTransactionId()),
+                    err ->
+                        Timber.tag(TAG)
+                            .e(
+                                err,
+                                "Error in persisting the transaction %s",
+                                transaction.getTransactionId())));
       }
 
       for (PublicKey current : getReceiversTransaction(transaction)) {
@@ -257,6 +267,7 @@ public class DigitalCashRepository {
                     hashEntities.forEach(
                         hashEntity ->
                             hashDictionary.put(hashEntity.getHash(), hashEntity.getPublicKey()));
+                    Timber.tag(TAG).d("Retrieved the hash dictionary from db");
                     // Then load the transactions
                     repository.disposables.add(
                         repository
@@ -268,6 +279,10 @@ public class DigitalCashRepository {
                                 transactionObjects ->
                                     transactionObjects.forEach(
                                         transactionObject -> {
+                                          Timber.tag(TAG)
+                                              .d(
+                                                  "Retrieved transaction %s from db",
+                                                  transactionObject.getTransactionId());
                                           try {
                                             updateTransactions(transactionObject, false);
                                           } catch (NoRollCallException e) {

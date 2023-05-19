@@ -15,6 +15,7 @@ import org.junit.*;
 import org.junit.runner.RunWith;
 
 import java.security.GeneralSecurityException;
+import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.observers.TestObserver;
@@ -35,6 +36,11 @@ public class DigitalCashDatabaseTest {
   private static TransactionEntity TRANSACTION_ENTITY;
   private static HashEntity HASH_ENTITY =
       new HashEntity(USER1.getPublicKey().computeHash(), LAO_ID, USER1.getPublicKey());
+  private static List<HashEntity> HASH_ENTITIES = new ArrayList<>();
+
+  static {
+    HASH_ENTITIES.add(HASH_ENTITY);
+  }
 
   @Before
   public void before() throws GeneralSecurityException {
@@ -102,7 +108,7 @@ public class DigitalCashDatabaseTest {
 
   @Test
   public void insertHashTest() {
-    TestObserver<Void> testObserver = hashDao.insert(HASH_ENTITY).test();
+    TestObserver<Void> testObserver = hashDao.insert(HASH_ENTITIES).test();
 
     testObserver.awaitTerminalEvent();
     testObserver.assertComplete();
@@ -110,7 +116,7 @@ public class DigitalCashDatabaseTest {
 
   @Test
   public void getHashTest() {
-    TestObserver<Void> testObserver = hashDao.insert(HASH_ENTITY).test();
+    TestObserver<Void> testObserver = hashDao.insert(HASH_ENTITIES).test();
 
     testObserver.awaitTerminalEvent();
     testObserver.assertComplete();
@@ -130,7 +136,7 @@ public class DigitalCashDatabaseTest {
 
   @Test
   public void deleteHashByLaoTest() {
-    TestObserver<Void> testObserver = hashDao.insert(HASH_ENTITY).test();
+    TestObserver<Void> testObserver = hashDao.insert(HASH_ENTITIES).test();
 
     testObserver.awaitTerminalEvent();
     testObserver.assertComplete();
