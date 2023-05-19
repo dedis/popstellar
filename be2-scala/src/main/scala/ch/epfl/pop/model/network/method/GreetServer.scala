@@ -12,7 +12,7 @@ final case class GreetServer(publicKey: PublicKey, clientAddress: String, server
 object GreetServer extends Parsable {
 
   def apply(publicKey: PublicKey, clientAddress: String, serverAddress: String): GreetServer = {
-    new  GreetServer(publicKey, clientAddress, serverAddress)
+    new GreetServer(publicKey, clientAddress, serverAddress)
   }
 
   override def buildFromJson(payload: String): Any = payload.parseJson.asJsObject.convertTo[GreetServer]
