@@ -38,7 +38,7 @@ public class DataRegistryModuleHelper {
         new ElectionRepository(appDatabase, application),
         new RollCallRepository(appDatabase, application),
         new MeetingRepository(appDatabase, application),
-        new DigitalCashRepository(),
+        new DigitalCashRepository(appDatabase, application),
         new MessageRepository(appDatabase, application),
         keyManager,
         new ServerRepository());
@@ -52,7 +52,7 @@ public class DataRegistryModuleHelper {
         new ElectionRepository(appDatabase, application),
         rollCallRepo,
         new MeetingRepository(appDatabase, application),
-        new DigitalCashRepository(),
+        new DigitalCashRepository(appDatabase, application),
         new MessageRepository(appDatabase, application),
         keyManager,
         new ServerRepository());
@@ -66,7 +66,7 @@ public class DataRegistryModuleHelper {
         new ElectionRepository(appDatabase, application),
         new RollCallRepository(appDatabase, application),
         meetingRepo,
-        new DigitalCashRepository(),
+        new DigitalCashRepository(appDatabase, application),
         new MessageRepository(appDatabase, application),
         keyManager,
         new ServerRepository());
@@ -80,7 +80,7 @@ public class DataRegistryModuleHelper {
         electionRepo,
         new RollCallRepository(appDatabase, application),
         new MeetingRepository(appDatabase, application),
-        new DigitalCashRepository(),
+        new DigitalCashRepository(appDatabase, application),
         new MessageRepository(appDatabase, application),
         keyManager,
         new ServerRepository());
@@ -97,7 +97,7 @@ public class DataRegistryModuleHelper {
         electionRepo,
         new RollCallRepository(appDatabase, application),
         new MeetingRepository(appDatabase, application),
-        new DigitalCashRepository(),
+        new DigitalCashRepository(appDatabase, application),
         messageRepo,
         keyManager,
         new ServerRepository());
@@ -114,7 +114,7 @@ public class DataRegistryModuleHelper {
         new ElectionRepository(appDatabase, application),
         rollCallRepo,
         new MeetingRepository(appDatabase, application),
-        new DigitalCashRepository(),
+        new DigitalCashRepository(appDatabase, application),
         new MessageRepository(appDatabase, application),
         keyManager,
         new ServerRepository());
@@ -131,7 +131,7 @@ public class DataRegistryModuleHelper {
         new ElectionRepository(appDatabase, application),
         new RollCallRepository(appDatabase, application),
         new MeetingRepository(appDatabase, application),
-        new DigitalCashRepository(),
+        new DigitalCashRepository(appDatabase, application),
         msgRepo,
         keyManager,
         serverRepo);

@@ -75,8 +75,8 @@ public class MeetingRepository {
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
-                () -> Timber.tag(TAG).d("Successfully persisted rollcall %s", meeting.getId()),
-                err -> Timber.tag(TAG).e(err, "Error in persisting rollcall %s", meeting.getId())));
+                () -> Timber.tag(TAG).d("Successfully persisted meeting %s", meeting.getId()),
+                err -> Timber.tag(TAG).e(err, "Error in persisting meeting %s", meeting.getId())));
 
     // Retrieve Lao data and add the meeting to it
     getLaoMeetings(laoId).update(meeting);

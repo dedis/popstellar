@@ -178,7 +178,6 @@ public class SocialMediaRepository {
   private static final class LaoChirps {
 
     private final String laoId;
-
     private boolean alreadyRetrieved = false;
 
     // Chirps
@@ -325,8 +324,8 @@ public class SocialMediaRepository {
 
     public Observable<Set<MessageID>> getChirpsSubject(SocialMediaRepository repository) {
       // Load in memory the chirps and their respective reactions from the disk only when the user
-      // wants to inflate the chirps adapter. It can be done only once, as during the execution
-      // everything is stored in memory
+      // wants to inflate the chirps adapter. It can be done only once per LAO, as during the
+      // execution everything is also stored in memory
       if (!alreadyRetrieved) {
         repository.disposables.add(
             repository
@@ -335,13 +334,14 @@ public class SocialMediaRepository {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                    chirps ->
-                        chirps.forEach(
+                    chirpsList ->
+                        chirpsList.forEach(
                             chirp -> {
                               // Do not retrieve deleted chirps
                               if (chirp.isDeleted()) {
                                 return;
                               }
+                              // Load the chirp into the memory
                               add(chirp);
                               Timber.tag(TAG).d("Retrieved from db chirp %s", chirp.getId());
                               // When retrieving the chirp also retrieve its reactions
@@ -352,19 +352,26 @@ public class SocialMediaRepository {
                                       .subscribeOn(Schedulers.io())
                                       .observeOn(AndroidSchedulers.mainThread())
                                       .subscribe(
-                                          reactions ->
-                                              reactions.forEach(
+                                          reactionsList ->
+                                              reactionsList.forEach(
                                                   reaction -> {
                                                     // Do not retrieve deleted reactions
                                                     if (reaction.isDeleted()) {
                                                       return;
                                                     }
+                                                    // Load the reaction into the memory
                                                     addReaction(reaction);
                                                     Timber.tag(TAG)
                                                         .d(
                                                             "Retrieved from db reaction %s",
                                                             reaction.getId());
-                                                  })));
+                                                  }),
+                                          err ->
+                                              Timber.tag(TAG)
+                                                  .e(
+                                                      err,
+                                                      "No reaction found in the storage for chirp %s",
+                                                      chirp.getId())));
                             }),
                     err ->
                         Timber.tag(TAG).e(err, "No chirp found in the storage for lao %s", laoId)));

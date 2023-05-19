@@ -13,6 +13,7 @@ import com.github.dedis.popstellar.model.network.serializer.data.JsonVoteSeriali
 import com.github.dedis.popstellar.model.network.serializer.database.*;
 import com.github.dedis.popstellar.model.network.serializer.network.*;
 import com.github.dedis.popstellar.model.objects.*;
+import com.github.dedis.popstellar.model.objects.digitalcash.TransactionObject;
 import com.github.dedis.popstellar.model.objects.security.*;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -50,6 +51,7 @@ public class JsonModule {
         .registerTypeAdapter(Meeting.class, new JsonMeetingSerializer())
         .registerTypeAdapter(Reaction.class, new JsonReactionSerializer())
         .registerTypeAdapter(Chirp.class, new JsonChirpSerializer())
+        .registerTypeAdapter(TransactionObject.class, new JsonTransactionObjectSerializer())
         // Base64URLData serializers
         .registerTypeAdapter(
             Base64URLData.class, new JsonBase64DataSerializer<>(Base64URLData::new))
