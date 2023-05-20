@@ -1,7 +1,7 @@
 package ch.epfl.pop.config
 
-import ch.epfl.pop.config.RuntimeEnvironment.readServerPeers
-import ch.epfl.pop.config.RuntimeEnvironmentTestingHelper.{deleteTestConfig, testWriteToServerPeersConfig}
+import ch.epfl.pop.config.RuntimeEnvironment.{readServerPeers, serverPeersListPath}
+import ch.epfl.pop.config.RuntimeEnvironmentTestingHelper.testWriteToServerPeersConfig
 import org.scalatest.funsuite.{AnyFunSuiteLike => FunSuite}
 import org.scalatest.matchers.should.Matchers.{convertToAnyShouldWrapper, equal}
 
@@ -14,7 +14,7 @@ class RuntimeEnvironmentSuite extends FunSuite {
     val addressList = List(
       "http://127.0.0.1/",
       "ws://127.0.0.1:7000/client",
-      "ws://127.0.0.1:8000/client",
+      "wss://127.0.0.1:8000/client",
       "ws://127.0.0.1:9000/client"
     )
 
