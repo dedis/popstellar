@@ -120,7 +120,7 @@ public class Election extends Event {
   }
 
   public List<ElectionQuestion> getElectionQuestions() {
-    return electionQuestions;
+    return new ArrayList<>(electionQuestions);
   }
 
   public EventState getState() {
@@ -128,15 +128,15 @@ public class Election extends Event {
   }
 
   public Map<PublicKey, MessageID> getMessageMap() {
-    return messageMap;
+    return new HashMap<>(messageMap);
   }
 
   public Map<PublicKey, List<Vote>> getVotesBySender() {
-    return votesBySender;
+    return Copyable.copyMapOfList(votesBySender);
   }
 
   public Map<String, Set<QuestionResult>> getResults() {
-    return results;
+    return Copyable.copyMapOfSet(results);
   }
 
   public String getId() {
