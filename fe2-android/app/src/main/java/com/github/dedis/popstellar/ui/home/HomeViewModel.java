@@ -129,7 +129,7 @@ public class HomeViewModel extends AndroidViewModel
    * @return true if the wallet is correctly restored, false otherwise
    */
   public boolean restoreWallet() {
-    // Retrieve from the database the saved state
+    // Retrieve from the database the saved wallet
     WalletEntity walletEntity = appDatabase.walletDao().getWallet();
     if (walletEntity == null) {
       ErrorUtils.logAndShow(

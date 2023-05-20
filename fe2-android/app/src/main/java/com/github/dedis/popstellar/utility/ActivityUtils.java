@@ -68,7 +68,7 @@ public class ActivityUtils {
   }
 
   /**
-   * This performs the steps of getting and storing persistently the wallet.
+   * This performs the persistent storage of the wallet.
    *
    * @param wallet the singleton wallet used to store PoP tokens
    * @param walletDao interface to query the database
@@ -91,6 +91,16 @@ public class ActivityUtils {
             err -> Timber.tag(TAG).e(err, "Error persisting the wallet"));
   }
 
+  /**
+   * This function performs a saving routing of the connection information of a given lao. Each lao
+   * saves its own set of subscriptions, such that it's possible to restore connections also with
+   * old laos.
+   *
+   * @param laoId identifier of the lao to persist
+   * @param networkManager network manager containing the message sender with the url and
+   *     subscriptions of the lao
+   * @param subscriptionsDao interface to query the subscriptions table
+   */
   public static Disposable saveSubscriptionsRoutine(
       String laoId, GlobalNetworkManager networkManager, SubscriptionsDao subscriptionsDao) {
     String currentServerAddress = networkManager.getCurrentUrl();
@@ -110,7 +120,7 @@ public class ActivityUtils {
         .subscribeOn(Schedulers.io())
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(
-            () -> Timber.tag(TAG).d("Persisted connections for lao %s", laoId),
+            () -> Timber.tag(TAG).d("Persisted connections for lao %s : %s", laoId, subscriptions),
             err -> Timber.tag(TAG).e(err, "Error persisting the connections for lao %s", laoId));
   }
 

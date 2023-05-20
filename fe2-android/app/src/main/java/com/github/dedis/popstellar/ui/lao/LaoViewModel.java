@@ -218,6 +218,7 @@ public class LaoViewModel extends AndroidViewModel implements PopViewModel {
     }
 
     Timber.tag(TAG).d("Restoring connections");
+    // Connect to the server and launch the connecting activity, as when joining a lao
     networkManager.connect(
         subscriptionsEntity.getServerAddress(), subscriptionsEntity.getSubscriptions());
     getApplication()

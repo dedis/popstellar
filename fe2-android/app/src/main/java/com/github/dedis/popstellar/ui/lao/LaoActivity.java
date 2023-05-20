@@ -63,6 +63,8 @@ public class LaoActivity extends AppCompatActivity {
     laoViewModel.observeLao(laoId);
     laoViewModel.observeRollCalls(laoId);
 
+    // At creation of the lao activity the connections of the lao are restored from the persistent
+    // storage, such that the client resubscribes to each previous subscribedß channel
     laoViewModel.restoreConnections();
 
     observeRoles();
@@ -78,7 +80,7 @@ public class LaoActivity extends AppCompatActivity {
   /*
    Normally the saving routine should be called onStop, such as is done in other activities,
    Yet here for unknown reasons the subscriptions set in LAONetworkManager is empty when going
-   to HomeActivity. This fixes it. Since the persisted data is light for now (13.02.2023) - i.e.
+   to HomeActivity. This fixes it. Since the persisted data is light for now (20.05.2023) - i.e.
    server address and channel list - and not computationally intensive this will not
    be a problem at the moment
   */

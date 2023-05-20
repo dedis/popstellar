@@ -57,6 +57,7 @@ public class HomeActivity extends AppCompatActivity {
     // At start of Activity we display home fragment
     setCurrentFragment(getSupportFragmentManager(), R.id.fragment_home, HomeFragment::newInstance);
 
+    // Try to restore the wallet if persisted in the database
     if (!viewModel.restoreWallet()) {
       // If the state restore fails it means that no wallet is set up
       setCurrentFragment(
@@ -155,6 +156,7 @@ public class HomeActivity extends AppCompatActivity {
   public void onStop() {
     super.onStop();
 
+    // On stop persist the wallet
     try {
       viewModel.saveWallet();
     } catch (GeneralSecurityException e) {

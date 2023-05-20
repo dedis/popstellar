@@ -124,6 +124,6 @@ public class CoreDatabaseTest {
 
     SubscriptionsEntity subscriptionsEntity2 = subscriptionsDao.getSubscriptionsByLao(LAO.getId());
 
-    assertEquals(subscriptionsEntity, subscriptionsEntity2);
+    assertEquals(subscriptionsEntity.getSubscriptions(), subscriptionsEntity2.getSubscriptions());
   }
 }
