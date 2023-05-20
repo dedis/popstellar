@@ -10,7 +10,7 @@ import ch.epfl.pop.decentralized.Monitor
 import ch.epfl.pop.model.network.MethodType._
 import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse}
 import ch.epfl.pop.pubsub.graph._
-import ch.epfl.pop.pubsub.graph.handlers.{GetMessagesByIdResponseHandler, ParamsWithChannelHandler, ParamsWithMapHandler, ParamsWithMessageHandler}
+import ch.epfl.pop.pubsub.graph.handlers.{GetMessagesByIdResponseHandler, ParamsHandler, ParamsWithMapHandler, ParamsWithMessageHandler}
 
 object PublishSubscribe {
 
@@ -126,9 +126,9 @@ object PublishSubscribe {
           ))
 
           val hasMessagePartition = builder.add(ParamsWithMessageHandler.graph(messageRegistry))
-          val subscribePartition = builder.add(ParamsWithChannelHandler.subscribeHandler(clientActorRef))
-          val unsubscribePartition = builder.add(ParamsWithChannelHandler.unsubscribeHandler(clientActorRef))
-          val catchupPartition = builder.add(ParamsWithChannelHandler.catchupHandler(clientActorRef))
+          val subscribePartition = builder.add(ParamsHandler.subscribeHandler(clientActorRef))
+          val unsubscribePartition = builder.add(ParamsHandler.unsubscribeHandler(clientActorRef))
+          val catchupPartition = builder.add(ParamsHandler.catchupHandler(clientActorRef))
           val heartbeatPartition = builder.add(ParamsWithMapHandler.heartbeatHandler(dbActorRef))
           val getMessagesByIdPartition = builder.add(ParamsWithMapHandler.getMessagesByIdHandler(dbActorRef))
 
