@@ -5,6 +5,8 @@ import ch.epfl.pop.config.RuntimeEnvironmentTestingHelper.{deleteTestConfig, tes
 import org.scalatest.funsuite.{AnyFunSuiteLike => FunSuite}
 import org.scalatest.matchers.should.Matchers.{convertToAnyShouldWrapper, equal}
 
+import java.io.File
+
 class RuntimeEnvironmentSuite extends FunSuite {
   test("readServerPeers() should only return the addresses that match the regex from the schema") {
 
@@ -18,10 +20,10 @@ class RuntimeEnvironmentSuite extends FunSuite {
 
     testWriteToServerPeersConfig(addressList)
 
+    // Set the file to delete itself at jvm shutdown
+    new File(serverPeersListPath).deleteOnExit()
+
     // Verify it works as expected
     readServerPeers() should equal(addressList.tail)
-
-    // Delete the test file
-    deleteTestConfig()
   }
 }
