@@ -153,7 +153,12 @@ object MessageDataProtocol extends DefaultJsonProtocol {
             lao.convertTo[Hash],
             frontend.convertTo[PublicKey],
             address,
-            peers.map(jsValue => jsValue.asJsObject.getFields(PARAM_ADDRESS).map(_.convertTo[String])).toList.flatten
+            peers.map(jsValue =>
+              jsValue.asJsObject.getFields(PARAM_ADDRESS) match {
+                case Seq(JsString(address)) => address
+                case _                      => throw new IllegalArgumentException(s"Can't parse json value $jsValue to get an address")
+              }
+            ).toList
           )
         case _ => throw new IllegalArgumentException(s"Can't parse json value $json to a GreetLao object")
       }
