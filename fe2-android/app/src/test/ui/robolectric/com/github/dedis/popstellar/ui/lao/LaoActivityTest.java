@@ -77,6 +77,6 @@ public class LaoActivityTest {
 
   @Test
   public void restoreConnectionsTest() {
-    assertEquals(globalNetworkManager.getMessageSender().getSubscriptions(), CHANNELS);
+    assertEquals(CHANNELS, globalNetworkManager.getMessageSender().getSubscriptions());
   }
 }
