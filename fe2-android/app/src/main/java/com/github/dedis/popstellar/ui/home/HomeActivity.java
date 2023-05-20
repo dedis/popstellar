@@ -1,6 +1,5 @@
 package com.github.dedis.popstellar.ui.home;
 
-import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -38,7 +37,6 @@ public class HomeActivity extends AppCompatActivity {
   private HomeViewModel viewModel;
   private HomeActivityBinding binding;
 
-  @SuppressLint("CheckResult")
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -59,7 +57,7 @@ public class HomeActivity extends AppCompatActivity {
     // At start of Activity we display home fragment
     setCurrentFragment(getSupportFragmentManager(), R.id.fragment_home, HomeFragment::newInstance);
 
-    if (!restoreStoredState()) {
+    if (!viewModel.restoreWallet()) {
       // If the state restore fails it means that no wallet is set up
       setCurrentFragment(
           getSupportFragmentManager(), R.id.fragment_seed_wallet, SeedWalletFragment::newInstance);
@@ -158,7 +156,7 @@ public class HomeActivity extends AppCompatActivity {
     super.onStop();
 
     try {
-      viewModel.saveCoreData();
+      viewModel.saveWallet();
     } catch (GeneralSecurityException e) {
       // We do not display the security error to the user
       Timber.tag(TAG).d(e, "Storage was unsuccessful due to wallet error");
@@ -215,10 +213,6 @@ public class HomeActivity extends AppCompatActivity {
   private void handleSettings() {
     ActivityUtils.setFragmentInContainer(
         getSupportFragmentManager(), R.id.fragment_container_home, SettingsFragment::newInstance);
-  }
-
-  private boolean restoreStoredState() {
-    return viewModel.restoreConnections();
   }
 
   public static HomeViewModel obtainViewModel(FragmentActivity activity) {

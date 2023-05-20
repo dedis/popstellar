@@ -1,19 +1,15 @@
 package com.github.dedis.popstellar.utility;
 
-import static com.github.dedis.popstellar.utility.Constants.ORIENTATION_DOWN;
-import static com.github.dedis.popstellar.utility.Constants.ORIENTATION_UP;
-
 import android.app.Activity;
 import android.app.Application;
-
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Bundle;
-
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -22,8 +18,10 @@ import androidx.lifecycle.Lifecycle;
 
 import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.model.objects.Wallet;
-import com.github.dedis.popstellar.repository.database.core.CoreDao;
-import com.github.dedis.popstellar.repository.database.core.CoreEntity;
+import com.github.dedis.popstellar.repository.database.subscriptions.SubscriptionsDao;
+import com.github.dedis.popstellar.repository.database.subscriptions.SubscriptionsEntity;
+import com.github.dedis.popstellar.repository.database.wallet.WalletDao;
+import com.github.dedis.popstellar.repository.database.wallet.WalletEntity;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 
 import java.security.GeneralSecurityException;
@@ -35,6 +33,9 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
+
+import static com.github.dedis.popstellar.utility.Constants.ORIENTATION_DOWN;
+import static com.github.dedis.popstellar.utility.Constants.ORIENTATION_UP;
 
 public class ActivityUtils {
   private static final String TAG = ActivityUtils.class.getSimpleName();
@@ -67,47 +68,50 @@ public class ActivityUtils {
   }
 
   /**
-   * This performs the steps of getting and storing persistently the needed data
+   * This performs the steps of getting and storing persistently the wallet.
    *
-   * @param networkManager, the singleton used across the app
-   * @param wallet, the singleton used across the app
+   * @param wallet the singleton wallet used to store PoP tokens
+   * @param walletDao interface to query the database
    */
-  public static Disposable activitySavingRoutine(
-      GlobalNetworkManager networkManager, Wallet wallet, CoreDao coreDao)
+  public static Disposable saveWalletRoutine(Wallet wallet, WalletDao walletDao)
       throws GeneralSecurityException {
-    String serverAddress = networkManager.getCurrentUrl();
-    if (serverAddress == null) {
-      Timber.tag(TAG).d("No persisted core data found!");
-      return null;
-    }
-
-    Set<Channel> subscriptions;
-    if (networkManager.isDisposed()
-        || networkManager.getMessageSender().getSubscriptions() == null) {
-      subscriptions = new HashSet<>();
-    } else {
-      subscriptions = networkManager.getMessageSender().getSubscriptions();
-    }
-
     String[] seed = wallet.exportSeed();
 
-    CoreEntity coreEntity =
+    WalletEntity walletEntity =
         // Constant id as we need to store only 1 entry (next insert must replace)
-        new CoreEntity(
-            0, serverAddress, Collections.unmodifiableList(Arrays.asList(seed)), subscriptions);
+        new WalletEntity(0, Collections.unmodifiableList(Arrays.asList(seed)));
 
     // Save in the database the state
-    return coreDao
-        .insert(coreEntity)
+    return walletDao
+        .insert(walletEntity)
         .subscribeOn(Schedulers.io())
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(
-            () ->
-                Timber.tag(TAG)
-                    .d(
-                        "Persisted seed length: %d, address: %s, subscriptions: %s",
-                        seed.length, serverAddress, subscriptions),
-            err -> Timber.tag(TAG).e(err, "Error persisting the core data"));
+            () -> Timber.tag(TAG).d("Persisted wallet seed: %s", Arrays.toString(seed)),
+            err -> Timber.tag(TAG).e(err, "Error persisting the wallet"));
+  }
+
+  public static Disposable saveSubscriptionsRoutine(
+      String laoId, GlobalNetworkManager networkManager, SubscriptionsDao subscriptionsDao) {
+    String currentServerAddress = networkManager.getCurrentUrl();
+
+    if (currentServerAddress == null) {
+      return null;
+    }
+
+    Set<Channel> subscriptions = networkManager.getMessageSender().getSubscriptions();
+
+    SubscriptionsEntity subscriptionsEntity =
+        new SubscriptionsEntity(laoId, currentServerAddress, subscriptions);
+
+    // Save in the db the connections
+    return subscriptionsDao
+        .insert(subscriptionsEntity)
+        .subscribeOn(Schedulers.io())
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(
+            () -> Timber.tag(TAG).d("Persisted connections for lao %s", laoId),
+            err -> Timber.tag(TAG).e(err, "Error persisting the connections for lao %s", laoId));
   }
 
   /**

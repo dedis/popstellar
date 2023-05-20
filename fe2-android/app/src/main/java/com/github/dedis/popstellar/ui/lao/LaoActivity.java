@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.IdRes;
@@ -36,7 +35,6 @@ import com.github.dedis.popstellar.utility.Constants;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 
-import java.security.GeneralSecurityException;
 import java.util.*;
 import java.util.function.Supplier;
 
@@ -65,6 +63,8 @@ public class LaoActivity extends AppCompatActivity {
     laoViewModel.observeLao(laoId);
     laoViewModel.observeRollCalls(laoId);
 
+    laoViewModel.restoreConnections();
+
     observeRoles();
     observeToolBar();
     observeDrawer();
@@ -79,19 +79,12 @@ public class LaoActivity extends AppCompatActivity {
    Normally the saving routine should be called onStop, such as is done in other activities,
    Yet here for unknown reasons the subscriptions set in LAONetworkManager is empty when going
    to HomeActivity. This fixes it. Since the persisted data is light for now (13.02.2023) - i.e.
-   server address, wallet seed and channel list - and not computationally intensive this will not
+   server address and channel list - and not computationally intensive this will not
    be a problem at the moment
   */
   public void onPause() {
     super.onPause();
-
-    try {
-      laoViewModel.saveCoreData();
-    } catch (GeneralSecurityException e) {
-      // We do not display the security error to the user
-      Timber.tag(TAG).d(e, "Storage was unsuccessful due to wallet error");
-      Toast.makeText(this, R.string.error_storage_wallet, Toast.LENGTH_SHORT).show();
-    }
+    laoViewModel.saveSubscriptionsData();
   }
 
   private void observeRoles() {
