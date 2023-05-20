@@ -7,6 +7,7 @@ import akka.pattern.AskableActorRef
 import akka.stream.FlowShape
 import akka.stream.scaladsl.{Broadcast, Flow, GraphDSL, Merge, Partition, Sink}
 import ch.epfl.pop.decentralized.Monitor
+import ch.epfl.pop.model.network.MethodType._
 import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse}
 import ch.epfl.pop.pubsub.graph._
 import ch.epfl.pop.pubsub.graph.handlers.{GetMessagesByIdResponseHandler, ParamsWithChannelHandler, ParamsWithMapHandler, ParamsWithMessageHandler}
@@ -95,9 +96,12 @@ object PublishSubscribe {
           /* partitioner port numbers */
           val portPipelineError = 0
           val portParamsWithMessage = 1
-          val portParamsWithChannel = 2
-          val portParamsWithMap = 3
-          val totalPorts = 4
+          val portSubscribe = 2
+          val portUnsubscribe = 3
+          val portCatchup = 4
+          val portHeartbeat = 5
+          val portGetMessagesById = 6
+          val totalPorts = 7
 
           /* building blocks */
           val input = builder.add(Flow[GraphMessage].collect { case msg: GraphMessage => msg })
@@ -106,16 +110,27 @@ object PublishSubscribe {
           val methodPartitioner = builder.add(Partition[GraphMessage](
             totalPorts,
             {
-              case Right(m: JsonRpcRequest) if m.hasParamsMessage => portParamsWithMessage // Publish and Broadcast messages
-              case Right(m: JsonRpcRequest) if m.hasParamsChannel => portParamsWithChannel
-              case Right(_: JsonRpcRequest)                       => portParamsWithMap
-              case _                                              => portPipelineError // Pipeline error goes directly in merger
+              case Right(m: JsonRpcRequest) => m.method match {
+                  case BROADCAST          => portParamsWithMessage
+                  case PUBLISH            => portParamsWithMessage
+                  case SUBSCRIBE          => portSubscribe
+                  case UNSUBSCRIBE        => portUnsubscribe
+                  case CATCHUP            => portCatchup
+                  case HEARTBEAT          => portHeartbeat
+                  case GET_MESSAGES_BY_ID => portGetMessagesById
+                  case _                  => portPipelineError
+                }
+
+              case _ => portPipelineError // Pipeline error goes directly in merger
             }
           ))
 
           val hasMessagePartition = builder.add(ParamsWithMessageHandler.graph(messageRegistry))
-          val hasChannelPartition = builder.add(ParamsWithChannelHandler.graph(clientActorRef))
-          val hasMapPartition = builder.add(ParamsWithMapHandler.graph(dbActorRef))
+          val subscribePartition = builder.add(ParamsWithChannelHandler.subscribeHandler(clientActorRef))
+          val unsubscribePartition = builder.add(ParamsWithChannelHandler.unsubscribeHandler(clientActorRef))
+          val catchupPartition = builder.add(ParamsWithChannelHandler.catchupHandler(clientActorRef))
+          val heartbeatPartition = builder.add(ParamsWithMapHandler.heartbeatHandler(dbActorRef))
+          val getMessagesByIdPartition = builder.add(ParamsWithMapHandler.getMessagesByIdHandler(dbActorRef))
 
           val merger = builder.add(Merge[GraphMessage](totalPorts))
 
@@ -124,8 +139,11 @@ object PublishSubscribe {
 
           methodPartitioner.out(portPipelineError) ~> merger
           methodPartitioner.out(portParamsWithMessage) ~> hasMessagePartition ~> merger
-          methodPartitioner.out(portParamsWithChannel) ~> hasChannelPartition ~> merger
-          methodPartitioner.out(portParamsWithMap) ~> hasMapPartition ~> merger
+          methodPartitioner.out(portSubscribe) ~> subscribePartition ~> merger
+          methodPartitioner.out(portUnsubscribe) ~> unsubscribePartition ~> merger
+          methodPartitioner.out(portCatchup) ~> catchupPartition ~> merger
+          methodPartitioner.out(portHeartbeat) ~> heartbeatPartition ~> merger
+          methodPartitioner.out(portGetMessagesById) ~> getMessagesByIdPartition ~> merger
 
           /* close the shape */
           FlowShape(input.in, merger.out)
