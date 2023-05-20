@@ -222,7 +222,8 @@ public class LaoViewModel extends AndroidViewModel implements PopViewModel {
         subscriptionsEntity.getServerAddress(), subscriptionsEntity.getSubscriptions());
     getApplication()
         .startActivity(
-            ConnectingActivity.newIntentForLao(getApplication().getApplicationContext(), laoId));
+            ConnectingActivity.newIntentForJoiningDetail(
+                getApplication().getApplicationContext(), laoId));
   }
 
   protected Role determineRole() {
