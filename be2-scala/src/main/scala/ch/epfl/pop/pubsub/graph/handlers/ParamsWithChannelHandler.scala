@@ -1,11 +1,8 @@
 package ch.epfl.pop.pubsub.graph.handlers
 
 import akka.NotUsed
-import akka.actor.ActorRef
 import akka.pattern.AskableActorRef
-import akka.stream.FlowShape
-import akka.stream.scaladsl.{Flow, GraphDSL, Merge, Partition}
-import ch.epfl.pop.model.network.method.{Catchup, Subscribe, Unsubscribe}
+import akka.stream.scaladsl.Flow
 import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse}
 import ch.epfl.pop.model.objects.Channel
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
@@ -15,50 +12,6 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
 
 object ParamsWithChannelHandler extends AskPatternConstants {
-
-  def graph(clientActorRef: ActorRef): Flow[GraphMessage, GraphMessage, NotUsed] = Flow.fromGraph(GraphDSL.create() {
-    implicit builder: GraphDSL.Builder[NotUsed] =>
-      {
-        import GraphDSL.Implicits._
-
-        /* partitioner port numbers */
-        val portPipelineError = 0
-        val portSubscribe = 1
-        val portUnsubscribe = 2
-        val portCatchup = 3
-        val totalPorts = 4
-
-        /* building blocks */
-        val handlerPartitioner = builder.add(Partition[GraphMessage](
-          totalPorts,
-          {
-            case Right(jsonRpcMessage: JsonRpcRequest) => jsonRpcMessage.getParams match {
-                case _: Subscribe   => portSubscribe
-                case _: Unsubscribe => portUnsubscribe
-                case _: Catchup     => portCatchup
-              }
-            case _ => portPipelineError // Pipeline error goes directly in handlerMerger
-          }
-        ))
-
-        val subscribeHandler = builder.add(ParamsWithChannelHandler.subscribeHandler(clientActorRef))
-        val unsubscribeHandler = builder.add(ParamsWithChannelHandler.unsubscribeHandler(clientActorRef))
-        val catchupHandler = builder.add(ParamsWithChannelHandler.catchupHandler(clientActorRef))
-
-        val handlerMerger = builder.add(Merge[GraphMessage](totalPorts))
-
-        /* glue the components together */
-        handlerPartitioner.out(portPipelineError) ~> handlerMerger
-        handlerPartitioner.out(portSubscribe) ~> subscribeHandler ~> handlerMerger
-        handlerPartitioner.out(portUnsubscribe) ~> unsubscribeHandler ~> handlerMerger
-        handlerPartitioner.out(portCatchup) ~> catchupHandler ~> handlerMerger
-
-        /* close the shape */
-        FlowShape(handlerPartitioner.in, handlerMerger.out)
-      }
-  })
-
-  final case class Asking(g: GraphMessage, replyTo: ActorRef)
 
   def subscribeHandler(clientActorRef: AskableActorRef): Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map {
     case Right(jsonRpcMessage: JsonRpcRequest) =>

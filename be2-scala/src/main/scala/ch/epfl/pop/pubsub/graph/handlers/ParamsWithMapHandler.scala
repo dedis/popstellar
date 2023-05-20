@@ -2,62 +2,22 @@ package ch.epfl.pop.pubsub.graph.handlers
 
 import akka.NotUsed
 import akka.pattern.AskableActorRef
-import akka.stream.scaladsl.{Flow, GraphDSL, Merge, Partition}
-import ch.epfl.pop.model.network.method.{GetMessagesById, Heartbeat}
-import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse}
-import ch.epfl.pop.model.objects.{Channel, DbActorNAckException, Hash}
-import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
-import ch.epfl.pop.pubsub.AskPatternConstants
-import ch.epfl.pop.storage.DbActor
-import ch.epfl.pop.model.network.MethodType
-import ch.epfl.pop.pubsub.graph.validators.RpcValidator
+import akka.stream.scaladsl.Flow
 import ch.epfl.pop.model.network.method.message.Message
-import scala.collection.mutable
-import akka.stream.FlowShape
-import ch.epfl.pop.model.network.ResultObject
+import ch.epfl.pop.model.network.method.{GetMessagesById, Heartbeat}
+import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse, MethodType, ResultObject}
+import ch.epfl.pop.model.objects.{Channel, DbActorNAckException, Hash}
+import ch.epfl.pop.pubsub.AskPatternConstants
+import ch.epfl.pop.pubsub.graph.validators.RpcValidator
+import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
+import ch.epfl.pop.storage.DbActor
 
 import scala.collection.immutable.HashMap
+import scala.collection.mutable
 import scala.concurrent.Await
 import scala.util.{Failure, Success}
 
 object ParamsWithMapHandler extends AskPatternConstants {
-
-  def graph(dbActorRef: AskableActorRef): Flow[GraphMessage, GraphMessage, NotUsed] = Flow.fromGraph(GraphDSL.create() {
-    implicit builder: GraphDSL.Builder[NotUsed] =>
-      {
-        import GraphDSL.Implicits._
-
-        /* partitioner port numbers */
-        val portPipelineError = 0
-        val portHeartBeatHandler = 1
-        val portGetMessagesByIdHandler = 2
-        val totalPorts = 3
-
-        /* building blocks */
-        val handlerPartitioner = builder.add(Partition[GraphMessage](
-          totalPorts,
-          {
-            case Right(jsonRpcMessage: JsonRpcRequest) => jsonRpcMessage.getParams match {
-                case _: Heartbeat       => portHeartBeatHandler
-                case _: GetMessagesById => portGetMessagesByIdHandler
-              }
-            case _ => portPipelineError // Pipeline error goes directly in handlerMerger
-          }
-        ))
-
-        val heartbeatHandler = builder.add(ParamsWithMapHandler.heartbeatHandler(dbActorRef))
-        val getMessagesByIdHandler = builder.add(ParamsWithMapHandler.getMessagesByIdHandler(dbActorRef))
-        val handlerMerger = builder.add(Merge[GraphMessage](totalPorts))
-
-        /* glue the components together */
-        handlerPartitioner.out(portPipelineError) ~> handlerMerger
-        handlerPartitioner.out(portHeartBeatHandler) ~> heartbeatHandler ~> handlerMerger
-        handlerPartitioner.out(portGetMessagesByIdHandler) ~> getMessagesByIdHandler ~> handlerMerger
-
-        /* close the shape */
-        FlowShape(handlerPartitioner.in, handlerMerger.out)
-      }
-  })
 
   def heartbeatHandler(dbActorRef: AskableActorRef): Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map {
     case Right(jsonRpcMessage: JsonRpcRequest) =>
