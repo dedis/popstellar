@@ -99,8 +99,8 @@ public class CoreDatabaseTest {
     testObserver2.assertComplete();
 
     // Check that the entry has been replaced
-    assertNotEquals(walletEntity1, walletDao.getWallet());
-    assertEquals(walletEntity2, walletDao.getWallet());
+    assertNotEquals(walletEntity1.getWalletSeed(), walletDao.getWallet().getWalletSeed());
+    assertEquals(walletEntity2.getWalletSeed(), walletDao.getWallet().getWalletSeed());
   }
 
   @Test
