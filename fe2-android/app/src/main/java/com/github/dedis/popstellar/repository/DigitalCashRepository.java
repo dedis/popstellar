@@ -288,8 +288,7 @@ public class DigitalCashRepository {
                                           } catch (NoRollCallException e) {
                                             // This exception can't ever be thrown, as if the
                                             // transactions are in the db,
-                                            // then they have a valid public key
-                                            throw new RuntimeException(e);
+                                            // then they have a valid public key associated
                                           }
                                         }),
                                 err ->
