@@ -1,12 +1,10 @@
 package com.github.dedis.popstellar.model.network.method.message.data.digitalcash;
 
-import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.github.dedis.popstellar.model.network.JsonTestUtils;
 import com.github.dedis.popstellar.model.objects.security.*;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -47,11 +45,6 @@ public class TransactionTest {
   // Transaction
   private static final Transaction TRANSACTION =
       new Transaction(VERSION, TX_INS, TX_OUTS, TIMESTAMP);
-
-  @Before
-  public void setup() {
-    JsonTestUtils.loadGSON(ApplicationProvider.getApplicationContext());
-  }
 
   @Test
   public void testGetVersion() {

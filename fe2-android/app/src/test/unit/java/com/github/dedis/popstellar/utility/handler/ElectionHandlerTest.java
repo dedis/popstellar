@@ -1,6 +1,6 @@
 package com.github.dedis.popstellar.utility.handler;
 
-import android.content.Context;
+import android.app.Application;
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.test.core.app.ApplicationProvider;
@@ -110,18 +110,19 @@ public class ElectionHandlerTest {
   @Before
   public void setup() throws GeneralSecurityException, IOException {
     MockitoAnnotations.openMocks(this);
-    Context context = ApplicationProvider.getApplicationContext();
-    appDatabase = AppDatabaseModuleHelper.getAppDatabase(context);
+
+    Application application = ApplicationProvider.getApplicationContext();
+    appDatabase = AppDatabaseModuleHelper.getAppDatabase(application);
 
     lenient().when(keyManager.getMainKeyPair()).thenReturn(SENDER_KEY);
     lenient().when(keyManager.getMainPublicKey()).thenReturn(SENDER);
 
     when(messageSender.subscribe(any())).then(args -> Completable.complete());
 
-    laoRepo = new LAORepository(appDatabase, ApplicationProvider.getApplicationContext());
-    electionRepo = new ElectionRepository();
+    laoRepo = new LAORepository(appDatabase, application);
+    electionRepo = new ElectionRepository(appDatabase, application);
 
-    messageRepo = new MessageRepository(appDatabase, ApplicationProvider.getApplicationContext());
+    messageRepo = new MessageRepository(appDatabase, application);
     DataRegistry dataRegistry =
         DataRegistryModuleHelper.buildRegistry(laoRepo, electionRepo, keyManager, messageRepo);
 

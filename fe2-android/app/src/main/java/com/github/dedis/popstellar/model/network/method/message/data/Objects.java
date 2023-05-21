@@ -52,11 +52,11 @@ public enum Objects {
   public boolean hasToBePersisted() {
     switch (object) {
       case "lao":
+      case "election":
+      case "roll_call":
         return true;
         // TODO: add persistence for other repos in next PRs
-      case "election":
       case "coin":
-      case "roll_call":
       case "meeting":
       case "consensus":
       case "chirp":

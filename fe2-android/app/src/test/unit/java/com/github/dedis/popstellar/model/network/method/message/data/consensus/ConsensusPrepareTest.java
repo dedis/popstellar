@@ -1,6 +1,5 @@
 package com.github.dedis.popstellar.model.network.method.message.data.consensus;
 
-import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.github.dedis.popstellar.model.network.JsonTestUtils;
@@ -10,7 +9,6 @@ import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.testutils.Base64DataUtils;
 import com.google.gson.JsonParseException;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -26,11 +24,6 @@ public class ConsensusPrepareTest {
 
   private static final ConsensusPrepare prepare =
       new ConsensusPrepare(instanceId, messageId, timeInSeconds, proposedTry);
-
-  @Before
-  public void setup() {
-    JsonTestUtils.loadGSON(ApplicationProvider.getApplicationContext());
-  }
 
   @Test
   public void getObjectTest() {

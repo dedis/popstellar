@@ -1,6 +1,5 @@
 package com.github.dedis.popstellar.model.network.method.message.data.consensus;
 
-import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.github.dedis.popstellar.model.network.JsonTestUtils;
@@ -9,7 +8,6 @@ import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.testutils.Base64DataUtils;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -25,11 +23,6 @@ public class ConsensusElectAcceptTest {
       new ConsensusElectAccept(instanceId, messageId, true);
   private static final ConsensusElectAccept consensusElectAcceptReject =
       new ConsensusElectAccept(instanceId, messageId, false);
-
-  @Before
-  public void setup() {
-    JsonTestUtils.loadGSON(ApplicationProvider.getApplicationContext());
-  }
 
   @Test
   public void getInstanceId() {

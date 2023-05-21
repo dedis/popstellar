@@ -4,8 +4,7 @@ import androidx.room.ProvidedTypeConverter;
 import androidx.room.TypeConverter;
 
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
-import com.github.dedis.popstellar.model.objects.Channel;
-import com.github.dedis.popstellar.model.objects.Lao;
+import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -49,6 +48,16 @@ public class CustomTypeConverters {
     return gson.fromJson(value, new TypeToken<Set<Channel>>() {}.getType());
   }
 
+  @TypeConverter
+  public Election electionFromString(String value) {
+    return gson.fromJson(value, Election.class);
+  }
+
+  @TypeConverter
+  public RollCall rollcallFromString(String value) {
+    return gson.fromJson(value, RollCall.class);
+  }
+
   /* ----  From Object to String  ---- */
   @TypeConverter
   public String messageToString(MessageGeneral messageGeneral) {
@@ -73,5 +82,15 @@ public class CustomTypeConverters {
   @TypeConverter
   public String setOfChannelsToString(Set<Channel> channels) {
     return gson.toJson(channels, new TypeToken<Set<Channel>>() {}.getType());
+  }
+
+  @TypeConverter
+  public String electionToString(Election election) {
+    return gson.toJson(election, Election.class);
+  }
+
+  @TypeConverter
+  public String rollcallToString(RollCall rollCall) {
+    return gson.toJson(rollCall, RollCall.class);
   }
 }

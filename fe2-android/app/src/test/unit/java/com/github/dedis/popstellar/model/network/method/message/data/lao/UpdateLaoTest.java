@@ -1,6 +1,5 @@
 package com.github.dedis.popstellar.model.network.method.message.data.lao;
 
-import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.github.dedis.popstellar.model.network.JsonTestUtils;
@@ -12,7 +11,6 @@ import com.github.dedis.popstellar.testutils.Base64DataUtils;
 import com.github.dedis.popstellar.utility.security.Hash;
 import com.google.gson.JsonParseException;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.internal.util.collections.Sets;
@@ -37,11 +35,6 @@ public class UpdateLaoTest {
   private final Set<PublicKey> witnesses = Sets.newSet(generatePublicKey(), generatePublicKey());
   private final UpdateLao updateLao =
       new UpdateLao(organizer, creation, name, lastModified, witnesses);
-
-  @Before
-  public void setup() {
-    JsonTestUtils.loadGSON(ApplicationProvider.getApplicationContext());
-  }
 
   @Test
   public void generateUpdateLaoIdTest() {
