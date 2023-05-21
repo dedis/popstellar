@@ -136,6 +136,23 @@ public class WitnessMessageFragmentTest {
   }
 
   @Test
+  public void testSignButtonState() {
+    witnessingViewModel = new ViewModelProvider(getLaoActivity()).get(WitnessingViewModel.class);
+    witnessingViewModel.setWitnessMessages(witnessMessages);
+
+    onData(anything())
+        .inAdapterView(witnessMessageListMatcher())
+        .atPosition(0)
+        .check(matches(hasDescendant(signMessageButtonMatcher())));
+
+    onData(anything())
+        .inAdapterView(witnessMessageListMatcher())
+        .atPosition(0)
+        .onChildView(signMessageButtonMatcher())
+        .check(matches(isEnabled()));
+  }
+
+  @Test
   public void testWitnessMessageDescriptionDropdown() {
     witnessingViewModel = new ViewModelProvider(getLaoActivity()).get(WitnessingViewModel.class);
     witnessingViewModel.setWitnessMessages(witnessMessages);
@@ -158,7 +175,7 @@ public class WitnessMessageFragmentTest {
 
     InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
-    // Check that correct message description is displayed
+    // Check that the correct message description is displayed
     messageDescriptionText().check(matches(withEffectiveVisibility(Visibility.VISIBLE)));
     onData(anything())
         .inAdapterView(witnessMessageListMatcher())
@@ -167,7 +184,6 @@ public class WitnessMessageFragmentTest {
   }
 
   @Test
-  @Ignore("suppressed")
   public void testWitnessMessageSignaturesDropdown() {
     witnessingViewModel = new ViewModelProvider(getLaoActivity()).get(WitnessingViewModel.class);
     witnessingViewModel.setWitnessMessages(witnessMessages);
@@ -190,12 +206,13 @@ public class WitnessMessageFragmentTest {
 
     InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
-    // Check that correct signatures are displayed
+    // Check that the correct signatures are displayed
     witnessSignaturesText().check(matches(withEffectiveVisibility(Visibility.VISIBLE)));
     onData(anything())
         .inAdapterView(witnessMessageListMatcher())
         .atPosition(0)
-        .check(matches(hasDescendant(withText(SIGNATURES_TEXT))));
+        .check(matches(hasDescendant(withSubstring(WITNESS1.getEncoded()))))
+        .check(matches(hasDescendant(withSubstring(WITNESS2.getEncoded()))));
   }
 
   private LaoActivity getLaoActivity() {

@@ -81,7 +81,7 @@ public final class LaoView {
   }
 
   public Map<MessageID, WitnessMessage> getWitnessMessages() {
-    return Copyable.copy(lao.getWitnessMessages());
+    return Copyable.copyMapPreservingOrder(lao.getWitnessMessages());
   }
 
   public List<ConsensusNode> getNodes() {

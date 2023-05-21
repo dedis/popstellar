@@ -1,6 +1,5 @@
 package com.github.dedis.popstellar.model.network.method.message.data.consensus;
 
-import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.github.dedis.popstellar.model.network.JsonTestUtils;
@@ -147,7 +146,6 @@ public class ConsensusProposeTest {
 
   @Test
   public void jsonValidationTest() {
-    JsonTestUtils.loadGSON(ApplicationProvider.getApplicationContext());
     JsonTestUtils.testData(propose);
 
     String dir = "protocol/examples/messageData/consensus_propose/";

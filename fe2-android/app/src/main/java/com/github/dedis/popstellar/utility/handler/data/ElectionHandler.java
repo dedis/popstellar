@@ -33,7 +33,6 @@ public final class ElectionHandler {
   private static final String ELECTION_NAME = "Election Name : ";
   private static final String MESSAGE_ID = "Message ID : ";
   private static final String ELECTION_ID = "Election ID : ";
-  private static final String QUESTION = "Question : ";
 
   @Inject
   public ElectionHandler(
@@ -93,7 +92,7 @@ public final class ElectionHandler {
     Timber.tag(TAG).d("election id %s", election.getId());
 
     Lao lao = laoView.createLaoCopy();
-    lao.updateWitnessMessage(messageId, electionSetupWitnessMessage(messageId, election));
+    lao.addWitnessMessage(electionSetupWitnessMessage(messageId, election));
     laoRepo.updateLao(lao);
   }
 
@@ -272,9 +271,7 @@ public final class ElectionHandler {
             + "\n"
             + election.getId()
             + "\n\n"
-            + QUESTION
-            + "\n"
-            + election.getElectionQuestions().get(0).getQuestion()
+            + formatElectionQuestions(election.getElectionQuestions())
             + "\n\n"
             + MESSAGE_ID
             + "\n"
@@ -304,5 +301,23 @@ public final class ElectionHandler {
     electionRepository.updateElection(election);
 
     Timber.tag(TAG).d("handleElectionKey: election key has been set");
+  }
+
+  private static String formatElectionQuestions(List<ElectionQuestion> questions) {
+    StringBuilder questionsDescription = new StringBuilder();
+    final String QUESTION = "Question ";
+
+    for (int i = 0; i < questions.size(); i++) {
+      questionsDescription
+          .append(QUESTION)
+          .append(i + 1)
+          .append(": \n")
+          .append(questions.get(i).getQuestion());
+
+      if (i < questions.size() - 1) {
+        questionsDescription.append("\n\n");
+      }
+    }
+    return questionsDescription.toString();
   }
 }

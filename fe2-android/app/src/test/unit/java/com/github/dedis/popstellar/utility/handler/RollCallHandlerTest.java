@@ -1,6 +1,6 @@
 package com.github.dedis.popstellar.utility.handler;
 
-import android.content.Context;
+import android.app.Application;
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.test.core.app.ApplicationProvider;
@@ -70,8 +70,8 @@ public class RollCallHandlerTest {
   public void setup()
       throws GeneralSecurityException, IOException, KeyException, UnknownRollCallException {
     MockitoAnnotations.openMocks(this);
-    Context context = ApplicationProvider.getApplicationContext();
-    appDatabase = AppDatabaseModuleHelper.getAppDatabase(context);
+    Application application = ApplicationProvider.getApplicationContext();
+    appDatabase = AppDatabaseModuleHelper.getAppDatabase(application);
 
     lenient().when(keyManager.getMainKeyPair()).thenReturn(SENDER_KEY);
     lenient().when(keyManager.getMainPublicKey()).thenReturn(SENDER);
@@ -79,8 +79,8 @@ public class RollCallHandlerTest {
 
     lenient().when(messageSender.subscribe(any())).then(args -> Completable.complete());
 
-    laoRepo = new LAORepository(appDatabase, ApplicationProvider.getApplicationContext());
-    rollCallRepo = new RollCallRepository();
+    laoRepo = new LAORepository(appDatabase, application);
+    rollCallRepo = new RollCallRepository(appDatabase, application);
 
     DataRegistry dataRegistry =
         DataRegistryModuleHelper.buildRegistry(laoRepo, keyManager, rollCallRepo);

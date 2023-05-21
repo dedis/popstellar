@@ -22,7 +22,6 @@
         android:id="@+id/sign_message_button"
         android:layout_width="@dimen/standard_button_width"
         android:layout_height="match_parent"
-        android:text="@string/Sign"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/message_metadata_container" />

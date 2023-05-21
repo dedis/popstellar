@@ -15,13 +15,10 @@ import org.junit.runner.RunWith;
 import java.time.Instant;
 import java.util.List;
 
-import dagger.hilt.android.testing.HiltAndroidRule;
-import dagger.hilt.android.testing.HiltAndroidTest;
 import io.reactivex.observers.TestObserver;
 
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.generatePublicKey;
 
-@HiltAndroidTest
 @RunWith(AndroidJUnit4.class)
 public class LAODatabaseTest {
   private static AppDatabase appDatabase;
@@ -32,11 +29,8 @@ public class LAODatabaseTest {
 
   private static final Lao LAO = new Lao(LAO_NAME_1, ORGANIZER, Instant.now().getEpochSecond());
 
-  @Rule public HiltAndroidRule hiltRule = new HiltAndroidRule(this);
-
   @Before
   public void before() {
-    hiltRule.inject();
     appDatabase =
         AppDatabaseModuleHelper.getAppDatabase(ApplicationProvider.getApplicationContext());
     laoDao = appDatabase.laoDao();

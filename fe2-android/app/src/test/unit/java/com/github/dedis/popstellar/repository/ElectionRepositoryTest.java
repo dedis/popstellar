@@ -1,12 +1,20 @@
 package com.github.dedis.popstellar.repository;
 
+import android.app.Application;
+
+import androidx.test.core.app.ApplicationProvider;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+
+import com.github.dedis.popstellar.di.AppDatabaseModuleHelper;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVersion;
 import com.github.dedis.popstellar.model.objects.Election;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.event.EventState;
+import com.github.dedis.popstellar.repository.database.AppDatabase;
 import com.github.dedis.popstellar.utility.error.UnknownElectionException;
 
-import org.junit.Test;
+import org.junit.*;
+import org.junit.runner.RunWith;
 
 import java.util.Set;
 
@@ -20,6 +28,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThrows;
 
+@RunWith(AndroidJUnit4.class)
 public class ElectionRepositoryTest {
 
   private static final String LAO_ID = Lao.generateLaoId(generatePublicKey(), 100321004, "Lao");
@@ -27,10 +36,23 @@ public class ElectionRepositoryTest {
       new Election.ElectionBuilder(LAO_ID, 100321014, "Election")
           .setElectionVersion(ElectionVersion.OPEN_BALLOT)
           .build();
+  private static final Application application = ApplicationProvider.getApplicationContext();
+  private static final AppDatabase appDatabase =
+      AppDatabaseModuleHelper.getAppDatabase(application);
+  private static ElectionRepository repo;
+
+  @Before
+  public void setup() {
+    repo = new ElectionRepository(appDatabase, application);
+  }
+
+  @After
+  public void tearDown() {
+    appDatabase.close();
+  }
 
   @Test
   public void addingElectionUpdatesIds() {
-    ElectionRepository repo = new ElectionRepository();
     TestObserver<Set<Election>> elections = repo.getElectionsObservableInLao(LAO_ID).test();
 
     assertCurrentValueIs(elections, emptySet());
@@ -43,7 +65,6 @@ public class ElectionRepositoryTest {
   @Test
   public void electionUpdateIsCorrectlyDispatched() throws UnknownElectionException {
     // Create repository with an election inside it
-    ElectionRepository repo = new ElectionRepository();
     repo.updateElection(ELECTION);
     TestObserver<Election> electionObserver =
         repo.getElectionObservable(LAO_ID, ELECTION.getId()).test();
@@ -62,7 +83,6 @@ public class ElectionRepositoryTest {
 
   @Test
   public void electionByChannelHasSameEffectAsGetElection() throws UnknownElectionException {
-    ElectionRepository repo = new ElectionRepository();
     repo.updateElection(ELECTION);
 
     assertThat(
@@ -72,8 +92,6 @@ public class ElectionRepositoryTest {
 
   @Test
   public void retrievingAnInvalidElectionThrowsAnException() {
-    ElectionRepository repo = new ElectionRepository();
-
     assertThrows(UnknownElectionException.class, () -> repo.getElection(LAO_ID, ELECTION.getId()));
     assertThrows(
         UnknownElectionException.class, () -> repo.getElectionObservable(LAO_ID, ELECTION.getId()));

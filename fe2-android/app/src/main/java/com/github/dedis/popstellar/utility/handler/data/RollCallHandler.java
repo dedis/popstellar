@@ -71,7 +71,7 @@ public final class RollCallHandler {
 
     RollCall rollCall = builder.build();
     Lao lao = laoView.createLaoCopy();
-    lao.updateWitnessMessage(messageId, createRollCallWitnessMessage(messageId, rollCall));
+    lao.addWitnessMessage(createRollCallWitnessMessage(messageId, rollCall));
 
     rollCallRepo.updateRollCall(laoView.getId(), rollCall);
     laoRepo.updateLao(lao);
@@ -110,7 +110,7 @@ public final class RollCallHandler {
 
     RollCall rollCall = builder.build();
     Lao lao = laoView.createLaoCopy();
-    lao.updateWitnessMessage(messageId, openRollCallWitnessMessage(messageId, rollCall));
+    lao.addWitnessMessage(openRollCallWitnessMessage(messageId, rollCall));
 
     rollCallRepo.updateRollCall(laoView.getId(), rollCall);
     laoRepo.updateLao(lao);
@@ -155,7 +155,7 @@ public final class RollCallHandler {
     rollCallRepo.updateRollCall(laoView.getId(), rollCall);
 
     Lao lao = laoView.createLaoCopy();
-    lao.updateWitnessMessage(messageId, closeRollCallWitnessMessage(messageId, rollCall));
+    lao.addWitnessMessage(closeRollCallWitnessMessage(messageId, rollCall));
 
     digitalCashRepo.initializeDigitalCash(laoView.getId(), closeRollCall.getAttendees());
 

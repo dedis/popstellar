@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 2,
-    "identityHash": "164d4893d3601e8aa93e08ebf498affa",
+    "identityHash": "8793d41bc2b2c494637e6b76c6f5334b",
     "entities": [
       {
         "tableName": "messages",
@@ -113,12 +113,96 @@
         },
         "indices": [],
         "foreignKeys": []
+      },
+      {
+        "tableName": "elections",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`election_id` TEXT NOT NULL, `lao_id` TEXT NOT NULL, `election` TEXT NOT NULL, PRIMARY KEY(`election_id`))",
+        "fields": [
+          {
+            "fieldPath": "electionId",
+            "columnName": "election_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "laoId",
+            "columnName": "lao_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "election",
+            "columnName": "election",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "election_id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [
+          {
+            "name": "index_elections_lao_id",
+            "unique": false,
+            "columnNames": [
+              "lao_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_elections_lao_id` ON `${TABLE_NAME}` (`lao_id`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "rollcalls",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`rollcall_id` TEXT NOT NULL, `lao_id` TEXT NOT NULL, `rollcall` TEXT NOT NULL, PRIMARY KEY(`rollcall_id`))",
+        "fields": [
+          {
+            "fieldPath": "rollcallId",
+            "columnName": "rollcall_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "laoId",
+            "columnName": "lao_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "rollCall",
+            "columnName": "rollcall",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "rollcall_id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [
+          {
+            "name": "index_rollcalls_lao_id",
+            "unique": false,
+            "columnNames": [
+              "lao_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_rollcalls_lao_id` ON `${TABLE_NAME}` (`lao_id`)"
+          }
+        ],
+        "foreignKeys": []
       }
     ],
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '164d4893d3601e8aa93e08ebf498affa')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '8793d41bc2b2c494637e6b76c6f5334b')"
     ]
   }
 }
