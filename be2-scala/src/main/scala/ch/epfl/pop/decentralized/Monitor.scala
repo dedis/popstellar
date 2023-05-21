@@ -115,8 +115,8 @@ private class FileMonitor(mediatorRef: ActorRef) extends Runnable {
           if (serverPeersListPath.endsWith(event.context().toString)) {
             mediatorRef ! ConnectionMediator.ConnectTo(readServerPeers())
           }
-          watchKey.reset()
         }
+        watchKey.reset()
       }
     } catch {
       case _: InterruptedException =>
