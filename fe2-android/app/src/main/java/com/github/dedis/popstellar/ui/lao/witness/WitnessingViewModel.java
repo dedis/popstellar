@@ -107,8 +107,10 @@ public class WitnessingViewModel extends AndroidViewModel implements QRCodeScann
             .subscribe(
                 laoView -> {
                   Timber.tag(TAG).d("got an update for lao: %s", laoView);
-
-                  setWitnessMessages(new ArrayList<>(laoView.getWitnessMessages().values()));
+                  List<WitnessMessage> witnessMessages =
+                      new ArrayList<>(laoView.getWitnessMessages().values());
+                  Collections.reverse(witnessMessages);
+                  setWitnessMessages(witnessMessages);
                   setWitnesses(new ArrayList<>(laoView.getWitnesses()));
                 },
                 error -> Timber.tag(TAG).d(error, "error updating LAO")));

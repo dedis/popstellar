@@ -29,7 +29,7 @@ public class WitnessMessageFragmentPageObject {
   public static Matcher<View> messageSignaturesArrowMatcher() {
     return withId(R.id.signatures_arrow);
   }
-  
+
   public static ViewInteraction messageDescriptionText() {
     return onView(withId(R.id.message_description_text));
   }
@@ -38,7 +38,7 @@ public class WitnessMessageFragmentPageObject {
     return onView(withId(R.id.witnesses_text));
   }
 
-  public static ViewInteraction witnessMessageFragment() {
-    return onView(withId(R.id.fragment_witness_message));
+  public static Matcher<View> signMessageButtonMatcher() {
+    return withId(R.id.sign_message_button);
   }
 }

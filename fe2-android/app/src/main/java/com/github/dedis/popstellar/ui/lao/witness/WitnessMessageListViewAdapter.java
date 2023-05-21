@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.view.*;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.FragmentActivity;
@@ -111,8 +112,22 @@ public class WitnessMessageListViewAdapter extends BaseAdapter {
 
     if (isWitness) {
       Context context = parent.getContext();
-      View.OnClickListener listener = setUpSignButtonClickListener(context, witnessMessage);
-      binding.signMessageButton.setOnClickListener(listener);
+      Set<PublicKey> witnessSignatures = witnessMessage.getWitnesses();
+
+      if (witnessSignatures.contains(laoViewModel.getPublicKey())) {
+        // The user already signed the message
+        binding.signMessageButton.setEnabled(false);
+        String signed = activity.getString(R.string.signed);
+        binding.signMessageButton.setText(signed);
+      } else {
+        binding.signMessageButton.setEnabled(true);
+        String sign = activity.getString(R.string.sign);
+        binding.signMessageButton.setText(sign);
+        View.OnClickListener listener =
+            setUpSignButtonClickListener(context, witnessMessage, binding.signMessageButton);
+        binding.signMessageButton.setOnClickListener(listener);
+      }
+
     } else {
       // Don't show the sign button if the user is not a witness
       binding.signMessageButton.setVisibility(View.GONE);
@@ -124,7 +139,7 @@ public class WitnessMessageListViewAdapter extends BaseAdapter {
   }
 
   private View.OnClickListener setUpSignButtonClickListener(
-      Context context, WitnessMessage message) {
+      Context context, WitnessMessage message, Button button) {
     return v -> {
       AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(context);
 
@@ -142,7 +157,12 @@ public class WitnessMessageListViewAdapter extends BaseAdapter {
                   witnessingViewModel
                       .signMessage(message)
                       .subscribe(
-                          () -> Timber.tag(TAG).d("Witness message successfully signed"),
+                          () -> {
+                            Timber.tag(TAG).d("Witness message successfully signed");
+                            button.setEnabled(false);
+                            String signed = activity.getString(R.string.signed);
+                            button.setText(signed);
+                          },
                           error ->
                               ErrorUtils.logAndShow(
                                   activity, TAG, error, R.string.error_sign_message))));

@@ -38,7 +38,8 @@ public abstract class DataRegistryModule {
       ConsensusHandler consensusHandler,
       ChirpHandler chirpHandler,
       ReactionHandler reactionHandler,
-      TransactionCoinHandler transactionCoinHandler) {
+      TransactionCoinHandler transactionCoinHandler,
+      WitnessingHandler witnessMessageHandler) {
     DataRegistry.Builder builder = new DataRegistry.Builder();
 
     // Lao
@@ -54,7 +55,11 @@ public abstract class DataRegistryModule {
         .add(MEETING, STATE, StateMeeting.class, meetingHandler::handleStateMeeting);
 
     // Message
-    builder.add(MESSAGE, WITNESS, WitnessMessageSignature.class, null);
+    builder.add(
+        MESSAGE,
+        WITNESS,
+        WitnessMessageSignature.class,
+        witnessMessageHandler::handleWitnessMessageSignature);
 
     // Roll Call
     builder

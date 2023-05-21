@@ -63,7 +63,7 @@ public class MeetingHandler {
 
     Meeting meeting = builder.build();
     Lao lao = laoView.createLaoCopy();
-    lao.updateWitnessMessage(messageId, createMeetingWitnessMessage(messageId, meeting));
+    lao.addWitnessMessage(createMeetingWitnessMessage(messageId, meeting));
 
     meetingRepo.updateMeeting(laoView.getId(), meeting);
     laoRepo.updateLao(lao);
@@ -93,7 +93,7 @@ public class MeetingHandler {
 
     Meeting meeting = builder.build();
     Lao lao = laoView.createLaoCopy();
-    lao.updateWitnessMessage(messageId, stateMeetingWitnessMessage(messageId, meeting));
+    lao.addWitnessMessage(stateMeetingWitnessMessage(messageId, meeting));
 
     meetingRepo.updateMeeting(laoView.getId(), meeting);
     laoRepo.updateLao(lao);
