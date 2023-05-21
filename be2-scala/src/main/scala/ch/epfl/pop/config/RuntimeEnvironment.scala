@@ -50,7 +50,7 @@ object RuntimeEnvironment {
   lazy val isTestMode: Boolean = testMode
   lazy val serverPeersListPath: String =
     if (isTestMode) {
-      confDir + File.separator + "server-peers-list-TEST.conf"
+      confDir + File.separator + "server-peers-list-mock.conf"
     } else {
       confDir + File.separator + "server-peers-list.conf"
     }

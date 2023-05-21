@@ -1,6 +1,6 @@
 package ch.epfl.pop.config
 
-import ch.epfl.pop.config.RuntimeEnvironment.{readServerPeers, serverPeersListPath}
+import ch.epfl.pop.config.RuntimeEnvironment.readServerPeers
 import ch.epfl.pop.config.RuntimeEnvironmentTestingHelper.testWriteToServerPeersConfig
 import org.scalatest.funsuite.{AnyFunSuiteLike => FunSuite}
 import org.scalatest.matchers.should.Matchers.{convertToAnyShouldWrapper, equal}
@@ -19,9 +19,6 @@ class RuntimeEnvironmentSuite extends FunSuite {
     )
 
     testWriteToServerPeersConfig(addressList)
-
-    // Set the file to delete itself at jvm shutdown
-    new File(serverPeersListPath).deleteOnExit()
 
     // Verify it works as expected
     readServerPeers() should equal(addressList.tail)
