@@ -331,7 +331,7 @@ public class LaoActivity extends AppCompatActivity {
       FragmentActivity activity, String laoId) {
     WitnessingViewModel witnessingViewModel =
         new ViewModelProvider(activity).get(WitnessingViewModel.class);
-    witnessingViewModel.setLaoId(laoId);
+    witnessingViewModel.initialize(laoId);
     return witnessingViewModel;
   }
 

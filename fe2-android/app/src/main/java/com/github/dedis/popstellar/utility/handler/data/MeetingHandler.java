@@ -6,8 +6,7 @@ import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.event.MeetingBuilder;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
-import com.github.dedis.popstellar.repository.LAORepository;
-import com.github.dedis.popstellar.repository.MeetingRepository;
+import com.github.dedis.popstellar.repository.*;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 
 import java.util.ArrayList;
@@ -27,11 +26,14 @@ public class MeetingHandler {
 
   private final LAORepository laoRepo;
   private final MeetingRepository meetingRepo;
+  private final WitnessingRepository witnessingRepo;
 
   @Inject
-  public MeetingHandler(LAORepository laoRepo, MeetingRepository meetingRepo) {
+  public MeetingHandler(
+      LAORepository laoRepo, MeetingRepository meetingRepo, WitnessingRepository witnessingRepo) {
     this.laoRepo = laoRepo;
     this.meetingRepo = meetingRepo;
+    this.witnessingRepo = witnessingRepo;
   }
 
   /**
@@ -62,11 +64,11 @@ public class MeetingHandler {
         .setModificationSignatures(new ArrayList<>());
 
     Meeting meeting = builder.build();
-    Lao lao = laoView.createLaoCopy();
-    lao.addWitnessMessage(createMeetingWitnessMessage(messageId, meeting));
+
+    witnessingRepo.addWitnessMessage(
+        laoView.getId(), createMeetingWitnessMessage(messageId, meeting));
 
     meetingRepo.updateMeeting(laoView.getId(), meeting);
-    laoRepo.updateLao(lao);
   }
 
   public void handleStateMeeting(HandlerContext context, StateMeeting stateMeeting)
@@ -92,11 +94,11 @@ public class MeetingHandler {
         .setModificationSignatures(stateMeeting.getModificationSignatures());
 
     Meeting meeting = builder.build();
-    Lao lao = laoView.createLaoCopy();
-    lao.addWitnessMessage(stateMeetingWitnessMessage(messageId, meeting));
+
+    witnessingRepo.addWitnessMessage(
+        laoView.getId(), stateMeetingWitnessMessage(messageId, meeting));
 
     meetingRepo.updateMeeting(laoView.getId(), meeting);
-    laoRepo.updateLao(lao);
   }
 
   public static WitnessMessage createMeetingWitnessMessage(MessageID messageId, Meeting meeting) {

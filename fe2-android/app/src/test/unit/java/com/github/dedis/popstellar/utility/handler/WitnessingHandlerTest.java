@@ -90,7 +90,7 @@ public class WitnessingHandlerTest {
     // Create one LAO
     LAO = new Lao(CREATE_LAO.getName(), CREATE_LAO.getOrganizer(), CREATE_LAO.getCreation());
     LAO.setLastModified(LAO.getCreation());
-    LAO.setWitnesses(new HashSet<>(CREATE_LAO.getWitnesses()));
+    LAO.initKeyToNode(new HashSet<>(CREATE_LAO.getWitnesses()));
     LAO.addWitnessMessage(WITNESS_MESSAGE);
 
     // Add the LAO to the LAORepository

@@ -30,15 +30,18 @@ public final class RollCallHandler {
   private final LAORepository laoRepo;
   private final RollCallRepository rollCallRepo;
   private final DigitalCashRepository digitalCashRepo;
+  private final WitnessingRepository witnessingRepo;
 
   @Inject
   public RollCallHandler(
       LAORepository laoRepo,
       RollCallRepository rollCallRepo,
-      DigitalCashRepository digitalCashRepo) {
+      DigitalCashRepository digitalCashRepo,
+      WitnessingRepository witnessingRepo) {
     this.laoRepo = laoRepo;
     this.rollCallRepo = rollCallRepo;
     this.digitalCashRepo = digitalCashRepo;
+    this.witnessingRepo = witnessingRepo;
   }
 
   /**
@@ -70,11 +73,11 @@ public final class RollCallHandler {
         .setEmptyAttendees();
 
     RollCall rollCall = builder.build();
-    Lao lao = laoView.createLaoCopy();
-    lao.addWitnessMessage(createRollCallWitnessMessage(messageId, rollCall));
+
+    witnessingRepo.addWitnessMessage(
+        laoView.getId(), createRollCallWitnessMessage(messageId, rollCall));
 
     rollCallRepo.updateRollCall(laoView.getId(), rollCall);
-    laoRepo.updateLao(lao);
   }
 
   /**
@@ -109,11 +112,11 @@ public final class RollCallHandler {
         .setEmptyAttendees();
 
     RollCall rollCall = builder.build();
-    Lao lao = laoView.createLaoCopy();
-    lao.addWitnessMessage(openRollCallWitnessMessage(messageId, rollCall));
+
+    witnessingRepo.addWitnessMessage(
+        laoView.getId(), openRollCallWitnessMessage(messageId, rollCall));
 
     rollCallRepo.updateRollCall(laoView.getId(), rollCall);
-    laoRepo.updateLao(lao);
   }
 
   /**
@@ -154,8 +157,8 @@ public final class RollCallHandler {
     RollCall rollCall = builder.build();
     rollCallRepo.updateRollCall(laoView.getId(), rollCall);
 
-    Lao lao = laoView.createLaoCopy();
-    lao.addWitnessMessage(closeRollCallWitnessMessage(messageId, rollCall));
+    witnessingRepo.addWitnessMessage(
+        laoView.getId(), closeRollCallWitnessMessage(messageId, rollCall));
 
     digitalCashRepo.initializeDigitalCash(laoView.getId(), closeRollCall.getAttendees());
 
@@ -180,8 +183,6 @@ public final class RollCallHandler {
         .subscribe(
             () -> Timber.tag(TAG).d("subscription a success"),
             error -> Timber.tag(TAG).d(error, "subscription error"));
-
-    laoRepo.updateLao(lao);
   }
 
   public static WitnessMessage createRollCallWitnessMessage(

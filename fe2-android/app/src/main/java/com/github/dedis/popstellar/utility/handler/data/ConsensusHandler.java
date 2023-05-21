@@ -7,6 +7,7 @@ import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.LAORepository;
+import com.github.dedis.popstellar.repository.WitnessingRepository;
 import com.github.dedis.popstellar.utility.error.*;
 
 import java.util.Optional;
@@ -21,10 +22,12 @@ public final class ConsensusHandler {
   public static final String TAG = ConsensusHandler.class.getSimpleName();
 
   private final LAORepository laoRepo;
+  private final WitnessingRepository witnessingRepo;
 
   @Inject
-  public ConsensusHandler(LAORepository laoRepo) {
+  public ConsensusHandler(LAORepository laoRepo, WitnessingRepository witnessingRepo) {
     this.laoRepo = laoRepo;
+    this.witnessingRepo = witnessingRepo;
   }
 
   /**
@@ -42,7 +45,7 @@ public final class ConsensusHandler {
     Timber.tag(TAG).d("handleElect: channel: %s, id: %s", channel, consensusElect.getInstanceId());
 
     LaoView laoView = laoRepo.getLaoViewByChannel(channel);
-    Set<PublicKey> nodes = laoView.getWitnesses();
+    Set<PublicKey> nodes = witnessingRepo.getWitnesses(laoView.getId());
     nodes.add(laoView.getOrganizer());
 
     ElectInstance electInstance =

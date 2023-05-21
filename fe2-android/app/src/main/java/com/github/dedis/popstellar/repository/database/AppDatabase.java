@@ -8,12 +8,14 @@ import com.github.dedis.popstellar.repository.database.lao.LAODao;
 import com.github.dedis.popstellar.repository.database.lao.LAOEntity;
 import com.github.dedis.popstellar.repository.database.message.MessageDao;
 import com.github.dedis.popstellar.repository.database.message.MessageEntity;
+import com.github.dedis.popstellar.repository.database.witnessing.WitnessingDao;
+import com.github.dedis.popstellar.repository.database.witnessing.WitnessingEntity;
 
 import javax.inject.Singleton;
 
 @Singleton
 @Database(
-    entities = {MessageEntity.class, LAOEntity.class, CoreEntity.class},
+    entities = {MessageEntity.class, LAOEntity.class, CoreEntity.class, WitnessingEntity.class},
     version = 1)
 @TypeConverters(CustomTypeConverters.class)
 public abstract class AppDatabase extends RoomDatabase {
@@ -22,4 +24,6 @@ public abstract class AppDatabase extends RoomDatabase {
   public abstract LAODao laoDao();
 
   public abstract CoreDao coreDao();
+
+  public abstract WitnessingDao witnessDao();
 }

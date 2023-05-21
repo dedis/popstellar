@@ -17,6 +17,7 @@ import com.github.dedis.popstellar.model.objects.security.*;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.model.qrcode.MainPublicKeyData;
 import com.github.dedis.popstellar.repository.LAORepository;
+import com.github.dedis.popstellar.repository.WitnessingRepository;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningViewModel;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
@@ -51,6 +52,7 @@ public class WitnessingViewModel extends AndroidViewModel implements QRCodeScann
   private final MutableLiveData<Integer> nbScanned = new MutableLiveData<>(0);
 
   private final LAORepository laoRepo;
+  private final WitnessingRepository witnessingRepo;
   private final KeyManager keyManager;
   private final GlobalNetworkManager networkManager;
   private final Gson gson;
@@ -61,11 +63,13 @@ public class WitnessingViewModel extends AndroidViewModel implements QRCodeScann
   public WitnessingViewModel(
       @NonNull Application application,
       LAORepository laoRepo,
+      WitnessingRepository witnessingRepo,
       KeyManager keyManager,
       GlobalNetworkManager networkManager,
       Gson gson) {
     super(application);
     this.laoRepo = laoRepo;
+    this.witnessingRepo = witnessingRepo;
     this.keyManager = keyManager;
     this.networkManager = networkManager;
     this.gson = gson;
@@ -91,29 +95,28 @@ public class WitnessingViewModel extends AndroidViewModel implements QRCodeScann
     return new ArrayList<>(scannedWitnesses);
   }
 
-  /*
-  // TODO refactor this away
-   This is done so because of the absence of witnessing repository. It should be added
-   and then witnesses can be observed the same way as events. You can have a look at
-   either the roll call or election repository and view model.
-  */
-  public void setLaoId(String laoId) {
+  public void initialize(String laoId) {
     this.laoId = laoId;
 
-    disposables.add(
-        laoRepo
-            .getLaoObservable(laoId)
+    disposables.addAll(
+        witnessingRepo
+            .getWitnessesObservableInLao(laoId)
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
-                laoView -> {
-                  Timber.tag(TAG).d("got an update for lao: %s", laoView);
-                  List<WitnessMessage> witnessMessages =
-                      new ArrayList<>(laoView.getWitnessMessages().values());
-                  Collections.reverse(witnessMessages);
-                  setWitnessMessages(witnessMessages);
-                  setWitnesses(new ArrayList<>(laoView.getWitnesses()));
+                witnesses -> setWitnesses(new ArrayList<>(witnesses)),
+                error ->
+                    Timber.tag(TAG).d(error, "Error in updating the witnesses of lao %s", laoId)),
+        witnessingRepo
+            .getWitnessMessagesObservableInLao(laoId)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                witnessMessage -> {
+                  Collections.reverse(witnessMessage);
+                  setWitnessMessages(witnessMessage);
                 },
-                error -> Timber.tag(TAG).d(error, "error updating LAO")));
+                error ->
+                    Timber.tag(TAG)
+                        .d(error, "Error in updating the witness messages of lao %s", laoId)));
   }
 
   @Override

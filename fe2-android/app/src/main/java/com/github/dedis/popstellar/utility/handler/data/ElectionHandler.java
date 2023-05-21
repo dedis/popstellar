@@ -1,7 +1,5 @@
 package com.github.dedis.popstellar.utility.handler.data;
 
-import android.annotation.SuppressLint;
-
 import androidx.annotation.NonNull;
 
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
@@ -29,6 +27,7 @@ public final class ElectionHandler {
   private final LAORepository laoRepo;
   private final MessageRepository messageRepo;
   private final ElectionRepository electionRepository;
+  private final WitnessingRepository witnessingRepository;
 
   private static final String ELECTION_NAME = "Election Name : ";
   private static final String MESSAGE_ID = "Message ID : ";
@@ -36,10 +35,14 @@ public final class ElectionHandler {
 
   @Inject
   public ElectionHandler(
-      MessageRepository messageRepo, LAORepository laoRepo, ElectionRepository electionRepository) {
+      MessageRepository messageRepo,
+      LAORepository laoRepo,
+      ElectionRepository electionRepository,
+      WitnessingRepository witnessingRepository) {
     this.laoRepo = laoRepo;
     this.messageRepo = messageRepo;
     this.electionRepository = electionRepository;
+    this.witnessingRepository = witnessingRepository;
   }
 
   /**
@@ -91,9 +94,7 @@ public final class ElectionHandler {
 
     Timber.tag(TAG).d("election id %s", election.getId());
 
-    Lao lao = laoView.createLaoCopy();
-    lao.addWitnessMessage(electionSetupWitnessMessage(messageId, election));
-    laoRepo.updateLao(lao);
+    witnessingRepository.addWitnessMessage(laoId, electionSetupWitnessMessage(messageId, election));
   }
 
   /**
@@ -194,7 +195,6 @@ public final class ElectionHandler {
    * @param context the HandlerContext of the message
    * @param castVote the message that was received
    */
-  @SuppressLint("CheckResult")
   public void handleCastVote(HandlerContext context, CastVote castVote)
       throws UnknownElectionException, DataHandlingException, UnknownLaoException {
     Channel channel = context.getChannel();

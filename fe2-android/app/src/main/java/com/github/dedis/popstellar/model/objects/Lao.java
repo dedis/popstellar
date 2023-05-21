@@ -21,12 +21,7 @@ public final class Lao implements Copyable<Lao> {
   private Long creation;
   private PublicKey organizer;
   private MessageID modificationId;
-  private Set<PublicKey> witnesses;
-  private final Map<MessageID, WitnessMessage> witnessMessages;
-  /**
-   * map between a messages ID and the corresponding object WitnessMessage that has to be signed by
-   * witnesses
-   */
+
   private Set<PendingUpdate> pendingUpdates;
 
   private final Map<MessageID, ElectInstance> messageIdToElectInstance;
@@ -43,8 +38,6 @@ public final class Lao implements Copyable<Lao> {
     this.id = id;
     keyToNode = new HashMap<>();
     messageIdToElectInstance = new HashMap<>();
-    witnessMessages = new LinkedHashMap<>();
-    witnesses = new HashSet<>();
     pendingUpdates = new HashSet<>();
   }
 
@@ -64,8 +57,6 @@ public final class Lao implements Copyable<Lao> {
       Long creation,
       PublicKey organizer,
       MessageID modificationId,
-      Set<PublicKey> witnesses,
-      Map<MessageID, WitnessMessage> witnessMessages,
       Set<PendingUpdate> pendingUpdates,
       Map<MessageID, ElectInstance> messageIdToElectInstance,
       Map<PublicKey, ConsensusNode> keyToNode) {
@@ -76,8 +67,6 @@ public final class Lao implements Copyable<Lao> {
     this.creation = creation;
     this.organizer = organizer;
     this.modificationId = modificationId;
-    this.witnesses = new HashSet<>(witnesses);
-    this.witnessMessages = new LinkedHashMap<>(witnessMessages);
     this.pendingUpdates = new HashSet<>(pendingUpdates);
     this.messageIdToElectInstance = new HashMap<>(messageIdToElectInstance);
     this.keyToNode = Copyable.copy(keyToNode);
@@ -96,8 +85,6 @@ public final class Lao implements Copyable<Lao> {
     creation = lao.creation;
     organizer = lao.organizer;
     modificationId = lao.modificationId;
-    witnesses = new HashSet<>(lao.witnesses);
-    witnessMessages = new LinkedHashMap<>(lao.witnessMessages);
     pendingUpdates = new HashSet<>(lao.pendingUpdates);
     // FIXME We need to keep the ElectInstance because the current consensus relies on references
     // (Gabriel Fleischer 11.08.22)
@@ -130,37 +117,12 @@ public final class Lao implements Copyable<Lao> {
     }
   }
 
-  /**
-   * Update the list of messages that have to be signed by witnesses. If the list of messages
-   * contain the message with Id prevId , it will remove this message from the list. Then it will
-   * add the new message to the list with the corresponding newId
-   *
-   * @param prevId the previous id of a message that needs to be signed
-   * @param witnessMessage the object representing the message needing to be signed
-   */
-  public void updateWitnessMessage(MessageID prevId, WitnessMessage witnessMessage) {
-    witnessMessages.remove(prevId);
-    witnessMessages.put(witnessMessage.getMessageId(), witnessMessage);
-  }
-
-  public void addWitnessMessage(WitnessMessage witnessMessage) {
-    witnessMessages.put(witnessMessage.getMessageId(), witnessMessage);
-  }
-
   public Optional<ElectInstance> getElectInstance(MessageID messageId) {
     return Optional.ofNullable(messageIdToElectInstance.get(messageId));
   }
 
-  public Optional<WitnessMessage> getWitnessMessage(MessageID id) {
-    return Optional.ofNullable(witnessMessages.get(id));
-  }
-
   public Long getLastModified() {
     return lastModified;
-  }
-
-  public Set<PublicKey> getWitnesses() {
-    return witnesses;
   }
 
   public Set<PendingUpdate> getPendingUpdates() {
@@ -228,7 +190,7 @@ public final class Lao implements Copyable<Lao> {
     this.modificationId = modificationId;
   }
 
-  public void setWitnesses(Set<PublicKey> witnesses) {
+  public void initKeyToNode(Set<PublicKey> witnesses) {
     if (witnesses == null) {
       throw new IllegalArgumentException("The witnesses set is null");
     }
@@ -237,7 +199,6 @@ public final class Lao implements Copyable<Lao> {
         throw new IllegalArgumentException("One of the witnesses in the set is null");
       }
     }
-    this.witnesses = witnesses;
     witnesses.forEach(w -> keyToNode.computeIfAbsent(w, ConsensusNode::new));
   }
 
@@ -266,10 +227,6 @@ public final class Lao implements Copyable<Lao> {
 
   public Map<MessageID, ElectInstance> getMessageIdToElectInstance() {
     return Collections.unmodifiableMap(messageIdToElectInstance);
-  }
-
-  public Map<MessageID, WitnessMessage> getWitnessMessages() {
-    return witnessMessages;
   }
 
   public Map<PublicKey, ConsensusNode> getKeyToNode() {
@@ -311,8 +268,6 @@ public final class Lao implements Copyable<Lao> {
         && Objects.equals(creation, lao.creation)
         && Objects.equals(organizer, lao.organizer)
         && Objects.equals(modificationId, lao.modificationId)
-        && Objects.equals(witnesses, lao.witnesses)
-        && Objects.equals(witnessMessages, lao.witnessMessages)
         && Objects.equals(pendingUpdates, lao.pendingUpdates)
         && Objects.equals(messageIdToElectInstance, lao.messageIdToElectInstance)
         && Objects.equals(keyToNode, lao.keyToNode);
@@ -328,8 +283,6 @@ public final class Lao implements Copyable<Lao> {
         creation,
         organizer,
         modificationId,
-        witnesses,
-        witnessMessages,
         pendingUpdates,
         messageIdToElectInstance,
         keyToNode);
@@ -358,8 +311,6 @@ public final class Lao implements Copyable<Lao> {
         + ", modificationId='"
         + modificationId
         + '\''
-        + ", witnesses="
-        + witnesses
         + ", electInstances="
         + messageIdToElectInstance.values()
         + ", transactionPerUser="

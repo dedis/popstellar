@@ -212,7 +212,7 @@ public class LaoHandlerTest {
       throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
           UnknownElectionException, NoRollCallException {
     // Set LAO to have one witness
-    lao.setWitnesses(new HashSet<>(WITNESS));
+    lao.initKeyToNode(new HashSet<>(WITNESS));
 
     // Create UpdateLao with updated witness set
     UpdateLao updateLao =

@@ -27,6 +27,7 @@ public final class LaoHandler {
   private final LAORepository laoRepo;
   private final KeyManager keyManager;
   private final ServerRepository serverRepo;
+  private final WitnessingRepository witnessingRepo;
 
   private static final String OLD_NAME = "Old Lao Name : ";
   private static final String NEW_NAME = "New Lao Name : ";
@@ -39,11 +40,13 @@ public final class LaoHandler {
       KeyManager keyManager,
       MessageRepository messageRepo,
       LAORepository laoRepo,
-      ServerRepository serverRepo) {
+      ServerRepository serverRepo,
+      WitnessingRepository witnessingRepo) {
     this.messageRepo = messageRepo;
     this.laoRepo = laoRepo;
     this.keyManager = keyManager;
     this.serverRepo = serverRepo;
+    this.witnessingRepo = witnessingRepo;
   }
 
   /**
@@ -56,6 +59,7 @@ public final class LaoHandler {
   public void handleCreateLao(HandlerContext context, CreateLao createLao)
       throws UnknownLaoException {
     Channel channel = context.getChannel();
+    Set<PublicKey> witnesses = new HashSet<>(createLao.getWitnesses());
 
     Timber.tag(TAG).d("handleCreateLao: channel: %s, msg: %s", channel, createLao);
     Lao lao = new Lao(createLao.getId());
@@ -65,13 +69,15 @@ public final class LaoHandler {
     lao.setLastModified(createLao.getCreation());
     lao.setOrganizer(createLao.getOrganizer());
     lao.setId(createLao.getId());
-    lao.setWitnesses(new HashSet<>(createLao.getWitnesses()));
+    lao.initKeyToNode(witnesses);
 
     laoRepo.updateLao(lao);
     LaoView laoView = laoRepo.getLaoViewByChannel(channel);
 
+    witnessingRepo.addWitnesses(lao.getId(), witnesses);
+
     PublicKey publicKey = keyManager.getMainPublicKey();
-    if (laoView.isOrganizer(publicKey) || laoView.isWitness(publicKey)) {
+    if (laoView.isOrganizer(publicKey) || witnessingRepo.isWitness(lao.getId(), publicKey)) {
       context
           .getMessageSender()
           .subscribe(lao.getChannel().subChannel("consensus"))
@@ -106,6 +112,7 @@ public final class LaoHandler {
 
     Timber.tag(TAG).d("Receive Update Lao Broadcast msg: %s", updateLao);
     LaoView laoView = laoRepo.getLaoViewByChannel(channel);
+    String laoId = laoView.getId();
 
     if (laoView.getLastModified() > updateLao.getLastModified()) {
       // the current state we have is more up to date
@@ -116,7 +123,7 @@ public final class LaoHandler {
     WitnessMessage message;
     if (!updateLao.getName().equals(laoView.getName())) {
       message = updateLaoNameWitnessMessage(messageId, updateLao, laoView);
-    } else if (!laoView.areWitnessSetsEqual(updateLao.getWitnesses())) {
+    } else if (!witnessingRepo.areWitnessesEquals(laoId, updateLao.getWitnesses())) {
       message = updateLaoWitnessesWitnessMessage(messageId, updateLao, laoView);
     } else {
       Timber.tag(TAG).d("Cannot set the witness message title to update lao");
@@ -124,9 +131,10 @@ public final class LaoHandler {
           updateLao, "Cannot set the witness message title to update lao");
     }
 
+    witnessingRepo.addWitnessMessage(laoId, message);
+
     Lao lao = laoView.createLaoCopy();
-    lao.addWitnessMessage(message);
-    if (!laoView.isWitnessesEmpty()) {
+    if (witnessingRepo.areWitnessesEmpty(laoId)) {
       // We send a pending update only if there are already some witness that need to sign this
       // UpdateLao
       lao.addPendingUpdate(new PendingUpdate(updateLao.getLastModified(), messageId));
@@ -171,13 +179,13 @@ public final class LaoHandler {
 
     Lao lao = laoView.createLaoCopy();
     lao.setId(stateLao.getId());
-    lao.setWitnesses(stateLao.getWitnesses());
+    lao.initKeyToNode(stateLao.getWitnesses());
     lao.setName(stateLao.getName());
     lao.setLastModified(stateLao.getLastModified());
     lao.setModificationId(stateLao.getModificationId());
 
     PublicKey publicKey = keyManager.getMainPublicKey();
-    if (laoView.isOrganizer(publicKey) || laoView.isWitness(publicKey)) {
+    if (laoView.isOrganizer(publicKey) || witnessingRepo.isWitness(lao.getId(), publicKey)) {
       context
           .getMessageSender()
           .subscribe(laoView.getChannel().subChannel("consensus"))

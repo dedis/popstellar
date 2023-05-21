@@ -130,7 +130,7 @@ public class ElectionStartFragmentTest {
 
           Lao lao = new Lao(LAO_ID);
           lao.setOrganizer(mainKeyPair.getPublicKey());
-          lao.setWitnesses(Sets.newSet(node2KeyPair.getPublicKey(), node3KeyPair.getPublicKey()));
+          lao.initKeyToNode(Sets.newSet(node2KeyPair.getPublicKey(), node3KeyPair.getPublicKey()));
 
           laoRepo.updateLao(lao);
           consensusChannel = lao.getChannel().subChannel("consensus");

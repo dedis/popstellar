@@ -13,8 +13,7 @@ import com.github.dedis.popstellar.model.objects.Wallet;
 import com.github.dedis.popstellar.model.objects.security.PoPToken;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
-import com.github.dedis.popstellar.repository.LAORepository;
-import com.github.dedis.popstellar.repository.RollCallRepository;
+import com.github.dedis.popstellar.repository.*;
 import com.github.dedis.popstellar.repository.database.AppDatabase;
 import com.github.dedis.popstellar.repository.database.core.CoreDao;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
@@ -57,6 +56,7 @@ public class LaoViewModel extends AndroidViewModel implements PopViewModel {
    */
   private final LAORepository laoRepo;
   private final RollCallRepository rollCallRepo;
+  private final WitnessingRepository witnessingRepo;
   private final GlobalNetworkManager networkManager;
   private final KeyManager keyManager;
   private final Wallet wallet;
@@ -67,6 +67,7 @@ public class LaoViewModel extends AndroidViewModel implements PopViewModel {
       @NonNull Application application,
       LAORepository laoRepository,
       RollCallRepository rollCallRepo,
+      WitnessingRepository witnessingRepo,
       GlobalNetworkManager networkManager,
       KeyManager keyManager,
       Wallet wallet,
@@ -74,6 +75,7 @@ public class LaoViewModel extends AndroidViewModel implements PopViewModel {
     super(application);
     this.laoRepo = laoRepository;
     this.rollCallRepo = rollCallRepo;
+    this.witnessingRepo = witnessingRepo;
     this.networkManager = networkManager;
     this.keyManager = keyManager;
     this.wallet = wallet;
@@ -223,7 +225,8 @@ public class LaoViewModel extends AndroidViewModel implements PopViewModel {
                   Timber.tag(TAG).d("got an update for lao: %s", laoView);
 
                   setIsOrganizer(laoView.getOrganizer().equals(keyManager.getMainPublicKey()));
-                  setIsWitness(laoView.getWitnesses().contains(keyManager.getMainPublicKey()));
+                  setIsWitness(
+                      witnessingRepo.getWitnesses(laoId).contains(keyManager.getMainPublicKey()));
 
                   updateRole();
                 },

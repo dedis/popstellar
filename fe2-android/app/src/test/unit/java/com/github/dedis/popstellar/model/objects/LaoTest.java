@@ -14,7 +14,8 @@ import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateMess
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.generatePublicKey;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
 
 public class LaoTest {
 
@@ -59,7 +60,7 @@ public class LaoTest {
   @Test
   public void setAndGetWitnessesTest() {
 
-    LAO_1.setWitnesses(WITNESSES);
+    LAO_1.initKeyToNode(WITNESSES);
     assertThat(LAO_1.getWitnesses(), is(WITNESSES));
   }
 
@@ -75,8 +76,8 @@ public class LaoTest {
 
   @Test
   public void setNullWitnessesTest() {
-    assertThrows(IllegalArgumentException.class, () -> LAO_1.setWitnesses(null));
-    assertThrows(IllegalArgumentException.class, () -> LAO_1.setWitnesses(WITNESSES_WITH_NULL));
+    assertThrows(IllegalArgumentException.class, () -> LAO_1.initKeyToNode(null));
+    assertThrows(IllegalArgumentException.class, () -> LAO_1.initKeyToNode(WITNESSES_WITH_NULL));
   }
 
   @Test
