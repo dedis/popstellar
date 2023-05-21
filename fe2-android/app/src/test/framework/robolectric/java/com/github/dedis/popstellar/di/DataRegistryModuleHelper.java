@@ -169,6 +169,7 @@ public class DataRegistryModuleHelper {
     ChirpHandler chirpHandler = new ChirpHandler(laoRepo, socialMediaRepo);
     ReactionHandler reactionHandler = new ReactionHandler(laoRepo, socialMediaRepo);
     TransactionCoinHandler transactionCoinHandler = new TransactionCoinHandler(digitalCashRepo);
+    WitnessingHandler witnessingHandler = new WitnessingHandler(laoRepo);
 
     return DataRegistryModule.provideDataRegistry(
         laoHandler,
@@ -178,6 +179,7 @@ public class DataRegistryModuleHelper {
         consensusHandler,
         chirpHandler,
         reactionHandler,
-        transactionCoinHandler);
+        transactionCoinHandler,
+        witnessingHandler);
   }
 }

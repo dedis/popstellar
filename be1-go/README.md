@@ -129,6 +129,8 @@ and the file must contain the same fields as the following example:
 ```json
 {
    "public-key"                           : "",
+   "server-address"                       : "ws://127.0.0.1:9003/server",
+   "client-address"                       : "ws://127.0.0.1:9002/client",
    "server-public-address"                : "localhost",
    "server-listen-address"                : "localhost",
    "client-port"                          : 9002,
@@ -139,7 +141,9 @@ and the file must contain the same fields as the following example:
 }
 ```
 
-The "other-servers" field is optional.
+The "other-servers" field is optional. Note that the server and client addresses must be
+the full path to the endpoint, including the protocol and the port number. If they are not
+provided, `ws` will be assumed.  
 
 ## Unit-tests
 

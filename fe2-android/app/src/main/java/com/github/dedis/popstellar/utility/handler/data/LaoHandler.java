@@ -125,7 +125,7 @@ public final class LaoHandler {
     }
 
     Lao lao = laoView.createLaoCopy();
-    lao.updateWitnessMessage(messageId, message);
+    lao.addWitnessMessage(message);
     if (!laoView.isWitnessesEmpty()) {
       // We send a pending update only if there are already some witness that need to sign this
       // UpdateLao

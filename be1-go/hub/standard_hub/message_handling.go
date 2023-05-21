@@ -494,6 +494,32 @@ func (h *Hub) handleGetMessagesById(socket socket.Socket,
 	return missingMessages, getMessagesById.ID, nil
 }
 
+func (h *Hub) handleGreetServer(socket socket.Socket, byteMessage []byte) error {
+	var greetServer method.GreetServer
+
+	err := json.Unmarshal(byteMessage, &greetServer)
+	if err != nil {
+		return xerrors.Errorf("failed to unmarshal greetServer message: %v", err)
+	}
+
+	h.Lock()
+	// store information about the server
+	h.peersInfo[socket.ID()] = greetServer.Params
+
+	// check if the server is already greeted
+	if slices.Contains(h.peersGreeted, socket.ID()) {
+		h.Unlock()
+		return nil
+	}
+	h.Unlock()
+
+	err = h.SendGreetServer(socket)
+	if err != nil {
+		return xerrors.Errorf("failed to send greetServer message: %v", err)
+	}
+	return nil
+}
+
 //-----------------------Helper methods for message handling---------------------------
 
 // getMissingIds compares two maps of channel Ids associated to slices of message Ids to

@@ -3,7 +3,6 @@ package popcha
 import (
 	"bytes"
 	"context"
-	"crypto/sha256"
 	"fmt"
 	"github.com/aaronarduino/goqrsvg"
 	"github.com/ajstarks/svgo"
@@ -29,16 +28,13 @@ const (
 	errValidAuthFormat = "Error while validating the auth request: %s"
 
 	//error message for invalid response type
-	errInvalidResponseType = "Response type should be " + ResTypeMulti
+	errInvalidResponseType = "Response type should be " + resTypeMulti
 
 	//error message for unimplemented methods of op.Client
 	errUnimplementedMethod = "this method is not implemented for our protocol"
 
 	// defaultValue for the ID token lifetime (in hours)
 	tokenLifeTimeHour = 24
-
-	// qrCodeWebPage file path for valid QRCode Displaying page
-	qrCodeWebPage = "qrcode/popcha.html"
 
 	// qrSize size of QRCode SVG
 	qrSize = 10
@@ -51,18 +47,23 @@ const (
 
 // constant parameter names
 const (
-	ClientID     = "client_id"
-	Nonce        = "nonce"
-	Scope        = "scope"
-	RedirectURI  = "redirect_uri"
-	ResponseType = "response_type"
-	State        = "state"
-	ResTypeMulti = "id_token token"
-	OpenID       = "openid"
-	Profile      = "profile"
-	LoginHint    = "login_hint"
+	clientID     = "client_id"
+	nonce        = "nonce"
+	scope        = "scope"
+	redirectURI  = "redirect_uri"
+	responseType = "response_type"
+	state        = "state"
+	resTypeMulti = "id_token token"
+	openID       = "openid"
+	profile      = "profile"
+	loginHint    = "login_hint"
+	responseMode = "response_mode"
+	// modes of response
+	query    = "query"
+	fragment = "fragment"
 )
 
+// variable for upgrading the http connection into a websocket one
 var upgrader = websocket.Upgrader{}
 
 // clientParams implements op.Client
@@ -80,7 +81,7 @@ Most of the methods of op.Client are implemented, however some of them
 are not going to be used in our Implicit Flow protocol.
 */
 
-// GetID returns the ClientID
+// GetID returns the clientID
 func (c clientParams) GetID() string {
 	return c.clientID
 }
@@ -181,34 +182,33 @@ type AuthorizationServer struct {
 	hub               hub.Hub
 	challengeServAddr string
 	internalConns     map[string]*websocket.Conn
-	key               [32]byte // key for encryption of data, optional?
 	Stopped           chan struct{}
 	Started           chan struct{}
 	closing           *sync.Mutex
 	connsMutex        *sync.Mutex
+	htmlFilePath      string
 }
 
-func NewAuthServer(hub hub.Hub, st string, httpAddr string, httpPort int, seed string,
-	log zerolog.Logger) (*AuthorizationServer, error) {
-
-	// key for encryption
-	key := sha256.Sum256([]byte(seed))
+// NewAuthServer creates an authorization server, given a hub, an address and port,
+// the path of the html file it will display, and a logger.
+func NewAuthServer(hub hub.Hub, httpAddr string, httpPort int, htmlFilePath string, log zerolog.Logger) *AuthorizationServer {
 
 	as := AuthorizationServer{
 		log: log.With().
 			Str("role", "authorization server").Logger(),
 		hub:               hub,
 		challengeServAddr: fmt.Sprintf("%s:%d", httpAddr, httpPort),
-		key:               key,
 		Stopped:           make(chan struct{}, 1),
 		Started:           make(chan struct{}, 1),
 		closing:           &sync.Mutex{},
 		internalConns:     make(map[string]*websocket.Conn),
 		connsMutex:        &sync.Mutex{},
+		htmlFilePath:      htmlFilePath,
 	}
 
-	as.httpServer = as.newChallengeServer(st)
-	return &as, nil
+	// creation of the http server
+	as.httpServer = as.newChallengeServer()
+	return &as
 }
 
 // Start launches a go routine to start the server
@@ -231,6 +231,8 @@ func (as *AuthorizationServer) Shutdown() error {
 	as.closing.Lock()
 	defer as.closing.Unlock()
 
+	as.log.Info().Msgf("shutting down PoPCHA Server %s", as.challengeServAddr)
+
 	err := as.httpServer.Shutdown(context.Background())
 	if err != nil {
 		return xerrors.Errorf("failed to shutdown authorization server: %v", err)
@@ -240,11 +242,11 @@ func (as *AuthorizationServer) Shutdown() error {
 
 // newChallengeServer creates a new HTTP Server containing a multiplexing router,
 // given the request endpoint.
-func (as *AuthorizationServer) newChallengeServer(endpoint string) *http.Server {
+func (as *AuthorizationServer) newChallengeServer() *http.Server {
 
 	r := mux.NewRouter()
 	// handler for request endpoint
-	r.PathPrefix(fmt.Sprintf("/%s", endpoint)).HandlerFunc(as.HandleRequest)
+	r.PathPrefix("/authorize").HandlerFunc(as.HandleRequest)
 	//handler for pop backend communication endpoint
 	r.PathPrefix(responseEndpoint).HandlerFunc(as.responseEndpoint)
 
@@ -329,7 +331,7 @@ func (as *AuthorizationServer) generateQRCode(w http.ResponseWriter, req *http.R
 		RedirectHost:  redirectHost,
 	}
 
-	templateFile := qrCodeWebPage
+	templateFile := as.htmlFilePath
 	// reading HTML template bytes
 	templateContent, err := os.ReadFile(templateFile)
 	if err != nil {
@@ -412,7 +414,7 @@ func (as *AuthorizationServer) handleClientResponse(path string, c *websocket.Co
 	as.connsMutex.Unlock()
 }
 
-// ValidateAuthRequest takes an OpenID request, and validates its parameters according to the PoPCHA and Implicit
+// ValidateAuthRequest takes an openID request, and validates its parameters according to the PoPCHA and Implicit
 // flow protocols.
 func (as *AuthorizationServer) ValidateAuthRequest(req *oidc.AuthRequest) error {
 
@@ -431,6 +433,10 @@ func (as *AuthorizationServer) ValidateAuthRequest(req *oidc.AuthRequest) error 
 		return err
 	}
 
+	err = as.validateResponseMode(req)
+	if err != nil {
+		return err
+	}
 	// validate the response type according to the implicit flow protocol
 	return as.validateImplicitFlowResponseType(client, req)
 }
@@ -440,7 +446,7 @@ func (as *AuthorizationServer) ValidateAuthRequest(req *oidc.AuthRequest) error 
 func (as *AuthorizationServer) validateImplicitFlowResponseType(params *clientParams, req *oidc.AuthRequest) error {
 	rType := req.ResponseType
 	// only two response types are allowed
-	if rType != ResTypeMulti {
+	if rType != resTypeMulti {
 		return oidc.ErrInvalidRequest().WithDescription(errValidAuthFormat, errInvalidResponseType)
 	}
 
@@ -448,18 +454,28 @@ func (as *AuthorizationServer) validateImplicitFlowResponseType(params *clientPa
 	return op.ValidateAuthReqResponseType(params, req.ResponseType)
 }
 
+func (as *AuthorizationServer) validateResponseMode(req *oidc.AuthRequest) error {
+	if req.ResponseMode == "" {
+		return nil
+	} else if !(req.ResponseMode == query || req.ResponseMode == fragment) {
+		return xerrors.Errorf("The provided response mode is %s, should be query or fragment", req.ResponseMode)
+	}
+	return nil
+}
+
 // createOIDCRequestFromParams takes parameters, and builds an OIDC authorization request.
 // parameters are validated before calling this method
 func createOIDCRequestFromParams(params map[string]string) *oidc.AuthRequest {
 
 	return &oidc.AuthRequest{
-		Scopes:       strings.Split(params[Scope], " "),
-		ResponseType: oidc.ResponseType(params[ResponseType]),
-		ClientID:     params[ClientID],
-		RedirectURI:  params[RedirectURI],
-		State:        params[State],
-		Nonce:        params[Nonce],
-		LoginHint:    params[LoginHint],
+		Scopes:       strings.Split(params[scope], " "),
+		ResponseType: oidc.ResponseType(params[responseType]),
+		ClientID:     params[clientID],
+		RedirectURI:  params[redirectURI],
+		State:        params[state],
+		Nonce:        params[nonce],
+		ResponseMode: oidc.ResponseMode(params[responseMode]),
+		LoginHint:    params[loginHint],
 	}
 }
 
@@ -469,12 +485,12 @@ func verifyParamsAndCreateRequest(req *http.Request) (*oidc.AuthRequest, error) 
 
 	// Parameters parsing
 	params := make(map[string]string)
-	params[ResponseType] = req.URL.Query().Get(ResponseType)
-	params[RedirectURI] = req.URL.Query().Get(RedirectURI)
-	params[Nonce] = req.URL.Query().Get(Nonce)
-	params[Scope] = req.URL.Query().Get(Scope)
-	params[ClientID] = req.URL.Query().Get(ClientID)
-	params[LoginHint] = req.URL.Query().Get(LoginHint)
+	params[responseType] = req.URL.Query().Get(responseType)
+	params[redirectURI] = req.URL.Query().Get(redirectURI)
+	params[nonce] = req.URL.Query().Get(nonce)
+	params[scope] = req.URL.Query().Get(scope)
+	params[clientID] = req.URL.Query().Get(clientID)
+	params[loginHint] = req.URL.Query().Get(loginHint)
 
 	var nilStrings = make([]string, 0)
 	for k, v := range params {
@@ -488,10 +504,14 @@ func verifyParamsAndCreateRequest(req *http.Request) (*oidc.AuthRequest, error) 
 		return nil, xerrors.Errorf("missing arguments %s", strings.Join(nilStrings, " "))
 	}
 	//optional parameters
-	state := req.URL.Query().Get(State)
-	if state != "" {
-		params[State] = state
+	st := req.URL.Query().Get(state)
+	if st != "" {
+		params[state] = st
 
+	}
+	resMode := req.URL.Query().Get(responseMode)
+	if resMode != "" {
+		params[responseMode] = resMode
 	}
 	//build auth request
 	oidcReq := createOIDCRequestFromParams(params)

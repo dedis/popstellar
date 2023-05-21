@@ -57,4 +57,22 @@ public interface Copyable<T> {
     return source.entrySet().stream()
         .collect(Collectors.toMap(Map.Entry::getKey, entry -> new HashSet<>(entry.getValue())));
   }
+
+  /**
+   * Create a copy of a map preserving it's order
+   *
+   * @param source map
+   * @param <T> type of key
+   * @param <C> type of value, must by a Copyable
+   * @return the copy
+   */
+  static <T, C extends Copyable<C>> LinkedHashMap<T, C> copyMapPreservingOrder(Map<T, C> source) {
+    return source.entrySet().stream()
+        .collect(
+            Collectors.toMap(
+                Map.Entry::getKey,
+                entry -> entry.getValue().copy(),
+                (oldValue, newValue) -> newValue,
+                LinkedHashMap::new));
+  }
 }
