@@ -23,7 +23,6 @@ public class Random {
    */
   public static String generateLaoId(){
     KeyPair keyPair = new KeyPair();
-
     return Lao.generateLaoId(keyPair.getPublicKey(), Instant.now().getEpochSecond(), "some name");
   }
 
@@ -32,8 +31,8 @@ public class Random {
    */
     public static String generatePublicKey(){
     KeyPair keyPair = new KeyPair();
-
     return keyPair.getPublicKey();
   }
+
 
 }

@@ -3,18 +3,18 @@ Feature: Create a pop LAO
 
   Background:
         # This feature will be called to test LAO creation
-        # This call makes this feature and server.feature share the same scope
+        # Call read(...) makes this feature and the called feature share the same scope
         # Meaning they share def variables, configurations ...
-        # Especially JS functions defined in server.feature can be directly used here thanks to Karate shared scopes
+        # Especially JS functions defined can be directly used here thanks to Karate shared scopes
     * call read('classpath:be/utils/server.feature')
     * call read('classpath:be/mockFrontEnd.feature')
     * call read('classpath:be/constants.feature')
     * def frontend = call createFrontend
     * def random =  Java.type('be.utils.Random')
-    * string channel = "/root"
+    * def organizer = call createFrontend
 
-  Scenario: Create Lao request with empty lao name should fail with an error response 2
-    Given def lao = frontend.createValidLao().setName('')
+  Scenario: Create Lao request with empty lao name should fail with an error response
+    Given def lao = organizer.createValidLao().setName('')
     And def badLaoReq =
       """
         {
@@ -27,14 +27,14 @@ Feature: Create a pop LAO
           "witnesses": []
         }
       """
-    When frontend.publish(badLaoReq, channel)
-    And json answer = frontend.getBackendResponse(badLaoReq)
+    When organizer.publish(badLaoReq, rootChannel)
+    And json answer = organizer.getBackendResponse(badLaoReq)
     Then match answer contains INVALID_MESSAGE_FIELD
-    And match frontend.receiveNoMoreResponses() == true
+    And match organizer.receiveNoMoreResponses() == true
 
 
-  Scenario: Create Lao with negative time should fail with an error response
-    Given def lao = frontend.createValidLao().setCreation(-1)
+  Scenario: Create Lao request with negative creation time should fail with an error response
+    Given def lao = organizer.createValidLao().setCreation(-1)
     And def badLaoReq =
       """
         {
@@ -47,13 +47,13 @@ Feature: Create a pop LAO
           "witnesses": []
         }
       """
-    When frontend.publish(badLaoReq, channel)
-    And json answer = frontend.getBackendResponse(badLaoReq)
+    When organizer.publish(badLaoReq, rootChannel)
+    And json answer = organizer.getBackendResponse(badLaoReq)
     Then match answer contains INVALID_MESSAGE_FIELD
-    And match frontend.receiveNoMoreResponses() == true
+    And match organizer.receiveNoMoreResponses() == true
 
-  Scenario: Create Lao with invalid id hash should fail with an error response
-    Given def lao = frontend.createValidLao()
+  Scenario: Create Lao request with invalid id hash should fail with an error response
+    Given def lao = organizer.createValidLao()
     And def badLaoReq =
       """
         {
@@ -66,13 +66,13 @@ Feature: Create a pop LAO
           "witnesses": []
         }
       """
-    When frontend.publish(badLaoReq, channel)
-    And json answer = frontend.getBackendResponse(badLaoReq)
+    When organizer.publish(badLaoReq, rootChannel)
+    And json answer = organizer.getBackendResponse(badLaoReq)
     Then match answer contains INVALID_MESSAGE_FIELD
-    And match frontend.receiveNoMoreResponses() == true
+    And match organizer.receiveNoMoreResponses() == true
 
-  Scenario: Create should succeed with a valid creation request
-    Given def lao = frontend.createValidLao()
+  Scenario: Valid Create Lao request should succeed
+    Given def lao = organizer.createValidLao()
     And def laoCreateRequest =
       """
         {
@@ -85,33 +85,13 @@ Feature: Create a pop LAO
           "witnesses": []
         }
       """
-    When frontend.publish(laoCreateRequest, channel)
-    And json answer = frontend.getBackendResponse(laoCreateRequest)
+    When organizer.publish(laoCreateRequest, rootChannel)
+    And json answer = organizer.getBackendResponse(laoCreateRequest)
     Then match answer contains VALID_MESSAGE
-    And match frontend.receiveNoMoreResponses() == true
+    And match organizer.receiveNoMoreResponses() == true
 
-  Scenario: Create should fail if signature is invalid
-    Given def laoCreateRequest =
-      """
-        {
-          "object": "lao",
-          "action": "create",
-          "id": '#(getLaoValid)',
-          "name": "LAO",
-          "creation": 1633035721,
-          "organizer": '#(getOrganizer)',
-          "witnesses": []
-        }
-      """
-    * frontend.setWrongSignature()
-    When frontend.publish(laoCreateRequest, channel)
-    And json answer = frontend.getBackendResponse(laoCreateRequest)
-    Then match answer contains INVALID_MESSAGE_FIELD
-    And match frontend.receiveNoMoreResponses() == true
-
-  Scenario: Create Lao with different public key from the organizer should fail with error response
-    Given def lao = frontend.createValidLao()
-    And def frontend2 = call createFrontend
+  Scenario: Create Lao request with invalid signature should fail
+    Given def lao = organizer.createValidLao()
     And def laoCreateRequest =
       """
         {
@@ -124,8 +104,28 @@ Feature: Create a pop LAO
           "witnesses": []
         }
       """
+    When organizer.useWrongSignature()
+    And organizer.publish(laoCreateRequest, rootChannel)
+    And json answer = organizer.getBackendResponse(laoCreateRequest)
+    Then match answer contains INVALID_MESSAGE_FIELD
+    And match organizer.receiveNoMoreResponses() == true
 
-    When frontend2.publish(laoCreateRequest, channel)
-    And json answer = frontend2.getBackendResponse(laoCreateRequest)
+  Scenario: Create Lao request with public key different from the sender public key should fail
+    Given def lao = organizer.createValidLao()
+    And def laoCreateRequest =
+      """
+        {
+          "object": "lao",
+          "action": "create",
+          "id": '#(lao.id)',
+          "name": '#(lao.name)',
+          "creation": '#(lao.creation)',
+          "organizer": '#(lao.organizerPk)',
+          "witnesses": []
+        }
+      """
+    When def notOrganizer = call createFrontend
+    And notOrganizer.publish(laoCreateRequest, rootChannel)
+    And json answer = notOrganizer.getBackendResponse(laoCreateRequest)
     Then match answer contains ACCESS_DENIED
-    And match frontend2.receiveNoMoreResponses() == true
+    And match notOrganizer.receiveNoMoreResponses() == true

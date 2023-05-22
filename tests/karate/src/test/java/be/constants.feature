@@ -63,12 +63,11 @@ Feature: Constants
     * def constructLaoId =
        """
           function(laoName, time){
-            var JsonConverter = Java.type('be.utils.JsonConverter')
+            var Hash = Java.type('be.utils.Hash')
             var String = Java.type('java.lang.String')
-            var jsonConverter = new JsonConverter()
             var organizer = getOrganizer
             var timeString = String.format("%d",time)
-            return jsonConverter.hash(organizer.getBytes(), timeString.getBytes(), laoName.getBytes())
+            return Hash.hash(organizer.getBytes(), timeString.getBytes(), laoName.getBytes())
           }
        """
 
@@ -79,11 +78,10 @@ Feature: Constants
     * def constructRollCallId =
       """
         function(laoId, rollCallName, time){
-          var JsonConverter = Java.type('be.utils.JsonConverter')
-          var jsonConverter = new JsonConverter()
+          var Hash = Java.type('be.utils.Hash')
           var String = Java.type('java.lang.String')
           var timeString = String.format("%d",time)
-          return jsonConverter.hash("R".getBytes(), laoId.getBytes(), timeString.getBytes(), rollCallName.getBytes())
+          return Hash.hash("R".getBytes(), laoId.getBytes(), timeString.getBytes(), rollCallName.getBytes())
         }
       """
     * def createValidRollCallOpenId =
@@ -95,11 +93,10 @@ Feature: Constants
     * def constructRollCallUpdateId =
       """
         function(laoId, update, creationTime){
-          var JsonConverter = Java.type('be.utils.JsonConverter')
-          var jsonConverter = new JsonConverter()
+          var Hash = Java.type('be.utils.Hash')
           var String = Java.type('java.lang.String')
           var timeString = String.format("%d", creationTime)
-          return jsonConverter.hash("R".getBytes(), laoId.getBytes(), update.getBytes(), timeString.getBytes())
+          return Hash.hash("R".getBytes(), laoId.getBytes(), update.getBytes(), timeString.getBytes())
         }
       """
     * def createInvalidRollCallOpenUpdateId =
@@ -123,13 +120,12 @@ Feature: Constants
     * def createElectionId =
       """
         function(name, time){
-          var JsonConverter = Java.type('be.utils.JsonConverter')
-          var jsonConverter = new JsonConverter()
+          var Hash = Java.type('be.utils.Hash')
           var electionConstant = "Election"
           var lao = getLaoValid
           var String = Java.type('java.lang.String')
           var timeString = String.format("%d",time)
-          return jsonConverter.hash(electionConstant.getBytes(), lao.getBytes(),
+          return Hash.hash(electionConstant.getBytes(), lao.getBytes(),
                                     timeString.getBytes(), name.getBytes())
         }
       """
@@ -144,12 +140,11 @@ Feature: Constants
     * def createIsThisProjectFunQuestionId =
       """
         function(){
-          var JsonConverter = Java.type('be.utils.JsonConverter')
-          var jsonConverter = new JsonConverter()
+          var Hash = Java.type('be.utils.Hash')
           var questionConstant = "Question"
           var electionId = getValidElectionSetupId
           var question = "Is this project fun?"
-          return jsonConverter.hash(questionConstant.getBytes(), electionId.getBytes(), question.getBytes())
+          return Hash.hash(questionConstant.getBytes(), electionId.getBytes(), question.getBytes())
         }
       """
     * def createInvalidQuestionId =
@@ -162,13 +157,12 @@ Feature: Constants
     * def createIsThisProjectFunVoteId =
       """
         function(vote){
-          var JsonConverter = Java.type('be.utils.JsonConverter')
+          var Hash = Java.type('be.utils.Hash')
           var String = Java.type('java.lang.String')
-          var jsonConverter = new JsonConverter()
           var voteConstant = "Vote"
           var electionId = getValidElectionSetupId
           var questionId = getIsThisProjectFunQuestionId
-          return jsonConverter.hash(voteConstant.getBytes(), electionId.getBytes(),
+          return Hash.hash(voteConstant.getBytes(), electionId.getBytes(),
                                      questionId.getBytes(), vote.getBytes())
         }
       """
@@ -242,3 +236,5 @@ Feature: Constants
     * def INTERNAL_SERVER_ERROR =   {error: {code: -6, description: '#string'}}
     * def VALID_MESSAGE =           {result: 0}
     * def ELECTION_RESULTS =        {"object": "election", "action": "result"}
+
+    * def rootChannel = '/root'

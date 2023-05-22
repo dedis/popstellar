@@ -4,6 +4,7 @@ import com.intuit.karate.http.WebSocketOptions;
 import com.intuit.karate.Logger;
 import common.net.MessageQueue;
 import common.net.MultiMsgWebSocketClient;
+import common.utils.Base64Utils;
 
 import java.time.Instant;
 
@@ -22,5 +23,4 @@ public class Frontend extends MultiMsgWebSocketClient {
       logger.info("setting wrong signature: " + wrongSignature);
       jsonConverter.setSignature(wrongSignature);
   }
-
 }

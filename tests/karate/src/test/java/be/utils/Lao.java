@@ -13,6 +13,8 @@ public class Lao {
     this.organizerPk = organizerPk;
     this.name = name;
 
+    System.out.println("Creating lao with public key: " + organizerPk);
+
     if(name.isEmpty()){
       // Cannot create id with empty name
       name = "empty";

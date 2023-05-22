@@ -37,4 +37,15 @@ public class Hash {
       throw new UnsupportedOperationException("failed to retrieve SHA-256 instance", e);
     }
   }
+
+  /** Hashes an arbitrary number of arguments */
+  public static String hash(byte[]... allData) throws NoSuchAlgorithmException {
+    MessageDigest digest = MessageDigest.getInstance("SHA-256");
+    for (byte[] data : allData) {
+      String dataLength = Integer.toString(data.length);
+      digest.update(dataLength.getBytes());
+      digest.update(data);
+    }
+    return Base64.getUrlEncoder().encodeToString(digest.digest());
+  }
 }

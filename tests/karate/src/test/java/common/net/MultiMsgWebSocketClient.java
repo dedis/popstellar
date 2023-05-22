@@ -15,7 +15,7 @@ import java.util.function.Predicate;
 public class MultiMsgWebSocketClient extends WebSocketClient {
 
   public String publicKey;
-  public byte [] privateKey;
+  public String privateKey;
   public JsonConverter jsonConverter;
 
   private final MessageQueue queue;
@@ -32,9 +32,9 @@ public class MultiMsgWebSocketClient extends WebSocketClient {
 
     KeyPair keyPair = new KeyPair();
     this.publicKey = keyPair.getPublicKey();
-    this.privateKey = keyPair.getPrivateKeyBytes();
+    this.privateKey = keyPair.getPrivateKey();
     this.jsonConverter = new JsonConverter(publicKey, privateKey);
-    System.out.println("Created a MultiMsgWebSocketClient using: \npublicKey: " + publicKey + "\nprivate key: " + Base64Utils.encode(privateKey));
+    System.out.println("Created a MultiMsgWebSocketClient using publicKey: " + publicKey + " and private key: " + privateKey);
 
     setTextHandler(m -> true);
   }
@@ -70,6 +70,7 @@ public class MultiMsgWebSocketClient extends WebSocketClient {
     Random random = new Random();
     int id = random.nextInt();
     idAssociatedWithSentMessages.put(data, id);
+    System.out.println("Put data: " + data + "with id: " + id);
     Json request =  jsonConverter.publishMessageFromData(data, id, channel);
     System.out.println("The final sent request is : " + request.toString());
     this.send(request.toString());
