@@ -20,7 +20,7 @@ import { PopchaAuthMsg } from './messages/PopchaAuthMsg';
  * @returns A promise that resolves when the message has been sent
  */
 export const sendPopchaAuthRequest = (
-  client_id: Hash,
+  client_id: string,
   nonce: string,
   popcha_address: string,
   state: string | null,
@@ -30,12 +30,12 @@ export const sendPopchaAuthRequest = (
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   generateToken_: (laoId: Hash, clientId: Hash | undefined) => Promise<PopToken>,
 ): Promise<void> => {
-  const token = generateToken(laoId, client_id);
+  const token = generateToken(laoId, Hash.fromString(client_id));
   return token.then((t) => {
     const signedToken = t.sign(new Base64UrlData(nonce));
     const popchaChannel = getPopchaAuthenticationChannel(laoId);
     const message = new PopchaAuthMsg({
-      client_id: client_id.toString(),
+      client_id: client_id,
       nonce: nonce,
       identifier: t.publicKey,
       identifier_proof: signedToken,

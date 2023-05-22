@@ -4,7 +4,7 @@ import { Base64UrlData, Hash, PopToken } from 'core/objects';
 
 import { sendPopchaAuthRequest } from '../PopchaMessageApi';
 
-const mockClientId = new Hash('mockClientId');
+const mockClientId = 'mockClientId';
 const mockNonce = 'mockNonce';
 const mockPopchaAddress = 'mockPopchaAddress';
 const mockState = 'mockState';
@@ -37,7 +37,7 @@ describe('PopchaMessageApi', () => {
     const [channel, message] = publishMock.mock.calls[0];
     expect(channel).toBe(`/root/${mockLaoId}/authentication`);
     expect(message).toMatchObject({
-      client_id: mockClientId.toString(),
+      client_id: mockClientId,
       nonce: mockNonce,
       identifier: mockPopToken.publicKey,
       popcha_address: mockPopchaAddress,
@@ -45,5 +45,27 @@ describe('PopchaMessageApi', () => {
       response_mode: mockResponseMode,
     });
     expect(mockPopToken.sign(new Base64UrlData(mockNonce))).toEqual(message.identifier_proof);
+  });
+
+  it('should create correct message with null state and response mode', async () => {
+    await sendPopchaAuthRequest(
+      mockClientId,
+      mockNonce,
+      mockPopchaAddress,
+      null,
+      null,
+      mockLaoId,
+      mockGenerateToken,
+    );
+
+    expect(publishMock).toHaveBeenCalledTimes(1);
+    const [channel, message] = publishMock.mock.calls[0];
+    expect(channel).toBe(`/root/${mockLaoId}/authentication`);
+    expect(message).toMatchObject({
+      client_id: mockClientId,
+      nonce: mockNonce,
+      identifier: mockPopToken.publicKey,
+      popcha_address: mockPopchaAddress,
+    });
   });
 });

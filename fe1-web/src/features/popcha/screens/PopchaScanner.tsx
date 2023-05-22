@@ -137,7 +137,7 @@ const PopchaScanner = () => {
     const urlArg = url.searchParams;
 
     const authResponse = sendPopchaAuthRequest(
-      Hash.fromString(urlArg.get('client_id')!),
+      urlArg.get('client_id')!,
       urlArg.get('nonce')!,
       urlArg.get('redirect_uri')!,
       urlArg.get('state'),
