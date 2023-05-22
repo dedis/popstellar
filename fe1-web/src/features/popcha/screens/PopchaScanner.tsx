@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 import { StyleSheet, Text, View, ViewStyle } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 
+import { ConfirmModal } from 'core/components';
 import { makeIcon } from 'core/components/PoPIcon';
 import PoPTouchableOpacity from 'core/components/PoPTouchableOpacity';
 import QrCodeScanner, { QrCodeScannerUIElementContainer } from 'core/components/QrCodeScanner';
 import QrCodeScanOverlay from 'core/components/QrCodeScanOverlay';
-import { Hash } from 'core/objects';
 import { Color, Spacing, Typography } from 'core/styles';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
@@ -14,7 +14,6 @@ import STRINGS from 'resources/strings';
 import { PopchaHooks } from '../hooks';
 import { PopchaFeature } from '../interface';
 import { sendPopchaAuthRequest } from '../network/PopchaMessageApi';
-import { ConfirmModal } from '../../../core/components';
 
 const styles = StyleSheet.create({
   container: {
@@ -92,7 +91,7 @@ const PopchaScanner = () => {
     }
 
     // Check if the response respects openid standard
-    if (urlArg.get('response_type') !== 'id_token token') {
+    if (urlArg.get('response_type') !== 'id_token') {
       showErrorMessage('Invalid response type');
       return false;
     }

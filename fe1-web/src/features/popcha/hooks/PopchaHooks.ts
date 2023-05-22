@@ -1,7 +1,6 @@
 import { useContext } from 'react';
 
 import FeatureContext from 'core/contexts/FeatureContext';
-import { Hash } from 'core/objects';
 
 import { POPCHA_FEATURE_IDENTIFIER, PopchaReactContext } from '../interface';
 
