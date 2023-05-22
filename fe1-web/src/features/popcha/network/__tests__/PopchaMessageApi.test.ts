@@ -4,7 +4,7 @@ import { Base64UrlData, Hash, PopToken } from 'core/objects';
 
 import { sendPopchaAuthRequest } from '../PopchaMessageApi';
 
-const mockClientId = new Hash('mockClientId');
+const mockClientId = 'mockClientId';
 const mockNonce = 'mockNonce';
 const mockPopchaAddress = 'mockPopchaAddress';
 const mockState = 'mockState';
@@ -37,7 +37,7 @@ describe('PopchaMessageApi', () => {
     const [channel, message] = publishMock.mock.calls[0];
     expect(channel).toBe(`/root/${mockLaoId}/authentication`);
     expect(message).toMatchObject({
-      client_id: mockClientId.toString(),
+      client_id: mockClientId,
       nonce: mockNonce,
       identifier: mockPopToken.publicKey,
       popcha_address: mockPopchaAddress,
@@ -62,7 +62,7 @@ describe('PopchaMessageApi', () => {
     const [channel, message] = publishMock.mock.calls[0];
     expect(channel).toBe(`/root/${mockLaoId}/authentication`);
     expect(message).toMatchObject({
-      client_id: mockClientId.toString(),
+      client_id: mockClientId,
       nonce: mockNonce,
       identifier: mockPopToken.publicKey,
       popcha_address: mockPopchaAddress,
