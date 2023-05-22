@@ -1,6 +1,6 @@
 import { mockLaoId, mockPopToken } from '__tests__/utils';
 import { publish as mockPublish } from 'core/network';
-import { Base64UrlData, Hash, PopToken } from 'core/objects';
+import { Base64UrlData, PopToken } from 'core/objects';
 
 import { sendPopchaAuthRequest } from '../PopchaMessageApi';
 
