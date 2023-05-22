@@ -21,6 +21,9 @@ final case class ConnectionMediator(
   // List of servers connected
   private var serverSet: Set[ActorRef] = Set()
 
+  // Ping Monitor to inform it of our ActorRef
+  monitorRef ! ConnectionMediator.Ping()
+
   override def receive: Receive = {
 
     // Connect to some servers
@@ -77,4 +80,5 @@ object ConnectionMediator {
   final case class ConnectTo(urlList: List[String]) extends Event
   final case class NewServerConnected(serverRef: ActorRef) extends Event
   final case class ServerLeft(serverRef: ActorRef) extends Event
+  final case class Ping() extends Event
 }
