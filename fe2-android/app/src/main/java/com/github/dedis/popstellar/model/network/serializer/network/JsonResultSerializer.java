@@ -1,4 +1,4 @@
-package com.github.dedis.popstellar.model.network.serializer;
+package com.github.dedis.popstellar.model.network.serializer.network;
 
 import com.github.dedis.popstellar.model.network.answer.Result;
 import com.github.dedis.popstellar.model.network.answer.ResultMessages;
@@ -12,9 +12,8 @@ import java.util.List;
 
 public class JsonResultSerializer implements JsonSerializer<Result>, JsonDeserializer<Result> {
 
-  private static final String TAG = JsonResultSerializer.class.getSimpleName();
-  private final String RESULT = "result";
-  private final String ID = "ID";
+  private static final String RESULT = "result";
+  private static final String ID = "ID";
 
   @Override
   public Result deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)

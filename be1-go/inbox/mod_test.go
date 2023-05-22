@@ -10,8 +10,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-const messageID = "oJYBapM5ZuVrnggAwzQMa3oBLrFSjEQY-hv_JQRgs1U="
-
 func TestInbox_AddWitnessSignature(t *testing.T) {
 	inbox := NewInbox("")
 
@@ -19,35 +17,40 @@ func TestInbox_AddWitnessSignature(t *testing.T) {
 
 	// Add a message to the inbox
 	inbox.StoreMessage(msg)
-
 	require.Equal(t, 1, len(inbox.msgsMap))
 
 	// Add the witness signature to the message in the inbox
-	err := inbox.AddWitnessSignature(msg.MessageID, "456", "789")
-	require.NoError(t, err)
+	inbox.AddWitnessSignature(msg.MessageID, "456", "789")
 
 	// Check if the message was updated
 	storedMsg, ok := inbox.GetMessage(msg.MessageID)
 	require.True(t, ok)
-
 	require.Equal(t, 1, len(storedMsg.WitnessSignatures))
 }
 
-func TestInbox_AddSigWrongMessages(t *testing.T) {
+func TestInbox_AddWitnessSignature_MessageNotReceivedYet(t *testing.T) {
 	inbox := NewInbox("")
 
-	buf, err := base64.URLEncoding.DecodeString(messageID)
-	require.NoError(t, err)
+	msg := newMessage(t, "123", "123", nil, "")
 
-	// Add the witness signature to the message in the inbox
-	err = inbox.AddWitnessSignature(string(buf), "456", "789")
-	require.Error(t, err)
+	// Add the witness signatures to a message that is not in the inbox yet
+	inbox.AddWitnessSignature(msg.MessageID, "456", "789")
+	inbox.AddWitnessSignature(msg.MessageID, "345", "678")
 
-	// Check that the message is still not in the inbox
-	_, ok := inbox.GetMessage(string(buf))
+	// Check that the message is not in the inbox and that the signatures are pending
+	_, ok := inbox.GetMessage(msg.MessageID)
 	require.False(t, ok)
-
 	require.Equal(t, 0, len(inbox.msgsMap))
+	require.Equal(t, 2, len(inbox.pendingSignatures[msg.MessageID]))
+
+	// Add the message to the inbox
+	inbox.StoreMessage(msg)
+
+	// Check if the message was added with all the signatures and that the pending signatures are removed
+	storedMsg, ok := inbox.GetMessage(msg.MessageID)
+	require.True(t, ok)
+	require.Equal(t, 2, len(storedMsg.WitnessSignatures))
+	require.Equal(t, 0, len(inbox.pendingSignatures[msg.MessageID]))
 }
 
 func TestInbox_AddWitnessSignatures(t *testing.T) {
@@ -63,8 +66,7 @@ func TestInbox_AddWitnessSignatures(t *testing.T) {
 	signaturesNumber := 100
 	for i := 0; i < signaturesNumber; i++ {
 		// Add the witness signature to the message in the inbox
-		err := inbox.AddWitnessSignature(msg.MessageID, fmt.Sprintf("%d", i), fmt.Sprintf("%d", i))
-		require.NoError(t, err)
+		inbox.AddWitnessSignature(msg.MessageID, fmt.Sprintf("%d", i), fmt.Sprintf("%d", i))
 	}
 
 	// Check if the message was updated

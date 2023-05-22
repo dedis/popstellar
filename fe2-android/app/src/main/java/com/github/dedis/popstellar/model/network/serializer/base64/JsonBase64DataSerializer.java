@@ -1,4 +1,4 @@
-package com.github.dedis.popstellar.model.network.serializer;
+package com.github.dedis.popstellar.model.network.serializer.base64;
 
 import com.github.dedis.popstellar.model.objects.security.Base64URLData;
 import com.google.gson.*;

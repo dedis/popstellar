@@ -1,12 +1,10 @@
 package com.github.dedis.popstellar.model.network.method.message.data.election;
 
-import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.github.dedis.popstellar.model.network.JsonTestUtils;
 import com.github.dedis.popstellar.utility.security.Hash;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -45,11 +43,6 @@ public class ElectionQuestionTest {
       new ElectionSetup(NAME, NOW, NOW, END, LAO_ID, VERSION, QUESTIONS);
 
   private static final ElectionQuestion ELECTION_QUESTION = ELECTION_SETUP.getQuestions().get(0);
-
-  @Before
-  public void setup() {
-    JsonTestUtils.loadGSON(ApplicationProvider.getApplicationContext());
-  }
 
   @Test
   public void electionQuestionGetterReturnsCorrectId() {

@@ -1,13 +1,11 @@
 package com.github.dedis.popstellar.model.network.method.message.data.election;
 
-import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.github.dedis.popstellar.model.network.JsonTestUtils;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -26,11 +24,6 @@ public class ElectionResultTest {
       new ElectionResultQuestion("question id", results);
   private final List<ElectionResultQuestion> questions = Collections.singletonList(question);
   private final ElectionResult electionResult = new ElectionResult(questions);
-
-  @Before
-  public void setup() {
-    JsonTestUtils.loadGSON(ApplicationProvider.getApplicationContext());
-  }
 
   @Test(expected = IllegalArgumentException.class)
   public void questionsCantBeNull() {

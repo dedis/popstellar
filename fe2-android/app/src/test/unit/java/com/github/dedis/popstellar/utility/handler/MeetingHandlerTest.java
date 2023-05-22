@@ -1,6 +1,6 @@
 package com.github.dedis.popstellar.utility.handler;
 
-import android.content.Context;
+import android.app.Application;
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.test.core.app.ApplicationProvider;
@@ -71,8 +71,8 @@ public class MeetingHandlerTest {
   public void setup()
       throws GeneralSecurityException, IOException, KeyException, UnknownRollCallException {
     MockitoAnnotations.openMocks(this);
-    Context context = ApplicationProvider.getApplicationContext();
-    appDatabase = AppDatabaseModuleHelper.getAppDatabase(context);
+    Application application = ApplicationProvider.getApplicationContext();
+    appDatabase = AppDatabaseModuleHelper.getAppDatabase(application);
 
     lenient().when(keyManager.getMainKeyPair()).thenReturn(SENDER_KEY);
     lenient().when(keyManager.getMainPublicKey()).thenReturn(SENDER);
@@ -80,13 +80,12 @@ public class MeetingHandlerTest {
 
     lenient().when(messageSender.subscribe(any())).then(args -> Completable.complete());
 
-    laoRepo = new LAORepository(appDatabase, ApplicationProvider.getApplicationContext());
-    meetingRepo = new MeetingRepository();
+    laoRepo = new LAORepository(appDatabase, application);
+    meetingRepo = new MeetingRepository(appDatabase, application);
 
     DataRegistry dataRegistry =
         DataRegistryModuleHelper.buildRegistry(laoRepo, keyManager, meetingRepo);
-    MessageRepository messageRepo =
-        new MessageRepository(appDatabase, ApplicationProvider.getApplicationContext());
+    MessageRepository messageRepo = new MessageRepository(appDatabase, application);
     gson = JsonModule.provideGson(dataRegistry);
     messageHandler = new MessageHandler(messageRepo, dataRegistry);
 

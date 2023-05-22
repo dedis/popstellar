@@ -1,6 +1,6 @@
 package com.github.dedis.popstellar.model.qrcode;
 
-import com.github.dedis.popstellar.model.network.serializer.JsonBase64DataSerializer;
+import com.github.dedis.popstellar.model.network.serializer.base64.JsonBase64DataSerializer;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.testutils.Base64DataUtils;
 import com.google.gson.Gson;

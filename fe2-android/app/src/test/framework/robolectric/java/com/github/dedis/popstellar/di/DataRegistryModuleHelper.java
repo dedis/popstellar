@@ -1,6 +1,6 @@
 package com.github.dedis.popstellar.di;
 
-import android.content.Context;
+import android.app.Application;
 
 import androidx.test.core.app.ApplicationProvider;
 
@@ -18,26 +18,28 @@ import javax.inject.Singleton;
 @Singleton
 public class DataRegistryModuleHelper {
 
+  private static final Application application = ApplicationProvider.getApplicationContext();
+  private static final AppDatabase appDatabase =
+      AppDatabaseModuleHelper.getAppDatabase(application);
+
+  static {
+    appDatabase.close();
+  }
+
   public static DataRegistry buildRegistry() {
-    Context applicationContext = ApplicationProvider.getApplicationContext();
     return buildRegistry(
-        new LAORepository(
-            AppDatabaseModuleHelper.getAppDatabase(applicationContext),
-            ApplicationProvider.getApplicationContext()),
-        Mockito.mock(KeyManager.class));
+        new LAORepository(appDatabase, application), Mockito.mock(KeyManager.class));
   }
 
   public static DataRegistry buildRegistry(LAORepository laoRepository, KeyManager keyManager) {
     return buildRegistry(
         laoRepository,
-        new SocialMediaRepository(),
-        new ElectionRepository(),
-        new RollCallRepository(),
-        new MeetingRepository(),
-        new DigitalCashRepository(),
-        new MessageRepository(
-            AppDatabaseModuleHelper.getAppDatabase(ApplicationProvider.getApplicationContext()),
-            ApplicationProvider.getApplicationContext()),
+        new SocialMediaRepository(appDatabase, application),
+        new ElectionRepository(appDatabase, application),
+        new RollCallRepository(appDatabase, application),
+        new MeetingRepository(appDatabase, application),
+        new DigitalCashRepository(appDatabase, application),
+        new MessageRepository(appDatabase, application),
         keyManager,
         new ServerRepository());
   }
@@ -46,14 +48,12 @@ public class DataRegistryModuleHelper {
       LAORepository laoRepository, KeyManager keyManager, RollCallRepository rollCallRepo) {
     return buildRegistry(
         laoRepository,
-        new SocialMediaRepository(),
-        new ElectionRepository(),
+        new SocialMediaRepository(appDatabase, application),
+        new ElectionRepository(appDatabase, application),
         rollCallRepo,
-        new MeetingRepository(),
-        new DigitalCashRepository(),
-        new MessageRepository(
-            AppDatabaseModuleHelper.getAppDatabase(ApplicationProvider.getApplicationContext()),
-            ApplicationProvider.getApplicationContext()),
+        new MeetingRepository(appDatabase, application),
+        new DigitalCashRepository(appDatabase, application),
+        new MessageRepository(appDatabase, application),
         keyManager,
         new ServerRepository());
   }
@@ -62,14 +62,12 @@ public class DataRegistryModuleHelper {
       LAORepository laoRepository, KeyManager keyManager, MeetingRepository meetingRepo) {
     return buildRegistry(
         laoRepository,
-        new SocialMediaRepository(),
-        new ElectionRepository(),
-        new RollCallRepository(),
+        new SocialMediaRepository(appDatabase, application),
+        new ElectionRepository(appDatabase, application),
+        new RollCallRepository(appDatabase, application),
         meetingRepo,
-        new DigitalCashRepository(),
-        new MessageRepository(
-            AppDatabaseModuleHelper.getAppDatabase(ApplicationProvider.getApplicationContext()),
-            ApplicationProvider.getApplicationContext()),
+        new DigitalCashRepository(appDatabase, application),
+        new MessageRepository(appDatabase, application),
         keyManager,
         new ServerRepository());
   }
@@ -78,14 +76,12 @@ public class DataRegistryModuleHelper {
       LAORepository laoRepository, ElectionRepository electionRepo, KeyManager keyManager) {
     return buildRegistry(
         laoRepository,
-        new SocialMediaRepository(),
+        new SocialMediaRepository(appDatabase, application),
         electionRepo,
-        new RollCallRepository(),
-        new MeetingRepository(),
-        new DigitalCashRepository(),
-        new MessageRepository(
-            AppDatabaseModuleHelper.getAppDatabase(ApplicationProvider.getApplicationContext()),
-            ApplicationProvider.getApplicationContext()),
+        new RollCallRepository(appDatabase, application),
+        new MeetingRepository(appDatabase, application),
+        new DigitalCashRepository(appDatabase, application),
+        new MessageRepository(appDatabase, application),
         keyManager,
         new ServerRepository());
   }
@@ -97,11 +93,11 @@ public class DataRegistryModuleHelper {
       MessageRepository messageRepo) {
     return buildRegistry(
         laoRepository,
-        new SocialMediaRepository(),
+        new SocialMediaRepository(appDatabase, application),
         electionRepo,
-        new RollCallRepository(),
-        new MeetingRepository(),
-        new DigitalCashRepository(),
+        new RollCallRepository(appDatabase, application),
+        new MeetingRepository(appDatabase, application),
+        new DigitalCashRepository(appDatabase, application),
         messageRepo,
         keyManager,
         new ServerRepository());
@@ -115,13 +111,11 @@ public class DataRegistryModuleHelper {
     return buildRegistry(
         laoRepo,
         socialMediaRepo,
-        new ElectionRepository(),
+        new ElectionRepository(appDatabase, application),
         rollCallRepo,
-        new MeetingRepository(),
-        new DigitalCashRepository(),
-        new MessageRepository(
-            AppDatabaseModuleHelper.getAppDatabase(ApplicationProvider.getApplicationContext()),
-            ApplicationProvider.getApplicationContext()),
+        new MeetingRepository(appDatabase, application),
+        new DigitalCashRepository(appDatabase, application),
+        new MessageRepository(appDatabase, application),
         keyManager,
         new ServerRepository());
   }
@@ -133,11 +127,11 @@ public class DataRegistryModuleHelper {
       ServerRepository serverRepo) {
     return buildRegistry(
         laoRepo,
-        new SocialMediaRepository(),
-        new ElectionRepository(),
-        new RollCallRepository(),
-        new MeetingRepository(),
-        new DigitalCashRepository(),
+        new SocialMediaRepository(appDatabase, application),
+        new ElectionRepository(appDatabase, application),
+        new RollCallRepository(appDatabase, application),
+        new MeetingRepository(appDatabase, application),
+        new DigitalCashRepository(appDatabase, application),
         msgRepo,
         keyManager,
         serverRepo);
@@ -145,16 +139,14 @@ public class DataRegistryModuleHelper {
 
   public static DataRegistry buildRegistry(
       DigitalCashRepository digitalCashRepo, KeyManager keyManager) {
-    AppDatabase appDatabase =
-        AppDatabaseModuleHelper.getAppDatabase(ApplicationProvider.getApplicationContext());
     return buildRegistry(
-        new LAORepository(appDatabase, ApplicationProvider.getApplicationContext()),
-        new SocialMediaRepository(),
-        new ElectionRepository(),
-        new RollCallRepository(),
-        new MeetingRepository(),
+        new LAORepository(appDatabase, application),
+        new SocialMediaRepository(appDatabase, application),
+        new ElectionRepository(appDatabase, application),
+        new RollCallRepository(appDatabase, application),
+        new MeetingRepository(appDatabase, application),
         digitalCashRepo,
-        new MessageRepository(appDatabase, ApplicationProvider.getApplicationContext()),
+        new MessageRepository(appDatabase, application),
         keyManager,
         new ServerRepository());
   }

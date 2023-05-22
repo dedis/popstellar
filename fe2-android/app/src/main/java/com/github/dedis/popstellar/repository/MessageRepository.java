@@ -47,13 +47,7 @@ public class MessageRepository {
   public MessageRepository(AppDatabase appDatabase, Application application) {
     messageDao = appDatabase.messageDao();
     Map<Lifecycle.Event, Consumer<Activity>> consumerMap = new EnumMap<>(Lifecycle.Event.class);
-    consumerMap.put(
-        Lifecycle.Event.ON_DESTROY,
-        activity -> {
-          if (!disposables.isDisposed()) {
-            disposables.dispose();
-          }
-        });
+    consumerMap.put(Lifecycle.Event.ON_STOP, activity -> disposables.clear());
     application.registerActivityLifecycleCallbacks(
         ActivityUtils.buildLifecycleCallback(consumerMap));
     loadCache();

@@ -1,6 +1,5 @@
 package com.github.dedis.popstellar.model.network.method.message.data.election;
 
-import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.github.dedis.popstellar.model.network.JsonTestUtils;
@@ -14,7 +13,6 @@ import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.utility.security.Hash;
 import com.google.gson.JsonParseException;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -54,11 +52,6 @@ public class ElectionSetupTest {
   private final ElectionSetup secretBallotSetup =
       new ElectionSetup(
           ELECTION_NAME, CREATION, START, END, LAO_ID, ElectionVersion.SECRET_BALLOT, QUESTIONS);
-
-  @Before
-  public void setup() {
-    JsonTestUtils.loadGSON(ApplicationProvider.getApplicationContext());
-  }
 
   @Test
   public void electionSetupGetterReturnsCorrectId() {

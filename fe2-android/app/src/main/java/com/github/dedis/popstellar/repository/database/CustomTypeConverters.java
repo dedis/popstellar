@@ -4,9 +4,10 @@ import androidx.room.ProvidedTypeConverter;
 import androidx.room.TypeConverter;
 
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
-import com.github.dedis.popstellar.model.objects.Channel;
-import com.github.dedis.popstellar.model.objects.Lao;
+import com.github.dedis.popstellar.model.objects.*;
+import com.github.dedis.popstellar.model.objects.digitalcash.TransactionObject;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
+import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -49,6 +50,41 @@ public class CustomTypeConverters {
     return gson.fromJson(value, new TypeToken<Set<Channel>>() {}.getType());
   }
 
+  @TypeConverter
+  public Election electionFromString(String value) {
+    return gson.fromJson(value, Election.class);
+  }
+
+  @TypeConverter
+  public RollCall rollcallFromString(String value) {
+    return gson.fromJson(value, RollCall.class);
+  }
+
+  @TypeConverter
+  public Meeting meetingFromString(String value) {
+    return gson.fromJson(value, Meeting.class);
+  }
+
+  @TypeConverter
+  public Chirp chirpFromString(String value) {
+    return gson.fromJson(value, Chirp.class);
+  }
+
+  @TypeConverter
+  public Reaction reactionFromString(String value) {
+    return gson.fromJson(value, Reaction.class);
+  }
+
+  @TypeConverter
+  public PublicKey publicKeyFromString(String value) {
+    return gson.fromJson(value, PublicKey.class);
+  }
+
+  @TypeConverter
+  public TransactionObject transactionObjectFromString(String value) {
+    return gson.fromJson(value, TransactionObject.class);
+  }
+
   /* ----  From Object to String  ---- */
   @TypeConverter
   public String messageToString(MessageGeneral messageGeneral) {
@@ -73,5 +109,40 @@ public class CustomTypeConverters {
   @TypeConverter
   public String setOfChannelsToString(Set<Channel> channels) {
     return gson.toJson(channels, new TypeToken<Set<Channel>>() {}.getType());
+  }
+
+  @TypeConverter
+  public String electionToString(Election election) {
+    return gson.toJson(election, Election.class);
+  }
+
+  @TypeConverter
+  public String rollcallToString(RollCall rollCall) {
+    return gson.toJson(rollCall, RollCall.class);
+  }
+
+  @TypeConverter
+  public String meetingToString(Meeting meeting) {
+    return gson.toJson(meeting, Meeting.class);
+  }
+
+  @TypeConverter
+  public String chirpToString(Chirp chirp) {
+    return gson.toJson(chirp, Chirp.class);
+  }
+
+  @TypeConverter
+  public String reactionToString(Reaction reaction) {
+    return gson.toJson(reaction, Reaction.class);
+  }
+
+  @TypeConverter
+  public String publicKeyToString(PublicKey publicKey) {
+    return gson.toJson(publicKey, PublicKey.class);
+  }
+
+  @TypeConverter
+  public String transactionObjectToString(TransactionObject transactionObject) {
+    return gson.toJson(transactionObject, TransactionObject.class);
   }
 }
