@@ -3,25 +3,27 @@ package com.github.dedis.popstellar.repository.database.digitalcash;
 import androidx.annotation.NonNull;
 import androidx.room.*;
 
+import com.github.dedis.popstellar.model.Immutable;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 
 import java.util.Objects;
 
 @Entity(tableName = "hash_dictionary")
+@Immutable
 public class HashEntity {
 
   @PrimaryKey
   @ColumnInfo(name = "hash")
   @NonNull
-  private String hash;
+  private final String hash;
 
   @ColumnInfo(name = "public_key")
   @NonNull
-  private PublicKey publicKey;
+  private final PublicKey publicKey;
 
   @ColumnInfo(name = "lao_id", index = true)
   @NonNull
-  private String laoId;
+  private final String laoId;
 
   public HashEntity(@NonNull String hash, @NonNull String laoId, @NonNull PublicKey publicKey) {
     this.hash = hash;
@@ -34,26 +36,14 @@ public class HashEntity {
     return hash;
   }
 
-  public void setHash(@NonNull String hash) {
-    this.hash = hash;
-  }
-
   @NonNull
   public String getLaoId() {
     return laoId;
   }
 
-  public void setLaoId(@NonNull String laoId) {
-    this.laoId = laoId;
-  }
-
   @NonNull
   public PublicKey getPublicKey() {
     return publicKey;
-  }
-
-  public void setPublicKey(@NonNull PublicKey publicKey) {
-    this.publicKey = publicKey;
   }
 
   @Override

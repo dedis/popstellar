@@ -3,24 +3,26 @@ package com.github.dedis.popstellar.repository.database.socialmedia;
 import androidx.annotation.NonNull;
 import androidx.room.*;
 
+import com.github.dedis.popstellar.model.Immutable;
 import com.github.dedis.popstellar.model.objects.Reaction;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 
 @Entity(tableName = "reactions")
+@Immutable
 public class ReactionEntity {
 
   @PrimaryKey
   @ColumnInfo(name = "reaction_id")
   @NonNull
-  private MessageID reactionId;
+  private final MessageID reactionId;
 
   @ColumnInfo(name = "chirp_id", index = true)
   @NonNull
-  private MessageID chirpId;
+  private final MessageID chirpId;
 
   @ColumnInfo(name = "reaction")
   @NonNull
-  private Reaction reaction;
+  private final Reaction reaction;
 
   public ReactionEntity(
       @NonNull MessageID reactionId, @NonNull MessageID chirpId, @NonNull Reaction reaction) {
@@ -39,25 +41,13 @@ public class ReactionEntity {
     return reactionId;
   }
 
-  public void setReactionId(@NonNull MessageID reactionId) {
-    this.reactionId = reactionId;
-  }
-
   @NonNull
   public MessageID getChirpId() {
     return chirpId;
   }
 
-  public void setChirpId(@NonNull MessageID chirpId) {
-    this.chirpId = chirpId;
-  }
-
   @NonNull
   public Reaction getReaction() {
     return reaction;
-  }
-
-  public void setReaction(@NonNull Reaction reaction) {
-    this.reaction = reaction;
   }
 }

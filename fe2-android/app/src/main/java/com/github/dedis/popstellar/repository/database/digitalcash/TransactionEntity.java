@@ -3,23 +3,25 @@ package com.github.dedis.popstellar.repository.database.digitalcash;
 import androidx.annotation.NonNull;
 import androidx.room.*;
 
+import com.github.dedis.popstellar.model.Immutable;
 import com.github.dedis.popstellar.model.objects.digitalcash.TransactionObject;
 
 @Entity(tableName = "transactions")
+@Immutable
 public class TransactionEntity {
 
   @PrimaryKey
   @ColumnInfo(name = "transaction_id")
   @NonNull
-  private String transactionId;
+  private final String transactionId;
 
   @ColumnInfo(name = "lao_id", index = true)
   @NonNull
-  private String laoId;
+  private final String laoId;
 
   @ColumnInfo(name = "transaction")
   @NonNull
-  private TransactionObject transactionObject;
+  private final TransactionObject transactionObject;
 
   public TransactionEntity(
       @NonNull String transactionId,
@@ -40,25 +42,13 @@ public class TransactionEntity {
     return transactionId;
   }
 
-  public void setTransactionId(@NonNull String transactionId) {
-    this.transactionId = transactionId;
-  }
-
   @NonNull
   public String getLaoId() {
     return laoId;
   }
 
-  public void setLaoId(@NonNull String laoId) {
-    this.laoId = laoId;
-  }
-
   @NonNull
   public TransactionObject getTransactionObject() {
     return transactionObject;
-  }
-
-  public void setTransactionObject(@NonNull TransactionObject transactionObject) {
-    this.transactionObject = transactionObject;
   }
 }
