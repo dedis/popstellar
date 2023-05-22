@@ -38,10 +38,6 @@ public class JsonConverter {
   public JsonConverter(String publicKey, byte [] privateKey){
     this.publicKey = publicKey;
     this.privateKey = privateKey;
-
-
-    System.out.println("privateKey in socket: " + Base64Utils.encode(privateKey));
-    System.out.println("publicKey in socket: " + publicKey);
   }
 
 

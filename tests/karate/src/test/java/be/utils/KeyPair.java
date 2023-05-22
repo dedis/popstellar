@@ -28,9 +28,6 @@ public class KeyPair {
 
     this.privateKey = privateKey;
     this.publicKey = publicKeyParameters.getEncoded();
-
-    System.out.println("generated privateKey: " + Base64Utils.encode(privateKey));
-    System.out.println("generated publicKey: " + Base64Utils.encode(publicKey));
   }
 
   public byte [] getPublicKeyBytes(){

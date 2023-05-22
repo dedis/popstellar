@@ -33,11 +33,8 @@ public class MultiMsgWebSocketClient extends WebSocketClient {
     KeyPair keyPair = new KeyPair();
     this.publicKey = keyPair.getPublicKey();
     this.privateKey = keyPair.getPrivateKeyBytes();
-
-    System.out.println("privateKey in socket: " + Base64Utils.encode(privateKey));
-    System.out.println("publicKey in socket: " + publicKey);
-
     this.jsonConverter = new JsonConverter(publicKey, privateKey);
+    System.out.println("Created a MultiMsgWebSocketClient using: \npublicKey: " + publicKey + "\nprivate key: " + Base64Utils.encode(privateKey));
 
     setTextHandler(m -> true);
   }

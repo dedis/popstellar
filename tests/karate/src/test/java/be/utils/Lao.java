@@ -11,7 +11,6 @@ public class Lao {
   public Lao(String organizerPk, Long creation, String name){
     this.creation = creation;
     this.organizerPk = organizerPk;
-    System.out.println("The organizer pk is: " + organizerPk);
     this.name = name;
 
     if(name.isEmpty()){
