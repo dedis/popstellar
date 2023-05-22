@@ -144,7 +144,7 @@ export namespace LaoHooks {
 
   export const useDisconnectFromLao = () => {
     const dispatch = useDispatch();
-
+    console.log(`Disconnecting...`);
     return useCallback(() => {
       getNetworkManager().disconnectFromAll();
       dispatch(clearCurrentLao());

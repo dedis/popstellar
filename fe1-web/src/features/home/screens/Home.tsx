@@ -37,10 +37,17 @@ const Home: FunctionComponent<unknown> = () => {
     // Return the function to unsubscribe from the event so it gets removed on unmount
     return navigation.addListener('focus', () => {
       // The screen is now focused, check if we are connected to a lao
+      console.log(`Am I connected to a lao? ${isConnected}`);
       if (isConnected) {
         // if we enter this screen and connected to a lao
         // disconnect from this lao
         disconnectFromLao();
+      } else {
+        try {
+          disconnectFromLao();
+        } catch (error) {
+          console.log(`Error disconnecting from lao: ${error}`);
+        }
       }
     });
   }, [navigation, isConnected, disconnectFromLao]);

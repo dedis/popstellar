@@ -75,6 +75,7 @@ const DisconnectIcon = makeIcon('logout');
 
 const LaoDrawerContent = ({ descriptors, navigation, state }: DrawerContentComponentProps) => {
   const lao = LaoHooks.useCurrentLao();
+  console.log('lao', lao);
 
   return (
     <View style={styles.drawerWapper}>
@@ -110,7 +111,7 @@ const LaoDrawerContent = ({ descriptors, navigation, state }: DrawerContentCompo
  */
 const LaoNavigation: React.FC<unknown> = () => {
   const passedScreens = LaoHooks.useLaoNavigationScreens();
-
+  console.log('passedScreens', passedScreens)
   // add the organizer or attendee screen depeding on the user
   const screens: LaoFeature.LaoScreen[] = useMemo(() => {
     return (
