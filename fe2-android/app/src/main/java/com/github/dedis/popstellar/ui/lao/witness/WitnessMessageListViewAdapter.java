@@ -34,7 +34,7 @@ public class WitnessMessageListViewAdapter extends BaseAdapter {
   private List<WitnessMessage> messages;
 
   private final FragmentActivity activity;
-  private boolean isWitness;
+  private final boolean isWitness;
   private static final String NO_SIGNATURES = "No signatures yet";
 
   public WitnessMessageListViewAdapter(List<WitnessMessage> messages, FragmentActivity activity) {

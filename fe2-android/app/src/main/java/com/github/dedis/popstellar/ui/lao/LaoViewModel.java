@@ -252,8 +252,7 @@ public class LaoViewModel extends AndroidViewModel implements PopViewModel {
                   Timber.tag(TAG).d("got an update for lao: %s", laoView);
 
                   setIsOrganizer(laoView.getOrganizer().equals(keyManager.getMainPublicKey()));
-                  setIsWitness(
-                      witnessingRepo.getWitnesses(laoId).contains(keyManager.getMainPublicKey()));
+                  setIsWitness(witnessingRepo.isWitness(laoId, keyManager.getMainPublicKey()));
 
                   updateRole();
                 },

@@ -18,8 +18,7 @@ import com.github.dedis.popstellar.repository.database.subscriptions.Subscriptio
 import com.github.dedis.popstellar.repository.database.subscriptions.SubscriptionsEntity;
 import com.github.dedis.popstellar.repository.database.wallet.WalletDao;
 import com.github.dedis.popstellar.repository.database.wallet.WalletEntity;
-import com.github.dedis.popstellar.repository.database.witnessing.WitnessingDao;
-import com.github.dedis.popstellar.repository.database.witnessing.WitnessingEntity;
+import com.github.dedis.popstellar.repository.database.witnessing.*;
 
 import javax.inject.Singleton;
 
@@ -37,9 +36,10 @@ import javax.inject.Singleton;
       ReactionEntity.class,
       TransactionEntity.class,
       HashEntity.class,
-      WitnessingEntity.class
+      WitnessingEntity.class,
+      WitnessEntity.class
     },
-    version = 2)
+    version = 1)
 @TypeConverters(CustomTypeConverters.class)
 public abstract class AppDatabase extends RoomDatabase {
   public abstract MessageDao messageDao();
@@ -50,7 +50,9 @@ public abstract class AppDatabase extends RoomDatabase {
 
   public abstract SubscriptionsDao subscriptionsDao();
 
-  public abstract WitnessingDao witnessDao();
+  public abstract WitnessingDao witnessingDao();
+
+  public abstract WitnessDao witnessDao();
 
   public abstract ElectionDao electionDao();
 

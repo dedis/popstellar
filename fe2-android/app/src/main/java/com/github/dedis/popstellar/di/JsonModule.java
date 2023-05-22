@@ -52,6 +52,7 @@ public class JsonModule {
         .registerTypeAdapter(Reaction.class, new JsonReactionSerializer())
         .registerTypeAdapter(Chirp.class, new JsonChirpSerializer())
         .registerTypeAdapter(TransactionObject.class, new JsonTransactionObjectSerializer())
+        .registerTypeAdapter(WitnessMessage.class, new JsonWitnessMessageSerializer())
         // Base64URLData serializers
         .registerTypeAdapter(
             Base64URLData.class, new JsonBase64DataSerializer<>(Base64URLData::new))

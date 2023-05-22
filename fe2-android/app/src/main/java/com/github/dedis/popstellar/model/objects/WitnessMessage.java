@@ -6,9 +6,7 @@ import com.github.dedis.popstellar.model.Copyable;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 /** Class to model a message that needs to be signed by witnesses */
 public class WitnessMessage implements Copyable<WitnessMessage> {
@@ -30,6 +28,14 @@ public class WitnessMessage implements Copyable<WitnessMessage> {
   public WitnessMessage(MessageID messageId) {
     witnesses = new HashSet<>();
     this.messageId = messageId;
+  }
+
+  public WitnessMessage(
+      MessageID messageId, Set<PublicKey> witnesses, String title, String description) {
+    this.messageId = messageId;
+    this.witnesses = witnesses;
+    this.title = title;
+    this.description = description;
   }
 
   public WitnessMessage(WitnessMessage witnessMessage) {

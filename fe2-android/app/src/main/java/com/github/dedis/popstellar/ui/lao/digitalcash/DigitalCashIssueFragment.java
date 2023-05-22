@@ -148,7 +148,7 @@ public class DigitalCashIssueFragment extends Fragment {
     } else if (radioGroup == selectAllRollCallAttendees) {
       attendees = digitalCashViewModel.getAttendeesFromLastRollCall();
     } else if (radioGroup == selectAllLaoWitnesses) {
-      attendees = Objects.requireNonNull(digitalCashViewModel.getLao()).getWitnesses();
+      attendees = digitalCashViewModel.getWitnesses();
     }
     return attendees;
   }

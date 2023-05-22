@@ -111,8 +111,9 @@ public class WitnessingViewModel extends AndroidViewModel implements QRCodeScann
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 witnessMessage -> {
-                  Collections.reverse(witnessMessage);
-                  setWitnessMessages(witnessMessage);
+                  List<WitnessMessage> messages = new ArrayList<>(witnessMessage);
+                  Collections.reverse(messages);
+                  setWitnessMessages(messages);
                 },
                 error ->
                     Timber.tag(TAG)

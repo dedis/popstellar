@@ -10,17 +10,20 @@ import com.github.dedis.popstellar.model.objects.WitnessMessage;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.repository.database.AppDatabase;
-import com.github.dedis.popstellar.repository.database.witnessing.WitnessingDao;
+import com.github.dedis.popstellar.repository.database.witnessing.*;
 import com.github.dedis.popstellar.utility.ActivityUtils;
 
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.BehaviorSubject;
 import io.reactivex.subjects.Subject;
 import timber.log.Timber;
@@ -35,12 +38,14 @@ public class WitnessingRepository {
 
   private final Map<String, LaoWitness> witnessByLao = new HashMap<>();
 
-  private final WitnessingDao witnessDao;
+  private final WitnessingDao witnessingDao;
+  private final WitnessDao witnessDao;
 
   private final CompositeDisposable disposables = new CompositeDisposable();
 
   @Inject
   public WitnessingRepository(AppDatabase appDatabase, Application application) {
+    witnessingDao = appDatabase.witnessingDao();
     witnessDao = appDatabase.witnessDao();
     Map<Lifecycle.Event, Consumer<Activity>> consumerMap = new EnumMap<>(Lifecycle.Event.class);
     consumerMap.put(Lifecycle.Event.ON_STOP, activity -> disposables.clear());
@@ -57,6 +62,17 @@ public class WitnessingRepository {
    */
   public void addWitnessMessage(String laoId, WitnessMessage witnessMessage) {
     Timber.tag(TAG).d("Adding a witness message on lao %s : %s", laoId, witnessMessage);
+    // Persist the message
+    WitnessingEntity witnessingEntity = new WitnessingEntity(laoId, witnessMessage);
+    disposables.add(
+        witnessingDao
+            .insert(witnessingEntity)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                () ->
+                    Timber.tag(TAG).d("Successfully persisted witness message %s", witnessMessage),
+                err -> Timber.tag(TAG).e(err, "Error in persisting witness message")));
     // Retrieve Lao data and add the witness message to it
     getLaoWitness(laoId).add(witnessMessage);
   }
@@ -69,8 +85,33 @@ public class WitnessingRepository {
    */
   public void addWitnesses(String laoId, Set<PublicKey> witnesses) {
     Timber.tag(TAG).d("Adding witnesses to lao %s : %s", laoId, witnesses);
+    // Persist the witnesses
+    List<WitnessEntity> witnessEntities =
+        witnesses.stream().map(pk -> new WitnessEntity(laoId, pk)).collect(Collectors.toList());
+    disposables.add(
+        witnessDao
+            .insert(witnessEntities)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                () -> Timber.tag(TAG).d("Successfully persisted witnesses %s", witnesses),
+                err -> Timber.tag(TAG).e(err, "Error in persisting witnesses")));
     // Retrieve Lao data and add the witnesses to it
     getLaoWitness(laoId).addWitnesses(witnesses);
+  }
+
+  /**
+   * This function adds a witness public key to a witness message contained in the repository.
+   *
+   * @param laoId identifier of the lao where the message belongs
+   * @param messageID id of the message signed
+   * @param witness public key to add
+   * @return true if it exists a witness message with that messageId, false otherwise
+   */
+  public boolean addWitnessToMessage(String laoId, MessageID messageID, PublicKey witness) {
+    Timber.tag(TAG).d("Adding a witness to a witness message on lao %s : %s", laoId, messageID);
+    // Retrieve Lao data and add the witness message to it
+    return getLaoWitness(laoId).addWitnessToMessage(messageID, witness);
   }
 
   /**
@@ -111,20 +152,6 @@ public class WitnessingRepository {
   }
 
   /**
-   * This function adds a witness public key to a witness message contained in the repository.
-   *
-   * @param laoId identifier of the lao where the message belongs
-   * @param messageID id of the message signed
-   * @param witness public key to add
-   * @return true if it exists a witness message with that messageId, false otherwise
-   */
-  public boolean addWitnessToMessage(String laoId, MessageID messageID, PublicKey witness) {
-    Timber.tag(TAG).d("Adding a witness to a witness message on lao %s : %s", laoId, messageID);
-    // Retrieve Lao data and add the witness message to it
-    return getLaoWitness(laoId).addWitnessToMessage(messageID, witness);
-  }
-
-  /**
    * Returns an observable over the set of witnesses in a lao.
    *
    * @param laoId the id of the Lao whose witnesses we want to observe
@@ -150,12 +177,14 @@ public class WitnessingRepository {
   @NonNull
   private synchronized LaoWitness getLaoWitness(String laoId) {
     // Create the lao witness object if it is not present yet
-    return witnessByLao.computeIfAbsent(laoId, lao -> new LaoWitness(laoId));
+    return witnessByLao.computeIfAbsent(laoId, lao -> new LaoWitness(laoId, this));
   }
 
   private static class LaoWitness {
 
     private final String laoId;
+    private final WitnessingRepository repo;
+    private boolean alreadyRetrieved = false;
 
     private final Set<PublicKey> witnesses = new HashSet<>();
     private final Subject<Set<PublicKey>> witnessesSubject =
@@ -164,8 +193,10 @@ public class WitnessingRepository {
     private final Subject<List<WitnessMessage>> witnessMessagesSubject =
         BehaviorSubject.createDefault(unmodifiableList(emptyList()));
 
-    public LaoWitness(String laoId) {
+    public LaoWitness(String laoId, WitnessingRepository repo) {
       this.laoId = laoId;
+      this.repo = repo;
+      loadFromDisk();
     }
 
     public synchronized void add(WitnessMessage witnessMessage) {
@@ -184,6 +215,17 @@ public class WitnessingRepository {
         return false;
       }
       witnessMessage.addWitness(witness);
+      // Persist the new message
+      repo.disposables.add(
+          repo.witnessingDao
+              .insert(new WitnessingEntity(laoId, witnessMessage))
+              .subscribeOn(Schedulers.io())
+              .observeOn(AndroidSchedulers.mainThread())
+              .subscribe(
+                  () ->
+                      Timber.tag(TAG)
+                          .d("Successfully persisted witness message %s", witnessMessage),
+                  err -> Timber.tag(TAG).e(err, "Error in persisting witness message")));
       // Update the subject
       witnessMessagesSubject.onNext(unmodifiableList(new ArrayList<>(witnessMessages.values())));
       return true;
@@ -211,6 +253,29 @@ public class WitnessingRepository {
 
     public Observable<List<WitnessMessage>> getWitnessMessagesSubject() {
       return witnessMessagesSubject;
+    }
+
+    /** This function loads the lao witnessing state from the disk at creation of the lao */
+    private void loadFromDisk() {
+      if (alreadyRetrieved) {
+        return;
+      }
+      repo.disposables.addAll(
+          repo.witnessDao
+              .getWitnessesByLao(laoId)
+              .subscribeOn(Schedulers.io())
+              .observeOn(AndroidSchedulers.mainThread())
+              .subscribe(
+                  witnessList -> addWitnesses(new HashSet<>(witnessList)),
+                  err -> Timber.tag(TAG).e(err, "No witnesses found on the disk")),
+          repo.witnessingDao
+              .getWitnessMessagesByLao(laoId)
+              .subscribeOn(Schedulers.io())
+              .observeOn(AndroidSchedulers.mainThread())
+              .subscribe(
+                  witnessMessageList -> witnessMessageList.forEach(this::add),
+                  err -> Timber.tag(TAG).e(err, "No witness messages found on the disk")));
+      alreadyRetrieved = true;
     }
   }
 }

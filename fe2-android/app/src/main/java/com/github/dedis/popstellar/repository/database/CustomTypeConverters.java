@@ -85,6 +85,11 @@ public class CustomTypeConverters {
     return gson.fromJson(value, TransactionObject.class);
   }
 
+  @TypeConverter
+  public WitnessMessage witnessMessageFromString(String value) {
+    return gson.fromJson(value, WitnessMessage.class);
+  }
+
   /* ----  From Object to String  ---- */
   @TypeConverter
   public String messageToString(MessageGeneral messageGeneral) {
@@ -144,5 +149,10 @@ public class CustomTypeConverters {
   @TypeConverter
   public String transactionObjectToString(TransactionObject transactionObject) {
     return gson.toJson(transactionObject, TransactionObject.class);
+  }
+
+  @TypeConverter
+  public String witnessMessageToString(WitnessMessage witnessMessage) {
+    return gson.toJson(witnessMessage, WitnessMessage.class);
   }
 }

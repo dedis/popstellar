@@ -1,34 +1,37 @@
 package com.github.dedis.popstellar.repository.database.witnessing;
 
 import androidx.annotation.NonNull;
-import androidx.room.ColumnInfo;
-import androidx.room.Entity;
+import androidx.room.*;
 
+import com.github.dedis.popstellar.model.objects.WitnessMessage;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
-import com.github.dedis.popstellar.model.objects.security.PublicKey;
 
-@Entity(
-    tableName = "witness_signatures",
-    primaryKeys = {"lao_id", "message_id", "signing_witness"})
+@Entity(tableName = "witness_messages")
 public class WitnessingEntity {
 
   @ColumnInfo(name = "lao_id")
   @NonNull
   private final String laoId;
 
-  @ColumnInfo(name = "message_id")
+  @PrimaryKey
+  @ColumnInfo(name = "id")
   @NonNull
   private final MessageID messageID;
 
-  @ColumnInfo(name = "signing_witness")
+  @ColumnInfo(name = "message")
   @NonNull
-  private final PublicKey signingWitness;
+  private final WitnessMessage message;
 
   public WitnessingEntity(
-      @NonNull String laoId, @NonNull MessageID messageID, @NonNull PublicKey signingWitness) {
+      @NonNull String laoId, @NonNull MessageID messageID, @NonNull WitnessMessage message) {
     this.laoId = laoId;
     this.messageID = messageID;
-    this.signingWitness = signingWitness;
+    this.message = message;
+  }
+
+  @Ignore
+  public WitnessingEntity(@NonNull String laoId, @NonNull WitnessMessage message) {
+    this(laoId, message.getMessageId(), message);
   }
 
   @NonNull
@@ -42,7 +45,7 @@ public class WitnessingEntity {
   }
 
   @NonNull
-  public PublicKey getSigningWitness() {
-    return signingWitness;
+  public WitnessMessage getMessage() {
+    return message;
   }
 }
