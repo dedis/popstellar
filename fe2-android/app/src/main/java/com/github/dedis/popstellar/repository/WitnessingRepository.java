@@ -100,6 +100,12 @@ public class WitnessingRepository {
     return getLaoWitness(laoId).areWitnessesEquals(witnesses);
   }
 
+  /**
+   * This returns the set of public keys of the witnesses of a lao.
+   *
+   * @param laoId lao identifier whose witnesses are being retrieved
+   * @return set of public keys of the witnesses
+   */
   public Set<PublicKey> getWitnesses(String laoId) {
     return getLaoWitness(laoId).getWitnesses();
   }
@@ -129,6 +135,13 @@ public class WitnessingRepository {
     return getLaoWitness(laoId).getWitnessesSubject();
   }
 
+  /**
+   * Returns an observable of the list of witness messages. Each time a witness is added to a
+   * witness message the observable is notified with the updated list.
+   *
+   * @param laoId identifier of the lao whose witness messages are observed
+   * @return an observable list of witness messages (message id and witnesses having signed it)
+   */
   public Observable<List<WitnessMessage>> getWitnessMessagesObservableInLao(String laoId) {
     return getLaoWitness(laoId).getWitnessMessagesSubject();
   }
