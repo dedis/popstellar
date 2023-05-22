@@ -6,7 +6,6 @@ import { makeIcon } from 'core/components/PoPIcon';
 import PoPTouchableOpacity from 'core/components/PoPTouchableOpacity';
 import QrCodeScanner, { QrCodeScannerUIElementContainer } from 'core/components/QrCodeScanner';
 import QrCodeScanOverlay from 'core/components/QrCodeScanOverlay';
-import { Hash } from 'core/objects';
 import { Typography } from 'core/styles';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
