@@ -36,6 +36,10 @@ public class Channel implements Serializable {
    */
   public static Channel fromString(String value) {
     // Remove the "/root/" part of the value as it is not relevant and does not need to be stored
+    // Check first that value is not simply root
+    if (value.equals(ROOT_CHANNEL)) {
+      return ROOT;
+    }
     String relevantPart = value.substring(ROOT_CHANNEL.length() + 1);
     return new Channel(relevantPart.split(DELIMITER));
   }

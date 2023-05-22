@@ -2,7 +2,7 @@ package ch.epfl.pop.pubsub.graph.handlers
 
 import akka.pattern.AskableActorRef
 import ch.epfl.pop.json.MessageDataProtocol._
-import ch.epfl.pop.model.network.{JsonRpcRequest}
+import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.socialMedia._
 import ch.epfl.pop.model.objects._
@@ -104,13 +104,14 @@ class SocialMediaHandler(dbRef: => AskableActorRef) extends MessageHandler {
     }
   }
 
-  // no need for a case handleNotifyAddChirp or handleNotifyDeleteChirp for now, since the server never receives any in theory, but could be needed later
   def handleNotifyAddChirp(rpcMessage: JsonRpcRequest): GraphMessage = {
-    Left(PipelineError(ErrorCodes.SERVER_ERROR.id, "NOT IMPLEMENTED: SocialMediaHandler should not handle NotifyAddChirp messages", rpcMessage.id))
+    val ask = dbAskWritePropagate(rpcMessage)
+    Await.result(ask, duration)
   }
 
   def handleNotifyDeleteChirp(rpcMessage: JsonRpcRequest): GraphMessage = {
-    Left(PipelineError(ErrorCodes.SERVER_ERROR.id, "NOT IMPLEMENTED: SocialMediaHandler should not handle NotifyDeleteChirp messages", rpcMessage.id))
+    val ask = dbAskWritePropagate(rpcMessage)
+    Await.result(ask, duration)
   }
 
   def handleAddReaction(rpcMessage: JsonRpcRequest): GraphMessage = {

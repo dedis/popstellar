@@ -25,4 +25,16 @@ public class WitnessingFragmentPageObject {
   public static ViewInteraction getEventListFragment() {
     return onView(withId(R.id.fragment_event_list));
   }
+
+  public static ViewInteraction witnessMessageFragment() {
+    return onView(withId(R.id.fragment_witness_message));
+  }
+
+  public static ViewInteraction witnessesFragment() {
+    return onView(withId(R.id.fragment_witnesses));
+  }
+
+  public static ViewInteraction witnessingTabs() {
+    return onView(withId(R.id.witnessing_tab_layout));
+  }
 }

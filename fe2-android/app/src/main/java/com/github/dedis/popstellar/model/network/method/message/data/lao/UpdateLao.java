@@ -42,7 +42,7 @@ public class UpdateLao extends Data {
       Set<PublicKey> witnesses) {
     // Witnesses are checked to be base64 at deserialization, but not organizer
     MessageValidator.verify()
-        .isBase64(organizer.getEncoded(), "organizer")
+        .isNotEmptyBase64(organizer.getEncoded(), "organizer")
         .stringNotEmpty(name, "name")
         .orderedTimes(creation, lastModified)
         .validPastTimes(creation, lastModified);

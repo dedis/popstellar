@@ -87,6 +87,10 @@ public class WitnessingViewModel extends AndroidViewModel implements QRCodeScann
     this.witnesses.setValue(witnesses);
   }
 
+  public List<PublicKey> getScannedWitnesses() {
+    return new ArrayList<>(scannedWitnesses);
+  }
+
   /*
   // TODO refactor this away
    This is done so because of the absence of witnessing repository. It should be added
@@ -103,8 +107,10 @@ public class WitnessingViewModel extends AndroidViewModel implements QRCodeScann
             .subscribe(
                 laoView -> {
                   Timber.tag(TAG).d("got an update for lao: %s", laoView);
-
-                  setWitnessMessages(new ArrayList<>(laoView.getWitnessMessages().values()));
+                  List<WitnessMessage> witnessMessages =
+                      new ArrayList<>(laoView.getWitnessMessages().values());
+                  Collections.reverse(witnessMessages);
+                  setWitnessMessages(witnessMessages);
                   setWitnesses(new ArrayList<>(laoView.getWitnesses()));
                 },
                 error -> Timber.tag(TAG).d(error, "error updating LAO")));
@@ -167,6 +173,8 @@ public class WitnessingViewModel extends AndroidViewModel implements QRCodeScann
     nbScanned.setValue(scannedWitnesses.size());
     Timber.tag(TAG).d("Witness %s successfully scanned", publicKey);
     Toast.makeText(getApplication(), R.string.witness_scan_success, Toast.LENGTH_SHORT).show();
+    // So far the update Lao it's not used, we simply add the witnesses at creation time
+    /*
     disposables.add(
         updateLaoWitnesses()
             .subscribe(
@@ -181,6 +189,7 @@ public class WitnessingViewModel extends AndroidViewModel implements QRCodeScann
                   nbScanned.setValue(scannedWitnesses.size());
                   ErrorUtils.logAndShow(getApplication(), TAG, error, R.string.error_update_lao);
                 }));
+     */
   }
 
   private Completable updateLaoWitnesses() {

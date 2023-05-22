@@ -7,6 +7,7 @@ import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 /** Class to model a message that needs to be signed by witnesses */
@@ -92,5 +93,25 @@ public class WitnessMessage implements Copyable<WitnessMessage> {
         + description
         + '\''
         + '}';
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof WitnessMessage)) {
+      return false;
+    }
+    WitnessMessage that = (WitnessMessage) o;
+    return messageId.equals(that.messageId)
+        && Objects.equals(witnesses, that.witnesses)
+        && Objects.equals(title, that.title)
+        && Objects.equals(description, that.description);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(messageId, witnesses, title, description);
   }
 }

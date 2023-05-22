@@ -8,16 +8,18 @@ import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
 
 import java.io.*;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
 
 public class JsonTestUtils {
 
-  private static final Gson GSON = JsonModule.provideGson(DataRegistryModuleHelper.buildRegistry());
+  public static final Gson GSON = JsonModule.provideGson(DataRegistryModuleHelper.buildRegistry());
 
   public static String loadFile(String path) {
-    InputStream is = JsonTestUtils.class.getClassLoader().getResourceAsStream(path);
+    InputStream is =
+        Objects.requireNonNull(JsonTestUtils.class.getClassLoader()).getResourceAsStream(path);
     BufferedReader reader = new BufferedReader(new InputStreamReader(is));
     return reader.lines().collect(Collectors.joining("\n"));
   }

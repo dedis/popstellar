@@ -55,7 +55,7 @@ public class ElectionSetup extends Data {
         .orderedTimes(creation, start, end)
         .validPastTimes(creation)
         .stringNotEmpty(name, "election name")
-        .isBase64(laoId, "lao id")
+        .isNotEmptyBase64(laoId, "lao id")
         .noListDuplicates(questions);
 
     this.name = name;

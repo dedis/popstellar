@@ -161,4 +161,7 @@ libraryDependencies += "com.fasterxml.jackson.core" % "jackson-databind" % "2.0.
 // Scala file system handling
 libraryDependencies += "org.scala-lang" % "scala-reflect" % scalaVersion.value
 
+// QRCODE generation library
+libraryDependencies += "com.google.zxing" % "core" % "3.5.1"
+
 conflictManager := ConflictManager.latestCompatible

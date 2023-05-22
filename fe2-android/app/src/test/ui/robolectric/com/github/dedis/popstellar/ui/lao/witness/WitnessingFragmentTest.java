@@ -20,20 +20,23 @@ import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoTestRule;
 
+import java.time.Instant;
+
 import dagger.hilt.android.testing.HiltAndroidRule;
 import dagger.hilt.android.testing.HiltAndroidTest;
 
+import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.generatePoPToken;
-import static com.github.dedis.popstellar.testutils.pages.lao.witness.WitnessingFragmentPageObject.getEventListFragment;
-import static com.github.dedis.popstellar.testutils.pages.lao.witness.WitnessingFragmentPageObject.getRootView;
+import static com.github.dedis.popstellar.testutils.MatcherUtils.selectTabAtPosition;
+import static com.github.dedis.popstellar.testutils.pages.lao.witness.WitnessingFragmentPageObject.*;
 
 @HiltAndroidTest
 @RunWith(AndroidJUnit4.class)
 public class WitnessingFragmentTest {
 
-  private static final long CREATION_TIME = 1631280815;
+  private static final long CREATION_TIME = Instant.now().getEpochSecond();
   private static final String LAO_NAME = "laoName";
 
   private static final KeyPair SENDER_KEY_1 = generatePoPToken();
@@ -72,5 +75,28 @@ public class WitnessingFragmentTest {
     getRootView().perform(ViewActions.pressBack());
     // Check current fragment displayed is event list
     getEventListFragment().check(matches(isDisplayed()));
+  }
+
+  @Test
+  public void testTabMenu() {
+    witnessingTabs().check(matches(isDisplayed()));
+
+    // Check that by default the witnesses are displayed
+    witnessMessageFragment().check(doesNotExist());
+    witnessesFragment().check(matches(isDisplayed()));
+
+    // Select the messages tab
+    witnessingTabs().perform(selectTabAtPosition(1));
+
+    // Check that the witness messages are displayed and the witnesses are not displayed
+    witnessMessageFragment().check(matches(isDisplayed()));
+    witnessesFragment().check(doesNotExist());
+
+    // Select the witnesses tab
+    witnessingTabs().perform(selectTabAtPosition(0));
+
+    // Check that the witnesses are displayed and the witnesses messages are not displayed
+    witnessMessageFragment().check(doesNotExist());
+    witnessesFragment().check(matches(isDisplayed()));
   }
 }

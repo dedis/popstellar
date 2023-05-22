@@ -2,10 +2,12 @@ package com.github.dedis.popstellar.model.network.method.message.data.election;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import com.github.dedis.popstellar.model.network.method.message.data.*;
+
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
+import com.github.dedis.popstellar.model.network.method.message.data.*;
 import com.github.dedis.popstellar.utility.MessageValidator;
 import com.google.gson.annotations.SerializedName;
+
 import java.time.Instant;
 import java.util.*;
 
@@ -34,8 +36,8 @@ public class CastVote extends Data {
       @Nullable List<? extends Vote> votes, @NonNull String electionId, @NonNull String laoId) {
     // Lao id and election id are checked to match existing ones in the cast vote handler
     MessageValidator.verify()
-        .isBase64(electionId, "election id")
-        .isBase64(laoId, "lao id")
+        .isNotEmptyBase64(electionId, "election id")
+        .isNotEmptyBase64(laoId, "lao id")
         .validVotes(votes);
 
     this.createdAt = Instant.now().getEpochSecond();
@@ -55,8 +57,8 @@ public class CastVote extends Data {
   public CastVote(List<? extends Vote> votes, String electionId, String laoId, Long createdAt) {
     // Lao id and election id are checked to match existing ones in the cast vote handler
     MessageValidator.verify()
-        .isBase64(electionId, "election id")
-        .isBase64(laoId, "lao id")
+        .isNotEmptyBase64(electionId, "election id")
+        .isNotEmptyBase64(laoId, "lao id")
         .validVotes(votes)
         .validPastTimes(createdAt);
 

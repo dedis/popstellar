@@ -52,6 +52,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     homeViewModel = HomeActivity.obtainViewModel(requireActivity());
     settingsViewModel = HomeActivity.obtainSettingsViewModel(requireActivity());
 
+    handleBackNav();
     return super.onCreateView(inflater, container, savedInstanceState);
   }
 
@@ -115,5 +116,9 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             return true;
           }
         });
+  }
+
+  private void handleBackNav() {
+    HomeActivity.addBackNavigationCallbackToHome(requireActivity(), getViewLifecycleOwner(), TAG);
   }
 }

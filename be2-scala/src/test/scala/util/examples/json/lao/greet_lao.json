@@ -1,0 +1,15 @@
+{
+  "jsonrpc": "2.0",
+  "id": 4,
+  "method": "publish",
+  "params": {
+    "channel": "/root/o3nyIIvrmDriwYXnH5-8CmYdyZcz4BPNT99W7dcrk9M=",
+    "message": {
+      "data": "eyJvYmplY3QiOiJsYW8iLCJhY3Rpb24iOiJncmVldCIsImxhbyI6Im8zbnlJSXZybURyaXdZWG5INS04Q21ZZHlaY3o0QlBOVDk5VzdkY3JrOU09IiwiZnJvbnRlbmQiOiJVdXZyOWNGZTByN2o4ZjY0YVB2cms3WjY1SnQ0a3Y5bkd6NEhYZ295MzhRPSIsImFkZHJlc3MiOiJ3czovLzEyNy4wLjAuMTo4MDAwL2NsaWVudCIsInBlZXJzIjpbXX0=",
+      "message_id": "WW4XMusn_hjJngXvVPmF_4wSIqSJEuaxqflqVx_OeEE=",
+      "sender": "pLGlHn5foBNLuY1Kd_s2y7-XZEAyaS4HcPVeD-VbRKE=",
+      "signature": "cHx0h-WRs3P9qPp9rTQFwH_UhQ7GJWdYARNF796P39Cz83Gsrf5RYdJEmSwBZXC_diMxngHFLm48ArEDZGZaCw==",
+      "witness_signatures": []
+    }
+  }
+}

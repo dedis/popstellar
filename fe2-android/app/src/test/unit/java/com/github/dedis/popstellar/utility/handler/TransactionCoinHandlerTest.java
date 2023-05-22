@@ -1,7 +1,11 @@
 package com.github.dedis.popstellar.utility.handler;
 
-import com.github.dedis.popstellar.di.DataRegistryModuleHelper;
-import com.github.dedis.popstellar.di.JsonModule;
+import android.content.Context;
+
+import androidx.test.core.app.ApplicationProvider;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+
+import com.github.dedis.popstellar.di.*;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.DataRegistry;
 import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.*;
@@ -12,22 +16,21 @@ import com.github.dedis.popstellar.model.objects.digitalcash.TransactionObject;
 import com.github.dedis.popstellar.model.objects.security.*;
 import com.github.dedis.popstellar.repository.DigitalCashRepository;
 import com.github.dedis.popstellar.repository.MessageRepository;
+import com.github.dedis.popstellar.repository.database.AppDatabase;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.utility.error.*;
 import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.MockitoAnnotations;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import io.reactivex.Completable;
 
@@ -37,11 +40,11 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.lenient;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(AndroidJUnit4.class)
 public class TransactionCoinHandlerTest {
   private static final KeyPair SENDER_KEY = generateKeyPair();
   private static final PublicKey SENDER = SENDER_KEY.getPublicKey();
-  private static final CreateLao CREATE_LAO = new CreateLao("lao", SENDER);
+  private static final CreateLao CREATE_LAO = new CreateLao("lao", SENDER, new ArrayList<>());
 
   // Version
   private static final int VERSION = 1;
@@ -79,6 +82,7 @@ public class TransactionCoinHandlerTest {
   private MessageHandler messageHandler;
   private Channel coinChannel;
   private Gson gson;
+  private AppDatabase appDatabase;
 
   private PostTransactionCoin postTransactionCoin;
 
@@ -89,6 +93,10 @@ public class TransactionCoinHandlerTest {
   public void setup()
       throws GeneralSecurityException, DataHandlingException, IOException, UnknownRollCallException,
           UnknownLaoException, NoRollCallException {
+    MockitoAnnotations.openMocks(this);
+    Context context = ApplicationProvider.getApplicationContext();
+    appDatabase = AppDatabaseModuleHelper.getAppDatabase(context);
+
     lenient().when(keyManager.getMainKeyPair()).thenReturn(SENDER_KEY);
     lenient().when(keyManager.getMainPublicKey()).thenReturn(SENDER);
     lenient().when(messageSender.subscribe(any())).then(args -> Completable.complete());
@@ -97,7 +105,8 @@ public class TransactionCoinHandlerTest {
 
     digitalCashRepo = new DigitalCashRepository();
     DataRegistry dataRegistry = DataRegistryModuleHelper.buildRegistry(digitalCashRepo, keyManager);
-    MessageRepository messageRepo = new MessageRepository();
+    MessageRepository messageRepo =
+        new MessageRepository(appDatabase, ApplicationProvider.getApplicationContext());
     gson = JsonModule.provideGson(dataRegistry);
     messageHandler = new MessageHandler(messageRepo, dataRegistry);
 
@@ -106,6 +115,12 @@ public class TransactionCoinHandlerTest {
 
     digitalCashRepo.initializeDigitalCash(lao.getId(), Collections.singletonList(SENDER));
     coinChannel = lao.getChannel().subChannel("coin").subChannel(SENDER.getEncoded());
+  }
+
+  @After
+  public void tearDown() {
+    appDatabase.clearAllTables();
+    appDatabase.close();
   }
 
   @Test

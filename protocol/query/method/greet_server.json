@@ -1,0 +1,43 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/greet_server.json",
+  "description": "Sent by the server to the other server when it connects to it. It informs the other server about its public key and client / server endpoints",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "method": {
+      "description": "[String] operation to be performed by the query",
+      "const": "greet_server"
+    },
+
+    "params": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "public_key": {
+          "description": "[String] public key of the server",
+          "type": "string",
+          "contentEncoding": "base64"
+        },
+        "server_address": {
+          "description": "Canonical address of the server with a protocol prefix and (optionally) the port number which is by default 80 and 443 for ws and wss respectively",
+          "type": "string",
+          "pattern": "^(ws|wss):\\/\\/.*(:\\d{0,5})?\\/.*$"
+        },
+        "client_address": {
+          "description": "Canonical address of the server with a protocol prefix and (optionally) the port number which is by default 80 and 443 for ws and wss respectively",
+          "type": "string",
+          "pattern": "^(ws|wss):\\/\\/.*(:\\d{0,5})?\\/.*$"
+        }
+      },
+
+      "required": ["public_key", "server_address", "client_address"]
+    },
+
+    "jsonrpc": {
+      "$comment": "Defined by the parent, but needed here for the validation"
+    }
+  },
+
+  "required": ["method", "params","jsonrpc"]
+}

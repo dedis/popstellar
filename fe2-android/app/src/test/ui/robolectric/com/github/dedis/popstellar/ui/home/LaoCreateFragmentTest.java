@@ -11,6 +11,7 @@ import com.github.dedis.popstellar.model.objects.security.KeyPair;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.LAORepository;
+import com.github.dedis.popstellar.repository.database.AppDatabase;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.testutils.Base64DataUtils;
@@ -25,6 +26,8 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoTestRule;
 
 import java.util.Collections;
+
+import javax.inject.Inject;
 
 import dagger.hilt.android.testing.*;
 import io.reactivex.Completable;
@@ -50,6 +53,8 @@ public class LaoCreateFragmentTest {
   private static final KeyPair KEY_PAIR = Base64DataUtils.generateKeyPair();
   private static final PublicKey PK = KEY_PAIR.getPublicKey();
   private static final Lao LAO = new Lao(LAO_NAME, PK, 10223421);
+
+  @Inject AppDatabase appDatabase;
 
   @BindValue @Mock LAORepository repository;
   @BindValue @Mock KeyManager keyManager;
@@ -96,11 +101,18 @@ public class LaoCreateFragmentTest {
     createButton().perform(click());
   }
 
+  @After
+  public void tearDown() {
+    appDatabase.close();
+  }
+
   @Test
   public final void uiElementsAreDisplayed() {
     laoNameEntry().check(matches(isDisplayed()));
     cancelButtonLaunch().check(matches(isDisplayed()));
     confirmButtonLaunch().check(matches(isDisplayed()));
+    addWitnessButton().check(matches(isDisplayed()));
+    witnessTitle().check(matches(withEffectiveVisibility(Visibility.GONE)));
   }
 
   @Test
@@ -119,5 +131,11 @@ public class LaoCreateFragmentTest {
   public void cancelButtonGoesToHome() {
     cancelButtonLaunch().perform(click());
     fragmentContainer().check(matches(withChild(withId(homeFragmentId()))));
+  }
+
+  @Test
+  public void addWitnessButtonGoesToScanner() {
+    addWitnessButton().perform(click());
+    fragmentContainer().check(matches(withChild(withId(qrScannerFragmentId()))));
   }
 }

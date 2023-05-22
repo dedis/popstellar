@@ -29,8 +29,8 @@ public class LaoCreatePageObject {
     return onView(withId(R.id.lao_name_entry_edit_text));
   }
 
-  public static ViewInteraction serverNameEntry(){
-      return onView(withId(R.id.server_url_entry_edit_text));
+  public static ViewInteraction serverNameEntry() {
+    return onView(withId(R.id.server_url_entry_edit_text));
   }
 
   public static ViewInteraction cancelButtonLaunch() {
@@ -39,5 +39,13 @@ public class LaoCreatePageObject {
 
   public static ViewInteraction confirmButtonLaunch() {
     return onView(withId(R.id.button_create));
+  }
+
+  public static ViewInteraction addWitnessButton() {
+    return onView(withId(R.id.add_witness_button));
+  }
+
+  public static ViewInteraction witnessTitle() {
+    return onView(withId(R.id.witnesses_title));
   }
 }

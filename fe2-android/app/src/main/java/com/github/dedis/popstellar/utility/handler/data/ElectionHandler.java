@@ -1,8 +1,9 @@
 package com.github.dedis.popstellar.utility.handler.data;
 
-import static com.github.dedis.popstellar.model.objects.event.EventState.*;
+import android.annotation.SuppressLint;
 
 import androidx.annotation.NonNull;
+
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.election.*;
 import com.github.dedis.popstellar.model.objects.*;
@@ -11,9 +12,14 @@ import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.*;
 import com.github.dedis.popstellar.utility.error.*;
+
 import java.util.*;
+
 import javax.inject.Inject;
+
 import timber.log.Timber;
+
+import static com.github.dedis.popstellar.model.objects.event.EventState.*;
 
 /** Election messages handler class */
 public final class ElectionHandler {
@@ -23,6 +29,10 @@ public final class ElectionHandler {
   private final LAORepository laoRepo;
   private final MessageRepository messageRepo;
   private final ElectionRepository electionRepository;
+
+  private static final String ELECTION_NAME = "Election Name : ";
+  private static final String MESSAGE_ID = "Message ID : ";
+  private static final String ELECTION_ID = "Election ID : ";
 
   @Inject
   public ElectionHandler(
@@ -82,7 +92,7 @@ public final class ElectionHandler {
     Timber.tag(TAG).d("election id %s", election.getId());
 
     Lao lao = laoView.createLaoCopy();
-    lao.updateWitnessMessage(messageId, electionSetupWitnessMessage(messageId, election));
+    lao.addWitnessMessage(electionSetupWitnessMessage(messageId, election));
     laoRepo.updateLao(lao);
   }
 
@@ -184,6 +194,7 @@ public final class ElectionHandler {
    * @param context the HandlerContext of the message
    * @param castVote the message that was received
    */
+  @SuppressLint("CheckResult")
   public void handleCastVote(HandlerContext context, CastVote castVote)
       throws UnknownElectionException, DataHandlingException, UnknownLaoException {
     Channel channel = context.getChannel();
@@ -252,17 +263,19 @@ public final class ElectionHandler {
     WitnessMessage message = new WitnessMessage(messageId);
     message.setTitle("New Election Setup");
     message.setDescription(
-        "Name : "
+        ELECTION_NAME
+            + "\n"
             + election.getName()
+            + "\n\n"
+            + ELECTION_ID
             + "\n"
-            + "Election ID : "
             + election.getId()
+            + "\n\n"
+            + formatElectionQuestions(election.getElectionQuestions())
+            + "\n\n"
+            + MESSAGE_ID
             + "\n"
-            + "Question : "
-            + election.getElectionQuestions().get(0).getQuestion()
-            + "\n"
-            + "Message ID : "
-            + messageId);
+            + messageId.getEncoded());
     return message;
   }
 
@@ -288,5 +301,23 @@ public final class ElectionHandler {
     electionRepository.updateElection(election);
 
     Timber.tag(TAG).d("handleElectionKey: election key has been set");
+  }
+
+  private static String formatElectionQuestions(List<ElectionQuestion> questions) {
+    StringBuilder questionsDescription = new StringBuilder();
+    final String QUESTION = "Question ";
+
+    for (int i = 0; i < questions.size(); i++) {
+      questionsDescription
+          .append(QUESTION)
+          .append(i + 1)
+          .append(": \n")
+          .append(questions.get(i).getQuestion());
+
+      if (i < questions.size() - 1) {
+        questionsDescription.append("\n\n");
+      }
+    }
+    return questionsDescription.toString();
   }
 }

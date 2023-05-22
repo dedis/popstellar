@@ -23,14 +23,15 @@
       android:layout_height="0dp"
       android:visibility="gone"
       android:layout_marginTop="@dimen/history_recycler_view_top_margin"
-      app:layout_constraintTop_toTopOf="parent" />
+      app:layout_constraintTop_toTopOf="parent"
+      app:layout_constraintBottom_toTopOf="@id/home_qr_button" />
 
     <Button
       android:id="@+id/home_join_button"
-      android:layout_width="@dimen/standard_button_width"
+      android:layout_width="@dimen/small_button_width"
       android:layout_height="@dimen/standard_button_height"
-      android:text="@string/join"
       android:drawableLeft="@drawable/qr_code_button_icon"
+      android:text="@string/join"
       android:layout_marginBottom="@dimen/home_button_vertical_margin"
       android:layout_marginEnd="@dimen/home_button_horizontal_margin"
       app:layout_constraintBottom_toBottomOf="parent"
@@ -38,15 +39,28 @@
       tools:ignore="RtlHardcoded" />
 
     <Button
-      android:id="@+id/home_create_button"
+      android:id="@+id/home_qr_button"
       style="@style/button_style_outlined"
+      android:layout_width="wrap_content"
+      android:layout_height="@dimen/standard_button_height"
+      android:layout_marginBottom="28dp"
+      android:drawableLeft="@drawable/qr_code_button_icon_blue"
+      android:text="@string/witness"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintEnd_toStartOf="@id/home_join_button"
+      app:layout_constraintHorizontal_bias="0.489"
+      app:layout_constraintStart_toEndOf="@id/home_create_button"
+      tools:ignore="RtlHardcoded" />
+    <Button
+      android:id="@+id/home_create_button"
       android:text="@string/create"
-      android:layout_width="@dimen/standard_button_width"
+      android:layout_width="@dimen/small_button_width"
       android:layout_height="@dimen/standard_button_height"
       android:layout_marginStart="@dimen/home_button_horizontal_margin"
       android:layout_marginBottom="@dimen/home_button_vertical_margin"
+      style="@style/button_style_outlined"
       app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintBottom_toBottomOf="parent"/>
+      app:layout_constraintBottom_toBottomOf="parent" />
 
     <TextView
       android:id="@+id/home_no_lao_text"
