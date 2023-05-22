@@ -267,7 +267,7 @@ jobs:
         run: sbt scalafmtCheckAll
 
       - name: Run unit tests
-        run: sbt -Dscala.config="src/main/scala/ch/epfl/pop/config" clean coverage test
+        run: sbt -Dscala.config="src/main/scala/ch/epfl/pop/config" -Dtest clean coverage test
 
       - name: Report coverage
         run: sbt coverageReport
