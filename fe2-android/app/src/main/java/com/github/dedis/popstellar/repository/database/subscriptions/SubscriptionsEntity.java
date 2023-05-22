@@ -3,11 +3,13 @@ package com.github.dedis.popstellar.repository.database.subscriptions;
 import androidx.annotation.NonNull;
 import androidx.room.*;
 
+import com.github.dedis.popstellar.model.Immutable;
 import com.github.dedis.popstellar.model.objects.Channel;
 
 import java.util.Set;
 
 @Entity(tableName = "subscriptions")
+@Immutable
 public class SubscriptionsEntity {
 
   @PrimaryKey

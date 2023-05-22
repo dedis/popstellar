@@ -3,6 +3,7 @@ package com.github.dedis.popstellar.repository.database.message;
 import androidx.annotation.NonNull;
 import androidx.room.*;
 
+import com.github.dedis.popstellar.model.Immutable;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 
@@ -11,16 +12,17 @@ import java.util.Objects;
 import javax.annotation.Nullable;
 
 @Entity(tableName = "messages")
+@Immutable
 public class MessageEntity {
 
   @ColumnInfo(name = "message_id")
   @PrimaryKey
   @NonNull
-  private MessageID messageId;
+  private final MessageID messageId;
 
   @ColumnInfo(name = "message")
   @Nullable
-  private MessageGeneral content;
+  private final MessageGeneral content;
 
   public MessageEntity(@NonNull MessageID messageId, @Nullable MessageGeneral content) {
     this.messageId = messageId;
@@ -32,17 +34,9 @@ public class MessageEntity {
     return messageId;
   }
 
-  public void setMessageId(@NonNull MessageID messageId) {
-    this.messageId = messageId;
-  }
-
   @Nullable
   public MessageGeneral getContent() {
     return content;
-  }
-
-  public void setContent(@Nullable MessageGeneral content) {
-    this.content = content;
   }
 
   @Override

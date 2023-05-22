@@ -3,10 +3,13 @@ package com.github.dedis.popstellar.repository.database.wallet;
 import androidx.annotation.NonNull;
 import androidx.room.*;
 
+import com.github.dedis.popstellar.model.Immutable;
+
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity(tableName = "wallet")
+@Immutable
 public class WalletEntity {
 
   // The id is used to keep always at most one entry in the database
