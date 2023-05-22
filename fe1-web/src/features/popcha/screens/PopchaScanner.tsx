@@ -131,7 +131,7 @@ const PopchaScanner = () => {
     const authResponse = sendPopchaAuthRequest(
       urlArg.get('client_id')!,
       urlArg.get('nonce')!,
-      urlArg.get('redirect_uri')!,
+      url.host,
       urlArg.get('state'),
       urlArg.get('response_mode'),
       laoId,
