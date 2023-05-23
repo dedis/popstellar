@@ -12,7 +12,7 @@ import util.examples.JsonRpcRequestExample
 import scala.concurrent.Await
 import scala.util.{Failure, Success}
 
-class ParamsWithChannelHandlerSuite extends FunSuite with Matchers with AskPatternConstants {
+class ParamsHandlerSuite extends FunSuite with Matchers with AskPatternConstants {
 
   implicit val system: ActorSystem = ActorSystem()
 
@@ -22,7 +22,7 @@ class ParamsWithChannelHandlerSuite extends FunSuite with Matchers with AskPatte
     val rpcExample = JsonRpcRequestExample.subscribeRpcRequest
     val expectedAsk = ClientActor.SubscribeTo(rpcExample.getParams.channel)
     val pipelineOutput = Source.single(Right(rpcExample))
-      .via(ParamsWithChannelHandler.subscribeHandler(mockClientRef.ref))
+      .via(ParamsHandler.subscribeHandler(mockClientRef.ref))
       .runWith(Sink.head)
 
     val channel = mockClientRef.expectMsg(expectedAsk).channel
@@ -40,7 +40,7 @@ class ParamsWithChannelHandlerSuite extends FunSuite with Matchers with AskPatte
     val rpcExample = JsonRpcRequestExample.subscribeRpcRequest
     val expectedAsk = ClientActor.SubscribeTo(rpcExample.getParams.channel)
     val pipelineOutput = Source.single(Right(rpcExample))
-      .via(ParamsWithChannelHandler.subscribeHandler(mockClientRef.ref))
+      .via(ParamsHandler.subscribeHandler(mockClientRef.ref))
       .runWith(Sink.head)
 
     val channel = mockClientRef.expectMsg(expectedAsk).channel
@@ -59,7 +59,7 @@ class ParamsWithChannelHandlerSuite extends FunSuite with Matchers with AskPatte
     val rpcExample = JsonRpcRequestExample.unSubscribeRpcRequest
     val expectedAsk = ClientActor.UnsubscribeFrom(rpcExample.getParams.channel)
     val pipelineOutput = Source.single(Right(rpcExample))
-      .via(ParamsWithChannelHandler.unsubscribeHandler(mockClientRef.ref))
+      .via(ParamsHandler.unsubscribeHandler(mockClientRef.ref))
       .runWith(Sink.head)
 
     val channel = mockClientRef.expectMsg(expectedAsk).channel
@@ -77,7 +77,7 @@ class ParamsWithChannelHandlerSuite extends FunSuite with Matchers with AskPatte
     val rpcExample = JsonRpcRequestExample.unSubscribeRpcRequest
     val expectedAsk = ClientActor.UnsubscribeFrom(rpcExample.getParams.channel)
     val pipelineOutput = Source.single(Right(rpcExample))
-      .via(ParamsWithChannelHandler.unsubscribeHandler(mockClientRef.ref))
+      .via(ParamsHandler.unsubscribeHandler(mockClientRef.ref))
       .runWith(Sink.head)
 
     val channel = mockClientRef.expectMsg(expectedAsk).channel

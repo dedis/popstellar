@@ -120,13 +120,13 @@ public class SocialMediaRepository {
    */
   @NonNull
   public Observable<Set<MessageID>> getChirpsOfLao(String laoId) {
-    return getLaoChirps(laoId).getChirpsSubject(this);
+    return getLaoChirps(laoId).getChirpsSubject();
   }
 
   @NonNull
   private synchronized LaoChirps getLaoChirps(String laoId) {
     // Create the lao chirps object if it is not present yet
-    return chirpsByLao.computeIfAbsent(laoId, lao -> new LaoChirps(laoId));
+    return chirpsByLao.computeIfAbsent(laoId, lao -> new LaoChirps(this, laoId));
   }
 
   /**
@@ -177,6 +177,7 @@ public class SocialMediaRepository {
    */
   private static final class LaoChirps {
 
+    private final SocialMediaRepository repository;
     private final String laoId;
     private boolean alreadyRetrieved = false;
 
@@ -192,7 +193,8 @@ public class SocialMediaRepository {
     private final Map<MessageID, Subject<Set<Reaction>>> reactionSubjectsByChirpId =
         new HashMap<>();
 
-    public LaoChirps(String laoId) {
+    public LaoChirps(SocialMediaRepository repository, String laoId) {
+      this.repository = repository;
       this.laoId = laoId;
     }
 
@@ -322,61 +324,8 @@ public class SocialMediaRepository {
       return true;
     }
 
-    public Observable<Set<MessageID>> getChirpsSubject(SocialMediaRepository repository) {
-      // Load in memory the chirps and their respective reactions from the disk only when the user
-      // wants to inflate the chirps adapter. It can be done only once per LAO, as during the
-      // execution everything is also stored in memory
-      if (!alreadyRetrieved) {
-        repository.disposables.add(
-            repository
-                .chirpDao
-                .getChirpsByLaoId(laoId, chirps.keySet())
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                    chirpsList ->
-                        chirpsList.forEach(
-                            chirp -> {
-                              // Do not retrieve deleted chirps
-                              if (chirp.isDeleted()) {
-                                return;
-                              }
-                              // Load the chirp into the memory
-                              add(chirp);
-                              Timber.tag(TAG).d("Retrieved from db chirp %s", chirp.getId());
-                              // When retrieving the chirp also retrieve its reactions
-                              repository.disposables.add(
-                                  repository
-                                      .reactionDao
-                                      .getReactionsByChirpId(chirp.getId(), reactions.keySet())
-                                      .subscribeOn(Schedulers.io())
-                                      .observeOn(AndroidSchedulers.mainThread())
-                                      .subscribe(
-                                          reactionsList ->
-                                              reactionsList.forEach(
-                                                  reaction -> {
-                                                    // Do not retrieve deleted reactions
-                                                    if (reaction.isDeleted()) {
-                                                      return;
-                                                    }
-                                                    // Load the reaction into the memory
-                                                    addReaction(reaction);
-                                                    Timber.tag(TAG)
-                                                        .d(
-                                                            "Retrieved from db reaction %s",
-                                                            reaction.getId());
-                                                  }),
-                                          err ->
-                                              Timber.tag(TAG)
-                                                  .e(
-                                                      err,
-                                                      "No reaction found in the storage for chirp %s",
-                                                      chirp.getId())));
-                            }),
-                    err ->
-                        Timber.tag(TAG).e(err, "No chirp found in the storage for lao %s", laoId)));
-        alreadyRetrieved = true;
-      }
+    public Observable<Set<MessageID>> getChirpsSubject() {
+      loadStorage();
       return chirpsSubject;
     }
 
@@ -395,6 +344,66 @@ public class SocialMediaRepository {
         throw new UnknownChirpException(chirpId);
       }
       return observable;
+    }
+
+    /**
+     * Load in memory the chirps and their respective reactions from the disk only when the user
+     * wants to inflate the chirps adapter. It can be done only once per LAO, as during the
+     * execution everything is also stored in memory.
+     */
+    private void loadStorage() {
+      if (alreadyRetrieved) {
+        return;
+      }
+      repository.disposables.add(
+          repository
+              .chirpDao
+              .getChirpsByLaoId(laoId, chirps.keySet())
+              .subscribeOn(Schedulers.io())
+              .observeOn(AndroidSchedulers.mainThread())
+              .subscribe(
+                  chirpsList ->
+                      chirpsList.forEach(
+                          chirp -> {
+                            // Do not retrieve deleted chirps
+                            if (chirp.isDeleted()) {
+                              return;
+                            }
+                            // Load the chirp into the memory
+                            add(chirp);
+                            Timber.tag(TAG).d("Retrieved from db chirp %s", chirp.getId());
+                            // When retrieving the chirp also retrieve its reactions
+                            repository.disposables.add(
+                                repository
+                                    .reactionDao
+                                    .getReactionsByChirpId(chirp.getId(), reactions.keySet())
+                                    .subscribeOn(Schedulers.io())
+                                    .observeOn(AndroidSchedulers.mainThread())
+                                    .subscribe(
+                                        reactionsList ->
+                                            reactionsList.forEach(
+                                                reaction -> {
+                                                  // Do not retrieve deleted reactions
+                                                  if (reaction.isDeleted()) {
+                                                    return;
+                                                  }
+                                                  // Load the reaction into the memory
+                                                  addReaction(reaction);
+                                                  Timber.tag(TAG)
+                                                      .d(
+                                                          "Retrieved from db reaction %s",
+                                                          reaction.getId());
+                                                }),
+                                        err ->
+                                            Timber.tag(TAG)
+                                                .e(
+                                                    err,
+                                                    "No reaction found in the storage for chirp %s",
+                                                    chirp.getId())));
+                          }),
+                  err ->
+                      Timber.tag(TAG).e(err, "No chirp found in the storage for lao %s", laoId)));
+      alreadyRetrieved = true;
     }
   }
 }

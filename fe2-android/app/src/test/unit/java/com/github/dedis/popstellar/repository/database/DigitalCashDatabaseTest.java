@@ -34,9 +34,9 @@ public class DigitalCashDatabaseTest {
   private static final KeyPair USER1 = Base64DataUtils.generateKeyPair();
   private static TransactionObject TRANSACTION_OBJECT;
   private static TransactionEntity TRANSACTION_ENTITY;
-  private static HashEntity HASH_ENTITY =
+  private static final HashEntity HASH_ENTITY =
       new HashEntity(USER1.getPublicKey().computeHash(), LAO_ID, USER1.getPublicKey());
-  private static List<HashEntity> HASH_ENTITIES = new ArrayList<>();
+  private static final List<HashEntity> HASH_ENTITIES = new ArrayList<>();
 
   static {
     HASH_ENTITIES.add(HASH_ENTITY);

@@ -39,7 +39,7 @@ import javax.inject.Singleton;
       WitnessingEntity.class,
       WitnessEntity.class
     },
-    version = 1)
+    version = 3)
 @TypeConverters(CustomTypeConverters.class)
 public abstract class AppDatabase extends RoomDatabase {
   public abstract MessageDao messageDao();

@@ -119,7 +119,7 @@ public class RollCallRepository {
    *     lao
    */
   public Observable<Set<RollCall>> getRollCallsObservableInLao(String laoId) {
-    return getLaoRollCalls(laoId).getRollCallsSubject(this);
+    return getLaoRollCalls(laoId).getRollCallsSubject();
   }
 
   /**
@@ -141,7 +141,7 @@ public class RollCallRepository {
 
   @NonNull
   private synchronized LaoRollCalls getLaoRollCalls(String laoId) {
-    return rollCallsByLao.computeIfAbsent(laoId, lao -> new LaoRollCalls(laoId));
+    return rollCallsByLao.computeIfAbsent(laoId, lao -> new LaoRollCalls(this, laoId));
   }
 
   /**
@@ -156,7 +156,10 @@ public class RollCallRepository {
   }
 
   private static final class LaoRollCalls {
+    private final RollCallRepository repository;
     private final String laoId;
+    private boolean alreadyRetrieved = false;
+
     private final Map<String, RollCall> rollCallByPersistentId = new HashMap<>();
 
     // This maps a roll call id, which is state dependant,
@@ -170,7 +173,8 @@ public class RollCallRepository {
     private final Subject<Set<RollCall>> rollCallsSubject =
         BehaviorSubject.createDefault(unmodifiableSet(emptySet()));
 
-    public LaoRollCalls(String laoId) {
+    public LaoRollCalls(RollCallRepository repository, String laoId) {
+      this.repository = repository;
       this.laoId = laoId;
     }
 
@@ -226,9 +230,27 @@ public class RollCallRepository {
       }
     }
 
-    public Observable<Set<RollCall>> getRollCallsSubject(RollCallRepository repository) {
-      // Load in memory the rollcalls from the disk only when the user
-      // clicks on the respective LAO, just needed one time only
+    public Observable<Set<RollCall>> getRollCallsSubject() {
+      loadStorage();
+      return rollCallsSubject;
+    }
+
+    public Set<PublicKey> getAllAttendees() {
+      // For all roll calls we add all attendees to the returned set
+      return rollCallByPersistentId.values().stream()
+          .map(RollCall::getAttendees)
+          .flatMap(Collection::stream)
+          .collect(Collectors.toSet());
+    }
+
+    /**
+     * Load in memory the rollcalls from the disk only when the user clicks on the respective LAO,
+     * just needed one time only at creation.
+     */
+    private void loadStorage() {
+      if (alreadyRetrieved) {
+        return;
+      }
       repository.disposables.add(
           repository
               .rollCallDao
@@ -246,15 +268,7 @@ public class RollCallRepository {
                   err ->
                       Timber.tag(TAG)
                           .e(err, "No rollcall found in the storage for lao %s", laoId)));
-      return rollCallsSubject;
-    }
-
-    public Set<PublicKey> getAllAttendees() {
-      // For all roll calls we add all attendees to the returned set
-      return rollCallByPersistentId.values().stream()
-          .map(RollCall::getAttendees)
-          .flatMap(Collection::stream)
-          .collect(Collectors.toSet());
+      alreadyRetrieved = true;
     }
   }
 }

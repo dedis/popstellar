@@ -101,7 +101,7 @@ public class MeetingRepository {
 
   @NonNull
   private synchronized LaoMeetings getLaoMeetings(String laoId) {
-    return meetingsByLao.computeIfAbsent(laoId, lao -> new MeetingRepository.LaoMeetings(laoId));
+    return meetingsByLao.computeIfAbsent(laoId, lao -> new LaoMeetings(this, laoId));
   }
 
   /**
@@ -109,11 +109,14 @@ public class MeetingRepository {
    * @return observable set of ids, corresponding to the set of meetings published on the given lao
    */
   public Observable<Set<Meeting>> getMeetingsObservableInLao(String laoId) {
-    return getLaoMeetings(laoId).getMeetingsSubject(this);
+    return getLaoMeetings(laoId).getMeetingsSubject();
   }
 
   private static final class LaoMeetings {
+    private final MeetingRepository repository;
     private final String laoId;
+    private boolean alreadyRetrieved = false;
+
     private final Map<String, Meeting> meetingById = new HashMap<>();
 
     // This allows to observe a specific meeting(s)
@@ -123,7 +126,8 @@ public class MeetingRepository {
     private final Subject<Set<Meeting>> meetingsSubject =
         BehaviorSubject.createDefault(unmodifiableSet(emptySet()));
 
-    public LaoMeetings(String laoId) {
+    public LaoMeetings(MeetingRepository repository, String laoId) {
+      this.repository = repository;
       this.laoId = laoId;
     }
 
@@ -167,9 +171,19 @@ public class MeetingRepository {
       }
     }
 
-    public Observable<Set<Meeting>> getMeetingsSubject(MeetingRepository repository) {
-      // Load in memory the meetings from the disk only when the user
-      // clicks on the respective LAO
+    public Observable<Set<Meeting>> getMeetingsSubject() {
+      loadStorage();
+      return meetingsSubject;
+    }
+
+    /**
+     * Load in memory the meetings from the disk only when the user clicks on the respective LAO.
+     * This can be done one time only, as from then things are stored in memory.
+     */
+    private void loadStorage() {
+      if (alreadyRetrieved) {
+        return;
+      }
       repository.disposables.add(
           repository
               .meetingDao
@@ -185,8 +199,7 @@ public class MeetingRepository {
                           }),
                   err ->
                       Timber.tag(TAG).e(err, "No meeting found in the storage for lao %s", laoId)));
-
-      return meetingsSubject;
+      alreadyRetrieved = true;
     }
   }
 }
