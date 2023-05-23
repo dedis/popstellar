@@ -19,5 +19,5 @@ public interface TransactionDao {
   Single<List<TransactionObject>> getTransactionsByLaoId(String laoId);
 
   @Query("DELETE FROM transactions WHERE lao_id = :laoId")
-  void deleteByLaoId(String laoId);
+  Completable deleteByLaoId(String laoId);
 }

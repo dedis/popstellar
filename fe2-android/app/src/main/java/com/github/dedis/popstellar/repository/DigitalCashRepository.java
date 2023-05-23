@@ -102,9 +102,18 @@ public class DigitalCashRepository {
      */
     public synchronized void initializeDigitalCash(List<PublicKey> attendees) {
       Timber.tag(TAG).d("initializing digital cash with attendees %s", attendees);
-      // Clear the database for the given lao
-      repository.hashDao.deleteByLaoId(laoId);
-      repository.transactionDao.deleteByLaoId(laoId);
+
+      // Clear the transactions on the database for the given lao
+      repository.disposables.add(
+          repository
+              .transactionDao
+              .deleteByLaoId(laoId)
+              .subscribeOn(Schedulers.io())
+              .observeOn(AndroidSchedulers.mainThread())
+              .subscribe(
+                  () -> Timber.tag(TAG).d("Cleared the transactions in the db for lao %s", laoId),
+                  err ->
+                      Timber.tag(TAG).e(err, "Error in clearing transactions for lao %s", laoId)));
 
       // Clear the memory
       hashDictionary.clear();
@@ -122,19 +131,40 @@ public class DigitalCashRepository {
             hashEntities.add(hashEntity);
           });
 
-      // Save all the entries at once to minimize I/O accesses
+      // Save all the entries at once to minimize I/O accesses but ensure to delete before adding
+      // the new entries
       repository.disposables.add(
           repository
               .hashDao
-              .insert(hashEntities)
+              .deleteByLaoId(laoId)
               .subscribeOn(Schedulers.io())
               .observeOn(AndroidSchedulers.mainThread())
               .subscribe(
-                  () ->
-                      Timber.tag(TAG).d("Successfully persisted hash dictionary for lao %s", laoId),
+                  () -> {
+                    Timber.tag(TAG).d("Cleared the hash dictionary in the db for lao %s", laoId);
+                    // After having it deleted, save the new entities
+                    repository.disposables.add(
+                        repository
+                            .hashDao
+                            .insert(hashEntities)
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(
+                                () ->
+                                    Timber.tag(TAG)
+                                        .d(
+                                            "Successfully persisted hash dictionary for lao %s",
+                                            laoId),
+                                err ->
+                                    Timber.tag(TAG)
+                                        .e(
+                                            err,
+                                            "Error in persisting the hash dictionary for lao %s",
+                                            laoId)));
+                  },
                   err ->
                       Timber.tag(TAG)
-                          .e(err, "Error in persisting the hash dictionary for lao %s", laoId)));
+                          .e(err, "Error in clearing the hash dictionary for lao %s", laoId)));
     }
 
     public synchronized void updateTransactions(TransactionObject transaction, boolean toBeStored)
