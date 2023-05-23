@@ -6,6 +6,7 @@
     # testing the validity of other features. By calling one scenario from
     # this file simply use the allocated name for the particular feature.
       * call read('classpath:be/mockFrontEnd.feature')
+      * call read('classpath:be/constants.feature')
       * def laoCreateId = 1
       * def rollCallCreateId = 3
       * def openRollCallId = 32
@@ -14,40 +15,57 @@
       * def castVoteId = 41
       * def frontend = call createFrontend
 
+     # organizer and lao need to be passed as arguments when calling this scenario
     @name=valid_lao
     Scenario: Creates valid lao
+      Given def laoCreateRequest =
+      """
+        {
+          "object": "lao",
+          "action": "create",
+          "id": '#(lao.id)',
+          "name": '#(lao.name)',
+          "creation": '#(lao.creation)',
+          "organizer": '#(lao.organizerPk)',
+          "witnesses": []
+        }
+      """
+      * karate.log("sending a lao create request : ", karate.pretty(laoCreateRequest))
+      * organizer.publish(laoCreateRequest, rootChannel)
+      * json answer = organizer.getBackendResponse(laoCreateRequest)
+      * karate.log("Received an answer for lao create request : ", karate.pretty(answer))
+      * string laoChannel = rootChannel + '/' + lao.id
 
-      * string laoCreateReq  = read('classpath:data/lao/valid_lao_create.json')
-      * eval frontend.send(laoCreateReq)
-      * frontend.takeTimeout(timeout)
-
-      * def subscribe =
+      And def subscribe =
         """
           {
             "method": "subscribe",
             "id": 2,
             "params": {
-                "channel": "/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=",
+                "channel": '#(laoChannel)',
             },
             "jsonrpc": "2.0"
           }
         """
-      * frontend.send(subscribe)
-      * def subs = frontend.takeTimeout(timeout)
+      * karate.log("sending a subscribe : ", karate.pretty(subscribe))
+      * organizer.send(subscribe)
+      * def subs = organizer.takeTimeout(timeout)
       * karate.log("subscribe message received : " + subs)
-      * def catchup =
+
+      And def catchup =
         """
           {
             "method": "catchup",
             "id": 5,
             "params": {
-                "channel": "/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=",
+                "channel": '#(laoChannel)',
               },
             "jsonrpc": "2.0"
           }
         """
-      * frontend.send(catchup)
-      * def catchup_response = frontend.takeTimeout(timeout)
+      * karate.log("sending a catchup : ", karate.pretty(catchup))
+      * organizer.send(catchup)
+      * def catchup_response = organizer.takeTimeout(timeout)
       * karate.log("catchup message received : " + catchup_response)
 
     @name=valid_roll_call
@@ -190,28 +208,6 @@
         """
       * frontend.publish(validElectionOpen, electionChannel)
       * json answer = frontend.getBackendResponse(validElectionOpen)
-    @name=cast_vote
-    Scenario: Casts a valid vote
-      * call read('classpath:be/utils/simpleScenarios.feature@name=election_open')
-      * def validCastVote =
-        """
-          {
-            "object": "election",
-            "action": "cast_vote",
-            "lao": "p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=",
-            "election": "rdv-0minecREM9XidNxnQotO7nxtVVnx-Zkmfm7hm2w=",
-            "created_at": 1633098941,
-            "votes": [
-              {
-                "id": "d60B94lVWm84lBHc9RE5H67oH-Ad3O1WFflK3NSY3Yk=",
-                "question": "3iPxJkdUiCgBd0c699KA9tU5U0zNIFau6spXs5Kw6Pg=",
-                "vote": [0]
-              }
-            ]
-          }
-        """
-      * frontend.publish(validCastVote, electionChannel)
-      * json answer = frontend.getBackendResponse(validCastVote)
 
     @name=setup_coin_channel
     Scenario: Sets up the coin channel and subscribes to it

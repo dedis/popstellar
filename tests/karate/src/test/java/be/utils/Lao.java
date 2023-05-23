@@ -7,6 +7,7 @@ public class Lao {
   // Organizer public key
   public String organizerPk;
   public long creation;
+  public String channel;
 
   public Lao(String organizerPk, Long creation, String name){
     this.creation = creation;
@@ -16,10 +17,19 @@ public class Lao {
     System.out.println("Creating lao with public key: " + organizerPk);
 
     if(name.isEmpty()){
-      // Cannot create id with empty name
+      // Cannot create a matching id with empty name, because empty string cannot be hashed
       name = "empty";
     }
     this.id = generateLaoId(organizerPk, creation, name);
+    this.channel = "/root/" + id;
+  }
+
+  public Lao setName(String newName) {
+    return new Lao(organizerPk, creation, newName);
+  }
+
+  public Lao setCreation(long newCreation) {
+    return new Lao(organizerPk, newCreation, name);
   }
 
   /**
@@ -35,14 +45,4 @@ public class Lao {
   public static String generateLaoId(String organizerPublicKey, long creation, String name) {
     return Hash.hash(organizerPublicKey, Long.toString(creation), name);
   }
-
-
-  public Lao setName(String newName) {
-    return new Lao(organizerPk, creation, newName);
-  }
-
-  public Lao setCreation(long creation) {
-    return new Lao(organizerPk, creation, name);
-  }
-
 }

@@ -9,12 +9,12 @@ Feature: Create a pop LAO
     * call read('classpath:be/utils/server.feature')
     * call read('classpath:be/mockFrontEnd.feature')
     * call read('classpath:be/constants.feature')
-    * def frontend = call createFrontend
-    * def random =  Java.type('be.utils.Random')
+    * def random =  Java.type('be.utils.RandomUtils')
     * def organizer = call createFrontend
+    * def validLao = organizer.createValidLao()
 
   Scenario: Create Lao request with empty lao name should fail with an error response
-    Given def lao = organizer.createValidLao().setName('')
+    Given def lao = validLao.setName('')
     And def badLaoReq =
       """
         {
@@ -32,9 +32,8 @@ Feature: Create a pop LAO
     Then match answer contains INVALID_MESSAGE_FIELD
     And match organizer.receiveNoMoreResponses() == true
 
-
   Scenario: Create Lao request with negative creation time should fail with an error response
-    Given def lao = organizer.createValidLao().setCreation(-1)
+    Given def lao = validLao.setCreation(-1)
     And def badLaoReq =
       """
         {
@@ -53,16 +52,15 @@ Feature: Create a pop LAO
     And match organizer.receiveNoMoreResponses() == true
 
   Scenario: Create Lao request with invalid id hash should fail with an error response
-    Given def lao = organizer.createValidLao()
-    And def badLaoReq =
+    Given def badLaoReq =
       """
         {
           "object": "lao",
           "action": "create",
           "id": '#(random.generateLaoId())',
-          "name": "#(lao.name)",
-          "creation": "#(lao.creation)",
-          "organizer": "#(lao.organizerPk)",
+          "name": "#(validLao.name)",
+          "creation": "#(validLao.creation)",
+          "organizer": "#(validLao.organizerPk)",
           "witnesses": []
         }
       """
@@ -72,16 +70,15 @@ Feature: Create a pop LAO
     And match organizer.receiveNoMoreResponses() == true
 
   Scenario: Valid Create Lao request should succeed
-    Given def lao = organizer.createValidLao()
-    And def laoCreateRequest =
+    Given def laoCreateRequest =
       """
         {
           "object": "lao",
           "action": "create",
-          "id": '#(lao.id)',
-          "name": '#(lao.name)',
-          "creation": '#(lao.creation)',
-          "organizer": '#(lao.organizerPk)',
+          "id": '#(validLao.id)',
+          "name": '#(validLao.name)',
+          "creation": '#(validLao.creation)',
+          "organizer": '#(validLao.organizerPk)',
           "witnesses": []
         }
       """
@@ -91,16 +88,15 @@ Feature: Create a pop LAO
     And match organizer.receiveNoMoreResponses() == true
 
   Scenario: Create Lao request with invalid signature should fail
-    Given def lao = organizer.createValidLao()
-    And def laoCreateRequest =
+    Given def laoCreateRequest =
       """
         {
           "object": "lao",
           "action": "create",
-          "id": '#(lao.id)',
-          "name": '#(lao.name)',
-          "creation": '#(lao.creation)',
-          "organizer": '#(lao.organizerPk)',
+          "id": '#(validLao.id)',
+          "name": '#(validLao.name)',
+          "creation": '#(validLao.creation)',
+          "organizer": '#(validLao.organizerPk)',
           "witnesses": []
         }
       """
@@ -111,16 +107,15 @@ Feature: Create a pop LAO
     And match organizer.receiveNoMoreResponses() == true
 
   Scenario: Create Lao request with public key different from the sender public key should fail
-    Given def lao = organizer.createValidLao()
-    And def laoCreateRequest =
+    Given def laoCreateRequest =
       """
         {
           "object": "lao",
           "action": "create",
-          "id": '#(lao.id)',
-          "name": '#(lao.name)',
-          "creation": '#(lao.creation)',
-          "organizer": '#(lao.organizerPk)',
+          "id": '#(validLao.id)',
+          "name": '#(validLao.name)',
+          "creation": '#(validLao.creation)',
+          "organizer": '#(validLao.organizerPk)',
           "witnesses": []
         }
       """

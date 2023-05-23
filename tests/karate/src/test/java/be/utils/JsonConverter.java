@@ -7,7 +7,6 @@ import common.utils.Base64Utils;
 
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
-import java.security.NoSuchAlgorithmException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -37,7 +36,7 @@ public class JsonConverter {
     Json messageData = Json.object();
     messageData.set("method", "publish");
     messageData.set("id", id);
-    Map<String, Object> paramsPart = new LinkedHashMap<>();
+    Map<String, Object> paramsPart;
     try{
     paramsPart = constructParamsField(channel, stringData);
     messageData.set("params", paramsPart);
@@ -49,7 +48,7 @@ public class JsonConverter {
     return messageData;
   }
 
-  public Map<String, Object> constructMessageField(String stringData) throws GeneralSecurityException, NoSuchAlgorithmException {
+  public Map<String, Object> constructMessageField(String stringData) throws GeneralSecurityException{
     Map<String, Object> messagePart = new LinkedHashMap<>();
     Json messageData = Json.of(stringData);
     String messageDataBase64 = Base64Utils.convertJsonToBase64(messageData);
