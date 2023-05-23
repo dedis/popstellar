@@ -305,7 +305,7 @@ jobs:
       - name: Setup pip dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install ruff pytest pytest-cov freezegun
+          pip install ruff tox
           pip install -r requirements.txt
 
       - name: Lint with ruff
@@ -314,9 +314,11 @@ jobs:
           ruff --format=github --select=E9,F63,F7,F82 --target-version=py39 .
           # default set of ruff rules with GitHub Annotations
           ruff --format=github --target-version=py39 .
+      
       - name: Run tests
         run: |
           pytest -v --cov --cov-report=xml
+      
       - name: Run SonarCloud Analysis
         if: ${{ !startsWith(github.head_ref, 'dependabot/') }} # execute even if previous steps failed
         uses: SonarSource/sonarcloud-github-action@master

@@ -18,6 +18,9 @@ from src.authentication import Authentication
 config: dict = {}
 core_app: CounterApp
 authenticationProvider: Authentication
+app = Flask("Example_authentication_server",
+            template_folder = path.join(path.dirname(__file__), "templates")
+            )
 
 
 def check_config(config_file: IO) -> bool:
@@ -92,6 +95,8 @@ def on_startup() -> None:
     homepage HTML code or the
     """
     global config, core_app, authenticationProvider
+    csrf = CSRFProtect()
+    csrf.init_app(app)
     core_app = CounterApp()
     authenticationProvider = Authentication()
     providers = load_providers()
@@ -109,11 +114,6 @@ def on_startup() -> None:
             config_file.write(json.dumps(config))
 
 
-app = Flask("Example_authentication_server",
-            template_folder = path.join(path.dirname(__file__), "templates")
-            )
-csrf = CSRFProtect()
-csrf.init_app(app)
 on_startup()
 
 
