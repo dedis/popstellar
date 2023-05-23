@@ -12,7 +12,7 @@ import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.model.qrcode.ConnectToLao;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.database.AppDatabase;
-import com.github.dedis.popstellar.repository.database.core.CoreEntity;
+import com.github.dedis.popstellar.repository.database.wallet.WalletEntity;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.ui.PopViewModel;
 import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningViewModel;
@@ -124,30 +124,24 @@ public class HomeViewModel extends AndroidViewModel
   }
 
   /**
-   * Function to restore the state of the application.
+   * Function to restore the wallet of the application.
    *
    * @return true if the wallet is correctly restored, false otherwise
    */
-  public boolean restoreConnections() {
-    // Retrieve from the database the saved state
-    CoreEntity coreEntity = appDatabase.coreDao().getSettings();
-    if (coreEntity == null) {
-      ErrorUtils.logAndShow(getApplication().getApplicationContext(), TAG, R.string.nothing_stored);
+  public boolean restoreWallet() {
+    // Retrieve from the database the saved wallet
+    WalletEntity walletEntity = appDatabase.walletDao().getWallet();
+    if (walletEntity == null) {
+      ErrorUtils.logAndShow(
+          getApplication().getApplicationContext(), TAG, R.string.no_seed_storage_found);
       return false;
     }
 
-    Timber.tag(TAG).d("Saved state found : %s", coreEntity);
-
     if (!isWalletSetUp()) {
-      Timber.tag(TAG).d("Restoring wallet");
-      String[] seed = coreEntity.getWalletSeedArray();
-      if (seed.length == 0) {
-        ErrorUtils.logAndShow(
-            getApplication().getApplicationContext(), TAG, R.string.no_seed_storage_found);
-        return false;
-      }
+      // Restore the wallet if not already set up
+      String[] seed = walletEntity.getWalletSeedArray();
       String appended = String.join(" ", seed);
-      Timber.tag(TAG).d("Seed is %s", appended);
+      Timber.tag(TAG).d("Retrieved wallet from db, seed : %s", appended);
       try {
         importSeed(appended);
       } catch (GeneralSecurityException | SeedValidationException e) {
@@ -156,27 +150,11 @@ public class HomeViewModel extends AndroidViewModel
       }
     }
 
-    if (coreEntity
-        .getSubscriptions()
-        .equals(networkManager.getMessageSender().getSubscriptions())) {
-      Timber.tag(TAG).d("Current state is up to date");
-    } else {
-      Timber.tag(TAG).d("Restoring connections");
-      networkManager.connect(coreEntity.getServerAddress(), coreEntity.getSubscriptions());
-      getApplication()
-          .startActivity(
-              ConnectingActivity.newIntentForHome(getApplication().getApplicationContext()));
-    }
-
     return true;
   }
 
-  public void saveCoreData() throws GeneralSecurityException {
-    Disposable toDispose =
-        ActivityUtils.activitySavingRoutine(networkManager, wallet, appDatabase.coreDao());
-    if (toDispose != null) {
-      addDisposable(toDispose);
-    }
+  public void saveWallet() throws GeneralSecurityException {
+    addDisposable(ActivityUtils.saveWalletRoutine(wallet, appDatabase.walletDao()));
   }
 
   public void clearStorage() {

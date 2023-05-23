@@ -202,12 +202,4 @@ public class ConnectingActivity extends AppCompatActivity {
     intent.addFlags(FLAG_ACTIVITY_NEW_TASK);
     return intent;
   }
-
-  public static Intent newIntentForHome(Context ctx) {
-    Intent intent = new Intent(ctx, ConnectingActivity.class);
-    intent.putExtra(Constants.LAO_ID_EXTRA, ""); // not needed but allows more elegant handling
-    intent.putExtra(Constants.ACTIVITY_TO_OPEN_EXTRA, Constants.HOME_EXTRA);
-    intent.addFlags(FLAG_ACTIVITY_NEW_TASK);
-    return intent;
-  }
 }

@@ -1,8 +1,8 @@
 {
   "formatVersion": 1,
   "database": {
-    "version": 1,
-    "identityHash": "612b6ac4896bba2abb49296ebd060e92",
+    "version": 2,
+    "identityHash": "fba2428170db0d1cc04c54ba7f6bea36",
     "entities": [
       {
         "tableName": "messages",
@@ -57,8 +57,8 @@
         "foreignKeys": []
       },
       {
-        "tableName": "core",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `server_address` TEXT NOT NULL, `wallet_seed` TEXT NOT NULL, `subscription` TEXT NOT NULL, PRIMARY KEY(`id`))",
+        "tableName": "wallet",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `wallet_seed` TEXT NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -67,14 +67,34 @@
             "notNull": true
           },
           {
-            "fieldPath": "serverAddress",
-            "columnName": "server_address",
+            "fieldPath": "walletSeed",
+            "columnName": "wallet_seed",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "subscriptions",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`lao_id` TEXT NOT NULL, `server_address` TEXT NOT NULL, `subscription` TEXT NOT NULL, PRIMARY KEY(`lao_id`))",
+        "fields": [
+          {
+            "fieldPath": "laoId",
+            "columnName": "lao_id",
             "affinity": "TEXT",
             "notNull": true
           },
           {
-            "fieldPath": "walletSeed",
-            "columnName": "wallet_seed",
+            "fieldPath": "serverAddress",
+            "columnName": "server_address",
             "affinity": "TEXT",
             "notNull": true
           },
@@ -87,7 +107,7 @@
         ],
         "primaryKey": {
           "columnNames": [
-            "id"
+            "lao_id"
           ],
           "autoGenerate": false
         },
@@ -392,7 +412,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '612b6ac4896bba2abb49296ebd060e92')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'fba2428170db0d1cc04c54ba7f6bea36')"
     ]
   }
 }
