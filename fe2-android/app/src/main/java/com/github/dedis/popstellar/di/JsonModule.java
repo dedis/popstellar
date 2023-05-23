@@ -47,10 +47,6 @@ public class JsonModule {
         // Objects serializer for database
         .registerTypeAdapter(Lao.class, new JsonLaoSerializer())
         .registerTypeAdapter(Election.class, new JsonElectionSerializer())
-        .registerTypeAdapter(RollCall.class, new JsonRollCallSerializer())
-        .registerTypeAdapter(Meeting.class, new JsonMeetingSerializer())
-        .registerTypeAdapter(Reaction.class, new JsonReactionSerializer())
-        .registerTypeAdapter(Chirp.class, new JsonChirpSerializer())
         .registerTypeAdapter(TransactionObject.class, new JsonTransactionObjectSerializer())
         // Base64URLData serializers
         .registerTypeAdapter(
