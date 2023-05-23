@@ -91,7 +91,7 @@ func TestAuthorizationServerHandleValidateRequest(t *testing.T) {
 func sendValidAuthRequest() (*http.Response, error) {
 	qrURL := createAuthRequestURL("random_nonce", "v4l1d_client_id",
 		strings.Join([]string{openID, profile}, " "), "v4l1d_lao_id", "http://localhost:3008/",
-		resTypeMulti, "st4te", "query")
+		respTypeIDToken, "st4te", "query")
 	res, err := http.Get(qrURL)
 	log.Info().Msg(qrURL)
 	if err != nil {
@@ -162,7 +162,7 @@ func TestAuthRequestFails(t *testing.T) {
 
 	// testing request with valid number of parameters, but invalid scope
 
-	invalidScopeURL := createAuthRequestURL("n", "c", "invalid", "l", "localhost:3001", resTypeMulti, " ", " ")
+	invalidScopeURL := createAuthRequestURL("n", "c", "invalid", "l", "localhost:3001", respTypeIDToken, " ", " ")
 	_, err = http.Get(invalidScopeURL)
 
 	// no error from the get request
@@ -223,7 +223,7 @@ func TestAuthorizationServerWebsocket(t *testing.T) {
 	state := "state"
 	redirectURI := "https://example.com/"
 	scope := strings.Join([]string{openID, profile}, " ")
-	resType := resTypeMulti
+	resType := respTypeIDToken
 
 	// create the URL of the PopCHA webpage
 	u := createAuthRequestURL(nonce, clientID, scope, laoID, redirectURI, resType, state, "")
@@ -387,7 +387,7 @@ func randomClientParams(r *rand.Rand) clientParams {
 	c := clientParams{
 		clientID:     genString(r, r.Intn(MaxStringSize)),
 		redirectURIs: []string{"localhost:3500"},
-		resType:      resTypeMulti,
+		resType:      respTypeIDToken,
 	}
 	return c
 }
@@ -396,7 +396,7 @@ func noIDClientParam() clientParams {
 	c := clientParams{
 		clientID:     "",
 		redirectURIs: []string{"localhost:3500"},
-		resType:      resTypeMulti,
+		resType:      respTypeIDToken,
 	}
 	return c
 }
@@ -432,7 +432,7 @@ func validClientParams(c clientParams) bool {
 		// no developer mode by default
 		!c.DevMode() &&
 		// responseType is correct
-		c.ResponseTypes()[0] == resTypeMulti &&
+		c.ResponseTypes()[0] == respTypeIDToken &&
 		// clock skew is set at 0
 		c.ClockSkew() == 0 &&
 		// ID Token lifetime duration is valid
@@ -452,7 +452,6 @@ type fakeWSClient struct {
 	conn *websocket.Conn
 }
 
-// new websocket client
 func newWSClient(urlPath url.URL) (*fakeWSClient, error) {
 	conn, _, err := websocket.DefaultDialer.Dial(urlPath.String(), nil)
 	if err != nil {
