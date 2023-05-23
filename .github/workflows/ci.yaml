@@ -317,8 +317,8 @@ jobs:
       
       - name: Run tests
         run: |
-          pytest -v --cov --cov-report=xml
-      
+          tox -e py
+
       - name: Run SonarCloud Analysis
         if: ${{ !startsWith(github.head_ref, 'dependabot/') }} # execute even if previous steps failed
         uses: SonarSource/sonarcloud-github-action@master
