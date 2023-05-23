@@ -17,5 +17,5 @@ public interface HashDao {
   Single<List<HashEntity>> getDictionaryByLaoId(String laoId);
 
   @Query("DELETE FROM hash_dictionary WHERE lao_id = :laoId")
-  Completable deleteByLaoId(String laoId);
+  void deleteByLaoId(String laoId);
 }

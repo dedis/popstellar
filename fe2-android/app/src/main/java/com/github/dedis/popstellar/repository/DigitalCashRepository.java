@@ -103,27 +103,8 @@ public class DigitalCashRepository {
     public synchronized void initializeDigitalCash(List<PublicKey> attendees) {
       Timber.tag(TAG).d("initializing digital cash with attendees %s", attendees);
       // Clear the database for the given lao
-      repository.disposables.addAll(
-          repository
-              .transactionDao
-              .deleteByLaoId(laoId)
-              .subscribeOn(Schedulers.io())
-              .observeOn(AndroidSchedulers.mainThread())
-              .subscribe(
-                  () -> Timber.tag(TAG).d("Cleared the transactions in the db for lao %s", laoId),
-                  err ->
-                      Timber.tag(TAG).e(err, "Error in clearing transactions for lao %s", laoId)),
-          repository
-              .hashDao
-              .deleteByLaoId(laoId)
-              .subscribeOn(Schedulers.io())
-              .observeOn(AndroidSchedulers.mainThread())
-              .subscribe(
-                  () ->
-                      Timber.tag(TAG).d("Cleared the hash dictionary in the db for lao %s", laoId),
-                  err ->
-                      Timber.tag(TAG)
-                          .e(err, "Error in clearing the hash dictionary for lao %s", laoId)));
+      repository.hashDao.deleteByLaoId(laoId);
+      repository.transactionDao.deleteByLaoId(laoId);
 
       // Clear the memory
       hashDictionary.clear();
@@ -210,7 +191,6 @@ public class DigitalCashRepository {
     }
 
     public Observable<List<TransactionObject>> getTransactionsObservable(PublicKey user) {
-      // Load from the db the digital cash state for a lao
       loadLaoState();
       return transactionsSubject.computeIfAbsent(
           user, newUser -> BehaviorSubject.createDefault(new ArrayList<>()));
