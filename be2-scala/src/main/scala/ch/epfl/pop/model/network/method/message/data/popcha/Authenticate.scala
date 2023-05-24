@@ -2,12 +2,10 @@ package ch.epfl.pop.model.network.method.message.data.popcha
 
 import ch.epfl.pop.json.MessageDataProtocol._
 import ch.epfl.pop.model.network.Parsable
-import ch.epfl.pop.model.network.method.ParamsWithMessage
 import ch.epfl.pop.model.network.method.message.data.ActionType.ActionType
-import ch.epfl.pop.model.network.method.message.data.{ActionType, MessageData, ObjectType}
 import ch.epfl.pop.model.network.method.message.data.ObjectType.ObjectType
-import ch.epfl.pop.model.network.method.message.data.election.CastVoteElection
-import ch.epfl.pop.model.objects.{Hash, PublicKey, Signature, Transaction}
+import ch.epfl.pop.model.network.method.message.data.{ActionType, MessageData, ObjectType}
+import ch.epfl.pop.model.objects.{PublicKey, Signature}
 import spray.json._
 
 final case class Authenticate(
