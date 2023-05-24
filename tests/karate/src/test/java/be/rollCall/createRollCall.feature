@@ -14,10 +14,10 @@ Feature: Create a Roll Call
 
     # The following calls makes this feature, mockFrontEnd.feature and server.feature share the same scope
     * call read('classpath:be/utils/server.feature')
-    * call read('classpath:be/mockFrontEnd.feature')
+    * call read('classpath:be/mockClient.feature')
     * call read('classpath:be/constants.feature')
     * def random =  Java.type('be.utils.RandomUtils')
-    * def organizer = call createFrontend
+    * def organizer = call createMockClient
     * def lao = organizer.createValidLao()
     * def validRollCall = organizer.createValidRollCall(lao)
      # This call creates a valid lao before every scenario

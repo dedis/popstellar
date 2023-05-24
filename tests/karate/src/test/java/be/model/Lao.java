@@ -1,9 +1,11 @@
-package be.utils;
+package be.model;
 
+import be.utils.Hash;
+
+/** Models a pop lao */
 public class Lao {
   public String id;
   public String name;
-
   // Organizer public key
   public String organizerPk;
   public long creation;
@@ -14,8 +16,6 @@ public class Lao {
     this.organizerPk = organizerPk;
     this.name = name;
 
-    System.out.println("Creating lao with public key: " + organizerPk);
-
     if(name.isEmpty()){
       // Cannot create a matching id with empty name, because empty string cannot be hashed
       name = "empty";
@@ -24,10 +24,24 @@ public class Lao {
     this.channel = "/root/" + id;
   }
 
+  /**
+   * Copies the existing lao but overwrites the name with the given new name.
+   * Recomputes the lao id to match the new name (Except for the empty string which cannot be hashed).
+   *
+   * @param newName the new lao name
+   * @return copy of the lao with new name
+   */
   public Lao setName(String newName) {
     return new Lao(organizerPk, creation, newName);
   }
 
+  /**
+   * Copies the existing lao but overwrites the creation with the given new creation time.
+   * Recomputes the lao id to match the new creation time.
+   *
+   * @param newCreation the new lao creation time
+   * @return copy of the lao with new creation time
+   */
   public Lao setCreation(long newCreation) {
     return new Lao(organizerPk, newCreation, name);
   }
@@ -45,4 +59,5 @@ public class Lao {
   public static String generateLaoId(String organizerPublicKey, long creation, String name) {
     return Hash.hash(organizerPublicKey, Long.toString(creation), name);
   }
+
 }

@@ -1,5 +1,8 @@
-package be.utils;
+package be.model;
 
+import be.utils.Hash;
+
+/** Models a roll call in a pop lao */
 public class RollCall {
   public String id;
   public String name;
@@ -23,6 +26,13 @@ public class RollCall {
     this.laoId = laoId;
   }
 
+  /**
+   * Copies the existing roll call but overwrites the name with the given new name.
+   * Recomputes the roll call id to match the new name (Except for the empty string which cannot be hashed).
+   *
+   * @param newName the new roll name
+   * @return copy of the roll call with new name
+   */
   public RollCall setName(String newName) {
     String hashName = newName;
     if(newName.isEmpty()){
@@ -33,15 +43,34 @@ public class RollCall {
     return new RollCall(newId, newName, creation, start, end, location, description, laoId);
   }
 
+  /**
+   * Copies the existing roll call but overwrites the creation time with the given new creation time.
+   * Recomputes the roll call id to match the new creation time.
+   *
+   * @param newCreation the new roll creation time
+   * @return copy of the roll call with new creation time
+   */
   public RollCall setCreation(long newCreation) {
     String newId = generateCreateRollCallId(laoId, newCreation, name);
     return new RollCall(newId, name, newCreation, start, end, location, description, laoId);
   }
 
+  /**
+   * Copies the existing roll call but switches the start and end time of the roll call.
+   *
+   * @return copy of the roll call with switched start and end time
+   */
   public RollCall switchStartAndEnd() {
     return new RollCall(id, name, creation, end, start, location, description, laoId);
   }
 
+
+  /**
+   * Copies the existing roll call but switches the creation and start time of the roll call.
+   * Recomputes the roll call id to match the new creation time.
+   *
+   * @return copy of the roll call with switched creation and start time
+   */
   public RollCall switchCreationAndStart() {
     String newId = generateCreateRollCallId(laoId, start, name);
     return new RollCall(newId, name, start, creation, end, location, description, laoId);

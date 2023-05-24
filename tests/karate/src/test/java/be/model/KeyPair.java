@@ -1,4 +1,4 @@
-package be.utils;
+package be.model;
 
 import common.utils.Base64Utils;
 import karate.com.linecorp.armeria.internal.shaded.bouncycastle.crypto.params.Ed25519PrivateKeyParameters;

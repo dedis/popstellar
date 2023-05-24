@@ -1,7 +1,11 @@
 package be.utils;
 
+import be.model.KeyPair;
+import be.model.Lao;
+import be.model.RollCall;
 import common.utils.Base64Utils;
 
+/** Class used to create random ids, names, signatures for tests */
 public class RandomUtils {
   private static final long SEED = 2023;
   private static final java.util.Random RANDOM = new java.util.Random(SEED);
@@ -22,7 +26,7 @@ public class RandomUtils {
   }
 
   /**
-   * @return generate a random valid Lao id
+   * @return generates a random valid Lao id
    */
   public static String generateLaoId(){
     KeyPair randomKeyPair = new KeyPair();

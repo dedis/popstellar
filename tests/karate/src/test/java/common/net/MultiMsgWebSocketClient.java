@@ -1,12 +1,12 @@
 package common.net;
 
 import be.utils.JsonConverter;
-import be.utils.KeyPair;
+import be.model.KeyPair;
+import be.utils.RandomUtils;
 import com.intuit.karate.Json;
 import com.intuit.karate.Logger;
 import com.intuit.karate.http.WebSocketClient;
 import com.intuit.karate.http.WebSocketOptions;
-import common.utils.Base64Utils;
 
 import java.util.*;
 import java.util.function.Predicate;
@@ -156,6 +156,15 @@ public class MultiMsgWebSocketClient extends WebSocketClient {
 
   public void takeTimeout(long timeout){
     getBuffer().takeTimeout(timeout);
+  }
+
+  /**
+   * Set the client to use a wrong signature when sending messages
+   */
+  public void useWrongSignature() {
+    String wrongSignature = RandomUtils.generateSignature();
+    logger.info("setting wrong signature: " + wrongSignature);
+    jsonConverter.setSignature(wrongSignature);
   }
 
 }

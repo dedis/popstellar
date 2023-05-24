@@ -7,10 +7,10 @@ Feature: Create a pop LAO
         # Meaning they share def variables, configurations ...
         # Especially JS functions defined can be directly used here thanks to Karate shared scopes
     * call read('classpath:be/utils/server.feature')
-    * call read('classpath:be/mockFrontEnd.feature')
+    * call read('classpath:be/mockClient.feature')
     * call read('classpath:be/constants.feature')
     * def random =  Java.type('be.utils.RandomUtils')
-    * def organizer = call createFrontend
+    * def organizer = call createMockClient
     * def validLao = organizer.createValidLao()
 
   Scenario: Create Lao request with empty lao name should fail with an error response
