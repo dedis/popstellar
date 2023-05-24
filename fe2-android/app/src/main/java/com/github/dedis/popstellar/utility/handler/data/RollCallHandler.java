@@ -1,7 +1,5 @@
 package com.github.dedis.popstellar.utility.handler.data;
 
-import android.annotation.SuppressLint;
-
 import com.github.dedis.popstellar.model.network.method.message.data.rollcall.*;
 import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.event.EventState;
@@ -10,9 +8,9 @@ import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.*;
-import com.github.dedis.popstellar.utility.error.UnknownLaoException;
-import com.github.dedis.popstellar.utility.error.UnknownRollCallException;
+import com.github.dedis.popstellar.utility.error.*;
 
+import java.util.ArrayList;
 import java.util.Set;
 
 import javax.inject.Inject;
@@ -51,7 +49,7 @@ public final class RollCallHandler {
    * @param createRollCall the message that was received
    */
   public void handleCreateRollCall(HandlerContext context, CreateRollCall createRollCall)
-      throws UnknownLaoException {
+      throws UnknownLaoException, UnknownWitnessMessageException {
     Channel channel = context.getChannel();
     MessageID messageId = context.getMessageId();
 
@@ -72,12 +70,15 @@ public final class RollCallHandler {
         .setDescription(createRollCall.getDescription().orElse(""))
         .setEmptyAttendees();
 
+    String laoId = laoView.getId();
     RollCall rollCall = builder.build();
 
     witnessingRepo.addWitnessMessage(
         laoView.getId(), createRollCallWitnessMessage(messageId, rollCall));
 
-    rollCallRepo.updateRollCall(laoView.getId(), rollCall);
+    // Update the repo with the created rollcall when the witness policy is satisfied
+    witnessingRepo.performActionWhenWitnessThresholdReached(
+        laoId, messageId, () -> rollCallRepo.updateRollCall(laoId, rollCall));
   }
 
   /**
@@ -87,7 +88,7 @@ public final class RollCallHandler {
    * @param openRollCall the message that was received
    */
   public void handleOpenRollCall(HandlerContext context, OpenRollCall openRollCall)
-      throws UnknownLaoException, UnknownRollCallException {
+      throws UnknownLaoException, UnknownRollCallException, UnknownWitnessMessageException {
     Channel channel = context.getChannel();
     MessageID messageId = context.getMessageId();
 
@@ -111,12 +112,15 @@ public final class RollCallHandler {
         .setDescription(existingRollCall.getDescription())
         .setEmptyAttendees();
 
+    String laoId = laoView.getId();
     RollCall rollCall = builder.build();
 
     witnessingRepo.addWitnessMessage(
         laoView.getId(), openRollCallWitnessMessage(messageId, rollCall));
 
-    rollCallRepo.updateRollCall(laoView.getId(), rollCall);
+    // Update the repo with the opened rollcall when the witness policy is satisfied
+    witnessingRepo.performActionWhenWitnessThresholdReached(
+        laoId, messageId, () -> rollCallRepo.updateRollCall(laoId, rollCall));
   }
 
   /**
@@ -125,9 +129,8 @@ public final class RollCallHandler {
    * @param context the HandlerContext of the message
    * @param closeRollCall the message that was received
    */
-  @SuppressLint("CheckResult")
   public void handleCloseRollCall(HandlerContext context, CloseRollCall closeRollCall)
-      throws UnknownLaoException, UnknownRollCallException {
+      throws UnknownLaoException, UnknownRollCallException, UnknownWitnessMessageException {
     Channel channel = context.getChannel();
     MessageID messageId = context.getMessageId();
 
@@ -154,13 +157,23 @@ public final class RollCallHandler {
         .setAttendees(currentAttendees)
         .setEnd(closeRollCall.getClosedAt());
 
+    String laoId = laoView.getId();
     RollCall rollCall = builder.build();
-    rollCallRepo.updateRollCall(laoView.getId(), rollCall);
 
     witnessingRepo.addWitnessMessage(
         laoView.getId(), closeRollCallWitnessMessage(messageId, rollCall));
 
-    digitalCashRepo.initializeDigitalCash(laoView.getId(), closeRollCall.getAttendees());
+    // Update the repo with the closed rollcall when the witness policy is satisfied and apply a
+    // specific routine
+    witnessingRepo.performActionWhenWitnessThresholdReached(
+        laoId, messageId, () -> closeRollCallRoutine(laoId, rollCall, context, channel));
+  }
+
+  private void closeRollCallRoutine(
+      String laoId, RollCall rollCall, HandlerContext context, Channel channel) {
+    rollCallRepo.updateRollCall(laoId, rollCall);
+
+    digitalCashRepo.initializeDigitalCash(laoId, new ArrayList<>(rollCall.getAttendees()));
 
     // Subscribe to the social media channels
     // (this is not the expected behavior as users should be able to choose who to subscribe to. But
@@ -169,20 +182,22 @@ public final class RollCallHandler {
         .getAttendees()
         .forEach(
             token ->
-                context
-                    .getMessageSender()
-                    .subscribe(channel.subChannel("social").subChannel(token.getEncoded()))
-                    .subscribe(
-                        () -> Timber.tag(TAG).d("subscription a success"),
-                        error -> Timber.tag(TAG).d(error, "subscription error")));
+                rollCallRepo.addDisposable(
+                    context
+                        .getMessageSender()
+                        .subscribe(channel.subChannel("social").subChannel(token.getEncoded()))
+                        .subscribe(
+                            () -> Timber.tag(TAG).d("subscription a success"),
+                            error -> Timber.tag(TAG).e(error, "subscription error"))));
 
     // Subscribe to reactions
-    context
-        .getMessageSender()
-        .subscribe(channel.subChannel("social").subChannel("reactions"))
-        .subscribe(
-            () -> Timber.tag(TAG).d("subscription a success"),
-            error -> Timber.tag(TAG).d(error, "subscription error"));
+    rollCallRepo.addDisposable(
+        context
+            .getMessageSender()
+            .subscribe(channel.subChannel("social").subChannel("reactions"))
+            .subscribe(
+                () -> Timber.tag(TAG).d("subscription a success"),
+                error -> Timber.tag(TAG).e(error, "subscription error")));
   }
 
   public static WitnessMessage createRollCallWitnessMessage(

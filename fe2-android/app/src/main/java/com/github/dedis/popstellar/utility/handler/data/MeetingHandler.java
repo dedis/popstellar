@@ -8,6 +8,7 @@ import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.*;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
+import com.github.dedis.popstellar.utility.error.UnknownWitnessMessageException;
 
 import java.util.ArrayList;
 
@@ -43,7 +44,7 @@ public class MeetingHandler {
    * @param createMeeting the message that was received
    */
   public void handleCreateMeeting(HandlerContext context, CreateMeeting createMeeting)
-      throws UnknownLaoException {
+      throws UnknownLaoException, UnknownWitnessMessageException {
     Channel channel = context.getChannel();
     MessageID messageId = context.getMessageId();
 
@@ -63,16 +64,17 @@ public class MeetingHandler {
         .setModificationId("")
         .setModificationSignatures(new ArrayList<>());
 
+    String laoId = laoView.getId();
     Meeting meeting = builder.build();
 
-    witnessingRepo.addWitnessMessage(
-        laoView.getId(), createMeetingWitnessMessage(messageId, meeting));
+    witnessingRepo.addWitnessMessage(laoId, createMeetingWitnessMessage(messageId, meeting));
 
-    meetingRepo.updateMeeting(laoView.getId(), meeting);
+    witnessingRepo.performActionWhenWitnessThresholdReached(
+        laoId, messageId, () -> meetingRepo.updateMeeting(laoId, meeting));
   }
 
   public void handleStateMeeting(HandlerContext context, StateMeeting stateMeeting)
-      throws UnknownLaoException {
+      throws UnknownLaoException, UnknownWitnessMessageException {
     Channel channel = context.getChannel();
     MessageID messageId = context.getMessageId();
 
@@ -93,12 +95,14 @@ public class MeetingHandler {
         .setModificationId(stateMeeting.getModificationId())
         .setModificationSignatures(stateMeeting.getModificationSignatures());
 
+    String laoId = laoView.getId();
     Meeting meeting = builder.build();
 
     witnessingRepo.addWitnessMessage(
         laoView.getId(), stateMeetingWitnessMessage(messageId, meeting));
 
-    meetingRepo.updateMeeting(laoView.getId(), meeting);
+    witnessingRepo.performActionWhenWitnessThresholdReached(
+        laoId, messageId, () -> meetingRepo.updateMeeting(laoId, meeting));
   }
 
   public static WitnessMessage createMeetingWitnessMessage(MessageID messageId, Meeting meeting) {

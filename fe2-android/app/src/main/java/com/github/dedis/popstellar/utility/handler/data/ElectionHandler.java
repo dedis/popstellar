@@ -52,7 +52,7 @@ public final class ElectionHandler {
    * @param electionSetup the message that was received
    */
   public void handleElectionSetup(HandlerContext context, ElectionSetup electionSetup)
-      throws UnknownLaoException, InvalidChannelException {
+      throws UnknownLaoException, InvalidChannelException, UnknownWitnessMessageException {
     Channel channel = context.getChannel();
     MessageID messageId = context.getMessageId();
 
@@ -79,6 +79,13 @@ public final class ElectionHandler {
             .setState(CREATED)
             .build();
 
+    witnessingRepository.addWitnessMessage(laoId, electionSetupWitnessMessage(messageId, election));
+
+    witnessingRepository.performActionWhenWitnessThresholdReached(
+        laoId, messageId, () -> setupElectionRoutine(election, context));
+  }
+
+  private void setupElectionRoutine(Election election, HandlerContext context) {
     // Add new election to repository
     electionRepository.updateElection(election);
 
@@ -93,8 +100,6 @@ public final class ElectionHandler {
         .subscribe();
 
     Timber.tag(TAG).d("election id %s", election.getId());
-
-    witnessingRepository.addWitnessMessage(laoId, electionSetupWitnessMessage(messageId, election));
   }
 
   /**

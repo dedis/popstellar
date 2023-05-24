@@ -1,7 +1,5 @@
 package com.github.dedis.popstellar.utility.handler.data;
 
-import android.annotation.SuppressLint;
-
 import com.github.dedis.popstellar.model.network.method.message.PublicKeySignaturePair;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.*;
 import com.github.dedis.popstellar.model.objects.*;
@@ -55,7 +53,7 @@ public final class LaoHandler {
    * @param context the HandlerContext of the message
    * @param createLao the message that was received
    */
-  @SuppressLint("CheckResult") // for now concerns Consensus which is not a priority this semester
+  // for now concerns Consensus which is not a priority this semester
   public void handleCreateLao(HandlerContext context, CreateLao createLao)
       throws UnknownLaoException {
     Channel channel = context.getChannel();
@@ -78,23 +76,27 @@ public final class LaoHandler {
 
     PublicKey publicKey = keyManager.getMainPublicKey();
     if (laoView.isOrganizer(publicKey) || witnessingRepo.isWitness(lao.getId(), publicKey)) {
-      context
-          .getMessageSender()
-          .subscribe(lao.getChannel().subChannel("consensus"))
-          .subscribe( // For now if we receive an error, we assume that it is because the server
-              // running is the scala one which does not implement consensus
-              () -> Timber.tag(TAG).d("subscription to consensus channel was a success"),
-              error ->
-                  Timber.tag(TAG).d(error, "error while trying to subscribe to consensus channel"));
+      laoRepo.addDisposable(
+          context
+              .getMessageSender()
+              .subscribe(lao.getChannel().subChannel("consensus"))
+              .subscribe( // For now if we receive an error, we assume that it is because the server
+                  // running is the scala one which does not implement consensus
+                  () -> Timber.tag(TAG).d("subscription to consensus channel was a success"),
+                  error ->
+                      Timber.tag(TAG)
+                          .d(error, "error while trying to subscribe to consensus channel")));
     }
 
     /* Creation channel coin*/
-    context
-        .getMessageSender()
-        .subscribe(channel.subChannel("coin"))
-        .subscribe(
-            () -> Timber.tag(TAG).d("subscription to the coin channel was a success"),
-            error -> Timber.tag(TAG).d(error, "error while trying  to subscribe to coin channel"));
+    laoRepo.addDisposable(
+        context
+            .getMessageSender()
+            .subscribe(channel.subChannel("coin"))
+            .subscribe(
+                () -> Timber.tag(TAG).d("subscription to the coin channel was a success"),
+                error ->
+                    Timber.tag(TAG).d(error, "error while trying  to subscribe to coin channel")));
 
     laoRepo.updateNodes(channel);
   }
@@ -150,7 +152,6 @@ public final class LaoHandler {
    * @param context the HandlerContext of the message
    * @param stateLao the message that was received
    */
-  @SuppressLint("CheckResult")
   public void handleStateLao(HandlerContext context, StateLao stateLao)
       throws UnknownLaoException, InvalidMessageIdException, InvalidSignatureException {
     Channel channel = context.getChannel();
@@ -186,12 +187,13 @@ public final class LaoHandler {
 
     PublicKey publicKey = keyManager.getMainPublicKey();
     if (laoView.isOrganizer(publicKey) || witnessingRepo.isWitness(lao.getId(), publicKey)) {
-      context
-          .getMessageSender()
-          .subscribe(laoView.getChannel().subChannel("consensus"))
-          .subscribe(
-              () -> Timber.tag(TAG).d("Successful subscribe to consensus channel"),
-              e -> Timber.tag(TAG).d(e, "Unsuccessful subscribe to consensus channel"));
+      laoRepo.addDisposable(
+          context
+              .getMessageSender()
+              .subscribe(laoView.getChannel().subChannel("consensus"))
+              .subscribe(
+                  () -> Timber.tag(TAG).d("Successful subscribe to consensus channel"),
+                  e -> Timber.tag(TAG).d(e, "Unsuccessful subscribe to consensus channel")));
     }
 
     // Now we're going to remove all pending updates which came prior to this state lao

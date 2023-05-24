@@ -39,7 +39,7 @@ import timber.log.Timber;
 
 @HiltViewModel
 public class WitnessingViewModel extends AndroidViewModel implements QRCodeScanningViewModel {
-  public static final String TAG = WitnessingViewModel.class.getSimpleName();
+  private static final String TAG = WitnessingViewModel.class.getSimpleName();
 
   private String laoId;
 
@@ -118,6 +118,15 @@ public class WitnessingViewModel extends AndroidViewModel implements QRCodeScann
                 error ->
                     Timber.tag(TAG)
                         .d(error, "Error in updating the witness messages of lao %s", laoId)));
+  }
+
+  /**
+   * This function deletes the messages that have already passed the witnessing policy to clear
+   * useless space.
+   */
+  public void deleteSignedMessages() {
+    Timber.tag(TAG).d("Deleting witness messages already signed by enough witnesses");
+    witnessingRepo.deleteSignedMessages(laoId);
   }
 
   @Override

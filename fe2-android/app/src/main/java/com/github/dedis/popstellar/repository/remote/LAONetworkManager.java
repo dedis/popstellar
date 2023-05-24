@@ -210,7 +210,8 @@ public class LAONetworkManager implements MessageSender {
         | UnknownLaoException
         | UnknownRollCallException
         | NoRollCallException
-        | UnknownElectionException e) {
+        | UnknownElectionException
+        | UnknownWitnessMessageException e) {
       Timber.tag(TAG).e(e, "Error while handling received message, will try to reprocess it later");
       reprocessMessage(broadcast);
     }
@@ -224,7 +225,8 @@ public class LAONetworkManager implements MessageSender {
           | UnknownLaoException
           | UnknownRollCallException
           | NoRollCallException
-          | UnknownElectionException e) {
+          | UnknownElectionException
+          | UnknownWitnessMessageException e) {
         Timber.tag(TAG).e(e, "Error while handling received catchup message");
       }
     }

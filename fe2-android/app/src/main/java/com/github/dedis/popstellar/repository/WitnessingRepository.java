@@ -12,8 +12,10 @@ import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.repository.database.AppDatabase;
 import com.github.dedis.popstellar.repository.database.witnessing.*;
 import com.github.dedis.popstellar.utility.ActivityUtils;
+import com.github.dedis.popstellar.utility.error.UnknownWitnessMessageException;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -35,6 +37,9 @@ import static java.util.Collections.*;
 public class WitnessingRepository {
 
   private static final String TAG = WitnessingRepository.class.getSimpleName();
+
+  /** Constant used to decide the percentage of witness signatures required */
+  private static final float WITNESSING_THRESHOLD = 2.0f / 3.0f;
 
   private final Map<String, LaoWitness> witnessByLao = new HashMap<>();
 
@@ -173,6 +178,61 @@ public class WitnessingRepository {
     return getLaoWitness(laoId).getWitnessMessagesSubject();
   }
 
+  /**
+   * This function is the core function used in the different handlers for inserting a given item
+   * (RollCall, Election, ...) and calling a certain routine code only after being sure that enough
+   * witnesses have signed the relative message
+   *
+   * @param laoId identifier of the lao whose witness messages are observed
+   * @param messageId id of the message to observe
+   * @param action action to perform after having the witness policy satisfied
+   * @throws UnknownWitnessMessageException if no witness message with that id is found
+   */
+  public void performActionWhenWitnessThresholdReached(
+      String laoId, MessageID messageId, Runnable action) throws UnknownWitnessMessageException {
+    AtomicBoolean pass = new AtomicBoolean(false);
+    disposables.add(
+        getWitnessMessageObservableInLao(laoId, messageId)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                witnessMessage -> {
+                  // Perform the action ONLY when the witnessing policy is satisfied (only once)
+                  if (!pass.get() && isAcceptedByWitnesses(laoId, messageId)) {
+                    action.run();
+                    pass.set(true);
+                  }
+                }));
+  }
+
+  public void deleteSignedMessages(String laoId) {
+    getLaoWitness(laoId).deleteAcceptedMessages();
+  }
+
+  /**
+   * This provides an observable of a witness message that triggers an update when modified.
+   *
+   * @param laoId the id of the Lao
+   * @param messageID the id of the message
+   * @return the observable wrapping the wanted witness message
+   * @throws UnknownWitnessMessageException if no witness message with the provided id could be
+   *     found
+   */
+  private Observable<WitnessMessage> getWitnessMessageObservableInLao(
+      String laoId, MessageID messageID) throws UnknownWitnessMessageException {
+    return getLaoWitness(laoId).getWitnessMessageObservable(messageID);
+  }
+
+  /**
+   * This function implements the witnessing policy (i.e. number of witnesses' signatures required
+   * to accept the message). It checks whether a given message can be accepted.
+   *
+   * @param messageId id of the message to check for validity
+   * @return true if the signature threshold is reached, false otherwise
+   */
+  private boolean isAcceptedByWitnesses(String laoId, MessageID messageId) {
+    return getLaoWitness(laoId).hasRequiredSignatures(messageId);
+  }
+
   /** Get in a thread-safe fashion the witness object for the lao, computes it if absent. */
   @NonNull
   private synchronized LaoWitness getLaoWitness(String laoId) {
@@ -187,11 +247,17 @@ public class WitnessingRepository {
     private boolean alreadyRetrieved = false;
 
     private final Set<PublicKey> witnesses = new HashSet<>();
+
     private final Subject<Set<PublicKey>> witnessesSubject =
         BehaviorSubject.createDefault(unmodifiableSet(emptySet()));
+
     private final Map<MessageID, WitnessMessage> witnessMessages = new LinkedHashMap<>();
+
     private final Subject<List<WitnessMessage>> witnessMessagesSubject =
         BehaviorSubject.createDefault(unmodifiableList(emptyList()));
+
+    // This allows to observe a specific witness message
+    private final Map<MessageID, Subject<WitnessMessage>> witnessMessageSubject = new HashMap<>();
 
     public LaoWitness(String laoId, WitnessingRepository repo) {
       this.laoId = laoId;
@@ -200,7 +266,18 @@ public class WitnessingRepository {
     }
 
     public synchronized void add(WitnessMessage witnessMessage) {
-      witnessMessages.put(witnessMessage.getMessageId(), witnessMessage);
+      MessageID messageID = witnessMessage.getMessageId();
+      witnessMessages.put(messageID, witnessMessage);
+
+      // Publish the new value
+      Subject<WitnessMessage> subject = witnessMessageSubject.get(messageID);
+      if (subject == null) {
+        witnessMessageSubject.put(messageID, BehaviorSubject.createDefault(witnessMessage));
+      } else {
+        subject.onNext(witnessMessage);
+      }
+
+      // Publish the updated collection
       witnessMessagesSubject.onNext(unmodifiableList(new ArrayList<>(witnessMessages.values())));
     }
 
@@ -226,8 +303,9 @@ public class WitnessingRepository {
                       Timber.tag(TAG)
                           .d("Successfully persisted witness message %s", witnessMessage),
                   err -> Timber.tag(TAG).e(err, "Error in persisting witness message")));
-      // Update the subject
-      witnessMessagesSubject.onNext(unmodifiableList(new ArrayList<>(witnessMessages.values())));
+
+      // Reinsert the message
+      add(witnessMessage);
       return true;
     }
 
@@ -243,12 +321,61 @@ public class WitnessingRepository {
       return this.witnesses.equals(witnesses);
     }
 
+    public synchronized boolean hasRequiredSignatures(MessageID messageId) {
+      WitnessMessage witnessMessage = witnessMessages.get(messageId);
+      if (witnessMessage == null) {
+        return false;
+      }
+
+      // In the future more complex policies can be defined, even at lao creation the organizer
+      // could specify its own to have personalized policies across laos. For now (25.05.2023) the
+      // very simple rule consists of having around 2/3 of witnesses signed the message.
+      int requiredSignatures = Math.round(witnesses.size() * WITNESSING_THRESHOLD);
+
+      return witnessMessage.getWitnesses().size() >= requiredSignatures;
+    }
+
+    public synchronized void deleteAcceptedMessages() {
+      Set<MessageID> idsToDelete =
+          witnessMessages.keySet().stream()
+              .filter(this::hasRequiredSignatures)
+              .collect(Collectors.toSet());
+
+      // Delete from db
+      repo.disposables.add(
+          repo.witnessingDao
+              .deleteMessagesByIds(laoId, idsToDelete)
+              .subscribeOn(Schedulers.io())
+              .observeOn(AndroidSchedulers.mainThread())
+              .subscribe(
+                  () ->
+                      Timber.tag(TAG)
+                          .d("Deleted accepted witness messages of lao %s from the disk", laoId),
+                  err ->
+                      Timber.tag(TAG).e(err, "Error deleting witness messages in lao %s", laoId)));
+
+      // Delete them from memory
+      idsToDelete.forEach(witnessMessages::remove);
+      // Publish the updated collection
+      witnessMessagesSubject.onNext(unmodifiableList(new ArrayList<>(witnessMessages.values())));
+    }
+
     public synchronized Set<PublicKey> getWitnesses() {
       return new HashSet<>(witnesses);
     }
 
     public Observable<Set<PublicKey>> getWitnessesSubject() {
       return witnessesSubject;
+    }
+
+    public Observable<WitnessMessage> getWitnessMessageObservable(MessageID messageID)
+        throws UnknownWitnessMessageException {
+      Observable<WitnessMessage> observable = witnessMessageSubject.get(messageID);
+      if (observable == null) {
+        throw new UnknownWitnessMessageException(messageID);
+      } else {
+        return observable;
+      }
     }
 
     public Observable<List<WitnessMessage>> getWitnessMessagesSubject() {

@@ -48,7 +48,6 @@ public class JsonModule {
         .registerTypeAdapter(Lao.class, new JsonLaoSerializer())
         .registerTypeAdapter(Election.class, new JsonElectionSerializer())
         .registerTypeAdapter(TransactionObject.class, new JsonTransactionObjectSerializer())
-        .registerTypeAdapter(WitnessMessage.class, new JsonWitnessMessageSerializer())
         // Base64URLData serializers
         .registerTypeAdapter(
             Base64URLData.class, new JsonBase64DataSerializer<>(Base64URLData::new))

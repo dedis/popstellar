@@ -49,6 +49,10 @@ public class WitnessMessageListViewAdapter extends BaseAdapter {
     setList(messages);
   }
 
+  public void deleteSignedMessages() {
+    witnessingViewModel.deleteSignedMessages();
+  }
+
   private void setList(List<WitnessMessage> messages) {
     this.messages = messages;
     notifyDataSetChanged();
