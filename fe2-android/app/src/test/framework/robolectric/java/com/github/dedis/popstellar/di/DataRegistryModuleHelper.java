@@ -39,6 +39,7 @@ public class DataRegistryModuleHelper {
         new RollCallRepository(appDatabase, application),
         new MeetingRepository(appDatabase, application),
         new DigitalCashRepository(appDatabase, application),
+        new WitnessingRepository(appDatabase, application),
         new MessageRepository(appDatabase, application),
         keyManager,
         new ServerRepository());
@@ -53,6 +54,7 @@ public class DataRegistryModuleHelper {
         rollCallRepo,
         new MeetingRepository(appDatabase, application),
         new DigitalCashRepository(appDatabase, application),
+        new WitnessingRepository(appDatabase, application),
         new MessageRepository(appDatabase, application),
         keyManager,
         new ServerRepository());
@@ -67,6 +69,7 @@ public class DataRegistryModuleHelper {
         new RollCallRepository(appDatabase, application),
         meetingRepo,
         new DigitalCashRepository(appDatabase, application),
+        new WitnessingRepository(appDatabase, application),
         new MessageRepository(appDatabase, application),
         keyManager,
         new ServerRepository());
@@ -81,6 +84,7 @@ public class DataRegistryModuleHelper {
         new RollCallRepository(appDatabase, application),
         new MeetingRepository(appDatabase, application),
         new DigitalCashRepository(appDatabase, application),
+        new WitnessingRepository(appDatabase, application),
         new MessageRepository(appDatabase, application),
         keyManager,
         new ServerRepository());
@@ -98,6 +102,7 @@ public class DataRegistryModuleHelper {
         new RollCallRepository(appDatabase, application),
         new MeetingRepository(appDatabase, application),
         new DigitalCashRepository(appDatabase, application),
+        new WitnessingRepository(appDatabase, application),
         messageRepo,
         keyManager,
         new ServerRepository());
@@ -115,6 +120,7 @@ public class DataRegistryModuleHelper {
         rollCallRepo,
         new MeetingRepository(appDatabase, application),
         new DigitalCashRepository(appDatabase, application),
+        new WitnessingRepository(appDatabase, application),
         new MessageRepository(appDatabase, application),
         keyManager,
         new ServerRepository());
@@ -132,6 +138,7 @@ public class DataRegistryModuleHelper {
         new RollCallRepository(appDatabase, application),
         new MeetingRepository(appDatabase, application),
         new DigitalCashRepository(appDatabase, application),
+        new WitnessingRepository(appDatabase, application),
         msgRepo,
         keyManager,
         serverRepo);
@@ -146,6 +153,7 @@ public class DataRegistryModuleHelper {
         new RollCallRepository(appDatabase, application),
         new MeetingRepository(appDatabase, application),
         digitalCashRepo,
+        new WitnessingRepository(appDatabase, application),
         new MessageRepository(appDatabase, application),
         keyManager,
         new ServerRepository());
@@ -158,18 +166,23 @@ public class DataRegistryModuleHelper {
       RollCallRepository rollCallRepo,
       MeetingRepository meetingRepo,
       DigitalCashRepository digitalCashRepo,
+      WitnessingRepository witnessingRepo,
       MessageRepository msgRepo,
       KeyManager keyManager,
       ServerRepository serverRepo) {
-    LaoHandler laoHandler = new LaoHandler(keyManager, msgRepo, laoRepo, serverRepo);
-    RollCallHandler rollCallHandler = new RollCallHandler(laoRepo, rollCallRepo, digitalCashRepo);
-    MeetingHandler meetingHandler = new MeetingHandler(laoRepo, meetingRepo);
-    ElectionHandler electionHandler = new ElectionHandler(msgRepo, laoRepo, electionRepo);
-    ConsensusHandler consensusHandler = new ConsensusHandler(laoRepo);
+    LaoHandler laoHandler =
+        new LaoHandler(keyManager, msgRepo, laoRepo, serverRepo, witnessingRepo);
+    RollCallHandler rollCallHandler =
+        new RollCallHandler(laoRepo, rollCallRepo, digitalCashRepo, witnessingRepo);
+    MeetingHandler meetingHandler = new MeetingHandler(laoRepo, meetingRepo, witnessingRepo);
+    ElectionHandler electionHandler =
+        new ElectionHandler(msgRepo, laoRepo, electionRepo, witnessingRepo);
+    ConsensusHandler consensusHandler = new ConsensusHandler(laoRepo, witnessingRepo);
     ChirpHandler chirpHandler = new ChirpHandler(laoRepo, socialMediaRepo);
     ReactionHandler reactionHandler = new ReactionHandler(laoRepo, socialMediaRepo);
-    TransactionCoinHandler transactionCoinHandler = new TransactionCoinHandler(digitalCashRepo);
-    WitnessingHandler witnessingHandler = new WitnessingHandler(laoRepo);
+    TransactionCoinHandler transactionCoinHandler =
+        new TransactionCoinHandler(digitalCashRepo, witnessingRepo);
+    WitnessingHandler witnessingHandler = new WitnessingHandler(laoRepo, witnessingRepo);
 
     return DataRegistryModule.provideDataRegistry(
         laoHandler,

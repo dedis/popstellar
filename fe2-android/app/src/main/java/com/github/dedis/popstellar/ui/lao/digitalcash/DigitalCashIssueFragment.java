@@ -141,7 +141,7 @@ public class DigitalCashIssueFragment extends Fragment {
    * nothing)
    */
   private Set<PublicKey> attendeesPerRadioGroupButton(int radioGroup, String currentSelected)
-      throws NoRollCallException, UnknownLaoException {
+      throws NoRollCallException {
     Set<PublicKey> attendees = new HashSet<>();
     if (radioGroup == selectOneMember && !currentSelected.equals("")) {
       attendees.add(new PublicKey(currentSelected));

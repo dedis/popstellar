@@ -109,8 +109,9 @@ public final class ElectionHandler {
    * @param electionResult the message that was received
    */
   public void handleElectionResult(HandlerContext context, ElectionResult electionResult)
-      throws UnknownElectionException {
+      throws UnknownElectionException, UnknownWitnessMessageException {
     Channel channel = context.getChannel();
+    MessageID messageId = context.getMessageId();
 
     Timber.tag(TAG).d("handling election result");
 
@@ -126,8 +127,13 @@ public final class ElectionHandler {
             .setResults(computeResults(resultsQuestions))
             .setState(RESULTS_READY)
             .build();
+    String laoId = channel.extractLaoId();
 
-    electionRepository.updateElection(election);
+    witnessingRepository.addWitnessMessage(
+        laoId, electionResultWitnessMessage(messageId, election));
+
+    witnessingRepository.performActionWhenWitnessThresholdReached(
+        laoId, messageId, () -> electionRepository.updateElection(election));
   }
 
   private Map<String, Set<QuestionResult>> computeResults(
@@ -284,6 +290,27 @@ public final class ElectionHandler {
     return message;
   }
 
+  public static WitnessMessage electionResultWitnessMessage(
+      MessageID messageId, Election election) {
+    WitnessMessage message = new WitnessMessage(messageId);
+    message.setTitle("Election Results");
+    message.setDescription(
+        ELECTION_NAME
+            + "\n"
+            + election.getName()
+            + "\n\n"
+            + ELECTION_ID
+            + "\n"
+            + election.getId()
+            + "\n\n"
+            + formatElectionResults(election.getElectionQuestions(), election.getResults())
+            + "\n\n"
+            + MESSAGE_ID
+            + "\n"
+            + messageId.getEncoded());
+    return message;
+  }
+
   /**
    * Simple way to handle a election key, add the given key to the given election
    *
@@ -318,6 +345,35 @@ public final class ElectionHandler {
           .append(i + 1)
           .append(": \n")
           .append(questions.get(i).getQuestion());
+
+      if (i < questions.size() - 1) {
+        questionsDescription.append("\n\n");
+      }
+    }
+    return questionsDescription.toString();
+  }
+
+  private static String formatElectionResults(
+      List<ElectionQuestion> questions, Map<String, Set<QuestionResult>> results) {
+    StringBuilder questionsDescription = new StringBuilder();
+    final String QUESTION = "Question ";
+
+    for (int i = 0; i < questions.size(); i++) {
+      questionsDescription
+          .append(QUESTION)
+          .append(i + 1)
+          .append(": \n")
+          .append(questions.get(i).getQuestion())
+          .append("\nResults: \n");
+
+      Set<QuestionResult> resultSet = results.get(questions.get(i).getId());
+      for (QuestionResult questionResult : Objects.requireNonNull(resultSet)) {
+        questionsDescription
+            .append(questionResult.getBallot())
+            .append(" : ")
+            .append(questionResult.getCount())
+            .append("\n");
+      }
 
       if (i < questions.size() - 1) {
         questionsDescription.append("\n\n");

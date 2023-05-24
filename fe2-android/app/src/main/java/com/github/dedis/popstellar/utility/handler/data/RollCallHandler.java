@@ -73,8 +73,7 @@ public final class RollCallHandler {
     String laoId = laoView.getId();
     RollCall rollCall = builder.build();
 
-    witnessingRepo.addWitnessMessage(
-        laoView.getId(), createRollCallWitnessMessage(messageId, rollCall));
+    witnessingRepo.addWitnessMessage(laoId, createRollCallWitnessMessage(messageId, rollCall));
 
     // Update the repo with the created rollcall when the witness policy is satisfied
     witnessingRepo.performActionWhenWitnessThresholdReached(
@@ -115,8 +114,7 @@ public final class RollCallHandler {
     String laoId = laoView.getId();
     RollCall rollCall = builder.build();
 
-    witnessingRepo.addWitnessMessage(
-        laoView.getId(), openRollCallWitnessMessage(messageId, rollCall));
+    witnessingRepo.addWitnessMessage(laoId, openRollCallWitnessMessage(messageId, rollCall));
 
     // Update the repo with the opened rollcall when the witness policy is satisfied
     witnessingRepo.performActionWhenWitnessThresholdReached(
@@ -160,8 +158,7 @@ public final class RollCallHandler {
     String laoId = laoView.getId();
     RollCall rollCall = builder.build();
 
-    witnessingRepo.addWitnessMessage(
-        laoView.getId(), closeRollCallWitnessMessage(messageId, rollCall));
+    witnessingRepo.addWitnessMessage(laoId, closeRollCallWitnessMessage(messageId, rollCall));
 
     // Update the repo with the closed rollcall when the witness policy is satisfied and apply a
     // specific routine

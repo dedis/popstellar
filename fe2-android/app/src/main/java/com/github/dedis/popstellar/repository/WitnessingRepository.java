@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Application;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 import androidx.lifecycle.Lifecycle;
 
 import com.github.dedis.popstellar.model.objects.WitnessMessage;
@@ -204,6 +205,11 @@ public class WitnessingRepository {
                 }));
   }
 
+  /**
+   * This function deletes all the accepted messages (signed by the threshold of witnesses)
+   *
+   * @param laoId the id of the Lao
+   */
   public void deleteSignedMessages(String laoId) {
     getLaoWitness(laoId).deleteAcceptedMessages();
   }
@@ -238,6 +244,16 @@ public class WitnessingRepository {
   private synchronized LaoWitness getLaoWitness(String laoId) {
     // Create the lao witness object if it is not present yet
     return witnessByLao.computeIfAbsent(laoId, lao -> new LaoWitness(laoId, this));
+  }
+
+  @VisibleForTesting
+  public Optional<WitnessMessage> getWitnessMessage(String laoId, MessageID messageID) {
+    return Optional.ofNullable(getLaoWitness(laoId).witnessMessages.get(messageID));
+  }
+
+  @VisibleForTesting
+  public boolean areWitnessMessagesEmpty(String laoId) {
+    return getLaoWitness(laoId).witnessMessages.isEmpty();
   }
 
   private static class LaoWitness {

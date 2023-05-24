@@ -1,6 +1,6 @@
 package com.github.dedis.popstellar.utility.handler;
 
-import android.content.Context;
+import android.app.Application;
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.test.core.app.ApplicationProvider;
@@ -13,8 +13,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.lao.CreateL
 import com.github.dedis.popstellar.model.network.method.message.data.message.WitnessMessageSignature;
 import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.security.*;
-import com.github.dedis.popstellar.repository.LAORepository;
-import com.github.dedis.popstellar.repository.MessageRepository;
+import com.github.dedis.popstellar.repository.*;
 import com.github.dedis.popstellar.repository.database.AppDatabase;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.utility.error.*;
@@ -55,9 +54,9 @@ public class WitnessingHandlerTest {
   private static final Channel LAO_CHANNEL = Channel.getLaoChannel(CREATE_LAO.getId());
   private static final MessageID MESSAGE_ID = generateMessageID();
   private static final WitnessMessage WITNESS_MESSAGE = new WitnessMessage(MESSAGE_ID);
-  private static Lao LAO;
 
   private LAORepository laoRepo;
+  private static WitnessingRepository witnessingRepository;
   private MessageHandler messageHandler;
   private Gson gson;
   private AppDatabase appDatabase;
@@ -70,8 +69,8 @@ public class WitnessingHandlerTest {
   public void setup()
       throws GeneralSecurityException, IOException, KeyException, UnknownRollCallException {
     MockitoAnnotations.openMocks(this);
-    Context context = ApplicationProvider.getApplicationContext();
-    appDatabase = AppDatabaseModuleHelper.getAppDatabase(context);
+    Application application = ApplicationProvider.getApplicationContext();
+    appDatabase = AppDatabaseModuleHelper.getAppDatabase(application);
 
     lenient().when(keyManager.getMainKeyPair()).thenReturn(ORGANIZER_KEY);
     lenient().when(keyManager.getMainPublicKey()).thenReturn(ORGANIZER);
@@ -79,19 +78,20 @@ public class WitnessingHandlerTest {
 
     lenient().when(messageSender.subscribe(any())).then(args -> Completable.complete());
 
-    laoRepo = new LAORepository(appDatabase, ApplicationProvider.getApplicationContext());
+    laoRepo = new LAORepository(appDatabase, application);
+    witnessingRepository = new WitnessingRepository(appDatabase, application);
 
     DataRegistry dataRegistry = DataRegistryModuleHelper.buildRegistry(laoRepo, keyManager);
-    MessageRepository messageRepo =
-        new MessageRepository(appDatabase, ApplicationProvider.getApplicationContext());
+    MessageRepository messageRepo = new MessageRepository(appDatabase, application);
     gson = JsonModule.provideGson(dataRegistry);
     messageHandler = new MessageHandler(messageRepo, dataRegistry);
 
     // Create one LAO
-    LAO = new Lao(CREATE_LAO.getName(), CREATE_LAO.getOrganizer(), CREATE_LAO.getCreation());
+    Lao LAO = new Lao(CREATE_LAO.getName(), CREATE_LAO.getOrganizer(), CREATE_LAO.getCreation());
     LAO.setLastModified(LAO.getCreation());
     LAO.initKeyToNode(new HashSet<>(CREATE_LAO.getWitnesses()));
-    LAO.addWitnessMessage(WITNESS_MESSAGE);
+
+    witnessingRepository.addWitnessMessage(LAO.getId(), WITNESS_MESSAGE);
 
     // Add the LAO to the LAORepository
     laoRepo.updateLao(LAO);
@@ -110,7 +110,8 @@ public class WitnessingHandlerTest {
   @Test
   public void testHandleWitnessMessageSignatureFromOrganizer()
       throws GeneralSecurityException, UnknownElectionException, UnknownRollCallException,
-          UnknownLaoException, DataHandlingException, NoRollCallException {
+          UnknownLaoException, DataHandlingException, NoRollCallException,
+          UnknownWitnessMessageException {
     // Create a valid witnessMessageSignature signed by the organizer
     Signature signature = ORGANIZER_KEY.sign(MESSAGE_ID);
     WitnessMessageSignature witnessMessageSignature =
@@ -122,7 +123,9 @@ public class WitnessingHandlerTest {
 
     // Check that the witness message in the lao repo was updated with the organizer public key
     Lao lao = laoRepo.getLaoByChannel(LAO_CHANNEL);
-    WitnessMessage witnessMessage = lao.getWitnessMessages().get(MESSAGE_ID);
+
+    WitnessMessage witnessMessage =
+        witnessingRepository.getWitnessMessage(lao.getId(), MESSAGE_ID).get();
     HashSet<PublicKey> expectedWitnesses = new HashSet<>();
     expectedWitnesses.add(ORGANIZER);
 
@@ -132,7 +135,8 @@ public class WitnessingHandlerTest {
   @Test
   public void testHandleWitnessMessageSignatureFromWitness()
       throws GeneralSecurityException, UnknownElectionException, UnknownRollCallException,
-          UnknownLaoException, DataHandlingException, NoRollCallException {
+          UnknownLaoException, DataHandlingException, NoRollCallException,
+          UnknownWitnessMessageException {
     // Create a valid witnessMessageSignature signed by a witness
     Signature signature = WITNESS_KEY.sign(MESSAGE_ID);
     WitnessMessageSignature witnessMessageSignature =
@@ -144,7 +148,8 @@ public class WitnessingHandlerTest {
 
     // Check that the witness message in the lao repo was updated with the witness public key
     Lao lao = laoRepo.getLaoByChannel(LAO_CHANNEL);
-    WitnessMessage witnessMessage = lao.getWitnessMessages().get(MESSAGE_ID);
+    WitnessMessage witnessMessage =
+        witnessingRepository.getWitnessMessage(lao.getId(), MESSAGE_ID).get();
     HashSet<PublicKey> expectedWitnesses = new HashSet<>();
     expectedWitnesses.add(WITNESS);
 

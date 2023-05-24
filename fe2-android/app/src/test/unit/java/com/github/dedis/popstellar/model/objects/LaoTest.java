@@ -58,13 +58,6 @@ public class LaoTest {
   }
 
   @Test
-  public void setAndGetWitnessesTest() {
-
-    LAO_1.initKeyToNode(WITNESSES);
-    assertThat(LAO_1.getWitnesses(), is(WITNESSES));
-  }
-
-  @Test
   public void setNullNameTest() {
     assertThrows(IllegalArgumentException.class, () -> LAO_1.setName(null));
   }
@@ -120,13 +113,5 @@ public class LaoTest {
     PendingUpdate update = new PendingUpdate(1L, new MessageID("foo"));
     LAO_1.setPendingUpdates(Collections.singleton(update));
     assertTrue(LAO_1.getPendingUpdates().contains(update));
-  }
-
-  @Test
-  public void witnessMapTest() {
-    MessageID messageID = new MessageID("foo");
-    WitnessMessage witnessMessage = new WitnessMessage(messageID);
-    LAO_1.addWitnessMessage(witnessMessage);
-    assertEquals(LAO_1.getWitnessMessages().get(messageID), witnessMessage);
   }
 }

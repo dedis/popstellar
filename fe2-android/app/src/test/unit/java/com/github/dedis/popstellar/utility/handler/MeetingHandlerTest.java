@@ -56,6 +56,7 @@ public class MeetingHandlerTest {
 
   private static LAORepository laoRepo;
   private static MeetingRepository meetingRepo;
+  private static WitnessingRepository witnessingRepository;
   private static MessageHandler messageHandler;
   private static Gson gson;
   private AppDatabase appDatabase;
@@ -82,6 +83,7 @@ public class MeetingHandlerTest {
 
     laoRepo = new LAORepository(appDatabase, application);
     meetingRepo = new MeetingRepository(appDatabase, application);
+    witnessingRepository = new WitnessingRepository(appDatabase, application);
 
     DataRegistry dataRegistry =
         DataRegistryModuleHelper.buildRegistry(laoRepo, keyManager, meetingRepo);
@@ -117,7 +119,8 @@ public class MeetingHandlerTest {
   @Test
   public void handleCreateMeetingTest()
       throws UnknownElectionException, UnknownRollCallException, UnknownLaoException,
-          DataHandlingException, NoRollCallException, UnknownMeetingException {
+          DataHandlingException, NoRollCallException, UnknownMeetingException,
+          UnknownWitnessMessageException {
     // Create the create Meeting message
     CreateMeeting createMeeting =
         new CreateMeeting(
@@ -139,7 +142,7 @@ public class MeetingHandlerTest {
 
     // Check the WitnessMessage has been created
     Optional<WitnessMessage> witnessMessage =
-        laoRepo.getLaoByChannel(LAO_CHANNEL).getWitnessMessage(message.getMessageId());
+        witnessingRepository.getWitnessMessage(LAO.getId(), message.getMessageId());
     assertTrue(witnessMessage.isPresent());
 
     // Check the Witness message contains the expected title and description
