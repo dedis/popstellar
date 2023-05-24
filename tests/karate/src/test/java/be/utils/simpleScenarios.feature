@@ -90,55 +90,43 @@
       * organizer.publish(validCreateRollCall, lao.channel)
       * json answer = organizer.getBackendResponse(validCreateRollCall)
 
+    # organizer, lao and rollCall need to be passed as arguments when calling this scenario
     @name=open_roll_call
     Scenario: Opens a valid Roll Call
-      * call read('classpath:be/utils/simpleScenarios.feature@name=valid_lao')
-
-      * def validCreateRollCall =
-        """
-          {
-            "object": "roll_call",
-            "action": "create",
-            "id": "pKbXASZI6NYbzhFKoGd4HUpIBLF-CMSGAbfdYkd09PM=",
-            "name": "Roll Call 3",
-            "creation": 1633098864,
-            "proposed_start": 1633099127,
-            "proposed_end": 1633099148,
-            "location": "Lausanne",
-            "description": "Nice city!"
-          }
-        """
+      * call read('classpath:be/utils/simpleScenarios.feature@name=valid_roll_call') { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)' }
+      * def openRollCall = rollCall.open()
       * def validOpenRollCall =
         """
           {
             "object": "roll_call",
             "action": "open",
-            "update_id": "N9DNfliEA9lrcDNAnw5PXjOS84kbq2fLFz8GzIxzCwU=",
-            "opens": "pKbXASZI6NYbzhFKoGd4HUpIBLF-CMSGAbfdYkd09PM=",
-            "opened_at": 1633099127
+            "update_id": '#(openRollCall.updateId)',
+            "opens": '#(openRollCall.opens)',
+            "opened_at": '#(openRollCall.openedAt)'
           }
         """
-      * frontend.publish(validCreateRollCall, laoChannel)
-      * json answer = frontend.getBackendResponse(validCreateRollCall)
-      * frontend.publish(validOpenRollCall, laoChannel)
-      * json answer2 = frontend.getBackendResponse(validOpenRollCall)
+      * karate.log("sending a roll call open request : ", karate.pretty(validOpenRollCall))
+      * organizer.publish(validOpenRollCall, lao.channel)
+      * json answer = organizer.getBackendResponse(validOpenRollCall)
 
+    # organizer, lao and rollCall need to be passed as arguments when calling this scenario
     @name=close_roll_call
     Scenario: Closes a valid Roll Call
-      * call read('classpath:be/utils/simpleScenarios.feature@name=open_roll_call')
+      * call read('classpath:be/utils/simpleScenarios.feature@name=valid_roll_call') { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)' }
       * def validRollCallClose =
         """
           {
             "object": "roll_call",
             "action": "close",
-            "update_id": "IGLB3pipK0p0G5E_wFxedEk4IpyM3L7XIQoFummhj0Y=",
-            "closes": "N9DNfliEA9lrcDNAnw5PXjOS84kbq2fLFz8GzIxzCwU=",
-            "closed_at": 1633099135,
-            "attendees": ["M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU=", "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM="]
+            "update_id": '#(closeRollCall.updateId)',
+            "closes": '#(closeRollCall.closes)',
+            "closed_at": '#(closeRollCall.closedAt)',
+            "attendees": '#(closeRollCall.attendees)'
           }
-        """
-      * frontend.publish(validRollCallClose, laoChannel)
-      * json answer = frontend.getBackendResponse(validRollCallClose)
+      """
+      * karate.log("sending a roll call close request : ", karate.pretty(validRollCallClose))
+      * organizer.publish(validRollCallClose, lao.channel)
+      * json answer = organizer.getBackendResponse(validRollCallClose)
 
     @name=election_setup
     Scenario: Sets up a valid election

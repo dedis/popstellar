@@ -8,6 +8,9 @@ import common.net.MessageQueue;
 import common.net.MultiMsgWebSocketClient;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /** Websocket client capable of creating lao, roll call, and election objects */
 public class MockClient extends MultiMsgWebSocketClient {
@@ -36,6 +39,7 @@ public class MockClient extends MultiMsgWebSocketClient {
     // Name needs to be random so that the same organizer does not create the same roll call twice if it happens in the same second
     String rollCallName = RandomUtils.generateRandomName();
     String rollCallId = RollCall.generateCreateRollCallId(lao.id, rollCallCreation, rollCallName);
+    List<String> attendees = Collections.singletonList(publicKey);
 
     return new RollCall(
       rollCallId,
@@ -45,7 +49,8 @@ public class MockClient extends MultiMsgWebSocketClient {
       rollCallCreation + 200,
       "valid location",
       "valid description",
-      lao.id);
+      lao.id,
+      attendees);
   }
 
 }

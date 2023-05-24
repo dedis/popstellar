@@ -67,7 +67,8 @@ Feature: Create a Roll Call
   # Setting up the lao correctly and sending a roll call create message that comes from
   # a non-organizer should result in an error message being sent by the backend.
   Scenario: Roll Call Creation with non-organizer as sender should return an error
-    Given def validCreateRollCall =
+    Given def notOrganizer = call createMockClient
+    And def validCreateRollCall =
       """
         {
           "object": "roll_call",
@@ -81,8 +82,8 @@ Feature: Create a Roll Call
           "description": '#(validRollCall.description)',
         }
       """
-    When def notOrganizer = call createFrontend
-    And notOrganizer.publish(validCreateRollCall, lao.channel)
+
+    When notOrganizer.publish(validCreateRollCall, lao.channel)
     And json answer = notOrganizer.getBackendResponse(validCreateRollCall)
     Then match answer contains INVALID_MESSAGE_FIELD
     And match notOrganizer.receiveNoMoreResponses() == true

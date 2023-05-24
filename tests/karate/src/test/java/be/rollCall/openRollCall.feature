@@ -38,8 +38,9 @@ Feature: Roll Call Open
     Then match answer contains VALID_MESSAGE
     And match organizer.receiveNoMoreResponses() == true
 
-  Scenario: Opening a roll call with non-organizer as sender should fail
-    Given def validOpenRollCall =
+  Scenario: Opening a Roll Call with non-organizer as sender should fail
+    Given def notOrganizer = call createMockClient
+    And def validOpenRollCall =
       """
         {
           "object": "roll_call",
@@ -49,8 +50,7 @@ Feature: Roll Call Open
           "opened_at": '#(openRollCall.openedAt)'
         }
       """
-    When def notOrganizer = call createFrontend
-    And notOrganizer.publish(validCreateRollCall, lao.channel)
+    When notOrganizer.publish(validCreateRollCall, lao.channel)
     And json answer = notOrganizer.getBackendResponse(validCreateRollCall)
     Then match answer contains INVALID_MESSAGE_FIELD
     And match notOrganizer.receiveNoMoreResponses() == true

@@ -107,7 +107,8 @@ Feature: Create a pop LAO
     And match organizer.receiveNoMoreResponses() == true
 
   Scenario: Create Lao request with public key different from the sender public key should fail
-    Given def laoCreateRequest =
+    Given def notOrganizer = call createMockClient
+    And def laoCreateRequest =
       """
         {
           "object": "lao",
@@ -119,8 +120,8 @@ Feature: Create a pop LAO
           "witnesses": []
         }
       """
-    When def notOrganizer = call createFrontend
-    And notOrganizer.publish(laoCreateRequest, rootChannel)
+
+    When notOrganizer.publish(laoCreateRequest, rootChannel)
     And json answer = notOrganizer.getBackendResponse(laoCreateRequest)
     Then match answer contains ACCESS_DENIED
     And match notOrganizer.receiveNoMoreResponses() == true

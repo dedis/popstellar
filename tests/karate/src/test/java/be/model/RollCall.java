@@ -3,6 +3,8 @@ package be.model;
 import be.utils.Hash;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 
 /** Models a roll call in a pop lao */
 public class RollCall {
@@ -14,10 +16,11 @@ public class RollCall {
   public String location;
   public String description;
   public String laoId;
+  public List<String> attendees;
 
   private final static String ROLL_CALL_SUFFIX = "R";
 
-  public RollCall(String id, String name, long creation, long start, long end, String location, String description, String laoId) {
+  public RollCall(String id, String name, long creation, long start, long end, String location, String description, String laoId, List<String> attendees) {
     this.id = id;
     this.name = name;
     this.creation = creation;
@@ -26,6 +29,7 @@ public class RollCall {
     this.location = location;
     this.description = description;
     this.laoId = laoId;
+    this.attendees = List.copyOf(attendees);
   }
 
   /**
@@ -42,7 +46,7 @@ public class RollCall {
       hashName = "empty";
     }
     String newId = generateCreateRollCallId(laoId, creation, hashName);
-    return new RollCall(newId, newName, creation, start, end, location, description, laoId);
+    return new RollCall(newId, newName, creation, start, end, location, description, laoId, attendees);
   }
 
   /**
@@ -54,7 +58,7 @@ public class RollCall {
    */
   public RollCall setCreation(long newCreation) {
     String newId = generateCreateRollCallId(laoId, newCreation, name);
-    return new RollCall(newId, name, newCreation, start, end, location, description, laoId);
+    return new RollCall(newId, name, newCreation, start, end, location, description, laoId, attendees);
   }
 
   /**
@@ -63,9 +67,8 @@ public class RollCall {
    * @return copy of the roll call with switched start and end time
    */
   public RollCall switchStartAndEnd() {
-    return new RollCall(id, name, creation, end, start, location, description, laoId);
+    return new RollCall(id, name, creation, end, start, location, description, laoId, attendees);
   }
-
 
   /**
    * Copies the existing roll call but switches the creation and start time of the roll call.
@@ -75,7 +78,7 @@ public class RollCall {
    */
   public RollCall switchCreationAndStart() {
     String newId = generateCreateRollCallId(laoId, start, name);
-    return new RollCall(newId, name, start, creation, end, location, description, laoId);
+    return new RollCall(newId, name, start, creation, end, location, description, laoId, attendees);
   }
 
   /**
@@ -123,7 +126,20 @@ public class RollCall {
   public RollCallOpen open(){
     long openedAt = Instant.now().getEpochSecond();
     String updateId = generateOpenRollCallId(laoId, id, openedAt);
-    return new RollCallOpen(updateId , id, openedAt);
+    RollCallOpen rollCallOpen = new RollCallOpen(updateId , id, openedAt);
+    id = updateId;
+    return rollCallOpen;
+  }
+
+  /**
+   * @return an object containing the data to create a valid close roll call message for this roll call
+   */
+  public RollCallClose close(){
+    long closedAt = Instant.now().getEpochSecond();
+    String updateId = generateCloseRollCallId(laoId, id, closedAt);
+    RollCallClose rollCallClose = new RollCallClose(updateId, id, closedAt, attendees);
+    id = updateId;
+    return rollCallClose;
   }
 
   /** Contains the data to create a valid open roll call message for this roll call */
@@ -138,6 +154,22 @@ public class RollCall {
       this.openedAt = openedAt;
     }
   }
+
+  /** Contains the data to create a valid close roll call message for this roll call */
+  public static class RollCallClose{
+    public String updateId;
+    public String closes;
+    public long closedAt;
+    public List<String> attendees;
+
+    public RollCallClose(String updateId, String closes, long closedAt, List<String> attendees){
+      this.updateId = updateId;
+      this.closes = closes;
+      this.closedAt = closedAt;
+      this.attendees = List.copyOf(attendees);
+    }
+  }
+
 }
 
 
