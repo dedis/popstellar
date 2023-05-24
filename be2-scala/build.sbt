@@ -78,6 +78,7 @@ copyProtocolTask := {
 // Add the copyProtocolTask to compile and test scopes
 (Compile/ compile) := ((Compile/ compile) dependsOn copyProtocolTask).value
 (Test/ test) := ((Test/ test) dependsOn copyProtocolTask).value
+assembly := (assembly dependsOn copyProtocolTask).value
 
 // Setup resource directory for jar assembly
 (Compile/ packageBin/ resourceDirectory) := file(".") / "./src/main/resources"
@@ -160,5 +161,8 @@ libraryDependencies += "com.fasterxml.jackson.core" % "jackson-databind" % "2.0.
 
 // Scala file system handling
 libraryDependencies += "org.scala-lang" % "scala-reflect" % scalaVersion.value
+
+// QRCODE generation library
+libraryDependencies += "com.google.zxing" % "core" % "3.5.1"
 
 conflictManager := ConflictManager.latestCompatible

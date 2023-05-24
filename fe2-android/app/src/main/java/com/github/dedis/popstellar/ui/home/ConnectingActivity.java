@@ -129,6 +129,9 @@ public class ConnectingActivity extends AppCompatActivity {
       List<PublicKey> witnesses =
           witnessesList.stream().map(PublicKey::new).collect(Collectors.toList());
 
+      // Add the organizer to the list of witnesses
+      witnesses.add(keyManager.getMainPublicKey());
+
       CreateLao createLao = new CreateLao(laoName, keyManager.getMainPublicKey(), witnesses);
       Lao lao = new Lao(createLao.getId());
       Timber.tag(TAG).d("Creating Lao %s", lao.getId());
@@ -196,14 +199,6 @@ public class ConnectingActivity extends AppCompatActivity {
             witnesses.stream().map(PublicKey::getEncoded).collect(Collectors.toList())));
     intent.putExtra(Constants.CONNECTION_PURPOSE_EXTRA, Constants.CREATING_EXTRA);
     intent.putExtra(Constants.ACTIVITY_TO_OPEN_EXTRA, Constants.LAO_DETAIL_EXTRA);
-    intent.addFlags(FLAG_ACTIVITY_NEW_TASK);
-    return intent;
-  }
-
-  public static Intent newIntentForHome(Context ctx) {
-    Intent intent = new Intent(ctx, ConnectingActivity.class);
-    intent.putExtra(Constants.LAO_ID_EXTRA, ""); // not needed but allows more elegant handling
-    intent.putExtra(Constants.ACTIVITY_TO_OPEN_EXTRA, Constants.HOME_EXTRA);
     intent.addFlags(FLAG_ACTIVITY_NEW_TASK);
     return intent;
   }

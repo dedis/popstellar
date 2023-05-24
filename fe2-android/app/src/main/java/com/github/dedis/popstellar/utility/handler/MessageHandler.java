@@ -39,25 +39,31 @@ public final class MessageHandler {
   public void handleMessage(MessageSender messageSender, Channel channel, MessageGeneral message)
       throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
           UnknownElectionException, NoRollCallException {
-    Timber.tag(TAG).d("handle incoming message");
 
-    if (messageRepo.isMessagePresent(message.getMessageId())) {
-      Timber.tag(TAG).d("the message has already been handled in the past");
+    Data data = message.getData();
+
+    Objects dataObj = Objects.find(data.getObject());
+    Action dataAction = Action.find(data.getAction());
+    boolean toPersist = dataObj.hasToBePersisted();
+    boolean toBeStored = dataAction.isStoreNeededByAction();
+
+    if (messageRepo.isMessagePresent(message.getMessageId(), toPersist)) {
+      Timber.tag(TAG)
+          .d(
+              "The message with class %s has already been handled in the past",
+              data.getClass().getSimpleName());
       return;
     }
 
-    Data data = message.getData();
-    Timber.tag(TAG).d("data with class: %s", data.getClass());
-    Objects dataObj = Objects.find(data.getObject());
-    Action dataAction = Action.find(data.getAction());
-
+    Timber.tag(TAG)
+        .d("Handling incoming message, data with class: %s", data.getClass().getSimpleName());
     registry.handle(
         new HandlerContext(message.getMessageId(), message.getSender(), channel, messageSender),
         data,
         dataObj,
         dataAction);
 
-    // Put the message in the state
-    messageRepo.addMessage(message);
+    // Put the message in the repo
+    messageRepo.addMessage(message, toBeStored, toPersist);
   }
 }

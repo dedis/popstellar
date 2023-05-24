@@ -2,10 +2,16 @@ package com.github.dedis.popstellar.testutils;
 
 import android.view.*;
 
+import androidx.test.espresso.UiController;
+import androidx.test.espresso.ViewAction;
 import androidx.test.espresso.matcher.BoundedMatcher;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.google.android.material.tabs.TabLayout;
+
 import org.hamcrest.*;
+
+import static androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom;
 
 public class MatcherUtils {
 
@@ -43,6 +49,29 @@ public class MatcherUtils {
       @Override
       protected boolean matchesSafely(ViewPager2 viewPager) {
         return viewPager.getCurrentItem() == position;
+      }
+    };
+  }
+
+  public static ViewAction selectTabAtPosition(final int tabIndex) {
+    return new ViewAction() {
+      @Override
+      public Matcher<View> getConstraints() {
+        return isAssignableFrom(TabLayout.class);
+      }
+
+      @Override
+      public String getDescription() {
+        return "select tab at index " + tabIndex;
+      }
+
+      @Override
+      public void perform(UiController uiController, View view) {
+        TabLayout tabLayout = (TabLayout) view;
+        TabLayout.Tab tab = tabLayout.getTabAt(tabIndex);
+        if (tab != null) {
+          tab.select();
+        }
       }
     };
   }

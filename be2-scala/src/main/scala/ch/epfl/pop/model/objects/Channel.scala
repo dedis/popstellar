@@ -1,5 +1,7 @@
 package ch.epfl.pop.model.objects
 
+import ch.epfl.pop.model.objects.Channel.CHANNEL_SEPARATOR
+
 import scala.util.{Success, Try}
 
 final case class Channel(channel: String) {
@@ -34,6 +36,30 @@ final case class Channel(channel: String) {
   }
 
   def isRootChannel: Boolean = channel == Channel.ROOT_CHANNEL.channel
+
+  /** Determine if channel is the main Lao channel
+    *
+    * @return
+    *   true if the channel is of the form /root/lao_id
+    */
+  def isMainLaoChannel: Boolean = {
+    Channel(channel).extractLaoChannel match {
+      case Some(laoChannel) => laoChannel.toString == channel
+      case None             => false
+    }
+  }
+
+  /** Extract the lao channel from a channel (e.g will extract channel /root/wex from /root/wex/xyz)
+    *
+    * @return
+    *   the lao channel when a lao_id can be decoded
+    */
+  def extractLaoChannel: Option[Channel] = {
+    Channel(channel).decodeChannelLaoId match {
+      case Some(laoId) => Some(Channel(s"${Channel.ROOT_CHANNEL}$CHANNEL_SEPARATOR$laoId"))
+      case _           => None
+    }
+  }
 
   def isSubChannel: Boolean = channel.startsWith(Channel.ROOT_CHANNEL_PREFIX)
 

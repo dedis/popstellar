@@ -131,9 +131,11 @@
   <string name="manual_witness_hint">Witness public key</string>
   <string name="add_witness_title">Add Witness</string>
   <string name="sign_message">Sign message</string>
-  <string name="not_a_witness">You\'re not a witness</string>
-  <string name="not_a_witness_explanation">You need to be a witness in order to sign this message</string>
   <string name="confirm_to_sign">Are you sure you want to sign message with ID : %1$s</string>
+  <string name="message_description_title">Description</string>
+  <string name="signatures_title">Signatures</string>
+  <string name="sign">Sign</string>
+  <string name="signed">Signed</string>
 
   <!--  Roll Call -->
   <string name="roll_call_setup_title">Roll Call Setup</string>
@@ -266,15 +268,17 @@
   <string name="text">text</string>
   <string name="chirp_list">Chirp List</string>
   <string name="delete_button">delete button</string>
+  <string name="upvote_button">upvote button</string>
+  <string name="downvote_button">downvote button</string>
+  <string name="love_button">love button</string>
   <string name="deleted_chirp">Deleted chirp!</string>
   <string name="deleted_chirp_2">Chirp is deleted.</string>
 
   <!--  Storage-->
-  <string name="nothing_stored">no stored data found</string>
+  <string name="nothing_stored">No stored data found</string>
   <string name="clear_text">Clear all storage</string>
   <string name="clear_confirmation_text">Are you sure you want to clear stored data ? This action is irreversible</string>
   <string name="clear_success">Clearing was successful</string>
-  <string name="clear_failure">Clearing was unsuccessful</string>
 
   <!--  Content description -->
   <string name="qr_code_image_description">Qr code image to display LAO connecting information</string>
@@ -302,6 +306,7 @@
 
   <string name="generic_error">An error occurred\n%1$s</string>
   <string name="error_sending_chirp">Could not send the chirp\n%1$s</string>
+  <string name="error_sending_reaction">Could not send the reaction\n%1$s</string>
   <string name="error_retrieve_own_token">Could not retrieve your own PoP Token\n%1$s</string>
   <string name="error_end_election">Could not complete the election\n%1$s</string>
   <string name="error_send_vote">Could not send the vote\n%1$s</string>
@@ -316,11 +321,10 @@
   <string name="error_update_lao">Could not update the LAO\n%1$s</string>
   <string name="error_subscribe_lao">Could not subscribe to the LAO channel\n%1$s</string>
   <string name="error_delete_chirp">Could not delete chirp\n%1$s</string>
+  <string name="error_delete_reaction">Could not delete the reaction\n%1$s</string>
   <string name="error_open_election">Could not open the election\n%1$s</string>
   <string name="error_post_transaction">Could not post a transaction\n%1$s</string>
   <string name="error_no_rollcall_closed_in_LAO">Error no RollCall closed in the LAO\n%1$s</string>
-  <string name="error_storing_data">An error occurred while storing data</string>
-  <string name="error_loading_data">An error occurred while loading data</string>
   <string name="error_storage_wallet">An error occurred during the storage of the wallet seed</string>
   <string name="qr_code_not_pop_token">Error, this QR code is not a pop token or the key format is invalid</string>
   <string name="qr_code_not_main_pk">Error, this QR code is not a main public key or the key format is invalid</string>
@@ -342,6 +346,7 @@
   <string name="unknown_lao_exception">Unknown Lao</string>
   <string name="unknown_election_exception">Unknown election</string>
   <string name="unknown_chirp_exception">Unknown Chirp</string>
+  <string name="unknown_reaction_exception">Unknown Reaction</string>
   <string name="unknown_roll_call_exception">Unknown Roll Call</string>
   <string name="unknown_meeting_exception">Unknown Meeting</string>
   <string name="already_open_roll_call_exception">Another Roll Call is already open</string>

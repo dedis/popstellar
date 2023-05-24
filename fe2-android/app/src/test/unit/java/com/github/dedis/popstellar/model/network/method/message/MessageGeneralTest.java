@@ -1,5 +1,7 @@
 package com.github.dedis.popstellar.model.network.method.message;
 
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+
 import com.github.dedis.popstellar.di.DataRegistryModuleHelper;
 import com.github.dedis.popstellar.di.JsonModule;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
@@ -12,6 +14,7 @@ import com.google.gson.Gson;
 import net.i2p.crypto.eddsa.Utils;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
@@ -21,6 +24,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 
+@RunWith(AndroidJUnit4.class)
 public class MessageGeneralTest {
 
   private static final Gson GSON = JsonModule.provideGson(DataRegistryModuleHelper.buildRegistry());

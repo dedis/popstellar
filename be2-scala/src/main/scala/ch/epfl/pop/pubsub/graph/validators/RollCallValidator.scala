@@ -1,12 +1,13 @@
 package ch.epfl.pop.pubsub.graph.validators
 
 import akka.pattern.AskableActorRef
-import ch.epfl.pop.model.network.{JsonRpcRequest}
+import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ActionType.{CLOSE, CREATE, OPEN, REOPEN}
-import ch.epfl.pop.model.network.method.message.data.{ObjectType}
+import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.network.method.message.data.rollCall.{CloseRollCall, CreateRollCall, IOpenRollCall}
 import ch.epfl.pop.model.objects.{Hash, RollCallData}
+import ch.epfl.pop.pubsub.PublishSubscribe
 import ch.epfl.pop.pubsub.graph.validators.MessageValidator._
 import ch.epfl.pop.pubsub.graph.{GraphMessage, PipelineError}
 import ch.epfl.pop.storage.DbActor
@@ -17,7 +18,7 @@ import scala.util.Success
 
 object RollCallValidator extends MessageDataContentValidator with EventValidator {
 
-  val rollCallValidator = new RollCallValidator(DbActor.getInstance)
+  val rollCallValidator = new RollCallValidator(PublishSubscribe.getDbActorRef)
 
   override val EVENT_HASH_PREFIX: String = rollCallValidator.EVENT_HASH_PREFIX
 

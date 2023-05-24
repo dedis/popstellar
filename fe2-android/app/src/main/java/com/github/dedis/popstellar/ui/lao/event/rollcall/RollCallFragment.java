@@ -96,11 +96,15 @@ public class RollCallFragment extends AbstractEventFragment {
 
     // Set the description dropdown
     binding.rollCallDescriptionCard.setOnClickListener(
-        v -> handleExpandArrow(binding.rollCallDescriptionArrow, binding.rollCallDescriptionText));
+        v ->
+            ActivityUtils.handleExpandArrow(
+                binding.rollCallDescriptionArrow, binding.rollCallDescriptionText));
 
     // Set the location dropdown
     binding.rollCallLocationCard.setOnClickListener(
-        v -> handleExpandArrow(binding.rollCallLocationArrow, binding.rollCallLocationText));
+        v ->
+            ActivityUtils.handleExpandArrow(
+                binding.rollCallLocationArrow, binding.rollCallLocationText));
 
     binding.rollCallManagementButton.setOnClickListener(
         v -> {
@@ -343,24 +347,6 @@ public class RollCallFragment extends AbstractEventFragment {
             .withColor(ActivityUtils.getQRCodeColor(requireContext()), Color.TRANSPARENT)
             .bitmap();
     binding.rollCallPkQrCode.setImageBitmap(myBitmap);
-  }
-
-  /** Callback function for the card listener to expand and shrink a text box */
-  private void handleExpandArrow(ImageView arrow, TextView text) {
-    float newRotation;
-    int visibility;
-    // If the arrow is pointing up, then rotate down and make visible the text
-    if (arrow.getRotation() == ORIENTATION_UP) {
-      newRotation = ORIENTATION_DOWN;
-      visibility = View.VISIBLE;
-    } else { // Otherwise rotate up and hide the text
-      newRotation = ORIENTATION_UP;
-      visibility = View.GONE;
-    }
-
-    // Use an animation to rotate smoothly
-    arrow.animate().rotation(newRotation).setDuration(300).start();
-    text.setVisibility(visibility);
   }
 
   private EnumMap<EventState, Integer> buildManagementTextMap() {

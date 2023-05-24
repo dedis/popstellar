@@ -37,6 +37,16 @@ func run(ctx context.Context, args []string) {
 		Aliases: []string{"pk"},
 		Usage:   "base64url encoded server's public key",
 	}
+	serverAddressFlag := &cli.StringFlag{
+		Name:    "server-address",
+		Aliases: []string{"sa"},
+		Usage:   "address of the server endpoint",
+	}
+	clientAddressFlag := &cli.StringFlag{
+		Name:    "client-address",
+		Aliases: []string{"ca"},
+		Usage:   "address of the client endpoint",
+	}
 	serverPublicAddressFlag := &cli.StringFlag{
 		Name:    "server-public-address",
 		Aliases: []string{"spa"},
@@ -66,6 +76,11 @@ func run(ctx context.Context, args []string) {
 		Aliases: []string{"os"},
 		Usage:   "address and port to connect to other servers",
 	}
+	configFileFlag := &cli.StringFlag{
+		Name:    "config-file",
+		Aliases: []string{"cf"},
+		Usage:   "path to the config file which will override other flags if present",
+	}
 
 	app := &cli.App{
 		Name:  "pop",
@@ -82,11 +97,14 @@ func run(ctx context.Context, args []string) {
 						Name:  "serve",
 						Usage: "start the server",
 						Flags: []cli.Flag{
+							serverAddressFlag,
+							clientAddressFlag,
 							serverPublicAddressFlag,
 							serverListenAddressFlag,
 							clientPortFlag,
 							serverPortFlag,
 							otherServersFlag,
+							configFileFlag,
 						},
 						Action: func(c *cli.Context) error {
 							err := Serve(c)

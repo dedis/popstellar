@@ -1,9 +1,12 @@
 package com.github.dedis.popstellar.utility.handler;
 
-import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
+import android.app.Application;
 
-import com.github.dedis.popstellar.di.DataRegistryModuleHelper;
-import com.github.dedis.popstellar.di.JsonModule;
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
+import androidx.test.core.app.ApplicationProvider;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+
+import com.github.dedis.popstellar.di.*;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.DataRegistry;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.CreateLao;
@@ -12,6 +15,7 @@ import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.model.objects.security.*;
 import com.github.dedis.popstellar.repository.*;
+import com.github.dedis.popstellar.repository.database.AppDatabase;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.utility.error.*;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
@@ -22,7 +26,7 @@ import com.google.gson.Gson;
 import org.junit.*;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.MockitoAnnotations;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -38,7 +42,7 @@ import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.lenient;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(AndroidJUnit4.class)
 public class RollCallHandlerTest {
 
   private static final KeyPair SENDER_KEY = generateKeyPair();
@@ -53,6 +57,7 @@ public class RollCallHandlerTest {
   private RollCallRepository rollCallRepo;
   private MessageHandler messageHandler;
   private Gson gson;
+  private AppDatabase appDatabase;
 
   private RollCall rollCall;
 
@@ -64,18 +69,23 @@ public class RollCallHandlerTest {
   @Before
   public void setup()
       throws GeneralSecurityException, IOException, KeyException, UnknownRollCallException {
+    MockitoAnnotations.openMocks(this);
+    Application application = ApplicationProvider.getApplicationContext();
+    appDatabase = AppDatabaseModuleHelper.getAppDatabase(application);
+
     lenient().when(keyManager.getMainKeyPair()).thenReturn(SENDER_KEY);
     lenient().when(keyManager.getMainPublicKey()).thenReturn(SENDER);
     lenient().when(keyManager.getValidPoPToken(any(), any())).thenReturn(POP_TOKEN);
 
     lenient().when(messageSender.subscribe(any())).then(args -> Completable.complete());
 
-    laoRepo = new LAORepository();
-    rollCallRepo = new RollCallRepository();
+    laoRepo = new LAORepository(appDatabase, application);
+    rollCallRepo = new RollCallRepository(appDatabase, application);
 
     DataRegistry dataRegistry =
         DataRegistryModuleHelper.buildRegistry(laoRepo, keyManager, rollCallRepo);
-    MessageRepository messageRepo = new MessageRepository();
+    MessageRepository messageRepo =
+        new MessageRepository(appDatabase, ApplicationProvider.getApplicationContext());
     gson = JsonModule.provideGson(dataRegistry);
     messageHandler = new MessageHandler(messageRepo, dataRegistry);
 
@@ -104,7 +114,13 @@ public class RollCallHandlerTest {
 
     // Add the CreateLao message to the LAORepository
     MessageGeneral createLaoMessage = new MessageGeneral(SENDER_KEY, CREATE_LAO, gson);
-    messageRepo.addMessage(createLaoMessage);
+    messageRepo.addMessage(createLaoMessage, false, false);
+  }
+
+  @After
+  public void tearDown() {
+    appDatabase.clearAllTables();
+    appDatabase.close();
   }
 
   @Test

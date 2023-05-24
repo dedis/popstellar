@@ -1,0 +1,15 @@
+{
+  "jsonrpc" : "2.0",
+  "id" : 4,
+  "method" : "publish",
+  "params" : {
+    "channel" : "/root/o3nyIIvrmDriwYXnH5-8CmYdyZcz4BPNT99W7dcrk9M=/social/chirps",
+    "message" : {
+      "data" : "eyJhY3Rpb24iOiJub3RpZnlfYWRkIiwiY2hhbm5lbCI6Ii9yb290L28zbnlJSXZybURyaXdZWG5INS04Q21ZZHlaY3o0QlBOVDk5VzdkY3JrOU09L3NvY2lhbC9WSGZ4VGxiTTNuVG5MUXVLbktmczFmR1AyY3dWVDhLSmtjLXNSR3NfMktNPSIsImNoaXJwX2lkIjoiS3JWVUw0RVdjTHN1VzE3MTlFbXpKSkVnb2xqa0QzdnU2bms3bEhIQnh4QT0iLCJvYmplY3QiOiJjaGlycCIsInRpbWVzdGFtcCI6MTY4MzMxNjMzOX0=",
+      "message_id" : "0ue6CuLnQ1WgfdYo2TvMDqLZ2TcJaR1bqsapuRPeF3E=",
+      "sender" : "pLGlHn5foBNLuY1Kd_s2y7-XZEAyaS4HcPVeD-VbRKE=",
+      "signature" : "pXcTqKnsnsfUuMVzxVEGu0kyFlEjwhe_iR-a4BfuYE7b5F8mgt2s00BuAFyMKROPzOoVvddzdyyULeHejWmMBg==",
+      "witness_signatures" : []
+    }
+  }
+}

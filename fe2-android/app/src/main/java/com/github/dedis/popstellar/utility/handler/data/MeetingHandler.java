@@ -22,6 +22,8 @@ public class MeetingHandler {
 
   private static final String MEETING_NAME = "Meeting Name : ";
   private static final String MESSAGE_ID = "Message ID : ";
+  private static final String MEETING_ID = "Meeting ID : ";
+  private static final String MODIFICATION_ID = "Modification ID : ";
 
   private final LAORepository laoRepo;
   private final MeetingRepository meetingRepo;
@@ -61,7 +63,7 @@ public class MeetingHandler {
 
     Meeting meeting = builder.build();
     Lao lao = laoView.createLaoCopy();
-    lao.updateWitnessMessage(messageId, createMeetingWitnessMessage(messageId, meeting));
+    lao.addWitnessMessage(createMeetingWitnessMessage(messageId, meeting));
 
     meetingRepo.updateMeeting(laoView.getId(), meeting);
     laoRepo.updateLao(lao);
@@ -91,7 +93,7 @@ public class MeetingHandler {
 
     Meeting meeting = builder.build();
     Lao lao = laoView.createLaoCopy();
-    lao.updateWitnessMessage(messageId, stateMeetingWitnessMessage(messageId, meeting));
+    lao.addWitnessMessage(stateMeetingWitnessMessage(messageId, meeting));
 
     meetingRepo.updateMeeting(laoView.getId(), meeting);
     laoRepo.updateLao(lao);
@@ -102,12 +104,15 @@ public class MeetingHandler {
     message.setTitle("New Meeting was created");
     message.setDescription(
         MEETING_NAME
+            + "\n"
             + meeting.getName()
+            + "\n\n"
+            + MEETING_ID
             + "\n"
-            + "Meeting ID : "
             + meeting.getId()
-            + "\n"
+            + "\n\n"
             + MESSAGE_ID
+            + "\n"
             + messageId);
 
     return message;
@@ -118,15 +123,19 @@ public class MeetingHandler {
     message.setTitle("A meeting was modified");
     message.setDescription(
         MEETING_NAME
+            + "\n"
             + meeting.getName()
+            + "\n\n"
+            + MEETING_ID
             + "\n"
-            + "Meeting ID : "
             + meeting.getId()
+            + "\n\n"
+            + MODIFICATION_ID
             + "\n"
-            + "Modification ID : "
             + meeting.getModificationId()
-            + "\n"
+            + "\n\n"
             + MESSAGE_ID
+            + "\n"
             + messageId);
 
     return message;

@@ -1,18 +1,18 @@
 package ch.epfl.pop.pubsub.graph.validators
 
+import akka.pattern.AskableActorRef
 import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.network.method.message.data.meeting.{CreateMeeting, StateMeeting}
 import ch.epfl.pop.model.objects.Hash
+import ch.epfl.pop.pubsub.PublishSubscribe
 import ch.epfl.pop.pubsub.graph.validators.MessageValidator._
 import ch.epfl.pop.pubsub.graph.{GraphMessage, PipelineError}
-import akka.pattern.AskableActorRef
-import ch.epfl.pop.storage.DbActor
 
 object MeetingValidator extends MessageDataContentValidator with EventValidator {
 
-  val meetingValidator = new MeetingValidator(DbActor.getInstance)
+  val meetingValidator = new MeetingValidator(PublishSubscribe.getDbActorRef)
 
   override val EVENT_HASH_PREFIX: String = meetingValidator.EVENT_HASH_PREFIX
 

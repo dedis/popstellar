@@ -1,9 +1,12 @@
 package com.github.dedis.popstellar.model.network.method.message.data.digitalcash;
 
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+
 import com.github.dedis.popstellar.model.network.JsonTestUtils;
 import com.github.dedis.popstellar.model.objects.security.*;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
@@ -11,6 +14,7 @@ import java.util.List;
 
 import static org.junit.Assert.*;
 
+@RunWith(AndroidJUnit4.class)
 public class TransactionTest {
   // Version
   private static final int VERSION = 1;

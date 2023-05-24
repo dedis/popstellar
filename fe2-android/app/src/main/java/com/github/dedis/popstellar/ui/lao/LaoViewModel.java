@@ -15,15 +15,17 @@ import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.RollCallRepository;
+import com.github.dedis.popstellar.repository.database.AppDatabase;
+import com.github.dedis.popstellar.repository.database.subscriptions.SubscriptionsDao;
+import com.github.dedis.popstellar.repository.database.subscriptions.SubscriptionsEntity;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.ui.PopViewModel;
+import com.github.dedis.popstellar.ui.home.ConnectingActivity;
 import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.github.dedis.popstellar.utility.error.keys.*;
 import com.github.dedis.popstellar.utility.security.KeyManager;
-
-import java.security.GeneralSecurityException;
 
 import javax.inject.Inject;
 
@@ -58,6 +60,7 @@ public class LaoViewModel extends AndroidViewModel implements PopViewModel {
   private final GlobalNetworkManager networkManager;
   private final KeyManager keyManager;
   private final Wallet wallet;
+  private final SubscriptionsDao subscriptionsDao;
 
   @Inject
   public LaoViewModel(
@@ -66,13 +69,15 @@ public class LaoViewModel extends AndroidViewModel implements PopViewModel {
       RollCallRepository rollCallRepo,
       GlobalNetworkManager networkManager,
       KeyManager keyManager,
-      Wallet wallet) {
+      Wallet wallet,
+      AppDatabase appDatabase) {
     super(application);
     this.laoRepo = laoRepository;
     this.rollCallRepo = rollCallRepo;
     this.networkManager = networkManager;
     this.keyManager = keyManager;
     this.wallet = wallet;
+    this.subscriptionsDao = appDatabase.subscriptionsDao();
   }
 
   @Override
@@ -188,9 +193,38 @@ public class LaoViewModel extends AndroidViewModel implements PopViewModel {
     disposables.dispose();
   }
 
-  public void savePersistentData() throws GeneralSecurityException {
-    ActivityUtils.activitySavingRoutine(
-        networkManager, wallet, getApplication().getApplicationContext());
+  public void saveSubscriptionsData() {
+    Disposable toDispose =
+        ActivityUtils.saveSubscriptionsRoutine(laoId, networkManager, subscriptionsDao);
+    if (toDispose != null) {
+      addDisposable(toDispose);
+    }
+  }
+
+  /** Function to restore the subscriptions to the given lao channels. */
+  public void restoreConnections() {
+    // Retrieve from the database the saved subscriptions
+    SubscriptionsEntity subscriptionsEntity = subscriptionsDao.getSubscriptionsByLao(laoId);
+    if (subscriptionsEntity == null) {
+      return;
+    }
+
+    if (subscriptionsEntity.getServerAddress().equals(networkManager.getCurrentUrl())
+        && subscriptionsEntity
+            .getSubscriptions()
+            .equals(networkManager.getMessageSender().getSubscriptions())) {
+      Timber.tag(TAG).d("Current connections are up to date");
+      return;
+    }
+
+    Timber.tag(TAG).d("Restoring connections");
+    // Connect to the server and launch the connecting activity, as when joining a lao
+    networkManager.connect(
+        subscriptionsEntity.getServerAddress(), subscriptionsEntity.getSubscriptions());
+    getApplication()
+        .startActivity(
+            ConnectingActivity.newIntentForJoiningDetail(
+                getApplication().getApplicationContext(), laoId));
   }
 
   protected Role determineRole() {

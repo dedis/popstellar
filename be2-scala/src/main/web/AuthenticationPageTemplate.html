@@ -1,0 +1,51 @@
+<!--Template copied from be1 (go backend)-->
+<!--TODO: find a way to make it consistent-->
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+    <title>PoPCHA Authorization</title>
+    <style>
+        body {
+            background: rgb(229,229,229);
+            background-size: 400% 400%;
+            animation: gradient 15s ease infinite;
+        }
+        .frame {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 100vh;
+            height: 100vh;
+            padding: 20px;
+            background-color: transparent;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.21);
+            border-radius: 10px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .frame h1 {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 20px;
+            margin: 0;
+            color: white;
+            background-color: rgba(0, 0, 0, 0.6);
+            font-size: 24px;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            box-sizing: border-box;
+            border-radius: 10px 10px 0 0;
+        }
+    </style>
+</head>
+<body>
+<div style="text-align:center;" class="frame">
+    <h1>Scan using your PoP App</h1>
+    {{QRCODE_PATTERN}}
+</div>
+</body>
+</html>

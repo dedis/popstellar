@@ -16,7 +16,7 @@ import (
 func TestServerStartAndShutdown(t *testing.T) {
 	log := zerolog.New(io.Discard)
 
-	h, err := standard_hub.NewHub(crypto.Suite.Point(), "", log, nil)
+	h, err := standard_hub.NewHub(crypto.Suite.Point(), "", "", log, nil)
 	require.NoErrorf(t, err, "could not create hub")
 
 	srv := NewServer(h, "", 0, "testsocket", log)
