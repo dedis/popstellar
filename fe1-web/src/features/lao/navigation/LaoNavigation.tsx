@@ -14,7 +14,6 @@ import { makeIcon } from 'core/components/PoPIcon';
 import { AppScreen } from 'core/navigation/AppNavigation';
 import { drawerNavigationOptions } from 'core/navigation/ScreenOptions';
 import { LaoParamList } from 'core/navigation/typing/LaoParamList';
-import { getNetworkManager } from 'core/network';
 import { Color, Spacing, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
@@ -75,7 +74,6 @@ const DisconnectIcon = makeIcon('logout');
 
 const LaoDrawerContent = ({ descriptors, navigation, state }: DrawerContentComponentProps) => {
   const lao = LaoHooks.useCurrentLao();
-  console.log('lao', lao);
 
   return (
     <View style={styles.drawerWapper}>
@@ -87,8 +85,7 @@ const LaoDrawerContent = ({ descriptors, navigation, state }: DrawerContentCompo
         <DrawerItem
           label={STRINGS.navigation_lao_disconnect_title}
           onPress={() => {
-            getNetworkManager().disconnectFromAll();
-
+            // when going back to the app home, it will automatically disconnect from the lao
             navigation.navigate(STRINGS.navigation_app_home, {
               screen: STRINGS.navigation_home_home,
             });
@@ -111,7 +108,7 @@ const LaoDrawerContent = ({ descriptors, navigation, state }: DrawerContentCompo
  */
 const LaoNavigation: React.FC<unknown> = () => {
   const passedScreens = LaoHooks.useLaoNavigationScreens();
-  console.log('passedScreens', passedScreens)
+
   // add the organizer or attendee screen depeding on the user
   const screens: LaoFeature.LaoScreen[] = useMemo(() => {
     return (
