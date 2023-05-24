@@ -8,13 +8,10 @@ import ch.epfl.pop.model.network.method.message.data.election._
 import ch.epfl.pop.model.objects.ElectionChannel._
 import ch.epfl.pop.model.objects.{Channel, DbActorNAckException, Hash, LaoData}
 import ch.epfl.pop.pubsub.PublishSubscribe
-import ch.epfl.pop.pubsub.graph.validators.ElectionValidator.electionValidator
 import ch.epfl.pop.pubsub.graph.validators.MessageValidator._
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
 import ch.epfl.pop.storage.DbActor
 
-import scala.::
-import scala.collection.immutable.HashMap
 import scala.collection.mutable
 import scala.concurrent.Await
 import scala.util.{Failure, Success}
@@ -23,7 +20,7 @@ import scala.util.{Failure, Success}
 //The defaults dbActorRef is used in the object, but the class can now be mocked with a custom dbActorRef for testing purpose
 object ElectionValidator extends MessageDataContentValidator with EventValidator {
 
-  val electionValidator = new ElectionValidator(PublishSubscribe.getDbActorRef)
+  private val electionValidator = new ElectionValidator(PublishSubscribe.getDbActorRef)
 
   override val EVENT_HASH_PREFIX: String = electionValidator.EVENT_HASH_PREFIX
 
@@ -264,40 +261,45 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
     }
   }
 
-  // not implemented since the back end does not receive a ResultElection message coming from the front end
   def validateResultElection(rpcMessage: JsonRpcRequest): GraphMessage = {
     def validationError(reason: String): PipelineError = super.validationError(reason, "ResultElection", rpcMessage.id)
     rpcMessage.getParamsMessage match {
       case Some(_: Message) =>
-        val (resultElection, laoId, senderPk, channel) = extractData[ResultElection](rpcMessage)
+        val (resultElection, _, _, channel) = extractData[ResultElection](rpcMessage)
         val electionQuestionResult = resultElection.questions
         val electionId = channel.extractChildChannel
-        val electionQuestions = extractElectionQuestions(channel,dbActorRef)
+        val electionQuestions = extractElectionQuestions(channel, dbActorRef)
+        if (!electionQuestions.isDefined) {
+          Left(validationErrorNoMessage(rpcMessage.id))
+        }
         runChecks(
           checkNumberOfVotes(
             rpcMessage,
             channel,
             electionQuestionResult,
             dbActorRef,
-            validationError(s"trying to send a ResultElection message with an invalid number of votes.")),
+            validationError(s"trying to send a ResultElection message with an invalid number of votes.")
+          ),
           checkElectionEnded(
             rpcMessage,
             channel,
             dbActorRef,
-            validationError("trying to send a ResultElection while Election is not ended yet.")),
+            validationError("trying to send a ResultElection while Election is not ended yet.")
+          ),
           checkQuestionId(
             rpcMessage,
-            electionQuestions,
+            electionQuestions.get,
             electionId,
-            validationError(s"trying to send a ResultElection message with invalid question ids.")),
+            validationError(s"trying to send a ResultElection message with invalid question ids.")
+          ),
           checkResultQuestionIds(
             rpcMessage,
-            electionQuestions,
+            electionQuestions.get,
             resultElection.questions,
             electionId,
-            validationError(s"trying to send a ResultElection message with invalid question ids."))
+            validationError(s"trying to send a ResultElection message with invalid question ids.")
+          )
         )
-
 
       case _ => Left(validationErrorNoMessage(rpcMessage.id))
     }
@@ -387,7 +389,7 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
       case _      => Right(rpcMessage)
     }
 
-  /** Does the opposite of the above function, i.e : checks if the election has ended
+  /** Checks if the election has ended
     *
     * @param rpcMessage
     *   the rpc message to validate
@@ -557,7 +559,7 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
         val numberOfAttendees = laoData.attendees.size
         val correct: Boolean =
           result.forall(electionQuestionResult =>
-            !((countNumberOfVotes(electionQuestionResult) > numberOfAttendees) || (!allBallotCountsArePositive(electionQuestionResult)))
+            (countNumberOfVotes(electionQuestionResult) <= numberOfAttendees) && allBallotCountsArePositive(electionQuestionResult)
           )
         if (correct) {
           Right(rpcMessage)
@@ -570,31 +572,34 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
   }
 
   private def countNumberOfVotes(electionQuestionResult: ElectionQuestionResult): Int = {
-    electionQuestionResult.result.map(_.count).foldLeft(0)(_ + _)
+    electionQuestionResult.result.map(_.count).sum
   }
 
   private def allBallotCountsArePositive(electionQuestionResult: ElectionQuestionResult): Boolean = {
     electionQuestionResult.result.forall(electionBallotVotes => electionBallotVotes.count >= 0)
   }
 
-  private def extractElectionQuestions(electionChannel : Channel, dbActorRef : AskableActorRef): List[ElectionQuestion] = {
+  private def extractElectionQuestions(electionChannel: Channel, dbActorRef: AskableActorRef): Option[List[ElectionQuestion]] = {
     val askForSetupElectionMessage = dbActorRef ? DbActor.ReadSetupElectionMessage(electionChannel)
     val listOfQuestions: List[ElectionQuestion] = Await.ready(askForSetupElectionMessage, duration).value match {
       case Some(Success(DbActor.DbActorReadAck(message))) =>
         message.get.decodedData.get.asInstanceOf[SetupElection].questions
       case _ => List.empty
     }
-    listOfQuestions
-
+    if (listOfQuestions.isEmpty) {
+      None
+    } else {
+      Some(listOfQuestions)
+    }
   }
 
-  private def extractIdQuestionAssociation(electionQuestions: List[ElectionQuestion], electionQuestionResult: List[ElectionQuestionResult]): mutable.HashMap[Hash,String] = {
-    electionQuestionResult.foldLeft(mutable.HashMap[Hash, String]())((acc,res) => acc += ((res.id,findMatchingQuestion(res.id, electionQuestions))))
+  private def extractIdQuestionAssociation(electionQuestions: List[ElectionQuestion], electionQuestionResult: List[ElectionQuestionResult]): mutable.HashMap[Hash, String] = {
+    electionQuestionResult.foldLeft(mutable.HashMap[Hash, String]())((acc, res) => acc += ((res.id, findMatchingQuestion(res.id, electionQuestions))))
   }
 
-  private def findMatchingQuestion(id: Hash, electionQuestions: List[ElectionQuestion]) : String = {
-    val matchingElectionQuestion : List[ElectionQuestion] = electionQuestions.dropWhile(question => question.id != id)
-    if(matchingElectionQuestion.isEmpty){
+  private def findMatchingQuestion(id: Hash, electionQuestions: List[ElectionQuestion]): String = {
+    val matchingElectionQuestion: List[ElectionQuestion] = electionQuestions.dropWhile(question => question.id != id)
+    if (matchingElectionQuestion.isEmpty) {
       return ""
     }
     matchingElectionQuestion.head.question
@@ -607,14 +612,12 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
       result: List[ElectionQuestionResult],
       electionId: Hash,
       error: PipelineError
-      ): GraphMessage = {
-    val questionIdAssociation : mutable.HashMap[Hash,String] = extractIdQuestionAssociation(questions,result)
-    val isQuestionIdValid: Boolean = {
-      questionIdAssociation.keys.forall(id => id == Hash.fromStrings("Question", electionId.toString, questionIdAssociation(id)))
-    }
-    if (isQuestionIdValid)
+  ): GraphMessage = {
+    val setupElectionIds = questions.map(_.id).toSet
+    val resultElectionIds = questions.map(_.id).toSet
+    if (setupElectionIds == resultElectionIds) {
       Right(rpcMessage)
-    else
+    } else
       Left(error)
   }
 }

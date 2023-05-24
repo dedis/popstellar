@@ -226,7 +226,7 @@ object JsonRpcRequestExample {
   private final val paramsWithResultElection: ParamsWithMessage = new ParamsWithMessage(Channel("/root/lao/" + SetupElectionExamples.ELECTION_ID.toString), MESSAGE_RESULT_ELECTION_WORKING)
   private final val paramsWithNegativeNumberOfVotesResultElection: ParamsWithMessage = new ParamsWithMessage(Channel("/root/lao/" + SetupElectionExamples.ELECTION_ID.toString), MESSAGE_RESULT_ELECTION_WRONG)
   private final val paramsWithTooMuchVotesResultElection: ParamsWithMessage = new ParamsWithMessage(Channel("/root/lao/" + SetupElectionExamples.ELECTION_ID.toString), MESSAGE_RESULT_ELECTION_TOO_MUCH_VOTES)
-  private final val paramsWithWrongIdResultElection: ParamsWithMessage = new ParamsWithMessage(Channel("/root/lao/" + SetupElectionExamples.ELECTION_ID.toString),MESSAGE_RESULT_ELECTION_WRONG_ID)
+  private final val paramsWithWrongIdResultElection: ParamsWithMessage = new ParamsWithMessage(Channel("/root/lao/" + SetupElectionExamples.ELECTION_ID.toString), MESSAGE_RESULT_ELECTION_WRONG_ID)
   final val RESULT_ELECTION_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithResultElection, id)
   final val RESULT_ELECTION_RPC_WRONG: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithNegativeNumberOfVotesResultElection, id)
   final val RESULT_ELECTION_RPC_TOO_MUCH_VOTES: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithTooMuchVotesResultElection, id)

@@ -275,25 +275,23 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
       override def receive: Receive = {
         case DbActor.ReadLaoData(_) =>
           sender() ! DbActor.DbActorReadLaoDataAck(laoDataForResultElection)
-        case DbActor.Catchup(_)  =>
+        case DbActor.Catchup(_) =>
           sender() ! DbActor.DbActorCatchupAck(List(MESSAGE_END_ELECTION_WORKING))
-        case DbActor.ReadSetupElectionMessage(channel) =>
+        case DbActor.ReadSetupElectionMessage(_) =>
           sender() ! DbActor.DbActorReadAck(Some(MESSAGE_SETUPELECTION_OPEN_BALLOT_WORKING))
       }
     })
     system.actorOf(dbActorMock)
   }
 
-
-
   private def mockDbElectionNotEnded: AskableActorRef = {
     val dbActorMock = Props(new Actor() {
       override def receive: Receive = {
-        case DbActor.ReadLaoData(channel) =>
+        case DbActor.ReadLaoData(_) =>
           sender() ! DbActor.DbActorReadLaoDataAck(laoDataForResultElection)
-        case DbActor.Catchup(channel) =>
+        case DbActor.Catchup(_) =>
           sender() ! DbActor.DbActorCatchupAck(List.empty)
-        case DbActor.ReadSetupElectionMessage(channel) =>
+        case DbActor.ReadSetupElectionMessage(_) =>
           sender() ! DbActor.DbActorReadAck(Some(MESSAGE_SETUPELECTION_OPEN_BALLOT_WORKING))
       }
     })
@@ -303,11 +301,11 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
   private def mockDbWrongQuestionIds: AskableActorRef = {
     val dbActorMock = Props(new Actor() {
       override def receive: Receive = {
-        case DbActor.ReadLaoData(channel) =>
+        case DbActor.ReadLaoData(_) =>
           sender() ! DbActor.DbActorReadLaoDataAck(laoDataForResultElection)
-        case DbActor.Catchup(channel) =>
+        case DbActor.Catchup(_) =>
           sender() ! DbActor.DbActorCatchupAck(List.empty)
-        case DbActor.ReadSetupElectionMessage(channel) =>
+        case DbActor.ReadSetupElectionMessage(_) =>
           sender() ! DbActor.DbActorReadAck(Some(MESSAGE_SETUPELECTION_WRONG_ID))
       }
     })
@@ -456,7 +454,6 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
   test("Open up an election with invalid Timestamp fails") {
     val dbActorRef = mockDbWorking
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateOpenElection(OPEN_ELECTION_WRONG_TIMESTAMP_RPC)
-    val messageStandardActor: GraphMessage = ElectionValidator.validateOpenElection(OPEN_ELECTION_WRONG_TIMESTAMP_RPC)
     message shouldBe a[Left[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
@@ -680,35 +677,35 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
   }
 
   test("Receiving the result of an election works as intended") {
-    val dbActorRef : AskableActorRef = mockDbForResultElection
+    val dbActorRef: AskableActorRef = mockDbForResultElection
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateResultElection(RESULT_ELECTION_RPC)
     message should equal(Right(RESULT_ELECTION_RPC))
     system.stop(dbActorRef.actorRef)
   }
 
   test("ResultElection with negative number of votes does not work in validateResultElection") {
-    val dbActorRef : AskableActorRef = mockDbForResultElection
+    val dbActorRef: AskableActorRef = mockDbForResultElection
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateResultElection(RESULT_ELECTION_RPC_WRONG)
     message shouldBe a[Left[PipelineError, _]]
     system.stop(dbActorRef.actorRef)
   }
 
   test("ResultElection with number of votes exceeding the number of attendees does not work in validateResultElection") {
-    val dbActorRef : AskableActorRef = mockDbForResultElection
+    val dbActorRef: AskableActorRef = mockDbForResultElection
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateResultElection(RESULT_ELECTION_RPC_TOO_MUCH_VOTES)
     message shouldBe a[Left[PipelineError, _]]
     system.stop(dbActorRef.actorRef)
   }
 
   test("ResultElection with election not ended does not work in validateResultElection ") {
-    val dbActorRef : AskableActorRef = mockDbElectionNotEnded
+    val dbActorRef: AskableActorRef = mockDbElectionNotEnded
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateResultElection(RESULT_ELECTION_RPC)
     message shouldBe a[Left[PipelineError, _]]
     system.stop(dbActorRef.actorRef)
   }
 
   test("ResultElection with invalid question ids does not work in validateResultElection ") {
-    val dbActorRef : AskableActorRef = mockDbForResultElection
+    val dbActorRef: AskableActorRef = mockDbWrongQuestionIds
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateResultElection(RESULT_ELECTION_RPC_WRONG_ID)
     message shouldBe a[Left[PipelineError, _]]
     system.stop(dbActorRef.actorRef)
