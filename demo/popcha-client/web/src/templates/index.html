@@ -37,7 +37,7 @@
     }
     select, option {
         width: 100%;
-        font-family:monospace;
+        font-family: monospace;
         cursor: pointer;
     }
     select, #submitAuthentication {
@@ -76,7 +76,7 @@
 
         <form action="/authenticate">
             <label for="lao-selection">
-                <select id="lao-selection" name="serverAndLaoId"    required>
+                <select id="lao-selection" name="serverAndLaoId" required>
                     <option value="">-- Please choose a lao / serve pair --</option>
                     {% include 'providers.html' %}
                 </select>
