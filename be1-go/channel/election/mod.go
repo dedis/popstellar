@@ -643,6 +643,7 @@ func (c *Channel) broadcastElectionResult() error {
 	}
 
 	c.broadcastToAllClients(electionResultMsg)
+	c.inbox.StoreMessage(electionResultMsg)
 
 	return nil
 }
