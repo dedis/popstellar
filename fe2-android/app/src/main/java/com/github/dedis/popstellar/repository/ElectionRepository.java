@@ -124,23 +124,27 @@ public class ElectionRepository {
    */
   @NonNull
   public Observable<Set<Election>> getElectionsObservableInLao(@NonNull String laoId) {
-    return getLaoElections(laoId).getElectionsSubject(this);
+    return getLaoElections(laoId).getElectionsSubject();
   }
 
   @NonNull
   private synchronized LaoElections getLaoElections(String laoId) {
     // Create the lao elections object if it is not present yet
-    return electionsByLao.computeIfAbsent(laoId, lao -> new LaoElections(laoId));
+    return electionsByLao.computeIfAbsent(laoId, lao -> new LaoElections(this, laoId));
   }
 
   private static final class LaoElections {
+    private final ElectionRepository repository;
     private final String laoId;
+    private boolean alreadyRetrieved = false;
+
     private final Map<String, Election> electionById = new HashMap<>();
     private final Map<String, Subject<Election>> electionSubjects = new HashMap<>();
     private final BehaviorSubject<Set<Election>> electionsSubject =
         BehaviorSubject.createDefault(Collections.emptySet());
 
-    public LaoElections(String laoId) {
+    public LaoElections(ElectionRepository repository, String laoId) {
+      this.repository = repository;
       this.laoId = laoId;
     }
 
@@ -164,9 +168,30 @@ public class ElectionRepository {
       }
     }
 
-    public Observable<Set<Election>> getElectionsSubject(ElectionRepository repository) {
-      // Load in memory the elections from the disk only when the user
-      // clicks on the respective LAO, just needed one time only
+    public Observable<Set<Election>> getElectionsSubject() {
+      loadStorage();
+      return electionsSubject;
+    }
+
+    public Observable<Election> getElectionSubject(@NonNull String electionId)
+        throws UnknownElectionException {
+      Observable<Election> electionObservable = electionSubjects.get(electionId);
+
+      if (electionObservable == null) {
+        throw new UnknownElectionException(electionId);
+      } else {
+        return electionObservable;
+      }
+    }
+
+    /**
+     * Load in memory the elections from the disk only when the user clicks on the respective LAO,
+     * just needed one time only.
+     */
+    private void loadStorage() {
+      if (alreadyRetrieved) {
+        return;
+      }
       repository.disposables.add(
           repository
               .electionDao
@@ -183,18 +208,7 @@ public class ElectionRepository {
                   err ->
                       Timber.tag(TAG)
                           .e(err, "No election found in the storage for lao %s", laoId)));
-      return electionsSubject;
-    }
-
-    public Observable<Election> getElectionSubject(@NonNull String electionId)
-        throws UnknownElectionException {
-      Observable<Election> electionObservable = electionSubjects.get(electionId);
-
-      if (electionObservable == null) {
-        throw new UnknownElectionException(electionId);
-      } else {
-        return electionObservable;
-      }
+      alreadyRetrieved = true;
     }
   }
 }

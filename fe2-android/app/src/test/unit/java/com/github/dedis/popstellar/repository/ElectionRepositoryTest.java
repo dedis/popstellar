@@ -36,14 +36,14 @@ public class ElectionRepositoryTest {
       new Election.ElectionBuilder(LAO_ID, 100321014, "Election")
           .setElectionVersion(ElectionVersion.OPEN_BALLOT)
           .build();
-  private static final Application application = ApplicationProvider.getApplicationContext();
-  private static final AppDatabase appDatabase =
-      AppDatabaseModuleHelper.getAppDatabase(application);
+  private static final Application APPLICATION = ApplicationProvider.getApplicationContext();
+  private static AppDatabase appDatabase;
   private static ElectionRepository repo;
 
   @Before
   public void setup() {
-    repo = new ElectionRepository(appDatabase, application);
+    appDatabase = AppDatabaseModuleHelper.getAppDatabase(APPLICATION);
+    repo = new ElectionRepository(appDatabase, APPLICATION);
   }
 
   @After

@@ -1,6 +1,6 @@
 package com.github.dedis.popstellar.utility.handler;
 
-import android.content.Context;
+import android.app.Application;
 
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -94,8 +94,8 @@ public class TransactionCoinHandlerTest {
       throws GeneralSecurityException, DataHandlingException, IOException, UnknownRollCallException,
           UnknownLaoException, NoRollCallException {
     MockitoAnnotations.openMocks(this);
-    Context context = ApplicationProvider.getApplicationContext();
-    appDatabase = AppDatabaseModuleHelper.getAppDatabase(context);
+    Application application = ApplicationProvider.getApplicationContext();
+    appDatabase = AppDatabaseModuleHelper.getAppDatabase(application);
 
     lenient().when(keyManager.getMainKeyPair()).thenReturn(SENDER_KEY);
     lenient().when(keyManager.getMainPublicKey()).thenReturn(SENDER);
@@ -103,10 +103,9 @@ public class TransactionCoinHandlerTest {
 
     postTransactionCoin = new PostTransactionCoin(TRANSACTION);
 
-    digitalCashRepo = new DigitalCashRepository();
+    digitalCashRepo = new DigitalCashRepository(appDatabase, application);
     DataRegistry dataRegistry = DataRegistryModuleHelper.buildRegistry(digitalCashRepo, keyManager);
-    MessageRepository messageRepo =
-        new MessageRepository(appDatabase, ApplicationProvider.getApplicationContext());
+    MessageRepository messageRepo = new MessageRepository(appDatabase, application);
     gson = JsonModule.provideGson(dataRegistry);
     messageHandler = new MessageHandler(messageRepo, dataRegistry);
 

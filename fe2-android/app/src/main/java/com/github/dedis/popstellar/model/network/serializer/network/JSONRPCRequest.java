@@ -1,4 +1,4 @@
-package com.github.dedis.popstellar.model.network.serializer;
+package com.github.dedis.popstellar.model.network.serializer.network;
 
 import com.google.gson.JsonObject;
 

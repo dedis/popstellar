@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 2,
-    "identityHash": "8793d41bc2b2c494637e6b76c6f5334b",
+    "identityHash": "fba2428170db0d1cc04c54ba7f6bea36",
     "entities": [
       {
         "tableName": "messages",
@@ -197,12 +197,222 @@
           }
         ],
         "foreignKeys": []
+      },
+      {
+        "tableName": "meetings",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`meeting_id` TEXT NOT NULL, `lao_id` TEXT NOT NULL, `meeting` TEXT NOT NULL, PRIMARY KEY(`meeting_id`))",
+        "fields": [
+          {
+            "fieldPath": "meetingId",
+            "columnName": "meeting_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "laoId",
+            "columnName": "lao_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "meeting",
+            "columnName": "meeting",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "meeting_id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [
+          {
+            "name": "index_meetings_lao_id",
+            "unique": false,
+            "columnNames": [
+              "lao_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_meetings_lao_id` ON `${TABLE_NAME}` (`lao_id`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "chirps",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`chirp_id` TEXT NOT NULL, `lao_id` TEXT NOT NULL, `chirp` TEXT NOT NULL, PRIMARY KEY(`chirp_id`))",
+        "fields": [
+          {
+            "fieldPath": "chirpId",
+            "columnName": "chirp_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "laoId",
+            "columnName": "lao_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "chirp",
+            "columnName": "chirp",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "chirp_id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [
+          {
+            "name": "index_chirps_lao_id",
+            "unique": false,
+            "columnNames": [
+              "lao_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_chirps_lao_id` ON `${TABLE_NAME}` (`lao_id`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "reactions",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`reaction_id` TEXT NOT NULL, `chirp_id` TEXT NOT NULL, `reaction` TEXT NOT NULL, PRIMARY KEY(`reaction_id`))",
+        "fields": [
+          {
+            "fieldPath": "reactionId",
+            "columnName": "reaction_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "chirpId",
+            "columnName": "chirp_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "reaction",
+            "columnName": "reaction",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "reaction_id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [
+          {
+            "name": "index_reactions_chirp_id",
+            "unique": false,
+            "columnNames": [
+              "chirp_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_reactions_chirp_id` ON `${TABLE_NAME}` (`chirp_id`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "transactions",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`transaction_id` TEXT NOT NULL, `lao_id` TEXT NOT NULL, `transaction` TEXT NOT NULL, PRIMARY KEY(`transaction_id`))",
+        "fields": [
+          {
+            "fieldPath": "transactionId",
+            "columnName": "transaction_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "laoId",
+            "columnName": "lao_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "transactionObject",
+            "columnName": "transaction",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "transaction_id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [
+          {
+            "name": "index_transactions_lao_id",
+            "unique": false,
+            "columnNames": [
+              "lao_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_transactions_lao_id` ON `${TABLE_NAME}` (`lao_id`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "hash_dictionary",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`hash` TEXT NOT NULL, `public_key` TEXT NOT NULL, `lao_id` TEXT NOT NULL, PRIMARY KEY(`hash`))",
+        "fields": [
+          {
+            "fieldPath": "hash",
+            "columnName": "hash",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "publicKey",
+            "columnName": "public_key",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "laoId",
+            "columnName": "lao_id",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "hash"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [
+          {
+            "name": "index_hash_dictionary_lao_id",
+            "unique": false,
+            "columnNames": [
+              "lao_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_hash_dictionary_lao_id` ON `${TABLE_NAME}` (`lao_id`)"
+          }
+        ],
+        "foreignKeys": []
       }
     ],
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '8793d41bc2b2c494637e6b76c6f5334b')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'fba2428170db0d1cc04c54ba7f6bea36')"
     ]
   }
 }

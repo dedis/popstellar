@@ -34,11 +34,11 @@ public class DataRegistryModuleHelper {
   public static DataRegistry buildRegistry(LAORepository laoRepository, KeyManager keyManager) {
     return buildRegistry(
         laoRepository,
-        new SocialMediaRepository(),
+        new SocialMediaRepository(appDatabase, application),
         new ElectionRepository(appDatabase, application),
         new RollCallRepository(appDatabase, application),
-        new MeetingRepository(),
-        new DigitalCashRepository(),
+        new MeetingRepository(appDatabase, application),
+        new DigitalCashRepository(appDatabase, application),
         new MessageRepository(appDatabase, application),
         keyManager,
         new ServerRepository());
@@ -48,11 +48,11 @@ public class DataRegistryModuleHelper {
       LAORepository laoRepository, KeyManager keyManager, RollCallRepository rollCallRepo) {
     return buildRegistry(
         laoRepository,
-        new SocialMediaRepository(),
+        new SocialMediaRepository(appDatabase, application),
         new ElectionRepository(appDatabase, application),
         rollCallRepo,
-        new MeetingRepository(),
-        new DigitalCashRepository(),
+        new MeetingRepository(appDatabase, application),
+        new DigitalCashRepository(appDatabase, application),
         new MessageRepository(appDatabase, application),
         keyManager,
         new ServerRepository());
@@ -62,11 +62,11 @@ public class DataRegistryModuleHelper {
       LAORepository laoRepository, KeyManager keyManager, MeetingRepository meetingRepo) {
     return buildRegistry(
         laoRepository,
-        new SocialMediaRepository(),
+        new SocialMediaRepository(appDatabase, application),
         new ElectionRepository(appDatabase, application),
         new RollCallRepository(appDatabase, application),
         meetingRepo,
-        new DigitalCashRepository(),
+        new DigitalCashRepository(appDatabase, application),
         new MessageRepository(appDatabase, application),
         keyManager,
         new ServerRepository());
@@ -76,11 +76,11 @@ public class DataRegistryModuleHelper {
       LAORepository laoRepository, ElectionRepository electionRepo, KeyManager keyManager) {
     return buildRegistry(
         laoRepository,
-        new SocialMediaRepository(),
+        new SocialMediaRepository(appDatabase, application),
         electionRepo,
         new RollCallRepository(appDatabase, application),
-        new MeetingRepository(),
-        new DigitalCashRepository(),
+        new MeetingRepository(appDatabase, application),
+        new DigitalCashRepository(appDatabase, application),
         new MessageRepository(appDatabase, application),
         keyManager,
         new ServerRepository());
@@ -93,11 +93,11 @@ public class DataRegistryModuleHelper {
       MessageRepository messageRepo) {
     return buildRegistry(
         laoRepository,
-        new SocialMediaRepository(),
+        new SocialMediaRepository(appDatabase, application),
         electionRepo,
         new RollCallRepository(appDatabase, application),
-        new MeetingRepository(),
-        new DigitalCashRepository(),
+        new MeetingRepository(appDatabase, application),
+        new DigitalCashRepository(appDatabase, application),
         messageRepo,
         keyManager,
         new ServerRepository());
@@ -113,8 +113,8 @@ public class DataRegistryModuleHelper {
         socialMediaRepo,
         new ElectionRepository(appDatabase, application),
         rollCallRepo,
-        new MeetingRepository(),
-        new DigitalCashRepository(),
+        new MeetingRepository(appDatabase, application),
+        new DigitalCashRepository(appDatabase, application),
         new MessageRepository(appDatabase, application),
         keyManager,
         new ServerRepository());
@@ -127,11 +127,11 @@ public class DataRegistryModuleHelper {
       ServerRepository serverRepo) {
     return buildRegistry(
         laoRepo,
-        new SocialMediaRepository(),
+        new SocialMediaRepository(appDatabase, application),
         new ElectionRepository(appDatabase, application),
         new RollCallRepository(appDatabase, application),
-        new MeetingRepository(),
-        new DigitalCashRepository(),
+        new MeetingRepository(appDatabase, application),
+        new DigitalCashRepository(appDatabase, application),
         msgRepo,
         keyManager,
         serverRepo);
@@ -141,10 +141,10 @@ public class DataRegistryModuleHelper {
       DigitalCashRepository digitalCashRepo, KeyManager keyManager) {
     return buildRegistry(
         new LAORepository(appDatabase, application),
-        new SocialMediaRepository(),
+        new SocialMediaRepository(appDatabase, application),
         new ElectionRepository(appDatabase, application),
         new RollCallRepository(appDatabase, application),
-        new MeetingRepository(),
+        new MeetingRepository(appDatabase, application),
         digitalCashRepo,
         new MessageRepository(appDatabase, application),
         keyManager,

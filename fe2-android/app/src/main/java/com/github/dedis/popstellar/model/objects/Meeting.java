@@ -6,8 +6,7 @@ import com.github.dedis.popstellar.model.Immutable;
 import com.github.dedis.popstellar.model.objects.event.*;
 import com.github.dedis.popstellar.utility.security.Hash;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Immutable
 public class Meeting extends Event {
@@ -128,6 +127,40 @@ public class Meeting extends Event {
    */
   public static String generateStateMeetingId(String laoId, long creation, String name) {
     return Hash.hash(EventType.MEETING.getSuffix(), laoId, Long.toString(creation), name);
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    Meeting meeting = (Meeting) o;
+    return creation == meeting.creation
+        && start == meeting.start
+        && end == meeting.end
+        && lastModified == meeting.lastModified
+        && Objects.equals(id, meeting.id)
+        && Objects.equals(name, meeting.name)
+        && Objects.equals(location, meeting.location)
+        && Objects.equals(modificationId, meeting.modificationId)
+        && Objects.equals(modificationSignatures, meeting.modificationSignatures);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(
+        id,
+        name,
+        creation,
+        start,
+        end,
+        location,
+        lastModified,
+        modificationId,
+        modificationSignatures);
   }
 
   @NonNull

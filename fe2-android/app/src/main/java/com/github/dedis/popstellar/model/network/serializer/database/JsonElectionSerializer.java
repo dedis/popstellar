@@ -1,4 +1,4 @@
-package com.github.dedis.popstellar.model.network.serializer;
+package com.github.dedis.popstellar.model.network.serializer.database;
 
 import com.github.dedis.popstellar.model.network.method.message.data.election.*;
 import com.github.dedis.popstellar.model.objects.Channel;
