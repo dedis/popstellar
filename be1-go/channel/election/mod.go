@@ -642,8 +642,8 @@ func (c *Channel) broadcastElectionResult() error {
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
-	c.broadcastToAllClients(electionResultMsg)
 	c.inbox.StoreMessage(electionResultMsg)
+	c.broadcastToAllClients(electionResultMsg)
 
 	return nil
 }
