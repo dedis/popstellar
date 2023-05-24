@@ -70,7 +70,6 @@ public class MultiMsgWebSocketClient extends WebSocketClient {
     Random random = new Random();
     int id = random.nextInt();
     idAssociatedWithSentMessages.put(data, id);
-    System.out.println("Put data: " + data + "with id: " + id);
     Json request =  jsonConverter.publishMessageFromData(data, id, channel);
     System.out.println("The final sent request is : " + request.toString());
     this.send(request.toString());
@@ -154,6 +153,10 @@ public class MultiMsgWebSocketClient extends WebSocketClient {
     return result == null;
   }
 
+  /**
+   * Set the client to take a timeout of the given length
+   * @param timeout the length to timeout
+   */
   public void takeTimeout(long timeout){
     getBuffer().takeTimeout(timeout);
   }

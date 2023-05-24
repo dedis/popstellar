@@ -209,6 +209,29 @@
       * frontend.publish(validElectionOpen, electionChannel)
       * json answer = frontend.getBackendResponse(validElectionOpen)
 
+    @name=cast_vote
+    Scenario: Casts a valid vote
+      * call read('classpath:be/utils/simpleScenarios.feature@name=election_open')
+      * def validCastVote =
+        """
+          {
+            "object": "election",
+            "action": "cast_vote",
+            "lao": "p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=",
+            "election": "rdv-0minecREM9XidNxnQotO7nxtVVnx-Zkmfm7hm2w=",
+            "created_at": 1633098941,
+            "votes": [
+              {
+                "id": "d60B94lVWm84lBHc9RE5H67oH-Ad3O1WFflK3NSY3Yk=",
+                "question": "3iPxJkdUiCgBd0c699KA9tU5U0zNIFau6spXs5Kw6Pg=",
+                "vote": [0]
+              }
+            ]
+          }
+        """
+      * frontend.publish(validCastVote, electionChannel)
+      * json answer = frontend.getBackendResponse(validCastVote)
+
     @name=setup_coin_channel
     Scenario: Sets up the coin channel and subscribes to it
       * call read('classpath:be/utils/simpleScenarios.feature@name=close_roll_call')

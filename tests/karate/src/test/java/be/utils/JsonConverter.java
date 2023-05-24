@@ -19,6 +19,7 @@ public class JsonConverter {
   private boolean isSignatureForced = false;
   private String messageIdForced = "";
 
+  // TODO: remove this constructor once all features are refactored
   public JsonConverter(){
     this.publicKey = "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=";
   }
@@ -36,7 +37,7 @@ public class JsonConverter {
     Json messageData = Json.object();
     messageData.set("method", "publish");
     messageData.set("id", id);
-    Map<String, Object> paramsPart;
+    Map<String, Object> paramsPart = new LinkedHashMap<>();
     try{
     paramsPart = constructParamsField(channel, stringData);
     messageData.set("params", paramsPart);
@@ -57,12 +58,12 @@ public class JsonConverter {
       signature = this.signatureForced;
       isSignatureForced = false;
     }
-    System.out.println("signature used was: " + signature);
+    System.out.println("Signature used was: " + signature);
     String messageId = Hash.hash(messageDataBase64.getBytes(), signature.getBytes());
     String[] witness = new String[0];
 
+    System.out.println("Public key used was : " + publicKey);
     messagePart.put("data", messageDataBase64);
-    System.out.println("publicKey used was : " + publicKey);
     messagePart.put("sender", publicKey);
     messagePart.put("signature", signature);
     messagePart.put("message_id", messageId);

@@ -10,7 +10,7 @@ Feature: Update a LAO
     * call read('classpath:be/mockFrontEnd.feature')
     * call read('classpath:be/constants.feature')
     * call read('classpath:be/utils/simpleScenarios.feature@name=valid_lao')
-    * def frontend = call createFrontend
+    * def frontend = call createMockClient
     * string channel = "/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA="
 
   Scenario: Update Lao should succeed with a valid update request

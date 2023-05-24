@@ -213,7 +213,7 @@ Feature: Create a Roll Call
   Scenario: Roll Call Creation for non existent lao should return an error
     Given def randomLao = organizer.createValidLao()
     And def randomRollCall = organizer.createValidRollCall(randomLao)
-    Given def badCreateRollCall =
+    Given def validCreateRollCall =
       """
         {
           "object": "roll_call",
@@ -227,7 +227,7 @@ Feature: Create a Roll Call
           "description": '#(randomRollCall.description)',
         }
       """
-    When organizer.publish(badCreateRollCall, lao.channel)
-    And json answer = organizer.getBackendResponse(badCreateRollCall)
+    When organizer.publish(validCreateRollCall, randomLao.channel)
+    And json answer = organizer.getBackendResponse(validCreateRollCall)
     Then match answer contains INVALID_MESSAGE_FIELD
     And match organizer.receiveNoMoreResponses() == true

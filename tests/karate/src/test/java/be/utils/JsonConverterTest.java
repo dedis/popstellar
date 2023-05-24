@@ -48,6 +48,7 @@ public class JsonConverterTest {
 
   @Test
   public void constructJsonMessageFromDataCorrespondsToTrueJsonMessage() {
+    // TODO: refactor tests
     String laoDataJsonString = constructJsonDataForValidLao().toString();
     JsonConverter jsonConverter = new JsonConverter();
     Json jsonValidLaoMessage = jsonConverter.publishMessageFromData(laoDataJsonString, 1, "/root");
