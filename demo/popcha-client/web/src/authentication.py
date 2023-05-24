@@ -2,6 +2,8 @@
 This file includes all the authentication logic. No external server logic is
 done here.
 """
+# allows class names to be used as return types inside the class
+# see e.g. https://stackoverflow.com/a/61544901
 from __future__ import annotations
 
 import secrets
