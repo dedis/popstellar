@@ -4,6 +4,7 @@ Test file for main.py
 import pytest
 
 from src import main
+from src.authentication import Authentication
 
 class TestMain:
     """
@@ -32,7 +33,7 @@ class TestMain:
         Fixture that allows to do get request to the server
         """
         main.config = self.config.copy()
-        main.authenticationProvider.providers = self.providers.copy()
+        main.authenticationProvider= Authentication(self.providers.copy())
         main.app.config.update({
             "TESTING": True,
         })

@@ -40,7 +40,7 @@
         font-family:monospace;
         cursor: pointer;
     }
-    select, #submitAuthentication {
+    select, #submit-authentication {
         background-color: #c6d6f1;
         border: none;
         padding: 7px 12px;
@@ -56,11 +56,11 @@
     .important {
         font-weight: bolder;
         color: red;
-        font-size: 0.9em;
+        font-size: 0.9rem;
     }
     .error{
         color: red;
-        font-size: 0.9em;
+        font-size: 0.9rem;
     }
     a {
         cursor: pointer;
@@ -71,8 +71,9 @@
     <div class="dataBox">
         <h1>PoPCHA authentication example</h1>
         <p>More informations<a href="https://github.com/dedis/popstellar">on the project repository.</a></p>
-        <p class="important"> Please note that this is a website designed to be used as an example
-            only</p>
+        <p class="important">
+            Please note that this is a website designed to be used as an example only
+        </p>
 
         <form action="/authenticate">
             <label for="lao-selection">
@@ -81,7 +82,7 @@
                     {% include 'providers.html' %}
                 </select>
             </label>
-            <input type="submit" id="submitAuthentication" value="Submit">
+            <input type="submit" id="submit-authentication" value="Submit">
         </form>
         <p class="error">{{ error }}</p>
     </div>

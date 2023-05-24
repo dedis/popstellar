@@ -18,25 +18,30 @@ class Authentication:
     Class that allows users to authenticate
     """
 
-    def __init__(self):
-        self.providers: list = []
-        self.login_states: dict[(str, str, float)] = {}
+    def __init__(self, providers : list[dict[str, str]]=None):
+        if providers is None:
+            providers = []
+        self.providers: list[dict[str, str]] = providers
+        self.login_states: dict[str, (str, str, float)] = {}
 
     def get_url(self, auth_server:str, lao_id: str, host_server: str, 
                 host_port: str | int, client_id: str) -> str:
         """
         Generates the url to contact the authentication server. It contains all
         the information required by the authentication server
-        :param auth_server: The auth server domain
+        :param auth_server: The domain of the authentication server (OpenID
+        provider)
         :param lao_id: The LAO ID the user wants to connect with
-        :param host_server: The current host server
+        :param host_server: The current host server domain
         :param host_port: The port the host server is running on
         :param client_id: The unique identifier of this client
-        :return: A url to the authentication server
+        :return: A url to the authentication server (Open ID Provider)
         """
         nonce = secrets.token_urlsafe(64)
         state = secrets.token_urlsafe(64)
+
         self.login_states[state] = (nonce, auth_server, time.time())
+
         parameters = {
             "response_mode": "query",
             "response_type": "id_token",
@@ -47,6 +52,7 @@ class Authentication:
             "nonce": nonce,
             "state": state
             }
+
         return f"https://{auth_server}/authorize?{parse.urlencode(parameters)}"
 
     def validate_args(self, args: MultiDict[str, str], client_id: str) \
@@ -64,10 +70,10 @@ class Authentication:
         if missing_arg:
             return None
 
-        if args.get("state") not in self.login_states.keys():
+        if args.get("state") not in self.login_states:
             return
-        nonce_data = self.login_states.pop(args.get("state"))
-        server_pub_key = self.public_key_from_iss(nonce_data[1])
+        nonce, issuer, _  = self.login_states.pop(args.get("state"))
+        server_pub_key = self.public_key_from_iss(issuer)
         try:
             token: dict = jwt.decode(
                 jwt = args.get("id_token", type = str),
@@ -78,15 +84,15 @@ class Authentication:
         except PyJWTError:
             return None
 
-        valid_provided_nonce = (token.get("nonce") == nonce_data[0])
+        valid_provided_nonce = (token.get("nonce") == nonce)
         if not valid_provided_nonce:
             return None
 
-        valid_issuer = nonce_data[1] == token.get("iss")
+        valid_issuer = issuer == token.get("iss")
         if not valid_issuer:
             return None
         user_id: str = token.get("sub")
-        return f"{user_id}@{nonce_data[1]}"
+        return f"{user_id}@{issuer}"
 
     def public_key_from_iss(self, iss: str) -> str:
         """

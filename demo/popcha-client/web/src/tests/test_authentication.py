@@ -23,13 +23,16 @@ class TestQuery:
                 8000,
                 "custom_client_id"
                 )
+
         generated_state = list(authentication.login_states.keys())[0]
         generated_nonce = authentication.login_states.get(generated_state)[0]
+
         reference = "https://server.example/authorize?response_mode=query" \
                     "&response_type=id_token&client_id=custom_client_id&" \
                     "redirect_uri=https%3A%2F%2F127.0.0.1%3A8000%2Fcb&scope=" \
                     "openid+profile&login_hint=custom_lao_id&nonce=" \
                     f"{generated_nonce}&state={generated_state}"
+
         assert reference == url
 
 
@@ -92,6 +95,7 @@ class TestAuthenticationResponse:
                    b"5+3wKt1prUGKEAHtPqC+olDaLwZw1didYotPgaZDwedkcAVSWNHvOkkY" \
                    b"3uMqvKI+CpoxP+uqtdy9tM54sNQjoWdq4LIaWF/nLRy5fM2JAVbAqwPW" \
                    b"6z23YMi4HIsfwuj+d8UZtQIDAQAB\n-----END PUBLIC KEY-----"
+
     domain = "https://server.example.com"
     client_id = "cID122dw"
 
@@ -107,7 +111,7 @@ class TestAuthenticationResponse:
 
     def get_args(self, jwt):
         """
-        No doc
+        Builds an arg object from a jwt
         """
         return MultiDict(
                 {
@@ -123,14 +127,18 @@ class TestAuthenticationResponse:
         Simple fixture
         """
         authentication = Authentication()
+
         authentication.providers = [{
             "domain": self.domain,
             "lao_id": "mmm",
             "public_key": self.pub_key
             }]
+
         authentication.login_states["stat3"] = ("n0nc3",
                                                 self.domain,
-                                                time())
+                                                time()
+                                                )
+
         return authentication
 
     def test_validate_args_validates_a_correct_one(self, authentication):
@@ -138,17 +146,20 @@ class TestAuthenticationResponse:
                 self.claimset, self.priv_key,
                 algorithm = "RS256"
                 )
-        assert (authentication.validate_args(
+        user_id = authentication.validate_args(
                 self.get_args(encoded),
                 self.client_id
                 )
-                == 'ppid12564@https://server.example.com')
+
+        assert (user_id == 'ppid12564@https://server.example.com')
 
     def test_validate_other_systems_token(self, authentication):
-        assert (authentication.validate_args(
+        user_id = authentication.validate_args(
                 self.get_args(self.be1_go_jwt),
                 self.client_id
                 )
+
+        assert (user_id
                 == 'ppid12564@https://server.example.com')
 
     def test_validate_fails_on_missing_required_arg(self, authentication):
@@ -156,6 +167,7 @@ class TestAuthenticationResponse:
                 self.claimset, self.priv_key,
                 algorithm = "RS256"
                 )
+
         args = self.get_args(encoded).pop("token_type")
         assert (authentication.validate_args(args, self.client_id) is None)
 
@@ -163,6 +175,7 @@ class TestAuthenticationResponse:
         encoded = jwt.encode(self.claimset, self.priv_key, algorithm = "RS256")
         args = self.get_args(encoded)
         args["state"] = "wrong state"
+
         assert (authentication.validate_args(
                 args,
                 self.client_id

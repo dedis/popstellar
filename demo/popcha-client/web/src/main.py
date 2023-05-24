@@ -6,7 +6,6 @@ import json
 from os import path
 import secrets
 import urllib.parse
-from typing import IO
 
 from flask import Flask, redirect, request, Response, render_template
 from flask_wtf import CSRFProtect
@@ -23,29 +22,31 @@ app = Flask("Example_authentication_server",
             )
 
 
-def check_config(config_file: IO) -> bool:
+def validate_config(configuration: dict[str, str]) -> dict[str, str]:
     """
-    Checks that the global config file is valid. Updates the updatable
-    parameters in the file.
-    :param config_file:  the file where the configuration is written
-    :return: True if the configurations is valid
+    Checks that the global config file is valid. Returns the missing /
+    updatable parameters
+    :param configuration:  the file where the configuration is written
+    :return: A dictionary containing the change in the configuration. This
+    function might throw error if needed.
     """
-    if "client_id" not in config.keys() or config["client_id"] == '':
-        config["client_id"] = secrets.token_urlsafe(32)
-        config_file.seek(0)
-        config_file.write(json.dumps(config))
-        return False
-    if "host_url" not in config.keys() or config["host_url"] == "":
+
+    if "client_id" not in configuration or configuration["client_id"] == "":
+        return {"client_id": secrets.token_urlsafe(32)}
+
+    if "host_url" not in configuration or configuration["host_url"] == "":
         raise ValueError(
                 "The \"server_url\" property should be set in "
                 "config.json and not empty"
                 )
-    if "host_port" not in config.keys() or config["host_port"] < 1:
+
+    if "host_port" not in configuration or configuration["host_port"] < 1:
         raise ValueError(
                 "The \"server_port\" should be set in config.json "
                 "and greater than 0"
                 )
-    return True
+
+    return {}
 
 
 def check_provider(provider: dict) -> bool:
@@ -55,11 +56,15 @@ def check_provider(provider: dict) -> bool:
     :param provider: The provider to check
     :return: True if the provider is valid
     """
+    # 44 is the length of the string representing a lao id
     valid_lao_id = (("lao_id" in provider) and (len(provider["lao_id"]) == 44)
                     and provider["lao_id"].endswith("="))
+
     valid_domain = (("domain" in provider) and ('/' not in provider["domain"])
                     and not provider["domain"].startswith("http"))
+
     valid_public_key = len(provider["public_key"]) > 0
+
     return valid_lao_id and valid_domain and valid_public_key
 
 
@@ -83,6 +88,7 @@ def load_providers() -> list:
             "../data/providers.json"
             )
         )
+
     with open(provider_path) as provider_file:
         return json.loads(provider_file.read())
 
@@ -95,27 +101,30 @@ def on_startup() -> None:
     homepage HTML code or the
     """
     global config, core_app, authenticationProvider
+
     csrf = CSRFProtect()
     csrf.init_app(app)
-    core_app = CounterApp()
-    authenticationProvider = Authentication()
+
     providers = load_providers()
-    authenticationProvider.providers = filter_providers(providers)
+
+    core_app = CounterApp()
+    authenticationProvider = Authentication(filter_providers(providers))
     config_path = path.normpath(
         path.join(
             path.dirname(__file__),
             "../data/config.json"
             )
         )
+
     with open(config_path, "r+") as config_file:
         config = json.loads(config_file.read())
-        if not check_config(config_file):
+
+        config_modifications = validate_config(config)
+        if len(config_modifications) != 0:
+            config.update(config_modifications)
             config_file.seek(0)
             config_file.write(json.dumps(config))
-
-
-on_startup()
-
+            print("Your app configuration has been updated in data/config.json")
 
 # Step1: Returns the homepage
 @app.get("/")
@@ -124,14 +133,17 @@ def root() -> str:
     Get the homepage.
     :return: The homepage HTML
     """
-    providers_string = [f'{provider.get("lao_id")}@{provider.get("domain")}'
+    providers_strings = [f'{provider.get("lao_id")}@{provider.get("domain")}'
         for provider in authenticationProvider.providers]
+
     error: str = ""
+
     if "error" in request.args:
         error = f'Error: {request.args.get("error", default = "", type = str)}'
+
     return render_template(
             'index.html',
-            providers = providers_string,
+            providers = providers_strings,
             error = error
             )
 
@@ -143,15 +155,18 @@ def authentication() -> Response:
     Redirect the user to the PoPCHA based authentication server
     :return: A response which includes a redirect to the original website
     """
-    provider_id: int = request.args.get("serverAndLaoId", -1, type = int)
+    provider_id: int = request.args.get("serverAndLaoId", default = -1,
+                                        type = int)
     if provider_id < 0:  # if serverAndLaoId is not an int
         return redirect("/")
+
     url = authenticationProvider.get_url(
             authenticationProvider.providers[provider_id]["domain"],
             authenticationProvider.providers[provider_id]["lao_id"],
             config["host_url"],
             config["host_port"],
             config["client_id"])
+
     return redirect(url)
 
 
@@ -166,6 +181,7 @@ def authentication_callback() -> Response:
     user_id: str = authenticationProvider.validate_args(
             request.args, config[
                 "client_id"], )
+
     if user_id is not None:
         params = urllib.parse.urlencode(core_app.get_new_login_params(user_id))
         return redirect(f'/app?{params}')
@@ -180,11 +196,13 @@ def app_route():
     :return: The HTML data returned based on the app module logic or a
     redirection if this path is called without valid query arguments
     """
-    html: str = core_app.process(request.args)
-    if html == "":
+    try:
+        html: str = core_app.process(request.args)
+
+    except ValueError:
         return redirect("/")
-    else:
-        return html
+
+    return html
 
 
 # WARNING: This code is used since it is an example app, but it is UNSAFE
@@ -198,15 +216,18 @@ def add_provider():
     args = request.args
     valid_request = ("domain" in args and "lao_id" in args
                      and "public_key" in args)
+
     if valid_request:
         provider = {
             "domain": args["domain"],
             "lao_id": args["lao_id"],
             "public_key": args["public_key"]
             }
+
         if check_provider(provider):
             authenticationProvider.providers.append(provider)
             return redirect("/")
+
     return redirect("/?error=Invalid%20provider")
 
 
@@ -214,6 +235,7 @@ def run():
     """
     Launches the flask server
     """
+    on_startup()
     app.run(host = config["host_url"], port = config["host_port"], debug = True)
 
 

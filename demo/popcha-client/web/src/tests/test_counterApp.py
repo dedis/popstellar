@@ -13,6 +13,8 @@ class TestCounterApp:
     Test class for the Counter App
     """
 
+    custom_user_id = "custom user id"
+
     @pytest.fixture
     def app(self):
         """
@@ -24,7 +26,7 @@ class TestCounterApp:
         """
         Tests the function if it is a new user
         """
-        params = app.get_new_login_params("custom user id")
+        params = app.get_new_login_params(self.custom_user_id)
         assert "nonce" in params
         assert len(app.app_nonces) == 1
         assert len(app.app_data) == 1
@@ -33,15 +35,16 @@ class TestCounterApp:
         """
         Tests the function the users already registered using this user_id
         """
-        app.get_new_login_params("custom user id")
-        params = app.get_new_login_params("custom user id")
+        app.get_new_login_params(self.custom_user_id)
+        params = app.get_new_login_params(self.custom_user_id)
         assert "nonce" in params
         assert len(app.app_nonces) == 2
         assert len(app.app_data) == 1
 
     def test_invalid_nonce(self, app):
         args = MultiDict({"nonce": "invalid nonce"})
-        assert app.process(args) == ""
+        with pytest.raises(ValueError):
+            app.process(args)
 
     def test_valid_nonce_incrementation(self, app):
         with flask_app.app_context():
