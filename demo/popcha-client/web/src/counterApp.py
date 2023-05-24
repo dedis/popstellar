@@ -61,5 +61,5 @@ class CounterApp:
 
         return render_template(
             'counterApp.html', nonce = new_nonce,
-            counter = str(self.app_data[user_id[0]])
+            counter = str(self.app_data[user_id])
             )
