@@ -1,20 +1,19 @@
 package ch.epfl.pop.pubsub.graph.validators
 
 import akka.pattern.AskableActorRef
-import ch.epfl.pop.model.network.{JsonRpcMessage, JsonRpcRequest}
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.popcha.Authenticate
-import ch.epfl.pop.model.objects.{Base64Data, Channel, Hash, PublicKey, Signature}
-import ch.epfl.pop.pubsub.graph.validators.CoinValidator.validationErrorNoMessage
+import ch.epfl.pop.model.network.{JsonRpcMessage, JsonRpcRequest}
+import ch.epfl.pop.model.objects._
+import ch.epfl.pop.pubsub.PublishSubscribe
 import ch.epfl.pop.pubsub.graph.validators.MessageValidator.{checkAttendee, extractData}
 import ch.epfl.pop.pubsub.graph.{GraphMessage, PipelineError}
-import ch.epfl.pop.storage.DbActor
 
 /** Validator for Popcha messages' data contents
   */
 case object PopchaValidator extends MessageDataContentValidator {
 
-  private val popchaValidator = new PopchaValidator(DbActor.getInstance)
+  private val popchaValidator = new PopchaValidator(PublishSubscribe.getDbActorRef)
 
   /** Validates a Popcha Authenticate message data content
     * @param rpcMessage
