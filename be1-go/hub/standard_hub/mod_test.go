@@ -111,7 +111,7 @@ func Test_Create_LAO_Bad_Key(t *testing.T) {
 		Message: publishBuf,
 	})
 
-	assert.Contains(t, sock.err.Error(), "access denied: sender's public key does not match the organizer's")
+	assert.Contains(t, sock.err.Error(), "access denied: sender's public key does not match the owner's")
 }
 
 func Test_Create_LAO_Different_Sender_And_Organizer_Keys(t *testing.T) {
