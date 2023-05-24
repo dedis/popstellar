@@ -11,29 +11,56 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class BackEndTest {
 
   /**
-   * This test will execute all back-end tests with the Go back-end
+   * This test will execute the tests for back-ends connected to a frontend with the Go back-end
    * It will not generate a clean report, but it can be used in development
    *
    * @return the Karate builder
    */
   @Karate.Test
-  Karate testGo() {
+  Karate testGoWithFrontend() {
     return Karate.run()
       .relativeTo(getClass())
-      .karateEnv("go");
+      .karateEnv("go_client");
+  }
+
+
+  /**
+   * This test will execute the tests for back-ends connected to another backend with the Go back-end
+   * It will not generate a clean report, but it can be used in development
+   *
+   * @return the Karate builder
+   */
+  @Karate.Test
+  Karate testGoWithServer() {
+    return Karate.run()
+      .relativeTo(getClass())
+      .karateEnv("go_server");
   }
 
   /**
-   * This test will execute all back-end tests with the Scala back-end
+   * This test will execute the tests for back-ends connected to a frontend with the Scala back-end
    * It will not generate a clean report, but it can be used in development
    *
    * @return the Karate builder
    */
   @Karate.Test
-  Karate testScala() {
+  Karate testScalaWithFrontend() {
     return Karate.run()
       .relativeTo(getClass())
-      .karateEnv("scala");
+      .karateEnv("scala_client");
+  }
+
+  /**
+   * This test will execute the tests for back-ends connected to another backend with the Scala back-end
+   * It will not generate a clean report, but it can be used in development
+   *
+   * @return the Karate builder
+   */
+  @Karate.Test
+  Karate testScalaWithServer() {
+    return Karate.run()
+      .relativeTo(getClass())
+      .karateEnv("scala_server");
   }
 
   /**

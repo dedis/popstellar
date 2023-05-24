@@ -1,4 +1,4 @@
-@env=go,scala
+@env=go_client,scala_client
 Feature: Simple Transactions for digital cash
   Background:
       # This feature will be called to test some simple transactions

@@ -2,7 +2,7 @@ function fn() {
   var env = karate.env; // get system property 'karate.env'
   karate.log('karate.env system property was:', env);
   if (!env) {
-    env = 'go'
+    env = 'go_client'
   }
   karate.log('karate.env system property is set to', env);
   var config = {
@@ -14,13 +14,25 @@ function fn() {
     timeout: 5000, //Timeout for websocket response
     args: [],
   }
-  if (env === 'go') {
+  if (env === 'go_client') {
     // customize
     config.host = '127.0.0.1';
     config.port = 9000;
     config.path = 'client';
     config.wsURL = `ws://${config.host}:${config.port}/${config.path}`;
-  } else if (env === 'scala') {
+  } else if (env === 'go_server') {
+    // customize
+    config.host = '127.0.0.1';
+    config.port = 9001;
+    config.path = 'server';
+    config.wsURL = `ws://${config.host}:${config.port}/${config.path}`;
+  } else if (env === 'scala_client') {
+    // customize
+    config.host = '127.0.0.1';
+    config.port = 8000;
+    config.path = 'client';
+    config.wsURL = `ws://${config.host}:${config.port}/${config.path}`;
+  } else if (env === 'scala_server') {
     // customize
     config.host = '127.0.0.1';
     config.port = 8000;

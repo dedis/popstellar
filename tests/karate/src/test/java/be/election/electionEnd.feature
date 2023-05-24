@@ -1,4 +1,4 @@
-@env=go,scala
+@env=go_client,scala_client
 Feature: Terminate an election
   Background:
         # This feature will be called to test End Election

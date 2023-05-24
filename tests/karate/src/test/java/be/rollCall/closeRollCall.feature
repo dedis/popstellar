@@ -1,4 +1,4 @@
-@env=go,scala
+@env=go_client,scala_client
 Feature: Close a Roll Call
   Background:
         # This feature will be called to test Roll Call close
@@ -51,7 +51,7 @@ Feature: Close a Roll Call
         }
       """
     * frontend.changeSenderToBeNonAttendee()
-    When frontend.publish((validCloseRollCall, laoChannel)
+    When frontend.publish(validCloseRollCall, laoChannel)
     And json answer = frontend.getBackendResponse(validCloseRollCall)
     Then match answer contains INVALID_MESSAGE_FIELD
     And match frontend.receiveNoMoreResponses() == true

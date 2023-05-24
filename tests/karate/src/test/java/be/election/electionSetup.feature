@@ -1,4 +1,4 @@
-@env=go,scala
+@env=go_client,scala_client
 Feature: Setup an Election
   Background:
         # This feature will be called to test Election Setup
