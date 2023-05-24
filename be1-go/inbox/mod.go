@@ -14,7 +14,7 @@ type messageInfo struct {
 	storedTime int64
 }
 
-// Inbox represents an in-memory data store to record incoming messages.
+// Inbox represents an in-memory data store to record messages.
 type Inbox struct {
 	mutex             sync.RWMutex
 	msgsMap           map[string]*messageInfo
