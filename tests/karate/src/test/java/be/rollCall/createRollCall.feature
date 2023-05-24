@@ -1,26 +1,21 @@
 @env=go,scala
 Feature: Create a Roll Call
-  Background:
-      # This feature will be called to test a Roll Call Creation
-      # The following calls makes this feature, mockFrontEnd.feature and server.feature
-      # share the same scope
-      # For every test a file containing the json representation of the message is read
-      # and is sent to the backend this is done via :
-      # eval frontend.send(<message>) where a mock frontend sends a message to backend
-      # Then the response sent by the backend and stored in a buffer :
-      # json response = frontend_buffer.takeTimeout(timeout)
-      # and checked if it contains the desired fields with :
-      # match response contains deep <desired fields>
 
-    # The following calls makes this feature, mockFrontEnd.feature and server.feature share the same scope
+  Background:
+
+    # This feature will be called to test LAO creation
+    # Call read(...) makes this feature and the called feature share the same scope
+    # Meaning they share def variables, configurations ...
+    # Especially JS functions defined can be directly used here thanks to Karate shared scopes
     * call read('classpath:be/utils/server.feature')
     * call read('classpath:be/mockClient.feature')
     * call read('classpath:be/constants.feature')
-    * def random =  Java.type('be.utils.RandomUtils')
     * def organizer = call createMockClient
     * def lao = organizer.createValidLao()
     * def validRollCall = organizer.createValidRollCall(lao)
-     # This call creates a valid lao before every scenario
+
+    # This call executes all the steps to create a valid lao on the server before every scenario
+    # (lao creation, subscribe, catchup)
     * call read('classpath:be/utils/simpleScenarios.feature@name=valid_lao') { organizer: '#(organizer)', lao: '#(lao)' }
 
   # Testing if after setting up a valid lao, subscribing to it and sending a catchup

@@ -40,6 +40,13 @@ public class RandomUtils {
     String randomLaoId = generateLaoId();
     return RollCall.generateCreateRollCallId(randomLaoId, 1, "some name");
   }
+  /**
+   * @return generate a random open roll call id
+   */
+  public static String generateOpenRollCallId(){
+    String randomLaoId = generateLaoId();
+    return RollCall.generateOpenRollCallId(randomLaoId, "roll call id", 1);
+  }
 
   /**
    * @return generate a random valid name for a lao or roll call

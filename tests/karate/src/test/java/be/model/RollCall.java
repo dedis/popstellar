@@ -2,6 +2,8 @@ package be.model;
 
 import be.utils.Hash;
 
+import java.time.Instant;
+
 /** Models a roll call in a pop lao */
 public class RollCall {
   public String id;
@@ -113,6 +115,28 @@ public class RollCall {
    */
   public static String generateCloseRollCallId(String laoId, String closes, long closedAt) {
     return Hash.hash(ROLL_CALL_SUFFIX, laoId, closes, Long.toString(closedAt));
+  }
+
+  /**
+   * @return an object containing the data to create a valid open roll call message for this roll call
+   */
+  public RollCallOpen open(){
+    long openedAt = Instant.now().getEpochSecond();
+    String updateId = generateOpenRollCallId(laoId, id, openedAt);
+    return new RollCallOpen(updateId , id, openedAt);
+  }
+
+  /** Contains the data to create a valid open roll call message for this roll call */
+  public static class RollCallOpen{
+    public String updateId;
+    public String opens;
+    public long openedAt;
+
+    public RollCallOpen(String updateId, String opens, long openedAt){
+      this.updateId = updateId;
+      this.opens = opens;
+      this.openedAt = openedAt;
+    }
   }
 }
 

@@ -238,3 +238,4 @@ Feature: Constants
     * def ELECTION_RESULTS =        {"object": "election", "action": "result"}
 
     * def rootChannel = '/root'
+    * def random = Java.type('be.utils.RandomUtils')

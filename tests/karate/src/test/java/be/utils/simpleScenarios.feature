@@ -15,7 +15,7 @@
       * def castVoteId = 41
       * def frontend = call createMockClient
 
-     # organizer and lao need to be passed as arguments when calling this scenario
+    # organizer and lao need to be passed as arguments when calling this scenario
     @name=valid_lao
     Scenario: Creates valid lao
       Given def laoCreateRequest =
@@ -68,25 +68,27 @@
       * def catchup_response = organizer.takeTimeout(timeout)
       * karate.log("catchup message received : " + catchup_response)
 
+    # organizer, lao and rollCall need to be passed as arguments when calling this scenario
     @name=valid_roll_call
     Scenario: Creates a valid Roll Call
-      * call read('classpath:be/utils/simpleScenarios.feature@name=valid_lao')
+      * call read('classpath:be/utils/simpleScenarios.feature@name=valid_lao') { organizer: '#(organizer)', lao: '#(lao)' }
       * def validCreateRollCall =
-        """
-          {
+         """
+           {
             "object": "roll_call",
             "action": "create",
-            "id": "VSsRrcHoOTQJ-nU_VT_FakiMkezZA86z2UHNZKCxbN8=",
-            "name": "Roll Call 2",
-            "creation": 1633098863,
-            "proposed_start": 1633099126,
-            "proposed_end": 1633099141,
-            "location": "EPFL cafeteria",
-            "description": "Food is welcome anytime!"
-          }
-        """
-      * frontend.publish(validCreateRollCall, laoChannel)
-      * json answer = frontend.getBackendResponse(validCreateRollCall)
+            "id": '#(rollCall.id)',
+            "name": '#(rollCall.name)',
+            "creation": '#(rollCall.creation)',
+            "proposed_start": '#(rollCall.start)',
+            "proposed_end": '#(rollCall.end)',
+            "location": '#(rollCall.location)',
+            "description": '#(rollCall.description)',
+           }
+         """
+      * karate.log("sending a roll call create request : ", karate.pretty(validCreateRollCall))
+      * organizer.publish(validCreateRollCall, lao.channel)
+      * json answer = organizer.getBackendResponse(validCreateRollCall)
 
     @name=open_roll_call
     Scenario: Opens a valid Roll Call
