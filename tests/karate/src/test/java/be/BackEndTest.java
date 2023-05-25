@@ -25,7 +25,7 @@ public class BackEndTest {
 
 
   /**
-   * This test will execute the tests for back-ends connected to another backend with the Go back-end
+   * This test will execute the tests for back-ends connected to another back-end with the Go back-end
    * It will not generate a clean report, but it can be used in development
    *
    * @return the Karate builder
@@ -51,7 +51,7 @@ public class BackEndTest {
   }
 
   /**
-   * This test will execute the tests for back-ends connected to another backend with the Scala back-end
+   * This test will execute the tests for back-ends connected to another back-end with the Scala back-end
    * It will not generate a clean report, but it can be used in development
    *
    * @return the Karate builder
