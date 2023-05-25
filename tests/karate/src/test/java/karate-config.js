@@ -35,7 +35,7 @@ function fn() {
   } else if (env === 'scala_server') {
     // customize
     config.host = '127.0.0.1';
-    config.port = 8000;
+    config.port = 8000; // Scala back-end does not have a specific server port
     config.path = 'server';
     config.wsURL = `ws://${config.host}:${config.port}/${config.path}`;
   } else {
