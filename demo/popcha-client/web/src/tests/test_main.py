@@ -17,14 +17,18 @@ class TestMain:
       }, 
       {
         "domain": "valid2.server.example:8000",
-        "lao_id": "5ie-bfxMwsqCtZRY1WuQzhturCoQ3MIvCyX5yAhsyvQ=",
+        "lao_id": "invalid.laod.id",
         "public_key": "ddd"
-      }]
+      },
+        {
+        "invalid": "provider"
+        }]
 
     config = {
         "client_id": "rILOsh19WmpMrZKy2MTWy8vcwitQR0gGEmYQL1d-nis",
-        "host_url": "127.0.0.1",
-        "host_port": 8000
+        "public_domain": "127.0.0.1",
+        "public_port": 8000,
+        "local_port": 8080
         }
     
     @pytest.fixture
@@ -42,8 +46,8 @@ class TestMain:
     def test_root_page_without_error(self, client):
         with main.app.app_context():
             response = client.get("/")
-            assert (b'<option value="1">5ie-bfxMwsqCtZRY1WuQzhturCoQ3MIvCyX5yAh'
-                    b'syvQ=@valid2.server.example:8000</option>' in response.data)
+            assert (b'<option value="0">1SZa21kpmmlkjuIJ2WqB9-C3v7GfU3dkga1yz1x'
+                    b'uhdo=@valid.example</option>' in response.data)
     
     def test_root_page_with_error(self, client):
         response = client.get("/", query_string={"error": "custom error"})
@@ -61,3 +65,35 @@ class TestMain:
                response.location)
         assert ("login_hint=1SZa21kpmmlkjuIJ2WqB9-C3v7GfU3dkga1yz1xuhdo%3D" 
                 in response.location)
+
+    def test_validate_config_on_correct_one(self):
+        config_modifications = main.validate_config(self.config)
+        assert len(config_modifications) == 0
+
+    def test_validate_config_on_missing_client_id(self):
+        input_config = self.config.copy()
+        input_config.pop("client_id")
+        config_modifications = main.validate_config(input_config)
+        assert len(config_modifications) == 1
+        assert "client_id" in config_modifications
+
+    def test_validate_config_on_missing_public_port(self):
+        with pytest.raises(ValueError):
+            input_config = self.config.copy()
+            input_config.pop("public_port")
+            main.validate_config(input_config)
+
+    def test_validate_config_on_missing_public_domain(self):
+        with pytest.raises(ValueError):
+            input_config = self.config.copy()
+            input_config.pop("public_domain")
+            main.validate_config(input_config)
+
+    def test_validate_config_on_missing_local_port(self):
+        with pytest.raises(ValueError):
+            input_config = self.config.copy()
+            input_config.pop("local_port")
+            main.validate_config(input_config)
+
+    def test_filter_providers_correct_length(self):
+        assert len(main.filter_providers(self.providers)) == 1

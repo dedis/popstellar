@@ -2,6 +2,8 @@
 This files includes the basis of the example server. Here are managed all
 HTTP/S requests.
 """
+from __future__ import annotations
+
 import json
 from os import path
 import secrets
@@ -14,7 +16,7 @@ from src.counterApp import CounterApp
 from src.authentication import Authentication
 
 # Define the global variables
-config: dict = {}
+config: dict[str, str | int] = {}
 core_app: CounterApp
 authenticationProvider: Authentication
 app = Flask("Example_authentication_server",
@@ -22,7 +24,7 @@ app = Flask("Example_authentication_server",
             )
 
 
-def validate_config(configuration: dict[str, str]) -> dict[str, str]:
+def validate_config(configuration: dict[str, str | int]) -> dict[str, str]:
     """
     Checks that the global config file is valid. Returns the missing /
     updatable parameters
@@ -30,21 +32,34 @@ def validate_config(configuration: dict[str, str]) -> dict[str, str]:
     :return: A dictionary containing the change in the configuration. This
     function might throw error if needed.
     """
-
-    if "client_id" not in configuration or configuration["client_id"] == "":
+    is_client_id_valid = ("client_id" not in configuration or
+                          configuration["client_id"] == "")
+    if is_client_id_valid:
         return {"client_id": secrets.token_urlsafe(32)}
 
-    if "host_url" not in configuration or configuration["host_url"] == "":
+    is_public_domain_valid = ("public_domain" not in configuration or
+                           configuration["public_domain"] == "")
+    if is_public_domain_valid:
         raise ValueError(
-                "The \"server_url\" property should be set in "
+                "The \"public_domain\" property should be set in "
                 "config.json and not empty"
                 )
 
-    if "host_port" not in configuration or configuration["host_port"] < 1:
+    is_public_port_valid = ("public_port" not in configuration or
+                            configuration["public_port"] < 1)
+    if is_public_port_valid:
         raise ValueError(
-                "The \"server_port\" should be set in config.json "
+                "The \"public_port\" should be set in config.json "
                 "and greater than 0"
                 )
+
+    is_local_port_valid = ("local_port" not in configuration or
+                           configuration["local_port"] < 1)
+    if is_local_port_valid:
+        raise ValueError(
+            "The \"local_port\" should be set in config.json "
+            "and greater than 0"
+        )
 
     return {}
 
@@ -63,7 +78,8 @@ def check_provider(provider: dict) -> bool:
     valid_domain = (("domain" in provider) and ('/' not in provider["domain"])
                     and not provider["domain"].startswith("http"))
 
-    valid_public_key = len(provider["public_key"]) > 0
+    valid_public_key = ("public_key" in provider and
+                        len(provider["public_key"]) > 0)
 
     return valid_lao_id and valid_domain and valid_public_key
 
@@ -163,8 +179,8 @@ def authentication() -> Response:
     url = authenticationProvider.get_url(
             authenticationProvider.providers[provider_id]["domain"],
             authenticationProvider.providers[provider_id]["lao_id"],
-            config["host_url"],
-            config["host_port"],
+            config["public_domain"],
+            config["public_port"],
             config["client_id"])
 
     return redirect(url)
@@ -236,7 +252,7 @@ def run():
     Launches the flask server
     """
     on_startup()
-    app.run(host = config["host_url"], port = config["host_port"], debug = True)
+    app.run(port = config["local_port"], debug = True)
 
 
 # Step 0: Starts the server

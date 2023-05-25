@@ -1,1 +1,1 @@
-{"client_id":"", "host_url": "example.com", "host_port": 8080}
+{"client_id":"", "public_domain": "example.com", "public_port": 8080,"local_port": 8080}
