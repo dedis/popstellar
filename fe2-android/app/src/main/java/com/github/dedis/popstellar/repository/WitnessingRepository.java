@@ -192,7 +192,7 @@ public class WitnessingRepository {
   public void performActionWhenWitnessThresholdReached(
       String laoId, MessageID messageId, Runnable action) throws UnknownWitnessMessageException {
     // Special case : there's no witness, so the observable won't be updated, thus we need to check
-    if (getLaoWitness(laoId).isWitnessEmpty()) {
+    if (areWitnessesEmpty(laoId)) {
       action.run();
       return;
     }
@@ -204,10 +204,20 @@ public class WitnessingRepository {
                 witnessMessage -> {
                   // Perform the action ONLY when the witnessing policy is satisfied (only once)
                   if (!pass.get() && isAcceptedByWitnesses(laoId, messageId)) {
+                    Timber.tag(TAG)
+                        .d(
+                            "The message %s has received enough signatures and it's now processed",
+                            messageId);
                     action.run();
                     pass.set(true);
                   }
-                }));
+                },
+                err ->
+                    Timber.tag(TAG)
+                        .e(
+                            err,
+                            "Error in observing the update of a witness message in lao %s",
+                            laoId)));
   }
 
   /**

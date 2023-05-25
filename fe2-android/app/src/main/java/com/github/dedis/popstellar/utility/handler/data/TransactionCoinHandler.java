@@ -39,7 +39,7 @@ public class TransactionCoinHandler {
    */
   public void handlePostTransactionCoin(
       HandlerContext context, PostTransactionCoin postTransactionCoin)
-      throws NoRollCallException, UnknownWitnessMessageException {
+      throws UnknownWitnessMessageException {
     Channel channel = context.getChannel();
     MessageID messageId = context.getMessageId();
 

@@ -103,7 +103,7 @@ public class WitnessingViewModel extends AndroidViewModel implements QRCodeScann
             .getWitnessesObservableInLao(laoId)
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
-                witnesses -> setWitnesses(new ArrayList<>(witnesses)),
+                witnessesSet -> setWitnesses(new ArrayList<>(witnessesSet)),
                 error ->
                     Timber.tag(TAG).d(error, "Error in updating the witnesses of lao %s", laoId)),
         witnessingRepo

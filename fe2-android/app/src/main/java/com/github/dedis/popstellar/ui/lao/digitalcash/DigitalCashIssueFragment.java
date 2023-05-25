@@ -16,7 +16,6 @@ import com.github.dedis.popstellar.ui.lao.LaoActivity;
 import com.github.dedis.popstellar.ui.lao.LaoViewModel;
 import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
-import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
 
@@ -103,8 +102,6 @@ public class DigitalCashIssueFragment extends Fragment {
         }
       } catch (NoRollCallException r) {
         ErrorUtils.logAndShow(requireContext(), TAG, r, R.string.no_rollcall_exception);
-      } catch (UnknownLaoException e) {
-        ErrorUtils.logAndShow(requireContext(), TAG, e, R.string.unknown_lao_exception);
       }
     }
   }
@@ -120,7 +117,7 @@ public class DigitalCashIssueFragment extends Fragment {
 
   public Map<String, String> computeMapForPostTransaction(
       String currentAmount, String currentPublicKeySelected, int radioGroup)
-      throws NoRollCallException, UnknownLaoException {
+      throws NoRollCallException {
     if (radioGroup == DigitalCashViewModel.NOTHING_SELECTED) {
       // In unlikely event that no radiobutton are selected, it do as if the first one was selected
       return Collections.singletonMap(currentPublicKeySelected, currentAmount);
