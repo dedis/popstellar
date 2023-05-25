@@ -21,7 +21,7 @@
   <dimen name="margin_top_title">50dp</dimen>
 
   <!--  Home -->
-  <dimen name="home_button_horizontal_margin">30dp</dimen>
+  <dimen name="home_button_horizontal_margin">20dp</dimen>
   <dimen name="home_button_vertical_margin">30dp</dimen>
   <dimen name="home_witness_list_height">150dp</dimen>
 
@@ -39,7 +39,8 @@
   <!-- Button -->
   <dimen name="standard_button_height">55dp</dimen>
   <dimen name="standard_button_width">105dp</dimen>
-  <dimen name="small_button_width">90dp</dimen>
+  <dimen name="small_button_width">95dp</dimen>
+  <dimen name="large_button_width">125dp</dimen>
   <dimen name="standard_button_text_size">16dp</dimen>
   <dimen name="big_button_text_size">22sp</dimen>
 
