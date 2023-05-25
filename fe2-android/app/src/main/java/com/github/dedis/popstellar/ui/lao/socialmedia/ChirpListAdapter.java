@@ -41,7 +41,7 @@ public class ChirpListAdapter extends BaseAdapter {
   private final LayoutInflater layoutInflater;
   private List<Chirp> chirps;
 
-  private CompositeDisposable disposables = new CompositeDisposable();
+  private final CompositeDisposable disposables = new CompositeDisposable();
 
   public ChirpListAdapter(
       Context context, SocialMediaViewModel socialMediaViewModel, LaoViewModel viewModel) {
@@ -59,7 +59,8 @@ public class ChirpListAdapter extends BaseAdapter {
   }
 
   public void replaceList(List<Chirp> chirps) {
-    disposables.clear(); // Dispose of previous observables
+    // Dispose of previous observables
+    disposables.clear();
     this.chirps = chirps;
     notifyDataSetChanged();
   }
@@ -99,6 +100,12 @@ public class ChirpListAdapter extends BaseAdapter {
       chirpView.findViewById(R.id.chirp_card_buttons).setVisibility(View.GONE);
     }
 
+    // Dispose of previous observables for the chirp at this position
+    Disposable previousDisposable = (Disposable) chirpView.getTag(R.id.chirp_card_buttons);
+    if (previousDisposable != null) {
+      previousDisposable.dispose();
+    }
+
     PublicKey sender = chirp.getSender();
     long timestamp = chirp.getTimestamp();
     String text;
@@ -113,12 +120,6 @@ public class ChirpListAdapter extends BaseAdapter {
     TextView upvoteCounter = chirpView.findViewById(R.id.upvote_counter);
     TextView downvoteCounter = chirpView.findViewById(R.id.downvote_counter);
     TextView heartCounter = chirpView.findViewById(R.id.heart_counter);
-
-    // Dispose of previous observables for the chirp at this position
-    Disposable disposable = (Disposable) chirpView.getTag(R.id.chirp_card_buttons);
-    if (disposable != null) {
-      disposable.dispose();
-    }
 
     // Set dynamically the reaction buttons selection and counter
     try {
@@ -175,6 +176,7 @@ public class ChirpListAdapter extends BaseAdapter {
                   },
                   err ->
                       ErrorUtils.logAndShow(context, TAG, err, R.string.unknown_chirp_exception));
+      // Store the disposable as a tag
       chirpView.setTag(R.id.chirp_card_buttons, reactionDisposable);
       disposables.add(reactionDisposable);
     } catch (UnknownChirpException e) {

@@ -56,7 +56,7 @@ public class AddReactionTest {
     assertEquals(ADD_REACTION, new AddReaction(CODE_POINT, CHIRP_ID, TIMESTAMP));
 
     assertNotEquals(
-        ADD_REACTION, new AddReaction("❤", generateMessageIDOtherThan(CHIRP_ID), TIMESTAMP));
+        ADD_REACTION, new AddReaction("❤️", generateMessageIDOtherThan(CHIRP_ID), TIMESTAMP));
     assertNotEquals(
         ADD_REACTION, new AddReaction(CODE_POINT, generateMessageIDOtherThan(CHIRP_ID), TIMESTAMP));
     assertNotEquals(ADD_REACTION, new AddReaction(CODE_POINT, CHIRP_ID, TIMESTAMP + 1));

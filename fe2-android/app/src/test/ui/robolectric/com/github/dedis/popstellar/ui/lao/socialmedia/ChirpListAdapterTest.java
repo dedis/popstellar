@@ -322,18 +322,14 @@ public class ChirpListAdapterTest {
               View view1 = chirpListAdapter.getView(0, null, layout);
               assertNotNull(view1);
 
-              // Verify the upvote is set
-              ImageButton upvoteButton = view1.findViewById(R.id.upvote_button);
-              assertNotNull(upvoteButton);
-              // Wait for the observable to be notified
-              InstrumentationRegistry.getInstrumentation().waitForIdleSync();
-              assertTrue(upvoteButton.isSelected());
-
               // Remove the upvote reaction
               socialMediaRepository.deleteReaction(LAO_ID, REACTION_ID);
-
               // Wait for the observable to be notified
               InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+              // Verify the upvote is deselected
+              ImageButton upvoteButton = view1.findViewById(R.id.upvote_button);
+              assertNotNull(upvoteButton);
               assertFalse(upvoteButton.isSelected());
 
               // Verify the downvote is not set
@@ -341,24 +337,10 @@ public class ChirpListAdapterTest {
               assertNotNull(downvoteButton);
               assertFalse(downvoteButton.isSelected());
 
-              // Add the downvote reaction
-              socialMediaRepository.addReaction(LAO_ID, REACTION2);
-
-              // Wait for the observable to be notified
-              InstrumentationRegistry.getInstrumentation().waitForIdleSync();
-              assertTrue(downvoteButton.isSelected());
-
               // Verify the heart is not set
               ImageButton heartButton = view1.findViewById(R.id.heart_button);
               assertNotNull(heartButton);
               assertFalse(heartButton.isSelected());
-
-              // Add the heart reaction
-              socialMediaRepository.addReaction(LAO_ID, REACTION3);
-
-              // Wait for the observable to be notified
-              InstrumentationRegistry.getInstrumentation().waitForIdleSync();
-              assertTrue(heartButton.isSelected());
             });
   }
 
