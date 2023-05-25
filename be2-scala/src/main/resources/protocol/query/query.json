@@ -42,6 +42,7 @@
         {
             "$ref": "method/greet_server.json"
         }
+
     ],
 
     "required": ["method", "params", "jsonrpc"],
