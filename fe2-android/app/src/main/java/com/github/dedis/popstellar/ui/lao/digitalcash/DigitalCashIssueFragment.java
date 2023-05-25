@@ -148,6 +148,8 @@ public class DigitalCashIssueFragment extends Fragment {
     } else if (radioGroup == selectAllRollCallAttendees) {
       attendees = digitalCashViewModel.getAttendeesFromLastRollCall();
     } else if (radioGroup == selectAllLaoWitnesses) {
+      // Currently the button is not visible, as we only have the public keys of the witnesses, not
+      // their pop tokens
       attendees = digitalCashViewModel.getWitnesses();
     }
     return attendees;

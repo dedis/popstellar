@@ -125,7 +125,8 @@ public class ElectionHandlerTest {
 
     messageRepo = new MessageRepository(appDatabase, application);
     DataRegistry dataRegistry =
-        DataRegistryModuleHelper.buildRegistry(laoRepo, electionRepo, keyManager, messageRepo);
+        DataRegistryModuleHelper.buildRegistry(
+            laoRepo, electionRepo, witnessingRepository, keyManager, messageRepo);
 
     gson = JsonModule.provideGson(dataRegistry);
     messageHandler = new MessageHandler(messageRepo, dataRegistry);

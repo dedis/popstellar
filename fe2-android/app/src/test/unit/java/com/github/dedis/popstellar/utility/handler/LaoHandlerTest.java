@@ -102,7 +102,8 @@ public class LaoHandlerTest {
     MessageRepository messageRepo = new MessageRepository(appDatabase, application);
 
     DataRegistry dataRegistry =
-        DataRegistryModuleHelper.buildRegistry(laoRepo, messageRepo, keyManager, serverRepository);
+        DataRegistryModuleHelper.buildRegistry(
+            laoRepo, witnessingRepository, messageRepo, keyManager, serverRepository);
     gson = JsonModule.provideGson(dataRegistry);
     messageHandler = new MessageHandler(messageRepo, dataRegistry);
 

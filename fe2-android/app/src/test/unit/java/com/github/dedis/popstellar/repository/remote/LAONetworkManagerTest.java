@@ -351,7 +351,7 @@ public class LAONetworkManagerTest {
   @Test
   public void identifyUnrecoverableFailures()
       throws UnknownElectionException, UnknownRollCallException, UnknownLaoException,
-          DataHandlingException, NoRollCallException {
+          DataHandlingException, NoRollCallException, UnknownWitnessMessageException {
     TestSchedulerProvider schedulerProvider = new TestSchedulerProvider();
     TestScheduler testScheduler = schedulerProvider.getTestScheduler();
 

@@ -86,7 +86,8 @@ public class MeetingHandlerTest {
     witnessingRepository = new WitnessingRepository(appDatabase, application);
 
     DataRegistry dataRegistry =
-        DataRegistryModuleHelper.buildRegistry(laoRepo, keyManager, meetingRepo);
+        DataRegistryModuleHelper.buildRegistry(
+            laoRepo, keyManager, meetingRepo, witnessingRepository);
     MessageRepository messageRepo = new MessageRepository(appDatabase, application);
     gson = JsonModule.provideGson(dataRegistry);
     messageHandler = new MessageHandler(messageRepo, dataRegistry);
@@ -112,7 +113,6 @@ public class MeetingHandlerTest {
 
   @After
   public void tearDown() {
-    appDatabase.clearAllTables();
     appDatabase.close();
   }
 

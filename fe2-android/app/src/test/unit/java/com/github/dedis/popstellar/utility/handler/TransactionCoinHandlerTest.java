@@ -118,7 +118,6 @@ public class TransactionCoinHandlerTest {
 
   @After
   public void tearDown() {
-    appDatabase.clearAllTables();
     appDatabase.close();
   }
 

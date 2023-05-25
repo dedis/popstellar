@@ -191,6 +191,11 @@ public class WitnessingRepository {
    */
   public void performActionWhenWitnessThresholdReached(
       String laoId, MessageID messageId, Runnable action) throws UnknownWitnessMessageException {
+    // Special case : there's no witness, so the observable won't be updated, thus we need to check
+    if (getLaoWitness(laoId).isWitnessEmpty()) {
+      action.run();
+      return;
+    }
     AtomicBoolean pass = new AtomicBoolean(false);
     disposables.add(
         getWitnessMessageObservableInLao(laoId, messageId)

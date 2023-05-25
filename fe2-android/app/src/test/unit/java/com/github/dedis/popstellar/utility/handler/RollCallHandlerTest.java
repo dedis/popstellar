@@ -85,7 +85,8 @@ public class RollCallHandlerTest {
     witnessingRepository = new WitnessingRepository(appDatabase, application);
 
     DataRegistry dataRegistry =
-        DataRegistryModuleHelper.buildRegistry(laoRepo, keyManager, rollCallRepo);
+        DataRegistryModuleHelper.buildRegistry(
+            laoRepo, keyManager, rollCallRepo, witnessingRepository);
     MessageRepository messageRepo =
         new MessageRepository(appDatabase, ApplicationProvider.getApplicationContext());
     gson = JsonModule.provideGson(dataRegistry);
