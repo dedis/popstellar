@@ -24,6 +24,8 @@ import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
 import timber.log.Timber;
 
 import static android.text.format.DateUtils.getRelativeTimeSpanString;
@@ -38,6 +40,8 @@ public class ChirpListAdapter extends BaseAdapter {
   private final Context context;
   private final LayoutInflater layoutInflater;
   private List<Chirp> chirps;
+
+  private CompositeDisposable disposables = new CompositeDisposable();
 
   public ChirpListAdapter(
       Context context, SocialMediaViewModel socialMediaViewModel, LaoViewModel viewModel) {
@@ -55,6 +59,7 @@ public class ChirpListAdapter extends BaseAdapter {
   }
 
   public void replaceList(List<Chirp> chirps) {
+    disposables.clear(); // Dispose of previous observables
     this.chirps = chirps;
     notifyDataSetChanged();
   }
@@ -109,9 +114,15 @@ public class ChirpListAdapter extends BaseAdapter {
     TextView downvoteCounter = chirpView.findViewById(R.id.downvote_counter);
     TextView heartCounter = chirpView.findViewById(R.id.heart_counter);
 
+    // Dispose of previous observables for the chirp at this position
+    Disposable disposable = (Disposable) chirpView.getTag(R.id.chirp_card_buttons);
+    if (disposable != null) {
+      disposable.dispose();
+    }
+
     // Set dynamically the reaction buttons selection and counter
     try {
-      laoViewModel.addDisposable(
+      Disposable reactionDisposable =
           socialMediaViewModel
               .getReactions(chirp.getId())
               // Each time the observable changes the counter and the selection is notified
@@ -163,7 +174,9 @@ public class ChirpListAdapter extends BaseAdapter {
                         R.drawable.ic_social_media_heart);
                   },
                   err ->
-                      ErrorUtils.logAndShow(context, TAG, err, R.string.unknown_chirp_exception)));
+                      ErrorUtils.logAndShow(context, TAG, err, R.string.unknown_chirp_exception));
+      chirpView.setTag(R.id.chirp_card_buttons, reactionDisposable);
+      disposables.add(reactionDisposable);
     } catch (UnknownChirpException e) {
       throw new IllegalArgumentException("The chirp does not exist");
     }
@@ -222,21 +235,21 @@ public class ChirpListAdapter extends BaseAdapter {
     // Set the listener for the upvote button to add and delete reaction
     upvoteChirp.setOnClickListener(
         v -> {
-          reactionListener(upvoteChirp, UPVOTE, chirpId);
           // Implement the exclusivity of upvote and downvote (i.e. disable downvote if upvote)
-          if (downvoteChirp.isSelected() && upvoteChirp.isSelected()) {
+          if (downvoteChirp.isSelected() && !upvoteChirp.isSelected()) {
             reactionListener(downvoteChirp, DOWNVOTE, chirpId);
           }
+          reactionListener(upvoteChirp, UPVOTE, chirpId);
         });
 
     // Set the listener for the downvote button to add and delete reaction
     downvoteChirp.setOnClickListener(
         v -> {
-          reactionListener(downvoteChirp, DOWNVOTE, chirpId);
           // Implement the exclusivity of upvote and downvote (i.e. disable upvote if downvote)
-          if (downvoteChirp.isSelected() && upvoteChirp.isSelected()) {
+          if (!downvoteChirp.isSelected() && upvoteChirp.isSelected()) {
             reactionListener(upvoteChirp, UPVOTE, chirpId);
           }
+          reactionListener(downvoteChirp, DOWNVOTE, chirpId);
         });
 
     // Set the listener for the heart button to add and delete reaction
