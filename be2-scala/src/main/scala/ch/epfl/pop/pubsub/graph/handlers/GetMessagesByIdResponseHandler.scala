@@ -18,7 +18,7 @@ import scala.concurrent.Await
 // When receiving the missing messages, the server's job is to write them on the database.
 object GetMessagesByIdResponseHandler extends AskPatternConstants {
 
-  private final val MAX_RETRY = 5
+  private final val MAX_RETRY_PER_MESSAGE = 5
   private final val SUCCESS = 0
 
   // This function packs each message into a publish before pushing them into the pipeline
@@ -28,7 +28,8 @@ object GetMessagesByIdResponseHandler extends AskPatternConstants {
         case Some(resultMap) =>
           val receivedResponse: Map[Channel, Set[GraphMessage]] = wrapMsgInPublish(resultMap)
           val validator = PublishSubscribe.validateRequests(ActorRef.noSender, messageRegistry)
-          val success: Boolean = passThroughPipeline(receivedResponse, validator, MAX_RETRY)
+          val maxTrials = MAX_RETRY_PER_MESSAGE * receivedResponse.foldRight(0)((elem, acc) => acc + elem._2.size)
+          val success: Boolean = passThroughPipeline(receivedResponse, validator, maxTrials)
           if (success) {
             Right(JsonRpcResponse(RpcValidator.JSON_RPC_VERSION, new ResultObject(SUCCESS), None))
           } else {
@@ -43,7 +44,7 @@ object GetMessagesByIdResponseHandler extends AskPatternConstants {
   }
 
   // This function will try to digest the set of messages for an entire channel
-  // It will go channel by channel until it finished processing messages or MAX_RETRY is reached
+  // It will go channel by channel until it finished processing messages or MAX_RETRY_PER_MESSAGE * total_number_of_message is reached
   @tailrec
   private def passThroughPipeline(
       receivedResponse: Map[Channel, Set[GraphMessage]],
@@ -55,9 +56,9 @@ object GetMessagesByIdResponseHandler extends AskPatternConstants {
     }
 
     var failedMessages: Map[Channel, Set[GraphMessage]] = Map.empty
-    receivedResponse.foreach {
-      case (channel, messagesSet) =>
-        val failedMsgErrorMap = messagesThroughPipeline(validatorFlow, messagesSet)
+    receivedResponse.keySet.toList.sortWith(_.toString.length < _.toString.length).foreach {
+      channel =>
+        val failedMsgErrorMap = messagesThroughPipeline(validatorFlow, receivedResponse(channel))
         if (failedMsgErrorMap.nonEmpty) {
           failedMessages += channel -> failedMsgErrorMap.keySet
 
