@@ -563,9 +563,25 @@ func (h *Hub) createLao(msg message.Message, laoCreate messagedata.LaoCreate,
 		return answer.NewInvalidMessageFieldError("failed to unmarshal public key of the sender: %v", err)
 	}
 
+	organizerBuf, err := base64.URLEncoding.DecodeString(laoCreate.Organizer)
+	if err != nil {
+		return answer.NewInvalidMessageFieldError("failed to decode public key of the organizer: %v", err)
+	}
+
+	organizerPubKey := crypto.Suite.Point()
+	err = organizerPubKey.UnmarshalBinary(organizerBuf)
+	if err != nil {
+		return answer.NewInvalidMessageFieldError("failed to unmarshal public key of the organizer: %v", err)
+	}
+
+	// Check if the sender and organizer fields of the create lao message are equal
+	if !organizerPubKey.Equal(senderPubKey) {
+		return answer.NewAccessDeniedError("sender's public key does not match the organizer field: %q != %q", senderPubKey, organizerPubKey)
+	}
+
+	// Check if the sender of the LAO creation message is the owner
 	if h.GetPubKeyOwner() != nil && !h.GetPubKeyOwner().Equal(senderPubKey) {
-		return answer.NewAccessDeniedError("sender's public key does not match the organizer's: %q != %q",
-			senderPubKey, h.GetPubKeyOwner())
+		return answer.NewAccessDeniedError("sender's public key does not match the owner's: %q != %q", senderPubKey, h.GetPubKeyOwner())
 	}
 
 	laoCh, err := h.laoFac(laoChannelPath, h, msg, h.log, senderPubKey, socket)
