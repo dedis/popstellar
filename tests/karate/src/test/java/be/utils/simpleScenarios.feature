@@ -27,7 +27,7 @@
           "name": '#(lao.name)',
           "creation": '#(lao.creation)',
           "organizer": '#(lao.organizerPk)',
-          "witnesses": []
+          "witnesses": "#(lao.witnesses)"
         }
       """
       * karate.log("sending a lao create request : ", karate.pretty(laoCreateRequest))

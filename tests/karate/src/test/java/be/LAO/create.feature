@@ -6,7 +6,7 @@ Feature: Create a pop LAO
     # This feature will be called to test LAO creation
     # Call read(...) makes this feature and the called feature share the same scope
     # Meaning they share def variables, configurations ...
-    # Especially JS functions defined can be directly used here thanks to Karate shared scopes
+    # Especially JS functions defined in the called features can be directly used here thanks to Karate shared scopes
     * call read('classpath:be/utils/server.feature')
     * call read('classpath:be/mockClient.feature')
     * call read('classpath:be/constants.feature')
@@ -24,7 +24,7 @@ Feature: Create a pop LAO
           "name": "#(lao.name)",
           "creation": "#(lao.creation)",
           "organizer": "#(lao.organizerPk)",
-          "witnesses": []
+          "witnesses": "#(lao.witnesses)"
         }
       """
     When organizer.publish(badLaoReq, rootChannel)
@@ -43,7 +43,7 @@ Feature: Create a pop LAO
           "name": "#(lao.name)",
           "creation": "#(lao.creation)",
           "organizer": "#(lao.organizerPk)",
-          "witnesses": []
+          "witnesses": "#(lao.witnesses)"
         }
       """
     When organizer.publish(badLaoReq, rootChannel)
@@ -61,7 +61,7 @@ Feature: Create a pop LAO
           "name": "#(validLao.name)",
           "creation": "#(validLao.creation)",
           "organizer": "#(validLao.organizerPk)",
-          "witnesses": []
+          "witnesses": "#(lao.witnesses)"
         }
       """
     When organizer.publish(badLaoReq, rootChannel)
@@ -79,7 +79,7 @@ Feature: Create a pop LAO
           "name": '#(validLao.name)',
           "creation": '#(validLao.creation)',
           "organizer": '#(validLao.organizerPk)',
-          "witnesses": []
+          "witnesses": "#(lao.witnesses)"
         }
       """
     When organizer.publish(laoCreateRequest, rootChannel)
@@ -97,7 +97,7 @@ Feature: Create a pop LAO
           "name": '#(validLao.name)',
           "creation": '#(validLao.creation)',
           "organizer": '#(validLao.organizerPk)',
-          "witnesses": []
+          "witnesses": "#(lao.witnesses)"
         }
       """
     When organizer.useWrongSignature()
@@ -117,7 +117,7 @@ Feature: Create a pop LAO
           "name": '#(validLao.name)',
           "creation": '#(validLao.creation)',
           "organizer": '#(validLao.organizerPk)',
-          "witnesses": []
+          "witnesses": "#(lao.witnesses)"
         }
       """
 

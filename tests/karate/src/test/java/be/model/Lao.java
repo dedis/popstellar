@@ -2,6 +2,9 @@ package be.model;
 
 import be.utils.Hash;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /** Models a pop lao */
 public class Lao {
   public String id;
@@ -9,6 +12,7 @@ public class Lao {
   // Organizer public key
   public String organizerPk;
   public long creation;
+  public List<String> witnesses = new ArrayList<>();
   public String channel;
 
   public Lao(String organizerPk, Long creation, String name){
@@ -21,6 +25,8 @@ public class Lao {
       name = "empty";
     }
     this.id = generateLaoId(organizerPk, creation, name);
+    // The organizer is always a witness
+    this.witnesses.add(organizerPk);
     this.channel = "/root/" + id;
   }
 
