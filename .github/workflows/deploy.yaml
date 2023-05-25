@@ -82,6 +82,7 @@ jobs:
 
     env:
       base_folder: be1-go
+      deploy_env: ${{ github.event.release.prerelease && 'dev' || 'prod' }}
 
     defaults:
       run:
@@ -124,6 +125,7 @@ jobs:
 
     env:
       base_folder: be2-scala
+      deploy_env: ${{ github.event.release.prerelease && 'dev' || 'prod' }}
       scala_version: 2.13
 
     defaults:
@@ -172,6 +174,7 @@ jobs:
 
     env:
       base_folder: fe2-android
+      deploy_env: ${{ github.event.release.prerelease && 'dev' || 'prod' }}
       app_name: pop
 
     defaults:
