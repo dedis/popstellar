@@ -112,7 +112,7 @@
     # organizer, lao and rollCall need to be passed as arguments when calling this scenario
     @name=close_roll_call
     Scenario: Closes a valid Roll Call
-      * call read('classpath:be/utils/simpleScenarios.feature@name=valid_roll_call') { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)' }
+      * call read('classpath:be/utils/simpleScenarios.feature@name=open_roll_call') { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)' }
       * def validRollCallClose =
         """
           {
