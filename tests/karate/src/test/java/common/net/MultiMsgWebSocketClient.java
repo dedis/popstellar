@@ -143,10 +143,6 @@ public class MultiMsgWebSocketClient extends WebSocketClient {
     return messages;
   }
 
-  /**
-   * Method to check that no more responses are send by the server, ignores heartbeat messages.
-   * @return true if no more responses or only a heartbeat was received.
-   */
   public boolean receiveNoMoreResponses(){
     String result = getBuffer().takeTimeout(5000);
     return result == null;
