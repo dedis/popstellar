@@ -16,7 +16,42 @@ import scala.sys.SystemProperties
   */
 object RuntimeEnvironment {
 
+  // Regex from dataGreetLao.json
+  private val addressPattern = "^(ws|wss)://.*(:d{0,5})?/.*$"
+
   private lazy val sp = new SystemProperties()
+  private lazy val confDir: String = getConfDir
+  private lazy val appConfFile = confDir + File.separator + "application.conf"
+
+  lazy val appConf: Config = ConfigFactory.parseFile(new File(appConfFile))
+  lazy val serverConf: ServerConf = ServerConf(appConf)
+  lazy val ownClientAddress = f"ws://${serverConf.interface}:${serverConf.port}/${serverConf.clientPath}"
+  lazy val ownServerAddress = f"ws://${serverConf.interface}:${serverConf.port}/${serverConf.serverPath}"
+  lazy val ownAuthAddress = f"http://${serverConf.interface}:${serverConf.port}/${serverConf.authenticationPath}"
+  lazy val isTestMode: Boolean = testMode
+
+  lazy val serverPeersListPath: String =
+    if (isTestMode) {
+      confDir + File.separator + "server-peers-list-mock.conf"
+    } else {
+      confDir + File.separator + "server-peers-list.conf"
+    }
+
+  def readServerPeers(): List[String] = {
+    val source =
+      try {
+        fromFile(serverPeersListPath)
+      } catch {
+        case ex: Throwable =>
+          println("RuntimeEnvironment: " + ex.toString)
+          return Nil
+      }
+
+    val addressList = source.getLines().map(_.trim).filter(_.matches(addressPattern)).toList
+    source.close()
+
+    addressList
+  }
 
   private def getConfDir: String = {
     /* Get config directory path from JVM */
@@ -43,37 +78,4 @@ object RuntimeEnvironment {
   private def testMode: Boolean = {
     sp("test") != null
   }
-
-  private lazy val confDir: String = getConfDir
-  private lazy val appConfFile = confDir + File.separator + "application.conf"
-
-  lazy val isTestMode: Boolean = testMode
-  lazy val serverPeersListPath: String =
-    if (isTestMode) {
-      confDir + File.separator + "server-peers-list-mock.conf"
-    } else {
-      confDir + File.separator + "server-peers-list.conf"
-    }
-
-  lazy val appConf: Config = ConfigFactory.parseFile(new File(appConfFile))
-
-  // Regex from dataGreetLao.json
-  private val addressPattern = "^(ws|wss)://.*(:d{0,5})?/.*$"
-
-  def readServerPeers(): List[String] = {
-    val source =
-      try {
-        fromFile(serverPeersListPath)
-      } catch {
-        case ex: Throwable =>
-          println("RuntimeEnvironment: " + ex.toString)
-          return Nil
-      }
-
-    val addressList = source.getLines().map(_.trim).filter(_.matches(addressPattern)).toList
-    source.close()
-
-    addressList
-  }
-
 }
