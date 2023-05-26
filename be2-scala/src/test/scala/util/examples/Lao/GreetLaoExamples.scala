@@ -1,6 +1,6 @@
 package util.examples.Lao
 
-import ch.epfl.pop.json.MessageDataProtocol._
+import ch.epfl.pop.json.MessageDataProtocol.GreetLaoFormat
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.lao.GreetLao
 import ch.epfl.pop.model.objects._

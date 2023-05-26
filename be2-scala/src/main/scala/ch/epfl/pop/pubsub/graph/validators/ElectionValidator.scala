@@ -213,12 +213,9 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
         }
         val openingTimeStamp = Await.result(channel.extractMessages[OpenElection](dbActorRef),duration) match {
           case openElection : List[(Message, OpenElection)] =>
-            print("coucou\n")
             openElection.head._2.opened_at
           case _ => Timestamp(casteVote.created_at.time + 1L)
         }
-        print(openingTimeStamp)
-        print(casteVote.created_at)
         runChecks(
           checkTimestampStaleness(
             rpcMessage,

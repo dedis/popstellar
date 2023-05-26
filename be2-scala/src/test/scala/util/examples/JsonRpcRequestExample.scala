@@ -195,6 +195,7 @@ object JsonRpcRequestExample {
   // For CastVoteElection testing
   private final val electionChannelCastVote: Channel = Channel(Channel.ROOT_CHANNEL_PREFIX + Base64Data.encode("laoId") + Channel.CHANNEL_SEPARATOR + ResultElectionExamples.ELECTION_ID)
   private final val paramsWithCastVoteElection: ParamsWithMessage = new ParamsWithMessage(electionChannelCastVote, MESSAGE_CAST_VOTE_ELECTION_WORKING)
+  private final val paramsWithCastVoteElectionBeforeOpening: ParamsWithMessage = new ParamsWithMessage(electionChannelCastVote, MESSAGE_CAST_VOTE_BEFORE_OPENING_THE_ELECTION)
   private final val paramsWithCastVoteElectionWrongTimestamp: ParamsWithMessage = new ParamsWithMessage(electionChannelCastVote, MESSAGE_CAST_VOTE_ELECTION_WRONG_TIMESTAMP)
   private final val paramsWithCastVoteElectionWrongId: ParamsWithMessage = new ParamsWithMessage(electionChannelCastVote, MESSAGE_CAST_VOTE_ELECTION_WRONG_ID)
   private final val paramsWithCastVoteElectionWrongLaoId: ParamsWithMessage = new ParamsWithMessage(electionChannelCastVote, MESSAGE_CAST_VOTE_ELECTION_WRONG_LAO_ID)
@@ -203,6 +204,7 @@ object JsonRpcRequestExample {
   private final val paramsWithCastVoteElectionInvalidBallot: ParamsWithMessage = new ParamsWithMessage(electionChannelCastVote, MESSAGE_CAST_VOTE_INVALID_BALLOT)
   private final val paramsWithCastVoteElectionInvalidVoteId: ParamsWithMessage = new ParamsWithMessage(electionChannelCastVote, MESSAGE_CAST_VOTE_INVALID_VOTE_ID)
   final val CAST_VOTE_ELECTION_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithCastVoteElection, id)
+  final val CAST_VOTE_BEFORE_OPENING_THE_ELECTION: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithCastVoteElectionBeforeOpening, id)
   final val CAST_VOTE_ELECTION_WRONG_TIMESTAMP_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithCastVoteElectionWrongTimestamp, id)
   final val CAST_VOTE_ELECTION_WRONG_ID_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithCastVoteElectionWrongId, id)
   final val CAST_VOTE_ELECTION_WRONG_LAO_ID_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithCastVoteElectionWrongLaoId, id)

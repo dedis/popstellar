@@ -610,6 +610,13 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
     system.stop(dbActorRef.actorRef)
   }
 
+  test("Casting a vote before opening the election should fail") {
+    val dbActorRef = mockDbCastVote
+    val message: GraphMessage = new ElectionValidator(dbActorRef).validateCastVoteElection(CAST_VOTE_BEFORE_OPENING_THE_ELECTION)
+    message shouldBe a[Left[_, PipelineError]]
+    system.stop(dbActorRef.actorRef)
+  }
+
   // End Election
   test("Ending an election works as intended") {
     val dbActorRef = mockDbCastVote
