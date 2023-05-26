@@ -80,6 +80,8 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
           sender() ! DbActor.DbActorReadLaoDataAck(laoDataRight)
         case DbActor.ReadChannelData(_) =>
           sender() ! DbActor.DbActorReadChannelDataAck(channelDataRightSetup)
+        case DbActor.ReadSetupElectionMessage(_) =>
+          sender() ! DbActor.DbActorReadAck(Some(MESSAGE_SETUPELECTION_OPEN_BALLOT_WORKING))
       }
     })
     system.actorOf(dbActorMock)
@@ -92,6 +94,8 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
           sender() ! DbActor.DbActorReadLaoDataAck(laoDataWrong)
         case DbActor.ReadChannelData(_) =>
           sender() ! DbActor.DbActorReadChannelDataAck(channelDataRightSetup)
+        case DbActor.ReadSetupElectionMessage(_) =>
+          sender() ! DbActor.DbActorReadAck(Some(MESSAGE_SETUPELECTION_OPEN_BALLOT_WORKING))
       }
     })
     system.actorOf(dbActorMock)
@@ -104,6 +108,8 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
           sender() ! DbActor.DbActorReadLaoDataAck(laoDataRight)
         case DbActor.ReadChannelData(_) =>
           sender() ! DbActor.DbActorReadChannelDataAck(channelDataWrongSetup)
+        case DbActor.ReadSetupElectionMessage(_) =>
+          sender() ! DbActor.DbActorReadAck(Some(MESSAGE_SETUPELECTION_OPEN_BALLOT_WORKING))
       }
     })
     system.actorOf(dbActorMock)
@@ -118,6 +124,8 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
           sender() ! DbActor.DbActorReadChannelDataAck(channelDataRightElection)
         case DbActor.Catchup(_) =>
           sender() ! DbActor.DbActorCatchupAck(messages)
+        case DbActor.ReadSetupElectionMessage(_) =>
+          sender() ! DbActor.DbActorReadAck(Some(MESSAGE_SETUPELECTION_OPEN_BALLOT_WORKING))
       }
     })
     system.actorOf(dbActorMock)
@@ -130,6 +138,9 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
           sender() ! DbActor.DbActorReadLaoDataAck(laoDataWrong)
         case DbActor.ReadChannelData(_) =>
           sender() ! DbActor.DbActorReadChannelDataAck(channelDataRightElection)
+        case DbActor.ReadSetupElectionMessage(_) =>
+          sender() ! DbActor.DbActorReadAck(Some(MESSAGE_SETUPELECTION_OPEN_BALLOT_WORKING))
+
       }
     })
     system.actorOf(dbActorMock)
@@ -142,6 +153,8 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
           sender() ! DbActor.DbActorReadLaoDataAck(laoDataRight)
         case DbActor.ReadChannelData(_) =>
           sender() ! DbActor.DbActorReadChannelDataAck(channelDataWrongElection)
+        case DbActor.ReadSetupElectionMessage(_) =>
+          sender() ! DbActor.DbActorReadAck(Some(MESSAGE_SETUPELECTION_OPEN_BALLOT_WORKING))
       }
     })
     system.actorOf(dbActorMock)

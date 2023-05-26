@@ -148,11 +148,23 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
 
         val electionId = channel.extractChildChannel
 
+        val setupElectionTimeStamp = Await.ready(channel.getSetupMessage(dbActorRef), duration).value.get match {
+          case Success(setupElection: SetupElection) => setupElection.created_at
+          case Failure(exception) => return Left(validationError("Failed to get election questions: " + exception.getMessage))
+          case err @_ => return Left(validationError("Unknown error: " + err.toString))
+        }
+
         runChecks(
           checkTimestampStaleness(
             rpcMessage,
             openElection.opened_at,
             validationError(s"stale 'opened_at' timestamp (${openElection.opened_at})")
+          ),
+          checkTimestampOrder(
+            rpcMessage,
+            setupElectionTimeStamp,
+            openElection.opened_at,
+            validationError("trying to open an election before seting it up.")
           ),
           checkId(
             rpcMessage,
