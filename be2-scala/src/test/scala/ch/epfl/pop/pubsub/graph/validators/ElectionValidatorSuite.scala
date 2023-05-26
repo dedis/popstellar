@@ -457,6 +457,13 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
     system.stop(dbActorRef.actorRef)
   }
 
+  test("Open up an election with invalid Timestamp order between the open Election and the setup Election fails") {
+    val dbActorRef = mockDbWorking
+    val message: GraphMessage = new ElectionValidator(dbActorRef).validateOpenElection(OPEN_ELECTION_BEFORE_SETUP_RPC)
+    message shouldBe a[Left[_, PipelineError]]
+    system.stop(dbActorRef.actorRef)
+  }
+
   test("Open up an election without valid PoP token fails") {
     val dbActorRef = mockDbWrongToken
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateOpenElection(OPEN_ELECTION_RPC)
