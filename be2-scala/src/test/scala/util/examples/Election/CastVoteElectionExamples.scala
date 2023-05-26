@@ -15,7 +15,7 @@ object CastVoteElectionExamples {
 
   final val ID: Hash = ELECTION_ID
   final val LAO_ID: Hash = Hash(Base64Data.encode("laoId"))
-  final val NOT_STALE_CREATED_AT = Timestamp(1649089855L)
+  final val NOT_STALE_CREATED_AT = Timestamp(1649089865L)
   final val QUESTION_ID = Hash.fromStrings("Question", ID.toString, "valid")
   final val VOTE = Some(List(1))
   final val VOTE_ID = Hash.fromStrings("Vote", ID.toString, QUESTION_ID.toString, VOTE.get.head.toString)

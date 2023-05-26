@@ -6,19 +6,19 @@ import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.network.method.message.data.election._
 import ch.epfl.pop.model.objects.ElectionChannel._
-import ch.epfl.pop.model.objects.{Channel, DbActorNAckException, Hash, LaoData}
+import ch.epfl.pop.model.objects.{Channel, Hash, Timestamp, DbActorNAckException, LaoData}
 import ch.epfl.pop.pubsub.PublishSubscribe
 import ch.epfl.pop.pubsub.graph.validators.MessageValidator._
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
 import ch.epfl.pop.storage.DbActor
 import scala.concurrent.Await
-import scala.util.{Failure, Success}
+import scala.util.{Success, Failure}
 
 //Similarly to the handlers, we create a ElectionValidator object which creates a ElectionValidator class instance.
 //The defaults dbActorRef is used in the object, but the class can now be mocked with a custom dbActorRef for testing purpose
 object ElectionValidator extends MessageDataContentValidator with EventValidator {
 
-  private val electionValidator = new ElectionValidator(PublishSubscribe.getDbActorRef)
+  val electionValidator = new ElectionValidator(PublishSubscribe.getDbActorRef)
 
   override val EVENT_HASH_PREFIX: String = electionValidator.EVENT_HASH_PREFIX
 
@@ -205,19 +205,31 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
     rpcMessage.getParamsMessage match {
       case Some(_: Message) =>
         val (casteVote, laoId, senderPK, channel) = extractData[CastVoteElection](rpcMessage)
-
         val electionId = channel.extractChildChannel
         val questions = Await.ready(channel.getSetupMessage(dbActorRef), duration).value.get match {
           case Success(setupElection) => setupElection.questions
           case Failure(exception)     => return Left(validationError("Failed to get election questions: " + exception.getMessage))
           case err @ _                => return Left(validationError("Unknown error: " + err.toString))
         }
-
+        val openingTimeStamp = Await.result(channel.extractMessages[OpenElection](dbActorRef),duration) match {
+          case openElection : List[(Message, OpenElection)] =>
+            print("coucou\n")
+            openElection.head._2.opened_at
+          case _ => Timestamp(casteVote.created_at.time + 1L)
+        }
+        print(openingTimeStamp)
+        print(casteVote.created_at)
         runChecks(
           checkTimestampStaleness(
             rpcMessage,
             casteVote.created_at,
             validationError(s"stale 'created_at' timestamp (${casteVote.created_at})")
+          ),
+          checkTimestampOrder(
+            rpcMessage,
+            openingTimeStamp,
+            casteVote.created_at,
+            validationError("trying to cast a vote before opening the election.")
           ),
           checkId(
             rpcMessage,
