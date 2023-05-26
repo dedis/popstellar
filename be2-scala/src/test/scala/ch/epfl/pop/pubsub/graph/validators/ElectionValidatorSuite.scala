@@ -304,7 +304,7 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
         case DbActor.ReadLaoData(_) =>
           sender() ! DbActor.DbActorReadLaoDataAck(laoDataForResultElection)
         case DbActor.Catchup(_) =>
-          sender() ! DbActor.DbActorCatchupAck(List.empty)
+          sender() ! DbActor.DbActorCatchupAck(List(MESSAGE_END_ELECTION_WRONG_ID))
         case DbActor.ReadSetupElectionMessage(_) =>
           sender() ! DbActor.DbActorReadAck(Some(MESSAGE_SETUPELECTION_WRONG_ID))
       }
@@ -707,6 +707,13 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
   test("ResultElection with invalid question ids does not work in validateResultElection ") {
     val dbActorRef: AskableActorRef = mockDbWrongQuestionIds
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateResultElection(RESULT_ELECTION_RPC_WRONG_ID)
+    message shouldBe a[Left[PipelineError, _]]
+    system.stop(dbActorRef.actorRef)
+  }
+
+  test("ResultElection with incoherent ballot options does not work in validateResultElection") {
+    val dbActorRef: AskableActorRef = mockDbForResultElection
+    val message: GraphMessage = new ElectionValidator(dbActorRef).validateResultElection(RESULT_ELECTION_RPC_WRONG_BALLOT_OPTIONS)
     message shouldBe a[Left[PipelineError, _]]
     system.stop(dbActorRef.actorRef)
   }

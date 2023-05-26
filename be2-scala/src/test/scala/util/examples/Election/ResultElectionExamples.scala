@@ -16,6 +16,8 @@ object ResultElectionExamples {
 
   val workingElectionQuestionResult: ElectionQuestionResult = ElectionQuestionResult(Hash.fromStrings("Question", ELECTION_ID.toString, "valid"), List(ElectionBallotVotes("yes", 2), ElectionBallotVotes("no", 1)))
 
+  val wrongBallotOptionsQuestionResult: ElectionQuestionResult = ElectionQuestionResult(Hash.fromStrings("Question", ELECTION_ID.toString, "valid"), List(ElectionBallotVotes("maybe", 2), ElectionBallotVotes("sometimes", 1)))
+
   val wrongElectionQuestionResult: ElectionQuestionResult = ElectionQuestionResult(Hash.fromStrings("Question", ELECTION_ID.toString, "valid"), List(ElectionBallotVotes("yes", 2), ElectionBallotVotes("no", -1)))
 
   val tooMuchVotesElectionQuestionResult: ElectionQuestionResult = ElectionQuestionResult(Hash.fromStrings("Question", ELECTION_ID.toString, "valid"), List(ElectionBallotVotes("yes", 2), ElectionBallotVotes("no", 2)))
@@ -24,6 +26,8 @@ object ResultElectionExamples {
 
   val workingResultElection: ResultElection = ResultElection(List(workingElectionQuestionResult), List(SIGNATURE))
 
+  val wrongBallotOptionsElection: ResultElection = ResultElection(List(wrongBallotOptionsQuestionResult), List(SIGNATURE))
+
   val wrongResultElection: ResultElection = ResultElection(List(wrongElectionQuestionResult), List(SIGNATURE))
 
   val tooMuchVotesElection: ResultElection = ResultElection(List(tooMuchVotesElectionQuestionResult), List(SIGNATURE))
@@ -31,6 +35,8 @@ object ResultElectionExamples {
   val wrongIdElection: ResultElection = ResultElection(List(wrongIdElectionQuestionResult), List(SIGNATURE))
 
   final val DATA_RESULT_ELECTION_WORKING: Hash = Hash(Base64Data.encode(workingResultElection.toJson.toString))
+
+  final val DATA_RESULT_ELECTION_WRONG_BALLOT_OPTIONS: Hash = Hash(Base64Data.encode(wrongBallotOptionsElection.toJson.toString))
 
   final val DATA_RESULT_ELECTION_WRONG: Hash = Hash(Base64Data.encode(wrongResultElection.toJson.toString))
 
@@ -45,6 +51,15 @@ object ResultElectionExamples {
     Hash(Base64Data("")),
     List.empty,
     Some(workingResultElection)
+  )
+
+  final val MESSAGE_RESULT_ELECTION_WRONG_BALLOT_OPTIONS: Message = new Message(
+    DATA_RESULT_ELECTION_WRONG_BALLOT_OPTIONS.base64Data,
+    SENDER_RESULT_ELECTION,
+    SIGNATURE,
+    Hash(Base64Data("")),
+    List.empty,
+    Some(wrongBallotOptionsElection)
   )
 
   final val MESSAGE_RESULT_ELECTION_WRONG: Message = new Message(
