@@ -27,7 +27,6 @@ import {
 } from '../network/SocialMessageApi';
 import { Chirp } from '../objects';
 import { makeReactedSelector, makeReactionCountsSelector } from '../reducer';
-import chirpCardPolyfill from './ChirpCardPolyfill';
 
 type NavigationProps = CompositeScreenProps<
   StackScreenProps<
@@ -85,9 +84,6 @@ const ChirpCard = ({ chirp, isFirstItem, isLastItem }: IPropTypes) => {
   const laoId = SocialHooks.useCurrentLaoId();
   const isConnected = SocialHooks.useConnectedToLao();
   const navigation = useNavigation<NavigationProps['navigation']>();
-
-  // This ensures that long chirps are not cut off (by adding css style word-break: break-word)
-  chirpCardPolyfill();
 
   const { currentUserPopTokenPublicKey } = useContext(SocialMediaContext);
 
