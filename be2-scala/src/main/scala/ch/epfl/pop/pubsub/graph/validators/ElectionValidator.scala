@@ -338,6 +338,8 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
           case Failure(exception)                    => return Left(validationError("Failed to get election questions: " + exception.getMessage))
           case err @ _                               => return Left(validationError("Unknown error: " + err.toString))
         }
+        print(setupElectionTimeStamp)
+        print(endElection.created_at)
 
         val firstCheck = runChecks(
           checkTimestampStaleness(

@@ -689,6 +689,13 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
     system.stop(dbActorRef.actorRef)
   }
 
+  test("Ending an election before the setup does not work in validateEndElection") {
+    val dbActorRef = mockDbCastVote
+    val message: GraphMessage = new ElectionValidator(dbActorRef).validateEndElection(END_ELECTION_BEFORE_SETUP_RPC)
+    message shouldBe a[Left[PipelineError, _]]
+    system.stop(dbActorRef.actorRef)
+  }
+
   test("Receiving the result of an election works as intended") {
     val dbActorRef: AskableActorRef = mockDbForResultElection
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateResultElection(RESULT_ELECTION_RPC)
