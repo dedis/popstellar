@@ -8,10 +8,10 @@ import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.*;
+import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.error.*;
 
-import java.util.ArrayList;
-import java.util.Set;
+import java.util.*;
 
 import javax.inject.Inject;
 
@@ -20,10 +20,7 @@ import timber.log.Timber;
 /** Roll Call messages handler class */
 public final class RollCallHandler {
 
-  public static final String TAG = RollCallHandler.class.getSimpleName();
-
-  private static final String ROLL_CALL_NAME = "Roll Call Name : ";
-  private static final String MESSAGE_ID = "Message ID : ";
+  private static final String TAG = RollCallHandler.class.getSimpleName();
 
   private final LAORepository laoRepo;
   private final RollCallRepository rollCallRepo;
@@ -200,61 +197,79 @@ public final class RollCallHandler {
   public static WitnessMessage createRollCallWitnessMessage(
       MessageID messageId, RollCall rollCall) {
     WitnessMessage message = new WitnessMessage(messageId);
-    message.setTitle("New Roll Call was created");
+    message.setTitle(
+        String.format(
+            "The Roll Call %s was created at %s",
+            rollCall.getName(), new Date(rollCall.getCreation() * 1000)));
     message.setDescription(
-        ROLL_CALL_NAME
-            + "\n"
-            + rollCall.getName()
+        "Mnemonic identifier :\n"
+            + ActivityUtils.generateMnemonicWordFromBase64(rollCall.getPersistentId(), 2)
             + "\n\n"
-            + "Roll Call ID : "
-            + "\n"
-            + rollCall.getId()
-            + "\n\n"
-            + "Location : "
-            + "\n"
+            + "Location :\n"
             + rollCall.getLocation()
             + "\n\n"
-            + MESSAGE_ID
-            + "\n"
-            + messageId.getEncoded());
+            + (rollCall.getDescription().isEmpty()
+                ? ""
+                : ("Description :\n" + rollCall.getDescription() + "\n\n"))
+            + "Opens at :\n"
+            + new Date(rollCall.getStartTimestampInMillis())
+            + "\n\n"
+            + "Closes at :\n"
+            + new Date(rollCall.getEndTimestampInMillis()));
 
     return message;
   }
 
   public static WitnessMessage openRollCallWitnessMessage(MessageID messageId, RollCall rollCall) {
     WitnessMessage message = new WitnessMessage(messageId);
-    message.setTitle("Roll Call was opened");
+    message.setTitle(
+        String.format(
+            "The Roll Call %s was opened at %s",
+            rollCall.getName(), new Date(rollCall.getStartTimestampInMillis())));
     message.setDescription(
-        ROLL_CALL_NAME
-            + "\n"
-            + rollCall.getName()
+        "Mnemonic identifier :\n"
+            + ActivityUtils.generateMnemonicWordFromBase64(rollCall.getPersistentId(), 2)
             + "\n\n"
-            + "Updated Roll Call ID :"
-            + "\n"
-            + rollCall.getId()
+            + "Location :\n"
+            + rollCall.getLocation()
             + "\n\n"
-            + MESSAGE_ID
-            + "\n"
-            + messageId.getEncoded());
+            + (rollCall.getDescription().isEmpty()
+                ? ""
+                : ("Description :\n" + rollCall.getDescription() + "\n\n"))
+            + "Closes at :\n"
+            + new Date(rollCall.getEndTimestampInMillis()));
 
     return message;
   }
 
   public static WitnessMessage closeRollCallWitnessMessage(MessageID messageId, RollCall rollCall) {
     WitnessMessage message = new WitnessMessage(messageId);
-    message.setTitle("Roll Call was closed");
+    message.setTitle(
+        String.format(
+            "The Roll Call %s was closed at %s",
+            rollCall.getName(), new Date(rollCall.getEndTimestampInMillis())));
     message.setDescription(
-        ROLL_CALL_NAME
-            + "\n"
-            + rollCall.getName()
+        "Mnemonic identifier :\n"
+            + ActivityUtils.generateMnemonicWordFromBase64(rollCall.getPersistentId(), 2)
             + "\n\n"
-            + "Updated Roll Call ID : "
-            + rollCall.getId()
+            + "Location :\n"
+            + rollCall.getLocation()
             + "\n\n"
-            + MESSAGE_ID
-            + "\n"
-            + messageId.getEncoded());
+            + (rollCall.getDescription().isEmpty()
+                ? ""
+                : ("Description :\n" + rollCall.getDescription() + "\n\n"))
+            + formatAttendees(rollCall.getAttendees()));
 
     return message;
+  }
+
+  private static String formatAttendees(Set<PublicKey> attendees) {
+    StringBuilder stringBuilder = new StringBuilder("Attendees :");
+    int index = 1;
+    for (PublicKey attendee : attendees) {
+      stringBuilder.append("\n").append(index).append(") ").append(attendee.getEncoded());
+      ++index;
+    }
+    return stringBuilder.toString();
   }
 }

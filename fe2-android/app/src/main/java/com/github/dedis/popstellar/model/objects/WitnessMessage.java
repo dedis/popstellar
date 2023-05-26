@@ -13,10 +13,16 @@ public class WitnessMessage implements Copyable<WitnessMessage> {
 
   /** Base 64 URL encoded ID of the message that we want to sign */
   private final MessageID messageId;
+
   /** Set of witnesses that have signed the message */
   private final Set<PublicKey> witnesses;
+
+  /** Boolean to specify whether the given message has to be manually signed */
+  private final boolean toBeSigned;
+
   /** Title that will be displayed for the message */
   private String title = "";
+
   /** Description that will be displayed for the message */
   private String description = "";
 
@@ -26,16 +32,13 @@ public class WitnessMessage implements Copyable<WitnessMessage> {
    * @param messageId ID of the message to sign
    */
   public WitnessMessage(MessageID messageId) {
-    witnesses = new HashSet<>();
-    this.messageId = messageId;
+    this(messageId, true);
   }
 
-  public WitnessMessage(
-      MessageID messageId, Set<PublicKey> witnesses, String title, String description) {
+  public WitnessMessage(MessageID messageId, boolean toBeSigned) {
+    witnesses = new HashSet<>();
     this.messageId = messageId;
-    this.witnesses = witnesses;
-    this.title = title;
-    this.description = description;
+    this.toBeSigned = toBeSigned;
   }
 
   public WitnessMessage(WitnessMessage witnessMessage) {
@@ -43,6 +46,7 @@ public class WitnessMessage implements Copyable<WitnessMessage> {
     this.witnesses = new HashSet<>(witnessMessage.witnesses);
     this.title = witnessMessage.title;
     this.description = witnessMessage.description;
+    this.toBeSigned = witnessMessage.toBeSigned;
   }
 
   /**
@@ -76,6 +80,10 @@ public class WitnessMessage implements Copyable<WitnessMessage> {
 
   public void setDescription(String description) {
     this.description = description;
+  }
+
+  public boolean hasToBeSigned() {
+    return toBeSigned;
   }
 
   @Override

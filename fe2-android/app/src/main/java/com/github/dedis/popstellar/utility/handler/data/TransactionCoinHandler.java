@@ -5,8 +5,6 @@ import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.digitalcash.*;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.repository.DigitalCashRepository;
-import com.github.dedis.popstellar.repository.WitnessingRepository;
-import com.github.dedis.popstellar.utility.error.UnknownWitnessMessageException;
 import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
 
 import java.util.*;
@@ -18,17 +16,11 @@ import timber.log.Timber;
 public class TransactionCoinHandler {
   private static final String TAG = TransactionCoinHandler.class.getSimpleName();
 
-  private static final String TRANSACTION_ID = "Transaction ID : ";
-  private static final String MESSAGE_ID = "Message ID : ";
-
   private final DigitalCashRepository digitalCashRepo;
-  private final WitnessingRepository witnessingRepo;
 
   @Inject
-  public TransactionCoinHandler(
-      DigitalCashRepository digitalCashRepo, WitnessingRepository witnessingRepo) {
+  public TransactionCoinHandler(DigitalCashRepository digitalCashRepo) {
     this.digitalCashRepo = digitalCashRepo;
-    this.witnessingRepo = witnessingRepo;
   }
 
   /**
@@ -38,8 +30,7 @@ public class TransactionCoinHandler {
    * @param postTransactionCoin the data of the message that was received
    */
   public void handlePostTransactionCoin(
-      HandlerContext context, PostTransactionCoin postTransactionCoin)
-      throws UnknownWitnessMessageException {
+      HandlerContext context, PostTransactionCoin postTransactionCoin) throws NoRollCallException {
     Channel channel = context.getChannel();
     MessageID messageId = context.getMessageId();
 
@@ -96,67 +87,7 @@ public class TransactionCoinHandler {
             .setInputs(inputs)
             .setOutputs(outputs)
             .build();
-    String laoId = channel.extractLaoId();
 
-    witnessingRepo.addWitnessMessage(
-        laoId, createPostTransactionWitnessMessage(messageId, transactionObject));
-
-    witnessingRepo.performActionWhenWitnessThresholdReached(
-        laoId,
-        messageId,
-        () -> {
-          try {
-            digitalCashRepo.updateTransactions(laoId, transactionObject);
-          } catch (NoRollCallException e) {
-            throw new RuntimeException(e);
-          }
-        });
-  }
-
-  public static WitnessMessage createPostTransactionWitnessMessage(
-      MessageID messageId, TransactionObject transactionObject) {
-    WitnessMessage message = new WitnessMessage(messageId);
-    message.setTitle("New Transaction was posted");
-    message.setDescription(
-        TRANSACTION_ID
-            + "\n"
-            + transactionObject.getTransactionId()
-            + "\n\n"
-            + "Version : "
-            + transactionObject.getVersion()
-            + "\n\n"
-            + formatTransactionDetails(
-                transactionObject.getInputs(), transactionObject.getOutputs())
-            + "\n\n"
-            + MESSAGE_ID
-            + "\n"
-            + messageId.getEncoded());
-
-    return message;
-  }
-
-  private static String formatTransactionDetails(
-      List<InputObject> inputObjects, List<OutputObject> outputObjects) {
-    StringBuilder transactionDescription = new StringBuilder();
-
-    transactionDescription.append("From: \n");
-    Iterator<InputObject> inputObjectIterator = inputObjects.iterator();
-    while (inputObjectIterator.hasNext()) {
-      transactionDescription.append(inputObjectIterator.next().getPubKey().getEncoded());
-      if (inputObjectIterator.hasNext()) {
-        transactionDescription.append(", ");
-      }
-    }
-
-    transactionDescription.append("\nTo: \n");
-    for (OutputObject outputObject : outputObjects) {
-      transactionDescription
-          .append(outputObject.getPubKeyHash())
-          .append(", Amount: ")
-          .append(outputObject.getValue())
-          .append("\n");
-    }
-
-    return transactionDescription.toString();
+    digitalCashRepo.updateTransactions(channel.extractLaoId(), transactionObject);
   }
 }

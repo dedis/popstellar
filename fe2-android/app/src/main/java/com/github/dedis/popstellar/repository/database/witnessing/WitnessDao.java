@@ -17,4 +17,7 @@ public interface WitnessDao {
 
   @Query("SELECT witness FROM witnesses WHERE lao_id = :laoId")
   Single<List<PublicKey>> getWitnessesByLao(String laoId);
+
+  @Query("SELECT COUNT(*) FROM witnesses WHERE lao_id = :laoId AND witness = :witness")
+  int isWitness(String laoId, PublicKey witness);
 }

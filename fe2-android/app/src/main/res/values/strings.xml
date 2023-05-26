@@ -72,6 +72,8 @@
   </string>
   <string name="empty_events_non_organizer_text">No event has been created in this LAO ! \n\nSince you are not an organizer, you must wait for them to create one.
   </string>
+  <string name="witness_message_popup_text">You have a new witness message to sign!</string>
+  <string name="witness_message_popup_action">Go to witnessing</string>
 
   <!-- Abstract Event-->
   <string name="open">Open</string>

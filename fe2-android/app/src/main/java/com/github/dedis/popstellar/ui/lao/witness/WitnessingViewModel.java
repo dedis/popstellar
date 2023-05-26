@@ -50,6 +50,7 @@ public class WitnessingViewModel extends AndroidViewModel implements QRCodeScann
   private final MutableLiveData<List<PublicKey>> witnesses = new MutableLiveData<>();
   private final MutableLiveData<List<WitnessMessage>> witnessMessages = new MutableLiveData<>();
   private final MutableLiveData<Integer> nbScanned = new MutableLiveData<>(0);
+  private MutableLiveData<Boolean> showPopup = new MutableLiveData<>(false);
 
   private final LAORepository laoRepo;
   private final WitnessingRepository witnessingRepo;
@@ -112,8 +113,18 @@ public class WitnessingViewModel extends AndroidViewModel implements QRCodeScann
             .subscribe(
                 witnessMessage -> {
                   List<WitnessMessage> messages = new ArrayList<>(witnessMessage);
+                  // Order by latest arrived
                   Collections.reverse(messages);
                   setWitnessMessages(messages);
+
+                  // When a new witness message is received, if it needs to be signed by the user
+                  // then we show a pop up that the user can click to open the witnessing fragment
+                  PublicKey myPk = keyManager.getMainPublicKey();
+                  if (!witnessMessage.isEmpty()
+                      && witnessingRepo.isWitness(laoId, myPk)
+                      && !messages.get(0).getWitnesses().contains(myPk)) {
+                    showPopup.setValue(true);
+                  }
                 },
                 error ->
                     Timber.tag(TAG)
@@ -125,7 +136,7 @@ public class WitnessingViewModel extends AndroidViewModel implements QRCodeScann
    * useless space.
    */
   public void deleteSignedMessages() {
-    Timber.tag(TAG).d("Deleting witness messages already signed by enough witnesses");
+    Timber.tag(TAG).d("Deleting witnessing messages already signed by enough witnesses");
     witnessingRepo.deleteSignedMessages(laoId);
   }
 
@@ -138,6 +149,14 @@ public class WitnessingViewModel extends AndroidViewModel implements QRCodeScann
   @Override
   public LiveData<Integer> getNbScanned() {
     return nbScanned;
+  }
+
+  public LiveData<Boolean> getShowPopup() {
+    return showPopup;
+  }
+
+  public void disableShowPopup() {
+    showPopup.setValue(false);
   }
 
   protected Completable signMessage(WitnessMessage witnessMessage) {

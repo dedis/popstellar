@@ -9,6 +9,7 @@ import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.*;
+import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.error.*;
 
 import java.util.*;
@@ -28,10 +29,6 @@ public final class ElectionHandler {
   private final MessageRepository messageRepo;
   private final ElectionRepository electionRepository;
   private final WitnessingRepository witnessingRepository;
-
-  private static final String ELECTION_NAME = "Election Name : ";
-  private static final String MESSAGE_ID = "Message ID : ";
-  private static final String ELECTION_ID = "Election ID : ";
 
   @Inject
   public ElectionHandler(
@@ -85,21 +82,38 @@ public final class ElectionHandler {
         laoId, messageId, () -> setupElectionRoutine(election, context));
   }
 
-  private void setupElectionRoutine(Election election, HandlerContext context) {
-    // Add new election to repository
-    electionRepository.updateElection(election);
+  /**
+   * Process an ElectionOpen message.
+   *
+   * @param context the HandlerContext of the message
+   * @param electionOpen the message that was received
+   */
+  @SuppressWarnings("unused")
+  public void handleElectionOpen(HandlerContext context, ElectionOpen electionOpen)
+      throws InvalidStateException, UnknownElectionException, UnknownLaoException {
+    Channel channel = context.getChannel();
 
-    // Once the election is created, we subscribe to the election channel
-    context
-        .getMessageSender()
-        .subscribe(election.getChannel())
-        .doOnError(
-            err ->
-                Timber.tag(TAG).e(err, "An error occurred while subscribing to election channel"))
-        .onErrorComplete()
-        .subscribe();
+    Timber.tag(TAG).d("handleOpenElection: channel %s", channel);
 
-    Timber.tag(TAG).d("election id %s", election.getId());
+    String laoId = electionOpen.getLaoId();
+    if (!laoRepo.containsLao(laoId)) {
+      throw new UnknownLaoException(laoId);
+    }
+
+    Election election = electionRepository.getElectionByChannel(channel);
+
+    // If the state is not created, then this message is invalid
+    if (election.getState() != CREATED) {
+      throw new InvalidStateException(
+          electionOpen, "election", election.getState().name(), CREATED.name());
+    }
+
+    // Sets the start time to now
+    Election updated =
+        election.builder().setState(OPENED).setStart(electionOpen.getOpenedAt()).build();
+
+    Timber.tag(TAG).d("election opened %d", updated.getStartTimestamp());
+    electionRepository.updateElection(updated);
   }
 
   /**
@@ -134,52 +148,6 @@ public final class ElectionHandler {
 
     witnessingRepository.performActionWhenWitnessThresholdReached(
         laoId, messageId, () -> electionRepository.updateElection(election));
-  }
-
-  private Map<String, Set<QuestionResult>> computeResults(
-      @NonNull List<ElectionResultQuestion> electionResultsQuestions) {
-
-    Map<String, Set<QuestionResult>> results = new HashMap<>();
-
-    for (ElectionResultQuestion resultQuestion : electionResultsQuestions) {
-      results.put(resultQuestion.getId(), resultQuestion.getResult());
-    }
-
-    return results;
-  }
-
-  /**
-   * Process an ElectionOpen message.
-   *
-   * @param context the HandlerContext of the message
-   * @param electionOpen the message that was received
-   */
-  @SuppressWarnings("unused")
-  public void handleElectionOpen(HandlerContext context, ElectionOpen electionOpen)
-      throws InvalidStateException, UnknownElectionException, UnknownLaoException {
-    Channel channel = context.getChannel();
-
-    Timber.tag(TAG).d("handleOpenElection: channel %s", channel);
-
-    String laoId = electionOpen.getLaoId();
-    if (!laoRepo.containsLao(laoId)) {
-      throw new UnknownLaoException(laoId);
-    }
-
-    Election election = electionRepository.getElectionByChannel(channel);
-
-    // If the state is not created, then this message is invalid
-    if (election.getState() != CREATED) {
-      throw new InvalidStateException(
-          electionOpen, "election", election.getState().name(), CREATED.name());
-    }
-
-    // Sets the start time to now
-    Election updated =
-        election.builder().setState(OPENED).setStart(electionOpen.getOpenedAt()).build();
-
-    Timber.tag(TAG).d("election opened %d", updated.getStartTimestamp());
-    electionRepository.updateElection(updated);
   }
 
   /**
@@ -258,59 +226,6 @@ public final class ElectionHandler {
     }
   }
 
-  private void updateElectionWithVotes(
-      CastVote castVote, MessageID messageId, PublicKey senderPk, Election election) {
-    Election updated =
-        election
-            .builder()
-            .updateMessageMap(senderPk, messageId)
-            .updateVotes(senderPk, castVote.getVotes())
-            .build();
-
-    electionRepository.updateElection(updated);
-  }
-
-  public static WitnessMessage electionSetupWitnessMessage(MessageID messageId, Election election) {
-    WitnessMessage message = new WitnessMessage(messageId);
-    message.setTitle("New Election Setup");
-    message.setDescription(
-        ELECTION_NAME
-            + "\n"
-            + election.getName()
-            + "\n\n"
-            + ELECTION_ID
-            + "\n"
-            + election.getId()
-            + "\n\n"
-            + formatElectionQuestions(election.getElectionQuestions())
-            + "\n\n"
-            + MESSAGE_ID
-            + "\n"
-            + messageId.getEncoded());
-    return message;
-  }
-
-  public static WitnessMessage electionResultWitnessMessage(
-      MessageID messageId, Election election) {
-    WitnessMessage message = new WitnessMessage(messageId);
-    message.setTitle("Election Results");
-    message.setDescription(
-        ELECTION_NAME
-            + "\n"
-            + election.getName()
-            + "\n\n"
-            + ELECTION_ID
-            + "\n"
-            + election.getId()
-            + "\n\n"
-            + formatElectionResults(election.getElectionQuestions(), election.getResults())
-            + "\n\n"
-            + MESSAGE_ID
-            + "\n"
-            + messageId.getEncoded());
-    return message;
-  }
-
   /**
    * Simple way to handle a election key, add the given key to the given election
    *
@@ -333,6 +248,84 @@ public final class ElectionHandler {
     electionRepository.updateElection(election);
 
     Timber.tag(TAG).d("handleElectionKey: election key has been set");
+  }
+
+  private void updateElectionWithVotes(
+      CastVote castVote, MessageID messageId, PublicKey senderPk, Election election) {
+    Election updated =
+        election
+            .builder()
+            .updateMessageMap(senderPk, messageId)
+            .updateVotes(senderPk, castVote.getVotes())
+            .build();
+
+    electionRepository.updateElection(updated);
+  }
+
+  private Map<String, Set<QuestionResult>> computeResults(
+      @NonNull List<ElectionResultQuestion> electionResultsQuestions) {
+
+    Map<String, Set<QuestionResult>> results = new HashMap<>();
+
+    for (ElectionResultQuestion resultQuestion : electionResultsQuestions) {
+      results.put(resultQuestion.getId(), resultQuestion.getResult());
+    }
+
+    return results;
+  }
+
+  private void setupElectionRoutine(Election election, HandlerContext context) {
+    // Add new election to repository
+    electionRepository.updateElection(election);
+
+    // Once the election is created, we subscribe to the election channel
+    context
+        .getMessageSender()
+        .subscribe(election.getChannel())
+        .doOnError(
+            err ->
+                Timber.tag(TAG).e(err, "An error occurred while subscribing to election channel"))
+        .onErrorComplete()
+        .subscribe();
+
+    Timber.tag(TAG).d("election id %s", election.getId());
+  }
+
+  public static WitnessMessage electionSetupWitnessMessage(MessageID messageId, Election election) {
+    WitnessMessage message = new WitnessMessage(messageId);
+    message.setTitle(
+        String.format(
+            "Election %s setup at %s",
+            election.getName(), new Date(election.getCreationInMillis())));
+    message.setDescription(
+        "Mnemonic identifier :\n"
+            + ActivityUtils.generateMnemonicWordFromBase64(election.getId(), 2)
+            + "\n\n"
+            + "Opens at :\n"
+            + new Date(election.getStartTimestampInMillis())
+            + "\n\n"
+            + "Closes at :\n"
+            + new Date(election.getEndTimestampInMillis())
+            + "\n\n"
+            + formatElectionQuestions(election.getElectionQuestions()));
+
+    return message;
+  }
+
+  public static WitnessMessage electionResultWitnessMessage(
+      MessageID messageId, Election election) {
+    WitnessMessage message = new WitnessMessage(messageId);
+    message.setTitle(String.format("Election %s results", election.getName()));
+    message.setDescription(
+        "Mnemonic identifier :\n"
+            + ActivityUtils.generateMnemonicWordFromBase64(election.getId(), 2)
+            + "\n\n"
+            + "Closed at :\n"
+            + new Date(election.getEndTimestampInMillis())
+            + "\n\n"
+            + formatElectionResults(election.getElectionQuestions(), election.getResults()));
+
+    return message;
   }
 
   private static String formatElectionQuestions(List<ElectionQuestion> questions) {

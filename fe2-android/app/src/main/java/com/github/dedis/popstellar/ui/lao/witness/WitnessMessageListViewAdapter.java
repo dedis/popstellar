@@ -54,7 +54,8 @@ public class WitnessMessageListViewAdapter extends BaseAdapter {
   }
 
   private void setList(List<WitnessMessage> messages) {
-    this.messages = messages;
+    this.messages =
+        messages.stream().filter(WitnessMessage::hasToBeSigned).collect(Collectors.toList());
     notifyDataSetChanged();
   }
 

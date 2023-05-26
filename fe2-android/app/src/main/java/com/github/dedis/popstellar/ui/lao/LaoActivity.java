@@ -34,6 +34,7 @@ import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.Constants;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.*;
 import java.util.function.Supplier;
@@ -46,6 +47,7 @@ public class LaoActivity extends AppCompatActivity {
   public static final String TAG = LaoActivity.class.getSimpleName();
 
   LaoViewModel laoViewModel;
+  WitnessingViewModel witnessingViewModel;
   LaoActivityBinding binding;
   private final Deque<Fragment> fragmentStack = new LinkedList<>();
 
@@ -63,6 +65,8 @@ public class LaoActivity extends AppCompatActivity {
     laoViewModel.observeLao(laoId);
     laoViewModel.observeRollCalls(laoId);
 
+    witnessingViewModel = obtainWitnessingViewModel(this, laoId);
+
     // At creation of the lao activity the connections of the lao are restored from the persistent
     // storage, such that the client resubscribes to each previous subscribed channel
     laoViewModel.restoreConnections();
@@ -71,6 +75,8 @@ public class LaoActivity extends AppCompatActivity {
     observeToolBar();
     observeDrawer();
     setupDrawerHeader();
+
+    observeWitnessPopup();
 
     // Open Event list on activity creation
     setEventsTab();
@@ -199,6 +205,35 @@ public class LaoActivity extends AppCompatActivity {
     }
   }
 
+  private void observeWitnessPopup() {
+    witnessingViewModel
+        .getShowPopup()
+        .observe(
+            this,
+            showPopup -> {
+              // Ensure that the current fragment is not already witnessing
+              if (!showPopup
+                  || getSupportFragmentManager().findFragmentById(R.id.fragment_container_lao)
+                      instanceof WitnessingFragment) {
+                return;
+              }
+
+              // Display the Snackbar popup
+              Snackbar snackbar =
+                  Snackbar.make(
+                      findViewById(R.id.fragment_container_lao),
+                      R.string.witness_message_popup_text,
+                      Snackbar.LENGTH_SHORT);
+              snackbar.setAction(
+                  R.string.witness_message_popup_action,
+                  v -> {
+                    witnessingViewModel.disableShowPopup();
+                    setWitnessTab();
+                  });
+              snackbar.show();
+            });
+  }
+
   private void setupHeaderRole(Role role) {
     TextView roleView =
         binding
@@ -271,6 +306,12 @@ public class LaoActivity extends AppCompatActivity {
   private void setEventsTab() {
     binding.laoNavigationDrawer.setCheckedItem(MainMenuTab.EVENTS.getMenuId());
     openEventsTab();
+  }
+
+  /** Opens Witness tab and select it in the drawer menu */
+  private void setWitnessTab() {
+    binding.laoNavigationDrawer.setCheckedItem(MainMenuTab.WITNESSING.getMenuId());
+    openWitnessTab();
   }
 
   /** Restore the fragment contained in the stack as container of the current lao */

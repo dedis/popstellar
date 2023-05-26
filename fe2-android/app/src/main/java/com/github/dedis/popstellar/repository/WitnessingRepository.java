@@ -341,7 +341,7 @@ public class WitnessingRepository {
     }
 
     public synchronized boolean isWitness(PublicKey witness) {
-      return witnesses.contains(witness);
+      return witnesses.contains(witness) || repo.witnessDao.isWitness(laoId, witness) != 0;
     }
 
     public synchronized boolean isWitnessEmpty() {
