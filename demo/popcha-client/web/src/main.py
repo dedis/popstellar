@@ -149,6 +149,7 @@ def root() -> str:
     Get the homepage.
     :return: The homepage HTML
     """
+    print(config)
     providers_strings = [f'{provider.get("lao_id")}@{provider.get("domain")}'
         for provider in authenticationProvider.providers]
 
@@ -222,6 +223,7 @@ def app_route():
 
 
 # WARNING: This code is used since it is an example app, but it is UNSAFE
+
 @app.route("/add_provider")
 def add_provider():
     """
@@ -230,31 +232,16 @@ def add_provider():
     is intended for example / showcase servers that do not provide security.
     """
     args = request.args
-    valid_request = ("domain" in args and "lao_id" in args
-                     and "public_key" in args)
 
-    if valid_request:
-        provider = {
-            "domain": args["domain"],
-            "lao_id": args["lao_id"],
-            "public_key": args["public_key"]
-            }
+    if not check_provider(args):
+        return redirect("/?error=Invalid%20provider")
 
-        if check_provider(provider):
-            authenticationProvider.providers.append(provider)
-            return redirect("/")
+    provider = {
+        "domain": args["domain"],
+        "lao_id": args["lao_id"],
+        "public_key": args["public_key"]
+    }
+    authenticationProvider.providers.append(provider)
+    return redirect("/")
 
-    return redirect("/?error=Invalid%20provider")
-
-
-def run():
-    """
-    Launches the flask server
-    """
-    on_startup()
-    app.run(port = config["local_port"], debug = True)
-
-
-# Step 0: Starts the server
-if __name__ == "__main__":
-    run()
+on_startup()

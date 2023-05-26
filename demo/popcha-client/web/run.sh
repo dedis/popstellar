@@ -16,4 +16,4 @@ elif [ $# -eq 3 ]; then
   numWorkers=$3
 fi
 echo "Starting server with $numWorkers workers"
-gunicorn -w $numWorkers --chdir src "main:app" | tee -a log.out;
+gunicorn -w $numWorkers --chdir src "main:app";
