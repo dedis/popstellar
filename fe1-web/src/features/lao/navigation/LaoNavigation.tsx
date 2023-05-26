@@ -14,7 +14,6 @@ import { makeIcon } from 'core/components/PoPIcon';
 import { AppScreen } from 'core/navigation/AppNavigation';
 import { drawerNavigationOptions } from 'core/navigation/ScreenOptions';
 import { LaoParamList } from 'core/navigation/typing/LaoParamList';
-import { getNetworkManager } from 'core/network';
 import { Color, Spacing, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
@@ -86,8 +85,7 @@ const LaoDrawerContent = ({ descriptors, navigation, state }: DrawerContentCompo
         <DrawerItem
           label={STRINGS.navigation_lao_disconnect_title}
           onPress={() => {
-            getNetworkManager().disconnectFromAll();
-
+            // when going back to the app home, it will automatically disconnect from the lao
             navigation.navigate(STRINGS.navigation_app_home, {
               screen: STRINGS.navigation_home_home,
             });
