@@ -150,8 +150,8 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
 
         val setupElectionTimeStamp = Await.ready(channel.getSetupMessage(dbActorRef), duration).value.get match {
           case Success(setupElection: SetupElection) => setupElection.created_at
-          case Failure(exception) => return Left(validationError("Failed to get election questions: " + exception.getMessage))
-          case err @_ => return Left(validationError("Unknown error: " + err.toString))
+          case Failure(exception)                    => return Left(validationError("Failed to get election questions: " + exception.getMessage))
+          case err @ _                               => return Left(validationError("Unknown error: " + err.toString))
         }
 
         runChecks(
@@ -211,8 +211,8 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
           case Failure(exception)     => return Left(validationError("Failed to get election questions: " + exception.getMessage))
           case err @ _                => return Left(validationError("Unknown error: " + err.toString))
         }
-        val openingTimeStamp = Await.result(channel.extractMessages[OpenElection](dbActorRef),duration) match {
-          case openElection : List[(Message, OpenElection)] =>
+        val openingTimeStamp = Await.result(channel.extractMessages[OpenElection](dbActorRef), duration) match {
+          case openElection: List[(Message, OpenElection)] =>
             openElection.head._2.opened_at
           case _ => Timestamp(casteVote.created_at.time + 1L)
         }
@@ -333,11 +333,23 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
 
         val electionId = channel.extractChildChannel
 
+        val setupElectionTimeStamp = Await.ready(channel.getSetupMessage(dbActorRef), duration).value.get match {
+          case Success(setupElection: SetupElection) => setupElection.created_at
+          case Failure(exception)                    => return Left(validationError("Failed to get election questions: " + exception.getMessage))
+          case err @ _                               => return Left(validationError("Unknown error: " + err.toString))
+        }
+
         val firstCheck = runChecks(
           checkTimestampStaleness(
             rpcMessage,
             endElection.created_at,
             validationError(s"stale 'created_at' timestamp (${endElection.created_at})")
+          ),
+          checkTimestampOrder(
+            rpcMessage,
+            setupElectionTimeStamp,
+            endElection.created_at,
+            validationError("trying to end an election before setting it up")
           ),
           checkId(
             rpcMessage,
