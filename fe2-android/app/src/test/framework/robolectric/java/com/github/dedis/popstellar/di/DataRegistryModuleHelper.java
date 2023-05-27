@@ -205,8 +205,7 @@ public class DataRegistryModuleHelper {
     ConsensusHandler consensusHandler = new ConsensusHandler(laoRepo, witnessingRepo);
     ChirpHandler chirpHandler = new ChirpHandler(laoRepo, socialMediaRepo);
     ReactionHandler reactionHandler = new ReactionHandler(laoRepo, socialMediaRepo);
-    TransactionCoinHandler transactionCoinHandler =
-        new TransactionCoinHandler(digitalCashRepo, witnessingRepo);
+    TransactionCoinHandler transactionCoinHandler = new TransactionCoinHandler(digitalCashRepo);
     WitnessingHandler witnessingHandler = new WitnessingHandler(laoRepo, witnessingRepo);
 
     return DataRegistryModule.provideDataRegistry(

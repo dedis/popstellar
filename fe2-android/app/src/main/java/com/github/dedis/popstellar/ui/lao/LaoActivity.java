@@ -75,7 +75,6 @@ public class LaoActivity extends AppCompatActivity {
     observeToolBar();
     observeDrawer();
     setupDrawerHeader();
-
     observeWitnessPopup();
 
     // Open Event list on activity creation

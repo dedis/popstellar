@@ -54,8 +54,13 @@ public class WitnessMessageListViewAdapter extends BaseAdapter {
   }
 
   private void setList(List<WitnessMessage> messages) {
-    this.messages =
-        messages.stream().filter(WitnessMessage::hasToBeSigned).collect(Collectors.toList());
+    if (messages != null) {
+      // Remove from view messages that don't have to be signed
+      this.messages =
+          messages.stream().filter(WitnessMessage::hasToBeSigned).collect(Collectors.toList());
+    } else {
+      this.messages = null;
+    }
     notifyDataSetChanged();
   }
 
