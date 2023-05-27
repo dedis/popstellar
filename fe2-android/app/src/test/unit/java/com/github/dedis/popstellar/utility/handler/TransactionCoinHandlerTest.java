@@ -119,6 +119,7 @@ public class TransactionCoinHandlerTest {
     when(transactionDao.getTransactionsByLaoId(anyString()))
         .thenReturn(Single.just(new ArrayList<>()));
     when(transactionDao.insert(any(TransactionEntity.class))).thenReturn(Completable.complete());
+    when(transactionDao.deleteByLaoId(anyString())).thenReturn(Completable.complete());
 
     postTransactionCoin = new PostTransactionCoin(TRANSACTION);
 
