@@ -3,7 +3,6 @@ package com.github.dedis.popstellar.utility.handler.data;
 import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.*;
 import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.digitalcash.*;
-import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.repository.DigitalCashRepository;
 import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
 
@@ -32,7 +31,6 @@ public class TransactionCoinHandler {
   public void handlePostTransactionCoin(
       HandlerContext context, PostTransactionCoin postTransactionCoin) throws NoRollCallException {
     Channel channel = context.getChannel();
-    MessageID messageId = context.getMessageId();
 
     Timber.tag(TAG)
         .d("handlePostTransactionCoin: channel: %s, msg: %s", channel, postTransactionCoin);

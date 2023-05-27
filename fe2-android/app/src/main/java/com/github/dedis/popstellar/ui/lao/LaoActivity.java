@@ -34,6 +34,7 @@ import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.Constants;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
+import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.*;
@@ -211,7 +212,7 @@ public class LaoActivity extends AppCompatActivity {
             this,
             showPopup -> {
               // Ensure that the current fragment is not already witnessing
-              if (!showPopup
+              if (Boolean.FALSE.equals(showPopup)
                   || getSupportFragmentManager().findFragmentById(R.id.fragment_container_lao)
                       instanceof WitnessingFragment) {
                 return;
@@ -222,7 +223,7 @@ public class LaoActivity extends AppCompatActivity {
                   Snackbar.make(
                       findViewById(R.id.fragment_container_lao),
                       R.string.witness_message_popup_text,
-                      Snackbar.LENGTH_SHORT);
+                      BaseTransientBottomBar.LENGTH_SHORT);
               snackbar.setAction(
                   R.string.witness_message_popup_action,
                   v -> {

@@ -264,7 +264,7 @@ public class ActivityUtils {
     // Generate the mnemonic words from the input data
     String[] mnemonicWords = generateMnemonic(data);
 
-    if (mnemonicWords == null) {
+    if (mnemonicWords.length == 0) {
       return "none";
     }
 
@@ -289,7 +289,7 @@ public class ActivityUtils {
               e,
               "Error generating the mnemonic for the base64 string %s",
               new Base64URLData(data).getEncoded());
-      return null;
+      return new String[0];
     }
   }
 }

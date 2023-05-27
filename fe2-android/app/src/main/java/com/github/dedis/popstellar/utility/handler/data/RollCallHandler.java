@@ -22,6 +22,10 @@ public final class RollCallHandler {
 
   private static final String TAG = RollCallHandler.class.getSimpleName();
 
+  private static final String MNEMONIC_STRING = "Mnemonic identifier :\n";
+  private static final String LOCATION_STRING = "Location :\n";
+  private static final String DESCRIPTION_STRING = "Description :\n";
+
   private final LAORepository laoRepo;
   private final RollCallRepository rollCallRepo;
   private final DigitalCashRepository digitalCashRepo;
@@ -202,15 +206,15 @@ public final class RollCallHandler {
             "The Roll Call %s was created at %s",
             rollCall.getName(), new Date(rollCall.getCreation() * 1000)));
     message.setDescription(
-        "Mnemonic identifier :\n"
+        MNEMONIC_STRING
             + ActivityUtils.generateMnemonicWordFromBase64(rollCall.getPersistentId(), 2)
             + "\n\n"
-            + "Location :\n"
+            + LOCATION_STRING
             + rollCall.getLocation()
             + "\n\n"
             + (rollCall.getDescription().isEmpty()
                 ? ""
-                : ("Description :\n" + rollCall.getDescription() + "\n\n"))
+                : (DESCRIPTION_STRING + rollCall.getDescription() + "\n\n"))
             + "Opens at :\n"
             + new Date(rollCall.getStartTimestampInMillis())
             + "\n\n"
@@ -227,15 +231,15 @@ public final class RollCallHandler {
             "The Roll Call %s was opened at %s",
             rollCall.getName(), new Date(rollCall.getStartTimestampInMillis())));
     message.setDescription(
-        "Mnemonic identifier :\n"
+        MNEMONIC_STRING
             + ActivityUtils.generateMnemonicWordFromBase64(rollCall.getPersistentId(), 2)
             + "\n\n"
-            + "Location :\n"
+            + LOCATION_STRING
             + rollCall.getLocation()
             + "\n\n"
             + (rollCall.getDescription().isEmpty()
                 ? ""
-                : ("Description :\n" + rollCall.getDescription() + "\n\n"))
+                : (DESCRIPTION_STRING + rollCall.getDescription() + "\n\n"))
             + "Closes at :\n"
             + new Date(rollCall.getEndTimestampInMillis()));
 
@@ -249,15 +253,15 @@ public final class RollCallHandler {
             "The Roll Call %s was closed at %s",
             rollCall.getName(), new Date(rollCall.getEndTimestampInMillis())));
     message.setDescription(
-        "Mnemonic identifier :\n"
+        MNEMONIC_STRING
             + ActivityUtils.generateMnemonicWordFromBase64(rollCall.getPersistentId(), 2)
             + "\n\n"
-            + "Location :\n"
+            + LOCATION_STRING
             + rollCall.getLocation()
             + "\n\n"
             + (rollCall.getDescription().isEmpty()
                 ? ""
-                : ("Description :\n" + rollCall.getDescription() + "\n\n"))
+                : (DESCRIPTION_STRING + rollCall.getDescription() + "\n\n"))
             + formatAttendees(rollCall.getAttendees()));
 
     return message;
