@@ -289,7 +289,6 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
             rpcMessage,
             electionQuestions,
             resultElection.questions,
-            electionId,
             validationError(s"trying to send a ResultElection message with invalid question ids.")
           ),
           checkResultBallotOptions(
@@ -545,9 +544,9 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
     * @param dbActorRef
     *   the dbActor to ask for the number of attendees.
     * @param channel
-    *   the channel we need the LAO's data for
+    *   the channel of the corresponding LaoData
     * @param error
-    *   the error to forward in case where the number of votes is incoherent.
+    *   the error to forward when the number of votes is incoherent.
     * @return
     *   GraphMessage: passes the rpcMessages to Right if successful else Left with pipeline error
     */
@@ -573,7 +572,7 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
   /** @param electionQuestionResult
     *   The ElectionQuestionResult the ElectionValidator received.
     * @return
-    *   The total number number of votes on that question.
+    *   The total number number of votes for the question.
     */
   private def countNumberOfVotes(electionQuestionResult: ElectionQuestionResult): Int = {
     electionQuestionResult.result.map(_.count).sum
@@ -595,10 +594,8 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
     *   The list of ElectionQuestions that have been sent with the SetupElection.
     * @param result
     *   The list of ElectionQuestionResults the ElectionValidator received.
-    * @param electionId
-    *   The electionId to compute the election question ids.
     * @param error
-    *   The error to forward in case where ballot options are incoherent.
+    *   The error to forward when the ballot options are incoherent.
     * @return
     *   GraphMessage: passes the rpcMessages to Right if successful else Left with pipeline error.
     */
@@ -606,7 +603,6 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
       rpcMessage: JsonRpcRequest,
       questions: List[ElectionQuestion],
       result: List[ElectionQuestionResult],
-      electionId: Hash,
       error: PipelineError
   ): GraphMessage = {
     val setupElectionIds = questions.map(_.id).toSet
@@ -636,11 +632,9 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
       error: PipelineError
   ): GraphMessage = {
     var isResultBallotValid = true
-    result.foreach(electionQuestionResult => {
-      val matchingQuestion = findMatchingElectionQuestion(electionQuestionResult.id, questions)
-      if ((!matchingQuestion.isDefined) || (electionQuestionResult.result.toSet[ElectionBallotVotes].map(_.ballot_option) != matchingQuestion.get.ballot_options.toSet)) {
-        isResultBallotValid = false
-      }
+    isResultBallotValid = result.forall(electionQuestionResult => {
+      val matchingQuestion = questions.find(_.id == electionQuestionResult.id)
+      matchingQuestion.isDefined && electionQuestionResult.result.toSet[ElectionBallotVotes].map(_.ballot_option) == matchingQuestion.get.ballot_options.toSet
     })
     if (isResultBallotValid) {
       Right(rpcMessage)

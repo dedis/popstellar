@@ -1,6 +1,7 @@
 package util.examples
 
 import ch.epfl.pop.model.network.method.message.Message
+import ch.epfl.pop.model.network.method.message.data.election.SetupElection
 import ch.epfl.pop.model.network.method.{GetMessagesById, Heartbeat, ParamsWithChannel, ParamsWithMessage}
 import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse, MethodType, ResultObject}
 import ch.epfl.pop.model.objects.{Base64Data, Channel, Hash}
@@ -10,8 +11,8 @@ import util.examples.Election.OpenElectionExamples._
 import util.examples.Election.SetupElectionExamples.{ELECTION_ID, _}
 import util.examples.Election.EndElectionExamples._
 import util.examples.Election.KeyElectionExamples._
-import util.examples.Election.ResultElectionExamples.{MESSAGE_RESULT_ELECTION_TOO_MUCH_VOTES, MESSAGE_RESULT_ELECTION_WORKING, MESSAGE_RESULT_ELECTION_WRONG, MESSAGE_RESULT_ELECTION_WRONG_BALLOT_OPTIONS, MESSAGE_RESULT_ELECTION_WRONG_ID}
-import util.examples.Election.SetupElectionExamples
+import util.examples.Election.ResultElectionExamples._
+import util.examples.Election.{ResultElectionExamples, SetupElectionExamples}
 import util.examples.Lao.GreetLaoExamples._
 import util.examples.MessageExample._
 import util.examples.Witness.WitnessMessageExamples._
@@ -192,7 +193,7 @@ object JsonRpcRequestExample {
   final val KEY_ELECTION_WRONG_OWNER_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithKeyElectionWrongOwner, id)
 
   // For CastVoteElection testing
-  private final val electionChannelCastVote: Channel = Channel(Channel.ROOT_CHANNEL_PREFIX + Base64Data.encode("laoId") + Channel.CHANNEL_SEPARATOR + ELECTION_ID)
+  private final val electionChannelCastVote: Channel = Channel(Channel.ROOT_CHANNEL_PREFIX + Base64Data.encode("laoId") + Channel.CHANNEL_SEPARATOR + ResultElectionExamples.ELECTION_ID)
   private final val paramsWithCastVoteElection: ParamsWithMessage = new ParamsWithMessage(electionChannelCastVote, MESSAGE_CAST_VOTE_ELECTION_WORKING)
   private final val paramsWithCastVoteElectionWrongTimestamp: ParamsWithMessage = new ParamsWithMessage(electionChannelCastVote, MESSAGE_CAST_VOTE_ELECTION_WRONG_TIMESTAMP)
   private final val paramsWithCastVoteElectionWrongId: ParamsWithMessage = new ParamsWithMessage(electionChannelCastVote, MESSAGE_CAST_VOTE_ELECTION_WRONG_ID)

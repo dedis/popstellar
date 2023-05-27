@@ -304,7 +304,7 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
         case DbActor.ReadLaoData(_) =>
           sender() ! DbActor.DbActorReadLaoDataAck(laoDataForResultElection)
         case DbActor.Catchup(_) =>
-          sender() ! DbActor.DbActorCatchupAck(List(MESSAGE_END_ELECTION_WRONG_ID))
+          sender() ! DbActor.DbActorCatchupAck(List(MESSAGE_END_ELECTION_WORKING))
         case DbActor.ReadSetupElectionMessage(_) =>
           sender() ! DbActor.DbActorReadAck(Some(MESSAGE_SETUPELECTION_WRONG_ID))
       }
