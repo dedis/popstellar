@@ -6,7 +6,6 @@ import com.github.dedis.popstellar.model.objects.Reaction;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 
 import java.util.List;
-import java.util.Set;
 
 import io.reactivex.Completable;
 import io.reactivex.Single;
@@ -17,7 +16,6 @@ public interface ReactionDao {
   @Insert(onConflict = OnConflictStrategy.REPLACE)
   Completable insert(ReactionEntity reactionEntity);
 
-  @Query(
-      "SELECT reaction FROM reactions WHERE chirp_id = :chirpId AND reaction_id NOT IN (:filteredIds)")
-  Single<List<Reaction>> getReactionsByChirpId(MessageID chirpId, Set<MessageID> filteredIds);
+  @Query("SELECT reaction FROM reactions WHERE chirp_id = :chirpId")
+  Single<List<Reaction>> getReactionsByChirpId(MessageID chirpId);
 }

@@ -120,6 +120,32 @@ public final class MessageGeneral {
     return true;
   }
 
+  public boolean isEmpty() {
+    return this.equals(EMPTY);
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    MessageGeneral that = (MessageGeneral) o;
+    return Objects.equals(sender, that.sender)
+        && Objects.equals(dataBuf, that.dataBuf)
+        && Objects.equals(data, that.data)
+        && Objects.equals(messageId, that.messageId)
+        && Objects.equals(signature, that.signature)
+        && Objects.equals(witnessSignatures, that.witnessSignatures);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(sender, dataBuf, data, messageId, signature, witnessSignatures);
+  }
+
   @NonNull
   @Override
   public String toString() {

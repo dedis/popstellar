@@ -11,7 +11,7 @@ import io.reactivex.Single;
 public interface HashDao {
 
   @Insert(onConflict = OnConflictStrategy.REPLACE)
-  Completable insert(List<HashEntity> hashEntity);
+  Completable insertAll(List<HashEntity> hashEntity);
 
   @Query("SELECT * FROM hash_dictionary WHERE lao_id = :laoId")
   Single<List<HashEntity>> getDictionaryByLaoId(String laoId);
