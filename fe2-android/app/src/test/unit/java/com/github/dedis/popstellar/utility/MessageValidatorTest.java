@@ -181,7 +181,7 @@ public class MessageValidatorTest {
 
     validator.isValidEmoji("\uD83D\uDC4D", field);
     validator.isValidEmoji("\uD83D\uDC4E", field);
-    validator.isValidEmoji("❤", field);
+    validator.isValidEmoji("❤️", field);
 
     assertThrows(
         IllegalArgumentException.class, () -> validator.isValidEmoji("\uD83D\uDE00", field));

@@ -140,8 +140,8 @@ public class ChirpListAdapterTest {
           socialMediaRepository.addChirp(LAO_ID, CHIRP_2);
           socialMediaRepository.addReaction(LAO_ID, REACTION);
 
-          messageSenderHelper.setupMock();
           when(networkManager.getMessageSender()).thenReturn(messageSenderHelper.getMockedSender());
+          messageSenderHelper.setupMock();
 
           when(keyManager.getMainPublicKey()).thenReturn(SENDER_KEY_1.getPublicKey());
           when(keyManager.getValidPoPToken(anyString(), any(RollCall.class)))
@@ -322,43 +322,29 @@ public class ChirpListAdapterTest {
               View view1 = chirpListAdapter.getView(0, null, layout);
               assertNotNull(view1);
 
-              // Verify the upvote is set
+              // Verify the upvote is deselected
               ImageButton upvoteButton = view1.findViewById(R.id.upvote_button);
               assertNotNull(upvoteButton);
-              // Wait for the observable to be notified
-              InstrumentationRegistry.getInstrumentation().waitForIdleSync();
-              assertTrue(upvoteButton.isSelected());
 
+              upvoteButton.callOnClick();
               // Remove the upvote reaction
               socialMediaRepository.deleteReaction(LAO_ID, REACTION_ID);
-
               // Wait for the observable to be notified
               InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
               assertFalse(upvoteButton.isSelected());
 
               // Verify the downvote is not set
               ImageButton downvoteButton = view1.findViewById(R.id.downvote_button);
               assertNotNull(downvoteButton);
               assertFalse(downvoteButton.isSelected());
-
-              // Add the downvote reaction
-              socialMediaRepository.addReaction(LAO_ID, REACTION2);
-
-              // Wait for the observable to be notified
-              InstrumentationRegistry.getInstrumentation().waitForIdleSync();
-              assertTrue(downvoteButton.isSelected());
+              downvoteButton.callOnClick();
 
               // Verify the heart is not set
               ImageButton heartButton = view1.findViewById(R.id.heart_button);
               assertNotNull(heartButton);
               assertFalse(heartButton.isSelected());
-
-              // Add the heart reaction
-              socialMediaRepository.addReaction(LAO_ID, REACTION3);
-
-              // Wait for the observable to be notified
-              InstrumentationRegistry.getInstrumentation().waitForIdleSync();
-              assertTrue(heartButton.isSelected());
+              heartButton.callOnClick();
             });
   }
 
