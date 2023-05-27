@@ -6,7 +6,8 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
-import com.github.dedis.popstellar.di.*;
+import com.github.dedis.popstellar.di.DataRegistryModuleHelper;
+import com.github.dedis.popstellar.di.JsonModule;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.DataRegistry;
 import com.github.dedis.popstellar.model.network.method.message.data.election.*;
@@ -19,6 +20,12 @@ import com.github.dedis.popstellar.model.objects.security.elGamal.ElectionKeyPai
 import com.github.dedis.popstellar.model.objects.security.elGamal.ElectionPublicKey;
 import com.github.dedis.popstellar.repository.*;
 import com.github.dedis.popstellar.repository.database.AppDatabase;
+import com.github.dedis.popstellar.repository.database.event.election.ElectionDao;
+import com.github.dedis.popstellar.repository.database.event.election.ElectionEntity;
+import com.github.dedis.popstellar.repository.database.lao.LAODao;
+import com.github.dedis.popstellar.repository.database.lao.LAOEntity;
+import com.github.dedis.popstellar.repository.database.message.MessageDao;
+import com.github.dedis.popstellar.repository.database.message.MessageEntity;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.utility.error.*;
 import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
@@ -39,13 +46,14 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import io.reactivex.Completable;
+import io.reactivex.Single;
 
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateRandomBase64String;
 import static com.github.dedis.popstellar.utility.handler.data.ElectionHandler.electionSetupWitnessMessage;
 import static java.util.Collections.singletonList;
 import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 
@@ -100,8 +108,11 @@ public class ElectionHandlerTest {
   private MessageHandler messageHandler;
   private MessageRepository messageRepo;
   private Gson gson;
-  private AppDatabase appDatabase;
 
+  @Mock AppDatabase appDatabase;
+  @Mock LAODao laoDao;
+  @Mock MessageDao messageDao;
+  @Mock ElectionDao electionDao;
   @Mock MessageSender messageSender;
   @Mock KeyManager keyManager;
 
@@ -110,19 +121,30 @@ public class ElectionHandlerTest {
   @Before
   public void setup() throws GeneralSecurityException, IOException {
     MockitoAnnotations.openMocks(this);
-
     Application application = ApplicationProvider.getApplicationContext();
-    appDatabase = AppDatabaseModuleHelper.getAppDatabase(application);
 
     lenient().when(keyManager.getMainKeyPair()).thenReturn(SENDER_KEY);
     lenient().when(keyManager.getMainPublicKey()).thenReturn(SENDER);
 
     when(messageSender.subscribe(any())).then(args -> Completable.complete());
 
+    when(appDatabase.laoDao()).thenReturn(laoDao);
+    when(laoDao.getAllLaos()).thenReturn(Single.just(new ArrayList<>()));
+    when(laoDao.insert(any(LAOEntity.class))).thenReturn(Completable.complete());
+
+    when(appDatabase.messageDao()).thenReturn(messageDao);
+    when(messageDao.takeFirstNMessages(anyInt())).thenReturn(Single.just(new ArrayList<>()));
+    when(messageDao.insert(any(MessageEntity.class))).thenReturn(Completable.complete());
+    when(messageDao.getMessageById(any(MessageID.class))).thenReturn(null);
+
+    when(appDatabase.electionDao()).thenReturn(electionDao);
+    when(electionDao.insert(any(ElectionEntity.class))).thenReturn(Completable.complete());
+    when(electionDao.getElectionsByLaoId(anyString())).thenReturn(Single.just(new ArrayList<>()));
+
     laoRepo = new LAORepository(appDatabase, application);
     electionRepo = new ElectionRepository(appDatabase, application);
-
     messageRepo = new MessageRepository(appDatabase, application);
+
     DataRegistry dataRegistry =
         DataRegistryModuleHelper.buildRegistry(laoRepo, electionRepo, keyManager, messageRepo);
 
@@ -134,12 +156,6 @@ public class ElectionHandlerTest {
     // Add the CreateLao message to the LAORepository
     MessageGeneral createLaoMessage = new MessageGeneral(SENDER_KEY, CREATE_LAO, gson);
     messageRepo.addMessage(createLaoMessage, true, true);
-  }
-
-  @After
-  public void tearDown() {
-    appDatabase.clearAllTables();
-    appDatabase.close();
   }
 
   private MessageID handleElectionSetup(Election election, Channel channel)
