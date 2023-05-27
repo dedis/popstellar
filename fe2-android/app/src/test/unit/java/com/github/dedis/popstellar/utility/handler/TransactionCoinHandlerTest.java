@@ -18,8 +18,7 @@ import com.github.dedis.popstellar.model.objects.security.*;
 import com.github.dedis.popstellar.repository.DigitalCashRepository;
 import com.github.dedis.popstellar.repository.MessageRepository;
 import com.github.dedis.popstellar.repository.database.AppDatabase;
-import com.github.dedis.popstellar.repository.database.digitalcash.TransactionDao;
-import com.github.dedis.popstellar.repository.database.digitalcash.TransactionEntity;
+import com.github.dedis.popstellar.repository.database.digitalcash.*;
 import com.github.dedis.popstellar.repository.database.message.MessageDao;
 import com.github.dedis.popstellar.repository.database.message.MessageEntity;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
@@ -96,6 +95,7 @@ public class TransactionCoinHandlerTest {
   @Mock AppDatabase appDatabase;
   @Mock MessageDao messageDao;
   @Mock TransactionDao transactionDao;
+  @Mock HashDao hashDao;
   @Mock MessageSender messageSender;
   @Mock KeyManager keyManager;
 
@@ -120,6 +120,11 @@ public class TransactionCoinHandlerTest {
         .thenReturn(Single.just(new ArrayList<>()));
     when(transactionDao.insert(any(TransactionEntity.class))).thenReturn(Completable.complete());
     when(transactionDao.deleteByLaoId(anyString())).thenReturn(Completable.complete());
+
+    when(appDatabase.hashDao()).thenReturn(hashDao);
+    when(hashDao.getDictionaryByLaoId(anyString())).thenReturn(Single.just(new ArrayList<>()));
+    when(hashDao.insertAll(any())).thenReturn(Completable.complete());
+    when(hashDao.deleteByLaoId(anyString())).thenReturn(Completable.complete());
 
     postTransactionCoin = new PostTransactionCoin(TRANSACTION);
 
