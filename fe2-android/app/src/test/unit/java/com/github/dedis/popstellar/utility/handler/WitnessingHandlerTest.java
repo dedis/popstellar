@@ -115,7 +115,8 @@ public class WitnessingHandlerTest {
     witnessingRepository = new WitnessingRepository(appDatabase, application);
     MessageRepository messageRepo = new MessageRepository(appDatabase, application);
 
-    DataRegistry dataRegistry = DataRegistryModuleHelper.buildRegistry(laoRepo, keyManager);
+    DataRegistry dataRegistry =
+        DataRegistryModuleHelper.buildRegistry(laoRepo, witnessingRepository, keyManager);
 
     gson = JsonModule.provideGson(dataRegistry);
     messageHandler = new MessageHandler(messageRepo, dataRegistry);
