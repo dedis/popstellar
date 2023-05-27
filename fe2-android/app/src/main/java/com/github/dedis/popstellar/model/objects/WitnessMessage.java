@@ -6,6 +6,7 @@ import com.github.dedis.popstellar.model.Copyable;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 
+import java.time.Instant;
 import java.util.*;
 
 /** Class to model a message that needs to be signed by witnesses */
@@ -17,14 +18,14 @@ public class WitnessMessage implements Copyable<WitnessMessage> {
   /** Set of witnesses that have signed the message */
   private final Set<PublicKey> witnesses;
 
-  /** Boolean to specify whether the given message has to be manually signed */
-  private final boolean toBeSigned;
-
   /** Title that will be displayed for the message */
   private String title = "";
 
   /** Description that will be displayed for the message */
   private String description = "";
+
+  /** Timestamp of the creation of the witnessing message used to sort messages by most recent */
+  private final long timestamp;
 
   /**
    * Constructor for a Witness Message
@@ -32,13 +33,9 @@ public class WitnessMessage implements Copyable<WitnessMessage> {
    * @param messageId ID of the message to sign
    */
   public WitnessMessage(MessageID messageId) {
-    this(messageId, true);
-  }
-
-  public WitnessMessage(MessageID messageId, boolean toBeSigned) {
     witnesses = new HashSet<>();
     this.messageId = messageId;
-    this.toBeSigned = toBeSigned;
+    this.timestamp = Instant.now().getEpochSecond();
   }
 
   public WitnessMessage(WitnessMessage witnessMessage) {
@@ -46,7 +43,7 @@ public class WitnessMessage implements Copyable<WitnessMessage> {
     this.witnesses = new HashSet<>(witnessMessage.witnesses);
     this.title = witnessMessage.title;
     this.description = witnessMessage.description;
-    this.toBeSigned = witnessMessage.toBeSigned;
+    this.timestamp = witnessMessage.timestamp;
   }
 
   /**
@@ -54,7 +51,7 @@ public class WitnessMessage implements Copyable<WitnessMessage> {
    *
    * @param pk public key of the witness that have signed the message
    */
-  public void addWitness(PublicKey pk) {
+  public synchronized void addWitness(PublicKey pk) {
     witnesses.add(pk);
   }
 
@@ -62,7 +59,7 @@ public class WitnessMessage implements Copyable<WitnessMessage> {
     return messageId;
   }
 
-  public Set<PublicKey> getWitnesses() {
+  public synchronized Set<PublicKey> getWitnesses() {
     return witnesses;
   }
 
@@ -82,8 +79,8 @@ public class WitnessMessage implements Copyable<WitnessMessage> {
     this.description = description;
   }
 
-  public boolean hasToBeSigned() {
-    return toBeSigned;
+  public long getTimestamp() {
+    return timestamp;
   }
 
   @Override
@@ -118,14 +115,11 @@ public class WitnessMessage implements Copyable<WitnessMessage> {
       return false;
     }
     WitnessMessage that = (WitnessMessage) o;
-    return messageId.equals(that.messageId)
-        && Objects.equals(witnesses, that.witnesses)
-        && Objects.equals(title, that.title)
-        && Objects.equals(description, that.description);
+    return messageId.equals(that.messageId) && Objects.equals(witnesses, that.witnesses);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(messageId, witnesses, title, description);
+    return Objects.hash(messageId, witnesses);
   }
 }

@@ -13,7 +13,7 @@ import io.reactivex.Single;
 public interface WitnessDao {
 
   @Insert(onConflict = OnConflictStrategy.REPLACE)
-  Completable insert(List<WitnessEntity> witnessEntities);
+  Completable insertAll(List<WitnessEntity> witnessEntities);
 
   @Query("SELECT witness FROM witnesses WHERE lao_id = :laoId")
   Single<List<PublicKey>> getWitnessesByLao(String laoId);

@@ -125,7 +125,7 @@ public final class LaoHandler {
     WitnessMessage message;
     if (!updateLao.getName().equals(laoView.getName())) {
       message = updateLaoNameWitnessMessage(messageId, updateLao, laoView);
-    } else if (!witnessingRepo.areWitnessesEquals(laoId, updateLao.getWitnesses())) {
+    } else if (!witnessingRepo.getWitnesses(laoId).equals(updateLao.getWitnesses())) {
       message = updateLaoWitnessesWitnessMessage(messageId, updateLao, laoView);
     } else {
       Timber.tag(TAG).d("Cannot set the witness message title to update lao");

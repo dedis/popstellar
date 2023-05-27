@@ -27,6 +27,7 @@ import com.google.gson.Gson;
 
 import java.time.Instant;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -96,10 +97,17 @@ public class WitnessingViewModel extends AndroidViewModel implements QRCodeScann
     return new ArrayList<>(scannedWitnesses);
   }
 
+  /**
+   * Function that initializes the view model. It sets the lao identifier and observe the witnesses
+   * and witness messages.
+   *
+   * @param laoId identifier of the lao whose view model belongs
+   */
   public void initialize(String laoId) {
     this.laoId = laoId;
 
     disposables.addAll(
+        // Observe the witnesses
         witnessingRepo
             .getWitnessesObservableInLao(laoId)
             .observeOn(AndroidSchedulers.mainThread())
@@ -107,22 +115,27 @@ public class WitnessingViewModel extends AndroidViewModel implements QRCodeScann
                 witnessesSet -> setWitnesses(new ArrayList<>(witnessesSet)),
                 error ->
                     Timber.tag(TAG).d(error, "Error in updating the witnesses of lao %s", laoId)),
+        // Observe the witness messages
         witnessingRepo
             .getWitnessMessagesObservableInLao(laoId)
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 witnessMessage -> {
-                  List<WitnessMessage> messages = new ArrayList<>(witnessMessage);
                   // Order by latest arrived
-                  Collections.reverse(messages);
-                  setWitnessMessages(messages);
+                  setWitnessMessages(
+                      witnessMessage.stream()
+                          .sorted(Comparator.comparing(WitnessMessage::getTimestamp).reversed())
+                          .collect(Collectors.toList()));
 
                   // When a new witness message is received, if it needs to be signed by the user
                   // then we show a pop up that the user can click to open the witnessing fragment
                   PublicKey myPk = keyManager.getMainPublicKey();
                   if (!witnessMessage.isEmpty()
                       && witnessingRepo.isWitness(laoId, myPk)
-                      && !messages.get(0).getWitnesses().contains(myPk)) {
+                      && !Objects.requireNonNull(witnessMessages.getValue())
+                          .get(0)
+                          .getWitnesses()
+                          .contains(myPk)) {
                     showPopup.setValue(true);
                   }
                 },

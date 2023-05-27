@@ -16,6 +16,7 @@ import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.error.UnknownWitnessMessageException;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -61,13 +62,14 @@ public class WitnessingRepository {
 
   /**
    * This adds to the repository a witness message. This is done at creation of a particular
-   * message, such that the witnesses are empty.
+   * message, such that the witnesses of the message are empty.
    *
    * @param laoId identifier of the lao where the message belongs
    * @param witnessMessage witness message containing the message id to sign
    */
   public void addWitnessMessage(String laoId, WitnessMessage witnessMessage) {
     Timber.tag(TAG).d("Adding a witness message on lao %s : %s", laoId, witnessMessage);
+
     // Persist the message
     WitnessingEntity witnessingEntity = new WitnessingEntity(laoId, witnessMessage);
     disposables.add(
@@ -79,6 +81,7 @@ public class WitnessingRepository {
                 () ->
                     Timber.tag(TAG).d("Successfully persisted witness message %s", witnessMessage),
                 err -> Timber.tag(TAG).e(err, "Error in persisting witness message")));
+
     // Retrieve Lao data and add the witness message to it
     getLaoWitness(laoId).add(witnessMessage);
   }
@@ -91,27 +94,30 @@ public class WitnessingRepository {
    */
   public void addWitnesses(String laoId, Set<PublicKey> witnesses) {
     Timber.tag(TAG).d("Adding witnesses to lao %s : %s", laoId, witnesses);
-    // Persist the witnesses
+
+    // Persist all the witnesses at once
     List<WitnessEntity> witnessEntities =
         witnesses.stream().map(pk -> new WitnessEntity(laoId, pk)).collect(Collectors.toList());
     disposables.add(
         witnessDao
-            .insert(witnessEntities)
+            .insertAll(witnessEntities)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 () -> Timber.tag(TAG).d("Successfully persisted witnesses %s", witnesses),
                 err -> Timber.tag(TAG).e(err, "Error in persisting witnesses")));
+
     // Retrieve Lao data and add the witnesses to it
     getLaoWitness(laoId).addWitnesses(witnesses);
   }
 
   /**
-   * This function adds a witness public key to a witness message contained in the repository.
+   * This function adds a witness public key to a witness message contained in the repository when
+   * such witness has correctly signed the message.
    *
    * @param laoId identifier of the lao where the message belongs
    * @param messageID id of the message signed
-   * @param witness public key to add
+   * @param witness whose public key to add
    * @return true if it exists a witness message with that messageId, false otherwise
    */
   public boolean addWitnessToMessage(String laoId, MessageID messageID, PublicKey witness) {
@@ -137,17 +143,6 @@ public class WitnessingRepository {
   }
 
   /**
-   * Check whether the passed witnesses are matching with the lao's witnesses.
-   *
-   * @param laoId identifier of the lao
-   * @param witnesses set of public keys representing to witnesses to check
-   * @return true if equals, false otherwise
-   */
-  public boolean areWitnessesEquals(String laoId, Set<PublicKey> witnesses) {
-    return getLaoWitness(laoId).areWitnessesEquals(witnesses);
-  }
-
-  /**
    * This returns the set of public keys of the witnesses of a lao.
    *
    * @param laoId lao identifier whose witnesses are being retrieved
@@ -161,8 +156,8 @@ public class WitnessingRepository {
    * Returns an observable over the set of witnesses in a lao.
    *
    * @param laoId the id of the Lao whose witnesses we want to observe
-   * @return an observable set of public keys which corresponds to the set of witnesses on the given
-   *     lao
+   * @return an observable over the set of public keys which corresponds to the set of witnesses on
+   *     the given lao
    */
   public Observable<Set<PublicKey>> getWitnessesObservableInLao(String laoId) {
     return getLaoWitness(laoId).getWitnessesSubject();
@@ -196,6 +191,8 @@ public class WitnessingRepository {
       action.run();
       return;
     }
+    // Atomic bool triggered when the policy is satisfied.
+    // It ensures the action is executed once only
     AtomicBoolean pass = new AtomicBoolean(false);
     disposables.add(
         getWitnessMessageObservableInLao(laoId, messageId)
@@ -277,18 +274,24 @@ public class WitnessingRepository {
     private final WitnessingRepository repo;
     private boolean alreadyRetrieved = false;
 
-    private final Set<PublicKey> witnesses = new HashSet<>();
+    /** Thread-safe structure for saving the witnesses of a given lao */
+    private final Set<PublicKey> witnesses = ConcurrentHashMap.newKeySet();
 
+    /** Subject to observe the witnesses collection as a whole */
     private final Subject<Set<PublicKey>> witnessesSubject =
         BehaviorSubject.createDefault(unmodifiableSet(emptySet()));
 
-    private final Map<MessageID, WitnessMessage> witnessMessages = new LinkedHashMap<>();
+    /** Thread-safe map to save witness messages by their ids */
+    private final ConcurrentHashMap<MessageID, WitnessMessage> witnessMessages =
+        new ConcurrentHashMap<>();
 
+    /** Subject to observe the witness messages collection as a whole */
     private final Subject<List<WitnessMessage>> witnessMessagesSubject =
         BehaviorSubject.createDefault(unmodifiableList(emptyList()));
 
-    // This allows to observe a specific witness message
-    private final Map<MessageID, Subject<WitnessMessage>> witnessMessageSubject = new HashMap<>();
+    /** Thread-safe map that assigns a subject to observe a specific witness message */
+    private final ConcurrentHashMap<MessageID, Subject<WitnessMessage>> witnessMessageSubject =
+        new ConcurrentHashMap<>();
 
     public LaoWitness(String laoId, WitnessingRepository repo) {
       this.laoId = laoId;
@@ -296,33 +299,37 @@ public class WitnessingRepository {
       loadFromDisk();
     }
 
-    public synchronized void add(WitnessMessage witnessMessage) {
+    public void add(WitnessMessage witnessMessage) {
       MessageID messageID = witnessMessage.getMessageId();
       witnessMessages.put(messageID, witnessMessage);
 
-      // Publish the new value
+      // Publish the new value in a thread-safe fashion
       Subject<WitnessMessage> subject = witnessMessageSubject.get(messageID);
       if (subject == null) {
         witnessMessageSubject.put(messageID, BehaviorSubject.createDefault(witnessMessage));
       } else {
-        subject.onNext(witnessMessage);
+        subject.toSerialized().onNext(witnessMessage);
       }
 
-      // Publish the updated collection
-      witnessMessagesSubject.onNext(unmodifiableList(new ArrayList<>(witnessMessages.values())));
+      // Publish the updated collection in a thread-safe fashion
+      witnessMessagesSubject
+          .toSerialized()
+          .onNext(unmodifiableList(new ArrayList<>(witnessMessages.values())));
     }
 
-    public synchronized void addWitnesses(Set<PublicKey> witnesses) {
+    public void addWitnesses(Set<PublicKey> witnesses) {
       this.witnesses.addAll(witnesses);
-      witnessesSubject.onNext(unmodifiableSet(new HashSet<>(this.witnesses)));
+      // Publish the update collection in a thread-safe fashion
+      witnessesSubject.toSerialized().onNext(unmodifiableSet(new HashSet<>(this.witnesses)));
     }
 
-    public synchronized boolean addWitnessToMessage(MessageID messageID, PublicKey witness) {
+    public boolean addWitnessToMessage(MessageID messageID, PublicKey witness) {
       WitnessMessage witnessMessage = witnessMessages.get(messageID);
       if (witnessMessage == null) {
         return false;
       }
       witnessMessage.addWitness(witness);
+
       // Persist the new message
       repo.disposables.add(
           repo.witnessingDao
@@ -335,38 +342,37 @@ public class WitnessingRepository {
                           .d("Successfully persisted witness message %s", witnessMessage),
                   err -> Timber.tag(TAG).e(err, "Error in persisting witness message")));
 
-      // Reinsert the message
+      // Reinsert the message to update the subjects and trigger the notifications
       add(witnessMessage);
       return true;
     }
 
-    public synchronized boolean isWitness(PublicKey witness) {
+    public boolean isWitness(PublicKey witness) {
+      // Check if the witness is currently stored in memory. It may happen that this check
+      // is scheduled before the db retrieval, so to be sure we perform a disk lookup
+      // By the compiler optimizations, if the first check is true the lookup is avoided.
       return witnesses.contains(witness) || repo.witnessDao.isWitness(laoId, witness) != 0;
     }
 
-    public synchronized boolean isWitnessEmpty() {
+    public boolean isWitnessEmpty() {
       return witnesses.isEmpty();
     }
 
-    public synchronized boolean areWitnessesEquals(Set<PublicKey> witnesses) {
-      return this.witnesses.equals(witnesses);
-    }
-
-    public synchronized boolean hasRequiredSignatures(MessageID messageId) {
+    public boolean hasRequiredSignatures(MessageID messageId) {
       WitnessMessage witnessMessage = witnessMessages.get(messageId);
       if (witnessMessage == null) {
         return false;
       }
 
       // In the future more complex policies can be defined, even at lao creation the organizer
-      // could specify its own to have personalized policies across laos. For now (25.05.2023) the
-      // very simple rule consists of having around 2/3 of witnesses signed the message.
+      // could specify its own, s.t. we have personalized policies across laos. For now (25.05.2023)
+      // the very simple rule consists of having around 2/3 of witnesses signed the message.
       int requiredSignatures = Math.round(witnesses.size() * WITNESSING_THRESHOLD);
 
       return witnessMessage.getWitnesses().size() >= requiredSignatures;
     }
 
-    public synchronized void deleteAcceptedMessages() {
+    public void deleteAcceptedMessages() {
       Set<MessageID> idsToDelete =
           witnessMessages.keySet().stream()
               .filter(this::hasRequiredSignatures)
@@ -387,11 +393,14 @@ public class WitnessingRepository {
 
       // Delete them from memory
       idsToDelete.forEach(witnessMessages::remove);
+
       // Publish the updated collection
-      witnessMessagesSubject.onNext(unmodifiableList(new ArrayList<>(witnessMessages.values())));
+      witnessMessagesSubject
+          .toSerialized()
+          .onNext(unmodifiableList(new ArrayList<>(witnessMessages.values())));
     }
 
-    public synchronized Set<PublicKey> getWitnesses() {
+    public Set<PublicKey> getWitnesses() {
       return new HashSet<>(witnesses);
     }
 
@@ -419,6 +428,7 @@ public class WitnessingRepository {
         return;
       }
       repo.disposables.addAll(
+          // Load in parallel all the witnesses
           repo.witnessDao
               .getWitnessesByLao(laoId)
               .subscribeOn(Schedulers.io())
@@ -426,6 +436,7 @@ public class WitnessingRepository {
               .subscribe(
                   witnessList -> addWitnesses(new HashSet<>(witnessList)),
                   err -> Timber.tag(TAG).e(err, "No witnesses found on the disk")),
+          // And all the witness messages of a given lao
           repo.witnessingDao
               .getWitnessMessagesByLao(laoId)
               .subscribeOn(Schedulers.io())
