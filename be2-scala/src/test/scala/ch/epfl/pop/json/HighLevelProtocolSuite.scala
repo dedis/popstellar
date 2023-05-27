@@ -1,7 +1,7 @@
 package ch.epfl.pop.json
 
 import ch.epfl.pop.model.network.method.message.Message
-import ch.epfl.pop.model.network.method.{ParamsWithChannel, ParamsWithMap, ParamsWithMessage}
+import ch.epfl.pop.model.network.method.{GreetServer, ParamsWithChannel, ParamsWithMap, ParamsWithMessage}
 import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse, MethodType, ResultObject}
 import ch.epfl.pop.model.objects._
 import ch.epfl.pop.pubsub.graph.validators.RpcValidator
@@ -180,6 +180,23 @@ class HighLevelProtocolSuite extends FunSuite with Matchers {
     getMsgsByIdFromJson.method should equal(MethodType.GET_MESSAGES_BY_ID)
     getMsgsByIdFromJson.getParams.asInstanceOf[ParamsWithMap].channelsToMessageIds should equal(map)
     getMsgsByIdFromJson.id should equal(id)
+  }
+
+  test("parse correctly greetServer") {
+    val pk: PublicKey = PublicKey(Base64Data("J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM="))
+    val clientAddress: String = "wss://popdemo.dedis.ch:9000/client"
+    val serverAddress: String = "wss://popdemo.dedis.ch:9001/server"
+
+    val greetServerJsValue = HighLevelProtocol.jsonRpcRequestFormat.write(JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, MethodType.GREET_SERVER, new GreetServer(pk, clientAddress, serverAddress), None))
+    val greetServerFromJson = JsonRpcRequest.buildFromJson(greetServerJsValue.prettyPrint)
+
+    // Test
+    greetServerFromJson.jsonrpc should equal(RpcValidator.JSON_RPC_VERSION)
+    greetServerFromJson.method should equal(MethodType.GREET_SERVER)
+    greetServerFromJson.getParams.asInstanceOf[GreetServer].clientAddress should equal(clientAddress)
+    greetServerFromJson.getParams.asInstanceOf[GreetServer].serverAddress should equal(serverAddress)
+    greetServerFromJson.getParams.asInstanceOf[GreetServer].publicKey should equal(pk)
+
   }
 
   test("parse correctly catchup") {

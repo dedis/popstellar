@@ -16,7 +16,7 @@ public class Reaction implements Copyable<Reaction> {
   public enum ReactionEmoji {
     UPVOTE("\uD83D\uDC4D"),
     DOWNVOTE("\uD83D\uDC4E"),
-    HEART("❤");
+    HEART("❤️");
 
     private final String code;
 
