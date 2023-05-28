@@ -63,7 +63,7 @@ export function getReactionChannel(laoIdHash: Hash): Channel {
 }
 
 /**
- * Returns the channel popcha channel for authentication of specific LAO
+ * Returns the popcha authentifcation channel of a specific LAO
  *
  * @param laoId - The id of the Lao in which to authenticate
  */
