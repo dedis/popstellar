@@ -126,11 +126,11 @@ describe('PopchaAuthMsg', () => {
   });
 
   describe('from JSON', () => {
-    it('invalid JSON should throw an error', () => {
+    it('should throw an error with invalid JSON', () => {
       (validateDataObject as jest.Mock).mockReturnValue({ errors: 'error' });
       expect(() => PopchaAuthMsg.fromJson('invalid')).toThrow(ProtocolError);
     });
-    it('valid JSON should return a PopchaAuthMsg', () => {
+    it('should return a PopchaAuthMsg with valid JSON', () => {
       (validateDataObject as jest.Mock).mockReturnValue({ errors: null });
       expect(PopchaAuthMsg.fromJson(VALID_POPCHA_AUTH_MSG)).toBeInstanceOf(PopchaAuthMsg);
     });

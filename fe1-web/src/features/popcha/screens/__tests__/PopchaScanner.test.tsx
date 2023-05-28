@@ -64,7 +64,7 @@ const testInvalidUrl = async (url: string) => {
 
 describe('Popcha scanner', () => {
   describe('scanner renders correctly', () => {
-    it('closed scanner renders correctly', () => {
+    it('renders correctly a closed scanner', () => {
       const { toJSON } = render(
         <FeatureContext.Provider value={contextValue}>
           <PopchaScanner />
@@ -73,7 +73,7 @@ describe('Popcha scanner', () => {
       expect(toJSON()).toMatchSnapshot();
     });
 
-    it('opened scanner renders correctly', () => {
+    it('renders correctly a opened scanner', () => {
       const { getByTestId, toJSON } = render(
         <FeatureContext.Provider value={contextValue}>
           <PopchaScanner />
@@ -85,65 +85,65 @@ describe('Popcha scanner', () => {
     });
   });
   describe('scanner verifies correctly', () => {
-    it('invalid url format shows error message', async () => {
+    it('shows error message with invalid url format', async () => {
       await testInvalidUrl('invalid url');
     });
 
-    it('url without client_id shows error message', async () => {
+    it('shows error message with url without client_id', async () => {
       const url = new URL(mockUrl.toString());
       url.searchParams.delete('client_id');
       await testInvalidUrl(url.toString());
     });
 
-    it('url without redirect_uri shows error message', async () => {
+    it('shows error message with url without redirect_uri', async () => {
       const url = new URL(mockUrl.toString());
       url.searchParams.delete('redirect_uri');
       await testInvalidUrl(url.toString());
     });
 
-    it('url without login_hint shows error message', async () => {
+    it('shows error message with url without login_hint', async () => {
       const url = new URL(mockUrl.toString());
       url.searchParams.delete('login_hint');
       await testInvalidUrl(url.toString());
     });
 
-    it('url without nonce shows error message', async () => {
+    it('shows error message with url without nonce', async () => {
       const url = new URL(mockUrl.toString());
       url.searchParams.delete('nonce');
       await testInvalidUrl(url.toString());
     });
 
-    it('url without response_type shows error message', async () => {
+    it('shows error message with url without response_type', async () => {
       const url = new URL(mockUrl.toString());
       url.searchParams.delete('response_type');
       await testInvalidUrl(url.toString());
     });
 
-    it('url without scope shows error message', async () => {
+    it('shows error message with url without scope', async () => {
       const url = new URL(mockUrl.toString());
       url.searchParams.delete('scope');
       await testInvalidUrl(url.toString());
     });
 
-    it('url with invalid scope shows error message', async () => {
+    it('shows error message with url with invalid scope', async () => {
       const url = new URL(mockUrl.toString());
       url.searchParams.set('scope', 'invalid');
       await testInvalidUrl(url.toString());
     });
 
-    it('url with invalid response_type shows error message', async () => {
+    it('shows error message with url with invalid response_type', async () => {
       const url = new URL(mockUrl.toString());
       url.searchParams.set('response_type', 'scope invalid response type');
       await testInvalidUrl(url.toString());
     });
 
-    it('url with invalid response_mode shows error message', async () => {
+    it('shows error message with url with invalid response_mode', async () => {
       const url = new URL(mockUrl.toString());
       url.searchParams.set('response_mode', 'invalid response mode');
       await testInvalidUrl(url.toString());
     });
 
-    it('login_hint does not match current laoId shows error message', async () => {
+    it('shows error message when login_hint does not match current laoId', async () => {
       const url = new URL(mockUrl.toString());
       url.searchParams.set('login_hint', 'invalid login hint');
       await testInvalidUrl(url.toString());
@@ -151,7 +151,7 @@ describe('Popcha scanner', () => {
   });
 
   describe('valid url sends correct response', () => {
-    it('valid url sends correct response', async () => {
+    it('sends correct response with valid url', async () => {
       const { getByTestId } = render(
         <FeatureContext.Provider value={contextValue}>
           <PopchaScanner />
@@ -164,7 +164,7 @@ describe('Popcha scanner', () => {
       await waitFor(() => expect(mockToastShow).toHaveBeenCalledTimes(0));
     });
 
-    it('valid response mode does not show error message', async () => {
+    it('does not show error message with valid response mode', async () => {
       const url = new URL(mockUrl.toString());
       url.searchParams.set('response_mode', 'query');
       const { getByTestId } = render(
@@ -183,7 +183,7 @@ describe('Popcha scanner', () => {
   // TODO: fix these tests
 
   describe('correct behavior when sending request', () => {
-    it('successful request closes scanner', async () => {
+    it('closes scanner when it is a successful request', async () => {
       const url = new URL(mockUrl.toString());
       (sendPopchaAuthRequest as jest.Mock).mockReturnValue(Promise.resolve());
       const { getByTestId, toJSON } = render(
@@ -200,7 +200,7 @@ describe('Popcha scanner', () => {
       });
     });
 
-    it('failed request shows error message', async () => {
+    it('shows error message with failed request', async () => {
       const url = new URL(mockUrl.toString());
       (sendPopchaAuthRequest as jest.Mock).mockReturnValue(Promise.reject(new Error('error')));
       const { getByTestId, toJSON } = render(
