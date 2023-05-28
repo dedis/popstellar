@@ -184,7 +184,7 @@ describe('Popcha scanner', () => {
     it('closes scanner when it is a successful request', async () => {
       const url = new URL(mockUrl.toString());
       (sendPopchaAuthRequest as jest.Mock).mockReturnValue(Promise.resolve());
-      const { getByTestId, getByText,toJSON } = render(
+      const { getByTestId, getByText, toJSON } = render(
         <FeatureContext.Provider value={contextValue}>
           <PopchaScanner />
         </FeatureContext.Provider>,
