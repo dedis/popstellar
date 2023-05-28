@@ -1,20 +1,19 @@
-import * as assert from 'assert';
-
 import { describe } from '@jest/globals';
 import { renderHook } from '@testing-library/react-hooks';
 import React from 'react';
 
-import { mockLaoId, mockPopToken } from '__tests__/utils';
+import { mockLaoId } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
-import { Hash } from 'core/objects';
 
 import { POPCHA_FEATURE_IDENTIFIER, PopchaReactContext } from '../../interface';
 import { PopchaHooks } from '../PopchaHooks';
 
+const mockGenerateToken = jest.fn();
+
 const contextValue = {
   [POPCHA_FEATURE_IDENTIFIER]: {
     useCurrentLaoId: () => mockLaoId,
-    generateToken: () => Promise.resolve(mockPopToken),
+    generateToken: mockGenerateToken,
   } as PopchaReactContext,
 };
 
@@ -34,11 +33,7 @@ describe('PoPcha hooks', () => {
       const { result } = renderHook(() => PopchaHooks.useGenerateToken(), {
         wrapper,
       });
-      await result
-        // call with mock params
-        .current({} as Hash, undefined)
-        .then((token) => expect(token).toEqual(mockPopToken))
-        .catch(assert.fail);
+      expect(result.current).toEqual(mockGenerateToken);
     });
   });
 });
