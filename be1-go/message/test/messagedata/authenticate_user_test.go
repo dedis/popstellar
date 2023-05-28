@@ -28,7 +28,7 @@ func TestVerify(t *testing.T) {
 	// generic method, takes a boolean argument, to assert whether the given json should be valid or not
 	getTestValid := func(file string, shouldBeValid bool) func(*testing.T) {
 		return func(t *testing.T) {
-			// read the bad example file
+			// read the example file
 			buf, err := os.ReadFile(filepath.Join(relativeExamplePath, "popcha_authenticate", file))
 			require.NoError(t, err)
 
