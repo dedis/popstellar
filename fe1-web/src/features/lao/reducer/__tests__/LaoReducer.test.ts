@@ -197,8 +197,8 @@ describe('LaoReducer', () => {
     expect(laoReduce(disconnectedState1, reconnectLao(mockLaoId))).toEqual(connectedState1);
   });
 
-  it('should not reconnect to Lao if it is not in store', () => {
-    expect(laoReduce(disconnectedState1, reconnectLao(mockLao2Id))).toEqual(disconnectedState1);
+  it('should throw error if Lao is not in store', () => {
+    expect(() => laoReduce(disconnectedState1, reconnectLao(mockLao2Id))).toThrow();
   });
 
   it('should clear currentId on rehydration', () => {
