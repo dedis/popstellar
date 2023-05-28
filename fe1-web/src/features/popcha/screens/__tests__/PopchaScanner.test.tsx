@@ -4,6 +4,7 @@ import React from 'react';
 import { fireScan } from '__mocks__/expo-camera';
 import { mockLaoId } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
+import STRINGS from 'resources/strings';
 
 import { POPCHA_FEATURE_IDENTIFIER, PopchaReactContext } from '../../interface';
 import { sendPopchaAuthRequest } from '../../network/PopchaMessageApi';
@@ -194,7 +195,7 @@ describe('Popcha scanner', () => {
       fireScan(url.toString());
       await waitFor(() => {
         // wait for scanner to close
-        expect(getByText('Open Scanner')).toBeTruthy();
+        expect(getByText(STRINGS.popcha_open_scanner)).toBeTruthy();
         expect(mockToastShow).toHaveBeenCalledTimes(0);
         expect(toJSON()).toMatchSnapshot();
       });

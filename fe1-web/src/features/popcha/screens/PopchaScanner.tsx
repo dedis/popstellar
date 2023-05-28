@@ -163,7 +163,10 @@ const PopchaScanner = () => {
         }>
         <View style={styles.container}>
           <View>
-            <Text style={Typography.paragraph}>Hello, here is your laoID: {laoId}</Text>
+            <Text style={Typography.paragraph}>
+              {STRINGS.popcha_display_current_lao}
+              {laoId}
+            </Text>
             <Text>{textScanned}</Text>
           </View>
           {showScanner && (
@@ -177,7 +180,7 @@ const PopchaScanner = () => {
                 testID="popcha_scanner_button"
                 onPress={() => setShowScanner(!showScanner)}>
                 <Text style={[Typography.base, Typography.accent]}>
-                  {showScanner ? 'Close Scanner' : 'Open Scanner'}
+                  {showScanner ? STRINGS.popcha_close_scanner : STRINGS.popcha_open_scanner}
                 </Text>
               </PoPTouchableOpacity>
             </View>

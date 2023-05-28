@@ -508,6 +508,11 @@ namespace STRINGS {
   export const witness_message_witness = 'Witness Message';
   export const meeting_message_decline = 'Decline Message';
 
+  /* --- Popcha Screen Strings --- */
+  export const popcha_display_current_lao = 'Hello, here is your laoID: ';
+  export const popcha_close_scanner = 'Close Scanner';
+  export const popcha_open_scanner = 'Open Scanner';
+
   /* --- General creation Strings --- */
   export const create_description = 'Choose the type of event you want to create';
   export const add_option = 'Add option';
