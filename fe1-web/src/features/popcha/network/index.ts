@@ -8,9 +8,8 @@ export const configureNetwork = (configuration: PopchaConfiguration) => {
     ObjectType.POPCHA,
     ActionType.AUTH,
     // We cannot subscribe on this channel, so we should not receive any message
-    (_: ProcessableMessage) => {
-      console.log(`Received unprocessed popcha auth message${JSON.stringify(_)}`);
-      return true;
+    () => {
+      throw new Error(`Received unexpected message on popcha auth channel`);
     },
     PopchaAuthMsg.fromJson,
   );
