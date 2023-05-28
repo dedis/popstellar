@@ -1,4 +1,4 @@
-import { ActionType, ObjectType, ProcessableMessage } from 'core/network/jsonrpc/messages';
+import { ActionType, ObjectType } from 'core/network/jsonrpc/messages';
 
 import { PopchaConfiguration } from '../interface';
 import { PopchaAuthMsg } from './messages/PopchaAuthMsg';
