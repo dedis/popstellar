@@ -190,7 +190,7 @@ const PopchaScanner = () => {
 
 export default PopchaScanner;
 
-export const popchaScannerScreen: PopchaFeature.LaoScreen = {
+export const PopchaScannerScreen: PopchaFeature.LaoScreen = {
   id: STRINGS.navigation_lao_popcha,
   Icon: makeIcon('key'),
   Component: PopchaScanner,

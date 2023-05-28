@@ -1,6 +1,6 @@
 import { POPCHA_FEATURE_IDENTIFIER, PopchaConfiguration, PopchaInterface } from './interface';
 import { configureNetwork } from './network';
-import { popchaScannerScreen } from './screens/PopchaScanner';
+import { PopchaScannerScreen } from './screens/PopchaScanner';
 
 export const configure = (configuration: PopchaConfiguration): PopchaInterface => {
   configureNetwork(configuration);
@@ -11,6 +11,6 @@ export const configure = (configuration: PopchaConfiguration): PopchaInterface =
       useCurrentLaoId: configuration.useCurrentLaoId,
       generateToken: configuration.generateToken,
     },
-    laoScreens: [popchaScannerScreen],
+    laoScreens: [PopchaScannerScreen],
   };
 };
