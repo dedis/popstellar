@@ -4,7 +4,6 @@ import { Hash, ProtocolError } from 'core/objects';
 
 /**
  * Data sent to authenticate a user
- * @category Message
  * @interface
  * @property {string} client_id - The client id of the application
  * @property {string} nonce - The nonce of the authentication request (challenge)
