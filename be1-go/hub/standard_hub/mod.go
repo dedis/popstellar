@@ -425,7 +425,7 @@ func (h *Hub) handleMessageFromServer(incomingMessage *socket.IncomingMessage) e
 		return err
 	}
 
-	var id int
+	id := -1
 	var msgsByChannel map[string][]message.Message
 	var handlerErr error
 
@@ -461,7 +461,9 @@ func (h *Hub) handleMessageFromServer(incomingMessage *socket.IncomingMessage) e
 		return nil
 	}
 
-	socket.SendResult(id, nil, nil)
+	if id != -1 {
+		socket.SendResult(id, nil, nil)
+	}
 
 	return nil
 }
