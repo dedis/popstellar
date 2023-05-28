@@ -4,6 +4,15 @@ import { Hash, ProtocolError } from 'core/objects';
 
 /**
  * Data sent to authenticate a user
+ * @category Message
+ * @interface
+ * @property {string} client_id - The client id of the application
+ * @property {string} nonce - The nonce of the authentication request (challenge)
+ * @property {Hash} identifier - Long time identifier of the user (Public key)
+ * @property {Hash} identifier_proof - Proof of the identifier (Signature of the nonce with private key)
+ * @property {string} popcha_address - The address of the popcha server
+ * @property {string} [state] - Used by the client to maintain state between the request and callback
+ * @property {string} [response_mode] - Informs authorization server of the mechanism to be used for returning parameters
  */
 export class PopchaAuthMsg implements MessageData {
   public readonly object: ObjectType = ObjectType.POPCHA;

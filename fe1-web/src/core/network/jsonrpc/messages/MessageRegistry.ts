@@ -94,7 +94,8 @@ export class MessageRegistry {
     // Coin
     [k(COIN, POST_TRANSACTION), { signature: KEYPAIR }],
 
-    [k(POPCHA, AUTH), { signature: KEYPAIR }],
+    // Popcha
+    [k(POPCHA, AUTH), { signature: POP_TOKEN }],
   ]);
 
   /**
