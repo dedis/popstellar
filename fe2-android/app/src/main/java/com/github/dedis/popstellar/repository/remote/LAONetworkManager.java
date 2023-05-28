@@ -193,13 +193,16 @@ public class LAONetworkManager implements MessageSender {
 
   @Override
   public void extendConnection(List<PeerAddress> peerAddressList) {
-    // If succeeded in extending the connections then return true
-    if (multiConnection.connectToPeers(peerAddressList)) {
-      // Start the incoming message processing for the other connections
-      processIncomingMessages();
-      // Start the routine aimed at resubscribing to channels when the connection is lost
-      resubscribeToChannelOnReconnection();
+    // If the connections to other peers are not created then do nothing
+    if (!multiConnection.connectToPeers(peerAddressList)) {
+      return;
     }
+    // First dispose the previous connections
+    disposables.clear();
+    // Start the incoming message processing for all the new connections
+    processIncomingMessages();
+    // Start the routine aimed at resubscribing to channels when the connection is lost
+    resubscribeToChannelOnReconnection();
   }
 
   private void handleBroadcast(Broadcast broadcast) {
