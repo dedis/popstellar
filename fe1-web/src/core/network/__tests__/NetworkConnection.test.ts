@@ -128,7 +128,6 @@ describe('NetworkConnection', () => {
       expect(networkError).toBeInstanceOf(NetworkError);
     });
 
-    jest.setTimeout(20000);
     it('calls onConnectionDeathCallback if the connection breaks for good', async () => {
       const onDeath = jest.fn();
 
@@ -140,7 +139,7 @@ describe('NetworkConnection', () => {
       // reduce timeout to zero
       // @ts-ignore
       // eslint-disable-next-line @typescript-eslint/dot-notation
-      connection['websocketConnectionTimeout'] = 0;
+      networkConnection['websocketConnectionTimeout'] = 0;
 
       // and trigger a close
       getWebsocket(networkConnection).mockConnectionClose(false);
@@ -148,7 +147,7 @@ describe('NetworkConnection', () => {
       // this should now trigger a loop of re-connects
       // and at some point call "onDeath"
 
-      await new Promise((resolve) => setTimeout(resolve, 6000));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
 
       expect(onDeath).toHaveBeenCalledTimes(1);
     });
@@ -235,14 +234,13 @@ describe('NetworkConnection', () => {
       await expect(promise).resolves.toHaveProperty('response.result', 0);
     });
 
-    jest.setTimeout(20000);
     it('returns network error if the sending times out', async () => {
       const [networkConnection] = await NetworkConnection.create(mockAddress, jest.fn(), jest.fn());
 
       // reduce timeout to zero
       // @ts-ignore
       // eslint-disable-next-line @typescript-eslint/dot-notation
-      connection['websocketMessageTimeout'] = 0;
+      networkConnection['websocketMessageTimeout'] = 0;
 
       const promise = networkConnection.sendPayload(mockRequest);
 
