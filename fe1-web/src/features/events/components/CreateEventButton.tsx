@@ -27,6 +27,8 @@ const CreateEventButton = () => {
     showActionSheetWithOptions(
       {
         options: types
+          // release: hide meeting event
+          .filter((type) => type.eventName !== STRINGS.meeting_event_name)
           .map((type) => `${STRINGS.events_create_event} ${type.eventName}`)
           .concat([STRINGS.general_button_cancel]),
         cancelButtonIndex: types.length,
