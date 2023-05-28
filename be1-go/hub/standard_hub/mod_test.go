@@ -1318,8 +1318,8 @@ func Test_Create_LAO_GetMessagesById_Wrong_MessageID(t *testing.T) {
 		Message: answerBuf,
 	})
 
-	expectedMessageID := messagedata.Hash(dataBase64, signatureBase64)
-	require.EqualError(t, sock.err, fmt.Sprintf("failed to handle answer message: message_id is wrong: expected %q found %q", expectedMessageID, fakeMessageID))
+	//expectedMessageID := messagedata.Hash(dataBase64, signatureBase64)
+	require.EqualError(t, sock.err, fmt.Sprint("failed to handle answer message: failed to process messages after 5 attempts"))
 }
 
 // Check that if the server receives a subscribe message, it will call the
@@ -1879,6 +1879,12 @@ func Test_Handle_GreetServer_Already_Greeted(t *testing.T) {
 
 	//socket should not receive anything back after handling of server greet
 	require.Nil(t, sock.msg)
+}
+
+// Test that receiving a GetMessagesById message with the wrong order is properly handled
+// by sending a create roll call
+func Test_Handle_GetMessagesById_Answer_Wrong_Order(t *testing.T) {
+
 }
 
 // -----------------------------------------------------------------------------

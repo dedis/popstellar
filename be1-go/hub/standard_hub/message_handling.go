@@ -3,6 +3,7 @@ package standard_hub
 import (
 	"encoding/base64"
 	"encoding/json"
+	"github.com/rs/zerolog/log"
 	"popstellar/crypto"
 	jsonrpc "popstellar/message"
 	"popstellar/message/answer"
@@ -19,8 +20,11 @@ import (
 	"golang.org/x/xerrors"
 )
 
-const publishError = "failed to publish: %v"
-const wrongMessageIdError = "message_id is wrong: expected %q found %q"
+const (
+	publishError        = "failed to publish: %v"
+	wrongMessageIdError = "message_id is wrong: expected %q found %q"
+	maxRetry            = 5
+)
 
 // handleRootChannelPublishMessage handles an incoming publish message on the root channel.
 func (h *Hub) handleRootChannelPublishMessage(sock socket.Socket, publish method.Publish) error {
@@ -211,52 +215,44 @@ func (h *Hub) handleAnswer(senderSocket socket.Socket, byteMessage []byte) error
 
 func (h *Hub) handleGetMessagesByIdAnswer(senderSocket socket.Socket, answerMsg answer.Answer) error {
 	messages := answerMsg.Result.GetMessagesByChannel()
-	for channel, messageArray := range messages {
+
+	for i := 0; i < maxRetry; i++ {
+		err := h.loopOverMessages(&messages, senderSocket)
+		if err == nil {
+			log.Info().Msg("Message processed")
+			return nil // if there's no error, we're done
+		}
+		h.log.Error().Msgf("failed to process messages, attempt %d: %v", i+1, err)
+	}
+
+	return xerrors.Errorf("failed to process messages after %d attempts", maxRetry)
+}
+
+func (h *Hub) loopOverMessages(messages *map[string][]json.RawMessage, senderSocket socket.Socket) error {
+	var returnErr error
+	for channel, messageArray := range *messages {
+		newMessageArray := make([]json.RawMessage, 0)
 		for _, msg := range messageArray {
-
 			var messageData message.Message
-
 			err := json.Unmarshal(msg, &messageData)
 			if err != nil {
 				h.log.Error().Msgf("failed to unmarshal message during getMessagesById answer handling: %v", err)
 				continue
 			}
-
-			signature := messageData.Signature
-			messageID := messageData.MessageID
-			data := messageData.Data
-
-			expectedMessageID := messagedata.Hash(data, signature)
-			if expectedMessageID != messageID {
-				return xerrors.Errorf(wrongMessageIdError,
-					expectedMessageID, messageID)
-			}
-
-			publish := method.Publish{
-				Base: query.Base{
-					JSONRPCBase: jsonrpc.JSONRPCBase{
-						JSONRPC: "2.0",
-					},
-					Method: "publish",
-				},
-
-				Params: struct {
-					Channel string          `json:"channel"`
-					Message message.Message `json:"message"`
-				}{
-					Channel: channel,
-					Message: messageData,
-				},
-			}
-
-			err = h.handleReceivedMessage(senderSocket, publish)
-
+			err = h.handleReceivedMessage(senderSocket, messageData, channel)
 			if err != nil {
+				log.Info().Msg("Trouble handling message")
 				h.log.Error().Msgf("failed to handle message received from getMessagesById answer: %v", err)
+				newMessageArray = append(newMessageArray, msg) // if there's an error, keep the message
+				returnErr = xerrors.Errorf("failed to handle message received from getMessagesById answer: %v", err)
 			}
 		}
+		(*messages)[channel] = newMessageArray // Update the channel's message array
+		if len(newMessageArray) == 0 {
+			delete(*messages, channel) // if no messages left for the channel, remove the channel from the map
+		}
 	}
-	return nil
+	return returnErr
 }
 
 func (h *Hub) handlePublish(socket socket.Socket, byteMessage []byte) (int, error) {
@@ -559,8 +555,35 @@ func (h *Hub) getMissingMessages(missingIds map[string][]string) (map[string][]m
 
 // handleReceivedMessage handle a message obtained by the server receiving a
 // getMessagesById result
-func (h *Hub) handleReceivedMessage(socket socket.Socket, publish method.Publish) error {
+func (h *Hub) handleReceivedMessage(socket socket.Socket, messageData message.Message, targetChannel string) error {
 	h.Lock()
+	signature := messageData.Signature
+	messageID := messageData.MessageID
+	data := messageData.Data
+
+	expectedMessageID := messagedata.Hash(data, signature)
+	if expectedMessageID != messageID {
+		h.Unlock()
+		return xerrors.Errorf(wrongMessageIdError,
+			expectedMessageID, messageID)
+	}
+
+	publish := method.Publish{
+		Base: query.Base{
+			JSONRPCBase: jsonrpc.JSONRPCBase{
+				JSONRPC: "2.0",
+			},
+			Method: "publish",
+		},
+
+		Params: struct {
+			Channel string          `json:"channel"`
+			Message message.Message `json:"message"`
+		}{
+			Channel: targetChannel,
+			Message: messageData,
+		},
+	}
 	_, stored := h.hubInbox.GetMessage(publish.Params.Message.MessageID)
 	if stored {
 		h.Unlock()
