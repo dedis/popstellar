@@ -23,22 +23,24 @@ const CreateEventButton = () => {
 
   const { showActionSheetWithOptions } = useActionSheet();
 
+  // release: hide meeting event
+  const typesRestricted = types.filter((type) => type.eventName !== STRINGS.meeting_event_name);
+
   const onPress = () => {
     showActionSheetWithOptions(
       {
-        options: types
+        options: typesRestricted
           // release: hide meeting event
-          .filter((type) => type.eventName !== STRINGS.meeting_event_name)
           .map((type) => `${STRINGS.events_create_event} ${type.eventName}`)
           .concat([STRINGS.general_button_cancel]),
-        cancelButtonIndex: types.length,
+        cancelButtonIndex: typesRestricted.length,
       },
       (idx) => {
-        if (idx !== undefined && idx < types.length) {
+        if (idx !== undefined && idx < typesRestricted.length) {
           navigation.navigate(STRINGS.navigation_app_lao, {
             screen: STRINGS.navigation_lao_events,
             params: {
-              screen: types[idx].navigationNames.createEvent,
+              screen: typesRestricted[idx].navigationNames.createEvent,
             },
           });
         } else {
