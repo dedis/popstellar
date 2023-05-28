@@ -72,7 +72,6 @@ export function configureNetwork(registry: MessageRegistry) {
     await resubscribeToLao(lao, store.dispatch).then(() => {
       // update the state in redux show user is now online
       store.dispatch(reconnectLao(laoId));
-      console.log('Successfully re-connected to LAO');
     });
   });
   getNetworkManager().addConnectionDeathHandler((address) => {

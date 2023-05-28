@@ -104,9 +104,11 @@ describe('NetworkConnection', () => {
   describe('create', () => {
     it('resolves to a connection if it is possible to connect', async () => {
       allowNewConnections();
-      const connection = await NetworkConnection.create(mockAddress, jest.fn(), jest.fn());
-      const networkConnection = connection[0];
-      const networkError = connection[1];
+      const [networkConnection, networkError] = await NetworkConnection.create(
+        mockAddress,
+        jest.fn(),
+        jest.fn(),
+      );
 
       expect(networkConnection).toBeInstanceOf(NetworkConnection);
       expect(networkConnection.address).toEqual(mockAddress);
@@ -118,11 +120,10 @@ describe('NetworkConnection', () => {
      * This test might log some errors depending on the timeout for the initial connection
      * and the time configured for the mocked websockets
      */
-    it('return networkError if it is not possible to create the connection within the timeout', async () => {
+    it('returns networkError if it is not possible to create the connection within the timeout', async () => {
       disallowNewConnections();
 
-      const connection = await NetworkConnection.create(mockAddress, jest.fn(), jest.fn());
-      const networkError = connection[1];
+      const [, networkError] = await NetworkConnection.create(mockAddress, jest.fn(), jest.fn());
 
       expect(networkError).toBeInstanceOf(NetworkError);
     });
@@ -131,8 +132,7 @@ describe('NetworkConnection', () => {
     it('calls onConnectionDeathCallback if the connection breaks for good', async () => {
       const onDeath = jest.fn();
 
-      const connection = await NetworkConnection.create(mockAddress, jest.fn(), onDeath);
-      const networkConnection = connection[0];
+      const [networkConnection] = await NetworkConnection.create(mockAddress, jest.fn(), onDeath);
 
       // after a successful connection, prevent new ones
       disallowNewConnections();
@@ -156,8 +156,7 @@ describe('NetworkConnection', () => {
 
   describe('reconnectIfNecessary', () => {
     it('does nothing if the socket is still open', async () => {
-      const connection = await NetworkConnection.create(mockAddress, jest.fn(), jest.fn());
-      const networkConnection = connection[0];
+      const [networkConnection] = await NetworkConnection.create(mockAddress, jest.fn(), jest.fn());
 
       const ws = getWebsocket(networkConnection);
       await expect(networkConnection.reconnectIfNecessary()).resolves.not.toThrow();
@@ -170,8 +169,7 @@ describe('NetworkConnection', () => {
       // This simulates the situation where the readyState of the websocket has been updated
       // because it is no longer open but onClose was not called. Yes, this should in theory never
       // happen.
-      const connection = await NetworkConnection.create(mockAddress, jest.fn(), jest.fn());
-      const networkConnection = connection[0];
+      const [networkConnection] = await NetworkConnection.create(mockAddress, jest.fn(), jest.fn());
 
       const ws = getWebsocket(networkConnection);
       ws.readyState = 3;
@@ -185,8 +183,7 @@ describe('NetworkConnection', () => {
     });
 
     it('rejects if the connection times out', async () => {
-      const connection = await NetworkConnection.create(mockAddress, jest.fn(), jest.fn());
-      const networkConnection = connection[0];
+      const [networkConnection] = await NetworkConnection.create(mockAddress, jest.fn(), jest.fn());
 
       // reduce timeout to zero
       // @ts-ignore
@@ -201,8 +198,7 @@ describe('NetworkConnection', () => {
 
   describe('setRpcHandler', () => {
     it('allows setting a new rpc handler', async () => {
-      const connection = await NetworkConnection.create(mockAddress, jest.fn(), jest.fn());
-      const networkConnection = connection[0];
+      const [networkConnection] = await NetworkConnection.create(mockAddress, jest.fn(), jest.fn());
 
       const newHandler = jest.fn();
       networkConnection.setRpcHandler(newHandler);
@@ -219,8 +215,7 @@ describe('NetworkConnection', () => {
 
   describe('sendPayload', () => {
     it('allows sending a payload', async () => {
-      const connection = await NetworkConnection.create(mockAddress, jest.fn(), jest.fn());
-      const networkConnection = connection[0];
+      const [networkConnection] = await NetworkConnection.create(mockAddress, jest.fn(), jest.fn());
 
       addNetworkMessageHandler((ws, msg) => {
         const message = JSON.parse(msg);
@@ -241,9 +236,8 @@ describe('NetworkConnection', () => {
     });
 
     jest.setTimeout(20000);
-    it('return network error if the sending times out', async () => {
-      const connection = await NetworkConnection.create(mockAddress, jest.fn(), jest.fn());
-      const networkConnection = connection[0];
+    it('returns network error if the sending times out', async () => {
+      const [networkConnection] = await NetworkConnection.create(mockAddress, jest.fn(), jest.fn());
 
       // reduce timeout to zero
       // @ts-ignore
@@ -256,8 +250,7 @@ describe('NetworkConnection', () => {
     });
 
     it('rejects if an error is received', async () => {
-      const connection = await NetworkConnection.create(mockAddress, jest.fn(), jest.fn());
-      const networkConnection = connection[0];
+      const [networkConnection] = await NetworkConnection.create(mockAddress, jest.fn(), jest.fn());
 
       addNetworkMessageHandler((ws, msg) => {
         const message = JSON.parse(msg);
@@ -280,8 +273,7 @@ describe('NetworkConnection', () => {
     });
 
     it('waits until the websocket connection is ready / open', async () => {
-      const connection = await NetworkConnection.create(mockAddress, jest.fn(), jest.fn());
-      const networkConnection = connection[0];
+      const [networkConnection] = await NetworkConnection.create(mockAddress, jest.fn(), jest.fn());
 
       const networkMessageHandler = jest.fn<void, [MockWebsocket, string]>((ws, msg) => {
         const message = JSON.parse(msg);
@@ -317,8 +309,7 @@ describe('NetworkConnection', () => {
     });
 
     it('retries sending after a new connection is established', async () => {
-      const connection = await NetworkConnection.create(mockAddress, jest.fn(), jest.fn());
-      const networkConnection = connection[0];
+      const [networkConnection] = await NetworkConnection.create(mockAddress, jest.fn(), jest.fn());
 
       // send some payload that takes a looooong time
       const promise = networkConnection.sendPayload(mockRequest);

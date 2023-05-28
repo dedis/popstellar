@@ -246,6 +246,8 @@ const laosSlice = createSlice({
         }
       },
     },
+    // Change the connected status to true
+    // throws an error if the LAO is not known
     reconnectLao: {
       prepare: (laoId: Hash) => ({
         payload: { laoId: laoId.valueOf() },
@@ -254,6 +256,8 @@ const laosSlice = createSlice({
         const { laoId } = action.payload;
         if (laoId in state.byId) {
           state.connected = true;
+        } else {
+          throw new Error(`Cannot reconnect to unknown LAO ${laoId}`);
         }
       },
     },
