@@ -1,17 +1,15 @@
 package util.examples
 
 import ch.epfl.pop.model.network.method.message.Message
-import ch.epfl.pop.model.network.method.message.data.election.SetupElection
 import ch.epfl.pop.model.network.method.{GetMessagesById, Heartbeat, ParamsWithChannel, ParamsWithMessage}
 import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse, MethodType, ResultObject}
 import ch.epfl.pop.model.objects.{Base64Data, Channel, Hash}
 import ch.epfl.pop.pubsub.graph.validators.RpcValidator
 import util.examples.Election.CastVoteElectionExamples._
 import util.examples.Election.OpenElectionExamples._
-import util.examples.Election.SetupElectionExamples.{ELECTION_ID, _}
+import util.examples.Election.SetupElectionExamples._
 import util.examples.Election.EndElectionExamples._
 import util.examples.Election.KeyElectionExamples._
-import util.examples.Election.ResultElectionExamples._
 import util.examples.Election.{ResultElectionExamples, SetupElectionExamples}
 import util.examples.Lao.GreetLaoExamples._
 import util.examples.MessageExample._
@@ -224,11 +222,11 @@ object JsonRpcRequestExample {
   final val END_ELECTION_WRONG_OWNER_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithEndElectionWrongOwner, id)
 
   // for ResultElectionTesting
-  private final val paramsWithResultElection: ParamsWithMessage = new ParamsWithMessage(Channel("/root/lao/" + SetupElectionExamples.ELECTION_ID.toString), MESSAGE_RESULT_ELECTION_WORKING)
-  private final val paramsWithWrongBallotOptionElection: ParamsWithMessage = new ParamsWithMessage(Channel("/root/lao/" + SetupElectionExamples.ELECTION_ID.toString), MESSAGE_RESULT_ELECTION_WRONG_BALLOT_OPTIONS)
-  private final val paramsWithNegativeNumberOfVotesResultElection: ParamsWithMessage = new ParamsWithMessage(Channel("/root/lao/" + SetupElectionExamples.ELECTION_ID.toString), MESSAGE_RESULT_ELECTION_WRONG)
-  private final val paramsWithTooMuchVotesResultElection: ParamsWithMessage = new ParamsWithMessage(Channel("/root/lao/" + SetupElectionExamples.ELECTION_ID.toString), MESSAGE_RESULT_ELECTION_TOO_MUCH_VOTES)
-  private final val paramsWithWrongIdResultElection: ParamsWithMessage = new ParamsWithMessage(Channel("/root/lao/" + SetupElectionExamples.ELECTION_ID.toString), MESSAGE_RESULT_ELECTION_WRONG_ID)
+  private final val paramsWithResultElection: ParamsWithMessage = new ParamsWithMessage(Channel("/root/lao/" + SetupElectionExamples.ELECTION_ID.toString),   ResultElectionExamples.MESSAGE_RESULT_ELECTION_WORKING)
+  private final val paramsWithWrongBallotOptionElection: ParamsWithMessage = new ParamsWithMessage(Channel("/root/lao/" + SetupElectionExamples.ELECTION_ID.toString), ResultElectionExamples.MESSAGE_RESULT_ELECTION_WRONG_BALLOT_OPTIONS)
+  private final val paramsWithNegativeNumberOfVotesResultElection: ParamsWithMessage = new ParamsWithMessage(Channel("/root/lao/" + SetupElectionExamples.ELECTION_ID.toString), ResultElectionExamples.MESSAGE_RESULT_ELECTION_WRONG)
+  private final val paramsWithTooMuchVotesResultElection: ParamsWithMessage = new ParamsWithMessage(Channel("/root/lao/" + SetupElectionExamples.ELECTION_ID.toString), ResultElectionExamples.MESSAGE_RESULT_ELECTION_TOO_MUCH_VOTES)
+  private final val paramsWithWrongIdResultElection: ParamsWithMessage = new ParamsWithMessage(Channel("/root/lao/" + SetupElectionExamples.ELECTION_ID.toString), ResultElectionExamples.MESSAGE_RESULT_ELECTION_WRONG_ID)
   final val RESULT_ELECTION_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithResultElection, id)
   final val RESULT_ELECTION_RPC_WRONG_BALLOT_OPTIONS = JsonRpcRequest(rpc, methodType, paramsWithWrongBallotOptionElection, id)
   final val RESULT_ELECTION_RPC_WRONG: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithNegativeNumberOfVotesResultElection, id)

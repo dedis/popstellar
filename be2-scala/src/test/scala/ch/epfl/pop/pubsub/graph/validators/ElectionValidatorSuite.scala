@@ -705,7 +705,7 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
   }
 
   test("ResultElection with invalid question ids does not work in validateResultElection ") {
-    val dbActorRef: AskableActorRef = mockDbWrongQuestionIds
+    val dbActorRef: AskableActorRef = mockDbForResultElection
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateResultElection(RESULT_ELECTION_RPC_WRONG_ID)
     message shouldBe a[Left[PipelineError, _]]
     system.stop(dbActorRef.actorRef)

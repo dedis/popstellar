@@ -632,9 +632,9 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
       error: PipelineError
   ): GraphMessage = {
     var isResultBallotValid = true
-    isResultBallotValid = result.forall(electionQuestionResult => {
-      val matchingQuestion = questions.find(_.id == electionQuestionResult.id)
-      matchingQuestion.isDefined && electionQuestionResult.result.toSet[ElectionBallotVotes].map(_.ballot_option) == matchingQuestion.get.ballot_options.toSet
+    isResultBallotValid = result.forall(question => {
+      val matchingQuestion = questions.find(_.id == question.id)
+      matchingQuestion.isDefined && question.result.toSet[ElectionBallotVotes].map(_.ballot_option) == matchingQuestion.get.ballot_options.toSet
     })
     if (isResultBallotValid) {
       Right(rpcMessage)
@@ -642,18 +642,4 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
       Left(error)
   }
 
-  /** Finds the electionQuestion that matchs the given id.
-    * @param id
-    * @param questions
-    *   The list of election questions that has been sent with the setup Election message.
-    * @return
-    *   Some of the matching electionQuestion, or None if there is no ElectionQuestion that matches the given id.
-    */
-  private def findMatchingElectionQuestion(id: Hash, questions: List[ElectionQuestion]): Option[ElectionQuestion] = {
-    val matchingQuestion = questions.dropWhile(_.id != id)
-    if (matchingQuestion.isEmpty) {
-      None
-    } else
-      Some(questions.dropWhile(_.id != id).head)
-  }
 }
