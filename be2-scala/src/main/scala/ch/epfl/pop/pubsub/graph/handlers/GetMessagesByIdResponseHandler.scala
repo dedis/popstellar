@@ -22,7 +22,15 @@ object GetMessagesByIdResponseHandler extends AskPatternConstants {
   private val MAX_RETRY_PER_MESSAGE = 5
   private val SUCCESS = 0
 
-  // This function packs each message into a publish before pushing them into the pipeline
+  /** Validate and replay on the system each message received in the get_messages_by_id result
+    *
+    * @param messageRegistry
+    *   The system message registry to use in the validation pipeline
+    * @param system
+    *   Implicit actor system to use the given validator
+    * @return
+    *   Left if some messages couldn't be validated after MAX_RETRY_PER_MESSAGE times, Right for success
+    */
   def responseHandler(messageRegistry: MessageRegistry)(implicit system: ActorSystem): Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map {
     case Right(JsonRpcResponse(_, Some(resultObject), None, _)) =>
       resultObject.resultMap match {
@@ -43,8 +51,17 @@ object GetMessagesByIdResponseHandler extends AskPatternConstants {
     case value @ _ => value
   }
 
-  // This function will try to digest the set of messages for an entire channel
-  // It will go channel by channel until it finished processing messages or MAX_RETRY_PER_MESSAGE * total_number_of_message is reached
+  /** Will try to digest each GraphMessage until their retry-counter reaches 0 or they all get validated
+    *
+    * @param receivedResponse
+    *   The wrapped messages with their counter
+    * @param validatorFlow
+    *   The validator to push the messages through
+    * @param system
+    *   Implicit actor system to use the given validator
+    * @return
+    *   true if all messages could be validated, otherwise false
+    */
   @tailrec
   private def passThroughPipeline(
       receivedResponse: List[(GraphMessage, Int)],
@@ -73,7 +90,17 @@ object GetMessagesByIdResponseHandler extends AskPatternConstants {
     passThroughPipeline(failedMessages.reverse, validatorFlow)
   }
 
-  // Push a message corresponding through the pipeline
+  /** Push a message through the given validator
+    *
+    * @param validator
+    *   The pipeline verifying the message
+    * @param message
+    *   The message to verify
+    * @param system
+    *   Implicit actor system to use the given validator
+    * @return
+    *   The result of the validator on the given message, Left for failure, Right for success
+    */
   private def messagesThroughPipeline(
       validator: Flow[GraphMessage, GraphMessage, NotUsed],
       message: GraphMessage
@@ -85,7 +112,13 @@ object GetMessagesByIdResponseHandler extends AskPatternConstants {
     }
   }
 
-  // Must return a list sorted by channel length
+  /** Wrap messages in Publish RPCs along with a counter
+    *
+    * @param map
+    *   A map of channels to their set of messages
+    * @return
+    *   A list of GraphMessage - Int pairs where the GraphMessage are sorted in increasing order of their channel length and the Int is the number of retry left for each message
+    */
   private def wrapMsgInPublish(map: Map[Channel, Set[Message]]): List[(GraphMessage, Int)] = {
     var publishedList = map.foldLeft(List.empty[JsonRpcRequest])((acc, elem) =>
       acc ++ elem._2.map(msg =>
