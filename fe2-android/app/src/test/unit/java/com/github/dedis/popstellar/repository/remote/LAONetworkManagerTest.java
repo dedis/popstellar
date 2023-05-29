@@ -446,7 +446,7 @@ public class LAONetworkManagerTest {
     verify(connection, times(2)).sendMessage(any(Subscribe.class));
     verify(connection, times(2)).sendMessage(any(Catchup.class));
     verify(connection, atLeastOnce()).observeMessage();
-    verify(connection).observeConnectionEvents();
+    verify(connection, times(2)).observeConnectionEvents();
     verify(connection).close();
   }
 }
