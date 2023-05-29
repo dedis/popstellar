@@ -194,10 +194,7 @@ func (c *Channel) auhenticateUser(msg message.Message, msgData interface{},
 
 	// constructing the unique URL endpoint of the PoPCHA server
 
-	laoID := c.channelID
-	if strings.HasPrefix(laoID, "/root/") {
-		laoID = laoID[len("/root/"):]
-	}
+	laoID := strings.TrimPrefix(c.channelID, "/root/")
 	popChaPath := strings.Join([]string{"/response", laoID, "v4l1d_ient_id", data.Nonce}, "/")
 
 	popchaAddress := data.PopchaAddress
