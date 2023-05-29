@@ -77,6 +77,7 @@ public class LAONetworkManagerTest {
     hiltRule.inject();
     when(connection.observeMessage()).thenReturn(messages);
     when(connection.observeConnectionEvents()).thenReturn(events);
+    when(connection.connectToPeers(any())).thenReturn(true);
 
     // Default behavior : success
     Answer<?> answer =
