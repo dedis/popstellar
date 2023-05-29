@@ -298,20 +298,6 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
     system.actorOf(dbActorMock)
   }
 
-  private def mockDbWrongQuestionIds: AskableActorRef = {
-    val dbActorMock = Props(new Actor() {
-      override def receive: Receive = {
-        case DbActor.ReadLaoData(_) =>
-          sender() ! DbActor.DbActorReadLaoDataAck(laoDataForResultElection)
-        case DbActor.Catchup(_) =>
-          sender() ! DbActor.DbActorCatchupAck(List(MESSAGE_END_ELECTION_WORKING))
-        case DbActor.ReadSetupElectionMessage(_) =>
-          sender() ! DbActor.DbActorReadAck(Some(MESSAGE_SETUPELECTION_WRONG_ID))
-      }
-    })
-    system.actorOf(dbActorMock)
-  }
-
   // Setup Election
   test("Setting up an election works as intended") {
     val dbActorRef = mockDbWorkingSetup
