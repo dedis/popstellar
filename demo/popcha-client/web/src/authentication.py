@@ -2,6 +2,7 @@
 This file includes all the authentication logic. No external server logic is
 done here.
 """
+
 # allows class names to be used as return types inside the class
 # see e.g. https://stackoverflow.com/a/61544901
 from __future__ import annotations
@@ -20,14 +21,17 @@ class Authentication:
     Class that allows users to authenticate
     """
 
-    def __init__(self, providers : list[dict[str, str]]=None):
+    def __init__(self, providers: list[dict[str, str]] = None):
         if providers is None:
             providers = []
+
         self.providers: list[dict[str, str]] = providers
         self.login_states: dict[str, (str, str, float)] = {}
 
-    def get_url(self, auth_server:str, lao_id: str, host_server: str, 
-                host_port: str | int, client_id: str) -> str:
+    def get_url(
+            self, auth_server: str, lao_id: str, host_server: str,
+            host_port: str | int, client_id: str
+            ) -> str:
         """
         Generates the url to contact the authentication server. It contains all
         the information required by the authentication server
@@ -60,11 +64,12 @@ class Authentication:
     def validate_args(self, args: MultiDict[str, str], client_id: str) \
             -> str | None:
         """
-        Validate the args as if they were coming from OpenID Authentication request
+        Validate the args as if they were coming from OpenID Authentication
+        request
         :param args: A MultiDict containing the arguments (almost the same as a
         dict).
         :param client_id: The ID of this client
-        :return: The unique user identifier if logged in None otherwise
+        :return: The unique user identifier if logged in, None otherwise
         """
 
         missing_arg: bool = ("id_token" not in args or "token_type" not in
@@ -74,15 +79,17 @@ class Authentication:
 
         if args.get("state") not in self.login_states:
             return
-        nonce, issuer, _  = self.login_states.pop(args.get("state"))
+
+        nonce, issuer, _ = self.login_states.pop(args.get("state"))
         server_pub_key = self.public_key_from_iss(issuer)
+
         try:
             token: dict = jwt.decode(
-                jwt = args.get("id_token", type = str),
-                key = server_pub_key,
-                algorithms = ['RS256'],
-                audience = client_id
-                )
+                    jwt = args.get("id_token", type = str),
+                    key = server_pub_key,
+                    algorithms = ['RS256'],
+                    audience = client_id
+                    )
         except PyJWTError:
             return None
 
@@ -93,7 +100,9 @@ class Authentication:
         valid_issuer = issuer == token.get("iss")
         if not valid_issuer:
             return None
+
         user_id: str = token.get("sub")
+
         return f"{user_id}@{issuer}"
 
     def public_key_from_iss(self, iss: str) -> str:

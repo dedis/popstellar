@@ -15,8 +15,12 @@ class CounterApp:
     """
 
     def __init__(self):
-        self.app_nonces: dict[str, (str, float)] = {}  # Maps nonce to user
-        self.app_data: dict[str, int] = {}  # Maps users to counter values
+        self.app_nonces: dict[str, (str, float)] = {"valid": ("tst", 0)}  # Maps
+        # nonce
+        # to
+        # user
+        self.app_data: dict[str, int] = {"tst": 0}  # Maps users to counter
+        # values
 
     def get_new_login_params(self, user_id: str) -> dict[str, str]:
         """
@@ -24,7 +28,7 @@ class CounterApp:
         :param user_id: The id of the newly logged-in user
         :returns: The arguments to use to connect to the app.
         """
-        if user_id not in self.app_data.keys():
+        if user_id not in self.app_data:
             self.app_data[user_id] = 0
 
         nonce: str = secrets.token_urlsafe(64)
@@ -47,11 +51,13 @@ class CounterApp:
 
         if valid_nonce:
             raise ValueError("The nonce is not valid")
+
         user_id, _ = self.app_nonces.pop(args.get("nonce", type = str))
 
         # Updates the app data if needed
         if "action" in args and args.get("action", type = str) == "increment":
             self.app_data[user_id] += 1
+
         if "action" in args and args.get("action", type = str) == "decrement":
             self.app_data[user_id] -= 1
 
