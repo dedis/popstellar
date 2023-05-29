@@ -124,8 +124,12 @@ websocket connections.
 ##### Processing messages in the application layer
 
 The incoming messages received by the `ReadPump` are propagated up the stack to
-the `Hub` which is responsible for processing it and sending a `Result`, `Error`
-or a `Broadcast`.
+the `Hub` which is responsible for processing it and sending, depending on the message's nature, a: 
+- `Result` to the request.
+- `Error`
+- `Broadcast`
+- `GreetServer` back to a server that has not been greeted yet.
+- `GetMessagesById` in response to a heartbeat if it is missing some messages.
 
 A hub, on receiving a message, processes it by invoking the
 `handleIncomingMessage` method where its handled depending on which `Socket` the
