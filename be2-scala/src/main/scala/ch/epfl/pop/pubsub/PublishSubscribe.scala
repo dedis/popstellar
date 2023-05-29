@@ -24,13 +24,14 @@ object PublishSubscribe {
       messageRegistry: MessageRegistry,
       monitorRef: ActorRef,
       connectionMediatorRef: ActorRef,
-      isServer: Boolean
+      isServer: Boolean,
+      initGreetServer: Boolean = false
   )(implicit system: ActorSystem): Flow[Message, Message, NotUsed] = Flow.fromGraph(GraphDSL.create() {
     implicit builder: GraphDSL.Builder[NotUsed] =>
       {
         import GraphDSL.Implicits._
 
-        val clientActorRef: ActorRef = system.actorOf(ClientActor.props(mediatorActorRef, connectionMediatorRef, isServer))
+        val clientActorRef: ActorRef = system.actorOf(ClientActor.props(mediatorActorRef, connectionMediatorRef, isServer, initGreetServer))
         dbActorRef = dbActorRefT
 
         /* partitioner port numbers */
@@ -101,7 +102,8 @@ object PublishSubscribe {
           val portCatchup = 4
           val portHeartbeat = 5
           val portGetMessagesById = 6
-          val totalPorts = 7
+          val portGreetServer = 7
+          val totalPorts = 8
 
           /* building blocks */
           val input = builder.add(Flow[GraphMessage].collect { case msg: GraphMessage => msg })
@@ -118,6 +120,7 @@ object PublishSubscribe {
                   case CATCHUP            => portCatchup
                   case HEARTBEAT          => portHeartbeat
                   case GET_MESSAGES_BY_ID => portGetMessagesById
+                  case GREET_SERVER       => portGreetServer
                   case _                  => portPipelineError
                 }
 
@@ -131,6 +134,7 @@ object PublishSubscribe {
           val catchupPartition = builder.add(ParamsHandler.catchupHandler(clientActorRef))
           val heartbeatPartition = builder.add(ParamsWithMapHandler.heartbeatHandler(dbActorRef))
           val getMessagesByIdPartition = builder.add(ParamsWithMapHandler.getMessagesByIdHandler(dbActorRef))
+          val greetServerPartition = builder.add(ParamsHandler.greetServerHandler(clientActorRef))
 
           val merger = builder.add(Merge[GraphMessage](totalPorts))
 
@@ -144,6 +148,7 @@ object PublishSubscribe {
           methodPartitioner.out(portCatchup) ~> catchupPartition ~> merger
           methodPartitioner.out(portHeartbeat) ~> heartbeatPartition ~> merger
           methodPartitioner.out(portGetMessagesById) ~> getMessagesByIdPartition ~> merger
+          methodPartitioner.out(portGreetServer) ~> greetServerPartition ~> merger
 
           /* close the shape */
           FlowShape(input.in, merger.out)

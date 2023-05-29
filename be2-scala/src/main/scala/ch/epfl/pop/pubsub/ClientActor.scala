@@ -3,8 +3,12 @@ package ch.epfl.pop.pubsub
 import akka.actor.{Actor, ActorLogging, ActorRef, Props}
 import akka.event.LoggingReceive
 import akka.pattern.AskableActorRef
+import ch.epfl.pop.config.RuntimeEnvironment
 import ch.epfl.pop.decentralized.ConnectionMediator
-import ch.epfl.pop.model.objects.Channel
+import ch.epfl.pop.model.network.JsonRpcRequest
+import ch.epfl.pop.model.network.MethodType.GREET_SERVER
+import ch.epfl.pop.model.network.method.GreetServer
+import ch.epfl.pop.model.objects.{Base64Data, Channel, PublicKey}
 import ch.epfl.pop.pubsub.ClientActor._
 import ch.epfl.pop.pubsub.PubSubMediator._
 import ch.epfl.pop.pubsub.graph.GraphMessage
@@ -14,16 +18,18 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
 import scala.util.Failure
 
-final case class ClientActor(mediator: ActorRef, connectionMediatorRef: ActorRef, isServer: Boolean) extends Actor with ActorLogging with AskPatternConstants {
+final case class ClientActor(mediator: ActorRef, connectionMediatorRef: ActorRef, isServer: Boolean, initGreet: Boolean) extends Actor with ActorLogging with AskPatternConstants {
 
   private var wsHandle: Option[ActorRef] = None
   private val subscribedChannels: mutable.Set[Channel] = mutable.Set.empty
 
   private val mediatorAskable: AskableActorRef = mediator
 
+  private var greetServerSent: Boolean = false
+
   // Tell connectionMediator we are online
-  if (isServer) {
-    connectionMediatorRef ! ConnectionMediator.NewServerConnected(self)
+  if (isServer && initGreet) {
+    triggerGreetServer()
   }
 
   private def messageWsHandle(event: ClientActorMessage): Unit = event match {
@@ -66,6 +72,11 @@ final case class ClientActor(mediator: ActorRef, connectionMediatorRef: ActorRef
         case UnsubscribeFromNAck(channel, reason) =>
           log.info(s"Actor $self received NACK mediator $mediator for the unsubscribe from channel '$channel' request for reason: $reason")
       }
+    case greetServer: GreetServer =>
+      if (!greetServerSent && isServer) {
+        triggerGreetServer()
+        connectionMediatorRef ! ConnectionMediator.NewServerConnected(self, greetServer)
+      }
     case clientAnswer @ ClientAnswer(_) =>
       log.info(s"Sending an answer back to client $wsHandle: $clientAnswer")
       messageWsHandle(clientAnswer)
@@ -86,11 +97,24 @@ final case class ClientActor(mediator: ActorRef, connectionMediatorRef: ActorRef
         case _ => log.error("UNKNOWN MESSAGE TO CLIENT ACTOR: " + m)
       }
   }
+
+  private def triggerGreetServer(): Unit = {
+    val clientAddress = RuntimeEnvironment.ownClientAddress
+    val serverAddress = RuntimeEnvironment.ownServerAddress
+    val greetServer = GreetServer(PublicKey(Base64Data("0000")), clientAddress, serverAddress) // TODO: implement a correct public key.
+    messageWsHandle(ClientAnswer(Right(JsonRpcRequest(
+      "rpc",
+      GREET_SERVER,
+      greetServer,
+      None
+    ))))
+    greetServerSent = true
+  }
 }
 
 object ClientActor {
-  def props(mediator: ActorRef, connectionMediatorRef: ActorRef, isServer: Boolean): Props =
-    Props(new ClientActor(mediator, connectionMediatorRef, isServer))
+  def props(mediator: ActorRef, connectionMediatorRef: ActorRef, isServer: Boolean, initGreetServer: Boolean): Props =
+    Props(new ClientActor(mediator, connectionMediatorRef, isServer, initGreetServer))
 
   sealed trait ClientActorMessage
 

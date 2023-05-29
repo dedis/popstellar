@@ -4,8 +4,8 @@ import akka.actor.{Actor, ActorLogging, ActorRef, ActorSystem, Props}
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.ws.WebSocketRequest
 import akka.pattern.AskableActorRef
-
-import ch.epfl.pop.model.network.method.{Heartbeat, ParamsWithMap}
+import ch.epfl.pop.decentralized.ConnectionMediator.NewServerConnected
+import ch.epfl.pop.model.network.method.{GreetServer, Heartbeat, ParamsWithMap}
 import ch.epfl.pop.model.network.{JsonRpcRequest, MethodType}
 import ch.epfl.pop.pubsub.ClientActor.ClientAnswer
 import ch.epfl.pop.pubsub.graph.validators.RpcValidator
@@ -18,8 +18,7 @@ final case class ConnectionMediator(
 ) extends Actor with ActorLogging with AskPatternConstants {
   implicit val system: ActorSystem = ActorSystem()
 
-  // List of servers connected
-  private var serverSet: Set[ActorRef] = Set()
+  private var serverMap: Map[ActorRef, GreetServer] = Map()
 
   // Ping Monitor to inform it of our ActorRef
   monitorRef ! ConnectionMediator.Ping()
@@ -37,28 +36,22 @@ final case class ConnectionMediator(
             messageRegistry,
             monitorRef,
             self,
-            isServer = true
+            isServer = true,
+            initGreetServer = true
           )
         )
       )
 
-    case ConnectionMediator.NewServerConnected(serverRef) =>
-      log.info("Received new server")
-      if (serverSet.isEmpty)
-        monitorRef ! Monitor.AtLeastOneServerConnected
-
-      serverSet += serverRef
-
     case ConnectionMediator.ServerLeft(serverRef) =>
       log.info("Server left")
-      serverSet -= serverRef
+      serverMap -= serverRef
       // Tell monitor to stop scheduling heartbeats since there is no one to receive them
-      if (serverSet.isEmpty)
+      if (serverMap.isEmpty)
         monitorRef ! Monitor.NoServerConnected
 
     case Heartbeat(map) =>
       log.info("Sending a heartbeat to the servers")
-      serverSet.map(server =>
+      serverMap.keys.map(server =>
         server ! ClientAnswer(
           Right(JsonRpcRequest(
             RpcValidator.JSON_RPC_VERSION,
@@ -68,6 +61,10 @@ final case class ConnectionMediator(
           ))
         )
       )
+
+    case NewServerConnected(serverRef, greetServer) =>
+      serverMap += (serverRef, greetServer)
+      monitorRef ! Monitor.AtLeastOneServerConnected
   }
 }
 
@@ -78,7 +75,7 @@ object ConnectionMediator {
 
   sealed trait Event
   final case class ConnectTo(urlList: List[String]) extends Event
-  final case class NewServerConnected(serverRef: ActorRef) extends Event
+  final case class NewServerConnected(serverRef: ActorRef, greetServer: GreetServer) extends Event
   final case class ServerLeft(serverRef: ActorRef) extends Event
   final case class Ping() extends Event
 }

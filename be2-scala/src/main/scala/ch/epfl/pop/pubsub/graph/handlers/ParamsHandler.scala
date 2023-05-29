@@ -1,8 +1,11 @@
 package ch.epfl.pop.pubsub.graph.handlers
 
 import akka.NotUsed
+import akka.actor.ActorRef
 import akka.pattern.AskableActorRef
 import akka.stream.scaladsl.Flow
+import ch.epfl.pop.model.network.MethodType.GREET_SERVER
+import ch.epfl.pop.model.network.method.GreetServer
 import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse}
 import ch.epfl.pop.model.objects.Channel
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
@@ -67,4 +70,19 @@ object ParamsHandler extends AskPatternConstants {
 
   // Catchup requests are treated at the AnswerGenerator stage since it generates a JsonRpcResponse directly
   def catchupHandler(clientActorRef: AskableActorRef): Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map(m => m)
+
+  def greetServerHandler(clientActorRef: ActorRef): Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map {
+    case Right(jsonRpcMessage: JsonRpcRequest) =>
+      jsonRpcMessage.method match {
+        case GREET_SERVER =>
+          val greetServer: GreetServer = jsonRpcMessage.getParams.asInstanceOf[GreetServer]
+          clientActorRef ! greetServer
+          Right(jsonRpcMessage)
+        case _ => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, "GreetServerHandler received a non expected jsonRpcRequest", jsonRpcMessage.id))
+      }
+    case Right(jsonRpcMessage: JsonRpcResponse) =>
+      Left(PipelineError(ErrorCodes.SERVER_ERROR.id, "GreetServerHandler received a 'JsonRpcResponse'", jsonRpcMessage.id))
+    case graphMessage @ _ => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, "GreetServerHandler received an unexpected message:" + graphMessage, None))
+  }
+
 }
