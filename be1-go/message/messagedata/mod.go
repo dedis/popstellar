@@ -61,6 +61,12 @@ const (
 
 	CoinObject                = "coin"
 	CoinActionPostTransaction = "post_transaction"
+
+	// AuthObject popcha messagedata object
+	AuthObject = "popcha"
+	// AuthAction popcha messagedata action
+	AuthAction = "authenticate"
+
 	// RootPrefix denotes the prefix for the root channel, used to verify the
 	// channel of origin of some message
 	RootPrefix = "/root/"

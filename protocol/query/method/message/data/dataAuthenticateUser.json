@@ -37,9 +37,10 @@
         "type": "string"
     },
     "popcha_address": {
-        "description": "host address of the PoPCHA authorization server",
+        "description": "host of the popcha authorization server",
         "type": "string"
     }
+    
   },
   "additionalProperties": false,
   "required": ["object", "action","client_id","nonce","identifier","identifier_proof","popcha_address"]
