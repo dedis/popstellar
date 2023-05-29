@@ -117,7 +117,7 @@ public class RollCallRepository {
   }
 
   /**
-   * This function retrieves a roll call from the repository given its ephemeral identifier.
+   * This function retrieves a roll call from the repository given its state-dependent identifier.
    *
    * @param laoId the id of the Lao
    * @param rollCallId the id of the roll call
