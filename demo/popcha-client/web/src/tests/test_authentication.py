@@ -41,6 +41,7 @@ class TestAuthenticationResponse:
     """
     Simple test class for the authentication response related functions
     """
+
     # This JWT has been provided by be1 for cross-validation
     be1_go_jwt: str = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9" \
                ".eyJhdWQiOiJjSUQxMjJkdyIs" \
@@ -124,7 +125,8 @@ class TestAuthenticationResponse:
     @pytest.fixture
     def authentication(self):
         """
-        Simple fixture
+        Allows tests to get a fresh and configured authentication provider
+        as a parameter
         """
         authentication = Authentication()
 
@@ -146,6 +148,7 @@ class TestAuthenticationResponse:
                 self.claimset, self.priv_key,
                 algorithm = "RS256"
                 )
+
         user_id = authentication.validate_args(
                 self.get_args(encoded),
                 self.client_id
@@ -186,6 +189,7 @@ class TestAuthenticationResponse:
         claimset = self.claimset.copy()
         claimset["aud"] = "altered audience"
         encoded = jwt.encode(claimset, self.priv_key, algorithm = "RS256")
+
         assert (authentication.validate_args(
                 self.get_args(encoded),
                 self.client_id
@@ -196,6 +200,7 @@ class TestAuthenticationResponse:
         claimset = self.claimset.copy()
         claimset["nonce"] = "wrong nonce"
         encoded = jwt.encode(claimset, self.priv_key, algorithm = "RS256")
+
         assert (authentication.validate_args(
                 self.get_args(encoded),
                 self.client_id
@@ -206,6 +211,7 @@ class TestAuthenticationResponse:
         claimset = self.claimset.copy()
         claimset["iss"] = "invalid issuer"
         encoded = jwt.encode(claimset, self.priv_key, algorithm = "RS256")
+
         assert (authentication.validate_args(
                 self.get_args(encoded),
                 self.client_id

@@ -59,7 +59,7 @@ def validate_config(configuration: dict[str, str | int]) -> dict[str, str]:
         raise ValueError(
             "The \"local_port\" should be set in config.json "
             "and greater than 0"
-        )
+            )
 
     return {}
 
@@ -118,6 +118,8 @@ def on_startup() -> None:
     """
     global config, core_app, authenticationProvider
 
+    app.config.from_prefixed_env()
+
     csrf = CSRFProtect()
     csrf.init_app(app)
 
@@ -128,7 +130,7 @@ def on_startup() -> None:
     config_path = path.normpath(
         path.join(
             path.dirname(__file__),
-            "../data/config.json"
+            f"../{app.config['CONFIG_FILE']}"
             )
         )
 
@@ -140,7 +142,8 @@ def on_startup() -> None:
             config.update(config_modifications)
             config_file.seek(0)
             config_file.write(json.dumps(config))
-            print("Your app configuration has been updated in data/config.json")
+            print(f"Your app configuration has been updated in "
+                  f"{app.config['CONFIG_FILE']}")
 
 # Step1: Returns the homepage
 @app.get("/")
@@ -149,7 +152,6 @@ def root() -> str:
     Get the homepage.
     :return: The homepage HTML
     """
-    print(config)
     providers_strings = [f'{provider.get("lao_id")}@{provider.get("domain")}'
         for provider in authenticationProvider.providers]
 
