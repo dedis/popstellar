@@ -1318,8 +1318,8 @@ func Test_Create_LAO_GetMessagesById_Wrong_MessageID(t *testing.T) {
 		Message: answerBuf,
 	})
 
-	//expectedMessageID := messagedata.Hash(dataBase64, signatureBase64)
-	require.EqualError(t, sock.err, fmt.Sprint("failed to handle answer message: failed to process messages after 5 attempts"))
+	expectedMessageID := messagedata.Hash(dataBase64, signatureBase64)
+	require.EqualError(t, sock.err, fmt.Sprintf("failed to handle answer message: failed to process messages: message_id is wrong: expected %q found %q", expectedMessageID, fakeMessageID))
 }
 
 // Check that if the server receives a subscribe message, it will call the

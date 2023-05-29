@@ -3,7 +3,6 @@ package standard_hub
 import (
 	"encoding/base64"
 	"encoding/json"
-	"github.com/rs/zerolog/log"
 	"popstellar/crypto"
 	jsonrpc "popstellar/message"
 	"popstellar/message/answer"
@@ -23,7 +22,7 @@ import (
 const (
 	publishError        = "failed to publish: %v"
 	wrongMessageIdError = "message_id is wrong: expected %q found %q"
-	maxRetry            = 5
+	maxRetry            = 10
 )
 
 // handleRootChannelPublishMessage handles an incoming publish message on the root channel.
@@ -214,45 +213,17 @@ func (h *Hub) handleAnswer(senderSocket socket.Socket, byteMessage []byte) error
 }
 
 func (h *Hub) handleGetMessagesByIdAnswer(senderSocket socket.Socket, answerMsg answer.Answer) error {
+	var err error
 	messages := answerMsg.Result.GetMessagesByChannel()
-
+	// Loops over the messages to process them until it succeeds or reaches
+	// the max number of attempts
 	for i := 0; i < maxRetry; i++ {
-		err := h.loopOverMessages(&messages, senderSocket)
+		err = h.loopOverMessages(&messages, senderSocket)
 		if err == nil {
-			log.Info().Msg("Message processed")
-			return nil // if there's no error, we're done
-		}
-		h.log.Error().Msgf("failed to process messages, attempt %d: %v", i+1, err)
-	}
-
-	return xerrors.Errorf("failed to process messages after %d attempts", maxRetry)
-}
-
-func (h *Hub) loopOverMessages(messages *map[string][]json.RawMessage, senderSocket socket.Socket) error {
-	var returnErr error
-	for channel, messageArray := range *messages {
-		newMessageArray := make([]json.RawMessage, 0)
-		for _, msg := range messageArray {
-			var messageData message.Message
-			err := json.Unmarshal(msg, &messageData)
-			if err != nil {
-				h.log.Error().Msgf("failed to unmarshal message during getMessagesById answer handling: %v", err)
-				continue
-			}
-			err = h.handleReceivedMessage(senderSocket, messageData, channel)
-			if err != nil {
-				log.Info().Msg("Trouble handling message")
-				h.log.Error().Msgf("failed to handle message received from getMessagesById answer: %v", err)
-				newMessageArray = append(newMessageArray, msg) // if there's an error, keep the message
-				returnErr = xerrors.Errorf("failed to handle message received from getMessagesById answer: %v", err)
-			}
-		}
-		(*messages)[channel] = newMessageArray // Update the channel's message array
-		if len(newMessageArray) == 0 {
-			delete(*messages, channel) // if no messages left for the channel, remove the channel from the map
+			return nil
 		}
 	}
-	return returnErr
+	return xerrors.Errorf("failed to process messages: %v", err)
 }
 
 func (h *Hub) handlePublish(socket socket.Socket, byteMessage []byte) (int, error) {
@@ -614,5 +585,42 @@ func (h *Hub) handleReceivedMessage(socket socket.Socket, messageData message.Me
 	h.addMessageId(publish.Params.Channel, publish.Params.Message.MessageID)
 	h.Unlock()
 
+	return nil
+}
+
+// loopOverMessages loops over the messages received from a getMessagesById answer to process them
+// and update the list of messages to process during the next iteration with those that fail
+func (h *Hub) loopOverMessages(messages *map[string][]json.RawMessage, senderSocket socket.Socket) error {
+	var errMsg string
+	for channel, messageArray := range *messages {
+		newMessageArray := make([]json.RawMessage, 0)
+
+		//Try to process each message
+		for _, msg := range messageArray {
+			var messageData message.Message
+			err := json.Unmarshal(msg, &messageData)
+			if err != nil {
+				h.log.Error().Msgf("failed to unmarshal message during getMessagesById answer handling: %v", err)
+				continue
+			}
+
+			err = h.handleReceivedMessage(senderSocket, messageData, channel)
+			if err != nil {
+				h.log.Error().Msgf("failed to handle message received from getMessagesById answer: %v", err)
+				newMessageArray = append(newMessageArray, msg) // if there's an error, keep the message
+				errMsg += err.Error()
+			}
+		}
+		// Update the list of messages to process during the next iteration
+		(*messages)[channel] = newMessageArray
+		// if no messages left for the channel, remove the channel from the map
+		if len(newMessageArray) == 0 {
+			delete(*messages, channel)
+		}
+	}
+
+	if errMsg != "" {
+		return xerrors.New(errMsg)
+	}
 	return nil
 }
