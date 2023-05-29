@@ -15,11 +15,8 @@ class CounterApp:
     """
 
     def __init__(self):
-        self.app_nonces: dict[str, (str, float)] = {"valid": ("tst", 0)}  # Maps
-        # nonce
-        # to
-        # user
-        self.app_data: dict[str, int] = {"tst": 0}  # Maps users to counter
+        self.app_nonces: dict[str, (str, float)] = {}  # Maps nonce to user
+        self.app_data: dict[str, int] = {}  # Maps users to counter
         # values
 
     def get_new_login_params(self, user_id: str) -> dict[str, str]:
