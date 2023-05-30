@@ -35,7 +35,7 @@ object GetMessagesByIdResponseHandler extends AskPatternConstants {
     case Right(JsonRpcResponse(_, Some(resultObject), None, _)) =>
       resultObject.resultMap match {
         case Some(resultMap) =>
-          val receivedResponse = wrapMsgInPublish(resultMap)
+          val receivedResponse = wrapMsgInPublish(resultMap, MAX_RETRY_PER_MESSAGE)
           val validator = PublishSubscribe.validateRequests(ActorRef.noSender, messageRegistry)
           val success: Boolean = passThroughPipeline(receivedResponse, validator)
           if (success) {
@@ -57,6 +57,8 @@ object GetMessagesByIdResponseHandler extends AskPatternConstants {
     *   The wrapped messages with their counter
     * @param validatorFlow
     *   The validator to push the messages through
+    * @param logListFailure
+    *   The list of accumulated error logs, default to Nil
     * @param system
     *   Implicit actor system to use the given validator
     * @return
@@ -65,29 +67,36 @@ object GetMessagesByIdResponseHandler extends AskPatternConstants {
   @tailrec
   private def passThroughPipeline(
       receivedResponse: List[(GraphMessage, Int)],
-      validatorFlow: Flow[GraphMessage, GraphMessage, NotUsed]
+      validatorFlow: Flow[GraphMessage, GraphMessage, NotUsed],
+      logListFailure: List[String] = Nil
   )(implicit system: ActorSystem): Boolean = {
-    if (receivedResponse.isEmpty || receivedResponse.forall(elem => elem._2 <= 0)) {
-      return receivedResponse.isEmpty
+    if (receivedResponse.isEmpty) {
+      if (logListFailure.nonEmpty) {
+        logListFailure.foreach(log => println(log))
+      }
+      return logListFailure.isEmpty
     }
 
     var failedMessages: List[(GraphMessage, Int)] = Nil
+    var logs: List[String] = logListFailure
     receivedResponse.foreach {
       case (graphMessage, retry) =>
         if (retry > 0) {
           messagesThroughPipeline(validatorFlow, graphMessage) match {
             case Left(err) =>
-              failedMessages = (graphMessage, retry - 1) :: failedMessages
-              // only log a during last attempt
               if (retry == 1) {
-                println("Errors: " + err.toString + "\n On:\n" + prettyPrinter(graphMessage))
+                // only log a during last attempt
+                logs ::= "Errors: " + err.toString + "\n On:\n" + prettyPrinter(graphMessage)
+              } else {
+                failedMessages ::= graphMessage -> (retry - 1)
               }
+
             case _ => /* DO NOTHING */
           }
         }
     }
 
-    passThroughPipeline(failedMessages.reverse, validatorFlow)
+    passThroughPipeline(failedMessages, validatorFlow, logs)
   }
 
   /** Push a message through the given validator
@@ -119,18 +128,21 @@ object GetMessagesByIdResponseHandler extends AskPatternConstants {
     * @return
     *   A list of GraphMessage - Int pairs where the GraphMessage are sorted in increasing order of their channel length and the Int is the number of retry left for each message
     */
-  private def wrapMsgInPublish(map: Map[Channel, Set[Message]]): List[(GraphMessage, Int)] = {
-    var publishedList = map.foldLeft(List.empty[JsonRpcRequest])((acc, elem) =>
-      acc ++ elem._2.map(msg =>
-        JsonRpcRequest(
-          RpcValidator.JSON_RPC_VERSION,
-          MethodType.PUBLISH,
-          new Publish(elem._1, msg),
-          Some(0)
+  private def wrapMsgInPublish(map: Map[Channel, Set[Message]], retryPerMessage: Int): List[(GraphMessage, Int)] = {
+    val publishedList: List[JsonRpcRequest] = map.flatMap {
+      case (channel, set) =>
+        set.map(msg =>
+          JsonRpcRequest(
+            RpcValidator.JSON_RPC_VERSION,
+            MethodType.PUBLISH,
+            new Publish(channel, msg),
+            Some(0)
+          )
         )
-      )
-    )
-    publishedList = publishedList.sortWith((e1, e2) => e1.getParamsChannel.channel.length <= e2.getParamsChannel.channel.length)
-    publishedList.map(js => (Right(js), MAX_RETRY_PER_MESSAGE))
+    }.toList
+
+    publishedList
+      .sortWith((jsonMsg1, jsonMsg2) => jsonMsg1.getParamsChannel.channel.length <= jsonMsg2.getParamsChannel.channel.length)
+      .map(js => (Right(js), retryPerMessage))
   }
 }
