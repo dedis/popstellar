@@ -1,19 +1,17 @@
 #!/bin/sh
-echo "Creating Virtual environment"
+echo "Creating Virtual environment";
 python -m venv venv;
-echo "Entering Virtual environment"
-source venv/bin/activate;
-echo "Installing dependencies"
+echo "Entering Virtual environment";
+. venv/bin/activate;
+echo "Installing dependencies";
 pip install -r requirements.txt;
 numWorkers=4
-if [ $# -eq 2 ] || [ $# -eq 3 ] ; then
-  echo "Creating config file (This will reset your client id)"
-  printf "{\"client_id\":\"\", \"host_url\": \"%s\", \"host_port\": %s}" "$1" "$2" > data/config.json
+if [ $# -lt 1 ] ; then
+  echo "Please specify the config_file as the first argument (./run.sh config.json)";
+  exit 1;
+elif [ $# -eq 3 ] ; then
+  numWorkers=$2;
 fi
-if [ $# -eq 1 ] ; then
-  numWorkers=$1
-elif [ $# -eq 3 ]; then
-  numWorkers=$3
-fi
-echo "Starting server with $numWorkers workers"
+export FLASK_CONFIG_FILE=$1
+echo "Starting server with $numWorkers workers";
 gunicorn -w $numWorkers --chdir src "main:app";

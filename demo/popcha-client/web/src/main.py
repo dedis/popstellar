@@ -2,6 +2,9 @@
 This files includes the basis of the example server. Here are managed all
 HTTP/S requests.
 """
+
+# allows class names to be used as return types inside the class
+# see e.g. https://stackoverflow.com/a/61544901
 from __future__ import annotations
 
 import json
@@ -19,9 +22,10 @@ from src.authentication import Authentication
 config: dict[str, str | int] = {}
 core_app: CounterApp
 authenticationProvider: Authentication
-app = Flask("Example_authentication_server",
-            template_folder = path.join(path.dirname(__file__), "templates")
-            )
+app = Flask(
+    "Example_authentication_server",
+    template_folder = path.join(path.dirname(__file__), "templates")
+    )
 
 
 def validate_config(configuration: dict[str, str | int]) -> dict[str, str]:
@@ -38,7 +42,7 @@ def validate_config(configuration: dict[str, str | int]) -> dict[str, str]:
         return {"client_id": secrets.token_urlsafe(32)}
 
     is_public_domain_valid = ("public_domain" not in configuration or
-                           configuration["public_domain"] == "")
+                              configuration["public_domain"] == "")
     if is_public_domain_valid:
         raise ValueError(
                 "The \"public_domain\" property should be set in "
@@ -57,9 +61,9 @@ def validate_config(configuration: dict[str, str | int]) -> dict[str, str]:
                            configuration["local_port"] < 1)
     if is_local_port_valid:
         raise ValueError(
-            "The \"local_port\" should be set in config.json "
-            "and greater than 0"
-        )
+                "The \"local_port\" should be set in config.json "
+                "and greater than 0"
+                )
 
     return {}
 
@@ -99,11 +103,11 @@ def load_providers() -> list:
     :return: The providers present in the configuration files
     """
     provider_path = path.normpath(
-        path.join(
-            path.dirname(__file__),
-            "../data/providers.json"
+            path.join(
+                    path.dirname(__file__),
+                    "../data/providers.json"
+                    )
             )
-        )
 
     with open(provider_path) as provider_file:
         return json.loads(provider_file.read())
@@ -113,10 +117,12 @@ def on_startup() -> None:
     """
     Prepare the data needed by the client authentication server (This
     server). This includes the list of authorized
-    Open ID providers.html, as well as basic config information such as the
+    Open ID providers, as well as basic config information such as the
     homepage HTML code or the
     """
     global config, core_app, authenticationProvider
+
+    app.config.from_prefixed_env()
 
     csrf = CSRFProtect()
     csrf.init_app(app)
@@ -126,11 +132,11 @@ def on_startup() -> None:
     core_app = CounterApp()
     authenticationProvider = Authentication(filter_providers(providers))
     config_path = path.normpath(
-        path.join(
-            path.dirname(__file__),
-            "../data/config.json"
+            path.join(
+                    path.dirname(__file__),
+                    f"../{app.config['CONFIG_FILE']}"
+                    )
             )
-        )
 
     with open(config_path, "r+") as config_file:
         config = json.loads(config_file.read())
@@ -140,7 +146,11 @@ def on_startup() -> None:
             config.update(config_modifications)
             config_file.seek(0)
             config_file.write(json.dumps(config))
-            print("Your app configuration has been updated in data/config.json")
+            print(
+                f"Your app configuration has been updated in "
+                f"{app.config['CONFIG_FILE']}"
+                )
+
 
 # Step1: Returns the homepage
 @app.get("/")
@@ -149,7 +159,6 @@ def root() -> str:
     Get the homepage.
     :return: The homepage HTML
     """
-    print(config)
     providers_strings = [f'{provider.get("lao_id")}@{provider.get("domain")}'
         for provider in authenticationProvider.providers]
 
@@ -172,8 +181,10 @@ def authentication() -> Response:
     Redirect the user to the PoPCHA based authentication server
     :return: A response which includes a redirect to the original website
     """
-    provider_id: int = request.args.get("serverAndLaoId", default = -1,
-                                        type = int)
+    provider_id: int = request.args.get(
+        "serverAndLaoId", default = -1,
+        type = int
+        )
     if provider_id < 0:  # if serverAndLaoId is not an int
         return redirect("/")
 
@@ -182,7 +193,8 @@ def authentication() -> Response:
             authenticationProvider.providers[provider_id]["lao_id"],
             config["public_domain"],
             config["public_port"],
-            config["client_id"])
+            config["client_id"]
+            )
 
     return redirect(url)
 
@@ -228,7 +240,7 @@ def app_route():
 def add_provider():
     """
     !!! DANGER ZONE !!!
-    WARNING: This call is unsafe and allows to easily add new providers.html. It
+    WARNING: This call is unsafe and allows to easily add new providers. It
     is intended for example / showcase servers that do not provide security.
     """
     args = request.args
@@ -240,8 +252,9 @@ def add_provider():
         "domain": args["domain"],
         "lao_id": args["lao_id"],
         "public_key": args["public_key"]
-    }
+        }
     authenticationProvider.providers.append(provider)
     return redirect("/")
+
 
 on_startup()
