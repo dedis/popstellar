@@ -117,7 +117,7 @@ def on_startup() -> None:
     """
     Prepare the data needed by the client authentication server (This
     server). This includes the list of authorized
-    Open ID providers.html, as well as basic config information such as the
+    Open ID providers, as well as basic config information such as the
     homepage HTML code or the
     """
     global config, core_app, authenticationProvider
@@ -240,7 +240,7 @@ def app_route():
 def add_provider():
     """
     !!! DANGER ZONE !!!
-    WARNING: This call is unsafe and allows to easily add new providers.html. It
+    WARNING: This call is unsafe and allows to easily add new providers. It
     is intended for example / showcase servers that do not provide security.
     """
     args = request.args

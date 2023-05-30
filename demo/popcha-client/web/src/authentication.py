@@ -66,8 +66,9 @@ class Authentication:
         """
         Validate the args as if they were coming from OpenID Authentication
         request
-        :param args: A MultiDict containing the arguments (almost the same as a
-        dict).
+        :param args: A MultiDict containing the arguments. Similar to a dict
+        but allows multiple values for a key. Implemented as dict[str, list[str]].
+        See https://werkzeug.palletsprojects.com/en/2.3.x/datastructures/#werkzeug.datastructures.MultiDict
         :param client_id: The ID of this client
         :return: The unique user identifier if logged in, None otherwise
         """
@@ -111,6 +112,7 @@ class Authentication:
         :param iss: The registered server
         :return: The public key
         """
-        return ([p for p in self.providers if p.get("domain") == iss][0]).get(
-                "public_key"
-                )
+        return next(
+            p for p in self.providers
+            if p.get("domain") == iss
+        ).get("public_key")
