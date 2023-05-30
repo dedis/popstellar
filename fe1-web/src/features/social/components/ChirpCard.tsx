@@ -111,6 +111,7 @@ const ChirpCard = ({ chirp, isFirstItem, isLastItem }: IPropTypes) => {
     '👍': !isConnected || !currentUserPopTokenPublicKey,
     '👎': !isConnected || !currentUserPopTokenPublicKey,
     '❤️': !isConnected || !currentUserPopTokenPublicKey,
+    delete: !isConnected || !currentUserPopTokenPublicKey,
   };
   const addReaction = (reaction_codepoint: string) => {
     requestAddReaction(reaction_codepoint, chirp.id, laoId).catch((err) => {
@@ -264,6 +265,7 @@ const ChirpCard = ({ chirp, isFirstItem, isLastItem }: IPropTypes) => {
                     name="delete"
                     testID="delete_chirp"
                     onPress={() => setShowDeleteConfirmation(true)}
+                    disabled={reactionsDisabled.delete}
                     size="small"
                     buttonStyle="secondary"
                     toolbar

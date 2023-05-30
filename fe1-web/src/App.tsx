@@ -20,9 +20,13 @@ import { Color } from 'core/styles';
 import { configureFeatures } from 'features';
 
 import cameraPolyfill from './core/platform/camera/web-polyfill';
+import wordBreakPolyfill from './core/platform/cssStyle/WordBreakPolyfill';
 
 // load polyfill when the app loads
 cameraPolyfill();
+
+// This ensures that long words are broken correctly
+wordBreakPolyfill();
 
 const { messageRegistry, keyPairRegistry, navigationOpts, context } = configureFeatures();
 configureKeyPair();
