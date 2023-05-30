@@ -5,7 +5,6 @@ import androidx.room.*;
 import com.github.dedis.popstellar.model.objects.Election;
 
 import java.util.List;
-import java.util.Set;
 
 import io.reactivex.Completable;
 import io.reactivex.Single;
@@ -17,15 +16,11 @@ public interface ElectionDao {
   Completable insert(ElectionEntity electionEntity);
 
   /**
-   * This function is a query execution to search for elections that match a given lao but have
-   * their ids different from a specified set to exclude (this represents the elections already in
-   * memory and useless to retrieve).
+   * This function is a query execution to search for elections that are contained in a given lao.
    *
    * @param laoId identifier of the lao where to search the elections
-   * @param filteredIds ids of the election to exclude from the search
    * @return an emitter of a list of elections
    */
-  @Query(
-      "SELECT election FROM elections WHERE lao_id = :laoId AND election_id NOT IN (:filteredIds)")
-  Single<List<Election>> getElectionsByLaoId(String laoId, Set<String> filteredIds);
+  @Query("SELECT election FROM elections WHERE lao_id = :laoId")
+  Single<List<Election>> getElectionsByLaoId(String laoId);
 }

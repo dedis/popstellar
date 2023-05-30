@@ -37,15 +37,14 @@ public class LAORepository {
 
   private final LAODao laoDao;
 
+  /** Thread-safe map used to store the laos by their unique identifiers */
   private final ConcurrentHashMap<String, Lao> laoById = new ConcurrentHashMap<>();
-  private final ConcurrentHashMap<String, Subject<LaoView>> subjectById = new ConcurrentHashMap<>();
-  private final BehaviorSubject<List<String>> laosSubject = BehaviorSubject.create();
 
-  // ============ Lao Unrelated data ===============
-  // State for Messages
-  // Observable for view models that need access to all Nodes
-  private final Map<Channel, BehaviorSubject<List<ConsensusNode>>> channelToNodesSubject =
-      new HashMap<>();
+  /** Thread-safe map that maps a lao identifier to an observable over its lao view */
+  private final ConcurrentHashMap<String, Subject<LaoView>> subjectById = new ConcurrentHashMap<>();
+
+  /** Observable over the list of laos' identifiers */
+  private final BehaviorSubject<List<String>> laosSubject = BehaviorSubject.create();
 
   private final CompositeDisposable disposables = new CompositeDisposable();
 
@@ -84,7 +83,7 @@ public class LAORepository {
                             lao.getId(), BehaviorSubject.createDefault(new LaoView(lao)));
                       });
                   List<String> laoIds = laos.stream().map(Lao::getId).collect(Collectors.toList());
-                  laosSubject.onNext(laoIds);
+                  laosSubject.toSerialized().onNext(laoIds);
                   Timber.tag(TAG).d("Loaded all the LAOs from database: %s", laoIds);
                 },
                 err -> Timber.tag(TAG).e(err, "Error loading the LAOs from the database")));
@@ -143,7 +142,7 @@ public class LAORepository {
     return getLaoView(channel.extractLaoId());
   }
 
-  public synchronized void updateLao(Lao lao) {
+  public void updateLao(Lao lao) {
     Timber.tag(TAG).d("Updating Lao %s", lao);
     if (lao == null) {
       throw new IllegalArgumentException();
@@ -168,34 +167,35 @@ public class LAORepository {
       // Update observer if present
       Subject<LaoView> subject = subjectById.get(lao.getId());
       if (subject != null) {
-        subject.onNext(laoView);
+        subject.toSerialized().onNext(laoView);
       }
     } else {
       // Otherwise, create the entry
       laoById.put(lao.getId(), lao);
       // Update lao list
-      laosSubject.onNext(new ArrayList<>(laoById.keySet()));
+      laosSubject.toSerialized().onNext(new ArrayList<>(laoById.keySet()));
       subjectById.put(lao.getId(), BehaviorSubject.createDefault(laoView));
     }
   }
 
-  /**
-   * This function removes from the home all the laos displayed when the user wants to clear the
-   * data storage. The maps are automatically cleared by the intent flags.
-   */
+  /** This function clears the repository */
   public void clearRepository() {
-    Timber.tag(TAG).d("Clearing LAORepository");
+    Timber.tag(TAG).d("Clearing LAORepository...");
     laoById.clear();
     subjectById.clear();
-    laosSubject.onNext(new ArrayList<>());
+    laosSubject.toSerialized().onNext(new ArrayList<>());
   }
 
   public void addDisposable(Disposable disposable) {
     disposables.add(disposable);
   }
 
+  // ============ Lao Unrelated data ===============
+  // State for Messages
+  // Observable for view models that need access to all Nodes
+  private final Map<Channel, BehaviorSubject<List<ConsensusNode>>> channelToNodesSubject =
+      new HashMap<>();
   // ============ Lao Unrelated functions ===============
-
   /**
    * Return an Observable to the list of nodes in a given channel.
    *

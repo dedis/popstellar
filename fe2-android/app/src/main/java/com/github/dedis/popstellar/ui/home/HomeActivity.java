@@ -44,6 +44,10 @@ public class HomeActivity extends AppCompatActivity {
     setContentView(binding.getRoot());
 
     viewModel = obtainViewModel(this);
+
+    // When back to the home activity set connecting in view model to false
+    viewModel.disableConnectingFlag();
+
     handleTopAppBar();
 
     // Load all the json schemas in background when the app is started.

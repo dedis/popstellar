@@ -14,6 +14,7 @@ import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.error.UnknownMeetingException;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
 import javax.inject.Inject;
@@ -67,11 +68,10 @@ public class MeetingRepository {
     }
     Timber.tag(TAG).d("Adding meeting on lao %s : %s", laoId, meeting);
 
-    MeetingEntity meetingEntity = new MeetingEntity(laoId, meeting);
-    // Persist the meeting
+    // Persist the meeting in the db
     disposables.add(
         meetingDao
-            .insert(meetingEntity)
+            .insert(new MeetingEntity(laoId, meeting))
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
@@ -95,13 +95,16 @@ public class MeetingRepository {
     return getLaoMeetings(laoId).getMeetingObservable(meetingId);
   }
 
+  /**
+   * This function returns the meeting object by the lao and meeting ids.
+   *
+   * @param laoId identifier of the lao where to search the meeting
+   * @param meetingId meeting identifier
+   * @return the meeting matching the identifier
+   * @throws UnknownMeetingException if there's no meeting with the provided id in the lao
+   */
   public Meeting getMeetingWithId(String laoId, String meetingId) throws UnknownMeetingException {
     return getLaoMeetings(laoId).getMeetingWithId(meetingId);
-  }
-
-  @NonNull
-  private synchronized LaoMeetings getLaoMeetings(String laoId) {
-    return meetingsByLao.computeIfAbsent(laoId, lao -> new LaoMeetings(this, laoId));
   }
 
   /**
@@ -112,23 +115,30 @@ public class MeetingRepository {
     return getLaoMeetings(laoId).getMeetingsSubject();
   }
 
+  @NonNull
+  private synchronized LaoMeetings getLaoMeetings(String laoId) {
+    return meetingsByLao.computeIfAbsent(laoId, lao -> new LaoMeetings(this, laoId));
+  }
+
   private static final class LaoMeetings {
     private final MeetingRepository repository;
     private final String laoId;
-    private boolean alreadyRetrieved = false;
 
-    private final Map<String, Meeting> meetingById = new HashMap<>();
+    /** Thread-safe map to store the meetings by their ids */
+    private final ConcurrentHashMap<String, Meeting> meetingById = new ConcurrentHashMap<>();
 
-    // This allows to observe a specific meeting(s)
-    private final Map<String, Subject<Meeting>> meetingSubjects = new HashMap<>();
+    /** Thread-safe map to map the meeting identifier to an observable over the meeting object */
+    private final ConcurrentHashMap<String, Subject<Meeting>> meetingSubjects =
+        new ConcurrentHashMap<>();
 
-    // This allows to observe the collection of meetings as a whole
+    /** Observable over the whole collection of meetings */
     private final Subject<Set<Meeting>> meetingsSubject =
         BehaviorSubject.createDefault(unmodifiableSet(emptySet()));
 
     public LaoMeetings(MeetingRepository repository, String laoId) {
       this.repository = repository;
       this.laoId = laoId;
+      loadStorage();
     }
 
     /**
@@ -136,7 +146,7 @@ public class MeetingRepository {
      *
      * @param meeting the meeting to update/add
      */
-    public synchronized void update(Meeting meeting) {
+    public void update(Meeting meeting) {
       // Updating repo data
       String id = meeting.getId();
       meetingById.put(id, meeting);
@@ -145,14 +155,14 @@ public class MeetingRepository {
       if (meetingSubjects.containsKey(id)) {
         // If it exist we update the subject
         Timber.tag(TAG).d("Updating existing meeting %s", meeting.getName());
-        meetingSubjects.get(id).onNext(meeting);
+        Objects.requireNonNull(meetingSubjects.get(id)).toSerialized().onNext(meeting);
       } else {
         // If it does not, we create a new subject
         Timber.tag(TAG).d("New meeting, subject created for %s", meeting.getName());
         meetingSubjects.put(id, BehaviorSubject.createDefault(meeting));
       }
 
-      meetingsSubject.onNext(unmodifiableSet(new HashSet<>(meetingById.values())));
+      meetingsSubject.toSerialized().onNext(unmodifiableSet(new HashSet<>(meetingById.values())));
     }
 
     public Meeting getMeetingWithId(String id) throws UnknownMeetingException {
@@ -172,7 +182,6 @@ public class MeetingRepository {
     }
 
     public Observable<Set<Meeting>> getMeetingsSubject() {
-      loadStorage();
       return meetingsSubject;
     }
 
@@ -181,13 +190,10 @@ public class MeetingRepository {
      * This can be done one time only, as from then things are stored in memory.
      */
     private void loadStorage() {
-      if (alreadyRetrieved) {
-        return;
-      }
       repository.disposables.add(
           repository
               .meetingDao
-              .getMeetingsByLaoId(laoId, meetingById.keySet())
+              .getMeetingsByLaoId(laoId)
               .subscribeOn(Schedulers.io())
               .observeOn(AndroidSchedulers.mainThread())
               .subscribe(
@@ -199,7 +205,6 @@ public class MeetingRepository {
                           }),
                   err ->
                       Timber.tag(TAG).e(err, "No meeting found in the storage for lao %s", laoId)));
-      alreadyRetrieved = true;
     }
   }
 }

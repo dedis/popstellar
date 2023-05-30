@@ -6,7 +6,8 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
-import com.github.dedis.popstellar.di.*;
+import com.github.dedis.popstellar.di.DataRegistryModuleHelper;
+import com.github.dedis.popstellar.di.JsonModule;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.DataRegistry;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.CreateLao;
@@ -16,6 +17,13 @@ import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.model.objects.security.*;
 import com.github.dedis.popstellar.repository.*;
 import com.github.dedis.popstellar.repository.database.AppDatabase;
+import com.github.dedis.popstellar.repository.database.event.rollcall.RollCallDao;
+import com.github.dedis.popstellar.repository.database.event.rollcall.RollCallEntity;
+import com.github.dedis.popstellar.repository.database.lao.LAODao;
+import com.github.dedis.popstellar.repository.database.lao.LAOEntity;
+import com.github.dedis.popstellar.repository.database.message.MessageDao;
+import com.github.dedis.popstellar.repository.database.message.MessageEntity;
+import com.github.dedis.popstellar.repository.database.witnessing.*;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.utility.error.*;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
@@ -34,13 +42,15 @@ import java.time.Instant;
 import java.util.*;
 
 import io.reactivex.Completable;
+import io.reactivex.Single;
 
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.generatePoPToken;
 import static com.github.dedis.popstellar.utility.handler.data.RollCallHandler.*;
 import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.when;
 
 @RunWith(AndroidJUnit4.class)
 public class RollCallHandlerTest {
@@ -58,10 +68,15 @@ public class RollCallHandlerTest {
 
   private MessageHandler messageHandler;
   private Gson gson;
-  private AppDatabase appDatabase;
 
   private RollCall rollCall;
 
+  @Mock AppDatabase appDatabase;
+  @Mock LAODao laoDao;
+  @Mock MessageDao messageDao;
+  @Mock RollCallDao rollCallDao;
+  @Mock WitnessingDao witnessingDao;
+  @Mock WitnessDao witnessDao;
   @Mock MessageSender messageSender;
   @Mock KeyManager keyManager;
 
@@ -72,7 +87,6 @@ public class RollCallHandlerTest {
       throws GeneralSecurityException, IOException, KeyException, UnknownRollCallException {
     MockitoAnnotations.openMocks(this);
     Application application = ApplicationProvider.getApplicationContext();
-    appDatabase = AppDatabaseModuleHelper.getAppDatabase(application);
 
     lenient().when(keyManager.getMainKeyPair()).thenReturn(SENDER_KEY);
     lenient().when(keyManager.getMainPublicKey()).thenReturn(SENDER);
@@ -80,15 +94,40 @@ public class RollCallHandlerTest {
 
     lenient().when(messageSender.subscribe(any())).then(args -> Completable.complete());
 
+    when(appDatabase.laoDao()).thenReturn(laoDao);
+    when(laoDao.getAllLaos()).thenReturn(Single.just(new ArrayList<>()));
+    when(laoDao.insert(any(LAOEntity.class))).thenReturn(Completable.complete());
+
+    when(appDatabase.messageDao()).thenReturn(messageDao);
+    when(messageDao.takeFirstNMessages(anyInt())).thenReturn(Single.just(new ArrayList<>()));
+    when(messageDao.insert(any(MessageEntity.class))).thenReturn(Completable.complete());
+    when(messageDao.getMessageById(any(MessageID.class))).thenReturn(null);
+
+    when(appDatabase.rollCallDao()).thenReturn(rollCallDao);
+    when(rollCallDao.getRollCallsByLaoId(anyString())).thenReturn(Single.just(new ArrayList<>()));
+    when(rollCallDao.insert(any(RollCallEntity.class))).thenReturn(Completable.complete());
+
+    when(appDatabase.witnessDao()).thenReturn(witnessDao);
+    when(witnessDao.getWitnessesByLao(anyString())).thenReturn(Single.just(new ArrayList<>()));
+    when(witnessDao.insertAll(any())).thenReturn(Completable.complete());
+    when(witnessDao.isWitness(anyString(), any(PublicKey.class))).thenReturn(0);
+
+    when(appDatabase.witnessingDao()).thenReturn(witnessingDao);
+    when(witnessingDao.getWitnessMessagesByLao(anyString()))
+        .thenReturn(Single.just(new ArrayList<>()));
+    when(witnessingDao.insert(any(WitnessingEntity.class))).thenReturn(Completable.complete());
+    when(witnessingDao.deleteMessagesByIds(anyString(), any())).thenReturn(Completable.complete());
+
     LAORepository laoRepo = new LAORepository(appDatabase, application);
     rollCallRepo = new RollCallRepository(appDatabase, application);
     witnessingRepository = new WitnessingRepository(appDatabase, application);
+    MessageRepository messageRepo =
+        new MessageRepository(appDatabase, ApplicationProvider.getApplicationContext());
 
     DataRegistry dataRegistry =
         DataRegistryModuleHelper.buildRegistry(
             laoRepo, keyManager, rollCallRepo, witnessingRepository);
-    MessageRepository messageRepo =
-        new MessageRepository(appDatabase, ApplicationProvider.getApplicationContext());
+
     gson = JsonModule.provideGson(dataRegistry);
     messageHandler = new MessageHandler(messageRepo, dataRegistry);
 
@@ -118,11 +157,6 @@ public class RollCallHandlerTest {
     // Add the CreateLao message to the LAORepository
     MessageGeneral createLaoMessage = new MessageGeneral(SENDER_KEY, CREATE_LAO, gson);
     messageRepo.addMessage(createLaoMessage, false, false);
-  }
-
-  @After
-  public void tearDown() {
-    appDatabase.close();
   }
 
   @Test

@@ -14,7 +14,8 @@ import org.junit.*;
 import org.junit.runner.RunWith;
 
 import java.time.Instant;
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
 
 import io.reactivex.observers.TestObserver;
 
@@ -41,18 +42,6 @@ public class RollCallDatabaseTest {
           new HashSet<>(),
           "loc",
           "");
-  private static final RollCall ROLL_CALL2 =
-      new RollCall(
-          LAO_ID + "2",
-          LAO_ID + "2",
-          "title2",
-          CREATION,
-          CREATION + 10,
-          CREATION + 20,
-          EventState.CREATED,
-          new HashSet<>(),
-          "loc2",
-          "description");
 
   private static final RollCallEntity ROLLCALL_ENTITY = new RollCallEntity(LAO_ID, ROLL_CALL);
 
@@ -83,45 +72,13 @@ public class RollCallDatabaseTest {
     testObserver.awaitTerminalEvent();
     testObserver.assertComplete();
 
-    Set<String> emptyFilter = new HashSet<>();
     TestObserver<List<RollCall>> testObserver2 =
         rollCallDao
-            .getRollCallsByLaoId(LAO_ID, emptyFilter)
+            .getRollCallsByLaoId(LAO_ID)
             .test()
             .assertValue(rollCalls -> rollCalls.size() == 1 && rollCalls.get(0).equals(ROLL_CALL));
 
     testObserver2.awaitTerminalEvent();
     testObserver2.assertComplete();
-  }
-
-  @Test
-  public void getFilteredIdsTest() {
-    TestObserver<Void> testObserver = rollCallDao.insert(ROLLCALL_ENTITY).test();
-
-    testObserver.awaitTerminalEvent();
-    testObserver.assertComplete();
-
-    Set<String> filter = new HashSet<>();
-    filter.add(ROLL_CALL.getPersistentId());
-    TestObserver<List<RollCall>> testObserver2 =
-        rollCallDao.getRollCallsByLaoId(LAO_ID, filter).test().assertValue(List::isEmpty);
-
-    testObserver2.awaitTerminalEvent();
-    testObserver2.assertComplete();
-
-    RollCallEntity newRollCallEntity = new RollCallEntity(LAO_ID, ROLL_CALL2);
-    TestObserver<Void> testObserver3 = rollCallDao.insert(newRollCallEntity).test();
-
-    testObserver3.awaitTerminalEvent();
-    testObserver3.assertComplete();
-
-    TestObserver<List<RollCall>> testObserver4 =
-        rollCallDao
-            .getRollCallsByLaoId(LAO_ID, filter)
-            .test()
-            .assertValue(rollCalls -> rollCalls.size() == 1 && rollCalls.get(0).equals(ROLL_CALL2));
-
-    testObserver4.awaitTerminalEvent();
-    testObserver4.assertComplete();
   }
 }

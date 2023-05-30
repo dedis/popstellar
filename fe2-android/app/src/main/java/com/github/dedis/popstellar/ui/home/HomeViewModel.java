@@ -26,6 +26,7 @@ import com.google.gson.JsonParseException;
 import java.security.GeneralSecurityException;
 import java.util.List;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.inject.Inject;
 
@@ -49,6 +50,13 @@ public class HomeViewModel extends AndroidViewModel
 
   /** This LiveData boolean is used to indicate whether the HomeFragment is displayed */
   private final MutableLiveData<Boolean> isHome = new MutableLiveData<>(Boolean.TRUE);
+
+  /**
+   * This atomic flag is used to avoid the scanner fragment to open multiple connecting activities,
+   * as in few seconds it scans the same qr code multiple times. This flag signals when a connecting
+   * attempt finishes, so that a new one could be launched.
+   */
+  private final AtomicBoolean connecting = new AtomicBoolean(false);
 
   /** Dependencies for this class */
   private final Gson gson;
@@ -102,6 +110,10 @@ public class HomeViewModel extends AndroidViewModel
 
   @Override
   public void handleData(String data) {
+    // Don't process another data from the scanner if I'm already trying to connect on a qr code
+    if (connecting.get()) {
+      return;
+    }
     ConnectToLao laoData;
     try {
       laoData = ConnectToLao.extractFrom(gson, data);
@@ -117,6 +129,7 @@ public class HomeViewModel extends AndroidViewModel
 
     // Establish connection with new address
     networkManager.connect(laoData.server);
+    connecting.set(true);
     getApplication()
         .startActivity(
             ConnectingActivity.newIntentForJoiningDetail(
@@ -211,6 +224,11 @@ public class HomeViewModel extends AndroidViewModel
     if (!Boolean.valueOf(isHome).equals(this.isHome.getValue())) {
       this.isHome.setValue(isHome);
     }
+  }
+
+  /** Set to false the connecting flag when the connecting activity has finished */
+  public void disableConnectingFlag() {
+    connecting.set(false);
   }
 
   public boolean isWalletSetUp() {
