@@ -23,6 +23,7 @@ object RuntimeEnvironment {
   private lazy val confDir: String = getConfDir
   private lazy val appConfFile = confDir + File.separator + "application.conf"
 
+  lazy val dbPath: String = getDbDirectory
   lazy val appConf: Config = ConfigFactory.parseFile(new File(appConfFile))
   lazy val serverConf: ServerConf = ServerConf(appConf)
   lazy val ownClientAddress = f"ws://${serverConf.interface}:${serverConf.port}/${serverConf.clientPath}"
@@ -60,7 +61,7 @@ object RuntimeEnvironment {
       println("Starting the server without any previous persistent state")
 
       // removing database folder
-      val directory = new Directory(new File("database"))
+      val directory = new Directory(new File(dbPath))
       if (directory.deleteRecursively()) {
         println("Removed old database folder")
       }
@@ -72,6 +73,16 @@ object RuntimeEnvironment {
       pathConfig.trim
     } else {
       throw new RuntimeException(s"-D$virtualMachineParam was not provided.")
+    }
+  }
+
+  private def getDbDirectory: String = {
+    val dbPathParam = "scala.db"
+    val dbPath = sp(dbPathParam)
+    if (dbPath != null && dbPath.trim.nonEmpty) {
+      dbPath.trim + "/database"
+    } else {
+      "database"
     }
   }
 
