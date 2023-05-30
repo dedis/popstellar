@@ -19,7 +19,11 @@ const keysDbId: string = 'SecureKeyPair';
  * @private
  */
 async function createKeyPair(): Promise<CryptoKeyPair> {
-  const keyPair = await getSubtleCrypto().generateKey(algorithm, false, keyUsages);
+  const keyPair = (await getSubtleCrypto().generateKey(
+    algorithm,
+    false,
+    keyUsages,
+  )) as CryptoKeyPair;
 
   if (!keyPair) {
     throw new Error('KeyPair generation failed');
