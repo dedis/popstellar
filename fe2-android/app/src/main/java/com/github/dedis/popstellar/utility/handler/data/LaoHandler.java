@@ -53,7 +53,6 @@ public final class LaoHandler {
    * @param context the HandlerContext of the message
    * @param createLao the message that was received
    */
-  // for now concerns Consensus which is not a priority this semester
   public void handleCreateLao(HandlerContext context, CreateLao createLao)
       throws UnknownLaoException {
     Channel channel = context.getChannel();

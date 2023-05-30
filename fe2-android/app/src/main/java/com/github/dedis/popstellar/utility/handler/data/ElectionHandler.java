@@ -227,7 +227,7 @@ public final class ElectionHandler {
   }
 
   /**
-   * Simple way to handle a election key, add the given key to the given election
+   * Simple way to handle an election key, add the given key to the given election
    *
    * @param context context
    * @param electionKey key to add
