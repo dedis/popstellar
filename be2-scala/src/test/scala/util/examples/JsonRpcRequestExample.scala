@@ -10,7 +10,7 @@ import util.examples.Election.OpenElectionExamples._
 import util.examples.Election.SetupElectionExamples._
 import util.examples.Election.EndElectionExamples._
 import util.examples.Election.KeyElectionExamples._
-import util.examples.Election.{ResultElectionExamples}
+import util.examples.Election.{ResultElectionExamples, SetupElectionExamples}
 import util.examples.Lao.GreetLaoExamples._
 import util.examples.MessageExample._
 import util.examples.Witness.WitnessMessageExamples._
