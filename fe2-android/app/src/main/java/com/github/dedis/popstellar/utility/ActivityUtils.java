@@ -18,17 +18,20 @@ import androidx.lifecycle.Lifecycle;
 
 import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.model.objects.Wallet;
+import com.github.dedis.popstellar.model.objects.security.Base64URLData;
 import com.github.dedis.popstellar.repository.database.subscriptions.SubscriptionsDao;
 import com.github.dedis.popstellar.repository.database.subscriptions.SubscriptionsEntity;
 import com.github.dedis.popstellar.repository.database.wallet.WalletDao;
 import com.github.dedis.popstellar.repository.database.wallet.WalletEntity;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 
-import java.security.GeneralSecurityException;
+import java.security.*;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import io.github.novacrypto.bip39.MnemonicGenerator;
+import io.github.novacrypto.bip39.wordlists.English;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
@@ -240,5 +243,53 @@ public class ActivityUtils {
     // Use an animation to rotate smoothly
     arrow.animate().rotation(newRotation).setDuration(300).start();
     text.setVisibility(visibility);
+  }
+
+  /**
+   * This function converts a base64 string into some mnemonic words.
+   *
+   * <p>Disclaimer: there's no guarantee that different base64 inputs map to 2 different words. The
+   * reason is that the representation space is limited. However, since the amount of messages is
+   * low is practically improbable to have conflicts
+   *
+   * @param input base64 string
+   * @param numberOfWords number of mnemonic words we want to generate
+   * @return two mnemonic words
+   */
+  public static String generateMnemonicWordFromBase64(String input, int numberOfWords) {
+    return generateMnemonicFromBase64(new Base64URLData(input).getData(), numberOfWords);
+  }
+
+  private static String generateMnemonicFromBase64(byte[] data, int numberOfWords) {
+    // Generate the mnemonic words from the input data
+    String[] mnemonicWords = generateMnemonic(data);
+
+    if (mnemonicWords.length == 0) {
+      return "none";
+    }
+
+    StringBuilder stringBuilder = new StringBuilder();
+    for (int i = 0; i < numberOfWords; i++) {
+      int wordIndex = Math.abs(Arrays.hashCode(data) + i) % mnemonicWords.length;
+      stringBuilder.append(" ").append(mnemonicWords[wordIndex]);
+    }
+
+    return stringBuilder.substring(1, stringBuilder.length());
+  }
+
+  private static String[] generateMnemonic(byte[] data) {
+    try {
+      MessageDigest digest = MessageDigest.getInstance("SHA-256");
+      StringBuilder sb = new StringBuilder();
+      new MnemonicGenerator(English.INSTANCE).createMnemonic(digest.digest(data), sb::append);
+      return sb.toString().split(" ");
+    } catch (NoSuchAlgorithmException e) {
+      Timber.tag(TAG)
+          .e(
+              e,
+              "Error generating the mnemonic for the base64 string %s",
+              new Base64URLData(data).getEncoded());
+      return new String[0];
+    }
   }
 }

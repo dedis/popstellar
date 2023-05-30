@@ -24,6 +24,7 @@ import javax.inject.Singleton;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.BehaviorSubject;
 import io.reactivex.subjects.Subject;
@@ -187,6 +188,10 @@ public class LAORepository {
     laoById.clear();
     subjectById.clear();
     laosSubject.onNext(new ArrayList<>());
+  }
+
+  public void addDisposable(Disposable disposable) {
+    disposables.add(disposable);
   }
 
   // ============ Lao Unrelated functions ===============

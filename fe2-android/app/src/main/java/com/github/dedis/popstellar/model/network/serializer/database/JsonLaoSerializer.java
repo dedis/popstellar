@@ -31,22 +31,6 @@ public class JsonLaoSerializer implements JsonSerializer<Lao>, JsonDeserializer<
     MessageID modificationId =
         context.deserialize(jsonObject.get("modificationId"), MessageID.class);
 
-    // Deserialize the Set of Witnesses
-    JsonArray witnessesJsonArray = jsonObject.get("witnesses").getAsJsonArray();
-    Set<PublicKey> witnesses = new HashSet<>();
-    for (JsonElement witnessJsonElement : witnessesJsonArray) {
-      witnesses.add(context.deserialize(witnessJsonElement, PublicKey.class));
-    }
-
-    // Deserialize the Map of witnessMessages
-    JsonObject witnessMessagesJsonObject = jsonObject.get("witnessMessages").getAsJsonObject();
-    Map<MessageID, WitnessMessage> witnessMessages = new HashMap<>();
-    for (Map.Entry<String, JsonElement> entry : witnessMessagesJsonObject.entrySet()) {
-      witnessMessages.put(
-          new MessageID(entry.getKey()),
-          context.deserialize(entry.getValue(), WitnessMessage.class));
-    }
-
     // Deserialize the Set of PendingUpdate
     JsonArray pendingUpdatesJsonArray = jsonObject.get("pendingUpdates").getAsJsonArray();
     Set<PendingUpdate> pendingUpdates = new HashSet<>();
@@ -78,8 +62,6 @@ public class JsonLaoSerializer implements JsonSerializer<Lao>, JsonDeserializer<
         .setCreation(creation)
         .setOrganizer(organizer)
         .setModificationId(modificationId)
-        .setWitnesses(witnesses)
-        .setWitnessMessages(witnessMessages)
         .setPendingUpdates(pendingUpdates)
         .setMessageIdToElectInstance(messageIdToElectInstance)
         // .setKeyToNode(keyToNode)
@@ -101,21 +83,6 @@ public class JsonLaoSerializer implements JsonSerializer<Lao>, JsonDeserializer<
 
     jsonObject.add("organizer", context.serialize(lao.getOrganizer(), PublicKey.class));
     jsonObject.add("modificationId", context.serialize(lao.getModificationId(), MessageID.class));
-
-    // Serialize the Set of Witnesses
-    JsonArray witnessesJsonArray = new JsonArray();
-    for (PublicKey witness : lao.getWitnesses()) {
-      witnessesJsonArray.add(context.serialize(witness, PublicKey.class));
-    }
-    jsonObject.add("witnesses", witnessesJsonArray);
-
-    // Serialize the Map of witnessMessages
-    JsonObject witnessMessagesJsonObject = new JsonObject();
-    for (Map.Entry<MessageID, WitnessMessage> entry : lao.getWitnessMessages().entrySet()) {
-      witnessMessagesJsonObject.add(
-          entry.getKey().getEncoded(), context.serialize(entry.getValue(), WitnessMessage.class));
-    }
-    jsonObject.add("witnessMessages", witnessMessagesJsonObject);
 
     // Serialize the Set of PendingUpdate
     JsonArray pendingUpdateJsonArray = new JsonArray();
