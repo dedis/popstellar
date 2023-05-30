@@ -1881,12 +1881,6 @@ func Test_Handle_GreetServer_Already_Greeted(t *testing.T) {
 	require.Nil(t, sock.msg)
 }
 
-// Test that receiving a GetMessagesById message with the wrong order is properly handled
-// by sending a create roll call
-func Test_Handle_GetMessagesById_Answer_Wrong_Order(t *testing.T) {
-
-}
-
 // -----------------------------------------------------------------------------
 // Utility functions
 

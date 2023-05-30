@@ -3,6 +3,7 @@ package standard_hub
 import (
 	"encoding/base64"
 	"encoding/json"
+	"github.com/rs/zerolog/log"
 	"popstellar/crypto"
 	jsonrpc "popstellar/message"
 	"popstellar/message/answer"
@@ -531,6 +532,7 @@ func (h *Hub) handleReceivedMessage(socket socket.Socket, messageData message.Me
 	signature := messageData.Signature
 	messageID := messageData.MessageID
 	data := messageData.Data
+	log.Info().Msgf("Received message on %s", targetChannel)
 
 	expectedMessageID := messagedata.Hash(data, signature)
 	if expectedMessageID != messageID {
@@ -581,9 +583,9 @@ func (h *Hub) handleReceivedMessage(socket socket.Socket, messageData message.Me
 	}
 
 	h.Lock()
+	defer h.Unlock()
 	h.hubInbox.StoreMessage(publish.Params.Message)
 	h.addMessageId(publish.Params.Channel, publish.Params.Message.MessageID)
-	h.Unlock()
 
 	return nil
 }
