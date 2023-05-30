@@ -42,11 +42,11 @@ class CounterApp:
         :returns: The correct HTML code if the request is valid,
         it will raise an exception otherwise
         """
-        valid_nonce: bool = (
+        invalid_nonce: bool = (
                     "nonce" not in args or args.get("nonce", type = str)
                     not in self.app_nonces)
 
-        if valid_nonce:
+        if invalid_nonce:
             raise ValueError("The nonce is not valid")
 
         user_id, _ = self.app_nonces.pop(args.get("nonce", type = str))
