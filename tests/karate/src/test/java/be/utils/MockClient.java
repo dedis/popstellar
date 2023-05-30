@@ -52,5 +52,4 @@ public class MockClient extends MultiMsgWebSocketClient {
       lao.id,
       attendees);
   }
-
 }

@@ -105,5 +105,4 @@ public class JsonConverter {
   public void setMessageIdForced(String messageIdForced) {
     this.messageIdForced = messageIdForced;
   }
-
 }

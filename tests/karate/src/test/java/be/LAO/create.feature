@@ -79,7 +79,7 @@ Feature: Create a pop LAO
           "name": '#(validLao.name)',
           "creation": '#(validLao.creation)',
           "organizer": '#(validLao.organizerPk)',
-          "witnesses": "#(lao.witnesses)"
+          "witnesses": "#(validLao.witnesses)"
         }
       """
     When organizer.publish(laoCreateRequest, rootChannel)

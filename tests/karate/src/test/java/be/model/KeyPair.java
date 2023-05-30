@@ -45,5 +45,4 @@ public class KeyPair {
   public String getPrivateKey(){
     return Base64Utils.encode(privateKey);
   }
-
 }

@@ -169,7 +169,6 @@ public class RollCall {
       this.attendees = List.copyOf(attendees);
     }
   }
-
 }
 
 

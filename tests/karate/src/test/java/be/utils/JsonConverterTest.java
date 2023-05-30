@@ -106,5 +106,4 @@ public class JsonConverterTest {
     String realRegisteredVotes = Hash.hash("8L2MWJJYNGG57ZOKdbmhHD9AopvBaBN26y1w5jL07ms=".getBytes());
     assert registeredVotes.equals(realRegisteredVotes);
   }
-
 }

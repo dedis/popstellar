@@ -65,5 +65,4 @@ public class Lao {
   public static String generateLaoId(String organizerPublicKey, long creation, String name) {
     return Hash.hash(organizerPublicKey, Long.toString(creation), name);
   }
-
 }

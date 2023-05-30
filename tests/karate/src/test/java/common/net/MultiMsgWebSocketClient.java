@@ -169,5 +169,4 @@ public class MultiMsgWebSocketClient extends WebSocketClient {
     logger.info("setting wrong signature: " + wrongSignature);
     jsonConverter.setSignature(wrongSignature);
   }
-
 }
