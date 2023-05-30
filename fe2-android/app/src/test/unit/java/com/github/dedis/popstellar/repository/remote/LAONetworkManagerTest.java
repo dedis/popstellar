@@ -13,6 +13,7 @@ import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.CreateLao;
 import com.github.dedis.popstellar.model.objects.Channel;
+import com.github.dedis.popstellar.model.objects.PeerAddress;
 import com.github.dedis.popstellar.model.objects.security.KeyPair;
 import com.github.dedis.popstellar.testutils.Base64DataUtils;
 import com.github.dedis.popstellar.utility.error.*;
@@ -76,6 +77,7 @@ public class LAONetworkManagerTest {
     hiltRule.inject();
     when(connection.observeMessage()).thenReturn(messages);
     when(connection.observeConnectionEvents()).thenReturn(events);
+    when(connection.connectToPeers(any())).thenReturn(true);
 
     // Default behavior : success
     Answer<?> answer =
@@ -397,5 +399,54 @@ public class LAONetworkManagerTest {
     testObserver.dispose();
     disposable.dispose();
     networkManager.dispose();
+  }
+
+  @Test
+  public void testExtendConnection() {
+    TestSchedulerProvider schedulerProvider = new TestSchedulerProvider();
+    TestScheduler testScheduler = schedulerProvider.getTestScheduler();
+
+    LAONetworkManager networkManager =
+        new LAONetworkManager(
+            handler,
+            connection,
+            JsonModule.provideGson(DataRegistryModuleHelper.buildRegistry()),
+            schedulerProvider,
+            new HashSet<>());
+
+    // Extend the connections with a new peer
+    List<PeerAddress> peers = new ArrayList<>();
+    peers.add(new PeerAddress("url"));
+    networkManager.extendConnection(peers);
+
+    // Ensure that publish sends the right messages with 2 connections
+
+    networkManager.subscribe(CHANNEL).subscribe(); // First subscribe
+    testScheduler.advanceTimeBy(REPROCESSING_DELAY, TimeUnit.SECONDS);
+
+    verify(connection).sendMessage(any(Subscribe.class));
+    verify(connection).sendMessage(any(Catchup.class));
+
+    // Setup mock answer
+    Answer<?> answer =
+        args -> {
+          Subscribe subscribe = args.getArgument(0); // Retrieve subscribe object
+          assertEquals(CHANNEL, subscribe.getChannel()); // Make sure the channel is correct
+          messages.onNext(new Result(subscribe.getRequestId())); // Return a positive result
+          return null;
+        };
+    doAnswer(answer).when(connection).sendMessage(any(Subscribe.class));
+
+    // Push Connection open event
+    events.onNext(new WebSocket.Event.OnConnectionOpened<>(mock(WebSocket.class)));
+    testScheduler.advanceTimeBy(REPROCESSING_DELAY, TimeUnit.SECONDS);
+
+    networkManager.dispose();
+
+    verify(connection, times(2)).sendMessage(any(Subscribe.class));
+    verify(connection, times(2)).sendMessage(any(Catchup.class));
+    verify(connection, atLeastOnce()).observeMessage();
+    verify(connection, times(2)).observeConnectionEvents();
+    verify(connection).close();
   }
 }
