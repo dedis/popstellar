@@ -26,6 +26,7 @@ import javax.inject.Singleton;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.BehaviorSubject;
 import io.reactivex.subjects.Subject;
@@ -173,6 +174,10 @@ public class RollCallRepository {
   public boolean canOpenRollCall(String laoId) {
     return getLaoRollCalls(laoId).rollCallByPersistentId.values().stream()
         .noneMatch(RollCall::isOpen);
+  }
+
+  public void addDisposable(Disposable disposable) {
+    disposables.add(disposable);
   }
 
   @NonNull

@@ -14,13 +14,13 @@ import com.github.dedis.popstellar.model.network.method.message.data.lao.CreateL
 import com.github.dedis.popstellar.model.network.method.message.data.message.WitnessMessageSignature;
 import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.security.*;
-import com.github.dedis.popstellar.repository.LAORepository;
-import com.github.dedis.popstellar.repository.MessageRepository;
+import com.github.dedis.popstellar.repository.*;
 import com.github.dedis.popstellar.repository.database.AppDatabase;
 import com.github.dedis.popstellar.repository.database.lao.LAODao;
 import com.github.dedis.popstellar.repository.database.lao.LAOEntity;
 import com.github.dedis.popstellar.repository.database.message.MessageDao;
 import com.github.dedis.popstellar.repository.database.message.MessageEntity;
+import com.github.dedis.popstellar.repository.database.witnessing.*;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.utility.error.*;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
@@ -41,10 +41,8 @@ import io.reactivex.Completable;
 import io.reactivex.Single;
 
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
+import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 
@@ -61,17 +59,21 @@ public class WitnessingHandlerTest {
 
   private static final CreateLao CREATE_LAO = new CreateLao("lao", ORGANIZER, WITNESSES);
   private static final Channel LAO_CHANNEL = Channel.getLaoChannel(CREATE_LAO.getId());
-  private static final MessageID MESSAGE_ID = generateMessageID();
-  private static final WitnessMessage WITNESS_MESSAGE = new WitnessMessage(MESSAGE_ID);
-  private static Lao LAO;
+  private static final MessageID MESSAGE_ID1 = generateMessageID();
+  private static final MessageID MESSAGE_ID2 = generateMessageIDOtherThan(MESSAGE_ID1);
+  private static final WitnessMessage WITNESS_MESSAGE1 = new WitnessMessage(MESSAGE_ID1);
+  private static final WitnessMessage WITNESS_MESSAGE2 = new WitnessMessage(MESSAGE_ID2);
 
   private LAORepository laoRepo;
+  private static WitnessingRepository witnessingRepository;
   private MessageHandler messageHandler;
   private Gson gson;
 
   @Mock AppDatabase appDatabase;
   @Mock LAODao laoDao;
   @Mock MessageDao messageDao;
+  @Mock WitnessDao witnessDao;
+  @Mock WitnessingDao witnessingDao;
   @Mock MessageSender messageSender;
   @Mock KeyManager keyManager;
 
@@ -98,19 +100,35 @@ public class WitnessingHandlerTest {
     when(messageDao.insert(any(MessageEntity.class))).thenReturn(Completable.complete());
     when(messageDao.getMessageById(any(MessageID.class))).thenReturn(null);
 
+    when(appDatabase.witnessDao()).thenReturn(witnessDao);
+    when(witnessDao.getWitnessesByLao(anyString())).thenReturn(Single.just(new ArrayList<>()));
+    when(witnessDao.insertAll(any())).thenReturn(Completable.complete());
+    when(witnessDao.isWitness(anyString(), any(PublicKey.class))).thenReturn(0);
+
+    when(appDatabase.witnessingDao()).thenReturn(witnessingDao);
+    when(witnessingDao.getWitnessMessagesByLao(anyString()))
+        .thenReturn(Single.just(new ArrayList<>()));
+    when(witnessingDao.insert(any(WitnessingEntity.class))).thenReturn(Completable.complete());
+    when(witnessingDao.deleteMessagesByIds(anyString(), any())).thenReturn(Completable.complete());
+
     laoRepo = new LAORepository(appDatabase, application);
+    witnessingRepository = new WitnessingRepository(appDatabase, application);
     MessageRepository messageRepo = new MessageRepository(appDatabase, application);
 
-    DataRegistry dataRegistry = DataRegistryModuleHelper.buildRegistry(laoRepo, keyManager);
+    DataRegistry dataRegistry =
+        DataRegistryModuleHelper.buildRegistry(laoRepo, witnessingRepository, keyManager);
 
     gson = JsonModule.provideGson(dataRegistry);
     messageHandler = new MessageHandler(messageRepo, dataRegistry);
 
     // Create one LAO
-    LAO = new Lao(CREATE_LAO.getName(), CREATE_LAO.getOrganizer(), CREATE_LAO.getCreation());
+    Lao LAO = new Lao(CREATE_LAO.getName(), CREATE_LAO.getOrganizer(), CREATE_LAO.getCreation());
     LAO.setLastModified(LAO.getCreation());
-    LAO.setWitnesses(new HashSet<>(CREATE_LAO.getWitnesses()));
-    LAO.addWitnessMessage(WITNESS_MESSAGE);
+    LAO.initKeyToNode(new HashSet<>(CREATE_LAO.getWitnesses()));
+
+    witnessingRepository.addWitnesses(LAO.getId(), new HashSet<>(WITNESSES));
+    witnessingRepository.addWitnessMessage(LAO.getId(), WITNESS_MESSAGE1);
+    witnessingRepository.addWitnessMessage(LAO.getId(), WITNESS_MESSAGE2);
 
     // Add the LAO to the LAORepository
     laoRepo.updateLao(LAO);
@@ -123,11 +141,12 @@ public class WitnessingHandlerTest {
   @Test
   public void testHandleWitnessMessageSignatureFromOrganizer()
       throws GeneralSecurityException, UnknownElectionException, UnknownRollCallException,
-          UnknownLaoException, DataHandlingException, NoRollCallException {
+          UnknownLaoException, DataHandlingException, NoRollCallException,
+          UnknownWitnessMessageException {
     // Create a valid witnessMessageSignature signed by the organizer
-    Signature signature = ORGANIZER_KEY.sign(MESSAGE_ID);
+    Signature signature = ORGANIZER_KEY.sign(MESSAGE_ID1);
     WitnessMessageSignature witnessMessageSignature =
-        new WitnessMessageSignature(MESSAGE_ID, signature);
+        new WitnessMessageSignature(MESSAGE_ID1, signature);
     MessageGeneral message = new MessageGeneral(ORGANIZER_KEY, witnessMessageSignature, gson);
 
     // Handle the witnessMessageSignature
@@ -135,21 +154,26 @@ public class WitnessingHandlerTest {
 
     // Check that the witness message in the lao repo was updated with the organizer public key
     Lao lao = laoRepo.getLaoByChannel(LAO_CHANNEL);
-    WitnessMessage witnessMessage = lao.getWitnessMessages().get(MESSAGE_ID);
+
+    Optional<WitnessMessage> witnessMessage =
+        witnessingRepository.getWitnessMessage(lao.getId(), MESSAGE_ID1);
+    assertTrue(witnessMessage.isPresent());
+
     HashSet<PublicKey> expectedWitnesses = new HashSet<>();
     expectedWitnesses.add(ORGANIZER);
 
-    assertEquals(expectedWitnesses, witnessMessage.getWitnesses());
+    assertEquals(expectedWitnesses, witnessMessage.get().getWitnesses());
   }
 
   @Test
   public void testHandleWitnessMessageSignatureFromWitness()
       throws GeneralSecurityException, UnknownElectionException, UnknownRollCallException,
-          UnknownLaoException, DataHandlingException, NoRollCallException {
+          UnknownLaoException, DataHandlingException, NoRollCallException,
+          UnknownWitnessMessageException {
     // Create a valid witnessMessageSignature signed by a witness
-    Signature signature = WITNESS_KEY.sign(MESSAGE_ID);
+    Signature signature = WITNESS_KEY.sign(MESSAGE_ID2);
     WitnessMessageSignature witnessMessageSignature =
-        new WitnessMessageSignature(MESSAGE_ID, signature);
+        new WitnessMessageSignature(MESSAGE_ID2, signature);
     MessageGeneral message = new MessageGeneral(WITNESS_KEY, witnessMessageSignature, gson);
 
     // Handle the witnessMessageSignature
@@ -157,20 +181,24 @@ public class WitnessingHandlerTest {
 
     // Check that the witness message in the lao repo was updated with the witness public key
     Lao lao = laoRepo.getLaoByChannel(LAO_CHANNEL);
-    WitnessMessage witnessMessage = lao.getWitnessMessages().get(MESSAGE_ID);
+
+    Optional<WitnessMessage> witnessMessage =
+        witnessingRepository.getWitnessMessage(lao.getId(), MESSAGE_ID2);
+    assertTrue(witnessMessage.isPresent());
+
     HashSet<PublicKey> expectedWitnesses = new HashSet<>();
     expectedWitnesses.add(WITNESS);
 
-    assertEquals(expectedWitnesses, witnessMessage.getWitnesses());
+    assertEquals(expectedWitnesses, witnessMessage.get().getWitnesses());
   }
 
   @Test
   public void testHandleWitnessMessageSignatureFromNonWitness() throws GeneralSecurityException {
     // Create a witnessMessageSignature signed by a non witness
     KeyPair invalidKeyPair = generateKeyPair();
-    Signature signature = invalidKeyPair.sign(MESSAGE_ID);
+    Signature signature = invalidKeyPair.sign(MESSAGE_ID1);
     WitnessMessageSignature witnessMessageSignature =
-        new WitnessMessageSignature(MESSAGE_ID, signature);
+        new WitnessMessageSignature(MESSAGE_ID1, signature);
     MessageGeneral message = new MessageGeneral(invalidKeyPair, witnessMessageSignature, gson);
 
     assertThrows(
@@ -182,7 +210,7 @@ public class WitnessingHandlerTest {
   public void testHandleWitnessMessageSignatureWithInvalidSignature() {
     // Create a witnessMessageSignature with an invalid signature
     WitnessMessageSignature witnessMessageSignature =
-        new WitnessMessageSignature(MESSAGE_ID, generateSignature());
+        new WitnessMessageSignature(MESSAGE_ID1, generateSignature());
     MessageGeneral message = new MessageGeneral(ORGANIZER_KEY, witnessMessageSignature, gson);
 
     assertThrows(
@@ -194,7 +222,7 @@ public class WitnessingHandlerTest {
   public void testHandleWitnessMessageSignatureWithNonExistentWitnessMessage()
       throws GeneralSecurityException {
     // Create a witnessMessageSignature for a witness message that does not exist in the lao
-    MessageID invalidMessageID = generateMessageIDOtherThan(MESSAGE_ID);
+    MessageID invalidMessageID = generateMessageIDOtherThan(MESSAGE_ID1);
     Signature signature = ORGANIZER_KEY.sign(invalidMessageID);
     WitnessMessageSignature witnessMessageSignature =
         new WitnessMessageSignature(invalidMessageID, signature);

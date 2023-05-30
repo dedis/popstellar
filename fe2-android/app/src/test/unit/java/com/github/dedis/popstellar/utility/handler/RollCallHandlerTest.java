@@ -23,6 +23,7 @@ import com.github.dedis.popstellar.repository.database.lao.LAODao;
 import com.github.dedis.popstellar.repository.database.lao.LAOEntity;
 import com.github.dedis.popstellar.repository.database.message.MessageDao;
 import com.github.dedis.popstellar.repository.database.message.MessageEntity;
+import com.github.dedis.popstellar.repository.database.witnessing.*;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.utility.error.*;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
@@ -62,8 +63,9 @@ public class RollCallHandlerTest {
   private static final Channel LAO_CHANNEL = Channel.getLaoChannel(CREATE_LAO.getId());
   private static Lao LAO;
 
-  private LAORepository laoRepo;
   private RollCallRepository rollCallRepo;
+  private WitnessingRepository witnessingRepository;
+
   private MessageHandler messageHandler;
   private Gson gson;
 
@@ -73,6 +75,8 @@ public class RollCallHandlerTest {
   @Mock LAODao laoDao;
   @Mock MessageDao messageDao;
   @Mock RollCallDao rollCallDao;
+  @Mock WitnessingDao witnessingDao;
+  @Mock WitnessDao witnessDao;
   @Mock MessageSender messageSender;
   @Mock KeyManager keyManager;
 
@@ -103,13 +107,26 @@ public class RollCallHandlerTest {
     when(rollCallDao.getRollCallsByLaoId(anyString())).thenReturn(Single.just(new ArrayList<>()));
     when(rollCallDao.insert(any(RollCallEntity.class))).thenReturn(Completable.complete());
 
-    laoRepo = new LAORepository(appDatabase, application);
+    when(appDatabase.witnessDao()).thenReturn(witnessDao);
+    when(witnessDao.getWitnessesByLao(anyString())).thenReturn(Single.just(new ArrayList<>()));
+    when(witnessDao.insertAll(any())).thenReturn(Completable.complete());
+    when(witnessDao.isWitness(anyString(), any(PublicKey.class))).thenReturn(0);
+
+    when(appDatabase.witnessingDao()).thenReturn(witnessingDao);
+    when(witnessingDao.getWitnessMessagesByLao(anyString()))
+        .thenReturn(Single.just(new ArrayList<>()));
+    when(witnessingDao.insert(any(WitnessingEntity.class))).thenReturn(Completable.complete());
+    when(witnessingDao.deleteMessagesByIds(anyString(), any())).thenReturn(Completable.complete());
+
+    LAORepository laoRepo = new LAORepository(appDatabase, application);
     rollCallRepo = new RollCallRepository(appDatabase, application);
+    witnessingRepository = new WitnessingRepository(appDatabase, application);
     MessageRepository messageRepo =
         new MessageRepository(appDatabase, ApplicationProvider.getApplicationContext());
 
     DataRegistry dataRegistry =
-        DataRegistryModuleHelper.buildRegistry(laoRepo, keyManager, rollCallRepo);
+        DataRegistryModuleHelper.buildRegistry(
+            laoRepo, keyManager, rollCallRepo, witnessingRepository);
 
     gson = JsonModule.provideGson(dataRegistry);
     messageHandler = new MessageHandler(messageRepo, dataRegistry);
@@ -145,7 +162,7 @@ public class RollCallHandlerTest {
   @Test
   public void testHandleCreateRollCall()
       throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
-          UnknownElectionException, NoRollCallException {
+          UnknownElectionException, NoRollCallException, UnknownWitnessMessageException {
     // Create the create Roll Call message
     CreateRollCall createRollCall =
         new CreateRollCall(
@@ -168,7 +185,7 @@ public class RollCallHandlerTest {
 
     // Check the WitnessMessage has been created
     Optional<WitnessMessage> witnessMessage =
-        laoRepo.getLaoByChannel(LAO_CHANNEL).getWitnessMessage(message.getMessageId());
+        witnessingRepository.getWitnessMessage(LAO.getId(), message.getMessageId());
     assertTrue(witnessMessage.isPresent());
 
     // Check the Witness message contains the expected title and description
@@ -181,7 +198,7 @@ public class RollCallHandlerTest {
   @Test
   public void testHandleOpenRollCall()
       throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
-          UnknownElectionException, NoRollCallException {
+          UnknownElectionException, NoRollCallException, UnknownWitnessMessageException {
     // Create the open Roll Call message
     OpenRollCall openRollCall =
         new OpenRollCall(
@@ -200,7 +217,7 @@ public class RollCallHandlerTest {
 
     // Check the WitnessMessage has been created
     Optional<WitnessMessage> witnessMessage =
-        laoRepo.getLaoByChannel(LAO_CHANNEL).getWitnessMessage(message.getMessageId());
+        witnessingRepository.getWitnessMessage(LAO.getId(), message.getMessageId());
     assertTrue(witnessMessage.isPresent());
 
     // Check the Witness message contains the expected title and description
@@ -213,7 +230,7 @@ public class RollCallHandlerTest {
   @Test
   public void testBlockOpenRollCall()
       throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
-          UnknownElectionException, NoRollCallException {
+          UnknownElectionException, NoRollCallException, UnknownWitnessMessageException {
     // Assert that a Roll Call can be opened
     assertTrue(rollCallRepo.canOpenRollCall(LAO.getId()));
 
@@ -245,7 +262,7 @@ public class RollCallHandlerTest {
   @Test
   public void testHandleCloseRollCall()
       throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
-          UnknownElectionException, NoRollCallException {
+          UnknownElectionException, NoRollCallException, UnknownWitnessMessageException {
     // Create the open Roll Call message
     OpenRollCall openRollCall =
         new OpenRollCall(
@@ -273,7 +290,7 @@ public class RollCallHandlerTest {
 
     // Check the WitnessMessage has been created
     Optional<WitnessMessage> witnessMessage =
-        laoRepo.getLaoByChannel(LAO_CHANNEL).getWitnessMessage(message.getMessageId());
+        witnessingRepository.getWitnessMessage(LAO.getId(), message.getMessageId());
     assertTrue(witnessMessage.isPresent());
 
     // Check the Witness message contains the expected title and description

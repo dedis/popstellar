@@ -1,5 +1,6 @@
 package com.github.dedis.popstellar.ui.lao.witness;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
 import android.view.*;
 import android.widget.ListView;
@@ -8,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.WitnessMessageFragmentBinding;
 import com.github.dedis.popstellar.ui.lao.LaoActivity;
 import com.github.dedis.popstellar.ui.lao.LaoViewModel;
@@ -43,6 +45,7 @@ public class WitnessMessageFragment extends Fragment {
     binding.setLifecycleOwner(getActivity());
     setupListAdapter();
     setupListUpdates();
+    setupDeleteButton();
     return binding.getRoot();
   }
 
@@ -50,7 +53,6 @@ public class WitnessMessageFragment extends Fragment {
     ListView listView = binding.witnessMessageList;
 
     adapter = new WitnessMessageListViewAdapter(new ArrayList<>(), getActivity());
-
     listView.setAdapter(adapter);
   }
 
@@ -63,5 +65,17 @@ public class WitnessMessageFragment extends Fragment {
               Timber.tag(TAG).d("witness messages updated");
               adapter.replaceList(messages);
             });
+  }
+
+  private void setupDeleteButton() {
+    binding.witnessDeleteSignedMessage.setOnClickListener(
+        v ->
+            new AlertDialog.Builder(getContext())
+                .setTitle(R.string.confirm_title)
+                .setMessage(R.string.confirm_delete_witnessed_messages)
+                .setPositiveButton(
+                    R.string.yes, (dialogInterface, i) -> adapter.deleteSignedMessages())
+                .setNegativeButton(R.string.no, (dialogInterface, i) -> dialogInterface.dismiss())
+                .show());
   }
 }

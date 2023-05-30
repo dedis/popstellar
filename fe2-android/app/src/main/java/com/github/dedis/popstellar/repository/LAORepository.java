@@ -24,6 +24,7 @@ import javax.inject.Singleton;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.BehaviorSubject;
 import io.reactivex.subjects.Subject;
@@ -185,12 +186,15 @@ public class LAORepository {
     laosSubject.toSerialized().onNext(new ArrayList<>());
   }
 
+  public void addDisposable(Disposable disposable) {
+    disposables.add(disposable);
+  }
+
   // ============ Lao Unrelated data ===============
   // State for Messages
   // Observable for view models that need access to all Nodes
   private final Map<Channel, BehaviorSubject<List<ConsensusNode>>> channelToNodesSubject =
       new HashMap<>();
-
   // ============ Lao Unrelated functions ===============
   /**
    * Return an Observable to the list of nodes in a given channel.

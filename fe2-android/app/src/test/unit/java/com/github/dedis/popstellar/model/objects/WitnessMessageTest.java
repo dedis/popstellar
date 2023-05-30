@@ -58,14 +58,6 @@ public class WitnessMessageTest {
     message2.addWitness(Base64DataUtils.generatePublicKey());
     assertNotEquals(message1, message2);
 
-    message2 = new WitnessMessage(message1);
-    message2.setDescription("new description");
-    assertNotEquals(message1, message2);
-
-    message2 = new WitnessMessage(message1);
-    message2.setTitle("new title");
-    assertNotEquals(message1, message2);
-
     assertNotEquals(message1, null);
   }
 

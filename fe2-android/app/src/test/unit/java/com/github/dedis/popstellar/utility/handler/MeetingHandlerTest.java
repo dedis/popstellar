@@ -22,6 +22,7 @@ import com.github.dedis.popstellar.repository.database.lao.LAODao;
 import com.github.dedis.popstellar.repository.database.lao.LAOEntity;
 import com.github.dedis.popstellar.repository.database.message.MessageDao;
 import com.github.dedis.popstellar.repository.database.message.MessageEntity;
+import com.github.dedis.popstellar.repository.database.witnessing.*;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.utility.error.*;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
@@ -64,6 +65,7 @@ public class MeetingHandlerTest {
 
   private static LAORepository laoRepo;
   private static MeetingRepository meetingRepo;
+  private static WitnessingRepository witnessingRepository;
   private static MessageHandler messageHandler;
   private static Gson gson;
 
@@ -73,6 +75,8 @@ public class MeetingHandlerTest {
   @Mock LAODao laoDao;
   @Mock MessageDao messageDao;
   @Mock MeetingDao meetingDao;
+  @Mock WitnessingDao witnessingDao;
+  @Mock WitnessDao witnessDao;
   @Mock MessageSender messageSender;
   @Mock KeyManager keyManager;
 
@@ -103,12 +107,25 @@ public class MeetingHandlerTest {
     when(meetingDao.getMeetingsByLaoId(anyString())).thenReturn(Single.just(new ArrayList<>()));
     when(meetingDao.insert(any(MeetingEntity.class))).thenReturn(Completable.complete());
 
+    when(appDatabase.witnessDao()).thenReturn(witnessDao);
+    when(witnessDao.getWitnessesByLao(anyString())).thenReturn(Single.just(new ArrayList<>()));
+    when(witnessDao.insertAll(any())).thenReturn(Completable.complete());
+    when(witnessDao.isWitness(anyString(), any(PublicKey.class))).thenReturn(0);
+
+    when(appDatabase.witnessingDao()).thenReturn(witnessingDao);
+    when(witnessingDao.getWitnessMessagesByLao(anyString()))
+        .thenReturn(Single.just(new ArrayList<>()));
+    when(witnessingDao.insert(any(WitnessingEntity.class))).thenReturn(Completable.complete());
+    when(witnessingDao.deleteMessagesByIds(anyString(), any())).thenReturn(Completable.complete());
+
     laoRepo = new LAORepository(appDatabase, application);
     meetingRepo = new MeetingRepository(appDatabase, application);
+    witnessingRepository = new WitnessingRepository(appDatabase, application);
     MessageRepository messageRepo = new MessageRepository(appDatabase, application);
 
     DataRegistry dataRegistry =
-        DataRegistryModuleHelper.buildRegistry(laoRepo, keyManager, meetingRepo);
+        DataRegistryModuleHelper.buildRegistry(
+            laoRepo, keyManager, meetingRepo, witnessingRepository);
 
     gson = JsonModule.provideGson(dataRegistry);
     messageHandler = new MessageHandler(messageRepo, dataRegistry);
@@ -135,7 +152,8 @@ public class MeetingHandlerTest {
   @Test
   public void handleCreateMeetingTest()
       throws UnknownElectionException, UnknownRollCallException, UnknownLaoException,
-          DataHandlingException, NoRollCallException, UnknownMeetingException {
+          DataHandlingException, NoRollCallException, UnknownMeetingException,
+          UnknownWitnessMessageException {
     // Create the create Meeting message
     CreateMeeting createMeeting =
         new CreateMeeting(
@@ -157,7 +175,7 @@ public class MeetingHandlerTest {
 
     // Check the WitnessMessage has been created
     Optional<WitnessMessage> witnessMessage =
-        laoRepo.getLaoByChannel(LAO_CHANNEL).getWitnessMessage(message.getMessageId());
+        witnessingRepository.getWitnessMessage(LAO.getId(), message.getMessageId());
     assertTrue(witnessMessage.isPresent());
 
     // Check the Witness message contains the expected title and description

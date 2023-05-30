@@ -58,10 +58,10 @@ public enum Objects {
       case "reaction":
       case "meeting":
       case "coin":
-        return true;
-        // TODO: add persistence for other repos in next PRs
-      case "consensus":
       case "message":
+        return true;
+        // TODO: add persistence for consensus when it'll have its repo
+      case "consensus":
       default:
         return false;
     }
