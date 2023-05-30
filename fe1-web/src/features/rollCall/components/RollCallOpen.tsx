@@ -178,7 +178,7 @@ const RollCallOpen = ({
         </>
       )}
 
-      {scannedPopTokens && <AttendeeList popTokens={scannedPopTokens} />}
+      {scannedPopTokens && <AttendeeList popTokens={scannedPopTokens} personalToken={popToken} />}
     </ScreenWrapper>
   );
 };

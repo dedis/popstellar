@@ -30,3 +30,5 @@ export const white = 'white';
 export const gray = 'gray';
 export const popGray = '#363636';
 export const popBlue = '#008ec2';
+export const lightPopBlue = 'rgb(211, 242, 255)';
+
