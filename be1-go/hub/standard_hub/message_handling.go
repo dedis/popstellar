@@ -559,8 +559,8 @@ func (h *Hub) handleReceivedMessage(socket socket.Socket, messageData message.Me
 	}
 	_, stored := h.hubInbox.GetMessage(publish.Params.Message.MessageID)
 	if stored {
+		h.log.Info().Msgf("Already stored message %s", publish.Params.Message.MessageID)
 		h.Unlock()
-		log.Info().Msgf("Already stored message %s", publish.Params.Message.MessageID)
 		return nil
 	}
 	h.Unlock()
