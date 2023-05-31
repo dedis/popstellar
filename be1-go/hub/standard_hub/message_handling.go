@@ -560,7 +560,8 @@ func (h *Hub) handleReceivedMessage(socket socket.Socket, messageData message.Me
 	_, stored := h.hubInbox.GetMessage(publish.Params.Message.MessageID)
 	if stored {
 		h.Unlock()
-		return xerrors.Errorf("already stored this message")
+		log.Info().Msgf("Already stored message %s", publish.Params.Message.MessageID)
+		return nil
 	}
 	h.Unlock()
 
@@ -583,10 +584,9 @@ func (h *Hub) handleReceivedMessage(socket socket.Socket, messageData message.Me
 	}
 
 	h.Lock()
-	defer h.Unlock()
 	h.hubInbox.StoreMessage(publish.Params.Message)
 	h.addMessageId(publish.Params.Channel, publish.Params.Message.MessageID)
-
+	h.Unlock()
 	return nil
 }
 
