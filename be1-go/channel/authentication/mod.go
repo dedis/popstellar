@@ -50,7 +50,7 @@ type Channel struct {
 	// channel path lao_id/authentication
 	channelID string
 
-	//clientID to pop token to identifier map
+	// clientID to pop token to identifier map
 	popToID map[clientID]map[string]identifier
 
 	popIDLock *sync.Mutex
@@ -179,7 +179,6 @@ func (c *Channel) auhenticateUser(msg message.Message, msgData interface{},
 	// verify signatures and validity of the pop Token.
 	err := c.verifyAuthMessage(msg, *data)
 	if err != nil {
-		c.log.Err(err).Msg("Error: invalid authentication message received")
 		return xerrors.Errorf("failed to verify authentication message: %v", err)
 	}
 
