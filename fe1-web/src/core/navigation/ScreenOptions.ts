@@ -7,6 +7,8 @@ import ButtonPadding from 'core/components/ButtonPadding';
 import DrawerMenuButton from 'core/components/DrawerMenuButton';
 import { Color, Spacing, Typography } from 'core/styles';
 
+import buildInfo from '../components/BuildInfo';
+
 export const stackScreenOptionsWithoutHeader: StackNavigationOptions = {
   headerShown: false,
   headerLeft: BackButton,
@@ -18,6 +20,7 @@ export const stackScreenOptionsWithoutHeader: StackNavigationOptions = {
 };
 
 export const stackScreenOptionsWithHeader: StackNavigationOptions = {
+  headerBackground: buildInfo,
   headerLeftContainerStyle: {
     flexBasis: 'auto',
     paddingLeft: Spacing.contentSpacing,
