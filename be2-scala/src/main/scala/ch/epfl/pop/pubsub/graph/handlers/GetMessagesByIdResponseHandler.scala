@@ -19,7 +19,7 @@ import scala.concurrent.Await
 // When receiving the missing messages, the server's job is to write them on the database.
 object GetMessagesByIdResponseHandler extends AskPatternConstants {
 
-  private val MAX_RETRY_PER_MESSAGE = 5
+  private val MAX_RETRY_PER_MESSAGE = 10
   private val SUCCESS = 0
 
   /** Validate and replay on the system each message received in the get_messages_by_id result
