@@ -133,16 +133,13 @@ func (c *Channel) Publish(publish method.Publish, socket socket.Socket) error {
 
 // Catchup is used to handle a catchup message.
 func (c *Channel) Catchup(catchup method.Catchup) []message.Message {
-	c.log.Info().
-		Str(msgID, strconv.Itoa(catchup.ID)).
-		Msg("received a catchup")
-
-	return c.inbox.GetSortedMessages()
+	c.log.Error().Msg("Catchup is not allowed on the authentication channel")
+	return nil
 }
 
 // Broadcast is forbidden, as authentication messages must be kept secret.
 func (c *Channel) Broadcast(_ method.Broadcast, _ socket.Socket) error {
-	panic("Broadcasting is not allowed in the authentication channel")
+	return xerrors.New("Broadcasting is not allowed on the authentication channel")
 }
 
 // ---
