@@ -10,6 +10,8 @@ import ch.epfl.pop.model.network.{JsonRpcRequest, MethodType}
 import ch.epfl.pop.pubsub.ClientActor.ClientAnswer
 import ch.epfl.pop.pubsub.graph.validators.RpcValidator
 import ch.epfl.pop.pubsub.{AskPatternConstants, MessageRegistry, PublishSubscribe}
+
+import scala.collection.mutable
 final case class ConnectionMediator(
     monitorRef: ActorRef,
     mediatorRef: ActorRef,
@@ -18,7 +20,7 @@ final case class ConnectionMediator(
 ) extends Actor with ActorLogging with AskPatternConstants {
   implicit val system: ActorSystem = ActorSystem()
 
-  private var serverMap: Map[ActorRef, GreetServer] = Map()
+  private var serverMap: mutable.HashMap[ActorRef, GreetServer] = mutable.HashMap()
 
   // Ping Monitor to inform it of our ActorRef
   monitorRef ! ConnectionMediator.Ping()
@@ -63,7 +65,7 @@ final case class ConnectionMediator(
       )
 
     case NewServerConnected(serverRef, greetServer) =>
-      serverMap += (serverRef, greetServer)
+      serverMap += ((serverRef, greetServer))
       monitorRef ! Monitor.AtLeastOneServerConnected
   }
 }

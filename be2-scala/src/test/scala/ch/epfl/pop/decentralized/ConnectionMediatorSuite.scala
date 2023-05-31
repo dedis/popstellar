@@ -2,12 +2,14 @@ package ch.epfl.pop.decentralized
 
 import akka.actor.{ActorRef, ActorSystem}
 import akka.testkit.{TestKit, TestProbe}
-import ch.epfl.pop.model.network.method.Heartbeat
+import ch.epfl.pop.model.network.method.{GreetServer, Heartbeat}
+import ch.epfl.pop.model.objects.{Base64Data, PublicKey}
 import ch.epfl.pop.pubsub.ClientActor.ClientActorMessage
 import ch.epfl.pop.pubsub.MessageRegistry
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.funsuite.{AnyFunSuiteLike => FunSuiteLike}
 import org.scalatest.matchers.should.Matchers
+
 import scala.concurrent.duration.DurationInt
 
 class ConnectionMediatorSuite extends TestKit(ActorSystem("ConnectionMediatorSuiteActorSystem")) with FunSuiteLike with Matchers with BeforeAndAfterAll {
@@ -29,7 +31,7 @@ class ConnectionMediatorSuite extends TestKit(ActorSystem("ConnectionMediatorSui
     mockMonitor.expectMsg(timeout, ConnectionMediator.Ping())
 
     // Register server
-    connectionMediatorRef ! ConnectionMediator.NewServerConnected(server.ref)
+    connectionMediatorRef ! ConnectionMediator.NewServerConnected(server.ref, GreetServer(PublicKey(Base64Data("")), "", ""))
 
     mockMonitor.expectMsg(timeout, Monitor.AtLeastOneServerConnected)
 
@@ -53,9 +55,9 @@ class ConnectionMediatorSuite extends TestKit(ActorSystem("ConnectionMediatorSui
     mockMonitor.expectMsg(timeout, ConnectionMediator.Ping())
 
     // Register servers
-    connectionMediatorRef ! ConnectionMediator.NewServerConnected(server1.ref)
-    connectionMediatorRef ! ConnectionMediator.NewServerConnected(server2.ref)
-    connectionMediatorRef ! ConnectionMediator.NewServerConnected(server3.ref)
+    connectionMediatorRef ! ConnectionMediator.NewServerConnected(server1.ref, GreetServer(PublicKey(Base64Data("")), "", ""))
+    connectionMediatorRef ! ConnectionMediator.NewServerConnected(server2.ref, GreetServer(PublicKey(Base64Data("")), "", ""))
+    connectionMediatorRef ! ConnectionMediator.NewServerConnected(server3.ref, GreetServer(PublicKey(Base64Data("")), "", ""))
 
     // Monitor expect a single message
     mockMonitor.expectMsg(timeout, Monitor.AtLeastOneServerConnected)

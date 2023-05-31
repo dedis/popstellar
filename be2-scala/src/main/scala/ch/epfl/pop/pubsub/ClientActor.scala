@@ -75,8 +75,8 @@ final case class ClientActor(mediator: ActorRef, connectionMediatorRef: ActorRef
     case greetServer: GreetServer =>
       if (!greetServerSent && isServer) {
         triggerGreetServer()
-        connectionMediatorRef ! ConnectionMediator.NewServerConnected(self, greetServer)
       }
+      connectionMediatorRef ! ConnectionMediator.NewServerConnected(self, greetServer)
     case clientAnswer @ ClientAnswer(_) =>
       log.info(s"Sending an answer back to client $wsHandle: $clientAnswer")
       messageWsHandle(clientAnswer)
