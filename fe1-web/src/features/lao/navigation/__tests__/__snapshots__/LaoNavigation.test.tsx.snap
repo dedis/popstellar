@@ -512,23 +512,53 @@ exports[`LaoNavigation renders correctly 1`] = `
                                                     }
                                                   >
                                                     <View
-                                                      collapsable={false}
                                                       style={
                                                         {
-                                                          "backgroundColor": "#fff",
-                                                          "borderBottomColor": "rgb(216, 216, 216)",
-                                                          "borderColor": "rgb(216, 216, 216)",
-                                                          "flex": 1,
-                                                          "shadowColor": "rgb(216, 216, 216)",
-                                                          "shadowOffset": {
-                                                            "height": 0.5,
-                                                            "width": 0,
-                                                          },
-                                                          "shadowOpacity": 0.85,
-                                                          "shadowRadius": 0,
+                                                          "display": "flex",
+                                                          "flexDirection": "row",
+                                                          "justifyContent": "center",
+                                                          "left": 8,
+                                                          "position": "absolute",
+                                                          "right": 8,
+                                                          "top": 48,
+                                                          "zIndex": 100,
                                                         }
                                                       }
-                                                    />
+                                                    >
+                                                      <Text
+                                                        style={
+                                                          [
+                                                            {
+                                                              "fontSize": 8,
+                                                              "lineHeight": 1,
+                                                            },
+                                                            {
+                                                              "color": "#8E8E8E",
+                                                            },
+                                                            {
+                                                              "fontFamily": "Courier New",
+                                                            },
+                                                            {
+                                                              "textTransform": "uppercase",
+                                                            },
+                                                          ]
+                                                        }
+                                                      >
+                                                        <Text
+                                                          onPress={[Function]}
+                                                        />
+                                                        <Text>
+                                                           | 
+                                                        </Text>
+                                                        <Text
+                                                          onPress={[Function]}
+                                                        />
+                                                        <Text>
+                                                           | 
+                                                        </Text>
+                                                        <Text />
+                                                      </Text>
+                                                    </View>
                                                   </View>
                                                   <View
                                                     collapsable={false}
