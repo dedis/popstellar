@@ -130,7 +130,7 @@ public class ElectionStartFragmentTest {
 
           Lao lao = new Lao(LAO_ID);
           lao.setOrganizer(mainKeyPair.getPublicKey());
-          lao.setWitnesses(Sets.newSet(node2KeyPair.getPublicKey(), node3KeyPair.getPublicKey()));
+          lao.initKeyToNode(Sets.newSet(node2KeyPair.getPublicKey(), node3KeyPair.getPublicKey()));
 
           laoRepo.updateLao(lao);
           consensusChannel = lao.getChannel().subChannel("consensus");
@@ -197,7 +197,7 @@ public class ElectionStartFragmentTest {
   @Test
   public void displayWithUpdatesIsCorrect()
       throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
-          UnknownElectionException, NoRollCallException, UnknownMeetingException {
+          UnknownElectionException, NoRollCallException, UnknownWitnessMessageException {
     setElectionStart(PAST_TIME);
 
     // Election start time has passed, should display that it's ready and start button enabled
@@ -285,7 +285,7 @@ public class ElectionStartFragmentTest {
   @Test
   public void acceptButtonSendElectAcceptMessageTest()
       throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
-          UnknownElectionException, NoRollCallException, UnknownMeetingException {
+          UnknownElectionException, NoRollCallException, UnknownWitnessMessageException {
     setElectionStart(PAST_TIME);
 
     // Nodes 3 try to start
@@ -308,7 +308,7 @@ public class ElectionStartFragmentTest {
   @Test
   public void failureTest()
       throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
-          UnknownElectionException, NoRollCallException, UnknownMeetingException {
+          UnknownElectionException, NoRollCallException, UnknownWitnessMessageException {
     setElectionStart(PAST_TIME);
 
     // Nodes 3 try to start and failed

@@ -15,9 +15,9 @@ public class WitnessPagerAdapter extends FragmentStateAdapter {
   @Override
   public Fragment createFragment(int position) {
     if (position == 0) {
-      return new WitnessesFragment();
-    } else {
       return new WitnessMessageFragment();
+    } else {
+      return new WitnessesFragment();
     }
   }
 

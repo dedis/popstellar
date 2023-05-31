@@ -13,7 +13,8 @@ import javax.inject.Inject;
 import timber.log.Timber;
 
 public class TransactionCoinHandler {
-  public static final String TAG = TransactionCoinHandler.class.getSimpleName();
+  private static final String TAG = TransactionCoinHandler.class.getSimpleName();
+
   private final DigitalCashRepository digitalCashRepo;
 
   @Inject
@@ -75,15 +76,16 @@ public class TransactionCoinHandler {
               current.getScript().getType(), current.getScript().getPubKeyHash());
       outputs.add(new OutputObject(current.getValue(), script));
     }
-    TransactionObjectBuilder builder =
+    TransactionObject transactionObject =
         new TransactionObjectBuilder()
             .setChannel(channel)
             .setLockTime(postTransactionCoin.getTransaction().getLockTime())
             .setVersion(postTransactionCoin.getTransaction().getVersion())
             .setTransactionId(postTransactionCoin.getTransactionId())
             .setInputs(inputs)
-            .setOutputs(outputs);
+            .setOutputs(outputs)
+            .build();
 
-    digitalCashRepo.updateTransactions(channel.extractLaoId(), builder.build());
+    digitalCashRepo.updateTransactions(channel.extractLaoId(), transactionObject);
   }
 }

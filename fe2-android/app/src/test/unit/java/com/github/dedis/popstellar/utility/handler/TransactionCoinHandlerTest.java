@@ -5,7 +5,8 @@ import android.app.Application;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
-import com.github.dedis.popstellar.di.*;
+import com.github.dedis.popstellar.di.DataRegistryModuleHelper;
+import com.github.dedis.popstellar.di.JsonModule;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.DataRegistry;
 import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.*;
@@ -17,13 +18,17 @@ import com.github.dedis.popstellar.model.objects.security.*;
 import com.github.dedis.popstellar.repository.DigitalCashRepository;
 import com.github.dedis.popstellar.repository.MessageRepository;
 import com.github.dedis.popstellar.repository.database.AppDatabase;
+import com.github.dedis.popstellar.repository.database.digitalcash.*;
+import com.github.dedis.popstellar.repository.database.message.MessageDao;
+import com.github.dedis.popstellar.repository.database.message.MessageEntity;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.utility.error.*;
 import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
 
-import org.junit.*;
+import org.junit.Before;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -33,12 +38,14 @@ import java.security.GeneralSecurityException;
 import java.util.*;
 
 import io.reactivex.Completable;
+import io.reactivex.Single;
 
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.when;
 
 @RunWith(AndroidJUnit4.class)
 public class TransactionCoinHandlerTest {
@@ -82,10 +89,13 @@ public class TransactionCoinHandlerTest {
   private MessageHandler messageHandler;
   private Channel coinChannel;
   private Gson gson;
-  private AppDatabase appDatabase;
 
   private PostTransactionCoin postTransactionCoin;
 
+  @Mock AppDatabase appDatabase;
+  @Mock MessageDao messageDao;
+  @Mock TransactionDao transactionDao;
+  @Mock HashDao hashDao;
   @Mock MessageSender messageSender;
   @Mock KeyManager keyManager;
 
@@ -95,17 +105,34 @@ public class TransactionCoinHandlerTest {
           UnknownLaoException, NoRollCallException {
     MockitoAnnotations.openMocks(this);
     Application application = ApplicationProvider.getApplicationContext();
-    appDatabase = AppDatabaseModuleHelper.getAppDatabase(application);
 
     lenient().when(keyManager.getMainKeyPair()).thenReturn(SENDER_KEY);
     lenient().when(keyManager.getMainPublicKey()).thenReturn(SENDER);
     lenient().when(messageSender.subscribe(any())).then(args -> Completable.complete());
 
+    when(appDatabase.messageDao()).thenReturn(messageDao);
+    when(messageDao.takeFirstNMessages(anyInt())).thenReturn(Single.just(new ArrayList<>()));
+    when(messageDao.insert(any(MessageEntity.class))).thenReturn(Completable.complete());
+    when(messageDao.getMessageById(any(MessageID.class))).thenReturn(null);
+
+    when(appDatabase.transactionDao()).thenReturn(transactionDao);
+    when(transactionDao.getTransactionsByLaoId(anyString()))
+        .thenReturn(Single.just(new ArrayList<>()));
+    when(transactionDao.insert(any(TransactionEntity.class))).thenReturn(Completable.complete());
+    when(transactionDao.deleteByLaoId(anyString())).thenReturn(Completable.complete());
+
+    when(appDatabase.hashDao()).thenReturn(hashDao);
+    when(hashDao.getDictionaryByLaoId(anyString())).thenReturn(Single.just(new ArrayList<>()));
+    when(hashDao.insertAll(any())).thenReturn(Completable.complete());
+    when(hashDao.deleteByLaoId(anyString())).thenReturn(Completable.complete());
+
     postTransactionCoin = new PostTransactionCoin(TRANSACTION);
 
     digitalCashRepo = new DigitalCashRepository(appDatabase, application);
-    DataRegistry dataRegistry = DataRegistryModuleHelper.buildRegistry(digitalCashRepo, keyManager);
     MessageRepository messageRepo = new MessageRepository(appDatabase, application);
+
+    DataRegistry dataRegistry = DataRegistryModuleHelper.buildRegistry(digitalCashRepo, keyManager);
+
     gson = JsonModule.provideGson(dataRegistry);
     messageHandler = new MessageHandler(messageRepo, dataRegistry);
 
@@ -116,16 +143,10 @@ public class TransactionCoinHandlerTest {
     coinChannel = lao.getChannel().subChannel("coin").subChannel(SENDER.getEncoded());
   }
 
-  @After
-  public void tearDown() {
-    appDatabase.clearAllTables();
-    appDatabase.close();
-  }
-
   @Test
   public void testHandlePostTransactionCoin()
       throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
-          UnknownElectionException, NoRollCallException {
+          UnknownElectionException, NoRollCallException, UnknownWitnessMessageException {
     MessageGeneral message = new MessageGeneral(SENDER_KEY, postTransactionCoin, gson);
     messageHandler.handleMessage(messageSender, coinChannel, message);
 

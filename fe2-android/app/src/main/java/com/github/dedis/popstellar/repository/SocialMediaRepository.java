@@ -15,6 +15,7 @@ import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.error.UnknownChirpException;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
 import javax.inject.Inject;
@@ -67,10 +68,9 @@ public class SocialMediaRepository {
     Timber.tag(TAG).d("Adding new chirp on lao %s : %s", laoId, chirp);
 
     // Persist the chirp
-    ChirpEntity chirpEntity = new ChirpEntity(laoId, chirp);
     disposables.add(
         chirpDao
-            .insert(chirpEntity)
+            .insert(new ChirpEntity(laoId, chirp))
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
@@ -89,7 +89,7 @@ public class SocialMediaRepository {
    */
   public boolean deleteChirp(String laoId, MessageID id) {
     Timber.tag(TAG).d("Deleting chirp on lao %s with id %s", laoId, id);
-    return getLaoChirps(laoId).delete(id, this);
+    return getLaoChirps(laoId).delete(id);
   }
 
   /**
@@ -123,12 +123,6 @@ public class SocialMediaRepository {
     return getLaoChirps(laoId).getChirpsSubject();
   }
 
-  @NonNull
-  private synchronized LaoChirps getLaoChirps(String laoId) {
-    // Create the lao chirps object if it is not present yet
-    return chirpsByLao.computeIfAbsent(laoId, lao -> new LaoChirps(this, laoId));
-  }
-
   /**
    * Add a reaction to a given chirp.
    *
@@ -140,10 +134,9 @@ public class SocialMediaRepository {
     Timber.tag(TAG).d("Adding new reaction on lao %s : %s", laoId, reaction);
 
     // Persist the reaction
-    ReactionEntity reactionEntity = new ReactionEntity(reaction);
     disposables.add(
         reactionDao
-            .insert(reactionEntity)
+            .insert(new ReactionEntity(reaction))
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
@@ -166,7 +159,13 @@ public class SocialMediaRepository {
   public boolean deleteReaction(String laoId, MessageID reactionID) {
     Timber.tag(TAG).d("Deleting reaction on lao %s : %s", laoId, reactionID);
     // Retrieve Lao data and delete the reaction from it
-    return getLaoChirps(laoId).deleteReaction(reactionID, this);
+    return getLaoChirps(laoId).deleteReaction(reactionID);
+  }
+
+  @NonNull
+  private synchronized LaoChirps getLaoChirps(String laoId) {
+    // Create the lao chirps object if it is not present yet
+    return chirpsByLao.computeIfAbsent(laoId, lao -> new LaoChirps(this, laoId));
   }
 
   /**
@@ -179,26 +178,28 @@ public class SocialMediaRepository {
 
     private final SocialMediaRepository repository;
     private final String laoId;
-    private boolean alreadyRetrieved = false;
 
     // Chirps
-    private final Map<MessageID, Chirp> chirps = new HashMap<>();
-    private final Map<MessageID, Subject<Chirp>> chirpSubjects = new HashMap<>();
+    private final ConcurrentHashMap<MessageID, Chirp> chirps = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<MessageID, Subject<Chirp>> chirpSubjects =
+        new ConcurrentHashMap<>();
     private final Subject<Set<MessageID>> chirpsSubject =
         BehaviorSubject.createDefault(Collections.emptySet());
 
     // Reactions
-    private final Map<MessageID, Set<Reaction>> reactionByChirpId = new HashMap<>();
-    private final Map<MessageID, Reaction> reactions = new HashMap<>();
-    private final Map<MessageID, Subject<Set<Reaction>>> reactionSubjectsByChirpId =
-        new HashMap<>();
+    private final ConcurrentHashMap<MessageID, Set<Reaction>> reactionByChirpId =
+        new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<MessageID, Reaction> reactions = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<MessageID, Subject<Set<Reaction>>> reactionSubjectsByChirpId =
+        new ConcurrentHashMap<>();
 
     public LaoChirps(SocialMediaRepository repository, String laoId) {
       this.repository = repository;
       this.laoId = laoId;
+      loadStorage();
     }
 
-    public synchronized void add(Chirp chirp) {
+    public void add(Chirp chirp) {
       MessageID id = chirp.getId();
       Chirp old = chirps.get(id);
       if (old != null) {
@@ -208,16 +209,16 @@ public class SocialMediaRepository {
 
       // Update repository data
       chirps.put(id, chirp);
-      reactionByChirpId.putIfAbsent(chirp.getId(), new HashSet<>());
+      reactionByChirpId.putIfAbsent(chirp.getId(), ConcurrentHashMap.newKeySet());
       reactionSubjectsByChirpId.putIfAbsent(
           chirp.getId(), BehaviorSubject.createDefault(new HashSet<>()));
 
       // Publish new values on subjects
       chirpSubjects.put(id, BehaviorSubject.createDefault(chirp));
-      chirpsSubject.onNext(chirps.keySet());
+      chirpsSubject.toSerialized().onNext(new HashSet<>(chirps.keySet()));
     }
 
-    public synchronized boolean addReaction(Reaction reaction) {
+    public boolean addReaction(Reaction reaction) {
       // Check if the associated chirp is present
       Chirp chirp = chirps.get(reaction.getChirpId());
       if (chirp == null) {
@@ -235,12 +236,14 @@ public class SocialMediaRepository {
       // Update repository data
       reactions.put(reaction.getId(), reaction);
       chirpReactions.add(reaction);
-      Objects.requireNonNull(reactionSubjectsByChirpId.get(chirp.getId())).onNext(chirpReactions);
+      Objects.requireNonNull(reactionSubjectsByChirpId.get(chirp.getId()))
+          .toSerialized()
+          .onNext(new HashSet<>(chirpReactions));
 
       return true;
     }
 
-    public synchronized boolean delete(MessageID id, SocialMediaRepository repository) {
+    public boolean delete(MessageID id) {
       Chirp chirp = chirps.get(id);
       if (chirp == null) {
         return false;
@@ -257,14 +260,13 @@ public class SocialMediaRepository {
 
         Chirp deleted = chirp.deleted();
         chirps.put(id, deleted);
-        subject.onNext(deleted);
+        subject.toSerialized().onNext(deleted);
 
-        ChirpEntity chirpEntity = new ChirpEntity(laoId, deleted);
         // Persist the deleted reaction (done only for completeness, this is not necessary)
         repository.disposables.add(
             repository
                 .chirpDao
-                .insert(chirpEntity)
+                .insert(new ChirpEntity(laoId, deleted))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
@@ -278,8 +280,7 @@ public class SocialMediaRepository {
       return true;
     }
 
-    public synchronized boolean deleteReaction(
-        MessageID reactionId, SocialMediaRepository repository) {
+    public boolean deleteReaction(MessageID reactionId) {
       // Check if the associated reaction is present
       Reaction reaction = reactions.get(reactionId);
       if (reaction == null) {
@@ -302,14 +303,15 @@ public class SocialMediaRepository {
         // Replace the old reaction with the deleted one
         chirpReactions.remove(reaction);
         chirpReactions.add(deleted);
-        Objects.requireNonNull(reactionSubjectsByChirpId.get(chirp.getId())).onNext(chirpReactions);
+        Objects.requireNonNull(reactionSubjectsByChirpId.get(chirp.getId()))
+            .toSerialized()
+            .onNext(chirpReactions);
 
         // Persist the deleted reaction (done only for completeness, this is not necessary)
-        ReactionEntity reactionEntity = new ReactionEntity(deleted);
         repository.disposables.add(
             repository
                 .reactionDao
-                .insert(reactionEntity)
+                .insert(new ReactionEntity(deleted))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
@@ -325,7 +327,6 @@ public class SocialMediaRepository {
     }
 
     public Observable<Set<MessageID>> getChirpsSubject() {
-      loadStorage();
       return chirpsSubject;
     }
 
@@ -352,13 +353,10 @@ public class SocialMediaRepository {
      * execution everything is also stored in memory.
      */
     private void loadStorage() {
-      if (alreadyRetrieved) {
-        return;
-      }
       repository.disposables.add(
           repository
               .chirpDao
-              .getChirpsByLaoId(laoId, chirps.keySet())
+              .getChirpsByLaoId(laoId)
               .subscribeOn(Schedulers.io())
               .observeOn(AndroidSchedulers.mainThread())
               .subscribe(
@@ -376,7 +374,7 @@ public class SocialMediaRepository {
                             repository.disposables.add(
                                 repository
                                     .reactionDao
-                                    .getReactionsByChirpId(chirp.getId(), reactions.keySet())
+                                    .getReactionsByChirpId(chirp.getId())
                                     .subscribeOn(Schedulers.io())
                                     .observeOn(AndroidSchedulers.mainThread())
                                     .subscribe(
@@ -403,7 +401,6 @@ public class SocialMediaRepository {
                           }),
                   err ->
                       Timber.tag(TAG).e(err, "No chirp found in the storage for lao %s", laoId)));
-      alreadyRetrieved = true;
     }
   }
 }

@@ -1,11 +1,12 @@
 package com.github.dedis.popstellar.utility.handler;
 
-import android.content.Context;
+import android.app.Application;
 
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
-import com.github.dedis.popstellar.di.*;
+import com.github.dedis.popstellar.di.DataRegistryModuleHelper;
+import com.github.dedis.popstellar.di.JsonModule;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.DataRegistry;
@@ -16,13 +17,18 @@ import com.github.dedis.popstellar.model.objects.security.*;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.MessageRepository;
 import com.github.dedis.popstellar.repository.database.AppDatabase;
+import com.github.dedis.popstellar.repository.database.lao.LAODao;
+import com.github.dedis.popstellar.repository.database.lao.LAOEntity;
+import com.github.dedis.popstellar.repository.database.message.MessageDao;
+import com.github.dedis.popstellar.repository.database.message.MessageEntity;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.utility.error.*;
 import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
 
-import org.junit.*;
+import org.junit.Before;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -34,6 +40,7 @@ import java.time.Instant;
 import java.util.*;
 
 import io.reactivex.Completable;
+import io.reactivex.Single;
 
 import static com.github.dedis.popstellar.model.objects.ElectInstance.State.ACCEPTED;
 import static com.github.dedis.popstellar.model.objects.ElectInstance.State.FAILED;
@@ -76,31 +83,42 @@ public class ConsensusHandlerTest {
   private LAORepository laoRepo;
   private MessageHandler messageHandler;
   private Gson gson;
-  private AppDatabase appDatabase;
 
   private MessageGeneral electMsg;
   private MessageID messageId;
 
+  @Mock AppDatabase appDatabase;
+  @Mock LAODao laoDao;
+  @Mock MessageDao messageDao;
   @Mock MessageSender messageSender;
   @Mock KeyManager keyManager;
 
   @Before
   public void setup()
       throws GeneralSecurityException, DataHandlingException, IOException, UnknownLaoException,
-          UnknownRollCallException, UnknownElectionException, NoRollCallException {
+          UnknownRollCallException, UnknownElectionException, NoRollCallException,
+          UnknownWitnessMessageException {
     MockitoAnnotations.openMocks(this);
-    Context context = ApplicationProvider.getApplicationContext();
-    appDatabase = AppDatabaseModuleHelper.getAppDatabase(context);
+    Application application = ApplicationProvider.getApplicationContext();
 
     lenient().when(keyManager.getMainKeyPair()).thenReturn(ORGANIZER_KEY);
     lenient().when(keyManager.getMainPublicKey()).thenReturn(ORGANIZER);
 
     when(messageSender.subscribe(any())).then(args -> Completable.complete());
 
-    laoRepo = new LAORepository(appDatabase, ApplicationProvider.getApplicationContext());
+    when(appDatabase.laoDao()).thenReturn(laoDao);
+    when(laoDao.getAllLaos()).thenReturn(Single.just(new ArrayList<>()));
+    when(laoDao.insert(any(LAOEntity.class))).thenReturn(Completable.complete());
+
+    when(appDatabase.messageDao()).thenReturn(messageDao);
+    when(messageDao.takeFirstNMessages(anyInt())).thenReturn(Single.just(new ArrayList<>()));
+    when(messageDao.insert(any(MessageEntity.class))).thenReturn(Completable.complete());
+    when(messageDao.getMessageById(any(MessageID.class))).thenReturn(null);
+
+    laoRepo = new LAORepository(appDatabase, application);
+    MessageRepository messageRepo = new MessageRepository(appDatabase, application);
     DataRegistry dataRegistry = DataRegistryModuleHelper.buildRegistry(laoRepo, keyManager);
-    MessageRepository messageRepo =
-        new MessageRepository(appDatabase, ApplicationProvider.getApplicationContext());
+
     gson = JsonModule.provideGson(dataRegistry);
     messageHandler = new MessageHandler(messageRepo, dataRegistry);
 
@@ -110,12 +128,6 @@ public class ConsensusHandlerTest {
 
     electMsg = getMsg(NODE_2_KEY, elect);
     messageId = electMsg.getMessageId();
-  }
-
-  @After
-  public void tearDown() {
-    appDatabase.clearAllTables();
-    appDatabase.close();
   }
 
   /**
@@ -132,7 +144,7 @@ public class ConsensusHandlerTest {
   @Test
   public void handleConsensusTests()
       throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
-          UnknownElectionException, NoRollCallException {
+          UnknownElectionException, NoRollCallException, UnknownWitnessMessageException {
     // each test need to be run one after another
     handleConsensusElectTest();
     handleConsensusElectAcceptTest();
@@ -142,7 +154,7 @@ public class ConsensusHandlerTest {
   @Test
   public void handleConsensusFailure()
       throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
-          UnknownElectionException, NoRollCallException {
+          UnknownElectionException, NoRollCallException, UnknownWitnessMessageException {
     // handle an elect from node2 then handle a failure for this elect
     // the state of the node2 for this instanceId should be FAILED
 
@@ -168,7 +180,7 @@ public class ConsensusHandlerTest {
   // election)
   private void handleConsensusElectTest()
       throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
-          UnknownElectionException, NoRollCallException {
+          UnknownElectionException, NoRollCallException, UnknownWitnessMessageException {
     messageHandler.handleMessage(messageSender, CONSENSUS_CHANNEL, electMsg);
 
     Lao updatedLao = laoRepo.getLaoViewByChannel(Channel.getLaoChannel(LAO_ID)).createLaoCopy();
@@ -215,7 +227,7 @@ public class ConsensusHandlerTest {
   // This test need be run after the elect message was handled, else the messageId would be invalid
   private void handleConsensusElectAcceptTest()
       throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
-          UnknownElectionException, NoRollCallException {
+          UnknownElectionException, NoRollCallException, UnknownWitnessMessageException {
     ConsensusElectAccept electAccept = new ConsensusElectAccept(INSTANCE_ID, messageId, true);
     MessageGeneral electAcceptMsg = getMsg(NODE_3_KEY, electAccept);
     messageHandler.handleMessage(messageSender, CONSENSUS_CHANNEL, electAcceptMsg);
@@ -252,7 +264,7 @@ public class ConsensusHandlerTest {
   // This test need be run after the elect message was handled, else the messageId would be invalid
   private void handleConsensusLearnTest()
       throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
-          UnknownElectionException, NoRollCallException {
+          UnknownElectionException, NoRollCallException, UnknownWitnessMessageException {
     ConsensusLearn learn =
         new ConsensusLearn(INSTANCE_ID, messageId, CREATION_TIME, true, Collections.emptyList());
     MessageGeneral learnMsg = getMsg(NODE_3_KEY, learn);
@@ -297,7 +309,7 @@ public class ConsensusHandlerTest {
   @Test
   public void handleConsensusDoNothingOnBackendMessageTest()
       throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
-          UnknownElectionException, NoRollCallException {
+          UnknownElectionException, NoRollCallException, UnknownWitnessMessageException {
     LAORepository mockLAORepository = mock(LAORepository.class);
 
     ConsensusPrepare prepare = new ConsensusPrepare(INSTANCE_ID, messageId, CREATION_TIME, 3);

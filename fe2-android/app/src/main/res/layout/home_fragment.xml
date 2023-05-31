@@ -41,9 +41,9 @@
     <Button
       android:id="@+id/home_qr_button"
       style="@style/button_style_outlined"
-      android:layout_width="wrap_content"
+      android:layout_width="@dimen/large_button_width"
       android:layout_height="@dimen/standard_button_height"
-      android:layout_marginBottom="28dp"
+      android:layout_marginBottom="@dimen/home_button_vertical_margin"
       android:drawableLeft="@drawable/qr_code_button_icon_blue"
       android:text="@string/witness"
       app:layout_constraintBottom_toBottomOf="parent"
