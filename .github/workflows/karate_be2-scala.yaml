@@ -82,8 +82,10 @@ jobs:
       - name: Update report
         run: |
           rm -rf report-repo/*
-          cp -a ./tests/karate/target/scala_server/cucumber-html-reports/. ./report-repo/
-          cp -a ./tests/karate/target/scala_client/cucumber-html-reports/. ./report-repo/
+          mkdir -p report-repo/scala_client
+          mkdir -p report-repo/scala_server
+          cp -a ./tests/karate/target/scala_client/cucumber-html-reports/. ./report-repo/scala_client/
+          cp -a ./tests/karate/target/scala_server/cucumber-html-reports/. ./report-repo/scala_server/
         
       - name: Commit files
         working-directory: ./report-repo
