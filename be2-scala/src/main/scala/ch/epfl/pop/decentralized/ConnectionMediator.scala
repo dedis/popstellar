@@ -4,7 +4,6 @@ import akka.actor.{Actor, ActorLogging, ActorRef, ActorSystem, Props}
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.ws.WebSocketRequest
 import akka.pattern.AskableActorRef
-
 import ch.epfl.pop.model.network.method.{Heartbeat, ParamsWithMap}
 import ch.epfl.pop.model.network.{JsonRpcRequest, MethodType}
 import ch.epfl.pop.pubsub.ClientActor.ClientAnswer
@@ -20,6 +19,7 @@ final case class ConnectionMediator(
 
   // List of servers connected
   private var serverSet: Set[ActorRef] = Set()
+  private var previousUrlList: List[String] = Nil
 
   // Ping Monitor to inform it of our ActorRef
   monitorRef ! ConnectionMediator.Ping()
@@ -28,7 +28,9 @@ final case class ConnectionMediator(
 
     // Connect to some servers
     case ConnectionMediator.ConnectTo(urlList) =>
-      urlList.map(url =>
+      val urlDiff = urlList.diff(previousUrlList)
+      previousUrlList :::= urlDiff
+      urlDiff.map(url =>
         Http().singleWebSocketRequest(
           WebSocketRequest(url),
           PublishSubscribe.buildGraph(
@@ -53,8 +55,10 @@ final case class ConnectionMediator(
       log.info("Server left")
       serverSet -= serverRef
       // Tell monitor to stop scheduling heartbeats since there is no one to receive them
-      if (serverSet.isEmpty)
+      if (serverSet.isEmpty) {
+        previousUrlList = Nil
         monitorRef ! Monitor.NoServerConnected
+      }
 
     case Heartbeat(map) =>
       log.info("Sending a heartbeat to the servers")
