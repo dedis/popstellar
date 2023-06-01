@@ -40,8 +40,9 @@ const Launch = () => {
   const dispatch = useDispatch();
 
   const [inputLaoName, setInputLaoName] = useState('');
-  const [inputAddress, setInputAddress] = useState('ws://127.0.0.1:9000/organizer/client');
-
+  const [inputAddress, setInputAddress] = useState('wss://127.0.0.1:9000/client');
+  // release : disable connect to test lao
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const connectToTestLao = HomeHooks.useConnectToTestLao();
   const requestCreateLao = HomeHooks.useRequestCreateLao();
 
@@ -102,9 +103,10 @@ const Launch = () => {
             {STRINGS.launch_button_launch}
           </PoPTextButton>
 
+          {/* release: Disable the MockServer
           <PoPTextButton onPress={connectToTestLao}>
             [TEST] Connect to LocalMockServer.ts (use &apos;npm run startServer&apos;)
-          </PoPTextButton>
+          </PoPTextButton>} */}
         </View>
       </View>
     </ScreenWrapper>

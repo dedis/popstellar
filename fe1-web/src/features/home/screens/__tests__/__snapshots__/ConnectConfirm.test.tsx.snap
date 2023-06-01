@@ -413,7 +413,7 @@ exports[`ConnectNavigation renders correctly 1`] = `
                                       },
                                     ]
                                   }
-                                  value="ws://localhost:9000/organizer/client"
+                                  value="wss://127.0.0.1:9000/client"
                                 />
                               </View>
                               <Text

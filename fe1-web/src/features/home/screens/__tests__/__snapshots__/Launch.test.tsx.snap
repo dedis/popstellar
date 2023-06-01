@@ -490,7 +490,7 @@ exports[`Launch renders correctly 1`] = `
                                       ]
                                     }
                                     testID="launch_address_selector"
-                                    value="ws://127.0.0.1:9000/organizer/client"
+                                    value="wss://127.0.0.1:9000/client"
                                   />
                                 </View>
                               </View>
@@ -576,85 +576,6 @@ exports[`Launch renders correctly 1`] = `
                                           }
                                         >
                                           Launch
-                                        </Text>
-                                      </View>
-                                    </View>
-                                  </RNGestureHandlerButton>
-                                </View>
-                                <View
-                                  accessible={true}
-                                  collapsable={false}
-                                  focusable={true}
-                                  onBlur={[Function]}
-                                  onClick={[Function]}
-                                  onFocus={[Function]}
-                                  onResponderGrant={[Function]}
-                                  onResponderMove={[Function]}
-                                  onResponderRelease={[Function]}
-                                  onResponderTerminate={[Function]}
-                                  onResponderTerminationRequest={[Function]}
-                                  onStartShouldSetResponder={[Function]}
-                                  style={
-                                    {
-                                      "marginBottom": 16,
-                                    }
-                                  }
-                                >
-                                  <RNGestureHandlerButton
-                                    collapsable={false}
-                                    delayLongPress={600}
-                                    enabled={true}
-                                    exclusive={true}
-                                    handlerTag={4}
-                                    handlerType="NativeViewGestureHandler"
-                                    onGestureEvent={[Function]}
-                                    onGestureHandlerEvent={[Function]}
-                                    onGestureHandlerStateChange={[Function]}
-                                    onHandlerStateChange={[Function]}
-                                    rippleColor={0}
-                                    touchSoundDisabled={false}
-                                  >
-                                    <View
-                                      accessible={true}
-                                      collapsable={false}
-                                      style={
-                                        {
-                                          "opacity": 1,
-                                        }
-                                      }
-                                    >
-                                      <View
-                                        style={
-                                          [
-                                            {
-                                              "backgroundColor": "#3742fa",
-                                              "borderColor": "#3742fa",
-                                              "borderRadius": 8,
-                                              "borderWidth": 1,
-                                              "padding": 8,
-                                            },
-                                          ]
-                                        }
-                                      >
-                                        <Text
-                                          style={
-                                            [
-                                              {
-                                                "color": "#000",
-                                                "fontSize": 20,
-                                                "lineHeight": 26,
-                                                "textAlign": "left",
-                                              },
-                                              {
-                                                "textAlign": "center",
-                                              },
-                                              {
-                                                "color": "#fff",
-                                              },
-                                            ]
-                                          }
-                                        >
-                                          [TEST] Connect to LocalMockServer.ts (use 'npm run startServer')
                                         </Text>
                                       </View>
                                     </View>
