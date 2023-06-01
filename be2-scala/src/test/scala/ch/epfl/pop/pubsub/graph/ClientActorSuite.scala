@@ -46,4 +46,11 @@ class ClientActorSuite extends TestKit(ActorSystem("ClientActorSuiteSystem")) wi
     connectionMediator.expectMsg(timeout, expectedNewServerConnected)
   }
 
+  test("when initGreet set to true, ClientActor should wait for the greetServer to come before sending a NewServerConnected message") {
+    val mediator = TestProbe()
+    val connectionMediator = TestProbe()
+    val clientActor: ActorRef = system.actorOf(ClientActor.props(mediator.ref, connectionMediator.ref, true, false))
+    connectionMediator.expectNoMessage()
+  }
+
 }
