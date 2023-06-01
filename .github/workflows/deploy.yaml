@@ -244,7 +244,8 @@ jobs:
     runs-on: ubuntu-latest
     
     env:
-      base_folder: demo/popcha-client/web    
+      base_folder: demo/popcha-client/web
+      deploy_env: ${{ github.event.release.prerelease && 'dev' || 'prod' }}
 
     steps:
       - uses: actions/checkout@v3
@@ -252,7 +253,7 @@ jobs:
       # Use rsync to deploy the new website (no build is necessary)
       - name: Sync
         env:
-            dest: "popdemo@${{secrets.POPDEMO_DEPLOY_ADDR}}:popcha-demo/"
+            dest: "popdemo@${{secrets.POPDEMO_DEPLOY_ADDR}}:dev/popcha/"
         run: |
             echo "${{secrets.POPDEMO_DEPLOY_KEY}}" > deploy_key
             chmod 600 ./deploy_key
