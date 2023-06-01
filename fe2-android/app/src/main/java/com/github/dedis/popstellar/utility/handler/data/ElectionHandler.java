@@ -77,9 +77,20 @@ public final class ElectionHandler {
             .build();
 
     witnessingRepository.addWitnessMessage(laoId, electionSetupWitnessMessage(messageId, election));
+    witnessingRepository.addPendingElection(laoId, messageId, election);
 
     witnessingRepository.performActionWhenWitnessThresholdReached(
-        laoId, messageId, () -> setupElectionRoutine(election, context));
+        laoId, messageId, () -> addElectionRoutine(electionRepository, election));
+
+    // Once the election is created, we subscribe to the election channel
+    context
+        .getMessageSender()
+        .subscribe(election.getChannel())
+        .doOnError(
+            err ->
+                Timber.tag(TAG).e(err, "An error occurred while subscribing to election channel"))
+        .onErrorComplete()
+        .subscribe();
   }
 
   /**
@@ -145,9 +156,10 @@ public final class ElectionHandler {
 
     witnessingRepository.addWitnessMessage(
         laoId, electionResultWitnessMessage(messageId, election));
+    witnessingRepository.addPendingElection(laoId, messageId, election);
 
     witnessingRepository.performActionWhenWitnessThresholdReached(
-        laoId, messageId, () -> electionRepository.updateElection(election));
+        laoId, messageId, () -> addElectionRoutine(electionRepository, election));
   }
 
   /**
@@ -274,21 +286,8 @@ public final class ElectionHandler {
     return results;
   }
 
-  private void setupElectionRoutine(Election election, HandlerContext context) {
-    // Add new election to repository
+  public static void addElectionRoutine(ElectionRepository electionRepository, Election election) {
     electionRepository.updateElection(election);
-
-    // Once the election is created, we subscribe to the election channel
-    context
-        .getMessageSender()
-        .subscribe(election.getChannel())
-        .doOnError(
-            err ->
-                Timber.tag(TAG).e(err, "An error occurred while subscribing to election channel"))
-        .onErrorComplete()
-        .subscribe();
-
-    Timber.tag(TAG).d("election id %s", election.getId());
   }
 
   public static WitnessMessage electionSetupWitnessMessage(MessageID messageId, Election election) {

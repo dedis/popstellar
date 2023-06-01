@@ -120,7 +120,14 @@ public class MeetingHandlerTest {
 
     laoRepo = new LAORepository(appDatabase, application);
     meetingRepo = new MeetingRepository(appDatabase, application);
-    witnessingRepository = new WitnessingRepository(appDatabase, application);
+    witnessingRepository =
+        new WitnessingRepository(
+            appDatabase,
+            application,
+            rollCallRepository,
+            electionRepository,
+            meetingRepository,
+            digitalCashRepository);
     MessageRepository messageRepo = new MessageRepository(appDatabase, application);
 
     DataRegistry dataRegistry =

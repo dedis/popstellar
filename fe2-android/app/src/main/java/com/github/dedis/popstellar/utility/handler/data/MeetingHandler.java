@@ -65,9 +65,10 @@ public class MeetingHandler {
     Meeting meeting = builder.build();
 
     witnessingRepo.addWitnessMessage(laoId, createMeetingWitnessMessage(messageId, meeting));
+    witnessingRepo.addPendingMeeting(laoId, messageId, meeting);
 
     witnessingRepo.performActionWhenWitnessThresholdReached(
-        laoId, messageId, () -> meetingRepo.updateMeeting(laoId, meeting));
+        laoId, messageId, () -> addMeetingRoutine(meetingRepo, laoId, meeting));
   }
 
   public void handleStateMeeting(HandlerContext context, StateMeeting stateMeeting)
@@ -97,9 +98,15 @@ public class MeetingHandler {
 
     witnessingRepo.addWitnessMessage(
         laoView.getId(), stateMeetingWitnessMessage(messageId, meeting));
+    witnessingRepo.addPendingMeeting(laoId, messageId, meeting);
 
     witnessingRepo.performActionWhenWitnessThresholdReached(
-        laoId, messageId, () -> meetingRepo.updateMeeting(laoId, meeting));
+        laoId, messageId, () -> addMeetingRoutine(meetingRepo, laoId, meeting));
+  }
+
+  public static void addMeetingRoutine(
+      MeetingRepository meetingRepository, String laoId, Meeting meeting) {
+    meetingRepository.updateMeeting(laoId, meeting);
   }
 
   public static WitnessMessage createMeetingWitnessMessage(MessageID messageId, Meeting meeting) {

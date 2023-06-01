@@ -75,10 +75,11 @@ public final class RollCallHandler {
     RollCall rollCall = builder.build();
 
     witnessingRepo.addWitnessMessage(laoId, createRollCallWitnessMessage(messageId, rollCall));
+    witnessingRepo.addPendingRollcall(laoId, messageId, rollCall);
 
     // Update the repo with the created rollcall when the witness policy is satisfied
     witnessingRepo.performActionWhenWitnessThresholdReached(
-        laoId, messageId, () -> rollCallRepo.updateRollCall(laoId, rollCall));
+        laoId, messageId, () -> addRollCallRoutine(rollCallRepo, digitalCashRepo, laoId, rollCall));
   }
 
   /**
@@ -116,10 +117,11 @@ public final class RollCallHandler {
     RollCall rollCall = builder.build();
 
     witnessingRepo.addWitnessMessage(laoId, openRollCallWitnessMessage(messageId, rollCall));
+    witnessingRepo.addPendingRollcall(laoId, messageId, rollCall);
 
     // Update the repo with the opened rollcall when the witness policy is satisfied
     witnessingRepo.performActionWhenWitnessThresholdReached(
-        laoId, messageId, () -> rollCallRepo.updateRollCall(laoId, rollCall));
+        laoId, messageId, () -> addRollCallRoutine(rollCallRepo, digitalCashRepo, laoId, rollCall));
   }
 
   /**
@@ -160,18 +162,12 @@ public final class RollCallHandler {
     RollCall rollCall = builder.build();
 
     witnessingRepo.addWitnessMessage(laoId, closeRollCallWitnessMessage(messageId, rollCall));
+    witnessingRepo.addPendingRollcall(laoId, messageId, rollCall);
 
     // Update the repo with the closed rollcall when the witness policy is satisfied and apply a
     // specific routine
     witnessingRepo.performActionWhenWitnessThresholdReached(
-        laoId, messageId, () -> closeRollCallRoutine(laoId, rollCall, context, channel));
-  }
-
-  private void closeRollCallRoutine(
-      String laoId, RollCall rollCall, HandlerContext context, Channel channel) {
-    rollCallRepo.updateRollCall(laoId, rollCall);
-
-    digitalCashRepo.initializeDigitalCash(laoId, new ArrayList<>(rollCall.getAttendees()));
+        laoId, messageId, () -> addRollCallRoutine(rollCallRepo, digitalCashRepo, laoId, rollCall));
 
     // Subscribe to the social media channels
     // (this is not the expected behavior as users should be able to choose who to subscribe to. But
@@ -196,6 +192,17 @@ public final class RollCallHandler {
             .subscribe(
                 () -> Timber.tag(TAG).d("subscription a success"),
                 error -> Timber.tag(TAG).e(error, "subscription error")));
+  }
+
+  public static void addRollCallRoutine(
+      RollCallRepository rollCallRepo,
+      DigitalCashRepository digitalCashRepo,
+      String laoId,
+      RollCall rollCall) {
+    rollCallRepo.updateRollCall(laoId, rollCall);
+    if (rollCall.isClosed()) {
+      digitalCashRepo.initializeDigitalCash(laoId, new ArrayList<>(rollCall.getAttendees()));
+    }
   }
 
   public static WitnessMessage createRollCallWitnessMessage(

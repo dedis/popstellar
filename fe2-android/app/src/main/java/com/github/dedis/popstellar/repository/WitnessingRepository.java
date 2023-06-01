@@ -7,13 +7,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import androidx.lifecycle.Lifecycle;
 
-import com.github.dedis.popstellar.model.objects.WitnessMessage;
+import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.repository.database.AppDatabase;
 import com.github.dedis.popstellar.repository.database.witnessing.*;
 import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.error.UnknownWitnessMessageException;
+import com.github.dedis.popstellar.utility.handler.data.*;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -47,13 +48,30 @@ public class WitnessingRepository {
 
   private final WitnessingDao witnessingDao;
   private final WitnessDao witnessDao;
+  private final PendingDao pendingDao;
+
+  private final RollCallRepository rollCallRepository;
+  private final ElectionRepository electionRepository;
+  private final MeetingRepository meetingRepository;
+  private final DigitalCashRepository digitalCashRepository;
 
   private final CompositeDisposable disposables = new CompositeDisposable();
 
   @Inject
-  public WitnessingRepository(AppDatabase appDatabase, Application application) {
+  public WitnessingRepository(
+      AppDatabase appDatabase,
+      Application application,
+      RollCallRepository rollCallRepository,
+      ElectionRepository electionRepository,
+      MeetingRepository meetingRepository,
+      DigitalCashRepository digitalCashRepository) {
+    this.rollCallRepository = rollCallRepository;
+    this.electionRepository = electionRepository;
+    this.meetingRepository = meetingRepository;
+    this.digitalCashRepository = digitalCashRepository;
     witnessingDao = appDatabase.witnessingDao();
     witnessDao = appDatabase.witnessDao();
+    pendingDao = appDatabase.pendingDao();
     Map<Lifecycle.Event, Consumer<Activity>> consumerMap = new EnumMap<>(Lifecycle.Event.class);
     consumerMap.put(Lifecycle.Event.ON_STOP, activity -> disposables.clear());
     application.registerActivityLifecycleCallbacks(
@@ -84,6 +102,18 @@ public class WitnessingRepository {
 
     // Retrieve Lao data and add the witness message to it
     getLaoWitness(laoId).add(witnessMessage);
+  }
+
+  public void addPendingRollcall(String laoId, MessageID messageID, RollCall rollCall) {
+    addPendingEntity(messageID, new PendingEntity(laoId, messageID, rollCall));
+  }
+
+  public void addPendingElection(String laoId, MessageID messageID, Election election) {
+    addPendingEntity(messageID, new PendingEntity(laoId, messageID, election));
+  }
+
+  public void addPendingMeeting(String laoId, MessageID messageID, Meeting meeting) {
+    addPendingEntity(messageID, new PendingEntity(laoId, messageID, meeting));
   }
 
   /**
@@ -205,6 +235,19 @@ public class WitnessingRepository {
                         .d(
                             "The message %s has received enough signatures and it's now processed",
                             messageId);
+                    // Remove the pending object from disk
+                    disposables.add(
+                        pendingDao
+                            .removePendingObject(messageId)
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(
+                                () ->
+                                    Timber.tag(TAG)
+                                        .d("Removed successfully pending object from disk"),
+                                err ->
+                                    Timber.tag(TAG)
+                                        .e(err, "Error in removing the pending object from disk")));
                     action.run();
                     pass.set(true);
                   }
@@ -249,6 +292,31 @@ public class WitnessingRepository {
    */
   private boolean isAcceptedByWitnesses(String laoId, MessageID messageId) {
     return getLaoWitness(laoId).hasRequiredSignatures(messageId);
+  }
+
+  /**
+   * This function adds to the database a pending entity.
+   *
+   * @param messageID identifier of the message to which the entity corresponds
+   * @param pendingEntity object (rollcall, election or meeting) that still needs to be approved by
+   *     the witnesses
+   */
+  private void addPendingEntity(MessageID messageID, PendingEntity pendingEntity) {
+    disposables.add(
+        pendingDao
+            .insert(pendingEntity)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                () ->
+                    Timber.tag(TAG)
+                        .d("Persisted the pending entity corresponding to message %s", messageID),
+                err ->
+                    Timber.tag(TAG)
+                        .e(
+                            err,
+                            "Error in persisting the pending entity of message %s",
+                            messageID)));
   }
 
   /** Get in a thread-safe fashion the witness object for the lao, computes it if absent. */
@@ -427,24 +495,81 @@ public class WitnessingRepository {
       if (alreadyRetrieved) {
         return;
       }
-      repo.disposables.addAll(
-          // Load in parallel all the witnesses
+      repo.disposables.add(
+          // Load first all the witnesses
           repo.witnessDao
               .getWitnessesByLao(laoId)
               .subscribeOn(Schedulers.io())
               .observeOn(AndroidSchedulers.mainThread())
               .subscribe(
-                  witnessList -> addWitnesses(new HashSet<>(witnessList)),
-                  err -> Timber.tag(TAG).e(err, "No witnesses found on the disk")),
-          // And all the witness messages of a given lao
-          repo.witnessingDao
-              .getWitnessMessagesByLao(laoId)
-              .subscribeOn(Schedulers.io())
-              .observeOn(AndroidSchedulers.mainThread())
-              .subscribe(
-                  witnessMessageList -> witnessMessageList.forEach(this::add),
-                  err -> Timber.tag(TAG).e(err, "No witness messages found on the disk")));
+                  witnessList -> {
+                    addWitnesses(new HashSet<>(witnessList));
+                    // And then all the witness messages of a given lao
+                    repo.disposables.add(
+                        repo.witnessingDao
+                            .getWitnessMessagesByLao(laoId)
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(
+                                witnessMessageList -> {
+                                  witnessMessageList.forEach(this::add);
+                                  // Finally, load the pending entities (the objects not already
+                                  // achieving the witnessing threshold)
+                                  repo.disposables.add(
+                                      repo.pendingDao
+                                          .getPendingObjectsFromLao(laoId)
+                                          .subscribeOn(Schedulers.io())
+                                          .observeOn(AndroidSchedulers.mainThread())
+                                          .subscribe(
+                                              pendingEntities ->
+                                                  pendingEntities.forEach(this::loadPendingEntity),
+                                              err ->
+                                                  Timber.tag(TAG)
+                                                      .e(
+                                                          err,
+                                                          "Error loading the pending entities from disk")));
+                                },
+                                err ->
+                                    Timber.tag(TAG)
+                                        .e(err, "No witness messages found on the disk")));
+                  },
+                  err -> Timber.tag(TAG).e(err, "No witnesses found on the disk")));
       alreadyRetrieved = true;
+    }
+
+    /**
+     * This function loads a pending entity from disk into memory.
+     *
+     * @param pendingEntity object (for now rollcall, election or meeting) which hasn't been yet
+     *     witnessed by the threshold established
+     */
+    private void loadPendingEntity(PendingEntity pendingEntity) {
+      MessageID messageID = pendingEntity.getMessageID();
+      final Runnable action;
+      switch (pendingEntity.getObjectType()) {
+        case ROLL_CALL:
+          RollCall rollCall = pendingEntity.getRollCall();
+          action =
+              () ->
+                  RollCallHandler.addRollCallRoutine(
+                      repo.rollCallRepository, repo.digitalCashRepository, laoId, rollCall);
+          break;
+        case ELECTION:
+          Election election = pendingEntity.getElection();
+          action = () -> ElectionHandler.addElectionRoutine(repo.electionRepository, election);
+          break;
+        case MEETING:
+          Meeting meeting = pendingEntity.getMeeting();
+          action = () -> MeetingHandler.addMeetingRoutine(repo.meetingRepository, laoId, meeting);
+          break;
+        default:
+          action = () -> {};
+      }
+      try {
+        repo.performActionWhenWitnessThresholdReached(laoId, messageID, action);
+      } catch (UnknownWitnessMessageException e) {
+        Timber.tag(TAG).e(e, "Error loading pending entity %s", messageID);
+      }
     }
   }
 }

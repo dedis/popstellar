@@ -120,7 +120,14 @@ public class RollCallHandlerTest {
 
     LAORepository laoRepo = new LAORepository(appDatabase, application);
     rollCallRepo = new RollCallRepository(appDatabase, application);
-    witnessingRepository = new WitnessingRepository(appDatabase, application);
+    witnessingRepository =
+        new WitnessingRepository(
+            appDatabase,
+            application,
+            rollCallRepository,
+            electionRepository,
+            meetingRepository,
+            digitalCashRepository);
     MessageRepository messageRepo =
         new MessageRepository(appDatabase, ApplicationProvider.getApplicationContext());
 

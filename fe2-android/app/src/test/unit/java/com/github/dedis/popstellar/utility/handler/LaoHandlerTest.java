@@ -129,7 +129,14 @@ public class LaoHandlerTest {
     laoRepo = new LAORepository(appDatabase, application);
     MessageRepository messageRepo = new MessageRepository(appDatabase, application);
     serverRepository = new ServerRepository();
-    witnessingRepository = new WitnessingRepository(appDatabase, application);
+    witnessingRepository =
+        new WitnessingRepository(
+            appDatabase,
+            application,
+            rollCallRepository,
+            electionRepository,
+            meetingRepository,
+            digitalCashRepository);
 
     DataRegistry dataRegistry =
         DataRegistryModuleHelper.buildRegistry(

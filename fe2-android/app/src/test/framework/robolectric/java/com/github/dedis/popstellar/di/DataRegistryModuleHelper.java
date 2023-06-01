@@ -39,7 +39,13 @@ public class DataRegistryModuleHelper {
         new RollCallRepository(appDatabase, application),
         new MeetingRepository(appDatabase, application),
         new DigitalCashRepository(appDatabase, application),
-        new WitnessingRepository(appDatabase, application),
+        new WitnessingRepository(
+            appDatabase,
+            application,
+            rollCallRepository,
+            electionRepository,
+            meetingRepository,
+            digitalCashRepository),
         new MessageRepository(appDatabase, application),
         keyManager,
         new ServerRepository());
@@ -107,7 +113,13 @@ public class DataRegistryModuleHelper {
         new RollCallRepository(appDatabase, application),
         new MeetingRepository(appDatabase, application),
         new DigitalCashRepository(appDatabase, application),
-        new WitnessingRepository(appDatabase, application),
+        new WitnessingRepository(
+            appDatabase,
+            application,
+            rollCallRepository,
+            electionRepository,
+            meetingRepository,
+            digitalCashRepository),
         new MessageRepository(appDatabase, application),
         keyManager,
         new ServerRepository());
@@ -144,7 +156,13 @@ public class DataRegistryModuleHelper {
         rollCallRepo,
         new MeetingRepository(appDatabase, application),
         new DigitalCashRepository(appDatabase, application),
-        new WitnessingRepository(appDatabase, application),
+        new WitnessingRepository(
+            appDatabase,
+            application,
+            rollCallRepository,
+            electionRepository,
+            meetingRepository,
+            digitalCashRepository),
         new MessageRepository(appDatabase, application),
         keyManager,
         new ServerRepository());
@@ -178,7 +196,13 @@ public class DataRegistryModuleHelper {
         new RollCallRepository(appDatabase, application),
         new MeetingRepository(appDatabase, application),
         digitalCashRepo,
-        new WitnessingRepository(appDatabase, application),
+        new WitnessingRepository(
+            appDatabase,
+            application,
+            rollCallRepository,
+            electionRepository,
+            meetingRepository,
+            digitalCashRepository),
         new MessageRepository(appDatabase, application),
         keyManager,
         new ServerRepository());

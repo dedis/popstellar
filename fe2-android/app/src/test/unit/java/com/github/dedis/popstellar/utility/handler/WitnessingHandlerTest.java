@@ -112,7 +112,14 @@ public class WitnessingHandlerTest {
     when(witnessingDao.deleteMessagesByIds(anyString(), any())).thenReturn(Completable.complete());
 
     laoRepo = new LAORepository(appDatabase, application);
-    witnessingRepository = new WitnessingRepository(appDatabase, application);
+    witnessingRepository =
+        new WitnessingRepository(
+            appDatabase,
+            application,
+            rollCallRepository,
+            electionRepository,
+            meetingRepository,
+            digitalCashRepository);
     MessageRepository messageRepo = new MessageRepository(appDatabase, application);
 
     DataRegistry dataRegistry =

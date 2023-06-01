@@ -157,7 +157,14 @@ public class ElectionHandlerTest {
 
     LAORepository laoRepo = new LAORepository(appDatabase, application);
     electionRepo = new ElectionRepository(appDatabase, application);
-    witnessingRepository = new WitnessingRepository(appDatabase, application);
+    witnessingRepository =
+        new WitnessingRepository(
+            appDatabase,
+            application,
+            rollCallRepository,
+            electionRepository,
+            meetingRepository,
+            digitalCashRepository);
     messageRepo = new MessageRepository(appDatabase, application);
 
     DataRegistry dataRegistry =

@@ -37,9 +37,10 @@ import javax.inject.Singleton;
       TransactionEntity.class,
       HashEntity.class,
       WitnessingEntity.class,
-      WitnessEntity.class
+      WitnessEntity.class,
+      PendingEntity.class
     },
-    version = 3)
+    version = 4)
 @TypeConverters(CustomTypeConverters.class)
 public abstract class AppDatabase extends RoomDatabase {
   public abstract MessageDao messageDao();
@@ -53,6 +54,8 @@ public abstract class AppDatabase extends RoomDatabase {
   public abstract WitnessingDao witnessingDao();
 
   public abstract WitnessDao witnessDao();
+
+  public abstract PendingDao pendingDao();
 
   public abstract ElectionDao electionDao();
 
