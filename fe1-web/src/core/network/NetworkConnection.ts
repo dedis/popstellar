@@ -296,7 +296,7 @@ export class NetworkConnection {
     // only retry a certain number of times and add a wait before retrying
     if (this.failedConnectionAttempts <= WEBSOCKET_CONNECTION_MAX_ATTEMPTS) {
       setTimeout(() => {
-        this.reconnectIfNecessary().catch(()=>{});
+        this.reconnectIfNecessary().catch(() => {});
       }, this.websocketConnectionTimeout);
       return;
     }
