@@ -1,22 +1,23 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Pressable, StyleProp, View, ViewStyle } from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import { Pressable, StyleProp, TouchableOpacity, View, ViewStyle } from 'react-native';
 
 import { ExtendType } from 'core/types';
-
 /**
  * Wraps a touchable opacity in a pressable component to make karate tests work :)
  */
 const PoPTouchableOpacity = React.forwardRef<View, IPropTypes>(
   ({ onPress, containerStyle, style, testID, children }: IPropTypes, ref) => {
     return (
-      <Pressable onPress={onPress} style={containerStyle} ref={ref} testID={testID || undefined}>
-        <TouchableOpacity style={style}>{children}</TouchableOpacity>
-      </Pressable>
+      // <Pressable onPress={onPress} style={containerStyle} ref={ref} testID={testID || undefined}>
+      //   {children}
+      // </Pressable>
+      <TouchableOpacity style={style} onPress={onPress}  ref={ref} testID={testID || undefined}>{children}</TouchableOpacity>
     );
   },
 );
+
+//         {<TouchableOpacity style={style} onPress={onPress} testID={testID || undefined}>{children}</TouchableOpacity>}
 
 const propTypes = {
   children: PropTypes.node,
