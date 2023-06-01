@@ -69,6 +69,9 @@ const schemaIds: Record<ObjectType, Record<string, string>> = {
   [ObjectType.COIN]: {
     [ActionType.POST_TRANSACTION]: 'postTransaction',
   },
+  [ObjectType.POPCHA]: {
+    [ActionType.AUTH]: 'dataAuthenticateUser',
+  },
 };
 
 function getSchema(obj: ObjectType, action: ActionType): string | null {
