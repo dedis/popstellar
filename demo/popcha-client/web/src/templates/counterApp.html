@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>PoPCHACounter</title>
+</head>
+<style>
+    * {
+        font-family: sans-serif;
+        font-size: 1.1rem;
+        text-align: center;
+        margin: 0;
+        padding: 0;
+    }
+    h2 {
+        font-size: 1.5rem;
+    }
+    body {
+        background: #f0f0f0;
+    }
+    .container {
+        margin: auto;
+        background: white;
+        max-width: 500px;
+        width: 100%;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+    .bold {
+        font-weight: bold;
+    }
+    .button {
+        font-style: normal;
+        font-size: 1.5rem;
+        text-decoration: none;
+        margin: 1rem auto;
+        color: black;
+        width: 90%;
+        min-height: 1.2rem;
+        background-color: #c6d6f1;
+        border-radius: 5px;
+        border: none;
+        padding: 0.5rem;
+    }
+</style>
+<body>
+    <div class="container">
+        <a class="button" href="/app?nonce={{ nonce }}&action=increment">
+            Increment
+        </a>
+        <div>
+            <h2>
+                Welcome to the PoPCHA Example:
+            </h2>
+            <div class="counter-container">
+                <br>
+                Counter:<span class="bold"> {{ counter }} </span>
+            </div>
+        </div>
+        <a class="button" href="/app?nonce={{ nonce }}&action=decrement">
+            Decrement
+        </a>
+    </div>
+</body>
+</html>
