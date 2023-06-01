@@ -1,5 +1,7 @@
 package be.utils;
 
+import be.model.Election;
+import be.model.ElectionQuestion;
 import be.model.Lao;
 import be.model.RollCall;
 import com.intuit.karate.http.WebSocketOptions;
@@ -51,5 +53,27 @@ public class MockClient extends MultiMsgWebSocketClient {
       "valid description",
       lao.id,
       attendees);
+  }
+
+  /**
+   * @param lao the lao to create an election for
+   * @return a valid empty election for the given lao, questions still need to be added!
+   */
+  public Election createValidElection(Lao lao) {
+    System.out.println("Client with public key: " + publicKey +" is creating an election for lao: " + lao.id);
+    long electionCreation = Instant.now().getEpochSecond();
+    // Name needs to be random so that the same organizer does not create the same election twice if it happens in the same second
+    String electionName = RandomUtils.generateRandomName();
+    String electionId = Election.generateElectionSetupId(lao.id, electionCreation, electionName);
+
+    return new Election(
+      lao.channel,
+      electionId,
+      electionName,
+      "OPEN_BALLOT",
+      electionCreation,
+      electionCreation + 100,
+      electionCreation + 200,
+      new ArrayList<>());
   }
 }

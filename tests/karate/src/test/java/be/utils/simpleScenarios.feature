@@ -113,6 +113,7 @@
     @name=close_roll_call
     Scenario: Closes a valid Roll Call
       * call read('classpath:be/utils/simpleScenarios.feature@name=open_roll_call') { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)' }
+      * def closeRollCall = rollCall.close()
       * def validRollCallClose =
         """
           {
@@ -127,6 +128,7 @@
       * karate.log("sending a roll call close request : ", karate.pretty(validRollCallClose))
       * organizer.publish(validRollCallClose, lao.channel)
       * json answer = organizer.getBackendResponse(validRollCallClose)
+      * karate.log("received an answer to the roll call close : ", karate.pretty(answer))
 
     @name=election_setup
     Scenario: Sets up a valid election
