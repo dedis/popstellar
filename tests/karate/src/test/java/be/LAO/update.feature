@@ -1,4 +1,4 @@
-@env=go,scala
+@env=go_client,scala_client
 Feature: Update a LAO
 
   Background:
