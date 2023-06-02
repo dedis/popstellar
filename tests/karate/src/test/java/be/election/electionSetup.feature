@@ -16,7 +16,7 @@ Feature: Setup an Election
 
     # This call executes all the steps to set up a lao and complete a roll call, to get a valid pop token
     # (lao creation, subscribe, catchup, roll call creation, roll call open, roll call close)
-    * call read('classpath:be/utils/simpleScenarios.feature@name=close_roll_call') { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)' }
+    * call read('classpath:be/utils/simpleScenarios.feature@name=election_setup') { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)' }
 
   # Testing if after a successful roll call, sending a valid election
   # setup results in a valid response from the backend

@@ -3,6 +3,7 @@ package be.model;
 import be.utils.Hash;
 import be.utils.RandomUtils;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -74,5 +75,22 @@ public class Election {
 
     questions.add(question);
     return question;
+  }
+
+  /**
+   * @return an object containing the data to create a valid open election message
+   */
+  public ElectionOpen open(){
+    long openedAt = Instant.now().getEpochSecond();
+    return new ElectionOpen(openedAt);
+  }
+
+  /** Contains the data to create a valid open election message */
+  public static class ElectionOpen{
+    public long openedAt;
+
+    public ElectionOpen(long openedAt){
+      this.openedAt = openedAt;
+    }
   }
 }

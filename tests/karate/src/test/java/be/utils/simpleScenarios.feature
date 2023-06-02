@@ -130,60 +130,65 @@
       * json answer = organizer.getBackendResponse(validRollCallClose)
       * karate.log("received an answer to the roll call close : ", karate.pretty(answer))
 
+    # organizer, lao, rollCall and an election with at least one question need to be passed as arguments when calling this scenario
     @name=election_setup
     Scenario: Sets up a valid election
-      Given call read('classpath:be/utils/simpleScenarios.feature@name=valid_roll_call')
+      * call read('classpath:be/utils/simpleScenarios.feature@name=close_roll_call') { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)'  election: '#(election)' }
+
       And def validElectionSetup =
       """
         {
           "object": "election",
           "action": "setup",
-          "id": '#(getValidElectionSetupId)',
-          "lao": '#(getLaoValid)',
-          "name": "Election",
-          "version": "OPEN_BALLOT",
-          "created_at": 1633098941,
-          "start_time": 1633098941,
-          "end_time": 1633099812,
+          "id": '#(election.id)',
+          "lao": '#(lao.id)',
+          "name": '#(election.name)',
+          "version": '#(election.version)',
+          "created_at": '#(election.creation)',
+          "start_time": '#(election.start)',
+          "end_time": '#(election.end)',
           "questions": [
             {
-              "id": '#(getIsThisProjectFunQuestionId)',
-              "question": "Is this project fun?",
-              "voting_method": "Plurality",
-              "ballot_options": ["Yes", "No"],
-              "write_in": false
+              "id": '#(election.questions.get(0).id)',
+              "question": '#(election.questions.get(0).question)',
+              "voting_method": '#(election.questions.get(0).votingMethod)',
+              "ballot_options": '#(election.questions.get(0).ballotOptions)',
+              "write_in": '#(election.questions.get(0).writeIn)'
             }
           ]
         }
       """
-      When frontend.publish(validElectionSetup, laoChannel)
-      And json answer = frontend.getBackendResponse(validElectionSetup)
+      * karate.log("sending an election setup request : ", karate.pretty(validElectionSetup))
+      When organizer.publish(validElectionSetup, laoChannel)
+      And json answer = organizer.getBackendResponse(validElectionSetup)
       * def subscribe =
         """
           {
             "method": "subscribe",
             "id": 200,
             "params": {
-                "channel": "/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=/rdv-0minecREM9XidNxnQotO7nxtVVnx-Zkmfm7hm2w=",
+                "channel":  '#(election.channel)',
             },
             "jsonrpc": "2.0"
           }
         """
-      * frontend.send(subscribe)
-      * def subs = frontend.takeTimeout(timeout)
+      * karate.log("sending a subscribe to election channel : ", karate.pretty(subscribe))
+      * organizer.send(subscribe)
+      * def subs = organizer.takeTimeout(timeout)
       * def catchup =
         """
           {
             "method": "catchup",
             "id": 500,
             "params": {
-                "channel": "/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=/rdv-0minecREM9XidNxnQotO7nxtVVnx-Zkmfm7hm2w=",
+               "channel":  '#(election.channel)',
             },
             "jsonrpc": "2.0"
            }
         """
-      * frontend.send(catchup)
-      * def catchup_response = frontend.takeTimeout(timeout)
+      * karate.log("sending a catchup to election channel : ", karate.pretty(catchup))
+      * organizer.send(catchup)
+      * def catchup_response = organizer.takeTimeout(timeout)
 
     @name=election_open
     Scenario: Opens an election

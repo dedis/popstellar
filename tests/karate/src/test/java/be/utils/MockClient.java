@@ -65,9 +65,9 @@ public class MockClient extends MultiMsgWebSocketClient {
     // Name needs to be random so that the same organizer does not create the same election twice if it happens in the same second
     String electionName = RandomUtils.generateRandomName();
     String electionId = Election.generateElectionSetupId(lao.id, electionCreation, electionName);
-
+    String channel = lao.channel + "/" + electionId;
     return new Election(
-      lao.channel,
+      channel,
       electionId,
       electionName,
       "OPEN_BALLOT",
