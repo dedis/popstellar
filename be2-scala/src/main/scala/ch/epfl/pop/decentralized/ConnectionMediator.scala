@@ -65,8 +65,10 @@ final case class ConnectionMediator(
       )
 
     case NewServerConnected(serverRef, greetServer) =>
+      if(serverMap.isEmpty){
+        monitorRef ! Monitor.AtLeastOneServerConnected
+      }
       serverMap += ((serverRef, greetServer))
-      monitorRef ! Monitor.AtLeastOneServerConnected
   }
 }
 
