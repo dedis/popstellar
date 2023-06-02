@@ -69,9 +69,10 @@ public class WitnessDatabaseTest {
   private static final PendingEntity ROLL_CALL_ENTITY =
       new PendingEntity(MESSAGE_ID, LAO_ID, ROLL_CALL);
   private static final PendingEntity ELECTION_ENTITY =
-      new PendingEntity(MESSAGE_ID, LAO_ID, ELECTION);
+      new PendingEntity(generateMessageIDOtherThan(MESSAGE_ID), LAO_ID, ELECTION);
   private static final PendingEntity MEETING_ENTITY =
-      new PendingEntity(MESSAGE_ID, LAO_ID, MEETING);
+      new PendingEntity(
+          generateMessageIDOtherThan(ELECTION_ENTITY.getMessageID()), LAO_ID, MEETING);
 
   @Before
   public void before() {
@@ -217,7 +218,7 @@ public class WitnessDatabaseTest {
             .test()
             .assertValue(
                 pendingEntities ->
-                    pendingEntities.size() == 1
+                    pendingEntities.size() == 3
                         && pendingEntities.get(0).getMessageID().equals(MESSAGE_ID)
                         && pendingEntities.get(0).getLaoId().equals(LAO_ID)
                         && pendingEntities.get(0).getObjectType().equals(Objects.ROLL_CALL)
