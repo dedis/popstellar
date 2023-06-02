@@ -5,6 +5,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.github.dedis.popstellar.di.AppDatabaseModuleHelper;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
+import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVersion;
 import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
@@ -50,8 +51,27 @@ public class WitnessDatabaseTest {
           new HashSet<>(),
           "loc",
           "");
-  private static final PendingEntity PENDING_ENTITY =
+  private static final Election ELECTION =
+      new Election.ElectionBuilder(LAO_ID, 100321014, "Election")
+          .setElectionVersion(ElectionVersion.OPEN_BALLOT)
+          .build();
+  private static final Meeting MEETING =
+      new Meeting(
+          Meeting.generateCreateMeetingId(LAO_ID, CREATION, "name"),
+          "name",
+          CREATION,
+          CREATION,
+          CREATION,
+          "",
+          CREATION,
+          "",
+          new ArrayList<>());
+  private static final PendingEntity ROLL_CALL_ENTITY =
       new PendingEntity(MESSAGE_ID, LAO_ID, ROLL_CALL);
+  private static final PendingEntity ELECTION_ENTITY =
+      new PendingEntity(MESSAGE_ID, LAO_ID, ELECTION);
+  private static final PendingEntity MEETING_ENTITY =
+      new PendingEntity(MESSAGE_ID, LAO_ID, MEETING);
 
   @Before
   public void before() {
@@ -168,7 +188,7 @@ public class WitnessDatabaseTest {
 
   @Test
   public void insertPendingTest() {
-    TestObserver<Void> testObserver = pendingDao.insert(PENDING_ENTITY).test();
+    TestObserver<Void> testObserver = pendingDao.insert(ROLL_CALL_ENTITY).test();
 
     testObserver.awaitTerminalEvent();
     testObserver.assertComplete();
@@ -176,10 +196,20 @@ public class WitnessDatabaseTest {
 
   @Test
   public void getPendingTest() {
-    TestObserver<Void> testObserver = pendingDao.insert(PENDING_ENTITY).test();
+    TestObserver<Void> testObserverV1 = pendingDao.insert(ROLL_CALL_ENTITY).test();
+    TestObserver<Void> testObserverV2 = pendingDao.insert(ELECTION_ENTITY).test();
+    TestObserver<Void> testObserverV3 = pendingDao.insert(MEETING_ENTITY).test();
 
-    testObserver.awaitTerminalEvent();
-    testObserver.assertComplete();
+    testObserverV1.awaitTerminalEvent();
+    testObserverV1.assertComplete();
+    testObserverV2.awaitTerminalEvent();
+    testObserverV2.assertComplete();
+    testObserverV3.awaitTerminalEvent();
+    testObserverV3.assertComplete();
+
+    assertEquals(Objects.ROLL_CALL, ROLL_CALL_ENTITY.getObjectType());
+    assertEquals(Objects.ELECTION, ELECTION_ENTITY.getObjectType());
+    assertEquals(Objects.MEETING, MEETING_ENTITY.getObjectType());
 
     TestObserver<List<PendingEntity>> testObserver2 =
         pendingDao
@@ -202,7 +232,7 @@ public class WitnessDatabaseTest {
 
   @Test
   public void removePendingTest() {
-    TestObserver<Void> testObserver = pendingDao.insert(PENDING_ENTITY).test();
+    TestObserver<Void> testObserver = pendingDao.insert(ROLL_CALL_ENTITY).test();
 
     testObserver.awaitTerminalEvent();
     testObserver.assertComplete();
