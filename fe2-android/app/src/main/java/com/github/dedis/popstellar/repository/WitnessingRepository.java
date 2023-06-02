@@ -428,6 +428,7 @@ public class WitnessingRepository {
           MeetingHandler.addMeetingRoutine(
               repo.meetingRepository, laoId, pendingEntity.getMeeting());
           break;
+        default:
       }
     }
 
