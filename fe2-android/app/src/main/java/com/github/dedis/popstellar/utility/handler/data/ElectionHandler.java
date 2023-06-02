@@ -9,6 +9,7 @@ import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.*;
+import com.github.dedis.popstellar.repository.database.witnessing.PendingEntity;
 import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.error.*;
 
@@ -49,7 +50,7 @@ public final class ElectionHandler {
    * @param electionSetup the message that was received
    */
   public void handleElectionSetup(HandlerContext context, ElectionSetup electionSetup)
-      throws UnknownLaoException, InvalidChannelException, UnknownWitnessMessageException {
+      throws UnknownLaoException, InvalidChannelException {
     Channel channel = context.getChannel();
     MessageID messageId = context.getMessageId();
 
@@ -76,11 +77,13 @@ public final class ElectionHandler {
             .setState(CREATED)
             .build();
 
-    witnessingRepository.addWitnessMessage(laoId, electionSetupWitnessMessage(messageId, election));
-    witnessingRepository.addPendingElection(laoId, messageId, election);
-
-    witnessingRepository.performActionWhenWitnessThresholdReached(
-        laoId, messageId, () -> addElectionRoutine(electionRepository, election));
+    if (witnessingRepository.areWitnessesEmpty(laoId)) {
+      addElectionRoutine(electionRepository, election);
+    } else {
+      witnessingRepository.addWitnessMessage(
+          laoId, electionSetupWitnessMessage(messageId, election));
+      witnessingRepository.addPendingEntity(new PendingEntity(messageId, election));
+    }
 
     // Once the election is created, we subscribe to the election channel
     context
@@ -134,7 +137,7 @@ public final class ElectionHandler {
    * @param electionResult the message that was received
    */
   public void handleElectionResult(HandlerContext context, ElectionResult electionResult)
-      throws UnknownElectionException, UnknownWitnessMessageException {
+      throws UnknownElectionException {
     Channel channel = context.getChannel();
     MessageID messageId = context.getMessageId();
 
@@ -154,12 +157,13 @@ public final class ElectionHandler {
             .build();
     String laoId = channel.extractLaoId();
 
-    witnessingRepository.addWitnessMessage(
-        laoId, electionResultWitnessMessage(messageId, election));
-    witnessingRepository.addPendingElection(laoId, messageId, election);
-
-    witnessingRepository.performActionWhenWitnessThresholdReached(
-        laoId, messageId, () -> addElectionRoutine(electionRepository, election));
+    if (witnessingRepository.areWitnessesEmpty(laoId)) {
+      addElectionRoutine(electionRepository, election);
+    } else {
+      witnessingRepository.addWitnessMessage(
+          laoId, electionResultWitnessMessage(messageId, election));
+      witnessingRepository.addPendingEntity(new PendingEntity(messageId, election));
+    }
   }
 
   /**

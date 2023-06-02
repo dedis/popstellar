@@ -10,9 +10,6 @@ import com.github.dedis.popstellar.model.objects.security.MessageID;
 
 @Entity(tableName = "pending_objects")
 public class PendingEntity {
-  @ColumnInfo(name = "lao_id")
-  @NonNull
-  private final String laoId;
 
   @PrimaryKey
   @ColumnInfo(name = "id")
@@ -32,12 +29,10 @@ public class PendingEntity {
   private final Meeting meeting;
 
   public PendingEntity(
-      @NonNull String laoId,
       @NonNull MessageID messageID,
       @NonNull RollCall rollCall,
       @NonNull Election election,
       @NonNull Meeting meeting) {
-    this.laoId = laoId;
     this.messageID = messageID;
     this.rollCall = rollCall;
     this.election = election;
@@ -45,9 +40,7 @@ public class PendingEntity {
   }
 
   @Ignore
-  public PendingEntity(
-      @NonNull String laoId, @NonNull MessageID messageID, @NonNull RollCall rollCall) {
-    this.laoId = laoId;
+  public PendingEntity(@NonNull MessageID messageID, @NonNull RollCall rollCall) {
     this.messageID = messageID;
     this.rollCall = rollCall;
     this.election = null;
@@ -55,9 +48,7 @@ public class PendingEntity {
   }
 
   @Ignore
-  public PendingEntity(
-      @NonNull String laoId, @NonNull MessageID messageID, @NonNull Election election) {
-    this.laoId = laoId;
+  public PendingEntity(@NonNull MessageID messageID, @NonNull Election election) {
     this.messageID = messageID;
     this.rollCall = null;
     this.election = election;
@@ -65,18 +56,11 @@ public class PendingEntity {
   }
 
   @Ignore
-  public PendingEntity(
-      @NonNull String laoId, @NonNull MessageID messageID, @NonNull Meeting meeting) {
-    this.laoId = laoId;
+  public PendingEntity(@NonNull MessageID messageID, @NonNull Meeting meeting) {
     this.messageID = messageID;
     this.rollCall = null;
     this.election = null;
     this.meeting = meeting;
-  }
-
-  @NonNull
-  public String getLaoId() {
-    return laoId;
   }
 
   @NonNull

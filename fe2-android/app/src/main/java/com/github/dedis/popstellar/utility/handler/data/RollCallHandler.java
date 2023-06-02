@@ -8,8 +8,10 @@ import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.*;
+import com.github.dedis.popstellar.repository.database.witnessing.PendingEntity;
 import com.github.dedis.popstellar.utility.ActivityUtils;
-import com.github.dedis.popstellar.utility.error.*;
+import com.github.dedis.popstellar.utility.error.UnknownLaoException;
+import com.github.dedis.popstellar.utility.error.UnknownRollCallException;
 
 import java.util.*;
 
@@ -50,7 +52,7 @@ public final class RollCallHandler {
    * @param createRollCall the message that was received
    */
   public void handleCreateRollCall(HandlerContext context, CreateRollCall createRollCall)
-      throws UnknownLaoException, UnknownWitnessMessageException {
+      throws UnknownLaoException {
     Channel channel = context.getChannel();
     MessageID messageId = context.getMessageId();
 
@@ -74,12 +76,13 @@ public final class RollCallHandler {
     String laoId = laoView.getId();
     RollCall rollCall = builder.build();
 
-    witnessingRepo.addWitnessMessage(laoId, createRollCallWitnessMessage(messageId, rollCall));
-    witnessingRepo.addPendingRollcall(laoId, messageId, rollCall);
-
-    // Update the repo with the created rollcall when the witness policy is satisfied
-    witnessingRepo.performActionWhenWitnessThresholdReached(
-        laoId, messageId, () -> addRollCallRoutine(rollCallRepo, digitalCashRepo, laoId, rollCall));
+    if (witnessingRepo.areWitnessesEmpty(laoId)) {
+      addRollCallRoutine(rollCallRepo, digitalCashRepo, laoId, rollCall);
+    } else {
+      witnessingRepo.addWitnessMessage(laoId, createRollCallWitnessMessage(messageId, rollCall));
+      // Update the repo with the created rollcall when the witness policy is satisfied
+      witnessingRepo.addPendingEntity(new PendingEntity(messageId, rollCall));
+    }
   }
 
   /**
@@ -89,7 +92,7 @@ public final class RollCallHandler {
    * @param openRollCall the message that was received
    */
   public void handleOpenRollCall(HandlerContext context, OpenRollCall openRollCall)
-      throws UnknownLaoException, UnknownRollCallException, UnknownWitnessMessageException {
+      throws UnknownLaoException, UnknownRollCallException {
     Channel channel = context.getChannel();
     MessageID messageId = context.getMessageId();
 
@@ -116,12 +119,13 @@ public final class RollCallHandler {
     String laoId = laoView.getId();
     RollCall rollCall = builder.build();
 
-    witnessingRepo.addWitnessMessage(laoId, openRollCallWitnessMessage(messageId, rollCall));
-    witnessingRepo.addPendingRollcall(laoId, messageId, rollCall);
-
-    // Update the repo with the opened rollcall when the witness policy is satisfied
-    witnessingRepo.performActionWhenWitnessThresholdReached(
-        laoId, messageId, () -> addRollCallRoutine(rollCallRepo, digitalCashRepo, laoId, rollCall));
+    if (witnessingRepo.areWitnessesEmpty(laoId)) {
+      addRollCallRoutine(rollCallRepo, digitalCashRepo, laoId, rollCall);
+    } else {
+      witnessingRepo.addWitnessMessage(laoId, openRollCallWitnessMessage(messageId, rollCall));
+      // Update the repo with the created rollcall when the witness policy is satisfied
+      witnessingRepo.addPendingEntity(new PendingEntity(messageId, rollCall));
+    }
   }
 
   /**
@@ -131,7 +135,7 @@ public final class RollCallHandler {
    * @param closeRollCall the message that was received
    */
   public void handleCloseRollCall(HandlerContext context, CloseRollCall closeRollCall)
-      throws UnknownLaoException, UnknownRollCallException, UnknownWitnessMessageException {
+      throws UnknownLaoException, UnknownRollCallException {
     Channel channel = context.getChannel();
     MessageID messageId = context.getMessageId();
 
@@ -161,13 +165,14 @@ public final class RollCallHandler {
     String laoId = laoView.getId();
     RollCall rollCall = builder.build();
 
-    witnessingRepo.addWitnessMessage(laoId, closeRollCallWitnessMessage(messageId, rollCall));
-    witnessingRepo.addPendingRollcall(laoId, messageId, rollCall);
-
-    // Update the repo with the closed rollcall when the witness policy is satisfied and apply a
-    // specific routine
-    witnessingRepo.performActionWhenWitnessThresholdReached(
-        laoId, messageId, () -> addRollCallRoutine(rollCallRepo, digitalCashRepo, laoId, rollCall));
+    if (witnessingRepo.areWitnessesEmpty(laoId)) {
+      addRollCallRoutine(rollCallRepo, digitalCashRepo, laoId, rollCall);
+    } else {
+      witnessingRepo.addWitnessMessage(laoId, closeRollCallWitnessMessage(messageId, rollCall));
+      // Update the repo with the closed rollcall when the witness policy is
+      // satisfied and apply a specific routine
+      witnessingRepo.addPendingEntity(new PendingEntity(messageId, rollCall));
+    }
 
     // Subscribe to the social media channels
     // (this is not the expected behavior as users should be able to choose who to subscribe to. But
