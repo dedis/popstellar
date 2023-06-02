@@ -19,11 +19,18 @@ object ServerConf {
     val clientPath = serverConf.getString("client-path")
     val serverPath = serverConf.getString("server-path")
     val authenticationPath = serverConf.getString("authentication-path")
+    val internalAddress = s"ws://$serverInterface:$serverPort"
     val externalAddress = {
       try {
-        serverConf.getString("external-address")
+        val configExternalAddress = serverConf.getString("external-address")
+        if (configExternalAddress.isBlank) {
+          internalAddress
+        } else {
+          configExternalAddress
+        }
+
       } catch {
-        case _: Throwable => s"ws://$serverInterface:$serverPort"
+        case _: Throwable => internalAddress
       }
     }
 
