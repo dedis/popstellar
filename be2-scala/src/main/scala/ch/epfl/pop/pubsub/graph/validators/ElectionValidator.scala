@@ -6,13 +6,15 @@ import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.network.method.message.data.election._
 import ch.epfl.pop.model.objects.ElectionChannel._
-import ch.epfl.pop.model.objects.{Channel, Hash, Timestamp, DbActorNAckException, LaoData}
+import ch.epfl.pop.model.objects.{Channel, DbActorNAckException, Hash, LaoData, Timestamp}
 import ch.epfl.pop.pubsub.PublishSubscribe
+import ch.epfl.pop.pubsub.graph.validators.ElectionValidator.{FAILED_TO_GET_QUESTION_ERROR_MESSAGE, UNKNOWN_ERROR_MESSAGE}
 import ch.epfl.pop.pubsub.graph.validators.MessageValidator._
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
 import ch.epfl.pop.storage.DbActor
+
 import scala.concurrent.Await
-import scala.util.{Success, Failure}
+import scala.util.{Failure, Success}
 
 //Similarly to the handlers, we create a ElectionValidator object which creates a ElectionValidator class instance.
 //The defaults dbActorRef is used in the object, but the class can now be mocked with a custom dbActorRef for testing purpose
@@ -21,6 +23,10 @@ object ElectionValidator extends MessageDataContentValidator with EventValidator
   val electionValidator = new ElectionValidator(PublishSubscribe.getDbActorRef)
 
   override val EVENT_HASH_PREFIX: String = electionValidator.EVENT_HASH_PREFIX
+
+  private val UNKNOWN_ERROR_MESSAGE: String = "Unknown error: "
+
+  private val FAILED_TO_GET_QUESTION_ERROR_MESSAGE: String = "Failed to get election questions: "
 
   def validateSetupElection(rpcMessage: JsonRpcRequest): GraphMessage = electionValidator.validateSetupElection(rpcMessage)
 
@@ -150,8 +156,8 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
 
         val setupElectionTimeStamp = Await.ready(channel.getSetupMessage(dbActorRef), duration).value.get match {
           case Success(setupElection: SetupElection) => setupElection.created_at
-          case Failure(exception)                    => return Left(validationError("Failed to get election questions: " + exception.getMessage))
-          case err @ _                               => return Left(validationError("Unknown error: " + err.toString))
+          case Failure(exception)                    => return Left(validationError(FAILED_TO_GET_QUESTION_ERROR_MESSAGE + exception.getMessage))
+          case err @ _                               => return Left(validationError(UNKNOWN_ERROR_MESSAGE + err.toString))
         }
 
         runChecks(
@@ -208,8 +214,8 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
         val electionId = channel.extractChildChannel
         val questions = Await.ready(channel.getSetupMessage(dbActorRef), duration).value.get match {
           case Success(setupElection) => setupElection.questions
-          case Failure(exception)     => return Left(validationError("Failed to get election questions: " + exception.getMessage))
-          case err @ _                => return Left(validationError("Unknown error: " + err.toString))
+          case Failure(exception)     => return Left(validationError(FAILED_TO_GET_QUESTION_ERROR_MESSAGE + exception.getMessage))
+          case err @ _                => return Left(validationError(UNKNOWN_ERROR_MESSAGE + err.toString))
         }
         val openingTimeStamp = Await.result(channel.extractMessages[OpenElection](dbActorRef), duration) match {
           case openElection: List[(Message, OpenElection)] =>
@@ -289,8 +295,8 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
         val electionId = channel.extractChildChannel
         val electionQuestions = Await.ready(channel.getSetupMessage(dbActorRef), duration).value.get match {
           case Success(setupElection) => setupElection.questions
-          case Failure(exception)     => return Left(validationError("Failed to get election questions: " + exception.getMessage))
-          case err @ _                => return Left(validationError("Unknown error: " + err.toString))
+          case Failure(exception)     => return Left(validationError(FAILED_TO_GET_QUESTION_ERROR_MESSAGE + exception.getMessage))
+          case err @ _                => return Left(validationError(UNKNOWN_ERROR_MESSAGE + err.toString))
         }
         runChecks(
           checkNumberOfVotes(
@@ -335,8 +341,8 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
 
         val setupElectionTimeStamp = Await.ready(channel.getSetupMessage(dbActorRef), duration).value.get match {
           case Success(setupElection: SetupElection) => setupElection.created_at
-          case Failure(exception)                    => return Left(validationError("Failed to get election questions: " + exception.getMessage))
-          case err @ _                               => return Left(validationError("Unknown error: " + err.toString))
+          case Failure(exception)                    => return Left(validationError(FAILED_TO_GET_QUESTION_ERROR_MESSAGE + exception.getMessage))
+          case err @ _                               => return Left(validationError(UNKNOWN_ERROR_MESSAGE + err.toString))
         }
         print(setupElectionTimeStamp)
         print(endElection.created_at)
