@@ -77,12 +77,11 @@ public final class ElectionHandler {
             .setState(CREATED)
             .build();
 
+    witnessingRepository.addWitnessMessage(laoId, electionSetupWitnessMessage(messageId, election));
     if (witnessingRepository.areWitnessesEmpty(laoId)) {
       addElectionRoutine(electionRepository, election);
     } else {
-      witnessingRepository.addWitnessMessage(
-          laoId, electionSetupWitnessMessage(messageId, election));
-      witnessingRepository.addPendingEntity(new PendingEntity(messageId, election));
+      witnessingRepository.addPendingEntity(new PendingEntity(messageId, laoId, election));
     }
 
     // Once the election is created, we subscribe to the election channel
@@ -157,12 +156,12 @@ public final class ElectionHandler {
             .build();
     String laoId = channel.extractLaoId();
 
+    witnessingRepository.addWitnessMessage(
+        laoId, electionResultWitnessMessage(messageId, election));
     if (witnessingRepository.areWitnessesEmpty(laoId)) {
       addElectionRoutine(electionRepository, election);
     } else {
-      witnessingRepository.addWitnessMessage(
-          laoId, electionResultWitnessMessage(messageId, election));
-      witnessingRepository.addPendingEntity(new PendingEntity(messageId, election));
+      witnessingRepository.addPendingEntity(new PendingEntity(messageId, laoId, election));
     }
   }
 

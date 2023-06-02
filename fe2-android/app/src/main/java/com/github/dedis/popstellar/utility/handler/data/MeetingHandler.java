@@ -64,12 +64,12 @@ public class MeetingHandler {
     String laoId = laoView.getId();
     Meeting meeting = builder.build();
 
+    witnessingRepo.addWitnessMessage(
+        laoView.getId(), createMeetingWitnessMessage(messageId, meeting));
     if (witnessingRepo.areWitnessesEmpty(laoId)) {
       addMeetingRoutine(meetingRepo, laoId, meeting);
     } else {
-      witnessingRepo.addWitnessMessage(
-          laoView.getId(), createMeetingWitnessMessage(messageId, meeting));
-      witnessingRepo.addPendingEntity(new PendingEntity(messageId, meeting));
+      witnessingRepo.addPendingEntity(new PendingEntity(messageId, laoId, meeting));
     }
   }
 
@@ -98,12 +98,12 @@ public class MeetingHandler {
     String laoId = laoView.getId();
     Meeting meeting = builder.build();
 
+    witnessingRepo.addWitnessMessage(
+        laoView.getId(), stateMeetingWitnessMessage(messageId, meeting));
     if (witnessingRepo.areWitnessesEmpty(laoId)) {
       addMeetingRoutine(meetingRepo, laoId, meeting);
     } else {
-      witnessingRepo.addWitnessMessage(
-          laoView.getId(), stateMeetingWitnessMessage(messageId, meeting));
-      witnessingRepo.addPendingEntity(new PendingEntity(messageId, meeting));
+      witnessingRepo.addPendingEntity(new PendingEntity(messageId, laoId, meeting));
     }
   }
 

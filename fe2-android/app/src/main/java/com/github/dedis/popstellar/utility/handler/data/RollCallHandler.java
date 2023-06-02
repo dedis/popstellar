@@ -76,12 +76,12 @@ public final class RollCallHandler {
     String laoId = laoView.getId();
     RollCall rollCall = builder.build();
 
+    witnessingRepo.addWitnessMessage(laoId, createRollCallWitnessMessage(messageId, rollCall));
     if (witnessingRepo.areWitnessesEmpty(laoId)) {
       addRollCallRoutine(rollCallRepo, digitalCashRepo, laoId, rollCall);
     } else {
-      witnessingRepo.addWitnessMessage(laoId, createRollCallWitnessMessage(messageId, rollCall));
       // Update the repo with the created rollcall when the witness policy is satisfied
-      witnessingRepo.addPendingEntity(new PendingEntity(messageId, rollCall));
+      witnessingRepo.addPendingEntity(new PendingEntity(messageId, laoId, rollCall));
     }
   }
 
@@ -119,12 +119,12 @@ public final class RollCallHandler {
     String laoId = laoView.getId();
     RollCall rollCall = builder.build();
 
+    witnessingRepo.addWitnessMessage(laoId, openRollCallWitnessMessage(messageId, rollCall));
     if (witnessingRepo.areWitnessesEmpty(laoId)) {
       addRollCallRoutine(rollCallRepo, digitalCashRepo, laoId, rollCall);
     } else {
-      witnessingRepo.addWitnessMessage(laoId, openRollCallWitnessMessage(messageId, rollCall));
       // Update the repo with the created rollcall when the witness policy is satisfied
-      witnessingRepo.addPendingEntity(new PendingEntity(messageId, rollCall));
+      witnessingRepo.addPendingEntity(new PendingEntity(messageId, laoId, rollCall));
     }
   }
 
@@ -165,13 +165,13 @@ public final class RollCallHandler {
     String laoId = laoView.getId();
     RollCall rollCall = builder.build();
 
+    witnessingRepo.addWitnessMessage(laoId, closeRollCallWitnessMessage(messageId, rollCall));
     if (witnessingRepo.areWitnessesEmpty(laoId)) {
       addRollCallRoutine(rollCallRepo, digitalCashRepo, laoId, rollCall);
     } else {
-      witnessingRepo.addWitnessMessage(laoId, closeRollCallWitnessMessage(messageId, rollCall));
       // Update the repo with the closed rollcall when the witness policy is
       // satisfied and apply a specific routine
-      witnessingRepo.addPendingEntity(new PendingEntity(messageId, rollCall));
+      witnessingRepo.addPendingEntity(new PendingEntity(messageId, laoId, rollCall));
     }
 
     // Subscribe to the social media channels

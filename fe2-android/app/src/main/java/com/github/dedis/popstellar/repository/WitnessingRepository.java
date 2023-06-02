@@ -200,7 +200,7 @@ public class WitnessingRepository {
   }
 
   /**
-   * This function adds to the database a pending entity.
+   * This function adds a pending entity.
    *
    * @param pendingEntity object (rollcall, election or meeting) that still needs to be approved by
    *     the witnesses
@@ -223,6 +223,8 @@ public class WitnessingRepository {
                             err,
                             "Error in persisting the pending entity of message %s",
                             messageId)));
+    // Add it to the memory for faster lookups
+    getLaoWitness(pendingEntity.getLaoId()).addPendingEntity(pendingEntity);
   }
 
   /** Get in a thread-safe fashion the witness object for the lao, computes it if absent. */
@@ -262,6 +264,10 @@ public class WitnessingRepository {
     /** Subject to observe the witness messages collection as a whole */
     private final Subject<List<WitnessMessage>> witnessMessagesSubject =
         BehaviorSubject.createDefault(unmodifiableList(emptyList()));
+
+    /** Thread-safe map to save pending entities by their message id */
+    private final ConcurrentHashMap<MessageID, PendingEntity> pendingEntities =
+        new ConcurrentHashMap<>();
 
     public LaoWitness(String laoId, WitnessingRepository repo) {
       this.laoId = laoId;
@@ -306,34 +312,23 @@ public class WitnessingRepository {
 
       // Upon reception of a new signature check that the policy is passed
       if (hasRequiredSignatures(witnessMessage)) {
-        repo.disposables.add(
-            repo.pendingDao
-                .getPendingObject(messageID)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                    pendingEntity -> {
-                      // Execute the action of the relative pending entity
-                      addPendingEntity(pendingEntity);
-                      // Then delete the pending entity from the db
-                      repo.disposables.add(
-                          repo.pendingDao
-                              .removePendingObject(messageID)
-                              .subscribeOn(Schedulers.io())
-                              .observeOn(AndroidSchedulers.mainThread())
-                              .subscribe(
-                                  () ->
-                                      Timber.tag(TAG)
-                                          .d("Removed successfully pending object from disk"),
-                                  err ->
-                                      Timber.tag(TAG)
-                                          .e(
-                                              err,
-                                              "Error in removing the pending object from disk")));
-                    },
-                    err ->
-                        Timber.tag(TAG)
-                            .e(err, "No pending entity matching message id %s", messageID)));
+        PendingEntity pendingEntity = pendingEntities.remove(messageID);
+        if (pendingEntity != null) {
+          // Process the entity by calling its action
+          processPendingEntity(pendingEntity);
+
+          // Then delete the pending entity from the db
+          repo.disposables.add(
+              repo.pendingDao
+                  .removePendingObject(messageID)
+                  .subscribeOn(Schedulers.io())
+                  .observeOn(AndroidSchedulers.mainThread())
+                  .subscribe(
+                      () -> Timber.tag(TAG).d("Removed successfully pending object from disk"),
+                      err ->
+                          Timber.tag(TAG)
+                              .e(err, "Error in removing the pending object from disk")));
+        }
       }
 
       // Reinsert the message to update the subjects and trigger the notifications
@@ -395,6 +390,10 @@ public class WitnessingRepository {
           .onNext(unmodifiableList(new ArrayList<>(witnessMessages.values())));
     }
 
+    public void addPendingEntity(PendingEntity pendingEntity) {
+      pendingEntities.put(pendingEntity.getMessageID(), pendingEntity);
+    }
+
     public Set<PublicKey> getWitnesses() {
       return new HashSet<>(witnesses);
     }
@@ -413,7 +412,7 @@ public class WitnessingRepository {
      * @param pendingEntity object (for now rollcall, election or meeting) which has now achieved
      *     the witnessing threshold
      */
-    public void addPendingEntity(PendingEntity pendingEntity) {
+    private void processPendingEntity(PendingEntity pendingEntity) {
       switch (pendingEntity.getObjectType()) {
         case ROLL_CALL:
           RollCallHandler.addRollCallRoutine(
@@ -453,7 +452,15 @@ public class WitnessingRepository {
               .observeOn(AndroidSchedulers.mainThread())
               .subscribe(
                   witnessMessageList -> witnessMessageList.forEach(this::add),
-                  err -> Timber.tag(TAG).e(err, "No witness messages found on the disk")));
+                  err -> Timber.tag(TAG).e(err, "No witness messages found on the disk")),
+          // And finally also load the pending entities from the db
+          repo.pendingDao
+              .getPendingObjectsFromLao(laoId)
+              .subscribeOn(Schedulers.io())
+              .observeOn(AndroidSchedulers.mainThread())
+              .subscribe(
+                  pendingEntityList -> pendingEntityList.forEach(this::addPendingEntity),
+                  err -> Timber.tag(TAG).e(err, "No pending entity found on the disk")));
 
       alreadyRetrieved = true;
     }
