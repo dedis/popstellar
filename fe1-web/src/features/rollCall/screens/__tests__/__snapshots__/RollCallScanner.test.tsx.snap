@@ -582,70 +582,6 @@ exports[`RollCallOpened renders correctly when no scan 1`] = `
                               </View>
                             </View>
                           </View>
-                          <View
-                            style={
-                              {
-                                "flexDirection": "column",
-                              }
-                            }
-                          >
-                            <View
-                              style={
-                                {
-                                  "alignSelf": "flex-end",
-                                  "backgroundColor": "#fff",
-                                  "borderRadius": 8,
-                                  "padding": 8,
-                                }
-                              }
-                            >
-                              <View
-                                accessible={true}
-                                collapsable={false}
-                                focusable={true}
-                                onBlur={[Function]}
-                                onClick={[Function]}
-                                onFocus={[Function]}
-                                onResponderGrant={[Function]}
-                                onResponderMove={[Function]}
-                                onResponderRelease={[Function]}
-                                onResponderTerminate={[Function]}
-                                onResponderTerminationRequest={[Function]}
-                                onStartShouldSetResponder={[Function]}
-                              >
-                                <RNGestureHandlerButton
-                                  collapsable={false}
-                                  delayLongPress={600}
-                                  enabled={true}
-                                  exclusive={true}
-                                  handlerTag={4}
-                                  handlerType="NativeViewGestureHandler"
-                                  onGestureEvent={[Function]}
-                                  onGestureHandlerEvent={[Function]}
-                                  onGestureHandlerStateChange={[Function]}
-                                  onHandlerStateChange={[Function]}
-                                  rippleColor={0}
-                                  touchSoundDisabled={false}
-                                >
-                                  <View
-                                    accessible={true}
-                                    collapsable={false}
-                                    style={
-                                      {
-                                        "alignSelf": "flex-end",
-                                        "marginLeft": "auto",
-                                        "opacity": 1,
-                                      }
-                                    }
-                                  >
-                                    <View>
-                                      {"name":"ios-camera-reverse","size":25,"color":"#3742fa"}
-                                    </View>
-                                  </View>
-                                </RNGestureHandlerButton>
-                              </View>
-                            </View>
-                          </View>
                         </View>
                       </View>
                       <Modal
@@ -811,7 +747,7 @@ exports[`RollCallOpened renders correctly when scanning attendees 1`] = `
                     delayLongPress={600}
                     enabled={true}
                     exclusive={true}
-                    handlerTag={5}
+                    handlerTag={4}
                     handlerType="NativeViewGestureHandler"
                     onGestureEvent={[Function]}
                     onGestureHandlerEvent={[Function]}
@@ -988,7 +924,7 @@ exports[`RollCallOpened renders correctly when scanning attendees 1`] = `
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
-                handlerTag={6}
+                handlerTag={5}
                 handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}
@@ -1178,7 +1114,7 @@ exports[`RollCallOpened renders correctly when scanning attendees 1`] = `
                                       delayLongPress={600}
                                       enabled={true}
                                       exclusive={true}
-                                      handlerTag={7}
+                                      handlerTag={6}
                                       handlerType="NativeViewGestureHandler"
                                       onGestureEvent={[Function]}
                                       onGestureHandlerEvent={[Function]}
@@ -1246,70 +1182,6 @@ exports[`RollCallOpened renders correctly when scanning attendees 1`] = `
                                     2
                                   </Text>
                                 </View>
-                              </View>
-                            </View>
-                          </View>
-                          <View
-                            style={
-                              {
-                                "flexDirection": "column",
-                              }
-                            }
-                          >
-                            <View
-                              style={
-                                {
-                                  "alignSelf": "flex-end",
-                                  "backgroundColor": "#fff",
-                                  "borderRadius": 8,
-                                  "padding": 8,
-                                }
-                              }
-                            >
-                              <View
-                                accessible={true}
-                                collapsable={false}
-                                focusable={true}
-                                onBlur={[Function]}
-                                onClick={[Function]}
-                                onFocus={[Function]}
-                                onResponderGrant={[Function]}
-                                onResponderMove={[Function]}
-                                onResponderRelease={[Function]}
-                                onResponderTerminate={[Function]}
-                                onResponderTerminationRequest={[Function]}
-                                onStartShouldSetResponder={[Function]}
-                              >
-                                <RNGestureHandlerButton
-                                  collapsable={false}
-                                  delayLongPress={600}
-                                  enabled={true}
-                                  exclusive={true}
-                                  handlerTag={8}
-                                  handlerType="NativeViewGestureHandler"
-                                  onGestureEvent={[Function]}
-                                  onGestureHandlerEvent={[Function]}
-                                  onGestureHandlerStateChange={[Function]}
-                                  onHandlerStateChange={[Function]}
-                                  rippleColor={0}
-                                  touchSoundDisabled={false}
-                                >
-                                  <View
-                                    accessible={true}
-                                    collapsable={false}
-                                    style={
-                                      {
-                                        "alignSelf": "flex-end",
-                                        "marginLeft": "auto",
-                                        "opacity": 1,
-                                      }
-                                    }
-                                  >
-                                    <View>
-                                      {"name":"ios-camera-reverse","size":25,"color":"#3742fa"}
-                                    </View>
-                                  </View>
-                                </RNGestureHandlerButton>
                               </View>
                             </View>
                           </View>
@@ -1478,7 +1350,7 @@ exports[`RollCallOpened shows the correct number of attendees 1`] = `
                     delayLongPress={600}
                     enabled={true}
                     exclusive={true}
-                    handlerTag={37}
+                    handlerTag={30}
                     handlerType="NativeViewGestureHandler"
                     onGestureEvent={[Function]}
                     onGestureHandlerEvent={[Function]}
@@ -1655,7 +1527,7 @@ exports[`RollCallOpened shows the correct number of attendees 1`] = `
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
-                handlerTag={38}
+                handlerTag={31}
                 handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}
@@ -1845,7 +1717,7 @@ exports[`RollCallOpened shows the correct number of attendees 1`] = `
                                       delayLongPress={600}
                                       enabled={true}
                                       exclusive={true}
-                                      handlerTag={39}
+                                      handlerTag={32}
                                       handlerType="NativeViewGestureHandler"
                                       onGestureEvent={[Function]}
                                       onGestureHandlerEvent={[Function]}
@@ -1913,70 +1785,6 @@ exports[`RollCallOpened shows the correct number of attendees 1`] = `
                                     0
                                   </Text>
                                 </View>
-                              </View>
-                            </View>
-                          </View>
-                          <View
-                            style={
-                              {
-                                "flexDirection": "column",
-                              }
-                            }
-                          >
-                            <View
-                              style={
-                                {
-                                  "alignSelf": "flex-end",
-                                  "backgroundColor": "#fff",
-                                  "borderRadius": 8,
-                                  "padding": 8,
-                                }
-                              }
-                            >
-                              <View
-                                accessible={true}
-                                collapsable={false}
-                                focusable={true}
-                                onBlur={[Function]}
-                                onClick={[Function]}
-                                onFocus={[Function]}
-                                onResponderGrant={[Function]}
-                                onResponderMove={[Function]}
-                                onResponderRelease={[Function]}
-                                onResponderTerminate={[Function]}
-                                onResponderTerminationRequest={[Function]}
-                                onStartShouldSetResponder={[Function]}
-                              >
-                                <RNGestureHandlerButton
-                                  collapsable={false}
-                                  delayLongPress={600}
-                                  enabled={true}
-                                  exclusive={true}
-                                  handlerTag={40}
-                                  handlerType="NativeViewGestureHandler"
-                                  onGestureEvent={[Function]}
-                                  onGestureHandlerEvent={[Function]}
-                                  onGestureHandlerStateChange={[Function]}
-                                  onHandlerStateChange={[Function]}
-                                  rippleColor={0}
-                                  touchSoundDisabled={false}
-                                >
-                                  <View
-                                    accessible={true}
-                                    collapsable={false}
-                                    style={
-                                      {
-                                        "alignSelf": "flex-end",
-                                        "marginLeft": "auto",
-                                        "opacity": 1,
-                                      }
-                                    }
-                                  >
-                                    <View>
-                                      {"name":"ios-camera-reverse","size":25,"color":"#3742fa"}
-                                    </View>
-                                  </View>
-                                </RNGestureHandlerButton>
                               </View>
                             </View>
                           </View>
@@ -2145,7 +1953,7 @@ exports[`RollCallOpened shows the correct number of attendees 2`] = `
                     delayLongPress={600}
                     enabled={true}
                     exclusive={true}
-                    handlerTag={37}
+                    handlerTag={30}
                     handlerType="NativeViewGestureHandler"
                     onGestureEvent={[Function]}
                     onGestureHandlerEvent={[Function]}
@@ -2322,7 +2130,7 @@ exports[`RollCallOpened shows the correct number of attendees 2`] = `
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
-                handlerTag={38}
+                handlerTag={31}
                 handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}
@@ -2512,7 +2320,7 @@ exports[`RollCallOpened shows the correct number of attendees 2`] = `
                                       delayLongPress={600}
                                       enabled={true}
                                       exclusive={true}
-                                      handlerTag={39}
+                                      handlerTag={32}
                                       handlerType="NativeViewGestureHandler"
                                       onGestureEvent={[Function]}
                                       onGestureHandlerEvent={[Function]}
@@ -2580,70 +2388,6 @@ exports[`RollCallOpened shows the correct number of attendees 2`] = `
                                     2
                                   </Text>
                                 </View>
-                              </View>
-                            </View>
-                          </View>
-                          <View
-                            style={
-                              {
-                                "flexDirection": "column",
-                              }
-                            }
-                          >
-                            <View
-                              style={
-                                {
-                                  "alignSelf": "flex-end",
-                                  "backgroundColor": "#fff",
-                                  "borderRadius": 8,
-                                  "padding": 8,
-                                }
-                              }
-                            >
-                              <View
-                                accessible={true}
-                                collapsable={false}
-                                focusable={true}
-                                onBlur={[Function]}
-                                onClick={[Function]}
-                                onFocus={[Function]}
-                                onResponderGrant={[Function]}
-                                onResponderMove={[Function]}
-                                onResponderRelease={[Function]}
-                                onResponderTerminate={[Function]}
-                                onResponderTerminationRequest={[Function]}
-                                onStartShouldSetResponder={[Function]}
-                              >
-                                <RNGestureHandlerButton
-                                  collapsable={false}
-                                  delayLongPress={600}
-                                  enabled={true}
-                                  exclusive={true}
-                                  handlerTag={40}
-                                  handlerType="NativeViewGestureHandler"
-                                  onGestureEvent={[Function]}
-                                  onGestureHandlerEvent={[Function]}
-                                  onGestureHandlerStateChange={[Function]}
-                                  onHandlerStateChange={[Function]}
-                                  rippleColor={0}
-                                  touchSoundDisabled={false}
-                                >
-                                  <View
-                                    accessible={true}
-                                    collapsable={false}
-                                    style={
-                                      {
-                                        "alignSelf": "flex-end",
-                                        "marginLeft": "auto",
-                                        "opacity": 1,
-                                      }
-                                    }
-                                  >
-                                    <View>
-                                      {"name":"ios-camera-reverse","size":25,"color":"#3742fa"}
-                                    </View>
-                                  </View>
-                                </RNGestureHandlerButton>
                               </View>
                             </View>
                           </View>

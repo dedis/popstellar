@@ -15,6 +15,7 @@
     "startServer": "node __tests__/utils/LocalMockServer.js",
     "startMonitorServer": "nodemon __tests__/utils/LocalMockServer.js",
     "test": "jest",
+    "update-snapshot": "jest -- -u",
     "eslint": "eslint .",
     "prettier": "prettier --check .",
     "prettier-format": "prettier --write .",

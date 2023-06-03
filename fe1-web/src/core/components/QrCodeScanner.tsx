@@ -1,4 +1,4 @@
-import { BarCodeScanningResult, Camera, CameraType, PermissionResponse } from 'expo-camera';
+import { BarCodeScanningResult, Camera, CameraType } from 'expo-camera';
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, ViewStyle } from 'react-native';
@@ -60,8 +60,8 @@ const QrCodeScanner = ({ showCamera, children, handleScan }: IPropTypes) => {
   // On future releases this might be changed to allow switching cameras. But for now this is not working. (2023-06-03)
   const hasMultipleCameras = false;
   const [cameraType, setCameraType] = useState<CameraType>(CameraType.back);
-  const [hasCamera, setHasCamera] = useState(false);
-  const [permission, setPermission] = useState<PermissionResponse>();
+  const [hasCamera, setHasCamera] = useState(true);
+  const [permission] = Camera.useCameraPermissions();
 
   useEffect(() => {
     (async () => {
@@ -72,8 +72,6 @@ const QrCodeScanner = ({ showCamera, children, handleScan }: IPropTypes) => {
           const types = await Camera.getAvailableCameraTypesAsync();
           setCameraType(types.includes(CameraType.back) ? CameraType.back : CameraType.front);
         }
-      } else {
-        setPermission(await Camera.getCameraPermissionsAsync());
       }
     })();
   }, [permission]);
