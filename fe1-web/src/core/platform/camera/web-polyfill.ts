@@ -18,7 +18,6 @@ export default () => {
   if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1) {
     // prevents issue documented at https://github.com/expo/expo/issues/13182
     // (expo-camera performs a check on this property first)
-
     // @ts-ignore
     MediaStream.prototype.getVideoTracks = undefined;
   }
@@ -50,7 +49,10 @@ export default () => {
 
             navigator.mediaDevices
               .getUserMedia({ video: constraints || true, peerIdentity })
-              .then((stream) => resolve({ name, state: 'granted', stream }))
+              .then((stream) => {
+                stream.getTracks().forEach((x) => x.stop());
+                resolve({ name, state: 'granted', stream });
+              })
               .catch((err) => {
                 if (err.name === 'PermissionDeniedError') {
                   // https://developer.mozilla.org/en-US/docs/Web/API/PermissionStatus
