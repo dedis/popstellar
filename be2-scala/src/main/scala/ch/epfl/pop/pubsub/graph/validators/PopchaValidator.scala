@@ -2,11 +2,12 @@ package ch.epfl.pop.pubsub.graph.validators
 
 import akka.pattern.AskableActorRef
 import ch.epfl.pop.model.network.method.message.Message
+import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.network.method.message.data.popcha.Authenticate
 import ch.epfl.pop.model.network.{JsonRpcMessage, JsonRpcRequest}
 import ch.epfl.pop.model.objects._
 import ch.epfl.pop.pubsub.PublishSubscribe
-import ch.epfl.pop.pubsub.graph.validators.MessageValidator.{checkAttendee, extractData}
+import ch.epfl.pop.pubsub.graph.validators.MessageValidator.{checkAttendee, checkChannelType, extractData}
 import ch.epfl.pop.pubsub.graph.{GraphMessage, PipelineError}
 
 /** Validator for Popcha messages' data contents
@@ -35,7 +36,7 @@ sealed class PopchaValidator(dbActorRef: => AskableActorRef) extends MessageData
 
         for {
           _ <- checkResponseMode(rpcMessage, authenticate.responseMode, validationError(s"Invalid response mode ${authenticate.responseMode}"))
-          _ <- checkChannelName(rpcMessage, channel, laoId, validationError(s"Incorrect channel $channel for lao $laoId"))
+          _ <- checkChannelType(rpcMessage, ObjectType.POPCHA, channel, dbActorRef, validationError(s"Incorrect channel $channel for popcha authentication message"))
           _ <- checkAttendee(rpcMessage, sender, channel, dbActorRef, validationError(s"User doesn't belong to the requested lao $laoId"))
           _ <- checkIdentifierProof(
             rpcMessage,
@@ -53,14 +54,6 @@ sealed class PopchaValidator(dbActorRef: => AskableActorRef) extends MessageData
 
   private def checkResponseMode(rpcMessage: JsonRpcRequest, responseMode: String, error: PipelineError): GraphMessage = {
     if (responseMode == "query" || responseMode == "fragment")
-      Right(rpcMessage)
-    else
-      Left(error)
-  }
-
-  private def checkChannelName(rpcMessage: JsonRpcMessage, channel: Channel, laodId: Hash, error: PipelineError): GraphMessage = {
-    val expectedChannelName = Channel.ROOT_CHANNEL_PREFIX + laodId + Channel.POPCHA_AUTHENTICATION_LOCATION
-    if (channel.channel == expectedChannelName)
       Right(rpcMessage)
     else
       Left(error)
