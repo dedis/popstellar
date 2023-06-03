@@ -50,9 +50,9 @@ $(document).ready(function() {
     var chartData = {
         datasets: [{
             data: [
-                775,
-                7,
-                7,
+                24,
+                1,
+                0,
                 0,
                 0
             ],
@@ -93,7 +93,7 @@ $(document).ready(function() {
                         var allData = data.datasets[tooltipItem.datasetIndex].data;
                         var tooltipLabel = data.labels[tooltipItem.index];
                         var tooltipData = allData[tooltipItem.index];
-                        var tooltipPercentage = Math.round(10000 * tooltipData / 789) / 100;
+                        var tooltipPercentage = Math.round(10000 * tooltipData / 25) / 100;
                         return tooltipLabel + ": " + tooltipData + " (" + tooltipPercentage + "%)";
                     }
                 }
@@ -106,8 +106,8 @@ $(document).ready(function() {
     var chartData = {
         datasets: [{
             data: [
-                48,
-                7
+                1,
+                1
             ],
             backgroundColor: [
                 "#00B000",
@@ -140,7 +140,7 @@ $(document).ready(function() {
                         var allData = data.datasets[tooltipItem.datasetIndex].data;
                         var tooltipLabel = data.labels[tooltipItem.index];
                         var tooltipData = allData[tooltipItem.index];
-                        var tooltipPercentage = Math.round(10000 * tooltipData / 55) / 100;
+                        var tooltipPercentage = Math.round(10000 * tooltipData / 2) / 100;
                         return tooltipLabel + ": " + tooltipData + " (" + tooltipPercentage + "%)";
                     }
                 }
@@ -153,8 +153,8 @@ $(document).ready(function() {
     var chartData = {
         datasets: [{
             data: [
-                   5,
-                   6
+                   0,
+                   1
                ],
                backgroundColor: [
                 "#00B000",
@@ -187,7 +187,7 @@ $(document).ready(function() {
                         var allData = data.datasets[tooltipItem.datasetIndex].data;
                         var tooltipLabel = data.labels[tooltipItem.index];
                         var tooltipData = allData[tooltipItem.index];
-                        var tooltipPercentage = Math.round(10000 * tooltipData / 11) / 100;
+                        var tooltipPercentage = Math.round(10000 * tooltipData / 1) / 100;
                         return tooltipLabel + ": " + tooltipData + " (" + tooltipPercentage + "%)";
                     }
                 }
@@ -227,8 +227,8 @@ $(document).ready(function() {
   </thead>
   <tbody>
     <tr class="info">
-      <td>go</td>
-      <td>02 Jun 2023, 04:12</td>
+      <td>go_server</td>
+      <td>03 Jun 2023, 04:11</td>
     </tr>
   </tbody>
 </table>
@@ -323,190 +323,20 @@ $(document).ready(function() {
 
   <tbody>
       <tr>
-        <td class="tagname"><a href="report-feature_859013492.html">be/election/electionOpen.feature</a></td>
+        <td class="tagname"><a href="report-feature_284991972.html">be/heartbeat/heartbeat.feature</a></td>
 
-        <td      class="passed"    >76</td>
-        <td >0</td>
-        <td >0</td>
-        <td >0</td>
-        <td >0</td>
-        <td class="total">76</td>
-
-        <td  class="passed"    >5</td>
-        <td >0</td>
-        <td class="total">5</td>
-
-        <td class="duration" data-value="26965900364">26.965</td>
-        <td class="passed">Passed</td>
-      </tr>
-      <tr>
-        <td class="tagname"><a href="report-feature_1_2621355858.html">be/rollCall/closeRollCall.feature</a></td>
-
-        <td      class="passed"    >53</td>
+        <td      class="passed"    >24</td>
         <td      class="failed"    >1</td>
-        <td     class="skipped"   >3</td>
-        <td >0</td>
-        <td >0</td>
-        <td class="total">57</td>
-
-        <td  class="passed"    >3</td>
-        <td  class="failed"    >1</td>
-        <td class="total">4</td>
-
-        <td class="duration" data-value="16482904041">16.482</td>
-        <td class="failed">Failed</td>
-      </tr>
-      <tr>
-        <td class="tagname"><a href="report-feature_2_159901009.html">be/LAO/update.feature</a></td>
-
-        <td      class="passed"    >40</td>
-        <td      class="failed"    >1</td>
-        <td     class="skipped"   >1</td>
-        <td >0</td>
-        <td >0</td>
-        <td class="total">42</td>
-
-        <td  class="passed"    >2</td>
-        <td  class="failed"    >1</td>
-        <td class="total">3</td>
-
-        <td class="duration" data-value="11254194495">11.254</td>
-        <td class="failed">Failed</td>
-      </tr>
-      <tr>
-        <td class="tagname"><a href="report-feature_3_3139404481.html">be/election/electionSetup.feature</a></td>
-
-        <td      class="passed"    >70</td>
-        <td >0</td>
-        <td >0</td>
-        <td >0</td>
-        <td >0</td>
-        <td class="total">70</td>
-
-        <td  class="passed"    >5</td>
-        <td >0</td>
-        <td class="total">5</td>
-
-        <td class="duration" data-value="26860538070">26.860</td>
-        <td class="passed">Passed</td>
-      </tr>
-      <tr>
-        <td class="tagname"><a href="report-feature_4_4269286261.html">be/digitalCash/transaction.feature</a></td>
-
-        <td      class="passed"    >73</td>
-        <td      class="failed"    >1</td>
-        <td     class="skipped"   >1</td>
-        <td >0</td>
-        <td >0</td>
-        <td class="total">75</td>
-
-        <td  class="passed"    >4</td>
-        <td  class="failed"    >1</td>
-        <td class="total">5</td>
-
-        <td class="duration" data-value="22649168354">22.649</td>
-        <td class="failed">Failed</td>
-      </tr>
-      <tr>
-        <td class="tagname"><a href="report-feature_5_4046913119.html">be/election/electionEnd.feature</a></td>
-
-        <td      class="passed"    >75</td>
-        <td >0</td>
-        <td >0</td>
-        <td >0</td>
-        <td >0</td>
-        <td class="total">75</td>
-
-        <td  class="passed"    >5</td>
-        <td >0</td>
-        <td class="total">5</td>
-
-        <td class="duration" data-value="27346257451">27.346</td>
-        <td class="passed">Passed</td>
-      </tr>
-      <tr>
-        <td class="tagname"><a href="report-feature_6_107614182.html">be/rollCall/createRollCall.feature</a></td>
-
-        <td      class="passed"    >113</td>
-        <td      class="failed"    >1</td>
-        <td     class="skipped"   >1</td>
-        <td >0</td>
-        <td >0</td>
-        <td class="total">115</td>
-
-        <td  class="passed"    >7</td>
-        <td  class="failed"    >1</td>
-        <td class="total">8</td>
-
-        <td class="duration" data-value="37540442520">37.540</td>
-        <td class="failed">Failed</td>
-      </tr>
-      <tr>
-        <td class="tagname"><a href="report-feature_7_284991972.html">be/heartbeat/heartbeat.feature</a></td>
-
-        <td      class="passed"    >23</td>
-        <td      class="failed"    >2</td>
         <td >0</td>
         <td >0</td>
         <td >0</td>
         <td class="total">25</td>
 
-        <td >0</td>
-        <td  class="failed"    >2</td>
+        <td  class="passed"    >1</td>
+        <td  class="failed"    >1</td>
         <td class="total">2</td>
 
-        <td class="duration" data-value="16688745116">16.688</td>
-        <td class="failed">Failed</td>
-      </tr>
-      <tr>
-        <td class="tagname"><a href="report-feature_8_655929658.html">be/election/castVote.feature</a></td>
-
-        <td      class="passed"    >106</td>
-        <td >0</td>
-        <td >0</td>
-        <td >0</td>
-        <td >0</td>
-        <td class="total">106</td>
-
-        <td  class="passed"    >7</td>
-        <td >0</td>
-        <td class="total">7</td>
-
-        <td class="duration" data-value="38224345004">38.224</td>
-        <td class="passed">Passed</td>
-      </tr>
-      <tr>
-        <td class="tagname"><a href="report-feature_9_212298372.html">be/LAO/create.feature</a></td>
-
-        <td      class="passed"    >74</td>
-        <td >0</td>
-        <td >0</td>
-        <td >0</td>
-        <td >0</td>
-        <td class="total">74</td>
-
-        <td  class="passed"    >6</td>
-        <td >0</td>
-        <td class="total">6</td>
-
-        <td class="duration" data-value="33344286657">33.344</td>
-        <td class="passed">Passed</td>
-      </tr>
-      <tr>
-        <td class="tagname"><a href="report-feature_10_1959930676.html">be/rollCall/openRollCall.feature</a></td>
-
-        <td      class="passed"    >72</td>
-        <td      class="failed"    >1</td>
-        <td     class="skipped"   >1</td>
-        <td >0</td>
-        <td >0</td>
-        <td class="total">74</td>
-
-        <td  class="passed"    >4</td>
-        <td  class="failed"    >1</td>
-        <td class="total">5</td>
-
-        <td class="duration" data-value="21778471397">21.778</td>
+        <td class="duration" data-value="17338527589">17.338</td>
         <td class="failed">Failed</td>
       </tr>
   </tbody>
@@ -514,33 +344,33 @@ $(document).ready(function() {
   <tfoot class="total">
     <tr>
       <td></td>
-      <td>775</td>
-      <td>7</td>
-      <td>7</td>
+      <td>24</td>
+      <td>1</td>
       <td>0</td>
       <td>0</td>
-      <td>789</td>
+      <td>0</td>
+      <td>25</td>
 
-      <td>48</td>
-      <td>7</td>
-      <td>55</td>
+      <td>1</td>
+      <td>1</td>
+      <td>2</td>
 
-      <td class="duration">4:39.135</td>
-      <td>11</td>
+      <td class="duration">17.338</td>
+      <td>1</td>
     </tr>
     <tr>
       <td></td>
-      <td>98.23%</td>
-      <td>0.89%</td>
-      <td>0.89%</td>
+      <td>96.00%</td>
+      <td>4.00%</td>
       <td>0.00%</td>
       <td>0.00%</td>
+      <td>0.00%</td>
       <td></td>
-      <td>87.27%</td>
-      <td>12.73%</td>
+      <td>50.00%</td>
+      <td>50.00%</td>
       <td></td>
       <td></td>
-      <td>45.45%</td>
+      <td>0.00%</td>
     </tr>
   </tfoot>
 </table>
