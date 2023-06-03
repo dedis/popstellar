@@ -1,6 +1,6 @@
 package fe.utils.verification;
 
-import be.utils.JsonConverter;
+import be.utils.Hash;
 import com.intuit.karate.Json;
 import com.intuit.karate.Logger;
 import common.utils.Constants;
@@ -18,7 +18,7 @@ public class ElectionVerification {
   private Constants constants = new Constants();
 
   /**
-   * Verfies that the election id is coherently computed
+   * Verifies that the election id is coherently computed
    * @param message the network message
    * @return true if the computed election id matches what is expected
    */
@@ -31,9 +31,8 @@ public class ElectionVerification {
     String electionName = setupMessageJson.get(NAME);
 
     try {
-      JsonConverter jsonConverter = new JsonConverter();
       return electionId.equals(
-          jsonConverter.hash(
+          Hash.hash(
               "Election".getBytes(),
               laoId.getBytes(),
               createdAt.getBytes(),
@@ -45,7 +44,7 @@ public class ElectionVerification {
   }
 
   /**
-   * Verfies that the question id is coherently computed
+   * Verifies that the question id is coherently computed
    * @param message the network message
    * @return true if the computed question id matches what is expected
    */
@@ -58,9 +57,8 @@ public class ElectionVerification {
     String question = questionJson.get(QUESTION);
 
     try {
-      JsonConverter jsonConverter = new JsonConverter();
       return questionId.equals(
-          jsonConverter.hash(
+          Hash.hash(
               "Question".getBytes(),
               electionId.getBytes(),
               question.getBytes()));
@@ -71,7 +69,7 @@ public class ElectionVerification {
   }
 
   /**
-   * Verfies that the vote id is coherently computed
+   * Verifies that the vote id is coherently computed
    * @param message the network message
    * @param index the index of the ballot that was selected
    * @return true if the computed question id matches what is expected
@@ -86,9 +84,8 @@ public class ElectionVerification {
     String vote = getStringFromIntegerField(voteJson, VOTE);
 
     try {
-      JsonConverter jsonConverter = new JsonConverter();
       return voteId.equals(
-          jsonConverter.hash(
+          Hash.hash(
               "Vote".getBytes(),
               electionId.getBytes(),
               questionId.getBytes(),

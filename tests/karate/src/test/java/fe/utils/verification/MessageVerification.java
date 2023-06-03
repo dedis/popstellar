@@ -1,6 +1,6 @@
 package fe.utils.verification;
 
-import be.utils.JsonConverter;
+import be.utils.Hash;
 import com.google.crypto.tink.PublicKeyVerify;
 import com.google.crypto.tink.subtle.Ed25519Verify;
 import com.intuit.karate.Json;
@@ -30,8 +30,7 @@ public class MessageVerification {
     String signature = messageFieldJson.get(SIGNATURE);
     String msgId = messageFieldJson.get(MESSAGE_ID);
     try {
-      JsonConverter jsonConverter = new JsonConverter();
-      return msgId.equals(jsonConverter.hash(data.getBytes(), signature.getBytes()));
+      return msgId.equals(Hash.hash(data.getBytes(), signature.getBytes()));
     } catch (NoSuchAlgorithmException e) {
       logger.info("verification failed with error: " + e);
       return false;

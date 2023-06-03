@@ -20,13 +20,13 @@ public class GoServer extends Server implements Configurable {
       return new String[]{
         "cmd",
         "/c",
-        "\"pop.exe server --pk J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM= serve\""
+        "\"pop.exe server serve\""
       };
     } else {
       return new String[]{
         "bash",
         "-c",
-        "./pop server --pk J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM= serve"
+        "./pop server serve"
       };
     }
   }
