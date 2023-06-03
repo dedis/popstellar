@@ -49,7 +49,7 @@ class PopchaValidatorSuite extends TestKit(ActorSystem("popChaValidatorTestActor
   private def setupMockDB(laoData: LaoData, channelData: ChannelData): AskableActorRef = {
     val dbActorMock = Props(new Actor() {
       override def receive: Receive = {
-        case DbActor.ReadLaoData(_) => sender() ! DbActor.DbActorReadLaoDataAck(laoData)
+        case DbActor.ReadLaoData(_)     => sender() ! DbActor.DbActorReadLaoDataAck(laoData)
         case DbActor.ReadChannelData(_) => sender() ! DbActor.DbActorReadChannelDataAck(channelData)
       }
     })
@@ -92,7 +92,7 @@ class PopchaValidatorSuite extends TestKit(ActorSystem("popChaValidatorTestActor
 
   test("Authenticate with user not in last lao's rollcall fails") {
     val dbActorRef = mockDBWithoutUser
-    val message: GraphMessage = new PopchaValidator(dbActorRef).validateAuthenticateRequest(AUTHENTICATE_INVALID_CHANNEL_RPC)
+    val message: GraphMessage = new PopchaValidator(dbActorRef).validateAuthenticateRequest(AUTHENTICATE_RPC)
     message shouldBe a[Left[_, PipelineError]]
   }
 }
