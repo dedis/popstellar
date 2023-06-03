@@ -1,4 +1,4 @@
-import { BarCodeScanningResult, Camera, PermissionResponse } from 'expo-camera';
+import { BarCodeScanningResult, Camera, CameraType, PermissionResponse } from 'expo-camera';
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, ViewStyle } from 'react-native';
@@ -57,33 +57,26 @@ const styles = StyleSheet.create({
  * (2022-12-05, Tyratox) Issue to track this: https://github.com/dedis/popstellar/issues/1306
  */
 const QrCodeScanner = ({ showCamera, children, handleScan }: IPropTypes) => {
-  // const [cameraType, setCameraType] = useState<CameraType>(CameraType.back);
-  const [hasMultipleCameras] = useState(false);
-  const [hasCamera, setHasCamera] = useState(true);
+  // On future releases this might be changed to allow switching cameras. But for now this is not working. (2023-06-03)
+  const hasMultipleCameras = false;
+  const [cameraType, setCameraType] = useState<CameraType>(CameraType.back);
+  const [hasCamera, setHasCamera] = useState(false);
   const [permission, setPermission] = useState<PermissionResponse>();
 
   useEffect(() => {
     (async () => {
-      setPermission(await Camera.getCameraPermissionsAsync());
       if (permission && permission.granted) {
         const isAvailable = await Camera.isAvailableAsync();
         setHasCamera(isAvailable);
         if (isAvailable) {
-          // const types = await Camera.getAvailableCameraTypesAsync();
-          // setCameraType(types.includes(CameraType.back) ? CameraType.back : CameraType.front);
+          const types = await Camera.getAvailableCameraTypesAsync();
+          setCameraType(types.includes(CameraType.back) ? CameraType.back : CameraType.front);
         }
+      } else {
+        setPermission(await Camera.getCameraPermissionsAsync());
       }
     })();
-  }, []);
-
-  if (!hasCamera) {
-    return (
-      <View style={styles.container}>
-        <Text>{STRINGS.camera_unavailable}</Text>
-        <View style={styles.children}>{children}</View>
-      </View>
-    );
-  }
+  }, [permission]);
 
   if (!permission) {
     return (
@@ -98,6 +91,15 @@ const QrCodeScanner = ({ showCamera, children, handleScan }: IPropTypes) => {
     return (
       <View style={styles.container}>
         <Text>{STRINGS.camera_permissions_denied}</Text>
+        <View style={styles.children}>{children}</View>
+      </View>
+    );
+  }
+
+  if (!hasCamera) {
+    return (
+      <View style={styles.container}>
+        <Text>{STRINGS.camera_unavailable}</Text>
         <View style={styles.children}>{children}</View>
       </View>
     );
@@ -122,7 +124,7 @@ const QrCodeScanner = ({ showCamera, children, handleScan }: IPropTypes) => {
               barCodeTypes: ['qr'],
             }}
             onBarCodeScanned={onBarCodeScanned}
-            //type={cameraType}
+            type={cameraType}
           />
         )}
       </View>
@@ -134,9 +136,9 @@ const QrCodeScanner = ({ showCamera, children, handleScan }: IPropTypes) => {
               <PoPTouchableOpacity
                 style={styles.flipButton}
                 onPress={() => {
-                  /* setCameraType(
+                  setCameraType(
                     cameraType === CameraType.back ? CameraType.front : CameraType.back,
-                  ); */
+                  );
                 }}>
                 <PoPIcon name="cameraReverse" color={Color.accent} size={Icon.size} />
               </PoPTouchableOpacity>
