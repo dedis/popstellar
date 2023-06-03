@@ -73,7 +73,7 @@ If we look even closer, here is how the real be2 DSL graph is designed.
 
 Between the `ClientActor` and the partitioner sits a module which goal is to validate conformity with our custom JSON-rcp protocol, decode the JSON payload, and then finally validate its fields.
 
-The partitioner decides which path a message is supposed to take depending on its content; more precisely, depending on if it contains a "map" field, a "message" field or not. Further down the line, a handler is used for each type of message (e.g. the LAO handler is able to understand and process LAO messages such as `CreateLao`, `StateLao`, and `UpdateLao`)
+The partitioner decides which path a message is supposed to take depending on its content; more precisely, depending on if it is a request, if it contains a message field, it will be forwarded to the paramsWithMessage handler, otherwise it will be filtered depending on the method carried by the json. Otherwise, if it is a response, it will be forwarded to the ResponseHandler. Further down the line, a handler is used for each type of message (e.g. the LAO handler is able to understand and process LAO messages such as `CreateLao`, `StateLao`, and `UpdateLao`)
 
 The results are then collected by the main merger (blue "merger" circle) and sent to the `AnswerGenerator`. An answer (`JsonRpcResponse`) is created and sent back to the `ClientActor` (and thus the real client through WebSocket) by the `Answerer` module.
 
@@ -327,6 +327,15 @@ final case class DbActorReadRollCallDataAck(rollcallData: RollCallData) extends 
 ```
 
 :information_source: the database may easily be reset/purged by deleting the `database` folder entirely. You may add the `-Dclean` flag at compilation for automatic database purge
+
+
+### Servers consistency
+
+Making sure that servers that run a LAO concurrently share the same state is ensured by `Heartbeat` messages and `GetMessagesById` messages. These messages are proper to server to server communication and they basically follow the same path as the other messages in the DSL graph.
+:warning: connection to other servers is internally represented by an instance of `ClientActor`. Since this can easily lead to errors, the way we distinguish a server to server connection and a client to server connection is by a `isServer` field in the `ClientActor` instance.
+The way we broadcast heartbeats to connected servers is by mean of the `Monitor` Actor. The monitor actor sees every message the system receives. It schedules heartbeats either whenever it sees a message in the next heartbeatRate seconds, or periodically after a period of messageDelay seconds.
+Heartbeats are sent by the mean of the `ConnectionMediator` actor that holds a set of connected server peers.
+
 
 
 
