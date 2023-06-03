@@ -235,6 +235,10 @@ final case class DbActor(
     }
   }
 
+  private def generateAuthenticatedKey(user: PublicKey, client: String): String = {
+    storage.AUTHENTICATED_KEY + user + Channel.DATA_SEPARATOR + client
+  }
+
   override def receive: Receive = LoggingReceive {
     case Write(channel, message) =>
       log.info(s"Actor $self (db) received a WRITE request on channel '$channel'")
@@ -357,6 +361,21 @@ final case class DbActor(
       Try(writeRollCallData(laoId, message)) match {
         case Success(_) => sender() ! DbActorAck()
         case failure    => sender() ! failure.recover(Status.Failure(_))
+      }
+
+    case WriteUserAuthenticated(user, identifier, clientId) =>
+      log.info(s"Actor $self (db) received a WriteUserAuthenticated request for user $user, id $identifier and clientId $clientId")
+      Try(storage.write(generateAuthenticatedKey(identifier, clientId) -> user.base64Data.decodeToString())) match {
+        case Success(_) => sender() ! DbActorAck()
+        case failure    => sender() ! failure.recover(Status.Failure(_))
+      }
+
+    case ReadUserAuthenticated(identifier, clientId) =>
+      log.info(s"Actor $self (db) received a ReadUserAuthenticated request for pop token $identifier and clientId $clientId")
+      Try(storage.read(generateAuthenticatedKey(identifier, clientId))) match {
+        case Success(Some(id)) => sender() ! DbActorReadUserAuthenticationAck(Some(PublicKey(Base64Data.encode(id))))
+        case Success(None)     => sender() ! DbActorReadUserAuthenticationAck(None)
+        case failure           => sender() ! failure.recover(Status.Failure(_))
       }
 
     case m =>
@@ -523,6 +542,24 @@ object DbActor {
     */
   final case class CreateRollCallData(laoId: Hash, updateId: Hash, state: ActionType) extends Event
 
+  /** Registers an authentication of a user on a client using a given identifier
+    * @param user
+    *   public key of the popcha long term identifier of the user
+    * @param identifier
+    *   pop token to associate to this user for this authentication
+    * @param clientId
+    *   client where the authentication happens on
+    */
+  final case class WriteUserAuthenticated(user: PublicKey, identifier: PublicKey, clientId: String) extends Event
+
+  /** Reads the authentication information registered for the given pop token regarding the given client
+    * @param identifier
+    *   pop token that may have had a user authenticated for the given clien
+    * @param clientId
+    *   client where the authentication may have happen on
+    */
+  final case class ReadUserAuthenticated(identifier: PublicKey, clientId: String) extends Event
+
   // DbActor DbActorMessage correspond to messages the actor may emit
   sealed trait DbActorMessage
 
@@ -581,6 +618,12 @@ object DbActor {
     *   requested channel data
     */
   final case class DbActorReadRollCallDataAck(rollcallData: RollCallData) extends DbActorMessage
+
+  /** Response for [[ReadUserAuthenticated]]
+    * @param user
+    *   Some(user) if a user was registered on the client specified for the given pop token, [[None]] otherwise
+    */
+  final case class DbActorReadUserAuthenticationAck(user: Option[PublicKey]) extends DbActorMessage
 
   /** Response for a general db actor ACK
     */

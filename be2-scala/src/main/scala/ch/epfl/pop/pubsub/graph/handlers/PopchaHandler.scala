@@ -2,6 +2,7 @@ package ch.epfl.pop.pubsub.graph.handlers
 
 import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.pubsub.graph.GraphMessage
+import ch.epfl.pop.storage.DbActor
 
 /** Handler for Popcha related messages
   */

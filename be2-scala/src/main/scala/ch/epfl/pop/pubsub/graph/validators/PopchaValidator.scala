@@ -1,14 +1,17 @@
 package ch.epfl.pop.pubsub.graph.validators
 
 import akka.pattern.AskableActorRef
-import ch.epfl.pop.model.network.{JsonRpcMessage, JsonRpcRequest}
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.popcha.Authenticate
-import ch.epfl.pop.model.objects.{Base64Data, Channel, Hash, PublicKey, Signature}
-import ch.epfl.pop.pubsub.graph.validators.CoinValidator.validationErrorNoMessage
+import ch.epfl.pop.model.network.{JsonRpcMessage, JsonRpcRequest}
+import ch.epfl.pop.model.objects._
 import ch.epfl.pop.pubsub.graph.validators.MessageValidator.{checkAttendee, extractData}
 import ch.epfl.pop.pubsub.graph.{GraphMessage, PipelineError}
 import ch.epfl.pop.storage.DbActor
+import ch.epfl.pop.storage.DbActor.{DbActorReadUserAuthenticationAck, ReadUserAuthenticated}
+
+import scala.concurrent.Await
+import scala.util.Success
 
 /** Validator for Popcha messages' data contents
   */
@@ -45,7 +48,13 @@ sealed class PopchaValidator(dbActorRef: => AskableActorRef) extends MessageData
             authenticate.nonce,
             validationError("Failed to verify the identifier proof with the given identifier/nonce pair")
           )
-          result <- checkNoDuplicateIdentifiers(rpcMessage, sender, authenticate.identifier, validationError("An identifier is already paired with this user token"))
+          result <- checkNoDuplicateIdentifiers(
+            rpcMessage,
+            sender,
+            authenticate.identifier,
+            authenticate.clientId,
+            validationError(s"Failed to verify that pop token $sender didn't have another user authenticate to client ${authenticate.clientId}")
+          )
         } yield result
 
       case None => Left(validationErrorNoMessage(rpcMessage.id))
@@ -59,8 +68,8 @@ sealed class PopchaValidator(dbActorRef: => AskableActorRef) extends MessageData
       Left(error)
   }
 
-  private def checkChannelName(rpcMessage: JsonRpcMessage, channel: Channel, laodId: Hash, error: PipelineError): GraphMessage = {
-    val expectedChannelName = Channel.ROOT_CHANNEL_PREFIX + laodId + Channel.POPCHA_AUTHENTICATION_LOCATION
+  private def checkChannelName(rpcMessage: JsonRpcMessage, channel: Channel, laoId: Hash, error: PipelineError): GraphMessage = {
+    val expectedChannelName = Channel.ROOT_CHANNEL_PREFIX + laoId + Channel.POPCHA_AUTHENTICATION_LOCATION
     if (channel.channel == expectedChannelName)
       Right(rpcMessage)
     else
@@ -75,8 +84,15 @@ sealed class PopchaValidator(dbActorRef: => AskableActorRef) extends MessageData
       Left(error)
   }
 
-  private def checkNoDuplicateIdentifiers(rpcMessage: JsonRpcMessage, user: PublicKey, identifier: PublicKey, error: PipelineError): GraphMessage = {
-    // TODO: store in DBActor a map [user -> identifier] to check and prevent duplicate
-    Right(rpcMessage)
+  private def checkNoDuplicateIdentifiers(rpcMessage: JsonRpcMessage, user: PublicKey, identifier: PublicKey, clientId: String, error: PipelineError): GraphMessage = {
+    val ask = dbActorRef ? ReadUserAuthenticated(identifier, clientId)
+    Await.ready(ask, duration).value.get match {
+      case Success(DbActorReadUserAuthenticationAck(optUser)) => optUser match {
+          case Some(userId) if userId == user => Right(rpcMessage)
+          case None                           => Right(rpcMessage)
+          case _                              => Left(error)
+        }
+      case _ => Left(error)
+    }
   }
 }

@@ -1,13 +1,13 @@
 package ch.epfl.pop.pubsub.graph.validators
 
-import akka.actor.{Actor, ActorRef, ActorSystem, Props}
+import akka.actor.{Actor, ActorSystem, Props}
 import akka.pattern.AskableActorRef
 import akka.testkit.TestKit
 import akka.util.Timeout
 import ch.epfl.pop.model.objects.{LaoData, PrivateKey, PublicKey}
+import ch.epfl.pop.pubsub.AskPatternConstants
 import ch.epfl.pop.pubsub.graph.{GraphMessage, PipelineError}
-import ch.epfl.pop.pubsub.{AskPatternConstants, MessageRegistry, PubSubMediator}
-import ch.epfl.pop.storage.{DbActor, InMemoryStorage}
+import ch.epfl.pop.storage.DbActor
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.funsuite.{AnyFunSuiteLike => FunSuiteLike}
 import org.scalatest.matchers.should.Matchers
@@ -42,20 +42,26 @@ class PopchaValidatorSuite extends TestKit(ActorSystem("electionValidatorTestAct
     directory.deleteRecursively()
   }
 
-  private def setupMockDB(includeUser: Boolean): AskableActorRef = {
+  private def setupMockDB(includeUser: Boolean, authenticateUserWith: Option[PublicKey] = None): AskableActorRef = {
     val laoDataToSend: LaoData = if (includeUser) laoDataWithUser else laoDataWithoutUser
     val dbActorMock = Props(new Actor() {
       override def receive: Receive = {
         case DbActor.ReadLaoData(_) =>
           sender() ! DbActor.DbActorReadLaoDataAck(laoDataToSend)
+        case DbActor.ReadUserAuthenticated(_, _) =>
+          sender() ! DbActor.DbActorReadUserAuthenticationAck(authenticateUserWith)
       }
     })
     system.actorOf(dbActorMock)
   }
 
-  private val mockDBWithUser: AskableActorRef = setupMockDB(true)
+  private val mockDBWithUser: AskableActorRef = setupMockDB(includeUser = true)
 
-  private val mockDBWithoutUser: AskableActorRef = setupMockDB(false)
+  private val mockDBWithoutUser: AskableActorRef = setupMockDB(includeUser = false)
+
+  private val mockDBWithOtherUserAuthenticated: AskableActorRef = setupMockDB(includeUser = true, Some(otherUser))
+
+  private val mockDBWithSameUserAuthenticated: AskableActorRef = setupMockDB(includeUser = true, Some(userIdentifier))
 
   test("Authenticate works") {
     val dbActorRef = mockDBWithUser
@@ -91,5 +97,17 @@ class PopchaValidatorSuite extends TestKit(ActorSystem("electionValidatorTestAct
     val dbActorRef = mockDBWithoutUser
     val message: GraphMessage = new PopchaValidator(dbActorRef).validateAuthenticateRequest(AUTHENTICATE_INVALID_CHANNEL_RPC)
     message shouldBe a[Left[_, PipelineError]]
+  }
+
+  test("Authenticate with other pop token already registered fails") {
+    val dbActorRef = mockDBWithOtherUserAuthenticated
+    val message: GraphMessage = new PopchaValidator(dbActorRef).validateAuthenticateRequest(AUTHENTICATE_RPC)
+    message shouldBe a[Left[_, PipelineError]]
+  }
+
+  test("Authenticate with same pop token already registered succeeds") {
+    val dbActorRef = mockDBWithSameUserAuthenticated
+    val message: GraphMessage = new PopchaValidator(dbActorRef).validateAuthenticateRequest(AUTHENTICATE_RPC)
+    message should equal(Right(AUTHENTICATE_RPC))
   }
 }

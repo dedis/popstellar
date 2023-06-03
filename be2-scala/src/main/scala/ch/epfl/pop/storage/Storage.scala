@@ -6,6 +6,7 @@ trait Storage {
     */
   final val CHANNEL_DATA_KEY = "ChannelData:"
   final val DATA_KEY = "Data:"
+  final val AUTHENTICATED_KEY = "Auth:"
 
   /** Optionally returns the value associated with a key
     *
