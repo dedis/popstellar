@@ -5,6 +5,7 @@ import be.utils.RandomUtils;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -70,6 +71,31 @@ public class Election {
   }
 
   /**
+   * Generate the id for a vote of dataCastVote.
+   * https://github.com/dedis/popstellar/blob/master/protocol/query/method/message/data/dataCastVote.json
+   *
+   * @param electionId ID of the Election
+   * @param questionId ID of the Election question
+   * @param voteIndex index(es) of the vote
+   * @param writeIn string representing the write in
+   * @param writeInEnabled boolean representing if write enabled or not
+   * @return the ID of an election question computed as
+   *     Hash('Vote'||election_id||question_id||(vote_index(es)|write_in))
+   */
+  public static String generateElectionVoteId(
+    String electionId,
+    String questionId,
+    Integer voteIndex,
+    String writeIn,
+    boolean writeInEnabled) {
+    // If write_in is enabled the id is formed with the write_in string
+    // If write_in is not enabled the id is formed with the vote indexes (formatted as int1, int2,
+    // ). The vote are concatenated and brackets are removed from the array toString representation
+    return Hash.hash(
+      "Vote", electionId, questionId, writeInEnabled ? writeIn : voteIndex.toString());
+  }
+
+  /**
    * Creates a random valid election question with 2 ballot options, plurality voting method and write in set to false.
    * Adds the question to the current election.
    *
@@ -99,12 +125,33 @@ public class Election {
     return new ElectionOpen(openedAt);
   }
 
+  /**
+   *
+   * @param plainVotes
+   * @return
+   */
+  public CastVote castVote(PlainVote... plainVotes){
+    long createdAt = Instant.now().getEpochSecond();
+    return new CastVote(createdAt, plainVotes);
+  }
+
   /** Contains the data to create a valid open election message */
   public static class ElectionOpen{
     public long openedAt;
 
     public ElectionOpen(long openedAt){
       this.openedAt = openedAt;
+    }
+  }
+
+  /** Contains the data to create a valid open election message */
+  public static class CastVote{
+    public long createdAt;
+    public List<PlainVote> votes;
+
+    public CastVote(long createdAt, PlainVote[] votes){
+      this.createdAt = createdAt;
+      this.votes = List.of(votes);
     }
   }
 

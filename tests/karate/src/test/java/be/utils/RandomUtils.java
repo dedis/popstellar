@@ -65,6 +65,14 @@ public class RandomUtils {
     return Election.generateElectionQuestionId(electionId, name);
   }
 
+  /** @return generates a random valid election vote id */
+  public static String generateElectionVoteId(){
+    String name = generateRandomName();
+    String electionId = Election.generateElectionSetupId(generateLaoId(), Instant.now().getEpochSecond(), name);
+    String questionId = Election.generateElectionQuestionId(electionId, generateRandomName());
+    return Election.generateElectionVoteId(electionId, questionId, 0, null, false);
+  }
+
   /** @return generate a random valid name for a lao or roll call */
   public static String generateRandomName() {
     int length = MIN_NAME_LENGTH + RANDOM.nextInt(MAX_NAME_LENGTH - MIN_NAME_LENGTH + 1);

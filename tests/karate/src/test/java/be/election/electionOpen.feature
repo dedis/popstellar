@@ -51,7 +51,7 @@ Feature: Open an Election
             "opened_at": '#(newElectionOpen.createdAt)'
         }
       """
-    When organizer.publish(validElectionOpen, election.channel)
+    When organizer.publish(validElectionOpen, newElection.channel)
     And json answer = organizer.getBackendResponse(validElectionOpen)
     Then match answer contains INVALID_MESSAGE_FIELD
     And match organizer.receiveNoMoreResponses() == true

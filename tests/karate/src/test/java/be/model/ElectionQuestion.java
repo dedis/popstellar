@@ -9,6 +9,7 @@ public class ElectionQuestion {
   public String votingMethod;
   public List<String> ballotOptions;
   public boolean writeIn;
+  public String electionId;
 
   public ElectionQuestion(String electionId, String question, String votingMethod, List<String> ballotOptions, boolean writeIn) {
     this.question = question;
@@ -16,5 +17,17 @@ public class ElectionQuestion {
     this.ballotOptions = List.copyOf(ballotOptions);
     this.writeIn = writeIn;
     this.id = Election.generateElectionQuestionId(electionId, this.question);
+    this.electionId = electionId;
+  }
+
+  /**
+   * Create a vote for the ballot option at index voteIndex for this question.
+   * Does not check that voteIndex is within bounds to allow for testing this case.
+   *
+   * @param voteIndex the index of the ballot option to vote for
+   * @return a valid vote for this ballot option
+   */
+  public PlainVote createVote(int voteIndex){
+    return new PlainVote(id, voteIndex, false, null, electionId);
   }
 }

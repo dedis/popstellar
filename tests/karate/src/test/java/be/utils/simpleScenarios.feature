@@ -134,7 +134,7 @@
     @name=election_setup
     Scenario: Sets up a valid election with one question
       * call read('classpath:be/utils/simpleScenarios.feature@name=close_roll_call') { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)' }
-      And def validElectionSetup =
+      Given def validElectionSetup =
       """
         {
           "object": "election",
@@ -160,7 +160,8 @@
       * karate.log("sending an election setup request : ", karate.pretty(validElectionSetup))
       When organizer.publish(validElectionSetup, laoChannel)
       And json answer = organizer.getBackendResponse(validElectionSetup)
-      * def subscribe =
+
+      And def subscribe =
         """
           {
             "method": "subscribe",
@@ -174,7 +175,8 @@
       * karate.log("sending a subscribe to election channel : ", karate.pretty(subscribe))
       * organizer.send(subscribe)
       * def subs = organizer.takeTimeout(timeout)
-      * def catchup =
+
+      And def catchup =
         """
           {
             "method": "catchup",
@@ -189,21 +191,24 @@
       * organizer.send(catchup)
       * def catchup_response = organizer.takeTimeout(timeout)
 
+    # organizer, lao, rollCall, election and the question need to be passed as arguments when calling this scenario
     @name=election_open
-    Scenario: Opens an election
-      * call read('classpath:be/utils/simpleScenarios.feature@name=election_setup')
+    Scenario: Opens an election with one question
+      * call read('classpath:be/utils/simpleScenarios.feature@name=election_setup') { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)',  election: '#(election)', question: '#(question)' }
+      * def electionOpen = election.open()
       * def validElectionOpen =
         """
           {
             "object": "election",
             "action": "open",
-            "lao": "p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=",
-            "election": "rdv-0minecREM9XidNxnQotO7nxtVVnx-Zkmfm7hm2w=",
-            "opened_at": 1633098944
+            "lao": '#(lao.id)',
+            "election": '#(election.id)',
+            "opened_at": '#(electionOpen.openedAt)'
           }
         """
-      * frontend.publish(validElectionOpen, electionChannel)
-      * json answer = frontend.getBackendResponse(validElectionOpen)
+      * karate.log("sending an election open request : ", karate.pretty(catchup))
+      * organizer.publish(validElectionOpen, election.channel)
+      * json answer = organizer.getBackendResponse(validElectionOpen)
 
     @name=cast_vote
     Scenario: Casts a valid vote
