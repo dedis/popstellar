@@ -28,7 +28,7 @@ const (
 	errValidAuthFormat = "Error while validating the auth request: %s"
 
 	//error message for invalid response type
-	errInvalidResponseType = "Response type should be " + resTypeMulti
+	errInvalidResponseType = "Response type should be " + respTypeIDToken
 
 	//error message for unimplemented methods of op.Client
 	errUnimplementedMethod = "this method is not implemented for our protocol"
@@ -37,7 +37,7 @@ const (
 	tokenLifeTimeHour = 24
 
 	// qrSize size of QRCode SVG
-	qrSize = 10
+	qrSize = 9
 
 	badRequestCode = 400
 
@@ -47,17 +47,17 @@ const (
 
 // constant parameter names
 const (
-	clientID     = "client_id"
-	nonce        = "nonce"
-	scope        = "scope"
-	redirectURI  = "redirect_uri"
-	responseType = "response_type"
-	state        = "state"
-	resTypeMulti = "id_token token"
-	openID       = "openid"
-	profile      = "profile"
-	loginHint    = "login_hint"
-	responseMode = "response_mode"
+	clientID        = "client_id"
+	nonce           = "nonce"
+	scope           = "scope"
+	redirectURI     = "redirect_uri"
+	responseType    = "response_type"
+	state           = "state"
+	respTypeIDToken = "id_token"
+	openID          = "openid"
+	profile         = "profile"
+	loginHint       = "login_hint"
+	responseMode    = "response_mode"
 	// modes of response
 	query    = "query"
 	fragment = "fragment"
@@ -303,9 +303,16 @@ func (as *AuthorizationServer) generateQRCode(w http.ResponseWriter, req *http.R
 	// new SVG buffer
 	s := svg.New(&buffer)
 
-	// QRCode contains the Auth request URL
-	data := req.Host + req.URL.String()
-	qrCode, err := qr.Encode(data, qr.M, qr.Auto)
+	// add the scheme and host to the URL
+
+	if req.Proto == "HTTP/1.1" {
+		req.URL.Scheme = "http"
+	}
+	req.URL.Host = req.Host
+
+	// QRCode contains the authentication request URL
+	data := req.URL.String()
+	qrCode, err := qr.Encode(data, qr.L, qr.Auto)
 	if err != nil {
 		return err
 	}
@@ -414,7 +421,7 @@ func (as *AuthorizationServer) handleClientResponse(path string, c *websocket.Co
 	as.connsMutex.Unlock()
 }
 
-// ValidateAuthRequest takes an openID request, and validates its parameters according to the PoPCHA and Implicit
+// ValidateAuthRequest takes an OpenID request, and validates its parameters according to the PoPCHA and Implicit
 // flow protocols.
 func (as *AuthorizationServer) ValidateAuthRequest(req *oidc.AuthRequest) error {
 
@@ -446,7 +453,7 @@ func (as *AuthorizationServer) ValidateAuthRequest(req *oidc.AuthRequest) error 
 func (as *AuthorizationServer) validateImplicitFlowResponseType(params *clientParams, req *oidc.AuthRequest) error {
 	rType := req.ResponseType
 	// only two response types are allowed
-	if rType != resTypeMulti {
+	if rType != respTypeIDToken {
 		return oidc.ErrInvalidRequest().WithDescription(errValidAuthFormat, errInvalidResponseType)
 	}
 

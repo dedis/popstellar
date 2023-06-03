@@ -6,11 +6,13 @@ import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.event.MeetingBuilder;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
-import com.github.dedis.popstellar.repository.LAORepository;
-import com.github.dedis.popstellar.repository.MeetingRepository;
+import com.github.dedis.popstellar.repository.*;
+import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
+import com.github.dedis.popstellar.utility.error.UnknownWitnessMessageException;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 import javax.inject.Inject;
 
@@ -20,18 +22,16 @@ public class MeetingHandler {
 
   private static final String TAG = RollCallHandler.class.getSimpleName();
 
-  private static final String MEETING_NAME = "Meeting Name : ";
-  private static final String MESSAGE_ID = "Message ID : ";
-  private static final String MEETING_ID = "Meeting ID : ";
-  private static final String MODIFICATION_ID = "Modification ID : ";
-
   private final LAORepository laoRepo;
   private final MeetingRepository meetingRepo;
+  private final WitnessingRepository witnessingRepo;
 
   @Inject
-  public MeetingHandler(LAORepository laoRepo, MeetingRepository meetingRepo) {
+  public MeetingHandler(
+      LAORepository laoRepo, MeetingRepository meetingRepo, WitnessingRepository witnessingRepo) {
     this.laoRepo = laoRepo;
     this.meetingRepo = meetingRepo;
+    this.witnessingRepo = witnessingRepo;
   }
 
   /**
@@ -41,7 +41,7 @@ public class MeetingHandler {
    * @param createMeeting the message that was received
    */
   public void handleCreateMeeting(HandlerContext context, CreateMeeting createMeeting)
-      throws UnknownLaoException {
+      throws UnknownLaoException, UnknownWitnessMessageException {
     Channel channel = context.getChannel();
     MessageID messageId = context.getMessageId();
 
@@ -61,16 +61,17 @@ public class MeetingHandler {
         .setModificationId("")
         .setModificationSignatures(new ArrayList<>());
 
+    String laoId = laoView.getId();
     Meeting meeting = builder.build();
-    Lao lao = laoView.createLaoCopy();
-    lao.addWitnessMessage(createMeetingWitnessMessage(messageId, meeting));
 
-    meetingRepo.updateMeeting(laoView.getId(), meeting);
-    laoRepo.updateLao(lao);
+    witnessingRepo.addWitnessMessage(laoId, createMeetingWitnessMessage(messageId, meeting));
+
+    witnessingRepo.performActionWhenWitnessThresholdReached(
+        laoId, messageId, () -> meetingRepo.updateMeeting(laoId, meeting));
   }
 
   public void handleStateMeeting(HandlerContext context, StateMeeting stateMeeting)
-      throws UnknownLaoException {
+      throws UnknownLaoException, UnknownWitnessMessageException {
     Channel channel = context.getChannel();
     MessageID messageId = context.getMessageId();
 
@@ -91,52 +92,56 @@ public class MeetingHandler {
         .setModificationId(stateMeeting.getModificationId())
         .setModificationSignatures(stateMeeting.getModificationSignatures());
 
+    String laoId = laoView.getId();
     Meeting meeting = builder.build();
-    Lao lao = laoView.createLaoCopy();
-    lao.addWitnessMessage(stateMeetingWitnessMessage(messageId, meeting));
 
-    meetingRepo.updateMeeting(laoView.getId(), meeting);
-    laoRepo.updateLao(lao);
+    witnessingRepo.addWitnessMessage(
+        laoView.getId(), stateMeetingWitnessMessage(messageId, meeting));
+
+    witnessingRepo.performActionWhenWitnessThresholdReached(
+        laoId, messageId, () -> meetingRepo.updateMeeting(laoId, meeting));
   }
 
   public static WitnessMessage createMeetingWitnessMessage(MessageID messageId, Meeting meeting) {
     WitnessMessage message = new WitnessMessage(messageId);
-    message.setTitle("New Meeting was created");
+    message.setTitle(
+        String.format(
+            "The Meeting %s was created at %s",
+            meeting.getName(), new Date(meeting.getCreation() * 1000)));
     message.setDescription(
-        MEETING_NAME
-            + "\n"
-            + meeting.getName()
+        "Mnemonic identifier :\n"
+            + ActivityUtils.generateMnemonicWordFromBase64(meeting.getId(), 2)
             + "\n\n"
-            + MEETING_ID
-            + "\n"
-            + meeting.getId()
+            + (meeting.getLocation().isEmpty()
+                ? ""
+                : ("Location :\n" + meeting.getLocation() + "\n\n"))
+            + "Starts at :\n"
+            + new Date(meeting.getStartTimestampInMillis())
             + "\n\n"
-            + MESSAGE_ID
-            + "\n"
-            + messageId);
+            + "Finishes at :\n"
+            + new Date(meeting.getEndTimestampInMillis()));
 
     return message;
   }
 
   public static WitnessMessage stateMeetingWitnessMessage(MessageID messageId, Meeting meeting) {
     WitnessMessage message = new WitnessMessage(messageId);
-    message.setTitle("A meeting was modified");
+    message.setTitle(
+        String.format(
+            "The Meeting %s was modified at %s",
+            meeting.getName(), new Date(meeting.getLastModified() * 1000)));
     message.setDescription(
-        MEETING_NAME
-            + "\n"
-            + meeting.getName()
+        "Mnemonic identifier :\n"
+            + ActivityUtils.generateMnemonicWordFromBase64(meeting.getId(), 2)
             + "\n\n"
-            + MEETING_ID
-            + "\n"
-            + meeting.getId()
+            + (meeting.getLocation().isEmpty()
+                ? ""
+                : ("Location :\n" + meeting.getLocation() + "\n\n"))
+            + "Starts at :\n"
+            + new Date(meeting.getStartTimestampInMillis())
             + "\n\n"
-            + MODIFICATION_ID
-            + "\n"
-            + meeting.getModificationId()
-            + "\n\n"
-            + MESSAGE_ID
-            + "\n"
-            + messageId);
+            + "Finishes at :\n"
+            + new Date(meeting.getEndTimestampInMillis()));
 
     return message;
   }

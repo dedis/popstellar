@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.IdRes;
@@ -35,8 +34,9 @@ import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.Constants;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
+import com.google.android.material.snackbar.BaseTransientBottomBar;
+import com.google.android.material.snackbar.Snackbar;
 
-import java.security.GeneralSecurityException;
 import java.util.*;
 import java.util.function.Supplier;
 
@@ -48,6 +48,7 @@ public class LaoActivity extends AppCompatActivity {
   public static final String TAG = LaoActivity.class.getSimpleName();
 
   LaoViewModel laoViewModel;
+  WitnessingViewModel witnessingViewModel;
   LaoActivityBinding binding;
   private final Deque<Fragment> fragmentStack = new LinkedList<>();
 
@@ -65,10 +66,17 @@ public class LaoActivity extends AppCompatActivity {
     laoViewModel.observeLao(laoId);
     laoViewModel.observeRollCalls(laoId);
 
+    witnessingViewModel = obtainWitnessingViewModel(this, laoId);
+
+    // At creation of the lao activity the connections of the lao are restored from the persistent
+    // storage, such that the client resubscribes to each previous subscribed channel
+    laoViewModel.restoreConnections();
+
     observeRoles();
     observeToolBar();
     observeDrawer();
     setupDrawerHeader();
+    observeWitnessPopup();
 
     // Open Event list on activity creation
     setEventsTab();
@@ -78,20 +86,13 @@ public class LaoActivity extends AppCompatActivity {
   /*
    Normally the saving routine should be called onStop, such as is done in other activities,
    Yet here for unknown reasons the subscriptions set in LAONetworkManager is empty when going
-   to HomeActivity. This fixes it. Since the persisted data is light for now (13.02.2023) - i.e.
-   server address, wallet seed and channel list - and not computationally intensive this will not
+   to HomeActivity. This fixes it. Since the persisted data is light for now (20.05.2023) - i.e.
+   server address and channel list - and not computationally intensive this will not
    be a problem at the moment
   */
   public void onPause() {
     super.onPause();
-
-    try {
-      laoViewModel.saveCoreData();
-    } catch (GeneralSecurityException e) {
-      // We do not display the security error to the user
-      Timber.tag(TAG).d(e, "Storage was unsuccessful due to wallet error");
-      Toast.makeText(this, R.string.error_storage_wallet, Toast.LENGTH_SHORT).show();
-    }
+    laoViewModel.saveSubscriptionsData();
   }
 
   private void observeRoles() {
@@ -204,6 +205,35 @@ public class LaoActivity extends AppCompatActivity {
     }
   }
 
+  private void observeWitnessPopup() {
+    witnessingViewModel
+        .getShowPopup()
+        .observe(
+            this,
+            showPopup -> {
+              // Ensure that the current fragment is not already witnessing
+              if (Boolean.FALSE.equals(showPopup)
+                  || getSupportFragmentManager().findFragmentById(R.id.fragment_container_lao)
+                      instanceof WitnessingFragment) {
+                return;
+              }
+
+              // Display the Snackbar popup
+              Snackbar snackbar =
+                  Snackbar.make(
+                      findViewById(R.id.fragment_container_lao),
+                      R.string.witness_message_popup_text,
+                      BaseTransientBottomBar.LENGTH_SHORT);
+              snackbar.setAction(
+                  R.string.witness_message_popup_action,
+                  v -> {
+                    witnessingViewModel.disableShowPopup();
+                    setWitnessTab();
+                  });
+              snackbar.show();
+            });
+  }
+
   private void setupHeaderRole(Role role) {
     TextView roleView =
         binding
@@ -278,6 +308,12 @@ public class LaoActivity extends AppCompatActivity {
     openEventsTab();
   }
 
+  /** Opens Witness tab and select it in the drawer menu */
+  private void setWitnessTab() {
+    binding.laoNavigationDrawer.setCheckedItem(MainMenuTab.WITNESSING.getMenuId());
+    openWitnessTab();
+  }
+
   /** Restore the fragment contained in the stack as container of the current lao */
   public void resetLastFragment() {
     Fragment fragment = fragmentStack.pop();
@@ -331,7 +367,7 @@ public class LaoActivity extends AppCompatActivity {
       FragmentActivity activity, String laoId) {
     WitnessingViewModel witnessingViewModel =
         new ViewModelProvider(activity).get(WitnessingViewModel.class);
-    witnessingViewModel.setLaoId(laoId);
+    witnessingViewModel.initialize(laoId);
     return witnessingViewModel;
   }
 

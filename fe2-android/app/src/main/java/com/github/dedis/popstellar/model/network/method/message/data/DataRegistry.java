@@ -48,7 +48,7 @@ public final class DataRegistry {
    */
   public void handle(HandlerContext context, Data data, Objects obj, Action action)
       throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
-          UnknownElectionException, NoRollCallException {
+          UnknownElectionException, NoRollCallException, UnknownWitnessMessageException {
     Optional.ofNullable(mapping.get(pair(obj, action)))
         .orElseThrow(() -> new UnhandledDataTypeException(data, obj + "#" + action))
         .handleData(context, data);
@@ -138,7 +138,7 @@ public final class DataRegistry {
     @SuppressWarnings("unchecked")
     public void handleData(HandlerContext context, Data data)
         throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
-            UnknownElectionException, NoRollCallException {
+            UnknownElectionException, NoRollCallException, UnknownWitnessMessageException {
       if (dataHandler == null) {
         throw new UnhandledDataTypeException(data, key.object + "#" + key.action);
       }

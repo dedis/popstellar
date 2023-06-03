@@ -11,7 +11,6 @@ import com.github.dedis.popstellar.model.objects.security.KeyPair;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.LAORepository;
-import com.github.dedis.popstellar.repository.database.AppDatabase;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.testutils.Base64DataUtils;
@@ -27,10 +26,7 @@ import org.mockito.junit.MockitoTestRule;
 
 import java.util.Collections;
 
-import javax.inject.Inject;
-
 import dagger.hilt.android.testing.*;
-import io.reactivex.Completable;
 import io.reactivex.subjects.BehaviorSubject;
 
 import static androidx.test.espresso.action.ViewActions.click;
@@ -40,7 +36,6 @@ import static androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent;
 import static androidx.test.espresso.matcher.ViewMatchers.*;
 import static com.github.dedis.popstellar.testutils.pages.home.HomePageObject.*;
 import static com.github.dedis.popstellar.testutils.pages.home.LaoCreatePageObject.*;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
@@ -53,8 +48,6 @@ public class LaoCreateFragmentTest {
   private static final KeyPair KEY_PAIR = Base64DataUtils.generateKeyPair();
   private static final PublicKey PK = KEY_PAIR.getPublicKey();
   private static final Lao LAO = new Lao(LAO_NAME, PK, 10223421);
-
-  @Inject AppDatabase appDatabase;
 
   @BindValue @Mock LAORepository repository;
   @BindValue @Mock KeyManager keyManager;
@@ -75,18 +68,10 @@ public class LaoCreateFragmentTest {
         @Override
         protected void before() throws UnknownLaoException {
           hiltRule.inject();
-          when(repository.getLaoObservable(anyString()))
-              .thenReturn(BehaviorSubject.createDefault(new LaoView(LAO)));
+
           when(repository.getAllLaoIds())
               .thenReturn(BehaviorSubject.createDefault(Collections.singletonList(LAO.getId())));
           when(repository.getLaoView(anyString())).thenReturn(new LaoView(LAO));
-
-          when(keyManager.getMainPublicKey()).thenReturn(PK);
-          when(keyManager.getMainKeyPair()).thenReturn(KEY_PAIR);
-          when(networkManager.getMessageSender()).thenReturn(messageSender);
-          when(messageSender.subscribe(any())).then(args -> Completable.complete());
-          when(messageSender.publish(any(), any())).then(args -> Completable.complete());
-          when(messageSender.publish(any(), any(), any())).then(args -> Completable.complete());
         }
       };
 
@@ -99,11 +84,6 @@ public class LaoCreateFragmentTest {
     // Open the launch tab
     HomeActivityTest.initializeWallet(activityScenarioRule);
     createButton().perform(click());
-  }
-
-  @After
-  public void tearDown() {
-    appDatabase.close();
   }
 
   @Test

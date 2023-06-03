@@ -7,8 +7,13 @@ import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.DataRegistry;
 import com.github.dedis.popstellar.model.network.method.message.data.election.Vote;
-import com.github.dedis.popstellar.model.network.serializer.*;
+import com.github.dedis.popstellar.model.network.serializer.base64.JsonBase64DataSerializer;
+import com.github.dedis.popstellar.model.network.serializer.data.JsonDataSerializer;
+import com.github.dedis.popstellar.model.network.serializer.data.JsonVoteSerializer;
+import com.github.dedis.popstellar.model.network.serializer.database.*;
+import com.github.dedis.popstellar.model.network.serializer.network.*;
 import com.github.dedis.popstellar.model.objects.*;
+import com.github.dedis.popstellar.model.objects.digitalcash.TransactionObject;
 import com.github.dedis.popstellar.model.objects.security.*;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -42,7 +47,7 @@ public class JsonModule {
         // Objects serializer for database
         .registerTypeAdapter(Lao.class, new JsonLaoSerializer())
         .registerTypeAdapter(Election.class, new JsonElectionSerializer())
-        .registerTypeAdapter(RollCall.class, new JsonRollCallSerializer())
+        .registerTypeAdapter(TransactionObject.class, new JsonTransactionObjectSerializer())
         // Base64URLData serializers
         .registerTypeAdapter(
             Base64URLData.class, new JsonBase64DataSerializer<>(Base64URLData::new))

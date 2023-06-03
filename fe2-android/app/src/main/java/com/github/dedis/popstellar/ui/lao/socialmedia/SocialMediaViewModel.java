@@ -319,20 +319,20 @@ public class SocialMediaViewModel extends AndroidViewModel {
   }
 
   /**
-   * Check whether the current user has an active reaction on a given chirp.
+   * This function searches if in the list of the senders of a reaction, there's the own key
    *
-   * @param chirpId chirp identifier of the reaction to check
-   * @param emoji unicode string of the reaction emoji
-   * @return true if the user has reacted with the given emoji to the given chirp (and the reaction
-   *     is not deleted) , false otherwise
+   * @param senders set of public keys as encoded strings
+   * @return true if we have sent such reaction, false otherwise
    */
-  public boolean isReactionPresent(MessageID chirpId, String emoji) {
-    return socialMediaRepository.getReactionsByChirp(laoId, chirpId).stream()
-        .anyMatch(
-            reaction ->
-                !reaction.isDeleted()
-                    && isOwner(reaction.getSender().getEncoded())
-                    && reaction.getCodepoint().equals(emoji));
+  public boolean isReactionPresent(@NonNull Set<String> senders) {
+    try {
+      PoPToken token = getValidPoPToken();
+      String toSearch = token.getPublicKey().getEncoded();
+      return senders.contains(toSearch);
+    } catch (KeyException e) {
+      ErrorUtils.logAndShow(getApplication(), TAG, e, R.string.error_retrieve_own_token);
+      return false;
+    }
   }
 
   public void setLaoId(String laoId) {

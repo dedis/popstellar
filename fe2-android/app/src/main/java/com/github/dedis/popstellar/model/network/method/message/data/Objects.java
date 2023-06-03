@@ -54,13 +54,14 @@ public enum Objects {
       case "lao":
       case "election":
       case "roll_call":
-        return true;
-        // TODO: add persistence for other repos in next PRs
-      case "coin":
-      case "meeting":
-      case "consensus":
       case "chirp":
+      case "reaction":
+      case "meeting":
+      case "coin":
       case "message":
+        return true;
+        // TODO: add persistence for consensus when it'll have its repo
+      case "consensus":
       default:
         return false;
     }

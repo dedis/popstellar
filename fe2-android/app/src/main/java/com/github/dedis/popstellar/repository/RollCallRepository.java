@@ -16,6 +16,7 @@ import com.github.dedis.popstellar.utility.error.UnknownRollCallException;
 import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -25,6 +26,7 @@ import javax.inject.Singleton;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.BehaviorSubject;
 import io.reactivex.subjects.Subject;
@@ -58,7 +60,7 @@ public class RollCallRepository {
   }
 
   /**
-   * This either updates the roll call in the repository or adds it if absent
+   * This either updates the roll call in the repository or adds it if absent.
    *
    * @param rollCall the roll call to update/add
    */
@@ -71,11 +73,10 @@ public class RollCallRepository {
     }
     Timber.tag(TAG).d("Updating roll call on lao %s : %s", laoId, rollCall);
 
-    RollCallEntity rollCallEntity = new RollCallEntity(laoId, rollCall);
     // Persist the rollcall
     disposables.add(
         rollCallDao
-            .insert(rollCallEntity)
+            .insert(new RollCallEntity(laoId, rollCall))
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
@@ -103,23 +104,41 @@ public class RollCallRepository {
     return getLaoRollCalls(laoId).getRollCallObservable(persistentId);
   }
 
+  /**
+   * This function retrieves a roll call from the repository given its persistent identifier.
+   *
+   * @param laoId the id of the Lao
+   * @param persistentId the persistent id of the roll call
+   * @return the roll call matching the identifier in the lao
+   * @throws UnknownRollCallException if no roll call with the provided id could be found
+   */
   public RollCall getRollCallWithPersistentId(String laoId, String persistentId)
       throws UnknownRollCallException {
     return getLaoRollCalls(laoId).getRollCallWithPersistentId(persistentId);
   }
 
+  /**
+   * This function retrieves a roll call from the repository given its state-dependent identifier.
+   *
+   * @param laoId the id of the Lao
+   * @param rollCallId the id of the roll call
+   * @return the roll call matching the identifier in the lao
+   * @throws UnknownRollCallException if no roll call with the provided id could be found
+   */
   public RollCall getRollCallWithId(String laoId, String rollCallId)
       throws UnknownRollCallException {
     return getLaoRollCalls(laoId).getRollCallWithId(rollCallId);
   }
 
   /**
+   * Returns an observable over the set of the roll calls in a given lao.
+   *
    * @param laoId the id of the Lao whose roll calls we want to observe
    * @return an observable set of ids who correspond to the set of roll calls published on the given
    *     lao
    */
   public Observable<Set<RollCall>> getRollCallsObservableInLao(String laoId) {
-    return getLaoRollCalls(laoId).getRollCallsSubject(this);
+    return getLaoRollCalls(laoId).getRollCallsSubject();
   }
 
   /**
@@ -132,16 +151,18 @@ public class RollCallRepository {
     return getLaoRollCalls(laoId).getAllAttendees();
   }
 
+  /**
+   * Returns the last closed roll call on a temporal basis.
+   *
+   * @param laoId the id of the considered lao
+   * @return the roll call that has been the last one to be closed
+   * @throws NoRollCallException if no roll call in the lao is found
+   */
   public RollCall getLastClosedRollCall(String laoId) throws NoRollCallException {
     return getLaoRollCalls(laoId).rollCallByPersistentId.values().stream()
         .filter(RollCall::isClosed)
         .max(Comparator.comparing(RollCall::getEnd))
         .orElseThrow(() -> new NoRollCallException(laoId));
-  }
-
-  @NonNull
-  private synchronized LaoRollCalls getLaoRollCalls(String laoId) {
-    return rollCallsByLao.computeIfAbsent(laoId, lao -> new LaoRollCalls(laoId));
   }
 
   /**
@@ -155,23 +176,41 @@ public class RollCallRepository {
         .noneMatch(RollCall::isOpen);
   }
 
+  public void addDisposable(Disposable disposable) {
+    disposables.add(disposable);
+  }
+
+  @NonNull
+  private synchronized LaoRollCalls getLaoRollCalls(String laoId) {
+    return rollCallsByLao.computeIfAbsent(laoId, lao -> new LaoRollCalls(this, laoId));
+  }
+
   private static final class LaoRollCalls {
+    private final RollCallRepository repository;
     private final String laoId;
-    private final Map<String, RollCall> rollCallByPersistentId = new HashMap<>();
 
-    // This maps a roll call id, which is state dependant,
-    // to its persistentId which is fixed at creation
-    private final Map<String, String> rollCallIdAlias = new HashMap<>();
+    /** Thread-safe mapping between a roll call persistent id and its object reference */
+    private final ConcurrentHashMap<String, RollCall> rollCallByPersistentId =
+        new ConcurrentHashMap<>();
 
-    // This allows to observe a specific roll call(s)
-    private final Map<String, Subject<RollCall>> rollCallSubjects = new HashMap<>();
+    /**
+     * Thread-safe mapping between the roll call ephemeral id (state dependant) and its persistent
+     * id, fixed at creation instead
+     */
+    private final ConcurrentHashMap<String, String> rollCallIdAlias = new ConcurrentHashMap<>();
 
-    // This allows to observe the collection of roll calls as a whole
+    /** Thread-safe map which maps a roll call persistent id to an observable over itself */
+    private final ConcurrentHashMap<String, Subject<RollCall>> rollCallSubjects =
+        new ConcurrentHashMap<>();
+
+    /** Observable over the whole set of roll calls */
     private final Subject<Set<RollCall>> rollCallsSubject =
         BehaviorSubject.createDefault(unmodifiableSet(emptySet()));
 
-    public LaoRollCalls(String laoId) {
+    public LaoRollCalls(RollCallRepository repository, String laoId) {
+      this.repository = repository;
       this.laoId = laoId;
+      loadStorage();
     }
 
     /**
@@ -179,7 +218,7 @@ public class RollCallRepository {
      *
      * @param rollCall the roll call to update/add
      */
-    public synchronized void update(RollCall rollCall) {
+    public void update(RollCall rollCall) {
       // Updating repo data
       String persistentId = rollCall.getPersistentId();
       rollCallByPersistentId.put(persistentId, rollCall);
@@ -191,14 +230,16 @@ public class RollCallRepository {
       if (rollCallSubjects.containsKey(persistentId)) {
         // If it exist we update the subject
         Timber.tag(TAG).d("Updating existing roll call %s", rollCall.getName());
-        rollCallSubjects.get(persistentId).onNext(rollCall);
+        Objects.requireNonNull(rollCallSubjects.get(persistentId)).toSerialized().onNext(rollCall);
       } else {
         // If it does not, we create a new subject
         Timber.tag(TAG).d("New roll call, subject created for %s", rollCall.getName());
         rollCallSubjects.put(persistentId, BehaviorSubject.createDefault(rollCall));
       }
 
-      rollCallsSubject.onNext(unmodifiableSet(new HashSet<>(this.rollCallByPersistentId.values())));
+      rollCallsSubject
+          .toSerialized()
+          .onNext(unmodifiableSet(new HashSet<>(this.rollCallByPersistentId.values())));
     }
 
     public RollCall getRollCallWithPersistentId(String persistentId)
@@ -226,13 +267,27 @@ public class RollCallRepository {
       }
     }
 
-    public Observable<Set<RollCall>> getRollCallsSubject(RollCallRepository repository) {
-      // Load in memory the rollcalls from the disk only when the user
-      // clicks on the respective LAO, just needed one time only
+    public Observable<Set<RollCall>> getRollCallsSubject() {
+      return rollCallsSubject;
+    }
+
+    public Set<PublicKey> getAllAttendees() {
+      // For all roll calls we add all attendees to the returned set
+      return rollCallByPersistentId.values().stream()
+          .map(RollCall::getAttendees)
+          .flatMap(Collection::stream)
+          .collect(Collectors.toSet());
+    }
+
+    /**
+     * Load in memory the rollcalls from the disk only when the user clicks on the respective LAO,
+     * just needed one time only at creation.
+     */
+    private void loadStorage() {
       repository.disposables.add(
           repository
               .rollCallDao
-              .getRollCallsByLaoId(laoId, rollCallByPersistentId.keySet())
+              .getRollCallsByLaoId(laoId)
               .subscribeOn(Schedulers.io())
               .observeOn(AndroidSchedulers.mainThread())
               .subscribe(
@@ -246,15 +301,6 @@ public class RollCallRepository {
                   err ->
                       Timber.tag(TAG)
                           .e(err, "No rollcall found in the storage for lao %s", laoId)));
-      return rollCallsSubject;
-    }
-
-    public Set<PublicKey> getAllAttendees() {
-      // For all roll calls we add all attendees to the returned set
-      return rollCallByPersistentId.values().stream()
-          .map(RollCall::getAttendees)
-          .flatMap(Collection::stream)
-          .collect(Collectors.toSet());
     }
   }
 }

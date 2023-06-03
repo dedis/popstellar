@@ -6,6 +6,7 @@ import (
 	"fmt"
 	popstellar "popstellar"
 	"popstellar/channel"
+	"popstellar/channel/authentication"
 	"popstellar/channel/chirp"
 	"popstellar/channel/coin"
 	"popstellar/channel/consensus"
@@ -45,6 +46,12 @@ const (
 	msgID  = "msg id"
 	social = "/social/"
 	chirps = "chirps"
+	// endpoint for the PoPCHA authentication channel
+	auth = "/authentication"
+	// skAbsolutePath represents the absolute path to the rsa secret key for the popcha authentication channel
+	skAbsolutePath = "crypto/popcha.rsa"
+	// pkAbsolutePath represents the absolute path to the rsa public key for the popcha authentication channel
+	pkAbsolutePath = "crypto/popcha.rsa.pub"
 
 	// Open represents the open roll call state.
 	Open rollCallState = "open"
@@ -63,6 +70,9 @@ type Channel struct {
 	inbox     *inbox.Inbox
 	general   channel.Broadcastable
 	reactions channel.LAOFunctionalities
+
+	//PoPCHA channel for authentication message
+	authMsgs channel.LAOFunctionalities
 
 	// /root/<ID>
 	channelID string
@@ -134,6 +144,9 @@ func NewChannel(channelID string, hub channel.HubFunctionalities, msg message.Me
 	}
 
 	newChannel.createCoinChannel(socket, newChannel.log)
+
+	// creating the authentication channel for the PoPCHA protocol
+	newChannel.createAuthChannel(hub, socket)
 
 	return newChannel, err
 }
@@ -422,6 +435,8 @@ func (c *Channel) processRollCallClose(msg message.Message, msgData interface{},
 		c.createChirpingChannel(attendee, senderSocket)
 
 		c.reactions.AddAttendee(attendee)
+		// add the attendee in the PopCha authentication channel
+		c.authMsgs.AddAttendee(attendee)
 	}
 
 	return nil
@@ -593,6 +608,17 @@ func (c *Channel) createChirpingChannel(publicKey string, socket socket.Socket) 
 	cha := chirp.NewChannel(chirpingChannelPath, publicKey, c.hub, c.general, popstellar.Logger)
 	c.hub.NotifyNewChannel(chirpingChannelPath, cha, socket)
 	log.Info().Msgf("storing new chirp channel (%s) for: '%s'", c.channelID, publicKey)
+}
+
+// createAuthChannel creates an authentication channel associated to the laoID, handling PopCHA requests
+func (c *Channel) createAuthChannel(hub channel.HubFunctionalities, socket socket.Socket) {
+	chanPath := c.channelID + auth
+	authChan := authentication.NewChannel(chanPath, hub, popstellar.Logger, skAbsolutePath, pkAbsolutePath)
+	hub.NotifyNewChannel(chanPath, authChan, socket)
+	c.log.Info().Msgf("storing new authentication channel '%s' ", chanPath)
+
+	// adding it to the LaoChannel
+	c.authMsgs = authChan
 }
 
 // createCoinChannel creates a coin channel to handle digital cash project

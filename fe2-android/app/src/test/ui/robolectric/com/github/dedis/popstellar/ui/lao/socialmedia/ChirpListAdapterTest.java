@@ -6,6 +6,7 @@ import android.widget.*;
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.fragment.app.FragmentActivity;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.objects.*;
@@ -97,11 +98,26 @@ public class ChirpListAdapterTest {
           CHIRP_1.getId(),
           TIMESTAMP);
 
+  private final Reaction REACTION2 =
+      new Reaction(
+          generateMessageID(),
+          SENDER_1,
+          Reaction.ReactionEmoji.DOWNVOTE.getCode(),
+          CHIRP_1.getId(),
+          TIMESTAMP);
+
+  private final Reaction REACTION3 =
+      new Reaction(
+          generateMessageID(),
+          SENDER_1,
+          Reaction.ReactionEmoji.HEART.getCode(),
+          CHIRP_1.getId(),
+          TIMESTAMP);
+
   @Inject SocialMediaRepository socialMediaRepository;
   @Inject RollCallRepository rollCallRepository;
   @BindValue @Mock GlobalNetworkManager networkManager;
   @BindValue @Mock KeyManager keyManager;
-
   MessageSenderHelper messageSenderHelper = new MessageSenderHelper();
 
   @Rule public InstantTaskExecutorRule rule = new InstantTaskExecutorRule();
@@ -124,8 +140,8 @@ public class ChirpListAdapterTest {
           socialMediaRepository.addChirp(LAO_ID, CHIRP_2);
           socialMediaRepository.addReaction(LAO_ID, REACTION);
 
-          messageSenderHelper.setupMock();
           when(networkManager.getMessageSender()).thenReturn(messageSenderHelper.getMockedSender());
+          messageSenderHelper.setupMock();
 
           when(keyManager.getMainPublicKey()).thenReturn(SENDER_KEY_1.getPublicKey());
           when(keyManager.getValidPoPToken(anyString(), any(RollCall.class)))
@@ -306,11 +322,16 @@ public class ChirpListAdapterTest {
               View view1 = chirpListAdapter.getView(0, null, layout);
               assertNotNull(view1);
 
-              // Verify the upvote is set
+              // Verify the upvote is deselected
               ImageButton upvoteButton = view1.findViewById(R.id.upvote_button);
               assertNotNull(upvoteButton);
-              assertTrue(upvoteButton.isSelected());
+
               upvoteButton.callOnClick();
+              // Remove the upvote reaction
+              socialMediaRepository.deleteReaction(LAO_ID, REACTION_ID);
+              // Wait for the observable to be notified
+              InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
               assertFalse(upvoteButton.isSelected());
 
               // Verify the downvote is not set
@@ -318,14 +339,12 @@ public class ChirpListAdapterTest {
               assertNotNull(downvoteButton);
               assertFalse(downvoteButton.isSelected());
               downvoteButton.callOnClick();
-              assertTrue(downvoteButton.isSelected());
 
               // Verify the heart is not set
               ImageButton heartButton = view1.findViewById(R.id.heart_button);
               assertNotNull(heartButton);
               assertFalse(heartButton.isSelected());
               heartButton.callOnClick();
-              assertTrue(heartButton.isSelected());
             });
   }
 

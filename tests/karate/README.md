@@ -20,17 +20,17 @@ Go to `Tools -> AVD Manager` and create an emulator.
 Then you need to install Appium. You can install either the command line app with `npm install -g appium`, or
 the [Desktop App](https://github.com/appium/appium-desktop/releases/).
 
-Finally, you need to set the environment variable `ANDROID_HOME` (The previous name was`ANDROID_SDK_ROOT` 
+Finally, you need to set the environment variable `ANDROID_HOME` (The previous name was`ANDROID_SDK_ROOT`
 and it still works)
 to your Android SDK installation. Find it by
 opening Android Studio and going to `Tools -> SDK Manager`. It stands next to `Android SDK Location`.
 
-If your Computer runs on Windows : we strongly advise that you do not use a VM or WSL. You will encounter problems you 
+If your Computer runs on Windows : we strongly advise that you do not use a VM or WSL. You will encounter problems you
 would not have otherwise, some of which might even be technically impossible to solve.
 
 ### Web Front-end
 
-Make sure you have [Google Chrome](https://www.google.com/intl/en/chrome/) and [npm](https://nodejs.org/en/download/) 
+Make sure you have [Google Chrome](https://www.google.com/intl/en/chrome/) and [npm](https://nodejs.org/en/download/)
 installed.
 
 ## Running the Tests
@@ -39,11 +39,18 @@ installed.
 
 Build the backend you want to test. Follow the steps described in the corresponding subproject.
 
-Simply run the tests with:
+Simply run the tests for server-to-client communication with:
 
 ```
-mvn test -DargLine="-Dkarate.env=go"
-mvn test -DargLine="-Dkarate.env=scala"
+mvn test -DargLine="-Dkarate.env=go_client"
+mvn test -DargLine="-Dkarate.env=scala_client"
+```
+
+Run the tests for server-to-server communication with:
+
+```
+mvn test -DargLine="-Dkarate.env=go_server"
+mvn test -DargLine="-Dkarate.env=scala_server"
 ```
 
 ### Android Front-end
@@ -63,7 +70,7 @@ Ex: `Android Emulator - Pixel_4_API_30:5554`
     Ex: `Pixel 4 API 30` for an `avd` of `Pixel_4_API_30`
   - Go to `Help`, under `Emulator ADB serial number` it should match `emulator-id`\
     Ex: `emulator-5554`
-    
+
 
 
 Make sure the [karate-config](src/test/java/karate-config.js) is correct. More precisely :

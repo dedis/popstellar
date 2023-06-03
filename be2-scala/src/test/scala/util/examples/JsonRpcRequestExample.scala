@@ -7,9 +7,10 @@ import ch.epfl.pop.model.objects.{Base64Data, Channel, Hash}
 import ch.epfl.pop.pubsub.graph.validators.RpcValidator
 import util.examples.Election.CastVoteElectionExamples._
 import util.examples.Election.OpenElectionExamples._
-import util.examples.Election.SetupElectionExamples.{ELECTION_ID, _}
+import util.examples.Election.SetupElectionExamples._
 import util.examples.Election.EndElectionExamples._
 import util.examples.Election.KeyElectionExamples._
+import util.examples.Election.{ResultElectionExamples, SetupElectionExamples}
 import util.examples.Lao.GreetLaoExamples._
 import util.examples.MessageExample._
 import util.examples.Witness.WitnessMessageExamples._
@@ -190,7 +191,7 @@ object JsonRpcRequestExample {
   final val KEY_ELECTION_WRONG_OWNER_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithKeyElectionWrongOwner, id)
 
   // For CastVoteElection testing
-  private final val electionChannelCastVote: Channel = Channel(Channel.ROOT_CHANNEL_PREFIX + Base64Data.encode("laoId") + Channel.CHANNEL_SEPARATOR + ELECTION_ID)
+  private final val electionChannelCastVote: Channel = Channel(Channel.ROOT_CHANNEL_PREFIX + Base64Data.encode("laoId") + Channel.CHANNEL_SEPARATOR + ResultElectionExamples.ELECTION_ID)
   private final val paramsWithCastVoteElection: ParamsWithMessage = new ParamsWithMessage(electionChannelCastVote, MESSAGE_CAST_VOTE_ELECTION_WORKING)
   private final val paramsWithCastVoteElectionWrongTimestamp: ParamsWithMessage = new ParamsWithMessage(electionChannelCastVote, MESSAGE_CAST_VOTE_ELECTION_WRONG_TIMESTAMP)
   private final val paramsWithCastVoteElectionWrongId: ParamsWithMessage = new ParamsWithMessage(electionChannelCastVote, MESSAGE_CAST_VOTE_ELECTION_WRONG_ID)
@@ -219,6 +220,18 @@ object JsonRpcRequestExample {
   final val END_ELECTION_WRONG_ID_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithEndElectionWrongId, id)
   final val END_ELECTION_WRONG_LAO_ID_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithEndElectionWrongLaoId, id)
   final val END_ELECTION_WRONG_OWNER_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithEndElectionWrongOwner, id)
+
+  // for ResultElectionTesting
+  private final val paramsWithResultElection: ParamsWithMessage = new ParamsWithMessage(Channel("/root/lao/" + SetupElectionExamples.ELECTION_ID.toString), ResultElectionExamples.MESSAGE_RESULT_ELECTION_WORKING)
+  private final val paramsWithWrongBallotOptionElection: ParamsWithMessage = new ParamsWithMessage(Channel("/root/lao/" + SetupElectionExamples.ELECTION_ID.toString), ResultElectionExamples.MESSAGE_RESULT_ELECTION_WRONG_BALLOT_OPTIONS)
+  private final val paramsWithNegativeNumberOfVotesResultElection: ParamsWithMessage = new ParamsWithMessage(Channel("/root/lao/" + SetupElectionExamples.ELECTION_ID.toString), ResultElectionExamples.MESSAGE_RESULT_ELECTION_WRONG)
+  private final val paramsWithTooMuchVotesResultElection: ParamsWithMessage = new ParamsWithMessage(Channel("/root/lao/" + SetupElectionExamples.ELECTION_ID.toString), ResultElectionExamples.MESSAGE_RESULT_ELECTION_TOO_MUCH_VOTES)
+  private final val paramsWithWrongIdResultElection: ParamsWithMessage = new ParamsWithMessage(Channel("/root/lao/" + SetupElectionExamples.ELECTION_ID.toString), ResultElectionExamples.MESSAGE_RESULT_ELECTION_WRONG_ID)
+  final val RESULT_ELECTION_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithResultElection, id)
+  final val RESULT_ELECTION_RPC_WRONG_BALLOT_OPTIONS = JsonRpcRequest(rpc, methodType, paramsWithWrongBallotOptionElection, id)
+  final val RESULT_ELECTION_RPC_WRONG: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithNegativeNumberOfVotesResultElection, id)
+  final val RESULT_ELECTION_RPC_TOO_MUCH_VOTES: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithTooMuchVotesResultElection, id)
+  final val RESULT_ELECTION_RPC_WRONG_ID: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithWrongIdResultElection, id)
 
   // for WitnessMessage testing
   private final val paramsWithWitnessMessage: ParamsWithMessage = new ParamsWithMessage(laoChannel, MESSAGE_WITNESS_MESSAGE_WORKING)

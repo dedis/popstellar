@@ -22,9 +22,10 @@ import com.github.dedis.popstellar.utility.error.keys.KeyException;
 
 import java.time.Instant;
 import java.util.*;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
 import timber.log.Timber;
 
 import static android.text.format.DateUtils.getRelativeTimeSpanString;
@@ -39,6 +40,8 @@ public class ChirpListAdapter extends BaseAdapter {
   private final Context context;
   private final LayoutInflater layoutInflater;
   private List<Chirp> chirps;
+
+  private final CompositeDisposable disposables = new CompositeDisposable();
 
   public ChirpListAdapter(
       Context context, SocialMediaViewModel socialMediaViewModel, LaoViewModel viewModel) {
@@ -56,6 +59,8 @@ public class ChirpListAdapter extends BaseAdapter {
   }
 
   public void replaceList(List<Chirp> chirps) {
+    // Dispose of previous observables
+    disposables.clear();
     this.chirps = chirps;
     notifyDataSetChanged();
   }
@@ -95,6 +100,12 @@ public class ChirpListAdapter extends BaseAdapter {
       chirpView.findViewById(R.id.chirp_card_buttons).setVisibility(View.GONE);
     }
 
+    // Dispose of previous observables for the chirp at this position
+    Disposable previousDisposable = (Disposable) chirpView.getTag(R.id.chirp_card_buttons);
+    if (previousDisposable != null) {
+      previousDisposable.dispose();
+    }
+
     PublicKey sender = chirp.getSender();
     long timestamp = chirp.getTimestamp();
     String text;
@@ -110,32 +121,64 @@ public class ChirpListAdapter extends BaseAdapter {
     TextView downvoteCounter = chirpView.findViewById(R.id.downvote_counter);
     TextView heartCounter = chirpView.findViewById(R.id.heart_counter);
 
-    // Set dynamically the counter of each reaction
+    // Set dynamically the reaction buttons selection and counter
     try {
-      laoViewModel.addDisposable(
+      Disposable reactionDisposable =
           socialMediaViewModel
               .getReactions(chirp.getId())
-              // Each time the observable changes the counter is notified
+              // Each time the observable changes the counter and the selection is notified
               .subscribe(
                   reactions -> {
-                    Map<String, Long> codepointToCountMap =
+                    // Map the reactions to the chirp into <codepoint, list of senders' pk>
+                    Map<String, Set<String>> codepointToSendersMap =
                         reactions.stream()
                             // Filter just non deleted reactions
-                            .filter(((Predicate<Reaction>) Reaction::isDeleted).negate())
+                            .filter(reaction -> !reaction.isDeleted())
                             // Then collect by emoji type and count the occurrences
                             .collect(
                                 Collectors.groupingBy(
-                                    Reaction::getCodepoint, Collectors.counting()));
-                    long upVotes = codepointToCountMap.getOrDefault(UPVOTE.getCode(), 0L);
-                    long downVotes = codepointToCountMap.getOrDefault(DOWNVOTE.getCode(), 0L);
-                    long hearts = codepointToCountMap.getOrDefault(HEART.getCode(), 0L);
+                                    Reaction::getCodepoint,
+                                    Collectors.mapping(
+                                        reaction -> reaction.getSender().getEncoded(),
+                                        Collectors.toSet())));
 
-                    upvoteCounter.setText(String.format(Locale.US, "%d", upVotes));
-                    downvoteCounter.setText(String.format(Locale.US, "%d", downVotes));
-                    heartCounter.setText(String.format(Locale.US, "%d", hearts));
+                    // Extract the number of reactions by emoji
+                    Set<String> upVotes =
+                        codepointToSendersMap.getOrDefault(UPVOTE.getCode(), new HashSet<>(0));
+                    Set<String> downVotes =
+                        codepointToSendersMap.getOrDefault(DOWNVOTE.getCode(), new HashSet<>(0));
+                    Set<String> hearts =
+                        codepointToSendersMap.getOrDefault(HEART.getCode(), new HashSet<>(0));
+
+                    upvoteCounter.setText(String.format(Locale.US, "%d", upVotes.size()));
+                    downvoteCounter.setText(String.format(Locale.US, "%d", downVotes.size()));
+                    heartCounter.setText(String.format(Locale.US, "%d", hearts.size()));
+
+                    // As retrieving the database state is asynchronous, the selection can be
+                    // slightly delayed, so we shall observe this observable to set the selection
+                    upvoteChirp.setSelected(socialMediaViewModel.isReactionPresent(upVotes));
+                    downvoteChirp.setSelected(socialMediaViewModel.isReactionPresent(downVotes));
+                    heartChirp.setSelected(socialMediaViewModel.isReactionPresent(hearts));
+
+                    // Based on the selection of the buttons choose the correct drawable
+                    setItemSelection(
+                        upvoteChirp,
+                        R.drawable.ic_social_media_upvote_selected,
+                        R.drawable.ic_social_media_upvote);
+                    setItemSelection(
+                        downvoteChirp,
+                        R.drawable.ic_social_media_downvote_selected,
+                        R.drawable.ic_social_media_downvote);
+                    setItemSelection(
+                        heartChirp,
+                        R.drawable.ic_social_media_heart_selected,
+                        R.drawable.ic_social_media_heart);
                   },
                   err ->
-                      ErrorUtils.logAndShow(context, TAG, err, R.string.unknown_chirp_exception)));
+                      ErrorUtils.logAndShow(context, TAG, err, R.string.unknown_chirp_exception));
+      // Store the disposable as a tag
+      chirpView.setTag(R.id.chirp_card_buttons, reactionDisposable);
+      disposables.add(reactionDisposable);
     } catch (UnknownChirpException e) {
       throw new IllegalArgumentException("The chirp does not exist");
     }
@@ -191,94 +234,41 @@ public class ChirpListAdapter extends BaseAdapter {
       ImageButton upvoteChirp,
       ImageButton downvoteChirp,
       ImageButton heartChirp) {
-    // Set the buttons selected if they were previously pressed
-    upvoteChirp.setSelected(socialMediaViewModel.isReactionPresent(chirpId, UPVOTE.getCode()));
-    downvoteChirp.setSelected(socialMediaViewModel.isReactionPresent(chirpId, DOWNVOTE.getCode()));
-    heartChirp.setSelected(socialMediaViewModel.isReactionPresent(chirpId, HEART.getCode()));
-
-    // Based on the selection of the buttons choose the correct drawable
-    setItemSelection(
-        upvoteChirp, R.drawable.ic_social_media_upvote_selected, R.drawable.ic_social_media_upvote);
-    setItemSelection(
-        downvoteChirp,
-        R.drawable.ic_social_media_downvote_selected,
-        R.drawable.ic_social_media_downvote);
-    setItemSelection(
-        heartChirp, R.drawable.ic_social_media_heart_selected, R.drawable.ic_social_media_heart);
-
     // Set the listener for the upvote button to add and delete reaction
     upvoteChirp.setOnClickListener(
         v -> {
-          reactionListener(
-              upvoteChirp,
-              R.drawable.ic_social_media_upvote_selected,
-              R.drawable.ic_social_media_upvote,
-              UPVOTE,
-              chirpId);
           // Implement the exclusivity of upvote and downvote (i.e. disable downvote if upvote)
-          if (downvoteChirp.isSelected() && upvoteChirp.isSelected()) {
-            reactionListener(
-                downvoteChirp,
-                R.drawable.ic_social_media_downvote_selected,
-                R.drawable.ic_social_media_downvote,
-                DOWNVOTE,
-                chirpId);
+          if (downvoteChirp.isSelected() && !upvoteChirp.isSelected()) {
+            reactionListener(downvoteChirp, DOWNVOTE, chirpId);
           }
+          reactionListener(upvoteChirp, UPVOTE, chirpId);
         });
 
     // Set the listener for the downvote button to add and delete reaction
     downvoteChirp.setOnClickListener(
         v -> {
-          reactionListener(
-              downvoteChirp,
-              R.drawable.ic_social_media_downvote_selected,
-              R.drawable.ic_social_media_downvote,
-              DOWNVOTE,
-              chirpId);
           // Implement the exclusivity of upvote and downvote (i.e. disable upvote if downvote)
-          if (downvoteChirp.isSelected() && upvoteChirp.isSelected()) {
-            reactionListener(
-                upvoteChirp,
-                R.drawable.ic_social_media_upvote_selected,
-                R.drawable.ic_social_media_upvote,
-                UPVOTE,
-                chirpId);
+          if (!downvoteChirp.isSelected() && upvoteChirp.isSelected()) {
+            reactionListener(upvoteChirp, UPVOTE, chirpId);
           }
+          reactionListener(downvoteChirp, DOWNVOTE, chirpId);
         });
 
     // Set the listener for the heart button to add and delete reaction
-    heartChirp.setOnClickListener(
-        v ->
-            reactionListener(
-                heartChirp,
-                R.drawable.ic_social_media_heart_selected,
-                R.drawable.ic_social_media_heart,
-                HEART,
-                chirpId));
+    heartChirp.setOnClickListener(v -> reactionListener(heartChirp, HEART, chirpId));
   }
 
   /**
-   * Function that sets the listener of the reaction buttons. It inverts the button selection,
-   * changes the aspect of the drawable and send the correct message.
+   * Function that sets the listener of the reaction buttons by sending the correct message.
    *
    * @param button reaction button pressed
-   * @param selected drawable resource if button is selected
-   * @param notSelected drawable resource if button is not selected
    * @param emoji type of reaction
    * @param chirpId chirp to which react
    */
   private void reactionListener(
-      ImageButton button,
-      @DrawableRes int selected,
-      @DrawableRes int notSelected,
-      Reaction.ReactionEmoji emoji,
-      @NonNull MessageID chirpId) {
+      ImageButton button, Reaction.ReactionEmoji emoji, @NonNull MessageID chirpId) {
     // Invert the selection
     boolean selection = !button.isSelected();
-    button.setSelected(selection);
-
-    // Set the aspect based on the selection
-    setItemSelection(button, selected, notSelected);
 
     // Send the proper message
     if (selection) {
@@ -309,7 +299,7 @@ public class ChirpListAdapter extends BaseAdapter {
   private void setItemSelection(
       ImageButton button, @DrawableRes int selected, @DrawableRes int notSelected) {
     boolean selection = button.isSelected();
-    // Choose either the selected or not icon
+    // Choose either the selected or not selected icon
     Drawable icon =
         selection
             ? ResourcesCompat.getDrawable(context.getResources(), selected, context.getTheme())

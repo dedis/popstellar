@@ -16,7 +16,7 @@ public class Reaction implements Copyable<Reaction> {
   public enum ReactionEmoji {
     UPVOTE("\uD83D\uDC4D"),
     DOWNVOTE("\uD83D\uDC4E"),
-    HEART("❤");
+    HEART("❤️");
 
     private final String code;
 
@@ -52,7 +52,8 @@ public class Reaction implements Copyable<Reaction> {
       @NonNull PublicKey sender,
       @NonNull String codepoint,
       @NonNull MessageID chirpId,
-      long timestamp) {
+      long timestamp,
+      boolean isDeleted) {
     MessageValidator.verify()
         .isNotEmptyBase64(id.getEncoded(), "reaction id")
         .isNotEmptyBase64(chirpId.getEncoded(), "chirp id")
@@ -63,7 +64,16 @@ public class Reaction implements Copyable<Reaction> {
     this.codepoint = codepoint;
     this.chirpId = chirpId;
     this.timestamp = timestamp;
-    isDeleted = false;
+    this.isDeleted = isDeleted;
+  }
+
+  public Reaction(
+      @NonNull MessageID id,
+      @NonNull PublicKey sender,
+      @NonNull String codepoint,
+      @NonNull MessageID chirpId,
+      long timestamp) {
+    this(id, sender, codepoint, chirpId, timestamp, false);
   }
 
   public Reaction(Reaction reaction) {

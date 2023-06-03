@@ -15,6 +15,7 @@ import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.error.UnknownElectionException;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
 import javax.inject.Inject;
@@ -61,17 +62,18 @@ public class ElectionRepository {
    * @param election the election to update
    */
   public void updateElection(@NonNull Election election) {
-    ElectionEntity electionEntity = new ElectionEntity(election);
     // Persist the election
     disposables.add(
         electionDao
-            .insert(electionEntity)
+            .insert(new ElectionEntity(election))
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 () -> Timber.tag(TAG).d("Successfully persisted election %s", election.getId()),
                 err ->
                     Timber.tag(TAG).e(err, "Error in persisting election %s", election.getId())));
+
+    // Get the lao state and update the election
     getLaoElections(election.getChannel().extractLaoId()).updateElection(election);
   }
 
@@ -124,34 +126,46 @@ public class ElectionRepository {
    */
   @NonNull
   public Observable<Set<Election>> getElectionsObservableInLao(@NonNull String laoId) {
-    return getLaoElections(laoId).getElectionsSubject(this);
+    return getLaoElections(laoId).getElectionsSubject();
   }
 
   @NonNull
   private synchronized LaoElections getLaoElections(String laoId) {
     // Create the lao elections object if it is not present yet
-    return electionsByLao.computeIfAbsent(laoId, lao -> new LaoElections(laoId));
+    return electionsByLao.computeIfAbsent(laoId, lao -> new LaoElections(this, laoId));
   }
 
   private static final class LaoElections {
+    private final ElectionRepository repository;
     private final String laoId;
-    private final Map<String, Election> electionById = new HashMap<>();
-    private final Map<String, Subject<Election>> electionSubjects = new HashMap<>();
+
+    /** Thread-safe map that stores the elections by their identifiers */
+    private final ConcurrentHashMap<String, Election> electionById = new ConcurrentHashMap<>();
+
+    /** Thread-safe map that maps an election id to an observable of it */
+    private final ConcurrentHashMap<String, Subject<Election>> electionSubjects =
+        new ConcurrentHashMap<>();
+
+    /** Observable of all the election set */
     private final BehaviorSubject<Set<Election>> electionsSubject =
         BehaviorSubject.createDefault(Collections.emptySet());
 
-    public LaoElections(String laoId) {
+    public LaoElections(ElectionRepository repository, String laoId) {
+      this.repository = repository;
       this.laoId = laoId;
+      loadStorage();
     }
 
-    public synchronized void updateElection(@NonNull Election election) {
+    public void updateElection(@NonNull Election election) {
       String id = election.getId();
 
       electionById.put(id, election);
       electionSubjects.putIfAbsent(id, BehaviorSubject.create());
-      Objects.requireNonNull(electionSubjects.get(id)).onNext(election);
+      Objects.requireNonNull(electionSubjects.get(id)).toSerialized().onNext(election);
 
-      electionsSubject.onNext(Collections.unmodifiableSet(new HashSet<>(electionById.values())));
+      electionsSubject
+          .toSerialized()
+          .onNext(Collections.unmodifiableSet(new HashSet<>(electionById.values())));
     }
 
     public Election getElection(@NonNull String electionId) throws UnknownElectionException {
@@ -164,25 +178,7 @@ public class ElectionRepository {
       }
     }
 
-    public Observable<Set<Election>> getElectionsSubject(ElectionRepository repository) {
-      // Load in memory the elections from the disk only when the user
-      // clicks on the respective LAO, just needed one time only
-      repository.disposables.add(
-          repository
-              .electionDao
-              .getElectionsByLaoId(laoId, electionById.keySet())
-              .subscribeOn(Schedulers.io())
-              .observeOn(AndroidSchedulers.mainThread())
-              .subscribe(
-                  elections ->
-                      elections.forEach(
-                          election -> {
-                            updateElection(election);
-                            Timber.tag(TAG).d("Retrieved from db election %s", election.getId());
-                          }),
-                  err ->
-                      Timber.tag(TAG)
-                          .e(err, "No election found in the storage for lao %s", laoId)));
+    public Observable<Set<Election>> getElectionsSubject() {
       return electionsSubject;
     }
 
@@ -195,6 +191,29 @@ public class ElectionRepository {
       } else {
         return electionObservable;
       }
+    }
+
+    /**
+     * Load in memory the elections from the disk only when the user clicks on the respective LAO,
+     * just needed one time only.
+     */
+    private void loadStorage() {
+      repository.disposables.add(
+          repository
+              .electionDao
+              .getElectionsByLaoId(laoId)
+              .subscribeOn(Schedulers.io())
+              .observeOn(AndroidSchedulers.mainThread())
+              .subscribe(
+                  elections ->
+                      elections.forEach(
+                          election -> {
+                            updateElection(election);
+                            Timber.tag(TAG).d("Retrieved from db election %s", election.getId());
+                          }),
+                  err ->
+                      Timber.tag(TAG)
+                          .e(err, "No election found in the storage for lao %s", laoId)));
     }
   }
 }

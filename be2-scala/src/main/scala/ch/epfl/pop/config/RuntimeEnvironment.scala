@@ -1,9 +1,9 @@
 package ch.epfl.pop.config
 
 import java.io.File
-
 import com.typesafe.config.{Config, ConfigFactory}
 
+import scala.io.Source.fromFile
 import scala.reflect.io.Directory
 import scala.sys.SystemProperties
 
@@ -33,15 +33,47 @@ object RuntimeEnvironment {
 
     val virtualMachineParam = "scala.config"
     val pathConfig = sp(virtualMachineParam)
-    if (pathConfig != null && !pathConfig.trim.isEmpty) {
+    if (pathConfig != null && pathConfig.trim.nonEmpty) {
       pathConfig.trim
     } else {
       throw new RuntimeException(s"-D$virtualMachineParam was not provided.")
     }
   }
 
-  private lazy val appConfFile = getConfDir + File.separator + "application.conf"
+  private def testMode: Boolean = {
+    sp("test") != null
+  }
+
+  private lazy val confDir: String = getConfDir
+  private lazy val appConfFile = confDir + File.separator + "application.conf"
+
+  lazy val isTestMode: Boolean = testMode
+  lazy val serverPeersListPath: String =
+    if (isTestMode) {
+      confDir + File.separator + "server-peers-list-mock.conf"
+    } else {
+      confDir + File.separator + "server-peers-list.conf"
+    }
 
   lazy val appConf: Config = ConfigFactory.parseFile(new File(appConfFile))
+
+  // Regex from dataGreetLao.json
+  private val addressPattern = "^(ws|wss)://.*(:d{0,5})?/.*$"
+
+  def readServerPeers(): List[String] = {
+    val source =
+      try {
+        fromFile(serverPeersListPath)
+      } catch {
+        case ex: Throwable =>
+          println("RuntimeEnvironment: " + ex.toString)
+          return Nil
+      }
+
+    val addressList = source.getLines().map(_.trim).filter(_.matches(addressPattern)).toList
+    source.close()
+
+    addressList
+  }
 
 }

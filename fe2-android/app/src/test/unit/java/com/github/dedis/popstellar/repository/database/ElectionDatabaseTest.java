@@ -14,7 +14,7 @@ import org.junit.*;
 import org.junit.runner.RunWith;
 
 import java.time.Instant;
-import java.util.*;
+import java.util.List;
 
 import io.reactivex.observers.TestObserver;
 
@@ -32,11 +32,6 @@ public class ElectionDatabaseTest {
   private static final Election ELECTION =
       new Election.ElectionBuilder(LAO_ID, CREATION + 10, "Election1")
           .setElectionVersion(ElectionVersion.OPEN_BALLOT)
-          .build();
-
-  private static final Election ELECTION2 =
-      new Election.ElectionBuilder(LAO_ID, CREATION + 20, "Election2")
-          .setElectionVersion(ElectionVersion.SECRET_BALLOT)
           .build();
 
   private static final ElectionEntity ELECTION_ENTITY = new ElectionEntity(ELECTION);
@@ -68,47 +63,13 @@ public class ElectionDatabaseTest {
     testObserver.awaitTerminalEvent();
     testObserver.assertComplete();
 
-    Set<String> emptyFilter = new HashSet<>();
     TestObserver<List<Election>> testObserver2 =
         electionDao
-            .getElectionsByLaoId(LAO_ID, emptyFilter)
+            .getElectionsByLaoId(LAO_ID)
             .test()
             .assertValue(elections -> elections.size() == 1 && elections.get(0).equals(ELECTION));
 
     testObserver2.awaitTerminalEvent();
     testObserver2.assertComplete();
-  }
-
-  @Test
-  public void getFilteredIdsTest() {
-    TestObserver<Void> testObserver = electionDao.insert(ELECTION_ENTITY).test();
-
-    testObserver.awaitTerminalEvent();
-    testObserver.assertComplete();
-
-    Set<String> filter = new HashSet<>();
-    filter.add(ELECTION.getId());
-    TestObserver<List<Election>> testObserver2 =
-        electionDao.getElectionsByLaoId(LAO_ID, filter).test().assertValue(List::isEmpty);
-
-    testObserver2.awaitTerminalEvent();
-    testObserver2.assertComplete();
-
-    ElectionEntity newElectionEntity = new ElectionEntity(ELECTION2);
-    TestObserver<Void> testObserver3 = electionDao.insert(newElectionEntity).test();
-
-    testObserver3.awaitTerminalEvent();
-    testObserver3.assertComplete();
-
-    TestObserver<List<Election>> testObserver4 =
-        electionDao
-            .getElectionsByLaoId(LAO_ID, filter)
-            .test()
-            .assertValue(
-                electionEntities ->
-                    electionEntities.size() == 1 && electionEntities.get(0).equals(ELECTION2));
-
-    testObserver4.awaitTerminalEvent();
-    testObserver4.assertComplete();
   }
 }

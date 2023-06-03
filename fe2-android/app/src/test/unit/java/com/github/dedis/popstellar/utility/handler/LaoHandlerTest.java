@@ -1,28 +1,34 @@
 package com.github.dedis.popstellar.utility.handler;
 
-import android.content.Context;
+import android.app.Application;
 
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
-import com.github.dedis.popstellar.di.*;
+import com.github.dedis.popstellar.di.DataRegistryModuleHelper;
+import com.github.dedis.popstellar.di.JsonModule;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.PublicKeySignaturePair;
 import com.github.dedis.popstellar.model.network.method.message.data.DataRegistry;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.*;
 import com.github.dedis.popstellar.model.objects.*;
-import com.github.dedis.popstellar.model.objects.security.KeyPair;
-import com.github.dedis.popstellar.model.objects.security.PublicKey;
+import com.github.dedis.popstellar.model.objects.security.*;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.*;
 import com.github.dedis.popstellar.repository.database.AppDatabase;
+import com.github.dedis.popstellar.repository.database.lao.LAODao;
+import com.github.dedis.popstellar.repository.database.lao.LAOEntity;
+import com.github.dedis.popstellar.repository.database.message.MessageDao;
+import com.github.dedis.popstellar.repository.database.message.MessageEntity;
+import com.github.dedis.popstellar.repository.database.witnessing.*;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.utility.error.*;
 import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
 
-import org.junit.*;
+import org.junit.Before;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -33,6 +39,7 @@ import java.time.Instant;
 import java.util.*;
 
 import io.reactivex.Completable;
+import io.reactivex.Single;
 
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.*;
 import static com.github.dedis.popstellar.utility.handler.data.LaoHandler.updateLaoNameWitnessMessage;
@@ -69,10 +76,10 @@ public class LaoHandlerTest {
   private static final Channel LAO_CHANNEL3 = Channel.getLaoChannel(CREATE_LAO3.getId());
 
   private LAORepository laoRepo;
+  private WitnessingRepository witnessingRepository;
   private MessageHandler messageHandler;
   private ServerRepository serverRepository;
   private Gson gson;
-  private AppDatabase appDatabase;
 
   public static final String RANDOM_KEY = "oOcKZjUeandJOFVgn-E6e-7QksviBBbHUPicdzUgIm8";
   public static final String RANDOM_ADDRESS = "ws://10.0.2.2:9000/organizer/client";
@@ -81,27 +88,52 @@ public class LaoHandlerTest {
   private Lao lao;
   private MessageGeneral createLaoMessage;
 
+  @Mock AppDatabase appDatabase;
+  @Mock LAODao laoDao;
+  @Mock MessageDao messageDao;
+  @Mock WitnessingDao witnessingDao;
+  @Mock WitnessDao witnessDao;
   @Mock MessageSender messageSender;
   @Mock KeyManager keyManager;
 
   @Before
   public void setup() throws GeneralSecurityException, IOException {
     MockitoAnnotations.openMocks(this);
-    Context context = ApplicationProvider.getApplicationContext();
-    appDatabase = AppDatabaseModuleHelper.getAppDatabase(context);
+    Application application = ApplicationProvider.getApplicationContext();
 
     lenient().when(keyManager.getMainKeyPair()).thenReturn(SENDER_KEY1);
     lenient().when(keyManager.getMainPublicKey()).thenReturn(SENDER1);
 
     when(messageSender.subscribe(any())).then(args -> Completable.complete());
 
-    laoRepo = new LAORepository(appDatabase, ApplicationProvider.getApplicationContext());
+    when(appDatabase.laoDao()).thenReturn(laoDao);
+    when(laoDao.getAllLaos()).thenReturn(Single.just(new ArrayList<>()));
+    when(laoDao.insert(any(LAOEntity.class))).thenReturn(Completable.complete());
+
+    when(appDatabase.messageDao()).thenReturn(messageDao);
+    when(messageDao.takeFirstNMessages(anyInt())).thenReturn(Single.just(new ArrayList<>()));
+    when(messageDao.insert(any(MessageEntity.class))).thenReturn(Completable.complete());
+    when(messageDao.getMessageById(any(MessageID.class))).thenReturn(null);
+
+    when(appDatabase.witnessDao()).thenReturn(witnessDao);
+    when(witnessDao.getWitnessesByLao(anyString())).thenReturn(Single.just(new ArrayList<>()));
+    when(witnessDao.insertAll(any())).thenReturn(Completable.complete());
+    when(witnessDao.isWitness(anyString(), any(PublicKey.class))).thenReturn(0);
+
+    when(appDatabase.witnessingDao()).thenReturn(witnessingDao);
+    when(witnessingDao.getWitnessMessagesByLao(anyString()))
+        .thenReturn(Single.just(new ArrayList<>()));
+    when(witnessingDao.insert(any(WitnessingEntity.class))).thenReturn(Completable.complete());
+    when(witnessingDao.deleteMessagesByIds(anyString(), any())).thenReturn(Completable.complete());
+
+    laoRepo = new LAORepository(appDatabase, application);
+    MessageRepository messageRepo = new MessageRepository(appDatabase, application);
     serverRepository = new ServerRepository();
-    MessageRepository messageRepo =
-        new MessageRepository(appDatabase, ApplicationProvider.getApplicationContext());
+    witnessingRepository = new WitnessingRepository(appDatabase, application);
 
     DataRegistry dataRegistry =
-        DataRegistryModuleHelper.buildRegistry(laoRepo, messageRepo, keyManager, serverRepository);
+        DataRegistryModuleHelper.buildRegistry(
+            laoRepo, witnessingRepository, messageRepo, keyManager, serverRepository);
     gson = JsonModule.provideGson(dataRegistry);
     messageHandler = new MessageHandler(messageRepo, dataRegistry);
 
@@ -115,16 +147,10 @@ public class LaoHandlerTest {
     messageRepo.addMessage(createLaoMessage, true, true);
   }
 
-  @After
-  public void tearDown() {
-    appDatabase.clearAllTables();
-    appDatabase.close();
-  }
-
   @Test
   public void testHandleCreateLaoOrganizer()
       throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
-          UnknownElectionException, NoRollCallException {
+          UnknownElectionException, NoRollCallException, UnknownWitnessMessageException {
     // Create the message (new CreateLao) and call the message handler
     MessageGeneral message = new MessageGeneral(SENDER_KEY1, CREATE_LAO2, gson);
     messageHandler.handleMessage(messageSender, LAO_CHANNEL2, message);
@@ -143,15 +169,15 @@ public class LaoHandlerTest {
     assertEquals(expectedCreation, (long) resultLao.getLastModified());
     assertEquals(expectedCreation, (long) resultLao.getCreation());
     assertEquals(expectedOrganizer, resultLao.getOrganizer());
-    assertTrue(resultLao.getWitnesses().isEmpty());
-    assertTrue(resultLao.getWitnessMessages().isEmpty());
+    assertTrue(witnessingRepository.areWitnessesEmpty(LAO_CHANNEL2.extractLaoId()));
+    assertTrue(witnessingRepository.areWitnessMessagesEmpty(LAO_CHANNEL3.extractLaoId()));
     assertNull(resultLao.getModificationId());
   }
 
   @Test
   public void testHandleCreateLaoWitness()
       throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
-          UnknownElectionException, NoRollCallException {
+          UnknownElectionException, NoRollCallException, UnknownWitnessMessageException {
     // Main public key is a witness now, and not the organizer
     lenient().when(keyManager.getMainPublicKey()).thenReturn(SENDER2);
 
@@ -173,15 +199,16 @@ public class LaoHandlerTest {
     assertEquals(expectedCreation, (long) resultLao.getLastModified());
     assertEquals(expectedCreation, (long) resultLao.getCreation());
     assertEquals(expectedOrganizer, resultLao.getOrganizer());
-    assertEquals(new HashSet<>(WITNESSES), resultLao.getWitnesses());
-    assertTrue(resultLao.getWitnessMessages().isEmpty());
+    assertEquals(
+        new HashSet<>(WITNESSES), witnessingRepository.getWitnesses(LAO_CHANNEL3.extractLaoId()));
+    assertTrue(witnessingRepository.areWitnessMessagesEmpty(LAO_CHANNEL3.extractLaoId()));
     assertNull(resultLao.getModificationId());
   }
 
   @Test
   public void testHandleUpdateLaoNewName()
       throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
-          UnknownElectionException, NoRollCallException {
+          UnknownElectionException, NoRollCallException, UnknownWitnessMessageException {
     // Create the update LAO message with new LAO name
     UpdateLao updateLao =
         new UpdateLao(
@@ -201,7 +228,7 @@ public class LaoHandlerTest {
 
     // Check the WitnessMessage has been created
     Optional<WitnessMessage> witnessMessage =
-        laoRepo.getLaoByChannel(LAO_CHANNEL1).getWitnessMessage(message.getMessageId());
+        witnessingRepository.getWitnessMessage(LAO_CHANNEL1.extractLaoId(), message.getMessageId());
     assertTrue(witnessMessage.isPresent());
     assertEquals(expectedMessage.getTitle(), witnessMessage.get().getTitle());
     assertEquals(expectedMessage.getDescription(), witnessMessage.get().getDescription());
@@ -210,9 +237,9 @@ public class LaoHandlerTest {
   @Test
   public void testHandleUpdateLaoNewWitness()
       throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
-          UnknownElectionException, NoRollCallException {
+          UnknownElectionException, NoRollCallException, UnknownWitnessMessageException {
     // Set LAO to have one witness
-    lao.setWitnesses(new HashSet<>(WITNESS));
+    lao.initKeyToNode(new HashSet<>(WITNESS));
 
     // Create UpdateLao with updated witness set
     UpdateLao updateLao =
@@ -237,7 +264,7 @@ public class LaoHandlerTest {
 
     // Check the WitnessMessage has been created
     Optional<WitnessMessage> witnessMessage =
-        laoRepo.getLaoByChannel(LAO_CHANNEL1).getWitnessMessage(message.getMessageId());
+        witnessingRepository.getWitnessMessage(LAO_CHANNEL1.extractLaoId(), message.getMessageId());
     assertTrue(witnessMessage.isPresent());
     assertEquals(expectedMessage.getTitle(), witnessMessage.get().getTitle());
     assertEquals(expectedMessage.getDescription(), witnessMessage.get().getDescription());
@@ -288,7 +315,7 @@ public class LaoHandlerTest {
   @Test
   public void testHandleStateLaoOrganizer()
       throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
-          UnknownElectionException, NoRollCallException {
+          UnknownElectionException, NoRollCallException, UnknownWitnessMessageException {
     // Create a valid list of modification signatures
     List<PublicKeySignaturePair> modificationSignatures =
         getValidModificationSignatures(createLaoMessage);
@@ -319,7 +346,7 @@ public class LaoHandlerTest {
   @Test
   public void testHandleStateLaoWitness()
       throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
-          UnknownElectionException, NoRollCallException {
+          UnknownElectionException, NoRollCallException, UnknownWitnessMessageException {
     // Main public key is a witness now, and not the organizer
     lenient().when(keyManager.getMainPublicKey()).thenReturn(SENDER2);
 
@@ -349,7 +376,7 @@ public class LaoHandlerTest {
   @Test
   public void testHandleStateLaoRemovesStalePendingUpdates()
       throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
-          UnknownElectionException, NoRollCallException {
+          UnknownElectionException, NoRollCallException, UnknownWitnessMessageException {
     // Create a list of 2 pending updates: one newer and one older than the stateLao message
     long targetTime = CREATE_LAO1.getCreation() + 5;
     PendingUpdate oldPendingUpdate = mock(PendingUpdate.class);
@@ -435,7 +462,7 @@ public class LaoHandlerTest {
   @Test()
   public void testGreetLao()
       throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
-          UnknownElectionException, NoRollCallException {
+          UnknownElectionException, NoRollCallException, UnknownWitnessMessageException {
     // Create the Greet Lao
     GreetLao greetLao =
         new GreetLao(

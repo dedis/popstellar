@@ -111,7 +111,82 @@ func Test_Create_LAO_Bad_Key(t *testing.T) {
 		Message: publishBuf,
 	})
 
-	assert.Contains(t, sock.err.Error(), "access denied: sender's public key does not match the organizer's")
+	assert.Contains(t, sock.err.Error(), "access denied: sender's public key does not match the owner's")
+}
+
+func Test_Create_LAO_Different_Sender_And_Organizer_Keys(t *testing.T) {
+	keypair := generateKeyPair(t)
+	wrongKeypair := generateKeyPair(t)
+
+	fakeChannelFac := &fakeChannelFac{c: &fakeChannel{}}
+
+	hub, err := NewHub(keypair.public, "", "", nolog, fakeChannelFac.newChannel)
+	require.NoError(t, err)
+
+	now := time.Now().Unix()
+	name := "LAO X"
+
+	// LaoID is Hash(organizer||create||name) encoded in base64URL
+	laoID := messagedata.Hash(base64.URLEncoding.EncodeToString(keypair.publicBuf), fmt.Sprintf("%d", now), name)
+
+	data := messagedata.LaoCreate{
+		Object:    messagedata.LAOObject,
+		Action:    messagedata.LAOActionCreate,
+		ID:        laoID,
+		Name:      name,
+		Creation:  now,
+		Organizer: base64.URLEncoding.EncodeToString(keypair.publicBuf),
+		Witnesses: []string{},
+	}
+
+	dataBuf, err := json.Marshal(data)
+	require.NoError(t, err)
+
+	signature, err := schnorr.Sign(suite, wrongKeypair.private, dataBuf)
+	require.NoError(t, err)
+
+	dataBase64 := base64.URLEncoding.EncodeToString(dataBuf)
+	signatureBase64 := base64.URLEncoding.EncodeToString(signature)
+
+	msg := message.Message{
+		Data:              dataBase64,
+		Sender:            base64.URLEncoding.EncodeToString(wrongKeypair.publicBuf),
+		Signature:         signatureBase64,
+		MessageID:         messagedata.Hash(dataBase64, signatureBase64),
+		WitnessSignatures: []message.WitnessSignature{},
+	}
+
+	publish := method.Publish{
+		Base: query.Base{
+			JSONRPCBase: jsonrpc.JSONRPCBase{
+				JSONRPC: "2.0",
+			},
+
+			Method: query.MethodPublish,
+		},
+
+		ID: 1,
+
+		Params: struct {
+			Channel string          `json:"channel"`
+			Message message.Message `json:"message"`
+		}{
+			Channel: "/root",
+			Message: msg,
+		},
+	}
+
+	publishBuf, err := json.Marshal(&publish)
+	require.NoError(t, err)
+
+	sock := &fakeSocket{}
+
+	hub.handleMessageFromClient(&socket.IncomingMessage{
+		Socket:  sock,
+		Message: publishBuf,
+	})
+
+	assert.Contains(t, sock.err.Error(), "access denied: sender's public key does not match the organizer field")
 }
 
 func Test_Create_LAO_No_Key(t *testing.T) {
@@ -1068,7 +1143,7 @@ func Test_Create_LAO_GetMessagesById_Result(t *testing.T) {
 
 	name := "LAO X"
 	creationTime := 123
-	organizer := base64.URLEncoding.EncodeToString([]byte("Somebody"))
+	organizer := base64.URLEncoding.EncodeToString(keypair.publicBuf)
 
 	// LaoID is Hash(organizer||create||name) encoded in base64URL
 	laoID := messagedata.Hash(organizer, fmt.Sprintf("%d", creationTime), name)
@@ -1244,7 +1319,7 @@ func Test_Create_LAO_GetMessagesById_Wrong_MessageID(t *testing.T) {
 	})
 
 	expectedMessageID := messagedata.Hash(dataBase64, signatureBase64)
-	require.EqualError(t, sock.err, fmt.Sprintf("failed to handle answer message: message_id is wrong: expected %q found %q", expectedMessageID, fakeMessageID))
+	require.EqualError(t, sock.err, fmt.Sprintf("failed to handle answer message: failed to process messages: message_id is wrong: expected %q found %q", expectedMessageID, fakeMessageID))
 }
 
 // Check that if the server receives a subscribe message, it will call the

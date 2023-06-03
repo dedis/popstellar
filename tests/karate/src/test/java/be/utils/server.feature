@@ -22,9 +22,9 @@ Feature: This feature starts a server and stops it after every scenario.
     * def getServer =
             """
                 function() {
-                    if(env == 'go')
+                    if(env == 'go_client' || env == 'go_server')
                         return new GoServer();
-                    else if(env == 'scala')
+                    else if(env == 'scala_client' || env == 'scala_server')
                         return new ScalaServer();
                     else
                         karate.fail("Unknown environment for server");

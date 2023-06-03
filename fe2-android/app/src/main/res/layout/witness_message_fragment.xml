@@ -15,21 +15,32 @@
       android:orientation="vertical"
       app:layout_constraintTop_toTopOf="parent">
 
-      <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-        android:id="@+id/swipe_refresh_witness_message"
+      <ListView
+        android:id="@+id/witness_message_list"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent"
+        android:divider="@color/background_gray"
+        android:layout_marginLeft="@dimen/margin_button"
+        android:layout_marginRight="@dimen/margin_button"
+        android:dividerHeight="@dimen/margin_top" />
 
-        <ListView
-          android:id="@+id/witness_message_list"
-          android:layout_width="match_parent"
-          android:layout_height="match_parent"
-          android:divider="@color/background_gray"
-          android:layout_marginLeft="@dimen/margin_button"
-          android:layout_marginRight="@dimen/margin_button"
-          android:dividerHeight="@dimen/margin_top" />
-      </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
     </LinearLayout>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+      android:id="@+id/witness_delete_signed_message"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      app:fabSize="normal"
+      android:elevation="@dimen/floating_action_button_elevation"
+      android:layout_marginBottom="@dimen/fab_margin_bottom"
+      android:layout_marginEnd="@dimen/fab_margin_end"
+      android:src="@drawable/bin_icon"
+      android:backgroundTint="@color/colorPrimary"
+      app:backgroundTint="@color/colorPrimary"
+      android:tintMode="@color/white"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintEnd_toEndOf="parent"
+      android:contentDescription="@string/delete_signed_messages" />
 
   </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

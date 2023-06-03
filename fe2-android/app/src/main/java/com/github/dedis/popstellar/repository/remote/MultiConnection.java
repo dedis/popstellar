@@ -5,8 +5,10 @@ import com.github.dedis.popstellar.model.network.method.Message;
 import com.github.dedis.popstellar.model.objects.PeerAddress;
 import com.tinder.scarlet.WebSocket;
 
-import java.util.*;
+import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import io.reactivex.Observable;
 
@@ -22,7 +24,7 @@ public class MultiConnection extends Connection {
   private final Function<String, Connection> connectionProvider;
 
   /** Map a PeerAddress (url for now) to its connection */
-  private final Map<PeerAddress, Connection> connectionMap;
+  private final ConcurrentHashMap<PeerAddress, Connection> connectionMap;
 
   /**
    * Create the main connection as the super class
@@ -32,25 +34,28 @@ public class MultiConnection extends Connection {
    * @param url main server's url
    */
   public MultiConnection(Function<String, Connection> connectionProvider, String url) {
+    // Instantiate the first connection to the main server
     super(connectionProvider.apply(url));
     this.connectionProvider = connectionProvider;
-    connectionMap = new HashMap<>();
+    connectionMap = new ConcurrentHashMap<>();
   }
 
   /**
-   * Function called upon the GreetLao, it extends the connection only for the first GreetLao
-   * received.
+   * Function called upon the GreetLao, it extends the connection for all the new peers.
    *
    * @param peerAddressList list of peer servers contained in the greet message
-   * @return true if the connection hasn't been extended already, false otherwise
+   * @return true if the connection is extended, false if all the peers are already connected
    */
   public boolean connectToPeers(List<PeerAddress> peerAddressList) {
-    // If the connection to peers has already established don't connect to
-    // the peers of the peers (depth = 1)
-    if (!connectionMap.isEmpty()) {
+    // Extract the peers for which there's no connection already
+    List<PeerAddress> newPeers =
+        peerAddressList.stream()
+            .filter(peer -> !connectionMap.containsKey(peer))
+            .collect(Collectors.toList());
+    if (newPeers.isEmpty()) {
       return false;
     }
-    peerAddressList.forEach(p -> connectionMap.put(p, connectionProvider.apply(p.getAddress())));
+    newPeers.forEach(p -> connectionMap.put(p, connectionProvider.apply(p.getAddress())));
     return true;
   }
 

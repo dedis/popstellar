@@ -38,7 +38,7 @@ public final class MessageHandler {
    */
   public void handleMessage(MessageSender messageSender, Channel channel, MessageGeneral message)
       throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
-          UnknownElectionException, NoRollCallException {
+          UnknownElectionException, NoRollCallException, UnknownWitnessMessageException {
 
     Data data = message.getData();
 
