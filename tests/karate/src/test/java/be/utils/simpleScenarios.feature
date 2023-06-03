@@ -47,7 +47,7 @@
             "jsonrpc": "2.0"
           }
         """
-      * karate.log("sending a subscribe : ", karate.pretty(subscribe))
+      * karate.log("sending a subscribe to lao channel: ", karate.pretty(subscribe))
       * organizer.send(subscribe)
       * def subs = organizer.takeTimeout(timeout)
       * karate.log("subscribe message received : " + subs)
@@ -63,7 +63,7 @@
             "jsonrpc": "2.0"
           }
         """
-      * karate.log("sending a catchup : ", karate.pretty(catchup))
+      * karate.log("sending a catchup to lao channel: ", karate.pretty(catchup))
       * organizer.send(catchup)
       * def catchup_response = organizer.takeTimeout(timeout)
       * karate.log("catchup message received : " + catchup_response)
@@ -130,11 +130,10 @@
       * json answer = organizer.getBackendResponse(validRollCallClose)
       * karate.log("received an answer to the roll call close : ", karate.pretty(answer))
 
-    # organizer, lao, rollCall and an election with at least one question need to be passed as arguments when calling this scenario
+    # organizer, lao, rollCall, election and the question need to be passed as arguments when calling this scenario
     @name=election_setup
-    Scenario: Sets up a valid election
-      * call read('classpath:be/utils/simpleScenarios.feature@name=close_roll_call') { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)'  election: '#(election)' }
-
+    Scenario: Sets up a valid election with one question
+      * call read('classpath:be/utils/simpleScenarios.feature@name=close_roll_call') { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)' }
       And def validElectionSetup =
       """
         {
@@ -149,11 +148,11 @@
           "end_time": '#(election.end)',
           "questions": [
             {
-              "id": '#(election.questions.get(0).id)',
-              "question": '#(election.questions.get(0).question)',
-              "voting_method": '#(election.questions.get(0).votingMethod)',
-              "ballot_options": '#(election.questions.get(0).ballotOptions)',
-              "write_in": '#(election.questions.get(0).writeIn)'
+              "id": '#(question.id)',
+              "question": '#(question.question)',
+              "voting_method": '#(question.votingMethod)',
+              "ballot_options": '#(question.ballotOptions)',
+              "write_in": '#(question.writeIn)'
             }
           ]
         }

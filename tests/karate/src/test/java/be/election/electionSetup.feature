@@ -12,11 +12,11 @@ Feature: Setup an Election
     * def lao = organizer.createValidLao()
     * def rollCall = organizer.createValidRollCall(lao)
     * def election = organizer.createValidElection(lao)
-    * def question = election.addRandomQuestion()
+    * def question = election.createQuestion()
 
     # This call executes all the steps to set up a lao and complete a roll call, to get a valid pop token
     # (lao creation, subscribe, catchup, roll call creation, roll call open, roll call close)
-    * call read('classpath:be/utils/simpleScenarios.feature@name=election_setup') { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)' }
+    * call read('classpath:be/utils/simpleScenarios.feature@name=close_roll_call') { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)' }
 
   # Testing if after a successful roll call, sending a valid election
   # setup results in a valid response from the backend

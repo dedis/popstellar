@@ -5,6 +5,7 @@ import be.utils.RandomUtils;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class Election {
@@ -29,6 +30,17 @@ public class Election {
     this.start = start;
     this.end = end;
     this.questions = questions;
+  }
+
+  /**
+   * Copies the existing election but switches the creation and start time of the election.
+   * Recomputes the election id to match the new creation time.
+   *
+   * @return copy of the election with switched creation and start time
+   */
+  public Election switchCreationAndStart(){
+    String newId = generateElectionSetupId(getLaoId(channel), start, name);
+    return new Election(channel, newId, name, version, start, creation, end, questions);
   }
 
   /**
@@ -58,10 +70,12 @@ public class Election {
   }
 
   /**
+   * Creates a random valid election question with 2 ballot options, plurality voting method and write in set to false.
+   * Adds the question to the current election.
    *
-   * @return
+   * @return a valid election question
    */
-  public ElectionQuestion addRandomQuestion(){
+  public ElectionQuestion createQuestion(){
     List<String> ballotOptions = new ArrayList<>();
     ballotOptions.add(RandomUtils.generateRandomName());
     ballotOptions.add(RandomUtils.generateRandomName());
@@ -91,6 +105,15 @@ public class Election {
 
     public ElectionOpen(long openedAt){
       this.openedAt = openedAt;
+    }
+  }
+
+  private String getLaoId(String electionChannel){
+    int index = electionChannel.indexOf('/');
+    if (index != -1) {
+      return electionChannel.substring(0, index);
+    } else {
+      throw new IllegalArgumentException(electionChannel + " is not a valid election channel");
     }
   }
 }

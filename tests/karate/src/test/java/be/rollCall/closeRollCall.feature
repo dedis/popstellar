@@ -78,7 +78,7 @@ Feature: Close a Roll Call
 
   Scenario: Closing a Roll Call that was not opened on the server returns an error
     Given def newRollCall = organizer.createValidRollCall(lao)
-    # This creates the new roll call on the server without opening it
+    # This call creates the new roll call on the server without opening it
     And call read('classpath:be/utils/simpleScenarios.feature@name=valid_roll_call') { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(newRollCall)' }
     And def closeNewRollCall = newRollCall.close()
     And def validCloseRollCall =
