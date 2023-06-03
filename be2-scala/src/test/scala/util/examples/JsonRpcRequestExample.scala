@@ -267,7 +267,7 @@ object JsonRpcRequestExample {
   final val STATE_MEETING_SMALLMODIFICATION_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithStateMeetingSmallModificationTime, id)
 
   // For Popcha testing
-  private final val authenticationChannel: Channel = Channel(Channel.ROOT_CHANNEL_PREFIX + Base64Data.encode("laoid") + Channel.POPCHA_AUTHENTICATION_LOCATION)
+  private final val authenticationChannel: Channel = Channel(Channel.ROOT_CHANNEL_PREFIX + Base64Data.encode("laoid") + Channel.POPCHA_CHANNEL_PREFIX)
   private final val authenticationChannelWrong: Channel = Channel(Channel.ROOT_CHANNEL_PREFIX + Base64Data.encode("laoid") + "/wrong_sub_channel")
   private final val paramsWithAuthenticate: ParamsWithMessage = new ParamsWithMessage(authenticationChannel, MESSAGE_AUTHENTICATE)
   private final val paramsWithAuthenticateOtherResponseMode: ParamsWithMessage = new ParamsWithMessage(authenticationChannel, MESSAGE_AUTHENTICATE_OTHER_RESPONSE_MODE)

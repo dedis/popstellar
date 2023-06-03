@@ -69,7 +69,7 @@ sealed class PopchaValidator(dbActorRef: => AskableActorRef) extends MessageData
   }
 
   private def checkChannelName(rpcMessage: JsonRpcMessage, channel: Channel, laoId: Hash, error: PipelineError): GraphMessage = {
-    val expectedChannelName = Channel.ROOT_CHANNEL_PREFIX + laoId + Channel.POPCHA_AUTHENTICATION_LOCATION
+    val expectedChannelName = Channel.ROOT_CHANNEL_PREFIX + laoId + Channel.POPCHA_CHANNEL_PREFIX
     if (channel.channel == expectedChannelName)
       Right(rpcMessage)
     else

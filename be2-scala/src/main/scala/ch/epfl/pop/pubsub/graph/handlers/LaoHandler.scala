@@ -26,6 +26,7 @@ case object LaoHandler extends MessageHandler {
         coinChannel: Channel = Channel(s"$laoChannel${Channel.COIN_CHANNEL_PREFIX}")
         socialChannel: Channel = Channel(s"$laoChannel${Channel.SOCIAL_MEDIA_CHIRPS_PREFIX}")
         reactionChannel: Channel = Channel(s"$laoChannel${Channel.REACTIONS_CHANNEL_PREFIX}")
+        popchaChannel: Channel = Channel(s"$laoChannel${Channel.POPCHA_CHANNEL_PREFIX}")
         // we get access to the canonical address of the server
         config = ServerConf(appConf)
         address: Option[String] = Some(f"ws://${config.interface}:${config.port}/${config.clientPath}")
@@ -37,7 +38,8 @@ case object LaoHandler extends MessageHandler {
           (coinChannel, ObjectType.COIN),
           (laoChannel, ObjectType.LAO),
           (socialChannel, ObjectType.CHIRP),
-          (reactionChannel, ObjectType.REACTION)
+          (reactionChannel, ObjectType.REACTION),
+          (popchaChannel, ObjectType.POPCHA)
         ))
         // write lao creation message
         _ <- dbActor ? DbActor.Write(laoChannel, message)
