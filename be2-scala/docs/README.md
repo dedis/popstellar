@@ -202,12 +202,18 @@ We are using [leveldb](https://github.com/codeborui/leveldb-scala) in order to s
 
 Multiple messages may then be stored "inside" each channel (all within one single database file). Since leveldb is a key-value database, we are using `channel#message_id` as key and the corresponding `message` (in its json representation) as value.
 
+The database is split between data stored as Key -> List[Message ids] and the data itself Key -> Message. Hence we are using two prefixes to the keys used to query the database :
+- CHANNEL_DATA_KEY = "ChannelData:" for data stored as Key -> List[Message ids]
+- DATA_KEY = "Data:" for the data itself.
+
 Summary of the keys used to retrieve data:
-- for a message: `channel#message_id`
-- for ChannelData: `channel`
-- for LaoData: `root/lao_id#laodata`
-- for RollCallData: `root/lao_id/rollcall`
-- for ElectionData: `root/lao_id/private/election_id`
+- for a message: `Data:channel#message_id`
+- for ChannelData: `ChannelData:channel`
+- for LaoData: `Data:root/lao_id#laodata`
+- for RollCallData: `Data:root/lao_id/rollcall`
+- for ElectionData: `Data:/root/lao_id/private/election_id`
+- for a SetupElection message: `Data:SetupElectionMessageId:channel`
+- for a CreateLao message: `Data:CreateLaoId:channel`
 
 We use `/` as a separator for parts of a channel and `#` as a separator for data objects when needed.
 
