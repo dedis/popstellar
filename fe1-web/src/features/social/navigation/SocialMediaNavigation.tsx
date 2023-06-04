@@ -38,6 +38,7 @@ const SocialMediaNavigation = () => {
   const [currentUserPopTokenPublicKey, setCurrentUserPopTokenPublicKey] = useState(
     undefined as unknown as PublicKey,
   );
+  console.log('Current User Pop Token Public Key: ', currentUserPopTokenPublicKey);
 
   const lao = SocialHooks.useCurrentLao();
 
@@ -49,17 +50,21 @@ const SocialMediaNavigation = () => {
   const rollCallId = lao.last_tokenized_roll_call_id;
   const rollCall: SocialFeature.RollCall | undefined = SocialHooks.useRollCallById(rollCallId);
 
-  SocialHooks.useSocialContext()
-    .generateToken(lao.id, rollCallId)
-    .then((token) => {
-      if (rollCall?.containsToken(token)) {
-        setCurrentUserPopTokenPublicKey(token.publicKey);
-      }
-    })
-    // If an error happens when generating the token, it should not affect the Social Media
-    .catch(() => {
-      /* noop */
-    });
+  const socialContext = SocialHooks.useSocialContext();
+
+  if (currentUserPopTokenPublicKey === undefined) {
+    socialContext
+      .generateToken(lao.id, rollCallId)
+      .then((token) => {
+        if (rollCall?.containsToken(token)) {
+          setCurrentUserPopTokenPublicKey(token.publicKey);
+        }
+      })
+      // If an error happens when generating the token, it should not affect the Social Media
+      .catch(() => {
+        /* noop */
+      });
+  }
 
   // prevents unnecessary re-renders in components using this react context
   // react by default only performs shallow equality checks which means
