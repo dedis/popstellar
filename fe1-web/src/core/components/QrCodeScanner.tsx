@@ -57,7 +57,7 @@ const styles = StyleSheet.create({
  * (2022-12-05, Tyratox) Issue to track this: https://github.com/dedis/popstellar/issues/1306
  */
 const QrCodeScanner = ({ showCamera, children, handleScan }: IPropTypes) => {
-  // On future releases this might be changed to allow switching cameras. But for now this is not working. (2023-06-03)
+  // On future releases this might be changed to allow switching cameras. But for now this is not working. (2023-06-03, MeKHell)
   const hasMultipleCameras = false;
   const [cameraType, setCameraType] = useState<CameraType>(CameraType.back);
   const [hasCamera, setHasCamera] = useState(true);
