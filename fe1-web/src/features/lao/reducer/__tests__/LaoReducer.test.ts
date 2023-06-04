@@ -40,6 +40,7 @@ import {
   addSubscribedChannel,
   removeSubscribedChannel,
   selectConnectedToLao,
+  reconnectLao,
 } from '../LaoReducer';
 
 const rollCallId = new Hash('1234');
@@ -114,6 +115,13 @@ const filledState2: LaoReducerState = {
   connected: false,
 };
 
+const disconnectedState1: LaoReducerState = {
+  byId: { [serializedMockLaoId]: mockLaoState },
+  allIds: [serializedMockLaoId],
+  currentId: serializedMockLaoId,
+  connected: true,
+};
+
 const connectedState1: LaoReducerState = {
   byId: { [serializedMockLaoId]: mockLaoState },
   allIds: [serializedMockLaoId],
@@ -183,6 +191,14 @@ describe('LaoReducer', () => {
     expect(laoReduce(filledState1, setLaoLastRollCall(mockLaoId, rollCallId, true))).toEqual(
       filledStateAfterRollCall,
     );
+  });
+
+  it('should update connected state when calling reconnectLao', () => {
+    expect(laoReduce(disconnectedState1, reconnectLao())).toEqual(connectedState1);
+  });
+
+  it('should throw error if no current id when calling reconnectLao', () => {
+    expect(() => laoReduce(filledState2, reconnectLao())).toThrow();
   });
 
   it('should clear currentId on rehydration', () => {
