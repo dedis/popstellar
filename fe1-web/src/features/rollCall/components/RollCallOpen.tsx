@@ -182,7 +182,13 @@ const RollCallOpen = ({
               value={ScannablePopToken.encodePopToken({ pop_token: popToken })}
               overlayText={STRINGS.roll_call_qrcode_text}
             />
-            <Text style={[Typography.paragraph, Typography.centered, textStyle.topSpace]}>
+            <Text
+              style={[
+                Typography.paragraph,
+                Typography.centered,
+                Typography.code,
+                textStyle.topSpace,
+              ]}>
               {popToken}
             </Text>
           </View>
