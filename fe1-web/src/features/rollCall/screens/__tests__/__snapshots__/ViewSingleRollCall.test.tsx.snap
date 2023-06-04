@@ -505,6 +505,9 @@ exports[`EventRollCall render correctly no duplicate attendees opened roll calls
                                       "textAlign": "center",
                                     },
                                     {
+                                      "fontFamily": "Courier New",
+                                    },
+                                    {
                                       "marginTop": 32,
                                     },
                                   ]
@@ -1491,6 +1494,9 @@ exports[`EventRollCall render correctly no duplicate attendees re-opened roll ca
                                     },
                                     {
                                       "textAlign": "center",
+                                    },
+                                    {
+                                      "fontFamily": "Courier New",
                                     },
                                     {
                                       "marginTop": 32,
@@ -3794,6 +3800,9 @@ exports[`EventRollCall render correctly non organizers opened roll calls 1`] = `
                                       "textAlign": "center",
                                     },
                                     {
+                                      "fontFamily": "Courier New",
+                                    },
+                                    {
                                       "marginTop": 32,
                                     },
                                   ]
@@ -4780,6 +4789,9 @@ exports[`EventRollCall render correctly non organizers re-opened roll calls 1`] 
                                     },
                                     {
                                       "textAlign": "center",
+                                    },
+                                    {
+                                      "fontFamily": "Courier New",
                                     },
                                     {
                                       "marginTop": 32,
