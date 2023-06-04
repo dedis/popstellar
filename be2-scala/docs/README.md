@@ -215,6 +215,9 @@ Summary of the keys used to retrieve data:
 - for a SetupElection message: `Data:SetupElectionMessageId:channel`
 - for a CreateLao message: `Data:CreateLaoId:channel`
 
+Notice how CreateLao messages are stored. Before the introduction of heartbeat and get_messages_by_id messages, CreateLao messages were received on `/root` and written on `/root/lao_id`. Hence, sent to other servers on `root/lao_id`, the CreateLao messages were rejected. This is the reason why CreateLao messages have been moved to root.
+Notice also how SetupElection messages are stored. They are expected to be received on `/root/lao_id`, but were written on `/root/lao_id/election_id`. Hence, they were rejected when received by other servers.
+
 We use `/` as a separator for parts of a channel and `#` as a separator for data objects when needed.
 
 The database API is separated in two layers:
