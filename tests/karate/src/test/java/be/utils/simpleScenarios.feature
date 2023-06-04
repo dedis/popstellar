@@ -13,7 +13,6 @@
       * def closeRollCallId = 33
       * def electionSetupId = 4
       * def castVoteId = 41
-      * def frontend = call createMockClient
 
     # organizer and lao need to be passed as arguments when calling this scenario
     @name=valid_lao
@@ -30,11 +29,10 @@
           "witnesses": "#(lao.witnesses)"
         }
       """
-      * karate.log("sending a lao create request : ", karate.pretty(laoCreateRequest))
+      * karate.log("sending a lao create request :\n", karate.pretty(laoCreateRequest))
       * organizer.publish(laoCreateRequest, rootChannel)
       * json answer = organizer.getBackendResponse(laoCreateRequest)
-      * karate.log("Received an answer for lao create request : ", karate.pretty(answer))
-      * string laoChannel = rootChannel + '/' + lao.id
+      * karate.log("Received an answer for lao create request :\n", karate.pretty(answer))
 
       And def subscribe =
         """
@@ -42,15 +40,15 @@
             "method": "subscribe",
             "id": 2,
             "params": {
-                "channel": '#(laoChannel)',
+                "channel": '#(lao.channel)',
             },
             "jsonrpc": "2.0"
           }
         """
-      * karate.log("sending a subscribe to lao channel: ", karate.pretty(subscribe))
+      * karate.log("sending a subscribe to lao channel:\n", karate.pretty(subscribe))
       * organizer.send(subscribe)
       * def subs = organizer.takeTimeout(timeout)
-      * karate.log("subscribe message received : " + subs)
+      * karate.log("subscribe message received :\n" + subs)
 
       And def catchup =
         """
@@ -58,15 +56,15 @@
             "method": "catchup",
             "id": 5,
             "params": {
-                "channel": '#(laoChannel)',
+                "channel": '#(lao.channel)',
               },
             "jsonrpc": "2.0"
           }
         """
-      * karate.log("sending a catchup to lao channel: ", karate.pretty(catchup))
+      * karate.log("sending a catchup to lao channel:\n", karate.pretty(catchup))
       * organizer.send(catchup)
       * def catchup_response = organizer.takeTimeout(timeout)
-      * karate.log("catchup message received : " + catchup_response)
+      * karate.log("catchup message received :\n" + catchup_response)
 
     # organizer, lao and rollCall need to be passed as arguments when calling this scenario
     @name=valid_roll_call
@@ -86,7 +84,7 @@
             "description": '#(rollCall.description)',
            }
          """
-      * karate.log("sending a roll call create request : ", karate.pretty(validCreateRollCall))
+      * karate.log("sending a roll call create request :\n", karate.pretty(validCreateRollCall))
       * organizer.publish(validCreateRollCall, lao.channel)
       * json answer = organizer.getBackendResponse(validCreateRollCall)
 
@@ -105,7 +103,7 @@
             "opened_at": '#(openRollCall.openedAt)'
           }
         """
-      * karate.log("sending a roll call open request : ", karate.pretty(validOpenRollCall))
+      * karate.log("sending a roll call open request :\n", karate.pretty(validOpenRollCall))
       * organizer.publish(validOpenRollCall, lao.channel)
       * json answer = organizer.getBackendResponse(validOpenRollCall)
 
@@ -125,10 +123,10 @@
             "attendees": '#(closeRollCall.attendees)'
           }
       """
-      * karate.log("sending a roll call close request : ", karate.pretty(validRollCallClose))
+      * karate.log("sending a roll call close request :\n", karate.pretty(validRollCallClose))
       * organizer.publish(validRollCallClose, lao.channel)
       * json answer = organizer.getBackendResponse(validRollCallClose)
-      * karate.log("received an answer to the roll call close : ", karate.pretty(answer))
+      * karate.log("received an answer to the roll call close :\n", karate.pretty(answer))
 
     # organizer, lao, rollCall, election and the question need to be passed as arguments when calling this scenario
     @name=election_setup
@@ -157,8 +155,8 @@
           ]
         }
       """
-      * karate.log("sending an election setup request : ", karate.pretty(validElectionSetup))
-      When organizer.publish(validElectionSetup, laoChannel)
+      * karate.log("sending an election setup request :\n", karate.pretty(validElectionSetup))
+      When organizer.publish(validElectionSetup, lao.channel)
       And json answer = organizer.getBackendResponse(validElectionSetup)
 
       And def subscribe =
@@ -172,7 +170,7 @@
             "jsonrpc": "2.0"
           }
         """
-      * karate.log("sending a subscribe to election channel : ", karate.pretty(subscribe))
+      * karate.log("sending a subscribe to election channel :\n", karate.pretty(subscribe))
       * organizer.send(subscribe)
       * def subs = organizer.takeTimeout(timeout)
 
@@ -187,7 +185,7 @@
             "jsonrpc": "2.0"
            }
         """
-      * karate.log("sending a catchup to election channel : ", karate.pretty(catchup))
+      * karate.log("sending a catchup to election channel :\n", karate.pretty(catchup))
       * organizer.send(catchup)
       * def catchup_response = organizer.takeTimeout(timeout)
 
@@ -206,7 +204,7 @@
             "opened_at": '#(electionOpen.openedAt)'
           }
         """
-      * karate.log("sending an election open request : ", karate.pretty(catchup))
+      * karate.log("sending an election open request :\n", karate.pretty(catchup))
       * organizer.publish(validElectionOpen, election.channel)
       * json answer = organizer.getBackendResponse(validElectionOpen)
 
@@ -232,7 +230,7 @@
             ]
           }
         """
-      * karate.log("sending a cast vote : ", karate.pretty(validCastVote))
+      * karate.log("sending a cast vote :\n", karate.pretty(validCastVote))
       * organizer.publish(validCastVote, election.channel)
       * json answer = organizer.getBackendResponse(validCastVote)
 

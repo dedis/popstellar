@@ -25,7 +25,7 @@ public class MockClient extends MultiMsgWebSocketClient {
    * @return a valid lao with the client's public key, the current time, and a random valid lao name.
    */
   public Lao createValidLao() {
-    System.out.println("Client with public key: " + publicKey + "is creating a lao");
+    System.out.println("Client with public key: " + publicKey + " is creating a lao");
     // Name needs to be random so that the same organizer does not create the same lao twice if it happens in the same second
     String randomName = RandomUtils.generateRandomName();
     return new Lao(publicKey, Instant.now().getEpochSecond(), randomName);
@@ -36,7 +36,7 @@ public class MockClient extends MultiMsgWebSocketClient {
    * @return a valid roll call for the given lao
    */
   public RollCall createValidRollCall(Lao lao) {
-    System.out.println("Client with public key: " + publicKey +" is creating roll call for lao: " + lao.id);
+    System.out.println("Client with public key: " + publicKey + " is creating roll call for lao: " + lao.id);
     long rollCallCreation = Instant.now().getEpochSecond();
     // Name needs to be random so that the same organizer does not create the same roll call twice if it happens in the same second
     String rollCallName = RandomUtils.generateRandomName();
@@ -60,7 +60,7 @@ public class MockClient extends MultiMsgWebSocketClient {
    * @return a valid empty election for the given lao, questions still need to be added!
    */
   public Election createValidElection(Lao lao) {
-    System.out.println("Client with public key: " + publicKey +" is creating an election for lao: " + lao.id);
+    System.out.println("Client with public key: " + publicKey + " is creating an election for lao: " + lao.id);
     long electionCreation = Instant.now().getEpochSecond();
     // Name needs to be random so that the same organizer does not create the same election twice if it happens in the same second
     String electionName = RandomUtils.generateRandomName();
