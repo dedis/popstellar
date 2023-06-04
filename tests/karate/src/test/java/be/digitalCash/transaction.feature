@@ -1,52 +1,58 @@
 @env=go,scala
 Feature: Simple Transactions for digital cash
   Background:
-      # This feature will be called to test some simple transactions
-      # The following calls makes this feature, mockFrontEnd.feature and server.feature
-      # share the same scope
-      # For every test a file containing the json representation of the message is read
-      # and is sent to the backend this is done via :
-      # eval frontend.send(<message>) where a mock frontend sends a message to backend
-      # Then the response sent by the backend and stored in a buffer :
-      # json response = frontend_buffer.takeTimeout(timeout)
-      # and checked if it contains the desired fields with :
-      # match response contains deep <desired fields>
-
-    # The following calls makes this feature, mockFrontEnd.feature and server.feature share the same scope
+    # This feature will be called to test some simple transactions
+    # Call read(...) makes this feature and the called feature share the same scope
+    # Meaning they share def variables, configurations ...
+    # Especially JS functions defined in the called features can be directly used here thanks to Karate shared scopes
     * call read('classpath:be/utils/server.feature')
-    * call read('classpath:be/mockFrontEnd.feature')
+    * call read('classpath:be/mockClient.feature')
     * call read('classpath:be/constants.feature')
-    * string laoChannel =  "/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA="
-    * string cashChannel = "/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=/coin"
+    * def organizer = call createMockClient
+    * def recipient = call createMockClient
+    * def lao = organizer.createValidLao()
+    * def rollCall = organizer.createValidRollCall(lao)
+
+    # This call executes all the steps to set up a lao, complete a roll call and subscribe to the coin channel
+    * call read('classpath:be/utils/simpleScenarios.feature@name=setup_coin_channel') { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)' }
 
   Scenario: Valid transaction: issue 32 mini-Laos to an attendee
-    Given call read('classpath:be/utils/simpleScenarios.feature@name=setup_coin_channel')
+    Given def transaction = organizer.issueCoins(recipient, 32);
+    And def postTransaction = transaction.post()
+    And def input = transaction.inputs[0]
+    And def output = transaction.outputs[0]
     And def validTransaction =
       """
         {
             "object": "coin",
             "action": "post_transaction",
-            "transaction_id": "yVMgw2E9IMX7JtNfizTqTOR1scMVSHfEe8WBbiAgsA8=",
+            "transaction_id": '#(postTransaction.transactionId)',
             "transaction": {
-              "version": 1,
+              "version": '#(transaction.version)',
               "inputs": [{
-                "tx_out_hash": '#(getTrxHashForCoinIssuance)',
-                "tx_out_index": 0,
+                "tx_out_hash": '#(input.txOutHash)',
+                "tx_out_index": '#(input.txOutIndex)',
                 "script": {
-                  "type": "P2PKH",
-                  "pubkey": '#(getCoinIssuancePubKey)',
-                  "sig": "Wsu3pJj7CpBzw4v__21k4pVtSKBeouz1vd0sXFiLQX9iaEERDDwwMuBFwRKk6E6nwxejH-lrsiprLJSojOvPCQ=="
+                  "type": '#(input.script.type)',
+                  "pubkey": '#(input.script.pubKeyRecipient)',
+                  "sig": '#(input.script.sig)'
                 }
               }],
-              "outputs": '#(getValidOutputs)',
-              "lock_time": 0
+              "outputs": [{
+                "value": '#(output.value)',
+                "script": {
+                  "type": '#(output.script.type)',
+                  "pubkey_hash": '#(output.script.pubKeyHash)',
+                }
+              }],
+              "lock_time": '#(transaction.lockTime)',
             }
         }
       """
-    When frontend.publish(validTransaction, cashChannel)
-    And json answer = frontend.getBackendResponse(validTransaction)
+    When organizer.publish(validTransaction, lao.cashChannel)
+    And json answer = organizer.getBackendResponse(validTransaction)
     Then match answer contains VALID_MESSAGE
-    And match frontend.receiveNoMoreResponses() == true
+    And match organizer.receiveNoMoreResponses() == true
 
   Scenario: Transfer valid amount should work
     Given call read('classpath:be/utils/simpleScenarios.feature@name=valid_coin_issuance')

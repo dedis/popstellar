@@ -14,6 +14,7 @@ public class Lao {
   public long creation;
   public List<String> witnesses = new ArrayList<>();
   public String channel;
+  public String cashChannel;
 
   public Lao(String organizerPk, Long creation, String name){
     this.creation = creation;
@@ -28,6 +29,7 @@ public class Lao {
     // The organizer is always a witness
     this.witnesses.add(organizerPk);
     this.channel = "/root/" + id;
+    this.cashChannel = channel + "/coin";
   }
 
   /**

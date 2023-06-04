@@ -204,10 +204,11 @@
             "opened_at": '#(electionOpen.openedAt)'
           }
         """
-      * karate.log("sending an election open request :\n", karate.pretty(catchup))
+      * karate.log("sending an election open request :\n", karate.pretty(validElectionOpen))
       * organizer.publish(validElectionOpen, election.channel)
       * json answer = organizer.getBackendResponse(validElectionOpen)
 
+    # organizer, lao, rollCall, election and the question need to be passed as arguments when calling this scenario
     @name=cast_vote
     Scenario: Casts a valid vote
       * call read('classpath:be/utils/simpleScenarios.feature@name=election_open') { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)',  election: '#(election)', question: '#(question)' }
@@ -234,67 +235,77 @@
       * organizer.publish(validCastVote, election.channel)
       * json answer = organizer.getBackendResponse(validCastVote)
 
+    # organizer, lao and rollCall need to be passed as arguments when calling this scenario
     @name=setup_coin_channel
     Scenario: Sets up the coin channel and subscribes to it
-      * call read('classpath:be/utils/simpleScenarios.feature@name=close_roll_call')
-      * def subscribe =
+      * call read('classpath:be/utils/simpleScenarios.feature@name=close_roll_call') { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)' }
+      Given def subscribe =
         """
           {
             "method": "subscribe",
             "id": 233,
             "params": {
-                "channel": "/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=/coin",
+                "channel": '#(lao.cashChannel)',
             },
             "jsonrpc": "2.0"
           }
         """
-      * frontend.send(subscribe)
-      * def subs = frontend.takeTimeout(timeout)
+      * karate.log("sending a subscribe to coin channel :\n", karate.pretty(subscribe))
+      * organizer.send(subscribe)
+      * def subs = organizer.takeTimeout(timeout)
       * karate.log("subscribe message received : " + subs)
-      * def catchup =
+
+      And def catchup =
         """
           {
             "method": "catchup",
             "id": 533,
             "params": {
-                "channel": "/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=/coin",
+                "channel": '#(lao.cashChannel)',
             },
             "jsonrpc": "2.0"
           }
         """
-      * frontend.send(catchup)
-      * def catchup_response = frontend.takeTimeout(timeout)
+      * karate.log("sending a catchup to coin channel :\n", karate.pretty(catchup))
+      * organizer.send(catchup)
+      * def catchup_response = organizer.takeTimeout(timeout)
 
+    # organizer, lao, rollCall, recipient and amount need to be passed as arguments when calling this scenario
     @name=valid_coin_issuance
     Scenario: Issues a certain amount of coins to an attendee
-      * call read('classpath:be/utils/simpleScenarios.feature@name=setup_coin_channel')
+      * call read('classpath:be/utils/simpleScenarios.feature@name=setup_coin_channel') { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)', recipient: '#(recipient)', amount: '#(amount)' }
+      * transaction = organizer.issueCoins(recipient, amount);
+      * postTransaction = transaction.post()
+      * input = transaction.inputs[0]
+      * output = transaction.outputs[0]
       * def validTransaction =
         """
           {
-            "object": "coin",
-            "action": "post_transaction",
-            "transaction_id": "yVMgw2E9IMX7JtNfizTqTOR1scMVSHfEe8WBbiAgsA8=",
-            "transaction": {
-              "version": 1,
-              "inputs": [{
-                "tx_out_hash": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
-                "tx_out_index": 0,
-                "script": {
-                  "type": "P2PKH",
-                  "pubkey": "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=",
-                  "sig": "wVoIYoQFoepkosPxXK8CmnvhRmq0IUczGQR5JOJjX8R7vqrgMOdI311bgzrOIwtACMfGFTJcnryiHiOuB5Z3Dg=="
-                }
-              }],
-              "outputs": [{
-                "value": 32,
-                "script": {
-                  "type": "P2PKH",
-                  "pubkey_hash": "-_qR4IHwsiq50raa8jURNArds54="
-                }
-              }],
-              "lock_time": 0
-            }
+              "object": "coin",
+              "action": "post_transaction",
+              "transaction_id": '#(postTransaction.transactionId)',
+              "transaction": {
+                "version": '#(transaction.version)',
+                "inputs": [{
+                  "tx_out_hash": '#(input.txOutHash)',
+                  "tx_out_index": '#(input.txOutIndex)',
+                  "script": {
+                    "type": '#(input.script.type)',
+                    "pubkey": '#(input.script.pubKeyRecipient)',
+                    "sig": '#(input.script.sig)'
+                  }
+                }],
+                "outputs": [{
+                  "value": '#(output.value)',
+                  "script": {
+                    "type": '#(output.script.type)',
+                    "pubkey_hash": '#(output.script.pubKeyHash)',
+                  }
+                }],
+                "lock_time": '#(transaction.lockTime)',
+              }
           }
         """
-      * frontend.publish(validTransaction, cashChannel)
-      * json answer = frontend.getBackendResponse(validTransaction)
+      * karate.log("sending a transaction to issue coins :\n", karate.pretty(validTransaction))
+      * organizer.publish(validTransaction, cashChannel)
+      * json answer = organizer.getBackendResponse(validTransaction)
