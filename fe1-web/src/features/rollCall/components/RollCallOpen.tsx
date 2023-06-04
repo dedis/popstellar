@@ -2,7 +2,7 @@ import { CompositeScreenProps, useNavigation } from '@react-navigation/core';
 import { StackScreenProps } from '@react-navigation/stack';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Text } from 'react-native';
+import { StyleSheet, Text, View, ViewStyle } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 import ReactTimeago from 'react-timeago';
 
@@ -14,7 +14,7 @@ import { LaoEventsParamList } from 'core/navigation/typing/LaoEventsParamList';
 import { LaoParamList } from 'core/navigation/typing/LaoParamList';
 import { Hash, PublicKey, Timestamp } from 'core/objects';
 import { ScannablePopToken } from 'core/objects/ScannablePopToken';
-import { Typography } from 'core/styles';
+import { Spacing, Typography } from 'core/styles';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
 
@@ -30,6 +30,12 @@ type NavigationProps = CompositeScreenProps<
     StackScreenProps<AppParamList, typeof STRINGS.navigation_app_lao>
   >
 >;
+
+const textStyle = StyleSheet.create({
+  topSpace: {
+    marginTop: Spacing.x2,
+  } as ViewStyle,
+});
 
 const RollCallOpen = ({
   rollCall,
@@ -171,10 +177,21 @@ const RollCallOpen = ({
       {!isOrganizer && (
         <>
           <Text style={Typography.paragraph}>{STRINGS.roll_call_open_attendee}</Text>
-          <QRCode
-            value={ScannablePopToken.encodePopToken({ pop_token: popToken })}
-            overlayText={STRINGS.roll_call_qrcode_text}
-          />
+          <View>
+            <QRCode
+              value={ScannablePopToken.encodePopToken({ pop_token: popToken })}
+              overlayText={STRINGS.roll_call_qrcode_text}
+            />
+            <Text
+              style={[
+                Typography.paragraph,
+                Typography.centered,
+                Typography.code,
+                textStyle.topSpace,
+              ]}>
+              {popToken}
+            </Text>
+          </View>
         </>
       )}
 
