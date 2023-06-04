@@ -73,6 +73,12 @@ public class RandomUtils {
     return Election.generateElectionVoteId(electionId, questionId, 0, null, false);
   }
 
+  /** @return generates a hash of a random vote id */
+  public static String generateRegisteredVotesHash(){
+    String voteId = generateElectionVoteId();
+    return Hash.hash(voteId);
+  }
+
   /** @return generate a random valid name for a lao or roll call */
   public static String generateRandomName() {
     int length = MIN_NAME_LENGTH + RANDOM.nextInt(MAX_NAME_LENGTH - MIN_NAME_LENGTH + 1);

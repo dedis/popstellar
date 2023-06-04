@@ -4,10 +4,8 @@ import be.utils.Hash;
 import be.utils.RandomUtils;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class Election {
 
@@ -19,6 +17,7 @@ public class Election {
   public long start;
   public long end;
   public List<ElectionQuestion> questions;
+  public List<PlainVote> votes = new ArrayList<>();
 
   private final static String ELECTION_SUFFIX = "Election";
 
@@ -96,6 +95,22 @@ public class Election {
   }
 
   /**
+   * Computes the hash for the registered votes, when terminating an election (sorted by vote id's in ascii order)
+   *
+   * @return the hash of all registered votes
+   */
+  public String computeRegisteredVotesHash() {
+    List<String> voteIds = votes.stream()
+      .map(PlainVote::getId)
+      .collect(Collectors.toList());
+
+    // Sort the voteIds list in ascending ASCII order
+    Collections.sort(voteIds);
+
+    return Hash.hash(voteIds.toArray(new String[0]));
+  }
+
+  /**
    * Creates a random valid election question with 2 ballot options, plurality voting method and write in set to false.
    * Adds the question to the current election.
    *
@@ -126,13 +141,22 @@ public class Election {
   }
 
   /**
-   *
-   * @param plainVotes
-   * @return
+   * @param plainVotes list of votes to create the cast vote message for
+   * @return an object containing the data to create a valid cast vote for the given votes message
    */
   public CastVote castVote(PlainVote... plainVotes){
     long createdAt = Instant.now().getEpochSecond();
-    return new CastVote(createdAt, plainVotes);
+    this.votes = new ArrayList<>(Arrays.asList(plainVotes));
+    return new CastVote(createdAt);
+  }
+
+  /**
+   * @return an object containing the data to create a valid close election message
+   */
+  public ElectionEnd close(){
+    long createdAt = Instant.now().getEpochSecond();
+    String registeredVotes = computeRegisteredVotesHash();
+    return new ElectionEnd(createdAt, registeredVotes);
   }
 
   /** Contains the data to create a valid open election message */
@@ -147,11 +171,20 @@ public class Election {
   /** Contains the data to create a valid open election message */
   public static class CastVote{
     public long createdAt;
-    public List<PlainVote> votes;
 
-    public CastVote(long createdAt, PlainVote[] votes){
+    public CastVote(long createdAt){
       this.createdAt = createdAt;
-      this.votes = List.of(votes);
+    }
+  }
+
+  /** Contains the data to create a valid end election message */
+  public static class ElectionEnd{
+    public long createdAt;
+    public String registeredVotes;
+
+    public ElectionEnd(long createdAt, String registeredVotes){
+      this.createdAt = createdAt;
+      this.registeredVotes = registeredVotes;
     }
   }
 

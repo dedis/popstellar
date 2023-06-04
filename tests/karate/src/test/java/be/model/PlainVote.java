@@ -20,4 +20,8 @@ public class PlainVote {
     this.index = writeInEnabled ? null : index;
     this.id = Election.generateElectionVoteId(electionId, questionId, index, writeIn, writeInEnabled);
   }
+
+  public String getId(){
+    return id;
+  }
 }

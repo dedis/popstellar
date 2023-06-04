@@ -212,26 +212,29 @@
 
     @name=cast_vote
     Scenario: Casts a valid vote
-      * call read('classpath:be/utils/simpleScenarios.feature@name=election_open')
+      * call read('classpath:be/utils/simpleScenarios.feature@name=election_open') { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)',  election: '#(election)', question: '#(question)' }
+      * def vote = question.createVote(0)
+      * def castVote = election.castVote(vote)
       * def validCastVote =
         """
           {
             "object": "election",
             "action": "cast_vote",
-            "lao": "p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=",
-            "election": "rdv-0minecREM9XidNxnQotO7nxtVVnx-Zkmfm7hm2w=",
-            "created_at": 1633098941,
+            "lao": '#(lao.id)',
+            "election": '#(election.id)',
+            "created_at": '#(castVote.createdAt)',
             "votes": [
               {
-                "id": "d60B94lVWm84lBHc9RE5H67oH-Ad3O1WFflK3NSY3Yk=",
-                "question": "3iPxJkdUiCgBd0c699KA9tU5U0zNIFau6spXs5Kw6Pg=",
-                "vote": [0]
+                "id": '#(vote.id)',
+                "question": '#(question.id)',
+                "vote": '#(vote.index)'
               }
             ]
           }
         """
-      * frontend.publish(validCastVote, electionChannel)
-      * json answer = frontend.getBackendResponse(validCastVote)
+      * karate.log("sending a cast vote : ", karate.pretty(validCastVote))
+      * organizer.publish(validCastVote, election.channel)
+      * json answer = organizer.getBackendResponse(validCastVote)
 
     @name=setup_coin_channel
     Scenario: Sets up the coin channel and subscribes to it
