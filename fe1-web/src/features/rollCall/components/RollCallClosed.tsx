@@ -61,7 +61,7 @@ const RollCallClosed = ({ rollCall, laoId, isConnected, isOrganizer }: IPropType
   const [popToken, setPopToken] = useState('');
   generateToken(laoId, rollCall.id)
     .then((token) => {
-      setPopToken(token.publicKey.valueOf);
+      setPopToken(token.publicKey.valueOf());
     })
     .catch((err) => console.error(`Could not generate token: ${err}`));
 
