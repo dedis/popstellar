@@ -5,7 +5,7 @@ import be.utils.Hash;
 import java.util.ArrayList;
 import java.util.List;
 
-/** Models a pop lao */
+/** Simplified version of a LAO, used to generate valid LAO data. */
 public class Lao {
   public String id;
   public String name;

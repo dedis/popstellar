@@ -270,29 +270,29 @@
       * def validTransaction =
         """
           {
-              "object": "coin",
-              "action": "post_transaction",
-              "transaction_id": '#(postTransaction.transactionId)',
-              "transaction": {
-                "version": '#(transaction.version)',
-                "inputs": [{
-                  "tx_out_hash": '#(input.txOutHash)',
-                  "tx_out_index": '#(input.txOutIndex)',
-                  "script": {
-                    "type": '#(input.script.type)',
-                    "pubkey": '#(input.script.pubKeyRecipient)',
-                    "sig": '#(input.script.sig)'
-                  }
-                }],
-                "outputs": [{
-                  "value": '#(output.value)',
-                  "script": {
-                    "type": '#(output.script.type)',
-                    "pubkey_hash": '#(output.script.pubKeyHash)',
-                  }
-                }],
-                "lock_time": '#(transaction.lockTime)',
-              }
+            "object": "coin",
+            "action": "post_transaction",
+            "transaction_id": '#(postTransaction.transactionId)',
+            "transaction": {
+              "version": '#(transaction.version)',
+              "inputs": [{
+                "tx_out_hash": '#(input.txOutHash)',
+                "tx_out_index": '#(input.txOutIndex)',
+                "script": {
+                  "type": '#(input.script.type)',
+                  "pubkey": '#(input.script.pubKeyRecipient)',
+                  "sig": '#(input.script.sig)'
+                }
+              }],
+              "outputs": [{
+                "value": '#(output.value)',
+                "script": {
+                  "type": '#(output.script.type)',
+                  "pubkey_hash": '#(output.script.pubKeyHash)',
+                }
+              }],
+              "lock_time": '#(transaction.lockTime)',
+            }
           }
         """
       * karate.log("sending a transaction to issue coins :\n", karate.pretty(validTransaction))

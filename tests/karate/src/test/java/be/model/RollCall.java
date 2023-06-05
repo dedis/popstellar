@@ -6,7 +6,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
-/** Models a roll call in a pop lao */
+/** Simplified version of a roll call, used to generate valid roll call data. */
 public class RollCall {
   public String id;
   public String name;

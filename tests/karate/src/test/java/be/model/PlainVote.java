@@ -1,8 +1,6 @@
 package be.model;
 
-/**
- * Represents a non-encrypted vote for one question.
- */
+/** Simplified version of a non-encrypted vote for one question, used to generate valid vote data. */
 public class PlainVote {
 
   // ID of the vote

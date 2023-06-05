@@ -125,8 +125,7 @@ Feature: Cast a vote
   # Testing if after creating an election correctly, the backend returns an error
   # upon casting a vote but with lao id as vote id
   Scenario: Casting a vote with lao id as vote id should return an error
-    Given call read('classpath:be/utils/simpleScenarios.feature@name=election_open')
-    And def invalidCastVote =
+    Given def invalidCastVote =
      """
         {
           "object": "election",

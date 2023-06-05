@@ -12,9 +12,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-/** Websocket client capable of creating lao, roll call, and election objects and issue coins */
+/** Websocket client capable of creating lao, roll call, and election objects and issuing coins */
 public class MockClient extends MultiMsgWebSocketClient {
-  private boolean firstTransaction = true;
   public MockClient(String wsURL) {
     super(new WebSocketOptions(wsURL), new Logger(), new MessageQueue());
   }

@@ -2,6 +2,7 @@ package be.model;
 
 import java.util.List;
 
+/** Simplified version of an election question, used to generate valid election question data. */
 public class ElectionQuestion {
 
   public String id;

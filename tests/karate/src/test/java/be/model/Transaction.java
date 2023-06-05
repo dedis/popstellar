@@ -145,13 +145,12 @@ public class Transaction {
   public class PostTransaction{
     public String transactionId;
     public PostTransaction(){
-
       this.transactionId = computeId();
-
     }
   }
 
   /** The following classes are all simplified versions of the digital cash data types in the android frontend */
+
   public class Input{
     public String txOutHash; // Previous (to-be-used) transaction hash
     public int txOutIndex; // index of the previous to-be-used transaction

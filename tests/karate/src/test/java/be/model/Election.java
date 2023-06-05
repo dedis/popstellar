@@ -7,6 +7,7 @@ import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/** Simplified version of an election, used to generate valid election data. */
 public class Election {
 
   public String channel;
@@ -30,17 +31,6 @@ public class Election {
     this.start = start;
     this.end = end;
     this.questions = questions;
-  }
-
-  /**
-   * Copies the existing election but switches the creation and start time of the election.
-   * Recomputes the election id to match the new creation time.
-   *
-   * @return copy of the election with switched creation and start time
-   */
-  public Election switchCreationAndStart(){
-    String newId = generateElectionSetupId(getLaoId(channel), start, name);
-    return new Election(channel, newId, name, version, start, creation, end, questions);
   }
 
   /**
@@ -168,7 +158,7 @@ public class Election {
     }
   }
 
-  /** Contains the data to create a valid open election message */
+  /** Contains the data to create a valid cast vote message */
   public static class CastVote{
     public long createdAt;
 
