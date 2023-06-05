@@ -216,7 +216,7 @@ const RollCallOpened = () => {
         title={STRINGS.roll_call_modal_add_attendee}
         description={STRINGS.roll_call_modal_enter_token}
         onConfirmPress={(token: string) =>
-          addAttendeePopTokenAndShowToast(`{"pop_token":"${token}"}`)
+          addAttendeePopTokenAndShowToast(JSON.stringify({ pop_token: token }))
         }
         buttonConfirmText={STRINGS.general_add}
         hasTextInput
