@@ -33,7 +33,43 @@ import timber.log.Timber;
 
 import static java.util.Collections.*;
 
-/** This class is the repository for witness messages */
+/**
+ * This class is the repository for witnesses and witness messages.
+ *
+ * <p>In particular, this repository:
+ *
+ * <ul>
+ *   <li>Stores the public keys of the witnesses of a given LAO.
+ *   <li>Stores the witness messages of a given LAO.
+ *   <li>Stores the pending objects of a given LAO.
+ *   <li>Process the pending objects when they are approved by "enough" witnesses
+ * </ul>
+ *
+ * <em>- What is a pending object?</em><br>
+ * When we receive a message which is subject to the witnessing policy (it has to be witnessed by a
+ * given number of witnesses before being accepted), the underlying object of this message is called
+ * pending object, as it cannot be directly added to the repository before being approved. This
+ * represents a transient state, where the object waits to receive enough signature to be finally
+ * processed and added to its repository. A pending object consists of the object itself plus the
+ * message identifier from which it comes. This allows upon the reception of a witness signature to
+ * know the pending object only from the message id.<br>
+ * <em>- What does "enough" mean?</em><br>
+ * The number of signatures to make a message valid (and consequently its relative pending object)
+ * are established by the witnessing policy. This repository is in charge of checking the witnessing
+ * policy through the method hasRequiredSignatures().<br>
+ * <em>- What does processing a pending object mean?</em><br>
+ * It means considering that object as valid, adding it to its own repository and doing other
+ * processing job involved depending the object's type. <br>
+ * <br>
+ * <em>Example</em><br>
+ * We receive an OpenRollCall, which contains the data of a RollCall object. We create an empty
+ * witnessing message (i.e. with no witnesses) and add it to the repo. That RollCall object is also
+ * put in the pending state. When we receive witnessing signatures matching the id of the
+ * OpenRollCall message, the witnessing message is updated and each time we check if the witnessing
+ * policy is passing. As soon as it passes, the pending RollCall is removed from the pending state
+ * and processed. In the case of OpenRollCall processing means simply adding it to the
+ * RollCallRepository. In some other cases other actions are performed depending on the object.
+ */
 @Singleton
 public class WitnessingRepository {
 
@@ -48,7 +84,12 @@ public class WitnessingRepository {
   private final WitnessDao witnessDao;
   private final PendingDao pendingDao;
 
+  /**
+   * Dependencies for other repositories, as they're needed to process the pending objects (roll
+   * calls, meetings and elections) and insert those in their respective repos.
+   */
   private final RollCallRepository rollCallRepository;
+
   private final ElectionRepository electionRepository;
   private final MeetingRepository meetingRepository;
   private final DigitalCashRepository digitalCashRepository;
@@ -275,6 +316,13 @@ public class WitnessingRepository {
       loadFromDisk();
     }
 
+    /**
+     * This function adds (or replaces if there's already a witness message with the same id) a
+     * WitnessMessage to the in-memory data structure and updates the subject containing the whole
+     * collection of witness messages.
+     *
+     * @param witnessMessage the new witness message to add/replace
+     */
     public void add(WitnessMessage witnessMessage) {
       MessageID messageID = witnessMessage.getMessageId();
       witnessMessages.put(messageID, witnessMessage);
@@ -285,17 +333,32 @@ public class WitnessingRepository {
           .onNext(unmodifiableList(new ArrayList<>(witnessMessages.values())));
     }
 
+    /**
+     * This adds a set of public keys representing the witnesses to a LAO. For now this is done only
+     * at creation, as the witnesses set is not dynamic due to consensus missing.
+     *
+     * @param witnesses set of public keys representing the witnesses' public keys
+     */
     public void addWitnesses(Set<PublicKey> witnesses) {
       this.witnesses.addAll(witnesses);
       // Publish the update collection in a thread-safe fashion
       witnessesSubject.toSerialized().onNext(unmodifiableSet(new HashSet<>(this.witnesses)));
     }
 
+    /**
+     * This function is triggered when a witness signs a given message, identified by the message
+     * id, and adds such witness to the list of witnesses of that message.
+     *
+     * @param messageID identifier of the message signed by the witness
+     * @param witness public key
+     * @return false if there's no message matching the given id, true otherwise
+     */
     public boolean addWitnessToMessage(MessageID messageID, PublicKey witness) {
       WitnessMessage witnessMessage = witnessMessages.get(messageID);
       if (witnessMessage == null) {
         return false;
       }
+      // Add the witness to the witness message
       witnessMessage.addWitness(witness);
 
       // Persist the new message
@@ -310,14 +373,18 @@ public class WitnessingRepository {
                           .d("Successfully persisted witness message %s", witnessMessage),
                   err -> Timber.tag(TAG).e(err, "Error in persisting witness message")));
 
-      // Upon reception of a new signature check that the policy is passed
+      // Upon reception of a new signature check that the witnessing policy is passing.
+      // The following function is designed to return true only once (when it just achieves the
+      // minimum threshold).
       if (hasRequiredSignatures(witnessMessage)) {
+        // Get and remove the pending entity
         PendingEntity pendingEntity = pendingEntities.remove(messageID);
         if (pendingEntity != null) {
-          // Process the entity by calling its action
+          // Process the entity by calling its action: the pending object can be now be considered
+          // valid and added to its repository
           processPendingEntity(pendingEntity);
 
-          // Then delete the pending entity from the db
+          // Then delete asynchronously the pending entity from the db
           repo.disposables.add(
               repo.pendingDao
                   .removePendingObject(messageID)
@@ -331,15 +398,21 @@ public class WitnessingRepository {
         }
       }
 
-      // Reinsert the message to update the subjects and trigger the notifications
+      // Reinsert the witness message with the new witness to update the subject
       add(witnessMessage);
       return true;
     }
 
+    /**
+     * This checks whether a given public key is a witness in the LAO.
+     *
+     * @param witness public key to check
+     * @return true if the given public key has a match in the set of witnesses, false otherwise
+     */
     public boolean isWitness(PublicKey witness) {
-      // Check if the witness is currently stored in memory. It may happen that this check
-      // is scheduled before the db retrieval, so to be sure we perform a disk lookup
-      // By the compiler optimizations, if the first check is true the lookup is avoided.
+      // It may happen that this check is scheduled before the db retrieval, so to be sure we
+      // perform a disk lookup. Trivially, by the compiler optimizations, if the first check is true
+      // then the lookup is avoided.
       return witnesses.contains(witness) || repo.witnessDao.isWitness(laoId, witness) != 0;
     }
 
@@ -347,6 +420,16 @@ public class WitnessingRepository {
       return witnesses.isEmpty();
     }
 
+    /**
+     * This function checks whether a witness message has been signed by enough witnesses. The
+     * "enough" is established by the witnessing policy, which for now is just an hardcoded
+     * threshold. The function is designed to return true only once, at the achievement of the
+     * signature threshold, not before nor after. This choice is due to the fact that the function
+     * is called every time a new signature is added.
+     *
+     * @param witnessMessage witness message to check if it has enough signatures
+     * @return true if the signatures number is exactly matching the threshold, false otherwise
+     */
     public boolean hasRequiredSignatures(WitnessMessage witnessMessage) {
       if (witnessMessage == null) {
         return false;
@@ -361,14 +444,21 @@ public class WitnessingRepository {
       return witnessMessage.getWitnesses().size() == requiredSignatures;
     }
 
+    /**
+     * This function deletes the witness messages that have already been accepted by the witnessing
+     * policy (i.e. they have enough signatures to be considered valid). Since they become useless,
+     * the user has the possibility of deleting them. For now this is only triggered by the user, in
+     * the future this deletion could be automatic.
+     */
     public void deleteAcceptedMessages() {
+      // Find the messages to delete
       Set<MessageID> idsToDelete =
           witnessMessages.values().stream()
               .filter(this::hasRequiredSignatures)
               .map(WitnessMessage::getMessageId)
               .collect(Collectors.toSet());
 
-      // Delete from db
+      // Delete from db asynchronously
       repo.disposables.add(
           repo.witnessingDao
               .deleteMessagesByIds(laoId, idsToDelete)
@@ -381,7 +471,7 @@ public class WitnessingRepository {
                   err ->
                       Timber.tag(TAG).e(err, "Error deleting witness messages in lao %s", laoId)));
 
-      // Delete them from memory
+      // Delete from memory
       idsToDelete.forEach(witnessMessages::remove);
 
       // Publish the updated collection
