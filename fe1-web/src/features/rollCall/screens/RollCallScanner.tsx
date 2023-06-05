@@ -132,7 +132,7 @@ const RollCallOpened = () => {
       }
 
       // sort the list of tokens to make de-anonymization harder
-      const newTokens = [...attendeePopTokens.current, popToken].sort();
+      const newTokens = [...attendeePopTokens.current, popToken].sort((a, b) => a.localeCompare(b));
 
       // update mutable reference that allows us to check for duplicates the next time this function is called
       attendeePopTokens.current = newTokens;
