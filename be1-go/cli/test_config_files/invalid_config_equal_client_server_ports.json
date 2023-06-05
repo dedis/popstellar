@@ -4,7 +4,9 @@
     "client-address"                       : "ws://127.0.0.1:9000/client",
     "server-public-address"                : "localhost",
     "server-listen-address"                : "localhost",
+    "auth-server-address"                  : "localhost",
     "client-port"                          : 9000,
     "server-port"                          : 9000,
+    "auth-port"                            : 9101,
     "other-servers": []
 }
