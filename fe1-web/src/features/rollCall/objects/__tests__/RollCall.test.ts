@@ -9,7 +9,7 @@ const NAME = 'myRollCall';
 const LOCATION = 'location';
 const TIMESTAMP_START = new Timestamp(1620355600);
 const TIMESTAMP_END = new Timestamp(1620357600);
-const ATTENDEES = ['attendee1', 'attendee2'];
+const ATTENDEES = ['attendee1', 'attendee2'].sort();
 const token = new PopToken({
   publicKey: new PublicKey('attendee1'),
   privateKey: new PrivateKey('privateKey'),
@@ -341,6 +341,25 @@ describe('RollCall object', () => {
           proposedEnd: TIMESTAMP_END,
           openedAt: TIMESTAMP_START,
           status: RollCallStatus.CLOSED,
+        });
+      expect(createWrongRollCall).toThrow(Error);
+    });
+
+    it('throws an error when list of attendees is not sorted', () => {
+      const createWrongRollCall = () =>
+        new RollCall({
+          id: ID,
+          idAlias: ID,
+          start: TIMESTAMP_START,
+          name: NAME,
+          location: LOCATION,
+          creation: TIMESTAMP_START,
+          proposedStart: TIMESTAMP_START,
+          proposedEnd: TIMESTAMP_END,
+          openedAt: TIMESTAMP_START,
+          closedAt: TIMESTAMP_END,
+          status: RollCallStatus.CLOSED,
+          attendees: [...ATTENDEES].reverse().map((s: string) => new PublicKey(s)),
         });
       expect(createWrongRollCall).toThrow(Error);
     });
