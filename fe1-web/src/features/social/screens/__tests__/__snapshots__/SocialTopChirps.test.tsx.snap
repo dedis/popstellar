@@ -394,93 +394,71 @@ exports[`SocialTopChirps renders correctly 1`] = `
                                     accessible={true}
                                     collapsable={false}
                                     focusable={true}
-                                    onBlur={[Function]}
                                     onClick={[Function]}
-                                    onFocus={[Function]}
                                     onResponderGrant={[Function]}
                                     onResponderMove={[Function]}
                                     onResponderRelease={[Function]}
                                     onResponderTerminate={[Function]}
                                     onResponderTerminationRequest={[Function]}
                                     onStartShouldSetResponder={[Function]}
+                                    style={
+                                      {
+                                        "opacity": 1,
+                                      }
+                                    }
                                   >
-                                    <RNGestureHandlerButton
-                                      collapsable={false}
-                                      delayLongPress={600}
-                                      enabled={true}
-                                      exclusive={true}
-                                      handlerTag={3}
-                                      handlerType="NativeViewGestureHandler"
-                                      onGestureEvent={[Function]}
-                                      onGestureHandlerEvent={[Function]}
-                                      onGestureHandlerStateChange={[Function]}
-                                      onHandlerStateChange={[Function]}
-                                      rippleColor={0}
-                                      touchSoundDisabled={false}
-                                    >
-                                      <View
-                                        accessible={true}
-                                        collapsable={false}
-                                        style={
+                                    <View
+                                      style={
+                                        [
                                           {
-                                            "opacity": 1,
-                                          }
+                                            "marginRight": 16,
+                                          },
+                                          {
+                                            "alignSelf": "flex-start",
+                                          },
+                                        ]
+                                      }
+                                    >
+                                      <blockies
+                                        bgColor="#ffffff"
+                                        scale={5}
+                                        seed="Douglas Adams"
+                                        size={8}
+                                        spotColor="#008ec2"
+                                      />
+                                      <Text
+                                        numberOfLines={1}
+                                        selectable={true}
+                                        style={
+                                          [
+                                            {
+                                              "color": "#000",
+                                              "fontSize": 20,
+                                              "lineHeight": 26,
+                                              "textAlign": "left",
+                                            },
+                                            {
+                                              "fontSize": 16,
+                                              "lineHeight": 20,
+                                            },
+                                            {
+                                              "color": "#8E8E8E",
+                                            },
+                                            {
+                                              "textAlign": "center",
+                                            },
+                                            {
+                                              "fontFamily": "Courier New",
+                                            },
+                                            {
+                                              "marginTop": 8,
+                                            },
+                                          ]
                                         }
                                       >
-                                        <View
-                                          style={
-                                            [
-                                              {
-                                                "marginRight": 16,
-                                              },
-                                              {
-                                                "alignSelf": "flex-start",
-                                              },
-                                            ]
-                                          }
-                                        >
-                                          <blockies
-                                            bgColor="#ffffff"
-                                            scale={5}
-                                            seed="Douglas Adams"
-                                            size={8}
-                                            spotColor="#008ec2"
-                                          />
-                                          <Text
-                                            numberOfLines={1}
-                                            selectable={true}
-                                            style={
-                                              [
-                                                {
-                                                  "color": "#000",
-                                                  "fontSize": 20,
-                                                  "lineHeight": 26,
-                                                  "textAlign": "left",
-                                                },
-                                                {
-                                                  "fontSize": 16,
-                                                  "lineHeight": 20,
-                                                },
-                                                {
-                                                  "color": "#8E8E8E",
-                                                },
-                                                {
-                                                  "textAlign": "center",
-                                                },
-                                                {
-                                                  "fontFamily": "Courier New",
-                                                },
-                                                {
-                                                  "marginTop": 8,
-                                                },
-                                              ]
-                                            }
-                                          >
-                                            Doug
-                                          </Text>
-                                        </View>
-                                      </View>
-                                    </RNGestureHandlerButton>
+                                        Doug
+                                      </Text>
+                                    </View>
                                   </View>
                                   <View
                                     style={
@@ -617,63 +595,40 @@ exports[`SocialTopChirps renders correctly 1`] = `
                                           accessible={true}
                                           collapsable={false}
                                           focusable={true}
-                                          onBlur={[Function]}
                                           onClick={[Function]}
-                                          onFocus={[Function]}
                                           onResponderGrant={[Function]}
                                           onResponderMove={[Function]}
                                           onResponderRelease={[Function]}
                                           onResponderTerminate={[Function]}
                                           onResponderTerminationRequest={[Function]}
                                           onStartShouldSetResponder={[Function]}
-                                          style={{}}
+                                          style={
+                                            {
+                                              "opacity": 1,
+                                            }
+                                          }
                                           testID="thumbs-up"
                                         >
-                                          <RNGestureHandlerButton
-                                            collapsable={false}
-                                            delayLongPress={600}
-                                            enabled={true}
-                                            exclusive={true}
-                                            handlerTag={4}
-                                            handlerType="NativeViewGestureHandler"
-                                            onGestureEvent={[Function]}
-                                            onGestureHandlerEvent={[Function]}
-                                            onGestureHandlerStateChange={[Function]}
-                                            onHandlerStateChange={[Function]}
-                                            rippleColor={0}
-                                            touchSoundDisabled={false}
-                                          >
-                                            <View
-                                              accessible={true}
-                                              collapsable={false}
-                                              style={
+                                          <View
+                                            style={
+                                              [
                                                 {
-                                                  "opacity": 1,
-                                                }
-                                              }
-                                            >
-                                              <View
-                                                style={
-                                                  [
-                                                    {
-                                                      "backgroundColor": "#3742fa",
-                                                      "borderColor": "#3742fa",
-                                                      "borderRadius": 8,
-                                                      "borderWidth": 1,
-                                                      "padding": 8,
-                                                    },
-                                                    {
-                                                      "backgroundColor": "transparent",
-                                                    },
-                                                  ]
-                                                }
-                                              >
-                                                <View>
-                                                  {"name":"thumbs-up-sharp","size":16,"color":"#3742fa"}
-                                                </View>
-                                              </View>
+                                                  "backgroundColor": "#3742fa",
+                                                  "borderColor": "#3742fa",
+                                                  "borderRadius": 8,
+                                                  "borderWidth": 1,
+                                                  "padding": 8,
+                                                },
+                                                {
+                                                  "backgroundColor": "transparent",
+                                                },
+                                              ]
+                                            }
+                                          >
+                                            <View>
+                                              {"name":"thumbs-up-sharp","size":16,"color":"#3742fa"}
                                             </View>
-                                          </RNGestureHandlerButton>
+                                          </View>
                                         </View>
                                         <Text
                                           style={
@@ -711,63 +666,40 @@ exports[`SocialTopChirps renders correctly 1`] = `
                                           accessible={true}
                                           collapsable={false}
                                           focusable={true}
-                                          onBlur={[Function]}
                                           onClick={[Function]}
-                                          onFocus={[Function]}
                                           onResponderGrant={[Function]}
                                           onResponderMove={[Function]}
                                           onResponderRelease={[Function]}
                                           onResponderTerminate={[Function]}
                                           onResponderTerminationRequest={[Function]}
                                           onStartShouldSetResponder={[Function]}
-                                          style={{}}
+                                          style={
+                                            {
+                                              "opacity": 1,
+                                            }
+                                          }
                                           testID="thumbs-down"
                                         >
-                                          <RNGestureHandlerButton
-                                            collapsable={false}
-                                            delayLongPress={600}
-                                            enabled={true}
-                                            exclusive={true}
-                                            handlerTag={5}
-                                            handlerType="NativeViewGestureHandler"
-                                            onGestureEvent={[Function]}
-                                            onGestureHandlerEvent={[Function]}
-                                            onGestureHandlerStateChange={[Function]}
-                                            onHandlerStateChange={[Function]}
-                                            rippleColor={0}
-                                            touchSoundDisabled={false}
-                                          >
-                                            <View
-                                              accessible={true}
-                                              collapsable={false}
-                                              style={
+                                          <View
+                                            style={
+                                              [
                                                 {
-                                                  "opacity": 1,
-                                                }
-                                              }
-                                            >
-                                              <View
-                                                style={
-                                                  [
-                                                    {
-                                                      "backgroundColor": "#3742fa",
-                                                      "borderColor": "#3742fa",
-                                                      "borderRadius": 8,
-                                                      "borderWidth": 1,
-                                                      "padding": 8,
-                                                    },
-                                                    {
-                                                      "backgroundColor": "transparent",
-                                                    },
-                                                  ]
-                                                }
-                                              >
-                                                <View>
-                                                  {"name":"thumbs-down-sharp","size":16,"color":"#3742fa"}
-                                                </View>
-                                              </View>
+                                                  "backgroundColor": "#3742fa",
+                                                  "borderColor": "#3742fa",
+                                                  "borderRadius": 8,
+                                                  "borderWidth": 1,
+                                                  "padding": 8,
+                                                },
+                                                {
+                                                  "backgroundColor": "transparent",
+                                                },
+                                              ]
+                                            }
+                                          >
+                                            <View>
+                                              {"name":"thumbs-down-sharp","size":16,"color":"#3742fa"}
                                             </View>
-                                          </RNGestureHandlerButton>
+                                          </View>
                                         </View>
                                         <Text
                                           style={
@@ -805,63 +737,40 @@ exports[`SocialTopChirps renders correctly 1`] = `
                                           accessible={true}
                                           collapsable={false}
                                           focusable={true}
-                                          onBlur={[Function]}
                                           onClick={[Function]}
-                                          onFocus={[Function]}
                                           onResponderGrant={[Function]}
                                           onResponderMove={[Function]}
                                           onResponderRelease={[Function]}
                                           onResponderTerminate={[Function]}
                                           onResponderTerminationRequest={[Function]}
                                           onStartShouldSetResponder={[Function]}
-                                          style={{}}
+                                          style={
+                                            {
+                                              "opacity": 1,
+                                            }
+                                          }
                                           testID="heart"
                                         >
-                                          <RNGestureHandlerButton
-                                            collapsable={false}
-                                            delayLongPress={600}
-                                            enabled={true}
-                                            exclusive={true}
-                                            handlerTag={6}
-                                            handlerType="NativeViewGestureHandler"
-                                            onGestureEvent={[Function]}
-                                            onGestureHandlerEvent={[Function]}
-                                            onGestureHandlerStateChange={[Function]}
-                                            onHandlerStateChange={[Function]}
-                                            rippleColor={0}
-                                            touchSoundDisabled={false}
-                                          >
-                                            <View
-                                              accessible={true}
-                                              collapsable={false}
-                                              style={
+                                          <View
+                                            style={
+                                              [
                                                 {
-                                                  "opacity": 1,
-                                                }
-                                              }
-                                            >
-                                              <View
-                                                style={
-                                                  [
-                                                    {
-                                                      "backgroundColor": "#3742fa",
-                                                      "borderColor": "#3742fa",
-                                                      "borderRadius": 8,
-                                                      "borderWidth": 1,
-                                                      "padding": 8,
-                                                    },
-                                                    {
-                                                      "backgroundColor": "transparent",
-                                                    },
-                                                  ]
-                                                }
-                                              >
-                                                <View>
-                                                  {"name":"heart","size":16,"color":"#3742fa"}
-                                                </View>
-                                              </View>
+                                                  "backgroundColor": "#3742fa",
+                                                  "borderColor": "#3742fa",
+                                                  "borderRadius": 8,
+                                                  "borderWidth": 1,
+                                                  "padding": 8,
+                                                },
+                                                {
+                                                  "backgroundColor": "transparent",
+                                                },
+                                              ]
+                                            }
+                                          >
+                                            <View>
+                                              {"name":"heart","size":16,"color":"#3742fa"}
                                             </View>
-                                          </RNGestureHandlerButton>
+                                          </View>
                                         </View>
                                         <Text
                                           style={
@@ -955,93 +864,71 @@ exports[`SocialTopChirps renders correctly 1`] = `
                                     accessible={true}
                                     collapsable={false}
                                     focusable={true}
-                                    onBlur={[Function]}
                                     onClick={[Function]}
-                                    onFocus={[Function]}
                                     onResponderGrant={[Function]}
                                     onResponderMove={[Function]}
                                     onResponderRelease={[Function]}
                                     onResponderTerminate={[Function]}
                                     onResponderTerminationRequest={[Function]}
                                     onStartShouldSetResponder={[Function]}
+                                    style={
+                                      {
+                                        "opacity": 1,
+                                      }
+                                    }
                                   >
-                                    <RNGestureHandlerButton
-                                      collapsable={false}
-                                      delayLongPress={600}
-                                      enabled={true}
-                                      exclusive={true}
-                                      handlerTag={7}
-                                      handlerType="NativeViewGestureHandler"
-                                      onGestureEvent={[Function]}
-                                      onGestureHandlerEvent={[Function]}
-                                      onGestureHandlerStateChange={[Function]}
-                                      onHandlerStateChange={[Function]}
-                                      rippleColor={0}
-                                      touchSoundDisabled={false}
-                                    >
-                                      <View
-                                        accessible={true}
-                                        collapsable={false}
-                                        style={
+                                    <View
+                                      style={
+                                        [
                                           {
-                                            "opacity": 1,
-                                          }
+                                            "marginRight": 16,
+                                          },
+                                          {
+                                            "alignSelf": "flex-start",
+                                          },
+                                        ]
+                                      }
+                                    >
+                                      <blockies
+                                        bgColor="#ffffff"
+                                        scale={5}
+                                        seed="Gandalf"
+                                        size={8}
+                                        spotColor="#008ec2"
+                                      />
+                                      <Text
+                                        numberOfLines={1}
+                                        selectable={true}
+                                        style={
+                                          [
+                                            {
+                                              "color": "#000",
+                                              "fontSize": 20,
+                                              "lineHeight": 26,
+                                              "textAlign": "left",
+                                            },
+                                            {
+                                              "fontSize": 16,
+                                              "lineHeight": 20,
+                                            },
+                                            {
+                                              "color": "#8E8E8E",
+                                            },
+                                            {
+                                              "textAlign": "center",
+                                            },
+                                            {
+                                              "fontFamily": "Courier New",
+                                            },
+                                            {
+                                              "marginTop": 8,
+                                            },
+                                          ]
                                         }
                                       >
-                                        <View
-                                          style={
-                                            [
-                                              {
-                                                "marginRight": 16,
-                                              },
-                                              {
-                                                "alignSelf": "flex-start",
-                                              },
-                                            ]
-                                          }
-                                        >
-                                          <blockies
-                                            bgColor="#ffffff"
-                                            scale={5}
-                                            seed="Gandalf"
-                                            size={8}
-                                            spotColor="#008ec2"
-                                          />
-                                          <Text
-                                            numberOfLines={1}
-                                            selectable={true}
-                                            style={
-                                              [
-                                                {
-                                                  "color": "#000",
-                                                  "fontSize": 20,
-                                                  "lineHeight": 26,
-                                                  "textAlign": "left",
-                                                },
-                                                {
-                                                  "fontSize": 16,
-                                                  "lineHeight": 20,
-                                                },
-                                                {
-                                                  "color": "#8E8E8E",
-                                                },
-                                                {
-                                                  "textAlign": "center",
-                                                },
-                                                {
-                                                  "fontFamily": "Courier New",
-                                                },
-                                                {
-                                                  "marginTop": 8,
-                                                },
-                                              ]
-                                            }
-                                          >
-                                            Gand
-                                          </Text>
-                                        </View>
-                                      </View>
-                                    </RNGestureHandlerButton>
+                                        Gand
+                                      </Text>
+                                    </View>
                                   </View>
                                   <View
                                     style={
@@ -1178,63 +1065,40 @@ exports[`SocialTopChirps renders correctly 1`] = `
                                           accessible={true}
                                           collapsable={false}
                                           focusable={true}
-                                          onBlur={[Function]}
                                           onClick={[Function]}
-                                          onFocus={[Function]}
                                           onResponderGrant={[Function]}
                                           onResponderMove={[Function]}
                                           onResponderRelease={[Function]}
                                           onResponderTerminate={[Function]}
                                           onResponderTerminationRequest={[Function]}
                                           onStartShouldSetResponder={[Function]}
-                                          style={{}}
+                                          style={
+                                            {
+                                              "opacity": 1,
+                                            }
+                                          }
                                           testID="thumbs-up"
                                         >
-                                          <RNGestureHandlerButton
-                                            collapsable={false}
-                                            delayLongPress={600}
-                                            enabled={true}
-                                            exclusive={true}
-                                            handlerTag={8}
-                                            handlerType="NativeViewGestureHandler"
-                                            onGestureEvent={[Function]}
-                                            onGestureHandlerEvent={[Function]}
-                                            onGestureHandlerStateChange={[Function]}
-                                            onHandlerStateChange={[Function]}
-                                            rippleColor={0}
-                                            touchSoundDisabled={false}
-                                          >
-                                            <View
-                                              accessible={true}
-                                              collapsable={false}
-                                              style={
+                                          <View
+                                            style={
+                                              [
                                                 {
-                                                  "opacity": 1,
-                                                }
-                                              }
-                                            >
-                                              <View
-                                                style={
-                                                  [
-                                                    {
-                                                      "backgroundColor": "#3742fa",
-                                                      "borderColor": "#3742fa",
-                                                      "borderRadius": 8,
-                                                      "borderWidth": 1,
-                                                      "padding": 8,
-                                                    },
-                                                    {
-                                                      "backgroundColor": "transparent",
-                                                    },
-                                                  ]
-                                                }
-                                              >
-                                                <View>
-                                                  {"name":"thumbs-up-sharp","size":16,"color":"#3742fa"}
-                                                </View>
-                                              </View>
+                                                  "backgroundColor": "#3742fa",
+                                                  "borderColor": "#3742fa",
+                                                  "borderRadius": 8,
+                                                  "borderWidth": 1,
+                                                  "padding": 8,
+                                                },
+                                                {
+                                                  "backgroundColor": "transparent",
+                                                },
+                                              ]
+                                            }
+                                          >
+                                            <View>
+                                              {"name":"thumbs-up-sharp","size":16,"color":"#3742fa"}
                                             </View>
-                                          </RNGestureHandlerButton>
+                                          </View>
                                         </View>
                                         <Text
                                           style={
@@ -1272,63 +1136,40 @@ exports[`SocialTopChirps renders correctly 1`] = `
                                           accessible={true}
                                           collapsable={false}
                                           focusable={true}
-                                          onBlur={[Function]}
                                           onClick={[Function]}
-                                          onFocus={[Function]}
                                           onResponderGrant={[Function]}
                                           onResponderMove={[Function]}
                                           onResponderRelease={[Function]}
                                           onResponderTerminate={[Function]}
                                           onResponderTerminationRequest={[Function]}
                                           onStartShouldSetResponder={[Function]}
-                                          style={{}}
+                                          style={
+                                            {
+                                              "opacity": 1,
+                                            }
+                                          }
                                           testID="thumbs-down"
                                         >
-                                          <RNGestureHandlerButton
-                                            collapsable={false}
-                                            delayLongPress={600}
-                                            enabled={true}
-                                            exclusive={true}
-                                            handlerTag={9}
-                                            handlerType="NativeViewGestureHandler"
-                                            onGestureEvent={[Function]}
-                                            onGestureHandlerEvent={[Function]}
-                                            onGestureHandlerStateChange={[Function]}
-                                            onHandlerStateChange={[Function]}
-                                            rippleColor={0}
-                                            touchSoundDisabled={false}
-                                          >
-                                            <View
-                                              accessible={true}
-                                              collapsable={false}
-                                              style={
+                                          <View
+                                            style={
+                                              [
                                                 {
-                                                  "opacity": 1,
-                                                }
-                                              }
-                                            >
-                                              <View
-                                                style={
-                                                  [
-                                                    {
-                                                      "backgroundColor": "#3742fa",
-                                                      "borderColor": "#3742fa",
-                                                      "borderRadius": 8,
-                                                      "borderWidth": 1,
-                                                      "padding": 8,
-                                                    },
-                                                    {
-                                                      "backgroundColor": "transparent",
-                                                    },
-                                                  ]
-                                                }
-                                              >
-                                                <View>
-                                                  {"name":"thumbs-down-sharp","size":16,"color":"#3742fa"}
-                                                </View>
-                                              </View>
+                                                  "backgroundColor": "#3742fa",
+                                                  "borderColor": "#3742fa",
+                                                  "borderRadius": 8,
+                                                  "borderWidth": 1,
+                                                  "padding": 8,
+                                                },
+                                                {
+                                                  "backgroundColor": "transparent",
+                                                },
+                                              ]
+                                            }
+                                          >
+                                            <View>
+                                              {"name":"thumbs-down-sharp","size":16,"color":"#3742fa"}
                                             </View>
-                                          </RNGestureHandlerButton>
+                                          </View>
                                         </View>
                                         <Text
                                           style={
@@ -1366,63 +1207,40 @@ exports[`SocialTopChirps renders correctly 1`] = `
                                           accessible={true}
                                           collapsable={false}
                                           focusable={true}
-                                          onBlur={[Function]}
                                           onClick={[Function]}
-                                          onFocus={[Function]}
                                           onResponderGrant={[Function]}
                                           onResponderMove={[Function]}
                                           onResponderRelease={[Function]}
                                           onResponderTerminate={[Function]}
                                           onResponderTerminationRequest={[Function]}
                                           onStartShouldSetResponder={[Function]}
-                                          style={{}}
+                                          style={
+                                            {
+                                              "opacity": 1,
+                                            }
+                                          }
                                           testID="heart"
                                         >
-                                          <RNGestureHandlerButton
-                                            collapsable={false}
-                                            delayLongPress={600}
-                                            enabled={true}
-                                            exclusive={true}
-                                            handlerTag={10}
-                                            handlerType="NativeViewGestureHandler"
-                                            onGestureEvent={[Function]}
-                                            onGestureHandlerEvent={[Function]}
-                                            onGestureHandlerStateChange={[Function]}
-                                            onHandlerStateChange={[Function]}
-                                            rippleColor={0}
-                                            touchSoundDisabled={false}
-                                          >
-                                            <View
-                                              accessible={true}
-                                              collapsable={false}
-                                              style={
+                                          <View
+                                            style={
+                                              [
                                                 {
-                                                  "opacity": 1,
-                                                }
-                                              }
-                                            >
-                                              <View
-                                                style={
-                                                  [
-                                                    {
-                                                      "backgroundColor": "#3742fa",
-                                                      "borderColor": "#3742fa",
-                                                      "borderRadius": 8,
-                                                      "borderWidth": 1,
-                                                      "padding": 8,
-                                                    },
-                                                    {
-                                                      "backgroundColor": "transparent",
-                                                    },
-                                                  ]
-                                                }
-                                              >
-                                                <View>
-                                                  {"name":"heart","size":16,"color":"#3742fa"}
-                                                </View>
-                                              </View>
+                                                  "backgroundColor": "#3742fa",
+                                                  "borderColor": "#3742fa",
+                                                  "borderRadius": 8,
+                                                  "borderWidth": 1,
+                                                  "padding": 8,
+                                                },
+                                                {
+                                                  "backgroundColor": "transparent",
+                                                },
+                                              ]
+                                            }
+                                          >
+                                            <View>
+                                              {"name":"heart","size":16,"color":"#3742fa"}
                                             </View>
-                                          </RNGestureHandlerButton>
+                                          </View>
                                         </View>
                                         <Text
                                           style={
@@ -1522,93 +1340,71 @@ exports[`SocialTopChirps renders correctly 1`] = `
                                     accessible={true}
                                     collapsable={false}
                                     focusable={true}
-                                    onBlur={[Function]}
                                     onClick={[Function]}
-                                    onFocus={[Function]}
                                     onResponderGrant={[Function]}
                                     onResponderMove={[Function]}
                                     onResponderRelease={[Function]}
                                     onResponderTerminate={[Function]}
                                     onResponderTerminationRequest={[Function]}
                                     onStartShouldSetResponder={[Function]}
+                                    style={
+                                      {
+                                        "opacity": 1,
+                                      }
+                                    }
                                   >
-                                    <RNGestureHandlerButton
-                                      collapsable={false}
-                                      delayLongPress={600}
-                                      enabled={true}
-                                      exclusive={true}
-                                      handlerTag={11}
-                                      handlerType="NativeViewGestureHandler"
-                                      onGestureEvent={[Function]}
-                                      onGestureHandlerEvent={[Function]}
-                                      onGestureHandlerStateChange={[Function]}
-                                      onHandlerStateChange={[Function]}
-                                      rippleColor={0}
-                                      touchSoundDisabled={false}
-                                    >
-                                      <View
-                                        accessible={true}
-                                        collapsable={false}
-                                        style={
+                                    <View
+                                      style={
+                                        [
                                           {
-                                            "opacity": 1,
-                                          }
+                                            "marginRight": 16,
+                                          },
+                                          {
+                                            "alignSelf": "flex-start",
+                                          },
+                                        ]
+                                      }
+                                    >
+                                      <blockies
+                                        bgColor="#ffffff"
+                                        scale={5}
+                                        seed="Douglas Adams"
+                                        size={8}
+                                        spotColor="#008ec2"
+                                      />
+                                      <Text
+                                        numberOfLines={1}
+                                        selectable={true}
+                                        style={
+                                          [
+                                            {
+                                              "color": "#000",
+                                              "fontSize": 20,
+                                              "lineHeight": 26,
+                                              "textAlign": "left",
+                                            },
+                                            {
+                                              "fontSize": 16,
+                                              "lineHeight": 20,
+                                            },
+                                            {
+                                              "color": "#8E8E8E",
+                                            },
+                                            {
+                                              "textAlign": "center",
+                                            },
+                                            {
+                                              "fontFamily": "Courier New",
+                                            },
+                                            {
+                                              "marginTop": 8,
+                                            },
+                                          ]
                                         }
                                       >
-                                        <View
-                                          style={
-                                            [
-                                              {
-                                                "marginRight": 16,
-                                              },
-                                              {
-                                                "alignSelf": "flex-start",
-                                              },
-                                            ]
-                                          }
-                                        >
-                                          <blockies
-                                            bgColor="#ffffff"
-                                            scale={5}
-                                            seed="Douglas Adams"
-                                            size={8}
-                                            spotColor="#008ec2"
-                                          />
-                                          <Text
-                                            numberOfLines={1}
-                                            selectable={true}
-                                            style={
-                                              [
-                                                {
-                                                  "color": "#000",
-                                                  "fontSize": 20,
-                                                  "lineHeight": 26,
-                                                  "textAlign": "left",
-                                                },
-                                                {
-                                                  "fontSize": 16,
-                                                  "lineHeight": 20,
-                                                },
-                                                {
-                                                  "color": "#8E8E8E",
-                                                },
-                                                {
-                                                  "textAlign": "center",
-                                                },
-                                                {
-                                                  "fontFamily": "Courier New",
-                                                },
-                                                {
-                                                  "marginTop": 8,
-                                                },
-                                              ]
-                                            }
-                                          >
-                                            Doug
-                                          </Text>
-                                        </View>
-                                      </View>
-                                    </RNGestureHandlerButton>
+                                        Doug
+                                      </Text>
+                                    </View>
                                   </View>
                                   <View
                                     style={
@@ -1745,63 +1541,40 @@ exports[`SocialTopChirps renders correctly 1`] = `
                                           accessible={true}
                                           collapsable={false}
                                           focusable={true}
-                                          onBlur={[Function]}
                                           onClick={[Function]}
-                                          onFocus={[Function]}
                                           onResponderGrant={[Function]}
                                           onResponderMove={[Function]}
                                           onResponderRelease={[Function]}
                                           onResponderTerminate={[Function]}
                                           onResponderTerminationRequest={[Function]}
                                           onStartShouldSetResponder={[Function]}
-                                          style={{}}
+                                          style={
+                                            {
+                                              "opacity": 1,
+                                            }
+                                          }
                                           testID="thumbs-up"
                                         >
-                                          <RNGestureHandlerButton
-                                            collapsable={false}
-                                            delayLongPress={600}
-                                            enabled={true}
-                                            exclusive={true}
-                                            handlerTag={12}
-                                            handlerType="NativeViewGestureHandler"
-                                            onGestureEvent={[Function]}
-                                            onGestureHandlerEvent={[Function]}
-                                            onGestureHandlerStateChange={[Function]}
-                                            onHandlerStateChange={[Function]}
-                                            rippleColor={0}
-                                            touchSoundDisabled={false}
-                                          >
-                                            <View
-                                              accessible={true}
-                                              collapsable={false}
-                                              style={
+                                          <View
+                                            style={
+                                              [
                                                 {
-                                                  "opacity": 1,
-                                                }
-                                              }
-                                            >
-                                              <View
-                                                style={
-                                                  [
-                                                    {
-                                                      "backgroundColor": "#3742fa",
-                                                      "borderColor": "#3742fa",
-                                                      "borderRadius": 8,
-                                                      "borderWidth": 1,
-                                                      "padding": 8,
-                                                    },
-                                                    {
-                                                      "backgroundColor": "transparent",
-                                                    },
-                                                  ]
-                                                }
-                                              >
-                                                <View>
-                                                  {"name":"thumbs-up-sharp","size":16,"color":"#3742fa"}
-                                                </View>
-                                              </View>
+                                                  "backgroundColor": "#3742fa",
+                                                  "borderColor": "#3742fa",
+                                                  "borderRadius": 8,
+                                                  "borderWidth": 1,
+                                                  "padding": 8,
+                                                },
+                                                {
+                                                  "backgroundColor": "transparent",
+                                                },
+                                              ]
+                                            }
+                                          >
+                                            <View>
+                                              {"name":"thumbs-up-sharp","size":16,"color":"#3742fa"}
                                             </View>
-                                          </RNGestureHandlerButton>
+                                          </View>
                                         </View>
                                         <Text
                                           style={
@@ -1839,63 +1612,40 @@ exports[`SocialTopChirps renders correctly 1`] = `
                                           accessible={true}
                                           collapsable={false}
                                           focusable={true}
-                                          onBlur={[Function]}
                                           onClick={[Function]}
-                                          onFocus={[Function]}
                                           onResponderGrant={[Function]}
                                           onResponderMove={[Function]}
                                           onResponderRelease={[Function]}
                                           onResponderTerminate={[Function]}
                                           onResponderTerminationRequest={[Function]}
                                           onStartShouldSetResponder={[Function]}
-                                          style={{}}
+                                          style={
+                                            {
+                                              "opacity": 1,
+                                            }
+                                          }
                                           testID="thumbs-down"
                                         >
-                                          <RNGestureHandlerButton
-                                            collapsable={false}
-                                            delayLongPress={600}
-                                            enabled={true}
-                                            exclusive={true}
-                                            handlerTag={13}
-                                            handlerType="NativeViewGestureHandler"
-                                            onGestureEvent={[Function]}
-                                            onGestureHandlerEvent={[Function]}
-                                            onGestureHandlerStateChange={[Function]}
-                                            onHandlerStateChange={[Function]}
-                                            rippleColor={0}
-                                            touchSoundDisabled={false}
-                                          >
-                                            <View
-                                              accessible={true}
-                                              collapsable={false}
-                                              style={
+                                          <View
+                                            style={
+                                              [
                                                 {
-                                                  "opacity": 1,
-                                                }
-                                              }
-                                            >
-                                              <View
-                                                style={
-                                                  [
-                                                    {
-                                                      "backgroundColor": "#3742fa",
-                                                      "borderColor": "#3742fa",
-                                                      "borderRadius": 8,
-                                                      "borderWidth": 1,
-                                                      "padding": 8,
-                                                    },
-                                                    {
-                                                      "backgroundColor": "transparent",
-                                                    },
-                                                  ]
-                                                }
-                                              >
-                                                <View>
-                                                  {"name":"thumbs-down-sharp","size":16,"color":"#3742fa"}
-                                                </View>
-                                              </View>
+                                                  "backgroundColor": "#3742fa",
+                                                  "borderColor": "#3742fa",
+                                                  "borderRadius": 8,
+                                                  "borderWidth": 1,
+                                                  "padding": 8,
+                                                },
+                                                {
+                                                  "backgroundColor": "transparent",
+                                                },
+                                              ]
+                                            }
+                                          >
+                                            <View>
+                                              {"name":"thumbs-down-sharp","size":16,"color":"#3742fa"}
                                             </View>
-                                          </RNGestureHandlerButton>
+                                          </View>
                                         </View>
                                         <Text
                                           style={
@@ -1933,63 +1683,40 @@ exports[`SocialTopChirps renders correctly 1`] = `
                                           accessible={true}
                                           collapsable={false}
                                           focusable={true}
-                                          onBlur={[Function]}
                                           onClick={[Function]}
-                                          onFocus={[Function]}
                                           onResponderGrant={[Function]}
                                           onResponderMove={[Function]}
                                           onResponderRelease={[Function]}
                                           onResponderTerminate={[Function]}
                                           onResponderTerminationRequest={[Function]}
                                           onStartShouldSetResponder={[Function]}
-                                          style={{}}
+                                          style={
+                                            {
+                                              "opacity": 1,
+                                            }
+                                          }
                                           testID="heart"
                                         >
-                                          <RNGestureHandlerButton
-                                            collapsable={false}
-                                            delayLongPress={600}
-                                            enabled={true}
-                                            exclusive={true}
-                                            handlerTag={14}
-                                            handlerType="NativeViewGestureHandler"
-                                            onGestureEvent={[Function]}
-                                            onGestureHandlerEvent={[Function]}
-                                            onGestureHandlerStateChange={[Function]}
-                                            onHandlerStateChange={[Function]}
-                                            rippleColor={0}
-                                            touchSoundDisabled={false}
-                                          >
-                                            <View
-                                              accessible={true}
-                                              collapsable={false}
-                                              style={
+                                          <View
+                                            style={
+                                              [
                                                 {
-                                                  "opacity": 1,
-                                                }
-                                              }
-                                            >
-                                              <View
-                                                style={
-                                                  [
-                                                    {
-                                                      "backgroundColor": "#3742fa",
-                                                      "borderColor": "#3742fa",
-                                                      "borderRadius": 8,
-                                                      "borderWidth": 1,
-                                                      "padding": 8,
-                                                    },
-                                                    {
-                                                      "backgroundColor": "transparent",
-                                                    },
-                                                  ]
-                                                }
-                                              >
-                                                <View>
-                                                  {"name":"heart","size":16,"color":"#3742fa"}
-                                                </View>
-                                              </View>
+                                                  "backgroundColor": "#3742fa",
+                                                  "borderColor": "#3742fa",
+                                                  "borderRadius": 8,
+                                                  "borderWidth": 1,
+                                                  "padding": 8,
+                                                },
+                                                {
+                                                  "backgroundColor": "transparent",
+                                                },
+                                              ]
+                                            }
+                                          >
+                                            <View>
+                                              {"name":"heart","size":16,"color":"#3742fa"}
                                             </View>
-                                          </RNGestureHandlerButton>
+                                          </View>
                                         </View>
                                         <Text
                                           style={

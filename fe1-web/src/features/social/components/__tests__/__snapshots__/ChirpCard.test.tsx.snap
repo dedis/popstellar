@@ -276,7 +276,7 @@ exports[`ChirpCard for deletion render correct for a deleted chirp 1`] = `
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
-                handlerTag={12}
+                handlerTag={3}
                 handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}
@@ -353,87 +353,65 @@ exports[`ChirpCard for deletion render correct for a deleted chirp 1`] = `
                             accessible={true}
                             collapsable={false}
                             focusable={true}
-                            onBlur={[Function]}
                             onClick={[Function]}
-                            onFocus={[Function]}
                             onResponderGrant={[Function]}
                             onResponderMove={[Function]}
                             onResponderRelease={[Function]}
                             onResponderTerminate={[Function]}
                             onResponderTerminationRequest={[Function]}
                             onStartShouldSetResponder={[Function]}
+                            style={
+                              {
+                                "opacity": 1,
+                              }
+                            }
                           >
-                            <RNGestureHandlerButton
-                              collapsable={false}
-                              delayLongPress={600}
-                              enabled={true}
-                              exclusive={true}
-                              handlerTag={13}
-                              handlerType="NativeViewGestureHandler"
-                              onGestureEvent={[Function]}
-                              onGestureHandlerEvent={[Function]}
-                              onGestureHandlerStateChange={[Function]}
-                              onHandlerStateChange={[Function]}
-                              rippleColor={0}
-                              touchSoundDisabled={false}
-                            >
-                              <View
-                                accessible={true}
-                                collapsable={false}
-                                style={
+                            <View
+                              style={
+                                [
                                   {
-                                    "opacity": 1,
-                                  }
+                                    "marginRight": 16,
+                                  },
+                                  {
+                                    "alignSelf": "flex-start",
+                                  },
+                                ]
+                              }
+                            >
+                              ProfileIcon
+                              <Text
+                                numberOfLines={1}
+                                selectable={true}
+                                style={
+                                  [
+                                    {
+                                      "color": "#000",
+                                      "fontSize": 20,
+                                      "lineHeight": 26,
+                                      "textAlign": "left",
+                                    },
+                                    {
+                                      "fontSize": 16,
+                                      "lineHeight": 20,
+                                    },
+                                    {
+                                      "color": "#8E8E8E",
+                                    },
+                                    {
+                                      "textAlign": "center",
+                                    },
+                                    {
+                                      "fontFamily": "Courier New",
+                                    },
+                                    {
+                                      "marginTop": 8,
+                                    },
+                                  ]
                                 }
                               >
-                                <View
-                                  style={
-                                    [
-                                      {
-                                        "marginRight": 16,
-                                      },
-                                      {
-                                        "alignSelf": "flex-start",
-                                      },
-                                    ]
-                                  }
-                                >
-                                  ProfileIcon
-                                  <Text
-                                    numberOfLines={1}
-                                    selectable={true}
-                                    style={
-                                      [
-                                        {
-                                          "color": "#000",
-                                          "fontSize": 20,
-                                          "lineHeight": 26,
-                                          "textAlign": "left",
-                                        },
-                                        {
-                                          "fontSize": 16,
-                                          "lineHeight": 20,
-                                        },
-                                        {
-                                          "color": "#8E8E8E",
-                                        },
-                                        {
-                                          "textAlign": "center",
-                                        },
-                                        {
-                                          "fontFamily": "Courier New",
-                                        },
-                                        {
-                                          "marginTop": 8,
-                                        },
-                                      ]
-                                    }
-                                  >
-                                    Joke
-                                  </Text>
-                                </View>
-                              </View>
-                            </RNGestureHandlerButton>
+                                Joke
+                              </Text>
+                            </View>
                           </View>
                           <View
                             style={
@@ -894,7 +872,7 @@ exports[`ChirpCard for deletion renders correctly for non-sender 1`] = `
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
-                handlerTag={7}
+                handlerTag={2}
                 handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}
@@ -971,87 +949,65 @@ exports[`ChirpCard for deletion renders correctly for non-sender 1`] = `
                             accessible={true}
                             collapsable={false}
                             focusable={true}
-                            onBlur={[Function]}
                             onClick={[Function]}
-                            onFocus={[Function]}
                             onResponderGrant={[Function]}
                             onResponderMove={[Function]}
                             onResponderRelease={[Function]}
                             onResponderTerminate={[Function]}
                             onResponderTerminationRequest={[Function]}
                             onStartShouldSetResponder={[Function]}
+                            style={
+                              {
+                                "opacity": 1,
+                              }
+                            }
                           >
-                            <RNGestureHandlerButton
-                              collapsable={false}
-                              delayLongPress={600}
-                              enabled={true}
-                              exclusive={true}
-                              handlerTag={8}
-                              handlerType="NativeViewGestureHandler"
-                              onGestureEvent={[Function]}
-                              onGestureHandlerEvent={[Function]}
-                              onGestureHandlerStateChange={[Function]}
-                              onHandlerStateChange={[Function]}
-                              rippleColor={0}
-                              touchSoundDisabled={false}
-                            >
-                              <View
-                                accessible={true}
-                                collapsable={false}
-                                style={
+                            <View
+                              style={
+                                [
                                   {
-                                    "opacity": 1,
-                                  }
+                                    "marginRight": 16,
+                                  },
+                                  {
+                                    "alignSelf": "flex-start",
+                                  },
+                                ]
+                              }
+                            >
+                              ProfileIcon
+                              <Text
+                                numberOfLines={1}
+                                selectable={true}
+                                style={
+                                  [
+                                    {
+                                      "color": "#000",
+                                      "fontSize": 20,
+                                      "lineHeight": 26,
+                                      "textAlign": "left",
+                                    },
+                                    {
+                                      "fontSize": 16,
+                                      "lineHeight": 20,
+                                    },
+                                    {
+                                      "color": "#8E8E8E",
+                                    },
+                                    {
+                                      "textAlign": "center",
+                                    },
+                                    {
+                                      "fontFamily": "Courier New",
+                                    },
+                                    {
+                                      "marginTop": 8,
+                                    },
+                                  ]
                                 }
                               >
-                                <View
-                                  style={
-                                    [
-                                      {
-                                        "marginRight": 16,
-                                      },
-                                      {
-                                        "alignSelf": "flex-start",
-                                      },
-                                    ]
-                                  }
-                                >
-                                  ProfileIcon
-                                  <Text
-                                    numberOfLines={1}
-                                    selectable={true}
-                                    style={
-                                      [
-                                        {
-                                          "color": "#000",
-                                          "fontSize": 20,
-                                          "lineHeight": 26,
-                                          "textAlign": "left",
-                                        },
-                                        {
-                                          "fontSize": 16,
-                                          "lineHeight": 20,
-                                        },
-                                        {
-                                          "color": "#8E8E8E",
-                                        },
-                                        {
-                                          "textAlign": "center",
-                                        },
-                                        {
-                                          "fontFamily": "Courier New",
-                                        },
-                                        {
-                                          "marginTop": 8,
-                                        },
-                                      ]
-                                    }
-                                  >
-                                    Doug
-                                  </Text>
-                                </View>
-                              </View>
-                            </RNGestureHandlerButton>
+                                Doug
+                              </Text>
+                            </View>
                           </View>
                           <View
                             style={
@@ -1188,63 +1144,40 @@ exports[`ChirpCard for deletion renders correctly for non-sender 1`] = `
                                   accessible={true}
                                   collapsable={false}
                                   focusable={true}
-                                  onBlur={[Function]}
                                   onClick={[Function]}
-                                  onFocus={[Function]}
                                   onResponderGrant={[Function]}
                                   onResponderMove={[Function]}
                                   onResponderRelease={[Function]}
                                   onResponderTerminate={[Function]}
                                   onResponderTerminationRequest={[Function]}
                                   onStartShouldSetResponder={[Function]}
-                                  style={{}}
+                                  style={
+                                    {
+                                      "opacity": 1,
+                                    }
+                                  }
                                   testID="thumbs-up"
                                 >
-                                  <RNGestureHandlerButton
-                                    collapsable={false}
-                                    delayLongPress={600}
-                                    enabled={true}
-                                    exclusive={true}
-                                    handlerTag={9}
-                                    handlerType="NativeViewGestureHandler"
-                                    onGestureEvent={[Function]}
-                                    onGestureHandlerEvent={[Function]}
-                                    onGestureHandlerStateChange={[Function]}
-                                    onHandlerStateChange={[Function]}
-                                    rippleColor={0}
-                                    touchSoundDisabled={false}
-                                  >
-                                    <View
-                                      accessible={true}
-                                      collapsable={false}
-                                      style={
+                                  <View
+                                    style={
+                                      [
                                         {
-                                          "opacity": 1,
-                                        }
-                                      }
-                                    >
-                                      <View
-                                        style={
-                                          [
-                                            {
-                                              "backgroundColor": "#3742fa",
-                                              "borderColor": "#3742fa",
-                                              "borderRadius": 8,
-                                              "borderWidth": 1,
-                                              "padding": 8,
-                                            },
-                                            {
-                                              "backgroundColor": "transparent",
-                                            },
-                                          ]
-                                        }
-                                      >
-                                        <View>
-                                          {"name":"thumbs-up-sharp","size":16,"color":"#3742fa"}
-                                        </View>
-                                      </View>
+                                          "backgroundColor": "#3742fa",
+                                          "borderColor": "#3742fa",
+                                          "borderRadius": 8,
+                                          "borderWidth": 1,
+                                          "padding": 8,
+                                        },
+                                        {
+                                          "backgroundColor": "transparent",
+                                        },
+                                      ]
+                                    }
+                                  >
+                                    <View>
+                                      {"name":"thumbs-up-sharp","size":16,"color":"#3742fa"}
                                     </View>
-                                  </RNGestureHandlerButton>
+                                  </View>
                                 </View>
                                 <Text
                                   style={
@@ -1282,63 +1215,40 @@ exports[`ChirpCard for deletion renders correctly for non-sender 1`] = `
                                   accessible={true}
                                   collapsable={false}
                                   focusable={true}
-                                  onBlur={[Function]}
                                   onClick={[Function]}
-                                  onFocus={[Function]}
                                   onResponderGrant={[Function]}
                                   onResponderMove={[Function]}
                                   onResponderRelease={[Function]}
                                   onResponderTerminate={[Function]}
                                   onResponderTerminationRequest={[Function]}
                                   onStartShouldSetResponder={[Function]}
-                                  style={{}}
+                                  style={
+                                    {
+                                      "opacity": 1,
+                                    }
+                                  }
                                   testID="thumbs-down"
                                 >
-                                  <RNGestureHandlerButton
-                                    collapsable={false}
-                                    delayLongPress={600}
-                                    enabled={true}
-                                    exclusive={true}
-                                    handlerTag={10}
-                                    handlerType="NativeViewGestureHandler"
-                                    onGestureEvent={[Function]}
-                                    onGestureHandlerEvent={[Function]}
-                                    onGestureHandlerStateChange={[Function]}
-                                    onHandlerStateChange={[Function]}
-                                    rippleColor={0}
-                                    touchSoundDisabled={false}
-                                  >
-                                    <View
-                                      accessible={true}
-                                      collapsable={false}
-                                      style={
+                                  <View
+                                    style={
+                                      [
                                         {
-                                          "opacity": 1,
-                                        }
-                                      }
-                                    >
-                                      <View
-                                        style={
-                                          [
-                                            {
-                                              "backgroundColor": "#3742fa",
-                                              "borderColor": "#3742fa",
-                                              "borderRadius": 8,
-                                              "borderWidth": 1,
-                                              "padding": 8,
-                                            },
-                                            {
-                                              "backgroundColor": "transparent",
-                                            },
-                                          ]
-                                        }
-                                      >
-                                        <View>
-                                          {"name":"thumbs-down-sharp","size":16,"color":"#3742fa"}
-                                        </View>
-                                      </View>
+                                          "backgroundColor": "#3742fa",
+                                          "borderColor": "#3742fa",
+                                          "borderRadius": 8,
+                                          "borderWidth": 1,
+                                          "padding": 8,
+                                        },
+                                        {
+                                          "backgroundColor": "transparent",
+                                        },
+                                      ]
+                                    }
+                                  >
+                                    <View>
+                                      {"name":"thumbs-down-sharp","size":16,"color":"#3742fa"}
                                     </View>
-                                  </RNGestureHandlerButton>
+                                  </View>
                                 </View>
                                 <Text
                                   style={
@@ -1376,63 +1286,40 @@ exports[`ChirpCard for deletion renders correctly for non-sender 1`] = `
                                   accessible={true}
                                   collapsable={false}
                                   focusable={true}
-                                  onBlur={[Function]}
                                   onClick={[Function]}
-                                  onFocus={[Function]}
                                   onResponderGrant={[Function]}
                                   onResponderMove={[Function]}
                                   onResponderRelease={[Function]}
                                   onResponderTerminate={[Function]}
                                   onResponderTerminationRequest={[Function]}
                                   onStartShouldSetResponder={[Function]}
-                                  style={{}}
+                                  style={
+                                    {
+                                      "opacity": 1,
+                                    }
+                                  }
                                   testID="heart"
                                 >
-                                  <RNGestureHandlerButton
-                                    collapsable={false}
-                                    delayLongPress={600}
-                                    enabled={true}
-                                    exclusive={true}
-                                    handlerTag={11}
-                                    handlerType="NativeViewGestureHandler"
-                                    onGestureEvent={[Function]}
-                                    onGestureHandlerEvent={[Function]}
-                                    onGestureHandlerStateChange={[Function]}
-                                    onHandlerStateChange={[Function]}
-                                    rippleColor={0}
-                                    touchSoundDisabled={false}
-                                  >
-                                    <View
-                                      accessible={true}
-                                      collapsable={false}
-                                      style={
+                                  <View
+                                    style={
+                                      [
                                         {
-                                          "opacity": 1,
-                                        }
-                                      }
-                                    >
-                                      <View
-                                        style={
-                                          [
-                                            {
-                                              "backgroundColor": "#3742fa",
-                                              "borderColor": "#3742fa",
-                                              "borderRadius": 8,
-                                              "borderWidth": 1,
-                                              "padding": 8,
-                                            },
-                                            {
-                                              "backgroundColor": "transparent",
-                                            },
-                                          ]
-                                        }
-                                      >
-                                        <View>
-                                          {"name":"heart","size":16,"color":"#3742fa"}
-                                        </View>
-                                      </View>
+                                          "backgroundColor": "#3742fa",
+                                          "borderColor": "#3742fa",
+                                          "borderRadius": 8,
+                                          "borderWidth": 1,
+                                          "padding": 8,
+                                        },
+                                        {
+                                          "backgroundColor": "transparent",
+                                        },
+                                      ]
+                                    }
+                                  >
+                                    <View>
+                                      {"name":"heart","size":16,"color":"#3742fa"}
                                     </View>
-                                  </RNGestureHandlerButton>
+                                  </View>
                                 </View>
                                 <Text
                                   style={
@@ -1866,87 +1753,65 @@ exports[`ChirpCard for deletion renders correctly for sender 1`] = `
                             accessible={true}
                             collapsable={false}
                             focusable={true}
-                            onBlur={[Function]}
                             onClick={[Function]}
-                            onFocus={[Function]}
                             onResponderGrant={[Function]}
                             onResponderMove={[Function]}
                             onResponderRelease={[Function]}
                             onResponderTerminate={[Function]}
                             onResponderTerminationRequest={[Function]}
                             onStartShouldSetResponder={[Function]}
+                            style={
+                              {
+                                "opacity": 1,
+                              }
+                            }
                           >
-                            <RNGestureHandlerButton
-                              collapsable={false}
-                              delayLongPress={600}
-                              enabled={true}
-                              exclusive={true}
-                              handlerTag={2}
-                              handlerType="NativeViewGestureHandler"
-                              onGestureEvent={[Function]}
-                              onGestureHandlerEvent={[Function]}
-                              onGestureHandlerStateChange={[Function]}
-                              onHandlerStateChange={[Function]}
-                              rippleColor={0}
-                              touchSoundDisabled={false}
-                            >
-                              <View
-                                accessible={true}
-                                collapsable={false}
-                                style={
+                            <View
+                              style={
+                                [
                                   {
-                                    "opacity": 1,
-                                  }
+                                    "marginRight": 16,
+                                  },
+                                  {
+                                    "alignSelf": "flex-start",
+                                  },
+                                ]
+                              }
+                            >
+                              ProfileIcon
+                              <Text
+                                numberOfLines={1}
+                                selectable={true}
+                                style={
+                                  [
+                                    {
+                                      "color": "#000",
+                                      "fontSize": 20,
+                                      "lineHeight": 26,
+                                      "textAlign": "left",
+                                    },
+                                    {
+                                      "fontSize": 16,
+                                      "lineHeight": 20,
+                                    },
+                                    {
+                                      "color": "#8E8E8E",
+                                    },
+                                    {
+                                      "textAlign": "center",
+                                    },
+                                    {
+                                      "fontFamily": "Courier New",
+                                    },
+                                    {
+                                      "marginTop": 8,
+                                    },
+                                  ]
                                 }
                               >
-                                <View
-                                  style={
-                                    [
-                                      {
-                                        "marginRight": 16,
-                                      },
-                                      {
-                                        "alignSelf": "flex-start",
-                                      },
-                                    ]
-                                  }
-                                >
-                                  ProfileIcon
-                                  <Text
-                                    numberOfLines={1}
-                                    selectable={true}
-                                    style={
-                                      [
-                                        {
-                                          "color": "#000",
-                                          "fontSize": 20,
-                                          "lineHeight": 26,
-                                          "textAlign": "left",
-                                        },
-                                        {
-                                          "fontSize": 16,
-                                          "lineHeight": 20,
-                                        },
-                                        {
-                                          "color": "#8E8E8E",
-                                        },
-                                        {
-                                          "textAlign": "center",
-                                        },
-                                        {
-                                          "fontFamily": "Courier New",
-                                        },
-                                        {
-                                          "marginTop": 8,
-                                        },
-                                      ]
-                                    }
-                                  >
-                                    Doug
-                                  </Text>
-                                </View>
-                              </View>
-                            </RNGestureHandlerButton>
+                                Doug
+                              </Text>
+                            </View>
                           </View>
                           <View
                             style={
@@ -2083,63 +1948,40 @@ exports[`ChirpCard for deletion renders correctly for sender 1`] = `
                                   accessible={true}
                                   collapsable={false}
                                   focusable={true}
-                                  onBlur={[Function]}
                                   onClick={[Function]}
-                                  onFocus={[Function]}
                                   onResponderGrant={[Function]}
                                   onResponderMove={[Function]}
                                   onResponderRelease={[Function]}
                                   onResponderTerminate={[Function]}
                                   onResponderTerminationRequest={[Function]}
                                   onStartShouldSetResponder={[Function]}
-                                  style={{}}
+                                  style={
+                                    {
+                                      "opacity": 1,
+                                    }
+                                  }
                                   testID="thumbs-up"
                                 >
-                                  <RNGestureHandlerButton
-                                    collapsable={false}
-                                    delayLongPress={600}
-                                    enabled={true}
-                                    exclusive={true}
-                                    handlerTag={3}
-                                    handlerType="NativeViewGestureHandler"
-                                    onGestureEvent={[Function]}
-                                    onGestureHandlerEvent={[Function]}
-                                    onGestureHandlerStateChange={[Function]}
-                                    onHandlerStateChange={[Function]}
-                                    rippleColor={0}
-                                    touchSoundDisabled={false}
-                                  >
-                                    <View
-                                      accessible={true}
-                                      collapsable={false}
-                                      style={
+                                  <View
+                                    style={
+                                      [
                                         {
-                                          "opacity": 1,
-                                        }
-                                      }
-                                    >
-                                      <View
-                                        style={
-                                          [
-                                            {
-                                              "backgroundColor": "#3742fa",
-                                              "borderColor": "#3742fa",
-                                              "borderRadius": 8,
-                                              "borderWidth": 1,
-                                              "padding": 8,
-                                            },
-                                            {
-                                              "backgroundColor": "transparent",
-                                            },
-                                          ]
-                                        }
-                                      >
-                                        <View>
-                                          {"name":"thumbs-up-sharp","size":16,"color":"#3742fa"}
-                                        </View>
-                                      </View>
+                                          "backgroundColor": "#3742fa",
+                                          "borderColor": "#3742fa",
+                                          "borderRadius": 8,
+                                          "borderWidth": 1,
+                                          "padding": 8,
+                                        },
+                                        {
+                                          "backgroundColor": "transparent",
+                                        },
+                                      ]
+                                    }
+                                  >
+                                    <View>
+                                      {"name":"thumbs-up-sharp","size":16,"color":"#3742fa"}
                                     </View>
-                                  </RNGestureHandlerButton>
+                                  </View>
                                 </View>
                                 <Text
                                   style={
@@ -2177,63 +2019,40 @@ exports[`ChirpCard for deletion renders correctly for sender 1`] = `
                                   accessible={true}
                                   collapsable={false}
                                   focusable={true}
-                                  onBlur={[Function]}
                                   onClick={[Function]}
-                                  onFocus={[Function]}
                                   onResponderGrant={[Function]}
                                   onResponderMove={[Function]}
                                   onResponderRelease={[Function]}
                                   onResponderTerminate={[Function]}
                                   onResponderTerminationRequest={[Function]}
                                   onStartShouldSetResponder={[Function]}
-                                  style={{}}
+                                  style={
+                                    {
+                                      "opacity": 1,
+                                    }
+                                  }
                                   testID="thumbs-down"
                                 >
-                                  <RNGestureHandlerButton
-                                    collapsable={false}
-                                    delayLongPress={600}
-                                    enabled={true}
-                                    exclusive={true}
-                                    handlerTag={4}
-                                    handlerType="NativeViewGestureHandler"
-                                    onGestureEvent={[Function]}
-                                    onGestureHandlerEvent={[Function]}
-                                    onGestureHandlerStateChange={[Function]}
-                                    onHandlerStateChange={[Function]}
-                                    rippleColor={0}
-                                    touchSoundDisabled={false}
-                                  >
-                                    <View
-                                      accessible={true}
-                                      collapsable={false}
-                                      style={
+                                  <View
+                                    style={
+                                      [
                                         {
-                                          "opacity": 1,
-                                        }
-                                      }
-                                    >
-                                      <View
-                                        style={
-                                          [
-                                            {
-                                              "backgroundColor": "#3742fa",
-                                              "borderColor": "#3742fa",
-                                              "borderRadius": 8,
-                                              "borderWidth": 1,
-                                              "padding": 8,
-                                            },
-                                            {
-                                              "backgroundColor": "transparent",
-                                            },
-                                          ]
-                                        }
-                                      >
-                                        <View>
-                                          {"name":"thumbs-down-sharp","size":16,"color":"#3742fa"}
-                                        </View>
-                                      </View>
+                                          "backgroundColor": "#3742fa",
+                                          "borderColor": "#3742fa",
+                                          "borderRadius": 8,
+                                          "borderWidth": 1,
+                                          "padding": 8,
+                                        },
+                                        {
+                                          "backgroundColor": "transparent",
+                                        },
+                                      ]
+                                    }
+                                  >
+                                    <View>
+                                      {"name":"thumbs-down-sharp","size":16,"color":"#3742fa"}
                                     </View>
-                                  </RNGestureHandlerButton>
+                                  </View>
                                 </View>
                                 <Text
                                   style={
@@ -2271,63 +2090,40 @@ exports[`ChirpCard for deletion renders correctly for sender 1`] = `
                                   accessible={true}
                                   collapsable={false}
                                   focusable={true}
-                                  onBlur={[Function]}
                                   onClick={[Function]}
-                                  onFocus={[Function]}
                                   onResponderGrant={[Function]}
                                   onResponderMove={[Function]}
                                   onResponderRelease={[Function]}
                                   onResponderTerminate={[Function]}
                                   onResponderTerminationRequest={[Function]}
                                   onStartShouldSetResponder={[Function]}
-                                  style={{}}
+                                  style={
+                                    {
+                                      "opacity": 1,
+                                    }
+                                  }
                                   testID="heart"
                                 >
-                                  <RNGestureHandlerButton
-                                    collapsable={false}
-                                    delayLongPress={600}
-                                    enabled={true}
-                                    exclusive={true}
-                                    handlerTag={5}
-                                    handlerType="NativeViewGestureHandler"
-                                    onGestureEvent={[Function]}
-                                    onGestureHandlerEvent={[Function]}
-                                    onGestureHandlerStateChange={[Function]}
-                                    onHandlerStateChange={[Function]}
-                                    rippleColor={0}
-                                    touchSoundDisabled={false}
-                                  >
-                                    <View
-                                      accessible={true}
-                                      collapsable={false}
-                                      style={
+                                  <View
+                                    style={
+                                      [
                                         {
-                                          "opacity": 1,
-                                        }
-                                      }
-                                    >
-                                      <View
-                                        style={
-                                          [
-                                            {
-                                              "backgroundColor": "#3742fa",
-                                              "borderColor": "#3742fa",
-                                              "borderRadius": 8,
-                                              "borderWidth": 1,
-                                              "padding": 8,
-                                            },
-                                            {
-                                              "backgroundColor": "transparent",
-                                            },
-                                          ]
-                                        }
-                                      >
-                                        <View>
-                                          {"name":"heart","size":16,"color":"#3742fa"}
-                                        </View>
-                                      </View>
+                                          "backgroundColor": "#3742fa",
+                                          "borderColor": "#3742fa",
+                                          "borderRadius": 8,
+                                          "borderWidth": 1,
+                                          "padding": 8,
+                                        },
+                                        {
+                                          "backgroundColor": "transparent",
+                                        },
+                                      ]
+                                    }
+                                  >
+                                    <View>
+                                      {"name":"heart","size":16,"color":"#3742fa"}
                                     </View>
-                                  </RNGestureHandlerButton>
+                                  </View>
                                 </View>
                                 <Text
                                   style={
@@ -2365,63 +2161,40 @@ exports[`ChirpCard for deletion renders correctly for sender 1`] = `
                                   accessible={true}
                                   collapsable={false}
                                   focusable={true}
-                                  onBlur={[Function]}
                                   onClick={[Function]}
-                                  onFocus={[Function]}
                                   onResponderGrant={[Function]}
                                   onResponderMove={[Function]}
                                   onResponderRelease={[Function]}
                                   onResponderTerminate={[Function]}
                                   onResponderTerminationRequest={[Function]}
                                   onStartShouldSetResponder={[Function]}
-                                  style={{}}
+                                  style={
+                                    {
+                                      "opacity": 1,
+                                    }
+                                  }
                                   testID="delete_chirp"
                                 >
-                                  <RNGestureHandlerButton
-                                    collapsable={false}
-                                    delayLongPress={600}
-                                    enabled={true}
-                                    exclusive={true}
-                                    handlerTag={6}
-                                    handlerType="NativeViewGestureHandler"
-                                    onGestureEvent={[Function]}
-                                    onGestureHandlerEvent={[Function]}
-                                    onGestureHandlerStateChange={[Function]}
-                                    onHandlerStateChange={[Function]}
-                                    rippleColor={0}
-                                    touchSoundDisabled={false}
-                                  >
-                                    <View
-                                      accessible={true}
-                                      collapsable={false}
-                                      style={
+                                  <View
+                                    style={
+                                      [
                                         {
-                                          "opacity": 1,
-                                        }
-                                      }
-                                    >
-                                      <View
-                                        style={
-                                          [
-                                            {
-                                              "backgroundColor": "#3742fa",
-                                              "borderColor": "#3742fa",
-                                              "borderRadius": 8,
-                                              "borderWidth": 1,
-                                              "padding": 8,
-                                            },
-                                            {
-                                              "backgroundColor": "transparent",
-                                            },
-                                          ]
-                                        }
-                                      >
-                                        <View>
-                                          {"name":"ios-trash","size":16,"color":"#3742fa"}
-                                        </View>
-                                      </View>
+                                          "backgroundColor": "#3742fa",
+                                          "borderColor": "#3742fa",
+                                          "borderRadius": 8,
+                                          "borderWidth": 1,
+                                          "padding": 8,
+                                        },
+                                        {
+                                          "backgroundColor": "transparent",
+                                        },
+                                      ]
+                                    }
+                                  >
+                                    <View>
+                                      {"name":"ios-trash","size":16,"color":"#3742fa"}
                                     </View>
-                                  </RNGestureHandlerButton>
+                                  </View>
                                 </View>
                                 <Modal
                                   hardwareAccelerated={false}
@@ -2763,7 +2536,7 @@ exports[`ChirpCard for reaction renders correctly with reaction 1`] = `
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
-                handlerTag={24}
+                handlerTag={7}
                 handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}
@@ -2840,87 +2613,65 @@ exports[`ChirpCard for reaction renders correctly with reaction 1`] = `
                             accessible={true}
                             collapsable={false}
                             focusable={true}
-                            onBlur={[Function]}
                             onClick={[Function]}
-                            onFocus={[Function]}
                             onResponderGrant={[Function]}
                             onResponderMove={[Function]}
                             onResponderRelease={[Function]}
                             onResponderTerminate={[Function]}
                             onResponderTerminationRequest={[Function]}
                             onStartShouldSetResponder={[Function]}
+                            style={
+                              {
+                                "opacity": 1,
+                              }
+                            }
                           >
-                            <RNGestureHandlerButton
-                              collapsable={false}
-                              delayLongPress={600}
-                              enabled={true}
-                              exclusive={true}
-                              handlerTag={25}
-                              handlerType="NativeViewGestureHandler"
-                              onGestureEvent={[Function]}
-                              onGestureHandlerEvent={[Function]}
-                              onGestureHandlerStateChange={[Function]}
-                              onHandlerStateChange={[Function]}
-                              rippleColor={0}
-                              touchSoundDisabled={false}
-                            >
-                              <View
-                                accessible={true}
-                                collapsable={false}
-                                style={
+                            <View
+                              style={
+                                [
                                   {
-                                    "opacity": 1,
-                                  }
+                                    "marginRight": 16,
+                                  },
+                                  {
+                                    "alignSelf": "flex-start",
+                                  },
+                                ]
+                              }
+                            >
+                              ProfileIcon
+                              <Text
+                                numberOfLines={1}
+                                selectable={true}
+                                style={
+                                  [
+                                    {
+                                      "color": "#000",
+                                      "fontSize": 20,
+                                      "lineHeight": 26,
+                                      "textAlign": "left",
+                                    },
+                                    {
+                                      "fontSize": 16,
+                                      "lineHeight": 20,
+                                    },
+                                    {
+                                      "color": "#8E8E8E",
+                                    },
+                                    {
+                                      "textAlign": "center",
+                                    },
+                                    {
+                                      "fontFamily": "Courier New",
+                                    },
+                                    {
+                                      "marginTop": 8,
+                                    },
+                                  ]
                                 }
                               >
-                                <View
-                                  style={
-                                    [
-                                      {
-                                        "marginRight": 16,
-                                      },
-                                      {
-                                        "alignSelf": "flex-start",
-                                      },
-                                    ]
-                                  }
-                                >
-                                  ProfileIcon
-                                  <Text
-                                    numberOfLines={1}
-                                    selectable={true}
-                                    style={
-                                      [
-                                        {
-                                          "color": "#000",
-                                          "fontSize": 20,
-                                          "lineHeight": 26,
-                                          "textAlign": "left",
-                                        },
-                                        {
-                                          "fontSize": 16,
-                                          "lineHeight": 20,
-                                        },
-                                        {
-                                          "color": "#8E8E8E",
-                                        },
-                                        {
-                                          "textAlign": "center",
-                                        },
-                                        {
-                                          "fontFamily": "Courier New",
-                                        },
-                                        {
-                                          "marginTop": 8,
-                                        },
-                                      ]
-                                    }
-                                  >
-                                    Doug
-                                  </Text>
-                                </View>
-                              </View>
-                            </RNGestureHandlerButton>
+                                Doug
+                              </Text>
+                            </View>
                           </View>
                           <View
                             style={
@@ -3057,63 +2808,40 @@ exports[`ChirpCard for reaction renders correctly with reaction 1`] = `
                                   accessible={true}
                                   collapsable={false}
                                   focusable={true}
-                                  onBlur={[Function]}
                                   onClick={[Function]}
-                                  onFocus={[Function]}
                                   onResponderGrant={[Function]}
                                   onResponderMove={[Function]}
                                   onResponderRelease={[Function]}
                                   onResponderTerminate={[Function]}
                                   onResponderTerminationRequest={[Function]}
                                   onStartShouldSetResponder={[Function]}
-                                  style={{}}
+                                  style={
+                                    {
+                                      "opacity": 1,
+                                    }
+                                  }
                                   testID="thumbs-up"
                                 >
-                                  <RNGestureHandlerButton
-                                    collapsable={false}
-                                    delayLongPress={600}
-                                    enabled={true}
-                                    exclusive={true}
-                                    handlerTag={26}
-                                    handlerType="NativeViewGestureHandler"
-                                    onGestureEvent={[Function]}
-                                    onGestureHandlerEvent={[Function]}
-                                    onGestureHandlerStateChange={[Function]}
-                                    onHandlerStateChange={[Function]}
-                                    rippleColor={0}
-                                    touchSoundDisabled={false}
-                                  >
-                                    <View
-                                      accessible={true}
-                                      collapsable={false}
-                                      style={
+                                  <View
+                                    style={
+                                      [
                                         {
-                                          "opacity": 1,
-                                        }
-                                      }
-                                    >
-                                      <View
-                                        style={
-                                          [
-                                            {
-                                              "backgroundColor": "#3742fa",
-                                              "borderColor": "#3742fa",
-                                              "borderRadius": 8,
-                                              "borderWidth": 1,
-                                              "padding": 8,
-                                            },
-                                            {
-                                              "backgroundColor": "transparent",
-                                            },
-                                          ]
-                                        }
-                                      >
-                                        <View>
-                                          {"name":"thumbs-up-sharp","size":16,"color":"#3742fa"}
-                                        </View>
-                                      </View>
+                                          "backgroundColor": "#3742fa",
+                                          "borderColor": "#3742fa",
+                                          "borderRadius": 8,
+                                          "borderWidth": 1,
+                                          "padding": 8,
+                                        },
+                                        {
+                                          "backgroundColor": "transparent",
+                                        },
+                                      ]
+                                    }
+                                  >
+                                    <View>
+                                      {"name":"thumbs-up-sharp","size":16,"color":"#3742fa"}
                                     </View>
-                                  </RNGestureHandlerButton>
+                                  </View>
                                 </View>
                                 <Text
                                   style={
@@ -3151,63 +2879,40 @@ exports[`ChirpCard for reaction renders correctly with reaction 1`] = `
                                   accessible={true}
                                   collapsable={false}
                                   focusable={true}
-                                  onBlur={[Function]}
                                   onClick={[Function]}
-                                  onFocus={[Function]}
                                   onResponderGrant={[Function]}
                                   onResponderMove={[Function]}
                                   onResponderRelease={[Function]}
                                   onResponderTerminate={[Function]}
                                   onResponderTerminationRequest={[Function]}
                                   onStartShouldSetResponder={[Function]}
-                                  style={{}}
+                                  style={
+                                    {
+                                      "opacity": 1,
+                                    }
+                                  }
                                   testID="thumbs-down"
                                 >
-                                  <RNGestureHandlerButton
-                                    collapsable={false}
-                                    delayLongPress={600}
-                                    enabled={true}
-                                    exclusive={true}
-                                    handlerTag={27}
-                                    handlerType="NativeViewGestureHandler"
-                                    onGestureEvent={[Function]}
-                                    onGestureHandlerEvent={[Function]}
-                                    onGestureHandlerStateChange={[Function]}
-                                    onHandlerStateChange={[Function]}
-                                    rippleColor={0}
-                                    touchSoundDisabled={false}
-                                  >
-                                    <View
-                                      accessible={true}
-                                      collapsable={false}
-                                      style={
+                                  <View
+                                    style={
+                                      [
                                         {
-                                          "opacity": 1,
-                                        }
-                                      }
-                                    >
-                                      <View
-                                        style={
-                                          [
-                                            {
-                                              "backgroundColor": "#3742fa",
-                                              "borderColor": "#3742fa",
-                                              "borderRadius": 8,
-                                              "borderWidth": 1,
-                                              "padding": 8,
-                                            },
-                                            {
-                                              "backgroundColor": "transparent",
-                                            },
-                                          ]
-                                        }
-                                      >
-                                        <View>
-                                          {"name":"thumbs-down-sharp","size":16,"color":"#3742fa"}
-                                        </View>
-                                      </View>
+                                          "backgroundColor": "#3742fa",
+                                          "borderColor": "#3742fa",
+                                          "borderRadius": 8,
+                                          "borderWidth": 1,
+                                          "padding": 8,
+                                        },
+                                        {
+                                          "backgroundColor": "transparent",
+                                        },
+                                      ]
+                                    }
+                                  >
+                                    <View>
+                                      {"name":"thumbs-down-sharp","size":16,"color":"#3742fa"}
                                     </View>
-                                  </RNGestureHandlerButton>
+                                  </View>
                                 </View>
                                 <Text
                                   style={
@@ -3245,63 +2950,40 @@ exports[`ChirpCard for reaction renders correctly with reaction 1`] = `
                                   accessible={true}
                                   collapsable={false}
                                   focusable={true}
-                                  onBlur={[Function]}
                                   onClick={[Function]}
-                                  onFocus={[Function]}
                                   onResponderGrant={[Function]}
                                   onResponderMove={[Function]}
                                   onResponderRelease={[Function]}
                                   onResponderTerminate={[Function]}
                                   onResponderTerminationRequest={[Function]}
                                   onStartShouldSetResponder={[Function]}
-                                  style={{}}
+                                  style={
+                                    {
+                                      "opacity": 1,
+                                    }
+                                  }
                                   testID="heart"
                                 >
-                                  <RNGestureHandlerButton
-                                    collapsable={false}
-                                    delayLongPress={600}
-                                    enabled={true}
-                                    exclusive={true}
-                                    handlerTag={28}
-                                    handlerType="NativeViewGestureHandler"
-                                    onGestureEvent={[Function]}
-                                    onGestureHandlerEvent={[Function]}
-                                    onGestureHandlerStateChange={[Function]}
-                                    onHandlerStateChange={[Function]}
-                                    rippleColor={0}
-                                    touchSoundDisabled={false}
-                                  >
-                                    <View
-                                      accessible={true}
-                                      collapsable={false}
-                                      style={
+                                  <View
+                                    style={
+                                      [
                                         {
-                                          "opacity": 1,
-                                        }
-                                      }
-                                    >
-                                      <View
-                                        style={
-                                          [
-                                            {
-                                              "backgroundColor": "#3742fa",
-                                              "borderColor": "#3742fa",
-                                              "borderRadius": 8,
-                                              "borderWidth": 1,
-                                              "padding": 8,
-                                            },
-                                            {
-                                              "backgroundColor": "transparent",
-                                            },
-                                          ]
-                                        }
-                                      >
-                                        <View>
-                                          {"name":"heart","size":16,"color":"#3742fa"}
-                                        </View>
-                                      </View>
+                                          "backgroundColor": "#3742fa",
+                                          "borderColor": "#3742fa",
+                                          "borderRadius": 8,
+                                          "borderWidth": 1,
+                                          "padding": 8,
+                                        },
+                                        {
+                                          "backgroundColor": "transparent",
+                                        },
+                                      ]
+                                    }
+                                  >
+                                    <View>
+                                      {"name":"heart","size":16,"color":"#3742fa"}
                                     </View>
-                                  </RNGestureHandlerButton>
+                                  </View>
                                 </View>
                                 <Text
                                   style={
@@ -3658,7 +3340,7 @@ exports[`ChirpCard for reaction renders correctly without reaction 1`] = `
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
-                handlerTag={29}
+                handlerTag={8}
                 handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}
@@ -3735,87 +3417,65 @@ exports[`ChirpCard for reaction renders correctly without reaction 1`] = `
                             accessible={true}
                             collapsable={false}
                             focusable={true}
-                            onBlur={[Function]}
                             onClick={[Function]}
-                            onFocus={[Function]}
                             onResponderGrant={[Function]}
                             onResponderMove={[Function]}
                             onResponderRelease={[Function]}
                             onResponderTerminate={[Function]}
                             onResponderTerminationRequest={[Function]}
                             onStartShouldSetResponder={[Function]}
+                            style={
+                              {
+                                "opacity": 1,
+                              }
+                            }
                           >
-                            <RNGestureHandlerButton
-                              collapsable={false}
-                              delayLongPress={600}
-                              enabled={true}
-                              exclusive={true}
-                              handlerTag={30}
-                              handlerType="NativeViewGestureHandler"
-                              onGestureEvent={[Function]}
-                              onGestureHandlerEvent={[Function]}
-                              onGestureHandlerStateChange={[Function]}
-                              onHandlerStateChange={[Function]}
-                              rippleColor={0}
-                              touchSoundDisabled={false}
-                            >
-                              <View
-                                accessible={true}
-                                collapsable={false}
-                                style={
+                            <View
+                              style={
+                                [
                                   {
-                                    "opacity": 1,
-                                  }
+                                    "marginRight": 16,
+                                  },
+                                  {
+                                    "alignSelf": "flex-start",
+                                  },
+                                ]
+                              }
+                            >
+                              ProfileIcon
+                              <Text
+                                numberOfLines={1}
+                                selectable={true}
+                                style={
+                                  [
+                                    {
+                                      "color": "#000",
+                                      "fontSize": 20,
+                                      "lineHeight": 26,
+                                      "textAlign": "left",
+                                    },
+                                    {
+                                      "fontSize": 16,
+                                      "lineHeight": 20,
+                                    },
+                                    {
+                                      "color": "#8E8E8E",
+                                    },
+                                    {
+                                      "textAlign": "center",
+                                    },
+                                    {
+                                      "fontFamily": "Courier New",
+                                    },
+                                    {
+                                      "marginTop": 8,
+                                    },
+                                  ]
                                 }
                               >
-                                <View
-                                  style={
-                                    [
-                                      {
-                                        "marginRight": 16,
-                                      },
-                                      {
-                                        "alignSelf": "flex-start",
-                                      },
-                                    ]
-                                  }
-                                >
-                                  ProfileIcon
-                                  <Text
-                                    numberOfLines={1}
-                                    selectable={true}
-                                    style={
-                                      [
-                                        {
-                                          "color": "#000",
-                                          "fontSize": 20,
-                                          "lineHeight": 26,
-                                          "textAlign": "left",
-                                        },
-                                        {
-                                          "fontSize": 16,
-                                          "lineHeight": 20,
-                                        },
-                                        {
-                                          "color": "#8E8E8E",
-                                        },
-                                        {
-                                          "textAlign": "center",
-                                        },
-                                        {
-                                          "fontFamily": "Courier New",
-                                        },
-                                        {
-                                          "marginTop": 8,
-                                        },
-                                      ]
-                                    }
-                                  >
-                                    Doug
-                                  </Text>
-                                </View>
-                              </View>
-                            </RNGestureHandlerButton>
+                                Doug
+                              </Text>
+                            </View>
                           </View>
                           <View
                             style={
@@ -3952,63 +3612,40 @@ exports[`ChirpCard for reaction renders correctly without reaction 1`] = `
                                   accessible={true}
                                   collapsable={false}
                                   focusable={true}
-                                  onBlur={[Function]}
                                   onClick={[Function]}
-                                  onFocus={[Function]}
                                   onResponderGrant={[Function]}
                                   onResponderMove={[Function]}
                                   onResponderRelease={[Function]}
                                   onResponderTerminate={[Function]}
                                   onResponderTerminationRequest={[Function]}
                                   onStartShouldSetResponder={[Function]}
-                                  style={{}}
+                                  style={
+                                    {
+                                      "opacity": 1,
+                                    }
+                                  }
                                   testID="thumbs-up"
                                 >
-                                  <RNGestureHandlerButton
-                                    collapsable={false}
-                                    delayLongPress={600}
-                                    enabled={true}
-                                    exclusive={true}
-                                    handlerTag={31}
-                                    handlerType="NativeViewGestureHandler"
-                                    onGestureEvent={[Function]}
-                                    onGestureHandlerEvent={[Function]}
-                                    onGestureHandlerStateChange={[Function]}
-                                    onHandlerStateChange={[Function]}
-                                    rippleColor={0}
-                                    touchSoundDisabled={false}
-                                  >
-                                    <View
-                                      accessible={true}
-                                      collapsable={false}
-                                      style={
+                                  <View
+                                    style={
+                                      [
                                         {
-                                          "opacity": 1,
-                                        }
-                                      }
-                                    >
-                                      <View
-                                        style={
-                                          [
-                                            {
-                                              "backgroundColor": "#3742fa",
-                                              "borderColor": "#3742fa",
-                                              "borderRadius": 8,
-                                              "borderWidth": 1,
-                                              "padding": 8,
-                                            },
-                                            {
-                                              "backgroundColor": "transparent",
-                                            },
-                                          ]
-                                        }
-                                      >
-                                        <View>
-                                          {"name":"thumbs-up-sharp","size":16,"color":"#3742fa"}
-                                        </View>
-                                      </View>
+                                          "backgroundColor": "#3742fa",
+                                          "borderColor": "#3742fa",
+                                          "borderRadius": 8,
+                                          "borderWidth": 1,
+                                          "padding": 8,
+                                        },
+                                        {
+                                          "backgroundColor": "transparent",
+                                        },
+                                      ]
+                                    }
+                                  >
+                                    <View>
+                                      {"name":"thumbs-up-sharp","size":16,"color":"#3742fa"}
                                     </View>
-                                  </RNGestureHandlerButton>
+                                  </View>
                                 </View>
                                 <Text
                                   style={
@@ -4046,63 +3683,40 @@ exports[`ChirpCard for reaction renders correctly without reaction 1`] = `
                                   accessible={true}
                                   collapsable={false}
                                   focusable={true}
-                                  onBlur={[Function]}
                                   onClick={[Function]}
-                                  onFocus={[Function]}
                                   onResponderGrant={[Function]}
                                   onResponderMove={[Function]}
                                   onResponderRelease={[Function]}
                                   onResponderTerminate={[Function]}
                                   onResponderTerminationRequest={[Function]}
                                   onStartShouldSetResponder={[Function]}
-                                  style={{}}
+                                  style={
+                                    {
+                                      "opacity": 1,
+                                    }
+                                  }
                                   testID="thumbs-down"
                                 >
-                                  <RNGestureHandlerButton
-                                    collapsable={false}
-                                    delayLongPress={600}
-                                    enabled={true}
-                                    exclusive={true}
-                                    handlerTag={32}
-                                    handlerType="NativeViewGestureHandler"
-                                    onGestureEvent={[Function]}
-                                    onGestureHandlerEvent={[Function]}
-                                    onGestureHandlerStateChange={[Function]}
-                                    onHandlerStateChange={[Function]}
-                                    rippleColor={0}
-                                    touchSoundDisabled={false}
-                                  >
-                                    <View
-                                      accessible={true}
-                                      collapsable={false}
-                                      style={
+                                  <View
+                                    style={
+                                      [
                                         {
-                                          "opacity": 1,
-                                        }
-                                      }
-                                    >
-                                      <View
-                                        style={
-                                          [
-                                            {
-                                              "backgroundColor": "#3742fa",
-                                              "borderColor": "#3742fa",
-                                              "borderRadius": 8,
-                                              "borderWidth": 1,
-                                              "padding": 8,
-                                            },
-                                            {
-                                              "backgroundColor": "transparent",
-                                            },
-                                          ]
-                                        }
-                                      >
-                                        <View>
-                                          {"name":"thumbs-down-sharp","size":16,"color":"#3742fa"}
-                                        </View>
-                                      </View>
+                                          "backgroundColor": "#3742fa",
+                                          "borderColor": "#3742fa",
+                                          "borderRadius": 8,
+                                          "borderWidth": 1,
+                                          "padding": 8,
+                                        },
+                                        {
+                                          "backgroundColor": "transparent",
+                                        },
+                                      ]
+                                    }
+                                  >
+                                    <View>
+                                      {"name":"thumbs-down-sharp","size":16,"color":"#3742fa"}
                                     </View>
-                                  </RNGestureHandlerButton>
+                                  </View>
                                 </View>
                                 <Text
                                   style={
@@ -4140,63 +3754,40 @@ exports[`ChirpCard for reaction renders correctly without reaction 1`] = `
                                   accessible={true}
                                   collapsable={false}
                                   focusable={true}
-                                  onBlur={[Function]}
                                   onClick={[Function]}
-                                  onFocus={[Function]}
                                   onResponderGrant={[Function]}
                                   onResponderMove={[Function]}
                                   onResponderRelease={[Function]}
                                   onResponderTerminate={[Function]}
                                   onResponderTerminationRequest={[Function]}
                                   onStartShouldSetResponder={[Function]}
-                                  style={{}}
+                                  style={
+                                    {
+                                      "opacity": 1,
+                                    }
+                                  }
                                   testID="heart"
                                 >
-                                  <RNGestureHandlerButton
-                                    collapsable={false}
-                                    delayLongPress={600}
-                                    enabled={true}
-                                    exclusive={true}
-                                    handlerTag={33}
-                                    handlerType="NativeViewGestureHandler"
-                                    onGestureEvent={[Function]}
-                                    onGestureHandlerEvent={[Function]}
-                                    onGestureHandlerStateChange={[Function]}
-                                    onHandlerStateChange={[Function]}
-                                    rippleColor={0}
-                                    touchSoundDisabled={false}
-                                  >
-                                    <View
-                                      accessible={true}
-                                      collapsable={false}
-                                      style={
+                                  <View
+                                    style={
+                                      [
                                         {
-                                          "opacity": 1,
-                                        }
-                                      }
-                                    >
-                                      <View
-                                        style={
-                                          [
-                                            {
-                                              "backgroundColor": "#3742fa",
-                                              "borderColor": "#3742fa",
-                                              "borderRadius": 8,
-                                              "borderWidth": 1,
-                                              "padding": 8,
-                                            },
-                                            {
-                                              "backgroundColor": "transparent",
-                                            },
-                                          ]
-                                        }
-                                      >
-                                        <View>
-                                          {"name":"heart","size":16,"color":"#3742fa"}
-                                        </View>
-                                      </View>
+                                          "backgroundColor": "#3742fa",
+                                          "borderColor": "#3742fa",
+                                          "borderRadius": 8,
+                                          "borderWidth": 1,
+                                          "padding": 8,
+                                        },
+                                        {
+                                          "backgroundColor": "transparent",
+                                        },
+                                      ]
+                                    }
+                                  >
+                                    <View>
+                                      {"name":"heart","size":16,"color":"#3742fa"}
                                     </View>
-                                  </RNGestureHandlerButton>
+                                  </View>
                                 </View>
                                 <Text
                                   style={
