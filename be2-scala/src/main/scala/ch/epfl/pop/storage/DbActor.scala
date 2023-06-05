@@ -481,8 +481,8 @@ final case class DbActor(
     case ReadServerPrivateKey() =>
       log.info(s"Actor $self (db) received a ReadServerPrivateKey request")
       Try(readServerPrivateKey()) match {
-        case Success(publicKey) => sender() ! DbActorReadServerPrivateKeyAck(publicKey)
-        case failure            => sender() ! failure.recover(Status.Failure(_))
+        case Success(privateKey) => sender() ! DbActorReadServerPrivateKeyAck(privateKey)
+        case failure             => sender() ! failure.recover(Status.Failure(_))
       }
 
     case m =>
