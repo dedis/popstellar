@@ -26,6 +26,9 @@ const (
 	// invalidConfigEqualClientServerPortsPath is the path to a config file with the same client and server ports
 	invalidConfigEqualClientServerPortsPath = "test_config_files/invalid_config_equal_client_server_ports.json"
 
+	// invalidConfigEqualClientAuthPortsPath is the path to a config file with the same client and auth ports
+	invalidConfigEqualClientAuthPortsPath = "test_config_files/invalid_config_equal_ports.json"
+
 	// validConfigWatcherPath is the path to a valid config file that used for testing the config watcher
 	validConfigWatcherPath = "test_config_files/valid_config_watcher.json"
 )
@@ -70,8 +73,10 @@ func TestLoadConfigFile(t *testing.T) {
 	require.Equal(t, "", ServerConfig.PublicKey)
 	require.Equal(t, "localhost", ServerConfig.PublicAddress)
 	require.Equal(t, "localhost", ServerConfig.PrivateAddress)
+	require.Equal(t, "localhost", ServerConfig.AuthAddress)
 	require.Equal(t, 9000, ServerConfig.ClientPort)
 	require.Equal(t, 9001, ServerConfig.ServerPort)
+	require.Equal(t, 9100, ServerConfig.AuthPort)
 	require.Equal(t, []string{}, ServerConfig.OtherServers)
 }
 
@@ -84,6 +89,12 @@ func TestLoadInvalidConfigFilename(t *testing.T) {
 // TestLoadConfigFileWithInvalidPorts tests that loading a config file with the same client and server ports fails
 func TestLoadConfigFileWithInvalidPorts(t *testing.T) {
 	_, err := startWithConfigFile(invalidConfigEqualClientServerPortsPath)
+	require.Error(t, err)
+}
+
+// TestLoadConfigFileWithInvalidPorts tests that loading a config file with the same client and PoPCHA ports fails
+func TestLoadConfigFileWithInvalidAuthPort(t *testing.T) {
+	_, err := startWithConfigFile(invalidConfigEqualClientAuthPortsPath)
 	require.Error(t, err)
 }
 
