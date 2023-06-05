@@ -19,6 +19,7 @@ Feature: Simple Transactions for digital cash
   Scenario: Valid transaction: issue 32 mini-Laos to an attendee
     Given def transaction = organizer.issueCoins(recipient, 32);
     And def postTransaction = transaction.post()
+    # Because this is the first transaction, input and output used are the first elements of the list
     And def input = transaction.inputs[0]
     And def output = transaction.outputs[0]
     And def validTransaction =
@@ -55,123 +56,160 @@ Feature: Simple Transactions for digital cash
     And match organizer.receiveNoMoreResponses() == true
 
   Scenario: Transfer valid amount should work
-    Given call read('classpath:be/utils/simpleScenarios.feature@name=valid_coin_issuance')
+    # This call issues initialAmount coins to the recipient
+    Given def initialAmount = 32
+    And call read('classpath:be/utils/simpleScenarios.feature@name=valid_coin_issuance') { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)', recipient: '#(recipient)', amount: '#(initialAmount)' }
+    And def transaction = organizer.issueCoins(recipient, 20);
+    And def postTransaction = transaction.post()
+    And def input = transaction.inputs[1]
+    And def output = transaction.outputs[1]
     And def validTransfer =
-      """
+        """
         {
             "object": "coin",
             "action": "post_transaction",
-            "transaction_id": "X6dMVyy-4YZ3jyePMlqyo53-eYBkO-gVgy7TybVgd78=",
+            "transaction_id": '#(postTransaction.transactionId)',
             "transaction": {
-              "version": 1,
+              "version": '#(transaction.version)',
               "inputs": [{
-                "tx_out_hash": "yVMgw2E9IMX7JtNfizTqTOR1scMVSHfEe8WBbiAgsA8=",
-                "tx_out_index": 1,
+                "tx_out_hash": '#(input.txOutHash)',
+                "tx_out_index": '#(input.txOutIndex)',
                 "script": {
-                  "type": "P2PKH",
-                  "pubkey": '#(getCoinIssuancePubKey)',
-                  "sig": "uTrQk9yt-pmG7eWA0dQ50Q4_aloIAwkY_smQml1lswjHp8ckUXAF3Th6xxJY_3-7uLNxpRtTzwBcAixPGjThDg=="
+                  "type": '#(input.script.type)',
+                  "pubkey": '#(input.script.pubKeyRecipient)',
+                  "sig": '#(input.script.sig)'
                 }
               }],
               "outputs": [{
-                "value": 20,
+                "value": '#(output.value)',
                 "script": {
-                  "type": "P2PKH",
-                  "pubkey_hash": "-_qR4IHwsiq50raa8jURNArds54="
+                  "type": '#(output.script.type)',
+                  "pubkey_hash": '#(output.script.pubKeyHash)',
                 }
               }],
-              "lock_time": 0
+              "lock_time": '#(transaction.lockTime)',
             }
         }
       """
-    When frontend.publish(validTransfer, cashChannel)
-    And json answer = frontend.getBackendResponse(validTransfer)
+    * karate.log("sending a transaction to issue coins :\n", karate.pretty(validTransfer))
+    When organizer.publish(validTransfer, lao.cashChannel)
+    And json answer = organizer.getBackendResponse(validTransfer)
     Then match answer contains VALID_MESSAGE
-    And match frontend.receiveNoMoreResponses() == true
+    And match organizer.receiveNoMoreResponses() == true
 
   Scenario: Post transaction with invalid transaction id should fail
-    Given call read('classpath:be/utils/simpleScenarios.feature@name=setup_coin_channel')
+    Given def transaction = organizer.issueCoins(recipient, 32);
+    And def postTransaction = transaction.post()
+     # Because this is the first transaction, input and output used are the first elements of the list
+    And def input = transaction.inputs[0]
+    And def output = transaction.outputs[0]
     And def validTransaction =
       """
         {
             "object": "coin",
             "action": "post_transaction",
-            "transaction_id": "47DEQpj8HBSa--TImW-5JCeuQeRkm5NMpJWZG3hSuFU=",
+            "transaction_id": '#(random.generateHash())',
             "transaction": {
-              "version": 1,
+              "version": '#(transaction.version)',
               "inputs": [{
-                "tx_out_hash": "yVMgw2E9IMX7JtNfizTqTOR1scMVSHfEe8WBbiAgsA8=",
-                "tx_out_index": 1,
+                "tx_out_hash": '#(input.txOutHash)',
+                "tx_out_index": '#(input.txOutIndex)',
                 "script": {
-                  "type": "P2PKH",
-                  "pubkey": '#(getCoinIssuancePubKey)',
-                  "sig": '#(getCreateSignatureForCoinIssuance)'
+                  "type": '#(input.script.type)',
+                  "pubkey": '#(input.script.pubKeyRecipient)',
+                  "sig": '#(input.script.sig)'
                 }
               }],
-              "outputs": '#(getValidOutputs)',
-              "lock_time": 0
+              "outputs": [{
+                "value": '#(output.value)',
+                "script": {
+                  "type": '#(output.script.type)',
+                  "pubkey_hash": '#(output.script.pubKeyHash)',
+                }
+              }],
+              "lock_time": '#(transaction.lockTime)',
             }
         }
       """
-    When frontend.publish(validTransaction, cashChannel)
-    And json answer = frontend.getBackendResponse(validTransaction)
-    Then match answer contains VALID_MESSAGE
-    And match frontend.receiveNoMoreResponses() == true
+    When organizer.publish(validTransaction, lao.cashChannel)
+    And json answer = organizer.getBackendResponse(validTransaction)
+    Then match answer contains INVALID_MESSAGE_FIELD
+    And match organizer.receiveNoMoreResponses() == true
 
   Scenario: Post transaction with invalid tx_out_hash should fail
-    Given call read('classpath:be/utils/simpleScenarios.feature@name=setup_coin_channel')
-    And def invalidTransaction =
+    Given def transaction = organizer.issueCoins(recipient, 32);
+    And def postTransaction = transaction.post()
+     # Because this is the first transaction, input and output used are the first elements of the list
+    And def input = transaction.inputs[0]
+    And def output = transaction.outputs[0]
+    And def validTransaction =
       """
         {
             "object": "coin",
             "action": "post_transaction",
-            "transaction_id": "fcDVZofQwuSUs5jz_LXGRtSz-xAV8ss4axY4GsHWnVM=",
+            "transaction_id": '#(postTransaction.transactionId)',
             "transaction": {
-              "version": 1,
+              "version": '#(transaction.version)',
               "inputs": [{
-                "tx_out_hash": "_6BPyKnSBFUdMdUxZivzC2BLzM7j5d667BdQ4perTvc=",
-                "tx_out_index": 0,
+                "tx_out_hash": '#(random.generateHash())',
+                "tx_out_index": '#(input.txOutIndex)',
                 "script": {
-                  "type": "P2PKH",
-                  "pubkey": '#(getCoinIssuancePubKey)',
-                  "sig": '#(getCreateSignatureForCoinIssuance)'
+                  "type": '#(input.script.type)',
+                  "pubkey": '#(input.script.pubKeyRecipient)',
+                  "sig": '#(input.script.sig)'
                 }
               }],
-              "outputs": '#(getValidOutputs)',
-              "lock_time": 0
+              "outputs": [{
+                "value": '#(output.value)',
+                "script": {
+                  "type": '#(output.script.type)',
+                  "pubkey_hash": '#(output.script.pubKeyHash)',
+                }
+              }],
+              "lock_time": '#(transaction.lockTime)',
             }
         }
       """
-    When frontend.publish(invalidTransaction, cashChannel)
-    And json answer = frontend.getBackendResponse(invalidTransaction)
+    When organizer.publish(validTransaction, lao.cashChannel)
+    And json answer = organizer.getBackendResponse(validTransaction)
     Then match answer contains INVALID_MESSAGE_FIELD
-    And match frontend.receiveNoMoreResponses() == true
+    And match organizer.receiveNoMoreResponses() == true
 
   Scenario: Post transaction with invalid output pubKey should fail
-    Given call read('classpath:be/utils/simpleScenarios.feature@name=setup_coin_channel')
-    And def invalidTransaction =
+    Given def transaction = organizer.issueCoins(recipient, 32);
+    And def postTransaction = transaction.post()
+     # Because this is the first transaction, input and output used are the first elements of the list
+    And def input = transaction.inputs[0]
+    And def output = transaction.outputs[0]
+    And def validTransaction =
       """
         {
             "object": "coin",
             "action": "post_transaction",
-            "transaction_id": "S-UTUqrPfUVw8Ywv6AOb7Qv0M01s7-BcYCSa4SIl9bQ=",
+            "transaction_id": '#(postTransaction.transactionId)',
             "transaction": {
-              "version": 1,
+              "version": '#(transaction.version)',
               "inputs": [{
-                "tx_out_hash": "47DEQpj8HBSa--TImW-5JCeuQeRkm5NMpJWZG3hSuFU=",
-                "tx_out_index": 0,
+                "tx_out_hash": '#(input.txOutHash)',
+                "tx_out_index": '#(input.txOutIndex)',
                 "script": {
-                  "type": "P2PKH",
-                  "pubkey": '#(getCoinIssuancePubKey)',
-                  "sig": '#(getCreateSignatureForCoinIssuance)'
+                  "type": '#(input.script.type)',
+                  "pubkey": '#(input.script.pubKeyRecipient)',
+                  "sig": '#(input.script.sig)'
                 }
               }],
-              "outputs": '#(getInvalidOutputs)',
-              "lock_time": 0
+              "outputs": [{
+                "value": '#(output.value)',
+                "script": {
+                  "type": '#(output.script.type)',
+                  "pubkey_hash": '#(random.generateHash())',
+                }
+              }],
+              "lock_time": '#(transaction.lockTime)',
             }
         }
       """
-    When frontend.publish(invalidTransaction, cashChannel)
-    And json answer = frontend.getBackendResponse(invalidTransaction)
+    When organizer.publish(validTransaction, lao.cashChannel)
+    And json answer = organizer.getBackendResponse(validTransaction)
     Then match answer contains INVALID_MESSAGE_FIELD
-    And match frontend.receiveNoMoreResponses() == true
+    And match organizer.receiveNoMoreResponses() == true

@@ -138,7 +138,7 @@ Feature: Setup an Election
           ]
         }
       """
-    When organizer.publish(invalidElectionSetup, laoChannel)
+    When organizer.publish(invalidElectionSetup, lao.channel)
     And json answer = organizer.getBackendResponse(invalidElectionSetup)
     Then match answer contains INVALID_MESSAGE_FIELD
     And match organizer.receiveNoMoreResponses() == true
@@ -169,7 +169,7 @@ Feature: Setup an Election
           ]
         }
       """
-    When organizer.publish(invalidElectionSetup, laoChannel)
+    When organizer.publish(invalidElectionSetup, lao.channel)
     And json answer = organizer.getBackendResponse(invalidElectionSetup)
     Then match answer contains INVALID_MESSAGE_FIELD
     And match organizer.receiveNoMoreResponses() == true

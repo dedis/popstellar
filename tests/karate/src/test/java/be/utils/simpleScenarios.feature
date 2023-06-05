@@ -273,11 +273,11 @@
     # organizer, lao, rollCall, recipient and amount need to be passed as arguments when calling this scenario
     @name=valid_coin_issuance
     Scenario: Issues a certain amount of coins to an attendee
-      * call read('classpath:be/utils/simpleScenarios.feature@name=setup_coin_channel') { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)', recipient: '#(recipient)', amount: '#(amount)' }
-      * transaction = organizer.issueCoins(recipient, amount);
-      * postTransaction = transaction.post()
-      * input = transaction.inputs[0]
-      * output = transaction.outputs[0]
+      * call read('classpath:be/utils/simpleScenarios.feature@name=setup_coin_channel') { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)' }
+      * def transaction = organizer.issueCoins(recipient, amount);
+      * def postTransaction = transaction.post()
+      * def input = transaction.inputs[0]
+      * def output = transaction.outputs[0]
       * def validTransaction =
         """
           {
@@ -307,5 +307,5 @@
           }
         """
       * karate.log("sending a transaction to issue coins :\n", karate.pretty(validTransaction))
-      * organizer.publish(validTransaction, cashChannel)
+      * organizer.publish(validTransaction, lao.cashChannel)
       * json answer = organizer.getBackendResponse(validTransaction)

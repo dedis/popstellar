@@ -7,11 +7,12 @@ import common.utils.Base64Utils;
 
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+/**
+ * A simplified version of the transaction system in the android frontend.
+ * Used to compute some valid values for simple transactions.
+ */
 public class Transaction {
   public int version = 1;
   public List<Input> inputs;
@@ -26,10 +27,16 @@ public class Transaction {
     this.lockTime = lockTime;
   }
 
+  public Transaction() {
+    this.inputs = new ArrayList<>();
+    this.outputs = new ArrayList<>();
+    this.lockTime = 0;
+  }
+
   /**
    * Copied from Transaction data class in android frontend
    *
-   * @return
+   * @return the transaction id computed based on the previous inputs and outputs.
    */
   public String computeId() {
     // Make a list all the string in the transaction
@@ -38,6 +45,7 @@ public class Transaction {
 
     // Inputs
     for (Input currentTxin : inputs) {
+      System.out.println("computing input: " + currentTxin);
       // Script
       // PubKey
       collectTransaction.add(currentTxin.script.pubKeyRecipient);
@@ -55,6 +63,7 @@ public class Transaction {
     collectTransaction.add(String.valueOf(lockTime));
     // Outputs
     for (Output currentTxout : outputs) {
+      System.out.println("computing output: " + currentTxout);
       // Script
       // PubKeyHash
       collectTransaction.add(currentTxout.script.pubKeyHash);
@@ -71,50 +80,62 @@ public class Transaction {
   }
 
   /**
+   * Simplified version of transaction computations in DigitalCashViewModel in android frontend
    *
-   * @param receiverPublicKey
-   * @param organizerPublicKey
-   * @param organizerPrivateKey
-   * @param amountToGive
-   * @return
+   * @return a transaction with updated input and output values
    * @throws GeneralSecurityException
    */
-  public Transaction createInitialCoinbaseTransaction(String receiverPublicKey, String organizerPublicKey, String organizerPrivateKey, long amountToGive)
+  public Transaction nextTransaction(String receiverPublicKey, String senderPublicKey, String senderPrivateKey, long amountToGive, boolean firstTransaction)
     throws GeneralSecurityException {
-    List<Input> inputs = new ArrayList<>();
-    List<Output> outputs = new ArrayList<>();
+    System.out.println("Is first transaction: " + firstTransaction);
+    System.out.println("outputs size start : " + outputs.size());
+    System.out.println("inputs size start: " + inputs.size());
+    System.out.println("outputs: " + outputs);
+    System.out.println("inputs: " + inputs);
 
-    // Create an output for the receiver
     Output output = new Output(
       amountToGive,
       new ScriptOutput(type, Hash.hash(receiverPublicKey.getBytes(StandardCharsets.UTF_8))));
-
     outputs.add(output);
 
-    byte[] toSign = Transaction.computeSigOutputsPairTxOutHashAndIndex(outputs, Collections.singletonMap(tx_out_hash_coinbase, 0))
+    int txOutIndex;
+    String hash;
+    if (firstTransaction) {
+      hash = tx_out_hash_coinbase;
+      txOutIndex = 0;
+    } else {
+      Output previousOutput = outputs.get(outputs.size() - 2);
+      Input previousInput = inputs.get(inputs.size() - 1);
+      hash = previousOutput.script.pubKeyHash;
+      txOutIndex = previousInput.txOutIndex + 1;
+    }
+
+    Map<String, Integer> inputsPairs = new HashMap<>();
+    inputsPairs.put(hash, txOutIndex);
+
+    byte[] toSign = Transaction.computeSigOutputsPairTxOutHashAndIndex(outputs, inputsPairs)
       .getBytes(StandardCharsets.UTF_8);
 
     // Create a signature for the transaction using the organizer's private key.
-    PublicKeySign publicKeySign = new Ed25519Sign(Base64Utils.decode(organizerPrivateKey));
+    PublicKeySign publicKeySign = new Ed25519Sign(Base64Utils.decode(senderPrivateKey));
     byte[] signBytes = publicKeySign.sign(toSign);
     String signature = Base64Utils.encode(signBytes);
 
     // Create an input for the transaction using the coinbase transaction hash.
-    Input input = new Input(
-      tx_out_hash_coinbase,
-      0,
-      new ScriptInput(type, organizerPublicKey, signature));
+    Input input = new Input(hash, txOutIndex, new ScriptInput(type, senderPublicKey, signature));
 
     inputs.add(input);
-
+    System.out.println("outputs size end : " + outputs.size());
+    System.out.println("inputs size end: " + inputs.size());
+    System.out.println("outputs: " + outputs);
+    System.out.println("inputs: " + inputs);
     return new Transaction(inputs, outputs, lockTime);
   }
 
   /**
+   * Copied from Transaction data class in android frontend
    *
-   * @param outputs
-   * @param inputsPairs
-   * @return
+   * @return signature of all the outputs and inputs with the public key
    */
   public static String computeSigOutputsPairTxOutHashAndIndex(
     List<Output> outputs, Map<String, Integer> inputsPairs) {
@@ -139,20 +160,24 @@ public class Transaction {
     return String.join("", sig.toArray(new String[0]));
   }
 
+  /**
+   * @return an object containing the data to create a valid transaction post message
+   */
   public PostTransaction post(){
     return new PostTransaction();
   }
 
-  /**
-   * @return an object containing the data to create a valid post transaction message
-   */
+  /** Contains the data to create a valid post transaction message */
   public class PostTransaction{
     public String transactionId;
     public PostTransaction(){
+
       this.transactionId = computeId();
+
     }
   }
 
+  /** The following classes are all simplified versions of the digital cash data types in the android frontend */
   public class Input{
     public String txOutHash; // Previous (to-be-used) transaction hash
     public int txOutIndex; // index of the previous to-be-used transaction
@@ -163,6 +188,15 @@ public class Transaction {
       this.txOutIndex = txOutIndex;
       this.script = script;
     }
+
+    @Override
+    public String toString(){
+      return "txOutHash: " + txOutHash
+        + "  txOutIndex: " + txOutIndex
+        + "  pubKeyRecipient: " + script.pubKeyRecipient
+        + "  type: " + script.type
+        + "  sig: " + script.sig;
+    }
   }
 
   public class Output{
@@ -172,6 +206,11 @@ public class Transaction {
     public Output(long value, ScriptOutput script) {
       this.value = value;
       this.script = script;
+    }
+
+    @Override
+    public String toString(){
+      return "value: " + value + "  pubKeyHash: " + script.pubKeyHash + "  type: " + script.type;
     }
   }
 

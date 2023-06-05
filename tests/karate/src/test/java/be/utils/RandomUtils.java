@@ -79,6 +79,12 @@ public class RandomUtils {
     return Hash.hash(voteId);
   }
 
+  /** @return generates a hash of a random string */
+  public static String generateHash(){
+    String random = generateRandomName();
+    return Hash.hash(random);
+  }
+
   /** @return generate a random valid name for a lao or roll call */
   public static String generateRandomName() {
     int length = MIN_NAME_LENGTH + RANDOM.nextInt(MAX_NAME_LENGTH - MIN_NAME_LENGTH + 1);

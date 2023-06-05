@@ -1,27 +1,21 @@
 package be.utils;
 
 import be.model.*;
-import com.google.crypto.tink.PublicKeySign;
-import com.google.crypto.tink.subtle.Ed25519Sign;
-import com.ibm.icu.util.Output;
-import com.intuit.karate.driver.Input;
 import com.intuit.karate.http.WebSocketOptions;
 import com.intuit.karate.Logger;
 import common.net.MessageQueue;
 import common.net.MultiMsgWebSocketClient;
-import common.utils.Base64Utils;
 
-import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
-import java.security.Signature;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
-/** Websocket client capable of creating lao, roll call, and election objects */
+/** Websocket client capable of creating lao, roll call, and election objects and issue coins */
 public class MockClient extends MultiMsgWebSocketClient {
+  private boolean firstTransaction = true;
+  private Transaction transaction = new Transaction();
 
   public MockClient(String wsURL) {
     super(new WebSocketOptions(wsURL), new Logger(), new MessageQueue());
@@ -83,8 +77,15 @@ public class MockClient extends MultiMsgWebSocketClient {
       new ArrayList<>());
   }
 
+  /**
+   * @param receiver to send the amount to
+   * @param amountToGive amount to send
+   * @return a valid transaction
+   * @throws GeneralSecurityException
+   */
   public Transaction issueCoins(MockClient receiver, long amountToGive) throws GeneralSecurityException {
-    Transaction transaction = new Transaction(new ArrayList<>(), new ArrayList<>(), 0);
-    return transaction.createInitialCoinbaseTransaction(receiver.publicKey, publicKey, privateKey, amountToGive);
+    Transaction tx = transaction.nextTransaction(receiver.publicKey, publicKey, privateKey, amountToGive, firstTransaction);
+    firstTransaction = false;
+    return tx;
   }
 }
