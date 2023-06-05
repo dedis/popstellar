@@ -148,8 +148,8 @@ export class RollCall {
       );
 
       if (!isAttendeeListSorted[0]) {
-        throw new Error(
-          'Attendee list is not sorted alphabetically, rejecting due to the risk of de-anonymization',
+        console.warn(
+          'Attendee list is not sorted alphabetically, be careful there is a risk of de-anonymization',
         );
       }
     }

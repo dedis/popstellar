@@ -345,7 +345,8 @@ describe('RollCall object', () => {
       expect(createWrongRollCall).toThrow(Error);
     });
 
-    it('throws an error when list of attendees is not sorted', () => {
+    it('logs a warning when list of attendees is not sorted', () => {
+      const mockConsoleWarn = jest.spyOn(console, 'warn').mockImplementation();
       const createWrongRollCall = () =>
         new RollCall({
           id: ID,
@@ -361,7 +362,8 @@ describe('RollCall object', () => {
           status: RollCallStatus.CLOSED,
           attendees: [...ATTENDEES].reverse().map((s: string) => new PublicKey(s)),
         });
-      expect(createWrongRollCall).toThrow(Error);
+      createWrongRollCall();
+      expect(mockConsoleWarn).toHaveBeenCalled();
     });
   });
 });
