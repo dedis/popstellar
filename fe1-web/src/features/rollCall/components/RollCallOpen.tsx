@@ -14,6 +14,7 @@ import { LaoEventsParamList } from 'core/navigation/typing/LaoEventsParamList';
 import { LaoParamList } from 'core/navigation/typing/LaoParamList';
 import { Hash, PublicKey, Timestamp } from 'core/objects';
 import { ScannablePopToken } from 'core/objects/ScannablePopToken';
+import { dispatch } from 'core/redux';
 import { Spacing, Typography } from 'core/styles';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
@@ -21,6 +22,7 @@ import STRINGS from 'resources/strings';
 import { RollCallHooks } from '../hooks';
 import { requestCloseRollCall } from '../network';
 import { RollCall } from '../objects';
+import { updateRollCall } from '../reducer';
 import AttendeeList from './AttendeeList';
 
 type NavigationProps = CompositeScreenProps<
@@ -48,9 +50,24 @@ const RollCallOpen = ({
   const hasSeed = RollCallHooks.useHasSeed();
   const toast = useToast();
   const navigation = useNavigation<NavigationProps['navigation']>();
+  const [popTokens, setPopTokens] = useState<PublicKey[]>(scannedPopTokens || []);
 
   const [popToken, setPopToken] = useState('');
   const [hasWalletBeenInitialized, setHasWalletBeenInitialized] = useState(hasSeed());
+
+  const updateAttendeeList = () => {
+    // If it comes from the scanner then we take this list, otherwise we try if it has already been set
+    const attendeesList = scannedPopTokens || rollCall.attendees || [];
+    setPopTokens(attendeesList);
+    // Stores the already scanned tokens in case we go to a new screen (different from the scanner)
+    const updatedRollCall = {
+      ...rollCall.toState(),
+      attendees: attendeesList.map((key) => key.toState()),
+    };
+    dispatch(updateRollCall(updatedRollCall));
+    // This useEffect should be called when the component is mounted.
+    // Especially for rollCall, we can not add it in the dependency list since it is updated. (2023-06-05, MeKHell)
+  }
 
   const onAddAttendees = useCallback(() => {
     // Once the roll call is opened the first time, idAlias is defined
@@ -70,20 +87,13 @@ const RollCallOpen = ({
         screen: STRINGS.events_open_roll_call,
         params: {
           rollCallId: rollCall.id.toString(),
-          attendeePopTokens: (scannedPopTokens || []).map((e) => e.valueOf()),
+          attendeePopTokens: popTokens.map((e) => e.valueOf()),
         },
       },
     });
-  }, [toast, navigation, rollCall, scannedPopTokens]);
+  }, [toast, navigation, rollCall, popTokens]);
 
   const onCloseRollCall = useCallback(async () => {
-    // get the public key as strings from the existing rollcall
-    const previousAttendees = rollCall.attendees || [];
-    // add the create a set of all attendees (takes care of deduplication)
-    const allAttendees = new Set([...previousAttendees, ...(scannedPopTokens || [])]);
-    // convert it back to a list
-    const attendeesList = [...allAttendees];
-
     if (!rollCall.idAlias) {
       toast.show(STRINGS.roll_call_error_close_roll_call_no_alias, {
         type: 'danger',
@@ -95,7 +105,7 @@ const RollCallOpen = ({
     }
 
     try {
-      await requestCloseRollCall(laoId, rollCall.idAlias, attendeesList);
+      await requestCloseRollCall(laoId, rollCall.idAlias, popTokens);
       navigation.navigate(STRINGS.navigation_lao_events_home);
     } catch (err) {
       console.log(err);
@@ -105,7 +115,7 @@ const RollCallOpen = ({
         duration: FOUR_SECONDS,
       });
     }
-  }, [toast, navigation, rollCall, laoId, scannedPopTokens]);
+  }, [toast, navigation, rollCall, laoId, popTokens]);
 
   const toolbarItems: ToolbarItem[] = useMemo(() => {
     if (!isOrganizer) {
@@ -131,11 +141,12 @@ const RollCallOpen = ({
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
       setHasWalletBeenInitialized(hasSeed());
+      updateAttendeeList();
     });
 
     // Return the function to unsubscribe from the event so it gets removed on unmount
     return unsubscribe;
-  }, [navigation, hasSeed]);
+  }, [navigation, hasSeed, updateAttendeeList]);
 
   useEffect(() => {
     if (!hasWalletBeenInitialized || !laoId || !rollCall?.id) {
