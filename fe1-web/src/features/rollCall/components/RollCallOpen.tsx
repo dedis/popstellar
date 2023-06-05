@@ -55,7 +55,7 @@ const RollCallOpen = ({
   const [popToken, setPopToken] = useState('');
   const [hasWalletBeenInitialized, setHasWalletBeenInitialized] = useState(hasSeed());
 
-  const updateAttendeeList = () => {
+  const updateAttendeeList = useCallback(() => {
     // If it comes from the scanner then we take this list, otherwise we try if it has already been set
     const attendeesList = scannedPopTokens || rollCall.attendees || [];
     setPopTokens(attendeesList);
@@ -67,7 +67,7 @@ const RollCallOpen = ({
     dispatch(updateRollCall(updatedRollCall));
     // This useEffect should be called when the component is mounted.
     // Especially for rollCall, we can not add it in the dependency list since it is updated. (2023-06-05, MeKHell)
-  }
+  }, [rollCall, scannedPopTokens]);
 
   const onAddAttendees = useCallback(() => {
     // Once the roll call is opened the first time, idAlias is defined
@@ -139,13 +139,11 @@ const RollCallOpen = ({
 
   // re-check if wallet has been initialized after focus events
   useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', () => {
+    // Return the function to unsubscribe from the event so it gets removed on unmount
+    return navigation.addListener('focus', () => {
       setHasWalletBeenInitialized(hasSeed());
       updateAttendeeList();
     });
-
-    // Return the function to unsubscribe from the event so it gets removed on unmount
-    return unsubscribe;
   }, [navigation, hasSeed, updateAttendeeList]);
 
   useEffect(() => {
