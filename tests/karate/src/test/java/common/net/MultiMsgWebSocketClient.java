@@ -17,13 +17,15 @@ public class MultiMsgWebSocketClient extends WebSocketClient {
   public String publicKey;
   public String privateKey;
   public JsonConverter jsonConverter;
-
   private final MessageQueue queue;
   public final Logger logger;
 
   private HashMap<String, Integer> idAssociatedWithSentMessages = new HashMap<>();
   private HashMap<Integer, String> idAssociatedWithAnswers = new HashMap<>();
   private ArrayList<String> broadcasts = new ArrayList<>();
+
+  private final static int TIMEOUT = 5000;
+
 
   public MultiMsgWebSocketClient(WebSocketOptions options, Logger logger, MessageQueue queue) {
     super(options, logger);
@@ -90,7 +92,7 @@ public class MultiMsgWebSocketClient extends WebSocketClient {
       idAssociatedWithSentMessages.remove(data);
       return answer;
     }
-    String answer = getBuffer().takeTimeout(5000);
+    String answer = getBuffer().takeTimeout(TIMEOUT);
     while(answer != null){
       if(answer.contains("result") || answer.contains("error")){
         Json resultJson = Json.of(answer);
@@ -105,7 +107,7 @@ public class MultiMsgWebSocketClient extends WebSocketClient {
       if (withBroadcasts && answer.contains("broadcast")){
         broadcasts.add(answer);
       }
-      answer = getBuffer().takeTimeout(5000);
+      answer = getBuffer().takeTimeout(TIMEOUT);
     }
     assert false;
     throw new IllegalArgumentException("No answer from the backend");
@@ -138,18 +140,18 @@ public class MultiMsgWebSocketClient extends WebSocketClient {
     List<String> messages = new ArrayList<>();
     Predicate<String> filter = MessageFilters.withMethod(method);
 
-    String message = getBuffer().takeTimeout(5000);
+    String message = getBuffer().takeTimeout(TIMEOUT);
     while (message != null) {
       if (filter.test(message)) {
         messages.add(message);
       }
-      message = getBuffer().takeTimeout(5000);
+      message = getBuffer().takeTimeout(TIMEOUT);
     }
     return messages;
   }
 
   public boolean receiveNoMoreResponses(){
-    String result = getBuffer().takeTimeout(5000);
+    String result = getBuffer().takeTimeout(TIMEOUT);
     return result == null;
   }
 
