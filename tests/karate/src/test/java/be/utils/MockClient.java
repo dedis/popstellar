@@ -15,8 +15,6 @@ import java.util.List;
 /** Websocket client capable of creating lao, roll call, and election objects and issue coins */
 public class MockClient extends MultiMsgWebSocketClient {
   private boolean firstTransaction = true;
-  private Transaction transaction = new Transaction();
-
   public MockClient(String wsURL) {
     super(new WebSocketOptions(wsURL), new Logger(), new MessageQueue());
   }
@@ -78,14 +76,18 @@ public class MockClient extends MultiMsgWebSocketClient {
   }
 
   /**
+   * Issues coins to a receiver.
+   * So far this is only works for the initial transaction and does not keep track of previous transactions!
+   *
    * @param receiver to send the amount to
    * @param amountToGive amount to send
    * @return a valid transaction
    * @throws GeneralSecurityException
    */
   public Transaction issueCoins(MockClient receiver, long amountToGive) throws GeneralSecurityException {
-    Transaction tx = transaction.nextTransaction(receiver.publicKey, publicKey, privateKey, amountToGive, firstTransaction);
-    firstTransaction = false;
-    return tx;
+    System.out.println("Client with public key: " + publicKey + " is issuing " + amountToGive + " coins to client with public key: " + receiver.publicKey);
+    Transaction transaction = new Transaction();
+    transaction.issueInitialCoins(receiver.publicKey, publicKey, privateKey, amountToGive);
+    return transaction;
   }
 }

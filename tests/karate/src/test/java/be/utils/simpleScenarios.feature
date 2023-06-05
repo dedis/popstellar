@@ -7,12 +7,6 @@
     # this file simply use the allocated name for the particular feature.
       * call read('classpath:be/mockClient.feature')
       * call read('classpath:be/constants.feature')
-      * def laoCreateId = 1
-      * def rollCallCreateId = 3
-      * def openRollCallId = 32
-      * def closeRollCallId = 33
-      * def electionSetupId = 4
-      * def castVoteId = 41
 
     # organizer and lao need to be passed as arguments when calling this scenario
     @name=valid_lao
@@ -32,7 +26,6 @@
       * karate.log("sending a lao create request :\n", karate.pretty(laoCreateRequest))
       * organizer.publish(laoCreateRequest, rootChannel)
       * json answer = organizer.getBackendResponse(laoCreateRequest)
-      * karate.log("Received an answer for lao create request :\n", karate.pretty(answer))
 
       And def subscribe =
         """
@@ -48,7 +41,6 @@
       * karate.log("sending a subscribe to lao channel:\n", karate.pretty(subscribe))
       * organizer.send(subscribe)
       * def subs = organizer.takeTimeout(timeout)
-      * karate.log("subscribe message received :\n" + subs)
 
       And def catchup =
         """
@@ -64,7 +56,6 @@
       * karate.log("sending a catchup to lao channel:\n", karate.pretty(catchup))
       * organizer.send(catchup)
       * def catchup_response = organizer.takeTimeout(timeout)
-      * karate.log("catchup message received :\n" + catchup_response)
 
     # organizer, lao and rollCall need to be passed as arguments when calling this scenario
     @name=valid_roll_call
@@ -126,7 +117,6 @@
       * karate.log("sending a roll call close request :\n", karate.pretty(validRollCallClose))
       * organizer.publish(validRollCallClose, lao.channel)
       * json answer = organizer.getBackendResponse(validRollCallClose)
-      * karate.log("received an answer to the roll call close :\n", karate.pretty(answer))
 
     # organizer, lao, rollCall, election and the question need to be passed as arguments when calling this scenario
     @name=election_setup
@@ -253,7 +243,6 @@
       * karate.log("sending a subscribe to coin channel :\n", karate.pretty(subscribe))
       * organizer.send(subscribe)
       * def subs = organizer.takeTimeout(timeout)
-      * karate.log("subscribe message received : " + subs)
 
       And def catchup =
         """

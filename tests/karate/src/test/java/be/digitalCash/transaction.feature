@@ -55,6 +55,8 @@ Feature: Simple Transactions for digital cash
     Then match answer contains VALID_MESSAGE
     And match organizer.receiveNoMoreResponses() == true
 
+  # This test fails since multiple transactions are not supported in the transaction class (05.06.2023)
+  # TODO: Add support for multiple transactions in the Transaction class
   Scenario: Transfer valid amount should work
     # This call issues initialAmount coins to the recipient
     Given def initialAmount = 32
@@ -91,7 +93,6 @@ Feature: Simple Transactions for digital cash
             }
         }
       """
-    * karate.log("sending a transaction to issue coins :\n", karate.pretty(validTransfer))
     When organizer.publish(validTransfer, lao.cashChannel)
     And json answer = organizer.getBackendResponse(validTransfer)
     Then match answer contains VALID_MESSAGE

@@ -11,6 +11,8 @@ import java.util.*;
 
 /**
  * A simplified version of the transaction system in the android frontend.
+ * So far this only works for the initial transaction and does not keep track of previous transactions!
+ * TODO: extend this to work for several transactions
  * Used to compute some valid values for simple transactions.
  */
 public class Transaction {
@@ -21,16 +23,69 @@ public class Transaction {
   public String tx_out_hash_coinbase = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
   public String type = "P2PKH";
 
-  public Transaction(List<Input> inputs, List<Output> outputs, long lockTime) {
-    this.inputs = Collections.unmodifiableList(inputs);
-    this.outputs = Collections.unmodifiableList(outputs);
-    this.lockTime = lockTime;
-  }
-
   public Transaction() {
     this.inputs = new ArrayList<>();
     this.outputs = new ArrayList<>();
     this.lockTime = 0;
+  }
+
+  /**
+   * Simplified version of transaction computations in DigitalCashViewModel in android frontend.
+   * This only works for one transaction and does not keep track of previous transactions!
+   *
+   * @return a transaction with updated input and output values
+   * @throws GeneralSecurityException
+   */
+  public void issueInitialCoins(String receiverPublicKey, String senderPublicKey, String senderPrivateKey, long amountToGive)
+    throws GeneralSecurityException {
+    Output output = new Output(
+      amountToGive,
+      new ScriptOutput(type, Hash.hash(receiverPublicKey.getBytes(StandardCharsets.UTF_8))));
+    outputs.add(output);
+
+    Map<String, Integer> inputsPairs = new HashMap<>();
+    inputsPairs.put(tx_out_hash_coinbase, 0);
+
+    byte[] toSign = Transaction.computeSigOutputsPairTxOutHashAndIndex(outputs, inputsPairs)
+      .getBytes(StandardCharsets.UTF_8);
+
+    // Create a signature for the transaction using the sender's private key
+    PublicKeySign publicKeySign = new Ed25519Sign(Base64Utils.decode(senderPrivateKey));
+    byte[] signBytes = publicKeySign.sign(toSign);
+    String signature = Base64Utils.encode(signBytes);
+
+    // Create an input for the transaction using the coinbase transaction hash
+    Input input = new Input(tx_out_hash_coinbase, 0, new ScriptInput(type, senderPublicKey, signature));
+
+    inputs.add(input);
+  }
+
+  /**
+   * Copied from Transaction data class in android frontend
+   *
+   * @return signature of all the outputs and inputs with the public key
+   */
+  public static String computeSigOutputsPairTxOutHashAndIndex(
+    List<Output> outputs, Map<String, Integer> inputsPairs) {
+    // input #1: tx_out_hash Value //input #1: tx_out_index Value
+    // input #2: tx_out_hash Value //input #2: tx_out_index Value ...
+    // TxOut #1: LaoCoin Value​​ //TxOut #1: script.type Value //TxOut #1: script.pubkey_hash Value
+    // TxOut #2: LaoCoin Value​​ //TxOut #2: script.type Value //TxOut #2: script.pubkey_hash
+    // Value...
+    List<String> sig = new ArrayList<>();
+
+    for (Map.Entry<String, Integer> current : inputsPairs.entrySet()) {
+      sig.add(current.getKey());
+      sig.add(String.valueOf(current.getValue()));
+    }
+
+    for (Output current : outputs) {
+      sig.add(String.valueOf(current.value));
+      sig.add(current.script.type);
+      sig.add(current.script.pubKeyHash);
+    }
+
+    return String.join("", sig.toArray(new String[0]));
   }
 
   /**
@@ -77,87 +132,6 @@ public class Transaction {
 
     // Use already implemented hash function
     return Hash.hash(collectTransaction.toArray(new String[0]));
-  }
-
-  /**
-   * Simplified version of transaction computations in DigitalCashViewModel in android frontend
-   *
-   * @return a transaction with updated input and output values
-   * @throws GeneralSecurityException
-   */
-  public Transaction nextTransaction(String receiverPublicKey, String senderPublicKey, String senderPrivateKey, long amountToGive, boolean firstTransaction)
-    throws GeneralSecurityException {
-    System.out.println("Is first transaction: " + firstTransaction);
-    System.out.println("outputs size start : " + outputs.size());
-    System.out.println("inputs size start: " + inputs.size());
-    System.out.println("outputs: " + outputs);
-    System.out.println("inputs: " + inputs);
-
-    Output output = new Output(
-      amountToGive,
-      new ScriptOutput(type, Hash.hash(receiverPublicKey.getBytes(StandardCharsets.UTF_8))));
-    outputs.add(output);
-
-    int txOutIndex;
-    String hash;
-    if (firstTransaction) {
-      hash = tx_out_hash_coinbase;
-      txOutIndex = 0;
-    } else {
-      Output previousOutput = outputs.get(outputs.size() - 2);
-      Input previousInput = inputs.get(inputs.size() - 1);
-      hash = previousOutput.script.pubKeyHash;
-      txOutIndex = previousInput.txOutIndex + 1;
-    }
-
-    Map<String, Integer> inputsPairs = new HashMap<>();
-    inputsPairs.put(hash, txOutIndex);
-
-    byte[] toSign = Transaction.computeSigOutputsPairTxOutHashAndIndex(outputs, inputsPairs)
-      .getBytes(StandardCharsets.UTF_8);
-
-    // Create a signature for the transaction using the organizer's private key.
-    PublicKeySign publicKeySign = new Ed25519Sign(Base64Utils.decode(senderPrivateKey));
-    byte[] signBytes = publicKeySign.sign(toSign);
-    String signature = Base64Utils.encode(signBytes);
-
-    // Create an input for the transaction using the coinbase transaction hash.
-    Input input = new Input(hash, txOutIndex, new ScriptInput(type, senderPublicKey, signature));
-
-    inputs.add(input);
-    System.out.println("outputs size end : " + outputs.size());
-    System.out.println("inputs size end: " + inputs.size());
-    System.out.println("outputs: " + outputs);
-    System.out.println("inputs: " + inputs);
-    return new Transaction(inputs, outputs, lockTime);
-  }
-
-  /**
-   * Copied from Transaction data class in android frontend
-   *
-   * @return signature of all the outputs and inputs with the public key
-   */
-  public static String computeSigOutputsPairTxOutHashAndIndex(
-    List<Output> outputs, Map<String, Integer> inputsPairs) {
-    // input #1: tx_out_hash Value //input #1: tx_out_index Value
-    // input #2: tx_out_hash Value //input #2: tx_out_index Value ...
-    // TxOut #1: LaoCoin Value​​ //TxOut #1: script.type Value //TxOut #1: script.pubkey_hash Value
-    // TxOut #2: LaoCoin Value​​ //TxOut #2: script.type Value //TxOut #2: script.pubkey_hash
-    // Value...
-    List<String> sig = new ArrayList<>();
-
-    for (Map.Entry<String, Integer> current : inputsPairs.entrySet()) {
-      sig.add(current.getKey());
-      sig.add(String.valueOf(current.getValue()));
-    }
-
-    for (Output current : outputs) {
-      sig.add(String.valueOf(current.value));
-      sig.add(current.script.type);
-      sig.add(current.script.pubKeyHash);
-    }
-
-    return String.join("", sig.toArray(new String[0]));
   }
 
   /**
