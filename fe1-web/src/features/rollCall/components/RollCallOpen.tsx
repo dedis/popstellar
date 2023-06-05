@@ -1,12 +1,13 @@
 import { CompositeScreenProps, useNavigation } from '@react-navigation/core';
 import { StackScreenProps } from '@react-navigation/stack';
+import * as Clipboard from 'expo-clipboard';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { StyleSheet, Text, View, ViewStyle } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 import ReactTimeago from 'react-timeago';
 
-import { CollapsibleContainer, QRCode } from 'core/components';
+import { CollapsibleContainer, PoPTextButton, QRCode } from 'core/components';
 import ScreenWrapper from 'core/components/ScreenWrapper';
 import { ToolbarItem } from 'core/components/Toolbar';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
@@ -191,6 +192,9 @@ const RollCallOpen = ({
               ]}>
               {popToken}
             </Text>
+            <PoPTextButton onPress={() => Clipboard.setStringAsync(popToken)}>
+              {STRINGS.general_copy}
+            </PoPTextButton>
           </View>
         </>
       )}

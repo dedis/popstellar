@@ -215,7 +215,9 @@ const RollCallOpened = () => {
         setVisibility={setInputModalIsVisible}
         title={STRINGS.roll_call_modal_add_attendee}
         description={STRINGS.roll_call_modal_enter_token}
-        onConfirmPress={addAttendeePopTokenAndShowToast}
+        onConfirmPress={(token: string) =>
+          addAttendeePopTokenAndShowToast(`{"pop_token":"${token}"}`)
+        }
         buttonConfirmText={STRINGS.general_add}
         hasTextInput
         textInputPlaceholder={STRINGS.roll_call_attendee_token_placeholder}

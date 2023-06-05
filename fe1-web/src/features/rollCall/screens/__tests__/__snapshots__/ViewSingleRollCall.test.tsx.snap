@@ -276,7 +276,7 @@ exports[`EventRollCall render correctly no duplicate attendees opened roll calls
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
-                handlerTag={23}
+                handlerTag={25}
                 handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}
@@ -336,7 +336,7 @@ exports[`EventRollCall render correctly no duplicate attendees opened roll calls
                       >
                         <RCTScrollView
                           collapsable={false}
-                          handlerTag={24}
+                          handlerTag={26}
                           handlerType="NativeViewGestureHandler"
                           onGestureHandlerEvent={[Function]}
                           onGestureHandlerStateChange={[Function]}
@@ -513,6 +513,85 @@ exports[`EventRollCall render correctly no duplicate attendees opened roll calls
                                   ]
                                 }
                               />
+                              <View
+                                accessible={true}
+                                collapsable={false}
+                                focusable={true}
+                                onBlur={[Function]}
+                                onClick={[Function]}
+                                onFocus={[Function]}
+                                onResponderGrant={[Function]}
+                                onResponderMove={[Function]}
+                                onResponderRelease={[Function]}
+                                onResponderTerminate={[Function]}
+                                onResponderTerminationRequest={[Function]}
+                                onStartShouldSetResponder={[Function]}
+                                style={
+                                  {
+                                    "marginBottom": 16,
+                                  }
+                                }
+                              >
+                                <RNGestureHandlerButton
+                                  collapsable={false}
+                                  delayLongPress={600}
+                                  enabled={true}
+                                  exclusive={true}
+                                  handlerTag={27}
+                                  handlerType="NativeViewGestureHandler"
+                                  onGestureEvent={[Function]}
+                                  onGestureHandlerEvent={[Function]}
+                                  onGestureHandlerStateChange={[Function]}
+                                  onHandlerStateChange={[Function]}
+                                  rippleColor={0}
+                                  touchSoundDisabled={false}
+                                >
+                                  <View
+                                    accessible={true}
+                                    collapsable={false}
+                                    style={
+                                      {
+                                        "opacity": 1,
+                                      }
+                                    }
+                                  >
+                                    <View
+                                      style={
+                                        [
+                                          {
+                                            "backgroundColor": "#3742fa",
+                                            "borderColor": "#3742fa",
+                                            "borderRadius": 8,
+                                            "borderWidth": 1,
+                                            "padding": 8,
+                                          },
+                                        ]
+                                      }
+                                    >
+                                      <Text
+                                        style={
+                                          [
+                                            {
+                                              "color": "#000",
+                                              "fontSize": 20,
+                                              "lineHeight": 26,
+                                              "textAlign": "left",
+                                            },
+                                            {
+                                              "textAlign": "center",
+                                            },
+                                            {
+                                              "color": "#fff",
+                                            },
+                                          ]
+                                        }
+                                      >
+                                        Copy to Clipboard
+                                      </Text>
+                                    </View>
+                                  </View>
+                                </RNGestureHandlerButton>
+                              </View>
                             </View>
                             <View
                               style={
@@ -1267,7 +1346,7 @@ exports[`EventRollCall render correctly no duplicate attendees re-opened roll ca
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
-                handlerTag={25}
+                handlerTag={28}
                 handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}
@@ -1327,7 +1406,7 @@ exports[`EventRollCall render correctly no duplicate attendees re-opened roll ca
                       >
                         <RCTScrollView
                           collapsable={false}
-                          handlerTag={26}
+                          handlerTag={29}
                           handlerType="NativeViewGestureHandler"
                           onGestureHandlerEvent={[Function]}
                           onGestureHandlerStateChange={[Function]}
@@ -1504,6 +1583,85 @@ exports[`EventRollCall render correctly no duplicate attendees re-opened roll ca
                                   ]
                                 }
                               />
+                              <View
+                                accessible={true}
+                                collapsable={false}
+                                focusable={true}
+                                onBlur={[Function]}
+                                onClick={[Function]}
+                                onFocus={[Function]}
+                                onResponderGrant={[Function]}
+                                onResponderMove={[Function]}
+                                onResponderRelease={[Function]}
+                                onResponderTerminate={[Function]}
+                                onResponderTerminationRequest={[Function]}
+                                onStartShouldSetResponder={[Function]}
+                                style={
+                                  {
+                                    "marginBottom": 16,
+                                  }
+                                }
+                              >
+                                <RNGestureHandlerButton
+                                  collapsable={false}
+                                  delayLongPress={600}
+                                  enabled={true}
+                                  exclusive={true}
+                                  handlerTag={30}
+                                  handlerType="NativeViewGestureHandler"
+                                  onGestureEvent={[Function]}
+                                  onGestureHandlerEvent={[Function]}
+                                  onGestureHandlerStateChange={[Function]}
+                                  onHandlerStateChange={[Function]}
+                                  rippleColor={0}
+                                  touchSoundDisabled={false}
+                                >
+                                  <View
+                                    accessible={true}
+                                    collapsable={false}
+                                    style={
+                                      {
+                                        "opacity": 1,
+                                      }
+                                    }
+                                  >
+                                    <View
+                                      style={
+                                        [
+                                          {
+                                            "backgroundColor": "#3742fa",
+                                            "borderColor": "#3742fa",
+                                            "borderRadius": 8,
+                                            "borderWidth": 1,
+                                            "padding": 8,
+                                          },
+                                        ]
+                                      }
+                                    >
+                                      <Text
+                                        style={
+                                          [
+                                            {
+                                              "color": "#000",
+                                              "fontSize": 20,
+                                              "lineHeight": 26,
+                                              "textAlign": "left",
+                                            },
+                                            {
+                                              "textAlign": "center",
+                                            },
+                                            {
+                                              "color": "#fff",
+                                            },
+                                          ]
+                                        }
+                                      >
+                                        Copy to Clipboard
+                                      </Text>
+                                    </View>
+                                  </View>
+                                </RNGestureHandlerButton>
+                              </View>
                             </View>
                             <View
                               style={
@@ -2258,7 +2416,7 @@ exports[`EventRollCall render correctly non organizers closed roll calls 1`] = `
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
-                handlerTag={21}
+                handlerTag={23}
                 handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}
@@ -2318,7 +2476,7 @@ exports[`EventRollCall render correctly non organizers closed roll calls 1`] = `
                       >
                         <RCTScrollView
                           collapsable={false}
-                          handlerTag={22}
+                          handlerTag={24}
                           handlerType="NativeViewGestureHandler"
                           onGestureHandlerEvent={[Function]}
                           onGestureHandlerStateChange={[Function]}
@@ -3808,6 +3966,85 @@ exports[`EventRollCall render correctly non organizers opened roll calls 1`] = `
                                   ]
                                 }
                               />
+                              <View
+                                accessible={true}
+                                collapsable={false}
+                                focusable={true}
+                                onBlur={[Function]}
+                                onClick={[Function]}
+                                onFocus={[Function]}
+                                onResponderGrant={[Function]}
+                                onResponderMove={[Function]}
+                                onResponderRelease={[Function]}
+                                onResponderTerminate={[Function]}
+                                onResponderTerminationRequest={[Function]}
+                                onStartShouldSetResponder={[Function]}
+                                style={
+                                  {
+                                    "marginBottom": 16,
+                                  }
+                                }
+                              >
+                                <RNGestureHandlerButton
+                                  collapsable={false}
+                                  delayLongPress={600}
+                                  enabled={true}
+                                  exclusive={true}
+                                  handlerTag={19}
+                                  handlerType="NativeViewGestureHandler"
+                                  onGestureEvent={[Function]}
+                                  onGestureHandlerEvent={[Function]}
+                                  onGestureHandlerStateChange={[Function]}
+                                  onHandlerStateChange={[Function]}
+                                  rippleColor={0}
+                                  touchSoundDisabled={false}
+                                >
+                                  <View
+                                    accessible={true}
+                                    collapsable={false}
+                                    style={
+                                      {
+                                        "opacity": 1,
+                                      }
+                                    }
+                                  >
+                                    <View
+                                      style={
+                                        [
+                                          {
+                                            "backgroundColor": "#3742fa",
+                                            "borderColor": "#3742fa",
+                                            "borderRadius": 8,
+                                            "borderWidth": 1,
+                                            "padding": 8,
+                                          },
+                                        ]
+                                      }
+                                    >
+                                      <Text
+                                        style={
+                                          [
+                                            {
+                                              "color": "#000",
+                                              "fontSize": 20,
+                                              "lineHeight": 26,
+                                              "textAlign": "left",
+                                            },
+                                            {
+                                              "textAlign": "center",
+                                            },
+                                            {
+                                              "color": "#fff",
+                                            },
+                                          ]
+                                        }
+                                      >
+                                        Copy to Clipboard
+                                      </Text>
+                                    </View>
+                                  </View>
+                                </RNGestureHandlerButton>
+                              </View>
                             </View>
                             <View
                               style={
@@ -4562,7 +4799,7 @@ exports[`EventRollCall render correctly non organizers re-opened roll calls 1`] 
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
-                handlerTag={19}
+                handlerTag={20}
                 handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}
@@ -4622,7 +4859,7 @@ exports[`EventRollCall render correctly non organizers re-opened roll calls 1`] 
                       >
                         <RCTScrollView
                           collapsable={false}
-                          handlerTag={20}
+                          handlerTag={21}
                           handlerType="NativeViewGestureHandler"
                           onGestureHandlerEvent={[Function]}
                           onGestureHandlerStateChange={[Function]}
@@ -4799,6 +5036,85 @@ exports[`EventRollCall render correctly non organizers re-opened roll calls 1`] 
                                   ]
                                 }
                               />
+                              <View
+                                accessible={true}
+                                collapsable={false}
+                                focusable={true}
+                                onBlur={[Function]}
+                                onClick={[Function]}
+                                onFocus={[Function]}
+                                onResponderGrant={[Function]}
+                                onResponderMove={[Function]}
+                                onResponderRelease={[Function]}
+                                onResponderTerminate={[Function]}
+                                onResponderTerminationRequest={[Function]}
+                                onStartShouldSetResponder={[Function]}
+                                style={
+                                  {
+                                    "marginBottom": 16,
+                                  }
+                                }
+                              >
+                                <RNGestureHandlerButton
+                                  collapsable={false}
+                                  delayLongPress={600}
+                                  enabled={true}
+                                  exclusive={true}
+                                  handlerTag={22}
+                                  handlerType="NativeViewGestureHandler"
+                                  onGestureEvent={[Function]}
+                                  onGestureHandlerEvent={[Function]}
+                                  onGestureHandlerStateChange={[Function]}
+                                  onHandlerStateChange={[Function]}
+                                  rippleColor={0}
+                                  touchSoundDisabled={false}
+                                >
+                                  <View
+                                    accessible={true}
+                                    collapsable={false}
+                                    style={
+                                      {
+                                        "opacity": 1,
+                                      }
+                                    }
+                                  >
+                                    <View
+                                      style={
+                                        [
+                                          {
+                                            "backgroundColor": "#3742fa",
+                                            "borderColor": "#3742fa",
+                                            "borderRadius": 8,
+                                            "borderWidth": 1,
+                                            "padding": 8,
+                                          },
+                                        ]
+                                      }
+                                    >
+                                      <Text
+                                        style={
+                                          [
+                                            {
+                                              "color": "#000",
+                                              "fontSize": 20,
+                                              "lineHeight": 26,
+                                              "textAlign": "left",
+                                            },
+                                            {
+                                              "textAlign": "center",
+                                            },
+                                            {
+                                              "color": "#fff",
+                                            },
+                                          ]
+                                        }
+                                      >
+                                        Copy to Clipboard
+                                      </Text>
+                                    </View>
+                                  </View>
+                                </RNGestureHandlerButton>
+                              </View>
                             </View>
                             <View
                               style={
