@@ -232,4 +232,60 @@ describe('Popcha scanner', () => {
       });
     });
   });
+  describe('manual input works correctly', () => {
+    it('shows error message with invalid url', async () => {
+      const { getByTestId, toJSON } = render(
+        <FeatureContext.Provider value={contextValue}>
+          <PopchaScanner />
+        </FeatureContext.Provider>,
+      );
+      const scannerButton = getByTestId('popcha_scanner_button');
+      fireEvent.press(scannerButton);
+      const enterManuallyButton = getByTestId('popcha_add_manually');
+      fireEvent.press(enterManuallyButton);
+
+      const input = getByTestId('confirm-modal-input');
+      fireEvent.changeText(input, 'invalid url');
+      const submitButton = getByTestId('confirm-modal-confirm');
+      fireEvent.press(submitButton);
+      await waitFor(() => {
+        expect(mockToastShow).toHaveBeenCalledWith(
+          expect.anything(),
+          expect.objectContaining({ type: 'warning' }),
+        );
+        expect(toJSON()).toMatchSnapshot();
+      });
+    });
+
+    it('closes scanner and confirmation modal when url is valid', async () => {
+      (sendPopchaAuthRequest as jest.Mock).mockReturnValue(Promise.resolve());
+      const { getByTestId, toJSON, getByText } = render(
+        <FeatureContext.Provider value={contextValue}>
+          <PopchaScanner />
+        </FeatureContext.Provider>,
+      );
+
+      // get to the manual input screen
+      const scannerButton = getByTestId('popcha_scanner_button');
+      fireEvent.press(scannerButton);
+      const enterManuallyButton = getByTestId('popcha_add_manually');
+      fireEvent.press(enterManuallyButton);
+
+      // enter a valid url
+      const input = getByTestId('confirm-modal-input');
+      fireEvent.changeText(input, mockUrl.toString());
+      const submitButton = getByTestId('confirm-modal-confirm');
+      fireEvent.press(submitButton);
+      await waitFor(() => {
+        // wait for scanner to close
+        expect(getByText(STRINGS.popcha_open_scanner)).toBeTruthy();
+        // check that a success message was shown
+        expect(mockToastShow).toHaveBeenCalledWith(
+          expect.anything(),
+          expect.objectContaining({ type: 'success' }),
+        );
+        expect(toJSON()).toMatchSnapshot();
+      });
+    });
+  });
 });

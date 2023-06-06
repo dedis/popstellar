@@ -193,7 +193,7 @@ const PopchaScanner = () => {
             {showScanner ? (
               <View style={QrCodeScannerUIElementContainer}>
                 <PoPTouchableOpacity
-                  testID="roll_call_open_add_manually"
+                  testID="popcha_add_manually"
                   onPress={() => setInputModalIsVisible(true)}>
                   <Text style={[Typography.base, Typography.accent, Typography.centered]}>
                     {STRINGS.general_enter_manually}
