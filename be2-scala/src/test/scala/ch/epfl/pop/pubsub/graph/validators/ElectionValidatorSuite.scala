@@ -31,9 +31,6 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
 
   final val DB_TEST_FOLDER: String = "databaseElectionTest"
 
-  val pubSubMediatorRef: ActorRef = system.actorOf(PubSubMediator.props, "PubSubMediator")
-  val dbActorRef: AskableActorRef = system.actorOf(Props(DbActor(pubSubMediatorRef, MessageRegistry(), InMemoryStorage())), "DbActor")
-
   // Implicit for system actors
   implicit val timeout: Timeout = Timeout(1, TimeUnit.SECONDS)
 

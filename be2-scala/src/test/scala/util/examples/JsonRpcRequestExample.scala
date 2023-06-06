@@ -22,6 +22,8 @@ import util.examples.socialMedia.AddReactionExamples._
 import util.examples.socialMedia.DeleteChirpExamples._
 import util.examples.socialMedia.DeleteReactionExamples._
 
+/** Holds json rpc response examples of various kinds for testing purpose in validators' test suites
+  */
 object JsonRpcRequestExample {
 
   private final val rpc: String = "rpc"
@@ -276,6 +278,17 @@ object JsonRpcRequestExample {
   final val STATE_MEETING_BIG_START_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithStateMeetingBigStart, id)
   final val STATE_MEETING_WRONGWITNESS_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithStateMeetingWrongWitness, id)
   final val STATE_MEETING_SMALLMODIFICATION_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithStateMeetingSmallModificationTime, id)
+
+  // For Popcha testing
+  private final val authenticationChannel: Channel = Channel(Channel.ROOT_CHANNEL_PREFIX + Base64Data.encode("laoid") + Channel.POPCHA_AUTHENTICATION_LOCATION)
+  private final val paramsWithAuthenticate: ParamsWithMessage = new ParamsWithMessage(authenticationChannel, MESSAGE_AUTHENTICATE)
+  private final val paramsWithAuthenticateOtherResponseMode: ParamsWithMessage = new ParamsWithMessage(authenticationChannel, MESSAGE_AUTHENTICATE_OTHER_RESPONSE_MODE)
+  private final val paramsWithAuthenticateWrongSignature: ParamsWithMessage = new ParamsWithMessage(authenticationChannel, MESSAGE_AUTHENTICATE_WRONG_SIGNATURE)
+  private final val paramsWithAuthenticateWrongResponseMode: ParamsWithMessage = new ParamsWithMessage(authenticationChannel, MESSAGE_AUTHENTICATE_WRONG_RESPONSE_MODE)
+  final val AUTHENTICATE_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithAuthenticate, id)
+  final val AUTHENTICATE_OTHER_RESPONSE_MODE_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithAuthenticateOtherResponseMode, id)
+  final val AUTHENTICATE_INVALID_SIGNATURE_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithAuthenticateWrongSignature, id)
+  final val AUTHENTICATE_INVALID_RESPONSE_MODE_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithAuthenticateWrongResponseMode, id)
 
   // broadcast JsonRpcRequest
   final val broadcastRpcRequest: JsonRpcRequest = JsonRpcRequest(rpc, MethodType.BROADCAST, paramsWithMessage, None)
