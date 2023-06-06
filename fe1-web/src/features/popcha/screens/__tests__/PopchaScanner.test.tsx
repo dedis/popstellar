@@ -60,7 +60,13 @@ const testInvalidUrl = async (url: string) => {
   const scannerButton = getByTestId('popcha_scanner_button');
   fireEvent.press(scannerButton);
   fireScan(url);
-  await waitFor(() => expect(mockToastShow).toHaveBeenCalledTimes(1));
+  await waitFor(() =>
+    // check that a warning message was shown
+    expect(mockToastShow).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({ type: 'warning' }),
+    ),
+  );
 };
 
 describe('Popcha scanner', () => {
@@ -196,7 +202,11 @@ describe('Popcha scanner', () => {
       await waitFor(() => {
         // wait for scanner to close
         expect(getByText(STRINGS.popcha_open_scanner)).toBeTruthy();
-        expect(mockToastShow).toHaveBeenCalledTimes(0);
+        // check that a success message was shown
+        expect(mockToastShow).toHaveBeenCalledWith(
+          expect.anything(),
+          expect.objectContaining({ type: 'success' }),
+        );
         expect(toJSON()).toMatchSnapshot();
       });
     });
@@ -214,7 +224,11 @@ describe('Popcha scanner', () => {
       fireScan(url.toString());
       await waitFor(() => {
         expect(toJSON()).toMatchSnapshot();
-        expect(mockToastShow).toHaveBeenCalledTimes(1);
+        // check that a success message was shown
+        expect(mockToastShow).toHaveBeenCalledWith(
+          expect.anything(),
+          expect.objectContaining({ type: 'warning' }),
+        );
       });
     });
   });
