@@ -151,13 +151,12 @@ and you need to be familiar with them to understand how communication happens.
 
 The [remote module](https://github.com/dedis/popstellar/tree/master/fe2-android/app/src/main/java/com/github/dedis/popstellar/repository/remote) contains most of the network communication logic, it is organized as follows:
 - The `GlobalNetworkManager` is responsible for holding, creating and destroying WebSocket connections.
-- It creates a `MultiConnection` object, which it `extends` the `Connection` class, by using a [Composite pattern](https://www.baeldung.com/java-composite-pattern). It essentially contains a collection of `Connection` objects for the secondary servers and uses `super` for the connection with the main server.
+- It creates a `MultiConnection` object, which `extends` the `Connection` class, by using a [Composite pattern](https://www.baeldung.com/java-composite-pattern). It essentially contains a collection of `Connection` objects for the secondary servers and uses `super` as the connection with the main server.
 - The `Connection` objects are created through the `ConnectionFactory` by using the [Scarlet](https://github.com/Tinder/Scarlet) library.
 - The `MultiConnection` is passed to a `LAONetworkManager` that is responsible for handling the JsonRPC layer of the protocol. It exposes the protocol API with the `MessageSender` interface that can be retrieved by `ViewModel` through the `GlobalNetworkManager`.
-- Upon reception of a `GreetLao`, the `MultiConnection` object is extended with new `Connection` objects to the peers contained in the message.
+- Upon reception of a `GreetLao`, the `MultiConnection` object is extended with new `Connection` objects by  establishing connections to the peers contained in the message.
 
-For more information on sending messages on the network, please refer to the [remote module](https://github.com/dedis/popstellar/tree/master/fe2-android/app/src/main/java/com/github/dedis/popstellar/repository/remote) and the `ViewModel` classes. Also, make sure you have a solid understanding
-of [JSON-RPC](https://www.jsonrpc.org/specification), the [Protocol Specifications](https://docs.google.com/document/d/1fyNWSPzLhM6W9V0VTFf2waMLiJGcscy7wa4bQlLkySM) and their actual implementation in the [protocol schemas](https://github.com/dedis/popstellar/tree/master/protocol).
+For more information on sending messages on the network, please refer to the [remote module](https://github.com/dedis/popstellar/tree/master/fe2-android/app/src/main/java/com/github/dedis/popstellar/repository/remote) and the `ViewModel` classes. Also, make sure you have a solid understanding of [JSON-RPC](https://www.jsonrpc.org/specification), the [Protocol Specifications](https://docs.google.com/document/d/1fyNWSPzLhM6W9V0VTFf2waMLiJGcscy7wa4bQlLkySM) and their actual implementation in the [protocol schemas](https://github.com/dedis/popstellar/tree/master/protocol).
 
 ### Getting messages over the wire
 
@@ -190,7 +189,7 @@ achieve this, applications typically resort to the definition and implementation
 reusable components - building bricks - that are reused throughout the application and assembled to
 create the different "views" (or "screens") of the application.
 
-Right now there are three Activities, `HomeActivity`, `LaoActivity` and `ConnectingActivity`. For the first one its purpose is to let a user initialize or retrieve the wallet seed; create, join, and display LAOs, with Fragments responsible for providing those features. The `LaoActivity` follows the single-activity principle. It supports many Fragments which provide all features centered around an LAO. Additional features provided in the context of an LAO should be added as fragments hosted by the `LaoActivity`. Finally, the `ConnectingActivity` is used to set up the connection for a LAO.
+Right now there are three Activities, `HomeActivity`, `LaoActivity` and `ConnectingActivity`. For the first one its purpose is to let a user initialize or retrieve the wallet seed; create, join, and display LAOs, with Fragments responsible for providing those features. The `LaoActivity` follows the single-activity principle. It supports many Fragments which provide all features centered around an LAO. Additional features provided in the context of an LAO should be added as fragments hosted by the `LaoActivity`. Finally, the `ConnectingActivity` is used upon creating or joining a LAO to set up the connection.
 
 In general, the top-level components (the "views" or "screens") will be full of application-specific
 logic, as they'll encompass the full behavior of that screen. As you go down into sub- and
@@ -282,13 +281,17 @@ can create package-private fields annotated with @Inject that will be provided b
 constructed. You can see this usage in [SettingsActivity](https://github.com/dedis/popstellar/blob/master/fe2-android/app/src/main/java/com/github/dedis/popstellar/ui/settings/SettingsActivity.java)
 
 ## Persistence
-Currently all the repositories store their state in a persistent way. The storage system used leverages the [Room library](https://developer.android.com/training/data-storage/room), which is essentialy a SQL-Lite efficient implementation. In the folder [database](https://github.com/dedis/popstellar/tree/master/fe2-android/app/src/main/java/com/github/dedis/popstellar/repository/database) you can find for each repository its Entities (they represent the SQL tables used) and its `DAO`s (they represent the interface to query such tables). One of the most important things is to perform the database operations in an asynchronous fashion and preferably using an I/O thread. This is easily possible thanks to the support for `RxJava2` by the `Room` library. However, having asynchronous queries is not always possible, so very few queries are performed on the main thread but this approach should be as limited as possible.
-There's no a common behaviour of storing and retrieving the persistent state, so here's the details:
-- The core information (wallet seed for now) is stored into the disk every time that the `HomeActivity` is stopped and retrieved every time it's resumed.
-- The subscriptions and server address are saved by LAO id, thus when the user launches a `LaoActivity` they're restored for that LAO only, and stored when such activity pauses. 
-- The `MessageRepository`, since it's the biggest repository in terms of number of items stored, uses a `LRU`, which is loaded at the start of the application. This cache works as virtualization of the underlying disk database to speed up the operations. 
-- The `LAORepository` loads all the disk state into the memory at the start of the application. This is because the list of LAOs shown in the home must be complete and retrieving only their name would be useless as the LAO is a quite light object, so it's worth to retrieve all of it in a lookup.
-- All the other repositories, which have states LAO-dependent (for each LAO have a different state) works in the following way: when the user clicks on a LAO or opens a given tabs within the LAO and the application needs to search data in the repository related to that LAO, then the state from disk is retrieved into the main memory. 
+
+Currently all the repositories store their state in a persistent way. The storage system used leverages the [Room library](https://developer.android.com/training/data-storage/room), which is essentialy a SQL-Lite efficient implementation. In the folder [database](https://github.com/dedis/popstellar/tree/master/fe2-android/app/src/main/java/com/github/dedis/popstellar/repository/database) you can find for each repository its [Entities](https://developer.android.com/training/data-storage/room/defining-data) and its [DAOs](https://developer.android.com/training/data-storage/room/accessing-data). 
+
+One of the most important things to keep in mind is to perform the database operations in an asynchronous fashion and preferably using an I/O thread. This is easily possible thanks to the support for `RxJava2` by the `Room` library, such that the methods in the DAOs could return a `Completable` or a `Single`. However, having asynchronous queries is not always possible, in fact very few queries are performed on the main thread but this approach should be as limited as possible.
+
+There's no a default behaviour of storing and retrieving the persistent state of a repository, so here's more details:
+- The wallet seed is stored into the disk every time that the `HomeActivity` is stopped and retrieved every time it's resumed.
+- The subscriptions and server address are saved by LAO id, thus when the user creates a `LaoActivity` they're restored for that LAO only, and stored when such activity pauses (that should be done when the activity stops but due to a bug the subscriptions are empty at `onStop()`, so for now it's done at `onPause()`). 
+- The `MessageRepository`, being the biggest repository in terms of number of items stored, uses a `LRU` cache, which is loaded at the start of the application. This cache works as virtualization of the underlying disk database to speed up the operations. The great majority of the messages don't need their content to be stored persistently, they just need their identifier to be stored, as to avoid reprocessing of the same message. This optimization can help reduce the total memory occupied and scale more efficiently.
+- The `LAORepository` loads all the disk state into the memory at the start of the application. This is because the list of LAOs shown in the home fragment must be complete. Also, retrieving only their name would be useless as the LAO is a quite light object (especially when it'll be decoupled from the remaining consensus feature), so it's worth to retrieve all of it in a lookup.
+- All the other repositories (`RollCallRepository`, `ElectionRepository`, `MeetingRepository`, ...), which have LAO-dependent states (for each LAO they have a different state) work in the following way: when the user clicks on a LAO and opens a given tabs within the LAO which needs to display the data in a repository, that repository state is retrieved from the disk into the main memory and will be left there for the whole application lifecycle. 
 
 ## Witnessing
 
@@ -296,7 +299,7 @@ The `WitnessingRepository` is responsible for managing witnesses and witness mes
 
 A pending object represents an object that is subject to the witnessing policy and needs to be witnessed by a certain number of witnesses before being accepted. When a message is received that requires witnessing, the underlying object of that message is considered a pending object. The pending object consists of the object itself and the message identifier from which it originates. This allows the repository to associate a witness signature with a pending object based on the message ID.
 
-A thing to notice is that pending objects are persisted. They're saved into the Room database and retrieved at LAO loading time as for other repositories. Every time a witness signatures is added, the method `hasRequiredSignatures()` checks if the message has the required number of signatures based on the witnessing policy. If so, then the pending object is actually processed and added to its repository, while being in parallel deleted from the memory and the database.
+A thing to notice is that pending objects are persisted in a `Room` database. They're retrieved at the LAO loading time as for other repositories. Every time a witness signatures is added, the method `hasRequiredSignatures()` checks if the message has achieved the required number of signatures based on the witnessing policy. If so, then the pending object related to that message (found through the mapping with the message identifier) is actually processed and added to its repository, while being in parallel deleted from the memory and the database.
 
 ## Testing
 
