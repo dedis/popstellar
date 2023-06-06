@@ -72,8 +72,6 @@ const RollCallOpen = ({
     };
 
     dispatch(updateRollCall(updatedRollCall));
-    // This useEffect should be called when the component is mounted.
-    // Especially for rollCall, we can not add it in the dependency list since it is updated. (2023-06-05, MeKHell)
   }, [rollCall, scannedPopTokens, popToken, isOrganizer]);
 
   // empty popTokens should be updated if the user is the organizer
