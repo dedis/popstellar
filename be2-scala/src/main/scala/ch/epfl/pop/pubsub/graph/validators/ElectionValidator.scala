@@ -154,10 +154,9 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
 
         val electionId = channel.extractChildChannel
 
-        val setupElectionTimeStamp = Await.ready(channel.getSetupMessage(dbActorRef), duration).value.get match {
-          case Success(setupElection: SetupElection) => setupElection.created_at
-          case Failure(exception)                    => return Left(validationError(FAILED_TO_GET_QUESTION_ERROR_MESSAGE + exception.getMessage))
-          case err @ _                               => return Left(validationError(UNKNOWN_ERROR_MESSAGE + err.toString))
+        val setupElectionTimeStamp = extractSetupElectionTimestamp(channel, rpcMessage)
+        if (setupElectionTimeStamp.isEmpty) {
+          return Left(validationError("couldn't retrieve the setup election timestamp"))
         }
 
         runChecks(
@@ -168,7 +167,7 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
           ),
           checkTimestampOrder(
             rpcMessage,
-            setupElectionTimeStamp,
+            setupElectionTimeStamp.get,
             openElection.opened_at,
             validationError("trying to open an election before seting it up.")
           ),
@@ -220,7 +219,7 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
         val openingTimeStamp = Await.result(channel.extractMessages[OpenElection](dbActorRef), duration) match {
           case openElection: List[(Message, OpenElection)] =>
             openElection.head._2.opened_at
-          case _ => Timestamp(casteVote.created_at.time + 1L)
+          case _ => return Left(validationError("couldn't retrieve the opening timestamp"))
         }
         runChecks(
           checkTimestampStaleness(
@@ -339,14 +338,10 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
 
         val electionId = channel.extractChildChannel
 
-        val setupElectionTimeStamp = Await.ready(channel.getSetupMessage(dbActorRef), duration).value.get match {
-          case Success(setupElection: SetupElection) => setupElection.created_at
-          case Failure(exception)                    => return Left(validationError(FAILED_TO_GET_QUESTION_ERROR_MESSAGE + exception.getMessage))
-          case err @ _                               => return Left(validationError(UNKNOWN_ERROR_MESSAGE + err.toString))
+        val setupElectionTimeStamp = extractSetupElectionTimestamp(channel, rpcMessage)
+        if (!setupElectionTimeStamp.isDefined) {
+          return Left(validationError("couldn't retrieve the setup election timestamp"))
         }
-        print(setupElectionTimeStamp)
-        print(endElection.created_at)
-
         val firstCheck = runChecks(
           checkTimestampStaleness(
             rpcMessage,
@@ -355,7 +350,7 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
           ),
           checkTimestampOrder(
             rpcMessage,
-            setupElectionTimeStamp,
+            setupElectionTimeStamp.get,
             endElection.created_at,
             validationError("trying to end an election before setting it up")
           ),
@@ -681,6 +676,15 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
       Right(rpcMessage)
     } else
       Left(error)
+  }
+
+  private def extractSetupElectionTimestamp(channel: Channel, rpcMessage: JsonRpcRequest): Option[Timestamp] = {
+    def validationError(reason: String): PipelineError = super.validationError(reason, "EndElection", rpcMessage.id)
+    Await.ready(channel.getSetupMessage(dbActorRef), duration).value.get match {
+      case Success(setupElection: SetupElection) => Some(setupElection.created_at)
+      case Failure(exception)                    => None
+      case err @ _                               => None
+    }
   }
 
 }
