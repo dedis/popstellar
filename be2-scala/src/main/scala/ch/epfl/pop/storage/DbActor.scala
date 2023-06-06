@@ -235,8 +235,8 @@ final case class DbActor(
     }
   }
 
-  private def generateAuthenticatedKey(user: PublicKey, client: String): String = {
-    storage.AUTHENTICATED_KEY + user + Channel.DATA_SEPARATOR + client
+  private def generateAuthenticatedKey(identifier: PublicKey, client: String): String = {
+    storage.AUTHENTICATED_KEY + identifier.base64Data.toString + Channel.DATA_SEPARATOR + client
   }
 
   override def receive: Receive = LoggingReceive {
@@ -554,7 +554,7 @@ object DbActor {
 
   /** Reads the authentication information registered for the given pop token regarding the given client
     * @param identifier
-    *   pop token that may have had a user authenticated for the given clien
+    *   pop token that may have had a user authenticated for the given client
     * @param clientId
     *   client where the authentication may have happen on
     */

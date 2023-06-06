@@ -63,7 +63,7 @@ class PopchaValidatorSuite extends TestKit(ActorSystem("electionValidatorTestAct
 
   private val mockDBWithSameUserAuthenticated: AskableActorRef = setupMockDB(includeUser = true, Some(userIdentifier))
 
-  test("Authenticate works") {
+  test("Authenticate works without user already authenticated") {
     val dbActorRef = mockDBWithUser
     val message: GraphMessage = new PopchaValidator(dbActorRef).validateAuthenticateRequest(AUTHENTICATE_RPC)
     message should equal(Right(AUTHENTICATE_RPC))
