@@ -75,6 +75,9 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-end',
     marginLeft: 'auto',
   } as ViewStyle,
+  noOverflow: {
+    overflow: 'hidden',
+  } as ViewStyle,
 });
 
 const FOUR_SECONDS = 4000;
@@ -205,7 +208,7 @@ const ChirpCard = ({ chirp, isFirstItem, isLastItem }: IPropTypes) => {
         </View>
       </PoPTouchableOpacity>
       <ListItem.Content>
-        <ListItem.Subtitle>
+        <ListItem.Subtitle style={styles.noOverflow}>
           {chirp.isDeleted ? (
             <Text style={[Typography.base, Typography.inactive]}>{STRINGS.deleted_chirp}</Text>
           ) : (
