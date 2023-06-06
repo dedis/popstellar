@@ -2,11 +2,12 @@ import React, { useState } from 'react';
 import { StyleSheet, Text, View, ViewStyle } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 
+import { ConfirmModal } from 'core/components';
 import { makeIcon } from 'core/components/PoPIcon';
 import PoPTouchableOpacity from 'core/components/PoPTouchableOpacity';
 import QrCodeScanner, { QrCodeScannerUIElementContainer } from 'core/components/QrCodeScanner';
 import QrCodeScanOverlay from 'core/components/QrCodeScanOverlay';
-import { Typography } from 'core/styles';
+import { Spacing, Typography } from 'core/styles';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
 
@@ -23,6 +24,9 @@ const styles = StyleSheet.create({
   qrCode: {
     opacity: 0.5,
   } as ViewStyle,
+  topMargin: {
+    marginTop: Spacing.x05,
+  } as ViewStyle,
 });
 
 /**
@@ -33,7 +37,7 @@ const PopchaScanner = () => {
   const generateToken = PopchaHooks.useGenerateToken();
 
   const [showScanner, setShowScanner] = useState(false);
-  const [textScanned, setTextScanned] = useState('');
+  const [showInputModal, setInputModalIsVisible] = useState(false);
 
   const toast = useToast();
 
@@ -44,6 +48,18 @@ const PopchaScanner = () => {
   const showErrorMessage = (message: string) => {
     toast.show(message, {
       type: 'warning',
+      placement: 'bottom',
+      duration: FOUR_SECONDS,
+    });
+  };
+
+  /**
+   * Display a toast success message
+   * @param message the message to display
+   */
+  const showSuccessMessage = (message: string) => {
+    toast.show(message, {
+      type: 'success',
       placement: 'bottom',
       duration: FOUR_SECONDS,
     });
@@ -121,6 +137,7 @@ const PopchaScanner = () => {
    * @returns true if the auth request was sent successfully, false otherwise
    */
   const sendAuthRequest = async (data: string) => {
+    return true;
     if (!verifyScannedInfo(data)) {
       return false;
     }
@@ -156,8 +173,8 @@ const PopchaScanner = () => {
           data &&
           sendAuthRequest(data).then((success) => {
             if (success) {
-              setTextScanned(data);
               setShowScanner(false);
+              showSuccessMessage(STRINGS.popcha_success_authentication);
             }
           })
         }>
@@ -167,7 +184,6 @@ const PopchaScanner = () => {
               {STRINGS.popcha_display_current_lao}
               {laoId}
             </Text>
-            <Text>{textScanned}</Text>
           </View>
           {showScanner && (
             <View style={styles.qrCode}>
@@ -175,7 +191,20 @@ const PopchaScanner = () => {
             </View>
           )}
           <View>
-            <View style={QrCodeScannerUIElementContainer}>
+            {showScanner ? (
+              <View style={QrCodeScannerUIElementContainer}>
+                <PoPTouchableOpacity
+                  testID="roll_call_open_add_manually"
+                  onPress={() => setInputModalIsVisible(true)}>
+                  <Text style={[Typography.base, Typography.accent, Typography.centered]}>
+                    {STRINGS.general_enter_manually}
+                  </Text>
+                </PoPTouchableOpacity>
+              </View>
+            ) : (
+              <View />
+            )}
+            <View style={[QrCodeScannerUIElementContainer, styles.topMargin]}>
               <PoPTouchableOpacity
                 testID="popcha_scanner_button"
                 onPress={() => setShowScanner(!showScanner)}>
@@ -184,9 +213,28 @@ const PopchaScanner = () => {
                 </Text>
               </PoPTouchableOpacity>
             </View>
+            <View />
           </View>
         </View>
       </QrCodeScanner>
+      <ConfirmModal
+        visibility={showInputModal}
+        setVisibility={setInputModalIsVisible}
+        title={STRINGS.popcha_manual_add_title}
+        description={STRINGS.popcha_manual_add_description}
+        onConfirmPress={(text: string) => {
+          sendAuthRequest(text).then((success) => {
+            if (success) {
+              setShowScanner(false);
+              setInputModalIsVisible(false);
+              showSuccessMessage(STRINGS.popcha_success_authentication);
+            }
+          });
+        }}
+        buttonConfirmText={STRINGS.general_add}
+        hasTextInput
+        textInputPlaceholder="Url"
+      />
     </>
   );
 };
