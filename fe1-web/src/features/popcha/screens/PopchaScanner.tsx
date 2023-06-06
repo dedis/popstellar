@@ -232,7 +232,7 @@ const PopchaScanner = () => {
         }}
         buttonConfirmText={STRINGS.general_add}
         hasTextInput
-        textInputPlaceholder="Url"
+        textInputPlaceholder={STRINGS.popcha_url_type_input}
       />
     </>
   );
