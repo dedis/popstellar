@@ -29,6 +29,7 @@ import RollCallScanner, { RollCallOpenedHeaderLeft } from '../RollCallScanner';
 
 const mockPublicKey2 = new PublicKey('mockPublicKey2_fFcHDaVHcCcY8IBfHE7auXJ7h4ms=');
 const mockPublicKey3 = new PublicKey('mockPublicKey3_fFcHDaVHcCcY8IBfHE7auXJ7h4ms=');
+const mockOrganizerPublicKey = new PublicKey('mockOrganizerPublicKey_fFcHDaVHcCcY8IBfHE7a=');
 
 jest.mock('@react-navigation/core', () => {
   const actualNavigation = jest.requireActual('@react-navigation/core');
@@ -96,7 +97,10 @@ const didFocus = () =>
     .filter(([eventName]) => eventName === 'focus')
     .forEach((args) => args[1]());
 
-const renderRollCallOpened = (mockAttendeePopTokens?: string[]) => {
+const renderRollCallOpened = (
+  // by default at least one attendee is already in the roll call (the organizer)
+  mockAttendeePopTokens: string[] = [mockOrganizerPublicKey.valueOf()],
+) => {
   const renderedRollCallOpened = render(
     <Provider store={mockStore}>
       <FeatureContext.Provider value={contextValue}>
@@ -220,9 +224,7 @@ describe('RollCallOpened', () => {
   });
 
   it('shows the correct number of attendees', async () => {
-    const mockAttendeePopTokens = [mockPopToken.publicKey.valueOf()];
-
-    const { toJSON } = renderRollCallOpened(mockAttendeePopTokens);
+    const { toJSON } = renderRollCallOpened();
 
     // counter should be at 0
     expect(toJSON()).toMatchSnapshot();
