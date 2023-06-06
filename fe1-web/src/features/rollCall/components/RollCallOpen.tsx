@@ -56,18 +56,30 @@ const RollCallOpen = ({
   const [hasWalletBeenInitialized, setHasWalletBeenInitialized] = useState(hasSeed());
 
   const updateAttendeeList = useCallback(() => {
+    // If it is the organizer, we add his token to the list (he automatically attends the roll call)
+    const personalPopToken = isOrganizer && popToken !== '' ? [new PublicKey(popToken)] : [];
     // If it comes from the scanner then we take this list, otherwise we try if it has already been set
-    const attendeesList = scannedPopTokens || rollCall.attendees || [];
+    const defaultAttendeesList = scannedPopTokens || rollCall.attendees || [];
+    // if the list is empty, we take the personalPopToken (which is non-empty if the user is the organizer)
+    const attendeesList = defaultAttendeesList.length > 0 ? defaultAttendeesList : personalPopToken;
+
     setPopTokens(attendeesList);
+
     // Stores the already scanned tokens in case we go to a new screen (different from the scanner)
     const updatedRollCall = {
       ...rollCall.toState(),
       attendees: attendeesList.map((key) => key.toState()),
     };
+
     dispatch(updateRollCall(updatedRollCall));
     // This useEffect should be called when the component is mounted.
     // Especially for rollCall, we can not add it in the dependency list since it is updated. (2023-06-05, MeKHell)
-  }, [rollCall, scannedPopTokens]);
+  }, [rollCall, scannedPopTokens, popToken, isOrganizer]);
+
+  // empty popTokens should be updated if the user is the organizer
+  if (popTokens.length === 0 && isOrganizer && popToken !== '') {
+    updateAttendeeList();
+  }
 
   const onAddAttendees = useCallback(() => {
     // Once the roll call is opened the first time, idAlias is defined
@@ -155,7 +167,7 @@ const RollCallOpen = ({
     generateToken(laoId, rollCall.id)
       .then((token) => setPopToken(token.publicKey.valueOf()))
       .catch((err) => console.error(`Could not generate token: ${err}`));
-  }, [hasWalletBeenInitialized, generateToken, laoId, rollCall]);
+  }, [hasWalletBeenInitialized, generateToken, laoId, rollCall, setPopToken]);
 
   return (
     <ScreenWrapper toolbarItems={toolbarItems}>
