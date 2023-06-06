@@ -137,7 +137,6 @@ const PopchaScanner = () => {
    * @returns true if the auth request was sent successfully, false otherwise
    */
   const sendAuthRequest = async (data: string) => {
-    return true;
     if (!verifyScannedInfo(data)) {
       return false;
     }

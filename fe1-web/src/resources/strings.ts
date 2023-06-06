@@ -509,7 +509,8 @@ namespace STRINGS {
   export const meeting_message_decline = 'Decline Message';
 
   /* --- Popcha Screen Strings --- */
-  export const popcha_display_current_lao = 'Welcome on the PoPcha screen, you are currently in the LAO: ';
+  export const popcha_display_current_lao =
+    'Welcome on the PoPcha screen, you are currently in the LAO: ';
   export const popcha_close_scanner = 'Close Scanner';
   export const popcha_open_scanner = 'Open Scanner';
   export const popcha_success_authentication = 'Successful authentication';
