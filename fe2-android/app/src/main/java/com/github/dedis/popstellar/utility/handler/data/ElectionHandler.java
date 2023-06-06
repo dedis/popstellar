@@ -9,6 +9,7 @@ import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.*;
+import com.github.dedis.popstellar.repository.database.witnessing.PendingEntity;
 import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.error.*;
 
@@ -49,7 +50,7 @@ public final class ElectionHandler {
    * @param electionSetup the message that was received
    */
   public void handleElectionSetup(HandlerContext context, ElectionSetup electionSetup)
-      throws UnknownLaoException, InvalidChannelException, UnknownWitnessMessageException {
+      throws UnknownLaoException, InvalidChannelException {
     Channel channel = context.getChannel();
     MessageID messageId = context.getMessageId();
 
@@ -77,9 +78,21 @@ public final class ElectionHandler {
             .build();
 
     witnessingRepository.addWitnessMessage(laoId, electionSetupWitnessMessage(messageId, election));
+    if (witnessingRepository.areWitnessesEmpty(laoId)) {
+      addElectionRoutine(electionRepository, election);
+    } else {
+      witnessingRepository.addPendingEntity(new PendingEntity(messageId, laoId, election));
+    }
 
-    witnessingRepository.performActionWhenWitnessThresholdReached(
-        laoId, messageId, () -> setupElectionRoutine(election, context));
+    // Once the election is created, we subscribe to the election channel
+    context
+        .getMessageSender()
+        .subscribe(election.getChannel())
+        .doOnError(
+            err ->
+                Timber.tag(TAG).e(err, "An error occurred while subscribing to election channel"))
+        .onErrorComplete()
+        .subscribe();
   }
 
   /**
@@ -123,7 +136,7 @@ public final class ElectionHandler {
    * @param electionResult the message that was received
    */
   public void handleElectionResult(HandlerContext context, ElectionResult electionResult)
-      throws UnknownElectionException, UnknownWitnessMessageException {
+      throws UnknownElectionException {
     Channel channel = context.getChannel();
     MessageID messageId = context.getMessageId();
 
@@ -145,9 +158,11 @@ public final class ElectionHandler {
 
     witnessingRepository.addWitnessMessage(
         laoId, electionResultWitnessMessage(messageId, election));
-
-    witnessingRepository.performActionWhenWitnessThresholdReached(
-        laoId, messageId, () -> electionRepository.updateElection(election));
+    if (witnessingRepository.areWitnessesEmpty(laoId)) {
+      addElectionRoutine(electionRepository, election);
+    } else {
+      witnessingRepository.addPendingEntity(new PendingEntity(messageId, laoId, election));
+    }
   }
 
   /**
@@ -274,21 +289,8 @@ public final class ElectionHandler {
     return results;
   }
 
-  private void setupElectionRoutine(Election election, HandlerContext context) {
-    // Add new election to repository
+  public static void addElectionRoutine(ElectionRepository electionRepository, Election election) {
     electionRepository.updateElection(election);
-
-    // Once the election is created, we subscribe to the election channel
-    context
-        .getMessageSender()
-        .subscribe(election.getChannel())
-        .doOnError(
-            err ->
-                Timber.tag(TAG).e(err, "An error occurred while subscribing to election channel"))
-        .onErrorComplete()
-        .subscribe();
-
-    Timber.tag(TAG).d("election id %s", election.getId());
   }
 
   public static WitnessMessage electionSetupWitnessMessage(MessageID messageId, Election election) {

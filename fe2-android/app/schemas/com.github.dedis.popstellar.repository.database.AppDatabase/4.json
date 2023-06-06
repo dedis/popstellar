@@ -1,8 +1,8 @@
 {
   "formatVersion": 1,
   "database": {
-    "version": 3,
-    "identityHash": "f87c56ac96ed761267044fdfbfe6d9eb",
+    "version": 4,
+    "identityHash": "643aa357eb9c5b8e5866c80b8dd0c232",
     "entities": [
       {
         "tableName": "messages",
@@ -469,11 +469,17 @@
       },
       {
         "tableName": "pending_objects",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `rollcall` TEXT, `election` TEXT, `meeting` TEXT, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `lao_id` TEXT NOT NULL, `rollcall` TEXT, `election` TEXT, `meeting` TEXT, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "messageID",
             "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "laoId",
+            "columnName": "lao_id",
             "affinity": "TEXT",
             "notNull": true
           },
@@ -509,7 +515,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'f87c56ac96ed761267044fdfbfe6d9eb')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '643aa357eb9c5b8e5866c80b8dd0c232')"
     ]
   }
 }

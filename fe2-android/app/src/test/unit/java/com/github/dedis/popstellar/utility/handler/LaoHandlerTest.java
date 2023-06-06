@@ -93,6 +93,7 @@ public class LaoHandlerTest {
   @Mock MessageDao messageDao;
   @Mock WitnessingDao witnessingDao;
   @Mock WitnessDao witnessDao;
+  @Mock PendingDao pendingDao;
   @Mock MessageSender messageSender;
   @Mock KeyManager keyManager;
 
@@ -126,10 +127,22 @@ public class LaoHandlerTest {
     when(witnessingDao.insert(any(WitnessingEntity.class))).thenReturn(Completable.complete());
     when(witnessingDao.deleteMessagesByIds(anyString(), any())).thenReturn(Completable.complete());
 
+    when(appDatabase.pendingDao()).thenReturn(pendingDao);
+    when(pendingDao.getPendingObjectsFromLao(anyString()))
+        .thenReturn(Single.just(new ArrayList<>()));
+    when(pendingDao.insert(any(PendingEntity.class))).thenReturn(Completable.complete());
+    when(pendingDao.removePendingObject(any(MessageID.class))).thenReturn(Completable.complete());
+
     laoRepo = new LAORepository(appDatabase, application);
     MessageRepository messageRepo = new MessageRepository(appDatabase, application);
     serverRepository = new ServerRepository();
-    witnessingRepository = new WitnessingRepository(appDatabase, application);
+    RollCallRepository rollCallRepo = new RollCallRepository(appDatabase, application);
+    ElectionRepository electionRepo = new ElectionRepository(appDatabase, application);
+    MeetingRepository meetingRepo = new MeetingRepository(appDatabase, application);
+    DigitalCashRepository digitalCashRepo = new DigitalCashRepository(appDatabase, application);
+    witnessingRepository =
+        new WitnessingRepository(
+            appDatabase, application, rollCallRepo, electionRepo, meetingRepo, digitalCashRepo);
 
     DataRegistry dataRegistry =
         DataRegistryModuleHelper.buildRegistry(

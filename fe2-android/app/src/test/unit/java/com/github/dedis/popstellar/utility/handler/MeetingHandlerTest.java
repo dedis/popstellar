@@ -63,7 +63,6 @@ public class MeetingHandlerTest {
   private static final Channel LAO_CHANNEL = Channel.getLaoChannel(CREATE_LAO.getId());
   private static Lao LAO;
 
-  private static LAORepository laoRepo;
   private static MeetingRepository meetingRepo;
   private static WitnessingRepository witnessingRepository;
   private static MessageHandler messageHandler;
@@ -77,6 +76,7 @@ public class MeetingHandlerTest {
   @Mock MeetingDao meetingDao;
   @Mock WitnessingDao witnessingDao;
   @Mock WitnessDao witnessDao;
+  @Mock PendingDao pendingDao;
   @Mock MessageSender messageSender;
   @Mock KeyManager keyManager;
 
@@ -118,9 +118,20 @@ public class MeetingHandlerTest {
     when(witnessingDao.insert(any(WitnessingEntity.class))).thenReturn(Completable.complete());
     when(witnessingDao.deleteMessagesByIds(anyString(), any())).thenReturn(Completable.complete());
 
-    laoRepo = new LAORepository(appDatabase, application);
+    when(appDatabase.pendingDao()).thenReturn(pendingDao);
+    when(pendingDao.getPendingObjectsFromLao(anyString()))
+        .thenReturn(Single.just(new ArrayList<>()));
+    when(pendingDao.insert(any(PendingEntity.class))).thenReturn(Completable.complete());
+    when(pendingDao.removePendingObject(any(MessageID.class))).thenReturn(Completable.complete());
+
+    LAORepository laoRepo = new LAORepository(appDatabase, application);
+    RollCallRepository rollCallRepo = new RollCallRepository(appDatabase, application);
+    ElectionRepository electionRepo = new ElectionRepository(appDatabase, application);
     meetingRepo = new MeetingRepository(appDatabase, application);
-    witnessingRepository = new WitnessingRepository(appDatabase, application);
+    DigitalCashRepository digitalCashRepo = new DigitalCashRepository(appDatabase, application);
+    witnessingRepository =
+        new WitnessingRepository(
+            appDatabase, application, rollCallRepo, electionRepo, meetingRepo, digitalCashRepo);
     MessageRepository messageRepo = new MessageRepository(appDatabase, application);
 
     DataRegistry dataRegistry =
