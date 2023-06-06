@@ -311,65 +311,7 @@ exports[`Popcha scanner correct behavior when sending request shows error messag
             }
           }
         >
-          <View>
-            <Text
-              style={
-                {
-                  "color": "#000",
-                  "fontSize": 20,
-                  "lineHeight": 26,
-                  "marginBottom": 16,
-                  "textAlign": "left",
-                }
-              }
-            >
-              Welcome on the PoPcha screen, you are currently in the LAO: 
-              -
-              M
-              2
-              5
-              9
-              c
-              5
-              J
-              l
-              a
-              k
-              L
-              V
-              l
-              X
-              B
-              R
-              a
-              8
-              9
-              3
-              p
-              c
-              E
-              -
-              4
-              s
-              7
-              s
-              s
-              O
-              8
-              J
-              v
-              5
-              g
-              X
-              O
-              v
-              t
-              r
-              e
-              E
-              =
-            </Text>
-          </View>
+          <View />
           <View
             style={
               {
@@ -695,65 +637,7 @@ exports[`Popcha scanner correct behavior when sending request shows error messag
             }
           }
         >
-          <View>
-            <Text
-              style={
-                {
-                  "color": "#000",
-                  "fontSize": 20,
-                  "lineHeight": 26,
-                  "marginBottom": 16,
-                  "textAlign": "left",
-                }
-              }
-            >
-              Welcome on the PoPcha screen, you are currently in the LAO: 
-              -
-              M
-              2
-              5
-              9
-              c
-              5
-              J
-              l
-              a
-              k
-              L
-              V
-              l
-              X
-              B
-              R
-              a
-              8
-              9
-              3
-              p
-              c
-              E
-              -
-              4
-              s
-              7
-              s
-              s
-              O
-              8
-              J
-              v
-              5
-              g
-              X
-              O
-              v
-              t
-              r
-              e
-              E
-              =
-            </Text>
-          </View>
+          <View />
           <View
             style={
               {
@@ -1340,65 +1224,7 @@ exports[`Popcha scanner manual input works correctly shows error message with in
             }
           }
         >
-          <View>
-            <Text
-              style={
-                {
-                  "color": "#000",
-                  "fontSize": 20,
-                  "lineHeight": 26,
-                  "marginBottom": 16,
-                  "textAlign": "left",
-                }
-              }
-            >
-              Welcome on the PoPcha screen, you are currently in the LAO: 
-              -
-              M
-              2
-              5
-              9
-              c
-              5
-              J
-              l
-              a
-              k
-              L
-              V
-              l
-              X
-              B
-              R
-              a
-              8
-              9
-              3
-              p
-              c
-              E
-              -
-              4
-              s
-              7
-              s
-              s
-              O
-              8
-              J
-              v
-              5
-              g
-              X
-              O
-              v
-              t
-              r
-              e
-              E
-              =
-            </Text>
-          </View>
+          <View />
           <View
             style={
               {
@@ -2244,65 +2070,7 @@ exports[`Popcha scanner scanner renders correctly renders correctly a opened sca
             }
           }
         >
-          <View>
-            <Text
-              style={
-                {
-                  "color": "#000",
-                  "fontSize": 20,
-                  "lineHeight": 26,
-                  "marginBottom": 16,
-                  "textAlign": "left",
-                }
-              }
-            >
-              Welcome on the PoPcha screen, you are currently in the LAO: 
-              -
-              M
-              2
-              5
-              9
-              c
-              5
-              J
-              l
-              a
-              k
-              L
-              V
-              l
-              X
-              B
-              R
-              a
-              8
-              9
-              3
-              p
-              c
-              E
-              -
-              4
-              s
-              7
-              s
-              s
-              O
-              8
-              J
-              v
-              5
-              g
-              X
-              O
-              v
-              t
-              r
-              e
-              E
-              =
-            </Text>
-          </View>
+          <View />
           <View
             style={
               {

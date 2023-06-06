@@ -179,10 +179,12 @@ const PopchaScanner = () => {
         }>
         <View style={styles.container}>
           <View>
-            <Text style={Typography.paragraph}>
-              {STRINGS.popcha_display_current_lao}
-              {laoId}
-            </Text>
+            {!showScanner && (
+              <Text style={Typography.paragraph}>
+                {STRINGS.popcha_display_current_lao}
+                {laoId}
+              </Text>
+            )}
           </View>
           {showScanner && (
             <View style={styles.qrCode}>
