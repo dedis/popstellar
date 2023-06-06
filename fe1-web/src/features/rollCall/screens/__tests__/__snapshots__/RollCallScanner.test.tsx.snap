@@ -1179,7 +1179,7 @@ exports[`RollCallOpened renders correctly when scanning attendees 1`] = `
                                   >
                                     Scanned attendees
                                     : 
-                                    2
+                                    1
                                   </Text>
                                 </View>
                               </View>

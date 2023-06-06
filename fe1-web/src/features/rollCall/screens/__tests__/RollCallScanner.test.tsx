@@ -80,14 +80,12 @@ const mockStore = configureStore({
 mockStore.dispatch(setCurrentLao(mockLao));
 mockStore.dispatch(addRollCall(mockRollCall.toState()));
 
-const mockGenerateToken = jest.fn(() => Promise.resolve(mockPopToken));
-
 const contextValue = {
   [ROLLCALL_FEATURE_IDENTIFIER]: {
     useCurrentLaoId: () => mockLaoId,
     useConnectedToLao: () => true,
     makeEventByTypeSelector: makeEventByTypeSelector,
-    generateToken: mockGenerateToken,
+    generateToken: jest.fn(),
     hasSeed: () => getWalletState(mockStore.getState()).seed !== undefined,
   } as RollCallReactContext,
 };
@@ -125,7 +123,6 @@ describe('RollCallOpened', () => {
     const { toJSON } = renderRollCallOpened();
 
     await waitFor(() => {
-      expect(mockGenerateToken).toHaveBeenCalled();
       expect(toJSON()).toMatchSnapshot();
     });
   });
@@ -140,7 +137,6 @@ describe('RollCallOpened', () => {
       // scan invalid pop tokens
       fakeQrReaderScan('123');
       fakeQrReaderScan('456');
-      expect(mockGenerateToken).toHaveBeenCalled();
     });
 
     expect(toJSON()).toMatchSnapshot();
@@ -151,10 +147,6 @@ describe('RollCallOpened', () => {
 
     fakeQrReaderScan(mockPublicKey2.valueOf());
     fakeQrReaderScan(mockPublicKey3.valueOf());
-
-    await waitFor(async () => {
-      expect(mockGenerateToken).toHaveBeenCalled();
-    });
 
     expect(mockToastShow).toHaveBeenCalledTimes(2);
   });
@@ -199,10 +191,6 @@ describe('RollCallOpened', () => {
       'roll_call_open_stop_scanning',
     );
 
-    await waitFor(() => {
-      expect(mockGenerateToken).toHaveBeenCalled();
-    });
-
     fireEvent.press(button);
 
     expect(navigate).toHaveBeenCalledWith(expect.anything(), {
@@ -218,7 +206,6 @@ describe('RollCallOpened', () => {
     renderRollCallOpened(mockAttendeePopTokens);
 
     await waitFor(() => {
-      expect(mockGenerateToken).toHaveBeenCalled();
       fakeQrReaderScan(ScannablePopToken.encodePopToken({ pop_token: mockPublicKey2.valueOf() }));
       fakeQrReaderScan(ScannablePopToken.encodePopToken({ pop_token: mockPublicKey3.valueOf() }));
     });
@@ -243,7 +230,6 @@ describe('RollCallOpened', () => {
     await waitFor(() => {
       fakeQrReaderScan(ScannablePopToken.encodePopToken({ pop_token: mockPublicKey2.valueOf() }));
       fakeQrReaderScan(ScannablePopToken.encodePopToken({ pop_token: mockPublicKey3.valueOf() }));
-      expect(mockGenerateToken).toHaveBeenCalled();
     });
 
     // counter should be at 2

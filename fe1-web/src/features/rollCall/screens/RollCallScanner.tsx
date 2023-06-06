@@ -71,7 +71,6 @@ const RollCallOpened = () => {
   const toast = useToast();
 
   const laoId = RollCallHooks.useCurrentLaoId();
-  const generateToken = RollCallHooks.useGenerateToken();
 
   const rollCallSelector = useMemo(() => makeRollCallSelector(new Hash(rollCallId)), [rollCallId]);
   const rollCall = useSelector(rollCallSelector);
@@ -109,18 +108,6 @@ const RollCallOpened = () => {
   if (!rollCall) {
     throw new Error('Impossible to open a Roll Call that does not exist');
   }
-
-  const handleError = useCallback(
-    (err: string | Error) => {
-      console.error(err.toString());
-      toast.show(err.toString(), {
-        type: 'danger',
-        placement: 'bottom',
-        duration: FOUR_SECONDS,
-      });
-    },
-    [toast],
-  );
 
   const addAttendeePopToken = useCallback(
     (popToken: string) => {
@@ -172,14 +159,6 @@ const RollCallOpened = () => {
       });
     }
   };
-
-  // This will run only when the state changes
-  useEffect(() => {
-    // Add the token of the organizer as soon as we open the roll call
-    generateToken(laoId, rollCall.id)
-      .then((popToken) => addAttendeePopToken(popToken.publicKey.valueOf()))
-      .catch(handleError);
-  }, [laoId, generateToken, rollCall, addAttendeePopToken, handleError]);
 
   return (
     <>
