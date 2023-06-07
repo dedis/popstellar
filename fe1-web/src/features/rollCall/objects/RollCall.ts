@@ -155,7 +155,7 @@ export class RollCall {
     }
     this.attendees = obj.attendees;
 
-    // these fields are optional and do not have to satisfy any checks
+    // This field is optional and do not have to satisfy any checks
     this.description = obj.description;
   }
 
