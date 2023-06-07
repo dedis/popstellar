@@ -30,8 +30,10 @@ Feature: Request messages by id from other servers
   # getMessagesByID requesting this message
   Scenario: Server should request the missing message ids in a heartbeat
     Given eval heartbeat.params[lao.channel] = messageIds
+
     When mockServer.send(heartbeat)
     And def getMessagesByIdMessages = mockServer.getMessagesByMethod('get_messages_by_id')
+
     Then assert getMessagesByIdMessages.length == 1
     And match getMessagesByIdMessages[0] contains randomMessageId
 
@@ -39,16 +41,20 @@ Feature: Request messages by id from other servers
   # prefix, the server does not request the messages
   Scenario: Server should not request messages if channel is missing '/root/' prefix
     Given eval heartbeat.params[lao.id] = messageIds
+
     When mockServer.send(heartbeat)
     And def getMessagesByIdMessages = mockServer.getMessagesByMethod('get_messages_by_id')
+
     Then assert getMessagesByIdMessages.length == 0
 
-   # Check that after sending a heartbeat message with invalid message ids, the server does not request the messages
+  # Check that after sending a heartbeat message with invalid message ids, the server does not request the messages
   Scenario: Server should not request messages for invalid lao ids
     Given def invalidMessageIds = []
     And eval invalidMessageIds.push('invalid message id')
     And eval heartbeat.params[lao.channel] = invalidMessageIds
+
     When mockServer.send(heartbeat)
     And def getMessagesByIdMessages = mockServer.getMessagesByMethod('get_messages_by_id')
+
     Then assert getMessagesByIdMessages.length == 0
 

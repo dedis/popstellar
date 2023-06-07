@@ -19,8 +19,10 @@ Feature: Send heartbeats to other servers
 
   # After lao creation, wait and do nothing (30 seconds for now) and check that a heartbeat message was received
   Scenario: Server should send heartbeat messages automatically after a time interval
-    And wait(30)
+    Given wait(30)
+
     When def heartbeatMessages = mockServer.getMessagesByMethod('heartbeat')
+
     Then assert heartbeatMessages.length > 0
 
   # Check that after receiving a publish message (in this case a create roll call), the server sends a heartbeat
@@ -39,6 +41,8 @@ Feature: Send heartbeats to other servers
           "description": '#(validRollCall.description)',
         }
       """
+
     When mockServer.publish(validCreateRollCall, lao.channel)
     And def heartbeatMessages = mockServer.getMessagesByMethod('heartbeat')
+
     Then assert heartbeatMessages.length == 1

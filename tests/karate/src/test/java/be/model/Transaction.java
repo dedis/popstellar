@@ -100,7 +100,6 @@ public class Transaction {
 
     // Inputs
     for (Input currentTxin : inputs) {
-      System.out.println("computing input: " + currentTxin);
       // Script
       // PubKey
       collectTransaction.add(currentTxin.script.pubKeyRecipient);
@@ -118,7 +117,6 @@ public class Transaction {
     collectTransaction.add(String.valueOf(lockTime));
     // Outputs
     for (Output currentTxout : outputs) {
-      System.out.println("computing output: " + currentTxout);
       // Script
       // PubKeyHash
       collectTransaction.add(currentTxout.script.pubKeyHash);

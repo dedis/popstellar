@@ -104,7 +104,7 @@ Feature: Simple Transactions for digital cash
      # Because this is the first transaction, input and output used are the first elements of the list
     And def input = transaction.inputs[0]
     And def output = transaction.outputs[0]
-    And def validTransaction =
+    And def invalidTransaction =
       """
         {
             "object": "coin",
@@ -132,8 +132,8 @@ Feature: Simple Transactions for digital cash
             }
         }
       """
-    When organizer.publish(validTransaction, lao.cashChannel)
-    And json answer = organizer.getBackendResponse(validTransaction)
+    When organizer.publish(invalidTransaction, lao.cashChannel)
+    And json answer = organizer.getBackendResponse(invalidTransaction)
     Then match answer contains INVALID_MESSAGE_FIELD
     And match organizer.receiveNoMoreResponses() == true
 
@@ -143,7 +143,7 @@ Feature: Simple Transactions for digital cash
      # Because this is the first transaction, input and output used are the first elements of the list
     And def input = transaction.inputs[0]
     And def output = transaction.outputs[0]
-    And def validTransaction =
+    And def invalidTransaction =
       """
         {
             "object": "coin",
@@ -171,8 +171,8 @@ Feature: Simple Transactions for digital cash
             }
         }
       """
-    When organizer.publish(validTransaction, lao.cashChannel)
-    And json answer = organizer.getBackendResponse(validTransaction)
+    When organizer.publish(invalidTransaction, lao.cashChannel)
+    And json answer = organizer.getBackendResponse(invalidTransaction)
     Then match answer contains INVALID_MESSAGE_FIELD
     And match organizer.receiveNoMoreResponses() == true
 
@@ -182,7 +182,7 @@ Feature: Simple Transactions for digital cash
      # Because this is the first transaction, input and output used are the first elements of the list
     And def input = transaction.inputs[0]
     And def output = transaction.outputs[0]
-    And def validTransaction =
+    And def invalidTransaction =
       """
         {
             "object": "coin",
@@ -210,7 +210,7 @@ Feature: Simple Transactions for digital cash
             }
         }
       """
-    When organizer.publish(validTransaction, lao.cashChannel)
-    And json answer = organizer.getBackendResponse(validTransaction)
+    When organizer.publish(invalidTransaction, lao.cashChannel)
+    And json answer = organizer.getBackendResponse(invalidTransaction)
     Then match answer contains INVALID_MESSAGE_FIELD
     And match organizer.receiveNoMoreResponses() == true
