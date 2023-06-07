@@ -201,7 +201,6 @@ const PopchaScanner = () => {
                 </Text>
               </PoPTouchableOpacity>
             </View>
-            <View />
           </View>
         </View>
       </QrCodeScanner>
@@ -235,7 +234,6 @@ const PopchaScanner = () => {
             </Text>
           </View>
           <View>
-            <View />
             <View style={[QrCodeScannerUIElementContainer, styles.topMargin]}>
               <PoPTouchableOpacity
                 testID="popcha_scanner_button"
@@ -245,7 +243,6 @@ const PopchaScanner = () => {
                 </Text>
               </PoPTouchableOpacity>
             </View>
-            <View />
           </View>
         </View>
       </QrCodeScanner>
