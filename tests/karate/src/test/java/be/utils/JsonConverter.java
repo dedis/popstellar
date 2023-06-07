@@ -58,16 +58,13 @@ public class JsonConverter {
       signature = this.signatureForced;
       isSignatureForced = false;
     }
-    System.out.println("Signature used was: " + signature);
     String messageId = Hash.hash(messageDataBase64.getBytes(), signature.getBytes());
     String[] witness = new String[0];
 
-    System.out.println("Public key used was : " + publicKey);
     messagePart.put("data", messageDataBase64);
     messagePart.put("sender", publicKey);
     messagePart.put("signature", signature);
     messagePart.put("message_id", messageId);
-    System.out.println("message id is : " + messageId);
     messagePart.put("witness_signatures", witness);
 
     return messagePart;

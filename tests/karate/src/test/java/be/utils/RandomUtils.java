@@ -1,5 +1,6 @@
 package be.utils;
 
+import be.model.Election;
 import be.model.KeyPair;
 import be.model.Lao;
 import be.model.RollCall;
@@ -50,6 +51,38 @@ public class RandomUtils {
   public static String generateCloseRollCallId(){
     String randomLaoId = generateLaoId();
     return RollCall.generateCloseRollCallId(randomLaoId, ID, 1);
+  }
+
+  /** @return generates a random valid ElectionSetupId */
+  public static String generateElectionSetupId(){
+    return Election.generateElectionSetupId(generateLaoId(), CREATION, generateRandomName());
+  }
+
+  /** @return generates a random valid election question id */
+  public static String generateElectionQuestionId(){
+    String name = generateRandomName();
+    String electionId = Election.generateElectionSetupId(generateLaoId(), Instant.now().getEpochSecond(), name);
+    return Election.generateElectionQuestionId(electionId, name);
+  }
+
+  /** @return generates a random valid election vote id */
+  public static String generateElectionVoteId(){
+    String name = generateRandomName();
+    String electionId = Election.generateElectionSetupId(generateLaoId(), Instant.now().getEpochSecond(), name);
+    String questionId = Election.generateElectionQuestionId(electionId, generateRandomName());
+    return Election.generateElectionVoteId(electionId, questionId, 0, null, false);
+  }
+
+  /** @return generates a hash of a random vote id */
+  public static String generateRegisteredVotesHash(){
+    String voteId = generateElectionVoteId();
+    return Hash.hash(voteId);
+  }
+
+  /** @return generates a hash of a random string */
+  public static String generateHash(){
+    String random = generateRandomName();
+    return Hash.hash(random);
   }
 
   /** @return generate a random valid name for a lao or roll call */

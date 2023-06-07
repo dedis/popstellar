@@ -30,14 +30,6 @@ public class KeyPair {
     this.publicKey = publicKeyParameters.getEncoded();
   }
 
-  public byte [] getPublicKeyBytes(){
-    return publicKey;
-  }
-
-  public byte [] getPrivateKeyBytes(){
-    return privateKey;
-  }
-
   public String getPublicKey(){
     return Base64Utils.encode(publicKey);
   }

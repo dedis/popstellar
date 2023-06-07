@@ -7,13 +7,6 @@
     # this file simply use the allocated name for the particular feature.
       * call read('classpath:be/mockClient.feature')
       * call read('classpath:be/constants.feature')
-      * def laoCreateId = 1
-      * def rollCallCreateId = 3
-      * def openRollCallId = 32
-      * def closeRollCallId = 33
-      * def electionSetupId = 4
-      * def castVoteId = 41
-      * def frontend = call createMockClient
 
     # organizer and lao need to be passed as arguments when calling this scenario
     @name=valid_lao
@@ -30,11 +23,9 @@
           "witnesses": "#(lao.witnesses)"
         }
       """
-      * karate.log("sending a lao create request : ", karate.pretty(laoCreateRequest))
+      * karate.log("sending a lao create request :\n", karate.pretty(laoCreateRequest))
       * organizer.publish(laoCreateRequest, rootChannel)
       * json answer = organizer.getBackendResponse(laoCreateRequest)
-      * karate.log("Received an answer for lao create request : ", karate.pretty(answer))
-      * string laoChannel = rootChannel + '/' + lao.id
 
       And def subscribe =
         """
@@ -42,15 +33,14 @@
             "method": "subscribe",
             "id": 2,
             "params": {
-                "channel": '#(laoChannel)',
+                "channel": '#(lao.channel)',
             },
             "jsonrpc": "2.0"
           }
         """
-      * karate.log("sending a subscribe : ", karate.pretty(subscribe))
+      * karate.log("sending a subscribe to lao channel:\n", karate.pretty(subscribe))
       * organizer.send(subscribe)
       * def subs = organizer.takeTimeout(timeout)
-      * karate.log("subscribe message received : " + subs)
 
       And def catchup =
         """
@@ -58,15 +48,14 @@
             "method": "catchup",
             "id": 5,
             "params": {
-                "channel": '#(laoChannel)',
+                "channel": '#(lao.channel)',
               },
             "jsonrpc": "2.0"
           }
         """
-      * karate.log("sending a catchup : ", karate.pretty(catchup))
+      * karate.log("sending a catchup to lao channel:\n", karate.pretty(catchup))
       * organizer.send(catchup)
       * def catchup_response = organizer.takeTimeout(timeout)
-      * karate.log("catchup message received : " + catchup_response)
 
     # organizer, lao and rollCall need to be passed as arguments when calling this scenario
     @name=valid_roll_call
@@ -86,7 +75,7 @@
             "description": '#(rollCall.description)',
            }
          """
-      * karate.log("sending a roll call create request : ", karate.pretty(validCreateRollCall))
+      * karate.log("sending a roll call create request :\n", karate.pretty(validCreateRollCall))
       * organizer.publish(validCreateRollCall, lao.channel)
       * json answer = organizer.getBackendResponse(validCreateRollCall)
 
@@ -105,7 +94,7 @@
             "opened_at": '#(openRollCall.openedAt)'
           }
         """
-      * karate.log("sending a roll call open request : ", karate.pretty(validOpenRollCall))
+      * karate.log("sending a roll call open request :\n", karate.pretty(validOpenRollCall))
       * organizer.publish(validOpenRollCall, lao.channel)
       * json answer = organizer.getBackendResponse(validOpenRollCall)
 
@@ -113,6 +102,7 @@
     @name=close_roll_call
     Scenario: Closes a valid Roll Call
       * call read('classpath:be/utils/simpleScenarios.feature@name=open_roll_call') { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)' }
+      * def closeRollCall = rollCall.close()
       * def validRollCallClose =
         """
           {
@@ -124,165 +114,187 @@
             "attendees": '#(closeRollCall.attendees)'
           }
       """
-      * karate.log("sending a roll call close request : ", karate.pretty(validRollCallClose))
+      * karate.log("sending a roll call close request :\n", karate.pretty(validRollCallClose))
       * organizer.publish(validRollCallClose, lao.channel)
       * json answer = organizer.getBackendResponse(validRollCallClose)
 
+    # organizer, lao, rollCall, election and the question need to be passed as arguments when calling this scenario
     @name=election_setup
-    Scenario: Sets up a valid election
-      Given call read('classpath:be/utils/simpleScenarios.feature@name=valid_roll_call')
-      And def validElectionSetup =
+    Scenario: Sets up a valid election with one question
+      * call read('classpath:be/utils/simpleScenarios.feature@name=close_roll_call') { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)' }
+      Given def validElectionSetup =
       """
         {
           "object": "election",
           "action": "setup",
-          "id": '#(getValidElectionSetupId)',
-          "lao": '#(getLaoValid)',
-          "name": "Election",
-          "version": "OPEN_BALLOT",
-          "created_at": 1633098941,
-          "start_time": 1633098941,
-          "end_time": 1633099812,
+          "id": '#(election.id)',
+          "lao": '#(lao.id)',
+          "name": '#(election.name)',
+          "version": '#(election.version)',
+          "created_at": '#(election.creation)',
+          "start_time": '#(election.start)',
+          "end_time": '#(election.end)',
           "questions": [
             {
-              "id": '#(getIsThisProjectFunQuestionId)',
-              "question": "Is this project fun?",
-              "voting_method": "Plurality",
-              "ballot_options": ["Yes", "No"],
-              "write_in": false
+              "id": '#(question.id)',
+              "question": '#(question.question)',
+              "voting_method": '#(question.votingMethod)',
+              "ballot_options": '#(question.ballotOptions)',
+              "write_in": '#(question.writeIn)'
             }
           ]
         }
       """
-      When frontend.publish(validElectionSetup, laoChannel)
-      And json answer = frontend.getBackendResponse(validElectionSetup)
-      * def subscribe =
+      * karate.log("sending an election setup request :\n", karate.pretty(validElectionSetup))
+      When organizer.publish(validElectionSetup, lao.channel)
+      And json answer = organizer.getBackendResponse(validElectionSetup)
+
+      And def subscribe =
         """
           {
             "method": "subscribe",
             "id": 200,
             "params": {
-                "channel": "/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=/rdv-0minecREM9XidNxnQotO7nxtVVnx-Zkmfm7hm2w=",
+                "channel":  '#(election.channel)',
             },
             "jsonrpc": "2.0"
           }
         """
-      * frontend.send(subscribe)
-      * def subs = frontend.takeTimeout(timeout)
-      * def catchup =
+      * karate.log("sending a subscribe to election channel :\n", karate.pretty(subscribe))
+      * organizer.send(subscribe)
+      * def subs = organizer.takeTimeout(timeout)
+
+      And def catchup =
         """
           {
             "method": "catchup",
             "id": 500,
             "params": {
-                "channel": "/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=/rdv-0minecREM9XidNxnQotO7nxtVVnx-Zkmfm7hm2w=",
+               "channel":  '#(election.channel)',
             },
             "jsonrpc": "2.0"
            }
         """
-      * frontend.send(catchup)
-      * def catchup_response = frontend.takeTimeout(timeout)
+      * karate.log("sending a catchup to election channel :\n", karate.pretty(catchup))
+      * organizer.send(catchup)
+      * def catchup_response = organizer.takeTimeout(timeout)
 
+    # organizer, lao, rollCall, election and the question need to be passed as arguments when calling this scenario
     @name=election_open
-    Scenario: Opens an election
-      * call read('classpath:be/utils/simpleScenarios.feature@name=election_setup')
+    Scenario: Opens an election with one question
+      * call read('classpath:be/utils/simpleScenarios.feature@name=election_setup') { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)',  election: '#(election)', question: '#(question)' }
+      * def electionOpen = election.open()
       * def validElectionOpen =
         """
           {
             "object": "election",
             "action": "open",
-            "lao": "p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=",
-            "election": "rdv-0minecREM9XidNxnQotO7nxtVVnx-Zkmfm7hm2w=",
-            "opened_at": 1633098944
+            "lao": '#(lao.id)',
+            "election": '#(election.id)',
+            "opened_at": '#(electionOpen.openedAt)'
           }
         """
-      * frontend.publish(validElectionOpen, electionChannel)
-      * json answer = frontend.getBackendResponse(validElectionOpen)
+      * karate.log("sending an election open request :\n", karate.pretty(validElectionOpen))
+      * organizer.publish(validElectionOpen, election.channel)
+      * json answer = organizer.getBackendResponse(validElectionOpen)
 
+    # organizer, lao, rollCall, election and the question need to be passed as arguments when calling this scenario
     @name=cast_vote
     Scenario: Casts a valid vote
-      * call read('classpath:be/utils/simpleScenarios.feature@name=election_open')
+      * call read('classpath:be/utils/simpleScenarios.feature@name=election_open') { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)',  election: '#(election)', question: '#(question)' }
+      * def vote = question.createVote(0)
+      * def castVote = election.castVote(vote)
       * def validCastVote =
         """
           {
             "object": "election",
             "action": "cast_vote",
-            "lao": "p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=",
-            "election": "rdv-0minecREM9XidNxnQotO7nxtVVnx-Zkmfm7hm2w=",
-            "created_at": 1633098941,
+            "lao": '#(lao.id)',
+            "election": '#(election.id)',
+            "created_at": '#(castVote.createdAt)',
             "votes": [
               {
-                "id": "d60B94lVWm84lBHc9RE5H67oH-Ad3O1WFflK3NSY3Yk=",
-                "question": "3iPxJkdUiCgBd0c699KA9tU5U0zNIFau6spXs5Kw6Pg=",
-                "vote": [0]
+                "id": '#(vote.id)',
+                "question": '#(question.id)',
+                "vote": '#(vote.index)'
               }
             ]
           }
         """
-      * frontend.publish(validCastVote, electionChannel)
-      * json answer = frontend.getBackendResponse(validCastVote)
+      * karate.log("sending a cast vote :\n", karate.pretty(validCastVote))
+      * organizer.publish(validCastVote, election.channel)
+      * json answer = organizer.getBackendResponse(validCastVote)
 
+    # organizer, lao and rollCall need to be passed as arguments when calling this scenario
     @name=setup_coin_channel
     Scenario: Sets up the coin channel and subscribes to it
-      * call read('classpath:be/utils/simpleScenarios.feature@name=close_roll_call')
-      * def subscribe =
+      * call read('classpath:be/utils/simpleScenarios.feature@name=close_roll_call') { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)' }
+      Given def subscribe =
         """
           {
             "method": "subscribe",
             "id": 233,
             "params": {
-                "channel": "/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=/coin",
+                "channel": '#(lao.cashChannel)',
             },
             "jsonrpc": "2.0"
           }
         """
-      * frontend.send(subscribe)
-      * def subs = frontend.takeTimeout(timeout)
-      * karate.log("subscribe message received : " + subs)
-      * def catchup =
+      * karate.log("sending a subscribe to coin channel :\n", karate.pretty(subscribe))
+      * organizer.send(subscribe)
+      * def subs = organizer.takeTimeout(timeout)
+
+      And def catchup =
         """
           {
             "method": "catchup",
             "id": 533,
             "params": {
-                "channel": "/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=/coin",
+                "channel": '#(lao.cashChannel)',
             },
             "jsonrpc": "2.0"
           }
         """
-      * frontend.send(catchup)
-      * def catchup_response = frontend.takeTimeout(timeout)
+      * karate.log("sending a catchup to coin channel :\n", karate.pretty(catchup))
+      * organizer.send(catchup)
+      * def catchup_response = organizer.takeTimeout(timeout)
 
+    # organizer, lao, rollCall, recipient and amount need to be passed as arguments when calling this scenario
     @name=valid_coin_issuance
     Scenario: Issues a certain amount of coins to an attendee
-      * call read('classpath:be/utils/simpleScenarios.feature@name=setup_coin_channel')
+      * call read('classpath:be/utils/simpleScenarios.feature@name=setup_coin_channel') { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)' }
+      * def transaction = organizer.issueCoins(recipient, amount);
+      * def postTransaction = transaction.post()
+      * def input = transaction.inputs[0]
+      * def output = transaction.outputs[0]
       * def validTransaction =
         """
           {
             "object": "coin",
             "action": "post_transaction",
-            "transaction_id": "yVMgw2E9IMX7JtNfizTqTOR1scMVSHfEe8WBbiAgsA8=",
+            "transaction_id": '#(postTransaction.transactionId)',
             "transaction": {
-              "version": 1,
+              "version": '#(transaction.version)',
               "inputs": [{
-                "tx_out_hash": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
-                "tx_out_index": 0,
+                "tx_out_hash": '#(input.txOutHash)',
+                "tx_out_index": '#(input.txOutIndex)',
                 "script": {
-                  "type": "P2PKH",
-                  "pubkey": "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=",
-                  "sig": "wVoIYoQFoepkosPxXK8CmnvhRmq0IUczGQR5JOJjX8R7vqrgMOdI311bgzrOIwtACMfGFTJcnryiHiOuB5Z3Dg=="
+                  "type": '#(input.script.type)',
+                  "pubkey": '#(input.script.pubKeyRecipient)',
+                  "sig": '#(input.script.sig)'
                 }
               }],
               "outputs": [{
-                "value": 32,
+                "value": '#(output.value)',
                 "script": {
-                  "type": "P2PKH",
-                  "pubkey_hash": "-_qR4IHwsiq50raa8jURNArds54="
+                  "type": '#(output.script.type)',
+                  "pubkey_hash": '#(output.script.pubKeyHash)',
                 }
               }],
-              "lock_time": 0
+              "lock_time": '#(transaction.lockTime)',
             }
           }
         """
-      * frontend.publish(validTransaction, cashChannel)
-      * json answer = frontend.getBackendResponse(validTransaction)
+      * karate.log("sending a transaction to issue coins :\n", karate.pretty(validTransaction))
+      * organizer.publish(validTransaction, lao.cashChannel)
+      * json answer = organizer.getBackendResponse(validTransaction)

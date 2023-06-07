@@ -5,7 +5,7 @@ import be.utils.Hash;
 import java.util.ArrayList;
 import java.util.List;
 
-/** Models a pop lao */
+/** Simplified version of a LAO, used to generate valid LAO data. */
 public class Lao {
   public String id;
   public String name;
@@ -14,6 +14,7 @@ public class Lao {
   public long creation;
   public List<String> witnesses = new ArrayList<>();
   public String channel;
+  public String cashChannel;
 
   public Lao(String organizerPk, Long creation, String name){
     this.creation = creation;
@@ -28,6 +29,7 @@ public class Lao {
     // The organizer is always a witness
     this.witnesses.add(organizerPk);
     this.channel = "/root/" + id;
+    this.cashChannel = channel + "/coin";
   }
 
   /**
