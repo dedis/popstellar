@@ -3,6 +3,7 @@ import { StackNavigationOptions } from '@react-navigation/stack';
 import { ViewStyle } from 'react-native';
 
 import BackButton from 'core/components/BackButton';
+import buildInfo from 'core/components/BuildInfo';
 import ButtonPadding from 'core/components/ButtonPadding';
 import DrawerMenuButton from 'core/components/DrawerMenuButton';
 import { Color, Spacing, Typography } from 'core/styles';
@@ -18,6 +19,11 @@ export const stackScreenOptionsWithoutHeader: StackNavigationOptions = {
 };
 
 export const stackScreenOptionsWithHeader: StackNavigationOptions = {
+  headerBackground: buildInfo,
+  headerBackgroundContainerStyle: {
+    backgroundColor: Color.contrast,
+    borderColor: Color.separator,
+  },
   headerLeftContainerStyle: {
     flexBasis: 'auto',
     paddingLeft: Spacing.contentSpacing,
@@ -31,10 +37,6 @@ export const stackScreenOptionsWithHeader: StackNavigationOptions = {
   },
   headerTitleStyle: Typography.topNavigationHeading,
   headerTitleAlign: 'center',
-  headerStyle: {
-    backgroundColor: Color.contrast,
-    borderColor: Color.separator,
-  },
   headerLeft: BackButton,
   headerRight: ButtonPadding,
   // Since we explicitly use scroll views for screens, we should disable scrolling for
