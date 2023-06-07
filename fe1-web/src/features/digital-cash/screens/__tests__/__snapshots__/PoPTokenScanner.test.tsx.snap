@@ -417,48 +417,6 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
                               </View>
                             </View>
                           </View>
-                          <View
-                            style={
-                              {
-                                "flexDirection": "column",
-                              }
-                            }
-                          >
-                            <View
-                              style={
-                                {
-                                  "alignSelf": "flex-end",
-                                  "backgroundColor": "#fff",
-                                  "borderRadius": 8,
-                                  "padding": 8,
-                                }
-                              }
-                            >
-                              <View
-                                accessible={true}
-                                collapsable={false}
-                                focusable={true}
-                                onClick={[Function]}
-                                onResponderGrant={[Function]}
-                                onResponderMove={[Function]}
-                                onResponderRelease={[Function]}
-                                onResponderTerminate={[Function]}
-                                onResponderTerminationRequest={[Function]}
-                                onStartShouldSetResponder={[Function]}
-                                style={
-                                  {
-                                    "alignSelf": "flex-end",
-                                    "marginLeft": "auto",
-                                    "opacity": 1,
-                                  }
-                                }
-                              >
-                                <View>
-                                  {"name":"ios-camera-reverse","size":25,"color":"#3742fa"}
-                                </View>
-                              </View>
-                            </View>
-                          </View>
                         </View>
                       </View>
                     </View>
@@ -887,48 +845,6 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
                                       </View>
                                     </View>
                                   </RNGestureHandlerButton>
-                                </View>
-                              </View>
-                            </View>
-                          </View>
-                          <View
-                            style={
-                              {
-                                "flexDirection": "column",
-                              }
-                            }
-                          >
-                            <View
-                              style={
-                                {
-                                  "alignSelf": "flex-end",
-                                  "backgroundColor": "#fff",
-                                  "borderRadius": 8,
-                                  "padding": 8,
-                                }
-                              }
-                            >
-                              <View
-                                accessible={true}
-                                collapsable={false}
-                                focusable={true}
-                                onClick={[Function]}
-                                onResponderGrant={[Function]}
-                                onResponderMove={[Function]}
-                                onResponderRelease={[Function]}
-                                onResponderTerminate={[Function]}
-                                onResponderTerminationRequest={[Function]}
-                                onStartShouldSetResponder={[Function]}
-                                style={
-                                  {
-                                    "alignSelf": "flex-end",
-                                    "marginLeft": "auto",
-                                    "opacity": 1,
-                                  }
-                                }
-                              >
-                                <View>
-                                  {"name":"ios-camera-reverse","size":25,"color":"#3742fa"}
                                 </View>
                               </View>
                             </View>

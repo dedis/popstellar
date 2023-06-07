@@ -508,6 +508,7 @@ exports[`ChirpCard for deletion render correct for a deleted chirp 1`] = `
                                   "backgroundColor": "transparent",
                                   "color": "#242424",
                                   "fontSize": 15,
+                                  "overflow": "hidden",
                                 }
                               }
                               testID="listItemTitle"
@@ -1104,6 +1105,7 @@ exports[`ChirpCard for deletion renders correctly for non-sender 1`] = `
                                   "backgroundColor": "transparent",
                                   "color": "#242424",
                                   "fontSize": 15,
+                                  "overflow": "hidden",
                                 }
                               }
                               testID="listItemTitle"
@@ -1908,6 +1910,7 @@ exports[`ChirpCard for deletion renders correctly for sender 1`] = `
                                   "backgroundColor": "transparent",
                                   "color": "#242424",
                                   "fontSize": 15,
+                                  "overflow": "hidden",
                                 }
                               }
                               testID="listItemTitle"
@@ -2768,6 +2771,7 @@ exports[`ChirpCard for reaction renders correctly with reaction 1`] = `
                                   "backgroundColor": "transparent",
                                   "color": "#242424",
                                   "fontSize": 15,
+                                  "overflow": "hidden",
                                 }
                               }
                               testID="listItemTitle"
@@ -3572,6 +3576,7 @@ exports[`ChirpCard for reaction renders correctly without reaction 1`] = `
                                   "backgroundColor": "transparent",
                                   "color": "#242424",
                                   "fontSize": 15,
+                                  "overflow": "hidden",
                                 }
                               }
                               testID="listItemTitle"
