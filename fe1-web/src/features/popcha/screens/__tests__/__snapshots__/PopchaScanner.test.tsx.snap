@@ -107,7 +107,6 @@ exports[`Popcha scanner correct behavior when sending request closes scanner whe
           </Text>
         </View>
         <View>
-          <View />
           <View
             style={
               [
@@ -181,7 +180,6 @@ exports[`Popcha scanner correct behavior when sending request closes scanner whe
               </RNGestureHandlerButton>
             </View>
           </View>
-          <View />
         </View>
       </View>
     </View>
@@ -500,7 +498,6 @@ exports[`Popcha scanner correct behavior when sending request shows error messag
                 </RNGestureHandlerButton>
               </View>
             </View>
-            <View />
           </View>
         </View>
       </View>
@@ -826,7 +823,6 @@ exports[`Popcha scanner correct behavior when sending request shows error messag
                 </RNGestureHandlerButton>
               </View>
             </View>
-            <View />
           </View>
         </View>
       </View>
@@ -1012,7 +1008,6 @@ exports[`Popcha scanner manual input works correctly closes scanner and confirma
           </Text>
         </View>
         <View>
-          <View />
           <View
             style={
               [
@@ -1086,7 +1081,6 @@ exports[`Popcha scanner manual input works correctly closes scanner and confirma
               </RNGestureHandlerButton>
             </View>
           </View>
-          <View />
         </View>
       </View>
     </View>
@@ -1405,7 +1399,6 @@ exports[`Popcha scanner manual input works correctly shows error message with in
                 </RNGestureHandlerButton>
               </View>
             </View>
-            <View />
           </View>
         </View>
       </View>
@@ -1850,7 +1843,6 @@ exports[`Popcha scanner scanner renders correctly renders correctly a closed sca
           </Text>
         </View>
         <View>
-          <View />
           <View
             style={
               [
@@ -1924,7 +1916,6 @@ exports[`Popcha scanner scanner renders correctly renders correctly a closed sca
               </RNGestureHandlerButton>
             </View>
           </View>
-          <View />
         </View>
       </View>
     </View>
@@ -2243,7 +2234,6 @@ exports[`Popcha scanner scanner renders correctly renders correctly a opened sca
                 </RNGestureHandlerButton>
               </View>
             </View>
-            <View />
           </View>
         </View>
       </View>
