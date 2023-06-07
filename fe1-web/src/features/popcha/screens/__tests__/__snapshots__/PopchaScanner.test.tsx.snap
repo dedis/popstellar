@@ -1,12 +1,32 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Popcha scanner correct behavior when sending request closes scanner when it is a successful request 1`] = `
-[
+<View
+  style={
+    {
+      "flex": 1,
+      "overflow": "hidden",
+    }
+  }
+>
+  <View
+    style={
+      {
+        "bottom": 0,
+        "left": 0,
+        "position": "absolute",
+        "right": 0,
+        "top": 0,
+        "zIndex": 0,
+      }
+    }
+  />
   <View
     style={
       {
         "flex": 1,
-        "overflow": "hidden",
+        "flexDirection": "column",
+        "margin": 16,
       }
     }
   >
@@ -14,251 +34,223 @@ exports[`Popcha scanner correct behavior when sending request closes scanner whe
       style={
         {
           "bottom": 0,
-          "left": 0,
-          "position": "absolute",
-          "right": 0,
-          "top": 0,
-          "zIndex": 0,
-        }
-      }
-    />
-    <View
-      style={
-        {
           "flex": 1,
-          "flexDirection": "column",
-          "margin": 16,
         }
       }
     >
       <View
         style={
           {
-            "bottom": 0,
+            "alignItems": "center",
             "flex": 1,
+            "justifyContent": "space-between",
           }
         }
       >
-        <View
-          style={
-            {
-              "alignItems": "center",
-              "flex": 1,
-              "justifyContent": "space-between",
+        <View>
+          <Text
+            style={
+              {
+                "color": "#000",
+                "fontSize": 20,
+                "lineHeight": 26,
+                "marginBottom": 16,
+                "textAlign": "left",
+              }
             }
-          }
-        >
-          <View>
-            <Text
-              style={
+          >
+            Welcome on the PoPcha screen, you are currently in the LAO: 
+            -
+            M
+            2
+            5
+            9
+            c
+            5
+            J
+            l
+            a
+            k
+            L
+            V
+            l
+            X
+            B
+            R
+            a
+            8
+            9
+            3
+            p
+            c
+            E
+            -
+            4
+            s
+            7
+            s
+            s
+            O
+            8
+            J
+            v
+            5
+            g
+            X
+            O
+            v
+            t
+            r
+            e
+            E
+            =
+          </Text>
+        </View>
+        <View>
+          <View />
+          <View
+            style={
+              [
                 {
-                  "color": "#000",
-                  "fontSize": 20,
-                  "lineHeight": 26,
-                  "marginBottom": 16,
-                  "textAlign": "left",
-                }
-              }
-            >
-              Welcome on the PoPcha screen, you are currently in the LAO: 
-              -
-              M
-              2
-              5
-              9
-              c
-              5
-              J
-              l
-              a
-              k
-              L
-              V
-              l
-              X
-              B
-              R
-              a
-              8
-              9
-              3
-              p
-              c
-              E
-              -
-              4
-              s
-              7
-              s
-              s
-              O
-              8
-              J
-              v
-              5
-              g
-              X
-              O
-              v
-              t
-              r
-              e
-              E
-              =
-            </Text>
-          </View>
-          <View>
-            <View />
+                  "backgroundColor": "#fff",
+                  "borderRadius": 8,
+                  "padding": 8,
+                },
+                {
+                  "marginTop": 8,
+                },
+              ]
+            }
+          >
             <View
-              style={
-                [
-                  {
-                    "backgroundColor": "#fff",
-                    "borderRadius": 8,
-                    "padding": 8,
-                  },
-                  {
-                    "marginTop": 8,
-                  },
-                ]
-              }
+              accessible={true}
+              collapsable={false}
+              focusable={true}
+              onBlur={[Function]}
+              onClick={[Function]}
+              onFocus={[Function]}
+              onResponderGrant={[Function]}
+              onResponderMove={[Function]}
+              onResponderRelease={[Function]}
+              onResponderTerminate={[Function]}
+              onResponderTerminationRequest={[Function]}
+              onStartShouldSetResponder={[Function]}
+              testID="popcha_scanner_button"
             >
-              <View
-                accessible={true}
+              <RNGestureHandlerButton
                 collapsable={false}
-                focusable={true}
-                onBlur={[Function]}
-                onClick={[Function]}
-                onFocus={[Function]}
-                onResponderGrant={[Function]}
-                onResponderMove={[Function]}
-                onResponderRelease={[Function]}
-                onResponderTerminate={[Function]}
-                onResponderTerminationRequest={[Function]}
-                onStartShouldSetResponder={[Function]}
-                testID="popcha_scanner_button"
+                delayLongPress={600}
+                enabled={true}
+                exclusive={true}
+                handlerTag={65}
+                handlerType="NativeViewGestureHandler"
+                onGestureEvent={[Function]}
+                onGestureHandlerEvent={[Function]}
+                onGestureHandlerStateChange={[Function]}
+                onHandlerStateChange={[Function]}
+                rippleColor={0}
+                touchSoundDisabled={false}
               >
-                <RNGestureHandlerButton
+                <View
+                  accessible={true}
                   collapsable={false}
-                  delayLongPress={600}
-                  enabled={true}
-                  exclusive={true}
-                  handlerTag={45}
-                  handlerType="NativeViewGestureHandler"
-                  onGestureEvent={[Function]}
-                  onGestureHandlerEvent={[Function]}
-                  onGestureHandlerStateChange={[Function]}
-                  onHandlerStateChange={[Function]}
-                  rippleColor={0}
-                  touchSoundDisabled={false}
+                  style={
+                    {
+                      "opacity": 1,
+                    }
+                  }
                 >
-                  <View
-                    accessible={true}
-                    collapsable={false}
+                  <Text
                     style={
-                      {
-                        "opacity": 1,
-                      }
+                      [
+                        {
+                          "color": "#000",
+                          "fontSize": 20,
+                          "lineHeight": 26,
+                          "textAlign": "left",
+                        },
+                        {
+                          "color": "#3742fa",
+                        },
+                      ]
                     }
                   >
-                    <Text
-                      style={
-                        [
-                          {
-                            "color": "#000",
-                            "fontSize": 20,
-                            "lineHeight": 26,
-                            "textAlign": "left",
-                          },
-                          {
-                            "color": "#3742fa",
-                          },
-                        ]
-                      }
-                    >
-                      Open Scanner
-                    </Text>
-                  </View>
-                </RNGestureHandlerButton>
-              </View>
-            </View>
-            <View />
-          </View>
-        </View>
-      </View>
-      <View
-        style={
-          {
-            "flexDirection": "column",
-          }
-        }
-      >
-        <View
-          style={
-            {
-              "alignSelf": "flex-end",
-              "backgroundColor": "#fff",
-              "borderRadius": 8,
-              "padding": 8,
-            }
-          }
-        >
-          <View
-            accessible={true}
-            collapsable={false}
-            focusable={true}
-            onBlur={[Function]}
-            onClick={[Function]}
-            onFocus={[Function]}
-            onResponderGrant={[Function]}
-            onResponderMove={[Function]}
-            onResponderRelease={[Function]}
-            onResponderTerminate={[Function]}
-            onResponderTerminationRequest={[Function]}
-            onStartShouldSetResponder={[Function]}
-          >
-            <RNGestureHandlerButton
-              collapsable={false}
-              delayLongPress={600}
-              enabled={true}
-              exclusive={true}
-              handlerTag={46}
-              handlerType="NativeViewGestureHandler"
-              onGestureEvent={[Function]}
-              onGestureHandlerEvent={[Function]}
-              onGestureHandlerStateChange={[Function]}
-              onHandlerStateChange={[Function]}
-              rippleColor={0}
-              touchSoundDisabled={false}
-            >
-              <View
-                accessible={true}
-                collapsable={false}
-                style={
-                  {
-                    "alignSelf": "flex-end",
-                    "marginLeft": "auto",
-                    "opacity": 1,
-                  }
-                }
-              >
-                <View>
-                  {"name":"ios-camera-reverse","size":25,"color":"#3742fa"}
+                    Open Scanner
+                  </Text>
                 </View>
-              </View>
-            </RNGestureHandlerButton>
+              </RNGestureHandlerButton>
+            </View>
           </View>
+          <View />
         </View>
       </View>
     </View>
-  </View>,
-  <Modal
-    hardwareAccelerated={false}
-    onRequestClose={[Function]}
-    transparent={true}
-    visible={false}
-  />,
-]
+    <View
+      style={
+        {
+          "flexDirection": "column",
+        }
+      }
+    >
+      <View
+        style={
+          {
+            "alignSelf": "flex-end",
+            "backgroundColor": "#fff",
+            "borderRadius": 8,
+            "padding": 8,
+          }
+        }
+      >
+        <View
+          accessible={true}
+          collapsable={false}
+          focusable={true}
+          onBlur={[Function]}
+          onClick={[Function]}
+          onFocus={[Function]}
+          onResponderGrant={[Function]}
+          onResponderMove={[Function]}
+          onResponderRelease={[Function]}
+          onResponderTerminate={[Function]}
+          onResponderTerminationRequest={[Function]}
+          onStartShouldSetResponder={[Function]}
+        >
+          <RNGestureHandlerButton
+            collapsable={false}
+            delayLongPress={600}
+            enabled={true}
+            exclusive={true}
+            handlerTag={62}
+            handlerType="NativeViewGestureHandler"
+            onGestureEvent={[Function]}
+            onGestureHandlerEvent={[Function]}
+            onGestureHandlerStateChange={[Function]}
+            onHandlerStateChange={[Function]}
+            rippleColor={0}
+            touchSoundDisabled={false}
+          >
+            <View
+              accessible={true}
+              collapsable={false}
+              style={
+                {
+                  "alignSelf": "flex-end",
+                  "marginLeft": "auto",
+                  "opacity": 1,
+                }
+              }
+            >
+              <View>
+                {"name":"ios-camera-reverse","size":25,"color":"#3742fa"}
+              </View>
+            </View>
+          </RNGestureHandlerButton>
+        </View>
+      </View>
+    </View>
+  </View>
+</View>
 `;
 
 exports[`Popcha scanner correct behavior when sending request shows error message with failed request 1`] = `
@@ -393,7 +385,7 @@ exports[`Popcha scanner correct behavior when sending request shows error messag
                   delayLongPress={600}
                   enabled={true}
                   exclusive={true}
-                  handlerTag={50}
+                  handlerTag={68}
                   handlerType="NativeViewGestureHandler"
                   onGestureEvent={[Function]}
                   onGestureHandlerEvent={[Function]}
@@ -469,7 +461,7 @@ exports[`Popcha scanner correct behavior when sending request shows error messag
                   delayLongPress={600}
                   enabled={true}
                   exclusive={true}
-                  handlerTag={48}
+                  handlerTag={69}
                   handlerType="NativeViewGestureHandler"
                   onGestureEvent={[Function]}
                   onGestureHandlerEvent={[Function]}
@@ -548,7 +540,7 @@ exports[`Popcha scanner correct behavior when sending request shows error messag
               delayLongPress={600}
               enabled={true}
               exclusive={true}
-              handlerTag={49}
+              handlerTag={67}
               handlerType="NativeViewGestureHandler"
               onGestureEvent={[Function]}
               onGestureHandlerEvent={[Function]}
@@ -719,7 +711,7 @@ exports[`Popcha scanner correct behavior when sending request shows error messag
                   delayLongPress={600}
                   enabled={true}
                   exclusive={true}
-                  handlerTag={50}
+                  handlerTag={68}
                   handlerType="NativeViewGestureHandler"
                   onGestureEvent={[Function]}
                   onGestureHandlerEvent={[Function]}
@@ -795,7 +787,7 @@ exports[`Popcha scanner correct behavior when sending request shows error messag
                   delayLongPress={600}
                   enabled={true}
                   exclusive={true}
-                  handlerTag={48}
+                  handlerTag={69}
                   handlerType="NativeViewGestureHandler"
                   onGestureEvent={[Function]}
                   onGestureHandlerEvent={[Function]}
@@ -874,7 +866,7 @@ exports[`Popcha scanner correct behavior when sending request shows error messag
               delayLongPress={600}
               enabled={true}
               exclusive={true}
-              handlerTag={49}
+              handlerTag={67}
               handlerType="NativeViewGestureHandler"
               onGestureEvent={[Function]}
               onGestureHandlerEvent={[Function]}
@@ -914,12 +906,32 @@ exports[`Popcha scanner correct behavior when sending request shows error messag
 `;
 
 exports[`Popcha scanner manual input works correctly closes scanner and confirmation modal when url is valid 1`] = `
-[
+<View
+  style={
+    {
+      "flex": 1,
+      "overflow": "hidden",
+    }
+  }
+>
+  <View
+    style={
+      {
+        "bottom": 0,
+        "left": 0,
+        "position": "absolute",
+        "right": 0,
+        "top": 0,
+        "zIndex": 0,
+      }
+    }
+  />
   <View
     style={
       {
         "flex": 1,
-        "overflow": "hidden",
+        "flexDirection": "column",
+        "margin": 16,
       }
     }
   >
@@ -927,251 +939,223 @@ exports[`Popcha scanner manual input works correctly closes scanner and confirma
       style={
         {
           "bottom": 0,
-          "left": 0,
-          "position": "absolute",
-          "right": 0,
-          "top": 0,
-          "zIndex": 0,
-        }
-      }
-    />
-    <View
-      style={
-        {
           "flex": 1,
-          "flexDirection": "column",
-          "margin": 16,
         }
       }
     >
       <View
         style={
           {
-            "bottom": 0,
+            "alignItems": "center",
             "flex": 1,
+            "justifyContent": "space-between",
           }
         }
       >
-        <View
-          style={
-            {
-              "alignItems": "center",
-              "flex": 1,
-              "justifyContent": "space-between",
+        <View>
+          <Text
+            style={
+              {
+                "color": "#000",
+                "fontSize": 20,
+                "lineHeight": 26,
+                "marginBottom": 16,
+                "textAlign": "left",
+              }
             }
-          }
-        >
-          <View>
-            <Text
-              style={
+          >
+            Welcome on the PoPcha screen, you are currently in the LAO: 
+            -
+            M
+            2
+            5
+            9
+            c
+            5
+            J
+            l
+            a
+            k
+            L
+            V
+            l
+            X
+            B
+            R
+            a
+            8
+            9
+            3
+            p
+            c
+            E
+            -
+            4
+            s
+            7
+            s
+            s
+            O
+            8
+            J
+            v
+            5
+            g
+            X
+            O
+            v
+            t
+            r
+            e
+            E
+            =
+          </Text>
+        </View>
+        <View>
+          <View />
+          <View
+            style={
+              [
                 {
-                  "color": "#000",
-                  "fontSize": 20,
-                  "lineHeight": 26,
-                  "marginBottom": 16,
-                  "textAlign": "left",
-                }
-              }
-            >
-              Welcome on the PoPcha screen, you are currently in the LAO: 
-              -
-              M
-              2
-              5
-              9
-              c
-              5
-              J
-              l
-              a
-              k
-              L
-              V
-              l
-              X
-              B
-              R
-              a
-              8
-              9
-              3
-              p
-              c
-              E
-              -
-              4
-              s
-              7
-              s
-              s
-              O
-              8
-              J
-              v
-              5
-              g
-              X
-              O
-              v
-              t
-              r
-              e
-              E
-              =
-            </Text>
-          </View>
-          <View>
-            <View />
+                  "backgroundColor": "#fff",
+                  "borderRadius": 8,
+                  "padding": 8,
+                },
+                {
+                  "marginTop": 8,
+                },
+              ]
+            }
+          >
             <View
-              style={
-                [
-                  {
-                    "backgroundColor": "#fff",
-                    "borderRadius": 8,
-                    "padding": 8,
-                  },
-                  {
-                    "marginTop": 8,
-                  },
-                ]
-              }
+              accessible={true}
+              collapsable={false}
+              focusable={true}
+              onBlur={[Function]}
+              onClick={[Function]}
+              onFocus={[Function]}
+              onResponderGrant={[Function]}
+              onResponderMove={[Function]}
+              onResponderRelease={[Function]}
+              onResponderTerminate={[Function]}
+              onResponderTerminationRequest={[Function]}
+              onStartShouldSetResponder={[Function]}
+              testID="popcha_scanner_button"
             >
-              <View
-                accessible={true}
+              <RNGestureHandlerButton
                 collapsable={false}
-                focusable={true}
-                onBlur={[Function]}
-                onClick={[Function]}
-                onFocus={[Function]}
-                onResponderGrant={[Function]}
-                onResponderMove={[Function]}
-                onResponderRelease={[Function]}
-                onResponderTerminate={[Function]}
-                onResponderTerminationRequest={[Function]}
-                onStartShouldSetResponder={[Function]}
-                testID="popcha_scanner_button"
+                delayLongPress={600}
+                enabled={true}
+                exclusive={true}
+                handlerTag={86}
+                handlerType="NativeViewGestureHandler"
+                onGestureEvent={[Function]}
+                onGestureHandlerEvent={[Function]}
+                onGestureHandlerStateChange={[Function]}
+                onHandlerStateChange={[Function]}
+                rippleColor={0}
+                touchSoundDisabled={false}
               >
-                <RNGestureHandlerButton
+                <View
+                  accessible={true}
                   collapsable={false}
-                  delayLongPress={600}
-                  enabled={true}
-                  exclusive={true}
-                  handlerTag={58}
-                  handlerType="NativeViewGestureHandler"
-                  onGestureEvent={[Function]}
-                  onGestureHandlerEvent={[Function]}
-                  onGestureHandlerStateChange={[Function]}
-                  onHandlerStateChange={[Function]}
-                  rippleColor={0}
-                  touchSoundDisabled={false}
+                  style={
+                    {
+                      "opacity": 1,
+                    }
+                  }
                 >
-                  <View
-                    accessible={true}
-                    collapsable={false}
+                  <Text
                     style={
-                      {
-                        "opacity": 1,
-                      }
+                      [
+                        {
+                          "color": "#000",
+                          "fontSize": 20,
+                          "lineHeight": 26,
+                          "textAlign": "left",
+                        },
+                        {
+                          "color": "#3742fa",
+                        },
+                      ]
                     }
                   >
-                    <Text
-                      style={
-                        [
-                          {
-                            "color": "#000",
-                            "fontSize": 20,
-                            "lineHeight": 26,
-                            "textAlign": "left",
-                          },
-                          {
-                            "color": "#3742fa",
-                          },
-                        ]
-                      }
-                    >
-                      Open Scanner
-                    </Text>
-                  </View>
-                </RNGestureHandlerButton>
-              </View>
-            </View>
-            <View />
-          </View>
-        </View>
-      </View>
-      <View
-        style={
-          {
-            "flexDirection": "column",
-          }
-        }
-      >
-        <View
-          style={
-            {
-              "alignSelf": "flex-end",
-              "backgroundColor": "#fff",
-              "borderRadius": 8,
-              "padding": 8,
-            }
-          }
-        >
-          <View
-            accessible={true}
-            collapsable={false}
-            focusable={true}
-            onBlur={[Function]}
-            onClick={[Function]}
-            onFocus={[Function]}
-            onResponderGrant={[Function]}
-            onResponderMove={[Function]}
-            onResponderRelease={[Function]}
-            onResponderTerminate={[Function]}
-            onResponderTerminationRequest={[Function]}
-            onStartShouldSetResponder={[Function]}
-          >
-            <RNGestureHandlerButton
-              collapsable={false}
-              delayLongPress={600}
-              enabled={true}
-              exclusive={true}
-              handlerTag={59}
-              handlerType="NativeViewGestureHandler"
-              onGestureEvent={[Function]}
-              onGestureHandlerEvent={[Function]}
-              onGestureHandlerStateChange={[Function]}
-              onHandlerStateChange={[Function]}
-              rippleColor={0}
-              touchSoundDisabled={false}
-            >
-              <View
-                accessible={true}
-                collapsable={false}
-                style={
-                  {
-                    "alignSelf": "flex-end",
-                    "marginLeft": "auto",
-                    "opacity": 1,
-                  }
-                }
-              >
-                <View>
-                  {"name":"ios-camera-reverse","size":25,"color":"#3742fa"}
+                    Open Scanner
+                  </Text>
                 </View>
-              </View>
-            </RNGestureHandlerButton>
+              </RNGestureHandlerButton>
+            </View>
           </View>
+          <View />
         </View>
       </View>
     </View>
-  </View>,
-  <Modal
-    hardwareAccelerated={false}
-    onRequestClose={[Function]}
-    transparent={true}
-    visible={false}
-  />,
-]
+    <View
+      style={
+        {
+          "flexDirection": "column",
+        }
+      }
+    >
+      <View
+        style={
+          {
+            "alignSelf": "flex-end",
+            "backgroundColor": "#fff",
+            "borderRadius": 8,
+            "padding": 8,
+          }
+        }
+      >
+        <View
+          accessible={true}
+          collapsable={false}
+          focusable={true}
+          onBlur={[Function]}
+          onClick={[Function]}
+          onFocus={[Function]}
+          onResponderGrant={[Function]}
+          onResponderMove={[Function]}
+          onResponderRelease={[Function]}
+          onResponderTerminate={[Function]}
+          onResponderTerminationRequest={[Function]}
+          onStartShouldSetResponder={[Function]}
+        >
+          <RNGestureHandlerButton
+            collapsable={false}
+            delayLongPress={600}
+            enabled={true}
+            exclusive={true}
+            handlerTag={79}
+            handlerType="NativeViewGestureHandler"
+            onGestureEvent={[Function]}
+            onGestureHandlerEvent={[Function]}
+            onGestureHandlerStateChange={[Function]}
+            onHandlerStateChange={[Function]}
+            rippleColor={0}
+            touchSoundDisabled={false}
+          >
+            <View
+              accessible={true}
+              collapsable={false}
+              style={
+                {
+                  "alignSelf": "flex-end",
+                  "marginLeft": "auto",
+                  "opacity": 1,
+                }
+              }
+            >
+              <View>
+                {"name":"ios-camera-reverse","size":25,"color":"#3742fa"}
+              </View>
+            </View>
+          </RNGestureHandlerButton>
+        </View>
+      </View>
+    </View>
+  </View>
+</View>
 `;
 
 exports[`Popcha scanner manual input works correctly shows error message with invalid url 1`] = `
@@ -1306,7 +1290,7 @@ exports[`Popcha scanner manual input works correctly shows error message with in
                   delayLongPress={600}
                   enabled={true}
                   exclusive={true}
-                  handlerTag={53}
+                  handlerTag={72}
                   handlerType="NativeViewGestureHandler"
                   onGestureEvent={[Function]}
                   onGestureHandlerEvent={[Function]}
@@ -1382,7 +1366,7 @@ exports[`Popcha scanner manual input works correctly shows error message with in
                   delayLongPress={600}
                   enabled={true}
                   exclusive={true}
-                  handlerTag={51}
+                  handlerTag={73}
                   handlerType="NativeViewGestureHandler"
                   onGestureEvent={[Function]}
                   onGestureHandlerEvent={[Function]}
@@ -1461,7 +1445,7 @@ exports[`Popcha scanner manual input works correctly shows error message with in
               delayLongPress={600}
               enabled={true}
               exclusive={true}
-              handlerTag={52}
+              handlerTag={71}
               handlerType="NativeViewGestureHandler"
               onGestureEvent={[Function]}
               onGestureHandlerEvent={[Function]}
@@ -1502,7 +1486,7 @@ exports[`Popcha scanner manual input works correctly shows error message with in
       delayLongPress={600}
       enabled={true}
       exclusive={true}
-      handlerTag={54}
+      handlerTag={74}
       handlerType="NativeViewGestureHandler"
       onGestureEvent={[Function]}
       onGestureHandlerEvent={[Function]}
@@ -1531,7 +1515,7 @@ exports[`Popcha scanner manual input works correctly shows error message with in
     </RNGestureHandlerButton>
     <RCTScrollView
       collapsable={false}
-      handlerTag={55}
+      handlerTag={75}
       handlerType="NativeViewGestureHandler"
       onGestureHandlerEvent={[Function]}
       onGestureHandlerStateChange={[Function]}
@@ -1598,7 +1582,7 @@ exports[`Popcha scanner manual input works correctly shows error message with in
               delayLongPress={600}
               enabled={true}
               exclusive={true}
-              handlerTag={56}
+              handlerTag={76}
               handlerType="NativeViewGestureHandler"
               onGestureEvent={[Function]}
               onGestureHandlerEvent={[Function]}
@@ -1698,7 +1682,7 @@ exports[`Popcha scanner manual input works correctly shows error message with in
             delayLongPress={600}
             enabled={true}
             exclusive={true}
-            handlerTag={57}
+            handlerTag={77}
             handlerType="NativeViewGestureHandler"
             onGestureEvent={[Function]}
             onGestureHandlerEvent={[Function]}
@@ -1760,12 +1744,32 @@ exports[`Popcha scanner manual input works correctly shows error message with in
 `;
 
 exports[`Popcha scanner scanner renders correctly renders correctly a closed scanner 1`] = `
-[
+<View
+  style={
+    {
+      "flex": 1,
+      "overflow": "hidden",
+    }
+  }
+>
+  <View
+    style={
+      {
+        "bottom": 0,
+        "left": 0,
+        "position": "absolute",
+        "right": 0,
+        "top": 0,
+        "zIndex": 0,
+      }
+    }
+  />
   <View
     style={
       {
         "flex": 1,
-        "overflow": "hidden",
+        "flexDirection": "column",
+        "margin": 16,
       }
     }
   >
@@ -1773,251 +1777,223 @@ exports[`Popcha scanner scanner renders correctly renders correctly a closed sca
       style={
         {
           "bottom": 0,
-          "left": 0,
-          "position": "absolute",
-          "right": 0,
-          "top": 0,
-          "zIndex": 0,
-        }
-      }
-    />
-    <View
-      style={
-        {
           "flex": 1,
-          "flexDirection": "column",
-          "margin": 16,
         }
       }
     >
       <View
         style={
           {
-            "bottom": 0,
+            "alignItems": "center",
             "flex": 1,
+            "justifyContent": "space-between",
           }
         }
       >
-        <View
-          style={
-            {
-              "alignItems": "center",
-              "flex": 1,
-              "justifyContent": "space-between",
+        <View>
+          <Text
+            style={
+              {
+                "color": "#000",
+                "fontSize": 20,
+                "lineHeight": 26,
+                "marginBottom": 16,
+                "textAlign": "left",
+              }
             }
-          }
-        >
-          <View>
-            <Text
-              style={
+          >
+            Welcome on the PoPcha screen, you are currently in the LAO: 
+            -
+            M
+            2
+            5
+            9
+            c
+            5
+            J
+            l
+            a
+            k
+            L
+            V
+            l
+            X
+            B
+            R
+            a
+            8
+            9
+            3
+            p
+            c
+            E
+            -
+            4
+            s
+            7
+            s
+            s
+            O
+            8
+            J
+            v
+            5
+            g
+            X
+            O
+            v
+            t
+            r
+            e
+            E
+            =
+          </Text>
+        </View>
+        <View>
+          <View />
+          <View
+            style={
+              [
                 {
-                  "color": "#000",
-                  "fontSize": 20,
-                  "lineHeight": 26,
-                  "marginBottom": 16,
-                  "textAlign": "left",
-                }
-              }
-            >
-              Welcome on the PoPcha screen, you are currently in the LAO: 
-              -
-              M
-              2
-              5
-              9
-              c
-              5
-              J
-              l
-              a
-              k
-              L
-              V
-              l
-              X
-              B
-              R
-              a
-              8
-              9
-              3
-              p
-              c
-              E
-              -
-              4
-              s
-              7
-              s
-              s
-              O
-              8
-              J
-              v
-              5
-              g
-              X
-              O
-              v
-              t
-              r
-              e
-              E
-              =
-            </Text>
-          </View>
-          <View>
-            <View />
+                  "backgroundColor": "#fff",
+                  "borderRadius": 8,
+                  "padding": 8,
+                },
+                {
+                  "marginTop": 8,
+                },
+              ]
+            }
+          >
             <View
-              style={
-                [
-                  {
-                    "backgroundColor": "#fff",
-                    "borderRadius": 8,
-                    "padding": 8,
-                  },
-                  {
-                    "marginTop": 8,
-                  },
-                ]
-              }
+              accessible={true}
+              collapsable={false}
+              focusable={true}
+              onBlur={[Function]}
+              onClick={[Function]}
+              onFocus={[Function]}
+              onResponderGrant={[Function]}
+              onResponderMove={[Function]}
+              onResponderRelease={[Function]}
+              onResponderTerminate={[Function]}
+              onResponderTerminationRequest={[Function]}
+              onStartShouldSetResponder={[Function]}
+              testID="popcha_scanner_button"
             >
-              <View
-                accessible={true}
+              <RNGestureHandlerButton
                 collapsable={false}
-                focusable={true}
-                onBlur={[Function]}
-                onClick={[Function]}
-                onFocus={[Function]}
-                onResponderGrant={[Function]}
-                onResponderMove={[Function]}
-                onResponderRelease={[Function]}
-                onResponderTerminate={[Function]}
-                onResponderTerminationRequest={[Function]}
-                onStartShouldSetResponder={[Function]}
-                testID="popcha_scanner_button"
+                delayLongPress={600}
+                enabled={true}
+                exclusive={true}
+                handlerTag={1}
+                handlerType="NativeViewGestureHandler"
+                onGestureEvent={[Function]}
+                onGestureHandlerEvent={[Function]}
+                onGestureHandlerStateChange={[Function]}
+                onHandlerStateChange={[Function]}
+                rippleColor={0}
+                touchSoundDisabled={false}
               >
-                <RNGestureHandlerButton
+                <View
+                  accessible={true}
                   collapsable={false}
-                  delayLongPress={600}
-                  enabled={true}
-                  exclusive={true}
-                  handlerTag={1}
-                  handlerType="NativeViewGestureHandler"
-                  onGestureEvent={[Function]}
-                  onGestureHandlerEvent={[Function]}
-                  onGestureHandlerStateChange={[Function]}
-                  onHandlerStateChange={[Function]}
-                  rippleColor={0}
-                  touchSoundDisabled={false}
+                  style={
+                    {
+                      "opacity": 1,
+                    }
+                  }
                 >
-                  <View
-                    accessible={true}
-                    collapsable={false}
+                  <Text
                     style={
-                      {
-                        "opacity": 1,
-                      }
+                      [
+                        {
+                          "color": "#000",
+                          "fontSize": 20,
+                          "lineHeight": 26,
+                          "textAlign": "left",
+                        },
+                        {
+                          "color": "#3742fa",
+                        },
+                      ]
                     }
                   >
-                    <Text
-                      style={
-                        [
-                          {
-                            "color": "#000",
-                            "fontSize": 20,
-                            "lineHeight": 26,
-                            "textAlign": "left",
-                          },
-                          {
-                            "color": "#3742fa",
-                          },
-                        ]
-                      }
-                    >
-                      Open Scanner
-                    </Text>
-                  </View>
-                </RNGestureHandlerButton>
-              </View>
-            </View>
-            <View />
-          </View>
-        </View>
-      </View>
-      <View
-        style={
-          {
-            "flexDirection": "column",
-          }
-        }
-      >
-        <View
-          style={
-            {
-              "alignSelf": "flex-end",
-              "backgroundColor": "#fff",
-              "borderRadius": 8,
-              "padding": 8,
-            }
-          }
-        >
-          <View
-            accessible={true}
-            collapsable={false}
-            focusable={true}
-            onBlur={[Function]}
-            onClick={[Function]}
-            onFocus={[Function]}
-            onResponderGrant={[Function]}
-            onResponderMove={[Function]}
-            onResponderRelease={[Function]}
-            onResponderTerminate={[Function]}
-            onResponderTerminationRequest={[Function]}
-            onStartShouldSetResponder={[Function]}
-          >
-            <RNGestureHandlerButton
-              collapsable={false}
-              delayLongPress={600}
-              enabled={true}
-              exclusive={true}
-              handlerTag={2}
-              handlerType="NativeViewGestureHandler"
-              onGestureEvent={[Function]}
-              onGestureHandlerEvent={[Function]}
-              onGestureHandlerStateChange={[Function]}
-              onHandlerStateChange={[Function]}
-              rippleColor={0}
-              touchSoundDisabled={false}
-            >
-              <View
-                accessible={true}
-                collapsable={false}
-                style={
-                  {
-                    "alignSelf": "flex-end",
-                    "marginLeft": "auto",
-                    "opacity": 1,
-                  }
-                }
-              >
-                <View>
-                  {"name":"ios-camera-reverse","size":25,"color":"#3742fa"}
+                    Open Scanner
+                  </Text>
                 </View>
-              </View>
-            </RNGestureHandlerButton>
+              </RNGestureHandlerButton>
+            </View>
           </View>
+          <View />
         </View>
       </View>
     </View>
-  </View>,
-  <Modal
-    hardwareAccelerated={false}
-    onRequestClose={[Function]}
-    transparent={true}
-    visible={false}
-  />,
-]
+    <View
+      style={
+        {
+          "flexDirection": "column",
+        }
+      }
+    >
+      <View
+        style={
+          {
+            "alignSelf": "flex-end",
+            "backgroundColor": "#fff",
+            "borderRadius": 8,
+            "padding": 8,
+          }
+        }
+      >
+        <View
+          accessible={true}
+          collapsable={false}
+          focusable={true}
+          onBlur={[Function]}
+          onClick={[Function]}
+          onFocus={[Function]}
+          onResponderGrant={[Function]}
+          onResponderMove={[Function]}
+          onResponderRelease={[Function]}
+          onResponderTerminate={[Function]}
+          onResponderTerminationRequest={[Function]}
+          onStartShouldSetResponder={[Function]}
+        >
+          <RNGestureHandlerButton
+            collapsable={false}
+            delayLongPress={600}
+            enabled={true}
+            exclusive={true}
+            handlerTag={2}
+            handlerType="NativeViewGestureHandler"
+            onGestureEvent={[Function]}
+            onGestureHandlerEvent={[Function]}
+            onGestureHandlerStateChange={[Function]}
+            onHandlerStateChange={[Function]}
+            rippleColor={0}
+            touchSoundDisabled={false}
+          >
+            <View
+              accessible={true}
+              collapsable={false}
+              style={
+                {
+                  "alignSelf": "flex-end",
+                  "marginLeft": "auto",
+                  "opacity": 1,
+                }
+              }
+            >
+              <View>
+                {"name":"ios-camera-reverse","size":25,"color":"#3742fa"}
+              </View>
+            </View>
+          </RNGestureHandlerButton>
+        </View>
+      </View>
+    </View>
+  </View>
+</View>
 `;
 
 exports[`Popcha scanner scanner renders correctly renders correctly a opened scanner 1`] = `
@@ -2228,7 +2204,7 @@ exports[`Popcha scanner scanner renders correctly renders correctly a opened sca
                   delayLongPress={600}
                   enabled={true}
                   exclusive={true}
-                  handlerTag={3}
+                  handlerTag={6}
                   handlerType="NativeViewGestureHandler"
                   onGestureEvent={[Function]}
                   onGestureHandlerEvent={[Function]}
