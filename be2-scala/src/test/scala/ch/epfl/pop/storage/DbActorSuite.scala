@@ -756,8 +756,8 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
     val askPrivateKey = dbActor ? DbActor.ReadServerPrivateKey()
     val privateKey = Await.result(askPrivateKey, duration).asInstanceOf[DbActorReadServerPrivateKeyAck].privateKey
 
-    publicKey.base64Data.data should equal(initialStorage.elements(initialStorage.SERVER_PUBLIC_KEY))
-    privateKey.base64Data.data should equal(initialStorage.elements(initialStorage.SERVER_PRIVATE_KEY))
+    publicKey.base64Data.data should equal(initialStorage.elements(initialStorage.SERVER_PUBLIC_KEY + initialStorage.DEFAULT))
+    privateKey.base64Data.data should equal(initialStorage.elements(initialStorage.SERVER_PRIVATE_KEY + initialStorage.DEFAULT))
   }
 
   test("readServerPrivateKey() and readServerPublicKey() read correctly existing keys") {
@@ -768,8 +768,8 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
     val publicKey = PublicKey(Base64Data.encode(keyPair.getPublicKey))
     val privateKey = PrivateKey(Base64Data.encode(keyPair.getPrivateKey))
 
-    initialStorage.write((initialStorage.SERVER_PUBLIC_KEY, publicKey.base64Data.data))
-    initialStorage.write((initialStorage.SERVER_PRIVATE_KEY, privateKey.base64Data.data))
+    initialStorage.write((initialStorage.SERVER_PUBLIC_KEY + initialStorage.DEFAULT, publicKey.base64Data.data))
+    initialStorage.write((initialStorage.SERVER_PRIVATE_KEY + initialStorage.DEFAULT, privateKey.base64Data.data))
 
     val askPublicKey = dbActor ? DbActor.ReadServerPublicKey()
     val dbPublicKey: PublicKey = Await.result(askPublicKey, duration).asInstanceOf[DbActorReadServerPublicKeyAck].publicKey

@@ -295,7 +295,7 @@ final case class DbActor(
 
   @throws[DbActorNAckException]
   private def readServerPublicKey(): PublicKey = {
-    Try(storage.read(storage.SERVER_PUBLIC_KEY)) match {
+    Try(storage.read(storage.SERVER_PUBLIC_KEY + storage.DEFAULT)) match {
       case Success(Some(key)) => PublicKey(Base64Data(key))
       case Success(None) =>
         val (publicKey, _) = generateKeyPair()
@@ -306,7 +306,7 @@ final case class DbActor(
 
   @throws[DbActorNAckException]
   private def readServerPrivateKey(): PrivateKey = {
-    Try(storage.read(storage.SERVER_PRIVATE_KEY)) match {
+    Try(storage.read(storage.SERVER_PRIVATE_KEY + storage.DEFAULT)) match {
       case Success(Some(key)) => PrivateKey(Base64Data(key))
       case Success(None) =>
         val (_, privateKey) = generateKeyPair()
@@ -321,8 +321,8 @@ final case class DbActor(
     val publicKey = PublicKey(Base64Data.encode(keyPair.getPublicKey))
     val privateKey = PrivateKey(Base64Data.encode(keyPair.getPrivateKey))
 
-    storage.write((storage.SERVER_PUBLIC_KEY, publicKey.base64Data.data))
-    storage.write((storage.SERVER_PRIVATE_KEY, privateKey.base64Data.data))
+    storage.write((storage.SERVER_PUBLIC_KEY + storage.DEFAULT, publicKey.base64Data.data))
+    storage.write((storage.SERVER_PRIVATE_KEY + storage.DEFAULT, privateKey.base64Data.data))
     (publicKey, privateKey)
   }
 
