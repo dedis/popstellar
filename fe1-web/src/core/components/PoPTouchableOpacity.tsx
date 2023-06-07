@@ -5,7 +5,7 @@ import { StyleProp, TouchableOpacity, ViewStyle } from 'react-native';
 import { ExtendType } from 'core/types';
 /**
  * Wraps a touchable opacity in a pressable component to make karate tests work :)
- * /!\ no longer wraps due to UI bugs (dayan9265, 06-06-2023)
+ * /!\ no longer wraps due to UI bugs (https://github.com/dedis/popstellar/issues/1605) (dayan9265, 06-06-2023)
  */
 const PoPTouchableOpacity = React.forwardRef<TouchableOpacity, IPropTypes>(
   ({ onPress, style, testID, children }: IPropTypes, ref) => {
