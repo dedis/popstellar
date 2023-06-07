@@ -138,7 +138,7 @@ message originates from.
 The flowchart below describes the flow of data and how messages are processed.
 
 <div align="center">
-  <img src="images/flowchart.png" alt="Flowchart"/>
+  <img src="images/flowchart/flowchart.png" alt="Flowchart"/>
 </div>
 
 <p align="center"><i>
