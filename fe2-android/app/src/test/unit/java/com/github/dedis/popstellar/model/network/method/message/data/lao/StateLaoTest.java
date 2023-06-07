@@ -1,5 +1,7 @@
 package com.github.dedis.popstellar.model.network.method.message.data.lao;
 
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+
 import com.github.dedis.popstellar.model.network.JsonTestUtils;
 import com.github.dedis.popstellar.model.network.method.message.PublicKeySignaturePair;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
@@ -11,6 +13,7 @@ import com.github.dedis.popstellar.testutils.Base64DataUtils;
 import com.google.gson.JsonParseException;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.internal.util.collections.Sets;
 
 import java.time.Instant;
@@ -21,6 +24,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.*;
 
+@RunWith(AndroidJUnit4.class)
 public class StateLaoTest {
 
   private final String name = " Lao name";

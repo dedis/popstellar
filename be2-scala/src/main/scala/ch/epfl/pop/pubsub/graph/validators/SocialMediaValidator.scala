@@ -5,15 +5,15 @@ import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.network.method.message.data.socialMedia._
 import ch.epfl.pop.model.objects.{Channel, Hash}
+import ch.epfl.pop.pubsub.PublishSubscribe
 import ch.epfl.pop.pubsub.graph.validators.MessageValidator._
 import ch.epfl.pop.pubsub.graph.{GraphMessage, PipelineError}
-import ch.epfl.pop.storage.DbActor
 
 // Similarly to the handlers, we create a SocialMediaValidator object which creates a SocialMediaValidator class instance.
 // The default dbActorRef is used in the object, but the class can now be mocked with a custom dbActorRef for testing purposes.
 object SocialMediaValidator extends MessageDataContentValidator with EventValidator {
 
-  val socialMediaValidator = new SocialMediaValidator(DbActor.getInstance)
+  val socialMediaValidator = new SocialMediaValidator(PublishSubscribe.getDbActorRef)
 
   override val EVENT_HASH_PREFIX: String = socialMediaValidator.EVENT_HASH_PREFIX
 
@@ -33,8 +33,7 @@ object SocialMediaValidator extends MessageDataContentValidator with EventValida
 sealed class SocialMediaValidator(dbActorRef: => AskableActorRef) extends MessageDataContentValidator with EventValidator {
 
   override val EVENT_HASH_PREFIX: String = s"${Channel.CHANNEL_SEPARATOR}posts"
-
-  private val MAX_CHIRP_TEXT_SIZE_REGEX = ".{0,300}$".r
+  private val MAX_CHIRP_TEXT_SIZE_REGEX = ".{1,300}$".r
 
   def validateAddChirp(rpcMessage: JsonRpcRequest): GraphMessage = {
     def validationError(reason: String): PipelineError = super.validationError(reason, "AddChirp", rpcMessage.id)
@@ -71,9 +70,9 @@ sealed class SocialMediaValidator(dbActorRef: => AskableActorRef) extends Messag
           ),
           checkStringPattern(
             rpcMessage,
-            addChirp.text,
+            addChirp.text.trim,
             MAX_CHIRP_TEXT_SIZE_REGEX,
-            validationError(s"Text is too long (over 300 characters).")
+            validationError(s"Text length is not between 1 and 300 characters.")
           ),
           checkIdExistence(
             rpcMessage,

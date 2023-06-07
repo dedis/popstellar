@@ -15,6 +15,7 @@ jobs:
 
     env:
       base_folder: fe1-web
+      deploy_env: ${{ github.event.release.prerelease && 'dev' || 'prod' }}
 
     defaults:
       run:
@@ -62,14 +63,15 @@ jobs:
           files: ${{ env.base_folder }}/fe1_web_${{ steps.get_version.outputs.version_file }}.tar.gz
 
       # Use rsync to deploy the new website
+      
       - name: Sync
         env:
-            dest: "fe1pop@${{secrets.FE1_DEPLOY_ADDR}}:www"
+            dest: "popdemo@${{secrets.POPDEMO_DEPLOY_ADDR}}:${{ env.deploy_env }}/fe1-web/"
         run: |
-            echo "${{secrets.FE1_DEPLOY_KEY}}" > deploy_key
+            echo "${{secrets.POPDEMO_DEPLOY_KEY}}" > deploy_key
             chmod 600 ./deploy_key
             rsync -chav --delete \
-              -e 'ssh -p ${{secrets.FE1_DEPLOY_PORT}} -i ./deploy_key -o StrictHostKeyChecking=no' \
+              -e 'ssh -p ${{secrets.POPDEMO_DEPLOY_PORT}} -i ./deploy_key -o StrictHostKeyChecking=no' \
               ./web-build/ ${{env.dest}}
 
   deploy_be1:
@@ -80,6 +82,7 @@ jobs:
 
     env:
       base_folder: be1-go
+      deploy_env: ${{ github.event.release.prerelease && 'dev' || 'prod' }}
 
     defaults:
       run:
@@ -106,7 +109,7 @@ jobs:
       # Use rsync to deploy the new website
       - name: Sync
         env:
-            dest: "popdemo@${{secrets.POPDEMO_DEPLOY_ADDR}}:be1-go/"
+            dest: "popdemo@${{secrets.POPDEMO_DEPLOY_ADDR}}:${{ env.deploy_env }}/be1-go/"
         run: |
             echo "${{secrets.POPDEMO_DEPLOY_KEY}}" > deploy_key
             chmod 600 ./deploy_key
@@ -122,6 +125,7 @@ jobs:
 
     env:
       base_folder: be2-scala
+      deploy_env: ${{ github.event.release.prerelease && 'dev' || 'prod' }}
       scala_version: 2.13
 
     defaults:
@@ -154,7 +158,7 @@ jobs:
       # Use rsync to deploy the new website
       - name: Sync
         env:
-            dest: "popdemo@${{secrets.POPDEMO_DEPLOY_ADDR}}:be2-scala/"
+            dest: "popdemo@${{secrets.POPDEMO_DEPLOY_ADDR}}:${{ env.deploy_env }}/be2-scala/"
         run: |
             echo "${{secrets.POPDEMO_DEPLOY_KEY}}" > deploy_key
             chmod 600 ./deploy_key
@@ -170,6 +174,7 @@ jobs:
 
     env:
       base_folder: fe2-android
+      deploy_env: ${{ github.event.release.prerelease && 'dev' || 'prod' }}
       app_name: pop
 
     defaults:
@@ -224,10 +229,34 @@ jobs:
       # Use rsync to deploy the release apk on the website
       - name: Sync
         env:
-            dest: "popdemo@${{secrets.POPDEMO_DEPLOY_ADDR}}:fe2-android/"
+            dest: "popdemo@${{secrets.POPDEMO_DEPLOY_ADDR}}:dev/fe2-android/"
         run: |
             echo "${{secrets.POPDEMO_DEPLOY_KEY}}" > deploy_key
             chmod 600 ./deploy_key
             rsync -chav --delete \
               -e 'ssh -p ${{secrets.POPDEMO_DEPLOY_PORT}} -i ./deploy_key -o StrictHostKeyChecking=no' \
               $(pwd)/app/build/outputs/apk/debug/${{ env.app_name }}-${{ steps.get_version.outputs.version }}.apk ${{env.dest}}
+
+  deploy_popcha_example_client:
+    name: Deploy the example PoPCHA client
+
+    if:  ${{ startsWith(github.event.release.tag_name, 'example-') || startsWith(github.event.release.tag_name, 'all-') }}
+    runs-on: ubuntu-latest
+    
+    env:
+      base_folder: demo/popcha-client/web
+      deploy_env: ${{ github.event.release.prerelease && 'dev' || 'prod' }}
+
+    steps:
+      - uses: actions/checkout@v3
+
+      # Use rsync to deploy the new website (no build is necessary)
+      - name: Sync
+        env:
+            dest: "popdemo@${{secrets.POPDEMO_DEPLOY_ADDR}}:dev/popcha/"
+        run: |
+            echo "${{secrets.POPDEMO_DEPLOY_KEY}}" > deploy_key
+            chmod 600 ./deploy_key
+            rsync -chav --delete \
+              -e 'ssh -p ${{secrets.POPDEMO_DEPLOY_PORT}} -i ./deploy_key -o StrictHostKeyChecking=no' \
+              ./${{ env.base_folder }} ${{ env.dest }}

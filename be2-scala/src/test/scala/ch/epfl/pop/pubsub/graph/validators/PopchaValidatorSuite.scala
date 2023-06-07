@@ -4,7 +4,8 @@ import akka.actor.{Actor, ActorSystem, Props}
 import akka.pattern.AskableActorRef
 import akka.testkit.TestKit
 import akka.util.Timeout
-import ch.epfl.pop.model.objects.{LaoData, PrivateKey, PublicKey}
+import ch.epfl.pop.model.network.method.message.data.ObjectType
+import ch.epfl.pop.model.objects.{ChannelData, LaoData, PrivateKey, PublicKey}
 import ch.epfl.pop.pubsub.AskPatternConstants
 import ch.epfl.pop.pubsub.graph.{GraphMessage, PipelineError}
 import ch.epfl.pop.storage.DbActor
@@ -18,7 +19,7 @@ import java.io.File
 import java.util.concurrent.TimeUnit
 import scala.reflect.io.Directory
 
-class PopchaValidatorSuite extends TestKit(ActorSystem("electionValidatorTestActorSystem")) with FunSuiteLike
+class PopchaValidatorSuite extends TestKit(ActorSystem("popChaValidatorTestActorSystem")) with FunSuiteLike
     with Matchers with BeforeAndAfterAll with AskPatternConstants {
 
   final val DB_TEST_FOLDER: String = "databasePopchaTest"
@@ -33,6 +34,9 @@ class PopchaValidatorSuite extends TestKit(ActorSystem("electionValidatorTestAct
   private val laoDataWithUser = LaoData(userIdentifier, List(userIdentifier), PrivateKey(laoSeed), PublicKey(laoSeed), List())
   private val laoDataWithoutUser = LaoData(otherUser, List(otherUser), PrivateKey(laoSeed), PublicKey(laoSeed), List())
 
+  private val channelDataWithValidObjectType = ChannelData(ObjectType.POPCHA, Nil)
+  private val channelDataWithInvalidObjectType = ChannelData(ObjectType.COIN, Nil)
+
   override def afterAll(): Unit = {
     // Stops the testKit
     TestKit.shutdownActorSystem(system)
@@ -42,26 +46,23 @@ class PopchaValidatorSuite extends TestKit(ActorSystem("electionValidatorTestAct
     directory.deleteRecursively()
   }
 
-  private def setupMockDB(includeUser: Boolean, authenticateUserWith: Option[PublicKey] = None): AskableActorRef = {
-    val laoDataToSend: LaoData = if (includeUser) laoDataWithUser else laoDataWithoutUser
+  private def setupMockDB(laoData: LaoData, channelData: ChannelData, authenticateUserWith: Option[PublicKey] = None): AskableActorRef = {
     val dbActorMock = Props(new Actor() {
       override def receive: Receive = {
-        case DbActor.ReadLaoData(_) =>
-          sender() ! DbActor.DbActorReadLaoDataAck(laoDataToSend)
-        case DbActor.ReadUserAuthenticated(_, _) =>
-          sender() ! DbActor.DbActorReadUserAuthenticationAck(authenticateUserWith)
+        case DbActor.ReadLaoData(_)              => sender() ! DbActor.DbActorReadLaoDataAck(laoData)
+        case DbActor.ReadChannelData(_)          => sender() ! DbActor.DbActorReadChannelDataAck(channelData)
+        case DbActor.ReadUserAuthenticated(_, _) => sender() ! DbActor.DbActorReadUserAuthenticationAck(authenticateUserWith)
       }
     })
     system.actorOf(dbActorMock)
   }
 
-  private val mockDBWithUser: AskableActorRef = setupMockDB(includeUser = true)
+  private val mockDBWithUser: AskableActorRef = setupMockDB(laoDataWithUser, channelDataWithValidObjectType)
+  private val mockDBWithoutUser: AskableActorRef = setupMockDB(laoDataWithoutUser, channelDataWithValidObjectType)
+  private val mockDBWithInvalidChannelType: AskableActorRef = setupMockDB(laoDataWithUser, channelDataWithInvalidObjectType)
 
-  private val mockDBWithoutUser: AskableActorRef = setupMockDB(includeUser = false)
-
-  private val mockDBWithOtherUserAuthenticated: AskableActorRef = setupMockDB(includeUser = true, Some(otherUser))
-
-  private val mockDBWithSameUserAuthenticated: AskableActorRef = setupMockDB(includeUser = true, Some(userIdentifier))
+  private val mockDBWithSameUserAuthenticated: AskableActorRef = setupMockDB(laoDataWithUser, channelDataWithValidObjectType, Some(userIdentifier))
+  private val mockDBWithOtherUserAuthenticated: AskableActorRef = setupMockDB(laoDataWithUser, channelDataWithValidObjectType, Some(otherUser))
 
   test("Authenticate works without user already authenticated") {
     val dbActorRef = mockDBWithUser
@@ -75,9 +76,9 @@ class PopchaValidatorSuite extends TestKit(ActorSystem("electionValidatorTestAct
     message should equal(Right(AUTHENTICATE_OTHER_RESPONSE_MODE_RPC))
   }
 
-  test("Authenticate with wrong channel fails") {
-    val dbActorRef = mockDBWithUser
-    val message: GraphMessage = new PopchaValidator(dbActorRef).validateAuthenticateRequest(AUTHENTICATE_INVALID_CHANNEL_RPC)
+  test("Authenticate with wrong channel type fails") {
+    val dbActorRef = mockDBWithInvalidChannelType
+    val message: GraphMessage = new PopchaValidator(dbActorRef).validateAuthenticateRequest(AUTHENTICATE_RPC)
     message shouldBe a[Left[_, PipelineError]]
   }
 
@@ -95,7 +96,7 @@ class PopchaValidatorSuite extends TestKit(ActorSystem("electionValidatorTestAct
 
   test("Authenticate with user not in last lao's rollcall fails") {
     val dbActorRef = mockDBWithoutUser
-    val message: GraphMessage = new PopchaValidator(dbActorRef).validateAuthenticateRequest(AUTHENTICATE_INVALID_CHANNEL_RPC)
+    val message: GraphMessage = new PopchaValidator(dbActorRef).validateAuthenticateRequest(AUTHENTICATE_RPC)
     message shouldBe a[Left[_, PipelineError]]
   }
 

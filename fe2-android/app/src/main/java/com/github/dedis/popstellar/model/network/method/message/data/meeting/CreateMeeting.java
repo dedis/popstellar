@@ -44,7 +44,7 @@ public class CreateMeeting extends Data {
       long end) {
     MessageValidator.MessageValidatorBuilder builder =
         MessageValidator.verify()
-            .isBase64(laoId, "lao id")
+            .isNotEmptyBase64(laoId, "lao id")
             .validCreateMeetingId(id, laoId, creation, name)
             .validPastTimes(creation)
             .orderedTimes(creation, start);

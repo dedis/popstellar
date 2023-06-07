@@ -1,4 +1,4 @@
-@env=go,scala
+@env=go_client,scala_client
 Feature: Cast a vote
   Background:
         # This feature will be called to test Cast Vote

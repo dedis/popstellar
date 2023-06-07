@@ -1,10 +1,12 @@
 package com.github.dedis.popstellar.model.network.method.message.data.election;
 
 import androidx.annotation.NonNull;
+
 import com.github.dedis.popstellar.model.Immutable;
 import com.github.dedis.popstellar.model.network.method.message.data.*;
 import com.github.dedis.popstellar.utility.MessageValidator;
 import com.google.gson.annotations.SerializedName;
+
 import java.time.Instant;
 
 @Immutable
@@ -25,8 +27,8 @@ public class ElectionEnd extends Data {
   public ElectionEnd(
       @NonNull String electionId, @NonNull String laoId, @NonNull String registeredVotes) {
     MessageValidator.verify()
-        .isBase64(electionId, "election id")
-        .isBase64(laoId, "laoId")
+        .isNotEmptyBase64(electionId, "election id")
+        .isNotEmptyBase64(laoId, "laoId")
         .isBase64(registeredVotes, "registered votes");
 
     this.createdAt = Instant.now().getEpochSecond();

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	popstellar "popstellar"
 	"popstellar/channel"
+	"popstellar/channel/authentication"
 	"popstellar/channel/chirp"
 	"popstellar/channel/coin"
 	"popstellar/channel/consensus"
@@ -45,6 +46,12 @@ const (
 	msgID  = "msg id"
 	social = "/social/"
 	chirps = "chirps"
+	// endpoint for the PoPCHA authentication channel
+	auth = "/authentication"
+	// skAbsolutePath represents the absolute path to the rsa secret key for the popcha authentication channel
+	skAbsolutePath = "crypto/popcha.rsa"
+	// pkAbsolutePath represents the absolute path to the rsa public key for the popcha authentication channel
+	pkAbsolutePath = "crypto/popcha.rsa.pub"
 
 	// Open represents the open roll call state.
 	Open rollCallState = "open"
@@ -63,6 +70,9 @@ type Channel struct {
 	inbox     *inbox.Inbox
 	general   channel.Broadcastable
 	reactions channel.LAOFunctionalities
+
+	//PoPCHA channel for authentication message
+	authMsgs channel.LAOFunctionalities
 
 	// /root/<ID>
 	channelID string
@@ -134,6 +144,9 @@ func NewChannel(channelID string, hub channel.HubFunctionalities, msg message.Me
 	}
 
 	newChannel.createCoinChannel(socket, newChannel.log)
+
+	// creating the authentication channel for the PoPCHA protocol
+	newChannel.createAuthChannel(hub, socket)
 
 	return newChannel, err
 }
@@ -293,7 +306,7 @@ func (c *Channel) processLaoState(rawMessage message.Message, msgData interface{
 		err := schnorr.VerifyWithChecks(crypto.Suite, []byte(pair.Witness),
 			[]byte(data.ModificationID), []byte(pair.Signature))
 		if err != nil {
-			return answer.NewErrorf(-4, "signature verfication failed for witness: %s",
+			return answer.NewErrorf(-4, "signature verification failed for witness: %s",
 				pair.Witness)
 		}
 	}
@@ -422,6 +435,8 @@ func (c *Channel) processRollCallClose(msg message.Message, msgData interface{},
 		c.createChirpingChannel(attendee, senderSocket)
 
 		c.reactions.AddAttendee(attendee)
+		// add the attendee in the PopCha authentication channel
+		c.authMsgs.AddAttendee(attendee)
 	}
 
 	return nil
@@ -478,7 +493,6 @@ func (c *Channel) processElectionObject(msg message.Message, msgData interface{}
 // processMessageWitness handles a message object.
 func (c *Channel) processMessageWitness(msg message.Message, msgData interface{},
 	_ socket.Socket) error {
-
 	_, ok := msgData.(*messagedata.MessageWitness)
 	if !ok {
 		return xerrors.Errorf("message %v isn't a message#witness message", msgData)
@@ -491,16 +505,28 @@ func (c *Channel) processMessageWitness(msg message.Message, msgData interface{}
 		return xerrors.Errorf("failed to unmarshal witness data: %v", err)
 	}
 
-	err = schnorr.VerifyWithChecks(crypto.Suite, []byte(msg.Sender), []byte(witnessData.MessageID),
-		[]byte(witnessData.Signature))
+	senderPkDecoded, err := base64.URLEncoding.DecodeString(msg.Sender)
+	if err != nil {
+		return xerrors.Errorf("failed to decode sender public key: %v", err)
+	}
+
+	messageIdDecoded, err := base64.URLEncoding.DecodeString(witnessData.MessageID)
+	if err != nil {
+		return xerrors.Errorf("failed to decode message id: %v", err)
+	}
+
+	signatureDecoded, err := base64.URLEncoding.DecodeString(witnessData.Signature)
+	if err != nil {
+		return xerrors.Errorf("failed to decode witness signature: %v", err)
+	}
+
+	err = schnorr.VerifyWithChecks(crypto.Suite, senderPkDecoded, messageIdDecoded, signatureDecoded)
 	if err != nil {
 		return answer.NewError(-4, "invalid witness signature")
 	}
 
-	err = c.inbox.AddWitnessSignature(witnessData.MessageID, msg.Sender, witnessData.Signature)
-	if err != nil {
-		return xerrors.Errorf("failed to add witness signature: %w", err)
-	}
+	c.inbox.AddWitnessSignature(witnessData.MessageID, msg.Sender, witnessData.Signature)
+	c.hub.NotifyWitnessMessage(witnessData.MessageID, msg.Sender, witnessData.Signature)
 
 	return nil
 }
@@ -584,6 +610,17 @@ func (c *Channel) createChirpingChannel(publicKey string, socket socket.Socket) 
 	log.Info().Msgf("storing new chirp channel (%s) for: '%s'", c.channelID, publicKey)
 }
 
+// createAuthChannel creates an authentication channel associated to the laoID, handling PopCHA requests
+func (c *Channel) createAuthChannel(hub channel.HubFunctionalities, socket socket.Socket) {
+	chanPath := c.channelID + auth
+	authChan := authentication.NewChannel(chanPath, hub, popstellar.Logger, skAbsolutePath, pkAbsolutePath)
+	hub.NotifyNewChannel(chanPath, authChan, socket)
+	c.log.Info().Msgf("storing new authentication channel '%s' ", chanPath)
+
+	// adding it to the LaoChannel
+	c.authMsgs = authChan
+}
+
 // createCoinChannel creates a coin channel to handle digital cash project
 func (c *Channel) createCoinChannel(socket socket.Socket, log zerolog.Logger) {
 	coinPath := fmt.Sprintf("%s/coin", c.channelID)
@@ -665,13 +702,21 @@ func (c *Channel) createAndSendLAOGreet() error {
 		return xerrors.Errorf("failed to marshal the organizer key: %v", err)
 	}
 
+	peers := []messagedata.Peer{}
+
+	for _, info := range c.hub.GetPeersInfo() {
+		peers = append(peers, messagedata.Peer{
+			Address: info.ClientAddress,
+		})
+	}
+
 	msgData := messagedata.LaoGreet{
 		Object:   messagedata.LAOObject,
 		Action:   messagedata.LAOActionGreet,
 		LaoID:    c.extractLaoID(),
 		Frontend: base64.URLEncoding.EncodeToString(orgPkBuf),
-		Address:  fmt.Sprintf("wss://%s/client", c.hub.GetServerAddress()),
-		Peers:    []messagedata.Peer{},
+		Address:  c.hub.GetClientServerAddress(),
+		Peers:    peers,
 	}
 
 	// Marshalls the message data

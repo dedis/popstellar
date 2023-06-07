@@ -1,18 +1,24 @@
 package com.github.dedis.popstellar.model.network.method.message.data.election;
 
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+
+import com.github.dedis.popstellar.model.network.JsonTestUtils;
+import com.github.dedis.popstellar.utility.security.Hash;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import java.time.Instant;
+import java.util.Arrays;
+import java.util.List;
+
 import static com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVersion.OPEN_BALLOT;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
-import com.github.dedis.popstellar.model.network.JsonTestUtils;
-import com.github.dedis.popstellar.utility.security.Hash;
-import java.time.Instant;
-import java.util.Arrays;
-import java.util.List;
-import org.junit.Test;
-
+@RunWith(AndroidJUnit4.class)
 public class ElectionQuestionTest {
 
   private static final ElectionVersion VERSION = OPEN_BALLOT;

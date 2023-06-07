@@ -25,6 +25,7 @@ public class Chirp implements Copyable<Chirp> {
       @NonNull PublicKey sender,
       @NonNull String text,
       long timestamp,
+      boolean isDeleted,
       @NonNull MessageID parentId) {
     if (id.getEncoded().isEmpty()) {
       throw new IllegalArgumentException("The id of the Chirp is empty");
@@ -43,7 +44,16 @@ public class Chirp implements Copyable<Chirp> {
     this.text = text;
     this.timestamp = timestamp;
     this.parentId = parentId;
-    isDeleted = false;
+    this.isDeleted = isDeleted;
+  }
+
+  public Chirp(
+      @NonNull MessageID id,
+      @NonNull PublicKey sender,
+      @NonNull String text,
+      long timestamp,
+      @NonNull MessageID parentId) {
+    this(id, sender, text, timestamp, false, parentId);
   }
 
   public Chirp(Chirp chirp, boolean deleted) {

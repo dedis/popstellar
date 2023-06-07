@@ -26,6 +26,8 @@ class ConnectionMediatorSuite extends TestKit(ActorSystem("ConnectionMediatorSui
       ConnectionMediator.props(mockMonitor.ref, ActorRef.noSender, ActorRef.noSender, MessageRegistry())
     )
 
+    mockMonitor.expectMsg(timeout, ConnectionMediator.Ping())
+
     // Register server
     connectionMediatorRef ! ConnectionMediator.NewServerConnected(server.ref)
 
@@ -47,6 +49,8 @@ class ConnectionMediatorSuite extends TestKit(ActorSystem("ConnectionMediatorSui
     val connectionMediatorRef = system.actorOf(
       ConnectionMediator.props(mockMonitor.ref, ActorRef.noSender, ActorRef.noSender, MessageRegistry())
     )
+
+    mockMonitor.expectMsg(timeout, ConnectionMediator.Ping())
 
     // Register servers
     connectionMediatorRef ! ConnectionMediator.NewServerConnected(server1.ref)

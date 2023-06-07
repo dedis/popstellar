@@ -52,7 +52,8 @@ var suite = crypto.Suite
 
 // Hub implements the Hub interface.
 type Hub struct {
-	serverAdress string
+	clientServerAddress string
+	serverServerAddress string
 
 	messageChan chan socket.IncomingMessage
 
@@ -88,6 +89,12 @@ type Hub struct {
 	// messageIdsByChannel stores all the message ids and the corresponding channel ids
 	// to help servers determine in which channel the message ids go
 	messageIdsByChannel map[string][]string
+
+	// peersInfo stores the info of the peers: public key, client and server endpoints associated with the socket ID
+	peersInfo map[string]method.ServerInfo
+
+	// peersGreeted stores the peers that were greeted by the socket ID
+	peersGreeted []string
 }
 
 // newQueries creates a new queries struct
@@ -111,7 +118,7 @@ type queries struct {
 }
 
 // NewHub returns a new Hub.
-func NewHub(pubKeyOwner kyber.Point, serverAddress string, log zerolog.Logger,
+func NewHub(pubKeyOwner kyber.Point, clientServerAddress string, serverServerAddress string, log zerolog.Logger,
 	laoFac channel.LaoFactory) (*Hub, error) {
 
 	schemaValidator, err := validation.NewSchemaValidator(log)
@@ -124,7 +131,8 @@ func NewHub(pubKeyOwner kyber.Point, serverAddress string, log zerolog.Logger,
 	pubServ, secServ := generateKeys()
 
 	hub := Hub{
-		serverAdress:        serverAddress,
+		clientServerAddress: clientServerAddress,
+		serverServerAddress: serverServerAddress,
 		messageChan:         make(chan socket.IncomingMessage),
 		channelByID:         make(map[string]channel.Channel),
 		closedSockets:       make(chan string),
@@ -141,6 +149,8 @@ func NewHub(pubKeyOwner kyber.Point, serverAddress string, log zerolog.Logger,
 		rootInbox:           *inbox.NewInbox(rootChannel),
 		queries:             newQueries(),
 		messageIdsByChannel: make(map[string][]string),
+		peersInfo:           make(map[string]method.ServerInfo),
+		peersGreeted:        make([]string, 0),
 	}
 
 	return &hub, nil
@@ -243,6 +253,43 @@ func (h *Hub) SendAndHandleMessage(msg method.Broadcast) error {
 // OnSocketClose implements hub.Hub
 func (h *Hub) OnSocketClose() chan<- string {
 	return h.closedSockets
+}
+
+// SendGreetServer implements hub.Hub
+func (h *Hub) SendGreetServer(socket socket.Socket) error {
+	h.Lock()
+	defer h.Unlock()
+
+	pk, err := h.pubKeyServ.MarshalBinary()
+	if err != nil {
+		return xerrors.Errorf("failed to marshal server public key: %v", err)
+	}
+
+	serverInfo := method.ServerInfo{
+		PublicKey:     base64.URLEncoding.EncodeToString(pk),
+		ServerAddress: h.serverServerAddress,
+		ClientAddress: h.clientServerAddress,
+	}
+
+	serverGreet := &method.GreetServer{
+		Base: query.Base{
+			JSONRPCBase: jsonrpc.JSONRPCBase{
+				JSONRPC: "2.0",
+			},
+			Method: query.MethodGreetServer,
+		},
+		Params: serverInfo,
+	}
+
+	buf, err := json.Marshal(serverGreet)
+	if err != nil {
+		return xerrors.Errorf("failed to marshal server greet: %v", err)
+	}
+
+	socket.Send(buf)
+
+	h.peersGreeted = append(h.peersGreeted, socket.ID())
+	return nil
 }
 
 func (h *Hub) getChan(channelPath string) (channel.Channel, error) {
@@ -378,11 +425,13 @@ func (h *Hub) handleMessageFromServer(incomingMessage *socket.IncomingMessage) e
 		return err
 	}
 
-	var id int
+	id := -1
 	var msgsByChannel map[string][]message.Message
 	var handlerErr error
 
 	switch queryBase.Method {
+	case query.MethodGreetServer:
+		handlerErr = h.handleGreetServer(socket, byteMessage)
 	case query.MethodPublish:
 		id, handlerErr = h.handlePublish(socket, byteMessage)
 		h.sendHeartbeatToServers()
@@ -412,7 +461,9 @@ func (h *Hub) handleMessageFromServer(incomingMessage *socket.IncomingMessage) e
 		return nil
 	}
 
-	socket.SendResult(id, nil, nil)
+	if id != -1 {
+		socket.SendResult(id, nil, nil)
+	}
 
 	return nil
 }
@@ -514,9 +565,25 @@ func (h *Hub) createLao(msg message.Message, laoCreate messagedata.LaoCreate,
 		return answer.NewInvalidMessageFieldError("failed to unmarshal public key of the sender: %v", err)
 	}
 
+	organizerBuf, err := base64.URLEncoding.DecodeString(laoCreate.Organizer)
+	if err != nil {
+		return answer.NewInvalidMessageFieldError("failed to decode public key of the organizer: %v", err)
+	}
+
+	organizerPubKey := crypto.Suite.Point()
+	err = organizerPubKey.UnmarshalBinary(organizerBuf)
+	if err != nil {
+		return answer.NewInvalidMessageFieldError("failed to unmarshal public key of the organizer: %v", err)
+	}
+
+	// Check if the sender and organizer fields of the create lao message are equal
+	if !organizerPubKey.Equal(senderPubKey) {
+		return answer.NewAccessDeniedError("sender's public key does not match the organizer field: %q != %q", senderPubKey, organizerPubKey)
+	}
+
+	// Check if the sender of the LAO creation message is the owner
 	if h.GetPubKeyOwner() != nil && !h.GetPubKeyOwner().Equal(senderPubKey) {
-		return answer.NewAccessDeniedError("sender's public key does not match the organizer's: %q != %q",
-			senderPubKey, h.GetPubKeyOwner())
+		return answer.NewAccessDeniedError("sender's public key does not match the owner's: %q != %q", senderPubKey, h.GetPubKeyOwner())
 	}
 
 	laoCh, err := h.laoFac(laoChannelPath, h, msg, h.log, senderPubKey, socket)
@@ -541,9 +608,9 @@ func (h *Hub) GetPubKeyServ() kyber.Point {
 	return h.pubKeyServ
 }
 
-// GetServerAddress implements channel.HubFunctionalities
-func (h *Hub) GetServerAddress() string {
-	return h.serverAdress
+// GetClientServerAddress implements channel.HubFunctionalities
+func (h *Hub) GetClientServerAddress() string {
+	return h.clientServerAddress
 }
 
 // Sign implements channel.HubFunctionalities
@@ -566,6 +633,25 @@ func (h *Hub) NotifyNewChannel(channelID string, channel channel.Channel, sock s
 	h.Lock()
 	h.channelByID[channelID] = channel
 	h.Unlock()
+}
+
+// NotifyWitnessMessage implements channel.HubFunctionalities
+func (h *Hub) NotifyWitnessMessage(messageId string, publicKey string, signature string) {
+	h.Lock()
+	h.hubInbox.AddWitnessSignature(messageId, publicKey, signature)
+	h.Unlock()
+}
+
+func (h *Hub) GetPeersInfo() []method.ServerInfo {
+	h.Lock()
+	defer h.Unlock()
+
+	var peersInfo []method.ServerInfo
+	for _, info := range h.peersInfo {
+		peersInfo = append(peersInfo, info)
+	}
+
+	return peersInfo
 }
 
 func generateKeys() (kyber.Point, kyber.Scalar) {

@@ -11,6 +11,7 @@ export enum ObjectType {
   CHIRP = 'chirp',
   REACTION = 'reaction',
   COIN = 'coin',
+  POPCHA = 'popcha',
 }
 
 /** Enumeration of all possible "action" field values in MessageData */
@@ -36,6 +37,7 @@ export enum ActionType {
   POST_TRANSACTION = 'post_transaction',
   GREET = 'greet',
   KEY = 'key',
+  AUTH = 'authenticate',
 }
 
 /** Enumeration of all possible signatures of a message */

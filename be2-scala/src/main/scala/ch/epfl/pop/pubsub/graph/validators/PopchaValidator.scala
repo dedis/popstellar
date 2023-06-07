@@ -2,14 +2,14 @@ package ch.epfl.pop.pubsub.graph.validators
 
 import akka.pattern.AskableActorRef
 import ch.epfl.pop.model.network.method.message.Message
+import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.network.method.message.data.popcha.Authenticate
 import ch.epfl.pop.model.network.{JsonRpcMessage, JsonRpcRequest}
 import ch.epfl.pop.model.objects._
-import ch.epfl.pop.pubsub.graph.validators.MessageValidator.{checkAttendee, extractData}
+import ch.epfl.pop.pubsub.PublishSubscribe
+import ch.epfl.pop.pubsub.graph.validators.MessageValidator.{checkAttendee, checkChannelType, extractData}
 import ch.epfl.pop.pubsub.graph.{GraphMessage, PipelineError}
-import ch.epfl.pop.storage.DbActor
 import ch.epfl.pop.storage.DbActor.{DbActorReadUserAuthenticationAck, ReadUserAuthenticated}
-
 import scala.concurrent.Await
 import scala.util.Success
 
@@ -17,7 +17,7 @@ import scala.util.Success
   */
 case object PopchaValidator extends MessageDataContentValidator {
 
-  private val popchaValidator = new PopchaValidator(DbActor.getInstance)
+  private val popchaValidator = new PopchaValidator(PublishSubscribe.getDbActorRef)
 
   /** Validates a Popcha Authenticate message data content
     * @param rpcMessage
@@ -39,7 +39,7 @@ sealed class PopchaValidator(dbActorRef: => AskableActorRef) extends MessageData
 
         for {
           _ <- checkResponseMode(rpcMessage, authenticate.responseMode, validationError(s"Invalid response mode ${authenticate.responseMode}"))
-          _ <- checkChannelName(rpcMessage, channel, laoId, validationError(s"Incorrect channel $channel for lao $laoId"))
+          _ <- checkChannelType(rpcMessage, ObjectType.POPCHA, channel, dbActorRef, validationError(s"Incorrect channel $channel for popcha authentication message"))
           _ <- checkAttendee(rpcMessage, sender, channel, dbActorRef, validationError(s"User doesn't belong to the requested lao $laoId"))
           _ <- checkIdentifierProof(
             rpcMessage,
@@ -53,7 +53,7 @@ sealed class PopchaValidator(dbActorRef: => AskableActorRef) extends MessageData
             sender,
             authenticate.identifier,
             authenticate.clientId,
-            validationError(s"Failed to verify that pop token $sender didn't have another user authenticate to client ${authenticate.clientId}")
+            validationError(s"Failed to verify that pop token $sender has never been used before to authenticate another user for client ${authenticate.clientId}")
           )
         } yield result
 
@@ -63,14 +63,6 @@ sealed class PopchaValidator(dbActorRef: => AskableActorRef) extends MessageData
 
   private def checkResponseMode(rpcMessage: JsonRpcRequest, responseMode: String, error: PipelineError): GraphMessage = {
     if (responseMode == "query" || responseMode == "fragment")
-      Right(rpcMessage)
-    else
-      Left(error)
-  }
-
-  private def checkChannelName(rpcMessage: JsonRpcMessage, channel: Channel, laoId: Hash, error: PipelineError): GraphMessage = {
-    val expectedChannelName = Channel.ROOT_CHANNEL_PREFIX + laoId + Channel.POPCHA_CHANNEL_PREFIX
-    if (channel.channel == expectedChannelName)
       Right(rpcMessage)
     else
       Left(error)

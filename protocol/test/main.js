@@ -15,9 +15,11 @@ const method_catchup_schema = require("../query/method/catchup.json");
 
 const method_heartbeat_schema = require("../query/method/heartbeat.json");
 const method_get_messages_by_id_schema = require("../query/method/get_messages_by_id.json");
+const method_greet_server_schema = require("../query/method/greet_server.json");
 
 const message_data_schema = require("../query/method/message/data/data.json");
 const message_data_roll_call_close_schema = require("../query/method/message/data/dataCloseRollCall.json");
+const message_data_authenticate_user = require("../query/method/message/data/dataAuthenticateUser.json");
 const message_data_roll_call_create_schema = require("../query/method/message/data/dataCreateRollCall.json");
 const message_data_roll_call_open_schema = require("../query/method/message/data/dataOpenRollCall.json");
 const message_data_lao_create_schema = require("../query/method/message/data/dataCreateLao.json");
@@ -70,12 +72,15 @@ ajv.addSchema([
 
     method_heartbeat_schema,
     method_get_messages_by_id_schema,
+    method_greet_server_schema,
 
     message_data_schema,
 
     message_data_roll_call_close_schema,
     message_data_roll_call_create_schema,
     message_data_roll_call_open_schema,
+
+    message_data_authenticate_user,
 
     message_data_lao_create_schema,
     message_data_lao_update_schema,

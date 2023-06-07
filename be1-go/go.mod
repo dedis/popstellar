@@ -7,6 +7,8 @@ require (
 	github.com/ajstarks/svgo v0.0.0-20211024235047-1546f124cd8b
 	github.com/benbjohnson/clock v1.3.0
 	github.com/boombuler/barcode v1.0.1
+	github.com/fsnotify/fsnotify v1.6.0
+	github.com/golang-jwt/jwt/v4 v4.5.0
 	github.com/gorilla/mux v1.8.0
 	github.com/gorilla/websocket v1.4.2
 	github.com/rs/xid v1.3.0
@@ -19,7 +21,7 @@ require (
 	go.dedis.ch/kyber/v3 v3.0.13
 	golang.org/x/exp v0.0.0-20230321023759-10a507213a29
 	golang.org/x/sync v0.1.0
-	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1
+	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2
 	gopkg.in/yaml.v2 v2.2.3
 )
 

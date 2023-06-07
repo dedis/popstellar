@@ -38,6 +38,9 @@
         },
         {
             "$ref": "method/get_messages_by_id.json"
+        },
+        {
+            "$ref": "method/greet_server.json"
         }
     ],
 

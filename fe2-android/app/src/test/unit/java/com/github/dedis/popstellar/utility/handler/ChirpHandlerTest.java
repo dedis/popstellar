@@ -1,11 +1,19 @@
 package com.github.dedis.popstellar.utility.handler;
 
+import android.app.Application;
+
+import androidx.test.core.app.ApplicationProvider;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+
 import com.github.dedis.popstellar.model.network.method.message.data.socialmedia.AddChirp;
 import com.github.dedis.popstellar.model.network.method.message.data.socialmedia.DeleteChirp;
 import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.security.*;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.SocialMediaRepository;
+import com.github.dedis.popstellar.repository.database.AppDatabase;
+import com.github.dedis.popstellar.repository.database.lao.LAODao;
+import com.github.dedis.popstellar.repository.database.lao.LAOEntity;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.utility.error.*;
 import com.github.dedis.popstellar.utility.handler.data.ChirpHandler;
@@ -15,12 +23,15 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.MockitoAnnotations;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.util.ArrayList;
 
 import dagger.hilt.android.testing.HiltAndroidTest;
+import io.reactivex.Completable;
+import io.reactivex.Single;
 
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateMessageID;
@@ -28,7 +39,7 @@ import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.*;
 
 @HiltAndroidTest
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(AndroidJUnit4.class)
 public class ChirpHandlerTest {
 
   private static final KeyPair SENDER_KEY = generateKeyPair();
@@ -54,6 +65,8 @@ public class ChirpHandlerTest {
 
   private ChirpHandler handler;
 
+  @Mock AppDatabase appDatabase;
+  @Mock LAODao laoDao;
   @Mock MessageSender messageSender;
   @Mock SocialMediaRepository socialMediaRepo;
 
@@ -61,7 +74,14 @@ public class ChirpHandlerTest {
   public void setup()
       throws GeneralSecurityException, DataHandlingException, IOException, UnknownLaoException {
     // Instantiate the dependencies here such that they are reset for each test
-    LAORepository laoRepo = new LAORepository();
+    MockitoAnnotations.openMocks(this);
+    Application application = ApplicationProvider.getApplicationContext();
+
+    when(appDatabase.laoDao()).thenReturn(laoDao);
+    when(laoDao.getAllLaos()).thenReturn(Single.just(new ArrayList<>()));
+    when(laoDao.insert(any(LAOEntity.class))).thenReturn(Completable.complete());
+
+    LAORepository laoRepo = new LAORepository(appDatabase, application);
     laoRepo.updateLao(LAO);
     handler = new ChirpHandler(laoRepo, socialMediaRepo);
   }

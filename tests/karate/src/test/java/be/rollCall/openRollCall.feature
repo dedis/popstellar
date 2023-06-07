@@ -1,4 +1,4 @@
-@env=go,scala
+@env=go_client,scala_client
 Feature: Roll Call Open
   Background:
         # This feature will be called to test Roll call open

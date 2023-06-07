@@ -30,7 +30,7 @@ import (
 func Test_Add_Server_Socket(t *testing.T) {
 	keypair := generateKeyPair(t)
 
-	hub, err := NewHub(keypair.public, "", nolog, nil)
+	hub, err := NewHub(keypair.public, "", "", nolog, nil)
 	require.NoError(t, err)
 
 	sock := &fakeSocket{id: "fakeID"}
@@ -45,7 +45,7 @@ func Test_Create_LAO_Bad_Key(t *testing.T) {
 
 	fakeChannelFac := &fakeChannelFac{c: &fakeChannel{}}
 
-	hub, err := NewHub(keypair.public, "", nolog, fakeChannelFac.newChannel)
+	hub, err := NewHub(keypair.public, "", "", nolog, fakeChannelFac.newChannel)
 	require.NoError(t, err)
 
 	now := time.Now().Unix()
@@ -111,7 +111,82 @@ func Test_Create_LAO_Bad_Key(t *testing.T) {
 		Message: publishBuf,
 	})
 
-	assert.Contains(t, sock.err.Error(), "access denied: sender's public key does not match the organizer's")
+	assert.Contains(t, sock.err.Error(), "access denied: sender's public key does not match the owner's")
+}
+
+func Test_Create_LAO_Different_Sender_And_Organizer_Keys(t *testing.T) {
+	keypair := generateKeyPair(t)
+	wrongKeypair := generateKeyPair(t)
+
+	fakeChannelFac := &fakeChannelFac{c: &fakeChannel{}}
+
+	hub, err := NewHub(keypair.public, "", "", nolog, fakeChannelFac.newChannel)
+	require.NoError(t, err)
+
+	now := time.Now().Unix()
+	name := "LAO X"
+
+	// LaoID is Hash(organizer||create||name) encoded in base64URL
+	laoID := messagedata.Hash(base64.URLEncoding.EncodeToString(keypair.publicBuf), fmt.Sprintf("%d", now), name)
+
+	data := messagedata.LaoCreate{
+		Object:    messagedata.LAOObject,
+		Action:    messagedata.LAOActionCreate,
+		ID:        laoID,
+		Name:      name,
+		Creation:  now,
+		Organizer: base64.URLEncoding.EncodeToString(keypair.publicBuf),
+		Witnesses: []string{},
+	}
+
+	dataBuf, err := json.Marshal(data)
+	require.NoError(t, err)
+
+	signature, err := schnorr.Sign(suite, wrongKeypair.private, dataBuf)
+	require.NoError(t, err)
+
+	dataBase64 := base64.URLEncoding.EncodeToString(dataBuf)
+	signatureBase64 := base64.URLEncoding.EncodeToString(signature)
+
+	msg := message.Message{
+		Data:              dataBase64,
+		Sender:            base64.URLEncoding.EncodeToString(wrongKeypair.publicBuf),
+		Signature:         signatureBase64,
+		MessageID:         messagedata.Hash(dataBase64, signatureBase64),
+		WitnessSignatures: []message.WitnessSignature{},
+	}
+
+	publish := method.Publish{
+		Base: query.Base{
+			JSONRPCBase: jsonrpc.JSONRPCBase{
+				JSONRPC: "2.0",
+			},
+
+			Method: query.MethodPublish,
+		},
+
+		ID: 1,
+
+		Params: struct {
+			Channel string          `json:"channel"`
+			Message message.Message `json:"message"`
+		}{
+			Channel: "/root",
+			Message: msg,
+		},
+	}
+
+	publishBuf, err := json.Marshal(&publish)
+	require.NoError(t, err)
+
+	sock := &fakeSocket{}
+
+	hub.handleMessageFromClient(&socket.IncomingMessage{
+		Socket:  sock,
+		Message: publishBuf,
+	})
+
+	assert.Contains(t, sock.err.Error(), "access denied: sender's public key does not match the organizer field")
 }
 
 func Test_Create_LAO_No_Key(t *testing.T) {
@@ -119,7 +194,7 @@ func Test_Create_LAO_No_Key(t *testing.T) {
 
 	fakeChannelFac := &fakeChannelFac{c: &fakeChannel{}}
 
-	hub, err := NewHub(nil, "", nolog, fakeChannelFac.newChannel)
+	hub, err := NewHub(nil, "", "", nolog, fakeChannelFac.newChannel)
 	require.NoError(t, err)
 
 	now := time.Now().Unix()
@@ -195,7 +270,7 @@ func Test_Create_LAO_Bad_MessageID(t *testing.T) {
 		c: &fakeChannel{},
 	}
 
-	hub, err := NewHub(keypair.public, "", nolog, fakeChannelFac.newChannel)
+	hub, err := NewHub(keypair.public, "", "", nolog, fakeChannelFac.newChannel)
 	require.NoError(t, err)
 
 	now := time.Now().Unix()
@@ -273,7 +348,7 @@ func Test_Create_LAO_Bad_Signature(t *testing.T) {
 		c: &fakeChannel{},
 	}
 
-	hub, err := NewHub(keypair.public, "", nolog, fakeChannelFac.newChannel)
+	hub, err := NewHub(keypair.public, "", "", nolog, fakeChannelFac.newChannel)
 	require.NoError(t, err)
 
 	now := time.Now().Unix()
@@ -350,7 +425,7 @@ func Test_Create_LAO_Data_Not_Base64(t *testing.T) {
 		c: &fakeChannel{},
 	}
 
-	hub, err := NewHub(keypair.public, "", nolog, fakeChannelFac.newChannel)
+	hub, err := NewHub(keypair.public, "", "", nolog, fakeChannelFac.newChannel)
 	require.NoError(t, err)
 
 	now := time.Now().Unix()
@@ -426,7 +501,7 @@ func Test_Create_Invalid_Json_Schema(t *testing.T) {
 		c: &fakeChannel{},
 	}
 
-	hub, err := NewHub(keypair.public, "", nolog, fakeChannelFac.newChannel)
+	hub, err := NewHub(keypair.public, "", "", nolog, fakeChannelFac.newChannel)
 	require.NoError(t, err)
 
 	type N0thing struct {
@@ -498,7 +573,7 @@ func Test_Create_Invalid_Lao_Id(t *testing.T) {
 		c: &fakeChannel{},
 	}
 
-	hub, err := NewHub(keypair.public, "", nolog, fakeChannelFac.newChannel)
+	hub, err := NewHub(keypair.public, "", "", nolog, fakeChannelFac.newChannel)
 	require.NoError(t, err)
 
 	now := time.Now().Unix()
@@ -575,7 +650,7 @@ func Test_Create_LAO(t *testing.T) {
 		c: &fakeChannel{},
 	}
 
-	hub, err := NewHub(keypair.public, "", nolog, fakeChannelFac.newChannel)
+	hub, err := NewHub(keypair.public, "", "", nolog, fakeChannelFac.newChannel)
 	require.NoError(t, err)
 
 	now := time.Now().Unix()
@@ -663,7 +738,7 @@ func Test_Wrong_Root_Publish(t *testing.T) {
 
 	c := &fakeChannel{}
 
-	hub, err := NewHub(keypair.public, "", nolog, nil)
+	hub, err := NewHub(keypair.public, "", "", nolog, nil)
 	require.NoError(t, err)
 
 	laoID := "/root"
@@ -743,7 +818,7 @@ func Test_Handle_Answer(t *testing.T) {
 		c: &fakeChannel{},
 	}
 
-	hub, err := NewHub(keypair.public, "", nolog, fakeChannelFac.newChannel)
+	hub, err := NewHub(keypair.public, "", "", nolog, fakeChannelFac.newChannel)
 	require.NoError(t, err)
 
 	result := struct {
@@ -852,7 +927,7 @@ func Test_Handle_Publish_From_Client(t *testing.T) {
 
 	c := &fakeChannel{}
 
-	hub, err := NewHub(keypair.public, "", nolog, nil)
+	hub, err := NewHub(keypair.public, "", "", nolog, nil)
 	require.NoError(t, err)
 
 	laoID := "XXX"
@@ -919,7 +994,7 @@ func Test_Handle_Publish_From_Server(t *testing.T) {
 
 	c := &fakeChannel{}
 
-	hub, err := NewHub(keypair.public, "", nolog, nil)
+	hub, err := NewHub(keypair.public, "", "", nolog, nil)
 	require.NoError(t, err)
 
 	laoID := "XXX"
@@ -986,7 +1061,7 @@ func Test_Receive_Publish_Twice(t *testing.T) {
 
 	c := &fakeChannel{}
 
-	hub, err := NewHub(keypair.public, "", nolog, nil)
+	hub, err := NewHub(keypair.public, "", "", nolog, nil)
 	require.NoError(t, err)
 
 	laoID := "XXX"
@@ -1063,12 +1138,12 @@ func Test_Create_LAO_GetMessagesById_Result(t *testing.T) {
 		c: &fakeChannel{},
 	}
 
-	hub, err := NewHub(keypair.public, "", nolog, fakeChannelFac.newChannel)
+	hub, err := NewHub(keypair.public, "", "", nolog, fakeChannelFac.newChannel)
 	require.NoError(t, err)
 
 	name := "LAO X"
 	creationTime := 123
-	organizer := base64.URLEncoding.EncodeToString([]byte("Somebody"))
+	organizer := base64.URLEncoding.EncodeToString(keypair.publicBuf)
 
 	// LaoID is Hash(organizer||create||name) encoded in base64URL
 	laoID := messagedata.Hash(organizer, fmt.Sprintf("%d", creationTime), name)
@@ -1165,7 +1240,7 @@ func Test_Create_LAO_GetMessagesById_Wrong_MessageID(t *testing.T) {
 		c: &fakeChannel{},
 	}
 
-	hub, err := NewHub(keypair.public, "", nolog, fakeChannelFac.newChannel)
+	hub, err := NewHub(keypair.public, "", "", nolog, fakeChannelFac.newChannel)
 	require.NoError(t, err)
 
 	name := "LAO X"
@@ -1244,7 +1319,7 @@ func Test_Create_LAO_GetMessagesById_Wrong_MessageID(t *testing.T) {
 	})
 
 	expectedMessageID := messagedata.Hash(dataBase64, signatureBase64)
-	require.EqualError(t, sock.err, fmt.Sprintf("failed to handle answer message: message_id is wrong: expected %q found %q", expectedMessageID, fakeMessageID))
+	require.EqualError(t, sock.err, fmt.Sprintf("failed to handle answer message: failed to process messages: message_id is wrong: expected %q found %q", expectedMessageID, fakeMessageID))
 }
 
 // Check that if the server receives a subscribe message, it will call the
@@ -1254,7 +1329,7 @@ func Test_Handle_Subscribe(t *testing.T) {
 
 	c := &fakeChannel{}
 
-	hub, err := NewHub(keypair.public, "", nolog, nil)
+	hub, err := NewHub(keypair.public, "", "", nolog, nil)
 	require.NoError(t, err)
 
 	laoID := "XXX"
@@ -1317,7 +1392,7 @@ func TestServer_Handle_Unsubscribe(t *testing.T) {
 
 	c := &fakeChannel{}
 
-	hub, err := NewHub(keypair.public, "", nolog, nil)
+	hub, err := NewHub(keypair.public, "", "", nolog, nil)
 	require.NoError(t, err)
 
 	laoID := "XXX"
@@ -1391,7 +1466,7 @@ func TestServer_Handle_Catchup(t *testing.T) {
 		msgs: fakeMessages,
 	}
 
-	hub, err := NewHub(keypair.public, "", nolog, nil)
+	hub, err := NewHub(keypair.public, "", "", nolog, nil)
 	require.NoError(t, err)
 
 	laoID := "XXX"
@@ -1443,7 +1518,7 @@ func TestServer_Handle_Catchup(t *testing.T) {
 func Test_Get_Server_Number(t *testing.T) {
 	keypair := generateKeyPair(t)
 
-	hub, err := NewHub(keypair.public, "", nolog, nil)
+	hub, err := NewHub(keypair.public, "", "", nolog, nil)
 	require.NoError(t, err)
 
 	sock1 := &fakeSocket{id: "fakeID1"}
@@ -1463,7 +1538,7 @@ func Test_Send_And_Handle_Message(t *testing.T) {
 
 	c := &fakeChannel{}
 
-	hub, err := NewHub(keypair.public, "", nolog, nil)
+	hub, err := NewHub(keypair.public, "", "", nolog, nil)
 	require.NoError(t, err)
 
 	laoID := "XXX"
@@ -1529,7 +1604,7 @@ func Test_Send_And_Handle_Message(t *testing.T) {
 func Test_Send_Heartbeat_Message(t *testing.T) {
 	keypair := generateKeyPair(t)
 
-	hub, err := NewHub(keypair.public, "", nolog, nil)
+	hub, err := NewHub(keypair.public, "", "", nolog, nil)
 	require.NoError(t, err)
 
 	sock := &fakeSocket{}
@@ -1569,7 +1644,7 @@ func Test_Send_Heartbeat_Message(t *testing.T) {
 func Test_Handle_Heartbeat(t *testing.T) {
 	keypair := generateKeyPair(t)
 
-	hub, err := NewHub(keypair.public, "", nolog, nil)
+	hub, err := NewHub(keypair.public, "", "", nolog, nil)
 	require.NoError(t, err)
 
 	hub.hubInbox.StoreMessage(msg1)
@@ -1629,7 +1704,7 @@ func Test_Handle_Heartbeat(t *testing.T) {
 func Test_Handle_GetMessagesById(t *testing.T) {
 	keypair := generateKeyPair(t)
 
-	hub, err := NewHub(keypair.public, "", nolog, nil)
+	hub, err := NewHub(keypair.public, "", "", nolog, nil)
 	require.NoError(t, err)
 
 	sock := &fakeSocket{}
@@ -1680,6 +1755,130 @@ func Test_Handle_GetMessagesById(t *testing.T) {
 			require.Contains(t, missingMessages[receivedChannelIds], msg)
 		}
 	}
+}
+
+// Test that the correct greet server message is sent
+func Test_Send_GreetServer_Message(t *testing.T) {
+	keypair := generateKeyPair(t)
+
+	hub, err := NewHub(keypair.public, "ws://localhost:9000/client", "ws://localhost:9001/server", nolog, nil)
+	require.NoError(t, err)
+
+	pkServ, err := hub.pubKeyServ.MarshalBinary()
+	require.NoError(t, err)
+	pk := base64.URLEncoding.EncodeToString(pkServ)
+
+	sock := &fakeSocket{}
+	err = hub.SendGreetServer(sock)
+	require.NoError(t, err)
+
+	greetServerMsg := sock.msg
+
+	var greetServer method.GreetServer
+	err = json.Unmarshal(greetServerMsg, &greetServer)
+	require.NoError(t, err)
+	require.Equal(t, query.MethodGreetServer, greetServer.Method)
+	require.Equal(t, pk, greetServer.Params.PublicKey)
+	require.Equal(t, "ws://localhost:9001/server", greetServer.Params.ServerAddress)
+	require.Equal(t, "ws://localhost:9000/client", greetServer.Params.ClientAddress)
+}
+
+// Test that the greet server messages received from non greeted servers are properly handled
+func Test_Handle_GreetServer_First_Time(t *testing.T) {
+	keypair := generateKeyPair(t)
+
+	hub, err := NewHub(keypair.public, "ws://localhost:9000/client", "ws://localhost:9001/server", nolog, nil)
+	require.NoError(t, err)
+
+	pkServ, err := hub.pubKeyServ.MarshalBinary()
+	require.NoError(t, err)
+	pk := base64.URLEncoding.EncodeToString(pkServ)
+
+	sock := &fakeSocket{}
+
+	serverInfo := method.ServerInfo{
+		PublicKey:     "",
+		ServerAddress: "ws://localhost:9003/server",
+		ClientAddress: "ws://localhost:9002/client",
+	}
+
+	serverGreet := method.GreetServer{
+		Base: query.Base{
+			JSONRPCBase: jsonrpc.JSONRPCBase{
+				JSONRPC: "2.0",
+			},
+			Method: query.MethodGreetServer,
+		},
+		Params: serverInfo,
+	}
+
+	msg, err := json.Marshal(serverGreet)
+	require.NoError(t, err)
+
+	err = hub.handleMessageFromServer(&socket.IncomingMessage{
+		Socket:  sock,
+		Message: msg,
+	})
+	require.NoError(t, err)
+	require.NoError(t, sock.err)
+
+	//socket should receive a server greet back after handling of server greet
+	var serverGreetResponse method.GreetServer
+
+	err = json.Unmarshal(sock.msg, &serverGreetResponse)
+	require.NoError(t, err)
+
+	require.Equal(t, query.MethodGreetServer, serverGreetResponse.Method)
+	require.Equal(t, pk, serverGreetResponse.Params.PublicKey)
+	require.Equal(t, "ws://localhost:9001/server", serverGreetResponse.Params.ServerAddress)
+	require.Equal(t, "ws://localhost:9000/client", serverGreetResponse.Params.ClientAddress)
+}
+
+// Test that the greet server messages received from already greeted servers are properly handled
+// and that the server is not greeted again to avoid loops
+func Test_Handle_GreetServer_Already_Greeted(t *testing.T) {
+	keypair := generateKeyPair(t)
+
+	hub, err := NewHub(keypair.public, "ws://localhost:9000/client", "ws://localhost:9001/server", nolog, nil)
+	require.NoError(t, err)
+
+	sock := &fakeSocket{}
+
+	err = hub.SendGreetServer(sock)
+	require.NoError(t, err)
+	require.True(t, slices.Contains(hub.peersGreeted, sock.ID()))
+
+	//reset socket message
+	sock.msg = nil
+
+	serverInfo := method.ServerInfo{
+		PublicKey:     "",
+		ServerAddress: "ws://localhost:9003/server",
+		ClientAddress: "ws://localhost:9002/client",
+	}
+
+	serverGreet := method.GreetServer{
+		Base: query.Base{
+			JSONRPCBase: jsonrpc.JSONRPCBase{
+				JSONRPC: "2.0",
+			},
+			Method: query.MethodGreetServer,
+		},
+		Params: serverInfo,
+	}
+
+	msg, err := json.Marshal(serverGreet)
+	require.NoError(t, err)
+
+	err = hub.handleMessageFromServer(&socket.IncomingMessage{
+		Socket:  sock,
+		Message: msg,
+	})
+	require.NoError(t, err)
+	require.NoError(t, sock.err)
+
+	//socket should not receive anything back after handling of server greet
+	require.Nil(t, sock.msg)
 }
 
 // -----------------------------------------------------------------------------

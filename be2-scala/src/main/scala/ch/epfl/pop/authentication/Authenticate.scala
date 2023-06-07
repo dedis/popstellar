@@ -57,6 +57,11 @@ object Authenticate {
     }
   }
 
+  private def generateChallenge(request: HttpRequest): HttpResponse = {
+    val challengeEntity = QRCodeChallengeGenerator.generateChallengeContent(request.uri.toString())
+    HttpResponse(status = StatusCodes.OK, entity = challengeEntity)
+  }
+
   private def verifyParameters(params: RequestParameters): VerificationState = {
     for {
       _ <- verifyResponseType(params.response_type)
@@ -101,9 +106,6 @@ object Authenticate {
     else
       Left(INVALID_REQUEST_ERROR -> s"only [${supportedModes.mkString(",")}] response modes are supported but received $mode")
   }
-
-  private def generateChallenge(request: HttpRequest): HttpResponse =
-    HttpResponse(status = StatusCodes.OK, entity = request.toString()) // TODO: add code for generating the challenge qrcode page
 
   private def authenticationFailure(error: String, errorDescription: String, state: Option[String]): HttpResponse = {
     var response = HttpResponse(status = StatusCodes.Found)

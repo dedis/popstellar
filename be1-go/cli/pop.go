@@ -37,6 +37,16 @@ func run(ctx context.Context, args []string) {
 		Aliases: []string{"pk"},
 		Usage:   "base64url encoded server's public key",
 	}
+	serverAddressFlag := &cli.StringFlag{
+		Name:    "server-address",
+		Aliases: []string{"sa"},
+		Usage:   "address of the server endpoint",
+	}
+	clientAddressFlag := &cli.StringFlag{
+		Name:    "client-address",
+		Aliases: []string{"ca"},
+		Usage:   "address of the client endpoint",
+	}
 	serverPublicAddressFlag := &cli.StringFlag{
 		Name:    "server-public-address",
 		Aliases: []string{"spa"},
@@ -47,6 +57,12 @@ func run(ctx context.Context, args []string) {
 		Name:    "server-listen-address",
 		Aliases: []string{"sla"},
 		Usage:   "address where the server should listen to",
+		Value:   "localhost",
+	}
+	authServerAddressFlag := &cli.StringFlag{
+		Name:    "auth-server-address",
+		Aliases: []string{"asa"},
+		Usage:   "address of the PoPCHA Server",
 		Value:   "localhost",
 	}
 	clientPortFlag := &cli.IntFlag{
@@ -61,10 +77,21 @@ func run(ctx context.Context, args []string) {
 		Usage:   "port to listen websocket connections from remote servers on",
 		Value:   9001,
 	}
+	authServerPortFlag := &cli.IntFlag{
+		Name:    "auth-port",
+		Aliases: []string{"asp"},
+		Usage:   "listening port of the PoPCHA HTTP server",
+		Value:   9100,
+	}
 	otherServersFlag := &cli.StringSliceFlag{
 		Name:    "other-servers",
 		Aliases: []string{"os"},
 		Usage:   "address and port to connect to other servers",
+	}
+	configFileFlag := &cli.StringFlag{
+		Name:    "config-file",
+		Aliases: []string{"cf"},
+		Usage:   "path to the config file which will override other flags if present",
 	}
 
 	app := &cli.App{
@@ -82,11 +109,16 @@ func run(ctx context.Context, args []string) {
 						Name:  "serve",
 						Usage: "start the server",
 						Flags: []cli.Flag{
+							serverAddressFlag,
+							clientAddressFlag,
 							serverPublicAddressFlag,
 							serverListenAddressFlag,
+							authServerAddressFlag,
 							clientPortFlag,
 							serverPortFlag,
+							authServerPortFlag,
 							otherServersFlag,
+							configFileFlag,
 						},
 						Action: func(c *cli.Context) error {
 							err := Serve(c)

@@ -1,0 +1,15 @@
+{
+  "jsonrpc": "2.0",
+  "id": 4,
+  "method": "publish",
+  "params": {
+    "channel": "/root/o3nyIIvrmDriwYXnH5-8CmYdyZcz4BPNT99W7dcrk9M=/coin",
+    "message": {
+      "data": "eyJvYmplY3QiOiJjb2luIiwiYWN0aW9uIjoicG9zdF90cmFuc2FjdGlvbiIsInRyYW5zYWN0aW9uIjp7InZlcnNpb24iOjEsImlucHV0cyI6W3sidHhfb3V0X2hhc2giOiJwaW8tR3VjaTFPb1NORHF3NUtGX3BqQUZBallhMjV2S2VXVm45emxrTTJvPSIsInR4X291dF9pbmRleCI6MSwic2NyaXB0Ijp7InR5cGUiOiJQMlBLSCIsInB1YmtleSI6IlZIZnhUbGJNM25UbkxRdUtuS2ZzMWZHUDJjd1ZUOEtKa2Mtc1JHc18yS009Iiwic2lnIjoiLU85QkRjTUQ1VzFQWmpPSGs3Z3BwLUFDZm44U2RxMHdpcXdiTXdYQWlVOGVBS1BWb01XTFhRdzF0RTlZRjdPQlMzblVJeGxvUjhGZEhlakZfeTFpQUE9PSJ9fV0sIm91dHB1dHMiOlt7InZhbHVlIjo1MCwic2NyaXB0Ijp7InR5cGUiOiJQMlBLSCIsInB1YmtleV9oYXNoIjoiNF9FeXpwVENCWWRmalMxemZMYURFS3FJS2EwPSJ9fSx7InZhbHVlIjo1MCwic2NyaXB0Ijp7InR5cGUiOiJQMlBLSCIsInB1YmtleV9oYXNoIjoib3ljejhkNXp0QUZTTHpYLVVESWpRbzhpSEZJPSJ9fV0sImxvY2tfdGltZSI6MH0sInRyYW5zYWN0aW9uX2lkIjoiWTRTVm1LcTFPdG84ZmVfS1ZMUlpBV0QxLWwyWmJkb0ZnU2E4VmVlMEtSMD0ifQ==",
+      "message_id": "T1oT7v-smRCHmB-czWfl5waZX2co5JLUSq9jM4dV6iU=",
+      "sender": "vF3T8FXyWVxu2_HnelFu23dZKKrRbZfOXQcugPY0mr8=",
+      "signature": "if-CmvJZ9mh8pNrH0Qv7wXmAM7YzT-AB-76nQz_YKjCTjQ3JRQM2W1xxUTRI7_sd202mZs_Z3GiMoOP0Zu3_Ag==",
+      "witness_signatures": []
+    }
+  }
+}

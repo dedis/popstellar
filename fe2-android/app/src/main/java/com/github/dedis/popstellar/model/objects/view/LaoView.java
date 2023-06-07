@@ -2,12 +2,12 @@ package com.github.dedis.popstellar.model.objects.view;
 
 import androidx.annotation.NonNull;
 
-import com.github.dedis.popstellar.model.Copyable;
 import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
 
 public final class LaoView {
 
@@ -44,28 +44,12 @@ public final class LaoView {
     return lao.getId();
   }
 
-  public boolean areWitnessSetsEqual(Set<PublicKey> witnesses) {
-    return lao.getWitnesses().equals(witnesses);
-  }
-
-  public boolean isWitnessesEmpty() {
-    return lao.getWitnesses().isEmpty();
-  }
-
   public boolean isOrganizer(PublicKey publicKey) {
     return lao.getOrganizer().equals(publicKey);
   }
 
-  public boolean isWitness(PublicKey publicKey) {
-    return lao.getWitnesses().contains(publicKey);
-  }
-
   public Channel getChannel() {
     return lao.getChannel();
-  }
-
-  public Set<PublicKey> getWitnesses() {
-    return new HashSet<>(lao.getWitnesses());
   }
 
   public PublicKey getOrganizer() {
@@ -78,10 +62,6 @@ public final class LaoView {
     //    return optional.map(ElectInstance::new); // If empty returns empty optional, if not
     // returns optional with copy of retrieved ElectInstance
     return lao.getElectInstance(messageId);
-  }
-
-  public Map<MessageID, WitnessMessage> getWitnessMessages() {
-    return Copyable.copy(lao.getWitnessMessages());
   }
 
   public List<ConsensusNode> getNodes() {

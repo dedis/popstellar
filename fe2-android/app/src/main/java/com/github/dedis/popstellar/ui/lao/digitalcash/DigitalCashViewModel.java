@@ -71,6 +71,7 @@ public class DigitalCashViewModel extends AndroidViewModel {
   private final LAORepository laoRepository;
   private final RollCallRepository rollCallRepo;
   private final DigitalCashRepository digitalCashRepo;
+  private final WitnessingRepository witnessingRepo;
   private final GlobalNetworkManager networkManager;
   private final Gson gson;
   private final KeyManager keyManager;
@@ -81,6 +82,7 @@ public class DigitalCashViewModel extends AndroidViewModel {
       LAORepository laoRepository,
       RollCallRepository rollCallRepo,
       DigitalCashRepository digitalCashRepo,
+      WitnessingRepository witnessingRepo,
       GlobalNetworkManager networkManager,
       Gson gson,
       KeyManager keyManager) {
@@ -88,6 +90,7 @@ public class DigitalCashViewModel extends AndroidViewModel {
     this.laoRepository = laoRepository;
     this.rollCallRepo = rollCallRepo;
     this.digitalCashRepo = digitalCashRepo;
+    this.witnessingRepo = witnessingRepo;
     this.networkManager = networkManager;
     this.gson = gson;
     this.keyManager = keyManager;
@@ -275,6 +278,10 @@ public class DigitalCashViewModel extends AndroidViewModel {
 
   public LaoView getLao() throws UnknownLaoException {
     return laoRepository.getLaoView(laoId);
+  }
+
+  public Set<PublicKey> getWitnesses() {
+    return witnessingRepo.getWitnesses(laoId);
   }
 
   public PoPToken getValidToken() throws KeyException {

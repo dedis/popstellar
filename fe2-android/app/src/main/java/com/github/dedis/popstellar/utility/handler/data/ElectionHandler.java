@@ -1,8 +1,7 @@
 package com.github.dedis.popstellar.utility.handler.data;
 
-import static com.github.dedis.popstellar.model.objects.event.EventState.*;
-
 import androidx.annotation.NonNull;
+
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.election.*;
 import com.github.dedis.popstellar.model.objects.*;
@@ -10,10 +9,17 @@ import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.*;
+import com.github.dedis.popstellar.repository.database.witnessing.PendingEntity;
+import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.error.*;
+
 import java.util.*;
+
 import javax.inject.Inject;
+
 import timber.log.Timber;
+
+import static com.github.dedis.popstellar.model.objects.event.EventState.*;
 
 /** Election messages handler class */
 public final class ElectionHandler {
@@ -23,13 +29,18 @@ public final class ElectionHandler {
   private final LAORepository laoRepo;
   private final MessageRepository messageRepo;
   private final ElectionRepository electionRepository;
+  private final WitnessingRepository witnessingRepository;
 
   @Inject
   public ElectionHandler(
-      MessageRepository messageRepo, LAORepository laoRepo, ElectionRepository electionRepository) {
+      MessageRepository messageRepo,
+      LAORepository laoRepo,
+      ElectionRepository electionRepository,
+      WitnessingRepository witnessingRepository) {
     this.laoRepo = laoRepo;
     this.messageRepo = messageRepo;
     this.electionRepository = electionRepository;
+    this.witnessingRepository = witnessingRepository;
   }
 
   /**
@@ -66,8 +77,12 @@ public final class ElectionHandler {
             .setState(CREATED)
             .build();
 
-    // Add new election to repository
-    electionRepository.updateElection(election);
+    witnessingRepository.addWitnessMessage(laoId, electionSetupWitnessMessage(messageId, election));
+    if (witnessingRepository.areWitnessesEmpty(laoId)) {
+      addElectionRoutine(electionRepository, election);
+    } else {
+      witnessingRepository.addPendingEntity(new PendingEntity(messageId, laoId, election));
+    }
 
     // Once the election is created, we subscribe to the election channel
     context
@@ -78,52 +93,6 @@ public final class ElectionHandler {
                 Timber.tag(TAG).e(err, "An error occurred while subscribing to election channel"))
         .onErrorComplete()
         .subscribe();
-
-    Timber.tag(TAG).d("election id %s", election.getId());
-
-    Lao lao = laoView.createLaoCopy();
-    lao.updateWitnessMessage(messageId, electionSetupWitnessMessage(messageId, election));
-    laoRepo.updateLao(lao);
-  }
-
-  /**
-   * Process an ElectionResult message.
-   *
-   * @param context the HandlerContext of the message
-   * @param electionResult the message that was received
-   */
-  public void handleElectionResult(HandlerContext context, ElectionResult electionResult)
-      throws UnknownElectionException {
-    Channel channel = context.getChannel();
-
-    Timber.tag(TAG).d("handling election result");
-
-    List<ElectionResultQuestion> resultsQuestions = electionResult.getElectionQuestionResults();
-    Timber.tag(TAG).d("size of resultsQuestions is %d", resultsQuestions.size());
-    // No need to check here that resultsQuestions is not empty, as it is already done at the
-    // creation of the ElectionResult Data
-
-    Election election =
-        electionRepository
-            .getElectionByChannel(channel)
-            .builder()
-            .setResults(computeResults(resultsQuestions))
-            .setState(RESULTS_READY)
-            .build();
-
-    electionRepository.updateElection(election);
-  }
-
-  private Map<String, Set<QuestionResult>> computeResults(
-      @NonNull List<ElectionResultQuestion> electionResultsQuestions) {
-
-    Map<String, Set<QuestionResult>> results = new HashMap<>();
-
-    for (ElectionResultQuestion resultQuestion : electionResultsQuestions) {
-      results.put(resultQuestion.getId(), resultQuestion.getResult());
-    }
-
-    return results;
   }
 
   /**
@@ -158,6 +127,42 @@ public final class ElectionHandler {
 
     Timber.tag(TAG).d("election opened %d", updated.getStartTimestamp());
     electionRepository.updateElection(updated);
+  }
+
+  /**
+   * Process an ElectionResult message.
+   *
+   * @param context the HandlerContext of the message
+   * @param electionResult the message that was received
+   */
+  public void handleElectionResult(HandlerContext context, ElectionResult electionResult)
+      throws UnknownElectionException {
+    Channel channel = context.getChannel();
+    MessageID messageId = context.getMessageId();
+
+    Timber.tag(TAG).d("handling election result");
+
+    List<ElectionResultQuestion> resultsQuestions = electionResult.getElectionQuestionResults();
+    Timber.tag(TAG).d("size of resultsQuestions is %d", resultsQuestions.size());
+    // No need to check here that resultsQuestions is not empty, as it is already done at the
+    // creation of the ElectionResult Data
+
+    Election election =
+        electionRepository
+            .getElectionByChannel(channel)
+            .builder()
+            .setResults(computeResults(resultsQuestions))
+            .setState(RESULTS_READY)
+            .build();
+    String laoId = channel.extractLaoId();
+
+    witnessingRepository.addWitnessMessage(
+        laoId, electionResultWitnessMessage(messageId, election));
+    if (witnessingRepository.areWitnessesEmpty(laoId)) {
+      addElectionRoutine(electionRepository, election);
+    } else {
+      witnessingRepository.addPendingEntity(new PendingEntity(messageId, laoId, election));
+    }
   }
 
   /**
@@ -236,38 +241,8 @@ public final class ElectionHandler {
     }
   }
 
-  private void updateElectionWithVotes(
-      CastVote castVote, MessageID messageId, PublicKey senderPk, Election election) {
-    Election updated =
-        election
-            .builder()
-            .updateMessageMap(senderPk, messageId)
-            .updateVotes(senderPk, castVote.getVotes())
-            .build();
-
-    electionRepository.updateElection(updated);
-  }
-
-  public static WitnessMessage electionSetupWitnessMessage(MessageID messageId, Election election) {
-    WitnessMessage message = new WitnessMessage(messageId);
-    message.setTitle("New Election Setup");
-    message.setDescription(
-        "Name : "
-            + election.getName()
-            + "\n"
-            + "Election ID : "
-            + election.getId()
-            + "\n"
-            + "Question : "
-            + election.getElectionQuestions().get(0).getQuestion()
-            + "\n"
-            + "Message ID : "
-            + messageId);
-    return message;
-  }
-
   /**
-   * Simple way to handle a election key, add the given key to the given election
+   * Simple way to handle an election key, add the given key to the given election
    *
    * @param context context
    * @param electionKey key to add
@@ -288,5 +263,117 @@ public final class ElectionHandler {
     electionRepository.updateElection(election);
 
     Timber.tag(TAG).d("handleElectionKey: election key has been set");
+  }
+
+  private void updateElectionWithVotes(
+      CastVote castVote, MessageID messageId, PublicKey senderPk, Election election) {
+    Election updated =
+        election
+            .builder()
+            .updateMessageMap(senderPk, messageId)
+            .updateVotes(senderPk, castVote.getVotes())
+            .build();
+
+    electionRepository.updateElection(updated);
+  }
+
+  private Map<String, Set<QuestionResult>> computeResults(
+      @NonNull List<ElectionResultQuestion> electionResultsQuestions) {
+
+    Map<String, Set<QuestionResult>> results = new HashMap<>();
+
+    for (ElectionResultQuestion resultQuestion : electionResultsQuestions) {
+      results.put(resultQuestion.getId(), resultQuestion.getResult());
+    }
+
+    return results;
+  }
+
+  public static void addElectionRoutine(ElectionRepository electionRepository, Election election) {
+    electionRepository.updateElection(election);
+  }
+
+  public static WitnessMessage electionSetupWitnessMessage(MessageID messageId, Election election) {
+    WitnessMessage message = new WitnessMessage(messageId);
+    message.setTitle(
+        String.format(
+            "Election %s setup at %s",
+            election.getName(), new Date(election.getCreationInMillis())));
+    message.setDescription(
+        "Mnemonic identifier :\n"
+            + ActivityUtils.generateMnemonicWordFromBase64(election.getId(), 2)
+            + "\n\n"
+            + "Opens at :\n"
+            + new Date(election.getStartTimestampInMillis())
+            + "\n\n"
+            + "Closes at :\n"
+            + new Date(election.getEndTimestampInMillis())
+            + "\n\n"
+            + formatElectionQuestions(election.getElectionQuestions()));
+
+    return message;
+  }
+
+  public static WitnessMessage electionResultWitnessMessage(
+      MessageID messageId, Election election) {
+    WitnessMessage message = new WitnessMessage(messageId);
+    message.setTitle(String.format("Election %s results", election.getName()));
+    message.setDescription(
+        "Mnemonic identifier :\n"
+            + ActivityUtils.generateMnemonicWordFromBase64(election.getId(), 2)
+            + "\n\n"
+            + "Closed at :\n"
+            + new Date(election.getEndTimestampInMillis())
+            + "\n\n"
+            + formatElectionResults(election.getElectionQuestions(), election.getResults()));
+
+    return message;
+  }
+
+  private static String formatElectionQuestions(List<ElectionQuestion> questions) {
+    StringBuilder questionsDescription = new StringBuilder();
+    final String QUESTION = "Question ";
+
+    for (int i = 0; i < questions.size(); i++) {
+      questionsDescription
+          .append(QUESTION)
+          .append(i + 1)
+          .append(": \n")
+          .append(questions.get(i).getQuestion());
+
+      if (i < questions.size() - 1) {
+        questionsDescription.append("\n\n");
+      }
+    }
+    return questionsDescription.toString();
+  }
+
+  private static String formatElectionResults(
+      List<ElectionQuestion> questions, Map<String, Set<QuestionResult>> results) {
+    StringBuilder questionsDescription = new StringBuilder();
+    final String QUESTION = "Question ";
+
+    for (int i = 0; i < questions.size(); i++) {
+      questionsDescription
+          .append(QUESTION)
+          .append(i + 1)
+          .append(": \n")
+          .append(questions.get(i).getQuestion())
+          .append("\nResults: \n");
+
+      Set<QuestionResult> resultSet = results.get(questions.get(i).getId());
+      for (QuestionResult questionResult : Objects.requireNonNull(resultSet)) {
+        questionsDescription
+            .append(questionResult.getBallot())
+            .append(" : ")
+            .append(questionResult.getCount())
+            .append("\n");
+      }
+
+      if (i < questions.size() - 1) {
+        questionsDescription.append("\n\n");
+      }
+    }
+    return questionsDescription.toString();
   }
 }

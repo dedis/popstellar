@@ -8,6 +8,9 @@
             "$ref": "dataCastVote.json"
         },
         {
+            "$ref": "dataAuthenticateUser.json"
+        },
+        {
             "$ref": "dataCloseRollCall.json"
         },
         {
