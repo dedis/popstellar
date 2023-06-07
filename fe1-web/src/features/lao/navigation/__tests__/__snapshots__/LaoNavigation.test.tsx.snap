@@ -501,6 +501,8 @@ exports[`LaoNavigation renders correctly 1`] = `
                                                     pointerEvents="box-none"
                                                     style={
                                                       {
+                                                        "backgroundColor": "#fff",
+                                                        "borderColor": "rgb(216, 216, 216)",
                                                         "bottom": 0,
                                                         "left": 0,
                                                         "opacity": 1,
@@ -514,14 +516,13 @@ exports[`LaoNavigation renders correctly 1`] = `
                                                     <View
                                                       style={
                                                         {
+                                                          "bottom": 12,
                                                           "display": "flex",
                                                           "flexDirection": "row",
                                                           "justifyContent": "center",
                                                           "left": 8,
                                                           "position": "absolute",
                                                           "right": 8,
-                                                          "top": 48,
-                                                          "zIndex": 100,
                                                         }
                                                       }
                                                     >

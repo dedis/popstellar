@@ -9,6 +9,7 @@ import {
 import React, { useMemo } from 'react';
 import { StyleSheet, Text, View, ViewStyle } from 'react-native';
 
+import { BuildInfo } from 'core/components';
 import ButtonPadding from 'core/components/ButtonPadding';
 import { makeIcon } from 'core/components/PoPIcon';
 import { AppScreen } from 'core/navigation/AppNavigation';
@@ -173,6 +174,11 @@ const LaoNavigation: React.FC<unknown> = () => {
                   headerLeft: headerLeft || drawerNavigationOptions.headerLeft,
                   headerRight: headerRight || drawerNavigationOptions.headerRight,
                   drawerIcon: Icon,
+                  headerBackground: BuildInfo,
+                  headerBackgroundContainerStyle: {
+                    backgroundColor: Color.contrast,
+                    borderColor: Color.separator,
+                  },
                   headerShown,
                   tabBarTestID: testID,
                   tabBarStyle:

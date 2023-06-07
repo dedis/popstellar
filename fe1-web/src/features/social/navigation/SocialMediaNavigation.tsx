@@ -3,6 +3,7 @@ import { CompositeScreenProps, useNavigation } from '@react-navigation/core';
 import { StackScreenProps } from '@react-navigation/stack';
 import React, { useMemo, useState } from 'react';
 
+import { BuildInfo } from 'core/components';
 import DrawerMenuButton from 'core/components/DrawerMenuButton';
 import { makeIcon } from 'core/components/PoPIcon';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
@@ -75,8 +76,11 @@ const SocialMediaNavigation = () => {
     <SocialMediaContext.Provider value={contextValue}>
       <Tab.Navigator
         screenOptions={{
-          tabBarActiveTintColor: Color.accent,
-          tabBarInactiveTintColor: Color.inactive,
+          headerBackground: BuildInfo,
+          headerBackgroundContainerStyle: {
+            backgroundColor: Color.contrast,
+            borderColor: Color.separator,
+          },
           headerLeft: DrawerMenuButton,
           headerLeftContainerStyle: {
             paddingLeft: Spacing.contentSpacing,
