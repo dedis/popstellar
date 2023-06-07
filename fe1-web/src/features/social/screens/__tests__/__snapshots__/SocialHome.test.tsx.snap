@@ -235,6 +235,12 @@ exports[`SocialHome renders correctly 1`] = `
             </View>
           </View>
         </View>
+        <Modal
+          hardwareAccelerated={false}
+          onRequestClose={[Function]}
+          transparent={true}
+          visible={false}
+        />
       </View>
     </View>
   </RCTScrollView>
