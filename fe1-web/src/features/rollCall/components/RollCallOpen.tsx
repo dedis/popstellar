@@ -38,11 +38,6 @@ const textStyle = StyleSheet.create({
   } as ViewStyle,
 });
 
-const dedupAttendees = (attendees: PublicKey[]): PublicKey[] => {
-  const set = new Set(attendees.map((attendee) => attendee.valueOf()));
-  return [...set].map((attendee) => PublicKey.fromState(attendee));
-};
-
 const RollCallOpen = ({
   rollCall,
   laoId,
@@ -58,13 +53,14 @@ const RollCallOpen = ({
   const [popToken, setPopToken] = useState('');
   const [hasWalletBeenInitialized, setHasWalletBeenInitialized] = useState(hasSeed());
   const allAttendees = useMemo(() => {
-    const othersWithDuplicates = [...(rollCall.attendees || []), ...(scannedPopTokens || [])];
-    const allWithDuplicates =
-      popToken === '' || !isOrganizer
-        ? othersWithDuplicates
-        : [...othersWithDuplicates, PublicKey.fromState(popToken)];
-    return dedupAttendees(allWithDuplicates);
-  }, [isOrganizer, popToken, rollCall.attendees, scannedPopTokens]);
+    if (isOrganizer && popToken !== '') {
+      if (scannedPopTokens && scannedPopTokens.length > 0) {
+        return scannedPopTokens;
+      }
+      return [PublicKey.fromState(popToken)];
+    }
+    return scannedPopTokens || [];
+  }, [isOrganizer, popToken, scannedPopTokens]);
 
   const onAddAttendees = useCallback(() => {
     // Once the roll call is opened the first time, idAlias is defined
