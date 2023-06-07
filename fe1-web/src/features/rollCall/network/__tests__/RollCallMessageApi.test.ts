@@ -203,7 +203,9 @@ describe('MessageApi', () => {
     const attendeePks: PublicKey[] = [
       'NdCY6Ga7yVK5rZay3S4xGjlz2jHZQrg2gw7fyI6tfuo=',
       'BEW-uVz_NG_prXFuaKrI9Ae0EbBLGWehLQ8aLZFWY4w=',
-    ].map((a) => new PublicKey(a));
+    ]
+      .map((a) => new PublicKey(a))
+      .sort();
 
     await msApi.requestCloseRollCall(mockLaoId, mockRollCallId, attendeePks);
 

@@ -10,7 +10,6 @@ import Toast, { ToastProvider } from 'react-native-toast-notifications';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 
-import { BuildInfo } from 'core/components';
 import FeatureContext from 'core/contexts/FeatureContext';
 import { configureKeyPair } from 'core/keypair';
 import AppNavigation, { navigationRef } from 'core/navigation/AppNavigation';
@@ -54,7 +53,6 @@ function App() {
                 {Platform.OS === 'ios' && (
                   <StatusBar barStyle="dark-content" backgroundColor="white" />
                 )}
-                <BuildInfo />
                 <ToastProvider
                   normalColor={Color.primary}
                   successColor={Color.success}

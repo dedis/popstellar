@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { useToast } from 'react-native-toast-notifications';
 
 import ScreenWrapper from 'core/components/ScreenWrapper';
@@ -8,6 +8,7 @@ import { Hash } from 'core/objects';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
 
+import { RollCallHooks } from '../hooks';
 import { requestReopenRollCall } from '../network';
 import { RollCall } from '../objects';
 import AttendeeList from './AttendeeList';
@@ -55,10 +56,19 @@ const RollCallClosed = ({ rollCall, laoId, isConnected, isOrganizer }: IPropType
     ];
   }, [isConnected, isOrganizer, onReopenRollCall]);
 
+  // generate personal token to highlight it in the list
+  const generateToken = RollCallHooks.useGenerateToken();
+  const [popToken, setPopToken] = useState('');
+  generateToken(laoId, rollCall.id)
+    .then((token) => {
+      setPopToken(token.publicKey.valueOf());
+    })
+    .catch((err) => console.error(`Could not generate token: ${err}`));
+
   return (
     <ScreenWrapper toolbarItems={toolbarItems}>
       <RollCallHeader rollCall={rollCall} descriptionInitiallyVisible={false} />
-      <AttendeeList popTokens={rollCall.attendees || []} />
+      <AttendeeList popTokens={rollCall.attendees || []} personalToken={popToken} />
     </ScreenWrapper>
   );
 };
