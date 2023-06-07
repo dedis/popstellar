@@ -751,15 +751,15 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
     val dbActor: AskableActorRef = system.actorOf(Props(DbActor(mediatorRef, MessageRegistry(), storage)))
 
     val user = PublicKey(Base64Data.encode("user"))
-    val identifier = PublicKey(Base64Data.encode("identifier"))
+    val popToken = PublicKey(Base64Data.encode("popToken"))
     val clientId = "some_client"
 
-    val write = dbActor ? DbActor.WriteUserAuthenticated(user, identifier, clientId)
+    val write = dbActor ? DbActor.WriteUserAuthenticated(user, popToken, clientId)
     Await.result(write, duration) shouldBe a[DbActor.DbActorAck]
 
     storage.size should equal(1)
 
-    val authKey = storage.AUTHENTICATED_KEY + identifier.base64Data.toString() + Channel.DATA_SEPARATOR + clientId
+    val authKey = storage.AUTHENTICATED_KEY + popToken.base64Data.toString() + Channel.DATA_SEPARATOR + clientId
     val userFound = storage.read(authKey)
 
     userFound shouldBe Some(user.base64Data.decodeToString())
@@ -770,13 +770,13 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
     val dbActor: AskableActorRef = system.actorOf(Props(DbActor(mediatorRef, MessageRegistry(), storage)))
 
     val user = PublicKey(Base64Data.encode("user"))
-    val identifier = PublicKey(Base64Data.encode("identifier"))
+    val popToken = PublicKey(Base64Data.encode("popToken"))
     val clientId = "some_client"
 
-    val authKey = storage.AUTHENTICATED_KEY + identifier.base64Data.toString() + Channel.DATA_SEPARATOR + clientId
+    val authKey = storage.AUTHENTICATED_KEY + popToken.base64Data.toString() + Channel.DATA_SEPARATOR + clientId
     storage.write(authKey -> user.base64Data.decodeToString())
 
-    val read = dbActor ? DbActor.ReadUserAuthenticated(identifier, clientId)
+    val read = dbActor ? DbActor.ReadUserAuthenticated(popToken, clientId)
     val answer = Await.result(read, duration)
 
     answer shouldBe a[DbActor.DbActorReadUserAuthenticationAck]
@@ -789,10 +789,10 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
     val storage: InMemoryStorage = InMemoryStorage()
     val dbActor: AskableActorRef = system.actorOf(Props(DbActor(mediatorRef, MessageRegistry(), storage)))
 
-    val identifier = PublicKey(Base64Data.encode("identifier"))
+    val popToken = PublicKey(Base64Data.encode("popToken"))
     val clientId = "some_client"
 
-    val read = dbActor ? DbActor.ReadUserAuthenticated(identifier, clientId)
+    val read = dbActor ? DbActor.ReadUserAuthenticated(popToken, clientId)
     val answer = Await.result(read, duration)
 
     answer shouldBe a[DbActor.DbActorReadUserAuthenticationAck]

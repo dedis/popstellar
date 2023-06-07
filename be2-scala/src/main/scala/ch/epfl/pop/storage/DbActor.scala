@@ -292,8 +292,8 @@ final case class DbActor(
     }
   }
 
-  private def generateAuthenticatedKey(identifier: PublicKey, client: String): String = {
-    storage.AUTHENTICATED_KEY + identifier.base64Data.toString + Channel.DATA_SEPARATOR + client
+  private def generateAuthenticatedKey(popToken: PublicKey, client: String): String = {
+    storage.AUTHENTICATED_KEY + popToken.base64Data.toString + Channel.DATA_SEPARATOR + client
   }
 
   override def receive: Receive = LoggingReceive {
@@ -441,16 +441,16 @@ final case class DbActor(
         case failure    => sender() ! failure.recover(Status.Failure(_))
       }
 
-    case WriteUserAuthenticated(user, identifier, clientId) =>
-      log.info(s"Actor $self (db) received a WriteUserAuthenticated request for user $user, id $identifier and clientId $clientId")
-      Try(storage.write(generateAuthenticatedKey(identifier, clientId) -> user.base64Data.decodeToString())) match {
+    case WriteUserAuthenticated(user, popToken, clientId) =>
+      log.info(s"Actor $self (db) received a WriteUserAuthenticated request for user $user, id $popToken and clientId $clientId")
+      Try(storage.write(generateAuthenticatedKey(popToken, clientId) -> user.base64Data.decodeToString())) match {
         case Success(_) => sender() ! DbActorAck()
         case failure    => sender() ! failure.recover(Status.Failure(_))
       }
 
-    case ReadUserAuthenticated(identifier, clientId) =>
-      log.info(s"Actor $self (db) received a ReadUserAuthenticated request for pop token $identifier and clientId $clientId")
-      Try(storage.read(generateAuthenticatedKey(identifier, clientId))) match {
+    case ReadUserAuthenticated(popToken, clientId) =>
+      log.info(s"Actor $self (db) received a ReadUserAuthenticated request for pop token $popToken and clientId $clientId")
+      Try(storage.read(generateAuthenticatedKey(popToken, clientId))) match {
         case Success(Some(id)) => sender() ! DbActorReadUserAuthenticationAck(Some(PublicKey(Base64Data.encode(id))))
         case Success(None)     => sender() ! DbActorReadUserAuthenticationAck(None)
         case failure           => sender() ! failure.recover(Status.Failure(_))
@@ -648,20 +648,20 @@ object DbActor {
   /** Registers an authentication of a user on a client using a given identifier
     * @param user
     *   public key of the popcha long term identifier of the user
-    * @param identifier
+    * @param popToken
     *   pop token to associate to this user for this authentication
     * @param clientId
     *   client where the authentication happens on
     */
-  final case class WriteUserAuthenticated(user: PublicKey, identifier: PublicKey, clientId: String) extends Event
+  final case class WriteUserAuthenticated(user: PublicKey, popToken: PublicKey, clientId: String) extends Event
 
   /** Reads the authentication information registered for the given pop token regarding the given client
-    * @param identifier
+    * @param popToken
     *   pop token that may have had a user authenticated for the given client
     * @param clientId
     *   client where the authentication may have happen on
     */
-  final case class ReadUserAuthenticated(identifier: PublicKey, clientId: String) extends Event
+  final case class ReadUserAuthenticated(popToken: PublicKey, clientId: String) extends Event
 
   // DbActor DbActorMessage correspond to messages the actor may emit
   sealed trait DbActorMessage
