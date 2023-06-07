@@ -142,7 +142,7 @@ The flowchart below describes the flow of data and how messages are processed.
 </div>
 
 <p align="center"><i>
-  Credits to the be1-go Spring 2021 team for the flowchart
+  Flowchart last updated at the end of Spring 2023
 </i></p>
 
 The hubs themselves contain multiple `Channels` with the `Root` channel being
