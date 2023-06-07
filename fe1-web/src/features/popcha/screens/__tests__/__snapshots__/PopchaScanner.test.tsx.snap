@@ -1618,7 +1618,7 @@ exports[`Popcha scanner manual input works correctly shows error message with in
             }
           }
         >
-          Enter the url you want to scan
+          Enter the url you want to use to login
         </Text>
         <View
           style={
