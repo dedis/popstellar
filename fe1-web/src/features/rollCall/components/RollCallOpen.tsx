@@ -38,6 +38,11 @@ const textStyle = StyleSheet.create({
   } as ViewStyle,
 });
 
+const dedupAttendees = (attendees: PublicKey[]): PublicKey[] => {
+  const set = new Set(attendees.map((attendee) => attendee.valueOf()));
+  return [...set].map((attendee) => PublicKey.fromState(attendee));
+};
+
 const RollCallOpen = ({
   rollCall,
   laoId,
@@ -52,6 +57,14 @@ const RollCallOpen = ({
 
   const [popToken, setPopToken] = useState('');
   const [hasWalletBeenInitialized, setHasWalletBeenInitialized] = useState(hasSeed());
+  const allAttendees = useMemo(() => {
+    const othersWithDuplicates = [...(rollCall.attendees || []), ...(scannedPopTokens || [])];
+    const allWithDuplicates =
+      popToken === ''
+        ? othersWithDuplicates
+        : [...othersWithDuplicates, PublicKey.fromState(popToken)];
+    return dedupAttendees(allWithDuplicates);
+  }, [popToken, rollCall.attendees, scannedPopTokens]);
 
   const onAddAttendees = useCallback(() => {
     // Once the roll call is opened the first time, idAlias is defined
@@ -71,20 +84,13 @@ const RollCallOpen = ({
         screen: STRINGS.events_open_roll_call,
         params: {
           rollCallId: rollCall.id.toString(),
-          attendeePopTokens: (scannedPopTokens || []).map((e) => e.valueOf()),
+          attendeePopTokens: allAttendees.map((e) => e.valueOf()),
         },
       },
     });
-  }, [toast, navigation, rollCall, scannedPopTokens]);
+  }, [toast, navigation, rollCall, allAttendees]);
 
   const onCloseRollCall = useCallback(async () => {
-    // get the public key as strings from the existing rollcall
-    const previousAttendees = rollCall.attendees || [];
-    // add the create a set of all attendees (takes care of deduplication)
-    const allAttendees = new Set([...previousAttendees, ...(scannedPopTokens || [])]);
-    // convert it back to a list
-    const attendeesList = [...allAttendees];
-
     if (!rollCall.idAlias) {
       toast.show(STRINGS.roll_call_error_close_roll_call_no_alias, {
         type: 'danger',
@@ -96,7 +102,7 @@ const RollCallOpen = ({
     }
 
     try {
-      await requestCloseRollCall(laoId, rollCall.idAlias, attendeesList);
+      await requestCloseRollCall(laoId, rollCall.idAlias, allAttendees);
       navigation.navigate(STRINGS.navigation_lao_events_home);
     } catch (err) {
       console.log(err);
@@ -106,7 +112,7 @@ const RollCallOpen = ({
         duration: FOUR_SECONDS,
       });
     }
-  }, [toast, navigation, rollCall, laoId, scannedPopTokens]);
+  }, [toast, navigation, rollCall, laoId, allAttendees]);
 
   const toolbarItems: ToolbarItem[] = useMemo(() => {
     if (!isOrganizer) {
@@ -130,12 +136,10 @@ const RollCallOpen = ({
 
   // re-check if wallet has been initialized after focus events
   useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', () => {
+    // Return the function to unsubscribe from the event so it gets removed on unmount
+    return navigation.addListener('focus', () => {
       setHasWalletBeenInitialized(hasSeed());
     });
-
-    // Return the function to unsubscribe from the event so it gets removed on unmount
-    return unsubscribe;
   }, [navigation, hasSeed]);
 
   useEffect(() => {
@@ -199,7 +203,7 @@ const RollCallOpen = ({
         </>
       )}
 
-      {scannedPopTokens && <AttendeeList popTokens={scannedPopTokens} />}
+      {scannedPopTokens && <AttendeeList popTokens={allAttendees} />}
     </ScreenWrapper>
   );
 };
