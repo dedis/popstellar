@@ -49,11 +49,15 @@ const SocialMediaNavigation = () => {
   const rollCallId = lao.last_tokenized_roll_call_id;
   const rollCall: SocialFeature.RollCall | undefined = SocialHooks.useRollCallById(rollCallId);
 
-  SocialHooks.useSocialContext()
+  const socialContext = SocialHooks.useSocialContext();
+
+  socialContext
     .generateToken(lao.id, rollCallId)
     .then((token) => {
       if (rollCall?.containsToken(token)) {
-        setCurrentUserPopTokenPublicKey(token.publicKey);
+        if (currentUserPopTokenPublicKey?.toString() !== token.publicKey.toString()) {
+          setCurrentUserPopTokenPublicKey(token.publicKey);
+        }
       }
     })
     // If an error happens when generating the token, it should not affect the Social Media

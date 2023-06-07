@@ -577,6 +577,7 @@ exports[`SocialTopChirps renders correctly 1`] = `
                                           "backgroundColor": "transparent",
                                           "color": "#242424",
                                           "fontSize": 15,
+                                          "overflow": "hidden",
                                         }
                                       }
                                       testID="listItemTitle"
@@ -1138,6 +1139,7 @@ exports[`SocialTopChirps renders correctly 1`] = `
                                           "backgroundColor": "transparent",
                                           "color": "#242424",
                                           "fontSize": 15,
+                                          "overflow": "hidden",
                                         }
                                       }
                                       testID="listItemTitle"
@@ -1705,6 +1707,7 @@ exports[`SocialTopChirps renders correctly 1`] = `
                                           "backgroundColor": "transparent",
                                           "color": "#242424",
                                           "fontSize": 15,
+                                          "overflow": "hidden",
                                         }
                                       }
                                       testID="listItemTitle"
