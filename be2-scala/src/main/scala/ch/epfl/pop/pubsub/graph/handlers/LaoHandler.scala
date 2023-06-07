@@ -1,6 +1,6 @@
 package ch.epfl.pop.pubsub.graph.handlers
 
-import ch.epfl.pop.config.RuntimeEnvironment.ownClientAddress
+import ch.epfl.pop.config.RuntimeEnvironment.serverConf
 import ch.epfl.pop.json.MessageDataProtocol.GreetLaoFormat
 import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.data.ObjectType
@@ -26,7 +26,7 @@ case object LaoHandler extends MessageHandler {
         socialChannel: Channel = Channel(s"$laoChannel${Channel.SOCIAL_MEDIA_CHIRPS_PREFIX}")
         reactionChannel: Channel = Channel(s"$laoChannel${Channel.REACTIONS_CHANNEL_PREFIX}")
         // we get access to the canonical address of the server
-        address: Option[String] = Some(ownClientAddress)
+        address: Option[String] = Some(s"${serverConf.externalAddress}/${serverConf.clientPath}")
 
         // check whether the lao already exists in db
         _ <- dbActor ? DbActor.AssertChannelMissing(laoChannel)
