@@ -3,11 +3,10 @@ import { StackNavigationOptions } from '@react-navigation/stack';
 import { ViewStyle } from 'react-native';
 
 import BackButton from 'core/components/BackButton';
+import buildInfo from 'core/components/BuildInfo';
 import ButtonPadding from 'core/components/ButtonPadding';
 import DrawerMenuButton from 'core/components/DrawerMenuButton';
 import { Color, Spacing, Typography } from 'core/styles';
-
-import buildInfo from '../components/BuildInfo';
 
 export const stackScreenOptionsWithoutHeader: StackNavigationOptions = {
   headerShown: false,
