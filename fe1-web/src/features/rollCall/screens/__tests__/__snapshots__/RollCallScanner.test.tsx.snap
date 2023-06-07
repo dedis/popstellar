@@ -576,7 +576,7 @@ exports[`RollCallOpened renders correctly when no scan 1`] = `
                                   >
                                     Scanned attendees
                                     : 
-                                    -1
+                                    0
                                   </Text>
                                 </View>
                               </View>
