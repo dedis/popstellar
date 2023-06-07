@@ -311,6 +311,8 @@ namespace STRINGS {
   export const roll_call_error_close_roll_call_no_alias =
     'Could not close roll call, the event does not have an idAlias';
   export const roll_call_error_close_roll_call = 'Could not close roll call';
+  export const roll_call_danger_attendee_list_not_sorted =
+    'Attendee list not sorted, risk of deanonymization';
 
   /* --- Roll-call creation Strings --- */
 
