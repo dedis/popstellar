@@ -455,44 +455,22 @@ exports[`ConnectNavigation renders correctly 1`] = `
                                         accessible={true}
                                         collapsable={false}
                                         focusable={true}
-                                        onBlur={[Function]}
                                         onClick={[Function]}
-                                        onFocus={[Function]}
                                         onResponderGrant={[Function]}
                                         onResponderMove={[Function]}
                                         onResponderRelease={[Function]}
                                         onResponderTerminate={[Function]}
                                         onResponderTerminationRequest={[Function]}
                                         onStartShouldSetResponder={[Function]}
+                                        style={
+                                          {
+                                            "opacity": 1,
+                                          }
+                                        }
                                       >
-                                        <RNGestureHandlerButton
-                                          collapsable={false}
-                                          delayLongPress={600}
-                                          enabled={true}
-                                          exclusive={true}
-                                          handlerTag={2}
-                                          handlerType="NativeViewGestureHandler"
-                                          onGestureEvent={[Function]}
-                                          onGestureHandlerEvent={[Function]}
-                                          onGestureHandlerStateChange={[Function]}
-                                          onHandlerStateChange={[Function]}
-                                          rippleColor={0}
-                                          touchSoundDisabled={false}
-                                        >
-                                          <View
-                                            accessible={true}
-                                            collapsable={false}
-                                            style={
-                                              {
-                                                "opacity": 1,
-                                              }
-                                            }
-                                          >
-                                            <View>
-                                              {"name":"ios-arrow-back","size":25,"color":"#8E8E8E"}
-                                            </View>
-                                          </View>
-                                        </RNGestureHandlerButton>
+                                        <View>
+                                          {"name":"ios-arrow-back","size":25,"color":"#8E8E8E"}
+                                        </View>
                                       </View>
                                     </View>
                                     <View
@@ -659,7 +637,7 @@ exports[`ConnectNavigation renders correctly 1`] = `
                                     <View
                                       collapsable={false}
                                       forwardedRef={[Function]}
-                                      handlerTag={3}
+                                      handlerTag={2}
                                       handlerType="PanGestureHandler"
                                       needsOffscreenAlphaCompositing={false}
                                       onGestureHandlerEvent={[Function]}
@@ -829,58 +807,36 @@ exports[`ConnectNavigation renders correctly 1`] = `
                                                           accessible={true}
                                                           collapsable={false}
                                                           focusable={true}
-                                                          onBlur={[Function]}
                                                           onClick={[Function]}
-                                                          onFocus={[Function]}
                                                           onResponderGrant={[Function]}
                                                           onResponderMove={[Function]}
                                                           onResponderRelease={[Function]}
                                                           onResponderTerminate={[Function]}
                                                           onResponderTerminationRequest={[Function]}
                                                           onStartShouldSetResponder={[Function]}
+                                                          style={
+                                                            {
+                                                              "opacity": 1,
+                                                            }
+                                                          }
                                                         >
-                                                          <RNGestureHandlerButton
-                                                            collapsable={false}
-                                                            delayLongPress={600}
-                                                            enabled={true}
-                                                            exclusive={true}
-                                                            handlerTag={4}
-                                                            handlerType="NativeViewGestureHandler"
-                                                            onGestureEvent={[Function]}
-                                                            onGestureHandlerEvent={[Function]}
-                                                            onGestureHandlerStateChange={[Function]}
-                                                            onHandlerStateChange={[Function]}
-                                                            rippleColor={0}
-                                                            touchSoundDisabled={false}
-                                                          >
-                                                            <View
-                                                              accessible={true}
-                                                              collapsable={false}
-                                                              style={
+                                                          <Text
+                                                            style={
+                                                              [
                                                                 {
-                                                                  "opacity": 1,
-                                                                }
-                                                              }
-                                                            >
-                                                              <Text
-                                                                style={
-                                                                  [
-                                                                    {
-                                                                      "color": "#000",
-                                                                      "fontSize": 20,
-                                                                      "lineHeight": 26,
-                                                                      "textAlign": "left",
-                                                                    },
-                                                                    {
-                                                                      "color": "#3742fa",
-                                                                    },
-                                                                  ]
-                                                                }
-                                                              >
-                                                                Enter Manually
-                                                              </Text>
-                                                            </View>
-                                                          </RNGestureHandlerButton>
+                                                                  "color": "#000",
+                                                                  "fontSize": 20,
+                                                                  "lineHeight": 26,
+                                                                  "textAlign": "left",
+                                                                },
+                                                                {
+                                                                  "color": "#3742fa",
+                                                                },
+                                                              ]
+                                                            }
+                                                          >
+                                                            Enter Manually
+                                                          </Text>
                                                         </View>
                                                       </View>
                                                     </View>
