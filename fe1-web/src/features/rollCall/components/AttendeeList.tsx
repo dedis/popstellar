@@ -1,11 +1,13 @@
 import { ListItem } from '@rneui/themed';
 import PropTypes from 'prop-types';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
+import { useToast } from 'react-native-toast-notifications';
 
 import { PoPIcon } from 'core/components';
 import { PublicKey } from 'core/objects';
 import { Color, Icon, List, Typography } from 'core/styles';
+import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
 
 const styles = StyleSheet.create({
@@ -16,6 +18,29 @@ const styles = StyleSheet.create({
 
 const AttendeeList = ({ popTokens, personalToken }: IPropTypes) => {
   const [showItems, setShowItems] = useState(true);
+  const toast = useToast();
+
+  // check if the attendee list is sorted alphabetically
+  useEffect(() => {
+    if (popTokens) {
+      const isAttendeeListSorted = popTokens.reduce<[boolean, PublicKey]>(
+        ([isSorted, lastValue], currentValue) => [
+          isSorted && lastValue < currentValue,
+          currentValue,
+        ],
+        [true, new PublicKey('')],
+      );
+
+      if (!isAttendeeListSorted[0]) {
+        toast.show(STRINGS.roll_call_danger_attendee_list_not_sorted, {
+          type: 'warning',
+          placement: 'bottom',
+          duration: FOUR_SECONDS,
+        });
+      }
+    }
+  }, [popTokens, toast]);
+
   return (
     <View style={List.container}>
       <ListItem.Accordion

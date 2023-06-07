@@ -1,10 +1,10 @@
 import PropTypes from 'prop-types';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { useToast } from 'react-native-toast-notifications';
 
 import ScreenWrapper from 'core/components/ScreenWrapper';
 import { ToolbarItem } from 'core/components/Toolbar';
-import { Hash, PublicKey } from 'core/objects';
+import { Hash } from 'core/objects';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
 
@@ -64,27 +64,6 @@ const RollCallClosed = ({ rollCall, laoId, isConnected, isOrganizer }: IPropType
       setPopToken(token.publicKey.valueOf());
     })
     .catch((err) => console.error(`Could not generate token: ${err}`));
-
-  useEffect(() => {
-    // check if the attendee list is sorted alphabetically
-    if (rollCall.attendees) {
-      const isAttendeeListSorted = rollCall.attendees.reduce<[boolean, PublicKey]>(
-        ([isSorted, lastValue], currentValue) => [
-          isSorted && lastValue < currentValue,
-          currentValue,
-        ],
-        [true, new PublicKey('')],
-      );
-
-      if (!isAttendeeListSorted[0]) {
-        toast.show(STRINGS.roll_call_danger_attendee_list_not_sorted, {
-          type: 'warning',
-          placement: 'bottom',
-          duration: FOUR_SECONDS,
-        });
-      }
-    }
-  }, [rollCall.attendees, toast]);
 
   return (
     <ScreenWrapper toolbarItems={toolbarItems}>
