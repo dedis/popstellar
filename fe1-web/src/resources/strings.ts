@@ -515,7 +515,7 @@ namespace STRINGS {
   export const popcha_open_scanner = 'Open Scanner';
   export const popcha_success_authentication = 'Successful authentication';
   export const popcha_manual_add_title = 'Enter url';
-  export const popcha_manual_add_description = 'Enter the url you want to scan';
+  export const popcha_manual_add_description = 'Enter the url you want to use to login';
   export const popcha_url_type_input = 'Url';
 
   /* --- General creation Strings --- */
