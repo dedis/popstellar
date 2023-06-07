@@ -167,7 +167,7 @@ const PopchaScanner = () => {
   return showScanner ? (
     <>
       <QrCodeScanner
-        showCamera={showScanner}
+        showCamera
         handleScan={(data: string | null) =>
           data &&
           sendAuthRequest(data).then((success) => {
@@ -197,7 +197,7 @@ const PopchaScanner = () => {
                 testID="popcha_scanner_button"
                 onPress={() => setShowScanner(!showScanner)}>
                 <Text style={[Typography.base, Typography.accent]}>
-                  {showScanner ? STRINGS.popcha_close_scanner : STRINGS.popcha_open_scanner}
+                  {STRINGS.popcha_close_scanner}
                 </Text>
               </PoPTouchableOpacity>
             </View>
@@ -226,17 +226,7 @@ const PopchaScanner = () => {
     </>
   ) : (
     <>
-      <QrCodeScanner
-        showCamera={showScanner}
-        handleScan={(data: string | null) =>
-          data &&
-          sendAuthRequest(data).then((success) => {
-            if (success) {
-              setShowScanner(false);
-              showSuccessMessage(STRINGS.popcha_success_authentication);
-            }
-          })
-        }>
+      <QrCodeScanner showCamera={false} handleScan={() => {}}>
         <View style={styles.container}>
           <View>
             <Text style={Typography.paragraph}>
@@ -251,7 +241,7 @@ const PopchaScanner = () => {
                 testID="popcha_scanner_button"
                 onPress={() => setShowScanner(!showScanner)}>
                 <Text style={[Typography.base, Typography.accent]}>
-                  {showScanner ? STRINGS.popcha_close_scanner : STRINGS.popcha_open_scanner}
+                  {STRINGS.popcha_open_scanner}
                 </Text>
               </PoPTouchableOpacity>
             </View>
