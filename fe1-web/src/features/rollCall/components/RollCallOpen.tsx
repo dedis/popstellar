@@ -60,11 +60,11 @@ const RollCallOpen = ({
   const allAttendees = useMemo(() => {
     const othersWithDuplicates = [...(rollCall.attendees || []), ...(scannedPopTokens || [])];
     const allWithDuplicates =
-      popToken === ''
+      popToken === '' || !isOrganizer
         ? othersWithDuplicates
         : [...othersWithDuplicates, PublicKey.fromState(popToken)];
     return dedupAttendees(allWithDuplicates);
-  }, [popToken, rollCall.attendees, scannedPopTokens]);
+  }, [isOrganizer, popToken, rollCall.attendees, scannedPopTokens]);
 
   const onAddAttendees = useCallback(() => {
     // Once the roll call is opened the first time, idAlias is defined
