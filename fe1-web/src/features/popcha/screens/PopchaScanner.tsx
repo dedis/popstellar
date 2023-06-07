@@ -37,7 +37,7 @@ const PopchaScanner = () => {
   const generateToken = PopchaHooks.useGenerateToken();
 
   const [showScanner, setShowScanner] = useState(false);
-  const [showInputModal, setInputModalIsVisible] = useState(false);
+  const [isInputModalVisible, setInputModalIsVisible] = useState(false);
 
   const toast = useToast();
 
@@ -164,7 +164,7 @@ const PopchaScanner = () => {
       });
   };
 
-  return (
+  return showScanner ? (
     <>
       <QrCodeScanner
         showCamera={showScanner}
@@ -178,33 +178,20 @@ const PopchaScanner = () => {
           })
         }>
         <View style={styles.container}>
-          <View>
-            {!showScanner && (
-              <Text style={Typography.paragraph}>
-                {STRINGS.popcha_display_current_lao}
-                {laoId}
-              </Text>
-            )}
+          <View />
+          <View style={styles.qrCode}>
+            <QrCodeScanOverlay width={300} height={300} />
           </View>
-          {showScanner && (
-            <View style={styles.qrCode}>
-              <QrCodeScanOverlay width={300} height={300} />
-            </View>
-          )}
           <View>
-            {showScanner ? (
-              <View style={QrCodeScannerUIElementContainer}>
-                <PoPTouchableOpacity
-                  testID="popcha_add_manually"
-                  onPress={() => setInputModalIsVisible(true)}>
-                  <Text style={[Typography.base, Typography.accent, Typography.centered]}>
-                    {STRINGS.general_enter_manually}
-                  </Text>
-                </PoPTouchableOpacity>
-              </View>
-            ) : (
-              <View />
-            )}
+            <View style={QrCodeScannerUIElementContainer}>
+              <PoPTouchableOpacity
+                testID="popcha_add_manually"
+                onPress={() => setInputModalIsVisible(true)}>
+                <Text style={[Typography.base, Typography.accent, Typography.centered]}>
+                  {STRINGS.general_enter_manually}
+                </Text>
+              </PoPTouchableOpacity>
+            </View>
             <View style={[QrCodeScannerUIElementContainer, styles.topMargin]}>
               <PoPTouchableOpacity
                 testID="popcha_scanner_button"
@@ -219,7 +206,7 @@ const PopchaScanner = () => {
         </View>
       </QrCodeScanner>
       <ConfirmModal
-        visibility={showInputModal}
+        visibility={isInputModalVisible}
         setVisibility={setInputModalIsVisible}
         title={STRINGS.popcha_manual_add_title}
         description={STRINGS.popcha_manual_add_description}
@@ -236,6 +223,42 @@ const PopchaScanner = () => {
         hasTextInput
         textInputPlaceholder={STRINGS.popcha_url_type_input}
       />
+    </>
+  ) : (
+    <>
+      <QrCodeScanner
+        showCamera={showScanner}
+        handleScan={(data: string | null) =>
+          data &&
+          sendAuthRequest(data).then((success) => {
+            if (success) {
+              setShowScanner(false);
+              showSuccessMessage(STRINGS.popcha_success_authentication);
+            }
+          })
+        }>
+        <View style={styles.container}>
+          <View>
+            <Text style={Typography.paragraph}>
+              {STRINGS.popcha_display_current_lao}
+              {laoId}
+            </Text>
+          </View>
+          <View>
+            <View />
+            <View style={[QrCodeScannerUIElementContainer, styles.topMargin]}>
+              <PoPTouchableOpacity
+                testID="popcha_scanner_button"
+                onPress={() => setShowScanner(!showScanner)}>
+                <Text style={[Typography.base, Typography.accent]}>
+                  {showScanner ? STRINGS.popcha_close_scanner : STRINGS.popcha_open_scanner}
+                </Text>
+              </PoPTouchableOpacity>
+            </View>
+            <View />
+          </View>
+        </View>
+      </QrCodeScanner>
     </>
   );
 };
