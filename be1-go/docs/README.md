@@ -157,6 +157,9 @@ required. The rule of thumb is the leaf/last method called from the hub should
 create/return a `message.Error` and intermediate methods should propagate it up
 by wrapping it until it reaches a point where `Socket.SendError` is invoked.
 
+The hubs have a separate goroutine that is not shown in the flowchart and that 
+sends a `Heartbeat` message to the servers every 30 seconds. 
+
 ##### Message definitions
 
 All messages are defined in the `message` package. Please note that the JSON-RPC
