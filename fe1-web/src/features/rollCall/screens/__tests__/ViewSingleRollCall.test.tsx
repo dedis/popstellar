@@ -1,5 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit';
-import { fireEvent, render, waitFor } from '@testing-library/react-native';
+import { fireEvent, render } from '@testing-library/react-native';
 import React from 'react';
 import { Provider } from 'react-redux';
 import { combineReducers } from 'redux';
@@ -7,7 +7,7 @@ import { combineReducers } from 'redux';
 import MockNavigator from '__tests__/components/MockNavigator';
 import { mockLao, mockLaoId } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
-import {Hash, PublicKey, Timestamp} from 'core/objects';
+import { Hash, PublicKey, Timestamp } from 'core/objects';
 import { addEvent, eventReducer, makeEventByTypeSelector } from 'features/events/reducer';
 import { laoReducer, setCurrentLao } from 'features/lao/reducer';
 import { mockRollCall } from 'features/rollCall/__tests__/utils';
@@ -19,7 +19,6 @@ import { getWalletState, walletReducer } from 'features/wallet/reducer';
 import { requestCloseRollCall } from '../../network';
 import { RollCall, RollCallStatus } from '../../objects';
 import ViewSingleRollCall from '../ViewSingleRollCall';
-import attendeeList from "../../components/AttendeeList";
 
 const ID = new Hash('rollCallId');
 const NAME = 'myRollCall';
