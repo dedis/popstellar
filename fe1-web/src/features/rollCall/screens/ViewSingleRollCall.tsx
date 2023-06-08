@@ -1,5 +1,5 @@
 import { CompositeScreenProps, useNavigation, useRoute } from '@react-navigation/core';
-import { StackScreenProps } from '@react-navigation/stack';
+import { StackNavigationProp, StackScreenProps } from '@react-navigation/stack';
 import PropTypes from 'prop-types';
 import React, { useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
@@ -21,7 +21,7 @@ import RollCallCreated from '../components/RollCallCreated';
 import RollCallOpen from '../components/RollCallOpen';
 import { RollCallHooks } from '../hooks';
 import { RollCallFeature } from '../interface';
-import { RollCall, RollCallStatus } from '../objects';
+import { RollCallStatus } from '../objects';
 import { makeRollCallSelector } from '../reducer';
 
 type NavigationProps = CompositeScreenProps<
@@ -30,6 +30,11 @@ type NavigationProps = CompositeScreenProps<
     StackScreenProps<LaoParamList, typeof STRINGS.navigation_lao_events>,
     StackScreenProps<AppParamList, typeof STRINGS.navigation_app_lao>
   >
+>;
+
+type SingleRollCallProps = StackNavigationProp<
+  LaoEventsParamList,
+  typeof STRINGS.events_view_single_roll_call
 >;
 
 /**
@@ -103,7 +108,7 @@ const ViewSingleRollCall = () => {
  */
 const ReturnButton = ({ padding }: IPropTypes) => {
   const navigationRoute = useRoute<NavigationProps['route']>();
-  const navigation = useNavigation<NavigationProps>();
+  const navigation = useNavigation<SingleRollCallProps>();
   const { attendeePopTokens: attendeePopTokensStrings, eventId: rollCallId } =
     navigationRoute.params;
 
