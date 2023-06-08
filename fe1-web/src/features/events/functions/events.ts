@@ -1,6 +1,7 @@
 import { Hash, Timestamp } from 'core/objects';
 import { getStore } from 'core/redux';
 
+import { Meeting } from '../../meeting/objects';
 import { EventState } from '../objects';
 import { getEvent } from '../reducer';
 
@@ -23,9 +24,15 @@ export const categorizeEventsByTime = (time: Timestamp, events: EventState[]) =>
   const upcomingEvents: EventState[] = [];
 
   events.forEach((e: EventState) => {
-    // ended events are events that have ended more than
-    // {CURRENT_EVENTS_THRESHOLD_HOURS} hours ago
-    if (e.end && e.end <= t - CURRENT_EVENTS_THRESHOLD_HOURS * 60 * 60) {
+    // ended events are either:
+    // - meetings that have ended more than {CURRENT_EVENTS_THRESHOLD_HOURS} hours ago
+    // - other events that have been marked as ended (e.end is set)
+    if (
+      (e.eventType === Meeting.EVENT_TYPE &&
+        e.end &&
+        e.end <= t - CURRENT_EVENTS_THRESHOLD_HOURS * 60 * 60) ||
+      (e.eventType !== Meeting.EVENT_TYPE && e.end)
+    ) {
       pastEvents.push(e);
       return;
     }
