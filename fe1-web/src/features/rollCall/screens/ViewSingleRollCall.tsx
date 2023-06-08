@@ -21,7 +21,7 @@ import RollCallCreated from '../components/RollCallCreated';
 import RollCallOpen from '../components/RollCallOpen';
 import { RollCallHooks } from '../hooks';
 import { RollCallFeature } from '../interface';
-import { RollCallStatus } from '../objects';
+import { RollCall, RollCallStatus } from '../objects';
 import { makeRollCallSelector } from '../reducer';
 
 type NavigationProps = CompositeScreenProps<
@@ -114,15 +114,19 @@ const ReturnButton = ({ padding }: IPropTypes) => {
 
   if (
     rollCall === undefined ||
-    rollCall.attendees === undefined ||
-    attendeePopTokensStrings === undefined
+    attendeePopTokensStrings === undefined ||
+    // only the organizer -> no new scanned attendees
+    attendeePopTokensStrings.length <= 1
   ) {
     return backButton({ padding });
   }
 
-  // no new scanned attendees
-  if (attendeePopTokensStrings?.length <= rollCall.attendees.length) {
-    return backButton({ padding });
+  // attendees are undefined but poptokens are not -> new scanned attendees
+  if (rollCall.attendees !== undefined) {
+    // attendeesPopTokens longer than rollCall.attendees -> new scanned attendees
+    if (attendeePopTokensStrings?.length <= rollCall.attendees.length) {
+      return backButton({ padding });
+    }
   }
 
   // new scanned attendees -> leaving will not save the new attendees
@@ -135,8 +139,8 @@ const ReturnButton = ({ padding }: IPropTypes) => {
       <ConfirmModal
         onConfirmPress={navigation.goBack}
         visibility={showConfirmModal}
-        description="Description"
-        title="Title"
+        description={STRINGS.roll_call_leave_description}
+        title={STRINGS.roll_call_leave_confirmation_title}
         setVisibility={setShowConfirmModal}
       />
     </>
