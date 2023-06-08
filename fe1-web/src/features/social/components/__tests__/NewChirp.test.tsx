@@ -1,5 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit';
-import { fireEvent, render, waitFor } from '@testing-library/react-native';
+import { fireEvent, render } from '@testing-library/react-native';
 import React from 'react';
 import { Provider } from 'react-redux';
 import { combineReducers } from 'redux';
@@ -81,9 +81,32 @@ describe('NewChirp', () => {
     fireEvent.changeText(getByTestId('new_chirp_input'), mockText);
     fireEvent.press(getByTestId('new_chirp_publish'));
 
-    await waitFor(() => {
-      expect(requestAddChirp).toHaveBeenCalledWith(mockPopToken.publicKey, mockText, mockLaoId);
-      expect(requestAddChirp).toHaveBeenCalledTimes(1);
-    });
+    expect(requestAddChirp).toHaveBeenCalledWith(mockPopToken.publicKey, mockText, mockLaoId);
+    expect(requestAddChirp).toHaveBeenCalledTimes(1);
+  });
+
+  it('shows the modal on trimmed chirp and closes it', async () => {
+    const { toJSON, getByTestId } = render(
+      <Provider store={mockStore}>
+        <FeatureContext.Provider value={contextValue}>
+          <SocialMediaContext.Provider value={socialContextValue}>
+            <NewChirp />
+          </SocialMediaContext.Provider>
+        </FeatureContext.Provider>
+      </Provider>,
+    );
+    const mockText = '\nThis    text\n \twill be trimmed \n ';
+
+    // Add an invalid chirp
+    fireEvent.changeText(getByTestId('new_chirp_input'), mockText);
+    fireEvent.press(getByTestId('new_chirp_publish'));
+
+    expect(getByTestId('confirm-modal-confirm')).toBeDefined();
+    expect(toJSON()).toMatchSnapshot();
+
+    // Accept the modal message
+    fireEvent.press(getByTestId('confirm-modal-confirm'));
+
+    expect(toJSON()).toMatchSnapshot();
   });
 });

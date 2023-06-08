@@ -36,9 +36,11 @@ const NewChirp = () => {
   }
 
   // The publish button is disabled in offline mode and when the user public key is not defined
-  const publishDisabled = !isConnected || !currentUserPopTokenPublicKey;
+  const publishDisabled =
+    !isConnected || !currentUserPopTokenPublicKey || trimmedInputChirp.length < 1;
 
   const publishChirp = () => {
+    setShowPublishConfirmation(false);
     if (publishDisabled) {
       return;
     }
@@ -76,6 +78,11 @@ const NewChirp = () => {
       {!currentUserPopTokenPublicKey && (
         <Text style={[Typography.base, Typography.error, styles.errorMessage]}>
           {STRINGS.social_media_create_chirp_no_pop_token}
+        </Text>
+      )}
+      {trimmedInputChirp.length < 1 && inputChirp.length > 0 && (
+        <Text style={[Typography.base, Typography.error, styles.errorMessage]}>
+          {STRINGS.social_media_empty_chirp}
         </Text>
       )}
       <ConfirmModal
