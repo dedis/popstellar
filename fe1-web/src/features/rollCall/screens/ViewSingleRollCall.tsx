@@ -123,21 +123,21 @@ const ReturnButton = ({ padding }: IPropTypes) => {
     // only the organizer -> no new scanned attendees
     attendeePopTokensStrings.length <= 1
   ) {
-    return backButton({ padding });
+    return backButton({ padding, testID: 'backButton' });
   }
 
   // attendees are undefined but poptokens are not -> new scanned attendees
   if (rollCall.attendees !== undefined) {
     // attendeesPopTokens longer than rollCall.attendees -> new scanned attendees
     if (attendeePopTokensStrings?.length <= rollCall.attendees.length) {
-      return backButton({ padding });
+      return backButton({ padding, testID: 'backButton' });
     }
   }
 
   // new scanned attendees -> leaving will not save the new attendees
   return (
     <>
-      <PoPTouchableOpacity onPress={() => setShowConfirmModal(true)}>
+      <PoPTouchableOpacity onPress={() => setShowConfirmModal(true)} testID="backButton">
         <PoPIcon name="arrowBack" color={Color.inactive} size={Icon.size} />
       </PoPTouchableOpacity>
       <ButtonPadding paddingAmount={padding || 0} nextToIcon />

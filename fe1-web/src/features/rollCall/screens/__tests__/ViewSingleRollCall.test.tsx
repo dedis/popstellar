@@ -1,5 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit';
-import { render } from '@testing-library/react-native';
+import { fireEvent, render } from '@testing-library/react-native';
 import React from 'react';
 import { Provider } from 'react-redux';
 import { combineReducers } from 'redux';
@@ -17,7 +17,7 @@ import { generateToken } from 'features/wallet/objects';
 import { getWalletState, walletReducer } from 'features/wallet/reducer';
 
 import { RollCall, RollCallStatus } from '../../objects';
-import ViewSingleRollCall from '../ViewSingleRollCall';
+import ViewSingleRollCall, { ViewSingleRollCallScreen } from '../ViewSingleRollCall';
 
 const ID = new Hash('rollCallId');
 const NAME = 'myRollCall';
@@ -135,6 +135,55 @@ describe('EventRollCall', () => {
         're-opened roll calls',
         testRender(mockRollCallReopened, false, ['attendee1', 'attendee2']),
       );
+    });
+
+    describe('return button', () => {
+      const getRenderedComponent = (
+        rollCall: RollCall,
+        attendeePopTokens: String[] | undefined = undefined,
+      ) => {
+        mockStore.dispatch(updateRollCall(rollCall.toState()));
+
+        return render(
+          <Provider store={mockStore}>
+            <FeatureContext.Provider value={contextValue}>
+              <MockNavigator
+                component={() => ViewSingleRollCallScreen.headerLeft!!({}) as JSX.Element}
+                params={{
+                  eventId: rollCall.id.valueOf(),
+                  isOrganizer: true,
+                  attendeePopTokens: attendeePopTokens,
+                }}
+              />
+            </FeatureContext.Provider>
+          </Provider>,
+        );
+      };
+
+      it('should return if no scanned attendees', () => {
+        const { getByTestId } = getRenderedComponent(mockRollCallOpened, undefined);
+        const returnButton = getByTestId('backButton');
+        fireEvent.press(returnButton);
+        // should have no confirmation modal
+        expect(() => getByTestId('confirm-modal-confirm')).toThrow();
+      });
+
+      it('should show confirmation modal if new scanned attendees', () => {
+        const { getByTestId } = getRenderedComponent(mockRollCallOpened, ['attendee1', 'attendee2', 'attendee3']);
+        const returnButton = getByTestId('backButton');
+        fireEvent.press(returnButton);
+        // should have confirmation modal
+        const confirmationButton = getByTestId('confirm-modal-confirm');
+        expect(confirmationButton).toBeTruthy();
+      });
+
+      it('should not show confirmation if only organizer scanned', () => {
+        const { getByTestId } = getRenderedComponent(mockRollCallOpened, ['attendee1']);
+        const returnButton = getByTestId('backButton');
+        fireEvent.press(returnButton);
+        // should have no confirmation modal
+        expect(() => getByTestId('confirm-modal-confirm')).toThrow();
+      });
     });
   });
 });
