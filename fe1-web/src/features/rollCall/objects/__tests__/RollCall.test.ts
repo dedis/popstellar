@@ -15,6 +15,11 @@ const token = new PopToken({
   privateKey: new PrivateKey('privateKey'),
 });
 
+const mockConsoleWarn = jest.spyOn(console, 'warn').mockImplementation();
+beforeEach(() => {
+  mockConsoleWarn.mockReset();
+});
+
 describe('RollCall object', () => {
   it('can do a state round trip correctly 1', () => {
     const rollCallState: any = {
@@ -346,7 +351,6 @@ describe('RollCall object', () => {
     });
 
     it('logs a warning when list of attendees is not sorted', () => {
-      const mockConsoleWarn = jest.spyOn(console, 'warn').mockImplementation();
       const createWrongRollCall = () =>
         new RollCall({
           id: ID,
@@ -364,6 +368,27 @@ describe('RollCall object', () => {
         });
       createWrongRollCall();
       expect(mockConsoleWarn).toHaveBeenCalled();
+    });
+
+    it('does not log a warning when list of attendees is sorted (w. uppercase & lowercase)', () => {
+      const attendeesWithUpperCase = ['attendee1', 'Attendee2'].sort((a, b) => a.localeCompare(b));
+      const createWrongRollCall = () =>
+        new RollCall({
+          id: ID,
+          idAlias: ID,
+          start: TIMESTAMP_START,
+          name: NAME,
+          location: LOCATION,
+          creation: TIMESTAMP_START,
+          proposedStart: TIMESTAMP_START,
+          proposedEnd: TIMESTAMP_END,
+          openedAt: TIMESTAMP_START,
+          closedAt: TIMESTAMP_END,
+          status: RollCallStatus.CLOSED,
+          attendees: attendeesWithUpperCase.map((s: string) => new PublicKey(s)),
+        });
+      createWrongRollCall();
+      expect(mockConsoleWarn).not.toHaveBeenCalled();
     });
   });
 });

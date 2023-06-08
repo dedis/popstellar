@@ -25,7 +25,7 @@ const AttendeeList = ({ popTokens, personalToken }: IPropTypes) => {
     if (popTokens) {
       const isAttendeeListSorted = popTokens.reduce<[boolean, PublicKey]>(
         ([isSorted, lastValue], currentValue) => [
-          isSorted && lastValue < currentValue,
+          isSorted && lastValue.valueOf().localeCompare(currentValue.valueOf()) <= 0,
           currentValue,
         ],
         [true, new PublicKey('')],

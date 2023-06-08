@@ -141,7 +141,7 @@ export class RollCall {
       // ensure the list of attendees is sorted
       const isAttendeeListSorted = obj.attendees.reduce<[boolean, PublicKey]>(
         ([isSorted, lastValue], currentValue) => [
-          isSorted && lastValue < currentValue,
+          isSorted && lastValue.valueOf().localeCompare(currentValue.valueOf()) <= 0,
           currentValue,
         ],
         [true, new PublicKey('')],
