@@ -505,9 +505,7 @@ exports[`Launch renders correctly 1`] = `
                                   accessible={true}
                                   collapsable={false}
                                   focusable={true}
-                                  onBlur={[Function]}
                                   onClick={[Function]}
-                                  onFocus={[Function]}
                                   onResponderGrant={[Function]}
                                   onResponderMove={[Function]}
                                   onResponderRelease={[Function]}
@@ -516,70 +514,45 @@ exports[`Launch renders correctly 1`] = `
                                   onStartShouldSetResponder={[Function]}
                                   style={
                                     {
-                                      "marginBottom": 16,
+                                      "opacity": 1,
                                     }
                                   }
                                   testID="launch_launch_selector"
                                 >
-                                  <RNGestureHandlerButton
-                                    collapsable={false}
-                                    delayLongPress={600}
-                                    enabled={true}
-                                    exclusive={true}
-                                    handlerTag={3}
-                                    handlerType="NativeViewGestureHandler"
-                                    onGestureEvent={[Function]}
-                                    onGestureHandlerEvent={[Function]}
-                                    onGestureHandlerStateChange={[Function]}
-                                    onHandlerStateChange={[Function]}
-                                    rippleColor={0}
-                                    touchSoundDisabled={false}
-                                  >
-                                    <View
-                                      accessible={true}
-                                      collapsable={false}
-                                      style={
+                                  <View
+                                    style={
+                                      [
                                         {
-                                          "opacity": 1,
-                                        }
+                                          "backgroundColor": "#3742fa",
+                                          "borderColor": "#3742fa",
+                                          "borderRadius": 8,
+                                          "borderWidth": 1,
+                                          "padding": 8,
+                                        },
+                                      ]
+                                    }
+                                  >
+                                    <Text
+                                      style={
+                                        [
+                                          {
+                                            "color": "#000",
+                                            "fontSize": 20,
+                                            "lineHeight": 26,
+                                            "textAlign": "left",
+                                          },
+                                          {
+                                            "textAlign": "center",
+                                          },
+                                          {
+                                            "color": "#fff",
+                                          },
+                                        ]
                                       }
                                     >
-                                      <View
-                                        style={
-                                          [
-                                            {
-                                              "backgroundColor": "#3742fa",
-                                              "borderColor": "#3742fa",
-                                              "borderRadius": 8,
-                                              "borderWidth": 1,
-                                              "padding": 8,
-                                            },
-                                          ]
-                                        }
-                                      >
-                                        <Text
-                                          style={
-                                            [
-                                              {
-                                                "color": "#000",
-                                                "fontSize": 20,
-                                                "lineHeight": 26,
-                                                "textAlign": "left",
-                                              },
-                                              {
-                                                "textAlign": "center",
-                                              },
-                                              {
-                                                "color": "#fff",
-                                              },
-                                            ]
-                                          }
-                                        >
-                                          Launch
-                                        </Text>
-                                      </View>
-                                    </View>
-                                  </RNGestureHandlerButton>
+                                      Launch
+                                    </Text>
+                                  </View>
                                 </View>
                               </View>
                             </View>
