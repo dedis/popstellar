@@ -37,6 +37,7 @@ The project is organized into different modules as follows
 ```
 .
 ├── channel             # contains the abstract definition of a channel
+│   ├── authentication  # channel implementation for an authentication channel
 │   ├── chirp           # channel implementation for a chirp channel
 │   ├── coin            # channel implementation for a coin channel
 │   ├── consensus       # channel implementation for a consensus channel
@@ -54,6 +55,7 @@ The project is organized into different modules as follows
 ├── message             # message types and marshaling/unmarshaling logic
 ├── network             # module to set up Websocket connections
 │   └── socket          # module to send/receive data over the wire
+├── popcha              # HTTP server and back-end logic for PoPCHA
 └── validation          # module to validate incoming/outgoing messages
 ```
 
