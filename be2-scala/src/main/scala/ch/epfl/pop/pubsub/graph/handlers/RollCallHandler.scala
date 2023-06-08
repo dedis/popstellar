@@ -119,8 +119,15 @@ class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
   private def createAttendeeChannels(rpcRequest: JsonRpcRequest): GraphMessage = {
     val message: Message = rpcRequest.getParamsMessage.get
     val data: CloseRollCall = message.decodedData.get.asInstanceOf[CloseRollCall]
-    val listAttendeeChannels: List[(Channel, ObjectType.ObjectType)] = data.attendees.map {
-      attendee => (generateSocialChannel(rpcRequest.getParamsChannel, attendee), ObjectType.CHIRP)
+    val listAttendeeChannels: List[(Channel, ObjectType.ObjectType)] = data.attendees.flatMap {
+      attendee =>
+        try {
+          Some((generateSocialChannel(rpcRequest.getParamsChannel, attendee), ObjectType.CHIRP))
+        } catch {
+          case _: Throwable =>
+            println(s"Failed to create attendee channel for pop token: ${attendee.base64Data.data}")
+            None
+        }
     }
 
     val askCreateChannels = dbActor ? DbActor.CreateChannelsFromList(listAttendeeChannels)
