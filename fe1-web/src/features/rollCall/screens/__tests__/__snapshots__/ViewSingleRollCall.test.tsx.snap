@@ -8845,7 +8845,6 @@ exports[`EventRollCall render correctly organizers re-opened roll calls 1`] = `
                               }
                             }
                             testID="roll_call_close_button"
-
                           >
                             <View
                               style={
