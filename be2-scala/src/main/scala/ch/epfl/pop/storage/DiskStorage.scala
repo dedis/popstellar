@@ -1,8 +1,9 @@
 package ch.epfl.pop.storage
 
+import ch.epfl.pop.config.RuntimeEnvironment.dbPath
+
 import java.io.{File, IOException}
 import java.nio.charset.StandardCharsets
-
 import ch.epfl.pop.model.objects.DbActorNAckException
 import ch.epfl.pop.pubsub.graph.ErrorCodes
 import org.iq80.leveldb.impl.Iq80DBFactory.{asString, factory}
@@ -114,7 +115,7 @@ class DiskStorage(val databaseFolder: String = DiskStorage.DATABASE_FOLDER) exte
 }
 
 object DiskStorage {
-  val DATABASE_FOLDER: String = "database"
+  val DATABASE_FOLDER: String = dbPath
 
   private val CACHE_SIZE: Long = 64 * 1024 * 1024 // 64 MB
 }

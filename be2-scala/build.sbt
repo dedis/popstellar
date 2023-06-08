@@ -48,7 +48,14 @@ Global/ cancelable := true
 // Fork run task in compile scope
 Compile/ run/ fork := true
 Compile/ run/ connectInput := true
-Compile/ run/ javaOptions += "-Dscala.config=src/main/scala/ch/epfl/pop/config"
+// When running the project using sbt, the jvm is forked
+// This allows the system properties (-D...) to be passed to the fork
+// Code from: https://stackoverflow.com/a/54326800
+Compile/ run/ javaOptions ++= {
+    sys.props.toList.map {
+        case (key, value) => s"-D$key=$value"
+    }
+}
 
 // Make test execution synchronized
 Test/ test/ parallelExecution := false
