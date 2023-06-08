@@ -7,7 +7,7 @@ import { combineReducers } from 'redux';
 import MockNavigator from '__tests__/components/MockNavigator';
 import { mockLao, mockLaoId } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
-import { Hash, Timestamp } from 'core/objects';
+import { Hash, PublicKey, Timestamp } from 'core/objects';
 import { addEvent, eventReducer, makeEventByTypeSelector } from 'features/events/reducer';
 import { laoReducer, setCurrentLao } from 'features/lao/reducer';
 import { mockRollCall } from 'features/rollCall/__tests__/utils';
@@ -16,6 +16,7 @@ import { addRollCall, rollCallReducer, updateRollCall } from 'features/rollCall/
 import { generateToken } from 'features/wallet/objects';
 import { getWalletState, walletReducer } from 'features/wallet/reducer';
 
+import { requestCloseRollCall } from '../../network';
 import { RollCall, RollCallStatus } from '../../objects';
 import ViewSingleRollCall, { ViewSingleRollCallScreen } from '../ViewSingleRollCall';
 
@@ -43,6 +44,13 @@ const createStateWithStatus: any = (mockStatus: RollCallStatus) => {
     idAlias: mockStatus === RollCallStatus.CREATED ? undefined : ID.valueOf(),
   };
 };
+jest.mock('features/rollCall/network', () => {
+  const actual = jest.requireActual('features/rollCall/network');
+  return {
+    ...actual,
+    requestCloseRollCall: jest.fn(() => Promise.resolve()),
+  };
+});
 
 const mockRollCallCreated = RollCall.fromState(createStateWithStatus(RollCallStatus.CREATED));
 const mockRollCallOpened = RollCall.fromState(createStateWithStatus(RollCallStatus.OPENED));
@@ -135,6 +143,30 @@ describe('EventRollCall', () => {
         're-opened roll calls',
         testRender(mockRollCallReopened, false, ['attendee1', 'attendee2']),
       );
+      it('while closing roll call', () => {
+        mockStore.dispatch(updateRollCall(mockRollCallReopened.toState()));
+        const { getByTestId } = render(
+          <Provider store={mockStore}>
+            <FeatureContext.Provider value={contextValue}>
+              <MockNavigator
+                component={ViewSingleRollCall}
+                params={{
+                  eventId: mockRollCallReopened.id.valueOf(),
+                  isOrganizer: true,
+                  attendeePopTokens: ATTENDEES,
+                }}
+              />
+            </FeatureContext.Provider>
+          </Provider>,
+        );
+        fireEvent.press(getByTestId('roll_call_close_button'));
+        expect(requestCloseRollCall).toHaveBeenCalledTimes(1);
+        expect(requestCloseRollCall).toHaveBeenCalledWith(
+          expect.anything(),
+          expect.anything(),
+          ATTENDEES.map((attendee) => PublicKey.fromState(attendee)),
+        );
+      });
     });
 
     describe('return button', () => {

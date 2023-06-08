@@ -7833,6 +7833,7 @@ exports[`EventRollCall render correctly organizers opened roll calls 1`] = `
                                 "opacity": 1,
                               }
                             }
+                            testID="roll_call_close_button"
                           >
                             <View
                               style={
@@ -8843,6 +8844,8 @@ exports[`EventRollCall render correctly organizers re-opened roll calls 1`] = `
                                 "opacity": 1,
                               }
                             }
+                            testID="roll_call_close_button"
+
                           >
                             <View
                               style={
