@@ -333,6 +333,9 @@ namespace STRINGS {
   export const roll_call_open = 'Open Roll-Call';
   export const roll_call_reopen = 'Re-open Roll-Call';
   export const roll_call_close = 'Close Roll-Call';
+  export const roll_call_leave_confirmation_title = 'Leave screen?';
+  export const roll_call_leave_description =
+    'By leaving this screen, any new scanned tokens will be lost.\nAre you sure you want to proceed?';
 
   /* --- Roll-call scanning Strings --- */
   export const roll_call_scan_attendees = 'Scan Attendees';
