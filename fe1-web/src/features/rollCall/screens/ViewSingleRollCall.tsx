@@ -4,18 +4,18 @@ import PropTypes from 'prop-types';
 import React, { useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 
+import { ConfirmModal } from 'core/components';
+import BackButton from 'core/components/BackButton';
+import ButtonPadding from 'core/components/ButtonPadding';
+import PoPIcon from 'core/components/PoPIcon';
+import PoPTouchableOpacity from 'core/components/PoPTouchableOpacity';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { LaoEventsParamList } from 'core/navigation/typing/LaoEventsParamList';
 import { LaoParamList } from 'core/navigation/typing/LaoParamList';
 import { Hash, PublicKey } from 'core/objects';
+import { Color, Icon } from 'core/styles';
 import STRINGS from 'resources/strings';
 
-import { ConfirmModal } from '../../../core/components';
-import backButton from '../../../core/components/BackButton';
-import ButtonPadding from '../../../core/components/ButtonPadding';
-import PoPIcon from '../../../core/components/PoPIcon';
-import PoPTouchableOpacity from '../../../core/components/PoPTouchableOpacity';
-import { Color, Icon } from '../../../core/styles';
 import RollCallClosed from '../components/RollCallClosed';
 import RollCallCreated from '../components/RollCallCreated';
 import RollCallOpen from '../components/RollCallOpen';
@@ -123,14 +123,14 @@ const ReturnButton = ({ padding }: IPropTypes) => {
     // only the organizer -> no new scanned attendees
     attendeePopTokensStrings.length <= 1
   ) {
-    return backButton({ padding, testID: 'backButton' });
+    return <BackButton padding={padding} testID="backButton" />;
   }
 
   // attendees are undefined but poptokens are not -> new scanned attendees
   if (rollCall.attendees !== undefined) {
     // attendeesPopTokens longer than rollCall.attendees -> new scanned attendees
     if (attendeePopTokensStrings?.length <= rollCall.attendees.length) {
-      return backButton({ padding, testID: 'backButton' });
+      return <BackButton padding={padding} testID="backButton" />;
     }
   }
 

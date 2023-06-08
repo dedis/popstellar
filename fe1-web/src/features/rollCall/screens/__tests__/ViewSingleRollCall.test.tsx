@@ -169,7 +169,11 @@ describe('EventRollCall', () => {
       });
 
       it('should show confirmation modal if new scanned attendees', () => {
-        const { getByTestId } = getRenderedComponent(mockRollCallOpened, ['attendee1', 'attendee2', 'attendee3']);
+        const { getByTestId } = getRenderedComponent(mockRollCallOpened, [
+          'attendee1',
+          'attendee2',
+          'attendee3',
+        ]);
         const returnButton = getByTestId('backButton');
         fireEvent.press(returnButton);
         // should have confirmation modal
