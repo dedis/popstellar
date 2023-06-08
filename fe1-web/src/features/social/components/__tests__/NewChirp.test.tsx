@@ -1,5 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit';
-import { fireEvent, render, waitFor } from '@testing-library/react-native';
+import { fireEvent, render } from '@testing-library/react-native';
 import React from 'react';
 import { Provider } from 'react-redux';
 import { combineReducers } from 'redux';
@@ -86,8 +86,8 @@ describe('NewChirp', () => {
     expect(requestAddChirp).toHaveBeenCalledTimes(1);
   });
 
-  it('shows the modal on trimmed chirp and closes it', () => {
-    const { toJSON, getByTestId, queryByText } = render(
+  it('shows the modal on trimmed chirp and closes it', async () => {
+    const { toJSON, getByTestId, findByText } = render(
       <Provider store={mockStore}>
         <FeatureContext.Provider value={contextValue}>
           <SocialMediaContext.Provider value={socialContextValue}>
@@ -108,7 +108,7 @@ describe('NewChirp', () => {
     // Accept the modal message
     fireEvent.press(getByTestId('confirm-modal-confirm'));
 
-    waitFor(() => expect(queryByText('300')).not.toBeNull());
+    expect(await findByText('300')).not.toBeNull();
     expect(toJSON()).toMatchSnapshot();
   });
   it('shows the error message on empty trimmed message', () => {
