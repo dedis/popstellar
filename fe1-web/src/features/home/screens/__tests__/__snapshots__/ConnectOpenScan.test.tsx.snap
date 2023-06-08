@@ -442,58 +442,36 @@ exports[`ConnectOpenScan renders correctly 1`] = `
                                     accessible={true}
                                     collapsable={false}
                                     focusable={true}
-                                    onBlur={[Function]}
                                     onClick={[Function]}
-                                    onFocus={[Function]}
                                     onResponderGrant={[Function]}
                                     onResponderMove={[Function]}
                                     onResponderRelease={[Function]}
                                     onResponderTerminate={[Function]}
                                     onResponderTerminationRequest={[Function]}
                                     onStartShouldSetResponder={[Function]}
+                                    style={
+                                      {
+                                        "opacity": 1,
+                                      }
+                                    }
                                   >
-                                    <RNGestureHandlerButton
-                                      collapsable={false}
-                                      delayLongPress={600}
-                                      enabled={true}
-                                      exclusive={true}
-                                      handlerTag={2}
-                                      handlerType="NativeViewGestureHandler"
-                                      onGestureEvent={[Function]}
-                                      onGestureHandlerEvent={[Function]}
-                                      onGestureHandlerStateChange={[Function]}
-                                      onHandlerStateChange={[Function]}
-                                      rippleColor={0}
-                                      touchSoundDisabled={false}
-                                    >
-                                      <View
-                                        accessible={true}
-                                        collapsable={false}
-                                        style={
+                                    <Text
+                                      style={
+                                        [
                                           {
-                                            "opacity": 1,
-                                          }
-                                        }
-                                      >
-                                        <Text
-                                          style={
-                                            [
-                                              {
-                                                "color": "#000",
-                                                "fontSize": 20,
-                                                "lineHeight": 26,
-                                                "textAlign": "left",
-                                              },
-                                              {
-                                                "color": "#3742fa",
-                                              },
-                                            ]
-                                          }
-                                        >
-                                          Enter Manually
-                                        </Text>
-                                      </View>
-                                    </RNGestureHandlerButton>
+                                            "color": "#000",
+                                            "fontSize": 20,
+                                            "lineHeight": 26,
+                                            "textAlign": "left",
+                                          },
+                                          {
+                                            "color": "#3742fa",
+                                          },
+                                        ]
+                                      }
+                                    >
+                                      Enter Manually
+                                    </Text>
                                   </View>
                                 </View>
                               </View>

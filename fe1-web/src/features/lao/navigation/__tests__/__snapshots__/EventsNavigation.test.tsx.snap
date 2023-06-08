@@ -494,45 +494,23 @@ exports[`OrganizerNavigation renders correctly 1`] = `
                                         <View
                                           accessible={true}
                                           collapsable={false}
-                                          focusable={true}
-                                          onBlur={[Function]}
+                                          focusable={false}
                                           onClick={[Function]}
-                                          onFocus={[Function]}
                                           onResponderGrant={[Function]}
                                           onResponderMove={[Function]}
                                           onResponderRelease={[Function]}
                                           onResponderTerminate={[Function]}
                                           onResponderTerminationRequest={[Function]}
                                           onStartShouldSetResponder={[Function]}
+                                          style={
+                                            {
+                                              "opacity": 1,
+                                            }
+                                          }
                                         >
-                                          <RNGestureHandlerButton
-                                            collapsable={false}
-                                            delayLongPress={600}
-                                            enabled={true}
-                                            exclusive={true}
-                                            handlerTag={2}
-                                            handlerType="NativeViewGestureHandler"
-                                            onGestureEvent={[Function]}
-                                            onGestureHandlerEvent={[Function]}
-                                            onGestureHandlerStateChange={[Function]}
-                                            onHandlerStateChange={[Function]}
-                                            rippleColor={0}
-                                            touchSoundDisabled={false}
-                                          >
-                                            <View
-                                              accessible={true}
-                                              collapsable={false}
-                                              style={
-                                                {
-                                                  "opacity": 1,
-                                                }
-                                              }
-                                            >
-                                              <View>
-                                                {"name":"ios-menu","size":25,"color":"#8E8E8E"}
-                                              </View>
-                                            </View>
-                                          </RNGestureHandlerButton>
+                                          <View>
+                                            {"name":"ios-menu","size":25,"color":"#8E8E8E"}
+                                          </View>
                                         </View>
                                       </View>
                                     </View>
@@ -710,7 +688,7 @@ exports[`OrganizerNavigation renders correctly 1`] = `
                                     <View
                                       collapsable={false}
                                       forwardedRef={[Function]}
-                                      handlerTag={3}
+                                      handlerTag={2}
                                       handlerType="PanGestureHandler"
                                       needsOffscreenAlphaCompositing={false}
                                       onGestureHandlerEvent={[Function]}
@@ -772,7 +750,7 @@ exports[`OrganizerNavigation renders correctly 1`] = `
                                             >
                                               <RCTScrollView
                                                 collapsable={false}
-                                                handlerTag={4}
+                                                handlerTag={3}
                                                 handlerType="NativeViewGestureHandler"
                                                 onGestureHandlerEvent={[Function]}
                                                 onGestureHandlerStateChange={[Function]}
