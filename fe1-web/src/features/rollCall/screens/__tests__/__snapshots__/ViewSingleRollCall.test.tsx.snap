@@ -447,7 +447,7 @@ exports[`EventRollCall render correctly no duplicate attendees opened roll calls
                                         "width": "100%",
                                       }
                                     }
-                                    value="{"pop_token":""}"
+                                    value=""
                                     viewBox="0 0 256 256"
                                   />
                                   <View
@@ -1490,7 +1490,7 @@ exports[`EventRollCall render correctly no duplicate attendees re-opened roll ca
                                         "width": "100%",
                                       }
                                     }
-                                    value="{"pop_token":""}"
+                                    value=""
                                     viewBox="0 0 256 256"
                                   />
                                   <View
@@ -3846,7 +3846,7 @@ exports[`EventRollCall render correctly non organizers opened roll calls 1`] = `
                                         "width": "100%",
                                       }
                                     }
-                                    value="{"pop_token":""}"
+                                    value=""
                                     viewBox="0 0 256 256"
                                   />
                                   <View
@@ -4889,7 +4889,7 @@ exports[`EventRollCall render correctly non organizers re-opened roll calls 1`] 
                                         "width": "100%",
                                       }
                                     }
-                                    value="{"pop_token":""}"
+                                    value=""
                                     viewBox="0 0 256 256"
                                   />
                                   <View
