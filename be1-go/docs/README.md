@@ -126,8 +126,12 @@ websocket connections.
 ##### Processing messages in the application layer
 
 The incoming messages received by the `ReadPump` are propagated up the stack to
-the `Hub` which is responsible for processing it and sending a `Result`, `Error`
-or a `Broadcast`.
+the `Hub` which is responsible for processing it and sending, depending on the message's nature, a: 
+- `Result` to the request.
+- `Error`
+- `Broadcast`
+- `GreetServer` back to a server that has not been greeted yet.
+- `GetMessagesById` in response to a heartbeat if it is missing some messages.
 
 A hub, on receiving a message, processes it by invoking the
 `handleIncomingMessage` method where its handled depending on which `Socket` the
@@ -136,11 +140,11 @@ message originates from.
 The flowchart below describes the flow of data and how messages are processed.
 
 <div align="center">
-  <img src="images/flowchart.png" alt="Flowchart"/>
+  <img src="images/flowchart/flowchart.png" alt="Flowchart"/>
 </div>
 
 <p align="center"><i>
-  Credits to the be1-go Spring 2021 team for the flowchart
+  Flowchart last updated at the end of Spring 2023
 </i></p>
 
 The hubs themselves contain multiple `Channels` with the `Root` channel being
@@ -154,6 +158,9 @@ messages and wrap them using `xerrors.Errorf` with the `%w` format specifier if
 required. The rule of thumb is the leaf/last method called from the hub should
 create/return a `message.Error` and intermediate methods should propagate it up
 by wrapping it until it reaches a point where `Socket.SendError` is invoked.
+
+The hubs have a separate goroutine that is not shown in the flowchart and that 
+sends a `Heartbeat` message to the servers every 30 seconds. 
 
 ##### Message definitions
 
