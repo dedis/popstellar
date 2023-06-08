@@ -7985,6 +7985,7 @@ exports[`EventRollCall render correctly organizers opened roll calls 1`] = `
                             onResponderTerminationRequest={[Function]}
                             onStartShouldSetResponder={[Function]}
                             style={{}}
+                            testID="roll_call_close_button"
                           >
                             <RNGestureHandlerButton
                               collapsable={false}
@@ -9041,6 +9042,7 @@ exports[`EventRollCall render correctly organizers re-opened roll calls 1`] = `
                             onResponderTerminationRequest={[Function]}
                             onStartShouldSetResponder={[Function]}
                             style={{}}
+                            testID="roll_call_close_button"
                           >
                             <RNGestureHandlerButton
                               collapsable={false}
