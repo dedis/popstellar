@@ -111,11 +111,6 @@ const RollCallOpened = () => {
 
   const addAttendeePopToken = useCallback(
     (popToken: string) => {
-      // if popToken is not in base64 format, do not add it
-      if (!popToken.match(/^[a-zA-Z0-9_-]+={0,3}$/) || popToken.length % 4 !== 0) {
-        throw new Error('Invalid popToken format');
-      }
-
       // if the token is already part of attendeePopTokens, do not trigger a state update
       // and return false indicating the pop token was not added since it's a duplicate
       if (attendeePopTokens.current.includes(popToken)) {

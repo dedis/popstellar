@@ -267,7 +267,7 @@ describe('RollCallOpened', () => {
     }
 
     for (const invalidPopToken of invalidPopTokens) {
-      fakeQrReaderScan(ScannablePopToken.encodePopToken({ pop_token: invalidPopToken }));
+      fakeQrReaderScan(JSON.stringify({ pop_token: invalidPopToken }));
       expect(mockToastShow).toHaveBeenCalledWith(
         expect.anything(),
         expect.objectContaining({ type: 'danger' }),

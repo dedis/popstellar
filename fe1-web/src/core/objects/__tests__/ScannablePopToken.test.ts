@@ -1,6 +1,7 @@
 import { mockPopToken } from '__tests__/utils';
 import { OmitMethods } from 'core/types';
 
+import { ProtocolError } from '../ProtocolError';
 import { ScannablePopToken } from '../ScannablePopToken';
 
 describe('ScannablePopToken object', () => {
@@ -20,6 +21,38 @@ describe('ScannablePopToken object', () => {
           pop_token: undefined,
         } as unknown as OmitMethods<ScannablePopToken>),
     ).toThrow(Error);
+  });
+
+  it('throws if the pop_token is not in a valid format', () => {
+    const validPopTokens = [
+      'QRf_GkuQI6-TviY6ZmW3sMZQzDYc66SWqcgfgKyiY00=',
+      '-r4fYiL7-uAnt4WIQ2-XopjzwCVBKyTECNr420juktI=',
+      'abcdefghijklwxyzABNOPQRSTUVWXYZ0123456789-_=',
+    ];
+
+    const invalidPopTokens = [
+      '', // empty string
+      'ockPublicKey2_fFcHDaVHcCcY8IBfHE7auXJ7h4ms=', // size not multiple of 44
+      'mockP!blicKey2_fFcHDaVHcCcY8IBfHE7auXJ7h4ms=', // invalid character
+    ];
+
+    validPopTokens.forEach((popToken) => {
+      expect(
+        () =>
+          new ScannablePopToken({
+            pop_token: popToken,
+          }),
+      ).not.toThrow(Error);
+    });
+
+    invalidPopTokens.forEach((popToken) => {
+      expect(
+        () =>
+          new ScannablePopToken({
+            pop_token: popToken,
+          }),
+      ).toThrow(ProtocolError);
+    });
   });
 
   it('can encode in json', () => {
