@@ -1,6 +1,7 @@
-import { CompositeScreenProps, useRoute } from '@react-navigation/core';
+import { CompositeScreenProps, useNavigation, useRoute } from '@react-navigation/core';
 import { StackScreenProps } from '@react-navigation/stack';
-import React, { useMemo } from 'react';
+import PropTypes from 'prop-types';
+import React, { useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 
 import { AppParamList } from 'core/navigation/typing/AppParamList';
@@ -9,6 +10,12 @@ import { LaoParamList } from 'core/navigation/typing/LaoParamList';
 import { Hash, PublicKey } from 'core/objects';
 import STRINGS from 'resources/strings';
 
+import { ConfirmModal } from '../../../core/components';
+import backButton from '../../../core/components/BackButton';
+import ButtonPadding from '../../../core/components/ButtonPadding';
+import PoPIcon from '../../../core/components/PoPIcon';
+import PoPTouchableOpacity from '../../../core/components/PoPTouchableOpacity';
+import { Color, Icon } from '../../../core/styles';
 import RollCallClosed from '../components/RollCallClosed';
 import RollCallCreated from '../components/RollCallCreated';
 import RollCallOpen from '../components/RollCallOpen';
@@ -90,10 +97,69 @@ const ViewSingleRollCall = () => {
   }
 };
 
+/**
+ * Return button that shows a confirmation modal if there are new scanned attendees
+ * to prevent the user from losing the new scanned attendees
+ */
+const ReturnButton = ({ padding }: IPropTypes) => {
+  const navigationRoute = useRoute<NavigationProps['route']>();
+  const navigation = useNavigation<NavigationProps>();
+  const { attendeePopTokens: attendeePopTokensStrings, eventId: rollCallId } =
+    navigationRoute.params;
+
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+
+  const selectRollCall = useMemo(() => makeRollCallSelector(new Hash(rollCallId)), [rollCallId]);
+  const rollCall = useSelector(selectRollCall);
+
+  if (
+    rollCall === undefined ||
+    rollCall.attendees === undefined ||
+    attendeePopTokensStrings === undefined
+  ) {
+    return backButton({ padding });
+  }
+
+  // no new scanned attendees
+  if (attendeePopTokensStrings?.length <= rollCall.attendees.length) {
+    return backButton({ padding });
+  }
+
+  // new scanned attendees -> leaving will not save the new attendees
+  return (
+    <>
+      <PoPTouchableOpacity onPress={() => setShowConfirmModal(true)}>
+        <PoPIcon name="arrowBack" color={Color.inactive} size={Icon.size} />
+      </PoPTouchableOpacity>
+      <ButtonPadding paddingAmount={padding || 0} nextToIcon />
+      <ConfirmModal
+        onConfirmPress={navigation.goBack}
+        visibility={showConfirmModal}
+        description="Description"
+        title="Title"
+        setVisibility={setShowConfirmModal}
+      />
+    </>
+  );
+};
+
+const propTypes = {
+  padding: PropTypes.number,
+};
+
+ReturnButton.propTypes = propTypes;
+
+ReturnButton.defaultProps = {
+  padding: 0,
+};
+
+type IPropTypes = PropTypes.InferProps<typeof propTypes>;
+
 export default ViewSingleRollCall;
 
 export const ViewSingleRollCallScreen: RollCallFeature.LaoEventScreen = {
   id: STRINGS.events_view_single_roll_call,
   Component: ViewSingleRollCall,
   headerTitle: STRINGS.roll_call_event_name,
+  headerLeft: ReturnButton,
 };
