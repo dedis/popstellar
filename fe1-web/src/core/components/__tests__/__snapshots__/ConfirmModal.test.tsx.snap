@@ -12,7 +12,7 @@ exports[`ConfirmModal disappears correctly after dismissing 1`] = `
     delayLongPress={600}
     enabled={true}
     exclusive={true}
-    handlerTag={9}
+    handlerTag={5}
     handlerType="NativeViewGestureHandler"
     onGestureEvent={[Function]}
     onGestureHandlerEvent={[Function]}
@@ -41,7 +41,7 @@ exports[`ConfirmModal disappears correctly after dismissing 1`] = `
   </RNGestureHandlerButton>
   <RCTScrollView
     collapsable={false}
-    handlerTag={10}
+    handlerTag={6}
     handlerType="NativeViewGestureHandler"
     onGestureHandlerEvent={[Function]}
     onGestureHandlerStateChange={[Function]}
@@ -92,45 +92,23 @@ exports[`ConfirmModal disappears correctly after dismissing 1`] = `
           accessible={true}
           collapsable={false}
           focusable={true}
-          onBlur={[Function]}
           onClick={[Function]}
-          onFocus={[Function]}
           onResponderGrant={[Function]}
           onResponderMove={[Function]}
           onResponderRelease={[Function]}
           onResponderTerminate={[Function]}
           onResponderTerminationRequest={[Function]}
           onStartShouldSetResponder={[Function]}
+          style={
+            {
+              "opacity": 1,
+            }
+          }
           testID="modal-header-close"
         >
-          <RNGestureHandlerButton
-            collapsable={false}
-            delayLongPress={600}
-            enabled={true}
-            exclusive={true}
-            handlerTag={11}
-            handlerType="NativeViewGestureHandler"
-            onGestureEvent={[Function]}
-            onGestureHandlerEvent={[Function]}
-            onGestureHandlerStateChange={[Function]}
-            onHandlerStateChange={[Function]}
-            rippleColor={0}
-            touchSoundDisabled={false}
-          >
-            <View
-              accessible={true}
-              collapsable={false}
-              style={
-                {
-                  "opacity": 1,
-                }
-              }
-            >
-              <View>
-                {"name":"ios-close","size":25,"color":"#000"}
-              </View>
-            </View>
-          </RNGestureHandlerButton>
+          <View>
+            {"name":"ios-close","size":25,"color":"#000"}
+          </View>
         </View>
       </View>
       <Text
@@ -150,9 +128,7 @@ exports[`ConfirmModal disappears correctly after dismissing 1`] = `
         accessible={true}
         collapsable={false}
         focusable={true}
-        onBlur={[Function]}
         onClick={[Function]}
-        onFocus={[Function]}
         onResponderGrant={[Function]}
         onResponderMove={[Function]}
         onResponderRelease={[Function]}
@@ -161,70 +137,45 @@ exports[`ConfirmModal disappears correctly after dismissing 1`] = `
         onStartShouldSetResponder={[Function]}
         style={
           {
-            "marginBottom": 16,
+            "opacity": 1,
           }
         }
         testID="confirm-modal-confirm"
       >
-        <RNGestureHandlerButton
-          collapsable={false}
-          delayLongPress={600}
-          enabled={true}
-          exclusive={true}
-          handlerTag={12}
-          handlerType="NativeViewGestureHandler"
-          onGestureEvent={[Function]}
-          onGestureHandlerEvent={[Function]}
-          onGestureHandlerStateChange={[Function]}
-          onHandlerStateChange={[Function]}
-          rippleColor={0}
-          touchSoundDisabled={false}
-        >
-          <View
-            accessible={true}
-            collapsable={false}
-            style={
+        <View
+          style={
+            [
               {
-                "opacity": 1,
-              }
+                "backgroundColor": "#3742fa",
+                "borderColor": "#3742fa",
+                "borderRadius": 8,
+                "borderWidth": 1,
+                "padding": 8,
+              },
+            ]
+          }
+        >
+          <Text
+            style={
+              [
+                {
+                  "color": "#000",
+                  "fontSize": 20,
+                  "lineHeight": 26,
+                  "textAlign": "left",
+                },
+                {
+                  "textAlign": "center",
+                },
+                {
+                  "color": "#fff",
+                },
+              ]
             }
           >
-            <View
-              style={
-                [
-                  {
-                    "backgroundColor": "#3742fa",
-                    "borderColor": "#3742fa",
-                    "borderRadius": 8,
-                    "borderWidth": 1,
-                    "padding": 8,
-                  },
-                ]
-              }
-            >
-              <Text
-                style={
-                  [
-                    {
-                      "color": "#000",
-                      "fontSize": 20,
-                      "lineHeight": 26,
-                      "textAlign": "left",
-                    },
-                    {
-                      "textAlign": "center",
-                    },
-                    {
-                      "color": "#fff",
-                    },
-                  ]
-                }
-              >
-                Confirm
-              </Text>
-            </View>
-          </View>
-        </RNGestureHandlerButton>
+            Confirm
+          </Text>
+        </View>
       </View>
     </View>
   </RCTScrollView>
@@ -323,45 +274,23 @@ exports[`ConfirmModal renders correctly 1`] = `
           accessible={true}
           collapsable={false}
           focusable={true}
-          onBlur={[Function]}
           onClick={[Function]}
-          onFocus={[Function]}
           onResponderGrant={[Function]}
           onResponderMove={[Function]}
           onResponderRelease={[Function]}
           onResponderTerminate={[Function]}
           onResponderTerminationRequest={[Function]}
           onStartShouldSetResponder={[Function]}
+          style={
+            {
+              "opacity": 1,
+            }
+          }
           testID="modal-header-close"
         >
-          <RNGestureHandlerButton
-            collapsable={false}
-            delayLongPress={600}
-            enabled={true}
-            exclusive={true}
-            handlerTag={3}
-            handlerType="NativeViewGestureHandler"
-            onGestureEvent={[Function]}
-            onGestureHandlerEvent={[Function]}
-            onGestureHandlerStateChange={[Function]}
-            onHandlerStateChange={[Function]}
-            rippleColor={0}
-            touchSoundDisabled={false}
-          >
-            <View
-              accessible={true}
-              collapsable={false}
-              style={
-                {
-                  "opacity": 1,
-                }
-              }
-            >
-              <View>
-                {"name":"ios-close","size":25,"color":"#000"}
-              </View>
-            </View>
-          </RNGestureHandlerButton>
+          <View>
+            {"name":"ios-close","size":25,"color":"#000"}
+          </View>
         </View>
       </View>
       <Text
@@ -381,9 +310,7 @@ exports[`ConfirmModal renders correctly 1`] = `
         accessible={true}
         collapsable={false}
         focusable={true}
-        onBlur={[Function]}
         onClick={[Function]}
-        onFocus={[Function]}
         onResponderGrant={[Function]}
         onResponderMove={[Function]}
         onResponderRelease={[Function]}
@@ -392,70 +319,45 @@ exports[`ConfirmModal renders correctly 1`] = `
         onStartShouldSetResponder={[Function]}
         style={
           {
-            "marginBottom": 16,
+            "opacity": 1,
           }
         }
         testID="confirm-modal-confirm"
       >
-        <RNGestureHandlerButton
-          collapsable={false}
-          delayLongPress={600}
-          enabled={true}
-          exclusive={true}
-          handlerTag={4}
-          handlerType="NativeViewGestureHandler"
-          onGestureEvent={[Function]}
-          onGestureHandlerEvent={[Function]}
-          onGestureHandlerStateChange={[Function]}
-          onHandlerStateChange={[Function]}
-          rippleColor={0}
-          touchSoundDisabled={false}
-        >
-          <View
-            accessible={true}
-            collapsable={false}
-            style={
+        <View
+          style={
+            [
               {
-                "opacity": 1,
-              }
+                "backgroundColor": "#3742fa",
+                "borderColor": "#3742fa",
+                "borderRadius": 8,
+                "borderWidth": 1,
+                "padding": 8,
+              },
+            ]
+          }
+        >
+          <Text
+            style={
+              [
+                {
+                  "color": "#000",
+                  "fontSize": 20,
+                  "lineHeight": 26,
+                  "textAlign": "left",
+                },
+                {
+                  "textAlign": "center",
+                },
+                {
+                  "color": "#fff",
+                },
+              ]
             }
           >
-            <View
-              style={
-                [
-                  {
-                    "backgroundColor": "#3742fa",
-                    "borderColor": "#3742fa",
-                    "borderRadius": 8,
-                    "borderWidth": 1,
-                    "padding": 8,
-                  },
-                ]
-              }
-            >
-              <Text
-                style={
-                  [
-                    {
-                      "color": "#000",
-                      "fontSize": 20,
-                      "lineHeight": 26,
-                      "textAlign": "left",
-                    },
-                    {
-                      "textAlign": "center",
-                    },
-                    {
-                      "color": "#fff",
-                    },
-                  ]
-                }
-              >
-                Confirm
-              </Text>
-            </View>
-          </View>
-        </RNGestureHandlerButton>
+            Confirm
+          </Text>
+        </View>
       </View>
     </View>
   </RCTScrollView>
@@ -474,7 +376,7 @@ exports[`ConfirmModal renders correctly with text input 1`] = `
     delayLongPress={600}
     enabled={true}
     exclusive={true}
-    handlerTag={5}
+    handlerTag={3}
     handlerType="NativeViewGestureHandler"
     onGestureEvent={[Function]}
     onGestureHandlerEvent={[Function]}
@@ -503,7 +405,7 @@ exports[`ConfirmModal renders correctly with text input 1`] = `
   </RNGestureHandlerButton>
   <RCTScrollView
     collapsable={false}
-    handlerTag={6}
+    handlerTag={4}
     handlerType="NativeViewGestureHandler"
     onGestureHandlerEvent={[Function]}
     onGestureHandlerStateChange={[Function]}
@@ -554,45 +456,23 @@ exports[`ConfirmModal renders correctly with text input 1`] = `
           accessible={true}
           collapsable={false}
           focusable={true}
-          onBlur={[Function]}
           onClick={[Function]}
-          onFocus={[Function]}
           onResponderGrant={[Function]}
           onResponderMove={[Function]}
           onResponderRelease={[Function]}
           onResponderTerminate={[Function]}
           onResponderTerminationRequest={[Function]}
           onStartShouldSetResponder={[Function]}
+          style={
+            {
+              "opacity": 1,
+            }
+          }
           testID="modal-header-close"
         >
-          <RNGestureHandlerButton
-            collapsable={false}
-            delayLongPress={600}
-            enabled={true}
-            exclusive={true}
-            handlerTag={7}
-            handlerType="NativeViewGestureHandler"
-            onGestureEvent={[Function]}
-            onGestureHandlerEvent={[Function]}
-            onGestureHandlerStateChange={[Function]}
-            onHandlerStateChange={[Function]}
-            rippleColor={0}
-            touchSoundDisabled={false}
-          >
-            <View
-              accessible={true}
-              collapsable={false}
-              style={
-                {
-                  "opacity": 1,
-                }
-              }
-            >
-              <View>
-                {"name":"ios-close","size":25,"color":"#000"}
-              </View>
-            </View>
-          </RNGestureHandlerButton>
+          <View>
+            {"name":"ios-close","size":25,"color":"#000"}
+          </View>
         </View>
       </View>
       <Text
@@ -649,9 +529,7 @@ exports[`ConfirmModal renders correctly with text input 1`] = `
         accessible={true}
         collapsable={false}
         focusable={true}
-        onBlur={[Function]}
         onClick={[Function]}
-        onFocus={[Function]}
         onResponderGrant={[Function]}
         onResponderMove={[Function]}
         onResponderRelease={[Function]}
@@ -660,70 +538,45 @@ exports[`ConfirmModal renders correctly with text input 1`] = `
         onStartShouldSetResponder={[Function]}
         style={
           {
-            "marginBottom": 16,
+            "opacity": 1,
           }
         }
         testID="confirm-modal-confirm"
       >
-        <RNGestureHandlerButton
-          collapsable={false}
-          delayLongPress={600}
-          enabled={true}
-          exclusive={true}
-          handlerTag={8}
-          handlerType="NativeViewGestureHandler"
-          onGestureEvent={[Function]}
-          onGestureHandlerEvent={[Function]}
-          onGestureHandlerStateChange={[Function]}
-          onHandlerStateChange={[Function]}
-          rippleColor={0}
-          touchSoundDisabled={false}
-        >
-          <View
-            accessible={true}
-            collapsable={false}
-            style={
+        <View
+          style={
+            [
               {
-                "opacity": 1,
-              }
+                "backgroundColor": "#3742fa",
+                "borderColor": "#3742fa",
+                "borderRadius": 8,
+                "borderWidth": 1,
+                "padding": 8,
+              },
+            ]
+          }
+        >
+          <Text
+            style={
+              [
+                {
+                  "color": "#000",
+                  "fontSize": 20,
+                  "lineHeight": 26,
+                  "textAlign": "left",
+                },
+                {
+                  "textAlign": "center",
+                },
+                {
+                  "color": "#fff",
+                },
+              ]
             }
           >
-            <View
-              style={
-                [
-                  {
-                    "backgroundColor": "#3742fa",
-                    "borderColor": "#3742fa",
-                    "borderRadius": 8,
-                    "borderWidth": 1,
-                    "padding": 8,
-                  },
-                ]
-              }
-            >
-              <Text
-                style={
-                  [
-                    {
-                      "color": "#000",
-                      "fontSize": 20,
-                      "lineHeight": 26,
-                      "textAlign": "left",
-                    },
-                    {
-                      "textAlign": "center",
-                    },
-                    {
-                      "color": "#fff",
-                    },
-                  ]
-                }
-              >
-                Confirm
-              </Text>
-            </View>
-          </View>
-        </RNGestureHandlerButton>
+            Confirm
+          </Text>
+        </View>
       </View>
     </View>
   </RCTScrollView>

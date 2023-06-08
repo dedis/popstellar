@@ -376,6 +376,8 @@ exports[`ConnectNavigation renders correctly 1`] = `
                                   pointerEvents="box-none"
                                   style={
                                     {
+                                      "backgroundColor": "#fff",
+                                      "borderColor": "rgb(216, 216, 216)",
                                       "bottom": 0,
                                       "left": 0,
                                       "opacity": 1,
@@ -387,23 +389,52 @@ exports[`ConnectNavigation renders correctly 1`] = `
                                   }
                                 >
                                   <View
-                                    collapsable={false}
                                     style={
                                       {
-                                        "backgroundColor": "#fff",
-                                        "borderBottomColor": "rgb(216, 216, 216)",
-                                        "borderColor": "rgb(216, 216, 216)",
-                                        "flex": 1,
-                                        "shadowColor": "rgb(216, 216, 216)",
-                                        "shadowOffset": {
-                                          "height": 0.5,
-                                          "width": 0,
-                                        },
-                                        "shadowOpacity": 0.85,
-                                        "shadowRadius": 0,
+                                        "bottom": 12,
+                                        "display": "flex",
+                                        "flexDirection": "row",
+                                        "justifyContent": "center",
+                                        "left": 8,
+                                        "position": "absolute",
+                                        "right": 8,
                                       }
                                     }
-                                  />
+                                  >
+                                    <Text
+                                      style={
+                                        [
+                                          {
+                                            "fontSize": 8,
+                                            "lineHeight": 1,
+                                          },
+                                          {
+                                            "color": "#8E8E8E",
+                                          },
+                                          {
+                                            "fontFamily": "Courier New",
+                                          },
+                                          {
+                                            "textTransform": "uppercase",
+                                          },
+                                        ]
+                                      }
+                                    >
+                                      <Text
+                                        onPress={[Function]}
+                                      />
+                                      <Text>
+                                         | 
+                                      </Text>
+                                      <Text
+                                        onPress={[Function]}
+                                      />
+                                      <Text>
+                                         | 
+                                      </Text>
+                                      <Text />
+                                    </Text>
+                                  </View>
                                 </View>
                                 <View
                                   collapsable={false}
@@ -455,44 +486,22 @@ exports[`ConnectNavigation renders correctly 1`] = `
                                         accessible={true}
                                         collapsable={false}
                                         focusable={true}
-                                        onBlur={[Function]}
                                         onClick={[Function]}
-                                        onFocus={[Function]}
                                         onResponderGrant={[Function]}
                                         onResponderMove={[Function]}
                                         onResponderRelease={[Function]}
                                         onResponderTerminate={[Function]}
                                         onResponderTerminationRequest={[Function]}
                                         onStartShouldSetResponder={[Function]}
+                                        style={
+                                          {
+                                            "opacity": 1,
+                                          }
+                                        }
                                       >
-                                        <RNGestureHandlerButton
-                                          collapsable={false}
-                                          delayLongPress={600}
-                                          enabled={true}
-                                          exclusive={true}
-                                          handlerTag={2}
-                                          handlerType="NativeViewGestureHandler"
-                                          onGestureEvent={[Function]}
-                                          onGestureHandlerEvent={[Function]}
-                                          onGestureHandlerStateChange={[Function]}
-                                          onHandlerStateChange={[Function]}
-                                          rippleColor={0}
-                                          touchSoundDisabled={false}
-                                        >
-                                          <View
-                                            accessible={true}
-                                            collapsable={false}
-                                            style={
-                                              {
-                                                "opacity": 1,
-                                              }
-                                            }
-                                          >
-                                            <View>
-                                              {"name":"ios-arrow-back","size":25,"color":"#8E8E8E"}
-                                            </View>
-                                          </View>
-                                        </RNGestureHandlerButton>
+                                        <View>
+                                          {"name":"ios-arrow-back","size":25,"color":"#8E8E8E"}
+                                        </View>
                                       </View>
                                     </View>
                                     <View
@@ -659,7 +668,7 @@ exports[`ConnectNavigation renders correctly 1`] = `
                                     <View
                                       collapsable={false}
                                       forwardedRef={[Function]}
-                                      handlerTag={3}
+                                      handlerTag={2}
                                       handlerType="PanGestureHandler"
                                       needsOffscreenAlphaCompositing={false}
                                       onGestureHandlerEvent={[Function]}
@@ -829,124 +838,38 @@ exports[`ConnectNavigation renders correctly 1`] = `
                                                           accessible={true}
                                                           collapsable={false}
                                                           focusable={true}
-                                                          onBlur={[Function]}
                                                           onClick={[Function]}
-                                                          onFocus={[Function]}
                                                           onResponderGrant={[Function]}
                                                           onResponderMove={[Function]}
                                                           onResponderRelease={[Function]}
                                                           onResponderTerminate={[Function]}
                                                           onResponderTerminationRequest={[Function]}
                                                           onStartShouldSetResponder={[Function]}
-                                                        >
-                                                          <RNGestureHandlerButton
-                                                            collapsable={false}
-                                                            delayLongPress={600}
-                                                            enabled={true}
-                                                            exclusive={true}
-                                                            handlerTag={4}
-                                                            handlerType="NativeViewGestureHandler"
-                                                            onGestureEvent={[Function]}
-                                                            onGestureHandlerEvent={[Function]}
-                                                            onGestureHandlerStateChange={[Function]}
-                                                            onHandlerStateChange={[Function]}
-                                                            rippleColor={0}
-                                                            touchSoundDisabled={false}
-                                                          >
-                                                            <View
-                                                              accessible={true}
-                                                              collapsable={false}
-                                                              style={
-                                                                {
-                                                                  "opacity": 1,
-                                                                }
-                                                              }
-                                                            >
-                                                              <Text
-                                                                style={
-                                                                  [
-                                                                    {
-                                                                      "color": "#000",
-                                                                      "fontSize": 20,
-                                                                      "lineHeight": 26,
-                                                                      "textAlign": "left",
-                                                                    },
-                                                                    {
-                                                                      "color": "#3742fa",
-                                                                    },
-                                                                  ]
-                                                                }
-                                                              >
-                                                                Enter Manually
-                                                              </Text>
-                                                            </View>
-                                                          </RNGestureHandlerButton>
-                                                        </View>
-                                                      </View>
-                                                    </View>
-                                                  </View>
-                                                </View>
-                                                <View
-                                                  style={
-                                                    {
-                                                      "flexDirection": "column",
-                                                    }
-                                                  }
-                                                >
-                                                  <View
-                                                    style={
-                                                      {
-                                                        "alignSelf": "flex-end",
-                                                        "backgroundColor": "#fff",
-                                                        "borderRadius": 8,
-                                                        "padding": 8,
-                                                      }
-                                                    }
-                                                  >
-                                                    <View
-                                                      accessible={true}
-                                                      collapsable={false}
-                                                      focusable={true}
-                                                      onBlur={[Function]}
-                                                      onClick={[Function]}
-                                                      onFocus={[Function]}
-                                                      onResponderGrant={[Function]}
-                                                      onResponderMove={[Function]}
-                                                      onResponderRelease={[Function]}
-                                                      onResponderTerminate={[Function]}
-                                                      onResponderTerminationRequest={[Function]}
-                                                      onStartShouldSetResponder={[Function]}
-                                                    >
-                                                      <RNGestureHandlerButton
-                                                        collapsable={false}
-                                                        delayLongPress={600}
-                                                        enabled={true}
-                                                        exclusive={true}
-                                                        handlerTag={5}
-                                                        handlerType="NativeViewGestureHandler"
-                                                        onGestureEvent={[Function]}
-                                                        onGestureHandlerEvent={[Function]}
-                                                        onGestureHandlerStateChange={[Function]}
-                                                        onHandlerStateChange={[Function]}
-                                                        rippleColor={0}
-                                                        touchSoundDisabled={false}
-                                                      >
-                                                        <View
-                                                          accessible={true}
-                                                          collapsable={false}
                                                           style={
                                                             {
-                                                              "alignSelf": "flex-end",
-                                                              "marginLeft": "auto",
                                                               "opacity": 1,
                                                             }
                                                           }
                                                         >
-                                                          <View>
-                                                            {"name":"ios-camera-reverse","size":25,"color":"#3742fa"}
-                                                          </View>
+                                                          <Text
+                                                            style={
+                                                              [
+                                                                {
+                                                                  "color": "#000",
+                                                                  "fontSize": 20,
+                                                                  "lineHeight": 26,
+                                                                  "textAlign": "left",
+                                                                },
+                                                                {
+                                                                  "color": "#3742fa",
+                                                                },
+                                                              ]
+                                                            }
+                                                          >
+                                                            Enter Manually
+                                                          </Text>
                                                         </View>
-                                                      </RNGestureHandlerButton>
+                                                      </View>
                                                     </View>
                                                   </View>
                                                 </View>

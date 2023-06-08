@@ -57,48 +57,24 @@ const styles = StyleSheet.create({
  * (2022-12-05, Tyratox) Issue to track this: https://github.com/dedis/popstellar/issues/1306
  */
 const QrCodeScanner = ({ showCamera, children, handleScan }: IPropTypes) => {
-  const [permission, requestPermission] = Camera.useCameraPermissions();
+  // On future releases this might be changed to allow switching cameras. But for now this is not working. (2023-06-03, MeKHell)
+  const hasMultipleCameras = false;
   const [cameraType, setCameraType] = useState<CameraType>(CameraType.back);
-  const [hasMultipleCameras, setHasMultipleCameras] = useState(true);
   const [hasCamera, setHasCamera] = useState(true);
+  const [permission] = Camera.useCameraPermissions();
 
   useEffect(() => {
     (async () => {
-      if (permission && !permission.granted) {
-        await requestPermission();
-      }
-    })();
-  }, [permission, requestPermission]);
-
-  useEffect(() => {
-    let isMounted = true;
-    (async () => {
-      const isAvailable = await Camera.isAvailableAsync();
-      if (isMounted) {
+      if (permission && permission.granted) {
+        const isAvailable = await Camera.isAvailableAsync();
         setHasCamera(isAvailable);
-      } else {
-        return;
-      }
-      if (isAvailable) {
-        const types = await Camera.getAvailableCameraTypesAsync();
-        if (isMounted) {
-          setHasMultipleCameras(types.length > 1);
+        if (isAvailable) {
+          const types = await Camera.getAvailableCameraTypesAsync();
+          setCameraType(types.includes(CameraType.back) ? CameraType.back : CameraType.front);
         }
       }
     })();
-    return () => {
-      isMounted = false;
-    };
-  }, []);
-
-  if (!hasCamera) {
-    return (
-      <View style={styles.container}>
-        <Text>{STRINGS.camera_unavailable}</Text>
-        <View style={styles.children}>{children}</View>
-      </View>
-    );
-  }
+  }, [permission]);
 
   if (!permission) {
     return (
@@ -113,6 +89,15 @@ const QrCodeScanner = ({ showCamera, children, handleScan }: IPropTypes) => {
     return (
       <View style={styles.container}>
         <Text>{STRINGS.camera_permissions_denied}</Text>
+        <View style={styles.children}>{children}</View>
+      </View>
+    );
+  }
+
+  if (!hasCamera) {
+    return (
+      <View style={styles.container}>
+        <Text>{STRINGS.camera_unavailable}</Text>
         <View style={styles.children}>{children}</View>
       </View>
     );

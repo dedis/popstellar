@@ -1,12 +1,13 @@
 import { CompositeScreenProps, useNavigation } from '@react-navigation/core';
 import { StackScreenProps } from '@react-navigation/stack';
+import * as Clipboard from 'expo-clipboard';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Text } from 'react-native';
+import { StyleSheet, Text, View, ViewStyle } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 import ReactTimeago from 'react-timeago';
 
-import { CollapsibleContainer, QRCode } from 'core/components';
+import { CollapsibleContainer, PoPTextButton, QRCode } from 'core/components';
 import ScreenWrapper from 'core/components/ScreenWrapper';
 import { ToolbarItem } from 'core/components/Toolbar';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
@@ -14,7 +15,7 @@ import { LaoEventsParamList } from 'core/navigation/typing/LaoEventsParamList';
 import { LaoParamList } from 'core/navigation/typing/LaoParamList';
 import { Hash, PublicKey, Timestamp } from 'core/objects';
 import { ScannablePopToken } from 'core/objects/ScannablePopToken';
-import { Typography } from 'core/styles';
+import { Spacing, Typography } from 'core/styles';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
 
@@ -31,6 +32,12 @@ type NavigationProps = CompositeScreenProps<
   >
 >;
 
+const textStyle = StyleSheet.create({
+  topSpace: {
+    marginTop: Spacing.x2,
+  } as ViewStyle,
+});
+
 const RollCallOpen = ({
   rollCall,
   laoId,
@@ -45,6 +52,15 @@ const RollCallOpen = ({
 
   const [popToken, setPopToken] = useState('');
   const [hasWalletBeenInitialized, setHasWalletBeenInitialized] = useState(hasSeed());
+  const allAttendees = useMemo(() => {
+    if (isOrganizer && popToken !== '') {
+      if (scannedPopTokens && scannedPopTokens.length > 0) {
+        return scannedPopTokens;
+      }
+      return [PublicKey.fromState(popToken)];
+    }
+    return scannedPopTokens || [];
+  }, [isOrganizer, popToken, scannedPopTokens]);
 
   const onAddAttendees = useCallback(() => {
     // Once the roll call is opened the first time, idAlias is defined
@@ -64,20 +80,13 @@ const RollCallOpen = ({
         screen: STRINGS.events_open_roll_call,
         params: {
           rollCallId: rollCall.id.toString(),
-          attendeePopTokens: (scannedPopTokens || []).map((e) => e.valueOf()),
+          attendeePopTokens: allAttendees.map((e) => e.valueOf()),
         },
       },
     });
-  }, [toast, navigation, rollCall, scannedPopTokens]);
+  }, [toast, navigation, rollCall, allAttendees]);
 
   const onCloseRollCall = useCallback(async () => {
-    // get the public key as strings from the existing rollcall
-    const previousAttendees = rollCall.attendees || [];
-    // add the create a set of all attendees (takes care of deduplication)
-    const allAttendees = new Set([...previousAttendees, ...(scannedPopTokens || [])]);
-    // convert it back to a list
-    const attendeesList = [...allAttendees];
-
     if (!rollCall.idAlias) {
       toast.show(STRINGS.roll_call_error_close_roll_call_no_alias, {
         type: 'danger',
@@ -89,7 +98,7 @@ const RollCallOpen = ({
     }
 
     try {
-      await requestCloseRollCall(laoId, rollCall.idAlias, attendeesList);
+      await requestCloseRollCall(laoId, rollCall.idAlias, allAttendees);
       navigation.navigate(STRINGS.navigation_lao_events_home);
     } catch (err) {
       console.log(err);
@@ -99,7 +108,7 @@ const RollCallOpen = ({
         duration: FOUR_SECONDS,
       });
     }
-  }, [toast, navigation, rollCall, laoId, scannedPopTokens]);
+  }, [toast, navigation, rollCall, laoId, allAttendees]);
 
   const toolbarItems: ToolbarItem[] = useMemo(() => {
     if (!isOrganizer) {
@@ -108,6 +117,7 @@ const RollCallOpen = ({
 
     return [
       {
+        id: 'roll_call_close_button',
         title: STRINGS.roll_call_close,
         onPress: onCloseRollCall,
         buttonStyle: 'secondary',
@@ -126,7 +136,6 @@ const RollCallOpen = ({
     const unsubscribe = navigation.addListener('focus', () => {
       setHasWalletBeenInitialized(hasSeed());
     });
-
     // Return the function to unsubscribe from the event so it gets removed on unmount
     return unsubscribe;
   }, [navigation, hasSeed]);
@@ -171,14 +180,28 @@ const RollCallOpen = ({
       {!isOrganizer && (
         <>
           <Text style={Typography.paragraph}>{STRINGS.roll_call_open_attendee}</Text>
-          <QRCode
-            value={ScannablePopToken.encodePopToken({ pop_token: popToken })}
-            overlayText={STRINGS.roll_call_qrcode_text}
-          />
+          <View>
+            <QRCode
+              value={ScannablePopToken.encodePopToken({ pop_token: popToken })}
+              overlayText={STRINGS.roll_call_qrcode_text}
+            />
+            <Text
+              style={[
+                Typography.paragraph,
+                Typography.centered,
+                Typography.code,
+                textStyle.topSpace,
+              ]}>
+              {popToken}
+            </Text>
+            <PoPTextButton onPress={() => Clipboard.setStringAsync(popToken)}>
+              {STRINGS.general_copy}
+            </PoPTextButton>
+          </View>
         </>
       )}
 
-      {scannedPopTokens && <AttendeeList popTokens={scannedPopTokens} personalToken={popToken} />}
+      {scannedPopTokens && <AttendeeList popTokens={allAttendees} personalToken={popToken} />}
     </ScreenWrapper>
   );
 };

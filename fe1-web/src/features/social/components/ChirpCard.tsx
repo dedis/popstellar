@@ -75,6 +75,9 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-end',
     marginLeft: 'auto',
   } as ViewStyle,
+  noOverflow: {
+    overflow: 'hidden',
+  } as ViewStyle,
 });
 
 const FOUR_SECONDS = 4000;
@@ -111,6 +114,7 @@ const ChirpCard = ({ chirp, isFirstItem, isLastItem }: IPropTypes) => {
     '👍': !isConnected || !currentUserPopTokenPublicKey,
     '👎': !isConnected || !currentUserPopTokenPublicKey,
     '❤️': !isConnected || !currentUserPopTokenPublicKey,
+    delete: !isConnected || !currentUserPopTokenPublicKey,
   };
   const addReaction = (reaction_codepoint: string) => {
     requestAddReaction(reaction_codepoint, chirp.id, laoId).catch((err) => {
@@ -204,7 +208,7 @@ const ChirpCard = ({ chirp, isFirstItem, isLastItem }: IPropTypes) => {
         </View>
       </PoPTouchableOpacity>
       <ListItem.Content>
-        <ListItem.Subtitle>
+        <ListItem.Subtitle style={styles.noOverflow}>
           {chirp.isDeleted ? (
             <Text style={[Typography.base, Typography.inactive]}>{STRINGS.deleted_chirp}</Text>
           ) : (
@@ -264,6 +268,7 @@ const ChirpCard = ({ chirp, isFirstItem, isLastItem }: IPropTypes) => {
                     name="delete"
                     testID="delete_chirp"
                     onPress={() => setShowDeleteConfirmation(true)}
+                    disabled={reactionsDisabled.delete}
                     size="small"
                     buttonStyle="secondary"
                     toolbar

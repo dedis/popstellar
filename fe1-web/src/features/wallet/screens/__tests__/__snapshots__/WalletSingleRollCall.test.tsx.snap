@@ -276,7 +276,7 @@ exports[`ViewSingleRollCallScreenHeader renders correctly 1`] = `
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
-                handlerTag={4}
+                handlerTag={3}
                 handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}
@@ -336,7 +336,7 @@ exports[`ViewSingleRollCallScreenHeader renders correctly 1`] = `
                       >
                         <RCTScrollView
                           collapsable={false}
-                          handlerTag={5}
+                          handlerTag={4}
                           handlerType="NativeViewGestureHandler"
                           onGestureHandlerEvent={[Function]}
                           onGestureHandlerStateChange={[Function]}
@@ -450,9 +450,7 @@ exports[`ViewSingleRollCallScreenHeader renders correctly 1`] = `
                               accessible={true}
                               collapsable={false}
                               focusable={true}
-                              onBlur={[Function]}
                               onClick={[Function]}
-                              onFocus={[Function]}
                               onResponderGrant={[Function]}
                               onResponderMove={[Function]}
                               onResponderRelease={[Function]}
@@ -461,69 +459,44 @@ exports[`ViewSingleRollCallScreenHeader renders correctly 1`] = `
                               onStartShouldSetResponder={[Function]}
                               style={
                                 {
-                                  "marginBottom": 16,
+                                  "opacity": 1,
                                 }
                               }
                             >
-                              <RNGestureHandlerButton
-                                collapsable={false}
-                                delayLongPress={600}
-                                enabled={true}
-                                exclusive={true}
-                                handlerTag={6}
-                                handlerType="NativeViewGestureHandler"
-                                onGestureEvent={[Function]}
-                                onGestureHandlerEvent={[Function]}
-                                onGestureHandlerStateChange={[Function]}
-                                onHandlerStateChange={[Function]}
-                                rippleColor={0}
-                                touchSoundDisabled={false}
-                              >
-                                <View
-                                  accessible={true}
-                                  collapsable={false}
-                                  style={
+                              <View
+                                style={
+                                  [
                                     {
-                                      "opacity": 1,
-                                    }
+                                      "backgroundColor": "#3742fa",
+                                      "borderColor": "#3742fa",
+                                      "borderRadius": 8,
+                                      "borderWidth": 1,
+                                      "padding": 8,
+                                    },
+                                  ]
+                                }
+                              >
+                                <Text
+                                  style={
+                                    [
+                                      {
+                                        "color": "#000",
+                                        "fontSize": 20,
+                                        "lineHeight": 26,
+                                        "textAlign": "left",
+                                      },
+                                      {
+                                        "textAlign": "center",
+                                      },
+                                      {
+                                        "color": "#fff",
+                                      },
+                                    ]
                                   }
                                 >
-                                  <View
-                                    style={
-                                      [
-                                        {
-                                          "backgroundColor": "#3742fa",
-                                          "borderColor": "#3742fa",
-                                          "borderRadius": 8,
-                                          "borderWidth": 1,
-                                          "padding": 8,
-                                        },
-                                      ]
-                                    }
-                                  >
-                                    <Text
-                                      style={
-                                        [
-                                          {
-                                            "color": "#000",
-                                            "fontSize": 20,
-                                            "lineHeight": 26,
-                                            "textAlign": "left",
-                                          },
-                                          {
-                                            "textAlign": "center",
-                                          },
-                                          {
-                                            "color": "#fff",
-                                          },
-                                        ]
-                                      }
-                                    >
-                                      Copy to Clipboard
-                                    </Text>
-                                  </View>
-                                </View>
-                              </RNGestureHandlerButton>
+                                  Copy to Clipboard
+                                </Text>
+                              </View>
                             </View>
                           </View>
                         </RCTScrollView>
@@ -991,9 +964,7 @@ exports[`WalletSingleRollCall renders correctly 1`] = `
                               accessible={true}
                               collapsable={false}
                               focusable={true}
-                              onBlur={[Function]}
                               onClick={[Function]}
-                              onFocus={[Function]}
                               onResponderGrant={[Function]}
                               onResponderMove={[Function]}
                               onResponderRelease={[Function]}
@@ -1002,69 +973,44 @@ exports[`WalletSingleRollCall renders correctly 1`] = `
                               onStartShouldSetResponder={[Function]}
                               style={
                                 {
-                                  "marginBottom": 16,
+                                  "opacity": 1,
                                 }
                               }
                             >
-                              <RNGestureHandlerButton
-                                collapsable={false}
-                                delayLongPress={600}
-                                enabled={true}
-                                exclusive={true}
-                                handlerTag={3}
-                                handlerType="NativeViewGestureHandler"
-                                onGestureEvent={[Function]}
-                                onGestureHandlerEvent={[Function]}
-                                onGestureHandlerStateChange={[Function]}
-                                onHandlerStateChange={[Function]}
-                                rippleColor={0}
-                                touchSoundDisabled={false}
-                              >
-                                <View
-                                  accessible={true}
-                                  collapsable={false}
-                                  style={
+                              <View
+                                style={
+                                  [
                                     {
-                                      "opacity": 1,
-                                    }
+                                      "backgroundColor": "#3742fa",
+                                      "borderColor": "#3742fa",
+                                      "borderRadius": 8,
+                                      "borderWidth": 1,
+                                      "padding": 8,
+                                    },
+                                  ]
+                                }
+                              >
+                                <Text
+                                  style={
+                                    [
+                                      {
+                                        "color": "#000",
+                                        "fontSize": 20,
+                                        "lineHeight": 26,
+                                        "textAlign": "left",
+                                      },
+                                      {
+                                        "textAlign": "center",
+                                      },
+                                      {
+                                        "color": "#fff",
+                                      },
+                                    ]
                                   }
                                 >
-                                  <View
-                                    style={
-                                      [
-                                        {
-                                          "backgroundColor": "#3742fa",
-                                          "borderColor": "#3742fa",
-                                          "borderRadius": 8,
-                                          "borderWidth": 1,
-                                          "padding": 8,
-                                        },
-                                      ]
-                                    }
-                                  >
-                                    <Text
-                                      style={
-                                        [
-                                          {
-                                            "color": "#000",
-                                            "fontSize": 20,
-                                            "lineHeight": 26,
-                                            "textAlign": "left",
-                                          },
-                                          {
-                                            "textAlign": "center",
-                                          },
-                                          {
-                                            "color": "#fff",
-                                          },
-                                        ]
-                                      }
-                                    >
-                                      Copy to Clipboard
-                                    </Text>
-                                  </View>
-                                </View>
-                              </RNGestureHandlerButton>
+                                  Copy to Clipboard
+                                </Text>
+                              </View>
                             </View>
                           </View>
                         </RCTScrollView>

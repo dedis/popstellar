@@ -1,12 +1,19 @@
-import { CompositeScreenProps, useRoute } from '@react-navigation/core';
-import { StackScreenProps } from '@react-navigation/stack';
-import React, { useMemo } from 'react';
+import { CompositeScreenProps, useNavigation, useRoute } from '@react-navigation/core';
+import { StackNavigationProp, StackScreenProps } from '@react-navigation/stack';
+import PropTypes from 'prop-types';
+import React, { useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 
+import { ConfirmModal } from 'core/components';
+import BackButton from 'core/components/BackButton';
+import ButtonPadding from 'core/components/ButtonPadding';
+import PoPIcon from 'core/components/PoPIcon';
+import PoPTouchableOpacity from 'core/components/PoPTouchableOpacity';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { LaoEventsParamList } from 'core/navigation/typing/LaoEventsParamList';
 import { LaoParamList } from 'core/navigation/typing/LaoParamList';
 import { Hash, PublicKey } from 'core/objects';
+import { Color, Icon } from 'core/styles';
 import STRINGS from 'resources/strings';
 
 import RollCallClosed from '../components/RollCallClosed';
@@ -23,6 +30,11 @@ type NavigationProps = CompositeScreenProps<
     StackScreenProps<LaoParamList, typeof STRINGS.navigation_lao_events>,
     StackScreenProps<AppParamList, typeof STRINGS.navigation_app_lao>
   >
+>;
+
+type SingleRollCallProps = StackNavigationProp<
+  LaoEventsParamList,
+  typeof STRINGS.events_view_single_roll_call
 >;
 
 /**
@@ -90,10 +102,73 @@ const ViewSingleRollCall = () => {
   }
 };
 
+/**
+ * Return button that shows a confirmation modal if there are new scanned attendees
+ * to prevent the user from losing the new scanned attendees
+ */
+const ReturnButton = ({ padding }: IPropTypes) => {
+  const navigationRoute = useRoute<NavigationProps['route']>();
+  const navigation = useNavigation<SingleRollCallProps>();
+  const { attendeePopTokens: attendeePopTokensStrings, eventId: rollCallId } =
+    navigationRoute.params;
+
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+
+  const selectRollCall = useMemo(() => makeRollCallSelector(new Hash(rollCallId)), [rollCallId]);
+  const rollCall = useSelector(selectRollCall);
+
+  if (
+    rollCall === undefined ||
+    attendeePopTokensStrings === undefined ||
+    // only the organizer -> no new scanned attendees
+    attendeePopTokensStrings.length <= 1
+  ) {
+    return <BackButton padding={padding} testID="backButton" />;
+  }
+
+  // attendees are undefined but poptokens are not -> new scanned attendees
+  if (rollCall.attendees !== undefined) {
+    // attendeesPopTokens longer than rollCall.attendees -> new scanned attendees
+    if (attendeePopTokensStrings?.length <= rollCall.attendees.length) {
+      return <BackButton padding={padding} testID="backButton" />;
+    }
+  }
+
+  // new scanned attendees -> leaving will not save the new attendees
+  return (
+    <>
+      <PoPTouchableOpacity onPress={() => setShowConfirmModal(true)} testID="backButton">
+        <PoPIcon name="arrowBack" color={Color.inactive} size={Icon.size} />
+      </PoPTouchableOpacity>
+      <ButtonPadding paddingAmount={padding || 0} nextToIcon />
+      <ConfirmModal
+        onConfirmPress={navigation.goBack}
+        visibility={showConfirmModal}
+        description={STRINGS.roll_call_leave_description}
+        title={STRINGS.roll_call_leave_confirmation_title}
+        setVisibility={setShowConfirmModal}
+      />
+    </>
+  );
+};
+
+const propTypes = {
+  padding: PropTypes.number,
+};
+
+ReturnButton.propTypes = propTypes;
+
+ReturnButton.defaultProps = {
+  padding: 0,
+};
+
+type IPropTypes = PropTypes.InferProps<typeof propTypes>;
+
 export default ViewSingleRollCall;
 
 export const ViewSingleRollCallScreen: RollCallFeature.LaoEventScreen = {
   id: STRINGS.events_view_single_roll_call,
   Component: ViewSingleRollCall,
   headerTitle: STRINGS.roll_call_event_name,
+  headerLeft: ReturnButton,
 };

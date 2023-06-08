@@ -155,86 +155,69 @@ exports[`SocialHome renders correctly 1`] = `
               <View
                 accessible={true}
                 collapsable={false}
-                focusable={true}
-                onBlur={[Function]}
+                focusable={false}
                 onClick={[Function]}
-                onFocus={[Function]}
                 onResponderGrant={[Function]}
                 onResponderMove={[Function]}
                 onResponderRelease={[Function]}
                 onResponderTerminate={[Function]}
                 onResponderTerminationRequest={[Function]}
                 onStartShouldSetResponder={[Function]}
-                style={{}}
+                style={
+                  {
+                    "opacity": 1,
+                  }
+                }
                 testID="new_chirp_publish"
               >
-                <RNGestureHandlerButton
-                  collapsable={false}
-                  delayLongPress={600}
-                  enabled={true}
-                  exclusive={true}
-                  handlerTag={2}
-                  handlerType="NativeViewGestureHandler"
-                  onGestureEvent={[Function]}
-                  onGestureHandlerEvent={[Function]}
-                  onGestureHandlerStateChange={[Function]}
-                  onHandlerStateChange={[Function]}
-                  rippleColor={0}
-                  touchSoundDisabled={false}
-                >
-                  <View
-                    accessible={true}
-                    collapsable={false}
-                    style={
+                <View
+                  style={
+                    [
                       {
-                        "opacity": 1,
-                      }
+                        "backgroundColor": "#3742fa",
+                        "borderColor": "#3742fa",
+                        "borderRadius": 8,
+                        "borderWidth": 1,
+                        "padding": 8,
+                      },
+                      {
+                        "backgroundColor": "#8E8E8E",
+                        "borderColor": "#8E8E8E",
+                      },
+                    ]
+                  }
+                >
+                  <Text
+                    style={
+                      [
+                        {
+                          "color": "#000",
+                          "fontSize": 20,
+                          "lineHeight": 26,
+                          "textAlign": "left",
+                        },
+                        {
+                          "textAlign": "center",
+                        },
+                        {
+                          "color": "#fff",
+                        },
+                      ]
                     }
                   >
-                    <View
-                      style={
-                        [
-                          {
-                            "backgroundColor": "#3742fa",
-                            "borderColor": "#3742fa",
-                            "borderRadius": 8,
-                            "borderWidth": 1,
-                            "padding": 8,
-                          },
-                          {
-                            "backgroundColor": "#8E8E8E",
-                            "borderColor": "#8E8E8E",
-                          },
-                        ]
-                      }
-                    >
-                      <Text
-                        style={
-                          [
-                            {
-                              "color": "#000",
-                              "fontSize": 20,
-                              "lineHeight": 26,
-                              "textAlign": "left",
-                            },
-                            {
-                              "textAlign": "center",
-                            },
-                            {
-                              "color": "#fff",
-                            },
-                          ]
-                        }
-                      >
-                        Publish
-                      </Text>
-                    </View>
-                  </View>
-                </RNGestureHandlerButton>
+                    Publish
+                  </Text>
+                </View>
               </View>
             </View>
           </View>
         </View>
+        <Modal
+          hardwareAccelerated={false}
+          onRequestClose={[Function]}
+          transparent={true}
+          visible={false}
+        />
       </View>
     </View>
   </RCTScrollView>
