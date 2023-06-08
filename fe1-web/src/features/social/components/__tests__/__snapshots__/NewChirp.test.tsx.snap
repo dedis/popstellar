@@ -567,7 +567,7 @@ exports[`NewChirp shows the modal on trimmed chirp and closes it 2`] = `
     >
       <TextInput
         multiline={true}
-        numberOfLines={5}
+        numberOfLines={1}
         onBlur={[Function]}
         onChangeText={[Function]}
         onFocus={[Function]}
@@ -592,10 +592,7 @@ exports[`NewChirp shows the modal on trimmed chirp and closes it 2`] = `
           ]
         }
         testID="new_chirp_input"
-        value="
-This    text
- 	will be trimmed 
- "
+        value=""
       />
       <View
         style={
@@ -626,13 +623,13 @@ This    text
               ]
             }
           >
-            266
+            300
           </Text>
         </View>
         <View
           accessible={true}
           collapsable={false}
-          focusable={true}
+          focusable={false}
           onClick={[Function]}
           onResponderGrant={[Function]}
           onResponderMove={[Function]}
@@ -656,6 +653,10 @@ This    text
                   "borderRadius": 8,
                   "borderWidth": 1,
                   "padding": 8,
+                },
+                {
+                  "backgroundColor": "#8E8E8E",
+                  "borderColor": "#8E8E8E",
                 },
               ]
             }

@@ -1,5 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit';
-import { fireEvent, render } from '@testing-library/react-native';
+import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import React from 'react';
 import { Provider } from 'react-redux';
 import { combineReducers } from 'redux';
@@ -9,7 +9,7 @@ import FeatureContext from 'core/contexts/FeatureContext';
 import { laoReducer, setCurrentLao } from 'features/lao/reducer';
 
 import { SocialMediaContext } from '../../context';
-import { SocialReactContext, SOCIAL_FEATURE_IDENTIFIER } from '../../interface';
+import { SOCIAL_FEATURE_IDENTIFIER, SocialReactContext } from '../../interface';
 import { requestAddChirp } from '../../network/SocialMessageApi';
 import SocialReducer from '../../reducer/SocialReducer';
 import NewChirp from '../NewChirp';
@@ -85,8 +85,8 @@ describe('NewChirp', () => {
     expect(requestAddChirp).toHaveBeenCalledTimes(1);
   });
 
-  it('shows the modal on trimmed chirp and closes it', async () => {
-    const { toJSON, getByTestId } = render(
+  it('shows the modal on trimmed chirp and closes it', () => {
+    const { toJSON, getByTestId, queryByText } = render(
       <Provider store={mockStore}>
         <FeatureContext.Provider value={contextValue}>
           <SocialMediaContext.Provider value={socialContextValue}>
@@ -107,6 +107,7 @@ describe('NewChirp', () => {
     // Accept the modal message
     fireEvent.press(getByTestId('confirm-modal-confirm'));
 
+    waitFor(() => expect(queryByText('300')).not.toBeNull());
     expect(toJSON()).toMatchSnapshot();
   });
 });
