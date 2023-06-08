@@ -1,4 +1,4 @@
-@env=go,scala
+@env=go_server,scala_server
 Feature: Send heartbeats to other servers
 
   Background:

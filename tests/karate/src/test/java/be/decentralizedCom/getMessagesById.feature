@@ -1,4 +1,4 @@
-@env=go,scala
+@env=go_server,scala_server
 Feature: Request messages by id from other servers
 
   Background:
