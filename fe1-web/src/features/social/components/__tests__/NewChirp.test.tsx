@@ -7,6 +7,7 @@ import { combineReducers } from 'redux';
 import { mockLao, mockLaoId, mockPopToken } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
 import { laoReducer, setCurrentLao } from 'features/lao/reducer';
+import STRINGS from 'resources/strings';
 
 import { SocialMediaContext } from '../../context';
 import { SOCIAL_FEATURE_IDENTIFIER, SocialReactContext } from '../../interface';
@@ -65,7 +66,7 @@ describe('NewChirp', () => {
     expect(toJSON()).toMatchSnapshot();
   });
 
-  it('is possible to publish chirps', async () => {
+  it('is possible to publish chirps', () => {
     const { getByTestId } = render(
       <Provider store={mockStore}>
         <FeatureContext.Provider value={contextValue}>
@@ -108,6 +109,24 @@ describe('NewChirp', () => {
     fireEvent.press(getByTestId('confirm-modal-confirm'));
 
     waitFor(() => expect(queryByText('300')).not.toBeNull());
+    expect(toJSON()).toMatchSnapshot();
+  });
+  it('shows the error message on empty trimmed message', () => {
+    const { toJSON, queryByText, getByTestId } = render(
+      <Provider store={mockStore}>
+        <FeatureContext.Provider value={contextValue}>
+          <SocialMediaContext.Provider value={socialContextValue}>
+            <NewChirp />
+          </SocialMediaContext.Provider>
+        </FeatureContext.Provider>
+      </Provider>,
+    );
+
+    const mockText = '   \t\n \r\n  ';
+
+    fireEvent.changeText(getByTestId('new_chirp_input'), mockText);
+
+    expect(queryByText(STRINGS.social_media_empty_chirp)).not.toBeNull();
     expect(toJSON()).toMatchSnapshot();
   });
 });
