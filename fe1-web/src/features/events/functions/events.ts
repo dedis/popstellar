@@ -23,8 +23,9 @@ export const categorizeEventsByTime = (time: Timestamp, events: EventState[]) =>
   const upcomingEvents: EventState[] = [];
 
   events.forEach((e: EventState) => {
-    // if end time is set, the event has ended
-    if (e.end) {
+    // ended events are events that have ended more than
+    // {CURRENT_EVENTS_THRESHOLD_HOURS} hours ago
+    if (e.end && e.end <= t - CURRENT_EVENTS_THRESHOLD_HOURS * 60 * 60) {
       pastEvents.push(e);
       return;
     }
