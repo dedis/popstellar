@@ -117,6 +117,7 @@ const RollCallOpen = ({
 
     return [
       {
+        id: 'roll_call_close_button',
         title: STRINGS.roll_call_close,
         onPress: onCloseRollCall,
         buttonStyle: 'secondary',
@@ -132,10 +133,11 @@ const RollCallOpen = ({
 
   // re-check if wallet has been initialized after focus events
   useEffect(() => {
-    // Return the function to unsubscribe from the event so it gets removed on unmount
-    return navigation.addListener('focus', () => {
+    const unsubscribe = navigation.addListener('focus', () => {
       setHasWalletBeenInitialized(hasSeed());
     });
+    // Return the function to unsubscribe from the event so it gets removed on unmount
+    return unsubscribe;
   }, [navigation, hasSeed]);
 
   useEffect(() => {
