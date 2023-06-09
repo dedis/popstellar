@@ -29,9 +29,7 @@ export const categorizeEventsByTime = (time: Timestamp, events: EventState[]) =>
     // TODO: should find a way to do this without relying on the event type
     // for example, by making that events ends when organizers mark them as ended (same as the others)
     if (
-      (e.eventType === 'MEETING' &&
-        e.end &&
-        e.end <= t) ||
+      (e.eventType === 'MEETING' && e.end && e.end <= t) ||
       (e.eventType !== 'MEETING' && e.end)
     ) {
       pastEvents.push(e);
