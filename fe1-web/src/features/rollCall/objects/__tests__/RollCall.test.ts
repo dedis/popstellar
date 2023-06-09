@@ -371,7 +371,7 @@ describe('RollCall object', () => {
     });
 
     it('does not log a warning when list of attendees is sorted (w. uppercase & lowercase)', () => {
-      const attendeesWithUpperCase = ['attendee1', 'Attendee2'].sort((a, b) => a.localeCompare(b));
+      const attendeesWithUpperCase = ['attendee1', 'Attendee2'].sort();
       const createWrongRollCall = () =>
         new RollCall({
           id: ID,
