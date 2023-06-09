@@ -102,6 +102,8 @@ Here's the annotated directory tree:
 │   │
 │   ├── rollCall                 # feature dealing with roll calls, a type of event
 │   │
+│   ├── popcha                   # feature dealing with popcha
+│   │
 │   ├── social                   # feature dealing with social media functionality
 │   │
 │   ├── wallet                   # feature providing a HD-Wallet for safekeeping of secrets

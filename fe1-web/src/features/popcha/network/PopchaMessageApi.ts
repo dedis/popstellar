@@ -25,7 +25,6 @@ export const sendPopchaAuthRequest = (
   state: string | null,
   response_mode: string | null,
   laoId: Hash,
-  // TODO: hook currently throwing error
   generateToken: (laoId: Hash, clientId: Hash | undefined) => Promise<PopToken>,
 ): Promise<void> => {
   const token = generateToken(laoId, Hash.fromString(client_id));

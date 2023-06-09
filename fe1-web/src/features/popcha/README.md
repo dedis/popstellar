@@ -1,6 +1,7 @@
 # PoPCha
 
-Provides a scanner that allows users to scan a QR code in order to authenticate to a 3rd party website and proove that they belong to a specific LAO. 
+Provides a scanner that allows users to scan a QR code in order to authenticate to a 3rd party website and proove that they belong to a specific LAO.
+The user can also manually add the url.
 
 ## Dependencies
 
