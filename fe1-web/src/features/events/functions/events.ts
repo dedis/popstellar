@@ -31,7 +31,7 @@ export const categorizeEventsByTime = (time: Timestamp, events: EventState[]) =>
     if (
       (e.eventType === 'MEETING' &&
         e.end &&
-        e.end <= t - CURRENT_EVENTS_THRESHOLD_HOURS * 60 * 60) ||
+        e.end <= t) ||
       (e.eventType !== 'MEETING' && e.end)
     ) {
       pastEvents.push(e);
