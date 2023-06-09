@@ -75,8 +75,6 @@ exports[`NewChirp renders correctly 1`] = `
       <View
         style={
           {
-            "alignItems": "center",
-            "alignSelf": "flex-end",
             "flexDirection": "row",
             "marginTop": 16,
           }
@@ -85,58 +83,17 @@ exports[`NewChirp renders correctly 1`] = `
         <View
           style={
             {
-              "marginRight": 16,
+              "alignContent": "flex-end",
+              "flexDirection": "row",
+              "marginLeft": "auto",
             }
           }
-        >
-          <Text
-            style={
-              [
-                {
-                  "color": "#000",
-                  "fontSize": 20,
-                  "lineHeight": 26,
-                  "textAlign": "left",
-                },
-              ]
-            }
-          >
-            300
-          </Text>
-        </View>
-        <View
-          accessible={true}
-          collapsable={false}
-          focusable={false}
-          onClick={[Function]}
-          onResponderGrant={[Function]}
-          onResponderMove={[Function]}
-          onResponderRelease={[Function]}
-          onResponderTerminate={[Function]}
-          onResponderTerminationRequest={[Function]}
-          onStartShouldSetResponder={[Function]}
-          style={
-            {
-              "opacity": 1,
-            }
-          }
-          testID="new_chirp_publish"
         >
           <View
             style={
-              [
-                {
-                  "backgroundColor": "#3742fa",
-                  "borderColor": "#3742fa",
-                  "borderRadius": 8,
-                  "borderWidth": 1,
-                  "padding": 8,
-                },
-                {
-                  "backgroundColor": "#8E8E8E",
-                  "borderColor": "#8E8E8E",
-                },
-              ]
+              {
+                "marginRight": 16,
+              }
             }
           >
             <Text
@@ -148,17 +105,68 @@ exports[`NewChirp renders correctly 1`] = `
                     "lineHeight": 26,
                     "textAlign": "left",
                   },
+                ]
+              }
+            >
+              300
+            </Text>
+          </View>
+          <View
+            accessible={true}
+            collapsable={false}
+            focusable={false}
+            onClick={[Function]}
+            onResponderGrant={[Function]}
+            onResponderMove={[Function]}
+            onResponderRelease={[Function]}
+            onResponderTerminate={[Function]}
+            onResponderTerminationRequest={[Function]}
+            onStartShouldSetResponder={[Function]}
+            style={
+              {
+                "opacity": 1,
+              }
+            }
+            testID="new_chirp_publish"
+          >
+            <View
+              style={
+                [
                   {
-                    "textAlign": "center",
+                    "backgroundColor": "#3742fa",
+                    "borderColor": "#3742fa",
+                    "borderRadius": 8,
+                    "borderWidth": 1,
+                    "padding": 8,
                   },
                   {
-                    "color": "#fff",
+                    "backgroundColor": "#8E8E8E",
+                    "borderColor": "#8E8E8E",
                   },
                 ]
               }
             >
-              Publish
-            </Text>
+              <Text
+                style={
+                  [
+                    {
+                      "color": "#000",
+                      "fontSize": 20,
+                      "lineHeight": 26,
+                      "textAlign": "left",
+                    },
+                    {
+                      "textAlign": "center",
+                    },
+                    {
+                      "color": "#fff",
+                    },
+                  ]
+                }
+              >
+                Publish
+              </Text>
+            </View>
           </View>
         </View>
       </View>
@@ -250,68 +258,42 @@ exports[`NewChirp shows the error message on empty trimmed message 1`] = `
       <View
         style={
           {
-            "alignItems": "center",
-            "alignSelf": "flex-end",
             "flexDirection": "row",
             "marginTop": 16,
           }
         }
       >
-        <View
+        <Text
           style={
-            {
-              "marginRight": 16,
-            }
+            [
+              {
+                "color": "#000",
+                "fontSize": 20,
+                "lineHeight": 26,
+                "textAlign": "left",
+              },
+              {
+                "color": "#e74c3c",
+              },
+            ]
           }
         >
-          <Text
-            style={
-              [
-                {
-                  "color": "#000",
-                  "fontSize": 20,
-                  "lineHeight": 26,
-                  "textAlign": "left",
-                },
-              ]
-            }
-          >
-            290
-          </Text>
-        </View>
+          You chirp will be cropped to an empty chirp. You cannot send an empty chirp.
+        </Text>
         <View
-          accessible={true}
-          collapsable={false}
-          focusable={false}
-          onClick={[Function]}
-          onResponderGrant={[Function]}
-          onResponderMove={[Function]}
-          onResponderRelease={[Function]}
-          onResponderTerminate={[Function]}
-          onResponderTerminationRequest={[Function]}
-          onStartShouldSetResponder={[Function]}
           style={
             {
-              "opacity": 1,
+              "alignContent": "flex-end",
+              "flexDirection": "row",
+              "marginLeft": "auto",
             }
           }
-          testID="new_chirp_publish"
         >
           <View
             style={
-              [
-                {
-                  "backgroundColor": "#3742fa",
-                  "borderColor": "#3742fa",
-                  "borderRadius": 8,
-                  "borderWidth": 1,
-                  "padding": 8,
-                },
-                {
-                  "backgroundColor": "#8E8E8E",
-                  "borderColor": "#8E8E8E",
-                },
-              ]
+              {
+                "marginRight": 16,
+              }
             }
           >
             <Text
@@ -323,42 +305,73 @@ exports[`NewChirp shows the error message on empty trimmed message 1`] = `
                     "lineHeight": 26,
                     "textAlign": "left",
                   },
+                ]
+              }
+            >
+              290
+            </Text>
+          </View>
+          <View
+            accessible={true}
+            collapsable={false}
+            focusable={false}
+            onClick={[Function]}
+            onResponderGrant={[Function]}
+            onResponderMove={[Function]}
+            onResponderRelease={[Function]}
+            onResponderTerminate={[Function]}
+            onResponderTerminationRequest={[Function]}
+            onStartShouldSetResponder={[Function]}
+            style={
+              {
+                "opacity": 1,
+              }
+            }
+            testID="new_chirp_publish"
+          >
+            <View
+              style={
+                [
                   {
-                    "textAlign": "center",
+                    "backgroundColor": "#3742fa",
+                    "borderColor": "#3742fa",
+                    "borderRadius": 8,
+                    "borderWidth": 1,
+                    "padding": 8,
                   },
                   {
-                    "color": "#fff",
+                    "backgroundColor": "#8E8E8E",
+                    "borderColor": "#8E8E8E",
                   },
                 ]
               }
             >
-              Publish
-            </Text>
+              <Text
+                style={
+                  [
+                    {
+                      "color": "#000",
+                      "fontSize": 20,
+                      "lineHeight": 26,
+                      "textAlign": "left",
+                    },
+                    {
+                      "textAlign": "center",
+                    },
+                    {
+                      "color": "#fff",
+                    },
+                  ]
+                }
+              >
+                Publish
+              </Text>
+            </View>
           </View>
         </View>
       </View>
     </View>
   </View>
-  <Text
-    style={
-      [
-        {
-          "color": "#000",
-          "fontSize": 20,
-          "lineHeight": 26,
-          "textAlign": "left",
-        },
-        {
-          "color": "#e74c3c",
-        },
-        {
-          "marginTop": 16,
-        },
-      ]
-    }
-  >
-    You chirp will be cropped to an empty chirp. You cannot send an empty chirp.
-  </Text>
   <Modal
     hardwareAccelerated={false}
     onRequestClose={[Function]}
@@ -446,8 +459,6 @@ This    text
       <View
         style={
           {
-            "alignItems": "center",
-            "alignSelf": "flex-end",
             "flexDirection": "row",
             "marginTop": 16,
           }
@@ -456,54 +467,17 @@ This    text
         <View
           style={
             {
-              "marginRight": 16,
+              "alignContent": "flex-end",
+              "flexDirection": "row",
+              "marginLeft": "auto",
             }
           }
-        >
-          <Text
-            style={
-              [
-                {
-                  "color": "#000",
-                  "fontSize": 20,
-                  "lineHeight": 26,
-                  "textAlign": "left",
-                },
-              ]
-            }
-          >
-            266
-          </Text>
-        </View>
-        <View
-          accessible={true}
-          collapsable={false}
-          focusable={true}
-          onClick={[Function]}
-          onResponderGrant={[Function]}
-          onResponderMove={[Function]}
-          onResponderRelease={[Function]}
-          onResponderTerminate={[Function]}
-          onResponderTerminationRequest={[Function]}
-          onStartShouldSetResponder={[Function]}
-          style={
-            {
-              "opacity": 1,
-            }
-          }
-          testID="new_chirp_publish"
         >
           <View
             style={
-              [
-                {
-                  "backgroundColor": "#3742fa",
-                  "borderColor": "#3742fa",
-                  "borderRadius": 8,
-                  "borderWidth": 1,
-                  "padding": 8,
-                },
-              ]
+              {
+                "marginRight": 16,
+              }
             }
           >
             <Text
@@ -515,17 +489,64 @@ This    text
                     "lineHeight": 26,
                     "textAlign": "left",
                   },
+                ]
+              }
+            >
+              266
+            </Text>
+          </View>
+          <View
+            accessible={true}
+            collapsable={false}
+            focusable={true}
+            onClick={[Function]}
+            onResponderGrant={[Function]}
+            onResponderMove={[Function]}
+            onResponderRelease={[Function]}
+            onResponderTerminate={[Function]}
+            onResponderTerminationRequest={[Function]}
+            onStartShouldSetResponder={[Function]}
+            style={
+              {
+                "opacity": 1,
+              }
+            }
+            testID="new_chirp_publish"
+          >
+            <View
+              style={
+                [
                   {
-                    "textAlign": "center",
-                  },
-                  {
-                    "color": "#fff",
+                    "backgroundColor": "#3742fa",
+                    "borderColor": "#3742fa",
+                    "borderRadius": 8,
+                    "borderWidth": 1,
+                    "padding": 8,
                   },
                 ]
               }
             >
-              Publish
-            </Text>
+              <Text
+                style={
+                  [
+                    {
+                      "color": "#000",
+                      "fontSize": 20,
+                      "lineHeight": 26,
+                      "textAlign": "left",
+                    },
+                    {
+                      "textAlign": "center",
+                    },
+                    {
+                      "color": "#fff",
+                    },
+                  ]
+                }
+              >
+                Publish
+              </Text>
+            </View>
           </View>
         </View>
       </View>
@@ -652,7 +673,7 @@ This    text
             }
           }
         >
-          Your chirp has been trimmed to : 
+          You have used more spacing characters than allowed. To improve readability, your chirp will be edited to : 
 
  This text will be trimmed
 
@@ -792,8 +813,6 @@ exports[`NewChirp shows the modal on trimmed chirp and closes it 2`] = `
       <View
         style={
           {
-            "alignItems": "center",
-            "alignSelf": "flex-end",
             "flexDirection": "row",
             "marginTop": 16,
           }
@@ -802,58 +821,17 @@ exports[`NewChirp shows the modal on trimmed chirp and closes it 2`] = `
         <View
           style={
             {
-              "marginRight": 16,
+              "alignContent": "flex-end",
+              "flexDirection": "row",
+              "marginLeft": "auto",
             }
           }
-        >
-          <Text
-            style={
-              [
-                {
-                  "color": "#000",
-                  "fontSize": 20,
-                  "lineHeight": 26,
-                  "textAlign": "left",
-                },
-              ]
-            }
-          >
-            300
-          </Text>
-        </View>
-        <View
-          accessible={true}
-          collapsable={false}
-          focusable={false}
-          onClick={[Function]}
-          onResponderGrant={[Function]}
-          onResponderMove={[Function]}
-          onResponderRelease={[Function]}
-          onResponderTerminate={[Function]}
-          onResponderTerminationRequest={[Function]}
-          onStartShouldSetResponder={[Function]}
-          style={
-            {
-              "opacity": 1,
-            }
-          }
-          testID="new_chirp_publish"
         >
           <View
             style={
-              [
-                {
-                  "backgroundColor": "#3742fa",
-                  "borderColor": "#3742fa",
-                  "borderRadius": 8,
-                  "borderWidth": 1,
-                  "padding": 8,
-                },
-                {
-                  "backgroundColor": "#8E8E8E",
-                  "borderColor": "#8E8E8E",
-                },
-              ]
+              {
+                "marginRight": 16,
+              }
             }
           >
             <Text
@@ -865,17 +843,68 @@ exports[`NewChirp shows the modal on trimmed chirp and closes it 2`] = `
                     "lineHeight": 26,
                     "textAlign": "left",
                   },
+                ]
+              }
+            >
+              300
+            </Text>
+          </View>
+          <View
+            accessible={true}
+            collapsable={false}
+            focusable={false}
+            onClick={[Function]}
+            onResponderGrant={[Function]}
+            onResponderMove={[Function]}
+            onResponderRelease={[Function]}
+            onResponderTerminate={[Function]}
+            onResponderTerminationRequest={[Function]}
+            onStartShouldSetResponder={[Function]}
+            style={
+              {
+                "opacity": 1,
+              }
+            }
+            testID="new_chirp_publish"
+          >
+            <View
+              style={
+                [
                   {
-                    "textAlign": "center",
+                    "backgroundColor": "#3742fa",
+                    "borderColor": "#3742fa",
+                    "borderRadius": 8,
+                    "borderWidth": 1,
+                    "padding": 8,
                   },
                   {
-                    "color": "#fff",
+                    "backgroundColor": "#8E8E8E",
+                    "borderColor": "#8E8E8E",
                   },
                 ]
               }
             >
-              Publish
-            </Text>
+              <Text
+                style={
+                  [
+                    {
+                      "color": "#000",
+                      "fontSize": 20,
+                      "lineHeight": 26,
+                      "textAlign": "left",
+                    },
+                    {
+                      "textAlign": "center",
+                    },
+                    {
+                      "color": "#fff",
+                    },
+                  ]
+                }
+              >
+                Publish
+              </Text>
+            </View>
           </View>
         </View>
       </View>

@@ -81,8 +81,6 @@ exports[`TextInputChirp renders correctly when writing less than 300 chars 1`] =
     <View
       style={
         {
-          "alignItems": "center",
-          "alignSelf": "flex-end",
           "flexDirection": "row",
           "marginTop": 16,
         }
@@ -91,57 +89,17 @@ exports[`TextInputChirp renders correctly when writing less than 300 chars 1`] =
       <View
         style={
           {
-            "marginRight": 16,
-          }
-        }
-      >
-        <Text
-          style={
-            [
-              {
-                "color": "#000",
-                "fontSize": 20,
-                "lineHeight": 26,
-                "textAlign": "left",
-              },
-            ]
-          }
-        >
-          300
-        </Text>
-      </View>
-      <View
-        accessible={true}
-        collapsable={false}
-        focusable={false}
-        onClick={[Function]}
-        onResponderGrant={[Function]}
-        onResponderMove={[Function]}
-        onResponderRelease={[Function]}
-        onResponderTerminate={[Function]}
-        onResponderTerminationRequest={[Function]}
-        onStartShouldSetResponder={[Function]}
-        style={
-          {
-            "opacity": 1,
+            "alignContent": "flex-end",
+            "flexDirection": "row",
+            "marginLeft": "auto",
           }
         }
       >
         <View
           style={
-            [
-              {
-                "backgroundColor": "#3742fa",
-                "borderColor": "#3742fa",
-                "borderRadius": 8,
-                "borderWidth": 1,
-                "padding": 8,
-              },
-              {
-                "backgroundColor": "#8E8E8E",
-                "borderColor": "#8E8E8E",
-              },
-            ]
+            {
+              "marginRight": 16,
+            }
           }
         >
           <Text
@@ -153,17 +111,67 @@ exports[`TextInputChirp renders correctly when writing less than 300 chars 1`] =
                   "lineHeight": 26,
                   "textAlign": "left",
                 },
+              ]
+            }
+          >
+            300
+          </Text>
+        </View>
+        <View
+          accessible={true}
+          collapsable={false}
+          focusable={false}
+          onClick={[Function]}
+          onResponderGrant={[Function]}
+          onResponderMove={[Function]}
+          onResponderRelease={[Function]}
+          onResponderTerminate={[Function]}
+          onResponderTerminationRequest={[Function]}
+          onStartShouldSetResponder={[Function]}
+          style={
+            {
+              "opacity": 1,
+            }
+          }
+        >
+          <View
+            style={
+              [
                 {
-                  "textAlign": "center",
+                  "backgroundColor": "#3742fa",
+                  "borderColor": "#3742fa",
+                  "borderRadius": 8,
+                  "borderWidth": 1,
+                  "padding": 8,
                 },
                 {
-                  "color": "#fff",
+                  "backgroundColor": "#8E8E8E",
+                  "borderColor": "#8E8E8E",
                 },
               ]
             }
           >
-            Publish
-          </Text>
+            <Text
+              style={
+                [
+                  {
+                    "color": "#000",
+                    "fontSize": 20,
+                    "lineHeight": 26,
+                    "textAlign": "left",
+                  },
+                  {
+                    "textAlign": "center",
+                  },
+                  {
+                    "color": "#fff",
+                  },
+                ]
+              }
+            >
+              Publish
+            </Text>
+          </View>
         </View>
       </View>
     </View>
@@ -252,8 +260,6 @@ exports[`TextInputChirp renders correctly when writing more than 300 chars 1`] =
     <View
       style={
         {
-          "alignItems": "center",
-          "alignSelf": "flex-end",
           "flexDirection": "row",
           "marginTop": 16,
         }
@@ -262,57 +268,17 @@ exports[`TextInputChirp renders correctly when writing more than 300 chars 1`] =
       <View
         style={
           {
-            "marginRight": 16,
-          }
-        }
-      >
-        <Text
-          style={
-            [
-              {
-                "color": "#000",
-                "fontSize": 20,
-                "lineHeight": 26,
-                "textAlign": "left",
-              },
-            ]
-          }
-        >
-          300
-        </Text>
-      </View>
-      <View
-        accessible={true}
-        collapsable={false}
-        focusable={false}
-        onClick={[Function]}
-        onResponderGrant={[Function]}
-        onResponderMove={[Function]}
-        onResponderRelease={[Function]}
-        onResponderTerminate={[Function]}
-        onResponderTerminationRequest={[Function]}
-        onStartShouldSetResponder={[Function]}
-        style={
-          {
-            "opacity": 1,
+            "alignContent": "flex-end",
+            "flexDirection": "row",
+            "marginLeft": "auto",
           }
         }
       >
         <View
           style={
-            [
-              {
-                "backgroundColor": "#3742fa",
-                "borderColor": "#3742fa",
-                "borderRadius": 8,
-                "borderWidth": 1,
-                "padding": 8,
-              },
-              {
-                "backgroundColor": "#8E8E8E",
-                "borderColor": "#8E8E8E",
-              },
-            ]
+            {
+              "marginRight": 16,
+            }
           }
         >
           <Text
@@ -324,17 +290,67 @@ exports[`TextInputChirp renders correctly when writing more than 300 chars 1`] =
                   "lineHeight": 26,
                   "textAlign": "left",
                 },
+              ]
+            }
+          >
+            300
+          </Text>
+        </View>
+        <View
+          accessible={true}
+          collapsable={false}
+          focusable={false}
+          onClick={[Function]}
+          onResponderGrant={[Function]}
+          onResponderMove={[Function]}
+          onResponderRelease={[Function]}
+          onResponderTerminate={[Function]}
+          onResponderTerminationRequest={[Function]}
+          onStartShouldSetResponder={[Function]}
+          style={
+            {
+              "opacity": 1,
+            }
+          }
+        >
+          <View
+            style={
+              [
                 {
-                  "textAlign": "center",
+                  "backgroundColor": "#3742fa",
+                  "borderColor": "#3742fa",
+                  "borderRadius": 8,
+                  "borderWidth": 1,
+                  "padding": 8,
                 },
                 {
-                  "color": "#fff",
+                  "backgroundColor": "#8E8E8E",
+                  "borderColor": "#8E8E8E",
                 },
               ]
             }
           >
-            Publish
-          </Text>
+            <Text
+              style={
+                [
+                  {
+                    "color": "#000",
+                    "fontSize": 20,
+                    "lineHeight": 26,
+                    "textAlign": "left",
+                  },
+                  {
+                    "textAlign": "center",
+                  },
+                  {
+                    "color": "#fff",
+                  },
+                ]
+              }
+            >
+              Publish
+            </Text>
+          </View>
         </View>
       </View>
     </View>
@@ -409,8 +425,6 @@ exports[`TextInputChirp renders correctly with placeholder 1`] = `
     <View
       style={
         {
-          "alignItems": "center",
-          "alignSelf": "flex-end",
           "flexDirection": "row",
           "marginTop": 16,
         }
@@ -419,57 +433,17 @@ exports[`TextInputChirp renders correctly with placeholder 1`] = `
       <View
         style={
           {
-            "marginRight": 16,
-          }
-        }
-      >
-        <Text
-          style={
-            [
-              {
-                "color": "#000",
-                "fontSize": 20,
-                "lineHeight": 26,
-                "textAlign": "left",
-              },
-            ]
-          }
-        >
-          300
-        </Text>
-      </View>
-      <View
-        accessible={true}
-        collapsable={false}
-        focusable={false}
-        onClick={[Function]}
-        onResponderGrant={[Function]}
-        onResponderMove={[Function]}
-        onResponderRelease={[Function]}
-        onResponderTerminate={[Function]}
-        onResponderTerminationRequest={[Function]}
-        onStartShouldSetResponder={[Function]}
-        style={
-          {
-            "opacity": 1,
+            "alignContent": "flex-end",
+            "flexDirection": "row",
+            "marginLeft": "auto",
           }
         }
       >
         <View
           style={
-            [
-              {
-                "backgroundColor": "#3742fa",
-                "borderColor": "#3742fa",
-                "borderRadius": 8,
-                "borderWidth": 1,
-                "padding": 8,
-              },
-              {
-                "backgroundColor": "#8E8E8E",
-                "borderColor": "#8E8E8E",
-              },
-            ]
+            {
+              "marginRight": 16,
+            }
           }
         >
           <Text
@@ -481,17 +455,67 @@ exports[`TextInputChirp renders correctly with placeholder 1`] = `
                   "lineHeight": 26,
                   "textAlign": "left",
                 },
+              ]
+            }
+          >
+            300
+          </Text>
+        </View>
+        <View
+          accessible={true}
+          collapsable={false}
+          focusable={false}
+          onClick={[Function]}
+          onResponderGrant={[Function]}
+          onResponderMove={[Function]}
+          onResponderRelease={[Function]}
+          onResponderTerminate={[Function]}
+          onResponderTerminationRequest={[Function]}
+          onStartShouldSetResponder={[Function]}
+          style={
+            {
+              "opacity": 1,
+            }
+          }
+        >
+          <View
+            style={
+              [
                 {
-                  "textAlign": "center",
+                  "backgroundColor": "#3742fa",
+                  "borderColor": "#3742fa",
+                  "borderRadius": 8,
+                  "borderWidth": 1,
+                  "padding": 8,
                 },
                 {
-                  "color": "#fff",
+                  "backgroundColor": "#8E8E8E",
+                  "borderColor": "#8E8E8E",
                 },
               ]
             }
           >
-            Publish
-          </Text>
+            <Text
+              style={
+                [
+                  {
+                    "color": "#000",
+                    "fontSize": 20,
+                    "lineHeight": 26,
+                    "textAlign": "left",
+                  },
+                  {
+                    "textAlign": "center",
+                  },
+                  {
+                    "color": "#fff",
+                  },
+                ]
+              }
+            >
+              Publish
+            </Text>
+          </View>
         </View>
       </View>
     </View>
@@ -560,8 +584,6 @@ exports[`TextInputChirp renders correctly with undefined public key 1`] = `
     <View
       style={
         {
-          "alignItems": "center",
-          "alignSelf": "flex-end",
           "flexDirection": "row",
           "marginTop": 16,
         }
@@ -570,57 +592,17 @@ exports[`TextInputChirp renders correctly with undefined public key 1`] = `
       <View
         style={
           {
-            "marginRight": 16,
-          }
-        }
-      >
-        <Text
-          style={
-            [
-              {
-                "color": "#000",
-                "fontSize": 20,
-                "lineHeight": 26,
-                "textAlign": "left",
-              },
-            ]
-          }
-        >
-          300
-        </Text>
-      </View>
-      <View
-        accessible={true}
-        collapsable={false}
-        focusable={false}
-        onClick={[Function]}
-        onResponderGrant={[Function]}
-        onResponderMove={[Function]}
-        onResponderRelease={[Function]}
-        onResponderTerminate={[Function]}
-        onResponderTerminationRequest={[Function]}
-        onStartShouldSetResponder={[Function]}
-        style={
-          {
-            "opacity": 1,
+            "alignContent": "flex-end",
+            "flexDirection": "row",
+            "marginLeft": "auto",
           }
         }
       >
         <View
           style={
-            [
-              {
-                "backgroundColor": "#3742fa",
-                "borderColor": "#3742fa",
-                "borderRadius": 8,
-                "borderWidth": 1,
-                "padding": 8,
-              },
-              {
-                "backgroundColor": "#8E8E8E",
-                "borderColor": "#8E8E8E",
-              },
-            ]
+            {
+              "marginRight": 16,
+            }
           }
         >
           <Text
@@ -632,17 +614,67 @@ exports[`TextInputChirp renders correctly with undefined public key 1`] = `
                   "lineHeight": 26,
                   "textAlign": "left",
                 },
+              ]
+            }
+          >
+            300
+          </Text>
+        </View>
+        <View
+          accessible={true}
+          collapsable={false}
+          focusable={false}
+          onClick={[Function]}
+          onResponderGrant={[Function]}
+          onResponderMove={[Function]}
+          onResponderRelease={[Function]}
+          onResponderTerminate={[Function]}
+          onResponderTerminationRequest={[Function]}
+          onStartShouldSetResponder={[Function]}
+          style={
+            {
+              "opacity": 1,
+            }
+          }
+        >
+          <View
+            style={
+              [
                 {
-                  "textAlign": "center",
+                  "backgroundColor": "#3742fa",
+                  "borderColor": "#3742fa",
+                  "borderRadius": 8,
+                  "borderWidth": 1,
+                  "padding": 8,
                 },
                 {
-                  "color": "#fff",
+                  "backgroundColor": "#8E8E8E",
+                  "borderColor": "#8E8E8E",
                 },
               ]
             }
           >
-            Publish
-          </Text>
+            <Text
+              style={
+                [
+                  {
+                    "color": "#000",
+                    "fontSize": 20,
+                    "lineHeight": 26,
+                    "textAlign": "left",
+                  },
+                  {
+                    "textAlign": "center",
+                  },
+                  {
+                    "color": "#fff",
+                  },
+                ]
+              }
+            >
+              Publish
+            </Text>
+          </View>
         </View>
       </View>
     </View>
@@ -717,8 +749,6 @@ exports[`TextInputChirp renders correctly without placeholder 1`] = `
     <View
       style={
         {
-          "alignItems": "center",
-          "alignSelf": "flex-end",
           "flexDirection": "row",
           "marginTop": 16,
         }
@@ -727,57 +757,17 @@ exports[`TextInputChirp renders correctly without placeholder 1`] = `
       <View
         style={
           {
-            "marginRight": 16,
-          }
-        }
-      >
-        <Text
-          style={
-            [
-              {
-                "color": "#000",
-                "fontSize": 20,
-                "lineHeight": 26,
-                "textAlign": "left",
-              },
-            ]
-          }
-        >
-          300
-        </Text>
-      </View>
-      <View
-        accessible={true}
-        collapsable={false}
-        focusable={false}
-        onClick={[Function]}
-        onResponderGrant={[Function]}
-        onResponderMove={[Function]}
-        onResponderRelease={[Function]}
-        onResponderTerminate={[Function]}
-        onResponderTerminationRequest={[Function]}
-        onStartShouldSetResponder={[Function]}
-        style={
-          {
-            "opacity": 1,
+            "alignContent": "flex-end",
+            "flexDirection": "row",
+            "marginLeft": "auto",
           }
         }
       >
         <View
           style={
-            [
-              {
-                "backgroundColor": "#3742fa",
-                "borderColor": "#3742fa",
-                "borderRadius": 8,
-                "borderWidth": 1,
-                "padding": 8,
-              },
-              {
-                "backgroundColor": "#8E8E8E",
-                "borderColor": "#8E8E8E",
-              },
-            ]
+            {
+              "marginRight": 16,
+            }
           }
         >
           <Text
@@ -789,17 +779,67 @@ exports[`TextInputChirp renders correctly without placeholder 1`] = `
                   "lineHeight": 26,
                   "textAlign": "left",
                 },
+              ]
+            }
+          >
+            300
+          </Text>
+        </View>
+        <View
+          accessible={true}
+          collapsable={false}
+          focusable={false}
+          onClick={[Function]}
+          onResponderGrant={[Function]}
+          onResponderMove={[Function]}
+          onResponderRelease={[Function]}
+          onResponderTerminate={[Function]}
+          onResponderTerminationRequest={[Function]}
+          onStartShouldSetResponder={[Function]}
+          style={
+            {
+              "opacity": 1,
+            }
+          }
+        >
+          <View
+            style={
+              [
                 {
-                  "textAlign": "center",
+                  "backgroundColor": "#3742fa",
+                  "borderColor": "#3742fa",
+                  "borderRadius": 8,
+                  "borderWidth": 1,
+                  "padding": 8,
                 },
                 {
-                  "color": "#fff",
+                  "backgroundColor": "#8E8E8E",
+                  "borderColor": "#8E8E8E",
                 },
               ]
             }
           >
-            Publish
-          </Text>
+            <Text
+              style={
+                [
+                  {
+                    "color": "#000",
+                    "fontSize": 20,
+                    "lineHeight": 26,
+                    "textAlign": "left",
+                  },
+                  {
+                    "textAlign": "center",
+                  },
+                  {
+                    "color": "#fff",
+                  },
+                ]
+              }
+            >
+              Publish
+            </Text>
+          </View>
         </View>
       </View>
     </View>

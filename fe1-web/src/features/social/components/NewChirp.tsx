@@ -30,14 +30,20 @@ const NewChirp = () => {
   const isConnected = SocialHooks.useConnectedToLao();
   const [showPublishConfirmation, setShowPublishConfirmation] = useState(false);
   const trimmedInputChirp = useMemo(() => inputChirp.replace(/\s+/g, ' ').trim(), [inputChirp]);
+  const publishDisabled = !isConnected || !currentUserPopTokenPublicKey;
 
+  const errorMessage = useMemo(
+    () =>
+      trimmedInputChirp.length === 0 && inputChirp.length > 0 && !publishDisabled
+        ? STRINGS.social_media_empty_chirp
+        : undefined,
+    [inputChirp.length, publishDisabled, trimmedInputChirp.length],
+  );
   if (laoId === undefined) {
     throw new Error('Impossible to render Social Home, current lao id is undefined');
   }
 
   // The publish button is disabled in offline mode and when the user public key is not defined
-  const publishDisabled =
-    !isConnected || !currentUserPopTokenPublicKey || trimmedInputChirp.length < 1;
 
   const publishChirp = () => {
     setShowPublishConfirmation(false);
@@ -72,17 +78,13 @@ const NewChirp = () => {
             setShowPublishConfirmation(true);
           }
         }}
-        disabled={publishDisabled}
+        disabled={publishDisabled || trimmedInputChirp.length < 1}
         currentUserPublicKey={currentUserPopTokenPublicKey}
+        errorMessage={errorMessage}
       />
       {!currentUserPopTokenPublicKey && (
         <Text style={[Typography.base, Typography.error, styles.errorMessage]}>
           {STRINGS.social_media_create_chirp_no_pop_token}
-        </Text>
-      )}
-      {trimmedInputChirp.length < 1 && inputChirp.length > 0 && (
-        <Text style={[Typography.base, Typography.error, styles.errorMessage]}>
-          {STRINGS.social_media_empty_chirp}
         </Text>
       )}
       <ConfirmModal

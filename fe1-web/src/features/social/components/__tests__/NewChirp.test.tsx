@@ -87,7 +87,7 @@ describe('NewChirp', () => {
   });
 
   it('shows the modal on trimmed chirp and closes it', async () => {
-    const { toJSON, getByTestId, findByText } = render(
+    const { toJSON, getByTestId, findByPlaceholderText } = render(
       <Provider store={mockStore}>
         <FeatureContext.Provider value={contextValue}>
           <SocialMediaContext.Provider value={socialContextValue}>
@@ -108,7 +108,7 @@ describe('NewChirp', () => {
     // Accept the modal message
     fireEvent.press(getByTestId('confirm-modal-confirm'));
 
-    expect(await findByText('300')).not.toBeNull();
+    expect(await findByPlaceholderText(STRINGS.your_chirp)).not.toBeNull();
     expect(toJSON()).toMatchSnapshot();
   });
   it('shows the error message on empty trimmed message', () => {
