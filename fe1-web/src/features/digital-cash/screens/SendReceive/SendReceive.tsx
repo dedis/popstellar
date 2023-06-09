@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback,
 } from 'react-native-gesture-handler';
+import { useToast } from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
 
 import {
@@ -26,6 +27,7 @@ import { DigitalCashParamList } from 'core/navigation/typing/DigitalCashParamLis
 import { Hash, PublicKey } from 'core/objects';
 import { ScannablePopToken } from 'core/objects/ScannablePopToken';
 import { Color, Icon, ModalStyles, Spacing, Typography } from 'core/styles';
+import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
 
 import { DigitalCashHooks } from '../../hooks';
@@ -290,6 +292,8 @@ export const SendReceiveHeaderRight = () => {
   const route = useRoute<NavigationProps['route']>();
   const laoId = DigitalCashHooks.useCurrentLaoId();
 
+  const toast = useToast();
+
   const { rollCallId: serializedRollCallId, isCoinbase } = route.params;
   const rollCallId = useMemo(
     () => (serializedRollCallId ? new Hash(serializedRollCallId) : undefined),
@@ -300,6 +304,22 @@ export const SendReceiveHeaderRight = () => {
 
   const popToken = useMemo(() => rollCallToken?.token.publicKey.valueOf() || '', [rollCallToken]);
 
+  const serializedPopToken = useMemo(() => {
+    try {
+      return ScannablePopToken.encodePopToken({ pop_token: popToken });
+    } catch {
+      return null;
+    }
+  }, [popToken]);
+
+  if (serializedPopToken === null) {
+    toast.show(STRINGS.digital_cash_error_rollcall_not_defined, {
+      type: 'warning',
+      placement: 'bottom',
+      duration: FOUR_SECONDS,
+    });
+    return null;
+  }
   if (isCoinbase) {
     return null;
   }
@@ -329,7 +349,7 @@ export const SendReceiveHeaderRight = () => {
 
           <View>
             <QRCode
-              value={ScannablePopToken.encodePopToken({ pop_token: popToken })}
+              value={serializedPopToken || ''}
               overlayText={STRINGS.digital_cash_wallet_qrcode_text}
             />
           </View>

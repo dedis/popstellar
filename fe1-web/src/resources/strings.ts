@@ -510,6 +510,8 @@ namespace STRINGS {
     'Issue to every attendee of this roll call';
 
   export const digital_cash_infinity = '∞';
+  export const digital_cash_error_rollcall_not_defined =
+    'RollcallId not defined, cannot generate PoP token';
 
   /* --- Witness Feature Strings --- */
   export const witness_message_witness = 'Witness Message';
