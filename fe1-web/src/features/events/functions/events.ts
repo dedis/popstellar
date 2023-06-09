@@ -24,7 +24,7 @@ export const categorizeEventsByTime = (time: Timestamp, events: EventState[]) =>
 
   events.forEach((e: EventState) => {
     // ended events are either:
-    // - meetings that have ended more than {CURRENT_EVENTS_THRESHOLD_HOURS} hours ago
+    // - meetings that have ended
     // - other events that have been marked as ended (e.end is set)
     // TODO: should find a way to do this without relying on the event type
     // for example, by making that events ends when organizers mark them as ended (same as the others)
