@@ -32,7 +32,8 @@
             "items": {
                 "type": "string",
                 "contentEncoding": "base64"
-            }
+            },
+            "$comment": "List must be sorted according to byte encoding: -,0...9,A...Z,_,a...z"
         }
     },
     "additionalProperties": false,
