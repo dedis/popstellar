@@ -122,7 +122,7 @@ export function requestCloseRollCall(
       closes: rollCallId,
       closed_at: time,
       // sort the list of tokens to make de-anonymization harder
-      attendees: [...attendees].sort((a, b) => a.toString().localeCompare(b.toString())),
+      attendees: [...attendees].sort(),
     },
     laoId,
   );
