@@ -148,7 +148,7 @@ namespace STRINGS {
   export const your_chirp = 'Your chirp';
   export const deleted_chirp = 'This chirp was deleted';
   export const social_media_ask_publish_trimmed_chirp =
-    'Your chirp has been trimmed to : \n\n {}\n\nDo you still want to publish this chirp ?';
+    'You have used more spacing characters than allowed. To improve readability, your chirp will be edited to : \n\n {}\n\nDo you still want to publish this chirp ?';
   export const social_media_confirm_publish_chirp = 'Confirm publication';
   export const social_media_ask_confirm_delete_chirp =
     'Are you sure you want to delete this chirp?';
@@ -157,6 +157,8 @@ namespace STRINGS {
     'So far nobody has published a chirp and you could be the first one to do so!';
   export const social_media_create_chirp_no_pop_token =
     'In order to post chirps, you first need to participate in a roll-call.';
+  export const social_media_empty_chirp =
+    'You chirp will be cropped to an empty chirp. You cannot send an empty chirp.';
   export const social_media_user_list_unavailable =
     'In order to see other roll call participants you yourself first need to participate in one.';
   export const social_media_your_profile_unavailable =

@@ -123,8 +123,6 @@ exports[`SocialHome renders correctly 1`] = `
             <View
               style={
                 {
-                  "alignItems": "center",
-                  "alignSelf": "flex-end",
                   "flexDirection": "row",
                   "marginTop": 16,
                 }
@@ -133,58 +131,17 @@ exports[`SocialHome renders correctly 1`] = `
               <View
                 style={
                   {
-                    "marginRight": 16,
+                    "alignContent": "flex-end",
+                    "flexDirection": "row",
+                    "marginLeft": "auto",
                   }
                 }
-              >
-                <Text
-                  style={
-                    [
-                      {
-                        "color": "#000",
-                        "fontSize": 20,
-                        "lineHeight": 26,
-                        "textAlign": "left",
-                      },
-                    ]
-                  }
-                >
-                  300
-                </Text>
-              </View>
-              <View
-                accessible={true}
-                collapsable={false}
-                focusable={false}
-                onClick={[Function]}
-                onResponderGrant={[Function]}
-                onResponderMove={[Function]}
-                onResponderRelease={[Function]}
-                onResponderTerminate={[Function]}
-                onResponderTerminationRequest={[Function]}
-                onStartShouldSetResponder={[Function]}
-                style={
-                  {
-                    "opacity": 1,
-                  }
-                }
-                testID="new_chirp_publish"
               >
                 <View
                   style={
-                    [
-                      {
-                        "backgroundColor": "#3742fa",
-                        "borderColor": "#3742fa",
-                        "borderRadius": 8,
-                        "borderWidth": 1,
-                        "padding": 8,
-                      },
-                      {
-                        "backgroundColor": "#8E8E8E",
-                        "borderColor": "#8E8E8E",
-                      },
-                    ]
+                    {
+                      "marginRight": 16,
+                    }
                   }
                 >
                   <Text
@@ -196,17 +153,68 @@ exports[`SocialHome renders correctly 1`] = `
                           "lineHeight": 26,
                           "textAlign": "left",
                         },
+                      ]
+                    }
+                  >
+                    300
+                  </Text>
+                </View>
+                <View
+                  accessible={true}
+                  collapsable={false}
+                  focusable={false}
+                  onClick={[Function]}
+                  onResponderGrant={[Function]}
+                  onResponderMove={[Function]}
+                  onResponderRelease={[Function]}
+                  onResponderTerminate={[Function]}
+                  onResponderTerminationRequest={[Function]}
+                  onStartShouldSetResponder={[Function]}
+                  style={
+                    {
+                      "opacity": 1,
+                    }
+                  }
+                  testID="new_chirp_publish"
+                >
+                  <View
+                    style={
+                      [
                         {
-                          "textAlign": "center",
+                          "backgroundColor": "#3742fa",
+                          "borderColor": "#3742fa",
+                          "borderRadius": 8,
+                          "borderWidth": 1,
+                          "padding": 8,
                         },
                         {
-                          "color": "#fff",
+                          "backgroundColor": "#8E8E8E",
+                          "borderColor": "#8E8E8E",
                         },
                       ]
                     }
                   >
-                    Publish
-                  </Text>
+                    <Text
+                      style={
+                        [
+                          {
+                            "color": "#000",
+                            "fontSize": 20,
+                            "lineHeight": 26,
+                            "textAlign": "left",
+                          },
+                          {
+                            "textAlign": "center",
+                          },
+                          {
+                            "color": "#fff",
+                          },
+                        ]
+                      }
+                    >
+                      Publish
+                    </Text>
+                  </View>
                 </View>
               </View>
             </View>
