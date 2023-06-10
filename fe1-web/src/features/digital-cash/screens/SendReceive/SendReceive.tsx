@@ -349,7 +349,7 @@ export const SendReceiveHeaderRight = () => {
 
           <View>
             <QRCode
-              value={serializedPopToken || ''}
+              value={serializedPopToken}
               overlayText={STRINGS.digital_cash_wallet_qrcode_text}
             />
           </View>
