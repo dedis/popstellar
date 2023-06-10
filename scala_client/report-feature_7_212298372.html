@@ -74,7 +74,7 @@ $(document).ready(function() {
   <tbody>
     <tr class="info">
       <td>scala_client</td>
-      <td>09 Jun 2023, 04:15</td>
+      <td>10 Jun 2023, 04:16</td>
     </tr>
   </tbody>
 </table>
@@ -127,18 +127,18 @@ $(document).ready(function() {
         <tbody>
         <tr>
           <td class="tagname">be/LAO/create.feature</td>
-          <td      class="passed"    >72</td>
+          <td      class="passed"    >80</td>
           <td      class="failed"    >1</td>
           <td     class="skipped"   >1</td>
           <td >0</td>
           <td >0</td>
-          <td class="total">74</td>
+          <td class="total">82</td>
 
           <td  class="passed"    >5</td>
           <td  class="failed"    >1</td>
           <td class="total">6</td>
 
-          <td class="duration" data-value="61225629963">1:1.225</td>
+          <td class="duration" data-value="56355121517">56.355</td>
           <td class="failed">Failed</td>
         </tr>
         </tbody>
@@ -191,7 +191,7 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">4.375</span>
+  <span class="lead-duration duration">4.614</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-1">
@@ -234,7 +234,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/utils/server.feature')</span>
 
-  <span class="lead-duration duration">3.280</span>
+  <span class="lead-duration duration">3.768</span>
 
 </div>
 
@@ -286,9 +286,9 @@ $(document).ready(function() {
 
 <div class="brief step-name-* passed">
   <span class="keyword indention">*</span>
-  <span class="name">call read('classpath:be/mockFrontEnd.feature')</span>
+  <span class="name">call read('classpath:be/mockClient.feature')</span>
 
-  <span class="lead-duration duration">0.824</span>
+  <span class="lead-duration duration">0.110</span>
 
 </div>
 
@@ -313,7 +313,7 @@ $(document).ready(function() {
 
 <div class="brief step-name- passed">
   <span class="keyword indention"></span>
-  <span class="name">be/mockFrontEnd.feature</span>
+  <span class="name">be/mockClient.feature</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -342,7 +342,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/constants.feature')</span>
 
-  <span class="lead-duration duration">0.269</span>
+  <span class="lead-duration duration">0.083</span>
 
 </div>
 
@@ -394,9 +394,36 @@ $(document).ready(function() {
 
 <div class="brief step-name-* passed">
   <span class="keyword indention">*</span>
-  <span class="name">string channel = &quot;/root&quot;</span>
+  <span class="name">def organizer = call createMockClient</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">0.639</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-* passed">
+  <span class="keyword indention">*</span>
+  <span class="name">def validLao = organizer.createValidLao()</span>
+
+  <span class="lead-duration duration">0.012</span>
 
 </div>
 
@@ -436,14 +463,14 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">7.263</span>
+  <span class="lead-duration duration">7.827</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-3">
 
 <div class="brief passed">
   <span class="keyword indention">Scenario</span>
-  <span class="name">Create Lao request with empty lao name should fail with an error response 2</span>
+  <span class="name">Create Lao request with empty lao name should fail with an error response</span>
 
 
      <i class="chevron fa fa-fw"></i>
@@ -477,54 +504,9 @@ $(document).ready(function() {
 
 <div class="brief step-name-Given passed">
   <span class="keyword indention">Given</span>
-  <span class="name">def badLaoReq =</span>
+  <span class="name">def lao = validLao.setName('')</span>
 
-  <span class="lead-duration duration">0.001</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-  <div class="inner-level">
-    <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-5">
-          <a>Doc string</a>
-      </div>
-      <div id="msg-5" class="collapse collapsable-details">
-        <pre>{
-  &quot;object&quot;: &quot;lao&quot;,
-  &quot;action&quot;: &quot;create&quot;,
-  &quot;id&quot;: '#(getLaoIdEmptyName)',
-  &quot;name&quot;: &quot;&quot;,
-  &quot;creation&quot;: 1633098234,
-  &quot;organizer&quot;: '#(getOrganizer)',
-  &quot;witnesses&quot;: []
-}</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-When passed">
-  <span class="keyword indention">When</span>
-  <span class="name">frontend.publish(badLaoReq, channel)</span>
-
-  <span class="lead-duration duration">0.250</span>
+  <span class="lead-duration duration">0.003</span>
 
 </div>
 
@@ -549,9 +531,81 @@ $(document).ready(function() {
 
 <div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
-  <span class="name">json answer = frontend.getBackendResponse(badLaoReq)</span>
+  <span class="name">def badLaoReq =</span>
 
-  <span class="lead-duration duration">1.995</span>
+  <span class="lead-duration duration">0.012</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+  <div class="inner-level">
+    <div class="docstring indention">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-5">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-5" class="collapse collapsable-details">
+        <pre>{
+  &quot;object&quot;: &quot;lao&quot;,
+  &quot;action&quot;: &quot;create&quot;,
+  &quot;id&quot;: &quot;#(lao.id)&quot;,
+  &quot;name&quot;: &quot;#(lao.name)&quot;,
+  &quot;creation&quot;: &quot;#(lao.creation)&quot;,
+  &quot;organizer&quot;: &quot;#(lao.organizerPk)&quot;,
+  &quot;witnesses&quot;: &quot;#(lao.witnesses)&quot;
+}</pre>
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-When passed">
+  <span class="keyword indention">When</span>
+  <span class="name">organizer.publish(badLaoReq, rootChannel)</span>
+
+  <span class="lead-duration duration">0.248</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And passed">
+  <span class="keyword indention">And</span>
+  <span class="name">json answer = organizer.getBackendResponse(badLaoReq)</span>
+
+  <span class="lead-duration duration">2.548</span>
 
 </div>
 
@@ -578,7 +632,7 @@ $(document).ready(function() {
   <span class="keyword indention">Then</span>
   <span class="name">match answer contains INVALID_MESSAGE_FIELD</span>
 
-  <span class="lead-duration duration">0.013</span>
+  <span class="lead-duration duration">0.012</span>
 
 </div>
 
@@ -603,9 +657,9 @@ $(document).ready(function() {
 
 <div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
-  <span class="name">match frontend.receiveNoMoreResponses() == true</span>
+  <span class="name">match organizer.receiveNoMoreResponses() == true</span>
 
-  <span class="lead-duration duration">5.002</span>
+  <span class="lead-duration duration">5.003</span>
 
 </div>
 
@@ -643,7 +697,7 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">3.938</span>
+  <span class="lead-duration duration">4.185</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-6">
@@ -686,7 +740,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/utils/server.feature')</span>
 
-  <span class="lead-duration duration">3.345</span>
+  <span class="lead-duration duration">3.793</span>
 
 </div>
 
@@ -738,9 +792,9 @@ $(document).ready(function() {
 
 <div class="brief step-name-* passed">
   <span class="keyword indention">*</span>
-  <span class="name">call read('classpath:be/mockFrontEnd.feature')</span>
+  <span class="name">call read('classpath:be/mockClient.feature')</span>
 
-  <span class="lead-duration duration">0.528</span>
+  <span class="lead-duration duration">0.029</span>
 
 </div>
 
@@ -765,7 +819,7 @@ $(document).ready(function() {
 
 <div class="brief step-name- passed">
   <span class="keyword indention"></span>
-  <span class="name">be/mockFrontEnd.feature</span>
+  <span class="name">be/mockClient.feature</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -794,7 +848,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/constants.feature')</span>
 
-  <span class="lead-duration duration">0.064</span>
+  <span class="lead-duration duration">0.020</span>
 
 </div>
 
@@ -846,7 +900,34 @@ $(document).ready(function() {
 
 <div class="brief step-name-* passed">
   <span class="keyword indention">*</span>
-  <span class="name">string channel = &quot;/root&quot;</span>
+  <span class="name">def organizer = call createMockClient</span>
+
+  <span class="lead-duration duration">0.341</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-* passed">
+  <span class="keyword indention">*</span>
+  <span class="name">def validLao = organizer.createValidLao()</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -888,14 +969,14 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">5.904</span>
+  <span class="lead-duration duration">5.796</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-8">
 
 <div class="brief passed">
   <span class="keyword indention">Scenario</span>
-  <span class="name">Create Lao with negative time should fail with an error response</span>
+  <span class="name">Create Lao request with negative creation time should fail with an error response</span>
 
 
      <i class="chevron fa fa-fw"></i>
@@ -929,54 +1010,9 @@ $(document).ready(function() {
 
 <div class="brief step-name-Given passed">
   <span class="keyword indention">Given</span>
-  <span class="name">def badLaoReq =</span>
+  <span class="name">def lao = validLao.setCreation(-1)</span>
 
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-  <div class="inner-level">
-    <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-10">
-          <a>Doc string</a>
-      </div>
-      <div id="msg-10" class="collapse collapsable-details">
-        <pre>{
-  &quot;object&quot;: &quot;lao&quot;,
-  &quot;action&quot;: &quot;create&quot;,
-  &quot;id&quot;: '#(getLaoIdNegativeTime)',
-  &quot;name&quot;: &quot;LAO&quot;,
-  &quot;creation&quot;: -1633098234,
-  &quot;organizer&quot;: '#(getOrganizer)',
-  &quot;witnesses&quot;: []
-}</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-When passed">
-  <span class="keyword indention">When</span>
-  <span class="name">frontend.publish(badLaoReq, channel)</span>
-
-  <span class="lead-duration duration">0.023</span>
+  <span class="lead-duration duration">0.019</span>
 
 </div>
 
@@ -1001,9 +1037,81 @@ $(document).ready(function() {
 
 <div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
-  <span class="name">json answer = frontend.getBackendResponse(badLaoReq)</span>
+  <span class="name">def badLaoReq =</span>
 
-  <span class="lead-duration duration">0.878</span>
+  <span class="lead-duration duration">0.001</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+  <div class="inner-level">
+    <div class="docstring indention">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-10">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-10" class="collapse collapsable-details">
+        <pre>{
+  &quot;object&quot;: &quot;lao&quot;,
+  &quot;action&quot;: &quot;create&quot;,
+  &quot;id&quot;: &quot;#(lao.creation)&quot;,
+  &quot;name&quot;: &quot;#(lao.name)&quot;,
+  &quot;creation&quot;: &quot;#(lao.creation)&quot;,
+  &quot;organizer&quot;: &quot;#(lao.organizerPk)&quot;,
+  &quot;witnesses&quot;: &quot;#(lao.witnesses)&quot;
+}</pre>
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-When passed">
+  <span class="keyword indention">When</span>
+  <span class="name">organizer.publish(badLaoReq, rootChannel)</span>
+
+  <span class="lead-duration duration">0.019</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And passed">
+  <span class="keyword indention">And</span>
+  <span class="name">json answer = organizer.getBackendResponse(badLaoReq)</span>
+
+  <span class="lead-duration duration">0.751</span>
 
 </div>
 
@@ -1030,7 +1138,7 @@ $(document).ready(function() {
   <span class="keyword indention">Then</span>
   <span class="name">match answer contains INVALID_MESSAGE_FIELD</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">0.002</span>
 
 </div>
 
@@ -1055,7 +1163,7 @@ $(document).ready(function() {
 
 <div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
-  <span class="name">match frontend.receiveNoMoreResponses() == true</span>
+  <span class="name">match organizer.receiveNoMoreResponses() == true</span>
 
   <span class="lead-duration duration">5.001</span>
 
@@ -1095,7 +1203,7 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">5.238</span>
+  <span class="lead-duration duration">4.012</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-11">
@@ -1138,7 +1246,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/utils/server.feature')</span>
 
-  <span class="lead-duration duration">4.618</span>
+  <span class="lead-duration duration">3.569</span>
 
 </div>
 
@@ -1190,9 +1298,9 @@ $(document).ready(function() {
 
 <div class="brief step-name-* passed">
   <span class="keyword indention">*</span>
-  <span class="name">call read('classpath:be/mockFrontEnd.feature')</span>
+  <span class="name">call read('classpath:be/mockClient.feature')</span>
 
-  <span class="lead-duration duration">0.337</span>
+  <span class="lead-duration duration">0.056</span>
 
 </div>
 
@@ -1217,7 +1325,7 @@ $(document).ready(function() {
 
 <div class="brief step-name- passed">
   <span class="keyword indention"></span>
-  <span class="name">be/mockFrontEnd.feature</span>
+  <span class="name">be/mockClient.feature</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -1246,7 +1354,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/constants.feature')</span>
 
-  <span class="lead-duration duration">0.282</span>
+  <span class="lead-duration duration">0.031</span>
 
 </div>
 
@@ -1298,7 +1406,34 @@ $(document).ready(function() {
 
 <div class="brief step-name-* passed">
   <span class="keyword indention">*</span>
-  <span class="name">string channel = &quot;/root&quot;</span>
+  <span class="name">def organizer = call createMockClient</span>
+
+  <span class="lead-duration duration">0.354</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-* passed">
+  <span class="keyword indention">*</span>
+  <span class="name">def validLao = organizer.createValidLao()</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -1340,14 +1475,14 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">5.899</span>
+  <span class="lead-duration duration">5.815</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-13">
 
 <div class="brief passed">
   <span class="keyword indention">Scenario</span>
-  <span class="name">Create Lao with invalid id hash should fail with an error response</span>
+  <span class="name">Create Lao request with invalid id hash should fail with an error response</span>
 
 
      <i class="chevron fa fa-fw"></i>
@@ -1383,7 +1518,7 @@ $(document).ready(function() {
   <span class="keyword indention">Given</span>
   <span class="name">def badLaoReq =</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">0.024</span>
 
 </div>
 
@@ -1404,11 +1539,11 @@ $(document).ready(function() {
         <pre>{
   &quot;object&quot;: &quot;lao&quot;,
   &quot;action&quot;: &quot;create&quot;,
-  &quot;id&quot;: '#(getOrganizer)',
-  &quot;name&quot;: &quot;LAO&quot;,
-  &quot;creation&quot;: 1633098234,
-  &quot;organizer&quot;: '#(getOrganizer)',
-  &quot;witnesses&quot;: []
+  &quot;id&quot;: '#(random.generateLaoId())',
+  &quot;name&quot;: &quot;#(validLao.name)&quot;,
+  &quot;creation&quot;: &quot;#(validLao.creation)&quot;,
+  &quot;organizer&quot;: &quot;#(validLao.organizerPk)&quot;,
+  &quot;witnesses&quot;: &quot;#(lao.witnesses)&quot;
 }</pre>
       </div>
     </div>
@@ -1426,9 +1561,9 @@ $(document).ready(function() {
 
 <div class="brief step-name-When passed">
   <span class="keyword indention">When</span>
-  <span class="name">frontend.publish(badLaoReq, channel)</span>
+  <span class="name">organizer.publish(badLaoReq, rootChannel)</span>
 
-  <span class="lead-duration duration">0.010</span>
+  <span class="lead-duration duration">0.013</span>
 
 </div>
 
@@ -1453,9 +1588,9 @@ $(document).ready(function() {
 
 <div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
-  <span class="name">json answer = frontend.getBackendResponse(badLaoReq)</span>
+  <span class="name">json answer = organizer.getBackendResponse(badLaoReq)</span>
 
-  <span class="lead-duration duration">0.877</span>
+  <span class="lead-duration duration">0.776</span>
 
 </div>
 
@@ -1507,9 +1642,9 @@ $(document).ready(function() {
 
 <div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
-  <span class="name">match frontend.receiveNoMoreResponses() == true</span>
+  <span class="name">match organizer.receiveNoMoreResponses() == true</span>
 
-  <span class="lead-duration duration">5.010</span>
+  <span class="lead-duration duration">5.001</span>
 
 </div>
 
@@ -1547,7 +1682,7 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">5.143</span>
+  <span class="lead-duration duration">3.971</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-16">
@@ -1590,7 +1725,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/utils/server.feature')</span>
 
-  <span class="lead-duration duration">4.497</span>
+  <span class="lead-duration duration">3.573</span>
 
 </div>
 
@@ -1642,9 +1777,9 @@ $(document).ready(function() {
 
 <div class="brief step-name-* passed">
   <span class="keyword indention">*</span>
-  <span class="name">call read('classpath:be/mockFrontEnd.feature')</span>
+  <span class="name">call read('classpath:be/mockClient.feature')</span>
 
-  <span class="lead-duration duration">0.511</span>
+  <span class="lead-duration duration">0.023</span>
 
 </div>
 
@@ -1669,7 +1804,7 @@ $(document).ready(function() {
 
 <div class="brief step-name- passed">
   <span class="keyword indention"></span>
-  <span class="name">be/mockFrontEnd.feature</span>
+  <span class="name">be/mockClient.feature</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -1698,7 +1833,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/constants.feature')</span>
 
-  <span class="lead-duration duration">0.135</span>
+  <span class="lead-duration duration">0.023</span>
 
 </div>
 
@@ -1750,7 +1885,34 @@ $(document).ready(function() {
 
 <div class="brief step-name-* passed">
   <span class="keyword indention">*</span>
-  <span class="name">string channel = &quot;/root&quot;</span>
+  <span class="name">def organizer = call createMockClient</span>
+
+  <span class="lead-duration duration">0.351</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-* passed">
+  <span class="keyword indention">*</span>
+  <span class="name">def validLao = organizer.createValidLao()</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -1792,14 +1954,14 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">6.290</span>
+  <span class="lead-duration duration">5.858</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-18">
 
 <div class="brief passed">
   <span class="keyword indention">Scenario</span>
-  <span class="name">Create should succeed with a valid creation request</span>
+  <span class="name">Valid Create Lao request should succeed</span>
 
 
      <i class="chevron fa fa-fw"></i>
@@ -1835,7 +1997,7 @@ $(document).ready(function() {
   <span class="keyword indention">Given</span>
   <span class="name">def laoCreateRequest =</span>
 
-  <span class="lead-duration duration">0.001</span>
+  <span class="lead-duration duration">0.004</span>
 
 </div>
 
@@ -1856,11 +2018,11 @@ $(document).ready(function() {
         <pre>{
   &quot;object&quot;: &quot;lao&quot;,
   &quot;action&quot;: &quot;create&quot;,
-  &quot;id&quot;: '#(getLaoValid)',
-  &quot;name&quot;: &quot;LAO&quot;,
-  &quot;creation&quot;: '#(getLaoValidCreationTime)',
-  &quot;organizer&quot;: '#(getOrganizer)',
-  &quot;witnesses&quot;: []
+  &quot;id&quot;: '#(validLao.id)',
+  &quot;name&quot;: '#(validLao.name)',
+  &quot;creation&quot;: '#(validLao.creation)',
+  &quot;organizer&quot;: '#(validLao.organizerPk)',
+  &quot;witnesses&quot;: &quot;#(validLao.witnesses)&quot;
 }</pre>
       </div>
     </div>
@@ -1878,7 +2040,7 @@ $(document).ready(function() {
 
 <div class="brief step-name-When passed">
   <span class="keyword indention">When</span>
-  <span class="name">frontend.publish(laoCreateRequest, channel)</span>
+  <span class="name">organizer.publish(laoCreateRequest, rootChannel)</span>
 
   <span class="lead-duration duration">0.018</span>
 
@@ -1905,9 +2067,9 @@ $(document).ready(function() {
 
 <div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
-  <span class="name">json answer = frontend.getBackendResponse(laoCreateRequest)</span>
+  <span class="name">json answer = organizer.getBackendResponse(laoCreateRequest)</span>
 
-  <span class="lead-duration duration">1.253</span>
+  <span class="lead-duration duration">0.833</span>
 
 </div>
 
@@ -1959,9 +2121,9 @@ $(document).ready(function() {
 
 <div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
-  <span class="name">match frontend.receiveNoMoreResponses() == true</span>
+  <span class="name">match organizer.receiveNoMoreResponses() == true</span>
 
-  <span class="lead-duration duration">5.017</span>
+  <span class="lead-duration duration">5.000</span>
 
 </div>
 
@@ -1999,7 +2161,7 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">5.574</span>
+  <span class="lead-duration duration">3.933</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-21">
@@ -2042,7 +2204,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/utils/server.feature')</span>
 
-  <span class="lead-duration duration">4.759</span>
+  <span class="lead-duration duration">3.534</span>
 
 </div>
 
@@ -2094,9 +2256,9 @@ $(document).ready(function() {
 
 <div class="brief step-name-* passed">
   <span class="keyword indention">*</span>
-  <span class="name">call read('classpath:be/mockFrontEnd.feature')</span>
+  <span class="name">call read('classpath:be/mockClient.feature')</span>
 
-  <span class="lead-duration duration">0.551</span>
+  <span class="lead-duration duration">0.013</span>
 
 </div>
 
@@ -2121,7 +2283,7 @@ $(document).ready(function() {
 
 <div class="brief step-name- passed">
   <span class="keyword indention"></span>
-  <span class="name">be/mockFrontEnd.feature</span>
+  <span class="name">be/mockClient.feature</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -2150,7 +2312,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/constants.feature')</span>
 
-  <span class="lead-duration duration">0.262</span>
+  <span class="lead-duration duration">0.046</span>
 
 </div>
 
@@ -2202,7 +2364,34 @@ $(document).ready(function() {
 
 <div class="brief step-name-* passed">
   <span class="keyword indention">*</span>
-  <span class="name">string channel = &quot;/root&quot;</span>
+  <span class="name">def organizer = call createMockClient</span>
+
+  <span class="lead-duration duration">0.339</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-* passed">
+  <span class="keyword indention">*</span>
+  <span class="name">def validLao = organizer.createValidLao()</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -2244,14 +2433,14 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">5.760</span>
+  <span class="lead-duration duration">5.617</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-23">
 
 <div class="brief passed">
   <span class="keyword indention">Scenario</span>
-  <span class="name">Create should fail if signature is invalid</span>
+  <span class="name">Create Lao request with invalid signature should fail</span>
 
 
      <i class="chevron fa fa-fw"></i>
@@ -2287,7 +2476,7 @@ $(document).ready(function() {
   <span class="keyword indention">Given</span>
   <span class="name">def laoCreateRequest =</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">0.001</span>
 
 </div>
 
@@ -2308,11 +2497,11 @@ $(document).ready(function() {
         <pre>{
   &quot;object&quot;: &quot;lao&quot;,
   &quot;action&quot;: &quot;create&quot;,
-  &quot;id&quot;: '#(getLaoValid)',
-  &quot;name&quot;: &quot;LAO&quot;,
-  &quot;creation&quot;: 1633035721,
-  &quot;organizer&quot;: '#(getOrganizer)',
-  &quot;witnesses&quot;: []
+  &quot;id&quot;: '#(validLao.id)',
+  &quot;name&quot;: '#(validLao.name)',
+  &quot;creation&quot;: '#(validLao.creation)',
+  &quot;organizer&quot;: '#(validLao.organizerPk)',
+  &quot;witnesses&quot;: &quot;#(lao.witnesses)&quot;
 }</pre>
       </div>
     </div>
@@ -2328,38 +2517,11 @@ $(document).ready(function() {
       <div class="step">
 
 
-<div class="brief step-name-* passed">
-  <span class="keyword indention">*</span>
-  <span class="name">frontend.setWrongSignature()</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
 <div class="brief step-name-When passed">
   <span class="keyword indention">When</span>
-  <span class="name">frontend.publish(laoCreateRequest, channel)</span>
+  <span class="name">organizer.useWrongSignature()</span>
 
-  <span class="lead-duration duration">0.003</span>
+  <span class="lead-duration duration">0.001</span>
 
 </div>
 
@@ -2384,9 +2546,36 @@ $(document).ready(function() {
 
 <div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
-  <span class="name">json answer = frontend.getBackendResponse(laoCreateRequest)</span>
+  <span class="name">organizer.publish(laoCreateRequest, rootChannel)</span>
 
-  <span class="lead-duration duration">0.731</span>
+  <span class="lead-duration duration">0.008</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And passed">
+  <span class="keyword indention">And</span>
+  <span class="name">json answer = organizer.getBackendResponse(laoCreateRequest)</span>
+
+  <span class="lead-duration duration">0.604</span>
 
 </div>
 
@@ -2438,9 +2627,9 @@ $(document).ready(function() {
 
 <div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
-  <span class="name">match frontend.receiveNoMoreResponses() == true</span>
+  <span class="name">match organizer.receiveNoMoreResponses() == true</span>
 
-  <span class="lead-duration duration">5.022</span>
+  <span class="lead-duration duration">5.001</span>
 
 </div>
 
@@ -2478,7 +2667,7 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">4.966</span>
+  <span class="lead-duration duration">3.946</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-26">
@@ -2521,7 +2710,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/utils/server.feature')</span>
 
-  <span class="lead-duration duration">4.364</span>
+  <span class="lead-duration duration">3.536</span>
 
 </div>
 
@@ -2573,9 +2762,9 @@ $(document).ready(function() {
 
 <div class="brief step-name-* passed">
   <span class="keyword indention">*</span>
-  <span class="name">call read('classpath:be/mockFrontEnd.feature')</span>
+  <span class="name">call read('classpath:be/mockClient.feature')</span>
 
-  <span class="lead-duration duration">0.340</span>
+  <span class="lead-duration duration">0.051</span>
 
 </div>
 
@@ -2600,7 +2789,7 @@ $(document).ready(function() {
 
 <div class="brief step-name- passed">
   <span class="keyword indention"></span>
-  <span class="name">be/mockFrontEnd.feature</span>
+  <span class="name">be/mockClient.feature</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -2629,7 +2818,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/constants.feature')</span>
 
-  <span class="lead-duration duration">0.260</span>
+  <span class="lead-duration duration">0.026</span>
 
 </div>
 
@@ -2681,7 +2870,34 @@ $(document).ready(function() {
 
 <div class="brief step-name-* passed">
   <span class="keyword indention">*</span>
-  <span class="name">string channel = &quot;/root&quot;</span>
+  <span class="name">def organizer = call createMockClient</span>
+
+  <span class="lead-duration duration">0.331</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-* passed">
+  <span class="keyword indention">*</span>
+  <span class="name">def validLao = organizer.createValidLao()</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -2723,14 +2939,14 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">0.870</span>
+  <span class="lead-duration duration">0.776</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-28">
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
-  <span class="name">Create Lao with different public key from the organizer should fail with error response</span>
+  <span class="name">Create Lao request with public key different from the sender public key should fail</span>
 
 
      <i class="chevron fa fa-fw"></i>
@@ -2764,81 +2980,9 @@ $(document).ready(function() {
 
 <div class="brief step-name-Given passed">
   <span class="keyword indention">Given</span>
-  <span class="name">def laoCreateRequest =</span>
+  <span class="name">def notOrganizer = call createMockClient</span>
 
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-  <div class="inner-level">
-    <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-30">
-          <a>Doc string</a>
-      </div>
-      <div id="msg-30" class="collapse collapsable-details">
-        <pre>{
-  &quot;object&quot;: &quot;lao&quot;,
-  &quot;action&quot;: &quot;create&quot;,
-  &quot;id&quot;: '#(getLaoValid)',
-  &quot;name&quot;: &quot;LAO&quot;,
-  &quot;creation&quot;: 1633035721,
-  &quot;organizer&quot;: '#(getOrganizer)',
-  &quot;witnesses&quot;: []
-}</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* passed">
-  <span class="keyword indention">*</span>
-  <span class="name">frontend.changeSenderToBeNonAttendee()</span>
-
-  <span class="lead-duration duration">0.006</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-When passed">
-  <span class="keyword indention">When</span>
-  <span class="name">frontend.publish(laoCreateRequest, channel)</span>
-
-  <span class="lead-duration duration">0.003</span>
+  <span class="lead-duration duration">0.043</span>
 
 </div>
 
@@ -2863,9 +3007,81 @@ $(document).ready(function() {
 
 <div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
-  <span class="name">json answer = frontend.getBackendResponse(laoCreateRequest)</span>
+  <span class="name">def laoCreateRequest =</span>
 
-  <span class="lead-duration duration">0.857</span>
+  <span class="lead-duration duration">0.003</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+  <div class="inner-level">
+    <div class="docstring indention">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-30">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-30" class="collapse collapsable-details">
+        <pre>{
+  &quot;object&quot;: &quot;lao&quot;,
+  &quot;action&quot;: &quot;create&quot;,
+  &quot;id&quot;: '#(validLao.id)',
+  &quot;name&quot;: '#(validLao.name)',
+  &quot;creation&quot;: '#(validLao.creation)',
+  &quot;organizer&quot;: '#(validLao.organizerPk)',
+  &quot;witnesses&quot;: &quot;#(lao.witnesses)&quot;
+}</pre>
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-When passed">
+  <span class="keyword indention">When</span>
+  <span class="name">notOrganizer.publish(laoCreateRequest, rootChannel)</span>
+
+  <span class="lead-duration duration">0.005</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And passed">
+  <span class="keyword indention">And</span>
+  <span class="name">json answer = notOrganizer.getBackendResponse(laoCreateRequest)</span>
+
+  <span class="lead-duration duration">0.722</span>
 
 </div>
 
@@ -2909,18 +3125,18 @@ $(document).ready(function() {
       <div id="msg-31" class="collapse collapsable-details  in ">
         <pre>match failed: CONTAINS
   $ | actual does not contain expected | all key-values did not match, expected has un-matched keys - [error] (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:1141239044,&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;CreateLao content validation failed: unexpected organizer public key PublicKey(oKHk3AivbpNXk_SfFcHDaVHcCcY8IBfHE7auXJ7h4ms=)&quot;}}
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:956432722,&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;Invalid data: $.witnesses: string found, array expected&quot;}}
   {&quot;error&quot;:{&quot;code&quot;:-5,&quot;description&quot;:&quot;#string&quot;}}
 
     $.error | not equal | match failed for name: 'code' (MAP:MAP)
-    {&quot;code&quot;:-4,&quot;description&quot;:&quot;CreateLao content validation failed: unexpected organizer public key PublicKey(oKHk3AivbpNXk_SfFcHDaVHcCcY8IBfHE7auXJ7h4ms=)&quot;}
+    {&quot;code&quot;:-4,&quot;description&quot;:&quot;Invalid data: $.witnesses: string found, array expected&quot;}
     {&quot;code&quot;:-5,&quot;description&quot;:&quot;#string&quot;}
 
       $.error.code | not equal (NUMBER:NUMBER)
       -4
       -5
 
-classpath:be/LAO/create.feature:123</pre>
+classpath:be/LAO/create.feature:126</pre>
       </div>
     </div>
   </div>
@@ -2934,22 +3150,22 @@ classpath:be/LAO/create.feature:123</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-32" class="collapse collapsable-details">
-        <pre>04:07:46.052 classpath:be/LAO/create.feature:123
+        <pre>04:07:38.084 classpath:be/LAO/create.feature:126
 Then match answer contains ACCESS_DENIED
 match failed: CONTAINS
   $ | actual does not contain expected | all key-values did not match, expected has un-matched keys - [error] (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:1141239044,&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;CreateLao content validation failed: unexpected organizer public key PublicKey(oKHk3AivbpNXk_SfFcHDaVHcCcY8IBfHE7auXJ7h4ms=)&quot;}}
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:956432722,&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;Invalid data: $.witnesses: string found, array expected&quot;}}
   {&quot;error&quot;:{&quot;code&quot;:-5,&quot;description&quot;:&quot;#string&quot;}}
 
     $.error | not equal | match failed for name: 'code' (MAP:MAP)
-    {&quot;code&quot;:-4,&quot;description&quot;:&quot;CreateLao content validation failed: unexpected organizer public key PublicKey(oKHk3AivbpNXk_SfFcHDaVHcCcY8IBfHE7auXJ7h4ms=)&quot;}
+    {&quot;code&quot;:-4,&quot;description&quot;:&quot;Invalid data: $.witnesses: string found, array expected&quot;}
     {&quot;code&quot;:-5,&quot;description&quot;:&quot;#string&quot;}
 
       $.error.code | not equal (NUMBER:NUMBER)
       -4
       -5
 
-classpath:be/LAO/create.feature:123
+classpath:be/LAO/create.feature:126
 </pre>
       </div>
     </div>
@@ -2967,7 +3183,7 @@ classpath:be/LAO/create.feature:123
 
 <div class="brief step-name-And skipped">
   <span class="keyword indention">And</span>
-  <span class="name">match frontend.receiveNoMoreResponses() == true</span>
+  <span class="name">match notOrganizer.receiveNoMoreResponses() == true</span>
 
   <span class="lead-duration duration">0.000</span>
 
