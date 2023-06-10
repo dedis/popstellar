@@ -125,7 +125,7 @@ class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
           Some((generateSocialChannel(rpcRequest.getParamsChannel, attendee), ObjectType.CHIRP))
         } catch {
           case _: Throwable =>
-            println(s"Failed to create attendee channel for pop token: ${attendee.base64Data.data}")
+            println(s"Failed to generate attendee social channel for pop token: \"${attendee.base64Data.data}\"")
             None
         }
     }
