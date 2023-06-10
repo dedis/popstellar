@@ -46,6 +46,16 @@ const mockStore = configureStore({
   }),
 });
 
+const emptyStore = configureStore({
+  reducer: combineReducers({
+    ...eventReducer,
+    ...electionReducer,
+    ...meetingReducer,
+    ...rollCallReducer,
+    ...walletReducer,
+  }),
+});
+
 const getContextValue = (isOrganizer: boolean) => ({
   [EVENT_FEATURE_IDENTIFIER]: {
     useCurrentLaoId: () => mockLaoId,
@@ -128,6 +138,28 @@ describe('EventLists', () => {
     const component = render(
       <Provider store={mockStore}>
         <FeatureContext.Provider value={getContextValue(true)}>
+          <MockNavigator component={EventLists} />
+        </FeatureContext.Provider>
+      </Provider>,
+    ).toJSON();
+    expect(component).toMatchSnapshot();
+  });
+
+  it('displays welcome message when no events are present for organizer', () => {
+    const component = render(
+      <Provider store={emptyStore}>
+        <FeatureContext.Provider value={getContextValue(true)}>
+          <MockNavigator component={EventLists} />
+        </FeatureContext.Provider>
+      </Provider>,
+    ).toJSON();
+    expect(component).toMatchSnapshot();
+  });
+
+  it('displays welcome message when no events are present for attendee', () => {
+    const component = render(
+      <Provider store={emptyStore}>
+        <FeatureContext.Provider value={getContextValue(false)}>
           <MockNavigator component={EventLists} />
         </FeatureContext.Provider>
       </Provider>,

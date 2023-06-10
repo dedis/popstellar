@@ -384,6 +384,12 @@ namespace STRINGS {
   export const events_view_single_election = 'Single Election';
   export const events_open_roll_call = 'Open Roll-Call';
   export const events_open_roll_call_title = 'Scan PoP Tokens';
+  export const events_welcome_organizer =
+    'No event has been created in this LAO!\n' +
+    'To create one, click on the button in the top right corner';
+  export const events_welcome_attendee =
+    'No event has been created in this LAO!\n' +
+    'Since you are not an organizer, you must wait for them to create one';
 
   /* --- Notification screen Strings --- */
   export const notification_unread_notifications = 'Notifications';
