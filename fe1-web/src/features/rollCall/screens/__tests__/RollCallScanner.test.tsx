@@ -151,8 +151,8 @@ describe('RollCallOpened', () => {
   it('shows toast when scanning attendees', async () => {
     renderRollCallOpened();
 
-    fakeQrReaderScan(mockPublicKey2.valueOf());
-    fakeQrReaderScan(mockPublicKey3.valueOf());
+    fakeQrReaderScan(ScannablePopToken.encodePopToken({ pop_token: mockPublicKey2.valueOf() }));
+    fakeQrReaderScan(ScannablePopToken.encodePopToken({ pop_token: mockPublicKey2.valueOf() }));
 
     expect(mockToastShow).toHaveBeenCalledTimes(2);
   });
@@ -240,5 +240,49 @@ describe('RollCallOpened', () => {
 
     // counter should be at 2
     expect(toJSON()).toMatchSnapshot();
+  });
+
+  it('accepts only valid pop tokens', async () => {
+    const validPopTokens = [
+      mockPublicKey2.valueOf(),
+      mockPublicKey3.valueOf(),
+      'abcdefghijklwxyzABNOPQRSTUVWXYZ0123456789-_=',
+    ];
+
+    const invalidPopTokens = [
+      '', // empty string
+      'ockPublicKey2_fFcHDaVHcCcY8IBfHE7auXJ7h4ms=', // size not multiple of 4
+      'mockP!blicKey2_fFcHDaVHcCcY8IBfHE7auXJ7h4ms=', // invalid character
+    ];
+
+    renderRollCallOpened();
+
+    for (const validPopToken of validPopTokens) {
+      fakeQrReaderScan(ScannablePopToken.encodePopToken({ pop_token: validPopToken }));
+      expect(mockToastShow).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.objectContaining({ type: 'success' }),
+      );
+      mockToastShow.mockReset();
+    }
+
+    for (const invalidPopToken of invalidPopTokens) {
+      fakeQrReaderScan(JSON.stringify({ pop_token: invalidPopToken }));
+      expect(mockToastShow).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.objectContaining({ type: 'danger' }),
+      );
+      mockToastShow.mockReset();
+    }
+
+    // should have correct json format
+    for (const validPopToken of validPopTokens) {
+      fakeQrReaderScan(validPopToken);
+      expect(mockToastShow).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.objectContaining({ type: 'danger' }),
+      );
+      mockToastShow.mockReset();
+    }
   });
 });

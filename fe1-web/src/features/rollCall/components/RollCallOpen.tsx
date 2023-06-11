@@ -151,6 +151,14 @@ const RollCallOpen = ({
       .catch((err) => console.error(`Could not generate token: ${err}`));
   }, [hasWalletBeenInitialized, generateToken, laoId, rollCall]);
 
+  const serializedPopToken = useMemo(() => {
+    try {
+      return ScannablePopToken.encodePopToken({ pop_token: popToken });
+    } catch {
+      return undefined;
+    }
+  }, [popToken]);
+
   return (
     <ScreenWrapper toolbarItems={toolbarItems}>
       <Text style={Typography.paragraph}>
@@ -181,10 +189,7 @@ const RollCallOpen = ({
         <>
           <Text style={Typography.paragraph}>{STRINGS.roll_call_open_attendee}</Text>
           <View>
-            <QRCode
-              value={ScannablePopToken.encodePopToken({ pop_token: popToken })}
-              overlayText={STRINGS.roll_call_qrcode_text}
-            />
+            <QRCode value={serializedPopToken} overlayText={STRINGS.roll_call_qrcode_text} />
             <Text
               style={[
                 Typography.paragraph,
