@@ -486,8 +486,8 @@ final case class DbActor(
       log.info(s"Actor $self (db) received a ReadUserAuthenticated request for pop token $popToken and clientId $clientId")
       Try(storage.read(generateAuthenticatedKey(popToken, clientId))) match {
         case Success(Some(id)) => sender() ! DbActorReadUserAuthenticationAck(Some(PublicKey(Base64Data.encode(id))))
-        case Success(None) => sender() ! DbActorReadUserAuthenticationAck(None)
-        case failure => sender() ! failure.recover(Status.Failure(_))
+        case Success(None)     => sender() ! DbActorReadUserAuthenticationAck(None)
+        case failure           => sender() ! failure.recover(Status.Failure(_))
       }
 
     case ReadServerPublicKey() =>
@@ -779,10 +779,10 @@ object DbActor {
   final case class DbActorReadRollCallDataAck(rollcallData: RollCallData) extends DbActorMessage
 
   /** Response for [[ReadUserAuthenticated]]
-   *
-   * @param user
-   * Some(user) if a user was registered on the client specified for the given pop token, [[None]] otherwise
-   */
+    *
+    * @param user
+    *   Some(user) if a user was registered on the client specified for the given pop token, [[None]] otherwise
+    */
   final case class DbActorReadUserAuthenticationAck(user: Option[PublicKey]) extends DbActorMessage
 
   /** Response for a [[ReadServerPublicKey]] db request
@@ -790,7 +790,7 @@ object DbActor {
   final case class DbActorReadServerPublicKeyAck(publicKey: PublicKey) extends DbActorMessage
 
   /** Response for a [[ReadServerPrivateKey]] db request
-   */
+    */
   final case class DbActorReadServerPrivateKeyAck(privateKey: PrivateKey) extends DbActorMessage
 
   /** Response for a general db actor ACK
