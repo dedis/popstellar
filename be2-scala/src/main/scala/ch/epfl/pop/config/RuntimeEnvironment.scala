@@ -16,49 +16,35 @@ import scala.sys.SystemProperties
   */
 object RuntimeEnvironment {
 
+  // Regex from dataGreetLao.json
+  private val addressPattern = "^(ws|wss)://.*(:d{0,5})?/.*$"
+
+  // Command line parameters
+  private val cleanParam = "clean"
+  private val configParam = "scala.config"
+  private val dbPathParam = "scala.db"
+  private val dbFolder = "database"
+  private val testParam = "test"
+
   private lazy val sp = new SystemProperties()
-
-  private def getConfDir: String = {
-    /* Get config directory path from JVM */
-    if (sp("clean") != null) {
-      // starting the program with fresh database
-      println("Starting the server without any previous persistent state")
-
-      // removing database folder
-      val directory = new Directory(new File("database"))
-      if (directory.deleteRecursively()) {
-        println("Removed old database folder")
-      }
-    }
-
-    val virtualMachineParam = "scala.config"
-    val pathConfig = sp(virtualMachineParam)
-    if (pathConfig != null && pathConfig.trim.nonEmpty) {
-      pathConfig.trim
-    } else {
-      throw new RuntimeException(s"-D$virtualMachineParam was not provided.")
-    }
-  }
-
-  private def testMode: Boolean = {
-    sp("test") != null
-  }
-
-  private lazy val confDir: String = getConfDir
+  private lazy val confDir: String = getConfDir(cleanParam, configParam)
   private lazy val appConfFile = confDir + File.separator + "application.conf"
 
-  lazy val isTestMode: Boolean = testMode
+  lazy val dbPath: String = getDbDirectory(dbPathParam, dbFolder)
+  lazy val appConf: Config = ConfigFactory.parseFile(new File(appConfFile))
+  lazy val serverConf: ServerConf = ServerConf(appConf)
+  lazy val ownClientAddress = f"ws://${serverConf.interface}:${serverConf.port}/${serverConf.clientPath}"
+  lazy val ownServerAddress = f"ws://${serverConf.interface}:${serverConf.port}/${serverConf.serverPath}"
+  lazy val ownAuthAddress = f"http://${serverConf.interface}:${serverConf.port}/${serverConf.authenticationPath}"
+
+  // Needed for unit tests
+  lazy val isTestMode: Boolean = testMode(testParam)
   lazy val serverPeersListPath: String =
     if (isTestMode) {
       confDir + File.separator + "server-peers-list-mock.conf"
     } else {
       confDir + File.separator + "server-peers-list.conf"
     }
-
-  lazy val appConf: Config = ConfigFactory.parseFile(new File(appConfFile))
-
-  // Regex from dataGreetLao.json
-  private val addressPattern = "^(ws|wss)://.*(:d{0,5})?/.*$"
 
   def readServerPeers(): List[String] = {
     val source =
@@ -76,4 +62,37 @@ object RuntimeEnvironment {
     addressList
   }
 
+  private def getConfDir(cleanParam: String, configParam: String): String = {
+    /* Get config directory path from JVM */
+    if (sp(cleanParam) != null) {
+      // starting the program with fresh database
+      println("Starting the server without any previous persistent state")
+
+      // removing database folder
+      val directory = new Directory(new File(dbPath))
+      if (directory.deleteRecursively()) {
+        println("Removed old database folder")
+      }
+    }
+
+    val pathConfig = sp(configParam)
+    if (pathConfig != null && pathConfig.trim.nonEmpty) {
+      pathConfig.trim
+    } else {
+      throw new RuntimeException(s"-D$configParam was not provided.")
+    }
+  }
+
+  private def getDbDirectory(dbPathParam: String, dbFolder: String): String = {
+    val dbPath = sp(dbPathParam)
+    if (dbPath != null && dbPath.trim.nonEmpty) {
+      dbPath.trim + File.separator + dbFolder
+    } else {
+      dbFolder
+    }
+  }
+
+  private def testMode(testParam: String): Boolean = {
+    sp(testParam) != null
+  }
 }

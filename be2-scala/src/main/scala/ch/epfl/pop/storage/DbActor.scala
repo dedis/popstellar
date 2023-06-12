@@ -12,6 +12,7 @@ import ch.epfl.pop.model.objects._
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, JsonString}
 import ch.epfl.pop.pubsub.{MessageRegistry, PubSubMediator, PublishSubscribe}
 import ch.epfl.pop.storage.DbActor._
+import com.google.crypto.tink.subtle.Ed25519Sign
 
 import scala.util.{Failure, Success, Try}
 
@@ -296,6 +297,39 @@ final case class DbActor(
     storage.AUTHENTICATED_KEY + popToken.base64Data.toString + Channel.DATA_SEPARATOR + client
   }
 
+  @throws[DbActorNAckException]
+  private def readServerPublicKey(): PublicKey = {
+    Try(storage.read(storage.SERVER_PUBLIC_KEY + storage.DEFAULT)) match {
+      case Success(Some(key)) => PublicKey(Base64Data(key))
+      case Success(None) =>
+        val (publicKey, _) = generateKeyPair()
+        publicKey
+      case Failure(ex) => throw ex
+    }
+  }
+
+  @throws[DbActorNAckException]
+  private def readServerPrivateKey(): PrivateKey = {
+    Try(storage.read(storage.SERVER_PRIVATE_KEY + storage.DEFAULT)) match {
+      case Success(Some(key)) => PrivateKey(Base64Data(key))
+      case Success(None) =>
+        val (_, privateKey) = generateKeyPair()
+        privateKey
+      case Failure(ex) => throw ex
+    }
+  }
+
+  @throws[DbActorNAckException]
+  private def generateKeyPair(): (PublicKey, PrivateKey) = {
+    val keyPair: Ed25519Sign.KeyPair = Ed25519Sign.KeyPair.newKeyPair
+    val publicKey = PublicKey(Base64Data.encode(keyPair.getPublicKey))
+    val privateKey = PrivateKey(Base64Data.encode(keyPair.getPrivateKey))
+
+    storage.write((storage.SERVER_PUBLIC_KEY + storage.DEFAULT, publicKey.base64Data.data))
+    storage.write((storage.SERVER_PRIVATE_KEY + storage.DEFAULT, privateKey.base64Data.data))
+    (publicKey, privateKey)
+  }
+
   override def receive: Receive = LoggingReceive {
     case Write(channel, message) =>
       log.info(s"Actor $self (db) received a WRITE request on channel '$channel'")
@@ -452,8 +486,22 @@ final case class DbActor(
       log.info(s"Actor $self (db) received a ReadUserAuthenticated request for pop token $popToken and clientId $clientId")
       Try(storage.read(generateAuthenticatedKey(popToken, clientId))) match {
         case Success(Some(id)) => sender() ! DbActorReadUserAuthenticationAck(Some(PublicKey(Base64Data.encode(id))))
-        case Success(None)     => sender() ! DbActorReadUserAuthenticationAck(None)
-        case failure           => sender() ! failure.recover(Status.Failure(_))
+        case Success(None) => sender() ! DbActorReadUserAuthenticationAck(None)
+        case failure => sender() ! failure.recover(Status.Failure(_))
+      }
+
+    case ReadServerPublicKey() =>
+      log.info(s"Actor $self (db) received a ReadServerPublicKey request")
+      Try(readServerPublicKey()) match {
+        case Success(publicKey) => sender() ! DbActorReadServerPublicKeyAck(publicKey)
+        case failure            => sender() ! failure.recover(Status.Failure(_))
+      }
+
+    case ReadServerPrivateKey() =>
+      log.info(s"Actor $self (db) received a ReadServerPrivateKey request")
+      Try(readServerPrivateKey()) match {
+        case Success(privateKey) => sender() ! DbActorReadServerPrivateKeyAck(privateKey)
+        case failure             => sender() ! failure.recover(Status.Failure(_))
       }
 
     case m =>
@@ -663,6 +711,14 @@ object DbActor {
     */
   final case class ReadUserAuthenticated(popToken: PublicKey, clientId: String) extends Event
 
+  /** Request for the server public key, created both private and public key if none is found
+    */
+  final case class ReadServerPublicKey() extends Event
+
+  /** Request for the server private key, created both private and public key if none is found
+    */
+  final case class ReadServerPrivateKey() extends Event
+
   // DbActor DbActorMessage correspond to messages the actor may emit
   sealed trait DbActorMessage
 
@@ -723,10 +779,19 @@ object DbActor {
   final case class DbActorReadRollCallDataAck(rollcallData: RollCallData) extends DbActorMessage
 
   /** Response for [[ReadUserAuthenticated]]
-    * @param user
-    *   Some(user) if a user was registered on the client specified for the given pop token, [[None]] otherwise
-    */
+   *
+   * @param user
+   * Some(user) if a user was registered on the client specified for the given pop token, [[None]] otherwise
+   */
   final case class DbActorReadUserAuthenticationAck(user: Option[PublicKey]) extends DbActorMessage
+
+  /** Response for a [[ReadServerPublicKey]] db request
+    */
+  final case class DbActorReadServerPublicKeyAck(publicKey: PublicKey) extends DbActorMessage
+
+  /** Response for a [[ReadServerPrivateKey]] db request
+   */
+  final case class DbActorReadServerPrivateKeyAck(privateKey: PrivateKey) extends DbActorMessage
 
   /** Response for a general db actor ACK
     */
