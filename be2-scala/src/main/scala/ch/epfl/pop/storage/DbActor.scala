@@ -475,7 +475,7 @@ final case class DbActor(
         case failure    => sender() ! failure.recover(Status.Failure(_))
       }
 
-    case WriteUserAuthenticated(user, popToken, clientId) =>
+    case WriteUserAuthenticated(popToken, clientId, user) =>
       log.info(s"Actor $self (db) received a WriteUserAuthenticated request for user $user, id $popToken and clientId $clientId")
       Try(storage.write(generateAuthenticatedKey(popToken, clientId) -> user.base64Data.decodeToString())) match {
         case Success(_) => sender() ! DbActorAck()
@@ -701,7 +701,7 @@ object DbActor {
     * @param clientId
     *   client where the authentication happens on
     */
-  final case class WriteUserAuthenticated(user: PublicKey, popToken: PublicKey, clientId: String) extends Event
+  final case class WriteUserAuthenticated(popToken: PublicKey, clientId: String, user: PublicKey) extends Event
 
   /** Reads the authentication information registered for the given pop token regarding the given client
     * @param popToken

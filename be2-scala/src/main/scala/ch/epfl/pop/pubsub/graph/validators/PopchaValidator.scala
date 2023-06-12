@@ -9,9 +9,6 @@ import ch.epfl.pop.model.objects._
 import ch.epfl.pop.pubsub.PublishSubscribe
 import ch.epfl.pop.pubsub.graph.validators.MessageValidator.{checkAttendee, checkChannelType, extractData}
 import ch.epfl.pop.pubsub.graph.{GraphMessage, PipelineError}
-import ch.epfl.pop.storage.DbActor.{DbActorReadUserAuthenticationAck, ReadUserAuthenticated}
-import scala.concurrent.Await
-import scala.util.Success
 
 /** Validator for Popcha messages' data contents
   */
@@ -41,19 +38,12 @@ sealed class PopchaValidator(dbActorRef: => AskableActorRef) extends MessageData
           _ <- checkResponseMode(rpcMessage, authenticate.responseMode, validationError(s"Invalid response mode ${authenticate.responseMode}"))
           _ <- checkChannelType(rpcMessage, ObjectType.POPCHA, channel, dbActorRef, validationError(s"Incorrect channel $channel for popcha authentication message"))
           _ <- checkAttendee(rpcMessage, sender, channel, dbActorRef, validationError(s"User doesn't belong to the requested lao $laoId"))
-          _ <- checkIdentifierProof(
+          result <- checkIdentifierProof(
             rpcMessage,
             authenticate.identifier,
             authenticate.identifierProof,
             authenticate.nonce,
             validationError("Failed to verify the identifier proof with the given identifier/nonce pair")
-          )
-          result <- checkNoDuplicateIdentifiers(
-            rpcMessage,
-            sender,
-            authenticate.identifier,
-            authenticate.clientId,
-            validationError(s"Failed to verify that pop token $sender has never been used before to authenticate another user for client ${authenticate.clientId}")
           )
         } yield result
 
@@ -74,17 +64,5 @@ sealed class PopchaValidator(dbActorRef: => AskableActorRef) extends MessageData
       Right(rpcMessage)
     else
       Left(error)
-  }
-
-  private def checkNoDuplicateIdentifiers(rpcMessage: JsonRpcMessage, user: PublicKey, identifier: PublicKey, clientId: String, error: PipelineError): GraphMessage = {
-    val ask = dbActorRef ? ReadUserAuthenticated(identifier, clientId)
-    Await.ready(ask, duration).value.get match {
-      case Success(DbActorReadUserAuthenticationAck(optUser)) => optUser match {
-          case Some(userId) if userId == user => Right(rpcMessage)
-          case None                           => Right(rpcMessage)
-          case _                              => Left(error)
-        }
-      case _ => Left(error)
-    }
   }
 }
