@@ -56,5 +56,6 @@ func TestVerify(t *testing.T) {
 	t.Run("valid authentication message", getTestValid("popcha_authenticate.json", true))
 	t.Run("valid authentication message", getTestValid("popcha_authenticate_wrong_proof.json", false))
 	t.Run("valid authentication message", getTestValid("popcha_authenticate_wrong_identifier.json", false))
+	t.Run("valid authentication message", getTestValid("popcha_authenticate_wrong_nonce.json", false))
 
 }
