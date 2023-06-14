@@ -216,14 +216,17 @@ func (h *Hub) handleAnswer(senderSocket socket.Socket, byteMessage []byte) error
 func (h *Hub) handleGetMessagesByIdAnswer(senderSocket socket.Socket, answerMsg answer.Answer) error {
 	var err error
 	messages := answerMsg.Result.GetMessagesByChannel()
+	tempBlacklist := make([]string, 0)
 	// Loops over the messages to process them until it succeeds or reaches
 	// the max number of attempts
 	for i := 0; i < maxRetry; i++ {
-		err = h.loopOverMessages(&messages, senderSocket)
-		if err == nil {
+		tempBlacklist, err = h.loopOverMessages(&messages, senderSocket)
+		if err == nil && len(tempBlacklist) == 0 {
 			return nil
 		}
 	}
+	// Add contents from tempBlacklist to h.blacklist
+	h.blacklist = append(h.blacklist, tempBlacklist...)
 	return xerrors.Errorf("failed to process messages: %v", err)
 }
 
@@ -432,7 +435,7 @@ func (h *Hub) handleHeartbeat(socket socket.Socket,
 
 	receivedIds := heartbeat.Params
 
-	missingIds := getMissingIds(receivedIds, h.messageIdsByChannel)
+	missingIds := getMissingIds(receivedIds, h.messageIdsByChannel, h.blacklist)
 
 	if len(missingIds) > 0 {
 		err = h.sendGetMessagesByIdToServer(socket, missingIds)
@@ -492,18 +495,21 @@ func (h *Hub) handleGreetServer(socket socket.Socket, byteMessage []byte) error 
 
 // getMissingIds compares two maps of channel Ids associated to slices of message Ids to
 // determine the missing Ids from the storedIds map with respect to the receivedIds map
-func getMissingIds(receivedIds map[string][]string, storedIds map[string][]string) map[string][]string {
+func getMissingIds(receivedIds map[string][]string, storedIds map[string][]string, blacklist []string) map[string][]string {
 	missingIds := make(map[string][]string)
 	for channelId, receivedMessageIds := range receivedIds {
 		for _, messageId := range receivedMessageIds {
+			blacklisted := slices.Contains(blacklist, messageId)
 			storedIdsForChannel, channelKnown := storedIds[channelId]
-			if channelKnown {
-				contains := slices.Contains(storedIdsForChannel, messageId)
-				if !contains {
+			if !blacklisted {
+				if channelKnown {
+					contains := slices.Contains(storedIdsForChannel, messageId)
+					if !contains {
+						missingIds[channelId] = append(missingIds[channelId], messageId)
+					}
+				} else {
 					missingIds[channelId] = append(missingIds[channelId], messageId)
 				}
-			} else {
-				missingIds[channelId] = append(missingIds[channelId], messageId)
 			}
 		}
 	}
@@ -592,8 +598,9 @@ func (h *Hub) handleReceivedMessage(socket socket.Socket, messageData message.Me
 
 // loopOverMessages loops over the messages received from a getMessagesById answer to process them
 // and update the list of messages to process during the next iteration with those that fail
-func (h *Hub) loopOverMessages(messages *map[string][]json.RawMessage, senderSocket socket.Socket) error {
+func (h *Hub) loopOverMessages(messages *map[string][]json.RawMessage, senderSocket socket.Socket) ([]string, error) {
 	var errMsg string
+	tempBlacklist := make([]string, 0)
 	for channel, messageArray := range *messages {
 		newMessageArray := make([]json.RawMessage, 0)
 
@@ -606,11 +613,18 @@ func (h *Hub) loopOverMessages(messages *map[string][]json.RawMessage, senderSoc
 				continue
 			}
 
+			if slices.Contains(h.blacklist, messageData.MessageID) {
+				break
+			}
+
 			err = h.handleReceivedMessage(senderSocket, messageData, channel)
 			if err != nil {
 				h.log.Error().Msgf("failed to handle message received from getMessagesById answer: %v", err)
 				newMessageArray = append(newMessageArray, msg) // if there's an error, keep the message
 				errMsg += err.Error()
+
+				// Add the ID of the failed message to the blacklist
+				tempBlacklist = append(tempBlacklist, messageData.MessageID)
 			}
 		}
 		// Update the list of messages to process during the next iteration
@@ -622,7 +636,7 @@ func (h *Hub) loopOverMessages(messages *map[string][]json.RawMessage, senderSoc
 	}
 
 	if errMsg != "" {
-		return xerrors.New(errMsg)
+		return tempBlacklist, xerrors.New(errMsg)
 	}
-	return nil
+	return tempBlacklist, nil
 }
