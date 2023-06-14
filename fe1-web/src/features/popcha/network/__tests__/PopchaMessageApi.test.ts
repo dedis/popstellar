@@ -45,7 +45,7 @@ describe('PopchaMessageApi', () => {
       state: mockState,
       response_mode: mockResponseMode,
     });
-    expect(mockPopToken.sign(new Base64UrlData(mockNonce))).toEqual(message.identifier_proof);
+    expect(mockPopToken.sign(mockEncodedNonce)).toEqual(message.identifier_proof);
   });
 
   it('should create correct message with null state and response mode', async () => {
