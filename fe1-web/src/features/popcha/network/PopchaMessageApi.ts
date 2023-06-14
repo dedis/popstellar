@@ -35,7 +35,7 @@ export const sendPopchaAuthRequest = (
     const popchaChannel = getPopchaAuthenticationChannel(laoId);
     const message = new PopchaAuthMsg({
       client_id: client_id.valueOf(),
-      nonce: nonceEnc,
+      nonce: nonceEnc.valueOf(),
       identifier: t.publicKey,
       identifier_proof: signedToken,
       popcha_address: popcha_address,
