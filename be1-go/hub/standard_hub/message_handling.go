@@ -501,15 +501,16 @@ func getMissingIds(receivedIds map[string][]string, storedIds map[string][]strin
 		for _, messageId := range receivedMessageIds {
 			blacklisted := slices.Contains(blacklist, messageId)
 			storedIdsForChannel, channelKnown := storedIds[channelId]
-			if !blacklisted {
-				if channelKnown {
-					contains := slices.Contains(storedIdsForChannel, messageId)
-					if !contains {
-						missingIds[channelId] = append(missingIds[channelId], messageId)
-					}
-				} else {
+			if blacklisted {
+				break
+			}
+			if channelKnown {
+				contains := slices.Contains(storedIdsForChannel, messageId)
+				if !contains {
 					missingIds[channelId] = append(missingIds[channelId], messageId)
 				}
+			} else {
+				missingIds[channelId] = append(missingIds[channelId], messageId)
 			}
 		}
 	}
