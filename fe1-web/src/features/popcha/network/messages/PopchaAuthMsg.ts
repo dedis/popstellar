@@ -1,12 +1,12 @@
 import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages';
 import { validateDataObject } from 'core/network/validation';
-import { Base64UrlData, Hash, ProtocolError } from 'core/objects';
+import { Hash, ProtocolError } from 'core/objects';
 
 /**
  * Data sent to authenticate a user
  * @interface
  * @property {string} client_id - The client id of the application
- * @property {string} nonce - The nonce of the authentication request (challenge)
+ * @property {string} nonce - The nonce of the authentication request (challenge) encoded in base64url
  * @property {Hash} identifier - Long time identifier of the user (Public key)
  * @property {Hash} identifier_proof - Proof of the identifier (Signature of the nonce with private key)
  * @property {string} popcha_address - The address of the popcha server
@@ -20,7 +20,7 @@ export class PopchaAuthMsg implements MessageData {
 
   public readonly client_id: string;
 
-  public readonly nonce: Base64UrlData;
+  public readonly nonce: string;
 
   public readonly identifier: Hash;
 

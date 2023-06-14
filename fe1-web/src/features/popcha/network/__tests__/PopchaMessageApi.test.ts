@@ -39,7 +39,7 @@ describe('PopchaMessageApi', () => {
     expect(channel).toBe(`/root/${mockLaoId}/authentication`);
     expect(message).toMatchObject({
       client_id: mockClientId,
-      nonce: mockEncodedNonce,
+      nonce: mockEncodedNonce.valueOf(),
       identifier: mockPopToken.publicKey,
       popcha_address: mockPopchaAddress,
       state: mockState,
@@ -64,7 +64,7 @@ describe('PopchaMessageApi', () => {
     expect(channel).toBe(`/root/${mockLaoId}/authentication`);
     expect(message).toMatchObject({
       client_id: mockClientId,
-      nonce: mockEncodedNonce,
+      nonce: mockEncodedNonce.valueOf(),
       identifier: mockPopToken.publicKey,
       popcha_address: mockPopchaAddress,
     });
