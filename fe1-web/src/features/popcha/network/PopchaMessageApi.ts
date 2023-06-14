@@ -30,11 +30,12 @@ export const sendPopchaAuthRequest = (
 ): Promise<void> => {
   const token = generateToken(laoId, Hash.fromString(client_id));
   return token.then((t) => {
-    const signedToken = t.sign(new Base64UrlData(nonce));
+    const nonceEnc = Base64UrlData.encode(nonce);
+    const signedToken = t.sign(nonceEnc);
     const popchaChannel = getPopchaAuthenticationChannel(laoId);
     const message = new PopchaAuthMsg({
       client_id: client_id,
-      nonce: nonce,
+      nonce: nonceEnc.valueOf(),
       identifier: t.publicKey,
       identifier_proof: signedToken,
       popcha_address: popcha_address,

@@ -36,7 +36,10 @@ func (msg AuthenticateUser) Verify() error {
 	if err != nil {
 		return xerrors.Errorf("Identifier Proof is %s, should be base64URL encoded", msg.IdentifierProof)
 	}
-	nonce := []byte(msg.Nonce)
+	nonce, err := base64.URLEncoding.DecodeString(msg.Nonce)
+	if err != nil {
+		return xerrors.Errorf("Nonce is %s, should be base64URL encoded", msg.Nonce)
+	}
 
 	// check that the identifier proof is valid
 	err = schnorr.VerifyWithChecks(crypto.Suite, id, nonce, idProof)
