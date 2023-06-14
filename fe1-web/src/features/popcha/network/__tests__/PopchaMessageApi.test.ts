@@ -6,6 +6,7 @@ import { sendPopchaAuthRequest } from '../PopchaMessageApi';
 
 const mockClientId = 'mockClientId';
 const mockNonce = 'mockNonce';
+const mockEncodedNonce = Base64UrlData.encode(mockNonce);
 const mockPopchaAddress = 'mockPopchaAddress';
 const mockState = 'mockState';
 const mockResponseMode = 'mockResponseMode';
@@ -38,7 +39,7 @@ describe('PopchaMessageApi', () => {
     expect(channel).toBe(`/root/${mockLaoId}/authentication`);
     expect(message).toMatchObject({
       client_id: mockClientId,
-      nonce: mockNonce,
+      nonce: mockEncodedNonce,
       identifier: mockPopToken.publicKey,
       popcha_address: mockPopchaAddress,
       state: mockState,
@@ -63,7 +64,7 @@ describe('PopchaMessageApi', () => {
     expect(channel).toBe(`/root/${mockLaoId}/authentication`);
     expect(message).toMatchObject({
       client_id: mockClientId,
-      nonce: mockNonce,
+      nonce: mockEncodedNonce,
       identifier: mockPopToken.publicKey,
       popcha_address: mockPopchaAddress,
     });

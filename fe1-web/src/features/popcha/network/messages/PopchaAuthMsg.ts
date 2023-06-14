@@ -1,6 +1,6 @@
 import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages';
 import { validateDataObject } from 'core/network/validation';
-import { Hash, ProtocolError } from 'core/objects';
+import { Base64UrlData, Hash, ProtocolError } from 'core/objects';
 
 /**
  * Data sent to authenticate a user
@@ -20,7 +20,7 @@ export class PopchaAuthMsg implements MessageData {
 
   public readonly client_id: string;
 
-  public readonly nonce: string;
+  public readonly nonce: Base64UrlData;
 
   public readonly identifier: Hash;
 
