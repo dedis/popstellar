@@ -95,6 +95,12 @@ type Hub struct {
 
 	// peersGreeted stores the peers that were greeted by the socket ID
 	peersGreeted []string
+
+	// blacklist stores the IDs of the messages that failed to be processed by the hub
+	// the server will not ask for them again in the heartbeat
+	// and will not process them if they are received again
+	// @TODO remove the messages from the blacklist after a certain amount of time by trying to process them again
+	blacklist []string
 }
 
 // newQueries creates a new queries struct
@@ -151,6 +157,7 @@ func NewHub(pubKeyOwner kyber.Point, clientServerAddress string, serverServerAdd
 		messageIdsByChannel: make(map[string][]string),
 		peersInfo:           make(map[string]method.ServerInfo),
 		peersGreeted:        make([]string, 0),
+		blacklist:           make([]string, 0),
 	}
 
 	return &hub, nil
