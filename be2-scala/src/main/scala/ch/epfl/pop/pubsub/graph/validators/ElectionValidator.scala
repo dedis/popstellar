@@ -155,51 +155,52 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
         val electionId = channel.extractChildChannel
 
         val setupElectionTimeStamp = extractSetupElectionTimestamp(channel, rpcMessage)
-        if (setupElectionTimeStamp.isEmpty) {
-          return Left(validationError("couldn't retrieve the setup election timestamp"))
+        setupElectionTimeStamp match {
+          case None => Left(validationError("couldn't retrieve the setup election timestamp"))
+          case Some(_) =>
+            runChecks(
+              checkTimestampStaleness(
+                rpcMessage,
+                openElection.opened_at,
+                validationError(s"stale 'opened_at' timestamp (${openElection.opened_at})")
+              ),
+              checkTimestampOrder(
+                rpcMessage,
+                setupElectionTimeStamp.get,
+                openElection.opened_at,
+                validationError("trying to open an election before seting it up.")
+              ),
+              checkId(
+                rpcMessage,
+                laoId,
+                openElection.lao,
+                validationError("Unexpected lao id")
+              ),
+              checkId(
+                rpcMessage,
+                electionId,
+                openElection.election,
+                validationError("Unexpected election id")
+              ),
+              checkOwner(
+                rpcMessage,
+                senderPK,
+                channel,
+                dbActorRef,
+                validationError(s"Sender $senderPK has an invalid PoP token.")
+              ),
+              checkChannelType(
+                rpcMessage,
+                ObjectType.ELECTION,
+                channel,
+                dbActorRef,
+                validationError(
+                  s"trying to send a OpenElection message on a wrong type of channel $channel"
+                )
+              )
+            )
         }
 
-        runChecks(
-          checkTimestampStaleness(
-            rpcMessage,
-            openElection.opened_at,
-            validationError(s"stale 'opened_at' timestamp (${openElection.opened_at})")
-          ),
-          checkTimestampOrder(
-            rpcMessage,
-            setupElectionTimeStamp.get,
-            openElection.opened_at,
-            validationError("trying to open an election before seting it up.")
-          ),
-          checkId(
-            rpcMessage,
-            laoId,
-            openElection.lao,
-            validationError("Unexpected lao id")
-          ),
-          checkId(
-            rpcMessage,
-            electionId,
-            openElection.election,
-            validationError("Unexpected election id")
-          ),
-          checkOwner(
-            rpcMessage,
-            senderPK,
-            channel,
-            dbActorRef,
-            validationError(s"Sender $senderPK has an invalid PoP token.")
-          ),
-          checkChannelType(
-            rpcMessage,
-            ObjectType.ELECTION,
-            channel,
-            dbActorRef,
-            validationError(
-              s"trying to send a OpenElection message on a wrong type of channel $channel"
-            )
-          )
-        )
       case _ => Left(validationErrorNoMessage(rpcMessage.id))
     }
   }
@@ -339,61 +340,62 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
         val electionId = channel.extractChildChannel
 
         val setupElectionTimeStamp = extractSetupElectionTimestamp(channel, rpcMessage)
-        if (!setupElectionTimeStamp.isDefined) {
-          return Left(validationError("couldn't retrieve the setup election timestamp"))
+        setupElectionTimeStamp match {
+          case None => Left(validationError("couldn't retrieve the setup election timestamp"))
+          case Some(_) =>
+            val firstCheck = runChecks(
+              checkTimestampStaleness(
+                rpcMessage,
+                endElection.created_at,
+                validationError(s"stale 'created_at' timestamp (${endElection.created_at})")
+              ),
+              checkTimestampOrder(
+                rpcMessage,
+                setupElectionTimeStamp.get,
+                endElection.created_at,
+                validationError("trying to end an election before setting it up")
+              ),
+              checkId(
+                rpcMessage,
+                electionId,
+                endElection.election,
+                validationError("unexpected election id")
+              ),
+              checkId(
+                rpcMessage,
+                laoId,
+                endElection.lao,
+                validationError("unexpected lao id")
+              ),
+              checkOwner(
+                rpcMessage,
+                senderPK,
+                channel,
+                dbActorRef,
+                validationError(s"invalid sender $senderPK")
+              ),
+              checkChannelType(
+                rpcMessage,
+                ObjectType.ELECTION,
+                channel,
+                dbActorRef,
+                validationError(s"trying to send a EndElection message on a wrong type of channel $channel")
+              )
+            )
+
+            // Until runChecks() can be set to be call-by-name this two part check is required to pass the unit tests
+            lazy val secondCheck = checkVoteResults(
+              rpcMessage,
+              channel,
+              endElection.registered_votes,
+              validationError(s"Incorrect verification hash")
+            )
+
+            if (firstCheck.isRight)
+              secondCheck
+            else
+              firstCheck
         }
-        val firstCheck = runChecks(
-          checkTimestampStaleness(
-            rpcMessage,
-            endElection.created_at,
-            validationError(s"stale 'created_at' timestamp (${endElection.created_at})")
-          ),
-          checkTimestampOrder(
-            rpcMessage,
-            setupElectionTimeStamp.get,
-            endElection.created_at,
-            validationError("trying to end an election before setting it up")
-          ),
-          checkId(
-            rpcMessage,
-            electionId,
-            endElection.election,
-            validationError("unexpected election id")
-          ),
-          checkId(
-            rpcMessage,
-            laoId,
-            endElection.lao,
-            validationError("unexpected lao id")
-          ),
-          checkOwner(
-            rpcMessage,
-            senderPK,
-            channel,
-            dbActorRef,
-            validationError(s"invalid sender $senderPK")
-          ),
-          checkChannelType(
-            rpcMessage,
-            ObjectType.ELECTION,
-            channel,
-            dbActorRef,
-            validationError(s"trying to send a EndElection message on a wrong type of channel $channel")
-          )
-        )
-
-        // Until runChecks() can be set to be call-by-name this two part check is required to pass the unit tests
-        lazy val secondCheck = checkVoteResults(
-          rpcMessage,
-          channel,
-          endElection.registered_votes,
-          validationError(s"Incorrect verification hash")
-        )
-
-        if (firstCheck.isRight)
-          secondCheck
-        else
-          firstCheck
 
       case _ => Left(validationErrorNoMessage(rpcMessage.id))
     }
@@ -679,7 +681,6 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
   }
 
   private def extractSetupElectionTimestamp(channel: Channel, rpcMessage: JsonRpcRequest): Option[Timestamp] = {
-    def validationError(reason: String): PipelineError = super.validationError(reason, "EndElection", rpcMessage.id)
     Await.ready(channel.getSetupMessage(dbActorRef), duration).value.get match {
       case Success(setupElection: SetupElection) => Some(setupElection.created_at)
       case Failure(exception)                    => None
