@@ -46,11 +46,12 @@ class PopchaValidatorSuite extends TestKit(ActorSystem("popChaValidatorTestActor
     directory.deleteRecursively()
   }
 
-  private def setupMockDB(laoData: LaoData, channelData: ChannelData): AskableActorRef = {
+  private def setupMockDB(laoData: LaoData, channelData: ChannelData, authenticateUserWith: Option[PublicKey] = None): AskableActorRef = {
     val dbActorMock = Props(new Actor() {
       override def receive: Receive = {
-        case DbActor.ReadLaoData(_)     => sender() ! DbActor.DbActorReadLaoDataAck(laoData)
-        case DbActor.ReadChannelData(_) => sender() ! DbActor.DbActorReadChannelDataAck(channelData)
+        case DbActor.ReadLaoData(_)              => sender() ! DbActor.DbActorReadLaoDataAck(laoData)
+        case DbActor.ReadChannelData(_)          => sender() ! DbActor.DbActorReadChannelDataAck(channelData)
+        case DbActor.ReadUserAuthenticated(_, _) => sender() ! DbActor.DbActorReadUserAuthenticationAck(authenticateUserWith)
       }
     })
     system.actorOf(dbActorMock)
@@ -60,7 +61,10 @@ class PopchaValidatorSuite extends TestKit(ActorSystem("popChaValidatorTestActor
   private val mockDBWithoutUser: AskableActorRef = setupMockDB(laoDataWithoutUser, channelDataWithValidObjectType)
   private val mockDBWithInvalidChannelType: AskableActorRef = setupMockDB(laoDataWithUser, channelDataWithInvalidObjectType)
 
-  test("Authenticate works") {
+  private val mockDBWithSameUserAuthenticated: AskableActorRef = setupMockDB(laoDataWithUser, channelDataWithValidObjectType, Some(userIdentifier))
+  private val mockDBWithOtherUserAuthenticated: AskableActorRef = setupMockDB(laoDataWithUser, channelDataWithValidObjectType, Some(otherUser))
+
+  test("Authenticate works without user already authenticated") {
     val dbActorRef = mockDBWithUser
     val message: GraphMessage = new PopchaValidator(dbActorRef).validateAuthenticateRequest(AUTHENTICATE_RPC)
     message should equal(Right(AUTHENTICATE_RPC))
@@ -94,5 +98,17 @@ class PopchaValidatorSuite extends TestKit(ActorSystem("popChaValidatorTestActor
     val dbActorRef = mockDBWithoutUser
     val message: GraphMessage = new PopchaValidator(dbActorRef).validateAuthenticateRequest(AUTHENTICATE_RPC)
     message shouldBe a[Left[_, PipelineError]]
+  }
+
+  test("Authenticate with other pop token already registered fails") {
+    val dbActorRef = mockDBWithOtherUserAuthenticated
+    val message: GraphMessage = new PopchaValidator(dbActorRef).validateAuthenticateRequest(AUTHENTICATE_RPC)
+    message shouldBe a[Left[_, PipelineError]]
+  }
+
+  test("Authenticate with same pop token already registered succeeds") {
+    val dbActorRef = mockDBWithSameUserAuthenticated
+    val message: GraphMessage = new PopchaValidator(dbActorRef).validateAuthenticateRequest(AUTHENTICATE_RPC)
+    message should equal(Right(AUTHENTICATE_RPC))
   }
 }

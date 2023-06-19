@@ -87,7 +87,7 @@ object Channel {
   final val SOCIAL_MEDIA_CHIRPS_PREFIX: String = s"${SOCIAL_CHANNEL_PREFIX}chirps"
   final val REACTIONS_CHANNEL_PREFIX: String = s"${SOCIAL_CHANNEL_PREFIX}reactions"
 
-  final val POPCHA_AUTHENTICATION_LOCATION: String = s"${ROOT_CHANNEL_PREFIX}authentication"
+  final val POPCHA_CHANNEL_PREFIX: String = s"${CHANNEL_SEPARATOR}authentication"
 
   def apply(channel: String): Channel = {
     if (channel.trim.isEmpty || !channel.matches(channelRegex)) {

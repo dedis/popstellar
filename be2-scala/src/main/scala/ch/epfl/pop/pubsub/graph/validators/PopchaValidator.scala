@@ -9,6 +9,9 @@ import ch.epfl.pop.model.objects._
 import ch.epfl.pop.pubsub.PublishSubscribe
 import ch.epfl.pop.pubsub.graph.validators.MessageValidator.{checkAttendee, checkChannelType, extractData}
 import ch.epfl.pop.pubsub.graph.{GraphMessage, PipelineError}
+import ch.epfl.pop.storage.DbActor.{DbActorReadUserAuthenticationAck, ReadUserAuthenticated}
+import scala.concurrent.Await
+import scala.util.Success
 
 /** Validator for Popcha messages' data contents
   */
@@ -45,7 +48,13 @@ sealed class PopchaValidator(dbActorRef: => AskableActorRef) extends MessageData
             authenticate.nonce,
             validationError("Failed to verify the identifier proof with the given identifier/nonce pair")
           )
-          result <- checkNoDuplicateIdentifiers(rpcMessage, sender, authenticate.identifier, validationError("An identifier is already paired with this user token"))
+          result <- checkNoDuplicateIdentifiers(
+            rpcMessage,
+            sender,
+            authenticate.identifier,
+            authenticate.clientId,
+            validationError(s"Failed to verify that pop token $sender has never been used before to authenticate another user for client ${authenticate.clientId}")
+          )
         } yield result
 
       case None => Left(validationErrorNoMessage(rpcMessage.id))
@@ -67,8 +76,15 @@ sealed class PopchaValidator(dbActorRef: => AskableActorRef) extends MessageData
       Left(error)
   }
 
-  private def checkNoDuplicateIdentifiers(rpcMessage: JsonRpcMessage, user: PublicKey, identifier: PublicKey, error: PipelineError): GraphMessage = {
-    // TODO: store in DBActor a map [user -> identifier] to check and prevent duplicate
-    Right(rpcMessage)
+  private def checkNoDuplicateIdentifiers(rpcMessage: JsonRpcMessage, user: PublicKey, identifier: PublicKey, clientId: String, error: PipelineError): GraphMessage = {
+    val ask = dbActorRef ? ReadUserAuthenticated(identifier, clientId)
+    Await.ready(ask, duration).value.get match {
+      case Success(DbActorReadUserAuthenticationAck(optUser)) => optUser match {
+          case Some(userId) if userId == user => Right(rpcMessage)
+          case None                           => Right(rpcMessage)
+          case _                              => Left(error)
+        }
+      case _ => Left(error)
+    }
   }
 }
