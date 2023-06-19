@@ -1,116 +1,131 @@
 @env=go_client,scala_client
 Feature: Open an Election
   Background:
-        # This feature will be called to test Election Open
-        # For every test a file containing the json representation of the message is read
-        # then sent to the backend and stored there.
-        # This is done via :
-        # eval frontend.send(<message>) where a mock frontend sends a message to backend
-        # Then the response sent by the backend and stored in a buffer :
-        # json response = frontend_buffer.takeTimeout(timeout)
-        # and checked if it contains the desired fields with :
-        # match response contains deep <desired fields>
-
-    # The following calls make this feature, mockFrontEnd.feature and server.feature share the same scope
+    # This feature will be called to test Election Open
+    # Call read(...) makes this feature and the called feature share the same scope
+    # Meaning they share def variables, configurations ...
+    # Especially JS functions defined in the called features can be directly used here thanks to Karate shared scopes
     * call read('classpath:be/utils/server.feature')
-    * call read('classpath:be/mockFrontEnd.feature')
+    * call read('classpath:be/mockClient.feature')
     * call read('classpath:be/constants.feature')
-    * string electionChannel = "/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=/rdv-0minecREM9XidNxnQotO7nxtVVnx-Zkmfm7hm2w="
-    * string laoChannel = "/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA="
+    * def organizer = call createMockClient
+    * def lao = organizer.createValidLao()
+    * def rollCall = organizer.createValidRollCall(lao)
+    * def election = organizer.createValidElection(lao)
+    * def question = election.createQuestion()
+
+    # This call executes all the steps to set up a lao, complete a roll call and create an election with one question
+    * call read('classpath:be/utils/simpleScenarios.feature@name=election_setup') { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)',  election: '#(election)', question: '#(question)' }
+    * def electionOpen = election.open()
 
   # Testing after creating an election, the backend returns an result
   # upon an open election message
   Scenario: Opening a valid election
-    Given call read('classpath:be/utils/simpleScenarios.feature@name=election_setup')
-    And def validElectionOpen =
+    Given def validElectionOpen =
       """
         {
             "object": "election",
             "action": "open",
-            "lao": '#(getLaoValid)',
-            "election": '#(getValidElectionSetupId)',
-            "opened_at": 1633098944
+            "lao": '#(lao.id)',
+            "election": '#(election.id)',
+            "opened_at": '#(electionOpen.openedAt)'
         }
       """
-    When frontend.publish(validElectionOpen, electionChannel)
-    And json answer = frontend.getBackendResponse(validElectionOpen)
+    When organizer.publish(validElectionOpen, election.channel)
+    And json answer = organizer.getBackendResponse(validElectionOpen)
     Then match answer contains VALID_MESSAGE
-    And match frontend.receiveNoMoreResponses() == true
+    And match organizer.receiveNoMoreResponses() == true
 
   # Testing before creating an election, the backend returns an error
   # upon an open election message
   Scenario: Opening the election without a setup should result in an error
-    Given call read('classpath:be/utils/simpleScenarios.feature@name=close_roll_call')
+    Given def newElection = organizer.createValidElection(lao)
+    And def newElectionOpen = newElection.open()
     And def validElectionOpen =
       """
         {
             "object": "election",
             "action": "open",
-            "lao": '#(getLaoValid)',
-            "election": '#(getValidElectionSetupId)',
-            "opened_at": 1633098944
+            "lao": '#(lao.id)',
+            "election": '#(newElection.id)',
+            "opened_at": '#(newElectionOpen.createdAt)'
         }
       """
-    When frontend.publish(validElectionOpen, electionChannel)
-    And json answer = frontend.getBackendResponse(validElectionOpen)
+    When organizer.publish(validElectionOpen, newElection.channel)
+    And json answer = organizer.getBackendResponse(validElectionOpen)
     Then match answer contains INVALID_MESSAGE_FIELD
-    And match frontend.receiveNoMoreResponses() == true
+    And match organizer.receiveNoMoreResponses() == true
 
   # Testing after creating an election, the backend returns an error
   # upon an open election message containing an open time before election creation time
   Scenario: Opening the election too early results in an error
-    Given call read('classpath:be/utils/simpleScenarios.feature@name=election_setup')
-    And def validElectionOpen =
+    Given def invalidElectionOpen =
       """
         {
             "object": "election",
             "action": "open",
-            "lao": '#(getLaoValid)',
-            "election": '#(getValidElectionSetupId)',
-            "opened_at": 1620000000
+            "lao": '#(lao.id)',
+            "election": '#(election.id)',
+            "opened_at": '#(election.creation - 1)'
         }
       """
-    When frontend.publish(validElectionOpen, electionChannel)
-    And json answer = frontend.getBackendResponse(validElectionOpen)
+    When organizer.publish(invalidElectionOpen, election.channel)
+    And json answer = organizer.getBackendResponse(invalidElectionOpen)
     Then match answer contains INVALID_MESSAGE_FIELD
-    And match frontend.receiveNoMoreResponses() == true
+    And match organizer.receiveNoMoreResponses() == true
 
   # Testing after creating an election, the backend returns an error
   # if an open election message is sent by a non-organizer
   Scenario: Non organizer opening the election should result in an error
-    Given call read('classpath:be/utils/simpleScenarios.feature@name=election_setup')
+    Given def notOrganizer = call createMockClient
     And def validElectionOpen =
       """
         {
             "object": "election",
             "action": "open",
-            "lao": '#(getLaoValid)',
-            "election": '#(getValidElectionSetupId)',
-            "opened_at": 1633098944
+            "lao": '#(lao.id)',
+            "election": '#(election.id)',
+            "opened_at": '#(electionOpen.openedAt)'
         }
       """
-    And frontend.changeSenderToBeNonAttendee()
-    When frontend.publish(validElectionOpen, electionChannel)
-    And json answer = frontend.getBackendResponse(validElectionOpen)
+    When notOrganizer.publish(validElectionOpen, election.channel)
+    And json answer = notOrganizer.getBackendResponse(validElectionOpen)
     Then match answer contains INVALID_MESSAGE_FIELD
-    And match frontend.receiveNoMoreResponses() == true
+    And match notOrganizer.receiveNoMoreResponses() == true
 
   # Testing after creating an election, the backend returns an error
   # if an open election message has the lao id field computed wrongly
-  Scenario: Opening the election with wrong election id should result in an error
-    Given call read('classpath:be/utils/simpleScenarios.feature@name=election_setup')
-    And def validElectionOpen =
-      """
+  Scenario: Opening the election with wrong lao id should result in an error
+    Given def invalidElectionOpen =
+       """
         {
             "object": "election",
             "action": "open",
-            "lao": '#(getLaoIdNegativeTime)',
-            "election": '#(getValidElectionSetupId)',
-            "opened_at": 1633098944
+            "lao": '#(random.generateLaoId())',
+            "election": '#(election.id)',
+            "opened_at": '#(electionOpen.openedAt)'
         }
       """
-    When frontend.publish(validElectionOpen, electionChannel)
-    And json answer = frontend.getBackendResponse(validElectionOpen)
+    When organizer.publish(invalidElectionOpen, election.channel)
+    And json answer = organizer.getBackendResponse(invalidElectionOpen)
     Then match answer contains INVALID_MESSAGE_FIELD
-    And match frontend.receiveNoMoreResponses() == true
+    And match organizer.receiveNoMoreResponses() == true
+
+  # Testing after creating an election, the backend returns an error
+  # if an open election message has the election id field computed wrongly
+  Scenario: Opening the election with wrong election id should result in an error
+    Given def invalidElectionOpen =
+       """
+        {
+            "object": "election",
+            "action": "open",
+            "lao": '#(lao.id)',
+            "election": '#(random.generateElectionId())',
+            "opened_at": '#(electionOpen.openedAt)'
+        }
+      """
+    When organizer.publish(invalidElectionOpen, election.channel)
+    And json answer = organizer.getBackendResponse(invalidElectionOpen)
+    Then match answer contains INVALID_MESSAGE_FIELD
+    And match organizer.receiveNoMoreResponses() == true
 

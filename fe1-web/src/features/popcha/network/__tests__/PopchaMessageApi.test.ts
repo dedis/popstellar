@@ -6,6 +6,7 @@ import { sendPopchaAuthRequest } from '../PopchaMessageApi';
 
 const mockClientId = 'mockClientId';
 const mockNonce = 'mockNonce';
+const mockEncodedNonce = Base64UrlData.encode(mockNonce);
 const mockPopchaAddress = 'mockPopchaAddress';
 const mockState = 'mockState';
 const mockResponseMode = 'mockResponseMode';
@@ -38,13 +39,13 @@ describe('PopchaMessageApi', () => {
     expect(channel).toBe(`/root/${mockLaoId}/authentication`);
     expect(message).toMatchObject({
       client_id: mockClientId,
-      nonce: mockNonce,
+      nonce: mockEncodedNonce.valueOf(),
       identifier: mockPopToken.publicKey,
       popcha_address: mockPopchaAddress,
       state: mockState,
       response_mode: mockResponseMode,
     });
-    expect(mockPopToken.sign(new Base64UrlData(mockNonce))).toEqual(message.identifier_proof);
+    expect(mockPopToken.sign(mockEncodedNonce)).toEqual(message.identifier_proof);
   });
 
   it('should create correct message with null state and response mode', async () => {
@@ -63,7 +64,7 @@ describe('PopchaMessageApi', () => {
     expect(channel).toBe(`/root/${mockLaoId}/authentication`);
     expect(message).toMatchObject({
       client_id: mockClientId,
-      nonce: mockNonce,
+      nonce: mockEncodedNonce.valueOf(),
       identifier: mockPopToken.publicKey,
       popcha_address: mockPopchaAddress,
     });

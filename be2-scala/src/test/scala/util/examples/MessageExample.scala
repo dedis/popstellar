@@ -3,25 +3,27 @@ package util.examples
 import ch.epfl.pop.json.MessageDataProtocol._
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.lao.CreateLao
+import ch.epfl.pop.model.network.method.message.data.meeting.{CreateMeeting, StateMeeting}
+import ch.epfl.pop.model.network.method.message.data.popcha.Authenticate
 import ch.epfl.pop.model.network.method.message.data.rollCall.CloseRollCall
 import ch.epfl.pop.model.network.method.message.data.socialMedia.AddChirp
-import ch.epfl.pop.model.network.method.message.data.meeting.CreateMeeting
 import ch.epfl.pop.model.objects._
 import spray.json._
-import ch.epfl.pop.model.network.method.message.data.meeting.StateMeeting
-import java.{util => ju}
-import ch.epfl.pop.json.ObjectProtocol
 
 object MessageExample {
 
-  private final val PUBLICKEY: PublicKey = PublicKey(Base64Data("jsNj23IHALvppqV1xQfP71_3IyAHzivxiCz236_zzQc="))
-  private final val PRIVATEKEY: PrivateKey = PrivateKey(Base64Data("qRfms3wzSLkxAeBz6UtwA-L1qP0h8D9XI1FSvY68t7Y="))
+  final val SEED: Base64Data = Base64Data("to_klZLtiHV446Fv98OLNdNmi-EP5OaTtbBkotTYLic=")
+  final val PUBLIC_KEY: PublicKey = PublicKey(Base64Data("jsNj23IHALvppqV1xQfP71_3IyAHzivxiCz236_zzQc="))
+  final val PRIVATE_KEY: PrivateKey = PrivateKey(Base64Data("qRfms3wzSLkxAeBz6UtwA-L1qP0h8D9XI1FSvY68t7Y="))
+
+  private final val EMPTY_SIGNATURE: Signature = Signature(Base64Data(""))
+  private final val EMPTY_HASH: Hash = Hash(Base64Data(""))
 
   final val NOT_STALE_TIMESTAMP = Timestamp(1577833201L)
 
   final val MESSAGE: Message = Message(
     Base64Data("eyJjcmVhdGlvbiI6MTYzMTg4NzQ5NiwiaWQiOiJ4aWdzV0ZlUG1veGxkd2txMUt1b0wzT1ZhODl4amdYalRPZEJnSldjR1drPSIsIm5hbWUiOiJoZ2dnZ2dnIiwib3JnYW5pemVyIjoidG9fa2xaTHRpSFY0NDZGdjk4T0xOZE5taS1FUDVPYVR0YkJrb3RUWUxpYz0iLCJ3aXRuZXNzZXMiOltdLCJvYmplY3QiOiJsYW8iLCJhY3Rpb24iOiJjcmVhdGUifQ=="),
-    PublicKey(Base64Data("to_klZLtiHV446Fv98OLNdNmi-EP5OaTtbBkotTYLic=")),
+    PublicKey(SEED),
     Signature(Base64Data("2VDJCWg11eNPUvZOnvq5YhqqIKLBcik45n-6o87aUKefmiywagivzD4o_YmjWHzYcb9qg-OgDBZbBNWSUgJICA==")),
     Hash(Base64Data("f1jTxH8TU2UGUBnikGU3wRTHjhOmIEQVmxZBK55QpsE=")),
     WitnessSignaturePair(PublicKey(Base64Data("d2l0MQ==")), Signature(Base64Data("c2lnMQ=="))) :: WitnessSignaturePair(PublicKey(Base64Data("d2l0Mg==")), Signature(Base64Data("c2lnMg=="))) :: Nil
@@ -29,7 +31,7 @@ object MessageExample {
 
   final val MESSAGE_FAULTY_ID: Message = Message(
     Base64Data("eyJjcmVhdGlvbiI6MTYzMTg4NzQ5NiwiaWQiOiJ4aWdzV0ZlUG1veGxkd2txMUt1b0wzT1ZhODl4amdYalRPZEJnSldjR1drPSIsIm5hbWUiOiJoZ2dnZ2dnIiwib3JnYW5pemVyIjoidG9fa2xaTHRpSFY0NDZGdjk4T0xOZE5taS1FUDVPYVR0YkJrb3RUWUxpYz0iLCJ3aXRuZXNzZXMiOltdLCJvYmplY3QiOiJsYW8iLCJhY3Rpb24iOiJjcmVhdGUifQ=="),
-    PublicKey(Base64Data("to_klZLtiHV446Fv98OLNdNmi-EP5OaTtbBkotTYLic=")),
+    PublicKey(SEED),
     Signature(Base64Data("2VDJCWg11eNPUvZOnvq5YhqqIKLBcik45n-6o87aUKefmiywagivzD4o_YmjWHzYcb9qg-OgDBZbBNWSUgJICA==")),
     Hash(Base64Data("RkFVTFRZLUlE")),
     WitnessSignaturePair(PublicKey(Base64Data("d2l0MQ==")), Signature(Base64Data("c2lnMQ=="))) :: WitnessSignaturePair(PublicKey(Base64Data("d2l0Mg==")), Signature(Base64Data("c2lnMg=="))) :: Nil
@@ -38,32 +40,32 @@ object MessageExample {
   // message with a valid Ed25519Sign WitnessSignaturePair
   final val MESSAGE_WORKING_WS_PAIR: Message = Message(
     Base64Data("eyJjcmVhdGlvbiI6MTYzMTg4NzQ5NiwiaWQiOiJ4aWdzV0ZlUG1veGxkd2txMUt1b0wzT1ZhODl4amdYalRPZEJnSldjR1drPSIsIm5hbWUiOiJoZ2dnZ2dnIiwib3JnYW5pemVyIjoidG9fa2xaTHRpSFY0NDZGdjk4T0xOZE5taS1FUDVPYVR0YkJrb3RUWUxpYz0iLCJ3aXRuZXNzZXMiOltdLCJvYmplY3QiOiJsYW8iLCJhY3Rpb24iOiJjcmVhdGUifQ=="),
-    PublicKey(Base64Data("to_klZLtiHV446Fv98OLNdNmi-EP5OaTtbBkotTYLic=")),
+    PublicKey(SEED),
     Signature(Base64Data("2VDJCWg11eNPUvZOnvq5YhqqIKLBcik45n-6o87aUKefmiywagivzD4o_YmjWHzYcb9qg-OgDBZbBNWSUgJICA==")),
     Hash(Base64Data("f1jTxH8TU2UGUBnikGU3wRTHjhOmIEQVmxZBK55QpsE=")),
-    WitnessSignaturePair(PUBLICKEY, PRIVATEKEY.signData(Base64Data("f1jTxH8TU2UGUBnikGU3wRTHjhOmIEQVmxZBK55QpsE="))) :: Nil
+    WitnessSignaturePair(PUBLIC_KEY, PRIVATE_KEY.signData(Base64Data("f1jTxH8TU2UGUBnikGU3wRTHjhOmIEQVmxZBK55QpsE="))) :: Nil
   )
 
   // message with an invalid Ed25519Sign WitnessSignaturePair
   final val MESSAGE_FAULTY_WS_PAIR: Message = Message(
     Base64Data("eyJjcmVhdGlvbiI6MTYzMTg4NzQ5NiwiaWQiOiJ4aWdzV0ZlUG1veGxkd2txMUt1b0wzT1ZhODl4amdYalRPZEJnSldjR1drPSIsIm5hbWUiOiJoZ2dnZ2dnIiwib3JnYW5pemVyIjoidG9fa2xaTHRpSFY0NDZGdjk4T0xOZE5taS1FUDVPYVR0YkJrb3RUWUxpYz0iLCJ3aXRuZXNzZXMiOltdLCJvYmplY3QiOiJsYW8iLCJhY3Rpb24iOiJjcmVhdGUifQ=="),
-    PublicKey(Base64Data("to_klZLtiHV446Fv98OLNdNmi-EP5OaTtbBkotTYLic=")),
+    PublicKey(SEED),
     Signature(Base64Data("2VDJCWg11eNPUvZOnvq5YhqqIKLBcik45n-6o87aUKefmiywagivzD4o_YmjWHzYcb9qg-OgDBZbBNWSUgJICA==")),
     Hash(Base64Data.encode("invalid")),
-    WitnessSignaturePair(PUBLICKEY, PRIVATEKEY.signData(Base64Data("f1jTxH8TU2UGUBnikGU3wRTHjhOmIEQVmxZBK55QpsE="))) :: Nil
+    WitnessSignaturePair(PUBLIC_KEY, PRIVATE_KEY.signData(Base64Data("f1jTxH8TU2UGUBnikGU3wRTHjhOmIEQVmxZBK55QpsE="))) :: Nil
   )
 
   // message with an invalid Signature
   final val MESSAGE_FAULTY_SIGNATURE: Message = Message(
     Base64Data("eyJjcmVhdGlvbiI6MTYzMTg4NzQ5NiwiaWQiOiJ4aWdzV0ZlUG1veGxkd2txMUt1b0wzT1ZhODl4amdYalRPZEJnSldjR1drPSIsIm5hbWUiOiJoZ2dnZ2dnIiwib3JnYW5pemVyIjoidG9fa2xaTHRpSFY0NDZGdjk4T0xOZE5taS1FUDVPYVR0YkJrb3RUWUxpYz0iLCJ3aXRuZXNzZXMiOltdLCJvYmplY3QiOiJsYW8iLCJhY3Rpb24iOiJjcmVhdGUifQ=="),
-    PublicKey(Base64Data("to_klZLtiHV446Fv98OLNdNmi-EP5OaTtbBkotTYLic=")),
+    PublicKey(SEED),
     Signature(Base64Data.encode("invalid")),
     Hash(Base64Data("f1jTxH8TU2UGUBnikGU3wRTHjhOmIEQVmxZBK55QpsE=")),
-    WitnessSignaturePair(PUBLICKEY, PRIVATEKEY.signData(Base64Data("f1jTxH8TU2UGUBnikGU3wRTHjhOmIEQVmxZBK55QpsE="))) :: Nil
+    WitnessSignaturePair(PUBLIC_KEY, PRIVATE_KEY.signData(Base64Data("f1jTxH8TU2UGUBnikGU3wRTHjhOmIEQVmxZBK55QpsE="))) :: Nil
   )
 
   // CreateLao
-  val organizer: PublicKey = PublicKey(Base64Data("to_klZLtiHV446Fv98OLNdNmi-EP5OaTtbBkotTYLic="))
+  val organizer: PublicKey = PublicKey(SEED)
   val organizerInvalid: PublicKey = PublicKey(Base64Data("to_klZLtiHV446Fv98OLNdNmi-EP5OaTtbBkotTYLid="))
   val name: String = "LAO"
   val nameInvalid: String = "wrong"
@@ -71,9 +73,9 @@ object MessageExample {
   val creationInvalid: Timestamp = Timestamp(0)
   val idWorking: Hash = Hash.fromStrings(organizer.base64Data.toString, creationWorking.toString, name)
   val idInvalid: Hash = Hash.fromStrings(organizer.base64Data.toString, creationWorking.toString, nameInvalid)
-  val workingWitnessList: List[PublicKey] = PUBLICKEY :: Nil
-  val invalidWitnessList: List[PublicKey] = PUBLICKEY :: PUBLICKEY :: Nil
-  val workingWSPairList: List[WitnessSignaturePair] = WitnessSignaturePair(PUBLICKEY, PRIVATEKEY.signData(Base64Data("f1jTxH8TU2UGUBnikGU3wRTHjhOmIEQVmxZBK55QpsE="))) :: Nil
+  val workingWitnessList: List[PublicKey] = PUBLIC_KEY :: Nil
+  val invalidWitnessList: List[PublicKey] = PUBLIC_KEY :: PUBLIC_KEY :: Nil
+  val workingWSPairList: List[WitnessSignaturePair] = WitnessSignaturePair(PUBLIC_KEY, PRIVATE_KEY.signData(Base64Data("f1jTxH8TU2UGUBnikGU3wRTHjhOmIEQVmxZBK55QpsE="))) :: Nil
 
   private final val createLaoCorrect: CreateLao = CreateLao(idWorking, name, creationWorking, organizer, workingWitnessList)
   final val MESSAGE_CREATELAO_WORKING: Message = new Message(
@@ -89,8 +91,8 @@ object MessageExample {
   final val MESSAGE_CREATELAO_WRONG_TIMESTAMP: Message = new Message(
     Base64Data.encode(createLaoWrongTimestamp.toJson.toString),
     organizer,
-    Signature(Base64Data("")),
-    Hash(Base64Data("")),
+    EMPTY_SIGNATURE,
+    EMPTY_HASH,
     workingWSPairList,
     Some(createLaoWrongTimestamp)
   )
@@ -99,8 +101,8 @@ object MessageExample {
   final val MESSAGE_CREATELAO_WRONG_WITNESSES: Message = new Message(
     Base64Data.encode(createLaoWrongWitnesses.toJson.toString),
     organizer,
-    Signature(Base64Data("")),
-    Hash(Base64Data("")),
+    EMPTY_SIGNATURE,
+    EMPTY_HASH,
     workingWSPairList,
     Some(createLaoWrongWitnesses)
   )
@@ -109,8 +111,8 @@ object MessageExample {
   final val MESSAGE_CREATELAO_WRONG_ID: Message = new Message(
     Base64Data.encode(createLaoWrongId.toJson.toString),
     organizer,
-    Signature(Base64Data("")),
-    Hash(Base64Data("")),
+    EMPTY_SIGNATURE,
+    EMPTY_HASH,
     workingWSPairList,
     Some(createLaoWrongId)
   )
@@ -121,8 +123,8 @@ object MessageExample {
   final val MESSAGE_CREATELAO_WRONG_SENDER: Message = new Message(
     Base64Data.encode(createLaoWrongSender.toJson.toString),
     organizer,
-    Signature(Base64Data("")),
-    Hash(Base64Data("")),
+    EMPTY_SIGNATURE,
+    EMPTY_HASH,
     workingWSPairList,
     Some(createLaoWrongSender)
   )
@@ -132,8 +134,8 @@ object MessageExample {
   final val MESSAGE_CREATELAO_EMPTY_NAME: Message = new Message(
     Base64Data.encode(createLaoEmptyName.toJson.toString),
     organizer,
-    Signature(Base64Data("")),
-    Hash(Base64Data("")),
+    EMPTY_SIGNATURE,
+    EMPTY_HASH,
     workingWSPairList,
     Some(createLaoEmptyName)
   )
@@ -141,36 +143,36 @@ object MessageExample {
   // we only care about the decoded data, the rest doesn't need to be right for current testing purposes
   final val MESSAGE_CREATELAO_SIMPLIFIED: Message = new Message(
     Base64Data.encode(CreateLao(Hash(Base64Data("aWQ=")), "LAO", NOT_STALE_TIMESTAMP, PublicKey(Base64Data("a2V5")), List.empty).toJson.toString),
-    PublicKey(Base64Data("to_klZLtiHV446Fv98OLNdNmi-EP5OaTtbBkotTYLic=")),
-    Signature(Base64Data("")),
-    Hash(Base64Data("")),
+    PublicKey(SEED),
+    EMPTY_SIGNATURE,
+    EMPTY_HASH,
     List.empty,
     Some(CreateLao(Hash(Base64Data("aWQ=")), "LAO", NOT_STALE_TIMESTAMP, PublicKey(Base64Data("a2V5")), List.empty))
   )
 
   final val MESSAGE_CREATELAO2: Message = new Message(
     Base64Data.encode(CreateLao(Hash(Base64Data("aWQy")), "LAO2", Timestamp(0), PublicKey(Base64Data("a2V5Mg==")), List.empty).toJson.toString),
-    PublicKey(Base64Data("to_klZLtiHV446Fv98OLNdNmi-EP5OaTtbBkotTYLic=")),
-    Signature(Base64Data("")),
-    Hash(Base64Data("")),
+    PublicKey(SEED),
+    EMPTY_SIGNATURE,
+    EMPTY_HASH,
     List.empty,
     Some(CreateLao(Hash(Base64Data("aWQy")), "LAO2", Timestamp(0), PublicKey(Base64Data("a2V5Mg==")), List.empty))
   )
 
   final val MESSAGE_CLOSEROLLCALL: Message = new Message(
-    Base64Data.encode(CloseRollCall(Hash(Base64Data("")), Hash(Base64Data("")), Timestamp(0), List(PublicKey(Base64Data("a2V5QXR0ZW5kZWU=")))).toJson.toString),
-    PublicKey(Base64Data("to_klZLtiHV446Fv98OLNdNmi-EP5OaTtbBkotTYLic=")),
-    Signature(Base64Data("")),
-    Hash(Base64Data("")),
+    Base64Data.encode(CloseRollCall(EMPTY_HASH, EMPTY_HASH, Timestamp(0), List(PublicKey(Base64Data("a2V5QXR0ZW5kZWU=")))).toJson.toString),
+    PublicKey(SEED),
+    EMPTY_SIGNATURE,
+    EMPTY_HASH,
     List.empty,
-    Some(CloseRollCall(Hash(Base64Data("")), Hash(Base64Data("")), Timestamp(0), List(PublicKey(Base64Data("a2V5QXR0ZW5kZWU=")))))
+    Some(CloseRollCall(EMPTY_HASH, EMPTY_HASH, Timestamp(0), List(PublicKey(Base64Data("a2V5QXR0ZW5kZWU=")))))
   )
 
   final val MESSAGE_ADDCHIRP: Message = new Message(
     Base64Data.encode(AddChirp("abc", None, Timestamp(0)).toJson.toString),
-    PublicKey(Base64Data("to_klZLtiHV446Fv98OLNdNmi-EP5OaTtbBkotTYLic=")),
-    Signature(Base64Data("")),
-    Hash(Base64Data("")),
+    PublicKey(SEED),
+    EMPTY_SIGNATURE,
+    EMPTY_HASH,
     List.empty,
     Some(AddChirp("abc", None, Timestamp(0)))
   )
@@ -183,8 +185,8 @@ object MessageExample {
   final val MESSAGE_CREATE_MEETING: Message = new Message(
     Base64Data.encode(mettingCreate.toJson.toString()),
     PublicKey(Base64Data("J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=")),
-    Signature(Base64Data("")),
-    Hash(Base64Data("")),
+    EMPTY_SIGNATURE,
+    EMPTY_HASH,
     List.empty,
     Some(mettingCreate)
   )
@@ -195,8 +197,8 @@ object MessageExample {
   final val MESSAGE_CREATE_MEETING_WRONG_CHANNEL: Message = new Message(
     Base64Data.encode(mettingCreateWrongChannel.toJson.toString()),
     PublicKey(Base64Data("J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=")),
-    Signature(Base64Data("")),
-    Hash(Base64Data("")),
+    EMPTY_SIGNATURE,
+    EMPTY_HASH,
     List.empty,
     Some(mettingCreateWrongChannel)
   )
@@ -206,8 +208,8 @@ object MessageExample {
   final val MESSAGE_CREATE_MEETING_WRONG_DATA: Message = new Message(
     Base64Data.encode(meetingCreateWrongData.toJson.toString()),
     PublicKey(Base64Data("J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=")),
-    Signature(Base64Data("")),
-    Hash(Base64Data("")),
+    EMPTY_SIGNATURE,
+    EMPTY_HASH,
     List.empty,
     Some(meetingCreateWrongData)
   )
@@ -218,8 +220,8 @@ object MessageExample {
   final val MESSAGE_CREATE_MEETING_SMALL_CREATION: Message = new Message(
     Base64Data.encode(meetingCreateSmallCreation.toJson.toString()),
     PublicKey(Base64Data("J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=")),
-    Signature(Base64Data("")),
-    Hash(Base64Data("")),
+    EMPTY_SIGNATURE,
+    EMPTY_HASH,
     List.empty,
     Some(meetingCreateSmallCreation)
   )
@@ -228,8 +230,8 @@ object MessageExample {
   final val MESSAGE_CREATE_MEETING_SMALL_START: Message = new Message(
     Base64Data.encode(meetingCreateSmallStart.toJson.toString()),
     PublicKey(Base64Data("J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=")),
-    Signature(Base64Data("")),
-    Hash(Base64Data("")),
+    EMPTY_SIGNATURE,
+    EMPTY_HASH,
     List.empty,
     Some(meetingCreateSmallStart)
   )
@@ -238,8 +240,8 @@ object MessageExample {
   final val MESSAGE_CREATE_MEETING_SMALL_END: Message = new Message(
     Base64Data.encode(meetingCreateInvalidEnd.toJson.toString()),
     PublicKey(Base64Data("J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=")),
-    Signature(Base64Data("")),
-    Hash(Base64Data("")),
+    EMPTY_SIGNATURE,
+    EMPTY_HASH,
     List.empty,
     Some(meetingCreateInvalidEnd)
   )
@@ -248,8 +250,8 @@ object MessageExample {
   final val MESSAGE_CREATE_MEETING_START_BIGGER_THAN_END: Message = new Message(
     Base64Data.encode(meetingCreateSmallEnd.toJson.toString()),
     PublicKey(Base64Data("J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=")),
-    Signature(Base64Data("")),
-    Hash(Base64Data("")),
+    EMPTY_SIGNATURE,
+    EMPTY_HASH,
     List.empty,
     Some(meetingCreateSmallEnd)
   )
@@ -272,8 +274,8 @@ object MessageExample {
   final val MESSAGE_STATE_MEETING: Message = new Message(
     Base64Data.encode(validStateMeeting.toJson.toString()),
     PublicKey(Base64Data("J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=")),
-    Signature(Base64Data("")),
-    Hash(Base64Data("")),
+    EMPTY_SIGNATURE,
+    EMPTY_HASH,
     List.empty,
     Some(validStateMeeting)
   )
@@ -293,8 +295,8 @@ object MessageExample {
   final val MESSAGE_STATE_MEETING_INVALID_DATA: Message = new Message(
     Base64Data.encode(invalidStateMeetingWrongData.toJson.toString()),
     PublicKey(Base64Data("J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=")),
-    Signature(Base64Data("")),
-    Hash(Base64Data("")),
+    EMPTY_SIGNATURE,
+    EMPTY_HASH,
     List.empty,
     Some(invalidStateMeetingWrongData)
   )
@@ -314,8 +316,8 @@ object MessageExample {
   final val MESSAGE_STATE_MEETING_INVALID_CREATION: Message = new Message(
     Base64Data.encode(invalidStateMeetingStaleCreationTime.toJson.toString()),
     PublicKey(Base64Data("J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=")),
-    Signature(Base64Data("")),
-    Hash(Base64Data("")),
+    EMPTY_SIGNATURE,
+    EMPTY_HASH,
     List.empty,
     Some(invalidStateMeetingStaleCreationTime)
   )
@@ -335,8 +337,8 @@ object MessageExample {
   final val MESSAGE_STATE_MEETING_INVALID_START: Message = new Message(
     Base64Data.encode(invalidStateMeetingStaleStartTime.toJson.toString()),
     PublicKey(Base64Data("J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=")),
-    Signature(Base64Data("")),
-    Hash(Base64Data("")),
+    EMPTY_SIGNATURE,
+    EMPTY_HASH,
     List.empty,
     Some(invalidStateMeetingStaleStartTime)
   )
@@ -356,8 +358,8 @@ object MessageExample {
   final val MESSAGE_STATE_MEETING_SMALL_START: Message = new Message(
     Base64Data.encode(invalidStateMeetingSmallStartTime.toJson.toString()),
     PublicKey(Base64Data("J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=")),
-    Signature(Base64Data("")),
-    Hash(Base64Data("")),
+    EMPTY_SIGNATURE,
+    EMPTY_HASH,
     List.empty,
     Some(invalidStateMeetingSmallStartTime)
   )
@@ -377,8 +379,8 @@ object MessageExample {
   final val MESSAGE_STATE_MEETING_SMALL_END: Message = new Message(
     Base64Data.encode(invalidStateMeetingSmallEndTime.toJson.toString()),
     PublicKey(Base64Data("J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=")),
-    Signature(Base64Data("")),
-    Hash(Base64Data("")),
+    EMPTY_SIGNATURE,
+    EMPTY_HASH,
     List.empty,
     Some(invalidStateMeetingSmallEndTime)
   )
@@ -398,8 +400,8 @@ object MessageExample {
   final val MESSAGE_STATE_MEETING_SMALL_MODIFICATION_TIME: Message = new Message(
     Base64Data.encode(invalidStateMeetingSmallModificationTime.toJson.toString()),
     PublicKey(Base64Data("J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=")),
-    Signature(Base64Data("")),
-    Hash(Base64Data("")),
+    EMPTY_SIGNATURE,
+    EMPTY_HASH,
     List.empty,
     Some(invalidStateMeetingSmallModificationTime)
   )
@@ -419,8 +421,8 @@ object MessageExample {
   final val MESSAGE_STATE_MEETING_BIG_START: Message = new Message(
     Base64Data.encode(invalidStateMeetingBigStartTime.toJson.toString()),
     PublicKey(Base64Data("J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=")),
-    Signature(Base64Data("")),
-    Hash(Base64Data("")),
+    EMPTY_SIGNATURE,
+    EMPTY_HASH,
     List.empty,
     Some(invalidStateMeetingBigStartTime)
   )
@@ -441,10 +443,85 @@ object MessageExample {
   final val MESSAGE_STATE_MEETING_WRONG_WITNESS_SIGNATURE: Message = new Message(
     Base64Data.encode(invalidStateMeetingWrongWitnessSignature.toJson.toString()),
     PublicKey(Base64Data("J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=")),
-    Signature(Base64Data("")),
-    Hash(Base64Data("")),
+    EMPTY_SIGNATURE,
+    EMPTY_HASH,
     List.empty,
     Some(invalidStateMeetingWrongWitnessSignature)
   )
 
+  // Popcha
+  private final val EMPTY_STATE = ""
+  private final val POPCHA_ADDRESS = ""
+  private final val clientId = "some client"
+  private final val nonce = "EPFL"
+  private final val signature = PRIVATE_KEY.signData(Base64Data.encode(nonce))
+  private final val responseMode = "query"
+  private final val validAuthenticate = Authenticate(
+    clientId,
+    nonce,
+    PUBLIC_KEY,
+    signature,
+    EMPTY_STATE,
+    responseMode,
+    POPCHA_ADDRESS
+  )
+  final val MESSAGE_AUTHENTICATE: Message = new Message(
+    Base64Data.encode(validAuthenticate.toJson.toString()),
+    PUBLIC_KEY,
+    EMPTY_SIGNATURE,
+    EMPTY_HASH,
+    List.empty,
+    Some(validAuthenticate)
+  )
+  private final val validAuthenticateOtherResponseMode = Authenticate(
+    clientId,
+    nonce,
+    PUBLIC_KEY,
+    signature,
+    EMPTY_STATE,
+    "fragment",
+    POPCHA_ADDRESS
+  )
+  final val MESSAGE_AUTHENTICATE_OTHER_RESPONSE_MODE: Message = new Message(
+    Base64Data.encode(validAuthenticateOtherResponseMode.toJson.toString()),
+    PUBLIC_KEY,
+    EMPTY_SIGNATURE,
+    EMPTY_HASH,
+    List.empty,
+    Some(validAuthenticateOtherResponseMode)
+  )
+  private final val invalidAuthenticateWrongSignature = Authenticate(
+    clientId,
+    nonce,
+    PUBLIC_KEY,
+    Signature(Base64Data.encode("wrong_signature")),
+    EMPTY_STATE,
+    responseMode,
+    POPCHA_ADDRESS
+  )
+  final val MESSAGE_AUTHENTICATE_WRONG_SIGNATURE: Message = new Message(
+    Base64Data.encode(invalidAuthenticateWrongSignature.toJson.toString()),
+    PUBLIC_KEY,
+    EMPTY_SIGNATURE,
+    EMPTY_HASH,
+    List.empty,
+    Some(invalidAuthenticateWrongSignature)
+  )
+  private final val invalidAuthenticateWrongResponseMode = Authenticate(
+    clientId,
+    nonce,
+    PUBLIC_KEY,
+    signature,
+    EMPTY_STATE,
+    "invalid_response_mode",
+    POPCHA_ADDRESS
+  )
+  final val MESSAGE_AUTHENTICATE_WRONG_RESPONSE_MODE: Message = new Message(
+    Base64Data.encode(invalidAuthenticateWrongResponseMode.toJson.toString()),
+    PUBLIC_KEY,
+    EMPTY_SIGNATURE,
+    EMPTY_HASH,
+    List.empty,
+    Some(invalidAuthenticateWrongResponseMode)
+  )
 }

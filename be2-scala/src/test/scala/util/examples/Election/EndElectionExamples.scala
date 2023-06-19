@@ -5,7 +5,7 @@ import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.election.EndElection
 import ch.epfl.pop.model.objects._
 import spray.json._
-import util.examples.Election.CastVoteElectionExamples.VOTE_ID
+import util.examples.Election.CastVoteElectionExamples.{NOT_STALE_CREATED_BEFORE_OPENING_THE_ELECTION, VOTE_ID}
 
 object EndElectionExamples {
 
@@ -16,6 +16,7 @@ object EndElectionExamples {
   final val ID: Hash = Hash(Base64Data.encode("election"))
   final val LAO_ID: Hash = Hash(Base64Data.encode("laoId"))
   final val NOT_STALE_CREATED_AT = Timestamp(1649089855L)
+  final val NOT_STALE_CREATED_BEFORE_SETUP = Timestamp(1649089850L)
   final val REGISTERED_VOTES: Hash = Hash.fromStrings(VOTE_ID.toString)
 
   val invalidTimestamp: Timestamp = Timestamp(0)
@@ -33,6 +34,16 @@ object EndElectionExamples {
     Some(workingEndElection)
   )
 
+  val beforeSetupEndElection: EndElection = EndElection(LAO_ID, ID, NOT_STALE_CREATED_BEFORE_SETUP, REGISTERED_VOTES)
+  final val DATA_END_ELECTION_BEFORE_SETUP_MESSAGE: Hash = Hash(Base64Data.encode(beforeSetupEndElection.toJson.toString))
+  final val MESSAGE_END_ELECTION_BEFORE_SETUP: Message = new Message(
+    DATA_END_ELECTION_BEFORE_SETUP_MESSAGE.base64Data,
+    SENDER,
+    SIGNATURE,
+    Hash(Base64Data("")),
+    List.empty,
+    Some(beforeSetupEndElection)
+  )
   val wrongTimestampEndElection: EndElection = EndElection(LAO_ID, ID, invalidTimestamp, REGISTERED_VOTES)
   final val MESSAGE_END_ELECTION_WRONG_TIMESTAMP: Message = new Message(
     Base64Data.encode(wrongTimestampEndElection.toJson.toString),

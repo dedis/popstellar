@@ -132,7 +132,7 @@ func (c *Channel) Publish(publish method.Publish, socket socket.Socket) error {
 }
 
 // Catchup is used to handle a catchup message.
-func (c *Channel) Catchup(catchup method.Catchup) []message.Message {
+func (c *Channel) Catchup(_ method.Catchup) []message.Message {
 	c.log.Error().Msg("Catchup is not allowed on the authentication channel")
 	return nil
 }
@@ -191,9 +191,15 @@ func (c *Channel) auhenticateUser(msg message.Message, msgData interface{},
 	// constructing the unique URL endpoint of the PoPCHA server
 
 	laoID := strings.TrimPrefix(c.channelID, "/root/")
-	popChaPath := strings.Join([]string{"/response", laoID, "v4l1d_ient_id", data.Nonce}, "/")
+
+	nonce, err := base64.URLEncoding.DecodeString(data.Nonce)
+	if err != nil {
+		return xerrors.Errorf("Nonce should be base64 encoded")
+	}
+	popChaPath := strings.Join([]string{"/response", laoID, data.ClientID, string(nonce)}, "/")
 
 	popchaAddress := data.PopchaAddress
+
 	if strings.HasPrefix(popchaAddress, "http://") {
 		popchaAddr, err := url.Parse(data.PopchaAddress)
 		if err != nil {

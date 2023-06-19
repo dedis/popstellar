@@ -2,6 +2,7 @@ package ch.epfl.pop.pubsub.graph.handlers
 
 import akka.pattern.AskableActorRef
 import ch.epfl.pop.model.network.JsonRpcRequest
+import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.witness.WitnessMessage
 import ch.epfl.pop.model.objects.{Channel, DbActorNAckException, Hash, Signature}
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
@@ -36,7 +37,9 @@ class WitnessHandler(dbRef: => AskableActorRef) extends MessageHandler {
         // add new witness signature to existing ones
         DbActorAddWitnessSignatureAck(witnessMessage) <- dbActor ? DbActor.AddWitnessSignature(channel, messageId, signature)
         // overwrites the message containing now the witness signature in the db
-        _ <- dbActor ? DbActor.WriteAndPropagate(channel, witnessMessage)
+        _ <- dbActor ? DbActor.Write(channel, witnessMessage)
+        // propagate signature message only
+        _ <- dbActor ? DbActor.WriteAndPropagate(channel, rpcMessage.getParamsMessage.get)
       } yield ()
 
     Await.ready(combined, duration).value.get match {

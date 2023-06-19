@@ -1,7 +1,6 @@
 package ch.epfl.pop.pubsub.graph.handlers
 
-import ch.epfl.pop.config.RuntimeEnvironment.appConf
-import ch.epfl.pop.config.ServerConf
+import ch.epfl.pop.config.RuntimeEnvironment.serverConf
 import ch.epfl.pop.json.MessageDataProtocol.GreetLaoFormat
 import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.data.ObjectType
@@ -26,9 +25,9 @@ case object LaoHandler extends MessageHandler {
         coinChannel: Channel = Channel(s"$laoChannel${Channel.COIN_CHANNEL_PREFIX}")
         socialChannel: Channel = Channel(s"$laoChannel${Channel.SOCIAL_MEDIA_CHIRPS_PREFIX}")
         reactionChannel: Channel = Channel(s"$laoChannel${Channel.REACTIONS_CHANNEL_PREFIX}")
+        popchaChannel: Channel = Channel(s"$laoChannel${Channel.POPCHA_CHANNEL_PREFIX}")
         // we get access to the canonical address of the server
-        config = ServerConf(appConf)
-        address: Option[String] = Some(f"ws://${config.interface}:${config.port}/${config.clientPath}")
+        address: Option[String] = Some(s"${serverConf.externalAddress}/${serverConf.clientPath}")
 
         // check whether the lao already exists in db
         _ <- dbActor ? DbActor.AssertChannelMissing(laoChannel)
@@ -37,7 +36,8 @@ case object LaoHandler extends MessageHandler {
           (coinChannel, ObjectType.COIN),
           (laoChannel, ObjectType.LAO),
           (socialChannel, ObjectType.CHIRP),
-          (reactionChannel, ObjectType.REACTION)
+          (reactionChannel, ObjectType.REACTION),
+          (popchaChannel, ObjectType.POPCHA)
         ))
         // write lao creation message
         _ <- dbActor ? DbActor.WriteCreateLaoMessage(laoChannel, message)

@@ -9,8 +9,9 @@ import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.{RequestContext, RouteResult}
 import akka.pattern.AskableActorRef
 import akka.util.Timeout
-import ch.epfl.pop.authentication.{Authenticate, GetRequestHandler}
-import ch.epfl.pop.config.{RuntimeEnvironment, ServerConf}
+import ch.epfl.pop.authentication.GetRequestHandler
+import ch.epfl.pop.config.RuntimeEnvironment
+import ch.epfl.pop.config.RuntimeEnvironment.{ownAuthAddress, ownClientAddress, ownServerAddress, serverConf}
 import ch.epfl.pop.decentralized.{ConnectionMediator, HeartbeatGenerator, Monitor}
 import ch.epfl.pop.pubsub.{MessageRegistry, PubSubMediator, PublishSubscribe}
 import ch.epfl.pop.storage.DbActor
@@ -26,12 +27,9 @@ object Server {
    * Create a WebServer that handles http requests and WebSockets requests.
    */
   def main(args: Array[String]): Unit = {
-    /* Get configuration object for akka actor/http*/
-    val appConf = RuntimeEnvironment.appConf
-
     /* Get Setup configuration*/
     println("Loading configuration from file...")
-    val config = ServerConf(appConf)
+    val appConf = RuntimeEnvironment.appConf
 
     val system = akka.actor.ActorSystem("pop-be2-inner-actor-system", appConf)
 
@@ -55,7 +53,7 @@ object Server {
 
       // Setup routes
       def publishSubscribeRoute: RequestContext => Future[RouteResult] = {
-        path(config.clientPath) {
+        path(serverConf.clientPath) {
           handleWebSocketMessages(
             PublishSubscribe.buildGraph(
               pubSubMediatorRef,
@@ -66,7 +64,7 @@ object Server {
               isServer = false
             )(system)
           )
-        } ~ path(config.serverPath) {
+        } ~ path(serverConf.serverPath) {
           handleWebSocketMessages(
             PublishSubscribe.buildGraph(
               pubSubMediatorRef,
@@ -80,7 +78,7 @@ object Server {
         }
       }
 
-      def getRequestsRoute = GetRequestHandler.buildRoutes(config)
+      def getRequestsRoute = GetRequestHandler.buildRoutes(serverConf)
 
       def allRoutes = concat(
         getRequestsRoute,
@@ -89,13 +87,13 @@ object Server {
 
       implicit val executionContext: ExecutionContextExecutor = typedSystem.executionContext
       /* Setup http server with bind and route config*/
-      val bindingFuture = Http().newServerAt(config.interface, config.port).bindFlow(allRoutes)
+      val bindingFuture = Http().newServerAt(serverConf.interface, serverConf.port).bindFlow(allRoutes)
 
       bindingFuture.onComplete {
         case Success(_) =>
-          println(f"[Client] ch.epfl.pop.Server online at ws://${config.interface}:${config.port}/${config.clientPath}")
-          println(f"[Server] ch.epfl.pop.Server online at ws://${config.interface}:${config.port}/${config.serverPath}")
-          println(f"[Server] ch.epfl.pop.Server auth server online at http://${config.interface}:${config.port}/${config.authenticationPath}")
+          println(f"[Client] ch.epfl.pop.Server online at $ownClientAddress")
+          println(f"[Server] ch.epfl.pop.Server online at $ownServerAddress")
+          println(f"[Server] ch.epfl.pop.Server auth server online at $ownAuthAddress")
 
         case Failure(_) =>
           logger.error(

@@ -1,6 +1,6 @@
 package fe.utils.verification;
 
-import be.utils.JsonConverter;
+import be.utils.Hash;
 import com.intuit.karate.Json;
 import com.intuit.karate.Logger;
 
@@ -71,9 +71,8 @@ public class RollCallVerification {
     String rcName = createMessageJson.get(NAME);
 
     try {
-      JsonConverter jsonConverter = new JsonConverter();
       return rcId.equals(
-          jsonConverter.hash(
+          Hash.hash(
               "R".getBytes(), laoId.getBytes(), creation.getBytes(), rcName.getBytes()));
     } catch (NoSuchAlgorithmException e) {
       logger.info("verification failed with error: " + e);
@@ -105,9 +104,8 @@ public class RollCallVerification {
     String time = getStringFromIntegerField(rollCallMessageJson, timeKey);
 
     try {
-      JsonConverter jsonConverter = new JsonConverter();
       return updateId.equals(
-          jsonConverter.hash(
+          Hash.hash(
               "R".getBytes(), laoId.getBytes(), reference.getBytes(), time.getBytes()));
     } catch (NoSuchAlgorithmException e) {
       logger.info("verification failed with error: " + e);

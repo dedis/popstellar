@@ -106,6 +106,7 @@ executing
 ```
 ./pop server serve
 ```
+The default port for the PoPCHA server is `9100`.
 
 if you want to enforce the rule that only the server owner can creates LAO, specify the option --pk (as written below)
 
@@ -113,10 +114,13 @@ if you want to enforce the rule that only the server owner can creates LAO, spec
 ./pop server --pk "<base64url encoded pk of server owner>" serve
 ```
 
-Please use the `-cp` and `-sp` flags to specify an alternative port, respectively
-for client the client port and for the server port. The full path to connect
+Please use the `-cp`, `-sp` and `-asp` flags to specify an alternative port, respectively
+for client the client port, server port and PoPCHA server port. The full path to connect
 to the organizer as a client is `ws://host:clientport/client/` and as
 a witness `ws://host:serverport/server/`.
+
+The backend also includes the PoPCHA authorization server, which serves authentication qr codes at
+`https://auth-addr:auth-port/authorize?[parameters]`.
 
 Using the `-os` flag as many times as necessary, you can specify you can specify
 the `address:port` of each of the other servers.
@@ -129,12 +133,14 @@ and the file must contain the same fields as the following example:
 ```json
 {
    "public-key"                           : "",
-   "server-address"                       : "ws://127.0.0.1:9003/server",
-   "client-address"                       : "ws://127.0.0.1:9002/client",
+   "server-address"                       : "ws://127.0.0.1:9001/server",
+   "client-address"                       : "ws://127.0.0.1:9000/client",
    "server-public-address"                : "localhost",
    "server-listen-address"                : "localhost",
+   "auth-server-address"                  : "localhost",
    "client-port"                          : 9002,
    "server-port"                          : 9003,
+   "auth-port"                            : 9101,
    "other-servers": [
       "localhost:9001", "localhost:9005"
    ]
