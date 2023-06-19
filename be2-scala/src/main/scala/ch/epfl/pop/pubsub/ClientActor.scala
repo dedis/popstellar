@@ -4,6 +4,7 @@ import akka.actor.{Actor, ActorLogging, ActorRef, Props}
 import akka.event.LoggingReceive
 import akka.pattern.AskableActorRef
 import ch.epfl.pop.config.RuntimeEnvironment
+import ch.epfl.pop.config.RuntimeEnvironment.serverConf
 import ch.epfl.pop.decentralized.ConnectionMediator
 import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.MethodType.GREET_SERVER
@@ -12,6 +13,7 @@ import ch.epfl.pop.model.objects.{Base64Data, Channel, PublicKey}
 import ch.epfl.pop.pubsub.ClientActor._
 import ch.epfl.pop.pubsub.PubSubMediator._
 import ch.epfl.pop.pubsub.graph.GraphMessage
+import ch.epfl.pop.storage.DbActor
 
 import scala.collection.mutable
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -99,9 +101,10 @@ final case class ClientActor(mediator: ActorRef, connectionMediatorRef: ActorRef
   }
 
   private def triggerGreetServer(): Unit = {
-    val clientAddress = RuntimeEnvironment.ownClientAddress
-    val serverAddress = RuntimeEnvironment.ownServerAddress
-    val greetServer = GreetServer(PublicKey(Base64Data("0000")), clientAddress, serverAddress) // TODO: implement a correct public key.
+    val clientAddress = serverConf.externalAddress + s"/${serverConf.clientPath}"
+    val serverAddress = serverConf.externalAddress + s"/${serverConf.serverPath}"
+    val publicKey = Await.result(PublishSubscribe.getDbActorRef ? DbActor.ReadServerPublicKey(), duration).asInstanceOf[DbActor.DbActorReadServerPublicKeyAck].publicKey
+    val greetServer = GreetServer(publicKey, clientAddress, serverAddress)
     messageWsHandle(ClientAnswer(Right(JsonRpcRequest(
       "rpc",
       GREET_SERVER,
@@ -110,6 +113,7 @@ final case class ClientActor(mediator: ActorRef, connectionMediatorRef: ActorRef
     ))))
     greetServerSent = true
   }
+
 }
 
 object ClientActor {

@@ -83,6 +83,6 @@ object ParamsHandler extends AskPatternConstants {
     case Right(jsonRpcMessage: JsonRpcResponse) =>
       Left(PipelineError(ErrorCodes.SERVER_ERROR.id, "GreetServerHandler received a 'JsonRpcResponse'", jsonRpcMessage.id))
     case graphMessage @ _ => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, "GreetServerHandler received an unexpected message:" + graphMessage, None))
-  }
+  }.filter(_ => false)
 
 }
