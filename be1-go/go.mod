@@ -8,6 +8,7 @@ require (
 	github.com/benbjohnson/clock v1.3.0
 	github.com/boombuler/barcode v1.0.1
 	github.com/fsnotify/fsnotify v1.6.0
+	github.com/golang-jwt/jwt/v4 v4.5.0
 	github.com/gorilla/mux v1.8.0
 	github.com/gorilla/websocket v1.4.2
 	github.com/rs/xid v1.3.0

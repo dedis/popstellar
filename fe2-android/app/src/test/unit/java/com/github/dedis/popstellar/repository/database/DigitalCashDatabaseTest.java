@@ -108,7 +108,7 @@ public class DigitalCashDatabaseTest {
 
   @Test
   public void insertHashTest() {
-    TestObserver<Void> testObserver = hashDao.insert(HASH_ENTITIES).test();
+    TestObserver<Void> testObserver = hashDao.insertAll(HASH_ENTITIES).test();
 
     testObserver.awaitTerminalEvent();
     testObserver.assertComplete();
@@ -116,7 +116,7 @@ public class DigitalCashDatabaseTest {
 
   @Test
   public void getHashTest() {
-    TestObserver<Void> testObserver = hashDao.insert(HASH_ENTITIES).test();
+    TestObserver<Void> testObserver = hashDao.insertAll(HASH_ENTITIES).test();
 
     testObserver.awaitTerminalEvent();
     testObserver.assertComplete();
@@ -136,7 +136,7 @@ public class DigitalCashDatabaseTest {
 
   @Test
   public void deleteHashByLaoTest() {
-    TestObserver<Void> testObserver = hashDao.insert(HASH_ENTITIES).test();
+    TestObserver<Void> testObserver = hashDao.insertAll(HASH_ENTITIES).test();
 
     testObserver.awaitTerminalEvent();
     testObserver.assertComplete();

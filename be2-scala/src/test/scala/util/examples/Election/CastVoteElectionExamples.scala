@@ -15,7 +15,8 @@ object CastVoteElectionExamples {
 
   final val ID: Hash = ELECTION_ID
   final val LAO_ID: Hash = Hash(Base64Data.encode("laoId"))
-  final val NOT_STALE_CREATED_AT = Timestamp(1649089855L)
+  final val NOT_STALE_CREATED_AT = Timestamp(1649089865L)
+  final val NOT_STALE_CREATED_BEFORE_OPENING_THE_ELECTION = Timestamp(1649089855L)
   final val QUESTION_ID = Hash.fromStrings("Question", ID.toString, "valid")
   final val VOTE = Some(List(1))
   final val VOTE_ID = Hash.fromStrings("Vote", ID.toString, QUESTION_ID.toString, VOTE.get.head.toString)
@@ -29,7 +30,9 @@ object CastVoteElectionExamples {
   val invalidVoteId: List[VoteElection] = List(VoteElection(invalidId, QUESTION_ID, Some(Left(1)), None))
 
   val workingCastVoteElection: CastVoteElection = CastVoteElection(LAO_ID, ID, NOT_STALE_CREATED_AT, VOTES)
+  val castVoteBeforeOpeningElection: CastVoteElection = CastVoteElection(LAO_ID, ID, NOT_STALE_CREATED_BEFORE_OPENING_THE_ELECTION, VOTES)
   val DATA_CAST_VOTE_MESSAGE: Hash = Hash(Base64Data.encode(workingCastVoteElection.toJson.toString))
+  val DATA_CAST_VOTE_BEFORE_OPENING_MESSAGE: Hash = Hash(Base64Data.encode(castVoteBeforeOpeningElection.toJson.toString))
   final val MESSAGE_CAST_VOTE_ELECTION_WORKING: Message = new Message(
     DATA_CAST_VOTE_MESSAGE.base64Data,
     SENDER,
@@ -37,6 +40,14 @@ object CastVoteElectionExamples {
     Hash(Base64Data("")),
     List.empty,
     Some(workingCastVoteElection)
+  )
+  final val MESSAGE_CAST_VOTE_BEFORE_OPENING_THE_ELECTION: Message = new Message(
+    DATA_CAST_VOTE_BEFORE_OPENING_MESSAGE.base64Data,
+    SENDER,
+    SIGNATURE,
+    Hash(Base64Data("")),
+    List.empty,
+    Some(castVoteBeforeOpeningElection)
   )
 
   val wrongTimestampCastVoteElection: CastVoteElection = CastVoteElection(LAO_ID, ID, invalidTimestamp, VOTES)

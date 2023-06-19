@@ -1,11 +1,12 @@
 package common.net;
 
 import be.utils.JsonConverter;
+import be.model.KeyPair;
+import be.utils.RandomUtils;
 import com.intuit.karate.Json;
 import com.intuit.karate.Logger;
 import com.intuit.karate.http.WebSocketClient;
 import com.intuit.karate.http.WebSocketOptions;
-import io.opencensus.trace.Link;
 
 import java.util.*;
 import java.util.function.Predicate;
@@ -13,19 +14,29 @@ import java.util.function.Predicate;
 /** A WebSocketClient that can handle multiple received messages */
 public class MultiMsgWebSocketClient extends WebSocketClient {
 
+  public String publicKey;
+  public String privateKey;
+  public JsonConverter jsonConverter;
   private final MessageQueue queue;
-  private final Logger logger;
-  private JsonConverter jsonConverter = new JsonConverter();
-  private static final String nonAttendeePk = "oKHk3AivbpNXk_SfFcHDaVHcCcY8IBfHE7auXJ7h4ms=";
-  private static final String nonAttendeeSkHex = "0cf511d2fe4c20bebb6bd51c1a7ce973d22de33d712ddf5f69a92d99e879363b";
+  public final Logger logger;
+
   private HashMap<String, Integer> idAssociatedWithSentMessages = new HashMap<>();
   private HashMap<Integer, String> idAssociatedWithAnswers = new HashMap<>();
   private ArrayList<String> broadcasts = new ArrayList<>();
+
+  private final static int TIMEOUT = 5000;
+
 
   public MultiMsgWebSocketClient(WebSocketOptions options, Logger logger, MessageQueue queue) {
     super(options, logger);
     this.logger = logger;
     this.queue = queue;
+
+    KeyPair keyPair = new KeyPair();
+    this.publicKey = keyPair.getPublicKey();
+    this.privateKey = keyPair.getPrivateKey();
+    this.jsonConverter = new JsonConverter(publicKey, privateKey);
+    System.out.println("Created a MultiMsgWebSocketClient using publicKey: " + publicKey + " and private key: " + privateKey);
 
     setTextHandler(m -> true);
   }
@@ -61,13 +72,9 @@ public class MultiMsgWebSocketClient extends WebSocketClient {
     Random random = new Random();
     int id = random.nextInt();
     idAssociatedWithSentMessages.put(data, id);
-    Json request =  jsonConverter.publishМessageFromData(data, id, channel);
+    Json request =  jsonConverter.publishMessageFromData(data, id, channel);
+    System.out.println("The final sent request is : " + request.toString());
     this.send(request.toString());
-  }
-
-  public void changeSenderToBeNonAttendee(){
-    jsonConverter.setSenderSk(nonAttendeeSkHex);
-    jsonConverter.setSenderPk(nonAttendeePk);
   }
 
   public String getBackendResponse(Map<String, Object> jsonDataMap){
@@ -85,7 +92,7 @@ public class MultiMsgWebSocketClient extends WebSocketClient {
       idAssociatedWithSentMessages.remove(data);
       return answer;
     }
-    String answer = getBuffer().takeTimeout(5000);
+    String answer = getBuffer().takeTimeout(TIMEOUT);
     while(answer != null){
       if(answer.contains("result") || answer.contains("error")){
         Json resultJson = Json.of(answer);
@@ -100,7 +107,7 @@ public class MultiMsgWebSocketClient extends WebSocketClient {
       if (withBroadcasts && answer.contains("broadcast")){
         broadcasts.add(answer);
       }
-      answer = getBuffer().takeTimeout(5000);
+      answer = getBuffer().takeTimeout(TIMEOUT);
     }
     assert false;
     throw new IllegalArgumentException("No answer from the backend");
@@ -133,22 +140,35 @@ public class MultiMsgWebSocketClient extends WebSocketClient {
     List<String> messages = new ArrayList<>();
     Predicate<String> filter = MessageFilters.withMethod(method);
 
-    String message = getBuffer().takeTimeout(5000);
+    String message = getBuffer().takeTimeout(TIMEOUT);
     while (message != null) {
       if (filter.test(message)) {
         messages.add(message);
       }
-      message = getBuffer().takeTimeout(5000);
+      message = getBuffer().takeTimeout(TIMEOUT);
     }
     return messages;
   }
 
   public boolean receiveNoMoreResponses(){
-    String result = getBuffer().takeTimeout(5000);
+    String result = getBuffer().takeTimeout(TIMEOUT);
     return result == null;
   }
 
-  public void setWrongSignature(){
-    jsonConverter.setSignature(nonAttendeePk);
+  /**
+   * Set the client to take a timeout of the given length
+   * @param timeout the length to timeout
+   */
+  public void takeTimeout(long timeout){
+    getBuffer().takeTimeout(timeout);
+  }
+
+  /**
+   * Set the client to use a wrong signature when sending messages
+   */
+  public void useWrongSignature() {
+    String wrongSignature = RandomUtils.generateSignature();
+    logger.info("setting wrong signature: " + wrongSignature);
+    jsonConverter.setSignature(wrongSignature);
   }
 }

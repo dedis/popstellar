@@ -29,6 +29,8 @@ object ActionType extends Enumeration {
   val NOTIFY_DELETE: Value = MatchingValue("notify_delete")
   // digital cash actions:
   val POST_TRANSACTION: Value = MatchingValue("post_transaction")
+  // popcha
+  val AUTHENTICATE: Value = MatchingValue("authenticate")
 
   def MatchingValue(v: String): Value with Matching = new Val(nextId, v) with Matching
 

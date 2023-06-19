@@ -1,8 +1,8 @@
 {
   "formatVersion": 1,
   "database": {
-    "version": 2,
-    "identityHash": "fba2428170db0d1cc04c54ba7f6bea36",
+    "version": 4,
+    "identityHash": "643aa357eb9c5b8e5866c80b8dd0c232",
     "entities": [
       {
         "tableName": "messages",
@@ -407,12 +407,115 @@
           }
         ],
         "foreignKeys": []
+      },
+      {
+        "tableName": "witness_messages",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`lao_id` TEXT NOT NULL, `id` TEXT NOT NULL, `message` TEXT NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "laoId",
+            "columnName": "lao_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "messageID",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "message",
+            "columnName": "message",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "witnesses",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`lao_id` TEXT NOT NULL, `witness` TEXT NOT NULL, PRIMARY KEY(`lao_id`, `witness`))",
+        "fields": [
+          {
+            "fieldPath": "laoId",
+            "columnName": "lao_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "witness",
+            "columnName": "witness",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "lao_id",
+            "witness"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "pending_objects",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `lao_id` TEXT NOT NULL, `rollcall` TEXT, `election` TEXT, `meeting` TEXT, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "messageID",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "laoId",
+            "columnName": "lao_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "rollCall",
+            "columnName": "rollcall",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "election",
+            "columnName": "election",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "meeting",
+            "columnName": "meeting",
+            "affinity": "TEXT",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
       }
     ],
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'fba2428170db0d1cc04c54ba7f6bea36')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '643aa357eb9c5b8e5866c80b8dd0c232')"
     ]
   }
 }

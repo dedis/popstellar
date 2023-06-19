@@ -39,7 +39,7 @@ public class WitnessingFragment extends Fragment {
             tabLayout,
             viewPager,
             ((tab, position) ->
-                tab.setText(position == 0 ? R.string.witnesses : R.string.messages)))
+                tab.setText(position == 0 ? R.string.messages : R.string.witnesses)))
         .attach();
     handleBackNav();
     return view;

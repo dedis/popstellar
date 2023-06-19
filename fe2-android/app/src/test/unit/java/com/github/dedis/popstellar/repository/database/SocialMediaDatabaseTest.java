@@ -13,11 +13,12 @@ import org.junit.*;
 import org.junit.runner.RunWith;
 
 import java.time.Instant;
-import java.util.*;
+import java.util.List;
 
 import io.reactivex.observers.TestObserver;
 
-import static com.github.dedis.popstellar.testutils.Base64DataUtils.*;
+import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateMessageID;
+import static com.github.dedis.popstellar.testutils.Base64DataUtils.generatePublicKey;
 
 @RunWith(AndroidJUnit4.class)
 public class SocialMediaDatabaseTest {
@@ -39,14 +40,6 @@ public class SocialMediaDatabaseTest {
 
   private static final Reaction REACTION_1 =
       new Reaction(generateMessageID(), SENDER, EMOJI, CHIRP1_ID, Instant.now().getEpochSecond());
-
-  private static final Reaction REACTION_2 =
-      new Reaction(
-          generateMessageIDOtherThan(REACTION_1.getId()),
-          generatePublicKey(),
-          EMOJI,
-          CHIRP1_ID,
-          Instant.now().getEpochSecond());
 
   private static final ChirpEntity CHIRP_ENTITY = new ChirpEntity(LAO_ID, CHIRP_1);
   private static final ReactionEntity REACTION_ENTITY = new ReactionEntity(REACTION_1);
@@ -79,46 +72,14 @@ public class SocialMediaDatabaseTest {
     testObserver.awaitTerminalEvent();
     testObserver.assertComplete();
 
-    Set<MessageID> emptyFilter = new HashSet<>();
     TestObserver<List<Chirp>> testObserver2 =
         chirpDao
-            .getChirpsByLaoId(LAO_ID, emptyFilter)
+            .getChirpsByLaoId(LAO_ID)
             .test()
             .assertValue(chirps -> chirps.size() == 1 && chirps.get(0).equals(CHIRP_1));
 
     testObserver2.awaitTerminalEvent();
     testObserver2.assertComplete();
-  }
-
-  @Test
-  public void getChirpFilteredIdsTest() {
-    TestObserver<Void> testObserver = chirpDao.insert(CHIRP_ENTITY).test();
-
-    testObserver.awaitTerminalEvent();
-    testObserver.assertComplete();
-
-    Set<MessageID> filter = new HashSet<>();
-    filter.add(CHIRP1_ID);
-    TestObserver<List<Chirp>> testObserver2 =
-        chirpDao.getChirpsByLaoId(LAO_ID, filter).test().assertValue(List::isEmpty);
-
-    testObserver2.awaitTerminalEvent();
-    testObserver2.assertComplete();
-
-    ChirpEntity newChirpEntity = new ChirpEntity(LAO_ID, CHIRP_2);
-    TestObserver<Void> testObserver3 = chirpDao.insert(newChirpEntity).test();
-
-    testObserver3.awaitTerminalEvent();
-    testObserver3.assertComplete();
-
-    TestObserver<List<Chirp>> testObserver4 =
-        chirpDao
-            .getChirpsByLaoId(LAO_ID, filter)
-            .test()
-            .assertValue(chirps -> chirps.size() == 1 && chirps.get(0).equals(CHIRP_2));
-
-    testObserver4.awaitTerminalEvent();
-    testObserver4.assertComplete();
   }
 
   @Test
@@ -136,45 +97,13 @@ public class SocialMediaDatabaseTest {
     testObserver.awaitTerminalEvent();
     testObserver.assertComplete();
 
-    Set<MessageID> emptyFilter = new HashSet<>();
     TestObserver<List<Reaction>> testObserver2 =
         reactionDao
-            .getReactionsByChirpId(CHIRP1_ID, emptyFilter)
+            .getReactionsByChirpId(CHIRP1_ID)
             .test()
             .assertValue(reactions -> reactions.size() == 1 && reactions.get(0).equals(REACTION_1));
 
     testObserver2.awaitTerminalEvent();
     testObserver2.assertComplete();
-  }
-
-  @Test
-  public void getReactionFilteredIdsTest() {
-    TestObserver<Void> testObserver = reactionDao.insert(REACTION_ENTITY).test();
-
-    testObserver.awaitTerminalEvent();
-    testObserver.assertComplete();
-
-    Set<MessageID> filter = new HashSet<>();
-    filter.add(REACTION_1.getId());
-    TestObserver<List<Reaction>> testObserver2 =
-        reactionDao.getReactionsByChirpId(CHIRP1_ID, filter).test().assertValue(List::isEmpty);
-
-    testObserver2.awaitTerminalEvent();
-    testObserver2.assertComplete();
-
-    ReactionEntity newReactionEntity = new ReactionEntity(REACTION_2);
-    TestObserver<Void> testObserver3 = reactionDao.insert(newReactionEntity).test();
-
-    testObserver3.awaitTerminalEvent();
-    testObserver3.assertComplete();
-
-    TestObserver<List<Reaction>> testObserver4 =
-        reactionDao
-            .getReactionsByChirpId(CHIRP1_ID, filter)
-            .test()
-            .assertValue(reactions -> reactions.size() == 1 && reactions.get(0).equals(REACTION_2));
-
-    testObserver4.awaitTerminalEvent();
-    testObserver4.assertComplete();
   }
 }

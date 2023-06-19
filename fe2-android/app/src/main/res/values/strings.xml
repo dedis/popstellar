@@ -72,6 +72,8 @@
   </string>
   <string name="empty_events_non_organizer_text">No event has been created in this LAO ! \n\nSince you are not an organizer, you must wait for them to create one.
   </string>
+  <string name="witness_message_popup_text">You have a new witness message to sign!</string>
+  <string name="witness_message_popup_action">Go to witnessing</string>
 
   <!-- Abstract Event-->
   <string name="open">Open</string>
@@ -136,6 +138,7 @@
   <string name="signatures_title">Signatures</string>
   <string name="sign">Sign</string>
   <string name="signed">Signed</string>
+  <string name="confirm_delete_witnessed_messages">Do you want to delete the messages already passing the witnessing policy?</string>
 
   <!--  Roll Call -->
   <string name="roll_call_setup_title">Roll Call Setup</string>
@@ -291,6 +294,7 @@
   <string name="add_election_description">Add Election</string>
   <string name="add_rc_description">Add Roll call</string>
   <string name="add_meeting_description">Add Meeting</string>
+  <string name="delete_signed_messages">Delete signed messages</string>
   <string name="rc_qr_description">Roll call qr code</string>
   <string name="add_witness_description">Add Witness</string>
   <string name="qr_code_icon_description">An icon representing a qr code</string>
@@ -349,6 +353,7 @@
   <string name="unknown_reaction_exception">Unknown Reaction</string>
   <string name="unknown_roll_call_exception">Unknown Roll Call</string>
   <string name="unknown_meeting_exception">Unknown Meeting</string>
+  <string name="unknown_witness_message_exception">Unknown Witness Message</string>
   <string name="already_open_roll_call_exception">Another Roll Call is already open</string>
   <string name="lao_coins">LAO coins</string>
   <string name="invalid_qrcode_data">Invalid QRCode laoData</string>

@@ -17,6 +17,7 @@ import com.github.dedis.popstellar.model.objects.security.*;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.model.qrcode.MainPublicKeyData;
 import com.github.dedis.popstellar.repository.LAORepository;
+import com.github.dedis.popstellar.repository.WitnessingRepository;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningViewModel;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
@@ -26,6 +27,7 @@ import com.google.gson.Gson;
 
 import java.time.Instant;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -38,7 +40,7 @@ import timber.log.Timber;
 
 @HiltViewModel
 public class WitnessingViewModel extends AndroidViewModel implements QRCodeScanningViewModel {
-  public static final String TAG = WitnessingViewModel.class.getSimpleName();
+  private static final String TAG = WitnessingViewModel.class.getSimpleName();
 
   private String laoId;
 
@@ -49,8 +51,10 @@ public class WitnessingViewModel extends AndroidViewModel implements QRCodeScann
   private final MutableLiveData<List<PublicKey>> witnesses = new MutableLiveData<>();
   private final MutableLiveData<List<WitnessMessage>> witnessMessages = new MutableLiveData<>();
   private final MutableLiveData<Integer> nbScanned = new MutableLiveData<>(0);
+  private MutableLiveData<Boolean> showPopup = new MutableLiveData<>(false);
 
   private final LAORepository laoRepo;
+  private final WitnessingRepository witnessingRepo;
   private final KeyManager keyManager;
   private final GlobalNetworkManager networkManager;
   private final Gson gson;
@@ -61,11 +65,13 @@ public class WitnessingViewModel extends AndroidViewModel implements QRCodeScann
   public WitnessingViewModel(
       @NonNull Application application,
       LAORepository laoRepo,
+      WitnessingRepository witnessingRepo,
       KeyManager keyManager,
       GlobalNetworkManager networkManager,
       Gson gson) {
     super(application);
     this.laoRepo = laoRepo;
+    this.witnessingRepo = witnessingRepo;
     this.keyManager = keyManager;
     this.networkManager = networkManager;
     this.gson = gson;
@@ -91,29 +97,60 @@ public class WitnessingViewModel extends AndroidViewModel implements QRCodeScann
     return new ArrayList<>(scannedWitnesses);
   }
 
-  /*
-  // TODO refactor this away
-   This is done so because of the absence of witnessing repository. It should be added
-   and then witnesses can be observed the same way as events. You can have a look at
-   either the roll call or election repository and view model.
-  */
-  public void setLaoId(String laoId) {
+  /**
+   * Function that initializes the view model. It sets the lao identifier and observe the witnesses
+   * and witness messages.
+   *
+   * @param laoId identifier of the lao whose view model belongs
+   */
+  public void initialize(String laoId) {
     this.laoId = laoId;
 
-    disposables.add(
-        laoRepo
-            .getLaoObservable(laoId)
+    disposables.addAll(
+        // Observe the witnesses
+        witnessingRepo
+            .getWitnessesObservableInLao(laoId)
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
-                laoView -> {
-                  Timber.tag(TAG).d("got an update for lao: %s", laoView);
-                  List<WitnessMessage> witnessMessages =
-                      new ArrayList<>(laoView.getWitnessMessages().values());
-                  Collections.reverse(witnessMessages);
-                  setWitnessMessages(witnessMessages);
-                  setWitnesses(new ArrayList<>(laoView.getWitnesses()));
+                witnessesSet -> setWitnesses(new ArrayList<>(witnessesSet)),
+                error ->
+                    Timber.tag(TAG).d(error, "Error in updating the witnesses of lao %s", laoId)),
+        // Observe the witness messages
+        witnessingRepo
+            .getWitnessMessagesObservableInLao(laoId)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                witnessMessage -> {
+                  // Order by latest arrived
+                  setWitnessMessages(
+                      witnessMessage.stream()
+                          .sorted(Comparator.comparing(WitnessMessage::getTimestamp).reversed())
+                          .collect(Collectors.toList()));
+
+                  // When a new witness message is received, if it needs to be signed by the user
+                  // then we show a pop up that the user can click to open the witnessing fragment
+                  PublicKey myPk = keyManager.getMainPublicKey();
+                  if (!witnessMessage.isEmpty()
+                      && witnessingRepo.isWitness(laoId, myPk)
+                      && !Objects.requireNonNull(witnessMessages.getValue())
+                          .get(0)
+                          .getWitnesses()
+                          .contains(myPk)) {
+                    showPopup.setValue(true);
+                  }
                 },
-                error -> Timber.tag(TAG).d(error, "error updating LAO")));
+                error ->
+                    Timber.tag(TAG)
+                        .d(error, "Error in updating the witness messages of lao %s", laoId)));
+  }
+
+  /**
+   * This function deletes the messages that have already passed the witnessing policy to clear
+   * useless space.
+   */
+  public void deleteSignedMessages() {
+    Timber.tag(TAG).d("Deleting witnessing messages already signed by enough witnesses");
+    witnessingRepo.deleteSignedMessages(laoId);
   }
 
   @Override
@@ -125,6 +162,14 @@ public class WitnessingViewModel extends AndroidViewModel implements QRCodeScann
   @Override
   public LiveData<Integer> getNbScanned() {
     return nbScanned;
+  }
+
+  public LiveData<Boolean> getShowPopup() {
+    return showPopup;
+  }
+
+  public void disableShowPopup() {
+    showPopup.setValue(false);
   }
 
   protected Completable signMessage(WitnessMessage witnessMessage) {

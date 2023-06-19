@@ -81,19 +81,19 @@ public class WitnessingFragmentTest {
   public void testTabMenu() {
     witnessingTabs().check(matches(isDisplayed()));
 
-    // Check that by default the witnesses are displayed
-    witnessMessageFragment().check(doesNotExist());
-    witnessesFragment().check(matches(isDisplayed()));
+    // Check that by default the witness messages are displayed
+    witnessMessageFragment().check(matches(isDisplayed()));
+    witnessesFragment().check(doesNotExist());
 
     // Select the messages tab
-    witnessingTabs().perform(selectTabAtPosition(1));
+    witnessingTabs().perform(selectTabAtPosition(0));
 
     // Check that the witness messages are displayed and the witnesses are not displayed
     witnessMessageFragment().check(matches(isDisplayed()));
     witnessesFragment().check(doesNotExist());
 
     // Select the witnesses tab
-    witnessingTabs().perform(selectTabAtPosition(0));
+    witnessingTabs().perform(selectTabAtPosition(1));
 
     // Check that the witnesses are displayed and the witnesses messages are not displayed
     witnessMessageFragment().check(doesNotExist());

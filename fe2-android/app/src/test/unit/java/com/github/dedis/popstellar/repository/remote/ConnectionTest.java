@@ -5,9 +5,14 @@ import com.github.dedis.popstellar.model.network.answer.Result;
 import com.github.dedis.popstellar.model.network.method.Message;
 import com.github.dedis.popstellar.model.network.method.Subscribe;
 import com.github.dedis.popstellar.model.objects.Channel;
+import com.github.dedis.popstellar.model.objects.PeerAddress;
 import com.tinder.scarlet.*;
 
 import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Function;
 
 import io.reactivex.Observable;
 import io.reactivex.subjects.BehaviorSubject;
@@ -106,6 +111,34 @@ public class ConnectionTest {
 
     verify(service).observeMessage();
     verify(service, atLeastOnce()).observeWebsocket();
+    verifyNoMoreInteractions(service);
+  }
+
+  @Test
+  public void testMultiConnection() {
+    LAOService service = mock(LAOService.class);
+    BehaviorSubject<GenericMessage> messages = BehaviorSubject.create();
+    when(service.observeMessage()).thenReturn(messages);
+    when(service.observeWebsocket()).thenReturn(BehaviorSubject.create());
+
+    BehaviorSubject<Lifecycle.State> manualState =
+        BehaviorSubject.createDefault(Lifecycle.State.Started.INSTANCE);
+
+    Function<String, Connection> provider = url -> new Connection(url, service, manualState);
+    MultiConnection multiConnection = new MultiConnection(provider, "url");
+
+    // Extend the connections with a new peer
+    List<PeerAddress> peers = new ArrayList<>();
+    peers.add(new PeerAddress("url2"));
+
+    multiConnection.connectToPeers(peers);
+
+    Message msg = new Subscribe(Channel.ROOT, 12);
+    multiConnection.sendMessage(msg);
+
+    verify(service, times(2)).sendMessage(msg);
+    verify(service, times(2)).observeMessage();
+    verify(service, times(2)).observeWebsocket();
     verifyNoMoreInteractions(service);
   }
 }

@@ -7,6 +7,7 @@ import ch.epfl.pop.model.network.method.message.data.coin.PostTransaction
 import ch.epfl.pop.model.network.method.message.data.election._
 import ch.epfl.pop.model.network.method.message.data.lao.{CreateLao, GreetLao, StateLao, UpdateLao}
 import ch.epfl.pop.model.network.method.message.data.meeting.{CreateMeeting, StateMeeting}
+import ch.epfl.pop.model.network.method.message.data.popcha.Authenticate
 import ch.epfl.pop.model.network.method.message.data.rollCall.{CloseRollCall, CreateRollCall, OpenRollCall, ReopenRollCall}
 import ch.epfl.pop.model.network.method.message.data.socialMedia._
 import ch.epfl.pop.model.network.method.message.data.witness.WitnessMessage
@@ -233,6 +234,15 @@ object MessageRegistry {
       PostTransaction.buildFromJson,
       CoinValidator.validatePostTransaction,
       CoinHandler.handlePostTransaction
+    )
+
+    // popcha
+    register.add(
+      (ObjectType.POPCHA, ActionType.AUTHENTICATE),
+      createSchemaVerifier("dataAuthenticateUser.json"),
+      Authenticate.buildFromJson,
+      PopchaValidator.validateAuthenticateRequest,
+      PopchaHandler.handleAuthentication
     )
 
     new MessageRegistry(register.get)

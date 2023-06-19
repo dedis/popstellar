@@ -15,8 +15,6 @@ public class LaoBuilder {
   private Long creation;
   private PublicKey organizer;
   private MessageID modificationId;
-  private Set<PublicKey> witnesses;
-  private Map<MessageID, WitnessMessage> witnessMessages;
   private Set<PendingUpdate> pendingUpdates = new HashSet<>();
   private Map<MessageID, ElectInstance> messageIdToElectInstance = new HashMap<>();
   private Map<PublicKey, ConsensusNode> keyToNode = new HashMap<>();
@@ -33,8 +31,6 @@ public class LaoBuilder {
     this.creation = lao.getCreation();
     this.organizer = lao.getOrganizer();
     this.modificationId = lao.getModificationId();
-    this.witnesses = lao.getWitnesses();
-    this.witnessMessages = lao.getWitnessMessages();
     this.pendingUpdates = lao.getPendingUpdates();
     this.messageIdToElectInstance = lao.getMessageIdToElectInstance();
     this.keyToNode = lao.getKeyToNode();
@@ -81,22 +77,6 @@ public class LaoBuilder {
     return this;
   }
 
-  public LaoBuilder setWitnesses(Set<PublicKey> witnesses) {
-    if (witnesses == null) {
-      throw new IllegalStateException("Witnesses is null");
-    }
-    this.witnesses = witnesses;
-    return this;
-  }
-
-  public LaoBuilder setWitnessMessages(Map<MessageID, WitnessMessage> witnessMessages) {
-    if (witnessMessages == null) {
-      throw new IllegalStateException("WitnessMessages is null");
-    }
-    this.witnessMessages = witnessMessages;
-    return this;
-  }
-
   public LaoBuilder setPendingUpdates(Set<PendingUpdate> pendingUpdates) {
     if (pendingUpdates == null) {
       throw new IllegalStateException("PendingUpdates is null");
@@ -129,12 +109,6 @@ public class LaoBuilder {
     if (organizer == null) {
       throw new IllegalStateException("Organizer is null");
     }
-    if (witnesses == null) {
-      throw new IllegalStateException("Witnesses is null");
-    }
-    if (witnessMessages == null) {
-      throw new IllegalStateException("WitnessMessages is null");
-    }
     if (pendingUpdates == null) {
       throw new IllegalStateException("PendingUpdates is null");
     }
@@ -152,8 +126,6 @@ public class LaoBuilder {
         creation,
         organizer,
         modificationId,
-        witnesses,
-        witnessMessages,
         pendingUpdates,
         messageIdToElectInstance,
         keyToNode);

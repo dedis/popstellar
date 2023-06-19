@@ -59,6 +59,12 @@ func run(ctx context.Context, args []string) {
 		Usage:   "address where the server should listen to",
 		Value:   "localhost",
 	}
+	authServerAddressFlag := &cli.StringFlag{
+		Name:    "auth-server-address",
+		Aliases: []string{"asa"},
+		Usage:   "address of the PoPCHA Server",
+		Value:   "localhost",
+	}
 	clientPortFlag := &cli.IntFlag{
 		Name:    "client-port",
 		Aliases: []string{"cp"},
@@ -70,6 +76,12 @@ func run(ctx context.Context, args []string) {
 		Aliases: []string{"sp"},
 		Usage:   "port to listen websocket connections from remote servers on",
 		Value:   9001,
+	}
+	authServerPortFlag := &cli.IntFlag{
+		Name:    "auth-port",
+		Aliases: []string{"asp"},
+		Usage:   "listening port of the PoPCHA HTTP server",
+		Value:   9100,
 	}
 	otherServersFlag := &cli.StringSliceFlag{
 		Name:    "other-servers",
@@ -101,8 +113,10 @@ func run(ctx context.Context, args []string) {
 							clientAddressFlag,
 							serverPublicAddressFlag,
 							serverListenAddressFlag,
+							authServerAddressFlag,
 							clientPortFlag,
 							serverPortFlag,
+							authServerPortFlag,
 							otherServersFlag,
 							configFileFlag,
 						},
