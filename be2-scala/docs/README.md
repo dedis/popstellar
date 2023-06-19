@@ -58,11 +58,11 @@ The PoP Scala backend is used by LAO organizers and witnesses in order to store 
 </div>
 
 
-In more details, the whole backend is a giant [DSL graph](https://doc.akka.io/docs/akka/current/stream/stream-graphs.html) (see image below). Whenever a new request is received (blue "Source" circle), a new `ClientActor` is automatically created for each new connected client or server. This actor *represents the fundamental link between a particular client and the server*; any message sent to the actor will arrive directly in the client's mailbox.
+The `ClientActor` then transmits data destined for the server directly to a partitioner for further examination. This partitioner will decide which path a particular message will follow (e.g. a JSON-rpc query will not be treated the same way as a JSON-rpc response).
 
 In more details, the whole backend is a giant [DSL graph](https://doc.akka.io/docs/akka/current/stream/stream-graphs.html) (see image below). Whenever a new request is received (blue "Source" circle), a new `ClientActor` is automatically created for each new connected client or server. This actor *represents the fundamental link between a particular client and the server*; any message sent to the actor will arrive directly in the client's mailbox.
 
-Once the message has been processed (for instance a LAO has been created or the message was rejected), the assigned handler (a green, orange or yellow box) asks the `AnswerGenerator` to inform the client whether the operation was successful or not.
+Once the message has been processed (for instance a LAO has been created or the message was rejected), the assigned handler (a green, orange or blue box) asks the `AnswerGenerator` to inform the client whether the operation was successful or not.
 
 <div align="center">
   <img alt="Simplified be2 project architecture" src="images/be2-s.png" />
@@ -85,7 +85,7 @@ The results are then collected by the main merger (blue "merger" circle) and sen
 ### Sending and Receiving Messages
 
 `ClientActor` is complex yet wonderful piece of code that resembles black magic at first sight. It *is* conceptually both the (websocket) link between the server & a particular client or server, as well as the actual internal representation of the client or server. Each different client or server is represented by a unique `ClientActor`. It serves as both the entry point (receiving a `JsonRpcRequest`) and exit point (sending a `JsonRpcResponse` to a client or broadcasting a `Broadcast` to multiple clients) of the graph.
-Whenever a client disconnects from the server, the clienActor associated to that connection gets killed and a new clientActor is recreated from scratch
+Whenever a client disconnects from the server, the clienActor associated to that connection is removed and a new clientActor is recreated from scratch
 #### `ClientActor` as entry point
 
 Using a mix of akka http (handling low-level websocket stuff) and akka stream, we collect input client websocket messages as a string directly in the graph
@@ -340,7 +340,7 @@ final case class DbActorReadRollCallDataAck(rollcallData: RollCallData) extends 
 
 ### Servers consistency
 
-Making sure that servers that run a LAO concurrently share the same state is ensured by `Heartbeat` messages and `GetMessagesById` messages. These messages are proper to server to servxer communication and they follow the same path as the other messages in the DSL graph.
+Making sure that servers that run a LAO concurrently share the same state is ensured by `Heartbeat` messages and `GetMessagesById` messages. These messages are proper to server to server communication and they follow the same path as the other messages in the DSL graph.
 :warning: connection to other servers is internally represented by an instance of `ClientActor`. Since this can easily lead to errors, the way we distinguish a server to server connection and a client to server connection is by a `isServer` field in the `ClientActor` instance.
 The way we broadcast heartbeats to connected servers is by mean of the `Monitor` Actor. The monitor actor sees every message the system receives. It schedules heartbeats either whenever it sees a message in the next heartbeatRate seconds, or periodically after a period of messageDelay seconds.
 Heartbeats are sent by the mean of the `ConnectionMediator` actor that holds a set of connected server peers.
