@@ -11,9 +11,9 @@ import { Spacing, Typography } from 'core/styles';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
 
+import { sendAuthRequest } from '../functions/network';
 import { PopchaHooks } from '../hooks';
 import { PopchaFeature } from '../interface';
-import { sendPopchaAuthRequest } from '../network/PopchaMessageApi';
 
 const styles = StyleSheet.create({
   container: {
@@ -65,117 +65,20 @@ const PopchaScanner = () => {
     });
   };
 
-  /**
-   * Verify the scanned info (url)
-   * @param data the scanned data
-   * @returns true if the scanned info is valid, false otherwise
-   */
-  const verifyScannedInfo = (data: string) => {
-    let url: URL;
-    try {
-      url = new URL(data);
-    } catch (e) {
-      console.log(`Error with scanned url: ${e}`);
-      showErrorMessage('Invalid url');
-      return false;
-    }
-
-    const urlArg = url.searchParams;
-
-    const requiredArguments = [
-      'client_id',
-      'redirect_uri',
-      'login_hint',
-      'nonce',
-      'response_type',
-      'scope',
-    ];
-
-    // Check if all required arguments are present
-    for (const arg of requiredArguments) {
-      if (!urlArg.has(arg)) {
-        showErrorMessage(`Missing argument ${arg}`);
-        return false;
-      }
-    }
-
-    // Check if the response respects openid standard
-    if (urlArg.get('response_type') !== 'id_token') {
-      showErrorMessage('Invalid response type');
-      return false;
-    }
-
-    if (!(urlArg.get('scope')!.includes('openid') && urlArg.get('scope')!.includes('profile'))) {
-      showErrorMessage('Invalid scope');
-      return false;
-    }
-
-    if (urlArg.has('response_mode')) {
-      if (
-        !(
-          urlArg.get('response_mode')!.includes('query') ||
-          urlArg.get('response_mode')!.includes('fragment')
-        )
-      ) {
-        showErrorMessage('Invalid response mode');
-        return false;
-      }
-    }
-
-    if (urlArg.get('login_hint') !== laoId.toString()) {
-      showErrorMessage('Invalid lao id');
-      console.log(`Scanned lao id: ${urlArg.get('login_hint')}, current lao id: ${laoId}`);
-      return false;
-    }
-
-    return true;
-  };
-
-  /**
-   * Send an auth request to the server
-   * @param data the scanned data
-   * @returns true if the auth request was sent successfully, false otherwise
-   */
-  const sendAuthRequest = async (data: string) => {
-    if (!verifyScannedInfo(data)) {
-      return false;
-    }
-
-    const url = new URL(data);
-    const urlArg = url.searchParams;
-
-    const authResponse = sendPopchaAuthRequest(
-      urlArg.get('client_id')!,
-      urlArg.get('nonce')!,
-      url.host,
-      urlArg.get('state'),
-      urlArg.get('response_mode'),
-      laoId,
-      generateToken,
-    );
-
-    return authResponse
-      .then(() => {
-        return true;
-      })
-      .catch((error) => {
-        showErrorMessage(`Could not send auth request: ${error}`);
-        return false;
-      });
-  };
-
   return showScanner ? (
     <>
       <QrCodeScanner
         showCamera
         handleScan={(data: string | null) =>
           data &&
-          sendAuthRequest(data).then((success) => {
-            if (success) {
+          sendAuthRequest(data, laoId, generateToken)
+            .then(() => {
               setShowScanner(false);
               showSuccessMessage(STRINGS.popcha_success_authentication);
-            }
-          })
+            })
+            .catch((error) => {
+              showErrorMessage(error.toString());
+            })
         }>
         <View style={styles.container}>
           <View />
@@ -210,13 +113,15 @@ const PopchaScanner = () => {
         title={STRINGS.popcha_manual_add_title}
         description={STRINGS.popcha_manual_add_description}
         onConfirmPress={(text: string) => {
-          sendAuthRequest(text).then((success) => {
-            if (success) {
+          sendAuthRequest(text, laoId, generateToken)
+            .then(() => {
               setShowScanner(false);
               setInputModalIsVisible(false);
               showSuccessMessage(STRINGS.popcha_success_authentication);
-            }
-          });
+            })
+            .catch((error) => {
+              showErrorMessage(error.toString());
+            });
         }}
         buttonConfirmText={STRINGS.general_add}
         hasTextInput
