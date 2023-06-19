@@ -6,7 +6,7 @@ import { sendPopchaAuthRequest } from '../network/PopchaMessageApi';
  * Verify the scanned info (url)
  * @param data the scanned data
  * @param laoId the lao id
- * @returns an error message if the scanned info is invalid, null otherwise
+ * @returns an error message if the scanned info is invalid, undefined otherwise
  */
 const verifyScannedInfo = (data: string, laoId: Hash) => {
   let url: URL;
