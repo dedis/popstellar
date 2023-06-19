@@ -14,6 +14,7 @@ object OpenElectionExamples {
 
   final val LAO_ID: Hash = Hash(Base64Data.encode("laoId"))
   final val NOT_STALE_OPENED_AT = Timestamp(1649089860L)
+  final val WRONG_OPENED_BEFORE_SETUP = Timestamp(1649089850)
   final val ELECTION_ID: Hash = Hash(Base64Data.encode("election"))
 
   val invalidTimestamp: Timestamp = Timestamp(0)
@@ -21,7 +22,10 @@ object OpenElectionExamples {
   val invalidSender: PublicKey = PublicKey(Base64Data.encode("wrong"))
 
   val workingOpenElection: OpenElection = OpenElection(LAO_ID, ELECTION_ID, NOT_STALE_OPENED_AT)
+  val wrongOpenElectionBeforeSetup: OpenElection = OpenElection(LAO_ID, ELECTION_ID, WRONG_OPENED_BEFORE_SETUP)
   final val DATA_OPEN_MESSAGE: Hash = Hash(Base64Data.encode(workingOpenElection.toJson.toString))
+  final val DATA_OPEN_MESSAGE_BEFORE_SETUP: Hash = Hash(Base64Data.encode(wrongOpenElectionBeforeSetup.toJson.toString))
+
   final val MESSAGE_OPEN_ELECTION_WORKING: Message = new Message(
     DATA_OPEN_MESSAGE.base64Data,
     SENDER_ELECTION,
@@ -29,6 +33,15 @@ object OpenElectionExamples {
     Hash(Base64Data("")),
     List.empty,
     Some(workingOpenElection)
+  )
+
+  final val MESSAGE_OPEN_ELECTION_BEFORE_SETUP: Message = new Message(
+    DATA_OPEN_MESSAGE_BEFORE_SETUP.base64Data,
+    SENDER_ELECTION,
+    SIGNATURE,
+    Hash(Base64Data("")),
+    List.empty,
+    Some(wrongOpenElectionBeforeSetup)
   )
 
   val wrongTimestampOpenElection: OpenElection = OpenElection(LAO_ID, ELECTION_ID, invalidTimestamp)
