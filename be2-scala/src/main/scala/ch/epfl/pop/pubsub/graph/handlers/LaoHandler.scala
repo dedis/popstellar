@@ -45,7 +45,7 @@ case object LaoHandler extends MessageHandler {
         _ <- dbActor ? DbActor.WriteLaoData(laoChannel, message, address)
         // after creating the lao, we need to send a lao#greet message to the frontend
         greet: GreetLao = GreetLao(data.id, message.sender, address.get, List.empty)
-        _ <- dbBroadcast(rpcMessage, laoChannel, GreetLaoFormat.write(greet), laoChannel) // We should not write the greatLao in the db, we should only generate it and broadcast it.
+        _ <- broadcast(rpcMessage, laoChannel, GreetLaoFormat.write(greet), laoChannel) // We should not write the greatLao in the db, we should only generate it and broadcast it.
       } yield ()
 
     Await.ready(ask, duration).value.get match {
@@ -56,15 +56,7 @@ case object LaoHandler extends MessageHandler {
   }
 
   def handleGreetLao(rpcMessage: JsonRpcRequest): GraphMessage = {
-    val ask = dbActor ? DbActor.ChannelExists(rpcMessage.getParamsChannel)
-    Await.ready(ask, duration).value.get match {
-      // We want to write greetLao only if channel exists
-      case Success(_) =>
-        val ask: Future[GraphMessage] = dbAskWritePropagate(rpcMessage)
-        Await.result(ask, duration)
-      case Failure(_) => Left(PipelineError(ErrorCodes.INVALID_ACTION.id, s"handleGreetLao failed : Channel doesn't exist", rpcMessage.getId))
-      case reply      => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleGreetLao failed : unexpected DbActor reply '$reply'", rpcMessage.getId))
-    }
+    Left(PipelineError(ErrorCodes.SERVER_ERROR.id, "server received a greetLao", rpcMessage.id))
   }
 
   def handleStateLao(rpcMessage: JsonRpcRequest): GraphMessage = {

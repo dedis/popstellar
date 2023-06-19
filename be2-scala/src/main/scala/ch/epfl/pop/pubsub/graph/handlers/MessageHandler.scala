@@ -93,10 +93,12 @@ trait MessageHandler extends AskPatternConstants {
     *   : the message data we broadcast converted to Base64Data
     * @param broadcastChannel
     *   : the Channel in which we broadcast
+    * @param writeToDb
+   *    : write to db when true, only broadcast when set to false.
     * @return
     *   the database answer wrapped in a [[scala.concurrent.Future]]
     */
-  def dbBroadcast(rpcMessage: JsonRpcRequest, channel: Channel, broadcastData: JsValue, broadcastChannel: Channel): Future[GraphMessage] = {
+  def broadcast(rpcMessage: JsonRpcRequest, channel: Channel, broadcastData: JsValue, broadcastChannel: Channel, writeToDb: Boolean = true): Future[GraphMessage] = {
     val m: Message = rpcMessage.getParamsMessage.getOrElse(
       return Future {
         Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"dbAskWritePropagate failed : retrieve empty rpcRequest message", rpcMessage.id))
@@ -109,12 +111,16 @@ trait MessageHandler extends AskPatternConstants {
       broadcastSignature: Signature = laoData.privateKey.signData(encodedData)
       broadcastId: Hash = Hash.fromStrings(encodedData.toString, broadcastSignature.toString)
       broadcastMessage: Message = Message(encodedData, laoData.publicKey, broadcastSignature, broadcastId, List.empty)
-      _ <- mediator ? PubSubMediator.Propagate(broadcastChannel, broadcastMessage)
+      _ <- if (writeToDb) {
+        dbActor ? DbActor.WriteAndPropagate(broadcastChannel, broadcastMessage)
+      } else {
+        mediator ? PubSubMediator.Propagate(broadcastChannel, broadcastMessage)
+      }
     } yield ()
 
     combined.transformWith {
       case Success(_) => Future(Right(rpcMessage))
-      case _          => Future(Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"dbBroadcast failed : could not read and broadcast message $m", rpcMessage.id)))
+      case _          => Future(Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"broadcast failed : could not read and broadcast message $m", rpcMessage.id)))
     }
   }
 }
