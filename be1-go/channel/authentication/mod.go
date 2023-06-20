@@ -182,8 +182,12 @@ func (c *Channel) auhenticateUser(msg message.Message, msgData interface{},
 	if !c.latestRollCallMembers.isPresent(msg.Sender) {
 		return xerrors.Errorf("Error while validating the authentication message: pop token is not part of the latest roll call")
 	}
+	nonce, err := base64.URLEncoding.DecodeString(data.Nonce)
+	if err != nil {
+		return xerrors.Errorf("Nonce should be base64 encoded")
+	}
 
-	encodedClientParams, err := constructRedirectURIParams(c, data)
+	encodedClientParams, err := constructRedirectURIParams(c, data, string(nonce))
 	if err != nil {
 		return xerrors.Errorf("Error while constructing the redirect URI parameters: %v", err)
 	}
@@ -192,10 +196,6 @@ func (c *Channel) auhenticateUser(msg message.Message, msgData interface{},
 
 	laoID := strings.TrimPrefix(c.channelID, "/root/")
 
-	nonce, err := base64.URLEncoding.DecodeString(data.Nonce)
-	if err != nil {
-		return xerrors.Errorf("Nonce should be base64 encoded")
-	}
 	popChaPath := strings.Join([]string{"/response", laoID, data.ClientID, string(nonce)}, "/")
 
 	popchaAddress := data.PopchaAddress
@@ -259,7 +259,7 @@ func loadRSAKeys(privateKeyPath string, publicKeyPath string) (*rsa.PrivateKey, 
 }
 
 // constructRedirectURIParams computes the redirect URI given the authentication message
-func constructRedirectURIParams(c *Channel, data *messagedata.AuthenticateUser) (string, error) {
+func constructRedirectURIParams(c *Channel, data *messagedata.AuthenticateUser, nonceDec string) (string, error) {
 
 	c.log.Info().Msg("Constructing the URI Parameters")
 
@@ -275,7 +275,7 @@ func constructRedirectURIParams(c *Channel, data *messagedata.AuthenticateUser) 
 	c.addPPIDEntry(identifier(data.Identifier), identifier(ppid))
 
 	c.log.Info().Msg("Signing the JWT Token")
-	idTokenString, err := createJWTString(data.PopchaAddress, ppid, data.ClientID, data.Nonce, sk)
+	idTokenString, err := createJWTString(data.PopchaAddress, ppid, data.ClientID, nonceDec, sk)
 	if err != nil {
 		c.log.Err(err).Msg("Error while creating the JWT token")
 		return "", xerrors.Errorf("Error while creating JWT token: %v", err)
