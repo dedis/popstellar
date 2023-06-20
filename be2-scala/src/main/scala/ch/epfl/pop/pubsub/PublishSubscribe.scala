@@ -34,7 +34,7 @@ object PublishSubscribe {
       {
         import GraphDSL.Implicits._
 
-        val clientActorRef: ActorRef = system.actorOf(ClientActor.props(mediatorActorRef, connectionMediatorRef, isServer))
+        val clientActorRef: ActorRef = system.actorOf(ClientActor.props(mediatorActorRefT, connectionMediatorRef, isServer))
         dbActorRef = dbActorRefT
         mediatorActorRef = mediatorActorRefT
 
