@@ -338,7 +338,7 @@ func TestGenerateQrCodeOnEdgeCases(t *testing.T) {
 		URL:    longURL,
 	}
 
-	err := s.generateQRCode(&fakeResponseWriter{}, req, "l", "c", "n", "")
+	err := s.generateQRCode(&fakeResponseWriter{}, req, "l", "c", "n", "example.com", fragment)
 	require.Error(t, err)
 
 	// testing that the QRCode can be generated with special characters, due to URL encoding
@@ -349,7 +349,7 @@ func TestGenerateQrCodeOnEdgeCases(t *testing.T) {
 	}
 
 	req.URL = specialCharURL
-	err = s.generateQRCode(&fakeResponseWriter{}, req, "l", "c", "n", "")
+	err = s.generateQRCode(&fakeResponseWriter{}, req, "l", "c", "n", "example.com", query)
 	require.NoError(t, err)
 }
 
