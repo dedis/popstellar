@@ -59,7 +59,7 @@ exports[`Popcha scanner correct behavior when sending request closes scanner whe
               }
             }
           >
-            Hello, here is your laoID:
+            Hello, here is your laoID: 
             -
             M
             2
@@ -224,7 +224,7 @@ exports[`Popcha scanner correct behavior when sending request shows error messag
               }
             }
           >
-            Hello, here is your laoID:
+            Hello, here is your laoID: 
             -
             M
             2
@@ -438,7 +438,7 @@ exports[`Popcha scanner correct behavior when sending request shows error messag
               }
             }
           >
-            Hello, here is your laoID:
+            Hello, here is your laoID: 
             -
             M
             2
@@ -650,7 +650,7 @@ exports[`Popcha scanner scanner renders correctly renders correctly a closed sca
               }
             }
           >
-            Hello, here is your laoID:
+            Hello, here is your laoID: 
             -
             M
             2
@@ -813,7 +813,7 @@ exports[`Popcha scanner scanner renders correctly renders correctly a opened sca
               }
             }
           >
-            Hello, here is your laoID:
+            Hello, here is your laoID: 
             -
             M
             2
