@@ -18,8 +18,12 @@ object PublishSubscribe {
 
   def getDbActorRef: AskableActorRef = dbActorRef
 
+  private var mediatorActorRef: ActorRef = _
+
+  def getMediatorActorRef: ActorRef = mediatorActorRef
+
   def buildGraph(
-      mediatorActorRef: ActorRef,
+      mediatorActorRefT: ActorRef,
       dbActorRefT: AskableActorRef,
       messageRegistry: MessageRegistry,
       monitorRef: ActorRef,
@@ -30,8 +34,9 @@ object PublishSubscribe {
       {
         import GraphDSL.Implicits._
 
-        val clientActorRef: ActorRef = system.actorOf(ClientActor.props(mediatorActorRef, connectionMediatorRef, isServer))
+        val clientActorRef: ActorRef = system.actorOf(ClientActor.props(mediatorActorRefT, connectionMediatorRef, isServer))
         dbActorRef = dbActorRefT
+        mediatorActorRef = mediatorActorRefT
 
         /* partitioner port numbers */
         val portPipelineError = 0
