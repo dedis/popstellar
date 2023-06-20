@@ -94,7 +94,7 @@ trait MessageHandler extends AskPatternConstants {
     * @param broadcastChannel
     *   : the Channel in which we broadcast
     * @param writeToDb
-   *    : write to db when true, only broadcast when set to false.
+    *   : write to db when true, only broadcast when set to false.
     * @return
     *   the database answer wrapped in a [[scala.concurrent.Future]]
     */
@@ -111,11 +111,12 @@ trait MessageHandler extends AskPatternConstants {
       broadcastSignature: Signature = laoData.privateKey.signData(encodedData)
       broadcastId: Hash = Hash.fromStrings(encodedData.toString, broadcastSignature.toString)
       broadcastMessage: Message = Message(encodedData, laoData.publicKey, broadcastSignature, broadcastId, List.empty)
-      _ <- if (writeToDb) {
-        dbActor ? DbActor.WriteAndPropagate(broadcastChannel, broadcastMessage)
-      } else {
-        mediator ? PubSubMediator.Propagate(broadcastChannel, broadcastMessage)
-      }
+      _ <-
+        if (writeToDb) {
+          dbActor ? DbActor.WriteAndPropagate(broadcastChannel, broadcastMessage)
+        } else {
+          mediator ? PubSubMediator.Propagate(broadcastChannel, broadcastMessage)
+        }
     } yield ()
 
     combined.transformWith {
