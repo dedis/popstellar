@@ -99,6 +99,8 @@ final case class ClientActor(mediator: ActorRef, connectionMediatorRef: ActorRef
       }
   }
 
+  /** Build our own GreetServer to identify us to other servers and push it into the websocket
+    */
   private def triggerGreetServer(): Unit = {
     val clientAddress = serverConf.externalAddress + s"/${serverConf.clientPath}"
     val serverAddress = serverConf.externalAddress + s"/${serverConf.serverPath}"

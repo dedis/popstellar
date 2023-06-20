@@ -52,6 +52,18 @@ final case class ConnectionMediator(
       if (serverMap.isEmpty)
         monitorRef ! Monitor.NoServerConnected
 
+    case ConnectionMediator.ReadPeersClientAddress() =>
+      if (serverMap.isEmpty)
+        sender() ! ConnectionMediator.ReadPeersClientAddressAck(List.empty[String])
+      else
+        sender() ! ConnectionMediator.ReadPeersClientAddressAck(serverMap.values.map(gr => gr.clientAddress).toList)
+
+    case ConnectionMediator.NewServerConnected(serverRef, greetServer) =>
+      if (serverMap.isEmpty) {
+        monitorRef ! Monitor.AtLeastOneServerConnected
+      }
+      serverMap += ((serverRef, greetServer))
+
     case Heartbeat(map) =>
       log.info("Sending a heartbeat to the servers")
       serverMap.keys.map(server =>
@@ -64,18 +76,6 @@ final case class ConnectionMediator(
           ))
         )
       )
-
-    case ReadPeersClientAddress() =>
-      if (serverMap.isEmpty)
-        sender() ! ReadPeersClientAddressAck(List.empty[String])
-      else
-        sender() ! ReadPeersClientAddressAck(serverMap.values.map(gr => gr.clientAddress).toList)
-
-    case NewServerConnected(serverRef, greetServer) =>
-      if (serverMap.isEmpty) {
-        monitorRef ! Monitor.AtLeastOneServerConnected
-      }
-      serverMap += ((serverRef, greetServer))
   }
 }
 
