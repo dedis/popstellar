@@ -1,11 +1,9 @@
 package ch.epfl.pop.pubsub.graph.handlers
 
-import akka.actor.ActorRef
 import akka.pattern.AskableActorRef
 import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.objects.{Base64Data, Channel, Hash, Signature}
-import ch.epfl.pop.pubsub.PubSubMediator.Propagate
 import ch.epfl.pop.pubsub.{AskPatternConstants, PubSubMediator, PublishSubscribe}
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
 import ch.epfl.pop.storage.DbActor
