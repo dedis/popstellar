@@ -29,7 +29,8 @@ final case class ConnectionMediator(
 
     // Connect to some servers
     case ConnectionMediator.ConnectTo(urlList) =>
-      urlList.map(url =>
+      val urlDiff = urlList.toSet.diff(serverMap.values.map(g => g.serverAddress).toSet)
+      urlDiff.map(url =>
         Http().singleWebSocketRequest(
           WebSocketRequest(url),
           PublishSubscribe.buildGraph(
