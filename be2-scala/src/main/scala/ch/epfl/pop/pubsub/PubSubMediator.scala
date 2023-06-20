@@ -97,7 +97,9 @@ class PubSubMediator extends Actor with ActorLogging with AskPatternConstants {
     case PubSubMediator.UnsubscribeFrom(channel, clientActorRef) =>
       sender() ! unsubscribeFrom(channel, clientActorRef)
 
-    case PubSubMediator.Propagate(channel, message) => broadcast(channel, message)
+    case PubSubMediator.Propagate(channel, message) =>
+      broadcast(channel, message)
+      sender() ! PropagateAck()
 
     case m @ _ =>
       log.error(s"PubSubMediator received an unknown message : $m")
@@ -132,5 +134,7 @@ object PubSubMediator {
 
   // unsubscribe infirmation (sender failed to unsubscribe from channel channel)
   final case class UnsubscribeFromNAck(channel: Channel, reason: String) extends PubSubMediatorMessage
+
+  final case class PropagateAck() extends PubSubMediatorMessage
 
 }

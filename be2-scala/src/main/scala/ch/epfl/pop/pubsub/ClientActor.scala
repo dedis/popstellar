@@ -75,6 +75,7 @@ final case class ClientActor(mediator: ActorRef, connectionMediatorRef: ActorRef
           log.info(s"Actor $self received NACK mediator $mediator for the subscribe to channel '$channel' request for reason: $reason")
         case UnsubscribeFromNAck(channel, reason) =>
           log.info(s"Actor $self received NACK mediator $mediator for the unsubscribe from channel '$channel' request for reason: $reason")
+        case PropagateAck() => // Nothing to do.
       }
     case greetServer: GreetServer =>
       if (!greetServerSent && isServer) {

@@ -51,7 +51,7 @@ case object LaoHandler extends MessageHandler {
           case _                                                           => List.empty
         }
         greet: GreetLao = GreetLao(data.id, message.sender, address.get, addresses)
-        _ <- dbBroadcast(rpcMessage, laoChannel, GreetLaoFormat.write(greet), laoChannel)
+        _ <- broadcast(rpcMessage, laoChannel, GreetLaoFormat.write(greet), laoChannel, writeToDb = false) // We should not write the greatLao in the db, we should only generate it and broadcast it.
       } yield ()
 
     Await.ready(ask, duration).value.get match {
@@ -62,15 +62,7 @@ case object LaoHandler extends MessageHandler {
   }
 
   def handleGreetLao(rpcMessage: JsonRpcRequest): GraphMessage = {
-    val ask = dbActor ? DbActor.ChannelExists(rpcMessage.getParamsChannel)
-    Await.ready(ask, duration).value.get match {
-      // We want to write greetLao only if channel exists
-      case Success(_) =>
-        val ask: Future[GraphMessage] = dbAskWritePropagate(rpcMessage)
-        Await.result(ask, duration)
-      case Failure(_) => Left(PipelineError(ErrorCodes.INVALID_ACTION.id, s"handleGreetLao failed : Channel doesn't exist", rpcMessage.getId))
-      case reply      => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleGreetLao failed : unexpected DbActor reply '$reply'", rpcMessage.getId))
-    }
+    Left(PipelineError(ErrorCodes.SERVER_ERROR.id, "server received a greetLao", rpcMessage.id))
   }
 
   def handleStateLao(rpcMessage: JsonRpcRequest): GraphMessage = {

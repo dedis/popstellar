@@ -59,8 +59,10 @@ const (
 	loginHint       = "login_hint"
 	responseMode    = "response_mode"
 	// modes of response
-	query    = "query"
-	fragment = "fragment"
+	query        = "query"
+	fragment     = "fragment"
+	queryChar    = "?"
+	fragmentChar = "#"
 )
 
 // variable for upgrading the http connection into a websocket one
@@ -280,7 +282,7 @@ func (as *AuthorizationServer) HandleRequest(w http.ResponseWriter, req *http.Re
 	}
 
 	// generate PoPCHA QRCode
-	err = as.generateQRCode(w, req, oidcReq.LoginHint, oidcReq.ClientID, oidcReq.Nonce, oidcReq.RedirectURI)
+	err = as.generateQRCode(w, req, oidcReq.LoginHint, oidcReq.ClientID, oidcReq.Nonce, oidcReq.RedirectURI, string(oidcReq.ResponseMode))
 	if err != nil {
 		as.handleBadRequest(w, err, "Error while generating PoPCHA QRCode")
 	}
@@ -298,7 +300,7 @@ func (as *AuthorizationServer) handleBadRequest(w http.ResponseWriter, err error
 
 // generateQRCode builds a PoPCHA QRCode and executes an HTML template including it, given authorization parameters.
 func (as *AuthorizationServer) generateQRCode(w http.ResponseWriter, req *http.Request, laoID string, clientID string,
-	nonce string, redirectHost string) error {
+	nonce string, redirectHost string, resMode string) error {
 	var buffer bytes.Buffer
 	// new SVG buffer
 	s := svg.New(&buffer)
@@ -327,6 +329,13 @@ func (as *AuthorizationServer) generateQRCode(w http.ResponseWriter, req *http.R
 	// finalizing the buffer construction
 	s.End()
 
+	var responseChar string
+	if resMode == query {
+		responseChar = queryChar
+	} else {
+		responseChar = fragmentChar
+	}
+
 	// internal HTML template struct, including the svg buffer, the Websocket and redirect addresses
 	d := struct {
 		SVGImage      template.HTML
@@ -335,7 +344,7 @@ func (as *AuthorizationServer) generateQRCode(w http.ResponseWriter, req *http.R
 	}{
 		SVGImage:      template.HTML(buffer.String()),
 		WebSocketAddr: "ws://" + req.Host + strings.Join([]string{responseEndpoint, laoID, "authentication", clientID, nonce}, "/"),
-		RedirectHost:  redirectHost,
+		RedirectHost:  redirectHost + responseChar,
 	}
 
 	templateFile := as.htmlFilePath
@@ -434,6 +443,9 @@ func (as *AuthorizationServer) ValidateAuthRequest(req *oidc.AuthRequest) error 
 		return err
 	}
 
+	if len(req.RedirectURI) <= 0 {
+		return xerrors.New("the redirect URI must be non empty")
+	}
 	//validating the redirectURI
 	err = op.ValidateAuthReqRedirectURI(client, req.RedirectURI, req.ResponseType)
 	if err != nil {
