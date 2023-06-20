@@ -3,18 +3,31 @@ import { Hash, PopToken, ProtocolError } from 'core/objects';
 import { sendPopchaAuthRequest } from '../network/PopchaMessageApi';
 
 /**
+ * Get the argument from the url
+ * @param url the url
+ * @param arg the argument
+ * @throws ProtocolError if the argument is missing
+ */
+const getArg = (url: URL, arg: string) => {
+  const value = url.searchParams.get(arg);
+  if (!value) {
+    throw new ProtocolError(`Missing argument ${arg}`);
+  }
+  return value;
+};
+
+/**
  * Verify the scanned info (url)
  * @param data the scanned data
  * @param laoId the lao id
- * @returns an error message if the scanned info is invalid, undefined otherwise
+ * @throws ProtocolError if the scanned data is invalid
  */
 const verifyScannedInfo = (data: string, laoId: Hash) => {
   let url: URL;
   try {
     url = new URL(data);
   } catch (e) {
-    console.log(`Error with scanned url: ${e}`);
-    return 'Invalid url';
+    throw new ProtocolError(`Invalid URL: ${e}`);
   }
 
   const urlArg = url.searchParams;
@@ -31,36 +44,31 @@ const verifyScannedInfo = (data: string, laoId: Hash) => {
   // Check if all required arguments are present
   for (const arg of requiredArguments) {
     if (!urlArg.has(arg)) {
-      return `Missing argument ${arg}`;
+      throw new ProtocolError(`Missing argument ${arg}`);
     }
   }
 
   // Check if the response respects openid standard
-  if (urlArg.get('response_type') !== 'id_token') {
-    return 'Invalid response type';
+  if (getArg(url, 'response_type') !== 'id_token') {
+    throw new ProtocolError('Invalid response type');
   }
 
-  if (!(urlArg.get('scope')!.includes('openid') && urlArg.get('scope')!.includes('profile'))) {
-    return 'Invalid scope';
+  if (!(getArg(url, 'scope').includes('openid') && getArg(url, 'scope').includes('profile'))) {
+    throw new ProtocolError('Invalid scope');
   }
 
-  if (urlArg.has('response_mode')) {
-    if (
-      !(
-        urlArg.get('response_mode')!.includes('query') ||
-        urlArg.get('response_mode')!.includes('fragment')
-      )
-    ) {
-      return 'Invalid response mode';
+  const responseMode = url.searchParams.get('response_mode');
+
+  if (responseMode) {
+    if (!(responseMode.includes('query') || responseMode.includes('fragment'))) {
+      throw new ProtocolError('Invalid response mode');
     }
   }
 
-  if (urlArg.get('login_hint') !== laoId.toString()) {
-    console.log(`Scanned lao id: ${urlArg.get('login_hint')}, current lao id: ${laoId}`);
-    return 'Invalid lao id';
+  if (getArg(url, 'login_hint') !== laoId.toString()) {
+    console.info(`Scanned lao id: ${getArg(url, 'login_hint')}, current lao id: ${laoId}`);
+    throw new ProtocolError('Invalid lao id');
   }
-
-  return undefined;
 };
 
 /**
@@ -77,10 +85,7 @@ export const sendAuthRequest = async (
   laoId: Hash,
   generateToken: (laoId: Hash, clientId: Hash | undefined) => Promise<PopToken>,
 ) => {
-  const errMsg = verifyScannedInfo(data, laoId);
-  if (errMsg) {
-    throw new ProtocolError(errMsg);
-  }
+  verifyScannedInfo(data, laoId);
 
   const url = new URL(data);
   const urlArg = url.searchParams;
