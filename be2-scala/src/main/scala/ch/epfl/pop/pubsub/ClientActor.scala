@@ -105,7 +105,7 @@ final case class ClientActor(mediator: ActorRef, connectionMediatorRef: ActorRef
     val serverAddress = serverConf.externalAddress + s"/${serverConf.serverPath}"
     val publicKey = Await.ready(PublishSubscribe.getDbActorRef ? DbActor.ReadServerPublicKey(), duration).value.get match {
       case Success(DbActor.DbActorReadServerPublicKeyAck(pk)) => Some(pk)
-      case _ => None
+      case _                                                  => None
     }
 
     if (publicKey.isDefined) {
