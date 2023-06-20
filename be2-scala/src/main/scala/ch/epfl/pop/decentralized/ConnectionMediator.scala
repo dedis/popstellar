@@ -4,14 +4,14 @@ import akka.actor.{Actor, ActorLogging, ActorRef, ActorSystem, Props}
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.ws.WebSocketRequest
 import akka.pattern.AskableActorRef
-import ch.epfl.pop.decentralized.ConnectionMediator.NewServerConnected
+import ch.epfl.pop.decentralized.ConnectionMediator.{NewServerConnected, ReadPeersClientAddress, ReadPeersClientAddressAck}
 import ch.epfl.pop.model.network.method.{GreetServer, Heartbeat, ParamsWithMap}
 import ch.epfl.pop.model.network.{JsonRpcRequest, MethodType}
 import ch.epfl.pop.pubsub.ClientActor.ClientAnswer
 import ch.epfl.pop.pubsub.graph.validators.RpcValidator
 import ch.epfl.pop.pubsub.{AskPatternConstants, MessageRegistry, PublishSubscribe}
 
-import scala.collection.mutable
+import scala.collection.immutable.HashMap
 final case class ConnectionMediator(
     monitorRef: ActorRef,
     mediatorRef: ActorRef,
@@ -20,7 +20,7 @@ final case class ConnectionMediator(
 ) extends Actor with ActorLogging with AskPatternConstants {
   implicit val system: ActorSystem = ActorSystem()
 
-  private var serverMap: mutable.HashMap[ActorRef, GreetServer] = mutable.HashMap()
+  private var serverMap: HashMap[ActorRef, GreetServer] = HashMap()
 
   // Ping Monitor to inform it of our ActorRef
   monitorRef ! ConnectionMediator.Ping()
@@ -65,6 +65,12 @@ final case class ConnectionMediator(
         )
       )
 
+    case ReadPeersClientAddress() =>
+      if (serverMap.isEmpty)
+        sender() ! ReadPeersClientAddressAck(List.empty[String])
+      else
+        sender() ! ReadPeersClientAddressAck(serverMap.values.map(gr => gr.clientAddress).toList)
+
     case NewServerConnected(serverRef, greetServer) =>
       if (serverMap.isEmpty) {
         monitorRef ! Monitor.AtLeastOneServerConnected
@@ -83,4 +89,8 @@ object ConnectionMediator {
   final case class NewServerConnected(serverRef: ActorRef, greetServer: GreetServer) extends Event
   final case class ServerLeft(serverRef: ActorRef) extends Event
   final case class Ping() extends Event
+  final case class ReadPeersClientAddress() extends Event
+
+  sealed trait ConnectionMediatorMessage
+  final case class ReadPeersClientAddressAck(list: List[String]) extends ConnectionMediatorMessage
 }
