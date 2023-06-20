@@ -18,7 +18,7 @@ import ch.epfl.pop.storage.DbActor
 import scala.collection.mutable
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
-import scala.util.Failure
+import scala.util.{Failure, Success}
 
 final case class ClientActor(mediator: ActorRef, connectionMediatorRef: ActorRef, isServer: Boolean, initGreet: Boolean) extends Actor with ActorLogging with AskPatternConstants {
 
@@ -103,15 +103,21 @@ final case class ClientActor(mediator: ActorRef, connectionMediatorRef: ActorRef
   private def triggerGreetServer(): Unit = {
     val clientAddress = serverConf.externalAddress + s"/${serverConf.clientPath}"
     val serverAddress = serverConf.externalAddress + s"/${serverConf.serverPath}"
-    val publicKey = Await.result(PublishSubscribe.getDbActorRef ? DbActor.ReadServerPublicKey(), duration).asInstanceOf[DbActor.DbActorReadServerPublicKeyAck].publicKey
-    val greetServer = GreetServer(publicKey, clientAddress, serverAddress)
-    messageWsHandle(ClientAnswer(Right(JsonRpcRequest(
-      "rpc",
-      GREET_SERVER,
-      greetServer,
-      None
-    ))))
-    greetServerSent = true
+    val publicKey = Await.ready(PublishSubscribe.getDbActorRef ? DbActor.ReadServerPublicKey(), duration).value.get match {
+      case Success(DbActor.DbActorReadServerPublicKeyAck(pk)) => Some(pk)
+      case _ => None
+    }
+
+    if (publicKey.isDefined) {
+      val greetServer = GreetServer(publicKey.get, clientAddress, serverAddress)
+      messageWsHandle(ClientAnswer(Right(JsonRpcRequest(
+        "rpc",
+        GREET_SERVER,
+        greetServer,
+        None
+      ))))
+      greetServerSent = true
+    }
   }
 
 }
