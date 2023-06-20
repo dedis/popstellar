@@ -12,6 +12,7 @@ import ch.epfl.pop.model.objects.Channel
 import ch.epfl.pop.pubsub.ClientActor._
 import ch.epfl.pop.pubsub.PubSubMediator._
 import ch.epfl.pop.pubsub.graph.GraphMessage
+import ch.epfl.pop.pubsub.graph.validators.RpcValidator
 import ch.epfl.pop.storage.DbActor
 
 import scala.collection.mutable
@@ -28,13 +29,10 @@ final case class ClientActor(mediator: ActorRef, connectionMediatorRef: ActorRef
 
   private var greetServerSent: Boolean = false
 
-  // Tell connectionMediator we are online
-  if (isServer && initGreet) {
-    triggerGreetServer()
-  }
-
-  private def messageWsHandle(event: ClientActorMessage): Unit = event match {
-    case ClientAnswer(graphMessage) => wsHandle.fold(())(_ ! graphMessage)
+  private def messageWsHandle(event: ClientActorMessage): Unit = {
+    event match {
+      case ClientAnswer(graphMessage) => wsHandle.fold(())(_ ! graphMessage)
+    }
   }
 
   override def receive: Receive = LoggingReceive {
@@ -42,6 +40,11 @@ final case class ClientActor(mediator: ActorRef, connectionMediatorRef: ActorRef
         case ConnectWsHandle(wsClient: ActorRef) =>
           log.info(s"Connecting wsHandle $wsClient to actor ${this.self}")
           wsHandle = Some(wsClient)
+
+          // If server, tell connectionMediator we are online
+          if (isServer && initGreet) {
+            triggerGreetServer()
+          }
 
         case DisconnectWsHandle =>
           subscribedChannels.foreach(channel => mediator ! PubSubMediator.UnsubscribeFrom(channel, this.self))
@@ -78,6 +81,7 @@ final case class ClientActor(mediator: ActorRef, connectionMediatorRef: ActorRef
         triggerGreetServer()
       }
       connectionMediatorRef ! ConnectionMediator.NewServerConnected(self, greetServer)
+
     case clientAnswer @ ClientAnswer(_) =>
       log.info(s"Sending an answer back to client $wsHandle: $clientAnswer")
       messageWsHandle(clientAnswer)
@@ -110,9 +114,10 @@ final case class ClientActor(mediator: ActorRef, connectionMediatorRef: ActorRef
     }
 
     if (publicKey.isDefined) {
+      log.info("Sending greet")
       val greetServer = GreetServer(publicKey.get, clientAddress, serverAddress)
       messageWsHandle(ClientAnswer(Right(JsonRpcRequest(
-        "rpc",
+        RpcValidator.JSON_RPC_VERSION,
         GREET_SERVER,
         greetServer,
         None
