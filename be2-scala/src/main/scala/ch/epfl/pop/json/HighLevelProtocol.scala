@@ -115,6 +115,7 @@ object HighLevelProtocol extends DefaultJsonProtocol {
       obj match {
         case paramsWithChannel: ParamsWithChannel => paramsWithChannel.toJson
         case paramsWithMap: ParamsWithMap         => paramsWithMap.toJson
+        case greetServer: GreetServer             => greetServer.toJson(GreetServerFormat)
       }
 
   }
@@ -169,6 +170,34 @@ object HighLevelProtocol extends DefaultJsonProtocol {
     override def write(obj: GetMessagesById): JsValue = obj.toJson(ParamsWithMapFormat.write)
   }
 
+  implicit object GreetServerFormat extends RootJsonFormat[GreetServer] {
+    final private val PARAM_PUBLIC_KEY: String = "public_key"
+    final private val PARAM_CLIENT_ADDRESS: String = "client_address"
+    final private val PARAM_SERVER_ADDRESS: String = "server_address"
+
+    override def read(json: JsValue): GreetServer = {
+      val jsonObject: JsObject = json.asJsObject
+      jsonObject.getFields(PARAM_PUBLIC_KEY, PARAM_CLIENT_ADDRESS, PARAM_SERVER_ADDRESS) match {
+        case Seq(publicKey @ JsString(_), clientAddress @ JsString(_), serverAddress @ JsString(_)) =>
+          GreetServer(
+            publicKey.convertTo[PublicKey],
+            clientAddress.convertTo[String],
+            serverAddress.convertTo[String]
+          )
+        case _ => throw new IllegalArgumentException(s"Can't parse json value $json to a GreetServer object")
+      }
+    }
+
+    override def write(obj: GreetServer): JsValue = {
+      val jsObjectContent: ListMap[String, JsValue] = ListMap[String, JsValue](
+        PARAM_PUBLIC_KEY -> obj.publicKey.toJson,
+        PARAM_CLIENT_ADDRESS -> obj.clientAddress.toJson,
+        PARAM_SERVER_ADDRESS -> obj.serverAddress.toJson
+      )
+      JsObject(jsObjectContent)
+    }
+  }
+
   implicit val errorObjectFormat: JsonFormat[ErrorObject] = jsonFormat2(ErrorObject.apply)
 
   implicit object ResultObjectFormat extends RootJsonFormat[ResultObject] {
@@ -220,9 +249,10 @@ object HighLevelProtocol extends DefaultJsonProtocol {
       case Seq(JsString(version), methodJsString @ JsString(_), paramsJsObject @ JsObject(_)) =>
         val method: MethodType = methodJsString.convertTo[MethodType]
         val params = method match {
-          case MethodType.HEARTBEAT => paramsJsObject.convertTo[Heartbeat]
-          case MethodType.BROADCAST => paramsJsObject.convertTo[Broadcast]
-          case _                    => throw new IllegalArgumentException(s"Can't parse json value $json with unknown method ${method.toString}")
+          case MethodType.HEARTBEAT    => paramsJsObject.convertTo[Heartbeat]
+          case MethodType.BROADCAST    => paramsJsObject.convertTo[Broadcast]
+          case MethodType.GREET_SERVER => paramsJsObject.convertTo[GreetServer]
+          case _                       => throw new IllegalArgumentException(s"Can't parse json value $json with unknown method ${method.toString}")
         }
         JsonRpcRequest(version, method, params, None)
       case _ => throw new IllegalArgumentException(s"Can't parse json value $json to a JsonRpcRequest object")

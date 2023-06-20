@@ -1,5 +1,7 @@
 package com.github.dedis.popstellar.model.network.method.message.data.consensus;
 
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+
 import com.github.dedis.popstellar.model.network.JsonTestUtils;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
@@ -8,10 +10,12 @@ import com.github.dedis.popstellar.testutils.Base64DataUtils;
 import com.google.gson.JsonParseException;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateMessageID;
 import static org.junit.Assert.*;
 
+@RunWith(AndroidJUnit4.class)
 public class ConsensusFailureTest {
 
   private static final MessageID messageId = generateMessageID();

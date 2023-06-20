@@ -28,7 +28,7 @@
 
     <Button
       android:id="@+id/home_join_button"
-      android:layout_width="@dimen/standard_button_width"
+      android:layout_width="@dimen/small_button_width"
       android:layout_height="@dimen/standard_button_height"
       android:drawableLeft="@drawable/qr_code_button_icon"
       android:text="@string/join"
@@ -41,20 +41,20 @@
     <Button
       android:id="@+id/home_qr_button"
       style="@style/button_style_outlined"
-      android:layout_width="wrap_content"
+      android:layout_width="@dimen/large_button_width"
       android:layout_height="@dimen/standard_button_height"
+      android:layout_marginBottom="@dimen/home_button_vertical_margin"
       android:drawableLeft="@drawable/qr_code_button_icon_blue"
       android:text="@string/witness"
-      android:layout_marginBottom="@dimen/home_button_vertical_margin"
       app:layout_constraintBottom_toBottomOf="parent"
-      app:layout_constraintStart_toEndOf="@id/home_create_button"
       app:layout_constraintEnd_toStartOf="@id/home_join_button"
+      app:layout_constraintHorizontal_bias="0.489"
+      app:layout_constraintStart_toEndOf="@id/home_create_button"
       tools:ignore="RtlHardcoded" />
-
     <Button
       android:id="@+id/home_create_button"
       android:text="@string/create"
-      android:layout_width="@dimen/standard_button_width"
+      android:layout_width="@dimen/small_button_width"
       android:layout_height="@dimen/standard_button_height"
       android:layout_marginStart="@dimen/home_button_horizontal_margin"
       android:layout_marginBottom="@dimen/home_button_vertical_margin"

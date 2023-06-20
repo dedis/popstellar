@@ -1,7 +1,7 @@
 package ch.epfl.pop.json
 
 import ch.epfl.pop.model.network.method.message.data.election._
-import ch.epfl.pop.model.network.method.message.data.lao.CreateLao
+import ch.epfl.pop.model.network.method.message.data.lao.{CreateLao, GreetLao}
 import ch.epfl.pop.model.objects._
 import org.scalatest.funsuite.{AnyFunSuite => FunSuite}
 import org.scalatest.matchers.should.Matchers
@@ -209,5 +209,25 @@ class MessageDataProtocolSuite extends FunSuite with Matchers {
 
     messageData shouldBe a[PostTransaction]
     messageData should equal(expected)
+  }
+
+  test("Parser correctly encodes and decode GreetLao") {
+    val expectedGreetLao = GreetLao(
+      Hash(Base64Data("p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=")),
+      PublicKey(Base64Data("J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=")),
+      "wss://popdemo.dedis.ch:8000/demo",
+      List("wss://popdemo.dedis.ch:8000/second-organizer-demo", "wss://popdemo.dedis.ch:8000/witness-demo")
+    )
+
+    val example = getExampleMessage("messageData/lao_greet/greeting.json")
+
+    val greetLaoFromExample = GreetLao.buildFromJson(example)
+    val buildGreetJson = MessageDataProtocol.GreetLaoFormat.write(expectedGreetLao)
+    val greetLaoFromBuiltJson = MessageDataProtocol.GreetLaoFormat.read(buildGreetJson)
+
+    greetLaoFromBuiltJson shouldBe a[GreetLao]
+    greetLaoFromExample shouldBe a[GreetLao]
+    greetLaoFromExample should equal(expectedGreetLao)
+    greetLaoFromBuiltJson should equal(expectedGreetLao)
   }
 }

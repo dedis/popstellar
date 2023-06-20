@@ -60,7 +60,7 @@ class WitnessHandlerTest extends TestKit(ActorSystem("Witness-DB-System")) with 
   def mockDbWithAck: AskableActorRef = {
     val dbActorMock = Props(new Actor() {
       override def receive: Receive = {
-        case DbActor.WriteAndPropagate(_, _) =>
+        case DbActor.WriteAndPropagate(_, _) | DbActor.Write(_, _) =>
           system.log.info("Received a message")
           system.log.info("Responding with a Ack")
           sender() ! DbActor.DbActorAck()

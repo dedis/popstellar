@@ -1,13 +1,20 @@
 package com.github.dedis.popstellar.repository;
 
+import android.app.Application;
+
+import androidx.test.core.app.ApplicationProvider;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+
+import com.github.dedis.popstellar.di.AppDatabaseModuleHelper;
 import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.digitalcash.*;
 import com.github.dedis.popstellar.model.objects.security.*;
+import com.github.dedis.popstellar.repository.database.AppDatabase;
 import com.github.dedis.popstellar.testutils.Base64DataUtils;
 import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
+import org.junit.runner.RunWith;
 
 import java.security.GeneralSecurityException;
 import java.util.*;
@@ -21,6 +28,7 @@ import static java.util.Collections.emptyList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
 
+@RunWith(AndroidJUnit4.class)
 public class DigitalCashRepositoryTest {
   private static final KeyPair ORGANIZER = Base64DataUtils.generateKeyPair();
   private static final KeyPair USER1 = Base64DataUtils.generateKeyPair();
@@ -31,9 +39,18 @@ public class DigitalCashRepositoryTest {
   private static final int DEFAULT_VALUE = Integer.MAX_VALUE;
   private static DigitalCashRepository repo;
 
+  private static final Application APPLICATION = ApplicationProvider.getApplicationContext();
+  private static AppDatabase appDatabase;
+
   @Before
   public void initializeRepo() {
-    repo = new DigitalCashRepository();
+    appDatabase = AppDatabaseModuleHelper.getAppDatabase(APPLICATION);
+    repo = new DigitalCashRepository(appDatabase, APPLICATION);
+  }
+
+  @After
+  public void tearDown() {
+    appDatabase.close();
   }
 
   @Test
@@ -117,8 +134,8 @@ public class DigitalCashRepositoryTest {
     assertEquals(issuanceAmount - paymentAmount, repo.getUserBalance(LAO_ID, USER1_PK));
   }
 
-  private TransactionObjectBuilder getValidTransactionBuilder(String transactionId, KeyPair sender)
-      throws GeneralSecurityException {
+  public static TransactionObjectBuilder getValidTransactionBuilder(
+      String transactionId, KeyPair sender) throws GeneralSecurityException {
     TransactionObjectBuilder builder = new TransactionObjectBuilder();
 
     PublicKey senderPublicKey = sender.getPublicKey();
@@ -148,7 +165,7 @@ public class DigitalCashRepositoryTest {
     return builder;
   }
 
-  private TransactionObjectBuilder getValidTransactionBuilder(
+  public static TransactionObjectBuilder getValidTransactionBuilder(
       String transactionId,
       KeyPair sender,
       List<PublicKey> recipients,

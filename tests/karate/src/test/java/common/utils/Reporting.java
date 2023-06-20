@@ -15,7 +15,9 @@ public class Reporting {
     Collection<File> jsonFiles = FileUtils.listFiles(new File(karateOutputPath), new String[] {"json"}, true);
     List<String> jsonPaths = new ArrayList<>(jsonFiles.size());
     jsonFiles.forEach(file -> jsonPaths.add(file.getAbsolutePath()));
-    Configuration config = new Configuration(new File("target"), System.getProperty("karate.env", "pop"));
+    String env = System.getProperty("karate.env", "go_client");
+    File reportDir = new File("target/" + env);
+    Configuration config = new Configuration(reportDir, System.getProperty("karate.env", "pop"));
     ReportBuilder reportBuilder = new ReportBuilder(jsonPaths, config);
     reportBuilder.generateReports();
   }

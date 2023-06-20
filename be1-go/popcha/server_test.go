@@ -2,6 +2,7 @@ package popcha
 
 import (
 	"bytes"
+	"fmt"
 	"github.com/gorilla/websocket"
 	"github.com/rs/xid"
 	"github.com/rs/zerolog"
@@ -28,10 +29,13 @@ const (
 	MaxStringSize = 128
 	MaxChecks     = 100000
 	ValidAlphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
-	BaseURL       = "http://localhost:3003/authorize?"
+	BaseURL       = "http://localhost:%d/authorize?"
 
 	//message content for the websocket workflow test
 	wsData = "Hello receiver!"
+
+	// qrCodeWebPage file path for valid QRCode Displaying page
+	qrCodeWebPage = "qrcode/popcha.html"
 )
 
 // genString is a helper method generating a string in the alphanumerical alphabet
@@ -51,11 +55,10 @@ func genString(r *rand.Rand, s int) string {
 func TestAuthServerStartAndShutdown(t *testing.T) {
 	l := popstellar.Logger
 
-	h, err := standard_hub.NewHub(crypto.Suite.Point(), "", l, nil)
+	h, err := standard_hub.NewHub(crypto.Suite.Point(), "", "", l, nil)
 	require.NoError(t, err, "could not create hub")
 
-	s, err := NewAuthServer(h, "/authorize", "localhost", 2003,
-		"random_string", l)
+	s := NewAuthServer(h, "localhost", 2003, qrCodeWebPage, l)
 
 	require.NoError(t, err, "could not create AuthServer")
 	s.Start()
@@ -70,9 +73,7 @@ func TestAuthServerStartAndShutdown(t *testing.T) {
 // the server serves a webpage with the associated QRCode.
 func TestAuthorizationServerHandleValidateRequest(t *testing.T) {
 	l := popstellar.Logger
-	s, err := NewAuthServer(fakeHub{}, "authorize", "localhost",
-		3003, "random_string", l)
-	require.NoError(t, err, "could not create AuthServer")
+	s := NewAuthServer(fakeHub{}, "localhost", 3003, qrCodeWebPage, l)
 	s.Start()
 	<-s.Started
 
@@ -90,8 +91,8 @@ func TestAuthorizationServerHandleValidateRequest(t *testing.T) {
 // helper method generating a valid authorization request with some pre-determined parameters.
 func sendValidAuthRequest() (*http.Response, error) {
 	qrURL := createAuthRequestURL("random_nonce", "v4l1d_client_id",
-		strings.Join([]string{OpenID, Profile}, " "), "v4l1d_lao_id", "http://localhost:3008/",
-		ResTypeMulti, "st4te")
+		strings.Join([]string{openID, profile}, " "), "v4l1d_lao_id", "http://localhost:3008/",
+		respTypeIDToken, "st4te", "query", 3003)
 	res, err := http.Get(qrURL)
 	log.Info().Msg(qrURL)
 	if err != nil {
@@ -101,18 +102,19 @@ func sendValidAuthRequest() (*http.Response, error) {
 }
 
 // helper method creating a valid authorization request URL
-func createAuthRequestURL(nonce string, clientID string, scope string, loginHint string,
-	redirectURI string, responseType string, state string) string {
+func createAuthRequestURL(n string, c string, s string, l string,
+	redir string, resType string, st string, resMode string, port int) string {
 	params := url.Values{}
-	params.Add(Nonce, nonce)
-	params.Add(ClientID, clientID)
-	params.Add(Scope, scope)
-	params.Add(LoginHint, loginHint)
-	params.Add(RedirectURI, redirectURI)
-	params.Add(ResponseType, responseType)
-	params.Add(State, state)
+	params.Add(nonce, n)
+	params.Add(clientID, c)
+	params.Add(scope, s)
+	params.Add(loginHint, l)
+	params.Add(redirectURI, redir)
+	params.Add(responseType, resType)
+	params.Add(state, st)
+	params.Add(responseMode, resMode)
 
-	qrURL := BaseURL + params.Encode()
+	qrURL := fmt.Sprintf(BaseURL, port) + params.Encode()
 	return qrURL
 }
 
@@ -121,9 +123,7 @@ func TestAuthRequestFails(t *testing.T) {
 	logTester := zltest.New(t)
 
 	l := zerolog.New(logTester).With().Timestamp().Logger()
-	s, err := NewAuthServer(fakeHub{}, "authorize", "localhost",
-		3003, "random_string", l)
-	require.NoError(t, err, "could not create AuthServer")
+	s := NewAuthServer(fakeHub{}, "localhost", 3007, qrCodeWebPage, l)
 	s.Start()
 	<-s.Started
 
@@ -131,7 +131,7 @@ func TestAuthRequestFails(t *testing.T) {
 	params := url.Values{}
 
 	// first case, url without parameters
-	emptyURL := BaseURL
+	emptyURL := fmt.Sprintf(BaseURL, 3007)
 
 	res, err := http.Get(emptyURL)
 	log.Info().Msg(emptyURL)
@@ -146,7 +146,7 @@ func TestAuthRequestFails(t *testing.T) {
 	helperMissingArgs(t, bodyBytes, 6)
 
 	// add a nonce
-	params.Add(Nonce, "some_n0nc3")
+	params.Add(nonce, "some_n0nc3")
 
 	partialURL := emptyURL + params.Encode()
 
@@ -163,7 +163,7 @@ func TestAuthRequestFails(t *testing.T) {
 
 	// testing request with valid number of parameters, but invalid scope
 
-	invalidScopeURL := createAuthRequestURL("n", "c", "invalid", "l", "localhost:3001", ResTypeMulti, " ")
+	invalidScopeURL := createAuthRequestURL("n", "c", "invalid", "l", "localhost:3001", respTypeIDToken, " ", " ", 3007)
 	_, err = http.Get(invalidScopeURL)
 
 	// no error from the get request
@@ -174,7 +174,7 @@ func TestAuthRequestFails(t *testing.T) {
 	lastEntry.ExpMsg("Error while validating the auth request")
 
 	// testing request with wrong response type
-	invalidResTypeURL := createAuthRequestURL("n", "c", OpenID, "l", "localhost:3001", "invalid", " ")
+	invalidResTypeURL := createAuthRequestURL("n", "c", openID, "l", "localhost:3001", "invalid", "", "", 3007)
 
 	_, err = http.Get(invalidResTypeURL)
 
@@ -213,9 +213,7 @@ func TestAuthorizationServerWebsocket(t *testing.T) {
 
 	// starting the authorization server
 	l := popstellar.Logger
-	s, err := NewAuthServer(fakeHub{}, "authorize", "localhost",
-		3003, "random_string", l)
-	require.NoError(t, err, "could not create AuthServer")
+	s := NewAuthServer(fakeHub{}, "localhost", 3004, qrCodeWebPage, l)
 	s.Start()
 	<-s.Started
 
@@ -225,13 +223,13 @@ func TestAuthorizationServerWebsocket(t *testing.T) {
 	nonce := "nonce"
 	state := "state"
 	redirectURI := "https://example.com/"
-	scope := strings.Join([]string{OpenID, Profile}, " ")
-	resType := ResTypeMulti
+	scope := strings.Join([]string{openID, profile}, " ")
+	resType := respTypeIDToken
 
 	// create the URL of the PopCHA webpage
-	u := createAuthRequestURL(nonce, clientID, scope, laoID, redirectURI, resType, state)
+	u := createAuthRequestURL(nonce, clientID, scope, laoID, redirectURI, resType, state, "", 3004)
 
-	_, err = http.Get(u)
+	_, err := http.Get(u)
 	require.NoError(t, err)
 	l.Info().Msg(u)
 
@@ -239,7 +237,7 @@ func TestAuthorizationServerWebsocket(t *testing.T) {
 	popChaPath := strings.Join([]string{responseEndpoint, laoID, "authentication", clientID, nonce}, "/")
 
 	//  ws://popcha.example/response/lao/authentication/client/nonce
-	popChaWsURL := url.URL{Scheme: "ws", Host: "localhost:3003", Path: popChaPath}
+	popChaWsURL := url.URL{Scheme: "ws", Host: "localhost:3004", Path: popChaPath}
 
 	// instantiating websocket connection
 	client, err := newWSClient(popChaWsURL)
@@ -265,14 +263,12 @@ func TestAuthorizationServerWorkflow(t *testing.T) {
 	logTester := zltest.New(t)
 
 	l := zerolog.New(logTester).With().Timestamp().Logger()
-	s, err := NewAuthServer(fakeHub{}, "authorize", "localhost",
-		3003, "random_string", l)
-	require.NoError(t, err, "could not create AuthServer")
+	s := NewAuthServer(fakeHub{}, "localhost", 3005, qrCodeWebPage, l)
 	s.Start()
 	<-s.Started
 
 	// test error on /response with empty path suffix
-	emptyPathURL := url.URL{Scheme: "ws", Host: "localhost:3003", Path: responseEndpoint}
+	emptyPathURL := url.URL{Scheme: "ws", Host: "localhost:3005", Path: responseEndpoint}
 	emptyPathClient, err := newWSClient(emptyPathURL)
 	require.NoError(t, err)
 
@@ -284,7 +280,7 @@ func TestAuthorizationServerWorkflow(t *testing.T) {
 	// create two clients, a sender and a receiver, on a valid path
 	validPath := strings.Join([]string{responseEndpoint, "laoid", "authentication", "clientid", "nonce"}, "/")
 
-	validURL := url.URL{Scheme: "ws", Host: "localhost:3003", Path: validPath}
+	validURL := url.URL{Scheme: "ws", Host: "localhost:3005", Path: validPath}
 
 	// creating the clients
 
@@ -328,9 +324,7 @@ func TestAuthorizationServerWorkflow(t *testing.T) {
 func TestGenerateQrCodeOnEdgeCases(t *testing.T) {
 	// create authorization server
 	l := zerolog.New(io.Discard)
-	s, err := NewAuthServer(fakeHub{}, "authorize", "localhost",
-		3003, "random_string", l)
-	require.NoError(t, err, "could not create AuthServer")
+	s := NewAuthServer(fakeHub{}, "localhost", 3006, qrCodeWebPage, l)
 
 	// testing that the QRCode can't be generated if the data is too long
 	longURL := &url.URL{
@@ -344,7 +338,7 @@ func TestGenerateQrCodeOnEdgeCases(t *testing.T) {
 		URL:    longURL,
 	}
 
-	err = s.generateQRCode(&fakeResponseWriter{}, req, "l", "c", "n", "")
+	err := s.generateQRCode(&fakeResponseWriter{}, req, "l", "c", "n", "example.com", fragment)
 	require.Error(t, err)
 
 	// testing that the QRCode can be generated with special characters, due to URL encoding
@@ -355,21 +349,19 @@ func TestGenerateQrCodeOnEdgeCases(t *testing.T) {
 	}
 
 	req.URL = specialCharURL
-	err = s.generateQRCode(&fakeResponseWriter{}, req, "l", "c", "n", "")
+	err = s.generateQRCode(&fakeResponseWriter{}, req, "l", "c", "n", "example.com", query)
 	require.NoError(t, err)
 }
 
 // TestClientParams tests the validity of the client parameters
 func TestClientParams(t *testing.T) {
 	l := zerolog.New(io.Discard)
-	s, err := NewAuthServer(fakeHub{}, "authorize", "localhost",
-		3003, "random_string", l)
-	require.NoError(t, err, "could not create AuthServer")
+	s := NewAuthServer(fakeHub{}, "localhost", 3009, qrCodeWebPage, l)
 	s.Start()
 	<-s.Started
 
 	// create a property generating random, valid client parameters (valid because only
-	// the ClientID is random, and only uses alphanumerical alphabet).
+	// the clientID is random, and only uses alphanumerical alphabet).
 	propertyConfig := quick.Config{
 		MaxCount: MaxChecks,
 		Values: func(values []reflect.Value, r *rand.Rand) {
@@ -377,7 +369,7 @@ func TestClientParams(t *testing.T) {
 		}}
 
 	// validate the client parameters for many values
-	err = quick.Check(validClientParams, &propertyConfig)
+	err := quick.Check(validClientParams, &propertyConfig)
 	require.NoError(t, err)
 
 	// test client parameters without ID
@@ -396,7 +388,7 @@ func randomClientParams(r *rand.Rand) clientParams {
 	c := clientParams{
 		clientID:     genString(r, r.Intn(MaxStringSize)),
 		redirectURIs: []string{"localhost:3500"},
-		resType:      ResTypeMulti,
+		resType:      respTypeIDToken,
 	}
 	return c
 }
@@ -405,7 +397,7 @@ func noIDClientParam() clientParams {
 	c := clientParams{
 		clientID:     "",
 		redirectURIs: []string{"localhost:3500"},
-		resType:      ResTypeMulti,
+		resType:      respTypeIDToken,
 	}
 	return c
 }
@@ -423,7 +415,7 @@ func invalidResponseTypeClientParam() clientParams {
 func validClientParams(c clientParams) bool {
 
 	// boolean formula validating client parameters.
-	// ClientID must be present
+	// clientID must be present
 	return c.GetID() != "" &&
 		// at least one URI is present
 		len(c.RedirectURIs()) != 0 &&
@@ -441,7 +433,7 @@ func validClientParams(c clientParams) bool {
 		// no developer mode by default
 		!c.DevMode() &&
 		// responseType is correct
-		c.ResponseTypes()[0] == ResTypeMulti &&
+		c.ResponseTypes()[0] == respTypeIDToken &&
 		// clock skew is set at 0
 		c.ClockSkew() == 0 &&
 		// ID Token lifetime duration is valid

@@ -10,6 +10,7 @@ import * as lao from './lao';
 import * as meeting from './meeting';
 import * as notification from './notification';
 import { NotificationCompositionConfiguration } from './notification/interface/Configuration';
+import * as popcha from './popcha';
 import * as rollCall from './rollCall';
 import * as social from './social';
 import * as wallet from './wallet';
@@ -124,6 +125,12 @@ export function configureFeatures() {
     discardNotifications: notificationConfiguration.actionCreators.discardNotifications,
   });
 
+  const popchaConfiguration = popcha.configure({
+    messageRegistry: messageRegistry,
+    useCurrentLaoId: laoConfiguration.hooks.useCurrentLaoId,
+    generateToken: walletConfiguration.functions.generateToken,
+  });
+
   // compose features
   const notificationComposition = notification.compose({
     useCurrentLaoId: laoConfiguration.hooks.useCurrentLaoId,
@@ -172,6 +179,7 @@ export function configureFeatures() {
       ...notificationConfiguration.laoScreens,
       ...walletComposition.laoScreens,
       ...digitalCashConfiguration.laoScreens,
+      ...popchaConfiguration.laoScreens,
     ],
     eventsNavigationScreens: [
       ...eventConfiguration.laoEventScreens,
@@ -223,6 +231,7 @@ export function configureFeatures() {
       [witnessConfiguration.identifier]: witnessConfiguration.context,
       [digitalCashComposition.identifier]: digitalCashComposition.context,
       [socialConfiguration.identifier]: socialConfiguration.context,
+      [popchaConfiguration.identifier]: popchaConfiguration.context,
     },
   };
 }

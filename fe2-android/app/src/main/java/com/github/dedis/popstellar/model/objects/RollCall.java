@@ -7,8 +7,7 @@ import com.github.dedis.popstellar.model.objects.event.*;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.utility.security.Hash;
 
-import java.util.Arrays;
-import java.util.Set;
+import java.util.*;
 
 @Immutable
 public class RollCall extends Event {
@@ -171,6 +170,33 @@ public class RollCall extends Event {
    */
   public boolean isOpen() {
     return EventState.OPENED.equals(state);
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    RollCall rollCall = (RollCall) o;
+    return creation == rollCall.creation
+        && start == rollCall.start
+        && end == rollCall.end
+        && Objects.equals(id, rollCall.id)
+        && Objects.equals(persistentId, rollCall.persistentId)
+        && Objects.equals(name, rollCall.name)
+        && state == rollCall.state
+        && Objects.equals(attendees, rollCall.attendees)
+        && Objects.equals(location, rollCall.location)
+        && Objects.equals(description, rollCall.description);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(
+        id, persistentId, name, creation, start, end, state, attendees, location, description);
   }
 
   @NonNull

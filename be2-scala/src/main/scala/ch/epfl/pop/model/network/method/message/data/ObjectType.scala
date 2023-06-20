@@ -16,6 +16,7 @@ object ObjectType extends Enumeration {
   val CHIRP: Value with Matching = MatchingValue("chirp")
   val REACTION: Value with Matching = MatchingValue("reaction")
   val COIN: Value with Matching = MatchingValue("coin")
+  val POPCHA: Value with Matching = MatchingValue("popcha")
 
   def MatchingValue(v: String): Value with Matching = new Val(nextId, v) with Matching
 

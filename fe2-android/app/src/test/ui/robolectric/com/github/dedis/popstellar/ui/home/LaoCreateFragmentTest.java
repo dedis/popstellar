@@ -27,7 +27,6 @@ import org.mockito.junit.MockitoTestRule;
 import java.util.Collections;
 
 import dagger.hilt.android.testing.*;
-import io.reactivex.Completable;
 import io.reactivex.subjects.BehaviorSubject;
 
 import static androidx.test.espresso.action.ViewActions.click;
@@ -37,7 +36,6 @@ import static androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent;
 import static androidx.test.espresso.matcher.ViewMatchers.*;
 import static com.github.dedis.popstellar.testutils.pages.home.HomePageObject.*;
 import static com.github.dedis.popstellar.testutils.pages.home.LaoCreatePageObject.*;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
@@ -70,18 +68,10 @@ public class LaoCreateFragmentTest {
         @Override
         protected void before() throws UnknownLaoException {
           hiltRule.inject();
-          when(repository.getLaoObservable(anyString()))
-              .thenReturn(BehaviorSubject.createDefault(new LaoView(LAO)));
+
           when(repository.getAllLaoIds())
               .thenReturn(BehaviorSubject.createDefault(Collections.singletonList(LAO.getId())));
           when(repository.getLaoView(anyString())).thenReturn(new LaoView(LAO));
-
-          when(keyManager.getMainPublicKey()).thenReturn(PK);
-          when(keyManager.getMainKeyPair()).thenReturn(KEY_PAIR);
-          when(networkManager.getMessageSender()).thenReturn(messageSender);
-          when(messageSender.subscribe(any())).then(args -> Completable.complete());
-          when(messageSender.publish(any(), any())).then(args -> Completable.complete());
-          when(messageSender.publish(any(), any(), any())).then(args -> Completable.complete());
         }
       };
 

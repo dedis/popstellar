@@ -33,7 +33,7 @@ const protocolRelativePath string = "../../../protocol"
 func TestLAOChannel_Subscribe(t *testing.T) {
 	keypair := generateKeyPair(t)
 
-	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
+	fakeHub, err := NewFakeHub("", keypair.public, nolog, nil)
 	require.NoError(t, err)
 
 	m := message.Message{MessageID: "0"}
@@ -66,7 +66,7 @@ func TestLAOChannel_Subscribe(t *testing.T) {
 func TestLAOChannel_Unsubscribe(t *testing.T) {
 	keypair := generateKeyPair(t)
 
-	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
+	fakeHub, err := NewFakeHub("", keypair.public, nolog, nil)
 	require.NoError(t, err)
 
 	m := message.Message{MessageID: "0"}
@@ -102,7 +102,7 @@ func TestLAOChannel_Unsubscribe(t *testing.T) {
 func TestLAOChannel_wrongUnsubscribe(t *testing.T) {
 	keypair := generateKeyPair(t)
 
-	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
+	fakeHub, err := NewFakeHub("", keypair.public, nolog, nil)
 	require.NoError(t, err)
 
 	m := message.Message{MessageID: "0"}
@@ -129,7 +129,7 @@ func TestLAOChannel_Broadcast(t *testing.T) {
 	keypair := generateKeyPair(t)
 	publicKey64 := base64.URLEncoding.EncodeToString(keypair.publicBuf)
 
-	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
+	fakeHub, err := NewFakeHub("", keypair.public, nolog, nil)
 	require.NoError(t, err)
 
 	m := message.Message{MessageID: "0"}
@@ -193,7 +193,7 @@ func TestLAOChannel_Catchup(t *testing.T) {
 	// Create the hub
 	keypair := generateKeyPair(t)
 
-	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
+	fakeHub, err := NewFakeHub("", keypair.public, nolog, nil)
 	require.NoError(t, err)
 
 	// Create the messages
@@ -244,7 +244,7 @@ func TestLAOChannel_Publish_LaoUpdate(t *testing.T) {
 	keypair := generateKeyPair(t)
 	publicKey64 := base64.URLEncoding.EncodeToString(keypair.publicBuf)
 
-	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
+	fakeHub, err := NewFakeHub("", keypair.public, nolog, nil)
 	require.NoError(t, err)
 
 	m := message.Message{MessageID: "0"}
@@ -290,7 +290,7 @@ func TestLAOChannel_Publish_LaoState(t *testing.T) {
 	keypair := generateKeyPair(t)
 	publicKey64 := base64.URLEncoding.EncodeToString(keypair.publicBuf)
 
-	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
+	fakeHub, err := NewFakeHub("", keypair.public, nolog, nil)
 	require.NoError(t, err)
 
 	m := message.Message{MessageID: "0"}
@@ -368,7 +368,7 @@ func TestBaseChannel_ConsensusIsCreated(t *testing.T) {
 	// Create the hub
 	keypair := generateKeyPair(t)
 
-	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
+	fakeHub, err := NewFakeHub("", keypair.public, nolog, nil)
 	require.NoError(t, err)
 
 	m := message.Message{MessageID: "0"}
@@ -392,7 +392,7 @@ func TestBaseChannel_SimulateRollCall(t *testing.T) {
 	publicKey64 := base64.URLEncoding.EncodeToString(keypair.publicBuf)
 
 	// Create the hub
-	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
+	fakeHub, err := NewFakeHub("", keypair.public, nolog, nil)
 	require.NoError(t, err)
 
 	m := message.Message{MessageID: "0"}
@@ -492,7 +492,7 @@ func TestLAOChannel_Election_Creation(t *testing.T) {
 	keypair := generateKeyPair(t)
 	publicKey64 := base64.URLEncoding.EncodeToString(keypair.publicBuf)
 
-	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
+	fakeHub, err := NewFakeHub("", keypair.public, nolog, nil)
 	require.NoError(t, err)
 
 	m := message.Message{MessageID: "0"}
@@ -538,8 +538,13 @@ func TestLAOChannel_Sends_Greeting(t *testing.T) {
 	keypair := generateKeyPair(t)
 	publicKey64 := base64.URLEncoding.EncodeToString(keypair.publicBuf)
 
-	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
+	fakeHub, err := NewFakeHub("ws://localhost:9000/client", keypair.public, nolog, nil)
 	require.NoError(t, err)
+
+	peerAddresses := []string{}
+	for _, serverInfo := range fakeHub.GetPeersInfo() {
+		peerAddresses = append(peerAddresses, serverInfo.ClientAddress)
+	}
 
 	m := message.Message{MessageID: "0"}
 	channel, err := NewChannel("/root/fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=", fakeHub, m, nolog, keypair.public, nil)
@@ -560,6 +565,53 @@ func TestLAOChannel_Sends_Greeting(t *testing.T) {
 	require.Equal(t, messagedata.LAOActionGreet, laoGreet.Action)
 	require.Equal(t, "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=", laoGreet.LaoID)
 	require.Equal(t, publicKey64, laoGreet.Frontend)
+	require.Equal(t, "ws://localhost:9000/client", laoGreet.Address)
+	for _, peer := range laoGreet.Peers {
+		require.Contains(t, peerAddresses, peer.Address)
+	}
+}
+
+func Test_LAOChannel_Witness_Message(t *testing.T) {
+	keypair := generateKeyPair(t)
+	fakeHub, err := NewFakeHub("", keypair.public, nolog, nil)
+	require.NoError(t, err)
+
+	// Create new Lao channel
+	m := message.Message{MessageID: "0"}
+	channel, err := NewChannel(sampleLao, fakeHub, m, nolog, keypair.public, nil)
+	require.NoError(t, err)
+
+	// Publish roll_call_create message
+	require.NoError(t, channel.Publish(sampleRollCallCreatePublish, nil))
+
+	// Publish witness message and catchup on channel to get the message back
+	require.NoError(t, channel.Publish(sampleWitnessMessagePublish, nil))
+	catchupAnswer := channel.Catchup(method.Catchup{ID: 0})
+
+	// Check that the witness signature was added to the message
+	require.Equal(t, 1, len(catchupAnswer[2].WitnessSignatures))
+}
+
+func Test_LAOChannel_Witness_Message_Not_Received_Yet(t *testing.T) {
+	keypair := generateKeyPair(t)
+	fakeHub, err := NewFakeHub("", keypair.public, nolog, nil)
+	require.NoError(t, err)
+
+	// Create new Lao channel
+	m := message.Message{MessageID: "0"}
+	channel, err := NewChannel(sampleLao, fakeHub, m, nolog, keypair.public, nil)
+	require.NoError(t, err)
+
+	// Publish witness message and catchup on channel to get the message back
+	require.NoError(t, channel.Publish(sampleWitnessMessagePublish, nil))
+
+	// Publish roll_call_create message
+	require.NoError(t, channel.Publish(sampleRollCallCreatePublish, nil))
+
+	catchupAnswer := channel.Catchup(method.Catchup{ID: 0})
+
+	// Check that the witness signature was added to the message
+	require.Equal(t, 1, len(catchupAnswer[3].WitnessSignatures))
 }
 
 // -----------------------------------------------------------------------------
@@ -585,6 +637,8 @@ func generateKeyPair(t *testing.T) keypair {
 }
 
 type fakeHub struct {
+	clientAddress string
+
 	messageChan chan socket.IncomingMessage
 
 	sync.RWMutex
@@ -609,7 +663,7 @@ type fakeHub struct {
 }
 
 // NewFakeHub returns a fake Hub.
-func NewFakeHub(publicOrg kyber.Point, log zerolog.Logger, laoFac channel.LaoFactory) (*fakeHub, error) {
+func NewFakeHub(clientAddress string, publicOrg kyber.Point, log zerolog.Logger, laoFac channel.LaoFactory) (*fakeHub, error) {
 
 	schemaValidator, err := validation.NewSchemaValidator(log)
 	if err != nil {
@@ -621,6 +675,7 @@ func NewFakeHub(publicOrg kyber.Point, log zerolog.Logger, laoFac channel.LaoFac
 	pubServ, secServ := generateKeys()
 
 	hub := fakeHub{
+		clientAddress:   clientAddress,
 		messageChan:     make(chan socket.IncomingMessage),
 		channelByID:     make(map[string]channel.Channel),
 		closedSockets:   make(chan string),
@@ -660,14 +715,33 @@ func (h *fakeHub) GetPubKeyServ() kyber.Point {
 	return h.pubKeyServ
 }
 
-// GetServerAddress implements channel.HubFunctionalities
-func (h *fakeHub) GetServerAddress() string {
-	return ""
+// GetClientServerAddress implements channel.HubFunctionalities
+func (h *fakeHub) GetClientServerAddress() string {
+	return h.clientAddress
 }
 
 // Sign implements channel.HubFunctionalities
 func (h *fakeHub) Sign(data []byte) ([]byte, error) {
 	return nil, nil
+}
+
+// NotifyWitnessMessage implements channel.HubFunctionalities
+func (h *fakeHub) NotifyWitnessMessage(messageId string, publicKey string, signature string) {}
+
+// GetPeersInfo implements channel.HubFunctionalities
+func (h *fakeHub) GetPeersInfo() []method.ServerInfo {
+	peer1 := method.ServerInfo{
+		PublicKey:     "",
+		ClientAddress: "wss://localhost:9002/client",
+		ServerAddress: "",
+	}
+
+	peer2 := method.ServerInfo{
+		PublicKey:     "",
+		ClientAddress: "wss://localhost:9004/client",
+		ServerAddress: "",
+	}
+	return []method.ServerInfo{peer1, peer2}
 }
 
 func (h *fakeHub) GetSchemaValidator() validation.SchemaValidator {
@@ -721,4 +795,59 @@ func (f *fakeSocket) SendError(id *int, err error) {
 
 func (f *fakeSocket) ID() string {
 	return f.id
+}
+
+// -----------------------------------------------------------------------------
+// Useful data extracted from a simulation
+
+var sampleLao = "/root/QNNTcGQk-rnehNjgizdzi9IT1nIlmXsOXy1BCWsNaVE="
+var organizerPublicKey = "A2nPAZfsvBRPb5uOb1_hUVuAKt5YKPRZdiFq1g0TLr0="
+
+var sampleRollCallCreate = message.Message{
+	Data: "eyJjcmVhdGlvbiI6MTY4NDI1OTU4MSwiZGVzY3JpcHRpb24iOiIiLCJpZCI6IktxLV9CbUJUZTFEWnFjSXEzU2pOcklzdHAzTFdCM0N6VFhoOVpBaHctUUU9IiwibG9jYXRpb24iOiJ0ZSI" +
+		"sIm5hbWUiOiJ0ZSIsInByb3Bvc2VkX2VuZCI6MTY4NDI2MzEyMCwicHJvcG9zZWRfc3RhcnQiOjE2ODQyNTk1ODEsIm9iamVjdCI6InJvbGxfY2FsbCIsImFjdGlvbiI6ImNyZWF0ZSJ9",
+	Sender:            organizerPublicKey,
+	Signature:         "j-7dykTLzS0qSPBiuQyxULXvWoPf-To89-vjnOtKyj9po2EjtNeUStgrK79OJOi8LYt6MmPCl6GVC8gzvhW-AA==",
+	MessageID:         "JEZPhpKgQZ_ZFEncCapUozRdeepMXV8N0Zeyz7EFfNU=",
+	WitnessSignatures: nil,
+}
+
+var sampleRollCallCreatePublish = method.Publish{
+	Base: query.Base{
+		JSONRPCBase: jsonrpc.JSONRPCBase{
+			JSONRPC: "2.0",
+		},
+		Method: "publish",
+	},
+	Params: struct {
+		Channel string          `json:"channel"`
+		Message message.Message `json:"message"`
+	}{
+		Channel: sampleLao,
+		Message: sampleRollCallCreate,
+	},
+}
+
+var sampleWitnessMessage = message.Message{
+	Data: "eyJtZXNzYWdlX2lkIjoiSkVaUGhwS2dRWl9aRkVuY0NhcFVvelJkZWVwTVhWOE4wWmV5ejdFRmZOVT0iLCJzaWduYXR1cmUiOiJfR1lXZkJqWlEzZy1EQTVrTjNRdngxYkpRRlBOS2Zy" +
+		"T0lpTXJ1RnF5T2VjaldzZ0dkWTk3ek04M214VlFxUnVHUHhCR1Mwd1N2bEtJTHplaFpSTWNBQT09Iiwib2JqZWN0IjoibWVzc2FnZSIsImFjdGlvbiI6IndpdG5lc3MifQ==",
+	Sender:    organizerPublicKey,
+	Signature: "3tHH0Km-LBfbBvqVLDjW_mHTTckAVfZHl-6NG55eWpVdk8tOnUVxbgdeNK3eC44MpKZFS7d4GdR86HJmFAjNAA==",
+	MessageID: "FBVnOu7SeIXWUstgFyPkdHmnv36dtxLE7yb8n4v1D6k=",
+}
+
+var sampleWitnessMessagePublish = method.Publish{
+	Base: query.Base{
+		JSONRPCBase: jsonrpc.JSONRPCBase{
+			JSONRPC: "2.0",
+		},
+		Method: "publish",
+	},
+	Params: struct {
+		Channel string          `json:"channel"`
+		Message message.Message `json:"message"`
+	}{
+		Channel: sampleLao,
+		Message: sampleWitnessMessage,
+	},
 }

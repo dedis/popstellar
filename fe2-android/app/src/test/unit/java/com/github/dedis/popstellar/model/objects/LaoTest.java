@@ -14,7 +14,8 @@ import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateMess
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.generatePublicKey;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
 
 public class LaoTest {
 
@@ -57,13 +58,6 @@ public class LaoTest {
   }
 
   @Test
-  public void setAndGetWitnessesTest() {
-
-    LAO_1.setWitnesses(WITNESSES);
-    assertThat(LAO_1.getWitnesses(), is(WITNESSES));
-  }
-
-  @Test
   public void setNullNameTest() {
     assertThrows(IllegalArgumentException.class, () -> LAO_1.setName(null));
   }
@@ -75,8 +69,8 @@ public class LaoTest {
 
   @Test
   public void setNullWitnessesTest() {
-    assertThrows(IllegalArgumentException.class, () -> LAO_1.setWitnesses(null));
-    assertThrows(IllegalArgumentException.class, () -> LAO_1.setWitnesses(WITNESSES_WITH_NULL));
+    assertThrows(IllegalArgumentException.class, () -> LAO_1.initKeyToNode(null));
+    assertThrows(IllegalArgumentException.class, () -> LAO_1.initKeyToNode(WITNESSES_WITH_NULL));
   }
 
   @Test
@@ -119,13 +113,5 @@ public class LaoTest {
     PendingUpdate update = new PendingUpdate(1L, new MessageID("foo"));
     LAO_1.setPendingUpdates(Collections.singleton(update));
     assertTrue(LAO_1.getPendingUpdates().contains(update));
-  }
-
-  @Test
-  public void witnessMapTest() {
-    MessageID messageID = new MessageID("foo");
-    WitnessMessage witnessMessage = new WitnessMessage(messageID);
-    LAO_1.updateWitnessMessage(messageID, witnessMessage);
-    assertEquals(LAO_1.getWitnessMessages().get(messageID), witnessMessage);
   }
 }

@@ -24,6 +24,9 @@ public final class MessageGeneral {
 
   private static final String TAG = MessageGeneral.class.getSimpleName();
 
+  private static final MessageGeneral EMPTY =
+      new MessageGeneral(null, null, null, null, null, new ArrayList<>());
+
   private final PublicKey sender;
   private final Base64URLData dataBuf;
   private final Data data;
@@ -31,6 +34,10 @@ public final class MessageGeneral {
 
   private Signature signature;
   private List<PublicKeySignaturePair> witnessSignatures = new ArrayList<>();
+
+  public static MessageGeneral emptyMessage() {
+    return EMPTY;
+  }
 
   public MessageGeneral(
       PublicKey sender,
@@ -111,6 +118,32 @@ public final class MessageGeneral {
     }
 
     return true;
+  }
+
+  public boolean isEmpty() {
+    return this.equals(EMPTY);
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    MessageGeneral that = (MessageGeneral) o;
+    return Objects.equals(sender, that.sender)
+        && Objects.equals(dataBuf, that.dataBuf)
+        && Objects.equals(data, that.data)
+        && Objects.equals(messageId, that.messageId)
+        && Objects.equals(signature, that.signature)
+        && Objects.equals(witnessSignatures, that.witnessSignatures);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(sender, dataBuf, data, messageId, signature, witnessSignatures);
   }
 
   @NonNull

@@ -14,7 +14,8 @@ import java.util.*;
 import static org.junit.Assert.assertThrows;
 
 public class MessageValidatorTest {
-  private static final int DELTA_TIME = 100;
+  private static final long DELTA_TIME =
+      MessageValidator.MessageValidatorBuilder.VALID_FUTURE_DELAY + 100;
 
   // LAO constants
   private static final PublicKey ORGANIZER = Base64DataUtils.generatePublicKey();
@@ -34,7 +35,8 @@ public class MessageValidatorTest {
   public void testValidLaoId() {
     MessageValidator.MessageValidatorBuilder validator = MessageValidator.verify();
     String invalid1 = "invalidID";
-    String invalid2 = "A" + LAO_ID.substring(1);
+    String invalid2 =
+        Lao.generateLaoId(Base64DataUtils.generatePublicKeyOtherThan(ORGANIZER), 0, "name");
 
     validator.validLaoId(LAO_ID, ORGANIZER, CREATION, NAME);
     assertThrows(
@@ -50,7 +52,7 @@ public class MessageValidatorTest {
     MessageValidator.MessageValidatorBuilder validator = MessageValidator.verify();
     long currentTime = Instant.now().getEpochSecond();
     // time that is too far in the past to be considered valid
-    long pastTime = currentTime - validator.VALID_DELAY - 1;
+    long pastTime = currentTime - MessageValidator.MessageValidatorBuilder.VALID_PAST_DELAY - 1;
     long futureTime = currentTime + DELTA_TIME;
 
     validator.validPastTimes(currentTime);
@@ -170,5 +172,21 @@ public class MessageValidatorTest {
     assertThrows(IllegalArgumentException.class, () -> validator.validUrl("http:example.com"));
     assertThrows(IllegalArgumentException.class, () -> validator.validUrl("://example.com"));
     assertThrows(IllegalArgumentException.class, () -> validator.validUrl("http://example."));
+  }
+
+  @Test
+  public void testValidEmoji() {
+    MessageValidator.MessageValidatorBuilder validator = MessageValidator.verify();
+    String field = "testField";
+
+    validator.isValidEmoji("\uD83D\uDC4D", field);
+    validator.isValidEmoji("\uD83D\uDC4E", field);
+    validator.isValidEmoji("❤️", field);
+
+    assertThrows(
+        IllegalArgumentException.class, () -> validator.isValidEmoji("\uD83D\uDE00", field));
+    assertThrows(IllegalArgumentException.class, () -> validator.isValidEmoji("U+1F600", field));
+    assertThrows(
+        IllegalArgumentException.class, () -> validator.isValidEmoji("random string", field));
   }
 }

@@ -15,6 +15,7 @@ import (
 	"popstellar/hub/standard_hub"
 	"popstellar/network"
 	"popstellar/network/socket"
+	"popstellar/popcha"
 	"sync"
 	"time"
 
@@ -37,15 +38,21 @@ const (
 
 	// connectionRetryRate is the rate at which the time to wait before retrying to connect to a server increases
 	connectionRetryRate = 2
+
+	popchaHTMLPath = "popcha/qrcode/popcha.html"
 )
 
 // ServerConfig contains the configuration for the server
 type ServerConfig struct {
 	PublicKey      string   `json:"public-key"`
+	ClientAddress  string   `json:"client-address"`
+	ServerAddress  string   `json:"server-address"`
 	PublicAddress  string   `json:"server-public-address"`
 	PrivateAddress string   `json:"server-listen-address"`
+	AuthAddress    string   `json:"auth-server-address"`
 	ClientPort     int      `json:"client-port"`
 	ServerPort     int      `json:"server-port"`
+	AuthPort       int      `json:"auth-port"`
 	OtherServers   []string `json:"other-servers"`
 }
 
@@ -75,14 +82,13 @@ func Serve(cliCtx *cli.Context) error {
 		}
 	}
 
-	// compute the client server address
-	clientServerAddress := fmt.Sprintf("%s:%d", serverConfig.PublicAddress, serverConfig.ClientPort)
+	computeAddresses(&serverConfig)
 
 	var point kyber.Point = nil
 	ownerKey(serverConfig.PublicKey, &point)
 
 	// create user hub
-	h, err := standard_hub.NewHub(point, clientServerAddress, log.With().Str("role", "server").Logger(),
+	h, err := standard_hub.NewHub(point, serverConfig.ClientAddress, serverConfig.ServerAddress, log.With().Str("role", "server").Logger(),
 		lao.NewChannel)
 	if err != nil {
 		return xerrors.Errorf("failed create the hub: %v", err)
@@ -100,6 +106,12 @@ func Serve(cliCtx *cli.Context) error {
 	serverSrv := network.NewServer(h, serverConfig.PrivateAddress, serverConfig.ServerPort, socket.ServerSocketType,
 		log.With().Str("role", "server websocket").Logger())
 	serverSrv.Start()
+
+	// Start the PoPCHA Authorization Server
+	authorizationSrv := popcha.NewAuthServer(h, serverConfig.AuthAddress, serverConfig.AuthPort, popchaHTMLPath,
+		log.With().Str("role", "authorization server").Logger())
+	authorizationSrv.Start()
+	<-authorizationSrv.Started
 
 	// create wait group which waits for goroutines to finish
 	wg := &sync.WaitGroup{}
@@ -136,7 +148,7 @@ func Serve(cliCtx *cli.Context) error {
 	go serverConnectionLoop(h, wg, done, serverConfig.OtherServers, updatedServersChan, &connectedServers)
 
 	// Wait for a Ctrl-C
-	err = network.WaitAndShutdownServers(cliCtx.Context, clientSrv, serverSrv)
+	err = network.WaitAndShutdownServers(cliCtx.Context, authorizationSrv, clientSrv, serverSrv)
 	if err != nil {
 		return err
 	}
@@ -144,6 +156,7 @@ func Serve(cliCtx *cli.Context) error {
 	h.Stop()
 	<-clientSrv.Stopped
 	<-serverSrv.Stopped
+	<-authorizationSrv.Stopped
 
 	// notify channs to stop
 	close(done)
@@ -248,6 +261,11 @@ func connectToSocket(address string, h hub.Hub,
 	go remoteSocket.WritePump()
 	go remoteSocket.ReadPump()
 
+	err = h.SendGreetServer(remoteSocket)
+	if err != nil {
+		return xerrors.Errorf("failed to send greet to server: %v", err)
+	}
+
 	h.NotifyNewServer(remoteSocket)
 
 	return nil
@@ -296,6 +314,9 @@ func loadConfig(configFilename string) (ServerConfig, error) {
 	}
 	if config.ServerPort == config.ClientPort {
 		return ServerConfig{}, xerrors.Errorf("client and server ports must be different")
+
+	} else if config.ServerPort == config.AuthPort || config.ClientPort == config.AuthPort {
+		return ServerConfig{}, xerrors.Errorf("PoPCHA Authentication port must be unique\"")
 	}
 	return config, nil
 }
@@ -306,15 +327,22 @@ func startWithFlags(cliCtx *cli.Context) (ServerConfig, error) {
 	// and servers, remote servers address
 	clientPort := cliCtx.Int("client-port")
 	serverPort := cliCtx.Int("server-port")
+	authPort := cliCtx.Int("auth-port")
 	if clientPort == serverPort {
 		return ServerConfig{}, xerrors.Errorf("client and server ports must be different")
+	} else if clientPort == authPort || serverPort == authPort {
+		return ServerConfig{}, xerrors.Errorf("PoPCHA Authentication port must be unique")
 	}
 	return ServerConfig{
 		PublicKey:      cliCtx.String("public-key"),
+		ClientAddress:  cliCtx.String("client-address"),
+		ServerAddress:  cliCtx.String("server-address"),
 		PublicAddress:  cliCtx.String("server-public-address"),
 		PrivateAddress: cliCtx.String("server-listen-address"),
+		AuthAddress:    cliCtx.String("auth-server-address"),
 		ClientPort:     clientPort,
 		ServerPort:     serverPort,
+		AuthPort:       authPort,
 		OtherServers:   cliCtx.StringSlice("other-servers"),
 	}, nil
 }
@@ -367,5 +395,17 @@ func updateServersState(servers []string, connectedServers *map[string]bool) {
 		if _, ok := (*connectedServers)[server]; !ok {
 			(*connectedServers)[server] = false
 		}
+	}
+}
+
+// computeAddresses computes the client and server addresses if they were not provided
+func computeAddresses(serverConfig *ServerConfig) {
+	// compute the client server address if it wasn't provided
+	if serverConfig.ClientAddress == "" {
+		serverConfig.ClientAddress = fmt.Sprintf("ws://%s:%d/client", serverConfig.PublicAddress, serverConfig.ClientPort)
+	}
+	// compute the server server address if it wasn't provided
+	if serverConfig.ServerAddress == "" {
+		serverConfig.ServerAddress = fmt.Sprintf("ws://%s:%d/server", serverConfig.PublicAddress, serverConfig.ServerPort)
 	}
 }

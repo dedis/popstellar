@@ -436,7 +436,7 @@ Last but not least, the greeting message contains a list of peers that tells cli
 
 ```
 
-<details>
+</details>
 
 ```json5
 // ../protocol/query/method/message/data/dataGreetLao.json
@@ -499,8 +499,9 @@ Last but not least, the greeting message contains a list of peers that tells cli
 
 By sending the message/witness message to the LAO’s main channel (LAO's “id”), a
 witness can attest to the message. Upon reception, the server and the witnesses
-add this signature to the existing message’s `witness_signatures` field. When a
-new client retrieves this message, the `witness_signatures` field will be
+add this signature to the existing message’s `witness_signatures` field. It also save the signature message in its database and broadcast it on the channel.
+The witness message is saved in the database so that it appears in the heartbeat leading to the signature being propagated among servers. 
+When a new client retrieves this message, the `witness_signatures` field will be
 populated with all the witness signatures received by the server.
 
 <details>

@@ -62,7 +62,7 @@ public class StateLao extends Data {
         .orderedTimes(creation, lastModified)
         .validPastTimes(creation, lastModified)
         .validLaoId(id, organizer, creation, name)
-        .isBase64(modificationId.getEncoded(), "Modification ID");
+        .isNotEmptyBase64(modificationId.getEncoded(), "Modification ID");
 
     this.id = id;
     this.name = name;

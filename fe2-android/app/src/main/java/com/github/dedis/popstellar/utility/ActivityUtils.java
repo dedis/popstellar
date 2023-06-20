@@ -1,32 +1,47 @@
 package com.github.dedis.popstellar.utility;
 
+import android.app.Activity;
+import android.app.Application;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Color;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.*;
+import androidx.lifecycle.Lifecycle;
 
-import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.model.objects.Wallet;
-import com.github.dedis.popstellar.repository.local.PersistentData;
+import com.github.dedis.popstellar.model.objects.security.Base64URLData;
+import com.github.dedis.popstellar.repository.database.subscriptions.SubscriptionsDao;
+import com.github.dedis.popstellar.repository.database.subscriptions.SubscriptionsEntity;
+import com.github.dedis.popstellar.repository.database.wallet.WalletDao;
+import com.github.dedis.popstellar.repository.database.wallet.WalletEntity;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
-import com.github.dedis.popstellar.utility.error.ErrorUtils;
 
-import java.io.*;
-import java.security.GeneralSecurityException;
-import java.util.HashSet;
-import java.util.Set;
+import java.security.*;
+import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import io.github.novacrypto.bip39.MnemonicGenerator;
+import io.github.novacrypto.bip39.wordlists.English;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
+
+import static com.github.dedis.popstellar.utility.Constants.ORIENTATION_DOWN;
+import static com.github.dedis.popstellar.utility.Constants.ORIENTATION_UP;
 
 public class ActivityUtils {
   private static final String TAG = ActivityUtils.class.getSimpleName();
-
-  private static final String PERSISTENT_DATA_FILE_NAME = "persistent_data";
 
   public static void setFragmentInContainer(
       FragmentManager manager, int containerId, int id, Supplier<Fragment> fragmentSupplier) {
@@ -56,92 +71,60 @@ public class ActivityUtils {
   }
 
   /**
-   * Store data in the phone's persistent storage
+   * This performs the persistent storage of the wallet.
    *
-   * @param context of the UI
-   * @param data the data to store
-   * @return true if the storage process was a success; false otherwise
+   * @param wallet the singleton wallet used to store PoP tokens
+   * @param walletDao interface to query the database
    */
-  public static boolean storePersistentData(Context context, PersistentData data) {
-    Timber.tag(TAG).d("Initiating storage of %s", data);
-
-    try (ObjectOutputStream oos =
-        new ObjectOutputStream(
-            context.openFileOutput(PERSISTENT_DATA_FILE_NAME, Context.MODE_PRIVATE))) {
-      oos.writeObject(data);
-    } catch (IOException e) {
-      ErrorUtils.logAndShow(context, TAG, e, R.string.error_storing_data);
-      return false;
-    }
-    Timber.tag(TAG).d("storage successful");
-    return true;
-  }
-
-  /**
-   * Load the persistent data from the phone's persistent storage
-   *
-   * @param context of the UI
-   * @return the data if found, null otherwise
-   */
-  public static PersistentData loadPersistentData(Context context) {
-    Timber.tag(TAG).d("Initiating loading of data");
-
-    PersistentData persistentData;
-    try (ObjectInputStream ois =
-        new ObjectInputStream(context.openFileInput(PERSISTENT_DATA_FILE_NAME))) {
-      persistentData = (PersistentData) ois.readObject();
-    } catch (FileNotFoundException e) {
-      ErrorUtils.logAndShow(context, TAG, e, R.string.nothing_stored);
-      return null;
-    } catch (IOException | ClassNotFoundException e) {
-      ErrorUtils.logAndShow(context, TAG, e, R.string.error_loading_data);
-      return null;
-    }
-
-    Timber.tag(TAG).d("loading of %s", persistentData);
-    return persistentData;
-  }
-
-  /**
-   * Clear the phone's persistent storage for the PoP app
-   *
-   * @param context of the UI
-   * @return true if the clearing was a success; false otherwise
-   */
-  public static boolean clearStorage(Context context) {
-    Timber.tag(TAG).d("clearing data");
-
-    File file = new File(context.getFilesDir(), PERSISTENT_DATA_FILE_NAME);
-    return file.delete();
-  }
-
-  /**
-   * This performs the steps of getting and storing persistently the needed data
-   *
-   * @param networkManager, the singleton used across the app
-   * @param wallet, the singleton used across the app
-   * @param context of the UI
-   * @return true if the saving process was a success; false otherwise
-   * @throws GeneralSecurityException
-   */
-  public static boolean activitySavingRoutine(
-      GlobalNetworkManager networkManager, Wallet wallet, Context context)
+  public static Disposable saveWalletRoutine(Wallet wallet, WalletDao walletDao)
       throws GeneralSecurityException {
-    String serverAddress = networkManager.getCurrentUrl();
-    if (serverAddress == null) {
-      return false;
-    }
-    Set<Channel> subscriptions = networkManager.getMessageSender().getSubscriptions();
-    if (subscriptions == null) {
-      subscriptions = new HashSet<>();
+    String[] seed = wallet.exportSeed();
+
+    WalletEntity walletEntity =
+        // Constant id as we need to store only 1 entry (next insert must replace)
+        new WalletEntity(0, Collections.unmodifiableList(Arrays.asList(seed)));
+
+    // Save in the database the state
+    return walletDao
+        .insert(walletEntity)
+        .subscribeOn(Schedulers.io())
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(
+            () -> Timber.tag(TAG).d("Persisted wallet seed: %s", Arrays.toString(seed)),
+            err -> Timber.tag(TAG).e(err, "Error persisting the wallet"));
+  }
+
+  /**
+   * This function performs a saving routing of the connection information of a given lao. Each lao
+   * saves its own set of subscriptions, such that it's possible to restore connections also with
+   * old laos.
+   *
+   * @param laoId identifier of the lao to persist
+   * @param networkManager network manager containing the message sender with the url and
+   *     subscriptions of the lao
+   * @param subscriptionsDao interface to query the subscriptions table
+   */
+  public static Disposable saveSubscriptionsRoutine(
+      String laoId, GlobalNetworkManager networkManager, SubscriptionsDao subscriptionsDao) {
+    String currentServerAddress = networkManager.getCurrentUrl();
+
+    if (currentServerAddress == null) {
+      return null;
     }
 
-    String[] seed = wallet.exportSeed();
-    Timber.tag(TAG)
-        .d(
-            "seed length: %d, address: %s, subscriptions: %s",
-            seed.length, serverAddress, subscriptions);
-    return storePersistentData(context, new PersistentData(seed, serverAddress, subscriptions));
+    Set<Channel> subscriptions = networkManager.getMessageSender().getSubscriptions();
+
+    SubscriptionsEntity subscriptionsEntity =
+        new SubscriptionsEntity(laoId, currentServerAddress, subscriptions);
+
+    // Save in the db the connections
+    return subscriptionsDao
+        .insert(subscriptionsEntity)
+        .subscribeOn(Schedulers.io())
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(
+            () -> Timber.tag(TAG).d("Persisted connections for lao %s : %s", laoId, subscriptions),
+            err -> Timber.tag(TAG).e(err, "Error persisting the connections for lao %s", laoId));
   }
 
   /**
@@ -165,6 +148,72 @@ public class ActivityUtils {
   }
 
   /**
+   * This function returns a callback to be registered to the application lifecycle.
+   *
+   * @param consumers map that has as key the method to override, as value the consumer to apply
+   * @return the lifecycle callback
+   */
+  public static Application.ActivityLifecycleCallbacks buildLifecycleCallback(
+      Map<Lifecycle.Event, Consumer<Activity>> consumers) {
+    return new Application.ActivityLifecycleCallbacks() {
+      @Override
+      public void onActivityCreated(
+          @NonNull Activity activity, @Nullable Bundle savedInstanceState) {
+        Consumer<Activity> consumer = consumers.get(Lifecycle.Event.ON_CREATE);
+        if (consumer != null) {
+          consumer.accept(activity);
+        }
+      }
+
+      @Override
+      public void onActivityStarted(@NonNull Activity activity) {
+        Consumer<Activity> consumer = consumers.get(Lifecycle.Event.ON_START);
+        if (consumer != null) {
+          consumer.accept(activity);
+        }
+      }
+
+      @Override
+      public void onActivityResumed(@NonNull Activity activity) {
+        Consumer<Activity> consumer = consumers.get(Lifecycle.Event.ON_RESUME);
+        if (consumer != null) {
+          consumer.accept(activity);
+        }
+      }
+
+      @Override
+      public void onActivityPaused(@NonNull Activity activity) {
+        Consumer<Activity> consumer = consumers.get(Lifecycle.Event.ON_PAUSE);
+        if (consumer != null) {
+          consumer.accept(activity);
+        }
+      }
+
+      @Override
+      public void onActivityStopped(@NonNull Activity activity) {
+        Consumer<Activity> consumer = consumers.get(Lifecycle.Event.ON_STOP);
+        if (consumer != null) {
+          consumer.accept(activity);
+        }
+      }
+
+      @Override
+      public void onActivitySaveInstanceState(
+          @NonNull Activity activity, @NonNull Bundle outState) {
+        // Do nothing here
+      }
+
+      @Override
+      public void onActivityDestroyed(@NonNull Activity activity) {
+        Consumer<Activity> consumer = consumers.get(Lifecycle.Event.ON_DESTROY);
+        if (consumer != null) {
+          consumer.accept(activity);
+        }
+      }
+    };
+  }
+
+  /**
    * Gets the color of the QR code based on the night mode configuration of the current context.
    *
    * @return the color of the QR code (either Color.WHITE or Color.BLACK)
@@ -176,5 +225,71 @@ public class ActivityUtils {
       return Color.WHITE;
     }
     return Color.BLACK;
+  }
+
+  /** Callback function for the card listener to expand and shrink a text box */
+  public static void handleExpandArrow(ImageView arrow, TextView text) {
+    float newRotation;
+    int visibility;
+    // If the arrow is pointing up, then rotate down and make visible the text
+    if (arrow.getRotation() == ORIENTATION_UP) {
+      newRotation = ORIENTATION_DOWN;
+      visibility = View.VISIBLE;
+    } else { // Otherwise rotate up and hide the text
+      newRotation = ORIENTATION_UP;
+      visibility = View.GONE;
+    }
+
+    // Use an animation to rotate smoothly
+    arrow.animate().rotation(newRotation).setDuration(300).start();
+    text.setVisibility(visibility);
+  }
+
+  /**
+   * This function converts a base64 string into some mnemonic words.
+   *
+   * <p>Disclaimer: there's no guarantee that different base64 inputs map to 2 different words. The
+   * reason is that the representation space is limited. However, since the amount of messages is
+   * low is practically improbable to have conflicts
+   *
+   * @param input base64 string
+   * @param numberOfWords number of mnemonic words we want to generate
+   * @return two mnemonic words
+   */
+  public static String generateMnemonicWordFromBase64(String input, int numberOfWords) {
+    return generateMnemonicFromBase64(new Base64URLData(input).getData(), numberOfWords);
+  }
+
+  private static String generateMnemonicFromBase64(byte[] data, int numberOfWords) {
+    // Generate the mnemonic words from the input data
+    String[] mnemonicWords = generateMnemonic(data);
+
+    if (mnemonicWords.length == 0) {
+      return "none";
+    }
+
+    StringBuilder stringBuilder = new StringBuilder();
+    for (int i = 0; i < numberOfWords; i++) {
+      int wordIndex = Math.abs(Arrays.hashCode(data) + i) % mnemonicWords.length;
+      stringBuilder.append(" ").append(mnemonicWords[wordIndex]);
+    }
+
+    return stringBuilder.substring(1, stringBuilder.length());
+  }
+
+  private static String[] generateMnemonic(byte[] data) {
+    try {
+      MessageDigest digest = MessageDigest.getInstance("SHA-256");
+      StringBuilder sb = new StringBuilder();
+      new MnemonicGenerator(English.INSTANCE).createMnemonic(digest.digest(data), sb::append);
+      return sb.toString().split(" ");
+    } catch (NoSuchAlgorithmException e) {
+      Timber.tag(TAG)
+          .e(
+              e,
+              "Error generating the mnemonic for the base64 string %s",
+              new Base64URLData(data).getEncoded());
+      return new String[0];
+    }
   }
 }

@@ -70,6 +70,7 @@ namespace STRINGS {
   export const navigation_lao_wallet_title = 'Tokens';
   export const navigation_lao_digital_cash = 'Digital Cash';
   export const navigation_lao_digital_cash_title = 'Digital Cash';
+  export const navigation_lao_popcha = 'PoPCHA';
 
   export const navigation_lao_disconnect_title = 'Disconnect';
 
@@ -524,6 +525,11 @@ namespace STRINGS {
   /* --- Witness Feature Strings --- */
   export const witness_message_witness = 'Witness Message';
   export const meeting_message_decline = 'Decline Message';
+
+  /* --- Popcha Screen Strings --- */
+  export const popcha_display_current_lao = 'Hello, here is your laoID: ';
+  export const popcha_close_scanner = 'Close Scanner';
+  export const popcha_open_scanner = 'Open Scanner';
 
   /* --- General creation Strings --- */
   export const create_description = 'Choose the type of event you want to create';

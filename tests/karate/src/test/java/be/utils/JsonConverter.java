@@ -3,41 +3,37 @@ package be.utils;
 import com.google.crypto.tink.PublicKeySign;
 import com.google.crypto.tink.subtle.Ed25519Sign;
 import com.intuit.karate.Json;
+import common.utils.Base64Utils;
 
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.Base64;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class JsonConverter {
 
-  private String senderPk = "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=";
-  private String privateKeyHex = "d257820c1a249652572974fbda9b27a85e54605551c6773504d0d2858d392874";
-  private String signatureForced =
-      "ONylxgHA9cbsB_lwdfbn3iyzRd4aTpJhBMnvEKhmJF_niE_pUHdmjxDXjEwFyvo5WiH1NZXWyXG27SYEpkasCA==";
+  public String publicKey;
+  public String privateKey;
+
+  private String signatureForced;
   private boolean isSignatureForced = false;
   private String messageIdForced = "";
 
-  public Json fromMapToJson(Map<String, String> map) {
-    return Json.of(map);
+  // TODO: remove this constructor once all features are refactored
+  public JsonConverter(){
+    this.publicKey = "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=";
   }
 
-  /** Produces the base64 variant of the json file passed as argument */
-  public String convertJsonToBase64(Json json) {
-    String stringJson = json.toString();
-    byte[] jsonBytes = stringJson.getBytes();
-    Base64.Encoder encoder = Base64.getEncoder();
-    return encoder.encodeToString(jsonBytes);
+  public JsonConverter(String publicKey, String privateKey){
+    this.publicKey = publicKey;
+    this.privateKey = privateKey;
   }
 
   /**
    * Produces a valid Json representation of a message given the message data, the id of the message
    * and the channel where the message is supposed to be sent
    */
-  public Json publishМessageFromData(String stringData, int id, String channel) {
+  public Json publishMessageFromData(String stringData, int id, String channel) {
     Json messageData = Json.object();
     messageData.set("method", "publish");
     messageData.set("id", id);
@@ -53,23 +49,22 @@ public class JsonConverter {
     return messageData;
   }
 
-  public Map<String, Object> constructMessageField(String stringData) throws GeneralSecurityException, NoSuchAlgorithmException {
+  public Map<String, Object> constructMessageField(String stringData) throws GeneralSecurityException{
     Map<String, Object> messagePart = new LinkedHashMap<>();
     Json messageData = Json.of(stringData);
-    String messageDataBase64 = convertJsonToBase64(messageData);
+    String messageDataBase64 = Base64Utils.convertJsonToBase64(messageData);
     String signature = constructSignature(stringData);
     if(isSignatureForced){
-      signature = signatureForced;
+      signature = this.signatureForced;
       isSignatureForced = false;
     }
-    String messageId = hash(messageDataBase64.getBytes(), signature.getBytes());
+    String messageId = Hash.hash(messageDataBase64.getBytes(), signature.getBytes());
     String[] witness = new String[0];
 
     messagePart.put("data", messageDataBase64);
-    messagePart.put("sender", senderPk);
+    messagePart.put("sender", publicKey);
     messagePart.put("signature", signature);
     messagePart.put("message_id", messageId);
-    System.out.println("message id is : " + messageId);
     messagePart.put("witness_signatures", witness);
 
     return messagePart;
@@ -87,24 +82,9 @@ public class JsonConverter {
 
   /** Constructs a valid signature on given data */
   public String constructSignature(String messageData) throws GeneralSecurityException {
-      // Hex representation of the private key
-      byte[] privateKeyBytes = getPrivateKeyBytes();
-      PublicKeySign publicKeySign = new Ed25519Sign(privateKeyBytes);
+      PublicKeySign publicKeySign = new Ed25519Sign(Base64Utils.decode(privateKey));
       byte[] signBytes = publicKeySign.sign(messageData.getBytes(StandardCharsets.UTF_8));
-      return Base64.getUrlEncoder().encodeToString(signBytes);
-  }
-
-  /** If want to test a sender that is not the organizer we can change the sender public key */
-  public void setSenderPk(String newSenderPk) {
-    this.senderPk = newSenderPk;
-  }
-
-  /**
-   * If we want to test having a secret key that does not match the private key we can set a
-   * different private key
-   */
-  public void setSenderSk(String newSenderSkHex) {
-    this.privateKeyHex = newSenderSkHex;
+      return Base64Utils.encode(signBytes);
   }
 
   /**
@@ -121,28 +101,5 @@ public class JsonConverter {
    */
   public void setMessageIdForced(String messageIdForced) {
     this.messageIdForced = messageIdForced;
-  }
-
-  /** Hashes an arbitrary number of arguments */
-  public String hash(byte[]... allData) throws NoSuchAlgorithmException {
-      MessageDigest digest = MessageDigest.getInstance("SHA-256");
-      for (byte[] data : allData) {
-        String dataLength = Integer.toString(data.length);
-        digest.update(dataLength.getBytes());
-        digest.update(data);
-      }
-      return Base64.getUrlEncoder().encodeToString(digest.digest());
-  }
-
-  private byte[] getPrivateKeyBytes(){
-    byte[] privateKeyBytes = new byte[privateKeyHex.length() / 2];
-
-    for (int i = 0; i < privateKeyBytes.length; i++) {
-      int index = i * 2;
-
-      int val = Integer.parseInt(privateKeyHex.substring(index, index + 2), 16);
-      privateKeyBytes[i] = (byte) val;
-    }
-    return privateKeyBytes;
   }
 }

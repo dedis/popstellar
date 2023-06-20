@@ -1,0 +1,10 @@
+{
+  "object": "popcha",
+  "action": "authenticate",
+  "nonce": "cmFuZG9tX25vbmNl",
+  "client_id": "v4l1d_client_id",
+  "identifier": "k4dRxpgJt7duFGwTSJ5jBVe6oW-UIo-6jTLApzML4l4=",
+  "identifier_proof": "T87cqNRjvE61uL8UCeFcgna4-5jvQXmMOMbs3F0kdmaUGZKDRSDJcRzCJFC9AGHI8MEBbvut7kdbwadhWISlAQ==",
+  "popcha_address": "localhost:19006",
+  "state": "st4te"
+}

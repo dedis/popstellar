@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.view.*;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.FragmentActivity;
@@ -11,11 +12,17 @@ import androidx.fragment.app.FragmentActivity;
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.WitnessMessageLayoutBinding;
 import com.github.dedis.popstellar.model.objects.WitnessMessage;
+import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.ui.lao.LaoActivity;
 import com.github.dedis.popstellar.ui.lao.LaoViewModel;
+import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import timber.log.Timber;
 
 /** Adapter to show the messages that have to be signed by the witnesses */
 public class WitnessMessageListViewAdapter extends BaseAdapter {
@@ -27,16 +34,23 @@ public class WitnessMessageListViewAdapter extends BaseAdapter {
   private List<WitnessMessage> messages;
 
   private final FragmentActivity activity;
+  private final boolean isWitness;
+  private static final String NO_SIGNATURES = "No signatures yet";
 
   public WitnessMessageListViewAdapter(List<WitnessMessage> messages, FragmentActivity activity) {
     laoViewModel = LaoActivity.obtainViewModel(activity);
     witnessingViewModel = LaoActivity.obtainWitnessingViewModel(activity, laoViewModel.getLaoId());
+    isWitness = Boolean.TRUE.equals(laoViewModel.isWitness().getValue());
     this.activity = activity;
     setList(messages);
   }
 
   public void replaceList(List<WitnessMessage> messages) {
     setList(messages);
+  }
+
+  public void deleteSignedMessages() {
+    witnessingViewModel.deleteSignedMessages();
   }
 
   private void setList(List<WitnessMessage> messages) {
@@ -77,43 +91,95 @@ public class WitnessMessageListViewAdapter extends BaseAdapter {
     }
 
     if (binding == null) {
-      throw new IllegalStateException("Binding could not be find in the view");
+      throw new IllegalStateException("Binding could not be found in the view");
     }
 
-    Context context = parent.getContext();
-    View.OnClickListener listener =
-        v -> {
-          AlertDialog.Builder adb = new AlertDialog.Builder(context);
+    WitnessMessage witnessMessage = messages.get(position);
 
-          if (Boolean.TRUE.equals(laoViewModel.isWitness().getValue())) {
-            adb.setTitle(R.string.sign_message);
-            adb.setMessage(
-                String.format(
-                    context.getString(R.string.confirm_to_sign),
-                    messages.get(position).getMessageId()));
-            adb.setNegativeButton(R.string.cancel, null);
-            adb.setPositiveButton(
-                R.string.confirm,
-                (dialog, which) ->
-                    laoViewModel.addDisposable(
-                        witnessingViewModel
-                            .signMessage(messages.get(position))
-                            .subscribe(
-                                () -> {},
-                                error ->
-                                    ErrorUtils.logAndShow(
-                                        activity, TAG, error, R.string.error_sign_message))));
-          } else {
-            adb.setTitle(R.string.not_a_witness);
-            adb.setMessage(R.string.not_a_witness_explanation);
-            adb.setCancelable(false);
-            adb.setPositiveButton(R.string.ok, (dialog, which) -> {});
-          }
-          adb.show();
-        };
-    binding.signMessageButton.setOnClickListener(listener);
+    // Set message title and description
+    binding.messageTitle.setText(witnessMessage.getTitle());
+    binding.messageDescriptionText.setText(witnessMessage.getDescription());
+
+    // Set witness signatures text
+    String formattedSignatures = formatPublicKeys(witnessMessage.getWitnesses());
+    binding.witnessesText.setText(formattedSignatures);
+
+    // Set message description dropdown
+    binding.messageDescriptionCard.setOnClickListener(
+        v ->
+            ActivityUtils.handleExpandArrow(
+                binding.messageDescriptionArrow, binding.messageDescriptionText));
+
+    // Set signatures dropdown
+    binding.signaturesCard.setOnClickListener(
+        v -> ActivityUtils.handleExpandArrow(binding.signaturesArrow, binding.witnessesText));
+
+    if (isWitness) {
+      Context context = parent.getContext();
+      Set<PublicKey> witnessSignatures = witnessMessage.getWitnesses();
+
+      if (witnessSignatures.contains(laoViewModel.getPublicKey())) {
+        // The user already signed the message
+        binding.signMessageButton.setEnabled(false);
+        String signed = activity.getString(R.string.signed);
+        binding.signMessageButton.setText(signed);
+      } else {
+        binding.signMessageButton.setEnabled(true);
+        String sign = activity.getString(R.string.sign);
+        binding.signMessageButton.setText(sign);
+        View.OnClickListener listener =
+            setUpSignButtonClickListener(context, witnessMessage, binding.signMessageButton);
+        binding.signMessageButton.setOnClickListener(listener);
+      }
+
+    } else {
+      // Don't show the sign button if the user is not a witness
+      binding.signMessageButton.setVisibility(View.GONE);
+    }
+
     binding.setLifecycleOwner(activity);
 
     return binding.getRoot();
+  }
+
+  private View.OnClickListener setUpSignButtonClickListener(
+      Context context, WitnessMessage message, Button button) {
+    return v -> {
+      AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(context);
+
+      dialogBuilder.setTitle(R.string.sign_message);
+      dialogBuilder.setMessage(
+          String.format(
+              context.getString(R.string.confirm_to_sign), message.getMessageId().getEncoded()));
+
+      dialogBuilder.setNegativeButton(R.string.cancel, null);
+
+      dialogBuilder.setPositiveButton(
+          R.string.confirm,
+          (dialog, which) ->
+              laoViewModel.addDisposable(
+                  witnessingViewModel
+                      .signMessage(message)
+                      .subscribe(
+                          () -> {
+                            Timber.tag(TAG).d("Witness message successfully signed");
+                            button.setEnabled(false);
+                            String signed = activity.getString(R.string.signed);
+                            button.setText(signed);
+                          },
+                          error ->
+                              ErrorUtils.logAndShow(
+                                  activity, TAG, error, R.string.error_sign_message))));
+
+      dialogBuilder.show();
+    };
+  }
+
+  private static String formatPublicKeys(Set<PublicKey> witnesses) {
+    if (witnesses.isEmpty()) {
+      return NO_SIGNATURES;
+    } else {
+      return witnesses.stream().map(PublicKey::getEncoded).collect(Collectors.joining("\n"));
+    }
   }
 }

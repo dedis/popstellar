@@ -98,4 +98,18 @@ class SignatureSuite extends FunSuite with Matchers with BeforeAndAfterAll {
     val msg_encoded = Base64Data.encode(msg)
     signature.verify(verify_pk, msg_encoded) should be(false)
   }
+
+  test("Basic walk through signing works") {
+    val pair = Ed25519Sign.KeyPair.newKeyPair()
+    val publicKey: PublicKey = PublicKey(Base64Data.encode(pair.getPublicKey))
+    val privateKey: PrivateKey = PrivateKey(Base64Data.encode(pair.getPrivateKey))
+
+    val data = "EPFL"
+    val dataEncoded = Base64Data.encode(data)
+
+    val signature = privateKey.signData(dataEncoded)
+    val verified = signature.verify(publicKey, dataEncoded)
+
+    verified shouldBe true
+  }
 }

@@ -1,19 +1,33 @@
 package com.github.dedis.popstellar.repository;
 
+import android.app.Activity;
+import android.app.Application;
+
 import androidx.annotation.NonNull;
+import androidx.lifecycle.Lifecycle;
 
 import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.model.objects.Election;
+import com.github.dedis.popstellar.repository.database.AppDatabase;
+import com.github.dedis.popstellar.repository.database.event.election.ElectionDao;
+import com.github.dedis.popstellar.repository.database.event.election.ElectionEntity;
+import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.error.UnknownElectionException;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.BehaviorSubject;
 import io.reactivex.subjects.Subject;
+import timber.log.Timber;
 
 /**
  * This class is the repository of the elections events
@@ -23,11 +37,21 @@ import io.reactivex.subjects.Subject;
 @Singleton
 public class ElectionRepository {
 
+  private static final String TAG = ElectionRepository.class.getSimpleName();
+
   private final Map<String, LaoElections> electionsByLao = new HashMap<>();
 
+  private final ElectionDao electionDao;
+
+  private final CompositeDisposable disposables = new CompositeDisposable();
+
   @Inject
-  public ElectionRepository() {
-    // Constructor required by Hilt
+  public ElectionRepository(AppDatabase appDatabase, Application application) {
+    electionDao = appDatabase.electionDao();
+    Map<Lifecycle.Event, Consumer<Activity>> consumerMap = new EnumMap<>(Lifecycle.Event.class);
+    consumerMap.put(Lifecycle.Event.ON_STOP, activity -> disposables.clear());
+    application.registerActivityLifecycleCallbacks(
+        ActivityUtils.buildLifecycleCallback(consumerMap));
   }
 
   /**
@@ -38,6 +62,18 @@ public class ElectionRepository {
    * @param election the election to update
    */
   public void updateElection(@NonNull Election election) {
+    // Persist the election
+    disposables.add(
+        electionDao
+            .insert(new ElectionEntity(election))
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                () -> Timber.tag(TAG).d("Successfully persisted election %s", election.getId()),
+                err ->
+                    Timber.tag(TAG).e(err, "Error in persisting election %s", election.getId())));
+
+    // Get the lao state and update the election
     getLaoElections(election.getChannel().extractLaoId()).updateElection(election);
   }
 
@@ -96,24 +132,40 @@ public class ElectionRepository {
   @NonNull
   private synchronized LaoElections getLaoElections(String laoId) {
     // Create the lao elections object if it is not present yet
-    return electionsByLao.computeIfAbsent(laoId, lao -> new LaoElections());
+    return electionsByLao.computeIfAbsent(laoId, lao -> new LaoElections(this, laoId));
   }
 
   private static final class LaoElections {
-    private final Map<String, Election> electionById = new HashMap<>();
-    private final Map<String, Subject<Election>> electionSubjects = new HashMap<>();
+    private final ElectionRepository repository;
+    private final String laoId;
+
+    /** Thread-safe map that stores the elections by their identifiers */
+    private final ConcurrentHashMap<String, Election> electionById = new ConcurrentHashMap<>();
+
+    /** Thread-safe map that maps an election id to an observable of it */
+    private final ConcurrentHashMap<String, Subject<Election>> electionSubjects =
+        new ConcurrentHashMap<>();
+
+    /** Observable of all the election set */
     private final BehaviorSubject<Set<Election>> electionsSubject =
         BehaviorSubject.createDefault(Collections.emptySet());
 
-    public synchronized void updateElection(@NonNull Election election) {
+    public LaoElections(ElectionRepository repository, String laoId) {
+      this.repository = repository;
+      this.laoId = laoId;
+      loadStorage();
+    }
+
+    public void updateElection(@NonNull Election election) {
       String id = election.getId();
 
       electionById.put(id, election);
       electionSubjects.putIfAbsent(id, BehaviorSubject.create());
-      //noinspection ConstantConditions
-      electionSubjects.get(id).onNext(election);
+      Objects.requireNonNull(electionSubjects.get(id)).toSerialized().onNext(election);
 
-      electionsSubject.onNext(Collections.unmodifiableSet(new HashSet<>(electionById.values())));
+      electionsSubject
+          .toSerialized()
+          .onNext(Collections.unmodifiableSet(new HashSet<>(electionById.values())));
     }
 
     public Election getElection(@NonNull String electionId) throws UnknownElectionException {
@@ -139,6 +191,29 @@ public class ElectionRepository {
       } else {
         return electionObservable;
       }
+    }
+
+    /**
+     * Load in memory the elections from the disk only when the user clicks on the respective LAO,
+     * just needed one time only.
+     */
+    private void loadStorage() {
+      repository.disposables.add(
+          repository
+              .electionDao
+              .getElectionsByLaoId(laoId)
+              .subscribeOn(Schedulers.io())
+              .observeOn(AndroidSchedulers.mainThread())
+              .subscribe(
+                  elections ->
+                      elections.forEach(
+                          election -> {
+                            updateElection(election);
+                            Timber.tag(TAG).d("Retrieved from db election %s", election.getId());
+                          }),
+                  err ->
+                      Timber.tag(TAG)
+                          .e(err, "No election found in the storage for lao %s", laoId)));
     }
   }
 }

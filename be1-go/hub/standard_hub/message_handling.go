@@ -3,6 +3,7 @@ package standard_hub
 import (
 	"encoding/base64"
 	"encoding/json"
+	"github.com/rs/zerolog/log"
 	"popstellar/crypto"
 	jsonrpc "popstellar/message"
 	"popstellar/message/answer"
@@ -19,8 +20,11 @@ import (
 	"golang.org/x/xerrors"
 )
 
-const publishError = "failed to publish: %v"
-const wrongMessageIdError = "message_id is wrong: expected %q found %q"
+const (
+	publishError        = "failed to publish: %v"
+	wrongMessageIdError = "message_id is wrong: expected %q found %q"
+	maxRetry            = 10
+)
 
 // handleRootChannelPublishMessage handles an incoming publish message on the root channel.
 func (h *Hub) handleRootChannelPublishMessage(sock socket.Socket, publish method.Publish) error {
@@ -210,53 +214,20 @@ func (h *Hub) handleAnswer(senderSocket socket.Socket, byteMessage []byte) error
 }
 
 func (h *Hub) handleGetMessagesByIdAnswer(senderSocket socket.Socket, answerMsg answer.Answer) error {
+	var err error
 	messages := answerMsg.Result.GetMessagesByChannel()
-	for channel, messageArray := range messages {
-		for _, msg := range messageArray {
-
-			var messageData message.Message
-
-			err := json.Unmarshal(msg, &messageData)
-			if err != nil {
-				h.log.Error().Msgf("failed to unmarshal message during getMessagesById answer handling: %v", err)
-				continue
-			}
-
-			signature := messageData.Signature
-			messageID := messageData.MessageID
-			data := messageData.Data
-
-			expectedMessageID := messagedata.Hash(data, signature)
-			if expectedMessageID != messageID {
-				return xerrors.Errorf(wrongMessageIdError,
-					expectedMessageID, messageID)
-			}
-
-			publish := method.Publish{
-				Base: query.Base{
-					JSONRPCBase: jsonrpc.JSONRPCBase{
-						JSONRPC: "2.0",
-					},
-					Method: "publish",
-				},
-
-				Params: struct {
-					Channel string          `json:"channel"`
-					Message message.Message `json:"message"`
-				}{
-					Channel: channel,
-					Message: messageData,
-				},
-			}
-
-			err = h.handleReceivedMessage(senderSocket, publish)
-
-			if err != nil {
-				h.log.Error().Msgf("failed to handle message received from getMessagesById answer: %v", err)
-			}
+	tempBlacklist := make([]string, 0)
+	// Loops over the messages to process them until it succeeds or reaches
+	// the max number of attempts
+	for i := 0; i < maxRetry; i++ {
+		tempBlacklist, err = h.loopOverMessages(&messages, senderSocket)
+		if err == nil && len(tempBlacklist) == 0 {
+			return nil
 		}
 	}
-	return nil
+	// Add contents from tempBlacklist to h.blacklist
+	h.blacklist = append(h.blacklist, tempBlacklist...)
+	return xerrors.Errorf("failed to process messages: %v", err)
 }
 
 func (h *Hub) handlePublish(socket socket.Socket, byteMessage []byte) (int, error) {
@@ -464,7 +435,7 @@ func (h *Hub) handleHeartbeat(socket socket.Socket,
 
 	receivedIds := heartbeat.Params
 
-	missingIds := getMissingIds(receivedIds, h.messageIdsByChannel)
+	missingIds := getMissingIds(receivedIds, h.messageIdsByChannel, h.blacklist)
 
 	if len(missingIds) > 0 {
 		err = h.sendGetMessagesByIdToServer(socket, missingIds)
@@ -494,15 +465,45 @@ func (h *Hub) handleGetMessagesById(socket socket.Socket,
 	return missingMessages, getMessagesById.ID, nil
 }
 
+func (h *Hub) handleGreetServer(socket socket.Socket, byteMessage []byte) error {
+	var greetServer method.GreetServer
+
+	err := json.Unmarshal(byteMessage, &greetServer)
+	if err != nil {
+		return xerrors.Errorf("failed to unmarshal greetServer message: %v", err)
+	}
+
+	h.Lock()
+	// store information about the server
+	h.peersInfo[socket.ID()] = greetServer.Params
+
+	// check if the server is already greeted
+	if slices.Contains(h.peersGreeted, socket.ID()) {
+		h.Unlock()
+		return nil
+	}
+	h.Unlock()
+
+	err = h.SendGreetServer(socket)
+	if err != nil {
+		return xerrors.Errorf("failed to send greetServer message: %v", err)
+	}
+	return nil
+}
+
 //-----------------------Helper methods for message handling---------------------------
 
 // getMissingIds compares two maps of channel Ids associated to slices of message Ids to
 // determine the missing Ids from the storedIds map with respect to the receivedIds map
-func getMissingIds(receivedIds map[string][]string, storedIds map[string][]string) map[string][]string {
+func getMissingIds(receivedIds map[string][]string, storedIds map[string][]string, blacklist []string) map[string][]string {
 	missingIds := make(map[string][]string)
 	for channelId, receivedMessageIds := range receivedIds {
 		for _, messageId := range receivedMessageIds {
+			blacklisted := slices.Contains(blacklist, messageId)
 			storedIdsForChannel, channelKnown := storedIds[channelId]
+			if blacklisted {
+				break
+			}
 			if channelKnown {
 				contains := slices.Contains(storedIdsForChannel, messageId)
 				if !contains {
@@ -533,12 +534,41 @@ func (h *Hub) getMissingMessages(missingIds map[string][]string) (map[string][]m
 
 // handleReceivedMessage handle a message obtained by the server receiving a
 // getMessagesById result
-func (h *Hub) handleReceivedMessage(socket socket.Socket, publish method.Publish) error {
+func (h *Hub) handleReceivedMessage(socket socket.Socket, messageData message.Message, targetChannel string) error {
 	h.Lock()
+	signature := messageData.Signature
+	messageID := messageData.MessageID
+	data := messageData.Data
+	log.Info().Msgf("Received message on %s", targetChannel)
+
+	expectedMessageID := messagedata.Hash(data, signature)
+	if expectedMessageID != messageID {
+		h.Unlock()
+		return xerrors.Errorf(wrongMessageIdError,
+			expectedMessageID, messageID)
+	}
+
+	publish := method.Publish{
+		Base: query.Base{
+			JSONRPCBase: jsonrpc.JSONRPCBase{
+				JSONRPC: "2.0",
+			},
+			Method: "publish",
+		},
+
+		Params: struct {
+			Channel string          `json:"channel"`
+			Message message.Message `json:"message"`
+		}{
+			Channel: targetChannel,
+			Message: messageData,
+		},
+	}
 	_, stored := h.hubInbox.GetMessage(publish.Params.Message.MessageID)
 	if stored {
+		h.log.Info().Msgf("Already stored message %s", publish.Params.Message.MessageID)
 		h.Unlock()
-		return xerrors.Errorf("already stored this message")
+		return nil
 	}
 	h.Unlock()
 
@@ -564,6 +594,50 @@ func (h *Hub) handleReceivedMessage(socket socket.Socket, publish method.Publish
 	h.hubInbox.StoreMessage(publish.Params.Message)
 	h.addMessageId(publish.Params.Channel, publish.Params.Message.MessageID)
 	h.Unlock()
-
 	return nil
+}
+
+// loopOverMessages loops over the messages received from a getMessagesById answer to process them
+// and update the list of messages to process during the next iteration with those that fail
+func (h *Hub) loopOverMessages(messages *map[string][]json.RawMessage, senderSocket socket.Socket) ([]string, error) {
+	var errMsg string
+	tempBlacklist := make([]string, 0)
+	for channel, messageArray := range *messages {
+		newMessageArray := make([]json.RawMessage, 0)
+
+		//Try to process each message
+		for _, msg := range messageArray {
+			var messageData message.Message
+			err := json.Unmarshal(msg, &messageData)
+			if err != nil {
+				h.log.Error().Msgf("failed to unmarshal message during getMessagesById answer handling: %v", err)
+				continue
+			}
+
+			if slices.Contains(h.blacklist, messageData.MessageID) {
+				break
+			}
+
+			err = h.handleReceivedMessage(senderSocket, messageData, channel)
+			if err != nil {
+				h.log.Error().Msgf("failed to handle message received from getMessagesById answer: %v", err)
+				newMessageArray = append(newMessageArray, msg) // if there's an error, keep the message
+				errMsg += err.Error()
+
+				// Add the ID of the failed message to the blacklist
+				tempBlacklist = append(tempBlacklist, messageData.MessageID)
+			}
+		}
+		// Update the list of messages to process during the next iteration
+		(*messages)[channel] = newMessageArray
+		// if no messages left for the channel, remove the channel from the map
+		if len(newMessageArray) == 0 {
+			delete(*messages, channel)
+		}
+	}
+
+	if errMsg != "" {
+		return tempBlacklist, xerrors.New(errMsg)
+	}
+	return tempBlacklist, nil
 }

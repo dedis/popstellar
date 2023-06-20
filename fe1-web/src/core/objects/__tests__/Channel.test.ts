@@ -7,6 +7,7 @@ import {
   getGeneralChirpsChannel,
   getLaoIdFromChannel,
   getLastPartOfChannel,
+  getPopchaAuthenticationChannel,
   getReactionChannel,
   getUserSocialChannel,
 } from '../Channel';
@@ -49,6 +50,12 @@ describe('Channel object', () => {
 
   it('getReactionChannel should return the correct channel', () => {
     expect(getReactionChannel(mockLaoId)).toStrictEqual(`/root/${mockLaoId}/social/reactions`);
+  });
+
+  it('getPopchaAuthenticationChannel should return the correct channel', () => {
+    expect(getPopchaAuthenticationChannel(mockLaoId)).toStrictEqual(
+      `/root/${mockLaoId}/authentication`,
+    );
   });
 
   it('getLastPartOfChannel works correctly', () => {

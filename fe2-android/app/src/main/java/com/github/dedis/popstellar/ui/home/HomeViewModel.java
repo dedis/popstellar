@@ -11,7 +11,8 @@ import com.github.dedis.popstellar.model.objects.Wallet;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.model.qrcode.ConnectToLao;
 import com.github.dedis.popstellar.repository.LAORepository;
-import com.github.dedis.popstellar.repository.local.PersistentData;
+import com.github.dedis.popstellar.repository.database.AppDatabase;
+import com.github.dedis.popstellar.repository.database.wallet.WalletEntity;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.ui.PopViewModel;
 import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningViewModel;
@@ -23,8 +24,9 @@ import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
 
 import java.security.GeneralSecurityException;
-import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.inject.Inject;
 
@@ -49,12 +51,21 @@ public class HomeViewModel extends AndroidViewModel
   /** This LiveData boolean is used to indicate whether the HomeFragment is displayed */
   private final MutableLiveData<Boolean> isHome = new MutableLiveData<>(Boolean.TRUE);
 
+  /**
+   * This atomic flag is used to avoid the scanner fragment to open multiple connecting activities,
+   * as in few seconds it scans the same qr code multiple times. This flag signals when a connecting
+   * attempt finishes, so that a new one could be launched.
+   */
+  private final AtomicBoolean connecting = new AtomicBoolean(false);
+
   /** Dependencies for this class */
   private final Gson gson;
 
   private final Wallet wallet;
   private final GlobalNetworkManager networkManager;
   private final LAORepository laoRepository;
+
+  private final AppDatabase appDatabase;
 
   private final CompositeDisposable disposables = new CompositeDisposable();
 
@@ -64,13 +75,15 @@ public class HomeViewModel extends AndroidViewModel
       Gson gson,
       Wallet wallet,
       LAORepository laoRepository,
-      GlobalNetworkManager networkManager) {
+      GlobalNetworkManager networkManager,
+      AppDatabase appDatabase) {
     super(application);
 
     this.gson = gson;
     this.wallet = wallet;
     this.networkManager = networkManager;
     this.laoRepository = laoRepository;
+    this.appDatabase = appDatabase;
 
     laoIdList =
         LiveDataReactiveStreams.fromPublisher(
@@ -97,6 +110,10 @@ public class HomeViewModel extends AndroidViewModel
 
   @Override
   public void handleData(String data) {
+    // Don't process another data from the scanner if I'm already trying to connect on a qr code
+    if (connecting.get()) {
+      return;
+    }
     ConnectToLao laoData;
     try {
       laoData = ConnectToLao.extractFrom(gson, data);
@@ -112,50 +129,56 @@ public class HomeViewModel extends AndroidViewModel
 
     // Establish connection with new address
     networkManager.connect(laoData.server);
+    connecting.set(true);
     getApplication()
         .startActivity(
             ConnectingActivity.newIntentForJoiningDetail(
                 getApplication().getApplicationContext(), laoData.lao));
   }
 
-  protected void restoreConnections(PersistentData data) {
-    if (data == null) {
-      return;
+  /**
+   * Function to restore the wallet of the application.
+   *
+   * @return true if the wallet is correctly restored, false otherwise
+   */
+  public boolean restoreWallet() {
+    // Retrieve from the database the saved wallet
+    WalletEntity walletEntity = appDatabase.walletDao().getWallet();
+    if (walletEntity == null) {
+      ErrorUtils.logAndShow(
+          getApplication().getApplicationContext(), TAG, R.string.no_seed_storage_found);
+      return false;
     }
-    Timber.tag(TAG).d("Saved state found : %s", data);
 
     if (!isWalletSetUp()) {
-      Timber.tag(TAG).d("Restoring wallet");
-      String[] seed = data.getWalletSeed();
-      Timber.tag(TAG).d("seed is %s", Arrays.toString(seed));
-      if (seed.length == 0) {
-        ErrorUtils.logAndShow(
-            getApplication().getApplicationContext(), TAG, R.string.no_seed_storage_found);
-        return;
-      }
-      String appended = String.join(" ", data.getWalletSeed());
+      // Restore the wallet if not already set up
+      String[] seed = walletEntity.getWalletSeedArray();
+      String appended = String.join(" ", seed);
+      Timber.tag(TAG).d("Retrieved wallet from db, seed : %s", appended);
       try {
         importSeed(appended);
       } catch (GeneralSecurityException | SeedValidationException e) {
-        Timber.tag(TAG).e(e, "error importing seed from storage");
-        return;
+        Timber.tag(TAG).e(e, "Error importing seed from storage");
+        return false;
       }
     }
 
-    if (data.getSubscriptions().equals(networkManager.getMessageSender().getSubscriptions())) {
-      Timber.tag(TAG).d("current state is up to date");
-      return;
-    }
-    Timber.tag(TAG).d("restoring connections");
-    networkManager.connect(data.getServerAddress(), data.getSubscriptions());
-    getApplication()
-        .startActivity(
-            ConnectingActivity.newIntentForHome(getApplication().getApplicationContext()));
+    return true;
   }
 
-  public void savePersistentData() throws GeneralSecurityException {
-    ActivityUtils.activitySavingRoutine(
-        networkManager, wallet, getApplication().getApplicationContext());
+  public void saveWallet() throws GeneralSecurityException {
+    addDisposable(ActivityUtils.saveWalletRoutine(wallet, appDatabase.walletDao()));
+  }
+
+  public void clearStorage() {
+    Executors.newCachedThreadPool()
+        .execute(
+            () -> {
+              appDatabase.clearAllTables();
+              Timber.tag(TAG).d("All the tables in the database have been cleared");
+            });
+    networkManager.dispose();
+    laoRepository.clearRepository();
   }
 
   public void importSeed(String seed) throws GeneralSecurityException, SeedValidationException {
@@ -203,6 +226,11 @@ public class HomeViewModel extends AndroidViewModel
     }
   }
 
+  /** Set to false the connecting flag when the connecting activity has finished */
+  public void disableConnectingFlag() {
+    connecting.set(false);
+  }
+
   public boolean isWalletSetUp() {
     Boolean setup = isWalletSetup.getValue();
     if (setup == null) {
@@ -227,6 +255,6 @@ public class HomeViewModel extends AndroidViewModel
    * @param disposable to add
    */
   public void addDisposable(Disposable disposable) {
-    this.disposables.add(disposable);
+    disposables.add(disposable);
   }
 }

@@ -8,9 +8,10 @@ import ch.epfl.pop.model.network.method.message.data.{ActionType, ObjectType}
 import ch.epfl.pop.model.objects.Channel.ROOT_CHANNEL_PREFIX
 import ch.epfl.pop.model.objects._
 import ch.epfl.pop.pubsub.{AskPatternConstants, MessageRegistry, PubSubMediator}
-import ch.epfl.pop.storage.DbActor.GetAllChannels
-import org.scalatest.concurrent.ScalaFutures
+import ch.epfl.pop.storage.DbActor.{DbActorReadServerPrivateKeyAck, DbActorReadServerPublicKeyAck, GetAllChannels}
+import com.google.crypto.tink.subtle.Ed25519Sign
 import org.scalatest.BeforeAndAfterAll
+import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.funsuite.{AnyFunSuiteLike => FunSuiteLike}
 import org.scalatest.matchers.should.Matchers
 import util.examples.MessageExample
@@ -743,5 +744,95 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
 
     readRollcallData.state should equal(ActionType.CREATE)
     readRollcallData.updateId should equal(updateId)
+  }
+
+  test("writeUserAuthenticated successfully add the authentication triplet in the db") {
+    val storage: InMemoryStorage = InMemoryStorage()
+    val dbActor: AskableActorRef = system.actorOf(Props(DbActor(mediatorRef, MessageRegistry(), storage)))
+
+    val user = PublicKey(Base64Data.encode("user"))
+    val popToken = PublicKey(Base64Data.encode("popToken"))
+    val clientId = "some_client"
+
+    val write = dbActor ? DbActor.WriteUserAuthenticated(user, popToken, clientId)
+    Await.result(write, duration) shouldBe a[DbActor.DbActorAck]
+
+    storage.size should equal(1)
+
+    val authKey = storage.AUTHENTICATED_KEY + popToken.base64Data.toString() + Channel.DATA_SEPARATOR + clientId
+    val userFound = storage.read(authKey)
+
+    userFound shouldBe Some(user.base64Data.decodeToString())
+  }
+
+  test("readUserAuthenticated succeeds when an authentication has already occurred") {
+    val storage: InMemoryStorage = InMemoryStorage()
+    val dbActor: AskableActorRef = system.actorOf(Props(DbActor(mediatorRef, MessageRegistry(), storage)))
+
+    val user = PublicKey(Base64Data.encode("user"))
+    val popToken = PublicKey(Base64Data.encode("popToken"))
+    val clientId = "some_client"
+
+    val authKey = storage.AUTHENTICATED_KEY + popToken.base64Data.toString() + Channel.DATA_SEPARATOR + clientId
+    storage.write(authKey -> user.base64Data.decodeToString())
+
+    val read = dbActor ? DbActor.ReadUserAuthenticated(popToken, clientId)
+    val answer = Await.result(read, duration)
+
+    answer shouldBe a[DbActor.DbActorReadUserAuthenticationAck]
+
+    val userAuthenticated = answer.asInstanceOf[DbActor.DbActorReadUserAuthenticationAck]
+    userAuthenticated.user shouldEqual Some(user)
+  }
+
+  test("readUserAuthenticated returns none when an authentication has never occurred") {
+    val storage: InMemoryStorage = InMemoryStorage()
+    val dbActor: AskableActorRef = system.actorOf(Props(DbActor(mediatorRef, MessageRegistry(), storage)))
+
+    val popToken = PublicKey(Base64Data.encode("popToken"))
+    val clientId = "some_client"
+
+    val read = dbActor ? DbActor.ReadUserAuthenticated(popToken, clientId)
+    val answer = Await.result(read, duration)
+
+    answer shouldBe a[DbActor.DbActorReadUserAuthenticationAck]
+
+    val userAuthenticated = answer.asInstanceOf[DbActor.DbActorReadUserAuthenticationAck]
+    userAuthenticated.user shouldEqual None
+  }
+
+  test("readServerPrivateKey() and readServerPublicKey() generate the pair when none exist") {
+    val initialStorage = InMemoryStorage()
+    val dbActor: AskableActorRef = system.actorOf(Props(DbActor(mediatorRef, MessageRegistry(), initialStorage)))
+
+    val askPublicKey = dbActor ? DbActor.ReadServerPublicKey()
+    val publicKey: PublicKey = Await.result(askPublicKey, duration).asInstanceOf[DbActorReadServerPublicKeyAck].publicKey
+
+    val askPrivateKey = dbActor ? DbActor.ReadServerPrivateKey()
+    val privateKey = Await.result(askPrivateKey, duration).asInstanceOf[DbActorReadServerPrivateKeyAck].privateKey
+
+    publicKey.base64Data.data should equal(initialStorage.elements(initialStorage.SERVER_PUBLIC_KEY + initialStorage.DEFAULT))
+    privateKey.base64Data.data should equal(initialStorage.elements(initialStorage.SERVER_PRIVATE_KEY + initialStorage.DEFAULT))
+  }
+
+  test("readServerPrivateKey() and readServerPublicKey() read correctly existing keys") {
+    val initialStorage = InMemoryStorage()
+    val dbActor: AskableActorRef = system.actorOf(Props(DbActor(mediatorRef, MessageRegistry(), initialStorage)))
+
+    val keyPair: Ed25519Sign.KeyPair = Ed25519Sign.KeyPair.newKeyPair
+    val publicKey = PublicKey(Base64Data.encode(keyPair.getPublicKey))
+    val privateKey = PrivateKey(Base64Data.encode(keyPair.getPrivateKey))
+
+    initialStorage.write((initialStorage.SERVER_PUBLIC_KEY + initialStorage.DEFAULT, publicKey.base64Data.data))
+    initialStorage.write((initialStorage.SERVER_PRIVATE_KEY + initialStorage.DEFAULT, privateKey.base64Data.data))
+
+    val askPublicKey = dbActor ? DbActor.ReadServerPublicKey()
+    val dbPublicKey: PublicKey = Await.result(askPublicKey, duration).asInstanceOf[DbActorReadServerPublicKeyAck].publicKey
+
+    val askPrivateKey = dbActor ? DbActor.ReadServerPrivateKey()
+    val dbPrivateKey = Await.result(askPrivateKey, duration).asInstanceOf[DbActorReadServerPrivateKeyAck].privateKey
+
+    dbPublicKey should equal(publicKey)
+    dbPrivateKey should equal(privateKey)
   }
 }
