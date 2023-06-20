@@ -15,15 +15,17 @@ import ch.epfl.pop.pubsub.graph.handlers.{GetMessagesByIdResponseHandler, Params
 object PublishSubscribe {
 
   private var dbActorRef: AskableActorRef = _
+  private var connectionMediatorRef: AskableActorRef = _
 
   def getDbActorRef: AskableActorRef = dbActorRef
+  def getConnectionMediatorRef: AskableActorRef = connectionMediatorRef
 
   def buildGraph(
       mediatorActorRef: ActorRef,
       dbActorRefT: AskableActorRef,
       messageRegistry: MessageRegistry,
       monitorRef: ActorRef,
-      connectionMediatorRef: ActorRef,
+      connectionMediatorRefT: ActorRef,
       isServer: Boolean,
       initGreetServer: Boolean = false
   )(implicit system: ActorSystem): Flow[Message, Message, NotUsed] = Flow.fromGraph(GraphDSL.create() {
@@ -31,8 +33,9 @@ object PublishSubscribe {
       {
         import GraphDSL.Implicits._
 
-        val clientActorRef: ActorRef = system.actorOf(ClientActor.props(mediatorActorRef, connectionMediatorRef, isServer, initGreetServer))
+        val clientActorRef: ActorRef = system.actorOf(ClientActor.props(mediatorActorRef, connectionMediatorRefT, isServer, initGreetServer))
         dbActorRef = dbActorRefT
+        connectionMediatorRef = connectionMediatorRefT
 
         /* partitioner port numbers */
         val portPipelineError = 0
