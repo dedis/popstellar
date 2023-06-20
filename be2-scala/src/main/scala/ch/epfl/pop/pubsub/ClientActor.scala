@@ -3,13 +3,12 @@ package ch.epfl.pop.pubsub
 import akka.actor.{Actor, ActorLogging, ActorRef, Props}
 import akka.event.LoggingReceive
 import akka.pattern.AskableActorRef
-import ch.epfl.pop.config.RuntimeEnvironment
 import ch.epfl.pop.config.RuntimeEnvironment.serverConf
 import ch.epfl.pop.decentralized.ConnectionMediator
 import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.MethodType.GREET_SERVER
 import ch.epfl.pop.model.network.method.GreetServer
-import ch.epfl.pop.model.objects.{Base64Data, Channel, PublicKey}
+import ch.epfl.pop.model.objects.Channel
 import ch.epfl.pop.pubsub.ClientActor._
 import ch.epfl.pop.pubsub.PubSubMediator._
 import ch.epfl.pop.pubsub.graph.GraphMessage
