@@ -6,6 +6,7 @@ import akka.pattern.AskableActorRef
 import akka.stream.scaladsl.{Flow, Sink, Source}
 import akka.testkit.TestKit
 import akka.util.Timeout
+import ch.epfl.pop.IOHelper.readJsonFromPath
 import ch.epfl.pop.model.network.JsonRpcResponse
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.objects.Channel
@@ -61,19 +62,6 @@ class GetMessagesByIdResponseHandlerSuite extends TestKit(ActorSystem("GetMessag
           .map(msg => Message(msg.data, msg.sender, msg.signature, msg.message_id, msg.witness_signatures, None)).toSet
       case _ => Matchers.fail(s"Couldn't catchup on channel: $channel")
     }
-  }
-
-  // Helper function to read json file into string
-  private def readJsonFromPath(path: String): String = {
-    val source = fromFile(path)
-    val jsonString: String = {
-      try {
-        source.mkString
-      } finally {
-        source.close()
-      }
-    }
-    jsonString
   }
 
   override def afterAll(): Unit = {

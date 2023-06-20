@@ -85,4 +85,16 @@ class ConnectionMediatorSuite extends TestKit(ActorSystem("ConnectionMediatorSui
     connectionMediatorRef ! ConnectionMediator.ServerLeft(server3.ref)
     mockMonitor.expectMsg(timeout, Monitor.NoServerConnected)
   }
+
+  test("Connection Mediator return an empty client address list when no peers are connected") {
+    val mockMonitor = TestProbe()
+    val testProbe = TestProbe()
+    val connectionMediatorRef = system.actorOf(
+      ConnectionMediator.props(mockMonitor.ref, ActorRef.noSender, ActorRef.noSender, MessageRegistry())
+    )
+
+    testProbe.send(connectionMediatorRef, ConnectionMediator.ReadPeersClientAddress())
+
+    testProbe.expectMsg(timeout, ConnectionMediator.ReadPeersClientAddressAck(List.empty))
+  }
 }
