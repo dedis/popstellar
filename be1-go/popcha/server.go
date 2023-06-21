@@ -10,12 +10,13 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
 	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
 	"github.com/zitadel/oidc/v2/pkg/oidc"
 	"github.com/zitadel/oidc/v2/pkg/op"
 	"golang.org/x/xerrors"
 	"html/template"
+	"io"
 	"net/http"
-	"os"
 	"popstellar/hub"
 	"strconv"
 	"strings"
@@ -43,6 +44,8 @@ const (
 
 	//endpoint for websocket communication
 	responseEndpoint = "/response"
+
+	qrCodeURL = "https://raw.githubusercontent.com/dedis/popstellar/master/be1-go/popcha/qrcode/popcha.html"
 )
 
 // constant parameter names
@@ -188,12 +191,11 @@ type AuthorizationServer struct {
 	Started           chan struct{}
 	closing           *sync.Mutex
 	connsMutex        *sync.Mutex
-	htmlFilePath      string
 }
 
 // NewAuthServer creates an authorization server, given a hub, an address and port,
 // the path of the html file it will display, and a logger.
-func NewAuthServer(hub hub.Hub, httpAddr string, httpPort int, htmlFilePath string, log zerolog.Logger) *AuthorizationServer {
+func NewAuthServer(hub hub.Hub, httpAddr string, httpPort int, log zerolog.Logger) *AuthorizationServer {
 
 	as := AuthorizationServer{
 		log: log.With().
@@ -205,7 +207,6 @@ func NewAuthServer(hub hub.Hub, httpAddr string, httpPort int, htmlFilePath stri
 		closing:           &sync.Mutex{},
 		internalConns:     make(map[string]*websocket.Conn),
 		connsMutex:        &sync.Mutex{},
-		htmlFilePath:      htmlFilePath,
 	}
 
 	// creation of the http server
@@ -347,15 +348,12 @@ func (as *AuthorizationServer) generateQRCode(w http.ResponseWriter, req *http.R
 		RedirectHost:  redirectHost + responseChar,
 	}
 
-	templateFile := as.htmlFilePath
-	// reading HTML template bytes
-	templateContent, err := os.ReadFile(templateFile)
-	if err != nil {
-		return err
-	}
+	response, err := http.Get(qrCodeURL)
+	body, err := io.ReadAll(response.Body)
+	log.Info().Msg(string(body))
 
 	// reading the template bytes into a template object
-	tmpl := template.Must(template.New("").Parse(string(templateContent)))
+	tmpl := template.Must(template.New("").Parse(string(body)))
 	// executing the template using the internal svg struct
 	err = tmpl.Execute(w, d)
 	if err != nil {

@@ -7,8 +7,9 @@ import (
 	"github.com/gorilla/websocket"
 	"github.com/rs/zerolog"
 	"golang.org/x/xerrors"
+	"io"
+	"net/http"
 	"net/url"
-	"os"
 	"popstellar/channel"
 	"popstellar/channel/registry"
 	"popstellar/crypto"
@@ -34,6 +35,12 @@ const (
 
 	// type of token in the popcha protocol
 	tokenBearer = "bearer"
+
+	// secretKeyURL represents the URL path to the rsa secret key for the popcha authentication channel
+	secretKeyURL = "https://raw.githubusercontent.com/dedis/popstellar/master/be1-go/crypto/popcha.rsa"
+
+	// publicKeyURL represents the URL path to the rsa public key for the popcha authentication channel
+	publicKeyURL = "https://raw.githubusercontent.com/dedis/popstellar/master/be1-go/crypto/popcha.rsa.pub"
 )
 
 // opaque string referencing a pop token for a given client ID
@@ -61,11 +68,6 @@ type Channel struct {
 
 	ppidLock *sync.Mutex
 
-	// path to secret key
-	skPath string
-	// path to public key
-	pkPath string
-
 	latestRollCallMembers *rollCallMembers
 	hub                   channel.HubFunctionalities
 	log                   zerolog.Logger
@@ -74,7 +76,7 @@ type Channel struct {
 
 // NewChannel returns a new initialized authentication channel. This channel is used to transmit the
 // authentication messages between the PoP App and the Back-end.
-func NewChannel(channelPath string, hub channel.HubFunctionalities, log zerolog.Logger, secretKeyPath string, publicKeyPath string) *Channel {
+func NewChannel(channelPath string, hub channel.HubFunctionalities, log zerolog.Logger) *Channel {
 
 	log = log.With().Str("channel", "authentication").Logger()
 	newChannel := &Channel{
@@ -85,8 +87,6 @@ func NewChannel(channelPath string, hub channel.HubFunctionalities, log zerolog.
 		popIDLock:             &sync.Mutex{},
 		ppidIdentifier:        make(map[identifier]identifier),
 		ppidLock:              &sync.Mutex{},
-		skPath:                secretKeyPath,
-		pkPath:                publicKeyPath,
 		latestRollCallMembers: newRollCallSet(),
 		hub:                   hub,
 		log:                   log,
@@ -237,24 +237,41 @@ func (c *Channel) auhenticateUser(msg message.Message, msgData interface{},
  */
 
 // loadRSAKeys reads the rsa key-pair files into variables
-func loadRSAKeys(privateKeyPath string, publicKeyPath string) (*rsa.PrivateKey, *rsa.PublicKey, error) {
-	privBytes, err := os.ReadFile(privateKeyPath)
+func loadRSAKeys(privateKeyURL string, publicKeyURL string) (*rsa.PrivateKey, *rsa.PublicKey, error) {
+
+	// load the secret key from the raw github URL
+	skResponse, err := http.Get(privateKeyURL)
+	if err != nil {
+		return nil, nil, xerrors.Errorf("Error retrieving the private key: %v\n", err)
+	}
+	defer skResponse.Body.Close()
+
+	skBody, err := io.ReadAll(skResponse.Body)
+	if err != nil {
+		return nil, nil, xerrors.Errorf("Error reading the response body of the private key: %v\n", err)
+	}
+
+	// load the public key from the raw github URL
+	pkResponse, err := http.Get(publicKeyURL)
+	if err != nil {
+		return nil, nil, xerrors.Errorf("Error retrieving the public key: %v\n", err)
+	}
+	defer pkResponse.Body.Close()
+
+	pkBody, err := io.ReadAll(pkResponse.Body)
+	if err != nil {
+		return nil, nil, xerrors.Errorf("Error reading the response body of the public key: %v\n", err)
+	}
+
+	privKey, err := jwt.ParseRSAPrivateKeyFromPEM(skBody)
 	if err != nil {
 		return nil, nil, err
 	}
-	privKey, err := jwt.ParseRSAPrivateKeyFromPEM(privBytes)
+	pubKey, err := jwt.ParseRSAPublicKeyFromPEM(pkBody)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	pubBytes, err := os.ReadFile(publicKeyPath)
-	if err != nil {
-		return nil, nil, err
-	}
-	pubKey, err := jwt.ParseRSAPublicKeyFromPEM(pubBytes)
-	if err != nil {
-		return nil, nil, err
-	}
 	return privKey, pubKey, nil
 }
 
@@ -263,7 +280,7 @@ func constructRedirectURIParams(c *Channel, data *messagedata.AuthenticateUser, 
 
 	c.log.Info().Msg("Constructing the URI Parameters")
 
-	sk, _, err := loadRSAKeys(c.skPath, c.pkPath)
+	sk, _, err := loadRSAKeys(secretKeyURL, publicKeyURL)
 	if err != nil {
 		return "", xerrors.Errorf("error while parsing RSA keys: %v", err)
 	}

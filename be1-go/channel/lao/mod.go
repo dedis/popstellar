@@ -48,11 +48,6 @@ const (
 	chirps = "chirps"
 	// endpoint for the PoPCHA authentication channel
 	auth = "/authentication"
-	// skAbsolutePath represents the absolute path to the rsa secret key for the popcha authentication channel
-	skAbsolutePath = "crypto/popcha.rsa"
-	// pkAbsolutePath represents the absolute path to the rsa public key for the popcha authentication channel
-	pkAbsolutePath = "crypto/popcha.rsa.pub"
-
 	// Open represents the open roll call state.
 	Open rollCallState = "open"
 
@@ -613,7 +608,7 @@ func (c *Channel) createChirpingChannel(publicKey string, socket socket.Socket) 
 // createAuthChannel creates an authentication channel associated to the laoID, handling PopCHA requests
 func (c *Channel) createAuthChannel(hub channel.HubFunctionalities, socket socket.Socket) {
 	chanPath := c.channelID + auth
-	authChan := authentication.NewChannel(chanPath, hub, popstellar.Logger, skAbsolutePath, pkAbsolutePath)
+	authChan := authentication.NewChannel(chanPath, hub, popstellar.Logger)
 	hub.NotifyNewChannel(chanPath, authChan, socket)
 	c.log.Info().Msgf("storing new authentication channel '%s' ", chanPath)
 
