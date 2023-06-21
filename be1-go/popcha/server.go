@@ -3,6 +3,7 @@ package popcha
 import (
 	"bytes"
 	"context"
+	"embed"
 	"fmt"
 	"github.com/aaronarduino/goqrsvg"
 	"github.com/ajstarks/svgo"
@@ -14,8 +15,8 @@ import (
 	"github.com/zitadel/oidc/v2/pkg/op"
 	"golang.org/x/xerrors"
 	"html/template"
+	"io/fs"
 	"net/http"
-	"os"
 	"popstellar/hub"
 	"strconv"
 	"strings"
@@ -188,12 +189,25 @@ type AuthorizationServer struct {
 	Started           chan struct{}
 	closing           *sync.Mutex
 	connsMutex        *sync.Mutex
-	htmlFilePath      string
+	qrCodeHTML        *template.Template
 }
+
+// creating a file system for the qrcode directory, in order to safely retrieve the HTML resource for further use in
+// the server.
+//
+//go:embed qrcode/*
+var popchaFS embed.FS
 
 // NewAuthServer creates an authorization server, given a hub, an address and port,
 // the path of the html file it will display, and a logger.
-func NewAuthServer(hub hub.Hub, httpAddr string, httpPort int, htmlFilePath string, log zerolog.Logger) *AuthorizationServer {
+func NewAuthServer(hub hub.Hub, httpAddr string, httpPort int, log zerolog.Logger) (*AuthorizationServer, error) {
+
+	file, err := fs.ReadFile(popchaFS, "qrcode/popcha.html")
+	if err != nil {
+		return nil, err
+	}
+	// reading the template bytes into a template object
+	qrCodeTemplate := template.Must(template.New("").Parse(string(file)))
 
 	as := AuthorizationServer{
 		log: log.With().
@@ -205,12 +219,12 @@ func NewAuthServer(hub hub.Hub, httpAddr string, httpPort int, htmlFilePath stri
 		closing:           &sync.Mutex{},
 		internalConns:     make(map[string]*websocket.Conn),
 		connsMutex:        &sync.Mutex{},
-		htmlFilePath:      htmlFilePath,
+		qrCodeHTML:        qrCodeTemplate,
 	}
 
 	// creation of the http server
 	as.httpServer = as.newChallengeServer()
-	return &as
+	return &as, nil
 }
 
 // Start launches a go routine to start the server
@@ -346,18 +360,7 @@ func (as *AuthorizationServer) generateQRCode(w http.ResponseWriter, req *http.R
 		WebSocketAddr: "ws://" + req.Host + strings.Join([]string{responseEndpoint, laoID, "authentication", clientID, nonce}, "/"),
 		RedirectHost:  redirectHost + responseChar,
 	}
-
-	templateFile := as.htmlFilePath
-	// reading HTML template bytes
-	templateContent, err := os.ReadFile(templateFile)
-	if err != nil {
-		return err
-	}
-
-	// reading the template bytes into a template object
-	tmpl := template.Must(template.New("").Parse(string(templateContent)))
-	// executing the template using the internal svg struct
-	err = tmpl.Execute(w, d)
+	err = as.qrCodeHTML.Execute(w, d)
 	if err != nil {
 		return err
 	}
