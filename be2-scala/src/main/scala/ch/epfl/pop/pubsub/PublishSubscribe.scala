@@ -16,12 +16,10 @@ object PublishSubscribe {
 
   private var dbActorRef: AskableActorRef = _
   private var connectionMediatorRef: AskableActorRef = _
+  private var mediatorActorRef: ActorRef = _
 
   def getDbActorRef: AskableActorRef = dbActorRef
   def getConnectionMediatorRef: AskableActorRef = connectionMediatorRef
-
-  private var mediatorActorRef: ActorRef = _
-
   def getMediatorActorRef: ActorRef = mediatorActorRef
 
   def buildGraph(
@@ -41,7 +39,6 @@ object PublishSubscribe {
         dbActorRef = dbActorRefT
         connectionMediatorRef = connectionMediatorRefT
         mediatorActorRef = mediatorActorRefT
-
 
         /* partitioner port numbers */
         val portPipelineError = 0
