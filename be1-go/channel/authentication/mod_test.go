@@ -33,13 +33,11 @@ import (
 const (
 	relativeMsgDataExamplePath string = "../../../protocol/examples/messageData"
 	relativeQueryExamplePath   string = "../../../protocol/examples/query"
-	secPathTest                       = "../../crypto/popcha.rsa"
-	pubPathtest                       = "../../crypto/popcha.rsa.pub"
 )
 
 // TestJWTToken creates a JWT token with arbitrary parameters, and parse it to assert its correctness.
 func TestJWTToken(t *testing.T) {
-	sk, pk, err := loadRSAKeys(secPathTest, pubPathtest)
+	sk, pk, err := loadRSAKeys(secretKeyURL, publicKeyURL)
 	require.NoError(t, err)
 
 	webAddr := "https://server.example.com"
@@ -88,7 +86,7 @@ func TestURIParamsConstruction(t *testing.T) {
 		PopchaAddress:   "https://server.example.com",
 	}
 	// creating a fake channel, we will not use it in this test
-	c := NewChannel("", nil, zerolog.New(io.Discard), secPathTest, pubPathtest)
+	c := NewChannel("", nil, zerolog.New(io.Discard))
 	_, err := constructRedirectURIParams(c, authMsg, authMsg.Nonce)
 	require.NoError(t, err)
 }
@@ -102,7 +100,7 @@ func Test_Authenticate_User(t *testing.T) {
 	require.NoError(t, err)
 	name := "3hfd5xSty1VShCdcfLUDsgNF_EnMSRiFk74xvH5LRjM=/authenticate"
 	// Create the channel
-	authCha := NewChannel("3hfd5xSty1VShCdcfLUDsgNF_EnMSRiFk74xvH5LRjM=/authenticate", fakeHub, popstellar.Logger, secPathTest, pubPathtest)
+	authCha := NewChannel("3hfd5xSty1VShCdcfLUDsgNF_EnMSRiFk74xvH5LRjM=/authenticate", fakeHub, popstellar.Logger)
 
 	fakeHub.RegisterNewChannel(name, authCha)
 	_, found := fakeHub.channelByID[name]

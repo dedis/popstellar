@@ -10,7 +10,6 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
 	"github.com/rs/zerolog"
-	"github.com/rs/zerolog/log"
 	"github.com/zitadel/oidc/v2/pkg/oidc"
 	"github.com/zitadel/oidc/v2/pkg/op"
 	"golang.org/x/xerrors"
@@ -350,7 +349,6 @@ func (as *AuthorizationServer) generateQRCode(w http.ResponseWriter, req *http.R
 
 	response, err := http.Get(qrCodeURL)
 	body, err := io.ReadAll(response.Body)
-	log.Info().Msg(string(body))
 
 	// reading the template bytes into a template object
 	tmpl := template.Must(template.New("").Parse(string(body)))
