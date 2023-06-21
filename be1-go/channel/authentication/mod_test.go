@@ -89,7 +89,7 @@ func TestURIParamsConstruction(t *testing.T) {
 	}
 	// creating a fake channel, we will not use it in this test
 	c := NewChannel("", nil, zerolog.New(io.Discard), secPathTest, pubPathtest)
-	_, err := constructRedirectURIParams(c, authMsg)
+	_, err := constructRedirectURIParams(c, authMsg, authMsg.Nonce)
 	require.NoError(t, err)
 }
 

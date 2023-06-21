@@ -107,8 +107,9 @@ func Serve(cliCtx *cli.Context) error {
 		log.With().Str("role", "server websocket").Logger())
 	serverSrv.Start()
 
-	// Start the PoPCHA Authorization Server
-	authorizationSrv := popcha.NewAuthServer(h, serverConfig.AuthAddress, serverConfig.AuthPort, popchaHTMLPath,
+	// Start the PoPCHA Authorization Server. It will run internally on localhost, the address of the server given in
+	// the config file will be the one used externally.
+	authorizationSrv := popcha.NewAuthServer(h, "localhost", serverConfig.AuthPort, popchaHTMLPath,
 		log.With().Str("role", "authorization server").Logger())
 	authorizationSrv.Start()
 	<-authorizationSrv.Started
