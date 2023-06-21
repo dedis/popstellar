@@ -33,9 +33,6 @@ const (
 
 	//message content for the websocket workflow test
 	wsData = "Hello receiver!"
-
-	// qrCodeWebPage file path for valid QRCode Displaying page
-	qrCodeWebPage = "qrcode/popcha.html"
 )
 
 // genString is a helper method generating a string in the alphanumerical alphabet
@@ -58,7 +55,8 @@ func TestAuthServerStartAndShutdown(t *testing.T) {
 	h, err := standard_hub.NewHub(crypto.Suite.Point(), "", "", l, nil)
 	require.NoError(t, err, "could not create hub")
 
-	s := NewAuthServer(h, "localhost", 2003, qrCodeWebPage, l)
+	s, err := NewAuthServer(h, "localhost", 2003, l)
+	require.NoError(t, err)
 
 	require.NoError(t, err, "could not create AuthServer")
 	s.Start()
@@ -73,7 +71,8 @@ func TestAuthServerStartAndShutdown(t *testing.T) {
 // the server serves a webpage with the associated QRCode.
 func TestAuthorizationServerHandleValidateRequest(t *testing.T) {
 	l := popstellar.Logger
-	s := NewAuthServer(fakeHub{}, "localhost", 3003, qrCodeWebPage, l)
+	s, err := NewAuthServer(fakeHub{}, "localhost", 3003, l)
+	require.NoError(t, err)
 	s.Start()
 	<-s.Started
 
@@ -123,7 +122,8 @@ func TestAuthRequestFails(t *testing.T) {
 	logTester := zltest.New(t)
 
 	l := zerolog.New(logTester).With().Timestamp().Logger()
-	s := NewAuthServer(fakeHub{}, "localhost", 3007, qrCodeWebPage, l)
+	s, err := NewAuthServer(fakeHub{}, "localhost", 3007, l)
+	require.NoError(t, err)
 	s.Start()
 	<-s.Started
 
@@ -213,7 +213,8 @@ func TestAuthorizationServerWebsocket(t *testing.T) {
 
 	// starting the authorization server
 	l := popstellar.Logger
-	s := NewAuthServer(fakeHub{}, "localhost", 3004, qrCodeWebPage, l)
+	s, err := NewAuthServer(fakeHub{}, "localhost", 3004, l)
+	require.NoError(t, err)
 	s.Start()
 	<-s.Started
 
@@ -229,7 +230,7 @@ func TestAuthorizationServerWebsocket(t *testing.T) {
 	// create the URL of the PopCHA webpage
 	u := createAuthRequestURL(nonce, clientID, scope, laoID, redirectURI, resType, state, "", 3004)
 
-	_, err := http.Get(u)
+	_, err = http.Get(u)
 	require.NoError(t, err)
 	l.Info().Msg(u)
 
@@ -263,7 +264,8 @@ func TestAuthorizationServerWorkflow(t *testing.T) {
 	logTester := zltest.New(t)
 
 	l := zerolog.New(logTester).With().Timestamp().Logger()
-	s := NewAuthServer(fakeHub{}, "localhost", 3005, qrCodeWebPage, l)
+	s, err := NewAuthServer(fakeHub{}, "localhost", 3005, l)
+	require.NoError(t, err)
 	s.Start()
 	<-s.Started
 
@@ -324,7 +326,8 @@ func TestAuthorizationServerWorkflow(t *testing.T) {
 func TestGenerateQrCodeOnEdgeCases(t *testing.T) {
 	// create authorization server
 	l := zerolog.New(io.Discard)
-	s := NewAuthServer(fakeHub{}, "localhost", 3006, qrCodeWebPage, l)
+	s, err := NewAuthServer(fakeHub{}, "localhost", 3006, l)
+	require.NoError(t, err)
 
 	// testing that the QRCode can't be generated if the data is too long
 	longURL := &url.URL{
@@ -338,7 +341,7 @@ func TestGenerateQrCodeOnEdgeCases(t *testing.T) {
 		URL:    longURL,
 	}
 
-	err := s.generateQRCode(&fakeResponseWriter{}, req, "l", "c", "n", "example.com", fragment)
+	err = s.generateQRCode(&fakeResponseWriter{}, req, "l", "c", "n", "example.com", fragment)
 	require.Error(t, err)
 
 	// testing that the QRCode can be generated with special characters, due to URL encoding
@@ -356,7 +359,8 @@ func TestGenerateQrCodeOnEdgeCases(t *testing.T) {
 // TestClientParams tests the validity of the client parameters
 func TestClientParams(t *testing.T) {
 	l := zerolog.New(io.Discard)
-	s := NewAuthServer(fakeHub{}, "localhost", 3009, qrCodeWebPage, l)
+	s, err := NewAuthServer(fakeHub{}, "localhost", 3009, l)
+	require.NoError(t, err)
 	s.Start()
 	<-s.Started
 
@@ -369,7 +373,7 @@ func TestClientParams(t *testing.T) {
 		}}
 
 	// validate the client parameters for many values
-	err := quick.Check(validClientParams, &propertyConfig)
+	err = quick.Check(validClientParams, &propertyConfig)
 	require.NoError(t, err)
 
 	// test client parameters without ID
