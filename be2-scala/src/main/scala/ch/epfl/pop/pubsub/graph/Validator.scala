@@ -35,6 +35,7 @@ object Validator {
         case _: Unsubscribe     => validateUnsubscribe(jsonRpcRequest)
         case _: Heartbeat       => graphMessage // No check necessary
         case _: GetMessagesById => graphMessage // No check necessary
+        case _: GreetServer     => graphMessage // No check necessary
         case _                  => Left(validationError(jsonRpcRequest.id))
       }
 
@@ -50,6 +51,7 @@ object Validator {
         case _: Unsubscribe     => graphMessage
         case _: Heartbeat       => graphMessage
         case _: GetMessagesById => graphMessage
+        case _: GreetServer     => graphMessage
         case _                  => Left(validationError(jsonRpcRequest.id))
       }
     case graphMessage @ _ => graphMessage
