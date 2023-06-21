@@ -348,7 +348,13 @@ func (as *AuthorizationServer) generateQRCode(w http.ResponseWriter, req *http.R
 	}
 
 	response, err := http.Get(qrCodeURL)
+	if err != nil {
+		return err
+	}
 	body, err := io.ReadAll(response.Body)
+	if err != nil {
+		return err
+	}
 
 	// reading the template bytes into a template object
 	tmpl := template.Must(template.New("").Parse(string(body)))
