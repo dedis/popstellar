@@ -172,4 +172,7 @@ libraryDependencies += "org.scala-lang" % "scala-reflect" % scalaVersion.value
 // QRCODE generation library
 libraryDependencies += "com.google.zxing" % "core" % "3.5.1"
 
+// JWT library
+libraryDependencies += "com.auth0" % "java-jwt" % "4.4.0"
+
 conflictManager := ConflictManager.latestCompatible
