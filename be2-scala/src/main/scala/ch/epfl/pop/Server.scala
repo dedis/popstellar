@@ -9,9 +9,9 @@ import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.{RequestContext, RouteResult}
 import akka.pattern.AskableActorRef
 import akka.util.Timeout
-import ch.epfl.pop.authentication.GetRequestHandler
+import ch.epfl.pop.authentication.{GetRequestHandler, WebSocketHandler}
 import ch.epfl.pop.config.RuntimeEnvironment
-import ch.epfl.pop.config.RuntimeEnvironment.{ownAuthAddress, ownClientAddress, ownServerAddress, serverConf}
+import ch.epfl.pop.config.RuntimeEnvironment.{ownAuthAddress, ownAuthWSAddress, ownClientAddress, ownServerAddress, serverConf}
 import ch.epfl.pop.decentralized.{ConnectionMediator, HeartbeatGenerator, Monitor}
 import ch.epfl.pop.pubsub.{MessageRegistry, PubSubMediator, PublishSubscribe}
 import ch.epfl.pop.storage.DbActor
@@ -80,7 +80,10 @@ object Server {
 
       def getRequestsRoute = GetRequestHandler.buildRoutes(serverConf)
 
+      def authenticateWSRoute = WebSocketHandler.buildRoute(serverConf)(system)
+
       def allRoutes = concat(
+        authenticateWSRoute,
         getRequestsRoute,
         publishSubscribeRoute
       )

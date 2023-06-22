@@ -110,7 +110,7 @@ class PopchaHandler(dbRef: => AskableActorRef) extends MessageHandler {
     import subSystem.dispatcher
 
     val tokenEmissionSource: Source[Message, NotUsed] = Source.single(TextMessage(openIdToken))
-    val flow: Flow[Message, Message, NotUsed] = Flow.fromSinkAndSource(Sink.ignore,tokenEmissionSource)
+    val flow: Flow[Message, Message, NotUsed] = Flow.fromSinkAndSource(Sink.ignore, tokenEmissionSource)
 
     val (upgradeResponse, _) =
       Http().singleWebSocketRequest(WebSocketRequest(authenticate.popchaAddress), flow)

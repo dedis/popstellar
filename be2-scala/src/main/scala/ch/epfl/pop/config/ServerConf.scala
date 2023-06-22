@@ -19,6 +19,7 @@ object ServerConf {
     val clientPath = serverConf.getString("client-path")
     val serverPath = serverConf.getString("server-path")
     val authenticationPath = serverConf.getString("authentication-path")
+    val authenticationResponseEndpoint = serverConf.getString("authentication-response-endpoint")
     val internalAddress = s"ws://$serverInterface:$serverPort"
     val externalAddress = {
       try {
@@ -34,10 +35,10 @@ object ServerConf {
       }
     }
 
-    new ServerConf(serverInterface, serverPort, clientPath, serverPath, authenticationPath, externalAddress)
+    new ServerConf(serverInterface, serverPort, clientPath, serverPath, authenticationPath, authenticationResponseEndpoint, externalAddress)
   }
 
 }
 
 /* Note: Can be upgraded for future configs :) */
-final case class ServerConf(interface: String, port: Int, clientPath: String, serverPath: String, authenticationPath: String, externalAddress: String)
+final case class ServerConf(interface: String, port: Int, clientPath: String, serverPath: String, authenticationPath: String, authenticationResponseEndpoint: String, externalAddress: String)

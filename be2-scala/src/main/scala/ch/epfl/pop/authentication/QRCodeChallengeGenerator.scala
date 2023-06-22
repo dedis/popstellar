@@ -1,6 +1,7 @@
 package ch.epfl.pop.authentication
 
 import akka.http.scaladsl.model.{ContentTypes, HttpEntity, ResponseEntity}
+import ch.epfl.pop.config.RuntimeEnvironment
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel
 import com.google.zxing.qrcode.encoder.{ByteMatrix, Encoder}
 
@@ -12,7 +13,8 @@ object QRCodeChallengeGenerator {
 
   private val templateFileName = "src/main/web/AuthenticationPageTemplate.html"
 
-  private val webTemplateQRCodeTemplate = "{{QRCODE_PATTERN}}"
+  private val webTemplateQRCodePlaceholder = "{{.SVGImage}}"
+  private val webTemplateWebSocketAddressPlaceholder = "{{.WebSocketAddr}}"
 
   private val qrcodeTotalSize = 650
   private val qrcodeMargin = 25
@@ -23,14 +25,17 @@ object QRCodeChallengeGenerator {
     * @return
     *   a web page in the form of an http-html response
     */
-  def generateChallengeContent(content: String): ResponseEntity = {
+  def generateChallengeContent(content: String, laoId: String, clientId: String, nonce: String): ResponseEntity = {
     val encodedContent = Encoder.encode(content, ErrorCorrectionLevel.H)
     val htmlQRCode = fromMatrixToHTML(encodedContent.getMatrix)
+    val webSocketAddress = RuntimeEnvironment.ownAuthWSAddress + s"/$laoId/$clientId/$nonce"
 
     val templateFile = Source.fromFile(templateFileName)
     val lines = for {
       line <- templateFile.getLines()
-      substitutedLine = line.replace(webTemplateQRCodeTemplate, htmlQRCode)
+      substitutedLine = line
+        .replace(webTemplateQRCodePlaceholder, htmlQRCode)
+        .replace(webTemplateWebSocketAddressPlaceholder, webSocketAddress)
     } yield substitutedLine
 
     val challengePage = lines.mkString("\n")
