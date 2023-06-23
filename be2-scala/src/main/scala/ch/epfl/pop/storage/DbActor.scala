@@ -477,7 +477,7 @@ final case class DbActor(
 
     case WriteUserAuthenticated(popToken, clientId, user) =>
       log.info(s"Actor $self (db) received a WriteUserAuthenticated request for user $user, id $popToken and clientId $clientId")
-      Try(storage.write(generateAuthenticatedKey(popToken, clientId) -> user.base64Data.decodeToString())) match {
+      Try(storage.write(generateAuthenticatedKey(popToken, clientId) -> user.base64Data.toString())) match {
         case Success(_) => sender() ! DbActorAck()
         case failure    => sender() ! failure.recover(Status.Failure(_))
       }
@@ -485,7 +485,7 @@ final case class DbActor(
     case ReadUserAuthenticated(popToken, clientId) =>
       log.info(s"Actor $self (db) received a ReadUserAuthenticated request for pop token $popToken and clientId $clientId")
       Try(storage.read(generateAuthenticatedKey(popToken, clientId))) match {
-        case Success(Some(id)) => sender() ! DbActorReadUserAuthenticationAck(Some(PublicKey(Base64Data.encode(id))))
+        case Success(Some(id)) => sender() ! DbActorReadUserAuthenticationAck(Some(PublicKey(Base64Data(id))))
         case Success(None)     => sender() ! DbActorReadUserAuthenticationAck(None)
         case failure           => sender() ! failure.recover(Status.Failure(_))
       }

@@ -11,7 +11,7 @@ import akka.pattern.AskableActorRef
 import akka.util.Timeout
 import ch.epfl.pop.authentication.{GetRequestHandler, WebSocketHandler}
 import ch.epfl.pop.config.RuntimeEnvironment
-import ch.epfl.pop.config.RuntimeEnvironment.{ownAuthAddress, ownAuthWSAddress, ownClientAddress, ownServerAddress, serverConf}
+import ch.epfl.pop.config.RuntimeEnvironment._
 import ch.epfl.pop.decentralized.{ConnectionMediator, HeartbeatGenerator, Monitor}
 import ch.epfl.pop.pubsub.{MessageRegistry, PubSubMediator, PublishSubscribe}
 import ch.epfl.pop.storage.DbActor
