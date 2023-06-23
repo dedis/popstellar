@@ -123,8 +123,6 @@ class PopchaHandler(dbRef: => AskableActorRef) extends MessageHandler {
       }
     }
 
-    connected.onComplete(println)
-
     Right(rpcMessage)
   }
 }

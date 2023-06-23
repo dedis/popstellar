@@ -59,7 +59,7 @@ sealed class PopchaValidator(dbActorRef: => AskableActorRef) extends MessageData
   }
 
   private def checkIdentifierProof(rpcMessage: JsonRpcMessage, identifier: PublicKey, identifierProof: Signature, nonce: String, error: PipelineError): GraphMessage = {
-    val verified = identifierProof.verify(identifier, Base64Data.encode(nonce))
+    val verified = identifierProof.verify(identifier, Base64Data(nonce))
     if (verified)
       Right(rpcMessage)
     else
