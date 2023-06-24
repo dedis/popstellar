@@ -39,7 +39,7 @@ object Authenticate {
             val params = RequestParameters(response_type, client_id, redirect_uri, scope, state, response_mode, login_hint, nonce)
             verifyParameters(params) match {
               case Left(error -> errorDescription) => complete(authenticationFailure(error, errorDescription, state))
-              case Right(_)                        => complete(generateChallenge(request, login_hint, client_id, nonce))
+              case Right(_)                        => complete(generateChallenge(request, redirect_uri, login_hint, client_id, nonce))
             }
           }
       }
@@ -57,8 +57,8 @@ object Authenticate {
     }
   }
 
-  private def generateChallenge(request: HttpRequest, laoId: String, clientId: String, nonce: String): HttpResponse = {
-    val challengeEntity = QRCodeChallengeGenerator.generateChallengeContent(request.uri.toString(), laoId, clientId, nonce)
+  private def generateChallenge(request: HttpRequest, redirectUri: String, laoId: String, clientId: String, nonce: String): HttpResponse = {
+    val challengeEntity = QRCodeChallengeGenerator.generateChallengeContent(request.uri.toString(), redirectUri, laoId, clientId, nonce)
     HttpResponse(status = StatusCodes.OK, entity = challengeEntity)
   }
 

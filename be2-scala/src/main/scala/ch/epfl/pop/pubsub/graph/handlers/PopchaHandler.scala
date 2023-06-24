@@ -2,8 +2,9 @@ package ch.epfl.pop.pubsub.graph.handlers
 
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
-import akka.http.scaladsl.model.StatusCodes
+import akka.http.scaladsl.model.Uri.Query
 import akka.http.scaladsl.model.ws.{Message, TextMessage, WebSocketRequest}
+import akka.http.scaladsl.model.{StatusCodes, Uri}
 import akka.pattern.AskableActorRef
 import akka.stream.scaladsl.{Flow, Sink, Source}
 import akka.{Done, NotUsed}
@@ -30,6 +31,8 @@ object PopchaHandler extends MessageHandler {
 }
 
 class PopchaHandler(dbRef: => AskableActorRef) extends MessageHandler {
+
+  private val TOKEN_VALIDITY_DURATION = 3600
 
   /** Handles authentication messages
     *
@@ -83,7 +86,7 @@ class PopchaHandler(dbRef: => AskableActorRef) extends MessageHandler {
   private def generateAndSendOpenIdToken(rpcMessage: JsonRpcMessage, authenticate: Authenticate, laoId: Hash): GraphMessage = {
     val date = Calendar.getInstance()
     val issuedTime = date.getTime
-    val expTime = new Date(date.getTimeInMillis + (60 * 60 * 1000)) // Expire after 1h
+    val expTime = new Date(date.getTimeInMillis + (TOKEN_VALIDITY_DURATION * 1000)) // Expire after 1h
 
     val publicKey = "ThisIsADummyKeyPleaseUpdateItBeforeUsageMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAsbR9Ip84tR4vc1IEefBJ\\ndHMlQAQm1UltYE3vs875eY8ASZ4lzlLG6iVRe7LH4VN6j7GB4Tjj2EtgUFUAQqbF\\ns5mn7cFO7DR9riQDgLGekAQ5g/mLz9QhuAGjU2am0mPBOSBME08Ek9vNRfAOGVWk\\n9fDUhdRceRdKOXnnz+YvqYfe3vz4jx9XXJHZHmG2wNB6egCnsbZOuEqiWVMj5+3w\\nKt1prUGKEAHtPqC+olDaLwZw1didYotPgaZDwedkcAVSWNHvOkkY3uMqvKI+Cpox\\nP+uqtdy9tM54sNQjoWdq4LIaWF/nLRy5fM2JAVbAqwPW6z23YMi4HIsfwuj+d8UZ\\ntQIDAQAB"
     val algorithm = Algorithm.HMAC256(publicKey)
@@ -99,7 +102,7 @@ class PopchaHandler(dbRef: => AskableActorRef) extends MessageHandler {
         .sign(algorithm)
     ) match {
       case Success(jwt)       => jwt
-      case Failure(exception) => return Left(PipelineError(ErrorCodes.SERVER_ERROR.id, exception.getMessage, rpcMessage.getId))
+      case Failure(ex) => return Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleAuthentication failed : ${ex.getMessage}", rpcMessage.getId))
     }
 
     sendOpenIdToken(rpcMessage, authenticate, laoId, jwt)
@@ -109,10 +112,18 @@ class PopchaHandler(dbRef: => AskableActorRef) extends MessageHandler {
     implicit val subSystem: ActorSystem = ActorSystem()
     import subSystem.dispatcher
 
-    val tokenEmissionSource: Source[Message, NotUsed] = Source.single(TextMessage(openIdToken))
-    val flow: Flow[Message, Message, NotUsed] = Flow.fromSinkAndSource(Sink.ignore, tokenEmissionSource)
+    val messageToSend = Uri("").withQuery(Query(Map(
+      "token_type" -> "bearer",
+      "id_token" -> openIdToken,
+      "expires_in" -> TOKEN_VALIDITY_DURATION.toString,
+      "state" -> authenticate.state
+    )))
 
-    val wsAddress = s"ws://${authenticate.popchaAddress}/response/$laoId/${authenticate.clientId}/${authenticate.nonce}"
+    val tokenEmissionSource: Source[Message, NotUsed] = Source.single(TextMessage(messageToSend.toString()))
+    val flow: Flow[Message, Message, NotUsed] = Flow.fromSinkAndSourceCoupled(Sink.ignore, tokenEmissionSource)
+
+    val wsAddress = s"ws://${authenticate.popchaAddress}/authorize/response/$laoId/${authenticate.clientId}/${authenticate.nonce}"
+
     val (upgradeResponse, _) =
       Http().singleWebSocketRequest(WebSocketRequest(wsAddress), flow)
 
@@ -120,10 +131,13 @@ class PopchaHandler(dbRef: => AskableActorRef) extends MessageHandler {
       if (upgrade.response.status == StatusCodes.SwitchingProtocols) {
         Done
       } else {
-        return Left(PipelineError(ErrorCodes.SERVER_ERROR.id, "Failed to upgrade web socket request", rpcMessage.getId))
+        return Left(PipelineError(ErrorCodes.SERVER_ERROR.id, "handleAuthentication failed : failed to upgrade web socket request", rpcMessage.getId))
       }
     }
 
-    Right(rpcMessage)
+    Await.ready(connected, duration).value.get match {
+      case Success(_) => Right(rpcMessage)
+      case Failure(ex) => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleAuthentication failed : ${ex.getMessage}", rpcMessage.getId))
+    }
   }
 }

@@ -15,6 +15,7 @@ object QRCodeChallengeGenerator {
 
   private val webTemplateQRCodePlaceholder = "{{.SVGImage}}"
   private val webTemplateWebSocketAddressPlaceholder = "{{.WebSocketAddr}}"
+  private val webTemplateRedirectHostPlaceholder = "{{.RedirectHost}}"
 
   private val qrcodeTotalSize = 650
   private val qrcodeMargin = 25
@@ -25,7 +26,7 @@ object QRCodeChallengeGenerator {
     * @return
     *   a web page in the form of an http-html response
     */
-  def generateChallengeContent(content: String, laoId: String, clientId: String, nonce: String): ResponseEntity = {
+  def generateChallengeContent(content: String, redirectUri: String, laoId: String, clientId: String, nonce: String): ResponseEntity = {
     val encodedContent = Encoder.encode(content, ErrorCorrectionLevel.H)
     val htmlQRCode = fromMatrixToHTML(encodedContent.getMatrix)
     val webSocketAddress = RuntimeEnvironment.ownAuthWSAddress + s"/$laoId/$clientId/$nonce"
@@ -36,6 +37,7 @@ object QRCodeChallengeGenerator {
       substitutedLine = line
         .replace(webTemplateQRCodePlaceholder, htmlQRCode)
         .replace(webTemplateWebSocketAddressPlaceholder, webSocketAddress)
+        .replace(webTemplateRedirectHostPlaceholder, redirectUri)
     } yield substitutedLine
 
     val challengePage = lines.mkString("\n")

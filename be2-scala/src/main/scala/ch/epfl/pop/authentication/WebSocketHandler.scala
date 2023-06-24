@@ -9,7 +9,7 @@ import akka.stream.{CompletionStrategy, OverflowStrategy}
 import akka.{Done, NotUsed}
 import ch.epfl.pop.config.ServerConf
 
-import scala.concurrent.Future
+import scala.concurrent.{Future, Promise}
 
 object WebSocketHandler {
 
@@ -33,39 +33,34 @@ object WebSocketHandler {
   }
 
   private def handleMessageAsListener(socketId: (String, String, String)): Flow[Message, Message, Any] = {
-    println("received message from listener")
     val dummySink = Sink.ignore
     val source: Source[TextMessage, NotUsed] = Source
       .actorRef(
         {
-          case akka.actor.Status.Success(s: CompletionStrategy) => s
-          case akka.actor.Status.Success(_)                     => CompletionStrategy.draining
-          case akka.actor.Status.Success                        => CompletionStrategy.draining
+          case Done => CompletionStrategy.immediately
         },
-        {
-          case akka.actor.Status.Failure(cause) => cause
-        },
+        PartialFunction.empty,
         bufferSize = LISTENER_BUFFER_SIZE,
-        overflowStrategy = OverflowStrategy.dropBuffer // OverflowStrategy back-pressure is not allowed!
+        overflowStrategy = OverflowStrategy.dropBuffer
       )
       .mapMaterializedValue(wsHandle => {
         socketsConnected.put(socketId, wsHandle)
         NotUsed
       })
-    Flow.fromSinkAndSource(dummySink, source)
+    Flow.fromSinkAndSourceCoupled(dummySink, source)
   }
 
   private def handleMessageAsServer(listenerRef: ActorRef, socketId: (String, String, String)): Flow[Message, Message, Any] = {
-    println("received message from server")
     val sink: Sink[Message, Future[Done]] =
       Sink.foreach {
         case message: TextMessage.Strict =>
           println(message.text)
           listenerRef ! message
+          listenerRef ! Done
           socketsConnected.remove(socketId)
         case _ => // ignore other message types
       }
-    val dummySource: Source[Message, NotUsed] = Source.empty
-    Flow.fromSinkAndSource(sink, dummySource)
+    val dummySource: Source[Message, Promise[Option[Nothing]]] = Source.maybe
+    Flow.fromSinkAndSourceCoupled(sink, dummySource)
   }
 }
