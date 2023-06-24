@@ -2,6 +2,13 @@ import { Hash, PopToken, ProtocolError } from 'core/objects';
 
 import { sendPopchaAuthRequest } from '../network/PopchaMessageApi';
 
+// Required arguments for the url (content not checked)
+export const requiredArguments = ['nonce', 'redirect_uri', 'client_id'];
+
+export const validResponseType = 'id_token';
+export const requiredScopes = ['openid', 'profile'];
+export const validResponseModes = ['query', 'fragment'];
+
 /**
  * Get the argument from the url
  * @param url the url
@@ -32,16 +39,7 @@ const verifyScannedInfo = (data: string, laoId: Hash) => {
 
   const urlArg = url.searchParams;
 
-  const requiredArguments = [
-    'client_id',
-    'redirect_uri',
-    'login_hint',
-    'nonce',
-    'response_type',
-    'scope',
-  ];
-
-  // Check if all required arguments are present
+  // Check if required arguments are present
   for (const arg of requiredArguments) {
     if (!urlArg.has(arg)) {
       throw new ProtocolError(`Missing argument ${arg}`);
@@ -49,18 +47,18 @@ const verifyScannedInfo = (data: string, laoId: Hash) => {
   }
 
   // Check if the response respects openid standard
-  if (getArg(url, 'response_type') !== 'id_token') {
+  if (getArg(url, 'response_type') !== validResponseType) {
     throw new ProtocolError('Invalid response type');
   }
 
-  if (!(getArg(url, 'scope').includes('openid') && getArg(url, 'scope').includes('profile'))) {
+  if (!requiredScopes.every((scope) => getArg(url, 'scope').includes(scope))) {
     throw new ProtocolError('Invalid scope');
   }
 
   const responseMode = url.searchParams.get('response_mode');
 
   if (responseMode) {
-    if (!(responseMode.includes('query') || responseMode.includes('fragment'))) {
+    if (!validResponseModes.some((mode) => responseMode.includes(mode))) {
       throw new ProtocolError('Invalid response mode');
     }
   }
@@ -91,8 +89,8 @@ export const sendAuthRequest = async (
   const urlArg = url.searchParams;
 
   return sendPopchaAuthRequest(
-    urlArg.get('client_id')!,
-    urlArg.get('nonce')!,
+    getArg(url, 'client_id'),
+    getArg(url, 'nonce'),
     url.host,
     urlArg.get('state'),
     urlArg.get('response_mode'),
