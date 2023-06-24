@@ -141,7 +141,7 @@ exports[`Popcha scanner correct behavior when sending request closes scanner whe
                 delayLongPress={600}
                 enabled={true}
                 exclusive={true}
-                handlerTag={65}
+                handlerTag={82}
                 handlerType="NativeViewGestureHandler"
                 onGestureEvent={[Function]}
                 onGestureHandlerEvent={[Function]}
@@ -219,7 +219,7 @@ exports[`Popcha scanner correct behavior when sending request closes scanner whe
             delayLongPress={600}
             enabled={true}
             exclusive={true}
-            handlerTag={62}
+            handlerTag={83}
             handlerType="NativeViewGestureHandler"
             onGestureEvent={[Function]}
             onGestureHandlerEvent={[Function]}
@@ -383,7 +383,7 @@ exports[`Popcha scanner correct behavior when sending request shows error messag
                   delayLongPress={600}
                   enabled={true}
                   exclusive={true}
-                  handlerTag={68}
+                  handlerTag={86}
                   handlerType="NativeViewGestureHandler"
                   onGestureEvent={[Function]}
                   onGestureHandlerEvent={[Function]}
@@ -459,7 +459,7 @@ exports[`Popcha scanner correct behavior when sending request shows error messag
                   delayLongPress={600}
                   enabled={true}
                   exclusive={true}
-                  handlerTag={69}
+                  handlerTag={87}
                   handlerType="NativeViewGestureHandler"
                   onGestureEvent={[Function]}
                   onGestureHandlerEvent={[Function]}
@@ -537,7 +537,7 @@ exports[`Popcha scanner correct behavior when sending request shows error messag
               delayLongPress={600}
               enabled={true}
               exclusive={true}
-              handlerTag={67}
+              handlerTag={88}
               handlerType="NativeViewGestureHandler"
               onGestureEvent={[Function]}
               onGestureHandlerEvent={[Function]}
@@ -708,7 +708,7 @@ exports[`Popcha scanner correct behavior when sending request shows error messag
                   delayLongPress={600}
                   enabled={true}
                   exclusive={true}
-                  handlerTag={68}
+                  handlerTag={86}
                   handlerType="NativeViewGestureHandler"
                   onGestureEvent={[Function]}
                   onGestureHandlerEvent={[Function]}
@@ -784,7 +784,7 @@ exports[`Popcha scanner correct behavior when sending request shows error messag
                   delayLongPress={600}
                   enabled={true}
                   exclusive={true}
-                  handlerTag={69}
+                  handlerTag={87}
                   handlerType="NativeViewGestureHandler"
                   onGestureEvent={[Function]}
                   onGestureHandlerEvent={[Function]}
@@ -862,7 +862,7 @@ exports[`Popcha scanner correct behavior when sending request shows error messag
               delayLongPress={600}
               enabled={true}
               exclusive={true}
-              handlerTag={67}
+              handlerTag={88}
               handlerType="NativeViewGestureHandler"
               onGestureEvent={[Function]}
               onGestureHandlerEvent={[Function]}
@@ -1042,7 +1042,7 @@ exports[`Popcha scanner manual input works correctly closes scanner and confirma
                 delayLongPress={600}
                 enabled={true}
                 exclusive={true}
-                handlerTag={86}
+                handlerTag={107}
                 handlerType="NativeViewGestureHandler"
                 onGestureEvent={[Function]}
                 onGestureHandlerEvent={[Function]}
@@ -1120,7 +1120,7 @@ exports[`Popcha scanner manual input works correctly closes scanner and confirma
             delayLongPress={600}
             enabled={true}
             exclusive={true}
-            handlerTag={79}
+            handlerTag={108}
             handlerType="NativeViewGestureHandler"
             onGestureEvent={[Function]}
             onGestureHandlerEvent={[Function]}
@@ -1284,7 +1284,7 @@ exports[`Popcha scanner manual input works correctly shows error message with in
                   delayLongPress={600}
                   enabled={true}
                   exclusive={true}
-                  handlerTag={72}
+                  handlerTag={91}
                   handlerType="NativeViewGestureHandler"
                   onGestureEvent={[Function]}
                   onGestureHandlerEvent={[Function]}
@@ -1360,7 +1360,7 @@ exports[`Popcha scanner manual input works correctly shows error message with in
                   delayLongPress={600}
                   enabled={true}
                   exclusive={true}
-                  handlerTag={73}
+                  handlerTag={92}
                   handlerType="NativeViewGestureHandler"
                   onGestureEvent={[Function]}
                   onGestureHandlerEvent={[Function]}
@@ -1438,7 +1438,7 @@ exports[`Popcha scanner manual input works correctly shows error message with in
               delayLongPress={600}
               enabled={true}
               exclusive={true}
-              handlerTag={71}
+              handlerTag={93}
               handlerType="NativeViewGestureHandler"
               onGestureEvent={[Function]}
               onGestureHandlerEvent={[Function]}
@@ -1479,7 +1479,7 @@ exports[`Popcha scanner manual input works correctly shows error message with in
       delayLongPress={600}
       enabled={true}
       exclusive={true}
-      handlerTag={74}
+      handlerTag={94}
       handlerType="NativeViewGestureHandler"
       onGestureEvent={[Function]}
       onGestureHandlerEvent={[Function]}
@@ -1508,7 +1508,7 @@ exports[`Popcha scanner manual input works correctly shows error message with in
     </RNGestureHandlerButton>
     <RCTScrollView
       collapsable={false}
-      handlerTag={75}
+      handlerTag={95}
       handlerType="NativeViewGestureHandler"
       onGestureHandlerEvent={[Function]}
       onGestureHandlerStateChange={[Function]}
@@ -1575,7 +1575,7 @@ exports[`Popcha scanner manual input works correctly shows error message with in
               delayLongPress={600}
               enabled={true}
               exclusive={true}
-              handlerTag={76}
+              handlerTag={96}
               handlerType="NativeViewGestureHandler"
               onGestureEvent={[Function]}
               onGestureHandlerEvent={[Function]}
@@ -1675,7 +1675,7 @@ exports[`Popcha scanner manual input works correctly shows error message with in
             delayLongPress={600}
             enabled={true}
             exclusive={true}
-            handlerTag={77}
+            handlerTag={97}
             handlerType="NativeViewGestureHandler"
             onGestureEvent={[Function]}
             onGestureHandlerEvent={[Function]}
@@ -2273,7 +2273,7 @@ exports[`Popcha scanner scanner renders correctly renders correctly a opened sca
               delayLongPress={600}
               enabled={true}
               exclusive={true}
-              handlerTag={4}
+              handlerTag={7}
               handlerType="NativeViewGestureHandler"
               onGestureEvent={[Function]}
               onGestureHandlerEvent={[Function]}
