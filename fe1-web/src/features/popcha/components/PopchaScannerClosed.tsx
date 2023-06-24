@@ -1,21 +1,15 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { StyleSheet, Text, View, ViewStyle } from 'react-native';
+import { Text, View } from 'react-native';
 
 import PoPTouchableOpacity from 'core/components/PoPTouchableOpacity';
 import QrCodeScanner, { QrCodeScannerUIElementContainer } from 'core/components/QrCodeScanner';
-import { Spacing, Typography } from 'core/styles';
+import { Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
 import { PopchaHooks } from '../hooks';
 
-const styles = StyleSheet.create({
-  topMargin: {
-    marginTop: Spacing.x05,
-  } as ViewStyle,
-});
-
-const PopchaScannerClosed = ({ containerStyle, onOpenPress }: IPropTypes) => {
+const PopchaScannerClosed = ({ containerStyle, onOpenPress, topMarginStyle }: IPropTypes) => {
   const laoId = PopchaHooks.useCurrentLaoId();
 
   return (
@@ -29,7 +23,7 @@ const PopchaScannerClosed = ({ containerStyle, onOpenPress }: IPropTypes) => {
             </Text>
           </View>
           <View>
-            <View style={[QrCodeScannerUIElementContainer, styles.topMargin]}>
+            <View style={[QrCodeScannerUIElementContainer, topMarginStyle]}>
               <PoPTouchableOpacity testID="popcha_scanner_button" onPress={onOpenPress}>
                 <Text style={[Typography.base, Typography.accent]}>
                   {STRINGS.popcha_open_scanner}
@@ -46,11 +40,14 @@ const PopchaScannerClosed = ({ containerStyle, onOpenPress }: IPropTypes) => {
 const propTypes = {
   // eslint-disable-next-line react/forbid-prop-types
   containerStyle: PropTypes.any,
+  // eslint-disable-next-line react/forbid-prop-types
+  topMarginStyle: PropTypes.any,
   onOpenPress: PropTypes.func.isRequired,
 };
 
 PopchaScannerClosed.propTypes = propTypes;
 PopchaScannerClosed.defaultProps = {
+  topMarginStyle: {},
   containerStyle: {},
 };
 

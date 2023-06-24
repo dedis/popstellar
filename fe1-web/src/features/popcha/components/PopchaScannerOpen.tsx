@@ -7,7 +7,7 @@ import { ConfirmModal } from 'core/components';
 import PoPTouchableOpacity from 'core/components/PoPTouchableOpacity';
 import QrCodeScanner, { QrCodeScannerUIElementContainer } from 'core/components/QrCodeScanner';
 import QrCodeScanOverlay from 'core/components/QrCodeScanOverlay';
-import { Spacing, Typography } from 'core/styles';
+import { Typography } from 'core/styles';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
 
@@ -18,12 +18,9 @@ const styles = StyleSheet.create({
   qrCode: {
     opacity: 0.5,
   } as ViewStyle,
-  topMargin: {
-    marginTop: Spacing.x05,
-  } as ViewStyle,
 });
 
-const PopchaScannerOpen = ({ onClose, containerStyle }: IPropTypes) => {
+const PopchaScannerOpen = ({ onClose, containerStyle, topMarginStyle }: IPropTypes) => {
   const laoId = PopchaHooks.useCurrentLaoId();
   const generateToken = PopchaHooks.useGenerateToken();
 
@@ -85,7 +82,7 @@ const PopchaScannerOpen = ({ onClose, containerStyle }: IPropTypes) => {
                 </Text>
               </PoPTouchableOpacity>
             </View>
-            <View style={[QrCodeScannerUIElementContainer, styles.topMargin]}>
+            <View style={[QrCodeScannerUIElementContainer, topMarginStyle]}>
               <PoPTouchableOpacity testID="popcha_scanner_button" onPress={onClose}>
                 <Text style={[Typography.base, Typography.accent]}>
                   {STRINGS.popcha_close_scanner}
@@ -123,11 +120,14 @@ const propTypes = {
   onClose: PropTypes.func.isRequired,
   // eslint-disable-next-line react/forbid-prop-types
   containerStyle: PropTypes.any,
+  // eslint-disable-next-line react/forbid-prop-types
+  topMarginStyle: PropTypes.any,
 };
 
 PopchaScannerOpen.propTypes = propTypes;
 PopchaScannerOpen.defaultProps = {
   containerStyle: {},
+  topMarginStyle: {},
 };
 
 type IPropTypes = PropTypes.InferProps<typeof propTypes>;

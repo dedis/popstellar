@@ -70,7 +70,7 @@ const verifyScannedInfo = (data: string, laoId: Hash) => {
 };
 
 /**
- * Send an auth request to the server
+ * Verify the scanned info and send the auth request (using `sendPopchaAuthRequest`)
  * @param data the scanned data (url)
  * @param laoId the current lao id
  * @param generateToken function to deterministically generate a long term token

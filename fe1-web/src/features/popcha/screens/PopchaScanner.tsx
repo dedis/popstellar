@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { StyleSheet, ViewStyle } from 'react-native';
 
 import { makeIcon } from 'core/components/PoPIcon';
+import { Spacing } from 'core/styles';
 import STRINGS from 'resources/strings';
 
 import PopchaScannerClosed from '../components/PopchaScannerClosed';
@@ -14,6 +15,9 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
   } as ViewStyle,
+  topMargin: {
+    marginTop: Spacing.x05,
+  } as ViewStyle,
 });
 
 /**
@@ -23,11 +27,16 @@ const PopchaScanner = () => {
   const [showScanner, setShowScanner] = useState(false);
 
   return showScanner ? (
-    <PopchaScannerOpen onClose={() => setShowScanner(true)} containerStyle={styles.container} />
+    <PopchaScannerOpen
+      onClose={() => setShowScanner(false)}
+      containerStyle={styles.container}
+      topMarginStyle={styles.topMargin}
+    />
   ) : (
     <PopchaScannerClosed
       onOpenPress={() => setShowScanner(true)}
       containerStyle={styles.container}
+      topMarginStyle={styles.topMargin}
     />
   );
 };
