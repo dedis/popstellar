@@ -453,8 +453,8 @@ object MessageExample {
   private final val EMPTY_STATE = ""
   private final val POPCHA_ADDRESS = ""
   private final val clientId = "some client"
-  private final val nonce = "EPFL"
-  private final val signature = PRIVATE_KEY.signData(Base64Data.encode(nonce))
+  private final val nonce = Base64Data.encode("EPFL")
+  private final val signature = PRIVATE_KEY.signData(nonce)
   private final val responseMode = "query"
   private final val validAuthenticate = Authenticate(
     clientId,

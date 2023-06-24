@@ -98,7 +98,7 @@ class PopchaHandler(dbRef: => AskableActorRef) extends MessageHandler {
         .withAudience(authenticate.clientId)
         .withIssuedAt(issuedTime)
         .withExpiresAt(expTime)
-        .withClaim("nonce", authenticate.nonce)
+        .withClaim("nonce", authenticate.nonce.toString)
         .sign(algorithm)
     ) match {
       case Success(jwt)       => jwt

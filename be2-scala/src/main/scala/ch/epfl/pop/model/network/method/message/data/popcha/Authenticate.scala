@@ -5,7 +5,7 @@ import ch.epfl.pop.model.network.Parsable
 import ch.epfl.pop.model.network.method.message.data.ActionType.ActionType
 import ch.epfl.pop.model.network.method.message.data.ObjectType.ObjectType
 import ch.epfl.pop.model.network.method.message.data.{ActionType, MessageData, ObjectType}
-import ch.epfl.pop.model.objects.{PublicKey, Signature}
+import ch.epfl.pop.model.objects.{Base64Data, PublicKey, Signature}
 import spray.json._
 
 /** Data structure to represent an authentication request
@@ -26,7 +26,7 @@ import spray.json._
   */
 final case class Authenticate(
     clientId: String,
-    nonce: String,
+    nonce: Base64Data,
     identifier: PublicKey,
     identifierProof: Signature,
     state: String,

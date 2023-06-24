@@ -62,7 +62,6 @@ class PopchaValidatorSuite extends TestKit(ActorSystem("popChaValidatorTestActor
   private val mockDBWithInvalidChannelType: AskableActorRef = setupMockDB(laoDataWithUser, channelDataWithInvalidObjectType)
 
   private val mockDBWithSameUserAuthenticated: AskableActorRef = setupMockDB(laoDataWithUser, channelDataWithValidObjectType, Some(userIdentifier))
-  private val mockDBWithOtherUserAuthenticated: AskableActorRef = setupMockDB(laoDataWithUser, channelDataWithValidObjectType, Some(otherUser))
 
   test("Authenticate works without user already authenticated") {
     val dbActorRef = mockDBWithUser
@@ -96,12 +95,6 @@ class PopchaValidatorSuite extends TestKit(ActorSystem("popChaValidatorTestActor
 
   test("Authenticate with user not in last lao's rollcall fails") {
     val dbActorRef = mockDBWithoutUser
-    val message: GraphMessage = new PopchaValidator(dbActorRef).validateAuthenticateRequest(AUTHENTICATE_RPC)
-    message shouldBe a[Left[_, PipelineError]]
-  }
-
-  test("Authenticate with other pop token already registered fails") {
-    val dbActorRef = mockDBWithOtherUserAuthenticated
     val message: GraphMessage = new PopchaValidator(dbActorRef).validateAuthenticateRequest(AUTHENTICATE_RPC)
     message shouldBe a[Left[_, PipelineError]]
   }

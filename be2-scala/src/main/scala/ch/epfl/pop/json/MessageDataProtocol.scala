@@ -437,7 +437,7 @@ object MessageDataProtocol extends DefaultJsonProtocol {
     override def read(json: JsValue): Authenticate = json.asJsObject().getFields(CLIENT_ID, NONCE, IDENTIFIER, IDENTIFIER_PROOF, STATE, RESPONSE_MODE, POPCHA_ADDRESS) match {
       case Seq(clientId @ JsString(_), nonce @ JsString(_), identifier @ JsString(_), identifierProof @ JsString(_), state @ JsString(_), responseMode @ JsString(_), popchaAddress @ JsString(_)) => Authenticate(
           clientId.convertTo[String],
-          nonce.convertTo[String],
+          nonce.convertTo[Base64Data],
           identifier.convertTo[PublicKey],
           identifierProof.convertTo[Signature],
           state.convertTo[String],
