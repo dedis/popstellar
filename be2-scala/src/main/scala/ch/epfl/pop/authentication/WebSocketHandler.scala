@@ -54,7 +54,6 @@ object WebSocketHandler {
     val sink: Sink[Message, Future[Done]] =
       Sink.foreach {
         case message: TextMessage.Strict =>
-          println(message.text)
           listenerRef ! message
           listenerRef ! Done
           socketsConnected.remove(socketId)

@@ -101,8 +101,8 @@ class PopchaHandler(dbRef: => AskableActorRef) extends MessageHandler {
         .withClaim("nonce", authenticate.nonce.toString)
         .sign(algorithm)
     ) match {
-      case Success(jwt)       => jwt
-      case Failure(ex) => return Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleAuthentication failed : ${ex.getMessage}", rpcMessage.getId))
+      case Success(jwt) => jwt
+      case Failure(ex)  => return Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleAuthentication failed : ${ex.getMessage}", rpcMessage.getId))
     }
 
     sendOpenIdToken(rpcMessage, authenticate, laoId, jwt)
@@ -136,7 +136,7 @@ class PopchaHandler(dbRef: => AskableActorRef) extends MessageHandler {
     }
 
     Await.ready(connected, duration).value.get match {
-      case Success(_) => Right(rpcMessage)
+      case Success(_)  => Right(rpcMessage)
       case Failure(ex) => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleAuthentication failed : ${ex.getMessage}", rpcMessage.getId))
     }
   }

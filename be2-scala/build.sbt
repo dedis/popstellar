@@ -144,6 +144,7 @@ libraryDependencies ++= Seq(
 
     "ch.qos.logback" % "logback-classic" % "1.1.3" % Runtime,   // Akka logging library
     "com.typesafe.akka" %% "akka-testkit" % AkkaVersion % Test, // Akka actor test kit (akka actor testing library)
+    "com.typesafe.akka" %% "akka-stream-testkit" % AkkaVersion, // Akka stream test kit
     "com.typesafe.akka" %% "akka-http-testkit" % AkkaHttpVersion // Akka http test kit
 )
 
