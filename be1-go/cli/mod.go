@@ -38,8 +38,6 @@ const (
 
 	// connectionRetryRate is the rate at which the time to wait before retrying to connect to a server increases
 	connectionRetryRate = 2
-
-	popchaHTMLPath = "popcha/qrcode/popcha.html"
 )
 
 // ServerConfig contains the configuration for the server
@@ -97,6 +95,16 @@ func Serve(cliCtx *cli.Context) error {
 	// start the processing loop
 	h.Start()
 
+	// Start the PoPCHA Authorization Server. It will run internally on localhost, the address of the server given in
+	// the config file will be the one used externally.
+	authorizationSrv, err := popcha.NewAuthServer(h, "localhost", serverConfig.AuthPort,
+		log.With().Str("role", "authorization server").Logger())
+	if err != nil {
+		return xerrors.Errorf("Error while starting the PoPCHA server: %v", err)
+	}
+	authorizationSrv.Start()
+	<-authorizationSrv.Started
+
 	// Start websocket server for clients
 	clientSrv := network.NewServer(h, serverConfig.PrivateAddress, serverConfig.ClientPort, socket.ClientSocketType,
 		log.With().Str("role", "client websocket").Logger())
@@ -106,12 +114,6 @@ func Serve(cliCtx *cli.Context) error {
 	serverSrv := network.NewServer(h, serverConfig.PrivateAddress, serverConfig.ServerPort, socket.ServerSocketType,
 		log.With().Str("role", "server websocket").Logger())
 	serverSrv.Start()
-
-	// Start the PoPCHA Authorization Server
-	authorizationSrv := popcha.NewAuthServer(h, serverConfig.AuthAddress, serverConfig.AuthPort, popchaHTMLPath,
-		log.With().Str("role", "authorization server").Logger())
-	authorizationSrv.Start()
-	<-authorizationSrv.Started
 
 	// create wait group which waits for goroutines to finish
 	wg := &sync.WaitGroup{}

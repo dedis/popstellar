@@ -102,7 +102,7 @@ private class FileMonitor(mediatorRef: ActorRef) extends Runnable {
   // getParent to exclude the filename from the path, i.e get the config directory path
   private val directory: Path = Path.of(serverPeersListPath).getParent
   private val watchService: WatchService = directory.getFileSystem.newWatchService()
-  directory.register(watchService, ENTRY_CREATE, ENTRY_MODIFY)
+  directory.register(watchService, ENTRY_MODIFY)
 
   override def run(): Unit = {
     try {

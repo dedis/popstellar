@@ -3,6 +3,10 @@ package ch.epfl.pop.pubsub.graph.handlers
 import akka.actor.ActorSystem
 import akka.stream.scaladsl.{Sink, Source}
 import akka.testkit.TestProbe
+import ch.epfl.pop.IOHelper.readJsonFromPath
+import ch.epfl.pop.json.HighLevelProtocol
+import ch.epfl.pop.model.network.JsonRpcRequest
+import ch.epfl.pop.model.network.method.GreetServer
 import ch.epfl.pop.model.objects.Channel
 import ch.epfl.pop.pubsub.{AskPatternConstants, ClientActor, PubSubMediator}
 import org.scalatest.funsuite.{AnyFunSuite => FunSuite}
@@ -89,6 +93,21 @@ class ParamsHandlerSuite extends FunSuite with Matchers with AskPatternConstants
       case Some(Failure(exception))       => Matchers.fail(exception.getMessage)
       case _                              => Matchers.fail()
     }
+  }
+
+  test("GreetServerHandler should send the GreetServer to client Actor") {
+    val mockClient = TestProbe()(system)
+    val greetExamplePath = "src/main/resources/protocol/examples/query/greet_server/greet_server.json"
+
+    val greetExample = JsonRpcRequest.buildFromJson(readJsonFromPath(greetExamplePath))
+
+    val handler = ParamsHandler.greetServerHandler(mockClient.ref)
+    val output = Source.single(Right(greetExample)).via(handler).runWith(Sink.head)
+
+    // Ensure the message has finished being processed
+    Await.ready(output, duration)
+
+    mockClient.expectMsgType[GreetServer](duration)
   }
 
 }

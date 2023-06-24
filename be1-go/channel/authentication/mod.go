@@ -132,7 +132,7 @@ func (c *Channel) Publish(publish method.Publish, socket socket.Socket) error {
 }
 
 // Catchup is used to handle a catchup message.
-func (c *Channel) Catchup(catchup method.Catchup) []message.Message {
+func (c *Channel) Catchup(_ method.Catchup) []message.Message {
 	c.log.Error().Msg("Catchup is not allowed on the authentication channel")
 	return nil
 }
@@ -182,8 +182,12 @@ func (c *Channel) auhenticateUser(msg message.Message, msgData interface{},
 	if !c.latestRollCallMembers.isPresent(msg.Sender) {
 		return xerrors.Errorf("Error while validating the authentication message: pop token is not part of the latest roll call")
 	}
+	nonce, err := base64.URLEncoding.DecodeString(data.Nonce)
+	if err != nil {
+		return xerrors.Errorf("Nonce should be base64 encoded")
+	}
 
-	encodedClientParams, err := constructRedirectURIParams(c, data)
+	encodedClientParams, err := constructRedirectURIParams(c, data, string(nonce))
 	if err != nil {
 		return xerrors.Errorf("Error while constructing the redirect URI parameters: %v", err)
 	}
@@ -191,9 +195,11 @@ func (c *Channel) auhenticateUser(msg message.Message, msgData interface{},
 	// constructing the unique URL endpoint of the PoPCHA server
 
 	laoID := strings.TrimPrefix(c.channelID, "/root/")
-	popChaPath := strings.Join([]string{"/response", laoID, "v4l1d_ient_id", data.Nonce}, "/")
+
+	popChaPath := strings.Join([]string{"/response", laoID, data.ClientID, string(nonce)}, "/")
 
 	popchaAddress := data.PopchaAddress
+
 	if strings.HasPrefix(popchaAddress, "http://") {
 		popchaAddr, err := url.Parse(data.PopchaAddress)
 		if err != nil {
@@ -253,7 +259,7 @@ func loadRSAKeys(privateKeyPath string, publicKeyPath string) (*rsa.PrivateKey, 
 }
 
 // constructRedirectURIParams computes the redirect URI given the authentication message
-func constructRedirectURIParams(c *Channel, data *messagedata.AuthenticateUser) (string, error) {
+func constructRedirectURIParams(c *Channel, data *messagedata.AuthenticateUser, nonceDec string) (string, error) {
 
 	c.log.Info().Msg("Constructing the URI Parameters")
 
@@ -269,7 +275,7 @@ func constructRedirectURIParams(c *Channel, data *messagedata.AuthenticateUser) 
 	c.addPPIDEntry(identifier(data.Identifier), identifier(ppid))
 
 	c.log.Info().Msg("Signing the JWT Token")
-	idTokenString, err := createJWTString(data.PopchaAddress, ppid, data.ClientID, data.Nonce, sk)
+	idTokenString, err := createJWTString(data.PopchaAddress, ppid, data.ClientID, nonceDec, sk)
 	if err != nil {
 		c.log.Err(err).Msg("Error while creating the JWT token")
 		return "", xerrors.Errorf("Error while creating JWT token: %v", err)

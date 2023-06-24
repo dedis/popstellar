@@ -3,6 +3,7 @@ package popcha
 import (
 	"bytes"
 	"context"
+	"embed"
 	"fmt"
 	"github.com/aaronarduino/goqrsvg"
 	"github.com/ajstarks/svgo"
@@ -14,8 +15,8 @@ import (
 	"github.com/zitadel/oidc/v2/pkg/op"
 	"golang.org/x/xerrors"
 	"html/template"
+	"io/fs"
 	"net/http"
-	"os"
 	"popstellar/hub"
 	"strconv"
 	"strings"
@@ -59,8 +60,10 @@ const (
 	loginHint       = "login_hint"
 	responseMode    = "response_mode"
 	// modes of response
-	query    = "query"
-	fragment = "fragment"
+	query        = "query"
+	fragment     = "fragment"
+	queryChar    = "?"
+	fragmentChar = "#"
 )
 
 // variable for upgrading the http connection into a websocket one
@@ -186,12 +189,25 @@ type AuthorizationServer struct {
 	Started           chan struct{}
 	closing           *sync.Mutex
 	connsMutex        *sync.Mutex
-	htmlFilePath      string
+	qrCodeHTML        *template.Template
 }
+
+// creating a file system for the qrcode directory, in order to safely retrieve the HTML resource for further use in
+// the server.
+//
+//go:embed qrcode/*
+var popchaFS embed.FS
 
 // NewAuthServer creates an authorization server, given a hub, an address and port,
 // the path of the html file it will display, and a logger.
-func NewAuthServer(hub hub.Hub, httpAddr string, httpPort int, htmlFilePath string, log zerolog.Logger) *AuthorizationServer {
+func NewAuthServer(hub hub.Hub, httpAddr string, httpPort int, log zerolog.Logger) (*AuthorizationServer, error) {
+
+	file, err := fs.ReadFile(popchaFS, "qrcode/popcha.html")
+	if err != nil {
+		return nil, err
+	}
+	// reading the template bytes into a template object
+	qrCodeTemplate := template.Must(template.New("").Parse(string(file)))
 
 	as := AuthorizationServer{
 		log: log.With().
@@ -203,12 +219,12 @@ func NewAuthServer(hub hub.Hub, httpAddr string, httpPort int, htmlFilePath stri
 		closing:           &sync.Mutex{},
 		internalConns:     make(map[string]*websocket.Conn),
 		connsMutex:        &sync.Mutex{},
-		htmlFilePath:      htmlFilePath,
+		qrCodeHTML:        qrCodeTemplate,
 	}
 
 	// creation of the http server
 	as.httpServer = as.newChallengeServer()
-	return &as
+	return &as, nil
 }
 
 // Start launches a go routine to start the server
@@ -280,7 +296,7 @@ func (as *AuthorizationServer) HandleRequest(w http.ResponseWriter, req *http.Re
 	}
 
 	// generate PoPCHA QRCode
-	err = as.generateQRCode(w, req, oidcReq.LoginHint, oidcReq.ClientID, oidcReq.Nonce, oidcReq.RedirectURI)
+	err = as.generateQRCode(w, req, oidcReq.LoginHint, oidcReq.ClientID, oidcReq.Nonce, oidcReq.RedirectURI, string(oidcReq.ResponseMode))
 	if err != nil {
 		as.handleBadRequest(w, err, "Error while generating PoPCHA QRCode")
 	}
@@ -298,7 +314,7 @@ func (as *AuthorizationServer) handleBadRequest(w http.ResponseWriter, err error
 
 // generateQRCode builds a PoPCHA QRCode and executes an HTML template including it, given authorization parameters.
 func (as *AuthorizationServer) generateQRCode(w http.ResponseWriter, req *http.Request, laoID string, clientID string,
-	nonce string, redirectHost string) error {
+	nonce string, redirectHost string, resMode string) error {
 	var buffer bytes.Buffer
 	// new SVG buffer
 	s := svg.New(&buffer)
@@ -327,6 +343,13 @@ func (as *AuthorizationServer) generateQRCode(w http.ResponseWriter, req *http.R
 	// finalizing the buffer construction
 	s.End()
 
+	var responseChar string
+	if resMode == query {
+		responseChar = queryChar
+	} else {
+		responseChar = fragmentChar
+	}
+
 	// internal HTML template struct, including the svg buffer, the Websocket and redirect addresses
 	d := struct {
 		SVGImage      template.HTML
@@ -335,20 +358,9 @@ func (as *AuthorizationServer) generateQRCode(w http.ResponseWriter, req *http.R
 	}{
 		SVGImage:      template.HTML(buffer.String()),
 		WebSocketAddr: "ws://" + req.Host + strings.Join([]string{responseEndpoint, laoID, "authentication", clientID, nonce}, "/"),
-		RedirectHost:  redirectHost,
+		RedirectHost:  redirectHost + responseChar,
 	}
-
-	templateFile := as.htmlFilePath
-	// reading HTML template bytes
-	templateContent, err := os.ReadFile(templateFile)
-	if err != nil {
-		return err
-	}
-
-	// reading the template bytes into a template object
-	tmpl := template.Must(template.New("").Parse(string(templateContent)))
-	// executing the template using the internal svg struct
-	err = tmpl.Execute(w, d)
+	err = as.qrCodeHTML.Execute(w, d)
 	if err != nil {
 		return err
 	}
@@ -434,6 +446,9 @@ func (as *AuthorizationServer) ValidateAuthRequest(req *oidc.AuthRequest) error 
 		return err
 	}
 
+	if len(req.RedirectURI) <= 0 {
+		return xerrors.New("the redirect URI must be non empty")
+	}
 	//validating the redirectURI
 	err = op.ValidateAuthReqRedirectURI(client, req.RedirectURI, req.ResponseType)
 	if err != nil {

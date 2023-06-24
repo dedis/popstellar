@@ -51,18 +51,18 @@ The two most common Scala IDEs are VSCode and IntelliJ. Both are viable since we
 
 ## 3.	Architecture
 
-The PoP Scala backend is used by LAO organizers and witnesses in order to store and validate LAO information/participation. A simplified version of the project is as follows: clients (either organizers, witnesses, or attendees) may connect to the server using WebSockets in order to "read" or "write" information on a database depending on their role in the LAO.
+The PoP Scala backend is used by LAO organizers and witnesses in order to store and validate LAO information/participation. Note that the actual implementation allows server to server and client to multi server communication; meaning that a LAO can be ran on multiple servers concurrently. A simplified version of the project is as follows: clients (either organizers, witnesses, or attendees) may connect to the server using WebSockets in order to "read" or "write" information on a database depending on their role in the LAO.
 
 <div align="center">
   <img alt="Simplified be2 project architecture" src="images/be2-simplified.png" width="600" />
 </div>
 
 
-In more details, the whole backend is a giant [DSL graph](https://doc.akka.io/docs/akka/current/stream/stream-graphs.html) (see image below). Whenever a new request is received (blue "Source" circle), a new `ClientActor` is automatically created for each new client. This actor *represents the fundamental link between a particular client and the server*; any message sent to the actor will arrive directly in the client's mailbox.
-
 The `ClientActor` then transmits data destined for the server directly to a partitioner for further examination. This partitioner will decide which path a particular message will follow (e.g. a JSON-rpc query will not be treated the same way as a JSON-rpc response).
 
-Once the message has been processed (e.g. LAO created if the message is valid or reject the request if it is not valid or does not follow our custom JSON-rpc protocol), the assigned handler (green and orange boxes) asks the `AnswerGenerator` to inform the client whether the operation was successful or not.
+In more details, the whole backend is a giant [DSL graph](https://doc.akka.io/docs/akka/current/stream/stream-graphs.html) (see image below). Whenever a new request is received (blue "Source" circle), a new `ClientActor` is automatically created for each new connected client or server. This actor *represents the fundamental link between a particular client and the server*; any message sent to the actor will arrive directly in the client's mailbox.
+
+Once the message has been processed (for instance a LAO has been created or the message was rejected), the assigned handler (a green, orange or blue box) asks the `AnswerGenerator` to inform the client whether the operation was successful or not.
 
 <div align="center">
   <img alt="Simplified be2 project architecture" src="images/be2-s.png" />
@@ -73,7 +73,7 @@ If we look even closer, here is how the real be2 DSL graph is designed.
 
 Between the `ClientActor` and the partitioner sits a module which goal is to validate conformity with our custom JSON-rcp protocol, decode the JSON payload, and then finally validate its fields.
 
-The partitioner decides which path a message is supposed to take depending on its content; more precisely, depending on if it contains a "params" field or not. Further down the line, a handler is used for each type of message (e.g. the LAO handler is able to understand and process LAO messages such as `CreateLao`, `StateLao`, and `UpdateLao`)
+The partitioner decides which path a message is supposed to take depending on its content; more precisely, depending on if it is a request, if it contains a message field, it will be forwarded to the paramsWithMessage handler, otherwise it will be filtered depending on the method carried by the json. Otherwise, if it is a response, it will be forwarded to the ResponseHandler. Further down the line, a handler is used for each type of message (e.g. the LAO handler is able to understand and process LAO messages such as `CreateLao`, `StateLao`, and `UpdateLao`)
 
 The results are then collected by the main merger (blue "merger" circle) and sent to the `AnswerGenerator`. An answer (`JsonRpcResponse`) is created and sent back to the `ClientActor` (and thus the real client through WebSocket) by the `Answerer` module.
 
@@ -84,8 +84,8 @@ The results are then collected by the main merger (blue "merger" circle) and sen
 
 ### Sending and Receiving Messages
 
-`ClientActor` is complex yet wonderful piece of code that resembles black magic at first sight. It *is* conceptually both the (websocket) link between the server & a particular client, as well as the actual internal representation of the client. Each different client is represented by a unique `ClientActor`. It serves as both the entry point (receiving a `JsonRpcRequest`) and exit point (sending a `JsonRpcResponse` to a client or broadcasting a `Broadcast` to multiple clients) of the graph.
-
+`ClientActor` is complex yet wonderful piece of code that resembles black magic at first sight. It *is* conceptually both the (websocket) link between the server & a particular client or server, as well as the actual internal representation of the client or server. Each different client or server is represented by a unique `ClientActor`. It serves as both the entry point (receiving a `JsonRpcRequest`) and exit point (sending a `JsonRpcResponse` to a client or broadcasting a `Broadcast` to multiple clients) of the graph.
+Whenever a client disconnects from the server, the clienActor associated to that connection is removed and a new clientActor is recreated from scratch
 #### `ClientActor` as entry point
 
 Using a mix of akka http (handling low-level websocket stuff) and akka stream, we collect input client websocket messages as a string directly in the graph
@@ -202,12 +202,21 @@ We are using [leveldb](https://github.com/codeborui/leveldb-scala) in order to s
 
 Multiple messages may then be stored "inside" each channel (all within one single database file). Since leveldb is a key-value database, we are using `channel#message_id` as key and the corresponding `message` (in its json representation) as value.
 
+The database is split between data stored as Key -> List[Message ids] and the data itself Key -> Message. Hence we are using two prefixes to the keys used to query the database :
+- CHANNEL_DATA_KEY = "ChannelData:" for data stored as Key -> List[Message ids]
+- DATA_KEY = "Data:" for the data itself.
+
 Summary of the keys used to retrieve data:
-- for a message: `channel#message_id`
-- for ChannelData: `channel`
-- for LaoData: `root/lao_id#laodata`
-- for RollCallData: `root/lao_id/rollcall`
-- for ElectionData: `root/lao_id/private/election_id`
+- for a message: `Data:channel#message_id`
+- for ChannelData: `ChannelData:channel`
+- for LaoData: `Data:root/lao_id#laodata`
+- for RollCallData: `Data:root/lao_id/rollcall`
+- for ElectionData: `Data:/root/lao_id/private/election_id`
+- for a SetupElection message: `Data:SetupElectionMessageId:channel`
+- for a CreateLao message: `Data:CreateLaoId:channel`
+
+Notice how CreateLao messages are stored. Before the introduction of heartbeat and get_messages_by_id messages, CreateLao messages were received on `/root` and written on `/root/lao_id`. Hence, sent to other servers on `root/lao_id`, the CreateLao messages were rejected. This is the reason why CreateLao messages have been moved to root.
+Notice also how SetupElection messages are stored. They are expected to be received on `/root/lao_id`, but were written on `/root/lao_id/election_id`. Hence, they were rejected when received by other servers.
 
 We use `/` as a separator for parts of a channel and `#` as a separator for data objects when needed.
 
@@ -284,8 +293,8 @@ Here's an example (shamefully stolen from `MessageHandler.scala`) showing the po
 ```scala
 val askWrite = dbActor ? DbActor.Write(rpcMessage.getParamsChannel, m)
 askWrite.transformWith {
-  case Success(_) => Future(Left(rpcMessage))
-  case _ => Future(Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"dbAskWrite failed : could not write message $message", rpcMessage.id)))
+  case Success(_) => Future(Right(rpcMessage))
+  case _ => Future(Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"dbAskWrite failed : could not write message $message", rpcMessage.id)))
 }
 ```
 
@@ -327,6 +336,15 @@ final case class DbActorReadRollCallDataAck(rollcallData: RollCallData) extends 
 ```
 
 :information_source: the database may easily be reset/purged by deleting the `database` folder entirely. You may add the `-Dclean` flag at compilation for automatic database purge
+
+
+### Servers consistency
+
+Making sure that servers that run a LAO concurrently share the same state is ensured by `Heartbeat` messages and `GetMessagesById` messages. These messages are proper to server to server communication and they follow the same path as the other messages in the DSL graph.
+:warning: connection to other servers is internally represented by an instance of `ClientActor`. Since this can easily lead to errors, the way we distinguish a server to server connection and a client to server connection is by a `isServer` field in the `ClientActor` instance.
+The way we broadcast heartbeats to connected servers is by mean of the `Monitor` Actor. The monitor actor sees every message the system receives. It schedules heartbeats either whenever it sees a message in the next heartbeatRate seconds, or periodically after a period of messageDelay seconds.
+Heartbeats are sent by the mean of the `ConnectionMediator` actor that holds a set of connected server peers.
+
 
 
 

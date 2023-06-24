@@ -16,7 +16,8 @@
     },
     "nonce": {
         "description": "one-time value linked to the client",
-        "type": "string"
+        "type": "string",
+        "contentEncoding": "base64"
     },
     "identifier": {
         "description": "public key associated to the pop token and client id",
