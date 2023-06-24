@@ -97,6 +97,7 @@ object Server {
           println(f"[Client] ch.epfl.pop.Server online at $ownClientAddress")
           println(f"[Server] ch.epfl.pop.Server online at $ownServerAddress")
           println(f"[Server] ch.epfl.pop.Server auth server online at $ownAuthAddress")
+          println(f"[Server] ch.epfl.pop.Server auth ws server online at $ownAuthWSAddress")
 
         case Failure(_) =>
           logger.error(
