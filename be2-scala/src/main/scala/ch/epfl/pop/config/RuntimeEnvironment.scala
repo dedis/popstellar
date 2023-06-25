@@ -33,11 +33,13 @@ object RuntimeEnvironment {
   lazy val dbPath: String = getDbDirectory(dbPathParam, dbFolder)
   lazy val appConf: Config = ConfigFactory.parseFile(new File(appConfFile))
   lazy val serverConf: ServerConf = ServerConf(appConf)
-  lazy val ownClientAddress = f"ws://${serverConf.interface}:${serverConf.port}/${serverConf.clientPath}"
-  lazy val ownServerAddress = f"ws://${serverConf.interface}:${serverConf.port}/${serverConf.serverPath}"
-  lazy val ownAuthAddress = f"http://${serverConf.interface}:${serverConf.port}/${serverConf.authenticationPath}"
-  lazy val ownResponseAddress = f"ws://${serverConf.interface}:${serverConf.port}/${serverConf.responseEndpoint}"
-  lazy val ownPublicKeyAddress = f"http://${serverConf.interface}:${serverConf.port}/${serverConf.publicKeyEndpoint}"
+
+  lazy val ownRootPath = s"${serverConf.interface}:${serverConf.port}"
+  lazy val ownClientAddress = f"ws://$ownRootPath/${serverConf.clientPath}"
+  lazy val ownServerAddress = f"ws://$ownRootPath/${serverConf.serverPath}"
+  lazy val ownAuthAddress = f"http://$ownRootPath/${serverConf.authenticationPath}"
+  lazy val ownResponseAddress = f"ws://$ownRootPath/${serverConf.responseEndpoint}"
+  lazy val ownPublicKeyAddress = f"http://$ownRootPath/${serverConf.publicKeyEndpoint}"
 
   // Needed for unit tests
   lazy val isTestMode: Boolean = testMode(testParam)

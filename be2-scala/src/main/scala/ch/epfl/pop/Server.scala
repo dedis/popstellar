@@ -13,6 +13,7 @@ import ch.epfl.pop.authentication.{GetRequestHandler, WebSocketHandler}
 import ch.epfl.pop.config.RuntimeEnvironment
 import ch.epfl.pop.config.RuntimeEnvironment._
 import ch.epfl.pop.decentralized.{ConnectionMediator, HeartbeatGenerator, Monitor}
+import ch.epfl.pop.model.objects.Base64Data
 import ch.epfl.pop.pubsub.{MessageRegistry, PubSubMediator, PublishSubscribe}
 import ch.epfl.pop.storage.DbActor
 import org.iq80.leveldb.Options
