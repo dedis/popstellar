@@ -13,9 +13,8 @@ import ch.epfl.pop.authentication.{GetRequestHandler, WebSocketHandler}
 import ch.epfl.pop.config.RuntimeEnvironment
 import ch.epfl.pop.config.RuntimeEnvironment._
 import ch.epfl.pop.decentralized.{ConnectionMediator, HeartbeatGenerator, Monitor}
-import ch.epfl.pop.model.objects.Base64Data
 import ch.epfl.pop.pubsub.{MessageRegistry, PubSubMediator, PublishSubscribe}
-import ch.epfl.pop.storage.DbActor
+import ch.epfl.pop.storage.{DbActor, SecurityModuleActor}
 import org.iq80.leveldb.Options
 
 import java.util.concurrent.TimeUnit
@@ -46,11 +45,12 @@ object Server {
       val messageRegistry: MessageRegistry = MessageRegistry()
       val pubSubMediatorRef: ActorRef = system.actorOf(PubSubMediator.props, "PubSubMediator")
       val dbActorRef: AskableActorRef = system.actorOf(Props(DbActor(pubSubMediatorRef, messageRegistry)), "DbActor")
+      val securityModuleActorRef: AskableActorRef = system.actorOf(Props(SecurityModuleActor(RuntimeEnvironment.securityPath)))
 
       // Create necessary actors for server-server communications
       val heartbeatGenRef: ActorRef = system.actorOf(HeartbeatGenerator.props(dbActorRef))
       val monitorRef: ActorRef = system.actorOf(Monitor.props(heartbeatGenRef))
-      val connectionMediatorRef: ActorRef = system.actorOf(ConnectionMediator.props(monitorRef, pubSubMediatorRef, dbActorRef, messageRegistry))
+      val connectionMediatorRef: ActorRef = system.actorOf(ConnectionMediator.props(monitorRef, pubSubMediatorRef, dbActorRef, securityModuleActorRef, messageRegistry))
 
       // Setup routes
       def publishSubscribeRoute: RequestContext => Future[RouteResult] = {
@@ -59,6 +59,7 @@ object Server {
             PublishSubscribe.buildGraph(
               pubSubMediatorRef,
               dbActorRef,
+              securityModuleActorRef,
               messageRegistry,
               monitorRef,
               connectionMediatorRef,
@@ -70,6 +71,7 @@ object Server {
             PublishSubscribe.buildGraph(
               pubSubMediatorRef,
               dbActorRef,
+              securityModuleActorRef,
               messageRegistry,
               monitorRef,
               connectionMediatorRef,
@@ -79,7 +81,7 @@ object Server {
         }
       }
 
-      def getRequestsRoute = GetRequestHandler.buildRoutes(serverConf, dbActorRef)
+      def getRequestsRoute = GetRequestHandler.buildRoutes(serverConf, securityModuleActorRef)
 
       def authenticateWSRoute = WebSocketHandler.buildRoute(serverConf)(system)
 

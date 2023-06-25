@@ -19,7 +19,7 @@ class GetRequestHandlerSuite extends AnyFunSuite with Matchers with ScalatestRou
 
   test("Accessing public key endpoint returns the server's public key in pem format") {
     val dummyServerConf = new ServerConf("", 42, "", "", "auth", "", "publicKey", "")
-    val securityModuleActorRef: AskableActorRef = system.actorOf(Props(FakeSecurityModuleActor))
+    val securityModuleActorRef: AskableActorRef = system.actorOf(Props(FakeSecurityModuleActor()))
 
     val route = GetRequestHandler.buildRoutes(dummyServerConf, securityModuleActorRef)
     val request = Get("/" + dummyServerConf.publicKeyEndpoint)

@@ -22,6 +22,7 @@ object RuntimeEnvironment {
   // Command line parameters
   private val cleanParam = "clean"
   private val configParam = "scala.config"
+  private val securityParam = "scala.security"
   private val dbPathParam = "scala.db"
   private val dbFolder = "database"
   private val testParam = "test"
@@ -31,6 +32,7 @@ object RuntimeEnvironment {
   private lazy val appConfFile = confDir + File.separator + "application.conf"
 
   lazy val dbPath: String = getDbDirectory(dbPathParam, dbFolder)
+  lazy val securityPath: String = getRequiredDirectory(securityParam)
   lazy val appConf: Config = ConfigFactory.parseFile(new File(appConfFile))
   lazy val serverConf: ServerConf = ServerConf(appConf)
 
@@ -79,12 +81,7 @@ object RuntimeEnvironment {
       }
     }
 
-    val pathConfig = sp(configParam)
-    if (pathConfig != null && pathConfig.trim.nonEmpty) {
-      pathConfig.trim
-    } else {
-      throw new RuntimeException(s"-D$configParam was not provided.")
-    }
+    getRequiredDirectory(configParam)
   }
 
   private def getDbDirectory(dbPathParam: String, dbFolder: String): String = {
@@ -93,6 +90,15 @@ object RuntimeEnvironment {
       dbPath.trim + File.separator + dbFolder
     } else {
       dbFolder
+    }
+  }
+
+  private def getRequiredDirectory(param: String): String = {
+    val path = sp(param)
+    if (path != null && path.trim.nonEmpty) {
+      path.trim
+    } else {
+      throw new RuntimeException(s"-D$param was not provided.")
     }
   }
 

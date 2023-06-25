@@ -10,7 +10,7 @@ import ch.epfl.pop.model.network.JsonRpcMessage
 import ch.epfl.pop.model.objects.{Base64Data, PublicKey}
 import ch.epfl.pop.pubsub.AskPatternConstants
 import ch.epfl.pop.pubsub.graph.{GraphMessage, PipelineError}
-import ch.epfl.pop.storage.DbActor
+import ch.epfl.pop.storage.{DbActor, FakeSecurityModuleActor}
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import org.scalatest.BeforeAndAfterAll
@@ -22,8 +22,6 @@ import util.examples.MessageExample
 import util.examples.MessageExample.{MESSAGE_AUTHENTICATE, VALID_AUTHENTICATE}
 
 import java.io.File
-import java.security.KeyPairGenerator
-import java.security.interfaces.{RSAPrivateKey, RSAPublicKey}
 import java.util.concurrent.TimeUnit
 import scala.annotation.unused
 import scala.concurrent.{Await, Promise}
@@ -41,12 +39,6 @@ class PopchaHandlerSuite extends TestKit(ActorSystem("popchaHandlerTestActorSyst
 
   private val serverError = PipelineError(42, "Some server error", Some(42))
   private val otherUser = PublicKey(MessageExample.SEED)
-
-  private val testKeyPair = {
-    val generator = KeyPairGenerator.getInstance("RSA")
-    generator.initialize(512)
-    generator.generateKeyPair()
-  }
 
   override def afterAll(): Unit = {
     // Stops the testKit
@@ -85,10 +77,6 @@ class PopchaHandlerSuite extends TestKit(ActorSystem("popchaHandlerTestActorSyst
     Right(rpcMessage)
   }
 
-  def privateKeyProvider: RSAPrivateKey = {
-    testKeyPair.getPrivate.asInstanceOf[RSAPrivateKey]
-  }
-
   private val mockDbWithoutUser = setupMockDB(None) _
   private val mockDbWithValidUser = setupMockDB(Some(VALID_AUTHENTICATE.identifier)) _
   private val mockDbWithInvalidUser = setupMockDB(Some(otherUser)) _
@@ -99,9 +87,10 @@ class PopchaHandlerSuite extends TestKit(ActorSystem("popchaHandlerTestActorSyst
     val respPromise = Promise[Uri]()
 
     val dbActorRef = mockDbWithoutUser(None)
+    val securityModuleActorRef = system.actorOf(Props(FakeSecurityModuleActor()))
     val responseHandler: Uri => GraphMessage = handleAuthenticationResponse(AUTHENTICATE_RPC, respPromise)
 
-    val message = new PopchaHandler(dbActorRef).handleAuthentication(AUTHENTICATE_RPC, responseHandler, privateKeyProvider)
+    val message = new PopchaHandler(dbActorRef, securityModuleActorRef).handleAuthentication(AUTHENTICATE_RPC, responseHandler)
     message shouldBe Right(AUTHENTICATE_RPC)
 
     val result = Await.ready(respPromise.future, timeout.duration).value
@@ -115,16 +104,16 @@ class PopchaHandlerSuite extends TestKit(ActorSystem("popchaHandlerTestActorSyst
     responseParams should contain("state" -> VALID_AUTHENTICATE.state)
     responseParams should contain key "id_token"
 
-    val idToken = JWT.require(Algorithm.RSA256(testKeyPair.getPublic.asInstanceOf[RSAPublicKey]))
+    val idToken = JWT.require(Algorithm.RSA256(FakeSecurityModuleActor.rsaPublicKey))
       .build()
       .verify(responseParams("id_token"))
 
     val claims = idToken.getClaims.asScala.map(kv => kv._1 -> kv._2.toString.stripPrefix("\"").stripSuffix("\""))
 
-    claims should contain("iss" -> RuntimeEnvironment.ownServerAddress)
+    claims should contain("iss" -> RuntimeEnvironment.ownRootPath)
     claims should contain("sub" -> VALID_AUTHENTICATE.identifier.base64Data.toString())
     claims should contain("aud" -> VALID_AUTHENTICATE.clientId)
-    claims should contain("nonce" -> VALID_AUTHENTICATE.nonce.toString)
+    claims should contain("nonce" -> VALID_AUTHENTICATE.nonce.decodeToString())
     claims should contain("laoId" -> laoId)
 
     claims should contain key "exp"
@@ -136,7 +125,8 @@ class PopchaHandlerSuite extends TestKit(ActorSystem("popchaHandlerTestActorSyst
     val authPromise = Promise[(PublicKey, String, PublicKey)]()
 
     val dbActorRef = mockDbWithoutUser(Some(authPromise))
-    val message = new PopchaHandler(dbActorRef).handleAuthentication(AUTHENTICATE_RPC, dummyResponseHandler(AUTHENTICATE_RPC), privateKeyProvider)
+    val securityModuleActorRef = system.actorOf(Props(FakeSecurityModuleActor()))
+    val message = new PopchaHandler(dbActorRef, securityModuleActorRef).handleAuthentication(AUTHENTICATE_RPC, dummyResponseHandler(AUTHENTICATE_RPC))
     message shouldBe Right(AUTHENTICATE_RPC)
 
     val authInfo = Await.ready(authPromise.future, timeout.duration).value
@@ -153,7 +143,8 @@ class PopchaHandlerSuite extends TestKit(ActorSystem("popchaHandlerTestActorSyst
     val authPromise = Promise[(PublicKey, String, PublicKey)]()
 
     val dbActorRef = mockDbWithValidUser(Some(authPromise))
-    val message = new PopchaHandler(dbActorRef).handleAuthentication(AUTHENTICATE_RPC, dummyResponseHandler(AUTHENTICATE_RPC), privateKeyProvider)
+    val securityModuleActorRef = system.actorOf(Props(FakeSecurityModuleActor()))
+    val message = new PopchaHandler(dbActorRef, securityModuleActorRef).handleAuthentication(AUTHENTICATE_RPC, dummyResponseHandler(AUTHENTICATE_RPC))
     message shouldBe Right(AUTHENTICATE_RPC)
 
     val authInfo = Try(Await.ready(authPromise.future, timeout.duration))
@@ -162,13 +153,15 @@ class PopchaHandlerSuite extends TestKit(ActorSystem("popchaHandlerTestActorSyst
 
   test("Authentication should fail on second authentication with a different identifier") {
     val dbActorRef = mockDbWithInvalidUser(None)
-    val message = new PopchaHandler(dbActorRef).handleAuthentication(AUTHENTICATE_RPC, dummyResponseHandler(AUTHENTICATE_RPC), privateKeyProvider)
+    val securityModuleActorRef = system.actorOf(Props(FakeSecurityModuleActor()))
+    val message = new PopchaHandler(dbActorRef, securityModuleActorRef).handleAuthentication(AUTHENTICATE_RPC, dummyResponseHandler(AUTHENTICATE_RPC))
     message shouldBe a[Left[_, _]]
   }
 
   test("Failure to send the authentication response should return the failure cause") {
     val dbActorRef = mockDbWithoutUser(None)
-    val message = new PopchaHandler(dbActorRef).handleAuthentication(AUTHENTICATE_RPC, failToHandleAuthenticationResponse, privateKeyProvider)
+    val securityModuleActorRef = system.actorOf(Props(FakeSecurityModuleActor()))
+    val message = new PopchaHandler(dbActorRef, securityModuleActorRef).handleAuthentication(AUTHENTICATE_RPC, failToHandleAuthenticationResponse)
     inside(message) {
       case Left(error) => error shouldEqual serverError
     }

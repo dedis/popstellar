@@ -38,12 +38,10 @@ object ServerConf {
       }
     }
 
-    new ServerConf(serverInterface, serverPort, clientPath, serverPath, authenticationPath, responseEndpoint, publicKeyEndpoint,
-      externalAddress)
+    new ServerConf(serverInterface, serverPort, clientPath, serverPath, authenticationPath, responseEndpoint, publicKeyEndpoint, externalAddress)
   }
 
 }
 
 /* Note: Can be upgraded for future configs :) */
-final case class ServerConf(interface: String, port: Int, clientPath: String, serverPath: String, authenticationPath: String,
-                            responseEndpoint: String, publicKeyEndpoint: String, externalAddress: String)
+final case class ServerConf(interface: String, port: Int, clientPath: String, serverPath: String, authenticationPath: String, responseEndpoint: String, publicKeyEndpoint: String, externalAddress: String)

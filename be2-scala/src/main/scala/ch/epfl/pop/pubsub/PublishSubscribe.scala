@@ -15,6 +15,7 @@ import ch.epfl.pop.pubsub.graph.handlers.{GetMessagesByIdResponseHandler, Params
 object PublishSubscribe {
 
   private var dbActorRef: AskableActorRef = _
+  private var securityModuleActorRef: AskableActorRef = _
   private var connectionMediatorRef: AskableActorRef = _
   private var mediatorActorRef: ActorRef = _
 
@@ -22,9 +23,12 @@ object PublishSubscribe {
   def getConnectionMediatorRef: AskableActorRef = connectionMediatorRef
   def getMediatorActorRef: ActorRef = mediatorActorRef
 
+  def getSecurityModuleActorRef: AskableActorRef = securityModuleActorRef
+
   def buildGraph(
       mediatorActorRefT: ActorRef,
       dbActorRefT: AskableActorRef,
+      securityModuleActorRefT: AskableActorRef,
       messageRegistry: MessageRegistry,
       monitorRef: ActorRef,
       connectionMediatorRefT: ActorRef,
@@ -39,6 +43,7 @@ object PublishSubscribe {
         dbActorRef = dbActorRefT
         connectionMediatorRef = connectionMediatorRefT
         mediatorActorRef = mediatorActorRefT
+        securityModuleActorRef = securityModuleActorRefT
 
         /* partitioner port numbers */
         val portPipelineError = 0

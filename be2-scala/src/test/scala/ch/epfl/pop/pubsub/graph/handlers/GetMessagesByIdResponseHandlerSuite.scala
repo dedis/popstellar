@@ -12,7 +12,7 @@ import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.objects.Channel
 import ch.epfl.pop.pubsub.graph.GraphMessage
 import ch.epfl.pop.pubsub.{AskPatternConstants, MessageRegistry, PubSubMediator, PublishSubscribe}
-import ch.epfl.pop.storage.{DbActor, InMemoryStorage}
+import ch.epfl.pop.storage.{DbActor, FakeSecurityModuleActor, InMemoryStorage}
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.funsuite.AnyFunSuiteLike
 import org.scalatest.matchers.should.Matchers
@@ -20,7 +20,6 @@ import org.scalatest.matchers.should.Matchers.{convertToAnyShouldWrapper, equal}
 
 import scala.concurrent.Await
 import scala.concurrent.duration.{DurationInt, FiniteDuration}
-import scala.io.Source.fromFile
 import scala.util.Success
 
 class GetMessagesByIdResponseHandlerSuite extends TestKit(ActorSystem("GetMessagesByIdResponseHandlerSuiteSystem")) with AnyFunSuiteLike with AskPatternConstants with BeforeAndAfterAll {
@@ -33,9 +32,10 @@ class GetMessagesByIdResponseHandlerSuite extends TestKit(ActorSystem("GetMessag
   val messageRegistry: MessageRegistry = MessageRegistry()
   val pubSubMediatorRef: ActorRef = system.actorOf(PubSubMediator.props, "PubSubMediator")
   val dbActorRef: AskableActorRef = system.actorOf(Props(DbActor(pubSubMediatorRef, messageRegistry, inMemoryStorage)), "DbActor")
+  val securityModuleActorRef: AskableActorRef = system.actorOf(Props(FakeSecurityModuleActor()))
 
   // Inject dbActor above
-  PublishSubscribe.buildGraph(pubSubMediatorRef, dbActorRef, messageRegistry, ActorRef.noSender, ActorRef.noSender, isServer = false)
+  PublishSubscribe.buildGraph(pubSubMediatorRef, dbActorRef, securityModuleActorRef, messageRegistry, ActorRef.noSender, ActorRef.noSender, isServer = false)
 
   // handler we want to test
   val responseHandler: Flow[GraphMessage, GraphMessage, NotUsed] = GetMessagesByIdResponseHandler.responseHandler(MessageRegistry())
