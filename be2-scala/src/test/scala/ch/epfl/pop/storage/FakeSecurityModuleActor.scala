@@ -2,7 +2,7 @@ package ch.epfl.pop.storage
 
 import akka.actor.Actor
 import akka.event.LoggingReceive
-import ch.epfl.pop.storage.SecurityModuleActor.{ReadRsaPublicKey, ReadRsaPublicKeyAck, SignJwt, SignJwtAck}
+import ch.epfl.pop.storage.SecurityModuleActor.{ReadRsaPublicKey, ReadRsaPublicKeyAck, ReadRsaPublicKeyPem, ReadRsaPublicKeyPemAck, SignJwt, SignJwtAck}
 import com.auth0.jwt.algorithms.Algorithm
 
 import java.security.interfaces.{RSAPrivateKey, RSAPublicKey}
@@ -16,12 +16,16 @@ object FakeSecurityModuleActor extends Actor {
     generator.generateKeyPair
   }
 
-  private val rsaPublicKey = keyPair.getPublic.asInstanceOf[RSAPublicKey]
+  val rsaPublicKey: RSAPublicKey = keyPair.getPublic.asInstanceOf[RSAPublicKey]
 
-  private val rsaPrivateKey = keyPair.getPrivate.asInstanceOf[RSAPrivateKey]
+  val rsaPrivateKey: RSAPrivateKey = keyPair.getPrivate.asInstanceOf[RSAPrivateKey]
+
+  val rsaPublicKeyPem = "-----BEGIN PUBLIC KEY-----Some_Public_Key-----END PUBLIC KEY-----"
 
   override def receive: Receive = LoggingReceive {
     case ReadRsaPublicKey() => sender() ! ReadRsaPublicKeyAck(rsaPublicKey)
+
+    case ReadRsaPublicKeyPem() => sender() ! ReadRsaPublicKeyPemAck(rsaPublicKeyPem)
 
     case SignJwt(jwt) =>
       val algorithm = Algorithm.RSA256(rsaPrivateKey)

@@ -2,7 +2,7 @@ package ch.epfl.pop.storage
 
 import akka.actor.{ActorSystem, Props}
 import akka.pattern.ask
-import akka.testkit.{ImplicitSender, TestKit}
+import akka.testkit.TestKit
 import ch.epfl.pop.pubsub.AskPatternConstants
 import ch.epfl.pop.storage.SecurityModuleActor.{ReadRsaPublicKey, ReadRsaPublicKeyAck, SignJwt, SignJwtAck}
 import com.auth0.jwt.JWT
@@ -16,7 +16,7 @@ import scala.concurrent.Await
 class SecurityModuleActorSuite extends TestKit(ActorSystem("SecurityModuleActorSystem")) with AnyFunSuiteLike with Matchers with BeforeAndAfterAll with AskPatternConstants {
 
 //  private val testSecurityDirectory = "/Users/hugo/Documents/EPFL/BA6/PoP/popstellar/be2-scala/src/security/test/"
-  private val testSecurityDirectory = "src/security/test/"
+  private val testSecurityDirectory = "src/security/test"
 
   override def afterAll(): Unit = {
     // Stops the test actor system
