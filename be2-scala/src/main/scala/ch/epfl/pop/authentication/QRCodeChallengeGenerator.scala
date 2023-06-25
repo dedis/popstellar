@@ -29,7 +29,7 @@ object QRCodeChallengeGenerator {
   def generateChallengeContent(content: String, redirectUri: String, laoId: String, clientId: String, nonce: String): ResponseEntity = {
     val encodedContent = Encoder.encode(content, ErrorCorrectionLevel.H)
     val htmlQRCode = fromMatrixToHTML(encodedContent.getMatrix)
-    val webSocketAddress = RuntimeEnvironment.ownAuthWSAddress + s"/$laoId/authentication/$clientId/$nonce"
+    val webSocketAddress = RuntimeEnvironment.ownResponseAddress + s"/$laoId/authentication/$clientId/$nonce"
 
     val templateFile = Source.fromFile(templateFileName)
     val lines = for {

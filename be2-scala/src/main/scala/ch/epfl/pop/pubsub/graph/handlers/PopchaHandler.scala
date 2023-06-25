@@ -14,11 +14,14 @@ import ch.epfl.pop.model.network.{JsonRpcMessage, JsonRpcRequest}
 import ch.epfl.pop.model.objects.{DbActorNAckException, Hash, PublicKey}
 import ch.epfl.pop.pubsub.graph.validators.MessageValidator.extractData
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
-import ch.epfl.pop.storage.DbActor.{DbActorAck, DbActorReadUserAuthenticationAck, ReadUserAuthenticated, WriteUserAuthenticated}
+import ch.epfl.pop.storage.DbActor._
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 
+import java.security.KeyFactory
+import java.security.interfaces.RSAPrivateKey
 import java.util.{Calendar, Date}
+import javax.crypto.spec.SecretKeySpec
 import scala.concurrent.Await
 import scala.util.{Failure, Success, Try}
 
@@ -27,12 +30,17 @@ import scala.util.{Failure, Success, Try}
 object PopchaHandler extends MessageHandler {
   final lazy val handlerInstance = new PopchaHandler(super.dbActor)
 
-  def handleAuthentication(rpcMessage: JsonRpcRequest): GraphMessage = handlerInstance.handleAuthentication(rpcMessage, None)
+  def handleAuthentication(rpcMessage: JsonRpcRequest): GraphMessage = handlerInstance.handleAuthentication(rpcMessage)
 }
 
 class PopchaHandler(dbRef: => AskableActorRef) extends MessageHandler {
 
   private val TOKEN_VALIDITY_DURATION = 3600
+
+  def handleAuthentication(rpcMessage: JsonRpcRequest): GraphMessage = {
+    val (authenticate, laoId, _, _) = extractData[Authenticate](rpcMessage)
+    handleAuthentication(rpcMessage, sendResponseToWebsocket(rpcMessage, authenticate, laoId), retrievePrivateKeyFromDB)
+  }
 
   /** Handles authentication messages
     *
@@ -41,17 +49,11 @@ class PopchaHandler(dbRef: => AskableActorRef) extends MessageHandler {
     * @return
     *   a graph message representing the message's state after handling
     */
-  def handleAuthentication(rpcMessage: JsonRpcRequest, responseHandler: Option[Uri => GraphMessage]): GraphMessage = {
+  def handleAuthentication(rpcMessage: JsonRpcRequest, responseHandler: Uri => GraphMessage, privateKeyProvider: => RSAPrivateKey): GraphMessage = {
     val (authenticate, laoId, sender, _) = extractData[Authenticate](rpcMessage)
-
-    val respHandler: Uri => GraphMessage = responseHandler match {
-      case Some(handler) => handler // dependency injection case
-      case None          => sendResponseToWebsocket(rpcMessage, authenticate, laoId) // default case
-    }
-
     for {
       _ <- registerAuthentication(rpcMessage, sender, authenticate.clientId, authenticate.identifier)
-      result <- sendOpenIdToken(rpcMessage, authenticate, laoId, respHandler)
+      result <- sendOpenIdToken(rpcMessage, authenticate, laoId, responseHandler, privateKeyProvider)
     } yield result
   }
 
@@ -89,15 +91,16 @@ class PopchaHandler(dbRef: => AskableActorRef) extends MessageHandler {
     }
   }
 
-  private def generateOpenIdToken(rpcMessage: JsonRpcMessage, authenticate: Authenticate, laoId: Hash): Either[PipelineError, String] = {
+  private def generateOpenIdToken(rpcMessage: JsonRpcMessage, authenticate: Authenticate, laoId: Hash, privateKeyProvider: => RSAPrivateKey): Either[PipelineError, String] = {
     val date = Calendar.getInstance()
     val issuedTime = date.getTime
     val expTime = new Date(date.getTimeInMillis + (TOKEN_VALIDITY_DURATION * 1000)) // Expire after 1h
 
-    // TODO: public key registered in the fake client --> when supporting popcha server discovery, a secured server-specific private key should be used instead
-    val publicKey = "ThisIsADummyKeyPleaseUpdateItBeforeUsageMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAsbR9Ip84tR4vc1IEefBJ\\ndHMlQAQm1UltYE3vs875eY8ASZ4lzlLG6iVRe7LH4VN6j7GB4Tjj2EtgUFUAQqbF\\ns5mn7cFO7DR9riQDgLGekAQ5g/mLz9QhuAGjU2am0mPBOSBME08Ek9vNRfAOGVWk\\n9fDUhdRceRdKOXnnz+YvqYfe3vz4jx9XXJHZHmG2wNB6egCnsbZOuEqiWVMj5+3w\\nKt1prUGKEAHtPqC+olDaLwZw1didYotPgaZDwedkcAVSWNHvOkkY3uMqvKI+Cpox\\nP+uqtdy9tM54sNQjoWdq4LIaWF/nLRy5fM2JAVbAqwPW6z23YMi4HIsfwuj+d8UZ\\ntQIDAQAB"
-
-    val algorithm = Algorithm.HMAC256(publicKey)
+    val privateKey = Try(privateKeyProvider) match {
+      case Success(key) => key
+      case Failure(ex) => return Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleAuthentication failed : private key fetch failed with error \"${ex.getMessage}\"", rpcMessage.getId))
+    }
+    val algorithm = Algorithm.RSA256(privateKey)
 
     Try(
       JWT.create()
@@ -116,8 +119,8 @@ class PopchaHandler(dbRef: => AskableActorRef) extends MessageHandler {
     }
   }
 
-  private def sendOpenIdToken(rpcMessage: JsonRpcMessage, authenticate: Authenticate, laoId: Hash, responseFlowHandler: Uri => GraphMessage): GraphMessage = {
-    val jwt = generateOpenIdToken(rpcMessage, authenticate, laoId) match {
+  private def sendOpenIdToken(rpcMessage: JsonRpcMessage, authenticate: Authenticate, laoId: Hash, responseFlowHandler: Uri => GraphMessage, privateKeyProvider: => RSAPrivateKey): GraphMessage = {
+    val jwt = generateOpenIdToken(rpcMessage, authenticate, laoId, privateKeyProvider) match {
       case Right(token) => token
       case Left(error)  => return Left(error)
     }
@@ -136,7 +139,7 @@ class PopchaHandler(dbRef: => AskableActorRef) extends MessageHandler {
     implicit val subSystem: ActorSystem = ActorSystem()
     import subSystem.dispatcher
 
-    val wsAddress = s"ws://${authenticate.popchaAddress}/${RuntimeEnvironment.serverConf.authenticationResponseEndpoint}/$laoId/authentication/${authenticate.clientId}/${authenticate.nonce.decodeToString()}"
+    val wsAddress = s"ws://${authenticate.popchaAddress}/${RuntimeEnvironment.serverConf.responseEndpoint}/$laoId/authentication/${authenticate.clientId}/${authenticate.nonce.decodeToString()}"
 
     val tokenEmissionSource: Source[Message, NotUsed] = Source.single(TextMessage(response.toString()))
     val responseFlow: Flow[Message, Message, NotUsed] = Flow.fromSinkAndSourceCoupled(Sink.ignore, tokenEmissionSource)
@@ -156,5 +159,18 @@ class PopchaHandler(dbRef: => AskableActorRef) extends MessageHandler {
       case Success(_)  => Right(rpcMessage)
       case Failure(ex) => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleAuthentication failed : ${ex.getMessage}", rpcMessage.getId))
     }
+  }
+
+  private def retrievePrivateKeyFromDB: RSAPrivateKey = {
+    val privateKey = Await.ready(dbRef ? ReadServerPrivateKey(), duration).value.get match {
+      case Success(DbActorReadServerPrivateKeyAck(key)) => key
+      case Success(reply) => throw new RuntimeException(s"unexpected reply: $reply")
+      case Failure(ex) => throw ex
+    }
+
+    val spec = new SecretKeySpec(privateKey.base64Data.getBytes, "RSA")
+    val factory = KeyFactory.getInstance("RSA")
+    val rsaPrivateKey = factory.generatePrivate(spec)
+    rsaPrivateKey.asInstanceOf[RSAPrivateKey]
   }
 }

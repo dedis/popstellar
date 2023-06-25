@@ -36,7 +36,8 @@ object RuntimeEnvironment {
   lazy val ownClientAddress = f"ws://${serverConf.interface}:${serverConf.port}/${serverConf.clientPath}"
   lazy val ownServerAddress = f"ws://${serverConf.interface}:${serverConf.port}/${serverConf.serverPath}"
   lazy val ownAuthAddress = f"http://${serverConf.interface}:${serverConf.port}/${serverConf.authenticationPath}"
-  lazy val ownAuthWSAddress = f"ws://${serverConf.interface}:${serverConf.port}/${serverConf.authenticationResponseEndpoint}"
+  lazy val ownResponseAddress = f"ws://${serverConf.interface}:${serverConf.port}/${serverConf.responseEndpoint}"
+  lazy val ownPublicKeyAddress = f"http://${serverConf.interface}:${serverConf.port}/${serverConf.publicKeyEndpoint}"
 
   // Needed for unit tests
   lazy val isTestMode: Boolean = testMode(testParam)

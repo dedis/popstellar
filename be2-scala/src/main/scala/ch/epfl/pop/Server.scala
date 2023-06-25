@@ -78,7 +78,7 @@ object Server {
         }
       }
 
-      def getRequestsRoute = GetRequestHandler.buildRoutes(serverConf)
+      def getRequestsRoute = GetRequestHandler.buildRoutes(serverConf, dbActorRef)
 
       def authenticateWSRoute = WebSocketHandler.buildRoute(serverConf)(system)
 
@@ -97,7 +97,8 @@ object Server {
           println(f"[Client] ch.epfl.pop.Server online at $ownClientAddress")
           println(f"[Server] ch.epfl.pop.Server online at $ownServerAddress")
           println(f"[Server] ch.epfl.pop.Server auth server online at $ownAuthAddress")
-          println(f"[Server] ch.epfl.pop.Server auth ws server online at $ownAuthWSAddress")
+          println(f"[Server] ch.epfl.pop.Server auth ws server online at $ownResponseAddress")
+          println(f"[Server] ch.epfl.pop.Server public key available at $ownPublicKeyAddress")
 
         case Failure(_) =>
           logger.error(

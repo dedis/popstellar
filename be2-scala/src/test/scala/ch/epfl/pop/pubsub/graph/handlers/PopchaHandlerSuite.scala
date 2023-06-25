@@ -22,6 +22,8 @@ import util.examples.MessageExample
 import util.examples.MessageExample.{MESSAGE_AUTHENTICATE, VALID_AUTHENTICATE}
 
 import java.io.File
+import java.security.KeyPairGenerator
+import java.security.interfaces.{RSAPrivateKey, RSAPublicKey}
 import java.util.concurrent.TimeUnit
 import scala.annotation.unused
 import scala.concurrent.{Await, Promise}
@@ -37,8 +39,14 @@ class PopchaHandlerSuite extends TestKit(ActorSystem("popchaHandlerTestActorSyst
   // Implicit for system actors
   implicit val timeout: Timeout = Timeout(1, TimeUnit.SECONDS)
 
-  final val serverError = PipelineError(42, "Some server error", Some(42))
+  private val serverError = PipelineError(42, "Some server error", Some(42))
   private val otherUser = PublicKey(MessageExample.SEED)
+
+  private val testKeyPair = {
+    val generator = KeyPairGenerator.getInstance("RSA")
+    generator.initialize(512)
+    generator.generateKeyPair()
+  }
 
   override def afterAll(): Unit = {
     // Stops the testKit
@@ -77,6 +85,10 @@ class PopchaHandlerSuite extends TestKit(ActorSystem("popchaHandlerTestActorSyst
     Right(rpcMessage)
   }
 
+  def privateKeyProvider: RSAPrivateKey = {
+    testKeyPair.getPrivate.asInstanceOf[RSAPrivateKey]
+  }
+
   private val mockDbWithoutUser = setupMockDB(None) _
   private val mockDbWithValidUser = setupMockDB(Some(VALID_AUTHENTICATE.identifier)) _
   private val mockDbWithInvalidUser = setupMockDB(Some(otherUser)) _
@@ -89,7 +101,7 @@ class PopchaHandlerSuite extends TestKit(ActorSystem("popchaHandlerTestActorSyst
     val dbActorRef = mockDbWithoutUser(None)
     val responseHandler: Uri => GraphMessage = handleAuthenticationResponse(AUTHENTICATE_RPC, respPromise)
 
-    val message = new PopchaHandler(dbActorRef).handleAuthentication(AUTHENTICATE_RPC, Some(responseHandler))
+    val message = new PopchaHandler(dbActorRef).handleAuthentication(AUTHENTICATE_RPC, responseHandler, privateKeyProvider)
     message shouldBe Right(AUTHENTICATE_RPC)
 
     val result = Await.ready(respPromise.future, timeout.duration).value
@@ -103,8 +115,7 @@ class PopchaHandlerSuite extends TestKit(ActorSystem("popchaHandlerTestActorSyst
     responseParams should contain("state" -> VALID_AUTHENTICATE.state)
     responseParams should contain key "id_token"
 
-    val dummyKey = "ThisIsADummyKeyPleaseUpdateItBeforeUsageMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAsbR9Ip84tR4vc1IEefBJ\\ndHMlQAQm1UltYE3vs875eY8ASZ4lzlLG6iVRe7LH4VN6j7GB4Tjj2EtgUFUAQqbF\\ns5mn7cFO7DR9riQDgLGekAQ5g/mLz9QhuAGjU2am0mPBOSBME08Ek9vNRfAOGVWk\\n9fDUhdRceRdKOXnnz+YvqYfe3vz4jx9XXJHZHmG2wNB6egCnsbZOuEqiWVMj5+3w\\nKt1prUGKEAHtPqC+olDaLwZw1didYotPgaZDwedkcAVSWNHvOkkY3uMqvKI+Cpox\\nP+uqtdy9tM54sNQjoWdq4LIaWF/nLRy5fM2JAVbAqwPW6z23YMi4HIsfwuj+d8UZ\\ntQIDAQAB"
-    val idToken = JWT.require(Algorithm.HMAC256(dummyKey))
+    val idToken = JWT.require(Algorithm.RSA256(testKeyPair.getPublic.asInstanceOf[RSAPublicKey]))
       .build()
       .verify(responseParams("id_token"))
 
@@ -125,7 +136,7 @@ class PopchaHandlerSuite extends TestKit(ActorSystem("popchaHandlerTestActorSyst
     val authPromise = Promise[(PublicKey, String, PublicKey)]()
 
     val dbActorRef = mockDbWithoutUser(Some(authPromise))
-    val message = new PopchaHandler(dbActorRef).handleAuthentication(AUTHENTICATE_RPC, Some(dummyResponseHandler(AUTHENTICATE_RPC)))
+    val message = new PopchaHandler(dbActorRef).handleAuthentication(AUTHENTICATE_RPC, dummyResponseHandler(AUTHENTICATE_RPC), privateKeyProvider)
     message shouldBe Right(AUTHENTICATE_RPC)
 
     val authInfo = Await.ready(authPromise.future, timeout.duration).value
@@ -142,7 +153,7 @@ class PopchaHandlerSuite extends TestKit(ActorSystem("popchaHandlerTestActorSyst
     val authPromise = Promise[(PublicKey, String, PublicKey)]()
 
     val dbActorRef = mockDbWithValidUser(Some(authPromise))
-    val message = new PopchaHandler(dbActorRef).handleAuthentication(AUTHENTICATE_RPC, Some(dummyResponseHandler(AUTHENTICATE_RPC)))
+    val message = new PopchaHandler(dbActorRef).handleAuthentication(AUTHENTICATE_RPC, dummyResponseHandler(AUTHENTICATE_RPC), privateKeyProvider)
     message shouldBe Right(AUTHENTICATE_RPC)
 
     val authInfo = Try(Await.ready(authPromise.future, timeout.duration))
@@ -151,13 +162,13 @@ class PopchaHandlerSuite extends TestKit(ActorSystem("popchaHandlerTestActorSyst
 
   test("Authentication should fail on second authentication with a different identifier") {
     val dbActorRef = mockDbWithInvalidUser(None)
-    val message = new PopchaHandler(dbActorRef).handleAuthentication(AUTHENTICATE_RPC, Some(dummyResponseHandler(AUTHENTICATE_RPC)))
+    val message = new PopchaHandler(dbActorRef).handleAuthentication(AUTHENTICATE_RPC, dummyResponseHandler(AUTHENTICATE_RPC), privateKeyProvider)
     message shouldBe a[Left[_, _]]
   }
 
   test("Failure to send the authentication response should return the failure cause") {
     val dbActorRef = mockDbWithoutUser(None)
-    val message = new PopchaHandler(dbActorRef).handleAuthentication(AUTHENTICATE_RPC, Some(failToHandleAuthenticationResponse))
+    val message = new PopchaHandler(dbActorRef).handleAuthentication(AUTHENTICATE_RPC, failToHandleAuthenticationResponse, privateKeyProvider)
     inside(message) {
       case Left(error) => error shouldEqual serverError
     }

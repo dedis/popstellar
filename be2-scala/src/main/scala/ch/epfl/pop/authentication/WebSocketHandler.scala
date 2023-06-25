@@ -18,7 +18,7 @@ object WebSocketHandler {
   private val socketsConnected: collection.mutable.Map[(String, String, String), ActorRef] = collection.mutable.Map()
 
   def buildRoute(config: ServerConf)(implicit system: ActorSystem): Route = {
-    path(config.authenticationResponseEndpoint / Segment / "authentication" / Segment / Segment) {
+    path(config.responseEndpoint / Segment / "authentication" / Segment / Segment) {
       (laoId: String, clientId: String, nonce: String) =>
         handleWebSocketMessages(handleMessage(laoId, clientId, nonce))
     }
