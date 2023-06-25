@@ -58,7 +58,7 @@ class PopchaHandlerSuite extends TestKit(ActorSystem("popchaHandlerTestActorSyst
           if (authPromise.isDefined) {
             authPromise.get.success((popToken, clientId, user))
           }
-          sender() ! DbActor.DbActorAck
+          sender() ! DbActor.DbActorAck()
       }
     })
     system.actorOf(dbActorMock)

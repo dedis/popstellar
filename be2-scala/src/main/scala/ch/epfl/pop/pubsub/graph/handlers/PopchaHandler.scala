@@ -83,7 +83,7 @@ class PopchaHandler(dbRef: => AskableActorRef) extends MessageHandler {
 
     val askWrite = dbRef ? WriteUserAuthenticated(popToken, clientId, user)
     Await.ready(askWrite, duration).value.get match {
-      case Success(DbActorAck)               => Right(rpcMessage)
+      case Success(DbActorAck())             => Right(rpcMessage)
       case Failure(ex: DbActorNAckException) => Left(invalidDBResponseError(ex))
       case reply                             => Left(invalidReply(reply))
     }
@@ -136,7 +136,7 @@ class PopchaHandler(dbRef: => AskableActorRef) extends MessageHandler {
     implicit val subSystem: ActorSystem = ActorSystem()
     import subSystem.dispatcher
 
-    val wsAddress = s"ws://${authenticate.popchaAddress}/response/$laoId/authentication/${authenticate.clientId}/${authenticate.nonce}"
+    val wsAddress = s"ws://${authenticate.popchaAddress}/${RuntimeEnvironment.serverConf.authenticationResponseEndpoint}/$laoId/authentication/${authenticate.clientId}/${authenticate.nonce.decodeToString()}"
 
     val tokenEmissionSource: Source[Message, NotUsed] = Source.single(TextMessage(response.toString()))
     val responseFlow: Flow[Message, Message, NotUsed] = Flow.fromSinkAndSourceCoupled(Sink.ignore, tokenEmissionSource)
