@@ -27,7 +27,7 @@ import scala.util.{Failure, Success, Try}
 object PopchaHandler extends MessageHandler {
   final lazy val handlerInstance = new PopchaHandler(super.dbActor)
 
-  def handleAuthentication(rpcMessage: JsonRpcRequest): GraphMessage = handlerInstance.handleAuthentication(rpcMessage)
+  def handleAuthentication(rpcMessage: JsonRpcRequest): GraphMessage = handlerInstance.handleAuthentication(rpcMessage, None)
 }
 
 class PopchaHandler(dbRef: => AskableActorRef) extends MessageHandler {
@@ -41,11 +41,17 @@ class PopchaHandler(dbRef: => AskableActorRef) extends MessageHandler {
     * @return
     *   a graph message representing the message's state after handling
     */
-  def handleAuthentication(rpcMessage: JsonRpcRequest): GraphMessage = {
+  def handleAuthentication(rpcMessage: JsonRpcRequest, responseFlowHandler: Option[Flow[Message, Message, Any] => GraphMessage]): GraphMessage = {
     val (authenticate, laoId, sender, _) = extractData[Authenticate](rpcMessage)
+
+    val responseHandler: Flow[Message, Message, Any] => GraphMessage = responseFlowHandler match {
+      case Some(handler) => handler // dependency injection case
+      case None          => sendResponseToWebsocket(rpcMessage, authenticate, laoId) // default case
+    }
+
     for {
       _ <- registerAuthentication(rpcMessage, sender, authenticate.clientId, authenticate.identifier)
-      result <- generateAndSendOpenIdToken(rpcMessage, authenticate, laoId)
+      result <- sendOpenIdToken(rpcMessage, authenticate, responseHandler)
     } yield result
   }
 
@@ -83,7 +89,7 @@ class PopchaHandler(dbRef: => AskableActorRef) extends MessageHandler {
     }
   }
 
-  private def generateAndSendOpenIdToken(rpcMessage: JsonRpcMessage, authenticate: Authenticate, laoId: Hash): GraphMessage = {
+  private def generateOpenIdToken(rpcMessage: JsonRpcMessage, authenticate: Authenticate): Either[PipelineError, String] = {
     val date = Calendar.getInstance()
     val issuedTime = date.getTime
     val expTime = new Date(date.getTimeInMillis + (TOKEN_VALIDITY_DURATION * 1000)) // Expire after 1h
@@ -91,7 +97,7 @@ class PopchaHandler(dbRef: => AskableActorRef) extends MessageHandler {
     val publicKey = "ThisIsADummyKeyPleaseUpdateItBeforeUsageMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAsbR9Ip84tR4vc1IEefBJ\\ndHMlQAQm1UltYE3vs875eY8ASZ4lzlLG6iVRe7LH4VN6j7GB4Tjj2EtgUFUAQqbF\\ns5mn7cFO7DR9riQDgLGekAQ5g/mLz9QhuAGjU2am0mPBOSBME08Ek9vNRfAOGVWk\\n9fDUhdRceRdKOXnnz+YvqYfe3vz4jx9XXJHZHmG2wNB6egCnsbZOuEqiWVMj5+3w\\nKt1prUGKEAHtPqC+olDaLwZw1didYotPgaZDwedkcAVSWNHvOkkY3uMqvKI+Cpox\\nP+uqtdy9tM54sNQjoWdq4LIaWF/nLRy5fM2JAVbAqwPW6z23YMi4HIsfwuj+d8UZ\\ntQIDAQAB"
     val algorithm = Algorithm.HMAC256(publicKey)
 
-    val jwt = Try(
+    Try(
       JWT.create()
         .withIssuer(RuntimeEnvironment.ownAuthAddress)
         .withSubject(authenticate.identifier.base64Data.toString)
@@ -101,31 +107,38 @@ class PopchaHandler(dbRef: => AskableActorRef) extends MessageHandler {
         .withClaim("nonce", authenticate.nonce.toString)
         .sign(algorithm)
     ) match {
-      case Success(jwt) => jwt
-      case Failure(ex)  => return Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleAuthentication failed : ${ex.getMessage}", rpcMessage.getId))
+      case Success(jwt) => Right(jwt)
+      case Failure(ex)  => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleAuthentication failed : ${ex.getMessage}", rpcMessage.getId))
     }
-
-    sendOpenIdToken(rpcMessage, authenticate, laoId, jwt)
   }
 
-  private def sendOpenIdToken(rpcMessage: JsonRpcMessage, authenticate: Authenticate, laoId: Hash, openIdToken: String): GraphMessage = {
-    implicit val subSystem: ActorSystem = ActorSystem()
-    import subSystem.dispatcher
+  private def sendOpenIdToken(rpcMessage: JsonRpcMessage, authenticate: Authenticate, responseFlowHandler: Flow[Message, Message, Any] => GraphMessage): GraphMessage = {
+    val jwt = generateOpenIdToken(rpcMessage, authenticate) match {
+      case Right(token) => token
+      case Left(error)  => return Left(error)
+    }
 
     val messageToSend = Uri("").withQuery(Query(Map(
       "token_type" -> "bearer",
-      "id_token" -> openIdToken,
+      "id_token" -> jwt,
       "expires_in" -> TOKEN_VALIDITY_DURATION.toString,
       "state" -> authenticate.state
     )))
 
     val tokenEmissionSource: Source[Message, NotUsed] = Source.single(TextMessage(messageToSend.toString()))
-    val flow: Flow[Message, Message, NotUsed] = Flow.fromSinkAndSourceCoupled(Sink.ignore, tokenEmissionSource)
+    val responseFlow: Flow[Message, Message, NotUsed] = Flow.fromSinkAndSourceCoupled(Sink.ignore, tokenEmissionSource)
+
+    responseFlowHandler(responseFlow)
+  }
+
+  private def sendResponseToWebsocket(rpcMessage: JsonRpcMessage, authenticate: Authenticate, laoId: Hash)(responseFlow: Flow[Message, Message, Any]): GraphMessage = {
+    implicit val subSystem: ActorSystem = ActorSystem()
+    import subSystem.dispatcher
 
     val wsAddress = s"ws://${authenticate.popchaAddress}/authorize/response/$laoId/${authenticate.clientId}/${authenticate.nonce}"
 
     val (upgradeResponse, _) =
-      Http().singleWebSocketRequest(WebSocketRequest(wsAddress), flow)
+      Http().singleWebSocketRequest(WebSocketRequest(wsAddress), responseFlow)
 
     val connected = upgradeResponse.map { upgrade =>
       if (upgrade.response.status == StatusCodes.SwitchingProtocols) {
