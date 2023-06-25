@@ -9,7 +9,7 @@ class WebSocketHandlerSuite extends AnyFunSuite with Matchers with ScalatestRout
 
   test("First client connected receives messages from the second one") {
     val websocketRoute = WebSocketHandler.buildRoute(RuntimeEnvironment.serverConf)
-    val path = "/authorize/response/xyz/abc/123"
+    val path = "/response/xyz/authentication/abc/123"
 
     val firstClient = WSProbe.apply()
     val secondClient = WSProbe.apply()
@@ -34,11 +34,12 @@ class WebSocketHandlerSuite extends AnyFunSuite with Matchers with ScalatestRout
     val websocketRoute = WebSocketHandler.buildRoute(RuntimeEnvironment.serverConf)
 
     val wrongPaths = List(
-      "/wrong/response/xyz/abc/123",
-      "/authorize/wrong/xyz/abc/123",
-      "/authorize/response",
-      "/authorize/response/xyz",
-      "/authorize/response/xyz/abc"
+      "response",
+      "response/xyz",
+      "response/xyz/authentication",
+      "response/xyz/authentication/abc",
+      "response/xyz/wrong/abc/123",
+      "wrong/xyz/authentication/abc/123"
     )
 
     for (path <- wrongPaths) {
