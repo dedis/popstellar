@@ -27,7 +27,7 @@ import scala.annotation.unused
 import scala.concurrent.{Await, Promise}
 import scala.jdk.CollectionConverters.MapHasAsScala
 import scala.reflect.io.Directory
-import scala.util.Success
+import scala.util.{Success, Try}
 
 class PopchaHandlerSuite extends TestKit(ActorSystem("popchaHandlerTestActorSystem")) with AnyFunSuiteLike
     with Matchers with BeforeAndAfterAll with AskPatternConstants {
@@ -145,8 +145,8 @@ class PopchaHandlerSuite extends TestKit(ActorSystem("popchaHandlerTestActorSyst
     val message = new PopchaHandler(dbActorRef).handleAuthentication(AUTHENTICATE_RPC, Some(dummyResponseHandler(AUTHENTICATE_RPC)))
     message shouldBe Right(AUTHENTICATE_RPC)
 
-    val authInfo = Await.ready(authPromise.future, timeout.duration).value
-    authInfo should matchPattern { case None => }
+    val authInfo = Try(Await.ready(authPromise.future, timeout.duration))
+    authInfo shouldBe Symbol("isFailure")
   }
 
   test("Authentication should fail on second authentication with a different identifier") {
