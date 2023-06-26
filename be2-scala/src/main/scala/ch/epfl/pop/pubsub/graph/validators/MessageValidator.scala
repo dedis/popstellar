@@ -50,17 +50,31 @@ object MessageValidator extends ContentValidator with AskPatternConstants {
     val message: Message = rpcMessage.getParamsMessage.get
     val expectedId: Hash = Hash.fromStrings(message.data.toString, message.signature.toString)
 
-    val result = runChecks(
-      bindToPipe(rpcMessage, message.message_id == expectedId,
-        validationError("Invalid message_id", "MessageValidator", rpcMessage.id)),
-      bindToPipe(rpcMessage, message.signature.verify(message.sender, message.data),
-        validationError("Invalid sender signature", "MessageValidator", rpcMessage.id)),
-    )
-    if (result.isLeft)
-      bindToPipe(rpcMessage, message.witness_signatures.forall(ws => ws.verify(message.message_id)),
-        validationError("Invalid witness signature", "MessageValidator", rpcMessage.id))
-    else
-      result
+    for {
+      _ <- bindToPipe(
+        rpcMessage,
+        message.message_id == expectedId,
+        validationError(
+          "Invalid message_id",
+          "MessageValidator",
+          rpcMessage.id
+        )
+      )
+      _ <- bindToPipe(
+        rpcMessage,
+        message.signature.verify(message.sender, message.data),
+        validationError(
+          "Invalid sender signature",
+          "MessageValidator",
+          rpcMessage.id
+        )
+      )
+      result <- bindToPipe(
+        rpcMessage,
+        message.witness_signatures.forall(ws => ws.verify(message.message_id)),
+        validationError("Invalid witness signature", "MessageValidator", rpcMessage.id)
+      )
+    } yield result
   }
 
   /** checks whether the sender of the JsonRpcRequest is in the attendee list inside the LAO's data

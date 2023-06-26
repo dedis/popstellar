@@ -7,7 +7,11 @@ package object graph {
 
   type GraphMessage = Either[PipelineError, JsonRpcMessage]
 
-  def bindToPipe(rpcMessage: JsonRpcMessage, success: Boolean, error: PipelineError) = {
-    if (success) Left(rpcMessage) else Right(error)
+  def bindToPipe(rpcMessage: JsonRpcMessage, success: Boolean, error: PipelineError): GraphMessage = {
+    if (success) Right(rpcMessage) else Left(error)
+  }
+
+  def bindToPipe[T](rpcMessage: JsonRpcMessage, opt: Option[T], pipelineError: PipelineError): GraphMessage = {
+    if (opt.isEmpty) Left(pipelineError) else Right(rpcMessage)
   }
 }
