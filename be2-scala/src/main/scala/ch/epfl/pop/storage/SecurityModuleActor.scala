@@ -9,12 +9,17 @@ import com.auth0.jwt.JWTCreator
 import com.auth0.jwt.algorithms.Algorithm
 
 import java.io.{DataInputStream, File, FileInputStream}
+import java.nio.file.{Files, Paths}
 import java.security.KeyFactory
 import java.security.interfaces.{RSAPrivateKey, RSAPublicKey}
 import java.security.spec.{PKCS8EncodedKeySpec, X509EncodedKeySpec}
 import scala.io.Source
 import scala.util.{Success, Try}
 
+/** Actor to use for logic involving the server's private keys. Only the public keys can exit the module, on the other hand private keys must stay here and can only be used through specific endpoint
+  * @param keysFolderPath
+  *   folder where the keys are stored at
+  */
 final case class SecurityModuleActor(keysFolderPath: String) extends Actor with ActorLogging {
 
   private val rsaPrivateKey: RSAPrivateKey = {
@@ -39,14 +44,7 @@ final case class SecurityModuleActor(keysFolderPath: String) extends Actor with 
   }
 
   private def readBytes(filePath: String): Array[Byte] = {
-    val file: File = new File(filePath)
-    val fis: FileInputStream = new FileInputStream(file)
-    val dis: DataInputStream = new DataInputStream(fis)
-
-    val keyBytes: Array[Byte] = new Array[Byte](file.length.asInstanceOf[Int])
-    dis.readFully(keyBytes)
-
-    keyBytes
+    Files.readAllBytes(Paths.get(filePath))
   }
 
   private def signJwt(jwt: JWTCreator.Builder): String = {
@@ -76,18 +74,38 @@ final case class SecurityModuleActor(keysFolderPath: String) extends Actor with 
   }
 }
 
+/** Events to use for interacting with the SecurityModuleActor
+  */
 object SecurityModuleActor {
   sealed trait Event
 
+  /** Reads the rsa public key owned. Replies with [[ReadRsaPublicKeyAck]] if successful
+    */
   case class ReadRsaPublicKey() extends Event
 
+  /** Reads the rsa public key stored as a .pem file (pem format). Replies with [[ReadRsaPublicKeyPemAck]] if successful
+    */
   case class ReadRsaPublicKeyPem() extends Event
 
+  /** Sign the jwt being build using the rsa private key owned. Replies with [[SignJwtAck]] if successful
+    */
   case class SignJwt(jwt: JWTCreator.Builder) extends Event
 
+  /** Response for [[ReadRsaPublicKey]]
+    * @param publicKey
+    *   rsa public key owned
+    */
   case class ReadRsaPublicKeyAck(publicKey: RSAPublicKey) extends Event
 
+  /** Response for [[ReadRsaPublicKeyPem]]
+    * @param publicKey
+    *   rsa public key owned (in a pem format)
+    */
   case class ReadRsaPublicKeyPemAck(publicKey: String) extends Event
 
+  /** Response for [[SignJwt]]
+    * @param jwt
+    *   string representation of the jwt signed using the rsa private key owned
+    */
   case class SignJwtAck(jwt: String) extends Event
 }

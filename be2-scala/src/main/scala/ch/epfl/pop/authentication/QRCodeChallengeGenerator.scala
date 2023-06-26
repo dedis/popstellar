@@ -23,6 +23,14 @@ object QRCodeChallengeGenerator {
   /** Generates an html response representing a web page with a qrcode holding the content provided
     * @param content
     *   data to insert in the qrcode
+    * @param redirectUri
+    *   uri to redirect the user to at the end of the authentication
+    * @param laoId
+    *   laoId the user tries to authenticate at
+    * @param clientId
+    *   id of client the user tries to authenticate on
+    * @param nonce
+    *   nonce of the authentication request
     * @return
     *   a web page in the form of an http-html response
     */

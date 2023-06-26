@@ -20,10 +20,9 @@ object PublishSubscribe {
   private var mediatorActorRef: ActorRef = _
 
   def getDbActorRef: AskableActorRef = dbActorRef
+  def getSecurityModuleActorRef: AskableActorRef = securityModuleActorRef
   def getConnectionMediatorRef: AskableActorRef = connectionMediatorRef
   def getMediatorActorRef: ActorRef = mediatorActorRef
-
-  def getSecurityModuleActorRef: AskableActorRef = securityModuleActorRef
 
   def buildGraph(
       mediatorActorRefT: ActorRef,

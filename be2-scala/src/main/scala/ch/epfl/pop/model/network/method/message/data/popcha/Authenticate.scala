@@ -12,7 +12,7 @@ import spray.json._
   * @param clientId
   *   client to authenticate to
   * @param nonce
-  *   nonce of the authentication request
+  *   nonce of the authentication request (base64 encoded)
   * @param identifier
   *   user's identity as the public key of the long term identifier
   * @param identifierProof

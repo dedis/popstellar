@@ -34,15 +34,26 @@ class PopchaHandler(dbRef: => AskableActorRef, securityModuleActorRef: => Askabl
 
   private val TOKEN_VALIDITY_DURATION = 3600
 
+  /** Handle the Authenticate message received by
+    *   - using [[securityModuleActorRef]] to sign the id token generated
+    *   - sending the result jwt to the predetermined websocket over an http request
+    * @param rpcMessage
+    *   message received
+    * @return
+    *   a graph message representing the message's state after handling
+    */
   def handleAuthentication(rpcMessage: JsonRpcRequest): GraphMessage = {
     val (authenticate, laoId, _, _) = extractData[Authenticate](rpcMessage)
     handleAuthentication(rpcMessage, sendResponseToWebsocket(rpcMessage, authenticate, laoId))
   }
 
-  /** Handles authentication messages
-    *
+  /** Handles authentication messages while allowing dependency injection Handle the Authenticate message received by
+    *   - using [[securityModuleActorRef]] to sign the id token generated
+    *   - the jwt result is given to the given responseHandler
     * @param rpcMessage
     *   message received
+    * @param responseHandler
+    *   handler to use when the jwt result is generated
     * @return
     *   a graph message representing the message's state after handling
     */

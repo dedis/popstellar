@@ -11,12 +11,22 @@ import ch.epfl.pop.config.ServerConf
 
 import scala.concurrent.{Future, Promise}
 
-object WebSocketHandler {
+/** Websocket handler that acts as a message forwarder between two websocket clients that connect on a common endpoint. The first client connected is considered the listener while the second one is the emitter. Only one Strict message (not a stream message) is expected from the emitter, after it is forward the connection is closed.
+  */
+object WebSocketResponseHandler {
 
   private val LISTENER_BUFFER_SIZE: Int = 256
 
   private val socketsConnected: collection.mutable.Map[(String, String, String), ActorRef] = collection.mutable.Map()
 
+  /** Builds a route to handle the websocket requests received
+    * @param config
+    *   server configuration to use
+    * @param system
+    *   actor system to use to spawn actors
+    * @return
+    *   a route that handles the server's response websocket messages
+    */
   def buildRoute(config: ServerConf)(implicit system: ActorSystem): Route = {
     path(config.responseEndpoint / Segment / "authentication" / Segment / Segment) {
       (laoId: String, clientId: String, nonce: String) =>

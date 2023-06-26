@@ -13,11 +13,21 @@ import java.util.concurrent.TimeUnit
 import scala.concurrent.Await
 import scala.util.Success
 
+/** Object to handle the http-get requests supported by the server
+  */
 object GetRequestHandler {
 
   // Implicit for system actors
   implicit val timeout: Timeout = Timeout(1, TimeUnit.SECONDS)
 
+  /** Build routes to handle the http-get requests supported by the server
+    * @param config
+    *   server configuration to use
+    * @param securityModuleActorRef
+    *   security module to use for secret keys
+    * @return
+    *   a route to handle get requests
+    */
   def buildRoutes(config: ServerConf, securityModuleActorRef: AskableActorRef): server.Route = {
     Directives.get {
       Directives.concat(
