@@ -8,7 +8,6 @@ import ch.epfl.pop.storage.SecurityModuleActor._
 import com.auth0.jwt.JWTCreator
 import com.auth0.jwt.algorithms.Algorithm
 
-import java.io.{DataInputStream, File, FileInputStream}
 import java.nio.file.{Files, Paths}
 import java.security.KeyFactory
 import java.security.interfaces.{RSAPrivateKey, RSAPublicKey}
