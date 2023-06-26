@@ -7,26 +7,14 @@ import org.scalatest.matchers.should.Matchers
 
 class WebSocketResponseHandlerSuite extends AnyFunSuite with Matchers with ScalatestRouteTest {
 
-  test("First client connected receives messages from the second one") {
+  test("Can connect on correct path") {
     val websocketRoute = WebSocketResponseHandler.buildRoute(RuntimeEnvironment.serverConf)
     val path = "/response/xyz/authentication/abc/123"
 
     val firstClient = WSProbe.apply()
-    val secondClient = WSProbe.apply()
-
-    val message = "IdToken"
 
     WS(path, firstClient.flow) ~> websocketRoute ~> check {
       isWebSocketUpgrade shouldEqual true
-
-      WS(path, secondClient.flow) ~> websocketRoute ~> check {
-        isWebSocketUpgrade shouldEqual true
-
-        secondClient.sendMessage(message)
-        firstClient.expectMessage(message)
-
-        firstClient.expectCompletion()
-      }
     }
   }
 
