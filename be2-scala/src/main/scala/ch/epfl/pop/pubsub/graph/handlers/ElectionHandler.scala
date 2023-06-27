@@ -62,7 +62,7 @@ class ElectionHandler(dbRef: => AskableActorRef) extends MessageHandler {
           case SECRET_BALLOT =>
             val keyElection: KeyElection = KeyElection(electionId, keyPair.publicKey)
             Await.result(
-              dbBroadcast(rpcMessage, rpcMessage.getParamsChannel, KeyElectionFormat.write(keyElection), electionChannel),
+              broadcast(rpcMessage, rpcMessage.getParamsChannel, KeyElectionFormat.write(keyElection), electionChannel),
               duration
             )
         }
@@ -114,7 +114,7 @@ class ElectionHandler(dbRef: => AskableActorRef) extends MessageHandler {
       // data to be broadcast
       resultElection: ResultElection = ResultElection(electionQuestionResults, witnessSignatures)
       // create & propagate the resultMessage
-      _ <- dbBroadcast(rpcMessage, electionChannel, resultElectionFormat.write(resultElection), electionChannel)
+      _ <- broadcast(rpcMessage, electionChannel, resultElectionFormat.write(resultElection), electionChannel)
     } yield ()
     Await.ready(combined, duration).value match {
       case Some(Success(_)) => Right(rpcMessage)

@@ -7,7 +7,7 @@ import ch.epfl.pop.json.MessageDataProtocol
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ActionType.ActionType
 import ch.epfl.pop.model.network.method.message.data.{ActionType, ObjectType}
-import ch.epfl.pop.model.objects.Channel.ROOT_CHANNEL_PREFIX
+import ch.epfl.pop.model.objects.Channel.{LAO_DATA_LOCATION, ROOT_CHANNEL_PREFIX}
 import ch.epfl.pop.model.objects._
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, JsonString}
 import ch.epfl.pop.pubsub.{MessageRegistry, PubSubMediator, PublishSubscribe}
@@ -260,7 +260,7 @@ final case class DbActor(
   @throws[DbActorNAckException]
   private def generateLaoDataKey(channel: Channel): String = {
     channel.decodeChannelLaoId match {
-      case Some(data) => storage.DATA_KEY + s"${Channel.ROOT_CHANNEL_PREFIX}$data${Channel.LAO_DATA_LOCATION}"
+      case Some(data) => storage.DATA_KEY + s"${Channel.ROOT_CHANNEL_PREFIX}$data${LAO_DATA_LOCATION}"
       case None =>
         log.error(s"Actor $self (db) encountered a problem while decoding LAO channel from '$channel'")
         throw DbActorNAckException(ErrorCodes.SERVER_ERROR.id, s"Could not extract the LAO id for channel $channel")

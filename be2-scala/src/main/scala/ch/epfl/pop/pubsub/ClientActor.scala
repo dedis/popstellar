@@ -3,31 +3,36 @@ package ch.epfl.pop.pubsub
 import akka.actor.{Actor, ActorLogging, ActorRef, Props}
 import akka.event.LoggingReceive
 import akka.pattern.AskableActorRef
+import ch.epfl.pop.config.RuntimeEnvironment.serverConf
 import ch.epfl.pop.decentralized.ConnectionMediator
+import ch.epfl.pop.model.network.JsonRpcRequest
+import ch.epfl.pop.model.network.MethodType.GREET_SERVER
+import ch.epfl.pop.model.network.method.GreetServer
 import ch.epfl.pop.model.objects.Channel
 import ch.epfl.pop.pubsub.ClientActor._
 import ch.epfl.pop.pubsub.PubSubMediator._
 import ch.epfl.pop.pubsub.graph.GraphMessage
+import ch.epfl.pop.pubsub.graph.validators.RpcValidator
+import ch.epfl.pop.storage.DbActor
 
 import scala.collection.mutable
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
-import scala.util.Failure
+import scala.util.{Failure, Success}
 
-final case class ClientActor(mediator: ActorRef, connectionMediatorRef: ActorRef, isServer: Boolean) extends Actor with ActorLogging with AskPatternConstants {
+final case class ClientActor(mediator: ActorRef, connectionMediatorRef: ActorRef, isServer: Boolean, initGreet: Boolean) extends Actor with ActorLogging with AskPatternConstants {
 
   private var wsHandle: Option[ActorRef] = None
   private val subscribedChannels: mutable.Set[Channel] = mutable.Set.empty
 
   private val mediatorAskable: AskableActorRef = mediator
 
-  // Tell connectionMediator we are online
-  if (isServer) {
-    connectionMediatorRef ! ConnectionMediator.NewServerConnected(self)
-  }
+  private var greetServerSent: Boolean = false
 
-  private def messageWsHandle(event: ClientActorMessage): Unit = event match {
-    case ClientAnswer(graphMessage) => wsHandle.fold(())(_ ! graphMessage)
+  private def messageWsHandle(event: ClientActorMessage): Unit = {
+    event match {
+      case ClientAnswer(graphMessage) => wsHandle.fold(())(_ ! graphMessage)
+    }
   }
 
   override def receive: Receive = LoggingReceive {
@@ -35,6 +40,11 @@ final case class ClientActor(mediator: ActorRef, connectionMediatorRef: ActorRef
         case ConnectWsHandle(wsClient: ActorRef) =>
           log.info(s"Connecting wsHandle $wsClient to actor ${this.self}")
           wsHandle = Some(wsClient)
+
+          // If server, tell connectionMediator we are online
+          if (isServer && initGreet) {
+            triggerGreetServer()
+          }
 
         case DisconnectWsHandle =>
           subscribedChannels.foreach(channel => mediator ! PubSubMediator.UnsubscribeFrom(channel, this.self))
@@ -65,7 +75,14 @@ final case class ClientActor(mediator: ActorRef, connectionMediatorRef: ActorRef
           log.info(s"Actor $self received NACK mediator $mediator for the subscribe to channel '$channel' request for reason: $reason")
         case UnsubscribeFromNAck(channel, reason) =>
           log.info(s"Actor $self received NACK mediator $mediator for the unsubscribe from channel '$channel' request for reason: $reason")
+        case PropagateAck() => // Nothing to do.
       }
+    case greetServer: GreetServer =>
+      if (!greetServerSent && isServer) {
+        triggerGreetServer()
+      }
+      connectionMediatorRef ! ConnectionMediator.NewServerConnected(self, greetServer)
+
     case clientAnswer @ ClientAnswer(_) =>
       log.info(s"Sending an answer back to client $wsHandle: $clientAnswer")
       messageWsHandle(clientAnswer)
@@ -86,11 +103,35 @@ final case class ClientActor(mediator: ActorRef, connectionMediatorRef: ActorRef
         case _ => log.error("UNKNOWN MESSAGE TO CLIENT ACTOR: " + m)
       }
   }
+
+  /** Build our own GreetServer to identify us to other servers and push it into the websocket
+    */
+  private def triggerGreetServer(): Unit = {
+    val clientAddress = serverConf.externalAddress + s"/${serverConf.clientPath}"
+    val serverAddress = serverConf.externalAddress + s"/${serverConf.serverPath}"
+    val publicKey = Await.ready(PublishSubscribe.getDbActorRef ? DbActor.ReadServerPublicKey(), duration).value.get match {
+      case Success(DbActor.DbActorReadServerPublicKeyAck(pk)) => Some(pk)
+      case _                                                  => None
+    }
+
+    if (publicKey.isDefined) {
+      log.info("Sending greet")
+      val greetServer = GreetServer(publicKey.get, clientAddress, serverAddress)
+      messageWsHandle(ClientAnswer(Right(JsonRpcRequest(
+        RpcValidator.JSON_RPC_VERSION,
+        GREET_SERVER,
+        greetServer,
+        None
+      ))))
+      greetServerSent = true
+    }
+  }
+
 }
 
 object ClientActor {
-  def props(mediator: ActorRef, connectionMediatorRef: ActorRef, isServer: Boolean): Props =
-    Props(new ClientActor(mediator, connectionMediatorRef, isServer))
+  def props(mediator: ActorRef, connectionMediatorRef: ActorRef, isServer: Boolean, initGreetServer: Boolean): Props =
+    Props(new ClientActor(mediator, connectionMediatorRef, isServer, initGreetServer))
 
   sealed trait ClientActorMessage
 

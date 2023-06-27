@@ -527,9 +527,14 @@ namespace STRINGS {
   export const meeting_message_decline = 'Decline Message';
 
   /* --- Popcha Screen Strings --- */
-  export const popcha_display_current_lao = 'Hello, here is your laoID: ';
+  export const popcha_display_current_lao =
+    'Welcome on the PoPcha screen, you are currently in the LAO: ';
   export const popcha_close_scanner = 'Close Scanner';
   export const popcha_open_scanner = 'Open Scanner';
+  export const popcha_success_authentication = 'Successful authentication';
+  export const popcha_manual_add_title = 'Enter url';
+  export const popcha_manual_add_description = 'Enter the url you want to use to login';
+  export const popcha_url_type_input = 'Url';
 
   /* --- General creation Strings --- */
   export const create_description = 'Choose the type of event you want to create';
