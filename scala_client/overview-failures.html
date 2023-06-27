@@ -75,7 +75,7 @@ $(document).ready(function() {
   <tbody>
     <tr class="info">
       <td>scala_client</td>
-      <td>26 Jun 2023, 04:15</td>
+      <td>27 Jun 2023, 04:16</td>
     </tr>
   </tbody>
 </table>
@@ -125,7 +125,7 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">5.024</span>
+  <span class="lead-duration duration">5.035</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-1">
@@ -168,7 +168,7 @@ $(document).ready(function() {
   <span class="keyword indention">Given</span>
   <span class="name">def updateLaoRequest =</span>
 
-  <span class="lead-duration duration">0.003</span>
+  <span class="lead-duration duration">0.012</span>
 
 </div>
 
@@ -212,7 +212,7 @@ $(document).ready(function() {
   <span class="keyword indention">When</span>
   <span class="name">organizer.publish(updateLaoRequest, lao.channel)</span>
 
-  <span class="lead-duration duration">0.014</span>
+  <span class="lead-duration duration">0.009</span>
 
 </div>
 
@@ -239,7 +239,7 @@ $(document).ready(function() {
   <span class="keyword indention">And</span>
   <span class="name">json answer = organizer.getBackendResponse(updateLaoRequest)</span>
 
-  <span class="lead-duration duration">5.005</span>
+  <span class="lead-duration duration">5.013</span>
 
 </div>
 
@@ -277,7 +277,7 @@ classpath:be/LAO/update.feature:32</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-5" class="collapse collapsable-details">
-        <pre>04:07:37.146 classpath:be/LAO/update.feature:32
+        <pre>04:08:13.734 classpath:be/LAO/update.feature:32
 And json answer = organizer.getBackendResponse(updateLaoRequest)
 js failed:
 &gt;&gt;&gt;&gt;
@@ -379,7 +379,7 @@ classpath:be/LAO/update.feature:32
 </div>
 
 
-  <span class="lead-duration duration">5.011</span>
+  <span class="lead-duration duration">5.028</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-6">
@@ -466,7 +466,7 @@ classpath:be/LAO/update.feature:32
   <span class="keyword indention">When</span>
   <span class="name">organizer.publish(badUpdateLaoReq, lao.channel)</span>
 
-  <span class="lead-duration duration">0.006</span>
+  <span class="lead-duration duration">0.019</span>
 
 </div>
 
@@ -493,7 +493,7 @@ classpath:be/LAO/update.feature:32
   <span class="keyword indention">And</span>
   <span class="name">json answer = organizer.getBackendResponse(badUpdateLaoReq)</span>
 
-  <span class="lead-duration duration">5.004</span>
+  <span class="lead-duration duration">5.008</span>
 
 </div>
 
@@ -531,7 +531,7 @@ classpath:be/LAO/update.feature:49</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-10" class="collapse collapsable-details">
-        <pre>04:07:46.381 classpath:be/LAO/update.feature:49
+        <pre>04:08:23.478 classpath:be/LAO/update.feature:49
 And json answer = organizer.getBackendResponse(badUpdateLaoReq)
 js failed:
 &gt;&gt;&gt;&gt;
@@ -633,7 +633,7 @@ classpath:be/LAO/update.feature:49
 </div>
 
 
-  <span class="lead-duration duration">5.026</span>
+  <span class="lead-duration duration">5.022</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-11">
@@ -676,7 +676,7 @@ classpath:be/LAO/update.feature:49
   <span class="keyword indention">Given</span>
   <span class="name">def badUpdateLaoReq =</span>
 
-  <span class="lead-duration duration">0.008</span>
+  <span class="lead-duration duration">0.005</span>
 
 </div>
 
@@ -720,7 +720,7 @@ classpath:be/LAO/update.feature:49
   <span class="keyword indention">When</span>
   <span class="name">organizer.publish(badUpdateLaoReq, lao.channel)</span>
 
-  <span class="lead-duration duration">0.016</span>
+  <span class="lead-duration duration">0.012</span>
 
 </div>
 
@@ -747,7 +747,7 @@ classpath:be/LAO/update.feature:49
   <span class="keyword indention">And</span>
   <span class="name">json answer = organizer.getBackendResponse(badUpdateLaoReq)</span>
 
-  <span class="lead-duration duration">5.002</span>
+  <span class="lead-duration duration">5.005</span>
 
 </div>
 
@@ -785,7 +785,7 @@ classpath:be/LAO/update.feature:67</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-15" class="collapse collapsable-details">
-        <pre>04:07:55.751 classpath:be/LAO/update.feature:67
+        <pre>04:08:33.416 classpath:be/LAO/update.feature:67
 And json answer = organizer.getBackendResponse(badUpdateLaoReq)
 js failed:
 &gt;&gt;&gt;&gt;
@@ -887,7 +887,7 @@ classpath:be/LAO/update.feature:67
 </div>
 
 
-  <span class="lead-duration duration">0.702</span>
+  <span class="lead-duration duration">0.870</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-16">
@@ -930,7 +930,7 @@ classpath:be/LAO/update.feature:67
   <span class="keyword indention">Given</span>
   <span class="name">def notOrganizer = call createMockClient</span>
 
-  <span class="lead-duration duration">0.029</span>
+  <span class="lead-duration duration">0.037</span>
 
 </div>
 
@@ -1002,7 +1002,7 @@ classpath:be/LAO/update.feature:67
   <span class="keyword indention">When</span>
   <span class="name">notOrganizer.publish(laoCreateRequest, rootChannel)</span>
 
-  <span class="lead-duration duration">0.003</span>
+  <span class="lead-duration duration">0.010</span>
 
 </div>
 
@@ -1029,7 +1029,7 @@ classpath:be/LAO/update.feature:67
   <span class="keyword indention">And</span>
   <span class="name">json answer = notOrganizer.getBackendResponse(laoCreateRequest)</span>
 
-  <span class="lead-duration duration">0.667</span>
+  <span class="lead-duration duration">0.819</span>
 
 </div>
 
@@ -1073,7 +1073,7 @@ classpath:be/LAO/update.feature:67
       <div id="msg-19" class="collapse collapsable-details  in ">
         <pre>match failed: CONTAINS
   $ | actual does not contain expected | all key-values did not match, expected has un-matched keys - [error] (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:1783767142,&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;Invalid data: $.witnesses: string found, array expected&quot;}}
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:-496841752,&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;Invalid data: $.witnesses: string found, array expected&quot;}}
   {&quot;error&quot;:{&quot;code&quot;:-5,&quot;description&quot;:&quot;#string&quot;}}
 
     $.error | not equal | match failed for name: 'code' (MAP:MAP)
@@ -1098,11 +1098,11 @@ classpath:be/LAO/create.feature:126</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-20" class="collapse collapsable-details">
-        <pre>04:07:26.326 classpath:be/LAO/create.feature:126
+        <pre>04:08:01.615 classpath:be/LAO/create.feature:126
 Then match answer contains ACCESS_DENIED
 match failed: CONTAINS
   $ | actual does not contain expected | all key-values did not match, expected has un-matched keys - [error] (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:1783767142,&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;Invalid data: $.witnesses: string found, array expected&quot;}}
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:-496841752,&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;Invalid data: $.witnesses: string found, array expected&quot;}}
   {&quot;error&quot;:{&quot;code&quot;:-5,&quot;description&quot;:&quot;#string&quot;}}
 
     $.error | not equal | match failed for name: 'code' (MAP:MAP)
@@ -1177,7 +1177,7 @@ classpath:be/LAO/create.feature:126
 </div>
 
 
-  <span class="lead-duration duration">0.360</span>
+  <span class="lead-duration duration">0.477</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-21">
@@ -1247,7 +1247,7 @@ classpath:be/LAO/create.feature:126
   <span class="keyword indention">And</span>
   <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=valid_coin_issuance') { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)', recipient: '#(recipient)', amount: '#(initialAmount)' }</span>
 
-  <span class="lead-duration duration">0.328</span>
+  <span class="lead-duration duration">0.440</span>
 
 </div>
 
@@ -1293,10 +1293,10 @@ classpath:be/LAO/create.feature:126
       </div>
       <div id="msg-23" class="collapse collapsable-details">
         <pre>{
-  &quot;organizer&quot;: &quot;be.utils.MockClient@3a4f8e8a&quot;,
-  &quot;lao&quot;: &quot;be.model.Lao@4468fda8&quot;,
-  &quot;rollCall&quot;: &quot;be.model.RollCall@5fc1e4fb&quot;,
-  &quot;recipient&quot;: &quot;be.utils.MockClient@29aa4bc9&quot;,
+  &quot;organizer&quot;: &quot;be.utils.MockClient@47162173&quot;,
+  &quot;lao&quot;: &quot;be.model.Lao@3a4f8e8a&quot;,
+  &quot;rollCall&quot;: &quot;be.model.RollCall@4468fda8&quot;,
+  &quot;recipient&quot;: &quot;be.utils.MockClient@5fc1e4fb&quot;,
   &quot;amount&quot;: 32
 }
 </pre>
@@ -1318,7 +1318,7 @@ classpath:be/LAO/create.feature:126
   <span class="keyword indention">And</span>
   <span class="name">def transaction = organizer.issueCoins(recipient, 20);</span>
 
-  <span class="lead-duration duration">0.002</span>
+  <span class="lead-duration duration">0.004</span>
 
 </div>
 
@@ -1426,7 +1426,7 @@ classpath:be/LAO/create.feature:126
   <span class="keyword indention">And</span>
   <span class="name">def validTransfer =</span>
 
-  <span class="lead-duration duration">0.002</span>
+  <span class="lead-duration duration">0.006</span>
 
 </div>
 
@@ -1487,7 +1487,7 @@ classpath:be/LAO/create.feature:126
   <span class="keyword indention">When</span>
   <span class="name">organizer.publish(validTransfer, lao.cashChannel)</span>
 
-  <span class="lead-duration duration">0.004</span>
+  <span class="lead-duration duration">0.020</span>
 
 </div>
 
@@ -1514,7 +1514,7 @@ classpath:be/LAO/create.feature:126
   <span class="keyword indention">And</span>
   <span class="name">json answer = organizer.getBackendResponse(validTransfer)</span>
 
-  <span class="lead-duration duration">0.018</span>
+  <span class="lead-duration duration">0.001</span>
 
 </div>
 
@@ -1558,7 +1558,7 @@ classpath:be/LAO/create.feature:126
       <div id="msg-25" class="collapse collapsable-details  in ">
         <pre>match failed: CONTAINS
   $ | actual does not contain expected | actual does not contain key - 'result' (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:2086274681,&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;Invalid data: $.transaction.outputs[0].value: string found, integer expected; $.transaction.inputs[0].tx_out_index: string found, integer expected&quot;}}
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:888728569,&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;Invalid data: $.transaction.outputs[0].value: string found, integer expected; $.transaction.inputs[0].tx_out_index: string found, integer expected&quot;}}
   {&quot;result&quot;:0}
 
 
@@ -1576,11 +1576,11 @@ classpath:be/digitalCash/transaction.feature:98</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-26" class="collapse collapsable-details">
-        <pre>04:08:10.773 classpath:be/digitalCash/transaction.feature:98
+        <pre>04:08:49.726 classpath:be/digitalCash/transaction.feature:98
 Then match answer contains VALID_MESSAGE
 match failed: CONTAINS
   $ | actual does not contain expected | actual does not contain key - 'result' (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:2086274681,&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;Invalid data: $.transaction.outputs[0].value: string found, integer expected; $.transaction.inputs[0].tx_out_index: string found, integer expected&quot;}}
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:888728569,&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;Invalid data: $.transaction.outputs[0].value: string found, integer expected; $.transaction.inputs[0].tx_out_index: string found, integer expected&quot;}}
   {&quot;result&quot;:0}
 
 
