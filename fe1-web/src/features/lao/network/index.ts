@@ -11,7 +11,12 @@ import STRINGS from 'resources/strings';
 
 import { getLaoById } from '../functions/lao';
 import { resubscribeToLao } from '../functions/network';
-import { addSubscribedChannel, removeSubscribedChannel, selectCurrentLaoId } from '../reducer';
+import {
+  addSubscribedChannel,
+  reconnectLao,
+  removeSubscribedChannel,
+  selectCurrentLaoId,
+} from '../reducer';
 import { storeBackendAndConnectToPeers, makeLaoGreetStoreWatcher } from './LaoGreetWatcher';
 import {
   handleLaoCreateMessage,
@@ -64,7 +69,10 @@ export function configureNetwork(registry: MessageRegistry) {
       return;
     }
 
-    await resubscribeToLao(lao, store.dispatch);
+    await resubscribeToLao(lao, store.dispatch).then(() => {
+      // update the state in redux show user is now online
+      store.dispatch(reconnectLao());
+    });
   });
   getNetworkManager().addConnectionDeathHandler((address) => {
     const laoId = selectCurrentLaoId(getStore().getState());
@@ -75,6 +83,9 @@ export function configureNetwork(registry: MessageRegistry) {
 
     if (currentLao.server_addresses.includes(address)) {
       // a connection we have with this lao has been terminated
+      // disconnect from all, i.e. don't try to re-connect
+      getNetworkManager().disconnectFromAll();
+
       // -> navigate back to the home screen
       if (navigationRef.isReady()) {
         if (toast) {

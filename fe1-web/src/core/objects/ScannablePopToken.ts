@@ -19,6 +19,11 @@ export class ScannablePopToken {
       throw new ProtocolError("undefined 'pop_token' when creating 'ScannedPopToken'");
     }
 
+    const tokenMatcher = new RegExp('^[A-Za-z0-9_-]{43}=$');
+    if (!tokenMatcher.test(scannedPopToken.pop_token)) {
+      throw new ProtocolError('Invalid pop token format');
+    }
+
     this.pop_token = scannedPopToken.pop_token;
   }
 

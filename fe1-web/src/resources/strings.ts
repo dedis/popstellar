@@ -148,6 +148,9 @@ namespace STRINGS {
   export const button_publish = 'Publish';
   export const your_chirp = 'Your chirp';
   export const deleted_chirp = 'This chirp was deleted';
+  export const social_media_ask_publish_trimmed_chirp =
+    'You have used more spacing characters than allowed. To improve readability, your chirp will be edited to : \n\n {}\n\nDo you still want to publish this chirp ?';
+  export const social_media_confirm_publish_chirp = 'Confirm publication';
   export const social_media_ask_confirm_delete_chirp =
     'Are you sure you want to delete this chirp?';
   export const social_media_confirm_delete_chirp = 'Confirm deletion';
@@ -155,6 +158,8 @@ namespace STRINGS {
     'So far nobody has published a chirp and you could be the first one to do so!';
   export const social_media_create_chirp_no_pop_token =
     'In order to post chirps, you first need to participate in a roll-call.';
+  export const social_media_empty_chirp =
+    'You chirp will be cropped to an empty chirp. You cannot send an empty chirp.';
   export const social_media_user_list_unavailable =
     'In order to see other roll call participants you yourself first need to participate in one.';
   export const social_media_your_profile_unavailable =
@@ -312,6 +317,8 @@ namespace STRINGS {
   export const roll_call_error_close_roll_call_no_alias =
     'Could not close roll call, the event does not have an idAlias';
   export const roll_call_error_close_roll_call = 'Could not close roll call';
+  export const roll_call_danger_attendee_list_not_sorted =
+    'Attendee list not sorted, risk of deanonymization';
 
   /* --- Roll-call creation Strings --- */
 
@@ -329,6 +336,9 @@ namespace STRINGS {
   export const roll_call_open = 'Open Roll-Call';
   export const roll_call_reopen = 'Re-open Roll-Call';
   export const roll_call_close = 'Close Roll-Call';
+  export const roll_call_leave_confirmation_title = 'Leave screen?';
+  export const roll_call_leave_description =
+    'By leaving this screen, any new scanned tokens will be lost.\nAre you sure you want to proceed?';
 
   /* --- Roll-call scanning Strings --- */
   export const roll_call_scan_attendees = 'Scan Attendees';
@@ -377,6 +387,12 @@ namespace STRINGS {
   export const events_view_single_election = 'Single Election';
   export const events_open_roll_call = 'Open Roll-Call';
   export const events_open_roll_call_title = 'Scan PoP Tokens';
+  export const events_welcome_organizer =
+    'No event has been created in this LAO!\n' +
+    'To create one, click on the button in the top right corner';
+  export const events_welcome_attendee =
+    'No event has been created in this LAO!\n' +
+    'Since you are not an organizer, you must wait for them to create one';
 
   /* --- Notification screen Strings --- */
   export const notification_unread_notifications = 'Notifications';
@@ -503,6 +519,8 @@ namespace STRINGS {
     'Issue to every attendee of this roll call';
 
   export const digital_cash_infinity = '∞';
+  export const digital_cash_error_rollcall_not_defined =
+    'RollcallId not defined, cannot generate PoP token';
 
   /* --- Witness Feature Strings --- */
   export const witness_message_witness = 'Witness Message';

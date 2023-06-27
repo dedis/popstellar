@@ -54,9 +54,7 @@ exports[`TextInputList renders correctly 1`] = `
         accessible={true}
         collapsable={false}
         focusable={true}
-        onBlur={[Function]}
         onClick={[Function]}
-        onFocus={[Function]}
         onResponderGrant={[Function]}
         onResponderMove={[Function]}
         onResponderRelease={[Function]}
@@ -65,40 +63,14 @@ exports[`TextInputList renders correctly 1`] = `
         onStartShouldSetResponder={[Function]}
         style={
           {
-            "marginBottom": 16,
-            "marginLeft": 16,
+            "opacity": 1,
           }
         }
         testID="x_option_0_remove"
       >
-        <RNGestureHandlerButton
-          collapsable={false}
-          delayLongPress={600}
-          enabled={true}
-          exclusive={true}
-          handlerTag={1}
-          handlerType="NativeViewGestureHandler"
-          onGestureEvent={[Function]}
-          onGestureHandlerEvent={[Function]}
-          onGestureHandlerStateChange={[Function]}
-          onHandlerStateChange={[Function]}
-          rippleColor={0}
-          touchSoundDisabled={false}
-        >
-          <View
-            accessible={true}
-            collapsable={false}
-            style={
-              {
-                "opacity": 1,
-              }
-            }
-          >
-            <View>
-              {"name":"ios-trash","size":25,"color":"#000"}
-            </View>
-          </View>
-        </RNGestureHandlerButton>
+        <View>
+          {"name":"ios-trash","size":25,"color":"#000"}
+        </View>
       </View>
     </View>
   </View>
@@ -154,9 +126,7 @@ exports[`TextInputList renders correctly 1`] = `
         accessible={true}
         collapsable={false}
         focusable={true}
-        onBlur={[Function]}
         onClick={[Function]}
-        onFocus={[Function]}
         onResponderGrant={[Function]}
         onResponderMove={[Function]}
         onResponderRelease={[Function]}
@@ -165,40 +135,14 @@ exports[`TextInputList renders correctly 1`] = `
         onStartShouldSetResponder={[Function]}
         style={
           {
-            "marginBottom": 16,
-            "marginLeft": 16,
+            "opacity": 1,
           }
         }
         testID="x_option_1_remove"
       >
-        <RNGestureHandlerButton
-          collapsable={false}
-          delayLongPress={600}
-          enabled={true}
-          exclusive={true}
-          handlerTag={2}
-          handlerType="NativeViewGestureHandler"
-          onGestureEvent={[Function]}
-          onGestureHandlerEvent={[Function]}
-          onGestureHandlerStateChange={[Function]}
-          onHandlerStateChange={[Function]}
-          rippleColor={0}
-          touchSoundDisabled={false}
-        >
-          <View
-            accessible={true}
-            collapsable={false}
-            style={
-              {
-                "opacity": 1,
-              }
-            }
-          >
-            <View>
-              {"name":"ios-trash","size":25,"color":"#000"}
-            </View>
-          </View>
-        </RNGestureHandlerButton>
+        <View>
+          {"name":"ios-trash","size":25,"color":"#000"}
+        </View>
       </View>
     </View>
   </View>

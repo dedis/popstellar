@@ -4,14 +4,13 @@ exports[`BuildInfo renders correctly 1`] = `
 <View
   style={
     {
+      "bottom": 12,
       "display": "flex",
       "flexDirection": "row",
       "justifyContent": "center",
       "left": 8,
       "position": "absolute",
       "right": 8,
-      "top": 48,
-      "zIndex": 100,
     }
   }
 >
