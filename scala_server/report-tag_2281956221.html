@@ -74,7 +74,7 @@ $(document).ready(function() {
   <tbody>
     <tr class="info">
       <td>scala_server</td>
-      <td>01 Jul 2023, 04:16</td>
+      <td>02 Jul 2023, 04:16</td>
     </tr>
   </tbody>
 </table>
@@ -138,7 +138,7 @@ $(document).ready(function() {
           <td  class="failed"    >2</td>
           <td class="total">5</td>
 
-          <td class="duration" data-value="55137338938">55.137</td>
+          <td class="duration" data-value="55129958040">55.129</td>
           <td class="failed">Failed</td>
         </tr>
         </tbody>
@@ -181,7 +181,7 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">35.013</span>
+  <span class="lead-duration duration">35.007</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-1">
@@ -224,7 +224,7 @@ $(document).ready(function() {
   <span class="keyword indention">Given</span>
   <span class="name">wait(30)</span>
 
-  <span class="lead-duration duration">30.010</span>
+  <span class="lead-duration duration">30.004</span>
 
 </div>
 
@@ -251,7 +251,7 @@ $(document).ready(function() {
   <span class="keyword indention">When</span>
   <span class="name">def heartbeatMessages = mockServer.getMessagesByMethod('heartbeat')</span>
 
-  <span class="lead-duration duration">5.000</span>
+  <span class="lead-duration duration">5.001</span>
 
 </div>
 
@@ -308,7 +308,7 @@ classpath:be/decentralizedCom/heartbeat.feature:26</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-4" class="collapse collapsable-details">
-        <pre>04:15:59.328 classpath:be/decentralizedCom/heartbeat.feature:26
+        <pre>04:16:09.205 classpath:be/decentralizedCom/heartbeat.feature:26
 Then assert heartbeatMessages.length &gt; 0
 did not evaluate to 'true': heartbeatMessages.length &gt; 0
 classpath:be/decentralizedCom/heartbeat.feature:26
@@ -348,7 +348,7 @@ classpath:be/decentralizedCom/heartbeat.feature:26
 </div>
 
 
-  <span class="lead-duration duration">5.065</span>
+  <span class="lead-duration duration">5.048</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-5">
@@ -391,7 +391,7 @@ classpath:be/decentralizedCom/heartbeat.feature:26
   <span class="keyword indention">Given</span>
   <span class="name">def validCreateRollCall =</span>
 
-  <span class="lead-duration duration">0.007</span>
+  <span class="lead-duration duration">0.010</span>
 
 </div>
 
@@ -438,7 +438,7 @@ classpath:be/decentralizedCom/heartbeat.feature:26
   <span class="keyword indention">When</span>
   <span class="name">mockServer.publish(validCreateRollCall, lao.channel)</span>
 
-  <span class="lead-duration duration">0.015</span>
+  <span class="lead-duration duration">0.005</span>
 
 </div>
 
@@ -465,7 +465,7 @@ classpath:be/decentralizedCom/heartbeat.feature:26
   <span class="keyword indention">And</span>
   <span class="name">def heartbeatMessages = mockServer.getMessagesByMethod('heartbeat')</span>
 
-  <span class="lead-duration duration">5.042</span>
+  <span class="lead-duration duration">5.031</span>
 
 </div>
 
@@ -522,7 +522,7 @@ classpath:be/decentralizedCom/heartbeat.feature:48</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-9" class="collapse collapsable-details">
-        <pre>04:16:08.419 classpath:be/decentralizedCom/heartbeat.feature:48
+        <pre>04:16:18.162 classpath:be/decentralizedCom/heartbeat.feature:48
 Then assert heartbeatMessages.length == 1
 did not evaluate to 'true': heartbeatMessages.length == 1
 classpath:be/decentralizedCom/heartbeat.feature:48
@@ -562,7 +562,7 @@ classpath:be/decentralizedCom/heartbeat.feature:48
 </div>
 
 
-  <span class="lead-duration duration">5.034</span>
+  <span class="lead-duration duration">5.047</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-10">
@@ -632,7 +632,7 @@ classpath:be/decentralizedCom/heartbeat.feature:48
   <span class="keyword indention">When</span>
   <span class="name">mockServer.send(heartbeat)</span>
 
-  <span class="lead-duration duration">0.006</span>
+  <span class="lead-duration duration">0.014</span>
 
 </div>
 
@@ -659,7 +659,7 @@ classpath:be/decentralizedCom/heartbeat.feature:48
   <span class="keyword indention">And</span>
   <span class="name">def getMessagesByIdMessages = mockServer.getMessagesByMethod('get_messages_by_id')</span>
 
-  <span class="lead-duration duration">5.016</span>
+  <span class="lead-duration duration">5.023</span>
 
 </div>
 
@@ -713,7 +713,7 @@ classpath:be/decentralizedCom/heartbeat.feature:48
   <span class="keyword indention">And</span>
   <span class="name">match getMessagesByIdMessages[0] contains randomMessageId</span>
 
-  <span class="lead-duration duration">0.009</span>
+  <span class="lead-duration duration">0.007</span>
 
 </div>
 
@@ -800,7 +800,7 @@ classpath:be/decentralizedCom/heartbeat.feature:48
   <span class="keyword indention">Given</span>
   <span class="name">eval heartbeat.params[lao.id] = messageIds</span>
 
-  <span class="lead-duration duration">0.004</span>
+  <span class="lead-duration duration">0.000</span>
 
 </div>
 
@@ -827,7 +827,7 @@ classpath:be/decentralizedCom/heartbeat.feature:48
   <span class="keyword indention">When</span>
   <span class="name">mockServer.send(heartbeat)</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">0.002</span>
 
 </div>
 
@@ -854,7 +854,7 @@ classpath:be/decentralizedCom/heartbeat.feature:48
   <span class="keyword indention">And</span>
   <span class="name">def getMessagesByIdMessages = mockServer.getMessagesByMethod('get_messages_by_id')</span>
 
-  <span class="lead-duration duration">5.007</span>
+  <span class="lead-duration duration">5.009</span>
 
 </div>
 
@@ -925,7 +925,7 @@ classpath:be/decentralizedCom/heartbeat.feature:48
 </div>
 
 
-  <span class="lead-duration duration">5.009</span>
+  <span class="lead-duration duration">5.012</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-14">
@@ -1022,7 +1022,7 @@ classpath:be/decentralizedCom/heartbeat.feature:48
   <span class="keyword indention">And</span>
   <span class="name">eval heartbeat.params[lao.channel] = invalidMessageIds</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">0.008</span>
 
 </div>
 
@@ -1049,7 +1049,7 @@ classpath:be/decentralizedCom/heartbeat.feature:48
   <span class="keyword indention">When</span>
   <span class="name">mockServer.send(heartbeat)</span>
 
-  <span class="lead-duration duration">0.007</span>
+  <span class="lead-duration duration">0.001</span>
 
 </div>
 
