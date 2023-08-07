@@ -74,7 +74,7 @@ $(document).ready(function() {
   <tbody>
     <tr class="info">
       <td>go_server</td>
-      <td>06 Aug 2023, 04:12</td>
+      <td>07 Aug 2023, 04:12</td>
     </tr>
   </tbody>
 </table>
@@ -138,7 +138,7 @@ $(document).ready(function() {
           <td  class="failed"    >1</td>
           <td class="total">5</td>
 
-          <td class="duration" data-value="55067335249">55.067</td>
+          <td class="duration" data-value="55074852466">55.074</td>
           <td class="failed">Failed</td>
         </tr>
         </tbody>
@@ -181,7 +181,7 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">5.017</span>
+  <span class="lead-duration duration">5.027</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-1">
@@ -224,7 +224,7 @@ $(document).ready(function() {
   <span class="keyword indention">Given</span>
   <span class="name">eval heartbeat.params[lao.channel] = messageIds</span>
 
-  <span class="lead-duration duration">0.001</span>
+  <span class="lead-duration duration">0.003</span>
 
 </div>
 
@@ -251,7 +251,7 @@ $(document).ready(function() {
   <span class="keyword indention">When</span>
   <span class="name">mockServer.send(heartbeat)</span>
 
-  <span class="lead-duration duration">0.005</span>
+  <span class="lead-duration duration">0.009</span>
 
 </div>
 
@@ -278,7 +278,7 @@ $(document).ready(function() {
   <span class="keyword indention">And</span>
   <span class="name">def getMessagesByIdMessages = mockServer.getMessagesByMethod('get_messages_by_id')</span>
 
-  <span class="lead-duration duration">5.002</span>
+  <span class="lead-duration duration">5.003</span>
 
 </div>
 
@@ -305,7 +305,7 @@ $(document).ready(function() {
   <span class="keyword indention">Then</span>
   <span class="name">assert getMessagesByIdMessages.length == 1</span>
 
-  <span class="lead-duration duration">0.001</span>
+  <span class="lead-duration duration">0.000</span>
 
 </div>
 
@@ -332,7 +332,7 @@ $(document).ready(function() {
   <span class="keyword indention">And</span>
   <span class="name">match getMessagesByIdMessages[0] contains randomMessageId</span>
 
-  <span class="lead-duration duration">0.006</span>
+  <span class="lead-duration duration">0.009</span>
 
 </div>
 
@@ -376,7 +376,7 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">5.010</span>
+  <span class="lead-duration duration">5.014</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-3">
@@ -419,7 +419,7 @@ $(document).ready(function() {
   <span class="keyword indention">Given</span>
   <span class="name">eval heartbeat.params[lao.id] = messageIds</span>
 
-  <span class="lead-duration duration">0.001</span>
+  <span class="lead-duration duration">0.003</span>
 
 </div>
 
@@ -446,7 +446,7 @@ $(document).ready(function() {
   <span class="keyword indention">When</span>
   <span class="name">mockServer.send(heartbeat)</span>
 
-  <span class="lead-duration duration">0.007</span>
+  <span class="lead-duration duration">0.008</span>
 
 </div>
 
@@ -500,7 +500,7 @@ $(document).ready(function() {
   <span class="keyword indention">Then</span>
   <span class="name">assert getMessagesByIdMessages.length == 0</span>
 
-  <span class="lead-duration duration">0.001</span>
+  <span class="lead-duration duration">0.000</span>
 
 </div>
 
@@ -614,7 +614,7 @@ $(document).ready(function() {
   <span class="keyword indention">And</span>
   <span class="name">eval invalidMessageIds.push('invalid message id')</span>
 
-  <span class="lead-duration duration">0.001</span>
+  <span class="lead-duration duration">0.000</span>
 
 </div>
 
@@ -752,7 +752,7 @@ classpath:be/decentralizedCom/getMessagesById.feature:59</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-8" class="collapse collapsable-details">
-        <pre>04:11:49.328 classpath:be/decentralizedCom/getMessagesById.feature:59
+        <pre>04:11:58.895 classpath:be/decentralizedCom/getMessagesById.feature:59
 Then assert getMessagesByIdMessages.length == 0
 did not evaluate to 'true': getMessagesByIdMessages.length == 0
 classpath:be/decentralizedCom/getMessagesById.feature:59
@@ -933,7 +933,7 @@ classpath:be/decentralizedCom/getMessagesById.feature:59
 </div>
 
 
-  <span class="lead-duration duration">5.027</span>
+  <span class="lead-duration duration">5.020</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-11">
@@ -976,7 +976,7 @@ classpath:be/decentralizedCom/getMessagesById.feature:59
   <span class="keyword indention">Given</span>
   <span class="name">def validCreateRollCall =</span>
 
-  <span class="lead-duration duration">0.006</span>
+  <span class="lead-duration duration">0.007</span>
 
 </div>
 
@@ -1023,7 +1023,7 @@ classpath:be/decentralizedCom/getMessagesById.feature:59
   <span class="keyword indention">When</span>
   <span class="name">mockServer.publish(validCreateRollCall, lao.channel)</span>
 
-  <span class="lead-duration duration">0.016</span>
+  <span class="lead-duration duration">0.008</span>
 
 </div>
 
