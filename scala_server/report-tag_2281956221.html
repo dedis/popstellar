@@ -74,7 +74,7 @@ $(document).ready(function() {
   <tbody>
     <tr class="info">
       <td>scala_server</td>
-      <td>07 Aug 2023, 04:16</td>
+      <td>08 Aug 2023, 04:15</td>
     </tr>
   </tbody>
 </table>
@@ -138,7 +138,7 @@ $(document).ready(function() {
           <td  class="failed"    >2</td>
           <td class="total">5</td>
 
-          <td class="duration" data-value="55160844842">55.160</td>
+          <td class="duration" data-value="55163069524">55.163</td>
           <td class="failed">Failed</td>
         </tr>
         </tbody>
@@ -181,7 +181,7 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">5.050</span>
+  <span class="lead-duration duration">5.051</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-1">
@@ -251,7 +251,7 @@ $(document).ready(function() {
   <span class="keyword indention">When</span>
   <span class="name">mockServer.send(heartbeat)</span>
 
-  <span class="lead-duration duration">0.002</span>
+  <span class="lead-duration duration">0.018</span>
 
 </div>
 
@@ -278,7 +278,7 @@ $(document).ready(function() {
   <span class="keyword indention">And</span>
   <span class="name">def getMessagesByIdMessages = mockServer.getMessagesByMethod('get_messages_by_id')</span>
 
-  <span class="lead-duration duration">5.038</span>
+  <span class="lead-duration duration">5.024</span>
 
 </div>
 
@@ -376,7 +376,7 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">5.009</span>
+  <span class="lead-duration duration">5.014</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-3">
@@ -419,229 +419,7 @@ $(document).ready(function() {
   <span class="keyword indention">Given</span>
   <span class="name">eval heartbeat.params[lao.id] = messageIds</span>
 
-  <span class="lead-duration duration">0.001</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-When passed">
-  <span class="keyword indention">When</span>
-  <span class="name">mockServer.send(heartbeat)</span>
-
-  <span class="lead-duration duration">0.004</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And passed">
-  <span class="keyword indention">And</span>
-  <span class="name">def getMessagesByIdMessages = mockServer.getMessagesByMethod('get_messages_by_id')</span>
-
-  <span class="lead-duration duration">5.002</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-Then passed">
-  <span class="keyword indention">Then</span>
-  <span class="name">assert getMessagesByIdMessages.length == 0</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-  </div>
-</div>
-
-
-
-
-
-  </div>
-</div>
-
-
-<div class="element">
-    <div class="indention">
-      <b>Feature:</b>
-      <a href="report-feature_2077385333.html">be/decentralizedCom/getMessagesById.feature</a>
-    </div>
-
-
-<div class="tags indention">
-    <b>Tags:</b>
-       <a href="report-tag_2281956221.html">@env=go_server,scala_server</a>
-</div>
-
-
-  <span class="lead-duration duration">5.019</span>
-
-
-  <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-5">
-
-<div class="brief passed">
-  <span class="keyword indention">Scenario</span>
-  <span class="name">Server should not request messages for invalid lao ids</span>
-
-
-     <i class="chevron fa fa-fw"></i>
-</div>
-
-  </span>
-  <div class="description indention"></div>
-
-  <div id="element-5" class="collapse collapsable-details ">
-
-
-
-
-
-<div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-6">
-
-<div class="brief passed">
-  <span class="keyword indention">Steps</span>
-  <span class="name"></span>
-
-
-     <i class="chevron fa fa-fw"></i>
-</div>
-
-  </div>
-
-  <div id="steps-6" class="inner-level collapse collapsable-details ">
-      <div class="step">
-
-
-<div class="brief step-name-Given passed">
-  <span class="keyword indention">Given</span>
-  <span class="name">def invalidMessageIds = []</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And passed">
-  <span class="keyword indention">And</span>
-  <span class="name">eval invalidMessageIds.push('invalid message id')</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And passed">
-  <span class="keyword indention">And</span>
-  <span class="name">eval heartbeat.params[lao.channel] = invalidMessageIds</span>
-
-  <span class="lead-duration duration">0.007</span>
+  <span class="lead-duration duration">0.003</span>
 
 </div>
 
@@ -756,6 +534,228 @@ $(document).ready(function() {
 <div class="element">
     <div class="indention">
       <b>Feature:</b>
+      <a href="report-feature_2077385333.html">be/decentralizedCom/getMessagesById.feature</a>
+    </div>
+
+
+<div class="tags indention">
+    <b>Tags:</b>
+       <a href="report-tag_2281956221.html">@env=go_server,scala_server</a>
+</div>
+
+
+  <span class="lead-duration duration">5.010</span>
+
+
+  <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-5">
+
+<div class="brief passed">
+  <span class="keyword indention">Scenario</span>
+  <span class="name">Server should not request messages for invalid lao ids</span>
+
+
+     <i class="chevron fa fa-fw"></i>
+</div>
+
+  </span>
+  <div class="description indention"></div>
+
+  <div id="element-5" class="collapse collapsable-details ">
+
+
+
+
+
+<div class="steps inner-level">
+  <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-6">
+
+<div class="brief passed">
+  <span class="keyword indention">Steps</span>
+  <span class="name"></span>
+
+
+     <i class="chevron fa fa-fw"></i>
+</div>
+
+  </div>
+
+  <div id="steps-6" class="inner-level collapse collapsable-details ">
+      <div class="step">
+
+
+<div class="brief step-name-Given passed">
+  <span class="keyword indention">Given</span>
+  <span class="name">def invalidMessageIds = []</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And passed">
+  <span class="keyword indention">And</span>
+  <span class="name">eval invalidMessageIds.push('invalid message id')</span>
+
+  <span class="lead-duration duration">0.003</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And passed">
+  <span class="keyword indention">And</span>
+  <span class="name">eval heartbeat.params[lao.channel] = invalidMessageIds</span>
+
+  <span class="lead-duration duration">0.001</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-When passed">
+  <span class="keyword indention">When</span>
+  <span class="name">mockServer.send(heartbeat)</span>
+
+  <span class="lead-duration duration">0.005</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And passed">
+  <span class="keyword indention">And</span>
+  <span class="name">def getMessagesByIdMessages = mockServer.getMessagesByMethod('get_messages_by_id')</span>
+
+  <span class="lead-duration duration">5.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-Then passed">
+  <span class="keyword indention">Then</span>
+  <span class="name">assert getMessagesByIdMessages.length == 0</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+  </div>
+</div>
+
+
+
+
+
+  </div>
+</div>
+
+
+<div class="element">
+    <div class="indention">
+      <b>Feature:</b>
       <a href="report-feature_1_3519381821.html">be/decentralizedCom/heartbeat.feature</a>
     </div>
 
@@ -766,7 +766,7 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">35.011</span>
+  <span class="lead-duration duration">35.016</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-7">
@@ -809,7 +809,7 @@ $(document).ready(function() {
   <span class="keyword indention">Given</span>
   <span class="name">wait(30)</span>
 
-  <span class="lead-duration duration">30.008</span>
+  <span class="lead-duration duration">30.012</span>
 
 </div>
 
@@ -893,7 +893,7 @@ classpath:be/decentralizedCom/heartbeat.feature:26</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-10" class="collapse collapsable-details">
-        <pre>04:16:01.256 classpath:be/decentralizedCom/heartbeat.feature:26
+        <pre>04:15:24.866 classpath:be/decentralizedCom/heartbeat.feature:26
 Then assert heartbeatMessages.length &gt; 0
 did not evaluate to 'true': heartbeatMessages.length &gt; 0
 classpath:be/decentralizedCom/heartbeat.feature:26
@@ -933,7 +933,7 @@ classpath:be/decentralizedCom/heartbeat.feature:26
 </div>
 
 
-  <span class="lead-duration duration">5.069</span>
+  <span class="lead-duration duration">5.071</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-11">
@@ -976,7 +976,7 @@ classpath:be/decentralizedCom/heartbeat.feature:26
   <span class="keyword indention">Given</span>
   <span class="name">def validCreateRollCall =</span>
 
-  <span class="lead-duration duration">0.006</span>
+  <span class="lead-duration duration">0.010</span>
 
 </div>
 
@@ -1023,7 +1023,7 @@ classpath:be/decentralizedCom/heartbeat.feature:26
   <span class="keyword indention">When</span>
   <span class="name">mockServer.publish(validCreateRollCall, lao.channel)</span>
 
-  <span class="lead-duration duration">0.015</span>
+  <span class="lead-duration duration">0.028</span>
 
 </div>
 
@@ -1050,7 +1050,7 @@ classpath:be/decentralizedCom/heartbeat.feature:26
   <span class="keyword indention">And</span>
   <span class="name">def heartbeatMessages = mockServer.getMessagesByMethod('heartbeat')</span>
 
-  <span class="lead-duration duration">5.047</span>
+  <span class="lead-duration duration">5.032</span>
 
 </div>
 
@@ -1107,7 +1107,7 @@ classpath:be/decentralizedCom/heartbeat.feature:48</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-15" class="collapse collapsable-details">
-        <pre>04:16:10.373 classpath:be/decentralizedCom/heartbeat.feature:48
+        <pre>04:15:33.612 classpath:be/decentralizedCom/heartbeat.feature:48
 Then assert heartbeatMessages.length == 1
 did not evaluate to 'true': heartbeatMessages.length == 1
 classpath:be/decentralizedCom/heartbeat.feature:48
