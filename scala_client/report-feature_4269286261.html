@@ -74,7 +74,7 @@ $(document).ready(function() {
   <tbody>
     <tr class="info">
       <td>scala_client</td>
-      <td>30 Aug 2023, 04:15</td>
+      <td>31 Aug 2023, 04:17</td>
     </tr>
   </tbody>
 </table>
@@ -138,7 +138,7 @@ $(document).ready(function() {
           <td  class="failed"    >1</td>
           <td class="total">5</td>
 
-          <td class="duration" data-value="44639915272">44.639</td>
+          <td class="duration" data-value="51071323797">51.071</td>
           <td class="failed">Failed</td>
         </tr>
         </tbody>
@@ -191,7 +191,7 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">4.642</span>
+  <span class="lead-duration duration">6.585</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-1">
@@ -234,7 +234,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/utils/server.feature')</span>
 
-  <span class="lead-duration duration">3.049</span>
+  <span class="lead-duration duration">4.284</span>
 
 </div>
 
@@ -288,7 +288,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/mockClient.feature')</span>
 
-  <span class="lead-duration duration">0.012</span>
+  <span class="lead-duration duration">0.017</span>
 
 </div>
 
@@ -342,7 +342,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/constants.feature')</span>
 
-  <span class="lead-duration duration">0.010</span>
+  <span class="lead-duration duration">0.039</span>
 
 </div>
 
@@ -396,7 +396,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">def organizer = call createMockClient</span>
 
-  <span class="lead-duration duration">0.288</span>
+  <span class="lead-duration duration">0.578</span>
 
 </div>
 
@@ -423,7 +423,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">def recipient = call createMockClient</span>
 
-  <span class="lead-duration duration">0.036</span>
+  <span class="lead-duration duration">0.058</span>
 
 </div>
 
@@ -504,7 +504,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=setup_coin_channel') { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)' }</span>
 
-  <span class="lead-duration duration">1.243</span>
+  <span class="lead-duration duration">1.605</span>
 
 </div>
 
@@ -550,9 +550,9 @@ $(document).ready(function() {
       </div>
       <div id="msg-3" class="collapse collapsable-details">
         <pre>{
-  &quot;organizer&quot;: &quot;be.utils.MockClient@47162173&quot;,
-  &quot;lao&quot;: &quot;be.model.Lao@3a4f8e8a&quot;,
-  &quot;rollCall&quot;: &quot;be.model.RollCall@4468fda8&quot;
+  &quot;organizer&quot;: &quot;be.utils.MockClient@5fc1e4fb&quot;,
+  &quot;lao&quot;: &quot;be.model.Lao@29aa4bc9&quot;,
+  &quot;rollCall&quot;: &quot;be.model.RollCall@6fd7aba8&quot;
 }
 </pre>
       </div>
@@ -586,7 +586,7 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">5.092</span>
+  <span class="lead-duration duration">5.082</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-4">
@@ -629,7 +629,7 @@ $(document).ready(function() {
   <span class="keyword indention">Given</span>
   <span class="name">def transaction = organizer.issueCoins(recipient, 32);</span>
 
-  <span class="lead-duration duration">0.019</span>
+  <span class="lead-duration duration">0.016</span>
 
 </div>
 
@@ -656,7 +656,7 @@ $(document).ready(function() {
   <span class="keyword indention">And</span>
   <span class="name">def postTransaction = transaction.post()</span>
 
-  <span class="lead-duration duration">0.004</span>
+  <span class="lead-duration duration">0.001</span>
 
 </div>
 
@@ -737,7 +737,7 @@ $(document).ready(function() {
   <span class="keyword indention">And</span>
   <span class="name">def validTransaction =</span>
 
-  <span class="lead-duration duration">0.007</span>
+  <span class="lead-duration duration">0.004</span>
 
 </div>
 
@@ -798,7 +798,7 @@ $(document).ready(function() {
   <span class="keyword indention">When</span>
   <span class="name">organizer.publish(validTransaction, lao.cashChannel)</span>
 
-  <span class="lead-duration duration">0.008</span>
+  <span class="lead-duration duration">0.004</span>
 
 </div>
 
@@ -825,7 +825,7 @@ $(document).ready(function() {
   <span class="keyword indention">And</span>
   <span class="name">json answer = organizer.getBackendResponse(validTransaction)</span>
 
-  <span class="lead-duration duration">0.047</span>
+  <span class="lead-duration duration">0.050</span>
 
 </div>
 
@@ -917,7 +917,7 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">4.682</span>
+  <span class="lead-duration duration">5.783</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-7">
@@ -960,7 +960,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/utils/server.feature')</span>
 
-  <span class="lead-duration duration">3.016</span>
+  <span class="lead-duration duration">3.787</span>
 
 </div>
 
@@ -1014,7 +1014,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/mockClient.feature')</span>
 
-  <span class="lead-duration duration">0.018</span>
+  <span class="lead-duration duration">0.016</span>
 
 </div>
 
@@ -1068,7 +1068,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/constants.feature')</span>
 
-  <span class="lead-duration duration">0.006</span>
+  <span class="lead-duration duration">0.008</span>
 
 </div>
 
@@ -1122,7 +1122,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">def organizer = call createMockClient</span>
 
-  <span class="lead-duration duration">0.349</span>
+  <span class="lead-duration duration">0.355</span>
 
 </div>
 
@@ -1149,7 +1149,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">def recipient = call createMockClient</span>
 
-  <span class="lead-duration duration">0.030</span>
+  <span class="lead-duration duration">0.039</span>
 
 </div>
 
@@ -1230,7 +1230,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=setup_coin_channel') { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)' }</span>
 
-  <span class="lead-duration duration">1.260</span>
+  <span class="lead-duration duration">1.574</span>
 
 </div>
 
@@ -1276,9 +1276,9 @@ $(document).ready(function() {
       </div>
       <div id="msg-9" class="collapse collapsable-details">
         <pre>{
-  &quot;organizer&quot;: &quot;be.utils.MockClient@5fc1e4fb&quot;,
-  &quot;lao&quot;: &quot;be.model.Lao@29aa4bc9&quot;,
-  &quot;rollCall&quot;: &quot;be.model.RollCall@6fd7aba8&quot;
+  &quot;organizer&quot;: &quot;be.utils.MockClient@6c519e47&quot;,
+  &quot;lao&quot;: &quot;be.model.Lao@3ce7490a&quot;,
+  &quot;rollCall&quot;: &quot;be.model.RollCall@4768b95c&quot;
 }
 </pre>
       </div>
@@ -1312,7 +1312,7 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">0.424</span>
+  <span class="lead-duration duration">0.647</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-10">
@@ -1382,7 +1382,7 @@ $(document).ready(function() {
   <span class="keyword indention">And</span>
   <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=valid_coin_issuance') { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)', recipient: '#(recipient)', amount: '#(initialAmount)' }</span>
 
-  <span class="lead-duration duration">0.396</span>
+  <span class="lead-duration duration">0.589</span>
 
 </div>
 
@@ -1428,10 +1428,10 @@ $(document).ready(function() {
       </div>
       <div id="msg-12" class="collapse collapsable-details">
         <pre>{
-  &quot;organizer&quot;: &quot;be.utils.MockClient@5fc1e4fb&quot;,
-  &quot;lao&quot;: &quot;be.model.Lao@29aa4bc9&quot;,
-  &quot;rollCall&quot;: &quot;be.model.RollCall@6fd7aba8&quot;,
-  &quot;recipient&quot;: &quot;be.utils.MockClient@6c519e47&quot;,
+  &quot;organizer&quot;: &quot;be.utils.MockClient@6c519e47&quot;,
+  &quot;lao&quot;: &quot;be.model.Lao@3ce7490a&quot;,
+  &quot;rollCall&quot;: &quot;be.model.RollCall@4768b95c&quot;,
+  &quot;recipient&quot;: &quot;be.utils.MockClient@1530d0f2&quot;,
   &quot;amount&quot;: 32
 }
 </pre>
@@ -1453,7 +1453,7 @@ $(document).ready(function() {
   <span class="keyword indention">And</span>
   <span class="name">def transaction = organizer.issueCoins(recipient, 20);</span>
 
-  <span class="lead-duration duration">0.001</span>
+  <span class="lead-duration duration">0.003</span>
 
 </div>
 
@@ -1480,7 +1480,7 @@ $(document).ready(function() {
   <span class="keyword indention">And</span>
   <span class="name">def postTransaction = transaction.post()</span>
 
-  <span class="lead-duration duration">0.001</span>
+  <span class="lead-duration duration">0.000</span>
 
 </div>
 
@@ -1507,7 +1507,7 @@ $(document).ready(function() {
   <span class="keyword indention">And</span>
   <span class="name">def input = transaction.inputs[1]</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">0.004</span>
 
 </div>
 
@@ -1534,7 +1534,7 @@ $(document).ready(function() {
   <span class="keyword indention">And</span>
   <span class="name">def output = transaction.outputs[1]</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">0.001</span>
 
 </div>
 
@@ -1561,7 +1561,7 @@ $(document).ready(function() {
   <span class="keyword indention">And</span>
   <span class="name">def validTransfer =</span>
 
-  <span class="lead-duration duration">0.005</span>
+  <span class="lead-duration duration">0.003</span>
 
 </div>
 
@@ -1622,7 +1622,7 @@ $(document).ready(function() {
   <span class="keyword indention">When</span>
   <span class="name">organizer.publish(validTransfer, lao.cashChannel)</span>
 
-  <span class="lead-duration duration">0.013</span>
+  <span class="lead-duration duration">0.006</span>
 
 </div>
 
@@ -1649,7 +1649,7 @@ $(document).ready(function() {
   <span class="keyword indention">And</span>
   <span class="name">json answer = organizer.getBackendResponse(validTransfer)</span>
 
-  <span class="lead-duration duration">0.003</span>
+  <span class="lead-duration duration">0.037</span>
 
 </div>
 
@@ -1693,7 +1693,7 @@ $(document).ready(function() {
       <div id="msg-14" class="collapse collapsable-details  in ">
         <pre>match failed: CONTAINS
   $ | actual does not contain expected | actual does not contain key - 'result' (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:1925745974,&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;Invalid data: $.transaction.outputs[0].value: string found, integer expected; $.transaction.inputs[0].tx_out_index: string found, integer expected&quot;}}
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:1373323620,&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;Invalid data: $.transaction.outputs[0].value: string found, integer expected; $.transaction.inputs[0].tx_out_index: string found, integer expected&quot;}}
   {&quot;result&quot;:0}
 
 
@@ -1711,11 +1711,11 @@ classpath:be/digitalCash/transaction.feature:98</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-15" class="collapse collapsable-details">
-        <pre>04:08:14.956 classpath:be/digitalCash/transaction.feature:98
+        <pre>04:09:18.021 classpath:be/digitalCash/transaction.feature:98
 Then match answer contains VALID_MESSAGE
 match failed: CONTAINS
   $ | actual does not contain expected | actual does not contain key - 'result' (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:1925745974,&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;Invalid data: $.transaction.outputs[0].value: string found, integer expected; $.transaction.inputs[0].tx_out_index: string found, integer expected&quot;}}
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:1373323620,&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;Invalid data: $.transaction.outputs[0].value: string found, integer expected; $.transaction.inputs[0].tx_out_index: string found, integer expected&quot;}}
   {&quot;result&quot;:0}
 
 
@@ -1777,7 +1777,7 @@ classpath:be/digitalCash/transaction.feature:98
 </div>
 
 
-  <span class="lead-duration duration">4.654</span>
+  <span class="lead-duration duration">6.204</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-16">
@@ -1820,7 +1820,7 @@ classpath:be/digitalCash/transaction.feature:98
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/utils/server.feature')</span>
 
-  <span class="lead-duration duration">3.016</span>
+  <span class="lead-duration duration">4.031</span>
 
 </div>
 
@@ -1874,7 +1874,7 @@ classpath:be/digitalCash/transaction.feature:98
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/mockClient.feature')</span>
 
-  <span class="lead-duration duration">0.004</span>
+  <span class="lead-duration duration">0.009</span>
 
 </div>
 
@@ -1928,7 +1928,7 @@ classpath:be/digitalCash/transaction.feature:98
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/constants.feature')</span>
 
-  <span class="lead-duration duration">0.005</span>
+  <span class="lead-duration duration">0.026</span>
 
 </div>
 
@@ -1982,7 +1982,7 @@ classpath:be/digitalCash/transaction.feature:98
   <span class="keyword indention">*</span>
   <span class="name">def organizer = call createMockClient</span>
 
-  <span class="lead-duration duration">0.280</span>
+  <span class="lead-duration duration">0.390</span>
 
 </div>
 
@@ -2009,7 +2009,7 @@ classpath:be/digitalCash/transaction.feature:98
   <span class="keyword indention">*</span>
   <span class="name">def recipient = call createMockClient</span>
 
-  <span class="lead-duration duration">0.035</span>
+  <span class="lead-duration duration">0.051</span>
 
 </div>
 
@@ -2090,7 +2090,7 @@ classpath:be/digitalCash/transaction.feature:98
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=setup_coin_channel') { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)' }</span>
 
-  <span class="lead-duration duration">1.312</span>
+  <span class="lead-duration duration">1.692</span>
 
 </div>
 
@@ -2136,9 +2136,9 @@ classpath:be/digitalCash/transaction.feature:98
       </div>
       <div id="msg-18" class="collapse collapsable-details">
         <pre>{
-  &quot;organizer&quot;: &quot;be.utils.MockClient@3ce7490a&quot;,
-  &quot;lao&quot;: &quot;be.model.Lao@4768b95c&quot;,
-  &quot;rollCall&quot;: &quot;be.model.RollCall@1530d0f2&quot;
+  &quot;organizer&quot;: &quot;be.utils.MockClient@7573c7b5&quot;,
+  &quot;lao&quot;: &quot;be.model.Lao@73da7f08&quot;,
+  &quot;rollCall&quot;: &quot;be.model.RollCall@717a8a76&quot;
 }
 </pre>
       </div>
@@ -2172,7 +2172,7 @@ classpath:be/digitalCash/transaction.feature:98
 </div>
 
 
-  <span class="lead-duration duration">5.047</span>
+  <span class="lead-duration duration">5.060</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-19">
@@ -2323,7 +2323,7 @@ classpath:be/digitalCash/transaction.feature:98
   <span class="keyword indention">And</span>
   <span class="name">def invalidTransaction =</span>
 
-  <span class="lead-duration duration">0.001</span>
+  <span class="lead-duration duration">0.003</span>
 
 </div>
 
@@ -2384,7 +2384,7 @@ classpath:be/digitalCash/transaction.feature:98
   <span class="keyword indention">When</span>
   <span class="name">organizer.publish(invalidTransaction, lao.cashChannel)</span>
 
-  <span class="lead-duration duration">0.006</span>
+  <span class="lead-duration duration">0.003</span>
 
 </div>
 
@@ -2411,7 +2411,7 @@ classpath:be/digitalCash/transaction.feature:98
   <span class="keyword indention">And</span>
   <span class="name">json answer = organizer.getBackendResponse(invalidTransaction)</span>
 
-  <span class="lead-duration duration">0.033</span>
+  <span class="lead-duration duration">0.048</span>
 
 </div>
 
@@ -2465,7 +2465,7 @@ classpath:be/digitalCash/transaction.feature:98
   <span class="keyword indention">And</span>
   <span class="name">match organizer.receiveNoMoreResponses() == true</span>
 
-  <span class="lead-duration duration">5.001</span>
+  <span class="lead-duration duration">5.002</span>
 
 </div>
 
@@ -2503,7 +2503,7 @@ classpath:be/digitalCash/transaction.feature:98
 </div>
 
 
-  <span class="lead-duration duration">5.044</span>
+  <span class="lead-duration duration">5.873</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-22">
@@ -2546,7 +2546,7 @@ classpath:be/digitalCash/transaction.feature:98
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/utils/server.feature')</span>
 
-  <span class="lead-duration duration">3.271</span>
+  <span class="lead-duration duration">4.043</span>
 
 </div>
 
@@ -2600,7 +2600,7 @@ classpath:be/digitalCash/transaction.feature:98
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/mockClient.feature')</span>
 
-  <span class="lead-duration duration">0.005</span>
+  <span class="lead-duration duration">0.006</span>
 
 </div>
 
@@ -2654,7 +2654,7 @@ classpath:be/digitalCash/transaction.feature:98
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/constants.feature')</span>
 
-  <span class="lead-duration duration">0.024</span>
+  <span class="lead-duration duration">0.028</span>
 
 </div>
 
@@ -2708,7 +2708,7 @@ classpath:be/digitalCash/transaction.feature:98
   <span class="keyword indention">*</span>
   <span class="name">def organizer = call createMockClient</span>
 
-  <span class="lead-duration duration">0.275</span>
+  <span class="lead-duration duration">0.364</span>
 
 </div>
 
@@ -2735,7 +2735,7 @@ classpath:be/digitalCash/transaction.feature:98
   <span class="keyword indention">*</span>
   <span class="name">def recipient = call createMockClient</span>
 
-  <span class="lead-duration duration">0.041</span>
+  <span class="lead-duration duration">0.050</span>
 
 </div>
 
@@ -2762,7 +2762,7 @@ classpath:be/digitalCash/transaction.feature:98
   <span class="keyword indention">*</span>
   <span class="name">def lao = organizer.createValidLao()</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">0.001</span>
 
 </div>
 
@@ -2816,7 +2816,7 @@ classpath:be/digitalCash/transaction.feature:98
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=setup_coin_channel') { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)' }</span>
 
-  <span class="lead-duration duration">1.425</span>
+  <span class="lead-duration duration">1.377</span>
 
 </div>
 
@@ -2862,9 +2862,9 @@ classpath:be/digitalCash/transaction.feature:98
       </div>
       <div id="msg-24" class="collapse collapsable-details">
         <pre>{
-  &quot;organizer&quot;: &quot;be.utils.MockClient@7573c7b5&quot;,
-  &quot;lao&quot;: &quot;be.model.Lao@73da7f08&quot;,
-  &quot;rollCall&quot;: &quot;be.model.RollCall@717a8a76&quot;
+  &quot;organizer&quot;: &quot;be.utils.MockClient@62de73eb&quot;,
+  &quot;lao&quot;: &quot;be.model.Lao@97b5e6a&quot;,
+  &quot;rollCall&quot;: &quot;be.model.RollCall@29f95272&quot;
 }
 </pre>
       </div>
@@ -2898,7 +2898,7 @@ classpath:be/digitalCash/transaction.feature:98
 </div>
 
 
-  <span class="lead-duration duration">5.043</span>
+  <span class="lead-duration duration">5.056</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-25">
@@ -2941,7 +2941,7 @@ classpath:be/digitalCash/transaction.feature:98
   <span class="keyword indention">Given</span>
   <span class="name">def transaction = organizer.issueCoins(recipient, 32);</span>
 
-  <span class="lead-duration duration">0.003</span>
+  <span class="lead-duration duration">0.005</span>
 
 </div>
 
@@ -3049,7 +3049,7 @@ classpath:be/digitalCash/transaction.feature:98
   <span class="keyword indention">And</span>
   <span class="name">def invalidTransaction =</span>
 
-  <span class="lead-duration duration">0.004</span>
+  <span class="lead-duration duration">0.005</span>
 
 </div>
 
@@ -3137,7 +3137,7 @@ classpath:be/digitalCash/transaction.feature:98
   <span class="keyword indention">And</span>
   <span class="name">json answer = organizer.getBackendResponse(invalidTransaction)</span>
 
-  <span class="lead-duration duration">0.022</span>
+  <span class="lead-duration duration">0.032</span>
 
 </div>
 
@@ -3229,7 +3229,7 @@ classpath:be/digitalCash/transaction.feature:98
 </div>
 
 
-  <span class="lead-duration duration">4.976</span>
+  <span class="lead-duration duration">5.723</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-28">
@@ -3272,7 +3272,7 @@ classpath:be/digitalCash/transaction.feature:98
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/utils/server.feature')</span>
 
-  <span class="lead-duration duration">3.267</span>
+  <span class="lead-duration duration">3.778</span>
 
 </div>
 
@@ -3326,7 +3326,7 @@ classpath:be/digitalCash/transaction.feature:98
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/mockClient.feature')</span>
 
-  <span class="lead-duration duration">0.053</span>
+  <span class="lead-duration duration">0.028</span>
 
 </div>
 
@@ -3380,7 +3380,7 @@ classpath:be/digitalCash/transaction.feature:98
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/constants.feature')</span>
 
-  <span class="lead-duration duration">0.007</span>
+  <span class="lead-duration duration">0.031</span>
 
 </div>
 
@@ -3434,7 +3434,7 @@ classpath:be/digitalCash/transaction.feature:98
   <span class="keyword indention">*</span>
   <span class="name">def organizer = call createMockClient</span>
 
-  <span class="lead-duration duration">0.345</span>
+  <span class="lead-duration duration">0.441</span>
 
 </div>
 
@@ -3461,7 +3461,7 @@ classpath:be/digitalCash/transaction.feature:98
   <span class="keyword indention">*</span>
   <span class="name">def recipient = call createMockClient</span>
 
-  <span class="lead-duration duration">0.033</span>
+  <span class="lead-duration duration">0.029</span>
 
 </div>
 
@@ -3542,7 +3542,7 @@ classpath:be/digitalCash/transaction.feature:98
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=setup_coin_channel') { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)' }</span>
 
-  <span class="lead-duration duration">1.268</span>
+  <span class="lead-duration duration">1.414</span>
 
 </div>
 
@@ -3588,9 +3588,9 @@ classpath:be/digitalCash/transaction.feature:98
       </div>
       <div id="msg-30" class="collapse collapsable-details">
         <pre>{
-  &quot;organizer&quot;: &quot;be.utils.MockClient@62de73eb&quot;,
-  &quot;lao&quot;: &quot;be.model.Lao@97b5e6a&quot;,
-  &quot;rollCall&quot;: &quot;be.model.RollCall@29f95272&quot;
+  &quot;organizer&quot;: &quot;be.utils.MockClient@c754401&quot;,
+  &quot;lao&quot;: &quot;be.model.Lao@1da53f4f&quot;,
+  &quot;rollCall&quot;: &quot;be.model.RollCall@4e7eba9f&quot;
 }
 </pre>
       </div>
@@ -3624,7 +3624,7 @@ classpath:be/digitalCash/transaction.feature:98
 </div>
 
 
-  <span class="lead-duration duration">5.031</span>
+  <span class="lead-duration duration">5.054</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-31">
@@ -3667,7 +3667,7 @@ classpath:be/digitalCash/transaction.feature:98
   <span class="keyword indention">Given</span>
   <span class="name">def transaction = organizer.issueCoins(recipient, 32);</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">0.004</span>
 
 </div>
 
@@ -3836,7 +3836,7 @@ classpath:be/digitalCash/transaction.feature:98
   <span class="keyword indention">When</span>
   <span class="name">organizer.publish(invalidTransaction, lao.cashChannel)</span>
 
-  <span class="lead-duration duration">0.001</span>
+  <span class="lead-duration duration">0.014</span>
 
 </div>
 
@@ -3863,7 +3863,7 @@ classpath:be/digitalCash/transaction.feature:98
   <span class="keyword indention">And</span>
   <span class="name">json answer = organizer.getBackendResponse(invalidTransaction)</span>
 
-  <span class="lead-duration duration">0.027</span>
+  <span class="lead-duration duration">0.034</span>
 
 </div>
 
