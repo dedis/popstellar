@@ -50,9 +50,9 @@ $(document).ready(function() {
     var chartData = {
         datasets: [{
             data: [
-                84,
-                2,
-                0,
+                59,
+                10,
+                22,
                 0,
                 0
             ],
@@ -93,7 +93,7 @@ $(document).ready(function() {
                         var allData = data.datasets[tooltipItem.datasetIndex].data;
                         var tooltipLabel = data.labels[tooltipItem.index];
                         var tooltipData = allData[tooltipItem.index];
-                        var tooltipPercentage = Math.round(10000 * tooltipData / 86) / 100;
+                        var tooltipPercentage = Math.round(10000 * tooltipData / 91) / 100;
                         return tooltipLabel + ": " + tooltipData + " (" + tooltipPercentage + "%)";
                     }
                 }
@@ -106,8 +106,8 @@ $(document).ready(function() {
     var chartData = {
         datasets: [{
             data: [
-                3,
-                2
+                0,
+                5
             ],
             backgroundColor: [
                 "#00B000",
@@ -153,8 +153,8 @@ $(document).ready(function() {
     var chartData = {
         datasets: [{
             data: [
-                   1,
-                   1
+                   0,
+                   2
                ],
                backgroundColor: [
                 "#00B000",
@@ -228,7 +228,7 @@ $(document).ready(function() {
   <tbody>
     <tr class="info">
       <td>scala_server</td>
-      <td>04 Sep 2023, 04:16</td>
+      <td>05 Sep 2023, 04:16</td>
     </tr>
   </tbody>
 </table>
@@ -325,69 +325,69 @@ $(document).ready(function() {
       <tr>
         <td class="tagname"><a href="report-feature_3519381821.html">be/decentralizedCom/heartbeat.feature</a></td>
 
-        <td      class="passed"    >27</td>
-        <td      class="failed"    >2</td>
+        <td      class="passed"    >20</td>
+        <td      class="failed"    >4</td>
+        <td     class="skipped"   >7</td>
         <td >0</td>
         <td >0</td>
-        <td >0</td>
-        <td class="total">29</td>
+        <td class="total">31</td>
 
         <td >0</td>
         <td  class="failed"    >2</td>
         <td class="total">2</td>
 
-        <td class="duration" data-value="49072488294">49.072</td>
+        <td class="duration" data-value="25904858854">25.904</td>
         <td class="failed">Failed</td>
       </tr>
       <tr>
         <td class="tagname"><a href="report-feature_1_2077385333.html">be/decentralizedCom/getMessagesById.feature</a></td>
 
-        <td      class="passed"    >57</td>
+        <td      class="passed"    >39</td>
+        <td      class="failed"    >6</td>
+        <td     class="skipped"   >15</td>
         <td >0</td>
         <td >0</td>
-        <td >0</td>
-        <td >0</td>
-        <td class="total">57</td>
+        <td class="total">60</td>
 
-        <td  class="passed"    >3</td>
         <td >0</td>
+        <td  class="failed"    >3</td>
         <td class="total">3</td>
 
-        <td class="duration" data-value="28618602314">28.618</td>
-        <td class="passed">Passed</td>
+        <td class="duration" data-value="39020740173">39.020</td>
+        <td class="failed">Failed</td>
       </tr>
   </tbody>
 
   <tfoot class="total">
     <tr>
       <td></td>
-      <td>84</td>
-      <td>2</td>
+      <td>59</td>
+      <td>10</td>
+      <td>22</td>
       <td>0</td>
       <td>0</td>
-      <td>0</td>
-      <td>86</td>
+      <td>91</td>
 
-      <td>3</td>
-      <td>2</td>
+      <td>0</td>
+      <td>5</td>
       <td>5</td>
 
-      <td class="duration">1:17.691</td>
+      <td class="duration">1:4.925</td>
       <td>2</td>
     </tr>
     <tr>
       <td></td>
-      <td>97.67%</td>
-      <td>2.33%</td>
-      <td>0.00%</td>
+      <td>64.84%</td>
+      <td>10.99%</td>
+      <td>24.18%</td>
       <td>0.00%</td>
       <td>0.00%</td>
       <td></td>
-      <td>60.00%</td>
-      <td>40.00%</td>
+      <td>0.00%</td>
+      <td>100.00%</td>
       <td></td>
       <td></td>
-      <td>50.00%</td>
+      <td>0.00%</td>
     </tr>
   </tfoot>
 </table>
