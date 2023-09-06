@@ -74,7 +74,7 @@ $(document).ready(function() {
   <tbody>
     <tr class="info">
       <td>scala_server</td>
-      <td>05 Sep 2023, 04:16</td>
+      <td>06 Sep 2023, 04:17</td>
     </tr>
   </tbody>
 </table>
@@ -127,18 +127,18 @@ $(document).ready(function() {
         <tbody>
         <tr>
           <td class="tagname">be/decentralizedCom/heartbeat.feature</td>
-          <td      class="passed"    >20</td>
-          <td      class="failed"    >4</td>
-          <td     class="skipped"   >7</td>
+          <td      class="passed"    >27</td>
+          <td      class="failed"    >2</td>
           <td >0</td>
           <td >0</td>
-          <td class="total">31</td>
+          <td >0</td>
+          <td class="total">29</td>
 
           <td >0</td>
           <td  class="failed"    >2</td>
           <td class="total">2</td>
 
-          <td class="duration" data-value="25904858854">25.904</td>
+          <td class="duration" data-value="49842669813">49.842</td>
           <td class="failed">Failed</td>
         </tr>
         </tbody>
@@ -191,12 +191,12 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">13.002</span>
+  <span class="lead-duration duration">4.087</span>
 
 
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-1">
+  <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-1">
 
-<div class="brief failed">
+<div class="brief passed">
   <span class="keyword indention">Background</span>
   <span class="name"></span>
 
@@ -207,16 +207,16 @@ $(document).ready(function() {
   </span>
   <div class="description indention"></div>
 
-  <div id="element-1" class="collapse collapsable-details  in ">
+  <div id="element-1" class="collapse collapsable-details ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-2">
+  <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-2">
 
-<div class="brief failed">
+<div class="brief passed">
   <span class="keyword indention">Steps</span>
   <span class="name"></span>
 
@@ -226,7 +226,7 @@ $(document).ready(function() {
 
   </div>
 
-  <div id="steps-2" class="inner-level collapse collapsable-details  in ">
+  <div id="steps-2" class="inner-level collapse collapsable-details ">
       <div class="step">
 
 
@@ -234,7 +234,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/utils/server.feature')</span>
 
-  <span class="lead-duration duration">2.539</span>
+  <span class="lead-duration duration">2.783</span>
 
 </div>
 
@@ -288,7 +288,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/mockClient.feature')</span>
 
-  <span class="lead-duration duration">0.034</span>
+  <span class="lead-duration duration">0.028</span>
 
 </div>
 
@@ -342,7 +342,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/constants.feature')</span>
 
-  <span class="lead-duration duration">0.023</span>
+  <span class="lead-duration duration">0.027</span>
 
 </div>
 
@@ -396,7 +396,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">def mockServer = call createMockClient</span>
 
-  <span class="lead-duration duration">0.243</span>
+  <span class="lead-duration duration">0.309</span>
 
 </div>
 
@@ -422,33 +422,6 @@ $(document).ready(function() {
 <div class="brief step-name-* passed">
   <span class="keyword indention">*</span>
   <span class="name">def lao = mockServer.createValidLao()</span>
-
-  <span class="lead-duration duration">0.001</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* passed">
-  <span class="keyword indention">*</span>
-  <span class="name">def validRollCall = mockServer.createValidRollCall(lao)</span>
 
   <span class="lead-duration duration">0.003</span>
 
@@ -473,11 +446,11 @@ $(document).ready(function() {
       <div class="step">
 
 
-<div class="brief step-name-* failed">
+<div class="brief step-name-* passed">
   <span class="keyword indention">*</span>
-  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=valid_lao') { organizer: '#(mockServer)', lao: '#(lao)' }</span>
+  <span class="name">def validRollCall = mockServer.createValidRollCall(lao)</span>
 
-  <span class="lead-duration duration">5.149</span>
+  <span class="lead-duration duration">0.006</span>
 
 </div>
 
@@ -486,53 +459,36 @@ $(document).ready(function() {
 
 
 
-  <div class="inner-level">
-    <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-3">
-          <a>js</a>
+
+
+
+
+
+
+
+
+
+
       </div>
-      <div id="msg-3" class="collapse collapsable-details  in ">
-        <pre>js failed:
-&gt;&gt;&gt;&gt;
-01: organizer.getBackendResponse(laoCreateRequest)
-&lt;&lt;&lt;&lt;
-org.graalvm.polyglot.PolyglotException
-- common.net.MultiMsgWebSocketClient.getBackendResponseWithOrWithoutBroadcasts(MultiMsgWebSocketClient.java:112)
-- common.net.MultiMsgWebSocketClient.getBackendResponse(MultiMsgWebSocketClient.java:81)
-- &lt;js&gt;.:program(Unnamed:1)
+      <div class="step">
 
-classpath:be/utils/simpleScenarios.feature:28
-classpath:be/decentralizedCom/heartbeat.feature:18</pre>
-      </div>
-    </div>
-  </div>
+
+<div class="brief step-name-* passed">
+  <span class="keyword indention">*</span>
+  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=valid_lao') { organizer: '#(mockServer)', lao: '#(lao)' }</span>
+
+  <span class="lead-duration duration">0.929</span>
+
+</div>
 
 
 
 
-  <div class="inner-level">
-    <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-4">
-          <a>Doc string</a>
-      </div>
-      <div id="msg-4" class="collapse collapsable-details">
-        <pre>04:15:53.900 classpath:be/decentralizedCom/heartbeat.feature:18
-* call read('classpath:be/utils/simpleScenarios.feature@name=valid_lao') { organizer: '#(mockServer)', lao: '#(lao)' }
-js failed:
-&gt;&gt;&gt;&gt;
-01: organizer.getBackendResponse(laoCreateRequest)
-&lt;&lt;&lt;&lt;
-org.graalvm.polyglot.PolyglotException
-- common.net.MultiMsgWebSocketClient.getBackendResponseWithOrWithoutBroadcasts(MultiMsgWebSocketClient.java:112)
-- common.net.MultiMsgWebSocketClient.getBackendResponse(MultiMsgWebSocketClient.java:81)
-- &lt;js&gt;.:program(Unnamed:1)
 
-classpath:be/utils/simpleScenarios.feature:28
-classpath:be/decentralizedCom/heartbeat.feature:18
-</pre>
-      </div>
-    </div>
-  </div>
+
+
+
+
 
 
 
@@ -562,65 +518,18 @@ classpath:be/decentralizedCom/heartbeat.feature:18
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-5">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-3">
           <a>Doc string</a>
       </div>
-      <div id="msg-5" class="collapse collapsable-details">
+      <div id="msg-3" class="collapse collapsable-details">
         <pre>{
-  &quot;organizer&quot;: &quot;be.utils.MockClient@1282e98&quot;,
-  &quot;lao&quot;: &quot;be.model.Lao@4db0ba1c&quot;
+  &quot;organizer&quot;: &quot;be.utils.MockClient@2e4eda17&quot;,
+  &quot;lao&quot;: &quot;be.model.Lao@7b5021d1&quot;
 }
 </pre>
       </div>
     </div>
   </div>
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-&amp;gt; * failed">
-  <span class="keyword indention">&gt; *</span>
-  <span class="name">json answer = organizer.getBackendResponse(laoCreateRequest)</span>
-
-  <span class="lead-duration duration">5.006</span>
-
-</div>
-
-
-
-
-
-
-  <div class="inner-level">
-    <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-6">
-          <a>js</a>
-      </div>
-      <div id="msg-6" class="collapse collapsable-details  in ">
-        <pre>js failed:
-&gt;&gt;&gt;&gt;
-01: organizer.getBackendResponse(laoCreateRequest)
-&lt;&lt;&lt;&lt;
-org.graalvm.polyglot.PolyglotException
-- common.net.MultiMsgWebSocketClient.getBackendResponseWithOrWithoutBroadcasts(MultiMsgWebSocketClient.java:112)
-- common.net.MultiMsgWebSocketClient.getBackendResponse(MultiMsgWebSocketClient.java:81)
-- &lt;js&gt;.:program(Unnamed:1)
-
-classpath:be/utils/simpleScenarios.feature:28</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
 
 
 
@@ -649,10 +558,10 @@ classpath:be/utils/simpleScenarios.feature:28</pre>
 </div>
 
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">35.020</span>
 
 
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-7">
+  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-4">
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
@@ -665,14 +574,14 @@ classpath:be/utils/simpleScenarios.feature:28</pre>
   </span>
   <div class="description indention"></div>
 
-  <div id="element-7" class="collapse collapsable-details  in ">
+  <div id="element-4" class="collapse collapsable-details  in ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-8">
+  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-5">
 
 <div class="brief failed">
   <span class="keyword indention">Steps</span>
@@ -684,15 +593,15 @@ classpath:be/utils/simpleScenarios.feature:28</pre>
 
   </div>
 
-  <div id="steps-8" class="inner-level collapse collapsable-details  in ">
+  <div id="steps-5" class="inner-level collapse collapsable-details  in ">
       <div class="step">
 
 
-<div class="brief step-name-Given skipped">
+<div class="brief step-name-Given passed">
   <span class="keyword indention">Given</span>
   <span class="name">wait(30)</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">30.015</span>
 
 </div>
 
@@ -715,11 +624,11 @@ classpath:be/utils/simpleScenarios.feature:28</pre>
       <div class="step">
 
 
-<div class="brief step-name-When skipped">
+<div class="brief step-name-When passed">
   <span class="keyword indention">When</span>
   <span class="name">def heartbeatMessages = mockServer.getMessagesByMethod('heartbeat')</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">5.001</span>
 
 </div>
 
@@ -742,11 +651,11 @@ classpath:be/utils/simpleScenarios.feature:28</pre>
       <div class="step">
 
 
-<div class="brief step-name-Then skipped">
+<div class="brief step-name-Then failed">
   <span class="keyword indention">Then</span>
   <span class="name">assert heartbeatMessages.length &gt; 0</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">0.003</span>
 
 </div>
 
@@ -755,9 +664,35 @@ classpath:be/utils/simpleScenarios.feature:28</pre>
 
 
 
+  <div class="inner-level">
+    <div class="message indention">
+      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-6">
+          <a>did</a>
+      </div>
+      <div id="msg-6" class="collapse collapsable-details  in ">
+        <pre>did not evaluate to 'true': heartbeatMessages.length &gt; 0
+classpath:be/decentralizedCom/heartbeat.feature:26</pre>
+      </div>
+    </div>
+  </div>
 
 
 
+
+  <div class="inner-level">
+    <div class="docstring indention">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-7">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-7" class="collapse collapsable-details">
+        <pre>04:17:01.182 classpath:be/decentralizedCom/heartbeat.feature:26
+Then assert heartbeatMessages.length &gt; 0
+did not evaluate to 'true': heartbeatMessages.length &gt; 0
+classpath:be/decentralizedCom/heartbeat.feature:26
+</pre>
+      </div>
+    </div>
+  </div>
 
 
 
@@ -784,12 +719,12 @@ classpath:be/utils/simpleScenarios.feature:28</pre>
 </div>
 
 
-  <span class="lead-duration duration">12.902</span>
+  <span class="lead-duration duration">5.668</span>
 
 
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-9">
+  <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-8">
 
-<div class="brief failed">
+<div class="brief passed">
   <span class="keyword indention">Background</span>
   <span class="name"></span>
 
@@ -800,16 +735,16 @@ classpath:be/utils/simpleScenarios.feature:28</pre>
   </span>
   <div class="description indention"></div>
 
-  <div id="element-9" class="collapse collapsable-details  in ">
+  <div id="element-8" class="collapse collapsable-details ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-10">
+  <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-9">
 
-<div class="brief failed">
+<div class="brief passed">
   <span class="keyword indention">Steps</span>
   <span class="name"></span>
 
@@ -819,7 +754,7 @@ classpath:be/utils/simpleScenarios.feature:28</pre>
 
   </div>
 
-  <div id="steps-10" class="inner-level collapse collapsable-details  in ">
+  <div id="steps-9" class="inner-level collapse collapsable-details ">
       <div class="step">
 
 
@@ -827,7 +762,7 @@ classpath:be/utils/simpleScenarios.feature:28</pre>
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/utils/server.feature')</span>
 
-  <span class="lead-duration duration">2.516</span>
+  <span class="lead-duration duration">3.035</span>
 
 </div>
 
@@ -881,7 +816,7 @@ classpath:be/utils/simpleScenarios.feature:28</pre>
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/mockClient.feature')</span>
 
-  <span class="lead-duration duration">0.015</span>
+  <span class="lead-duration duration">0.028</span>
 
 </div>
 
@@ -935,7 +870,7 @@ classpath:be/utils/simpleScenarios.feature:28</pre>
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/constants.feature')</span>
 
-  <span class="lead-duration duration">0.020</span>
+  <span class="lead-duration duration">0.007</span>
 
 </div>
 
@@ -989,7 +924,7 @@ classpath:be/utils/simpleScenarios.feature:28</pre>
   <span class="keyword indention">*</span>
   <span class="name">def mockServer = call createMockClient</span>
 
-  <span class="lead-duration duration">0.225</span>
+  <span class="lead-duration duration">0.283</span>
 
 </div>
 
@@ -1066,11 +1001,11 @@ classpath:be/utils/simpleScenarios.feature:28</pre>
       <div class="step">
 
 
-<div class="brief step-name-* failed">
+<div class="brief step-name-* passed">
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=valid_lao') { organizer: '#(mockServer)', lao: '#(lao)' }</span>
 
-  <span class="lead-duration duration">5.120</span>
+  <span class="lead-duration duration">2.312</span>
 
 </div>
 
@@ -1079,53 +1014,9 @@ classpath:be/utils/simpleScenarios.feature:28</pre>
 
 
 
-  <div class="inner-level">
-    <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-11">
-          <a>js</a>
-      </div>
-      <div id="msg-11" class="collapse collapsable-details  in ">
-        <pre>js failed:
-&gt;&gt;&gt;&gt;
-01: organizer.getBackendResponse(laoCreateRequest)
-&lt;&lt;&lt;&lt;
-org.graalvm.polyglot.PolyglotException
-- common.net.MultiMsgWebSocketClient.getBackendResponseWithOrWithoutBroadcasts(MultiMsgWebSocketClient.java:112)
-- common.net.MultiMsgWebSocketClient.getBackendResponse(MultiMsgWebSocketClient.java:81)
-- &lt;js&gt;.:program(Unnamed:1)
-
-classpath:be/utils/simpleScenarios.feature:28
-classpath:be/decentralizedCom/heartbeat.feature:18</pre>
-      </div>
-    </div>
-  </div>
 
 
 
-
-  <div class="inner-level">
-    <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-12">
-          <a>Doc string</a>
-      </div>
-      <div id="msg-12" class="collapse collapsable-details">
-        <pre>04:16:02.162 classpath:be/decentralizedCom/heartbeat.feature:18
-* call read('classpath:be/utils/simpleScenarios.feature@name=valid_lao') { organizer: '#(mockServer)', lao: '#(lao)' }
-js failed:
-&gt;&gt;&gt;&gt;
-01: organizer.getBackendResponse(laoCreateRequest)
-&lt;&lt;&lt;&lt;
-org.graalvm.polyglot.PolyglotException
-- common.net.MultiMsgWebSocketClient.getBackendResponseWithOrWithoutBroadcasts(MultiMsgWebSocketClient.java:112)
-- common.net.MultiMsgWebSocketClient.getBackendResponse(MultiMsgWebSocketClient.java:81)
-- &lt;js&gt;.:program(Unnamed:1)
-
-classpath:be/utils/simpleScenarios.feature:28
-classpath:be/decentralizedCom/heartbeat.feature:18
-</pre>
-      </div>
-    </div>
-  </div>
 
 
 
@@ -1155,65 +1046,18 @@ classpath:be/decentralizedCom/heartbeat.feature:18
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-13">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-10">
           <a>Doc string</a>
       </div>
-      <div id="msg-13" class="collapse collapsable-details">
+      <div id="msg-10" class="collapse collapsable-details">
         <pre>{
-  &quot;organizer&quot;: &quot;be.utils.MockClient@1d91fa02&quot;,
-  &quot;lao&quot;: &quot;be.model.Lao@1578fa9&quot;
+  &quot;organizer&quot;: &quot;be.utils.MockClient@6befbb12&quot;,
+  &quot;lao&quot;: &quot;be.model.Lao@21d9cd04&quot;
 }
 </pre>
       </div>
     </div>
   </div>
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-&amp;gt; * failed">
-  <span class="keyword indention">&gt; *</span>
-  <span class="name">json answer = organizer.getBackendResponse(laoCreateRequest)</span>
-
-  <span class="lead-duration duration">5.002</span>
-
-</div>
-
-
-
-
-
-
-  <div class="inner-level">
-    <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-14">
-          <a>js</a>
-      </div>
-      <div id="msg-14" class="collapse collapsable-details  in ">
-        <pre>js failed:
-&gt;&gt;&gt;&gt;
-01: organizer.getBackendResponse(laoCreateRequest)
-&lt;&lt;&lt;&lt;
-org.graalvm.polyglot.PolyglotException
-- common.net.MultiMsgWebSocketClient.getBackendResponseWithOrWithoutBroadcasts(MultiMsgWebSocketClient.java:112)
-- common.net.MultiMsgWebSocketClient.getBackendResponse(MultiMsgWebSocketClient.java:81)
-- &lt;js&gt;.:program(Unnamed:1)
-
-classpath:be/utils/simpleScenarios.feature:28</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
 
 
 
@@ -1242,10 +1086,10 @@ classpath:be/utils/simpleScenarios.feature:28</pre>
 </div>
 
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">5.064</span>
 
 
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-15">
+  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-11">
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
@@ -1258,14 +1102,14 @@ classpath:be/utils/simpleScenarios.feature:28</pre>
   </span>
   <div class="description indention"></div>
 
-  <div id="element-15" class="collapse collapsable-details  in ">
+  <div id="element-11" class="collapse collapsable-details  in ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-16">
+  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-12">
 
 <div class="brief failed">
   <span class="keyword indention">Steps</span>
@@ -1277,15 +1121,15 @@ classpath:be/utils/simpleScenarios.feature:28</pre>
 
   </div>
 
-  <div id="steps-16" class="inner-level collapse collapsable-details  in ">
+  <div id="steps-12" class="inner-level collapse collapsable-details  in ">
       <div class="step">
 
 
-<div class="brief step-name-Given skipped">
+<div class="brief step-name-Given passed">
   <span class="keyword indention">Given</span>
   <span class="name">def validCreateRollCall =</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">0.003</span>
 
 </div>
 
@@ -1299,10 +1143,10 @@ classpath:be/utils/simpleScenarios.feature:28</pre>
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-17">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-13">
           <a>Doc string</a>
       </div>
-      <div id="msg-17" class="collapse collapsable-details">
+      <div id="msg-13" class="collapse collapsable-details">
         <pre>{
   &quot;object&quot;: &quot;roll_call&quot;,
   &quot;action&quot;: &quot;create&quot;,
@@ -1328,11 +1172,11 @@ classpath:be/utils/simpleScenarios.feature:28</pre>
       <div class="step">
 
 
-<div class="brief step-name-When skipped">
+<div class="brief step-name-When passed">
   <span class="keyword indention">When</span>
   <span class="name">mockServer.publish(validCreateRollCall, lao.channel)</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">0.013</span>
 
 </div>
 
@@ -1355,11 +1199,11 @@ classpath:be/utils/simpleScenarios.feature:28</pre>
       <div class="step">
 
 
-<div class="brief step-name-And skipped">
+<div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
   <span class="name">def heartbeatMessages = mockServer.getMessagesByMethod('heartbeat')</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">5.046</span>
 
 </div>
 
@@ -1382,7 +1226,7 @@ classpath:be/utils/simpleScenarios.feature:28</pre>
       <div class="step">
 
 
-<div class="brief step-name-Then skipped">
+<div class="brief step-name-Then failed">
   <span class="keyword indention">Then</span>
   <span class="name">assert heartbeatMessages.length == 1</span>
 
@@ -1395,9 +1239,35 @@ classpath:be/utils/simpleScenarios.feature:28</pre>
 
 
 
+  <div class="inner-level">
+    <div class="message indention">
+      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-14">
+          <a>did</a>
+      </div>
+      <div id="msg-14" class="collapse collapsable-details  in ">
+        <pre>did not evaluate to 'true': heartbeatMessages.length == 1
+classpath:be/decentralizedCom/heartbeat.feature:48</pre>
+      </div>
+    </div>
+  </div>
 
 
 
+
+  <div class="inner-level">
+    <div class="docstring indention">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-15">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-15" class="collapse collapsable-details">
+        <pre>04:17:12.283 classpath:be/decentralizedCom/heartbeat.feature:48
+Then assert heartbeatMessages.length == 1
+did not evaluate to 'true': heartbeatMessages.length == 1
+classpath:be/decentralizedCom/heartbeat.feature:48
+</pre>
+      </div>
+    </div>
+  </div>
 
 
 
