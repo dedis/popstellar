@@ -74,7 +74,7 @@ $(document).ready(function() {
   <tbody>
     <tr class="info">
       <td>scala_client</td>
-      <td>18 Sep 2023, 04:14</td>
+      <td>19 Sep 2023, 04:14</td>
     </tr>
   </tbody>
 </table>
@@ -138,7 +138,7 @@ $(document).ready(function() {
           <td >0</td>
           <td class="total">5</td>
 
-          <td class="duration" data-value="42832096149">42.832</td>
+          <td class="duration" data-value="42810704531">42.810</td>
           <td class="passed">Passed</td>
         </tr>
         </tbody>
@@ -191,7 +191,7 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">3.552</span>
+  <span class="lead-duration duration">3.586</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-1">
@@ -234,607 +234,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/utils/server.feature')</span>
 
-  <span class="lead-duration duration">2.514</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name- passed">
-  <span class="keyword indention"></span>
-  <span class="name">be/utils/server.feature</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* passed">
-  <span class="keyword indention">*</span>
-  <span class="name">call read('classpath:be/mockClient.feature')</span>
-
-  <span class="lead-duration duration">0.007</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name- passed">
-  <span class="keyword indention"></span>
-  <span class="name">be/mockClient.feature</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* passed">
-  <span class="keyword indention">*</span>
-  <span class="name">call read('classpath:be/constants.feature')</span>
-
-  <span class="lead-duration duration">0.008</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name- passed">
-  <span class="keyword indention"></span>
-  <span class="name">be/constants.feature</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* passed">
-  <span class="keyword indention">*</span>
-  <span class="name">def organizer = call createMockClient</span>
-
-  <span class="lead-duration duration">0.228</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* passed">
-  <span class="keyword indention">*</span>
-  <span class="name">def lao = organizer.createValidLao()</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* passed">
-  <span class="keyword indention">*</span>
-  <span class="name">def rollCall = organizer.createValidRollCall(lao)</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* passed">
-  <span class="keyword indention">*</span>
-  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=valid_roll_call') { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)' }</span>
-
-  <span class="lead-duration duration">0.792</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name- passed">
-  <span class="keyword indention"></span>
-  <span class="name">be/utils/simpleScenarios.feature</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-  <div class="inner-level">
-    <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-3">
-          <a>Doc string</a>
-      </div>
-      <div id="msg-3" class="collapse collapsable-details">
-        <pre>{
-  &quot;organizer&quot;: &quot;be.utils.MockClient@79f14c56&quot;,
-  &quot;lao&quot;: &quot;be.model.Lao@19f007c4&quot;,
-  &quot;rollCall&quot;: &quot;be.model.RollCall@73790bb5&quot;
-}
-</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* passed">
-  <span class="keyword indention">*</span>
-  <span class="name">def openRollCall = rollCall.open()</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-  </div>
-</div>
-
-
-
-
-
-  </div>
-</div>
-
-
-<div class="element">
-
-
-<div class="tags indention">
-    <b>Tags:</b>
-       <a href="report-tag_238387325.html">@env=go_client,scala_client</a>
-</div>
-
-
-  <span class="lead-duration duration">5.026</span>
-
-
-  <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-4">
-
-<div class="brief passed">
-  <span class="keyword indention">Scenario</span>
-  <span class="name">Open a valid Roll Call</span>
-
-
-     <i class="chevron fa fa-fw"></i>
-</div>
-
-  </span>
-  <div class="description indention"></div>
-
-  <div id="element-4" class="collapse collapsable-details ">
-
-
-
-
-
-<div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-5">
-
-<div class="brief passed">
-  <span class="keyword indention">Steps</span>
-  <span class="name"></span>
-
-
-     <i class="chevron fa fa-fw"></i>
-</div>
-
-  </div>
-
-  <div id="steps-5" class="inner-level collapse collapsable-details ">
-      <div class="step">
-
-
-<div class="brief step-name-Given passed">
-  <span class="keyword indention">Given</span>
-  <span class="name">def validOpenRollCall =</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-  <div class="inner-level">
-    <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-6">
-          <a>Doc string</a>
-      </div>
-      <div id="msg-6" class="collapse collapsable-details">
-        <pre>{
-  &quot;object&quot;: &quot;roll_call&quot;,
-  &quot;action&quot;: &quot;open&quot;,
-  &quot;update_id&quot;: '#(openRollCall.updateId)',
-  &quot;opens&quot;: '#(openRollCall.opens)',
-  &quot;opened_at&quot;: '#(openRollCall.openedAt)'
-}</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-When passed">
-  <span class="keyword indention">When</span>
-  <span class="name">organizer.publish(validOpenRollCall, lao.channel)</span>
-
-  <span class="lead-duration duration">0.002</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And passed">
-  <span class="keyword indention">And</span>
-  <span class="name">json answer = organizer.getBackendResponse(validOpenRollCall)</span>
-
-  <span class="lead-duration duration">0.023</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-Then passed">
-  <span class="keyword indention">Then</span>
-  <span class="name">match answer contains VALID_MESSAGE</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And passed">
-  <span class="keyword indention">And</span>
-  <span class="name">match organizer.receiveNoMoreResponses() == true</span>
-
-  <span class="lead-duration duration">5.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-  </div>
-</div>
-
-
-
-
-
-  </div>
-</div>
-
-
-<div class="element">
-
-
-<div class="tags indention">
-</div>
-
-
-  <span class="lead-duration duration">3.546</span>
-
-
-  <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-7">
-
-<div class="brief passed">
-  <span class="keyword indention">Background</span>
-  <span class="name"></span>
-
-
-     <i class="chevron fa fa-fw"></i>
-</div>
-
-  </span>
-  <div class="description indention"></div>
-
-  <div id="element-7" class="collapse collapsable-details ">
-
-
-
-
-
-<div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-8">
-
-<div class="brief passed">
-  <span class="keyword indention">Steps</span>
-  <span class="name"></span>
-
-
-     <i class="chevron fa fa-fw"></i>
-</div>
-
-  </div>
-
-  <div id="steps-8" class="inner-level collapse collapsable-details ">
-      <div class="step">
-
-
-<div class="brief step-name-* passed">
-  <span class="keyword indention">*</span>
-  <span class="name">call read('classpath:be/utils/server.feature')</span>
-
-  <span class="lead-duration duration">2.509</span>
+  <span class="lead-duration duration">2.512</span>
 
 </div>
 
@@ -942,7 +342,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/constants.feature')</span>
 
-  <span class="lead-duration duration">0.002</span>
+  <span class="lead-duration duration">0.008</span>
 
 </div>
 
@@ -996,7 +396,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">def organizer = call createMockClient</span>
 
-  <span class="lead-duration duration">0.244</span>
+  <span class="lead-duration duration">0.208</span>
 
 </div>
 
@@ -1077,7 +477,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=valid_roll_call') { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)' }</span>
 
-  <span class="lead-duration duration">0.785</span>
+  <span class="lead-duration duration">0.852</span>
 
 </div>
 
@@ -1118,14 +518,14 @@ $(document).ready(function() {
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-9">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-3">
           <a>Doc string</a>
       </div>
-      <div id="msg-9" class="collapse collapsable-details">
+      <div id="msg-3" class="collapse collapsable-details">
         <pre>{
-  &quot;organizer&quot;: &quot;be.utils.MockClient@3d3709d0&quot;,
-  &quot;lao&quot;: &quot;be.model.Lao@4ed761dc&quot;,
-  &quot;rollCall&quot;: &quot;be.model.RollCall@578081e5&quot;
+  &quot;organizer&quot;: &quot;be.utils.MockClient@457f43a2&quot;,
+  &quot;lao&quot;: &quot;be.model.Lao@4016d5fe&quot;,
+  &quot;rollCall&quot;: &quot;be.model.RollCall@6f8fa77a&quot;
 }
 </pre>
       </div>
@@ -1186,7 +586,607 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">5.045</span>
+  <span class="lead-duration duration">5.024</span>
+
+
+  <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-4">
+
+<div class="brief passed">
+  <span class="keyword indention">Scenario</span>
+  <span class="name">Open a valid Roll Call</span>
+
+
+     <i class="chevron fa fa-fw"></i>
+</div>
+
+  </span>
+  <div class="description indention"></div>
+
+  <div id="element-4" class="collapse collapsable-details ">
+
+
+
+
+
+<div class="steps inner-level">
+  <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-5">
+
+<div class="brief passed">
+  <span class="keyword indention">Steps</span>
+  <span class="name"></span>
+
+
+     <i class="chevron fa fa-fw"></i>
+</div>
+
+  </div>
+
+  <div id="steps-5" class="inner-level collapse collapsable-details ">
+      <div class="step">
+
+
+<div class="brief step-name-Given passed">
+  <span class="keyword indention">Given</span>
+  <span class="name">def validOpenRollCall =</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+  <div class="inner-level">
+    <div class="docstring indention">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-6">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-6" class="collapse collapsable-details">
+        <pre>{
+  &quot;object&quot;: &quot;roll_call&quot;,
+  &quot;action&quot;: &quot;open&quot;,
+  &quot;update_id&quot;: '#(openRollCall.updateId)',
+  &quot;opens&quot;: '#(openRollCall.opens)',
+  &quot;opened_at&quot;: '#(openRollCall.openedAt)'
+}</pre>
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-When passed">
+  <span class="keyword indention">When</span>
+  <span class="name">organizer.publish(validOpenRollCall, lao.channel)</span>
+
+  <span class="lead-duration duration">0.001</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And passed">
+  <span class="keyword indention">And</span>
+  <span class="name">json answer = organizer.getBackendResponse(validOpenRollCall)</span>
+
+  <span class="lead-duration duration">0.022</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-Then passed">
+  <span class="keyword indention">Then</span>
+  <span class="name">match answer contains VALID_MESSAGE</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And passed">
+  <span class="keyword indention">And</span>
+  <span class="name">match organizer.receiveNoMoreResponses() == true</span>
+
+  <span class="lead-duration duration">5.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+  </div>
+</div>
+
+
+
+
+
+  </div>
+</div>
+
+
+<div class="element">
+
+
+<div class="tags indention">
+</div>
+
+
+  <span class="lead-duration duration">3.506</span>
+
+
+  <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-7">
+
+<div class="brief passed">
+  <span class="keyword indention">Background</span>
+  <span class="name"></span>
+
+
+     <i class="chevron fa fa-fw"></i>
+</div>
+
+  </span>
+  <div class="description indention"></div>
+
+  <div id="element-7" class="collapse collapsable-details ">
+
+
+
+
+
+<div class="steps inner-level">
+  <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-8">
+
+<div class="brief passed">
+  <span class="keyword indention">Steps</span>
+  <span class="name"></span>
+
+
+     <i class="chevron fa fa-fw"></i>
+</div>
+
+  </div>
+
+  <div id="steps-8" class="inner-level collapse collapsable-details ">
+      <div class="step">
+
+
+<div class="brief step-name-* passed">
+  <span class="keyword indention">*</span>
+  <span class="name">call read('classpath:be/utils/server.feature')</span>
+
+  <span class="lead-duration duration">2.511</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name- passed">
+  <span class="keyword indention"></span>
+  <span class="name">be/utils/server.feature</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-* passed">
+  <span class="keyword indention">*</span>
+  <span class="name">call read('classpath:be/mockClient.feature')</span>
+
+  <span class="lead-duration duration">0.006</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name- passed">
+  <span class="keyword indention"></span>
+  <span class="name">be/mockClient.feature</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-* passed">
+  <span class="keyword indention">*</span>
+  <span class="name">call read('classpath:be/constants.feature')</span>
+
+  <span class="lead-duration duration">0.002</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name- passed">
+  <span class="keyword indention"></span>
+  <span class="name">be/constants.feature</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-* passed">
+  <span class="keyword indention">*</span>
+  <span class="name">def organizer = call createMockClient</span>
+
+  <span class="lead-duration duration">0.257</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-* passed">
+  <span class="keyword indention">*</span>
+  <span class="name">def lao = organizer.createValidLao()</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-* passed">
+  <span class="keyword indention">*</span>
+  <span class="name">def rollCall = organizer.createValidRollCall(lao)</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-* passed">
+  <span class="keyword indention">*</span>
+  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=valid_roll_call') { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)' }</span>
+
+  <span class="lead-duration duration">0.728</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name- passed">
+  <span class="keyword indention"></span>
+  <span class="name">be/utils/simpleScenarios.feature</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+  <div class="inner-level">
+    <div class="docstring indention">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-9">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-9" class="collapse collapsable-details">
+        <pre>{
+  &quot;organizer&quot;: &quot;be.utils.MockClient@14d44e72&quot;,
+  &quot;lao&quot;: &quot;be.model.Lao@2b097d19&quot;,
+  &quot;rollCall&quot;: &quot;be.model.RollCall@5d46f4a3&quot;
+}
+</pre>
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-* passed">
+  <span class="keyword indention">*</span>
+  <span class="name">def openRollCall = rollCall.open()</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+  </div>
+</div>
+
+
+
+
+
+  </div>
+</div>
+
+
+<div class="element">
+
+
+<div class="tags indention">
+    <b>Tags:</b>
+       <a href="report-tag_238387325.html">@env=go_client,scala_client</a>
+</div>
+
+
+  <span class="lead-duration duration">5.047</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-10">
@@ -1229,7 +1229,7 @@ $(document).ready(function() {
   <span class="keyword indention">Given</span>
   <span class="name">def notOrganizer = call createMockClient</span>
 
-  <span class="lead-duration duration">0.026</span>
+  <span class="lead-duration duration">0.021</span>
 
 </div>
 
@@ -1326,7 +1326,7 @@ $(document).ready(function() {
   <span class="keyword indention">And</span>
   <span class="name">json answer = notOrganizer.getBackendResponse(validCreateRollCall)</span>
 
-  <span class="lead-duration duration">0.017</span>
+  <span class="lead-duration duration">0.024</span>
 
 </div>
 
@@ -1418,7 +1418,7 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">3.552</span>
+  <span class="lead-duration duration">3.486</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-13">
@@ -1569,7 +1569,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/constants.feature')</span>
 
-  <span class="lead-duration duration">0.003</span>
+  <span class="lead-duration duration">0.006</span>
 
 </div>
 
@@ -1623,7 +1623,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">def organizer = call createMockClient</span>
 
-  <span class="lead-duration duration">0.231</span>
+  <span class="lead-duration duration">0.217</span>
 
 </div>
 
@@ -1650,7 +1650,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">def lao = organizer.createValidLao()</span>
 
-  <span class="lead-duration duration">0.001</span>
+  <span class="lead-duration duration">0.000</span>
 
 </div>
 
@@ -1704,7 +1704,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=valid_roll_call') { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)' }</span>
 
-  <span class="lead-duration duration">0.802</span>
+  <span class="lead-duration duration">0.749</span>
 
 </div>
 
@@ -1750,9 +1750,9 @@ $(document).ready(function() {
       </div>
       <div id="msg-15" class="collapse collapsable-details">
         <pre>{
-  &quot;organizer&quot;: &quot;be.utils.MockClient@6c1f1c03&quot;,
-  &quot;lao&quot;: &quot;be.model.Lao@69e3e1d9&quot;,
-  &quot;rollCall&quot;: &quot;be.model.RollCall@1ccfa4b8&quot;
+  &quot;organizer&quot;: &quot;be.utils.MockClient@4fe03c06&quot;,
+  &quot;lao&quot;: &quot;be.model.Lao@79f14c56&quot;,
+  &quot;rollCall&quot;: &quot;be.model.RollCall@19f007c4&quot;
 }
 </pre>
       </div>
@@ -1813,7 +1813,7 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">5.017</span>
+  <span class="lead-duration duration">5.016</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-16">
@@ -1953,7 +1953,7 @@ $(document).ready(function() {
   <span class="keyword indention">When</span>
   <span class="name">organizer.publish(validOpenRollCall, lao.channel)</span>
 
-  <span class="lead-duration duration">0.001</span>
+  <span class="lead-duration duration">0.004</span>
 
 </div>
 
@@ -1980,7 +1980,7 @@ $(document).ready(function() {
   <span class="keyword indention">And</span>
   <span class="name">json answer = organizer.getBackendResponse(validOpenRollCall)</span>
 
-  <span class="lead-duration duration">0.014</span>
+  <span class="lead-duration duration">0.011</span>
 
 </div>
 
@@ -2072,7 +2072,7 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">3.547</span>
+  <span class="lead-duration duration">3.593</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-19">
@@ -2115,7 +2115,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/utils/server.feature')</span>
 
-  <span class="lead-duration duration">2.510</span>
+  <span class="lead-duration duration">2.513</span>
 
 </div>
 
@@ -2277,7 +2277,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">def organizer = call createMockClient</span>
 
-  <span class="lead-duration duration">0.237</span>
+  <span class="lead-duration duration">0.245</span>
 
 </div>
 
@@ -2358,7 +2358,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=valid_roll_call') { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)' }</span>
 
-  <span class="lead-duration duration">0.793</span>
+  <span class="lead-duration duration">0.829</span>
 
 </div>
 
@@ -2404,9 +2404,9 @@ $(document).ready(function() {
       </div>
       <div id="msg-21" class="collapse collapsable-details">
         <pre>{
-  &quot;organizer&quot;: &quot;be.utils.MockClient@4f93816d&quot;,
-  &quot;lao&quot;: &quot;be.model.Lao@5bf86398&quot;,
-  &quot;rollCall&quot;: &quot;be.model.RollCall@2de3ac17&quot;
+  &quot;organizer&quot;: &quot;be.utils.MockClient@73790bb5&quot;,
+  &quot;lao&quot;: &quot;be.model.Lao@3d3709d0&quot;,
+  &quot;rollCall&quot;: &quot;be.model.RollCall@4ed761dc&quot;
 }
 </pre>
       </div>
@@ -2467,7 +2467,7 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">5.019</span>
+  <span class="lead-duration duration">5.023</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-22">
@@ -2553,7 +2553,7 @@ $(document).ready(function() {
   <span class="keyword indention">When</span>
   <span class="name">organizer.publish(invalidOpenRollCall, lao.channel)</span>
 
-  <span class="lead-duration duration">0.002</span>
+  <span class="lead-duration duration">0.001</span>
 
 </div>
 
@@ -2580,7 +2580,7 @@ $(document).ready(function() {
   <span class="keyword indention">And</span>
   <span class="name">json answer = organizer.getBackendResponse(invalidOpenRollCall)</span>
 
-  <span class="lead-duration duration">0.016</span>
+  <span class="lead-duration duration">0.020</span>
 
 </div>
 
@@ -2672,7 +2672,7 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">3.494</span>
+  <span class="lead-duration duration">3.496</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-25">
@@ -2823,7 +2823,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/constants.feature')</span>
 
-  <span class="lead-duration duration">0.003</span>
+  <span class="lead-duration duration">0.006</span>
 
 </div>
 
@@ -2877,7 +2877,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">def organizer = call createMockClient</span>
 
-  <span class="lead-duration duration">0.225</span>
+  <span class="lead-duration duration">0.217</span>
 
 </div>
 
@@ -2958,7 +2958,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=valid_roll_call') { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)' }</span>
 
-  <span class="lead-duration duration">0.752</span>
+  <span class="lead-duration duration">0.757</span>
 
 </div>
 
@@ -3004,9 +3004,9 @@ $(document).ready(function() {
       </div>
       <div id="msg-27" class="collapse collapsable-details">
         <pre>{
-  &quot;organizer&quot;: &quot;be.utils.MockClient@4c683777&quot;,
-  &quot;lao&quot;: &quot;be.model.Lao@1fa35f7e&quot;,
-  &quot;rollCall&quot;: &quot;be.model.RollCall@7df0bb1&quot;
+  &quot;organizer&quot;: &quot;be.utils.MockClient@578081e5&quot;,
+  &quot;lao&quot;: &quot;be.model.Lao@6c1f1c03&quot;,
+  &quot;rollCall&quot;: &quot;be.model.RollCall@69e3e1d9&quot;
 }
 </pre>
       </div>
@@ -3180,7 +3180,7 @@ $(document).ready(function() {
   <span class="keyword indention">And</span>
   <span class="name">json answer = organizer.getBackendResponse(invalidOpenRollCall)</span>
 
-  <span class="lead-duration duration">0.013</span>
+  <span class="lead-duration duration">0.018</span>
 
 </div>
 
@@ -3261,7 +3261,7 @@ $(document).ready(function() {
   <span class="keyword indention">And</span>
   <span class="name">json answer = organizer.getBackendResponse(invalidOpenRollCall)</span>
 
-  <span class="lead-duration duration">0.012</span>
+  <span class="lead-duration duration">0.008</span>
 
 </div>
 
