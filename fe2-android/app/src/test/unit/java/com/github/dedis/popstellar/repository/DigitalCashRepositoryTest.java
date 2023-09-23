@@ -40,7 +40,7 @@ public class DigitalCashRepositoryTest {
   private static DigitalCashRepository repo;
 
   private static final Application APPLICATION = ApplicationProvider.getApplicationContext();
-  private static AppDatabase appDatabase;
+  private AppDatabase appDatabase;
 
   @Before
   public void initializeRepo() {
@@ -74,7 +74,6 @@ public class DigitalCashRepositoryTest {
   }
 
   @Test
-  @Ignore("Buggy test")
   /* 09.2023 - This test is often getting stuck, probably there's a deadlock or a general concurrency issue */
   public void getTransactionsObservableTest() throws GeneralSecurityException, NoRollCallException {
     // In this test the actual content of the transaction do not matter, only whether they concern
