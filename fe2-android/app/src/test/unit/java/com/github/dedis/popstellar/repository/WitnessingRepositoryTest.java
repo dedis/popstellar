@@ -70,8 +70,7 @@ public class WitnessingRepositoryTest {
   @Before
   public void setUp() {
     Application application = ApplicationProvider.getApplicationContext();
-    appDatabase =
-        AppDatabaseModuleHelper.getAppDatabase(ApplicationProvider.getApplicationContext());
+    appDatabase = AppDatabaseModuleHelper.getAppDatabase(application);
 
     rollCallRepo = new RollCallRepository(appDatabase, application);
     electionRepo = new ElectionRepository(appDatabase, application);
