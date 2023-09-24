@@ -74,7 +74,6 @@ public class DigitalCashRepositoryTest {
   }
 
   @Test
-  /* 09.2023 - This test is often getting stuck, probably there's a deadlock or a general concurrency issue */
   public void getTransactionsObservableTest() throws GeneralSecurityException, NoRollCallException {
     // In this test the actual content of the transaction do not matter, only whether they concern
     // user 1 or user 2

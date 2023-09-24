@@ -28,7 +28,7 @@ import static org.junit.Assert.assertEquals;
 @RunWith(AndroidJUnit4.class)
 public class WitnessingRepositoryTest {
 
-  private static AppDatabase appDatabase;
+  private AppDatabase appDatabase;
   private static WitnessingRepository witnessingRepository;
   private static RollCallRepository rollCallRepo;
   private static ElectionRepository electionRepo;
