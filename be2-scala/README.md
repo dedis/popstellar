@@ -95,8 +95,8 @@ environment:
 ```sh
 # install sdkman
 curl -s "https://get.sdkman.io" | bash
-# install java zulu 17
-sdk install java 17.0.8-zulu
+# install java temurin 17
+sdk install java 17.0.8-tem
 # install sbt
 sdk install sbt
 # check that everything went well
