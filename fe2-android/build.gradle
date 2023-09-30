@@ -3,9 +3,10 @@ buildscript {
     ext {
         // Write shared dependency versions here, they will be available in the whole project
         hilt_version = '2.42'
-        room_version = '2.4.3'
+        room_version = '2.5.2'
         scarlet_version = '0.1.11'
         slf4j_version = '1.7.36'
+        // (Matteo Suez, 30.09.2023) Newer version than 3.5.0-alpha07 makes the build fail
         espresso_version = '3.5.0-alpha07'
     }
 
@@ -17,7 +18,7 @@ buildscript {
 }
 
 plugins {
-    id 'com.android.application' version '7.4.1' apply false
+    id 'com.android.application' version '7.4.2' apply false
 }
 
 task clean(type: Delete) {

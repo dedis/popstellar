@@ -347,8 +347,7 @@ This project follows the [Google Java Style Guide](https://google.github.io/styl
 The [google-java-format](https://github.com/google/google-java-format) plugin allows very easy
 formatting.
 
-Please ensure that you configure Android Studio to use `google-java-format`. As of now, v1.9 of the
-plugin requires JDK11 which is not shipped with Android Studio 4.0. Please install the `Choose Runtime` plugin from the Marketplace and install a JDK11 runtime by double pressing shift and searching for `Choose Runtime` in the popup.
+Please ensure that you configure Android Studio to use `google-java-format`.
 
 `google-java-format` does not handle import orders unfortunately. Please import the [google-style scheme](https://raw.githubusercontent.com/google/styleguide/gh-pages/intellij-java-google-style.xml)
 in Android Studio by going to `Preferences` -> `Editor` -> `Code Style` -> `Import Scheme...` on the
