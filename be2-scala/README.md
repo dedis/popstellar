@@ -95,13 +95,13 @@ environment:
 ```sh
 # install sdkman
 curl -s "https://get.sdkman.io" | bash
-# install java zulu 11
-sdk install java 11.0.18-zulu
+# install java temurin 17
+sdk install java 17.0.8-tem
 # install sbt
 sdk install sbt
 # check that everything went well
 java -version
-> openjdk version "11.0.18" 2023-01-17 LTS
+> openjdk 17.0.8 2023-07-18 LTS
 ```
 
 ## Package and run
