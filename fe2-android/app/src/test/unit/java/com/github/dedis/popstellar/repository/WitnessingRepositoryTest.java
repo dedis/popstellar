@@ -5,30 +5,50 @@ import android.app.Application;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
-import com.github.dedis.popstellar.di.AppDatabaseModuleHelper;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVersion;
 import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.repository.database.AppDatabase;
-import com.github.dedis.popstellar.repository.database.witnessing.PendingEntity;
+import com.github.dedis.popstellar.repository.database.digitalcash.HashDao;
+import com.github.dedis.popstellar.repository.database.digitalcash.TransactionDao;
+import com.github.dedis.popstellar.repository.database.event.election.ElectionDao;
+import com.github.dedis.popstellar.repository.database.event.meeting.MeetingDao;
+import com.github.dedis.popstellar.repository.database.event.rollcall.RollCallDao;
+import com.github.dedis.popstellar.repository.database.witnessing.*;
 import com.github.dedis.popstellar.utility.error.*;
 
 import org.junit.*;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import java.time.Instant;
 import java.util.*;
 
+import io.reactivex.Completable;
+import io.reactivex.Single;
+
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateMessageID;
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.when;
 
 @RunWith(AndroidJUnit4.class)
 public class WitnessingRepositoryTest {
 
-  private static AppDatabase appDatabase;
+  @Mock private static AppDatabase appDatabase;
+  @Mock private static RollCallDao rollCallDao;
+  @Mock private static WitnessDao witnessDao;
+  @Mock private static WitnessingDao witnessingDao;
+  @Mock private static PendingDao pendingDao;
+  @Mock private static TransactionDao transactionDao;
+  @Mock private static HashDao hashDao;
+  @Mock private static ElectionDao electionDao;
+  @Mock private static MeetingDao meetingDao;
   private static WitnessingRepository witnessingRepository;
   private static RollCallRepository rollCallRepo;
   private static ElectionRepository electionRepo;
@@ -67,10 +87,20 @@ public class WitnessingRepositoryTest {
           "",
           new ArrayList<>());
 
+  @Rule(order = 0)
+  public final MockitoRule mockitoRule = MockitoJUnit.rule();
+
   @Before
   public void setUp() {
     Application application = ApplicationProvider.getApplicationContext();
-    appDatabase = AppDatabaseModuleHelper.getAppDatabase(application);
+    when(appDatabase.witnessDao()).thenReturn(witnessDao);
+    when(appDatabase.witnessingDao()).thenReturn(witnessingDao);
+    when(appDatabase.pendingDao()).thenReturn(pendingDao);
+    when(appDatabase.rollCallDao()).thenReturn(rollCallDao);
+    when(appDatabase.electionDao()).thenReturn(electionDao);
+    when(appDatabase.meetingDao()).thenReturn(meetingDao);
+    when(appDatabase.transactionDao()).thenReturn(transactionDao);
+    when(appDatabase.hashDao()).thenReturn(hashDao);
 
     rollCallRepo = new RollCallRepository(appDatabase, application);
     electionRepo = new ElectionRepository(appDatabase, application);
@@ -79,6 +109,43 @@ public class WitnessingRepositoryTest {
     witnessingRepository =
         new WitnessingRepository(
             appDatabase, application, rollCallRepo, electionRepo, meetingRepo, digitalCashRepo);
+
+    when(witnessDao.insertAll(anyList())).thenReturn(Completable.complete());
+    when(witnessDao.getWitnessesByLao(anyString()))
+        .thenReturn(Single.just(Collections.emptyList()));
+    when(witnessDao.isWitness(anyString(), any())).thenReturn(0);
+
+    when(witnessingDao.insert(any())).thenReturn(Completable.complete());
+    when(witnessingDao.getWitnessMessagesByLao(anyString()))
+        .thenReturn(Single.just(Collections.emptyList()));
+    when(witnessingDao.deleteMessagesByIds(anyString(), anySet()))
+        .thenReturn(Completable.complete());
+
+    when(pendingDao.insert(any())).thenReturn(Completable.complete());
+    when(pendingDao.getPendingObjectsFromLao(anyString()))
+        .thenReturn(Single.just(Collections.emptyList()));
+    when(pendingDao.removePendingObject(any())).thenReturn(Completable.complete());
+
+    when(rollCallDao.insert(any())).thenReturn(Completable.complete());
+    when(rollCallDao.getRollCallsByLaoId(anyString()))
+        .thenReturn(Single.just(Collections.emptyList()));
+
+    when(electionDao.getElectionsByLaoId(anyString()))
+        .thenReturn(Single.just(Collections.emptyList()));
+    when(electionDao.insert(any())).thenReturn(Completable.complete());
+
+    when(meetingDao.insert(any())).thenReturn(Completable.complete());
+    when(meetingDao.getMeetingsByLaoId(anyString()))
+        .thenReturn(Single.just(Collections.emptyList()));
+
+    when(hashDao.getDictionaryByLaoId(anyString()))
+        .thenReturn(Single.just(Collections.emptyList()));
+    when(hashDao.deleteByLaoId(anyString())).thenReturn(Completable.complete());
+    when(hashDao.insertAll(anyList())).thenReturn(Completable.complete());
+    when(transactionDao.getTransactionsByLaoId(anyString()))
+        .thenReturn(Single.just(Collections.emptyList()));
+    when(transactionDao.deleteByLaoId(anyString())).thenReturn(Completable.complete());
+    when(transactionDao.insert(any())).thenReturn(Completable.complete());
 
     witnessingRepository.addWitnesses(LAO_ID, WITNESSES);
     witnessingRepository.addWitnessMessage(LAO_ID, WITNESS_MESSAGE);
