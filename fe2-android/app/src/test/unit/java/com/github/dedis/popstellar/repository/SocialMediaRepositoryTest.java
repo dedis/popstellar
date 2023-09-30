@@ -31,7 +31,7 @@ import static org.junit.Assert.*;
 public class SocialMediaRepositoryTest {
 
   private static final Application APPLICATION = ApplicationProvider.getApplicationContext();
-  private AppDatabase appDatabase;
+  private static AppDatabase appDatabase;
   private static final String LAO_ID = Lao.generateLaoId(generatePublicKey(), 1000, "LAO");
 
   private static final PublicKey SENDER = generatePublicKey();
@@ -54,7 +54,7 @@ public class SocialMediaRepositoryTest {
           CHIRP1_ID,
           Instant.now().getEpochSecond());
 
-  private SocialMediaRepository repo;
+  private static SocialMediaRepository repo;
 
   @Before
   public void setup() {

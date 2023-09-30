@@ -37,7 +37,7 @@ public class ElectionRepositoryTest {
           .setElectionVersion(ElectionVersion.OPEN_BALLOT)
           .build();
   private static final Application APPLICATION = ApplicationProvider.getApplicationContext();
-  private AppDatabase appDatabase;
+  private static AppDatabase appDatabase;
   private static ElectionRepository repo;
 
   @Before

@@ -23,7 +23,7 @@ import static org.junit.Assert.assertTrue;
 @RunWith(AndroidJUnit4.class)
 public class MeetingRepositoryTest {
   private static final Application APPLICATION = ApplicationProvider.getApplicationContext();
-  private AppDatabase appDatabase;
+  private static AppDatabase appDatabase;
   private static MeetingRepository meetingRepository;
   private static final String LAO_ID = "LAO_ID";
   private static final String ID = "ID";

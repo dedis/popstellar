@@ -5,21 +5,27 @@ import android.app.Application;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
-import com.github.dedis.popstellar.di.AppDatabaseModuleHelper;
 import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.digitalcash.*;
 import com.github.dedis.popstellar.model.objects.security.*;
 import com.github.dedis.popstellar.repository.database.AppDatabase;
+import com.github.dedis.popstellar.repository.database.digitalcash.HashDao;
+import com.github.dedis.popstellar.repository.database.digitalcash.TransactionDao;
 import com.github.dedis.popstellar.testutils.Base64DataUtils;
 import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
 
 import org.junit.*;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import java.security.GeneralSecurityException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import io.reactivex.Completable;
+import io.reactivex.Single;
 import io.reactivex.observers.TestObserver;
 
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.generatePublicKey;
@@ -27,6 +33,8 @@ import static com.github.dedis.popstellar.testutils.ObservableUtils.assertCurren
 import static java.util.Collections.emptyList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.when;
 
 @RunWith(AndroidJUnit4.class)
 public class DigitalCashRepositoryTest {
@@ -40,17 +48,28 @@ public class DigitalCashRepositoryTest {
   private static DigitalCashRepository repo;
 
   private static final Application APPLICATION = ApplicationProvider.getApplicationContext();
-  private AppDatabase appDatabase;
+  @Mock private static AppDatabase appDatabase;
+  @Mock private static TransactionDao transactionDao;
+  @Mock private static HashDao hashDao;
+
+  @Rule(order = 0)
+  public final MockitoRule mockitoRule = MockitoJUnit.rule();
 
   @Before
   public void initializeRepo() {
-    appDatabase = AppDatabaseModuleHelper.getAppDatabase(APPLICATION);
+    when(appDatabase.transactionDao()).thenReturn(transactionDao);
+    when(appDatabase.hashDao()).thenReturn(hashDao);
     repo = new DigitalCashRepository(appDatabase, APPLICATION);
-  }
 
-  @After
-  public void tearDown() {
-    appDatabase.close();
+    // Mock the DAOs
+    when(hashDao.getDictionaryByLaoId(anyString()))
+        .thenReturn(Single.just(Collections.emptyList()));
+    when(hashDao.deleteByLaoId(anyString())).thenReturn(Completable.complete());
+    when(hashDao.insertAll(anyList())).thenReturn(Completable.complete());
+    when(transactionDao.getTransactionsByLaoId(anyString()))
+        .thenReturn(Single.just(Collections.emptyList()));
+    when(transactionDao.deleteByLaoId(anyString())).thenReturn(Completable.complete());
+    when(transactionDao.insert(any())).thenReturn(Completable.complete());
   }
 
   @Test
