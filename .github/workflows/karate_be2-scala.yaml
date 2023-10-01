@@ -102,7 +102,6 @@ jobs:
           branch: report-karate-be2-scala
           directory: report-repo
           
-      - name: Fail job if the tests were not successful
-        # Catchup of tests failure such that the job fo fail
-        if: steps.tests.outcome == 'failure'
+      - name: Fail job if either the server or client tests were not successful
+        if: steps.tests_client.outcome == 'failure' || steps.tests_server.outcome == 'failure'
         run: exit 1
