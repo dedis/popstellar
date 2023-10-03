@@ -33,6 +33,12 @@ func (i *IdsByChannel) Add(channel string, id string) {
 	}
 }
 
+func (i *IdsByChannel) AddAll(channel string, ids []string) {
+	i.Lock()
+	defer i.Unlock()
+	i.table[channel] = append(i.table[channel], ids...)
+}
+
 func (i *IdsByChannel) GetAll() map[string][]string {
 	i.RLock()
 	defer i.RUnlock()
