@@ -78,7 +78,7 @@ func (h *Hub) handleRootChannelPublishMessage(sock socket.Socket, publish method
 
 	h.rootInbox.StoreMessage(publish.Params.Message)
 	h.hubInbox.StoreMessage(publish.Params.Message)
-	h.addMessageId(publish.Params.Channel, publish.Params.Message.MessageID)
+	h.messageIdsByChannel.Add(publish.Params.Channel, publish.Params.Message.MessageID)
 
 	return nil
 }
@@ -143,7 +143,7 @@ func (h *Hub) handleRootChannelBroadcastMessage(sock socket.Socket,
 
 	h.rootInbox.StoreMessage(broadcast.Params.Message)
 	h.hubInbox.StoreMessage(broadcast.Params.Message)
-	h.addMessageId(broadcast.Params.Channel, broadcast.Params.Message.MessageID)
+	h.messageIdsByChannel.Add(broadcast.Params.Channel, broadcast.Params.Message.MessageID)
 
 	return nil
 }
@@ -275,7 +275,7 @@ func (h *Hub) handlePublish(socket socket.Socket, byteMessage []byte) (int, erro
 			return publish.ID, err
 		}
 		h.hubInbox.StoreMessage(publish.Params.Message)
-		h.addMessageId(publish.Params.Channel, publish.Params.Message.MessageID)
+		h.messageIdsByChannel.Add(publish.Params.Channel, publish.Params.Message.MessageID)
 		return publish.ID, nil
 	}
 
@@ -295,7 +295,7 @@ func (h *Hub) handlePublish(socket socket.Socket, byteMessage []byte) (int, erro
 	}
 
 	h.hubInbox.StoreMessage(publish.Params.Message)
-	h.addMessageId(publish.Params.Channel, publish.Params.Message.MessageID)
+	h.messageIdsByChannel.Add(publish.Params.Channel, publish.Params.Message.MessageID)
 
 	return publish.ID, nil
 }
@@ -325,7 +325,7 @@ func (h *Hub) handleBroadcast(socket socket.Socket, byteMessage []byte) error {
 		return nil
 	}
 	h.hubInbox.StoreMessage(broadcast.Params.Message)
-	h.addMessageId(broadcast.Params.Channel, broadcast.Params.Message.MessageID)
+	h.messageIdsByChannel.Add(broadcast.Params.Channel, broadcast.Params.Message.MessageID)
 
 	h.Unlock()
 
@@ -435,7 +435,7 @@ func (h *Hub) handleHeartbeat(socket socket.Socket,
 
 	receivedIds := heartbeat.Params
 
-	missingIds := getMissingIds(receivedIds, h.messageIdsByChannel, h.blacklist)
+	missingIds := getMissingIds(receivedIds, h.messageIdsByChannel.GetAll(), h.blacklist)
 
 	if len(missingIds) > 0 {
 		err = h.sendGetMessagesByIdToServer(socket, missingIds)
@@ -592,7 +592,7 @@ func (h *Hub) handleReceivedMessage(socket socket.Socket, messageData message.Me
 
 	h.Lock()
 	h.hubInbox.StoreMessage(publish.Params.Message)
-	h.addMessageId(publish.Params.Channel, publish.Params.Message.MessageID)
+	h.messageIdsByChannel.Add(publish.Params.Channel, publish.Params.Message.MessageID)
 	h.Unlock()
 	return nil
 }

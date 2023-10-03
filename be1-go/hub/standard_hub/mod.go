@@ -4,9 +4,9 @@ import (
 	"context"
 	"encoding/base64"
 	"encoding/json"
-	"golang.org/x/exp/slices"
 	"popstellar/channel"
 	"popstellar/crypto"
+	"popstellar/hub/standard_hub/helpers"
 	"popstellar/inbox"
 	jsonrpc "popstellar/message"
 	"popstellar/message/answer"
@@ -88,7 +88,7 @@ type Hub struct {
 
 	// messageIdsByChannel stores all the message ids and the corresponding channel ids
 	// to help servers determine in which channel the message ids go
-	messageIdsByChannel map[string][]string
+	messageIdsByChannel helpers.IdsByChannel
 
 	// peersInfo stores the info of the peers: public key, client and server endpoints associated with the socket ID
 	peersInfo map[string]method.ServerInfo
@@ -154,7 +154,7 @@ func NewHub(pubKeyOwner kyber.Point, clientServerAddress string, serverServerAdd
 		hubInbox:            *inbox.NewInbox(rootChannel),
 		rootInbox:           *inbox.NewInbox(rootChannel),
 		queries:             newQueries(),
-		messageIdsByChannel: make(map[string][]string),
+		messageIdsByChannel: helpers.NewIdsByChannel(),
 		peersInfo:           make(map[string]method.ServerInfo),
 		peersGreeted:        make([]string, 0),
 		blacklist:           make([]string, 0),
@@ -528,26 +528,24 @@ func (h *Hub) sendGetMessagesByIdToServer(socket socket.Socket, missingIds map[s
 
 // sendHeartbeatToServers sends a heartbeat message to all servers
 func (h *Hub) sendHeartbeatToServers() {
-	h.Lock()
-	defer h.Unlock()
-	if len(h.messageIdsByChannel) > 0 {
-		heartbeatMessage := method.Heartbeat{
-			Base: query.Base{
-				JSONRPCBase: jsonrpc.JSONRPCBase{
-					JSONRPC: "2.0",
-				},
-				Method: "heartbeat",
-			},
-			Params: h.messageIdsByChannel,
-		}
-
-		buf, err := json.Marshal(heartbeatMessage)
-		if err != nil {
-			h.log.Err(err).Msg("Failed to marshal and send heartbeat query")
-		}
-
-		h.serverSockets.SendToAll(buf)
+	if h.messageIdsByChannel.IsEmpty() {
+		return
 	}
+	heartbeatMessage := method.Heartbeat{
+		Base: query.Base{
+			JSONRPCBase: jsonrpc.JSONRPCBase{
+				JSONRPC: "2.0",
+			},
+			Method: "heartbeat",
+		},
+		Params: h.messageIdsByChannel.GetAll(),
+	}
+
+	buf, err := json.Marshal(heartbeatMessage)
+	if err != nil {
+		h.log.Err(err).Msg("Failed to marshal and send heartbeat query")
+	}
+	h.serverSockets.SendToAll(buf)
 }
 
 // createLao creates a new LAO using the data in the publish parameter.
@@ -666,17 +664,4 @@ func generateKeys() (kyber.Point, kyber.Scalar) {
 	point := suite.Point().Mul(secret, nil)
 
 	return point, secret
-}
-
-// addMessageId adds a message ID to the map of messageIds by channel of the hub
-func (h *Hub) addMessageId(channelId string, messageId string) {
-	messageIds, channelStored := h.messageIdsByChannel[channelId]
-	if !channelStored {
-		h.messageIdsByChannel[channelId] = append(h.messageIdsByChannel[channelId], messageId)
-	} else {
-		alreadyStored := slices.Contains(messageIds, messageId)
-		if !alreadyStored {
-			h.messageIdsByChannel[channelId] = append(h.messageIdsByChannel[channelId], messageId)
-		}
-	}
 }
