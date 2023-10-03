@@ -1,6 +1,6 @@
 module popstellar
 
-go 1.19
+go 1.21
 
 require (
 	github.com/aaronarduino/goqrsvg v0.0.0-20220419053939-17e843f1dd40
