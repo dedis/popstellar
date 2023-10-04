@@ -3,9 +3,53 @@ package helpers
 import (
 	"maps"
 	"popstellar/channel"
+	"popstellar/message/query/method"
 	"slices"
 	"sync"
 )
+
+type Peers struct {
+	sync.RWMutex
+	// peersInfo stores the info of the peers: public key, client and server endpoints associated with the socket ID
+	peersInfo map[string]method.ServerInfo
+	// peersGreeted stores the peers that were greeted by the socket ID
+	peersGreeted []string
+}
+
+func NewPeers() Peers {
+	return Peers{
+		peersInfo:    make(map[string]method.ServerInfo),
+		peersGreeted: make([]string, 0),
+	}
+}
+
+func (p *Peers) AddPeerInfo(socketId string, info method.ServerInfo) {
+	p.Lock()
+	defer p.Unlock()
+	p.peersInfo[socketId] = info
+}
+
+func (p *Peers) AddPeerGreeted(socketId string) {
+	p.Lock()
+	defer p.Unlock()
+	p.peersGreeted = append(p.peersGreeted, socketId)
+}
+
+func (p *Peers) GetAllPeersInfo() []method.ServerInfo {
+	p.RLock()
+	defer p.RUnlock()
+	peersInfo := make([]method.ServerInfo, 0)
+	for _, info := range p.peersInfo {
+		peersInfo = append(peersInfo, info)
+	}
+	return peersInfo
+}
+
+func (p *Peers) IsPeerGreeted(socketId string) bool {
+	p.RLock()
+	defer p.RUnlock()
+	return slices.Contains(p.peersGreeted, socketId)
+}
 
 // MessageIds provides a thread-safe structure that stores a channel id with its corresponding message ids
 type IdsByChannel struct {

@@ -90,11 +90,8 @@ type Hub struct {
 	// to help servers determine in which channel the message ids go
 	messageIdsByChannel helpers.IdsByChannel
 
-	// peersInfo stores the info of the peers: public key, client and server endpoints associated with the socket ID
-	peersInfo map[string]method.ServerInfo
-
-	// peersGreeted stores the peers that were greeted by the socket ID
-	peersGreeted []string
+	// peers stores information about the peers
+	peers helpers.Peers
 
 	// blacklist stores the IDs of the messages that failed to be processed by the hub
 	// the server will not ask for them again in the heartbeat
@@ -155,8 +152,7 @@ func NewHub(pubKeyOwner kyber.Point, clientServerAddress string, serverServerAdd
 		rootInbox:           *inbox.NewInbox(rootChannel),
 		queries:             newQueries(),
 		messageIdsByChannel: helpers.NewIdsByChannel(),
-		peersInfo:           make(map[string]method.ServerInfo),
-		peersGreeted:        make([]string, 0),
+		peers:               helpers.NewPeers(),
 		blacklist:           make([]string, 0),
 	}
 
@@ -295,7 +291,7 @@ func (h *Hub) SendGreetServer(socket socket.Socket) error {
 
 	socket.Send(buf)
 
-	h.peersGreeted = append(h.peersGreeted, socket.ID())
+	h.peers.AddPeerGreeted(socket.ID())
 	return nil
 }
 
@@ -648,15 +644,7 @@ func (h *Hub) NotifyWitnessMessage(messageId string, publicKey string, signature
 }
 
 func (h *Hub) GetPeersInfo() []method.ServerInfo {
-	h.Lock()
-	defer h.Unlock()
-
-	var peersInfo []method.ServerInfo
-	for _, info := range h.peersInfo {
-		peersInfo = append(peersInfo, info)
-	}
-
-	return peersInfo
+	return h.peers.GetAllPeersInfo()
 }
 
 func generateKeys() (kyber.Point, kyber.Scalar) {

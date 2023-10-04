@@ -1846,7 +1846,7 @@ func Test_Handle_GreetServer_Already_Greeted(t *testing.T) {
 
 	err = hub.SendGreetServer(sock)
 	require.NoError(t, err)
-	require.True(t, slices.Contains(hub.peersGreeted, sock.ID()))
+	require.True(t, hub.peers.IsPeerGreeted(sock.ID()))
 
 	//reset socket message
 	sock.msg = nil
