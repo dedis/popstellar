@@ -58,7 +58,7 @@ type Hub struct {
 	messageChan chan socket.IncomingMessage
 
 	sync.RWMutex
-	channelByID map[string]channel.Channel
+	channelByID helpers.ChannelsById
 
 	closedSockets chan string
 
@@ -120,6 +120,39 @@ type queries struct {
 	nextID int
 }
 
+func (q *queries) getQueryState(id int) *bool {
+	q.Lock()
+	defer q.Unlock()
+
+	return q.state[id]
+}
+
+// getNextID returns the next query ID
+func (q *queries) getNextID() int {
+	q.Lock()
+	defer q.Unlock()
+
+	id := q.nextID
+	q.nextID++
+	return id
+}
+
+// setQueryState sets the state of the query with the given ID
+func (q *queries) setQueryState(id int, state bool) {
+	q.Lock()
+	defer q.Unlock()
+
+	q.state[id] = &state
+}
+
+// addQuery adds the given query to the table
+func (q *queries) addQuery(id int, query method.GetMessagesById) {
+	q.Lock()
+	defer q.Unlock()
+
+	q.getMessagesByIdQueries[id] = query
+}
+
 // NewHub returns a new Hub.
 func NewHub(pubKeyOwner kyber.Point, clientServerAddress string, serverServerAddress string, log zerolog.Logger,
 	laoFac channel.LaoFactory) (*Hub, error) {
@@ -137,7 +170,7 @@ func NewHub(pubKeyOwner kyber.Point, clientServerAddress string, serverServerAdd
 		clientServerAddress: clientServerAddress,
 		serverServerAddress: serverServerAddress,
 		messageChan:         make(chan socket.IncomingMessage),
-		channelByID:         make(map[string]channel.Channel),
+		channelByID:         helpers.NewChannelsById(),
 		closedSockets:       make(chan string),
 		pubKeyOwner:         pubKeyOwner,
 		pubKeyServ:          pubServ,
@@ -194,12 +227,10 @@ func (h *Hub) Start() {
 					}
 				}()
 			case id := <-h.closedSockets:
-				h.RLock()
-				for _, channel := range h.channelByID {
+				for _, channel := range h.channelByID.GetAll() {
 					// dummy Unsubscribe message because it's only used for logging...
 					channel.Unsubscribe(id, method.Unsubscribe{})
 				}
-				h.RUnlock()
 			case <-h.stop:
 				h.log.Info().Msg("stopping the hub")
 				return
@@ -260,9 +291,6 @@ func (h *Hub) OnSocketClose() chan<- string {
 
 // SendGreetServer implements hub.Hub
 func (h *Hub) SendGreetServer(socket socket.Socket) error {
-	h.Lock()
-	defer h.Unlock()
-
 	pk, err := h.pubKeyServ.MarshalBinary()
 	if err != nil {
 		return xerrors.Errorf("failed to marshal server public key: %v", err)
@@ -300,10 +328,7 @@ func (h *Hub) getChan(channelPath string) (channel.Channel, error) {
 		return nil, xerrors.Errorf("channel not prefixed with '%s': %q", rootPrefix, channelPath)
 	}
 
-	h.RLock()
-	defer h.RUnlock()
-
-	channel, ok := h.channelByID[channelPath]
+	channel, ok := h.channelByID.GetChannel(channelPath)
 	if !ok {
 		return nil, xerrors.Errorf("channel %s does not exist", channelPath)
 	}
@@ -491,12 +516,8 @@ func (h *Hub) handleIncomingMessage(incomingMessage *socket.IncomingMessage) err
 
 // sendGetMessagesByIdToServer sends a getMessagesById message to a server
 func (h *Hub) sendGetMessagesByIdToServer(socket socket.Socket, missingIds map[string][]string) error {
-	h.Lock()
-	defer h.Unlock()
-
-	queryId := h.queries.nextID
-	baseValue := false
-	h.queries.state[queryId] = &baseValue
+	queryId := h.queries.getNextID()
+	h.queries.setQueryState(queryId, false)
 
 	getMessagesById := method.GetMessagesById{
 		Base: query.Base{
@@ -514,8 +535,7 @@ func (h *Hub) sendGetMessagesByIdToServer(socket socket.Socket, missingIds map[s
 		return xerrors.Errorf("failed to marshal getMessagesById query: %v", err)
 	}
 
-	h.queries.getMessagesByIdQueries[queryId] = getMessagesById
-	h.queries.nextID++
+	h.queries.addQuery(queryId, getMessagesById)
 
 	socket.Send(buf)
 
@@ -550,7 +570,7 @@ func (h *Hub) createLao(msg message.Message, laoCreate messagedata.LaoCreate,
 
 	laoChannelPath := rootPrefix + laoCreate.ID
 
-	if _, ok := h.channelByID[laoChannelPath]; ok {
+	if _, ok := h.channelByID.GetChannel(laoChannelPath); ok {
 		return answer.NewDuplicateResourceError("failed to create lao: duplicate lao path: %q", laoChannelPath)
 	}
 
@@ -631,16 +651,12 @@ func (h *Hub) GetSchemaValidator() validation.SchemaValidator {
 
 // NotifyNewChannel implements channel.HubFunctionalities
 func (h *Hub) NotifyNewChannel(channelID string, channel channel.Channel, sock socket.Socket) {
-	h.Lock()
-	h.channelByID[channelID] = channel
-	h.Unlock()
+	h.channelByID.Add(channelID, channel)
 }
 
 // NotifyWitnessMessage implements channel.HubFunctionalities
 func (h *Hub) NotifyWitnessMessage(messageId string, publicKey string, signature string) {
-	h.Lock()
 	h.hubInbox.AddWitnessSignature(messageId, publicKey, signature)
-	h.Unlock()
 }
 
 func (h *Hub) GetPeersInfo() []method.ServerInfo {
