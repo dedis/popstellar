@@ -11,9 +11,7 @@ jobs:
       - name: Run pull request stats
         uses: flowwer-dev/pull-request-stats@master
         with:
-          token: ${{ secrets.ADD_A_PERSONAL_ACCESS_TOKEN }}
-          organization: 'piedpiper'
-          period: 7
+          period: 90
           charts: true
-          disableLinks: true
-          sortBy: 'COMMENTS'
+          disableLinks: false
+          sortBy: 'REVIEWS'
