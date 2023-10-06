@@ -19,11 +19,6 @@ public class JsonConverter {
   private boolean isSignatureForced = false;
   private String messageIdForced = "";
 
-  // TODO: remove this constructor once all features are refactored
-  public JsonConverter(){
-    this.publicKey = "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=";
-  }
-
   public JsonConverter(String publicKey, String privateKey){
     this.publicKey = publicKey;
     this.privateKey = privateKey;

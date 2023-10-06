@@ -1,6 +1,5 @@
 package be.utils;
 
-import be.model.KeyPair;
 import com.intuit.karate.Json;
 import common.utils.Base64Utils;
 import org.junit.jupiter.api.Test;
@@ -11,13 +10,18 @@ import java.util.Map;
 
 public class JsonConverterTest {
 
+  private static final String publicKey = "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=";
+  private static final String privateKey = "0leCDBokllJXKXT72psnqF5UYFVRxnc1BNDShY05KHQ=";
+  private final JsonConverter jsonConverter = new JsonConverter(publicKey, privateKey);
+
+
   private Json constructJsonDataForValidLao() {
     Map<String, Object> laoData = new LinkedHashMap<>();
     laoData.put("object", "lao");
     laoData.put("action", "create");
     laoData.put("name", "LAO");
     laoData.put("creation", 1633035721);
-    laoData.put("organizer", "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=");
+    laoData.put("organizer", publicKey);
     String[] witness = new String[0];
     laoData.put("witnesses", witness);
     laoData.put("id", "p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=");
@@ -26,14 +30,13 @@ public class JsonConverterTest {
 
   @Test
   public void testJsonDataToBase64PrintsInDesiredFormat() {
-    KeyPair keyPair = new KeyPair();
-    JsonConverter jsonConverter = new JsonConverter(keyPair.getPublicKey(), keyPair.getPrivateKey());
     Map<String, Object> testMap = new LinkedHashMap<>();
     testMap.put("test1", "test2");
     Json testJson = Json.of(testMap);
     Json testConverter = jsonConverter.publishMessageFromData(testJson.toString(), 2, "/root");
     String jsonString = testConverter.toString();
-    System.out.println(jsonString);
+    String result = "{\"method\":\"publish\",\"id\":2,\"params\":{\"channel\":\"/root\",\"message\":{\"data\":\"eyJ0ZXN0MSI6InRlc3QyIn0=\",\"sender\":\"J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=\",\"signature\":\"-waobQoP4TyXbTSXG0A8hZ2EPRB--p8G_F_NDerSoOhcBA1BE1JZux98ihvmP8-lG8WifZTx9gSVfWuN2dx2Bw==\",\"message_id\":\"Oj7kLJCLMvQrvBZmW0YyRUDbRX10p4mIg2gw0AuIu3E=\",\"witness_signatures\":[]}},\"jsonrpc\":\"2.0\"}";
+    assert jsonString.equals(result);
   }
 
   @Test
@@ -48,9 +51,7 @@ public class JsonConverterTest {
 
   @Test
   public void constructJsonMessageFromDataCorrespondsToTrueJsonMessage() {
-    // TODO: refactor tests
     String laoDataJsonString = constructJsonDataForValidLao().toString();
-    JsonConverter jsonConverter = new JsonConverter();
     Json jsonValidLaoMessage = jsonConverter.publishMessageFromData(laoDataJsonString, 1, "/root");
     Map<String, Object> validStringMessage = new LinkedHashMap<>();
     validStringMessage.put("method", "publish");

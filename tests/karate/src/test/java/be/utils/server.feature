@@ -82,15 +82,6 @@ Feature: This feature starts a server and stops it after every scenario.
     * call waitForPort
     * karate.log('Executing tests')
 
-    * def convertData =
-        """
-          function(){
-            var JsonConverter = Java.type('be.utils.JsonConverter')
-            return new JsonConverter()
-          }
-        """
-    * def converter = call convertData
-
     # Shutdown server automatically after the end of a feature
     * configure afterFeature =
           """
