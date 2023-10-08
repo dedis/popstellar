@@ -5,8 +5,8 @@
     # This file contains a set of simple scenarios that can be used when
     # testing the validity of other features. By calling one scenario from
     # this file simply use the allocated name for the particular feature.
-      * call read('classpath:be/mockClient.feature')
-      * call read('classpath:be/constants.feature')
+      * call read('classpath:be/features/utils/mockClient.feature')
+      * call read('classpath:be/features/utils/constants.feature')
 
     # organizer and lao need to be passed as arguments when calling this scenario
     @name=valid_lao
@@ -60,7 +60,7 @@
     # organizer, lao and rollCall need to be passed as arguments when calling this scenario
     @name=valid_roll_call
     Scenario: Creates a valid Roll Call
-      * call read('classpath:be/utils/simpleScenarios.feature@name=valid_lao') { organizer: '#(organizer)', lao: '#(lao)' }
+      * call read('classpath:be/features/utils/simpleScenarios.feature@name=valid_lao') { organizer: '#(organizer)', lao: '#(lao)' }
       * def validCreateRollCall =
          """
            {
@@ -82,7 +82,7 @@
     # organizer, lao and rollCall need to be passed as arguments when calling this scenario
     @name=open_roll_call
     Scenario: Opens a valid Roll Call
-      * call read('classpath:be/utils/simpleScenarios.feature@name=valid_roll_call') { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)' }
+      * call read('classpath:be/features/utils/simpleScenarios.feature@name=valid_roll_call') { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)' }
       * def openRollCall = rollCall.open()
       * def validOpenRollCall =
         """
@@ -101,7 +101,7 @@
     # organizer, lao and rollCall need to be passed as arguments when calling this scenario
     @name=close_roll_call
     Scenario: Closes a valid Roll Call
-      * call read('classpath:be/utils/simpleScenarios.feature@name=open_roll_call') { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)' }
+      * call read('classpath:be/features/utils/simpleScenarios.feature@name=open_roll_call') { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)' }
       * def closeRollCall = rollCall.close()
       * def validRollCallClose =
         """
@@ -121,7 +121,7 @@
     # organizer, lao, rollCall, election and the question need to be passed as arguments when calling this scenario
     @name=election_setup
     Scenario: Sets up a valid election with one question
-      * call read('classpath:be/utils/simpleScenarios.feature@name=close_roll_call') { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)' }
+      * call read('classpath:be/features/utils/simpleScenarios.feature@name=close_roll_call') { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)' }
       Given def validElectionSetup =
       """
         {
@@ -182,7 +182,7 @@
     # organizer, lao, rollCall, election and the question need to be passed as arguments when calling this scenario
     @name=election_open
     Scenario: Opens an election with one question
-      * call read('classpath:be/utils/simpleScenarios.feature@name=election_setup') { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)',  election: '#(election)', question: '#(question)' }
+      * call read('classpath:be/features/utils/simpleScenarios.feature@name=election_setup') { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)',  election: '#(election)', question: '#(question)' }
       * def electionOpen = election.open()
       * def validElectionOpen =
         """
@@ -201,7 +201,7 @@
     # organizer, lao, rollCall, election and the question need to be passed as arguments when calling this scenario
     @name=cast_vote
     Scenario: Casts a valid vote
-      * call read('classpath:be/utils/simpleScenarios.feature@name=election_open') { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)',  election: '#(election)', question: '#(question)' }
+      * call read('classpath:be/features/utils/simpleScenarios.feature@name=election_open') { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)',  election: '#(election)', question: '#(question)' }
       * def vote = question.createVote(0)
       * def castVote = election.castVote(vote)
       * def validCastVote =
@@ -228,7 +228,7 @@
     # organizer, lao and rollCall need to be passed as arguments when calling this scenario
     @name=setup_coin_channel
     Scenario: Sets up the coin channel and subscribes to it
-      * call read('classpath:be/utils/simpleScenarios.feature@name=close_roll_call') { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)' }
+      * call read('classpath:be/features/utils/simpleScenarios.feature@name=close_roll_call') { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)' }
       Given def subscribe =
         """
           {
@@ -262,7 +262,7 @@
     # organizer, lao, rollCall, recipient and amount need to be passed as arguments when calling this scenario
     @name=valid_coin_issuance
     Scenario: Issues a certain amount of coins to an attendee
-      * call read('classpath:be/utils/simpleScenarios.feature@name=setup_coin_channel') { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)' }
+      * call read('classpath:be/features/utils/simpleScenarios.feature@name=setup_coin_channel') { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)' }
       * def transaction = organizer.issueCoins(recipient, amount);
       * def postTransaction = transaction.post()
       * def input = transaction.inputs[0]

@@ -5,9 +5,9 @@ Feature: Terminate an election
     # Call read(...) makes this feature and the called feature share the same scope
     # Meaning they share def variables, configurations ...
     # Especially JS functions defined in the called features can be directly used here thanks to Karate shared scopes
-    * call read('classpath:be/utils/server.feature')
-    * call read('classpath:be/mockClient.feature')
-    * call read('classpath:be/constants.feature')
+    * call read('classpath:be/features/utils/server.feature')
+    * call read('classpath:be/features/utils/mockClient.feature')
+    * call read('classpath:be/features/utils/constants.feature')
     * def organizer = call createMockClient
     * def lao = organizer.createValidLao()
     * def rollCall = organizer.createValidRollCall(lao)
@@ -15,7 +15,7 @@ Feature: Terminate an election
     * def question = election.createQuestion()
 
     # This call executes all the steps to set up a lao, complete a roll call, open an election and cast a vote
-    * call read('classpath:be/utils/simpleScenarios.feature@name=cast_vote') { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)',  election: '#(election)', question: '#(question)' }
+    * call read('classpath:be/features/utils/simpleScenarios.feature@name=cast_vote') { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)',  election: '#(election)', question: '#(question)' }
     * def electionEnd = election.close()
 
   # After a successful election setup and cast vote sending a valid election end

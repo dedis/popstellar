@@ -6,9 +6,9 @@ Feature: Request messages by id from other servers
     # Call read(...) makes this feature and the called feature share the same scope
     # Meaning they share def variables, configurations ...
     # Especially JS functions defined in the called features can be directly used here thanks to Karate shared scopes
-    * call read('classpath:be/utils/server.feature')
-    * call read('classpath:be/mockClient.feature')
-    * call read('classpath:be/constants.feature')
+    * call read('classpath:be/features/utils/server.feature')
+    * call read('classpath:be/features/utils/mockClient.feature')
+    * call read('classpath:be/features/utils/constants.feature')
     * def mockServer = call createMockClient
     * def lao = mockServer.createValidLao()
 
@@ -24,7 +24,7 @@ Feature: Request messages by id from other servers
 
     # This call executes all the steps to create a valid lao on the server before every scenario
     # (lao creation, subscribe, catchup)
-    * call read('classpath:be/utils/simpleScenarios.feature@name=valid_lao') { organizer: '#(mockServer)', lao: '#(lao)' }
+    * call read('classpath:be/features/utils/simpleScenarios.feature@name=valid_lao') { organizer: '#(mockServer)', lao: '#(lao)' }
 
   # Check that after sending a heartbeat message with unknown message id, the server responds with a
   # getMessagesByID requesting this message
