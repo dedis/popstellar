@@ -5,9 +5,9 @@ Feature: Open an Election
     # Call read(...) makes this feature and the called feature share the same scope
     # Meaning they share def variables, configurations ...
     # Especially JS functions defined in the called features can be directly used here thanks to Karate shared scopes
-    * call read('classpath:be/utils/server.feature')
-    * call read('classpath:be/mockClient.feature')
-    * call read('classpath:be/constants.feature')
+    * call read('classpath:be/features/utils/server.feature')
+    * call read('classpath:be/features/utils/mockClient.feature')
+    * call read('classpath:be/features/utils/constants.feature')
     * def organizer = call createMockClient
     * def lao = organizer.createValidLao()
     * def rollCall = organizer.createValidRollCall(lao)
@@ -15,7 +15,7 @@ Feature: Open an Election
     * def question = election.createQuestion()
 
     # This call executes all the steps to set up a lao, complete a roll call and create an election with one question
-    * call read('classpath:be/utils/simpleScenarios.feature@name=election_setup') { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)',  election: '#(election)', question: '#(question)' }
+    * call read('classpath:be/features/utils/simpleScenarios.feature@name=election_setup') { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)',  election: '#(election)', question: '#(question)' }
     * def electionOpen = election.open()
 
   # Testing after creating an election, the backend returns an result

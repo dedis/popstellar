@@ -7,16 +7,16 @@ Feature: Roll Call Open
     # Call read(...) makes this feature and the called feature share the same scope
     # Meaning they share def variables, configurations ...
     # Especially JS functions defined in the called features can be directly used here thanks to Karate shared scopes
-    * call read('classpath:be/utils/server.feature')
-    * call read('classpath:be/mockClient.feature')
-    * call read('classpath:be/constants.feature')
+    * call read('classpath:be/features/utils/server.feature')
+    * call read('classpath:be/features/utils/mockClient.feature')
+    * call read('classpath:be/features/utils/constants.feature')
     * def organizer = call createMockClient
     * def lao = organizer.createValidLao()
     * def rollCall = organizer.createValidRollCall(lao)
 
     # This call executes all the steps to create a valid roll call on the server before every scenario
     # (lao creation, subscribe, catchup, roll call creation)
-    * call read('classpath:be/utils/simpleScenarios.feature@name=valid_roll_call') { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)' }
+    * call read('classpath:be/features/utils/simpleScenarios.feature@name=valid_roll_call') { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)' }
     * def openRollCall = rollCall.open()
 
   # This scenario tests a valid roll call open message.
