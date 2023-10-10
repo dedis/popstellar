@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"golang.org/x/exp/slices"
 	popstellar "popstellar"
 	"popstellar/channel"
 	"popstellar/channel/authentication"
@@ -705,9 +706,12 @@ func (c *Channel) createAndSendLAOGreet() error {
 	peers := []messagedata.Peer{}
 
 	for _, info := range c.hub.GetPeersInfo() {
-		peers = append(peers, messagedata.Peer{
+		peer := messagedata.Peer{
 			Address: info.ClientAddress,
-		})
+		}
+		if !slices.Contains(peers, peer) {
+			peers = append(peers, peer)
+		}
 	}
 
 	msgData := messagedata.LaoGreet{

@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	"popstellar/channel"
 	"popstellar/crypto"
-	"popstellar/hub/standard_hub/helpers"
+	state "popstellar/hub/standard_hub/hub_state"
 	"popstellar/inbox"
 	jsonrpc "popstellar/message"
 	"popstellar/message/answer"
@@ -58,7 +58,7 @@ type Hub struct {
 	messageChan chan socket.IncomingMessage
 
 	sync.RWMutex
-	channelByID helpers.ChannelsById
+	channelByID state.ChannelsById
 
 	closedSockets chan string
 
@@ -84,73 +84,20 @@ type Hub struct {
 
 	// rootInbox and queries are used to help servers catchup to each other
 	rootInbox inbox.Inbox
-	queries   queries
+	queries   state.Queries
 
 	// messageIdsByChannel stores all the message ids and the corresponding channel ids
 	// to help servers determine in which channel the message ids go
-	messageIdsByChannel helpers.IdsByChannel
+	messageIdsByChannel state.IdsByChannel
 
 	// peers stores information about the peers
-	peers helpers.Peers
+	peers state.Peers
 
 	// blacklist stores the IDs of the messages that failed to be processed by the hub
 	// the server will not ask for them again in the heartbeat
 	// and will not process them if they are received again
 	// @TODO remove the messages from the blacklist after a certain amount of time by trying to process them again
 	blacklist []string
-}
-
-// newQueries creates a new queries struct
-func newQueries() queries {
-	return queries{
-		state:                  make(map[int]*bool),
-		getMessagesByIdQueries: make(map[int]method.GetMessagesById),
-	}
-}
-
-// queries let the hub remember all queries that it sent to other servers
-type queries struct {
-	sync.Mutex
-	// state stores the ID of the server's queries and their state. False for a
-	// query not yet answered, else true.
-	state map[int]*bool
-	// getMessagesByIdQueries stores the server's getMessagesByIds queries by their ID.
-	getMessagesByIdQueries map[int]method.GetMessagesById
-	// nextID store the ID of the next query
-	nextID int
-}
-
-func (q *queries) getQueryState(id int) *bool {
-	q.Lock()
-	defer q.Unlock()
-
-	return q.state[id]
-}
-
-// getNextID returns the next query ID
-func (q *queries) getNextID() int {
-	q.Lock()
-	defer q.Unlock()
-
-	id := q.nextID
-	q.nextID++
-	return id
-}
-
-// setQueryState sets the state of the query with the given ID
-func (q *queries) setQueryState(id int, state bool) {
-	q.Lock()
-	defer q.Unlock()
-
-	q.state[id] = &state
-}
-
-// addQuery adds the given query to the table
-func (q *queries) addQuery(id int, query method.GetMessagesById) {
-	q.Lock()
-	defer q.Unlock()
-
-	q.getMessagesByIdQueries[id] = query
 }
 
 // NewHub returns a new Hub.
@@ -170,7 +117,7 @@ func NewHub(pubKeyOwner kyber.Point, clientServerAddress string, serverServerAdd
 		clientServerAddress: clientServerAddress,
 		serverServerAddress: serverServerAddress,
 		messageChan:         make(chan socket.IncomingMessage),
-		channelByID:         helpers.NewChannelsById(),
+		channelByID:         state.NewChannelsById(),
 		closedSockets:       make(chan string),
 		pubKeyOwner:         pubKeyOwner,
 		pubKeyServ:          pubServ,
@@ -183,9 +130,9 @@ func NewHub(pubKeyOwner kyber.Point, clientServerAddress string, serverServerAdd
 		serverSockets:       channel.NewSockets(),
 		hubInbox:            *inbox.NewInbox(rootChannel),
 		rootInbox:           *inbox.NewInbox(rootChannel),
-		queries:             newQueries(),
-		messageIdsByChannel: helpers.NewIdsByChannel(),
-		peers:               helpers.NewPeers(),
+		queries:             state.NewQueries(),
+		messageIdsByChannel: state.NewIdsByChannel(),
+		peers:               state.NewPeers(),
 		blacklist:           make([]string, 0),
 	}
 
@@ -516,8 +463,8 @@ func (h *Hub) handleIncomingMessage(incomingMessage *socket.IncomingMessage) err
 
 // sendGetMessagesByIdToServer sends a getMessagesById message to a server
 func (h *Hub) sendGetMessagesByIdToServer(socket socket.Socket, missingIds map[string][]string) error {
-	queryId := h.queries.getNextID()
-	h.queries.setQueryState(queryId, false)
+	queryId := h.queries.GetNextID()
+	h.queries.SetQueryState(queryId, false)
 
 	getMessagesById := method.GetMessagesById{
 		Base: query.Base{
@@ -535,7 +482,7 @@ func (h *Hub) sendGetMessagesByIdToServer(socket socket.Socket, missingIds map[s
 		return xerrors.Errorf("failed to marshal getMessagesById query: %v", err)
 	}
 
-	h.queries.addQuery(queryId, getMessagesById)
+	h.queries.AddQuery(queryId, getMessagesById)
 
 	socket.Send(buf)
 
