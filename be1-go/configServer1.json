@@ -8,5 +8,5 @@
     "client-port"                          : 9000,
     "server-port"                          : 9001,
     "auth-port"                            : 9100,
-    "other-servers": []
+    "other-servers": ["localhost:9003"]
 }
