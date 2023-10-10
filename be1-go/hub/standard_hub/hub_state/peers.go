@@ -15,6 +15,7 @@ type Peers struct {
 	peersGreeted []string
 }
 
+// NewPeers creates a new Peers structure
 func NewPeers() Peers {
 	return Peers{
 		peersInfo:    make(map[string]method.ServerInfo),
@@ -22,12 +23,14 @@ func NewPeers() Peers {
 	}
 }
 
+// AddPeerInfo adds a peer's info to the table
 func (p *Peers) AddPeerInfo(socketId string, info method.ServerInfo) {
 	p.Lock()
 	defer p.Unlock()
 	p.peersInfo[socketId] = info
 }
 
+// AddPeerGreeted adds a peer's socket ID to the slice of peers greeted
 func (p *Peers) AddPeerGreeted(socketId string) {
 	p.Lock()
 	defer p.Unlock()
@@ -37,6 +40,7 @@ func (p *Peers) AddPeerGreeted(socketId string) {
 	p.peersGreeted = append(p.peersGreeted, socketId)
 }
 
+// GetAllPeersInfo returns a copy of the peers' info slice
 func (p *Peers) GetAllPeersInfo() []method.ServerInfo {
 	p.RLock()
 	defer p.RUnlock()
@@ -47,6 +51,7 @@ func (p *Peers) GetAllPeersInfo() []method.ServerInfo {
 	return peersInfo
 }
 
+// IsPeerGreeted returns true if the peer was greeted, otherwise it returns false
 func (p *Peers) IsPeerGreeted(socketId string) bool {
 	p.RLock()
 	defer p.RUnlock()

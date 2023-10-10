@@ -709,9 +709,10 @@ func (c *Channel) createAndSendLAOGreet() error {
 		peer := messagedata.Peer{
 			Address: info.ClientAddress,
 		}
-		if !slices.Contains(peers, peer) {
-			peers = append(peers, peer)
+		if slices.Contains(peers, peer) {
+			continue
 		}
+		peers = append(peers, peer)
 	}
 
 	msgData := messagedata.LaoGreet{
