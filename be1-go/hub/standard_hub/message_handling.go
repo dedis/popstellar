@@ -189,7 +189,7 @@ func (h *Hub) handleAnswer(senderSocket socket.Socket, byteMessage []byte) error
 		return nil
 	}
 
-	val := h.queries.getQueryState(*answerMsg.ID)
+	val := h.queries.GetQueryState(*answerMsg.ID)
 	if val == nil {
 		return xerrors.Errorf("no query sent with id %v", answerMsg.ID)
 	}
@@ -198,7 +198,7 @@ func (h *Hub) handleAnswer(senderSocket socket.Socket, byteMessage []byte) error
 		return xerrors.Errorf("query %v already got an answer", answerMsg.ID)
 	}
 
-	h.queries.setQueryState(*answerMsg.ID, true)
+	h.queries.SetQueryState(*answerMsg.ID, true)
 
 	err = h.handleGetMessagesByIdAnswer(senderSocket, answerMsg)
 	if err != nil {
