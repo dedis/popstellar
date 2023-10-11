@@ -448,7 +448,7 @@ func (h *Hub) handleMessageFromServer(incomingMessage *socket.IncomingMessage) e
 func (h *Hub) handleIncomingMessage(incomingMessage *socket.IncomingMessage) error {
 	defer h.workers.Release(1)
 
-	h.log.Info().Str("msg", string(incomingMessage.Message)).Msgf("handle incoming message")
+	h.log.Info().Str("msg", string(incomingMessage.Message)).Msg("handle incoming message")
 
 	switch incomingMessage.Socket.Type() {
 	case socket.ClientSocketType:
