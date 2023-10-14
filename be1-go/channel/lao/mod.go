@@ -4,7 +4,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"golang.org/x/exp/slices"
+	"golang.org/x/exp/maps"
 	popstellar "popstellar"
 	"popstellar/channel"
 	"popstellar/channel/authentication"
@@ -703,16 +703,12 @@ func (c *Channel) createAndSendLAOGreet() error {
 		return xerrors.Errorf("failed to marshal the organizer key: %v", err)
 	}
 
-	peers := []messagedata.Peer{}
+	peersInfo := c.hub.GetPeersInfo()
 
-	for _, info := range c.hub.GetPeersInfo() {
-		peer := messagedata.Peer{
-			Address: info.ClientAddress,
-		}
-		if slices.Contains(peers, peer) {
-			continue
-		}
-		peers = append(peers, peer)
+	peers := make(map[messagedata.Peer]struct{}, len(peersInfo))
+
+	for _, info := range peersInfo {
+		peers[messagedata.Peer{Address: info.ClientAddress}] = struct{}{}
 	}
 
 	msgData := messagedata.LaoGreet{
@@ -721,7 +717,7 @@ func (c *Channel) createAndSendLAOGreet() error {
 		LaoID:    c.extractLaoID(),
 		Frontend: base64.URLEncoding.EncodeToString(orgPkBuf),
 		Address:  c.hub.GetClientServerAddress(),
-		Peers:    peers,
+		Peers:    maps.Keys(peers),
 	}
 
 	// Marshalls the message data

@@ -1,6 +1,7 @@
 package hub_state
 
 import (
+	"golang.org/x/exp/maps"
 	"golang.org/x/exp/slices"
 	"popstellar/message/query/method"
 	"sync"
@@ -12,14 +13,14 @@ type Peers struct {
 	// peersInfo stores the info of the peers: public key, client and server endpoints associated with the socket ID
 	peersInfo map[string]method.ServerInfo
 	// peersGreeted stores the peers that were greeted by the socket ID
-	peersGreeted []string
+	peersGreeted map[string]struct{}
 }
 
 // NewPeers creates a new Peers structure
 func NewPeers() Peers {
 	return Peers{
 		peersInfo:    make(map[string]method.ServerInfo),
-		peersGreeted: make([]string, 0),
+		peersGreeted: make(map[string]struct{}),
 	}
 }
 
@@ -34,10 +35,10 @@ func (p *Peers) AddPeerInfo(socketId string, info method.ServerInfo) {
 func (p *Peers) AddPeerGreeted(socketId string) {
 	p.Lock()
 	defer p.Unlock()
-	if slices.Contains(p.peersGreeted, socketId) {
+	if slices.Contains(maps.Keys(p.peersGreeted), socketId) {
 		return
 	}
-	p.peersGreeted = append(p.peersGreeted, socketId)
+	p.peersGreeted[socketId] = struct{}{}
 }
 
 // GetAllPeersInfo returns a copy of the peers' info slice
@@ -55,5 +56,5 @@ func (p *Peers) GetAllPeersInfo() []method.ServerInfo {
 func (p *Peers) IsPeerGreeted(socketId string) bool {
 	p.RLock()
 	defer p.RUnlock()
-	return slices.Contains(p.peersGreeted, socketId)
+	return slices.Contains(maps.Keys(p.peersGreeted), socketId)
 }

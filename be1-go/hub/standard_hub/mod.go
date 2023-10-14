@@ -132,7 +132,7 @@ func NewHub(pubKeyOwner kyber.Point, clientServerAddress string, serverServerAdd
 		rootInbox:           *inbox.NewInbox(rootChannel),
 		queries:             state.NewQueries(),
 		messageIdsByChannel: state.MessageIds{
-			state.NewThreadSafeMap[string, []string](),
+			ThreadSafeMap: state.NewThreadSafeMap[string, []string](),
 		},
 		peers:     state.NewPeers(),
 		blacklist: make([]string, 0),
