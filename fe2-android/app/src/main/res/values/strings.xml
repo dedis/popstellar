@@ -16,6 +16,7 @@
   <!-- bottom nav -->
   <string name="tab_social_media">Social Media</string>
   <string name="tab_digital_cash">Digital Cash</string>
+  <string name="tab_popcha">PoPCHA</string>
   <string name="event_list">Events</string>
   <string name="witnessing">Witnessing</string>
   <string name="invite">Invite</string>
@@ -276,6 +277,10 @@
   <string name="love_button">love button</string>
   <string name="deleted_chirp">Deleted chirp!</string>
   <string name="deleted_chirp_2">Chirp is deleted.</string>
+
+  <!-- PoPCHA -->
+  <string name="popcha">PoPCHA</string>
+  <string name="popcha_header">Welcome to the PoPCHA tab, you\'re currently in the LAO:\n%1$s</string>
 
   <!--  Storage-->
   <string name="nothing_stored">No stored data found</string>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools">
+
+  <androidx.constraintlayout.widget.ConstraintLayout
+    android:id="@+id/fragment_popcha_home"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+      android:id="@+id/popcha_header"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:gravity="center"
+      android:text="@string/popcha_header"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintTop_toTopOf="parent"
+      tools:layout_editor_absoluteX="0dp" />
+
+    <Button
+      android:id="@+id/popcha_scanner"
+      android:layout_width="@dimen/standard_button_width"
+      android:layout_height="@dimen/standard_button_height"
+      android:drawableLeft="@drawable/qr_code_button_icon"
+      android:text="@string/scan"
+      android:layout_marginBottom="@dimen/home_button_vertical_margin"
+      android:layout_marginEnd="@dimen/home_button_horizontal_margin"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintEnd_toEndOf="parent"
+      tools:ignore="RtlHardcoded" />
+
+  </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
