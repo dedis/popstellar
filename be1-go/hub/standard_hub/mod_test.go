@@ -729,9 +729,9 @@ func Test_Create_LAO(t *testing.T) {
 
 	// the server should have saved the channel locally
 
-	require.Contains(t, hub.channelByID.GetAll(), rootPrefix+data.ID)
+	require.Contains(t, hub.channelByID.GetTable(), rootPrefix+data.ID)
 
-	channel, _ := hub.channelByID.GetChannel(rootPrefix + data.ID)
+	channel, _ := hub.channelByID.Get(rootPrefix + data.ID)
 	require.Equal(t, fakeChannelFac.c, channel)
 }
 
@@ -745,7 +745,7 @@ func Test_Wrong_Root_Publish(t *testing.T) {
 
 	laoID := "/root"
 
-	hub.channelByID.Add(rootPrefix+laoID, c)
+	hub.channelByID.Set(rootPrefix+laoID, c)
 
 	data := messagedata.LaoState{
 		Object:    messagedata.LAOObject,
@@ -933,7 +933,7 @@ func Test_Handle_Publish_From_Client(t *testing.T) {
 
 	laoID := "XXX"
 
-	hub.channelByID.Add(rootPrefix+laoID, c)
+	hub.channelByID.Set(rootPrefix+laoID, c)
 
 	signature, err := schnorr.Sign(suite, keypair.private, []byte("XXX"))
 	require.NoError(t, err)
@@ -1000,7 +1000,7 @@ func Test_Handle_Publish_From_Server(t *testing.T) {
 
 	laoID := "XXX"
 
-	hub.channelByID.Add(rootPrefix+laoID, c)
+	hub.channelByID.Set(rootPrefix+laoID, c)
 
 	signature, err := schnorr.Sign(suite, keypair.private, []byte("XXX"))
 	require.NoError(t, err)
@@ -1067,7 +1067,7 @@ func Test_Receive_Publish_Twice(t *testing.T) {
 
 	laoID := "XXX"
 
-	hub.channelByID.Add(rootPrefix+laoID, c)
+	hub.channelByID.Set(rootPrefix+laoID, c)
 
 	signature, err := schnorr.Sign(suite, keypair.private, []byte("XXX"))
 	require.NoError(t, err)
@@ -1228,8 +1228,8 @@ func Test_Create_LAO_GetMessagesById_Result(t *testing.T) {
 
 	// the server should have saved the channel locally
 
-	require.Contains(t, hub.channelByID.GetAll(), rootPrefix+data.ID)
-	channel, _ := hub.channelByID.GetChannel(rootPrefix + laoID)
+	require.Contains(t, hub.channelByID.GetTable(), rootPrefix+data.ID)
+	channel, _ := hub.channelByID.Get(rootPrefix + laoID)
 	require.Equal(t, fakeChannelFac.c, channel)
 }
 
@@ -1334,7 +1334,7 @@ func Test_Handle_Subscribe(t *testing.T) {
 
 	laoID := "XXX"
 
-	hub.channelByID.Add(rootPrefix+laoID, c)
+	hub.channelByID.Set(rootPrefix+laoID, c)
 
 	subscribe := method.Subscribe{
 		Base: query.Base{
@@ -1397,7 +1397,7 @@ func TestServer_Handle_Unsubscribe(t *testing.T) {
 
 	laoID := "XXX"
 
-	hub.channelByID.Add(rootPrefix+laoID, c)
+	hub.channelByID.Set(rootPrefix+laoID, c)
 
 	unsubscribe := method.Unsubscribe{
 		Base: query.Base{
@@ -1471,7 +1471,7 @@ func TestServer_Handle_Catchup(t *testing.T) {
 
 	laoID := "XXX"
 
-	hub.channelByID.Add(rootPrefix+laoID, c)
+	hub.channelByID.Set(rootPrefix+laoID, c)
 
 	catchup := method.Catchup{
 		Base: query.Base{
@@ -1543,7 +1543,7 @@ func Test_Send_And_Handle_Message(t *testing.T) {
 
 	laoID := "XXX"
 
-	hub.channelByID.Add(rootPrefix+laoID, c)
+	hub.channelByID.Set(rootPrefix+laoID, c)
 
 	signature, err := schnorr.Sign(suite, keypair.private, []byte("XXX"))
 	require.NoError(t, err)
@@ -1630,7 +1630,7 @@ func Test_Send_Heartbeat_Message(t *testing.T) {
 	messageIdsSent := heartbeat.Params
 
 	//Check that all the stored messages where sent
-	for storedChannel, storedIds := range hub.messageIdsByChannel.GetAll() {
+	for storedChannel, storedIds := range hub.messageIdsByChannel.GetTable() {
 		sentIds, exists := messageIdsSent[storedChannel]
 		require.True(t, exists)
 		for _, storedId := range storedIds {

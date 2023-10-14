@@ -58,7 +58,7 @@ type Hub struct {
 	messageChan chan socket.IncomingMessage
 
 	sync.RWMutex
-	channelByID state.ChannelsById
+	channelByID state.Channels
 
 	closedSockets chan string
 
@@ -88,7 +88,7 @@ type Hub struct {
 
 	// messageIdsByChannel stores all the message ids and the corresponding channel ids
 	// to help servers determine in which channel the message ids go
-	messageIdsByChannel state.IdsByChannel
+	messageIdsByChannel state.MessageIds
 
 	// peers stores information about the peers
 	peers state.Peers
@@ -117,7 +117,7 @@ func NewHub(pubKeyOwner kyber.Point, clientServerAddress string, serverServerAdd
 		clientServerAddress: clientServerAddress,
 		serverServerAddress: serverServerAddress,
 		messageChan:         make(chan socket.IncomingMessage),
-		channelByID:         state.NewChannelsById(),
+		channelByID:         state.NewThreadSafeMap[string, channel.Channel](),
 		closedSockets:       make(chan string),
 		pubKeyOwner:         pubKeyOwner,
 		pubKeyServ:          pubServ,
@@ -131,9 +131,11 @@ func NewHub(pubKeyOwner kyber.Point, clientServerAddress string, serverServerAdd
 		hubInbox:            *inbox.NewInbox(rootChannel),
 		rootInbox:           *inbox.NewInbox(rootChannel),
 		queries:             state.NewQueries(),
-		messageIdsByChannel: state.NewIdsByChannel(),
-		peers:               state.NewPeers(),
-		blacklist:           make([]string, 0),
+		messageIdsByChannel: state.MessageIds{
+			state.NewThreadSafeMap[string, []string](),
+		},
+		peers:     state.NewPeers(),
+		blacklist: make([]string, 0),
 	}
 
 	return &hub, nil
@@ -174,7 +176,7 @@ func (h *Hub) Start() {
 					}
 				}()
 			case id := <-h.closedSockets:
-				for _, channel := range h.channelByID.GetAll() {
+				for _, channel := range h.channelByID.GetTable() {
 					// dummy Unsubscribe message because it's only used for logging...
 					channel.Unsubscribe(id, method.Unsubscribe{})
 				}
@@ -275,7 +277,7 @@ func (h *Hub) getChan(channelPath string) (channel.Channel, error) {
 		return nil, xerrors.Errorf("channel not prefixed with '%s': %q", rootPrefix, channelPath)
 	}
 
-	channel, ok := h.channelByID.GetChannel(channelPath)
+	channel, ok := h.channelByID.Get(channelPath)
 	if !ok {
 		return nil, xerrors.Errorf("channel %s does not exist", channelPath)
 	}
@@ -501,7 +503,7 @@ func (h *Hub) sendHeartbeatToServers() {
 			},
 			Method: "heartbeat",
 		},
-		Params: h.messageIdsByChannel.GetAll(),
+		Params: h.messageIdsByChannel.GetTable(),
 	}
 
 	buf, err := json.Marshal(heartbeatMessage)
@@ -517,7 +519,7 @@ func (h *Hub) createLao(msg message.Message, laoCreate messagedata.LaoCreate,
 
 	laoChannelPath := rootPrefix + laoCreate.ID
 
-	if _, ok := h.channelByID.GetChannel(laoChannelPath); ok {
+	if _, ok := h.channelByID.Get(laoChannelPath); ok {
 		return answer.NewDuplicateResourceError("failed to create lao: duplicate lao path: %q", laoChannelPath)
 	}
 
@@ -598,7 +600,7 @@ func (h *Hub) GetSchemaValidator() validation.SchemaValidator {
 
 // NotifyNewChannel implements channel.HubFunctionalities
 func (h *Hub) NotifyNewChannel(channelID string, channel channel.Channel, sock socket.Socket) {
-	h.channelByID.Add(channelID, channel)
+	h.channelByID.Set(channelID, channel)
 }
 
 // NotifyWitnessMessage implements channel.HubFunctionalities

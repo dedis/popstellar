@@ -6,10 +6,12 @@ import (
 )
 
 // Channels provides a thread-safe structure that stores channel ids with their corresponding channels
-type Channels ThreadSafeMap[string, channel.Channel]
+type Channels = ThreadSafeMap[string, channel.Channel]
 
 // MessageIds provides a thread-safe structure that stores a channel id with its corresponding message ids
-type MessageIds ThreadSafeMap[string, []string]
+type MessageIds struct {
+	ThreadSafeMap[string, []string]
+}
 
 func (i *MessageIds) Add(channel string, id string) {
 	i.Lock()

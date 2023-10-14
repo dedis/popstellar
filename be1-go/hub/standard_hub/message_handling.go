@@ -427,7 +427,7 @@ func (h *Hub) handleHeartbeat(socket socket.Socket,
 
 	receivedIds := heartbeat.Params
 
-	missingIds := getMissingIds(receivedIds, h.messageIdsByChannel.GetAll(), h.blacklist)
+	missingIds := getMissingIds(receivedIds, h.messageIdsByChannel.GetTable(), h.blacklist)
 
 	if len(missingIds) > 0 {
 		err = h.sendGetMessagesByIdToServer(socket, missingIds)

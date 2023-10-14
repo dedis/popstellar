@@ -13,31 +13,31 @@ func NewThreadSafeMap[K comparable, V any]() ThreadSafeMap[K, V] {
 	}
 }
 
-func (t *ThreadSafeMap[K, V]) Get(key K) (V, bool) {
-	t.RLock()
-	defer t.RUnlock()
-	val, ok := t.table[key]
+func (i *ThreadSafeMap[K, V]) Get(key K) (V, bool) {
+	i.RLock()
+	defer i.RUnlock()
+	val, ok := i.table[key]
 	return val, ok
 }
 
-func (t *ThreadSafeMap[K, V]) Set(key K, val V) {
-	t.Lock()
-	defer t.Unlock()
-	t.table[key] = val
+func (i *ThreadSafeMap[K, V]) Set(key K, val V) {
+	i.Lock()
+	defer i.Unlock()
+	i.table[key] = val
 }
 
-func (t *ThreadSafeMap[K, V]) GetTable() map[K]V {
-	t.Lock()
-	defer t.Unlock()
+func (i *ThreadSafeMap[K, V]) GetTable() map[K]V {
+	i.Lock()
+	defer i.Unlock()
 	tableCopy := make(map[K]V)
-	for key, val := range t.table {
+	for key, val := range i.table {
 		tableCopy[key] = val
 	}
 	return tableCopy
 }
 
-func (t *ThreadSafeMap[K, V]) IsEmpty() bool {
-	t.Lock()
-	defer t.Unlock()
-	return len(t.table) == 0
+func (i *ThreadSafeMap[K, V]) IsEmpty() bool {
+	i.Lock()
+	defer i.Unlock()
+	return len(i.table) == 0
 }
