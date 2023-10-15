@@ -108,6 +108,7 @@
 
   <!-- QR code -->
   <string name="qrcode_scanning_add_witness">Scan personal QR code of the witness to add</string>
+  <string name="qrcode_scanning_add_popcha">Scan the PoPCHA QR code to log in</string>
   <string name="qrcode_scanning_connect_lao">Scan the invite QR code to join the LAO</string>
   <string name="event_description">Event Description</string>
   <string name="rc_location_title">Location*</string>
@@ -281,6 +282,9 @@
   <!-- PoPCHA -->
   <string name="popcha">PoPCHA</string>
   <string name="popcha_header">Welcome to the PoPCHA tab, you\'re currently in the LAO:\n%1$s</string>
+  <string name="popcha_add">Log in through PoPCHA</string>
+  <string name="popcha_scan_title">Enter PoPCHA URL to log in</string>
+  <string name="manual_popcha_hint">PoPCHA URL</string>
 
   <!--  Storage-->
   <string name="nothing_stored">No stored data found</string>
@@ -361,6 +365,7 @@
   <string name="unknown_witness_message_exception">Unknown Witness Message</string>
   <string name="already_open_roll_call_exception">Another Roll Call is already open</string>
   <string name="lao_coins">LAO coins</string>
-  <string name="invalid_qrcode_data">Invalid QRCode laoData</string>
+  <string name="invalid_qrcode_lao_data">Invalid QRCode laoData</string>
+  <string name="invalid_qrcode_popcha_data">Invalid QRCode PoPCHAData</string>
 
 </resources>

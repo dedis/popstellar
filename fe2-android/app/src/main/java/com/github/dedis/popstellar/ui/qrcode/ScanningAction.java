@@ -4,14 +4,13 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.StringRes;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
-
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.ui.PopViewModel;
 import com.github.dedis.popstellar.ui.home.*;
 import com.github.dedis.popstellar.ui.lao.LaoActivity;
 import com.github.dedis.popstellar.ui.lao.event.rollcall.RollCallFragment;
+import com.github.dedis.popstellar.ui.lao.popcha.PoPCHAHomeFragment;
 import com.github.dedis.popstellar.ui.lao.witness.WitnessingFragment;
-
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
@@ -66,7 +65,18 @@ public enum ScanningAction {
       (activity, unused) -> HomeActivity.obtainViewModel(activity),
       HomeActivity::obtainViewModel,
       (manager, unused) ->
-          HomeActivity.setCurrentFragment(manager, R.id.fragment_home, HomeFragment::new));
+          HomeActivity.setCurrentFragment(manager, R.id.fragment_home, HomeFragment::new)),
+  ADD_POPCHA(
+      R.string.qrcode_scanning_add_popcha,
+      R.string.scanned_tokens,
+      R.string.popcha_add,
+      R.string.manual_popcha_hint,
+      R.string.popcha_scan_title,
+      LaoActivity::obtainPoPCHAViewModel,
+      LaoActivity::obtainViewModel,
+      (manager, unused) ->
+          LaoActivity.setCurrentFragment(
+              manager, R.id.fragment_popcha_home, PoPCHAHomeFragment::new));
 
   @StringRes public final int instruction;
   @StringRes public final int scanTitle;

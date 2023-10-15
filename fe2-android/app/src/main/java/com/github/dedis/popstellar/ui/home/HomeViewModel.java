@@ -2,10 +2,8 @@ package com.github.dedis.popstellar.ui.home;
 
 import android.app.Application;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.lifecycle.*;
-
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.objects.Wallet;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
@@ -22,18 +20,15 @@ import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.github.dedis.popstellar.utility.error.keys.SeedValidationException;
 import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
-
-import java.security.GeneralSecurityException;
-import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import javax.inject.Inject;
-
 import dagger.hilt.android.lifecycle.HiltViewModel;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
+import java.security.GeneralSecurityException;
+import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicBoolean;
+import javax.inject.Inject;
 import timber.log.Timber;
 
 @HiltViewModel
@@ -121,7 +116,7 @@ public class HomeViewModel extends AndroidViewModel
       Timber.tag(TAG).e(e, "Invalid QRCode laoData");
       Toast.makeText(
               getApplication().getApplicationContext(),
-              R.string.invalid_qrcode_data,
+              R.string.invalid_qrcode_lao_data,
               Toast.LENGTH_LONG)
           .show();
       return;

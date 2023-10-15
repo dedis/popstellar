@@ -1,5 +1,7 @@
 package com.github.dedis.popstellar.ui.lao.popcha;
 
+import static com.github.dedis.popstellar.ui.lao.LaoActivity.setCurrentFragment;
+
 import android.os.Bundle;
 import android.view.*;
 import androidx.annotation.NonNull;
@@ -9,11 +11,13 @@ import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.PopchaHomeFragmentBinding;
 import com.github.dedis.popstellar.ui.lao.LaoActivity;
 import com.github.dedis.popstellar.ui.lao.LaoViewModel;
+import com.github.dedis.popstellar.ui.qrcode.QrScannerFragment;
+import com.github.dedis.popstellar.ui.qrcode.ScanningAction;
 
 public class PoPCHAHomeFragment extends Fragment {
-  private PopchaHomeFragmentBinding binding;
+
   private LaoViewModel laoViewModel;
-  private PoPCHAViewModel poPCHAViewModel;
+  private PoPCHAViewModel popCHAViewModel;
 
   public PoPCHAHomeFragment() {
     // Required public empty constructor
@@ -30,14 +34,26 @@ public class PoPCHAHomeFragment extends Fragment {
       @NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     laoViewModel = LaoActivity.obtainViewModel(requireActivity());
 
-    poPCHAViewModel = LaoActivity.obtainPoPCHAViewModel(requireActivity(), laoViewModel.getLaoId());
-    binding = PopchaHomeFragmentBinding.inflate(inflater, container, false);
+    popCHAViewModel = LaoActivity.obtainPoPCHAViewModel(requireActivity(), laoViewModel.getLaoId());
+    PopchaHomeFragmentBinding binding =
+        PopchaHomeFragmentBinding.inflate(inflater, container, false);
 
     binding.popchaHeader.setText(
         String.format(
-            getResources().getString(R.string.popcha_header), poPCHAViewModel.getLaoId()));
+            getResources().getString(R.string.popcha_header), popCHAViewModel.getLaoId()));
 
-    binding.popchaScanner.setOnClickListener(v -> {});
+    binding.popchaScanner.setOnClickListener(v -> openScanner());
+
+    popCHAViewModel
+        .getTextDisplayed()
+        .observe(
+            getViewLifecycleOwner(),
+            stringSingleEvent -> {
+              String url = stringSingleEvent.getContentIfNotHandled();
+              if (url != null) {
+                binding.popchaText.setText(url);
+              }
+            });
 
     handleBackNav();
     return binding.getRoot();
@@ -48,6 +64,14 @@ public class PoPCHAHomeFragment extends Fragment {
     super.onResume();
     laoViewModel.setPageTitle(R.string.popcha);
     laoViewModel.setIsTab(true);
+  }
+
+  private void openScanner() {
+    laoViewModel.setIsTab(false);
+    setCurrentFragment(
+        getParentFragmentManager(),
+        R.id.fragment_qr_scanner,
+        () -> QrScannerFragment.newInstance(ScanningAction.ADD_POPCHA));
   }
 
   public static void openFragment(FragmentManager manager) {

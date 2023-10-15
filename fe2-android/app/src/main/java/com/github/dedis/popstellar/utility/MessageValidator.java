@@ -1,9 +1,11 @@
 package com.github.dedis.popstellar.utility;
 
+import static com.github.dedis.popstellar.model.qrcode.PoPCHAQRCode.*;
+
+import android.net.Uri;
 import com.github.dedis.popstellar.model.network.method.message.data.election.Vote;
 import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
-
 import java.time.Instant;
 import java.util.*;
 import java.util.regex.Pattern;
@@ -33,6 +35,12 @@ public abstract class MessageValidator {
     // Constant used to validate a timestamp as not in the future, considering that timestamp from
     // different devices can slightly vary
     public static final long VALID_FUTURE_DELAY = 120;
+
+    // Constants used for checking PoPCHA URLs
+    public static final String[] REQUIRED_ARGUMENTS = new String[] {CLIENT_ID, NONCE, REDIRECT_URI};
+    public static final String VALID_RESPONSE_TYPE = "id_token";
+    public static final String[] REQUIRED_SCOPES = new String[] {"openid", "profile"};
+    public static final String[] VALID_RESPONSE_MODES = new String[] {"query", "fragment"};
 
     /**
      * Helper method to check that a LAO id is valid.
@@ -234,6 +242,43 @@ public abstract class MessageValidator {
       if (input == null || !URL_PATTERN.matcher(input).matches()) {
         throw new IllegalArgumentException("Input is not a url");
       }
+      return this;
+    }
+
+    public MessageValidatorBuilder isValidPoPCHAUrl(String input, String laoId) {
+      // Check it's a valid url
+      MessageValidator.verify().validUrl(input);
+
+      Uri uri = Uri.parse(input);
+      // Check required arguments are present
+      for (String arg : REQUIRED_ARGUMENTS) {
+        if (uri.getQueryParameter(arg) == null) {
+          throw new IllegalArgumentException(
+              String.format("Required argument %s is missing in the URL.", arg));
+        }
+      }
+      // Check response type respects openid standards
+      String responseType = uri.getQueryParameter(RESPONSE_TYPE);
+      if (!responseType.equals(VALID_RESPONSE_TYPE)) {
+        throw new IllegalArgumentException("Invalid response type in the URL");
+      }
+      // Check the scope contains all the required scopes
+      if (Arrays.stream(REQUIRED_SCOPES)
+          .anyMatch(name -> !uri.getQueryParameter("scope").contains(name))) {
+        throw new IllegalArgumentException("Invalid scope");
+      }
+      // Check response mode is valid
+      String responseMode = uri.getQueryParameter(RESPONSE_MODE);
+      if (responseMode != null
+          && Arrays.stream(VALID_RESPONSE_MODES).noneMatch(responseMode::contains)) {
+        throw new IllegalArgumentException("Invalid response mode");
+      }
+      // Check lao ID in login hint match the right laoID
+      String laoHint = uri.getQueryParameter(LOGIN_HINT);
+      if (!laoHint.equals(laoId)) {
+        throw new IllegalArgumentException(String.format("Invalid LAO ID %s", laoHint));
+      }
+
       return this;
     }
   }
