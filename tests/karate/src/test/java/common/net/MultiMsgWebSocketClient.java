@@ -7,6 +7,7 @@ import com.intuit.karate.Json;
 import com.intuit.karate.Logger;
 import com.intuit.karate.http.WebSocketClient;
 import com.intuit.karate.http.WebSocketOptions;
+import common.utils.Base64Utils;
 
 import java.util.*;
 import java.util.function.Predicate;
@@ -20,9 +21,10 @@ public class MultiMsgWebSocketClient extends WebSocketClient {
   private final MessageQueue queue;
   public final Logger logger;
 
-  private HashMap<String, Integer> idAssociatedWithSentMessages = new HashMap<>();
-  private HashMap<Integer, String> idAssociatedWithAnswers = new HashMap<>();
-  private ArrayList<String> broadcasts = new ArrayList<>();
+  /** Map of all the messages and their corresponding message ids that the client sent */
+  private final HashMap<String, Integer> sentMessageIds = new HashMap<>();
+  /** Collects all broadcasts that were received */
+  public ArrayList<String> broadcasts = new ArrayList<>();
 
   private final static int TIMEOUT = 5000;
 
@@ -41,94 +43,60 @@ public class MultiMsgWebSocketClient extends WebSocketClient {
     setTextHandler(m -> true);
   }
 
-  public void send(Map<String, Object> jsonDataMap){
-    this.send(Json.of(jsonDataMap).toString());
+  /**
+   * JSON messages defined inside features are interpreted as maps from String to Object.
+   * This method is called directly inside features and is just a wrapper around the send method of WebsocketClient (that takes Strings).
+   * @param messageData the message to send as a JSON map
+   *                    (for example: subscribe and catchup in simpleScenarios.feature).
+   */
+  public void send(Map<String, Object> messageData){
+    this.send(mapToJson(messageData));
   }
 
-  @Override
-  public void signal(Object result) {
-    logger.trace("signal called: {}", result);
-    queue.onNewMsg(result.toString());
+  /**
+   * JSON messages defined inside features are interpreted as maps from String to Object.
+   * This method is called directly inside features to send a full publish message given the high-level message data to publish.
+   * @param highLevelMessageDataMap the high-level message to publish as a JSON map
+   *                                (for example: validCreateRollCall and badCreateRollCall in createRollCall.feature).
+   * @param channel the channel to publish on.
+   */
+  public void publish(Map<String, Object> highLevelMessageDataMap, String channel){
+    String highLevelMessageData = mapToJson(highLevelMessageDataMap);
+    int messageId = new Random().nextInt();
+    sentMessageIds.put(highLevelMessageData, messageId);
+    Json publishMessageJson =  jsonConverter.createPublishMessage(highLevelMessageData, messageId, channel);
+    String publishMessage = publishMessageJson.toString();
+    System.out.println("The final sent publish message is : " + publishMessage);
+    this.send(publishMessage);
   }
 
-  @Override
-  public synchronized Object listen(long timeout) {
-    logger.trace("entered listen wait state");
-    String msg = queue.take();
+  /**
+   * Waits to receive the backend answer to a given message and returns the answer.
+   * @param highLevelMessageDataMap of the message that the answer is expected for.
+   * @return the answer to the given message or throws an error if there is none.
+   */
+  public String getBackendResponse(Map<String, Object> highLevelMessageDataMap){
+    String highLevelMessageData = mapToJson(highLevelMessageDataMap);
+    assert sentMessageIds.containsKey(highLevelMessageData);
+    int messageId = sentMessageIds.get(highLevelMessageData);
 
-    if (msg == null) logger.error("listen timed out");
-
-    return msg;
-  }
-
-  public MessageBuffer getBuffer() {
-    return queue;
-  }
-
-
-  public void publish(Map<String, Object> jsonDataMap, String channel){
-    Json dataJson = Json.of(jsonDataMap);
-    String data = dataJson.toString();
-    Random random = new Random();
-    int id = random.nextInt();
-    idAssociatedWithSentMessages.put(data, id);
-    Json request =  jsonConverter.publishMessageFromData(data, id, channel);
-    System.out.println("The final sent request is : " + request.toString());
-    this.send(request.toString());
-  }
-
-  public String getBackendResponse(Map<String, Object> jsonDataMap){
-    return getBackendResponseWithOrWithoutBroadcasts(jsonDataMap, false);
-  }
-
-  public String getBackendResponseWithOrWithoutBroadcasts(Map<String, Object> jsonDataMap, boolean withBroadcasts){
-    Json dataJson = Json.of(jsonDataMap);
-    String data = dataJson.toString();
-    assert idAssociatedWithSentMessages.containsKey(data);
-    int idData = idAssociatedWithSentMessages.get(data);
-    if (idAssociatedWithAnswers.containsKey(idData)){
-      String answer = idAssociatedWithAnswers.get(idData);
-      idAssociatedWithAnswers.remove(idData);
-      idAssociatedWithSentMessages.remove(data);
-      return answer;
-    }
     String answer = getBuffer().takeTimeout(TIMEOUT);
     while(answer != null){
       if(answer.contains("result") || answer.contains("error")){
         Json resultJson = Json.of(answer);
-        int idResult = resultJson.get("id");
-        if (idData == idResult){
-          idAssociatedWithSentMessages.remove(data);
+        int resultId = resultJson.get("id");
+        if (messageId == resultId){
+          sentMessageIds.remove(highLevelMessageData);
           return answer;
-        }else{
-          idAssociatedWithAnswers.put(idResult, answer);
         }
       }
-      if (withBroadcasts && answer.contains("broadcast")){
+      if (answer.contains("broadcast")){
         broadcasts.add(answer);
       }
       answer = getBuffer().takeTimeout(TIMEOUT);
     }
     assert false;
     throw new IllegalArgumentException("No answer from the backend");
-  }
-
-  public String getBackendResponseWithElectionResults(Map<String, Object> jsonDataMap){
-    String answer = getBackendResponseWithOrWithoutBroadcasts(jsonDataMap, true);
-    Base64.Decoder decoder = Base64.getDecoder();
-    for (String broadcast : broadcasts) {
-      String base64Data =
-          (((LinkedHashMap)
-                  ((LinkedHashMap) Json.of(broadcast).get("params")).get("message"))
-              .get("data")
-              .toString());
-      String broadcastData = new String(decoder.decode(base64Data.getBytes()));
-      if (broadcastData.contains("result")){
-        return broadcastData;
-      }
-    }
-    assert false;
-    throw new IllegalArgumentException("No election results where received");
   }
 
   /**
@@ -148,6 +116,10 @@ public class MultiMsgWebSocketClient extends WebSocketClient {
       message = getBuffer().takeTimeout(TIMEOUT);
     }
     return messages;
+  }
+
+  public MessageBuffer getBuffer() {
+    return queue;
   }
 
   public boolean receiveNoMoreResponses(){
@@ -170,5 +142,25 @@ public class MultiMsgWebSocketClient extends WebSocketClient {
     String wrongSignature = RandomUtils.generateSignature();
     logger.info("setting wrong signature: " + wrongSignature);
     jsonConverter.setSignature(wrongSignature);
+  }
+
+  @Override
+  public void signal(Object result) {
+    logger.trace("signal called: {}", result);
+    queue.onNewMsg(result.toString());
+  }
+
+  @Override
+  public synchronized Object listen(long timeout) {
+    logger.trace("entered listen wait state");
+    String msg = queue.take();
+
+    if (msg == null) logger.error("listen timed out");
+
+    return msg;
+  }
+
+  private String mapToJson(Map<String, Object> jsonAsMap){
+    return Json.of(jsonAsMap).toString();
   }
 }

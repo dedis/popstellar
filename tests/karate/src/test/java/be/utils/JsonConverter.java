@@ -28,13 +28,13 @@ public class JsonConverter {
    * Produces a valid Json representation of a message given the message data, the id of the message
    * and the channel where the message is supposed to be sent
    */
-  public Json publishMessageFromData(String stringData, int id, String channel) {
+  public Json createPublishMessage(String highLevelMessageData, int messageId, String channel) {
     Json messageData = Json.object();
     messageData.set("method", "publish");
-    messageData.set("id", id);
+    messageData.set("id", messageId);
     Map<String, Object> paramsPart = new LinkedHashMap<>();
     try{
-    paramsPart = constructParamsField(channel, stringData);
+    paramsPart = constructParamsField(channel, highLevelMessageData);
     messageData.set("params", paramsPart);
     }catch (GeneralSecurityException e){
       e.printStackTrace();

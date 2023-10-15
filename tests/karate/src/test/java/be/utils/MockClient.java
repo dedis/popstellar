@@ -1,10 +1,12 @@
 package be.utils;
 
 import be.model.*;
+import com.intuit.karate.Json;
 import com.intuit.karate.http.WebSocketOptions;
 import com.intuit.karate.Logger;
 import common.net.MessageQueue;
 import common.net.MultiMsgWebSocketClient;
+import common.utils.Base64Utils;
 
 import java.security.GeneralSecurityException;
 import java.time.Instant;
@@ -88,5 +90,21 @@ public class MockClient extends MultiMsgWebSocketClient {
     Transaction transaction = new Transaction();
     transaction.issueInitialCoins(receiver.publicKey, publicKey, privateKey, amountToGive);
     return transaction;
+  }
+
+  /**
+   * Checks the contents of the message data of all broadcasts that the client received for election results.
+   * @return the message data containing the decoded election results, or throws an error if none are found
+   */
+  public String getElectionResults(){
+    for (String broadcast : broadcasts) {
+      // Extract the field params/message/data from the Json and decode it
+      String messageData = Base64Utils.decodeBase64JsonField(Json.of(broadcast), "params.message.data");
+      if (messageData.contains("result") && messageData.contains("election")){
+        return messageData;
+      }
+    }
+    assert false;
+    throw new IllegalArgumentException("No election results where received");
   }
 }
