@@ -12,3 +12,20 @@ Feature: Constants
 
     * def rootChannel = '/root'
     * def random = Java.type('be.utils.RandomUtils')
+
+    # Paths to util features
+    * def utilsPath = 'classpath:be/features/utils/'
+    * def serverFeature = utilsPath + 'server.feature'
+    * def mockClientFeature = utilsPath + 'mockClient.feature'
+
+    # Paths to scenarios defined in simpleScenarios
+    * def simpleScenario = 'classpath:be/features/utils/simpleScenarios.feature@name='
+    * def createLaoScenario = simpleScenario + 'valid_lao'
+    * def createRollCallScenario = simpleScenario + 'valid_roll_call'
+    * def openRollCallScenario = simpleScenario + 'open_roll_call'
+    * def closeRollCallScenario = simpleScenario + 'close_roll_call'
+    * def setupElectionScenario = simpleScenario + 'election_setup'
+    * def openElectionScenario = simpleScenario + 'election_open'
+    * def castVoteScenario = simpleScenario + 'cast_vote'
+    * def setupCoinChannelScenario = simpleScenario + 'setup_coin_channel'
+    * def validCoinIssuanceScenario = simpleScenario + 'valid_coin_issuance'
