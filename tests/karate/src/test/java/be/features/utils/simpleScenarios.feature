@@ -9,7 +9,7 @@
       * call read(mockClientFeature)
 
     # organizer and lao need to be passed as arguments when calling this scenario
-    @name=valid_lao
+    @name=create_lao
     Scenario: Creates valid lao
       Given def laoCreateRequest =
       """
@@ -58,7 +58,7 @@
       * def catchup_response = organizer.takeTimeout(timeout)
 
     # organizer, lao and rollCall need to be passed as arguments when calling this scenario
-    @name=valid_roll_call
+    @name=create_roll_call
     Scenario: Creates a valid Roll Call
       * call read(createLaoScenario) { organizer: '#(organizer)', lao: '#(lao)' }
       * def validCreateRollCall =
