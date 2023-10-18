@@ -15,10 +15,8 @@ GOTO error
 
 :lint
 	go get -v honnef.co/go/tools/cmd/staticcheck
-	go get golang.org/x/tools/cmd/goimports@latest
 	go mod tidy
 	staticcheck ./...
-	goimports -w .
 	GOTO :EOF
 
 :check
