@@ -145,7 +145,13 @@ jobs:
         if: ${{ matrix.platform == 'ubuntu-latest' }}
         run: |
           make check-fmt
-          if [ "$(goimports -s -l ./ | wc -l)" -gt 0 ]; then exit 1; fi
+          if [ "$(gofmt -s -l ./ | wc -l)" -gt 0 ]; then exit 1; fi
+
+      - name: GoImports install
+        run: go get golang.org/x/tools/cmd/goimports@latest
+
+      - name: GoImports run
+        run: goimports -w .
 
       - name: Run check target
         if: ${{ matrix.platform == 'ubuntu-latest' }}
