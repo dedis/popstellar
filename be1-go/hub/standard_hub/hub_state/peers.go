@@ -1,10 +1,11 @@
 package hub_state
 
 import (
-	"golang.org/x/exp/maps"
-	"golang.org/x/exp/slices"
 	"popstellar/message/query/method"
 	"sync"
+
+	"golang.org/x/exp/maps"
+	"golang.org/x/exp/slices"
 )
 
 // Peers provides a thread-safe structure that stores the peers' information

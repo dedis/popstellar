@@ -1,12 +1,23 @@
 package hub_state
 
 import (
-	"golang.org/x/exp/slices"
 	"popstellar/channel"
+
+	"golang.org/x/exp/slices"
 )
 
 // Channels provides a thread-safe structure that stores channel ids with their corresponding channels
-type Channels = ThreadSafeMap[string, channel.Channel]
+type Channels struct {
+	ThreadSafeMap[string, channel.Channel]
+}
+
+func (c *Channels) ForEach(f func(channel.Channel)) {
+	c.Lock()
+	defer c.Unlock()
+	for _, channel := range c.table {
+		f(channel)
+	}
+}
 
 // MessageIds provides a thread-safe structure that stores a channel id with its corresponding message ids
 type MessageIds struct {

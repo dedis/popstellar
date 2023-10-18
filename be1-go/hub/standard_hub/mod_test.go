@@ -4,7 +4,6 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"golang.org/x/exp/slices"
 	"io"
 	"os"
 	"path/filepath"
@@ -18,6 +17,8 @@ import (
 	"sync"
 	"testing"
 	"time"
+
+	"golang.org/x/exp/slices"
 
 	"github.com/stretchr/testify/assert"
 

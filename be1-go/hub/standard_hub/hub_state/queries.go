@@ -1,9 +1,10 @@
 package hub_state
 
 import (
-	"golang.org/x/xerrors"
 	"popstellar/message/query/method"
 	"sync"
+
+	"golang.org/x/xerrors"
 )
 
 // Queries let the hub remember all queries that it sent to other servers

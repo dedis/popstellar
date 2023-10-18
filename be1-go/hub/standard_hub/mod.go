@@ -117,20 +117,22 @@ func NewHub(pubKeyOwner kyber.Point, clientServerAddress string, serverServerAdd
 		clientServerAddress: clientServerAddress,
 		serverServerAddress: serverServerAddress,
 		messageChan:         make(chan socket.IncomingMessage),
-		channelByID:         state.NewThreadSafeMap[string, channel.Channel](),
-		closedSockets:       make(chan string),
-		pubKeyOwner:         pubKeyOwner,
-		pubKeyServ:          pubServ,
-		secKeyServ:          secServ,
-		schemaValidator:     schemaValidator,
-		stop:                make(chan struct{}),
-		workers:             semaphore.NewWeighted(numWorkers),
-		log:                 log,
-		laoFac:              laoFac,
-		serverSockets:       channel.NewSockets(),
-		hubInbox:            *inbox.NewInbox(rootChannel),
-		rootInbox:           *inbox.NewInbox(rootChannel),
-		queries:             state.NewQueries(),
+		channelByID: state.Channels{
+			ThreadSafeMap: state.NewThreadSafeMap[string, channel.Channel](),
+		},
+		closedSockets:   make(chan string),
+		pubKeyOwner:     pubKeyOwner,
+		pubKeyServ:      pubServ,
+		secKeyServ:      secServ,
+		schemaValidator: schemaValidator,
+		stop:            make(chan struct{}),
+		workers:         semaphore.NewWeighted(numWorkers),
+		log:             log,
+		laoFac:          laoFac,
+		serverSockets:   channel.NewSockets(),
+		hubInbox:        *inbox.NewInbox(rootChannel),
+		rootInbox:       *inbox.NewInbox(rootChannel),
+		queries:         state.NewQueries(),
 		messageIdsByChannel: state.MessageIds{
 			ThreadSafeMap: state.NewThreadSafeMap[string, []string](),
 		},
@@ -176,10 +178,9 @@ func (h *Hub) Start() {
 					}
 				}()
 			case id := <-h.closedSockets:
-				for _, channel := range h.channelByID.GetTable() {
-					// dummy Unsubscribe message because it's only used for logging...
-					channel.Unsubscribe(id, method.Unsubscribe{})
-				}
+				h.channelByID.ForEach(func(c channel.Channel) {
+					c.Unsubscribe(id, method.Unsubscribe{})
+				})
 			case <-h.stop:
 				h.log.Info().Msg("stopping the hub")
 				return

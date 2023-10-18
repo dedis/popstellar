@@ -3,7 +3,6 @@ package standard_hub
 import (
 	"encoding/base64"
 	"encoding/json"
-	"github.com/rs/zerolog/log"
 	"popstellar/crypto"
 	jsonrpc "popstellar/message"
 	"popstellar/message/answer"
@@ -13,6 +12,8 @@ import (
 	"popstellar/message/query/method/message"
 	"popstellar/network/socket"
 	"popstellar/validation"
+
+	"github.com/rs/zerolog/log"
 
 	"go.dedis.ch/kyber/v3/sign/schnorr"
 
