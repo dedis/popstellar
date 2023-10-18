@@ -144,7 +144,7 @@ jobs:
       - name: Format
         if: ${{ matrix.platform == 'ubuntu-latest' }}
         run: |
-          make check-imports
+          make check-fmt
           if [ "$(goimports -s -l ./ | wc -l)" -gt 0 ]; then exit 1; fi
 
       - name: Run check target
