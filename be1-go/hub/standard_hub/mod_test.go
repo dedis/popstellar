@@ -876,7 +876,6 @@ func Test_Handle_Answer(t *testing.T) {
 	answerBisBuf, err := json.Marshal(serverAnswerBis)
 	require.NoError(t, err)
 
-	hub.queries.SetQueryState(1, false)
 	query := method.GetMessagesById{
 		Base:   query.Base{},
 		ID:     1,
@@ -891,21 +890,27 @@ func Test_Handle_Answer(t *testing.T) {
 	})
 	require.Error(t, sock.err, "rpc message sent by a client should be a query")
 	sock.err = nil
-	require.False(t, *hub.queries.GetQueryState(1))
+	queryState, err := hub.queries.GetQueryState(1)
+	require.NoError(t, err)
+	require.False(t, queryState)
 
 	hub.handleMessageFromServer(&socket.IncomingMessage{
 		Socket:  sock,
 		Message: resultBuf,
 	})
 	require.NoError(t, sock.err)
-	require.False(t, *hub.queries.GetQueryState(1))
+	queryState, _ = hub.queries.GetQueryState(1)
+	require.NoError(t, err)
+	require.False(t, queryState)
 
 	hub.handleMessageFromServer(&socket.IncomingMessage{
 		Socket:  sock,
 		Message: answerBuf,
 	})
 	require.NoError(t, sock.err)
-	require.True(t, *hub.queries.GetQueryState(1))
+	queryState, _ = hub.queries.GetQueryState(1)
+	require.NoError(t, err)
+	require.True(t, queryState)
 
 	hub.handleMessageFromServer(&socket.IncomingMessage{
 		Socket:  sock,
@@ -1192,7 +1197,6 @@ func Test_Create_LAO_GetMessagesById_Result(t *testing.T) {
 		Params: missingMessages,
 	}
 
-	hub.queries.SetQueryState(1, false)
 	hub.queries.AddQuery(1, getMessagesByIdQuery)
 
 	ans := struct {
@@ -1295,7 +1299,6 @@ func Test_Create_LAO_GetMessagesById_Wrong_MessageID(t *testing.T) {
 		Params: missingMessages,
 	}
 
-	hub.queries.SetQueryState(1, false)
 	hub.queries.AddQuery(1, getMessagesByIdQuery)
 
 	ans := struct {

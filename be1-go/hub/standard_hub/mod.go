@@ -466,7 +466,6 @@ func (h *Hub) handleIncomingMessage(incomingMessage *socket.IncomingMessage) err
 // sendGetMessagesByIdToServer sends a getMessagesById message to a server
 func (h *Hub) sendGetMessagesByIdToServer(socket socket.Socket, missingIds map[string][]string) error {
 	queryId := h.queries.GetNextID()
-	h.queries.SetQueryState(queryId, false)
 
 	getMessagesById := method.GetMessagesById{
 		Base: query.Base{
@@ -484,9 +483,9 @@ func (h *Hub) sendGetMessagesByIdToServer(socket socket.Socket, missingIds map[s
 		return xerrors.Errorf("failed to marshal getMessagesById query: %v", err)
 	}
 
-	h.queries.AddQuery(queryId, getMessagesById)
-
 	socket.Send(buf)
+
+	h.queries.AddQuery(queryId, getMessagesById)
 
 	return nil
 }
