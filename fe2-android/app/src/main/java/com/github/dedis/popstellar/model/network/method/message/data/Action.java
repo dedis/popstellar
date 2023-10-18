@@ -31,7 +31,7 @@ public enum Action {
   NOTIFY_DELETE("notify_delete"),
   KEY("key"),
   POST_TRANSACTION("post_transaction"),
-  AUTH("auth");
+  AUTH("authenticate");
 
   private static final List<Action> ALL = Collections.unmodifiableList(Arrays.asList(values()));
   private final String action;

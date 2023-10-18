@@ -366,6 +366,6 @@
   <string name="already_open_roll_call_exception">Another Roll Call is already open</string>
   <string name="lao_coins">LAO coins</string>
   <string name="invalid_qrcode_lao_data">Invalid QRCode laoData</string>
-  <string name="invalid_qrcode_popcha_data">Invalid QRCode PoPCHAData</string>
+  <string name="invalid_qrcode_popcha_data">Invalid URL</string>
 
 </resources>

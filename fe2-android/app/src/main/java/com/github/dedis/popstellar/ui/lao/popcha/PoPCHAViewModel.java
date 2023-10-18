@@ -29,10 +29,11 @@ public class PoPCHAViewModel extends AndroidViewModel implements QRCodeScanningV
 
   private static final String TAG = PoPCHAViewModel.class.getSimpleName();
 
-  private static final String AUTHENTICATION = "authentication";
+  public static final String AUTHENTICATION = "authentication";
 
   private String laoId;
   private final MutableLiveData<SingleEvent<String>> textDisplayed = new MutableLiveData<>();
+  private final MutableLiveData<SingleEvent<Boolean>> isRequestCompleted = new MutableLiveData<>();
   private final AtomicBoolean connecting = new AtomicBoolean(false);
   private final CompositeDisposable disposables = new CompositeDisposable();
 
@@ -71,6 +72,14 @@ public class PoPCHAViewModel extends AndroidViewModel implements QRCodeScanningV
     return textDisplayed;
   }
 
+  public MutableLiveData<SingleEvent<Boolean>> getIsRequestCompleted() {
+    return isRequestCompleted;
+  }
+
+  public void deactivateRequestCompleted() {
+    isRequestCompleted.postValue(new SingleEvent<>(false));
+  }
+
   private void postTextDisplayed(String text) {
     textDisplayed.postValue(new SingleEvent<>(text));
   }
@@ -107,15 +116,17 @@ public class PoPCHAViewModel extends AndroidViewModel implements QRCodeScanningV
       return;
     }
 
-    postTextDisplayed(popCHAQRCode.toString());
     try {
       sendAuthRequest(popCHAQRCode, token);
+      postTextDisplayed(popCHAQRCode.toString());
+      isRequestCompleted.postValue(new SingleEvent<>(true));
     } catch (GeneralSecurityException | UnknownLaoException e) {
       if (e instanceof GeneralSecurityException) {
-        Timber.tag(TAG).e(e, "Impossible to generate sign the token");
+        Timber.tag(TAG).e(e, "Impossible to sign the token");
       } else {
-        Timber.tag(TAG).e(e, "Impossible to find lao");
+        Timber.tag(TAG).e(e, "Impossible to find the lao");
       }
+    } finally {
       connecting.set(false);
     }
   }
@@ -127,9 +138,9 @@ public class PoPCHAViewModel extends AndroidViewModel implements QRCodeScanningV
     PoPCHAAuthentication authMessage =
         new PoPCHAAuthentication(
             popCHAQRCode.getClientId(),
-            nonce.toString(),
-            token.getPublicKey().getEncoded(),
-            signedToken.getEncoded(),
+            nonce,
+            token.getPublicKey(),
+            signedToken,
             popCHAQRCode.getHost(),
             popCHAQRCode.getState(),
             popCHAQRCode.getResponseMode());
@@ -138,7 +149,9 @@ public class PoPCHAViewModel extends AndroidViewModel implements QRCodeScanningV
         networkManager
             .getMessageSender()
             .publish(keyManager.getMainKeyPair(), channel, authMessage)
-            .subscribe(() -> Timber.tag(TAG).d("sent the auth message for popcha")));
+            .subscribe(
+                () -> Timber.tag(TAG).d("sent the auth message for popcha"),
+                err -> Timber.tag(TAG).e(err, "error sending the auth message for popcha")));
   }
 
   public void disableConnectingFlag() {

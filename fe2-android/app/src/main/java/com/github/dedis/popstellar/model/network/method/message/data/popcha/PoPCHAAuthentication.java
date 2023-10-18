@@ -1,8 +1,10 @@
 package com.github.dedis.popstellar.model.network.method.message.data.popcha;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.github.dedis.popstellar.model.Immutable;
 import com.github.dedis.popstellar.model.network.method.message.data.*;
+import com.github.dedis.popstellar.model.objects.security.Base64URLData;
 import com.google.gson.annotations.SerializedName;
 
 /** Data sent to authenticate to a PoPCHA server */
@@ -12,11 +14,11 @@ public class PoPCHAAuthentication extends Data {
   @SerializedName("client_id")
   private final String clientId;
 
-  private final String nonce;
-  private final String identifier;
+  private final Base64URLData nonce;
+  private final Base64URLData identifier;
 
   @SerializedName("identifier_proof")
-  private final String identifierProof;
+  private final Base64URLData identifierProof;
 
   @Nullable private final String state;
 
@@ -29,12 +31,12 @@ public class PoPCHAAuthentication extends Data {
 
   public PoPCHAAuthentication(
       String clientId,
-      String nonce,
-      String identifier,
-      String identifierProof,
+      Base64URLData nonce,
+      Base64URLData identifier,
+      Base64URLData identifierProof,
+      String popchaAddress,
       @Nullable String state,
-      @Nullable String responseMode,
-      String popchaAddress) {
+      @Nullable String responseMode) {
     this.clientId = clientId;
     this.nonce = nonce;
     this.identifier = identifier;
@@ -42,6 +44,36 @@ public class PoPCHAAuthentication extends Data {
     this.state = state;
     this.responseMode = responseMode;
     this.popchaAddress = popchaAddress;
+  }
+
+  public String getClientId() {
+    return clientId;
+  }
+
+  public Base64URLData getNonce() {
+    return nonce;
+  }
+
+  public Base64URLData getIdentifier() {
+    return identifier;
+  }
+
+  public Base64URLData getIdentifierProof() {
+    return identifierProof;
+  }
+
+  @Nullable
+  public String getState() {
+    return state;
+  }
+
+  @Nullable
+  public String getResponseMode() {
+    return responseMode;
+  }
+
+  public String getPopchaAddress() {
+    return popchaAddress;
   }
 
   @Override
@@ -74,6 +106,7 @@ public class PoPCHAAuthentication extends Data {
         clientId, nonce, identifier, identifierProof, state, responseMode, popchaAddress);
   }
 
+  @NonNull
   @Override
   public String toString() {
     return "PoPCHAAuthentication{"

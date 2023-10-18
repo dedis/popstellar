@@ -42,7 +42,13 @@ public class PoPCHAHomeFragment extends Fragment {
         String.format(
             getResources().getString(R.string.popcha_header), popCHAViewModel.getLaoId()));
 
-    binding.popchaScanner.setOnClickListener(v -> openScanner());
+    binding.popchaScanner.setOnClickListener(
+        v -> {
+          String data =
+              "http://localhost:9100/authorize?response_mode=query&response_type=id_token&client_id=WAsabGuEe5m1KpqOZQKgmO7UShX84Jmd_eaenOZ32wU&redirect_uri=http%3A%2F%2Flocalhost%3A8000%2Fcb&scope=openid+profile&login_hint=ApvVz51aIZPVXa_wTfEniIlEqC5OY-ZH9BhLwxD6mi4=&nonce=frXgNl-IxJPzsNia07f_3yV0ECYlWOb2RXG_SGvATKcJ7-s0LthmboTrnMqlQS1RnzmV9hW0iumu_5NwAqXwGA&state=m_9r5sPUD8NoRIdVVYFMyYCOb-8xh1d2q8l-pKDXO0sn9TWnR_2nmC8MfVj1COHZsh1rElqimOTLAp3CbhbYJQ";
+          popCHAViewModel.handleData(data);
+          // openScanner();
+        });
 
     popCHAViewModel
         .getTextDisplayed()
@@ -52,6 +58,18 @@ public class PoPCHAHomeFragment extends Fragment {
               String url = stringSingleEvent.getContentIfNotHandled();
               if (url != null) {
                 binding.popchaText.setText(url);
+              }
+            });
+
+    popCHAViewModel
+        .getIsRequestCompleted()
+        .observe(
+            getViewLifecycleOwner(),
+            booleanSingleEvent -> {
+              Boolean finished = booleanSingleEvent.getContentIfNotHandled();
+              if (finished.equals(Boolean.TRUE)) {
+                closeScanner();
+                popCHAViewModel.deactivateRequestCompleted();
               }
             });
 
@@ -72,6 +90,11 @@ public class PoPCHAHomeFragment extends Fragment {
         getParentFragmentManager(),
         R.id.fragment_qr_scanner,
         () -> QrScannerFragment.newInstance(ScanningAction.ADD_POPCHA));
+  }
+
+  private void closeScanner() {
+    laoViewModel.setIsTab(true);
+    getParentFragmentManager().popBackStack();
   }
 
   public static void openFragment(FragmentManager manager) {
