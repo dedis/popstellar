@@ -41,7 +41,7 @@ $(document).ready(function() {
 
 
 
-<title>Cucumber Reports  - Feature: be/features/decentralizedCom/getMessagesById.feature</title>
+<title>Cucumber Reports  - Feature: be/features/LAO/update.feature</title>
 
 </head>
 <body>
@@ -73,8 +73,8 @@ $(document).ready(function() {
   </thead>
   <tbody>
     <tr class="info">
-      <td>go_server</td>
-      <td>18 Oct 2023, 04:13</td>
+      <td>go_client</td>
+      <td>19 Oct 2023, 04:11</td>
     </tr>
   </tbody>
 </table>
@@ -126,19 +126,19 @@ $(document).ready(function() {
 
         <tbody>
         <tr>
-          <td class="tagname">be/features/decentralizedCom/getMessagesById.feature</td>
-          <td      class="passed"    >56</td>
-          <td      class="failed"    >1</td>
+          <td class="tagname">be/features/LAO/update.feature</td>
+          <td      class="passed"    >41</td>
+          <td      class="failed"    >2</td>
+          <td     class="skipped"   >2</td>
           <td >0</td>
           <td >0</td>
-          <td >0</td>
-          <td class="total">57</td>
+          <td class="total">45</td>
 
-          <td  class="passed"    >2</td>
-          <td  class="failed"    >1</td>
+          <td  class="passed"    >1</td>
+          <td  class="failed"    >2</td>
           <td class="total">3</td>
 
-          <td class="duration" data-value="17123401871">17.123</td>
+          <td class="duration" data-value="6263316720">6.263</td>
           <td class="failed">Failed</td>
         </tr>
         </tbody>
@@ -169,18 +169,18 @@ $(document).ready(function() {
 
 <div class="tags indention">
     <b>Tags:</b>
-       <a href="report-tag_2281956221.html">@env=go_server,scala_server</a>
+       <a href="report-tag_238387325.html">@env=go_client,scala_client</a>
 </div>
 
 
 <div class="brief failed">
   <span class="keyword indention">Feature</span>
-  <span class="name">be/features/decentralizedCom/getMessagesById.feature</span>
+  <span class="name">be/features/LAO/update.feature</span>
 
 
 </div>
 
-        <div class="description indention">Request messages by id from other servers</div>
+        <div class="description indention">Update a LAO</div>
 
         <div class="elements inner-level">
 
@@ -191,7 +191,7 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">1.301</span>
+  <span class="lead-duration duration">0.432</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-1">
@@ -234,7 +234,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/features/utils/server.feature')</span>
 
-  <span class="lead-duration duration">0.454</span>
+  <span class="lead-duration duration">0.299</span>
 
 </div>
 
@@ -288,7 +288,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/features/utils/mockClient.feature')</span>
 
-  <span class="lead-duration duration">0.055</span>
+  <span class="lead-duration duration">0.010</span>
 
 </div>
 
@@ -342,7 +342,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/features/utils/constants.feature')</span>
 
-  <span class="lead-duration duration">0.025</span>
+  <span class="lead-duration duration">0.012</span>
 
 </div>
 
@@ -394,34 +394,7 @@ $(document).ready(function() {
 
 <div class="brief step-name-* passed">
   <span class="keyword indention">*</span>
-  <span class="name">def mockServer = call createMockClient</span>
-
-  <span class="lead-duration duration">0.317</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* passed">
-  <span class="keyword indention">*</span>
-  <span class="name">def lao = mockServer.createValidLao()</span>
+  <span class="name">def organizer = call createMockClient</span>
 
   <span class="lead-duration duration">0.016</span>
 
@@ -448,61 +421,7 @@ $(document).ready(function() {
 
 <div class="brief step-name-* passed">
   <span class="keyword indention">*</span>
-  <span class="name">eval var heartbeat = { method: &quot;heartbeat&quot;, params: {}, jsonrpc: &quot;2.0&quot; }</span>
-
-  <span class="lead-duration duration">0.006</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* passed">
-  <span class="keyword indention">*</span>
-  <span class="name">def randomMessageId = random.generateHash()</span>
-
-  <span class="lead-duration duration">0.001</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* passed">
-  <span class="keyword indention">*</span>
-  <span class="name">def messageIds = []</span>
+  <span class="name">def lao = organizer.createValidLao()</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -529,36 +448,9 @@ $(document).ready(function() {
 
 <div class="brief step-name-* passed">
   <span class="keyword indention">*</span>
-  <span class="name">eval messageIds.push(randomMessageId)</span>
+  <span class="name">call read('classpath:be/features/utils/simpleScenarios.feature@name=valid_lao') { organizer: '#(organizer)', lao: '#(lao)' }</span>
 
-  <span class="lead-duration duration">0.002</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* passed">
-  <span class="keyword indention">*</span>
-  <span class="name">call read('classpath:be/features/utils/simpleScenarios.feature@name=valid_lao') { organizer: '#(mockServer)', lao: '#(lao)' }</span>
-
-  <span class="lead-duration duration">0.420</span>
+  <span class="lead-duration duration">0.093</span>
 
 </div>
 
@@ -604,8 +496,8 @@ $(document).ready(function() {
       </div>
       <div id="msg-3" class="collapse collapsable-details">
         <pre>{
-  &quot;organizer&quot;: &quot;be.utils.MockClient@16736040&quot;,
-  &quot;lao&quot;: &quot;be.model.Lao@7c5d1d25&quot;
+  &quot;organizer&quot;: &quot;be.utils.MockClient@3f6c2763&quot;,
+  &quot;lao&quot;: &quot;be.model.Lao@5c82031b&quot;
 }
 </pre>
       </div>
@@ -635,18 +527,18 @@ $(document).ready(function() {
 
 <div class="tags indention">
     <b>Tags:</b>
-       <a href="report-tag_2281956221.html">@env=go_server,scala_server</a>
+       <a href="report-tag_238387325.html">@env=go_client,scala_client</a>
 </div>
 
 
-  <span class="lead-duration duration">5.022</span>
+  <span class="lead-duration duration">5.018</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-4">
 
 <div class="brief passed">
   <span class="keyword indention">Scenario</span>
-  <span class="name">Server should request the missing message ids in a heartbeat</span>
+  <span class="name">Update Lao should succeed with a valid update request with new lao name</span>
 
 
      <i class="chevron fa fa-fw"></i>
@@ -680,9 +572,9 @@ $(document).ready(function() {
 
 <div class="brief step-name-Given passed">
   <span class="keyword indention">Given</span>
-  <span class="name">eval heartbeat.params[lao.channel] = messageIds</span>
+  <span class="name">def updateLaoRequest =</span>
 
-  <span class="lead-duration duration">0.001</span>
+  <span class="lead-duration duration">0.005</span>
 
 </div>
 
@@ -694,6 +586,23 @@ $(document).ready(function() {
 
 
 
+  <div class="inner-level">
+    <div class="docstring indention">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-6">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-6" class="collapse collapsable-details">
+        <pre>{
+  &quot;object&quot;: &quot;lao&quot;,
+  &quot;action&quot;: &quot;update_properties&quot;,
+  &quot;id&quot;: '#(lao.id)',
+  &quot;name&quot;: '#(random.generateName())',
+  &quot;last_modified&quot;: '#(lao.creation)',
+  &quot;witnesses&quot;: '#(lao.witnesses)'
+}</pre>
+      </div>
+    </div>
+  </div>
 
 
 
@@ -707,7 +616,7 @@ $(document).ready(function() {
 
 <div class="brief step-name-When passed">
   <span class="keyword indention">When</span>
-  <span class="name">mockServer.send(heartbeat)</span>
+  <span class="name">organizer.publish(updateLaoRequest, lao.channel)</span>
 
   <span class="lead-duration duration">0.007</span>
 
@@ -734,9 +643,9 @@ $(document).ready(function() {
 
 <div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
-  <span class="name">def getMessagesByIdMessages = mockServer.getMessagesByMethod('get_messages_by_id')</span>
+  <span class="name">json answer = organizer.getBackendResponse(updateLaoRequest)</span>
 
-  <span class="lead-duration duration">5.002</span>
+  <span class="lead-duration duration">0.002</span>
 
 </div>
 
@@ -761,9 +670,9 @@ $(document).ready(function() {
 
 <div class="brief step-name-Then passed">
   <span class="keyword indention">Then</span>
-  <span class="name">assert getMessagesByIdMessages.length == 1</span>
+  <span class="name">match answer contains VALID_MESSAGE</span>
 
-  <span class="lead-duration duration">0.001</span>
+  <span class="lead-duration duration">0.000</span>
 
 </div>
 
@@ -788,9 +697,9 @@ $(document).ready(function() {
 
 <div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
-  <span class="name">match getMessagesByIdMessages[0] contains randomMessageId</span>
+  <span class="name">match organizer.receiveNoMoreResponses() == true</span>
 
-  <span class="lead-duration duration">0.009</span>
+  <span class="lead-duration duration">5.001</span>
 
 </div>
 
@@ -828,10 +737,10 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">0.396</span>
+  <span class="lead-duration duration">0.428</span>
 
 
-  <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-6">
+  <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-7">
 
 <div class="brief passed">
   <span class="keyword indention">Background</span>
@@ -844,14 +753,14 @@ $(document).ready(function() {
   </span>
   <div class="description indention"></div>
 
-  <div id="element-6" class="collapse collapsable-details ">
+  <div id="element-7" class="collapse collapsable-details ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-7">
+  <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-8">
 
 <div class="brief passed">
   <span class="keyword indention">Steps</span>
@@ -863,7 +772,7 @@ $(document).ready(function() {
 
   </div>
 
-  <div id="steps-7" class="inner-level collapse collapsable-details ">
+  <div id="steps-8" class="inner-level collapse collapsable-details ">
       <div class="step">
 
 
@@ -925,7 +834,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/features/utils/mockClient.feature')</span>
 
-  <span class="lead-duration duration">0.012</span>
+  <span class="lead-duration duration">0.013</span>
 
 </div>
 
@@ -979,7 +888,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/features/utils/constants.feature')</span>
 
-  <span class="lead-duration duration">0.011</span>
+  <span class="lead-duration duration">0.007</span>
 
 </div>
 
@@ -1031,9 +940,9 @@ $(document).ready(function() {
 
 <div class="brief step-name-* passed">
   <span class="keyword indention">*</span>
-  <span class="name">def mockServer = call createMockClient</span>
+  <span class="name">def organizer = call createMockClient</span>
 
-  <span class="lead-duration duration">0.013</span>
+  <span class="lead-duration duration">0.007</span>
 
 </div>
 
@@ -1058,7 +967,7 @@ $(document).ready(function() {
 
 <div class="brief step-name-* passed">
   <span class="keyword indention">*</span>
-  <span class="name">def lao = mockServer.createValidLao()</span>
+  <span class="name">def lao = organizer.createValidLao()</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -1085,117 +994,9 @@ $(document).ready(function() {
 
 <div class="brief step-name-* passed">
   <span class="keyword indention">*</span>
-  <span class="name">eval var heartbeat = { method: &quot;heartbeat&quot;, params: {}, jsonrpc: &quot;2.0&quot; }</span>
+  <span class="name">call read('classpath:be/features/utils/simpleScenarios.feature@name=valid_lao') { organizer: '#(organizer)', lao: '#(lao)' }</span>
 
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* passed">
-  <span class="keyword indention">*</span>
-  <span class="name">def randomMessageId = random.generateHash()</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* passed">
-  <span class="keyword indention">*</span>
-  <span class="name">def messageIds = []</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* passed">
-  <span class="keyword indention">*</span>
-  <span class="name">eval messageIds.push(randomMessageId)</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* passed">
-  <span class="keyword indention">*</span>
-  <span class="name">call read('classpath:be/features/utils/simpleScenarios.feature@name=valid_lao') { organizer: '#(mockServer)', lao: '#(lao)' }</span>
-
-  <span class="lead-duration duration">0.081</span>
+  <span class="lead-duration duration">0.124</span>
 
 </div>
 
@@ -1236,13 +1037,13 @@ $(document).ready(function() {
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-8">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-9">
           <a>Doc string</a>
       </div>
-      <div id="msg-8" class="collapse collapsable-details">
+      <div id="msg-9" class="collapse collapsable-details">
         <pre>{
-  &quot;organizer&quot;: &quot;be.utils.MockClient@550e9be6&quot;,
-  &quot;lao&quot;: &quot;be.model.Lao@3f96f020&quot;
+  &quot;organizer&quot;: &quot;be.utils.MockClient@274fdea6&quot;,
+  &quot;lao&quot;: &quot;be.model.Lao@74c121d4&quot;
 }
 </pre>
       </div>
@@ -1272,18 +1073,18 @@ $(document).ready(function() {
 
 <div class="tags indention">
     <b>Tags:</b>
-       <a href="report-tag_2281956221.html">@env=go_server,scala_server</a>
+       <a href="report-tag_238387325.html">@env=go_client,scala_client</a>
 </div>
 
 
-  <span class="lead-duration duration">5.008</span>
+  <span class="lead-duration duration">0.019</span>
 
 
-  <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-9">
+  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-10">
 
-<div class="brief passed">
+<div class="brief failed">
   <span class="keyword indention">Scenario</span>
-  <span class="name">Server should not request messages if channel is missing '/root/' prefix</span>
+  <span class="name">Update Lao request with empty lao name should fail with an error response</span>
 
 
      <i class="chevron fa fa-fw"></i>
@@ -1292,16 +1093,16 @@ $(document).ready(function() {
   </span>
   <div class="description indention"></div>
 
-  <div id="element-9" class="collapse collapsable-details ">
+  <div id="element-10" class="collapse collapsable-details  in ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-10">
+  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-11">
 
-<div class="brief passed">
+<div class="brief failed">
   <span class="keyword indention">Steps</span>
   <span class="name"></span>
 
@@ -1311,13 +1112,13 @@ $(document).ready(function() {
 
   </div>
 
-  <div id="steps-10" class="inner-level collapse collapsable-details ">
+  <div id="steps-11" class="inner-level collapse collapsable-details  in ">
       <div class="step">
 
 
 <div class="brief step-name-Given passed">
   <span class="keyword indention">Given</span>
-  <span class="name">eval heartbeat.params[lao.id] = messageIds</span>
+  <span class="name">def badUpdateLaoReq =</span>
 
   <span class="lead-duration duration">0.001</span>
 
@@ -1331,6 +1132,23 @@ $(document).ready(function() {
 
 
 
+  <div class="inner-level">
+    <div class="docstring indention">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-12">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-12" class="collapse collapsable-details">
+        <pre>{
+  &quot;object&quot;: &quot;lao&quot;,
+  &quot;action&quot;: &quot;update_properties&quot;,
+  &quot;id&quot;: '#(lao.id)',
+  &quot;name&quot;: &quot;&quot;,
+  &quot;last_modified&quot;: '#(lao.creation)',
+  &quot;witnesses&quot;: '#(lao.witnesses)'
+}</pre>
+      </div>
+    </div>
+  </div>
 
 
 
@@ -1344,9 +1162,9 @@ $(document).ready(function() {
 
 <div class="brief step-name-When passed">
   <span class="keyword indention">When</span>
-  <span class="name">mockServer.send(heartbeat)</span>
+  <span class="name">organizer.publish(badUpdateLaoReq, lao.channel)</span>
 
-  <span class="lead-duration duration">0.004</span>
+  <span class="lead-duration duration">0.016</span>
 
 </div>
 
@@ -1371,9 +1189,9 @@ $(document).ready(function() {
 
 <div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
-  <span class="name">def getMessagesByIdMessages = mockServer.getMessagesByMethod('get_messages_by_id')</span>
+  <span class="name">json answer = organizer.getBackendResponse(badUpdateLaoReq)</span>
 
-  <span class="lead-duration duration">5.001</span>
+  <span class="lead-duration duration">0.001</span>
 
 </div>
 
@@ -1396,9 +1214,72 @@ $(document).ready(function() {
       <div class="step">
 
 
-<div class="brief step-name-Then passed">
+<div class="brief step-name-Then failed">
   <span class="keyword indention">Then</span>
-  <span class="name">assert getMessagesByIdMessages.length == 0</span>
+  <span class="name">match answer contains INVALID_MESSAGE_FIELD</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+  <div class="inner-level">
+    <div class="message indention">
+      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-13">
+          <a>match</a>
+      </div>
+      <div id="msg-13" class="collapse collapsable-details  in ">
+        <pre>match failed: CONTAINS
+  $ | actual does not contain expected | actual does not contain key - 'error' (MAP:MAP)
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:856890040,&quot;result&quot;:0}
+  {&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;#string&quot;}}
+
+
+classpath:be/features/LAO/update.feature:50</pre>
+      </div>
+    </div>
+  </div>
+
+
+
+
+  <div class="inner-level">
+    <div class="docstring indention">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-14">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-14" class="collapse collapsable-details">
+        <pre>04:07:31.357 classpath:be/features/LAO/update.feature:50
+Then match answer contains INVALID_MESSAGE_FIELD
+match failed: CONTAINS
+  $ | actual does not contain expected | actual does not contain key - 'error' (MAP:MAP)
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:856890040,&quot;result&quot;:0}
+  {&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;#string&quot;}}
+
+
+classpath:be/features/LAO/update.feature:50
+</pre>
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And skipped">
+  <span class="keyword indention">And</span>
+  <span class="name">match organizer.receiveNoMoreResponses() == true</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -1438,10 +1319,10 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">0.388</span>
+  <span class="lead-duration duration">0.355</span>
 
 
-  <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-11">
+  <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-15">
 
 <div class="brief passed">
   <span class="keyword indention">Background</span>
@@ -1454,14 +1335,14 @@ $(document).ready(function() {
   </span>
   <div class="description indention"></div>
 
-  <div id="element-11" class="collapse collapsable-details ">
+  <div id="element-15" class="collapse collapsable-details ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-12">
+  <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-16">
 
 <div class="brief passed">
   <span class="keyword indention">Steps</span>
@@ -1473,7 +1354,7 @@ $(document).ready(function() {
 
   </div>
 
-  <div id="steps-12" class="inner-level collapse collapsable-details ">
+  <div id="steps-16" class="inner-level collapse collapsable-details ">
       <div class="step">
 
 
@@ -1481,7 +1362,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/features/utils/server.feature')</span>
 
-  <span class="lead-duration duration">0.267</span>
+  <span class="lead-duration duration">0.280</span>
 
 </div>
 
@@ -1535,7 +1416,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/features/utils/mockClient.feature')</span>
 
-  <span class="lead-duration duration">0.011</span>
+  <span class="lead-duration duration">0.008</span>
 
 </div>
 
@@ -1589,7 +1470,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/features/utils/constants.feature')</span>
 
-  <span class="lead-duration duration">0.010</span>
+  <span class="lead-duration duration">0.006</span>
 
 </div>
 
@@ -1641,9 +1522,9 @@ $(document).ready(function() {
 
 <div class="brief step-name-* passed">
   <span class="keyword indention">*</span>
-  <span class="name">def mockServer = call createMockClient</span>
+  <span class="name">def organizer = call createMockClient</span>
 
-  <span class="lead-duration duration">0.017</span>
+  <span class="lead-duration duration">0.005</span>
 
 </div>
 
@@ -1668,7 +1549,7 @@ $(document).ready(function() {
 
 <div class="brief step-name-* passed">
   <span class="keyword indention">*</span>
-  <span class="name">def lao = mockServer.createValidLao()</span>
+  <span class="name">def lao = organizer.createValidLao()</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -1695,117 +1576,9 @@ $(document).ready(function() {
 
 <div class="brief step-name-* passed">
   <span class="keyword indention">*</span>
-  <span class="name">eval var heartbeat = { method: &quot;heartbeat&quot;, params: {}, jsonrpc: &quot;2.0&quot; }</span>
+  <span class="name">call read('classpath:be/features/utils/simpleScenarios.feature@name=valid_lao') { organizer: '#(organizer)', lao: '#(lao)' }</span>
 
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* passed">
-  <span class="keyword indention">*</span>
-  <span class="name">def randomMessageId = random.generateHash()</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* passed">
-  <span class="keyword indention">*</span>
-  <span class="name">def messageIds = []</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* passed">
-  <span class="keyword indention">*</span>
-  <span class="name">eval messageIds.push(randomMessageId)</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* passed">
-  <span class="keyword indention">*</span>
-  <span class="name">call read('classpath:be/features/utils/simpleScenarios.feature@name=valid_lao') { organizer: '#(mockServer)', lao: '#(lao)' }</span>
-
-  <span class="lead-duration duration">0.080</span>
+  <span class="lead-duration duration">0.054</span>
 
 </div>
 
@@ -1846,13 +1619,13 @@ $(document).ready(function() {
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-13">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-17">
           <a>Doc string</a>
       </div>
-      <div id="msg-13" class="collapse collapsable-details">
+      <div id="msg-17" class="collapse collapsable-details">
         <pre>{
-  &quot;organizer&quot;: &quot;be.utils.MockClient@32eae6f2&quot;,
-  &quot;lao&quot;: &quot;be.model.Lao@26ca61bf&quot;
+  &quot;organizer&quot;: &quot;be.utils.MockClient@2a484710&quot;,
+  &quot;lao&quot;: &quot;be.model.Lao@661e1399&quot;
 }
 </pre>
       </div>
@@ -1882,18 +1655,18 @@ $(document).ready(function() {
 
 <div class="tags indention">
     <b>Tags:</b>
-       <a href="report-tag_2281956221.html">@env=go_server,scala_server</a>
+       <a href="report-tag_238387325.html">@env=go_client,scala_client</a>
 </div>
 
 
-  <span class="lead-duration duration">5.005</span>
+  <span class="lead-duration duration">0.008</span>
 
 
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-14">
+  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-18">
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
-  <span class="name">Server should not request messages for invalid lao ids</span>
+  <span class="name">Update Lao with last_modified before creation time should fail with an error response</span>
 
 
      <i class="chevron fa fa-fw"></i>
@@ -1902,14 +1675,14 @@ $(document).ready(function() {
   </span>
   <div class="description indention"></div>
 
-  <div id="element-14" class="collapse collapsable-details  in ">
+  <div id="element-18" class="collapse collapsable-details  in ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-15">
+  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-19">
 
 <div class="brief failed">
   <span class="keyword indention">Steps</span>
@@ -1921,15 +1694,15 @@ $(document).ready(function() {
 
   </div>
 
-  <div id="steps-15" class="inner-level collapse collapsable-details  in ">
+  <div id="steps-19" class="inner-level collapse collapsable-details  in ">
       <div class="step">
 
 
 <div class="brief step-name-Given passed">
   <span class="keyword indention">Given</span>
-  <span class="name">def invalidMessageIds = []</span>
+  <span class="name">def badUpdateLaoReq =</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">0.003</span>
 
 </div>
 
@@ -1941,60 +1714,23 @@ $(document).ready(function() {
 
 
 
-
-
-
-
-
-
-
+  <div class="inner-level">
+    <div class="docstring indention">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-20">
+          <a>Doc string</a>
       </div>
-      <div class="step">
-
-
-<div class="brief step-name-And passed">
-  <span class="keyword indention">And</span>
-  <span class="name">eval invalidMessageIds.push('invalid message id')</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+      <div id="msg-20" class="collapse collapsable-details">
+        <pre>{
+  &quot;object&quot;: &quot;lao&quot;,
+  &quot;action&quot;: &quot;update_properties&quot;,
+  &quot;id&quot;: '#(lao.id)',
+  &quot;name&quot;: '#(random.generateName())',
+  &quot;last_modified&quot;: '#(lao.creation - 1)',
+  &quot;witnesses&quot;: '#(lao.witnesses)'
+}</pre>
       </div>
-      <div class="step">
-
-
-<div class="brief step-name-And passed">
-  <span class="keyword indention">And</span>
-  <span class="name">eval heartbeat.params[lao.channel] = invalidMessageIds</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
+    </div>
+  </div>
 
 
 
@@ -2008,9 +1744,9 @@ $(document).ready(function() {
 
 <div class="brief step-name-When passed">
   <span class="keyword indention">When</span>
-  <span class="name">mockServer.send(heartbeat)</span>
+  <span class="name">organizer.publish(badUpdateLaoReq, lao.channel)</span>
 
-  <span class="lead-duration duration">0.001</span>
+  <span class="lead-duration duration">0.004</span>
 
 </div>
 
@@ -2035,9 +1771,9 @@ $(document).ready(function() {
 
 <div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
-  <span class="name">def getMessagesByIdMessages = mockServer.getMessagesByMethod('get_messages_by_id')</span>
+  <span class="name">json answer = organizer.getBackendResponse(badUpdateLaoReq)</span>
 
-  <span class="lead-duration duration">5.001</span>
+  <span class="lead-duration duration">0.000</span>
 
 </div>
 
@@ -2062,9 +1798,9 @@ $(document).ready(function() {
 
 <div class="brief step-name-Then failed">
   <span class="keyword indention">Then</span>
-  <span class="name">assert getMessagesByIdMessages.length == 0</span>
+  <span class="name">match answer contains INVALID_MESSAGE_FIELD</span>
 
-  <span class="lead-duration duration">0.001</span>
+  <span class="lead-duration duration">0.000</span>
 
 </div>
 
@@ -2075,12 +1811,17 @@ $(document).ready(function() {
 
   <div class="inner-level">
     <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-16">
-          <a>did</a>
+      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-21">
+          <a>match</a>
       </div>
-      <div id="msg-16" class="collapse collapsable-details  in ">
-        <pre>did not evaluate to 'true': getMessagesByIdMessages.length == 0
-classpath:be/features/decentralizedCom/getMessagesById.feature:59</pre>
+      <div id="msg-21" class="collapse collapsable-details  in ">
+        <pre>match failed: CONTAINS
+  $ | actual does not contain expected | actual does not contain key - 'error' (MAP:MAP)
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:493407411,&quot;result&quot;:0}
+  {&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;#string&quot;}}
+
+
+classpath:be/features/LAO/update.feature:68</pre>
       </div>
     </div>
   </div>
@@ -2090,18 +1831,50 @@ classpath:be/features/decentralizedCom/getMessagesById.feature:59</pre>
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-17">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-22">
           <a>Doc string</a>
       </div>
-      <div id="msg-17" class="collapse collapsable-details">
-        <pre>04:12:25.992 classpath:be/features/decentralizedCom/getMessagesById.feature:59
-Then assert getMessagesByIdMessages.length == 0
-did not evaluate to 'true': getMessagesByIdMessages.length == 0
-classpath:be/features/decentralizedCom/getMessagesById.feature:59
+      <div id="msg-22" class="collapse collapsable-details">
+        <pre>04:07:31.738 classpath:be/features/LAO/update.feature:68
+Then match answer contains INVALID_MESSAGE_FIELD
+match failed: CONTAINS
+  $ | actual does not contain expected | actual does not contain key - 'error' (MAP:MAP)
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:493407411,&quot;result&quot;:0}
+  {&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;#string&quot;}}
+
+
+classpath:be/features/LAO/update.feature:68
 </pre>
       </div>
     </div>
   </div>
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And skipped">
+  <span class="keyword indention">And</span>
+  <span class="name">match organizer.receiveNoMoreResponses() == true</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
 
 
 
