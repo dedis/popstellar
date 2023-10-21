@@ -74,7 +74,7 @@ $(document).ready(function() {
   <tbody>
     <tr class="info">
       <td>scala_client</td>
-      <td>20 Oct 2023, 04:15</td>
+      <td>21 Oct 2023, 04:14</td>
     </tr>
   </tbody>
 </table>
@@ -138,7 +138,7 @@ $(document).ready(function() {
           <td >0</td>
           <td class="total">7</td>
 
-          <td class="duration" data-value="68054202332">1:8.054</td>
+          <td class="duration" data-value="59993619803">59.993</td>
           <td class="passed">Passed</td>
         </tr>
         </tbody>
@@ -191,7 +191,7 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">5.252</span>
+  <span class="lead-duration duration">3.608</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-1">
@@ -234,7 +234,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/features/utils/server.feature')</span>
 
-  <span class="lead-duration duration">3.287</span>
+  <span class="lead-duration duration">2.265</span>
 
 </div>
 
@@ -288,7 +288,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/features/utils/mockClient.feature')</span>
 
-  <span class="lead-duration duration">0.053</span>
+  <span class="lead-duration duration">0.013</span>
 
 </div>
 
@@ -342,7 +342,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/features/utils/constants.feature')</span>
 
-  <span class="lead-duration duration">0.031</span>
+  <span class="lead-duration duration">0.004</span>
 
 </div>
 
@@ -396,7 +396,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">def organizer = call createMockClient</span>
 
-  <span class="lead-duration duration">0.355</span>
+  <span class="lead-duration duration">0.241</span>
 
 </div>
 
@@ -477,7 +477,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">def election = organizer.createValidElection(lao)</span>
 
-  <span class="lead-duration duration">0.001</span>
+  <span class="lead-duration duration">0.000</span>
 
 </div>
 
@@ -531,7 +531,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/features/utils/simpleScenarios.feature@name=election_open') { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)',  election: '#(election)', question: '#(question)' }</span>
 
-  <span class="lead-duration duration">1.511</span>
+  <span class="lead-duration duration">1.078</span>
 
 </div>
 
@@ -577,11 +577,11 @@ $(document).ready(function() {
       </div>
       <div id="msg-3" class="collapse collapsable-details">
         <pre>{
-  &quot;organizer&quot;: &quot;be.utils.MockClient@42066f0d&quot;,
-  &quot;lao&quot;: &quot;be.model.Lao@687e561b&quot;,
-  &quot;rollCall&quot;: &quot;be.model.RollCall@299786b1&quot;,
-  &quot;election&quot;: &quot;be.model.Election@75f8d9b0&quot;,
-  &quot;question&quot;: &quot;be.model.ElectionQuestion@4f7ae05&quot;
+  &quot;organizer&quot;: &quot;be.utils.MockClient@687e561b&quot;,
+  &quot;lao&quot;: &quot;be.model.Lao@299786b1&quot;,
+  &quot;rollCall&quot;: &quot;be.model.RollCall@75f8d9b0&quot;,
+  &quot;election&quot;: &quot;be.model.Election@4f7ae05&quot;,
+  &quot;question&quot;: &quot;be.model.ElectionQuestion@1e23ee0e&quot;
 }
 </pre>
       </div>
@@ -602,7 +602,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">def vote = question.createVote(0)</span>
 
-  <span class="lead-duration duration">0.008</span>
+  <span class="lead-duration duration">0.001</span>
 
 </div>
 
@@ -669,7 +669,7 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">5.042</span>
+  <span class="lead-duration duration">5.028</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-4">
@@ -762,7 +762,7 @@ $(document).ready(function() {
   <span class="keyword indention">When</span>
   <span class="name">organizer.publish(validCastVote, election.channel)</span>
 
-  <span class="lead-duration duration">0.004</span>
+  <span class="lead-duration duration">0.001</span>
 
 </div>
 
@@ -789,7 +789,7 @@ $(document).ready(function() {
   <span class="keyword indention">And</span>
   <span class="name">json answer = organizer.getBackendResponse(validCastVote)</span>
 
-  <span class="lead-duration duration">0.034</span>
+  <span class="lead-duration duration">0.025</span>
 
 </div>
 
@@ -843,7 +843,7 @@ $(document).ready(function() {
   <span class="keyword indention">And</span>
   <span class="name">match organizer.receiveNoMoreResponses() == true</span>
 
-  <span class="lead-duration duration">5.001</span>
+  <span class="lead-duration duration">5.000</span>
 
 </div>
 
@@ -881,7 +881,7 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">4.766</span>
+  <span class="lead-duration duration">3.509</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-7">
@@ -924,7 +924,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/features/utils/server.feature')</span>
 
-  <span class="lead-duration duration">2.768</span>
+  <span class="lead-duration duration">2.264</span>
 
 </div>
 
@@ -978,7 +978,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/features/utils/mockClient.feature')</span>
 
-  <span class="lead-duration duration">0.007</span>
+  <span class="lead-duration duration">0.005</span>
 
 </div>
 
@@ -1032,7 +1032,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/features/utils/constants.feature')</span>
 
-  <span class="lead-duration duration">0.015</span>
+  <span class="lead-duration duration">0.007</span>
 
 </div>
 
@@ -1086,7 +1086,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">def organizer = call createMockClient</span>
 
-  <span class="lead-duration duration">0.312</span>
+  <span class="lead-duration duration">0.213</span>
 
 </div>
 
@@ -1221,7 +1221,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/features/utils/simpleScenarios.feature@name=election_open') { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)',  election: '#(election)', question: '#(question)' }</span>
 
-  <span class="lead-duration duration">1.660</span>
+  <span class="lead-duration duration">1.016</span>
 
 </div>
 
@@ -1267,11 +1267,11 @@ $(document).ready(function() {
       </div>
       <div id="msg-9" class="collapse collapsable-details">
         <pre>{
-  &quot;organizer&quot;: &quot;be.utils.MockClient@1e23ee0e&quot;,
-  &quot;lao&quot;: &quot;be.model.Lao@b144175&quot;,
-  &quot;rollCall&quot;: &quot;be.model.RollCall@38923cfe&quot;,
-  &quot;election&quot;: &quot;be.model.Election@1ac3a6f&quot;,
-  &quot;question&quot;: &quot;be.model.ElectionQuestion@fee7ca&quot;
+  &quot;organizer&quot;: &quot;be.utils.MockClient@b144175&quot;,
+  &quot;lao&quot;: &quot;be.model.Lao@38923cfe&quot;,
+  &quot;rollCall&quot;: &quot;be.model.RollCall@1ac3a6f&quot;,
+  &quot;election&quot;: &quot;be.model.Election@fee7ca&quot;,
+  &quot;question&quot;: &quot;be.model.ElectionQuestion@29c80149&quot;
 }
 </pre>
       </div>
@@ -1359,7 +1359,7 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">5.023</span>
+  <span class="lead-duration duration">5.024</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-10">
@@ -1452,7 +1452,7 @@ $(document).ready(function() {
   <span class="keyword indention">When</span>
   <span class="name">organizer.publish(validCastVote, lao.channel)</span>
 
-  <span class="lead-duration duration">0.004</span>
+  <span class="lead-duration duration">0.002</span>
 
 </div>
 
@@ -1479,7 +1479,7 @@ $(document).ready(function() {
   <span class="keyword indention">And</span>
   <span class="name">json answer = organizer.getBackendResponse(validCastVote)</span>
 
-  <span class="lead-duration duration">0.018</span>
+  <span class="lead-duration duration">0.020</span>
 
 </div>
 
@@ -1571,7 +1571,7 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">4.663</span>
+  <span class="lead-duration duration">3.502</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-13">
@@ -1614,7 +1614,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/features/utils/server.feature')</span>
 
-  <span class="lead-duration duration">2.768</span>
+  <span class="lead-duration duration">2.266</span>
 
 </div>
 
@@ -1668,7 +1668,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/features/utils/mockClient.feature')</span>
 
-  <span class="lead-duration duration">0.031</span>
+  <span class="lead-duration duration">0.005</span>
 
 </div>
 
@@ -1722,7 +1722,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/features/utils/constants.feature')</span>
 
-  <span class="lead-duration duration">0.010</span>
+  <span class="lead-duration duration">0.011</span>
 
 </div>
 
@@ -1776,7 +1776,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">def organizer = call createMockClient</span>
 
-  <span class="lead-duration duration">0.334</span>
+  <span class="lead-duration duration">0.206</span>
 
 </div>
 
@@ -1911,7 +1911,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/features/utils/simpleScenarios.feature@name=election_open') { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)',  election: '#(election)', question: '#(question)' }</span>
 
-  <span class="lead-duration duration">1.516</span>
+  <span class="lead-duration duration">1.010</span>
 
 </div>
 
@@ -1957,11 +1957,11 @@ $(document).ready(function() {
       </div>
       <div id="msg-15" class="collapse collapsable-details">
         <pre>{
-  &quot;organizer&quot;: &quot;be.utils.MockClient@29c80149&quot;,
-  &quot;lao&quot;: &quot;be.model.Lao@14ad42&quot;,
-  &quot;rollCall&quot;: &quot;be.model.RollCall@608b906d&quot;,
-  &quot;election&quot;: &quot;be.model.Election@173cfb01&quot;,
-  &quot;question&quot;: &quot;be.model.ElectionQuestion@7e1762e6&quot;
+  &quot;organizer&quot;: &quot;be.utils.MockClient@14ad42&quot;,
+  &quot;lao&quot;: &quot;be.model.Lao@608b906d&quot;,
+  &quot;rollCall&quot;: &quot;be.model.RollCall@173cfb01&quot;,
+  &quot;election&quot;: &quot;be.model.Election@7e1762e6&quot;,
+  &quot;question&quot;: &quot;be.model.ElectionQuestion@5bccaedb&quot;
 }
 </pre>
       </div>
@@ -2049,7 +2049,7 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">5.038</span>
+  <span class="lead-duration duration">5.025</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-16">
@@ -2092,7 +2092,7 @@ $(document).ready(function() {
   <span class="keyword indention">Given</span>
   <span class="name">def newElection = organizer.createValidElection(lao)</span>
 
-  <span class="lead-duration duration">0.001</span>
+  <span class="lead-duration duration">0.000</span>
 
 </div>
 
@@ -2250,7 +2250,7 @@ $(document).ready(function() {
   <span class="keyword indention">When</span>
   <span class="name">organizer.publish(validCastVote, newElection.channel)</span>
 
-  <span class="lead-duration duration">0.008</span>
+  <span class="lead-duration duration">0.010</span>
 
 </div>
 
@@ -2277,7 +2277,7 @@ $(document).ready(function() {
   <span class="keyword indention">And</span>
   <span class="name">json answer = organizer.getBackendResponse(validCastVote)</span>
 
-  <span class="lead-duration duration">0.026</span>
+  <span class="lead-duration duration">0.012</span>
 
 </div>
 
@@ -2331,7 +2331,7 @@ $(document).ready(function() {
   <span class="keyword indention">And</span>
   <span class="name">match organizer.receiveNoMoreResponses() == true</span>
 
-  <span class="lead-duration duration">5.001</span>
+  <span class="lead-duration duration">5.000</span>
 
 </div>
 
@@ -2369,7 +2369,7 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">4.858</span>
+  <span class="lead-duration duration">3.481</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-19">
@@ -2412,7 +2412,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/features/utils/server.feature')</span>
 
-  <span class="lead-duration duration">3.028</span>
+  <span class="lead-duration duration">2.274</span>
 
 </div>
 
@@ -2520,7 +2520,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/features/utils/constants.feature')</span>
 
-  <span class="lead-duration duration">0.011</span>
+  <span class="lead-duration duration">0.012</span>
 
 </div>
 
@@ -2574,7 +2574,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">def organizer = call createMockClient</span>
 
-  <span class="lead-duration duration">0.294</span>
+  <span class="lead-duration duration">0.193</span>
 
 </div>
 
@@ -2709,7 +2709,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/features/utils/simpleScenarios.feature@name=election_open') { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)',  election: '#(election)', question: '#(question)' }</span>
 
-  <span class="lead-duration duration">1.512</span>
+  <span class="lead-duration duration">0.989</span>
 
 </div>
 
@@ -2755,11 +2755,11 @@ $(document).ready(function() {
       </div>
       <div id="msg-21" class="collapse collapsable-details">
         <pre>{
-  &quot;organizer&quot;: &quot;be.utils.MockClient@5bccaedb&quot;,
-  &quot;lao&quot;: &quot;be.model.Lao@67784537&quot;,
-  &quot;rollCall&quot;: &quot;be.model.RollCall@17ec5e2a&quot;,
-  &quot;election&quot;: &quot;be.model.Election@52290e63&quot;,
-  &quot;question&quot;: &quot;be.model.ElectionQuestion@6c2dd88b&quot;
+  &quot;organizer&quot;: &quot;be.utils.MockClient@67784537&quot;,
+  &quot;lao&quot;: &quot;be.model.Lao@17ec5e2a&quot;,
+  &quot;rollCall&quot;: &quot;be.model.RollCall@52290e63&quot;,
+  &quot;election&quot;: &quot;be.model.Election@6c2dd88b&quot;,
+  &quot;question&quot;: &quot;be.model.ElectionQuestion@49d979c4&quot;
 }
 </pre>
       </div>
@@ -2847,7 +2847,7 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">5.054</span>
+  <span class="lead-duration duration">5.036</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-22">
@@ -2890,7 +2890,7 @@ $(document).ready(function() {
   <span class="keyword indention">Given</span>
   <span class="name">def invalidCastVote =</span>
 
-  <span class="lead-duration duration">0.004</span>
+  <span class="lead-duration duration">0.000</span>
 
 </div>
 
@@ -2940,7 +2940,7 @@ $(document).ready(function() {
   <span class="keyword indention">When</span>
   <span class="name">organizer.publish(invalidCastVote, election.channel)</span>
 
-  <span class="lead-duration duration">0.013</span>
+  <span class="lead-duration duration">0.007</span>
 
 </div>
 
@@ -2967,7 +2967,7 @@ $(document).ready(function() {
   <span class="keyword indention">And</span>
   <span class="name">json answer = organizer.getBackendResponse(invalidCastVote)</span>
 
-  <span class="lead-duration duration">0.035</span>
+  <span class="lead-duration duration">0.027</span>
 
 </div>
 
@@ -3059,7 +3059,7 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">4.273</span>
+  <span class="lead-duration duration">3.519</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-25">
@@ -3102,7 +3102,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/features/utils/server.feature')</span>
 
-  <span class="lead-duration duration">2.769</span>
+  <span class="lead-duration duration">2.263</span>
 
 </div>
 
@@ -3156,7 +3156,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/features/utils/mockClient.feature')</span>
 
-  <span class="lead-duration duration">0.012</span>
+  <span class="lead-duration duration">0.009</span>
 
 </div>
 
@@ -3210,7 +3210,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/features/utils/constants.feature')</span>
 
-  <span class="lead-duration duration">0.005</span>
+  <span class="lead-duration duration">0.008</span>
 
 </div>
 
@@ -3264,7 +3264,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">def organizer = call createMockClient</span>
 
-  <span class="lead-duration duration">0.291</span>
+  <span class="lead-duration duration">0.210</span>
 
 </div>
 
@@ -3399,7 +3399,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/features/utils/simpleScenarios.feature@name=election_open') { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)',  election: '#(election)', question: '#(question)' }</span>
 
-  <span class="lead-duration duration">1.192</span>
+  <span class="lead-duration duration">1.027</span>
 
 </div>
 
@@ -3445,11 +3445,11 @@ $(document).ready(function() {
       </div>
       <div id="msg-27" class="collapse collapsable-details">
         <pre>{
-  &quot;organizer&quot;: &quot;be.utils.MockClient@49d979c4&quot;,
-  &quot;lao&quot;: &quot;be.model.Lao@3cb173db&quot;,
-  &quot;rollCall&quot;: &quot;be.model.RollCall@26712838&quot;,
-  &quot;election&quot;: &quot;be.model.Election@249a45fd&quot;,
-  &quot;question&quot;: &quot;be.model.ElectionQuestion@268f0ff3&quot;
+  &quot;organizer&quot;: &quot;be.utils.MockClient@3cb173db&quot;,
+  &quot;lao&quot;: &quot;be.model.Lao@26712838&quot;,
+  &quot;rollCall&quot;: &quot;be.model.RollCall@249a45fd&quot;,
+  &quot;election&quot;: &quot;be.model.Election@268f0ff3&quot;,
+  &quot;question&quot;: &quot;be.model.ElectionQuestion@11978f52&quot;
 }
 </pre>
       </div>
@@ -3537,7 +3537,7 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">5.042</span>
+  <span class="lead-duration duration">5.032</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-28">
@@ -3630,7 +3630,7 @@ $(document).ready(function() {
   <span class="keyword indention">When</span>
   <span class="name">organizer.publish(invalidCastVote, election.channel)</span>
 
-  <span class="lead-duration duration">0.004</span>
+  <span class="lead-duration duration">0.001</span>
 
 </div>
 
@@ -3657,7 +3657,7 @@ $(document).ready(function() {
   <span class="keyword indention">And</span>
   <span class="name">json answer = organizer.getBackendResponse(invalidCastVote)</span>
 
-  <span class="lead-duration duration">0.036</span>
+  <span class="lead-duration duration">0.029</span>
 
 </div>
 
@@ -3749,7 +3749,7 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">4.506</span>
+  <span class="lead-duration duration">3.519</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-31">
@@ -3792,7 +3792,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/features/utils/server.feature')</span>
 
-  <span class="lead-duration duration">2.775</span>
+  <span class="lead-duration duration">2.266</span>
 
 </div>
 
@@ -3846,7 +3846,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/features/utils/mockClient.feature')</span>
 
-  <span class="lead-duration duration">0.008</span>
+  <span class="lead-duration duration">0.007</span>
 
 </div>
 
@@ -3900,7 +3900,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/features/utils/constants.feature')</span>
 
-  <span class="lead-duration duration">0.003</span>
+  <span class="lead-duration duration">0.005</span>
 
 </div>
 
@@ -3954,7 +3954,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">def organizer = call createMockClient</span>
 
-  <span class="lead-duration duration">0.291</span>
+  <span class="lead-duration duration">0.204</span>
 
 </div>
 
@@ -4089,7 +4089,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/features/utils/simpleScenarios.feature@name=election_open') { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)',  election: '#(election)', question: '#(question)' }</span>
 
-  <span class="lead-duration duration">1.425</span>
+  <span class="lead-duration duration">1.034</span>
 
 </div>
 
@@ -4135,11 +4135,11 @@ $(document).ready(function() {
       </div>
       <div id="msg-33" class="collapse collapsable-details">
         <pre>{
-  &quot;organizer&quot;: &quot;be.utils.MockClient@11978f52&quot;,
-  &quot;lao&quot;: &quot;be.model.Lao@3e0855b0&quot;,
-  &quot;rollCall&quot;: &quot;be.model.RollCall@484b5a21&quot;,
-  &quot;election&quot;: &quot;be.model.Election@16e5344c&quot;,
-  &quot;question&quot;: &quot;be.model.ElectionQuestion@3ba5c4dd&quot;
+  &quot;organizer&quot;: &quot;be.utils.MockClient@3e0855b0&quot;,
+  &quot;lao&quot;: &quot;be.model.Lao@484b5a21&quot;,
+  &quot;rollCall&quot;: &quot;be.model.RollCall@16e5344c&quot;,
+  &quot;election&quot;: &quot;be.model.Election@3ba5c4dd&quot;,
+  &quot;question&quot;: &quot;be.model.ElectionQuestion@47fca3cc&quot;
 }
 </pre>
       </div>
@@ -4227,7 +4227,7 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">5.084</span>
+  <span class="lead-duration duration">5.046</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-34">
@@ -4270,7 +4270,7 @@ $(document).ready(function() {
   <span class="keyword indention">Given</span>
   <span class="name">def nonAttendee = call createMockClient</span>
 
-  <span class="lead-duration duration">0.035</span>
+  <span class="lead-duration duration">0.016</span>
 
 </div>
 
@@ -4347,7 +4347,7 @@ $(document).ready(function() {
   <span class="keyword indention">When</span>
   <span class="name">nonAttendee.publish(validCastVote, election.channel)</span>
 
-  <span class="lead-duration duration">0.005</span>
+  <span class="lead-duration duration">0.001</span>
 
 </div>
 
@@ -4374,7 +4374,7 @@ $(document).ready(function() {
   <span class="keyword indention">And</span>
   <span class="name">json answer = nonAttendee.getBackendResponse(validCastVote)</span>
 
-  <span class="lead-duration duration">0.040</span>
+  <span class="lead-duration duration">0.026</span>
 
 </div>
 
@@ -4466,7 +4466,7 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">4.414</span>
+  <span class="lead-duration duration">3.632</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-37">
@@ -4509,7 +4509,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/features/utils/server.feature')</span>
 
-  <span class="lead-duration duration">2.769</span>
+  <span class="lead-duration duration">2.263</span>
 
 </div>
 
@@ -4563,7 +4563,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/features/utils/mockClient.feature')</span>
 
-  <span class="lead-duration duration">0.005</span>
+  <span class="lead-duration duration">0.004</span>
 
 </div>
 
@@ -4617,7 +4617,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/features/utils/constants.feature')</span>
 
-  <span class="lead-duration duration">0.008</span>
+  <span class="lead-duration duration">0.019</span>
 
 </div>
 
@@ -4671,7 +4671,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">def organizer = call createMockClient</span>
 
-  <span class="lead-duration duration">0.296</span>
+  <span class="lead-duration duration">0.200</span>
 
 </div>
 
@@ -4806,7 +4806,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/features/utils/simpleScenarios.feature@name=election_open') { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)',  election: '#(election)', question: '#(question)' }</span>
 
-  <span class="lead-duration duration">1.332</span>
+  <span class="lead-duration duration">1.142</span>
 
 </div>
 
@@ -4852,11 +4852,11 @@ $(document).ready(function() {
       </div>
       <div id="msg-39" class="collapse collapsable-details">
         <pre>{
-  &quot;organizer&quot;: &quot;be.utils.MockClient@47fca3cc&quot;,
-  &quot;lao&quot;: &quot;be.model.Lao@55746340&quot;,
-  &quot;rollCall&quot;: &quot;be.model.RollCall@6a0c7af6&quot;,
-  &quot;election&quot;: &quot;be.model.Election@7f1ad846&quot;,
-  &quot;question&quot;: &quot;be.model.ElectionQuestion@5d5ae6aa&quot;
+  &quot;organizer&quot;: &quot;be.utils.MockClient@55746340&quot;,
+  &quot;lao&quot;: &quot;be.model.Lao@6a0c7af6&quot;,
+  &quot;rollCall&quot;: &quot;be.model.RollCall@7f1ad846&quot;,
+  &quot;election&quot;: &quot;be.model.Election@5d5ae6aa&quot;,
+  &quot;question&quot;: &quot;be.model.ElectionQuestion@2bc2e022&quot;
 }
 </pre>
       </div>
@@ -4944,7 +4944,7 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">5.034</span>
+  <span class="lead-duration duration">5.026</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-40">
@@ -5037,7 +5037,7 @@ $(document).ready(function() {
   <span class="keyword indention">When</span>
   <span class="name">organizer.publish(invalidCastVote, election.channel)</span>
 
-  <span class="lead-duration duration">0.004</span>
+  <span class="lead-duration duration">0.003</span>
 
 </div>
 
@@ -5064,7 +5064,7 @@ $(document).ready(function() {
   <span class="keyword indention">And</span>
   <span class="name">json answer = organizer.getBackendResponse(invalidCastVote)</span>
 
-  <span class="lead-duration duration">0.028</span>
+  <span class="lead-duration duration">0.021</span>
 
 </div>
 
