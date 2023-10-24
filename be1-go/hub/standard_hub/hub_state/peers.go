@@ -8,7 +8,7 @@ import (
 	"golang.org/x/exp/slices"
 )
 
-// Peers provides a thread-safe structure that stores the peers' information
+// Peers stores the peers' information
 type Peers struct {
 	sync.RWMutex
 	// peersInfo stores the info of the peers: public key, client and server endpoints associated with the socket ID
@@ -46,7 +46,7 @@ func (p *Peers) AddPeerGreeted(socketId string) {
 func (p *Peers) GetAllPeersInfo() []method.ServerInfo {
 	p.RLock()
 	defer p.RUnlock()
-	peersInfo := make([]method.ServerInfo, 0)
+	peersInfo := make([]method.ServerInfo, 0, len(p.peersInfo))
 	for _, info := range p.peersInfo {
 		peersInfo = append(peersInfo, info)
 	}

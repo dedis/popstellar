@@ -179,6 +179,7 @@ func (h *Hub) Start() {
 				}()
 			case id := <-h.closedSockets:
 				h.channelByID.ForEach(func(c channel.Channel) {
+					// dummy Unsubscribe message because it's only used for logging...
 					c.Unsubscribe(id, method.Unsubscribe{})
 				})
 			case <-h.stop:
