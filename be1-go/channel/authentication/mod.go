@@ -3,6 +3,10 @@ package authentication
 import (
 	"crypto/rsa"
 	"encoding/base64"
+	"github.com/golang-jwt/jwt/v4"
+	"github.com/gorilla/websocket"
+	"github.com/rs/zerolog"
+	"golang.org/x/xerrors"
 	"net/url"
 	"os"
 	"popstellar/channel"
@@ -19,11 +23,6 @@ import (
 	"strings"
 	"sync"
 	"time"
-
-	"github.com/golang-jwt/jwt/v4"
-	"github.com/gorilla/websocket"
-	"github.com/rs/zerolog"
-	"golang.org/x/xerrors"
 )
 
 const (

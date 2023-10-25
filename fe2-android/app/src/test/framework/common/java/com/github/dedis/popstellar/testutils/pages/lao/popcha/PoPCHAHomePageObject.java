@@ -30,6 +30,10 @@ public class PoPCHAHomePageObject {
     return onView(withId(R.id.popcha_header));
   }
 
+  public static ViewInteraction getText() {
+    return onView(withId(R.id.popcha_text));
+  }
+
   public static ViewInteraction getScanner() {
     return onView(withId(R.id.popcha_scanner));
   }
