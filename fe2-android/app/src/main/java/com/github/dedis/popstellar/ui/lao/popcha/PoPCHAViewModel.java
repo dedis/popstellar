@@ -126,10 +126,23 @@ public class PoPCHAViewModel extends AndroidViewModel implements QRCodeScanningV
       isRequestCompleted.postValue(new SingleEvent<>(true));
     } catch (GeneralSecurityException e) {
       Timber.tag(TAG).e(e, "Impossible to sign the token");
+      Toast.makeText(
+              getApplication().getApplicationContext(),
+              R.string.error_sign_message,
+              Toast.LENGTH_LONG)
+          .show();
     } catch (UnknownLaoException e) {
       Timber.tag(TAG).e(e, "Impossible to find the lao");
+      Toast.makeText(
+              getApplication().getApplicationContext(), R.string.error_no_lao, Toast.LENGTH_LONG)
+          .show();
     } catch (KeyException e) {
-      Timber.tag(TAG).e(e, "Impossible to get pop token");
+      Timber.tag(TAG).e(e, "Impossible to get pop token: no roll call exists in the lao");
+      Toast.makeText(
+              getApplication().getApplicationContext(),
+              R.string.no_rollcall_exception,
+              Toast.LENGTH_LONG)
+          .show();
     } finally {
       connecting.set(false);
     }

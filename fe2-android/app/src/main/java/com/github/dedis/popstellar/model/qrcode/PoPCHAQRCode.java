@@ -55,4 +55,25 @@ public class PoPCHAQRCode {
   public String getHost() {
     return host;
   }
+
+  @Override
+  public String toString() {
+    return "PoPCHAQRCode{"
+        + "clientId='"
+        + clientId
+        + '\''
+        + ", nonce='"
+        + nonce
+        + '\''
+        + ", state='"
+        + state
+        + '\''
+        + ", responseMode='"
+        + responseMode
+        + '\''
+        + ", host='"
+        + host
+        + '\''
+        + '}';
+  }
 }
