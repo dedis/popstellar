@@ -14,7 +14,7 @@ public class PoPCHAAuthentication extends Data {
   @SerializedName("client_id")
   private final String clientId;
 
-  private final Base64URLData nonce;
+  private final String nonce;
   private final Base64URLData identifier;
 
   @SerializedName("identifier_proof")
@@ -31,7 +31,7 @@ public class PoPCHAAuthentication extends Data {
 
   public PoPCHAAuthentication(
       String clientId,
-      Base64URLData nonce,
+      String nonce,
       Base64URLData identifier,
       Base64URLData identifierProof,
       String popchaAddress,
@@ -50,7 +50,7 @@ public class PoPCHAAuthentication extends Data {
     return clientId;
   }
 
-  public Base64URLData getNonce() {
+  public String getNonce() {
     return nonce;
   }
 

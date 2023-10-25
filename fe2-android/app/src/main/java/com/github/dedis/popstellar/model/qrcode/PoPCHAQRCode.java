@@ -3,6 +3,7 @@ package com.github.dedis.popstellar.model.qrcode;
 import android.net.Uri;
 import com.github.dedis.popstellar.model.Immutable;
 import com.github.dedis.popstellar.utility.MessageValidator;
+import java.util.Locale;
 
 @Immutable
 public class PoPCHAQRCode {
@@ -29,7 +30,10 @@ public class PoPCHAQRCode {
     nonce = uri.getQueryParameter(NONCE);
     state = uri.getQueryParameter(STATE);
     responseMode = uri.getQueryParameter(RESPONSE_MODE);
-    host = uri.getHost();
+    final int port = uri.getPort();
+    host =
+        String.format(
+            "%s%s", uri.getHost(), port == -1 ? "" : String.format(Locale.ENGLISH, ":%d", port));
   }
 
   public String getClientId() {

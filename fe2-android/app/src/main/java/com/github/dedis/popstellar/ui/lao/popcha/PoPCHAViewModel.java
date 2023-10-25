@@ -12,6 +12,7 @@ import com.github.dedis.popstellar.model.objects.security.*;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.model.qrcode.PoPCHAQRCode;
 import com.github.dedis.popstellar.repository.LAORepository;
+import com.github.dedis.popstellar.repository.RollCallRepository;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningViewModel;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
@@ -39,6 +40,7 @@ public class PoPCHAViewModel extends AndroidViewModel implements QRCodeScanningV
 
   /* Dependencies to inject */
   private final LAORepository laoRepository;
+  private final RollCallRepository rollCallRepo;
   private final GlobalNetworkManager networkManager;
   private final KeyManager keyManager;
 
@@ -46,10 +48,12 @@ public class PoPCHAViewModel extends AndroidViewModel implements QRCodeScanningV
   public PoPCHAViewModel(
       @NonNull Application application,
       LAORepository laoRepository,
+      RollCallRepository rollCallRepo,
       GlobalNetworkManager networkManager,
       KeyManager keyManager) {
     super(application);
     this.laoRepository = laoRepository;
+    this.rollCallRepo = rollCallRepo;
     this.networkManager = networkManager;
     this.keyManager = keyManager;
   }
@@ -120,11 +124,13 @@ public class PoPCHAViewModel extends AndroidViewModel implements QRCodeScanningV
       sendAuthRequest(popCHAQRCode, token);
       postTextDisplayed(popCHAQRCode.toString());
       isRequestCompleted.postValue(new SingleEvent<>(true));
-    } catch (GeneralSecurityException | UnknownLaoException e) {
+    } catch (GeneralSecurityException | UnknownLaoException | KeyException e) {
       if (e instanceof GeneralSecurityException) {
         Timber.tag(TAG).e(e, "Impossible to sign the token");
-      } else {
+      } else if (e instanceof UnknownLaoException) {
         Timber.tag(TAG).e(e, "Impossible to find the lao");
+      } else {
+        Timber.tag(TAG).e(e, "Impossible to get pop token");
       }
     } finally {
       connecting.set(false);
@@ -132,9 +138,9 @@ public class PoPCHAViewModel extends AndroidViewModel implements QRCodeScanningV
   }
 
   private void sendAuthRequest(PoPCHAQRCode popCHAQRCode, PoPToken token)
-      throws GeneralSecurityException, UnknownLaoException {
-    Base64URLData nonce = new Base64URLData(popCHAQRCode.getNonce());
-    Signature signedToken = token.sign(nonce);
+      throws GeneralSecurityException, UnknownLaoException, KeyException {
+    String nonce = Base64URLData.encode(popCHAQRCode.getNonce());
+    Signature signedToken = token.sign(new Base64URLData(nonce));
     PoPCHAAuthentication authMessage =
         new PoPCHAAuthentication(
             popCHAQRCode.getClientId(),
@@ -148,10 +154,14 @@ public class PoPCHAViewModel extends AndroidViewModel implements QRCodeScanningV
     disposables.add(
         networkManager
             .getMessageSender()
-            .publish(keyManager.getMainKeyPair(), channel, authMessage)
+            .publish(getValidToken(), channel, authMessage)
             .subscribe(
                 () -> Timber.tag(TAG).d("sent the auth message for popcha"),
                 err -> Timber.tag(TAG).e(err, "error sending the auth message for popcha")));
+  }
+
+  private PoPToken getValidToken() throws KeyException {
+    return keyManager.getValidPoPToken(laoId, rollCallRepo.getLastClosedRollCall(laoId));
   }
 
   public void disableConnectingFlag() {
