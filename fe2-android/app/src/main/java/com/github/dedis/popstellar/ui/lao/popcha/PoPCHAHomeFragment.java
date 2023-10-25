@@ -17,7 +17,6 @@ import com.github.dedis.popstellar.ui.qrcode.ScanningAction;
 public class PoPCHAHomeFragment extends Fragment {
 
   private LaoViewModel laoViewModel;
-  private PoPCHAViewModel popCHAViewModel;
 
   public PoPCHAHomeFragment() {
     // Required public empty constructor
@@ -34,7 +33,8 @@ public class PoPCHAHomeFragment extends Fragment {
       @NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     laoViewModel = LaoActivity.obtainViewModel(requireActivity());
 
-    popCHAViewModel = LaoActivity.obtainPoPCHAViewModel(requireActivity(), laoViewModel.getLaoId());
+    PoPCHAViewModel popCHAViewModel =
+        LaoActivity.obtainPoPCHAViewModel(requireActivity(), laoViewModel.getLaoId());
     PopchaHomeFragmentBinding binding =
         PopchaHomeFragmentBinding.inflate(inflater, container, false);
 

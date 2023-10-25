@@ -37,10 +37,11 @@ public abstract class MessageValidator {
     public static final long VALID_FUTURE_DELAY = 120;
 
     // Constants used for checking PoPCHA URLs
-    public static final String[] REQUIRED_ARGUMENTS = new String[] {CLIENT_ID, NONCE, REDIRECT_URI};
-    public static final String VALID_RESPONSE_TYPE = "id_token";
-    public static final String[] REQUIRED_SCOPES = new String[] {"openid", "profile"};
-    public static final String[] VALID_RESPONSE_MODES = new String[] {"query", "fragment"};
+    private static final String[] REQUIRED_ARGUMENTS =
+        new String[] {FIELD_CLIENT_ID, FIELD_NONCE, FIELD_REDIRECT_URI};
+    private static final String VALID_RESPONSE_TYPE = "id_token";
+    private static final String[] REQUIRED_SCOPES = new String[] {"openid", "profile"};
+    private static final String[] VALID_RESPONSE_MODES = new String[] {"query", "fragment"};
 
     /**
      * Helper method to check that a LAO id is valid.
@@ -250,6 +251,11 @@ public abstract class MessageValidator {
       MessageValidator.verify().validUrl(input);
 
       Uri uri = Uri.parse(input);
+      if (uri == null) {
+        throw new IllegalArgumentException(
+            String.format("Impossible to parse the URL: %s", input));
+      }
+
       // Check required arguments are present
       for (String arg : REQUIRED_ARGUMENTS) {
         if (uri.getQueryParameter(arg) == null) {
@@ -258,7 +264,7 @@ public abstract class MessageValidator {
         }
       }
       // Check response type respects openid standards
-      String responseType = uri.getQueryParameter(RESPONSE_TYPE);
+      String responseType = uri.getQueryParameter(FIELD_RESPONSE_TYPE);
       if (!responseType.equals(VALID_RESPONSE_TYPE)) {
         throw new IllegalArgumentException("Invalid response type in the URL");
       }
@@ -268,13 +274,13 @@ public abstract class MessageValidator {
         throw new IllegalArgumentException("Invalid scope");
       }
       // Check response mode is valid
-      String responseMode = uri.getQueryParameter(RESPONSE_MODE);
+      String responseMode = uri.getQueryParameter(FIELD_RESPONSE_MODE);
       if (responseMode != null
           && Arrays.stream(VALID_RESPONSE_MODES).noneMatch(responseMode::contains)) {
         throw new IllegalArgumentException("Invalid response mode");
       }
       // Check lao ID in login hint match the right laoID
-      String laoHint = uri.getQueryParameter(LOGIN_HINT);
+      String laoHint = uri.getQueryParameter(FIELD_LOGIN_HINT);
       if (!laoHint.equals(laoId)) {
         throw new IllegalArgumentException(String.format("Invalid LAO ID %s", laoHint));
       }

@@ -8,13 +8,13 @@ import java.util.Locale;
 @Immutable
 public class PoPCHAQRCode {
 
-  public static final String CLIENT_ID = "client_id";
-  public static final String NONCE = "nonce";
-  public static final String REDIRECT_URI = "redirect_uri";
-  public static final String STATE = "state";
-  public static final String RESPONSE_TYPE = "response_type";
-  public static final String RESPONSE_MODE = "response_mode";
-  public static final String LOGIN_HINT = "login_hint";
+  public static final String FIELD_CLIENT_ID = "client_id";
+  public static final String FIELD_NONCE = "nonce";
+  public static final String FIELD_REDIRECT_URI = "redirect_uri";
+  public static final String FIELD_STATE = "state";
+  public static final String FIELD_RESPONSE_TYPE = "response_type";
+  public static final String FIELD_RESPONSE_MODE = "response_mode";
+  public static final String FIELD_LOGIN_HINT = "login_hint";
 
   private final String clientId;
   private final String nonce;
@@ -26,10 +26,10 @@ public class PoPCHAQRCode {
     MessageValidator.verify().isValidPoPCHAUrl(data, laoId);
 
     Uri uri = Uri.parse(data);
-    clientId = uri.getQueryParameter(CLIENT_ID);
-    nonce = uri.getQueryParameter(NONCE);
-    state = uri.getQueryParameter(STATE);
-    responseMode = uri.getQueryParameter(RESPONSE_MODE);
+    clientId = uri.getQueryParameter(FIELD_CLIENT_ID);
+    nonce = uri.getQueryParameter(FIELD_NONCE);
+    state = uri.getQueryParameter(FIELD_STATE);
+    responseMode = uri.getQueryParameter(FIELD_RESPONSE_MODE);
     final int port = uri.getPort();
     host =
         String.format(
@@ -54,26 +54,5 @@ public class PoPCHAQRCode {
 
   public String getHost() {
     return host;
-  }
-
-  @Override
-  public String toString() {
-    return "PoPCHAQRCode{"
-        + "clientId='"
-        + clientId
-        + '\''
-        + ", nonce='"
-        + nonce
-        + '\''
-        + ", state='"
-        + state
-        + '\''
-        + ", responseMode='"
-        + responseMode
-        + '\''
-        + ", host='"
-        + host
-        + '\''
-        + '}';
   }
 }

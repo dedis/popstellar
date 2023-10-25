@@ -1,18 +1,19 @@
 package com.github.dedis.popstellar.utility;
 
+import static org.junit.Assert.assertThrows;
+
 import com.github.dedis.popstellar.model.network.method.message.data.election.*;
 import com.github.dedis.popstellar.model.objects.Election;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.testutils.Base64DataUtils;
-
-import org.junit.Test;
-
 import java.time.Instant;
 import java.util.*;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
 
-import static org.junit.Assert.assertThrows;
-
+@RunWith(RobolectricTestRunner.class)
 public class MessageValidatorTest {
   private static final long DELTA_TIME =
       MessageValidator.MessageValidatorBuilder.VALID_FUTURE_DELAY + 100;
@@ -188,5 +189,44 @@ public class MessageValidatorTest {
     assertThrows(IllegalArgumentException.class, () -> validator.isValidEmoji("U+1F600", field));
     assertThrows(
         IllegalArgumentException.class, () -> validator.isValidEmoji("random string", field));
+  }
+
+  @Test
+  public void testValidPopCHAUrl() {
+    MessageValidator.MessageValidatorBuilder validator = MessageValidator.verify();
+
+    String laoId = "6IQ-Q3S4ISaxZ-hLDelTszYxhJkNQ1gC4JjMxr4jy6Y=";
+
+    String valid =
+        "http://localhost:9100/authorize?response_mode=query&response_type=id_token&client_id=WAsabGuEe5m1KpqOZQKgmO7UShX84Jmd_eaenOZ32wU&redirect_uri=http%3A%2F%2Flocalhost%3A8000%2Fcb&scope=openid+profile&login_hint=6IQ-Q3S4ISaxZ-hLDelTszYxhJkNQ1gC4JjMxr4jy6Y=&nonce=frXgNl-IxJPzsNia07f_3yV0ECYlWOb2RXG_SGvATKcJ7-s0LthmboTrnMqlQS1RnzmV9hW0iumu_5NwAqXwGA&state=m_9r5sPUD8NoRIdVVYFMyYCOb-8xh1d2q8l-pKDXO0sn9TWnR_2nmC8MfVj1COHZsh1rElqimOTLAp3CbhbYJQ";
+    String valid2 =
+        "https://be1.personhood.online/authorize?response_mode=fragment&response_type=id_token&client_id=WAsabGuEe5m1KpqOZQKgmO7UShX84Jmd_eaenOZ32wU&redirect_uri=http%3A%2F%2Flocalhost%3A8000%2Fcb&scope=openid+profile+random&login_hint=6IQ-Q3S4ISaxZ-hLDelTszYxhJkNQ1gC4JjMxr4jy6Y=&nonce=frXgNl-IxJPzsNia07f_3yV0ECYlWOb2RXG_SGvATKcJ7-s0LthmboTrnMqlQS1RnzmV9hW0iumu_5NwAqXwGA";
+    String missingClientId =
+        "http://localhost:9100/authorize?response_mode=query&response_type=id_token&redirect_uri=http%3A%2F%2Flocalhost%3A8000%2Fcb&scope=openid+profile&login_hint=6IQ-Q3S4ISaxZ-hLDelTszYxhJkNQ1gC4JjMxr4jy6Y=&nonce=frXgNl-IxJPzsNia07f_3yV0ECYlWOb2RXG_SGvATKcJ7-s0LthmboTrnMqlQS1RnzmV9hW0iumu_5NwAqXwGA&state=m_9r5sPUD8NoRIdVVYFMyYCOb-8xh1d2q8l-pKDXO0sn9TWnR_2nmC8MfVj1COHZsh1rElqimOTLAp3CbhbYJQ";
+    String invalidResponseType =
+        "http://localhost:9100/authorize?response_mode=query&response_type=token&client_id=WAsabGuEe5m1KpqOZQKgmO7UShX84Jmd_eaenOZ32wU&redirect_uri=http%3A%2F%2Flocalhost%3A8000%2Fcb&scope=openid+profile&login_hint=6IQ-Q3S4ISaxZ-hLDelTszYxhJkNQ1gC4JjMxr4jy6Y=&nonce=frXgNl-IxJPzsNia07f_3yV0ECYlWOb2RXG_SGvATKcJ7-s0LthmboTrnMqlQS1RnzmV9hW0iumu_5NwAqXwGA&state=m_9r5sPUD8NoRIdVVYFMyYCOb-8xh1d2q8l-pKDXO0sn9TWnR_2nmC8MfVj1COHZsh1rElqimOTLAp3CbhbYJQ";
+    String missingRequiredScope =
+        "http://localhost:9100/authorize?response_mode=query&response_type=id_token&client_id=WAsabGuEe5m1KpqOZQKgmO7UShX84Jmd_eaenOZ32wU&redirect_uri=http%3A%2F%2Flocalhost%3A8000%2Fcb&scope=openid+random&login_hint=6IQ-Q3S4ISaxZ-hLDelTszYxhJkNQ1gC4JjMxr4jy6Y=&nonce=frXgNl-IxJPzsNia07f_3yV0ECYlWOb2RXG_SGvATKcJ7-s0LthmboTrnMqlQS1RnzmV9hW0iumu_5NwAqXwGA&state=m_9r5sPUD8NoRIdVVYFMyYCOb-8xh1d2q8l-pKDXO0sn9TWnR_2nmC8MfVj1COHZsh1rElqimOTLAp3CbhbYJQ";
+    String invalidResponseMode =
+        "http://localhost:9100/authorize?response_mode=random&response_type=id_token&client_id=WAsabGuEe5m1KpqOZQKgmO7UShX84Jmd_eaenOZ32wU&redirect_uri=http%3A%2F%2Flocalhost%3A8000%2Fcb&scope=openid+profile&login_hint=6IQ-Q3S4ISaxZ-hLDelTszYxhJkNQ1gC4JjMxr4jy6Y=&nonce=frXgNl-IxJPzsNia07f_3yV0ECYlWOb2RXG_SGvATKcJ7-s0LthmboTrnMqlQS1RnzmV9hW0iumu_5NwAqXwGA&state=m_9r5sPUD8NoRIdVVYFMyYCOb-8xh1d2q8l-pKDXO0sn9TWnR_2nmC8MfVj1COHZsh1rElqimOTLAp3CbhbYJQ";
+    String invalidLao =
+        "http://localhost:9100/authorize?response_mode=random&response_type=id_token&client_id=WAsabGuEe5m1KpqOZQKgmO7UShX84Jmd_eaenOZ32wU&redirect_uri=http%3A%2F%2Flocalhost%3A8000%2Fcb&scope=openid+profile&login_hint=6IQ-Q3S4ISaxZ-hLTylTszYxhJkNQ1gC4JjMxr4jy6Y=&nonce=frXgNl-IxJPzsNia07f_3yV0ECYlWOb2RXG_SGvATKcJ7-s0LthmboTrnMqlQS1RnzmV9hW0iumu_5NwAqXwGA&state=m_9r5sPUD8NoRIdVVYFMyYCOb-8xh1d2q8l-pKDXO0sn9TWnR_2nmC8MfVj1COHZsh1rElqimOTLAp3CbhbYJQ";
+
+    validator.isValidPoPCHAUrl(valid, laoId);
+    validator.isValidPoPCHAUrl(valid2, laoId);
+
+    assertThrows(
+        IllegalArgumentException.class, () -> validator.isValidPoPCHAUrl(missingClientId, laoId));
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> validator.isValidPoPCHAUrl(invalidResponseType, laoId));
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> validator.isValidPoPCHAUrl(missingRequiredScope, laoId));
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> validator.isValidPoPCHAUrl(invalidResponseMode, laoId));
+    assertThrows(
+        IllegalArgumentException.class, () -> validator.isValidPoPCHAUrl(invalidLao, laoId));
   }
 }
