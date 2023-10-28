@@ -2,10 +2,8 @@ package com.github.dedis.popstellar.ui.lao.witness;
 
 import android.app.Application;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.lifecycle.*;
-
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.StateLao;
@@ -24,18 +22,15 @@ import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
-
-import java.time.Instant;
-import java.util.*;
-import java.util.stream.Collectors;
-
-import javax.inject.Inject;
-
 import dagger.hilt.android.lifecycle.HiltViewModel;
 import io.reactivex.Completable;
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
+import java.time.Instant;
+import java.util.*;
+import java.util.stream.Collectors;
+import javax.inject.Inject;
 import timber.log.Timber;
 
 @HiltViewModel
@@ -51,7 +46,7 @@ public class WitnessingViewModel extends AndroidViewModel implements QRCodeScann
   private final MutableLiveData<List<PublicKey>> witnesses = new MutableLiveData<>();
   private final MutableLiveData<List<WitnessMessage>> witnessMessages = new MutableLiveData<>();
   private final MutableLiveData<Integer> nbScanned = new MutableLiveData<>(0);
-  private MutableLiveData<Boolean> showPopup = new MutableLiveData<>(false);
+  private final MutableLiveData<Boolean> showPopup = new MutableLiveData<>(false);
 
   private final LAORepository laoRepo;
   private final WitnessingRepository witnessingRepo;
@@ -87,6 +82,10 @@ public class WitnessingViewModel extends AndroidViewModel implements QRCodeScann
 
   public void setWitnessMessages(List<WitnessMessage> messages) {
     this.witnessMessages.setValue(messages);
+  }
+  
+  public boolean isWitness() {
+    return witnessingRepo.isWitness(laoId, keyManager.getMainPublicKey());
   }
 
   public void setWitnesses(List<PublicKey> witnesses) {
