@@ -97,10 +97,11 @@ public class MockClient extends MultiMsgWebSocketClient {
    * @return the message data containing the decoded election results, or throws an error if none are found
    */
   public String getElectionResults(){
-    for (String broadcast : broadcasts) {
+    for (String broadcast : receivedBroadcasts) {
       // Extract the field params/message/data from the Json and decode it
       String messageData = Base64Utils.decodeBase64JsonField(Json.of(broadcast), "params.message.data");
       if (messageData.contains("result") && messageData.contains("election")){
+        System.out.println("Received election results: " + messageData);
         return messageData;
       }
     }

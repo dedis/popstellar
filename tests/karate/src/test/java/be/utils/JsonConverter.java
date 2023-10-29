@@ -25,30 +25,48 @@ public class JsonConverter {
   }
 
   /**
-   * Produces a valid Json representation of a message given the message data, the id of the message
+   * Produces a valid Json representation of a publish message given the high level message data, the id of the message
    * and the channel where the message is supposed to be sent
    */
-  public Json createPublishMessage(String highLevelMessageData, int messageId, String channel) {
-    Json messageData = Json.object();
-    messageData.set("method", "publish");
-    messageData.set("id", messageId);
-    Map<String, Object> paramsPart = new LinkedHashMap<>();
+  public Json constructPublishMessage(String highLevelMessageData, int messageId, String channel) {
+    Json publishMessage = Json.object();
+    publishMessage.set("jsonrpc", "2.0");
+    publishMessage.set("id", messageId);
+    publishMessage.set("method", "publish");
+
+    Map<String, Object> paramsField = new LinkedHashMap<>();
     try{
-    paramsPart = constructParamsField(channel, highLevelMessageData);
-    messageData.set("params", paramsPart);
+    paramsField = constructParamsField(channel, highLevelMessageData);
+    publishMessage.set("params", paramsField);
     }catch (GeneralSecurityException e){
       e.printStackTrace();
     }
-    messageData.set("jsonrpc", "2.0");
-
-    return messageData;
+    return publishMessage;
   }
 
-  public Map<String, Object> constructMessageField(String stringData) throws GeneralSecurityException{
-    Map<String, Object> messagePart = new LinkedHashMap<>();
-    Json messageData = Json.of(stringData);
+  /**
+   * Creates a JSON map of the params field of a publish message.
+   * Consists of sub-fields channel and message.
+   */
+  public Map<String, Object> constructParamsField(String channel, String highLevelMessageData) throws GeneralSecurityException {
+    Map<String, Object> paramsField = new LinkedHashMap<>();
+    Map<String, Object> messageField = constructMessageField(highLevelMessageData);
+
+    paramsField.put("channel", channel);
+    paramsField.put("message", messageField);
+
+    return paramsField;
+  }
+
+  /**
+   * Creates a JSON map of the message field of a publish message.
+   * Consists of sub-fields data, sender, signature, message id and witness signatures.
+   */
+  public Map<String, Object> constructMessageField(String highLevelMessageData) throws GeneralSecurityException{
+    Map<String, Object> messageField = new LinkedHashMap<>();
+    Json messageData = Json.of(highLevelMessageData);
     String messageDataBase64 = Base64Utils.convertJsonToBase64(messageData);
-    String signature = constructSignature(stringData);
+    String signature = constructSignature(highLevelMessageData);
     if(isSignatureForced){
       signature = this.signatureForced;
       isSignatureForced = false;
@@ -56,23 +74,13 @@ public class JsonConverter {
     String messageId = Hash.hash(messageDataBase64.getBytes(), signature.getBytes());
     String[] witness = new String[0];
 
-    messagePart.put("data", messageDataBase64);
-    messagePart.put("sender", publicKey);
-    messagePart.put("signature", signature);
-    messagePart.put("message_id", messageId);
-    messagePart.put("witness_signatures", witness);
+    messageField.put("data", messageDataBase64);
+    messageField.put("sender", publicKey);
+    messageField.put("signature", signature);
+    messageField.put("message_id", messageId);
+    messageField.put("witness_signatures", witness);
 
-    return messagePart;
-  }
-
-  public Map<String, Object> constructParamsField(String channel, String messageDataBase64) throws GeneralSecurityException {
-    Map<String, Object> paramsPart = new LinkedHashMap<>();
-    Map<String, Object> messagePart = constructMessageField(messageDataBase64);
-
-    paramsPart.put("channel", channel);
-    paramsPart.put("message", messagePart);
-
-    return paramsPart;
+    return messageField;
   }
 
   /** Constructs a valid signature on given data */

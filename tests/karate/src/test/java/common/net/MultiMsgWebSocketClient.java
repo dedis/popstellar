@@ -7,7 +7,6 @@ import com.intuit.karate.Json;
 import com.intuit.karate.Logger;
 import com.intuit.karate.http.WebSocketClient;
 import com.intuit.karate.http.WebSocketOptions;
-import common.utils.Base64Utils;
 
 import java.util.*;
 import java.util.function.Predicate;
@@ -22,9 +21,9 @@ public class MultiMsgWebSocketClient extends WebSocketClient {
   public final Logger logger;
 
   /** Map of all the messages and their corresponding message ids that the client sent */
-  private final HashMap<String, Integer> sentMessageIds = new HashMap<>();
+  private final HashMap<String, Integer> sentMessages = new HashMap<>();
   /** Collects all broadcasts that were received */
-  public ArrayList<String> broadcasts = new ArrayList<>();
+  public ArrayList<String> receivedBroadcasts = new ArrayList<>();
 
   private final static int TIMEOUT = 5000;
 
@@ -50,23 +49,23 @@ public class MultiMsgWebSocketClient extends WebSocketClient {
    *                    (for example: subscribe and catchup in simpleScenarios.feature).
    */
   public void send(Map<String, Object> messageData){
-    this.send(mapToJson(messageData));
+    this.send(mapToJsonString(messageData));
   }
 
   /**
    * JSON messages defined inside features are interpreted as maps from String to Object.
-   * This method is called directly inside features to send a full publish message given the high-level message data to publish.
+   * This method is called directly inside features to send a complete publish message given the high-level message data to publish.
    * @param highLevelMessageDataMap the high-level message to publish as a JSON map
    *                                (for example: validCreateRollCall and badCreateRollCall in createRollCall.feature).
    * @param channel the channel to publish on.
    */
   public void publish(Map<String, Object> highLevelMessageDataMap, String channel){
-    String highLevelMessageData = mapToJson(highLevelMessageDataMap);
+    String highLevelMessageData = mapToJsonString(highLevelMessageDataMap);
     int messageId = new Random().nextInt();
-    sentMessageIds.put(highLevelMessageData, messageId);
-    Json publishMessageJson =  jsonConverter.createPublishMessage(highLevelMessageData, messageId, channel);
+    sentMessages.put(highLevelMessageData, messageId);
+    Json publishMessageJson =  jsonConverter.constructPublishMessage(highLevelMessageData, messageId, channel);
     String publishMessage = publishMessageJson.toString();
-    System.out.println("The final sent publish message is : " + publishMessage);
+    System.out.println("The complete publish message sent is : " + publishMessage);
     this.send(publishMessage);
   }
 
@@ -76,9 +75,9 @@ public class MultiMsgWebSocketClient extends WebSocketClient {
    * @return the answer to the given message or throws an error if there is none.
    */
   public String getBackendResponse(Map<String, Object> highLevelMessageDataMap){
-    String highLevelMessageData = mapToJson(highLevelMessageDataMap);
-    assert sentMessageIds.containsKey(highLevelMessageData);
-    int messageId = sentMessageIds.get(highLevelMessageData);
+    String highLevelMessageData = mapToJsonString(highLevelMessageDataMap);
+    assert sentMessages.containsKey(highLevelMessageData);
+    int messageId = sentMessages.get(highLevelMessageData);
 
     String answer = getBuffer().takeTimeout(TIMEOUT);
     while(answer != null){
@@ -86,12 +85,12 @@ public class MultiMsgWebSocketClient extends WebSocketClient {
         Json resultJson = Json.of(answer);
         int resultId = resultJson.get("id");
         if (messageId == resultId){
-          sentMessageIds.remove(highLevelMessageData);
+          sentMessages.remove(highLevelMessageData);
           return answer;
         }
       }
       if (answer.contains("broadcast")){
-        broadcasts.add(answer);
+        receivedBroadcasts.add(answer);
       }
       answer = getBuffer().takeTimeout(TIMEOUT);
     }
@@ -160,7 +159,7 @@ public class MultiMsgWebSocketClient extends WebSocketClient {
     return msg;
   }
 
-  private String mapToJson(Map<String, Object> jsonAsMap){
+  private String mapToJsonString(Map<String, Object> jsonAsMap){
     return Json.of(jsonAsMap).toString();
   }
 }
