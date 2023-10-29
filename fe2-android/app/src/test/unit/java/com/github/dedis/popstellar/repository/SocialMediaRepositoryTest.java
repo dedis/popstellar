@@ -5,20 +5,25 @@ import android.app.Application;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
-import com.github.dedis.popstellar.di.AppDatabaseModuleHelper;
 import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.repository.database.AppDatabase;
+import com.github.dedis.popstellar.repository.database.socialmedia.ChirpDao;
+import com.github.dedis.popstellar.repository.database.socialmedia.ReactionDao;
 import com.github.dedis.popstellar.utility.error.UnknownChirpException;
 
 import org.junit.*;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import java.time.Instant;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
+import io.reactivex.Completable;
+import io.reactivex.Single;
 import io.reactivex.observers.TestObserver;
 
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.*;
@@ -26,12 +31,17 @@ import static com.github.dedis.popstellar.testutils.ObservableUtils.assertCurren
 import static java.util.Collections.addAll;
 import static java.util.Collections.emptySet;
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
 
 @RunWith(AndroidJUnit4.class)
 public class SocialMediaRepositoryTest {
 
   private static final Application APPLICATION = ApplicationProvider.getApplicationContext();
-  private static AppDatabase appDatabase;
+  @Mock private static AppDatabase appDatabase;
+  @Mock private static ReactionDao reactionDao;
+  @Mock private static ChirpDao chirpDao;
   private static final String LAO_ID = Lao.generateLaoId(generatePublicKey(), 1000, "LAO");
 
   private static final PublicKey SENDER = generatePublicKey();
@@ -56,15 +66,19 @@ public class SocialMediaRepositoryTest {
 
   private static SocialMediaRepository repo;
 
+  @Rule(order = 0)
+  public final MockitoRule mockitoRule = MockitoJUnit.rule();
+
   @Before
   public void setup() {
-    appDatabase = AppDatabaseModuleHelper.getAppDatabase(APPLICATION);
+    when(appDatabase.chirpDao()).thenReturn(chirpDao);
+    when(appDatabase.reactionDao()).thenReturn(reactionDao);
     repo = new SocialMediaRepository(appDatabase, APPLICATION);
-  }
 
-  @After
-  public void tearDown() {
-    appDatabase.close();
+    when(chirpDao.insert(any())).thenReturn(Completable.complete());
+    when(reactionDao.insert(any())).thenReturn(Completable.complete());
+    when(chirpDao.getChirpsByLaoId(anyString())).thenReturn(Single.just(Collections.emptyList()));
+    when(reactionDao.getReactionsByChirpId(any())).thenReturn(Single.just(Collections.emptyList()));
   }
 
   @Test

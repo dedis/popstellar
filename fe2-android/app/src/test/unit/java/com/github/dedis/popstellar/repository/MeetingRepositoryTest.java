@@ -5,25 +5,34 @@ import android.app.Application;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
-import com.github.dedis.popstellar.di.AppDatabaseModuleHelper;
 import com.github.dedis.popstellar.model.objects.Meeting;
 import com.github.dedis.popstellar.repository.database.AppDatabase;
+import com.github.dedis.popstellar.repository.database.event.meeting.MeetingDao;
 import com.github.dedis.popstellar.utility.error.UnknownMeetingException;
 
 import org.junit.*;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import java.util.*;
 
+import io.reactivex.Completable;
+import io.reactivex.Single;
 import io.reactivex.observers.TestObserver;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
 
 @RunWith(AndroidJUnit4.class)
 public class MeetingRepositoryTest {
   private static final Application APPLICATION = ApplicationProvider.getApplicationContext();
-  private static AppDatabase appDatabase;
+  @Mock private static AppDatabase appDatabase;
+  @Mock private static MeetingDao meetingDao;
   private static MeetingRepository meetingRepository;
   private static final String LAO_ID = "LAO_ID";
   private static final String ID = "ID";
@@ -47,16 +56,18 @@ public class MeetingRepositoryTest {
           MODIFICATION_ID,
           MODIFICATION_SIGNATURES);
 
+  @Rule(order = 0)
+  public final MockitoRule mockitoRule = MockitoJUnit.rule();
+
   @Before
   public void setUp() {
-    appDatabase = AppDatabaseModuleHelper.getAppDatabase(APPLICATION);
+    when(appDatabase.meetingDao()).thenReturn(meetingDao);
     meetingRepository = new MeetingRepository(appDatabase, APPLICATION);
-    meetingRepository.updateMeeting(LAO_ID, meeting);
-  }
 
-  @After
-  public void tearDown() {
-    appDatabase.close();
+    when(meetingDao.insert(any())).thenReturn(Completable.complete());
+    when(meetingDao.getMeetingsByLaoId(anyString()))
+        .thenReturn(Single.just(Collections.emptyList()));
+    meetingRepository.updateMeeting(LAO_ID, meeting);
   }
 
   @Test
