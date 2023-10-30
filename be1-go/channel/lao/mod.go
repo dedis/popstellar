@@ -704,7 +704,7 @@ func (c *Channel) createAndSendLAOGreet() error {
 
 	peersInfo := c.hub.GetPeersInfo()
 
-	peers := make([]messagedata.Peer, len(peersInfo))
+	peers := make([]messagedata.Peer, 0, len(peersInfo))
 
 	for _, info := range peersInfo {
 		peers = append(peers, messagedata.Peer{Address: info.ClientAddress})
