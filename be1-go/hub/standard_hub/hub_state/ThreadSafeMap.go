@@ -28,8 +28,8 @@ func (i *ThreadSafeMap[K, V]) Set(key K, val V) {
 
 // GetTable returns a shallow copy of the map
 func (i *ThreadSafeMap[K, V]) GetTable() map[K]V {
-	i.Lock()
-	defer i.Unlock()
+	i.RLock()
+	defer i.RUnlock()
 	tableCopy := make(map[K]V, len(i.table))
 	for key, val := range i.table {
 		tableCopy[key] = val
@@ -38,7 +38,7 @@ func (i *ThreadSafeMap[K, V]) GetTable() map[K]V {
 }
 
 func (i *ThreadSafeMap[K, V]) IsEmpty() bool {
-	i.Lock()
-	defer i.Unlock()
+	i.RLock()
+	defer i.RUnlock()
 	return len(i.table) == 0
 }

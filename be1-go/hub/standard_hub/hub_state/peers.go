@@ -36,9 +36,6 @@ func (p *Peers) AddPeerInfo(socketId string, info method.ServerInfo) {
 func (p *Peers) AddPeerGreeted(socketId string) {
 	p.Lock()
 	defer p.Unlock()
-	if slices.Contains(maps.Keys(p.peersGreeted), socketId) {
-		return
-	}
 	p.peersGreeted[socketId] = struct{}{}
 }
 
@@ -48,7 +45,9 @@ func (p *Peers) GetAllPeersInfo() []method.ServerInfo {
 	defer p.RUnlock()
 	peersInfo := make([]method.ServerInfo, 0, len(p.peersInfo))
 	for _, info := range p.peersInfo {
-		peersInfo = append(peersInfo, info)
+		if !slices.Contains(peersInfo, info) {
+			peersInfo = append(peersInfo, info)
+		}
 	}
 	return peersInfo
 }

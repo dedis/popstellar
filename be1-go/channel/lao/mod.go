@@ -4,7 +4,6 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"golang.org/x/exp/maps"
 	popstellar "popstellar"
 	"popstellar/channel"
 	"popstellar/channel/authentication"
@@ -705,10 +704,10 @@ func (c *Channel) createAndSendLAOGreet() error {
 
 	peersInfo := c.hub.GetPeersInfo()
 
-	peers := make(map[messagedata.Peer]struct{}, len(peersInfo))
+	peers := make([]messagedata.Peer, len(peersInfo))
 
 	for _, info := range peersInfo {
-		peers[messagedata.Peer{Address: info.ClientAddress}] = struct{}{}
+		peers = append(peers, messagedata.Peer{Address: info.ClientAddress})
 	}
 
 	msgData := messagedata.LaoGreet{
@@ -717,7 +716,7 @@ func (c *Channel) createAndSendLAOGreet() error {
 		LaoID:    c.extractLaoID(),
 		Frontend: base64.URLEncoding.EncodeToString(orgPkBuf),
 		Address:  c.hub.GetClientServerAddress(),
-		Peers:    maps.Keys(peers),
+		Peers:    peers,
 	}
 
 	// Marshalls the message data

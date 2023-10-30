@@ -9,6 +9,13 @@ type MessageIds struct {
 	ThreadSafeMap[string, []string]
 }
 
+// NewMessageIdsMap creates a new MessageIds structure
+func NewMessageIdsMap() MessageIds {
+	return MessageIds{
+		ThreadSafeMap: NewThreadSafeMap[string, []string](),
+	}
+}
+
 // Add adds a message id to the slice of message ids of the channel
 func (i *MessageIds) Add(channel string, id string) {
 	i.Lock()

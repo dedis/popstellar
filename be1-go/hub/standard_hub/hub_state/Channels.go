@@ -7,6 +7,13 @@ type Channels struct {
 	ThreadSafeMap[string, channel.Channel]
 }
 
+// NewChannelsMap creates a new Channels structure
+func NewChannelsMap() Channels {
+	return Channels{
+		ThreadSafeMap: NewThreadSafeMap[string, channel.Channel](),
+	}
+}
+
 // ForEach iterates over all channels and applies the given function
 func (c *Channels) ForEach(f func(channel.Channel)) {
 	c.Lock()
