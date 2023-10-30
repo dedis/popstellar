@@ -5,16 +5,16 @@ Feature: Simple Transactions for digital cash
     # Call read(...) makes this feature and the called feature share the same scope
     # Meaning they share def variables, configurations ...
     # Especially JS functions defined in the called features can be directly used here thanks to Karate shared scopes
-    * call read('classpath:be/features/utils/server.feature')
-    * call read('classpath:be/features/utils/mockClient.feature')
     * call read('classpath:be/features/utils/constants.feature')
+    * call read(serverFeature)
+    * call read(mockClientFeature)
     * def organizer = call createMockClient
     * def recipient = call createMockClient
     * def lao = organizer.createValidLao()
     * def rollCall = organizer.createValidRollCall(lao)
 
     # This call executes all the steps to set up a lao, complete a roll call and subscribe to the coin channel
-    * call read('classpath:be/features/utils/simpleScenarios.feature@name=setup_coin_channel') { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)' }
+    * call read(setupCoinChannelScenario) { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)' }
 
   Scenario: Valid transaction: issue 32 mini-Laos to an attendee
     Given def transaction = organizer.issueCoins(recipient, 32);
@@ -60,7 +60,7 @@ Feature: Simple Transactions for digital cash
   Scenario: Transfer valid amount should work
     # This call issues initialAmount coins to the recipient
     Given def initialAmount = 32
-    And call read('classpath:be/utils/simpleScenarios.feature@name=valid_coin_issuance') { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)', recipient: '#(recipient)', amount: '#(initialAmount)' }
+    And call read(validCoinIssuanceScenario) { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)', recipient: '#(recipient)', amount: '#(initialAmount)' }
     And def transaction = organizer.issueCoins(recipient, 20);
     And def postTransaction = transaction.post()
     And def input = transaction.inputs[1]
