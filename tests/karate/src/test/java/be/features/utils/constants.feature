@@ -20,8 +20,8 @@ Feature: Constants
 
     # Paths to scenarios defined in simpleScenarios
     * def simpleScenario = 'classpath:be/features/utils/simpleScenarios.feature@name='
-    * def createLaoScenario = simpleScenario + 'valid_lao'
-    * def createRollCallScenario = simpleScenario + 'valid_roll_call'
+    * def createLaoScenario = simpleScenario + 'create_lao'
+    * def createRollCallScenario = simpleScenario + 'create_roll_call'
     * def openRollCallScenario = simpleScenario + 'open_roll_call'
     * def closeRollCallScenario = simpleScenario + 'close_roll_call'
     * def setupElectionScenario = simpleScenario + 'election_setup'
