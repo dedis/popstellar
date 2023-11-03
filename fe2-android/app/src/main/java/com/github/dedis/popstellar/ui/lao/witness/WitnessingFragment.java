@@ -2,10 +2,9 @@ package com.github.dedis.popstellar.ui.lao.witness;
 
 import android.os.Bundle;
 import android.view.*;
-
+import android.widget.Toast;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
-
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.ui.lao.LaoActivity;
 import com.github.dedis.popstellar.ui.lao.LaoViewModel;
@@ -41,6 +40,13 @@ public class WitnessingFragment extends Fragment {
             ((tab, position) ->
                 tab.setText(position == 0 ? R.string.messages : R.string.witnesses)))
         .attach();
+
+    if (!LaoActivity.obtainWitnessingViewModel(
+            requireActivity(), LaoActivity.obtainViewModel(requireActivity()).getLaoId())
+        .isWitness()) {
+      Toast.makeText(requireContext(), R.string.not_a_witness, Toast.LENGTH_SHORT).show();
+    }
+
     handleBackNav();
     return view;
   }
