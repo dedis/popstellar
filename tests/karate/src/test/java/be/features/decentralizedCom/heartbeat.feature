@@ -17,13 +17,14 @@ Feature: Send heartbeats to other servers
     # (lao creation, subscribe, catchup)
     * call read(createLaoScenario) { organizer: '#(mockServer)', lao: '#(lao)' }
 
-  # After lao creation, wait and do nothing (30 seconds for now) and check that a heartbeat message was received
+  # After lao creation, wait and do nothing (40 seconds for now) and check that more than one heartbeat message was received.
+  # (The initial one would be a response to publishing lao creation)
   Scenario: Server should send heartbeat messages automatically after a time interval
-    Given wait(30)
+    Given wait(40)
 
     When def heartbeatMessages = mockServer.getMessagesByMethod('heartbeat')
 
-    Then assert heartbeatMessages.length > 0
+    Then assert heartbeatMessages.length > 1
 
   # Check that after receiving a publish message (in this case a create roll call), the server sends a heartbeat
   Scenario: Server should send heartbeat messages after receiving a publish
@@ -43,6 +44,4 @@ Feature: Send heartbeats to other servers
       """
 
     When mockServer.publish(validCreateRollCall, lao.channel)
-    And def heartbeatMessages = mockServer.getMessagesByMethod('heartbeat')
-
-    Then assert heartbeatMessages.length == 1
+    Then assert mockServer.receivedHeartbeatContainingMessageId(validCreateRollCall)

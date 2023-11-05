@@ -21,9 +21,11 @@ public class MultiMsgWebSocketClient extends WebSocketClient {
   public final Logger logger;
 
   /** Map of all the messages and their corresponding message ids that the client sent */
-  private final HashMap<String, Integer> sentMessages = new HashMap<>();
+  private final HashMap<String, PublishMessageIds> sentMessages = new HashMap<>();
   /** Collects all broadcasts that were received */
-  public ArrayList<String> receivedBroadcasts = new ArrayList<>();
+  public List<String> receivedBroadcasts = new ArrayList<>();
+  /** Collects all heartbeats that were received */
+  public List<String> receivedHeartbeats = new ArrayList<>();
 
   private final static int TIMEOUT = 5000;
 
@@ -62,22 +64,24 @@ public class MultiMsgWebSocketClient extends WebSocketClient {
   public void publish(Map<String, Object> highLevelMessageDataMap, String channel){
     String highLevelMessageData = mapToJsonString(highLevelMessageDataMap);
     int messageId = new Random().nextInt(Integer.MAX_VALUE);
-    sentMessages.put(highLevelMessageData, messageId);
     Json publishMessageJson =  jsonConverter.constructPublishMessage(highLevelMessageData, messageId, channel);
+    PublishMessageIds publishMessageIds = new PublishMessageIds(messageId, publishMessageJson.get("params.message.message_id"));
+    sentMessages.put(highLevelMessageData, publishMessageIds);
     String publishMessage = publishMessageJson.toString();
     System.out.println("The complete publish message sent is : " + publishMessage);
     this.send(publishMessage);
   }
 
   /**
-   * Waits to receive the backend answer to a given message and returns the answer.
+   * Retrieves the backend answer to a given message and returns it.
+   * Also stores broadcasts that were received while waiting for an answer.
    * @param highLevelMessageDataMap of the message that the answer is expected for.
    * @return the answer to the given message or throws an error if there is none.
    */
   public String getBackendResponse(Map<String, Object> highLevelMessageDataMap){
     String highLevelMessageData = mapToJsonString(highLevelMessageDataMap);
     assert sentMessages.containsKey(highLevelMessageData);
-    int messageId = sentMessages.get(highLevelMessageData);
+    int messageId = sentMessages.get(highLevelMessageData).id;
 
     String answer = getBuffer().takeTimeout(TIMEOUT);
     while(answer != null){
@@ -85,7 +89,6 @@ public class MultiMsgWebSocketClient extends WebSocketClient {
         Json resultJson = Json.of(answer);
         int resultId = resultJson.get("id");
         if (messageId == resultId){
-          sentMessages.remove(highLevelMessageData);
           return answer;
         }
       }
@@ -115,6 +118,22 @@ public class MultiMsgWebSocketClient extends WebSocketClient {
       message = getBuffer().takeTimeout(TIMEOUT);
     }
     return messages;
+  }
+
+  /**
+   * Checks if a heartbeat containing the message_id corresponding to a given high level message was received.
+   */
+  public boolean receivedHeartbeatContainingMessageId(Map<String, Object> highLevelMessageDataMap){
+    receivedHeartbeats = getMessagesByMethod("heartbeat");
+    String highLevelMessageData = mapToJsonString(highLevelMessageDataMap);
+    String message_id = sentMessages.get(highLevelMessageData).message_id;
+    for(String heartbeat : receivedHeartbeats){
+      if(heartbeat.contains(message_id)){
+        System.out.println("Found a heartbeat containing message_id " + message_id);
+        return true;
+      }
+    }
+    return false;
   }
 
   public MessageBuffer getBuffer() {
@@ -161,5 +180,19 @@ public class MultiMsgWebSocketClient extends WebSocketClient {
 
   private String mapToJsonString(Map<String, Object> jsonAsMap){
     return Json.of(jsonAsMap).toString();
+  }
+
+  /** A publish message has two ids:
+   * The id field, a random integer: It is used to match sent query messages to the corresponding backend answer.
+   * The params/message/message_id field, a String: The hash of the base64 message data and the signature,
+   * computed in {@link JsonConverter#constructMessageField(String)} */
+  private static class PublishMessageIds {
+    public int id;
+    public String message_id;
+
+    public PublishMessageIds(int id, String message_id){
+      this.id = id;
+      this.message_id = message_id;
+    }
   }
 }
