@@ -61,7 +61,7 @@ public class MultiMsgWebSocketClient extends WebSocketClient {
    */
   public void publish(Map<String, Object> highLevelMessageDataMap, String channel){
     String highLevelMessageData = mapToJsonString(highLevelMessageDataMap);
-    int messageId = new Random().nextInt();
+    int messageId = new Random().nextInt(Integer.MAX_VALUE);
     sentMessages.put(highLevelMessageData, messageId);
     Json publishMessageJson =  jsonConverter.constructPublishMessage(highLevelMessageData, messageId, channel);
     String publishMessage = publishMessageJson.toString();

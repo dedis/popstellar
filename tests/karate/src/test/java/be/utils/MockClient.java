@@ -106,6 +106,6 @@ public class MockClient extends MultiMsgWebSocketClient {
       }
     }
     assert false;
-    throw new IllegalArgumentException("No election results where received");
+    throw new IllegalArgumentException("No election results were received");
   }
 }
