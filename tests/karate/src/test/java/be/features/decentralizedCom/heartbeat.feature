@@ -10,12 +10,14 @@ Feature: Send heartbeats to other servers
     * call read(serverFeature)
     * call read(mockClientFeature)
     * def mockServer = call createMockClient
-    * def lao = mockServer.createValidLao()
-    * def validRollCall = mockServer.createValidRollCall(lao)
+    * def mockFrontend = call createMockClient
+    * def lao = mockFrontend.createValidLao()
+    * def validRollCall = mockFrontend.createValidRollCall(lao)
 
     # This call executes all the steps to create a valid lao on the server before every scenario
     # (lao creation, subscribe, catchup)
-    * call read(createLaoScenario) { organizer: '#(mockServer)', lao: '#(lao)' }
+    * call read(createLaoScenario) { organizer: '#(mockFrontend)', lao: '#(lao)' }
+    * call read(greetServerScenario) { mockServer: '#(mockServer)' }
 
   # After lao creation, wait and do nothing (40 seconds for now) and check that more than one heartbeat message was received.
   # (The initial one would be a response to publishing lao creation)
@@ -43,5 +45,5 @@ Feature: Send heartbeats to other servers
         }
       """
 
-    When mockServer.publish(validCreateRollCall, lao.channel)
+    When mockFrontend.publish(validCreateRollCall, lao.channel)
     Then assert mockServer.receivedHeartbeatContainingMessageId(validCreateRollCall)

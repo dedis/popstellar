@@ -29,3 +29,4 @@ Feature: Constants
     * def castVoteScenario = simpleScenario + 'cast_vote'
     * def setupCoinChannelScenario = simpleScenario + 'setup_coin_channel'
     * def validCoinIssuanceScenario = simpleScenario + 'valid_coin_issuance'
+    * def greetServerScenario = simpleScenario + 'greet_server'
