@@ -6,15 +6,15 @@ Feature: Update a LAO
     # Call read(...) makes this feature and the called feature share the same scope
     # Meaning they share def variables, configurations ...
     # Especially JS functions defined in the called features can be directly used here thanks to Karate shared scopes
-    * call read('classpath:be/features/utils/server.feature')
-    * call read('classpath:be/features/utils/mockClient.feature')
     * call read('classpath:be/features/utils/constants.feature')
+    * call read(serverFeature)
+    * call read(mockClientFeature)
     * def organizer = call createMockClient
     * def lao = organizer.createValidLao()
 
     # This call executes all the steps to create a valid lao on the server before every scenario
     # (lao creation, subscribe, catchup)
-    * call read('classpath:be/features/utils/simpleScenarios.feature@name=valid_lao') { organizer: '#(organizer)', lao: '#(lao)' }
+    * call read(createLaoScenario) { organizer: '#(organizer)', lao: '#(lao)' }
 
   Scenario: Update Lao should succeed with a valid update request with new lao name
     Given def updateLaoRequest =

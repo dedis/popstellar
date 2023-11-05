@@ -7,9 +7,9 @@ Feature: Create a pop LAO
     # Call read(...) makes this feature and the called feature share the same scope
     # Meaning they share def variables, configurations ...
     # Especially JS functions defined in the called features can be directly used here thanks to Karate shared scopes
-    * call read('classpath:be/features/utils/server.feature')
-    * call read('classpath:be/features/utils/mockClient.feature')
     * call read('classpath:be/features/utils/constants.feature')
+    * call read(serverFeature)
+    * call read(mockClientFeature)
     * def organizer = call createMockClient
     * def validLao = organizer.createValidLao()
 

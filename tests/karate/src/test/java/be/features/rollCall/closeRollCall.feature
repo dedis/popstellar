@@ -7,16 +7,16 @@ Feature: Close a Roll Call
     # Call read(...) makes this feature and the called feature share the same scope
     # Meaning they share def variables, configurations ...
     # Especially JS functions defined in the called features can be directly used here thanks to Karate shared scopes
-    * call read('classpath:be/features/utils/server.feature')
-    * call read('classpath:be/features/utils/mockClient.feature')
     * call read('classpath:be/features/utils/constants.feature')
+    * call read(serverFeature)
+    * call read(mockClientFeature)
     * def organizer = call createMockClient
     * def lao = organizer.createValidLao()
     * def rollCall = organizer.createValidRollCall(lao)
 
     # This call executes all the steps to open a valid roll call on the server before every scenario
     # (lao creation, subscribe, catchup, roll call creation, roll call open)
-    * call read('classpath:be/features/utils/simpleScenarios.feature@name=open_roll_call') { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)' }
+    * call read(openRollCallScenario) { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)' }
     * def closeRollCall = rollCall.close()
 
   # Testing if after setting up a valid lao, subscribing to it, sending a catchup
@@ -79,7 +79,7 @@ Feature: Close a Roll Call
   Scenario: Closing a Roll Call that was not opened on the server returns an error
     Given def newRollCall = organizer.createValidRollCall(lao)
     # This call creates the new roll call on the server without opening it
-    And call read('classpath:be/utils/simpleScenarios.feature@name=valid_roll_call') { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(newRollCall)' }
+    And call read(createRollCallScenario) { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(newRollCall)' }
     And def closeNewRollCall = newRollCall.close()
     And def validCloseRollCall =
       """

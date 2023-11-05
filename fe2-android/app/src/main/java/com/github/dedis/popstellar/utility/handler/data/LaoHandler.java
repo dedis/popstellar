@@ -9,11 +9,8 @@ import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.*;
 import com.github.dedis.popstellar.utility.error.*;
 import com.github.dedis.popstellar.utility.security.KeyManager;
-
 import java.util.*;
-
 import javax.inject.Inject;
-
 import timber.log.Timber;
 
 /** Lao messages handler class */
@@ -56,7 +53,8 @@ public final class LaoHandler {
   public void handleCreateLao(HandlerContext context, CreateLao createLao)
       throws UnknownLaoException {
     Channel channel = context.getChannel();
-    Set<PublicKey> witnesses = new HashSet<>(createLao.getWitnesses());
+    // TODO: Uncomment this line when we want to restore the witnessing functionalities
+    Set<PublicKey> witnesses = new HashSet<>(); // new HashSet<>(createLao.getWitnesses());
 
     Timber.tag(TAG).d("handleCreateLao: channel: %s, msg: %s", channel, createLao);
     Lao lao = new Lao(createLao.getId());

@@ -141,6 +141,7 @@
   <string name="sign">Sign</string>
   <string name="signed">Signed</string>
   <string name="confirm_delete_witnessed_messages">Do you want to delete the messages already passing the witnessing policy?</string>
+  <string name="not_a_witness">You\'re not a witness!</string>
 
   <!--  Roll Call -->
   <string name="roll_call_setup_title">Roll Call Setup</string>
