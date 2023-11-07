@@ -4,9 +4,9 @@ import (
 	"context"
 	"encoding/base64"
 	"encoding/json"
-	"golang.org/x/exp/slices"
 	"popstellar/channel"
 	"popstellar/crypto"
+	state "popstellar/hub/standard_hub/hub_state"
 	"popstellar/inbox"
 	jsonrpc "popstellar/message"
 	"popstellar/message/answer"
@@ -58,7 +58,7 @@ type Hub struct {
 	messageChan chan socket.IncomingMessage
 
 	sync.RWMutex
-	channelByID map[string]channel.Channel
+	channelByID state.Channels
 
 	closedSockets chan string
 
@@ -84,43 +84,20 @@ type Hub struct {
 
 	// rootInbox and queries are used to help servers catchup to each other
 	rootInbox inbox.Inbox
-	queries   queries
+	queries   state.Queries
 
 	// messageIdsByChannel stores all the message ids and the corresponding channel ids
 	// to help servers determine in which channel the message ids go
-	messageIdsByChannel map[string][]string
+	messageIdsByChannel state.MessageIds
 
-	// peersInfo stores the info of the peers: public key, client and server endpoints associated with the socket ID
-	peersInfo map[string]method.ServerInfo
-
-	// peersGreeted stores the peers that were greeted by the socket ID
-	peersGreeted []string
+	// peers stores information about the peers
+	peers state.Peers
 
 	// blacklist stores the IDs of the messages that failed to be processed by the hub
 	// the server will not ask for them again in the heartbeat
 	// and will not process them if they are received again
 	// @TODO remove the messages from the blacklist after a certain amount of time by trying to process them again
 	blacklist []string
-}
-
-// newQueries creates a new queries struct
-func newQueries() queries {
-	return queries{
-		state:                  make(map[int]*bool),
-		getMessagesByIdQueries: make(map[int]method.GetMessagesById),
-	}
-}
-
-// queries let the hub remember all queries that it sent to other servers
-type queries struct {
-	sync.Mutex
-	// state stores the ID of the server's queries and their state. False for a
-	// query not yet answered, else true.
-	state map[int]*bool
-	// getMessagesByIdQueries stores the server's getMessagesByIds queries by their ID.
-	getMessagesByIdQueries map[int]method.GetMessagesById
-	// nextID store the ID of the next query
-	nextID int
 }
 
 // NewHub returns a new Hub.
@@ -140,7 +117,7 @@ func NewHub(pubKeyOwner kyber.Point, clientServerAddress string, serverServerAdd
 		clientServerAddress: clientServerAddress,
 		serverServerAddress: serverServerAddress,
 		messageChan:         make(chan socket.IncomingMessage),
-		channelByID:         make(map[string]channel.Channel),
+		channelByID:         state.NewChannelsMap(),
 		closedSockets:       make(chan string),
 		pubKeyOwner:         pubKeyOwner,
 		pubKeyServ:          pubServ,
@@ -153,10 +130,9 @@ func NewHub(pubKeyOwner kyber.Point, clientServerAddress string, serverServerAdd
 		serverSockets:       channel.NewSockets(),
 		hubInbox:            *inbox.NewInbox(rootChannel),
 		rootInbox:           *inbox.NewInbox(rootChannel),
-		queries:             newQueries(),
-		messageIdsByChannel: make(map[string][]string),
-		peersInfo:           make(map[string]method.ServerInfo),
-		peersGreeted:        make([]string, 0),
+		queries:             state.NewQueries(),
+		messageIdsByChannel: state.NewMessageIdsMap(),
+		peers:               state.NewPeers(),
 		blacklist:           make([]string, 0),
 	}
 
@@ -198,12 +174,10 @@ func (h *Hub) Start() {
 					}
 				}()
 			case id := <-h.closedSockets:
-				h.RLock()
-				for _, channel := range h.channelByID {
+				h.channelByID.ForEach(func(c channel.Channel) {
 					// dummy Unsubscribe message because it's only used for logging...
-					channel.Unsubscribe(id, method.Unsubscribe{})
-				}
-				h.RUnlock()
+					c.Unsubscribe(id, method.Unsubscribe{})
+				})
 			case <-h.stop:
 				h.log.Info().Msg("stopping the hub")
 				return
@@ -264,9 +238,6 @@ func (h *Hub) OnSocketClose() chan<- string {
 
 // SendGreetServer implements hub.Hub
 func (h *Hub) SendGreetServer(socket socket.Socket) error {
-	h.Lock()
-	defer h.Unlock()
-
 	pk, err := h.pubKeyServ.MarshalBinary()
 	if err != nil {
 		return xerrors.Errorf("failed to marshal server public key: %v", err)
@@ -295,7 +266,7 @@ func (h *Hub) SendGreetServer(socket socket.Socket) error {
 
 	socket.Send(buf)
 
-	h.peersGreeted = append(h.peersGreeted, socket.ID())
+	h.peers.AddPeerGreeted(socket.ID())
 	return nil
 }
 
@@ -304,10 +275,7 @@ func (h *Hub) getChan(channelPath string) (channel.Channel, error) {
 		return nil, xerrors.Errorf("channel not prefixed with '%s': %q", rootPrefix, channelPath)
 	}
 
-	h.RLock()
-	defer h.RUnlock()
-
-	channel, ok := h.channelByID[channelPath]
+	channel, ok := h.channelByID.Get(channelPath)
 	if !ok {
 		return nil, xerrors.Errorf("channel %s does not exist", channelPath)
 	}
@@ -495,12 +463,7 @@ func (h *Hub) handleIncomingMessage(incomingMessage *socket.IncomingMessage) err
 
 // sendGetMessagesByIdToServer sends a getMessagesById message to a server
 func (h *Hub) sendGetMessagesByIdToServer(socket socket.Socket, missingIds map[string][]string) error {
-	h.Lock()
-	defer h.Unlock()
-
-	queryId := h.queries.nextID
-	baseValue := false
-	h.queries.state[queryId] = &baseValue
+	queryId := h.queries.GetNextID()
 
 	getMessagesById := method.GetMessagesById{
 		Base: query.Base{
@@ -518,36 +481,33 @@ func (h *Hub) sendGetMessagesByIdToServer(socket socket.Socket, missingIds map[s
 		return xerrors.Errorf("failed to marshal getMessagesById query: %v", err)
 	}
 
-	h.queries.getMessagesByIdQueries[queryId] = getMessagesById
-	h.queries.nextID++
-
 	socket.Send(buf)
+
+	h.queries.AddQuery(queryId, getMessagesById)
 
 	return nil
 }
 
 // sendHeartbeatToServers sends a heartbeat message to all servers
 func (h *Hub) sendHeartbeatToServers() {
-	h.Lock()
-	defer h.Unlock()
-	if len(h.messageIdsByChannel) > 0 {
-		heartbeatMessage := method.Heartbeat{
-			Base: query.Base{
-				JSONRPCBase: jsonrpc.JSONRPCBase{
-					JSONRPC: "2.0",
-				},
-				Method: "heartbeat",
-			},
-			Params: h.messageIdsByChannel,
-		}
-
-		buf, err := json.Marshal(heartbeatMessage)
-		if err != nil {
-			h.log.Err(err).Msg("Failed to marshal and send heartbeat query")
-		}
-
-		h.serverSockets.SendToAll(buf)
+	if h.messageIdsByChannel.IsEmpty() {
+		return
 	}
+	heartbeatMessage := method.Heartbeat{
+		Base: query.Base{
+			JSONRPCBase: jsonrpc.JSONRPCBase{
+				JSONRPC: "2.0",
+			},
+			Method: "heartbeat",
+		},
+		Params: h.messageIdsByChannel.GetTable(),
+	}
+
+	buf, err := json.Marshal(heartbeatMessage)
+	if err != nil {
+		h.log.Err(err).Msg("Failed to marshal and send heartbeat query")
+	}
+	h.serverSockets.SendToAll(buf)
 }
 
 // createLao creates a new LAO using the data in the publish parameter.
@@ -556,7 +516,7 @@ func (h *Hub) createLao(msg message.Message, laoCreate messagedata.LaoCreate,
 
 	laoChannelPath := rootPrefix + laoCreate.ID
 
-	if _, ok := h.channelByID[laoChannelPath]; ok {
+	if _, ok := h.channelByID.Get(laoChannelPath); ok {
 		return answer.NewDuplicateResourceError("failed to create lao: duplicate lao path: %q", laoChannelPath)
 	}
 
@@ -637,28 +597,16 @@ func (h *Hub) GetSchemaValidator() validation.SchemaValidator {
 
 // NotifyNewChannel implements channel.HubFunctionalities
 func (h *Hub) NotifyNewChannel(channelID string, channel channel.Channel, sock socket.Socket) {
-	h.Lock()
-	h.channelByID[channelID] = channel
-	h.Unlock()
+	h.channelByID.Set(channelID, channel)
 }
 
 // NotifyWitnessMessage implements channel.HubFunctionalities
 func (h *Hub) NotifyWitnessMessage(messageId string, publicKey string, signature string) {
-	h.Lock()
 	h.hubInbox.AddWitnessSignature(messageId, publicKey, signature)
-	h.Unlock()
 }
 
 func (h *Hub) GetPeersInfo() []method.ServerInfo {
-	h.Lock()
-	defer h.Unlock()
-
-	var peersInfo []method.ServerInfo
-	for _, info := range h.peersInfo {
-		peersInfo = append(peersInfo, info)
-	}
-
-	return peersInfo
+	return h.peers.GetAllPeersInfo()
 }
 
 func generateKeys() (kyber.Point, kyber.Scalar) {
@@ -666,17 +614,4 @@ func generateKeys() (kyber.Point, kyber.Scalar) {
 	point := suite.Point().Mul(secret, nil)
 
 	return point, secret
-}
-
-// addMessageId adds a message ID to the map of messageIds by channel of the hub
-func (h *Hub) addMessageId(channelId string, messageId string) {
-	messageIds, channelStored := h.messageIdsByChannel[channelId]
-	if !channelStored {
-		h.messageIdsByChannel[channelId] = append(h.messageIdsByChannel[channelId], messageId)
-	} else {
-		alreadyStored := slices.Contains(messageIds, messageId)
-		if !alreadyStored {
-			h.messageIdsByChannel[channelId] = append(h.messageIdsByChannel[channelId], messageId)
-		}
-	}
 }

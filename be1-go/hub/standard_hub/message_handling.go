@@ -3,7 +3,6 @@ package standard_hub
 import (
 	"encoding/base64"
 	"encoding/json"
-	"github.com/rs/zerolog/log"
 	"popstellar/crypto"
 	jsonrpc "popstellar/message"
 	"popstellar/message/answer"
@@ -13,6 +12,8 @@ import (
 	"popstellar/message/query/method/message"
 	"popstellar/network/socket"
 	"popstellar/validation"
+
+	"github.com/rs/zerolog/log"
 
 	"go.dedis.ch/kyber/v3/sign/schnorr"
 
@@ -78,7 +79,7 @@ func (h *Hub) handleRootChannelPublishMessage(sock socket.Socket, publish method
 
 	h.rootInbox.StoreMessage(publish.Params.Message)
 	h.hubInbox.StoreMessage(publish.Params.Message)
-	h.addMessageId(publish.Params.Channel, publish.Params.Message.MessageID)
+	h.messageIdsByChannel.Add(publish.Params.Channel, publish.Params.Message.MessageID)
 
 	return nil
 }
@@ -143,7 +144,7 @@ func (h *Hub) handleRootChannelBroadcastMessage(sock socket.Socket,
 
 	h.rootInbox.StoreMessage(broadcast.Params.Message)
 	h.hubInbox.StoreMessage(broadcast.Params.Message)
-	h.addMessageId(broadcast.Params.Channel, broadcast.Params.Message.MessageID)
+	h.messageIdsByChannel.Add(broadcast.Params.Channel, broadcast.Params.Message.MessageID)
 
 	return nil
 }
@@ -189,21 +190,10 @@ func (h *Hub) handleAnswer(senderSocket socket.Socket, byteMessage []byte) error
 		return nil
 	}
 
-	h.queries.Lock()
-
-	val := h.queries.state[*answerMsg.ID]
-	if val == nil {
-		h.queries.Unlock()
-		return xerrors.Errorf("no query sent with id %v", answerMsg.ID)
+	err = h.queries.SetQueryReceived(*answerMsg.ID)
+	if err != nil {
+		return xerrors.Errorf("failed to set query state: %v", err)
 	}
-
-	if *val {
-		h.queries.Unlock()
-		return xerrors.Errorf("query %v already got an answer", answerMsg.ID)
-	}
-
-	*h.queries.state[*answerMsg.ID] = true
-	h.queries.Unlock()
 
 	err = h.handleGetMessagesByIdAnswer(senderSocket, answerMsg)
 	if err != nil {
@@ -275,7 +265,7 @@ func (h *Hub) handlePublish(socket socket.Socket, byteMessage []byte) (int, erro
 			return publish.ID, err
 		}
 		h.hubInbox.StoreMessage(publish.Params.Message)
-		h.addMessageId(publish.Params.Channel, publish.Params.Message.MessageID)
+		h.messageIdsByChannel.Add(publish.Params.Channel, publish.Params.Message.MessageID)
 		return publish.ID, nil
 	}
 
@@ -295,7 +285,7 @@ func (h *Hub) handlePublish(socket socket.Socket, byteMessage []byte) (int, erro
 	}
 
 	h.hubInbox.StoreMessage(publish.Params.Message)
-	h.addMessageId(publish.Params.Channel, publish.Params.Message.MessageID)
+	h.messageIdsByChannel.Add(publish.Params.Channel, publish.Params.Message.MessageID)
 
 	return publish.ID, nil
 }
@@ -318,16 +308,13 @@ func (h *Hub) handleBroadcast(socket socket.Socket, byteMessage []byte) error {
 			expectedMessageID, messageID)
 	}
 
-	h.Lock()
 	_, ok := h.hubInbox.GetMessage(broadcast.Params.Message.MessageID)
 	if ok {
 		h.log.Info().Msg("message was already received")
 		return nil
 	}
 	h.hubInbox.StoreMessage(broadcast.Params.Message)
-	h.addMessageId(broadcast.Params.Channel, broadcast.Params.Message.MessageID)
-
-	h.Unlock()
+	h.messageIdsByChannel.Add(broadcast.Params.Channel, broadcast.Params.Message.MessageID)
 
 	if err != nil {
 		return xerrors.Errorf("failed to broadcast message: %v", err)
@@ -435,7 +422,7 @@ func (h *Hub) handleHeartbeat(socket socket.Socket,
 
 	receivedIds := heartbeat.Params
 
-	missingIds := getMissingIds(receivedIds, h.messageIdsByChannel, h.blacklist)
+	missingIds := getMissingIds(receivedIds, h.messageIdsByChannel.GetTable(), h.blacklist)
 
 	if len(missingIds) > 0 {
 		err = h.sendGetMessagesByIdToServer(socket, missingIds)
@@ -473,16 +460,12 @@ func (h *Hub) handleGreetServer(socket socket.Socket, byteMessage []byte) error 
 		return xerrors.Errorf("failed to unmarshal greetServer message: %v", err)
 	}
 
-	h.Lock()
 	// store information about the server
-	h.peersInfo[socket.ID()] = greetServer.Params
+	h.peers.AddPeerInfo(socket.ID(), greetServer.Params)
 
-	// check if the server is already greeted
-	if slices.Contains(h.peersGreeted, socket.ID()) {
-		h.Unlock()
+	if h.peers.IsPeerGreeted(socket.ID()) {
 		return nil
 	}
-	h.Unlock()
 
 	err = h.SendGreetServer(socket)
 	if err != nil {
@@ -535,7 +518,6 @@ func (h *Hub) getMissingMessages(missingIds map[string][]string) (map[string][]m
 // handleReceivedMessage handle a message obtained by the server receiving a
 // getMessagesById result
 func (h *Hub) handleReceivedMessage(socket socket.Socket, messageData message.Message, targetChannel string) error {
-	h.Lock()
 	signature := messageData.Signature
 	messageID := messageData.MessageID
 	data := messageData.Data
@@ -543,7 +525,6 @@ func (h *Hub) handleReceivedMessage(socket socket.Socket, messageData message.Me
 
 	expectedMessageID := messagedata.Hash(data, signature)
 	if expectedMessageID != messageID {
-		h.Unlock()
 		return xerrors.Errorf(wrongMessageIdError,
 			expectedMessageID, messageID)
 	}
@@ -567,10 +548,8 @@ func (h *Hub) handleReceivedMessage(socket socket.Socket, messageData message.Me
 	_, stored := h.hubInbox.GetMessage(publish.Params.Message.MessageID)
 	if stored {
 		h.log.Info().Msgf("Already stored message %s", publish.Params.Message.MessageID)
-		h.Unlock()
 		return nil
 	}
-	h.Unlock()
 
 	if publish.Params.Channel == rootChannel {
 		err := h.handleRootChannelPublishMessage(socket, publish)
@@ -590,10 +569,8 @@ func (h *Hub) handleReceivedMessage(socket socket.Socket, messageData message.Me
 		return xerrors.Errorf(publishError, err)
 	}
 
-	h.Lock()
 	h.hubInbox.StoreMessage(publish.Params.Message)
-	h.addMessageId(publish.Params.Channel, publish.Params.Message.MessageID)
-	h.Unlock()
+	h.messageIdsByChannel.Add(publish.Params.Channel, publish.Params.Message.MessageID)
 	return nil
 }
 
