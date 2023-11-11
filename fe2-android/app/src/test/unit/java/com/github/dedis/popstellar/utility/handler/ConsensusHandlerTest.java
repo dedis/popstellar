@@ -89,8 +89,13 @@ public class ConsensusHandlerTest {
 
   @Before
   public void setup()
-      throws GeneralSecurityException, DataHandlingException, IOException, UnknownLaoException,
-          UnknownRollCallException, UnknownElectionException, NoRollCallException,
+      throws GeneralSecurityException,
+          DataHandlingException,
+          IOException,
+          UnknownLaoException,
+          UnknownRollCallException,
+          UnknownElectionException,
+          NoRollCallException,
           UnknownWitnessMessageException {
     MockitoAnnotations.openMocks(this);
     Application application = ApplicationProvider.getApplicationContext();
@@ -136,10 +141,13 @@ public class ConsensusHandlerTest {
   }
 
   @Test
-  @Ignore
   public void handleConsensusTests()
-      throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
-          UnknownElectionException, NoRollCallException, UnknownWitnessMessageException {
+      throws DataHandlingException,
+          UnknownLaoException,
+          UnknownRollCallException,
+          UnknownElectionException,
+          NoRollCallException,
+          UnknownWitnessMessageException {
     // each test need to be run one after another
     handleConsensusElectTest();
     handleConsensusElectAcceptTest();
@@ -147,10 +155,13 @@ public class ConsensusHandlerTest {
   }
 
   @Test
-  @Ignore
   public void handleConsensusFailure()
-      throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
-          UnknownElectionException, NoRollCallException, UnknownWitnessMessageException {
+      throws DataHandlingException,
+          UnknownLaoException,
+          UnknownRollCallException,
+          UnknownElectionException,
+          NoRollCallException,
+          UnknownWitnessMessageException {
     // handle an elect from node2 then handle a failure for this elect
     // the state of the node2 for this instanceId should be FAILED
 
@@ -175,8 +186,12 @@ public class ConsensusHandlerTest {
   // This should add an attempt from node2 to start a consensus (in this case for starting an
   // election)
   private void handleConsensusElectTest()
-      throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
-          UnknownElectionException, NoRollCallException, UnknownWitnessMessageException {
+      throws DataHandlingException,
+          UnknownLaoException,
+          UnknownRollCallException,
+          UnknownElectionException,
+          NoRollCallException,
+          UnknownWitnessMessageException {
     messageHandler.handleMessage(messageSender, CONSENSUS_CHANNEL, electMsg);
 
     Lao updatedLao = laoRepo.getLaoViewByChannel(Channel.getLaoChannel(LAO_ID)).createLaoCopy();
@@ -222,8 +237,12 @@ public class ConsensusHandlerTest {
   // handle an electAccept from node3 for the elect of node2
   // This test need be run after the elect message was handled, else the messageId would be invalid
   private void handleConsensusElectAcceptTest()
-      throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
-          UnknownElectionException, NoRollCallException, UnknownWitnessMessageException {
+      throws DataHandlingException,
+          UnknownLaoException,
+          UnknownRollCallException,
+          UnknownElectionException,
+          NoRollCallException,
+          UnknownWitnessMessageException {
     ConsensusElectAccept electAccept = new ConsensusElectAccept(INSTANCE_ID, messageId, true);
     MessageGeneral electAcceptMsg = getMsg(NODE_3_KEY, electAccept);
     messageHandler.handleMessage(messageSender, CONSENSUS_CHANNEL, electAcceptMsg);
@@ -259,8 +278,12 @@ public class ConsensusHandlerTest {
   // handle a learn from node3 for the elect of node2
   // This test need be run after the elect message was handled, else the messageId would be invalid
   private void handleConsensusLearnTest()
-      throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
-          UnknownElectionException, NoRollCallException, UnknownWitnessMessageException {
+      throws DataHandlingException,
+          UnknownLaoException,
+          UnknownRollCallException,
+          UnknownElectionException,
+          NoRollCallException,
+          UnknownWitnessMessageException {
     ConsensusLearn learn =
         new ConsensusLearn(INSTANCE_ID, messageId, CREATION_TIME, true, Collections.emptyList());
     MessageGeneral learnMsg = getMsg(NODE_3_KEY, learn);
@@ -304,8 +327,12 @@ public class ConsensusHandlerTest {
 
   @Test
   public void handleConsensusDoNothingOnBackendMessageTest()
-      throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
-          UnknownElectionException, NoRollCallException, UnknownWitnessMessageException {
+      throws DataHandlingException,
+          UnknownLaoException,
+          UnknownRollCallException,
+          UnknownElectionException,
+          NoRollCallException,
+          UnknownWitnessMessageException {
     LAORepository mockLAORepository = mock(LAORepository.class);
 
     ConsensusPrepare prepare = new ConsensusPrepare(INSTANCE_ID, messageId, CREATION_TIME, 3);

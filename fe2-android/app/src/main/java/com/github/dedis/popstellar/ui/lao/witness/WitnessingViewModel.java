@@ -9,8 +9,7 @@ import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.StateLao;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.UpdateLao;
 import com.github.dedis.popstellar.model.network.method.message.data.message.WitnessMessageSignature;
-import com.github.dedis.popstellar.model.objects.Channel;
-import com.github.dedis.popstellar.model.objects.WitnessMessage;
+import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.security.*;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.model.qrcode.MainPublicKeyData;
@@ -83,7 +82,7 @@ public class WitnessingViewModel extends AndroidViewModel implements QRCodeScann
   public void setWitnessMessages(List<WitnessMessage> messages) {
     this.witnessMessages.setValue(messages);
   }
-  
+
   public boolean isWitness() {
     return witnessingRepo.isWitness(laoId, keyManager.getMainPublicKey());
   }
@@ -102,9 +101,10 @@ public class WitnessingViewModel extends AndroidViewModel implements QRCodeScann
    *
    * @param laoId identifier of the lao whose view model belongs
    */
-  public void initialize(String laoId) {
+  public void initialize(String laoId) throws UnknownLaoException {
     this.laoId = laoId;
 
+    LaoView lao = laoRepo.getLaoView(laoId);
     disposables.addAll(
         // Observe the witnesses
         witnessingRepo
@@ -120,23 +120,43 @@ public class WitnessingViewModel extends AndroidViewModel implements QRCodeScann
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 witnessMessage -> {
+                  if (witnessMessage.isEmpty()) {
+                    return;
+                  }
                   // Order by latest arrived
                   setWitnessMessages(
                       witnessMessage.stream()
                           .sorted(Comparator.comparing(WitnessMessage::getTimestamp).reversed())
                           .collect(Collectors.toList()));
 
-                  // When a new witness message is received, if it needs to be signed by the user
-                  // then we show a pop up that the user can click to open the witnessing fragment
+                  WitnessMessage lastMessage =
+                      Objects.requireNonNull(witnessMessages.getValue()).get(0);
+
+                  // When a new witness message is received, if it needs to be yet signed by the
+                  // user
+                  // then we show a pop up that the user can click to open the witnessing fragment.
+                  // Don't show the pop-up for the organizer as we use an automatic signature
+                  // mechanism
                   PublicKey myPk = keyManager.getMainPublicKey();
-                  if (!witnessMessage.isEmpty()
-                      && witnessingRepo.isWitness(laoId, myPk)
-                      && !Objects.requireNonNull(witnessMessages.getValue())
-                          .get(0)
-                          .getWitnesses()
-                          .contains(myPk)) {
-                    showPopup.setValue(true);
+                  boolean isOrganizer = lao.isOrganizer(keyManager.getMainPublicKey());
+                  boolean alreadySigned = lastMessage.getWitnesses().contains(myPk);
+                  if (isOrganizer && !alreadySigned) {
+                    // Automatically sign the messages if it's the organizer
+                    disposables.add(
+                        signMessage(lastMessage)
+                            .subscribe(
+                                () ->
+                                    Timber.tag(TAG)
+                                        .d(
+                                            "Witness message automatically successfully signed by organizer"),
+                                error ->
+                                    Timber.tag(TAG)
+                                        .e(
+                                            error,
+                                            "Error signing automatically message from organizer")));
                   }
+                  showPopup.setValue(
+                      !isOrganizer && witnessingRepo.isWitness(laoId, myPk) && !alreadySigned);
                 },
                 error ->
                     Timber.tag(TAG)
