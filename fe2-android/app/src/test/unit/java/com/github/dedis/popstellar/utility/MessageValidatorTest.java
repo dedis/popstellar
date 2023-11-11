@@ -192,40 +192,83 @@ public class MessageValidatorTest {
   }
 
   @Test
-  public void testValidPopCHAUrl() {
+  public void testValidLocalPopCHAUrl() {
+    MessageValidator.MessageValidatorBuilder validator = MessageValidator.verify();
+
+    String laoId = "6IQ-Q3S4ISaxZ-hLDelTszYxhJkNQ1gC4JjMxr4jy6Y=";
+    String valid =
+        "http://localhost:9100/authorize?response_mode=query&response_type=id_token&client_id=WAsabGuEe5m1KpqOZQKgmO7UShX84Jmd_eaenOZ32wU&redirect_uri=http%3A%2F%2Flocalhost%3A8000%2Fcb&scope=openid+profile&login_hint=6IQ-Q3S4ISaxZ-hLDelTszYxhJkNQ1gC4JjMxr4jy6Y=&nonce=frXgNl-IxJPzsNia07f_3yV0ECYlWOb2RXG_SGvATKcJ7-s0LthmboTrnMqlQS1RnzmV9hW0iumu_5NwAqXwGA&state=m_9r5sPUD8NoRIdVVYFMyYCOb-8xh1d2q8l-pKDXO0sn9TWnR_2nmC8MfVj1COHZsh1rElqimOTLAp3CbhbYJQ";
+    validator.isValidPoPCHAUrl(valid, laoId);
+  }
+
+  @Test
+  public void testValidExternalPopCHAUrl() {
     MessageValidator.MessageValidatorBuilder validator = MessageValidator.verify();
 
     String laoId = "6IQ-Q3S4ISaxZ-hLDelTszYxhJkNQ1gC4JjMxr4jy6Y=";
 
     String valid =
-        "http://localhost:9100/authorize?response_mode=query&response_type=id_token&client_id=WAsabGuEe5m1KpqOZQKgmO7UShX84Jmd_eaenOZ32wU&redirect_uri=http%3A%2F%2Flocalhost%3A8000%2Fcb&scope=openid+profile&login_hint=6IQ-Q3S4ISaxZ-hLDelTszYxhJkNQ1gC4JjMxr4jy6Y=&nonce=frXgNl-IxJPzsNia07f_3yV0ECYlWOb2RXG_SGvATKcJ7-s0LthmboTrnMqlQS1RnzmV9hW0iumu_5NwAqXwGA&state=m_9r5sPUD8NoRIdVVYFMyYCOb-8xh1d2q8l-pKDXO0sn9TWnR_2nmC8MfVj1COHZsh1rElqimOTLAp3CbhbYJQ";
-    String valid2 =
         "https://be1.personhood.online/authorize?response_mode=fragment&response_type=id_token&client_id=WAsabGuEe5m1KpqOZQKgmO7UShX84Jmd_eaenOZ32wU&redirect_uri=http%3A%2F%2Flocalhost%3A8000%2Fcb&scope=openid+profile+random&login_hint=6IQ-Q3S4ISaxZ-hLDelTszYxhJkNQ1gC4JjMxr4jy6Y=&nonce=frXgNl-IxJPzsNia07f_3yV0ECYlWOb2RXG_SGvATKcJ7-s0LthmboTrnMqlQS1RnzmV9hW0iumu_5NwAqXwGA";
+    validator.isValidPoPCHAUrl(valid, laoId);
+  }
+
+  @Test
+  public void testMissingClientIdPopCHAUrl() {
+    MessageValidator.MessageValidatorBuilder validator = MessageValidator.verify();
+
+    String laoId = "6IQ-Q3S4ISaxZ-hLDelTszYxhJkNQ1gC4JjMxr4jy6Y=";
     String missingClientId =
         "http://localhost:9100/authorize?response_mode=query&response_type=id_token&redirect_uri=http%3A%2F%2Flocalhost%3A8000%2Fcb&scope=openid+profile&login_hint=6IQ-Q3S4ISaxZ-hLDelTszYxhJkNQ1gC4JjMxr4jy6Y=&nonce=frXgNl-IxJPzsNia07f_3yV0ECYlWOb2RXG_SGvATKcJ7-s0LthmboTrnMqlQS1RnzmV9hW0iumu_5NwAqXwGA&state=m_9r5sPUD8NoRIdVVYFMyYCOb-8xh1d2q8l-pKDXO0sn9TWnR_2nmC8MfVj1COHZsh1rElqimOTLAp3CbhbYJQ";
-    String invalidResponseType =
-        "http://localhost:9100/authorize?response_mode=query&response_type=token&client_id=WAsabGuEe5m1KpqOZQKgmO7UShX84Jmd_eaenOZ32wU&redirect_uri=http%3A%2F%2Flocalhost%3A8000%2Fcb&scope=openid+profile&login_hint=6IQ-Q3S4ISaxZ-hLDelTszYxhJkNQ1gC4JjMxr4jy6Y=&nonce=frXgNl-IxJPzsNia07f_3yV0ECYlWOb2RXG_SGvATKcJ7-s0LthmboTrnMqlQS1RnzmV9hW0iumu_5NwAqXwGA&state=m_9r5sPUD8NoRIdVVYFMyYCOb-8xh1d2q8l-pKDXO0sn9TWnR_2nmC8MfVj1COHZsh1rElqimOTLAp3CbhbYJQ";
-    String missingRequiredScope =
-        "http://localhost:9100/authorize?response_mode=query&response_type=id_token&client_id=WAsabGuEe5m1KpqOZQKgmO7UShX84Jmd_eaenOZ32wU&redirect_uri=http%3A%2F%2Flocalhost%3A8000%2Fcb&scope=openid+random&login_hint=6IQ-Q3S4ISaxZ-hLDelTszYxhJkNQ1gC4JjMxr4jy6Y=&nonce=frXgNl-IxJPzsNia07f_3yV0ECYlWOb2RXG_SGvATKcJ7-s0LthmboTrnMqlQS1RnzmV9hW0iumu_5NwAqXwGA&state=m_9r5sPUD8NoRIdVVYFMyYCOb-8xh1d2q8l-pKDXO0sn9TWnR_2nmC8MfVj1COHZsh1rElqimOTLAp3CbhbYJQ";
-    String invalidResponseMode =
-        "http://localhost:9100/authorize?response_mode=random&response_type=id_token&client_id=WAsabGuEe5m1KpqOZQKgmO7UShX84Jmd_eaenOZ32wU&redirect_uri=http%3A%2F%2Flocalhost%3A8000%2Fcb&scope=openid+profile&login_hint=6IQ-Q3S4ISaxZ-hLDelTszYxhJkNQ1gC4JjMxr4jy6Y=&nonce=frXgNl-IxJPzsNia07f_3yV0ECYlWOb2RXG_SGvATKcJ7-s0LthmboTrnMqlQS1RnzmV9hW0iumu_5NwAqXwGA&state=m_9r5sPUD8NoRIdVVYFMyYCOb-8xh1d2q8l-pKDXO0sn9TWnR_2nmC8MfVj1COHZsh1rElqimOTLAp3CbhbYJQ";
-    String invalidLao =
-        "http://localhost:9100/authorize?response_mode=random&response_type=id_token&client_id=WAsabGuEe5m1KpqOZQKgmO7UShX84Jmd_eaenOZ32wU&redirect_uri=http%3A%2F%2Flocalhost%3A8000%2Fcb&scope=openid+profile&login_hint=6IQ-Q3S4ISaxZ-hLTylTszYxhJkNQ1gC4JjMxr4jy6Y=&nonce=frXgNl-IxJPzsNia07f_3yV0ECYlWOb2RXG_SGvATKcJ7-s0LthmboTrnMqlQS1RnzmV9hW0iumu_5NwAqXwGA&state=m_9r5sPUD8NoRIdVVYFMyYCOb-8xh1d2q8l-pKDXO0sn9TWnR_2nmC8MfVj1COHZsh1rElqimOTLAp3CbhbYJQ";
-
-    validator.isValidPoPCHAUrl(valid, laoId);
-    validator.isValidPoPCHAUrl(valid2, laoId);
 
     assertThrows(
         IllegalArgumentException.class, () -> validator.isValidPoPCHAUrl(missingClientId, laoId));
+  }
+
+  @Test
+  public void testInvalidResponseTypePopCHAUrl() {
+    MessageValidator.MessageValidatorBuilder validator = MessageValidator.verify();
+
+    String laoId = "6IQ-Q3S4ISaxZ-hLDelTszYxhJkNQ1gC4JjMxr4jy6Y=";
+    String invalidResponseType =
+        "http://localhost:9100/authorize?response_mode=query&response_type=token&client_id=WAsabGuEe5m1KpqOZQKgmO7UShX84Jmd_eaenOZ32wU&redirect_uri=http%3A%2F%2Flocalhost%3A8000%2Fcb&scope=openid+profile&login_hint=6IQ-Q3S4ISaxZ-hLDelTszYxhJkNQ1gC4JjMxr4jy6Y=&nonce=frXgNl-IxJPzsNia07f_3yV0ECYlWOb2RXG_SGvATKcJ7-s0LthmboTrnMqlQS1RnzmV9hW0iumu_5NwAqXwGA&state=m_9r5sPUD8NoRIdVVYFMyYCOb-8xh1d2q8l-pKDXO0sn9TWnR_2nmC8MfVj1COHZsh1rElqimOTLAp3CbhbYJQ";
+
     assertThrows(
         IllegalArgumentException.class,
         () -> validator.isValidPoPCHAUrl(invalidResponseType, laoId));
+  }
+
+  @Test
+  public void testMissingRequiredScopePopCHAUrl() {
+    MessageValidator.MessageValidatorBuilder validator = MessageValidator.verify();
+
+    String laoId = "6IQ-Q3S4ISaxZ-hLDelTszYxhJkNQ1gC4JjMxr4jy6Y=";
+    String missingRequiredScope =
+        "http://localhost:9100/authorize?response_mode=query&response_type=id_token&client_id=WAsabGuEe5m1KpqOZQKgmO7UShX84Jmd_eaenOZ32wU&redirect_uri=http%3A%2F%2Flocalhost%3A8000%2Fcb&scope=openid+random&login_hint=6IQ-Q3S4ISaxZ-hLDelTszYxhJkNQ1gC4JjMxr4jy6Y=&nonce=frXgNl-IxJPzsNia07f_3yV0ECYlWOb2RXG_SGvATKcJ7-s0LthmboTrnMqlQS1RnzmV9hW0iumu_5NwAqXwGA&state=m_9r5sPUD8NoRIdVVYFMyYCOb-8xh1d2q8l-pKDXO0sn9TWnR_2nmC8MfVj1COHZsh1rElqimOTLAp3CbhbYJQ";
     assertThrows(
         IllegalArgumentException.class,
         () -> validator.isValidPoPCHAUrl(missingRequiredScope, laoId));
+  }
+
+  @Test
+  public void testInvalidResponseModePopCHAUrl() {
+    MessageValidator.MessageValidatorBuilder validator = MessageValidator.verify();
+
+    String laoId = "6IQ-Q3S4ISaxZ-hLDelTszYxhJkNQ1gC4JjMxr4jy6Y=";
+    String invalidResponseMode =
+        "http://localhost:9100/authorize?response_mode=random&response_type=id_token&client_id=WAsabGuEe5m1KpqOZQKgmO7UShX84Jmd_eaenOZ32wU&redirect_uri=http%3A%2F%2Flocalhost%3A8000%2Fcb&scope=openid+profile&login_hint=6IQ-Q3S4ISaxZ-hLDelTszYxhJkNQ1gC4JjMxr4jy6Y=&nonce=frXgNl-IxJPzsNia07f_3yV0ECYlWOb2RXG_SGvATKcJ7-s0LthmboTrnMqlQS1RnzmV9hW0iumu_5NwAqXwGA&state=m_9r5sPUD8NoRIdVVYFMyYCOb-8xh1d2q8l-pKDXO0sn9TWnR_2nmC8MfVj1COHZsh1rElqimOTLAp3CbhbYJQ";
     assertThrows(
         IllegalArgumentException.class,
         () -> validator.isValidPoPCHAUrl(invalidResponseMode, laoId));
+  }
+
+  @Test
+  public void testInvalidLaoPopCHAUrl() {
+    MessageValidator.MessageValidatorBuilder validator = MessageValidator.verify();
+
+    String laoId = "6IQ-Q3S4ISaxZ-hLDelTszYxhJkNQ1gC4JjMxr4jy6Y=";
+    String invalidLao =
+        "http://localhost:9100/authorize?response_mode=random&response_type=id_token&client_id=WAsabGuEe5m1KpqOZQKgmO7UShX84Jmd_eaenOZ32wU&redirect_uri=http%3A%2F%2Flocalhost%3A8000%2Fcb&scope=openid+profile&login_hint=6IQ-Q3S4ISaxZ-hLTylTszYxhJkNQ1gC4JjMxr4jy6Y=&nonce=frXgNl-IxJPzsNia07f_3yV0ECYlWOb2RXG_SGvATKcJ7-s0LthmboTrnMqlQS1RnzmV9hW0iumu_5NwAqXwGA&state=m_9r5sPUD8NoRIdVVYFMyYCOb-8xh1d2q8l-pKDXO0sn9TWnR_2nmC8MfVj1COHZsh1rElqimOTLAp3CbhbYJQ";
+
     assertThrows(
         IllegalArgumentException.class, () -> validator.isValidPoPCHAUrl(invalidLao, laoId));
   }

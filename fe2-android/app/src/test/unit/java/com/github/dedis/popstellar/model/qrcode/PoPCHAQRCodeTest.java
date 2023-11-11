@@ -2,6 +2,7 @@ package com.github.dedis.popstellar.model.qrcode;
 
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.generatePoPToken;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.security.KeyPair;
@@ -29,18 +30,7 @@ public class PoPCHAQRCodeTest {
       "m_9r5sPUD8NoRIdVVYFMyYCOb-8xh1d2q8l-pKDXO0sn9TWnR_2nmC8MfVj1COHZsh1rElqimOTLAp3CbhbYJQ";
 
   private static final String URL =
-      "http://"
-          + ADDRESS
-          + "/authorize?response_mode="
-          + RESPONSE_MODE
-          + "&response_type=id_token&client_id="
-          + CLIENT_ID
-          + "&redirect_uri=http%3A%2F%2Flocalhost%3A8000%2Fcb&scope=openid+profile&login_hint="
-          + LAO_ID
-          + "&nonce="
-          + NONCE
-          + "&state="
-          + STATE;
+      createPoPCHAUrl(ADDRESS, RESPONSE_MODE, CLIENT_ID, LAO_ID, NONCE, STATE);
 
   private static final PoPCHAQRCode POPCHA_QR_CODE = new PoPCHAQRCode(URL, LAO_ID);
 
@@ -67,5 +57,45 @@ public class PoPCHAQRCodeTest {
   @Test
   public void extractHost() {
     assertEquals(ADDRESS, POPCHA_QR_CODE.getHost());
+  }
+
+  @Test
+  public void invalidUrl() {
+    String invalidUrl = "http:/random.";
+    assertThrows(IllegalArgumentException.class, () -> new PoPCHAQRCode(invalidUrl, LAO_ID));
+  }
+
+  @Test
+  public void invalidResponseMode() {
+    String invalidQueryUrl = createPoPCHAUrl(ADDRESS, "resp", CLIENT_ID, LAO_ID, NONCE, STATE);
+    assertThrows(IllegalArgumentException.class, () -> new PoPCHAQRCode(invalidQueryUrl, LAO_ID));
+  }
+
+  @Test
+  public void invalidLaoId() {
+    String invalidLaoUrl =
+        createPoPCHAUrl(ADDRESS, RESPONSE_MODE, CLIENT_ID, "lao_wrong", NONCE, STATE);
+    assertThrows(IllegalArgumentException.class, () -> new PoPCHAQRCode(invalidLaoUrl, LAO_ID));
+  }
+
+  private static String createPoPCHAUrl(
+      String address,
+      String responseMode,
+      String clientId,
+      String laoId,
+      String nonce,
+      String state) {
+    return "http://"
+        + address
+        + "/authorize?response_mode="
+        + responseMode
+        + "&response_type=id_token&client_id="
+        + clientId
+        + "&redirect_uri=http%3A%2F%2Flocalhost%3A8000%2Fcb&scope=openid+profile&login_hint="
+        + laoId
+        + "&nonce="
+        + nonce
+        + "&state="
+        + state;
   }
 }

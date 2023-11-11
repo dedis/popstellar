@@ -85,16 +85,16 @@ public class KeyManager {
   }
 
   /**
-   * Generate a long-term PoP Token for the given Lao - ClientID pair
+   * Generate a long-term Authentication Token for the given Lao - ClientID pair
    *
-   * @param laoId to generate the PoP Token from
-   * @param clientId to generate the PoP Token from
-   * @return the generated PoP Token
+   * @param laoId to generate the AuthToken from
+   * @param clientId to generate the AuthToken from
+   * @return the generated AuthToken
    * @throws KeyGenerationException if an error occurs during key generation
    * @throws UninitializedWalletException if the wallet is not initialized with a seed
    */
-  public PoPToken getLongTermPoPToken(String laoId, String clientId) throws KeyException {
-    return wallet.generatePoPToken(laoId, Hash.hash(clientId));
+  public AuthToken getLongTermAuthToken(String laoId, String clientId) throws KeyException {
+    return new AuthToken(wallet.generatePoPToken(laoId, Hash.hash(clientId)));
   }
 
   /**

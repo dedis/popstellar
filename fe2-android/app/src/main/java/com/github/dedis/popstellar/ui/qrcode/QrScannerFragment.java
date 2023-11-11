@@ -61,8 +61,7 @@ public class QrScannerFragment extends Fragment {
     scanningViewModel =
         scanningAction.obtainScannerViewModel(requireActivity(), popViewModel.getLaoId());
 
-    if (scanningAction != ScanningAction.ADD_LAO_PARTICIPANT
-        && scanningAction != ScanningAction.ADD_POPCHA) {
+    if (scanningAction.displayCounter) {
       displayCounter();
     }
 

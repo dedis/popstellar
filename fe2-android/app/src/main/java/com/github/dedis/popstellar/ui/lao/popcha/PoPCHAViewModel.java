@@ -111,9 +111,9 @@ public class PoPCHAViewModel extends AndroidViewModel implements QRCodeScanningV
       connecting.set(false);
       return;
     }
-    PoPToken token;
+    AuthToken token;
     try {
-      token = keyManager.getLongTermPoPToken(laoId, popCHAQRCode.getClientId());
+      token = keyManager.getLongTermAuthToken(laoId, popCHAQRCode.getClientId());
     } catch (KeyException e) {
       Timber.tag(TAG).e(e, "Impossible to generate the token");
       connecting.set(false);
@@ -148,7 +148,7 @@ public class PoPCHAViewModel extends AndroidViewModel implements QRCodeScanningV
     }
   }
 
-  private void sendAuthRequest(PoPCHAQRCode popCHAQRCode, PoPToken token)
+  private void sendAuthRequest(PoPCHAQRCode popCHAQRCode, AuthToken token)
       throws GeneralSecurityException, UnknownLaoException, KeyException {
     String nonce = Base64URLData.encode(popCHAQRCode.getNonce());
     Signature signedToken = token.sign(new Base64URLData(nonce));

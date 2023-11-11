@@ -60,6 +60,7 @@ public class PoPCHAHomeFragmentTest {
   private static final long TIMESTAMP_1 = 1632204910;
   private static final long TIMESTAMP_2 = 1632204900;
   private static final PoPToken popToken = generatePoPToken();
+  private static final AuthToken authToken = new AuthToken(popToken);
   private static final HashSet<PublicKey> attendees = new HashSet<>();
 
   static {
@@ -130,7 +131,7 @@ public class PoPCHAHomeFragmentTest {
 
           when(keyManager.getMainPublicKey()).thenReturn(SENDER_KEY.getPublicKey());
           when(keyManager.getValidPoPToken(anyString(), any(RollCall.class))).thenReturn(popToken);
-          when(keyManager.getLongTermPoPToken(anyString(), anyString())).thenReturn(popToken);
+          when(keyManager.getLongTermAuthToken(anyString(), anyString())).thenReturn(authToken);
         }
       };
 
