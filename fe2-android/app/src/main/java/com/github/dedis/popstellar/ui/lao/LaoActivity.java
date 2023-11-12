@@ -365,8 +365,7 @@ public class LaoActivity extends AppCompatActivity {
         new ViewModelProvider(activity).get(WitnessingViewModel.class);
     try {
       witnessingViewModel.initialize(laoId);
-    } catch (UnknownLaoException e) {
-      throw new RuntimeException(e);
+    } catch (UnknownLaoException ignored) {
     }
     return witnessingViewModel;
   }

@@ -5,11 +5,9 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.*;
 import android.widget.ArrayAdapter;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.LaoCreateFragmentBinding;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
@@ -17,14 +15,10 @@ import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.ui.lao.witness.WitnessingViewModel;
 import com.github.dedis.popstellar.ui.qrcode.QrScannerFragment;
 import com.github.dedis.popstellar.ui.qrcode.ScanningAction;
-
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
-import javax.inject.Inject;
-
 import dagger.hilt.android.AndroidEntryPoint;
+import java.util.*;
+import java.util.stream.Collectors;
+import javax.inject.Inject;
 import timber.log.Timber;
 
 /** Fragment used to display the Launch UI */
@@ -56,10 +50,11 @@ public final class LaoCreateFragment extends Fragment {
     viewModel = HomeActivity.obtainViewModel(requireActivity());
     witnessingViewModel = HomeActivity.obtainWitnessingViewModel(requireActivity());
 
-    setupCancelButton();
+    setupClearButton();
     setupTextFields();
     setupAddWitnesses();
     setupCreateButton();
+    setupWitnessingSwitch();
 
     handleBackNav();
     return binding.getRoot();
@@ -124,11 +119,6 @@ public final class LaoCreateFragment extends Fragment {
             .map(PublicKey::getEncoded)
             .collect(Collectors.toList());
 
-    // Show the witnesses title only if there's at least one witness
-    if (!witnesses.isEmpty()) {
-      binding.witnessesTitle.setVisibility(View.VISIBLE);
-    }
-
     ArrayAdapter<String> witnessesListAdapter =
         new ArrayAdapter<>(requireContext(), android.R.layout.simple_list_item_1, witnesses);
     binding.witnessesList.setAdapter(witnessesListAdapter);
@@ -141,6 +131,8 @@ public final class LaoCreateFragment extends Fragment {
               Objects.requireNonNull(binding.serverUrlEntryEditText.getText()).toString();
           String laoName =
               Objects.requireNonNull(binding.laoNameEntryEditText.getText()).toString();
+          boolean isWitnessingEnabled =
+              Boolean.TRUE.equals(viewModel.isWitnessingEnabled().getValue());
           Timber.tag(TAG).d("creating lao with name %s", laoName);
           List<PublicKey> witnesses = witnessingViewModel.getScannedWitnesses();
 
@@ -148,17 +140,39 @@ public final class LaoCreateFragment extends Fragment {
           requireActivity()
               .startActivity(
                   ConnectingActivity.newIntentForCreatingDetail(
-                      requireContext(), laoName, witnesses));
+                      requireContext(), laoName, witnesses, isWitnessingEnabled));
         });
   }
 
-  private void setupCancelButton() {
-    binding.buttonCancelLaunch.setOnClickListener(
+  private void setupClearButton() {
+    binding.buttonClearLaunch.setOnClickListener(
         v -> {
           Objects.requireNonNull(binding.laoNameEntryEditText.getText()).clear();
-          HomeActivity.setCurrentFragment(
-              getParentFragmentManager(), R.id.fragment_home, HomeFragment::newInstance);
+          Objects.requireNonNull(binding.serverUrlEntryEditText.getText()).clear();
+          binding.enableWitnessingSwitch.setChecked(false);
+          witnessingViewModel.setWitnesses(Collections.emptyList());
         });
+  }
+
+  private void setupWitnessingSwitch() {
+    binding.enableWitnessingSwitch.setOnCheckedChangeListener(
+        (button, isChecked) -> {
+          viewModel.setIsWitnessingEnabled(isChecked);
+          if (isChecked) {
+            binding.addWitnessButton.setVisibility(View.VISIBLE);
+            if (!witnessingViewModel.getScannedWitnesses().isEmpty()) {
+              binding.witnessesTitle.setVisibility(View.VISIBLE);
+              binding.witnessesList.setVisibility(View.VISIBLE);
+            }
+          } else {
+            binding.addWitnessButton.setVisibility(View.GONE);
+            binding.witnessesTitle.setVisibility(View.GONE);
+            binding.witnessesList.setVisibility(View.GONE);
+          }
+        });
+    // Use this to save the preference after opening and closing the QR code
+    binding.enableWitnessingSwitch.setChecked(
+        Boolean.TRUE.equals(viewModel.isWitnessingEnabled().getValue()));
   }
 
   private void handleBackNav() {

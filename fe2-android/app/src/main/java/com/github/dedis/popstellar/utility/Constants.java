@@ -12,6 +12,7 @@ public class Constants {
   public static final String LAO_NAME = "lao_name";
 
   public static final String WITNESSES = "witnesses";
+  public static final String WITNESSING_FLAG_EXTRA = "isWitnessingEnabled";
 
   /** The extra key given to transmit a roll call id */
   public static final String ROLL_CALL_ID = "roll_call_id";

@@ -1,11 +1,21 @@
 package com.github.dedis.popstellar.ui.home;
 
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.intent.Intents.intended;
+import static androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent;
+import static androidx.test.espresso.intent.matcher.IntentMatchers.hasExtra;
+import static androidx.test.espresso.matcher.ViewMatchers.*;
+import static com.github.dedis.popstellar.testutils.pages.home.HomePageObject.*;
+import static com.github.dedis.popstellar.testutils.pages.home.LaoCreatePageObject.*;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
+
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.test.espresso.action.ViewActions;
 import androidx.test.espresso.intent.Intents;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
-
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.security.KeyPair;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
@@ -14,30 +24,18 @@ import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.testutils.Base64DataUtils;
+import com.github.dedis.popstellar.utility.Constants;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
-
+import dagger.hilt.android.testing.*;
+import io.reactivex.subjects.BehaviorSubject;
+import java.util.Collections;
 import org.junit.*;
 import org.junit.rules.ExternalResource;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoTestRule;
-
-import java.util.Collections;
-
-import dagger.hilt.android.testing.*;
-import io.reactivex.subjects.BehaviorSubject;
-
-import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.intent.Intents.intended;
-import static androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent;
-import static androidx.test.espresso.matcher.ViewMatchers.*;
-import static com.github.dedis.popstellar.testutils.pages.home.HomePageObject.*;
-import static com.github.dedis.popstellar.testutils.pages.home.LaoCreatePageObject.*;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
 
 @HiltAndroidTest
 @RunWith(AndroidJUnit4.class)
@@ -87,11 +85,18 @@ public class LaoCreateFragmentTest {
   }
 
   @Test
-  public final void uiElementsAreDisplayed() {
+  public final void uiElementsAreCorrectlyDisplayed() {
     laoNameEntry().check(matches(isDisplayed()));
-    cancelButtonLaunch().check(matches(isDisplayed()));
+    serverNameEntry().check(matches(isDisplayed()));
+    clearButtonLaunch().check(matches(isDisplayed()));
     confirmButtonLaunch().check(matches(isDisplayed()));
-    addWitnessButton().check(matches(isDisplayed()));
+    witnessingSwitch().check(matches(isDisplayed()));
+  }
+
+  @Test
+  public void uiElementsAreCorrectlyHidden() {
+    addWitnessButton().check(matches((withEffectiveVisibility(Visibility.GONE))));
+    witnessList().check(matches((withEffectiveVisibility(Visibility.GONE))));
     witnessTitle().check(matches(withEffectiveVisibility(Visibility.GONE)));
   }
 
@@ -108,14 +113,40 @@ public class LaoCreateFragmentTest {
   }
 
   @Test
-  public void cancelButtonGoesToHome() {
-    cancelButtonLaunch().perform(click());
-    fragmentContainer().check(matches(withChild(withId(homeFragmentId()))));
+  public void clearButtonEraseFields() {
+    clearButtonLaunch().perform(click());
+    laoNameEntry().check(matches(withText("")));
+    serverNameEntry().check(matches(withText("")));
+    witnessingSwitch().check(matches(isNotSelected()));
+    addWitnessButton().check(matches((withEffectiveVisibility(Visibility.GONE))));
+    witnessList().check(matches((withEffectiveVisibility(Visibility.GONE))));
+    witnessTitle().check(matches(withEffectiveVisibility(Visibility.GONE)));
   }
 
   @Test
   public void addWitnessButtonGoesToScanner() {
+    witnessingSwitch().perform(click());
     addWitnessButton().perform(click());
     fragmentContainer().check(matches(withChild(withId(qrScannerFragmentId()))));
+  }
+
+  @Test
+  public void witnessingSwitchDisplayButton() {
+    witnessingSwitch().perform(click());
+    addWitnessButton().check(matches((isDisplayed())));
+  }
+
+  @Test
+  public void witnessingSwitchEnabledPopulateWitnesses() {
+    witnessingSwitch().perform(click());
+    Intents.init();
+    laoNameEntry().perform(ViewActions.replaceText(LAO_NAME));
+    serverNameEntry().perform(ViewActions.replaceText(SERVER_URL));
+    confirmButtonLaunch().check(matches(isDisplayed()));
+    confirmButtonLaunch().check(matches(isEnabled()));
+    confirmButtonLaunch().perform(click());
+    intended(hasComponent(ConnectingActivity.class.getName()));
+    intended(hasExtra(Constants.WITNESSING_FLAG_EXTRA, true));
+    Intents.release();
   }
 }

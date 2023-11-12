@@ -44,6 +44,14 @@
 
       </com.google.android.material.textfield.TextInputLayout>
 
+      <androidx.appcompat.widget.SwitchCompat
+        android:id="@+id/enable_witnessing_switch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/lao_create_enable_witnessing_switch"
+        style="@style/text_medium_emphasis"
+        android:layout_marginTop="@dimen/margin_text" />
+
       <TextView
         android:id="@+id/witnesses_title"
         android:layout_width="match_parent"
@@ -52,7 +60,7 @@
         android:text="@string/witnesses"
         android:visibility="gone"
         android:layout_marginTop="@dimen/margin_text"
-        app:layout_constraintTop_toBottomOf="@id/server_url_entry_edit_text" />
+        app:layout_constraintTop_toBottomOf="@id/enable_witnessing_switch" />
 
       <ListView
         android:id="@+id/witnesses_list"
@@ -64,7 +72,8 @@
         android:scrollbarSize="@dimen/roll_call_attendees_scrollbar_size"
         android:scrollbars="vertical"
         android:scrollingCache="true"
-        android:smoothScrollbar="true" />
+        android:smoothScrollbar="true"
+        android:visibility="gone" />
 
       <LinearLayout
         android:layout_width="match_parent"
@@ -76,7 +85,8 @@
           android:id="@+id/add_witness_button"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
-          android:text="@string/lao_create_witnesses_button" />
+          android:text="@string/lao_create_witnesses_button"
+          android:visibility="gone" />
       </LinearLayout>
 
       <LinearLayout
@@ -89,12 +99,12 @@
         app:layout_constraintBottom_toBottomOf="parent">
 
         <Button
-          android:id="@+id/button_cancel_launch"
+          android:id="@+id/button_clear_launch"
           android:layout_width="@dimen/standard_button_width"
           android:layout_height="@dimen/standard_button_height"
           android:gravity="center"
           android:backgroundTint="@color/gray"
-          android:text="@string/button_cancel" />
+          android:text="@string/button_clear" />
 
         <Button
           android:id="@+id/button_create"

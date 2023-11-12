@@ -1,12 +1,12 @@
 package com.github.dedis.popstellar.ui.home;
 
+import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
+
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
-
 import androidx.appcompat.app.AppCompatActivity;
-
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.ConnectingActivityBinding;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.CreateLao;
@@ -19,19 +19,13 @@ import com.github.dedis.popstellar.utility.Constants;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.tinder.scarlet.WebSocket;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import javax.inject.Inject;
-
 import dagger.hilt.android.AndroidEntryPoint;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.observables.ConnectableObservable;
+import java.util.*;
+import java.util.stream.Collectors;
+import javax.inject.Inject;
 import timber.log.Timber;
-
-import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 
 @AndroidEntryPoint
 public class ConnectingActivity extends AppCompatActivity {
@@ -126,11 +120,17 @@ public class ConnectingActivity extends AppCompatActivity {
     if (isCreation) {
       String laoName = getIntent().getExtras().getString(Constants.LAO_NAME);
       List<String> witnessesList = getIntent().getStringArrayListExtra(Constants.WITNESSES);
+      boolean isWitnessingEnabled =
+          getIntent().getExtras().getBoolean(Constants.WITNESSING_FLAG_EXTRA);
       List<PublicKey> witnesses =
-          witnessesList.stream().map(PublicKey::new).collect(Collectors.toList());
+          isWitnessingEnabled
+              ? witnessesList.stream().map(PublicKey::new).collect(Collectors.toList())
+              : Collections.emptyList();
 
       // Add the organizer to the list of witnesses
-      witnesses.add(keyManager.getMainPublicKey());
+      if (isWitnessingEnabled) {
+        witnesses.add(keyManager.getMainPublicKey());
+      }
 
       CreateLao createLao = new CreateLao(laoName, keyManager.getMainPublicKey(), witnesses);
       Lao lao = new Lao(createLao.getId());
@@ -190,7 +190,7 @@ public class ConnectingActivity extends AppCompatActivity {
   }
 
   public static Intent newIntentForCreatingDetail(
-      Context ctx, String laoName, List<PublicKey> witnesses) {
+      Context ctx, String laoName, List<PublicKey> witnesses, boolean isWitnessingEnabled) {
     Intent intent = new Intent(ctx, ConnectingActivity.class);
     intent.putExtra(Constants.LAO_NAME, laoName);
     intent.putStringArrayListExtra(
@@ -199,6 +199,7 @@ public class ConnectingActivity extends AppCompatActivity {
             witnesses.stream().map(PublicKey::getEncoded).collect(Collectors.toList())));
     intent.putExtra(Constants.CONNECTION_PURPOSE_EXTRA, Constants.CREATING_EXTRA);
     intent.putExtra(Constants.ACTIVITY_TO_OPEN_EXTRA, Constants.LAO_DETAIL_EXTRA);
+    intent.putExtra(Constants.WITNESSING_FLAG_EXTRA, isWitnessingEnabled);
     intent.addFlags(FLAG_ACTIVITY_NEW_TASK);
     return intent;
   }
