@@ -365,7 +365,10 @@ public class LaoActivity extends AppCompatActivity {
         new ViewModelProvider(activity).get(WitnessingViewModel.class);
     try {
       witnessingViewModel.initialize(laoId);
-    } catch (UnknownLaoException ignored) {
+    } catch (UnknownLaoException e) {
+      Timber.tag(TAG)
+          .e(e, "Unable to initialize the witnessing model: not found lao with lao id=%s", laoId);
+      return witnessingViewModel;
     }
     return witnessingViewModel;
   }

@@ -1,13 +1,16 @@
 package com.github.dedis.popstellar.ui.home;
 
-import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.*;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.intent.Intents.intended;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasExtra;
 import static androidx.test.espresso.matcher.ViewMatchers.*;
+import static com.github.dedis.popstellar.testutils.UITestUtils.forceTypeText;
 import static com.github.dedis.popstellar.testutils.pages.home.HomePageObject.*;
 import static com.github.dedis.popstellar.testutils.pages.home.LaoCreatePageObject.*;
+import static com.github.dedis.popstellar.testutils.pages.lao.socialmedia.SocialMediaHomePageObject.getRootView;
+import static com.github.dedis.popstellar.testutils.pages.scanning.QrScanningPageObject.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
@@ -29,7 +32,7 @@ import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import dagger.hilt.android.testing.*;
 import io.reactivex.subjects.BehaviorSubject;
-import java.util.Collections;
+import java.util.*;
 import org.junit.*;
 import org.junit.rules.ExternalResource;
 import org.junit.runner.RunWith;
@@ -46,6 +49,8 @@ public class LaoCreateFragmentTest {
   private static final KeyPair KEY_PAIR = Base64DataUtils.generateKeyPair();
   private static final PublicKey PK = KEY_PAIR.getPublicKey();
   private static final Lao LAO = new Lao(LAO_NAME, PK, 10223421);
+  public static final String VALID_WITNESS_MANUAL_INPUT =
+      "{\"main_public_key\": \"" + PK.getEncoded() + "\"}";
 
   @BindValue @Mock LAORepository repository;
   @BindValue @Mock KeyManager keyManager;
@@ -113,8 +118,13 @@ public class LaoCreateFragmentTest {
   }
 
   @Test
-  public void clearButtonEraseFields() {
+  public void clearButtonEraseFilledFields() {
+    laoNameEntry().perform(ViewActions.replaceText(LAO_NAME));
+    serverNameEntry().perform(ViewActions.replaceText(SERVER_URL));
+    witnessingSwitch().perform(click());
+
     clearButtonLaunch().perform(click());
+
     laoNameEntry().check(matches(withText("")));
     serverNameEntry().check(matches(withText("")));
     witnessingSwitch().check(matches(isNotSelected()));
@@ -148,5 +158,22 @@ public class LaoCreateFragmentTest {
     intended(hasComponent(ConnectingActivity.class.getName()));
     intended(hasExtra(Constants.WITNESSING_FLAG_EXTRA, true));
     Intents.release();
+  }
+
+  @Test
+  public void addingWitnessShowTitleAndKeys() {
+    witnessingSwitch().perform(click());
+
+    addWitnessButton().check(matches((isDisplayed())));
+    addWitnessButton().perform(click());
+
+    openManualButton().perform(click());
+    manualAddEditText().perform(forceTypeText(VALID_WITNESS_MANUAL_INPUT));
+    manualAddConfirm().perform(click());
+    closeManualButton().perform(click());
+    getRootView().perform(pressBack());
+
+    witnessList().check(matches((isDisplayed())));
+    witnessTitle().check(matches((isDisplayed())));
   }
 }
