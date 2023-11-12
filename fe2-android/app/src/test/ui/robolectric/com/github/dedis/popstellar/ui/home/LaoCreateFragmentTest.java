@@ -19,6 +19,7 @@ import androidx.test.espresso.action.ViewActions;
 import androidx.test.espresso.intent.Intents;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
+import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.security.KeyPair;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
@@ -128,6 +129,7 @@ public class LaoCreateFragmentTest {
     laoNameEntry().check(matches(withText("")));
     serverNameEntry().check(matches(withText("")));
     witnessingSwitch().check(matches(isNotSelected()));
+    witnessingSwitch().check(matches(withText(R.string.lao_create_enable_witnessing_switch)));
     addWitnessButton().check(matches((withEffectiveVisibility(Visibility.GONE))));
     witnessList().check(matches((withEffectiveVisibility(Visibility.GONE))));
     witnessTitle().check(matches(withEffectiveVisibility(Visibility.GONE)));
@@ -143,6 +145,7 @@ public class LaoCreateFragmentTest {
   @Test
   public void witnessingSwitchDisplayButton() {
     witnessingSwitch().perform(click());
+    witnessingSwitch().check(matches(withText(R.string.lao_create_disable_witnessing_switch)));
     addWitnessButton().check(matches((isDisplayed())));
   }
 
