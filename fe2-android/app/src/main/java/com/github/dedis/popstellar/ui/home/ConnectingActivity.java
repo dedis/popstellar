@@ -32,10 +32,33 @@ public class ConnectingActivity extends AppCompatActivity {
   public static final String TAG = ConnectingActivity.class.getSimpleName();
 
   private final CompositeDisposable disposables = new CompositeDisposable();
-  private ConnectingActivityBinding binding;
-
   @Inject GlobalNetworkManager networkManager;
   @Inject KeyManager keyManager;
+  private ConnectingActivityBinding binding;
+
+  public static Intent newIntentForJoiningDetail(Context ctx, String laoId) {
+    Intent intent = new Intent(ctx, ConnectingActivity.class);
+    intent.putExtra(Constants.LAO_ID_EXTRA, laoId);
+    intent.putExtra(Constants.CONNECTION_PURPOSE_EXTRA, Constants.JOINING_EXTRA);
+    intent.putExtra(Constants.ACTIVITY_TO_OPEN_EXTRA, Constants.LAO_DETAIL_EXTRA);
+    intent.addFlags(FLAG_ACTIVITY_NEW_TASK);
+    return intent;
+  }
+
+  public static Intent newIntentForCreatingDetail(
+      Context ctx, String laoName, List<PublicKey> witnesses, boolean isWitnessingEnabled) {
+    Intent intent = new Intent(ctx, ConnectingActivity.class);
+    intent.putExtra(Constants.LAO_NAME, laoName);
+    intent.putStringArrayListExtra(
+        Constants.WITNESSES,
+        new ArrayList<>(
+            witnesses.stream().map(PublicKey::getEncoded).collect(Collectors.toList())));
+    intent.putExtra(Constants.CONNECTION_PURPOSE_EXTRA, Constants.CREATING_EXTRA);
+    intent.putExtra(Constants.ACTIVITY_TO_OPEN_EXTRA, Constants.LAO_DETAIL_EXTRA);
+    intent.putExtra(Constants.WITNESSING_FLAG_EXTRA, isWitnessingEnabled);
+    intent.addFlags(FLAG_ACTIVITY_NEW_TASK);
+    return intent;
+  }
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -122,14 +145,14 @@ public class ConnectingActivity extends AppCompatActivity {
       List<String> witnessesList = getIntent().getStringArrayListExtra(Constants.WITNESSES);
       boolean isWitnessingEnabled =
           getIntent().getExtras().getBoolean(Constants.WITNESSING_FLAG_EXTRA);
-      List<PublicKey> witnesses =
-          isWitnessingEnabled
-              ? witnessesList.stream().map(PublicKey::new).collect(Collectors.toList())
-              : Collections.emptyList();
 
-      // Add the organizer to the list of witnesses
+      List<PublicKey> witnesses;
       if (isWitnessingEnabled) {
+        witnesses = witnessesList.stream().map(PublicKey::new).collect(Collectors.toList());
+        // Add the organizer to the list of witnesses
         witnesses.add(keyManager.getMainPublicKey());
+      } else {
+        witnesses = Collections.emptyList();
       }
 
       CreateLao createLao = new CreateLao(laoName, keyManager.getMainPublicKey(), witnesses);
@@ -178,29 +201,5 @@ public class ConnectingActivity extends AppCompatActivity {
           startActivity(HomeActivity.newIntent(this));
           finish();
         });
-  }
-
-  public static Intent newIntentForJoiningDetail(Context ctx, String laoId) {
-    Intent intent = new Intent(ctx, ConnectingActivity.class);
-    intent.putExtra(Constants.LAO_ID_EXTRA, laoId);
-    intent.putExtra(Constants.CONNECTION_PURPOSE_EXTRA, Constants.JOINING_EXTRA);
-    intent.putExtra(Constants.ACTIVITY_TO_OPEN_EXTRA, Constants.LAO_DETAIL_EXTRA);
-    intent.addFlags(FLAG_ACTIVITY_NEW_TASK);
-    return intent;
-  }
-
-  public static Intent newIntentForCreatingDetail(
-      Context ctx, String laoName, List<PublicKey> witnesses, boolean isWitnessingEnabled) {
-    Intent intent = new Intent(ctx, ConnectingActivity.class);
-    intent.putExtra(Constants.LAO_NAME, laoName);
-    intent.putStringArrayListExtra(
-        Constants.WITNESSES,
-        new ArrayList<>(
-            witnesses.stream().map(PublicKey::getEncoded).collect(Collectors.toList())));
-    intent.putExtra(Constants.CONNECTION_PURPOSE_EXTRA, Constants.CREATING_EXTRA);
-    intent.putExtra(Constants.ACTIVITY_TO_OPEN_EXTRA, Constants.LAO_DETAIL_EXTRA);
-    intent.putExtra(Constants.WITNESSING_FLAG_EXTRA, isWitnessingEnabled);
-    intent.addFlags(FLAG_ACTIVITY_NEW_TASK);
-    return intent;
   }
 }

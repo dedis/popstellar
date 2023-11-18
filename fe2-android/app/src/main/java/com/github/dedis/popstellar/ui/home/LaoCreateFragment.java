@@ -164,12 +164,10 @@ public final class LaoCreateFragment extends Fragment {
               binding.witnessesTitle.setVisibility(View.VISIBLE);
               binding.witnessesList.setVisibility(View.VISIBLE);
             }
-            binding.enableWitnessingSwitch.setText(R.string.lao_create_disable_witnessing_switch);
           } else {
             binding.addWitnessButton.setVisibility(View.GONE);
             binding.witnessesTitle.setVisibility(View.GONE);
             binding.witnessesList.setVisibility(View.GONE);
-            binding.enableWitnessingSwitch.setText(R.string.lao_create_enable_witnessing_switch);
           }
         });
     // Use this to save the preference after opening and closing the QR code

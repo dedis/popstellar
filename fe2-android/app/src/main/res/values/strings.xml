@@ -58,7 +58,6 @@
   <string name="text_entry_create">Organization name</string>
   <string name="lao_create_witnesses_button">Add witnesses</string>
   <string name="lao_create_enable_witnessing_switch">Enable witnessing protocol</string>
-  <string name="lao_create_disable_witnessing_switch">Disable witnessing protocol</string>
   <string name="button_clear">Clear</string>
 
   <!--  Lao Detail-->

@@ -101,6 +101,9 @@ public class LaoCreateFragmentTest {
 
   @Test
   public void uiElementsAreCorrectlyHidden() {
+    // The witnessing switch is disabled by default
+    witnessingSwitch().check(matches(isNotChecked()));
+
     addWitnessButton().check(matches((withEffectiveVisibility(Visibility.GONE))));
     witnessList().check(matches((withEffectiveVisibility(Visibility.GONE))));
     witnessTitle().check(matches(withEffectiveVisibility(Visibility.GONE)));
@@ -145,7 +148,6 @@ public class LaoCreateFragmentTest {
   @Test
   public void witnessingSwitchDisplayButton() {
     witnessingSwitch().perform(click());
-    witnessingSwitch().check(matches(withText(R.string.lao_create_disable_witnessing_switch)));
     addWitnessButton().check(matches((isDisplayed())));
   }
 
