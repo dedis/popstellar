@@ -148,7 +148,7 @@ public class LaoCreateFragmentTest {
   @Test
   public void witnessingSwitchDisplayButton() {
     witnessingSwitch().perform(click());
-    addWitnessButton().check(matches((isDisplayed())));
+    addWitnessButton().check(matches(isDisplayed()));
   }
 
   @Test
