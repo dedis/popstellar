@@ -118,6 +118,11 @@ android {
             resources.srcDirs = []
         }
     }
+
+    lint {
+        sarifReport true
+        sarifOutput file("lint.sarif")
+    }
 }
 
 // Disable every task related to release unit tests
