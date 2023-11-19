@@ -121,7 +121,6 @@ android {
 
     lint {
         sarifReport true
-        sarifOutput file("lint.sarif")
     }
 }
 
