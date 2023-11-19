@@ -10,8 +10,7 @@ import static com.github.dedis.popstellar.testutils.pages.lao.popcha.PoPCHAHomeP
 import static com.github.dedis.popstellar.testutils.pages.scanning.QrScanningPageObject.*;
 import static com.github.dedis.popstellar.ui.lao.popcha.PoPCHAViewModel.AUTHENTICATION;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -48,66 +47,8 @@ import org.mockito.junit.MockitoTestRule;
 @HiltAndroidTest
 @RunWith(AndroidJUnit4.class)
 public class PoPCHAHomeFragmentTest {
-  private static final long CREATION_TIME = 1612204910;
-  private static final String LAO_NAME = "laoName";
   private static final KeyPair SENDER_KEY = generateKeyPair();
-  private static final Lao LAO = new Lao(LAO_NAME, SENDER_KEY.getPublicKey(), CREATION_TIME);
-  private static final BehaviorSubject<LaoView> laoSubject =
-      BehaviorSubject.createDefault(new LaoView(LAO));
-  private static final String ROLLCALL_NAME = "rollcall#1";
-  private static final String ROLLCALL_ID =
-      RollCall.generateCreateRollCallId(LAO.getId(), CREATION_TIME, ROLLCALL_NAME);
-  private static final long TIMESTAMP_1 = 1632204910;
-  private static final long TIMESTAMP_2 = 1632204900;
-  private static final PoPToken popToken = generatePoPToken();
-  private static final AuthToken authToken = new AuthToken(popToken);
-  private static final HashSet<PublicKey> attendees = new HashSet<>();
-
-  static {
-    attendees.add(popToken.getPublicKey());
-  }
-
-  private static final RollCall ROLL_CALL =
-      new RollCall(
-          ROLLCALL_ID,
-          ROLLCALL_ID,
-          ROLLCALL_NAME,
-          CREATION_TIME,
-          TIMESTAMP_1,
-          TIMESTAMP_2,
-          EventState.CLOSED,
-          attendees,
-          "bc",
-          "");
-
-  private static final String ADDRESS = "localhost:9100";
-  private static final String RESPONSE_MODE = "query";
-  private static final String CLIENT_ID = "WAsabGuEe5m1KpqOZQKgmO7UShX84Jmd_eaenOZ32wU";
-  private static final String NONCE =
-      "frXgNl-IxJPzsNia07f_3yV0ECYlWOb2RXG_SGvATKcJ7-s0LthmboTrnMqlQS1RnzmV9hW0iumu_5NwAqXwGA";
-  private static final String STATE =
-      "m_9r5sPUD8NoRIdVVYFMyYCOb-8xh1d2q8l-pKDXO0sn9TWnR_2nmC8MfVj1COHZsh1rElqimOTLAp3CbhbYJQ";
-  private static final String VALID_POPCHA_URL =
-      "http://"
-          + ADDRESS
-          + "/authorize?response_mode="
-          + RESPONSE_MODE
-          + "&response_type=id_token&client_id="
-          + CLIENT_ID
-          + "&redirect_uri=http%3A%2F%2Flocalhost%3A8000%2Fcb&scope=openid+profile&login_hint="
-          + LAO.getId()
-          + "&nonce="
-          + NONCE
-          + "&state="
-          + STATE;
-
-  @Inject RollCallRepository rollCallRepository;
-  @BindValue @Mock LAORepository laoRepo;
-  @BindValue @Mock GlobalNetworkManager networkManager;
-  @BindValue @Mock KeyManager keyManager;
-  MessageSenderHelper messageSenderHelper = new MessageSenderHelper();
-
-  @Rule public InstantTaskExecutorRule rule = new InstantTaskExecutorRule();
+  private static final Lao LAO = new Lao("laoName", SENDER_KEY.getPublicKey(), 1612204910);
 
   @Rule(order = 0)
   public final MockitoTestRule mockitoRule = MockitoJUnit.testRule(this);
@@ -115,25 +56,7 @@ public class PoPCHAHomeFragmentTest {
   @Rule(order = 1)
   public final HiltAndroidRule hiltRule = new HiltAndroidRule(this);
 
-  @Rule(order = 2)
-  public final ExternalResource setupRule =
-      new ExternalResource() {
-        @Override
-        protected void before() throws KeyException, UnknownLaoException {
-          hiltRule.inject();
-          when(laoRepo.getLaoObservable(anyString())).thenReturn(laoSubject);
-          when(laoRepo.getLaoView(any())).thenAnswer(invocation -> new LaoView(LAO));
-
-          rollCallRepository.updateRollCall(LAO.getId(), ROLL_CALL);
-
-          when(networkManager.getMessageSender()).thenReturn(messageSenderHelper.getMockedSender());
-          messageSenderHelper.setupMock();
-
-          when(keyManager.getMainPublicKey()).thenReturn(SENDER_KEY.getPublicKey());
-          when(keyManager.getValidPoPToken(anyString(), any(RollCall.class))).thenReturn(popToken);
-          when(keyManager.getLongTermAuthToken(anyString(), anyString())).thenReturn(authToken);
-        }
-      };
+  @Rule public InstantTaskExecutorRule rule = new InstantTaskExecutorRule();
 
   @Rule(order = 3)
   public ActivityFragmentScenarioRule<LaoActivity, PoPCHAHomeFragment> activityScenarioRule =
@@ -143,6 +66,54 @@ public class PoPCHAHomeFragmentTest {
           LaoActivityPageObject.containerId(),
           PoPCHAHomeFragment.class,
           PoPCHAHomeFragment::newInstance);
+
+  @Inject RollCallRepository rollCallRepository;
+  @BindValue @Mock LAORepository laoRepo;
+  @BindValue @Mock GlobalNetworkManager networkManager;
+  @BindValue @Mock KeyManager keyManager;
+  MessageSenderHelper messageSenderHelper = new MessageSenderHelper();
+
+  @Rule(order = 2)
+  public final ExternalResource setupRule =
+      new ExternalResource() {
+        @Override
+        protected void before() throws KeyException, UnknownLaoException {
+          hiltRule.inject();
+          when(laoRepo.getLaoObservable(anyString()))
+              .thenReturn(BehaviorSubject.createDefault(new LaoView(LAO)));
+          when(laoRepo.getLaoView(any())).thenAnswer(invocation -> new LaoView(LAO));
+
+          String rollcallName = "rollcall#1";
+          String rollCallId =
+              RollCall.generateCreateRollCallId(LAO.getId(), 1612204910, rollcallName);
+          PoPToken popToken = generatePoPToken();
+
+          HashSet<PublicKey> attendees = new HashSet<>();
+          attendees.add(popToken.getPublicKey());
+
+          rollCallRepository.updateRollCall(
+              LAO.getId(),
+              new RollCall(
+                  rollCallId,
+                  rollCallId,
+                  rollcallName,
+                  1612204910,
+                  1632204910,
+                  1632204900,
+                  EventState.CLOSED,
+                  attendees,
+                  "bc",
+                  ""));
+
+          when(networkManager.getMessageSender()).thenReturn(messageSenderHelper.getMockedSender());
+          messageSenderHelper.setupMock();
+
+          when(keyManager.getMainPublicKey()).thenReturn(SENDER_KEY.getPublicKey());
+          when(keyManager.getValidPoPToken(anyString(), any(RollCall.class))).thenReturn(popToken);
+          when(keyManager.getLongTermAuthToken(anyString(), anyString()))
+              .thenReturn(new AuthToken(popToken));
+        }
+      };
 
   @Test
   public void testPageHeaderText() {
@@ -160,10 +131,18 @@ public class PoPCHAHomeFragmentTest {
 
   @Test
   public void testScanValidPoPCHAUrlSendMessage() {
+    final String validPopchaUrl =
+        "http://localhost:9100/authorize?response_mode=query&response_type=id_token&client_id="
+            + "WAsabGuEe5m1KpqOZQKgmO7UShX84Jmd_eaenOZ32wU&redirect_uri="
+            + "http%3A%2F%2Flocalhost%3A8000%2Fcb&scope=openid+profile&login_hint="
+            + LAO.getId()
+            + "&nonce=frXgNl-IxJPzsNia07f_3yV0ECYlWOb2RXG_SGvATKcJ7-s0LthmboTrnMqlQS1RnzmV9hW0ium"
+            + "u_5NwAqXwGA&state=m_9r5sPUD8NoRIdVVYFMyYCOb-8xh1d2q8l-pKDXO0sn9TWnR_2nmC8MfVj1CO"
+            + "HZsh1rElqimOTLAp3CbhbYJQ";
     getScanner().perform(click());
 
     openManualButton().perform(click());
-    manualAddEditText().perform(forceTypeText(VALID_POPCHA_URL));
+    manualAddEditText().perform(forceTypeText(validPopchaUrl));
     manualAddConfirm().perform(click());
 
     InstrumentationRegistry.getInstrumentation().waitForIdleSync();
@@ -173,6 +152,27 @@ public class PoPCHAHomeFragmentTest {
             any(),
             eq(Channel.getLaoChannel(LAO.getId()).subChannel(AUTHENTICATION)),
             any(PoPCHAAuthentication.class));
+  }
+
+  @Test
+  public void testScanInvalidPoPCHAUrlFails() {
+    final String validPopchaUrl =
+        "http://localhost:9100/authorize?response_mode=query&response_type=id_token&client_id="
+            + "WAsabGuEe5m1KpqOZQKgmO7UShX84Jmd_eaenOZ32wU&redirect_uri="
+            + "http%3A%2F%2Flocalhost%3A8000%2Fcb&scope=openid+profile&login_hint="
+            + "random_invalid_lao_id"
+            + "&nonce=frXgNl-IxJPzsNia07f_3yV0ECYlWOb2RXG_SGvATKcJ7-s0LthmboTrnMqlQS1RnzmV9hW0ium"
+            + "u_5NwAqXwGA&state=m_9r5sPUD8NoRIdVVYFMyYCOb-8xh1d2q8l-pKDXO0sn9TWnR_2nmC8MfVj1CO"
+            + "HZsh1rElqimOTLAp3CbhbYJQ";
+    getScanner().perform(click());
+
+    openManualButton().perform(click());
+    manualAddEditText().perform(forceTypeText(validPopchaUrl));
+    manualAddConfirm().perform(click());
+
+    InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+    verifyNoInteractions(messageSenderHelper.getMockedSender());
   }
 
   @Test

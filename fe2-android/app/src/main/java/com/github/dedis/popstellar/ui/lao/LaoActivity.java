@@ -66,8 +66,6 @@ public class LaoActivity extends AppCompatActivity {
 
     witnessingViewModel = obtainWitnessingViewModel(this, laoId);
 
-    obtainPoPCHAViewModel(this, laoId).disableConnectingFlag();
-
     // At creation of the lao activity the connections of the lao are restored from the persistent
     // storage, such that the client resubscribes to each previous subscribed channel
     laoViewModel.restoreConnections();

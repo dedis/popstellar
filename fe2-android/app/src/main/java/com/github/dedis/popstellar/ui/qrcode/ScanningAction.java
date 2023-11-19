@@ -53,8 +53,12 @@ public enum ScanningAction {
       LaoActivity::obtainViewModel,
       (manager, stringArray) ->
           LaoActivity.setCurrentFragment(
-              manager, R.id.fragment_roll_call, () -> RollCallFragment.newInstance(stringArray[0])),
-      true), // We only need the first arg (rc id)
+              manager,
+              R.id.fragment_roll_call,
+              () ->
+                  RollCallFragment.newInstance(
+                      stringArray[0])), // We only need the first arg (rc id)
+      true),
   ADD_LAO_PARTICIPANT(
       R.string.qrcode_scanning_connect_lao,
       R.string.scanned_tokens,

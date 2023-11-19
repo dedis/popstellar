@@ -175,10 +175,6 @@ public class PoPCHAViewModel extends AndroidViewModel implements QRCodeScanningV
     return keyManager.getValidPoPToken(laoId, rollCallRepo.getLastClosedRollCall(laoId));
   }
 
-  public void disableConnectingFlag() {
-    connecting.set(false);
-  }
-
   @Override
   public LiveData<Integer> getNbScanned() {
     // This is useless for the PoPCHA Scanner (we just scan once)
