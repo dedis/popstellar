@@ -2,9 +2,7 @@ package com.github.dedis.popstellar.repository;
 
 import android.app.Activity;
 import android.app.Application;
-
 import androidx.lifecycle.Lifecycle;
-
 import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.database.AppDatabase;
@@ -12,15 +10,6 @@ import com.github.dedis.popstellar.repository.database.lao.LAODao;
 import com.github.dedis.popstellar.repository.database.lao.LAOEntity;
 import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
-
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -28,6 +17,12 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.BehaviorSubject;
 import io.reactivex.subjects.Subject;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import timber.log.Timber;
 
 @Singleton
@@ -188,33 +183,5 @@ public class LAORepository {
 
   public void addDisposable(Disposable disposable) {
     disposables.add(disposable);
-  }
-
-  // ============ Lao Unrelated data ===============
-  // State for Messages
-  // Observable for view models that need access to all Nodes
-  private final Map<Channel, BehaviorSubject<List<ConsensusNode>>> channelToNodesSubject =
-      new HashMap<>();
-  // ============ Lao Unrelated functions ===============
-  /**
-   * Return an Observable to the list of nodes in a given channel.
-   *
-   * @param channel the lao channel.
-   * @return an Observable to the list of nodes
-   */
-  public Observable<List<ConsensusNode>> getNodesByChannel(Channel channel) {
-    return channelToNodesSubject.get(channel);
-  }
-
-  /**
-   * Emit an update to the observer of nodes for the given lao channel. Create the BehaviorSubject
-   * if absent (first update).
-   *
-   * @param channel the lao channel
-   */
-  public void updateNodes(Channel channel) {
-    List<ConsensusNode> nodes = getLaoByChannel(channel).getNodes();
-    channelToNodesSubject.putIfAbsent(channel, BehaviorSubject.create());
-    channelToNodesSubject.get(channel).onNext(nodes);
   }
 }

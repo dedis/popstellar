@@ -1,18 +1,14 @@
 package com.github.dedis.popstellar.di;
 
 import android.app.Application;
-
 import androidx.test.core.app.ApplicationProvider;
-
 import com.github.dedis.popstellar.model.network.method.message.data.DataRegistry;
 import com.github.dedis.popstellar.repository.*;
 import com.github.dedis.popstellar.repository.database.AppDatabase;
 import com.github.dedis.popstellar.utility.handler.data.*;
 import com.github.dedis.popstellar.utility.security.KeyManager;
-
-import org.mockito.Mockito;
-
 import javax.inject.Singleton;
+import org.mockito.Mockito;
 
 /** This class helps in the creation of the DataRegistry */
 @Singleton
@@ -28,10 +24,13 @@ public class DataRegistryModuleHelper {
 
   public static DataRegistry buildRegistry() {
     return buildRegistry(
-        new LAORepository(appDatabase, application), Mockito.mock(KeyManager.class));
+        new LAORepository(appDatabase, application),
+        Mockito.mock(KeyManager.class),
+        new ConsensusRepository());
   }
 
-  public static DataRegistry buildRegistry(LAORepository laoRepository, KeyManager keyManager) {
+  public static DataRegistry buildRegistry(
+      LAORepository laoRepository, KeyManager keyManager, ConsensusRepository consensusRepository) {
     RollCallRepository rollCallRepository = new RollCallRepository(appDatabase, application);
     ElectionRepository electionRepository = new ElectionRepository(appDatabase, application);
     MeetingRepository meetingRepository = new MeetingRepository(appDatabase, application);
@@ -53,7 +52,8 @@ public class DataRegistryModuleHelper {
             digitalCashRepository),
         new MessageRepository(appDatabase, application),
         keyManager,
-        new ServerRepository());
+        new ServerRepository(),
+        consensusRepository);
   }
 
   public static DataRegistry buildRegistry(
@@ -70,7 +70,8 @@ public class DataRegistryModuleHelper {
         witnessingRepository,
         new MessageRepository(appDatabase, application),
         keyManager,
-        new ServerRepository());
+        new ServerRepository(),
+        new ConsensusRepository());
   }
 
   public static DataRegistry buildRegistry(
@@ -88,7 +89,8 @@ public class DataRegistryModuleHelper {
         witnessingRepo,
         new MessageRepository(appDatabase, application),
         keyManager,
-        new ServerRepository());
+        new ServerRepository(),
+        new ConsensusRepository());
   }
 
   public static DataRegistry buildRegistry(
@@ -106,7 +108,8 @@ public class DataRegistryModuleHelper {
         witnessingRepo,
         new MessageRepository(appDatabase, application),
         keyManager,
-        new ServerRepository());
+        new ServerRepository(),
+        new ConsensusRepository());
   }
 
   public static DataRegistry buildRegistry(
@@ -131,7 +134,8 @@ public class DataRegistryModuleHelper {
             digitalCashRepository),
         new MessageRepository(appDatabase, application),
         keyManager,
-        new ServerRepository());
+        new ServerRepository(),
+        new ConsensusRepository());
   }
 
   public static DataRegistry buildRegistry(
@@ -150,7 +154,8 @@ public class DataRegistryModuleHelper {
         witnessingRepo,
         messageRepo,
         keyManager,
-        new ServerRepository());
+        new ServerRepository(),
+        new ConsensusRepository());
   }
 
   public static DataRegistry buildRegistry(
@@ -178,7 +183,8 @@ public class DataRegistryModuleHelper {
             digitalCashRepository),
         new MessageRepository(appDatabase, application),
         keyManager,
-        new ServerRepository());
+        new ServerRepository(),
+        new ConsensusRepository());
   }
 
   public static DataRegistry buildRegistry(
@@ -197,7 +203,8 @@ public class DataRegistryModuleHelper {
         witnessingRepo,
         msgRepo,
         keyManager,
-        serverRepo);
+        serverRepo,
+        new ConsensusRepository());
   }
 
   public static DataRegistry buildRegistry(
@@ -221,7 +228,8 @@ public class DataRegistryModuleHelper {
             digitalCashRepo),
         new MessageRepository(appDatabase, application),
         keyManager,
-        new ServerRepository());
+        new ServerRepository(),
+        new ConsensusRepository());
   }
 
   public static DataRegistry buildRegistry(
@@ -234,15 +242,17 @@ public class DataRegistryModuleHelper {
       WitnessingRepository witnessingRepo,
       MessageRepository msgRepo,
       KeyManager keyManager,
-      ServerRepository serverRepo) {
+      ServerRepository serverRepo,
+      ConsensusRepository consensusRepo) {
     LaoHandler laoHandler =
-        new LaoHandler(keyManager, msgRepo, laoRepo, serverRepo, witnessingRepo);
+        new LaoHandler(keyManager, msgRepo, laoRepo, serverRepo, witnessingRepo, consensusRepo);
     RollCallHandler rollCallHandler =
         new RollCallHandler(laoRepo, rollCallRepo, digitalCashRepo, witnessingRepo);
     MeetingHandler meetingHandler = new MeetingHandler(laoRepo, meetingRepo, witnessingRepo);
     ElectionHandler electionHandler =
         new ElectionHandler(msgRepo, laoRepo, electionRepo, witnessingRepo);
-    ConsensusHandler consensusHandler = new ConsensusHandler(laoRepo, witnessingRepo);
+    ConsensusHandler consensusHandler =
+        new ConsensusHandler(laoRepo, witnessingRepo, consensusRepo);
     ChirpHandler chirpHandler = new ChirpHandler(laoRepo, socialMediaRepo);
     ReactionHandler reactionHandler = new ReactionHandler(laoRepo, socialMediaRepo);
     TransactionCoinHandler transactionCoinHandler = new TransactionCoinHandler(digitalCashRepo);
