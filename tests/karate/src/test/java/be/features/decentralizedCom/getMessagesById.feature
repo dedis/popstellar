@@ -32,7 +32,7 @@ Feature: Request messages by id from other servers
     Given eval heartbeat.params[lao.channel] = messageIds
 
     When mockServer.send(heartbeat)
-    And def getMessagesByIdMessages = mockServer.getMessagesByMethod('get_messages_by_id')
+    And def getMessagesByIdMessages = mockServer.getGetMessagesById()
 
     Then assert getMessagesByIdMessages.length == 1
     And match getMessagesByIdMessages[0] contains randomMessageId
@@ -43,7 +43,7 @@ Feature: Request messages by id from other servers
     Given eval heartbeat.params[lao.id] = messageIds
 
     When mockServer.send(heartbeat)
-    And def getMessagesByIdMessages = mockServer.getMessagesByMethod('get_messages_by_id')
+    And def getMessagesByIdMessages = mockServer.getGetMessagesById()
 
     Then assert getMessagesByIdMessages.length == 0
 
@@ -54,7 +54,7 @@ Feature: Request messages by id from other servers
     And eval heartbeat.params[lao.channel] = invalidMessageIds
 
     When mockServer.send(heartbeat)
-    And def getMessagesByIdMessages = mockServer.getMessagesByMethod('get_messages_by_id')
+    And def getMessagesByIdMessages = mockServer.getGetMessagesById()
 
     Then assert getMessagesByIdMessages.length == 0
 

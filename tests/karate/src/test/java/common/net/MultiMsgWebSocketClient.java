@@ -20,13 +20,10 @@ public class MultiMsgWebSocketClient extends WebSocketClient {
   private final MessageQueue queue;
   public final Logger logger;
 
-  /** Map of all the messages and their corresponding message ids that the client sent */
+  /** Map of all the messages and their corresponding message ids that this client sent */
   private final HashMap<String, PublishMessageIds> sentMessages = new HashMap<>();
   /** Collects all broadcasts that were received */
   public List<String> receivedBroadcasts = new ArrayList<>();
-  /** Collects all heartbeats that were received */
-  public List<String> receivedHeartbeats = new ArrayList<>();
-
   private final static int TIMEOUT = 5000;
 
 
@@ -81,14 +78,14 @@ public class MultiMsgWebSocketClient extends WebSocketClient {
   public String getBackendResponse(Map<String, Object> highLevelMessageDataMap){
     String highLevelMessageData = mapToJsonString(highLevelMessageDataMap);
     assert sentMessages.containsKey(highLevelMessageData);
-    int messageId = sentMessages.get(highLevelMessageData).id;
+    int id = sentMessages.get(highLevelMessageData).id;
 
     String answer = getBuffer().takeTimeout(TIMEOUT);
     while(answer != null){
       if(answer.contains("result") || answer.contains("error")){
         Json resultJson = Json.of(answer);
         int resultId = resultJson.get("id");
-        if (messageId == resultId){
+        if (id == resultId){
           return answer;
         }
       }
@@ -101,39 +98,36 @@ public class MultiMsgWebSocketClient extends WebSocketClient {
     throw new IllegalArgumentException("No answer from the backend");
   }
 
-  /**
-   * Retrieves all messages with the specified method type from the messages buffer.
-   * @param method The method type to filter the messages by.
-   * @return A list containing all received messages that match the specified method type.
-   */
-  public List<String> getMessagesByMethod(String method) {
-    List<String> messages = new ArrayList<>();
-    Predicate<String> filter = MessageFilters.withMethod(method);
-
-    String message = getBuffer().takeTimeout(TIMEOUT);
-    while (message != null) {
-      if (filter.test(message)) {
-        messages.add(message);
-      }
-      message = getBuffer().takeTimeout(TIMEOUT);
-    }
-    return messages;
+  public List<String> getHeartbeats(){
+    return getMessagesByMethod("heartbeat");
   }
 
-  /**
-   * Checks if a heartbeat containing the message_id corresponding to a given high level message was received.
-   */
-  public boolean receivedHeartbeatContainingMessageId(Map<String, Object> highLevelMessageDataMap){
-    receivedHeartbeats = getMessagesByMethod("heartbeat");
-    String highLevelMessageData = mapToJsonString(highLevelMessageDataMap);
-    String message_id = sentMessages.get(highLevelMessageData).message_id;
-    for(String heartbeat : receivedHeartbeats){
-      if(heartbeat.contains(message_id)){
-        System.out.println("Found a heartbeat containing message_id " + message_id);
+  public List<String> getGetMessagesById(){
+    return getMessagesByMethod("get_messages_by_id");
+  }
+
+  public boolean receivedHeartbeatWithSubstring(String substring){
+    for(String heartbeat : getHeartbeats()){
+      if(heartbeat.contains(substring)){
+        System.out.println("Found a heartbeat containing substring " + substring);
         return true;
       }
     }
     return false;
+  }
+
+  /**
+   * Returns the message_id field of the publish message corresponding to highLevelMessageDataMap.
+   */
+  public String getPublishMessageId(Map<String, Object> highLevelMessageDataMap){
+    return getPublishMessageIds(highLevelMessageDataMap).message_id;
+  }
+
+  /**
+   * Returns the id field of the publish message corresponding to highLevelMessageDataMap.
+   */
+  public int getPublishId(Map<String, Object> highLevelMessageDataMap){
+    return getPublishMessageIds(highLevelMessageDataMap).id;
   }
 
   public MessageBuffer getBuffer() {
@@ -176,6 +170,34 @@ public class MultiMsgWebSocketClient extends WebSocketClient {
     if (msg == null) logger.error("listen timed out");
 
     return msg;
+  }
+
+  private PublishMessageIds getPublishMessageIds(Map<String, Object> highLevelMessageDataMap){
+    String highLevelMessageData = mapToJsonString(highLevelMessageDataMap);
+    PublishMessageIds message_ids = sentMessages.get(highLevelMessageData);
+    if(message_ids == null){
+      throw new IllegalArgumentException("Did not send this message");
+    }
+    return message_ids;
+  }
+
+  /**
+   * Retrieves all messages with the specified method type from the messages buffer.
+   * @param method The method type to filter the messages by.
+   * @return A list containing all received messages that match the specified method type.
+   */
+  private List<String> getMessagesByMethod(String method) {
+    List<String> messages = new ArrayList<>();
+    Predicate<String> filter = MessageFilters.withMethod(method);
+
+    String message = getBuffer().takeTimeout(TIMEOUT);
+    while (message != null) {
+      if (filter.test(message)) {
+        messages.add(message);
+      }
+      message = getBuffer().takeTimeout(TIMEOUT);
+    }
+    return messages;
   }
 
   private String mapToJsonString(Map<String, Object> jsonAsMap){
