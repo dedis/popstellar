@@ -298,22 +298,3 @@
       * karate.log("sending a transaction to issue coins :\n", karate.pretty(validTransaction))
       * organizer.publish(validTransaction, lao.cashChannel)
       * json answer = organizer.getBackendResponse(validTransaction)
-
-    # mockServer needs to be passed as argument when calling this scenario
-    @name=greet_server
-    Scenario: Sends a greet server message
-      Given def greetServer =
-        """
-          {
-            "method": "greet_server",
-            "params": {
-                "public_key": '#(mockServer.publicKey)',
-                "client_address": '#(wsURL)',
-                "server_address": '#(wsURL)'
-            },
-            "jsonrpc": "2.0"
-          }
-        """
-      * karate.log("sending a greet_server\n", karate.pretty(greetServer))
-      * mockServer.send(greetServer)
-      * def subs = mockServer.takeTimeout(timeout)
