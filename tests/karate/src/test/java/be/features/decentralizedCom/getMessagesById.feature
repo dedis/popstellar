@@ -10,7 +10,8 @@ Feature: Request messages by id from other servers
     * call read(serverFeature)
     * call read(mockClientFeature)
     * def mockServer = call createMockClient
-    * def lao = mockServer.createValidLao()
+    * def mockFrontend = call createMockClient
+    * def lao = mockFrontend.createValidLao()
 
     # Create the template for heartbeat message
     # This is used in combination with 'eval' to dynamically resolve the channel keys in the heartbeat JSON
@@ -24,7 +25,7 @@ Feature: Request messages by id from other servers
 
     # This call executes all the steps to create a valid lao on the server before every scenario
     # (lao creation, subscribe, catchup)
-    * call read(createLaoScenario) { organizer: '#(mockServer)', lao: '#(lao)' }
+    * call read(createLaoScenario) { organizer: '#(mockFrontend)', lao: '#(lao)' }
 
   # Check that after sending a heartbeat message with unknown message id, the server responds with a
   # getMessagesByID requesting this message
@@ -54,7 +55,40 @@ Feature: Request messages by id from other servers
     And eval heartbeat.params[lao.channel] = invalidMessageIds
 
     When mockServer.send(heartbeat)
-    And def getMessagesByIdMessages = mockServer.getGetMessagesById()
 
-    Then assert getMessagesByIdMessages.length == 0
+    Then assert mockServer.getGetMessagesById().length == 0
+
+
+  # Check that after the server confirms it received a message, sending a heartbeat containing that message id does not
+  # trigger a getMessagesById anymore
+  Scenario: Server should not request messages that it already has
+    Given def validRollCall = mockFrontend.createValidRollCall(lao)
+    And def validCreateRollCall =
+      """
+        {
+          "object": "roll_call",
+          "action": "create",
+          "id": '#(validRollCall.id)',
+          "name": '#(validRollCall.name)',
+          "creation": '#(validRollCall.creation)',
+          "proposed_start": '#(validRollCall.start)',
+          "proposed_end": '#(validRollCall.end)',
+          "location": '#(validRollCall.location)',
+          "description": '#(validRollCall.description)',
+        }
+      """
+
+    And mockFrontend.publish(validCreateRollCall, lao.channel)
+    And json answer = mockFrontend.getBackendResponse(validCreateRollCall)
+    And def message_id = mockFrontend.getPublishMessageId(validCreateRollCall)
+    And def messageIds = []
+    And eval messageIds.push(message_id)
+    And eval heartbeat.params[lao.channel] = messageIds
+
+    When mockServer.send(heartbeat)
+
+    Then match answer contains VALID_MESSAGE
+    And assert mockServer.getGetMessagesById().length == 0
+
+
 
