@@ -45,11 +45,11 @@ public class MultiMsgWebSocketClient extends WebSocketClient {
   /**
    * JSON messages defined inside features are interpreted as maps from String to Object.
    * This method is called directly inside features and is just a wrapper around the send method of WebsocketClient (that takes Strings).
-   * @param messageData the message to send as a JSON map
+   * @param jsonRpcMsg the message to send as a JSON map
    *                    (for example: subscribe and catchup in simpleScenarios.feature).
    */
-  public void send(Map<String, Object> messageData){
-    this.send(mapToJsonString(messageData));
+  public void send(Map<String, Object> jsonRpcMsg){
+    this.send(mapToJsonString(jsonRpcMsg));
   }
 
   /**
