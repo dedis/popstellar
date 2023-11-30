@@ -53,8 +53,7 @@ public final class LaoHandler {
   public void handleCreateLao(HandlerContext context, CreateLao createLao)
       throws UnknownLaoException {
     Channel channel = context.getChannel();
-    // TODO: Uncomment this line when we want to restore the witnessing functionalities
-    Set<PublicKey> witnesses = new HashSet<>(); // new HashSet<>(createLao.getWitnesses());
+    Set<PublicKey> witnesses = new HashSet<>(createLao.getWitnesses());
 
     Timber.tag(TAG).d("handleCreateLao: channel: %s, msg: %s", channel, createLao);
     Lao lao = new Lao(createLao.getId());

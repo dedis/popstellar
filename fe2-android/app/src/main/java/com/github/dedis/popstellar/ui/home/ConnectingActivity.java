@@ -1,12 +1,12 @@
 package com.github.dedis.popstellar.ui.home;
 
+import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
+
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
-
 import androidx.appcompat.app.AppCompatActivity;
-
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.ConnectingActivityBinding;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.CreateLao;
@@ -19,29 +19,46 @@ import com.github.dedis.popstellar.utility.Constants;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.tinder.scarlet.WebSocket;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import javax.inject.Inject;
-
 import dagger.hilt.android.AndroidEntryPoint;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.observables.ConnectableObservable;
+import java.util.*;
+import java.util.stream.Collectors;
+import javax.inject.Inject;
 import timber.log.Timber;
-
-import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 
 @AndroidEntryPoint
 public class ConnectingActivity extends AppCompatActivity {
   public static final String TAG = ConnectingActivity.class.getSimpleName();
 
   private final CompositeDisposable disposables = new CompositeDisposable();
-  private ConnectingActivityBinding binding;
-
   @Inject GlobalNetworkManager networkManager;
   @Inject KeyManager keyManager;
+  private ConnectingActivityBinding binding;
+
+  public static Intent newIntentForJoiningDetail(Context ctx, String laoId) {
+    Intent intent = new Intent(ctx, ConnectingActivity.class);
+    intent.putExtra(Constants.LAO_ID_EXTRA, laoId);
+    intent.putExtra(Constants.CONNECTION_PURPOSE_EXTRA, Constants.JOINING_EXTRA);
+    intent.putExtra(Constants.ACTIVITY_TO_OPEN_EXTRA, Constants.LAO_DETAIL_EXTRA);
+    intent.addFlags(FLAG_ACTIVITY_NEW_TASK);
+    return intent;
+  }
+
+  public static Intent newIntentForCreatingDetail(
+      Context ctx, String laoName, List<PublicKey> witnesses, boolean isWitnessingEnabled) {
+    Intent intent = new Intent(ctx, ConnectingActivity.class);
+    intent.putExtra(Constants.LAO_NAME, laoName);
+    intent.putStringArrayListExtra(
+        Constants.WITNESSES,
+        new ArrayList<>(
+            witnesses.stream().map(PublicKey::getEncoded).collect(Collectors.toList())));
+    intent.putExtra(Constants.CONNECTION_PURPOSE_EXTRA, Constants.CREATING_EXTRA);
+    intent.putExtra(Constants.ACTIVITY_TO_OPEN_EXTRA, Constants.LAO_DETAIL_EXTRA);
+    intent.putExtra(Constants.WITNESSING_FLAG_EXTRA, isWitnessingEnabled);
+    intent.addFlags(FLAG_ACTIVITY_NEW_TASK);
+    return intent;
+  }
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -126,11 +143,17 @@ public class ConnectingActivity extends AppCompatActivity {
     if (isCreation) {
       String laoName = getIntent().getExtras().getString(Constants.LAO_NAME);
       List<String> witnessesList = getIntent().getStringArrayListExtra(Constants.WITNESSES);
-      List<PublicKey> witnesses =
-          witnessesList.stream().map(PublicKey::new).collect(Collectors.toList());
+      boolean isWitnessingEnabled =
+          getIntent().getExtras().getBoolean(Constants.WITNESSING_FLAG_EXTRA);
 
-      // Add the organizer to the list of witnesses
-      witnesses.add(keyManager.getMainPublicKey());
+      List<PublicKey> witnesses;
+      if (isWitnessingEnabled) {
+        witnesses = witnessesList.stream().map(PublicKey::new).collect(Collectors.toList());
+        // Add the organizer to the list of witnesses
+        witnesses.add(keyManager.getMainPublicKey());
+      } else {
+        witnesses = Collections.emptyList();
+      }
 
       CreateLao createLao = new CreateLao(laoName, keyManager.getMainPublicKey(), witnesses);
       Lao lao = new Lao(createLao.getId());
@@ -178,28 +201,5 @@ public class ConnectingActivity extends AppCompatActivity {
           startActivity(HomeActivity.newIntent(this));
           finish();
         });
-  }
-
-  public static Intent newIntentForJoiningDetail(Context ctx, String laoId) {
-    Intent intent = new Intent(ctx, ConnectingActivity.class);
-    intent.putExtra(Constants.LAO_ID_EXTRA, laoId);
-    intent.putExtra(Constants.CONNECTION_PURPOSE_EXTRA, Constants.JOINING_EXTRA);
-    intent.putExtra(Constants.ACTIVITY_TO_OPEN_EXTRA, Constants.LAO_DETAIL_EXTRA);
-    intent.addFlags(FLAG_ACTIVITY_NEW_TASK);
-    return intent;
-  }
-
-  public static Intent newIntentForCreatingDetail(
-      Context ctx, String laoName, List<PublicKey> witnesses) {
-    Intent intent = new Intent(ctx, ConnectingActivity.class);
-    intent.putExtra(Constants.LAO_NAME, laoName);
-    intent.putStringArrayListExtra(
-        Constants.WITNESSES,
-        new ArrayList<>(
-            witnesses.stream().map(PublicKey::getEncoded).collect(Collectors.toList())));
-    intent.putExtra(Constants.CONNECTION_PURPOSE_EXTRA, Constants.CREATING_EXTRA);
-    intent.putExtra(Constants.ACTIVITY_TO_OPEN_EXTRA, Constants.LAO_DETAIL_EXTRA);
-    intent.addFlags(FLAG_ACTIVITY_NEW_TASK);
-    return intent;
   }
 }

@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.TextView;
-
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.IdRes;
 import androidx.annotation.Nullable;
@@ -13,7 +12,6 @@ import androidx.core.view.GravityCompat;
 import androidx.fragment.app.*;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
-
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.LaoActivityBinding;
 import com.github.dedis.popstellar.model.Role;
@@ -36,11 +34,9 @@ import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
-
+import dagger.hilt.android.AndroidEntryPoint;
 import java.util.*;
 import java.util.function.Supplier;
-
-import dagger.hilt.android.AndroidEntryPoint;
 import timber.log.Timber;
 
 @AndroidEntryPoint
@@ -367,7 +363,13 @@ public class LaoActivity extends AppCompatActivity {
       FragmentActivity activity, String laoId) {
     WitnessingViewModel witnessingViewModel =
         new ViewModelProvider(activity).get(WitnessingViewModel.class);
-    witnessingViewModel.initialize(laoId);
+    try {
+      witnessingViewModel.initialize(laoId);
+    } catch (UnknownLaoException e) {
+      Timber.tag(TAG)
+          .e(e, "Unable to initialize the witnessing model: not found lao with lao id=%s", laoId);
+      return witnessingViewModel;
+    }
     return witnessingViewModel;
   }
 
