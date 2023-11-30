@@ -1,9 +1,12 @@
 package com.github.dedis.popstellar.ui.qrcode;
 
+import static android.content.pm.PackageManager.PERMISSION_GRANTED;
+import static androidx.camera.view.CameraController.COORDINATE_SYSTEM_VIEW_REFERENCED;
+import static androidx.core.content.ContextCompat.checkSelfPermission;
+
 import android.Manifest;
 import android.os.Bundle;
 import android.view.*;
-
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
@@ -12,21 +15,13 @@ import androidx.camera.mlkit.vision.MlKitAnalyzer;
 import androidx.camera.view.LifecycleCameraController;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-
 import com.github.dedis.popstellar.databinding.QrScannerFragmentBinding;
 import com.github.dedis.popstellar.ui.PopViewModel;
 import com.google.mlkit.vision.barcode.*;
 import com.google.mlkit.vision.barcode.common.Barcode;
-
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.Executor;
-
 import timber.log.Timber;
-
-import static android.content.pm.PackageManager.PERMISSION_GRANTED;
-import static androidx.camera.view.CameraController.COORDINATE_SYSTEM_VIEW_REFERENCED;
-import static androidx.core.content.ContextCompat.checkSelfPermission;
 
 public class QrScannerFragment extends Fragment {
   public static final String TAG = QrScannerFragment.class.getSimpleName();
@@ -66,7 +61,7 @@ public class QrScannerFragment extends Fragment {
     scanningViewModel =
         scanningAction.obtainScannerViewModel(requireActivity(), popViewModel.getLaoId());
 
-    if (scanningAction != ScanningAction.ADD_LAO_PARTICIPANT) {
+    if (scanningAction.displayCounter) {
       displayCounter();
     }
 
@@ -195,7 +190,7 @@ public class QrScannerFragment extends Fragment {
 
     binding.manualAddButton.setOnClickListener(
         v -> {
-          String input = binding.manualAddEditText.getText().toString();
+          String input = Objects.requireNonNull(binding.manualAddEditText.getText()).toString();
           onResult(input);
         });
   }

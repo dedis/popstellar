@@ -23,6 +23,8 @@ import com.github.dedis.popstellar.ui.lao.event.election.ElectionViewModel;
 import com.github.dedis.popstellar.ui.lao.event.eventlist.EventListFragment;
 import com.github.dedis.popstellar.ui.lao.event.meeting.MeetingViewModel;
 import com.github.dedis.popstellar.ui.lao.event.rollcall.RollCallViewModel;
+import com.github.dedis.popstellar.ui.lao.popcha.PoPCHAHomeFragment;
+import com.github.dedis.popstellar.ui.lao.popcha.PoPCHAViewModel;
 import com.github.dedis.popstellar.ui.lao.socialmedia.SocialMediaHomeFragment;
 import com.github.dedis.popstellar.ui.lao.socialmedia.SocialMediaViewModel;
 import com.github.dedis.popstellar.ui.lao.token.TokenListFragment;
@@ -256,6 +258,9 @@ public class LaoActivity extends AppCompatActivity {
       case DIGITAL_CASH:
         openDigitalCashTab();
         return true;
+      case POPCHA:
+        openPoPCHATab();
+        return true;
       case SOCIAL_MEDIA:
         openSocialMediaTab();
         return true;
@@ -291,6 +296,11 @@ public class LaoActivity extends AppCompatActivity {
   private void openDigitalCashTab() {
     setCurrentFragment(
         getSupportFragmentManager(), R.id.fragment_digital_cash_home, DigitalCashHomeFragment::new);
+  }
+
+  private void openPoPCHATab() {
+    setCurrentFragment(
+        getSupportFragmentManager(), R.id.fragment_popcha_home, PoPCHAHomeFragment::new);
   }
 
   private void openSocialMediaTab() {
@@ -387,6 +397,12 @@ public class LaoActivity extends AppCompatActivity {
         new ViewModelProvider(activity).get(DigitalCashViewModel.class);
     digitalCashViewModel.setLaoId(laoId);
     return digitalCashViewModel;
+  }
+
+  public static PoPCHAViewModel obtainPoPCHAViewModel(FragmentActivity activity, String laoId) {
+    PoPCHAViewModel popCHAViewModel = new ViewModelProvider(activity).get(PoPCHAViewModel.class);
+    popCHAViewModel.setLaoId(laoId);
+    return popCHAViewModel;
   }
 
   /**

@@ -1,7 +1,8 @@
 package com.github.dedis.popstellar.utility.security;
 
-import androidx.annotation.VisibleForTesting;
+import static com.github.dedis.popstellar.di.KeysetModule.DeviceKeyset;
 
+import androidx.annotation.VisibleForTesting;
 import com.github.dedis.popstellar.model.objects.RollCall;
 import com.github.dedis.popstellar.model.objects.Wallet;
 import com.github.dedis.popstellar.model.objects.security.*;
@@ -11,19 +12,14 @@ import com.github.dedis.popstellar.utility.error.keys.*;
 import com.google.crypto.tink.*;
 import com.google.crypto.tink.integration.android.AndroidKeysetManager;
 import com.google.gson.*;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.Arrays;
 import java.util.Base64;
-
 import javax.inject.Inject;
 import javax.inject.Singleton;
-
 import timber.log.Timber;
-
-import static com.github.dedis.popstellar.di.KeysetModule.DeviceKeyset;
 
 /** Service managing keys and providing easy access to the main device key and PoP Tokens */
 @Singleton
@@ -86,6 +82,19 @@ public class KeyManager {
    */
   public PoPToken getPoPToken(LaoView laoView, RollCall rollCall) throws KeyException {
     return wallet.generatePoPToken(laoView.getId(), rollCall.getPersistentId());
+  }
+
+  /**
+   * Generate a long-term Authentication Token for the given Lao - ClientID pair
+   *
+   * @param laoId to generate the AuthToken from
+   * @param clientId to generate the AuthToken from
+   * @return the generated AuthToken
+   * @throws KeyGenerationException if an error occurs during key generation
+   * @throws UninitializedWalletException if the wallet is not initialized with a seed
+   */
+  public AuthToken getLongTermAuthToken(String laoId, String clientId) throws KeyException {
+    return new AuthToken(wallet.generatePoPToken(laoId, Hash.hash(clientId)));
   }
 
   /**

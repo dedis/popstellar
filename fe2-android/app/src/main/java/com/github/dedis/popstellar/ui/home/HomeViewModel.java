@@ -118,7 +118,7 @@ public class HomeViewModel extends AndroidViewModel
       Timber.tag(TAG).e(e, "Invalid QRCode laoData");
       Toast.makeText(
               getApplication().getApplicationContext(),
-              R.string.invalid_qrcode_data,
+              R.string.invalid_qrcode_lao_data,
               Toast.LENGTH_LONG)
           .show();
       return;
