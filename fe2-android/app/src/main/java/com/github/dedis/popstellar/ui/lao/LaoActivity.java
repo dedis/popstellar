@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.TextView;
-
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.IdRes;
 import androidx.annotation.Nullable;
@@ -13,7 +12,6 @@ import androidx.core.view.GravityCompat;
 import androidx.fragment.app.*;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
-
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.LaoActivityBinding;
 import com.github.dedis.popstellar.model.Role;
@@ -25,6 +23,8 @@ import com.github.dedis.popstellar.ui.lao.event.election.ElectionViewModel;
 import com.github.dedis.popstellar.ui.lao.event.eventlist.EventListFragment;
 import com.github.dedis.popstellar.ui.lao.event.meeting.MeetingViewModel;
 import com.github.dedis.popstellar.ui.lao.event.rollcall.RollCallViewModel;
+import com.github.dedis.popstellar.ui.lao.popcha.PoPCHAHomeFragment;
+import com.github.dedis.popstellar.ui.lao.popcha.PoPCHAViewModel;
 import com.github.dedis.popstellar.ui.lao.socialmedia.SocialMediaHomeFragment;
 import com.github.dedis.popstellar.ui.lao.socialmedia.SocialMediaViewModel;
 import com.github.dedis.popstellar.ui.lao.token.TokenListFragment;
@@ -36,11 +36,9 @@ import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
-
+import dagger.hilt.android.AndroidEntryPoint;
 import java.util.*;
 import java.util.function.Supplier;
-
-import dagger.hilt.android.AndroidEntryPoint;
 import timber.log.Timber;
 
 @AndroidEntryPoint
@@ -260,6 +258,9 @@ public class LaoActivity extends AppCompatActivity {
       case DIGITAL_CASH:
         openDigitalCashTab();
         return true;
+      case POPCHA:
+        openPoPCHATab();
+        return true;
       case SOCIAL_MEDIA:
         openSocialMediaTab();
         return true;
@@ -295,6 +296,11 @@ public class LaoActivity extends AppCompatActivity {
   private void openDigitalCashTab() {
     setCurrentFragment(
         getSupportFragmentManager(), R.id.fragment_digital_cash_home, DigitalCashHomeFragment::new);
+  }
+
+  private void openPoPCHATab() {
+    setCurrentFragment(
+        getSupportFragmentManager(), R.id.fragment_popcha_home, PoPCHAHomeFragment::new);
   }
 
   private void openSocialMediaTab() {
@@ -367,7 +373,13 @@ public class LaoActivity extends AppCompatActivity {
       FragmentActivity activity, String laoId) {
     WitnessingViewModel witnessingViewModel =
         new ViewModelProvider(activity).get(WitnessingViewModel.class);
-    witnessingViewModel.initialize(laoId);
+    try {
+      witnessingViewModel.initialize(laoId);
+    } catch (UnknownLaoException e) {
+      Timber.tag(TAG)
+          .e(e, "Unable to initialize the witnessing model: not found lao with lao id=%s", laoId);
+      return witnessingViewModel;
+    }
     return witnessingViewModel;
   }
 
@@ -385,6 +397,12 @@ public class LaoActivity extends AppCompatActivity {
         new ViewModelProvider(activity).get(DigitalCashViewModel.class);
     digitalCashViewModel.setLaoId(laoId);
     return digitalCashViewModel;
+  }
+
+  public static PoPCHAViewModel obtainPoPCHAViewModel(FragmentActivity activity, String laoId) {
+    PoPCHAViewModel popCHAViewModel = new ViewModelProvider(activity).get(PoPCHAViewModel.class);
+    popCHAViewModel.setLaoId(laoId);
+    return popCHAViewModel;
   }
 
   /**

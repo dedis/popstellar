@@ -1,9 +1,8 @@
 package com.github.dedis.popstellar.model.objects.security;
 
 import androidx.annotation.NonNull;
-
 import com.github.dedis.popstellar.model.Immutable;
-
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Base64;
 
@@ -35,6 +34,10 @@ public class Base64URLData {
 
   private static byte[] decode(String data) {
     return Base64.getUrlDecoder().decode(data);
+  }
+
+  public static String encode(String data) {
+    return encode(data.getBytes(StandardCharsets.UTF_8));
   }
 
   private static String encode(byte[] data) {

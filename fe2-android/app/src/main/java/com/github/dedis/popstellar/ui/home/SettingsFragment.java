@@ -3,20 +3,16 @@ package com.github.dedis.popstellar.ui.home;
 import android.os.Bundle;
 import android.view.*;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.preference.SwitchPreference;
-
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.utility.MessageValidator;
 import com.github.dedis.popstellar.utility.NetworkLogger;
 import com.takisoft.preferencex.EditTextPreference;
 import com.takisoft.preferencex.PreferenceFragmentCompat;
-
-import java.util.Objects;
-
 import dagger.hilt.android.AndroidEntryPoint;
+import java.util.Objects;
 
 @AndroidEntryPoint
 public class SettingsFragment extends PreferenceFragmentCompat {
@@ -43,6 +39,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     setDebuggingPreferences();
   }
 
+  @NonNull
   @Override
   public View onCreateView(
       @NonNull LayoutInflater inflater,

@@ -2,10 +2,8 @@ package com.github.dedis.popstellar.ui.home;
 
 import android.app.Application;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.lifecycle.*;
-
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.objects.Wallet;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
@@ -22,18 +20,15 @@ import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.github.dedis.popstellar.utility.error.keys.SeedValidationException;
 import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
-
-import java.security.GeneralSecurityException;
-import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import javax.inject.Inject;
-
 import dagger.hilt.android.lifecycle.HiltViewModel;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
+import java.security.GeneralSecurityException;
+import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicBoolean;
+import javax.inject.Inject;
 import timber.log.Timber;
 
 @HiltViewModel
@@ -50,6 +45,8 @@ public class HomeViewModel extends AndroidViewModel
 
   /** This LiveData boolean is used to indicate whether the HomeFragment is displayed */
   private final MutableLiveData<Boolean> isHome = new MutableLiveData<>(Boolean.TRUE);
+
+  private final MutableLiveData<Boolean> isWitnessingEnabled = new MutableLiveData<>(Boolean.FALSE);
 
   /**
    * This atomic flag is used to avoid the scanner fragment to open multiple connecting activities,
@@ -121,7 +118,7 @@ public class HomeViewModel extends AndroidViewModel
       Timber.tag(TAG).e(e, "Invalid QRCode laoData");
       Toast.makeText(
               getApplication().getApplicationContext(),
-              R.string.invalid_qrcode_data,
+              R.string.invalid_qrcode_lao_data,
               Toast.LENGTH_LONG)
           .show();
       return;
@@ -215,6 +212,10 @@ public class HomeViewModel extends AndroidViewModel
     return isHome;
   }
 
+  public MutableLiveData<Boolean> isWitnessingEnabled() {
+    return isWitnessingEnabled;
+  }
+
   /**
    * Function to set the liveData isHome.
    *
@@ -223,6 +224,17 @@ public class HomeViewModel extends AndroidViewModel
   public void setIsHome(boolean isHome) {
     if (!Boolean.valueOf(isHome).equals(this.isHome.getValue())) {
       this.isHome.setValue(isHome);
+    }
+  }
+
+  /**
+   * Function to set the liveData isWitnessingEnabled.
+   *
+   * @param isWitnessingEnabled true if we want to enable witnessing, false otherwise
+   */
+  public void setIsWitnessingEnabled(boolean isWitnessingEnabled) {
+    if (!Boolean.valueOf(isWitnessingEnabled).equals(this.isWitnessingEnabled.getValue())) {
+      this.isWitnessingEnabled.setValue(isWitnessingEnabled);
     }
   }
 

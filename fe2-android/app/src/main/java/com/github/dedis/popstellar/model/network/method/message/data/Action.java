@@ -1,7 +1,7 @@
 package com.github.dedis.popstellar.model.network.method.message.data;
 
-import java.util.Objects;
 import java.util.*;
+import java.util.Objects;
 
 /** Enumerates all possible messages actions */
 public enum Action {
@@ -30,7 +30,8 @@ public enum Action {
   DELETE("delete"),
   NOTIFY_DELETE("notify_delete"),
   KEY("key"),
-  POST_TRANSACTION("post_transaction");
+  POST_TRANSACTION("post_transaction"),
+  AUTH("authenticate");
 
   private static final List<Action> ALL = Collections.unmodifiableList(Arrays.asList(values()));
   private final String action;

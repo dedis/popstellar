@@ -12,7 +12,8 @@ public enum Objects {
   CONSENSUS("consensus"),
   CHIRP("chirp"),
   REACTION("reaction"),
-  COIN("coin");
+  COIN("coin"),
+  POPCHA("popcha");
 
   private static final List<Objects> ALL = Collections.unmodifiableList(Arrays.asList(values()));
   private final String object;
@@ -62,6 +63,7 @@ public enum Objects {
         return true;
         // TODO: add persistence for consensus when it'll have its repo
       case "consensus":
+      case "popcha":
       default:
         return false;
     }

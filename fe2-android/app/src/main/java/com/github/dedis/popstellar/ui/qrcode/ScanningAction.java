@@ -4,14 +4,13 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.StringRes;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
-
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.ui.PopViewModel;
 import com.github.dedis.popstellar.ui.home.*;
 import com.github.dedis.popstellar.ui.lao.LaoActivity;
 import com.github.dedis.popstellar.ui.lao.event.rollcall.RollCallFragment;
+import com.github.dedis.popstellar.ui.lao.popcha.PoPCHAHomeFragment;
 import com.github.dedis.popstellar.ui.lao.witness.WitnessingFragment;
-
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
@@ -30,7 +29,8 @@ public enum ScanningAction {
       HomeActivity::obtainViewModel,
       (manager, unused) ->
           HomeActivity.setCurrentFragment(
-              manager, R.id.fragment_lao_create, LaoCreateFragment::new)),
+              manager, R.id.fragment_lao_create, LaoCreateFragment::new),
+      true),
   ADD_WITNESS(
       R.string.qrcode_scanning_add_witness,
       R.string.scanned_witness,
@@ -41,7 +41,8 @@ public enum ScanningAction {
       LaoActivity::obtainViewModel,
       (manager, unused) ->
           LaoActivity.setCurrentFragment(
-              manager, R.id.fragment_witnessing, WitnessingFragment::new)),
+              manager, R.id.fragment_witnessing, WitnessingFragment::new),
+      true),
   ADD_ROLL_CALL_ATTENDEE(
       R.string.qrcode_scanning_add_attendee,
       R.string.scanned_tokens,
@@ -56,7 +57,8 @@ public enum ScanningAction {
               R.id.fragment_roll_call,
               () ->
                   RollCallFragment.newInstance(
-                      stringArray[0]))), // We only need the first arg (rc id)
+                      stringArray[0])), // We only need the first arg (rc id)
+      true),
   ADD_LAO_PARTICIPANT(
       R.string.qrcode_scanning_connect_lao,
       R.string.scanned_tokens,
@@ -66,7 +68,20 @@ public enum ScanningAction {
       (activity, unused) -> HomeActivity.obtainViewModel(activity),
       HomeActivity::obtainViewModel,
       (manager, unused) ->
-          HomeActivity.setCurrentFragment(manager, R.id.fragment_home, HomeFragment::new));
+          HomeActivity.setCurrentFragment(manager, R.id.fragment_home, HomeFragment::new),
+      false),
+  ADD_POPCHA(
+      R.string.qrcode_scanning_add_popcha,
+      R.string.scanned_tokens,
+      R.string.popcha_add,
+      R.string.manual_popcha_hint,
+      R.string.popcha_scan_title,
+      LaoActivity::obtainPoPCHAViewModel,
+      LaoActivity::obtainViewModel,
+      (manager, unused) ->
+          LaoActivity.setCurrentFragment(
+              manager, R.id.fragment_popcha_home, PoPCHAHomeFragment::new),
+      false);
 
   @StringRes public final int instruction;
   @StringRes public final int scanTitle;
@@ -77,6 +92,7 @@ public enum ScanningAction {
       scannerViewModelProvider;
   private final Function<FragmentActivity, PopViewModel> popViewModelProvider;
   private final BiConsumer<FragmentManager, String[]> onBackPressed;
+  public final boolean displayCounter;
 
   ScanningAction(
       @StringRes int instruction,
@@ -86,7 +102,8 @@ public enum ScanningAction {
       int manualAddTitle,
       BiFunction<FragmentActivity, String, QRCodeScanningViewModel> scannerViewModelProvider,
       Function<FragmentActivity, PopViewModel> popViewModelProvider,
-      BiConsumer<FragmentManager, String[]> onBackPressed) {
+      BiConsumer<FragmentManager, String[]> onBackPressed,
+      boolean displayCounter) {
     this.instruction = instruction;
     this.scanTitle = scanTitle;
     this.pageTitle = pageTitle;
@@ -95,6 +112,7 @@ public enum ScanningAction {
     this.scannerViewModelProvider = scannerViewModelProvider;
     this.popViewModelProvider = popViewModelProvider;
     this.onBackPressed = onBackPressed;
+    this.displayCounter = displayCounter;
   }
 
   /**
