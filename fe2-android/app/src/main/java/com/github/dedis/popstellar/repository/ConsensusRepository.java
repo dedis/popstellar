@@ -76,7 +76,7 @@ public class ConsensusRepository {
     return getLaoConsensus(laoId).getMessageIdToElectInstance();
   }
 
-  /** Get in a thread-safe fashion the witness object for the lao, computes it if absent. */
+  /** Get in a thread-safe fashion the consensus object for the lao, computes it if absent. */
   @NonNull
   private synchronized LaoConsensus getLaoConsensus(String laoId) {
     // Create the lao consensus object if it is not present yet
