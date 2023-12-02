@@ -235,7 +235,7 @@ jobs:
       
       - name: Upload lint sarif
         uses: github/codeql-action/upload-sarif@v2
-        if: success() || failure()
+        if: always()
         with:
           sarif_file: fe2-android/app/build/reports/lint-results-debug.sarif
           category: lint
