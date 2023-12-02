@@ -54,9 +54,9 @@ public class ConsensusRepository {
 
   public Optional<ElectInstance> getElectInstance(String laoId, MessageID messageId) {
     // TODO uncomment that when consensus does not rely on call by reference
-    //    Optional<ElectInstance> optional = lao.getElectInstance(messageId);
+    //    Optional<ElectInstance> optional = getLaoConsensus(laoId).getElectInstance(messageId);
     //    return optional.map(ElectInstance::new); // If empty returns empty optional, if not
-    // returns optional with copy of retrieved ElectInstance
+    //    returns optional with copy of retrieved ElectInstance
     return getLaoConsensus(laoId).getElectInstance(messageId);
   }
 
@@ -76,7 +76,7 @@ public class ConsensusRepository {
     return getLaoConsensus(laoId).getMessageIdToElectInstance();
   }
 
-  /** Get in a thread-safe fashion the witness object for the lao, computes it if absent. */
+  /** Get in a thread-safe fashion the consensus object for the lao, computes it if absent. */
   @NonNull
   private synchronized LaoConsensus getLaoConsensus(String laoId) {
     // Create the lao consensus object if it is not present yet
