@@ -61,7 +61,7 @@ public class MultiMsgWebSocketClient extends WebSocketClient {
    */
   public void publish(Map<String, Object> highLevelMessageDataMap, String channel){
     String highLevelMessageData = mapToJsonString(highLevelMessageDataMap);
-    int messageId = new Random().nextInt(Integer.MAX_VALUE);
+    int messageId = new Random().nextInt();
     Json publishMessageJson =  jsonConverter.constructPublishMessage(highLevelMessageData, messageId, channel);
     PublishMessageIds publishMessageIds = new PublishMessageIds(messageId, publishMessageJson.get("params.message.message_id"));
     sentMessages.put(highLevelMessageData, publishMessageIds);
@@ -192,11 +192,11 @@ public class MultiMsgWebSocketClient extends WebSocketClient {
 
   private PublishMessageIds getPublishMessageIds(Map<String, Object> highLevelMessageDataMap){
     String highLevelMessageData = mapToJsonString(highLevelMessageDataMap);
-    PublishMessageIds message_ids = sentMessages.get(highLevelMessageData);
-    if(message_ids == null){
+    PublishMessageIds messageIds = sentMessages.get(highLevelMessageData);
+    if(messageIds == null){
       throw new IllegalArgumentException("Did not send this message");
     }
-    return message_ids;
+    return messageIds;
   }
 
   /**

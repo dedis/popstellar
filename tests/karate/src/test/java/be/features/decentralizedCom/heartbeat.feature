@@ -25,7 +25,7 @@ Feature: Send heartbeats to other servers
 
     When def heartbeatMessages = mockServer.getHeartbeats()
 
-    Then assert heartbeatMessages.length > 1
+    Then assert heartbeatMessages.length == 2
 
   # Check that after receiving a publish message (in this case a create roll call), the server sends a heartbeat containing
   # the message id of that publish message.
