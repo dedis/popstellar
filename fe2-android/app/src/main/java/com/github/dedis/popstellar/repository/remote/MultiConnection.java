@@ -55,7 +55,7 @@ public class MultiConnection extends Connection {
     if (newPeers.isEmpty()) {
       return false;
     }
-    newPeers.forEach(p -> connectionMap.put(p, connectionProvider.apply(p.getAddress())));
+    newPeers.forEach(p -> connectionMap.put(p, connectionProvider.apply(p.address)));
     return true;
   }
 

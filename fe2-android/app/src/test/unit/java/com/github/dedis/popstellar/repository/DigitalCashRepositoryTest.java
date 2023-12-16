@@ -40,9 +40,9 @@ import static org.mockito.Mockito.when;
 public class DigitalCashRepositoryTest {
   private static final KeyPair ORGANIZER = Base64DataUtils.generateKeyPair();
   private static final KeyPair USER1 = Base64DataUtils.generateKeyPair();
-  private static final PublicKey USER1_PK = USER1.getPublicKey();
+  private static final PublicKey USER1_PK = USER1.publicKey;
   private static final KeyPair USER2 = Base64DataUtils.generateKeyPair();
-  private static final PublicKey USER2_PK = USER2.getPublicKey();
+  private static final PublicKey USER2_PK = USER2.publicKey;
   private static final String LAO_ID = Lao.generateLaoId(generatePublicKey(), 1000, "LAO");
   private static final int DEFAULT_VALUE = Integer.MAX_VALUE;
   private static DigitalCashRepository repo;
@@ -157,7 +157,7 @@ public class DigitalCashRepositoryTest {
       String transactionId, KeyPair sender) throws GeneralSecurityException {
     TransactionObjectBuilder builder = new TransactionObjectBuilder();
 
-    PublicKey senderPublicKey = sender.getPublicKey();
+    PublicKey senderPublicKey = sender.publicKey;
     String type = "P2PKH";
     int txOutIndex = 0;
     String txOutHash = "47DEQpj8HBSa--TImW-5JCeuQeRkm5NMpJWZG3hSuFU=";
@@ -193,7 +193,7 @@ public class DigitalCashRepositoryTest {
       throws GeneralSecurityException {
     TransactionObjectBuilder builder = new TransactionObjectBuilder();
 
-    PublicKey senderPublicKey = sender.getPublicKey();
+    PublicKey senderPublicKey = sender.publicKey;
     String type = "P2PKH";
     int txOutIndex = 0;
     String txOutHash =

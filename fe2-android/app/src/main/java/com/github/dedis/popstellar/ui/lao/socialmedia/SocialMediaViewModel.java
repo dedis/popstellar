@@ -145,7 +145,7 @@ public class SocialMediaViewModel extends AndroidViewModel {
                   laoView
                       .getChannel()
                       .subChannel(SOCIAL)
-                      .subChannel(token.getPublicKey().getEncoded());
+                      .subChannel(token.publicKey.getEncoded());
               MessageGeneral msg = new MessageGeneral(token, addChirp, gson);
 
               return networkManager.getMessageSender().publish(channel, msg).toSingleDefault(msg);
@@ -207,7 +207,7 @@ public class SocialMediaViewModel extends AndroidViewModel {
                   laoView
                       .getChannel()
                       .subChannel(SOCIAL)
-                      .subChannel(token.getPublicKey().getEncoded());
+                      .subChannel(token.publicKey.getEncoded());
               MessageGeneral msg = new MessageGeneral(token, deleteChirp, gson);
 
               return networkManager.getMessageSender().publish(channel, msg).toSingleDefault(msg);
@@ -248,9 +248,9 @@ public class SocialMediaViewModel extends AndroidViewModel {
                   reactions.stream()
                       .filter(
                           reaction ->
-                              !reaction.isDeleted()
-                                  && reaction.getCodepoint().equals(emoji)
-                                  && reaction.getSender().equals(token.getPublicKey()))
+                              !reaction.isDeleted
+                                  && reaction.codepoint.equals(emoji)
+                                  && reaction.sender.equals(token.publicKey))
                       .findFirst()
                       .orElse(null);
               if (previousReaction == null) {
@@ -258,7 +258,7 @@ public class SocialMediaViewModel extends AndroidViewModel {
               }
 
               DeleteReaction deleteReaction =
-                  new DeleteReaction(previousReaction.getId(), timestamp);
+                  new DeleteReaction(previousReaction.id, timestamp);
               MessageGeneral msg = new MessageGeneral(token, deleteReaction, gson);
 
               return networkManager.getMessageSender().publish(channel, msg).toSingleDefault(msg);
@@ -287,7 +287,7 @@ public class SocialMediaViewModel extends AndroidViewModel {
                             .map(Chirp.class::cast)
                             .sorted(
                                 Comparator.comparing(
-                                    (Chirp chirp) -> chirp != null ? -chirp.getTimestamp() : 0))
+                                    (Chirp chirp) -> chirp != null ? -chirp.timestamp : 0))
                             .collect(Collectors.toList())))
         // We want to observe these changes on the main thread such that any modification done to
         // the view are done on the thread. Otherwise, the app might crash
@@ -311,7 +311,7 @@ public class SocialMediaViewModel extends AndroidViewModel {
 
     try {
       PoPToken token = getValidPoPToken();
-      return sender.equals(token.getPublicKey().getEncoded());
+      return sender.equals(token.publicKey.getEncoded());
     } catch (KeyException e) {
       ErrorUtils.logAndShow(getApplication(), TAG, e, R.string.error_retrieve_own_token);
       return false;
@@ -327,7 +327,7 @@ public class SocialMediaViewModel extends AndroidViewModel {
   public boolean isReactionPresent(@NonNull Set<String> senders) {
     try {
       PoPToken token = getValidPoPToken();
-      String toSearch = token.getPublicKey().getEncoded();
+      String toSearch = token.publicKey.getEncoded();
       return senders.contains(toSearch);
     } catch (KeyException e) {
       ErrorUtils.logAndShow(getApplication(), TAG, e, R.string.error_retrieve_own_token);

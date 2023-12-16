@@ -40,26 +40,26 @@ public class ConsensusPromiseTest {
 
   @Test
   public void getInstanceIdTest() {
-    assertEquals(instanceId, promise.getInstanceId());
+    assertEquals(instanceId, promise.instanceId);
   }
 
   @Test
   public void getMessageIdTest() {
-    assertEquals(messageId, promise.getMessageId());
+    assertEquals(messageId, promise.messageId);
   }
 
   @Test
   public void getCreationTest() {
-    assertEquals(timeInSeconds, promise.getCreation());
+    assertEquals(timeInSeconds, promise.creation);
   }
 
   @Test
   public void getPromiseValueTest() {
-    PromiseValue value = promise.getPromiseValue();
+    PromiseValue value = promise.promiseValue;
 
-    assertEquals(acceptedTry, value.getAcceptedTry());
+    assertEquals(acceptedTry, value.acceptedTry);
     assertEquals(acceptedValue, value.isAcceptedValue());
-    assertEquals(promisedTry, value.getPromisedTry());
+    assertEquals(promisedTry, value.promisedTry);
 
     PromiseValue value2 = new PromiseValue(acceptedTry, acceptedValue, promisedTry);
     assertEquals(value, value2);

@@ -38,12 +38,12 @@ public class ElectionKeyTest {
 
   @Test
   public void getElectionIdTest() {
-    assertEquals(ELEC_ID1, ELECTION_KEY1.getElectionId());
+    assertEquals(ELEC_ID1, ELECTION_KEY1.electionId);
   }
 
   @Test
   public void getElectionVoteKeyTest() {
-    assertEquals(KEY1, ELECTION_KEY1.getElectionVoteKey());
+    assertEquals(KEY1, ELECTION_KEY1.electionVoteKey);
   }
 
   @Test

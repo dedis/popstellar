@@ -54,9 +54,9 @@ public class TokenFragmentTest {
 
   private static final String LAO_NAME = "lao";
   private static final KeyPair USER_KEY_PAIR = generateKeyPair();
-  private static final PublicKey USER = USER_KEY_PAIR.getPublicKey();
+  private static final PublicKey USER = USER_KEY_PAIR.publicKey;
   private static final PoPToken USER_TOKEN = generatePoPToken();
-  private static final Lao LAO = new Lao(LAO_NAME, generateKeyPair().getPublicKey(), 10223421);
+  private static final Lao LAO = new Lao(LAO_NAME, generateKeyPair().publicKey, 10223421);
   private static final String LAO_ID = LAO.getId();
   private static final String ROLL_CALL_TITLE = "RC title";
   private static final long CREATION = 10323411;
@@ -117,11 +117,11 @@ public class TokenFragmentTest {
           new BundleBuilder().putString(laoIdExtra(), LAO_ID).build(),
           containerId(),
           TokenFragment.class,
-          () -> TokenFragment.newInstance(ROLL_CALL.getPersistentId()));
+          () -> TokenFragment.newInstance(ROLL_CALL.persistentId));
 
   @Test
   public void tokenIsDisplayed() {
-    tokenTextView().check(matches(withText(USER_TOKEN.getPublicKey().getEncoded())));
+    tokenTextView().check(matches(withText(USER_TOKEN.publicKey.getEncoded())));
   }
 
   @Test

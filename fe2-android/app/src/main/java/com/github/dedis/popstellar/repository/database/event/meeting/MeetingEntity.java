@@ -31,7 +31,7 @@ public class MeetingEntity {
 
   @Ignore
   public MeetingEntity(@NonNull String laoId, @NonNull Meeting meeting) {
-    this(meeting.getId(), laoId, meeting);
+    this(meeting.id, laoId, meeting);
   }
 
   @NonNull

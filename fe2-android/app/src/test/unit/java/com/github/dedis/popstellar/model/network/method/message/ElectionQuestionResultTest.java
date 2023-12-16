@@ -22,12 +22,12 @@ public class ElectionQuestionResultTest {
 
   @Test
   public void electionQuestionResultGetterReturnsCorrectQuestionId() {
-    assertThat(electionQuestionResult.getId(), is(questionId));
+    assertThat(electionQuestionResult.id, is(questionId));
   }
 
   @Test
   public void electionQuestionResultGetterReturnsCorrectResults() {
-    assertThat(electionQuestionResult.getResult(), is(results));
+    assertThat(electionQuestionResult.result, is(results));
   }
 
   @Test

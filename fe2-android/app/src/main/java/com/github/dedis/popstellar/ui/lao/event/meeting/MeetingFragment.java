@@ -65,7 +65,7 @@ public class MeetingFragment extends AbstractEventFragment {
 
     laoViewModel.addDisposable(
         meetingViewModel
-            .getMeetingObservable(meeting.getId())
+            .getMeetingObservable(meeting.id)
             .subscribe(
                 m -> {
                   Timber.tag(TAG).d("Received meeting update: %s", m);
@@ -99,10 +99,10 @@ public class MeetingFragment extends AbstractEventFragment {
     binding.meetingTitle.setText(meeting.getName());
 
     // Set location visible if present
-    if (meeting.getLocation().isEmpty()) {
+    if (meeting.location.isEmpty()) {
       binding.meetingLocationTitle.setVisibility(View.GONE);
     } else {
-      binding.meetingLocationText.setText(meeting.getLocation());
+      binding.meetingLocationText.setText(meeting.location);
     }
   }
 }

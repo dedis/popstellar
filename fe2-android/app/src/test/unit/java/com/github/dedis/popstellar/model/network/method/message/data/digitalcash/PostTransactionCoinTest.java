@@ -67,13 +67,13 @@ public class PostTransactionCoinTest {
 
   @Test
   public void getTransactionTest() {
-    assertEquals(TRANSACTION, POST_TRANSACTION.getTransaction());
+    assertEquals(TRANSACTION, POST_TRANSACTION.transaction);
   }
 
   @Test
   public void getTransactionIdTest() {
     String expected = "_6BPyKnSBFUdMdUxZivzC2BLzM7j5d667BdQ4perTvc=";
-    assertEquals(expected, POST_TRANSACTION.getTransactionId());
+    assertEquals(expected, POST_TRANSACTION.transactionId);
   }
 
   private static final JsonSchemaFactory FACTORY =
@@ -94,7 +94,7 @@ public class PostTransactionCoinTest {
     PostTransactionCoin postTransaction = new PostTransactionCoin(trans);
     assertEquals(
         java.util.Objects.hash(
-            postTransaction.getTransactionId(), postTransaction.getTransaction()),
+            postTransaction.transactionId, postTransaction.transaction),
         postTransaction.hashCode());
   }
 

@@ -33,7 +33,7 @@ public class WitnessDatabaseTest {
 
   private static final long CREATION = Instant.now().getEpochSecond();
   private static final String LAO_ID = Lao.generateLaoId(generatePublicKey(), CREATION, "Lao");
-  private static final PublicKey WITNESS = generateKeyPair().getPublicKey();
+  private static final PublicKey WITNESS = generateKeyPair().publicKey;
   private static final WitnessEntity WITNESS_ENTITY = new WitnessEntity(LAO_ID, WITNESS);
   private static final MessageID MESSAGE_ID = generateMessageID();
   private static final WitnessMessage WITNESS_MESSAGE = new WitnessMessage(MESSAGE_ID);

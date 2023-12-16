@@ -1,13 +1,18 @@
 package com.github.dedis.popstellar.repository.remote;
 
+import static com.github.dedis.popstellar.repository.remote.LAONetworkManager.REPROCESSING_DELAY;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
-
 import com.github.dedis.popstellar.di.DataRegistryModuleHelper;
 import com.github.dedis.popstellar.di.JsonModule;
 import com.github.dedis.popstellar.model.network.GenericMessage;
-import com.github.dedis.popstellar.model.network.answer.Error;
 import com.github.dedis.popstellar.model.network.answer.*;
+import com.github.dedis.popstellar.model.network.answer.Error;
 import com.github.dedis.popstellar.model.network.method.*;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
@@ -22,7 +27,16 @@ import com.github.dedis.popstellar.utility.handler.MessageHandler;
 import com.github.dedis.popstellar.utility.scheduler.TestSchedulerProvider;
 import com.google.gson.Gson;
 import com.tinder.scarlet.WebSocket;
-
+import dagger.hilt.android.testing.HiltAndroidRule;
+import dagger.hilt.android.testing.HiltAndroidTest;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.observers.TestObserver;
+import io.reactivex.schedulers.TestScheduler;
+import io.reactivex.subjects.BehaviorSubject;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import javax.inject.Inject;
 import org.junit.*;
 import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
@@ -30,33 +44,13 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.stubbing.Answer;
 
-import java.util.*;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import javax.inject.Inject;
-
-import dagger.hilt.android.testing.HiltAndroidRule;
-import dagger.hilt.android.testing.HiltAndroidTest;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.observers.TestObserver;
-import io.reactivex.schedulers.TestScheduler;
-import io.reactivex.subjects.BehaviorSubject;
-
-import static com.github.dedis.popstellar.repository.remote.LAONetworkManager.REPROCESSING_DELAY;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-
 @HiltAndroidTest
 @RunWith(AndroidJUnit4.class)
 public class LAONetworkManagerTest {
 
   private static final Channel CHANNEL = Channel.ROOT.subChannel("channel");
   private static final KeyPair KEY_PAIR = Base64DataUtils.generateKeyPair();
-  private static final Data DATA =
-      new CreateLao("LaoName", KEY_PAIR.getPublicKey(), new ArrayList<>());
+  private static final Data DATA = new CreateLao("LaoName", KEY_PAIR.publicKey, new ArrayList<>());
 
   private final BehaviorSubject<WebSocket.Event> events = BehaviorSubject.create();
   private final BehaviorSubject<GenericMessage> messages = BehaviorSubject.create();
@@ -109,7 +103,7 @@ public class LAONetworkManagerTest {
     Answer<?> answer =
         args -> {
           Subscribe subscribe = args.getArgument(0); // Retrieve subscribe object
-          assertEquals(CHANNEL, subscribe.getChannel()); // Make sure the channel is correct
+          assertEquals(CHANNEL, subscribe.channel); // Make sure the channel is correct
           messages.onNext(new Result(subscribe.getRequestId())); // Return a positive result
           return null;
         };
@@ -145,7 +139,7 @@ public class LAONetworkManagerTest {
     Answer<?> answer =
         args -> {
           Unsubscribe subscribe = args.getArgument(0); // Retrieve subscribe object
-          assertEquals(CHANNEL, subscribe.getChannel()); // Make sure the channel is correct
+          assertEquals(CHANNEL, subscribe.channel); // Make sure the channel is correct
           messages.onNext(new Result(subscribe.getRequestId())); // Return a positive result
           return null;
         };
@@ -180,9 +174,9 @@ public class LAONetworkManagerTest {
     Answer<?> answer =
         args -> {
           Publish publish = args.getArgument(0); // Retrieve subscribe object
-          assertEquals(CHANNEL, publish.getChannel()); // Make sure the channel is correct
-          MessageGeneral messageGeneral = publish.getMessage();
-          assertEquals(DATA, messageGeneral.getData());
+          assertEquals(CHANNEL, publish.channel); // Make sure the channel is correct
+          MessageGeneral messageGeneral = publish.message;
+          assertEquals(DATA, messageGeneral.data);
           messages.onNext(new Result(publish.getRequestId())); // Return a positive result
           return null;
         };
@@ -267,7 +261,7 @@ public class LAONetworkManagerTest {
     Answer<?> answer =
         args -> {
           Subscribe subscribe = args.getArgument(0); // Retrieve subscribe object
-          assertEquals(CHANNEL, subscribe.getChannel()); // Make sure the channel is correct
+          assertEquals(CHANNEL, subscribe.channel); // Make sure the channel is correct
           messages.onNext(new Result(subscribe.getRequestId())); // Return a positive result
           return null;
         };
@@ -352,8 +346,12 @@ public class LAONetworkManagerTest {
 
   @Test
   public void identifyUnrecoverableFailures()
-      throws UnknownElectionException, UnknownRollCallException, UnknownLaoException,
-          DataHandlingException, NoRollCallException, UnknownWitnessMessageException {
+      throws UnknownElectionException,
+          UnknownRollCallException,
+          UnknownLaoException,
+          DataHandlingException,
+          NoRollCallException,
+          UnknownWitnessMessageException {
     TestSchedulerProvider schedulerProvider = new TestSchedulerProvider();
     TestScheduler testScheduler = schedulerProvider.getTestScheduler();
 
@@ -431,7 +429,7 @@ public class LAONetworkManagerTest {
     Answer<?> answer =
         args -> {
           Subscribe subscribe = args.getArgument(0); // Retrieve subscribe object
-          assertEquals(CHANNEL, subscribe.getChannel()); // Make sure the channel is correct
+          assertEquals(CHANNEL, subscribe.channel); // Make sure the channel is correct
           messages.onNext(new Result(subscribe.getRequestId())); // Return a positive result
           return null;
         };

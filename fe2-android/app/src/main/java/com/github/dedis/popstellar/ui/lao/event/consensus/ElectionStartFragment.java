@@ -164,7 +164,7 @@ public class ElectionStartFragment extends Fragment {
     List<ConsensusNode> nodes = electionNodesState.nodes;
 
     String instanceId =
-        ElectInstance.generateConsensusId(CONSENSUS_TYPE, election.getId(), CONSENSUS_PROPERTY);
+        ElectInstance.generateConsensusId(CONSENSUS_TYPE, election.id, CONSENSUS_PROPERTY);
 
     if (isElectionStartTimePassed(election)) {
       updateStartAndStatus(nodes, election, instanceId);

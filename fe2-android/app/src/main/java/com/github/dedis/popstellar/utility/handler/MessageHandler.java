@@ -8,10 +8,8 @@ import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.utility.error.*;
 import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
 import com.github.dedis.popstellar.utility.handler.data.HandlerContext;
-
 import javax.inject.Inject;
 import javax.inject.Singleton;
-
 import timber.log.Timber;
 
 /** General message handler class */
@@ -37,17 +35,21 @@ public final class MessageHandler {
    * @param message the message that was received
    */
   public void handleMessage(MessageSender messageSender, Channel channel, MessageGeneral message)
-      throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
-          UnknownElectionException, NoRollCallException, UnknownWitnessMessageException {
+      throws DataHandlingException,
+          UnknownLaoException,
+          UnknownRollCallException,
+          UnknownElectionException,
+          NoRollCallException,
+          UnknownWitnessMessageException {
 
-    Data data = message.getData();
+    Data data = message.data;
 
     Objects dataObj = Objects.find(data.getObject());
     Action dataAction = Action.find(data.getAction());
     boolean toPersist = dataObj.hasToBePersisted();
     boolean toBeStored = dataAction.isStoreNeededByAction();
 
-    if (messageRepo.isMessagePresent(message.getMessageId(), toPersist)) {
+    if (messageRepo.isMessagePresent(message.messageId, toPersist)) {
       Timber.tag(TAG)
           .d(
               "The message with class %s has already been handled in the past",
@@ -58,7 +60,7 @@ public final class MessageHandler {
     Timber.tag(TAG)
         .d("Handling incoming message, data with class: %s", data.getClass().getSimpleName());
     registry.handle(
-        new HandlerContext(message.getMessageId(), message.getSender(), channel, messageSender),
+        new HandlerContext(message.messageId, message.sender, channel, messageSender),
         data,
         dataObj,
         dataAction);

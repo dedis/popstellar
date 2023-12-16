@@ -43,7 +43,7 @@ import static org.mockito.Mockito.*;
 public class ChirpHandlerTest {
 
   private static final KeyPair SENDER_KEY = generateKeyPair();
-  private static final PublicKey SENDER = SENDER_KEY.getPublicKey();
+  private static final PublicKey SENDER = SENDER_KEY.publicKey;
 
   private static final long CREATION_TIME = 1631280815;
   private static final long DELETION_TIME = 1642244760;
@@ -52,7 +52,7 @@ public class ChirpHandlerTest {
   private static final String LAO_ID = LAO.getId();
 
   private static final Channel CHIRP_CHANNEL =
-      LAO.getChannel().subChannel("social").subChannel(SENDER.getEncoded());
+      LAO.channel.subChannel("social").subChannel(SENDER.getEncoded());
 
   private static final String TEXT = "textOfTheChirp";
   private static final MessageID PARENT_ID = generateMessageID();

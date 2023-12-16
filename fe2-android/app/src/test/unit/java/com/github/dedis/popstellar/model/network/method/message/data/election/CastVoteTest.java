@@ -1,23 +1,20 @@
 package com.github.dedis.popstellar.model.network.method.message.data.election;
 
-import androidx.test.ext.junit.runners.AndroidJUnit4;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.*;
 
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 import com.github.dedis.popstellar.model.network.JsonTestUtils;
 import com.github.dedis.popstellar.model.objects.Election;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.testutils.Base64DataUtils;
 import com.google.gson.JsonParseException;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
 import java.time.Instant;
 import java.util.*;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.*;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 @RunWith(AndroidJUnit4.class)
 public class CastVoteTest {
@@ -92,14 +89,14 @@ public class CastVoteTest {
 
   @Test
   public void getLaoIdTest() {
-    assertThat(castOpenVote.getLaoId(), is(laoId));
-    assertThat(castEncryptedVote.getLaoId(), is(laoId));
+    assertThat(castOpenVote.laoId, is(laoId));
+    assertThat(castEncryptedVote.laoId, is(laoId));
   }
 
   @Test
   public void getElectionIdTest() {
-    assertThat(castOpenVote.getElectionId(), is(electionId));
-    assertThat(castEncryptedVote.getElectionId(), is(electionId));
+    assertThat(castOpenVote.electionId, is(electionId));
+    assertThat(castEncryptedVote.electionId, is(electionId));
   }
 
   @Test

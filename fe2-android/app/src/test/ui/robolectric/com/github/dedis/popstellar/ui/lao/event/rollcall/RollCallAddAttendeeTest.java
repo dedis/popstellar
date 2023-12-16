@@ -48,11 +48,11 @@ public class RollCallAddAttendeeTest {
 
   private static final String LAO_NAME = "lao";
   private static final KeyPair SENDER_KEY = generateKeyPair();
-  private static final PublicKey SENDER = SENDER_KEY.getPublicKey();
+  private static final PublicKey SENDER = SENDER_KEY.publicKey;
   private static final Lao LAO = new Lao(LAO_NAME, SENDER, 10223421);
   private static final String LAO_ID = LAO.getId();
   private static final String POP_TOKEN =
-      Base64DataUtils.generatePoPToken().getPublicKey().getEncoded();
+      Base64DataUtils.generatePoPToken().publicKey.getEncoded();
   private static final String VALID_RC_MANUAL_INPUT = "{\"pop_token\": \"" + POP_TOKEN + "\"}";
   public static final String JSON_INVALID_INPUT = "{pop_token:" + POP_TOKEN;
   public static final String VALID_WITNESS_MANUAL_INPUT =

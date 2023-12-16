@@ -233,8 +233,8 @@ public abstract class MessageValidator {
       noListDuplicates(votes);
 
       for (Vote vote : votes) {
-        isBase64(vote.getQuestionId(), "question id");
-        isBase64(vote.getId(), "vote id");
+        isBase64(vote.questionId, "question id");
+        isBase64(vote.id, "vote id");
       }
       return this;
     }
@@ -252,8 +252,7 @@ public abstract class MessageValidator {
 
       Uri uri = Uri.parse(input);
       if (uri == null) {
-        throw new IllegalArgumentException(
-            String.format("Impossible to parse the URL: %s", input));
+        throw new IllegalArgumentException(String.format("Impossible to parse the URL: %s", input));
       }
 
       // Check required arguments are present

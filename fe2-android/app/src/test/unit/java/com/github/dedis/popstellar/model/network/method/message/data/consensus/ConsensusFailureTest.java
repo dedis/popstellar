@@ -26,12 +26,12 @@ public class ConsensusFailureTest {
 
   @Test
   public void getInstanceId() {
-    assertEquals(instanceId, failure.getInstanceId());
+    assertEquals(instanceId, failure.instanceId);
   }
 
   @Test
   public void getMessageIdTest() {
-    assertEquals(messageId, failure.getMessageId());
+    assertEquals(messageId, failure.messageId);
   }
 
   @Test

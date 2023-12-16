@@ -77,18 +77,18 @@ public class TokenFragment extends Fragment {
       Timber.tag(TAG).d("token displayed from roll call: %s", rollCall);
 
       PoPToken poPToken = keyManager.getValidPoPToken(laoViewModel.getLaoId(), rollCall);
-      PopTokenData data = new PopTokenData(poPToken.getPublicKey());
+      PopTokenData data = new PopTokenData(poPToken.publicKey);
       Bitmap bitmap =
           QRCode.from(gson.toJson(data))
               .withSize(Constants.QR_SIDE, Constants.QR_SIDE)
               .withColor(ActivityUtils.getQRCodeColor(requireContext()), Color.TRANSPARENT)
               .bitmap();
       binding.tokenQrCode.setImageBitmap(bitmap);
-      binding.tokenTextView.setText(poPToken.getPublicKey().getEncoded());
+      binding.tokenTextView.setText(poPToken.publicKey.getEncoded());
 
       binding.tokenCopyButton.setOnClickListener(
           v -> {
-            copyTextToClipboard(poPToken.getPublicKey().getEncoded());
+            copyTextToClipboard(poPToken.publicKey.getEncoded());
             Toast.makeText(requireContext(), R.string.successful_copy, Toast.LENGTH_SHORT).show();
           });
 

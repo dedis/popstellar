@@ -324,7 +324,7 @@ public class WitnessingRepository {
      * @param witnessMessage the new witness message to add/replace
      */
     public void add(WitnessMessage witnessMessage) {
-      MessageID messageID = witnessMessage.getMessageId();
+      MessageID messageID = witnessMessage.messageId;
       witnessMessages.put(messageID, witnessMessage);
 
       // Publish the updated collection in a thread-safe fashion

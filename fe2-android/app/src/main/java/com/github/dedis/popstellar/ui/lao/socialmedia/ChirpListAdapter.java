@@ -106,8 +106,8 @@ public class ChirpListAdapter extends BaseAdapter {
       previousDisposable.dispose();
     }
 
-    PublicKey sender = chirp.getSender();
-    long timestamp = chirp.getTimestamp();
+    PublicKey sender = chirp.sender;
+    long timestamp = chirp.timestamp;
     String text;
 
     TextView itemUsername = chirpView.findViewById(R.id.social_media_username);
@@ -125,7 +125,7 @@ public class ChirpListAdapter extends BaseAdapter {
     try {
       Disposable reactionDisposable =
           socialMediaViewModel
-              .getReactions(chirp.getId())
+              .getReactions(chirp.id)
               // Each time the observable changes the counter and the selection is notified
               .subscribe(
                   reactions -> {
@@ -133,22 +133,22 @@ public class ChirpListAdapter extends BaseAdapter {
                     Map<String, Set<String>> codepointToSendersMap =
                         reactions.stream()
                             // Filter just non deleted reactions
-                            .filter(reaction -> !reaction.isDeleted())
+                            .filter(reaction -> !reaction.isDeleted)
                             // Then collect by emoji type and count the occurrences
                             .collect(
                                 Collectors.groupingBy(
                                     Reaction::getCodepoint,
                                     Collectors.mapping(
-                                        reaction -> reaction.getSender().getEncoded(),
+                                        reaction -> reaction.sender.getEncoded(),
                                         Collectors.toSet())));
 
                     // Extract the number of reactions by emoji
                     Set<String> upVotes =
-                        codepointToSendersMap.getOrDefault(UPVOTE.getCode(), new HashSet<>(0));
+                        codepointToSendersMap.getOrDefault(UPVOTE.code, new HashSet<>(0));
                     Set<String> downVotes =
-                        codepointToSendersMap.getOrDefault(DOWNVOTE.getCode(), new HashSet<>(0));
+                        codepointToSendersMap.getOrDefault(DOWNVOTE.code, new HashSet<>(0));
                     Set<String> hearts =
-                        codepointToSendersMap.getOrDefault(HEART.getCode(), new HashSet<>(0));
+                        codepointToSendersMap.getOrDefault(HEART.code, new HashSet<>(0));
 
                     upvoteCounter.setText(String.format(Locale.US, "%d", upVotes.size()));
                     downvoteCounter.setText(String.format(Locale.US, "%d", downVotes.size()));
@@ -183,7 +183,7 @@ public class ChirpListAdapter extends BaseAdapter {
       throw new IllegalArgumentException("The chirp does not exist");
     }
 
-    setupReactionButtons(chirp.getId(), upvoteChirp, downvoteChirp, heartChirp);
+    setupReactionButtons(chirp.id, upvoteChirp, downvoteChirp, heartChirp);
 
     // Show the delete button only if the user is the owner of the chirp
     if (socialMediaViewModel.isOwner(sender.getEncoded())) {
@@ -192,7 +192,7 @@ public class ChirpListAdapter extends BaseAdapter {
           v ->
               laoViewModel.addDisposable(
                   socialMediaViewModel
-                      .deleteChirp(chirp.getId(), Instant.now().getEpochSecond())
+                      .deleteChirp(chirp.id, Instant.now().getEpochSecond())
                       .subscribe(
                           msg ->
                               Toast.makeText(context, R.string.deleted_chirp, Toast.LENGTH_LONG)
@@ -205,12 +205,12 @@ public class ChirpListAdapter extends BaseAdapter {
     }
 
     // If the chirp has been deleted display a special text and hide the rest
-    if (chirp.isDeleted()) {
+    if (chirp.isDeleted) {
       text = context.getString(R.string.deleted_chirp_2);
       chirpView.findViewById(R.id.chirp_card_buttons).setVisibility(View.GONE);
       itemText.setTextColor(Color.GRAY);
     } else {
-      text = chirp.getText();
+      text = chirp.text;
     }
 
     itemUsername.setText(sender.getEncoded());
@@ -274,7 +274,7 @@ public class ChirpListAdapter extends BaseAdapter {
     if (selection) {
       laoViewModel.addDisposable(
           socialMediaViewModel
-              .sendReaction(emoji.getCode(), chirpId, Instant.now().getEpochSecond())
+              .sendReaction(emoji.code, chirpId, Instant.now().getEpochSecond())
               .subscribe(
                   msg -> Timber.tag(TAG).d("Added reaction to chirp %s", chirpId),
                   err ->
@@ -282,7 +282,7 @@ public class ChirpListAdapter extends BaseAdapter {
     } else {
       laoViewModel.addDisposable(
           socialMediaViewModel
-              .deleteReaction(chirpId, Instant.now().getEpochSecond(), emoji.getCode())
+              .deleteReaction(chirpId, Instant.now().getEpochSecond(), emoji.code)
               .subscribe(
                   msg -> Timber.tag(TAG).d("Deleted reaction of chirp %s", chirpId),
                   err -> ErrorUtils.logAndShow(context, TAG, err, R.string.error_delete_reaction)));

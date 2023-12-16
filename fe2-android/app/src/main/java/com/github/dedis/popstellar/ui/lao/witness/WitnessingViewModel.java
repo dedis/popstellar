@@ -192,7 +192,7 @@ public class WitnessingViewModel extends AndroidViewModel implements QRCodeScann
   }
 
   protected Completable signMessage(WitnessMessage witnessMessage) {
-    Timber.tag(TAG).d("signing message with ID %s", witnessMessage.getMessageId());
+    Timber.tag(TAG).d("signing message with ID %s", witnessMessage.messageId);
     final LaoView laoView;
     try {
       laoView = getLao();
@@ -205,11 +205,11 @@ public class WitnessingViewModel extends AndroidViewModel implements QRCodeScann
         .flatMapCompletable(
             keyPair -> {
               // Generate the signature of the message
-              Signature signature = keyPair.sign(witnessMessage.getMessageId());
+              Signature signature = keyPair.sign(witnessMessage.messageId);
 
               Timber.tag(TAG).d("Signed message id, resulting signature : %s", signature);
               WitnessMessageSignature signatureMessage =
-                  new WitnessMessageSignature(witnessMessage.getMessageId(), signature);
+                  new WitnessMessageSignature(witnessMessage.messageId, signature);
 
               return networkManager
                   .getMessageSender()
@@ -227,7 +227,7 @@ public class WitnessingViewModel extends AndroidViewModel implements QRCodeScann
           getApplication().getApplicationContext(), TAG, e, R.string.qr_code_not_main_pk);
       return;
     }
-    PublicKey publicKey = pkData.getPublicKey();
+    PublicKey publicKey = pkData.publicKey;
     if (scannedWitnesses.contains(publicKey)) {
       ErrorUtils.logAndShow(getApplication(), TAG, R.string.witness_already_scanned_warning);
       return;
@@ -272,11 +272,7 @@ public class WitnessingViewModel extends AndroidViewModel implements QRCodeScann
     long now = Instant.now().getEpochSecond();
     UpdateLao updateLao =
         new UpdateLao(
-            mainKey.getPublicKey(),
-            laoView.getCreation(),
-            laoView.getName(),
-            now,
-            scannedWitnesses);
+            mainKey.publicKey, laoView.getCreation(), laoView.getName(), now, scannedWitnesses);
     MessageGeneral msg = new MessageGeneral(mainKey, updateLao, gson);
 
     return networkManager
@@ -290,12 +286,12 @@ public class WitnessingViewModel extends AndroidViewModel implements QRCodeScann
       UpdateLao updateLao, LaoView laoView, Channel channel, MessageGeneral msg) {
     StateLao stateLao =
         new StateLao(
-            updateLao.getId(),
-            updateLao.getName(),
+            updateLao.id,
+            updateLao.name,
             laoView.getCreation(),
-            updateLao.getLastModified(),
+            updateLao.lastModified,
             laoView.getOrganizer(),
-            msg.getMessageId(),
+            msg.messageId,
             updateLao.getWitnesses(),
             new ArrayList<>());
 

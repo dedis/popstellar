@@ -2,7 +2,6 @@ package com.github.dedis.popstellar.repository.database.digitalcash;
 
 import androidx.annotation.NonNull;
 import androidx.room.*;
-
 import com.github.dedis.popstellar.model.Immutable;
 import com.github.dedis.popstellar.model.objects.digitalcash.TransactionObject;
 
@@ -34,7 +33,7 @@ public class TransactionEntity {
 
   @Ignore
   public TransactionEntity(@NonNull String laoId, @NonNull TransactionObject transactionObject) {
-    this(transactionObject.getTransactionId(), laoId, transactionObject);
+    this(transactionObject.transactionId, laoId, transactionObject);
   }
 
   @NonNull

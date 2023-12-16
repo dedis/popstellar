@@ -30,7 +30,7 @@ public class BroadcastTest {
 
   @Test
   public void getMessage() {
-    assertEquals(MESSAGE_GENERAL, BROADCAST.getMessage());
+    assertEquals(MESSAGE_GENERAL, BROADCAST.message);
   }
 
   @Test

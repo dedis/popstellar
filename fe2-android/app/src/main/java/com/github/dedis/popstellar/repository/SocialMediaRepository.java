@@ -74,8 +74,8 @@ public class SocialMediaRepository {
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
-                () -> Timber.tag(TAG).d("Successfully persisted chirp %s", chirp.getId()),
-                err -> Timber.tag(TAG).e(err, "Error in persisting chirp %s", chirp.getId())));
+                () -> Timber.tag(TAG).d("Successfully persisted chirp %s", chirp.id),
+                err -> Timber.tag(TAG).e(err, "Error in persisting chirp %s", chirp.id)));
 
     // Retrieve Lao data and add the chirp to it
     getLaoChirps(laoId).add(chirp);
@@ -140,9 +140,9 @@ public class SocialMediaRepository {
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
-                () -> Timber.tag(TAG).d("Successfully persisted reaction %s", reaction.getId()),
+                () -> Timber.tag(TAG).d("Successfully persisted reaction %s", reaction.id),
                 err ->
-                    Timber.tag(TAG).e(err, "Error in persisting reaction %s", reaction.getId())));
+                    Timber.tag(TAG).e(err, "Error in persisting reaction %s", reaction.id)));
 
     // Retrieve Lao data and add the reaction to it
     return getLaoChirps(laoId).addReaction(reaction);
@@ -200,7 +200,7 @@ public class SocialMediaRepository {
     }
 
     public void add(Chirp chirp) {
-      MessageID id = chirp.getId();
+      MessageID id = chirp.id;
       Chirp old = chirps.get(id);
       if (old != null) {
         Timber.tag(TAG).w("A chirp with id %s already exist : %s", id, old);
@@ -209,9 +209,9 @@ public class SocialMediaRepository {
 
       // Update repository data
       chirps.put(id, chirp);
-      reactionByChirpId.putIfAbsent(chirp.getId(), ConcurrentHashMap.newKeySet());
+      reactionByChirpId.putIfAbsent(chirp.id, ConcurrentHashMap.newKeySet());
       reactionSubjectsByChirpId.putIfAbsent(
-          chirp.getId(), BehaviorSubject.createDefault(new HashSet<>()));
+          chirp.id, BehaviorSubject.createDefault(new HashSet<>()));
 
       // Publish new values on subjects
       chirpSubjects.put(id, BehaviorSubject.createDefault(chirp));
@@ -220,23 +220,23 @@ public class SocialMediaRepository {
 
     public boolean addReaction(Reaction reaction) {
       // Check if the associated chirp is present
-      Chirp chirp = chirps.get(reaction.getChirpId());
+      Chirp chirp = chirps.get(reaction.chirpId);
       if (chirp == null) {
         return false;
       }
 
-      Set<Reaction> chirpReactions = Objects.requireNonNull(reactionByChirpId.get(chirp.getId()));
+      Set<Reaction> chirpReactions = Objects.requireNonNull(reactionByChirpId.get(chirp.id));
 
       // Search for a previous deleted reaction
-      Reaction deleted = reactions.get(reaction.getId());
+      Reaction deleted = reactions.get(reaction.id);
       if (deleted != null) {
         chirpReactions.remove(deleted);
       }
 
       // Update repository data
-      reactions.put(reaction.getId(), reaction);
+      reactions.put(reaction.id, reaction);
       chirpReactions.add(reaction);
-      Objects.requireNonNull(reactionSubjectsByChirpId.get(chirp.getId()))
+      Objects.requireNonNull(reactionSubjectsByChirpId.get(chirp.id))
           .toSerialized()
           .onNext(new HashSet<>(chirpReactions));
 
@@ -249,7 +249,7 @@ public class SocialMediaRepository {
         return false;
       }
 
-      if (chirp.isDeleted()) {
+      if (chirp.isDeleted) {
         Timber.tag(TAG).d("The chirp with id %s is already deleted", id);
       } else {
         Subject<Chirp> subject = chirpSubjects.get(id);
@@ -272,10 +272,10 @@ public class SocialMediaRepository {
                 .subscribe(
                     () ->
                         Timber.tag(TAG)
-                            .d("Successfully persisted deleted chirp %s", deleted.getId()),
+                            .d("Successfully persisted deleted chirp %s", deleted.id),
                     err ->
                         Timber.tag(TAG)
-                            .e(err, "Error in persisting deleted chirp %s", deleted.getId())));
+                            .e(err, "Error in persisting deleted chirp %s", deleted.id)));
       }
       return true;
     }
@@ -287,23 +287,23 @@ public class SocialMediaRepository {
         return false;
       }
 
-      Chirp chirp = chirps.get(reaction.getChirpId());
+      Chirp chirp = chirps.get(reaction.chirpId);
       // If the chirp the reaction refers to it's not present then throw an error
       if (chirp == null) {
         throw new IllegalStateException("The reaction refers to a not existing chirp");
       }
 
-      if (reaction.isDeleted()) {
+      if (reaction.isDeleted) {
         Timber.tag(TAG).d("The reaction with id %s is already deleted", reactionId);
       } else {
         // Update the repository data
         Reaction deleted = reaction.deleted();
         reactions.put(reactionId, deleted);
-        Set<Reaction> chirpReactions = Objects.requireNonNull(reactionByChirpId.get(chirp.getId()));
+        Set<Reaction> chirpReactions = Objects.requireNonNull(reactionByChirpId.get(chirp.id));
         // Replace the old reaction with the deleted one
         chirpReactions.remove(reaction);
         chirpReactions.add(deleted);
-        Objects.requireNonNull(reactionSubjectsByChirpId.get(chirp.getId()))
+        Objects.requireNonNull(reactionSubjectsByChirpId.get(chirp.id))
             .toSerialized()
             .onNext(chirpReactions);
 
@@ -317,10 +317,10 @@ public class SocialMediaRepository {
                 .subscribe(
                     () ->
                         Timber.tag(TAG)
-                            .d("Successfully persisted deleted reaction %s", deleted.getId()),
+                            .d("Successfully persisted deleted reaction %s", deleted.id),
                     err ->
                         Timber.tag(TAG)
-                            .e(err, "Error in persisting deleted reaction %s", deleted.getId())));
+                            .e(err, "Error in persisting deleted reaction %s", deleted.id)));
       }
 
       return true;
@@ -364,17 +364,17 @@ public class SocialMediaRepository {
                       chirpsList.forEach(
                           chirp -> {
                             // Do not retrieve deleted chirps
-                            if (chirp.isDeleted()) {
+                            if (chirp.isDeleted) {
                               return;
                             }
                             // Load the chirp into the memory
                             add(chirp);
-                            Timber.tag(TAG).d("Retrieved from db chirp %s", chirp.getId());
+                            Timber.tag(TAG).d("Retrieved from db chirp %s", chirp.id);
                             // When retrieving the chirp also retrieve its reactions
                             repository.disposables.add(
                                 repository
                                     .reactionDao
-                                    .getReactionsByChirpId(chirp.getId())
+                                    .getReactionsByChirpId(chirp.id)
                                     .subscribeOn(Schedulers.io())
                                     .observeOn(AndroidSchedulers.mainThread())
                                     .subscribe(
@@ -382,7 +382,7 @@ public class SocialMediaRepository {
                                             reactionsList.forEach(
                                                 reaction -> {
                                                   // Do not retrieve deleted reactions
-                                                  if (reaction.isDeleted()) {
+                                                  if (reaction.isDeleted) {
                                                     return;
                                                   }
                                                   // Load the reaction into the memory
@@ -390,14 +390,14 @@ public class SocialMediaRepository {
                                                   Timber.tag(TAG)
                                                       .d(
                                                           "Retrieved from db reaction %s",
-                                                          reaction.getId());
+                                                          reaction.id);
                                                 }),
                                         err ->
                                             Timber.tag(TAG)
                                                 .e(
                                                     err,
                                                     "No reaction found in the storage for chirp %s",
-                                                    chirp.getId())));
+                                                    chirp.id)));
                           }),
                   err ->
                       Timber.tag(TAG).e(err, "No chirp found in the storage for lao %s", laoId)));

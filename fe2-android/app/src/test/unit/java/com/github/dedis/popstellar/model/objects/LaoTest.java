@@ -76,20 +76,20 @@ public class LaoTest {
   @Test
   public void setAndGetModificationIdTest() {
     MessageID id = generateMessageID();
-    LAO_1.setModificationId(id);
-    assertThat(LAO_1.getModificationId(), is(id));
+    LAO_1.modificationId = id;
+    assertThat(LAO_1.modificationId, is(id));
   }
 
   @Test
   public void setAndGetCreation() {
-    LAO_1.setCreation(0xFFL);
-    assertThat(LAO_1.getCreation(), is(0xFFL));
+    LAO_1.creation = 0xFFL;
+    assertThat(LAO_1.creation, is(0xFFL));
   }
 
   @Test
   public void setAndGetLastModified() {
-    LAO_1.setLastModified(0xFFL);
-    assertThat(LAO_1.getLastModified(), is(0xFFL));
+    LAO_1.lastModified = 0xFFL;
+    assertThat(LAO_1.lastModified, is(0xFFL));
   }
 
   @Test

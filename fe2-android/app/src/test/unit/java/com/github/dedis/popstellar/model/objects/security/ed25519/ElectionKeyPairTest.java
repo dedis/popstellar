@@ -1,28 +1,25 @@
 package com.github.dedis.popstellar.model.objects.security.ed25519;
 
-import android.util.Log;
-
-import com.github.dedis.popstellar.model.objects.security.Base64URLData;
-import com.github.dedis.popstellar.model.objects.security.elGamal.*;
-
-import org.junit.Test;
-
-import ch.epfl.dedis.lib.exception.CothorityCryptoException;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+
+import android.util.Log;
+import ch.epfl.dedis.lib.exception.CothorityCryptoException;
+import com.github.dedis.popstellar.model.objects.security.Base64URLData;
+import com.github.dedis.popstellar.model.objects.security.elGamal.*;
+import org.junit.Test;
 
 public class ElectionKeyPairTest {
 
   private final ElectionKeyPair encryptionKeys = ElectionKeyPair.generateKeyPair();
-  private final ElectionPublicKey electionPublicKey = encryptionKeys.getEncryptionScheme();
-  private final ElectionPrivateKey electionPrivateKey = encryptionKeys.getDecryptionScheme();
+  private final ElectionPublicKey electionPublicKey = encryptionKeys.encryptionScheme;
+  private final ElectionPrivateKey electionPrivateKey = encryptionKeys.decryptionScheme;
 
   @Test
   public void testKeyGeneration() {
     assertNotEquals(null, encryptionKeys);
-    assertNotEquals(null, encryptionKeys.getEncryptionScheme());
-    assertNotEquals(null, encryptionKeys.getDecryptionScheme());
+    assertNotEquals(null, encryptionKeys.encryptionScheme);
+    assertNotEquals(null, encryptionKeys.decryptionScheme);
   }
 
   @Test

@@ -1,5 +1,7 @@
 package com.github.dedis.popstellar.ui.lao.event.rollcall;
 
+import static com.github.dedis.popstellar.utility.Constants.*;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.pm.ActivityInfo;
@@ -9,11 +11,9 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.*;
 import android.widget.*;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
-
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.RollCallFragmentBinding;
 import com.github.dedis.popstellar.model.objects.RollCall;
@@ -32,19 +32,13 @@ import com.github.dedis.popstellar.utility.Constants;
 import com.github.dedis.popstellar.utility.error.*;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
-
-import net.glxn.qrgen.android.QRCode;
-
+import dagger.hilt.android.AndroidEntryPoint;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import javax.inject.Inject;
-
-import dagger.hilt.android.AndroidEntryPoint;
+import net.glxn.qrgen.android.QRCode;
 import timber.log.Timber;
-
-import static com.github.dedis.popstellar.utility.Constants.*;
 
 @AndroidEntryPoint
 public class RollCallFragment extends AbstractEventFragment {
@@ -114,7 +108,7 @@ public class RollCallFragment extends AbstractEventFragment {
             case CREATED:
               laoViewModel.addDisposable(
                   rollCallViewModel
-                      .openRollCall(rollCall.getId())
+                      .openRollCall(rollCall.id)
                       .subscribe(
                           () ->
                               /* Here the fragment is reopened as we want to have continuity between
@@ -124,7 +118,7 @@ public class RollCallFragment extends AbstractEventFragment {
                               LaoActivity.setCurrentFragment(
                                   getParentFragmentManager(),
                                   R.id.fragment_roll_call,
-                                  () -> RollCallFragment.newInstance(rollCall.getPersistentId())),
+                                  () -> RollCallFragment.newInstance(rollCall.persistentId)),
                           error ->
                               ErrorUtils.logAndShow(
                                   requireContext(), TAG, error, R.string.error_open_rollcall)));
@@ -133,7 +127,7 @@ public class RollCallFragment extends AbstractEventFragment {
               // will add the scan to this fragment in the future
               laoViewModel.addDisposable(
                   rollCallViewModel
-                      .closeRollCall(rollCall.getId())
+                      .closeRollCall(rollCall.id)
                       .subscribe(
                           () ->
                               LaoActivity.setCurrentFragment(
@@ -161,7 +155,7 @@ public class RollCallFragment extends AbstractEventFragment {
 
     laoViewModel.addDisposable(
         rollCallViewModel
-            .getRollCallObservable(rollCall.getPersistentId())
+            .getRollCallObservable(rollCall.persistentId)
             .subscribe(
                 rc -> {
                   Timber.tag(TAG).d("Received rc update: %s", rc);
@@ -220,13 +214,13 @@ public class RollCallFragment extends AbstractEventFragment {
     } else {
       binding.rollCallMetadataContainer.setVisibility(View.VISIBLE);
       // Set the description invisible if it's empty
-      if (rollCall.getDescription().isEmpty()) {
+      if (rollCall.description.isEmpty()) {
         binding.rollCallDescriptionCard.setVisibility(View.GONE);
       }
     }
 
-    binding.rollCallLocationText.setText(rollCall.getLocation());
-    binding.rollCallDescriptionText.setText(rollCall.getDescription());
+    binding.rollCallLocationText.setText(rollCall.location);
+    binding.rollCallDescriptionText.setText(rollCall.description);
 
     // Set visibility of management button as Gone by default
     binding.rollCallManagementButton.setVisibility(View.GONE);
@@ -297,10 +291,9 @@ public class RollCallFragment extends AbstractEventFragment {
       // Show the list of attendees if the roll call has ended
       binding.rollCallAttendeesText.setText(
           String.format(
-              getResources().getString(R.string.roll_call_attendees),
-              rollCall.getAttendees().size()));
+              getResources().getString(R.string.roll_call_attendees), rollCall.attendees.size()));
       attendeesList =
-          rollCall.getAttendees().stream().map(PublicKey::getEncoded).collect(Collectors.toList());
+          rollCall.attendees.stream().map(PublicKey::getEncoded).collect(Collectors.toList());
     }
 
     if (attendeesList != null) {
@@ -330,7 +323,7 @@ public class RollCallFragment extends AbstractEventFragment {
       return;
     }
 
-    String pk = popToken.getPublicKey().getEncoded();
+    String pk = popToken.publicKey.getEncoded();
     Timber.tag(TAG).d("key displayed is %s", pk);
 
     // Set the QR visible only if the rollcall is opened and the user isn't the organizer

@@ -38,17 +38,17 @@ public class NotifyAddChirpTest {
 
   @Test
   public void getChirpIdTest() {
-    assertEquals(CHIRP_ID, NOTIFY_ADD_CHIRP.getChirpId());
+    assertEquals(CHIRP_ID, NOTIFY_ADD_CHIRP.chirpId);
   }
 
   @Test
   public void getChannelTest() {
-    assertEquals(CHANNEL, NOTIFY_ADD_CHIRP.getChannel());
+    assertEquals(CHANNEL, NOTIFY_ADD_CHIRP.channel);
   }
 
   @Test
   public void getTimestampTest() {
-    assertEquals(TIMESTAMP, NOTIFY_ADD_CHIRP.getTimestamp());
+    assertEquals(TIMESTAMP, NOTIFY_ADD_CHIRP.timestamp);
   }
 
   @Test

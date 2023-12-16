@@ -21,40 +21,40 @@ public class PlainVoteTest {
 
   // Hash values util for testing
   private final String expectedIdNoWriteIn =
-      Election.generateElectionVoteId(electionId, questionId, plainVote1.getVote(), writeIn, false);
-  private final String wrongFormatId = Hash.hash("Vote", electionId, plainVote2.getQuestionId());
+      Election.generateElectionVoteId(electionId, questionId, plainVote1.vote, writeIn, false);
+  private final String wrongFormatId = Hash.hash("Vote", electionId, plainVote2.questionId);
   private final String expectedIdWithWriteIn =
-      Election.generateElectionVoteId(electionId, questionId, plainVote2.getVote(), writeIn, true);
+      Election.generateElectionVoteId(electionId, questionId, plainVote2.vote, writeIn, true);
 
   @Test
   public void electionVoteWriteInDisabledReturnsCorrectId() {
     // WriteIn enabled so id is Hash('Vote'||election_id||question_id||write_in)
-    assertThat(plainVote1.getId(), is(expectedIdNoWriteIn));
+    assertThat(plainVote1.id, is(expectedIdNoWriteIn));
   }
 
   @Test
   public void electionVoteWriteInEnabledReturnsCorrectId() {
     // WriteIn enabled so id is Hash('Vote'||election_id||question_id)
     // Hash code shouldn't change with new protocol specifications
-    assertThat(plainVote2.getId().equals(wrongFormatId), is(false));
-    assertThat(plainVote2.getId().equals(expectedIdWithWriteIn), is(true));
-    assertNull(plainVote2.getVote());
+    assertThat(plainVote2.id.equals(wrongFormatId), is(false));
+    assertThat(plainVote2.id.equals(expectedIdWithWriteIn), is(true));
+    assertNull(plainVote2.vote);
   }
 
   @Test
   public void electionVoteGetterReturnsCorrectQuestionId() {
-    assertThat(plainVote1.getQuestionId(), is(questionId));
+    assertThat(plainVote1.questionId, is(questionId));
   }
 
   @Test
   public void attributesIsNull() {
-    assertNull(plainVote2.getVote());
-    assertNotNull(plainVote1.getVote());
+    assertNull(plainVote2.vote);
+    assertNotNull(plainVote1.vote);
   }
 
   @Test
   public void electionVoteGetterReturnsCorrectVotes() {
-    assertThat(plainVote1.getVote(), is(vote));
+    assertThat(plainVote1.vote, is(vote));
   }
 
   @Test

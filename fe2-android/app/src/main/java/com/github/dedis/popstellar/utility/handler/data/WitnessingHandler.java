@@ -6,9 +6,7 @@ import com.github.dedis.popstellar.model.objects.security.*;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.WitnessingRepository;
 import com.github.dedis.popstellar.utility.error.*;
-
 import javax.inject.Inject;
-
 import timber.log.Timber;
 
 public class WitnessingHandler {
@@ -43,8 +41,8 @@ public class WitnessingHandler {
     }
 
     // Check that the signature of the message id is correct
-    MessageID messageID = witnessMessageSignature.getMessageId();
-    Signature signature = witnessMessageSignature.getSignature();
+    MessageID messageID = witnessMessageSignature.messageId;
+    Signature signature = witnessMessageSignature.signature;
     if (!witnessPk.verify(signature, messageID)) {
       throw new InvalidSignatureException(witnessMessageSignature, signature);
     }

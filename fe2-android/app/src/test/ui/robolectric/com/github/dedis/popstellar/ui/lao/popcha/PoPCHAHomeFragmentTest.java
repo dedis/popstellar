@@ -48,7 +48,7 @@ import org.mockito.junit.MockitoTestRule;
 @RunWith(AndroidJUnit4.class)
 public class PoPCHAHomeFragmentTest {
   private static final KeyPair SENDER_KEY = generateKeyPair();
-  private static final Lao LAO = new Lao("laoName", SENDER_KEY.getPublicKey(), 1612204910);
+  private static final Lao LAO = new Lao("laoName", SENDER_KEY.publicKey, 1612204910);
 
   @Rule(order = 0)
   public final MockitoTestRule mockitoRule = MockitoJUnit.testRule(this);
@@ -89,7 +89,7 @@ public class PoPCHAHomeFragmentTest {
           PoPToken popToken = generatePoPToken();
 
           HashSet<PublicKey> attendees = new HashSet<>();
-          attendees.add(popToken.getPublicKey());
+          attendees.add(popToken.publicKey);
 
           rollCallRepository.updateRollCall(
               LAO.getId(),
@@ -108,7 +108,7 @@ public class PoPCHAHomeFragmentTest {
           when(networkManager.getMessageSender()).thenReturn(messageSenderHelper.getMockedSender());
           messageSenderHelper.setupMock();
 
-          when(keyManager.getMainPublicKey()).thenReturn(SENDER_KEY.getPublicKey());
+          when(keyManager.getMainPublicKey()).thenReturn(SENDER_KEY.publicKey);
           when(keyManager.getValidPoPToken(anyString(), any(RollCall.class))).thenReturn(popToken);
           when(keyManager.getLongTermAuthToken(anyString(), anyString()))
               .thenReturn(new AuthToken(popToken));

@@ -49,14 +49,14 @@ public class CastVoteViewPagerAdapter
 
     // setting the question
     ElectionQuestion question = questions.get(position);
-    holder.questionView.setText(question.getQuestion());
+    holder.questionView.setText(question.question);
 
     // this will determine the number of option the user can select and vote for
     // If another voting method is implemented in setUp, this can be adapted
 
     // setting the list view with ballot options
     ballotAdapter.clear();
-    ballotAdapter.addAll(question.getBallotOptions());
+    ballotAdapter.addAll(question.ballotOptions);
     ListView ballotsListView = holder.ballotsListView;
     ballotsListView.setAdapter(ballotAdapter);
     ballotsListView.setChoiceMode(AbsListView.CHOICE_MODE_SINGLE);
@@ -64,13 +64,13 @@ public class CastVoteViewPagerAdapter
         (parent, view, listPosition, id) -> {
           // This is for satisfying the unique vote method
           // It should be changed in the future when multiple votes will be allowed
-          votes.put(question.getId(), listPosition);
+          votes.put(question.id, listPosition);
           voteButton.setEnabled(areEveryQuestionChecked());
         });
 
     // Ensure that the selection is not lost
-    Integer index = votes.get(question.getId());
-    if (index != null && index >= 0 && index < question.getBallotOptions().size()) {
+    Integer index = votes.get(question.id);
+    if (index != null && index >= 0 && index < question.ballotOptions.size()) {
       holder.ballotsListView.setItemChecked(index, true);
     }
   }

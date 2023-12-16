@@ -52,7 +52,7 @@ public class WitnessMessageFragmentTest {
 
   private static final String LAO_NAME = "lao";
   private static final KeyPair SENDER_KEY = generateKeyPair();
-  private static final PublicKey SENDER = SENDER_KEY.getPublicKey();
+  private static final PublicKey SENDER = SENDER_KEY.publicKey;
   private static final Lao LAO = new Lao(LAO_NAME, SENDER, Instant.now().getEpochSecond());
   private static final String LAO_ID = LAO.getId();
 
@@ -106,8 +106,8 @@ public class WitnessMessageFragmentTest {
 
           when(keyManager.getPoPToken(any(), any())).thenReturn(POP_TOKEN);
 
-          WITNESS_MESSAGE.setTitle(TITLE);
-          WITNESS_MESSAGE.setDescription(DESCRIPTION);
+          WITNESS_MESSAGE.title = TITLE;
+          WITNESS_MESSAGE.description = DESCRIPTION;
           WITNESS_MESSAGE.addWitness(WITNESS1);
           WITNESS_MESSAGE.addWitness(WITNESS2);
           witnessMessages = Collections.singletonList(WITNESS_MESSAGE);

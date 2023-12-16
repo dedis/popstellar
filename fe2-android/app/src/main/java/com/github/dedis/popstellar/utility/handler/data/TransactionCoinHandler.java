@@ -5,11 +5,8 @@ import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.digitalcash.*;
 import com.github.dedis.popstellar.repository.DigitalCashRepository;
 import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
-
 import java.util.*;
-
 import javax.inject.Inject;
-
 import timber.log.Timber;
 
 public class TransactionCoinHandler {
@@ -40,48 +37,44 @@ public class TransactionCoinHandler {
     List<OutputObject> outputs = new ArrayList<>();
 
     // Should always be at least one input and one output
-    if (postTransactionCoin.getTransaction().getInputs().isEmpty()
-        || postTransactionCoin.getTransaction().getOutputs().isEmpty()) {
+    if (postTransactionCoin.transaction.getInputs().isEmpty()
+        || postTransactionCoin.transaction.getOutputs().isEmpty()) {
       throw new IllegalArgumentException();
     }
 
     // Iterate on the inputs and the outputs
-    Iterator<Input> iteratorInput = postTransactionCoin.getTransaction().getInputs().iterator();
-    Iterator<Output> iteratorOutput = postTransactionCoin.getTransaction().getOutputs().iterator();
+    Iterator<Input> iteratorInput = postTransactionCoin.transaction.getInputs().iterator();
+    Iterator<Output> iteratorOutput = postTransactionCoin.transaction.getOutputs().iterator();
 
     while (iteratorInput.hasNext()) {
       Input current = iteratorInput.next();
       // Normally if there is an input there is always a script
-      if (current.getScript() == null) {
+      if (current.script == null) {
         throw new IllegalArgumentException();
       }
       ScriptInputObject scriptInputObject =
           new ScriptInputObject(
-              current.getScript().getType(),
-              current.getScript().getPubkey(),
-              current.getScript().getSig());
+              current.script.type, current.script.getPubkey(), current.script.sig);
 
-      inputs.add(
-          new InputObject(current.getTxOutHash(), current.getTxOutIndex(), scriptInputObject));
+      inputs.add(new InputObject(current.txOutHash, current.txOutIndex, scriptInputObject));
     }
 
     while (iteratorOutput.hasNext()) {
       // Normally if there is an output there is always a script
       Output current = iteratorOutput.next();
-      if (current.getScript() == null) {
+      if (current.script == null) {
         throw new IllegalArgumentException();
       }
       ScriptOutputObject script =
-          new ScriptOutputObject(
-              current.getScript().getType(), current.getScript().getPubKeyHash());
-      outputs.add(new OutputObject(current.getValue(), script));
+          new ScriptOutputObject(current.script.type, current.script.pubKeyHash);
+      outputs.add(new OutputObject(current.value, script));
     }
     TransactionObject transactionObject =
         new TransactionObjectBuilder()
             .setChannel(channel)
-            .setLockTime(postTransactionCoin.getTransaction().getLockTime())
-            .setVersion(postTransactionCoin.getTransaction().getVersion())
-            .setTransactionId(postTransactionCoin.getTransactionId())
+            .setLockTime(postTransactionCoin.transaction.lockTime)
+            .setVersion(postTransactionCoin.transaction.version)
+            .setTransactionId(postTransactionCoin.transactionId)
             .setInputs(inputs)
             .setOutputs(outputs)
             .build();

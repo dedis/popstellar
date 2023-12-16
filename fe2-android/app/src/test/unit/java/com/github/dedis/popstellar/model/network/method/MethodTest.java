@@ -8,11 +8,11 @@ public class MethodTest {
 
   @Test
   public void getDataClassTest() {
-    assertEquals(Subscribe.class, Method.SUBSCRIBE.getDataClass());
-    assertEquals(Unsubscribe.class, Method.UNSUBSCRIBE.getDataClass());
-    assertEquals(Publish.class, Method.PUBLISH.getDataClass());
-    assertEquals(Broadcast.class, Method.MESSAGE.getDataClass());
-    assertEquals(Catchup.class, Method.CATCHUP.getDataClass());
+    assertEquals(Subscribe.class, Method.SUBSCRIBE.dataClass);
+    assertEquals(Unsubscribe.class, Method.UNSUBSCRIBE.dataClass);
+    assertEquals(Publish.class, Method.PUBLISH.dataClass);
+    assertEquals(Broadcast.class, Method.MESSAGE.dataClass);
+    assertEquals(Catchup.class, Method.CATCHUP.dataClass);
   }
 
   @Test

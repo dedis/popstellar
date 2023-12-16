@@ -43,7 +43,7 @@ import static org.mockito.Mockito.*;
 @RunWith(AndroidJUnit4.class)
 public class ReactionHandlerTest {
   private static final KeyPair SENDER_KEY = generateKeyPair();
-  private static final PublicKey SENDER = SENDER_KEY.getPublicKey();
+  private static final PublicKey SENDER = SENDER_KEY.publicKey;
 
   private static final long CREATION_TIME = Instant.now().getEpochSecond();
   private static final long DELETION_TIME = CREATION_TIME + 10;
@@ -52,7 +52,7 @@ public class ReactionHandlerTest {
   private static final String LAO_ID = LAO.getId();
 
   private static final Channel CHANNEL =
-      LAO.getChannel().subChannel("social").subChannel("reactions");
+      LAO.channel.subChannel("social").subChannel("reactions");
   private static final String EMOJI = "\uD83D\uDC4D";
   private static final MessageID CHIRP_ID = generateMessageID();
 

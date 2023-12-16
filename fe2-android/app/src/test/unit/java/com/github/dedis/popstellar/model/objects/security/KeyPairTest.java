@@ -39,7 +39,7 @@ public class KeyPairTest {
             Utils.hexToBytes("e5cdb393fe6e0abacd99d521400968083a982400b6ac3e0a1e8f6018d1554bd7"));
     KeyPair keyPair = new KeyPair(privateKey, publicKey);
 
-    assertEquals(publicKey, keyPair.getPublicKey());
+    assertEquals(publicKey, keyPair.publicKey);
   }
 
   @Test

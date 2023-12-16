@@ -58,7 +58,7 @@ public class SocialMediaRepositoryTest {
 
   private static final Reaction REACTION_2 =
       new Reaction(
-          generateMessageIDOtherThan(REACTION_1.getId()),
+          generateMessageIDOtherThan(REACTION_1.id),
           generatePublicKey(),
           EMOJI,
           CHIRP1_ID,
@@ -90,7 +90,7 @@ public class SocialMediaRepositoryTest {
     repo.addChirp(LAO_ID, CHIRP_1);
 
     // assert we received a new value : the set containing the chirp
-    assertCurrentValueIs(ids, setOf(CHIRP_1.getId()));
+    assertCurrentValueIs(ids, setOf(CHIRP_1.id));
   }
 
   @Test
@@ -99,23 +99,23 @@ public class SocialMediaRepositoryTest {
     TestObserver<Set<MessageID>> ids = repo.getChirpsOfLao(LAO_ID).test();
 
     // The value at subscription contains only the first chirp's id
-    assertCurrentValueIs(ids, setOf(CHIRP_1.getId()));
+    assertCurrentValueIs(ids, setOf(CHIRP_1.id));
 
     repo.addChirp(LAO_ID, CHIRP_2);
 
     // The value at subscription contains the two chirps' ids
-    assertCurrentValueIs(ids, setOf(CHIRP_1.getId(), CHIRP_2.getId()));
+    assertCurrentValueIs(ids, setOf(CHIRP_1.id, CHIRP_2.id));
   }
 
   @Test
   public void deleteChipDispatchToObservable() throws UnknownChirpException {
     repo.addChirp(LAO_ID, CHIRP_1);
-    TestObserver<Chirp> chirp = repo.getChirp(LAO_ID, CHIRP_1.getId()).test();
+    TestObserver<Chirp> chirp = repo.getChirp(LAO_ID, CHIRP_1.id).test();
     // Assert the value at start is the chirp
     assertCurrentValueIs(chirp, CHIRP_1);
 
     // Delete the chirp and make sure is was seen a present
-    assertTrue(repo.deleteChirp(LAO_ID, CHIRP_1.getId()));
+    assertTrue(repo.deleteChirp(LAO_ID, CHIRP_1.id));
 
     // Assert a new value was dispatched and it is deleted
     assertCurrentValueIs(chirp, CHIRP_1.deleted());
@@ -126,13 +126,13 @@ public class SocialMediaRepositoryTest {
     // Given a fresh repo, with an added chirp
     repo.addChirp(LAO_ID, CHIRP_1);
 
-    TestObserver<Chirp> chirp = repo.getChirp(LAO_ID, CHIRP_1.getId()).test();
+    TestObserver<Chirp> chirp = repo.getChirp(LAO_ID, CHIRP_1.id).test();
     assertCurrentValueIs(chirp, CHIRP_1);
 
     // Act
     Chirp invalidChirp =
         new Chirp(
-            CHIRP_1.getId(),
+            CHIRP_1.id,
             generatePublicKey(),
             "This is another chirp !",
             1003,
@@ -147,14 +147,14 @@ public class SocialMediaRepositoryTest {
   public void deletingADeletedChirpHasNoEffect() throws UnknownChirpException {
     repo.addChirp(LAO_ID, CHIRP_1);
 
-    assertTrue(repo.deleteChirp(LAO_ID, CHIRP_1.getId()));
-    TestObserver<Chirp> chirp = repo.getChirp(LAO_ID, CHIRP_1.getId()).test();
+    assertTrue(repo.deleteChirp(LAO_ID, CHIRP_1.id));
+    TestObserver<Chirp> chirp = repo.getChirp(LAO_ID, CHIRP_1.id).test();
     // Retrieve current value count to make sure there are nothing more later
     int valueCount = chirp.valueCount();
     assertCurrentValueIs(chirp, CHIRP_1.deleted());
 
     // Assert a chirp was present
-    assertTrue(repo.deleteChirp(LAO_ID, CHIRP_1.getId()));
+    assertTrue(repo.deleteChirp(LAO_ID, CHIRP_1.id));
     // But there is no new value published as the chirp was already deleted
     chirp.assertValueCount(valueCount);
   }
@@ -164,17 +164,17 @@ public class SocialMediaRepositoryTest {
     // Given a fresh repo, with an added chirp
     repo.addChirp(LAO_ID, CHIRP_1);
 
-    assertFalse(repo.deleteChirp(LAO_ID, CHIRP_2.getId()));
+    assertFalse(repo.deleteChirp(LAO_ID, CHIRP_2.id));
   }
 
   @Test
   public void deletingAChirpDoesNotChangeTheIdSet() {
-    assertFalse(repo.deleteChirp(LAO_ID, CHIRP_1.getId()));
+    assertFalse(repo.deleteChirp(LAO_ID, CHIRP_1.id));
   }
 
   @Test
   public void observingAnInvalidChirpThrowsAnError() {
-    assertThrows(UnknownChirpException.class, () -> repo.getChirp(LAO_ID, CHIRP_1.getId()));
+    assertThrows(UnknownChirpException.class, () -> repo.getChirp(LAO_ID, CHIRP_1.id));
   }
 
   @Test
@@ -205,7 +205,7 @@ public class SocialMediaRepositoryTest {
     repo.addReaction(LAO_ID, REACTION_1);
     Reaction deleted = REACTION_1.deleted();
 
-    assertTrue(repo.deleteReaction(LAO_ID, REACTION_1.getId()));
+    assertTrue(repo.deleteReaction(LAO_ID, REACTION_1.id));
     assertTrue(repo.getReactionsByChirp(LAO_ID, CHIRP1_ID).contains(deleted));
   }
 
@@ -217,7 +217,7 @@ public class SocialMediaRepositoryTest {
 
   @Test
   public void deletingNonExistingReactionTest() {
-    assertFalse(repo.deleteReaction(LAO_ID, REACTION_1.getId()));
+    assertFalse(repo.deleteReaction(LAO_ID, REACTION_1.id));
   }
 
   @Test
@@ -226,11 +226,11 @@ public class SocialMediaRepositoryTest {
     repo.addReaction(LAO_ID, REACTION_1);
     repo.addReaction(LAO_ID, REACTION_2);
 
-    TestObserver<Set<Reaction>> reactions = repo.getReactions(LAO_ID, CHIRP_1.getId()).test();
+    TestObserver<Set<Reaction>> reactions = repo.getReactions(LAO_ID, CHIRP_1.id).test();
     assertCurrentValueIs(reactions, setOf(REACTION_1, REACTION_2));
 
-    assertTrue(repo.deleteReaction(LAO_ID, REACTION_1.getId()));
-    assertTrue(repo.deleteReaction(LAO_ID, REACTION_1.getId()));
+    assertTrue(repo.deleteReaction(LAO_ID, REACTION_1.id));
+    assertTrue(repo.deleteReaction(LAO_ID, REACTION_1.id));
     assertCurrentValueIs(reactions, setOf(REACTION_2, REACTION_1.deleted()));
   }
 

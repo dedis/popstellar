@@ -56,13 +56,13 @@ public final class LaoHandler {
     Set<PublicKey> witnesses = new HashSet<>(createLao.getWitnesses());
 
     Timber.tag(TAG).d("handleCreateLao: channel: %s, msg: %s", channel, createLao);
-    Lao lao = new Lao(createLao.getId());
+    Lao lao = new Lao(createLao.id);
 
-    lao.setName(createLao.getName());
-    lao.setCreation(createLao.getCreation());
-    lao.setLastModified(createLao.getCreation());
-    lao.setOrganizer(createLao.getOrganizer());
-    lao.setId(createLao.getId());
+    lao.setName(createLao.name);
+    lao.creation = createLao.creation;
+    lao.lastModified = createLao.creation;
+    lao.setOrganizer(createLao.organizer);
+    lao.setId(createLao.id);
     lao.initKeyToNode(witnesses);
 
     laoRepo.updateLao(lao);
@@ -75,7 +75,7 @@ public final class LaoHandler {
       laoRepo.addDisposable(
           context
               .getMessageSender()
-              .subscribe(lao.getChannel().subChannel("consensus"))
+              .subscribe(lao.channel.subChannel("consensus"))
               .subscribe( // For now if we receive an error, we assume that it is because the server
                   // running is the scala one which does not implement consensus
                   () -> Timber.tag(TAG).d("subscription to consensus channel was a success"),
@@ -112,14 +112,14 @@ public final class LaoHandler {
     LaoView laoView = laoRepo.getLaoViewByChannel(channel);
     String laoId = laoView.getId();
 
-    if (laoView.getLastModified() > updateLao.getLastModified()) {
+    if (laoView.getLastModified() > updateLao.lastModified) {
       // the current state we have is more up to date
       throw new DataHandlingException(
           updateLao, "The current Lao is more up to date than the update lao message");
     }
 
     WitnessMessage message;
-    if (!updateLao.getName().equals(laoView.getName())) {
+    if (!updateLao.name.equals(laoView.getName())) {
       message = updateLaoNameWitnessMessage(messageId, updateLao, laoView);
     } else if (!witnessingRepo.getWitnesses(laoId).equals(updateLao.getWitnesses())) {
       message = updateLaoWitnessesWitnessMessage(messageId, updateLao, laoView);
@@ -135,7 +135,7 @@ public final class LaoHandler {
     if (witnessingRepo.areWitnessesEmpty(laoId)) {
       // We send a pending update only if there are already some witness that need to sign this
       // UpdateLao
-      lao.addPendingUpdate(new PendingUpdate(updateLao.getLastModified(), messageId));
+      lao.addPendingUpdate(new PendingUpdate(updateLao.lastModified, messageId));
     }
 
     laoRepo.updateNodes(channel);
@@ -155,18 +155,18 @@ public final class LaoHandler {
     Timber.tag(TAG).d("Receive State Lao Broadcast msg: %s", stateLao);
     LaoView laoView = laoRepo.getLaoViewByChannel(channel);
 
-    Timber.tag(TAG).d("Receive State Lao Broadcast %s", stateLao.getName());
+    Timber.tag(TAG).d("Receive State Lao Broadcast %s", stateLao.name);
 
-    if (!messageRepo.isMessagePresent(stateLao.getModificationId(), true)) {
-      Timber.tag(TAG).d("Can't find modification id : %s", stateLao.getModificationId());
+    if (!messageRepo.isMessagePresent(stateLao.modificationId, true)) {
+      Timber.tag(TAG).d("Can't find modification id : %s", stateLao.modificationId);
       // queue it if we haven't received the update message yet
-      throw new InvalidMessageIdException(stateLao, stateLao.getModificationId());
+      throw new InvalidMessageIdException(stateLao, stateLao.modificationId);
     }
 
     Timber.tag(TAG).d("Verifying signatures");
     for (PublicKeySignaturePair pair : stateLao.getModificationSignatures()) {
-      if (!pair.getWitness().verify(pair.getSignature(), stateLao.getModificationId())) {
-        throw new InvalidSignatureException(stateLao, pair.getSignature());
+      if (!pair.witness.verify(pair.signature, stateLao.modificationId)) {
+        throw new InvalidSignatureException(stateLao, pair.signature);
       }
     }
 
@@ -175,11 +175,11 @@ public final class LaoHandler {
     // TODO: verify if lao/state_lao is consistent with the lao/update message
 
     Lao lao = laoView.createLaoCopy();
-    lao.setId(stateLao.getId());
+    lao.setId(stateLao.id);
     lao.initKeyToNode(stateLao.getWitnesses());
-    lao.setName(stateLao.getName());
-    lao.setLastModified(stateLao.getLastModified());
-    lao.setModificationId(stateLao.getModificationId());
+    lao.setName(stateLao.name);
+    lao.lastModified = stateLao.lastModified;
+    lao.modificationId = stateLao.modificationId;
 
     PublicKey publicKey = keyManager.getMainPublicKey();
     if (laoView.isOrganizer(publicKey) || witnessingRepo.isWitness(lao.getId(), publicKey)) {
@@ -193,9 +193,9 @@ public final class LaoHandler {
     }
 
     // Now we're going to remove all pending updates which came prior to this state lao
-    long targetTime = stateLao.getLastModified();
+    long targetTime = stateLao.lastModified;
     lao.getPendingUpdates()
-        .removeIf(pendingUpdate -> pendingUpdate.getModificationTime() <= targetTime);
+        .removeIf(pendingUpdate -> pendingUpdate.modificationTime <= targetTime);
 
     laoRepo.updateLao(lao);
     laoRepo.updateNodes(channel);
@@ -204,19 +204,18 @@ public final class LaoHandler {
   public static WitnessMessage updateLaoNameWitnessMessage(
       MessageID messageId, UpdateLao updateLao, LaoView laoView) {
     WitnessMessage message = new WitnessMessage(messageId);
-    message.setTitle("Update Lao Name ");
-    message.setDescription(
-        OLD_NAME
-            + "\n"
-            + laoView.getName()
-            + "\n\n"
-            + NEW_NAME
-            + "\n"
-            + updateLao.getName()
-            + "\n\n"
-            + MESSAGE_ID
-            + "\n"
-            + messageId);
+    message.title = "Update Lao Name ";
+    message.description = OLD_NAME
+        + "\n"
+        + laoView.getName()
+        + "\n\n"
+        + NEW_NAME
+        + "\n"
+        + updateLao.name
+        + "\n\n"
+        + MESSAGE_ID
+        + "\n"
+        + messageId;
     return message;
   }
 
@@ -224,19 +223,18 @@ public final class LaoHandler {
       MessageID messageId, UpdateLao updateLao, LaoView laoView) {
     WitnessMessage message = new WitnessMessage(messageId);
     List<PublicKey> tempList = new ArrayList<>(updateLao.getWitnesses());
-    message.setTitle("Update Lao Witnesses");
-    message.setDescription(
-        LAO_NAME
-            + "\n"
-            + laoView.getName()
-            + "\n\n"
-            + WITNESS_ID
-            + "\n"
-            + tempList.get(tempList.size() - 1)
-            + "\n\n"
-            + MESSAGE_ID
-            + "\n"
-            + messageId);
+    message.title = "Update Lao Witnesses";
+    message.description = LAO_NAME
+        + "\n"
+        + laoView.getName()
+        + "\n\n"
+        + WITNESS_ID
+        + "\n"
+        + tempList.get(tempList.size() - 1)
+        + "\n\n"
+        + MESSAGE_ID
+        + "\n"
+        + messageId;
     return message;
   }
 
@@ -247,20 +245,20 @@ public final class LaoHandler {
     LaoView laoView = laoRepo.getLaoViewByChannel(channel);
 
     // Check the correctness of the LAO id
-    if (!laoView.getId().equals(greetLao.getId())) {
+    if (!laoView.getId().equals(greetLao.id)) {
       Timber.tag(TAG)
           .d(
               "Current lao id %s doesn't match the lao id from greetLao message (%s)",
-              laoView.getId(), greetLao.getId());
+              laoView.getId(), greetLao.id);
       throw new IllegalArgumentException(
           "Current lao doesn't match the lao id from the greetLao message");
     }
-    Timber.tag(TAG).d("Creating a server with IP: %s", greetLao.getAddress());
+    Timber.tag(TAG).d("Creating a server with IP: %s", greetLao.address);
 
-    Server server = new Server(greetLao.getAddress(), greetLao.getFrontendKey());
+    Server server = new Server(greetLao.address, greetLao.frontendKey);
 
     Timber.tag(TAG).d("Adding the server to the repository for lao id : %s", laoView.getId());
-    serverRepo.addServer(greetLao.getId(), server);
+    serverRepo.addServer(greetLao.id, server);
 
     // Extend the current connection by connecting to the peers of the main server
     // The greetLao will also be sent by the other servers, so the message sender

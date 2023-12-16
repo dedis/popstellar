@@ -1,17 +1,15 @@
 package com.github.dedis.popstellar.model.network.method.message.data.meeting;
 
+import static com.github.dedis.popstellar.testutils.Base64DataUtils.generatePublicKey;
+import static org.junit.Assert.*;
+
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.event.EventType;
 import com.github.dedis.popstellar.utility.security.Hash;
-
-import org.junit.Test;
-
 import java.time.Instant;
 import java.util.Objects;
-
-import static com.github.dedis.popstellar.testutils.Base64DataUtils.generatePublicKey;
-import static org.junit.Assert.*;
+import org.junit.Test;
 
 public class CreateMeetingTest {
   private static final String LAO_ID =
@@ -22,24 +20,24 @@ public class CreateMeetingTest {
   private static final long START = CREATION + 1;
   private static final long END = START + 5;
   private static final String ID =
-      Hash.hash(EventType.MEETING.getSuffix(), LAO_ID, Long.toString(CREATION), NAME);
+      Hash.hash(EventType.MEETING.suffix, LAO_ID, Long.toString(CREATION), NAME);
 
   private static final CreateMeeting CREATE_MEETING =
       new CreateMeeting(LAO_ID, ID, NAME, CREATION, LOCATION, START, END);
 
   @Test
   public void getId() {
-    assertEquals(ID, CREATE_MEETING.getId());
+    assertEquals(ID, CREATE_MEETING.id);
   }
 
   @Test
   public void getName() {
-    assertEquals(NAME, CREATE_MEETING.getName());
+    assertEquals(NAME, CREATE_MEETING.name);
   }
 
   @Test
   public void getCreation() {
-    assertEquals(CREATION, CREATE_MEETING.getCreation());
+    assertEquals(CREATION, CREATE_MEETING.creation);
   }
 
   @Test
@@ -49,12 +47,12 @@ public class CreateMeetingTest {
 
   @Test
   public void getStart() {
-    assertEquals(START, CREATE_MEETING.getStart());
+    assertEquals(START, CREATE_MEETING.start);
   }
 
   @Test
   public void getEnd() {
-    assertEquals(END, CREATE_MEETING.getEnd());
+    assertEquals(END, CREATE_MEETING.end);
   }
 
   @Test

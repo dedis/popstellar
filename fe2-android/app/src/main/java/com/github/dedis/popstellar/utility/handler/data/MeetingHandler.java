@@ -10,12 +10,9 @@ import com.github.dedis.popstellar.repository.*;
 import com.github.dedis.popstellar.repository.database.witnessing.PendingEntity;
 import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
-
 import java.util.ArrayList;
 import java.util.Date;
-
 import javax.inject.Inject;
-
 import timber.log.Timber;
 
 public class MeetingHandler {
@@ -45,19 +42,18 @@ public class MeetingHandler {
     Channel channel = context.getChannel();
     MessageID messageId = context.getMessageId();
 
-    Timber.tag(TAG)
-        .d("handleCreateMeeting: channel: %s, name: %s", channel, createMeeting.getName());
+    Timber.tag(TAG).d("handleCreateMeeting: channel: %s, name: %s", channel, createMeeting.name);
     LaoView laoView = laoRepo.getLaoViewByChannel(channel);
 
     MeetingBuilder builder = new MeetingBuilder();
     builder
-        .setId(createMeeting.getId())
-        .setCreation(createMeeting.getCreation())
-        .setStart(createMeeting.getStart())
-        .setEnd(createMeeting.getEnd())
-        .setName(createMeeting.getName())
+        .setId(createMeeting.id)
+        .setCreation(createMeeting.creation)
+        .setStart(createMeeting.start)
+        .setEnd(createMeeting.end)
+        .setName(createMeeting.name)
         .setLocation(createMeeting.getLocation().orElse(""))
-        .setLastModified(createMeeting.getCreation())
+        .setLastModified(createMeeting.creation)
         .setModificationId("")
         .setModificationSignatures(new ArrayList<>());
 
@@ -78,21 +74,21 @@ public class MeetingHandler {
     Channel channel = context.getChannel();
     MessageID messageId = context.getMessageId();
 
-    Timber.tag(TAG).d("handleStateMeeting: channel: %s, name: %s", channel, stateMeeting.getName());
+    Timber.tag(TAG).d("handleStateMeeting: channel: %s, name: %s", channel, stateMeeting.name);
     LaoView laoView = laoRepo.getLaoViewByChannel(channel);
 
     // TODO: modify with the right logic when implementing the state functionality
 
     MeetingBuilder builder = new MeetingBuilder();
     builder
-        .setId(stateMeeting.getId())
-        .setCreation(stateMeeting.getCreation())
-        .setStart(stateMeeting.getStart())
-        .setEnd(stateMeeting.getEnd())
-        .setName(stateMeeting.getName())
+        .setId(stateMeeting.id)
+        .setCreation(stateMeeting.creation)
+        .setStart(stateMeeting.start)
+        .setEnd(stateMeeting.end)
+        .setName(stateMeeting.name)
         .setLocation(stateMeeting.getLocation().orElse(""))
-        .setLastModified(stateMeeting.getCreation())
-        .setModificationId(stateMeeting.getModificationId())
+        .setLastModified(stateMeeting.creation)
+        .setModificationId(stateMeeting.modificationId)
         .setModificationSignatures(stateMeeting.getModificationSignatures());
 
     String laoId = laoView.getId();
@@ -114,44 +110,40 @@ public class MeetingHandler {
 
   public static WitnessMessage createMeetingWitnessMessage(MessageID messageId, Meeting meeting) {
     WitnessMessage message = new WitnessMessage(messageId);
-    message.setTitle(
-        String.format(
-            "The Meeting %s was created at %s",
-            meeting.getName(), new Date(meeting.getCreation() * 1000)));
-    message.setDescription(
-        "Mnemonic identifier :\n"
-            + ActivityUtils.generateMnemonicWordFromBase64(meeting.getId(), 2)
-            + "\n\n"
-            + (meeting.getLocation().isEmpty()
-                ? ""
-                : ("Location :\n" + meeting.getLocation() + "\n\n"))
-            + "Starts at :\n"
-            + new Date(meeting.getStartTimestampInMillis())
-            + "\n\n"
-            + "Finishes at :\n"
-            + new Date(meeting.getEndTimestampInMillis()));
+    message.title = String.format(
+        "The Meeting %s was created at %s",
+        meeting.getName(), new Date(meeting.creation * 1000));
+    message.description = "Mnemonic identifier :\n"
+        + ActivityUtils.generateMnemonicWordFromBase64(meeting.id, 2)
+        + "\n\n"
+        + (meeting.location.isEmpty()
+            ? ""
+            : ("Location :\n" + meeting.location + "\n\n"))
+        + "Starts at :\n"
+        + new Date(meeting.getStartTimestampInMillis())
+        + "\n\n"
+        + "Finishes at :\n"
+        + new Date(meeting.getEndTimestampInMillis());
 
     return message;
   }
 
   public static WitnessMessage stateMeetingWitnessMessage(MessageID messageId, Meeting meeting) {
     WitnessMessage message = new WitnessMessage(messageId);
-    message.setTitle(
-        String.format(
-            "The Meeting %s was modified at %s",
-            meeting.getName(), new Date(meeting.getLastModified() * 1000)));
-    message.setDescription(
-        "Mnemonic identifier :\n"
-            + ActivityUtils.generateMnemonicWordFromBase64(meeting.getId(), 2)
-            + "\n\n"
-            + (meeting.getLocation().isEmpty()
-                ? ""
-                : ("Location :\n" + meeting.getLocation() + "\n\n"))
-            + "Starts at :\n"
-            + new Date(meeting.getStartTimestampInMillis())
-            + "\n\n"
-            + "Finishes at :\n"
-            + new Date(meeting.getEndTimestampInMillis()));
+    message.title = String.format(
+        "The Meeting %s was modified at %s",
+        meeting.getName(), new Date(meeting.lastModified * 1000));
+    message.description = "Mnemonic identifier :\n"
+        + ActivityUtils.generateMnemonicWordFromBase64(meeting.id, 2)
+        + "\n\n"
+        + (meeting.location.isEmpty()
+            ? ""
+            : ("Location :\n" + meeting.location + "\n\n"))
+        + "Starts at :\n"
+        + new Date(meeting.getStartTimestampInMillis())
+        + "\n\n"
+        + "Finishes at :\n"
+        + new Date(meeting.getEndTimestampInMillis());
 
     return message;
   }

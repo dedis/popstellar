@@ -18,7 +18,7 @@ public class PoPCHAQRCodeTest {
   private static final long CREATION_TIME = Instant.now().getEpochSecond();
   private static final String LAO_NAME = "laoName";
   private static final KeyPair SENDER_KEY = generatePoPToken();
-  private static final PublicKey SENDER = SENDER_KEY.getPublicKey();
+  private static final PublicKey SENDER = SENDER_KEY.publicKey;
   private static final String LAO_ID = Lao.generateLaoId(SENDER, CREATION_TIME, LAO_NAME);
 
   private static final String ADDRESS = "localhost:9100";
@@ -36,27 +36,27 @@ public class PoPCHAQRCodeTest {
 
   @Test
   public void extractClientId() {
-    assertEquals(CLIENT_ID, POPCHA_QR_CODE.getClientId());
+    assertEquals(CLIENT_ID, POPCHA_QR_CODE.clientId);
   }
 
   @Test
   public void extractNonce() {
-    assertEquals(NONCE, POPCHA_QR_CODE.getNonce());
+    assertEquals(NONCE, POPCHA_QR_CODE.nonce);
   }
 
   @Test
   public void extractState() {
-    assertEquals(STATE, POPCHA_QR_CODE.getState());
+    assertEquals(STATE, POPCHA_QR_CODE.state);
   }
 
   @Test
   public void extractResponseMode() {
-    assertEquals(RESPONSE_MODE, POPCHA_QR_CODE.getResponseMode());
+    assertEquals(RESPONSE_MODE, POPCHA_QR_CODE.responseMode);
   }
 
   @Test
   public void extractHost() {
-    assertEquals(ADDRESS, POPCHA_QR_CODE.getHost());
+    assertEquals(ADDRESS, POPCHA_QR_CODE.host);
   }
 
   @Test

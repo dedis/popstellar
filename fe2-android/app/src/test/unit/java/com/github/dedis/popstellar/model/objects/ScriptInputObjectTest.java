@@ -1,20 +1,18 @@
 package com.github.dedis.popstellar.model.objects;
 
-import com.github.dedis.popstellar.model.objects.digitalcash.ScriptInputObject;
-import com.github.dedis.popstellar.model.objects.security.*;
-
-import org.junit.Before;
-import org.junit.Test;
-
-import java.security.GeneralSecurityException;
-
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
 import static org.junit.Assert.assertEquals;
+
+import com.github.dedis.popstellar.model.objects.digitalcash.ScriptInputObject;
+import com.github.dedis.popstellar.model.objects.security.*;
+import java.security.GeneralSecurityException;
+import org.junit.Before;
+import org.junit.Test;
 
 public class ScriptInputObjectTest {
 
   private static final KeyPair SENDER_KEY = generateKeyPair();
-  private static final PublicKey SENDER = SENDER_KEY.getPublicKey();
+  private static final PublicKey SENDER = SENDER_KEY.publicKey;
 
   private String type;
   private String pubKey;
@@ -31,7 +29,7 @@ public class ScriptInputObjectTest {
 
   @Test
   public void getTypeTest() {
-    assertEquals(type, scriptTxIn.getType());
+    assertEquals(type, scriptTxIn.type);
   }
 
   @Test
@@ -41,6 +39,6 @@ public class ScriptInputObjectTest {
 
   @Test
   public void getSigTest() {
-    assertEquals(sig, scriptTxIn.getSig().getEncoded());
+    assertEquals(sig, scriptTxIn.sig.getEncoded());
   }
 }

@@ -38,17 +38,17 @@ public class AddReactionTest {
 
   @Test
   public void getCodepointTest() {
-    assertEquals(CODE_POINT, ADD_REACTION.getCodepoint());
+    assertEquals(CODE_POINT, ADD_REACTION.codepoint);
   }
 
   @Test
   public void getChirpIdTest() {
-    assertEquals(CHIRP_ID, ADD_REACTION.getChirpId());
+    assertEquals(CHIRP_ID, ADD_REACTION.chirpId);
   }
 
   @Test
   public void getTimestampTest() {
-    assertEquals(TIMESTAMP, ADD_REACTION.getTimestamp());
+    assertEquals(TIMESTAMP, ADD_REACTION.timestamp);
   }
 
   @Test

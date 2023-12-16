@@ -51,7 +51,7 @@ import static org.mockito.Mockito.when;
 public class MeetingFragmentTest {
   private static final String LAO_NAME = "lao";
   private static final KeyPair SENDER_KEY = generateKeyPair();
-  private static final PublicKey SENDER = SENDER_KEY.getPublicKey();
+  private static final PublicKey SENDER = SENDER_KEY.publicKey;
   private static final Lao LAO = new Lao(LAO_NAME, SENDER, 10223421);
   private static final String LAO_ID = LAO.getId();
   private static final String MEETING_TITLE = "Title";
@@ -122,8 +122,8 @@ public class MeetingFragmentTest {
           new BundleBuilder().putString(laoIdExtra(), LAO_ID).build(),
           containerId(),
           MeetingFragment.class,
-          () -> MeetingFragment.newInstance(MEETING.getId()),
-          new BundleBuilder().putString(Constants.MEETING_ID, MEETING.getId()).build());
+          () -> MeetingFragment.newInstance(MEETING.id),
+          new BundleBuilder().putString(Constants.MEETING_ID, MEETING.id).build());
 
   @Test
   public void rollCallTitleMatches() {

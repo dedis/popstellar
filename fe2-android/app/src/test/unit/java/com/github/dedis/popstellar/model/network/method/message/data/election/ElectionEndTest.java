@@ -48,17 +48,17 @@ public class ElectionEndTest {
 
   @Test
   public void electionEndGetterReturnsCorrectElectionId() {
-    assertThat(electionEnd.getElectionId(), is(electionId));
+    assertThat(electionEnd.electionId, is(electionId));
   }
 
   @Test
   public void electionEndGetterReturnsCorrectLaoId() {
-    assertThat(electionEnd.getLaoId(), is(laoId));
+    assertThat(electionEnd.laoId, is(laoId));
   }
 
   @Test
   public void electionEndGetterReturnsCorrectRegisteredVotes() {
-    assertThat(electionEnd.getRegisteredVotes(), is(registeredVotes));
+    assertThat(electionEnd.registeredVotes, is(registeredVotes));
   }
 
   @Test

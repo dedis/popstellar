@@ -1,45 +1,5 @@
 package com.github.dedis.popstellar.ui.lao.event.election;
 
-import android.app.DatePickerDialog;
-import android.app.TimePickerDialog;
-
-import androidx.test.ext.junit.runners.AndroidJUnit4;
-import androidx.test.filters.LargeTest;
-
-import com.github.dedis.popstellar.model.network.method.message.data.election.*;
-import com.github.dedis.popstellar.model.objects.Lao;
-import com.github.dedis.popstellar.model.objects.security.PublicKey;
-import com.github.dedis.popstellar.model.objects.view.LaoView;
-import com.github.dedis.popstellar.repository.LAORepository;
-import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
-import com.github.dedis.popstellar.repository.remote.MessageSender;
-import com.github.dedis.popstellar.testutils.BundleBuilder;
-import com.github.dedis.popstellar.testutils.fragment.ActivityFragmentScenarioRule;
-import com.github.dedis.popstellar.ui.lao.LaoActivity;
-import com.github.dedis.popstellar.ui.lao.event.election.fragments.ElectionSetupFragment;
-import com.github.dedis.popstellar.utility.error.UnknownLaoException;
-import com.github.dedis.popstellar.utility.handler.MessageHandler;
-import com.github.dedis.popstellar.utility.security.KeyManager;
-import com.google.gson.Gson;
-
-import org.junit.*;
-import org.junit.rules.ExternalResource;
-import org.junit.runner.RunWith;
-import org.mockito.*;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoTestRule;
-
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.time.Instant;
-import java.util.*;
-
-import javax.inject.Inject;
-
-import dagger.hilt.android.testing.*;
-import io.reactivex.Completable;
-import io.reactivex.subjects.BehaviorSubject;
-
 import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.action.ViewActions.*;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
@@ -58,6 +18,40 @@ import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.when;
+
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.filters.LargeTest;
+import com.github.dedis.popstellar.model.network.method.message.data.election.*;
+import com.github.dedis.popstellar.model.objects.Lao;
+import com.github.dedis.popstellar.model.objects.security.PublicKey;
+import com.github.dedis.popstellar.model.objects.view.LaoView;
+import com.github.dedis.popstellar.repository.LAORepository;
+import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
+import com.github.dedis.popstellar.repository.remote.MessageSender;
+import com.github.dedis.popstellar.testutils.BundleBuilder;
+import com.github.dedis.popstellar.testutils.fragment.ActivityFragmentScenarioRule;
+import com.github.dedis.popstellar.ui.lao.LaoActivity;
+import com.github.dedis.popstellar.ui.lao.event.election.fragments.ElectionSetupFragment;
+import com.github.dedis.popstellar.utility.error.UnknownLaoException;
+import com.github.dedis.popstellar.utility.handler.MessageHandler;
+import com.github.dedis.popstellar.utility.security.KeyManager;
+import com.google.gson.Gson;
+import dagger.hilt.android.testing.*;
+import io.reactivex.Completable;
+import io.reactivex.subjects.BehaviorSubject;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.util.*;
+import javax.inject.Inject;
+import org.junit.*;
+import org.junit.rules.ExternalResource;
+import org.junit.runner.RunWith;
+import org.mockito.*;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoTestRule;
 
 @LargeTest
 @HiltAndroidTest
@@ -391,10 +385,10 @@ public class ElectionSetupFragmentTest {
     calendar.set(YEAR, MONTH_OF_YEAR, DAY_OF_MONTH, HOURS + 1, MINUTES, 0);
     long expectedEndTime = calendar.toInstant().getEpochSecond();
 
-    assertEquals(expectedStartTime, electionSetup.getStartTime());
-    assertEquals(expectedEndTime, electionSetup.getEndTime());
+    assertEquals(expectedStartTime, electionSetup.startTime);
+    assertEquals(expectedEndTime, electionSetup.endTime);
 
-    assertEquals(ELECTION_NAME, electionSetup.getName());
+    assertEquals(ELECTION_NAME, electionSetup.name);
     assertEquals(LAO.getId(), electionSetup.getLaoId());
 
     List<ElectionQuestion> questionList = electionSetup.getQuestions();
@@ -403,18 +397,18 @@ public class ElectionSetupFragmentTest {
     ElectionQuestion question2 = questionList.get(1);
 
     // Check the Questions 1
-    assertEquals("Question 1", question1.getQuestion());
-    assertFalse(question1.getWriteIn());
-    List<String> ballotOptions1 = question1.getBallotOptions();
+    assertEquals("Question 1", question1.question);
+    assertFalse(question1.writeIn);
+    List<String> ballotOptions1 = question1.ballotOptions;
     assertEquals(3, ballotOptions1.size());
     for (int i = 0; i < 3; ++i) {
       assertEquals("answer 1." + i, ballotOptions1.get(i));
     }
 
     // Check the Questions 2
-    assertEquals("Question 2", question2.getQuestion());
+    assertEquals("Question 2", question2.question);
     // assertTrue(question2.getWriteIn());
-    List<String> ballotOptions2 = question2.getBallotOptions();
+    List<String> ballotOptions2 = question2.ballotOptions;
     assertEquals(2, ballotOptions2.size());
     for (int i = 0; i < 2; ++i) {
       assertEquals("answer 2." + i, ballotOptions2.get(i));

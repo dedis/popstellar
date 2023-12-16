@@ -57,8 +57,8 @@ public class ChirpListAdapterTest {
   private static final KeyPair SENDER_KEY_1 = generatePoPToken();
   private static final KeyPair SENDER_KEY_2 = generatePoPToken();
 
-  private static final PublicKey SENDER_1 = SENDER_KEY_1.getPublicKey();
-  private static final PublicKey SENDER_2 = SENDER_KEY_2.getPublicKey();
+  private static final PublicKey SENDER_1 = SENDER_KEY_1.publicKey;
+  private static final PublicKey SENDER_2 = SENDER_KEY_2.publicKey;
 
   private static final String LAO_ID = Lao.generateLaoId(SENDER_1, CREATION_TIME, LAO_NAME);
 
@@ -94,24 +94,24 @@ public class ChirpListAdapterTest {
       new Reaction(
           REACTION_ID,
           SENDER_1,
-          Reaction.ReactionEmoji.UPVOTE.getCode(),
-          CHIRP_1.getId(),
+          Reaction.ReactionEmoji.UPVOTE.code,
+          CHIRP_1.id,
           TIMESTAMP);
 
   private final Reaction REACTION2 =
       new Reaction(
           generateMessageID(),
           SENDER_1,
-          Reaction.ReactionEmoji.DOWNVOTE.getCode(),
-          CHIRP_1.getId(),
+          Reaction.ReactionEmoji.DOWNVOTE.code,
+          CHIRP_1.id,
           TIMESTAMP);
 
   private final Reaction REACTION3 =
       new Reaction(
           generateMessageID(),
           SENDER_1,
-          Reaction.ReactionEmoji.HEART.getCode(),
-          CHIRP_1.getId(),
+          Reaction.ReactionEmoji.HEART.code,
+          CHIRP_1.id,
           TIMESTAMP);
 
   @Inject SocialMediaRepository socialMediaRepository;
@@ -143,7 +143,7 @@ public class ChirpListAdapterTest {
           when(networkManager.getMessageSender()).thenReturn(messageSenderHelper.getMockedSender());
           messageSenderHelper.setupMock();
 
-          when(keyManager.getMainPublicKey()).thenReturn(SENDER_KEY_1.getPublicKey());
+          when(keyManager.getMainPublicKey()).thenReturn(SENDER_KEY_1.publicKey);
           when(keyManager.getValidPoPToken(anyString(), any(RollCall.class)))
               .thenReturn((PoPToken) SENDER_KEY_1);
         }

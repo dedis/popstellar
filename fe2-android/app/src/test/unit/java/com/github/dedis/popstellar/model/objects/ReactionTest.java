@@ -59,11 +59,11 @@ public class ReactionTest {
   @Test
   public void createDeletedReaction() {
     Reaction deleted = REACTION.deleted();
-    assertEquals(REACTION.getId(), deleted.getId());
-    assertEquals(REACTION.getSender(), deleted.getSender());
-    assertEquals(REACTION.getChirpId(), deleted.getChirpId());
-    assertEquals(REACTION.getTimestamp(), deleted.getTimestamp());
-    assertEquals(REACTION.getCodepoint(), deleted.getCodepoint());
-    assertTrue(deleted.isDeleted());
+    assertEquals(REACTION.id, deleted.id);
+    assertEquals(REACTION.sender, deleted.sender);
+    assertEquals(REACTION.chirpId, deleted.chirpId);
+    assertEquals(REACTION.timestamp, deleted.timestamp);
+    assertEquals(REACTION.codepoint, deleted.codepoint);
+    assertTrue(deleted.isDeleted);
   }
 }

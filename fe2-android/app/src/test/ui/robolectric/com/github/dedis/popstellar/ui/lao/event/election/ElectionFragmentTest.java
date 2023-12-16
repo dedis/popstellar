@@ -62,7 +62,7 @@ public class ElectionFragmentTest {
 
   private static final String LAO_NAME = "lao";
   private static final KeyPair SENDER_KEY = generateKeyPair();
-  private static final PublicKey SENDER = SENDER_KEY.getPublicKey();
+  private static final PublicKey SENDER = SENDER_KEY.publicKey;
   private static final long CREATION = Instant.now().getEpochSecond() - 1000;
   private static final Lao LAO = new Lao(LAO_NAME, SENDER, CREATION);
   private static final String LAO_ID = LAO.getId();
@@ -155,7 +155,7 @@ public class ElectionFragmentTest {
           new BundleBuilder().putString(laoIdExtra(), LAO_ID).build(),
           containerId(),
           ElectionFragment.class,
-          () -> ElectionFragment.newInstance(ELECTION.getId()));
+          () -> ElectionFragment.newInstance(ELECTION.id));
 
   @Test
   public void electionTitleMatches() {
@@ -193,7 +193,7 @@ public class ElectionFragmentTest {
     InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
     verify(messageSenderHelper.getMockedSender())
-        .publish(any(), eq(ELECTION.getChannel()), any(ElectionOpen.class));
+        .publish(any(), eq(ELECTION.channel), any(ElectionOpen.class));
     messageSenderHelper.assertSubscriptions();
   }
 
@@ -220,7 +220,7 @@ public class ElectionFragmentTest {
     InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
     verify(messageSenderHelper.getMockedSender())
-        .publish(any(), eq(ELECTION.getChannel()), any(ElectionEnd.class));
+        .publish(any(), eq(ELECTION.channel), any(ElectionEnd.class));
     messageSenderHelper.assertSubscriptions();
   }
 

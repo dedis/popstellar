@@ -58,21 +58,21 @@ public class ElectionSetupTest {
     // Hash('Election'||lao_id||created_at||name)
     String expectedId =
         Hash.hash(
-            EventType.ELECTION.getSuffix(),
+            EventType.ELECTION.suffix,
             openBallotSetup.getLaoId(),
             Long.toString(openBallotSetup.getCreation()),
-            openBallotSetup.getName());
+            openBallotSetup.name);
     assertThat(openBallotSetup.getElectionId(), is(expectedId));
   }
 
   @Test
   public void getNameTest() {
-    assertThat(openBallotSetup.getName(), is(ELECTION_NAME));
+    assertThat(openBallotSetup.name, is(ELECTION_NAME));
   }
 
   @Test
   public void getEndTimeTest() {
-    assertThat(openBallotSetup.getEndTime(), is(END));
+    assertThat(openBallotSetup.endTime, is(END));
   }
 
   @Test
@@ -99,10 +99,10 @@ public class ElectionSetupTest {
   public void getVersionTest() {
     assertEquals(
         ElectionVersion.OPEN_BALLOT.getStringBallotVersion(),
-        openBallotSetup.getElectionVersion().getStringBallotVersion());
+        openBallotSetup.electionVersion.getStringBallotVersion());
     assertEquals(
         ElectionVersion.SECRET_BALLOT.getStringBallotVersion(),
-        secretBallotSetup.getElectionVersion().getStringBallotVersion());
+        secretBallotSetup.electionVersion.getStringBallotVersion());
   }
 
   @Test

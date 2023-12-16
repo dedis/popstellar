@@ -2,10 +2,8 @@ package com.github.dedis.popstellar.ui.lao.event.rollcall;
 
 import android.app.Application;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.lifecycle.*;
-
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.network.method.message.data.rollcall.*;
 import com.github.dedis.popstellar.model.objects.*;
@@ -21,16 +19,13 @@ import com.github.dedis.popstellar.utility.error.keys.*;
 import com.github.dedis.popstellar.utility.scheduler.SchedulerProvider;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
-
+import dagger.hilt.android.lifecycle.HiltViewModel;
+import io.reactivex.*;
+import io.reactivex.Observable;
 import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
-
 import javax.inject.Inject;
-
-import dagger.hilt.android.lifecycle.HiltViewModel;
-import io.reactivex.Observable;
-import io.reactivex.*;
 import timber.log.Timber;
 
 @HiltViewModel
@@ -122,7 +117,7 @@ public class RollCallViewModel extends AndroidViewModel implements QRCodeScannin
     return networkManager
         .getMessageSender()
         .publish(keyManager.getMainKeyPair(), laoView.getChannel(), createRollCall)
-        .toSingleDefault(createRollCall.getId());
+        .toSingleDefault(createRollCall.id);
   }
 
   /**
@@ -168,15 +163,15 @@ public class RollCallViewModel extends AndroidViewModel implements QRCodeScannin
     return networkManager
         .getMessageSender()
         .publish(keyManager.getMainKeyPair(), channel, openRollCall)
-        .doOnComplete(() -> openRollCall(openRollCall.getUpdateId(), laoView, rollCall));
+        .doOnComplete(() -> openRollCall(openRollCall.updateId, laoView, rollCall));
   }
 
   private void openRollCall(String currentId, LaoView laoView, RollCall rollCall) {
     Timber.tag(TAG).d("opening rollcall with id %s", currentId);
-    attendees.addAll(rollCall.getAttendees());
+    attendees.addAll(rollCall.attendees);
 
     try {
-      attendees.add(keyManager.getPoPToken(laoView, rollCall).getPublicKey());
+      attendees.add(keyManager.getPoPToken(laoView, rollCall).publicKey);
     } catch (KeyException e) {
       ErrorUtils.logAndShow(getApplication(), TAG, e, R.string.error_retrieve_own_token);
     }
@@ -246,9 +241,9 @@ public class RollCallViewModel extends AndroidViewModel implements QRCodeScannin
     try {
       boolean isOrganizer =
           laoRepo.getLaoView(laoId).getOrganizer().equals(keyManager.getMainPublicKey());
-      PublicKey pk = wallet.generatePoPToken(laoId, rollcall.getPersistentId()).getPublicKey();
+      PublicKey pk = wallet.generatePoPToken(laoId, rollcall.persistentId).publicKey;
 
-      return rollcall.getAttendees().contains(pk) || isOrganizer;
+      return rollcall.attendees.contains(pk) || isOrganizer;
     } catch (KeyGenerationException | UninitializedWalletException e) {
       ErrorUtils.logAndShow(getApplication(), TAG, e, R.string.key_generation_exception);
       return false;
@@ -268,7 +263,7 @@ public class RollCallViewModel extends AndroidViewModel implements QRCodeScannin
           getApplication().getApplicationContext(), TAG, R.string.qr_code_not_pop_token);
       return;
     }
-    PublicKey publicKey = tokenData.getPopToken();
+    PublicKey publicKey = tokenData.popToken;
     if (attendees.contains(publicKey)) {
       ErrorUtils.logAndShow(getApplication(), TAG, R.string.attendee_already_scanned_warning);
       return;

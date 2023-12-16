@@ -75,8 +75,8 @@ public class MeetingRepository {
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
-                () -> Timber.tag(TAG).d("Successfully persisted meeting %s", meeting.getId()),
-                err -> Timber.tag(TAG).e(err, "Error in persisting meeting %s", meeting.getId())));
+                () -> Timber.tag(TAG).d("Successfully persisted meeting %s", meeting.id),
+                err -> Timber.tag(TAG).e(err, "Error in persisting meeting %s", meeting.id)));
 
     // Retrieve Lao data and add the meeting to it
     getLaoMeetings(laoId).update(meeting);
@@ -148,7 +148,7 @@ public class MeetingRepository {
      */
     public void update(Meeting meeting) {
       // Updating repo data
-      String id = meeting.getId();
+      String id = meeting.id;
       meetingById.put(id, meeting);
 
       // Publish new values on subjects
@@ -201,7 +201,7 @@ public class MeetingRepository {
                       meetings.forEach(
                           meeting -> {
                             update(meeting);
-                            Timber.tag(TAG).d("Retrieved from db meeting %s", meeting.getId());
+                            Timber.tag(TAG).d("Retrieved from db meeting %s", meeting.id);
                           }),
                   err ->
                       Timber.tag(TAG).e(err, "No meeting found in the storage for lao %s", laoId)));

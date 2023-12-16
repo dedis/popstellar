@@ -97,8 +97,8 @@ public class WitnessMessageListViewAdapter extends BaseAdapter {
     WitnessMessage witnessMessage = messages.get(position);
 
     // Set message title and description
-    binding.messageTitle.setText(witnessMessage.getTitle());
-    binding.messageDescriptionText.setText(witnessMessage.getDescription());
+    binding.messageTitle.setText(witnessMessage.title);
+    binding.messageDescriptionText.setText(witnessMessage.description);
 
     // Set witness signatures text
     String formattedSignatures = formatPublicKeys(witnessMessage.getWitnesses());
@@ -150,7 +150,7 @@ public class WitnessMessageListViewAdapter extends BaseAdapter {
       dialogBuilder.setTitle(R.string.sign_message);
       dialogBuilder.setMessage(
           String.format(
-              context.getString(R.string.confirm_to_sign), message.getMessageId().getEncoded()));
+              context.getString(R.string.confirm_to_sign), message.messageId.getEncoded()));
 
       dialogBuilder.setNegativeButton(R.string.cancel, null);
 

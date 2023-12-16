@@ -1,11 +1,15 @@
 package com.github.dedis.popstellar.utility.handler;
 
-import android.app.Application;
+import static com.github.dedis.popstellar.testutils.Base64DataUtils.*;
+import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.when;
 
+import android.app.Application;
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
-
 import com.github.dedis.popstellar.di.DataRegistryModuleHelper;
 import com.github.dedis.popstellar.di.JsonModule;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
@@ -27,38 +31,29 @@ import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
-
+import io.reactivex.Completable;
+import io.reactivex.Single;
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+import java.util.*;
 import org.junit.*;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
-import java.io.IOException;
-import java.security.GeneralSecurityException;
-import java.util.*;
-
-import io.reactivex.Completable;
-import io.reactivex.Single;
-
-import static com.github.dedis.popstellar.testutils.Base64DataUtils.*;
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.lenient;
-import static org.mockito.Mockito.when;
 
 @RunWith(AndroidJUnit4.class)
 public class WitnessingHandlerTest {
 
   private static final KeyPair ORGANIZER_KEY = generateKeyPair();
   private static final KeyPair WITNESS_KEY = generateKeyPair();
-  private static final PublicKey ORGANIZER = ORGANIZER_KEY.getPublicKey();
-  private static final PublicKey WITNESS = WITNESS_KEY.getPublicKey();
+  private static final PublicKey ORGANIZER = ORGANIZER_KEY.publicKey;
+  private static final PublicKey WITNESS = WITNESS_KEY.publicKey;
   private static final List<PublicKey> WITNESSES =
       new ArrayList<>(Arrays.asList(ORGANIZER, WITNESS));
   private static final PoPToken POP_TOKEN = generatePoPToken();
 
   private static final CreateLao CREATE_LAO = new CreateLao("lao", ORGANIZER, WITNESSES);
-  private static final Channel LAO_CHANNEL = Channel.getLaoChannel(CREATE_LAO.getId());
+  private static final Channel LAO_CHANNEL = Channel.getLaoChannel(CREATE_LAO.id);
   private static final MessageID MESSAGE_ID1 = generateMessageID();
   private static final MessageID MESSAGE_ID2 = generateMessageIDOtherThan(MESSAGE_ID1);
   private static final WitnessMessage WITNESS_MESSAGE1 = new WitnessMessage(MESSAGE_ID1);
@@ -135,8 +130,8 @@ public class WitnessingHandlerTest {
     messageHandler = new MessageHandler(messageRepo, dataRegistry);
 
     // Create one LAO
-    Lao LAO = new Lao(CREATE_LAO.getName(), CREATE_LAO.getOrganizer(), CREATE_LAO.getCreation());
-    LAO.setLastModified(LAO.getCreation());
+    Lao LAO = new Lao(CREATE_LAO.name, CREATE_LAO.organizer, CREATE_LAO.creation);
+    LAO.lastModified = LAO.creation;
     LAO.initKeyToNode(new HashSet<>(CREATE_LAO.getWitnesses()));
 
     witnessingRepository.addWitnesses(LAO.getId(), new HashSet<>(WITNESSES));
@@ -153,8 +148,12 @@ public class WitnessingHandlerTest {
 
   @Test
   public void testHandleWitnessMessageSignatureFromOrganizer()
-      throws GeneralSecurityException, UnknownElectionException, UnknownRollCallException,
-          UnknownLaoException, DataHandlingException, NoRollCallException,
+      throws GeneralSecurityException,
+          UnknownElectionException,
+          UnknownRollCallException,
+          UnknownLaoException,
+          DataHandlingException,
+          NoRollCallException,
           UnknownWitnessMessageException {
     // Create a valid witnessMessageSignature signed by the organizer
     Signature signature = ORGANIZER_KEY.sign(MESSAGE_ID1);
@@ -180,8 +179,12 @@ public class WitnessingHandlerTest {
 
   @Test
   public void testHandleWitnessMessageSignatureFromWitness()
-      throws GeneralSecurityException, UnknownElectionException, UnknownRollCallException,
-          UnknownLaoException, DataHandlingException, NoRollCallException,
+      throws GeneralSecurityException,
+          UnknownElectionException,
+          UnknownRollCallException,
+          UnknownLaoException,
+          DataHandlingException,
+          NoRollCallException,
           UnknownWitnessMessageException {
     // Create a valid witnessMessageSignature signed by a witness
     Signature signature = WITNESS_KEY.sign(MESSAGE_ID2);

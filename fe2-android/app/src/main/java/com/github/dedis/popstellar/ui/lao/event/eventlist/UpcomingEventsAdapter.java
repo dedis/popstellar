@@ -35,7 +35,7 @@ public class UpcomingEventsAdapter extends EventsAdapter {
     this.setEvents(
         events.stream()
             .filter(
-                event -> event.getState().equals(EventState.CREATED) && !event.isEventEndingToday())
+                event -> event.state.equals(EventState.CREATED) && !event.isEventEndingToday())
             .collect(Collectors.toList()));
     notifyDataSetChanged();
   }

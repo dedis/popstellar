@@ -1,7 +1,11 @@
 package com.github.dedis.popstellar.model.network.method.message.data.lao;
 
-import androidx.test.ext.junit.runners.AndroidJUnit4;
+import static com.github.dedis.popstellar.testutils.Base64DataUtils.*;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.*;
 
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 import com.github.dedis.popstellar.model.network.JsonTestUtils;
 import com.github.dedis.popstellar.model.network.method.message.PublicKeySignaturePair;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
@@ -11,18 +15,11 @@ import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.testutils.Base64DataUtils;
 import com.google.gson.JsonParseException;
-
+import java.time.Instant;
+import java.util.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.internal.util.collections.Sets;
-
-import java.time.Instant;
-import java.util.*;
-
-import static com.github.dedis.popstellar.testutils.Base64DataUtils.*;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.*;
 
 @RunWith(AndroidJUnit4.class)
 public class StateLaoTest {
@@ -131,7 +128,7 @@ public class StateLaoTest {
 
   @Test
   public void getIdTest() {
-    assertThat(stateLao.getId(), is(id));
+    assertThat(stateLao.id, is(id));
   }
 
   @Test
@@ -141,27 +138,27 @@ public class StateLaoTest {
 
   @Test
   public void getActionTest() {
-    assertThat(stateLao.getAction(), is(Action.STATE.getAction()));
+    assertThat(stateLao.getAction(), is(Action.STATE.action));
   }
 
   @Test
   public void getNameTest() {
-    assertThat(stateLao.getName(), is(name));
+    assertThat(stateLao.name, is(name));
   }
 
   @Test
   public void getCreationTest() {
-    assertThat(stateLao.getCreation(), is(creation));
+    assertThat(stateLao.creation, is(creation));
   }
 
   @Test
   public void getLastModifiedTest() {
-    assertThat(stateLao.getLastModified(), is(lastModified));
+    assertThat(stateLao.lastModified, is(lastModified));
   }
 
   @Test
   public void getOrganizerTest() {
-    assertThat(stateLao.getOrganizer(), is(organizer));
+    assertThat(stateLao.organizer, is(organizer));
   }
 
   @Test
@@ -171,12 +168,12 @@ public class StateLaoTest {
 
   @Test
   public void getModificationIdTest() {
-    assertThat(stateLao.getModificationId(), is(modificationId));
+    assertThat(stateLao.modificationId, is(modificationId));
   }
 
   @Test
   public void getModificationIdSignaturesTest() {
-    assertThat(stateLao.getModificationId(), is(modificationId));
+    assertThat(stateLao.modificationId, is(modificationId));
   }
 
   @Test

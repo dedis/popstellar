@@ -25,13 +25,13 @@ public class PendingUpdateTest {
   @Test
   public void testGetModificationTime() {
     PendingUpdate pendingUpdate = new PendingUpdate(MODIFICATION1, MESSAGE_ID1);
-    assertEquals(MODIFICATION1, pendingUpdate.getModificationTime());
+    assertEquals(MODIFICATION1, pendingUpdate.modificationTime);
   }
 
   @Test
   public void testGetMessageId() {
     PendingUpdate pendingUpdate = new PendingUpdate(MODIFICATION1, MESSAGE_ID1);
-    assertEquals(MESSAGE_ID1, pendingUpdate.getMessageId());
+    assertEquals(MESSAGE_ID1, pendingUpdate.messageId);
   }
 
   @Test

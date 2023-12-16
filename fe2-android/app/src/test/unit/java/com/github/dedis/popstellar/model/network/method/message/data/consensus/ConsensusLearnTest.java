@@ -26,17 +26,17 @@ public class ConsensusLearnTest {
 
   @Test
   public void getInstanceIdTest() {
-    assertEquals(instanceId, consensusLearn.getInstanceId());
+    assertEquals(instanceId, consensusLearn.instanceId);
   }
 
   @Test
   public void getMessageIdTest() {
-    assertEquals(messageId, consensusLearn.getMessageId());
+    assertEquals(messageId, consensusLearn.messageId);
   }
 
   @Test
   public void getAcceptorSignaturesTest() {
-    assertEquals(acceptorSignatures, consensusLearn.getAcceptorSignatures());
+    assertEquals(acceptorSignatures, consensusLearn.acceptorSignatures);
   }
 
   @Test
@@ -51,12 +51,12 @@ public class ConsensusLearnTest {
 
   @Test
   public void getCreationTest() {
-    assertEquals(timeInSeconds, consensusLearn.getCreation());
+    assertEquals(timeInSeconds, consensusLearn.creation);
   }
 
   @Test
   public void getLearnValueTest() {
-    LearnValue value = consensusLearn.getLearnValue();
+    LearnValue value = consensusLearn.learnValue;
 
     assertEquals(decision, value.isDecision());
 

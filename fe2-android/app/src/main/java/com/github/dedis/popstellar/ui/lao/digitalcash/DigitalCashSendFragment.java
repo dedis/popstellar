@@ -83,7 +83,7 @@ public class DigitalCashSendFragment extends Fragment {
                     currentAmount, currentPublicKeySelected, -1)) {
                   try {
                     PoPToken token = digitalCashViewModel.getValidToken();
-                    if (canPostTransaction(token.getPublicKey(), Integer.parseInt(currentAmount))) {
+                    if (canPostTransaction(token.publicKey, Integer.parseInt(currentAmount))) {
                       laoViewModel.addDisposable(
                           postTransaction(
                                   Collections.singletonMap(currentPublicKeySelected, currentAmount))
@@ -176,7 +176,7 @@ public class DigitalCashSendFragment extends Fragment {
    */
   private void removeOwnToken(List<String> members) {
     try {
-      members.remove(digitalCashViewModel.getValidToken().getPublicKey().getEncoded());
+      members.remove(digitalCashViewModel.getValidToken().publicKey.getEncoded());
     } catch (KeyException e) {
       Timber.tag(TAG).e(e, getResources().getString(R.string.error_retrieve_own_token));
     }

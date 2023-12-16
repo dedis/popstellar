@@ -94,7 +94,7 @@ public class ConsensusViewModel extends AndroidViewModel {
    * @param accept true if accepted, false if rejected
    */
   public Completable sendConsensusElectAccept(ElectInstance electInstance, boolean accept) {
-    MessageID messageId = electInstance.getMessageId();
+    MessageID messageId = electInstance.messageId;
     Timber.tag(TAG)
         .d(
             "sending a new elect_accept for consensus with messageId : %s with value %s",
@@ -105,7 +105,7 @@ public class ConsensusViewModel extends AndroidViewModel {
 
     return networkManager
         .getMessageSender()
-        .publish(keyManager.getMainKeyPair(), electInstance.getChannel(), consensusElectAccept);
+        .publish(keyManager.getMainKeyPair(), electInstance.channel, consensusElectAccept);
   }
 
   public void setLaoId(String laoId) {

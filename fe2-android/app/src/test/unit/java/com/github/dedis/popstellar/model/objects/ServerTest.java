@@ -16,11 +16,11 @@ public class ServerTest {
 
   @Test
   public void getPublicKeyTest() {
-    assertEquals(RANDOM_KEY, SERVER.getPublicKey());
+    assertEquals(RANDOM_KEY, SERVER.publicKey);
   }
 
   @Test
   public void getServerAddressTest() {
-    assertEquals(RANDOM_ADDRESS, SERVER.getServerAddress());
+    assertEquals(RANDOM_ADDRESS, SERVER.serverAddress);
   }
 }

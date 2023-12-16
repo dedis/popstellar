@@ -3,12 +3,10 @@ package com.github.dedis.popstellar.ui.lao.event.eventlist;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.event.Event;
@@ -18,13 +16,10 @@ import com.github.dedis.popstellar.ui.lao.LaoViewModel;
 import com.github.dedis.popstellar.ui.lao.event.election.fragments.ElectionFragment;
 import com.github.dedis.popstellar.ui.lao.event.meeting.MeetingFragment;
 import com.github.dedis.popstellar.ui.lao.event.rollcall.RollCallFragment;
-
-import org.ocpsoft.prettytime.PrettyTime;
-
+import io.reactivex.Observable;
 import java.util.*;
 import java.util.stream.Collectors;
-
-import io.reactivex.Observable;
+import org.ocpsoft.prettytime.PrettyTime;
 import timber.log.Timber;
 
 public abstract class EventsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -80,14 +75,14 @@ public abstract class EventsAdapter extends RecyclerView.Adapter<RecyclerView.Vi
    * setting an appropriate listener based on the type
    */
   protected void handleEventContent(EventViewHolder eventViewHolder, Event event) {
-    if (event.getType().equals(EventType.ELECTION)) {
+    if (event.type.equals(EventType.ELECTION)) {
       handleElectionContent(eventViewHolder, (Election) event);
-    } else if (event.getType().equals(EventType.ROLL_CALL)) {
+    } else if (event.type.equals(EventType.ROLL_CALL)) {
       handleRollCallContent(eventViewHolder, (RollCall) event);
-    } else if (event.getType().equals(EventType.MEETING)) {
+    } else if (event.type.equals(EventType.MEETING)) {
       handleMeetingContent(eventViewHolder, (Meeting) event);
     }
-    eventViewHolder.eventTitle.setText(event.getName());
+    eventViewHolder.eventTitle.setText(event.name);
     handleTimeAndLocation(eventViewHolder, event);
   }
 
@@ -98,7 +93,7 @@ public abstract class EventsAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             LaoActivity.setCurrentFragment(
                 activity.getSupportFragmentManager(),
                 R.id.fragment_election,
-                () -> ElectionFragment.newInstance(election.getId())));
+                () -> ElectionFragment.newInstance(election.id)));
   }
 
   private void handleRollCallContent(EventViewHolder eventViewHolder, RollCall rollCall) {
@@ -108,7 +103,7 @@ public abstract class EventsAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             LaoActivity.setCurrentFragment(
                 activity.getSupportFragmentManager(),
                 R.id.fragment_roll_call,
-                () -> RollCallFragment.newInstance(rollCall.getPersistentId())));
+                () -> RollCallFragment.newInstance(rollCall.persistentId)));
   }
 
   private void handleMeetingContent(EventViewHolder eventViewHolder, Meeting meeting) {
@@ -118,19 +113,19 @@ public abstract class EventsAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             LaoActivity.setCurrentFragment(
                 activity.getSupportFragmentManager(),
                 R.id.fragment_meeting,
-                () -> MeetingFragment.newInstance(meeting.getId())));
+                () -> MeetingFragment.newInstance(meeting.id)));
   }
 
   private void handleTimeAndLocation(EventViewHolder viewHolder, Event event) {
     String location = "";
     if (event instanceof RollCall) {
-      location = ", at " + ((RollCall) event).getLocation();
+      location = ", at " + ((RollCall) event).location;
     }
-    if (event instanceof Meeting && !((Meeting) event).getLocation().isEmpty()) {
-      location = ", at " + ((Meeting) event).getLocation();
+    if (event instanceof Meeting && !((Meeting) event).location.isEmpty()) {
+      location = ", at " + ((Meeting) event).location;
     }
     String timeText;
-    switch (event.getState()) {
+    switch (event.state) {
       case CREATED:
         if (event.isStartPassed()) {
           timeText = getActivity().getString(R.string.start_anytime);

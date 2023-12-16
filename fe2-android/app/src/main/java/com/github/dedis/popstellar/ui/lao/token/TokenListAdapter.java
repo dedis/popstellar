@@ -43,7 +43,7 @@ public class TokenListAdapter extends RecyclerView.Adapter<TokenListAdapter.Toke
             LaoActivity.setCurrentFragment(
                 activity.getSupportFragmentManager(),
                 R.id.fragment_token,
-                () -> TokenFragment.newInstance(rollCall.getPersistentId())));
+                () -> TokenFragment.newInstance(rollCall.persistentId)));
   }
 
   @Override

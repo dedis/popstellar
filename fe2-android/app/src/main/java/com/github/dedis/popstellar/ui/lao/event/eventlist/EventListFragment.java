@@ -198,7 +198,7 @@ public class EventListFragment extends Fragment {
                 .anyMatch( // We are looking for any event that is in future section
                     event ->
                         // We want created events that are in more than 24 hours
-                        event.getState().equals(EventState.CREATED) && !event.isEventEndingToday())
+                        event.state.equals(EventState.CREATED) && !event.isEventEndingToday())
             ? View.VISIBLE
             : View.GONE);
   }

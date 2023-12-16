@@ -311,3 +311,8 @@ dependencies {
     // We use a special version of mockito that has the capability to mock final classes in android tests
     androidTestImplementation 'com.linkedin.dexmaker:dexmaker-mockito-inline:2.28.1'
 }
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}

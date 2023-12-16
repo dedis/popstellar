@@ -48,7 +48,7 @@ public class TransactionTest {
 
   @Test
   public void testGetVersion() {
-    assertEquals(VERSION, TRANSACTION.getVersion());
+    assertEquals(VERSION, TRANSACTION.version);
   }
 
   @Test
@@ -63,7 +63,7 @@ public class TransactionTest {
 
   @Test
   public void testGetTimestamp() {
-    assertEquals(TIMESTAMP, TRANSACTION.getLockTime());
+    assertEquals(TIMESTAMP, TRANSACTION.lockTime);
   }
 
   @Test
@@ -86,9 +86,9 @@ public class TransactionTest {
     String path = "protocol/examples/messageData/coin/post_transaction_coinbase.json";
     String validJson = JsonTestUtils.loadFile(path);
     PostTransactionCoin postTransactionModel = (PostTransactionCoin) JsonTestUtils.parse(validJson);
-    Transaction transactionModel = postTransactionModel.getTransaction();
+    Transaction transactionModel = postTransactionModel.transaction;
 
-    assertEquals(postTransactionModel.getTransactionId(), transactionModel.computeId());
+    assertEquals(postTransactionModel.transactionId, transactionModel.computeId());
   }
 
   @Test
@@ -96,11 +96,11 @@ public class TransactionTest {
     String path = "protocol/examples/messageData/coin/post_transaction_coinbase.json";
     String validJson = JsonTestUtils.loadFile(path);
     PostTransactionCoin postTransactionModel = (PostTransactionCoin) JsonTestUtils.parse(validJson);
-    Transaction transactionModel = postTransactionModel.getTransaction();
+    Transaction transactionModel = postTransactionModel.transaction;
     Input single = transactionModel.getInputs().get(0);
 
-    Signature sig = single.getScript().getSig();
-    PublicKey pk = single.getScript().getPubkey();
+    Signature sig = single.script.sig;
+    PublicKey pk = single.script.getPubkey();
 
     assertTrue(
         pk.verify(
@@ -108,17 +108,17 @@ public class TransactionTest {
             new Base64URLData(
                 Transaction.computeSigOutputsPairTxOutHashAndIndex(
                         transactionModel.getOutputs(),
-                        Collections.singletonMap(single.getTxOutHash(), single.getTxOutIndex()))
+                        Collections.singletonMap(single.txOutHash, single.txOutIndex))
                     .getBytes(StandardCharsets.UTF_8))));
 
     path = "protocol/examples/messageData/coin/post_transaction_bad_signature.json";
     validJson = JsonTestUtils.loadFile(path);
     postTransactionModel = (PostTransactionCoin) JsonTestUtils.parse(validJson);
-    transactionModel = postTransactionModel.getTransaction();
+    transactionModel = postTransactionModel.transaction;
     single = transactionModel.getInputs().get(0);
 
-    sig = single.getScript().getSig();
-    pk = single.getScript().getPubkey();
+    sig = single.script.sig;
+    pk = single.script.getPubkey();
 
     assertFalse(
         pk.verify(
@@ -126,7 +126,7 @@ public class TransactionTest {
             new Base64URLData(
                 Transaction.computeSigOutputsPairTxOutHashAndIndex(
                         transactionModel.getOutputs(),
-                        Collections.singletonMap(single.getTxOutHash(), single.getTxOutIndex()))
+                        Collections.singletonMap(single.txOutHash, single.txOutIndex))
                     .getBytes(StandardCharsets.UTF_8))));
   }
 }

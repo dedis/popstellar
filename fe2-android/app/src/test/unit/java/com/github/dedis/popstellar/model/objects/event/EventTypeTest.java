@@ -9,9 +9,9 @@ public class EventTypeTest {
 
   @Test
   public void getSuffixTest() {
-    assertThat(EventType.MEETING.getSuffix(), is("M"));
-    assertThat(EventType.ROLL_CALL.getSuffix(), is("R"));
-    assertThat(EventType.POLL.getSuffix(), is("P"));
-    assertThat(EventType.DISCUSSION.getSuffix(), is("D"));
+    assertThat(EventType.MEETING.suffix, is("M"));
+    assertThat(EventType.ROLL_CALL.suffix, is("R"));
+    assertThat(EventType.POLL.suffix, is("P"));
+    assertThat(EventType.DISCUSSION.suffix, is("D"));
   }
 }

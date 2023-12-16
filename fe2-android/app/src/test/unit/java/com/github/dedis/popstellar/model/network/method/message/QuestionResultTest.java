@@ -26,6 +26,6 @@ public class QuestionResultTest {
 
   @Test
   public void questionResultGetterReturnsCorrectCount() {
-    assertThat(questionResult.getCount(), is(count));
+    assertThat(questionResult.count, is(count));
   }
 }

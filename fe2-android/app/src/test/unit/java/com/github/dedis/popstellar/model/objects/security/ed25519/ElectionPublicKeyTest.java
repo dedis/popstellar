@@ -41,7 +41,7 @@ public class ElectionPublicKeyTest {
   @Test
   public void equalsTest() {
     ElectionKeyPair scheme = ElectionKeyPair.generateKeyPair();
-    ElectionPublicKey that = scheme.getEncryptionScheme();
+    ElectionPublicKey that = scheme.encryptionScheme;
     assertNotEquals(validEncryptionScheme, that);
     assertEquals(validEncryptionScheme, validEncryptionScheme);
     assertNotEquals(null, validEncryptionScheme);
@@ -65,7 +65,7 @@ public class ElectionPublicKeyTest {
   @Test
   public void getPublicKeyTest() {
     Point keyPoint = keyPairScheme.point;
-    assertEquals(keyPoint, validEncryptionScheme.getPublicKey());
+    assertEquals(keyPoint, validEncryptionScheme.publicKey);
   }
 
   // Encryption / decryption process is already tested in ElectionKeyPairTest

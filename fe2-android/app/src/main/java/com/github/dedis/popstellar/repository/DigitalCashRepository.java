@@ -2,10 +2,8 @@ package com.github.dedis.popstellar.repository;
 
 import android.app.Activity;
 import android.app.Application;
-
 import androidx.annotation.NonNull;
 import androidx.lifecycle.Lifecycle;
-
 import com.github.dedis.popstellar.model.objects.OutputObject;
 import com.github.dedis.popstellar.model.objects.digitalcash.TransactionObject;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
@@ -13,22 +11,19 @@ import com.github.dedis.popstellar.repository.database.AppDatabase;
 import com.github.dedis.popstellar.repository.database.digitalcash.*;
 import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
-
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.BehaviorSubject;
 import io.reactivex.subjects.Subject;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import timber.log.Timber;
 
 @Singleton
@@ -261,15 +256,13 @@ public class DigitalCashRepository {
                 .subscribe(
                     () ->
                         Timber.tag(TAG)
-                            .d(
-                                "Successfully persisted transaction %s",
-                                transaction.getTransactionId()),
+                            .d("Successfully persisted transaction %s", transaction.transactionId),
                     err ->
                         Timber.tag(TAG)
                             .e(
                                 err,
                                 "Error in persisting the transaction %s",
-                                transaction.getTransactionId())));
+                                transaction.transactionId)));
       }
     }
 
@@ -286,7 +279,7 @@ public class DigitalCashRepository {
     private List<PublicKey> getReceiversTransaction(TransactionObject transaction) {
       // For each output, we get the hash of the public key. Then for each hash we return the
       // preimage (the public key)
-      return transaction.getOutputs().stream()
+      return transaction.outputs.stream()
           .map(OutputObject::getPubKeyHash)
           .map(
               hash -> {
@@ -341,7 +334,7 @@ public class DigitalCashRepository {
                                           Timber.tag(TAG)
                                               .d(
                                                   "Retrieved transaction %s from db",
-                                                  transactionObject.getTransactionId());
+                                                  transactionObject.transactionId);
                                           try {
                                             updateTransactions(transactionObject, false);
                                           } catch (NoRollCallException e) {

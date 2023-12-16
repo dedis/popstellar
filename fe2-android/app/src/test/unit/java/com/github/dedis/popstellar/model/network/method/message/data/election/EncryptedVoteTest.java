@@ -23,43 +23,43 @@ public class EncryptedVoteTest {
   // Hash values util for testing
   private final String expectedIdNoWriteIn =
       Election.generateEncryptedElectionVoteId(
-          electionId, questionId, encryptedVote1.getVote(), encryptedWriteIn, false);
+          electionId, questionId, encryptedVote1.vote, encryptedWriteIn, false);
   private final EncryptedVote electionEncryptedVotes2 =
       new EncryptedVote(questionId, votes, true, encryptedWriteIn, electionId);
   private final String wrongFormatId =
-      Hash.hash("Vote", electionId, electionEncryptedVotes2.getQuestionId());
+      Hash.hash("Vote", electionId, electionEncryptedVotes2.questionId);
   private final String expectedIdWithWriteIn =
       Election.generateEncryptedElectionVoteId(
-          electionId, questionId, electionEncryptedVotes2.getVote(), encryptedWriteIn, true);
+          electionId, questionId, electionEncryptedVotes2.vote, encryptedWriteIn, true);
 
   @Test
   public void electionVoteWriteInDisabledReturnsCorrectId() {
     // WriteIn enabled so id is Hash('Vote'||election_id||question_id||write_in)
-    assertThat(encryptedVote1.getId(), is(expectedIdNoWriteIn));
+    assertThat(encryptedVote1.id, is(expectedIdNoWriteIn));
   }
 
   @Test
   public void electionVoteWriteInEnabledReturnsCorrectIdTest() {
     // hash = Hash('Vote'||election_id||question_id||encryptedWriteIn)
-    assertThat(electionEncryptedVotes2.getId().equals(wrongFormatId), is(false));
-    assertThat(electionEncryptedVotes2.getId().equals(expectedIdWithWriteIn), is(true));
-    assertNull(electionEncryptedVotes2.getVote());
+    assertThat(electionEncryptedVotes2.id.equals(wrongFormatId), is(false));
+    assertThat(electionEncryptedVotes2.id.equals(expectedIdWithWriteIn), is(true));
+    assertNull(electionEncryptedVotes2.vote);
   }
 
   @Test
   public void getIdTest() {
-    assertThat(encryptedVote1.getQuestionId(), is(questionId));
+    assertThat(encryptedVote1.questionId, is(questionId));
   }
 
   @Test
   public void attributesIsNullTest() {
-    assertNull(electionEncryptedVotes2.getVote());
-    assertNotNull(encryptedVote1.getVote());
+    assertNull(electionEncryptedVotes2.vote);
+    assertNotNull(encryptedVote1.vote);
   }
 
   @Test
   public void getVoteTest() {
-    assertThat(encryptedVote1.getVote(), is(votes));
+    assertThat(encryptedVote1.vote, is(votes));
   }
 
   @Test

@@ -33,7 +33,7 @@ public class ElectionEntity {
   // Ignore the constructor for Room
   @Ignore
   public ElectionEntity(@NonNull Election election) {
-    this(election.getId(), election.getChannel().extractLaoId(), election);
+    this(election.id, election.channel.extractLaoId(), election);
   }
 
   @NonNull

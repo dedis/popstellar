@@ -1,10 +1,9 @@
 package com.github.dedis.popstellar.repository.remote;
 
 import androidx.annotation.VisibleForTesting;
-
 import com.github.dedis.popstellar.model.network.GenericMessage;
-import com.github.dedis.popstellar.model.network.answer.Error;
 import com.github.dedis.popstellar.model.network.answer.*;
+import com.github.dedis.popstellar.model.network.answer.Error;
 import com.github.dedis.popstellar.model.network.method.*;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
@@ -17,18 +16,16 @@ import com.github.dedis.popstellar.utility.handler.MessageHandler;
 import com.github.dedis.popstellar.utility.scheduler.SchedulerProvider;
 import com.google.gson.Gson;
 import com.tinder.scarlet.WebSocket;
-
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import io.reactivex.Observable;
 import io.reactivex.*;
+import io.reactivex.Observable;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.subjects.Subject;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import timber.log.Timber;
 
 /** This class handles the JSON-RPC layer of the protocol */
@@ -139,7 +136,7 @@ public class LAONetworkManager implements MessageSender {
 
   @Override
   public Completable publish(Channel channel, MessageGeneral msg) {
-    Timber.tag(TAG).d("sending a publish %s to the channel %s", msg.getData().getClass(), channel);
+    Timber.tag(TAG).d("sending a publish %s to the channel %s", msg.data.getClass(), channel);
     Publish publish = new Publish(channel, requestCounter.incrementAndGet(), msg);
     return request(publish)
         .ignoreElement()
@@ -208,7 +205,7 @@ public class LAONetworkManager implements MessageSender {
   private void handleBroadcast(Broadcast broadcast) {
     Timber.tag(TAG).d("handling broadcast msg : %s", broadcast);
     try {
-      messageHandler.handleMessage(this, broadcast.getChannel(), broadcast.getMessage());
+      messageHandler.handleMessage(this, broadcast.channel, broadcast.message);
     } catch (DataHandlingException
         | UnknownLaoException
         | UnknownRollCallException
@@ -245,8 +242,8 @@ public class LAONetworkManager implements MessageSender {
         .filter(Answer.class::isInstance) // Filter for Answers
         .map(Answer.class::cast)
         // This specific request has an id, only let the related Answer pass
-        .filter(answer -> answer.getId() == query.getRequestId())
-        .doOnNext(answer -> Timber.tag(TAG).d("request id: %s", answer.getId()))
+        .filter(answer -> answer.id == query.getRequestId())
+        .doOnNext(answer -> Timber.tag(TAG).d("request id: %s", answer.id))
         // Transform from an Observable to a Single
         // This Means that we expect a result before the source is disposed and an error
         // will be produced if no value is received.

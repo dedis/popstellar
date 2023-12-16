@@ -35,12 +35,12 @@ public class DeleteChirpTest {
 
   @Test
   public void getChirpIdTest() {
-    assertEquals(CHIRP_ID, DELETE_CHIRP.getChirpId());
+    assertEquals(CHIRP_ID, DELETE_CHIRP.chirpId);
   }
 
   @Test
   public void getTimestampTest() {
-    assertEquals(TIMESTAMP, DELETE_CHIRP.getTimestamp());
+    assertEquals(TIMESTAMP, DELETE_CHIRP.timestamp);
   }
 
   @Test

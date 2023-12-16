@@ -1,11 +1,17 @@
 package com.github.dedis.popstellar.utility.handler;
 
-import android.app.Application;
+import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
+import static com.github.dedis.popstellar.testutils.Base64DataUtils.generatePoPToken;
+import static com.github.dedis.popstellar.utility.handler.data.RollCallHandler.*;
+import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.when;
 
+import android.app.Application;
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
-
 import com.github.dedis.popstellar.di.DataRegistryModuleHelper;
 import com.github.dedis.popstellar.di.JsonModule;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
@@ -30,37 +36,26 @@ import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
-
+import io.reactivex.Completable;
+import io.reactivex.Single;
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+import java.time.Instant;
+import java.util.*;
 import org.junit.*;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.io.IOException;
-import java.security.GeneralSecurityException;
-import java.time.Instant;
-import java.util.*;
-
-import io.reactivex.Completable;
-import io.reactivex.Single;
-
-import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
-import static com.github.dedis.popstellar.testutils.Base64DataUtils.generatePoPToken;
-import static com.github.dedis.popstellar.utility.handler.data.RollCallHandler.*;
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.lenient;
-import static org.mockito.Mockito.when;
-
 @RunWith(AndroidJUnit4.class)
 public class RollCallHandlerTest {
 
   private static final KeyPair SENDER_KEY = generateKeyPair();
-  private static final PublicKey SENDER = SENDER_KEY.getPublicKey();
+  private static final PublicKey SENDER = SENDER_KEY.publicKey;
   private static final PoPToken POP_TOKEN = generatePoPToken();
 
   private static final CreateLao CREATE_LAO = new CreateLao("lao", SENDER, new ArrayList<>());
-  private static final Channel LAO_CHANNEL = Channel.getLaoChannel(CREATE_LAO.getId());
+  private static final Channel LAO_CHANNEL = Channel.getLaoChannel(CREATE_LAO.id);
   private static Lao LAO;
 
   private RollCallRepository rollCallRepo;
@@ -144,8 +139,8 @@ public class RollCallHandlerTest {
     messageHandler = new MessageHandler(messageRepo, dataRegistry);
 
     // Create one LAO
-    LAO = new Lao(CREATE_LAO.getName(), CREATE_LAO.getOrganizer(), CREATE_LAO.getCreation());
-    LAO.setLastModified(LAO.getCreation());
+    LAO = new Lao(CREATE_LAO.name, CREATE_LAO.organizer, CREATE_LAO.creation);
+    LAO.lastModified = LAO.creation;
 
     // Create one Roll Call and add it to the roll call repo
     long now = Instant.now().getEpochSecond();
@@ -173,83 +168,90 @@ public class RollCallHandlerTest {
 
   @Test
   public void testHandleCreateRollCall()
-      throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
-          UnknownElectionException, NoRollCallException, UnknownWitnessMessageException {
+      throws DataHandlingException,
+          UnknownLaoException,
+          UnknownRollCallException,
+          UnknownElectionException,
+          NoRollCallException,
+          UnknownWitnessMessageException {
     // Create the create Roll Call message
     CreateRollCall createRollCall =
         new CreateRollCall(
             "roll call 2",
-            rollCall.getCreation(),
-            rollCall.getStart(),
-            rollCall.getEnd(),
-            rollCall.getLocation(),
-            rollCall.getDescription(),
-            CREATE_LAO.getId());
+            rollCall.creation,
+            rollCall.start,
+            rollCall.end,
+            rollCall.location,
+            rollCall.description,
+            CREATE_LAO.id);
     MessageGeneral message = new MessageGeneral(SENDER_KEY, createRollCall, gson);
 
     // Call the message handler
     messageHandler.handleMessage(messageSender, LAO_CHANNEL, message);
 
     // Check the new Roll Call is present with state CREATED and the correct ID
-    RollCall rollCallCheck = rollCallRepo.getRollCallWithId(LAO.getId(), createRollCall.getId());
+    RollCall rollCallCheck = rollCallRepo.getRollCallWithId(LAO.getId(), createRollCall.id);
     assertEquals(EventState.CREATED, rollCallCheck.getState());
-    assertEquals(createRollCall.getId(), rollCallCheck.getId());
+    assertEquals(createRollCall.id, rollCallCheck.id);
 
     // Check the WitnessMessage has been created
     Optional<WitnessMessage> witnessMessage =
-        witnessingRepository.getWitnessMessage(LAO.getId(), message.getMessageId());
+        witnessingRepository.getWitnessMessage(LAO.getId(), message.messageId);
     assertTrue(witnessMessage.isPresent());
 
     // Check the Witness message contains the expected title and description
-    WitnessMessage expectedMessage =
-        createRollCallWitnessMessage(message.getMessageId(), rollCallCheck);
-    assertEquals(expectedMessage.getTitle(), witnessMessage.get().getTitle());
-    assertEquals(expectedMessage.getDescription(), witnessMessage.get().getDescription());
+    WitnessMessage expectedMessage = createRollCallWitnessMessage(message.messageId, rollCallCheck);
+    assertEquals(expectedMessage.title, witnessMessage.get().title);
+    assertEquals(expectedMessage.description, witnessMessage.get().description);
   }
 
   @Test
   public void testHandleOpenRollCall()
-      throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
-          UnknownElectionException, NoRollCallException, UnknownWitnessMessageException {
+      throws DataHandlingException,
+          UnknownLaoException,
+          UnknownRollCallException,
+          UnknownElectionException,
+          NoRollCallException,
+          UnknownWitnessMessageException {
     // Create the open Roll Call message
     OpenRollCall openRollCall =
-        new OpenRollCall(
-            CREATE_LAO.getId(), rollCall.getId(), rollCall.getStart(), EventState.CREATED);
+        new OpenRollCall(CREATE_LAO.id, rollCall.id, rollCall.start, EventState.CREATED);
     MessageGeneral message = new MessageGeneral(SENDER_KEY, openRollCall, gson);
 
     // Call the message handler
     messageHandler.handleMessage(messageSender, LAO_CHANNEL, message);
 
     // Check the Roll Call is present with state OPENED and the correct ID
-    RollCall rollCallCheck =
-        rollCallRepo.getRollCallWithId(LAO.getId(), openRollCall.getUpdateId());
+    RollCall rollCallCheck = rollCallRepo.getRollCallWithId(LAO.getId(), openRollCall.updateId);
     assertEquals(EventState.OPENED, rollCallCheck.getState());
     assertTrue(rollCallCheck.isOpen());
-    assertEquals(openRollCall.getUpdateId(), rollCallCheck.getId());
+    assertEquals(openRollCall.updateId, rollCallCheck.id);
 
     // Check the WitnessMessage has been created
     Optional<WitnessMessage> witnessMessage =
-        witnessingRepository.getWitnessMessage(LAO.getId(), message.getMessageId());
+        witnessingRepository.getWitnessMessage(LAO.getId(), message.messageId);
     assertTrue(witnessMessage.isPresent());
 
     // Check the Witness message contains the expected title and description
-    WitnessMessage expectedMessage =
-        openRollCallWitnessMessage(message.getMessageId(), rollCallCheck);
-    assertEquals(expectedMessage.getTitle(), witnessMessage.get().getTitle());
-    assertEquals(expectedMessage.getDescription(), witnessMessage.get().getDescription());
+    WitnessMessage expectedMessage = openRollCallWitnessMessage(message.messageId, rollCallCheck);
+    assertEquals(expectedMessage.title, witnessMessage.get().title);
+    assertEquals(expectedMessage.description, witnessMessage.get().description);
   }
 
   @Test
   public void testBlockOpenRollCall()
-      throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
-          UnknownElectionException, NoRollCallException, UnknownWitnessMessageException {
+      throws DataHandlingException,
+          UnknownLaoException,
+          UnknownRollCallException,
+          UnknownElectionException,
+          NoRollCallException,
+          UnknownWitnessMessageException {
     // Assert that a Roll Call can be opened
     assertTrue(rollCallRepo.canOpenRollCall(LAO.getId()));
 
     // Create the open Roll Call message
     OpenRollCall openRollCall =
-        new OpenRollCall(
-            CREATE_LAO.getId(), rollCall.getId(), rollCall.getStart(), EventState.CREATED);
+        new OpenRollCall(CREATE_LAO.id, rollCall.id, rollCall.start, EventState.CREATED);
     MessageGeneral messageOpen = new MessageGeneral(SENDER_KEY, openRollCall, gson);
 
     // Call the message handler
@@ -260,8 +262,7 @@ public class RollCallHandlerTest {
 
     // Create the close Roll Call message
     CloseRollCall closeRollCall =
-        new CloseRollCall(
-            CREATE_LAO.getId(), rollCall.getId(), rollCall.getEnd(), new ArrayList<>());
+        new CloseRollCall(CREATE_LAO.id, rollCall.id, rollCall.end, new ArrayList<>());
     MessageGeneral messageClose = new MessageGeneral(SENDER_KEY, closeRollCall, gson);
 
     // Call the message handler
@@ -273,12 +274,15 @@ public class RollCallHandlerTest {
 
   @Test
   public void testHandleCloseRollCall()
-      throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
-          UnknownElectionException, NoRollCallException, UnknownWitnessMessageException {
+      throws DataHandlingException,
+          UnknownLaoException,
+          UnknownRollCallException,
+          UnknownElectionException,
+          NoRollCallException,
+          UnknownWitnessMessageException {
     // Create the open Roll Call message
     OpenRollCall openRollCall =
-        new OpenRollCall(
-            CREATE_LAO.getId(), rollCall.getId(), rollCall.getStart(), EventState.CREATED);
+        new OpenRollCall(CREATE_LAO.id, rollCall.id, rollCall.start, EventState.CREATED);
 
     // Call the message handler
     messageHandler.handleMessage(
@@ -286,29 +290,26 @@ public class RollCallHandlerTest {
 
     // Create the close Roll Call message
     CloseRollCall closeRollCall =
-        new CloseRollCall(
-            CREATE_LAO.getId(), rollCall.getId(), rollCall.getEnd(), new ArrayList<>());
+        new CloseRollCall(CREATE_LAO.id, rollCall.id, rollCall.end, new ArrayList<>());
     MessageGeneral message = new MessageGeneral(SENDER_KEY, closeRollCall, gson);
 
     // Call the message handler
     messageHandler.handleMessage(messageSender, LAO_CHANNEL, message);
 
     // Check the Roll Call is present with state CLOSED and the correct ID
-    RollCall rollCallCheck =
-        rollCallRepo.getRollCallWithId(LAO.getId(), closeRollCall.getUpdateId());
+    RollCall rollCallCheck = rollCallRepo.getRollCallWithId(LAO.getId(), closeRollCall.updateId);
     assertEquals(EventState.CLOSED, rollCallCheck.getState());
     assertTrue(rollCallCheck.isClosed());
-    assertEquals(closeRollCall.getUpdateId(), rollCallCheck.getId());
+    assertEquals(closeRollCall.updateId, rollCallCheck.id);
 
     // Check the WitnessMessage has been created
     Optional<WitnessMessage> witnessMessage =
-        witnessingRepository.getWitnessMessage(LAO.getId(), message.getMessageId());
+        witnessingRepository.getWitnessMessage(LAO.getId(), message.messageId);
     assertTrue(witnessMessage.isPresent());
 
     // Check the Witness message contains the expected title and description
-    WitnessMessage expectedMessage =
-        closeRollCallWitnessMessage(message.getMessageId(), rollCallCheck);
-    assertEquals(expectedMessage.getTitle(), witnessMessage.get().getTitle());
-    assertEquals(expectedMessage.getDescription(), witnessMessage.get().getDescription());
+    WitnessMessage expectedMessage = closeRollCallWitnessMessage(message.messageId, rollCallCheck);
+    assertEquals(expectedMessage.title, witnessMessage.get().title);
+    assertEquals(expectedMessage.description, witnessMessage.get().description);
   }
 }

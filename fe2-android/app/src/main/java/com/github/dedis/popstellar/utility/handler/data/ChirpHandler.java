@@ -11,9 +11,7 @@ import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.SocialMediaRepository;
 import com.github.dedis.popstellar.utility.error.InvalidMessageIdException;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
-
 import javax.inject.Inject;
-
 import timber.log.Timber;
 
 /** Chirp messages handler class */
@@ -47,8 +45,8 @@ public final class ChirpHandler {
         new Chirp(
             messageId,
             senderPk,
-            addChirp.getText(),
-            addChirp.getTimestamp(),
+            addChirp.text,
+            addChirp.timestamp,
             addChirp.getParentId().orElse(new MessageID("")));
 
     socialMediaRepo.addChirp(laoView.getId(), chirp);
@@ -64,12 +62,12 @@ public final class ChirpHandler {
       throws UnknownLaoException, InvalidMessageIdException {
     Channel channel = context.getChannel();
 
-    Timber.tag(TAG).d("handleDeleteChirp: channel: %s, id: %s", channel, deleteChirp.getChirpId());
+    Timber.tag(TAG).d("handleDeleteChirp: channel: %s, id: %s", channel, deleteChirp.chirpId);
 
     LaoView laoView = laoRepo.getLaoViewByChannel(channel);
-    boolean chirpExist = socialMediaRepo.deleteChirp(laoView.getId(), deleteChirp.getChirpId());
+    boolean chirpExist = socialMediaRepo.deleteChirp(laoView.getId(), deleteChirp.chirpId);
     if (!chirpExist) {
-      throw new InvalidMessageIdException(deleteChirp, deleteChirp.getChirpId());
+      throw new InvalidMessageIdException(deleteChirp, deleteChirp.chirpId);
     }
   }
 }

@@ -35,7 +35,7 @@ public class DigitalCashDatabaseTest {
   private static TransactionObject TRANSACTION_OBJECT;
   private static TransactionEntity TRANSACTION_ENTITY;
   private static final HashEntity HASH_ENTITY =
-      new HashEntity(USER1.getPublicKey().computeHash(), LAO_ID, USER1.getPublicKey());
+      new HashEntity(USER1.publicKey.computeHash(), LAO_ID, USER1.publicKey);
   private static final List<HashEntity> HASH_ENTITIES = new ArrayList<>();
 
   static {

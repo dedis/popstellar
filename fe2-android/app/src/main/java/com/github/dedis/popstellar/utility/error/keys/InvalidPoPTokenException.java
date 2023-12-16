@@ -8,9 +8,9 @@ public class InvalidPoPTokenException extends KeyException {
   private final String publicKey;
 
   public InvalidPoPTokenException(PoPToken token) {
-    super("The token " + token.getPublicKey() + " is invalid");
+    super("The token " + token.publicKey + " is invalid");
 
-    publicKey = token.getPublicKey().getEncoded();
+    publicKey = token.publicKey.getEncoded();
   }
 
   @Override

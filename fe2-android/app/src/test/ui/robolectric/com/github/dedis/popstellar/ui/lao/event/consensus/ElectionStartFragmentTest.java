@@ -1,11 +1,22 @@
 package com.github.dedis.popstellar.ui.lao.event.consensus;
 
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.*;
+import static com.github.dedis.popstellar.testutils.pages.lao.LaoActivityPageObject.containerId;
+import static com.github.dedis.popstellar.testutils.pages.lao.LaoActivityPageObject.laoIdExtra;
+import static com.github.dedis.popstellar.testutils.pages.lao.event.consensus.ElectionStartPageObject.*;
+import static org.hamcrest.core.AllOf.allOf;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.when;
+
 import androidx.test.annotation.UiThreadTest;
 import androidx.test.espresso.DataInteraction;
 import androidx.test.espresso.action.ViewActions;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
-
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.*;
@@ -30,7 +41,14 @@ import com.google.crypto.tink.KeysetHandle;
 import com.google.crypto.tink.signature.Ed25519PrivateKeyManager;
 import com.google.crypto.tink.signature.PublicKeySignWrapper;
 import com.google.gson.Gson;
-
+import dagger.hilt.android.testing.*;
+import io.reactivex.Completable;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.Collections;
+import java.util.List;
+import javax.inject.Inject;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExternalResource;
@@ -40,29 +58,6 @@ import org.mockito.*;
 import org.mockito.internal.util.collections.Sets;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoTestRule;
-
-import java.time.Instant;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.util.Collections;
-import java.util.List;
-
-import javax.inject.Inject;
-
-import dagger.hilt.android.testing.*;
-import io.reactivex.Completable;
-
-import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.*;
-import static com.github.dedis.popstellar.testutils.pages.lao.LaoActivityPageObject.containerId;
-import static com.github.dedis.popstellar.testutils.pages.lao.LaoActivityPageObject.laoIdExtra;
-import static com.github.dedis.popstellar.testutils.pages.lao.event.consensus.ElectionStartPageObject.*;
-import static org.hamcrest.core.AllOf.allOf;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.when;
 
 @HiltAndroidTest
 @RunWith(AndroidJUnit4.class)
@@ -89,9 +84,9 @@ public class ElectionStartFragmentTest {
           .setElectionVersion(ElectionVersion.OPEN_BALLOT)
           .setState(EventState.CREATED)
           .build();
-  private static final ConsensusKey KEY = new ConsensusKey("election", ELECTION.getId(), "state");
+  private static final ConsensusKey KEY = new ConsensusKey("election", ELECTION.id, "state");
   private static final String INSTANCE_ID =
-      ElectInstance.generateConsensusId(KEY.getType(), KEY.getId(), KEY.getProperty());
+      ElectInstance.generateConsensusId(KEY.type, KEY.id, KEY.property);
 
   @Rule(order = 0)
   public final MockitoTestRule mockitoRule = MockitoJUnit.testRule(this);
@@ -120,25 +115,25 @@ public class ElectionStartFragmentTest {
             node2KeyPair = keyManager.getKeyPair(keysetHandle2);
             node3KeyPair = keyManager.getKeyPair(keysetHandle3);
 
-            publicKey = mainKeyPair.getPublicKey().getEncoded();
-            node2 = node2KeyPair.getPublicKey().getEncoded();
-            node3 = node3KeyPair.getPublicKey().getEncoded();
+            publicKey = mainKeyPair.publicKey.getEncoded();
+            node2 = node2KeyPair.publicKey.getEncoded();
+            node3 = node3KeyPair.publicKey.getEncoded();
 
           } catch (Exception e) {
             throw new RuntimeException(e);
           }
 
           Lao lao = new Lao(LAO_ID);
-          lao.setOrganizer(mainKeyPair.getPublicKey());
-          lao.initKeyToNode(Sets.newSet(node2KeyPair.getPublicKey(), node3KeyPair.getPublicKey()));
+          lao.setOrganizer(mainKeyPair.publicKey);
+          lao.initKeyToNode(Sets.newSet(node2KeyPair.publicKey, node3KeyPair.publicKey));
 
           laoRepo.updateLao(lao);
-          consensusChannel = lao.getChannel().subChannel("consensus");
-          laoRepo.updateNodes(lao.getChannel());
+          consensusChannel = lao.channel.subChannel("consensus");
+          laoRepo.updateNodes(lao.channel);
 
           List<ConsensusNode> nodes = lao.getNodes();
           for (int i = 0; i < nodes.size(); ++i) {
-            String key = nodes.get(i).getPublicKey().getEncoded();
+            String key = nodes.get(i).publicKey.getEncoded();
             if (key.equals(publicKey)) {
               ownPos = i;
             } else if (key.equals(node2)) {
@@ -165,10 +160,10 @@ public class ElectionStartFragmentTest {
           new BundleBuilder().putString(laoIdExtra(), LAO_ID).build(),
           containerId(),
           ElectionStartFragment.class,
-          () -> ElectionStartFragment.newInstance(ELECTION.getId()));
+          () -> ElectionStartFragment.newInstance(ELECTION.id));
 
   private static final ConsensusElect elect =
-      new ConsensusElect(PAST_TIME, KEY.getId(), KEY.getType(), KEY.getProperty(), "started");
+      new ConsensusElect(PAST_TIME, KEY.id, KEY.type, KEY.property, "started");
 
   private static final String STATUS_WAITING = "Waiting scheduled time";
   private static final String STATUS_READY = "Ready to start";
@@ -196,8 +191,12 @@ public class ElectionStartFragmentTest {
 
   @Test
   public void displayWithUpdatesIsCorrect()
-      throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
-          UnknownElectionException, NoRollCallException, UnknownWitnessMessageException {
+      throws DataHandlingException,
+          UnknownLaoException,
+          UnknownRollCallException,
+          UnknownElectionException,
+          NoRollCallException,
+          UnknownWitnessMessageException {
     setElectionStart(PAST_TIME);
 
     // Election start time has passed, should display that it's ready and start button enabled
@@ -221,7 +220,7 @@ public class ElectionStartFragmentTest {
 
     // We accepted node 3 (it should disable button for node3)
     ConsensusElectAccept electAccept3 =
-        new ConsensusElectAccept(INSTANCE_ID, elect3Msg.getMessageId(), true);
+        new ConsensusElectAccept(INSTANCE_ID, elect3Msg.messageId, true);
     MessageGeneral accept3Msg = createMsg(mainKeyPair, electAccept3);
     messageHandler.handleMessage(messageSender, consensusChannel, accept3Msg);
     nodeAssertions(grid, node3Pos, "Approve Start by\n" + node3, false);
@@ -229,7 +228,7 @@ public class ElectionStartFragmentTest {
     // Receive a learn message => node3 was accepted and has started the election
     ConsensusLearn learn3 =
         new ConsensusLearn(
-            INSTANCE_ID, elect3Msg.getMessageId(), PAST_TIME, true, Collections.emptyList());
+            INSTANCE_ID, elect3Msg.messageId, PAST_TIME, true, Collections.emptyList());
     MessageGeneral learn3Msg = createMsg(node3KeyPair, learn3);
     messageHandler.handleMessage(messageSender, consensusChannel, learn3Msg);
     displayAssertions(STATUS_STARTED, START_STARTED, false);
@@ -273,19 +272,23 @@ public class ElectionStartFragmentTest {
     Mockito.verify(messageSender).publish(eq(consensusChannel), captor.capture());
     MessageGeneral msgGeneral = captor.getValue();
     long maxCreation = Instant.now().getEpochSecond();
-    assertEquals(mainKeyPair.getPublicKey(), msgGeneral.getSender());
+    assertEquals(mainKeyPair.publicKey, msgGeneral.sender);
 
-    ConsensusElect elect = (ConsensusElect) msgGeneral.getData();
-    assertEquals(KEY, elect.getKey());
-    assertEquals(INSTANCE_ID, elect.getInstanceId());
-    assertEquals("started", elect.getValue());
-    assertTrue(minCreation <= elect.getCreation() && elect.getCreation() <= maxCreation);
+    ConsensusElect elect = (ConsensusElect) msgGeneral.data;
+    assertEquals(KEY, elect.key);
+    assertEquals(INSTANCE_ID, elect.instanceId);
+    assertEquals("started", elect.value);
+    assertTrue(minCreation <= elect.creation && elect.creation <= maxCreation);
   }
 
   @Test
   public void acceptButtonSendElectAcceptMessageTest()
-      throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
-          UnknownElectionException, NoRollCallException, UnknownWitnessMessageException {
+      throws DataHandlingException,
+          UnknownLaoException,
+          UnknownRollCallException,
+          UnknownElectionException,
+          NoRollCallException,
+          UnknownWitnessMessageException {
     setElectionStart(PAST_TIME);
 
     // Nodes 3 try to start
@@ -301,21 +304,24 @@ public class ElectionStartFragmentTest {
 
     ConsensusElectAccept electAccept = captor.getValue();
     ConsensusElectAccept expectedElectAccept =
-        new ConsensusElectAccept(INSTANCE_ID, elect3Msg.getMessageId(), true);
+        new ConsensusElectAccept(INSTANCE_ID, elect3Msg.messageId, true);
     assertEquals(expectedElectAccept, electAccept);
   }
 
   @Test
   public void failureTest()
-      throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
-          UnknownElectionException, NoRollCallException, UnknownWitnessMessageException {
+      throws DataHandlingException,
+          UnknownLaoException,
+          UnknownRollCallException,
+          UnknownElectionException,
+          NoRollCallException,
+          UnknownWitnessMessageException {
     setElectionStart(PAST_TIME);
 
     // Nodes 3 try to start and failed
     MessageGeneral elect3Msg = createMsg(node3KeyPair, elect);
     messageHandler.handleMessage(messageSender, consensusChannel, elect3Msg);
-    ConsensusFailure failure3 =
-        new ConsensusFailure(INSTANCE_ID, elect3Msg.getMessageId(), PAST_TIME);
+    ConsensusFailure failure3 = new ConsensusFailure(INSTANCE_ID, elect3Msg.messageId, PAST_TIME);
     MessageGeneral failure3Msg = createMsg(node3KeyPair, failure3);
     messageHandler.handleMessage(messageSender, consensusChannel, failure3Msg);
 
@@ -324,8 +330,7 @@ public class ElectionStartFragmentTest {
     // We try to start and failed
     MessageGeneral elect1Msg = createMsg(mainKeyPair, elect);
     messageHandler.handleMessage(messageSender, consensusChannel, elect1Msg);
-    ConsensusFailure failure1 =
-        new ConsensusFailure(INSTANCE_ID, elect1Msg.getMessageId(), PAST_TIME);
+    ConsensusFailure failure1 = new ConsensusFailure(INSTANCE_ID, elect1Msg.messageId, PAST_TIME);
     MessageGeneral failure1Msg = createMsg(mainKeyPair, failure1);
     messageHandler.handleMessage(messageSender, consensusChannel, failure1Msg);
     InstrumentationRegistry.getInstrumentation().waitForIdleSync();

@@ -14,7 +14,7 @@ public class PeerAddressTest {
 
   @Test
   public void getAddress() {
-    assertEquals(ADDRESS_1, PEER_ADDRESS_1.getAddress());
+    assertEquals(ADDRESS_1, PEER_ADDRESS_1.address);
   }
 
   @Test

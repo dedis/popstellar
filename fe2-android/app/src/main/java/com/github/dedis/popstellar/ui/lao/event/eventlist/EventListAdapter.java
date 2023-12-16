@@ -58,7 +58,7 @@ public class EventListAdapter extends EventsAdapter {
     eventsMap.get(PRESENT).clear();
 
     for (Event event : events) {
-      switch (event.getState()) {
+      switch (event.state) {
         case CREATED:
           if (event.isEventEndingToday()) {
             eventsMap.get(PRESENT).add(event);

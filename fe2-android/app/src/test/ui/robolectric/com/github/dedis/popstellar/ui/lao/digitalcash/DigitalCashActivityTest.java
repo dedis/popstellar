@@ -60,7 +60,7 @@ public class DigitalCashActivityTest {
 
   private static final PoPToken POP_TOKEN = Base64DataUtils.generatePoPToken();
   private static final String LAO_NAME = "LAO";
-  private static final Lao LAO = new Lao(LAO_NAME, POP_TOKEN.getPublicKey(), 10223421);
+  private static final Lao LAO = new Lao(LAO_NAME, POP_TOKEN.publicKey, 10223421);
   private static final String LAO_ID = LAO.getId();
   private static final String RC_TITLE = "Roll-Call Title";
   private static final RollCall ROLL_CALL =
@@ -72,7 +72,7 @@ public class DigitalCashActivityTest {
           1,
           2,
           EventState.CLOSED,
-          Collections.singleton(POP_TOKEN.getPublicKey()),
+          Collections.singleton(POP_TOKEN.publicKey),
           "location",
           "desc");
 
@@ -106,9 +106,9 @@ public class DigitalCashActivityTest {
           builder.setLockTime(0);
           builder.setChannel(Channel.fromString("/root/laoId/coin/myChannel"));
 
-          ScriptOutput so = new ScriptOutput("P2PKH", POP_TOKEN.getPublicKey().computeHash());
+          ScriptOutput so = new ScriptOutput("P2PKH", POP_TOKEN.publicKey.computeHash());
           ScriptOutputObject soo =
-              new ScriptOutputObject("P2PKH", POP_TOKEN.getPublicKey().computeHash());
+              new ScriptOutputObject("P2PKH", POP_TOKEN.publicKey.computeHash());
 
           OutputObject oo = new OutputObject(10, soo);
           Output out = new Output(10, so);
@@ -124,7 +124,7 @@ public class DigitalCashActivityTest {
                                       "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=", 0))
                               .getBytes(StandardCharsets.UTF_8)));
 
-          ScriptInputObject sio = new ScriptInputObject("P2PKH", POP_TOKEN.getPublicKey(), sig);
+          ScriptInputObject sio = new ScriptInputObject("P2PKH", POP_TOKEN.publicKey, sig);
 
           InputObject io = new InputObject("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=", 0, sio);
 
@@ -146,7 +146,7 @@ public class DigitalCashActivityTest {
           hiltRule.inject();
           when(laoRepo.getLaoObservable(anyString()))
               .thenReturn(BehaviorSubject.createDefault(new LaoView(LAO)));
-          when(keyManager.getMainPublicKey()).thenReturn(POP_TOKEN.getPublicKey());
+          when(keyManager.getMainPublicKey()).thenReturn(POP_TOKEN.publicKey);
           when(keyManager.getValidPoPToken(any(), any())).thenReturn(POP_TOKEN);
           when(networkManager.getMessageSender()).thenReturn(messageSender);
           when(messageSender.subscribe(any())).then(args -> Completable.complete());

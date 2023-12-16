@@ -33,8 +33,8 @@ public class WitnessMessageTest {
   public void toStringTest() {
     WitnessMessage witnessMessage = new WitnessMessage(MSG_ID);
     witnessMessage.addWitness(PK);
-    witnessMessage.setDescription(DESCRIPTION);
-    witnessMessage.setTitle(TITLE);
+    witnessMessage.description = DESCRIPTION;
+    witnessMessage.title = TITLE;
     String expected =
         String.format(
             "WitnessMessage{messageId='%s', witnesses=%s, title='%s', description='%s'}",
@@ -49,8 +49,8 @@ public class WitnessMessageTest {
 
     WitnessMessage message1 = new WitnessMessage(MESSAGE1);
     message1.addWitness(PK);
-    message1.setDescription(DESCRIPTION);
-    message1.setTitle(TITLE);
+    message1.description = DESCRIPTION;
+    message1.title = TITLE;
 
     WitnessMessage message2 = new WitnessMessage(message1);
     assertEquals(message1, message2);

@@ -37,24 +37,24 @@ public class ConsensusPrepareTest {
 
   @Test
   public void getInstanceIdTest() {
-    assertEquals(instanceId, prepare.getInstanceId());
+    assertEquals(instanceId, prepare.instanceId);
   }
 
   @Test
   public void getMessageIdTest() {
-    assertEquals(messageId, prepare.getMessageId());
+    assertEquals(messageId, prepare.messageId);
   }
 
   @Test
   public void getCreationTest() {
-    assertEquals(timeInSeconds, prepare.getCreation());
+    assertEquals(timeInSeconds, prepare.creation);
   }
 
   @Test
   public void getPrepareValueTest() {
-    PrepareValue value = prepare.getPrepareValue();
+    PrepareValue value = prepare.prepareValue;
 
-    assertEquals(proposedTry, value.getProposedTry());
+    assertEquals(proposedTry, value.proposedTry);
 
     PrepareValue value2 = new PrepareValue(proposedTry);
     assertEquals(value, value2);

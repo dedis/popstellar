@@ -61,7 +61,7 @@ public class KeyManager {
    * @return the device public key
    */
   public PublicKey getMainPublicKey() {
-    return keyPair.getPublicKey();
+    return keyPair.publicKey;
   }
 
   /**
@@ -81,7 +81,7 @@ public class KeyManager {
    * @throws UninitializedWalletException if the wallet is not initialized with a seed
    */
   public PoPToken getPoPToken(LaoView laoView, RollCall rollCall) throws KeyException {
-    return wallet.generatePoPToken(laoView.getId(), rollCall.getPersistentId());
+    return wallet.generatePoPToken(laoView.getId(), rollCall.persistentId);
   }
 
   /**
@@ -109,7 +109,7 @@ public class KeyManager {
    * @throws InvalidPoPTokenException if the token is not a valid attendee
    */
   public PoPToken getValidPoPToken(String laoId, RollCall rollCall) throws KeyException {
-    return wallet.recoverKey(laoId, rollCall.getPersistentId(), rollCall.getAttendees());
+    return wallet.recoverKey(laoId, rollCall.persistentId, rollCall.attendees);
   }
 
   @VisibleForTesting

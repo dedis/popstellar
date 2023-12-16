@@ -57,7 +57,7 @@ public class KeyManagerTest {
     KeyPair mainKeyPair = keyManager.getMainKeyPair();
     PublicKey mainKey = keyManager.getMainPublicKey();
 
-    assertEquals(mainKey, mainKeyPair.getPublicKey());
+    assertEquals(mainKey, mainKeyPair.publicKey);
 
     // We cannot extract the public key from the keyset handle
     // But we can make sure both signatures are equals and the key manager keypair can verify it
@@ -118,7 +118,7 @@ public class KeyManagerTest {
     assertEquals(token, manager.getValidPoPToken(lao.getId(), rollCall1));
 
     // make sure that rollcall1 was taken and not rollcall2 as the oldest is rollcall 1
-    verify(wallet, atLeast(1)).recoverKey(eq(lao.getId()), eq(rollCall1.getId()), any());
+    verify(wallet, atLeast(1)).recoverKey(eq(lao.getId()), eq(rollCall1.id), any());
   }
 
   @Test
@@ -151,7 +151,7 @@ public class KeyManagerTest {
         KeyGenerationException.class,
         () ->
             manager.getValidPoPToken(lao.getId(), rollCallRepo.getLastClosedRollCall(lao.getId())));
-    verify(wallet, times(1)).recoverKey(eq(lao.getId()), eq(rollCall.getId()), any());
+    verify(wallet, times(1)).recoverKey(eq(lao.getId()), eq(rollCall.id), any());
     reset(wallet);
 
     when(wallet.recoverKey(any(), any(), any())).thenThrow(new UninitializedWalletException());
@@ -159,7 +159,7 @@ public class KeyManagerTest {
         UninitializedWalletException.class,
         () ->
             manager.getValidPoPToken(lao.getId(), rollCallRepo.getLastClosedRollCall(lao.getId())));
-    verify(wallet, times(1)).recoverKey(eq(lao.getId()), eq(rollCall.getId()), any());
+    verify(wallet, times(1)).recoverKey(eq(lao.getId()), eq(rollCall.id), any());
     reset(wallet);
 
     when(wallet.recoverKey(any(), any(), any())).thenThrow(new InvalidPoPTokenException(token));
@@ -167,7 +167,7 @@ public class KeyManagerTest {
         InvalidPoPTokenException.class,
         () ->
             manager.getValidPoPToken(lao.getId(), rollCallRepo.getLastClosedRollCall(lao.getId())));
-    verify(wallet, times(1)).recoverKey(eq(lao.getId()), eq(rollCall.getId()), any());
+    verify(wallet, times(1)).recoverKey(eq(lao.getId()), eq(rollCall.id), any());
   }
 
   @Test

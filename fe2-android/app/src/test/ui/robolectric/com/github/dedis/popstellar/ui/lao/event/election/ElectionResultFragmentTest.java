@@ -56,7 +56,7 @@ import static org.mockito.Mockito.when;
 public class ElectionResultFragmentTest {
   private static final String LAO_NAME = "LAO";
   private static final KeyPair SENDER_KEY = generateKeyPair();
-  private static final PublicKey SENDER = SENDER_KEY.getPublicKey();
+  private static final PublicKey SENDER = SENDER_KEY.publicKey;
   private static final Lao LAO = new Lao(LAO_NAME, SENDER, 10223421);
   private static final String LAO_ID = LAO.getId();
 
@@ -94,7 +94,7 @@ public class ElectionResultFragmentTest {
           .setState(CREATED)
           .setResults(
               buildResultsMap(
-                  QUESTION.getId(),
+                  QUESTION.id,
                   new QuestionResult(ELECTION_BALLOT1, RESULT1),
                   new QuestionResult(ELECTION_BALLOT2, RESULT2),
                   new QuestionResult(ELECTION_BALLOT3, RESULT3)))

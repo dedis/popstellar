@@ -26,7 +26,7 @@ public class StateMeetingTest {
   private static final String SIGNATURE_1 = "signature 1";
   private static final String SIGNATURE_2 = "signature 2";
   private static final String ID =
-      Hash.hash(EventType.MEETING.getSuffix(), LAO_ID, Long.toString(CREATION), NAME);
+      Hash.hash(EventType.MEETING.suffix, LAO_ID, Long.toString(CREATION), NAME);
 
   private static final List<String> MODIFICATION_SIGNATURES =
       Arrays.asList(SIGNATURE_1, SIGNATURE_2);
@@ -45,22 +45,22 @@ public class StateMeetingTest {
 
   @Test
   public void getId() {
-    assertEquals(ID, STATE_MEETING.getId());
+    assertEquals(ID, STATE_MEETING.id);
   }
 
   @Test
   public void getName() {
-    assertEquals(NAME, STATE_MEETING.getName());
+    assertEquals(NAME, STATE_MEETING.name);
   }
 
   @Test
   public void getCreation() {
-    assertEquals(CREATION, STATE_MEETING.getCreation());
+    assertEquals(CREATION, STATE_MEETING.creation);
   }
 
   @Test
   public void getLastModified() {
-    assertEquals(LAST_MODIFIED, STATE_MEETING.getLastModified());
+    assertEquals(LAST_MODIFIED, STATE_MEETING.lastModified);
   }
 
   @Test
@@ -70,17 +70,17 @@ public class StateMeetingTest {
 
   @Test
   public void getStart() {
-    assertEquals(START, STATE_MEETING.getStart());
+    assertEquals(START, STATE_MEETING.start);
   }
 
   @Test
   public void getEnd() {
-    assertEquals(END, STATE_MEETING.getEnd());
+    assertEquals(END, STATE_MEETING.end);
   }
 
   @Test
   public void getModificationId() {
-    assertEquals(MODIFICATION_ID, STATE_MEETING.getModificationId());
+    assertEquals(MODIFICATION_ID, STATE_MEETING.modificationId);
   }
 
   @Test

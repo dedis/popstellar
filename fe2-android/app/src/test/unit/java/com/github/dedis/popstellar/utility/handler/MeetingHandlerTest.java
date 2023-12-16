@@ -1,11 +1,17 @@
 package com.github.dedis.popstellar.utility.handler;
 
-import android.app.Application;
+import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
+import static com.github.dedis.popstellar.testutils.Base64DataUtils.generatePoPToken;
+import static com.github.dedis.popstellar.utility.handler.data.MeetingHandler.createMeetingWitnessMessage;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.*;
 
+import android.app.Application;
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
-
 import com.github.dedis.popstellar.di.DataRegistryModuleHelper;
 import com.github.dedis.popstellar.di.JsonModule;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
@@ -29,38 +35,27 @@ import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
-
-import org.junit.*;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-
+import io.reactivex.Completable;
+import io.reactivex.Single;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Optional;
-
-import io.reactivex.Completable;
-import io.reactivex.Single;
-
-import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
-import static com.github.dedis.popstellar.testutils.Base64DataUtils.generatePoPToken;
-import static com.github.dedis.popstellar.utility.handler.data.MeetingHandler.createMeetingWitnessMessage;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.*;
+import org.junit.*;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 @RunWith(AndroidJUnit4.class)
 public class MeetingHandlerTest {
 
   private static final KeyPair SENDER_KEY = generateKeyPair();
-  private static final PublicKey SENDER = SENDER_KEY.getPublicKey();
+  private static final PublicKey SENDER = SENDER_KEY.publicKey;
   private static final PoPToken POP_TOKEN = generatePoPToken();
 
   private static final CreateLao CREATE_LAO = new CreateLao("lao", SENDER, new ArrayList<>());
-  private static final Channel LAO_CHANNEL = Channel.getLaoChannel(CREATE_LAO.getId());
+  private static final Channel LAO_CHANNEL = Channel.getLaoChannel(CREATE_LAO.id);
   private static Lao LAO;
 
   private static MeetingRepository meetingRepo;
@@ -142,8 +137,8 @@ public class MeetingHandlerTest {
     messageHandler = new MessageHandler(messageRepo, dataRegistry);
 
     // Create one LAO
-    LAO = new Lao(CREATE_LAO.getName(), CREATE_LAO.getOrganizer(), CREATE_LAO.getCreation());
-    LAO.setLastModified(LAO.getCreation());
+    LAO = new Lao(CREATE_LAO.name, CREATE_LAO.organizer, CREATE_LAO.creation);
+    LAO.lastModified = LAO.creation;
 
     // Create one Roll Call and add it to the roll call repo
     long now = Instant.now().getEpochSecond();
@@ -162,17 +157,21 @@ public class MeetingHandlerTest {
 
   @Test
   public void handleCreateMeetingTest()
-      throws UnknownElectionException, UnknownRollCallException, UnknownLaoException,
-          DataHandlingException, NoRollCallException, UnknownMeetingException,
+      throws UnknownElectionException,
+          UnknownRollCallException,
+          UnknownLaoException,
+          DataHandlingException,
+          NoRollCallException,
+          UnknownMeetingException,
           UnknownWitnessMessageException {
     // Create the create Meeting message
     CreateMeeting createMeeting =
         new CreateMeeting(
             LAO.getId(),
-            meeting.getId(),
+            meeting.id,
             meeting.getName(),
-            meeting.getCreation(),
-            meeting.getLocation(),
+            meeting.creation,
+            meeting.location,
             meeting.getStartTimestamp(),
             meeting.getEndTimestamp());
     MessageGeneral message = new MessageGeneral(SENDER_KEY, createMeeting, gson);
@@ -181,18 +180,17 @@ public class MeetingHandlerTest {
     messageHandler.handleMessage(messageSender, LAO_CHANNEL, message);
 
     // Check the new Meeting is present with state CREATED and the correct ID
-    Meeting meetingSearch = meetingRepo.getMeetingWithId(LAO.getId(), meeting.getId());
-    assertEquals(createMeeting.getId(), meetingSearch.getId());
+    Meeting meetingSearch = meetingRepo.getMeetingWithId(LAO.getId(), meeting.id);
+    assertEquals(createMeeting.id, meetingSearch.id);
 
     // Check the WitnessMessage has been created
     Optional<WitnessMessage> witnessMessage =
-        witnessingRepository.getWitnessMessage(LAO.getId(), message.getMessageId());
+        witnessingRepository.getWitnessMessage(LAO.getId(), message.messageId);
     assertTrue(witnessMessage.isPresent());
 
     // Check the Witness message contains the expected title and description
-    WitnessMessage expectedMessage =
-        createMeetingWitnessMessage(message.getMessageId(), meetingSearch);
-    assertEquals(expectedMessage.getTitle(), witnessMessage.get().getTitle());
-    assertEquals(expectedMessage.getDescription(), witnessMessage.get().getDescription());
+    WitnessMessage expectedMessage = createMeetingWitnessMessage(message.messageId, meetingSearch);
+    assertEquals(expectedMessage.title, witnessMessage.get().title);
+    assertEquals(expectedMessage.description, witnessMessage.get().description);
   }
 }

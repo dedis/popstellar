@@ -69,12 +69,12 @@ public class ElectionRepository {
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
-                () -> Timber.tag(TAG).d("Successfully persisted election %s", election.getId()),
+                () -> Timber.tag(TAG).d("Successfully persisted election %s", election.id),
                 err ->
-                    Timber.tag(TAG).e(err, "Error in persisting election %s", election.getId())));
+                    Timber.tag(TAG).e(err, "Error in persisting election %s", election.id)));
 
     // Get the lao state and update the election
-    getLaoElections(election.getChannel().extractLaoId()).updateElection(election);
+    getLaoElections(election.channel.extractLaoId()).updateElection(election);
   }
 
   /**
@@ -157,7 +157,7 @@ public class ElectionRepository {
     }
 
     public void updateElection(@NonNull Election election) {
-      String id = election.getId();
+      String id = election.id;
 
       electionById.put(id, election);
       electionSubjects.putIfAbsent(id, BehaviorSubject.create());
@@ -209,7 +209,7 @@ public class ElectionRepository {
                       elections.forEach(
                           election -> {
                             updateElection(election);
-                            Timber.tag(TAG).d("Retrieved from db election %s", election.getId());
+                            Timber.tag(TAG).d("Retrieved from db election %s", election.id);
                           }),
                   err ->
                       Timber.tag(TAG)

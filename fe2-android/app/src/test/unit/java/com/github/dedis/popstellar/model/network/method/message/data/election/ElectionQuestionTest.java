@@ -48,27 +48,27 @@ public class ElectionQuestionTest {
   public void electionQuestionGetterReturnsCorrectId() {
     // Hash(“Question”||election_id||question)
     String expectedId = Hash.hash("Question", ELECTION_SETUP.getElectionId(), QUESTION);
-    assertThat(ELECTION_SETUP.getQuestions().get(0).getId(), is(expectedId));
+    assertThat(ELECTION_SETUP.getQuestions().get(0).id, is(expectedId));
   }
 
   @Test
   public void electionQuestionGetterReturnsCorrectQuestion() {
-    assertThat(ELECTION_QUESTION.getQuestion(), is(QUESTION));
+    assertThat(ELECTION_QUESTION.question, is(QUESTION));
   }
 
   @Test
   public void electionQuestionGetterReturnsCorrectVotingMethod() {
-    assertThat(ELECTION_QUESTION.getVotingMethod(), is(VOTING_METHOD));
+    assertThat(ELECTION_QUESTION.votingMethod, is(VOTING_METHOD));
   }
 
   @Test
   public void electionQuestionGetterReturnsCorrectWriteIn() {
-    assertThat(ELECTION_QUESTION.getWriteIn(), is(false));
+    assertThat(ELECTION_QUESTION.writeIn, is(false));
   }
 
   @Test
   public void electionQuestionGetterReturnsCorrectBallotOptions() {
-    assertThat(ELECTION_QUESTION.getBallotOptions(), is(BALLOT_OPTIONS));
+    assertThat(ELECTION_QUESTION.ballotOptions, is(BALLOT_OPTIONS));
   }
 
   @Test

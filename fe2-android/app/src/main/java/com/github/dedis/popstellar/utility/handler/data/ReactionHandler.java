@@ -11,9 +11,7 @@ import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.SocialMediaRepository;
 import com.github.dedis.popstellar.utility.error.InvalidMessageIdException;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
-
 import javax.inject.Inject;
-
 import timber.log.Timber;
 
 /** Reaction to chirps handler class */
@@ -42,20 +40,15 @@ public class ReactionHandler {
     MessageID messageId = context.getMessageId();
     PublicKey senderPk = context.getSenderPk();
 
-    Timber.tag(TAG)
-        .d("handleAddReaction: channel: %s, chirp id: %s", channel, addReaction.getChirpId());
+    Timber.tag(TAG).d("handleAddReaction: channel: %s, chirp id: %s", channel, addReaction.chirpId);
     LaoView laoView = laoRepo.getLaoViewByChannel(channel);
 
     Reaction reaction =
         new Reaction(
-            messageId,
-            senderPk,
-            addReaction.getCodepoint(),
-            addReaction.getChirpId(),
-            addReaction.getTimestamp());
+            messageId, senderPk, addReaction.codepoint, addReaction.chirpId, addReaction.timestamp);
 
     if (!socialMediaRepo.addReaction(laoView.getId(), reaction)) {
-      throw new InvalidMessageIdException(addReaction, addReaction.getChirpId());
+      throw new InvalidMessageIdException(addReaction, addReaction.chirpId);
     }
   }
 
@@ -72,11 +65,11 @@ public class ReactionHandler {
     Timber.tag(TAG)
         .d(
             "handleDeleteReaction: channel: %s, reaction id: %s",
-            channel, deleteReaction.getReactionID());
+            channel, deleteReaction.reactionID);
     LaoView laoView = laoRepo.getLaoViewByChannel(channel);
 
-    if (!socialMediaRepo.deleteReaction(laoView.getId(), deleteReaction.getReactionID())) {
-      throw new InvalidMessageIdException(deleteReaction, deleteReaction.getReactionID());
+    if (!socialMediaRepo.deleteReaction(laoView.getId(), deleteReaction.reactionID)) {
+      throw new InvalidMessageIdException(deleteReaction, deleteReaction.reactionID);
     }
   }
 }

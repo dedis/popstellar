@@ -1,13 +1,13 @@
 package com.github.dedis.popstellar.ui.lao.event.election.fragments;
 
+import static com.github.dedis.popstellar.utility.error.ErrorUtils.logAndShow;
+
 import android.os.Bundle;
 import android.view.*;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
-
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.CastVoteFragmentBinding;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionQuestion;
@@ -23,15 +23,10 @@ import com.github.dedis.popstellar.ui.lao.event.election.adapters.CastVoteViewPa
 import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.error.UnknownElectionException;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
-
-import java.util.*;
-
-import javax.inject.Inject;
-
 import dagger.hilt.android.AndroidEntryPoint;
+import java.util.*;
+import javax.inject.Inject;
 import me.relex.circleindicator.CircleIndicator3;
-
-import static com.github.dedis.popstellar.utility.error.ErrorUtils.logAndShow;
 
 /**
  * A simple {@link Fragment} subclass. Use the {@link CastVoteFragment#newInstance} factory method
@@ -180,9 +175,9 @@ public class CastVoteFragment extends Fragment {
       for (ElectionQuestion electionQuestion : electionQuestions) {
         PlainVote plainVote =
             new PlainVote(
-                electionQuestion.getId(),
-                votes.get(electionQuestion.getId()),
-                electionQuestion.getWriteIn(),
+                electionQuestion.id,
+                votes.get(electionQuestion.id),
+                electionQuestion.writeIn,
                 null,
                 electionId);
 
@@ -194,8 +189,7 @@ public class CastVoteFragment extends Fragment {
               .sendVote(electionId, plainVotes)
               .subscribe(
                   () ->
-                      Toast.makeText(
-                              requireContext(), R.string.vote_sent, Toast.LENGTH_LONG)
+                      Toast.makeText(requireContext(), R.string.vote_sent, Toast.LENGTH_LONG)
                           .show(),
                   err -> logAndShow(requireContext(), TAG, err, R.string.error_send_vote)));
     } catch (UnknownElectionException err) {

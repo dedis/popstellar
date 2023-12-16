@@ -37,17 +37,17 @@ public class NotifyDeleteChirpTest {
 
   @Test
   public void getChirpIdTest() {
-    assertEquals(CHIRP_ID, NOTIFY_DELETE_CHIRP.getChirpId());
+    assertEquals(CHIRP_ID, NOTIFY_DELETE_CHIRP.chirpId);
   }
 
   @Test
   public void getChannelTest() {
-    assertEquals(CHANNEL, NOTIFY_DELETE_CHIRP.getChannel());
+    assertEquals(CHANNEL, NOTIFY_DELETE_CHIRP.channel);
   }
 
   @Test
   public void getTimestampTest() {
-    assertEquals(TIMESTAMP, NOTIFY_DELETE_CHIRP.getTimestamp());
+    assertEquals(TIMESTAMP, NOTIFY_DELETE_CHIRP.timestamp);
   }
 
   @Test

@@ -39,12 +39,12 @@ public class ElectInstanceTest {
 
   @Test
   public void getMessageIdTest() {
-    assertEquals(electMessageId, electInstance.getMessageId());
+    assertEquals(electMessageId, electInstance.messageId);
   }
 
   @Test
   public void getChannelTest() {
-    assertEquals(channel, electInstance.getChannel());
+    assertEquals(channel, electInstance.channel);
   }
 
   @Test
@@ -71,12 +71,12 @@ public class ElectInstanceTest {
 
   @Test
   public void getProposerTest() {
-    assertEquals(proposer, electInstance.getProposer());
+    assertEquals(proposer, electInstance.proposer);
   }
 
   @Test
   public void getNodesTest() {
-    assertEquals(nodes, electInstance.getNodes());
+    assertEquals(nodes, electInstance.nodes);
   }
 
   @Test
@@ -99,11 +99,11 @@ public class ElectInstanceTest {
   @Test
   public void setAndGetStateTest() {
     // default state should be STARTING
-    assertEquals(STARTING, electInstance.getState());
+    assertEquals(STARTING, electInstance.state);
 
     for (ElectInstance.State state : ElectInstance.State.values()) {
-      electInstance.setState(state);
-      assertEquals(state, electInstance.getState());
+      electInstance.state = state;
+      assertEquals(state, electInstance.state);
     }
   }
 

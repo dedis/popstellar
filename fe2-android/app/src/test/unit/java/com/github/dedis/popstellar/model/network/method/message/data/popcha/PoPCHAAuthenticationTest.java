@@ -25,37 +25,37 @@ public class PoPCHAAuthenticationTest {
 
   @Test
   public void getClientId() {
-    assertEquals(CLIENT_ID, POPCHA_AUTHENTICATION.getClientId());
+    assertEquals(CLIENT_ID, POPCHA_AUTHENTICATION.clientId);
   }
 
   @Test
   public void getNonce() {
-    assertEquals(NONCE, POPCHA_AUTHENTICATION.getNonce());
+    assertEquals(NONCE, POPCHA_AUTHENTICATION.nonce);
   }
 
   @Test
   public void getIdentifier() {
-    assertEquals(IDENTIFIER, POPCHA_AUTHENTICATION.getIdentifier());
+    assertEquals(IDENTIFIER, POPCHA_AUTHENTICATION.identifier);
   }
 
   @Test
   public void getIdentifierProof() {
-    assertEquals(IDENTIFIER_PROOF, POPCHA_AUTHENTICATION.getIdentifierProof());
+    assertEquals(IDENTIFIER_PROOF, POPCHA_AUTHENTICATION.identifierProof);
   }
 
   @Test
   public void getState() {
-    assertEquals(STATE, POPCHA_AUTHENTICATION.getState());
+    assertEquals(STATE, POPCHA_AUTHENTICATION.state);
   }
 
   @Test
   public void getResponseMode() {
-    assertEquals(RESPONSE_MODE, POPCHA_AUTHENTICATION.getResponseMode());
+    assertEquals(RESPONSE_MODE, POPCHA_AUTHENTICATION.responseMode);
   }
 
   @Test
   public void getPopchaAddress() {
-    assertEquals(ADDRESS, POPCHA_AUTHENTICATION.getPopchaAddress());
+    assertEquals(ADDRESS, POPCHA_AUTHENTICATION.popchaAddress);
   }
 
   @Test

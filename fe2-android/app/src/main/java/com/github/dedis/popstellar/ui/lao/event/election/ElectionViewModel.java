@@ -123,12 +123,12 @@ public class ElectionViewModel extends AndroidViewModel {
       return Completable.error(new UnknownLaoException());
     }
 
-    Channel channel = election.getChannel();
+    Channel channel = election.channel;
     String laoViewId = laoView.getId();
 
     // The time will have to be modified on the backend
     ElectionOpen electionOpen =
-        new ElectionOpen(laoViewId, election.getId(), election.getStartTimestamp());
+        new ElectionOpen(laoViewId, election.id, election.getStartTimestamp());
 
     return networkManager
         .getMessageSender()
@@ -145,10 +145,10 @@ public class ElectionViewModel extends AndroidViewModel {
       return Completable.error(new UnknownLaoException());
     }
 
-    Channel channel = election.getChannel();
+    Channel channel = election.channel;
     String laoViewId = laoView.getId();
     ElectionEnd electionEnd =
-        new ElectionEnd(election.getId(), laoViewId, election.computeRegisteredVotesHash());
+        new ElectionEnd(election.id, laoViewId, election.computeRegisteredVotesHash());
 
     return networkManager
         .getMessageSender()
@@ -191,7 +191,7 @@ public class ElectionViewModel extends AndroidViewModel {
             token -> {
               CompletableFuture<CastVote> vote = createCastVote(votes, election, laoView);
 
-              Channel electionChannel = election.getChannel();
+              Channel electionChannel = election.channel;
               return networkManager.getMessageSender().publish(token, electionChannel, vote.get());
             });
   }
@@ -213,9 +213,9 @@ public class ElectionViewModel extends AndroidViewModel {
   @NonNull
   private CompletableFuture<CastVote> createCastVote(
       List<PlainVote> votes, Election election, LaoView laoView) {
-    if (election.getElectionVersion() == ElectionVersion.OPEN_BALLOT) {
+    if (election.electionVersion == ElectionVersion.OPEN_BALLOT) {
       return CompletableFuture.completedFuture(
-          new CastVote(votes, election.getId(), laoView.getId()));
+          new CastVote(votes, election.id, laoView.getId()));
     } else {
       isEncrypting.setValue(true);
       return CompletableFuture.supplyAsync(
@@ -227,7 +227,7 @@ public class ElectionViewModel extends AndroidViewModel {
                     () ->
                         Toast.makeText(getApplication(), R.string.vote_encrypted, Toast.LENGTH_LONG)
                             .show());
-            return new CastVote(encryptedVotes, election.getId(), laoView.getId());
+            return new CastVote(encryptedVotes, election.id, laoView.getId());
           },
           Executors.newSingleThreadExecutor());
     }

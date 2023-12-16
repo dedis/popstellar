@@ -32,12 +32,12 @@ public class ConsensusElectTest {
   public void getInstanceIdTest() {
     // Hash("consensus"||key:type||key:id||key:property)
     String expectedId = Hash.hash("consensus", type, objId, property);
-    assertEquals(expectedId, consensusElect.getInstanceId());
+    assertEquals(expectedId, consensusElect.instanceId);
   }
 
   @Test
   public void getCreationTest() {
-    assertEquals(timeInSeconds, consensusElect.getCreation());
+    assertEquals(timeInSeconds, consensusElect.creation);
   }
 
   @Test
@@ -52,12 +52,12 @@ public class ConsensusElectTest {
 
   @Test
   public void getKeyTest() {
-    assertEquals(key, consensusElect.getKey());
+    assertEquals(key, consensusElect.key);
   }
 
   @Test
   public void getValueTest() {
-    assertEquals(value, consensusElect.getValue());
+    assertEquals(value, consensusElect.value);
   }
 
   @Test

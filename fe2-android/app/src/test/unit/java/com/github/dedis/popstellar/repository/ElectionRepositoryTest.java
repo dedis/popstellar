@@ -79,10 +79,10 @@ public class ElectionRepositoryTest {
     // Create repository with an election inside it
     repo.updateElection(ELECTION);
     TestObserver<Election> electionObserver =
-        repo.getElectionObservable(LAO_ID, ELECTION.getId()).test();
+        repo.getElectionObservable(LAO_ID, ELECTION.id).test();
 
     assertCurrentValueIs(electionObserver, ELECTION);
-    assertThat(repo.getElection(LAO_ID, ELECTION.getId()), is(ELECTION));
+    assertThat(repo.getElection(LAO_ID, ELECTION.id), is(ELECTION));
 
     // Update Election
     Election updated = ELECTION.builder().setState(EventState.CLOSED).build();
@@ -90,7 +90,7 @@ public class ElectionRepositoryTest {
 
     // Assert that the update was correctly dispatched
     assertCurrentValueIs(electionObserver, updated);
-    assertThat(repo.getElection(LAO_ID, ELECTION.getId()), is(updated));
+    assertThat(repo.getElection(LAO_ID, ELECTION.id), is(updated));
   }
 
   @Test
@@ -98,14 +98,14 @@ public class ElectionRepositoryTest {
     repo.updateElection(ELECTION);
 
     assertThat(
-        repo.getElection(LAO_ID, ELECTION.getId()),
-        is(repo.getElectionByChannel(ELECTION.getChannel())));
+        repo.getElection(LAO_ID, ELECTION.id),
+        is(repo.getElectionByChannel(ELECTION.channel)));
   }
 
   @Test
   public void retrievingAnInvalidElectionThrowsAnException() {
-    assertThrows(UnknownElectionException.class, () -> repo.getElection(LAO_ID, ELECTION.getId()));
+    assertThrows(UnknownElectionException.class, () -> repo.getElection(LAO_ID, ELECTION.id));
     assertThrows(
-        UnknownElectionException.class, () -> repo.getElectionObservable(LAO_ID, ELECTION.getId()));
+        UnknownElectionException.class, () -> repo.getElectionObservable(LAO_ID, ELECTION.id));
   }
 }

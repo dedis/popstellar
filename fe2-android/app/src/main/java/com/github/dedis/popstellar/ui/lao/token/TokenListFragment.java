@@ -95,7 +95,7 @@ public class TokenListFragment extends Fragment {
                             LaoActivity.setCurrentFragment(
                                 requireActivity().getSupportFragmentManager(),
                                 R.id.fragment_token,
-                                () -> TokenFragment.newInstance(lastRollCall.getPersistentId())));
+                                () -> TokenFragment.newInstance(lastRollCall.persistentId)));
                   } else {
                     binding.validTokenLayout.setVisibility(View.GONE);
                   }

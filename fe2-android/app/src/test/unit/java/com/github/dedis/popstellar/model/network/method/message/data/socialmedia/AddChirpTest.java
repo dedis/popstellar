@@ -48,7 +48,7 @@ public class AddChirpTest {
 
   @Test
   public void getTextTest() {
-    assertEquals(TEXT, ADD_CHIRP.getText());
+    assertEquals(TEXT, ADD_CHIRP.text);
   }
 
   @Test
@@ -58,7 +58,7 @@ public class AddChirpTest {
 
   @Test
   public void getTimestampTest() {
-    assertEquals(TIMESTAMP, ADD_CHIRP.getTimestamp());
+    assertEquals(TIMESTAMP, ADD_CHIRP.timestamp);
   }
 
   @Test

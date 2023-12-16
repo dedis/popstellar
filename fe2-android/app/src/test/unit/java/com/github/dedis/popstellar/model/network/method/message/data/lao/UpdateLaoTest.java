@@ -1,7 +1,11 @@
 package com.github.dedis.popstellar.model.network.method.message.data.lao;
 
-import androidx.test.ext.junit.runners.AndroidJUnit4;
+import static com.github.dedis.popstellar.testutils.Base64DataUtils.generatePublicKey;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.*;
 
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 import com.github.dedis.popstellar.model.network.JsonTestUtils;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
@@ -10,19 +14,12 @@ import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.testutils.Base64DataUtils;
 import com.github.dedis.popstellar.utility.security.Hash;
 import com.google.gson.JsonParseException;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.internal.util.collections.Sets;
-
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
-
-import static com.github.dedis.popstellar.testutils.Base64DataUtils.generatePublicKey;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.*;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.internal.util.collections.Sets;
 
 @RunWith(AndroidJUnit4.class)
 public class UpdateLaoTest {
@@ -40,9 +37,8 @@ public class UpdateLaoTest {
   public void generateUpdateLaoIdTest() {
     UpdateLao updateLao = new UpdateLao(organizer, creation, name, lastModified, new HashSet<>());
     // Hash(organizer||creation||name)
-    String expectedId =
-        Hash.hash(organizer.getEncoded(), Long.toString(creation), updateLao.getName());
-    assertThat(updateLao.getId(), is(expectedId));
+    String expectedId = Hash.hash(organizer.getEncoded(), Long.toString(creation), updateLao.name);
+    assertThat(updateLao.id, is(expectedId));
   }
 
   @Test(expected = IllegalArgumentException.class)
@@ -79,17 +75,17 @@ public class UpdateLaoTest {
 
   @Test
   public void getNameTest() {
-    assertThat(updateLao.getName(), is(name));
+    assertThat(updateLao.name, is(name));
   }
 
   @Test
   public void getLastModifiedTest() {
-    assertThat(updateLao.getLastModified(), is(lastModified));
+    assertThat(updateLao.lastModified, is(lastModified));
   }
 
   @Test
   public void getIdTest() {
-    assertThat(updateLao.getId(), is(Lao.generateLaoId(organizer, creation, name)));
+    assertThat(updateLao.id, is(Lao.generateLaoId(organizer, creation, name)));
   }
 
   @Test

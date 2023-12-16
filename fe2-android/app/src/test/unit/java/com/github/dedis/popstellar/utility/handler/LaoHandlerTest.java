@@ -47,8 +47,8 @@ public class LaoHandlerTest {
 
   private static final KeyPair SENDER_KEY1 = generateKeyPair();
   private static final KeyPair SENDER_KEY2 = generateKeyPair();
-  private static final PublicKey SENDER1 = SENDER_KEY1.getPublicKey();
-  private static final PublicKey SENDER2 = SENDER_KEY2.getPublicKey();
+  private static final PublicKey SENDER1 = SENDER_KEY1.publicKey;
+  private static final PublicKey SENDER2 = SENDER_KEY2.publicKey;
   private static final long CREATION = Instant.now().getEpochSecond() - 10;
   private static final String NAME1 = "lao1";
   private static final String NAME2 = "lao2";
@@ -65,9 +65,9 @@ public class LaoHandlerTest {
       new CreateLao(ID2, NAME2, CREATION, SENDER1, new ArrayList<>());
   private static final CreateLao CREATE_LAO3 =
       new CreateLao(ID3, NAME3, CREATION, SENDER1, WITNESSES);
-  private static final Channel LAO_CHANNEL1 = Channel.getLaoChannel(CREATE_LAO1.getId());
-  private static final Channel LAO_CHANNEL2 = Channel.getLaoChannel(CREATE_LAO2.getId());
-  private static final Channel LAO_CHANNEL3 = Channel.getLaoChannel(CREATE_LAO3.getId());
+  private static final Channel LAO_CHANNEL1 = Channel.getLaoChannel(CREATE_LAO1.id);
+  private static final Channel LAO_CHANNEL2 = Channel.getLaoChannel(CREATE_LAO2.id);
+  private static final Channel LAO_CHANNEL3 = Channel.getLaoChannel(CREATE_LAO3.id);
 
   private LAORepository laoRepo;
   private WitnessingRepository witnessingRepository;
@@ -145,8 +145,8 @@ public class LaoHandlerTest {
     messageHandler = new MessageHandler(messageRepo, dataRegistry);
 
     // Create one LAO and add it to the LAORepository
-    lao = new Lao(CREATE_LAO1.getName(), CREATE_LAO1.getOrganizer(), CREATE_LAO1.getCreation());
-    lao.setLastModified(lao.getCreation());
+    lao = new Lao(CREATE_LAO1.name, CREATE_LAO1.organizer, CREATE_LAO1.creation);
+    lao.lastModified = lao.creation;
     laoRepo.updateLao(lao);
 
     // Add the CreateLao message to the LAORepository
@@ -168,21 +168,21 @@ public class LaoHandlerTest {
 
     // Get expected results
     Lao resultLao = laoRepo.getLaoByChannel(LAO_CHANNEL2);
-    String expectedName = CREATE_LAO2.getName();
-    PublicKey expectedOrganizer = CREATE_LAO2.getOrganizer();
-    long expectedCreation = CREATE_LAO2.getCreation();
+    String expectedName = CREATE_LAO2.name;
+    PublicKey expectedOrganizer = CREATE_LAO2.organizer;
+    long expectedCreation = CREATE_LAO2.creation;
     String expectedID = Lao.generateLaoId(expectedOrganizer, expectedCreation, expectedName);
 
     // Check that the expected LAO was created in the LAO repo
-    assertEquals(LAO_CHANNEL2, resultLao.getChannel());
+    assertEquals(LAO_CHANNEL2, resultLao.channel);
     assertEquals(expectedID, resultLao.getId());
     assertEquals(expectedName, resultLao.getName());
-    assertEquals(expectedCreation, (long) resultLao.getLastModified());
-    assertEquals(expectedCreation, (long) resultLao.getCreation());
+    assertEquals(expectedCreation, (long) resultLao.lastModified);
+    assertEquals(expectedCreation, (long) resultLao.creation);
     assertEquals(expectedOrganizer, resultLao.getOrganizer());
     assertTrue(witnessingRepository.areWitnessesEmpty(LAO_CHANNEL2.extractLaoId()));
     assertTrue(witnessingRepository.areWitnessMessagesEmpty(LAO_CHANNEL3.extractLaoId()));
-    assertNull(resultLao.getModificationId());
+    assertNull(resultLao.modificationId);
   }
 
   @Test
@@ -203,22 +203,22 @@ public class LaoHandlerTest {
 
     // Get expected results
     Lao resultLao = laoRepo.getLaoByChannel(LAO_CHANNEL3);
-    String expectedName = CREATE_LAO3.getName();
-    PublicKey expectedOrganizer = CREATE_LAO3.getOrganizer();
-    long expectedCreation = CREATE_LAO3.getCreation();
+    String expectedName = CREATE_LAO3.name;
+    PublicKey expectedOrganizer = CREATE_LAO3.organizer;
+    long expectedCreation = CREATE_LAO3.creation;
     String expectedID = Lao.generateLaoId(expectedOrganizer, expectedCreation, expectedName);
 
     // Check that the expected LAO was created in the LAO repo
-    assertEquals(LAO_CHANNEL3, resultLao.getChannel());
+    assertEquals(LAO_CHANNEL3, resultLao.channel);
     assertEquals(expectedID, resultLao.getId());
     assertEquals(expectedName, resultLao.getName());
-    assertEquals(expectedCreation, (long) resultLao.getLastModified());
-    assertEquals(expectedCreation, (long) resultLao.getCreation());
+    assertEquals(expectedCreation, (long) resultLao.lastModified);
+    assertEquals(expectedCreation, (long) resultLao.creation);
     assertEquals(expectedOrganizer, resultLao.getOrganizer());
     assertEquals(
         new HashSet<>(WITNESSES), witnessingRepository.getWitnesses(LAO_CHANNEL3.extractLaoId()));
     assertTrue(witnessingRepository.areWitnessMessagesEmpty(LAO_CHANNEL3.extractLaoId()));
-    assertNull(resultLao.getModificationId());
+    assertNull(resultLao.modificationId);
   }
 
   @Test
@@ -233,7 +233,7 @@ public class LaoHandlerTest {
     UpdateLao updateLao =
         new UpdateLao(
             SENDER1,
-            CREATE_LAO1.getCreation(),
+            CREATE_LAO1.creation,
             "new name",
             Instant.now().getEpochSecond(),
             new HashSet<>());
@@ -241,17 +241,17 @@ public class LaoHandlerTest {
 
     // Create the expected WitnessMessage
     WitnessMessage expectedMessage =
-        updateLaoNameWitnessMessage(message.getMessageId(), updateLao, new LaoView(lao));
+        updateLaoNameWitnessMessage(message.messageId, updateLao, new LaoView(lao));
 
     // Call the message handler
     messageHandler.handleMessage(messageSender, LAO_CHANNEL1, message);
 
     // Check the WitnessMessage has been created
     Optional<WitnessMessage> witnessMessage =
-        witnessingRepository.getWitnessMessage(LAO_CHANNEL1.extractLaoId(), message.getMessageId());
+        witnessingRepository.getWitnessMessage(LAO_CHANNEL1.extractLaoId(), message.messageId);
     assertTrue(witnessMessage.isPresent());
-    assertEquals(expectedMessage.getTitle(), witnessMessage.get().getTitle());
-    assertEquals(expectedMessage.getDescription(), witnessMessage.get().getDescription());
+    assertEquals(expectedMessage.title, witnessMessage.get().title);
+    assertEquals(expectedMessage.description, witnessMessage.get().description);
   }
 
   @Test
@@ -269,17 +269,16 @@ public class LaoHandlerTest {
     UpdateLao updateLao =
         new UpdateLao(
             SENDER1,
-            CREATE_LAO1.getCreation(),
-            CREATE_LAO1.getName(),
+            CREATE_LAO1.creation,
+            CREATE_LAO1.name,
             Instant.now().getEpochSecond(),
             new HashSet<>(WITNESSES));
     MessageGeneral message = new MessageGeneral(SENDER_KEY1, updateLao, gson);
 
     // Create the expected WitnessMessage and PendingUpdate
     WitnessMessage expectedMessage =
-        updateLaoWitnessesWitnessMessage(message.getMessageId(), updateLao, new LaoView(lao));
-    PendingUpdate pendingUpdate =
-        new PendingUpdate(updateLao.getLastModified(), message.getMessageId());
+        updateLaoWitnessesWitnessMessage(message.messageId, updateLao, new LaoView(lao));
+    PendingUpdate pendingUpdate = new PendingUpdate(updateLao.lastModified, message.messageId);
     HashSet<PendingUpdate> expectedPendingUpdateSet = new HashSet<>();
     expectedPendingUpdateSet.add(pendingUpdate);
 
@@ -288,10 +287,10 @@ public class LaoHandlerTest {
 
     // Check the WitnessMessage has been created
     Optional<WitnessMessage> witnessMessage =
-        witnessingRepository.getWitnessMessage(LAO_CHANNEL1.extractLaoId(), message.getMessageId());
+        witnessingRepository.getWitnessMessage(LAO_CHANNEL1.extractLaoId(), message.messageId);
     assertTrue(witnessMessage.isPresent());
-    assertEquals(expectedMessage.getTitle(), witnessMessage.get().getTitle());
-    assertEquals(expectedMessage.getDescription(), witnessMessage.get().getDescription());
+    assertEquals(expectedMessage.title, witnessMessage.get().title);
+    assertEquals(expectedMessage.description, witnessMessage.get().description);
 
     // Check the PendingUpdate has been added
     assertEquals(
@@ -304,8 +303,8 @@ public class LaoHandlerTest {
     UpdateLao updateLao =
         new UpdateLao(
             SENDER1,
-            CREATE_LAO1.getCreation(),
-            CREATE_LAO1.getName(),
+            CREATE_LAO1.creation,
+            CREATE_LAO1.name,
             Instant.now().getEpochSecond(),
             new HashSet<>());
     MessageGeneral message = new MessageGeneral(SENDER_KEY1, updateLao, gson);
@@ -320,13 +319,13 @@ public class LaoHandlerTest {
   public void testHandleUpdateLaoStale() {
     // Create a update LAO message with last modified time older than the current LAO last modified
     // time
-    lao.setLastModified(CREATE_LAO1.getCreation() + 10);
+    lao.lastModified = CREATE_LAO1.creation + 10;
     UpdateLao updateLao1 =
         new UpdateLao(
             SENDER1,
-            CREATE_LAO1.getCreation(),
+            CREATE_LAO1.creation,
             "new lao name",
-            CREATE_LAO1.getCreation() + 5,
+            CREATE_LAO1.creation + 5,
             new HashSet<>());
     MessageGeneral message = new MessageGeneral(SENDER_KEY1, updateLao1, gson);
 
@@ -351,12 +350,12 @@ public class LaoHandlerTest {
     // Create the state LAO message
     StateLao stateLao =
         new StateLao(
-            CREATE_LAO1.getId(),
-            CREATE_LAO1.getName(),
-            CREATE_LAO1.getCreation(),
+            CREATE_LAO1.id,
+            CREATE_LAO1.name,
+            CREATE_LAO1.creation,
             Instant.now().getEpochSecond(),
-            CREATE_LAO1.getOrganizer(),
-            createLaoMessage.getMessageId(),
+            CREATE_LAO1.organizer,
+            createLaoMessage.messageId,
             new HashSet<>(),
             modificationSignatures);
     MessageGeneral message = new MessageGeneral(SENDER_KEY1, stateLao, gson);
@@ -366,9 +365,9 @@ public class LaoHandlerTest {
 
     // Check the LAO last modification time and ID was updated
     assertEquals(
-        (Long) stateLao.getLastModified(), laoRepo.getLaoByChannel(LAO_CHANNEL1).getLastModified());
+        (Long) stateLao.lastModified, laoRepo.getLaoByChannel(LAO_CHANNEL1).lastModified);
     assertEquals(
-        stateLao.getModificationId(), laoRepo.getLaoByChannel(LAO_CHANNEL1).getModificationId());
+        stateLao.modificationId, laoRepo.getLaoByChannel(LAO_CHANNEL1).modificationId);
   }
 
   @Test
@@ -385,12 +384,12 @@ public class LaoHandlerTest {
     // Create the state LAO message with one witness that has the main public key
     StateLao stateLao =
         new StateLao(
-            CREATE_LAO1.getId(),
-            CREATE_LAO1.getName(),
-            CREATE_LAO1.getCreation(),
+            CREATE_LAO1.id,
+            CREATE_LAO1.name,
+            CREATE_LAO1.creation,
             Instant.now().getEpochSecond(),
-            CREATE_LAO1.getOrganizer(),
-            createLaoMessage.getMessageId(),
+            CREATE_LAO1.organizer,
+            createLaoMessage.messageId,
             new HashSet<>(WITNESS),
             new ArrayList<>());
     MessageGeneral message = new MessageGeneral(SENDER_KEY1, stateLao, gson);
@@ -400,9 +399,9 @@ public class LaoHandlerTest {
 
     // Check the LAO last modification time and ID was updated
     assertEquals(
-        (Long) stateLao.getLastModified(), laoRepo.getLaoByChannel(LAO_CHANNEL1).getLastModified());
+        (Long) stateLao.lastModified, laoRepo.getLaoByChannel(LAO_CHANNEL1).lastModified);
     assertEquals(
-        stateLao.getModificationId(), laoRepo.getLaoByChannel(LAO_CHANNEL1).getModificationId());
+        stateLao.modificationId, laoRepo.getLaoByChannel(LAO_CHANNEL1).modificationId);
   }
 
   @Test
@@ -414,11 +413,11 @@ public class LaoHandlerTest {
           NoRollCallException,
           UnknownWitnessMessageException {
     // Create a list of 2 pending updates: one newer and one older than the stateLao message
-    long targetTime = CREATE_LAO1.getCreation() + 5;
+    long targetTime = CREATE_LAO1.creation + 5;
     PendingUpdate oldPendingUpdate = mock(PendingUpdate.class);
     PendingUpdate newPendingUpdate = mock(PendingUpdate.class);
-    when(oldPendingUpdate.getModificationTime()).thenReturn(targetTime - 1);
-    when(newPendingUpdate.getModificationTime()).thenReturn(targetTime + 1);
+    when(oldPendingUpdate.modificationTime).thenReturn(targetTime - 1);
+    when(newPendingUpdate.modificationTime).thenReturn(targetTime + 1);
     Set<PendingUpdate> pendingUpdates =
         new HashSet<>(Arrays.asList(oldPendingUpdate, newPendingUpdate));
 
@@ -429,12 +428,12 @@ public class LaoHandlerTest {
     // Create the stateLao message
     StateLao stateLao =
         new StateLao(
-            CREATE_LAO1.getId(),
-            CREATE_LAO1.getName(),
-            CREATE_LAO1.getCreation(),
+            CREATE_LAO1.id,
+            CREATE_LAO1.name,
+            CREATE_LAO1.creation,
             targetTime,
-            CREATE_LAO1.getOrganizer(),
-            createLaoMessage.getMessageId(),
+            CREATE_LAO1.organizer,
+            createLaoMessage.messageId,
             new HashSet<>(),
             new ArrayList<>());
     MessageGeneral stateMessage = new MessageGeneral(SENDER_KEY1, stateLao, gson);
@@ -455,12 +454,12 @@ public class LaoHandlerTest {
     // Create the state LAO message
     StateLao stateLao =
         new StateLao(
-            CREATE_LAO1.getId(),
-            CREATE_LAO1.getName(),
-            CREATE_LAO1.getCreation(),
+            CREATE_LAO1.id,
+            CREATE_LAO1.name,
+            CREATE_LAO1.creation,
             Instant.now().getEpochSecond(),
-            CREATE_LAO1.getOrganizer(),
-            createLaoMessage2.getMessageId(),
+            CREATE_LAO1.organizer,
+            createLaoMessage2.messageId,
             new HashSet<>(),
             new ArrayList<>());
     MessageGeneral message = new MessageGeneral(SENDER_KEY1, stateLao, gson);
@@ -479,12 +478,12 @@ public class LaoHandlerTest {
     // Create the a state LAO message with invalid modification signatures
     StateLao stateLao =
         new StateLao(
-            CREATE_LAO1.getId(),
-            CREATE_LAO1.getName(),
-            CREATE_LAO1.getCreation(),
+            CREATE_LAO1.id,
+            CREATE_LAO1.name,
+            CREATE_LAO1.creation,
             Instant.now().getEpochSecond(),
-            CREATE_LAO1.getOrganizer(),
-            createLaoMessage.getMessageId(),
+            CREATE_LAO1.organizer,
+            createLaoMessage.messageId,
             new HashSet<>(),
             modificationSignatures);
     MessageGeneral message = new MessageGeneral(SENDER_KEY1, stateLao, gson);
@@ -513,13 +512,13 @@ public class LaoHandlerTest {
     messageHandler.handleMessage(messageSender, LAO_CHANNEL1, message);
 
     // Check that the server repository contains the key of the server
-    assertEquals(RANDOM_ADDRESS, serverRepository.getServerByLaoId(lao.getId()).getServerAddress());
+    assertEquals(RANDOM_ADDRESS, serverRepository.getServerByLaoId(lao.getId()).serverAddress);
     // Check that it contains the key as well
     assertEquals(
-        new PublicKey(RANDOM_KEY), serverRepository.getServerByLaoId(lao.getId()).getPublicKey());
+        new PublicKey(RANDOM_KEY), serverRepository.getServerByLaoId(lao.getId()).publicKey);
 
     // Test that the handler throws an exception if the lao id does not match the current one
-    String invalidId = Lao.generateLaoId(SENDER1, CREATE_LAO1.getCreation(), "some name");
+    String invalidId = Lao.generateLaoId(SENDER1, CREATE_LAO1.creation, "some name");
     GreetLao greetLao_invalid =
         new GreetLao(invalidId, RANDOM_KEY, RANDOM_ADDRESS, Collections.singletonList(RANDOM_PEER));
     MessageGeneral message_invalid = new MessageGeneral(SENDER_KEY1, greetLao_invalid, gson);
@@ -534,7 +533,7 @@ public class LaoHandlerTest {
     PublicKeySignaturePair validKeyPair;
     try {
       validKeyPair =
-          new PublicKeySignaturePair(SENDER1, SENDER_KEY1.sign(messageGeneral.getMessageId()));
+          new PublicKeySignaturePair(SENDER1, SENDER_KEY1.sign(messageGeneral.messageId));
     } catch (GeneralSecurityException e) {
       throw new RuntimeException(e);
     }

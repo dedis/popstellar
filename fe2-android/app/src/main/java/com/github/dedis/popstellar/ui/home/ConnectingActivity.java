@@ -156,7 +156,7 @@ public class ConnectingActivity extends AppCompatActivity {
       }
 
       CreateLao createLao = new CreateLao(laoName, keyManager.getMainPublicKey(), witnesses);
-      Lao lao = new Lao(createLao.getId());
+      Lao lao = new Lao(createLao.id);
       Timber.tag(TAG).d("Creating Lao %s", lao.getId());
       disposables.add(
           networkManager
@@ -175,11 +175,11 @@ public class ConnectingActivity extends AppCompatActivity {
   }
 
   private void subscribeToLao(Lao lao) {
-    Timber.tag(TAG).d("connecting to lao %s", lao.getChannel());
+    Timber.tag(TAG).d("connecting to lao %s", lao.channel);
     disposables.add(
         networkManager
             .getMessageSender()
-            .subscribe(lao.getChannel())
+            .subscribe(lao.channel)
             .subscribe(
                 () -> {
                   Timber.tag(TAG).d("subscribing to LAO with id %s", lao.getId());

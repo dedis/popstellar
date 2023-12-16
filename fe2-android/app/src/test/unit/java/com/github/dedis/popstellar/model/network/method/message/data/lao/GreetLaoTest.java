@@ -1,20 +1,17 @@
 package com.github.dedis.popstellar.model.network.method.message.data.lao;
 
-import androidx.test.ext.junit.runners.AndroidJUnit4;
+import static org.junit.Assert.*;
 
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 import com.github.dedis.popstellar.model.network.JsonTestUtils;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.objects.PeerAddress;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.google.gson.JsonParseException;
-
+import java.util.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import java.util.*;
-
-import static org.junit.Assert.*;
 
 @RunWith(AndroidJUnit4.class)
 public class GreetLaoTest {
@@ -51,12 +48,12 @@ public class GreetLaoTest {
 
   @Test
   public void getFrontendKeyTest() {
-    assertEquals(new PublicKey(RANDOM_KEY), GREETING_MSG.getFrontendKey());
+    assertEquals(new PublicKey(RANDOM_KEY), GREETING_MSG.frontendKey);
   }
 
   @Test
   public void getAddressTest() {
-    assertEquals(RANDOM_ADDRESS, GREETING_MSG.getAddress());
+    assertEquals(RANDOM_ADDRESS, GREETING_MSG.address);
   }
 
   @Test

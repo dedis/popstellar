@@ -37,12 +37,12 @@ public class DeleteReactionTest {
 
   @Test
   public void getChirpIdTest() {
-    assertEquals(REACTION_ID, DELETE_REACTION.getReactionID());
+    assertEquals(REACTION_ID, DELETE_REACTION.reactionID);
   }
 
   @Test
   public void getTimestampTest() {
-    assertEquals(TIMESTAMP, DELETE_REACTION.getTimestamp());
+    assertEquals(TIMESTAMP, DELETE_REACTION.timestamp);
   }
 
   @Test

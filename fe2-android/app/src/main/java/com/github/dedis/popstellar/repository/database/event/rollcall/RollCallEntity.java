@@ -32,7 +32,7 @@ public class RollCallEntity {
 
   @Ignore
   public RollCallEntity(@NonNull String laoId, @NonNull RollCall rollCall) {
-    this(rollCall.getPersistentId(), laoId, rollCall);
+    this(rollCall.persistentId, laoId, rollCall);
   }
 
   @NonNull

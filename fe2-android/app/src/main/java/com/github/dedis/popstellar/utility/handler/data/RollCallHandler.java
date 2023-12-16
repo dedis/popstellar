@@ -12,11 +12,8 @@ import com.github.dedis.popstellar.repository.database.witnessing.PendingEntity;
 import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.github.dedis.popstellar.utility.error.UnknownRollCallException;
-
 import java.util.*;
-
 import javax.inject.Inject;
-
 import timber.log.Timber;
 
 /** Roll Call messages handler class */
@@ -56,20 +53,19 @@ public final class RollCallHandler {
     Channel channel = context.getChannel();
     MessageID messageId = context.getMessageId();
 
-    Timber.tag(TAG)
-        .d("handleCreateRollCall: channel: %s, name: %s", channel, createRollCall.getName());
+    Timber.tag(TAG).d("handleCreateRollCall: channel: %s, name: %s", channel, createRollCall.name);
     LaoView laoView = laoRepo.getLaoViewByChannel(channel);
 
     RollCallBuilder builder = new RollCallBuilder();
     builder
-        .setId(createRollCall.getId())
-        .setPersistentId(createRollCall.getId())
-        .setCreation(createRollCall.getCreation())
+        .setId(createRollCall.id)
+        .setPersistentId(createRollCall.id)
+        .setCreation(createRollCall.creation)
         .setState(EventState.CREATED)
-        .setStart(createRollCall.getProposedStart())
-        .setEnd(createRollCall.getProposedEnd())
-        .setName(createRollCall.getName())
-        .setLocation(createRollCall.getLocation())
+        .setStart(createRollCall.proposedStart)
+        .setEnd(createRollCall.proposedEnd)
+        .setName(createRollCall.name)
+        .setLocation(createRollCall.location)
         .setDescription(createRollCall.getDescription().orElse(""))
         .setEmptyAttendees();
 
@@ -99,21 +95,21 @@ public final class RollCallHandler {
     Timber.tag(TAG).d("handleOpenRollCall: channel: %s, msg: %s", channel, openRollCall);
     LaoView laoView = laoRepo.getLaoViewByChannel(channel);
 
-    String updateId = openRollCall.getUpdateId();
-    String opens = openRollCall.getOpens();
+    String updateId = openRollCall.updateId;
+    String opens = openRollCall.opens;
 
     RollCall existingRollCall = rollCallRepo.getRollCallWithId(laoView.getId(), opens);
     RollCallBuilder builder = new RollCallBuilder();
     builder
         .setId(updateId)
-        .setPersistentId(existingRollCall.getPersistentId())
-        .setCreation(existingRollCall.getCreation())
+        .setPersistentId(existingRollCall.persistentId)
+        .setCreation(existingRollCall.creation)
         .setState(EventState.OPENED)
-        .setStart(openRollCall.getOpenedAt())
-        .setEnd(existingRollCall.getEnd())
+        .setStart(openRollCall.openedAt)
+        .setEnd(existingRollCall.end)
         .setName(existingRollCall.getName())
-        .setLocation(existingRollCall.getLocation())
-        .setDescription(existingRollCall.getDescription())
+        .setLocation(existingRollCall.location)
+        .setDescription(existingRollCall.description)
         .setEmptyAttendees();
 
     String laoId = laoView.getId();
@@ -142,25 +138,25 @@ public final class RollCallHandler {
     Timber.tag(TAG).d("handleCloseRollCall: channel: %s", channel);
     LaoView laoView = laoRepo.getLaoViewByChannel(channel);
 
-    String updateId = closeRollCall.getUpdateId();
-    String closes = closeRollCall.getCloses();
+    String updateId = closeRollCall.updateId;
+    String closes = closeRollCall.closes;
 
     RollCall existingRollCall = rollCallRepo.getRollCallWithId(laoView.getId(), closes);
-    Set<PublicKey> currentAttendees = existingRollCall.getAttendees();
+    Set<PublicKey> currentAttendees = existingRollCall.attendees;
     currentAttendees.addAll(closeRollCall.getAttendees());
 
     RollCallBuilder builder = new RollCallBuilder();
     builder
         .setId(updateId)
-        .setPersistentId(existingRollCall.getPersistentId())
-        .setCreation(existingRollCall.getCreation())
+        .setPersistentId(existingRollCall.persistentId)
+        .setCreation(existingRollCall.creation)
         .setState(EventState.CLOSED)
-        .setStart(existingRollCall.getStart())
+        .setStart(existingRollCall.start)
         .setName(existingRollCall.getName())
-        .setLocation(existingRollCall.getLocation())
-        .setDescription(existingRollCall.getDescription())
+        .setLocation(existingRollCall.location)
+        .setDescription(existingRollCall.description)
         .setAttendees(currentAttendees)
-        .setEnd(closeRollCall.getClosedAt());
+        .setEnd(closeRollCall.closedAt);
 
     String laoId = laoView.getId();
     RollCall rollCall = builder.build();
@@ -177,8 +173,7 @@ public final class RollCallHandler {
     // Subscribe to the social media channels
     // (this is not the expected behavior as users should be able to choose who to subscribe to. But
     // as this part is not implemented, currently, it subscribes to everyone)
-    rollCall
-        .getAttendees()
+    rollCall.attendees
         .forEach(
             token ->
                 rollCallRepo.addDisposable(
@@ -206,75 +201,69 @@ public final class RollCallHandler {
       RollCall rollCall) {
     rollCallRepo.updateRollCall(laoId, rollCall);
     if (rollCall.isClosed()) {
-      digitalCashRepo.initializeDigitalCash(laoId, new ArrayList<>(rollCall.getAttendees()));
+      digitalCashRepo.initializeDigitalCash(laoId, new ArrayList<>(rollCall.attendees));
     }
   }
 
   public static WitnessMessage createRollCallWitnessMessage(
       MessageID messageId, RollCall rollCall) {
     WitnessMessage message = new WitnessMessage(messageId);
-    message.setTitle(
-        String.format(
-            "The Roll Call %s was created at %s",
-            rollCall.getName(), new Date(rollCall.getCreation() * 1000)));
-    message.setDescription(
-        MNEMONIC_STRING
-            + ActivityUtils.generateMnemonicWordFromBase64(rollCall.getPersistentId(), 2)
-            + "\n\n"
-            + LOCATION_STRING
-            + rollCall.getLocation()
-            + "\n\n"
-            + (rollCall.getDescription().isEmpty()
-                ? ""
-                : (DESCRIPTION_STRING + rollCall.getDescription() + "\n\n"))
-            + "Opens at :\n"
-            + new Date(rollCall.getStartTimestampInMillis())
-            + "\n\n"
-            + "Closes at :\n"
-            + new Date(rollCall.getEndTimestampInMillis()));
+    message.title = String.format(
+        "The Roll Call %s was created at %s",
+        rollCall.getName(), new Date(rollCall.creation * 1000));
+    message.description = MNEMONIC_STRING
+        + ActivityUtils.generateMnemonicWordFromBase64(rollCall.persistentId, 2)
+        + "\n\n"
+        + LOCATION_STRING
+        + rollCall.location
+        + "\n\n"
+        + (rollCall.description.isEmpty()
+            ? ""
+            : (DESCRIPTION_STRING + rollCall.description + "\n\n"))
+        + "Opens at :\n"
+        + new Date(rollCall.getStartTimestampInMillis())
+        + "\n\n"
+        + "Closes at :\n"
+        + new Date(rollCall.getEndTimestampInMillis());
 
     return message;
   }
 
   public static WitnessMessage openRollCallWitnessMessage(MessageID messageId, RollCall rollCall) {
     WitnessMessage message = new WitnessMessage(messageId);
-    message.setTitle(
-        String.format(
-            "The Roll Call %s was opened at %s",
-            rollCall.getName(), new Date(rollCall.getStartTimestampInMillis())));
-    message.setDescription(
-        MNEMONIC_STRING
-            + ActivityUtils.generateMnemonicWordFromBase64(rollCall.getPersistentId(), 2)
-            + "\n\n"
-            + LOCATION_STRING
-            + rollCall.getLocation()
-            + "\n\n"
-            + (rollCall.getDescription().isEmpty()
-                ? ""
-                : (DESCRIPTION_STRING + rollCall.getDescription() + "\n\n"))
-            + "Closes at :\n"
-            + new Date(rollCall.getEndTimestampInMillis()));
+    message.title = String.format(
+        "The Roll Call %s was opened at %s",
+        rollCall.getName(), new Date(rollCall.getStartTimestampInMillis()));
+    message.description = MNEMONIC_STRING
+        + ActivityUtils.generateMnemonicWordFromBase64(rollCall.persistentId, 2)
+        + "\n\n"
+        + LOCATION_STRING
+        + rollCall.location
+        + "\n\n"
+        + (rollCall.description.isEmpty()
+            ? ""
+            : (DESCRIPTION_STRING + rollCall.description + "\n\n"))
+        + "Closes at :\n"
+        + new Date(rollCall.getEndTimestampInMillis());
 
     return message;
   }
 
   public static WitnessMessage closeRollCallWitnessMessage(MessageID messageId, RollCall rollCall) {
     WitnessMessage message = new WitnessMessage(messageId);
-    message.setTitle(
-        String.format(
-            "The Roll Call %s was closed at %s",
-            rollCall.getName(), new Date(rollCall.getEndTimestampInMillis())));
-    message.setDescription(
-        MNEMONIC_STRING
-            + ActivityUtils.generateMnemonicWordFromBase64(rollCall.getPersistentId(), 2)
-            + "\n\n"
-            + LOCATION_STRING
-            + rollCall.getLocation()
-            + "\n\n"
-            + (rollCall.getDescription().isEmpty()
-                ? ""
-                : (DESCRIPTION_STRING + rollCall.getDescription() + "\n\n"))
-            + formatAttendees(rollCall.getAttendees()));
+    message.title = String.format(
+        "The Roll Call %s was closed at %s",
+        rollCall.getName(), new Date(rollCall.getEndTimestampInMillis()));
+    message.description = MNEMONIC_STRING
+        + ActivityUtils.generateMnemonicWordFromBase64(rollCall.persistentId, 2)
+        + "\n\n"
+        + LOCATION_STRING
+        + rollCall.location
+        + "\n\n"
+        + (rollCall.description.isEmpty()
+            ? ""
+            : (DESCRIPTION_STRING + rollCall.description + "\n\n"))
+        + formatAttendees(rollCall.attendees);
 
     return message;
   }

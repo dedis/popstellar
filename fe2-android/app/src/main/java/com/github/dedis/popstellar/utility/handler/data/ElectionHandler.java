@@ -1,7 +1,8 @@
 package com.github.dedis.popstellar.utility.handler.data;
 
-import androidx.annotation.NonNull;
+import static com.github.dedis.popstellar.model.objects.event.EventState.*;
 
+import androidx.annotation.NonNull;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.election.*;
 import com.github.dedis.popstellar.model.objects.*;
@@ -12,14 +13,9 @@ import com.github.dedis.popstellar.repository.*;
 import com.github.dedis.popstellar.repository.database.witnessing.PendingEntity;
 import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.error.*;
-
 import java.util.*;
-
 import javax.inject.Inject;
-
 import timber.log.Timber;
-
-import static com.github.dedis.popstellar.model.objects.event.EventState.*;
 
 /** Election messages handler class */
 public final class ElectionHandler {
@@ -64,16 +60,15 @@ public final class ElectionHandler {
     }
 
     LaoView laoView = laoRepo.getLaoViewByChannel(channel);
-    Timber.tag(TAG)
-        .d("handleElectionSetup: channel: %s, name: %s", channel, electionSetup.getName());
+    Timber.tag(TAG).d("handleElectionSetup: channel: %s, name: %s", channel, electionSetup.name);
 
     Election election =
         new Election.ElectionBuilder(
-                laoView.getId(), electionSetup.getCreation(), electionSetup.getName())
-            .setElectionVersion(electionSetup.getElectionVersion())
+                laoView.getId(), electionSetup.getCreation(), electionSetup.name)
+            .setElectionVersion(electionSetup.electionVersion)
             .setElectionQuestions(electionSetup.getQuestions())
-            .setStart(electionSetup.getStartTime())
-            .setEnd(electionSetup.getEndTime())
+            .setStart(electionSetup.startTime)
+            .setEnd(electionSetup.endTime)
             .setState(CREATED)
             .build();
 
@@ -87,7 +82,7 @@ public final class ElectionHandler {
     // Once the election is created, we subscribe to the election channel
     context
         .getMessageSender()
-        .subscribe(election.getChannel())
+        .subscribe(election.channel)
         .doOnError(
             err ->
                 Timber.tag(TAG).e(err, "An error occurred while subscribing to election channel"))
@@ -108,7 +103,7 @@ public final class ElectionHandler {
 
     Timber.tag(TAG).d("handleOpenElection: channel %s", channel);
 
-    String laoId = electionOpen.getLaoId();
+    String laoId = electionOpen.laoId;
     if (!laoRepo.containsLao(laoId)) {
       throw new UnknownLaoException(laoId);
     }
@@ -122,8 +117,7 @@ public final class ElectionHandler {
     }
 
     // Sets the start time to now
-    Election updated =
-        election.builder().setState(OPENED).setStart(electionOpen.getOpenedAt()).build();
+    Election updated = election.builder().setState(OPENED).setStart(electionOpen.openedAt).build();
 
     Timber.tag(TAG).d("election opened %d", updated.getStartTimestamp());
     electionRepository.updateElection(updated);
@@ -197,7 +191,7 @@ public final class ElectionHandler {
 
     Timber.tag(TAG).d("handleCastVote: channel %s", channel);
 
-    String laoId = castVote.getLaoId();
+    String laoId = castVote.laoId;
     if (!laoRepo.containsLao(laoId)) {
       throw new UnknownLaoException(laoId);
     }
@@ -205,7 +199,7 @@ public final class ElectionHandler {
     // Election id validity is checked with this
     Election election = electionRepository.getElectionByChannel(channel);
 
-    if (election.getCreation() > castVote.getCreation()) {
+    if (election.creation > castVote.getCreation()) {
       throw new DataHandlingException(castVote, "vote cannot be older than election creation");
     }
 
@@ -221,7 +215,7 @@ public final class ElectionHandler {
       }
 
       // Retrieve previous message and make sure it is a CastVote
-      Data previousData = messageRepo.getMessage(previousMessageId).getData();
+      Data previousData = messageRepo.getMessage(previousMessageId).data;
       if (previousData == null) {
         throw new IllegalStateException(
             "The message corresponding to " + messageId + " does not exist");
@@ -257,7 +251,7 @@ public final class ElectionHandler {
         electionRepository
             .getElectionByChannel(channel)
             .builder()
-            .setElectionKey(electionKey.getElectionVoteKey())
+            .setElectionKey(electionKey.electionVoteKey)
             .build();
 
     electionRepository.updateElection(election);
@@ -283,7 +277,7 @@ public final class ElectionHandler {
     Map<String, Set<QuestionResult>> results = new HashMap<>();
 
     for (ElectionResultQuestion resultQuestion : electionResultsQuestions) {
-      results.put(resultQuestion.getId(), resultQuestion.getResult());
+      results.put(resultQuestion.id, resultQuestion.result);
     }
 
     return results;
@@ -295,21 +289,19 @@ public final class ElectionHandler {
 
   public static WitnessMessage electionSetupWitnessMessage(MessageID messageId, Election election) {
     WitnessMessage message = new WitnessMessage(messageId);
-    message.setTitle(
-        String.format(
-            "Election %s setup at %s",
-            election.getName(), new Date(election.getCreationInMillis())));
-    message.setDescription(
-        "Mnemonic identifier :\n"
-            + ActivityUtils.generateMnemonicWordFromBase64(election.getId(), 2)
-            + "\n\n"
-            + "Opens at :\n"
-            + new Date(election.getStartTimestampInMillis())
-            + "\n\n"
-            + "Closes at :\n"
-            + new Date(election.getEndTimestampInMillis())
-            + "\n\n"
-            + formatElectionQuestions(election.getElectionQuestions()));
+    message.title = String.format(
+        "Election %s setup at %s",
+        election.getName(), new Date(election.getCreationInMillis()));
+    message.description = "Mnemonic identifier :\n"
+        + ActivityUtils.generateMnemonicWordFromBase64(election.id, 2)
+        + "\n\n"
+        + "Opens at :\n"
+        + new Date(election.getStartTimestampInMillis())
+        + "\n\n"
+        + "Closes at :\n"
+        + new Date(election.getEndTimestampInMillis())
+        + "\n\n"
+        + formatElectionQuestions(election.getElectionQuestions());
 
     return message;
   }
@@ -317,15 +309,14 @@ public final class ElectionHandler {
   public static WitnessMessage electionResultWitnessMessage(
       MessageID messageId, Election election) {
     WitnessMessage message = new WitnessMessage(messageId);
-    message.setTitle(String.format("Election %s results", election.getName()));
-    message.setDescription(
-        "Mnemonic identifier :\n"
-            + ActivityUtils.generateMnemonicWordFromBase64(election.getId(), 2)
-            + "\n\n"
-            + "Closed at :\n"
-            + new Date(election.getEndTimestampInMillis())
-            + "\n\n"
-            + formatElectionResults(election.getElectionQuestions(), election.getResults()));
+    message.title = String.format("Election %s results", election.getName());
+    message.description = "Mnemonic identifier :\n"
+        + ActivityUtils.generateMnemonicWordFromBase64(election.id, 2)
+        + "\n\n"
+        + "Closed at :\n"
+        + new Date(election.getEndTimestampInMillis())
+        + "\n\n"
+        + formatElectionResults(election.getElectionQuestions(), election.getResults());
 
     return message;
   }
@@ -339,7 +330,7 @@ public final class ElectionHandler {
           .append(QUESTION)
           .append(i + 1)
           .append(": \n")
-          .append(questions.get(i).getQuestion());
+          .append(questions.get(i).question);
 
       if (i < questions.size() - 1) {
         questionsDescription.append("\n\n");
@@ -358,15 +349,15 @@ public final class ElectionHandler {
           .append(QUESTION)
           .append(i + 1)
           .append(": \n")
-          .append(questions.get(i).getQuestion())
+          .append(questions.get(i).question)
           .append("\nResults: \n");
 
-      Set<QuestionResult> resultSet = results.get(questions.get(i).getId());
+      Set<QuestionResult> resultSet = results.get(questions.get(i).id);
       for (QuestionResult questionResult : Objects.requireNonNull(resultSet)) {
         questionsDescription
             .append(questionResult.getBallot())
             .append(" : ")
-            .append(questionResult.getCount())
+            .append(questionResult.count)
             .append("\n");
       }
 

@@ -10,9 +10,9 @@ public class JsonRPCErrorException extends GenericException {
   private final String errorDesc;
 
   public JsonRPCErrorException(Error error) {
-    super("Error " + error.getError().getCode() + " - " + error.getError().getDescription());
-    this.errorCode = error.getError().getCode();
-    this.errorDesc = error.getError().getDescription();
+    super("Error " + error.error.code + " - " + error.error.description);
+    this.errorCode = error.error.code;
+    this.errorDesc = error.error.description;
   }
 
   @Override

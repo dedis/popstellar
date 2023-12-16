@@ -50,13 +50,13 @@ public class WitnessAddTest {
 
   private static final String LAO_NAME = "lao";
   private static final KeyPair SENDER_KEY = generateKeyPair();
-  private static final PublicKey SENDER = SENDER_KEY.getPublicKey();
+  private static final PublicKey SENDER = SENDER_KEY.publicKey;
 
   private static final long CREATION = Instant.now().getEpochSecond();
   private static final Lao LAO = new Lao(LAO_NAME, SENDER, CREATION);
   private static final String LAO_ID = LAO.getId();
   private static final String POP_TOKEN =
-      Base64DataUtils.generatePoPToken().getPublicKey().getEncoded();
+      Base64DataUtils.generatePoPToken().publicKey.getEncoded();
   private static final String VALID_RC_MANUAL_INPUT = "{\"pop_token\": \"" + POP_TOKEN + "\"}";
   public static final String JSON_INVALID_INPUT = "{pop_token:" + POP_TOKEN;
   public static final String VALID_WITNESS_MANUAL_INPUT =
@@ -86,7 +86,7 @@ public class WitnessAddTest {
           when(repository.getLaoObservable(anyString())).thenReturn(laoSubject);
           when(repository.getLaoView(any())).thenReturn(new LaoView(LAO));
           when(keyManager.getMainKeyPair()).thenReturn(SENDER_KEY);
-          when(keyManager.getMainPublicKey()).thenReturn(SENDER_KEY.getPublicKey());
+          when(keyManager.getMainPublicKey()).thenReturn(SENDER_KEY.publicKey);
         }
       };
 

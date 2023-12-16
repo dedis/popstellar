@@ -45,7 +45,7 @@ public class SocialMediaHomeFragmentTest {
   private static final KeyPair SENDER_KEY_1 = generatePoPToken();
   private static final KeyPair SENDER_KEY_2 = generatePoPToken();
 
-  private static final PublicKey SENDER_1 = SENDER_KEY_1.getPublicKey();
+  private static final PublicKey SENDER_1 = SENDER_KEY_1.publicKey;
   private static final String LAO_ID = Lao.generateLaoId(SENDER_1, CREATION_TIME, LAO_NAME);
 
   @Rule public InstantTaskExecutorRule rule = new InstantTaskExecutorRule();

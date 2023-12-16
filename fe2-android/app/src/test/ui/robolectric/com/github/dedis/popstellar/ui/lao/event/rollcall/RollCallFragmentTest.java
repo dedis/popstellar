@@ -1,9 +1,19 @@
 package com.github.dedis.popstellar.ui.lao.event.rollcall;
 
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.*;
+import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
+import static com.github.dedis.popstellar.testutils.pages.lao.LaoActivityPageObject.*;
+import static com.github.dedis.popstellar.testutils.pages.lao.event.rollcall.RollCallFragmentPageObject.*;
+import static org.junit.Assert.assertNotEquals;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
-
 import com.github.dedis.popstellar.model.network.method.message.data.rollcall.CloseRollCall;
 import com.github.dedis.popstellar.model.network.method.message.data.rollcall.OpenRollCall;
 import com.github.dedis.popstellar.model.objects.Lao;
@@ -21,7 +31,12 @@ import com.github.dedis.popstellar.utility.Constants;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
-
+import dagger.hilt.android.testing.*;
+import io.reactivex.subjects.BehaviorSubject;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import javax.inject.Inject;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExternalResource;
@@ -30,34 +45,14 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoTestRule;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.*;
-
-import javax.inject.Inject;
-
-import dagger.hilt.android.testing.*;
-import io.reactivex.subjects.BehaviorSubject;
-
-import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.*;
-import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
-import static com.github.dedis.popstellar.testutils.pages.lao.LaoActivityPageObject.*;
-import static com.github.dedis.popstellar.testutils.pages.lao.event.rollcall.RollCallFragmentPageObject.*;
-import static org.junit.Assert.assertNotEquals;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 @HiltAndroidTest
 @RunWith(AndroidJUnit4.class)
 public class RollCallFragmentTest {
 
   private static final String LAO_NAME = "lao";
   private static final KeyPair SENDER_KEY = generateKeyPair();
-  private static final PublicKey SENDER = SENDER_KEY.getPublicKey();
-  private static final PublicKey SENDER_2 = generateKeyPair().getPublicKey();
+  private static final PublicKey SENDER = SENDER_KEY.publicKey;
+  private static final PublicKey SENDER_2 = generateKeyPair().publicKey;
   private static final Lao LAO = new Lao(LAO_NAME, SENDER, 10223421);
   private static final Lao LAO_2 = new Lao(LAO_NAME + "2", SENDER_2, 10223422);
   private static final String LAO_ID = LAO.getId();
@@ -150,9 +145,7 @@ public class RollCallFragmentTest {
           containerId(),
           RollCallFragment.class,
           () -> RollCallFragment.newInstance(ROLL_CALL),
-          new BundleBuilder()
-              .putString(Constants.ROLL_CALL_ID, ROLL_CALL.getPersistentId())
-              .build());
+          new BundleBuilder().putString(Constants.ROLL_CALL_ID, ROLL_CALL.persistentId).build());
 
   @Test
   public void rollCallTitleMatches() {
@@ -194,7 +187,7 @@ public class RollCallFragmentTest {
     InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
     verify(messageSenderHelper.getMockedSender())
-        .publish(any(), eq(LAO.getChannel()), any(OpenRollCall.class));
+        .publish(any(), eq(LAO.channel), any(OpenRollCall.class));
     messageSenderHelper.assertSubscriptions();
   }
 
@@ -224,7 +217,7 @@ public class RollCallFragmentTest {
     InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
     verify(messageSenderHelper.getMockedSender())
-        .publish(any(), eq(LAO.getChannel()), any(CloseRollCall.class));
+        .publish(any(), eq(LAO.channel), any(CloseRollCall.class));
     messageSenderHelper.assertSubscriptions();
   }
 
@@ -402,6 +395,6 @@ public class RollCallFragmentTest {
                 LaoActivity.setCurrentFragment(
                     activity.getSupportFragmentManager(),
                     fragmentId(),
-                    () -> RollCallFragment.newInstance(ROLL_CALL_2.getPersistentId())));
+                    () -> RollCallFragment.newInstance(ROLL_CALL_2.persistentId)));
   }
 }

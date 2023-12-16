@@ -60,7 +60,7 @@ import static org.mockito.Mockito.when;
 public class CastVoteSecretBallotFragmentTest {
   private static final String LAO_NAME = "LAO";
   private static final KeyPair SENDER_KEY = generateKeyPair();
-  private static final PublicKey SENDER = SENDER_KEY.getPublicKey();
+  private static final PublicKey SENDER = SENDER_KEY.publicKey;
   private static final Lao LAO = new Lao(LAO_NAME, SENDER, 10223421);
   private static final String LAO_ID = LAO.getId();
 

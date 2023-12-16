@@ -48,7 +48,7 @@ public class LaoCreateFragmentTest {
   private static final String LAO_NAME = "LAO";
   private static final String SERVER_URL = "localhost";
   private static final KeyPair KEY_PAIR = Base64DataUtils.generateKeyPair();
-  private static final PublicKey PK = KEY_PAIR.getPublicKey();
+  private static final PublicKey PK = KEY_PAIR.publicKey;
   private static final Lao LAO = new Lao(LAO_NAME, PK, 10223421);
   public static final String VALID_WITNESS_MANUAL_INPUT =
       "{\"main_public_key\": \"" + PK.getEncoded() + "\"}";

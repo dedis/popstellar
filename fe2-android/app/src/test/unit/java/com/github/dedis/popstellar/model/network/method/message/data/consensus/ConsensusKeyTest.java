@@ -17,17 +17,17 @@ public class ConsensusKeyTest {
 
   @Test
   public void getTypeTest() {
-    assertEquals(type, key.getType());
+    assertEquals(type, key.type);
   }
 
   @Test
   public void getIdTest() {
-    assertEquals(id, key.getId());
+    assertEquals(id, key.id);
   }
 
   @Test
   public void getPropertyTest() {
-    assertEquals(property, key.getProperty());
+    assertEquals(property, key.property);
   }
 
   @Test

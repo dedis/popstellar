@@ -1,33 +1,30 @@
 package com.github.dedis.popstellar.model.objects;
 
-import androidx.test.ext.junit.runners.AndroidJUnit4;
+import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
+import static org.junit.Assert.*;
 
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 import com.github.dedis.popstellar.model.network.JsonTestUtils;
 import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.*;
 import com.github.dedis.popstellar.model.objects.digitalcash.*;
 import com.github.dedis.popstellar.model.objects.security.*;
 import com.github.dedis.popstellar.utility.security.Hash;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
 import java.security.GeneralSecurityException;
 import java.util.*;
-
-import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
-import static org.junit.Assert.*;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 @RunWith(AndroidJUnit4.class)
 public class TransactionObjectTest {
   KeyPair senderKey = generateKeyPair();
-  PublicKey sender = senderKey.getPublicKey();
+  PublicKey sender = senderKey.publicKey;
 
   @Test
   public void getChannelTest() throws GeneralSecurityException {
     Channel channel = Channel.fromString("/root/laoId/coin/myChannel");
     TransactionObjectBuilder builder = getValidTransactionBuilder();
     builder.setChannel(channel);
-    assertEquals(channel, builder.build().getChannel());
+    assertEquals(channel, builder.build().channel);
   }
 
   // test get Inputs
@@ -45,7 +42,7 @@ public class TransactionObjectTest {
     List<InputObject> listInput = Collections.singletonList(input);
     builder.setInputs(listInput);
 
-    assertEquals(listInput, builder.build().getInputs());
+    assertEquals(listInput, builder.build().inputs);
   }
 
   // test get Outputs
@@ -59,7 +56,7 @@ public class TransactionObjectTest {
     OutputObject output = new OutputObject(value, scriptTxOut);
     List<OutputObject> listOutput = Collections.singletonList(output);
     builder.setOutputs(listOutput);
-    assertEquals(listOutput, builder.build().getOutputs());
+    assertEquals(listOutput, builder.build().outputs);
   }
 
   @Test
@@ -67,7 +64,7 @@ public class TransactionObjectTest {
     TransactionObjectBuilder builder = getValidTransactionBuilder();
     long locktime = 0;
     builder.setLockTime(locktime);
-    assertEquals(locktime, builder.build().getLockTime());
+    assertEquals(locktime, builder.build().lockTime);
   }
 
   @Test
@@ -75,7 +72,7 @@ public class TransactionObjectTest {
     TransactionObjectBuilder builder = getValidTransactionBuilder();
     int version = 0;
     builder.setVersion(version);
-    assertEquals(version, builder.build().getVersion());
+    assertEquals(version, builder.build().version);
   }
 
   @Test
@@ -117,7 +114,7 @@ public class TransactionObjectTest {
   public void getReceiversTransactionTestNull() throws GeneralSecurityException {
     TransactionObjectBuilder builder = getValidTransactionBuilder();
     KeyPair senderKey1 = generateKeyPair();
-    PublicKey sender1 = senderKey1.getPublicKey();
+    PublicKey sender1 = senderKey1.publicKey;
     PublicKey sender2 = null;
     String type = "P2PKH";
     String pubkeyhash1 = sender1.computeHash();
@@ -164,7 +161,7 @@ public class TransactionObjectTest {
         Collections.singletonList(pubKeyHash), transactionObject.getReceiversHashTransaction());
     // DUMMY SENDER
     KeyPair senderDummyKey = generateKeyPair();
-    PublicKey senderDummy = senderDummyKey.getPublicKey();
+    PublicKey senderDummy = senderDummyKey.publicKey;
     assertNotEquals(
         Collections.singletonList(senderDummy.computeHash()),
         transactionObject.getReceiversHashTransaction());
@@ -203,30 +200,28 @@ public class TransactionObjectTest {
     String path = "protocol/examples/messageData/coin/post_transaction_coinbase.json";
     String validJson = JsonTestUtils.loadFile(path);
     PostTransactionCoin postTransactionModel = (PostTransactionCoin) JsonTestUtils.parse(validJson);
-    Transaction transactionModel = postTransactionModel.getTransaction();
+    Transaction transactionModel = postTransactionModel.transaction;
 
     TransactionObjectBuilder builder = getValidTransactionBuilder();
-    builder.setLockTime(transactionModel.getLockTime());
-    builder.setVersion(transactionModel.getVersion());
+    builder.setLockTime(transactionModel.lockTime);
+    builder.setVersion(transactionModel.version);
 
     List<InputObject> inpObj = new ArrayList<>();
     List<OutputObject> outObj = new ArrayList<>();
     for (Input i : transactionModel.getInputs()) {
-      ScriptInput scriptInput = i.getScript();
+      ScriptInput scriptInput = i.script;
       inpObj.add(
           new InputObject(
-              i.getTxOutHash(),
-              i.getTxOutIndex(),
-              new ScriptInputObject(
-                  scriptInput.getType(), scriptInput.getPubkey(), scriptInput.getSig())));
+              i.txOutHash,
+              i.txOutIndex,
+              new ScriptInputObject(scriptInput.type, scriptInput.getPubkey(), scriptInput.sig)));
     }
 
     for (Output o : transactionModel.getOutputs()) {
-      ScriptOutput scriptOutput = o.getScript();
+      ScriptOutput scriptOutput = o.script;
       outObj.add(
           new OutputObject(
-              o.getValue(),
-              new ScriptOutputObject(scriptOutput.getType(), scriptOutput.getPubKeyHash())));
+              o.value, new ScriptOutputObject(scriptOutput.type, scriptOutput.pubKeyHash)));
     }
 
     builder.setInputs(inpObj);

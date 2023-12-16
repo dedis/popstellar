@@ -38,7 +38,7 @@ import static org.mockito.Mockito.when;
 public class InviteFragmentTest {
   private static final String LAO_NAME = "LAO";
   private static final KeyPair KEY_PAIR = Base64DataUtils.generateKeyPair();
-  private static final PublicKey PK = KEY_PAIR.getPublicKey();
+  private static final PublicKey PK = KEY_PAIR.publicKey;
 
   private static final Lao LAO = new Lao(LAO_NAME, PK, 44444444);
 

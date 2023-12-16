@@ -1,10 +1,15 @@
 package com.github.dedis.popstellar.utility.handler;
 
-import android.app.Application;
+import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.when;
 
+import android.app.Application;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
-
 import com.github.dedis.popstellar.di.DataRegistryModuleHelper;
 import com.github.dedis.popstellar.di.JsonModule;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
@@ -26,31 +31,21 @@ import com.github.dedis.popstellar.utility.error.*;
 import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
-
+import io.reactivex.Completable;
+import io.reactivex.Single;
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+import java.util.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.io.IOException;
-import java.security.GeneralSecurityException;
-import java.util.*;
-
-import io.reactivex.Completable;
-import io.reactivex.Single;
-
-import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.lenient;
-import static org.mockito.Mockito.when;
-
 @RunWith(AndroidJUnit4.class)
 public class TransactionCoinHandlerTest {
   private static final KeyPair SENDER_KEY = generateKeyPair();
-  private static final PublicKey SENDER = SENDER_KEY.getPublicKey();
+  private static final PublicKey SENDER = SENDER_KEY.publicKey;
   private static final CreateLao CREATE_LAO = new CreateLao("lao", SENDER, new ArrayList<>());
 
   // Version
@@ -101,8 +96,12 @@ public class TransactionCoinHandlerTest {
 
   @Before
   public void setup()
-      throws GeneralSecurityException, DataHandlingException, IOException, UnknownRollCallException,
-          UnknownLaoException, NoRollCallException {
+      throws GeneralSecurityException,
+          DataHandlingException,
+          IOException,
+          UnknownRollCallException,
+          UnknownLaoException,
+          NoRollCallException {
     MockitoAnnotations.openMocks(this);
     Application application = ApplicationProvider.getApplicationContext();
 
@@ -136,17 +135,21 @@ public class TransactionCoinHandlerTest {
     gson = JsonModule.provideGson(dataRegistry);
     messageHandler = new MessageHandler(messageRepo, dataRegistry);
 
-    lao = new Lao(CREATE_LAO.getName(), CREATE_LAO.getOrganizer(), CREATE_LAO.getCreation());
-    lao.setLastModified(lao.getCreation());
+    lao = new Lao(CREATE_LAO.name, CREATE_LAO.organizer, CREATE_LAO.creation);
+    lao.lastModified = lao.creation;
 
     digitalCashRepo.initializeDigitalCash(lao.getId(), Collections.singletonList(SENDER));
-    coinChannel = lao.getChannel().subChannel("coin").subChannel(SENDER.getEncoded());
+    coinChannel = lao.channel.subChannel("coin").subChannel(SENDER.getEncoded());
   }
 
   @Test
   public void testHandlePostTransactionCoin()
-      throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
-          UnknownElectionException, NoRollCallException, UnknownWitnessMessageException {
+      throws DataHandlingException,
+          UnknownLaoException,
+          UnknownRollCallException,
+          UnknownElectionException,
+          NoRollCallException,
+          UnknownWitnessMessageException {
     MessageGeneral message = new MessageGeneral(SENDER_KEY, postTransactionCoin, gson);
     messageHandler.handleMessage(messageSender, coinChannel, message);
 
@@ -154,6 +157,6 @@ public class TransactionCoinHandlerTest {
     assertEquals(1, transactions.size());
     assertTrue(
         transactions.stream()
-            .anyMatch(transactionObject -> transactionObject.getChannel().equals(coinChannel)));
+            .anyMatch(transactionObject -> transactionObject.channel.equals(coinChannel)));
   }
 }

@@ -42,24 +42,24 @@ public class ConsensusProposeTest {
 
   @Test
   public void getInstanceIdTest() {
-    assertEquals(instanceId, propose.getInstanceId());
+    assertEquals(instanceId, propose.instanceId);
   }
 
   @Test
   public void getMessageIdTest() {
-    assertEquals(messageId, propose.getMessageId());
+    assertEquals(messageId, propose.messageId);
   }
 
   @Test
   public void getCreationTest() {
-    assertEquals(timeInSeconds, propose.getCreation());
+    assertEquals(timeInSeconds, propose.creation);
   }
 
   @Test
   public void getProposeValueTest() {
-    ProposeValue value = propose.getProposeValue();
+    ProposeValue value = propose.proposeValue;
 
-    assertEquals(proposedTry, value.getProposedTry());
+    assertEquals(proposedTry, value.proposedTry);
     assertEquals(proposedValue, value.isProposedValue());
 
     ProposeValue value2 = new ProposeValue(proposedTry, proposedValue);

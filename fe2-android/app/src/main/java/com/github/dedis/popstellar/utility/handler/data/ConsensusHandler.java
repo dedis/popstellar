@@ -9,12 +9,9 @@ import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.WitnessingRepository;
 import com.github.dedis.popstellar.utility.error.*;
-
 import java.util.Optional;
 import java.util.Set;
-
 import javax.inject.Inject;
-
 import timber.log.Timber;
 
 public final class ConsensusHandler {
@@ -42,7 +39,7 @@ public final class ConsensusHandler {
     MessageID messageId = context.getMessageId();
     PublicKey senderPk = context.getSenderPk();
 
-    Timber.tag(TAG).d("handleElect: channel: %s, id: %s", channel, consensusElect.getInstanceId());
+    Timber.tag(TAG).d("handleElect: channel: %s, id: %s", channel, consensusElect.instanceId);
 
     LaoView laoView = laoRepo.getLaoViewByChannel(channel);
     Set<PublicKey> nodes = witnessingRepo.getWitnesses(laoView.getId());
@@ -64,16 +61,14 @@ public final class ConsensusHandler {
     PublicKey senderPk = context.getSenderPk();
 
     Timber.tag(TAG)
-        .d("handleElectAccept: channel: %s, id: %s", channel, consensusElectAccept.getInstanceId());
+        .d("handleElectAccept: channel: %s, id: %s", channel, consensusElectAccept.instanceId);
     LaoView laoView = laoRepo.getLaoViewByChannel(channel);
 
     Optional<ElectInstance> electInstanceOpt =
-        laoView.getElectInstance(consensusElectAccept.getMessageId());
+        laoView.getElectInstance(consensusElectAccept.messageId);
     if (!electInstanceOpt.isPresent()) {
-      Timber.tag(TAG)
-          .w("elect_accept for invalid messageId : %s", consensusElectAccept.getMessageId());
-      throw new InvalidMessageIdException(
-          consensusElectAccept, consensusElectAccept.getMessageId());
+      Timber.tag(TAG).w("elect_accept for invalid messageId : %s", consensusElectAccept.messageId);
+      throw new InvalidMessageIdException(consensusElectAccept, consensusElectAccept.messageId);
     }
 
     ElectInstance electInstance = electInstanceOpt.get();
@@ -95,20 +90,19 @@ public final class ConsensusHandler {
       throws DataHandlingException, UnknownLaoException {
     Channel channel = context.getChannel();
 
-    Timber.tag(TAG).d("handleLearn: channel: %s, id: %s", channel, consensusLearn.getInstanceId());
+    Timber.tag(TAG).d("handleLearn: channel: %s, id: %s", channel, consensusLearn.instanceId);
     LaoView laoView = laoRepo.getLaoViewByChannel(channel);
 
-    Optional<ElectInstance> electInstanceOpt =
-        laoView.getElectInstance(consensusLearn.getMessageId());
+    Optional<ElectInstance> electInstanceOpt = laoView.getElectInstance(consensusLearn.messageId);
     if (!electInstanceOpt.isPresent()) {
-      Timber.tag(TAG).w("learn for invalid messageId : %s", consensusLearn.getMessageId());
-      throw new InvalidMessageIdException(consensusLearn, consensusLearn.getMessageId());
+      Timber.tag(TAG).w("learn for invalid messageId : %s", consensusLearn.messageId);
+      throw new InvalidMessageIdException(consensusLearn, consensusLearn.messageId);
     }
 
     ElectInstance electInstance = electInstanceOpt.get();
 
-    if (consensusLearn.getLearnValue().isDecision()) {
-      electInstance.setState(ElectInstance.State.ACCEPTED);
+    if (consensusLearn.learnValue.isDecision()) {
+      electInstance.state = ElectInstance.State.ACCEPTED;
     }
     Lao lao = laoView.createLaoCopy();
     lao.updateElectInstance(electInstance);
@@ -121,18 +115,17 @@ public final class ConsensusHandler {
       throws UnknownLaoException, InvalidMessageIdException {
     Channel channel = context.getChannel();
 
-    Timber.tag(TAG)
-        .d("handleConsensusFailure: channel: %s, id: %s", channel, failure.getInstanceId());
+    Timber.tag(TAG).d("handleConsensusFailure: channel: %s, id: %s", channel, failure.instanceId);
     LaoView laoView = laoRepo.getLaoViewByChannel(channel);
 
-    Optional<ElectInstance> electInstanceOpt = laoView.getElectInstance(failure.getMessageId());
+    Optional<ElectInstance> electInstanceOpt = laoView.getElectInstance(failure.messageId);
     if (!electInstanceOpt.isPresent()) {
-      Timber.tag(TAG).w("Failure for invalid messageId : %s", failure.getMessageId());
-      throw new InvalidMessageIdException(failure, failure.getMessageId());
+      Timber.tag(TAG).w("Failure for invalid messageId : %s", failure.messageId);
+      throw new InvalidMessageIdException(failure, failure.messageId);
     }
 
     ElectInstance electInstance = electInstanceOpt.get();
-    electInstance.setState(ElectInstance.State.FAILED);
+    electInstance.state = ElectInstance.State.FAILED;
     Lao lao = laoView.createLaoCopy();
     lao.updateElectInstance(electInstance);
 

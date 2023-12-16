@@ -1,15 +1,12 @@
 package com.github.dedis.popstellar.model.objects.security.ed25519;
 
-import com.github.dedis.popstellar.model.objects.security.Base64URLData;
-import com.github.dedis.popstellar.model.objects.security.elGamal.*;
-
-import org.junit.Test;
-
-import java.nio.charset.StandardCharsets;
+import static org.junit.Assert.*;
 
 import ch.epfl.dedis.lib.crypto.Ed25519Pair;
-
-import static org.junit.Assert.*;
+import com.github.dedis.popstellar.model.objects.security.Base64URLData;
+import com.github.dedis.popstellar.model.objects.security.elGamal.*;
+import java.nio.charset.StandardCharsets;
+import org.junit.Test;
 
 public class ElectionPrivateKeyTest {
 
@@ -40,7 +37,7 @@ public class ElectionPrivateKeyTest {
   @Test
   public void equalsTest() {
     ElectionKeyPair scheme = ElectionKeyPair.generateKeyPair();
-    ElectionPrivateKey that = scheme.getDecryptionScheme();
+    ElectionPrivateKey that = scheme.decryptionScheme;
     assertEquals(validDecryptionScheme, validDecryptionScheme);
     assertNotEquals(that, validDecryptionScheme);
     assertNotEquals(null, validDecryptionScheme);

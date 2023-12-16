@@ -82,10 +82,10 @@ public class RollCallRepository {
             .subscribe(
                 () ->
                     Timber.tag(TAG)
-                        .d("Successfully persisted rollcall %s", rollCall.getPersistentId()),
+                        .d("Successfully persisted rollcall %s", rollCall.persistentId),
                 err ->
                     Timber.tag(TAG)
-                        .e(err, "Error in persisting rollcall %s", rollCall.getPersistentId())));
+                        .e(err, "Error in persisting rollcall %s", rollCall.persistentId)));
 
     // Retrieve Lao data and add the roll call to it
     getLaoRollCalls(laoId).update(rollCall);
@@ -220,11 +220,11 @@ public class RollCallRepository {
      */
     public void update(RollCall rollCall) {
       // Updating repo data
-      String persistentId = rollCall.getPersistentId();
+      String persistentId = rollCall.persistentId;
       rollCallByPersistentId.put(persistentId, rollCall);
 
       // We update the alias map with
-      rollCallIdAlias.put(rollCall.getId(), rollCall.getPersistentId());
+      rollCallIdAlias.put(rollCall.id, rollCall.persistentId);
 
       // Publish new values on subjects
       if (rollCallSubjects.containsKey(persistentId)) {
@@ -296,7 +296,7 @@ public class RollCallRepository {
                           rollCall -> {
                             update(rollCall);
                             Timber.tag(TAG)
-                                .d("Retrieved from db rollcall %s", rollCall.getPersistentId());
+                                .d("Retrieved from db rollcall %s", rollCall.persistentId);
                           }),
                   err ->
                       Timber.tag(TAG)

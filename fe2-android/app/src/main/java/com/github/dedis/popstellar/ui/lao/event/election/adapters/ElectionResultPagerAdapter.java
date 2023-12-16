@@ -43,7 +43,7 @@ public class ElectionResultPagerAdapter
                   e -> {
                     List<QuestionResults> results =
                         e.getElectionQuestions().stream()
-                            .map(q -> new QuestionResults(q, e.getResultsForQuestionId(q.getId())))
+                            .map(q -> new QuestionResults(q, e.getResultsForQuestionId(q.id)))
                             .collect(Collectors.toList());
 
                     if (!results.equals(currentResults)) {
@@ -77,7 +77,7 @@ public class ElectionResultPagerAdapter
 
     // setting the question
     QuestionResults results = currentResults.get(position);
-    String question = results.question.getQuestion();
+    String question = results.question.question;
     Set<QuestionResult> questionResults = results.results;
 
     holder.questionView.setText(question);
@@ -89,7 +89,7 @@ public class ElectionResultPagerAdapter
             .map(
                 result ->
                     new ElectionResultListAdapter.ElectionResult(
-                        result.getBallot(), result.getCount()))
+                        result.getBallot(), result.count))
             .collect(Collectors.toList());
 
     adapter.clear();

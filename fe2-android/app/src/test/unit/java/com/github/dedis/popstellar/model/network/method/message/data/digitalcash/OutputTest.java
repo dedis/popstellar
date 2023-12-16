@@ -17,12 +17,12 @@ public class OutputTest {
 
   @Test
   public void testGetValue() {
-    assertEquals(VALUE, TXOUT.getValue());
+    assertEquals(VALUE, TXOUT.value);
   }
 
   @Test
   public void testGetScript() {
-    assertEquals(SCRIPT_TX_OUT, TXOUT.getScript());
+    assertEquals(SCRIPT_TX_OUT, TXOUT.script);
   }
 
   @Test

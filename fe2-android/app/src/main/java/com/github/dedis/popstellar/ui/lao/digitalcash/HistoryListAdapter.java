@@ -4,22 +4,18 @@ import android.annotation.SuppressLint;
 import android.view.*;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.objects.digitalcash.TransactionObject;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
-
 import java.util.*;
 import java.util.stream.Collectors;
-
 import timber.log.Timber;
 
 public class HistoryListAdapter extends RecyclerView.Adapter<HistoryListAdapter.HistoryViewHolder> {
@@ -86,8 +82,7 @@ public class HistoryListAdapter extends RecyclerView.Adapter<HistoryListAdapter.
   @SuppressLint("NotifyDataSetChanged") // Because our current implementation warrants it
   public void setList(List<TransactionObject> transactions) {
     this.transactions = buildTransactionList(transactions);
-    transactions.forEach(
-        transaction -> expandMap.putIfAbsent(transaction.getTransactionId(), false));
+    transactions.forEach(transaction -> expandMap.putIfAbsent(transaction.transactionId, false));
     notifyDataSetChanged();
   }
 
@@ -96,7 +91,7 @@ public class HistoryListAdapter extends RecyclerView.Adapter<HistoryListAdapter.
     ArrayList<TransactionHistoryElement> transactionHistoryElements = new ArrayList<>();
     PublicKey ownKey;
     try {
-      ownKey = viewModel.getValidToken().getPublicKey();
+      ownKey = viewModel.getValidToken().publicKey;
     } catch (KeyException e) {
       ErrorUtils.logAndShow(activity, TAG, e, R.string.error_retrieve_own_token);
       return new ArrayList<>();
@@ -106,7 +101,7 @@ public class HistoryListAdapter extends RecyclerView.Adapter<HistoryListAdapter.
       boolean isSender = transactionObject.isSender(ownKey);
       boolean isIssuance = transactionObject.isCoinBaseTransaction();
       transactionHistoryElements.addAll(
-          transactionObject.getOutputs().stream()
+          transactionObject.outputs.stream()
               // If we are in input, we want all output except us. If we are not in input,
               // we want all output we are in: so we filter isInInput XOR isInOutput
               // if it is an issuance, we want all outputs where we are
@@ -120,9 +115,9 @@ public class HistoryListAdapter extends RecyclerView.Adapter<HistoryListAdapter.
                       new TransactionHistoryElement(
                           isSender
                               ? outputObject.getPubKeyHash()
-                              : transactionObject.getInputs().get(0).getPubKey().getEncoded(),
-                          String.valueOf(outputObject.getValue()),
-                          transactionObject.getTransactionId(),
+                              : transactionObject.inputs.get(0).getPubKey().getEncoded(),
+                          String.valueOf(outputObject.value),
+                          transactionObject.transactionId,
                           !isIssuance && isSender))
               .collect(Collectors.toList()));
     }

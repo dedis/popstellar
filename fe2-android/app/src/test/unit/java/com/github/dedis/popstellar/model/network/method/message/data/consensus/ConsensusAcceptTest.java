@@ -38,24 +38,24 @@ public class ConsensusAcceptTest {
 
   @Test
   public void getInstanceIdTest() {
-    assertEquals(instanceId, accept.getInstanceId());
+    assertEquals(instanceId, accept.instanceId);
   }
 
   @Test
   public void getMessageIdTest() {
-    assertEquals(messageId, accept.getMessageId());
+    assertEquals(messageId, accept.messageId);
   }
 
   @Test
   public void getCreationTest() {
-    assertEquals(timeInSeconds, accept.getCreation());
+    assertEquals(timeInSeconds, accept.creation);
   }
 
   @Test
   public void getAcceptValueTest() {
-    AcceptValue value = accept.getAcceptValue();
+    AcceptValue value = accept.acceptValue;
 
-    assertEquals(acceptedTry, value.getAcceptedTry());
+    assertEquals(acceptedTry, value.acceptedTry);
     assertEquals(acceptedValue, value.isAcceptedValue());
 
     AcceptValue value2 = new AcceptValue(acceptedTry, acceptedValue);

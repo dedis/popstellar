@@ -33,7 +33,7 @@ public class ReactionEntity {
 
   @Ignore
   public ReactionEntity(@NonNull Reaction reaction) {
-    this(reaction.getId(), reaction.getChirpId(), reaction);
+    this(reaction.id, reaction.chirpId, reaction);
   }
 
   @NonNull

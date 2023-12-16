@@ -76,9 +76,9 @@ public class DigitalCashReceiveFragment extends Fragment {
             .subscribe(
                 ids -> {
                   PoPToken token = digitalCashViewModel.getValidToken();
-                  PublicKey publicKey = token.getPublicKey();
+                  PublicKey publicKey = token.publicKey;
                   binding.digitalCashReceiveAddress.setText(publicKey.getEncoded());
-                  PopTokenData tokenData = new PopTokenData(token.getPublicKey());
+                  PopTokenData tokenData = new PopTokenData(token.publicKey);
                   Bitmap myBitmap =
                       QRCode.from(gson.toJson(tokenData))
                           .withColor(

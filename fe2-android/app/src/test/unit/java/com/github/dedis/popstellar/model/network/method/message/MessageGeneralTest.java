@@ -1,7 +1,10 @@
 package com.github.dedis.popstellar.model.network.method.message;
 
-import androidx.test.ext.junit.runners.AndroidJUnit4;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertEquals;
 
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 import com.github.dedis.popstellar.di.DataRegistryModuleHelper;
 import com.github.dedis.popstellar.di.JsonModule;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
@@ -10,19 +13,12 @@ import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.security.*;
 import com.github.dedis.popstellar.model.objects.security.privatekey.PlainPrivateKey;
 import com.google.gson.Gson;
-
-import net.i2p.crypto.eddsa.Utils;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.util.*;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertEquals;
+import net.i2p.crypto.eddsa.Utils;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 @RunWith(AndroidJUnit4.class)
 public class MessageGeneralTest {
@@ -67,8 +63,8 @@ public class MessageGeneralTest {
   public void testConstructorWithData() {
     MessageGeneral msg = new MessageGeneral(KEY_PAIR, DATA, GSON);
 
-    assertThat(msg.getData(), is(DATA));
-    assertThat(msg.getSender(), is(KEY_PAIR.getPublicKey()));
+    assertThat(msg.data, is(DATA));
+    assertThat(msg.sender, is(KEY_PAIR.publicKey));
     assertThat(msg.getWitnessSignatures(), is(Collections.emptyList()));
   }
 
@@ -76,8 +72,8 @@ public class MessageGeneralTest {
   public void testConstructorWithDataAndWitnessSignatures() {
     MessageGeneral msg = new MessageGeneral(KEY_PAIR, DATA, WITNESS_SIGNATURES, GSON);
 
-    assertThat(msg.getData(), is(DATA));
-    assertThat(msg.getSender(), is(KEY_PAIR.getPublicKey()));
+    assertThat(msg.data, is(DATA));
+    assertThat(msg.sender, is(KEY_PAIR.publicKey));
     assertThat(msg.getWitnessSignatures(), is(WITNESS_SIGNATURES));
   }
 
@@ -88,8 +84,8 @@ public class MessageGeneralTest {
     assertThat(
         msg.getDataEncoded(),
         is(new Base64URLData(GSON.toJson(DATA, Data.class).getBytes(StandardCharsets.UTF_8))));
-    assertThat(msg.getSignature(), is(KEY_PAIR.getPrivateKey().sign(msg.getDataEncoded())));
-    assertThat(msg.getMessageId(), is(new MessageID(msg.getDataEncoded(), msg.getSignature())));
+    assertThat(msg.getSignature(), is(KEY_PAIR.privateKey.sign(msg.getDataEncoded())));
+    assertThat(msg.messageId, is(new MessageID(msg.getDataEncoded(), msg.getSignature())));
   }
 
   @Test
@@ -98,7 +94,7 @@ public class MessageGeneralTest {
 
     assertThat(msg.getDataEncoded(), is(DATA_ENCODED));
     assertThat(msg.getSignature(), is(SIGNATURE));
-    assertThat(msg.getMessageId(), is(MESSAGE_ID));
+    assertThat(msg.messageId, is(MESSAGE_ID));
   }
 
   @Test
@@ -106,7 +102,7 @@ public class MessageGeneralTest {
     MessageGeneral msg1 = new MessageGeneral(KEY_PAIR, DATA, WITNESS_SIGNATURES, GSON);
     MessageGeneral msg2 =
         new MessageGeneral(
-            KEY_PAIR.getPublicKey(), DATA_ENCODED, DATA, SIGNATURE, MESSAGE_ID, WITNESS_SIGNATURES);
+            KEY_PAIR.publicKey, DATA_ENCODED, DATA, SIGNATURE, MESSAGE_ID, WITNESS_SIGNATURES);
 
     assertThat(msg1.verify(), is(true));
     assertThat(msg2.verify(), is(true));
@@ -116,7 +112,7 @@ public class MessageGeneralTest {
   public void verifyFailsOnInvalidData() {
     MessageGeneral msg =
         new MessageGeneral(
-            KEY_PAIR.getPublicKey(),
+            KEY_PAIR.publicKey,
             DATA_ENCODED,
             DATA,
             new Signature("UB6xpjpUGN5VtmWAw1T3npHxiZfKaXzx3ny5PXl_qF4"),
@@ -130,12 +126,12 @@ public class MessageGeneralTest {
   public void toStringTest() {
     MessageGeneral msg =
         new MessageGeneral(
-            KEY_PAIR.getPublicKey(), DATA_ENCODED, DATA, SIGNATURE, MESSAGE_ID, WITNESS_SIGNATURES);
+            KEY_PAIR.publicKey, DATA_ENCODED, DATA, SIGNATURE, MESSAGE_ID, WITNESS_SIGNATURES);
     String expected =
         String.format(
             "MessageGeneral{sender='%s', data='%s', signature='%s', messageId='%s', "
                 + "witnessSignatures='%s'}",
-            KEY_PAIR.getPublicKey().toString(), DATA, SIGNATURE, MESSAGE_ID, WITNESS_SIGNATURES);
+            KEY_PAIR.publicKey.toString(), DATA, SIGNATURE, MESSAGE_ID, WITNESS_SIGNATURES);
     assertEquals(expected, msg.toString());
   }
 }

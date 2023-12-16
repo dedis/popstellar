@@ -1,24 +1,21 @@
 package com.github.dedis.popstellar.model.network.method.message.data.rollcall;
 
-import androidx.test.ext.junit.runners.AndroidJUnit4;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 import com.github.dedis.popstellar.model.network.JsonTestUtils;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.model.objects.event.EventType;
 import com.github.dedis.popstellar.utility.security.Hash;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
 import java.time.Instant;
 import java.util.ArrayList;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 @RunWith(AndroidJUnit4.class)
 public class CloseRollCallTest {
@@ -30,20 +27,20 @@ public class CloseRollCallTest {
   private static final CreateRollCall CREATE_ROLL_CALL =
       new CreateRollCall(NAME, TIME, TIME, TIME, LOCATION, null, LAO_ID);
   private static final OpenRollCall OPEN_ROLL_CALL =
-      new OpenRollCall(LAO_ID, CREATE_ROLL_CALL.getId(), TIME, EventState.CREATED);
+      new OpenRollCall(LAO_ID, CREATE_ROLL_CALL.id, TIME, EventState.CREATED);
   private static final CloseRollCall CLOSE_ROLL_CALL =
-      new CloseRollCall(LAO_ID, OPEN_ROLL_CALL.getUpdateId(), TIME, new ArrayList<>());
+      new CloseRollCall(LAO_ID, OPEN_ROLL_CALL.updateId, TIME, new ArrayList<>());
 
   @Test
   public void generateCloseRollCallIdTest() {
     // Hash('R'||lao_id||closes||closed_at)
     String expectedId =
         Hash.hash(
-            EventType.ROLL_CALL.getSuffix(),
+            EventType.ROLL_CALL.suffix,
             LAO_ID,
-            CLOSE_ROLL_CALL.getCloses(),
-            Long.toString(CLOSE_ROLL_CALL.getClosedAt()));
-    assertThat(CLOSE_ROLL_CALL.getUpdateId(), is(expectedId));
+            CLOSE_ROLL_CALL.closes,
+            Long.toString(CLOSE_ROLL_CALL.closedAt));
+    assertThat(CLOSE_ROLL_CALL.updateId, is(expectedId));
   }
 
   @Test
@@ -63,12 +60,12 @@ public class CloseRollCallTest {
 
   @Test
   public void getClosedAtTest() {
-    assertThat(CLOSE_ROLL_CALL.getClosedAt(), is(TIME));
+    assertThat(CLOSE_ROLL_CALL.closedAt, is(TIME));
   }
 
   @Test
   public void getClosesTest() {
-    assertThat(CLOSE_ROLL_CALL.getCloses(), is(OPEN_ROLL_CALL.getUpdateId()));
+    assertThat(CLOSE_ROLL_CALL.closes, is(OPEN_ROLL_CALL.updateId));
   }
 
   @Test
@@ -81,7 +78,7 @@ public class CloseRollCallTest {
     assertEquals(CLOSE_ROLL_CALL, CLOSE_ROLL_CALL);
     assertNotEquals(null, CLOSE_ROLL_CALL);
     CloseRollCall closeRollCall =
-        new CloseRollCall(LAO_ID, OPEN_ROLL_CALL.getUpdateId(), TIME, new ArrayList<>());
+        new CloseRollCall(LAO_ID, OPEN_ROLL_CALL.updateId, TIME, new ArrayList<>());
     assertEquals(CLOSE_ROLL_CALL, closeRollCall);
   }
 
@@ -89,12 +86,9 @@ public class CloseRollCallTest {
   public void hashCodeTest() {
     String updateId =
         Hash.hash(
-            EventType.ROLL_CALL.getSuffix(),
-            LAO_ID,
-            OPEN_ROLL_CALL.getUpdateId(),
-            Long.toString(TIME));
+            EventType.ROLL_CALL.suffix, LAO_ID, OPEN_ROLL_CALL.updateId, Long.toString(TIME));
     assertEquals(
-        java.util.Objects.hash(updateId, OPEN_ROLL_CALL.getUpdateId(), TIME, new ArrayList<>()),
+        java.util.Objects.hash(updateId, OPEN_ROLL_CALL.updateId, TIME, new ArrayList<>()),
         CLOSE_ROLL_CALL.hashCode());
   }
 }

@@ -18,12 +18,12 @@ public class ScriptInputTest {
 
   @Test
   public void testGetType() {
-    assertEquals(TYPE, SCRIPTTXIN.getType());
+    assertEquals(TYPE, SCRIPTTXIN.type);
   }
 
   @Test
   public void testGetSig() {
-    assertEquals(new Signature(SIG), SCRIPTTXIN.getSig());
+    assertEquals(new Signature(SIG), SCRIPTTXIN.sig);
   }
 
   @Test

@@ -31,7 +31,7 @@ public class WitnessingEntity {
 
   @Ignore
   public WitnessingEntity(@NonNull String laoId, @NonNull WitnessMessage message) {
-    this(laoId, message.getMessageId(), message);
+    this(laoId, message.messageId, message);
   }
 
   @NonNull

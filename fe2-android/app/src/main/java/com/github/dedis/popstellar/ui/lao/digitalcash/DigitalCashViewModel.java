@@ -2,11 +2,9 @@ package com.github.dedis.popstellar.ui.lao.digitalcash;
 
 import android.app.Application;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.*;
-
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.SingleEvent;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
@@ -24,17 +22,14 @@ import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
-
+import dagger.hilt.android.lifecycle.HiltViewModel;
+import io.reactivex.*;
+import io.reactivex.Observable;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.util.*;
 import java.util.stream.Collectors;
-
 import javax.inject.Inject;
-
-import dagger.hilt.android.lifecycle.HiltViewModel;
-import io.reactivex.Observable;
-import io.reactivex.*;
 import timber.log.Timber;
 
 @HiltViewModel
@@ -220,7 +215,7 @@ public class DigitalCashViewModel extends AndroidViewModel {
     int index = 0;
 
     List<Input> inputs = new ArrayList<>();
-    List<TransactionObject> transactions = getTransactionsForUser(keyPair.getPublicKey());
+    List<TransactionObject> transactions = getTransactionsForUser(keyPair.publicKey);
     if (transactions != null && !coinBase) {
       processNotCoinbaseTransaction(keyPair, outputs, amountFromReceiver, inputs);
     } else {
@@ -248,7 +243,7 @@ public class DigitalCashViewModel extends AndroidViewModel {
     return new Input(
         currentHash,
         transactionInpMap.get(currentHash),
-        new ScriptInput(TYPE, keyPair.getPublicKey(), sig));
+        new ScriptInput(TYPE, keyPair.publicKey, sig));
   }
 
   public LAORepository getLaoRepository() {
@@ -261,7 +256,7 @@ public class DigitalCashViewModel extends AndroidViewModel {
 
   @Nullable
   public Set<PublicKey> getAttendeesFromLastRollCall() throws NoRollCallException {
-    return rollCallRepo.getLastClosedRollCall(laoId).getAttendees();
+    return rollCallRepo.getLastClosedRollCall(laoId).attendees;
   }
 
   @Nullable
@@ -324,16 +319,16 @@ public class DigitalCashViewModel extends AndroidViewModel {
       throws GeneralSecurityException {
     int index;
     String transactionHash;
-    List<TransactionObject> transactions = getTransactionsForUser(keyPair.getPublicKey());
+    List<TransactionObject> transactions = getTransactionsForUser(keyPair.publicKey);
 
-    long amountSender = getUserBalance(keyPair.getPublicKey()) - amountFromReceiver;
+    long amountSender = getUserBalance(keyPair.publicKey) - amountFromReceiver;
     Output outputSender =
-        new Output(amountSender, new ScriptOutput(TYPE, keyPair.getPublicKey().computeHash()));
+        new Output(amountSender, new ScriptOutput(TYPE, keyPair.publicKey.computeHash()));
     outputs.add(outputSender);
     Map<String, Integer> transactionInpMap = new HashMap<>();
     for (TransactionObject transactionPrevious : transactions) {
-      transactionHash = transactionPrevious.getTransactionId();
-      index = transactionPrevious.getIndexTransaction(keyPair.getPublicKey());
+      transactionHash = transactionPrevious.transactionId;
+      index = transactionPrevious.getIndexTransaction(keyPair.publicKey);
       transactionInpMap.put(transactionHash, index);
     }
 
@@ -348,7 +343,7 @@ public class DigitalCashViewModel extends AndroidViewModel {
 
   public Observable<List<TransactionObject>> getTransactionsObservable() {
     try {
-      return digitalCashRepo.getTransactionsObservable(laoId, getValidToken().getPublicKey());
+      return digitalCashRepo.getTransactionsObservable(laoId, getValidToken().publicKey);
     } catch (KeyException e) {
       return Observable.error(e);
     }
@@ -363,6 +358,6 @@ public class DigitalCashViewModel extends AndroidViewModel {
   }
 
   public long getOwnBalance() throws KeyException {
-    return getUserBalance(getValidToken().getPublicKey());
+    return getUserBalance(getValidToken().publicKey);
   }
 }

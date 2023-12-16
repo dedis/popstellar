@@ -26,12 +26,12 @@ public class ConsensusElectAcceptTest {
 
   @Test
   public void getInstanceId() {
-    assertEquals(instanceId, consensusElectAcceptAccept.getInstanceId());
+    assertEquals(instanceId, consensusElectAcceptAccept.instanceId);
   }
 
   @Test
   public void getMessageIdTest() {
-    assertEquals(messageId, consensusElectAcceptAccept.getMessageId());
+    assertEquals(messageId, consensusElectAcceptAccept.messageId);
   }
 
   @Test

@@ -50,11 +50,11 @@ public class ChirpTest {
     Chirp chirp = new Chirp(ID, SENDER, TEXT, TIMESTAMP, EMPTY_MESSAGE_ID);
     Chirp deleted = chirp.deleted();
 
-    assertEquals(chirp.getId(), deleted.getId());
-    assertEquals(chirp.getSender(), deleted.getSender());
-    assertEquals("", deleted.getText());
-    assertEquals(chirp.getTimestamp(), deleted.getTimestamp());
-    assertEquals(chirp.getParentId(), deleted.getParentId());
-    assertTrue(deleted.isDeleted());
+    assertEquals(chirp.id, deleted.id);
+    assertEquals(chirp.sender, deleted.sender);
+    assertEquals("", deleted.text);
+    assertEquals(chirp.timestamp, deleted.timestamp);
+    assertEquals(chirp.parentId, deleted.parentId);
+    assertTrue(deleted.isDeleted);
   }
 }

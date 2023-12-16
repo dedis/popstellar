@@ -23,17 +23,17 @@ public class InputTest {
 
   @Test
   public void testGetTxOutHash() {
-    assertEquals(Tx_OUT_HASH, TXIN.getTxOutHash());
+    assertEquals(Tx_OUT_HASH, TXIN.txOutHash);
   }
 
   @Test
   public void testGetTxOutIndex() {
-    assertEquals(TX_OUT_INDEX, TXIN.getTxOutIndex());
+    assertEquals(TX_OUT_INDEX, TXIN.txOutIndex);
   }
 
   @Test
   public void testGetScript() {
-    assertEquals(SCRIPTTXIN, TXIN.getScript());
+    assertEquals(SCRIPTTXIN, TXIN.script);
   }
 
   @Test

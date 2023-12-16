@@ -1,26 +1,21 @@
 package com.github.dedis.popstellar.ui.home;
 
-import androidx.test.ext.junit.runners.AndroidJUnit4;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 import com.github.dedis.popstellar.di.TestKeysetModule;
 import com.github.dedis.popstellar.model.objects.Wallet;
 import com.github.dedis.popstellar.model.objects.security.PoPToken;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.error.keys.SeedValidationException;
-
+import dagger.hilt.android.testing.HiltAndroidRule;
+import dagger.hilt.android.testing.HiltAndroidTest;
+import java.security.GeneralSecurityException;
 import net.i2p.crypto.eddsa.Utils;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import java.security.GeneralSecurityException;
-
-import dagger.hilt.android.testing.HiltAndroidRule;
-import dagger.hilt.android.testing.HiltAndroidTest;
-
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
 
 @HiltAndroidTest
 @RunWith(AndroidJUnit4.class)
@@ -60,7 +55,7 @@ public class WalletTest {
         Utils.bytesToHex(res.getPrivateKey().getData()));
     assertEquals(
         "7147759d146897111bcf74f60a1948b1d3a22c9199a6b88c236eb7326adc2efc",
-        Utils.bytesToHex(res.getPublicKey().getData()));
+        Utils.bytesToHex(res.publicKey.getData()));
   }
 
   @Test

@@ -32,7 +32,7 @@ public class ChirpEntity {
 
   @Ignore
   public ChirpEntity(@NonNull String laoId, @NonNull Chirp chirp) {
-    this(chirp.getId(), laoId, chirp);
+    this(chirp.id, laoId, chirp);
   }
 
   @NonNull

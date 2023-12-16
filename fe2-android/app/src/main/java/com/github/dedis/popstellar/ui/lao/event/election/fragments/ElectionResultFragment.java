@@ -66,7 +66,7 @@ public class ElectionResultFragment extends Fragment {
       binding.electionResultElectionTitle.setText(election.getName());
 
       ElectionResultPagerAdapter adapter =
-          new ElectionResultPagerAdapter(laoViewModel, electionRepository, election.getId());
+          new ElectionResultPagerAdapter(laoViewModel, electionRepository, election.id);
       ViewPager2 viewPager2 = binding.electionResultPager;
       viewPager2.setAdapter(adapter);
 

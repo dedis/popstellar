@@ -55,7 +55,7 @@ public class WitnessingRepositoryTest {
   private static MeetingRepository meetingRepo;
   private static final String LAO_ID = "LAO_ID";
   private static final MessageID MESSAGE_ID = generateMessageID();
-  private static final PublicKey WITNESS = generateKeyPair().getPublicKey();
+  private static final PublicKey WITNESS = generateKeyPair().publicKey;
   private static final Set<PublicKey> WITNESSES = new HashSet<>(Collections.singletonList(WITNESS));
   private static final WitnessMessage WITNESS_MESSAGE = new WitnessMessage(MESSAGE_ID);
   private static final long CREATION = Instant.now().getEpochSecond();
@@ -163,7 +163,7 @@ public class WitnessingRepositoryTest {
     witnessingRepository.addWitnessToMessage(LAO_ID, MESSAGE_ID, WITNESS);
 
     // Verify the roll call has been added to the repo
-    assertEquals(ROLL_CALL, rollCallRepo.getRollCallWithId(LAO_ID, ROLL_CALL.getId()));
+    assertEquals(ROLL_CALL, rollCallRepo.getRollCallWithId(LAO_ID, ROLL_CALL.id));
   }
 
   @Test
@@ -173,7 +173,7 @@ public class WitnessingRepositoryTest {
     witnessingRepository.addWitnessToMessage(LAO_ID, MESSAGE_ID, WITNESS);
 
     // Verify the election has been added to the repo
-    assertEquals(ELECTION, electionRepo.getElection(LAO_ID, ELECTION.getId()));
+    assertEquals(ELECTION, electionRepo.getElection(LAO_ID, ELECTION.id));
   }
 
   @Test
@@ -183,6 +183,6 @@ public class WitnessingRepositoryTest {
     witnessingRepository.addWitnessToMessage(LAO_ID, MESSAGE_ID, WITNESS);
 
     // Verify the meeting has been added to the repo
-    assertEquals(MEETING, meetingRepo.getMeetingWithId(LAO_ID, MEETING.getId()));
+    assertEquals(MEETING, meetingRepo.getMeetingWithId(LAO_ID, MEETING.id));
   }
 }

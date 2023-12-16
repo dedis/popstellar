@@ -20,12 +20,12 @@ public class ConsensusNodeTest {
 
   private static final ConsensusKey key = new ConsensusKey("type", "id", "property");
   private static final ConsensusElect elect1 =
-      new ConsensusElect(1000, key.getId(), key.getType(), key.getProperty(), "value_1");
+      new ConsensusElect(1000, key.id, key.type, key.property, "value_1");
   private static final ConsensusElect elect2 =
-      new ConsensusElect(2000, key.getId(), key.getType(), key.getProperty(), "value_2");
+      new ConsensusElect(2000, key.id, key.type, key.property, "value_2");
   private static final ConsensusElect elect3 =
-      new ConsensusElect(3000, key.getId(), key.getType(), key.getProperty(), "value_3");
-  private static final String instanceId = elect1.getInstanceId();
+      new ConsensusElect(3000, key.id, key.type, key.property, "value_3");
+  private static final String instanceId = elect1.instanceId;
   private static final Channel channel = Channel.fromString("/root/laoChannel/consensus");
   private static final PublicKey publicKey = generatePublicKey();
   private static final MessageID messageId1 = generateMessageID();
@@ -41,14 +41,14 @@ public class ConsensusNodeTest {
 
   @Before
   public void setup() {
-    electInstance1.setState(FAILED);
-    electInstance3.setState(ACCEPTED);
+    electInstance1.state = FAILED;
+    electInstance3.state = ACCEPTED;
   }
 
   @Test
   public void getPublicKeyTest() {
     ConsensusNode node = new ConsensusNode(publicKey);
-    assertEquals(publicKey, node.getPublicKey());
+    assertEquals(publicKey, node.publicKey);
   }
 
   @Test
