@@ -26,5 +26,5 @@ fun interface DataHandler<T : Data?> {
         NoRollCallException::class,
         UnknownWitnessMessageException::class
     )
-    fun accept(context: HandlerContext?, data: T)
+    fun accept(context: HandlerContext, data: T)
 }

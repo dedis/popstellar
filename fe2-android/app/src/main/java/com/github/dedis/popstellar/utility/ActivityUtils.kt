@@ -151,6 +151,7 @@ object ActivityUtils {
      * @param consumers map that has as key the method to override, as value the consumer to apply
      * @return the lifecycle callback
      */
+    @JvmStatic
     fun buildLifecycleCallback(
         consumers: Map<Lifecycle.Event?, Consumer<Activity?>?>
     ): Application.ActivityLifecycleCallbacks {

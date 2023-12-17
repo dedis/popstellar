@@ -3,6 +3,7 @@ apply plugin: 'org.sonarqube'
 apply plugin: 'jacoco'
 apply plugin: 'dagger.hilt.android.plugin'
 apply plugin: 'com.adarshr.test-logger'
+apply plugin: 'kotlin-android'
 
 android {
     compileSdkVersion 34
@@ -289,6 +290,8 @@ dependencies {
     implementation 'org.ocpsoft.prettytime:prettytime:5.0.4.Final'
 
     implementation 'com.vdurmont:emoji-java:5.1.1'
+
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
     // ============= Test Framework ============
     debugImplementation 'junit:junit:4.13.2'

@@ -11,11 +11,8 @@ class NoRollCallException(laoId: String) : KeyException(
     constructor(lao: Lao) : this(lao.id)
     constructor(laoView: LaoView) : this(laoView.id)
 
-    override fun getUserMessage(): Int {
-        return R.string.no_rollcall_exception
-    }
-
-    override fun getUserMessageArguments(): Array<Any> {
-        return arrayOf()
-    }
+    override val userMessage: Int
+        get() = R.string.no_rollcall_exception
+    override val userMessageArguments: Array<Any?>
+        get() = arrayOf()
 }

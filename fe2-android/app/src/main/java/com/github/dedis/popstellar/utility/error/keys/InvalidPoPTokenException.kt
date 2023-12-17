@@ -11,11 +11,8 @@ class InvalidPoPTokenException(token: PoPToken) :
         publicKey = token.publicKey.encoded
     }
 
-    override fun getUserMessage(): Int {
-        return R.string.invalid_pop_token_exception
-    }
-
-    override fun getUserMessageArguments(): Array<Any> {
-        return arrayOf(publicKey)
-    }
+    override val userMessage: Int
+        get() = R.string.invalid_pop_token_exception
+    override val userMessageArguments: Array<Any?>
+        get() = arrayOf(publicKey)
 }

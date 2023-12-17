@@ -5,11 +5,9 @@ import java.security.GeneralSecurityException
 
 class KeyGenerationException(e: GeneralSecurityException?) :
     KeyException("Could not generate key", e) {
-    override fun getUserMessage(): Int {
-        return R.string.key_generation_exception
-    }
 
-    override fun getUserMessageArguments(): Array<Any> {
-        return arrayOf()
-    }
+    override val userMessage: Int
+        get() = R.string.key_generation_exception
+    override val userMessageArguments: Array<Any?>
+        get() = arrayOf()
 }

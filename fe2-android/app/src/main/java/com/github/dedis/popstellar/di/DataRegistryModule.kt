@@ -75,7 +75,7 @@ object DataRegistryModule {
                 Objects.LAO,
                 Action.CREATE,
                 CreateLao::class.java
-            ) { context: HandlerContext?, createLao: CreateLao? ->
+            ) { context: HandlerContext, createLao: CreateLao ->
                 laoHandler.handleCreateLao(
                     context,
                     createLao
@@ -85,7 +85,7 @@ object DataRegistryModule {
                 Objects.LAO,
                 Action.UPDATE,
                 UpdateLao::class.java
-            ) { context: HandlerContext?, updateLao: UpdateLao? ->
+            ) { context: HandlerContext, updateLao: UpdateLao ->
                 laoHandler.handleUpdateLao(
                     context,
                     updateLao
@@ -95,7 +95,7 @@ object DataRegistryModule {
                 Objects.LAO,
                 Action.STATE,
                 StateLao::class.java
-            ) { context: HandlerContext?, stateLao: StateLao? ->
+            ) { context: HandlerContext, stateLao: StateLao ->
                 laoHandler.handleStateLao(
                     context,
                     stateLao
@@ -105,7 +105,7 @@ object DataRegistryModule {
                 Objects.LAO,
                 Action.GREET,
                 GreetLao::class.java
-            ) { context: HandlerContext?, greetLao: GreetLao? ->
+            ) { context: HandlerContext, greetLao: GreetLao ->
                 laoHandler.handleGreetLao(
                     context,
                     greetLao
@@ -118,7 +118,7 @@ object DataRegistryModule {
                 Objects.MEETING,
                 Action.CREATE,
                 CreateMeeting::class.java
-            ) { context: HandlerContext?, createMeeting: CreateMeeting? ->
+            ) { context: HandlerContext, createMeeting: CreateMeeting ->
                 meetingHandler.handleCreateMeeting(
                     context,
                     createMeeting
@@ -128,7 +128,7 @@ object DataRegistryModule {
                 Objects.MEETING,
                 Action.STATE,
                 StateMeeting::class.java
-            ) { context: HandlerContext?, stateMeeting: StateMeeting? ->
+            ) { context: HandlerContext, stateMeeting: StateMeeting ->
                 meetingHandler.handleStateMeeting(
                     context,
                     stateMeeting
@@ -139,7 +139,7 @@ object DataRegistryModule {
         builder.add(
             Objects.MESSAGE, Action.WITNESS,
             WitnessMessageSignature::class.java
-        ) { context: HandlerContext?, witnessMessageSignature: WitnessMessageSignature? ->
+        ) { context: HandlerContext, witnessMessageSignature: WitnessMessageSignature ->
             witnessMessageHandler.handleWitnessMessageSignature(
                 context,
                 witnessMessageSignature
@@ -152,7 +152,7 @@ object DataRegistryModule {
                 Objects.ROLL_CALL,
                 Action.CREATE,
                 CreateRollCall::class.java
-            ) { context: HandlerContext?, createRollCall: CreateRollCall? ->
+            ) { context: HandlerContext, createRollCall: CreateRollCall ->
                 rollCallHandler.handleCreateRollCall(
                     context,
                     createRollCall
@@ -162,7 +162,7 @@ object DataRegistryModule {
                 Objects.ROLL_CALL,
                 Action.OPEN,
                 OpenRollCall::class.java
-            ) { context: HandlerContext?, openRollCall: OpenRollCall? ->
+            ) { context: HandlerContext, openRollCall: OpenRollCall ->
                 rollCallHandler.handleOpenRollCall(
                     context,
                     openRollCall
@@ -172,7 +172,7 @@ object DataRegistryModule {
                 Objects.ROLL_CALL,
                 Action.REOPEN,
                 OpenRollCall::class.java
-            ) { context: HandlerContext?, openRollCall: OpenRollCall? ->
+            ) { context: HandlerContext, openRollCall: OpenRollCall ->
                 rollCallHandler.handleOpenRollCall(
                     context,
                     openRollCall
@@ -182,7 +182,7 @@ object DataRegistryModule {
                 Objects.ROLL_CALL,
                 Action.CLOSE,
                 CloseRollCall::class.java
-            ) { context: HandlerContext?, closeRollCall: CloseRollCall? ->
+            ) { context: HandlerContext, closeRollCall: CloseRollCall ->
                 rollCallHandler.handleCloseRollCall(
                     context,
                     closeRollCall
@@ -195,7 +195,7 @@ object DataRegistryModule {
                 Objects.ELECTION,
                 Action.SETUP,
                 ElectionSetup::class.java
-            ) { context: HandlerContext?, electionSetup: ElectionSetup? ->
+            ) { context: HandlerContext, electionSetup: ElectionSetup ->
                 electionHandler.handleElectionSetup(
                     context,
                     electionSetup
@@ -205,7 +205,7 @@ object DataRegistryModule {
                 Objects.ELECTION,
                 Action.OPEN,
                 ElectionOpen::class.java
-            ) { context: HandlerContext?, electionOpen: ElectionOpen? ->
+            ) { context: HandlerContext, electionOpen: ElectionOpen ->
                 electionHandler.handleElectionOpen(
                     context,
                     electionOpen
@@ -215,7 +215,7 @@ object DataRegistryModule {
                 Objects.ELECTION,
                 Action.CAST_VOTE,
                 CastVote::class.java
-            ) { context: HandlerContext?, castVote: CastVote? ->
+            ) { context: HandlerContext, castVote: CastVote ->
                 electionHandler.handleCastVote(
                     context,
                     castVote
@@ -225,7 +225,7 @@ object DataRegistryModule {
                 Objects.ELECTION,
                 Action.END,
                 ElectionEnd::class.java
-            ) { context: HandlerContext?, electionEnd: ElectionEnd? ->
+            ) { context: HandlerContext, electionEnd: ElectionEnd ->
                 electionHandler.handleElectionEnd(
                     context,
                     electionEnd
@@ -235,7 +235,7 @@ object DataRegistryModule {
                 Objects.ELECTION,
                 Action.RESULT,
                 ElectionResult::class.java
-            ) { context: HandlerContext?, electionResult: ElectionResult? ->
+            ) { context: HandlerContext, electionResult: ElectionResult ->
                 electionHandler.handleElectionResult(
                     context,
                     electionResult
@@ -245,7 +245,7 @@ object DataRegistryModule {
                 Objects.ELECTION,
                 Action.KEY,
                 ElectionKey::class.java
-            ) { context: HandlerContext?, electionKey: ElectionKey? ->
+            ) { context: HandlerContext, electionKey: ElectionKey ->
                 electionHandler.handleElectionKey(
                     context,
                     electionKey
@@ -258,7 +258,7 @@ object DataRegistryModule {
                 Objects.CONSENSUS,
                 Action.ELECT,
                 ConsensusElect::class.java
-            ) { context: HandlerContext?, consensusElect: ConsensusElect? ->
+            ) { context: HandlerContext, consensusElect: ConsensusElect ->
                 consensusHandler.handleElect(
                     context,
                     consensusElect
@@ -267,7 +267,7 @@ object DataRegistryModule {
             .add(
                 Objects.CONSENSUS, Action.ELECT_ACCEPT,
                 ConsensusElectAccept::class.java
-            ) { context: HandlerContext?, consensusElectAccept: ConsensusElectAccept? ->
+            ) { context: HandlerContext, consensusElectAccept: ConsensusElectAccept ->
                 consensusHandler.handleElectAccept(
                     context,
                     consensusElectAccept
@@ -277,7 +277,7 @@ object DataRegistryModule {
                 Objects.CONSENSUS,
                 Action.PREPARE,
                 ConsensusPrepare::class.java
-            ) { context: HandlerContext?, data: ConsensusPrepare? ->
+            ) { context: HandlerContext, data: ConsensusPrepare ->
                 consensusHandler.handleBackend(
                     context,
                     data
@@ -287,7 +287,7 @@ object DataRegistryModule {
                 Objects.CONSENSUS,
                 Action.PROMISE,
                 ConsensusPromise::class.java
-            ) { context: HandlerContext?, data: ConsensusPromise? ->
+            ) { context: HandlerContext, data: ConsensusPromise ->
                 consensusHandler.handleBackend(
                     context,
                     data
@@ -297,7 +297,7 @@ object DataRegistryModule {
                 Objects.CONSENSUS,
                 Action.PROPOSE,
                 ConsensusPropose::class.java
-            ) { context: HandlerContext?, data: ConsensusPropose? ->
+            ) { context: HandlerContext, data: ConsensusPropose ->
                 consensusHandler.handleBackend(
                     context,
                     data
@@ -307,7 +307,7 @@ object DataRegistryModule {
                 Objects.CONSENSUS,
                 Action.ACCEPT,
                 ConsensusAccept::class.java
-            ) { context: HandlerContext?, data: ConsensusAccept? ->
+            ) { context: HandlerContext, data: ConsensusAccept ->
                 consensusHandler.handleBackend(
                     context,
                     data
@@ -317,7 +317,7 @@ object DataRegistryModule {
                 Objects.CONSENSUS,
                 Action.LEARN,
                 ConsensusLearn::class.java
-            ) { context: HandlerContext?, consensusLearn: ConsensusLearn? ->
+            ) { context: HandlerContext, consensusLearn: ConsensusLearn ->
                 consensusHandler.handleLearn(
                     context,
                     consensusLearn
@@ -327,7 +327,7 @@ object DataRegistryModule {
                 Objects.CONSENSUS,
                 Action.FAILURE,
                 ConsensusFailure::class.java
-            ) { context: HandlerContext?, failure: ConsensusFailure? ->
+            ) { context: HandlerContext, failure: ConsensusFailure ->
                 consensusHandler.handleConsensusFailure(
                     context,
                     failure
@@ -340,7 +340,7 @@ object DataRegistryModule {
                 Objects.CHIRP,
                 Action.ADD,
                 AddChirp::class.java
-            ) { context: HandlerContext?, addChirp: AddChirp? ->
+            ) { context: HandlerContext, addChirp: AddChirp ->
                 chirpHandler.handleChirpAdd(
                     context,
                     addChirp
@@ -351,7 +351,7 @@ object DataRegistryModule {
                 Objects.CHIRP,
                 Action.DELETE,
                 DeleteChirp::class.java
-            ) { context: HandlerContext?, deleteChirp: DeleteChirp? ->
+            ) { context: HandlerContext, deleteChirp: DeleteChirp ->
                 chirpHandler.handleDeleteChirp(
                     context,
                     deleteChirp
@@ -367,7 +367,7 @@ object DataRegistryModule {
                 Objects.REACTION,
                 Action.ADD,
                 AddReaction::class.java
-            ) { context: HandlerContext?, addReaction: AddReaction? ->
+            ) { context: HandlerContext, addReaction: AddReaction ->
                 reactionHandler.handleAddReaction(
                     context,
                     addReaction
@@ -377,7 +377,7 @@ object DataRegistryModule {
                 Objects.REACTION,
                 Action.DELETE,
                 DeleteReaction::class.java
-            ) { context: HandlerContext?, deleteReaction: DeleteReaction? ->
+            ) { context: HandlerContext, deleteReaction: DeleteReaction ->
                 reactionHandler.handleDeleteReaction(
                     context,
                     deleteReaction
@@ -388,7 +388,7 @@ object DataRegistryModule {
         builder.add(
             Objects.COIN, Action.POST_TRANSACTION,
             PostTransactionCoin::class.java
-        ) { context: HandlerContext?, postTransactionCoin: PostTransactionCoin? ->
+        ) { context: HandlerContext, postTransactionCoin: PostTransactionCoin ->
             transactionCoinHandler.handlePostTransactionCoin(
                 context,
                 postTransactionCoin
