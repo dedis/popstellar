@@ -2,7 +2,6 @@ package com.github.dedis.popstellar.repository.database.event.rollcall;
 
 import androidx.annotation.NonNull;
 import androidx.room.*;
-
 import com.github.dedis.popstellar.model.Immutable;
 import com.github.dedis.popstellar.model.objects.RollCall;
 

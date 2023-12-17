@@ -1,12 +1,12 @@
 package com.github.dedis.popstellar.ui.lao.event.consensus;
 
+import static io.reactivex.android.schedulers.AndroidSchedulers.mainThread;
+
 import android.os.Bundle;
 import android.view.*;
 import android.widget.GridView;
-
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.ElectionStartFragmentBinding;
 import com.github.dedis.popstellar.model.objects.*;
@@ -16,20 +16,15 @@ import com.github.dedis.popstellar.repository.ElectionRepository;
 import com.github.dedis.popstellar.ui.lao.LaoActivity;
 import com.github.dedis.popstellar.ui.lao.LaoViewModel;
 import com.github.dedis.popstellar.utility.error.*;
-
-import java.text.SimpleDateFormat;
-import java.time.Instant;
-import java.util.*;
-
-import javax.inject.Inject;
-
 import dagger.hilt.android.AndroidEntryPoint;
 import io.reactivex.Observable;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.functions.Consumer;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.util.*;
+import javax.inject.Inject;
 import timber.log.Timber;
-
-import static io.reactivex.android.schedulers.AndroidSchedulers.mainThread;
 
 /**
  * A simple {@link Fragment} subclass. Use the {@link ElectionStartFragment#newInstance} factory

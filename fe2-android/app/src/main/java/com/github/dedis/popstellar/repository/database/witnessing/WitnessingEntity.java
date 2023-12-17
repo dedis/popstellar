@@ -2,7 +2,6 @@ package com.github.dedis.popstellar.repository.database.witnessing;
 
 import androidx.annotation.NonNull;
 import androidx.room.*;
-
 import com.github.dedis.popstellar.model.objects.WitnessMessage;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 

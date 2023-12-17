@@ -1,12 +1,10 @@
 package com.github.dedis.popstellar.model.objects;
 
 import androidx.annotation.NonNull;
-
 import com.github.dedis.popstellar.model.Copyable;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.utility.security.Hash;
-
 import java.util.*;
 
 /** Class modeling a Local Autonomous Organization (LAO) */
@@ -69,7 +67,7 @@ public final class Lao implements Copyable<Lao> {
     this.modificationId = modificationId;
     this.pendingUpdates = new HashSet<>(pendingUpdates);
     this.messageIdToElectInstance = new HashMap<>(messageIdToElectInstance);
-    this.keyToNode = Copyable.copy(keyToNode);
+    this.keyToNode = Copyable.Companion.copy(keyToNode);
   }
 
   /**
@@ -89,7 +87,7 @@ public final class Lao implements Copyable<Lao> {
     // FIXME We need to keep the ElectInstance because the current consensus relies on references
     // (Gabriel Fleischer 11.08.22)
     messageIdToElectInstance = new HashMap<>(lao.messageIdToElectInstance);
-    keyToNode = Copyable.copy(lao.keyToNode);
+    keyToNode = Copyable.Companion.copy(lao.keyToNode);
   }
 
   /**
