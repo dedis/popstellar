@@ -227,6 +227,19 @@ jobs:
           # To run the CI with debug informations, add --info
           ./gradlew jacocoTestReport --parallel --build-cache
 
+      - name: Generate Sarif Lint Report
+        shell: bash
+        run: |
+          # To run the CI with debug informations, add --info
+          ./gradlew lintDebug --parallel --build-cache
+      
+      - name: Upload lint sarif
+        uses: github/codeql-action/upload-sarif@v2
+        if: always()
+        with:
+          sarif_file: fe2-android/app/build/reports/lint-results-debug.sarif
+          category: lint
+
       - name: Cache SonarCloud packages
         uses: actions/cache@v2
         with:
