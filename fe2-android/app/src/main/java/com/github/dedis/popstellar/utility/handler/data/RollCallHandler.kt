@@ -181,7 +181,7 @@ class RollCallHandler @Inject constructor(
         fun addRollCallRoutine(
             rollCallRepo: RollCallRepository,
             digitalCashRepo: DigitalCashRepository,
-            laoId: String?,
+            laoId: String,
             rollCall: RollCall
         ) {
             rollCallRepo.updateRollCall(laoId, rollCall)

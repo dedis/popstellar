@@ -211,7 +211,7 @@ class ElectionHandler @Inject constructor(
             }
 
             // Retrieve previous message and make sure it is a CastVote
-            val previousData = messageRepo.getMessage(previousMessageId).data
+            val previousData = messageRepo.getMessage(previousMessageId)?.data
                 ?: throw IllegalStateException(
                     "The message corresponding to $messageId does not exist"
                 )

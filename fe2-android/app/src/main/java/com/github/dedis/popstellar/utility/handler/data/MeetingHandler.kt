@@ -93,7 +93,7 @@ class MeetingHandler @Inject constructor(
 
         @JvmStatic
         fun addMeetingRoutine(
-            meetingRepository: MeetingRepository, laoId: String?, meeting: Meeting?
+            meetingRepository: MeetingRepository, laoId: String, meeting: Meeting
         ) {
             meetingRepository.updateMeeting(laoId, meeting)
         }

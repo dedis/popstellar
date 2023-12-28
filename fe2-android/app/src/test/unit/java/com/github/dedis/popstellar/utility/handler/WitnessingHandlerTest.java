@@ -1,11 +1,15 @@
 package com.github.dedis.popstellar.utility.handler;
 
-import android.app.Application;
+import static com.github.dedis.popstellar.testutils.Base64DataUtils.*;
+import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.when;
 
+import android.app.Application;
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
-
 import com.github.dedis.popstellar.di.DataRegistryModuleHelper;
 import com.github.dedis.popstellar.di.JsonModule;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
@@ -27,24 +31,15 @@ import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
-
+import io.reactivex.Completable;
+import io.reactivex.Single;
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+import java.util.*;
 import org.junit.*;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
-import java.io.IOException;
-import java.security.GeneralSecurityException;
-import java.util.*;
-
-import io.reactivex.Completable;
-import io.reactivex.Single;
-
-import static com.github.dedis.popstellar.testutils.Base64DataUtils.*;
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.lenient;
-import static org.mockito.Mockito.when;
 
 @RunWith(AndroidJUnit4.class)
 public class WitnessingHandlerTest {
@@ -70,6 +65,10 @@ public class WitnessingHandlerTest {
   private Gson gson;
 
   @Mock AppDatabase appDatabase;
+  @Mock RollCallRepository rollCallRepo;
+  @Mock DigitalCashRepository digitalCashRepo;
+  @Mock MeetingRepository meetingRepo;
+  @Mock ElectionRepository electionRepo;
   @Mock LAODao laoDao;
   @Mock MessageDao messageDao;
   @Mock WitnessDao witnessDao;
@@ -119,10 +118,6 @@ public class WitnessingHandlerTest {
     when(pendingDao.removePendingObject(any(MessageID.class))).thenReturn(Completable.complete());
 
     laoRepo = new LAORepository(appDatabase, application);
-    RollCallRepository rollCallRepo = new RollCallRepository(appDatabase, application);
-    ElectionRepository electionRepo = new ElectionRepository(appDatabase, application);
-    MeetingRepository meetingRepo = new MeetingRepository(appDatabase, application);
-    DigitalCashRepository digitalCashRepo = new DigitalCashRepository(appDatabase, application);
     witnessingRepository =
         new WitnessingRepository(
             appDatabase, application, rollCallRepo, electionRepo, meetingRepo, digitalCashRepo);
@@ -153,8 +148,12 @@ public class WitnessingHandlerTest {
 
   @Test
   public void testHandleWitnessMessageSignatureFromOrganizer()
-      throws GeneralSecurityException, UnknownElectionException, UnknownRollCallException,
-          UnknownLaoException, DataHandlingException, NoRollCallException,
+      throws GeneralSecurityException,
+          UnknownElectionException,
+          UnknownRollCallException,
+          UnknownLaoException,
+          DataHandlingException,
+          NoRollCallException,
           UnknownWitnessMessageException {
     // Create a valid witnessMessageSignature signed by the organizer
     Signature signature = ORGANIZER_KEY.sign(MESSAGE_ID1);
@@ -180,8 +179,12 @@ public class WitnessingHandlerTest {
 
   @Test
   public void testHandleWitnessMessageSignatureFromWitness()
-      throws GeneralSecurityException, UnknownElectionException, UnknownRollCallException,
-          UnknownLaoException, DataHandlingException, NoRollCallException,
+      throws GeneralSecurityException,
+          UnknownElectionException,
+          UnknownRollCallException,
+          UnknownLaoException,
+          DataHandlingException,
+          NoRollCallException,
           UnknownWitnessMessageException {
     // Create a valid witnessMessageSignature signed by a witness
     Signature signature = WITNESS_KEY.sign(MESSAGE_ID2);

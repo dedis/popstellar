@@ -140,12 +140,12 @@ class NetworkLogger : Timber.Tree() {
             )
 
             // Register the callback for a graceful shutdown
-            val consumerMap: MutableMap<Lifecycle.Event?, Consumer<Activity?>?> = EnumMap(
+            val consumerMap: MutableMap<Lifecycle.Event, Consumer<Activity>> = EnumMap(
                 Lifecycle.Event::class.java
             )
             consumerMap[Lifecycle.Event.ON_DESTROY] =
                 Consumer { closeWebSocket() }
-            val saverConsumer = Consumer { _: Activity? ->
+            val saverConsumer = Consumer { _: Activity ->
                 // Close the websocket on pause and stop only if we we want to save battery
                 if (SAVE_ENERGY) {
                     closeWebSocket()

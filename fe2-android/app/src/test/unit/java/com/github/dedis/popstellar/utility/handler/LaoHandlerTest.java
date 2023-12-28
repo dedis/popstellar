@@ -83,6 +83,10 @@ public class LaoHandlerTest {
   private MessageGeneral createLaoMessage;
 
   @Mock AppDatabase appDatabase;
+  @Mock RollCallRepository rollCallRepo;
+  @Mock MeetingRepository meetingRepo;
+  @Mock ElectionRepository electionRepo;
+  @Mock DigitalCashRepository digitalCashRepo;
   @Mock LAODao laoDao;
   @Mock MessageDao messageDao;
   @Mock WitnessingDao witnessingDao;
@@ -130,10 +134,6 @@ public class LaoHandlerTest {
     laoRepo = new LAORepository(appDatabase, application);
     MessageRepository messageRepo = new MessageRepository(appDatabase, application);
     serverRepository = new ServerRepository();
-    RollCallRepository rollCallRepo = new RollCallRepository(appDatabase, application);
-    ElectionRepository electionRepo = new ElectionRepository(appDatabase, application);
-    MeetingRepository meetingRepo = new MeetingRepository(appDatabase, application);
-    DigitalCashRepository digitalCashRepo = new DigitalCashRepository(appDatabase, application);
     witnessingRepository =
         new WitnessingRepository(
             appDatabase, application, rollCallRepo, electionRepo, meetingRepo, digitalCashRepo);

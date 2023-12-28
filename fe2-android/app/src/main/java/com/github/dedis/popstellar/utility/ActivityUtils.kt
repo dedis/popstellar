@@ -153,7 +153,7 @@ object ActivityUtils {
      */
     @JvmStatic
     fun buildLifecycleCallback(
-        consumers: Map<Lifecycle.Event?, Consumer<Activity?>?>
+        consumers: Map<Lifecycle.Event, Consumer<Activity>>
     ): Application.ActivityLifecycleCallbacks {
         return object : Application.ActivityLifecycleCallbacks {
             override fun onActivityCreated(

@@ -1,11 +1,17 @@
 package com.github.dedis.popstellar.utility.handler;
 
-import android.app.Application;
+import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
+import static com.github.dedis.popstellar.testutils.Base64DataUtils.generatePoPToken;
+import static com.github.dedis.popstellar.utility.handler.data.RollCallHandler.*;
+import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.when;
 
+import android.app.Application;
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
-
 import com.github.dedis.popstellar.di.DataRegistryModuleHelper;
 import com.github.dedis.popstellar.di.JsonModule;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
@@ -30,27 +36,16 @@ import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
-
-import org.junit.*;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-
+import io.reactivex.Completable;
+import io.reactivex.Single;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.time.Instant;
 import java.util.*;
-
-import io.reactivex.Completable;
-import io.reactivex.Single;
-
-import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
-import static com.github.dedis.popstellar.testutils.Base64DataUtils.generatePoPToken;
-import static com.github.dedis.popstellar.utility.handler.data.RollCallHandler.*;
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.lenient;
-import static org.mockito.Mockito.when;
+import org.junit.*;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 @RunWith(AndroidJUnit4.class)
 public class RollCallHandlerTest {
@@ -72,6 +67,9 @@ public class RollCallHandlerTest {
   private RollCall rollCall;
 
   @Mock AppDatabase appDatabase;
+  @Mock ElectionRepository electionRepo;
+  @Mock MeetingRepository meetingRepo;
+  @Mock DigitalCashRepository digitalCashRepo;
   @Mock LAODao laoDao;
   @Mock MessageDao messageDao;
   @Mock RollCallDao rollCallDao;
@@ -127,9 +125,6 @@ public class RollCallHandlerTest {
 
     LAORepository laoRepo = new LAORepository(appDatabase, application);
     rollCallRepo = new RollCallRepository(appDatabase, application);
-    ElectionRepository electionRepo = new ElectionRepository(appDatabase, application);
-    MeetingRepository meetingRepo = new MeetingRepository(appDatabase, application);
-    DigitalCashRepository digitalCashRepo = new DigitalCashRepository(appDatabase, application);
     witnessingRepository =
         new WitnessingRepository(
             appDatabase, application, rollCallRepo, electionRepo, meetingRepo, digitalCashRepo);
@@ -173,8 +168,12 @@ public class RollCallHandlerTest {
 
   @Test
   public void testHandleCreateRollCall()
-      throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
-          UnknownElectionException, NoRollCallException, UnknownWitnessMessageException {
+      throws DataHandlingException,
+          UnknownLaoException,
+          UnknownRollCallException,
+          UnknownElectionException,
+          NoRollCallException,
+          UnknownWitnessMessageException {
     // Create the create Roll Call message
     CreateRollCall createRollCall =
         new CreateRollCall(
@@ -209,8 +208,12 @@ public class RollCallHandlerTest {
 
   @Test
   public void testHandleOpenRollCall()
-      throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
-          UnknownElectionException, NoRollCallException, UnknownWitnessMessageException {
+      throws DataHandlingException,
+          UnknownLaoException,
+          UnknownRollCallException,
+          UnknownElectionException,
+          NoRollCallException,
+          UnknownWitnessMessageException {
     // Create the open Roll Call message
     OpenRollCall openRollCall =
         new OpenRollCall(
@@ -241,8 +244,12 @@ public class RollCallHandlerTest {
 
   @Test
   public void testBlockOpenRollCall()
-      throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
-          UnknownElectionException, NoRollCallException, UnknownWitnessMessageException {
+      throws DataHandlingException,
+          UnknownLaoException,
+          UnknownRollCallException,
+          UnknownElectionException,
+          NoRollCallException,
+          UnknownWitnessMessageException {
     // Assert that a Roll Call can be opened
     assertTrue(rollCallRepo.canOpenRollCall(LAO.getId()));
 
@@ -273,8 +280,12 @@ public class RollCallHandlerTest {
 
   @Test
   public void testHandleCloseRollCall()
-      throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
-          UnknownElectionException, NoRollCallException, UnknownWitnessMessageException {
+      throws DataHandlingException,
+          UnknownLaoException,
+          UnknownRollCallException,
+          UnknownElectionException,
+          NoRollCallException,
+          UnknownWitnessMessageException {
     // Create the open Roll Call message
     OpenRollCall openRollCall =
         new OpenRollCall(
