@@ -13,18 +13,17 @@ import com.github.dedis.popstellar.utility.error.keys.NoRollCallException
  * subclass of Data.
  */
 fun interface DataHandler<T : Data?> {
-    /**
-     * @param context the HandlerContext of the message
-     * @param data the Data to be handle
-     * @throws DataHandlingException if an error occurs
-     */
-    @Throws(
-        DataHandlingException::class,
-        UnknownLaoException::class,
-        UnknownRollCallException::class,
-        UnknownElectionException::class,
-        NoRollCallException::class,
-        UnknownWitnessMessageException::class
-    )
-    fun accept(context: HandlerContext?, data: T)
+  /**
+   * @param context the HandlerContext of the message
+   * @param data the Data to be handle
+   * @throws DataHandlingException if an error occurs
+   */
+  @Throws(
+      DataHandlingException::class,
+      UnknownLaoException::class,
+      UnknownRollCallException::class,
+      UnknownElectionException::class,
+      NoRollCallException::class,
+      UnknownWitnessMessageException::class)
+  fun accept(context: HandlerContext?, data: T)
 }

@@ -5,8 +5,9 @@ import com.github.dedis.popstellar.model.objects.security.MessageID
 
 class UnknownWitnessMessageException(id: MessageID) :
     GenericException("Witness message with id " + id.encoded + " is unknown") {
-    override val userMessage: Int
-        get() = R.string.unknown_witness_message_exception
-    override val userMessageArguments: Array<Any?>
-        get() = arrayOfNulls(0)
+  override val userMessage: Int
+    get() = R.string.unknown_witness_message_exception
+
+  override val userMessageArguments: Array<Any?>
+    get() = arrayOfNulls(0)
 }

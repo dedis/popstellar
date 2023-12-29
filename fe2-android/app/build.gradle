@@ -1,5 +1,6 @@
 plugins {
     id 'kotlin-android'
+    id 'com.ncorti.ktfmt.gradle' version '0.16.0'
 }
 
 apply plugin: 'com.android.application'
@@ -7,6 +8,7 @@ apply plugin: 'org.sonarqube'
 apply plugin: 'jacoco'
 apply plugin: 'dagger.hilt.android.plugin'
 apply plugin: 'com.adarshr.test-logger'
+apply plugin: 'kotlin-kapt'
 
 android {
     compileSdkVersion 34

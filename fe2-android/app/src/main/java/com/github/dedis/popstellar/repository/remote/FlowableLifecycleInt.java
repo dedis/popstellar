@@ -9,6 +9,7 @@ import org.reactivestreams.Subscriber;
 
 /** Java class used as wrapper to access an internal Kotlin declaration */
 class FlowableLifecycleInt implements Lifecycle {
+
   private final FlowableLifecycle internalInstance;
 
   public FlowableLifecycleInt(Flowable<State> flowable, Scheduler scheduler) {
