@@ -226,10 +226,6 @@ jobs:
         run: |
           # To run the CI with debug informations, add --info
           ./gradlew jacocoTestReport --parallel --build-cache
-
-      - name: Run Detekt
-        run: |
-          ./gradlew detekt --parallel --build-cache
           
       - name: Generate Sarif Lint Report
         shell: bash

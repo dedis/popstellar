@@ -12,7 +12,6 @@ apply plugin: 'org.sonarqube'
 apply plugin: 'jacoco'
 apply plugin: 'dagger.hilt.android.plugin'
 apply plugin: 'com.adarshr.test-logger'
-apply plugin: 'kotlin-kapt'
 
 android {
     compileSdkVersion 34
@@ -230,10 +229,10 @@ tasks.register('jacocoTestReport', JacocoReport) {
 }
 
 detekt {
+    basePath = projectDir
+    config.setFrom("schemas/detekt/detekt-config.yml")
     buildUponDefaultConfig = true
     parallel = true
-    allRules = false
-    basePath = projectDir
 }
 
 tasks.withType(Detekt).configureEach {
