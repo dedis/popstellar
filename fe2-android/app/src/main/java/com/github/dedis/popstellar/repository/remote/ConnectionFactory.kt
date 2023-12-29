@@ -40,9 +40,8 @@ constructor(
                     .combineWith(
                         FlowableLifecycleInt(
                             manualState.toFlowable(BackpressureStrategy.LATEST),
-                            schedulerProvider
-                                .computation()))) // .backoffStrategy(new
-                                                  // ExponentialBackoffStrategy())
+                            schedulerProvider.computation()))) // .backoffStrategy(new
+            // ExponentialBackoffStrategy())
             .build()
 
     // And return a bundled object of the service and the subject

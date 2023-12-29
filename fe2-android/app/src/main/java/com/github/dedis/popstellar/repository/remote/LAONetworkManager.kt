@@ -93,7 +93,7 @@ class LAONetworkManager(
         Observable.merge( // Normal message received over the wire
                 multiConnection
                     .observeMessage(), // Packets that could not be processed (maybe due to a
-                                       // reordering),
+                // reordering),
                 // this is merged into incoming message,
                 // with a delay of 5 seconds to give priority to new messages.
                 unprocessed.delay(
@@ -254,7 +254,7 @@ class LAONetworkManager(
         .observeOn(
             schedulerProvider
                 .mainThread()) // Add a timeout to automatically dispose of the flow and end with a
-                               // failure
+        // failure
         .timeout(REPROCESSING_DELAY.toLong(), TimeUnit.SECONDS)
         .cache()
   }
