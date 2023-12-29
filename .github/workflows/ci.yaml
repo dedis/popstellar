@@ -227,6 +227,10 @@ jobs:
           # To run the CI with debug informations, add --info
           ./gradlew jacocoTestReport --parallel --build-cache
 
+      - name: Run Detekt
+        run: |
+          ./gradlew detekt --parallel --build-cache
+
       - name: Cache SonarCloud packages
         uses: actions/cache@v2
         with:

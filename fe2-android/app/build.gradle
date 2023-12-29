@@ -1,6 +1,10 @@
+import io.gitlab.arturbosch.detekt.Detekt
+import io.gitlab.arturbosch.detekt.DetektCreateBaselineTask
+
 plugins {
     id 'kotlin-android'
     id 'com.ncorti.ktfmt.gradle' version '0.16.0'
+    id 'io.gitlab.arturbosch.detekt' version '1.23.3'
 }
 
 apply plugin: 'com.android.application'
@@ -151,6 +155,7 @@ sonarqube {
         property "sonar.androidLint.reportPaths", "${project.buildDir}/reports/lint-results-debug.xml"
         // Paths to JaCoCo XML coverage report files.
         property "sonar.coverage.jacoco.xmlReportPaths", "${project.buildDir}/reports/jacoco/jacocoTestReport/jacocoTestReport.xml"
+        property "sonar.kotlin.detekt.reportPaths", "${project.buildDir}/reports/detekt/detekt.xml"
     }
 }
 
@@ -218,6 +223,26 @@ tasks.register('jacocoTestReport', JacocoReport) {
         'outputs/unit_test_code_coverage/*/*.exec',
         'outputs/code_coverage/*/connected/**/*.ec',
     ]))
+}
+
+detekt {
+    buildUponDefaultConfig = true
+    parallel = true
+    allRules = false
+    basePath = projectDir
+}
+
+tasks.withType(Detekt).configureEach {
+    jvmTarget = "1.8"
+    reports {
+        html.required.set(true)
+        xml.required.set(true)
+        sarif.required.set(true)
+        txt.required.set(false)
+    }
+}
+tasks.withType(DetektCreateBaselineTask).configureEach {
+    jvmTarget = "1.8"
 }
 
 dependencies {
