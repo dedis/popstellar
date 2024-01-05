@@ -75,7 +75,7 @@ $(document).ready(function() {
   <tbody>
     <tr class="info">
       <td>go_server</td>
-      <td>04 Jan 2024, 04:12</td>
+      <td>05 Jan 2024, 04:11</td>
     </tr>
   </tbody>
 </table>
@@ -272,38 +272,11 @@ $(document).ready(function() {
       <div class="step">
 
 
-<div class="brief step-name-And passed">
-  <span class="keyword indention">And</span>
-  <span class="name">def getMessagesByIdMessages = mockServer.getMessagesByMethod('get_messages_by_id')</span>
-
-  <span class="lead-duration duration">5.002</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
 <div class="brief step-name-Then failed">
   <span class="keyword indention">Then</span>
-  <span class="name">assert getMessagesByIdMessages.length == 0</span>
+  <span class="name">assert mockServer.getGetMessagesById().length == 0</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">5.002</span>
 
 </div>
 
@@ -318,7 +291,7 @@ $(document).ready(function() {
           <a>did</a>
       </div>
       <div id="msg-3" class="collapse collapsable-details  in ">
-        <pre>did not evaluate to 'true': getMessagesByIdMessages.length == 0
+        <pre>did not evaluate to 'true': mockServer.getGetMessagesById().length == 0
 classpath:be/features/decentralizedCom/getMessagesById.feature:59</pre>
       </div>
     </div>
@@ -333,9 +306,9 @@ classpath:be/features/decentralizedCom/getMessagesById.feature:59</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-4" class="collapse collapsable-details">
-        <pre>04:11:20.012 classpath:be/features/decentralizedCom/getMessagesById.feature:59
-Then assert getMessagesByIdMessages.length == 0
-did not evaluate to 'true': getMessagesByIdMessages.length == 0
+        <pre>04:10:53.671 classpath:be/features/decentralizedCom/getMessagesById.feature:59
+Then assert mockServer.getGetMessagesById().length == 0
+did not evaluate to 'true': mockServer.getGetMessagesById().length == 0
 classpath:be/features/decentralizedCom/getMessagesById.feature:59
 </pre>
       </div>
