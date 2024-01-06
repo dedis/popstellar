@@ -189,8 +189,7 @@ constructor(
     fun createRollCallWitnessMessage(messageId: MessageID?, rollCall: RollCall): WitnessMessage {
       val message = WitnessMessage(messageId)
       message.title =
-          String.format(
-              "The Roll Call %s was created at %s", rollCall.name, Date(rollCall.creation * 1000))
+          "The Roll Call ${rollCall.name} was created at ${Date(rollCall.creation * 1000)}"
       message.description =
           """
                    $MNEMONIC_STRING${generateMnemonicWordFromBase64(rollCall.persistentId, 2)}
@@ -217,10 +216,7 @@ constructor(
     fun openRollCallWitnessMessage(messageId: MessageID?, rollCall: RollCall): WitnessMessage {
       val message = WitnessMessage(messageId)
       message.title =
-          String.format(
-              "The Roll Call %s was opened at %s",
-              rollCall.name,
-              Date(rollCall.startTimestampInMillis))
+          "The Roll Call ${rollCall.name} was opened at ${Date(rollCall.startTimestampInMillis)}"
       message.description =
           """
                    $MNEMONIC_STRING${generateMnemonicWordFromBase64(rollCall.persistentId, 2)}
@@ -244,10 +240,7 @@ constructor(
     fun closeRollCallWitnessMessage(messageId: MessageID?, rollCall: RollCall): WitnessMessage {
       val message = WitnessMessage(messageId)
       message.title =
-          String.format(
-              "The Roll Call %s was closed at %s",
-              rollCall.name,
-              Date(rollCall.endTimestampInMillis))
+          "The Roll Call ${rollCall.name} was closed at ${Date(rollCall.endTimestampInMillis)}"
       message.description =
           """
                    $MNEMONIC_STRING${generateMnemonicWordFromBase64(rollCall.persistentId, 2)}

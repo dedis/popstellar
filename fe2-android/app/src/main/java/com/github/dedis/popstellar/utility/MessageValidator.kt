@@ -178,7 +178,7 @@ object MessageValidator {
      * @throws IllegalArgumentException if the string is empty or null
      */
     fun listNotEmpty(list: List<*>?): MessageValidatorBuilder {
-      require(!(list == null || list.isEmpty())) { "List cannot be empty" }
+      require(!list.isNullOrEmpty()) { "List cannot be null or empty" }
       return this
     }
 
@@ -223,14 +223,12 @@ object MessageValidator {
       // Check it's a valid url
       verify().validUrl(input)
       val uri =
-          Uri.parse(input)
-              ?: throw IllegalArgumentException(
-                  String.format("Impossible to parse the URL: %s", input))
+          Uri.parse(input) ?: throw IllegalArgumentException("Impossible to parse the URL: $input")
 
       // Check required arguments are present
       for (arg in REQUIRED_ARGUMENTS) {
         requireNotNull(uri.getQueryParameter(arg)) {
-          String.format("Required argument %s is missing in the URL.", arg)
+          "Required argument $arg is missing in the URL."
         }
       }
       // Check response type respects openid standards
@@ -254,7 +252,7 @@ object MessageValidator {
           }
       // Check lao ID in login hint match the right laoID
       val laoHint = uri.getQueryParameter(PoPCHAQRCode.FIELD_LOGIN_HINT)
-      require(laoHint == laoId) { String.format("Invalid LAO ID %s", laoHint) }
+      require(laoHint == laoId) { "Invalid LAO ID $laoHint" }
       return this
     }
 

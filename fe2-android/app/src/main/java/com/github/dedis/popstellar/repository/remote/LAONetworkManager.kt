@@ -181,46 +181,49 @@ class LAONetworkManager(
   }
 
   private fun handleBroadcast(broadcast: Broadcast) {
+    fun handleError(e: Exception) {
+      Timber.tag(TAG).e(e, "Error while handling received message, will try to reprocess it later")
+      reprocessMessage(broadcast)
+    }
     Timber.tag(TAG).d("handling broadcast msg : %s", broadcast)
     try {
       messageHandler.handleMessage(this, broadcast.channel, broadcast.message)
     } catch (e: DataHandlingException) {
-      Timber.tag(TAG).e(e, "Error while handling received message, will try to reprocess it later")
-      reprocessMessage(broadcast)
+      handleError(e)
     } catch (e: UnknownLaoException) {
-      Timber.tag(TAG).e(e, "Error while handling received message, will try to reprocess it later")
-      reprocessMessage(broadcast)
+      handleError(e)
     } catch (e: UnknownRollCallException) {
-      Timber.tag(TAG).e(e, "Error while handling received message, will try to reprocess it later")
-      reprocessMessage(broadcast)
+      handleError(e)
     } catch (e: NoRollCallException) {
-      Timber.tag(TAG).e(e, "Error while handling received message, will try to reprocess it later")
-      reprocessMessage(broadcast)
+      handleError(e)
     } catch (e: UnknownElectionException) {
-      Timber.tag(TAG).e(e, "Error while handling received message, will try to reprocess it later")
-      reprocessMessage(broadcast)
+      handleError(e)
     } catch (e: UnknownWitnessMessageException) {
-      Timber.tag(TAG).e(e, "Error while handling received message, will try to reprocess it later")
-      reprocessMessage(broadcast)
+      handleError(e)
     }
   }
 
   private fun handleMessages(messages: List<MessageGeneral>, channel: Channel?) {
+    fun handleError(e: Exception) {
+      Timber.tag(TAG).e(e, "Error while handling received catchup message")
+    }
     for (msg in messages) {
       try {
         messageHandler.handleMessage(this, channel!!, msg)
+      } catch (e: Exception) {
+        Timber.tag(TAG).e(e, "Error while handling received catchup message")
       } catch (e: DataHandlingException) {
-        Timber.tag(TAG).e(e, "Error while handling received catchup message")
+        handleError(e)
       } catch (e: UnknownLaoException) {
-        Timber.tag(TAG).e(e, "Error while handling received catchup message")
+        handleError(e)
       } catch (e: UnknownRollCallException) {
-        Timber.tag(TAG).e(e, "Error while handling received catchup message")
+        handleError(e)
       } catch (e: NoRollCallException) {
-        Timber.tag(TAG).e(e, "Error while handling received catchup message")
+        handleError(e)
       } catch (e: UnknownElectionException) {
-        Timber.tag(TAG).e(e, "Error while handling received catchup message")
+        handleError(e)
       } catch (e: UnknownWitnessMessageException) {
-        Timber.tag(TAG).e(e, "Error while handling received catchup message")
+        handleError(e)
       }
     }
   }

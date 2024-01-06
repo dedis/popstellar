@@ -96,9 +96,7 @@ constructor(
     @JvmStatic
     fun createMeetingWitnessMessage(messageId: MessageID?, meeting: Meeting): WitnessMessage {
       val message = WitnessMessage(messageId)
-      message.title =
-          String.format(
-              "The Meeting %s was created at %s", meeting.name, Date(meeting.creation * 1000))
+      message.title = "The Meeting ${meeting.name} was created at ${Date(meeting.creation * 1000)}"
       message.description =
           """
                    Mnemonic identifier :
@@ -124,8 +122,7 @@ constructor(
     fun stateMeetingWitnessMessage(messageId: MessageID?, meeting: Meeting): WitnessMessage {
       val message = WitnessMessage(messageId)
       message.title =
-          String.format(
-              "The Meeting %s was modified at %s", meeting.name, Date(meeting.lastModified * 1000))
+          "The Meeting ${meeting.name} was modified at ${Date(meeting.lastModified * 1000)}"
       message.description =
           """
                    Mnemonic identifier :

@@ -191,7 +191,7 @@ constructor(
    * @return set of public keys of the witnesses
    */
   fun getWitnesses(laoId: String): MutableSet<PublicKey> {
-    return getLaoWitness(laoId).getWitnesses()
+    return getLaoWitness(laoId).witnesses
   }
 
   /**
@@ -271,7 +271,7 @@ constructor(
     private var alreadyRetrieved = false
 
     /** Thread-safe structure for saving the witnesses of a given lao */
-    private val witnesses: MutableSet<PublicKey> = ConcurrentHashMap.newKeySet()
+    val witnesses: MutableSet<PublicKey> = ConcurrentHashMap.newKeySet()
 
     /** Subject to observe the witnesses collection as a whole */
     private val witnessesSubject: Subject<Set<PublicKey>> =
@@ -456,10 +456,6 @@ constructor(
       pendingEntities[pendingEntity.messageID] = pendingEntity
     }
 
-    fun getWitnesses(): MutableSet<PublicKey> {
-      return HashSet(witnesses)
-    }
-
     fun getWitnessesSubject(): Observable<Set<PublicKey>> {
       return witnessesSubject
     }
@@ -484,7 +480,9 @@ constructor(
                 pendingEntity.rollCall!!)
         Objects.ELECTION -> addElectionRoutine(repo.electionRepository, pendingEntity.election!!)
         Objects.MEETING -> addMeetingRoutine(repo.meetingRepository, laoId, pendingEntity.meeting!!)
-        else -> {}
+        else -> {
+          /* Only needed for these 3 objects */
+        }
       }
     }
 

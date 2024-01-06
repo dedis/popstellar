@@ -27,7 +27,6 @@ import com.github.dedis.popstellar.utility.error.InvalidStateException
 import com.github.dedis.popstellar.utility.error.UnknownElectionException
 import com.github.dedis.popstellar.utility.error.UnknownLaoException
 import java.util.Date
-import java.util.Objects
 import javax.inject.Inject
 import timber.log.Timber
 
@@ -90,7 +89,6 @@ constructor(
    * @param context the HandlerContext of the message
    * @param electionOpen the message that was received
    */
-  @Suppress("unused")
   @Throws(InvalidStateException::class, UnknownElectionException::class, UnknownLaoException::class)
   fun handleElectionOpen(context: HandlerContext, electionOpen: ElectionOpen) {
     val channel = context.channel
@@ -238,14 +236,14 @@ constructor(
 
   private fun updateElectionWithVotes(
       castVote: CastVote,
-      messageId: MessageID?,
-      senderPk: PublicKey?,
+      messageId: MessageID,
+      senderPk: PublicKey,
       election: Election
   ) {
     val updated =
         election
             .builder()
-            .updateMessageMap(senderPk!!, messageId!!)
+            .updateMessageMap(senderPk, messageId)
             .updateVotes(senderPk, castVote.votes)
             .build()
     electionRepository.updateElection(updated)
@@ -265,15 +263,14 @@ constructor(
     val TAG: String = ElectionHandler::class.java.simpleName
 
     @JvmStatic
-    fun addElectionRoutine(electionRepository: ElectionRepository, election: Election?) {
-      electionRepository.updateElection(election!!)
+    fun addElectionRoutine(electionRepository: ElectionRepository, election: Election) {
+      electionRepository.updateElection(election)
     }
 
     @JvmStatic
     fun electionSetupWitnessMessage(messageId: MessageID?, election: Election): WitnessMessage {
       val message = WitnessMessage(messageId)
-      message.title =
-          String.format("Election %s setup at %s", election.name, Date(election.creationInMillis))
+      message.title = "Election ${election.name} setup at ${Date(election.creationInMillis)}"
       message.description =
           """
                    Mnemonic identifier :
@@ -293,7 +290,7 @@ constructor(
 
     fun electionResultWitnessMessage(messageId: MessageID?, election: Election): WitnessMessage {
       val message = WitnessMessage(messageId)
-      message.title = String.format("Election %s results", election.name)
+      message.title = "Election ${election.name} results"
       message.description =
           ("""
     Mnemonic identifier :
@@ -337,8 +334,8 @@ constructor(
             .append(": \n")
             .append(questions[i].question)
             .append("\nResults: \n")
-        val resultSet = results[questions[i].id]!!
-        for (questionResult in Objects.requireNonNull(resultSet)) {
+        val resultSet = results.getValue(questions[i].id)
+        for (questionResult in resultSet) {
           questionsDescription
               .append(questionResult.ballot)
               .append(" : ")

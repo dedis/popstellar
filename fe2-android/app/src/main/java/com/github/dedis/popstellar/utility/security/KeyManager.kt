@@ -35,19 +35,21 @@ constructor(
     private val wallet: Wallet
 ) {
   /** @return the device keypair */
-  var mainKeyPair: KeyPair? = null
+  lateinit var mainKeyPair: KeyPair
     private set
 
   init {
+    fun throwException(e: Exception) {
+      Timber.tag(TAG).e(e, "Failed to retrieve device's key")
+      throw IllegalStateException("Failed to retrieve device's key", e)
+    }
     try {
       cacheMainKey()
       Timber.tag(TAG).d("Public Key = %s", mainPublicKey.encoded)
     } catch (e: IOException) {
-      Timber.tag(TAG).e(e, "Failed to retrieve device's key")
-      throw IllegalStateException("Failed to retrieve device's key", e)
+      throwException(e)
     } catch (e: GeneralSecurityException) {
-      Timber.tag(TAG).e(e, "Failed to retrieve device's key")
-      throw IllegalStateException("Failed to retrieve device's key", e)
+      throwException(e)
     }
   }
 
@@ -66,7 +68,7 @@ constructor(
 
   val mainPublicKey: PublicKey
     /** @return the device public key */
-    get() = mainKeyPair!!.publicKey
+    get() = mainKeyPair.publicKey
 
   /**
    * Generate the PoP Token for the given Lao - RollCall pair

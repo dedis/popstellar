@@ -85,10 +85,8 @@ class NetworkLogger : Timber.Tree() {
 
     // Take the UTC-timezone timestamp: [yyyy-mm-ddThh:mm:ss.msZ]
     val timestamp = Clock.systemUTC().instant().toString()
-    return if (error.isEmpty())
-        String.format("[%s] - %s %s: %s", timestamp, priorityString, tag, message)
-    else
-        String.format("[%s] - %s %s: %s%nERROR: %s", timestamp, priorityString, tag, message, error)
+    return if (error.isEmpty()) "[$timestamp] - $priorityString $tag: $message"
+    else "[$timestamp] - $priorityString $tag: $message%nERROR: $error"
   }
 
   companion object {

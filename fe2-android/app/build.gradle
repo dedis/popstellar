@@ -32,11 +32,13 @@ android {
 
         buildTypes {
             debug {
+                buildConfigField "String", "DEFAULT_URL", "\"ws://10.0.2.2:9000/client\""
                 isDefault true
                 testCoverageEnabled true
             }
 
             release {
+                buildConfigField "String", "DEFAULT_URL", "\"ws://10.0.2.2:9000/client\""
                 minifyEnabled false
                 proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             }

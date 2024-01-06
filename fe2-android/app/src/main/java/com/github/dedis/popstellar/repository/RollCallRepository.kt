@@ -232,7 +232,7 @@ class RollCallRepository @Inject constructor(appDatabase: AppDatabase, applicati
       if (!rollCallIdAlias.containsKey(id)) {
         throw UnknownRollCallException(id)
       }
-      val persistentId = rollCallIdAlias[id]!!
+      val persistentId = rollCallIdAlias.getValue(id)
       return getRollCallWithPersistentId(persistentId)
     }
 

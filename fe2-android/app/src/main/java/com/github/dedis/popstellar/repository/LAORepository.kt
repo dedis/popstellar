@@ -94,9 +94,9 @@ class LAORepository @Inject constructor(appDatabase: AppDatabase, application: A
   val allLaoIds: Observable<List<String>>
     get() = laosSubject
 
-  fun getLaoObservable(laoId: String): Observable<LaoView> {
+  fun getLaoObservable(laoId: String): Observable<LaoView>? {
     subjectById.computeIfAbsent(laoId) { BehaviorSubject.create() }
-    return subjectById[laoId]!!
+    return subjectById[laoId]
   }
 
   @Throws(UnknownLaoException::class)
@@ -185,8 +185,8 @@ class LAORepository @Inject constructor(appDatabase: AppDatabase, application: A
    * @param channel the lao channel.
    * @return an Observable to the list of nodes
    */
-  fun getNodesByChannel(channel: Channel): Observable<List<ConsensusNode>> {
-    return channelToNodesSubject[channel]!!
+  fun getNodesByChannel(channel: Channel): Observable<List<ConsensusNode>>? {
+    return channelToNodesSubject[channel]
   }
 
   /**
@@ -198,7 +198,7 @@ class LAORepository @Inject constructor(appDatabase: AppDatabase, application: A
   fun updateNodes(channel: Channel) {
     val nodes = getLaoByChannel(channel)!!.nodes
     channelToNodesSubject.putIfAbsent(channel, BehaviorSubject.create())
-    channelToNodesSubject[channel]!!.onNext(nodes)
+    channelToNodesSubject[channel]?.onNext(nodes)
   }
 
   companion object {

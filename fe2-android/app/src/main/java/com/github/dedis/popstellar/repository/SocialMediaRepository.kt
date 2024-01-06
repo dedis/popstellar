@@ -100,7 +100,7 @@ constructor(appDatabase: AppDatabase, application: Application) {
 
   @Synchronized
   fun getReactionsByChirp(laoId: String, chirpId: MessageID): Set<Reaction> {
-    return getLaoChirps(laoId).reactionByChirpId[chirpId]!!
+    return getLaoChirps(laoId).reactionByChirpId[chirpId] ?: emptySet()
   }
 
   /**
@@ -203,7 +203,7 @@ constructor(appDatabase: AppDatabase, application: Application) {
     fun addReaction(reaction: Reaction): Boolean {
       // Check if the associated chirp is present
       val chirp = chirps[reaction.chirpId] ?: return false
-      val chirpReactions = reactionByChirpId[chirp.id]!!
+      val chirpReactions = reactionByChirpId.getValue(chirp.id)
 
       // Search for a previous deleted reaction
       val deleted = reactions[reaction.id]
@@ -259,7 +259,7 @@ constructor(appDatabase: AppDatabase, application: Application) {
         // Update the repository data
         val deleted = reaction.deleted()
         reactions[reactionId] = deleted
-        val chirpReactions = reactionByChirpId[chirp.id]!!
+        val chirpReactions = reactionByChirpId.getValue(chirp.id)
 
         // Replace the old reaction with the deleted one
         chirpReactions.remove(reaction)

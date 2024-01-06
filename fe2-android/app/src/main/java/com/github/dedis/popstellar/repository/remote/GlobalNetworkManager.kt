@@ -1,5 +1,6 @@
 package com.github.dedis.popstellar.repository.remote
 
+import com.github.dedis.popstellar.BuildConfig
 import com.github.dedis.popstellar.model.objects.Channel
 import com.github.dedis.popstellar.utility.handler.MessageHandler
 import com.github.dedis.popstellar.utility.scheduler.SchedulerProvider
@@ -23,7 +24,7 @@ constructor(
     private set
 
   init {
-    connect(DEFAULT_URL)
+    connect(BuildConfig.DEFAULT_URL)
   }
 
   @JvmOverloads
@@ -56,9 +57,5 @@ constructor(
 
   override fun isDisposed(): Boolean {
     return networkManager == null
-  }
-
-  companion object {
-    private const val DEFAULT_URL = "ws://10.0.2.2:9000/client"
   }
 }

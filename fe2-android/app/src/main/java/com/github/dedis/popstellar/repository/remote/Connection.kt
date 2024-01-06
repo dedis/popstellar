@@ -73,7 +73,9 @@ open class Connection {
         val reason: ShutdownReason = event.shutdownReason
         Timber.tag(TAG).d("%s is closing: %s", baseMsg, reason)
       }
-      else -> {}
+      else -> {
+        /* Don't log anything in the other cases */
+      }
     }
   }
 

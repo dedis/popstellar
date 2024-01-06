@@ -314,6 +314,8 @@ constructor(appDatabase: AppDatabase, application: Application) {
                                 try {
                                   updateTransactions(transactionObject, false)
                                 } catch (e: NoRollCallException) {
+                                  Timber.tag(TAG)
+                                      .e(e, "No roll call exception to load for lao %s", laoId)
                                   // This exception can't ever be thrown, as if the
                                   // transactions are in the db,
                                   // then they have a valid public key associated

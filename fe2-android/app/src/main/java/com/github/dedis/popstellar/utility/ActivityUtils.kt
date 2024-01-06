@@ -89,7 +89,7 @@ object ActivityUtils {
     val seed = wallet.exportSeed()
     val walletEntity =
         // Constant id as we need to store only 1 entry (next insert must replace)
-        WalletEntity(0, Collections.unmodifiableList(listOf(*seed)))
+        WalletEntity(0, Collections.unmodifiableList(seed.toList()))
 
     // Save in the database the state
     return walletDao

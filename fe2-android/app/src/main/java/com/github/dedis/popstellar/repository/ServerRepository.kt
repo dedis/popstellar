@@ -26,8 +26,7 @@ class ServerRepository @Inject constructor() {
     if (serverByLaoId.containsKey(laoId)) {
       return serverByLaoId[laoId]
     }
-    throw IllegalArgumentException(
-        String.format("There is no backend associated with the LAO '%s'", laoId))
+    throw IllegalArgumentException("There is no backend associated with the LAO '$laoId'")
   }
 
   val allServer: Collection<Server>
