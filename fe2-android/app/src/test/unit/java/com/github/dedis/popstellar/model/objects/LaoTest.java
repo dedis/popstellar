@@ -1,15 +1,5 @@
 package com.github.dedis.popstellar.model.objects;
 
-import com.github.dedis.popstellar.model.objects.security.MessageID;
-import com.github.dedis.popstellar.model.objects.security.PublicKey;
-
-import org.junit.Test;
-import org.mockito.internal.util.collections.Sets;
-
-import java.time.Instant;
-import java.util.Collections;
-import java.util.Set;
-
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateMessageID;
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.generatePublicKey;
 import static org.hamcrest.CoreMatchers.is;
@@ -17,15 +7,16 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
+import com.github.dedis.popstellar.model.objects.security.MessageID;
+import com.github.dedis.popstellar.model.objects.security.PublicKey;
+import java.time.Instant;
+import java.util.Collections;
+import org.junit.Test;
+
 public class LaoTest {
 
   private static final String LAO_NAME_1 = "LAO name 1";
   private static final PublicKey ORGANIZER = generatePublicKey();
-  private static final Set<PublicKey> WITNESSES =
-      Sets.newSet(generatePublicKey(), generatePublicKey());
-  private static final Set<PublicKey> WITNESSES_WITH_NULL =
-      Sets.newSet(generatePublicKey(), null, generatePublicKey());
-
   private static final Lao LAO_1 = new Lao(LAO_NAME_1, ORGANIZER, Instant.now().getEpochSecond());
 
   @Test
@@ -65,12 +56,6 @@ public class LaoTest {
   @Test
   public void setEmptyNameTest() {
     assertThrows(IllegalArgumentException.class, () -> LAO_1.setName(""));
-  }
-
-  @Test
-  public void setNullWitnessesTest() {
-    assertThrows(IllegalArgumentException.class, () -> LAO_1.initKeyToNode(null));
-    assertThrows(IllegalArgumentException.class, () -> LAO_1.initKeyToNode(WITNESSES_WITH_NULL));
   }
 
   @Test

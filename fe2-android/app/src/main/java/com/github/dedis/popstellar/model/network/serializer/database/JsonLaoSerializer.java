@@ -4,7 +4,6 @@ import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.google.gson.*;
-
 import java.lang.reflect.Type;
 import java.util.*;
 
@@ -38,22 +37,6 @@ public class JsonLaoSerializer implements JsonSerializer<Lao>, JsonDeserializer<
       pendingUpdates.add(context.deserialize(pendingUpdatesJsonElement, PendingUpdate.class));
     }
 
-    // Deserialize the Map of messageIdToElectInstance
-    JsonObject messageIdToElectInstanceJsonObject =
-        jsonObject.get("messageIdToElectInstance").getAsJsonObject();
-    Map<MessageID, ElectInstance> messageIdToElectInstance = new HashMap<>();
-    for (Map.Entry<String, JsonElement> entry : messageIdToElectInstanceJsonObject.entrySet()) {
-      messageIdToElectInstance.put(
-          new MessageID(entry.getKey()),
-          context.deserialize(entry.getValue(), ElectInstance.class));
-    }
-
-    /*
-    TODO: The keyToNode is not serialized as the public keys are in base 28,
-       they throw an error when encoded and decoded, so far it's not a problem as
-       consensus is not used but it has to be fixed in the future
-    */
-
     return new LaoBuilder()
         .setChannel(channel)
         .setId(id)
@@ -63,8 +46,6 @@ public class JsonLaoSerializer implements JsonSerializer<Lao>, JsonDeserializer<
         .setOrganizer(organizer)
         .setModificationId(modificationId)
         .setPendingUpdates(pendingUpdates)
-        .setMessageIdToElectInstance(messageIdToElectInstance)
-        // .setKeyToNode(keyToNode)
         .build();
   }
 
@@ -90,16 +71,6 @@ public class JsonLaoSerializer implements JsonSerializer<Lao>, JsonDeserializer<
       pendingUpdateJsonArray.add(context.serialize(pendingUpdate, PendingUpdate.class));
     }
     jsonObject.add("pendingUpdates", pendingUpdateJsonArray);
-
-    // Serialize the Map of messageIdToElectInstance
-    JsonObject messageIdToElectInstanceJsonObject = new JsonObject();
-    for (Map.Entry<MessageID, ElectInstance> entry : lao.getMessageIdToElectInstance().entrySet()) {
-      messageIdToElectInstanceJsonObject.add(
-          entry.getKey().getEncoded(), context.serialize(entry.getValue(), ElectInstance.class));
-    }
-    jsonObject.add("messageIdToElectInstance", messageIdToElectInstanceJsonObject);
-
-    // TODO: add the keyToNode serialization when the deserialization will work
 
     return jsonObject;
   }

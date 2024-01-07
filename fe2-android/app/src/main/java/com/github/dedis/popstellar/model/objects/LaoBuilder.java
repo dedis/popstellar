@@ -2,7 +2,6 @@ package com.github.dedis.popstellar.model.objects;
 
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
-
 import java.util.*;
 
 /** Builder for the LAO object */
@@ -16,8 +15,6 @@ public class LaoBuilder {
   private PublicKey organizer;
   private MessageID modificationId;
   private Set<PendingUpdate> pendingUpdates = new HashSet<>();
-  private Map<MessageID, ElectInstance> messageIdToElectInstance = new HashMap<>();
-  private Map<PublicKey, ConsensusNode> keyToNode = new HashMap<>();
 
   public LaoBuilder() {
     // Empty public constructor
@@ -32,8 +29,6 @@ public class LaoBuilder {
     this.organizer = lao.getOrganizer();
     this.modificationId = lao.getModificationId();
     this.pendingUpdates = lao.getPendingUpdates();
-    this.messageIdToElectInstance = lao.getMessageIdToElectInstance();
-    this.keyToNode = lao.getKeyToNode();
   }
 
   public LaoBuilder setChannel(Channel channel) {
@@ -85,23 +80,6 @@ public class LaoBuilder {
     return this;
   }
 
-  public LaoBuilder setMessageIdToElectInstance(
-      Map<MessageID, ElectInstance> messageIdToElectInstance) {
-    if (messageIdToElectInstance == null) {
-      throw new IllegalStateException("MessageIdToElectInstance is null");
-    }
-    this.messageIdToElectInstance = messageIdToElectInstance;
-    return this;
-  }
-
-  public LaoBuilder setKeyToNode(Map<PublicKey, ConsensusNode> keyToNode) {
-    if (keyToNode == null) {
-      throw new IllegalStateException("KeyToNode is null");
-    }
-    this.keyToNode = keyToNode;
-    return this;
-  }
-
   public Lao build() {
     if (channel == null) {
       throw new IllegalStateException("Channel is null");
@@ -112,22 +90,7 @@ public class LaoBuilder {
     if (pendingUpdates == null) {
       throw new IllegalStateException("PendingUpdates is null");
     }
-    if (messageIdToElectInstance == null) {
-      throw new IllegalStateException("MessageIdToElectInstance is null");
-    }
-    if (keyToNode == null) {
-      throw new IllegalStateException("KeyToNode is null");
-    }
     return new Lao(
-        channel,
-        id,
-        name,
-        lastModified,
-        creation,
-        organizer,
-        modificationId,
-        pendingUpdates,
-        messageIdToElectInstance,
-        keyToNode);
+        channel, id, name, lastModified, creation, organizer, modificationId, pendingUpdates);
   }
 }

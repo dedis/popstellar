@@ -71,6 +71,7 @@ public class LaoHandlerTest {
 
   private LAORepository laoRepo;
   private WitnessingRepository witnessingRepository;
+  private ConsensusRepository consensusRepo;
   private MessageHandler messageHandler;
   private ServerRepository serverRepository;
   private Gson gson;
@@ -137,6 +138,7 @@ public class LaoHandlerTest {
     witnessingRepository =
         new WitnessingRepository(
             appDatabase, application, rollCallRepo, electionRepo, meetingRepo, digitalCashRepo);
+    consensusRepo = new ConsensusRepository();
 
     DataRegistry dataRegistry =
         DataRegistryModuleHelper.buildRegistry(
@@ -263,7 +265,7 @@ public class LaoHandlerTest {
           NoRollCallException,
           UnknownWitnessMessageException {
     // Set LAO to have one witness
-    lao.initKeyToNode(new HashSet<>(WITNESS));
+    consensusRepo.initKeyToNode(lao.getId(), new HashSet<>(WITNESS));
 
     // Create UpdateLao with updated witness set
     UpdateLao updateLao =

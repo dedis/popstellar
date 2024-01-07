@@ -23,6 +23,7 @@ public final class LaoHandler {
   private final KeyManager keyManager;
   private final ServerRepository serverRepo;
   private final WitnessingRepository witnessingRepo;
+  private final ConsensusRepository consensusRepo;
 
   private static final String OLD_NAME = "Old Lao Name : ";
   private static final String NEW_NAME = "New Lao Name : ";
@@ -36,12 +37,14 @@ public final class LaoHandler {
       MessageRepository messageRepo,
       LAORepository laoRepo,
       ServerRepository serverRepo,
-      WitnessingRepository witnessingRepo) {
+      WitnessingRepository witnessingRepo,
+      ConsensusRepository consensusRepo) {
     this.messageRepo = messageRepo;
     this.laoRepo = laoRepo;
     this.keyManager = keyManager;
     this.serverRepo = serverRepo;
     this.witnessingRepo = witnessingRepo;
+    this.consensusRepo = consensusRepo;
   }
 
   /**
@@ -63,12 +66,13 @@ public final class LaoHandler {
     lao.setLastModified(createLao.getCreation());
     lao.setOrganizer(createLao.getOrganizer());
     lao.setId(createLao.getId());
-    lao.initKeyToNode(witnesses);
 
     laoRepo.updateLao(lao);
     LaoView laoView = laoRepo.getLaoViewByChannel(channel);
 
     witnessingRepo.addWitnesses(lao.getId(), witnesses);
+    consensusRepo.setOrganizer(lao.getId(), createLao.getOrganizer());
+    consensusRepo.initKeyToNode(lao.getId(), witnesses);
 
     PublicKey publicKey = keyManager.getMainPublicKey();
     if (laoView.isOrganizer(publicKey) || witnessingRepo.isWitness(lao.getId(), publicKey)) {
@@ -94,7 +98,7 @@ public final class LaoHandler {
                 error ->
                     Timber.tag(TAG).d(error, "error while trying  to subscribe to coin channel")));
 
-    laoRepo.updateNodes(channel);
+    consensusRepo.updateNodesByChannel(channel);
   }
 
   /**
@@ -138,7 +142,7 @@ public final class LaoHandler {
       lao.addPendingUpdate(new PendingUpdate(updateLao.getLastModified(), messageId));
     }
 
-    laoRepo.updateNodes(channel);
+    consensusRepo.updateNodesByChannel(channel);
     laoRepo.updateLao(lao);
   }
 
@@ -176,10 +180,11 @@ public final class LaoHandler {
 
     Lao lao = laoView.createLaoCopy();
     lao.setId(stateLao.getId());
-    lao.initKeyToNode(stateLao.getWitnesses());
     lao.setName(stateLao.getName());
     lao.setLastModified(stateLao.getLastModified());
     lao.setModificationId(stateLao.getModificationId());
+
+    consensusRepo.initKeyToNode(lao.getId(), stateLao.getWitnesses());
 
     PublicKey publicKey = keyManager.getMainPublicKey();
     if (laoView.isOrganizer(publicKey) || witnessingRepo.isWitness(lao.getId(), publicKey)) {
@@ -198,7 +203,7 @@ public final class LaoHandler {
         .removeIf(pendingUpdate -> pendingUpdate.getModificationTime() <= targetTime);
 
     laoRepo.updateLao(lao);
-    laoRepo.updateNodes(channel);
+    consensusRepo.updateNodesByChannel(channel);
   }
 
   public static WitnessMessage updateLaoNameWitnessMessage(

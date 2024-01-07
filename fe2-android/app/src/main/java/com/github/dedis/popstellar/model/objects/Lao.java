@@ -1,12 +1,10 @@
 package com.github.dedis.popstellar.model.objects;
 
 import androidx.annotation.NonNull;
-
 import com.github.dedis.popstellar.model.Copyable;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.utility.security.Hash;
-
 import java.util.*;
 
 /** Class modeling a Local Autonomous Organization (LAO) */
@@ -24,9 +22,6 @@ public final class Lao implements Copyable<Lao> {
 
   private Set<PendingUpdate> pendingUpdates;
 
-  private final Map<MessageID, ElectInstance> messageIdToElectInstance;
-  private final Map<PublicKey, ConsensusNode> keyToNode;
-
   public Lao(String id) {
     if (id == null) {
       throw new IllegalArgumentException(" The id is null");
@@ -36,8 +31,6 @@ public final class Lao implements Copyable<Lao> {
 
     channel = Channel.getLaoChannel(id);
     this.id = id;
-    keyToNode = new HashMap<>();
-    messageIdToElectInstance = new HashMap<>();
     pendingUpdates = new HashSet<>();
   }
 
@@ -57,9 +50,7 @@ public final class Lao implements Copyable<Lao> {
       Long creation,
       PublicKey organizer,
       MessageID modificationId,
-      Set<PendingUpdate> pendingUpdates,
-      Map<MessageID, ElectInstance> messageIdToElectInstance,
-      Map<PublicKey, ConsensusNode> keyToNode) {
+      Set<PendingUpdate> pendingUpdates) {
     this.channel = channel;
     this.id = id;
     this.name = name;
@@ -68,8 +59,6 @@ public final class Lao implements Copyable<Lao> {
     this.organizer = organizer;
     this.modificationId = modificationId;
     this.pendingUpdates = new HashSet<>(pendingUpdates);
-    this.messageIdToElectInstance = new HashMap<>(messageIdToElectInstance);
-    this.keyToNode = Copyable.copy(keyToNode);
   }
 
   /**
@@ -86,39 +75,6 @@ public final class Lao implements Copyable<Lao> {
     organizer = lao.organizer;
     modificationId = lao.modificationId;
     pendingUpdates = new HashSet<>(lao.pendingUpdates);
-    // FIXME We need to keep the ElectInstance because the current consensus relies on references
-    // (Gabriel Fleischer 11.08.22)
-    messageIdToElectInstance = new HashMap<>(lao.messageIdToElectInstance);
-    keyToNode = Copyable.copy(lao.keyToNode);
-  }
-
-  /**
-   * Store the given ElectInstance and update all nodes concerned by it.
-   *
-   * @param electInstance the ElectInstance
-   */
-  public void updateElectInstance(@NonNull ElectInstance electInstance) {
-    MessageID messageId = electInstance.getMessageId();
-    messageIdToElectInstance.put(messageId, electInstance);
-
-    Map<PublicKey, MessageID> acceptorsToMessageId = electInstance.getAcceptorsToMessageId();
-    // add to each node the messageId of the Elect if they accept it
-    keyToNode.forEach(
-        (key, node) -> {
-          if (acceptorsToMessageId.containsKey(key)) {
-            node.addMessageIdOfAnAcceptedElect(messageId);
-          }
-        });
-
-    // add the ElectInstance to the proposer node
-    ConsensusNode proposer = keyToNode.get(electInstance.getProposer());
-    if (proposer != null) {
-      proposer.addElectInstance(electInstance);
-    }
-  }
-
-  public Optional<ElectInstance> getElectInstance(MessageID messageId) {
-    return Optional.ofNullable(messageIdToElectInstance.get(messageId));
   }
 
   public Long getLastModified() {
@@ -179,7 +135,6 @@ public final class Lao implements Copyable<Lao> {
 
   public void setOrganizer(PublicKey organizer) {
     this.organizer = organizer;
-    keyToNode.computeIfAbsent(organizer, ConsensusNode::new);
   }
 
   public MessageID getModificationId() {
@@ -190,47 +145,12 @@ public final class Lao implements Copyable<Lao> {
     this.modificationId = modificationId;
   }
 
-  public void initKeyToNode(Set<PublicKey> witnesses) {
-    if (witnesses == null) {
-      throw new IllegalArgumentException("The witnesses set is null");
-    }
-    for (PublicKey witness : witnesses) {
-      if (witness == null) {
-        throw new IllegalArgumentException("One of the witnesses in the set is null");
-      }
-    }
-    witnesses.forEach(w -> keyToNode.computeIfAbsent(w, ConsensusNode::new));
-  }
-
   public void addPendingUpdate(PendingUpdate pendingUpdate) {
     pendingUpdates.add(pendingUpdate);
   }
 
   public void setPendingUpdates(Set<PendingUpdate> pendingUpdates) {
     this.pendingUpdates = pendingUpdates;
-  }
-
-  /**
-   * Get the list of all nodes of this Lao sorted by the base64 representation of their public key.
-   *
-   * @return a sorted List of ConsensusNode
-   */
-  public List<ConsensusNode> getNodes() {
-    List<ConsensusNode> nodes = new ArrayList<>(keyToNode.values());
-    nodes.sort(Comparator.comparing(node -> node.getPublicKey().getEncoded()));
-    return nodes;
-  }
-
-  public ConsensusNode getNode(@NonNull PublicKey key) {
-    return keyToNode.get(key);
-  }
-
-  public Map<MessageID, ElectInstance> getMessageIdToElectInstance() {
-    return Collections.unmodifiableMap(messageIdToElectInstance);
-  }
-
-  public Map<PublicKey, ConsensusNode> getKeyToNode() {
-    return keyToNode;
   }
 
   /**
@@ -268,24 +188,13 @@ public final class Lao implements Copyable<Lao> {
         && Objects.equals(creation, lao.creation)
         && Objects.equals(organizer, lao.organizer)
         && Objects.equals(modificationId, lao.modificationId)
-        && Objects.equals(pendingUpdates, lao.pendingUpdates)
-        && Objects.equals(messageIdToElectInstance, lao.messageIdToElectInstance)
-        && Objects.equals(keyToNode, lao.keyToNode);
+        && Objects.equals(pendingUpdates, lao.pendingUpdates);
   }
 
   @Override
   public int hashCode() {
     return Objects.hash(
-        channel,
-        id,
-        name,
-        lastModified,
-        creation,
-        organizer,
-        modificationId,
-        pendingUpdates,
-        messageIdToElectInstance,
-        keyToNode);
+        channel, id, name, lastModified, creation, organizer, modificationId, pendingUpdates);
   }
 
   @NonNull
@@ -310,10 +219,6 @@ public final class Lao implements Copyable<Lao> {
         + lastModified
         + ", modificationId='"
         + modificationId
-        + '\''
-        + ", electInstances="
-        + messageIdToElectInstance.values()
-        + ", transactionPerUser="
-        + '}';
+        + "'}";
   }
 }
