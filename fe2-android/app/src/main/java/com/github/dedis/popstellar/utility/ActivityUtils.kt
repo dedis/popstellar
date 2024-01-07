@@ -267,11 +267,11 @@ object ActivityUtils {
     return stringBuilder.substring(1, stringBuilder.length)
   }
 
-  private fun generateMnemonic(data: ByteArray): Array<String?> {
+  private fun generateMnemonic(data: ByteArray): Array<String> {
     return try {
       val digest = MessageDigest.getInstance("SHA-256")
       val sb = StringBuilder()
-      MnemonicGenerator(English.INSTANCE).createMnemonic(digest.digest(data)) { s: CharSequence? ->
+      MnemonicGenerator(English.INSTANCE).createMnemonic(digest.digest(data)) { s: CharSequence ->
         sb.append(s)
       }
       sb.toString().split(" ".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
@@ -281,7 +281,7 @@ object ActivityUtils {
               e,
               "Error generating the mnemonic for the base64 string %s",
               Base64URLData(data).encoded)
-      arrayOfNulls(0)
+      emptyArray()
     }
   }
 }

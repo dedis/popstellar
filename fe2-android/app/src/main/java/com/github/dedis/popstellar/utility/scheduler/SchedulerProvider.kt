@@ -9,5 +9,5 @@ interface SchedulerProvider {
 
   fun newThread(): Scheduler
 
-  fun mainThread(): Scheduler?
+  fun mainThread(): Scheduler
 }

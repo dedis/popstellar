@@ -17,7 +17,7 @@ import timber.log.Timber
 /** Represents a single websocket connection that can be closed */
 open class Connection {
   // Create a new subject whose purpose is to dispatch incoming messages to all subscribers
-  private val messagesSubject: BehaviorSubject<GenericMessage?>
+  private val messagesSubject: BehaviorSubject<GenericMessage>
   private val manualState: BehaviorSubject<Lifecycle.State>
   private val laoService: LAOService
   private val disposables: CompositeDisposable
@@ -32,11 +32,11 @@ open class Connection {
     disposables.add(
         laoService
             .observeMessage()
-            .doOnNext { msg: GenericMessage? ->
+            .doOnNext { msg: GenericMessage ->
               Timber.tag(TAG).d("Received a new message from remote: %s", msg)
             }
-            .subscribe({ t: GenericMessage? -> messagesSubject.onNext(t!!) }) { t: Throwable? ->
-              messagesSubject.onError(t!!)
+            .subscribe({ t: GenericMessage -> messagesSubject.onNext(t) }) { t: Throwable ->
+              messagesSubject.onError(t)
             })
 
     // Add logs on connection state events
@@ -44,8 +44,8 @@ open class Connection {
         laoService
             .observeWebsocket()
             .subscribe(
-                { event: WebSocket.Event? -> logEvent(event, url) },
-                { err: Throwable? -> Timber.tag(TAG).d(err, "Error in connection %s", url) }))
+                { event: WebSocket.Event -> logEvent(event, url) },
+                { err: Throwable -> Timber.tag(TAG).d(err, "Error in connection %s", url) }))
   }
 
   protected constructor(connection: Connection) {
@@ -55,7 +55,7 @@ open class Connection {
     messagesSubject = connection.messagesSubject
   }
 
-  private fun logEvent(event: WebSocket.Event?, url: String) {
+  private fun logEvent(event: WebSocket.Event, url: String) {
     val baseMsg = "Connection to $url"
     when (event) {
       is OnConnectionOpened<*> -> {
@@ -83,11 +83,11 @@ open class Connection {
     laoService.sendMessage(msg)
   }
 
-  open fun observeMessage(): Observable<GenericMessage?> {
+  open fun observeMessage(): Observable<GenericMessage> {
     return messagesSubject
   }
 
-  open fun observeConnectionEvents(): Observable<WebSocket.Event?> {
+  open fun observeConnectionEvents(): Observable<WebSocket.Event> {
     return laoService.observeWebsocket()
   }
 

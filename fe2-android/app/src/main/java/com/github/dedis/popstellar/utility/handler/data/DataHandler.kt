@@ -12,7 +12,7 @@ import com.github.dedis.popstellar.utility.error.keys.NoRollCallException
  * Interface of functions used to handle data message. The generic type T of data need to be a
  * subclass of Data.
  */
-fun interface DataHandler<T : Data?> {
+fun interface DataHandler<T : Data> {
   /**
    * @param context the HandlerContext of the message
    * @param data the Data to be handle
@@ -25,5 +25,5 @@ fun interface DataHandler<T : Data?> {
       UnknownElectionException::class,
       NoRollCallException::class,
       UnknownWitnessMessageException::class)
-  fun accept(context: HandlerContext?, data: T)
+  fun accept(context: HandlerContext, data: T)
 }

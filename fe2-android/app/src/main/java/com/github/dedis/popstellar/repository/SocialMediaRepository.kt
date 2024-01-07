@@ -108,7 +108,7 @@ constructor(appDatabase: AppDatabase, application: Application) {
    * @return an observable set of message ids whose correspond to the set of chirp published on the
    *   given lao
    */
-  fun getChirpsOfLao(laoId: String): Observable<Set<MessageID?>> {
+  fun getChirpsOfLao(laoId: String): Observable<Set<MessageID>> {
     return getLaoChirps(laoId).getChirpsSubject()
   }
 
@@ -169,9 +169,8 @@ constructor(appDatabase: AppDatabase, application: Application) {
   ) {
     // Chirps
     private val chirps = ConcurrentHashMap<MessageID, Chirp>()
-    private val chirpSubjects = ConcurrentHashMap<MessageID?, Subject<Chirp>>()
-    private val chirpsSubject: Subject<Set<MessageID?>> =
-        BehaviorSubject.createDefault(emptySet<MessageID>())
+    private val chirpSubjects = ConcurrentHashMap<MessageID, Subject<Chirp>>()
+    private val chirpsSubject: Subject<Set<MessageID>> = BehaviorSubject.createDefault(emptySet())
 
     // Reactions
     val reactionByChirpId = ConcurrentHashMap<MessageID, MutableSet<Reaction>>()
@@ -281,7 +280,7 @@ constructor(appDatabase: AppDatabase, application: Application) {
       return true
     }
 
-    fun getChirpsSubject(): Observable<Set<MessageID?>> {
+    fun getChirpsSubject(): Observable<Set<MessageID>> {
       return chirpsSubject
     }
 

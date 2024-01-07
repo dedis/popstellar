@@ -10,7 +10,7 @@ import io.reactivex.Observable
 interface LAOService {
   @Send fun sendMessage(msg: Message)
 
-  @Receive fun observeMessage(): Observable<GenericMessage?>
+  @Receive fun observeMessage(): Observable<GenericMessage>
 
-  @Receive fun observeWebsocket(): Observable<WebSocket.Event?>
+  @Receive fun observeWebsocket(): Observable<WebSocket.Event>
 }

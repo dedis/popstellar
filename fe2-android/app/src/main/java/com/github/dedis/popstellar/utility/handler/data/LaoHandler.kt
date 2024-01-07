@@ -62,15 +62,16 @@ constructor(
               .subscribe( // For now if we receive an error, we assume that it is because the server
                   // running is the scala one which does not implement consensus
                   { Timber.tag(TAG).d("subscription to consensus channel was a success") }) {
-                  error: Throwable? ->
+                  error: Throwable ->
                 Timber.tag(TAG).d(error, "error while trying to subscribe to consensus channel")
               })
     }
 
-    /* Creation channel coin*/ laoRepo.addDisposable(
+    /* Creation channel coin*/
+    laoRepo.addDisposable(
         context.messageSender.subscribe(channel.subChannel("coin")).subscribe({
           Timber.tag(TAG).d("subscription to the coin channel was a success")
-        }) { error: Throwable? ->
+        }) { error: Throwable ->
           Timber.tag(TAG).d(error, "error while trying  to subscribe to coin channel")
         })
     laoRepo.updateNodes(channel)
@@ -154,7 +155,7 @@ constructor(
       laoRepo.addDisposable(
           context.messageSender.subscribe(laoView.channel.subChannel("consensus")).subscribe({
             Timber.tag(TAG).d("Successful subscribe to consensus channel")
-          }) { e: Throwable? ->
+          }) { e: Throwable ->
             Timber.tag(TAG).d(e, "Unsuccessful subscribe to consensus channel")
           })
     }
@@ -228,7 +229,7 @@ constructor(
 
     @JvmStatic
     fun updateLaoWitnessesWitnessMessage(
-        messageId: MessageID?,
+        messageId: MessageID,
         updateLao: UpdateLao,
         laoView: LaoView
     ): WitnessMessage {

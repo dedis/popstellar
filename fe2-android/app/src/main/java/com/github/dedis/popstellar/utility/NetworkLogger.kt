@@ -51,14 +51,11 @@ class NetworkLogger : Timber.Tree() {
   private fun sendToServer(log: String) {
     // Take the lock and send the log as UTF-8 encoded string
     synchronized(lock) {
-
       // If the websocket hasn't been already opened then open it
       if (webSocket == null) {
         connectWebSocket()
-      }
-      // Connect may fail
-      if (webSocket != null) {
-        webSocket!!.send(log)
+        // Connect may fail
+        webSocket?.send(log)
       }
     }
   }
@@ -194,11 +191,9 @@ class NetworkLogger : Timber.Tree() {
     private fun closeWebSocket() {
       // Take the lock and then close the websocket
       synchronized(lock) {
-        if (webSocket != null) {
-          webSocket!!.close(1000, null)
-          webSocket = null
-          Log.d(TAG, "Disconnected from server $serverUrl")
-        }
+        webSocket?.close(1000, null)
+        webSocket = null
+        Log.d(TAG, "Disconnected from server $serverUrl")
       }
     }
   }

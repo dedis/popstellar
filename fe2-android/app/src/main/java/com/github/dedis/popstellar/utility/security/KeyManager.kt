@@ -94,8 +94,8 @@ constructor(
    * @throws UninitializedWalletException if the wallet is not initialized with a seed
    */
   @Throws(KeyException::class)
-  fun getLongTermAuthToken(laoId: String?, clientId: String?): AuthToken {
-    return AuthToken(wallet.generatePoPToken(laoId!!, Hash.hash(clientId)))
+  fun getLongTermAuthToken(laoId: String, clientId: String): AuthToken {
+    return AuthToken(wallet.generatePoPToken(laoId, Hash.hash(clientId)))
   }
 
   /**
@@ -110,8 +110,8 @@ constructor(
    * @throws InvalidPoPTokenException if the token is not a valid attendee
    */
   @Throws(KeyException::class)
-  fun getValidPoPToken(laoId: String?, rollCall: RollCall): PoPToken {
-    return wallet.recoverKey(laoId!!, rollCall.persistentId, rollCall.attendees)
+  fun getValidPoPToken(laoId: String, rollCall: RollCall): PoPToken {
+    return wallet.recoverKey(laoId, rollCall.persistentId, rollCall.attendees)
   }
 
   @VisibleForTesting

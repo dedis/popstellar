@@ -76,9 +76,10 @@ class LAORepository @Inject constructor(appDatabase: AppDatabase, application: A
    * @param channel the channel on which the Lao was created
    * @return the Lao corresponding to this channel
    */
-  fun getLaoByChannel(channel: Channel): Lao? {
+  @Throws(UnknownLaoException::class)
+  fun getLaoByChannel(channel: Channel): Lao {
     Timber.tag(TAG).d("querying lao for channel %s", channel)
-    return laoById[channel.extractLaoId()]
+    return laoById[channel.extractLaoId()] ?: throw UnknownLaoException(channel.extractLaoId())
   }
 
   /**
@@ -94,9 +95,9 @@ class LAORepository @Inject constructor(appDatabase: AppDatabase, application: A
   val allLaoIds: Observable<List<String>>
     get() = laosSubject
 
-  fun getLaoObservable(laoId: String): Observable<LaoView>? {
+  fun getLaoObservable(laoId: String): Observable<LaoView> {
     subjectById.computeIfAbsent(laoId) { BehaviorSubject.create() }
-    return subjectById[laoId]
+    return subjectById.getValue(laoId)
   }
 
   @Throws(UnknownLaoException::class)
@@ -111,7 +112,7 @@ class LAORepository @Inject constructor(appDatabase: AppDatabase, application: A
       if (laoFromDb == null) {
         throw UnknownLaoException(id)
       } else {
-        // Restore the lao
+        // Restore the lao in memory
         updateLao(laoFromDb)
       }
     }
@@ -196,9 +197,9 @@ class LAORepository @Inject constructor(appDatabase: AppDatabase, application: A
    * @param channel the lao channel
    */
   fun updateNodes(channel: Channel) {
-    val nodes = getLaoByChannel(channel)!!.nodes
+    val nodes = getLaoByChannel(channel).nodes
     channelToNodesSubject.putIfAbsent(channel, BehaviorSubject.create())
-    channelToNodesSubject[channel]?.onNext(nodes)
+    channelToNodesSubject.getValue(channel).onNext(nodes)
   }
 
   companion object {

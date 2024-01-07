@@ -76,7 +76,7 @@ constructor(
     // Once the election is created, we subscribe to the election channel
     context.messageSender
         .subscribe(election.channel)
-        .doOnError { err: Throwable? ->
+        .doOnError { err: Throwable ->
           Timber.tag(TAG).e(err, "An error occurred while subscribing to election channel")
         }
         .onErrorComplete()
@@ -268,7 +268,7 @@ constructor(
     }
 
     @JvmStatic
-    fun electionSetupWitnessMessage(messageId: MessageID?, election: Election): WitnessMessage {
+    fun electionSetupWitnessMessage(messageId: MessageID, election: Election): WitnessMessage {
       val message = WitnessMessage(messageId)
       message.title = "Election ${election.name} setup at ${Date(election.creationInMillis)}"
       message.description =
@@ -288,7 +288,7 @@ constructor(
       return message
     }
 
-    fun electionResultWitnessMessage(messageId: MessageID?, election: Election): WitnessMessage {
+    fun electionResultWitnessMessage(messageId: MessageID, election: Election): WitnessMessage {
       val message = WitnessMessage(messageId)
       message.title = "Election ${election.name} results"
       message.description =

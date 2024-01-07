@@ -214,7 +214,7 @@ constructor(appDatabase: AppDatabase, application: Application) {
           // An empty subject might have been created already
           if (transactionsSubject.containsKey(current)) {
             // Updating subject
-            transactionsSubject[current]?.toSerialized()?.onNext(ArrayList(transactionList))
+            transactionsSubject.getValue(current).toSerialized().onNext(ArrayList(transactionList))
           } else {
             // Creating new subject
             transactionsSubject[current] = BehaviorSubject.createDefault(ArrayList(transactionList))
@@ -272,12 +272,12 @@ constructor(appDatabase: AppDatabase, application: Application) {
           .collect(Collectors.toList())
     }
 
-    fun getUserBalance(user: PublicKey?): Long {
-      val transactionList = transactions[user]
+    fun getUserBalance(user: PublicKey): Long {
+      val transactionList = transactions[user] ?: return 0
       return transactionList
-          ?.stream()
-          ?.mapToLong { transaction: TransactionObject -> transaction.getSumForUser(user) }
-          ?.sum() ?: 0
+          .stream()
+          .mapToLong { transaction: TransactionObject -> transaction.getSumForUser(user) }
+          .sum()
     }
 
     /**

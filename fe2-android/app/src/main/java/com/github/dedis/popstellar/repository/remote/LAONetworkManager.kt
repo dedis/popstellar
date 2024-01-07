@@ -50,7 +50,7 @@ class LAONetworkManager(
   private val requestCounter = AtomicInteger()
 
   // A subject that represents unprocessed messages
-  private val unprocessed: Subject<GenericMessage?> = PublishSubject.create()
+  private val unprocessed: Subject<GenericMessage> = PublishSubject.create()
   private val reprocessingCounter = ConcurrentHashMap<GenericMessage, Int>()
   private val subscribedChannels: MutableSet<Channel>
   private val disposables = CompositeDisposable()
@@ -70,7 +70,7 @@ class LAONetworkManager(
             .observeConnectionEvents() // Observe the events of a connection
             .subscribeOn(
                 schedulerProvider.io()) // Filter out events that are not related to a reconnection
-            .filter { event: WebSocket.Event? -> event is WebSocket.Event.OnConnectionOpened<*> }
+            .filter { event: WebSocket.Event -> event is WebSocket.Event.OnConnectionOpened<*> }
             // Subscribe to the stream and when a connection event is received, send a subscribe
             // message
             // for each channel we are supposed to be subscribed to.
@@ -98,8 +98,8 @@ class LAONetworkManager(
                 // with a delay of 5 seconds to give priority to new messages.
                 unprocessed.delay(
                     REPROCESSING_DELAY.toLong(), TimeUnit.SECONDS, schedulerProvider.computation()))
-            .filter { obj: GenericMessage? -> obj is Broadcast } // Filter the Broadcast
-            .map { obj: GenericMessage? -> obj as Broadcast }
+            .filter { obj: GenericMessage -> obj is Broadcast } // Filter the Broadcast
+            .map { obj: GenericMessage -> obj as Broadcast }
             .subscribeOn(schedulerProvider.newThread())
             .subscribe({ broadcast: Broadcast -> handleBroadcast(broadcast) }) { error: Throwable ->
               Timber.tag(TAG).d(error, "Error on processing message")
@@ -157,14 +157,14 @@ class LAONetworkManager(
           Timber.tag(TAG).d("Removing %s from subscriptions", channel)
           subscribedChannels.remove(channel)
         }
-        .doOnError { error: Throwable? -> Timber.tag(TAG).d(error, "error unsubscribing") }
+        .doOnError { error: Throwable -> Timber.tag(TAG).d(error, "error unsubscribing") }
         .ignoreElement()
   }
 
-  override val connectEvents: Observable<WebSocket.Event?>
+  override val connectEvents: Observable<WebSocket.Event>
     get() = multiConnection.observeConnectionEvents()
 
-  override val subscriptions: Set<Channel?>
+  override val subscriptions: Set<Channel>
     get() = HashSet(subscribedChannels)
 
   override fun extendConnection(peerAddressList: List<PeerAddress>) {
@@ -203,15 +203,13 @@ class LAONetworkManager(
     }
   }
 
-  private fun handleMessages(messages: List<MessageGeneral>, channel: Channel?) {
+  private fun handleMessages(messages: List<MessageGeneral>, channel: Channel) {
     fun handleError(e: Exception) {
       Timber.tag(TAG).e(e, "Error while handling received catchup message")
     }
     for (msg in messages) {
       try {
-        messageHandler.handleMessage(this, channel!!, msg)
-      } catch (e: Exception) {
-        Timber.tag(TAG).e(e, "Error while handling received catchup message")
+        messageHandler.handleMessage(this, channel, msg)
       } catch (e: DataHandlingException) {
         handleError(e)
       } catch (e: UnknownLaoException) {
@@ -235,8 +233,8 @@ class LAONetworkManager(
         // certain the reply will be processed and the message is only sent when an observer
         // subscribes to the request answer.
         .doOnSubscribe { multiConnection.sendMessage(query) }
-        .filter { obj: GenericMessage? -> obj is Answer } // Filter for Answers
-        .map { obj: GenericMessage? ->
+        .filter { obj: GenericMessage -> obj is Answer } // Filter for Answers
+        .map { obj: GenericMessage ->
           obj as Answer
         } // This specific request has an id, only let the related Answer pass
         .filter { answer: Answer -> answer.id == query.requestId }

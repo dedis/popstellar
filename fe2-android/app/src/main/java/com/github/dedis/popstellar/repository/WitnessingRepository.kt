@@ -369,7 +369,6 @@ constructor(
                   })
         }
       }
-
       // Reinsert the witness message with the new witness to update the subject
       add(witnessMessage)
       return true
@@ -426,7 +425,7 @@ constructor(
       val idsToDelete =
           witnessMessages.values
               .stream()
-              .filter { witnessMessage: WitnessMessage? -> hasRequiredSignatures(witnessMessage) }
+              .filter { witnessMessage: WitnessMessage -> hasRequiredSignatures(witnessMessage) }
               .map { obj: WitnessMessage -> obj.messageId }
               .collect(Collectors.toSet())
 
@@ -444,7 +443,7 @@ constructor(
               })
 
       // Delete from memory
-      idsToDelete.forEach(Consumer { key: MessageID? -> witnessMessages.remove(key) })
+      idsToDelete.forEach(Consumer { key: MessageID -> witnessMessages.remove(key) })
 
       // Publish the updated collection
       witnessMessagesSubject

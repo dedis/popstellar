@@ -10,11 +10,7 @@ import javax.inject.Singleton
  */
 @Singleton
 class ServerRepository @Inject constructor() {
-  private val serverByLaoId: MutableMap<String, Server>
-
-  init {
-    serverByLaoId = HashMap()
-  }
+  private val serverByLaoId: MutableMap<String, Server> = HashMap()
 
   /** Add a server to the repository */
   fun addServer(laoId: String, server: Server) {
@@ -22,11 +18,9 @@ class ServerRepository @Inject constructor() {
   }
 
   /** Get the corresponding server to the given Lao Id (if present) */
-  fun getServerByLaoId(laoId: String): Server? {
-    if (serverByLaoId.containsKey(laoId)) {
-      return serverByLaoId[laoId]
-    }
-    throw IllegalArgumentException("There is no backend associated with the LAO '$laoId'")
+  fun getServerByLaoId(laoId: String): Server {
+    return serverByLaoId[laoId]
+        ?: throw IllegalArgumentException("There is no backend associated with the LAO '$laoId'")
   }
 
   val allServer: Collection<Server>

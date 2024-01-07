@@ -119,7 +119,7 @@ constructor(
       return message
     }
 
-    fun stateMeetingWitnessMessage(messageId: MessageID?, meeting: Meeting): WitnessMessage {
+    fun stateMeetingWitnessMessage(messageId: MessageID, meeting: Meeting): WitnessMessage {
       val message = WitnessMessage(messageId)
       message.title =
           "The Meeting ${meeting.name} was modified at ${Date(meeting.lastModified * 1000)}"

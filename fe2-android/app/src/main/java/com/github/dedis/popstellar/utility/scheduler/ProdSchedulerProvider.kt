@@ -18,7 +18,7 @@ class ProdSchedulerProvider @Inject constructor() : SchedulerProvider {
     return Schedulers.newThread()
   }
 
-  override fun mainThread(): Scheduler? {
+  override fun mainThread(): Scheduler {
     return AndroidSchedulers.mainThread()
   }
 }

@@ -236,8 +236,8 @@ object MessageValidator {
       require(responseType == VALID_RESPONSE_TYPE) { "Invalid response type in the URL" }
       // Check the scope contains all the required scopes
       require(
-          !Arrays.stream(REQUIRED_SCOPES).anyMatch { name: String? ->
-            !uri.getQueryParameter("scope")!!.contains(name!!)
+          !Arrays.stream(REQUIRED_SCOPES).anyMatch { name: String ->
+            !uri.getQueryParameter("scope")!!.contains(name)
           }) {
             "Invalid scope"
           }
@@ -245,8 +245,8 @@ object MessageValidator {
       val responseMode = uri.getQueryParameter(PoPCHAQRCode.FIELD_RESPONSE_MODE)
       require(
           !(responseMode != null &&
-              Arrays.stream(VALID_RESPONSE_MODES).noneMatch { s: String? ->
-                responseMode.contains(s!!)
+              Arrays.stream(VALID_RESPONSE_MODES).noneMatch { s: String ->
+                responseMode.contains(s)
               })) {
             "Invalid response mode"
           }

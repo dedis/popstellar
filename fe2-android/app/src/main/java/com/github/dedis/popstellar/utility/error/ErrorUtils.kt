@@ -75,10 +75,11 @@ class ErrorUtils private constructor() {
       return context.getString(action, java.util.Arrays.toString(args))
     }
 
+    @Suppress("SpreadOperator")
     private fun getErrorSpecificMessage(context: Context, error: Throwable): String {
       return when (error) {
         is GenericException -> {
-          context.getString(error.userMessage, error.userMessageArguments)
+          context.getString(error.userMessage, *error.userMessageArguments)
         }
         is TimeoutException -> {
           context.getString(R.string.timeout_exception)

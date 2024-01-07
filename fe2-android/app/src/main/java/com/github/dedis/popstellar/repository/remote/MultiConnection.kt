@@ -53,16 +53,16 @@ class MultiConnection(
    *
    * @return an Observable of GenericMessage received on the connections
    */
-  override fun observeMessage(): Observable<GenericMessage?> {
+  override fun observeMessage(): Observable<GenericMessage> {
     return super.observeMessage()
         .concatWith(
             connectionMap.values
                 .stream()
                 .map { obj: Connection -> obj.observeMessage() }
-                .reduce { obj: Observable<GenericMessage?>, other: Observable<GenericMessage?> ->
+                .reduce { obj: Observable<GenericMessage>, other: Observable<GenericMessage> ->
                   obj.concatWith(other)
                 }
-                .orElse(Observable.empty<GenericMessage?>()))
+                .orElse(Observable.empty()))
   }
 
   /**
@@ -70,16 +70,16 @@ class MultiConnection(
    *
    * @return an Observable of Events happening on the connection
    */
-  override fun observeConnectionEvents(): Observable<WebSocket.Event?> {
+  override fun observeConnectionEvents(): Observable<WebSocket.Event> {
     return super.observeConnectionEvents()
         .concatWith(
             connectionMap.values
                 .stream()
                 .map { obj: Connection -> obj.observeConnectionEvents() }
-                .reduce { obj: Observable<WebSocket.Event?>, other: Observable<WebSocket.Event?> ->
+                .reduce { obj: Observable<WebSocket.Event>, other: Observable<WebSocket.Event> ->
                   obj.concatWith(other)
                 }
-                .orElse(Observable.empty<WebSocket.Event?>()))
+                .orElse(Observable.empty()))
   }
 
   override fun sendMessage(msg: Message) {

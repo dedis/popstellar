@@ -16,7 +16,7 @@ object PoPRXOperators {
    * @param <T> type of values
    * @return the new observer </T>
    */
-  fun <T> suppressErrors(onError: Consumer<Throwable?>): ObservableOperator<T, T> {
+  fun <T> suppressErrors(onError: Consumer<Throwable>): ObservableOperator<T, T> {
     return ObservableOperator { observer: Observer<in T> ->
       object : Observer<T> {
         override fun onSubscribe(d: Disposable) {

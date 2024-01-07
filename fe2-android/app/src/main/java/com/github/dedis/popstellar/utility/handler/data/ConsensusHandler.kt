@@ -61,7 +61,7 @@ constructor(private val laoRepo: LAORepository, private val witnessingRepo: Witn
   }
 
   @Suppress("unused")
-  fun <T : Data?> handleBackend(context: HandlerContext?, data: T) {
+  fun <T : Data?> handleBackend(context: HandlerContext, data: T) {
     Timber.tag(TAG)
         .w("Received a consensus message only for backend with action: %s", data!!.action)
   }

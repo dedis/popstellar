@@ -143,7 +143,7 @@ class ElectionRepository @Inject constructor(appDatabase: AppDatabase, applicati
       val id = election.id
       electionById[id] = election
       electionSubjects.putIfAbsent(id, BehaviorSubject.create())
-      electionSubjects[id]?.toSerialized()?.onNext(election)
+      electionSubjects.getValue(id).toSerialized().onNext(election)
       electionsSubject
           .toSerialized()
           .onNext(Collections.unmodifiableSet(HashSet(electionById.values)))
@@ -151,8 +151,7 @@ class ElectionRepository @Inject constructor(appDatabase: AppDatabase, applicati
 
     @Throws(UnknownElectionException::class)
     fun getElection(electionId: String): Election {
-      val election = electionById[electionId]
-      return election ?: throw UnknownElectionException(electionId)
+      return electionById[electionId] ?: throw UnknownElectionException(electionId)
     }
 
     fun getElectionsSubject(): Observable<Set<Election>> {
@@ -161,8 +160,7 @@ class ElectionRepository @Inject constructor(appDatabase: AppDatabase, applicati
 
     @Throws(UnknownElectionException::class)
     fun getElectionSubject(electionId: String): Observable<Election> {
-      val electionObservable: Observable<Election>? = electionSubjects[electionId]
-      return electionObservable ?: throw UnknownElectionException(electionId)
+      return electionSubjects[electionId] ?: throw UnknownElectionException(electionId)
     }
 
     /**

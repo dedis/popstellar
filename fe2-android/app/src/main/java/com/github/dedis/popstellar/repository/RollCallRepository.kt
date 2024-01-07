@@ -211,7 +211,7 @@ class RollCallRepository @Inject constructor(appDatabase: AppDatabase, applicati
       if (rollCallSubjects.containsKey(persistentId)) {
         // If it exist we update the subject
         Timber.tag(TAG).d("Updating existing roll call %s", rollCall.name)
-        rollCallSubjects[persistentId]?.toSerialized()?.onNext(rollCall)
+        rollCallSubjects.getValue(persistentId).toSerialized().onNext(rollCall)
       } else {
         // If it does not, we create a new subject
         Timber.tag(TAG).d("New roll call, subject created for %s", rollCall.name)

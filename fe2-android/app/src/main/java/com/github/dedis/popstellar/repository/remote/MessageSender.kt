@@ -63,10 +63,10 @@ interface MessageSender : Disposable {
   fun unsubscribe(channel: Channel): Completable
 
   /** @return an Observable of WebSocket events of the underlying connection */
-  val connectEvents: Observable<WebSocket.Event?>
+  val connectEvents: Observable<WebSocket.Event>
 
   /** @return the list of channels we subscribed to */
-  val subscriptions: Set<Channel?>
+  val subscriptions: Set<Channel>
 
   /**
    * Extend the connection by connecting to the peers of a server upon a GreetLao

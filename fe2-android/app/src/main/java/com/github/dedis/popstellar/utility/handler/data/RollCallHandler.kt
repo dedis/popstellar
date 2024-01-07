@@ -152,7 +152,7 @@ constructor(
           rollCallRepo.addDisposable(
               context.messageSender
                   .subscribe(channel.subChannel("social").subChannel(token.encoded))
-                  .subscribe({ Timber.tag(TAG).d("subscription a success") }) { error: Throwable? ->
+                  .subscribe({ Timber.tag(TAG).d("subscription a success") }) { error: Throwable ->
                     Timber.tag(TAG).e(error, "subscription error")
                   })
         })
@@ -161,7 +161,7 @@ constructor(
     rollCallRepo.addDisposable(
         context.messageSender
             .subscribe(channel.subChannel("social").subChannel("reactions"))
-            .subscribe({ Timber.tag(TAG).d("subscription a success") }) { error: Throwable? ->
+            .subscribe({ Timber.tag(TAG).d("subscription a success") }) { error: Throwable ->
               Timber.tag(TAG).e(error, "subscription error")
             })
   }
@@ -186,7 +186,7 @@ constructor(
     }
 
     @JvmStatic
-    fun createRollCallWitnessMessage(messageId: MessageID?, rollCall: RollCall): WitnessMessage {
+    fun createRollCallWitnessMessage(messageId: MessageID, rollCall: RollCall): WitnessMessage {
       val message = WitnessMessage(messageId)
       message.title =
           "The Roll Call ${rollCall.name} was created at ${Date(rollCall.creation * 1000)}"
@@ -213,7 +213,7 @@ constructor(
     }
 
     @JvmStatic
-    fun openRollCallWitnessMessage(messageId: MessageID?, rollCall: RollCall): WitnessMessage {
+    fun openRollCallWitnessMessage(messageId: MessageID, rollCall: RollCall): WitnessMessage {
       val message = WitnessMessage(messageId)
       message.title =
           "The Roll Call ${rollCall.name} was opened at ${Date(rollCall.startTimestampInMillis)}"
@@ -237,7 +237,7 @@ constructor(
     }
 
     @JvmStatic
-    fun closeRollCallWitnessMessage(messageId: MessageID?, rollCall: RollCall): WitnessMessage {
+    fun closeRollCallWitnessMessage(messageId: MessageID, rollCall: RollCall): WitnessMessage {
       val message = WitnessMessage(messageId)
       message.title =
           "The Roll Call ${rollCall.name} was closed at ${Date(rollCall.endTimestampInMillis)}"

@@ -134,7 +134,7 @@ class MeetingRepository @Inject constructor(appDatabase: AppDatabase, applicatio
       if (meetingSubjects.containsKey(id)) {
         // If it exist we update the subject
         Timber.tag(TAG).d("Updating existing meeting %s", meeting.name)
-        meetingSubjects[id]?.toSerialized()?.onNext(meeting)
+        meetingSubjects.getValue(id).toSerialized().onNext(meeting)
       } else {
         // If it does not, we create a new subject
         Timber.tag(TAG).d("New meeting, subject created for %s", meeting.name)
