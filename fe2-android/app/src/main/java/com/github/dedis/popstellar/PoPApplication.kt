@@ -14,6 +14,7 @@ import timber.log.Timber
 class PoPApplication : Application() {
   override fun onCreate() {
     super.onCreate()
+
     // Associate the custom logger to Timber
     NetworkLogger.loadFromPersistPreference(this)
     Timber.plant(NetworkLogger())

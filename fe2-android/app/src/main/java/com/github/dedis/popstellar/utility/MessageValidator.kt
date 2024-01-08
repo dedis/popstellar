@@ -24,6 +24,7 @@ object MessageValidator {
   }
 
   class MessageValidatorBuilder {
+
     /**
      * Helper method to check that a LAO id is valid.
      *
@@ -99,6 +100,7 @@ object MessageValidator {
     fun validPastTimes(vararg times: Long): MessageValidatorBuilder {
       val currentTime = Instant.now().epochSecond + VALID_FUTURE_DELAY
       val validPastTime = currentTime - VALID_PAST_DELAY
+
       for (time in times) {
         require(time >= validPastTime) { "Time cannot be too far in the past" }
         require(time <= currentTime) { "Time cannot be in the future" }
@@ -206,11 +208,14 @@ object MessageValidator {
       if (votes == null) {
         return this
       }
+
       noListDuplicates(votes)
+
       for (vote in votes) {
         isBase64(vote.questionId, "question id")
         isBase64(vote.id, "vote id")
       }
+
       return this
     }
 
@@ -231,9 +236,11 @@ object MessageValidator {
           "Required argument $arg is missing in the URL."
         }
       }
+
       // Check response type respects openid standards
       val responseType = uri.getQueryParameter(PoPCHAQRCode.FIELD_RESPONSE_TYPE)
       require(responseType == VALID_RESPONSE_TYPE) { "Invalid response type in the URL" }
+
       // Check the scope contains all the required scopes
       require(
           !Arrays.stream(REQUIRED_SCOPES).anyMatch { name: String ->
@@ -241,6 +248,7 @@ object MessageValidator {
           }) {
             "Invalid scope"
           }
+
       // Check response mode is valid
       val responseMode = uri.getQueryParameter(PoPCHAQRCode.FIELD_RESPONSE_MODE)
       require(
@@ -250,9 +258,11 @@ object MessageValidator {
               })) {
             "Invalid response mode"
           }
+
       // Check lao ID in login hint match the right laoID
       val laoHint = uri.getQueryParameter(PoPCHAQRCode.FIELD_LOGIN_HINT)
       require(laoHint == laoId) { "Invalid LAO ID $laoHint" }
+
       return this
     }
 

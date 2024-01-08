@@ -14,7 +14,7 @@ import com.github.dedis.popstellar.repository.LAORepository
 import com.github.dedis.popstellar.repository.RollCallRepository
 import com.github.dedis.popstellar.repository.WitnessingRepository
 import com.github.dedis.popstellar.repository.database.witnessing.PendingEntity
-import com.github.dedis.popstellar.utility.ActivityUtils.generateMnemonicWordFromBase64
+import com.github.dedis.popstellar.utility.GeneralUtils.generateMnemonicWordFromBase64
 import com.github.dedis.popstellar.utility.error.UnknownLaoException
 import com.github.dedis.popstellar.utility.error.UnknownRollCallException
 import java.util.Date
@@ -31,6 +31,7 @@ constructor(
     private val digitalCashRepo: DigitalCashRepository,
     private val witnessingRepo: WitnessingRepository
 ) {
+
   /**
    * Process a CreateRollCall message.
    *
@@ -41,8 +42,9 @@ constructor(
   fun handleCreateRollCall(context: HandlerContext, createRollCall: CreateRollCall) {
     val channel = context.channel
     val messageId = context.messageId
-    Timber.tag(TAG).d("handleCreateRollCall: channel: %s, name: %s", channel, createRollCall.name)
     val laoView = laoRepo.getLaoViewByChannel(channel)
+    Timber.tag(TAG).d("handleCreateRollCall: channel: %s, name: %s", channel, createRollCall.name)
+
     val builder = RollCallBuilder()
     builder
         .setId(createRollCall.id)
@@ -57,6 +59,7 @@ constructor(
         .setEmptyAttendees()
     val laoId = laoView.id
     val rollCall = builder.build()
+
     witnessingRepo.addWitnessMessage(laoId, createRollCallWitnessMessage(messageId, rollCall))
     if (witnessingRepo.areWitnessesEmpty(laoId)) {
       addRollCallRoutine(rollCallRepo, digitalCashRepo, laoId, rollCall)
@@ -77,6 +80,7 @@ constructor(
     val channel = context.channel
     val messageId = context.messageId
     Timber.tag(TAG).d("handleOpenRollCall: channel: %s, msg: %s", channel, openRollCall)
+
     val laoView = laoRepo.getLaoViewByChannel(channel)
     val updateId = openRollCall.updateId
     val opens = openRollCall.opens
@@ -95,6 +99,7 @@ constructor(
         .setEmptyAttendees()
     val laoId = laoView.id
     val rollCall = builder.build()
+
     witnessingRepo.addWitnessMessage(laoId, openRollCallWitnessMessage(messageId, rollCall))
     if (witnessingRepo.areWitnessesEmpty(laoId)) {
       addRollCallRoutine(rollCallRepo, digitalCashRepo, laoId, rollCall)
@@ -115,6 +120,7 @@ constructor(
     val channel = context.channel
     val messageId = context.messageId
     Timber.tag(TAG).d("handleCloseRollCall: channel: %s", channel)
+
     val laoView = laoRepo.getLaoViewByChannel(channel)
     val updateId = closeRollCall.updateId
     val closes = closeRollCall.closes
@@ -135,6 +141,7 @@ constructor(
         .setEnd(closeRollCall.closedAt)
     val laoId = laoView.id
     val rollCall = builder.build()
+
     witnessingRepo.addWitnessMessage(laoId, closeRollCallWitnessMessage(messageId, rollCall))
     if (witnessingRepo.areWitnessesEmpty(laoId)) {
       addRollCallRoutine(rollCallRepo, digitalCashRepo, laoId, rollCall)
@@ -152,18 +159,18 @@ constructor(
           rollCallRepo.addDisposable(
               context.messageSender
                   .subscribe(channel.subChannel("social").subChannel(token.encoded))
-                  .subscribe({ Timber.tag(TAG).d("subscription a success") }) { error: Throwable ->
-                    Timber.tag(TAG).e(error, "subscription error")
-                  })
+                  .subscribe(
+                      { Timber.tag(TAG).d("subscription a success") },
+                      { error: Throwable -> Timber.tag(TAG).e(error, "subscription error") }))
         })
 
     // Subscribe to reactions
     rollCallRepo.addDisposable(
         context.messageSender
             .subscribe(channel.subChannel("social").subChannel("reactions"))
-            .subscribe({ Timber.tag(TAG).d("subscription a success") }) { error: Throwable ->
-              Timber.tag(TAG).e(error, "subscription error")
-            })
+            .subscribe(
+                { Timber.tag(TAG).d("subscription a success") },
+                { error: Throwable -> Timber.tag(TAG).e(error, "subscription error") }))
   }
 
   companion object {
@@ -191,24 +198,13 @@ constructor(
       message.title =
           "The Roll Call ${rollCall.name} was created at ${Date(rollCall.creation * 1000)}"
       message.description =
-          """
-                   $MNEMONIC_STRING${generateMnemonicWordFromBase64(rollCall.persistentId, 2)}
-                   
-                   $LOCATION_STRING${rollCall.location}
-                   
-                   ${
-        if (rollCall.description.isEmpty()) "" else """
-     $DESCRIPTION_STRING${rollCall.description}
-     
-     
-     """.trimIndent()
-      }Opens at :
-                   ${Date(rollCall.startTimestampInMillis)}
-                   
-                   Closes at :
-                   ${Date(rollCall.endTimestampInMillis)}
-                   """
-              .trimIndent()
+          "$MNEMONIC_STRING${generateMnemonicWordFromBase64(rollCall.persistentId, 2)}\n\n" +
+              "$LOCATION_STRING${rollCall.location}\n\n" +
+              (if (rollCall.description.isEmpty()) ""
+              else "$DESCRIPTION_STRING${rollCall.description}\n\n") +
+              "Opens at :\n${Date(rollCall.startTimestampInMillis)}\n\n" +
+              "Closes at :\n${Date(rollCall.endTimestampInMillis)}"
+
       return message
     }
 
@@ -218,21 +214,12 @@ constructor(
       message.title =
           "The Roll Call ${rollCall.name} was opened at ${Date(rollCall.startTimestampInMillis)}"
       message.description =
-          """
-                   $MNEMONIC_STRING${generateMnemonicWordFromBase64(rollCall.persistentId, 2)}
-                   
-                   $LOCATION_STRING${rollCall.location}
-                   
-                   ${
-        if (rollCall.description.isEmpty()) "" else """
-     $DESCRIPTION_STRING${rollCall.description}
-     
-     
-     """.trimIndent()
-      }Closes at :
-                   ${Date(rollCall.endTimestampInMillis)}
-                   """
-              .trimIndent()
+          "$MNEMONIC_STRING${generateMnemonicWordFromBase64(rollCall.persistentId, 2)}\n\n" +
+              "$LOCATION_STRING${rollCall.location}\n\n" +
+              (if (rollCall.description.isEmpty()) ""
+              else "$DESCRIPTION_STRING${rollCall.description}\n\n") +
+              "Closes at :\n${Date(rollCall.endTimestampInMillis)}"
+
       return message
     }
 
@@ -242,20 +229,12 @@ constructor(
       message.title =
           "The Roll Call ${rollCall.name} was closed at ${Date(rollCall.endTimestampInMillis)}"
       message.description =
-          """
-                   $MNEMONIC_STRING${generateMnemonicWordFromBase64(rollCall.persistentId, 2)}
-                   
-                   $LOCATION_STRING${rollCall.location}
-                   
-                   ${
-        if (rollCall.description.isEmpty()) "" else """
-     $DESCRIPTION_STRING${rollCall.description}
-     
-     
-     """.trimIndent()
-      }${formatAttendees(rollCall.attendees)}
-                   """
-              .trimIndent()
+          "$MNEMONIC_STRING${generateMnemonicWordFromBase64(rollCall.persistentId, 2)}\n\n" +
+              "$LOCATION_STRING${rollCall.location}\n\n" +
+              (if (rollCall.description.isEmpty()) ""
+              else "$DESCRIPTION_STRING${rollCall.description}\n\n") +
+              formatAttendees(rollCall.attendees)
+
       return message
     }
 

@@ -29,14 +29,7 @@ class NetworkLogger : Timber.Tree() {
 
     // Always print the log to console
     if (t != null) {
-      Log.println(
-          priority,
-          tag,
-          """
-     $message
-     $error
-     """
-              .trimIndent())
+      Log.println(priority, tag, "$message\n$error")
     } else {
       Log.println(priority, tag, message)
     }
@@ -54,9 +47,9 @@ class NetworkLogger : Timber.Tree() {
       // If the websocket hasn't been already opened then open it
       if (webSocket == null) {
         connectWebSocket()
-        // Connect may fail
-        webSocket?.send(log)
       }
+      // Connect may fail
+      webSocket?.send(log)
     }
   }
 
@@ -82,6 +75,7 @@ class NetworkLogger : Timber.Tree() {
 
     // Take the UTC-timezone timestamp: [yyyy-mm-ddThh:mm:ss.msZ]
     val timestamp = Clock.systemUTC().instant().toString()
+
     return if (error.isEmpty()) "[$timestamp] - $priorityString $tag: $message"
     else "[$timestamp] - $priorityString $tag: $message%nERROR: $error"
   }
@@ -136,10 +130,11 @@ class NetworkLogger : Timber.Tree() {
           closeWebSocket()
         }
       }
+
       consumerMap[Lifecycle.Event.ON_PAUSE] = saverConsumer
       consumerMap[Lifecycle.Event.ON_STOP] = saverConsumer
       application.registerActivityLifecycleCallbacks(
-          ActivityUtils.buildLifecycleCallback(consumerMap))
+          GeneralUtils.buildLifecycleCallback(consumerMap))
     }
 
     /** Function to enable the remote logging. It opens the websocket */
@@ -171,6 +166,7 @@ class NetworkLogger : Timber.Tree() {
       try {
         val request: Request = Builder().url(serverUrl.toString()).build()
         val client = OkHttpClient()
+
         // Create the socket with an empty listener
         webSocket =
             client.newWebSocket(

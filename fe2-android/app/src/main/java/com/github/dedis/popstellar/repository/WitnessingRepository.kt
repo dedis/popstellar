@@ -15,7 +15,7 @@ import com.github.dedis.popstellar.repository.database.witnessing.WitnessDao
 import com.github.dedis.popstellar.repository.database.witnessing.WitnessEntity
 import com.github.dedis.popstellar.repository.database.witnessing.WitnessingDao
 import com.github.dedis.popstellar.repository.database.witnessing.WitnessingEntity
-import com.github.dedis.popstellar.utility.ActivityUtils.buildLifecycleCallback
+import com.github.dedis.popstellar.utility.GeneralUtils.buildLifecycleCallback
 import com.github.dedis.popstellar.utility.handler.data.ElectionHandler.Companion.addElectionRoutine
 import com.github.dedis.popstellar.utility.handler.data.MeetingHandler.Companion.addMeetingRoutine
 import com.github.dedis.popstellar.utility.handler.data.RollCallHandler.Companion.addRollCallRoutine
@@ -91,6 +91,7 @@ constructor(
     witnessingDao = appDatabase.witnessingDao()
     witnessDao = appDatabase.witnessDao()
     pendingDao = appDatabase.pendingDao()
+
     val consumerMap: MutableMap<Lifecycle.Event, Consumer<Activity>> =
         EnumMap(Lifecycle.Event::class.java)
     consumerMap[Lifecycle.Event.ON_STOP] = Consumer { disposables.clear() }
@@ -114,11 +115,11 @@ constructor(
             .insert(witnessingEntity)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({
-              Timber.tag(TAG).d("Successfully persisted witness message %s", witnessMessage)
-            }) { err: Throwable ->
-              Timber.tag(TAG).e(err, "Error in persisting witness message")
-            })
+            .subscribe(
+                { Timber.tag(TAG).d("Successfully persisted witness message %s", witnessMessage) },
+                { err: Throwable ->
+                  Timber.tag(TAG).e(err, "Error in persisting witness message")
+                }))
 
     // Retrieve Lao data and add the witness message to it
     getLaoWitness(laoId).add(witnessMessage)
@@ -139,15 +140,15 @@ constructor(
             .stream()
             .map { pk: PublicKey -> WitnessEntity(laoId, pk) }
             .collect(Collectors.toList())
+
     disposables.add(
         witnessDao
             .insertAll(witnessEntities)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({ Timber.tag(TAG).d("Successfully persisted witnesses %s", witnesses) }) {
-                err: Throwable ->
-              Timber.tag(TAG).e(err, "Error in persisting witnesses")
-            })
+            .subscribe(
+                { Timber.tag(TAG).d("Successfully persisted witnesses %s", witnesses) },
+                { err: Throwable -> Timber.tag(TAG).e(err, "Error in persisting witnesses") }))
 
     // Retrieve Lao data and add the witnesses to it
     getLaoWitness(laoId).addWitnesses(witnesses)
@@ -239,13 +240,15 @@ constructor(
             .insert(pendingEntity)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({
-              Timber.tag(TAG)
-                  .d("Persisted the pending entity corresponding to message %s", messageId)
-            }) { err: Throwable ->
-              Timber.tag(TAG)
-                  .e(err, "Error in persisting the pending entity of message %s", messageId)
-            })
+            .subscribe(
+                {
+                  Timber.tag(TAG)
+                      .d("Persisted the pending entity corresponding to message %s", messageId)
+                },
+                { err: Throwable ->
+                  Timber.tag(TAG)
+                      .e(err, "Error in persisting the pending entity of message %s", messageId)
+                }))
     // Add it to the memory for faster lookups
     getLaoWitness(pendingEntity.laoId).addPendingEntity(pendingEntity)
   }
@@ -339,11 +342,13 @@ constructor(
               .insert(WitnessingEntity(laoId, witnessMessage))
               .subscribeOn(Schedulers.io())
               .observeOn(AndroidSchedulers.mainThread())
-              .subscribe({
-                Timber.tag(TAG).d("Successfully persisted witness message %s", witnessMessage)
-              }) { err: Throwable ->
-                Timber.tag(TAG).e(err, "Error in persisting witness message")
-              })
+              .subscribe(
+                  {
+                    Timber.tag(TAG).d("Successfully persisted witness message %s", witnessMessage)
+                  },
+                  { err: Throwable ->
+                    Timber.tag(TAG).e(err, "Error in persisting witness message")
+                  }))
 
       // Upon reception of a new signature check that the witnessing policy is passing.
       // The following function is designed to return true only once (when it just achieves the
@@ -362,11 +367,11 @@ constructor(
                   .removePendingObject(messageID)
                   .subscribeOn(Schedulers.io())
                   .observeOn(AndroidSchedulers.mainThread())
-                  .subscribe({
-                    Timber.tag(TAG).d("Removed successfully pending object from disk")
-                  }) { err: Throwable ->
-                    Timber.tag(TAG).e(err, "Error in removing the pending object from disk")
-                  })
+                  .subscribe(
+                      { Timber.tag(TAG).d("Removed successfully pending object from disk") },
+                      { err: Throwable ->
+                        Timber.tag(TAG).e(err, "Error in removing the pending object from disk")
+                      }))
         }
       }
       // Reinsert the witness message with the new witness to update the subject
@@ -435,12 +440,14 @@ constructor(
               .deleteMessagesByIds(laoId, idsToDelete)
               .subscribeOn(Schedulers.io())
               .observeOn(AndroidSchedulers.mainThread())
-              .subscribe({
-                Timber.tag(TAG)
-                    .d("Deleted accepted witness messages of lao %s from the disk", laoId)
-              }) { err: Throwable ->
-                Timber.tag(TAG).e(err, "Error deleting witness messages in lao %s", laoId)
-              })
+              .subscribe(
+                  {
+                    Timber.tag(TAG)
+                        .d("Deleted accepted witness messages of lao %s from the disk", laoId)
+                  },
+                  { err: Throwable ->
+                    Timber.tag(TAG).e(err, "Error deleting witness messages in lao %s", laoId)
+                  }))
 
       // Delete from memory
       idsToDelete.forEach(Consumer { key: MessageID -> witnessMessages.remove(key) })
@@ -495,30 +502,39 @@ constructor(
               .getWitnessesByLao(laoId)
               .subscribeOn(Schedulers.io())
               .observeOn(AndroidSchedulers.mainThread())
-              .subscribe({ witnessList: List<PublicKey> -> addWitnesses(HashSet(witnessList)) }) {
-                  err: Throwable ->
-                Timber.tag(TAG).e(err, "No witness messages found on the disk")
-              }, // And all the witness messages of a given lao
+              .subscribe(
+                  { witnessList: List<PublicKey> -> addWitnesses(HashSet(witnessList)) },
+                  { err: Throwable ->
+                    Timber.tag(TAG).e(err, "No witness messages found on the disk")
+                  }),
+          // And all the witness messages of a given lao
           repo.witnessingDao
               .getWitnessMessagesByLao(laoId)
               .subscribeOn(Schedulers.io())
               .observeOn(AndroidSchedulers.mainThread())
-              .subscribe({ witnessMessageList: List<WitnessMessage> ->
-                witnessMessageList.forEach(
-                    Consumer { witnessMessage: WitnessMessage -> add(witnessMessage) })
-              }) { err: Throwable ->
-                Timber.tag(TAG).e(err, "No witness messages found on the disk")
-              }, // And finally also load the pending entities from the db
+              .subscribe(
+                  { witnessMessageList: List<WitnessMessage> ->
+                    witnessMessageList.forEach(
+                        Consumer { witnessMessage: WitnessMessage -> add(witnessMessage) })
+                  },
+                  { err: Throwable ->
+                    Timber.tag(TAG).e(err, "No witness messages found on the disk")
+                  }),
+          // And finally also load the pending entities from the db
           repo.pendingDao
               .getPendingObjectsFromLao(laoId)
               .subscribeOn(Schedulers.io())
               .observeOn(AndroidSchedulers.mainThread())
-              .subscribe({ pendingEntityList: List<PendingEntity> ->
-                pendingEntityList.forEach(
-                    Consumer { pendingEntity: PendingEntity -> addPendingEntity(pendingEntity) })
-              }) { err: Throwable ->
-                Timber.tag(TAG).e(err, "No pending entity found on the disk")
-              })
+              .subscribe(
+                  { pendingEntityList: List<PendingEntity> ->
+                    pendingEntityList.forEach(
+                        Consumer { pendingEntity: PendingEntity ->
+                          addPendingEntity(pendingEntity)
+                        })
+                  },
+                  { err: Throwable ->
+                    Timber.tag(TAG).e(err, "No pending entity found on the disk")
+                  }))
       alreadyRetrieved = true
     }
   }

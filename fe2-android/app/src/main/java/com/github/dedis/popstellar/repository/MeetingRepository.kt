@@ -7,7 +7,7 @@ import com.github.dedis.popstellar.model.objects.Meeting
 import com.github.dedis.popstellar.repository.database.AppDatabase
 import com.github.dedis.popstellar.repository.database.event.meeting.MeetingDao
 import com.github.dedis.popstellar.repository.database.event.meeting.MeetingEntity
-import com.github.dedis.popstellar.utility.ActivityUtils.buildLifecycleCallback
+import com.github.dedis.popstellar.utility.GeneralUtils.buildLifecycleCallback
 import com.github.dedis.popstellar.utility.error.UnknownMeetingException
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -36,6 +36,7 @@ class MeetingRepository @Inject constructor(appDatabase: AppDatabase, applicatio
 
   init {
     meetingDao = appDatabase.meetingDao()
+
     val consumerMap: MutableMap<Lifecycle.Event, Consumer<Activity>> =
         EnumMap(Lifecycle.Event::class.java)
     consumerMap[Lifecycle.Event.ON_STOP] = Consumer { disposables.clear() }
@@ -49,18 +50,21 @@ class MeetingRepository @Inject constructor(appDatabase: AppDatabase, applicatio
    */
   fun updateMeeting(laoId: String?, meeting: Meeting?) {
     Timber.tag(TAG).d("Adding meeting on lao %s : %s", laoId, meeting)
+
     requireNotNull(laoId) { "LaoId cannot be null" }
     requireNotNull(meeting) { "MeetingId cannot be null" }
+
     // Persist the meeting in the db
     disposables.add(
         meetingDao
             .insert(MeetingEntity(laoId, meeting))
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({ Timber.tag(TAG).d("Successfully persisted meeting %s", meeting.id) }) {
-                err: Throwable ->
-              Timber.tag(TAG).e(err, "Error in persisting meeting %s", meeting.id)
-            })
+            .subscribe(
+                { Timber.tag(TAG).d("Successfully persisted meeting %s", meeting.id) },
+                { err: Throwable ->
+                  Timber.tag(TAG).e(err, "Error in persisting meeting %s", meeting.id)
+                }))
 
     // Retrieve Lao data and add the meeting to it
     getLaoMeetings(laoId).update(meeting)
@@ -169,15 +173,17 @@ class MeetingRepository @Inject constructor(appDatabase: AppDatabase, applicatio
               .getMeetingsByLaoId(laoId)
               .subscribeOn(Schedulers.io())
               .observeOn(AndroidSchedulers.mainThread())
-              .subscribe({ meetings: List<Meeting> ->
-                meetings.forEach(
-                    Consumer { meeting: Meeting ->
-                      update(meeting)
-                      Timber.tag(TAG).d("Retrieved from db meeting %s", meeting.id)
-                    })
-              }) { err: Throwable ->
-                Timber.tag(TAG).e(err, "No meeting found in the storage for lao %s", laoId)
-              })
+              .subscribe(
+                  { meetings: List<Meeting> ->
+                    meetings.forEach(
+                        Consumer { meeting: Meeting ->
+                          update(meeting)
+                          Timber.tag(TAG).d("Retrieved from db meeting %s", meeting.id)
+                        })
+                  },
+                  { err: Throwable ->
+                    Timber.tag(TAG).e(err, "No meeting found in the storage for lao %s", laoId)
+                  }))
     }
   }
 

@@ -33,6 +33,7 @@ constructor(
     private val serverRepo: ServerRepository,
     private val witnessingRepo: WitnessingRepository
 ) {
+
   /**
    * Process a CreateLao message.
    *
@@ -44,6 +45,7 @@ constructor(
     val channel = context.channel
     val witnesses: Set<PublicKey> = HashSet(createLao.witnesses)
     Timber.tag(TAG).d("handleCreateLao: channel: %s, msg: %s", channel, createLao)
+
     val lao = Lao(createLao.id)
     lao.name = createLao.name
     lao.creation = createLao.creation
@@ -51,9 +53,11 @@ constructor(
     lao.organizer = createLao.organizer
     lao.id = createLao.id
     lao.initKeyToNode(witnesses)
+
     laoRepo.updateLao(lao)
-    val laoView = laoRepo.getLaoViewByChannel(channel)
     witnessingRepo.addWitnesses(lao.id, witnesses)
+
+    val laoView = laoRepo.getLaoViewByChannel(channel)
     val publicKey = keyManager.mainPublicKey
     if (laoView.isOrganizer(publicKey) || witnessingRepo.isWitness(lao.id, publicKey)) {
       laoRepo.addDisposable(
@@ -61,19 +65,22 @@ constructor(
               .subscribe(lao.channel.subChannel("consensus"))
               .subscribe( // For now if we receive an error, we assume that it is because the server
                   // running is the scala one which does not implement consensus
-                  { Timber.tag(TAG).d("subscription to consensus channel was a success") }) {
-                  error: Throwable ->
-                Timber.tag(TAG).d(error, "error while trying to subscribe to consensus channel")
-              })
+                  { Timber.tag(TAG).d("subscription to consensus channel was a success") },
+                  { error: Throwable ->
+                    Timber.tag(TAG).d(error, "error while trying to subscribe to consensus channel")
+                  }))
     }
 
     /* Creation channel coin*/
     laoRepo.addDisposable(
-        context.messageSender.subscribe(channel.subChannel("coin")).subscribe({
-          Timber.tag(TAG).d("subscription to the coin channel was a success")
-        }) { error: Throwable ->
-          Timber.tag(TAG).d(error, "error while trying  to subscribe to coin channel")
-        })
+        context.messageSender
+            .subscribe(channel.subChannel("coin"))
+            .subscribe(
+                { Timber.tag(TAG).d("subscription to the coin channel was a success") },
+                { error: Throwable ->
+                  Timber.tag(TAG).d(error, "error while trying  to subscribe to coin channel")
+                }))
+
     laoRepo.updateNodes(channel)
   }
 
@@ -88,6 +95,7 @@ constructor(
     val channel = context.channel
     val messageId = context.messageId
     Timber.tag(TAG).d("Receive Update Lao Broadcast msg: %s", updateLao)
+
     val laoView = laoRepo.getLaoViewByChannel(channel)
     val laoId = laoView.id
     if (laoView.lastModified > updateLao.lastModified) {
@@ -95,6 +103,7 @@ constructor(
       throw DataHandlingException(
           updateLao, "The current Lao is more up to date than the update lao message")
     }
+
     val message: WitnessMessage =
         if (updateLao.name != laoView.name) {
           updateLaoNameWitnessMessage(messageId, updateLao, laoView)
@@ -106,12 +115,14 @@ constructor(
               updateLao, "Cannot set the witness message title to update lao")
         }
     witnessingRepo.addWitnessMessage(laoId, message)
+
     val lao = laoView.createLaoCopy()
     if (witnessingRepo.areWitnessesEmpty(laoId)) {
       // We send a pending update only if there are already some witness that need to sign this
       // UpdateLao
       lao.addPendingUpdate(PendingUpdate(updateLao.lastModified, messageId))
     }
+
     laoRepo.updateNodes(channel)
     laoRepo.updateLao(lao)
   }
@@ -128,13 +139,14 @@ constructor(
       InvalidSignatureException::class)
   fun handleStateLao(context: HandlerContext, stateLao: StateLao) {
     val channel = context.channel
-    Timber.tag(TAG).d("Receive State Lao Broadcast msg: %s", stateLao)
     val laoView = laoRepo.getLaoViewByChannel(channel)
-    Timber.tag(TAG).d("Receive State Lao Broadcast %s", stateLao.name)
+    Timber.tag(TAG).d("Receive State Lao Broadcast msg: %s, name: %s", stateLao, stateLao.name)
+
     if (!messageRepo.isMessagePresent(stateLao.modificationId, true)) {
       Timber.tag(TAG).d("Can't find modification id : %s", stateLao.modificationId)
       throw InvalidMessageIdException(stateLao, stateLao.modificationId)
     }
+
     Timber.tag(TAG).d("Verifying signatures")
     for (pair in stateLao.modificationSignatures) {
       if (!pair.witness.verify(pair.signature, stateLao.modificationId)) {
@@ -150,14 +162,17 @@ constructor(
     lao.name = stateLao.name
     lao.lastModified = stateLao.lastModified
     lao.modificationId = stateLao.modificationId
+
     val publicKey = keyManager.mainPublicKey
     if (laoView.isOrganizer(publicKey) || witnessingRepo.isWitness(lao.id, publicKey)) {
       laoRepo.addDisposable(
-          context.messageSender.subscribe(laoView.channel.subChannel("consensus")).subscribe({
-            Timber.tag(TAG).d("Successful subscribe to consensus channel")
-          }) { e: Throwable ->
-            Timber.tag(TAG).d(e, "Unsuccessful subscribe to consensus channel")
-          })
+          context.messageSender
+              .subscribe(laoView.channel.subChannel("consensus"))
+              .subscribe(
+                  { Timber.tag(TAG).d("Successful subscribe to consensus channel") },
+                  { e: Throwable ->
+                    Timber.tag(TAG).d(e, "Unsuccessful subscribe to consensus channel")
+                  }))
     }
 
     // Now we're going to remove all pending updates which came prior to this state lao
@@ -165,6 +180,7 @@ constructor(
     lao.pendingUpdates.removeIf { pendingUpdate: PendingUpdate ->
       pendingUpdate.modificationTime <= targetTime
     }
+
     laoRepo.updateLao(lao)
     laoRepo.updateNodes(channel)
   }
@@ -172,8 +188,8 @@ constructor(
   @Throws(UnknownLaoException::class)
   fun handleGreetLao(context: HandlerContext, greetLao: GreetLao) {
     val channel = context.channel
-    Timber.tag(TAG).d("handleGreetLao: channel: %s, msg: %s", channel, greetLao)
     val laoView = laoRepo.getLaoViewByChannel(channel)
+    Timber.tag(TAG).d("handleGreetLao: channel: %s, msg: %s", channel, greetLao)
 
     // Check the correctness of the LAO id
     if (laoView.id != greetLao.id) {
@@ -185,8 +201,10 @@ constructor(
       throw IllegalArgumentException(
           "Current lao doesn't match the lao id from the greetLao message")
     }
+
     Timber.tag(TAG).d("Creating a server with IP: %s", greetLao.address)
     val server = Server(greetLao.address, greetLao.frontendKey)
+
     Timber.tag(TAG).d("Adding the server to the repository for lao id : %s", laoView.id)
     serverRepo.addServer(greetLao.id, server)
 
@@ -213,17 +231,8 @@ constructor(
       val message = WitnessMessage(messageId)
       message.title = "Update Lao Name "
       message.description =
-          """
-                   $OLD_NAME
-                   ${laoView.name}
-                   
-                   $NEW_NAME
-                   ${updateLao.name}
-                   
-                   $MESSAGE_ID
-                   $messageId
-                   """
-              .trimIndent()
+          "$OLD_NAME\n${laoView.name}\n\n$NEW_NAME\n${updateLao.name}" + "$MESSAGE_ID\n$messageId"
+
       return message
     }
 
@@ -237,17 +246,8 @@ constructor(
       val tempList: List<PublicKey> = ArrayList(updateLao.witnesses)
       message.title = "Update Lao Witnesses"
       message.description =
-          """
-                   $LAO_NAME
-                   ${laoView.name}
-                   
-                   $WITNESS_ID
-                   ${tempList[tempList.size - 1]}
-                   
-                   $MESSAGE_ID
-                   $messageId
-                   """
-              .trimIndent()
+          "$LAO_NAME\n${laoView.name}\n\n$WITNESS_ID\n${tempList[tempList.size - 1]}\n\n$MESSAGE_ID\n$messageId"
+
       return message
     }
   }

@@ -72,17 +72,17 @@ class LAONetworkManager(
                 schedulerProvider.io()) // Filter out events that are not related to a reconnection
             .filter { event: WebSocket.Event -> event is WebSocket.Event.OnConnectionOpened<*> }
             // Subscribe to the stream and when a connection event is received, send a subscribe
-            // message
-            // for each channel we are supposed to be subscribed to.
+            // message for each channel we are supposed to be subscribed to.
             .subscribe(
                 {
                   subscribedChannels.forEach { channel: Channel ->
                     disposables.add(
-                        subscribe(channel).subscribe({
-                          Timber.tag(TAG).d("resubscription successful to : %s", channel)
-                        }) { error: Throwable ->
-                          Timber.tag(TAG).d(error, "error on resubscription to")
-                        })
+                        subscribe(channel)
+                            .subscribe(
+                                { Timber.tag(TAG).d("resubscription successful to : %s", channel) },
+                                { error: Throwable ->
+                                  Timber.tag(TAG).d(error, "error on resubscription to")
+                                }))
                   }
                 },
                 { error: Throwable -> Timber.tag(TAG).d(error, "Error on resubscription") }))
@@ -93,21 +93,22 @@ class LAONetworkManager(
         Observable.merge( // Normal message received over the wire
                 multiConnection
                     .observeMessage(), // Packets that could not be processed (maybe due to a
-                // reordering),
-                // this is merged into incoming message,
-                // with a delay of 5 seconds to give priority to new messages.
+                // reordering), this is merged into incoming message, with a delay of 5 seconds to
+                // give
+                // priority to new messages.
                 unprocessed.delay(
                     REPROCESSING_DELAY.toLong(), TimeUnit.SECONDS, schedulerProvider.computation()))
             .filter { obj: GenericMessage -> obj is Broadcast } // Filter the Broadcast
             .map { obj: GenericMessage -> obj as Broadcast }
             .subscribeOn(schedulerProvider.newThread())
-            .subscribe({ broadcast: Broadcast -> handleBroadcast(broadcast) }) { error: Throwable ->
-              Timber.tag(TAG).d(error, "Error on processing message")
-            })
+            .subscribe(
+                { broadcast: Broadcast -> handleBroadcast(broadcast) },
+                { error: Throwable -> Timber.tag(TAG).d(error, "Error on processing message") }))
   }
 
   override fun catchup(channel: Channel): Completable {
     Timber.tag(TAG).d("sending a catchup to the channel %s", channel)
+
     val catchup = Catchup(channel, requestCounter.incrementAndGet())
     return request(catchup)
         .map { obj: Answer -> (obj as ResultMessages).messages }
@@ -125,6 +126,7 @@ class LAONetworkManager(
 
   override fun publish(channel: Channel, msg: MessageGeneral): Completable {
     Timber.tag(TAG).d("sending a publish %s to the channel %s", msg.data.javaClass, channel)
+
     val publish = Publish(channel, requestCounter.incrementAndGet(), msg)
     return request(publish).ignoreElement().doOnComplete {
       Timber.tag(TAG).d("Successfully published %s", msg)
@@ -133,6 +135,7 @@ class LAONetworkManager(
 
   override fun subscribe(channel: Channel): Completable {
     Timber.tag(TAG).d("sending a subscribe on the channel %s", channel)
+
     val subscribe = Subscribe(channel, requestCounter.incrementAndGet())
     return request(subscribe) // This is used when reconnecting after a lost connection
         .doOnSuccess {
@@ -185,21 +188,21 @@ class LAONetworkManager(
       Timber.tag(TAG).e(e, "Error while handling received message, will try to reprocess it later")
       reprocessMessage(broadcast)
     }
+
     Timber.tag(TAG).d("handling broadcast msg : %s", broadcast)
+
     try {
       messageHandler.handleMessage(this, broadcast.channel, broadcast.message)
-    } catch (e: DataHandlingException) {
-      handleError(e)
-    } catch (e: UnknownLaoException) {
-      handleError(e)
-    } catch (e: UnknownRollCallException) {
-      handleError(e)
-    } catch (e: NoRollCallException) {
-      handleError(e)
-    } catch (e: UnknownElectionException) {
-      handleError(e)
-    } catch (e: UnknownWitnessMessageException) {
-      handleError(e)
+    } catch (e: Exception) {
+      when (e) {
+        is DataHandlingException,
+        is UnknownLaoException,
+        is UnknownRollCallException,
+        is NoRollCallException,
+        is UnknownElectionException,
+        is UnknownWitnessMessageException -> handleError(e)
+        else -> throw e
+      }
     }
   }
 
@@ -207,21 +210,20 @@ class LAONetworkManager(
     fun handleError(e: Exception) {
       Timber.tag(TAG).e(e, "Error while handling received catchup message")
     }
+
     for (msg in messages) {
       try {
         messageHandler.handleMessage(this, channel, msg)
-      } catch (e: DataHandlingException) {
-        handleError(e)
-      } catch (e: UnknownLaoException) {
-        handleError(e)
-      } catch (e: UnknownRollCallException) {
-        handleError(e)
-      } catch (e: NoRollCallException) {
-        handleError(e)
-      } catch (e: UnknownElectionException) {
-        handleError(e)
-      } catch (e: UnknownWitnessMessageException) {
-        handleError(e)
+      } catch (e: Exception) {
+        when (e) {
+          is DataHandlingException,
+          is UnknownLaoException,
+          is UnknownRollCallException,
+          is NoRollCallException,
+          is UnknownElectionException,
+          is UnknownWitnessMessageException -> handleError(e)
+          else -> throw e
+        }
       }
     }
   }

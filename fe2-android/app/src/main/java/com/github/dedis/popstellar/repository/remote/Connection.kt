@@ -27,6 +27,7 @@ open class Connection {
     this.manualState = manualState
     messagesSubject = BehaviorSubject.create()
     disposables = CompositeDisposable()
+
     // Subscribe to the incoming messages of the websocket service
     // and simply hand them to the subject
     disposables.add(
@@ -35,9 +36,9 @@ open class Connection {
             .doOnNext { msg: GenericMessage ->
               Timber.tag(TAG).d("Received a new message from remote: %s", msg)
             }
-            .subscribe({ t: GenericMessage -> messagesSubject.onNext(t) }) { t: Throwable ->
-              messagesSubject.onError(t)
-            })
+            .subscribe(
+                { t: GenericMessage -> messagesSubject.onNext(t) },
+                { t: Throwable -> messagesSubject.onError(t) }))
 
     // Add logs on connection state events
     disposables.add(

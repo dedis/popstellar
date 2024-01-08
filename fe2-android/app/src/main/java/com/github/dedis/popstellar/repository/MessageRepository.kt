@@ -9,7 +9,7 @@ import com.github.dedis.popstellar.model.objects.security.MessageID
 import com.github.dedis.popstellar.repository.database.AppDatabase
 import com.github.dedis.popstellar.repository.database.message.MessageDao
 import com.github.dedis.popstellar.repository.database.message.MessageEntity
-import com.github.dedis.popstellar.utility.ActivityUtils.buildLifecycleCallback
+import com.github.dedis.popstellar.utility.GeneralUtils.buildLifecycleCallback
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
@@ -41,6 +41,7 @@ class MessageRepository @Inject constructor(appDatabase: AppDatabase, applicatio
 
   init {
     messageDao = appDatabase.messageDao()
+
     val consumerMap: MutableMap<Lifecycle.Event, Consumer<Activity>> =
         EnumMap(Lifecycle.Event::class.java)
     consumerMap[Lifecycle.Event.ON_STOP] = Consumer { disposables.clear() }
@@ -56,17 +57,21 @@ class MessageRepository @Inject constructor(appDatabase: AppDatabase, applicatio
             .takeFirstNMessages(CACHED_MESSAGES)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({ messageEntities: List<MessageEntity> ->
-              messageEntities.forEach(
-                  Consumer { msg: MessageEntity ->
-                    messageCache.put(
-                        msg.messageId, // Cache doesn't accept null as value, so an empty message
-                        // is used
-                        if (msg.content == null) MessageGeneral.emptyMessage() else msg.content)
-                  })
-            }) { err: Throwable ->
-              Timber.tag(TAG).e(err, "Error loading message repository cache")
-            })
+            .subscribe(
+                { messageEntities: List<MessageEntity> ->
+                  messageEntities.forEach(
+                      Consumer { msg: MessageEntity ->
+                        messageCache.put(
+                            msg
+                                .messageId, // Cache doesn't accept null as value, so an empty
+                                            // message
+                            // is used
+                            if (msg.content == null) MessageGeneral.emptyMessage() else msg.content)
+                      })
+                },
+                { err: Throwable ->
+                  Timber.tag(TAG).e(err, "Error loading message repository cache")
+                }))
   }
 
   /**
@@ -118,6 +123,7 @@ class MessageRepository @Inject constructor(appDatabase: AppDatabase, applicatio
       // Thus we use an empty messages that is light-weight (whose ref is also shared)
       msg = MessageGeneral.emptyMessage()
     }
+
     val messageID = message.messageId
     if (!toPersist) {
       ephemeralMessages[messageID] = msg
@@ -131,10 +137,11 @@ class MessageRepository @Inject constructor(appDatabase: AppDatabase, applicatio
               .insert(MessageEntity(messageID, if (msg.isEmpty) null else msg))
               .subscribeOn(Schedulers.io())
               .observeOn(AndroidSchedulers.mainThread())
-              .subscribe({ Timber.tag(TAG).d("Persisted message %s", messageID) }) { err: Throwable
-                ->
-                Timber.tag(TAG).e(err, "Error persisting the message %s", messageID)
-              })
+              .subscribe(
+                  { Timber.tag(TAG).d("Persisted message %s", messageID) },
+                  { err: Throwable ->
+                    Timber.tag(TAG).e(err, "Error persisting the message %s", messageID)
+                  }))
     }
   }
 

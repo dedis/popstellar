@@ -17,6 +17,7 @@ constructor(
     private val laoRepo: LAORepository,
     private val socialMediaRepo: SocialMediaRepository
 ) {
+
   /**
    * Process a AddReaction message.
    *
@@ -29,10 +30,12 @@ constructor(
     val messageId = context.messageId
     val senderPk = context.senderPk
     Timber.tag(TAG).d("handleAddReaction: channel: %s, chirp id: %s", channel, addReaction.chirpId)
+
     val laoView = laoRepo.getLaoViewByChannel(channel)
     val reaction =
         Reaction(
             messageId, senderPk, addReaction.codepoint, addReaction.chirpId, addReaction.timestamp)
+
     if (!socialMediaRepo.addReaction(laoView.id, reaction)) {
       throw InvalidMessageIdException(addReaction, addReaction.chirpId)
     }
@@ -49,6 +52,7 @@ constructor(
     val channel = context.channel
     Timber.tag(TAG)
         .d("handleDeleteReaction: channel: %s, reaction id: %s", channel, deleteReaction.reactionID)
+
     val laoView = laoRepo.getLaoViewByChannel(channel)
     if (!socialMediaRepo.deleteReaction(laoView.id, deleteReaction.reactionID)) {
       throw InvalidMessageIdException(deleteReaction, deleteReaction.reactionID)

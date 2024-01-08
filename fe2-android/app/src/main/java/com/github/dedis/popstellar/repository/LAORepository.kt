@@ -10,7 +10,7 @@ import com.github.dedis.popstellar.model.objects.view.LaoView
 import com.github.dedis.popstellar.repository.database.AppDatabase
 import com.github.dedis.popstellar.repository.database.lao.LAODao
 import com.github.dedis.popstellar.repository.database.lao.LAOEntity
-import com.github.dedis.popstellar.utility.ActivityUtils.buildLifecycleCallback
+import com.github.dedis.popstellar.utility.GeneralUtils.buildLifecycleCallback
 import com.github.dedis.popstellar.utility.error.UnknownLaoException
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -41,6 +41,22 @@ class LAORepository @Inject constructor(appDatabase: AppDatabase, application: A
   private val laosSubject = BehaviorSubject.create<List<String>>()
   private val disposables = CompositeDisposable()
 
+  // ============ Lao Unrelated data ===============
+  // State for Messages
+  // Observable for view models that need access to all Nodes
+  private val channelToNodesSubject: MutableMap<Channel, BehaviorSubject<List<ConsensusNode>>> =
+      HashMap()
+
+  init {
+    laoDao = appDatabase.laoDao()
+
+    val consumerMap: MutableMap<Lifecycle.Event, Consumer<Activity>> =
+        EnumMap(Lifecycle.Event::class.java)
+    consumerMap[Lifecycle.Event.ON_STOP] = Consumer { disposables.clear() }
+    application.registerActivityLifecycleCallbacks(buildLifecycleCallback(consumerMap))
+    loadPersistentStorage()
+  }
+
   /**
    * This functions is called on start to load all the laos in memory as they must be displayed in
    * the home list. Given the fact that we load every lao in memory at the beginning a cache is not
@@ -52,22 +68,24 @@ class LAORepository @Inject constructor(appDatabase: AppDatabase, application: A
         laoDao.allLaos
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({ laos: List<Lao> ->
-              if (laos.isEmpty()) {
-                Timber.tag(TAG).d("No LAO has been found in the database")
-                return@subscribe
-              }
-              laos.forEach(
-                  Consumer { lao: Lao ->
-                    laoById[lao.id] = lao
-                    subjectById[lao.id] = BehaviorSubject.createDefault(LaoView(lao))
-                  })
-              val laoIds = laos.stream().map { obj: Lao -> obj.id }.collect(Collectors.toList())
-              laosSubject.toSerialized().onNext(laoIds)
-              Timber.tag(TAG).d("Loaded all the LAOs from database: %s", laoIds)
-            }) { err: Throwable ->
-              Timber.tag(TAG).e(err, "Error loading the LAOs from the database")
-            })
+            .subscribe(
+                { laos: List<Lao> ->
+                  if (laos.isEmpty()) {
+                    Timber.tag(TAG).d("No LAO has been found in the database")
+                    return@subscribe
+                  }
+                  laos.forEach(
+                      Consumer { lao: Lao ->
+                        laoById[lao.id] = lao
+                        subjectById[lao.id] = BehaviorSubject.createDefault(LaoView(lao))
+                      })
+                  val laoIds = laos.stream().map { obj: Lao -> obj.id }.collect(Collectors.toList())
+                  laosSubject.toSerialized().onNext(laoIds)
+                  Timber.tag(TAG).d("Loaded all the LAOs from database: %s", laoIds)
+                },
+                { err: Throwable ->
+                  Timber.tag(TAG).e(err, "Error loading the LAOs from the database")
+                }))
   }
 
   /**
@@ -135,9 +153,9 @@ class LAORepository @Inject constructor(appDatabase: AppDatabase, application: A
             .insert(laoEntity)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({ Timber.tag(TAG).d("Persisted Lao %s", lao) }) { err: Throwable ->
-              Timber.tag(TAG).e(err, "Error persisting Lao %s", lao)
-            })
+            .subscribe(
+                { Timber.tag(TAG).d("Persisted Lao %s", lao) },
+                { err: Throwable -> Timber.tag(TAG).e(err, "Error persisting Lao %s", lao) }))
     if (laoById.containsKey(lao.id)) {
       // If the lao already exists, we can push the next update
       laoById[lao.id] = lao
@@ -165,20 +183,6 @@ class LAORepository @Inject constructor(appDatabase: AppDatabase, application: A
     disposables.add(disposable)
   }
 
-  // ============ Lao Unrelated data ===============
-  // State for Messages
-  // Observable for view models that need access to all Nodes
-  private val channelToNodesSubject: MutableMap<Channel, BehaviorSubject<List<ConsensusNode>>> =
-      HashMap()
-
-  init {
-    laoDao = appDatabase.laoDao()
-    val consumerMap: MutableMap<Lifecycle.Event, Consumer<Activity>> =
-        EnumMap(Lifecycle.Event::class.java)
-    consumerMap[Lifecycle.Event.ON_STOP] = Consumer { disposables.clear() }
-    application.registerActivityLifecycleCallbacks(buildLifecycleCallback(consumerMap))
-    loadPersistentStorage()
-  }
   // ============ Lao Unrelated functions ===============
   /**
    * Return an Observable to the list of nodes in a given channel.

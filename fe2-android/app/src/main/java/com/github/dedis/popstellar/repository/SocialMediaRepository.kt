@@ -11,7 +11,7 @@ import com.github.dedis.popstellar.repository.database.socialmedia.ChirpDao
 import com.github.dedis.popstellar.repository.database.socialmedia.ChirpEntity
 import com.github.dedis.popstellar.repository.database.socialmedia.ReactionDao
 import com.github.dedis.popstellar.repository.database.socialmedia.ReactionEntity
-import com.github.dedis.popstellar.utility.ActivityUtils.buildLifecycleCallback
+import com.github.dedis.popstellar.utility.GeneralUtils.buildLifecycleCallback
 import com.github.dedis.popstellar.utility.error.UnknownChirpException
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -43,6 +43,7 @@ constructor(appDatabase: AppDatabase, application: Application) {
   init {
     reactionDao = appDatabase.reactionDao()
     chirpDao = appDatabase.chirpDao()
+
     val consumerMap: MutableMap<Lifecycle.Event, Consumer<Activity>> =
         EnumMap(Lifecycle.Event::class.java)
     consumerMap[Lifecycle.Event.ON_STOP] = Consumer { disposables.clear() }
@@ -66,10 +67,11 @@ constructor(appDatabase: AppDatabase, application: Application) {
             .insert(ChirpEntity(laoId, chirp))
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({ Timber.tag(TAG).d("Successfully persisted chirp %s", chirp.id) }) {
-                err: Throwable ->
-              Timber.tag(TAG).e(err, "Error in persisting chirp %s", chirp.id)
-            })
+            .subscribe(
+                { Timber.tag(TAG).d("Successfully persisted chirp %s", chirp.id) },
+                { err: Throwable ->
+                  Timber.tag(TAG).e(err, "Error in persisting chirp %s", chirp.id)
+                }))
 
     // Retrieve Lao data and add the chirp to it
     getLaoChirps(laoId).add(chirp)
@@ -128,10 +130,11 @@ constructor(appDatabase: AppDatabase, application: Application) {
             .insert(ReactionEntity(reaction))
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({ Timber.tag(TAG).d("Successfully persisted reaction %s", reaction.id) }) {
-                err: Throwable ->
-              Timber.tag(TAG).e(err, "Error in persisting reaction %s", reaction.id)
-            })
+            .subscribe(
+                { Timber.tag(TAG).d("Successfully persisted reaction %s", reaction.id) },
+                { err: Throwable ->
+                  Timber.tag(TAG).e(err, "Error in persisting reaction %s", reaction.id)
+                }))
 
     // Retrieve Lao data and add the reaction to it
     return getLaoChirps(laoId).addReaction(reaction)
@@ -236,11 +239,11 @@ constructor(appDatabase: AppDatabase, application: Application) {
                 .insert(ChirpEntity(laoId, deleted))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                  Timber.tag(TAG).d("Successfully persisted deleted chirp %s", deleted.id)
-                }) { err: Throwable ->
-                  Timber.tag(TAG).e(err, "Error in persisting deleted chirp %s", deleted.id)
-                })
+                .subscribe(
+                    { Timber.tag(TAG).d("Successfully persisted deleted chirp %s", deleted.id) },
+                    { err: Throwable ->
+                      Timber.tag(TAG).e(err, "Error in persisting deleted chirp %s", deleted.id)
+                    }))
       }
       return true
     }
@@ -271,11 +274,11 @@ constructor(appDatabase: AppDatabase, application: Application) {
                 .insert(ReactionEntity(deleted))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                  Timber.tag(TAG).d("Successfully persisted deleted reaction %s", deleted.id)
-                }) { err: Throwable ->
-                  Timber.tag(TAG).e(err, "Error in persisting deleted reaction %s", deleted.id)
-                })
+                .subscribe(
+                    { Timber.tag(TAG).d("Successfully persisted deleted reaction %s", deleted.id) },
+                    { err: Throwable ->
+                      Timber.tag(TAG).e(err, "Error in persisting deleted reaction %s", deleted.id)
+                    }))
       }
       return true
     }
@@ -305,45 +308,49 @@ constructor(appDatabase: AppDatabase, application: Application) {
               .getChirpsByLaoId(laoId)
               .subscribeOn(Schedulers.io())
               .observeOn(AndroidSchedulers.mainThread())
-              .subscribe({ chirpsList: List<Chirp> ->
-                chirpsList.forEach(
-                    Consumer outer@{ chirp: Chirp ->
-                      // Do not retrieve deleted chirps
-                      if (chirp.isDeleted) {
-                        return@outer
-                      }
-                      // Load the chirp into the memory
-                      add(chirp)
-                      Timber.tag(TAG).d("Retrieved from db chirp %s", chirp.id)
-                      // When retrieving the chirp also retrieve its reactions
-                      repository.disposables.add(
-                          repository.reactionDao
-                              .getReactionsByChirpId(chirp.id)
-                              .subscribeOn(Schedulers.io())
-                              .observeOn(AndroidSchedulers.mainThread())
-                              .subscribe({ reactionsList: List<Reaction> ->
-                                reactionsList.forEach(
-                                    Consumer inner@{ reaction: Reaction ->
-                                      // Do not retrieve deleted reactions
-                                      if (reaction.isDeleted) {
-                                        return@inner
-                                      }
-                                      // Load the reaction into the memory
-                                      addReaction(reaction)
-                                      Timber.tag(TAG)
-                                          .d("Retrieved from db reaction %s", reaction.id)
-                                    })
-                              }) { err: Throwable ->
-                                Timber.tag(TAG)
-                                    .e(
-                                        err,
-                                        "No reaction found in the storage for chirp %s",
-                                        chirp.id)
-                              })
-                    })
-              }) { err: Throwable ->
-                Timber.tag(TAG).e(err, "No chirp found in the storage for lao %s", laoId)
-              })
+              .subscribe(
+                  { chirpsList: List<Chirp> ->
+                    chirpsList.forEach(
+                        Consumer outer@{ chirp: Chirp ->
+                          // Do not retrieve deleted chirps
+                          if (chirp.isDeleted) {
+                            return@outer
+                          }
+                          // Load the chirp into the memory
+                          add(chirp)
+                          Timber.tag(TAG).d("Retrieved from db chirp %s", chirp.id)
+                          // When retrieving the chirp also retrieve its reactions
+                          repository.disposables.add(
+                              repository.reactionDao
+                                  .getReactionsByChirpId(chirp.id)
+                                  .subscribeOn(Schedulers.io())
+                                  .observeOn(AndroidSchedulers.mainThread())
+                                  .subscribe(
+                                      { reactionsList: List<Reaction> ->
+                                        reactionsList.forEach(
+                                            Consumer inner@{ reaction: Reaction ->
+                                              // Do not retrieve deleted reactions
+                                              if (reaction.isDeleted) {
+                                                return@inner
+                                              }
+                                              // Load the reaction into the memory
+                                              addReaction(reaction)
+                                              Timber.tag(TAG)
+                                                  .d("Retrieved from db reaction %s", reaction.id)
+                                            })
+                                      },
+                                      { err: Throwable ->
+                                        Timber.tag(TAG)
+                                            .e(
+                                                err,
+                                                "No reaction found in the storage for chirp %s",
+                                                chirp.id)
+                                      }))
+                        })
+                  },
+                  { err: Throwable ->
+                    Timber.tag(TAG).e(err, "No chirp found in the storage for lao %s", laoId)
+                  }))
     }
   }
 

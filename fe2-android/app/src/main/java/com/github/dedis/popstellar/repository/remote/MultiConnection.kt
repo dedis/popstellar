@@ -40,9 +40,11 @@ class MultiConnection(
             .stream()
             .filter { peer: PeerAddress -> !connectionMap.containsKey(peer) }
             .collect(Collectors.toList())
+
     if (newPeers.isEmpty()) {
       return false
     }
+
     newPeers.forEach(
         Consumer { p: PeerAddress -> connectionMap[p] = connectionProvider.apply(p.address) })
     return true

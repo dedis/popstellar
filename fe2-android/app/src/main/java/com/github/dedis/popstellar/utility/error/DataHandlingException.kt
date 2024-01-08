@@ -14,13 +14,8 @@ open class DataHandlingException : GenericException {
     this.data = data
   }
 
-  override val message: String?
-    get() =
-        """
-               Error while handling data : ${super.message}
-               data=$data
-               """
-            .trimIndent()
+  override val message: String
+    get() = "Error while handling data : ${super.message}\ndata=$data"
 
   override val userMessage: Int
     get() = R.string.data_handling_exception

@@ -11,7 +11,7 @@ import com.github.dedis.popstellar.repository.database.digitalcash.HashDao
 import com.github.dedis.popstellar.repository.database.digitalcash.HashEntity
 import com.github.dedis.popstellar.repository.database.digitalcash.TransactionDao
 import com.github.dedis.popstellar.repository.database.digitalcash.TransactionEntity
-import com.github.dedis.popstellar.utility.ActivityUtils.buildLifecycleCallback
+import com.github.dedis.popstellar.utility.GeneralUtils.buildLifecycleCallback
 import com.github.dedis.popstellar.utility.error.keys.NoRollCallException
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -40,6 +40,7 @@ constructor(appDatabase: AppDatabase, application: Application) {
   init {
     transactionDao = appDatabase.transactionDao()
     hashDao = appDatabase.hashDao()
+
     val consumerMap: MutableMap<Lifecycle.Event, Consumer<Activity>> =
         EnumMap(Lifecycle.Event::class.java)
     consumerMap[Lifecycle.Event.ON_STOP] = Consumer { disposables.clear() }
@@ -148,11 +149,11 @@ constructor(appDatabase: AppDatabase, application: Application) {
               .deleteByLaoId(laoId)
               .subscribeOn(Schedulers.io())
               .observeOn(AndroidSchedulers.mainThread())
-              .subscribe({
-                Timber.tag(TAG).d("Cleared the transactions in the db for lao %s", laoId)
-              }) { err: Throwable ->
-                Timber.tag(TAG).e(err, "Error in clearing transactions for lao %s", laoId)
-              })
+              .subscribe(
+                  { Timber.tag(TAG).d("Cleared the transactions in the db for lao %s", laoId) },
+                  { err: Throwable ->
+                    Timber.tag(TAG).e(err, "Error in clearing transactions for lao %s", laoId)
+                  }))
 
       // Clear the memory
       hashDictionary.clear()
@@ -180,24 +181,32 @@ constructor(appDatabase: AppDatabase, application: Application) {
               .deleteByLaoId(laoId)
               .subscribeOn(Schedulers.io())
               .observeOn(AndroidSchedulers.mainThread())
-              .subscribe({
-                Timber.tag(TAG).d("Cleared the hash dictionary in the db for lao %s", laoId)
-                // After having it deleted, save the new entities
-                repository.disposables.add(
-                    repository.hashDao
-                        .insertAll(hashEntities)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe({
-                          Timber.tag(TAG)
-                              .d("Successfully persisted hash dictionary for lao %s", laoId)
-                        }) { err: Throwable ->
-                          Timber.tag(TAG)
-                              .e(err, "Error in persisting the hash dictionary for lao %s", laoId)
-                        })
-              }) { err: Throwable ->
-                Timber.tag(TAG).e(err, "Error in clearing the hash dictionary for lao %s", laoId)
-              })
+              .subscribe(
+                  {
+                    Timber.tag(TAG).d("Cleared the hash dictionary in the db for lao %s", laoId)
+                    // After having it deleted, save the new entities
+                    repository.disposables.add(
+                        repository.hashDao
+                            .insertAll(hashEntities)
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(
+                                {
+                                  Timber.tag(TAG)
+                                      .d("Successfully persisted hash dictionary for lao %s", laoId)
+                                },
+                                { err: Throwable ->
+                                  Timber.tag(TAG)
+                                      .e(
+                                          err,
+                                          "Error in persisting the hash dictionary for lao %s",
+                                          laoId)
+                                }))
+                  },
+                  { err: Throwable ->
+                    Timber.tag(TAG)
+                        .e(err, "Error in clearing the hash dictionary for lao %s", laoId)
+                  }))
     }
 
     @Throws(NoRollCallException::class)
@@ -205,6 +214,7 @@ constructor(appDatabase: AppDatabase, application: Application) {
       if (hashDictionary.isEmpty()) {
         throw NoRollCallException("No roll call attendees could be found")
       }
+
       for (current in getReceiversTransaction(transaction)) {
         var transactionList = transactions[current]
         if (transactionList == null) {
@@ -236,13 +246,18 @@ constructor(appDatabase: AppDatabase, application: Application) {
                 .insert(transactionEntity)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                  Timber.tag(TAG)
-                      .d("Successfully persisted transaction %s", transaction.transactionId)
-                }) { err: Throwable ->
-                  Timber.tag(TAG)
-                      .e(err, "Error in persisting the transaction %s", transaction.transactionId)
-                })
+                .subscribe(
+                    {
+                      Timber.tag(TAG)
+                          .d("Successfully persisted transaction %s", transaction.transactionId)
+                    },
+                    { err: Throwable ->
+                      Timber.tag(TAG)
+                          .e(
+                              err,
+                              "Error in persisting the transaction %s",
+                              transaction.transactionId)
+                    }))
       }
     }
 
@@ -291,42 +306,49 @@ constructor(appDatabase: AppDatabase, application: Application) {
               .getDictionaryByLaoId(laoId)
               .subscribeOn(Schedulers.io())
               .observeOn(AndroidSchedulers.mainThread())
-              .subscribe({ hashEntities: List<HashEntity> ->
-                // Firstly load the dictionary
-                hashEntities.forEach(
-                    Consumer { hashEntity: HashEntity ->
-                      hashDictionary[hashEntity.hash] = hashEntity.publicKey
-                    })
-                Timber.tag(TAG).d("Retrieved the hash dictionary from db")
-                // Then load the transactions
-                repository.disposables.add(
-                    repository.transactionDao
-                        .getTransactionsByLaoId(laoId)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe({ transactionObjects: List<TransactionObject> ->
-                          transactionObjects.forEach(
-                              Consumer { transactionObject: TransactionObject ->
-                                Timber.tag(TAG)
-                                    .d(
-                                        "Retrieved transaction %s from db",
-                                        transactionObject.transactionId)
-                                try {
-                                  updateTransactions(transactionObject, false)
-                                } catch (e: NoRollCallException) {
-                                  Timber.tag(TAG)
-                                      .e(e, "No roll call exception to load for lao %s", laoId)
-                                  // This exception can't ever be thrown, as if the
-                                  // transactions are in the db,
-                                  // then they have a valid public key associated
-                                }
-                              })
-                        }) { err: Throwable ->
-                          Timber.tag(TAG).e(err, "No transaction to load for lao %s", laoId)
+              .subscribe(
+                  { hashEntities: List<HashEntity> ->
+                    // Firstly load the dictionary
+                    hashEntities.forEach(
+                        Consumer { hashEntity: HashEntity ->
+                          hashDictionary[hashEntity.hash] = hashEntity.publicKey
                         })
-              }) { err: Throwable ->
-                Timber.tag(TAG).e(err, "No hash dictionary to load for lao %s", laoId)
-              })
+                    Timber.tag(TAG).d("Retrieved the hash dictionary from db")
+                    // Then load the transactions
+                    repository.disposables.add(
+                        repository.transactionDao
+                            .getTransactionsByLaoId(laoId)
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(
+                                { transactionObjects: List<TransactionObject> ->
+                                  transactionObjects.forEach(
+                                      Consumer { transactionObject: TransactionObject ->
+                                        Timber.tag(TAG)
+                                            .d(
+                                                "Retrieved transaction %s from db",
+                                                transactionObject.transactionId)
+                                        try {
+                                          updateTransactions(transactionObject, false)
+                                        } catch (e: NoRollCallException) {
+                                          Timber.tag(TAG)
+                                              .e(
+                                                  e,
+                                                  "No roll call exception to load for lao %s",
+                                                  laoId)
+                                          // This exception can't ever be thrown, as if the
+                                          // transactions are in the db,
+                                          // then they have a valid public key associated
+                                        }
+                                      })
+                                },
+                                { err: Throwable ->
+                                  Timber.tag(TAG).e(err, "No transaction to load for lao %s", laoId)
+                                }))
+                  },
+                  { err: Throwable ->
+                    Timber.tag(TAG).e(err, "No hash dictionary to load for lao %s", laoId)
+                  }))
     }
   }
 

@@ -8,7 +8,7 @@ import com.github.dedis.popstellar.model.objects.Election
 import com.github.dedis.popstellar.repository.database.AppDatabase
 import com.github.dedis.popstellar.repository.database.event.election.ElectionDao
 import com.github.dedis.popstellar.repository.database.event.election.ElectionEntity
-import com.github.dedis.popstellar.utility.ActivityUtils.buildLifecycleCallback
+import com.github.dedis.popstellar.utility.GeneralUtils.buildLifecycleCallback
 import com.github.dedis.popstellar.utility.error.UnknownElectionException
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -37,6 +37,7 @@ class ElectionRepository @Inject constructor(appDatabase: AppDatabase, applicati
 
   init {
     electionDao = appDatabase.electionDao()
+
     val consumerMap: MutableMap<Lifecycle.Event, Consumer<Activity>> =
         EnumMap(Lifecycle.Event::class.java)
     consumerMap[Lifecycle.Event.ON_STOP] = Consumer { disposables.clear() }
@@ -57,10 +58,11 @@ class ElectionRepository @Inject constructor(appDatabase: AppDatabase, applicati
             .insert(ElectionEntity(election))
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({ Timber.tag(TAG).d("Successfully persisted election %s", election.id) }) {
-                err: Throwable ->
-              Timber.tag(TAG).e(err, "Error in persisting election %s", election.id)
-            })
+            .subscribe(
+                { Timber.tag(TAG).d("Successfully persisted election %s", election.id) },
+                { err: Throwable ->
+                  Timber.tag(TAG).e(err, "Error in persisting election %s", election.id)
+                }))
 
     // Get the lao state and update the election
     getLaoElections(election.channel.extractLaoId()).updateElection(election)
@@ -173,15 +175,17 @@ class ElectionRepository @Inject constructor(appDatabase: AppDatabase, applicati
               .getElectionsByLaoId(laoId)
               .subscribeOn(Schedulers.io())
               .observeOn(AndroidSchedulers.mainThread())
-              .subscribe({ elections: List<Election> ->
-                elections.forEach(
-                    Consumer { election: Election ->
-                      updateElection(election)
-                      Timber.tag(TAG).d("Retrieved from db election %s", election.id)
-                    })
-              }) { err: Throwable ->
-                Timber.tag(TAG).e(err, "No election found in the storage for lao %s", laoId)
-              })
+              .subscribe(
+                  { elections: List<Election> ->
+                    elections.forEach(
+                        Consumer { election: Election ->
+                          updateElection(election)
+                          Timber.tag(TAG).d("Retrieved from db election %s", election.id)
+                        })
+                  },
+                  { err: Throwable ->
+                    Timber.tag(TAG).e(err, "No election found in the storage for lao %s", laoId)
+                  }))
     }
   }
 

@@ -8,7 +8,7 @@ import com.github.dedis.popstellar.model.objects.security.PublicKey
 import com.github.dedis.popstellar.repository.database.AppDatabase
 import com.github.dedis.popstellar.repository.database.event.rollcall.RollCallDao
 import com.github.dedis.popstellar.repository.database.event.rollcall.RollCallEntity
-import com.github.dedis.popstellar.utility.ActivityUtils.buildLifecycleCallback
+import com.github.dedis.popstellar.utility.GeneralUtils.buildLifecycleCallback
 import com.github.dedis.popstellar.utility.error.UnknownRollCallException
 import com.github.dedis.popstellar.utility.error.keys.NoRollCallException
 import io.reactivex.Observable
@@ -40,6 +40,7 @@ class RollCallRepository @Inject constructor(appDatabase: AppDatabase, applicati
 
   init {
     rollCallDao = appDatabase.rollCallDao()
+
     val consumerMap: MutableMap<Lifecycle.Event, Consumer<Activity>> =
         EnumMap(Lifecycle.Event::class.java)
     consumerMap[Lifecycle.Event.ON_STOP] = Consumer { disposables.clear() }
@@ -60,11 +61,11 @@ class RollCallRepository @Inject constructor(appDatabase: AppDatabase, applicati
             .insert(RollCallEntity(laoId, rollCall))
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({
-              Timber.tag(TAG).d("Successfully persisted rollcall %s", rollCall.persistentId)
-            }) { err: Throwable ->
-              Timber.tag(TAG).e(err, "Error in persisting rollcall %s", rollCall.persistentId)
-            })
+            .subscribe(
+                { Timber.tag(TAG).d("Successfully persisted rollcall %s", rollCall.persistentId) },
+                { err: Throwable ->
+                  Timber.tag(TAG).e(err, "Error in persisting rollcall %s", rollCall.persistentId)
+                }))
 
     // Retrieve Lao data and add the roll call to it
     getLaoRollCalls(laoId).update(rollCall)
@@ -263,15 +264,17 @@ class RollCallRepository @Inject constructor(appDatabase: AppDatabase, applicati
               .getRollCallsByLaoId(laoId)
               .subscribeOn(Schedulers.io())
               .observeOn(AndroidSchedulers.mainThread())
-              .subscribe({ rollcalls: List<RollCall> ->
-                rollcalls.forEach(
-                    Consumer { rollCall: RollCall ->
-                      update(rollCall)
-                      Timber.tag(TAG).d("Retrieved from db rollcall %s", rollCall.persistentId)
-                    })
-              }) { err: Throwable ->
-                Timber.tag(TAG).e(err, "No rollcall found in the storage for lao %s", laoId)
-              })
+              .subscribe(
+                  { rollcalls: List<RollCall> ->
+                    rollcalls.forEach(
+                        Consumer { rollCall: RollCall ->
+                          update(rollCall)
+                          Timber.tag(TAG).d("Retrieved from db rollcall %s", rollCall.persistentId)
+                        })
+                  },
+                  { err: Throwable ->
+                    Timber.tag(TAG).e(err, "No rollcall found in the storage for lao %s", laoId)
+                  }))
     }
   }
 

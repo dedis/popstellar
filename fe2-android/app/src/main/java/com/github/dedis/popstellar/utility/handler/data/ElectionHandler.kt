@@ -20,7 +20,7 @@ import com.github.dedis.popstellar.repository.LAORepository
 import com.github.dedis.popstellar.repository.MessageRepository
 import com.github.dedis.popstellar.repository.WitnessingRepository
 import com.github.dedis.popstellar.repository.database.witnessing.PendingEntity
-import com.github.dedis.popstellar.utility.ActivityUtils.generateMnemonicWordFromBase64
+import com.github.dedis.popstellar.utility.GeneralUtils.generateMnemonicWordFromBase64
 import com.github.dedis.popstellar.utility.error.DataHandlingException
 import com.github.dedis.popstellar.utility.error.InvalidChannelException
 import com.github.dedis.popstellar.utility.error.InvalidStateException
@@ -39,6 +39,7 @@ constructor(
     private val electionRepository: ElectionRepository,
     private val witnessingRepository: WitnessingRepository
 ) {
+
   /**
    * Process an ElectionSetup message.
    *
@@ -50,14 +51,16 @@ constructor(
     val channel = context.channel
     val messageId = context.messageId
     val laoId = electionSetup.laoId
+    Timber.tag(TAG).d("handleElectionSetup: channel: %s, name: %s", channel, electionSetup.name)
+
     if (!laoRepo.containsLao(laoId)) {
       throw UnknownLaoException(laoId)
     }
     if (!channel.isLaoChannel) {
       throw InvalidChannelException(electionSetup, "an lao channel", channel)
     }
+
     val laoView = laoRepo.getLaoViewByChannel(channel)
-    Timber.tag(TAG).d("handleElectionSetup: channel: %s, name: %s", channel, electionSetup.name)
     val election =
         ElectionBuilder(laoView.id, electionSetup.creation, electionSetup.name)
             .setElectionVersion(electionSetup.electionVersion)
@@ -66,6 +69,7 @@ constructor(
             .setEnd(electionSetup.endTime)
             .setState(EventState.CREATED)
             .build()
+
     witnessingRepository.addWitnessMessage(laoId, electionSetupWitnessMessage(messageId, election))
     if (witnessingRepository.areWitnessesEmpty(laoId)) {
       addElectionRoutine(electionRepository, election)
@@ -93,12 +97,13 @@ constructor(
   fun handleElectionOpen(context: HandlerContext, electionOpen: ElectionOpen) {
     val channel = context.channel
     Timber.tag(TAG).d("handleOpenElection: channel %s", channel)
+
     val laoId = electionOpen.laoId
     if (!laoRepo.containsLao(laoId)) {
       throw UnknownLaoException(laoId)
     }
-    val election = electionRepository.getElectionByChannel(channel)
 
+    val election = electionRepository.getElectionByChannel(channel)
     // If the state is not created, then this message is invalid
     if (election.state != EventState.CREATED) {
       throw InvalidStateException(
@@ -109,6 +114,7 @@ constructor(
     val updated =
         election.builder().setState(EventState.OPENED).setStart(electionOpen.openedAt).build()
     Timber.tag(TAG).d("election opened %d", updated.startTimestamp)
+
     electionRepository.updateElection(updated)
   }
 
@@ -123,8 +129,10 @@ constructor(
     val channel = context.channel
     val messageId = context.messageId
     Timber.tag(TAG).d("handling election result")
+
     val resultsQuestions = electionResult.electionQuestionResults
     Timber.tag(TAG).d("size of resultsQuestions is %d", resultsQuestions.size)
+
     // No need to check here that resultsQuestions is not empty, as it is already done at the
     // creation of the ElectionResult Data
     val election =
@@ -135,6 +143,7 @@ constructor(
             .setState(EventState.RESULTS_READY)
             .build()
     val laoId = channel.extractLaoId()
+
     witnessingRepository.addWitnessMessage(laoId, electionResultWitnessMessage(messageId, election))
     if (witnessingRepository.areWitnessesEmpty(laoId)) {
       addElectionRoutine(electionRepository, election)
@@ -154,6 +163,7 @@ constructor(
   fun handleElectionEnd(context: HandlerContext, electionEnd: ElectionEnd?) {
     val channel = context.channel
     Timber.tag(TAG).d("handleElectionEnd: channel %s", channel)
+
     val election =
         electionRepository
             .getElectionByChannel(channel)
@@ -175,6 +185,7 @@ constructor(
     val messageId = context.messageId
     val senderPk = context.senderPk
     Timber.tag(TAG).d("handleCastVote: channel %s", channel)
+
     val laoId = castVote.laoId
     if (!laoRepo.containsLao(laoId)) {
       throw UnknownLaoException(laoId)
@@ -224,6 +235,7 @@ constructor(
   fun handleElectionKey(context: HandlerContext, electionKey: ElectionKey) {
     val channel = context.channel
     Timber.tag(TAG).d("handleElectionKey: channel %s", channel)
+
     val election =
         electionRepository
             .getElectionByChannel(channel)
@@ -231,6 +243,7 @@ constructor(
             .setElectionKey(electionKey.electionVoteKey)
             .build()
     electionRepository.updateElection(election)
+
     Timber.tag(TAG).d("handleElectionKey: election key has been set")
   }
 
@@ -272,19 +285,11 @@ constructor(
       val message = WitnessMessage(messageId)
       message.title = "Election ${election.name} setup at ${Date(election.creationInMillis)}"
       message.description =
-          """
-                   Mnemonic identifier :
-                   ${generateMnemonicWordFromBase64(election.id, 2)}
-                   
-                   Opens at :
-                   ${Date(election.startTimestampInMillis)}
-                   
-                   Closes at :
-                   ${Date(election.endTimestampInMillis)}
-                   
-                   ${formatElectionQuestions(election.electionQuestions)}
-                   """
-              .trimIndent()
+          "Mnemonic identifier :\n${generateMnemonicWordFromBase64(election.id, 2)}\n\n" +
+              "Opens at :\n${Date(election.startTimestampInMillis)}\n\n" +
+              "Closes at :\n${Date(election.endTimestampInMillis)}\n\n" +
+              formatElectionQuestions(election.electionQuestions)
+
       return message
     }
 
@@ -292,22 +297,17 @@ constructor(
       val message = WitnessMessage(messageId)
       message.title = "Election ${election.name} results"
       message.description =
-          ("""
-    Mnemonic identifier :
-    ${generateMnemonicWordFromBase64(election.id, 2)}
-    
-    Closed at :
-    ${Date(election.endTimestampInMillis)}
-    
-    
-    """
-              .trimIndent() + formatElectionResults(election.electionQuestions, election.results))
+          "Mnemonic identifier :\n${generateMnemonicWordFromBase64(election.id, 2)}\n\n" +
+              "Closed at :\n${Date(election.endTimestampInMillis)}\n\n" +
+              formatElectionResults(election.electionQuestions, election.results)
+
       return message
     }
 
     private fun formatElectionQuestions(questions: List<ElectionQuestion>): String {
       val questionsDescription = StringBuilder()
       val QUESTION = "Question "
+
       for (i in questions.indices) {
         questionsDescription
             .append(QUESTION)
@@ -318,6 +318,7 @@ constructor(
           questionsDescription.append("\n\n")
         }
       }
+
       return questionsDescription.toString()
     }
 
@@ -327,6 +328,7 @@ constructor(
     ): String {
       val questionsDescription = StringBuilder()
       val QUESTION = "Question "
+
       for (i in questions.indices) {
         questionsDescription
             .append(QUESTION)
@@ -334,6 +336,7 @@ constructor(
             .append(": \n")
             .append(questions[i].question)
             .append("\nResults: \n")
+
         val resultSet = results.getValue(questions[i].id)
         for (questionResult in resultSet) {
           questionsDescription
@@ -342,10 +345,12 @@ constructor(
               .append(questionResult.count)
               .append("\n")
         }
+
         if (i < questions.size - 1) {
           questionsDescription.append("\n\n")
         }
       }
+
       return questionsDescription.toString()
     }
   }

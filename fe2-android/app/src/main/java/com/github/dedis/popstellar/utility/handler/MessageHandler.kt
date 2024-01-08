@@ -23,6 +23,7 @@ import timber.log.Timber
 class MessageHandler
 @Inject
 constructor(private val messageRepo: MessageRepository, private val registry: DataRegistry) {
+
   /**
    * Send messages to the corresponding handler.
    *
@@ -39,10 +40,12 @@ constructor(private val messageRepo: MessageRepository, private val registry: Da
       UnknownWitnessMessageException::class)
   fun handleMessage(messageSender: MessageSender, channel: Channel, message: MessageGeneral) {
     val data = message.data
+
     val dataObj = Objects.find(data.getObject())
     val dataAction = Action.find(data.action)
     val toPersist = dataObj.hasToBePersisted()
     val toBeStored = dataAction.isStoreNeededByAction
+
     if (messageRepo.isMessagePresent(message.messageId, toPersist)) {
       Timber.tag(TAG)
           .d(
@@ -50,6 +53,7 @@ constructor(private val messageRepo: MessageRepository, private val registry: Da
               data.javaClass.simpleName)
       return
     }
+
     Timber.tag(TAG).d("Handling incoming message, data with class: %s", data.javaClass.simpleName)
     registry.handle(
         HandlerContext(message.messageId, message.sender, channel, messageSender),

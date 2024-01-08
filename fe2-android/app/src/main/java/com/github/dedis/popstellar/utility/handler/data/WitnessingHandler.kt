@@ -13,6 +13,7 @@ import timber.log.Timber
 class WitnessingHandler
 @Inject
 constructor(private val laoRepo: LAORepository, private val witnessingRepo: WitnessingRepository) {
+
   /**
    * Process a WitnessMessageSignature message.
    *

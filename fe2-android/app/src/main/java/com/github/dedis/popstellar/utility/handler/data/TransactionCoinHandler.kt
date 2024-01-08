@@ -16,6 +16,7 @@ import timber.log.Timber
 class TransactionCoinHandler
 @Inject
 constructor(private val digitalCashRepo: DigitalCashRepository) {
+
   /**
    * Process an PostTransactionCoin.
    *
@@ -55,6 +56,7 @@ constructor(private val digitalCashRepo: DigitalCashRepository) {
       val script = ScriptOutputObject(current.script.type, current.script.pubKeyHash)
       outputs.add(OutputObject(current.value, script))
     }
+
     val transactionObject =
         TransactionObjectBuilder()
             .setChannel(channel)

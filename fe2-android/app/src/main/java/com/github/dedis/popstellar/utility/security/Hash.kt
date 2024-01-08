@@ -22,17 +22,21 @@ object Hash {
   @JvmStatic
   fun hash(vararg strs: String?): String {
     require(strs.isNotEmpty()) { "cannot hash an empty/null array" }
-    return try {
+
+    try {
       val digest = MessageDigest.getInstance("SHA-256")
+
       for (str in strs) {
         require(!str.isNullOrEmpty()) { "cannot hash an empty/null string" }
+
         val buf = str.toByteArray(StandardCharsets.UTF_8)
         val length = buf.size.toString()
         digest.update(length.toByteArray(StandardCharsets.UTF_8))
         digest.update(buf)
       }
+
       val digestBuf = digest.digest()
-      Base64.getUrlEncoder().encodeToString(digestBuf)
+      return Base64.getUrlEncoder().encodeToString(digestBuf)
     } catch (e: NoSuchAlgorithmException) {
       Timber.tag(TAG).e(e, "failed to hash")
       throw UnsupportedOperationException("failed to retrieve SHA-256 instance", e)

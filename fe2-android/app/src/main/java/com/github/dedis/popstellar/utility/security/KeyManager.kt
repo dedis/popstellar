@@ -34,7 +34,8 @@ constructor(
     @param:DeviceKeyset private val keysetManager: AndroidKeysetManager,
     private val wallet: Wallet
 ) {
-  /** @return the device keypair */
+
+  /** the device keypair */
   lateinit var mainKeyPair: KeyPair
     private set
 
@@ -43,13 +44,16 @@ constructor(
       Timber.tag(TAG).e(e, "Failed to retrieve device's key")
       throw IllegalStateException("Failed to retrieve device's key", e)
     }
+
     try {
       cacheMainKey()
       Timber.tag(TAG).d("Public Key = %s", mainPublicKey.encoded)
-    } catch (e: IOException) {
-      throwException(e)
-    } catch (e: GeneralSecurityException) {
-      throwException(e)
+    } catch (e: Exception) {
+      when (e) {
+        is IOException,
+        is GeneralSecurityException -> throwException(e)
+        else -> {}
+      }
     }
   }
 
@@ -119,6 +123,7 @@ constructor(
   fun getKeyPair(keysetHandle: KeysetHandle): KeyPair {
     val privateKey: PrivateKey = ProtectedPrivateKey(keysetHandle)
     val publicKey = getPublicKey(keysetHandle)
+
     return KeyPair(privateKey, publicKey)
   }
 

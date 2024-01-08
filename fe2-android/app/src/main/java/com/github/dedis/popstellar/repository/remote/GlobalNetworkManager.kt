@@ -29,9 +29,8 @@ constructor(
 
   @JvmOverloads
   fun connect(url: String, subscriptions: Set<Channel> = HashSet()) {
-    if (networkManager != null) {
-      networkManager!!.dispose()
-    }
+    networkManager?.dispose()
+
     networkManager =
         LAONetworkManager(
             messageHandler,
@@ -49,9 +48,7 @@ constructor(
     }
 
   override fun dispose() {
-    if (networkManager != null) {
-      networkManager!!.dispose()
-    }
+    networkManager?.dispose()
     networkManager = null
   }
 
