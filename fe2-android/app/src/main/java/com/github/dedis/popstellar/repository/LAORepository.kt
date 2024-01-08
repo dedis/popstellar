@@ -4,7 +4,6 @@ import android.app.Activity
 import android.app.Application
 import androidx.lifecycle.Lifecycle
 import com.github.dedis.popstellar.model.objects.Channel
-import com.github.dedis.popstellar.model.objects.ConsensusNode
 import com.github.dedis.popstellar.model.objects.Lao
 import com.github.dedis.popstellar.model.objects.view.LaoView
 import com.github.dedis.popstellar.repository.database.AppDatabase
@@ -40,12 +39,6 @@ class LAORepository @Inject constructor(appDatabase: AppDatabase, application: A
   /** Observable over the list of laos' identifiers */
   private val laosSubject = BehaviorSubject.create<List<String>>()
   private val disposables = CompositeDisposable()
-
-  // ============ Lao Unrelated data ===============
-  // State for Messages
-  // Observable for view models that need access to all Nodes
-  private val channelToNodesSubject: MutableMap<Channel, BehaviorSubject<List<ConsensusNode>>> =
-      HashMap()
 
   init {
     laoDao = appDatabase.laoDao()

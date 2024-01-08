@@ -1,40 +1,5 @@
 package com.github.dedis.popstellar.ui.lao.event.meeting;
 
-import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
-import androidx.test.ext.junit.runners.AndroidJUnit4;
-
-import com.github.dedis.popstellar.model.objects.Lao;
-import com.github.dedis.popstellar.model.objects.Meeting;
-import com.github.dedis.popstellar.model.objects.security.KeyPair;
-import com.github.dedis.popstellar.model.objects.security.PublicKey;
-import com.github.dedis.popstellar.model.objects.view.LaoView;
-import com.github.dedis.popstellar.repository.MeetingRepository;
-import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
-import com.github.dedis.popstellar.testutils.BundleBuilder;
-import com.github.dedis.popstellar.testutils.MessageSenderHelper;
-import com.github.dedis.popstellar.testutils.fragment.ActivityFragmentScenarioRule;
-import com.github.dedis.popstellar.ui.lao.LaoActivity;
-import com.github.dedis.popstellar.utility.Constants;
-import com.github.dedis.popstellar.utility.error.UnknownLaoException;
-import com.github.dedis.popstellar.utility.security.KeyManager;
-
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExternalResource;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoTestRule;
-
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.*;
-
-import javax.inject.Inject;
-
-import dagger.hilt.android.testing.*;
-import io.reactivex.subjects.BehaviorSubject;
-
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.*;
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
@@ -44,6 +9,37 @@ import static com.github.dedis.popstellar.testutils.pages.lao.MeetingFragmentPag
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
+
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+import com.github.dedis.popstellar.model.objects.Lao;
+import com.github.dedis.popstellar.model.objects.Meeting;
+import com.github.dedis.popstellar.model.objects.security.KeyPair;
+import com.github.dedis.popstellar.model.objects.security.PublicKey;
+import com.github.dedis.popstellar.model.objects.view.LaoView;
+import com.github.dedis.popstellar.repository.LAORepository;
+import com.github.dedis.popstellar.repository.MeetingRepository;
+import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
+import com.github.dedis.popstellar.testutils.BundleBuilder;
+import com.github.dedis.popstellar.testutils.MessageSenderHelper;
+import com.github.dedis.popstellar.testutils.fragment.ActivityFragmentScenarioRule;
+import com.github.dedis.popstellar.ui.lao.LaoActivity;
+import com.github.dedis.popstellar.utility.Constants;
+import com.github.dedis.popstellar.utility.error.UnknownLaoException;
+import com.github.dedis.popstellar.utility.security.KeyManager;
+import dagger.hilt.android.testing.*;
+import io.reactivex.subjects.BehaviorSubject;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import javax.inject.Inject;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExternalResource;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoTestRule;
 
 @HiltAndroidTest
 @RunWith(AndroidJUnit4.class)

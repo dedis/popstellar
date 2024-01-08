@@ -1,17 +1,25 @@
 package com.github.dedis.popstellar.ui.lao;
 
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
+import static com.github.dedis.popstellar.testutils.pages.lao.InviteFragmentPageObject.*;
+import static com.github.dedis.popstellar.testutils.pages.lao.LaoActivityPageObject.containerId;
+import static com.github.dedis.popstellar.testutils.pages.lao.LaoActivityPageObject.laoIdExtra;
+import static org.mockito.Mockito.when;
+
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.SmallTest;
-
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.security.KeyPair;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
+import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.testutils.Base64DataUtils;
 import com.github.dedis.popstellar.testutils.BundleBuilder;
 import com.github.dedis.popstellar.testutils.fragment.ActivityFragmentScenarioRule;
 import com.github.dedis.popstellar.utility.security.KeyManager;
-
+import dagger.hilt.android.testing.*;
+import javax.inject.Inject;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExternalResource;
@@ -19,17 +27,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoTestRule;
-
-import javax.inject.Inject;
-
-import dagger.hilt.android.testing.*;
-
-import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.withText;
-import static com.github.dedis.popstellar.testutils.pages.lao.InviteFragmentPageObject.*;
-import static com.github.dedis.popstellar.testutils.pages.lao.LaoActivityPageObject.containerId;
-import static com.github.dedis.popstellar.testutils.pages.lao.LaoActivityPageObject.laoIdExtra;
-import static org.mockito.Mockito.when;
 
 @SmallTest
 @HiltAndroidTest

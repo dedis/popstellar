@@ -1,50 +1,5 @@
 package com.github.dedis.popstellar.ui.lao.event.eventlist;
 
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-import android.view.View;
-import android.widget.ImageView;
-
-import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
-import androidx.test.espresso.matcher.BoundedMatcher;
-import androidx.test.ext.junit.rules.ActivityScenarioRule;
-import androidx.test.ext.junit.runners.AndroidJUnit4;
-import androidx.test.filters.LargeTest;
-
-import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
-import com.github.dedis.popstellar.model.network.method.message.data.Data;
-import com.github.dedis.popstellar.model.network.method.message.data.rollcall.CreateRollCall;
-import com.github.dedis.popstellar.model.objects.Channel;
-import com.github.dedis.popstellar.model.objects.Lao;
-import com.github.dedis.popstellar.model.objects.security.*;
-import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
-import com.github.dedis.popstellar.repository.remote.MessageSender;
-import com.github.dedis.popstellar.testutils.*;
-import com.github.dedis.popstellar.ui.lao.LaoActivity;
-import com.github.dedis.popstellar.utility.error.keys.KeyException;
-import com.github.dedis.popstellar.utility.handler.MessageHandler;
-import com.github.dedis.popstellar.utility.security.KeyManager;
-import com.google.gson.Gson;
-import com.google.zxing.*;
-import com.google.zxing.common.HybridBinarizer;
-import com.google.zxing.qrcode.QRCodeReader;
-
-import org.hamcrest.Description;
-import org.hamcrest.Matcher;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExternalResource;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoTestRule;
-
-import javax.inject.Inject;
-
-import dagger.hilt.android.testing.*;
-import io.reactivex.Completable;
-
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
@@ -56,6 +11,47 @@ import static com.github.dedis.popstellar.testutils.pages.lao.event.rollcall.Rol
 import static org.hamcrest.Matchers.not;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.view.View;
+import android.widget.ImageView;
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
+import androidx.test.espresso.matcher.BoundedMatcher;
+import androidx.test.ext.junit.rules.ActivityScenarioRule;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.filters.LargeTest;
+import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
+import com.github.dedis.popstellar.model.network.method.message.data.Data;
+import com.github.dedis.popstellar.model.network.method.message.data.rollcall.CreateRollCall;
+import com.github.dedis.popstellar.model.objects.Channel;
+import com.github.dedis.popstellar.model.objects.Lao;
+import com.github.dedis.popstellar.model.objects.security.*;
+import com.github.dedis.popstellar.repository.LAORepository;
+import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
+import com.github.dedis.popstellar.repository.remote.MessageSender;
+import com.github.dedis.popstellar.testutils.*;
+import com.github.dedis.popstellar.ui.lao.LaoActivity;
+import com.github.dedis.popstellar.utility.error.keys.KeyException;
+import com.github.dedis.popstellar.utility.handler.MessageHandler;
+import com.github.dedis.popstellar.utility.security.KeyManager;
+import com.google.gson.Gson;
+import com.google.zxing.*;
+import com.google.zxing.common.HybridBinarizer;
+import com.google.zxing.qrcode.QRCodeReader;
+import dagger.hilt.android.testing.*;
+import io.reactivex.Completable;
+import javax.inject.Inject;
+import org.hamcrest.Description;
+import org.hamcrest.Matcher;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExternalResource;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoTestRule;
 
 @LargeTest
 @HiltAndroidTest
