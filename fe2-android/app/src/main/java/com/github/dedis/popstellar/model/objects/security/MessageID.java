@@ -1,7 +1,7 @@
 package com.github.dedis.popstellar.model.objects.security;
 
 import com.github.dedis.popstellar.model.Immutable;
-import com.github.dedis.popstellar.utility.security.Hash;
+import com.github.dedis.popstellar.utility.security.HashSHA256;
 
 /** Represents the id of a message */
 @Immutable
@@ -18,6 +18,6 @@ public class MessageID extends Base64URLData {
    * @param signature the sender generated for the message
    */
   public MessageID(Base64URLData dataBuf, Signature signature) {
-    super(Hash.hash(dataBuf.getEncoded(), signature.getEncoded()));
+    super(HashSHA256.hash(dataBuf.getEncoded(), signature.getEncoded()));
   }
 }

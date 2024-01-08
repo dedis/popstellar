@@ -1,28 +1,25 @@
 package com.github.dedis.popstellar.model.network.method.message.data.election;
 
-import androidx.test.ext.junit.runners.AndroidJUnit4;
-
-import com.github.dedis.popstellar.model.network.JsonTestUtils;
-import com.github.dedis.popstellar.utility.security.Hash;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
-import java.time.Instant;
-import java.util.Arrays;
-import java.util.List;
-
 import static com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVersion.OPEN_BALLOT;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+import com.github.dedis.popstellar.model.network.JsonTestUtils;
+import com.github.dedis.popstellar.utility.security.HashSHA256;
+import java.time.Instant;
+import java.util.Arrays;
+import java.util.List;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
 @RunWith(AndroidJUnit4.class)
 public class ElectionQuestionTest {
 
   private static final ElectionVersion VERSION = OPEN_BALLOT;
-  private static final String LAO_ID = Hash.hash("laoId");
+  private static final String LAO_ID = HashSHA256.hash("laoId");
   private static final String NAME = "name";
   private static final long NOW = Instant.now().getEpochSecond();
   private static final long END = NOW + 30L;
@@ -47,7 +44,7 @@ public class ElectionQuestionTest {
   @Test
   public void electionQuestionGetterReturnsCorrectId() {
     // Hash(“Question”||election_id||question)
-    String expectedId = Hash.hash("Question", ELECTION_SETUP.getElectionId(), QUESTION);
+    String expectedId = HashSHA256.hash("Question", ELECTION_SETUP.getElectionId(), QUESTION);
     assertThat(ELECTION_SETUP.getQuestions().get(0).getId(), is(expectedId));
   }
 

@@ -1,12 +1,10 @@
 package com.github.dedis.popstellar.model.objects;
 
 import androidx.annotation.NonNull;
-
 import com.github.dedis.popstellar.model.Immutable;
 import com.github.dedis.popstellar.model.objects.event.*;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
-import com.github.dedis.popstellar.utility.security.Hash;
-
+import com.github.dedis.popstellar.utility.security.HashSHA256;
 import java.util.*;
 
 @Immutable
@@ -117,7 +115,7 @@ public class RollCall extends Event {
    * @return the ID of CreateRollCall computed as Hash('R'||lao_id||creation||name)
    */
   public static String generateCreateRollCallId(String laoId, long creation, String name) {
-    return Hash.hash(EventType.ROLL_CALL.getSuffix(), laoId, Long.toString(creation), name);
+    return HashSHA256.hash(EventType.ROLL_CALL.getSuffix(), laoId, Long.toString(creation), name);
   }
 
   /**
@@ -130,7 +128,7 @@ public class RollCall extends Event {
    * @return the ID of OpenRollCall computed as Hash('R'||lao_id||opens||opened_at)
    */
   public static String generateOpenRollCallId(String laoId, String opens, long openedAt) {
-    return Hash.hash(EventType.ROLL_CALL.getSuffix(), laoId, opens, Long.toString(openedAt));
+    return HashSHA256.hash(EventType.ROLL_CALL.getSuffix(), laoId, opens, Long.toString(openedAt));
   }
 
   /**
@@ -143,7 +141,7 @@ public class RollCall extends Event {
    * @return the ID of CloseRollCall computed as Hash('R'||lao_id||closes||closed_at)
    */
   public static String generateCloseRollCallId(String laoId, String closes, long closedAt) {
-    return Hash.hash(EventType.ROLL_CALL.getSuffix(), laoId, closes, Long.toString(closedAt));
+    return HashSHA256.hash(EventType.ROLL_CALL.getSuffix(), laoId, closes, Long.toString(closedAt));
   }
 
   public static RollCall openRollCall(RollCall rollCall) {

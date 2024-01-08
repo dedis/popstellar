@@ -1,18 +1,16 @@
 package com.github.dedis.popstellar.model.network.method.message.data.consensus;
 
+import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateMessageID;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.testutils.Base64DataUtils;
-import com.github.dedis.popstellar.utility.security.Hash;
-
-import org.junit.Test;
-
+import com.github.dedis.popstellar.utility.security.HashSHA256;
 import java.util.*;
-
-import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateMessageID;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
+import org.junit.Test;
 
 public class ConsensusLearnTest {
 
@@ -20,7 +18,7 @@ public class ConsensusLearnTest {
   private static final long timeInSeconds = 1635277619;
   private static final boolean decision = true;
   private static final List<String> acceptorSignatures = Arrays.asList("aaa", "bbb");
-  private static final String instanceId = Hash.hash("ccc");
+  private static final String instanceId = HashSHA256.hash("ccc");
   private static final ConsensusLearn consensusLearn =
       new ConsensusLearn(instanceId, messageId, timeInSeconds, decision, acceptorSignatures);
 

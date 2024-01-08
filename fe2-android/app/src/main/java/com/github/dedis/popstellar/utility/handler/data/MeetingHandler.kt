@@ -67,7 +67,7 @@ constructor(
 
     val laoView = laoRepo.getLaoViewByChannel(channel)
     val laoId = laoView.id
-    // TODO: modify with the right logic when implementing the state functionality
+    /* TODO: modify with the right logic when implementing the state functionality */
     val meeting =
         MeetingBuilder()
             .setId(stateMeeting.id)

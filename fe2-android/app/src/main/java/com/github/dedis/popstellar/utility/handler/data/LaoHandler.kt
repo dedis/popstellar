@@ -158,7 +158,7 @@ constructor(
     }
     Timber.tag(TAG).d("Success to verify state lao signatures")
 
-    // TODO: verify if lao/state_lao is consistent with the lao/update message
+    /* TODO: verify if lao/state_lao is consistent with the lao/update message */
 
     val lao = laoView.createLaoCopy()
     lao.id = stateLao.id

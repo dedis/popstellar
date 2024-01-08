@@ -1,28 +1,25 @@
 package com.github.dedis.popstellar.model.network.method.message.data.rollcall;
 
-import androidx.test.ext.junit.runners.AndroidJUnit4;
-
-import com.github.dedis.popstellar.model.network.JsonTestUtils;
-import com.github.dedis.popstellar.model.network.method.message.data.Action;
-import com.github.dedis.popstellar.model.network.method.message.data.Objects;
-import com.github.dedis.popstellar.model.objects.event.EventState;
-import com.github.dedis.popstellar.model.objects.event.EventType;
-import com.github.dedis.popstellar.utility.security.Hash;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
-import java.time.Instant;
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+import com.github.dedis.popstellar.model.network.JsonTestUtils;
+import com.github.dedis.popstellar.model.network.method.message.data.Action;
+import com.github.dedis.popstellar.model.network.method.message.data.Objects;
+import com.github.dedis.popstellar.model.objects.event.EventState;
+import com.github.dedis.popstellar.model.objects.event.EventType;
+import com.github.dedis.popstellar.utility.security.HashSHA256;
+import java.time.Instant;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
 @RunWith(AndroidJUnit4.class)
 public class OpenRollCallTest {
 
-  private static final String LAO_ID = Hash.hash("LAO_ID");
+  private static final String LAO_ID = HashSHA256.hash("LAO_ID");
   private static final String NAME = "NAME";
   private static final long TIME = Instant.now().getEpochSecond();
   private static final String LOCATION = "Location";
@@ -33,14 +30,14 @@ public class OpenRollCallTest {
   private static final OpenRollCall REOPEN_ROLL_CALL =
       new OpenRollCall(LAO_ID, CREATE_ROLL_CALL.getId(), TIME, EventState.CLOSED);
   private static final String ID =
-      Hash.hash(
+      HashSHA256.hash(
           EventType.ROLL_CALL.getSuffix(), LAO_ID, CREATE_ROLL_CALL.getId(), Long.toString(TIME));
 
   @Test
   public void generateOpenRollCallIdTest() {
     // Hash('R'||lao_id||opens||opened_at)
     String expectedId =
-        Hash.hash(
+        HashSHA256.hash(
             EventType.ROLL_CALL.getSuffix(),
             LAO_ID,
             REOPEN_ROLL_CALL.getOpens(),

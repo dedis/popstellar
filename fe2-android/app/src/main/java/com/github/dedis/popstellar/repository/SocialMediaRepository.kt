@@ -228,7 +228,7 @@ constructor(appDatabase: AppDatabase, application: Application) {
         val subject =
             chirpSubjects[id]
                 ?: // This should really never occurs
-                throw IllegalStateException("A chirp exist but has no associated subject with it")
+                error("A chirp exist but has no associated subject with it")
         val deleted = chirp.deleted()
         chirps[id] = deleted
         subject.toSerialized().onNext(deleted)
@@ -251,9 +251,7 @@ constructor(appDatabase: AppDatabase, application: Application) {
     fun deleteReaction(reactionId: MessageID): Boolean {
       // Check if the associated reaction is present
       val reaction = reactions[reactionId] ?: return false
-      val chirp =
-          chirps[reaction.chirpId]
-              ?: throw IllegalStateException("The reaction refers to a not existing chirp")
+      val chirp = chirps[reaction.chirpId] ?: error("The reaction refers to a not existing chirp")
       // If the chirp the reaction refers to it's not present then throw an error
       if (reaction.isDeleted) {
         Timber.tag(TAG).d("The reaction with id %s is already deleted", reactionId)

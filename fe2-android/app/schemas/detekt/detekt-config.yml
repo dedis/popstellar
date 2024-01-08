@@ -1,2 +1,32 @@
 build:
-  maxIssues: 50
+  maxIssues: 20
+  weights:
+    comments: 0
+
+complexity:
+  TooManyFunctions:
+    active: true
+    thresholdInFiles: 16
+    thresholdInClasses: 16
+    thresholdInInterfaces: 16
+    thresholdInObjects: 16
+    thresholdInEnums: 16
+    ignoreDeprecated: true
+    ignorePrivate: false
+    ignoreOverridden: false
+
+exceptions:
+  TooGenericExceptionCaught:
+    active: false
+
+style:
+  ThrowsCount:
+    active: true
+    max: 4
+  ReturnCount:
+    active: true
+    max: 4
+    excludeLabeled: false
+    excludeReturnFromLambda: true
+  ForbiddenComment:
+    active: false

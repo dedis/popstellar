@@ -37,7 +37,7 @@ import com.github.dedis.popstellar.repository.database.witnessing.*;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.utility.error.*;
 import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
-import com.github.dedis.popstellar.utility.security.Hash;
+import com.github.dedis.popstellar.utility.security.HashSHA256;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
 import io.reactivex.Completable;
@@ -452,7 +452,7 @@ public class ElectionHandlerTest {
     String[] voteIds = Stream.of(VOTE1, VOTE2).map(Vote::getId).sorted().toArray(String[]::new);
     Election election = electionRepo.getElectionByChannel(OPEN_BALLOT_ELECTION.getChannel());
 
-    assertEquals(Hash.hash(voteIds), election.computeRegisteredVotesHash());
+    assertEquals(HashSHA256.hash(voteIds), election.computeRegisteredVotesHash());
   }
 
   @Test
@@ -477,7 +477,7 @@ public class ElectionHandlerTest {
     String[] voteIds = Stream.of(VOTE1, VOTE3).map(Vote::getId).sorted().toArray(String[]::new);
     Election election = electionRepo.getElectionByChannel(OPEN_BALLOT_ELECTION.getChannel());
 
-    assertEquals(Hash.hash(voteIds), election.computeRegisteredVotesHash());
+    assertEquals(HashSHA256.hash(voteIds), election.computeRegisteredVotesHash());
   }
 
   @Test
@@ -502,7 +502,7 @@ public class ElectionHandlerTest {
     String[] voteIds = Stream.of(VOTE1, VOTE2).map(Vote::getId).sorted().toArray(String[]::new);
     Election election = electionRepo.getElectionByChannel(OPEN_BALLOT_ELECTION.getChannel());
 
-    assertEquals(Hash.hash(voteIds), election.computeRegisteredVotesHash());
+    assertEquals(HashSHA256.hash(voteIds), election.computeRegisteredVotesHash());
   }
 
   @Test
@@ -612,6 +612,6 @@ public class ElectionHandlerTest {
     String[] voteIds = Stream.of(vote1, vote2).map(Vote::getId).sorted().toArray(String[]::new);
     Election election = electionRepo.getElectionByChannel(OPEN_BALLOT_ELECTION.getChannel());
 
-    assertEquals(Hash.hash(voteIds), election.computeRegisteredVotesHash());
+    assertEquals(HashSHA256.hash(voteIds), election.computeRegisteredVotesHash());
   }
 }

@@ -211,8 +211,7 @@ constructor(
       // Retrieve previous message and make sure it is a CastVote
       val previousData =
           messageRepo.getMessage(previousMessageId)?.data
-              ?: throw IllegalStateException(
-                  "The message corresponding to $messageId does not exist")
+              ?: error("The message corresponding to $messageId does not exist")
       if (previousData !is CastVote) {
         throw DataHandlingException(
             previousData, "The previous message of a cast vote was not a CastVote")

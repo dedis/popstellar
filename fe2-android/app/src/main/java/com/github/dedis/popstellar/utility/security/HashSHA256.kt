@@ -7,8 +7,8 @@ import java.util.Base64
 import timber.log.Timber
 
 /** SHA256 Hashing Class */
-object Hash {
-  val TAG: String = Hash::class.java.simpleName
+object HashSHA256 {
+  val TAG: String = HashSHA256::class.java.simpleName
 
   /**
    * Hash some objects using SHA256. Concatenate the object's string representation following the

@@ -279,9 +279,7 @@ constructor(appDatabase: AppDatabase, application: Application) {
           .stream()
           .map { obj: OutputObject -> obj.pubKeyHash }
           .map { hash: String ->
-            val key =
-                hashDictionary[hash]
-                    ?: throw IllegalStateException("The hash is not in dictionary of known hashes")
+            val key = hashDictionary[hash] ?: error("The hash is not in dictionary of known hashes")
             key
           }
           .collect(Collectors.toList())

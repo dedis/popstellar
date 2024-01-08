@@ -99,7 +99,7 @@ constructor(
    */
   @Throws(KeyException::class)
   fun getLongTermAuthToken(laoId: String, clientId: String): AuthToken {
-    return AuthToken(wallet.generatePoPToken(laoId, Hash.hash(clientId)))
+    return AuthToken(wallet.generatePoPToken(laoId, HashSHA256.hash(clientId)))
   }
 
   /**

@@ -4,7 +4,7 @@ import androidx.annotation.NonNull;
 import com.github.dedis.popstellar.model.Copyable;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
-import com.github.dedis.popstellar.utility.security.Hash;
+import com.github.dedis.popstellar.utility.security.HashSHA256;
 import java.util.*;
 
 /** Class modeling a Local Autonomous Organization (LAO) */
@@ -164,7 +164,7 @@ public final class Lao implements Copyable<Lao> {
    * @return the ID of CreateLao or UpdateLao computed as Hash(organizer||creation||name)
    */
   public static String generateLaoId(PublicKey organizer, long creation, String name) {
-    return Hash.hash(organizer.getEncoded(), Long.toString(creation), name);
+    return HashSHA256.hash(organizer.getEncoded(), Long.toString(creation), name);
   }
 
   @Override
