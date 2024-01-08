@@ -33,7 +33,7 @@ public class JsonConverterTest {
     Map<String, Object> testMap = new LinkedHashMap<>();
     testMap.put("test1", "test2");
     Json testJson = Json.of(testMap);
-    Json testConverter = jsonConverter.publishMessageFromData(testJson.toString(), 2, "/root");
+    Json testConverter = jsonConverter.constructPublishMessage(testJson.toString(), 2, "/root");
     String jsonString = testConverter.toString();
     String result = "{\"method\":\"publish\",\"id\":2,\"params\":{\"channel\":\"/root\",\"message\":{\"data\":\"eyJ0ZXN0MSI6InRlc3QyIn0=\",\"sender\":\"J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=\",\"signature\":\"-waobQoP4TyXbTSXG0A8hZ2EPRB--p8G_F_NDerSoOhcBA1BE1JZux98ihvmP8-lG8WifZTx9gSVfWuN2dx2Bw==\",\"message_id\":\"Oj7kLJCLMvQrvBZmW0YyRUDbRX10p4mIg2gw0AuIu3E=\",\"witness_signatures\":[]}},\"jsonrpc\":\"2.0\"}";
     assert jsonString.equals(result);
@@ -52,7 +52,7 @@ public class JsonConverterTest {
   @Test
   public void constructJsonMessageFromDataCorrespondsToTrueJsonMessage() {
     String laoDataJsonString = constructJsonDataForValidLao().toString();
-    Json jsonValidLaoMessage = jsonConverter.publishMessageFromData(laoDataJsonString, 1, "/root");
+    Json jsonValidLaoMessage = jsonConverter.constructPublishMessage(laoDataJsonString, 1, "/root");
     Map<String, Object> validStringMessage = new LinkedHashMap<>();
     validStringMessage.put("method", "publish");
     validStringMessage.put("id", 1);

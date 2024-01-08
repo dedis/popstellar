@@ -1,13 +1,8 @@
 package com.github.dedis.popstellar.model.objects.view;
 
 import androidx.annotation.NonNull;
-
 import com.github.dedis.popstellar.model.objects.*;
-import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
-
-import java.util.List;
-import java.util.Optional;
 
 public final class LaoView {
 
@@ -54,22 +49,6 @@ public final class LaoView {
 
   public PublicKey getOrganizer() {
     return lao.getOrganizer();
-  }
-
-  public Optional<ElectInstance> getElectInstance(MessageID messageId) {
-    // TODO uncomment that when consensus does not rely on call by reference
-    //    Optional<ElectInstance> optional = lao.getElectInstance(messageId);
-    //    return optional.map(ElectInstance::new); // If empty returns empty optional, if not
-    // returns optional with copy of retrieved ElectInstance
-    return lao.getElectInstance(messageId);
-  }
-
-  public List<ConsensusNode> getNodes() {
-    return lao.getNodes();
-  }
-
-  public ConsensusNode getNode(@NonNull PublicKey key) {
-    return lao.getNode(key);
   }
 
   public long getCreation() {

@@ -8,7 +8,6 @@ import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.objects.Wallet;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.model.qrcode.ConnectToLao;
-import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.database.AppDatabase;
 import com.github.dedis.popstellar.repository.database.wallet.WalletEntity;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;

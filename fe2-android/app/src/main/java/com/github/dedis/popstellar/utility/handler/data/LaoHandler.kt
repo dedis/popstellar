@@ -11,6 +11,7 @@ import com.github.dedis.popstellar.model.objects.WitnessMessage
 import com.github.dedis.popstellar.model.objects.security.MessageID
 import com.github.dedis.popstellar.model.objects.security.PublicKey
 import com.github.dedis.popstellar.model.objects.view.LaoView
+import com.github.dedis.popstellar.repository.ConsensusRepository
 import com.github.dedis.popstellar.repository.LAORepository
 import com.github.dedis.popstellar.repository.MessageRepository
 import com.github.dedis.popstellar.repository.ServerRepository
@@ -31,7 +32,8 @@ constructor(
     private val messageRepo: MessageRepository,
     private val laoRepo: LAORepository,
     private val serverRepo: ServerRepository,
-    private val witnessingRepo: WitnessingRepository
+    private val witnessingRepo: WitnessingRepository,
+    private val consensusRepo: ConsensusRepository
 ) {
 
   /**
@@ -52,10 +54,11 @@ constructor(
     lao.lastModified = createLao.creation
     lao.organizer = createLao.organizer
     lao.id = createLao.id
-    lao.initKeyToNode(witnesses)
-
     laoRepo.updateLao(lao)
+
     witnessingRepo.addWitnesses(lao.id, witnesses)
+    consensusRepo.setOrganizer(lao.id, createLao.organizer)
+    consensusRepo.initKeyToNode(lao.id, witnesses)
 
     val laoView = laoRepo.getLaoViewByChannel(channel)
     val publicKey = keyManager.mainPublicKey
@@ -81,7 +84,7 @@ constructor(
                   Timber.tag(TAG).d(error, "error while trying  to subscribe to coin channel")
                 }))
 
-    laoRepo.updateNodes(channel)
+    consensusRepo.updateNodesByChannel(channel)
   }
 
   /**
@@ -123,7 +126,7 @@ constructor(
       lao.addPendingUpdate(PendingUpdate(updateLao.lastModified, messageId))
     }
 
-    laoRepo.updateNodes(channel)
+    consensusRepo.updateNodesByChannel(channel)
     laoRepo.updateLao(lao)
   }
 
@@ -156,12 +159,14 @@ constructor(
     Timber.tag(TAG).d("Success to verify state lao signatures")
 
     // TODO: verify if lao/state_lao is consistent with the lao/update message
+
     val lao = laoView.createLaoCopy()
     lao.id = stateLao.id
-    lao.initKeyToNode(stateLao.witnesses)
     lao.name = stateLao.name
     lao.lastModified = stateLao.lastModified
     lao.modificationId = stateLao.modificationId
+
+    consensusRepo.initKeyToNode(lao.id, stateLao.witnesses)
 
     val publicKey = keyManager.mainPublicKey
     if (laoView.isOrganizer(publicKey) || witnessingRepo.isWitness(lao.id, publicKey)) {
@@ -182,7 +187,7 @@ constructor(
     }
 
     laoRepo.updateLao(lao)
-    laoRepo.updateNodes(channel)
+    consensusRepo.updateNodesByChannel(channel)
   }
 
   @Throws(UnknownLaoException::class)

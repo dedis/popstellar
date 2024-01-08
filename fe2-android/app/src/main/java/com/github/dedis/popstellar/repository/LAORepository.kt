@@ -183,29 +183,6 @@ class LAORepository @Inject constructor(appDatabase: AppDatabase, application: A
     disposables.add(disposable)
   }
 
-  // ============ Lao Unrelated functions ===============
-  /**
-   * Return an Observable to the list of nodes in a given channel.
-   *
-   * @param channel the lao channel.
-   * @return an Observable to the list of nodes
-   */
-  fun getNodesByChannel(channel: Channel): Observable<List<ConsensusNode>>? {
-    return channelToNodesSubject[channel]
-  }
-
-  /**
-   * Emit an update to the observer of nodes for the given lao channel. Create the BehaviorSubject
-   * if absent (first update).
-   *
-   * @param channel the lao channel
-   */
-  fun updateNodes(channel: Channel) {
-    val nodes = getLaoByChannel(channel).nodes
-    channelToNodesSubject.putIfAbsent(channel, BehaviorSubject.create())
-    channelToNodesSubject.getValue(channel).onNext(nodes)
-  }
-
   companion object {
     private val TAG = LAORepository::class.java.simpleName
   }

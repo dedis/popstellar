@@ -62,9 +62,8 @@ class MessageRepository @Inject constructor(appDatabase: AppDatabase, applicatio
                   messageEntities.forEach(
                       Consumer { msg: MessageEntity ->
                         messageCache.put(
-                            msg
-                                .messageId, // Cache doesn't accept null as value, so an empty
-                                            // message
+                            msg.messageId, // Cache doesn't accept null as value, so an empty
+                            // message
                             // is used
                             if (msg.content == null) MessageGeneral.emptyMessage() else msg.content)
                       })

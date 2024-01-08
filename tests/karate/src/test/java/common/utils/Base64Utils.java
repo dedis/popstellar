@@ -22,9 +22,16 @@ public class Base64Utils {
     return Base64.getUrlDecoder().decode(data);
   }
 
+
   /** Produces the base64 variant of the json file passed as argument */
   public static String convertJsonToBase64(Json json) {
     String stringJson = json.toString();
     return Base64Utils.encode(stringJson.getBytes());
+  }
+
+  /** Extracts the Base64 encoded data of a (possibly nested) field in a Json and decodes it */
+  public static String decodeBase64JsonField(Json json, String fieldPath) {
+    String base64Data = json.get(fieldPath);
+    return new String(decode(base64Data));
   }
 }

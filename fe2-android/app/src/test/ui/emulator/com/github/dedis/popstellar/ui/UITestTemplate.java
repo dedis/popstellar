@@ -3,7 +3,6 @@ package com.github.dedis.popstellar.ui;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
-import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.ui.home.HomeActivity;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.google.gson.Gson;

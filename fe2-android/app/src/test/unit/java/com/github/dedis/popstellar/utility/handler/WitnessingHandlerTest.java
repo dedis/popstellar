@@ -60,6 +60,7 @@ public class WitnessingHandlerTest {
   private static final WitnessMessage WITNESS_MESSAGE2 = new WitnessMessage(MESSAGE_ID2);
 
   private LAORepository laoRepo;
+  private ConsensusRepository consensusRepo;
   private static WitnessingRepository witnessingRepository;
   private MessageHandler messageHandler;
   private Gson gson;
@@ -121,6 +122,7 @@ public class WitnessingHandlerTest {
     witnessingRepository =
         new WitnessingRepository(
             appDatabase, application, rollCallRepo, electionRepo, meetingRepo, digitalCashRepo);
+    consensusRepo = new ConsensusRepository();
     MessageRepository messageRepo = new MessageRepository(appDatabase, application);
 
     DataRegistry dataRegistry =
@@ -132,7 +134,7 @@ public class WitnessingHandlerTest {
     // Create one LAO
     Lao LAO = new Lao(CREATE_LAO.getName(), CREATE_LAO.getOrganizer(), CREATE_LAO.getCreation());
     LAO.setLastModified(LAO.getCreation());
-    LAO.initKeyToNode(new HashSet<>(CREATE_LAO.getWitnesses()));
+    consensusRepo.initKeyToNode(LAO.getId(), new HashSet<>(CREATE_LAO.getWitnesses()));
 
     witnessingRepository.addWitnesses(LAO.getId(), new HashSet<>(WITNESSES));
     witnessingRepository.addWitnessMessage(LAO.getId(), WITNESS_MESSAGE1);

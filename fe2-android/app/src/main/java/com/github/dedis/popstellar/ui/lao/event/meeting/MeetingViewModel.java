@@ -9,7 +9,6 @@ import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.network.method.message.data.meeting.CreateMeeting;
 import com.github.dedis.popstellar.model.objects.Meeting;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
-import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.MeetingRepository;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.utility.error.*;

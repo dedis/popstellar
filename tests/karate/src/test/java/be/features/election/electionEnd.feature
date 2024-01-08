@@ -19,7 +19,7 @@ Feature: Terminate an election
     * def electionEnd = election.close()
 
   # After a successful election setup and cast vote sending a valid election end
-  # message should succeed
+  # message should succeed (message should be accepted and a broadcast with election results received in return)
   Scenario: Sending a valid election end should succeed
     Given def validElectionEnd =
       """
@@ -33,8 +33,10 @@ Feature: Terminate an election
         }
       """
     When organizer.publish(validElectionEnd, election.channel)
-    And json answer = organizer.getBackendResponseWithElectionResults(validElectionEnd)
-    Then match answer contains ELECTION_RESULTS
+    And json answer = organizer.getBackendResponse(validElectionEnd)
+    And json results = organizer.getElectionResults()
+    And match answer contains VALID_MESSAGE
+    And match results contains ELECTION_RESULTS
     And match organizer.receiveNoMoreResponses() == true
 
    # After having a successful election setup and vote casts, sending an election end
