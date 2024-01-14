@@ -1,11 +1,9 @@
 package com.github.dedis.popstellar.model.objects;
 
 import androidx.annotation.NonNull;
-
 import com.github.dedis.popstellar.model.Immutable;
 import com.github.dedis.popstellar.model.objects.event.*;
-import com.github.dedis.popstellar.utility.security.Hash;
-
+import com.github.dedis.popstellar.utility.security.HashSHA256;
 import java.util.*;
 
 @Immutable
@@ -113,7 +111,7 @@ public class Meeting extends Event {
    * @return the ID of CreateMeeting computed as Hash('M'||lao_id||creation||name)
    */
   public static String generateCreateMeetingId(String laoId, long creation, String name) {
-    return Hash.hash(EventType.MEETING.getSuffix(), laoId, Long.toString(creation), name);
+    return HashSHA256.hash(EventType.MEETING.getSuffix(), laoId, Long.toString(creation), name);
   }
 
   /**
@@ -126,7 +124,7 @@ public class Meeting extends Event {
    * @return the ID of StateMeeting computed as Hash('M'||lao_id||creation||name)
    */
   public static String generateStateMeetingId(String laoId, long creation, String name) {
-    return Hash.hash(EventType.MEETING.getSuffix(), laoId, Long.toString(creation), name);
+    return HashSHA256.hash(EventType.MEETING.getSuffix(), laoId, Long.toString(creation), name);
   }
 
   @Override

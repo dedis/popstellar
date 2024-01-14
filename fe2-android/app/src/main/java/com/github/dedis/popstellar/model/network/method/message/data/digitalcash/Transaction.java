@@ -1,9 +1,8 @@
 package com.github.dedis.popstellar.model.network.method.message.data.digitalcash;
 
 import com.github.dedis.popstellar.model.Immutable;
-import com.github.dedis.popstellar.utility.security.Hash;
+import com.github.dedis.popstellar.utility.security.HashSHA256;
 import com.google.gson.annotations.SerializedName;
-
 import java.util.*;
 
 /** The transaction object */
@@ -92,7 +91,7 @@ public final class Transaction {
     collectTransaction.add(String.valueOf(version));
 
     // Use already implemented hash function
-    return Hash.hash(collectTransaction.toArray(new String[0]));
+    return HashSHA256.hash(collectTransaction.toArray(new String[0]));
   }
 
   @Override

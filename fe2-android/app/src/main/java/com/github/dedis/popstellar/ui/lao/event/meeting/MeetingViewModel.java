@@ -1,10 +1,8 @@
 package com.github.dedis.popstellar.ui.lao.event.meeting;
 
 import android.app.Application;
-
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
-
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.network.method.message.data.meeting.CreateMeeting;
 import com.github.dedis.popstellar.model.objects.Meeting;
@@ -15,12 +13,10 @@ import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.utility.error.*;
 import com.github.dedis.popstellar.utility.scheduler.SchedulerProvider;
 import com.github.dedis.popstellar.utility.security.KeyManager;
-
-import javax.inject.Inject;
-
 import dagger.hilt.android.lifecycle.HiltViewModel;
 import io.reactivex.Observable;
 import io.reactivex.Single;
+import javax.inject.Inject;
 import timber.log.Timber;
 
 @HiltViewModel

@@ -1,0 +1,46 @@
+build:
+  maxIssues: 20
+  weights:
+    # Set to 0 the weight of issues on comments
+    comments: 0
+
+complexity:
+  # Set to 16 the maximum number of functions in a class, file, interface or object
+  TooManyFunctions:
+    active: true
+    thresholdInFiles: 16
+    thresholdInClasses: 16
+    thresholdInInterfaces: 16
+    thresholdInObjects: 16
+    ignoreDeprecated: true
+    ignorePrivate: false
+    ignoreOverridden: false
+
+exceptions:
+  # Deactivating permanently the following exception as it doesn't allow to
+  # handle exceptions in Kotlin in a more compact way:
+  #
+  # catch (e: Exception) {
+  #   when(e) {
+  #     is IOException, ... : ...
+  #     else: ...
+  #   }
+  # }
+  #
+  TooGenericExceptionCaught:
+    active: false
+
+style:
+  # Allow up to 4 throws statements within a function
+  ThrowsCount:
+    active: true
+    max: 4
+  # Allow up to 4 return statements within a function
+  ReturnCount:
+    active: true
+    max: 4
+    excludeLabeled: false
+    excludeReturnFromLambda: true
+  # Allow TODOs in the codebase by deactivating the following rule
+  ForbiddenComment:
+    active: false

@@ -2,10 +2,8 @@ package com.github.dedis.popstellar.ui.lao.event.rollcall;
 
 import android.app.Application;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.lifecycle.*;
-
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.network.method.message.data.rollcall.*;
 import com.github.dedis.popstellar.model.objects.*;
@@ -21,16 +19,13 @@ import com.github.dedis.popstellar.utility.error.keys.*;
 import com.github.dedis.popstellar.utility.scheduler.SchedulerProvider;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
-
+import dagger.hilt.android.lifecycle.HiltViewModel;
+import io.reactivex.*;
+import io.reactivex.Observable;
 import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
-
 import javax.inject.Inject;
-
-import dagger.hilt.android.lifecycle.HiltViewModel;
-import io.reactivex.Observable;
-import io.reactivex.*;
 import timber.log.Timber;
 
 @HiltViewModel
@@ -72,17 +67,18 @@ public class RollCallViewModel extends AndroidViewModel implements QRCodeScannin
   }
 
   public void setLaoId(String laoId) {
-    this.laoId = laoId;
-
-    attendedRollCalls =
-        rollCallRepo
-            .getRollCallsObservableInLao(laoId)
-            .map(
-                rcs ->
-                    rcs.stream()
-                        // Keep only attended roll calls
-                        .filter(this::isRollCallAttended)
-                        .collect(Collectors.toList()));
+    if (laoId != null) {
+      this.laoId = laoId;
+      attendedRollCalls =
+          rollCallRepo
+              .getRollCallsObservableInLao(laoId)
+              .map(
+                  rcs ->
+                      rcs.stream()
+                          // Keep only attended roll calls
+                          .filter(this::isRollCallAttended)
+                          .collect(Collectors.toList()));
+    }
   }
 
   /**

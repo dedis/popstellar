@@ -1,11 +1,17 @@
 package com.github.dedis.popstellar.utility.handler;
 
-import android.app.Application;
+import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
+import static com.github.dedis.popstellar.testutils.Base64DataUtils.generatePoPToken;
+import static com.github.dedis.popstellar.utility.handler.data.MeetingHandler.createMeetingWitnessMessage;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.*;
 
+import android.app.Application;
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
-
 import com.github.dedis.popstellar.di.DataRegistryModuleHelper;
 import com.github.dedis.popstellar.di.JsonModule;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
@@ -29,28 +35,17 @@ import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
-
-import org.junit.*;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-
+import io.reactivex.Completable;
+import io.reactivex.Single;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Optional;
-
-import io.reactivex.Completable;
-import io.reactivex.Single;
-
-import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
-import static com.github.dedis.popstellar.testutils.Base64DataUtils.generatePoPToken;
-import static com.github.dedis.popstellar.utility.handler.data.MeetingHandler.createMeetingWitnessMessage;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.*;
+import org.junit.*;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 @RunWith(AndroidJUnit4.class)
 public class MeetingHandlerTest {
@@ -71,6 +66,9 @@ public class MeetingHandlerTest {
   private static Meeting meeting;
 
   @Mock AppDatabase appDatabase;
+  @Mock RollCallRepository rollCallRepository;
+  @Mock DigitalCashRepository digitalCashRepo;
+  @Mock ElectionRepository electionRepo;
   @Mock LAODao laoDao;
   @Mock MessageDao messageDao;
   @Mock MeetingDao meetingDao;
@@ -125,13 +123,15 @@ public class MeetingHandlerTest {
     when(pendingDao.removePendingObject(any(MessageID.class))).thenReturn(Completable.complete());
 
     LAORepository laoRepo = new LAORepository(appDatabase, application);
-    RollCallRepository rollCallRepo = new RollCallRepository(appDatabase, application);
-    ElectionRepository electionRepo = new ElectionRepository(appDatabase, application);
     meetingRepo = new MeetingRepository(appDatabase, application);
-    DigitalCashRepository digitalCashRepo = new DigitalCashRepository(appDatabase, application);
     witnessingRepository =
         new WitnessingRepository(
-            appDatabase, application, rollCallRepo, electionRepo, meetingRepo, digitalCashRepo);
+            appDatabase,
+            application,
+            rollCallRepository,
+            electionRepo,
+            meetingRepo,
+            digitalCashRepo);
     MessageRepository messageRepo = new MessageRepository(appDatabase, application);
 
     DataRegistry dataRegistry =
@@ -162,8 +162,12 @@ public class MeetingHandlerTest {
 
   @Test
   public void handleCreateMeetingTest()
-      throws UnknownElectionException, UnknownRollCallException, UnknownLaoException,
-          DataHandlingException, NoRollCallException, UnknownMeetingException,
+      throws UnknownElectionException,
+          UnknownRollCallException,
+          UnknownLaoException,
+          DataHandlingException,
+          NoRollCallException,
+          UnknownMeetingException,
           UnknownWitnessMessageException {
     // Create the create Meeting message
     CreateMeeting createMeeting =

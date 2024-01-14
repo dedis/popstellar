@@ -6,13 +6,13 @@ import static org.junit.Assert.assertNotEquals;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.objects.security.Base64URLData;
-import com.github.dedis.popstellar.utility.security.Hash;
+import com.github.dedis.popstellar.utility.security.HashSHA256;
 import org.junit.Test;
 
 public class PoPCHAAuthenticationTest {
 
-  private static final String CLIENT_ID = Hash.hash("clientID");
-  private static final String NONCE = Hash.hash("random");
+  private static final String CLIENT_ID = HashSHA256.hash("clientID");
+  private static final String NONCE = HashSHA256.hash("random");
   private static final Base64URLData IDENTIFIER = new Base64URLData("identifier");
   private static final Base64URLData IDENTIFIER_PROOF = new Base64URLData("identifier-proof");
   private static final String STATE = null;

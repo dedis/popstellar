@@ -1,15 +1,13 @@
 package com.github.dedis.popstellar.model.objects;
 
 import androidx.annotation.NonNull;
-
 import com.github.dedis.popstellar.model.Copyable;
 import com.github.dedis.popstellar.model.Immutable;
 import com.github.dedis.popstellar.model.network.method.message.data.election.*;
 import com.github.dedis.popstellar.model.objects.event.*;
 import com.github.dedis.popstellar.model.objects.security.*;
 import com.github.dedis.popstellar.model.objects.security.elGamal.ElectionPublicKey;
-import com.github.dedis.popstellar.utility.security.Hash;
-
+import com.github.dedis.popstellar.utility.security.HashSHA256;
 import java.util.*;
 import java.util.stream.Stream;
 
@@ -172,7 +170,7 @@ public class Election extends Event {
    * @return the ID of ElectionSetup computed as Hash('Election'||lao_id||created_at||name)
    */
   public static String generateElectionSetupId(String laoId, long createdAt, String name) {
-    return Hash.hash(EventType.ELECTION.getSuffix(), laoId, Long.toString(createdAt), name);
+    return HashSHA256.hash(EventType.ELECTION.getSuffix(), laoId, Long.toString(createdAt), name);
   }
 
   /**
@@ -185,7 +183,7 @@ public class Election extends Event {
    * @return the ID of an election question computed as Hash(“Question”||election_id||question)
    */
   public static String generateElectionQuestionId(String electionId, String question) {
-    return Hash.hash("Question", electionId, question);
+    return HashSHA256.hash("Question", electionId, question);
   }
 
   /**
@@ -209,7 +207,7 @@ public class Election extends Event {
     // If write_in is enabled the id is formed with the write_in string
     // If write_in is not enabled the id is formed with the vote indexes (formatted as int1, int2,
     // ). The vote are concatenated and brackets are removed from the array toString representation
-    return Hash.hash(
+    return HashSHA256.hash(
         "Vote", electionId, questionId, writeInEnabled ? writeIn : voteIndex.toString());
   }
 
@@ -233,7 +231,7 @@ public class Election extends Event {
       boolean writeInEnabled) {
     // HashLen('Vote', election_id, question_id, (encrypted_vote_index|encrypted_write_in))),
     // concatenate vote indexes - must sort in alphabetical order and use delimiter ','"
-    return Hash.hash(
+    return HashSHA256.hash(
         "Vote", electionId, questionId, writeInEnabled ? writeInEncrypted : voteIndexEncrypted);
   }
 
@@ -257,7 +255,7 @@ public class Election extends Event {
     if (ids.length == 0) {
       return "";
     } else {
-      return Hash.hash(ids);
+      return HashSHA256.hash(ids);
     }
   }
 

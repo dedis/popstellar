@@ -1,22 +1,19 @@
 package com.github.dedis.popstellar.model.network.method.message.data.rollcall;
 
-import androidx.test.ext.junit.runners.AndroidJUnit4;
-
-import com.github.dedis.popstellar.model.network.JsonTestUtils;
-import com.github.dedis.popstellar.model.network.method.message.data.Action;
-import com.github.dedis.popstellar.model.network.method.message.data.Objects;
-import com.github.dedis.popstellar.model.objects.event.EventType;
-import com.github.dedis.popstellar.utility.security.Hash;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
-import java.time.Instant;
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+import com.github.dedis.popstellar.model.network.JsonTestUtils;
+import com.github.dedis.popstellar.model.network.method.message.data.Action;
+import com.github.dedis.popstellar.model.network.method.message.data.Objects;
+import com.github.dedis.popstellar.model.objects.event.EventType;
+import com.github.dedis.popstellar.utility.security.HashSHA256;
+import java.time.Instant;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 @RunWith(AndroidJUnit4.class)
 public class CreateRollCallTest {
@@ -29,13 +26,13 @@ public class CreateRollCallTest {
   private static final CreateRollCall CREATE_ROLL_CALL =
       new CreateRollCall(NAME, NOW, NOW, END, LOCATION, null, LAO_ID);
   private static final String ID =
-      Hash.hash(EventType.ROLL_CALL.getSuffix(), LAO_ID, Long.toString(NOW), NAME);
+      HashSHA256.hash(EventType.ROLL_CALL.getSuffix(), LAO_ID, Long.toString(NOW), NAME);
 
   @Test
   public void generateCreateRollCallIdTest() {
     // Hash('R'||lao_id||creation||NAME)
     String expectedId =
-        Hash.hash(
+        HashSHA256.hash(
             EventType.ROLL_CALL.getSuffix(),
             LAO_ID,
             Long.toString(CREATE_ROLL_CALL.getCreation()),

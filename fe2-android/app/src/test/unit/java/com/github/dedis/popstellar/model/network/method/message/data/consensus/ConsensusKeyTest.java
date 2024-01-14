@@ -1,16 +1,15 @@
 package com.github.dedis.popstellar.model.network.method.message.data.consensus;
 
-import com.github.dedis.popstellar.utility.security.Hash;
-
-import org.junit.Test;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+
+import com.github.dedis.popstellar.utility.security.HashSHA256;
+import org.junit.Test;
 
 public class ConsensusKeyTest {
 
   private static final String type = "TestType";
-  private static final String id = Hash.hash("TestId");
+  private static final String id = HashSHA256.hash("TestId");
   private static final String property = "TestProperty";
 
   private static final ConsensusKey key = new ConsensusKey(type, id, property);

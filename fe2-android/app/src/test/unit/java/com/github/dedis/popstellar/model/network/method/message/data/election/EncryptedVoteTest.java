@@ -1,13 +1,12 @@
 package com.github.dedis.popstellar.model.network.method.message.data.election;
 
-import com.github.dedis.popstellar.model.objects.Election;
-import com.github.dedis.popstellar.utility.security.Hash;
-
-import org.junit.Test;
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.*;
+
+import com.github.dedis.popstellar.model.objects.Election;
+import com.github.dedis.popstellar.utility.security.HashSHA256;
+import org.junit.Test;
 
 public class EncryptedVoteTest {
 
@@ -27,7 +26,7 @@ public class EncryptedVoteTest {
   private final EncryptedVote electionEncryptedVotes2 =
       new EncryptedVote(questionId, votes, true, encryptedWriteIn, electionId);
   private final String wrongFormatId =
-      Hash.hash("Vote", electionId, electionEncryptedVotes2.getQuestionId());
+      HashSHA256.hash("Vote", electionId, electionEncryptedVotes2.getQuestionId());
   private final String expectedIdWithWriteIn =
       Election.generateEncryptedElectionVoteId(
           electionId, questionId, electionEncryptedVotes2.getVote(), encryptedWriteIn, true);

@@ -1,3 +1,12 @@
+import io.gitlab.arturbosch.detekt.Detekt
+import io.gitlab.arturbosch.detekt.DetektCreateBaselineTask
+
+plugins {
+    id 'kotlin-android'
+    id 'com.ncorti.ktfmt.gradle' version '0.16.0'
+    id 'io.gitlab.arturbosch.detekt' version '1.23.3'
+}
+
 apply plugin: 'com.android.application'
 apply plugin: 'org.sonarqube'
 apply plugin: 'jacoco'
@@ -23,11 +32,13 @@ android {
 
         buildTypes {
             debug {
+                buildConfigField "String", "DEFAULT_URL", "\"ws://10.0.2.2:9000/client\""
                 isDefault true
                 testCoverageEnabled true
             }
 
             release {
+                buildConfigField "String", "DEFAULT_URL", "\"ws://10.0.2.2:9000/client\""
                 minifyEnabled false
                 proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             }
@@ -149,6 +160,7 @@ sonarqube {
         property "sonar.androidLint.reportPaths", "${project.buildDir}/reports/lint-results-debug.xml"
         // Paths to JaCoCo XML coverage report files.
         property "sonar.coverage.jacoco.xmlReportPaths", "${project.buildDir}/reports/jacoco/jacocoTestReport/jacocoTestReport.xml"
+        property "sonar.kotlin.detekt.reportPaths", "${project.buildDir}/reports/detekt/detekt.xml"
     }
 }
 
@@ -175,12 +187,13 @@ copy {
 }
 
 // Jacoco configuration - This configures jacoco for each test task
-tasks.withType(Test) {
+tasks.withType(Test).configureEach {
     jacoco.includeNoLocationClasses = true
     jacoco.excludes = ['jdk.internal.*']
 }
 
-task jacocoTestReport(type: JacocoReport, dependsOn: ['check']) {
+tasks.register('jacocoTestReport', JacocoReport) {
+    dependsOn['check']
     reports {
         xml.required = true
         html.required = true
@@ -215,6 +228,26 @@ task jacocoTestReport(type: JacocoReport, dependsOn: ['check']) {
         'outputs/unit_test_code_coverage/*/*.exec',
         'outputs/code_coverage/*/connected/**/*.ec',
     ]))
+}
+
+detekt {
+    basePath = projectDir
+    config.setFrom("schemas/detekt/detekt-config.yml")
+    buildUponDefaultConfig = true
+    parallel = true
+}
+
+tasks.withType(Detekt).configureEach {
+    jvmTarget = "1.8"
+    reports {
+        html.required.set(true)
+        xml.required.set(true)
+        sarif.required.set(true)
+        txt.required.set(false)
+    }
+}
+tasks.withType(DetektCreateBaselineTask).configureEach {
+    jvmTarget = "1.8"
 }
 
 dependencies {
@@ -293,6 +326,9 @@ dependencies {
     implementation 'org.ocpsoft.prettytime:prettytime:5.0.4.Final'
 
     implementation 'com.vdurmont:emoji-java:5.1.1'
+
+    implementation 'androidx.core:core-ktx:1.12.0'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
     // ============= Test Framework ============
     debugImplementation 'junit:junit:4.13.2'

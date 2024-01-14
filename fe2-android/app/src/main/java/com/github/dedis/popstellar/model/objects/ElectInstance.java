@@ -1,13 +1,11 @@
 package com.github.dedis.popstellar.model.objects;
 
 import androidx.annotation.NonNull;
-
 import com.github.dedis.popstellar.model.Copyable;
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.*;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
-import com.github.dedis.popstellar.utility.security.Hash;
-
+import com.github.dedis.popstellar.utility.security.HashSHA256;
 import java.util.*;
 
 /**
@@ -155,7 +153,7 @@ public final class ElectInstance implements Copyable<ElectInstance> {
    */
   public static String generateConsensusId(
       @NonNull String type, @NonNull String id, @NonNull String property) {
-    return Hash.hash("consensus", type, id, property);
+    return HashSHA256.hash("consensus", type, id, property);
   }
 
   @Override
