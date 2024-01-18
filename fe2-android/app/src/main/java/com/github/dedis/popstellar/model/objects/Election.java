@@ -67,8 +67,8 @@ public class Election extends Event {
     this.electionVersion = electionVersion;
     // Defensive copies
     this.electionQuestions = new ArrayList<>(electionQuestions);
-    this.votesBySender = Copyable.copyMapOfList(votesBySender);
-    this.results = Copyable.copyMapOfSet(results);
+    this.votesBySender = Copyable.Companion.copyMapOfList(votesBySender);
+    this.results = Copyable.Companion.copyMapOfSet(results);
     // Create message map as a tree map to sort messages correctly
     this.messageMap = new HashMap<>(messageMap);
   }
@@ -130,11 +130,11 @@ public class Election extends Event {
   }
 
   public Map<PublicKey, List<Vote>> getVotesBySender() {
-    return Copyable.copyMapOfList(votesBySender);
+    return Copyable.Companion.copyMapOfList(votesBySender);
   }
 
   public Map<String, Set<QuestionResult>> getResults() {
-    return Copyable.copyMapOfSet(results);
+    return Copyable.Companion.copyMapOfSet(results);
   }
 
   public String getId() {

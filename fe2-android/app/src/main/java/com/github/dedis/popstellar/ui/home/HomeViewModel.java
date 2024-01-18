@@ -125,12 +125,12 @@ public class HomeViewModel extends AndroidViewModel
     }
 
     // Establish connection with new address
-    networkManager.connect(laoData.server);
+    networkManager.connect(laoData.getServer());
     connecting.set(true);
     getApplication()
         .startActivity(
             ConnectingActivity.newIntentForJoiningDetail(
-                getApplication().getApplicationContext(), laoData.lao));
+                getApplication().getApplicationContext(), laoData.getLao()));
   }
 
   /**
