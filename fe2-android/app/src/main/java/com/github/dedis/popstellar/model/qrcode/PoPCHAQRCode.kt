@@ -25,22 +25,22 @@ class PoPCHAQRCode(data: String?, laoId: String) {
 
   override fun toString(): String {
     return ("PoPCHAQRCode{" +
-      "clientId='" +
-      clientId +
-      '\'' +
-      ", nonce='" +
-      nonce +
-      '\'' +
-      ", state='" +
-      state +
-      '\'' +
-      ", responseMode='" +
-      responseMode +
-      '\'' +
-      ", host='" +
-      host +
-      '\'' +
-      '}')
+        "clientId='" +
+        clientId +
+        '\'' +
+        ", nonce='" +
+        nonce +
+        '\'' +
+        ", state='" +
+        state +
+        '\'' +
+        ", responseMode='" +
+        responseMode +
+        '\'' +
+        ", host='" +
+        host +
+        '\'' +
+        '}')
   }
 
   companion object {

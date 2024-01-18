@@ -66,15 +66,13 @@ interface Copyable<T> {
      */
     fun <T, C : Copyable<C>> copyMapPreservingOrder(source: Map<T, C>): LinkedHashMap<T, C> {
       return source.entries
-        .stream()
-        .collect(
-          Collectors.toMap(
-            { it.key },
-            { it.value.copy() },
-            { _, newValue -> newValue },
-            { LinkedHashMap() }
-          )
-        )
+          .stream()
+          .collect(
+              Collectors.toMap(
+                  { it.key },
+                  { it.value.copy() },
+                  { _, newValue -> newValue },
+                  { LinkedHashMap() }))
     }
   }
 }
