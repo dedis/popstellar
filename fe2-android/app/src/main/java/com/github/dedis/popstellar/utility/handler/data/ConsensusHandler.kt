@@ -18,9 +18,9 @@ import timber.log.Timber
 class ConsensusHandler
 @Inject
 constructor(
-    private val laoRepo: LAORepository,
-    private val witnessingRepo: WitnessingRepository,
-    private val consensusRepo: ConsensusRepository
+  private val laoRepo: LAORepository,
+  private val witnessingRepo: WitnessingRepository,
+  private val consensusRepo: ConsensusRepository
 ) {
 
   /**
@@ -52,11 +52,11 @@ constructor(
     val messageId = context.messageId
     val senderPk = context.senderPk
     Timber.tag(TAG)
-        .d("handleElectAccept: channel: %s, id: %s", channel, consensusElectAccept.instanceId)
+      .d("handleElectAccept: channel: %s, id: %s", channel, consensusElectAccept.instanceId)
 
     val laoView = laoRepo.getLaoViewByChannel(channel)
     val electInstanceOpt =
-        consensusRepo.getElectInstance(laoView.id, consensusElectAccept.messageId)
+      consensusRepo.getElectInstance(laoView.id, consensusElectAccept.messageId)
     if (!electInstanceOpt.isPresent) {
       Timber.tag(TAG).w("elect_accept for invalid messageId : %s", consensusElectAccept.messageId)
       throw InvalidMessageIdException(consensusElectAccept, consensusElectAccept.messageId)

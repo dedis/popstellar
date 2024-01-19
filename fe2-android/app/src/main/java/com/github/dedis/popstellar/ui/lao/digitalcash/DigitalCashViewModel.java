@@ -2,11 +2,9 @@ package com.github.dedis.popstellar.ui.lao.digitalcash;
 
 import android.app.Application;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.*;
-
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.SingleEvent;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
@@ -24,17 +22,14 @@ import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
-
+import dagger.hilt.android.lifecycle.HiltViewModel;
+import io.reactivex.*;
+import io.reactivex.Observable;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.util.*;
 import java.util.stream.Collectors;
-
 import javax.inject.Inject;
-
-import dagger.hilt.android.lifecycle.HiltViewModel;
-import io.reactivex.Observable;
-import io.reactivex.*;
 import timber.log.Timber;
 
 @HiltViewModel
@@ -243,7 +238,8 @@ public class DigitalCashViewModel extends AndroidViewModel {
     Signature sig =
         keyPair.sign(
             new Base64URLData(
-                Transaction.computeSigOutputsPairTxOutHashAndIndex(outputs, transactionInpMap)
+                Transaction.Companion.computeSigOutputsPairTxOutHashAndIndex(
+                        outputs, transactionInpMap)
                     .getBytes(StandardCharsets.UTF_8)));
     return new Input(
         currentHash,

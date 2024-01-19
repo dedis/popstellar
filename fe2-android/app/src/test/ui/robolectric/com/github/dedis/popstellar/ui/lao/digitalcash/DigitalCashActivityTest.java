@@ -1,8 +1,22 @@
 package com.github.dedis.popstellar.ui.lao.digitalcash;
 
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.withChild;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static com.github.dedis.popstellar.testutils.pages.lao.LaoActivityPageObject.*;
+import static com.github.dedis.popstellar.testutils.pages.lao.digitalcash.DigitalCashPageObject.*;
+import static com.github.dedis.popstellar.testutils.pages.lao.digitalcash.HistoryPageObject.fragmentDigitalCashHistoryId;
+import static com.github.dedis.popstellar.testutils.pages.lao.digitalcash.IssuePageObject.fragmentDigitalCashIssueId;
+import static com.github.dedis.popstellar.testutils.pages.lao.digitalcash.ReceivePageObject.fragmentDigitalCashReceiveId;
+import static com.github.dedis.popstellar.testutils.pages.lao.digitalcash.SendPageObject.fragmentDigitalCashSendId;
+import static com.github.dedis.popstellar.testutils.pages.lao.digitalcash.SendPageObject.sendButtonToReceipt;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
+
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
-
 import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.*;
 import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.digitalcash.*;
@@ -20,7 +34,13 @@ import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
-
+import dagger.hilt.android.testing.*;
+import io.reactivex.Completable;
+import io.reactivex.subjects.BehaviorSubject;
+import java.nio.charset.StandardCharsets;
+import java.security.GeneralSecurityException;
+import java.util.*;
+import javax.inject.Inject;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExternalResource;
@@ -28,31 +48,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoTestRule;
-
-import java.nio.charset.StandardCharsets;
-import java.security.GeneralSecurityException;
-import java.util.*;
-
-import javax.inject.Inject;
-
-import dagger.hilt.android.testing.*;
-import io.reactivex.Completable;
-import io.reactivex.subjects.BehaviorSubject;
-
-import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.withChild;
-import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static com.github.dedis.popstellar.testutils.pages.lao.LaoActivityPageObject.*;
-import static com.github.dedis.popstellar.testutils.pages.lao.digitalcash.DigitalCashPageObject.*;
-import static com.github.dedis.popstellar.testutils.pages.lao.digitalcash.HistoryPageObject.fragmentDigitalCashHistoryId;
-import static com.github.dedis.popstellar.testutils.pages.lao.digitalcash.IssuePageObject.fragmentDigitalCashIssueId;
-import static com.github.dedis.popstellar.testutils.pages.lao.digitalcash.ReceivePageObject.fragmentDigitalCashReceiveId;
-import static com.github.dedis.popstellar.testutils.pages.lao.digitalcash.SendPageObject.fragmentDigitalCashSendId;
-import static com.github.dedis.popstellar.testutils.pages.lao.digitalcash.SendPageObject.sendButtonToReceipt;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
 
 @HiltAndroidTest
 @RunWith(AndroidJUnit4.class)
@@ -118,7 +113,7 @@ public class DigitalCashActivityTest {
                   .getPrivateKey()
                   .sign(
                       new Base64URLData(
-                          Transaction.computeSigOutputsPairTxOutHashAndIndex(
+                          Transaction.Companion.computeSigOutputsPairTxOutHashAndIndex(
                                   Collections.singletonList(out),
                                   Collections.singletonMap(
                                       "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=", 0))
