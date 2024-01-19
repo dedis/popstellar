@@ -78,6 +78,9 @@ public class LaoActivity extends AppCompatActivity {
 
     // Open Event list on activity creation
     setEventsTab();
+
+    // Display witnessing tab only if enabled
+    setWitnessingTabVisibility();
   }
 
   @Override
@@ -312,6 +315,17 @@ public class LaoActivity extends AppCompatActivity {
   private void setEventsTab() {
     binding.laoNavigationDrawer.setCheckedItem(MainMenuTab.EVENTS.getMenuId());
     openEventsTab();
+  }
+
+  /**
+   * Set to invisible in the drawer menu the 'Witness' tab if it has been disabled upon LAO creation
+   */
+  private void setWitnessingTabVisibility() {
+    binding
+        .laoNavigationDrawer
+        .getMenu()
+        .findItem(R.id.main_menu_witnessing)
+        .setVisible(laoViewModel.isWitnessingEnabled());
   }
 
   /** Opens Witness tab and select it in the drawer menu */

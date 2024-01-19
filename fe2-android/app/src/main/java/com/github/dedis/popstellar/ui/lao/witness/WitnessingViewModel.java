@@ -133,30 +133,37 @@ public class WitnessingViewModel extends AndroidViewModel implements QRCodeScann
                       Objects.requireNonNull(witnessMessages.getValue()).get(0);
 
                   // When a new witness message is received, if it needs to be yet signed by the
-                  // user
-                  // then we show a pop up that the user can click to open the witnessing fragment.
+                  // witness
+                  // we show a pop up that the user can click to open the witnessing fragment.
+
                   // Don't show the pop-up for the organizer as we use an automatic signature
                   // mechanism
+
                   PublicKey myPk = keyManager.getMainPublicKey();
-                  boolean isOrganizer = lao.isOrganizer(keyManager.getMainPublicKey());
+                  boolean isOrganizer = lao.isOrganizer(myPk);
+                  boolean isWitness = witnessingRepo.isWitness(laoId, myPk);
                   boolean alreadySigned = lastMessage.getWitnesses().contains(myPk);
-                  if (isOrganizer && !alreadySigned) {
-                    // Automatically sign the messages if it's the organizer
-                    disposables.add(
-                        signMessage(lastMessage)
-                            .subscribe(
-                                () ->
-                                    Timber.tag(TAG)
-                                        .d(
-                                            "Witness message automatically successfully signed by organizer"),
-                                error ->
-                                    Timber.tag(TAG)
-                                        .e(
-                                            error,
-                                            "Error signing automatically message from organizer")));
+
+                  // Allow to sign the message only if the user is a witness and hasn't signed yet
+                  if (isWitness && !alreadySigned) {
+                    if (isOrganizer) {
+                      // Automatically sign the messages if it's the organizer
+                      disposables.add(
+                          signMessage(lastMessage)
+                              .subscribe(
+                                  () ->
+                                      Timber.tag(TAG)
+                                          .d(
+                                              "Witness message automatically successfully signed by organizer"),
+                                  error ->
+                                      Timber.tag(TAG)
+                                          .e(
+                                              error,
+                                              "Error signing automatically message from organizer")));
+                    } else {
+                      showPopup.setValue(true);
+                    }
                   }
-                  showPopup.setValue(
-                      !isOrganizer && witnessingRepo.isWitness(laoId, myPk) && !alreadySigned);
                 },
                 error ->
                     Timber.tag(TAG)
