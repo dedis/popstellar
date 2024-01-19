@@ -62,8 +62,8 @@ class LAORepository @Inject constructor(appDatabase: AppDatabase, application: A
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
-                { laos: List<Lao> ->
-                  if (laos.isEmpty()) {
+                { laos: List<Lao>? ->
+                  if (laos.isNullOrEmpty()) {
                     Timber.tag(TAG).d("No LAO has been found in the database")
                     return@subscribe
                   }

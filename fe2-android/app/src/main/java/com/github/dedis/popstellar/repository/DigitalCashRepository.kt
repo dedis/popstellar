@@ -305,9 +305,9 @@ constructor(appDatabase: AppDatabase, application: Application) {
               .subscribeOn(Schedulers.io())
               .observeOn(AndroidSchedulers.mainThread())
               .subscribe(
-                  { hashEntities: List<HashEntity> ->
+                  { hashEntities: List<HashEntity>? ->
                     // Firstly load the dictionary
-                    hashEntities.forEach(
+                    hashEntities?.forEach(
                         Consumer { hashEntity: HashEntity ->
                           hashDictionary[hashEntity.hash] = hashEntity.publicKey
                         })
@@ -319,8 +319,8 @@ constructor(appDatabase: AppDatabase, application: Application) {
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(
-                                { transactionObjects: List<TransactionObject> ->
-                                  transactionObjects.forEach(
+                                { transactionObjects: List<TransactionObject>? ->
+                                  transactionObjects?.forEach(
                                       Consumer { transactionObject: TransactionObject ->
                                         Timber.tag(TAG)
                                             .d(

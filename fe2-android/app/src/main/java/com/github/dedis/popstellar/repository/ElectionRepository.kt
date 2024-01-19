@@ -176,8 +176,8 @@ class ElectionRepository @Inject constructor(appDatabase: AppDatabase, applicati
               .subscribeOn(Schedulers.io())
               .observeOn(AndroidSchedulers.mainThread())
               .subscribe(
-                  { elections: List<Election> ->
-                    elections.forEach(
+                  { elections: List<Election>? ->
+                    elections?.forEach(
                         Consumer { election: Election ->
                           updateElection(election)
                           Timber.tag(TAG).d("Retrieved from db election %s", election.id)

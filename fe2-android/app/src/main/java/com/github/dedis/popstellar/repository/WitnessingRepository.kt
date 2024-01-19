@@ -513,8 +513,8 @@ constructor(
               .subscribeOn(Schedulers.io())
               .observeOn(AndroidSchedulers.mainThread())
               .subscribe(
-                  { witnessMessageList: List<WitnessMessage> ->
-                    witnessMessageList.forEach(
+                  { witnessMessageList: List<WitnessMessage>? ->
+                    witnessMessageList?.forEach(
                         Consumer { witnessMessage: WitnessMessage -> add(witnessMessage) })
                   },
                   { err: Throwable ->
@@ -526,8 +526,8 @@ constructor(
               .subscribeOn(Schedulers.io())
               .observeOn(AndroidSchedulers.mainThread())
               .subscribe(
-                  { pendingEntityList: List<PendingEntity> ->
-                    pendingEntityList.forEach(
+                  { pendingEntityList: List<PendingEntity>? ->
+                    pendingEntityList?.forEach(
                         Consumer { pendingEntity: PendingEntity ->
                           addPendingEntity(pendingEntity)
                         })

@@ -58,14 +58,13 @@ class MessageRepository @Inject constructor(appDatabase: AppDatabase, applicatio
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
-                { messageEntities: List<MessageEntity> ->
-                  messageEntities.forEach(
+                { messageEntities: List<MessageEntity>? ->
+                  messageEntities?.forEach(
                       Consumer { msg: MessageEntity ->
                         messageCache.put(
-                            msg.messageId, // Cache doesn't accept null as value, so an empty
-                            // message
-                            // is used
-                            if (msg.content == null) MessageGeneral.emptyMessage() else msg.content)
+                            msg.messageId,
+                            // Cache doesn't accept null as value, so an empty message is used
+                            msg.content ?: MessageGeneral.emptyMessage())
                       })
                 },
                 { err: Throwable ->

@@ -174,8 +174,8 @@ class MeetingRepository @Inject constructor(appDatabase: AppDatabase, applicatio
               .subscribeOn(Schedulers.io())
               .observeOn(AndroidSchedulers.mainThread())
               .subscribe(
-                  { meetings: List<Meeting> ->
-                    meetings.forEach(
+                  { meetings: List<Meeting>? ->
+                    meetings?.forEach(
                         Consumer { meeting: Meeting ->
                           update(meeting)
                           Timber.tag(TAG).d("Retrieved from db meeting %s", meeting.id)

@@ -265,8 +265,8 @@ class RollCallRepository @Inject constructor(appDatabase: AppDatabase, applicati
               .subscribeOn(Schedulers.io())
               .observeOn(AndroidSchedulers.mainThread())
               .subscribe(
-                  { rollcalls: List<RollCall> ->
-                    rollcalls.forEach(
+                  { rollcalls: List<RollCall>? ->
+                    rollcalls?.forEach(
                         Consumer { rollCall: RollCall ->
                           update(rollCall)
                           Timber.tag(TAG).d("Retrieved from db rollcall %s", rollCall.persistentId)

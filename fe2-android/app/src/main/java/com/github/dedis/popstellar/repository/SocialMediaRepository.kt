@@ -307,8 +307,8 @@ constructor(appDatabase: AppDatabase, application: Application) {
               .subscribeOn(Schedulers.io())
               .observeOn(AndroidSchedulers.mainThread())
               .subscribe(
-                  { chirpsList: List<Chirp> ->
-                    chirpsList.forEach(
+                  { chirpsList: List<Chirp>? ->
+                    chirpsList?.forEach(
                         Consumer outer@{ chirp: Chirp ->
                           // Do not retrieve deleted chirps
                           if (chirp.isDeleted) {
@@ -324,8 +324,8 @@ constructor(appDatabase: AppDatabase, application: Application) {
                                   .subscribeOn(Schedulers.io())
                                   .observeOn(AndroidSchedulers.mainThread())
                                   .subscribe(
-                                      { reactionsList: List<Reaction> ->
-                                        reactionsList.forEach(
+                                      { reactionsList: List<Reaction>? ->
+                                        reactionsList?.forEach(
                                             Consumer inner@{ reaction: Reaction ->
                                               // Do not retrieve deleted reactions
                                               if (reaction.isDeleted) {

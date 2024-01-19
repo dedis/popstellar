@@ -1,8 +1,10 @@
 package com.github.dedis.popstellar.repository.database;
 
+import static com.github.dedis.popstellar.testutils.Base64DataUtils.generatePublicKey;
+import static org.junit.Assert.*;
+
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
-
 import com.github.dedis.popstellar.di.AppDatabaseModuleHelper;
 import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.model.objects.Lao;
@@ -11,17 +13,11 @@ import com.github.dedis.popstellar.repository.database.subscriptions.Subscriptio
 import com.github.dedis.popstellar.repository.database.subscriptions.SubscriptionsEntity;
 import com.github.dedis.popstellar.repository.database.wallet.WalletDao;
 import com.github.dedis.popstellar.repository.database.wallet.WalletEntity;
-
-import org.junit.*;
-import org.junit.runner.RunWith;
-
+import io.reactivex.observers.TestObserver;
 import java.time.Instant;
 import java.util.*;
-
-import io.reactivex.observers.TestObserver;
-
-import static com.github.dedis.popstellar.testutils.Base64DataUtils.generatePublicKey;
-import static org.junit.Assert.*;
+import org.junit.*;
+import org.junit.runner.RunWith;
 
 @RunWith(AndroidJUnit4.class)
 public class CoreDatabaseTest {
@@ -72,6 +68,7 @@ public class CoreDatabaseTest {
 
     WalletEntity get = walletDao.getWallet();
 
+    assertNotNull(get);
     assertArrayEquals(SEED, get.getWalletSeedArray());
   }
 
@@ -93,7 +90,9 @@ public class CoreDatabaseTest {
     testObserver2.assertComplete();
 
     // Check that the entry has been replaced
-    assertNotEquals(walletEntity1.getWalletSeed(), walletDao.getWallet().getWalletSeed());
+    assertNotEquals(
+        walletEntity1.getWalletSeed(),
+        Objects.requireNonNull(walletDao.getWallet()).getWalletSeed());
     assertEquals(walletEntity2.getWalletSeed(), walletDao.getWallet().getWalletSeed());
   }
 
@@ -118,6 +117,7 @@ public class CoreDatabaseTest {
 
     SubscriptionsEntity subscriptionsEntity2 = subscriptionsDao.getSubscriptionsByLao(LAO.getId());
 
+    assertNotNull(subscriptionsEntity2);
     assertEquals(subscriptionsEntity.getSubscriptions(), subscriptionsEntity2.getSubscriptions());
   }
 }
