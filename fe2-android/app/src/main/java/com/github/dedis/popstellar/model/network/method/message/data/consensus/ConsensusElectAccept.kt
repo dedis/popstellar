@@ -22,13 +22,8 @@ class ConsensusElectAccept
   @field:SerializedName("accept") val isAccept: Boolean
 ) : Data() {
 
-  override fun getObject(): String {
-    return Objects.CONSENSUS.getObject()
-  }
-
-  override fun getAction(): String {
-    return Action.ELECT_ACCEPT.action
-  }
+  override val `object`: String = Objects.CONSENSUS.`object`
+  override val action: String = Action.ELECT_ACCEPT.action
 
   override fun hashCode(): Int {
     return java.util.Objects.hash(instanceId, messageId, isAccept)

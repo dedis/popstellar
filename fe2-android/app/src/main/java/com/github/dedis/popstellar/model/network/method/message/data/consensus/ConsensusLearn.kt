@@ -35,13 +35,8 @@ class ConsensusLearn(
     this.acceptorSignatures = Collections.unmodifiableList(acceptorSignatures)
   }
 
-  override fun getObject(): String {
-    return Objects.CONSENSUS.getObject()
-  }
-
-  override fun getAction(): String {
-    return Action.LEARN.action
-  }
+  override val `object`: String = Objects.CONSENSUS.`object`
+  override val action: String = Action.LEARN.action
 
   override fun hashCode(): Int {
     return java.util.Objects.hash(instanceId, messageId, creation, learnValue, acceptorSignatures)

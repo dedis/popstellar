@@ -33,13 +33,8 @@ class ConsensusPromise(
     promiseValue = PromiseValue(acceptedTry, acceptedValue, promisedTry)
   }
 
-  override fun getObject(): String {
-    return Objects.CONSENSUS.getObject()
-  }
-
-  override fun getAction(): String {
-    return Action.PROMISE.action
-  }
+  override val `object`: String = Objects.CONSENSUS.`object`
+  override val action: String = Action.PROMISE.action
 
   override fun equals(other: Any?): Boolean {
     if (this === other) {

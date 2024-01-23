@@ -24,7 +24,7 @@ internal class ConsensusAcceptTest {
 
   @Test
   fun objectTest() {
-    Assert.assertEquals(Objects.CONSENSUS.getObject(), accept.getObject())
+    Assert.assertEquals(Objects.CONSENSUS.`object`, accept.`object`)
   }
 
   @Test

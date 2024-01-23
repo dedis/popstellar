@@ -22,7 +22,7 @@ class ConsensusPrepareTest {
 
   @Test
   fun objectTest() {
-    Assert.assertEquals(Objects.CONSENSUS.getObject(), prepare.getObject())
+    Assert.assertEquals(Objects.CONSENSUS.`object`, prepare.`object`)
   }
 
   @Test

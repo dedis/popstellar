@@ -34,11 +34,7 @@ class PostTransactionCoin( // the transaction object // String
     return "PostTransactionCoin{ transaction_id=$transactionId, transaction=$transaction}"
   }
 
-  override fun getObject(): String {
-    return com.github.dedis.popstellar.model.network.method.message.data.Objects.COIN.getObject()
-  }
-
-  override fun getAction(): String {
-    return Action.POST_TRANSACTION.action
-  }
+  override val `object`: String =
+    com.github.dedis.popstellar.model.network.method.message.data.Objects.COIN.`object`
+  override val action: String = Action.POST_TRANSACTION.action
 }

@@ -22,13 +22,8 @@ class ConsensusFailure
   @field:SerializedName("created_at") val creation: Long
 ) : Data() {
 
-  override fun getObject(): String {
-    return Objects.CONSENSUS.getObject()
-  }
-
-  override fun getAction(): String {
-    return Action.FAILURE.action
-  }
+  override val `object`: String = Objects.CONSENSUS.`object`
+  override val action: String = Action.FAILURE.action
 
   override fun equals(other: Any?): Boolean {
     if (this === other) {

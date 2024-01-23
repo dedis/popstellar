@@ -25,7 +25,7 @@ class ConsensusPromiseTest {
 
   @Test
   fun objectTest() {
-    Assert.assertEquals(Objects.CONSENSUS.getObject(), promise.getObject())
+    Assert.assertEquals(Objects.CONSENSUS.`object`, promise.`object`)
   }
 
   @Test

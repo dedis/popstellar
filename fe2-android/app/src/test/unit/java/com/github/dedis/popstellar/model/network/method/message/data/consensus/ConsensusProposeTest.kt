@@ -32,7 +32,7 @@ class ConsensusProposeTest {
 
   @Test
   fun objectTest() {
-    Assert.assertEquals(Objects.CONSENSUS.getObject(), propose.getObject())
+    Assert.assertEquals(Objects.CONSENSUS.`object`, propose.`object`)
   }
 
   @Test

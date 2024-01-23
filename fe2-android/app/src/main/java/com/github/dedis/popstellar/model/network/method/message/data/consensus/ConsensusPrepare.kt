@@ -29,13 +29,8 @@ class ConsensusPrepare(
     prepareValue = PrepareValue(proposedTry)
   }
 
-  override fun getObject(): String {
-    return Objects.CONSENSUS.getObject()
-  }
-
-  override fun getAction(): String {
-    return Action.PREPARE.action
-  }
+  override val `object`: String = Objects.CONSENSUS.`object`
+  override val action: String = Action.PREPARE.action
 
   override fun equals(other: Any?): Boolean {
     if (this === other) {

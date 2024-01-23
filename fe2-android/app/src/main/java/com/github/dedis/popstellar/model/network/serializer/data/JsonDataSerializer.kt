@@ -39,7 +39,7 @@ class JsonDataSerializer(private val dataRegistry: DataRegistry) :
     val clazz = dataRegistry.getType(`object`, action)
     if (!clazz.isPresent) {
       throw JsonParseException(
-        "The pair (${`object`.getObject()}, ${action.action}) does not exists in the protocol"
+        "The pair (${`object`.`object`}, ${action.action}) does not exists in the protocol"
       )
     }
 
@@ -53,7 +53,7 @@ class JsonDataSerializer(private val dataRegistry: DataRegistry) :
   ): JsonElement {
     val obj = context.serialize(src).asJsonObject
 
-    obj.addProperty(OBJECT, src.getObject())
+    obj.addProperty(OBJECT, src.`object`)
     obj.addProperty(ACTION, src.action)
 
     verifyJson(JsonUtils.DATA_SCHEMA, obj.toString())

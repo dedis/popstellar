@@ -32,34 +32,41 @@ constructor(private val messageRepo: MessageRepository, private val registry: Da
    * @param message the message that was received
    */
   @Throws(
-      DataHandlingException::class,
-      UnknownLaoException::class,
-      UnknownRollCallException::class,
-      UnknownElectionException::class,
-      NoRollCallException::class,
-      UnknownWitnessMessageException::class)
+    DataHandlingException::class,
+    UnknownLaoException::class,
+    UnknownRollCallException::class,
+    UnknownElectionException::class,
+    NoRollCallException::class,
+    UnknownWitnessMessageException::class
+  )
   fun handleMessage(messageSender: MessageSender, channel: Channel, message: MessageGeneral) {
     val data = message.data
 
-    val dataObj = Objects.find(data.getObject())
+    val dataObj = Objects.find(data.`object`)
     val dataAction = Action.find(data.action)
+
+    requireNotNull(dataObj) { "Unsupported data object: ${data.`object`}" }
+    requireNotNull(dataAction) { "Unsupported data action: ${data.action}" }
+
     val toPersist = dataObj.hasToBePersisted()
     val toBeStored = dataAction.isStoreNeededByAction
 
     if (messageRepo.isMessagePresent(message.messageId, toPersist)) {
       Timber.tag(TAG)
-          .d(
-              "The message with class %s has already been handled in the past",
-              data.javaClass.simpleName)
+        .d(
+          "The message with class %s has already been handled in the past",
+          data.javaClass.simpleName
+        )
       return
     }
 
     Timber.tag(TAG).d("Handling incoming message, data with class: %s", data.javaClass.simpleName)
     registry.handle(
-        HandlerContext(message.messageId, message.sender, channel, messageSender),
-        data,
-        dataObj,
-        dataAction)
+      HandlerContext(message.messageId, message.sender, channel, messageSender),
+      data,
+      dataObj,
+      dataAction
+    )
 
     // Put the message in the repo
     messageRepo.addMessage(message, toBeStored, toPersist)

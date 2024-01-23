@@ -24,13 +24,8 @@ class ConsensusElect(
     this.value = value
   }
 
-  override fun getObject(): String {
-    return Objects.CONSENSUS.getObject()
-  }
-
-  override fun getAction(): String {
-    return Action.ELECT.action
-  }
+  override val `object`: String = Objects.CONSENSUS.`object`
+  override val action: String = Action.ELECT.action
 
   override fun hashCode(): Int {
     return java.util.Objects.hash(instanceId, creation, key, value)

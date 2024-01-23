@@ -36,13 +36,8 @@ class ConsensusPropose(
     this.acceptorSignatures = ArrayList(acceptorSignatures)
   }
 
-  override fun getObject(): String {
-    return Objects.CONSENSUS.getObject()
-  }
-
-  override fun getAction(): String {
-    return Action.PROPOSE.action
-  }
+  override val `object`: String = Objects.CONSENSUS.`object`
+  override val action: String = Action.PROPOSE.action
 
   fun getAcceptorSignatures(): List<String> {
     return ArrayList(acceptorSignatures)

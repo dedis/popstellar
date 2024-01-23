@@ -65,7 +65,7 @@ class JsonMessageGeneralSerializer :
   private class JsonMessageData(
     val data: Base64URLData,
     val sender: PublicKey,
-    val signature: Signature,
+    val signature: Signature?,
     @field:SerializedName("message_id") val messageID: MessageID,
     @field:SerializedName("witness_signatures") val witnessSignatures: List<PublicKeySignaturePair>
   )

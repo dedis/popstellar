@@ -19,7 +19,7 @@ import org.junit.runner.RunWith
 class PostTransactionCoinTest {
   @Test
   fun objectTest() {
-    Assert.assertEquals(Objects.COIN.getObject(), POST_TRANSACTION.getObject())
+    Assert.assertEquals(Objects.COIN.`object`, POST_TRANSACTION.`object`)
   }
 
   @Test

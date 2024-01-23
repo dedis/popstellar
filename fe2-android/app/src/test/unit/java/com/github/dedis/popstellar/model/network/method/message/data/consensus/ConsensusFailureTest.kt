@@ -30,7 +30,7 @@ class ConsensusFailureTest {
 
   @Test
   fun objectTest() {
-    Assert.assertEquals(Objects.CONSENSUS.getObject(), failure.getObject())
+    Assert.assertEquals(Objects.CONSENSUS.`object`, failure.`object`)
   }
 
   @Test

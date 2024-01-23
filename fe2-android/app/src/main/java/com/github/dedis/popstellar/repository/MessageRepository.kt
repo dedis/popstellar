@@ -35,7 +35,7 @@ class MessageRepository @Inject constructor(appDatabase: AppDatabase, applicatio
   private val ephemeralMessages = ConcurrentHashMap<MessageID, MessageGeneral>()
 
   /** Cache for efficient lookups and for avoiding I/O operations */
-  private val messageCache = LruCache<MessageID, MessageGeneral>(CACHED_MESSAGES)
+  private val messageCache = LruCache<MessageID, Any>(CACHED_MESSAGES)
   private val messageDao: MessageDao
   private val disposables = CompositeDisposable()
 
@@ -43,7 +43,7 @@ class MessageRepository @Inject constructor(appDatabase: AppDatabase, applicatio
     messageDao = appDatabase.messageDao()
 
     val consumerMap: MutableMap<Lifecycle.Event, Consumer<Activity>> =
-        EnumMap(Lifecycle.Event::class.java)
+      EnumMap(Lifecycle.Event::class.java)
     consumerMap[Lifecycle.Event.ON_STOP] = Consumer { disposables.clear() }
     application.registerActivityLifecycleCallbacks(buildLifecycleCallback(consumerMap))
     // Full the cache at starting time
@@ -53,23 +53,25 @@ class MessageRepository @Inject constructor(appDatabase: AppDatabase, applicatio
   /** This function is called at creation to fill the cache asynchronously */
   private fun loadCache() {
     disposables.add(
-        messageDao
-            .takeFirstNMessages(CACHED_MESSAGES)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(
-                { messageEntities: List<MessageEntity>? ->
-                  messageEntities?.forEach(
-                      Consumer { msg: MessageEntity ->
-                        messageCache.put(
-                            msg.messageId,
-                            // Cache doesn't accept null as value, so an empty message is used
-                            msg.content ?: MessageGeneral.emptyMessage())
-                      })
-                },
-                { err: Throwable ->
-                  Timber.tag(TAG).e(err, "Error loading message repository cache")
-                }))
+      messageDao
+        .takeFirstNMessages(CACHED_MESSAGES)
+        .subscribeOn(Schedulers.io())
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(
+          { messageEntities: List<MessageEntity>? ->
+            messageEntities?.forEach(
+              Consumer { msg: MessageEntity ->
+                messageCache.put(
+                  msg.messageId,
+                  // Cache doesn't accept null as value, so an empty message is used
+                  msg.content ?: MessageGeneral.EMPTY
+                )
+              }
+            )
+          },
+          { err: Throwable -> Timber.tag(TAG).e(err, "Error loading message repository cache") }
+        )
+    )
   }
 
   /**
@@ -89,7 +91,7 @@ class MessageRepository @Inject constructor(appDatabase: AppDatabase, applicatio
     synchronized(messageCache) {
       val cachedMessage = messageCache[messageID]
       if (cachedMessage != null) {
-        return cachedMessage
+        return cachedMessage as MessageGeneral
       }
     }
 
@@ -101,6 +103,7 @@ class MessageRepository @Inject constructor(appDatabase: AppDatabase, applicatio
       synchronized(messageCache) { messageCache.put(messageID, messageGeneral) }
       return messageGeneral
     }
+
     return null
   }
 
@@ -114,32 +117,35 @@ class MessageRepository @Inject constructor(appDatabase: AppDatabase, applicatio
    *   the db (true) or only loaded in memory (false)
    */
   fun addMessage(message: MessageGeneral, isContentNeeded: Boolean, toPersist: Boolean) {
-    var msg = message
     if (!isContentNeeded) {
       // No need to store the content of the message, just the id is needed
       // However the cache and the concurrent hash map don't accept null value
       // Thus we use an empty messages that is light-weight (whose ref is also shared)
-      msg = MessageGeneral.emptyMessage()
+      message.isEmpty = true
     }
 
     val messageID = message.messageId
     if (!toPersist) {
-      ephemeralMessages[messageID] = msg
+      ephemeralMessages[messageID] = message
     } else {
       // Add the message to the cache (cache cannot accept a null value)
-      synchronized(messageCache) { messageCache.put(messageID, msg) }
+      synchronized(messageCache) {
+        messageCache.put(messageID, if (message.isEmpty) MessageGeneral.EMPTY else message)
+      }
 
       // Add asynchronously the messages to the database
       disposables.add(
-          messageDao
-              .insert(MessageEntity(messageID, if (msg.isEmpty) null else msg))
-              .subscribeOn(Schedulers.io())
-              .observeOn(AndroidSchedulers.mainThread())
-              .subscribe(
-                  { Timber.tag(TAG).d("Persisted message %s", messageID) },
-                  { err: Throwable ->
-                    Timber.tag(TAG).e(err, "Error persisting the message %s", messageID)
-                  }))
+        messageDao
+          .insert(MessageEntity(messageID, if (message.isEmpty) null else message))
+          .subscribeOn(Schedulers.io())
+          .observeOn(AndroidSchedulers.mainThread())
+          .subscribe(
+            { Timber.tag(TAG).d("Persisted message %s", messageID) },
+            { err: Throwable ->
+              Timber.tag(TAG).e(err, "Error persisting the message %s", messageID)
+            }
+          )
+      )
     }
   }
 

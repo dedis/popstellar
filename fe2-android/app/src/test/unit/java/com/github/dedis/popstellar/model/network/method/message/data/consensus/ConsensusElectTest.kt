@@ -35,7 +35,7 @@ class ConsensusElectTest {
 
   @Test
   fun objectTest() {
-    Assert.assertEquals(Objects.CONSENSUS.getObject(), consensusElect.getObject())
+    Assert.assertEquals(Objects.CONSENSUS.`object`, consensusElect.`object`)
   }
 
   @Test
