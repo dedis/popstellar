@@ -21,7 +21,7 @@ abstract class Message protected constructor(channel: Channel?) : GenericMessage
   }
 
   /** Return the Message method */
-  abstract val method: String?
+  abstract val method: String
 
   override fun equals(other: Any?): Boolean {
     if (this === other) {
