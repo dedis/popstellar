@@ -6,11 +6,9 @@ import android.text.TextWatcher;
 import android.view.*;
 import android.widget.*;
 import android.widget.AdapterView.OnItemSelectedListener;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.viewpager2.widget.ViewPager2;
-
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.ElectionSetupFragmentBinding;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionQuestion.Question;
@@ -23,12 +21,10 @@ import com.github.dedis.popstellar.ui.lao.event.election.ZoomOutTransformer;
 import com.github.dedis.popstellar.ui.lao.event.election.adapters.ElectionSetupViewPagerAdapter;
 import com.github.dedis.popstellar.ui.lao.event.eventlist.EventListFragment;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
-
+import dagger.hilt.android.AndroidEntryPoint;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import dagger.hilt.android.AndroidEntryPoint;
 import me.relex.circleindicator.CircleIndicator3;
 import timber.log.Timber;
 
@@ -282,7 +278,7 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
   private void setUpElectionVersionSpinner(
       Spinner spinner, AdapterView.OnItemSelectedListener listener) {
 
-    List<ElectionVersion> versionsList = ElectionVersion.getAllElectionVersion();
+    List<ElectionVersion> versionsList = ElectionVersion.Companion.getAllElectionVersion();
     List<String> items = new ArrayList<>();
 
     // Add items to version list

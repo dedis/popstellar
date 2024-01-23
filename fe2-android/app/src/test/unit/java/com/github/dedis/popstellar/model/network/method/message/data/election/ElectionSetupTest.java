@@ -56,10 +56,10 @@ public class ElectionSetupTest {
     String expectedId =
         HashSHA256.hash(
             EventType.ELECTION.getSuffix(),
-            openBallotSetup.getLaoId(),
+            openBallotSetup.getLao(),
             Long.toString(openBallotSetup.getCreation()),
             openBallotSetup.getName());
-    assertThat(openBallotSetup.getElectionId(), is(expectedId));
+    assertThat(openBallotSetup.getId(), is(expectedId));
   }
 
   @Test
@@ -74,7 +74,7 @@ public class ElectionSetupTest {
 
   @Test
   public void getLaoTest() {
-    assertThat(openBallotSetup.getLaoId(), is(LAO_ID));
+    assertThat(openBallotSetup.getLao(), is(LAO_ID));
   }
 
   @Test

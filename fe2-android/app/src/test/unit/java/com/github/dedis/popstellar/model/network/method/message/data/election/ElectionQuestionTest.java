@@ -44,7 +44,7 @@ public class ElectionQuestionTest {
   @Test
   public void electionQuestionGetterReturnsCorrectId() {
     // Hash(“Question”||election_id||question)
-    String expectedId = HashSHA256.hash("Question", ELECTION_SETUP.getElectionId(), QUESTION);
+    String expectedId = HashSHA256.hash("Question", ELECTION_SETUP.getId(), QUESTION);
     assertThat(ELECTION_SETUP.getQuestions().get(0).getId(), is(expectedId));
   }
 

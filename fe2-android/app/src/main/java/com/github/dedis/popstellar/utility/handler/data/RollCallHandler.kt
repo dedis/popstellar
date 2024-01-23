@@ -26,10 +26,10 @@ import timber.log.Timber
 class RollCallHandler
 @Inject
 constructor(
-    private val laoRepo: LAORepository,
-    private val rollCallRepo: RollCallRepository,
-    private val digitalCashRepo: DigitalCashRepository,
-    private val witnessingRepo: WitnessingRepository
+  private val laoRepo: LAORepository,
+  private val rollCallRepo: RollCallRepository,
+  private val digitalCashRepo: DigitalCashRepository,
+  private val witnessingRepo: WitnessingRepository
 ) {
 
   /**
@@ -47,16 +47,16 @@ constructor(
 
     val builder = RollCallBuilder()
     builder
-        .setId(createRollCall.id)
-        .setPersistentId(createRollCall.id)
-        .setCreation(createRollCall.creation)
-        .setState(EventState.CREATED)
-        .setStart(createRollCall.proposedStart)
-        .setEnd(createRollCall.proposedEnd)
-        .setName(createRollCall.name)
-        .setLocation(createRollCall.location)
-        .setDescription(createRollCall.description.orElse(""))
-        .setEmptyAttendees()
+      .setId(createRollCall.id)
+      .setPersistentId(createRollCall.id)
+      .setCreation(createRollCall.creation)
+      .setState(EventState.CREATED)
+      .setStart(createRollCall.proposedStart)
+      .setEnd(createRollCall.proposedEnd)
+      .setName(createRollCall.name)
+      .setLocation(createRollCall.location)
+      .setDescription(createRollCall.getDescription().orElse(""))
+      .setEmptyAttendees()
     val laoId = laoView.id
     val rollCall = builder.build()
 
@@ -87,16 +87,16 @@ constructor(
     val existingRollCall = rollCallRepo.getRollCallWithId(laoView.id, opens)
     val builder = RollCallBuilder()
     builder
-        .setId(updateId)
-        .setPersistentId(existingRollCall.persistentId)
-        .setCreation(existingRollCall.creation)
-        .setState(EventState.OPENED)
-        .setStart(openRollCall.openedAt)
-        .setEnd(existingRollCall.end)
-        .setName(existingRollCall.name)
-        .setLocation(existingRollCall.location)
-        .setDescription(existingRollCall.description)
-        .setEmptyAttendees()
+      .setId(updateId)
+      .setPersistentId(existingRollCall.persistentId)
+      .setCreation(existingRollCall.creation)
+      .setState(EventState.OPENED)
+      .setStart(openRollCall.openedAt)
+      .setEnd(existingRollCall.end)
+      .setName(existingRollCall.name)
+      .setLocation(existingRollCall.location)
+      .setDescription(existingRollCall.description)
+      .setEmptyAttendees()
     val laoId = laoView.id
     val rollCall = builder.build()
 
@@ -129,16 +129,16 @@ constructor(
     currentAttendees.addAll(closeRollCall.attendees)
     val builder = RollCallBuilder()
     builder
-        .setId(updateId)
-        .setPersistentId(existingRollCall.persistentId)
-        .setCreation(existingRollCall.creation)
-        .setState(EventState.CLOSED)
-        .setStart(existingRollCall.start)
-        .setName(existingRollCall.name)
-        .setLocation(existingRollCall.location)
-        .setDescription(existingRollCall.description)
-        .setAttendees(currentAttendees)
-        .setEnd(closeRollCall.closedAt)
+      .setId(updateId)
+      .setPersistentId(existingRollCall.persistentId)
+      .setCreation(existingRollCall.creation)
+      .setState(EventState.CLOSED)
+      .setStart(existingRollCall.start)
+      .setName(existingRollCall.name)
+      .setLocation(existingRollCall.location)
+      .setDescription(existingRollCall.description)
+      .setAttendees(currentAttendees)
+      .setEnd(closeRollCall.closedAt)
     val laoId = laoView.id
     val rollCall = builder.build()
 
@@ -155,22 +155,27 @@ constructor(
     // (this is not the expected behavior as users should be able to choose who to subscribe to. But
     // as this part is not implemented, currently, it subscribes to everyone)
     rollCall.attendees.forEach(
-        Consumer { token: PublicKey ->
-          rollCallRepo.addDisposable(
-              context.messageSender
-                  .subscribe(channel.subChannel("social").subChannel(token.encoded))
-                  .subscribe(
-                      { Timber.tag(TAG).d("subscription a success") },
-                      { error: Throwable -> Timber.tag(TAG).e(error, "subscription error") }))
-        })
+      Consumer { token: PublicKey ->
+        rollCallRepo.addDisposable(
+          context.messageSender
+            .subscribe(channel.subChannel("social").subChannel(token.encoded))
+            .subscribe(
+              { Timber.tag(TAG).d("subscription a success") },
+              { error: Throwable -> Timber.tag(TAG).e(error, "subscription error") }
+            )
+        )
+      }
+    )
 
     // Subscribe to reactions
     rollCallRepo.addDisposable(
-        context.messageSender
-            .subscribe(channel.subChannel("social").subChannel("reactions"))
-            .subscribe(
-                { Timber.tag(TAG).d("subscription a success") },
-                { error: Throwable -> Timber.tag(TAG).e(error, "subscription error") }))
+      context.messageSender
+        .subscribe(channel.subChannel("social").subChannel("reactions"))
+        .subscribe(
+          { Timber.tag(TAG).d("subscription a success") },
+          { error: Throwable -> Timber.tag(TAG).e(error, "subscription error") }
+        )
+    )
   }
 
   companion object {
@@ -181,10 +186,10 @@ constructor(
 
     @JvmStatic
     fun addRollCallRoutine(
-        rollCallRepo: RollCallRepository,
-        digitalCashRepo: DigitalCashRepository,
-        laoId: String,
-        rollCall: RollCall
+      rollCallRepo: RollCallRepository,
+      digitalCashRepo: DigitalCashRepository,
+      laoId: String,
+      rollCall: RollCall
     ) {
       rollCallRepo.updateRollCall(laoId, rollCall)
       if (rollCall.isClosed) {
@@ -196,14 +201,14 @@ constructor(
     fun createRollCallWitnessMessage(messageId: MessageID, rollCall: RollCall): WitnessMessage {
       val message = WitnessMessage(messageId)
       message.title =
-          "The Roll Call ${rollCall.name} was created at ${Date(rollCall.creation * 1000)}"
+        "The Roll Call ${rollCall.name} was created at ${Date(rollCall.creation * 1000)}"
       message.description =
-          "$MNEMONIC_STRING${generateMnemonicWordFromBase64(rollCall.persistentId, 2)}\n\n" +
-              "$LOCATION_STRING${rollCall.location}\n\n" +
-              (if (rollCall.description.isEmpty()) ""
-              else "$DESCRIPTION_STRING${rollCall.description}\n\n") +
-              "Opens at :\n${Date(rollCall.startTimestampInMillis)}\n\n" +
-              "Closes at :\n${Date(rollCall.endTimestampInMillis)}"
+        "$MNEMONIC_STRING${generateMnemonicWordFromBase64(rollCall.persistentId, 2)}\n\n" +
+          "$LOCATION_STRING${rollCall.location}\n\n" +
+          (if (rollCall.description.isEmpty()) ""
+          else "$DESCRIPTION_STRING${rollCall.description}\n\n") +
+          "Opens at :\n${Date(rollCall.startTimestampInMillis)}\n\n" +
+          "Closes at :\n${Date(rollCall.endTimestampInMillis)}"
 
       return message
     }
@@ -212,13 +217,13 @@ constructor(
     fun openRollCallWitnessMessage(messageId: MessageID, rollCall: RollCall): WitnessMessage {
       val message = WitnessMessage(messageId)
       message.title =
-          "The Roll Call ${rollCall.name} was opened at ${Date(rollCall.startTimestampInMillis)}"
+        "The Roll Call ${rollCall.name} was opened at ${Date(rollCall.startTimestampInMillis)}"
       message.description =
-          "$MNEMONIC_STRING${generateMnemonicWordFromBase64(rollCall.persistentId, 2)}\n\n" +
-              "$LOCATION_STRING${rollCall.location}\n\n" +
-              (if (rollCall.description.isEmpty()) ""
-              else "$DESCRIPTION_STRING${rollCall.description}\n\n") +
-              "Closes at :\n${Date(rollCall.endTimestampInMillis)}"
+        "$MNEMONIC_STRING${generateMnemonicWordFromBase64(rollCall.persistentId, 2)}\n\n" +
+          "$LOCATION_STRING${rollCall.location}\n\n" +
+          (if (rollCall.description.isEmpty()) ""
+          else "$DESCRIPTION_STRING${rollCall.description}\n\n") +
+          "Closes at :\n${Date(rollCall.endTimestampInMillis)}"
 
       return message
     }
@@ -227,13 +232,13 @@ constructor(
     fun closeRollCallWitnessMessage(messageId: MessageID, rollCall: RollCall): WitnessMessage {
       val message = WitnessMessage(messageId)
       message.title =
-          "The Roll Call ${rollCall.name} was closed at ${Date(rollCall.endTimestampInMillis)}"
+        "The Roll Call ${rollCall.name} was closed at ${Date(rollCall.endTimestampInMillis)}"
       message.description =
-          "$MNEMONIC_STRING${generateMnemonicWordFromBase64(rollCall.persistentId, 2)}\n\n" +
-              "$LOCATION_STRING${rollCall.location}\n\n" +
-              (if (rollCall.description.isEmpty()) ""
-              else "$DESCRIPTION_STRING${rollCall.description}\n\n") +
-              formatAttendees(rollCall.attendees)
+        "$MNEMONIC_STRING${generateMnemonicWordFromBase64(rollCall.persistentId, 2)}\n\n" +
+          "$LOCATION_STRING${rollCall.location}\n\n" +
+          (if (rollCall.description.isEmpty()) ""
+          else "$DESCRIPTION_STRING${rollCall.description}\n\n") +
+          formatAttendees(rollCall.attendees)
 
       return message
     }
