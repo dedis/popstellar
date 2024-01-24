@@ -80,7 +80,7 @@ class ElectionPrivateKey(privateKey: Base64URLData) {
       K = Ed25519Point(Kbytes)
       C = Ed25519Point(Cbytes)
     } catch (e: CothorityCryptoException) {
-      throw IllegalArgumentException("Could not create K Point while decrypting")
+      throw IllegalArgumentException("Could not create K Point while decrypting\n$e")
     }
 
     // Export data to get the original message

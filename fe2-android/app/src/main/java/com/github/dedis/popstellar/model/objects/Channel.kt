@@ -22,7 +22,7 @@ class Channel : Serializable {
   private val segments: List<String>
 
   private constructor(vararg segments: String) {
-    this.segments = listOf(*segments)
+    this.segments = segments.toList()
 
     require(CHANNEL_VALIDATOR.test(asString)) { "$asString is not a valid channel" }
   }
@@ -121,6 +121,8 @@ class Channel : Serializable {
     /** Root channel, every client is subscribed to it. */
     @JvmField val ROOT = Channel()
 
+    private const val serialVersionUID = 1L
+
     /**
      * Create a Channel from the protocol string representation of it
      *
@@ -128,6 +130,7 @@ class Channel : Serializable {
      * @return the new channel
      */
     @JvmStatic
+    @Suppress("SpreadOperator")
     fun fromString(value: String): Channel {
       // Remove the "/root/" part of the value as it is not relevant and does not need to be stored
       // Check first that value is not simply root

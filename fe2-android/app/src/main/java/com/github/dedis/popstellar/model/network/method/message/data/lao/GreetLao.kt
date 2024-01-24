@@ -46,7 +46,7 @@ class GreetLao(id: String, frontend: String, address: String, peers: List<PeerAd
         try {
           PublicKey(frontend)
         } catch (e: Exception) {
-          throw IllegalArgumentException("Please provide a valid public key")
+          throw IllegalArgumentException("Please provide a valid public key\n$e")
         }
 
     // Validity of the address is checked at deserialization

@@ -94,6 +94,7 @@ class ConsensusNode : Copyable<ConsensusNode?> {
   }
 
   override fun toString(): String {
-    return "ConsensusNode{publicKey='${publicKey.encoded}', acceptedMessageIds='$acceptedMessageIds', electInstances='$electInstances'}"
+    return "ConsensusNode{publicKey='${publicKey.encoded}', acceptedMessageIds='$acceptedMessageIds', " +
+        "electInstances='$electInstances'}"
   }
 }

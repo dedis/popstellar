@@ -90,7 +90,8 @@ class Chirp : Copyable<Chirp> {
   }
 
   override fun toString(): String {
-    return "Chirp{id='${id.encoded}', sender='$sender', text='$text', timestamp='$timestamp', isDeleted='$isDeleted', parentId='${parentId.encoded}'"
+    return "Chirp{id='${id.encoded}', sender='$sender', text='$text', timestamp='$timestamp', " +
+        "isDeleted='$isDeleted', parentId='${parentId.encoded}'"
   }
 
   companion object {

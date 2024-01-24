@@ -56,6 +56,7 @@ object DataRegistryModule {
   @JvmStatic
   @Provides
   @Singleton
+  @Suppress("LongMethod")
   fun provideDataRegistry(
       laoHandler: LaoHandler,
       rollCallHandler: RollCallHandler,

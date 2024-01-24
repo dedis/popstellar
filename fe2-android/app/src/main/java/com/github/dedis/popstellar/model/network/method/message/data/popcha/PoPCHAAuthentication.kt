@@ -48,6 +48,8 @@ class PoPCHAAuthentication(
   }
 
   override fun toString(): String {
-    return "PoPCHAAuthentication{clientId='$clientId', nonce='$nonce', identifier='$identifier', identifierProof='$identifierProof', state='$state', responseMode='$responseMode', popchaAddress='$popchaAddress'}"
+    return "PoPCHAAuthentication{clientId='$clientId', nonce='$nonce', identifier='$identifier', " +
+        "identifierProof='$identifierProof', state='$state', " +
+        "responseMode='$responseMode', popchaAddress='$popchaAddress'}"
   }
 }

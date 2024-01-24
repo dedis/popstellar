@@ -222,6 +222,7 @@ class Wallet @Inject constructor(@WalletKeyset keysetManager: AndroidKeysetManag
    * @throws UninitializedWalletException if the wallet is not initialized with a seed
    */
   @Throws(KeyGenerationException::class, UninitializedWalletException::class)
+  @Suppress("SpreadOperator")
   private fun generateKeyFromPath(path: String): PoPToken {
     if (!isSetUp) {
       throw UninitializedWalletException()

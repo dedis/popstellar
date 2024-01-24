@@ -35,6 +35,7 @@ class Transaction(
       Collections.unmodifiableList(outputs)
     get() = ArrayList(field)
 
+  @Suppress("SpreadOperator")
   fun computeId(): String {
     // Make a list all the string in the transaction
     val collectTransaction: MutableList<String> = ArrayList()
@@ -127,7 +128,7 @@ class Transaction(
         sig.add(current.script.pubKeyHash)
       }
 
-      return java.lang.String.join("", *sig.toTypedArray())
+      return sig.toTypedArray().joinToString("")
     }
   }
 }

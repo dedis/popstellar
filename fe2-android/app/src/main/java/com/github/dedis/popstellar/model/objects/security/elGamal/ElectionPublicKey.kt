@@ -24,7 +24,7 @@ class ElectionPublicKey(base64publicKey: Base64URLData) {
           Ed25519Point(base64publicKey.data)
         } catch (e: CothorityCryptoException) {
           throw IllegalArgumentException(
-              "Could not create the point for elliptic curve, please provide another key")
+              "Could not create the point for elliptic curve, please provide another key\n$e")
         }
   }
 
@@ -95,7 +95,8 @@ class ElectionPublicKey(base64publicKey: Base64URLData) {
           output.toByteArray()
         } catch (e: IOException) {
           Timber.tag(TAG)
-              .d(
+              .e(
+                  e,
                   "Something happened during the encryption, could NOT concatenate the final result into a byte array")
           null
         }

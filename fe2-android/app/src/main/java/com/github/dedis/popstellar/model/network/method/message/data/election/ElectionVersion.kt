@@ -11,6 +11,7 @@ enum class ElectionVersion(val stringBallotVersion: String) {
   SECRET_BALLOT("secret-ballot");
 
   companion object {
-    val allElectionVersion: List<ElectionVersion> = Collections.unmodifiableList(listOf(*values()))
+    val allElectionVersion: List<ElectionVersion> =
+        values().toList().let(Collections::unmodifiableList)
   }
 }

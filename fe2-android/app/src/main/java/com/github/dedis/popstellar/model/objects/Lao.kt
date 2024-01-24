@@ -128,7 +128,8 @@ class Lao : Copyable<Lao> {
   }
 
   override fun toString(): String {
-    return "Lao{name='$name', id='$id', channel='$channel', creation=$creation, organizer='$organizer', lastModified=$lastModified, modificationId='$modificationId'}"
+    return "Lao{name='$name', id='$id', channel='$channel', creation=$creation, organizer='$organizer', " +
+        "lastModified=$lastModified, modificationId='$modificationId'}"
   }
 
   companion object {

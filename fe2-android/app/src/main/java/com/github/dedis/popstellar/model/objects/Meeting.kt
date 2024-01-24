@@ -80,7 +80,9 @@ class Meeting(
   }
 
   override fun toString(): String {
-    return "Meeting{id='$id', name='$name', creation=$creation, start=$startTimestamp, end=$end, location='$location', lastModified=$lastModified, modificationId='$modificationId', modificationSignatures='$modificationSignatures'}"
+    return "Meeting{id='$id', name='$name', creation=$creation, start=$startTimestamp, end=$end, " +
+        "location='$location', lastModified=$lastModified, modificationId='$modificationId', " +
+        "modificationSignatures='$modificationSignatures'}"
   }
 
   companion object {

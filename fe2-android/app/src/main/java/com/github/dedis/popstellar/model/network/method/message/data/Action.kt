@@ -53,7 +53,7 @@ enum class Action
     action == CAST_VOTE.action
 
   companion object {
-    private val ALL = Collections.unmodifiableList(listOf(*values()))
+    private val ALL = values().toList().let(Collections::unmodifiableList)
 
     /**
      * Find a given Action

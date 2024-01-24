@@ -105,6 +105,7 @@ class CreateRollCall : Data {
   }
 
   override fun toString(): String {
-    return "CreateRollCall{id='$id', name='$name', creation=$creation, proposedStart=$proposedStart, proposedEnd=$proposedEnd, location='$location', description='$description'}"
+    return "CreateRollCall{id='$id', name='$name', creation=$creation, proposedStart=$proposedStart, " +
+        "proposedEnd=$proposedEnd, location='$location', description='$description'}"
   }
 }

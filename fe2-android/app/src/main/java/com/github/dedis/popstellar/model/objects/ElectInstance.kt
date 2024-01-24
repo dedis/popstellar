@@ -78,7 +78,8 @@ class ElectInstance : Copyable<ElectInstance> {
   }
 
   override fun toString(): String {
-    return "ElectInstance{messageId='${messageId.encoded}', instanceId='$instanceId', channel='$channel', proposer='${proposer.encoded}', elect=$elect, nodes=$nodes, state=$state}"
+    return "ElectInstance{messageId='${messageId.encoded}', instanceId='$instanceId', channel='$channel', " +
+        "proposer='${proposer.encoded}', elect=$elect, nodes=$nodes, state=$state}"
   }
 
   override fun equals(other: Any?): Boolean {

@@ -51,6 +51,7 @@ class ConsensusPrepare(
   }
 
   override fun toString(): String {
-    return "ConsensusPrepare{instance_id='$instanceId', message_id='${messageId.encoded}', created_at=$creation, value=$prepareValue}"
+    return "ConsensusPrepare{instance_id='$instanceId', message_id='${messageId.encoded}', " +
+        "created_at=$creation, value=$prepareValue}"
   }
 }

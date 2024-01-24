@@ -57,6 +57,7 @@ class ElectionEnd(electionId: String?, laoId: String?, registeredVotes: String?)
   }
 
   override fun toString(): String {
-    return "ElectionEnd{electionId='$electionId', createdAt=$createdAt, laoId='$laoId', registeredVotes='$registeredVotes'}"
+    return "ElectionEnd{electionId='$electionId', createdAt=$createdAt, " +
+        "laoId='$laoId', registeredVotes='$registeredVotes'}"
   }
 }

@@ -19,6 +19,7 @@ import com.google.gson.reflect.TypeToken
 
 /** Class used by the database to convert all the fields in Entities into Strings and vice versa */
 @ProvidedTypeConverter
+@Suppress("TooManyFunctions")
 class CustomTypeConverters(private val gson: Gson) {
   /* ----  From String to Object  ---- */
   @TypeConverter

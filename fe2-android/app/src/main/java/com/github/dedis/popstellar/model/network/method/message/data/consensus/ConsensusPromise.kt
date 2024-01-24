@@ -55,6 +55,7 @@ class ConsensusPromise(
   }
 
   override fun toString(): String {
-    return "ConsensusPromise{instance_id='$instanceId', message_id='${messageId.encoded}', created_at=$creation, value=$promiseValue}"
+    return "ConsensusPromise{instance_id='$instanceId', message_id='${messageId.encoded}', " +
+        "created_at=$creation, value=$promiseValue}"
   }
 }

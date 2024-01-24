@@ -8,14 +8,20 @@ build:
 complexity:
   # Set to 16 the maximum number of functions in a class, file, interface or object
   TooManyFunctions:
-    active: true
     thresholdInFiles: 16
     thresholdInClasses: 16
     thresholdInInterfaces: 16
     thresholdInObjects: 16
     ignoreDeprecated: true
-    ignorePrivate: false
-    ignoreOverridden: false
+  # Set to 10 the maximum number of params of a function
+  LongParameterList:
+    functionThreshold: 11
+    constructorThreshold: 11
+  # Set to 150 the maximum number of lines for a single function
+  LongMethod:
+    threshold: 150
+  CyclomaticComplexMethod:
+    threshold: 20
 
 exceptions:
   # Deactivating permanently the following exception as it doesn't allow to
@@ -44,4 +50,10 @@ style:
     excludeReturnFromLambda: true
   # Allow TODOs in the codebase by deactivating the following rule
   ForbiddenComment:
+    active: false
+  MagicNumber:
+    active: false
+
+naming:
+  VariableNaming:
     active: false

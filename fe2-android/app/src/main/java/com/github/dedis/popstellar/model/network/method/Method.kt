@@ -30,7 +30,7 @@ enum class Method
   }
 
   companion object {
-    private val ALL = Collections.unmodifiableList(listOf(*values()))
+    private val ALL = values().toList().let(Collections::unmodifiableList)
 
     /**
      * Find a given Method

@@ -58,6 +58,7 @@ class ConsensusLearn(
   }
 
   override fun toString(): String {
-    return "ConsensusLearn{instance_id='$instanceId', message_id='${messageId.encoded}', acceptor-signatures=${acceptorSignatures.toTypedArray().contentToString()}"
+    return "ConsensusLearn{instance_id='$instanceId', message_id='${messageId.encoded}', " +
+        "acceptor-signatures=${acceptorSignatures.toTypedArray().contentToString()}"
   }
 }

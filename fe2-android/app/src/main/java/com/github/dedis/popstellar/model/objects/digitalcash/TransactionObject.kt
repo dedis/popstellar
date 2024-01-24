@@ -169,7 +169,8 @@ class TransactionObject(
   }
 
   override fun toString(): String {
-    return "TransactionObject{channel=$channel, version=$version, inputs=$inputs, outputs=$outputs, lockTime=$lockTime, transactionId='$transactionId'}"
+    return "TransactionObject{channel=$channel, version=$version, inputs=$inputs, outputs=$outputs, " +
+        "lockTime=$lockTime, transactionId='$transactionId'}"
   }
 
   companion object {

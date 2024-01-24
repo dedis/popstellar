@@ -19,10 +19,9 @@ import com.github.dedis.popstellar.model.objects.security.PublicKey
 import com.github.dedis.popstellar.model.objects.security.elGamal.ElectionPublicKey
 import com.github.dedis.popstellar.utility.security.HashSHA256.hash
 import java.util.Objects
-import java.util.stream.Collectors
-import java.util.stream.Stream
 
 @Immutable
+@Suppress("LongParameterList")
 class Election(
     id: String,
     name: String,
@@ -117,22 +116,14 @@ class Election(
    *
    * @return the hash of all registered votes
    */
+  @Suppress("SpreadOperator")
   fun computeRegisteredVotesHash(): String {
-    val ids =
-        messageMap.keys
-            .stream()
-            .map { o: PublicKey -> votesBySender[o] }
-            // Merge lists and drop nulls
-            .flatMap { electionVotes: List<Vote>? -> electionVotes?.stream() ?: Stream.empty() }
-            .map(Vote::id)
-            .sorted()
-            .collect(Collectors.toList())
-            .toTypedArray()
+    val ids = messageMap.keys.flatMap { votesBySender[it] ?: emptyList() }.map(Vote::id).sorted()
 
     return if (ids.isEmpty()) {
       ""
     } else {
-      hash(*ids)
+      hash(*ids.toTypedArray())
     }
   }
 
