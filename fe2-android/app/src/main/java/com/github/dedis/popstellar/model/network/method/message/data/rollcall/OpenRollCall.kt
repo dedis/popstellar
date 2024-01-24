@@ -33,11 +33,11 @@ class OpenRollCall : Data {
     this.openedAt = openedAt
 
     this.action =
-      if (state == EventState.CLOSED) {
-        Action.REOPEN.action
-      } else {
-        Action.OPEN.action
-      }
+        if (state == EventState.CLOSED) {
+          Action.REOPEN.action
+        } else {
+          Action.OPEN.action
+        }
   }
 
   constructor(updateId: String, opens: String, openedAt: Long, action: String) {
@@ -59,9 +59,9 @@ class OpenRollCall : Data {
     }
     val that = other as OpenRollCall
     return openedAt == that.openedAt &&
-      updateId == that.updateId &&
-      opens == that.opens &&
-      action == that.action
+        updateId == that.updateId &&
+        opens == that.opens &&
+        action == that.action
   }
 
   override fun hashCode(): Int {

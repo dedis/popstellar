@@ -1,5 +1,6 @@
 build:
-  maxIssues: 20
+  # Very large number as we don't want the build to fail (SonarCloud will then collect the issues on the CI)
+  maxIssues: 50
   weights:
     # Set to 0 the weight of issues on comments
     comments: 0

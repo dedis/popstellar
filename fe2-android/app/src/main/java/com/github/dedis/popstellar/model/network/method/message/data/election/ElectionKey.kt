@@ -21,8 +21,8 @@ class ElectionKey(electionId: String, electionVoteKey: String) : Data() {
 
   init {
     verify()
-      .isNotEmptyBase64(electionId, "election id")
-      .isNotEmptyBase64(electionVoteKey, "election vote key")
+        .isNotEmptyBase64(electionId, "election id")
+        .isNotEmptyBase64(electionVoteKey, "election vote key")
 
     this.electionId = electionId
     this.electionVoteKey = electionVoteKey

@@ -18,9 +18,9 @@ import timber.log.Timber
 class JsonMessageSerializer : JsonSerializer<Message>, JsonDeserializer<Message> {
   @Throws(JsonParseException::class)
   override fun deserialize(
-    json: JsonElement,
-    typeOfT: Type,
-    context: JsonDeserializationContext
+      json: JsonElement,
+      typeOfT: Type,
+      context: JsonDeserializationContext
   ): Message {
     Timber.tag(TAG).d("deserializing message")
     val container = context.deserialize<JSONRPCRequest>(json, JSONRPCRequest::class.java)
@@ -28,7 +28,8 @@ class JsonMessageSerializer : JsonSerializer<Message>, JsonDeserializer<Message>
     testRPCVersion(container.jsonrpc)
 
     val method =
-      find(container.method) ?: throw JsonParseException("Unknown method type " + container.method)
+        find(container.method)
+            ?: throw JsonParseException("Unknown method type " + container.method)
     val params = container.params
 
     // If the Channeled Data is a Query, we need to give the params the id the the request
@@ -40,13 +41,15 @@ class JsonMessageSerializer : JsonSerializer<Message>, JsonDeserializer<Message>
   }
 
   override fun serialize(
-    src: Message,
-    typeOfSrc: Type,
-    context: JsonSerializationContext
+      src: Message,
+      typeOfSrc: Type,
+      context: JsonSerializationContext
   ): JsonElement {
     val params = context.serialize(src).asJsonObject
     val obj =
-      context.serialize(JSONRPCRequest(JsonUtils.JSON_RPC_VERSION, src.method, params)).asJsonObject
+        context
+            .serialize(JSONRPCRequest(JsonUtils.JSON_RPC_VERSION, src.method, params))
+            .asJsonObject
 
     if (src is Query) {
       obj.addProperty(JsonUtils.JSON_REQUEST_ID, src.requestId)

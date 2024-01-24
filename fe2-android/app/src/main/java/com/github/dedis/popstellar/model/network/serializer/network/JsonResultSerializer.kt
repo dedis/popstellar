@@ -16,9 +16,9 @@ import java.lang.reflect.Type
 class JsonResultSerializer : JsonSerializer<Result>, JsonDeserializer<Result> {
   @Throws(JsonParseException::class)
   override fun deserialize(
-    json: JsonElement,
-    typeOfT: Type,
-    context: JsonDeserializationContext
+      json: JsonElement,
+      typeOfT: Type,
+      context: JsonDeserializationContext
   ): Result {
     val root = json.asJsonObject
     val id = root["id"].asInt
@@ -34,9 +34,9 @@ class JsonResultSerializer : JsonSerializer<Result>, JsonDeserializer<Result> {
   }
 
   override fun serialize(
-    src: Result,
-    typeOfSrc: Type,
-    context: JsonSerializationContext
+      src: Result,
+      typeOfSrc: Type,
+      context: JsonSerializationContext
   ): JsonElement {
     val output = JsonObject()
     output.addProperty(ID, src.id)

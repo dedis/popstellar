@@ -30,11 +30,11 @@ class CreateLao : Data {
    * @throws IllegalArgumentException if arguments are invalid
    */
   constructor(
-    id: String,
-    name: String,
-    creation: Long,
-    organizer: PublicKey,
-    witnesses: List<PublicKey>
+      id: String,
+      name: String,
+      creation: Long,
+      organizer: PublicKey,
+      witnesses: List<PublicKey>
   ) {
     // Organizer and witnesses are checked to be base64 at deserialization
     verify().validLaoId(id, organizer, creation, name).validPastTimes(creation)
@@ -70,10 +70,10 @@ class CreateLao : Data {
     }
     val createLao = other as CreateLao
     return creation == createLao.creation &&
-      id == createLao.id &&
-      name == createLao.name &&
-      organizer == createLao.organizer &&
-      witnesses == createLao.witnesses
+        id == createLao.id &&
+        name == createLao.name &&
+        organizer == createLao.organizer &&
+        witnesses == createLao.witnesses
   }
 
   override fun hashCode(): Int {

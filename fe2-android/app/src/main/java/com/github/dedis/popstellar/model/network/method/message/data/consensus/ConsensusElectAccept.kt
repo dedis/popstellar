@@ -17,9 +17,9 @@ class ConsensusElectAccept
  * @param isAccept true if the node agrees with the proposal
  */
 (
-  @field:SerializedName("instance_id") val instanceId: String,
-  @field:SerializedName("message_id") val messageId: MessageID,
-  @field:SerializedName("accept") val isAccept: Boolean
+    @field:SerializedName("instance_id") val instanceId: String,
+    @field:SerializedName("message_id") val messageId: MessageID,
+    @field:SerializedName("accept") val isAccept: Boolean
 ) : Data() {
 
   override val `object`: String = Objects.CONSENSUS.`object`

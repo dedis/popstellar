@@ -12,11 +12,11 @@ import com.google.gson.annotations.SerializedName
 /** Data sent to update the lao specifications */
 @Immutable
 class UpdateLao(
-  organizer: PublicKey,
-  creation: Long,
-  name: String,
-  lastModified: Long,
-  witnesses: Set<PublicKey>
+    organizer: PublicKey,
+    creation: Long,
+    name: String,
+    lastModified: Long,
+    witnesses: Set<PublicKey>
 ) : Data() {
   val id: String
   val name: String
@@ -38,10 +38,10 @@ class UpdateLao(
   init {
     // Witnesses are checked to be base64 at deserialization, but not organizer
     verify()
-      .isNotEmptyBase64(organizer.encoded, "organizer")
-      .stringNotEmpty(name, "name")
-      .orderedTimes(creation, lastModified)
-      .validPastTimes(creation, lastModified)
+        .isNotEmptyBase64(organizer.encoded, "organizer")
+        .stringNotEmpty(name, "name")
+        .orderedTimes(creation, lastModified)
+        .validPastTimes(creation, lastModified)
 
     this.id = Lao.generateLaoId(organizer, creation, name)
     this.name = name
@@ -64,9 +64,9 @@ class UpdateLao(
     }
     val updateLao = other as UpdateLao
     return lastModified == updateLao.lastModified &&
-      name == updateLao.name &&
-      id == updateLao.id &&
-      witnesses == updateLao.witnesses
+        name == updateLao.name &&
+        id == updateLao.id &&
+        witnesses == updateLao.witnesses
   }
 
   override fun hashCode(): Int {

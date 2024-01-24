@@ -10,8 +10,8 @@ enum class Objects
  * @param object name of the object
  */
 (
-  /** Returns the name of the Object. */
-  val `object`: String
+    /** Returns the name of the Object. */
+    val `object`: String
 ) {
   LAO("lao"),
   MEETING("meeting"),
@@ -56,9 +56,9 @@ enum class Objects
      */
     fun find(searched: String): Objects? {
       return ALL.stream()
-        .filter { obj: Objects -> obj.`object` == searched }
-        .findFirst()
-        .orElse(null)
+          .filter { obj: Objects -> obj.`object` == searched }
+          .findFirst()
+          .orElse(null)
     }
   }
 }

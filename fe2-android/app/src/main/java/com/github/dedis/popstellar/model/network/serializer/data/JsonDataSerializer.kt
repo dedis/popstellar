@@ -16,12 +16,12 @@ import java.lang.reflect.Type
 
 /** Json serializer and deserializer for the data messages */
 class JsonDataSerializer(private val dataRegistry: DataRegistry) :
-  JsonSerializer<Data>, JsonDeserializer<Data> {
+    JsonSerializer<Data>, JsonDeserializer<Data> {
   @Throws(JsonParseException::class)
   override fun deserialize(
-    json: JsonElement,
-    typeOfT: Type,
-    context: JsonDeserializationContext
+      json: JsonElement,
+      typeOfT: Type,
+      context: JsonDeserializationContext
   ): Data {
     val obj = json.asJsonObject
     verifyJson(JsonUtils.DATA_SCHEMA, obj.toString())
@@ -39,17 +39,16 @@ class JsonDataSerializer(private val dataRegistry: DataRegistry) :
     val clazz = dataRegistry.getType(`object`, action)
     if (!clazz.isPresent) {
       throw JsonParseException(
-        "The pair (${`object`.`object`}, ${action.action}) does not exists in the protocol"
-      )
+          "The pair (${`object`.`object`}, ${action.action}) does not exists in the protocol")
     }
 
     return context.deserialize(json, clazz.get())
   }
 
   override fun serialize(
-    src: Data,
-    typeOfSrc: Type,
-    context: JsonSerializationContext
+      src: Data,
+      typeOfSrc: Type,
+      context: JsonSerializationContext
   ): JsonElement {
     val obj = context.serialize(src).asJsonObject
 

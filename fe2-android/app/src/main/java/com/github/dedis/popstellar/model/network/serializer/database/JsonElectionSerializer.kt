@@ -23,9 +23,9 @@ import java.lang.reflect.Type
 class JsonElectionSerializer : JsonSerializer<Election>, JsonDeserializer<Election> {
   @Throws(JsonParseException::class)
   override fun deserialize(
-    json: JsonElement,
-    typeOfT: Type,
-    context: JsonDeserializationContext
+      json: JsonElement,
+      typeOfT: Type,
+      context: JsonDeserializationContext
   ): Election {
     val jsonObject = json.asJsonObject
 
@@ -51,8 +51,7 @@ class JsonElectionSerializer : JsonSerializer<Election>, JsonDeserializer<Electi
     val electionQuestions: MutableList<ElectionQuestion> = ArrayList()
     for (electionQuestionJsonElement in electionQuestionsJsonArray) {
       electionQuestions.add(
-        context.deserialize(electionQuestionJsonElement, ElectionQuestion::class.java)
-      )
+          context.deserialize(electionQuestionJsonElement, ElectionQuestion::class.java))
     }
 
     // Deserialize the map votesBySender
@@ -92,26 +91,25 @@ class JsonElectionSerializer : JsonSerializer<Election>, JsonDeserializer<Electi
     }
 
     return Election(
-      id,
-      name,
-      creation,
-      channel,
-      start,
-      end,
-      electionQuestions,
-      electionKey,
-      electionVersion,
-      votesBySender,
-      messageMap,
-      state,
-      results
-    )
+        id,
+        name,
+        creation,
+        channel,
+        start,
+        end,
+        electionQuestions,
+        electionKey,
+        electionVersion,
+        votesBySender,
+        messageMap,
+        state,
+        results)
   }
 
   override fun serialize(
-    election: Election,
-    typeOfSrc: Type,
-    context: JsonSerializationContext
+      election: Election,
+      typeOfSrc: Type,
+      context: JsonSerializationContext
   ): JsonElement {
     val jsonObject = JsonObject()
 
@@ -135,8 +133,7 @@ class JsonElectionSerializer : JsonSerializer<Election>, JsonDeserializer<Electi
     val electionQuestionsJsonArray = JsonArray()
     for (electionQuestion in election.electionQuestions) {
       electionQuestionsJsonArray.add(
-        context.serialize(electionQuestion, ElectionQuestion::class.java)
-      )
+          context.serialize(electionQuestion, ElectionQuestion::class.java))
     }
     jsonObject.add("electionQuestions", electionQuestionsJsonArray)
 

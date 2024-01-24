@@ -12,13 +12,13 @@ import java.util.stream.Collectors
 
 @Immutable
 class ElectionSetup(
-  name: String,
-  creation: Long,
-  start: Long,
-  end: Long,
-  laoId: String,
-  electionVersion: ElectionVersion,
-  questions: List<Question>
+    name: String,
+    creation: Long,
+    start: Long,
+    end: Long,
+    laoId: String,
+    electionVersion: ElectionVersion,
+    questions: List<Question>
 ) : Data() {
   val id: String
   val name: String
@@ -46,11 +46,11 @@ class ElectionSetup(
   init {
     // The lao id is checked to be a known lao in the election setup handler
     verify()
-      .orderedTimes(creation, start, end)
-      .validPastTimes(creation)
-      .stringNotEmpty(name, "election name")
-      .isNotEmptyBase64(laoId, "lao id")
-      .noListDuplicates(questions)
+        .orderedTimes(creation, start, end)
+        .validPastTimes(creation)
+        .stringNotEmpty(name, "election name")
+        .isNotEmptyBase64(laoId, "lao id")
+        .noListDuplicates(questions)
 
     this.name = name
     this.creation = creation
@@ -60,7 +60,10 @@ class ElectionSetup(
     this.electionVersion = electionVersion
     this.id = Election.generateElectionSetupId(laoId, this.creation, name)
     this.questions =
-      questions.stream().map { q: Question -> ElectionQuestion(id, q) }.collect(Collectors.toList())
+        questions
+            .stream()
+            .map { q: Question -> ElectionQuestion(id, q) }
+            .collect(Collectors.toList())
   }
 
   override val `object`: String
@@ -78,12 +81,12 @@ class ElectionSetup(
     }
     val that = other as ElectionSetup
     return creation == that.creation &&
-      electionVersion == that.electionVersion &&
-      startTime == that.startTime &&
-      id == that.id &&
-      name == that.name &&
-      endTime == that.endTime &&
-      questions == that.questions
+        electionVersion == that.electionVersion &&
+        startTime == that.startTime &&
+        id == that.id &&
+        name == that.name &&
+        endTime == that.endTime &&
+        questions == that.questions
   }
 
   override fun hashCode(): Int {

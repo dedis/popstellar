@@ -22,9 +22,9 @@ class ElectionEnd(electionId: String?, laoId: String?, registeredVotes: String?)
 
   init {
     verify()
-      .isNotEmptyBase64(electionId, "election id")
-      .isNotEmptyBase64(laoId, "laoId")
-      .isBase64(registeredVotes, "registered votes")
+        .isNotEmptyBase64(electionId, "election id")
+        .isNotEmptyBase64(laoId, "laoId")
+        .isBase64(registeredVotes, "registered votes")
 
     this.createdAt = Instant.now().epochSecond
     this.electionId = electionId!!
@@ -47,9 +47,9 @@ class ElectionEnd(electionId: String?, laoId: String?, registeredVotes: String?)
     }
     val that = other as ElectionEnd
     return createdAt == that.createdAt &&
-      electionId == that.electionId &&
-      laoId == that.laoId &&
-      registeredVotes == that.registeredVotes
+        electionId == that.electionId &&
+        laoId == that.laoId &&
+        registeredVotes == that.registeredVotes
   }
 
   override fun hashCode(): Int {

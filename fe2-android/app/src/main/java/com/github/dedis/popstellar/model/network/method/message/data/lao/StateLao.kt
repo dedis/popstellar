@@ -15,14 +15,14 @@ import java.util.Collections
 class StateLao
 @Immutable
 constructor(
-  id: String,
-  name: String,
-  creation: Long,
-  lastModified: Long,
-  organizer: PublicKey,
-  modificationId: MessageID,
-  witnesses: Set<PublicKey>,
-  modificationSignatures: List<PublicKeySignaturePair>?
+    id: String,
+    name: String,
+    creation: Long,
+    lastModified: Long,
+    organizer: PublicKey,
+    modificationId: MessageID,
+    witnesses: Set<PublicKey>,
+    modificationSignatures: List<PublicKeySignaturePair>?
 ) : Data() {
   val id: String
   val name: String
@@ -56,10 +56,10 @@ constructor(
   init {
     // Organizer and witnesses are checked to be base64 at deserialization
     verify()
-      .orderedTimes(creation, lastModified)
-      .validPastTimes(creation, lastModified)
-      .validLaoId(id, organizer, creation, name)
-      .isNotEmptyBase64(modificationId.encoded, "Modification ID")
+        .orderedTimes(creation, lastModified)
+        .validPastTimes(creation, lastModified)
+        .validLaoId(id, organizer, creation, name)
+        .isNotEmptyBase64(modificationId.encoded, "Modification ID")
 
     this.id = id
     this.name = name
@@ -86,11 +86,11 @@ constructor(
     }
     val stateLao = other as StateLao
     return creation == stateLao.creation &&
-      lastModified == stateLao.lastModified &&
-      id == stateLao.id &&
-      name == stateLao.name &&
-      organizer == stateLao.organizer &&
-      witnesses == stateLao.witnesses
+        lastModified == stateLao.lastModified &&
+        id == stateLao.id &&
+        name == stateLao.name &&
+        organizer == stateLao.organizer &&
+        witnesses == stateLao.witnesses
   }
 
   override fun hashCode(): Int {

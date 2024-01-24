@@ -10,13 +10,13 @@ import com.google.gson.annotations.SerializedName
 /** Data sent to authenticate to a PoPCHA server */
 @Immutable
 class PoPCHAAuthentication(
-  @field:SerializedName("client_id") val clientId: String,
-  val nonce: String,
-  val identifier: Base64URLData,
-  @field:SerializedName("identifier_proof") val identifierProof: Base64URLData,
-  @field:SerializedName("popcha_address") val popchaAddress: String,
-  val state: String?,
-  @field:SerializedName("response_mode") val responseMode: String?
+    @field:SerializedName("client_id") val clientId: String,
+    val nonce: String,
+    val identifier: Base64URLData,
+    @field:SerializedName("identifier_proof") val identifierProof: Base64URLData,
+    @field:SerializedName("popcha_address") val popchaAddress: String,
+    val state: String?,
+    @field:SerializedName("response_mode") val responseMode: String?
 ) : Data() {
 
   override val `object`: String
@@ -34,24 +34,17 @@ class PoPCHAAuthentication(
     }
     val that = other as PoPCHAAuthentication
     return clientId == that.clientId &&
-      nonce == that.nonce &&
-      identifier == that.identifier &&
-      identifierProof == that.identifierProof &&
-      state == that.state &&
-      responseMode == that.responseMode &&
-      popchaAddress == that.popchaAddress
+        nonce == that.nonce &&
+        identifier == that.identifier &&
+        identifierProof == that.identifierProof &&
+        state == that.state &&
+        responseMode == that.responseMode &&
+        popchaAddress == that.popchaAddress
   }
 
   override fun hashCode(): Int {
     return java.util.Objects.hash(
-      clientId,
-      nonce,
-      identifier,
-      identifierProof,
-      state,
-      responseMode,
-      popchaAddress
-    )
+        clientId, nonce, identifier, identifierProof, state, responseMode, popchaAddress)
   }
 
   override fun toString(): String {

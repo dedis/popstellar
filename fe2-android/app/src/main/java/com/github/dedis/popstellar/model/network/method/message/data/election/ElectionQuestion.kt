@@ -54,10 +54,10 @@ class ElectionQuestion(electionId: String, question: Question) {
    */
   @Immutable
   class Question(
-    val title: String,
-    val votingMethod: String,
-    val ballotOptions: List<String>,
-    val writeIn: Boolean
+      val title: String,
+      val votingMethod: String,
+      val ballotOptions: List<String>,
+      val writeIn: Boolean
   ) {
     override fun equals(other: Any?): Boolean {
       if (this === other) {
@@ -68,9 +68,9 @@ class ElectionQuestion(electionId: String, question: Question) {
       }
       val that = other as Question
       return writeIn == that.writeIn &&
-        title == that.title &&
-        votingMethod == that.votingMethod &&
-        ballotOptions == that.ballotOptions
+          title == that.title &&
+          votingMethod == that.votingMethod &&
+          ballotOptions == that.ballotOptions
     }
 
     override fun hashCode(): Int {

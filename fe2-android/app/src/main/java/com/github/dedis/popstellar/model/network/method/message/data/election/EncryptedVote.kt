@@ -25,27 +25,22 @@ class EncryptedVote : Vote {
    * @param electionId the election id
    */
   constructor(
-    questionId: String,
-    encryptedVote: String,
-    writeInEnabled: Boolean,
-    encryptedWriteIn: String?,
-    electionId: String
+      questionId: String,
+      encryptedVote: String,
+      writeInEnabled: Boolean,
+      encryptedWriteIn: String?,
+      electionId: String
   ) {
     this.questionId = questionId
     this.id =
-      Election.generateEncryptedElectionVoteId(
-        electionId,
-        questionId,
-        encryptedVote,
-        encryptedWriteIn,
-        writeInEnabled
-      )
+        Election.generateEncryptedElectionVoteId(
+            electionId, questionId, encryptedVote, encryptedWriteIn, writeInEnabled)
     this.vote =
-      if (writeInEnabled) {
-        null
-      } else {
-        encryptedVote
-      }
+        if (writeInEnabled) {
+          null
+        } else {
+          encryptedVote
+        }
   }
 
   constructor(id: String, question: String, vote: String) {

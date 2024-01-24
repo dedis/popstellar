@@ -19,9 +19,9 @@ import timber.log.Timber
 class MeetingHandler
 @Inject
 constructor(
-  private val laoRepo: LAORepository,
-  private val meetingRepo: MeetingRepository,
-  private val witnessingRepo: WitnessingRepository
+    private val laoRepo: LAORepository,
+    private val meetingRepo: MeetingRepository,
+    private val witnessingRepo: WitnessingRepository
 ) {
 
   /**
@@ -39,17 +39,17 @@ constructor(
     val laoView = laoRepo.getLaoViewByChannel(channel)
     val laoId = laoView.id
     val meeting =
-      MeetingBuilder()
-        .setId(createMeeting.id)
-        .setCreation(createMeeting.creation)
-        .setStart(createMeeting.start)
-        .setEnd(createMeeting.end)
-        .setName(createMeeting.name)
-        .setLocation(createMeeting.getLocation().orElse(""))
-        .setLastModified(createMeeting.creation)
-        .setModificationId("")
-        .setModificationSignatures(ArrayList())
-        .build()
+        MeetingBuilder()
+            .setId(createMeeting.id)
+            .setCreation(createMeeting.creation)
+            .setStart(createMeeting.start)
+            .setEnd(createMeeting.end)
+            .setName(createMeeting.name)
+            .setLocation(createMeeting.getLocation().orElse(""))
+            .setLastModified(createMeeting.creation)
+            .setModificationId("")
+            .setModificationSignatures(ArrayList())
+            .build()
 
     witnessingRepo.addWitnessMessage(laoView.id, createMeetingWitnessMessage(messageId, meeting))
     if (witnessingRepo.areWitnessesEmpty(laoId)) {
@@ -69,17 +69,17 @@ constructor(
     val laoId = laoView.id
     /* TODO: modify with the right logic when implementing the state functionality */
     val meeting =
-      MeetingBuilder()
-        .setId(stateMeeting.id)
-        .setCreation(stateMeeting.creation)
-        .setStart(stateMeeting.start)
-        .setEnd(stateMeeting.end)
-        .setName(stateMeeting.name)
-        .setLocation(stateMeeting.getLocation().orElse(""))
-        .setLastModified(stateMeeting.creation)
-        .setModificationId(stateMeeting.modificationId)
-        .setModificationSignatures(stateMeeting.modificationSignatures)
-        .build()
+        MeetingBuilder()
+            .setId(stateMeeting.id)
+            .setCreation(stateMeeting.creation)
+            .setStart(stateMeeting.start)
+            .setEnd(stateMeeting.end)
+            .setName(stateMeeting.name)
+            .setLocation(stateMeeting.getLocation().orElse(""))
+            .setLastModified(stateMeeting.creation)
+            .setModificationId(stateMeeting.modificationId)
+            .setModificationSignatures(stateMeeting.modificationSignatures)
+            .build()
 
     witnessingRepo.addWitnessMessage(laoView.id, stateMeetingWitnessMessage(messageId, meeting))
     if (witnessingRepo.areWitnessesEmpty(laoId)) {
@@ -103,10 +103,10 @@ constructor(
 
       message.title = "The Meeting ${meeting.name} was created at ${Date(meeting.creation * 1000)}"
       message.description =
-        "Mnemonic identifier :\n${generateMnemonicWordFromBase64(meeting.id, 2)}\n\n" +
-          (if (meeting.location.isEmpty()) "" else "Location :\n${meeting.location}\n\n}") +
-          "Starts at :\n${Date(meeting.startTimestampInMillis)}\n\n" +
-          "Finishes at :\n${Date(meeting.endTimestampInMillis)}"
+          "Mnemonic identifier :\n${generateMnemonicWordFromBase64(meeting.id, 2)}\n\n" +
+              (if (meeting.location.isEmpty()) "" else "Location :\n${meeting.location}\n\n}") +
+              "Starts at :\n${Date(meeting.startTimestampInMillis)}\n\n" +
+              "Finishes at :\n${Date(meeting.endTimestampInMillis)}"
 
       return message
     }
@@ -115,12 +115,12 @@ constructor(
       val message = WitnessMessage(messageId)
 
       message.title =
-        "The Meeting ${meeting.name} was modified at ${Date(meeting.lastModified * 1000)}"
+          "The Meeting ${meeting.name} was modified at ${Date(meeting.lastModified * 1000)}"
       message.description =
-        "Mnemonic identifier :\n${generateMnemonicWordFromBase64(meeting.id, 2)}\n\n" +
-          (if (meeting.location.isEmpty()) "" else "Location :\n${meeting.location}\n\n}") +
-          "Starts at :\n${Date(meeting.startTimestampInMillis)}\n\n" +
-          "Finishes at :\n${Date(meeting.endTimestampInMillis)}"
+          "Mnemonic identifier :\n${generateMnemonicWordFromBase64(meeting.id, 2)}\n\n" +
+              (if (meeting.location.isEmpty()) "" else "Location :\n${meeting.location}\n\n}") +
+              "Starts at :\n${Date(meeting.startTimestampInMillis)}\n\n" +
+              "Finishes at :\n${Date(meeting.endTimestampInMillis)}"
 
       return message
     }

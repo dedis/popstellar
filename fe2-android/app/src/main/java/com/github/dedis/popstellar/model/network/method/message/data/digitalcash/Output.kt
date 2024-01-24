@@ -12,10 +12,10 @@ class Output
  * @param script The script describing the TxOut unlock mechanism
  */
 ( // the value of the output transaction, expressed in miniLAOs
-  @JvmField
-  @field:SerializedName("value")
-  val value: Long, // The script describing the TxOut unlock mechanism
-  @JvmField @field:SerializedName("script") val script: ScriptOutput
+    @JvmField
+    @field:SerializedName("value")
+    val value: Long, // The script describing the TxOut unlock mechanism
+    @JvmField @field:SerializedName("script") val script: ScriptOutput
 ) {
 
   override fun equals(other: Any?): Boolean {

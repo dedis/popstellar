@@ -12,12 +12,12 @@ import java.lang.reflect.Type
 import java.util.function.Function
 
 class JsonBase64DataSerializer<T : Base64URLData>(private val constructor: Function<String, T>) :
-  JsonSerializer<T>, JsonDeserializer<T> {
+    JsonSerializer<T>, JsonDeserializer<T> {
   @Throws(JsonParseException::class)
   override fun deserialize(
-    json: JsonElement,
-    typeOfT: Type,
-    context: JsonDeserializationContext
+      json: JsonElement,
+      typeOfT: Type,
+      context: JsonDeserializationContext
   ): T {
     return try {
       constructor.apply(json.asString)

@@ -45,17 +45,16 @@ class DataRegistry private constructor(mapping: Map<EntryPair, Entry<out Data>>)
    * @throws DataHandlingException if an error occurs or if there was no handler
    */
   @Throws(
-    DataHandlingException::class,
-    UnknownLaoException::class,
-    UnknownRollCallException::class,
-    UnknownElectionException::class,
-    NoRollCallException::class,
-    UnknownWitnessMessageException::class
-  )
+      DataHandlingException::class,
+      UnknownLaoException::class,
+      UnknownRollCallException::class,
+      UnknownElectionException::class,
+      NoRollCallException::class,
+      UnknownWitnessMessageException::class)
   fun handle(context: HandlerContext, data: Data, obj: Objects, action: Action) {
     Optional.ofNullable(mapping[pair(obj, action)])
-      .orElseThrow { UnhandledDataTypeException(data, "$obj#$action") }
-      .handleData(context, data)
+        .orElseThrow { UnhandledDataTypeException(data, "$obj#$action") }
+        .handleData(context, data)
   }
 
   /** Entry of the messages map. A pair of (Objects, Action) */
@@ -89,9 +88,9 @@ class DataRegistry private constructor(mapping: Map<EntryPair, Entry<out Data>>)
    * @param <T> generic type of class that extends Data </T>
    */
   class Entry<T : Data>(
-    val key: EntryPair,
-    val dataClass: Class<T>,
-    private val dataHandler: DataHandler<T>?
+      val key: EntryPair,
+      val dataClass: Class<T>,
+      private val dataHandler: DataHandler<T>?
   ) {
     /**
      * Handle the given data using the given context
@@ -101,13 +100,12 @@ class DataRegistry private constructor(mapping: Map<EntryPair, Entry<out Data>>)
      * @throws DataHandlingException if an error occurs or if the dataHandler is null
      */
     @Throws(
-      DataHandlingException::class,
-      UnknownLaoException::class,
-      UnknownRollCallException::class,
-      UnknownElectionException::class,
-      NoRollCallException::class,
-      UnknownWitnessMessageException::class
-    )
+        DataHandlingException::class,
+        UnknownLaoException::class,
+        UnknownRollCallException::class,
+        UnknownElectionException::class,
+        NoRollCallException::class,
+        UnknownWitnessMessageException::class)
     fun handleData(context: HandlerContext, data: Data) {
       if (dataHandler == null) {
         throw UnhandledDataTypeException(data, "${key.`object`}#${key.action}")
@@ -137,10 +135,10 @@ class DataRegistry private constructor(mapping: Map<EntryPair, Entry<out Data>>)
      * @throws IllegalArgumentException if the key of the entry is already present </T>
      */
     fun <T : Data> add(
-      obj: Objects,
-      action: Action,
-      dataClass: Class<T>,
-      dataHandler: DataHandler<T>?
+        obj: Objects,
+        action: Action,
+        dataClass: Class<T>,
+        dataHandler: DataHandler<T>?
     ): Builder {
       return add(Entry(pair(obj, action), dataClass, dataHandler))
     }

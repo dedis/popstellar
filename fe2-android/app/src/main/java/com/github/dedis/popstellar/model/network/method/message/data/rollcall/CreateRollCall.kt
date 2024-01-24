@@ -33,13 +33,13 @@ class CreateRollCall : Data {
    * @param laoId ID of the LAO
    */
   constructor(
-    name: String,
-    creation: Long,
-    proposedStart: Long,
-    proposedEnd: Long,
-    location: String,
-    description: String?,
-    laoId: String
+      name: String,
+      creation: Long,
+      proposedStart: Long,
+      proposedEnd: Long,
+      location: String,
+      description: String?,
+      laoId: String
   ) {
     this.name = name
     this.creation = creation
@@ -55,13 +55,13 @@ class CreateRollCall : Data {
   }
 
   constructor(
-    id: String,
-    name: String,
-    creation: Long,
-    proposedStart: Long,
-    proposedEnd: Long,
-    location: String,
-    description: String?
+      id: String,
+      name: String,
+      creation: Long,
+      proposedStart: Long,
+      proposedEnd: Long,
+      location: String,
+      description: String?
   ) {
     this.id = id
     this.name = name
@@ -91,24 +91,17 @@ class CreateRollCall : Data {
     }
     val that = other as CreateRollCall
     return creation == that.creation &&
-      proposedStart == that.proposedStart &&
-      proposedEnd == that.proposedEnd &&
-      id == that.id &&
-      name == that.name &&
-      location == that.location &&
-      getDescription() == that.getDescription()
+        proposedStart == that.proposedStart &&
+        proposedEnd == that.proposedEnd &&
+        id == that.id &&
+        name == that.name &&
+        location == that.location &&
+        getDescription() == that.getDescription()
   }
 
   override fun hashCode(): Int {
     return java.util.Objects.hash(
-      id,
-      name,
-      creation,
-      proposedStart,
-      proposedEnd,
-      location,
-      getDescription()
-    )
+        id, name, creation, proposedStart, proposedEnd, location, getDescription())
   }
 
   override fun toString(): String {

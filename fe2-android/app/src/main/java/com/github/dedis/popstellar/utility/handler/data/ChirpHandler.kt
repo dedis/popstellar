@@ -15,8 +15,8 @@ import timber.log.Timber
 class ChirpHandler
 @Inject
 constructor(
-  private val laoRepo: LAORepository,
-  private val socialMediaRepo: SocialMediaRepository
+    private val laoRepo: LAORepository,
+    private val socialMediaRepo: SocialMediaRepository
 ) {
 
   /**
@@ -32,21 +32,19 @@ constructor(
     val senderPk = context.senderPk
 
     Timber.tag(TAG)
-      .d(
-        "handleChirpAdd: channel: %s, id: %s",
-        channel,
-        addChirp.getParentId().orElse(MessageID(""))
-      )
+        .d(
+            "handleChirpAdd: channel: %s, id: %s",
+            channel,
+            addChirp.getParentId().orElse(MessageID("")))
 
     val laoView = laoRepo.getLaoViewByChannel(channel)
     val chirp =
-      Chirp(
-        messageId,
-        senderPk,
-        addChirp.text,
-        addChirp.timestamp,
-        addChirp.getParentId().orElse(MessageID(""))
-      )
+        Chirp(
+            messageId,
+            senderPk,
+            addChirp.text,
+            addChirp.timestamp,
+            addChirp.getParentId().orElse(MessageID("")))
 
     socialMediaRepo.addChirp(laoView.id, chirp)
   }

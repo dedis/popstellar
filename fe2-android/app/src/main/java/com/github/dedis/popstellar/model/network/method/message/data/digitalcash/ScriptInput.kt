@@ -15,10 +15,10 @@ class ScriptInput
  * @param sig Signature on all txins and txouts using the recipient's private key
  */
 ( // The script describing the unlock mechanism
-  @field:SerializedName("type") val type: String, // The recipient’s public key
-  @field:SerializedName("pubkey")
-  val pubkey: PublicKey, // Signature on all txins and txouts using the recipient's private key
-  @field:SerializedName("sig") val sig: Signature
+    @field:SerializedName("type") val type: String, // The recipient’s public key
+    @field:SerializedName("pubkey")
+    val pubkey: PublicKey, // Signature on all txins and txouts using the recipient's private key
+    @field:SerializedName("sig") val sig: Signature
 ) {
 
   // Transaction with all txin txout

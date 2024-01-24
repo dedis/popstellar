@@ -26,8 +26,7 @@ class MessageGeneral {
   val dataEncoded: Base64URLData
   val data: Data
   val messageId: MessageID
-  var signature: Signature? = null
-    private set
+  val signature: Signature
 
   var witnessSignatures: List<PublicKeySignaturePair> = ArrayList()
     get() = ArrayList(field)
@@ -36,12 +35,12 @@ class MessageGeneral {
   var isEmpty: Boolean = false
 
   constructor(
-    sender: PublicKey,
-    dataBuf: Base64URLData,
-    data: Data,
-    signature: Signature?,
-    messageID: MessageID,
-    witnessSignatures: List<PublicKeySignaturePair>
+      sender: PublicKey,
+      dataBuf: Base64URLData,
+      data: Data,
+      signature: Signature,
+      messageID: MessageID,
+      witnessSignatures: List<PublicKeySignaturePair>
   ) {
     this.sender = sender
     this.dataEncoded = dataBuf
@@ -54,29 +53,30 @@ class MessageGeneral {
   constructor(keyPair: KeyPair, data: Data, gson: Gson) {
     this.sender = keyPair.publicKey
     this.data = data
-    val dataJson = gson.toJson(data, Data::class.java)
 
+    val dataJson = gson.toJson(data, Data::class.java)
     Timber.tag(TAG).d(dataJson)
 
-    dataEncoded = Base64URLData(dataJson.toByteArray(StandardCharsets.UTF_8))
-    generateSignature(keyPair.privateKey)
-    messageId = MessageID(dataEncoded, signature)
+    this.dataEncoded = Base64URLData(dataJson.toByteArray(StandardCharsets.UTF_8))
+    this.signature = generateSignature(keyPair.privateKey)
+    this.messageId = MessageID(dataEncoded, signature)
   }
 
   constructor(
-    keyPair: KeyPair,
-    data: Data,
-    witnessSignatures: List<PublicKeySignaturePair>,
-    gson: Gson
+      keyPair: KeyPair,
+      data: Data,
+      witnessSignatures: List<PublicKeySignaturePair>,
+      gson: Gson
   ) : this(keyPair, data, gson) {
     this.witnessSignatures = witnessSignatures
   }
 
-  private fun generateSignature(signer: PrivateKey) {
-    try {
-      signature = signer.sign(dataEncoded)
+  private fun generateSignature(signer: PrivateKey): Signature {
+    return try {
+      signer.sign(dataEncoded)
     } catch (e: GeneralSecurityException) {
-      Timber.tag(TAG).d(e, "failed to generate signature")
+      Timber.tag(TAG).d(e, "Failed to generate signature")
+      Signature("")
     }
   }
 
@@ -104,11 +104,11 @@ class MessageGeneral {
     }
     val that = other as MessageGeneral
     return sender == that.sender &&
-      dataEncoded == that.dataEncoded &&
-      data == that.data &&
-      messageId == that.messageId &&
-      signature == that.signature &&
-      witnessSignatures == that.witnessSignatures
+        dataEncoded == that.dataEncoded &&
+        data == that.data &&
+        messageId == that.messageId &&
+        signature == that.signature &&
+        witnessSignatures == that.witnessSignatures
   }
 
   override fun hashCode(): Int {

@@ -11,10 +11,10 @@ import com.google.gson.annotations.SerializedName
 /** Data sent to close a Roll-Call */
 @Immutable
 class CloseRollCall(
-  laoId: String,
-  val closes: String,
-  @field:SerializedName("closed_at") val closedAt: Long,
-  attendees: List<PublicKey>
+    laoId: String,
+    val closes: String,
+    @field:SerializedName("closed_at") val closedAt: Long,
+    attendees: List<PublicKey>
 ) : Data() {
   @SerializedName("update_id") val updateId: String
 
@@ -50,9 +50,9 @@ class CloseRollCall(
     }
     val that = other as CloseRollCall
     return closedAt == that.closedAt &&
-      updateId == that.updateId &&
-      closes == that.closes &&
-      attendees == that.attendees
+        updateId == that.updateId &&
+        closes == that.closes &&
+        attendees == that.attendees
   }
 
   override fun hashCode(): Int {

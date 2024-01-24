@@ -43,11 +43,11 @@ class GreetLao(id: String, frontend: String, address: String, peers: List<PeerAd
 
     // Checking the validity of the public key is done via the Public Key class
     this.frontendKey =
-      try {
-        PublicKey(frontend)
-      } catch (e: Exception) {
-        throw IllegalArgumentException("Please provide a valid public key")
-      }
+        try {
+          PublicKey(frontend)
+        } catch (e: Exception) {
+          throw IllegalArgumentException("Please provide a valid public key")
+        }
 
     // Validity of the address is checked at deserialization
     this.address = address
@@ -65,9 +65,9 @@ class GreetLao(id: String, frontend: String, address: String, peers: List<PeerAd
     }
     val that = other as GreetLao
     return that.id == id &&
-      that.address == address &&
-      that.frontendKey == frontendKey &&
-      that.peers == peers
+        that.address == address &&
+        that.frontendKey == frontendKey &&
+        that.peers == peers
   }
 
   override fun hashCode(): Int {

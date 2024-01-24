@@ -45,41 +45,31 @@ object JsonModule {
   @Singleton
   fun provideGson(dataRegistry: DataRegistry): Gson {
     return GsonBuilder()
-      .registerTypeAdapter(GenericMessage::class.java, JsonGenericMessageDeserializer())
-      .registerTypeAdapter(Message::class.java, JsonMessageSerializer())
-      .registerTypeAdapter(Data::class.java, JsonDataSerializer(dataRegistry))
-      .registerTypeAdapter(Vote::class.java, JsonVoteSerializer())
-      .registerTypeAdapter(Result::class.java, JsonResultSerializer())
-      .registerTypeAdapter(ResultMessages::class.java, JsonResultSerializer())
-      .registerTypeAdapter(Answer::class.java, JsonAnswerSerializer())
-      .registerTypeAdapter(MessageGeneral::class.java, JsonMessageGeneralSerializer())
-      .registerTypeAdapter(
-        Channel::class.java,
-        JsonChannelSerializer()
-      ) // Objects serializer for database
-      .registerTypeAdapter(Lao::class.java, JsonLaoSerializer())
-      .registerTypeAdapter(Election::class.java, JsonElectionSerializer())
-      .registerTypeAdapter(
-        TransactionObject::class.java,
-        JsonTransactionObjectSerializer()
-      ) // Base64URLData serializers
-      .registerTypeAdapter(
-        Base64URLData::class.java,
-        JsonBase64DataSerializer { data: String -> Base64URLData(data) }
-      )
-      .registerTypeAdapter(
-        PublicKey::class.java,
-        JsonBase64DataSerializer { data: String -> PublicKey(data) }
-      )
-      .registerTypeAdapter(
-        Signature::class.java,
-        JsonBase64DataSerializer { data: String -> Signature(data) }
-      )
-      .registerTypeAdapter(
-        MessageID::class.java,
-        JsonBase64DataSerializer { data: String -> MessageID(data) }
-      )
-      .disableHtmlEscaping()
-      .create()
+        .registerTypeAdapter(GenericMessage::class.java, JsonGenericMessageDeserializer())
+        .registerTypeAdapter(Message::class.java, JsonMessageSerializer())
+        .registerTypeAdapter(Data::class.java, JsonDataSerializer(dataRegistry))
+        .registerTypeAdapter(Vote::class.java, JsonVoteSerializer())
+        .registerTypeAdapter(Result::class.java, JsonResultSerializer())
+        .registerTypeAdapter(ResultMessages::class.java, JsonResultSerializer())
+        .registerTypeAdapter(Answer::class.java, JsonAnswerSerializer())
+        .registerTypeAdapter(MessageGeneral::class.java, JsonMessageGeneralSerializer())
+        .registerTypeAdapter(
+            Channel::class.java, JsonChannelSerializer()) // Objects serializer for database
+        .registerTypeAdapter(Lao::class.java, JsonLaoSerializer())
+        .registerTypeAdapter(Election::class.java, JsonElectionSerializer())
+        .registerTypeAdapter(
+            TransactionObject::class.java,
+            JsonTransactionObjectSerializer()) // Base64URLData serializers
+        .registerTypeAdapter(
+            Base64URLData::class.java,
+            JsonBase64DataSerializer { data: String -> Base64URLData(data) })
+        .registerTypeAdapter(
+            PublicKey::class.java, JsonBase64DataSerializer { data: String -> PublicKey(data) })
+        .registerTypeAdapter(
+            Signature::class.java, JsonBase64DataSerializer { data: String -> Signature(data) })
+        .registerTypeAdapter(
+            MessageID::class.java, JsonBase64DataSerializer { data: String -> MessageID(data) })
+        .disableHtmlEscaping()
+        .create()
   }
 }

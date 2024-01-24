@@ -21,40 +21,34 @@ import java.lang.reflect.Type
 import java.nio.charset.StandardCharsets
 
 class JsonMessageGeneralSerializer :
-  JsonSerializer<MessageGeneral>, JsonDeserializer<MessageGeneral> {
+    JsonSerializer<MessageGeneral>, JsonDeserializer<MessageGeneral> {
   @Throws(JsonParseException::class)
   override fun deserialize(
-    json: JsonElement,
-    typeOfT: Type,
-    context: JsonDeserializationContext
+      json: JsonElement,
+      typeOfT: Type,
+      context: JsonDeserializationContext
   ): MessageGeneral {
     val jsonObject = context.deserialize<JsonMessageData>(json, JsonMessageData::class.java)
     val dataElement = JsonParser.parseString(jsonObject.data.data.toString(StandardCharsets.UTF_8))
     val data = context.deserialize<Data>(dataElement, Data::class.java)
 
     return MessageGeneral(
-      jsonObject.sender,
-      jsonObject.data,
-      data,
-      jsonObject.signature,
-      jsonObject.messageID,
-      jsonObject.witnessSignatures
-    )
+        jsonObject.sender,
+        jsonObject.data,
+        data,
+        jsonObject.signature,
+        jsonObject.messageID,
+        jsonObject.witnessSignatures)
   }
 
   override fun serialize(
-    src: MessageGeneral,
-    typeOfSrc: Type,
-    context: JsonSerializationContext
+      src: MessageGeneral,
+      typeOfSrc: Type,
+      context: JsonSerializationContext
   ): JsonElement {
     val jsonObject =
-      JsonMessageData(
-        src.dataEncoded,
-        src.sender,
-        src.signature,
-        src.messageId,
-        src.witnessSignatures
-      )
+        JsonMessageData(
+            src.dataEncoded, src.sender, src.signature, src.messageId, src.witnessSignatures)
     val result = context.serialize(jsonObject)
 
     verifyJson(JsonUtils.GENERAL_MESSAGE_SCHEMA, result.toString())
@@ -63,10 +57,11 @@ class JsonMessageGeneralSerializer :
   }
 
   private class JsonMessageData(
-    val data: Base64URLData,
-    val sender: PublicKey,
-    val signature: Signature?,
-    @field:SerializedName("message_id") val messageID: MessageID,
-    @field:SerializedName("witness_signatures") val witnessSignatures: List<PublicKeySignaturePair>
+      val data: Base64URLData,
+      val sender: PublicKey,
+      val signature: Signature,
+      @field:SerializedName("message_id") val messageID: MessageID,
+      @field:SerializedName("witness_signatures")
+      val witnessSignatures: List<PublicKeySignaturePair>
   )
 }

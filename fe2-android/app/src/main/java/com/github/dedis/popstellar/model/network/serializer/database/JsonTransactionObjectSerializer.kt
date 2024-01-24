@@ -15,12 +15,12 @@ import com.google.gson.JsonSerializer
 import java.lang.reflect.Type
 
 class JsonTransactionObjectSerializer :
-  JsonSerializer<TransactionObject>, JsonDeserializer<TransactionObject> {
+    JsonSerializer<TransactionObject>, JsonDeserializer<TransactionObject> {
   @Throws(JsonParseException::class)
   override fun deserialize(
-    json: JsonElement,
-    typeOfT: Type,
-    context: JsonDeserializationContext
+      json: JsonElement,
+      typeOfT: Type,
+      context: JsonDeserializationContext
   ): TransactionObject {
     val jsonObject = json.asJsonObject
 
@@ -50,9 +50,9 @@ class JsonTransactionObjectSerializer :
   }
 
   override fun serialize(
-    transactionObject: TransactionObject,
-    typeOfSrc: Type,
-    context: JsonSerializationContext
+      transactionObject: TransactionObject,
+      typeOfSrc: Type,
+      context: JsonSerializationContext
   ): JsonElement {
     val jsonObject = JsonObject()
 

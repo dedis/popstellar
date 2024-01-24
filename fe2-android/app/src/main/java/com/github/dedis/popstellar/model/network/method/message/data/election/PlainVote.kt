@@ -27,11 +27,11 @@ class PlainVote : Vote {
    * @param electionId Id of the election
    */
   constructor(
-    questionId: String,
-    vote: Int?,
-    writeInEnabled: Boolean,
-    writeIn: String?,
-    electionId: String?
+      questionId: String,
+      vote: Int?,
+      writeInEnabled: Boolean,
+      writeIn: String?,
+      electionId: String?
   ) {
     this.questionId = questionId
     this.vote = if (writeInEnabled) null else vote

@@ -15,9 +15,9 @@ import java.lang.reflect.Type
 /** Simple serializer to convert json elements to Vote types and vice-versa */
 class JsonVoteSerializer : JsonSerializer<Vote?>, JsonDeserializer<Vote> {
   override fun serialize(
-    src: Vote?,
-    typeOfSrc: Type,
-    context: JsonSerializationContext
+      src: Vote?,
+      typeOfSrc: Type,
+      context: JsonSerializationContext
   ): JsonElement {
     // make sure the actual class of the vote is used for serialization.
     // Even if the asked type is Vote
@@ -26,9 +26,9 @@ class JsonVoteSerializer : JsonSerializer<Vote?>, JsonDeserializer<Vote> {
 
   @Throws(JsonParseException::class)
   override fun deserialize(
-    json: JsonElement,
-    typeOfT: Type,
-    context: JsonDeserializationContext
+      json: JsonElement,
+      typeOfT: Type,
+      context: JsonDeserializationContext
   ): Vote {
     val inter = context.deserialize<IntermediateVote>(json, IntermediateVote::class.java)
     return inter.convert()
@@ -36,9 +36,9 @@ class JsonVoteSerializer : JsonSerializer<Vote?>, JsonDeserializer<Vote> {
 
   @Suppress("unused")
   private class IntermediateVote(
-    private val id: String,
-    private val question: String,
-    private val vote: JsonPrimitive
+      private val id: String,
+      private val question: String,
+      private val vote: JsonPrimitive
   ) {
 
     fun convert(): Vote {

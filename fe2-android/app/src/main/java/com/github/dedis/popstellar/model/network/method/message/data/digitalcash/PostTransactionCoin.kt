@@ -8,12 +8,12 @@ import java.util.Objects
 
 @Immutable
 class PostTransactionCoin( // the transaction object // String
-  @field:SerializedName(value = "transaction") val transaction: Transaction
+    @field:SerializedName(value = "transaction") val transaction: Transaction
 ) : Data() {
   @SerializedName(value = "transaction_id")
   val transactionId // TxOutHash SHA256 over base64encode(transaction)
   : String =
-    transaction.computeId()
+      transaction.computeId()
 
   override fun equals(other: Any?): Boolean {
     if (this === other) {
@@ -35,6 +35,6 @@ class PostTransactionCoin( // the transaction object // String
   }
 
   override val `object`: String =
-    com.github.dedis.popstellar.model.network.method.message.data.Objects.COIN.`object`
+      com.github.dedis.popstellar.model.network.method.message.data.Objects.COIN.`object`
   override val action: String = Action.POST_TRANSACTION.action
 }

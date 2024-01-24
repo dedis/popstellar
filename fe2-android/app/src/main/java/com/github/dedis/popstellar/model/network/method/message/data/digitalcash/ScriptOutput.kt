@@ -12,8 +12,8 @@ class ScriptOutput
  * @param pubKeyHash Hash of the recipient’s public key
  */
 ( // Type of script
-  @field:SerializedName("type") val type: String, // Hash of the recipient’s public key
-  @field:SerializedName("pubkey_hash") val pubKeyHash: String
+    @field:SerializedName("type") val type: String, // Hash of the recipient’s public key
+    @field:SerializedName("pubkey_hash") val pubKeyHash: String
 ) {
 
   override fun equals(other: Any?): Boolean {

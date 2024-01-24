@@ -10,11 +10,11 @@ import java.util.Collections
 
 @Immutable
 class ConsensusLearn(
-  @field:SerializedName("instance_id") val instanceId: String,
-  @field:SerializedName("message_id") val messageId: MessageID,
-  @field:SerializedName("created_at") val creation: Long,
-  decision: Boolean,
-  acceptorSignatures: List<String>
+    @field:SerializedName("instance_id") val instanceId: String,
+    @field:SerializedName("message_id") val messageId: MessageID,
+    @field:SerializedName("created_at") val creation: Long,
+    decision: Boolean,
+    acceptorSignatures: List<String>
 ) : Data() {
 
   @SerializedName("value") val learnValue: LearnValue
@@ -51,10 +51,10 @@ class ConsensusLearn(
     }
     val that = other as ConsensusLearn
     return creation == that.creation &&
-      instanceId == that.instanceId &&
-      messageId == that.messageId &&
-      learnValue == that.learnValue &&
-      acceptorSignatures == that.acceptorSignatures
+        instanceId == that.instanceId &&
+        messageId == that.messageId &&
+        learnValue == that.learnValue &&
+        acceptorSignatures == that.acceptorSignatures
   }
 
   override fun toString(): String {

@@ -20,9 +20,9 @@ import java.lang.reflect.Type
 class JsonLaoSerializer : JsonSerializer<Lao>, JsonDeserializer<Lao> {
   @Throws(JsonParseException::class)
   override fun deserialize(
-    json: JsonElement,
-    typeOfT: Type,
-    context: JsonDeserializationContext
+      json: JsonElement,
+      typeOfT: Type,
+      context: JsonDeserializationContext
   ): Lao {
     val jsonObject = json.asJsonObject
 
@@ -38,7 +38,7 @@ class JsonLaoSerializer : JsonSerializer<Lao>, JsonDeserializer<Lao> {
     val creation = jsonObject["creation"].asLong
     val organizer = context.deserialize<PublicKey>(jsonObject["organizer"], PublicKey::class.java)
     val modificationId =
-      context.deserialize<MessageID>(jsonObject["modificationId"], MessageID::class.java)
+        context.deserialize<MessageID>(jsonObject["modificationId"], MessageID::class.java)
 
     // Deserialize the Set of PendingUpdate
     val pendingUpdatesJsonArray = jsonObject["pendingUpdates"].asJsonArray
@@ -48,21 +48,21 @@ class JsonLaoSerializer : JsonSerializer<Lao>, JsonDeserializer<Lao> {
     }
 
     return LaoBuilder()
-      .setChannel(channel)
-      .setId(id)
-      .setName(name)
-      .setLastModified(lastModified)
-      .setCreation(creation)
-      .setOrganizer(organizer)
-      .setModificationId(modificationId)
-      .setPendingUpdates(pendingUpdates)
-      .build()
+        .setChannel(channel)
+        .setId(id)
+        .setName(name)
+        .setLastModified(lastModified)
+        .setCreation(creation)
+        .setOrganizer(organizer)
+        .setModificationId(modificationId)
+        .setPendingUpdates(pendingUpdates)
+        .build()
   }
 
   override fun serialize(
-    lao: Lao,
-    typeOfSrc: Type,
-    context: JsonSerializationContext
+      lao: Lao,
+      typeOfSrc: Type,
+      context: JsonSerializationContext
   ): JsonElement {
     val jsonObject = JsonObject()
 

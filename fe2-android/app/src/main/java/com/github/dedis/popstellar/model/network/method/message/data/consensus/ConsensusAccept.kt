@@ -9,11 +9,11 @@ import com.google.gson.annotations.SerializedName
 
 @Immutable
 class ConsensusAccept(
-  @field:SerializedName("instance_id") val instanceId: String,
-  @field:SerializedName("message_id") val messageId: MessageID,
-  @field:SerializedName("created_at") val creation: Long,
-  acceptedTry: Int,
-  acceptedValue: Boolean
+    @field:SerializedName("instance_id") val instanceId: String,
+    @field:SerializedName("message_id") val messageId: MessageID,
+    @field:SerializedName("created_at") val creation: Long,
+    acceptedTry: Int,
+    acceptedValue: Boolean
 ) : Data() {
 
   @SerializedName("value") val acceptValue: AcceptValue
@@ -43,9 +43,9 @@ class ConsensusAccept(
     }
     val that = other as ConsensusAccept
     return creation == that.creation &&
-      instanceId == that.instanceId &&
-      messageId == that.messageId &&
-      acceptValue == that.acceptValue
+        instanceId == that.instanceId &&
+        messageId == that.messageId &&
+        acceptValue == that.acceptValue
   }
 
   override fun hashCode(): Int {

@@ -31,20 +31,20 @@ class CreateMeeting : Data {
    * @throws IllegalArgumentException if the id is invalid
    */
   constructor(
-    laoId: String,
-    id: String,
-    name: String,
-    creation: Long,
-    location: String?,
-    start: Long,
-    end: Long
+      laoId: String,
+      id: String,
+      name: String,
+      creation: Long,
+      location: String?,
+      start: Long,
+      end: Long
   ) {
     val builder =
-      verify()
-        .isNotEmptyBase64(laoId, "lao id")
-        .validCreateMeetingId(id, laoId, creation, name)
-        .validPastTimes(creation)
-        .orderedTimes(creation, start)
+        verify()
+            .isNotEmptyBase64(laoId, "lao id")
+            .validCreateMeetingId(id, laoId, creation, name)
+            .validPastTimes(creation)
+            .orderedTimes(creation, start)
 
     this.id = id
     this.name = name
@@ -60,12 +60,12 @@ class CreateMeeting : Data {
   }
 
   constructor(
-    laoId: String,
-    name: String,
-    creation: Long,
-    location: String?,
-    start: Long,
-    end: Long
+      laoId: String,
+      name: String,
+      creation: Long,
+      location: String?,
+      start: Long,
+      end: Long
   ) {
     id = Meeting.generateCreateMeetingId(laoId, creation, name)
     this.name = name
@@ -94,11 +94,11 @@ class CreateMeeting : Data {
     }
     val that = other as CreateMeeting
     return creation == that.creation &&
-      start == that.start &&
-      end == that.end &&
-      id == that.id &&
-      name == that.name &&
-      getLocation() == that.getLocation()
+        start == that.start &&
+        end == that.end &&
+        id == that.id &&
+        name == that.name &&
+        getLocation() == that.getLocation()
   }
 
   override fun hashCode(): Int {

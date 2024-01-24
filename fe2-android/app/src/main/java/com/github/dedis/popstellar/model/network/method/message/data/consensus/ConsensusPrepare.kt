@@ -9,10 +9,10 @@ import com.google.gson.annotations.SerializedName
 
 @Immutable
 class ConsensusPrepare(
-  @field:SerializedName("instance_id") val instanceId: String,
-  @field:SerializedName("message_id") val messageId: MessageID,
-  @field:SerializedName("created_at") val creation: Long,
-  proposedTry: Int
+    @field:SerializedName("instance_id") val instanceId: String,
+    @field:SerializedName("message_id") val messageId: MessageID,
+    @field:SerializedName("created_at") val creation: Long,
+    proposedTry: Int
 ) : Data() {
 
   @SerializedName("value") val prepareValue: PrepareValue
@@ -41,9 +41,9 @@ class ConsensusPrepare(
     }
     val that = other as ConsensusPrepare
     return creation == that.creation &&
-      instanceId == that.instanceId &&
-      messageId == that.messageId &&
-      prepareValue == that.prepareValue
+        instanceId == that.instanceId &&
+        messageId == that.messageId &&
+        prepareValue == that.prepareValue
   }
 
   override fun hashCode(): Int {

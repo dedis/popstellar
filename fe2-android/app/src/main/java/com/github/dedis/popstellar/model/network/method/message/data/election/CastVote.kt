@@ -34,9 +34,9 @@ class CastVote : Data {
   constructor(votes: List<Vote>, electionId: String, laoId: String) {
     // Lao id and election id are checked to match existing ones in the cast vote handler
     verify()
-      .isNotEmptyBase64(electionId, "election id")
-      .isNotEmptyBase64(laoId, "lao id")
-      .validVotes(votes)
+        .isNotEmptyBase64(electionId, "election id")
+        .isNotEmptyBase64(laoId, "lao id")
+        .validVotes(votes)
 
     this.creation = Instant.now().epochSecond
     this.electionId = electionId
@@ -55,10 +55,10 @@ class CastVote : Data {
   constructor(votes: List<Vote>, electionId: String, laoId: String, createdAt: Long) {
     // Lao id and election id are checked to match existing ones in the cast vote handler
     verify()
-      .isNotEmptyBase64(electionId, "election id")
-      .isNotEmptyBase64(laoId, "lao id")
-      .validVotes(votes)
-      .validPastTimes(createdAt)
+        .isNotEmptyBase64(electionId, "election id")
+        .isNotEmptyBase64(laoId, "lao id")
+        .validVotes(votes)
+        .validPastTimes(createdAt)
 
     this.creation = createdAt
     this.electionId = electionId
@@ -81,9 +81,9 @@ class CastVote : Data {
     }
     val that = other as CastVote
     return laoId == that.laoId &&
-      creation == that.creation &&
-      electionId == that.electionId &&
-      votes == that.votes
+        creation == that.creation &&
+        electionId == that.electionId &&
+        votes == that.votes
   }
 
   override fun hashCode(): Int {

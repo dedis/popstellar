@@ -23,9 +23,9 @@ class ElectionOpen(laoId: String, electionId: String, openedAt: Long) : Data() {
   init {
     // The election open handler checks that lao and election id match with an existing lao
     verify()
-      .isNotEmptyBase64(laoId, "lao id")
-      .isNotEmptyBase64(electionId, "election id")
-      .validPastTimes(openedAt)
+        .isNotEmptyBase64(laoId, "lao id")
+        .isNotEmptyBase64(electionId, "election id")
+        .validPastTimes(openedAt)
 
     this.laoId = laoId
     this.electionId = electionId
@@ -47,8 +47,8 @@ class ElectionOpen(laoId: String, electionId: String, openedAt: Long) : Data() {
     }
     val election = other as ElectionOpen
     return openedAt == election.openedAt &&
-      laoId == election.laoId &&
-      electionId == election.electionId
+        laoId == election.laoId &&
+        electionId == election.electionId
   }
 
   override fun hashCode(): Int {

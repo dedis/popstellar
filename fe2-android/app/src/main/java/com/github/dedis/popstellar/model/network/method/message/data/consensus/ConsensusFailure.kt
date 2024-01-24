@@ -17,9 +17,9 @@ class ConsensusFailure
  * @param creation UNIX timestamp in UTC
  */
 (
-  @field:SerializedName("instance_id") val instanceId: String,
-  @field:SerializedName("message_id") val messageId: MessageID,
-  @field:SerializedName("created_at") val creation: Long
+    @field:SerializedName("instance_id") val instanceId: String,
+    @field:SerializedName("message_id") val messageId: MessageID,
+    @field:SerializedName("created_at") val creation: Long
 ) : Data() {
 
   override val `object`: String = Objects.CONSENSUS.`object`

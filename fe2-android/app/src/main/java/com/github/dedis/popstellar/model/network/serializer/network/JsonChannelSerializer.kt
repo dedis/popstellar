@@ -13,17 +13,17 @@ import java.lang.reflect.Type
 class JsonChannelSerializer : JsonSerializer<Channel>, JsonDeserializer<Channel> {
   @Throws(JsonParseException::class)
   override fun deserialize(
-    json: JsonElement,
-    typeOfT: Type,
-    context: JsonDeserializationContext
+      json: JsonElement,
+      typeOfT: Type,
+      context: JsonDeserializationContext
   ): Channel {
     return Channel.fromString(json.asString)
   }
 
   override fun serialize(
-    channel: Channel,
-    typeOfSrc: Type,
-    context: JsonSerializationContext
+      channel: Channel,
+      typeOfSrc: Type,
+      context: JsonSerializationContext
   ): JsonElement {
     return JsonPrimitive(channel.asString)
   }

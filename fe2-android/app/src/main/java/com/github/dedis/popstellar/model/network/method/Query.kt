@@ -15,9 +15,9 @@ abstract class Query
  * @param id request ID of the query
  */
 protected constructor(
-  channel: Channel?,
-  /** Returns the request ID. */
-  @field:Transient val requestId: Int
+    channel: Channel?,
+    /** Returns the request ID. */
+    @field:Transient val requestId: Int
 ) : Message(channel) {
 
   override fun equals(other: Any?): Boolean {

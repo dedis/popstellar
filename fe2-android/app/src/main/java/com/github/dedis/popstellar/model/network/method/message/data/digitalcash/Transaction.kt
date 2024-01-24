@@ -17,22 +17,22 @@ import java.util.Objects
  * @param lockTime TimeStamp
  */
 class Transaction(
-  @field:SerializedName(value = "version") val version: Int,
-  inputs: List<Input>,
-  outputs: List<Output>,
-  @field:SerializedName("lock_time") val lockTime: Long
+    @field:SerializedName(value = "version") val version: Int,
+    inputs: List<Input>,
+    outputs: List<Output>,
+    @field:SerializedName("lock_time") val lockTime: Long
 ) {
 
   @SerializedName(value = "inputs")
   val inputs // [Array[Objects]] array of output transactions to use as inputs
   : List<Input> =
-    Collections.unmodifiableList(inputs)
+      Collections.unmodifiableList(inputs)
     get() = ArrayList(field)
 
   @SerializedName(value = "outputs")
   val outputs // [Array[Objects]] array of outputs from this transactions
   : List<Output> =
-    Collections.unmodifiableList(outputs)
+      Collections.unmodifiableList(outputs)
     get() = ArrayList(field)
 
   fun computeId(): String {
@@ -83,9 +83,9 @@ class Transaction(
     }
     val that = other as Transaction
     return version == that.version &&
-      lockTime == that.lockTime &&
-      inputs == that.inputs &&
-      outputs == that.outputs
+        lockTime == that.lockTime &&
+        inputs == that.inputs &&
+        outputs == that.outputs
   }
 
   override fun hashCode(): Int {
@@ -105,8 +105,8 @@ class Transaction(
      * @return sig other all the outputs and inputs with the public key
      */
     fun computeSigOutputsPairTxOutHashAndIndex(
-      outputs: List<Output>,
-      inputsPairs: Map<String, Int>
+        outputs: List<Output>,
+        inputsPairs: Map<String, Int>
     ): String {
       // input #1: tx_out_hash Value //input #1: tx_out_index Value
       // input #2: tx_out_hash Value //input #2: tx_out_index Value ...

@@ -14,9 +14,9 @@ class AddReaction(codepoint: String, chirpId: MessageID, timestamp: Long) : Data
 
   init {
     verify()
-      .isNotEmptyBase64(chirpId.encoded, "chirp id")
-      .isValidEmoji(codepoint, "reaction codepoint")
-      .validPastTimes(timestamp)
+        .isNotEmptyBase64(chirpId.encoded, "chirp id")
+        .isValidEmoji(codepoint, "reaction codepoint")
+        .validPastTimes(timestamp)
 
     this.codepoint = codepoint
     this.chirpId = chirpId

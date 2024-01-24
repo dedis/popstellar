@@ -10,8 +10,8 @@ enum class Action
  * @param action the name of the action
  */
 (
-  /** Returns the name of the Action. */
-  val action: String
+    /** Returns the name of the Action. */
+    val action: String
 ) {
   CREATE("create"),
   END("end"),
@@ -63,9 +63,9 @@ enum class Action
      */
     fun find(searched: String): Action? {
       return ALL.stream()
-        .filter { action: Action -> action.action == searched }
-        .findFirst()
-        .orElse(null)
+          .filter { action: Action -> action.action == searched }
+          .findFirst()
+          .orElse(null)
     }
   }
 }

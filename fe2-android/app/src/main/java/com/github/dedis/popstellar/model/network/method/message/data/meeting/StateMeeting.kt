@@ -9,16 +9,16 @@ import java.util.Optional
 
 /** Data received to track the state of a meeting */
 class StateMeeting(
-  laoId: String,
-  id: String,
-  name: String,
-  creation: Long,
-  lastModified: Long,
-  location: String?,
-  start: Long,
-  end: Long,
-  modificationId: String,
-  modificationSignatures: List<String>
+    laoId: String,
+    id: String,
+    name: String,
+    creation: Long,
+    lastModified: Long,
+    location: String?,
+    start: Long,
+    end: Long,
+    modificationId: String,
+    modificationSignatures: List<String>
 ) : Data() {
   val id: String
   val name: String
@@ -53,11 +53,11 @@ class StateMeeting(
    */
   init {
     val builder =
-      verify()
-        .isNotEmptyBase64(laoId, "lao id")
-        .validStateMeetingId(id, laoId, creation, name)
-        .validPastTimes(creation)
-        .orderedTimes(creation, start)
+        verify()
+            .isNotEmptyBase64(laoId, "lao id")
+            .validStateMeetingId(id, laoId, creation, name)
+            .validPastTimes(creation)
+            .orderedTimes(creation, start)
 
     this.id = id
     this.name = name
@@ -94,28 +94,27 @@ class StateMeeting(
     }
     val that = other as StateMeeting
     return creation == that.creation &&
-      lastModified == that.lastModified &&
-      start == that.start &&
-      end == that.end &&
-      id == that.id &&
-      name == that.name &&
-      getLocation() == that.getLocation() &&
-      modificationId == that.modificationId &&
-      modificationSignatures == that.modificationSignatures
+        lastModified == that.lastModified &&
+        start == that.start &&
+        end == that.end &&
+        id == that.id &&
+        name == that.name &&
+        getLocation() == that.getLocation() &&
+        modificationId == that.modificationId &&
+        modificationSignatures == that.modificationSignatures
   }
 
   override fun hashCode(): Int {
     return java.util.Objects.hash(
-      id,
-      name,
-      creation,
-      lastModified,
-      getLocation(),
-      start,
-      end,
-      modificationId,
-      modificationSignatures
-    )
+        id,
+        name,
+        creation,
+        lastModified,
+        getLocation(),
+        start,
+        end,
+        modificationId,
+        modificationSignatures)
   }
 
   override fun toString(): String {

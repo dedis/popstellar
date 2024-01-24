@@ -17,9 +17,9 @@ class NotifyAddChirp
  * @param timestamp UNIX timestamp in UTC
  */
 (
-  @field:SerializedName("chirp_id") val chirpId: MessageID,
-  val channel: Channel,
-  val timestamp: Long
+    @field:SerializedName("chirp_id") val chirpId: MessageID,
+    val channel: Channel,
+    val timestamp: Long
 ) : Data() {
 
   override val `object`: String

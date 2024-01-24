@@ -9,12 +9,12 @@ import com.google.gson.annotations.SerializedName
 
 @Immutable
 class ConsensusPromise(
-  @field:SerializedName("instance_id") val instanceId: String,
-  @field:SerializedName("message_id") val messageId: MessageID,
-  @field:SerializedName("created_at") val creation: Long,
-  acceptedTry: Int,
-  acceptedValue: Boolean,
-  promisedTry: Int
+    @field:SerializedName("instance_id") val instanceId: String,
+    @field:SerializedName("message_id") val messageId: MessageID,
+    @field:SerializedName("created_at") val creation: Long,
+    acceptedTry: Int,
+    acceptedValue: Boolean,
+    promisedTry: Int
 ) : Data() {
 
   @SerializedName("value") val promiseValue: PromiseValue
@@ -45,9 +45,9 @@ class ConsensusPromise(
     }
     val that = other as ConsensusPromise
     return creation == that.creation &&
-      instanceId == that.instanceId &&
-      messageId == that.messageId &&
-      promiseValue == that.promiseValue
+        instanceId == that.instanceId &&
+        messageId == that.messageId &&
+        promiseValue == that.promiseValue
   }
 
   override fun hashCode(): Int {

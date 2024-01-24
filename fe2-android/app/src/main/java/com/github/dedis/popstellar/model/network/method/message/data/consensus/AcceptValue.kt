@@ -6,8 +6,8 @@ import java.util.Objects
 
 @Immutable
 class AcceptValue(
-  @field:SerializedName("accepted_try") val acceptedTry: Int,
-  @field:SerializedName("accepted_value") val isAcceptedValue: Boolean
+    @field:SerializedName("accepted_try") val acceptedTry: Int,
+    @field:SerializedName("accepted_value") val isAcceptedValue: Boolean
 ) {
 
   override fun equals(other: Any?): Boolean {

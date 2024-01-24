@@ -6,8 +6,8 @@ import java.util.Objects
 
 @Immutable
 class ProposeValue(
-  @field:SerializedName("proposed_try") val proposedTry: Int,
-  @field:SerializedName("proposed_value") val isProposedValue: Boolean
+    @field:SerializedName("proposed_try") val proposedTry: Int,
+    @field:SerializedName("proposed_value") val isProposedValue: Boolean
 ) {
 
   override fun equals(other: Any?): Boolean {

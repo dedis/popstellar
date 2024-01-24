@@ -6,9 +6,9 @@ import java.util.Objects
 
 @Immutable
 class PromiseValue(
-  @field:SerializedName("accepted_try") val acceptedTry: Int,
-  @field:SerializedName("accepted_value") val isAcceptedValue: Boolean,
-  @field:SerializedName("promised_try") val promisedTry: Int
+    @field:SerializedName("accepted_try") val acceptedTry: Int,
+    @field:SerializedName("accepted_value") val isAcceptedValue: Boolean,
+    @field:SerializedName("promised_try") val promisedTry: Int
 ) {
 
   override fun equals(other: Any?): Boolean {
@@ -20,8 +20,8 @@ class PromiseValue(
     }
     val that = other as PromiseValue
     return acceptedTry == that.acceptedTry &&
-      isAcceptedValue == that.isAcceptedValue &&
-      promisedTry == that.promisedTry
+        isAcceptedValue == that.isAcceptedValue &&
+        promisedTry == that.promisedTry
   }
 
   override fun hashCode(): Int {

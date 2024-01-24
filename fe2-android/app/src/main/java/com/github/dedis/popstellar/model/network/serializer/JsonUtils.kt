@@ -81,8 +81,7 @@ object JsonUtils {
       val errors = schema.validate(OBJECT_MAPPER.readTree(json))
       if (errors.isNotEmpty()) {
         throw JsonParseException(
-          "Json : $json\nValidationMessage errors : ${errors.toTypedArray().contentToString()}"
-        )
+            "Json : $json\nValidationMessage errors : ${errors.toTypedArray().contentToString()}")
       }
     } catch (e: JsonProcessingException) {
       throw JsonParseException(e)

@@ -34,10 +34,10 @@ import timber.log.Timber
 class ElectionHandler
 @Inject
 constructor(
-  private val messageRepo: MessageRepository,
-  private val laoRepo: LAORepository,
-  private val electionRepository: ElectionRepository,
-  private val witnessingRepository: WitnessingRepository
+    private val messageRepo: MessageRepository,
+    private val laoRepo: LAORepository,
+    private val electionRepository: ElectionRepository,
+    private val witnessingRepository: WitnessingRepository
 ) {
 
   /**
@@ -62,13 +62,13 @@ constructor(
 
     val laoView = laoRepo.getLaoViewByChannel(channel)
     val election =
-      ElectionBuilder(laoView.id, electionSetup.creation, electionSetup.name)
-        .setElectionVersion(electionSetup.electionVersion)
-        .setElectionQuestions(electionSetup.questions)
-        .setStart(electionSetup.startTime)
-        .setEnd(electionSetup.endTime)
-        .setState(EventState.CREATED)
-        .build()
+        ElectionBuilder(laoView.id, electionSetup.creation, electionSetup.name)
+            .setElectionVersion(electionSetup.electionVersion)
+            .setElectionQuestions(electionSetup.questions)
+            .setStart(electionSetup.startTime)
+            .setEnd(electionSetup.endTime)
+            .setState(EventState.CREATED)
+            .build()
 
     witnessingRepository.addWitnessMessage(laoId, electionSetupWitnessMessage(messageId, election))
     if (witnessingRepository.areWitnessesEmpty(laoId)) {
@@ -79,12 +79,12 @@ constructor(
 
     // Once the election is created, we subscribe to the election channel
     context.messageSender
-      .subscribe(election.channel)
-      .doOnError { err: Throwable ->
-        Timber.tag(TAG).e(err, "An error occurred while subscribing to election channel")
-      }
-      .onErrorComplete()
-      .subscribe()
+        .subscribe(election.channel)
+        .doOnError { err: Throwable ->
+          Timber.tag(TAG).e(err, "An error occurred while subscribing to election channel")
+        }
+        .onErrorComplete()
+        .subscribe()
   }
 
   /**
@@ -107,16 +107,12 @@ constructor(
     // If the state is not created, then this message is invalid
     if (election.state != EventState.CREATED) {
       throw InvalidStateException(
-        electionOpen,
-        "election",
-        election.state.name,
-        EventState.CREATED.name
-      )
+          electionOpen, "election", election.state.name, EventState.CREATED.name)
     }
 
     // Sets the start time to now
     val updated =
-      election.builder().setState(EventState.OPENED).setStart(electionOpen.openedAt).build()
+        election.builder().setState(EventState.OPENED).setStart(electionOpen.openedAt).build()
     Timber.tag(TAG).d("election opened %d", updated.startTimestamp)
 
     electionRepository.updateElection(updated)
@@ -140,12 +136,12 @@ constructor(
     // No need to check here that resultsQuestions is not empty, as it is already done at the
     // creation of the ElectionResult Data
     val election =
-      electionRepository
-        .getElectionByChannel(channel)
-        .builder()
-        .setResults(computeResults(resultsQuestions))
-        .setState(EventState.RESULTS_READY)
-        .build()
+        electionRepository
+            .getElectionByChannel(channel)
+            .builder()
+            .setResults(computeResults(resultsQuestions))
+            .setState(EventState.RESULTS_READY)
+            .build()
     val laoId = channel.extractLaoId()
 
     witnessingRepository.addWitnessMessage(laoId, electionResultWitnessMessage(messageId, election))
@@ -169,7 +165,11 @@ constructor(
     Timber.tag(TAG).d("handleElectionEnd: channel %s", channel)
 
     val election =
-      electionRepository.getElectionByChannel(channel).builder().setState(EventState.CLOSED).build()
+        electionRepository
+            .getElectionByChannel(channel)
+            .builder()
+            .setState(EventState.CLOSED)
+            .build()
     electionRepository.updateElection(election)
   }
 
@@ -210,13 +210,11 @@ constructor(
 
       // Retrieve previous message and make sure it is a CastVote
       val previousData =
-        messageRepo.getMessage(previousMessageId)?.data
-          ?: error("The message corresponding to $messageId does not exist")
+          messageRepo.getMessage(previousMessageId)?.data
+              ?: error("The message corresponding to $messageId does not exist")
       if (previousData !is CastVote) {
         throw DataHandlingException(
-          previousData,
-          "The previous message of a cast vote was not a CastVote"
-        )
+            previousData, "The previous message of a cast vote was not a CastVote")
       }
 
       // Verify the current cast vote message is the last one received
@@ -238,33 +236,33 @@ constructor(
     Timber.tag(TAG).d("handleElectionKey: channel %s", channel)
 
     val election =
-      electionRepository
-        .getElectionByChannel(channel)
-        .builder()
-        .setElectionKey(electionKey.electionVoteKey)
-        .build()
+        electionRepository
+            .getElectionByChannel(channel)
+            .builder()
+            .setElectionKey(electionKey.electionVoteKey)
+            .build()
     electionRepository.updateElection(election)
 
     Timber.tag(TAG).d("handleElectionKey: election key has been set")
   }
 
   private fun updateElectionWithVotes(
-    castVote: CastVote,
-    messageId: MessageID,
-    senderPk: PublicKey,
-    election: Election
+      castVote: CastVote,
+      messageId: MessageID,
+      senderPk: PublicKey,
+      election: Election
   ) {
     val updated =
-      election
-        .builder()
-        .updateMessageMap(senderPk, messageId)
-        .updateVotes(senderPk, castVote.votes)
-        .build()
+        election
+            .builder()
+            .updateMessageMap(senderPk, messageId)
+            .updateVotes(senderPk, castVote.votes)
+            .build()
     electionRepository.updateElection(updated)
   }
 
   private fun computeResults(
-    electionResultsQuestions: List<ElectionResultQuestion>
+      electionResultsQuestions: List<ElectionResultQuestion>
   ): Map<String, Set<QuestionResult>> {
     val results: MutableMap<String, Set<QuestionResult>> = HashMap()
     for (resultQuestion in electionResultsQuestions) {
@@ -286,10 +284,10 @@ constructor(
       val message = WitnessMessage(messageId)
       message.title = "Election ${election.name} setup at ${Date(election.creationInMillis)}"
       message.description =
-        "Mnemonic identifier :\n${generateMnemonicWordFromBase64(election.id, 2)}\n\n" +
-          "Opens at :\n${Date(election.startTimestampInMillis)}\n\n" +
-          "Closes at :\n${Date(election.endTimestampInMillis)}\n\n" +
-          formatElectionQuestions(election.electionQuestions)
+          "Mnemonic identifier :\n${generateMnemonicWordFromBase64(election.id, 2)}\n\n" +
+              "Opens at :\n${Date(election.startTimestampInMillis)}\n\n" +
+              "Closes at :\n${Date(election.endTimestampInMillis)}\n\n" +
+              formatElectionQuestions(election.electionQuestions)
 
       return message
     }
@@ -298,9 +296,9 @@ constructor(
       val message = WitnessMessage(messageId)
       message.title = "Election ${election.name} results"
       message.description =
-        "Mnemonic identifier :\n${generateMnemonicWordFromBase64(election.id, 2)}\n\n" +
-          "Closed at :\n${Date(election.endTimestampInMillis)}\n\n" +
-          formatElectionResults(election.electionQuestions, election.results)
+          "Mnemonic identifier :\n${generateMnemonicWordFromBase64(election.id, 2)}\n\n" +
+              "Closed at :\n${Date(election.endTimestampInMillis)}\n\n" +
+              formatElectionResults(election.electionQuestions, election.results)
 
       return message
     }
@@ -311,10 +309,10 @@ constructor(
 
       for (i in questions.indices) {
         questionsDescription
-          .append(QUESTION)
-          .append(i + 1)
-          .append(": \n")
-          .append(questions[i].question)
+            .append(QUESTION)
+            .append(i + 1)
+            .append(": \n")
+            .append(questions[i].question)
         if (i < questions.size - 1) {
           questionsDescription.append("\n\n")
         }
@@ -324,27 +322,27 @@ constructor(
     }
 
     private fun formatElectionResults(
-      questions: List<ElectionQuestion>,
-      results: Map<String, Set<QuestionResult>>
+        questions: List<ElectionQuestion>,
+        results: Map<String, Set<QuestionResult>>
     ): String {
       val questionsDescription = StringBuilder()
       val QUESTION = "Question "
 
       for (i in questions.indices) {
         questionsDescription
-          .append(QUESTION)
-          .append(i + 1)
-          .append(": \n")
-          .append(questions[i].question)
-          .append("\nResults: \n")
+            .append(QUESTION)
+            .append(i + 1)
+            .append(": \n")
+            .append(questions[i].question)
+            .append("\nResults: \n")
 
         val resultSet = results.getValue(questions[i].id)
         for (questionResult in resultSet) {
           questionsDescription
-            .append(questionResult.ballot)
-            .append(" : ")
-            .append(questionResult.count)
-            .append("\n")
+              .append(questionResult.ballot)
+              .append(" : ")
+              .append(questionResult.count)
+              .append("\n")
         }
 
         if (i < questions.size - 1) {

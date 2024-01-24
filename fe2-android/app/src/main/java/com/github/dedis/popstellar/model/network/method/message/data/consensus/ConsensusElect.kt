@@ -7,11 +7,11 @@ import com.github.dedis.popstellar.model.objects.ElectInstance
 import com.google.gson.annotations.SerializedName
 
 class ConsensusElect(
-  @field:SerializedName("created_at") val creation: Long,
-  objId: String,
-  type: String,
-  property: String,
-  value: Any
+    @field:SerializedName("created_at") val creation: Long,
+    objId: String,
+    type: String,
+    property: String,
+    value: Any
 ) : Data() {
   @SerializedName("instance_id") val instanceId: String
 
@@ -40,9 +40,9 @@ class ConsensusElect(
     }
     val that = other as ConsensusElect
     return creation == that.creation &&
-      instanceId == that.instanceId &&
-      key == that.key &&
-      value == that.value
+        instanceId == that.instanceId &&
+        key == that.key &&
+        value == that.value
   }
 
   override fun toString(): String {

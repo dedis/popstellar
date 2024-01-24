@@ -12,11 +12,11 @@ enum class Method
  * @param expectResult the expect result as a boolean
  */
 (
-  /** Returns the name of the Method. */
-  val method: String,
-  /** Returns the data class of the Method. */
-  val dataClass: Class<out Message>,
-  private val expectResult: Boolean
+    /** Returns the name of the Method. */
+    val method: String,
+    /** Returns the data class of the Method. */
+    val dataClass: Class<out Message>,
+    private val expectResult: Boolean
 ) {
   SUBSCRIBE("subscribe", Subscribe::class.java, true),
   UNSUBSCRIBE("unsubscribe", Unsubscribe::class.java, true),
@@ -41,9 +41,9 @@ enum class Method
     @JvmStatic
     fun find(searched: String): Method? {
       return ALL.stream()
-        .filter { method: Method -> method.method == searched }
-        .findFirst()
-        .orElse(null)
+          .filter { method: Method -> method.method == searched }
+          .findFirst()
+          .orElse(null)
     }
   }
 }

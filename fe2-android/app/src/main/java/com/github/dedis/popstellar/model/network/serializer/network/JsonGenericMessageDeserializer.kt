@@ -14,9 +14,9 @@ import timber.log.Timber
 class JsonGenericMessageDeserializer : JsonDeserializer<GenericMessage> {
   @Throws(JsonParseException::class)
   override fun deserialize(
-    json: JsonElement,
-    typeOfT: Type,
-    context: JsonDeserializationContext
+      json: JsonElement,
+      typeOfT: Type,
+      context: JsonDeserializationContext
   ): GenericMessage {
     Timber.tag(TAG).d("deserializing generic message")
 

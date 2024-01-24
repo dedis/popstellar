@@ -41,11 +41,11 @@ import timber.log.Timber
 
 /** This class handles the JSON-RPC layer of the protocol */
 class LAONetworkManager(
-  private val messageHandler: MessageHandler,
-  private val multiConnection: MultiConnection,
-  private val gson: Gson,
-  private val schedulerProvider: SchedulerProvider,
-  subscribedChannels: Set<Channel>
+    private val messageHandler: MessageHandler,
+    private val multiConnection: MultiConnection,
+    private val gson: Gson,
+    private val schedulerProvider: SchedulerProvider,
+    subscribedChannels: Set<Channel>
 ) : MessageSender {
   private val requestCounter = AtomicInteger()
 
@@ -66,52 +66,44 @@ class LAONetworkManager(
 
   private fun resubscribeToChannelOnReconnection() {
     disposables.add(
-      multiConnection
-        .observeConnectionEvents() // Observe the events of a connection
-        .subscribeOn(
-          schedulerProvider.io()
-        ) // Filter out events that are not related to a reconnection
-        .filter { event: WebSocket.Event -> event is WebSocket.Event.OnConnectionOpened<*> }
-        // Subscribe to the stream and when a connection event is received, send a subscribe
-        // message for each channel we are supposed to be subscribed to.
-        .subscribe(
-          {
-            subscribedChannels.forEach { channel: Channel ->
-              disposables.add(
-                subscribe(channel)
-                  .subscribe(
-                    { Timber.tag(TAG).d("resubscription successful to : %s", channel) },
-                    { error: Throwable -> Timber.tag(TAG).e(error, "error on resubscription to") }
-                  )
-              )
-            }
-          },
-          { error: Throwable -> Timber.tag(TAG).e(error, "Error on resubscription") }
-        )
-    )
+        multiConnection
+            .observeConnectionEvents() // Observe the events of a connection
+            .subscribeOn(
+                schedulerProvider.io()) // Filter out events that are not related to a reconnection
+            .filter { event: WebSocket.Event -> event is WebSocket.Event.OnConnectionOpened<*> }
+            // Subscribe to the stream and when a connection event is received, send a subscribe
+            // message for each channel we are supposed to be subscribed to.
+            .subscribe(
+                {
+                  subscribedChannels.forEach { channel: Channel ->
+                    disposables.add(
+                        subscribe(channel)
+                            .subscribe(
+                                { Timber.tag(TAG).d("resubscription successful to : %s", channel) },
+                                { error: Throwable ->
+                                  Timber.tag(TAG).e(error, "error on resubscription to")
+                                }))
+                  }
+                },
+                { error: Throwable -> Timber.tag(TAG).e(error, "Error on resubscription") }))
   }
 
   private fun processIncomingMessages() {
     disposables.add(
-      Observable.merge( // Normal message received over the wire
-          multiConnection.observeMessage(), // Packets that could not be processed (maybe due to a
-          // reordering), this is merged into incoming message, with a delay of 5 seconds to
-          // give
-          // priority to new messages.
-          unprocessed.delay(
-            REPROCESSING_DELAY.toLong(),
-            TimeUnit.SECONDS,
-            schedulerProvider.computation()
-          )
-        )
-        .filter { obj: GenericMessage -> obj is Broadcast } // Filter the Broadcast
-        .map { obj: GenericMessage -> obj as Broadcast }
-        .subscribeOn(schedulerProvider.newThread())
-        .subscribe(
-          { broadcast: Broadcast -> handleBroadcast(broadcast) },
-          { error: Throwable -> Timber.tag(TAG).e(error, "Error on processing message") }
-        )
-    )
+        Observable.merge( // Normal message received over the wire
+                multiConnection
+                    .observeMessage(), // Packets that could not be processed (maybe due to a
+                // reordering), this is merged into incoming message, with a delay of 5 seconds to
+                // give
+                // priority to new messages.
+                unprocessed.delay(
+                    REPROCESSING_DELAY.toLong(), TimeUnit.SECONDS, schedulerProvider.computation()))
+            .filter { obj: GenericMessage -> obj is Broadcast } // Filter the Broadcast
+            .map { obj: GenericMessage -> obj as Broadcast }
+            .subscribeOn(schedulerProvider.newThread())
+            .subscribe(
+                { broadcast: Broadcast -> handleBroadcast(broadcast) },
+                { error: Throwable -> Timber.tag(TAG).e(error, "Error on processing message") }))
   }
 
   override fun catchup(channel: Channel): Completable {
@@ -119,13 +111,13 @@ class LAONetworkManager(
 
     val catchup = Catchup(channel, requestCounter.incrementAndGet())
     return request(catchup)
-      .map { obj: Answer -> (obj as ResultMessages).messages }
-      .doOnError { error: Throwable -> Timber.tag(TAG).e(error, "Error in catchup") }
-      .doOnSuccess { msgs: List<MessageGeneral> ->
-        Timber.tag(TAG).d("Received catchup response on %s, retrieved : %s", channel, msgs)
-      }
-      .doOnSuccess { messages: List<MessageGeneral> -> handleMessages(messages, channel) }
-      .ignoreElement()
+        .map { obj: Answer -> (obj as ResultMessages).messages }
+        .doOnError { error: Throwable -> Timber.tag(TAG).e(error, "Error in catchup") }
+        .doOnSuccess { msgs: List<MessageGeneral> ->
+          Timber.tag(TAG).d("Received catchup response on %s, retrieved : %s", channel, msgs)
+        }
+        .doOnSuccess { messages: List<MessageGeneral> -> handleMessages(messages, channel) }
+        .ignoreElement()
   }
 
   override fun publish(keyPair: KeyPair, channel: Channel, data: Data): Completable {
@@ -146,30 +138,30 @@ class LAONetworkManager(
 
     val subscribe = Subscribe(channel, requestCounter.incrementAndGet())
     return request(subscribe) // This is used when reconnecting after a lost connection
-      .doOnSuccess {
-        Timber.tag(TAG).d("Adding %s to subscriptions", channel)
-        subscribedChannels.add(channel)
-      }
-      .doOnError { error: Throwable -> Timber.tag(TAG).e(error, "error in subscribe") }
-      // Catchup already sent messages after the subscription to the channel is complete
-      // This allows for the completion of the returned completable only when both subscribe
-      // and catchup are completed
-      .flatMapCompletable { catchup(channel) }
-      .doOnComplete {
-        Timber.tag(TAG).d("Successfully subscribed and catchup to channel %s", channel)
-      }
+        .doOnSuccess {
+          Timber.tag(TAG).d("Adding %s to subscriptions", channel)
+          subscribedChannels.add(channel)
+        }
+        .doOnError { error: Throwable -> Timber.tag(TAG).e(error, "error in subscribe") }
+        // Catchup already sent messages after the subscription to the channel is complete
+        // This allows for the completion of the returned completable only when both subscribe
+        // and catchup are completed
+        .flatMapCompletable { catchup(channel) }
+        .doOnComplete {
+          Timber.tag(TAG).d("Successfully subscribed and catchup to channel %s", channel)
+        }
   }
 
   override fun unsubscribe(channel: Channel): Completable {
     Timber.tag(TAG).d("sending an unsubscribe on the channel %s", channel)
     val unsubscribe = Unsubscribe(channel, requestCounter.incrementAndGet())
     return request(unsubscribe) // This is used when reconnecting after a lost connection
-      .doOnSuccess {
-        Timber.tag(TAG).d("Removing %s from subscriptions", channel)
-        subscribedChannels.remove(channel)
-      }
-      .doOnError { error: Throwable -> Timber.tag(TAG).e(error, "error unsubscribing") }
-      .ignoreElement()
+        .doOnSuccess {
+          Timber.tag(TAG).d("Removing %s from subscriptions", channel)
+          subscribedChannels.remove(channel)
+        }
+        .doOnError { error: Throwable -> Timber.tag(TAG).e(error, "error unsubscribing") }
+        .ignoreElement()
   }
 
   override val connectEvents: Observable<WebSocket.Event>
@@ -238,36 +230,36 @@ class LAONetworkManager(
 
   private fun request(query: Query): Single<Answer> {
     return multiConnection
-      .observeMessage() // Observe incoming messages
-      // Send the message upon subscription the the incoming messages. That way we are
-      // certain the reply will be processed and the message is only sent when an observer
-      // subscribes to the request answer.
-      .doOnSubscribe { multiConnection.sendMessage(query) }
-      .filter { obj: GenericMessage -> obj is Answer } // Filter for Answers
-      .map { obj: GenericMessage ->
-        obj as Answer
-      } // This specific request has an id, only let the related Answer pass
-      .filter { answer: Answer -> answer.id == query.requestId }
-      .doOnNext { answer: Answer ->
-        Timber.tag(TAG).d("request id: %s", answer.id)
-      } // Transform from an Observable to a Single
-      // This Means that we expect a result before the source is disposed and an error
-      // will be produced if no value is received.
-      .firstOrError() // If we receive an error, transform the flow to a Failure
-      .flatMap { answer: Answer ->
-        if (answer is Error) {
-          return@flatMap Single.error<Answer>(JsonRPCErrorException(answer))
-        } else {
-          return@flatMap Single.just<Answer>(answer)
+        .observeMessage() // Observe incoming messages
+        // Send the message upon subscription the the incoming messages. That way we are
+        // certain the reply will be processed and the message is only sent when an observer
+        // subscribes to the request answer.
+        .doOnSubscribe { multiConnection.sendMessage(query) }
+        .filter { obj: GenericMessage -> obj is Answer } // Filter for Answers
+        .map { obj: GenericMessage ->
+          obj as Answer
+        } // This specific request has an id, only let the related Answer pass
+        .filter { answer: Answer -> answer.id == query.requestId }
+        .doOnNext { answer: Answer ->
+          Timber.tag(TAG).d("request id: %s", answer.id)
+        } // Transform from an Observable to a Single
+        // This Means that we expect a result before the source is disposed and an error
+        // will be produced if no value is received.
+        .firstOrError() // If we receive an error, transform the flow to a Failure
+        .flatMap { answer: Answer ->
+          if (answer is Error) {
+            return@flatMap Single.error<Answer>(JsonRPCErrorException(answer))
+          } else {
+            return@flatMap Single.just<Answer>(answer)
+          }
         }
-      }
-      .subscribeOn(schedulerProvider.io())
-      .observeOn(
-        schedulerProvider.mainThread()
-      ) // Add a timeout to automatically dispose of the flow and end with a
-      // failure
-      .timeout(REPROCESSING_DELAY.toLong(), TimeUnit.SECONDS)
-      .cache()
+        .subscribeOn(schedulerProvider.io())
+        .observeOn(
+            schedulerProvider
+                .mainThread()) // Add a timeout to automatically dispose of the flow and end with a
+        // failure
+        .timeout(REPROCESSING_DELAY.toLong(), TimeUnit.SECONDS)
+        .cache()
   }
 
   /**
