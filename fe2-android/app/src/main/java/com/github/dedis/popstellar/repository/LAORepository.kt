@@ -149,6 +149,7 @@ class LAORepository @Inject constructor(appDatabase: AppDatabase, application: A
             .subscribe(
                 { Timber.tag(TAG).d("Persisted Lao %s", lao) },
                 { err: Throwable -> Timber.tag(TAG).e(err, "Error persisting Lao %s", lao) }))
+
     if (laoById.containsKey(lao.id)) {
       // If the lao already exists, we can push the next update
       laoById[lao.id] = lao

@@ -26,7 +26,7 @@ class EncryptedVote : Vote {
    */
   constructor(
       questionId: String,
-      encryptedVote: String,
+      encryptedVote: String?,
       writeInEnabled: Boolean,
       encryptedWriteIn: String?,
       electionId: String

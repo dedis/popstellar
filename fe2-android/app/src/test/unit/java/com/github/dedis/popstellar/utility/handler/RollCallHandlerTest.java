@@ -179,7 +179,7 @@ public class RollCallHandlerTest {
         new CreateRollCall(
             "roll call 2",
             rollCall.getCreation(),
-            rollCall.getStart(),
+            rollCall.getStartTimestamp(),
             rollCall.getEnd(),
             rollCall.getLocation(),
             rollCall.getDescription(),
@@ -217,7 +217,7 @@ public class RollCallHandlerTest {
     // Create the open Roll Call message
     OpenRollCall openRollCall =
         new OpenRollCall(
-            CREATE_LAO.getId(), rollCall.getId(), rollCall.getStart(), EventState.CREATED);
+            CREATE_LAO.getId(), rollCall.getId(), rollCall.getStartTimestamp(), EventState.CREATED);
     MessageGeneral message = new MessageGeneral(SENDER_KEY, openRollCall, gson);
 
     // Call the message handler
@@ -256,7 +256,7 @@ public class RollCallHandlerTest {
     // Create the open Roll Call message
     OpenRollCall openRollCall =
         new OpenRollCall(
-            CREATE_LAO.getId(), rollCall.getId(), rollCall.getStart(), EventState.CREATED);
+            CREATE_LAO.getId(), rollCall.getId(), rollCall.getStartTimestamp(), EventState.CREATED);
     MessageGeneral messageOpen = new MessageGeneral(SENDER_KEY, openRollCall, gson);
 
     // Call the message handler
@@ -289,7 +289,7 @@ public class RollCallHandlerTest {
     // Create the open Roll Call message
     OpenRollCall openRollCall =
         new OpenRollCall(
-            CREATE_LAO.getId(), rollCall.getId(), rollCall.getStart(), EventState.CREATED);
+            CREATE_LAO.getId(), rollCall.getId(), rollCall.getStartTimestamp(), EventState.CREATED);
 
     // Call the message handler
     messageHandler.handleMessage(

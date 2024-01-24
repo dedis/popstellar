@@ -368,7 +368,7 @@ public class LaoHandlerTest {
 
     // Check the LAO last modification time and ID was updated
     assertEquals(
-        (Long) stateLao.getLastModified(), laoRepo.getLaoByChannel(LAO_CHANNEL1).getLastModified());
+        stateLao.getLastModified(), laoRepo.getLaoByChannel(LAO_CHANNEL1).getLastModified());
     assertEquals(
         stateLao.getModificationId(), laoRepo.getLaoByChannel(LAO_CHANNEL1).getModificationId());
   }
@@ -402,7 +402,7 @@ public class LaoHandlerTest {
 
     // Check the LAO last modification time and ID was updated
     assertEquals(
-        (Long) stateLao.getLastModified(), laoRepo.getLaoByChannel(LAO_CHANNEL1).getLastModified());
+        stateLao.getLastModified(), laoRepo.getLaoByChannel(LAO_CHANNEL1).getLastModified());
     assertEquals(
         stateLao.getModificationId(), laoRepo.getLaoByChannel(LAO_CHANNEL1).getModificationId());
   }

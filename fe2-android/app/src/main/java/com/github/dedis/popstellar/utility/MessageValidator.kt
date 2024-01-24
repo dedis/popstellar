@@ -154,7 +154,7 @@ object MessageValidator {
      * @param field name of the field (to print in case of error)
      * @throws IllegalArgumentException if the string is not representing a valid codepoint
      */
-    fun isValidEmoji(input: String?, field: String): MessageValidatorBuilder {
+    fun isValidEmoji(input: String, field: String): MessageValidatorBuilder {
       require(Reaction.ReactionEmoji.isSupported(input)) {
         "$field is not a supported unicode emoji"
       }

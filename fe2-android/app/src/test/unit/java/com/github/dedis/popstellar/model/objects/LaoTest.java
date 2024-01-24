@@ -90,7 +90,7 @@ public class LaoTest {
 
   @Test
   public void setNullIdThrowsException() {
-    assertThrows(IllegalArgumentException.class, () -> LAO_1.setId(null));
+    assertThrows(NullPointerException.class, () -> LAO_1.setId(null));
   }
 
   @Test
