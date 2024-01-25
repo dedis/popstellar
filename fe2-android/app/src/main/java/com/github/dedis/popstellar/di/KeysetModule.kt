@@ -1,6 +1,8 @@
 package com.github.dedis.popstellar.di
 
 import android.content.Context
+import androidx.security.crypto.EncryptedSharedPreferences
+import androidx.security.crypto.MasterKey
 import com.google.crypto.tink.KeyTemplates
 import com.google.crypto.tink.aead.AeadConfig
 import com.google.crypto.tink.aead.AesGcmKeyManager
@@ -41,11 +43,18 @@ object KeysetModule {
       @ApplicationContext applicationContext: Context
   ): AndroidKeysetManager {
     try {
-      val editor =
-          applicationContext
-              .getSharedPreferences(DEVICE_SHARED_PREF_FILE_NAME, Context.MODE_PRIVATE)
+      val masterKey =
+          MasterKey.Builder(applicationContext).setKeyScheme(MasterKey.KeyScheme.AES256_GCM).build()
+      // Use an encrypted database here to store sensitive information
+      val sharedPreferences =
+          EncryptedSharedPreferences.create(
+                  applicationContext,
+                  DEVICE_SHARED_PREF_FILE_NAME,
+                  masterKey,
+                  EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                  EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM)
               .edit()
-      editor.apply()
+      sharedPreferences.apply()
 
       Ed25519PrivateKeyManager.registerPair(true)
       PublicKeySignWrapper.register()
