@@ -53,7 +53,7 @@ class ConsensusAccept(
   }
 
   override fun toString(): String {
-    return "ConsensusAccept{instance_id='$instanceId', message_id='${messageId.encoded}', c" +
+    return "ConsensusAccept{instance_id='$instanceId', message_id='${messageId.encoded}', " +
         "created_at=$creation, value=$acceptValue}"
   }
 }
