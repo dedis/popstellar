@@ -7,7 +7,7 @@ import com.github.dedis.popstellar.model.objects.security.MessageID
 import com.github.dedis.popstellar.utility.MessageValidator.verify
 import com.google.gson.annotations.SerializedName
 
-class AddReaction(codepoint: String, chirpId: MessageID, timestamp: Long) : Data() {
+class AddReaction(codepoint: String, chirpId: MessageID, timestamp: Long) : Data {
   @SerializedName("reaction_codepoint") val codepoint: String
   @SerializedName("chirp_id") val chirpId: MessageID
   val timestamp: Long

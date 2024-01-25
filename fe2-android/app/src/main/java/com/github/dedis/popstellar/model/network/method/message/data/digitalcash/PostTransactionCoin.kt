@@ -9,7 +9,7 @@ import java.util.Objects
 @Immutable
 class PostTransactionCoin( // the transaction object // String
     @field:SerializedName(value = "transaction") val transaction: Transaction
-) : Data() {
+) : Data {
   @SerializedName(value = "transaction_id")
   val transactionId // TxOutHash SHA256 over base64encode(transaction)
   : String =

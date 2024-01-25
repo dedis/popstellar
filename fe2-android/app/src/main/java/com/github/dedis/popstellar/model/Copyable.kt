@@ -9,7 +9,7 @@ import java.util.stream.Collectors
  *
  * @param <T> of the copied object
  */
-interface Copyable<T> {
+fun interface Copyable<T> {
 
   /**
    * Create a deep copy of the object

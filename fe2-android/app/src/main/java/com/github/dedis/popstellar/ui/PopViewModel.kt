@@ -5,5 +5,5 @@ import androidx.annotation.StringRes
 interface PopViewModel {
   fun setPageTitle(@StringRes title: Int)
 
-  val laoId: String
+  val laoId: String?
 }

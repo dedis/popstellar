@@ -14,7 +14,7 @@ class ConsensusAccept(
     @field:SerializedName("created_at") val creation: Long,
     acceptedTry: Int,
     acceptedValue: Boolean
-) : Data() {
+) : Data {
 
   @SerializedName("value") val acceptValue: AcceptValue
 

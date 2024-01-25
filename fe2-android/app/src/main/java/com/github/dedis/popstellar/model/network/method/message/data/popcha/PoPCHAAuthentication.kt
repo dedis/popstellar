@@ -17,7 +17,7 @@ class PoPCHAAuthentication(
     @field:SerializedName("popcha_address") val popchaAddress: String,
     val state: String?,
     @field:SerializedName("response_mode") val responseMode: String?
-) : Data() {
+) : Data {
 
   override val `object`: String
     get() = Objects.POPCHA.`object`

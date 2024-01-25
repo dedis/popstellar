@@ -17,7 +17,7 @@ class WitnessMessageSignature
  * @param messageId ID of the message
  * @param signature signature by the witness over the message ID
  */
-(@field:SerializedName("message_id") val messageId: MessageID, val signature: Signature) : Data() {
+(@field:SerializedName("message_id") val messageId: MessageID, val signature: Signature) : Data {
 
   override val `object`: String
     get() = Objects.MESSAGE.`object`

@@ -20,7 +20,7 @@ class NotifyAddChirp
     @field:SerializedName("chirp_id") val chirpId: MessageID,
     val channel: Channel,
     val timestamp: Long
-) : Data() {
+) : Data {
 
   override val `object`: String
     get() = Objects.CHIRP.`object`

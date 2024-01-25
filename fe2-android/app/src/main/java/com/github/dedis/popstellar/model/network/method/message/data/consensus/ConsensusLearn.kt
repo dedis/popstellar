@@ -15,7 +15,7 @@ class ConsensusLearn(
     @field:SerializedName("created_at") val creation: Long,
     decision: Boolean,
     acceptorSignatures: List<String>
-) : Data() {
+) : Data {
 
   @SerializedName("value") val learnValue: LearnValue
 

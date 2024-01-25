@@ -9,7 +9,7 @@ import com.google.gson.annotations.SerializedName
 import java.time.Instant
 
 @Immutable
-class ElectionEnd(electionId: String?, laoId: String?, registeredVotes: String?) : Data() {
+class ElectionEnd(electionId: String?, laoId: String?, registeredVotes: String?) : Data {
   @SerializedName(value = "election") val electionId: String
 
   @SerializedName(value = "created_at") val createdAt: Long

@@ -23,7 +23,7 @@ constructor(
     modificationId: MessageID,
     witnesses: Set<PublicKey>,
     modificationSignatures: List<PublicKeySignaturePair>?
-) : Data() {
+) : Data {
   val id: String
   val name: String
   val creation: Long

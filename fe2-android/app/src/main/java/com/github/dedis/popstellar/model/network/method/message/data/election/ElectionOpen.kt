@@ -8,7 +8,7 @@ import com.github.dedis.popstellar.utility.MessageValidator.verify
 import com.google.gson.annotations.SerializedName
 
 @Immutable
-class ElectionOpen(laoId: String, electionId: String, openedAt: Long) : Data() {
+class ElectionOpen(laoId: String, electionId: String, openedAt: Long) : Data {
   @SerializedName("lao") val laoId: String
 
   @SerializedName("election") val electionId: String

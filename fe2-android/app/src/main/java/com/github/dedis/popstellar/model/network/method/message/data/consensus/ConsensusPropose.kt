@@ -15,7 +15,7 @@ class ConsensusPropose(
     proposedTry: Int,
     proposedValue: Boolean,
     acceptorSignatures: List<String>
-) : Data() {
+) : Data {
 
   @SerializedName("value") val proposeValue: ProposeValue
 

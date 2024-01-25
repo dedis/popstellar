@@ -5,7 +5,7 @@ import com.github.dedis.popstellar.model.objects.Channel
 import java.util.Objects
 
 /** An abstract low level message that is sent over a specific channel */
-abstract class Message protected constructor(channel: Channel?) : GenericMessage() {
+abstract class Message protected constructor(channel: Channel?) : GenericMessage {
   /** Returns the message channel */
   val channel: Channel
 

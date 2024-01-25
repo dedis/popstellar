@@ -17,7 +17,7 @@ abstract class Answer
 (
     /** Returns the ID of the answer */
     val id: Int
-) : GenericMessage() {
+) : GenericMessage {
 
   override fun equals(other: Any?): Boolean {
     if (this === other) {

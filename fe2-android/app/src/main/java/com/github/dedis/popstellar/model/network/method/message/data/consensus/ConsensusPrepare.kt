@@ -13,7 +13,7 @@ class ConsensusPrepare(
     @field:SerializedName("message_id") val messageId: MessageID,
     @field:SerializedName("created_at") val creation: Long,
     proposedTry: Int
-) : Data() {
+) : Data {
 
   @SerializedName("value") val prepareValue: PrepareValue
 

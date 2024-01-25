@@ -15,7 +15,7 @@ class DeleteChirp
  * @param chirpId the id of the chirp to delete
  * @param timestamp UNIX timestamp in UTC
  */
-(@field:SerializedName("chirp_id") val chirpId: MessageID, val timestamp: Long) : Data() {
+(@field:SerializedName("chirp_id") val chirpId: MessageID, val timestamp: Long) : Data {
 
   override val `object`: String
     get() = Objects.CHIRP.`object`

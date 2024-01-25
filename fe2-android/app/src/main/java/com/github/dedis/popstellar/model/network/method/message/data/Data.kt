@@ -1,10 +1,10 @@
 package com.github.dedis.popstellar.model.network.method.message.data
 
 /** An abstract high level message */
-abstract class Data {
+interface Data {
   /** Returns the object the message is referring to. */
-  abstract val `object`: String
+  val `object`: String
 
   /** Returns the action the message is handling. */
-  abstract val action: String
+  val action: String
 }

@@ -15,7 +15,7 @@ class ConsensusPromise(
     acceptedTry: Int,
     acceptedValue: Boolean,
     promisedTry: Int
-) : Data() {
+) : Data {
 
   @SerializedName("value") val promiseValue: PromiseValue
 

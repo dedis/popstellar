@@ -12,7 +12,7 @@ import com.google.gson.annotations.SerializedName
  * it should contain the public key to encrypt the votes.
  */
 @Immutable
-class ElectionKey(electionId: String, electionVoteKey: String) : Data() {
+class ElectionKey(electionId: String, electionVoteKey: String) : Data {
   // Id of the election
   @SerializedName("election") val electionId: String
 

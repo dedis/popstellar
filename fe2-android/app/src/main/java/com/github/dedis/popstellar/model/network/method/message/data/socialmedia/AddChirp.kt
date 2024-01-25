@@ -10,7 +10,7 @@ import java.util.Optional
 
 /** Data sent to add a Chirp to the user channel */
 @Immutable
-class AddChirp(text: String, parentId: MessageID?, timestamp: Long) : Data() {
+class AddChirp(text: String, parentId: MessageID?, timestamp: Long) : Data {
   val text: String
 
   @SerializedName("parent_id") private val parentId: MessageID?

@@ -19,7 +19,7 @@ class ElectionSetup(
     laoId: String,
     electionVersion: ElectionVersion,
     questions: List<Question>
-) : Data() {
+) : Data {
   val id: String
   val name: String
   val lao: String

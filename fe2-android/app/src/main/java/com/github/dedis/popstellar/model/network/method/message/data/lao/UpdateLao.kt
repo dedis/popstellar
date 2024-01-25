@@ -17,7 +17,7 @@ class UpdateLao(
     name: String,
     lastModified: Long,
     witnesses: Set<PublicKey>
-) : Data() {
+) : Data {
   val id: String
   val name: String
 

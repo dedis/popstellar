@@ -20,7 +20,7 @@ class ConsensusFailure
     @field:SerializedName("instance_id") val instanceId: String,
     @field:SerializedName("message_id") val messageId: MessageID,
     @field:SerializedName("created_at") val creation: Long
-) : Data() {
+) : Data {
 
   override val `object`: String = Objects.CONSENSUS.`object`
   override val action: String = Action.FAILURE.action

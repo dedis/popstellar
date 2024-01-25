@@ -15,7 +15,7 @@ class CloseRollCall(
     val closes: String,
     @field:SerializedName("closed_at") val closedAt: Long,
     attendees: List<PublicKey>
-) : Data() {
+) : Data {
   @SerializedName("update_id") val updateId: String
 
   val attendees: List<PublicKey>

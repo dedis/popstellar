@@ -11,7 +11,7 @@ import java.lang.IllegalArgumentException
 import java.util.Objects
 
 @Immutable
-class GreetLao(id: String, frontend: String, address: String, peers: List<PeerAddress>) : Data() {
+class GreetLao(id: String, frontend: String, address: String, peers: List<PeerAddress>) : Data {
   @SerializedName("lao") val id: String
 
   // Backend sender address

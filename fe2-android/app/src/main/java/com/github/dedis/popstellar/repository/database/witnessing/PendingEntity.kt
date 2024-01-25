@@ -67,13 +67,11 @@ class PendingEntity {
 
   val objectType: Objects?
     get() {
-      if (rollCall != null) {
-        return Objects.ROLL_CALL
-      } else if (election != null) {
-        return Objects.ELECTION
-      } else if (meeting != null) {
-        return Objects.MEETING
+      return when {
+        rollCall != null -> Objects.ROLL_CALL
+        election != null -> Objects.ELECTION
+        meeting != null -> Objects.MEETING
+        else -> null
       }
-      return null
     }
 }

@@ -8,7 +8,7 @@ import com.github.dedis.popstellar.utility.MessageValidator.verify
 import java.util.Collections
 
 @Immutable
-class ElectionResult(questions: List<ElectionResultQuestion>?) : Data() {
+class ElectionResult(questions: List<ElectionResultQuestion>?) : Data {
   val questions: List<ElectionResultQuestion>
 
   init {

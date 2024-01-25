@@ -20,7 +20,7 @@ class ConsensusElectAccept
     @field:SerializedName("instance_id") val instanceId: String,
     @field:SerializedName("message_id") val messageId: MessageID,
     @field:SerializedName("accept") val isAccept: Boolean
-) : Data() {
+) : Data {
 
   override val `object`: String = Objects.CONSENSUS.`object`
   override val action: String = Action.ELECT_ACCEPT.action

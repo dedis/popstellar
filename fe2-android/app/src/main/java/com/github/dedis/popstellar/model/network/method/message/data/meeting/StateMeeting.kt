@@ -19,7 +19,7 @@ class StateMeeting(
     end: Long,
     modificationId: String,
     modificationSignatures: List<String>
-) : Data() {
+) : Data {
   val id: String
   val name: String
   val creation: Long

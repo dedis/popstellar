@@ -12,7 +12,7 @@ class ConsensusElect(
     type: String,
     property: String,
     value: Any
-) : Data() {
+) : Data {
   @SerializedName("instance_id") val instanceId: String
 
   val key: ConsensusKey
