@@ -219,10 +219,10 @@ public class TransactionObjectTest {
     }
 
     for (Output o : transactionModel.getOutputs()) {
-      ScriptOutput scriptOutput = o.script;
+      ScriptOutput scriptOutput = o.getScript();
       outObj.add(
           new OutputObject(
-              o.value,
+              o.getValue(),
               new ScriptOutputObject(scriptOutput.getType(), scriptOutput.getPubKeyHash())));
     }
 

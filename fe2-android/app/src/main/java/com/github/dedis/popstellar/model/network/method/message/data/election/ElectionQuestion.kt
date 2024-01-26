@@ -7,24 +7,17 @@ import java.util.Collections
 import java.util.Objects
 
 @Immutable
+/** Constructor for a data Question, for the election setup */
 class ElectionQuestion(electionId: String, question: Question) {
-  val id: String
-  val question: String
+  val question: String = question.title
+  val id: String = Election.generateElectionQuestionId(electionId, question.title)
 
-  @SerializedName(value = "voting_method") val votingMethod: String
+  @SerializedName(value = "voting_method") val votingMethod: String = question.votingMethod
 
-  @SerializedName(value = "ballot_options") val ballotOptions: List<String>
+  @SerializedName(value = "ballot_options")
+  val ballotOptions: List<String> = Collections.unmodifiableList(question.ballotOptions)
 
-  @SerializedName(value = "write_in") val writeIn: Boolean
-
-  /** Constructor for a data Question, for the election setup */
-  init {
-    this.question = question.title
-    this.ballotOptions = Collections.unmodifiableList(question.ballotOptions)
-    this.writeIn = question.writeIn
-    this.votingMethod = question.votingMethod
-    this.id = Election.generateElectionQuestionId(electionId, this.question)
-  }
+  @SerializedName(value = "write_in") val writeIn: Boolean = question.writeIn
 
   override fun equals(other: Any?): Boolean {
     if (this === other) {

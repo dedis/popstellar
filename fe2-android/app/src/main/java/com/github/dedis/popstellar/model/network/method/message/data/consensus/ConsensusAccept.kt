@@ -8,6 +8,15 @@ import com.github.dedis.popstellar.model.objects.security.MessageID
 import com.google.gson.annotations.SerializedName
 
 @Immutable
+/**
+ * Constructor for a data Accept
+ *
+ * @param instanceId unique id of the consensus instance
+ * @param messageId message id of the Elect message
+ * @param creation UNIX timestamp in UTC
+ * @param acceptedTry the accepted try number
+ * @param acceptedValue the value accepted
+ */
 class ConsensusAccept(
     @field:SerializedName("instance_id") val instanceId: String,
     @field:SerializedName("message_id") val messageId: MessageID,
@@ -16,20 +25,7 @@ class ConsensusAccept(
     acceptedValue: Boolean
 ) : Data {
 
-  @SerializedName("value") val acceptValue: AcceptValue
-
-  /**
-   * Constructor for a data Accept
-   *
-   * @param instanceId unique id of the consensus instance
-   * @param messageId message id of the Elect message
-   * @param creation UNIX timestamp in UTC
-   * @param acceptedTry the accepted try number
-   * @param acceptedValue the value accepted
-   */
-  init {
-    acceptValue = AcceptValue(acceptedTry, acceptedValue)
-  }
+  @SerializedName("value") val acceptValue: AcceptValue = AcceptValue(acceptedTry, acceptedValue)
 
   override val `object`: String = Objects.CONSENSUS.`object`
   override val action: String = Action.ACCEPT.action

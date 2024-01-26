@@ -9,6 +9,15 @@ import com.google.gson.annotations.SerializedName
 import java.util.Collections
 
 @Immutable
+/**
+ * Constructor for a data Learn
+ *
+ * @param instanceId unique id of the consensus instance
+ * @param messageId message id of the Elect message
+ * @param creation UNIX timestamp in UTC
+ * @param decision true if the consensus was successful
+ * @param acceptorSignatures signatures of all the received Accept messages
+ */
 class ConsensusLearn(
     @field:SerializedName("instance_id") val instanceId: String,
     @field:SerializedName("message_id") val messageId: MessageID,
@@ -17,23 +26,10 @@ class ConsensusLearn(
     acceptorSignatures: List<String>
 ) : Data {
 
-  @SerializedName("value") val learnValue: LearnValue
+  @SerializedName("value") val learnValue: LearnValue = LearnValue(decision)
 
-  @SerializedName("acceptor-signatures") val acceptorSignatures: List<String>
-
-  /**
-   * Constructor for a data Learn
-   *
-   * @param instanceId unique id of the consensus instance
-   * @param messageId message id of the Elect message
-   * @param creation UNIX timestamp in UTC
-   * @param decision true if the consensus was successful
-   * @param acceptorSignatures signatures of all the received Accept messages
-   */
-  init {
-    learnValue = LearnValue(decision)
-    this.acceptorSignatures = Collections.unmodifiableList(acceptorSignatures)
-  }
+  @SerializedName("acceptor-signatures")
+  val acceptorSignatures: List<String> = Collections.unmodifiableList(acceptorSignatures)
 
   override val `object`: String = Objects.CONSENSUS.`object`
   override val action: String = Action.LEARN.action

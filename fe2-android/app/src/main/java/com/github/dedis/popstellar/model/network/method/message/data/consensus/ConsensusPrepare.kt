@@ -8,6 +8,14 @@ import com.github.dedis.popstellar.model.objects.security.MessageID
 import com.google.gson.annotations.SerializedName
 
 @Immutable
+/**
+ * Constructor for a data Prepare
+ *
+ * @param instanceId unique id of the consensus instance
+ * @param messageId message id of the Elect message
+ * @param creation UNIX timestamp in UTC
+ * @param proposedTry proposed try number
+ */
 class ConsensusPrepare(
     @field:SerializedName("instance_id") val instanceId: String,
     @field:SerializedName("message_id") val messageId: MessageID,
@@ -15,19 +23,7 @@ class ConsensusPrepare(
     proposedTry: Int
 ) : Data {
 
-  @SerializedName("value") val prepareValue: PrepareValue
-
-  /**
-   * Constructor for a data Prepare
-   *
-   * @param instanceId unique id of the consensus instance
-   * @param messageId message id of the Elect message
-   * @param creation UNIX timestamp in UTC
-   * @param proposedTry proposed try number
-   */
-  init {
-    prepareValue = PrepareValue(proposedTry)
-  }
+  @SerializedName("value") val prepareValue: PrepareValue = PrepareValue(proposedTry)
 
   override val `object`: String = Objects.CONSENSUS.`object`
   override val action: String = Action.PREPARE.action

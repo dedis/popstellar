@@ -8,6 +8,16 @@ import com.github.dedis.popstellar.model.objects.security.MessageID
 import com.google.gson.annotations.SerializedName
 
 @Immutable
+/**
+ * Constructor for a data Promise
+ *
+ * @param instanceId unique id of the consensus instance
+ * @param messageId message id of the Elect message
+ * @param creation UNIX timestamp in UTC
+ * @param acceptedTry previous accepted try number
+ * @param acceptedValue previous accepted value
+ * @param promisedTry promised try number
+ */
 class ConsensusPromise(
     @field:SerializedName("instance_id") val instanceId: String,
     @field:SerializedName("message_id") val messageId: MessageID,
@@ -17,21 +27,8 @@ class ConsensusPromise(
     promisedTry: Int
 ) : Data {
 
-  @SerializedName("value") val promiseValue: PromiseValue
-
-  /**
-   * Constructor for a data Promise
-   *
-   * @param instanceId unique id of the consensus instance
-   * @param messageId message id of the Elect message
-   * @param creation UNIX timestamp in UTC
-   * @param acceptedTry previous accepted try number
-   * @param acceptedValue previous accepted value
-   * @param promisedTry promised try number
-   */
-  init {
-    promiseValue = PromiseValue(acceptedTry, acceptedValue, promisedTry)
-  }
+  @SerializedName("value")
+  val promiseValue: PromiseValue = PromiseValue(acceptedTry, acceptedValue, promisedTry)
 
   override val `object`: String = Objects.CONSENSUS.`object`
   override val action: String = Action.PROMISE.action

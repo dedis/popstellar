@@ -10,30 +10,26 @@ import com.google.gson.annotations.SerializedName
 
 /** Data sent to close a Roll-Call */
 @Immutable
+/**
+ * Constructor for a data Close Roll-Call Event
+ *
+ * @param laoId id of the LAO
+ * @param closes The 'update_id' of the latest roll call open, or in its absence, the 'id' field of
+ *   the roll call creation
+ * @param closedAt timestamp of the roll call close
+ * @param attendees list of attendees of the Roll-Call
+ */
 class CloseRollCall(
     laoId: String,
     val closes: String,
     @field:SerializedName("closed_at") val closedAt: Long,
     attendees: List<PublicKey>
 ) : Data {
-  @SerializedName("update_id") val updateId: String
+  @SerializedName("update_id")
+  val updateId: String = RollCall.generateCloseRollCallId(laoId, closes, closedAt)
 
-  val attendees: List<PublicKey>
+  val attendees: List<PublicKey> = ArrayList(attendees)
     get() = ArrayList(field)
-
-  /**
-   * Constructor for a data Close Roll-Call Event
-   *
-   * @param laoId id of the LAO
-   * @param closes The 'update_id' of the latest roll call open, or in its absence, the 'id' field
-   *   of the roll call creation
-   * @param closedAt timestamp of the roll call close
-   * @param attendees list of attendees of the Roll-Call
-   */
-  init {
-    updateId = RollCall.generateCloseRollCallId(laoId, closes, closedAt)
-    this.attendees = ArrayList(attendees)
-  }
 
   override val `object`: String
     get() = Objects.ROLL_CALL.`object`

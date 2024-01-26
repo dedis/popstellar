@@ -41,14 +41,14 @@ enum class Action
   POST_TRANSACTION("post_transaction"),
   AUTH("authenticate");
 
+  /**
+   * Field to decide whether to store the message content. This is used to save memory, as some
+   * messages don't need to be saved but rather only their ids is necessary to avoid reprocessing.
+   *
+   * @return true if the message content is useful for future retrieval and thus has to be stored,
+   *   false otherwise.
+   */
   val isStoreNeededByAction: Boolean
-    /**
-     * Function to decide whether to store the message content. This is used to save memory, as some
-     * messages don't need to be saved but rather only their ids is necessary to avoid reprocessing.
-     *
-     * @return true if the message content is useful for future retrieval and thus has to be stored,
-     *   false otherwise.
-     */
     get() = // So far only the cast vote message relies on a previous message retrieval
     action == CAST_VOTE.action
 

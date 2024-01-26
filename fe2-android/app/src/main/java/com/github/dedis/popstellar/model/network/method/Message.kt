@@ -17,6 +17,7 @@ abstract class Message protected constructor(channel: Channel?) : GenericMessage
    */
   init {
     requireNotNull(channel) { "Trying to create a message with a null channel" }
+
     this.channel = channel
   }
 

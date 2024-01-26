@@ -11,18 +11,12 @@ class ConsensusElect(
     objId: String,
     type: String,
     property: String,
-    value: Any
+    val value: Any
 ) : Data {
-  @SerializedName("instance_id") val instanceId: String
+  @SerializedName("instance_id")
+  val instanceId: String = ElectInstance.generateConsensusId(type, objId, property)
 
-  val key: ConsensusKey
-  val value: Any
-
-  init {
-    instanceId = ElectInstance.generateConsensusId(type, objId, property)
-    key = ConsensusKey(type, objId, property)
-    this.value = value
-  }
+  val key: ConsensusKey = ConsensusKey(type, objId, property)
 
   override val `object`: String = Objects.CONSENSUS.`object`
   override val action: String = Action.ELECT.action

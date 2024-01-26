@@ -8,6 +8,16 @@ import com.github.dedis.popstellar.model.objects.security.MessageID
 import com.google.gson.annotations.SerializedName
 
 @Immutable
+/**
+ * Constructor for a data Propose
+ *
+ * @param instanceId unique id of the consensus instance
+ * @param messageId message id of the Elect message
+ * @param creation UNIX timestamp in UTC
+ * @param proposedTry proposed try number used in Paxos
+ * @param proposedValue proposed value
+ * @param acceptorSignatures signatures of all received Promise messages
+ */
 class ConsensusPropose(
     @field:SerializedName("instance_id") val instanceId: String,
     @field:SerializedName("message_id") val messageId: MessageID,
@@ -17,24 +27,9 @@ class ConsensusPropose(
     acceptorSignatures: List<String>
 ) : Data {
 
-  @SerializedName("value") val proposeValue: ProposeValue
-
-  @SerializedName("acceptor-signatures") private val acceptorSignatures: List<String>
-
-  /**
-   * Constructor for a data Propose
-   *
-   * @param instanceId unique id of the consensus instance
-   * @param messageId message id of the Elect message
-   * @param creation UNIX timestamp in UTC
-   * @param proposedTry proposed try number used in Paxos
-   * @param proposedValue proposed value
-   * @param acceptorSignatures signatures of all received Promise messages
-   */
-  init {
-    proposeValue = ProposeValue(proposedTry, proposedValue)
-    this.acceptorSignatures = ArrayList(acceptorSignatures)
-  }
+  @SerializedName("value") val proposeValue: ProposeValue = ProposeValue(proposedTry, proposedValue)
+  @SerializedName("acceptor-signatures")
+  private val acceptorSignatures: List<String> = ArrayList(acceptorSignatures)
 
   override val `object`: String = Objects.CONSENSUS.`object`
   override val action: String = Action.PROPOSE.action

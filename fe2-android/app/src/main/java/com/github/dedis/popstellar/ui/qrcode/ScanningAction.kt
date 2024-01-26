@@ -19,11 +19,11 @@ import java.util.function.Function
  * strings to display and functions, i.e. to obtain view models and on back press behaviour
  */
 enum class ScanningAction(
-    @field:StringRes @param:StringRes val instruction: Int,
-    @field:StringRes @param:StringRes val scanTitle: Int,
-    @field:StringRes @param:StringRes val pageTitle: Int,
-    @field:StringRes @param:StringRes val hint: Int,
-    @field:StringRes val manualAddTitle: Int,
+    @StringRes val instruction: Int,
+    @StringRes val scanTitle: Int,
+    @StringRes val pageTitle: Int,
+    @StringRes val hint: Int,
+    @StringRes val manualAddTitle: Int,
     private val scannerViewModelProvider:
         BiFunction<FragmentActivity, String?, QRCodeScanningViewModel>,
     private val popViewModelProvider: Function<FragmentActivity, PopViewModel>,

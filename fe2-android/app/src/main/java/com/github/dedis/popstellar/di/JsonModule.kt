@@ -40,6 +40,7 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object JsonModule {
+
   @JvmStatic
   @Provides
   @Singleton
@@ -53,13 +54,12 @@ object JsonModule {
         .registerTypeAdapter(ResultMessages::class.java, JsonResultSerializer())
         .registerTypeAdapter(Answer::class.java, JsonAnswerSerializer())
         .registerTypeAdapter(MessageGeneral::class.java, JsonMessageGeneralSerializer())
-        .registerTypeAdapter(
-            Channel::class.java, JsonChannelSerializer()) // Objects serializer for database
+        .registerTypeAdapter(Channel::class.java, JsonChannelSerializer())
+        // Objects serializer for database
         .registerTypeAdapter(Lao::class.java, JsonLaoSerializer())
         .registerTypeAdapter(Election::class.java, JsonElectionSerializer())
-        .registerTypeAdapter(
-            TransactionObject::class.java,
-            JsonTransactionObjectSerializer()) // Base64URLData serializers
+        .registerTypeAdapter(TransactionObject::class.java, JsonTransactionObjectSerializer())
+        // Base64URLData serializers
         .registerTypeAdapter(
             Base64URLData::class.java,
             JsonBase64DataSerializer { data: String -> Base64URLData(data) })

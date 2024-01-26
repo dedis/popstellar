@@ -21,6 +21,7 @@ class Publish(channel: Channel?, id: Int, message: MessageGeneral?) : Query(chan
    */
   init {
     requireNotNull(message) { "Trying to publish a null message" }
+
     this.message = message
   }
 

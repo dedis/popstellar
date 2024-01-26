@@ -19,11 +19,7 @@ class Meeting(
     val modificationId: String,
     modificationSignatures: List<String>
 ) : Event() {
-  val modificationSignatures: List<String>
-
-  init {
-    this.modificationSignatures = ArrayList(modificationSignatures)
-  }
+  val modificationSignatures: List<String> = ArrayList(modificationSignatures)
 
   override val type: EventType
     get() = EventType.MEETING

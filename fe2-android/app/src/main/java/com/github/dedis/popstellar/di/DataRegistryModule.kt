@@ -53,6 +53,7 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object DataRegistryModule {
+
   @JvmStatic
   @Provides
   @Singleton
@@ -227,7 +228,8 @@ object DataRegistryModule {
             deleteChirp: DeleteChirp ->
           chirpHandler.handleDeleteChirp(context, deleteChirp)
         }
-        .add(Objects.CHIRP, Action.NOTIFY_DELETE, NotifyDeleteChirp::class.java, null) // Reactions
+        .add(Objects.CHIRP, Action.NOTIFY_DELETE, NotifyDeleteChirp::class.java, null)
+
         // Reactions
         .add(Objects.REACTION, Action.ADD, AddReaction::class.java) {
             context: HandlerContext,
@@ -307,6 +309,8 @@ object DataRegistryModule {
         .add(Objects.CHIRP, Action.NOTIFY_ADD, NotifyAddChirp::class.java, null)
         .add(Objects.CHIRP, Action.DELETE, DeleteChirp::class.java, null)
         .add(Objects.CHIRP, Action.NOTIFY_DELETE, NotifyDeleteChirp::class.java, null)
+        .add(Objects.REACTION, Action.ADD, AddReaction::class.java, null)
+        .add(Objects.REACTION, Action.DELETE, DeleteReaction::class.java, null)
 
     // Digital Cash
     builder.add(Objects.COIN, Action.POST_TRANSACTION, PostTransactionCoin::class.java, null)

@@ -171,6 +171,7 @@ class Wallet @Inject constructor(@WalletKeyset keysetManager: AndroidKeysetManag
   private fun storeEncrypted(mnemonicWords: String) {
     encryptedMnemonic =
         aead.encrypt(mnemonicWords.toByteArray(StandardCharsets.UTF_8), ByteArray(0))
+
     encryptedSeed =
         aead.encrypt(
             SeedCalculator().calculateSeed(java.lang.String.join("", mnemonicWords), ""),

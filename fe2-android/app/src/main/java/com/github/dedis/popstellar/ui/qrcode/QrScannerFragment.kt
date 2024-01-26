@@ -190,6 +190,7 @@ class QrScannerFragment : Fragment() {
       bundle.putSerializable(SCANNING_KEY, scanningAction)
       bundle.putSerializable(BACK_ARGS, backArgs)
       fragment.arguments = bundle
+
       return fragment
     }
   }

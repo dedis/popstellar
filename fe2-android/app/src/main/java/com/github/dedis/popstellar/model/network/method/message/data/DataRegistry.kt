@@ -16,11 +16,7 @@ import timber.log.Timber
 /** A registry of Data classes and handlers */
 class DataRegistry private constructor(mapping: Map<EntryPair, Entry<out Data>>) {
   /** A mapping of (object, action) -> (class, handler) */
-  private val mapping: Map<EntryPair, Entry<out Data>>
-
-  init {
-    this.mapping = Collections.unmodifiableMap(mapping)
-  }
+  private val mapping: Map<EntryPair, Entry<out Data>> = Collections.unmodifiableMap(mapping)
 
   /**
    * Return the class assigned to the pair (obj, action)
