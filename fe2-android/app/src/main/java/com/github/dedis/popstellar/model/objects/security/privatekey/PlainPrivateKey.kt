@@ -14,15 +14,12 @@ import java.security.GeneralSecurityException
  * generated independently from the phone.
  */
 class PlainPrivateKey(key: ByteArray) : Base64URLData(key), PrivateKey {
-  private val signer: PublicKeySign
-
-  init {
-    try {
-      signer = Ed25519Sign(key)
-    } catch (e: GeneralSecurityException) {
-      throw IllegalArgumentException("Could not create the private key from its value", e)
-    }
-  }
+  private val signer: PublicKeySign =
+      try {
+        Ed25519Sign(key)
+      } catch (e: GeneralSecurityException) {
+        throw IllegalArgumentException("Could not create the private key from its value", e)
+      }
 
   @Throws(GeneralSecurityException::class)
   override fun sign(data: Base64URLData): Signature {

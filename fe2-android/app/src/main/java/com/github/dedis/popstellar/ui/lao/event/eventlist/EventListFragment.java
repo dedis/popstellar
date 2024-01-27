@@ -2,7 +2,6 @@ package com.github.dedis.popstellar.ui.lao.event.eventlist;
 
 import android.os.Bundle;
 import android.view.*;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -10,7 +9,6 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.EventListFragmentBinding;
 import com.github.dedis.popstellar.model.Role;
@@ -24,12 +22,9 @@ import com.github.dedis.popstellar.ui.lao.event.rollcall.RollCallCreationFragmen
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.Gson;
-
-import java.util.Set;
-
-import javax.inject.Inject;
-
 import dagger.hilt.android.AndroidEntryPoint;
+import java.util.Set;
+import javax.inject.Inject;
 import timber.log.Timber;
 
 /** Fragment used to display the list of events */
@@ -89,7 +84,8 @@ public class EventListFragment extends Fragment {
                   setupEmptyEventsTextVisibility(events);
                 },
                 error ->
-                    ErrorUtils.logAndShow(requireContext(), TAG, R.string.error_event_observed)));
+                    ErrorUtils.INSTANCE.logAndShow(
+                        requireContext(), TAG, R.string.error_event_observed)));
 
     // Add listener to upcoming events card
     binding.upcomingEventsCard.setOnClickListener(

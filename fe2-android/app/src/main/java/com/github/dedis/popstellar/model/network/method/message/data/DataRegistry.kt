@@ -113,11 +113,7 @@ class DataRegistry private constructor(mapping: Map<EntryPair, Entry<out Data>>)
 
   /** Builder of the DataRegistry */
   class Builder {
-    private val mapping: MutableMap<EntryPair, Entry<out Data>>
-
-    init {
-      mapping = HashMap()
-    }
+    private val mapping: MutableMap<EntryPair, Entry<out Data>> = HashMap()
 
     /**
      * Add an entry to the builder and check if it was already present.

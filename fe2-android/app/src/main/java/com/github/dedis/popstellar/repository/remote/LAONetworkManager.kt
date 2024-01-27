@@ -52,12 +52,10 @@ class LAONetworkManager(
   // A subject that represents unprocessed messages
   private val unprocessed: Subject<GenericMessage> = PublishSubject.create()
   private val reprocessingCounter = ConcurrentHashMap<GenericMessage, Int>()
-  private val subscribedChannels: MutableSet<Channel>
+  private val subscribedChannels: MutableSet<Channel> = HashSet(subscribedChannels)
   private val disposables = CompositeDisposable()
 
   init {
-    this.subscribedChannels = HashSet(subscribedChannels)
-
     // Start the incoming message processing
     processIncomingMessages()
     // Start the routine aimed at resubscribing to channels when the connection is lost

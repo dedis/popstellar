@@ -31,12 +31,10 @@ import timber.log.Timber
 @Singleton
 class MeetingRepository @Inject constructor(appDatabase: AppDatabase, application: Application) {
   private val meetingsByLao: MutableMap<String, LaoMeetings> = HashMap()
-  private val meetingDao: MeetingDao
+  private val meetingDao: MeetingDao = appDatabase.meetingDao()
   private val disposables = CompositeDisposable()
 
   init {
-    meetingDao = appDatabase.meetingDao()
-
     val consumerMap: MutableMap<Lifecycle.Event, Consumer<Activity>> =
         EnumMap(Lifecycle.Event::class.java)
     consumerMap[Lifecycle.Event.ON_STOP] = Consumer { disposables.clear() }

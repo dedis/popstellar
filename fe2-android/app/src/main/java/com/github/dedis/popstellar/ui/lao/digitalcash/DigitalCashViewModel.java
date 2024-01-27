@@ -295,14 +295,14 @@ public class DigitalCashViewModel extends AndroidViewModel {
       parsedAmount = Integer.parseInt(currentAmount);
     } catch (NumberFormatException e) {
       // Overflow in the amount (no characters or negative numbers can be inserted)
-      ErrorUtils.logAndShow(
+      ErrorUtils.INSTANCE.logAndShow(
           getApplication().getApplicationContext(),
           TAG,
           R.string.digital_cash_amount_inserted_error);
       return false;
     }
     if (parsedAmount <= MIN_LAO_COIN) {
-      ErrorUtils.logAndShow(
+      ErrorUtils.INSTANCE.logAndShow(
           getApplication().getApplicationContext(),
           TAG,
           R.string.digital_cash_amount_min_indication);

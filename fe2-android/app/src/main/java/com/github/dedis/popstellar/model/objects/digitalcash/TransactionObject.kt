@@ -19,13 +19,8 @@ class TransactionObject(
     val transactionId: String
 ) {
 
-  val inputs: List<InputObject>
-  val outputs: List<OutputObject>
-
-  init {
-    this.inputs = Collections.unmodifiableList(ArrayList(inputs))
-    this.outputs = Collections.unmodifiableList(ArrayList(outputs))
-  }
+  val inputs: List<InputObject> = Collections.unmodifiableList(ArrayList(inputs))
+  val outputs: List<OutputObject> = Collections.unmodifiableList(ArrayList(outputs))
 
   val sendersTransaction: List<PublicKey>
     /**

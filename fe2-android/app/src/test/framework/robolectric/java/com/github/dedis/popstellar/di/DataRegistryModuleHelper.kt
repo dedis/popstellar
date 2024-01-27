@@ -32,10 +32,6 @@ object DataRegistryModuleHelper {
   private val application = ApplicationProvider.getApplicationContext<Application>()
   private val appDatabase = AppDatabaseModuleHelper.getAppDatabase(application)
 
-  init {
-    appDatabase.close()
-  }
-
   @JvmStatic
   @JvmOverloads
   fun buildRegistry(

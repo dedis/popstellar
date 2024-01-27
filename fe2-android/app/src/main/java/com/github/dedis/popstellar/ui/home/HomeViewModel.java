@@ -142,7 +142,7 @@ public class HomeViewModel extends AndroidViewModel
     // Retrieve from the database the saved wallet
     WalletEntity walletEntity = appDatabase.walletDao().getWallet();
     if (walletEntity == null) {
-      ErrorUtils.logAndShow(
+      ErrorUtils.INSTANCE.logAndShow(
           getApplication().getApplicationContext(), TAG, R.string.no_seed_storage_found);
       return false;
     }

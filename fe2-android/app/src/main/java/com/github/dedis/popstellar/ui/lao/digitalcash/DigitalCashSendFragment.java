@@ -4,11 +4,9 @@ import android.os.Bundle;
 import android.view.*;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.DigitalCashSendFragmentBinding;
 import com.github.dedis.popstellar.model.objects.security.PoPToken;
@@ -19,12 +17,10 @@ import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
-
+import io.reactivex.Completable;
 import java.security.GeneralSecurityException;
 import java.time.Instant;
 import java.util.*;
-
-import io.reactivex.Completable;
 import timber.log.Timber;
 
 /**
@@ -102,7 +98,7 @@ public class DigitalCashSendFragment extends Fragment {
                     }
 
                   } catch (KeyException keyException) {
-                    ErrorUtils.logAndShow(
+                    ErrorUtils.INSTANCE.logAndShow(
                         requireContext(),
                         TAG,
                         keyException,
@@ -115,7 +111,8 @@ public class DigitalCashSendFragment extends Fragment {
     try {
       setUpTheAdapter();
     } catch (KeyException e) {
-      ErrorUtils.logAndShow(requireContext(), TAG, e, R.string.digital_cash_error_poptoken);
+      ErrorUtils.INSTANCE.logAndShow(
+          requireContext(), TAG, e, R.string.digital_cash_error_poptoken);
     }
   }
 
@@ -207,10 +204,10 @@ public class DigitalCashSendFragment extends Fragment {
         .doOnError(
             error -> {
               if (error instanceof KeyException || error instanceof GeneralSecurityException) {
-                ErrorUtils.logAndShow(
+                ErrorUtils.INSTANCE.logAndShow(
                     requireContext(), TAG, error, R.string.error_retrieve_own_token);
               } else {
-                ErrorUtils.logAndShow(
+                ErrorUtils.INSTANCE.logAndShow(
                     requireContext(), TAG, error, R.string.error_post_transaction);
               }
             });

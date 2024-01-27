@@ -33,14 +33,11 @@ class DigitalCashRepository
 @Inject
 constructor(appDatabase: AppDatabase, application: Application) {
   private val transactionsByLao: MutableMap<String, LaoTransactions> = HashMap()
-  private val transactionDao: TransactionDao
-  private val hashDao: HashDao
+  private val transactionDao: TransactionDao = appDatabase.transactionDao()
+  private val hashDao: HashDao = appDatabase.hashDao()
   private val disposables = CompositeDisposable()
 
   init {
-    transactionDao = appDatabase.transactionDao()
-    hashDao = appDatabase.hashDao()
-
     val consumerMap: MutableMap<Lifecycle.Event, Consumer<Activity>> =
         EnumMap(Lifecycle.Event::class.java)
     consumerMap[Lifecycle.Event.ON_STOP] = Consumer { disposables.clear() }

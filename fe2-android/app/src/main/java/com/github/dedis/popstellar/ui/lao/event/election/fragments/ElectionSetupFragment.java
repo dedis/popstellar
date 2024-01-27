@@ -253,7 +253,7 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
                               R.id.fragment_event_list,
                               EventListFragment::newInstance),
                       error ->
-                          ErrorUtils.logAndShow(
+                          ErrorUtils.INSTANCE.logAndShow(
                               requireContext(), TAG, error, R.string.error_create_election)));
         });
   }

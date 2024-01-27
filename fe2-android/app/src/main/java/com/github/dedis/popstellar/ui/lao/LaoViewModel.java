@@ -276,7 +276,7 @@ public class LaoViewModel extends AndroidViewModel implements PopViewModel {
                   setIsAttendee(isLastRollCallAttended);
                 },
                 error ->
-                    ErrorUtils.logAndShow(
+                    ErrorUtils.INSTANCE.logAndShow(
                         getApplication(), TAG, error, R.string.unknown_roll_call_exception)));
   }
 

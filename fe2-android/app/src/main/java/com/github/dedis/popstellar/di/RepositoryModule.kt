@@ -9,6 +9,6 @@ import dagger.hilt.components.SingletonComponent
 
 @Module
 @InstallIn(SingletonComponent::class)
-interface RepositoryModule {
+fun interface RepositoryModule {
   @Binds fun bindsSchedulerProvider(prodSchedulerProvider: ProdSchedulerProvider): SchedulerProvider
 }

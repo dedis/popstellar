@@ -36,12 +36,10 @@ class MessageRepository @Inject constructor(appDatabase: AppDatabase, applicatio
 
   /** Cache for efficient lookups and for avoiding I/O operations */
   private val messageCache = LruCache<MessageID, Any>(CACHED_MESSAGES)
-  private val messageDao: MessageDao
+  private val messageDao: MessageDao = appDatabase.messageDao()
   private val disposables = CompositeDisposable()
 
   init {
-    messageDao = appDatabase.messageDao()
-
     val consumerMap: MutableMap<Lifecycle.Event, Consumer<Activity>> =
         EnumMap(Lifecycle.Event::class.java)
     consumerMap[Lifecycle.Event.ON_STOP] = Consumer { disposables.clear() }

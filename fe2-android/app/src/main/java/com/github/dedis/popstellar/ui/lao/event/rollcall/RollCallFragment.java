@@ -1,5 +1,7 @@
 package com.github.dedis.popstellar.ui.lao.event.rollcall;
 
+import static com.github.dedis.popstellar.utility.Constants.*;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.pm.ActivityInfo;
@@ -9,11 +11,9 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.*;
 import android.widget.*;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
-
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.RollCallFragmentBinding;
 import com.github.dedis.popstellar.model.objects.RollCall;
@@ -32,19 +32,13 @@ import com.github.dedis.popstellar.utility.Constants;
 import com.github.dedis.popstellar.utility.error.*;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
-
-import net.glxn.qrgen.android.QRCode;
-
+import dagger.hilt.android.AndroidEntryPoint;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import javax.inject.Inject;
-
-import dagger.hilt.android.AndroidEntryPoint;
+import net.glxn.qrgen.android.QRCode;
 import timber.log.Timber;
-
-import static com.github.dedis.popstellar.utility.Constants.*;
 
 @AndroidEntryPoint
 public class RollCallFragment extends AbstractEventFragment {
@@ -88,7 +82,8 @@ public class RollCallFragment extends AbstractEventFragment {
           rollCallRepo.getRollCallWithPersistentId(
               laoViewModel.getLaoId(), requireArguments().getString(ROLL_CALL_ID));
     } catch (UnknownRollCallException e) {
-      ErrorUtils.logAndShow(requireContext(), TAG, e, R.string.unknown_roll_call_exception);
+      ErrorUtils.INSTANCE.logAndShow(
+          requireContext(), TAG, e, R.string.unknown_roll_call_exception);
       return null;
     }
 
@@ -126,7 +121,7 @@ public class RollCallFragment extends AbstractEventFragment {
                                   R.id.fragment_roll_call,
                                   () -> RollCallFragment.newInstance(rollCall.getPersistentId())),
                           error ->
-                              ErrorUtils.logAndShow(
+                              ErrorUtils.INSTANCE.logAndShow(
                                   requireContext(), TAG, error, R.string.error_open_rollcall)));
               break;
             case OPENED:
@@ -141,7 +136,7 @@ public class RollCallFragment extends AbstractEventFragment {
                                   R.id.fragment_event_list,
                                   EventListFragment::newInstance),
                           error ->
-                              ErrorUtils.logAndShow(
+                              ErrorUtils.INSTANCE.logAndShow(
                                   requireContext(), TAG, error, R.string.error_close_rollcall)));
               break;
             default:
@@ -169,7 +164,7 @@ public class RollCallFragment extends AbstractEventFragment {
                   setUpStateDependantContent();
                 },
                 error ->
-                    ErrorUtils.logAndShow(
+                    ErrorUtils.INSTANCE.logAndShow(
                         requireContext(), TAG, error, R.string.unknown_roll_call_exception)));
 
     handleBackNav(TAG);
@@ -185,7 +180,8 @@ public class RollCallFragment extends AbstractEventFragment {
           rollCallRepo.getRollCallWithPersistentId(
               laoViewModel.getLaoId(), requireArguments().getString(ROLL_CALL_ID));
     } catch (UnknownRollCallException e) {
-      ErrorUtils.logAndShow(requireContext(), TAG, e, R.string.unknown_roll_call_exception);
+      ErrorUtils.INSTANCE.logAndShow(
+          requireContext(), TAG, e, R.string.unknown_roll_call_exception);
     }
   }
 
@@ -193,10 +189,10 @@ public class RollCallFragment extends AbstractEventFragment {
     try {
       return laoViewModel.getCurrentPopToken(rollCall);
     } catch (KeyException e) {
-      ErrorUtils.logAndShow(requireContext(), TAG, e, R.string.key_generation_exception);
+      ErrorUtils.INSTANCE.logAndShow(requireContext(), TAG, e, R.string.key_generation_exception);
       return null;
     } catch (UnknownLaoException e) {
-      ErrorUtils.logAndShow(requireContext(), TAG, e, R.string.unknown_lao_exception);
+      ErrorUtils.INSTANCE.logAndShow(requireContext(), TAG, e, R.string.unknown_lao_exception);
       return null;
     }
   }

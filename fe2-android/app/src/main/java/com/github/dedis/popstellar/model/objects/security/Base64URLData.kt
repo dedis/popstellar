@@ -7,13 +7,9 @@ import java.util.Base64
 /** Represents a data that can be encoded into a Base64 form */
 @Immutable
 open class Base64URLData(data: ByteArray) {
-  val data: ByteArray
+  // Deep copy of byte array
+  val data: ByteArray = data.copyOf(data.size)
     get() = field.copyOf(field.size)
-
-  init {
-    // Deep copy of byte array
-    this.data = data.copyOf(data.size)
-  }
 
   constructor(data: String) : this(decode(data))
 

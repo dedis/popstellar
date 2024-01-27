@@ -200,7 +200,7 @@ constructor(
     // Verify the vote was created before the end of the election or the election is not closed yet
     if (election.endTimestamp >= castVote.creation || election.state != EventState.CLOSED) {
       // Retrieve previous cast vote message stored for the given sender
-      val previousMessageId = election.getMessageMap()[senderPk]
+      val previousMessageId = election.messageMap[senderPk]
 
       // No previous message, we always handle it
       if (previousMessageId == null) {
@@ -287,7 +287,7 @@ constructor(
           "Mnemonic identifier :\n${generateMnemonicWordFromBase64(election.id, 2)}\n\n" +
               "Opens at :\n${Date(election.startTimestampInMillis)}\n\n" +
               "Closes at :\n${Date(election.endTimestampInMillis)}\n\n" +
-              formatElectionQuestions(election.getElectionQuestions())
+              formatElectionQuestions(election.electionQuestions)
 
       return message
     }
@@ -298,7 +298,7 @@ constructor(
       message.description =
           "Mnemonic identifier :\n${generateMnemonicWordFromBase64(election.id, 2)}\n\n" +
               "Closed at :\n${Date(election.endTimestampInMillis)}\n\n" +
-              formatElectionResults(election.getElectionQuestions(), election.getResults())
+              formatElectionResults(election.electionQuestions, election.results)
 
       return message
     }

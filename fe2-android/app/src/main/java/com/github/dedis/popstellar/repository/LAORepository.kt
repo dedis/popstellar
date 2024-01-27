@@ -28,7 +28,7 @@ import timber.log.Timber
 
 @Singleton
 class LAORepository @Inject constructor(appDatabase: AppDatabase, application: Application) {
-  private val laoDao: LAODao
+  private val laoDao: LAODao = appDatabase.laoDao()
 
   /** Thread-safe map used to store the laos by their unique identifiers */
   private val laoById = ConcurrentHashMap<String, Lao>()
@@ -41,8 +41,6 @@ class LAORepository @Inject constructor(appDatabase: AppDatabase, application: A
   private val disposables = CompositeDisposable()
 
   init {
-    laoDao = appDatabase.laoDao()
-
     val consumerMap: MutableMap<Lifecycle.Event, Consumer<Activity>> =
         EnumMap(Lifecycle.Event::class.java)
     consumerMap[Lifecycle.Event.ON_STOP] = Consumer { disposables.clear() }

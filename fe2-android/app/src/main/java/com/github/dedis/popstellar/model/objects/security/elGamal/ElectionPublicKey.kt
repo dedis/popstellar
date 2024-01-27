@@ -16,17 +16,13 @@ import timber.log.Timber
 /** Represents a private key meant for El-Gam */
 class ElectionPublicKey(base64publicKey: Base64URLData) {
   // Point is generate with given public key
-  val publicKey: Point
-
-  init {
-    publicKey =
-        try {
-          Ed25519Point(base64publicKey.data)
-        } catch (e: CothorityCryptoException) {
-          throw IllegalArgumentException(
-              "Could not create the point for elliptic curve, please provide another key\n$e")
-        }
-  }
+  val publicKey: Point =
+      try {
+        Ed25519Point(base64publicKey.data)
+      } catch (e: CothorityCryptoException) {
+        throw IllegalArgumentException(
+            "Could not create the point for elliptic curve, please provide another key\n$e")
+      }
 
   override fun toString(): String {
     return publicKey.toString()

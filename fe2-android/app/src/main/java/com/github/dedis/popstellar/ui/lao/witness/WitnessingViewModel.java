@@ -204,7 +204,7 @@ public class WitnessingViewModel extends AndroidViewModel implements QRCodeScann
     try {
       laoView = getLao();
     } catch (UnknownLaoException e) {
-      ErrorUtils.logAndShow(getApplication(), TAG, e, R.string.unknown_lao_exception);
+      ErrorUtils.INSTANCE.logAndShow(getApplication(), TAG, e, R.string.unknown_lao_exception);
       return Completable.error(new UnknownLaoException());
     }
 
@@ -230,13 +230,14 @@ public class WitnessingViewModel extends AndroidViewModel implements QRCodeScann
     try {
       pkData = MainPublicKeyData.extractFrom(gson, data);
     } catch (Exception e) {
-      ErrorUtils.logAndShow(
+      ErrorUtils.INSTANCE.logAndShow(
           getApplication().getApplicationContext(), TAG, e, R.string.qr_code_not_main_pk);
       return;
     }
     PublicKey publicKey = pkData.getPublicKey();
     if (scannedWitnesses.contains(publicKey)) {
-      ErrorUtils.logAndShow(getApplication(), TAG, R.string.witness_already_scanned_warning);
+      ErrorUtils.INSTANCE.logAndShow(
+          getApplication(), TAG, R.string.witness_already_scanned_warning);
       return;
     }
 
@@ -258,7 +259,7 @@ public class WitnessingViewModel extends AndroidViewModel implements QRCodeScann
                 error -> {
                   scannedWitnesses.remove(publicKey);
                   nbScanned.setValue(scannedWitnesses.size());
-                  ErrorUtils.logAndShow(getApplication(), TAG, error, R.string.error_update_lao);
+                  ErrorUtils.INSTANCE.logAndShow(getApplication(), TAG, error, R.string.error_update_lao);
                 }));
      */
   }
@@ -270,7 +271,7 @@ public class WitnessingViewModel extends AndroidViewModel implements QRCodeScann
     try {
       laoView = getLao();
     } catch (UnknownLaoException e) {
-      ErrorUtils.logAndShow(getApplication(), TAG, e, R.string.unknown_lao_exception);
+      ErrorUtils.INSTANCE.logAndShow(getApplication(), TAG, e, R.string.unknown_lao_exception);
       return Completable.error(new UnknownLaoException());
     }
 

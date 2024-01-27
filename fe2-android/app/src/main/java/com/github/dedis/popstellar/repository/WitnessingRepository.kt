@@ -82,16 +82,12 @@ constructor(
     private val digitalCashRepository: DigitalCashRepository
 ) {
   private val witnessByLao: MutableMap<String, LaoWitness> = HashMap()
-  private val witnessingDao: WitnessingDao
-  private val witnessDao: WitnessDao
-  private val pendingDao: PendingDao
+  private val witnessingDao: WitnessingDao = appDatabase.witnessingDao()
+  private val witnessDao: WitnessDao = appDatabase.witnessDao()
+  private val pendingDao: PendingDao = appDatabase.pendingDao()
   private val disposables = CompositeDisposable()
 
   init {
-    witnessingDao = appDatabase.witnessingDao()
-    witnessDao = appDatabase.witnessDao()
-    pendingDao = appDatabase.pendingDao()
-
     val consumerMap: MutableMap<Lifecycle.Event, Consumer<Activity>> =
         EnumMap(Lifecycle.Event::class.java)
     consumerMap[Lifecycle.Event.ON_STOP] = Consumer { disposables.clear() }

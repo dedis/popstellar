@@ -201,7 +201,7 @@ public class LaoActivity extends AppCompatActivity {
               .findViewById(R.id.drawer_header_lao_title);
       laoNameView.setText(laoViewModel.getLao().getName());
     } catch (UnknownLaoException e) {
-      ErrorUtils.logAndShow(this, TAG, e, R.string.unknown_lao_exception);
+      ErrorUtils.INSTANCE.logAndShow(this, TAG, e, R.string.unknown_lao_exception);
       startActivity(HomeActivity.newIntent(this));
     }
   }

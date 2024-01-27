@@ -14,15 +14,12 @@ import java.security.GeneralSecurityException
  * [PublicKeySign] that can be used to sign data.
  */
 class ProtectedPrivateKey(handler: KeysetHandle) : PrivateKey {
-  private val signer: PublicKeySign
-
-  init {
-    try {
-      signer = handler.getPrimitive(PublicKeySign::class.java)
-    } catch (e: GeneralSecurityException) {
-      throw IllegalArgumentException("Could not create the private key from the keyset", e)
-    }
-  }
+  private val signer: PublicKeySign =
+      try {
+        handler.getPrimitive(PublicKeySign::class.java)
+      } catch (e: GeneralSecurityException) {
+        throw IllegalArgumentException("Could not create the private key from the keyset", e)
+      }
 
   @Throws(GeneralSecurityException::class)
   override fun sign(data: Base64URLData): Signature {

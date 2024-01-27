@@ -4,22 +4,18 @@ import android.annotation.SuppressLint;
 import android.view.*;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.objects.digitalcash.TransactionObject;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
-
 import java.util.*;
 import java.util.stream.Collectors;
-
 import timber.log.Timber;
 
 public class HistoryListAdapter extends RecyclerView.Adapter<HistoryListAdapter.HistoryViewHolder> {
@@ -98,7 +94,7 @@ public class HistoryListAdapter extends RecyclerView.Adapter<HistoryListAdapter.
     try {
       ownKey = viewModel.getValidToken().getPublicKey();
     } catch (KeyException e) {
-      ErrorUtils.logAndShow(activity, TAG, e, R.string.error_retrieve_own_token);
+      ErrorUtils.INSTANCE.logAndShow(activity, TAG, e, R.string.error_retrieve_own_token);
       return new ArrayList<>();
     }
     for (TransactionObject transactionObject : transactionObjects) {

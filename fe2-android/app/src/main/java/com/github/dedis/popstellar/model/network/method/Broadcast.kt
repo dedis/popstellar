@@ -24,6 +24,7 @@ class Broadcast(channel: Channel?, message: MessageGeneral?) : Message(channel) 
    */
   init {
     requireNotNull(message) { "Trying to broadcast a null message" }
+
     this.message = message
   }
 

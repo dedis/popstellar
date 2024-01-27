@@ -7,18 +7,14 @@ import ch.epfl.dedis.lib.exception.CothorityCryptoException
 import com.github.dedis.popstellar.model.objects.security.Base64URLData
 import java.util.Objects
 
+/**
+ * Create an decryption scheme for 64 bytes message using a private key
+ *
+ * @param privateKey private key used to decrypt
+ */
 class ElectionPrivateKey(privateKey: Base64URLData) {
   // Scalar generated with the private key
-  private val privateKey: Ed25519Scalar
-
-  /**
-   * Create an decryption scheme for 64 bytes message using a private key
-   *
-   * @param privateKey private key used to decrypt
-   */
-  init {
-    this.privateKey = Ed25519Scalar(privateKey.data)
-  }
+  private val privateKey: Ed25519Scalar = Ed25519Scalar(privateKey.data)
 
   override fun toString(): String {
     return privateKey.toString()

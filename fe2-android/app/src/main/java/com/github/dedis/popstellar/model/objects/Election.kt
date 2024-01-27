@@ -40,7 +40,6 @@ class Election(
   val channel: Channel
   val id: String
   val creation: Long
-  private val electionQuestions: List<ElectionQuestion>
 
   override val name: String
   override val startTimestamp: Long
@@ -57,14 +56,20 @@ class Election(
   // Either OPEN_BALLOT or SECRET_BALLOT
   val electionVersion: ElectionVersion
 
+  val electionQuestions: List<ElectionQuestion>
+    get() = ArrayList(field)
+
   // Map that associates each sender pk to their votes
-  private val votesBySender: Map<PublicKey, List<Vote>>
+  val votesBySender: Map<PublicKey, List<Vote>>
+    get() = copyMapOfList(field)
 
   // Map that associates each messageId to its sender
-  private val messageMap: Map<PublicKey, MessageID>
+  val messageMap: Map<PublicKey, MessageID>
+    get() = HashMap(field)
 
   // Results of an election (associated to a question id)
-  private val results: Map<String, Set<QuestionResult>>
+  val results: Map<String, Set<QuestionResult>>
+    get() = copyMapOfSet(field)
 
   init {
     // Make sure the vote are encrypted in a secret election and plain in an open election
@@ -89,22 +94,6 @@ class Election(
 
   val creationInMillis: Long
     get() = creation * 1000
-
-  fun getElectionQuestions(): List<ElectionQuestion> {
-    return ArrayList(electionQuestions)
-  }
-
-  fun getMessageMap(): Map<PublicKey, MessageID> {
-    return HashMap(messageMap)
-  }
-
-  fun getVotesBySender(): Map<PublicKey, List<Vote>> {
-    return copyMapOfList(votesBySender)
-  }
-
-  fun getResults(): Map<String, Set<QuestionResult>> {
-    return copyMapOfSet(results)
-  }
 
   fun getResultsForQuestionId(id: String): Set<QuestionResult>? {
     return results[id]

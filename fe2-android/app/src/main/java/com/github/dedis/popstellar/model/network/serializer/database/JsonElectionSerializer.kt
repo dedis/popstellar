@@ -131,7 +131,7 @@ class JsonElectionSerializer : JsonSerializer<Election>, JsonDeserializer<Electi
 
     // Serialize the list of election questions into a JsonArray
     val electionQuestionsJsonArray = JsonArray()
-    for (electionQuestion in election.getElectionQuestions()) {
+    for (electionQuestion in election.electionQuestions) {
       electionQuestionsJsonArray.add(
           context.serialize(electionQuestion, ElectionQuestion::class.java))
     }
@@ -139,7 +139,7 @@ class JsonElectionSerializer : JsonSerializer<Election>, JsonDeserializer<Electi
 
     // Serialize the map of votesBySender into a JsonObject
     val votesBySenderJsonObject = JsonObject()
-    for ((key, value) in election.getVotesBySender()) {
+    for ((key, value) in election.votesBySender) {
       val pk = key.encoded
       // Serialize the list of votes into a JsonArray
       val votesBySenderJsonArray = JsonArray()
@@ -152,7 +152,7 @@ class JsonElectionSerializer : JsonSerializer<Election>, JsonDeserializer<Electi
 
     // Serialize the messageMap into a JsonObject
     val messageMapJsonObject = JsonObject()
-    for ((key, value) in election.getMessageMap()) {
+    for ((key, value) in election.messageMap) {
       val pk = key.encoded
       val messageID = value.encoded
       val jsonElement: JsonElement = JsonPrimitive(messageID)
@@ -162,7 +162,7 @@ class JsonElectionSerializer : JsonSerializer<Election>, JsonDeserializer<Electi
 
     // Serialize the results map into a JsonObject
     val resultsJsonObject = JsonObject()
-    for ((key, value) in election.getResults()) {
+    for ((key, value) in election.results) {
       // Serialize the set of question results into a JsonArray
       val resultsJsonArray = JsonArray()
       for (vote in value) {

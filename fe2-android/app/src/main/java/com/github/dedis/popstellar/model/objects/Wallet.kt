@@ -35,22 +35,18 @@ import timber.log.Timber
  * realistic security and usability.
  */
 @Singleton
+/** Class constructor, initialize the wallet keyset. */
 class Wallet @Inject constructor(@WalletKeyset keysetManager: AndroidKeysetManager) {
   private var encryptedSeed: ByteArray? = null
   private var encryptedMnemonic: ByteArray? = null
 
-  private val aead: Aead
-
-  /** Class constructor, initialize the wallet keyset. */
-  init {
-    aead =
-        try {
-          keysetManager.keysetHandle.getPrimitive(Aead::class.java)
-        } catch (e: GeneralSecurityException) {
-          Timber.tag(TAG).e(e, "Failed to initialize the Wallet")
-          throw IllegalStateException("Failed to initialize the Wallet", e)
-        }
-  }
+  private val aead: Aead =
+      try {
+        keysetManager.keysetHandle.getPrimitive(Aead::class.java)
+      } catch (e: GeneralSecurityException) {
+        Timber.tag(TAG).e(e, "Failed to initialize the Wallet")
+        throw IllegalStateException("Failed to initialize the Wallet", e)
+      }
 
   /**
    * Generate a PoPToken from the ID of the LAO and the ID of the RollCall.
