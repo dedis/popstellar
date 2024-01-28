@@ -370,6 +370,7 @@ constructor(
                       }))
         }
       }
+
       // Reinsert the witness message with the new witness to update the subject
       add(witnessMessage)
       return true

@@ -2,20 +2,16 @@ package com.github.dedis.popstellar.ui.lao.socialmedia;
 
 import android.os.Bundle;
 import android.view.*;
-
 import androidx.annotation.*;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.SocialMediaHomeFragmentBinding;
 import com.github.dedis.popstellar.ui.lao.LaoActivity;
 import com.github.dedis.popstellar.ui.lao.LaoViewModel;
 import com.github.dedis.popstellar.utility.ActivityUtils;
-
-import java.util.function.Supplier;
-
 import dagger.hilt.android.AndroidEntryPoint;
+import java.util.function.Supplier;
 import timber.log.Timber;
 
 /**
@@ -29,6 +25,14 @@ public class SocialMediaHomeFragment extends Fragment {
   private SocialMediaHomeFragmentBinding binding;
 
   public static final String TAG = SocialMediaHomeFragment.class.getSimpleName();
+
+  public SocialMediaHomeFragment() {
+    // Required public empty constructor
+  }
+
+  public static SocialMediaHomeFragment newInstance() {
+    return new SocialMediaHomeFragment();
+  }
 
   @Nullable
   @Override

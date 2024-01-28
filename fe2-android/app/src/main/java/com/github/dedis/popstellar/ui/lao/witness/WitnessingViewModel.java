@@ -101,7 +101,7 @@ public class WitnessingViewModel extends AndroidViewModel implements QRCodeScann
    *
    * @param laoId identifier of the lao whose view model belongs
    */
-  public void initialize(String laoId) throws UnknownLaoException {
+  public WitnessingViewModel initialize(String laoId) throws UnknownLaoException {
     this.laoId = laoId;
 
     LaoView lao = laoRepo.getLaoView(laoId);
@@ -168,6 +168,8 @@ public class WitnessingViewModel extends AndroidViewModel implements QRCodeScann
                 error ->
                     Timber.tag(TAG)
                         .d(error, "Error in updating the witness messages of lao %s", laoId)));
+
+    return this;
   }
 
   /**

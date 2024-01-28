@@ -125,7 +125,7 @@ constructor(
     if (!isWalletSetUp) {
       // Restore the wallet if not already set up
       val seed = walletEntity.walletSeedArray
-      val appended = java.lang.String.join(" ", *seed)
+      val appended = seed.joinToString(" ")
       Timber.tag(TAG).d("Retrieved wallet from db, seed : %s", appended)
       try {
         importSeed(appended)
