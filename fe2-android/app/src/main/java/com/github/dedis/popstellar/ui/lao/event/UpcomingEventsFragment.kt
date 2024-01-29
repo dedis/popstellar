@@ -18,9 +18,9 @@ class UpcomingEventsFragment : Fragment() {
   private lateinit var laoViewModel: LaoViewModel
 
   override fun onCreateView(
-    inflater: LayoutInflater,
-    container: ViewGroup?,
-    savedInstanceState: Bundle?
+      inflater: LayoutInflater,
+      container: ViewGroup?,
+      savedInstanceState: Bundle?
   ): View {
     val binding = UpcomingEventsFragmentBinding.inflate(inflater, container, false)
 
@@ -29,7 +29,7 @@ class UpcomingEventsFragment : Fragment() {
 
     binding.upcomingEventsRecyclerView.layoutManager = LinearLayoutManager(context)
     binding.upcomingEventsRecyclerView.adapter =
-      UpcomingEventsAdapter(eventsViewModel.events, laoViewModel, requireActivity(), TAG)
+        UpcomingEventsAdapter(eventsViewModel.events, laoViewModel, requireActivity(), TAG)
     handleBackNav()
     return binding.root
   }

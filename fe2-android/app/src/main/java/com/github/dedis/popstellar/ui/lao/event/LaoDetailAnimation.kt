@@ -31,18 +31,17 @@ object LaoDetailAnimation {
     v.translationY = v.height.toFloat()
 
     v.animate()
-      .setDuration(200)
-      .translationY(0f)
-      .setListener(
-        object : AnimatorListenerAdapter() {
-          override fun onAnimationEnd(animation: Animator) {
-            v.alpha = 1f
-            super.onAnimationEnd(animation)
-          }
-        }
-      )
-      .alpha(1f)
-      .start()
+        .setDuration(200)
+        .translationY(0f)
+        .setListener(
+            object : AnimatorListenerAdapter() {
+              override fun onAnimationEnd(animation: Animator) {
+                v.alpha = 1f
+                super.onAnimationEnd(animation)
+              }
+            })
+        .alpha(1f)
+        .start()
   }
 
   @JvmStatic
@@ -52,19 +51,18 @@ object LaoDetailAnimation {
     v.translationY = 0f
 
     v.animate()
-      .setDuration(200)
-      .translationY(v.height.toFloat())
-      .setListener(
-        object : AnimatorListenerAdapter() {
-          override fun onAnimationEnd(animation: Animator) {
-            v.visibility = View.GONE
-            v.alpha = 0f
-            super.onAnimationEnd(animation)
-          }
-        }
-      )
-      .alpha(0f)
-      .start()
+        .setDuration(200)
+        .translationY(v.height.toFloat())
+        .setListener(
+            object : AnimatorListenerAdapter() {
+              override fun onAnimationEnd(animation: Animator) {
+                v.visibility = View.GONE
+                v.alpha = 0f
+                super.onAnimationEnd(animation)
+              }
+            })
+        .alpha(0f)
+        .start()
   }
 
   @JvmStatic

@@ -113,8 +113,8 @@ abstract class AbstractEventCreationFragment : Fragment() {
       endDate = null
 
       openPickerDialog(DatePickerFragment.newInstance(), DatePickerFragment.TAG) {
-        request: String,
-        bundle: Bundle ->
+          request: String,
+          bundle: Bundle ->
         onStartDate(request, bundle)
       }
     }
@@ -125,8 +125,8 @@ abstract class AbstractEventCreationFragment : Fragment() {
       endDate = null
 
       openPickerDialog(DatePickerFragment.newInstance(), DatePickerFragment.TAG) {
-        requestKey: String,
-        bundle: Bundle ->
+          requestKey: String,
+          bundle: Bundle ->
         onEndDate(requestKey, bundle)
       }
     }
@@ -140,8 +140,8 @@ abstract class AbstractEventCreationFragment : Fragment() {
       endTime = null
 
       openPickerDialog(TimePickerFragment.newInstance(), TimePickerFragment.TAG) {
-        requestKey: String,
-        bundle: Bundle ->
+          requestKey: String,
+          bundle: Bundle ->
         onStartTime(requestKey, bundle)
       }
     }
@@ -152,24 +152,21 @@ abstract class AbstractEventCreationFragment : Fragment() {
       endTime = null
 
       openPickerDialog(TimePickerFragment(), TimePickerFragment.TAG) {
-        requestKey: String,
-        bundle: Bundle ->
+          requestKey: String,
+          bundle: Bundle ->
         onEndTime(requestKey, bundle)
       }
     }
   }
 
   private fun openPickerDialog(
-    fragment: AppCompatDialogFragment,
-    fragmentTag: String,
-    listener: FragmentResultListener
+      fragment: AppCompatDialogFragment,
+      fragmentTag: String,
+      listener: FragmentResultListener
   ) {
     // Create Listener
     parentFragmentManager.setFragmentResultListener(
-      PickerConstant.REQUEST_KEY,
-      viewLifecycleOwner,
-      listener
-    )
+        PickerConstant.REQUEST_KEY, viewLifecycleOwner, listener)
     // show the picker
     fragment.show(parentFragmentManager, fragmentTag)
   }
@@ -255,13 +252,11 @@ abstract class AbstractEventCreationFragment : Fragment() {
     startTime = getSelection(bundle)
     startTimeEditText?.setText(timeFormat.format(startTime!!.time))
 
-    if (
-      startDate != null &&
+    if (startDate != null &&
         endDate != null &&
         startDate == endDate &&
         endTime != null &&
-        startTime!! > endTime!!
-    ) {
+        startTime!! > endTime!!) {
       showToast(R.string.start_time_after_end_time_not_allowed)
       startTime = null
       startTimeEditText?.setText("")
@@ -274,13 +269,11 @@ abstract class AbstractEventCreationFragment : Fragment() {
     endTime = getSelection(bundle)
     endTimeEditText?.setText(timeFormat.format(endTime!!.time))
 
-    if (
-      startDate != null &&
+    if (startDate != null &&
         endDate != null &&
         startDate == endDate &&
         startTime != null &&
-        startTime!! > endTime!!
-    ) {
+        startTime!! > endTime!!) {
       showToast(R.string.end_time_before_start_time_not_allowed)
       endTime = null
       endTimeEditText?.setText("")
@@ -289,18 +282,17 @@ abstract class AbstractEventCreationFragment : Fragment() {
 
   private fun getSelection(bundle: Bundle): Calendar {
     return bundle.getSerializable(PickerConstant.RESPONSE_KEY) as Calendar?
-      ?: throw IllegalStateException("Bundle does not contain selection")
+        ?: throw IllegalStateException("Bundle does not contain selection")
   }
 
   private fun compareWithNowByDay(date: Calendar): Int {
     val dayThreshold =
-      Calendar.Builder()
-        .setDate(
-          threshold[Calendar.YEAR],
-          threshold[Calendar.MONTH],
-          threshold[Calendar.DAY_OF_MONTH]
-        )
-        .build()
+        Calendar.Builder()
+            .setDate(
+                threshold[Calendar.YEAR],
+                threshold[Calendar.MONTH],
+                threshold[Calendar.DAY_OF_MONTH])
+            .build()
 
     return date.compareTo(dayThreshold)
   }
@@ -321,11 +313,11 @@ abstract class AbstractEventCreationFragment : Fragment() {
     }
 
     completeStartTime[
-      startDate!![Calendar.YEAR],
-      startDate!![Calendar.MONTH],
-      startDate!![Calendar.DAY_OF_MONTH],
-      startTime!![Calendar.HOUR_OF_DAY],
-      startTime!![Calendar.MINUTE]] = 0
+        startDate!![Calendar.YEAR],
+        startDate!![Calendar.MONTH],
+        startDate!![Calendar.DAY_OF_MONTH],
+        startTime!![Calendar.HOUR_OF_DAY],
+        startTime!![Calendar.MINUTE]] = 0
     val creation = Instant.now()
     var start = completeStartTime.toInstant()
     if (start.isBefore(creation)) {
@@ -351,11 +343,11 @@ abstract class AbstractEventCreationFragment : Fragment() {
 
     if (endDate != null) {
       completeEndTime[
-        endDate!![Calendar.YEAR],
-        endDate!![Calendar.MONTH],
-        endDate!![Calendar.DAY_OF_MONTH],
-        endTime!![Calendar.HOUR_OF_DAY],
-        endTime!![Calendar.MINUTE]] = 0
+          endDate!![Calendar.YEAR],
+          endDate!![Calendar.MONTH],
+          endDate!![Calendar.DAY_OF_MONTH],
+          endTime!![Calendar.HOUR_OF_DAY],
+          endTime!![Calendar.MINUTE]] = 0
       var end = completeEndTime.toInstant()
       if (end.isBefore(start)) {
         if (end.truncatedTo(ChronoUnit.MINUTES) == start.truncatedTo(ChronoUnit.MINUTES)) {
@@ -393,11 +385,11 @@ abstract class AbstractEventCreationFragment : Fragment() {
       override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
         // Check that all text fields are not empty
         val areAllFieldsFilled =
-          Arrays.stream(requiredTexts).noneMatch { text: EditText ->
-            text.text.toString().isEmpty()
-          }
+            Arrays.stream(requiredTexts).noneMatch { text: EditText ->
+              text.text.toString().isEmpty()
+            }
         confirmButton?.isEnabled =
-          areAllFieldsFilled && getStartDate().isNotEmpty() && getStartTime().isNotEmpty()
+            areAllFieldsFilled && getStartDate().isNotEmpty() && getStartTime().isNotEmpty()
       }
 
       override fun afterTextChanged(s: Editable) {
