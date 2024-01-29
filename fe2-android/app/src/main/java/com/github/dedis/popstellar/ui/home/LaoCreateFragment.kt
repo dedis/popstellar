@@ -94,7 +94,8 @@ class LaoCreateFragment : Fragment() {
 
     // No need to have a LiveData as the fragment is recreated upon exiting the scanner
     val witnesses =
-        witnessingViewModel.scannedWitnesses
+        witnessingViewModel
+            .getScannedWitnesses()
             .stream()
             .map(PublicKey::encoded)
             .collect(Collectors.toList())
@@ -112,7 +113,7 @@ class LaoCreateFragment : Fragment() {
 
       Timber.tag(TAG).d("creating lao with name %s", laoName)
 
-      val witnesses = witnessingViewModel.scannedWitnesses
+      val witnesses = witnessingViewModel.getScannedWitnesses()
       networkManager.connect(serverAddress)
       requireActivity()
           .startActivity(
@@ -137,7 +138,7 @@ class LaoCreateFragment : Fragment() {
       viewModel.setIsWitnessingEnabled(isChecked)
       if (isChecked) {
         binding.addWitnessButton.visibility = View.VISIBLE
-        if (witnessingViewModel.scannedWitnesses.isNotEmpty()) {
+        if (witnessingViewModel.getScannedWitnesses().isNotEmpty()) {
           binding.witnessesTitle.visibility = View.VISIBLE
           binding.witnessesList.visibility = View.VISIBLE
         }
