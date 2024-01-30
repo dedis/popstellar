@@ -1,4 +1,4 @@
-@env=go_client,scala_client
+@env=go,scala
 Feature: Cast a vote
   Background:
     # This feature will be called to test Cast Vote
@@ -8,7 +8,7 @@ Feature: Cast a vote
     * call read('classpath:be/features/utils/constants.feature')
     * call read(serverFeature)
     * call read(mockClientFeature)
-    * def organizer = call createMockClient
+    * def organizer = call createMockFrontend
     * def lao = organizer.createValidLao()
     * def rollCall = organizer.createValidRollCall(lao)
     * def election = organizer.createValidElection(lao)

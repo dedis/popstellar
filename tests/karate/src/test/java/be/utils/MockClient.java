@@ -16,6 +16,7 @@ import java.util.List;
 public class MockClient extends MultiMsgWebSocketClient {
   public MockClient(String wsURL) {
     super(new WebSocketOptions(wsURL), new Logger(), new MessageQueue());
+    System.out.println("ws URL is: " + wsURL);
   }
 
   /**

@@ -14,30 +14,26 @@ function fn() {
     timeout: 5000, //Timeout for websocket response
     args: [],
   }
-  if (env === 'go_client') {
+  if (env === 'go') {
     // customize
     config.host = '127.0.0.1';
-    config.port = 9000;
-    config.path = 'client';
-    config.wsURL = `ws://${config.host}:${config.port}/${config.path}`;
-  } else if (env === 'go_server') {
+    config.port = 9001
+    config.frontendPort = 9000;
+    config.backendPort = 9001;
+    config.frontendPath = 'client';
+    config.backendPath = 'server';
+    config.frontendWsURL = `ws://${config.host}:${config.frontendPort}/${config.frontendPath}`;
+    config.backendWsURL = `ws://${config.host}:${config.backendPort}/${config.backendPath}`;
+  } else if (env === 'scala') {
     // customize
     config.host = '127.0.0.1';
-    config.port = 9001;
-    config.path = 'server';
-    config.wsURL = `ws://${config.host}:${config.port}/${config.path}`;
-  } else if (env === 'scala_client') {
-    // customize
-    config.host = '127.0.0.1';
-    config.port = 8000;
-    config.path = 'client';
-    config.wsURL = `ws://${config.host}:${config.port}/${config.path}`;
-  } else if (env === 'scala_server') {
-    // customize
-    config.host = '127.0.0.1';
-    config.port = 8000; // Scala back-end does not have a specific server port
-    config.path = 'server';
-    config.wsURL = `ws://${config.host}:${config.port}/${config.path}`;
+    config.port = 8000
+    config.frontendPort = 8000;
+    config.backendPort = 8000; // Scala back-end does not have a specific server port
+    config.frontendPath = 'client';
+    config.backendPath = 'server';
+    config.frontendWsURL = `ws://${config.host}:${config.frontendPort}/${config.frontendPath}`;
+    config.backendWsURL = `ws://${config.host}:${config.backendPort}/${config.backendPath}`;
   } else {
     config.port = 9005;
     config.timeout = 1000;

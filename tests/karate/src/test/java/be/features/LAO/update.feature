@@ -1,4 +1,4 @@
-@env=go_client,scala_client
+@env=go,scala
 Feature: Update a LAO
 
   Background:
@@ -9,7 +9,7 @@ Feature: Update a LAO
     * call read('classpath:be/features/utils/constants.feature')
     * call read(serverFeature)
     * call read(mockClientFeature)
-    * def organizer = call createMockClient
+    * def organizer = call createMockFrontend
     * def lao = organizer.createValidLao()
 
     # This call executes all the steps to create a valid lao on the server before every scenario

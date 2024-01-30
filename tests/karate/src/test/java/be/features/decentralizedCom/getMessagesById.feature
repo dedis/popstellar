@@ -1,4 +1,4 @@
-@env=go_server,scala_server
+@env=go,scala
 Feature: Request messages by id from other servers
 
   Background:
@@ -9,8 +9,8 @@ Feature: Request messages by id from other servers
     * call read('classpath:be/features/utils/constants.feature')
     * call read(serverFeature)
     * call read(mockClientFeature)
-    * def mockServer = call createMockClient
-    * def mockFrontend = call createMockClient
+    * def mockServer = call createMockBackend
+    * def mockFrontend = call createMockFrontend
     * def lao = mockFrontend.createValidLao()
 
     # Create the template for heartbeat message
