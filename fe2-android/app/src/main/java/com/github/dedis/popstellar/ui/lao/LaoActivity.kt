@@ -411,7 +411,7 @@ class LaoActivity : AppCompatActivity() {
         laoId: String
     ): DigitalCashViewModel {
       val digitalCashViewModel = ViewModelProvider(activity)[DigitalCashViewModel::class.java]
-      digitalCashViewModel.setLaoId(laoId)
+      digitalCashViewModel.laoId = laoId
       return digitalCashViewModel
     }
 
