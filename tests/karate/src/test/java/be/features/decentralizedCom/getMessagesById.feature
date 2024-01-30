@@ -9,7 +9,7 @@ Feature: Request messages by id from other servers
     * call read('classpath:be/features/utils/constants.feature')
     * call read(serverFeature)
     * call read(mockClientFeature)
-    * def mockServer = call createMockBackend
+    * def mockBackend = call createMockBackend
     * def mockFrontend = call createMockFrontend
     * def lao = mockFrontend.createValidLao()
 
@@ -32,8 +32,8 @@ Feature: Request messages by id from other servers
   Scenario: Server should request the missing message ids in a heartbeat
     Given eval heartbeat.params[lao.channel] = messageIds
 
-    When mockServer.send(heartbeat)
-    And def getMessagesByIdMessages = mockServer.getGetMessagesById()
+    When mockBackend.send(heartbeat)
+    And def getMessagesByIdMessages = mockBackend.getGetMessagesById()
 
     Then assert getMessagesByIdMessages.length == 1
     And match getMessagesByIdMessages[0] contains randomMessageId
@@ -43,8 +43,8 @@ Feature: Request messages by id from other servers
   Scenario: Server should not request messages if channel is missing '/root/' prefix
     Given eval heartbeat.params[lao.id] = messageIds
 
-    When mockServer.send(heartbeat)
-    And def getMessagesByIdMessages = mockServer.getGetMessagesById()
+    When mockBackend.send(heartbeat)
+    And def getMessagesByIdMessages = mockBackend.getGetMessagesById()
 
     Then assert getMessagesByIdMessages.length == 0
 
@@ -54,9 +54,9 @@ Feature: Request messages by id from other servers
     And eval invalidMessageIds.push('invalid message id')
     And eval heartbeat.params[lao.channel] = invalidMessageIds
 
-    When mockServer.send(heartbeat)
+    When mockBackend.send(heartbeat)
 
-    Then assert mockServer.getGetMessagesById().length == 0
+    Then assert mockBackend.getGetMessagesById().length == 0
 
 
   # Check that after the server confirms it received a message, sending a heartbeat containing that message id does not
@@ -85,10 +85,10 @@ Feature: Request messages by id from other servers
     And eval messageIds.push(message_id)
     And eval heartbeat.params[lao.channel] = messageIds
 
-    When mockServer.send(heartbeat)
+    When mockBackend.send(heartbeat)
 
     Then match answer contains VALID_MESSAGE
-    And assert mockServer.getGetMessagesById().length == 0
+    And assert mockBackend.getGetMessagesById().length == 0
 
 
 

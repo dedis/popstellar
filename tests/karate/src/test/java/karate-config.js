@@ -17,7 +17,6 @@ function fn() {
   if (env === 'go') {
     // customize
     config.host = '127.0.0.1';
-    config.port = 9001
     config.frontendPort = 9000;
     config.backendPort = 9001;
     config.frontendPath = 'client';
@@ -27,7 +26,6 @@ function fn() {
   } else if (env === 'scala') {
     // customize
     config.host = '127.0.0.1';
-    config.port = 8000
     config.frontendPort = 8000;
     config.backendPort = 8000; // Scala back-end does not have a specific server port
     config.frontendPath = 'client';

@@ -9,7 +9,7 @@ Feature: Send heartbeats to other servers
     * call read('classpath:be/features/utils/constants.feature')
     * call read(serverFeature)
     * call read(mockClientFeature)
-    * def mockServer = call createMockBackend
+    * def mockBackend = call createMockBackend
     * def mockFrontend = call createMockFrontend
     * def lao = mockFrontend.createValidLao()
     * def validRollCall = mockFrontend.createValidRollCall(lao)
@@ -23,7 +23,7 @@ Feature: Send heartbeats to other servers
   Scenario: Server should send heartbeat messages automatically after a time interval
     Given wait(40)
 
-    When def heartbeatMessages = mockServer.getHeartbeats()
+    When def heartbeatMessages = mockBackend.getHeartbeats()
 
     Then assert heartbeatMessages.length == 2
 
@@ -47,4 +47,4 @@ Feature: Send heartbeats to other servers
 
     When mockFrontend.publish(validCreateRollCall, lao.channel)
     And def message_id = mockFrontend.getPublishMessageId(validCreateRollCall)
-    Then assert mockServer.receivedHeartbeatWithSubstring(message_id)
+    Then assert mockBackend.receivedHeartbeatWithSubstring(message_id)

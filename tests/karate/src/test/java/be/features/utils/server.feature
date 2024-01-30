@@ -37,14 +37,27 @@ Feature: This feature starts a server and stops it after every scenario.
             """
                 function() {
                     var i = 0;
-                    while(i < MAX_CONNECTION_ATTEMPTS && !karate.waitForPort(host, port)){
+                    var frontendPortReady = false;
+                    var backendPortReady = false;
+
+                    while(i < MAX_CONNECTION_ATTEMPTS && (!frontendPortReady || !backendPortReady)){
+                      karate.log('Polling attempt #' + i);
+                      frontendPortReady = karate.waitForPort(host, frontendPort)
+                      backendPortReady = karate.waitForPort(host, backendPort)
+
                       //Wait 5 secs before polling again
                       wait(5)
                       i++
                     }
+
                     if(i >= MAX_CONNECTION_ATTEMPTS){
                       server.stop()
-                      karate.fail(`Failed waiting for ${wsURL}`)
+                      var error = ""
+                      if(!frontendPortReady)
+                        error += `Failed waiting for ${frontendWsURL}. `
+                    if(!backendPortReady)
+                        error += `Failed waiting for ${backendWsURL}.`
+                        karate.fail(error)
                     }
                 }
             """
