@@ -4,6 +4,7 @@ import com.intuit.karate.Json;
 import common.utils.Base64Utils;
 import org.junit.jupiter.api.Test;
 
+import java.security.GeneralSecurityException;
 import java.security.NoSuchAlgorithmException;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -35,7 +36,7 @@ public class JsonConverterTest {
     Json testJson = Json.of(testMap);
     Json testConverter = jsonConverter.constructPublishMessage(testJson.toString(), 2, "/root");
     String jsonString = testConverter.toString();
-    String result = "{\"method\":\"publish\",\"id\":2,\"params\":{\"channel\":\"/root\",\"message\":{\"data\":\"eyJ0ZXN0MSI6InRlc3QyIn0=\",\"sender\":\"J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=\",\"signature\":\"-waobQoP4TyXbTSXG0A8hZ2EPRB--p8G_F_NDerSoOhcBA1BE1JZux98ihvmP8-lG8WifZTx9gSVfWuN2dx2Bw==\",\"message_id\":\"Oj7kLJCLMvQrvBZmW0YyRUDbRX10p4mIg2gw0AuIu3E=\",\"witness_signatures\":[]}},\"jsonrpc\":\"2.0\"}";
+    String result = "{\"jsonrpc\":\"2.0\",\"id\":2,\"method\":\"publish\",\"params\":{\"channel\":\"/root\",\"message\":{\"data\":\"eyJ0ZXN0MSI6InRlc3QyIn0=\",\"sender\":\"J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=\",\"signature\":\"-waobQoP4TyXbTSXG0A8hZ2EPRB--p8G_F_NDerSoOhcBA1BE1JZux98ihvmP8-lG8WifZTx9gSVfWuN2dx2Bw==\",\"message_id\":\"Oj7kLJCLMvQrvBZmW0YyRUDbRX10p4mIg2gw0AuIu3E=\",\"witness_signatures\":[]}}}";
     assert jsonString.equals(result);
   }
 
@@ -54,8 +55,9 @@ public class JsonConverterTest {
     String laoDataJsonString = constructJsonDataForValidLao().toString();
     Json jsonValidLaoMessage = jsonConverter.constructPublishMessage(laoDataJsonString, 1, "/root");
     Map<String, Object> validStringMessage = new LinkedHashMap<>();
-    validStringMessage.put("method", "publish");
+    validStringMessage.put("jsonrpc", "2.0");
     validStringMessage.put("id", 1);
+    validStringMessage.put("method", "publish");
     Map<String, Object> paramsMap = new LinkedHashMap<>();
     paramsMap.put("channel", "/root");
     Map<String, Object> messageMap = new LinkedHashMap<>();
@@ -74,7 +76,6 @@ public class JsonConverterTest {
     messageMap.put("witness_signatures", witness);
     paramsMap.put("message", messageMap);
     validStringMessage.put("params", paramsMap);
-    validStringMessage.put("jsonrpc", "2.0");
     Json toCompare = Json.of(validStringMessage);
 
     assert toCompare.toString().equals(jsonValidLaoMessage.toString());

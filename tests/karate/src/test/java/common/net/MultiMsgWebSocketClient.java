@@ -103,6 +103,10 @@ public class MultiMsgWebSocketClient extends WebSocketClient {
     return getMessagesByMethod("heartbeat");
   }
 
+  public List<String> getGreetServer(){
+    return getMessagesByMethod("greet_server");
+  }
+
   public List<String> getGetMessagesById(){
     return getMessagesByMethod("get_messages_by_id");
   }

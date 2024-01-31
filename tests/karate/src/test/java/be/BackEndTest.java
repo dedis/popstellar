@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class BackEndTest {
 
   /**
-   * This test will execute all the tests for a back-end connected to mock frontends with the Go back-end
+   * This will execute all the tests for the Go back-end
    * It will not generate a clean report, but it can be used in development
    *
    * @return the Karate builder
@@ -24,7 +24,7 @@ public class BackEndTest {
   }
 
   /**
-   * This test will execute all the tests for a back-end connected to mock frontends with the Scala back-end
+   * This will execute all the tests for the Scala back-end
    * It will not generate a clean report, but it can be used in development
    *
    * @return the Karate builder
