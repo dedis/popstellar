@@ -74,7 +74,7 @@ $(document).ready(function() {
   <tbody>
     <tr class="info">
       <td>scala_server</td>
-      <td>31 Jan 2024, 04:14</td>
+      <td>01 Feb 2024, 04:15</td>
     </tr>
   </tbody>
 </table>
@@ -138,7 +138,7 @@ $(document).ready(function() {
           <td  class="failed"    >2</td>
           <td class="total">6</td>
 
-          <td class="duration" data-value="70110038647">1:10.110</td>
+          <td class="duration" data-value="70108489437">1:10.108</td>
           <td class="failed">Failed</td>
         </tr>
         </tbody>
@@ -171,7 +171,7 @@ $(document).ready(function() {
 <div class="element">
     <div class="indention">
       <b>Feature:</b>
-      <a href="report-feature_1816568631.html">be/features/decentralizedCom/heartbeat.feature</a>
+      <a href="report-feature_3356270831.html">be/features/decentralizedCom/getMessagesById.feature</a>
     </div>
 
 
@@ -181,391 +181,10 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">45.004</span>
+  <span class="lead-duration duration">5.036</span>
 
 
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-1">
-
-<div class="brief failed">
-  <span class="keyword indention">Scenario</span>
-  <span class="name">Server should send heartbeat messages automatically after a time interval</span>
-
-
-     <i class="chevron fa fa-fw"></i>
-</div>
-
-  </span>
-  <div class="description indention"></div>
-
-  <div id="element-1" class="collapse collapsable-details  in ">
-
-
-
-
-
-<div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-2">
-
-<div class="brief failed">
-  <span class="keyword indention">Steps</span>
-  <span class="name"></span>
-
-
-     <i class="chevron fa fa-fw"></i>
-</div>
-
-  </div>
-
-  <div id="steps-2" class="inner-level collapse collapsable-details  in ">
-      <div class="step">
-
-
-<div class="brief step-name-Given passed">
-  <span class="keyword indention">Given</span>
-  <span class="name">wait(40)</span>
-
-  <span class="lead-duration duration">40.002</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-When passed">
-  <span class="keyword indention">When</span>
-  <span class="name">def heartbeatMessages = mockServer.getHeartbeats()</span>
-
-  <span class="lead-duration duration">5.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-Then failed">
-  <span class="keyword indention">Then</span>
-  <span class="name">assert heartbeatMessages.length == 2</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-  <div class="inner-level">
-    <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-3">
-          <a>did</a>
-      </div>
-      <div id="msg-3" class="collapse collapsable-details  in ">
-        <pre>did not evaluate to 'true': heartbeatMessages.length == 2
-classpath:be/features/decentralizedCom/heartbeat.feature:28</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-  <div class="inner-level">
-    <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-4">
-          <a>Doc string</a>
-      </div>
-      <div id="msg-4" class="collapse collapsable-details">
-        <pre>04:14:38.856 classpath:be/features/decentralizedCom/heartbeat.feature:28
-Then assert heartbeatMessages.length == 2
-did not evaluate to 'true': heartbeatMessages.length == 2
-classpath:be/features/decentralizedCom/heartbeat.feature:28
-</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-
-
-
-      </div>
-  </div>
-</div>
-
-
-
-
-
-  </div>
-</div>
-
-
-<div class="element">
-    <div class="indention">
-      <b>Feature:</b>
-      <a href="report-feature_1816568631.html">be/features/decentralizedCom/heartbeat.feature</a>
-    </div>
-
-
-<div class="tags indention">
-    <b>Tags:</b>
-       <a href="report-tag_2281956221.html">@env=go_server,scala_server</a>
-</div>
-
-
-  <span class="lead-duration duration">5.009</span>
-
-
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-5">
-
-<div class="brief failed">
-  <span class="keyword indention">Scenario</span>
-  <span class="name">Server should send heartbeat messages after receiving a publish</span>
-
-
-     <i class="chevron fa fa-fw"></i>
-</div>
-
-  </span>
-  <div class="description indention"></div>
-
-  <div id="element-5" class="collapse collapsable-details  in ">
-
-
-
-
-
-<div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-6">
-
-<div class="brief failed">
-  <span class="keyword indention">Steps</span>
-  <span class="name"></span>
-
-
-     <i class="chevron fa fa-fw"></i>
-</div>
-
-  </div>
-
-  <div id="steps-6" class="inner-level collapse collapsable-details  in ">
-      <div class="step">
-
-
-<div class="brief step-name-Given passed">
-  <span class="keyword indention">Given</span>
-  <span class="name">def validCreateRollCall =</span>
-
-  <span class="lead-duration duration">0.001</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-  <div class="inner-level">
-    <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-7">
-          <a>Doc string</a>
-      </div>
-      <div id="msg-7" class="collapse collapsable-details">
-        <pre>{
-  &quot;object&quot;: &quot;roll_call&quot;,
-  &quot;action&quot;: &quot;create&quot;,
-  &quot;id&quot;: '#(validRollCall.id)',
-  &quot;name&quot;: '#(validRollCall.name)',
-  &quot;creation&quot;: '#(validRollCall.creation)',
-  &quot;proposed_start&quot;: '#(validRollCall.start)',
-  &quot;proposed_end&quot;: '#(validRollCall.end)',
-  &quot;location&quot;: '#(validRollCall.location)',
-  &quot;description&quot;: '#(validRollCall.description)',
-}</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-When passed">
-  <span class="keyword indention">When</span>
-  <span class="name">mockFrontend.publish(validCreateRollCall, lao.channel)</span>
-
-  <span class="lead-duration duration">0.005</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And passed">
-  <span class="keyword indention">And</span>
-  <span class="name">def message_id = mockFrontend.getPublishMessageId(validCreateRollCall)</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-Then failed">
-  <span class="keyword indention">Then</span>
-  <span class="name">assert mockServer.receivedHeartbeatWithSubstring(message_id)</span>
-
-  <span class="lead-duration duration">5.002</span>
-
-</div>
-
-
-
-
-
-
-  <div class="inner-level">
-    <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-8">
-          <a>did</a>
-      </div>
-      <div id="msg-8" class="collapse collapsable-details  in ">
-        <pre>did not evaluate to 'true': mockServer.receivedHeartbeatWithSubstring(message_id)
-classpath:be/features/decentralizedCom/heartbeat.feature:50</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-  <div class="inner-level">
-    <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-9">
-          <a>Doc string</a>
-      </div>
-      <div id="msg-9" class="collapse collapsable-details">
-        <pre>04:14:46.680 classpath:be/features/decentralizedCom/heartbeat.feature:50
-Then assert mockServer.receivedHeartbeatWithSubstring(message_id)
-did not evaluate to 'true': mockServer.receivedHeartbeatWithSubstring(message_id)
-classpath:be/features/decentralizedCom/heartbeat.feature:50
-</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-
-
-
-      </div>
-  </div>
-</div>
-
-
-
-
-
-  </div>
-</div>
-
-
-<div class="element">
-    <div class="indention">
-      <b>Feature:</b>
-      <a href="report-feature_1_3356270831.html">be/features/decentralizedCom/getMessagesById.feature</a>
-    </div>
-
-
-<div class="tags indention">
-    <b>Tags:</b>
-       <a href="report-tag_2281956221.html">@env=go_server,scala_server</a>
-</div>
-
-
-  <span class="lead-duration duration">5.043</span>
-
-
-  <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-10">
+  <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-1">
 
 <div class="brief passed">
   <span class="keyword indention">Scenario</span>
@@ -578,14 +197,14 @@ classpath:be/features/decentralizedCom/heartbeat.feature:50
   </span>
   <div class="description indention"></div>
 
-  <div id="element-10" class="collapse collapsable-details ">
+  <div id="element-1" class="collapse collapsable-details ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-11">
+  <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-2">
 
 <div class="brief passed">
   <span class="keyword indention">Steps</span>
@@ -597,7 +216,7 @@ classpath:be/features/decentralizedCom/heartbeat.feature:50
 
   </div>
 
-  <div id="steps-11" class="inner-level collapse collapsable-details ">
+  <div id="steps-2" class="inner-level collapse collapsable-details ">
       <div class="step">
 
 
@@ -659,7 +278,7 @@ classpath:be/features/decentralizedCom/heartbeat.feature:50
   <span class="keyword indention">And</span>
   <span class="name">def getMessagesByIdMessages = mockServer.getGetMessagesById()</span>
 
-  <span class="lead-duration duration">5.033</span>
+  <span class="lead-duration duration">5.025</span>
 
 </div>
 
@@ -713,7 +332,7 @@ classpath:be/features/decentralizedCom/heartbeat.feature:50
   <span class="keyword indention">And</span>
   <span class="name">match getMessagesByIdMessages[0] contains randomMessageId</span>
 
-  <span class="lead-duration duration">0.004</span>
+  <span class="lead-duration duration">0.005</span>
 
 </div>
 
@@ -747,7 +366,7 @@ classpath:be/features/decentralizedCom/heartbeat.feature:50
 <div class="element">
     <div class="indention">
       <b>Feature:</b>
-      <a href="report-feature_1_3356270831.html">be/features/decentralizedCom/getMessagesById.feature</a>
+      <a href="report-feature_3356270831.html">be/features/decentralizedCom/getMessagesById.feature</a>
     </div>
 
 
@@ -760,7 +379,7 @@ classpath:be/features/decentralizedCom/heartbeat.feature:50
   <span class="lead-duration duration">5.009</span>
 
 
-  <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-12">
+  <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-3">
 
 <div class="brief passed">
   <span class="keyword indention">Scenario</span>
@@ -773,14 +392,14 @@ classpath:be/features/decentralizedCom/heartbeat.feature:50
   </span>
   <div class="description indention"></div>
 
-  <div id="element-12" class="collapse collapsable-details ">
+  <div id="element-3" class="collapse collapsable-details ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-13">
+  <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-4">
 
 <div class="brief passed">
   <span class="keyword indention">Steps</span>
@@ -792,7 +411,7 @@ classpath:be/features/decentralizedCom/heartbeat.feature:50
 
   </div>
 
-  <div id="steps-13" class="inner-level collapse collapsable-details ">
+  <div id="steps-4" class="inner-level collapse collapsable-details ">
       <div class="step">
 
 
@@ -800,7 +419,7 @@ classpath:be/features/decentralizedCom/heartbeat.feature:50
   <span class="keyword indention">Given</span>
   <span class="name">eval heartbeat.params[lao.id] = messageIds</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">0.001</span>
 
 </div>
 
@@ -915,7 +534,7 @@ classpath:be/features/decentralizedCom/heartbeat.feature:50
 <div class="element">
     <div class="indention">
       <b>Feature:</b>
-      <a href="report-feature_1_3356270831.html">be/features/decentralizedCom/getMessagesById.feature</a>
+      <a href="report-feature_3356270831.html">be/features/decentralizedCom/getMessagesById.feature</a>
     </div>
 
 
@@ -925,10 +544,10 @@ classpath:be/features/decentralizedCom/heartbeat.feature:50
 </div>
 
 
-  <span class="lead-duration duration">5.004</span>
+  <span class="lead-duration duration">5.006</span>
 
 
-  <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-14">
+  <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-5">
 
 <div class="brief passed">
   <span class="keyword indention">Scenario</span>
@@ -941,14 +560,14 @@ classpath:be/features/decentralizedCom/heartbeat.feature:50
   </span>
   <div class="description indention"></div>
 
-  <div id="element-14" class="collapse collapsable-details ">
+  <div id="element-5" class="collapse collapsable-details ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-15">
+  <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-6">
 
 <div class="brief passed">
   <span class="keyword indention">Steps</span>
@@ -960,7 +579,7 @@ classpath:be/features/decentralizedCom/heartbeat.feature:50
 
   </div>
 
-  <div id="steps-15" class="inner-level collapse collapsable-details ">
+  <div id="steps-6" class="inner-level collapse collapsable-details ">
       <div class="step">
 
 
@@ -995,7 +614,7 @@ classpath:be/features/decentralizedCom/heartbeat.feature:50
   <span class="keyword indention">And</span>
   <span class="name">eval invalidMessageIds.push('invalid message id')</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">0.001</span>
 
 </div>
 
@@ -1076,7 +695,7 @@ classpath:be/features/decentralizedCom/heartbeat.feature:50
   <span class="keyword indention">Then</span>
   <span class="name">assert mockServer.getGetMessagesById().length == 0</span>
 
-  <span class="lead-duration duration">5.002</span>
+  <span class="lead-duration duration">5.003</span>
 
 </div>
 
@@ -1110,7 +729,7 @@ classpath:be/features/decentralizedCom/heartbeat.feature:50
 <div class="element">
     <div class="indention">
       <b>Feature:</b>
-      <a href="report-feature_1_3356270831.html">be/features/decentralizedCom/getMessagesById.feature</a>
+      <a href="report-feature_3356270831.html">be/features/decentralizedCom/getMessagesById.feature</a>
     </div>
 
 
@@ -1120,10 +739,10 @@ classpath:be/features/decentralizedCom/heartbeat.feature:50
 </div>
 
 
-  <span class="lead-duration duration">5.038</span>
+  <span class="lead-duration duration">5.040</span>
 
 
-  <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-16">
+  <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-7">
 
 <div class="brief passed">
   <span class="keyword indention">Scenario</span>
@@ -1136,14 +755,14 @@ classpath:be/features/decentralizedCom/heartbeat.feature:50
   </span>
   <div class="description indention"></div>
 
-  <div id="element-16" class="collapse collapsable-details ">
+  <div id="element-7" class="collapse collapsable-details ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-17">
+  <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-8">
 
 <div class="brief passed">
   <span class="keyword indention">Steps</span>
@@ -1155,7 +774,7 @@ classpath:be/features/decentralizedCom/heartbeat.feature:50
 
   </div>
 
-  <div id="steps-17" class="inner-level collapse collapsable-details ">
+  <div id="steps-8" class="inner-level collapse collapsable-details ">
       <div class="step">
 
 
@@ -1204,10 +823,10 @@ classpath:be/features/decentralizedCom/heartbeat.feature:50
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-18">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-9">
           <a>Doc string</a>
       </div>
-      <div id="msg-18" class="collapse collapsable-details">
+      <div id="msg-9" class="collapse collapsable-details">
         <pre>{
   &quot;object&quot;: &quot;roll_call&quot;,
   &quot;action&quot;: &quot;create&quot;,
@@ -1264,7 +883,7 @@ classpath:be/features/decentralizedCom/heartbeat.feature:50
   <span class="keyword indention">And</span>
   <span class="name">json answer = mockFrontend.getBackendResponse(validCreateRollCall)</span>
 
-  <span class="lead-duration duration">0.025</span>
+  <span class="lead-duration duration">0.026</span>
 
 </div>
 
@@ -1372,7 +991,7 @@ classpath:be/features/decentralizedCom/heartbeat.feature:50
   <span class="keyword indention">And</span>
   <span class="name">eval heartbeat.params[lao.channel] = messageIds</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">0.001</span>
 
 </div>
 
@@ -1399,7 +1018,7 @@ classpath:be/features/decentralizedCom/heartbeat.feature:50
   <span class="keyword indention">When</span>
   <span class="name">mockServer.send(heartbeat)</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">0.001</span>
 
 </div>
 
@@ -1465,6 +1084,387 @@ classpath:be/features/decentralizedCom/heartbeat.feature:50
 
 
 
+
+
+
+
+
+
+
+      </div>
+  </div>
+</div>
+
+
+
+
+
+  </div>
+</div>
+
+
+<div class="element">
+    <div class="indention">
+      <b>Feature:</b>
+      <a href="report-feature_1_1816568631.html">be/features/decentralizedCom/heartbeat.feature</a>
+    </div>
+
+
+<div class="tags indention">
+    <b>Tags:</b>
+       <a href="report-tag_2281956221.html">@env=go_server,scala_server</a>
+</div>
+
+
+  <span class="lead-duration duration">45.005</span>
+
+
+  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-10">
+
+<div class="brief failed">
+  <span class="keyword indention">Scenario</span>
+  <span class="name">Server should send heartbeat messages automatically after a time interval</span>
+
+
+     <i class="chevron fa fa-fw"></i>
+</div>
+
+  </span>
+  <div class="description indention"></div>
+
+  <div id="element-10" class="collapse collapsable-details  in ">
+
+
+
+
+
+<div class="steps inner-level">
+  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-11">
+
+<div class="brief failed">
+  <span class="keyword indention">Steps</span>
+  <span class="name"></span>
+
+
+     <i class="chevron fa fa-fw"></i>
+</div>
+
+  </div>
+
+  <div id="steps-11" class="inner-level collapse collapsable-details  in ">
+      <div class="step">
+
+
+<div class="brief step-name-Given passed">
+  <span class="keyword indention">Given</span>
+  <span class="name">wait(40)</span>
+
+  <span class="lead-duration duration">40.004</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-When passed">
+  <span class="keyword indention">When</span>
+  <span class="name">def heartbeatMessages = mockServer.getHeartbeats()</span>
+
+  <span class="lead-duration duration">5.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-Then failed">
+  <span class="keyword indention">Then</span>
+  <span class="name">assert heartbeatMessages.length == 2</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+  <div class="inner-level">
+    <div class="message indention">
+      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-12">
+          <a>did</a>
+      </div>
+      <div id="msg-12" class="collapse collapsable-details  in ">
+        <pre>did not evaluate to 'true': heartbeatMessages.length == 2
+classpath:be/features/decentralizedCom/heartbeat.feature:28</pre>
+      </div>
+    </div>
+  </div>
+
+
+
+
+  <div class="inner-level">
+    <div class="docstring indention">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-13">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-13" class="collapse collapsable-details">
+        <pre>04:15:18.795 classpath:be/features/decentralizedCom/heartbeat.feature:28
+Then assert heartbeatMessages.length == 2
+did not evaluate to 'true': heartbeatMessages.length == 2
+classpath:be/features/decentralizedCom/heartbeat.feature:28
+</pre>
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+
+
+      </div>
+  </div>
+</div>
+
+
+
+
+
+  </div>
+</div>
+
+
+<div class="element">
+    <div class="indention">
+      <b>Feature:</b>
+      <a href="report-feature_1_1816568631.html">be/features/decentralizedCom/heartbeat.feature</a>
+    </div>
+
+
+<div class="tags indention">
+    <b>Tags:</b>
+       <a href="report-tag_2281956221.html">@env=go_server,scala_server</a>
+</div>
+
+
+  <span class="lead-duration duration">5.009</span>
+
+
+  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-14">
+
+<div class="brief failed">
+  <span class="keyword indention">Scenario</span>
+  <span class="name">Server should send heartbeat messages after receiving a publish</span>
+
+
+     <i class="chevron fa fa-fw"></i>
+</div>
+
+  </span>
+  <div class="description indention"></div>
+
+  <div id="element-14" class="collapse collapsable-details  in ">
+
+
+
+
+
+<div class="steps inner-level">
+  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-15">
+
+<div class="brief failed">
+  <span class="keyword indention">Steps</span>
+  <span class="name"></span>
+
+
+     <i class="chevron fa fa-fw"></i>
+</div>
+
+  </div>
+
+  <div id="steps-15" class="inner-level collapse collapsable-details  in ">
+      <div class="step">
+
+
+<div class="brief step-name-Given passed">
+  <span class="keyword indention">Given</span>
+  <span class="name">def validCreateRollCall =</span>
+
+  <span class="lead-duration duration">0.001</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+  <div class="inner-level">
+    <div class="docstring indention">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-16">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-16" class="collapse collapsable-details">
+        <pre>{
+  &quot;object&quot;: &quot;roll_call&quot;,
+  &quot;action&quot;: &quot;create&quot;,
+  &quot;id&quot;: '#(validRollCall.id)',
+  &quot;name&quot;: '#(validRollCall.name)',
+  &quot;creation&quot;: '#(validRollCall.creation)',
+  &quot;proposed_start&quot;: '#(validRollCall.start)',
+  &quot;proposed_end&quot;: '#(validRollCall.end)',
+  &quot;location&quot;: '#(validRollCall.location)',
+  &quot;description&quot;: '#(validRollCall.description)',
+}</pre>
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-When passed">
+  <span class="keyword indention">When</span>
+  <span class="name">mockFrontend.publish(validCreateRollCall, lao.channel)</span>
+
+  <span class="lead-duration duration">0.005</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And passed">
+  <span class="keyword indention">And</span>
+  <span class="name">def message_id = mockFrontend.getPublishMessageId(validCreateRollCall)</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-Then failed">
+  <span class="keyword indention">Then</span>
+  <span class="name">assert mockServer.receivedHeartbeatWithSubstring(message_id)</span>
+
+  <span class="lead-duration duration">5.002</span>
+
+</div>
+
+
+
+
+
+
+  <div class="inner-level">
+    <div class="message indention">
+      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-17">
+          <a>did</a>
+      </div>
+      <div id="msg-17" class="collapse collapsable-details  in ">
+        <pre>did not evaluate to 'true': mockServer.receivedHeartbeatWithSubstring(message_id)
+classpath:be/features/decentralizedCom/heartbeat.feature:50</pre>
+      </div>
+    </div>
+  </div>
+
+
+
+
+  <div class="inner-level">
+    <div class="docstring indention">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-18">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-18" class="collapse collapsable-details">
+        <pre>04:15:26.563 classpath:be/features/decentralizedCom/heartbeat.feature:50
+Then assert mockServer.receivedHeartbeatWithSubstring(message_id)
+did not evaluate to 'true': mockServer.receivedHeartbeatWithSubstring(message_id)
+classpath:be/features/decentralizedCom/heartbeat.feature:50
+</pre>
+      </div>
+    </div>
+  </div>
 
 
 
