@@ -10,7 +10,6 @@ import static com.github.dedis.popstellar.testutils.pages.lao.LaoActivityPageObj
 import static com.github.dedis.popstellar.testutils.pages.lao.LaoActivityPageObject.laoIdExtra;
 import static com.github.dedis.popstellar.testutils.pages.lao.event.EventCreationPageObject.*;
 import static com.github.dedis.popstellar.testutils.pages.lao.event.election.ElectionSetupPageObject.*;
-import static com.github.dedis.popstellar.ui.lao.event.election.adapters.ElectionSetupViewPagerAdapter.hasDuplicate;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.anything;
 import static org.hamcrest.Matchers.containsString;
@@ -33,6 +32,7 @@ import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.testutils.BundleBuilder;
 import com.github.dedis.popstellar.testutils.fragment.ActivityFragmentScenarioRule;
 import com.github.dedis.popstellar.ui.lao.LaoActivity;
+import com.github.dedis.popstellar.ui.lao.event.election.adapters.ElectionSetupViewPagerAdapter;
 import com.github.dedis.popstellar.ui.lao.event.election.fragments.ElectionSetupFragment;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.github.dedis.popstellar.utility.handler.MessageHandler;
@@ -539,7 +539,7 @@ public class ElectionSetupFragmentTest {
     List<String> questionsNotDuplicated =
         new ArrayList<>(Arrays.asList("Question 1", "Question 2", "Question 3", "Question 4"));
 
-    assertTrue(hasDuplicate(questionsDuplicated));
-    assertFalse(hasDuplicate(questionsNotDuplicated));
+    assertTrue(ElectionSetupViewPagerAdapter.Companion.hasDuplicate(questionsDuplicated));
+    assertFalse(ElectionSetupViewPagerAdapter.Companion.hasDuplicate(questionsNotDuplicated));
   }
 }

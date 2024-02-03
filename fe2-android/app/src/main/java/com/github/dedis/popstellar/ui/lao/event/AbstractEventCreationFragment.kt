@@ -61,8 +61,8 @@ abstract class AbstractEventCreationFragment : Fragment() {
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
 
-    if (confirmButton != null && !confirmButton!!.hasOnClickListeners()) {
-      confirmButton!!.setOnClickListener { createEvent() }
+    if (confirmButton?.hasOnClickListeners() == false) {
+      confirmButton?.setOnClickListener { createEvent() }
     }
   }
 
