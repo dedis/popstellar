@@ -30,40 +30,22 @@ jobs:
         working-directory: ./be2-scala
         run: sbt assembly
         
-      - name: Run Karate server-client tests
-        id: tests_client
+      - name: Run Karate tests
+        id: tests
         continue-on-error: true
         working-directory: ./tests/karate
-        run: mvn test -DargLine=-Dkarate.env=scala_client -Dtest=BackEndTest#fullTest
+        run: mvn test -DargLine=-Dkarate.env=scala -Dtest=BackEndTest#fullTest
         
-      - name: Publish Client Cucumber Report
+      - name: Publish Cucumber Report
         uses: actions/upload-artifact@v3
         with:
-          name: Client Cucumber Report
-          path: ./tests/karate/target/scala_client/cucumber-html-reports
+          name: Cucumber Report
+          path: ./tests/karate/target/scala/cucumber-html-reports
           
-      - name: Publish Client HTML Report
+      - name: Publish HTML Report
         uses: actions/upload-artifact@v3
         with:
-          name: Client HTML Report
-          path: ./tests/karate/target/karate-reports
-          
-      - name: Run Karate server-server tests
-        id: tests_server
-        continue-on-error: true
-        working-directory: ./tests/karate
-        run: mvn test -DargLine=-Dkarate.env=scala_server -Dtest=BackEndTest#fullTest
-      
-      - name: Publish Server Cucumber Report
-        uses: actions/upload-artifact@v3
-        with:
-          name: Server Cucumber Report
-          path: ./tests/karate/target/scala_server/cucumber-html-reports
-
-      - name: Publish Server HTML Report
-        uses: actions/upload-artifact@v3
-        with:
-          name: Server HTML Report
+          name: HTML Report
           path: ./tests/karate/target/karate-reports
           
       - name: Publish Server logs
@@ -82,10 +64,8 @@ jobs:
       - name: Update report
         run: |
           rm -rf report-repo/*
-          mkdir -p report-repo/scala_client
-          mkdir -p report-repo/scala_server
-          cp -a ./tests/karate/target/scala_client/cucumber-html-reports/. ./report-repo/scala_client/
-          cp -a ./tests/karate/target/scala_server/cucumber-html-reports/. ./report-repo/scala_server/
+          mkdir -p report-repo/scala
+          cp -a ./tests/karate/target/scala/cucumber-html-reports/. ./report-repo/scala/
         
       - name: Commit files
         working-directory: ./report-repo
@@ -102,6 +82,6 @@ jobs:
           branch: report-karate-be2-scala
           directory: report-repo
           
-      - name: Fail job if either the server or client tests were not successful
-        if: steps.tests_client.outcome == 'failure' || steps.tests_server.outcome == 'failure'
+      - name: Fail job if tests were not successful
+        if: steps.tests.outcome == 'failure'
         run: exit 1
