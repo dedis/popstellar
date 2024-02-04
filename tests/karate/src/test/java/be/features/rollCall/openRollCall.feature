@@ -22,6 +22,7 @@ Feature: Roll Call Open
   # This scenario tests a valid roll call open message.
   # The roll call is already created and we now send a valid open Roll Call message. We expect a message
   # containing the same id as the request and a result back from the server.
+  @openRollCall1
   Scenario: Open a valid Roll Call
     Given def validOpenRollCall =
       """
@@ -38,6 +39,7 @@ Feature: Roll Call Open
     Then match answer contains VALID_MESSAGE
     And match organizer.receiveNoMoreResponses() == true
 
+  @openRollCall2
   Scenario: Opening a Roll Call with non-organizer as sender should fail
     Given def notOrganizer = call createMockClient
     And def validOpenRollCall =
@@ -55,6 +57,7 @@ Feature: Roll Call Open
     Then match answer contains INVALID_MESSAGE_FIELD
     And match notOrganizer.receiveNoMoreResponses() == true
 
+  @openRollCall3
   Scenario: Opening a Roll Call that was not created on the server returns an error
     Given def newRollCall = organizer.createValidRollCall(lao)
     And def openNewRollCall = newRollCall.open()
@@ -73,6 +76,7 @@ Feature: Roll Call Open
     Then match answer contains INVALID_MESSAGE_FIELD
     And match organizer.receiveNoMoreResponses() == true
 
+  @openRollCall4
   Scenario: Opening a Roll Call with invalid update_id should return an error
     Given def invalidOpenRollCall =
       """
@@ -90,6 +94,7 @@ Feature: Roll Call Open
     And match organizer.receiveNoMoreResponses() == true
 
   # Testing idempotency (Not guaranteed by the backend for now, so the test fails)
+  @openRollCall5
   Scenario: Opening a Roll Call for which with already received an error should return an error again
     And def invalidOpenRollCall =
       """

@@ -22,6 +22,7 @@ Feature: Close a Roll Call
   # Testing if after setting up a valid lao, subscribing to it, sending a catchup
   # creating a valid roll call and opening it, we send a valid roll call close
   # message and expect to receive a valid response from the backend
+  @closeRollCall1
   Scenario: Close a valid roll should succeed
     Given def validCloseRollCall =
       """
@@ -39,6 +40,7 @@ Feature: Close a Roll Call
     Then match answer contains VALID_MESSAGE
     And match organizer.receiveNoMoreResponses() == true
 
+  @closeRollCall2
   Scenario: Non-organizer closing a roll call should fail
     Given def notOrganizer = call createMockClient
     And def validCloseRollCall =
@@ -59,6 +61,7 @@ Feature: Close a Roll Call
 
   # After the usual setup open a valid roll call and then send an invalid request for roll call close, here
   # we provide an invalid update_id field in the message. We expect an error message in return
+  @closeRollCall3
   Scenario: Close a valid roll call with wrong update_id should return an error message
     Given def invalidCloseRollCall =
       """
@@ -76,6 +79,7 @@ Feature: Close a Roll Call
     Then match answer contains INVALID_MESSAGE_FIELD
     And match organizer.receiveNoMoreResponses() == true
 
+  @closeRollCall4
   Scenario: Closing a Roll Call that was not opened on the server returns an error
     Given def newRollCall = organizer.createValidRollCall(lao)
     # This call creates the new roll call on the server without opening it

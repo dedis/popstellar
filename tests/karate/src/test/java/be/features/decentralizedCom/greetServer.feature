@@ -7,7 +7,7 @@ Feature: Send greetServer messages to other servers
     * call read(mockClientFeature)
     * def mockBackend = call createMockBackend
 
-  @name=valid_greet_server
+  @greetServer1
   Scenario: Server should reply to a greetServer message with its own greetServer
       Given def validGreetServer =
         """
@@ -27,7 +27,7 @@ Feature: Send greetServer messages to other servers
       Then assert greetServers.length == 1
       And json greetServer = greetServers[0]
 
-  @name=invalid_greet_server1
+  @greetServer2
   Scenario: Server should not reply to a greetServer message with invalid public key (not base64 encoded)
     Given def invalidGreetServer =
         """
@@ -46,7 +46,7 @@ Feature: Send greetServer messages to other servers
     And def greetServers = mockBackend.getGreetServer()
     Then assert greetServers.length == 0
 
-  @name=invalid_greet_server2
+  @greetServer3
   Scenario: Server should not reply to a greetServer message with invalid client address (does not fit regex pattern)
     Given def invalidGreetServer =
         """
@@ -65,7 +65,7 @@ Feature: Send greetServer messages to other servers
     And def greetServers = mockBackend.getGreetServer()
     Then assert greetServers.length == 0
 
-  @name=invalid_greet_server3
+  @greetServer4
   Scenario: Server should not reply to a greetServer message with invalid server address (does not fit regex pattern)
     Given def invalidGreetServer =
         """

@@ -20,6 +20,7 @@ Feature: Setup an Election
 
   # Testing if after a successful roll call, sending a valid election
   # setup results in a valid response from the backend
+  @electionSetup1
   Scenario: Setting up a valid election should succeed
     And def validElectionSetup =
       """
@@ -52,6 +53,7 @@ Feature: Setup an Election
   # Testing if after a successful roll call, sending an election
   # setup message with invalid election id results in an error message
   # from the backend
+  @electionSetup2
   Scenario: Setting up an election with invalid election id should fail
     And def invalidElectionSetup =
         """
@@ -83,6 +85,7 @@ Feature: Setup an Election
 
   # Testing if after a successful roll call, sending an election setup message
   # invalid question id results in an error message from the backend
+  @electionSetup3
   Scenario: Setting up an election with invalid question id should fail
     And def invalidElectionSetup =
        """
@@ -114,6 +117,7 @@ Feature: Setup an Election
 
 #  # Testing if after a successful roll call, sending an election setup message
 #  # containing empty ballot options results in an error message from the backend
+  @electionSetup4
   Scenario: Setting up an election with a question containing empty ballot options should return an error
     And def invalidElectionSetup =
      """
@@ -145,6 +149,7 @@ Feature: Setup an Election
 
 #  # Testing if after a successful roll call, sending an election setup message
 #  # with a non supported voting method results in an error message from the backend
+  @electionSetup5
   Scenario: Setting up an election with a non-supported voting method should return an error
     And def invalidElectionSetup =
         """

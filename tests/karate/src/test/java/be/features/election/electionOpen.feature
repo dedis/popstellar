@@ -20,6 +20,7 @@ Feature: Open an Election
 
   # Testing after creating an election, the backend returns an result
   # upon an open election message
+  @electionOpen1
   Scenario: Opening a valid election
     Given def validElectionOpen =
       """
@@ -38,6 +39,7 @@ Feature: Open an Election
 
   # Testing before creating an election, the backend returns an error
   # upon an open election message
+  @electionOpen2
   Scenario: Opening the election without a setup should result in an error
     Given def newElection = organizer.createValidElection(lao)
     And def newElectionOpen = newElection.open()
@@ -58,6 +60,7 @@ Feature: Open an Election
 
   # Testing after creating an election, the backend returns an error
   # upon an open election message containing an open time before election creation time
+  @electionOpen3
   Scenario: Opening the election too early results in an error
     Given def invalidElectionOpen =
       """
@@ -76,6 +79,7 @@ Feature: Open an Election
 
   # Testing after creating an election, the backend returns an error
   # if an open election message is sent by a non-organizer
+  @electionOpen4
   Scenario: Non organizer opening the election should result in an error
     Given def notOrganizer = call createMockClient
     And def validElectionOpen =
@@ -95,6 +99,7 @@ Feature: Open an Election
 
   # Testing after creating an election, the backend returns an error
   # if an open election message has the lao id field computed wrongly
+  @electionOpen5
   Scenario: Opening the election with wrong lao id should result in an error
     Given def invalidElectionOpen =
        """
@@ -113,6 +118,7 @@ Feature: Open an Election
 
   # Testing after creating an election, the backend returns an error
   # if an open election message has the election id field computed wrongly
+  @electionOpen6
   Scenario: Opening the election with wrong election id should result in an error
     Given def invalidElectionOpen =
        """

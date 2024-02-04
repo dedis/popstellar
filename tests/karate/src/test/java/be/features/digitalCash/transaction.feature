@@ -16,6 +16,7 @@ Feature: Simple Transactions for digital cash
     # This call executes all the steps to set up a lao, complete a roll call and subscribe to the coin channel
     * call read(setupCoinChannelScenario) { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)' }
 
+  @transaction1
   Scenario: Valid transaction: issue 32 mini-Laos to an attendee
     Given def transaction = organizer.issueCoins(recipient, 32);
     And def postTransaction = transaction.post()
@@ -57,6 +58,7 @@ Feature: Simple Transactions for digital cash
 
   # This test fails since multiple transactions are not supported in the transaction class (05.06.2023)
   # TODO: Add support for multiple transactions in the Transaction class
+  @transaction2
   Scenario: Transfer valid amount should work
     # This call issues initialAmount coins to the recipient
     Given def initialAmount = 32
@@ -98,6 +100,7 @@ Feature: Simple Transactions for digital cash
     Then match answer contains VALID_MESSAGE
     And match organizer.receiveNoMoreResponses() == true
 
+  @transaction3
   Scenario: Post transaction with invalid transaction id should fail
     Given def transaction = organizer.issueCoins(recipient, 32);
     And def postTransaction = transaction.post()
@@ -137,6 +140,7 @@ Feature: Simple Transactions for digital cash
     Then match answer contains INVALID_MESSAGE_FIELD
     And match organizer.receiveNoMoreResponses() == true
 
+  @transaction4
   Scenario: Post transaction with invalid tx_out_hash should fail
     Given def transaction = organizer.issueCoins(recipient, 32);
     And def postTransaction = transaction.post()
@@ -176,6 +180,7 @@ Feature: Simple Transactions for digital cash
     Then match answer contains INVALID_MESSAGE_FIELD
     And match organizer.receiveNoMoreResponses() == true
 
+  @transaction5
   Scenario: Post transaction with invalid output pubKey should fail
     Given def transaction = organizer.issueCoins(recipient, 32);
     And def postTransaction = transaction.post()

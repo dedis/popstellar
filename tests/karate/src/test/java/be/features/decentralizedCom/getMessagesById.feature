@@ -29,6 +29,7 @@ Feature: Request messages by id from other servers
 
   # Check that after sending a heartbeat message with unknown message id, the server responds with a
   # getMessagesByID requesting this message
+  @getMessagesById1
   Scenario: Server should request the missing message ids in a heartbeat
     Given eval heartbeat.params[lao.channel] = messageIds
 
@@ -40,6 +41,7 @@ Feature: Request messages by id from other servers
 
   # Check that after sending a heartbeat message with unknown message id on a channel missing the /root/'
   # prefix, the server does not request the messages
+  @getMessagesById2
   Scenario: Server should not request messages if channel is missing '/root/' prefix
     Given eval heartbeat.params[lao.id] = messageIds
 
@@ -49,6 +51,7 @@ Feature: Request messages by id from other servers
     Then assert getMessagesByIdMessages.length == 0
 
   # Check that after sending a heartbeat message with invalid message ids, the server does not request the messages
+  @getMessagesById3
   Scenario: Server should not request messages for invalid lao ids
     Given def invalidMessageIds = []
     And eval invalidMessageIds.push('invalid message id')
@@ -61,6 +64,7 @@ Feature: Request messages by id from other servers
 
   # Check that after the server confirms it received a message, sending a heartbeat containing that message id does not
   # trigger a getMessagesById anymore
+  @getMessagesById4
   Scenario: Server should not request messages that it already has
     Given def validRollCall = mockFrontend.createValidRollCall(lao)
     And def validCreateRollCall =

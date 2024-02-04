@@ -13,6 +13,7 @@ Feature: Create a pop LAO
     * def organizer = call createMockFrontend
     * def validLao = organizer.createValidLao()
 
+  @create1
   Scenario: Create Lao request with empty lao name should fail with an error response
     Given def lao = validLao.setName('')
     And def badLaoReq =
@@ -32,6 +33,7 @@ Feature: Create a pop LAO
     Then match answer contains INVALID_MESSAGE_FIELD
     And match organizer.receiveNoMoreResponses() == true
 
+  @create2
   Scenario: Create Lao request with negative creation time should fail with an error response
     Given def lao = validLao.setCreation(-1)
     And def badLaoReq =
@@ -51,6 +53,7 @@ Feature: Create a pop LAO
     Then match answer contains INVALID_MESSAGE_FIELD
     And match organizer.receiveNoMoreResponses() == true
 
+  @create3
   Scenario: Create Lao request with invalid id hash should fail with an error response
     Given def badLaoReq =
       """
@@ -69,6 +72,7 @@ Feature: Create a pop LAO
     Then match answer contains INVALID_MESSAGE_FIELD
     And match organizer.receiveNoMoreResponses() == true
 
+  @create4
   Scenario: Valid Create Lao request should succeed
     Given def laoCreateRequest =
       """
@@ -87,6 +91,7 @@ Feature: Create a pop LAO
     Then match answer contains VALID_MESSAGE
     And match organizer.receiveNoMoreResponses() == true
 
+  @create5
   Scenario: Create Lao request with invalid signature should fail
     Given def laoCreateRequest =
       """
@@ -106,6 +111,7 @@ Feature: Create a pop LAO
     Then match answer contains INVALID_MESSAGE_FIELD
     And match organizer.receiveNoMoreResponses() == true
 
+  @create6
   Scenario: Create Lao request with public key different from the sender public key should fail
     Given def notOrganizer = call createMockClient
     And def laoCreateRequest =

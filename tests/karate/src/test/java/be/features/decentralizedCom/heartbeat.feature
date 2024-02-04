@@ -20,6 +20,7 @@ Feature: Send heartbeats to other servers
 
   # After lao creation, wait and do nothing (40 seconds for now) and check that more than one heartbeat message was received.
   # (The initial one would be a response to publishing lao creation)
+  @heartbeat1
   Scenario: Server should send heartbeat messages automatically after a time interval
     Given wait(40)
 
@@ -29,6 +30,7 @@ Feature: Send heartbeats to other servers
 
   # Check that after receiving a publish message (in this case a create roll call), the server sends a heartbeat containing
   # the message id of that publish message.
+  @heartbeat2
   Scenario: Server should send heartbeat messages after receiving a publish
     Given def validCreateRollCall =
       """
