@@ -1615,12 +1615,9 @@ func Test_Send_Heartbeat_Message(t *testing.T) {
 
 	hub.serverSockets.Upsert(sock)
 
-	hub.hubInbox.StoreMessage(msg1)
-	hub.hubInbox.StoreMessage(msg2)
-	hub.hubInbox.StoreMessage(msg3)
-
-	hub.messageIdsByChannel.AddAll("/root", idsRoot)
-	hub.messageIdsByChannel.AddAll("/root/channel1", idsChannel1)
+	hub.hubInbox.StoreMessage("/root", msg1)
+	hub.hubInbox.StoreMessage("/root", msg2)
+	hub.hubInbox.StoreMessage("/root/channel1", msg3)
 
 	hub.sendHeartbeatToServers()
 
@@ -1634,7 +1631,7 @@ func Test_Send_Heartbeat_Message(t *testing.T) {
 	messageIdsSent := heartbeat.Params
 
 	//Check that all the stored messages where sent
-	for storedChannel, storedIds := range hub.messageIdsByChannel.GetTable() {
+	for storedChannel, storedIds := range hub.hubInbox.GetIDsTable() {
 		sentIds, exists := messageIdsSent[storedChannel]
 		require.True(t, exists)
 		for _, storedId := range storedIds {
@@ -1651,9 +1648,7 @@ func Test_Handle_Heartbeat(t *testing.T) {
 	hub, err := NewHub(keypair.public, "", "", nolog, nil)
 	require.NoError(t, err)
 
-	hub.hubInbox.StoreMessage(msg1)
-
-	hub.messageIdsByChannel.Add("/root", msg1.MessageID)
+	hub.hubInbox.StoreMessage("/root", msg1)
 
 	sock := &fakeSocket{}
 
@@ -1715,12 +1710,9 @@ func Test_Handle_GetMessagesById(t *testing.T) {
 
 	hub.serverSockets.Upsert(sock)
 
-	hub.hubInbox.StoreMessage(msg1)
-	hub.hubInbox.StoreMessage(msg2)
-	hub.hubInbox.StoreMessage(msg3)
-
-	hub.messageIdsByChannel.AddAll("/root", idsRoot)
-	hub.messageIdsByChannel.AddAll("/root/channel1", idsChannel1)
+	hub.hubInbox.StoreMessage("/root", msg1)
+	hub.hubInbox.StoreMessage("/root", msg2)
+	hub.hubInbox.StoreMessage("/root/channel1", msg3)
 
 	//The missing Ids requested by the server
 	missingIds := make(map[string][]string)
