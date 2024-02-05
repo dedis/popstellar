@@ -18,6 +18,11 @@ object MockitoKotlinHelpers {
    */
   fun <T> any(): T = Mockito.any<T>()
 
+  fun <T> any(entity: Class<T>): T = Mockito.any<T>(entity)
+
+  inline fun <reified T> argumentCaptor(): ArgumentCaptor<T> =
+    ArgumentCaptor.forClass(T::class.java)
+
   /**
    * Returns ArgumentCaptor.capture() as nullable type to avoid java.lang.IllegalStateException when
    * null is returned.
