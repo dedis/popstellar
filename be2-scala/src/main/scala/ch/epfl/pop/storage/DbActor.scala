@@ -134,7 +134,7 @@ final case class DbActor(
   private def readLaoData(channel: Channel): LaoData = {
     Try(storage.read(generateLaoDataKey(channel))) match {
       case Success(Some(json)) => LaoData.buildFromJson(json)
-      case Success(None)       => LaoData()
+      case Success(None)       => throw DbActorNAckException(ErrorCodes.SERVER_ERROR.id, s"LaoData for channel $channel not in the database")
       case Failure(ex)         => throw ex
     }
   }
