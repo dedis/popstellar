@@ -6,6 +6,7 @@ import (
 	"sync"
 )
 
+// HubInbox represents an inbox for the hub for storing messages and ids atomically
 type HubInbox struct {
 	sync.RWMutex
 	Inbox
@@ -14,6 +15,7 @@ type HubInbox struct {
 	messageIdsByChannel state.MessageIds
 }
 
+// NewHubInbox creates a new HubInbox
 func NewHubInbox(channelID string) *HubInbox {
 	return &HubInbox{
 		Inbox:               *NewInbox(channelID),
@@ -21,6 +23,7 @@ func NewHubInbox(channelID string) *HubInbox {
 	}
 }
 
+// StoreMessage stores a message inside the inbox and adds the message id to the map
 func (i *HubInbox) StoreMessage(channel string, msg message.Message) {
 	i.RLock()
 	defer i.RUnlock()
@@ -28,12 +31,14 @@ func (i *HubInbox) StoreMessage(channel string, msg message.Message) {
 	i.messageIdsByChannel.Add(channel, msg.MessageID)
 }
 
+// IsEmpty returns true if the inbox is empty
 func (i *HubInbox) IsEmpty() bool {
 	i.RLock()
 	defer i.RUnlock()
 	return i.messageIdsByChannel.IsEmpty()
 }
 
+// GetIDsTable returns the table of message ids by channel
 func (i *HubInbox) GetIDsTable() map[string][]string {
 	i.RLock()
 	defer i.RUnlock()
