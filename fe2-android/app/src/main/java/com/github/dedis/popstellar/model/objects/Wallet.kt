@@ -41,12 +41,12 @@ class Wallet @Inject constructor(@WalletKeyset keysetManager: AndroidKeysetManag
   private var encryptedMnemonic: ByteArray? = null
 
   private val aead: Aead =
-      try {
-        keysetManager.keysetHandle.getPrimitive(Aead::class.java)
-      } catch (e: GeneralSecurityException) {
-        Timber.tag(TAG).e(e, "Failed to initialize the Wallet")
-        throw IllegalStateException("Failed to initialize the Wallet", e)
-      }
+    try {
+      keysetManager.keysetHandle.getPrimitive(Aead::class.java)
+    } catch (e: GeneralSecurityException) {
+      Timber.tag(TAG).e(e, "Failed to initialize the Wallet")
+      throw IllegalStateException("Failed to initialize the Wallet", e)
+    }
 
   /**
    * Generate a PoPToken from the ID of the LAO and the ID of the RollCall.
@@ -61,13 +61,14 @@ class Wallet @Inject constructor(@WalletKeyset keysetManager: AndroidKeysetManag
   fun generatePoPToken(laoID: String, rollCallID: String): PoPToken {
     // Generate the string path
     val res =
-        java.lang.String.join(
-            "/", // delimiter
-            "m",
-            PURPOSE,
-            ACCOUNT,
-            convertDataToPath(laoID),
-            convertDataToPath(rollCallID))
+      java.lang.String.join(
+        "/", // delimiter
+        "m",
+        PURPOSE,
+        ACCOUNT,
+        convertDataToPath(laoID),
+        convertDataToPath(rollCallID)
+      )
 
     Timber.tag(TAG).d("Generated path: %s", res)
 
@@ -88,10 +89,11 @@ class Wallet @Inject constructor(@WalletKeyset keysetManager: AndroidKeysetManag
    * @throws InvalidPoPTokenException if the token is not a valid attendee
    */
   @Throws(
-      KeyGenerationException::class,
-      UninitializedWalletException::class,
-      InvalidPoPTokenException::class)
-  fun recoverKey(laoID: String, rollCallID: String, rollCallTokens: Set<PublicKey?>): PoPToken {
+    KeyGenerationException::class,
+    UninitializedWalletException::class,
+    InvalidPoPTokenException::class
+  )
+  fun recoverKey(laoID: String, rollCallID: String, rollCallTokens: Set<PublicKey>): PoPToken {
     val token = generatePoPToken(laoID, rollCallID)
 
     return if (rollCallTokens.contains(token.publicKey)) {
@@ -134,11 +136,13 @@ class Wallet @Inject constructor(@WalletKeyset keysetManager: AndroidKeysetManag
         else -> throw e
       }
     }
+
     storeEncrypted(words)
+
     Timber.tag(TAG).d("Mnemonic words were successfully imported")
   }
 
-  val isSetUp: Boolean
+  private val isSetUp: Boolean
     /**
      * Determine whether wallet has been initialized
      *
@@ -166,12 +170,13 @@ class Wallet @Inject constructor(@WalletKeyset keysetManager: AndroidKeysetManag
   @Throws(GeneralSecurityException::class)
   private fun storeEncrypted(mnemonicWords: String) {
     encryptedMnemonic =
-        aead.encrypt(mnemonicWords.toByteArray(StandardCharsets.UTF_8), ByteArray(0))
+      aead.encrypt(mnemonicWords.toByteArray(StandardCharsets.UTF_8), ByteArray(0))
 
     encryptedSeed =
-        aead.encrypt(
-            SeedCalculator().calculateSeed(java.lang.String.join("", mnemonicWords), ""),
-            ByteArray(0))
+      aead.encrypt(
+        SeedCalculator().calculateSeed(java.lang.String.join("", mnemonicWords), ""),
+        ByteArray(0)
+      )
 
     Timber.tag(TAG).d("Mnemonic words and seed successfully encrypted")
   }
@@ -227,15 +232,15 @@ class Wallet @Inject constructor(@WalletKeyset keysetManager: AndroidKeysetManag
 
     // convert the path string in an array of int
     val pathValueInt =
-        Arrays.stream(path.split("/".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray())
-            .skip(1) // remove the first element ('m')
-            .mapToInt { s: String -> s.toInt() }
-            .toArray()
+      Arrays.stream(path.split("/".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray())
+        .skip(1) // remove the first element ('m')
+        .mapToInt { s: String -> s.toInt() }
+        .toArray()
 
     try {
       // derive private and public key
       val privateKey =
-          SLIP10.deriveEd25519PrivateKey(aead.decrypt(encryptedSeed, ByteArray(0)), *pathValueInt)
+        SLIP10.deriveEd25519PrivateKey(aead.decrypt(encryptedSeed, ByteArray(0)), *pathValueInt)
       val prK = Ed25519PrivateKeyParameters(privateKey, 0)
       val puK = prK.generatePublicKey()
       val publicKey = puK.encoded
