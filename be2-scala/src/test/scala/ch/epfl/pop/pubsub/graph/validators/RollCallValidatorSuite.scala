@@ -51,8 +51,9 @@ class RollCallValidatorSuite extends TestKit(ActorSystem("rollcallValidatorTestA
   private final val PUBLIC_KEY: PublicKey = PublicKey(Base64Data("jsNj23IHALvppqV1xQfP71_3IyAHzivxiCz236_zzQc="))
   private final val PRIVATE_KEY: PrivateKey = PrivateKey(Base64Data("qRfms3wzSLkxAeBz6UtwA-L1qP0h8D9XI1FSvY68t7Y="))
   private final val PK_OWNER: PublicKey = PublicKey(Base64Data.encode("wrongOwner"))
-  private final val laoDataRight: LaoData = LaoData(sender, List(sender), PRIVATE_KEY, PUBLIC_KEY, List.empty)
-  private final val laoDataWrong: LaoData = LaoData(sender, List(PK_OWNER), PRIVATE_KEY, PUBLIC_KEY, List.empty)
+  private final val ADDRESS: String = "127.0.0.1:8000"
+  private final val laoDataRight: LaoData = LaoData(sender, List(sender), PRIVATE_KEY, PUBLIC_KEY, List.empty, ADDRESS)
+  private final val laoDataWrong: LaoData = LaoData(sender, List(PK_OWNER), PRIVATE_KEY, PUBLIC_KEY, List.empty, ADDRESS)
   private final val channelDataWrong: ChannelData = ChannelData(ObjectType.INVALID, List.empty)
   private final val channelDataRight: ChannelData = ChannelData(ObjectType.LAO, List.empty)
   private final val rollcallDataCreate: RollCallData = RollCallData(CreateRollCallExamples.R_ID, ActionType.CREATE)

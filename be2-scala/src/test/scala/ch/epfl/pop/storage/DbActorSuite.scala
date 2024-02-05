@@ -375,7 +375,9 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
     val channelName1: Channel = Channel(CHANNEL_NAME)
     val publicKey: PublicKey = PublicKey(Base64Data("jsNj23IHALvppqV1xQfP71_3IyAHzivxiCz236_zzQc="))
     val privateKey: PrivateKey = PrivateKey(Base64Data("qRfms3wzSLkxAeBz6UtwA-L1qP0h8D9XI1FSvY68t7Y="))
-    val laoData: LaoData = LaoData(PublicKey(Base64Data.encode("key")), List(PublicKey(Base64Data.encode("key"))), privateKey, publicKey, List.empty)
+    val address: String = "127.0.0.1:8000"
+
+    val laoData: LaoData = LaoData(PublicKey(Base64Data.encode("key")), List(PublicKey(Base64Data.encode("key"))), privateKey, publicKey, List.empty, address)
     val laoDataKey: String = initialStorage.DATA_KEY + s"$CHANNEL_NAME${Channel.LAO_DATA_LOCATION}"
     initialStorage.write((laoDataKey, laoData.toJsonString))
     val dbActor: AskableActorRef = system.actorOf(Props(DbActor(mediatorRef, MessageRegistry(), initialStorage)))

@@ -43,8 +43,9 @@ class WitnessValidatorSuite extends TestKit(ActorSystem("witnessValidatorTestAct
   private final val PUBLIC_KEY: PublicKey = WitnessMessageExamples.SENDER
   private final val PRIVATE_KEY: PrivateKey = WitnessMessageExamples.privateKey
   private final val PK_WRONG_OWNER: PublicKey = PublicKey(Base64Data.encode("wrongOwner"))
-  private final val laoDataRight: LaoData = LaoData(PUBLIC_KEY, List(PUBLIC_KEY), PRIVATE_KEY, PUBLIC_KEY, List.empty)
-  private final val laoDataWrong: LaoData = LaoData(PK_WRONG_OWNER, List(PK_WRONG_OWNER), PRIVATE_KEY, PUBLIC_KEY, List.empty)
+  private final val ADDRESS: String = "127.0.0.1:8000"
+  private final val laoDataRight: LaoData = LaoData(PUBLIC_KEY, List(PUBLIC_KEY), PRIVATE_KEY, PUBLIC_KEY, List.empty, ADDRESS)
+  private final val laoDataWrong: LaoData = LaoData(PK_WRONG_OWNER, List(PK_WRONG_OWNER), PRIVATE_KEY, PUBLIC_KEY, List.empty, ADDRESS)
 
   private def mockDbWorking: AskableActorRef = {
     val dbActorMock = Props(new Actor() {
