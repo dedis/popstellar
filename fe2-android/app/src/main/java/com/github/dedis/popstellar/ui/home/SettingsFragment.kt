@@ -13,6 +13,7 @@ import com.github.dedis.popstellar.utility.NetworkLogger.Companion.setServerUrl
 import com.takisoft.preferencex.EditTextPreference
 import com.takisoft.preferencex.PreferenceFragmentCompat
 import dagger.hilt.android.AndroidEntryPoint
+import timber.log.Timber
 
 @AndroidEntryPoint
 class SettingsFragment : PreferenceFragmentCompat() {
@@ -92,6 +93,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
             return@returnPoint true
           } catch (e: IllegalArgumentException) {
+            Timber.tag(TAG).d(e)
             enableLogging.isEnabled = false
             // Show an error message and prevent the preference from being updated
             Toast.makeText(context, R.string.error_settings_url_server, Toast.LENGTH_SHORT).show()

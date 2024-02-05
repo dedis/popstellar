@@ -126,6 +126,7 @@ class DigitalCashSendFragment : Fragment() {
     try {
       myArray = digitalCashViewModel.attendeesFromTheRollCallList.toMutableList()
     } catch (e: NoRollCallException) {
+      Timber.tag(TAG).d(e)
       Toast.makeText(
               requireContext(), R.string.digital_cash_please_enter_roll_call, Toast.LENGTH_SHORT)
           .show()

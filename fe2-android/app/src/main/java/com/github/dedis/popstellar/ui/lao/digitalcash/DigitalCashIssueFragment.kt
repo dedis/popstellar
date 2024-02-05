@@ -133,17 +133,23 @@ class DigitalCashIssueFragment : Fragment() {
       currentSelected: String
   ): Set<PublicKey> {
     val attendees: Set<PublicKey> =
-        if (radioGroup == selectOneMember && currentSelected != "") {
-          setOf(PublicKey(currentSelected))
-        } else if (radioGroup == selectAllRollCallAttendees) {
-          digitalCashViewModel.attendeesFromLastRollCall
-        } else if (radioGroup == selectAllLaoWitnesses) {
-          // Currently the button is not visible, as we only have the public keys of the witnesses,
-          // not
-          // their pop tokens
-          digitalCashViewModel.witnesses
-        } else {
-          emptySet()
+        when {
+          radioGroup == selectOneMember && currentSelected != "" -> {
+            setOf(PublicKey(currentSelected))
+          }
+          radioGroup == selectAllRollCallAttendees -> {
+            digitalCashViewModel.attendeesFromLastRollCall
+          }
+          radioGroup == selectAllLaoWitnesses -> {
+            // Currently the button is not visible, as we only have the public keys of the
+            // witnesses,
+            // not
+            // their pop tokens
+            digitalCashViewModel.witnesses
+          }
+          else -> {
+            emptySet()
+          }
         }
 
     return attendees

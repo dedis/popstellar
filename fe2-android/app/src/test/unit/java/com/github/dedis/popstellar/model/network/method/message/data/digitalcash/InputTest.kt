@@ -13,7 +13,7 @@ class InputTest {
 
   @Test
   fun testGetTxOutIndex() {
-    Assert.assertEquals(TX_OUT_INDEX.toLong(), TXIN.txOutIndex.toLong())
+    Assert.assertEquals(TX_OUT_INDEX.toLong(), TXIN.txOutIndex?.toLong())
   }
 
   @Test

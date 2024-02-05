@@ -56,8 +56,8 @@ class HistoryListAdapter(
     val listener =
         View.OnClickListener {
           Timber.tag(TAG).d("transaction is %s position is %s", transactionId, position)
-          val expandStatus = expandMap[transactionId]!!
-          expandMap[transactionId] = !expandStatus
+          val expandStatus = expandMap[transactionId]
+          expandMap[transactionId] = !(expandStatus ?: true)
           notifyItemChanged(position)
         }
 

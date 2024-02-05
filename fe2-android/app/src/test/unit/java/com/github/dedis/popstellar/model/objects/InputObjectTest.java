@@ -1,18 +1,16 @@
 package com.github.dedis.popstellar.model.objects;
 
-import com.github.dedis.popstellar.model.objects.digitalcash.ScriptInputObject;
-import com.github.dedis.popstellar.model.objects.security.*;
-
-import org.junit.Before;
-import org.junit.Test;
-
-import java.security.GeneralSecurityException;
-
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
 import static org.junit.Assert.assertEquals;
 
+import com.github.dedis.popstellar.model.objects.digitalcash.ScriptInputObject;
+import com.github.dedis.popstellar.model.objects.security.*;
+import java.security.GeneralSecurityException;
+import org.junit.Before;
+import org.junit.Test;
+
 public class InputObjectTest {
-  private static final int TX_OUT_INDEX = 0;
+  private static final Integer TX_OUT_INDEX = 0;
   private static final String Tx_OUT_HASH = "47DEQpj8HBSa--TImW-5JCeuQeRkm5NMpJWZG3hSuFU=";
 
   private static final KeyPair SENDER_KEY = generateKeyPair();

@@ -15,7 +15,7 @@ class PlainVote : Vote {
   @SerializedName(value = "question") override val questionId: String
 
   // index of the chosen vote
-  val vote: Int
+  val vote: Int?
 
   /**
    * Constructor for a data Vote, for cast vote . It represents a Vote for one Question.
@@ -28,13 +28,13 @@ class PlainVote : Vote {
    */
   constructor(
       questionId: String,
-      vote: Int,
+      vote: Int?,
       writeInEnabled: Boolean,
       writeIn: String?,
       electionId: String?
   ) {
     this.questionId = questionId
-    this.vote = if (writeInEnabled) -1 else vote
+    this.vote = if (writeInEnabled) null else vote
     this.id = Election.generateElectionVoteId(electionId, questionId, vote, writeIn, writeInEnabled)
   }
 

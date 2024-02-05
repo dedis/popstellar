@@ -109,7 +109,7 @@ protected constructor(
       location = ", at " + event.location
     }
 
-    if (event is Meeting && !event.location.isEmpty()) {
+    if (event is Meeting && event.location.isNotEmpty()) {
       location = ", at " + event.location
     }
 
@@ -124,12 +124,6 @@ protected constructor(
                     activity.getString(R.string.start_at), PrettyTime().format(Date(eventTime)))
               }
           EventState.OPENED -> activity.getString(R.string.ongoing)
-          EventState.CLOSED,
-          EventState.RESULTS_READY -> {
-            val eventTime = event.endTimestampInMillis
-            String.format(
-                activity.getString(R.string.close_at), PrettyTime().format(Date(eventTime)))
-          }
           else -> {
             val eventTime = event.endTimestampInMillis
             String.format(

@@ -43,7 +43,8 @@ class LAOListAdapter(private val homeViewModel: HomeViewModel, private val activ
       val laoView = homeViewModel.getLaoView(laoId)
       laoTitle.text = laoView.name
     } catch (e: UnknownLaoException) {
-      throw IllegalStateException("Lao with id $laoId is supposed to be present")
+      Timber.tag(TAG).e(e)
+      error("Lao with id $laoId is supposed to be present")
     }
   }
 

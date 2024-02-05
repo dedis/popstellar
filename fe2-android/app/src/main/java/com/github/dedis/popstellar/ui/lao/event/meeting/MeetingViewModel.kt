@@ -41,6 +41,7 @@ constructor(
     return try {
       meetingRepo.getMeetingObservable(laoId, id).observeOn(schedulerProvider.mainThread())
     } catch (e: UnknownMeetingException) {
+      Timber.tag(TAG).d(e)
       Observable.error(UnknownMeetingException(id))
     }
   }

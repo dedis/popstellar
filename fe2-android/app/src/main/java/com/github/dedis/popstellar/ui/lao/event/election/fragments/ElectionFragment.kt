@@ -38,6 +38,7 @@ import java.util.Locale
 import javax.inject.Inject
 
 @AndroidEntryPoint
+@Suppress("TooManyFunctions")
 class ElectionFragment : Fragment() {
   private val dateFormat = SimpleDateFormat("dd/MM/yyyy HH:mm z", Locale.ENGLISH)
 
@@ -127,7 +128,7 @@ class ElectionFragment : Fragment() {
                 .setNegativeButton(R.string.no, null)
                 .show()
         else ->
-            throw IllegalStateException(
+            error(
                 "User should not be able to use the management button when in this state : $state")
       }
     }
@@ -149,9 +150,7 @@ class ElectionFragment : Fragment() {
             setCurrentFragment(parentFragmentManager, R.id.fragment_election_result) {
               ElectionResultFragment.newInstance(electionId)
             }
-        else ->
-            throw IllegalStateException(
-                "User should not be able to use the action button in this state :$state")
+        else -> error("User should not be able to use the action button in this state :$state")
       }
     }
 

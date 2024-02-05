@@ -18,6 +18,7 @@ import com.github.dedis.popstellar.utility.error.UnknownElectionException
 import com.github.dedis.popstellar.utility.error.UnknownLaoException
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
+import timber.log.Timber
 
 @AndroidEntryPoint
 class ElectionResultFragment : Fragment() {
@@ -50,11 +51,13 @@ class ElectionResultFragment : Fragment() {
       // Setting the circle indicator
       val circleIndicator = binding.swipeIndicatorElectionResults
       circleIndicator.setViewPager(viewPager2)
-    } catch (e: UnknownLaoException) {
-      logAndShow(requireContext(), TAG, R.string.error_no_lao)
-      return null
-    } catch (e: UnknownElectionException) {
-      logAndShow(requireContext(), TAG, R.string.error_no_election)
+    } catch (e: Exception) {
+      when (e) {
+        is UnknownLaoException -> logAndShow(requireContext(), TAG, R.string.error_no_lao)
+        is UnknownElectionException -> logAndShow(requireContext(), TAG, R.string.error_no_election)
+        else -> throw e
+      }
+      Timber.tag(TAG).d(e)
       return null
     }
 

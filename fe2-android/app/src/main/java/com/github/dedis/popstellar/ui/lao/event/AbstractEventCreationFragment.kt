@@ -1,5 +1,6 @@
 package com.github.dedis.popstellar.ui.lao.event
 
+import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.InputType
@@ -32,6 +33,7 @@ import java.util.Locale
  *
  * This class handles these fields.
  */
+@Suppress("TooManyFunctions")
 abstract class AbstractEventCreationFragment : Fragment() {
   private val dateFormat: DateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.FRENCH)
   private val timeFormat: DateFormat = SimpleDateFormat("HH:mm", Locale.FRENCH)
@@ -113,9 +115,9 @@ abstract class AbstractEventCreationFragment : Fragment() {
       endDate = null
 
       openPickerDialog(DatePickerFragment.newInstance(), DatePickerFragment.TAG) {
-          request: String,
+          _: String,
           bundle: Bundle ->
-        onStartDate(request, bundle)
+        onStartDate(bundle)
       }
     }
 
@@ -125,9 +127,9 @@ abstract class AbstractEventCreationFragment : Fragment() {
       endDate = null
 
       openPickerDialog(DatePickerFragment.newInstance(), DatePickerFragment.TAG) {
-          requestKey: String,
+          _: String,
           bundle: Bundle ->
-        onEndDate(requestKey, bundle)
+        onEndDate(bundle)
       }
     }
 
@@ -140,9 +142,9 @@ abstract class AbstractEventCreationFragment : Fragment() {
       endTime = null
 
       openPickerDialog(TimePickerFragment.newInstance(), TimePickerFragment.TAG) {
-          requestKey: String,
+          _: String,
           bundle: Bundle ->
-        onStartTime(requestKey, bundle)
+        onStartTime(bundle)
       }
     }
 
@@ -151,10 +153,8 @@ abstract class AbstractEventCreationFragment : Fragment() {
       endTimeEditText?.text?.clear()
       endTime = null
 
-      openPickerDialog(TimePickerFragment(), TimePickerFragment.TAG) {
-          requestKey: String,
-          bundle: Bundle ->
-        onEndTime(requestKey, bundle)
+      openPickerDialog(TimePickerFragment(), TimePickerFragment.TAG) { _: String, bundle: Bundle ->
+        onEndTime(bundle)
       }
     }
   }
@@ -197,7 +197,7 @@ abstract class AbstractEventCreationFragment : Fragment() {
     return endTimeEditText?.text.toString().trim { it <= ' ' }
   }
 
-  private fun onStartDate(request: String, bundle: Bundle) {
+  private fun onStartDate(bundle: Bundle) {
     val newDate = getSelection(bundle)
     startDateEditText?.setText("")
     startDate = null
@@ -224,7 +224,7 @@ abstract class AbstractEventCreationFragment : Fragment() {
     }
   }
 
-  private fun onEndDate(requestKey: String, bundle: Bundle) {
+  private fun onEndDate(bundle: Bundle) {
     val newDate = getSelection(bundle)
     endDateEditText?.setText("")
     endDate = null
@@ -248,7 +248,7 @@ abstract class AbstractEventCreationFragment : Fragment() {
     }
   }
 
-  private fun onStartTime(requestKey: String, bundle: Bundle) {
+  private fun onStartTime(bundle: Bundle) {
     startTime = getSelection(bundle)
     startTimeEditText?.setText(timeFormat.format(startTime!!.time))
 
@@ -265,7 +265,7 @@ abstract class AbstractEventCreationFragment : Fragment() {
     }
   }
 
-  private fun onEndTime(requestKey: String, bundle: Bundle) {
+  private fun onEndTime(bundle: Bundle) {
     endTime = getSelection(bundle)
     endTimeEditText?.setText(timeFormat.format(endTime!!.time))
 
@@ -281,8 +281,15 @@ abstract class AbstractEventCreationFragment : Fragment() {
   }
 
   private fun getSelection(bundle: Bundle): Calendar {
-    return bundle.getSerializable(PickerConstant.RESPONSE_KEY) as Calendar?
-        ?: throw IllegalStateException("Bundle does not contain selection")
+    return when {
+      Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU ->
+          @Suppress("DEPRECATION")
+          bundle.getSerializable(PickerConstant.RESPONSE_KEY) as Calendar?
+              ?: error("Bundle does not contain selection")
+      else ->
+          bundle.getSerializable(PickerConstant.RESPONSE_KEY, Calendar::class.java)
+              ?: error("Bundle does not contain selection")
+    }
   }
 
   private fun compareWithNowByDay(date: Calendar): Int {
@@ -307,6 +314,7 @@ abstract class AbstractEventCreationFragment : Fragment() {
    *
    * @return true if the date/times are all valid
    */
+  @Suppress("ReturnCount")
   fun computeTimesInSeconds(): Boolean {
     if (startDate == null || startTime == null) {
       return false

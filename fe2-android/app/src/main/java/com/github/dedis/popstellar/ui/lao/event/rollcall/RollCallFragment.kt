@@ -118,7 +118,7 @@ class RollCallFragment : AbstractEventFragment {
                         { error: Throwable ->
                           logAndShow(requireContext(), TAG, error, R.string.error_close_rollcall)
                         }))
-        else -> throw IllegalStateException("Roll-Call should not be in a $state state")
+        else -> error("Roll-Call should not be in a $state state")
       }
     }
 

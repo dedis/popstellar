@@ -35,6 +35,7 @@ import javax.inject.Inject
 import timber.log.Timber
 
 @HiltViewModel
+@Suppress("TooManyFunctions")
 class LaoViewModel
 @Inject
 constructor(
@@ -158,14 +159,19 @@ constructor(
   }
 
   private fun determineRole(): Role {
-    return if (isOrganizer) {
-      Role.ORGANIZER
-    } else if (java.lang.Boolean.TRUE == isWitness.value) {
-      return Role.WITNESS
-    } else if (java.lang.Boolean.TRUE == isAttendee.value) {
-      Role.ATTENDEE
-    } else {
-      Role.MEMBER
+    return when {
+      isOrganizer -> {
+        Role.ORGANIZER
+      }
+      java.lang.Boolean.TRUE == isWitness.value -> {
+        Role.WITNESS
+      }
+      java.lang.Boolean.TRUE == isAttendee.value -> {
+        Role.ATTENDEE
+      }
+      else -> {
+        Role.MEMBER
+      }
     }
   }
 
@@ -201,6 +207,7 @@ constructor(
                             try {
                               return@anyMatch rc == rollCallRepo.getLastClosedRollCall(laoId)
                             } catch (e: NoRollCallException) {
+                              Timber.tag(TAG).e(e)
                               return@anyMatch false
                             }
                           }

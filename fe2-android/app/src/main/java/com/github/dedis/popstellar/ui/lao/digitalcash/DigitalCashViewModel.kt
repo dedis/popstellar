@@ -45,6 +45,7 @@ import javax.inject.Inject
 import timber.log.Timber
 
 @HiltViewModel
+@Suppress("TooManyFunctions")
 class DigitalCashViewModel
 @Inject
 constructor(
@@ -224,7 +225,7 @@ constructor(
                     .toByteArray(StandardCharsets.UTF_8)))
 
     return Input(
-        currentHash, transactionInpMap[currentHash]!!, ScriptInput(TYPE, keyPair.publicKey, sig))
+        currentHash, transactionInpMap[currentHash], ScriptInput(TYPE, keyPair.publicKey, sig))
   }
 
   @get:Throws(NoRollCallException::class)

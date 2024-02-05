@@ -75,7 +75,7 @@ class EventListAdapter(
       return EventViewHolder(view)
     }
 
-    throw IllegalStateException("Illegal view type")
+    error("Illegal view type")
   }
 
   @SuppressLint("NotifyDataSetChanged") // Warranted by our current implementation
@@ -96,7 +96,7 @@ class EventListAdapter(
 
       expandIcon.rotation = if (expanded[eventCategory.ordinal]) 180f else 0f
 
-      val numberOfEventsInCategory = "(${eventsMap[eventCategory]!!.size})"
+      val numberOfEventsInCategory = "(${eventsMap[eventCategory]?.size})"
       holder.headerNumber.text = numberOfEventsInCategory
 
       // Expansion/Collapse part
@@ -122,13 +122,13 @@ class EventListAdapter(
    * sure the position is occupied by an event or this will throw an exception
    */
   private fun getEvent(position: Int): Event? {
-    val nbrOfPresentEvents = eventsMap[EventCategory.PRESENT]!!.size
-    val nbrOfPastEvents = eventsMap[EventCategory.PAST]!!.size
+    val nbrOfPresentEvents = eventsMap[EventCategory.PRESENT]?.size ?: 0
+    val nbrOfPastEvents = eventsMap[EventCategory.PAST]?.size ?: 0
 
     var eventAccumulator = 0
     if (expanded[EventCategory.PRESENT.ordinal]) {
       if (position <= nbrOfPresentEvents) {
-        return eventsMap[EventCategory.PRESENT]!![position - 1] // position 0 is for the header
+        return eventsMap[EventCategory.PRESENT]?.get(position - 1) // position 0 is for the header
       }
       eventAccumulator += nbrOfPresentEvents
     }
@@ -136,11 +136,11 @@ class EventListAdapter(
     if (expanded[EventCategory.PAST.ordinal] &&
         position <= nbrOfPastEvents + eventAccumulator + 1) {
       val secondSectionOffset = if (nbrOfPresentEvents > 0) 2 else 1
-      return eventsMap[EventCategory.PAST]!![position - eventAccumulator - secondSectionOffset]
+      return eventsMap[EventCategory.PAST]?.get(position - eventAccumulator - secondSectionOffset)
     }
 
     Timber.tag(TAG).e("position was %d", position)
-    throw IllegalStateException("no event matches")
+    error("no event matches")
   }
 
   /**
@@ -149,7 +149,7 @@ class EventListAdapter(
    * sure the position is occupied by a header or this will throw an exception
    */
   private fun getHeaderCategory(position: Int): EventCategory {
-    val nbrOfPresentEvents = eventsMap[EventCategory.PRESENT]!!.size
+    val nbrOfPresentEvents = eventsMap[EventCategory.PRESENT]?.size ?: 0
 
     if (position == 0) {
       // If this function is called, it means that getSize() > 0. Therefore there are some events
@@ -167,12 +167,12 @@ class EventListAdapter(
     }
 
     Timber.tag(TAG).e("Illegal position %d", position)
-    throw IllegalStateException("No event category")
+    error("No event category")
   }
 
   override fun getItemCount(): Int {
-    val nbrOfPresentEvents = eventsMap[EventCategory.PRESENT]!!.size
-    val nbrOfPastEvents = eventsMap[EventCategory.PAST]!!.size
+    val nbrOfPresentEvents = eventsMap[EventCategory.PRESENT]?.size ?: 0
+    val nbrOfPastEvents = eventsMap[EventCategory.PAST]?.size ?: 0
     var eventAccumulator = 0
 
     if (nbrOfPresentEvents > 0) {
@@ -193,7 +193,7 @@ class EventListAdapter(
   }
 
   override fun getItemViewType(position: Int): Int {
-    val nbrOfPresentEvents = eventsMap[EventCategory.PRESENT]!!.size
+    val nbrOfPresentEvents = eventsMap[EventCategory.PRESENT]?.size ?: 0
     var eventAccumulator = 0
     if (expanded[EventCategory.PRESENT.ordinal]) {
       eventAccumulator = nbrOfPresentEvents

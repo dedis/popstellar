@@ -38,7 +38,7 @@ public class PlainVoteTest {
     // Hash code shouldn't change with new protocol specifications
     assertThat(plainVote2.getId().equals(wrongFormatId), is(false));
     assertThat(plainVote2.getId().equals(expectedIdWithWriteIn), is(true));
-    assertThat(plainVote2.getVote(), is(-1));
+    assertNull(plainVote2.getVote());
   }
 
   @Test
@@ -48,8 +48,8 @@ public class PlainVoteTest {
 
   @Test
   public void attributesIsNull() {
-    assertThat(plainVote2.getVote(), is(-1));
-    assertNotEquals(plainVote1.getVote(), -1);
+    assertNull(plainVote2.getVote());
+    assertNotNull(plainVote1.getVote());
   }
 
   @Test

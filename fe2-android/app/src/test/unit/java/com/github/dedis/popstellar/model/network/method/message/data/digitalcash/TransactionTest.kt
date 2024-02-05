@@ -78,7 +78,7 @@ class TransactionTest {
         Base64URLData(
           Transaction.computeSigOutputsPairTxOutHashAndIndex(
               transactionModel.outputs,
-              Collections.singletonMap(single.txOutHash, single.txOutIndex)
+              Collections.singletonMap(single.txOutHash, single.txOutIndex!!)
             )
             .toByteArray(StandardCharsets.UTF_8)
         )
@@ -100,7 +100,7 @@ class TransactionTest {
         Base64URLData(
           Transaction.computeSigOutputsPairTxOutHashAndIndex(
               transactionModel.outputs,
-              Collections.singletonMap(single.txOutHash, single.txOutIndex)
+              Collections.singletonMap(single.txOutHash, single.txOutIndex!!)
             )
             .toByteArray(StandardCharsets.UTF_8)
         )

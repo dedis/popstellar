@@ -42,7 +42,7 @@ constructor(
   init {
     fun throwException(e: Exception) {
       Timber.tag(TAG).e(e, "Failed to retrieve device's key")
-      throw IllegalStateException("Failed to retrieve device's key", e)
+      error("Failed to retrieve device's key", e)
     }
 
     try {

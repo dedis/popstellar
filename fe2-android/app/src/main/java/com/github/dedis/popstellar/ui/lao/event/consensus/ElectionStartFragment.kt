@@ -91,7 +91,7 @@ class ElectionStartFragment : Fragment() {
     if (ownNode == null) {
       // Only possible if the user wasn't an acceptor, but shouldn't have access to this fragment
       Timber.tag(TAG).e("Couldn't find the Node with public key : %s", laoViewModel.getPublicKey())
-      throw IllegalStateException("Only acceptors are allowed to access ElectionStartFragment")
+      error("Only acceptors are allowed to access ElectionStartFragment")
     }
 
     val instanceId = generateConsensusId(CONSENSUS_TYPE, electionId, CONSENSUS_PROPERTY)

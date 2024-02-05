@@ -51,15 +51,17 @@ class ConnectingActivity : AppCompatActivity() {
   }
 
   private fun setupConnectingText() {
-    if (intent.getStringExtra(Constants.ACTIVITY_TO_OPEN_EXTRA) == Constants.HOME_EXTRA) {
-      binding.connectingLao.setText(R.string.stored_channels)
-    } else if (intent.getStringExtra(Constants.CONNECTION_PURPOSE_EXTRA) ==
-        Constants.JOINING_EXTRA) {
-      binding.connectingLao.text = intent.getStringExtra(Constants.LAO_ID_EXTRA)
-    } else if (intent.getStringExtra(Constants.CONNECTION_PURPOSE_EXTRA) ==
-        Constants.CREATING_EXTRA) {
-      binding.connectingText.setText(R.string.creating_new_lao)
-      binding.connectingLao.text = intent.getStringExtra(Constants.LAO_NAME)
+    when {
+      intent.getStringExtra(Constants.ACTIVITY_TO_OPEN_EXTRA) == Constants.HOME_EXTRA -> {
+        binding.connectingLao.setText(R.string.stored_channels)
+      }
+      intent.getStringExtra(Constants.CONNECTION_PURPOSE_EXTRA) == Constants.JOINING_EXTRA -> {
+        binding.connectingLao.text = intent.getStringExtra(Constants.LAO_ID_EXTRA)
+      }
+      intent.getStringExtra(Constants.CONNECTION_PURPOSE_EXTRA) == Constants.CREATING_EXTRA -> {
+        binding.connectingText.setText(R.string.creating_new_lao)
+        binding.connectingLao.text = intent.getStringExtra(Constants.LAO_NAME)
+      }
     }
   }
 

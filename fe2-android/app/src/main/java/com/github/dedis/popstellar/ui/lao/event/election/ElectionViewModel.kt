@@ -182,6 +182,7 @@ constructor(
     try {
       keyManager.getValidPoPToken(laoId, rollCallRepo.getLastClosedRollCall(laoId))
     } catch (e: KeyException) {
+      Timber.tag(TAG).d(e)
       return false
     }
     return true

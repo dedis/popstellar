@@ -49,6 +49,7 @@ import java.util.function.Supplier
 import timber.log.Timber
 
 @AndroidEntryPoint
+@Suppress("TooManyFunctions")
 class LaoActivity : AppCompatActivity() {
   private lateinit var laoViewModel: LaoViewModel
   private lateinit var witnessingViewModel: WitnessingViewModel

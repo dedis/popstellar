@@ -128,7 +128,7 @@ class Election(
 
     for (vote in votes) {
       // We are sure that each vote is unique per question following new specification
-      val voteIndice = vote.vote
+      val voteIndice = vote.vote!!
 
       // Get the two lsb byte from the indice
       val voteIndiceInBytes = byteArrayOf((voteIndice shr 8).toByte(), voteIndice.toByte())
@@ -380,7 +380,7 @@ class Election(
     fun generateElectionVoteId(
         electionId: String?,
         questionId: String?,
-        voteIndex: Int,
+        voteIndex: Int?,
         writeIn: String?,
         writeInEnabled: Boolean
     ): String {

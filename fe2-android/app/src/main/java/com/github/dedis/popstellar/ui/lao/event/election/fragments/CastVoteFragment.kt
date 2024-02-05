@@ -24,6 +24,7 @@ import com.github.dedis.popstellar.utility.error.UnknownElectionException
 import com.github.dedis.popstellar.utility.error.UnknownLaoException
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
+import timber.log.Timber
 
 /**
  * A simple [Fragment] subclass. Use the [CastVoteFragment.newInstance] factory method to create an
@@ -111,6 +112,7 @@ class CastVoteFragment : Fragment() {
       binding.castVoteLaoName.text = laoView.name
       false
     } catch (e: UnknownLaoException) {
+      Timber.tag(TAG).d(e)
       logAndShow(requireContext(), TAG, R.string.error_no_lao)
       true
     }
@@ -122,6 +124,7 @@ class CastVoteFragment : Fragment() {
       binding.castVoteElectionName.text = election.name
       false
     } catch (e: UnknownElectionException) {
+      Timber.tag(TAG).d(e)
       logAndShow(requireContext(), TAG, R.string.error_no_election)
       true
     }
@@ -143,7 +146,7 @@ class CastVoteFragment : Fragment() {
         val plainVote =
             PlainVote(
                 electionQuestion.id,
-                votes[electionQuestion.id]!!,
+                votes[electionQuestion.id],
                 electionQuestion.writeIn,
                 null,
                 electionId)

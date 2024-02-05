@@ -161,8 +161,7 @@ class EventListFragment : Fragment() {
 
   private fun setupEventListAdapter() {
     val eventList = binding.eventList
-    val eventListAdapter =
-        EventListAdapter(laoViewModel, eventsViewModel!!.events, requireActivity())
+    val eventListAdapter = EventListAdapter(laoViewModel, eventsViewModel.events, requireActivity())
 
     Timber.tag(TAG).d("created adapter")
 

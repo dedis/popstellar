@@ -11,7 +11,7 @@ class InputObject
  * @param txOutIndex index of the previous to-be-used transaction
  * @param script The script describing the unlock mechanism
  */
-(val txOutHash: String, val txOutIndex: Int, val script: ScriptInputObject) {
+(val txOutHash: String, val txOutIndex: Int?, val script: ScriptInputObject) {
 
   val pubKey: PublicKey
     get() = script.pubKey

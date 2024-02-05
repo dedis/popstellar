@@ -39,10 +39,7 @@ object TestKeysetModule {
 
       manager
     } catch (e: GeneralSecurityException) {
-      throw IllegalStateException(
-        "Could not register security primitives for the mock device keyset",
-        e
-      )
+      error("Could not register security primitives for the mock device keyset", e)
     }
   }
 
@@ -60,10 +57,7 @@ object TestKeysetModule {
 
       manager
     } catch (e: GeneralSecurityException) {
-      throw IllegalStateException(
-        "Could not register security primitives for the mock wallet keyset",
-        e
-      )
+      error("Could not register security primitives for the mock wallet keyset", e)
     }
   }
 }
