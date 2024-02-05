@@ -80,15 +80,11 @@ type Hub struct {
 	serverSockets channel.Sockets
 
 	// hubInbox is used to remember the messages that the hub received
-	hubInbox inbox.Inbox
+	hubInbox inbox.HubInbox
 
 	// rootInbox and queries are used to help servers catchup to each other
 	rootInbox inbox.Inbox
 	queries   state.Queries
-
-	// messageIdsByChannel stores all the message ids and the corresponding channel ids
-	// to help servers determine in which channel the message ids go
-	messageIdsByChannel state.MessageIds
 
 	// peers stores information about the peers
 	peers state.Peers
@@ -128,10 +124,9 @@ func NewHub(pubKeyOwner kyber.Point, clientServerAddress string, serverServerAdd
 		log:                 log,
 		laoFac:              laoFac,
 		serverSockets:       channel.NewSockets(),
-		hubInbox:            *inbox.NewInbox(rootChannel),
+		hubInbox:            *inbox.NewHubInbox(rootChannel),
 		rootInbox:           *inbox.NewInbox(rootChannel),
 		queries:             state.NewQueries(),
-		messageIdsByChannel: state.NewMessageIdsMap(),
 		peers:               state.NewPeers(),
 		blacklist:           make([]string, 0),
 	}
@@ -490,7 +485,7 @@ func (h *Hub) sendGetMessagesByIdToServer(socket socket.Socket, missingIds map[s
 
 // sendHeartbeatToServers sends a heartbeat message to all servers
 func (h *Hub) sendHeartbeatToServers() {
-	if h.messageIdsByChannel.IsEmpty() {
+	if h.hubInbox.IsEmpty() {
 		return
 	}
 	heartbeatMessage := method.Heartbeat{
@@ -500,7 +495,7 @@ func (h *Hub) sendHeartbeatToServers() {
 			},
 			Method: "heartbeat",
 		},
-		Params: h.messageIdsByChannel.GetTable(),
+		Params: h.hubInbox.GetIDsTable(),
 	}
 
 	buf, err := json.Marshal(heartbeatMessage)
