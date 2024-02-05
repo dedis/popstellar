@@ -30,7 +30,7 @@ public class GlobalNetworkManagerTest {
   @Test
   public void initializationProducesAValidConnection() {
     TestSchedulerProvider schedulerProvider = new TestSchedulerProvider();
-    TestScheduler testScheduler = schedulerProvider.getTestScheduler();
+    TestScheduler testScheduler = schedulerProvider.testScheduler;
     ConnectionFactory factory = mock(ConnectionFactory.class);
 
     MultiConnection firstConnection = mock(MultiConnection.class);

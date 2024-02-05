@@ -1,13 +1,18 @@
 package com.github.dedis.popstellar.repository.remote;
 
+import static com.github.dedis.popstellar.repository.remote.LAONetworkManager.REPROCESSING_DELAY;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
-
 import com.github.dedis.popstellar.di.DataRegistryModuleHelper;
 import com.github.dedis.popstellar.di.JsonModule;
 import com.github.dedis.popstellar.model.network.GenericMessage;
-import com.github.dedis.popstellar.model.network.answer.Error;
 import com.github.dedis.popstellar.model.network.answer.*;
+import com.github.dedis.popstellar.model.network.answer.Error;
 import com.github.dedis.popstellar.model.network.method.*;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
@@ -22,32 +27,22 @@ import com.github.dedis.popstellar.utility.handler.MessageHandler;
 import com.github.dedis.popstellar.utility.scheduler.TestSchedulerProvider;
 import com.google.gson.Gson;
 import com.tinder.scarlet.WebSocket;
-
-import org.junit.*;
-import org.junit.rules.RuleChain;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.stubbing.Answer;
-
-import java.util.*;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import javax.inject.Inject;
-
 import dagger.hilt.android.testing.HiltAndroidRule;
 import dagger.hilt.android.testing.HiltAndroidTest;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.schedulers.TestScheduler;
 import io.reactivex.subjects.BehaviorSubject;
-
-import static com.github.dedis.popstellar.repository.remote.LAONetworkManager.REPROCESSING_DELAY;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import javax.inject.Inject;
+import org.junit.*;
+import org.junit.rules.RuleChain;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.stubbing.Answer;
 
 @HiltAndroidTest
 @RunWith(AndroidJUnit4.class)
@@ -97,7 +92,7 @@ public class LAONetworkManagerTest {
   @Test
   public void subscribeSendsTheRightMessages() {
     TestSchedulerProvider schedulerProvider = new TestSchedulerProvider();
-    TestScheduler testScheduler = schedulerProvider.getTestScheduler();
+    TestScheduler testScheduler = schedulerProvider.testScheduler;
     LAONetworkManager networkManager =
         new LAONetworkManager(
             handler,
@@ -133,7 +128,7 @@ public class LAONetworkManagerTest {
   @Test
   public void unsubscribeSendsTheRightMessage() {
     TestSchedulerProvider schedulerProvider = new TestSchedulerProvider();
-    TestScheduler testScheduler = schedulerProvider.getTestScheduler();
+    TestScheduler testScheduler = schedulerProvider.testScheduler;
     LAONetworkManager networkManager =
         new LAONetworkManager(
             handler,
@@ -168,7 +163,7 @@ public class LAONetworkManagerTest {
   @Test
   public void publishSendsRightMessage() {
     TestSchedulerProvider schedulerProvider = new TestSchedulerProvider();
-    TestScheduler testScheduler = schedulerProvider.getTestScheduler();
+    TestScheduler testScheduler = schedulerProvider.testScheduler;
     LAONetworkManager networkManager =
         new LAONetworkManager(
             handler,
@@ -205,7 +200,7 @@ public class LAONetworkManagerTest {
   @Test
   public void errorsAreDispatchedCorrectly() {
     TestSchedulerProvider schedulerProvider = new TestSchedulerProvider();
-    TestScheduler testScheduler = schedulerProvider.getTestScheduler();
+    TestScheduler testScheduler = schedulerProvider.testScheduler;
     LAONetworkManager networkManager =
         new LAONetworkManager(
             handler,
@@ -248,7 +243,7 @@ public class LAONetworkManagerTest {
   @Test
   public void resubscribeToChannelWhenConnectionReopened() {
     TestSchedulerProvider schedulerProvider = new TestSchedulerProvider();
-    TestScheduler testScheduler = schedulerProvider.getTestScheduler();
+    TestScheduler testScheduler = schedulerProvider.testScheduler;
     LAONetworkManager networkManager =
         new LAONetworkManager(
             handler,
@@ -290,7 +285,7 @@ public class LAONetworkManagerTest {
   @Test
   public void multipleRequestsAtATimeShouldAllSucceed() {
     TestSchedulerProvider schedulerProvider = new TestSchedulerProvider();
-    TestScheduler testScheduler = schedulerProvider.getTestScheduler();
+    TestScheduler testScheduler = schedulerProvider.testScheduler;
     LAONetworkManager networkManager =
         new LAONetworkManager(
             handler,
@@ -352,10 +347,14 @@ public class LAONetworkManagerTest {
 
   @Test
   public void identifyUnrecoverableFailures()
-      throws UnknownElectionException, UnknownRollCallException, UnknownLaoException,
-          DataHandlingException, NoRollCallException, UnknownWitnessMessageException {
+      throws UnknownElectionException,
+          UnknownRollCallException,
+          UnknownLaoException,
+          DataHandlingException,
+          NoRollCallException,
+          UnknownWitnessMessageException {
     TestSchedulerProvider schedulerProvider = new TestSchedulerProvider();
-    TestScheduler testScheduler = schedulerProvider.getTestScheduler();
+    TestScheduler testScheduler = schedulerProvider.testScheduler;
 
     // Mock to be not able to handle any broadcast message
     doThrow(UnknownLaoException.class)
@@ -404,7 +403,7 @@ public class LAONetworkManagerTest {
   @Test
   public void testExtendConnection() {
     TestSchedulerProvider schedulerProvider = new TestSchedulerProvider();
-    TestScheduler testScheduler = schedulerProvider.getTestScheduler();
+    TestScheduler testScheduler = schedulerProvider.testScheduler;
 
     LAONetworkManager networkManager =
         new LAONetworkManager(

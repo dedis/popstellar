@@ -50,7 +50,9 @@ class MessageGeneral {
     this.witnessSignatures = ArrayList(witnessSignatures)
   }
 
-  constructor(keyPair: KeyPair, data: Data, gson: Gson) {
+  constructor(keyPair: KeyPair, data: Data?, gson: Gson) {
+    requireNotNull(data)
+
     this.sender = keyPair.publicKey
     this.data = data
 
