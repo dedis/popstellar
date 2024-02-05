@@ -188,7 +188,8 @@ public class ConnectingActivity extends AppCompatActivity {
                 },
                 error -> {
                   // In case of error, log it and go to home activity
-                  ErrorUtils.logAndShow(getApplication(), TAG, error, R.string.error_subscribe_lao);
+                  ErrorUtils.INSTANCE.logAndShow(
+                      getApplication(), TAG, error, R.string.error_subscribe_lao);
                   startActivity(HomeActivity.newIntent(this));
                   finish();
                 }));

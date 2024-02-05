@@ -82,16 +82,12 @@ constructor(
     private val digitalCashRepository: DigitalCashRepository
 ) {
   private val witnessByLao: MutableMap<String, LaoWitness> = HashMap()
-  private val witnessingDao: WitnessingDao
-  private val witnessDao: WitnessDao
-  private val pendingDao: PendingDao
+  private val witnessingDao: WitnessingDao = appDatabase.witnessingDao()
+  private val witnessDao: WitnessDao = appDatabase.witnessDao()
+  private val pendingDao: PendingDao = appDatabase.pendingDao()
   private val disposables = CompositeDisposable()
 
   init {
-    witnessingDao = appDatabase.witnessingDao()
-    witnessDao = appDatabase.witnessDao()
-    pendingDao = appDatabase.pendingDao()
-
     val consumerMap: MutableMap<Lifecycle.Event, Consumer<Activity>> =
         EnumMap(Lifecycle.Event::class.java)
     consumerMap[Lifecycle.Event.ON_STOP] = Consumer { disposables.clear() }
@@ -513,8 +509,8 @@ constructor(
               .subscribeOn(Schedulers.io())
               .observeOn(AndroidSchedulers.mainThread())
               .subscribe(
-                  { witnessMessageList: List<WitnessMessage> ->
-                    witnessMessageList.forEach(
+                  { witnessMessageList: List<WitnessMessage>? ->
+                    witnessMessageList?.forEach(
                         Consumer { witnessMessage: WitnessMessage -> add(witnessMessage) })
                   },
                   { err: Throwable ->
@@ -526,8 +522,8 @@ constructor(
               .subscribeOn(Schedulers.io())
               .observeOn(AndroidSchedulers.mainThread())
               .subscribe(
-                  { pendingEntityList: List<PendingEntity> ->
-                    pendingEntityList.forEach(
+                  { pendingEntityList: List<PendingEntity>? ->
+                    pendingEntityList?.forEach(
                         Consumer { pendingEntity: PendingEntity ->
                           addPendingEntity(pendingEntity)
                         })

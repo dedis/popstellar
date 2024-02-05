@@ -4,11 +4,9 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.*;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.InviteFragmentBinding;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
@@ -18,12 +16,9 @@ import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.google.gson.Gson;
-
-import net.glxn.qrgen.android.QRCode;
-
-import javax.inject.Inject;
-
 import dagger.hilt.android.AndroidEntryPoint;
+import javax.inject.Inject;
+import net.glxn.qrgen.android.QRCode;
 
 @AndroidEntryPoint
 public class InviteFragment extends Fragment {
@@ -74,7 +69,7 @@ public class InviteFragment extends Fragment {
               role -> binding.laoPropertiesRoleText.setText(role.getStringId()));
 
     } catch (UnknownLaoException e) {
-      ErrorUtils.logAndShow(requireContext(), TAG, e, R.string.unknown_lao_exception);
+      ErrorUtils.INSTANCE.logAndShow(requireContext(), TAG, e, R.string.unknown_lao_exception);
       return null;
     }
 

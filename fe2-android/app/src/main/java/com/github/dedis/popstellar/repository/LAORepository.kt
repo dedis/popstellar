@@ -28,7 +28,7 @@ import timber.log.Timber
 
 @Singleton
 class LAORepository @Inject constructor(appDatabase: AppDatabase, application: Application) {
-  private val laoDao: LAODao
+  private val laoDao: LAODao = appDatabase.laoDao()
 
   /** Thread-safe map used to store the laos by their unique identifiers */
   private val laoById = ConcurrentHashMap<String, Lao>()
@@ -41,8 +41,6 @@ class LAORepository @Inject constructor(appDatabase: AppDatabase, application: A
   private val disposables = CompositeDisposable()
 
   init {
-    laoDao = appDatabase.laoDao()
-
     val consumerMap: MutableMap<Lifecycle.Event, Consumer<Activity>> =
         EnumMap(Lifecycle.Event::class.java)
     consumerMap[Lifecycle.Event.ON_STOP] = Consumer { disposables.clear() }
@@ -62,8 +60,8 @@ class LAORepository @Inject constructor(appDatabase: AppDatabase, application: A
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
-                { laos: List<Lao> ->
-                  if (laos.isEmpty()) {
+                { laos: List<Lao>? ->
+                  if (laos.isNullOrEmpty()) {
                     Timber.tag(TAG).d("No LAO has been found in the database")
                     return@subscribe
                   }
@@ -149,6 +147,7 @@ class LAORepository @Inject constructor(appDatabase: AppDatabase, application: A
             .subscribe(
                 { Timber.tag(TAG).d("Persisted Lao %s", lao) },
                 { err: Throwable -> Timber.tag(TAG).e(err, "Error persisting Lao %s", lao) }))
+
     if (laoById.containsKey(lao.id)) {
       // If the lao already exists, we can push the next update
       laoById[lao.id] = lao

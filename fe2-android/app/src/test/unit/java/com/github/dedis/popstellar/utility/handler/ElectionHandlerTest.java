@@ -519,19 +519,8 @@ public class ElectionHandlerTest {
     handleElectionKey(OPEN_BALLOT_ELECTION, ELECTION_KEY);
     handleElectionOpen(OPEN_BALLOT_ELECTION);
 
-    // Create an invalid message with null data and add it to the message repo
-    MessageGeneral nullData = new MessageGeneral(SENDER_KEY, null, gson);
-    messageRepo.addMessage(nullData, false, true);
-
-    // Update the messageMap in this election to contain the invalid message
-    Election prevElection = electionRepo.getElectionByChannel(OPEN_BALLOT_ELECTION.getChannel());
-    Election updatedElection =
-        prevElection.builder().updateMessageMap(SENDER, nullData.getMessageId()).build();
-    electionRepo.updateElection(updatedElection);
-
-    // Check that handling the message fails
-    assertThrows(
-        IllegalStateException.class, () -> handleCastVote(VOTE1, SENDER_KEY, OPENED_AT + 1));
+    // Create an invalid message with null data
+    assertThrows(NullPointerException.class, () -> new MessageGeneral(SENDER_KEY, null, gson));
   }
 
   @Test

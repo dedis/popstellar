@@ -95,7 +95,7 @@ public class ElectionStartFragment extends Fragment {
       subscribeTo(election, this::updateElection);
       subscribeTo(merged, this::updateNodesAndElection);
     } catch (UnknownElectionException e) {
-      ErrorUtils.logAndShow(requireContext(), TAG, e, R.string.generic_error);
+      ErrorUtils.INSTANCE.logAndShow(requireContext(), TAG, e, R.string.generic_error);
       return null;
     }
 
@@ -126,7 +126,9 @@ public class ElectionStartFragment extends Fragment {
     disposables.add(
         observable.subscribe(
             onNext,
-            err -> ErrorUtils.logAndShow(requireContext(), TAG, err, R.string.generic_error)));
+            err ->
+                ErrorUtils.INSTANCE.logAndShow(
+                    requireContext(), TAG, err, R.string.generic_error)));
   }
 
   private void updateNodes(List<ConsensusNode> nodes) {
@@ -184,7 +186,7 @@ public class ElectionStartFragment extends Fragment {
                     .subscribe(
                         msg -> {},
                         error ->
-                            ErrorUtils.logAndShow(
+                            ErrorUtils.INSTANCE.logAndShow(
                                 requireContext(), TAG, error, R.string.error_start_election))));
   }
 

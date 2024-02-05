@@ -71,7 +71,7 @@ public class MeetingViewModel extends AndroidViewModel {
     try {
       laoView = getLao();
     } catch (UnknownLaoException e) {
-      ErrorUtils.logAndShow(getApplication(), TAG, e, R.string.unknown_lao_exception);
+      ErrorUtils.INSTANCE.logAndShow(getApplication(), TAG, e, R.string.unknown_lao_exception);
       return Single.error(new UnknownLaoException());
     }
 

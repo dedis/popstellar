@@ -55,7 +55,7 @@ constructor(
         .setEnd(createRollCall.proposedEnd)
         .setName(createRollCall.name)
         .setLocation(createRollCall.location)
-        .setDescription(createRollCall.description.orElse(""))
+        .setDescription(createRollCall.getDescription().orElse(""))
         .setEmptyAttendees()
     val laoId = laoView.id
     val rollCall = builder.build()
@@ -127,13 +127,14 @@ constructor(
     val existingRollCall = rollCallRepo.getRollCallWithId(laoView.id, closes)
     val currentAttendees = existingRollCall.attendees
     currentAttendees.addAll(closeRollCall.attendees)
+
     val builder = RollCallBuilder()
     builder
         .setId(updateId)
         .setPersistentId(existingRollCall.persistentId)
         .setCreation(existingRollCall.creation)
         .setState(EventState.CLOSED)
-        .setStart(existingRollCall.start)
+        .setStart(existingRollCall.startTimestamp)
         .setName(existingRollCall.name)
         .setLocation(existingRollCall.location)
         .setDescription(existingRollCall.description)

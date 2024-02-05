@@ -48,12 +48,7 @@ constructor(
     val witnesses: Set<PublicKey> = HashSet(createLao.witnesses)
     Timber.tag(TAG).d("handleCreateLao: channel: %s, msg: %s", channel, createLao)
 
-    val lao = Lao(createLao.id)
-    lao.name = createLao.name
-    lao.creation = createLao.creation
-    lao.lastModified = createLao.creation
-    lao.organizer = createLao.organizer
-    lao.id = createLao.id
+    val lao = Lao(createLao)
     laoRepo.updateLao(lao)
 
     witnessingRepo.addWitnesses(lao.id, witnesses)
@@ -162,7 +157,7 @@ constructor(
 
     val lao = laoView.createLaoCopy()
     lao.id = stateLao.id
-    lao.name = stateLao.name
+    lao.setName(stateLao.name)
     lao.lastModified = stateLao.lastModified
     lao.modificationId = stateLao.modificationId
 
@@ -229,7 +224,7 @@ constructor(
 
     @JvmStatic
     fun updateLaoNameWitnessMessage(
-        messageId: MessageID?,
+        messageId: MessageID,
         updateLao: UpdateLao,
         laoView: LaoView
     ): WitnessMessage {

@@ -35,12 +35,10 @@ import timber.log.Timber
 @Singleton
 class RollCallRepository @Inject constructor(appDatabase: AppDatabase, application: Application) {
   private val rollCallsByLao: MutableMap<String, LaoRollCalls> = HashMap()
-  private val rollCallDao: RollCallDao
+  private val rollCallDao: RollCallDao = appDatabase.rollCallDao()
   private val disposables = CompositeDisposable()
 
   init {
-    rollCallDao = appDatabase.rollCallDao()
-
     val consumerMap: MutableMap<Lifecycle.Event, Consumer<Activity>> =
         EnumMap(Lifecycle.Event::class.java)
     consumerMap[Lifecycle.Event.ON_STOP] = Consumer { disposables.clear() }
@@ -265,8 +263,8 @@ class RollCallRepository @Inject constructor(appDatabase: AppDatabase, applicati
               .subscribeOn(Schedulers.io())
               .observeOn(AndroidSchedulers.mainThread())
               .subscribe(
-                  { rollcalls: List<RollCall> ->
-                    rollcalls.forEach(
+                  { rollcalls: List<RollCall>? ->
+                    rollcalls?.forEach(
                         Consumer { rollCall: RollCall ->
                           update(rollCall)
                           Timber.tag(TAG).d("Retrieved from db rollcall %s", rollCall.persistentId)

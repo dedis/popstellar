@@ -52,12 +52,10 @@ class LAONetworkManager(
   // A subject that represents unprocessed messages
   private val unprocessed: Subject<GenericMessage> = PublishSubject.create()
   private val reprocessingCounter = ConcurrentHashMap<GenericMessage, Int>()
-  private val subscribedChannels: MutableSet<Channel>
+  private val subscribedChannels: MutableSet<Channel> = HashSet(subscribedChannels)
   private val disposables = CompositeDisposable()
 
   init {
-    this.subscribedChannels = HashSet(subscribedChannels)
-
     // Start the incoming message processing
     processIncomingMessages()
     // Start the routine aimed at resubscribing to channels when the connection is lost
@@ -81,11 +79,11 @@ class LAONetworkManager(
                             .subscribe(
                                 { Timber.tag(TAG).d("resubscription successful to : %s", channel) },
                                 { error: Throwable ->
-                                  Timber.tag(TAG).d(error, "error on resubscription to")
+                                  Timber.tag(TAG).e(error, "error on resubscription to")
                                 }))
                   }
                 },
-                { error: Throwable -> Timber.tag(TAG).d(error, "Error on resubscription") }))
+                { error: Throwable -> Timber.tag(TAG).e(error, "Error on resubscription") }))
   }
 
   private fun processIncomingMessages() {
@@ -103,7 +101,7 @@ class LAONetworkManager(
             .subscribeOn(schedulerProvider.newThread())
             .subscribe(
                 { broadcast: Broadcast -> handleBroadcast(broadcast) },
-                { error: Throwable -> Timber.tag(TAG).d(error, "Error on processing message") }))
+                { error: Throwable -> Timber.tag(TAG).e(error, "Error on processing message") }))
   }
 
   override fun catchup(channel: Channel): Completable {
@@ -112,7 +110,7 @@ class LAONetworkManager(
     val catchup = Catchup(channel, requestCounter.incrementAndGet())
     return request(catchup)
         .map { obj: Answer -> (obj as ResultMessages).messages }
-        .doOnError { error: Throwable -> Timber.tag(TAG).d(error, "Error in catchup") }
+        .doOnError { error: Throwable -> Timber.tag(TAG).e(error, "Error in catchup") }
         .doOnSuccess { msgs: List<MessageGeneral> ->
           Timber.tag(TAG).d("Received catchup response on %s, retrieved : %s", channel, msgs)
         }
@@ -142,7 +140,7 @@ class LAONetworkManager(
           Timber.tag(TAG).d("Adding %s to subscriptions", channel)
           subscribedChannels.add(channel)
         }
-        .doOnError { error: Throwable -> Timber.tag(TAG).d(error, "error in subscribe") }
+        .doOnError { error: Throwable -> Timber.tag(TAG).e(error, "error in subscribe") }
         // Catchup already sent messages after the subscription to the channel is complete
         // This allows for the completion of the returned completable only when both subscribe
         // and catchup are completed
@@ -160,7 +158,7 @@ class LAONetworkManager(
           Timber.tag(TAG).d("Removing %s from subscriptions", channel)
           subscribedChannels.remove(channel)
         }
-        .doOnError { error: Throwable -> Timber.tag(TAG).d(error, "error unsubscribing") }
+        .doOnError { error: Throwable -> Timber.tag(TAG).e(error, "error unsubscribing") }
         .ignoreElement()
   }
 

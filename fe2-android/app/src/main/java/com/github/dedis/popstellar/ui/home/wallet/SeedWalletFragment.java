@@ -5,12 +5,10 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.*;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
-
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.WalletSeedFragmentBinding;
 import com.github.dedis.popstellar.model.objects.Wallet;
@@ -18,13 +16,10 @@ import com.github.dedis.popstellar.ui.home.*;
 import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.keys.SeedValidationException;
-
+import dagger.hilt.android.AndroidEntryPoint;
 import java.security.GeneralSecurityException;
 import java.util.Objects;
-
 import javax.inject.Inject;
-
-import dagger.hilt.android.AndroidEntryPoint;
 import timber.log.Timber;
 
 /** Fragment used to display the new seed UI */
@@ -133,7 +128,8 @@ public class SeedWalletFragment extends Fragment {
             viewModel.importSeed(
                 Objects.requireNonNull(binding.importSeedEntryEditText.getText()).toString());
           } catch (GeneralSecurityException | SeedValidationException e) {
-            ErrorUtils.logAndShow(requireContext(), TAG, e, R.string.seed_validation_exception);
+            ErrorUtils.INSTANCE.logAndShow(
+                requireContext(), TAG, e, R.string.seed_validation_exception);
             return;
           }
           Toast.makeText(requireContext(), R.string.seed_import_success, Toast.LENGTH_SHORT).show();

@@ -50,7 +50,7 @@ constructor(
   fun handleElectionSetup(context: HandlerContext, electionSetup: ElectionSetup) {
     val channel = context.channel
     val messageId = context.messageId
-    val laoId = electionSetup.laoId
+    val laoId = electionSetup.lao
     Timber.tag(TAG).d("handleElectionSetup: channel: %s, name: %s", channel, electionSetup.name)
 
     if (!laoRepo.containsLao(laoId)) {
@@ -107,7 +107,7 @@ constructor(
     // If the state is not created, then this message is invalid
     if (election.state != EventState.CREATED) {
       throw InvalidStateException(
-          electionOpen, "election", election.state.name, EventState.CREATED.name)
+          electionOpen, "election", election.state?.name ?: "None", EventState.CREATED.name)
     }
 
     // Sets the start time to now
@@ -130,7 +130,7 @@ constructor(
     val messageId = context.messageId
     Timber.tag(TAG).d("handling election result")
 
-    val resultsQuestions = electionResult.electionQuestionResults
+    val resultsQuestions = electionResult.questions
     Timber.tag(TAG).d("size of resultsQuestions is %d", resultsQuestions.size)
 
     // No need to check here that resultsQuestions is not empty, as it is already done at the

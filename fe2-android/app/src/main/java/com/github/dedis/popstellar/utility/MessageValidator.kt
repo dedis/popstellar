@@ -130,7 +130,7 @@ object MessageValidator {
      * @throws IllegalArgumentException if the string is not a URL-safe base64 encoding
      */
     fun isBase64(input: String?, field: String): MessageValidatorBuilder {
-      require(!(input == null || !BASE64_PATTERN.matcher(input).matches())) {
+      require(input != null && BASE64_PATTERN.matcher(input).matches()) {
         "$field must be a base 64 encoded string"
       }
       return this
@@ -154,7 +154,7 @@ object MessageValidator {
      * @param field name of the field (to print in case of error)
      * @throws IllegalArgumentException if the string is not representing a valid codepoint
      */
-    fun isValidEmoji(input: String?, field: String): MessageValidatorBuilder {
+    fun isValidEmoji(input: String, field: String): MessageValidatorBuilder {
       require(Reaction.ReactionEmoji.isSupported(input)) {
         "$field is not a supported unicode emoji"
       }
@@ -220,7 +220,7 @@ object MessageValidator {
     }
 
     fun validUrl(input: String?): MessageValidatorBuilder {
-      require(!(input == null || !URL_PATTERN.matcher(input).matches())) { "Input is not a url" }
+      require(input != null && URL_PATTERN.matcher(input).matches()) { "Input is not a url" }
       return this
     }
 
@@ -243,8 +243,8 @@ object MessageValidator {
 
       // Check the scope contains all the required scopes
       require(
-          !Arrays.stream(REQUIRED_SCOPES).anyMatch { name: String ->
-            !uri.getQueryParameter("scope")!!.contains(name)
+          Arrays.stream(REQUIRED_SCOPES).allMatch { name: String ->
+            uri.getQueryParameter(PoPCHAQRCode.FIELD_SCOPE)!!.contains(name)
           }) {
             "Invalid scope"
           }
@@ -252,10 +252,10 @@ object MessageValidator {
       // Check response mode is valid
       val responseMode = uri.getQueryParameter(PoPCHAQRCode.FIELD_RESPONSE_MODE)
       require(
-          !(responseMode != null &&
-              Arrays.stream(VALID_RESPONSE_MODES).noneMatch { s: String ->
+          responseMode == null ||
+              Arrays.stream(VALID_RESPONSE_MODES).anyMatch { s: String ->
                 responseMode.contains(s)
-              })) {
+              }) {
             "Invalid response mode"
           }
 
@@ -280,7 +280,8 @@ object MessageValidator {
           arrayOf(
               PoPCHAQRCode.FIELD_CLIENT_ID,
               PoPCHAQRCode.FIELD_NONCE,
-              PoPCHAQRCode.FIELD_REDIRECT_URI)
+              PoPCHAQRCode.FIELD_REDIRECT_URI,
+              PoPCHAQRCode.FIELD_SCOPE)
       private const val VALID_RESPONSE_TYPE = "id_token"
       private val REQUIRED_SCOPES = arrayOf("openid", "profile")
       private val VALID_RESPONSE_MODES = arrayOf("query", "fragment")

@@ -36,14 +36,11 @@ class SocialMediaRepository
 @Inject
 constructor(appDatabase: AppDatabase, application: Application) {
   private val chirpsByLao: MutableMap<String, LaoChirps> = HashMap()
-  private val reactionDao: ReactionDao
-  private val chirpDao: ChirpDao
+  private val reactionDao: ReactionDao = appDatabase.reactionDao()
+  private val chirpDao: ChirpDao = appDatabase.chirpDao()
   private val disposables = CompositeDisposable()
 
   init {
-    reactionDao = appDatabase.reactionDao()
-    chirpDao = appDatabase.chirpDao()
-
     val consumerMap: MutableMap<Lifecycle.Event, Consumer<Activity>> =
         EnumMap(Lifecycle.Event::class.java)
     consumerMap[Lifecycle.Event.ON_STOP] = Consumer { disposables.clear() }
@@ -307,8 +304,8 @@ constructor(appDatabase: AppDatabase, application: Application) {
               .subscribeOn(Schedulers.io())
               .observeOn(AndroidSchedulers.mainThread())
               .subscribe(
-                  { chirpsList: List<Chirp> ->
-                    chirpsList.forEach(
+                  { chirpsList: List<Chirp>? ->
+                    chirpsList?.forEach(
                         Consumer outer@{ chirp: Chirp ->
                           // Do not retrieve deleted chirps
                           if (chirp.isDeleted) {
@@ -324,8 +321,8 @@ constructor(appDatabase: AppDatabase, application: Application) {
                                   .subscribeOn(Schedulers.io())
                                   .observeOn(AndroidSchedulers.mainThread())
                                   .subscribe(
-                                      { reactionsList: List<Reaction> ->
-                                        reactionsList.forEach(
+                                      { reactionsList: List<Reaction>? ->
+                                        reactionsList?.forEach(
                                             Consumer inner@{ reaction: Reaction ->
                                               // Do not retrieve deleted reactions
                                               if (reaction.isDeleted) {

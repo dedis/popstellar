@@ -6,6 +6,7 @@ class SingleEvent<T>(content: T?) {
 
   init {
     requireNotNull(content) { "null values not allowed in an Event" }
+
     mContent = content
   }
 

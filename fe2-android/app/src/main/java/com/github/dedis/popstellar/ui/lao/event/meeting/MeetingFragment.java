@@ -1,10 +1,10 @@
 package com.github.dedis.popstellar.ui.lao.event.meeting;
 
+import static com.github.dedis.popstellar.utility.Constants.MEETING_ID;
+
 import android.os.Bundle;
 import android.view.*;
-
 import androidx.annotation.NonNull;
-
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.MeetingFragmentBinding;
 import com.github.dedis.popstellar.model.objects.Meeting;
@@ -13,13 +13,9 @@ import com.github.dedis.popstellar.ui.lao.LaoActivity;
 import com.github.dedis.popstellar.ui.lao.event.AbstractEventFragment;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.UnknownMeetingException;
-
-import javax.inject.Inject;
-
 import dagger.hilt.android.AndroidEntryPoint;
+import javax.inject.Inject;
 import timber.log.Timber;
-
-import static com.github.dedis.popstellar.utility.Constants.MEETING_ID;
 
 @AndroidEntryPoint
 public class MeetingFragment extends AbstractEventFragment {
@@ -57,7 +53,7 @@ public class MeetingFragment extends AbstractEventFragment {
           meetingRepo.getMeetingWithId(
               laoViewModel.getLaoId(), requireArguments().getString(MEETING_ID));
     } catch (UnknownMeetingException e) {
-      ErrorUtils.logAndShow(requireContext(), TAG, e, R.string.unknown_meeting_exception);
+      ErrorUtils.INSTANCE.logAndShow(requireContext(), TAG, e, R.string.unknown_meeting_exception);
       return null;
     }
 
@@ -73,7 +69,7 @@ public class MeetingFragment extends AbstractEventFragment {
                   setUpStateDependantContent();
                 },
                 error ->
-                    ErrorUtils.logAndShow(
+                    ErrorUtils.INSTANCE.logAndShow(
                         requireContext(), TAG, error, R.string.unknown_meeting_exception)));
 
     handleBackNav(TAG);
@@ -89,7 +85,7 @@ public class MeetingFragment extends AbstractEventFragment {
           meetingRepo.getMeetingWithId(
               laoViewModel.getLaoId(), requireArguments().getString(MEETING_ID));
     } catch (UnknownMeetingException e) {
-      ErrorUtils.logAndShow(requireContext(), TAG, e, R.string.unknown_meeting_exception);
+      ErrorUtils.INSTANCE.logAndShow(requireContext(), TAG, e, R.string.unknown_meeting_exception);
     }
   }
 

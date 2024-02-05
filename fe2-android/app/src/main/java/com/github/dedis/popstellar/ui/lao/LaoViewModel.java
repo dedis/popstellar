@@ -1,11 +1,9 @@
 package com.github.dedis.popstellar.ui.lao;
 
 import android.app.Application;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 import androidx.lifecycle.*;
-
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.Role;
 import com.github.dedis.popstellar.model.objects.RollCall;
@@ -25,13 +23,11 @@ import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.github.dedis.popstellar.utility.error.keys.*;
 import com.github.dedis.popstellar.utility.security.KeyManager;
-
-import javax.inject.Inject;
-
 import dagger.hilt.android.lifecycle.HiltViewModel;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
+import javax.inject.Inject;
 import timber.log.Timber;
 
 @HiltViewModel
@@ -280,7 +276,7 @@ public class LaoViewModel extends AndroidViewModel implements PopViewModel {
                   setIsAttendee(isLastRollCallAttended);
                 },
                 error ->
-                    ErrorUtils.logAndShow(
+                    ErrorUtils.INSTANCE.logAndShow(
                         getApplication(), TAG, error, R.string.unknown_roll_call_exception)));
   }
 
@@ -292,5 +288,9 @@ public class LaoViewModel extends AndroidViewModel implements PopViewModel {
       Timber.tag(TAG).e(e, "failed to retrieve public key from wallet");
       return false;
     }
+  }
+
+  public boolean isWitnessingEnabled() {
+    return !witnessingRepo.areWitnessesEmpty(laoId);
   }
 }

@@ -1,11 +1,9 @@
 package com.github.dedis.popstellar.ui.lao.socialmedia;
 
 import android.app.Application;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.*;
-
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.socialmedia.*;
@@ -20,16 +18,13 @@ import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.scheduler.SchedulerProvider;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
-
-import java.util.*;
-import java.util.stream.Collectors;
-
-import javax.inject.Inject;
-
 import dagger.hilt.android.lifecycle.HiltViewModel;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.disposables.CompositeDisposable;
+import java.util.*;
+import java.util.stream.Collectors;
+import javax.inject.Inject;
 import timber.log.Timber;
 
 @HiltViewModel
@@ -313,7 +308,7 @@ public class SocialMediaViewModel extends AndroidViewModel {
       PoPToken token = getValidPoPToken();
       return sender.equals(token.getPublicKey().getEncoded());
     } catch (KeyException e) {
-      ErrorUtils.logAndShow(getApplication(), TAG, e, R.string.error_retrieve_own_token);
+      ErrorUtils.INSTANCE.logAndShow(getApplication(), TAG, e, R.string.error_retrieve_own_token);
       return false;
     }
   }
@@ -330,7 +325,7 @@ public class SocialMediaViewModel extends AndroidViewModel {
       String toSearch = token.getPublicKey().getEncoded();
       return senders.contains(toSearch);
     } catch (KeyException e) {
-      ErrorUtils.logAndShow(getApplication(), TAG, e, R.string.error_retrieve_own_token);
+      ErrorUtils.INSTANCE.logAndShow(getApplication(), TAG, e, R.string.error_retrieve_own_token);
       return false;
     }
   }

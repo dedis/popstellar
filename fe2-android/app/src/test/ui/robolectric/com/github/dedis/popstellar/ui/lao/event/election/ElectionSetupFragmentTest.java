@@ -286,6 +286,7 @@ public class ElectionSetupFragmentTest {
     endTimeView().check(matches(withText(String.format(TIME_FORMAT, HOURS + 1, MINUTES))));
   }
 
+  // NOTE: This test fails if executed between 00:00 and 00:10!
   @Test
   public void cannotChooseStartTimeTooFarInPast() {
     Calendar today = Calendar.getInstance();
@@ -389,7 +390,7 @@ public class ElectionSetupFragmentTest {
     assertEquals(expectedEndTime, electionSetup.getEndTime());
 
     assertEquals(ELECTION_NAME, electionSetup.getName());
-    assertEquals(LAO.getId(), electionSetup.getLaoId());
+    assertEquals(LAO.getId(), electionSetup.getLao());
 
     List<ElectionQuestion> questionList = electionSetup.getQuestions();
     assertEquals(2, questionList.size());

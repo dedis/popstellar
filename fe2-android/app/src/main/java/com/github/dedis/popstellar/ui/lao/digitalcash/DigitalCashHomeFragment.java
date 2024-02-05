@@ -2,18 +2,15 @@ package com.github.dedis.popstellar.ui.lao.digitalcash;
 
 import android.os.Bundle;
 import android.view.*;
-
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.DigitalCashHomeFragmentBinding;
 import com.github.dedis.popstellar.model.Role;
 import com.github.dedis.popstellar.ui.lao.LaoActivity;
 import com.github.dedis.popstellar.ui.lao.LaoViewModel;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
-
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import timber.log.Timber;
 
@@ -29,6 +26,7 @@ public class DigitalCashHomeFragment extends Fragment {
   public DigitalCashHomeFragment() {
     // Required empty constructor
   }
+
   /**
    * Use this factory method to create a new instance of this fragment
    *
@@ -76,7 +74,7 @@ public class DigitalCashHomeFragment extends Fragment {
                   binding.coinAmountText.setText(String.valueOf(totalAmount));
                 },
                 error ->
-                    ErrorUtils.logAndShow(
+                    ErrorUtils.INSTANCE.logAndShow(
                         requireContext(), TAG, error, R.string.error_retrieve_own_token)));
   }
 

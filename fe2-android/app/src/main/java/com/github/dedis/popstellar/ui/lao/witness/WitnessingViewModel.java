@@ -133,30 +133,37 @@ public class WitnessingViewModel extends AndroidViewModel implements QRCodeScann
                       Objects.requireNonNull(witnessMessages.getValue()).get(0);
 
                   // When a new witness message is received, if it needs to be yet signed by the
-                  // user
-                  // then we show a pop up that the user can click to open the witnessing fragment.
+                  // witness
+                  // we show a pop up that the user can click to open the witnessing fragment.
+
                   // Don't show the pop-up for the organizer as we use an automatic signature
                   // mechanism
+
                   PublicKey myPk = keyManager.getMainPublicKey();
-                  boolean isOrganizer = lao.isOrganizer(keyManager.getMainPublicKey());
+                  boolean isOrganizer = lao.isOrganizer(myPk);
+                  boolean isWitness = witnessingRepo.isWitness(laoId, myPk);
                   boolean alreadySigned = lastMessage.getWitnesses().contains(myPk);
-                  if (isOrganizer && !alreadySigned) {
-                    // Automatically sign the messages if it's the organizer
-                    disposables.add(
-                        signMessage(lastMessage)
-                            .subscribe(
-                                () ->
-                                    Timber.tag(TAG)
-                                        .d(
-                                            "Witness message automatically successfully signed by organizer"),
-                                error ->
-                                    Timber.tag(TAG)
-                                        .e(
-                                            error,
-                                            "Error signing automatically message from organizer")));
+
+                  // Allow to sign the message only if the user is a witness and hasn't signed yet
+                  if (isWitness && !alreadySigned) {
+                    if (isOrganizer) {
+                      // Automatically sign the messages if it's the organizer
+                      disposables.add(
+                          signMessage(lastMessage)
+                              .subscribe(
+                                  () ->
+                                      Timber.tag(TAG)
+                                          .d(
+                                              "Witness message automatically successfully signed by organizer"),
+                                  error ->
+                                      Timber.tag(TAG)
+                                          .e(
+                                              error,
+                                              "Error signing automatically message from organizer")));
+                    } else {
+                      showPopup.setValue(true);
+                    }
                   }
-                  showPopup.setValue(
-                      !isOrganizer && witnessingRepo.isWitness(laoId, myPk) && !alreadySigned);
                 },
                 error ->
                     Timber.tag(TAG)
@@ -197,7 +204,7 @@ public class WitnessingViewModel extends AndroidViewModel implements QRCodeScann
     try {
       laoView = getLao();
     } catch (UnknownLaoException e) {
-      ErrorUtils.logAndShow(getApplication(), TAG, e, R.string.unknown_lao_exception);
+      ErrorUtils.INSTANCE.logAndShow(getApplication(), TAG, e, R.string.unknown_lao_exception);
       return Completable.error(new UnknownLaoException());
     }
 
@@ -223,13 +230,14 @@ public class WitnessingViewModel extends AndroidViewModel implements QRCodeScann
     try {
       pkData = MainPublicKeyData.extractFrom(gson, data);
     } catch (Exception e) {
-      ErrorUtils.logAndShow(
+      ErrorUtils.INSTANCE.logAndShow(
           getApplication().getApplicationContext(), TAG, e, R.string.qr_code_not_main_pk);
       return;
     }
     PublicKey publicKey = pkData.getPublicKey();
     if (scannedWitnesses.contains(publicKey)) {
-      ErrorUtils.logAndShow(getApplication(), TAG, R.string.witness_already_scanned_warning);
+      ErrorUtils.INSTANCE.logAndShow(
+          getApplication(), TAG, R.string.witness_already_scanned_warning);
       return;
     }
 
@@ -251,7 +259,7 @@ public class WitnessingViewModel extends AndroidViewModel implements QRCodeScann
                 error -> {
                   scannedWitnesses.remove(publicKey);
                   nbScanned.setValue(scannedWitnesses.size());
-                  ErrorUtils.logAndShow(getApplication(), TAG, error, R.string.error_update_lao);
+                  ErrorUtils.INSTANCE.logAndShow(getApplication(), TAG, error, R.string.error_update_lao);
                 }));
      */
   }
@@ -263,7 +271,7 @@ public class WitnessingViewModel extends AndroidViewModel implements QRCodeScann
     try {
       laoView = getLao();
     } catch (UnknownLaoException e) {
-      ErrorUtils.logAndShow(getApplication(), TAG, e, R.string.unknown_lao_exception);
+      ErrorUtils.INSTANCE.logAndShow(getApplication(), TAG, e, R.string.unknown_lao_exception);
       return Completable.error(new UnknownLaoException());
     }
 

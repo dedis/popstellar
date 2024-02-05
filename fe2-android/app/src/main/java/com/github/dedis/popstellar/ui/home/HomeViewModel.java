@@ -125,12 +125,12 @@ public class HomeViewModel extends AndroidViewModel
     }
 
     // Establish connection with new address
-    networkManager.connect(laoData.server);
+    networkManager.connect(laoData.getServer());
     connecting.set(true);
     getApplication()
         .startActivity(
             ConnectingActivity.newIntentForJoiningDetail(
-                getApplication().getApplicationContext(), laoData.lao));
+                getApplication().getApplicationContext(), laoData.getLao()));
   }
 
   /**
@@ -142,7 +142,7 @@ public class HomeViewModel extends AndroidViewModel
     // Retrieve from the database the saved wallet
     WalletEntity walletEntity = appDatabase.walletDao().getWallet();
     if (walletEntity == null) {
-      ErrorUtils.logAndShow(
+      ErrorUtils.INSTANCE.logAndShow(
           getApplication().getApplicationContext(), TAG, R.string.no_seed_storage_found);
       return false;
     }

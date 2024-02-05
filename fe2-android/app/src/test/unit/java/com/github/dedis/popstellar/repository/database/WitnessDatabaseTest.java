@@ -1,8 +1,10 @@
 package com.github.dedis.popstellar.repository.database;
 
+import static com.github.dedis.popstellar.testutils.Base64DataUtils.*;
+import static org.junit.Assert.assertEquals;
+
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
-
 import com.github.dedis.popstellar.di.AppDatabaseModuleHelper;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVersion;
@@ -11,17 +13,11 @@ import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.repository.database.witnessing.*;
-
-import org.junit.*;
-import org.junit.runner.RunWith;
-
+import io.reactivex.observers.TestObserver;
 import java.time.Instant;
 import java.util.*;
-
-import io.reactivex.observers.TestObserver;
-
-import static com.github.dedis.popstellar.testutils.Base64DataUtils.*;
-import static org.junit.Assert.assertEquals;
+import org.junit.*;
+import org.junit.runner.RunWith;
 
 @RunWith(AndroidJUnit4.class)
 public class WitnessDatabaseTest {
@@ -221,7 +217,8 @@ public class WitnessDatabaseTest {
                     pendingEntities.size() == 3
                         && pendingEntities.get(0).getMessageID().equals(MESSAGE_ID)
                         && pendingEntities.get(0).getLaoId().equals(LAO_ID)
-                        && pendingEntities.get(0).getObjectType().equals(Objects.ROLL_CALL)
+                        && java.util.Objects.equals(
+                            pendingEntities.get(0).getObjectType(), Objects.ROLL_CALL)
                         && pendingEntities.get(0).getElection() == null
                         && pendingEntities.get(0).getMeeting() == null
                         && java.util.Objects.equals(

@@ -41,8 +41,12 @@ constructor(private val messageRepo: MessageRepository, private val registry: Da
   fun handleMessage(messageSender: MessageSender, channel: Channel, message: MessageGeneral) {
     val data = message.data
 
-    val dataObj = Objects.find(data.getObject())
+    val dataObj = Objects.find(data.`object`)
     val dataAction = Action.find(data.action)
+
+    requireNotNull(dataObj) { "Unsupported data object: ${data.`object`}" }
+    requireNotNull(dataAction) { "Unsupported data action: ${data.action}" }
+
     val toPersist = dataObj.hasToBePersisted()
     val toBeStored = dataAction.isStoreNeededByAction
 

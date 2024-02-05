@@ -4,11 +4,9 @@ import android.os.Bundle;
 import android.view.*;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.DigitalCashIssueFragmentBinding;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
@@ -18,12 +16,10 @@ import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
-
+import dagger.hilt.android.AndroidEntryPoint;
 import java.security.GeneralSecurityException;
 import java.time.Instant;
 import java.util.*;
-
-import dagger.hilt.android.AndroidEntryPoint;
 import timber.log.Timber;
 
 /**
@@ -101,7 +97,7 @@ public class DigitalCashIssueFragment extends Fragment {
           postTransaction(issueMap);
         }
       } catch (NoRollCallException r) {
-        ErrorUtils.logAndShow(requireContext(), TAG, r, R.string.no_rollcall_exception);
+        ErrorUtils.INSTANCE.logAndShow(requireContext(), TAG, r, R.string.no_rollcall_exception);
       }
     }
   }
@@ -205,10 +201,10 @@ public class DigitalCashIssueFragment extends Fragment {
                 },
                 error -> {
                   if (error instanceof KeyException || error instanceof GeneralSecurityException) {
-                    ErrorUtils.logAndShow(
+                    ErrorUtils.INSTANCE.logAndShow(
                         requireContext(), TAG, error, R.string.error_retrieve_own_token);
                   } else {
-                    ErrorUtils.logAndShow(
+                    ErrorUtils.INSTANCE.logAndShow(
                         requireContext(), TAG, error, R.string.error_post_transaction);
                   }
                 }));

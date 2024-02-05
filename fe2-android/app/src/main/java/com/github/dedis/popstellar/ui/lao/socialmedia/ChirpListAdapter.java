@@ -1,15 +1,16 @@
 package com.github.dedis.popstellar.ui.lao.socialmedia;
 
+import static android.text.format.DateUtils.getRelativeTimeSpanString;
+import static com.github.dedis.popstellar.model.objects.Reaction.ReactionEmoji.*;
+
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.view.*;
 import android.widget.*;
-
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.core.content.res.ResourcesCompat;
-
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.objects.Chirp;
 import com.github.dedis.popstellar.model.objects.Reaction;
@@ -19,17 +20,12 @@ import com.github.dedis.popstellar.ui.lao.LaoViewModel;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.UnknownChirpException;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
-
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
 import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
-
-import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.disposables.Disposable;
 import timber.log.Timber;
-
-import static android.text.format.DateUtils.getRelativeTimeSpanString;
-import static com.github.dedis.popstellar.model.objects.Reaction.ReactionEmoji.*;
 
 public class ChirpListAdapter extends BaseAdapter {
 
@@ -55,7 +51,9 @@ public class ChirpListAdapter extends BaseAdapter {
             .getChirps()
             .subscribe(
                 this::replaceList,
-                err -> ErrorUtils.logAndShow(context, TAG, err, R.string.unknown_chirp_exception)));
+                err ->
+                    ErrorUtils.INSTANCE.logAndShow(
+                        context, TAG, err, R.string.unknown_chirp_exception)));
   }
 
   public void replaceList(List<Chirp> chirps) {
@@ -175,7 +173,8 @@ public class ChirpListAdapter extends BaseAdapter {
                         R.drawable.ic_social_media_heart);
                   },
                   err ->
-                      ErrorUtils.logAndShow(context, TAG, err, R.string.unknown_chirp_exception));
+                      ErrorUtils.INSTANCE.logAndShow(
+                          context, TAG, err, R.string.unknown_chirp_exception));
       // Store the disposable as a tag
       chirpView.setTag(R.id.chirp_card_buttons, reactionDisposable);
       disposables.add(reactionDisposable);
@@ -198,7 +197,7 @@ public class ChirpListAdapter extends BaseAdapter {
                               Toast.makeText(context, R.string.deleted_chirp, Toast.LENGTH_LONG)
                                   .show(),
                           error ->
-                              ErrorUtils.logAndShow(
+                              ErrorUtils.INSTANCE.logAndShow(
                                   context, TAG, error, R.string.error_delete_chirp))));
     } else {
       deleteChirp.setVisibility(View.GONE);
@@ -278,14 +277,17 @@ public class ChirpListAdapter extends BaseAdapter {
               .subscribe(
                   msg -> Timber.tag(TAG).d("Added reaction to chirp %s", chirpId),
                   err ->
-                      ErrorUtils.logAndShow(context, TAG, err, R.string.error_sending_reaction)));
+                      ErrorUtils.INSTANCE.logAndShow(
+                          context, TAG, err, R.string.error_sending_reaction)));
     } else {
       laoViewModel.addDisposable(
           socialMediaViewModel
               .deleteReaction(chirpId, Instant.now().getEpochSecond(), emoji.getCode())
               .subscribe(
                   msg -> Timber.tag(TAG).d("Deleted reaction of chirp %s", chirpId),
-                  err -> ErrorUtils.logAndShow(context, TAG, err, R.string.error_delete_reaction)));
+                  err ->
+                      ErrorUtils.INSTANCE.logAndShow(
+                          context, TAG, err, R.string.error_delete_reaction)));
     }
   }
 

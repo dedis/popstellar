@@ -33,14 +33,11 @@ class DigitalCashRepository
 @Inject
 constructor(appDatabase: AppDatabase, application: Application) {
   private val transactionsByLao: MutableMap<String, LaoTransactions> = HashMap()
-  private val transactionDao: TransactionDao
-  private val hashDao: HashDao
+  private val transactionDao: TransactionDao = appDatabase.transactionDao()
+  private val hashDao: HashDao = appDatabase.hashDao()
   private val disposables = CompositeDisposable()
 
   init {
-    transactionDao = appDatabase.transactionDao()
-    hashDao = appDatabase.hashDao()
-
     val consumerMap: MutableMap<Lifecycle.Event, Consumer<Activity>> =
         EnumMap(Lifecycle.Event::class.java)
     consumerMap[Lifecycle.Event.ON_STOP] = Consumer { disposables.clear() }
@@ -305,9 +302,9 @@ constructor(appDatabase: AppDatabase, application: Application) {
               .subscribeOn(Schedulers.io())
               .observeOn(AndroidSchedulers.mainThread())
               .subscribe(
-                  { hashEntities: List<HashEntity> ->
+                  { hashEntities: List<HashEntity>? ->
                     // Firstly load the dictionary
-                    hashEntities.forEach(
+                    hashEntities?.forEach(
                         Consumer { hashEntity: HashEntity ->
                           hashDictionary[hashEntity.hash] = hashEntity.publicKey
                         })
@@ -319,8 +316,8 @@ constructor(appDatabase: AppDatabase, application: Application) {
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(
-                                { transactionObjects: List<TransactionObject> ->
-                                  transactionObjects.forEach(
+                                { transactionObjects: List<TransactionObject>? ->
+                                  transactionObjects?.forEach(
                                       Consumer { transactionObject: TransactionObject ->
                                         Timber.tag(TAG)
                                             .d(

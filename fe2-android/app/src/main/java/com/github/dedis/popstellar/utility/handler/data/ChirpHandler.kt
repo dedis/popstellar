@@ -30,7 +30,12 @@ constructor(
     val channel = context.channel
     val messageId = context.messageId
     val senderPk = context.senderPk
-    Timber.tag(TAG).d("handleChirpAdd: channel: %s, id: %s", channel, addChirp.parentId)
+
+    Timber.tag(TAG)
+        .d(
+            "handleChirpAdd: channel: %s, id: %s",
+            channel,
+            addChirp.getParentId().orElse(MessageID("")))
 
     val laoView = laoRepo.getLaoViewByChannel(channel)
     val chirp =
@@ -39,7 +44,7 @@ constructor(
             senderPk,
             addChirp.text,
             addChirp.timestamp,
-            addChirp.parentId.orElse(MessageID("")))
+            addChirp.getParentId().orElse(MessageID("")))
 
     socialMediaRepo.addChirp(laoView.id, chirp)
   }
