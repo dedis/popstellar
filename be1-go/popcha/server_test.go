@@ -3,14 +3,6 @@ package popcha
 import (
 	"bytes"
 	"fmt"
-	"github.com/gorilla/websocket"
-	"github.com/rs/xid"
-	"github.com/rs/zerolog"
-	"github.com/rs/zerolog/log"
-	"github.com/rzajac/zltest"
-	"github.com/stretchr/testify/require"
-	"github.com/zitadel/oidc/v2/pkg/oidc"
-	"github.com/zitadel/oidc/v2/pkg/op"
 	"io"
 	"math/rand"
 	"net/http"
@@ -23,6 +15,16 @@ import (
 	"strings"
 	"testing"
 	"testing/quick"
+	"time"
+
+	"github.com/gorilla/websocket"
+	"github.com/rs/xid"
+	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
+	"github.com/rzajac/zltest"
+	"github.com/stretchr/testify/require"
+	"github.com/zitadel/oidc/v2/pkg/oidc"
+	"github.com/zitadel/oidc/v2/pkg/op"
 )
 
 const (
@@ -276,6 +278,8 @@ func TestAuthorizationServerWorkflow(t *testing.T) {
 
 	// send any message to the websocket server
 	err = emptyPathClient.conn.WriteMessage(websocket.TextMessage, []byte("test"))
+	// add delay to let the logs update
+	time.Sleep(500 * time.Millisecond)
 	logTester.LastEntry().ExpMsg("Error while receiving a request on /response: empty path")
 	require.NoError(t, err)
 
