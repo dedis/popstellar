@@ -45,7 +45,7 @@ class Wallet @Inject constructor(@WalletKeyset keysetManager: AndroidKeysetManag
         keysetManager.keysetHandle.getPrimitive(Aead::class.java)
       } catch (e: GeneralSecurityException) {
         Timber.tag(TAG).e(e, "Failed to initialize the Wallet")
-        error("Failed to initialize the Wallet", e)
+        throw IllegalStateException("Failed to initialize the Wallet", e)
       }
 
   /**

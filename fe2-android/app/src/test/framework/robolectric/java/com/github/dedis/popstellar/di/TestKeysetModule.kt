@@ -37,7 +37,10 @@ object TestKeysetModule {
         .thenReturn(KeysetHandle.generateNew(KeyTemplates.get("ED25519_RAW")))
       manager
     } catch (e: GeneralSecurityException) {
-      error("Could not register security primitives for the mock device keyset", e)
+      throw IllegalStateException(
+        "Could not register security primitives for the mock device keyset",
+        e
+      )
     }
   }
 
@@ -54,7 +57,10 @@ object TestKeysetModule {
         .thenReturn(KeysetHandle.generateNew(KeyTemplates.get("AES128_GCM_RAW")))
       manager
     } catch (e: GeneralSecurityException) {
-      error("Could not register security primitives for the mock wallet keyset", e)
+      throw IllegalStateException(
+        "Could not register security primitives for the mock wallet keyset",
+        e
+      )
     }
   }
 }

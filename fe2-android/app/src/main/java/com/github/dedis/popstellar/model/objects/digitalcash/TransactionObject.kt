@@ -49,7 +49,7 @@ class TransactionObject(
    * @param mapHashKey Map<String,PublicKey> dictionary public key by public key hash
    * @return List<PublicKey> outputs public keys
    */
-  fun getReceiversTransaction(mapHashKey: Map<String, PublicKey>): List<PublicKey> {
+  fun getReceiversTransaction(mapHashKey: Map<String, PublicKey?>): List<PublicKey> {
     val receivers: MutableList<PublicKey> = ArrayList()
 
     for (transactionHash in receiversHashTransaction) {
