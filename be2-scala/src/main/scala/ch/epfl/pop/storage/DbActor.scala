@@ -3,17 +3,24 @@ package ch.epfl.pop.storage
 import akka.actor.{Actor, ActorLogging, ActorRef, Status}
 import akka.event.LoggingReceive
 import akka.pattern.AskableActorRef
+import ch.epfl.pop.decentralized.ConnectionMediator
 import ch.epfl.pop.json.MessageDataProtocol
+import ch.epfl.pop.json.MessageDataProtocol.GreetLaoFormat
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ActionType.ActionType
+import ch.epfl.pop.model.network.method.message.data.lao.GreetLao
 import ch.epfl.pop.model.network.method.message.data.{ActionType, ObjectType}
 import ch.epfl.pop.model.objects.Channel.{LAO_DATA_LOCATION, ROOT_CHANNEL_PREFIX}
 import ch.epfl.pop.model.objects._
+import ch.epfl.pop.pubsub.graph.AnswerGenerator.timout
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, JsonString}
 import ch.epfl.pop.pubsub.{MessageRegistry, PubSubMediator, PublishSubscribe}
 import ch.epfl.pop.storage.DbActor._
 import com.google.crypto.tink.subtle.Ed25519Sign
 
+import java.util.concurrent.TimeUnit
+import scala.concurrent.Await
+import scala.concurrent.duration.{Duration, FiniteDuration}
 import scala.util.{Failure, Success, Try}
 
 final case class DbActor(
@@ -27,6 +34,7 @@ final case class DbActor(
     super.postStop()
   }
 
+  private val duration: FiniteDuration = Duration(1, TimeUnit.SECONDS)
   /* --------------- Functions handling messages DbActor may receive --------------- */
 
   @throws[DbActorNAckException]
@@ -152,6 +160,33 @@ final case class DbActor(
   }
 
   @throws[DbActorNAckException]
+  private def readGreetLao(channel: Channel): Option[Message] = {
+    val connectionMediator: AskableActorRef = PublishSubscribe.getConnectionMediatorRef
+    val laoData = Try(readLaoData(channel)) match {
+      case Success(data) => data
+      case Failure(_)    => return None
+    }
+
+    val askAddresses = Await.ready(connectionMediator ? ConnectionMediator.ReadPeersClientAddress(), duration).value.get
+    val addresses = askAddresses match {
+      case Success(ConnectionMediator.ReadPeersClientAddressAck(result)) => result
+      case _                                                             => List.empty
+    }
+
+    val laoChannel = channel.extractLaoChannel.get
+    val laoID = laoChannel.extractChildChannel
+    val greetLao = GreetLao(laoID, laoData.owner, laoData.address, addresses)
+
+    // Need to build a signed message
+    val jsData = GreetLaoFormat.write(greetLao)
+    val encodedData = Base64Data.encode(jsData.toString)
+    val signature = laoData.privateKey.signData(encodedData)
+    val id = Hash.fromStrings(encodedData.toString, signature.toString)
+
+    Some(Message(encodedData, laoData.publicKey, signature, id, List.empty))
+  }
+
+  @throws[DbActorNAckException]
   private def catchupChannel(channel: Channel): List[Message] = {
 
     @scala.annotation.tailrec
@@ -170,7 +205,7 @@ final case class DbActor(
 
     val channelData: ChannelData = readChannelData(channel)
 
-    readCreateLao(channel) match {
+    val catchupList = readCreateLao(channel) match {
       case Some(msg) =>
         msg :: buildCatchupList(channelData.messages, Nil)
 
@@ -179,6 +214,11 @@ final case class DbActor(
           log.error("Critical error encountered: no create_lao message was found in the db")
         }
         buildCatchupList(channelData.messages, Nil)
+    }
+
+    readGreetLao(channel) match {
+      case Some(msg) => msg :: catchupList
+      case None      => catchupList
     }
   }
 
