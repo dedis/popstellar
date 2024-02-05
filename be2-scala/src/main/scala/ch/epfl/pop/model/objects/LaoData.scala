@@ -60,9 +60,10 @@ object LaoData extends Parsable {
       attendees: List[PublicKey],
       privateKey: PrivateKey,
       publicKey: PublicKey,
-      witnesses: List[PublicKey]
+      witnesses: List[PublicKey],
+      address: String
   ): LaoData = {
-    new LaoData(owner, attendees, privateKey, publicKey, witnesses, "")
+    new LaoData(owner, attendees, privateKey, publicKey, witnesses, address)
   }
 
   // to simplify the use of updateWith during a CreateLao process, the keypair is generated here

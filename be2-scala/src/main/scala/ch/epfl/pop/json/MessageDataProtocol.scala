@@ -1,5 +1,6 @@
 package ch.epfl.pop.json
 
+import ch.epfl.pop.json.MessageDataProtocol.LaoDataFormat.PARAM_ADDRESS
 import ch.epfl.pop.json.ObjectProtocol._
 import ch.epfl.pop.model.network.method.message.data.ActionType.ActionType
 import ch.epfl.pop.model.network.method.message.data.ObjectType.ObjectType
@@ -404,14 +405,16 @@ object MessageDataProtocol extends DefaultJsonProtocol {
     final private val PARAM_PRIVATE_KEY: String = "privateKey"
     final private val PARAM_PUBLIC_KEY: String = "publicKey"
     final private val PARAM_WITNESSES: String = "witnesses"
+    final private val PARAM_ADDRESS: String = "address"
 
-    override def read(json: JsValue): LaoData = json.asJsObject().getFields(PARAM_OWNER, PARAM_ATTENDEES, PARAM_PRIVATE_KEY, PARAM_PUBLIC_KEY, PARAM_WITNESSES) match {
-      case Seq(owner @ JsString(_), JsArray(attendees), privateKey @ JsString(_), publicKey @ JsString(_), JsArray(witnesses)) => LaoData(
+    override def read(json: JsValue): LaoData = json.asJsObject().getFields(PARAM_OWNER, PARAM_ATTENDEES, PARAM_PRIVATE_KEY, PARAM_PUBLIC_KEY, PARAM_WITNESSES, PARAM_ADDRESS) match {
+      case Seq(owner @ JsString(_), JsArray(attendees), privateKey @ JsString(_), publicKey @ JsString(_), JsArray(witnesses), address @ JsString(_)) => LaoData(
           owner.convertTo[PublicKey],
           attendees.map(_.convertTo[PublicKey]).toList,
           privateKey.convertTo[PrivateKey],
           publicKey.convertTo[PublicKey],
-          witnesses.map(_.convertTo[PublicKey]).toList
+          witnesses.map(_.convertTo[PublicKey]).toList,
+          address.value
         )
       case _ => throw new IllegalArgumentException(s"Can't parse json value $json to a LaoData object")
     }
@@ -421,7 +424,8 @@ object MessageDataProtocol extends DefaultJsonProtocol {
       PARAM_ATTENDEES -> obj.attendees.toJson,
       PARAM_PRIVATE_KEY -> obj.privateKey.toJson,
       PARAM_PUBLIC_KEY -> obj.publicKey.toJson,
-      PARAM_WITNESSES -> obj.witnesses.toJson
+      PARAM_WITNESSES -> obj.witnesses.toJson,
+      PARAM_ADDRESS -> obj.address.toJson
     )
   }
 
