@@ -55,7 +55,7 @@ Feature: Send greetServer messages to other servers
             "method": "greet_server",
             "params": {
               "public_key": "#(mockBackend.publicKey)",
-              "client_address": "https://invalid:9000/client",
+              "client_address": "invalid://localhost:9000/client",
               "server_address": "#(backendWsURL)"
               }
           }
@@ -75,7 +75,7 @@ Feature: Send greetServer messages to other servers
             "params": {
               "public_key": "#(mockBackend.publicKey)",
               "client_address": "#(frontendWsURL)",
-              "server_address": "https://invalid:9001/server",
+              "server_address": "invalid://localhost:9001/server",
               }
           }
         """
