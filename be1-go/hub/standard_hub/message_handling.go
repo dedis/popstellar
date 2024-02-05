@@ -77,7 +77,6 @@ func (h *Hub) handleRootChannelPublishMessage(sock socket.Socket, publish method
 		return err
 	}
 
-	h.rootInbox.StoreMessage(publish.Params.Message)
 	h.hubInbox.StoreMessage(publish.Params.Channel, publish.Params.Message)
 	return nil
 }
@@ -140,9 +139,7 @@ func (h *Hub) handleRootChannelBroadcastMessage(sock socket.Socket,
 		return err
 	}
 
-	h.rootInbox.StoreMessage(broadcast.Params.Message)
 	h.hubInbox.StoreMessage(broadcast.Params.Channel, broadcast.Params.Message)
-
 	return nil
 }
 
@@ -162,7 +159,7 @@ func (h *Hub) handleRootCatchup(senderSocket socket.Socket,
 			"be sent on /root channel")
 	}
 
-	messages := h.rootInbox.GetSortedMessages()
+	messages := h.hubInbox.GetSortedRootMessages()
 
 	return messages, catchup.ID, nil
 }

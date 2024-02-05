@@ -82,9 +82,8 @@ type Hub struct {
 	// hubInbox is used to remember the messages that the hub received
 	hubInbox inbox.HubInbox
 
-	// rootInbox and queries are used to help servers catchup to each other
-	rootInbox inbox.Inbox
-	queries   state.Queries
+	// queries are used to help servers catchup to each other
+	queries state.Queries
 
 	// peers stores information about the peers
 	peers state.Peers
@@ -125,7 +124,6 @@ func NewHub(pubKeyOwner kyber.Point, clientServerAddress string, serverServerAdd
 		laoFac:              laoFac,
 		serverSockets:       channel.NewSockets(),
 		hubInbox:            *inbox.NewHubInbox(rootChannel),
-		rootInbox:           *inbox.NewInbox(rootChannel),
 		queries:             state.NewQueries(),
 		peers:               state.NewPeers(),
 		blacklist:           make([]string, 0),
