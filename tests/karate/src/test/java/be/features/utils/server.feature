@@ -55,9 +55,11 @@ Feature: This feature starts a server and stops it after every scenario.
                       var error = ""
                       if(!frontendPortReady)
                         error += `Failed waiting for ${frontendWsURL}. `
-                    if(!backendPortReady)
+                      if(!backendPortReady)
                         error += `Failed waiting for ${backendWsURL}.`
+                      if(error != ""){
                         karate.fail(error)
+                      }
                     }
                 }
             """
