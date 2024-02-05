@@ -1,6 +1,5 @@
 package ch.epfl.pop.json
 
-import ch.epfl.pop.json.MessageDataProtocol.LaoDataFormat.PARAM_ADDRESS
 import ch.epfl.pop.json.ObjectProtocol._
 import ch.epfl.pop.model.network.method.message.data.ActionType.ActionType
 import ch.epfl.pop.model.network.method.message.data.ObjectType.ObjectType
