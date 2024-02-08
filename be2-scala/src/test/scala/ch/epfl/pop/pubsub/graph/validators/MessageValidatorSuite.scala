@@ -34,7 +34,8 @@ class MessageValidatorSuite extends TestKit(ActorSystem("messageValidatorTestAct
   private final val PK_ATTENDEE: PublicKey = PublicKey(Base64Data.encode("attendee1"))
   private final val PK_FALSE: PublicKey = PublicKey(Base64Data.encode("false"))
   private final val CHANNEL: Channel = Channel(Channel.ROOT_CHANNEL_PREFIX + "channel")
-  private final val laoData: LaoData = LaoData(PK_OWNER, List(PK_ATTENDEE), PRIVATE_KEY, PUBLIC_KEY, List.empty)
+  private final val ADDRESS: String = "127.0.0.1:8000"
+  private final val laoData: LaoData = LaoData(PK_OWNER, List(PK_ATTENDEE), PRIVATE_KEY, PUBLIC_KEY, List.empty, ADDRESS)
 
   private final val channelData: ChannelData = ChannelData(ObjectType.LAO, List.empty)
 
