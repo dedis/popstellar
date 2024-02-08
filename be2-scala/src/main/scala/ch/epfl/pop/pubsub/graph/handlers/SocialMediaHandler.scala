@@ -15,7 +15,7 @@ import scala.concurrent.{Await, Future}
 import scala.util.{Failure, Success}
 
 object SocialMediaHandler extends MessageHandler {
-  final lazy val handlerInstance = new SocialMediaHandler(super.dbActor)
+  final lazy val handlerInstance = new SocialMediaHandler(super.dbActor, super.mediator)
 
   def handleAddChirp(rpcMessage: JsonRpcRequest): GraphMessage = handlerInstance.handleAddChirp(rpcMessage)
 
@@ -30,11 +30,12 @@ object SocialMediaHandler extends MessageHandler {
   def handleDeleteReaction(rpcMessage: JsonRpcRequest): GraphMessage = handlerInstance.handleDeleteReaction(rpcMessage)
 }
 
-class SocialMediaHandler(dbRef: => AskableActorRef) extends MessageHandler {
+class SocialMediaHandler(dbRef: => AskableActorRef, mediatorRef: => AskableActorRef) extends MessageHandler {
 
   /** Overrides default DbActor with provided parameter
     */
   override final val dbActor: AskableActorRef = dbRef
+  override final val mediator: AskableActorRef = mediatorRef
 
   private final val unknownAnswerDatabase: String = "Database actor returned an unknown answer"
 
