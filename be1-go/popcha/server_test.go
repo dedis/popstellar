@@ -15,7 +15,6 @@ import (
 	"strings"
 	"testing"
 	"testing/quick"
-	"time"
 
 	"github.com/gorilla/websocket"
 	"github.com/rs/xid"
@@ -278,8 +277,6 @@ func TestAuthorizationServerWorkflow(t *testing.T) {
 
 	// send any message to the websocket server
 	err = emptyPathClient.conn.WriteMessage(websocket.TextMessage, []byte("test"))
-	// add delay to let the logs update
-	time.Sleep(500 * time.Millisecond)
 	logTester.LastEntry().ExpMsg("Error while receiving a request on /response: empty path")
 	require.NoError(t, err)
 
