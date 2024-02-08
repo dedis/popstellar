@@ -159,7 +159,7 @@ func (h *Hub) handleRootCatchup(senderSocket socket.Socket,
 			"be sent on /root channel")
 	}
 
-	messages := h.hubInbox.GetSortedRootMessages()
+	messages := h.hubInbox.GetRootMessages()
 
 	return messages, catchup.ID, nil
 }

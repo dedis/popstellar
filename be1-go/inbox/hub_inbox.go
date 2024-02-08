@@ -52,8 +52,8 @@ func (i *HubInbox) GetIDsTable() map[string][]string {
 	return i.messageIdsByChannel.GetTable()
 }
 
-// GetSortedRootMessages returns the root messages
-func (i *HubInbox) GetSortedRootMessages() []message.Message {
+// GetRootMessages returns the root messages
+func (i *HubInbox) GetRootMessages() []message.Message {
 	i.RLock()
 	defer i.RUnlock()
 	res := make([]message.Message, len(i.rootMessages))
