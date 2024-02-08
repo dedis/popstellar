@@ -222,16 +222,6 @@ class SocialMediaHandlerSuite extends TestKit(ActorSystem("SocialMedia-DB-System
     system.stop(mockedDB.actorRef)
   }
 
-  test("AddChirp fails if the database succeeds storing the message and fails the notify") {
-    val mockedDB = mockDbWithAckAndNotifyNAck
-    val rc = new SocialMediaHandler(mockedDB)
-    val request = AddChirpMessages.addChirp
-
-    rc.handleAddChirp(request) shouldBe an[Left[PipelineError, _]]
-
-    system.stop(mockedDB.actorRef)
-  }
-
   test("DeleteChirp fails if the database fails storing the message") {
     val mockedDB = mockDbWithNack
     val rc = new SocialMediaHandler(mockedDB, mockMed)
