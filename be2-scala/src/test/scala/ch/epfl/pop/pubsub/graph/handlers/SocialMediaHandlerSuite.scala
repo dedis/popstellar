@@ -5,6 +5,7 @@ import akka.pattern.AskableActorRef
 import akka.testkit.{ImplicitSender, TestKit}
 import akka.util.Timeout
 import ch.epfl.pop.model.objects.DbActorNAckException
+import ch.epfl.pop.pubsub.PubSubMediator
 import ch.epfl.pop.pubsub.graph.PipelineError
 import ch.epfl.pop.storage.DbActor
 import org.scalatest.BeforeAndAfterAll
@@ -19,10 +20,23 @@ class SocialMediaHandlerSuite extends TestKit(ActorSystem("SocialMedia-DB-System
   // Implicits for system actors
   implicit val duration: FiniteDuration = FiniteDuration(5, "seconds")
   implicit val timeout: Timeout = Timeout(duration)
+  private val mockMed: AskableActorRef = mockMediator
 
   override def afterAll(): Unit = {
     // Stops the testKit
     TestKit.shutdownActorSystem(system)
+  }
+
+  def mockMediator: AskableActorRef = {
+    val mediatorMock = Props(new Actor() {
+      override def receive: Receive = {
+        case PubSubMediator.Propagate(_, _) =>
+          sender() ! PubSubMediator.PropagateAck()
+
+        case _ =>
+      }
+    })
+    system.actorOf(mediatorMock)
   }
 
   def mockDbWithNack: AskableActorRef = {
@@ -130,7 +144,7 @@ class SocialMediaHandlerSuite extends TestKit(ActorSystem("SocialMedia-DB-System
 
   test("AddReaction fails if the database fails storing the message") {
     val mockedDB = mockDbWithNack
-    val rc = new SocialMediaHandler(mockedDB)
+    val rc = new SocialMediaHandler(mockedDB, mockMed)
     val request = AddReactionMessages.addReaction
 
     rc.handleAddReaction(request) shouldBe an[Left[PipelineError, _]]
@@ -140,7 +154,7 @@ class SocialMediaHandlerSuite extends TestKit(ActorSystem("SocialMedia-DB-System
 
   test("AddReaction succeeds if the database succeeds storing the message") {
     val mockedDB = mockDbWithAck
-    val rc = new SocialMediaHandler(mockedDB)
+    val rc = new SocialMediaHandler(mockedDB, mockMed)
     val request = AddReactionMessages.addReaction
 
     rc.handleAddReaction(request) should equal(Right(request))
@@ -150,7 +164,7 @@ class SocialMediaHandlerSuite extends TestKit(ActorSystem("SocialMedia-DB-System
 
   test("DeleteReaction fails if the database fails storing the message") {
     val mockedDB = mockDbWithNack
-    val rc = new SocialMediaHandler(mockedDB)
+    val rc = new SocialMediaHandler(mockedDB, mockMed)
     val request = DeleteReactionMessages.deleteReaction
 
     rc.handleDeleteReaction(request) shouldBe an[Left[PipelineError, _]]
@@ -160,7 +174,7 @@ class SocialMediaHandlerSuite extends TestKit(ActorSystem("SocialMedia-DB-System
 
   test("DeleteReaction succeeds if the database succeeds storing the message") {
     val mockedDB = mockDbWithAck
-    val rc = new SocialMediaHandler(mockedDB)
+    val rc = new SocialMediaHandler(mockedDB, mockMed)
     val request = DeleteReactionMessages.deleteReaction
 
     rc.handleDeleteReaction(request) should equal(Right(request))
@@ -170,7 +184,7 @@ class SocialMediaHandlerSuite extends TestKit(ActorSystem("SocialMedia-DB-System
 
   test("AddChirp fails if the database fails storing the message") {
     val mockedDB = mockDbWithNack
-    val rc = new SocialMediaHandler(mockedDB)
+    val rc = new SocialMediaHandler(mockedDB, mockMed)
     val request = AddChirpMessages.addChirp
 
     rc.handleAddChirp(request) shouldBe an[Left[PipelineError, _]]
@@ -180,7 +194,7 @@ class SocialMediaHandlerSuite extends TestKit(ActorSystem("SocialMedia-DB-System
 
   test("AddChirp fails if the database provides 'None' laoId") {
     val mockedDB = mockDbWithAckButEmptyAckLaoData
-    val rc = new SocialMediaHandler(mockedDB)
+    val rc = new SocialMediaHandler(mockedDB, mockMed)
     val request = AddChirpMessages.addChirp
 
     rc.handleAddChirp(request) shouldBe an[Left[PipelineError, _]]
@@ -190,7 +204,7 @@ class SocialMediaHandlerSuite extends TestKit(ActorSystem("SocialMedia-DB-System
 
   test("AddChirp fails if the database fails to provide laoId") {
     val mockedDB = mockDbWithAckButNAckLaoData
-    val rc = new SocialMediaHandler(mockedDB)
+    val rc = new SocialMediaHandler(mockedDB, mockMed)
     val request = AddChirpMessages.addChirp
 
     rc.handleAddChirp(request) shouldBe an[Left[PipelineError, _]]
@@ -200,7 +214,7 @@ class SocialMediaHandlerSuite extends TestKit(ActorSystem("SocialMedia-DB-System
 
   test("AddChirp succeeds if the database succeeds storing the message and managing the notify") {
     val mockedDB = mockDbWithAck
-    val rc = new SocialMediaHandler(mockedDB)
+    val rc = new SocialMediaHandler(mockedDB, mockMed)
     val request = AddChirpMessages.addChirp
 
     rc.handleAddChirp(request) should equal(Right(request))
@@ -220,7 +234,8 @@ class SocialMediaHandlerSuite extends TestKit(ActorSystem("SocialMedia-DB-System
 
   test("DeleteChirp fails if the database fails storing the message") {
     val mockedDB = mockDbWithNack
-    val rc = new SocialMediaHandler(mockedDB)
+    val rc = new SocialMediaHandler(mockedDB, mockMed)
+
     val request = DeleteChirpMessages.deleteChirp
 
     rc.handleDeleteChirp(request) shouldBe an[Left[PipelineError, _]]
@@ -230,7 +245,7 @@ class SocialMediaHandlerSuite extends TestKit(ActorSystem("SocialMedia-DB-System
 
   test("DeleteChirp succeeds if the database succeeds storing the message and managing the notify") {
     val mockedDB = mockDbWithAck
-    val rc = new SocialMediaHandler(mockedDB)
+    val rc = new SocialMediaHandler(mockedDB, mockMed)
     val request = DeleteChirpMessages.deleteChirp
 
     rc.handleDeleteChirp(request) should equal(Right(request))
@@ -240,7 +255,7 @@ class SocialMediaHandlerSuite extends TestKit(ActorSystem("SocialMedia-DB-System
 
   test("DeleteChirp fails if the database succeeds storing the message but fails the notify") {
     val mockedDB = mockDbWithAckAndNotifyNAck
-    val rc = new SocialMediaHandler(mockedDB)
+    val rc = new SocialMediaHandler(mockedDB, mockMed)
     val request = DeleteChirpMessages.deleteChirp
 
     rc.handleDeleteChirp(request) shouldBe an[Left[PipelineError, _]]
@@ -250,7 +265,7 @@ class SocialMediaHandlerSuite extends TestKit(ActorSystem("SocialMedia-DB-System
 
   test("DeleteChirp fails if the database provides 'None' laoId") {
     val mockedDB = mockDbWithAckButEmptyAckLaoData
-    val rc = new SocialMediaHandler(mockedDB)
+    val rc = new SocialMediaHandler(mockedDB, mockMed)
     val request = DeleteChirpMessages.deleteChirp
 
     rc.handleDeleteChirp(request) shouldBe an[Left[PipelineError, _]]
@@ -260,7 +275,7 @@ class SocialMediaHandlerSuite extends TestKit(ActorSystem("SocialMedia-DB-System
 
   test("DeleteChirp fails if the database fails to provide laoId") {
     val mockedDB = mockDbWithAckButNAckLaoData
-    val rc = new SocialMediaHandler(mockedDB)
+    val rc = new SocialMediaHandler(mockedDB, mockMed)
     val request = DeleteChirpMessages.deleteChirp
 
     rc.handleDeleteChirp(request) shouldBe an[Left[PipelineError, _]]
