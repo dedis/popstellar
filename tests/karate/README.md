@@ -1,6 +1,26 @@
 # Karate Tests
 
-This folder implements tests for the back-end and front-end.
+This folder implements tests for the back-end and front-end. The front-end tests are out of date and currently not expected to pass.
+
+## Architecture
+### General
+Karate test cases are called Scenarios. They are structured with the following keywords:
+
+- Given: Prepare the JSON payload to be sent to the component being tested. 
+- When: Defines the action that is to be performed with the payload. For instance, publish to publish a message containing some high-level message data.
+- And: Connector that can be used after any of the other keywords.
+- Then: Asserts that the action taken in the 'When' step has the expected outcome.
+
+Scenarios are grouped in different feature files that each tests a different message type (i.e. electionOpen, createRollCall etc.). Code defined in the background section of a feature file will be run before each scenario. This can be used to set up previous steps of a test, for example opening an election before testing a close election message.
+
+In the background section, `read(classpath: "path/to/feature")`to make the current feature share the same scope as the called feature. This means they share definitions (def variables) and configurations. JavaScript functions defined in the called feature are available for use in the current feature's context.
+
+
+### Java code 
+We can instanciate Java Classes inside features. For instance, the mockClient feature provides functions to create mock front-ends or back-ends that are instanciations of the Java class MockClient. This class represents a WebSocket client that also has the ability to create valid message data, such as for example using the function createValidLao, createValidRollCall etc.
+
+### Data model
+To generate valid message data for JSON payloads, a simplified model of the system (Lao, RollCall, Elections etc.) is implemented in Java code. Instances of MockCLients use this model to create message data that is valid for the 
 
 ## First Setup
 
@@ -42,15 +62,8 @@ Build the backend you want to test. Follow the steps described in the correspond
 Simply run the tests for server-to-client communication with:
 
 ```
-mvn test -DargLine="-Dkarate.env=go_client"
-mvn test -DargLine="-Dkarate.env=scala_client"
-```
-
-Run the tests for server-to-server communication with:
-
-```
-mvn test -DargLine="-Dkarate.env=go_server"
-mvn test -DargLine="-Dkarate.env=scala_server"
+mvn test -DargLine="-Dkarate.env=go"
+mvn test -DargLine="-Dkarate.env=scala"
 ```
 
 ### Android Front-end
