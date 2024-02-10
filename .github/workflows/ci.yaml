@@ -267,11 +267,10 @@ jobs:
         run: sbt scalafmtCheckAll
 
       - name: Run unit tests
-        run: cd ./src/security/
-        run: ./generateKeys.sh -test
-        run: cd ../.. # Generate test keys
-        run: sbt -Dscala.config="src/main/scala/ch/epfl/pop/config" -Dscala.security="src/security" -Dtest clean coverage test
-        #run: rm -rf ./src/security/test/ # Remove test keys
+        run: |
+          cd ./src/security/ && ./generateKeys.sh -test && cd ../.. # Generate test keys
+          sbt -Dscala.config="src/main/scala/ch/epfl/pop/config" -Dscala.security="src/security" -Dtest clean coverage test
+          rm -rf ./src/security/test/ # Remove test keys
 
       - name: Report coverage
         run: sbt coverageReport
