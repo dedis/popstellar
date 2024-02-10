@@ -515,9 +515,9 @@ final case class DbActor(
         case failure    => sender() ! failure.recover(Status.Failure(_))
       }
 
-    case WriteUserAuthenticated(user, popToken, clientId) =>
+    case WriteUserAuthenticated(popToken, clientId, user) =>
       log.info(s"Actor $self (db) received a WriteUserAuthenticated request for user $user, id $popToken and clientId $clientId")
-      Try(storage.write(generateAuthenticatedKey(popToken, clientId) -> user.base64Data.decodeToString())) match {
+      Try(storage.write(generateAuthenticatedKey(popToken, clientId) -> user.base64Data.toString())) match {
         case Success(_) => sender() ! DbActorAck()
         case failure    => sender() ! failure.recover(Status.Failure(_))
       }
@@ -525,7 +525,7 @@ final case class DbActor(
     case ReadUserAuthenticated(popToken, clientId) =>
       log.info(s"Actor $self (db) received a ReadUserAuthenticated request for pop token $popToken and clientId $clientId")
       Try(storage.read(generateAuthenticatedKey(popToken, clientId))) match {
-        case Success(Some(id)) => sender() ! DbActorReadUserAuthenticationAck(Some(PublicKey(Base64Data.encode(id))))
+        case Success(Some(id)) => sender() ! DbActorReadUserAuthenticationAck(Some(PublicKey(Base64Data(id))))
         case Success(None)     => sender() ! DbActorReadUserAuthenticationAck(None)
         case failure           => sender() ! failure.recover(Status.Failure(_))
       }
@@ -734,20 +734,20 @@ object DbActor {
   final case class CreateRollCallData(laoId: Hash, updateId: Hash, state: ActionType) extends Event
 
   /** Registers an authentication of a user on a client using a given identifier
+    * @param popToken
+    *   pop token to use for authentication
+    * @param clientId
+    *   client where the user authenticates on
     * @param user
     *   public key of the popcha long term identifier of the user
-    * @param popToken
-    *   pop token to associate to this user for this authentication
-    * @param clientId
-    *   client where the authentication happens on
     */
-  final case class WriteUserAuthenticated(user: PublicKey, popToken: PublicKey, clientId: String) extends Event
+  final case class WriteUserAuthenticated(popToken: PublicKey, clientId: String, user: PublicKey) extends Event
 
   /** Reads the authentication information registered for the given pop token regarding the given client
     * @param popToken
-    *   pop token that may have had a user authenticated for the given client
+    *   pop token that may have been used for authentication
     * @param clientId
-    *   client where the authentication may have happen on
+    *   client where the user may have authenticated on
     */
   final case class ReadUserAuthenticated(popToken: PublicKey, clientId: String) extends Event
 

@@ -16,6 +16,7 @@ final case class ConnectionMediator(
     monitorRef: ActorRef,
     mediatorRef: ActorRef,
     dbActorRef: AskableActorRef,
+    securityModuleActorRef: AskableActorRef,
     messageRegistry: MessageRegistry
 ) extends Actor with ActorLogging with AskPatternConstants {
   implicit val system: ActorSystem = ActorSystem()
@@ -36,6 +37,7 @@ final case class ConnectionMediator(
           PublishSubscribe.buildGraph(
             mediatorRef,
             dbActorRef,
+            securityModuleActorRef,
             messageRegistry,
             monitorRef,
             self,
@@ -81,8 +83,8 @@ final case class ConnectionMediator(
 
 object ConnectionMediator {
 
-  def props(monitorRef: ActorRef, mediatorRef: ActorRef, dbActorRef: AskableActorRef, messageRegistry: MessageRegistry): Props =
-    Props(new ConnectionMediator(monitorRef, mediatorRef, dbActorRef, messageRegistry))
+  def props(monitorRef: ActorRef, mediatorRef: ActorRef, dbActorRef: AskableActorRef, securityModuleActorRef: AskableActorRef, messageRegistry: MessageRegistry): Props =
+    Props(new ConnectionMediator(monitorRef, mediatorRef, dbActorRef, securityModuleActorRef, messageRegistry))
 
   sealed trait Event
   final case class ConnectTo(urlList: List[String]) extends Event

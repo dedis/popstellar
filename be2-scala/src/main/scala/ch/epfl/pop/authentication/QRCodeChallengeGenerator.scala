@@ -1,6 +1,7 @@
 package ch.epfl.pop.authentication
 
 import akka.http.scaladsl.model.{ContentTypes, HttpEntity, ResponseEntity}
+import ch.epfl.pop.config.RuntimeEnvironment
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel
 import com.google.zxing.qrcode.encoder.{ByteMatrix, Encoder}
 
@@ -12,7 +13,9 @@ object QRCodeChallengeGenerator {
 
   private val templateFileName = "src/main/web/AuthenticationPageTemplate.html"
 
-  private val webTemplateQRCodeTemplate = "{{QRCODE_PATTERN}}"
+  private val webTemplateQRCodePlaceholder = "{{.SVGImage}}"
+  private val webTemplateWebSocketAddressPlaceholder = "{{.WebSocketAddr}}"
+  private val webTemplateRedirectHostPlaceholder = "{{.RedirectHost}}"
 
   private val qrcodeTotalSize = 650
   private val qrcodeMargin = 25
@@ -20,17 +23,29 @@ object QRCodeChallengeGenerator {
   /** Generates an html response representing a web page with a qrcode holding the content provided
     * @param content
     *   data to insert in the qrcode
+    * @param redirectUri
+    *   uri to redirect the user to at the end of the authentication
+    * @param laoId
+    *   laoId the user tries to authenticate at
+    * @param clientId
+    *   id of client the user tries to authenticate on
+    * @param nonce
+    *   nonce of the authentication request
     * @return
     *   a web page in the form of an http-html response
     */
-  def generateChallengeContent(content: String): ResponseEntity = {
+  def generateChallengeContent(content: String, redirectUri: String, laoId: String, clientId: String, nonce: String): ResponseEntity = {
     val encodedContent = Encoder.encode(content, ErrorCorrectionLevel.H)
     val htmlQRCode = fromMatrixToHTML(encodedContent.getMatrix)
+    val webSocketAddress = RuntimeEnvironment.ownResponseAddress + s"/$laoId/authentication/$clientId/$nonce"
 
     val templateFile = Source.fromFile(templateFileName)
     val lines = for {
       line <- templateFile.getLines()
-      substitutedLine = line.replace(webTemplateQRCodeTemplate, htmlQRCode)
+      substitutedLine = line
+        .replace(webTemplateQRCodePlaceholder, htmlQRCode)
+        .replace(webTemplateWebSocketAddressPlaceholder, webSocketAddress)
+        .replace(webTemplateRedirectHostPlaceholder, redirectUri)
     } yield substitutedLine
 
     val challengePage = lines.mkString("\n")

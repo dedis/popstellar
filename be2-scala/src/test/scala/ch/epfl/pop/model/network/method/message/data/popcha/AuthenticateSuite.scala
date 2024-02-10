@@ -15,12 +15,12 @@ class AuthenticateSuite extends FunSuite with Matchers {
 }
 
 object AuthenticateSuite {
-  val NONCE = "I am unique"
+  val NONCE: Base64Data = Base64Data.encode("I am unique")
   val CLIENT_ID = "Some id"
 
   val KEY_DATA: Base64Data = Base64Data.encode("Some long term identifier abcdef")
   val IDENTIFIER: PublicKey = PublicKey(KEY_DATA)
-  val IDENTIFIER_PROOF: Signature = PrivateKey(KEY_DATA).signData(Base64Data.encode(NONCE))
+  val IDENTIFIER_PROOF: Signature = PrivateKey(KEY_DATA).signData(NONCE)
 
   val STATE = "Some optional state"
   val RESPONSE_MODE = "query"

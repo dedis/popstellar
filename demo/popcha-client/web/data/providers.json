@@ -10,6 +10,11 @@
     "public_key": "-----BEGIN PUBLIC KEY-----\nThisIsADummyKeyPleaseUpdateItBeforeUsageMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAsbR9Ip84tR4vc1IEefBJ\ndHMlQAQm1UltYE3vs875eY8ASZ4lzlLG6iVRe7LH4VN6j7GB4Tjj2EtgUFUAQqbF\ns5mn7cFO7DR9riQDgLGekAQ5g/mLz9QhuAGjU2am0mPBOSBME08Ek9vNRfAOGVWk\n9fDUhdRceRdKOXnnz+YvqYfe3vz4jx9XXJHZHmG2wNB6egCnsbZOuEqiWVMj5+3w\nKt1prUGKEAHtPqC+olDaLwZw1didYotPgaZDwedkcAVSWNHvOkkY3uMqvKI+Cpox\nP+uqtdy9tM54sNQjoWdq4LIaWF/nLRy5fM2JAVbAqwPW6z23YMi4HIsfwuj+d8UZ\ntQIDAQAB\n-----END PUBLIC KEY-----"
   },
   {
+    "domain": "valid3.example",
+    "lao_id": "vnZT6W2emmj8mTCwkfcd2-oGpHX1HAMETh06_bleNI4=",
+    "public_key": "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAw+QH1soUXevs7b3pAR23w0bNqYx5pFPtHkkP4x9RAu8Ato+QJnuENF8cyCEz05FLq0VRO4rxGGJn/0YsiVnj67aulrACU0U0KFUsAHh1vpf2hpd9Gc0ywBTcFd5yAr4AIHHB+sGpWfAgkoTF8q+FTza35dLquuCfXnr+emIQFiIXjxQVnn1ZcW/VylP/sB4eJ4sT/v4vmCA+Fd/zdtXip7WTV9hZlaNKnUdfovWpIawqb5pmm2hm4CSVOzewReEFoAy0/G0I4zsaWbIFPIs1lypWJDyCaZmWede8TANDwDouMjtbkpLW5HLxRYxvxcVI9Z49OASm1OnpfOREExzDFwIDAQAB\n-----END PUBLIC KEY-----"
+  },
+  {
     "domain": "http://invalid.server.example:8000",
     "lao_id": "ThirdLaoID",
     "public_key": "ddd"

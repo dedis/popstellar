@@ -5,12 +5,28 @@ import ch.epfl.pop.model.network.Parsable
 import ch.epfl.pop.model.network.method.message.data.ActionType.ActionType
 import ch.epfl.pop.model.network.method.message.data.ObjectType.ObjectType
 import ch.epfl.pop.model.network.method.message.data.{ActionType, MessageData, ObjectType}
-import ch.epfl.pop.model.objects.{PublicKey, Signature}
+import ch.epfl.pop.model.objects.{Base64Data, PublicKey, Signature}
 import spray.json._
 
+/** Data structure to represent an authentication request
+  * @param clientId
+  *   client to authenticate to
+  * @param nonce
+  *   nonce of the authentication request (base64 encoded)
+  * @param identifier
+  *   user's identity as the public key of the long term identifier
+  * @param identifierProof
+  *   proof of authentication
+  * @param state
+  *   state of the authentication request
+  * @param responseMode
+  *   response mode requested
+  * @param popchaAddress
+  *   address of the web socket to send the Id Token to
+  */
 final case class Authenticate(
     clientId: String,
-    nonce: String,
+    nonce: Base64Data,
     identifier: PublicKey,
     identifierProof: Signature,
     state: String,

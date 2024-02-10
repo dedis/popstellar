@@ -11,7 +11,7 @@ class AuthenticateSuite extends AnyFunSuite with Matchers with ScalatestRouteTes
 
   private val routeName = "authenticate/"
 
-  private val responseType = "id_token token"
+  private val responseType = "id_token"
   private val clientID = "abc"
   private val redirectUri = "https://example.com"
   private val scope = "openid profile"

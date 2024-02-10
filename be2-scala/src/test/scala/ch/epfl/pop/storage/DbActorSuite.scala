@@ -784,7 +784,7 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
     readRollcallData.updateId should equal(updateId)
   }
 
-  test("writeUserAuthenticated successfully add the authentication triplet in the db") {
+  test("writeUserAuthenticated successfully adds the authentication triplet in the db") {
     val storage: InMemoryStorage = InMemoryStorage()
     val dbActor: AskableActorRef = system.actorOf(Props(DbActor(mediatorRef, MessageRegistry(), storage)))
 
@@ -792,7 +792,7 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
     val popToken = PublicKey(Base64Data.encode("popToken"))
     val clientId = "some_client"
 
-    val write = dbActor ? DbActor.WriteUserAuthenticated(user, popToken, clientId)
+    val write = dbActor ? DbActor.WriteUserAuthenticated(popToken, clientId, user)
     Await.result(write, duration) shouldBe a[DbActor.DbActorAck]
 
     storage.size should equal(1)
@@ -800,7 +800,7 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
     val authKey = storage.AUTHENTICATED_KEY + popToken.base64Data.toString() + Channel.DATA_SEPARATOR + clientId
     val userFound = storage.read(authKey)
 
-    userFound shouldBe Some(user.base64Data.decodeToString())
+    userFound shouldBe Some(user.base64Data.toString())
   }
 
   test("readUserAuthenticated succeeds when an authentication has already occurred") {
@@ -812,7 +812,7 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
     val clientId = "some_client"
 
     val authKey = storage.AUTHENTICATED_KEY + popToken.base64Data.toString() + Channel.DATA_SEPARATOR + clientId
-    storage.write(authKey -> user.base64Data.decodeToString())
+    storage.write(authKey -> user.base64Data.toString())
 
     val read = dbActor ? DbActor.ReadUserAuthenticated(popToken, clientId)
     val answer = Await.result(read, duration)

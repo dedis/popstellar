@@ -25,7 +25,7 @@ class ConnectionMediatorSuite extends TestKit(ActorSystem("ConnectionMediatorSui
     val server = TestProbe()
 
     val connectionMediatorRef = system.actorOf(
-      ConnectionMediator.props(mockMonitor.ref, ActorRef.noSender, ActorRef.noSender, MessageRegistry())
+      ConnectionMediator.props(mockMonitor.ref, ActorRef.noSender, ActorRef.noSender, ActorRef.noSender, MessageRegistry())
     )
 
     mockMonitor.expectMsg(timeout, ConnectionMediator.Ping())
@@ -49,7 +49,7 @@ class ConnectionMediatorSuite extends TestKit(ActorSystem("ConnectionMediatorSui
     val server3 = TestProbe()
 
     val connectionMediatorRef = system.actorOf(
-      ConnectionMediator.props(mockMonitor.ref, ActorRef.noSender, ActorRef.noSender, MessageRegistry())
+      ConnectionMediator.props(mockMonitor.ref, ActorRef.noSender, ActorRef.noSender, ActorRef.noSender, MessageRegistry())
     )
 
     mockMonitor.expectMsg(timeout, ConnectionMediator.Ping())
@@ -90,7 +90,7 @@ class ConnectionMediatorSuite extends TestKit(ActorSystem("ConnectionMediatorSui
     val mockMonitor = TestProbe()
     val testProbe = TestProbe()
     val connectionMediatorRef = system.actorOf(
-      ConnectionMediator.props(mockMonitor.ref, ActorRef.noSender, ActorRef.noSender, MessageRegistry())
+      ConnectionMediator.props(mockMonitor.ref, ActorRef.noSender, ActorRef.noSender, ActorRef.noSender, MessageRegistry())
     )
 
     testProbe.send(connectionMediatorRef, ConnectionMediator.ReadPeersClientAddress())
