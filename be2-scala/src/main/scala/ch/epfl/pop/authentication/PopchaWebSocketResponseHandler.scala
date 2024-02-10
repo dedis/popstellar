@@ -11,10 +11,7 @@ import ch.epfl.pop.config.ServerConf
 
 import scala.concurrent.{Future, Promise}
 
-/** Websocket handler that, given two websocket connections on a common endpoint, forwards a single message from the second websocket connected to the first:
-  *   - Connection requests are expected to lend on endpoints with format "/laoId/authentication/clientId/nonce". This uniquely determines a connection by its socketId (laoId, clientId, nonce).
-  *   - The first websocket connected on a given endpoint is assumed to be waiting for a message. It will be provided by the second websocket to connect on that same endpoint (at any point later in time).
-  *   - Once a message is received from the second websocket connected on a given endpoint, it is forwarded to the first websocket connected and both connections are then closed.
+/** This websocket handler receives the JWT from the PopchaHandler via websocket and forwards it to the client webpage connected via websocket as well.
   */
 object PopchaWebSocketResponseHandler {
 
