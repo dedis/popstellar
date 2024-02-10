@@ -17,7 +17,7 @@ There are two main possible ways of running the project :
 1. Import the project using your editor
 2. Modify the default  Run configuration 'Server', to include the following __VM option__:
 
-__```-Dscala.config=src/main/scala/ch/epfl/pop/config```__ (click on **Modify options** and tick **Add VM options** if VM options box does not appear initially)
+__```-Dscala.config=src/main/scala/ch/epfl/pop/config -Dscala.security=src/security```__ (click on **Modify options** and tick **Add VM options** if VM options box does not appear initially)
 
 ![](docs/images/intellij-vm.png)
 
@@ -33,7 +33,7 @@ Here are a few points that students often forget when setting up IntelliJ:
 
 ### Option 2: SBT
 
-Using `sbt -Dscala.config="path/to/config/file" run`.
+Using `sbt -Dscala.config="path/to/config/file" -Dscala.security="src/security" run`.
 
 There is a default configuration ready to use in
 `src/main/scala/ch/epfl/pop/config` which contains an __application.config__
@@ -55,8 +55,22 @@ ch_epfl_pop_Server {
 Consequently, from **be2-scala/** folder run the following:
 
 ```bash
- sbt -Dscala.config="src/main/scala/ch/epfl/pop/config" run
+ sbt -Dscala.config="src/main/scala/ch/epfl/pop/config" -Dscala.security="src/security" run
 ```
+
+---
+
+## Security keys
+
+The scala server needs security keys to run properly. Their location must be specified using the `-Dscala.security` flag.
+
+By default, the folder is `src/security` and the script `src/security/generateKeys.sh` can be used to generate fresh keys.
+> Go to the folder `src/security` and run `./generateKeys.sh`, or directly run `(cd ./src/security/ && ./generateKeys.sh)` from the current directory.
+
+Security keys are also needed to run the tests. The process is the same except that tests expect to find the keys in a `test` folder (for example `src/security/test`), so run the script `generateKeys.sh` with the argument `-test` to take that into account. You don't need to generate new keys every time you run the tests.
+> Go to the folder `src/security` and run `./generateKeys.sh -test`, or directly run `(cd ./src/security/ && ./generateKeys.sh -test)` from the current directory before running the tests.
+
+Note that the script `generateKeys.sh` requires [**openssl**](https://www.openssl.org/) to be available on the system.
 
 ---
 
@@ -65,6 +79,7 @@ Consequently, from **be2-scala/** folder run the following:
 We introduced two custom [preprocessor flags](https://gcc.gnu.org/onlinedocs/gcc/Preprocessor-Options.html), one of which you already encountered:
 
 - Config file location (**mandatory**): location of the config file on the system with respect to the be2-scala folder
+- Security keys location (**mandatory**): location of the security keys on the system with respect to the be2-scala folder
 - Database auto-cleanup (optional). By adding the `-Dclean` flag, the database will be recreated everytime the server starts running
 
 ---
@@ -80,6 +95,9 @@ The project relies on several sbt dependencies (external libraries) :
 - encryption : [**kyber**](https://github.com/dedis/kyber) to encrypt and decrypt messages of an election
 - testing : [**scalatest**](https://www.scalatest.org/) for unit tests
 - Json schema validator : [**networknt**](https://github.com/networknt/json-schema-validator) for Json schema validation
+- Json Web Tokens (jwt) : [java-jwt](https://github.com/auth0/java-jwt) to generate and sign jwt
+- Qrcode : [**zxing**](https://github.com/zxing/zxing) to generate Qrcodes
+- security keys : [**openssl**](https://www.openssl.org/) only used in `src/security/generateKeys.sh` to generate a pair of RSA keys
 
 ---
 

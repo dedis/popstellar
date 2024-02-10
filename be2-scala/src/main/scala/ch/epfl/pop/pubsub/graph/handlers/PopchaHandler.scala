@@ -47,7 +47,7 @@ class PopchaHandler(dbRef: => AskableActorRef, securityModuleActorRef: => Askabl
     handleAuthentication(rpcMessage, sendResponseToWebsocket(rpcMessage, authenticate, laoId))
   }
 
-  /** Handle, while allowing dependency injection, the Authenticate message received:
+  /** Handle, while allowing dependency injection, the Authenticate message received
     *   - use [[securityModuleActorRef]] to sign the id token generated
     *   - the jwt result is given to the given responseHandler
     * @param rpcMessage
