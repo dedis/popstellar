@@ -28,8 +28,10 @@ jobs:
         
       - name: Assemble server jar file
         working-directory: ./be2-scala
-        run: sbt assembly
-        
+        run: |
+          sbt assembly
+          cd ./src/security/ && ./generateKeys.sh # Generate keys
+
       - name: Run Karate server-client tests
         id: tests_client
         continue-on-error: true
