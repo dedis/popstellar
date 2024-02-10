@@ -3,14 +3,6 @@ package popcha
 import (
 	"bytes"
 	"fmt"
-	"github.com/gorilla/websocket"
-	"github.com/rs/xid"
-	"github.com/rs/zerolog"
-	"github.com/rs/zerolog/log"
-	"github.com/rzajac/zltest"
-	"github.com/stretchr/testify/require"
-	"github.com/zitadel/oidc/v2/pkg/oidc"
-	"github.com/zitadel/oidc/v2/pkg/op"
 	"io"
 	"math/rand"
 	"net/http"
@@ -23,6 +15,15 @@ import (
 	"strings"
 	"testing"
 	"testing/quick"
+
+	"github.com/gorilla/websocket"
+	"github.com/rs/xid"
+	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
+	"github.com/rzajac/zltest"
+	"github.com/stretchr/testify/require"
+	"github.com/zitadel/oidc/v2/pkg/oidc"
+	"github.com/zitadel/oidc/v2/pkg/op"
 )
 
 const (

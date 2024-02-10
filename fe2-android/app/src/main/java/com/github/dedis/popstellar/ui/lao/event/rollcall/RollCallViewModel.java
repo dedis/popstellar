@@ -2,10 +2,8 @@ package com.github.dedis.popstellar.ui.lao.event.rollcall;
 
 import android.app.Application;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.lifecycle.*;
-
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.network.method.message.data.rollcall.*;
 import com.github.dedis.popstellar.model.objects.*;
@@ -21,16 +19,13 @@ import com.github.dedis.popstellar.utility.error.keys.*;
 import com.github.dedis.popstellar.utility.scheduler.SchedulerProvider;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
-
+import dagger.hilt.android.lifecycle.HiltViewModel;
+import io.reactivex.*;
+import io.reactivex.Observable;
 import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
-
 import javax.inject.Inject;
-
-import dagger.hilt.android.lifecycle.HiltViewModel;
-import io.reactivex.Observable;
-import io.reactivex.*;
 import timber.log.Timber;
 
 @HiltViewModel
@@ -72,17 +67,18 @@ public class RollCallViewModel extends AndroidViewModel implements QRCodeScannin
   }
 
   public void setLaoId(String laoId) {
-    this.laoId = laoId;
-
-    attendedRollCalls =
-        rollCallRepo
-            .getRollCallsObservableInLao(laoId)
-            .map(
-                rcs ->
-                    rcs.stream()
-                        // Keep only attended roll calls
-                        .filter(this::isRollCallAttended)
-                        .collect(Collectors.toList()));
+    if (laoId != null) {
+      this.laoId = laoId;
+      attendedRollCalls =
+          rollCallRepo
+              .getRollCallsObservableInLao(laoId)
+              .map(
+                  rcs ->
+                      rcs.stream()
+                          // Keep only attended roll calls
+                          .filter(this::isRollCallAttended)
+                          .collect(Collectors.toList()));
+    }
   }
 
   /**
@@ -111,7 +107,7 @@ public class RollCallViewModel extends AndroidViewModel implements QRCodeScannin
     try {
       laoView = getLao();
     } catch (UnknownLaoException e) {
-      ErrorUtils.logAndShow(getApplication(), TAG, e, R.string.unknown_lao_exception);
+      ErrorUtils.INSTANCE.logAndShow(getApplication(), TAG, e, R.string.unknown_lao_exception);
       return Single.error(new UnknownLaoException());
     }
 
@@ -139,7 +135,7 @@ public class RollCallViewModel extends AndroidViewModel implements QRCodeScannin
     try {
       laoView = getLao();
     } catch (UnknownLaoException e) {
-      ErrorUtils.logAndShow(getApplication(), TAG, e, R.string.unknown_lao_exception);
+      ErrorUtils.INSTANCE.logAndShow(getApplication(), TAG, e, R.string.unknown_lao_exception);
       return Completable.error(new UnknownLaoException());
     }
 
@@ -178,7 +174,7 @@ public class RollCallViewModel extends AndroidViewModel implements QRCodeScannin
     try {
       attendees.add(keyManager.getPoPToken(laoView, rollCall).getPublicKey());
     } catch (KeyException e) {
-      ErrorUtils.logAndShow(getApplication(), TAG, e, R.string.error_retrieve_own_token);
+      ErrorUtils.INSTANCE.logAndShow(getApplication(), TAG, e, R.string.error_retrieve_own_token);
     }
 
     // this to display the initial number of attendees
@@ -197,7 +193,7 @@ public class RollCallViewModel extends AndroidViewModel implements QRCodeScannin
     try {
       laoView = getLao();
     } catch (UnknownLaoException e) {
-      ErrorUtils.logAndShow(getApplication(), TAG, e, R.string.unknown_lao_exception);
+      ErrorUtils.INSTANCE.logAndShow(getApplication(), TAG, e, R.string.unknown_lao_exception);
       return Completable.error(new UnknownLaoException());
     }
 
@@ -250,10 +246,10 @@ public class RollCallViewModel extends AndroidViewModel implements QRCodeScannin
 
       return rollcall.getAttendees().contains(pk) || isOrganizer;
     } catch (KeyGenerationException | UninitializedWalletException e) {
-      ErrorUtils.logAndShow(getApplication(), TAG, e, R.string.key_generation_exception);
+      ErrorUtils.INSTANCE.logAndShow(getApplication(), TAG, e, R.string.key_generation_exception);
       return false;
     } catch (UnknownLaoException e) {
-      ErrorUtils.logAndShow(getApplication(), TAG, e, R.string.unknown_lao_exception);
+      ErrorUtils.INSTANCE.logAndShow(getApplication(), TAG, e, R.string.unknown_lao_exception);
       return false;
     }
   }
@@ -264,13 +260,14 @@ public class RollCallViewModel extends AndroidViewModel implements QRCodeScannin
     try {
       tokenData = PopTokenData.extractFrom(gson, data);
     } catch (Exception e) {
-      ErrorUtils.logAndShow(
+      ErrorUtils.INSTANCE.logAndShow(
           getApplication().getApplicationContext(), TAG, R.string.qr_code_not_pop_token);
       return;
     }
     PublicKey publicKey = tokenData.getPopToken();
     if (attendees.contains(publicKey)) {
-      ErrorUtils.logAndShow(getApplication(), TAG, R.string.attendee_already_scanned_warning);
+      ErrorUtils.INSTANCE.logAndShow(
+          getApplication(), TAG, R.string.attendee_already_scanned_warning);
       return;
     }
 

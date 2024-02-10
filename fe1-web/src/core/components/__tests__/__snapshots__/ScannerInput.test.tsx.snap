@@ -132,9 +132,7 @@ exports[`ScannerInput renders correctly 1`] = `
                 accessible={true}
                 collapsable={false}
                 focusable={true}
-                onBlur={[Function]}
                 onClick={[Function]}
-                onFocus={[Function]}
                 onResponderGrant={[Function]}
                 onResponderMove={[Function]}
                 onResponderRelease={[Function]}
@@ -143,51 +141,23 @@ exports[`ScannerInput renders correctly 1`] = `
                 onStartShouldSetResponder={[Function]}
                 style={
                   {
-                    "borderBottomColor": "rgb(216, 216, 216)",
-                    "borderBottomWidth": 1,
-                    "paddingHorizontal": 16,
-                    "paddingVertical": 8,
+                    "opacity": 1,
                   }
                 }
               >
-                <RNGestureHandlerButton
-                  collapsable={false}
-                  delayLongPress={600}
-                  enabled={true}
-                  exclusive={true}
-                  handlerTag={2}
-                  handlerType="NativeViewGestureHandler"
-                  onGestureEvent={[Function]}
-                  onGestureHandlerEvent={[Function]}
-                  onGestureHandlerStateChange={[Function]}
-                  onHandlerStateChange={[Function]}
-                  rippleColor={0}
-                  touchSoundDisabled={false}
-                >
-                  <View
-                    accessible={true}
-                    collapsable={false}
-                    style={
-                      {
-                        "opacity": 1,
-                      }
+                <Text
+                  numberOfLines={1}
+                  style={
+                    {
+                      "color": "#000",
+                      "fontSize": 20,
+                      "lineHeight": 26,
+                      "textAlign": "left",
                     }
-                  >
-                    <Text
-                      numberOfLines={1}
-                      style={
-                        {
-                          "color": "#000",
-                          "fontSize": 20,
-                          "lineHeight": 26,
-                          "textAlign": "left",
-                        }
-                      }
-                    >
-                      aaa
-                    </Text>
-                  </View>
-                </RNGestureHandlerButton>
+                  }
+                >
+                  aaa
+                </Text>
               </View>
             </View>
             <View
@@ -198,9 +168,7 @@ exports[`ScannerInput renders correctly 1`] = `
                 accessible={true}
                 collapsable={false}
                 focusable={true}
-                onBlur={[Function]}
                 onClick={[Function]}
-                onFocus={[Function]}
                 onResponderGrant={[Function]}
                 onResponderMove={[Function]}
                 onResponderRelease={[Function]}
@@ -209,51 +177,23 @@ exports[`ScannerInput renders correctly 1`] = `
                 onStartShouldSetResponder={[Function]}
                 style={
                   {
-                    "borderBottomColor": "rgb(216, 216, 216)",
-                    "borderBottomWidth": 1,
-                    "paddingHorizontal": 16,
-                    "paddingVertical": 8,
+                    "opacity": 1,
                   }
                 }
               >
-                <RNGestureHandlerButton
-                  collapsable={false}
-                  delayLongPress={600}
-                  enabled={true}
-                  exclusive={true}
-                  handlerTag={3}
-                  handlerType="NativeViewGestureHandler"
-                  onGestureEvent={[Function]}
-                  onGestureHandlerEvent={[Function]}
-                  onGestureHandlerStateChange={[Function]}
-                  onHandlerStateChange={[Function]}
-                  rippleColor={0}
-                  touchSoundDisabled={false}
-                >
-                  <View
-                    accessible={true}
-                    collapsable={false}
-                    style={
-                      {
-                        "opacity": 1,
-                      }
+                <Text
+                  numberOfLines={1}
+                  style={
+                    {
+                      "color": "#000",
+                      "fontSize": 20,
+                      "lineHeight": 26,
+                      "textAlign": "left",
                     }
-                  >
-                    <Text
-                      numberOfLines={1}
-                      style={
-                        {
-                          "color": "#000",
-                          "fontSize": 20,
-                          "lineHeight": 26,
-                          "textAlign": "left",
-                        }
-                      }
-                    >
-                      aab
-                    </Text>
-                  </View>
-                </RNGestureHandlerButton>
+                  }
+                >
+                  aab
+                </Text>
               </View>
             </View>
             <View
@@ -264,9 +204,7 @@ exports[`ScannerInput renders correctly 1`] = `
                 accessible={true}
                 collapsable={false}
                 focusable={true}
-                onBlur={[Function]}
                 onClick={[Function]}
-                onFocus={[Function]}
                 onResponderGrant={[Function]}
                 onResponderMove={[Function]}
                 onResponderRelease={[Function]}
@@ -274,57 +212,24 @@ exports[`ScannerInput renders correctly 1`] = `
                 onResponderTerminationRequest={[Function]}
                 onStartShouldSetResponder={[Function]}
                 style={
-                  [
-                    {
-                      "borderBottomColor": "rgb(216, 216, 216)",
-                      "borderBottomWidth": 1,
-                      "paddingHorizontal": 16,
-                      "paddingVertical": 8,
-                    },
-                    {
-                      "borderRadius": 8,
-                    },
-                  ]
+                  {
+                    "opacity": 1,
+                  }
                 }
               >
-                <RNGestureHandlerButton
-                  collapsable={false}
-                  delayLongPress={600}
-                  enabled={true}
-                  exclusive={true}
-                  handlerTag={4}
-                  handlerType="NativeViewGestureHandler"
-                  onGestureEvent={[Function]}
-                  onGestureHandlerEvent={[Function]}
-                  onGestureHandlerStateChange={[Function]}
-                  onHandlerStateChange={[Function]}
-                  rippleColor={0}
-                  touchSoundDisabled={false}
-                >
-                  <View
-                    accessible={true}
-                    collapsable={false}
-                    style={
-                      {
-                        "opacity": 1,
-                      }
+                <Text
+                  numberOfLines={1}
+                  style={
+                    {
+                      "color": "#000",
+                      "fontSize": 20,
+                      "lineHeight": 26,
+                      "textAlign": "left",
                     }
-                  >
-                    <Text
-                      numberOfLines={1}
-                      style={
-                        {
-                          "color": "#000",
-                          "fontSize": 20,
-                          "lineHeight": 26,
-                          "textAlign": "left",
-                        }
-                      }
-                    >
-                      aac
-                    </Text>
-                  </View>
-                </RNGestureHandlerButton>
+                  }
+                >
+                  aac
+                </Text>
               </View>
             </View>
           </View>
@@ -343,9 +248,7 @@ exports[`ScannerInput renders correctly 1`] = `
       accessible={true}
       collapsable={false}
       focusable={true}
-      onBlur={[Function]}
       onClick={[Function]}
-      onFocus={[Function]}
       onResponderGrant={[Function]}
       onResponderMove={[Function]}
       onResponderRelease={[Function]}
@@ -354,52 +257,27 @@ exports[`ScannerInput renders correctly 1`] = `
       onStartShouldSetResponder={[Function]}
       style={
         {
-          "marginBottom": 16,
+          "opacity": 1,
         }
       }
     >
-      <RNGestureHandlerButton
-        collapsable={false}
-        delayLongPress={600}
-        enabled={true}
-        exclusive={true}
-        handlerTag={5}
-        handlerType="NativeViewGestureHandler"
-        onGestureEvent={[Function]}
-        onGestureHandlerEvent={[Function]}
-        onGestureHandlerStateChange={[Function]}
-        onHandlerStateChange={[Function]}
-        rippleColor={0}
-        touchSoundDisabled={false}
-      >
-        <View
-          accessible={true}
-          collapsable={false}
-          style={
+      <View
+        style={
+          [
             {
-              "opacity": 1,
-            }
-          }
-        >
-          <View
-            style={
-              [
-                {
-                  "backgroundColor": "#3742fa",
-                  "borderColor": "#3742fa",
-                  "borderRadius": 8,
-                  "borderWidth": 1,
-                  "padding": 8,
-                },
-              ]
-            }
-          >
-            <View>
-              {"name":"ios-scan","size":25,"color":"#fff"}
-            </View>
-          </View>
+              "backgroundColor": "#3742fa",
+              "borderColor": "#3742fa",
+              "borderRadius": 8,
+              "borderWidth": 1,
+              "padding": 8,
+            },
+          ]
+        }
+      >
+        <View>
+          {"name":"ios-scan","size":25,"color":"#fff"}
         </View>
-      </RNGestureHandlerButton>
+      </View>
     </View>
   </View>
 </View>

@@ -1,8 +1,9 @@
 import * as React from 'react';
-import { useContext, useState } from 'react';
+import { useContext, useMemo, useState } from 'react';
 import { StyleSheet, Text, TextStyle, View, ViewStyle } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 
+import { ConfirmModal } from 'core/components';
 import { Spacing, Typography } from 'core/styles';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
@@ -27,20 +28,30 @@ const NewChirp = () => {
   const toast = useToast();
   const laoId = SocialHooks.useCurrentLaoId();
   const isConnected = SocialHooks.useConnectedToLao();
+  const [showPublishConfirmation, setShowPublishConfirmation] = useState(false);
+  const trimmedInputChirp = useMemo(() => inputChirp.replace(/\s+/g, ' ').trim(), [inputChirp]);
+  const publishDisabled = !isConnected || !currentUserPopTokenPublicKey;
 
+  const errorMessage = useMemo(
+    () =>
+      trimmedInputChirp.length === 0 && inputChirp.length > 0 && !publishDisabled
+        ? STRINGS.social_media_empty_chirp
+        : undefined,
+    [inputChirp.length, publishDisabled, trimmedInputChirp.length],
+  );
   if (laoId === undefined) {
     throw new Error('Impossible to render Social Home, current lao id is undefined');
   }
 
   // The publish button is disabled in offline mode and when the user public key is not defined
-  const publishDisabled = !isConnected || !currentUserPopTokenPublicKey;
 
   const publishChirp = () => {
+    setShowPublishConfirmation(false);
     if (publishDisabled) {
       return;
     }
 
-    requestAddChirp(currentUserPopTokenPublicKey, inputChirp, laoId)
+    requestAddChirp(currentUserPopTokenPublicKey, trimmedInputChirp, laoId)
       .then(() => {
         setInputChirp('');
       })
@@ -60,15 +71,32 @@ const NewChirp = () => {
         testID="new_chirp"
         value={inputChirp}
         onChangeText={setInputChirp}
-        onPress={publishChirp}
-        disabled={publishDisabled}
+        onPress={() => {
+          if (trimmedInputChirp === inputChirp) {
+            publishChirp();
+          } else {
+            setShowPublishConfirmation(true);
+          }
+        }}
+        disabled={publishDisabled || trimmedInputChirp.length < 1}
         currentUserPublicKey={currentUserPopTokenPublicKey}
+        errorMessage={errorMessage}
       />
       {!currentUserPopTokenPublicKey && (
         <Text style={[Typography.base, Typography.error, styles.errorMessage]}>
           {STRINGS.social_media_create_chirp_no_pop_token}
         </Text>
       )}
+      <ConfirmModal
+        onConfirmPress={publishChirp}
+        visibility={showPublishConfirmation}
+        description={STRINGS.social_media_ask_publish_trimmed_chirp.replace(
+          '{}',
+          trimmedInputChirp,
+        )}
+        title={STRINGS.social_media_confirm_publish_chirp}
+        setVisibility={setShowPublishConfirmation}
+      />
     </View>
   );
 };

@@ -5,19 +5,25 @@ import android.app.Application;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
-import com.github.dedis.popstellar.di.AppDatabaseModuleHelper;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVersion;
 import com.github.dedis.popstellar.model.objects.Election;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.repository.database.AppDatabase;
+import com.github.dedis.popstellar.repository.database.event.election.ElectionDao;
 import com.github.dedis.popstellar.utility.error.UnknownElectionException;
 
 import org.junit.*;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
+import java.util.Collections;
 import java.util.Set;
 
+import io.reactivex.Completable;
+import io.reactivex.Single;
 import io.reactivex.observers.TestObserver;
 
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.generatePublicKey;
@@ -27,6 +33,9 @@ import static java.util.Collections.singleton;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
 
 @RunWith(AndroidJUnit4.class)
 public class ElectionRepositoryTest {
@@ -37,18 +46,21 @@ public class ElectionRepositoryTest {
           .setElectionVersion(ElectionVersion.OPEN_BALLOT)
           .build();
   private static final Application APPLICATION = ApplicationProvider.getApplicationContext();
-  private static AppDatabase appDatabase;
+  @Mock private static AppDatabase appDatabase;
+  @Mock private static ElectionDao electionDao;
   private static ElectionRepository repo;
+
+  @Rule(order = 0)
+  public final MockitoRule mockitoRule = MockitoJUnit.rule();
 
   @Before
   public void setup() {
-    appDatabase = AppDatabaseModuleHelper.getAppDatabase(APPLICATION);
+    when(appDatabase.electionDao()).thenReturn(electionDao);
     repo = new ElectionRepository(appDatabase, APPLICATION);
-  }
 
-  @After
-  public void tearDown() {
-    appDatabase.close();
+    when(electionDao.getElectionsByLaoId(anyString()))
+        .thenReturn(Single.just(Collections.emptyList()));
+    when(electionDao.insert(any())).thenReturn(Completable.complete());
   }
 
   @Test

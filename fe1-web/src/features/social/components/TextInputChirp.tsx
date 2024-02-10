@@ -38,11 +38,14 @@ const styles = StyleSheet.create({
     borderRadius: Border.radius,
     borderWidth: Border.width,
   } as TextStyle,
-  buttonView: {
+  bottomRow: {
     flexDirection: 'row',
-    alignItems: 'center',
-    alignSelf: 'flex-end',
     marginTop: Spacing.x1,
+  } as ViewStyle,
+  buttonView: {
+    marginLeft: 'auto',
+    flexDirection: 'row',
+    alignContent: 'flex-end',
   } as ViewStyle,
   charsLeft: {
     marginRight: Spacing.x1,
@@ -58,6 +61,7 @@ const TextInputChirp = (props: IPropTypes) => {
     onChangeText,
     disabled: alwaysDisabled,
     currentUserPublicKey,
+    errorMessage,
     testID,
   } = props;
 
@@ -94,19 +98,22 @@ const TextInputChirp = (props: IPropTypes) => {
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
         />
-        <View style={styles.buttonView}>
-          <View style={styles.charsLeft}>
-            <Text style={textIsRed ? [Typography.base, Typography.error] : [Typography.base]}>
-              {charsLeft.toString()}
-            </Text>
+        <View style={styles.bottomRow}>
+          {errorMessage && <Text style={[Typography.base, Typography.error]}>{errorMessage}</Text>}
+          <View style={styles.buttonView}>
+            <View style={styles.charsLeft}>
+              <Text style={textIsRed ? [Typography.base, Typography.error] : [Typography.base]}>
+                {charsLeft.toString()}
+              </Text>
+            </View>
+            <PoPTextButton
+              onPress={onPress}
+              disabled={disabled === true}
+              testID={testID ? `${testID}_publish` : undefined}
+              toolbar>
+              {STRINGS.button_publish}
+            </PoPTextButton>
           </View>
-          <PoPTextButton
-            onPress={onPress}
-            disabled={disabled === true}
-            testID={testID ? `${testID}_publish` : undefined}
-            toolbar>
-            {STRINGS.button_publish}
-          </PoPTextButton>
         </View>
       </View>
     </View>
@@ -122,6 +129,7 @@ const propTypes = {
   disabled: PropTypes.bool,
   currentUserPublicKey: PropTypes.instanceOf(PublicKey),
   testID: PropTypes.string,
+  errorMessage: PropTypes.string,
 };
 
 TextInputChirp.propTypes = propTypes;
@@ -132,6 +140,7 @@ TextInputChirp.defaultProps = {
   disabled: false,
   currentUserPublicKey: undefined,
   testID: undefined,
+  errorMessage: undefined,
 };
 
 type IPropTypes = PropTypes.InferProps<typeof propTypes>;

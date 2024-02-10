@@ -108,15 +108,19 @@ class NetworkManager {
   }
 
   private onConnectionDeath(address: string) {
-    this.disconnectFrom(address);
+    this.disconnectFrom(address, false);
     this.connectionDeathHandlers.forEach((handler) => handler(address));
   }
 
   /** Connects to a server or returns an existing connection to the server
    * @param address the server's full address (URI)
+   * @param alwaysPersistConnection Whether to persist the connection even if the initial connection attempt fails
    * @returns a new connection to the server, or an existing one if it's already established
    */
-  public async connect(address: string): Promise<NetworkConnection> {
+  public async connect(
+    address: string,
+    alwaysPersistConnection = true,
+  ): Promise<NetworkConnection> {
     if (!address) {
       throw new Error('No address provided in connect');
     }
@@ -129,36 +133,51 @@ class NetworkManager {
       return existingConnection;
     }
 
-    const connection: NetworkConnection = await NetworkConnection.create(
-      href,
-      this.rpcHandler,
-      () => this.onConnectionDeath(href),
+    const [connection, error] = await NetworkConnection.create(href, this.rpcHandler, () =>
+      this.onConnectionDeath(href),
     );
-    this.connections.push(connection);
+
+    if (alwaysPersistConnection) {
+      // always push the connection to the array so that we can re-connect later
+      this.connections.push(connection);
+    }
+
+    // if the inital connection attempt failed, reject the promise
+    if (error != null) {
+      throw error;
+    }
+
+    // if it succeeded, return it
     return connection;
   }
 
-  public disconnect(connection: NetworkConnection): void {
+  public disconnect(connection: NetworkConnection, intentional = true): void {
     const index = this.connections.indexOf(connection);
     if (index !== -1) {
       this.connections[index].disconnect();
-      this.connections.splice(index, 1);
+
+      if (intentional) {
+        this.connections.splice(index, 1);
+      }
     }
   }
 
-  public disconnectFrom(address: string): void {
+  public disconnectFrom(address: string, intentional = true): void {
     if (!address) {
       throw new Error('No address provided in disconnectFrom');
     }
     const connection = this.getConnectionByAddress(address);
     if (connection !== undefined) {
-      this.disconnect(connection);
+      this.disconnect(connection, intentional);
     }
   }
 
-  public disconnectFromAll(): void {
+  public disconnectFromAll(intentional = true): void {
     this.connections.forEach((nc: NetworkConnection) => nc.disconnect());
-    this.connections = [];
+
+    if (intentional) {
+      this.connections = [];
+    }
   }
 
   /** Sends a JsonRpcRequest over the network to any relevant server.

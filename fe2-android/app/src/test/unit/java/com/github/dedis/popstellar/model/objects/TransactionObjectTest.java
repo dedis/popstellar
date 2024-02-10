@@ -1,21 +1,18 @@
 package com.github.dedis.popstellar.model.objects;
 
-import androidx.test.ext.junit.runners.AndroidJUnit4;
+import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
+import static org.junit.Assert.*;
 
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 import com.github.dedis.popstellar.model.network.JsonTestUtils;
 import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.*;
 import com.github.dedis.popstellar.model.objects.digitalcash.*;
 import com.github.dedis.popstellar.model.objects.security.*;
-import com.github.dedis.popstellar.utility.security.Hash;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
+import com.github.dedis.popstellar.utility.security.HashSHA256;
 import java.security.GeneralSecurityException;
 import java.util.*;
-
-import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
-import static org.junit.Assert.*;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 @RunWith(AndroidJUnit4.class)
 public class TransactionObjectTest {
@@ -176,7 +173,7 @@ public class TransactionObjectTest {
     TransactionObjectBuilder builder = getValidTransactionBuilder();
     String type = "P2PKH";
     ScriptInputObject scriptTxInput = new ScriptInputObject(type, sender, new Signature("qqchose"));
-    InputObject input = new InputObject(Hash.hash("none"), 0, scriptTxInput);
+    InputObject input = new InputObject(HashSHA256.hash("none"), 0, scriptTxInput);
     List<InputObject> listInput = Collections.singletonList(input);
     builder.setInputs(listInput);
     assertTrue(builder.build().isSender(sender));

@@ -9,12 +9,12 @@ import {
 import React, { useMemo } from 'react';
 import { StyleSheet, Text, View, ViewStyle } from 'react-native';
 
+import { BuildInfo } from 'core/components';
 import ButtonPadding from 'core/components/ButtonPadding';
 import { makeIcon } from 'core/components/PoPIcon';
 import { AppScreen } from 'core/navigation/AppNavigation';
 import { drawerNavigationOptions } from 'core/navigation/ScreenOptions';
 import { LaoParamList } from 'core/navigation/typing/LaoParamList';
-import { getNetworkManager } from 'core/network';
 import { Color, Spacing, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
@@ -86,8 +86,7 @@ const LaoDrawerContent = ({ descriptors, navigation, state }: DrawerContentCompo
         <DrawerItem
           label={STRINGS.navigation_lao_disconnect_title}
           onPress={() => {
-            getNetworkManager().disconnectFromAll();
-
+            // when going back to the app home, it will automatically disconnect from the lao
             navigation.navigate(STRINGS.navigation_app_home, {
               screen: STRINGS.navigation_home_home,
             });
@@ -175,6 +174,11 @@ const LaoNavigation: React.FC<unknown> = () => {
                   headerLeft: headerLeft || drawerNavigationOptions.headerLeft,
                   headerRight: headerRight || drawerNavigationOptions.headerRight,
                   drawerIcon: Icon,
+                  headerBackground: BuildInfo,
+                  headerBackgroundContainerStyle: {
+                    backgroundColor: Color.contrast,
+                    borderColor: Color.separator,
+                  },
                   headerShown,
                   tabBarTestID: testID,
                   tabBarStyle:

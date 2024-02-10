@@ -6,10 +6,8 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.view.*;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.TokenFragmentBinding;
 import com.github.dedis.popstellar.model.objects.RollCall;
@@ -26,12 +24,9 @@ import com.github.dedis.popstellar.utility.error.UnknownRollCallException;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
-
-import net.glxn.qrgen.android.QRCode;
-
-import javax.inject.Inject;
-
 import dagger.hilt.android.AndroidEntryPoint;
+import javax.inject.Inject;
+import net.glxn.qrgen.android.QRCode;
 import timber.log.Timber;
 
 @AndroidEntryPoint
@@ -93,7 +88,7 @@ public class TokenFragment extends Fragment {
           });
 
     } catch (UnknownRollCallException | KeyException e) {
-      ErrorUtils.logAndShow(requireContext(), TAG, e, R.string.error_retrieve_own_token);
+      ErrorUtils.INSTANCE.logAndShow(requireContext(), TAG, e, R.string.error_retrieve_own_token);
       LaoActivity.setCurrentFragment(
           getParentFragmentManager(), R.id.fragment_event_list, LaoCreateFragment::new);
       return null;

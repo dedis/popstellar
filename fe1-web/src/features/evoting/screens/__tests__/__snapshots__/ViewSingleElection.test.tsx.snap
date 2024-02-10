@@ -276,7 +276,7 @@ exports[`ViewSingleElection renders correctly non organizers election with resul
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
-                handlerTag={22}
+                handlerTag={18}
                 handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}
@@ -336,7 +336,7 @@ exports[`ViewSingleElection renders correctly non organizers election with resul
                       >
                         <RCTScrollView
                           collapsable={false}
-                          handlerTag={23}
+                          handlerTag={19}
                           handlerType="NativeViewGestureHandler"
                           onGestureHandlerEvent={[Function]}
                           onGestureHandlerStateChange={[Function]}
@@ -1628,7 +1628,7 @@ exports[`ViewSingleElection renders correctly non organizers not started electio
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
-                handlerTag={15}
+                handlerTag={12}
                 handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}
@@ -1688,7 +1688,7 @@ exports[`ViewSingleElection renders correctly non organizers not started electio
                       >
                         <RCTScrollView
                           collapsable={false}
-                          handlerTag={16}
+                          handlerTag={13}
                           handlerType="NativeViewGestureHandler"
                           onGestureHandlerEvent={[Function]}
                           onGestureHandlerStateChange={[Function]}
@@ -2918,7 +2918,7 @@ exports[`ViewSingleElection renders correctly non organizers open secret ballot 
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
-                handlerTag={25}
+                handlerTag={21}
                 handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}
@@ -2978,7 +2978,7 @@ exports[`ViewSingleElection renders correctly non organizers open secret ballot 
                       >
                         <RCTScrollView
                           collapsable={false}
-                          handlerTag={26}
+                          handlerTag={22}
                           handlerType="NativeViewGestureHandler"
                           onGestureHandlerEvent={[Function]}
                           onGestureHandlerStateChange={[Function]}
@@ -3301,7 +3301,7 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
-                handlerTag={17}
+                handlerTag={14}
                 handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}
@@ -3361,7 +3361,7 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                       >
                         <RCTScrollView
                           collapsable={false}
-                          handlerTag={18}
+                          handlerTag={15}
                           handlerType="NativeViewGestureHandler"
                           onGestureHandlerEvent={[Function]}
                           onGestureHandlerStateChange={[Function]}
@@ -4665,77 +4665,54 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                             accessible={true}
                             collapsable={false}
                             focusable={true}
-                            onBlur={[Function]}
                             onClick={[Function]}
-                            onFocus={[Function]}
                             onResponderGrant={[Function]}
                             onResponderMove={[Function]}
                             onResponderRelease={[Function]}
                             onResponderTerminate={[Function]}
                             onResponderTerminationRequest={[Function]}
                             onStartShouldSetResponder={[Function]}
-                            style={{}}
+                            style={
+                              {
+                                "opacity": 1,
+                              }
+                            }
                             testID="election_vote_selector"
                           >
-                            <RNGestureHandlerButton
-                              collapsable={false}
-                              delayLongPress={600}
-                              enabled={true}
-                              exclusive={true}
-                              handlerTag={19}
-                              handlerType="NativeViewGestureHandler"
-                              onGestureEvent={[Function]}
-                              onGestureHandlerEvent={[Function]}
-                              onGestureHandlerStateChange={[Function]}
-                              onHandlerStateChange={[Function]}
-                              rippleColor={0}
-                              touchSoundDisabled={false}
-                            >
-                              <View
-                                accessible={true}
-                                collapsable={false}
-                                style={
+                            <View
+                              style={
+                                [
                                   {
-                                    "opacity": 1,
-                                  }
+                                    "backgroundColor": "#3742fa",
+                                    "borderColor": "#3742fa",
+                                    "borderRadius": 8,
+                                    "borderWidth": 1,
+                                    "padding": 8,
+                                  },
+                                ]
+                              }
+                            >
+                              <Text
+                                style={
+                                  [
+                                    {
+                                      "color": "#000",
+                                      "fontSize": 20,
+                                      "lineHeight": 26,
+                                      "textAlign": "left",
+                                    },
+                                    {
+                                      "textAlign": "center",
+                                    },
+                                    {
+                                      "color": "#fff",
+                                    },
+                                  ]
                                 }
                               >
-                                <View
-                                  style={
-                                    [
-                                      {
-                                        "backgroundColor": "#3742fa",
-                                        "borderColor": "#3742fa",
-                                        "borderRadius": 8,
-                                        "borderWidth": 1,
-                                        "padding": 8,
-                                      },
-                                    ]
-                                  }
-                                >
-                                  <Text
-                                    style={
-                                      [
-                                        {
-                                          "color": "#000",
-                                          "fontSize": 20,
-                                          "lineHeight": 26,
-                                          "textAlign": "left",
-                                        },
-                                        {
-                                          "textAlign": "center",
-                                        },
-                                        {
-                                          "color": "#fff",
-                                        },
-                                      ]
-                                    }
-                                  >
-                                    Cast Vote
-                                  </Text>
-                                </View>
-                              </View>
-                            </RNGestureHandlerButton>
+                                Cast Vote
+                              </Text>
+                            </View>
                           </View>
                         </View>
                       </View>
@@ -5028,7 +5005,7 @@ exports[`ViewSingleElection renders correctly non organizers terminated election
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
-                handlerTag={20}
+                handlerTag={16}
                 handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}
@@ -5088,7 +5065,7 @@ exports[`ViewSingleElection renders correctly non organizers terminated election
                       >
                         <RCTScrollView
                           collapsable={false}
-                          handlerTag={21}
+                          handlerTag={17}
                           handlerType="NativeViewGestureHandler"
                           onGestureHandlerEvent={[Function]}
                           onGestureHandlerStateChange={[Function]}
@@ -6330,7 +6307,7 @@ exports[`ViewSingleElection renders correctly non organizers undefined election 
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
-                handlerTag={24}
+                handlerTag={20}
                 handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}
@@ -6669,7 +6646,7 @@ exports[`ViewSingleElection renders correctly organizers election with results 1
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
-                handlerTag={10}
+                handlerTag={7}
                 handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}
@@ -6729,7 +6706,7 @@ exports[`ViewSingleElection renders correctly organizers election with results 1
                       >
                         <RCTScrollView
                           collapsable={false}
-                          handlerTag={11}
+                          handlerTag={8}
                           handlerType="NativeViewGestureHandler"
                           onGestureHandlerEvent={[Function]}
                           onGestureHandlerStateChange={[Function]}
@@ -9039,77 +9016,54 @@ exports[`ViewSingleElection renders correctly organizers not started election 1`
                             accessible={true}
                             collapsable={false}
                             focusable={true}
-                            onBlur={[Function]}
                             onClick={[Function]}
-                            onFocus={[Function]}
                             onResponderGrant={[Function]}
                             onResponderMove={[Function]}
                             onResponderRelease={[Function]}
                             onResponderTerminate={[Function]}
                             onResponderTerminationRequest={[Function]}
                             onStartShouldSetResponder={[Function]}
-                            style={{}}
+                            style={
+                              {
+                                "opacity": 1,
+                              }
+                            }
                             testID="election_option_selector"
                           >
-                            <RNGestureHandlerButton
-                              collapsable={false}
-                              delayLongPress={600}
-                              enabled={true}
-                              exclusive={true}
-                              handlerTag={3}
-                              handlerType="NativeViewGestureHandler"
-                              onGestureEvent={[Function]}
-                              onGestureHandlerEvent={[Function]}
-                              onGestureHandlerStateChange={[Function]}
-                              onHandlerStateChange={[Function]}
-                              rippleColor={0}
-                              touchSoundDisabled={false}
-                            >
-                              <View
-                                accessible={true}
-                                collapsable={false}
-                                style={
+                            <View
+                              style={
+                                [
                                   {
-                                    "opacity": 1,
-                                  }
+                                    "backgroundColor": "#3742fa",
+                                    "borderColor": "#3742fa",
+                                    "borderRadius": 8,
+                                    "borderWidth": 1,
+                                    "padding": 8,
+                                  },
+                                ]
+                              }
+                            >
+                              <Text
+                                style={
+                                  [
+                                    {
+                                      "color": "#000",
+                                      "fontSize": 20,
+                                      "lineHeight": 26,
+                                      "textAlign": "left",
+                                    },
+                                    {
+                                      "textAlign": "center",
+                                    },
+                                    {
+                                      "color": "#fff",
+                                    },
+                                  ]
                                 }
                               >
-                                <View
-                                  style={
-                                    [
-                                      {
-                                        "backgroundColor": "#3742fa",
-                                        "borderColor": "#3742fa",
-                                        "borderRadius": 8,
-                                        "borderWidth": 1,
-                                        "padding": 8,
-                                      },
-                                    ]
-                                  }
-                                >
-                                  <Text
-                                    style={
-                                      [
-                                        {
-                                          "color": "#000",
-                                          "fontSize": 20,
-                                          "lineHeight": 26,
-                                          "textAlign": "left",
-                                        },
-                                        {
-                                          "textAlign": "center",
-                                        },
-                                        {
-                                          "color": "#fff",
-                                        },
-                                      ]
-                                    }
-                                  >
-                                    Open Election
-                                  </Text>
-                                </View>
-                              </View>
-                            </RNGestureHandlerButton>
+                                Open Election
+                              </Text>
+                            </View>
                           </View>
                         </View>
                       </View>
@@ -9402,7 +9356,7 @@ exports[`ViewSingleElection renders correctly organizers open secret ballot elec
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
-                handlerTag={13}
+                handlerTag={10}
                 handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}
@@ -9462,7 +9416,7 @@ exports[`ViewSingleElection renders correctly organizers open secret ballot elec
                       >
                         <RCTScrollView
                           collapsable={false}
-                          handlerTag={14}
+                          handlerTag={11}
                           handlerType="NativeViewGestureHandler"
                           onGestureHandlerEvent={[Function]}
                           onGestureHandlerStateChange={[Function]}
@@ -9785,7 +9739,7 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
-                handlerTag={4}
+                handlerTag={3}
                 handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}
@@ -9845,7 +9799,7 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                       >
                         <RCTScrollView
                           collapsable={false}
-                          handlerTag={5}
+                          handlerTag={4}
                           handlerType="NativeViewGestureHandler"
                           onGestureHandlerEvent={[Function]}
                           onGestureHandlerStateChange={[Function]}
@@ -11057,159 +11011,113 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                             accessible={true}
                             collapsable={false}
                             focusable={true}
-                            onBlur={[Function]}
                             onClick={[Function]}
-                            onFocus={[Function]}
                             onResponderGrant={[Function]}
                             onResponderMove={[Function]}
                             onResponderRelease={[Function]}
                             onResponderTerminate={[Function]}
                             onResponderTerminationRequest={[Function]}
                             onStartShouldSetResponder={[Function]}
-                            style={{}}
+                            style={
+                              {
+                                "opacity": 1,
+                              }
+                            }
                             testID="election_opened_option_selector"
                           >
-                            <RNGestureHandlerButton
-                              collapsable={false}
-                              delayLongPress={600}
-                              enabled={true}
-                              exclusive={true}
-                              handlerTag={6}
-                              handlerType="NativeViewGestureHandler"
-                              onGestureEvent={[Function]}
-                              onGestureHandlerEvent={[Function]}
-                              onGestureHandlerStateChange={[Function]}
-                              onHandlerStateChange={[Function]}
-                              rippleColor={0}
-                              touchSoundDisabled={false}
-                            >
-                              <View
-                                accessible={true}
-                                collapsable={false}
-                                style={
+                            <View
+                              style={
+                                [
                                   {
-                                    "opacity": 1,
-                                  }
+                                    "backgroundColor": "#3742fa",
+                                    "borderColor": "#3742fa",
+                                    "borderRadius": 8,
+                                    "borderWidth": 1,
+                                    "padding": 8,
+                                  },
+                                  {
+                                    "backgroundColor": "transparent",
+                                  },
+                                ]
+                              }
+                            >
+                              <Text
+                                style={
+                                  [
+                                    {
+                                      "color": "#000",
+                                      "fontSize": 20,
+                                      "lineHeight": 26,
+                                      "textAlign": "left",
+                                    },
+                                    {
+                                      "textAlign": "center",
+                                    },
+                                    {
+                                      "color": "#fff",
+                                    },
+                                    {
+                                      "color": "#3742fa",
+                                    },
+                                  ]
                                 }
                               >
-                                <View
-                                  style={
-                                    [
-                                      {
-                                        "backgroundColor": "#3742fa",
-                                        "borderColor": "#3742fa",
-                                        "borderRadius": 8,
-                                        "borderWidth": 1,
-                                        "padding": 8,
-                                      },
-                                      {
-                                        "backgroundColor": "transparent",
-                                      },
-                                    ]
-                                  }
-                                >
-                                  <Text
-                                    style={
-                                      [
-                                        {
-                                          "color": "#000",
-                                          "fontSize": 20,
-                                          "lineHeight": 26,
-                                          "textAlign": "left",
-                                        },
-                                        {
-                                          "textAlign": "center",
-                                        },
-                                        {
-                                          "color": "#fff",
-                                        },
-                                        {
-                                          "color": "#3742fa",
-                                        },
-                                      ]
-                                    }
-                                  >
-                                    End Election
-                                  </Text>
-                                </View>
-                              </View>
-                            </RNGestureHandlerButton>
+                                End Election
+                              </Text>
+                            </View>
                           </View>
                           <View
                             accessible={true}
                             collapsable={false}
                             focusable={true}
-                            onBlur={[Function]}
                             onClick={[Function]}
-                            onFocus={[Function]}
                             onResponderGrant={[Function]}
                             onResponderMove={[Function]}
                             onResponderRelease={[Function]}
                             onResponderTerminate={[Function]}
                             onResponderTerminationRequest={[Function]}
                             onStartShouldSetResponder={[Function]}
-                            style={{}}
+                            style={
+                              {
+                                "opacity": 1,
+                              }
+                            }
                             testID="election_vote_selector"
                           >
-                            <RNGestureHandlerButton
-                              collapsable={false}
-                              delayLongPress={600}
-                              enabled={true}
-                              exclusive={true}
-                              handlerTag={7}
-                              handlerType="NativeViewGestureHandler"
-                              onGestureEvent={[Function]}
-                              onGestureHandlerEvent={[Function]}
-                              onGestureHandlerStateChange={[Function]}
-                              onHandlerStateChange={[Function]}
-                              rippleColor={0}
-                              touchSoundDisabled={false}
-                            >
-                              <View
-                                accessible={true}
-                                collapsable={false}
-                                style={
+                            <View
+                              style={
+                                [
                                   {
-                                    "opacity": 1,
-                                  }
+                                    "backgroundColor": "#3742fa",
+                                    "borderColor": "#3742fa",
+                                    "borderRadius": 8,
+                                    "borderWidth": 1,
+                                    "padding": 8,
+                                  },
+                                ]
+                              }
+                            >
+                              <Text
+                                style={
+                                  [
+                                    {
+                                      "color": "#000",
+                                      "fontSize": 20,
+                                      "lineHeight": 26,
+                                      "textAlign": "left",
+                                    },
+                                    {
+                                      "textAlign": "center",
+                                    },
+                                    {
+                                      "color": "#fff",
+                                    },
+                                  ]
                                 }
                               >
-                                <View
-                                  style={
-                                    [
-                                      {
-                                        "backgroundColor": "#3742fa",
-                                        "borderColor": "#3742fa",
-                                        "borderRadius": 8,
-                                        "borderWidth": 1,
-                                        "padding": 8,
-                                      },
-                                    ]
-                                  }
-                                >
-                                  <Text
-                                    style={
-                                      [
-                                        {
-                                          "color": "#000",
-                                          "fontSize": 20,
-                                          "lineHeight": 26,
-                                          "textAlign": "left",
-                                        },
-                                        {
-                                          "textAlign": "center",
-                                        },
-                                        {
-                                          "color": "#fff",
-                                        },
-                                      ]
-                                    }
-                                  >
-                                    Cast Vote
-                                  </Text>
-                                </View>
-                              </View>
-                            </RNGestureHandlerButton>
+                                Cast Vote
+                              </Text>
+                            </View>
                           </View>
                         </View>
                       </View>
@@ -11502,7 +11410,7 @@ exports[`ViewSingleElection renders correctly organizers terminated election 1`]
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
-                handlerTag={8}
+                handlerTag={5}
                 handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}
@@ -11562,7 +11470,7 @@ exports[`ViewSingleElection renders correctly organizers terminated election 1`]
                       >
                         <RCTScrollView
                           collapsable={false}
-                          handlerTag={9}
+                          handlerTag={6}
                           handlerType="NativeViewGestureHandler"
                           onGestureHandlerEvent={[Function]}
                           onGestureHandlerStateChange={[Function]}
@@ -12804,7 +12712,7 @@ exports[`ViewSingleElection renders correctly organizers undefined election stat
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
-                handlerTag={12}
+                handlerTag={9}
                 handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}

@@ -2,10 +2,8 @@ package com.github.dedis.popstellar.ui.lao.event.consensus;
 
 import android.view.*;
 import android.widget.BaseAdapter;
-
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.LifecycleOwner;
-
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.ConsensusNodeLayoutBinding;
 import com.github.dedis.popstellar.model.objects.ConsensusNode;
@@ -13,7 +11,6 @@ import com.github.dedis.popstellar.model.objects.ElectInstance;
 import com.github.dedis.popstellar.model.objects.ElectInstance.State;
 import com.github.dedis.popstellar.ui.lao.LaoViewModel;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
-
 import java.util.*;
 
 public class NodesAcceptorAdapter extends BaseAdapter {
@@ -110,7 +107,7 @@ public class NodesAcceptorAdapter extends BaseAdapter {
                             .subscribe(
                                 () -> {},
                                 error ->
-                                    ErrorUtils.logAndShow(
+                                    ErrorUtils.INSTANCE.logAndShow(
                                         parent.getContext(),
                                         TAG,
                                         error,

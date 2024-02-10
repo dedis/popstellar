@@ -1,29 +1,26 @@
 package com.github.dedis.popstellar.model.network.method.message.data.rollcall;
 
-import androidx.test.ext.junit.runners.AndroidJUnit4;
-
-import com.github.dedis.popstellar.model.network.JsonTestUtils;
-import com.github.dedis.popstellar.model.network.method.message.data.Action;
-import com.github.dedis.popstellar.model.network.method.message.data.Objects;
-import com.github.dedis.popstellar.model.objects.event.EventState;
-import com.github.dedis.popstellar.model.objects.event.EventType;
-import com.github.dedis.popstellar.utility.security.Hash;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
-import java.time.Instant;
-import java.util.ArrayList;
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+import com.github.dedis.popstellar.model.network.JsonTestUtils;
+import com.github.dedis.popstellar.model.network.method.message.data.Action;
+import com.github.dedis.popstellar.model.network.method.message.data.Objects;
+import com.github.dedis.popstellar.model.objects.event.EventState;
+import com.github.dedis.popstellar.model.objects.event.EventType;
+import com.github.dedis.popstellar.utility.security.HashSHA256;
+import java.time.Instant;
+import java.util.ArrayList;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
 @RunWith(AndroidJUnit4.class)
 public class CloseRollCallTest {
 
-  private static final String LAO_ID = Hash.hash("LAO_ID");
+  private static final String LAO_ID = HashSHA256.hash("LAO_ID");
   private static final String NAME = "NAME";
   private static final long TIME = Instant.now().getEpochSecond();
   private static final String LOCATION = "Location";
@@ -38,7 +35,7 @@ public class CloseRollCallTest {
   public void generateCloseRollCallIdTest() {
     // Hash('R'||lao_id||closes||closed_at)
     String expectedId =
-        Hash.hash(
+        HashSHA256.hash(
             EventType.ROLL_CALL.getSuffix(),
             LAO_ID,
             CLOSE_ROLL_CALL.getCloses(),
@@ -88,7 +85,7 @@ public class CloseRollCallTest {
   @Test
   public void hashCodeTest() {
     String updateId =
-        Hash.hash(
+        HashSHA256.hash(
             EventType.ROLL_CALL.getSuffix(),
             LAO_ID,
             OPEN_ROLL_CALL.getUpdateId(),

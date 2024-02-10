@@ -1,9 +1,20 @@
 package com.github.dedis.popstellar.ui.lao.token;
 
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
+import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
+import static com.github.dedis.popstellar.testutils.Base64DataUtils.generatePoPToken;
+import static com.github.dedis.popstellar.testutils.pages.lao.LaoActivityPageObject.containerId;
+import static com.github.dedis.popstellar.testutils.pages.lao.LaoActivityPageObject.laoIdExtra;
+import static com.github.dedis.popstellar.testutils.pages.lao.token.TokenListPageObject.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
+
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
-
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.event.EventState;
@@ -18,7 +29,12 @@ import com.github.dedis.popstellar.ui.lao.LaoActivity;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.github.dedis.popstellar.utility.error.keys.*;
 import com.github.dedis.popstellar.utility.security.KeyManager;
-
+import dagger.hilt.android.testing.*;
+import io.reactivex.subjects.BehaviorSubject;
+import java.security.GeneralSecurityException;
+import java.util.Collections;
+import java.util.HashSet;
+import javax.inject.Inject;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExternalResource;
@@ -26,27 +42,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoTestRule;
-
-import java.security.GeneralSecurityException;
-import java.util.Collections;
-import java.util.HashSet;
-
-import javax.inject.Inject;
-
-import dagger.hilt.android.testing.*;
-import io.reactivex.subjects.BehaviorSubject;
-
-import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
-import static androidx.test.espresso.matcher.ViewMatchers.withText;
-import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
-import static com.github.dedis.popstellar.testutils.Base64DataUtils.generatePoPToken;
-import static com.github.dedis.popstellar.testutils.pages.lao.LaoActivityPageObject.containerId;
-import static com.github.dedis.popstellar.testutils.pages.lao.LaoActivityPageObject.laoIdExtra;
-import static com.github.dedis.popstellar.testutils.pages.lao.token.TokenListPageObject.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
 
 @HiltAndroidTest
 @RunWith(AndroidJUnit4.class)
@@ -100,7 +95,9 @@ public class TokenListFragmentTest {
       new ExternalResource() {
         @Override
         protected void before()
-            throws UnknownLaoException, GeneralSecurityException, KeyGenerationException,
+            throws UnknownLaoException,
+                GeneralSecurityException,
+                KeyGenerationException,
                 UninitializedWalletException {
           hiltRule.inject();
           when(repository.getLaoObservable(anyString())).thenReturn(laoSubject);

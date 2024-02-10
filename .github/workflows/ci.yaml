@@ -115,10 +115,10 @@ jobs:
         working-directory: ./be1-go
 
     steps:
-      - name: Use go >= 1.19
+      - name: Use go >= 1.21
         uses: actions/setup-go@v3
         with:
-          go-version: ">=1.19"
+          go-version: ">=1.21"
 
       - name: Setup repo
         uses: actions/checkout@v3
@@ -194,8 +194,8 @@ jobs:
       - name: Setup JDK
         uses: actions/setup-java@v3
         with:
-          distribution: "zulu"
-          java-version: "11"
+          distribution: "temurin"
+          java-version: "17"
 
       - name: Cache Gradle
         uses: actions/cache@v2
@@ -226,6 +226,19 @@ jobs:
         run: |
           # To run the CI with debug informations, add --info
           ./gradlew jacocoTestReport --parallel --build-cache
+          
+      - name: Generate Sarif Lint Report
+        shell: bash
+        run: |
+          # To run the CI with debug informations, add --info
+          ./gradlew lintDebug --parallel --build-cache
+      
+      - name: Upload lint sarif
+        uses: github/codeql-action/upload-sarif@v2
+        if: always()
+        with:
+          sarif_file: fe2-android/app/build/reports/lint-results-debug.sarif
+          category: lint
 
       - name: Cache SonarCloud packages
         uses: actions/cache@v2
@@ -252,11 +265,11 @@ jobs:
         working-directory: ./be2-scala
 
     steps:
-      - name: Set up JDK 11
+      - name: Set up JDK 17
         uses: actions/setup-java@v2
         with:
-          distribution: "zulu"
-          java-version: "11"
+          distribution: "temurin"
+          java-version: "17"
 
       - name: Setup repo
         uses: actions/checkout@v2
@@ -314,9 +327,9 @@ jobs:
       - name: Lint with ruff
         run: |
           # stop the build if there are Python syntax errors or undefined names
-          ruff --format=github --select=E9,F63,F7,F82 --target-version=py39 .
+          ruff --output-format=github --select=E9,F63,F7,F82 --target-version=py39 .
           # default set of ruff rules with GitHub Annotations
-          ruff --format=github --target-version=py39 .
+          ruff --output-format=github --target-version=py39 .
       
       - name: Run tests
         run: |

@@ -36,7 +36,7 @@ const ConnectConfirm = () => {
   const dispatch = useDispatch();
 
   const laoIdRouteParam = route.params?.laoId || '';
-  const url = route.params?.serverUrl || 'ws://localhost:9000/organizer/client';
+  const url = route.params?.serverUrl || 'wss://127.0.0.1:9000/client';
   const [serverUrl, setServerUrl] = useState(url);
   const [laoIdInput, setLaoIdInput] = useState(laoIdRouteParam);
 

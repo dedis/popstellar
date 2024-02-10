@@ -2,25 +2,28 @@
 buildscript {
     ext {
         // Write shared dependency versions here, they will be available in the whole project
-        hilt_version = '2.42'
-        room_version = '2.4.3'
+        hilt_version = '2.44'
+        room_version = '2.5.2'
         scarlet_version = '0.1.11'
         slf4j_version = '1.7.36'
+        // (Matteo Suez, 30.09.2023) Newer version than 3.5.0-alpha07 makes the build fail
         espresso_version = '3.5.0-alpha07'
+        kotlin_version = '1.8.22'
     }
 
     dependencies {
         classpath "com.google.dagger:hilt-android-gradle-plugin:$hilt_version"
         classpath 'org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:3.4.0.2513'
         classpath 'com.adarshr:gradle-test-logger-plugin:3.2.0'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
 
 plugins {
-    id 'com.android.application' version '7.4.1' apply false
+    id 'com.android.application' version '7.4.2' apply false
 }
 
-task clean(type: Delete) {
+tasks.register('clean', Delete) {
     delete rootProject.buildDir
 }
 

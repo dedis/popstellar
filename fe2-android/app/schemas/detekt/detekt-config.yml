@@ -1,0 +1,59 @@
+build:
+  # Very large number as we don't want the build to fail (SonarCloud will then collect the issues on the CI)
+  maxIssues: 50
+  weights:
+    # Set to 0 the weight of issues on comments
+    comments: 0
+
+complexity:
+  # Set to 16 the maximum number of functions in a class, file, interface or object
+  TooManyFunctions:
+    thresholdInFiles: 16
+    thresholdInClasses: 16
+    thresholdInInterfaces: 16
+    thresholdInObjects: 16
+    ignoreDeprecated: true
+  # Set to 10 the maximum number of params of a function
+  LongParameterList:
+    functionThreshold: 11
+    constructorThreshold: 11
+  # Set to 150 the maximum number of lines for a single function
+  LongMethod:
+    threshold: 150
+  CyclomaticComplexMethod:
+    threshold: 20
+
+exceptions:
+  # Deactivating permanently the following exception as it doesn't allow to
+  # handle exceptions in Kotlin in a more compact way:
+  #
+  # catch (e: Exception) {
+  #   when(e) {
+  #     is IOException, ... : ...
+  #     else: ...
+  #   }
+  # }
+  #
+  TooGenericExceptionCaught:
+    active: false
+
+style:
+  # Allow up to 4 throws statements within a function
+  ThrowsCount:
+    active: true
+    max: 4
+  # Allow up to 4 return statements within a function
+  ReturnCount:
+    active: true
+    max: 4
+    excludeLabeled: false
+    excludeReturnFromLambda: true
+  # Allow TODOs in the codebase by deactivating the following rule
+  ForbiddenComment:
+    active: false
+  MagicNumber:
+    active: false
+
+naming:
+  VariableNaming:
+    active: false

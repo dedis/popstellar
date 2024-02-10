@@ -702,12 +702,12 @@ func (c *Channel) createAndSendLAOGreet() error {
 		return xerrors.Errorf("failed to marshal the organizer key: %v", err)
 	}
 
-	peers := []messagedata.Peer{}
+	peersInfo := c.hub.GetPeersInfo()
 
-	for _, info := range c.hub.GetPeersInfo() {
-		peers = append(peers, messagedata.Peer{
-			Address: info.ClientAddress,
-		})
+	peers := make([]messagedata.Peer, 0, len(peersInfo))
+
+	for _, info := range peersInfo {
+		peers = append(peers, messagedata.Peer{Address: info.ClientAddress})
 	}
 
 	msgData := messagedata.LaoGreet{

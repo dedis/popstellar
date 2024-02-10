@@ -23,14 +23,11 @@ export const categorizeEventsByTime = (time: Timestamp, events: EventState[]) =>
   const upcomingEvents: EventState[] = [];
 
   events.forEach((e: EventState) => {
-    // if end time is set, the event has ended
-    if (e.end) {
+    // past events are event where the end time is defined and before current time
+    if (e.end && e.end <= t) {
       pastEvents.push(e);
       return;
     }
-
-    // if end time was not set yet, it is either a current event
-    // or an upcoming one
 
     // current events are the ones that already started or will start within
     // the next {CURRENT_EVENTS_THRESHOLD_HOURS} hours

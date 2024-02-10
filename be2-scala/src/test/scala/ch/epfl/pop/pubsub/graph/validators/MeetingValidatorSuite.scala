@@ -51,8 +51,10 @@ class MeetingValidatorSuite extends TestKit(ActorSystem("meetingValidatorTestAct
   private final val PUBLIC_KEY: PublicKey = PublicKey(Base64Data("jsNj23IHALvppqV1xQfP71_3IyAHzivxiCz236_zzQc="))
   private final val PRIVATE_KEY: PrivateKey = PrivateKey(Base64Data("qRfms3wzSLkxAeBz6UtwA-L1qP0h8D9XI1FSvY68t7Y="))
   private final val PK_OWNER: PublicKey = PublicKey(Base64Data.encode("wrongOwner"))
-  private final val laoDataRight: LaoData = LaoData(sender, List(sender), PRIVATE_KEY, PUBLIC_KEY, List.empty)
-  private final val laoDataWrong: LaoData = LaoData(PK_OWNER, List(PK_OWNER), PRIVATE_KEY, PUBLIC_KEY, List.empty)
+  private final val address: String = "127.0.0.1:8000"
+
+  private final val laoDataRight: LaoData = LaoData(sender, List(sender), PRIVATE_KEY, PUBLIC_KEY, List.empty, address)
+  private final val laoDataWrong: LaoData = LaoData(PK_OWNER, List(PK_OWNER), PRIVATE_KEY, PUBLIC_KEY, List.empty, address)
   private final val channelDataRightSetup: ChannelData = ChannelData(ObjectType.LAO, List.empty)
   private final val channelDataWrongSetup: ChannelData = ChannelData(ObjectType.ELECTION, List.empty)
 

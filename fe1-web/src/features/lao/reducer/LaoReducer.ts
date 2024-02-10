@@ -246,6 +246,15 @@ const laosSlice = createSlice({
         }
       },
     },
+    // Change the connected status to true
+    // throws an error if currentId is undefined
+    reconnectLao: (state) => {
+      if (state.currentId !== undefined) {
+        state.connected = true;
+      } else {
+        throw new Error(`Cannot reconnect to a LAO if not connected to one`);
+      }
+    },
   },
   extraReducers: (builder) => {
     // this is called by the persistence layer of Redux, upon starting the application
@@ -279,6 +288,7 @@ export const {
   addLaoServerAddress,
   addSubscribedChannel,
   removeSubscribedChannel,
+  reconnectLao,
 } = laosSlice.actions;
 
 export const getLaosState = (state: any): LaoReducerState => state[LAO_REDUCER_PATH];

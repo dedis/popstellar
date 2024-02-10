@@ -29,6 +29,7 @@ import RollCallScanner, { RollCallOpenedHeaderLeft } from '../RollCallScanner';
 
 const mockPublicKey2 = new PublicKey('mockPublicKey2_fFcHDaVHcCcY8IBfHE7auXJ7h4ms=');
 const mockPublicKey3 = new PublicKey('mockPublicKey3_fFcHDaVHcCcY8IBfHE7auXJ7h4ms=');
+const mockOrganizerPublicKey = new PublicKey('mockOrganizerPublicKey_fFcHDaVHcCcY8IBfHE7a=');
 
 jest.mock('@react-navigation/core', () => {
   const actualNavigation = jest.requireActual('@react-navigation/core');
@@ -80,14 +81,12 @@ const mockStore = configureStore({
 mockStore.dispatch(setCurrentLao(mockLao));
 mockStore.dispatch(addRollCall(mockRollCall.toState()));
 
-const mockGenerateToken = jest.fn(() => Promise.resolve(mockPopToken));
-
 const contextValue = {
   [ROLLCALL_FEATURE_IDENTIFIER]: {
     useCurrentLaoId: () => mockLaoId,
     useConnectedToLao: () => true,
     makeEventByTypeSelector: makeEventByTypeSelector,
-    generateToken: mockGenerateToken,
+    generateToken: jest.fn(),
     hasSeed: () => getWalletState(mockStore.getState()).seed !== undefined,
   } as RollCallReactContext,
 };
@@ -98,13 +97,18 @@ const didFocus = () =>
     .filter(([eventName]) => eventName === 'focus')
     .forEach((args) => args[1]());
 
-const renderRollCallOpened = (mockAttendeePopTokens?: string[]) => {
+const renderRollCallOpened = (
+  mockAttendeePopTokens: string[] = [mockOrganizerPublicKey.toString()],
+) => {
   const renderedRollCallOpened = render(
     <Provider store={mockStore}>
       <FeatureContext.Provider value={contextValue}>
         <MockNavigator
           component={RollCallScanner}
-          params={{ rollCallId, attendeePopTokens: mockAttendeePopTokens || [] }}
+          params={{
+            rollCallId,
+            attendeePopTokens: mockAttendeePopTokens,
+          }}
           screenOptions={{ headerLeft: RollCallOpenedHeaderLeft }}
         />
       </FeatureContext.Provider>
@@ -125,7 +129,6 @@ describe('RollCallOpened', () => {
     const { toJSON } = renderRollCallOpened();
 
     await waitFor(() => {
-      expect(mockGenerateToken).toHaveBeenCalled();
       expect(toJSON()).toMatchSnapshot();
     });
   });
@@ -140,7 +143,6 @@ describe('RollCallOpened', () => {
       // scan invalid pop tokens
       fakeQrReaderScan('123');
       fakeQrReaderScan('456');
-      expect(mockGenerateToken).toHaveBeenCalled();
     });
 
     expect(toJSON()).toMatchSnapshot();
@@ -149,12 +151,8 @@ describe('RollCallOpened', () => {
   it('shows toast when scanning attendees', async () => {
     renderRollCallOpened();
 
-    fakeQrReaderScan(mockPublicKey2.valueOf());
-    fakeQrReaderScan(mockPublicKey3.valueOf());
-
-    await waitFor(async () => {
-      expect(mockGenerateToken).toHaveBeenCalled();
-    });
+    fakeQrReaderScan(ScannablePopToken.encodePopToken({ pop_token: mockPublicKey2.valueOf() }));
+    fakeQrReaderScan(ScannablePopToken.encodePopToken({ pop_token: mockPublicKey2.valueOf() }));
 
     expect(mockToastShow).toHaveBeenCalledTimes(2);
   });
@@ -199,10 +197,6 @@ describe('RollCallOpened', () => {
       'roll_call_open_stop_scanning',
     );
 
-    await waitFor(() => {
-      expect(mockGenerateToken).toHaveBeenCalled();
-    });
-
     fireEvent.press(button);
 
     expect(navigate).toHaveBeenCalledWith(expect.anything(), {
@@ -218,7 +212,6 @@ describe('RollCallOpened', () => {
     renderRollCallOpened(mockAttendeePopTokens);
 
     await waitFor(() => {
-      expect(mockGenerateToken).toHaveBeenCalled();
       fakeQrReaderScan(ScannablePopToken.encodePopToken({ pop_token: mockPublicKey2.valueOf() }));
       fakeQrReaderScan(ScannablePopToken.encodePopToken({ pop_token: mockPublicKey3.valueOf() }));
     });
@@ -228,7 +221,7 @@ describe('RollCallOpened', () => {
         ...mockAttendeePopTokens,
         mockPublicKey2.valueOf(),
         mockPublicKey3.valueOf(),
-      ],
+      ].sort(),
     });
   });
 
@@ -243,10 +236,53 @@ describe('RollCallOpened', () => {
     await waitFor(() => {
       fakeQrReaderScan(ScannablePopToken.encodePopToken({ pop_token: mockPublicKey2.valueOf() }));
       fakeQrReaderScan(ScannablePopToken.encodePopToken({ pop_token: mockPublicKey3.valueOf() }));
-      expect(mockGenerateToken).toHaveBeenCalled();
     });
 
     // counter should be at 2
     expect(toJSON()).toMatchSnapshot();
+  });
+
+  it('accepts only valid pop tokens', async () => {
+    const validPopTokens = [
+      mockPublicKey2.valueOf(),
+      mockPublicKey3.valueOf(),
+      'abcdefghijklwxyzABNOPQRSTUVWXYZ0123456789-_=',
+    ];
+
+    const invalidPopTokens = [
+      '', // empty string
+      'ockPublicKey2_fFcHDaVHcCcY8IBfHE7auXJ7h4ms=', // size not multiple of 4
+      'mockP!blicKey2_fFcHDaVHcCcY8IBfHE7auXJ7h4ms=', // invalid character
+    ];
+
+    renderRollCallOpened();
+
+    for (const validPopToken of validPopTokens) {
+      fakeQrReaderScan(ScannablePopToken.encodePopToken({ pop_token: validPopToken }));
+      expect(mockToastShow).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.objectContaining({ type: 'success' }),
+      );
+      mockToastShow.mockReset();
+    }
+
+    for (const invalidPopToken of invalidPopTokens) {
+      fakeQrReaderScan(JSON.stringify({ pop_token: invalidPopToken }));
+      expect(mockToastShow).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.objectContaining({ type: 'danger' }),
+      );
+      mockToastShow.mockReset();
+    }
+
+    // should have correct json format
+    for (const validPopToken of validPopTokens) {
+      fakeQrReaderScan(validPopToken);
+      expect(mockToastShow).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.objectContaining({ type: 'danger' }),
+      );
+      mockToastShow.mockReset();
+    }
   });
 });

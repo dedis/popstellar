@@ -12,12 +12,12 @@ import PoPTouchableOpacity from './PoPTouchableOpacity';
 
 type NavigationProps = StackNavigationProp<AppParamList>;
 
-const BackButton = ({ padding }: IPropTypes) => {
+const BackButton = ({ padding, testID }: IPropTypes) => {
   const navigation = useNavigation<NavigationProps>();
 
   return (
     <>
-      <PoPTouchableOpacity onPress={navigation.goBack}>
+      <PoPTouchableOpacity onPress={navigation.goBack} testID={testID}>
         <PoPIcon name="arrowBack" color={Color.inactive} size={Icon.size} />
       </PoPTouchableOpacity>
       <ButtonPadding paddingAmount={padding || 0} nextToIcon />
@@ -27,12 +27,14 @@ const BackButton = ({ padding }: IPropTypes) => {
 
 const propTypes = {
   padding: PropTypes.number,
+  testID: PropTypes.string,
 };
 
 BackButton.propTypes = propTypes;
 
 BackButton.defaultProps = {
   padding: 0,
+  testID: undefined,
 };
 
 type IPropTypes = PropTypes.InferProps<typeof propTypes>;

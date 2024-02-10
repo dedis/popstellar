@@ -84,56 +84,79 @@ export class RollCall {
     if (obj.id === undefined) {
       throw new Error("Undefined 'id' when creating 'RollCall'");
     }
+    this.id = obj.id;
+
     if (obj.name === undefined) {
       throw new Error("Undefined 'name' when creating 'RollCall'");
     }
+    this.name = obj.name;
+
     if (obj.location === undefined) {
       throw new Error("Undefined 'location' when creating 'RollCall'");
     }
+    this.location = obj.location;
+
     if (obj.creation === undefined) {
       throw new Error("Undefined 'creation' when creating 'RollCall'");
     }
+    this.creation = obj.creation;
+
     if (obj.proposedStart === undefined) {
       throw new Error("Undefined 'proposed_start' when creating 'RollCall'");
     }
+    this.proposedStart = obj.proposedStart;
+
     if (obj.proposedEnd === undefined) {
       throw new Error("Undefined 'proposed_end' when creating 'RollCall'");
     }
+    this.proposedEnd = obj.proposedEnd;
+
     if (obj.status === undefined) {
       throw new Error("Undefined 'status' when creating 'RollCall'");
     }
+    this.status = obj.status;
 
     if (obj.status !== RollCallStatus.CREATED && !obj.idAlias) {
       throw new Error(
         `Error when creating 'RollCall': 'idAlias' can only be undefined in status 'CREATED'`,
       );
     }
+    this.idAlias = obj.idAlias;
 
     if (obj.status !== RollCallStatus.CREATED && !obj.openedAt) {
       throw new Error(
         `Error when creating 'RollCall': 'openedAt' can only be undefined in status 'CREATED'`,
       );
     }
+    this.openedAt = obj.openedAt;
 
     if (obj.status === RollCallStatus.CLOSED && !obj.closedAt) {
       throw new Error(
         `Error when creating 'RollCall': 'closedAt' cannot be undefined when in status 'CLOSED'`,
       );
     }
+    this.closedAt = obj.closedAt;
 
-    this.id = obj.id;
-    this.idAlias = obj.idAlias;
-    this.name = obj.name;
-    this.location = obj.location;
-    this.description = obj.description;
-    this.creation = obj.creation;
-    this.proposedStart = obj.proposedStart;
-    this.proposedEnd = obj.proposedEnd;
-    this.status = obj.status;
+    if (obj.attendees) {
+      // ensure the list of attendees is sorted
+      const isAttendeeListSorted = obj.attendees.reduce<[boolean, PublicKey]>(
+        ([isSorted, lastValue], currentValue) => [
+          isSorted && lastValue < currentValue,
+          currentValue,
+        ],
+        [true, new PublicKey('')],
+      );
+
+      if (!isAttendeeListSorted[0]) {
+        console.warn(
+          'Attendee list is not sorted alphabetically, be careful there is a risk of de-anonymization',
+        );
+      }
+    }
     this.attendees = obj.attendees;
 
-    this.openedAt = obj.openedAt;
-    this.closedAt = obj.closedAt;
+    // This field is optional and do not have to satisfy any checks
+    this.description = obj.description;
   }
 
   /**

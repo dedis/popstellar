@@ -1,28 +1,25 @@
 package com.github.dedis.popstellar.model.network.method.message.data.lao;
 
-import androidx.test.ext.junit.runners.AndroidJUnit4;
+import static com.github.dedis.popstellar.testutils.Base64DataUtils.generatePublicKey;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.*;
 
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 import com.github.dedis.popstellar.model.network.JsonTestUtils;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.testutils.Base64DataUtils;
-import com.github.dedis.popstellar.utility.security.Hash;
+import com.github.dedis.popstellar.utility.security.HashSHA256;
 import com.google.gson.JsonParseException;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.internal.util.collections.Sets;
-
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
-
-import static com.github.dedis.popstellar.testutils.Base64DataUtils.generatePublicKey;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.*;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.internal.util.collections.Sets;
 
 @RunWith(AndroidJUnit4.class)
 public class UpdateLaoTest {
@@ -41,7 +38,7 @@ public class UpdateLaoTest {
     UpdateLao updateLao = new UpdateLao(organizer, creation, name, lastModified, new HashSet<>());
     // Hash(organizer||creation||name)
     String expectedId =
-        Hash.hash(organizer.getEncoded(), Long.toString(creation), updateLao.getName());
+        HashSHA256.hash(organizer.getEncoded(), Long.toString(creation), updateLao.getName());
     assertThat(updateLao.getId(), is(expectedId));
   }
 

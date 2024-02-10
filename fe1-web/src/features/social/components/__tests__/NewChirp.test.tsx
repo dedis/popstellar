@@ -1,5 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit';
-import { fireEvent, render, waitFor } from '@testing-library/react-native';
+import { fireEvent, render } from '@testing-library/react-native';
 import React from 'react';
 import { Provider } from 'react-redux';
 import { combineReducers } from 'redux';
@@ -7,9 +7,10 @@ import { combineReducers } from 'redux';
 import { mockLao, mockLaoId, mockPopToken } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
 import { laoReducer, setCurrentLao } from 'features/lao/reducer';
+import STRINGS from 'resources/strings';
 
 import { SocialMediaContext } from '../../context';
-import { SocialReactContext, SOCIAL_FEATURE_IDENTIFIER } from '../../interface';
+import { SOCIAL_FEATURE_IDENTIFIER, SocialReactContext } from '../../interface';
 import { requestAddChirp } from '../../network/SocialMessageApi';
 import SocialReducer from '../../reducer/SocialReducer';
 import NewChirp from '../NewChirp';
@@ -65,7 +66,7 @@ describe('NewChirp', () => {
     expect(toJSON()).toMatchSnapshot();
   });
 
-  it('is possible to publish chirps', async () => {
+  it('is possible to publish chirps', () => {
     const { getByTestId } = render(
       <Provider store={mockStore}>
         <FeatureContext.Provider value={contextValue}>
@@ -81,9 +82,51 @@ describe('NewChirp', () => {
     fireEvent.changeText(getByTestId('new_chirp_input'), mockText);
     fireEvent.press(getByTestId('new_chirp_publish'));
 
-    await waitFor(() => {
-      expect(requestAddChirp).toHaveBeenCalledWith(mockPopToken.publicKey, mockText, mockLaoId);
-      expect(requestAddChirp).toHaveBeenCalledTimes(1);
-    });
+    expect(requestAddChirp).toHaveBeenCalledWith(mockPopToken.publicKey, mockText, mockLaoId);
+    expect(requestAddChirp).toHaveBeenCalledTimes(1);
+  });
+
+  it('shows the modal on trimmed chirp and closes it', async () => {
+    const { toJSON, getByTestId, findByPlaceholderText } = render(
+      <Provider store={mockStore}>
+        <FeatureContext.Provider value={contextValue}>
+          <SocialMediaContext.Provider value={socialContextValue}>
+            <NewChirp />
+          </SocialMediaContext.Provider>
+        </FeatureContext.Provider>
+      </Provider>,
+    );
+    const mockText = '\nThis    text\n \twill be trimmed \n ';
+
+    // Add an invalid chirp
+    fireEvent.changeText(getByTestId('new_chirp_input'), mockText);
+    fireEvent.press(getByTestId('new_chirp_publish'));
+
+    expect(getByTestId('confirm-modal-confirm')).toBeDefined();
+    expect(toJSON()).toMatchSnapshot();
+
+    // Accept the modal message
+    fireEvent.press(getByTestId('confirm-modal-confirm'));
+
+    expect(await findByPlaceholderText(STRINGS.your_chirp)).not.toBeNull();
+    expect(toJSON()).toMatchSnapshot();
+  });
+  it('shows the error message on empty trimmed message', () => {
+    const { toJSON, queryByText, getByTestId } = render(
+      <Provider store={mockStore}>
+        <FeatureContext.Provider value={contextValue}>
+          <SocialMediaContext.Provider value={socialContextValue}>
+            <NewChirp />
+          </SocialMediaContext.Provider>
+        </FeatureContext.Provider>
+      </Provider>,
+    );
+
+    const mockText = '   \t\n \r\n  ';
+
+    fireEvent.changeText(getByTestId('new_chirp_input'), mockText);
+
+    expect(queryByText(STRINGS.social_media_empty_chirp)).not.toBeNull();
+    expect(toJSON()).toMatchSnapshot();
   });
 });

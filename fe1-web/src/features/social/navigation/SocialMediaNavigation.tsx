@@ -3,6 +3,7 @@ import { CompositeScreenProps, useNavigation } from '@react-navigation/core';
 import { StackScreenProps } from '@react-navigation/stack';
 import React, { useMemo, useState } from 'react';
 
+import { BuildInfo } from 'core/components';
 import DrawerMenuButton from 'core/components/DrawerMenuButton';
 import { makeIcon } from 'core/components/PoPIcon';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
@@ -49,11 +50,15 @@ const SocialMediaNavigation = () => {
   const rollCallId = lao.last_tokenized_roll_call_id;
   const rollCall: SocialFeature.RollCall | undefined = SocialHooks.useRollCallById(rollCallId);
 
-  SocialHooks.useSocialContext()
+  const socialContext = SocialHooks.useSocialContext();
+
+  socialContext
     .generateToken(lao.id, rollCallId)
     .then((token) => {
       if (rollCall?.containsToken(token)) {
-        setCurrentUserPopTokenPublicKey(token.publicKey);
+        if (currentUserPopTokenPublicKey?.toString() !== token.publicKey.toString()) {
+          setCurrentUserPopTokenPublicKey(token.publicKey);
+        }
       }
     })
     // If an error happens when generating the token, it should not affect the Social Media
@@ -75,8 +80,11 @@ const SocialMediaNavigation = () => {
     <SocialMediaContext.Provider value={contextValue}>
       <Tab.Navigator
         screenOptions={{
-          tabBarActiveTintColor: Color.accent,
-          tabBarInactiveTintColor: Color.inactive,
+          headerBackground: BuildInfo,
+          headerBackgroundContainerStyle: {
+            backgroundColor: Color.contrast,
+            borderColor: Color.separator,
+          },
           headerLeft: DrawerMenuButton,
           headerLeftContainerStyle: {
             paddingLeft: Spacing.contentSpacing,

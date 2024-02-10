@@ -5,10 +5,8 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.*;
 import android.widget.EditText;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.MeetingCreateFragmentBinding;
 import com.github.dedis.popstellar.ui.lao.LaoActivity;
@@ -17,11 +15,9 @@ import com.github.dedis.popstellar.ui.lao.event.AbstractEventCreationFragment;
 import com.github.dedis.popstellar.ui.lao.event.eventlist.EventListFragment;
 import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
-
-import java.util.Objects;
-
 import dagger.hilt.android.AndroidEntryPoint;
 import io.reactivex.Single;
+import java.util.Objects;
 
 /** Fragment that shows up when user wants to create a Meeting Event */
 @AndroidEntryPoint
@@ -99,7 +95,7 @@ public class MeetingCreationFragment extends AbstractEventCreationFragment {
                     R.id.fragment_event_list,
                     EventListFragment::newInstance),
             error ->
-                ErrorUtils.logAndShow(
+                ErrorUtils.INSTANCE.logAndShow(
                     requireContext(), TAG, error, R.string.error_create_meeting)));
   }
 

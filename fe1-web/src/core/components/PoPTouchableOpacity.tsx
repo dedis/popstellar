@@ -1,19 +1,22 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Pressable, StyleProp, View, ViewStyle } from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import { StyleProp, TouchableOpacity, ViewStyle } from 'react-native';
 
 import { ExtendType } from 'core/types';
-
 /**
  * Wraps a touchable opacity in a pressable component to make karate tests work :)
+ * /!\ no longer wraps due to UI bugs (https://github.com/dedis/popstellar/issues/1605) (dayan9265, 06-06-2023)
  */
-const PoPTouchableOpacity = React.forwardRef<View, IPropTypes>(
-  ({ onPress, containerStyle, style, testID, children }: IPropTypes, ref) => {
+const PoPTouchableOpacity = React.forwardRef<TouchableOpacity, IPropTypes>(
+  ({ onPress, style, testID, children }: IPropTypes, ref) => {
     return (
-      <Pressable onPress={onPress} style={containerStyle} ref={ref} testID={testID || undefined}>
-        <TouchableOpacity style={style}>{children}</TouchableOpacity>
-      </Pressable>
+      <TouchableOpacity
+        style={style}
+        onPress={onPress !== null ? onPress : undefined}
+        ref={ref}
+        testID={testID || undefined}>
+        {children}
+      </TouchableOpacity>
     );
   },
 );
@@ -25,8 +28,6 @@ const propTypes = {
 
   // we cannot reliably determine the shape of a react native style object
   // eslint-disable-next-line react/forbid-prop-types
-  containerStyle: PropTypes.any,
-  // eslint-disable-next-line react/forbid-prop-types
   style: PropTypes.any,
 };
 
@@ -36,7 +37,6 @@ PoPTouchableOpacity.defaultProps = {
   children: undefined,
   onPress: undefined,
   testID: undefined,
-  containerStyle: undefined,
   style: undefined,
 };
 

@@ -75,8 +75,6 @@ exports[`NewChirp renders correctly 1`] = `
       <View
         style={
           {
-            "alignItems": "center",
-            "alignSelf": "flex-end",
             "flexDirection": "row",
             "marginTop": 16,
           }
@@ -85,107 +83,838 @@ exports[`NewChirp renders correctly 1`] = `
         <View
           style={
             {
-              "marginRight": 16,
+              "alignContent": "flex-end",
+              "flexDirection": "row",
+              "marginLeft": "auto",
             }
           }
         >
-          <Text
+          <View
             style={
-              [
-                {
-                  "color": "#000",
-                  "fontSize": 20,
-                  "lineHeight": 26,
-                  "textAlign": "left",
-                },
-              ]
+              {
+                "marginRight": 16,
+              }
             }
           >
-            300
-          </Text>
+            <Text
+              style={
+                [
+                  {
+                    "color": "#000",
+                    "fontSize": 20,
+                    "lineHeight": 26,
+                    "textAlign": "left",
+                  },
+                ]
+              }
+            >
+              300
+            </Text>
+          </View>
+          <View
+            accessible={true}
+            collapsable={false}
+            focusable={false}
+            onClick={[Function]}
+            onResponderGrant={[Function]}
+            onResponderMove={[Function]}
+            onResponderRelease={[Function]}
+            onResponderTerminate={[Function]}
+            onResponderTerminationRequest={[Function]}
+            onStartShouldSetResponder={[Function]}
+            style={
+              {
+                "opacity": 1,
+              }
+            }
+            testID="new_chirp_publish"
+          >
+            <View
+              style={
+                [
+                  {
+                    "backgroundColor": "#3742fa",
+                    "borderColor": "#3742fa",
+                    "borderRadius": 8,
+                    "borderWidth": 1,
+                    "padding": 8,
+                  },
+                  {
+                    "backgroundColor": "#8E8E8E",
+                    "borderColor": "#8E8E8E",
+                  },
+                ]
+              }
+            >
+              <Text
+                style={
+                  [
+                    {
+                      "color": "#000",
+                      "fontSize": 20,
+                      "lineHeight": 26,
+                      "textAlign": "left",
+                    },
+                    {
+                      "textAlign": "center",
+                    },
+                    {
+                      "color": "#fff",
+                    },
+                  ]
+                }
+              >
+                Publish
+              </Text>
+            </View>
+          </View>
         </View>
+      </View>
+    </View>
+  </View>
+  <Modal
+    hardwareAccelerated={false}
+    onRequestClose={[Function]}
+    transparent={true}
+    visible={false}
+  />
+</View>
+`;
+
+exports[`NewChirp shows the error message on empty trimmed message 1`] = `
+<View
+  style={
+    {
+      "marginBottom": 16,
+    }
+  }
+>
+  <View
+    style={
+      {
+        "backgroundColor": "#fff",
+        "borderColor": "#000",
+        "borderRadius": 8,
+        "flexDirection": "row",
+        "padding": 16,
+      }
+    }
+  >
+    <View
+      style={
+        {
+          "marginRight": 16,
+        }
+      }
+    >
+      <blockies
+        bgColor="#ffffff"
+        scale={5}
+        seed="oKHk3AivbpNXk_SfFcHDaVHcCcY8IBfHE7auXJ7h4ms="
+        size={8}
+        spotColor="#008ec2"
+      />
+    </View>
+    <View
+      style={
+        {
+          "display": "flex",
+          "flexDirection": "column",
+          "flexGrow": 1,
+        }
+      }
+    >
+      <TextInput
+        multiline={true}
+        numberOfLines={5}
+        onBlur={[Function]}
+        onChangeText={[Function]}
+        onFocus={[Function]}
+        placeholder="Your chirp"
+        placeholderTextColor="#8E8E8E"
+        selectTextOnFocus={true}
+        style={
+          [
+            {
+              "color": "#000",
+              "fontSize": 20,
+              "lineHeight": 26,
+              "textAlign": "left",
+            },
+            {
+              "alignContent": "flex-end",
+              "borderColor": "#000",
+              "borderRadius": 8,
+              "borderWidth": 1,
+              "padding": 16,
+            },
+          ]
+        }
+        testID="new_chirp_input"
+        value="   	
+ 
+  "
+      />
+      <View
+        style={
+          {
+            "flexDirection": "row",
+            "marginTop": 16,
+          }
+        }
+      >
+        <Text
+          style={
+            [
+              {
+                "color": "#000",
+                "fontSize": 20,
+                "lineHeight": 26,
+                "textAlign": "left",
+              },
+              {
+                "color": "#e74c3c",
+              },
+            ]
+          }
+        >
+          You chirp will be cropped to an empty chirp. You cannot send an empty chirp.
+        </Text>
+        <View
+          style={
+            {
+              "alignContent": "flex-end",
+              "flexDirection": "row",
+              "marginLeft": "auto",
+            }
+          }
+        >
+          <View
+            style={
+              {
+                "marginRight": 16,
+              }
+            }
+          >
+            <Text
+              style={
+                [
+                  {
+                    "color": "#000",
+                    "fontSize": 20,
+                    "lineHeight": 26,
+                    "textAlign": "left",
+                  },
+                ]
+              }
+            >
+              290
+            </Text>
+          </View>
+          <View
+            accessible={true}
+            collapsable={false}
+            focusable={false}
+            onClick={[Function]}
+            onResponderGrant={[Function]}
+            onResponderMove={[Function]}
+            onResponderRelease={[Function]}
+            onResponderTerminate={[Function]}
+            onResponderTerminationRequest={[Function]}
+            onStartShouldSetResponder={[Function]}
+            style={
+              {
+                "opacity": 1,
+              }
+            }
+            testID="new_chirp_publish"
+          >
+            <View
+              style={
+                [
+                  {
+                    "backgroundColor": "#3742fa",
+                    "borderColor": "#3742fa",
+                    "borderRadius": 8,
+                    "borderWidth": 1,
+                    "padding": 8,
+                  },
+                  {
+                    "backgroundColor": "#8E8E8E",
+                    "borderColor": "#8E8E8E",
+                  },
+                ]
+              }
+            >
+              <Text
+                style={
+                  [
+                    {
+                      "color": "#000",
+                      "fontSize": 20,
+                      "lineHeight": 26,
+                      "textAlign": "left",
+                    },
+                    {
+                      "textAlign": "center",
+                    },
+                    {
+                      "color": "#fff",
+                    },
+                  ]
+                }
+              >
+                Publish
+              </Text>
+            </View>
+          </View>
+        </View>
+      </View>
+    </View>
+  </View>
+  <Modal
+    hardwareAccelerated={false}
+    onRequestClose={[Function]}
+    transparent={true}
+    visible={false}
+  />
+</View>
+`;
+
+exports[`NewChirp shows the modal on trimmed chirp and closes it 1`] = `
+<View
+  style={
+    {
+      "marginBottom": 16,
+    }
+  }
+>
+  <View
+    style={
+      {
+        "backgroundColor": "#fff",
+        "borderColor": "#000",
+        "borderRadius": 8,
+        "flexDirection": "row",
+        "padding": 16,
+      }
+    }
+  >
+    <View
+      style={
+        {
+          "marginRight": 16,
+        }
+      }
+    >
+      <blockies
+        bgColor="#ffffff"
+        scale={5}
+        seed="oKHk3AivbpNXk_SfFcHDaVHcCcY8IBfHE7auXJ7h4ms="
+        size={8}
+        spotColor="#008ec2"
+      />
+    </View>
+    <View
+      style={
+        {
+          "display": "flex",
+          "flexDirection": "column",
+          "flexGrow": 1,
+        }
+      }
+    >
+      <TextInput
+        multiline={true}
+        numberOfLines={5}
+        onBlur={[Function]}
+        onChangeText={[Function]}
+        onFocus={[Function]}
+        placeholder="Your chirp"
+        placeholderTextColor="#8E8E8E"
+        selectTextOnFocus={true}
+        style={
+          [
+            {
+              "color": "#000",
+              "fontSize": 20,
+              "lineHeight": 26,
+              "textAlign": "left",
+            },
+            {
+              "alignContent": "flex-end",
+              "borderColor": "#000",
+              "borderRadius": 8,
+              "borderWidth": 1,
+              "padding": 16,
+            },
+          ]
+        }
+        testID="new_chirp_input"
+        value="
+This    text
+ 	will be trimmed 
+ "
+      />
+      <View
+        style={
+          {
+            "flexDirection": "row",
+            "marginTop": 16,
+          }
+        }
+      >
+        <View
+          style={
+            {
+              "alignContent": "flex-end",
+              "flexDirection": "row",
+              "marginLeft": "auto",
+            }
+          }
+        >
+          <View
+            style={
+              {
+                "marginRight": 16,
+              }
+            }
+          >
+            <Text
+              style={
+                [
+                  {
+                    "color": "#000",
+                    "fontSize": 20,
+                    "lineHeight": 26,
+                    "textAlign": "left",
+                  },
+                ]
+              }
+            >
+              266
+            </Text>
+          </View>
+          <View
+            accessible={true}
+            collapsable={false}
+            focusable={true}
+            onClick={[Function]}
+            onResponderGrant={[Function]}
+            onResponderMove={[Function]}
+            onResponderRelease={[Function]}
+            onResponderTerminate={[Function]}
+            onResponderTerminationRequest={[Function]}
+            onStartShouldSetResponder={[Function]}
+            style={
+              {
+                "opacity": 1,
+              }
+            }
+            testID="new_chirp_publish"
+          >
+            <View
+              style={
+                [
+                  {
+                    "backgroundColor": "#3742fa",
+                    "borderColor": "#3742fa",
+                    "borderRadius": 8,
+                    "borderWidth": 1,
+                    "padding": 8,
+                  },
+                ]
+              }
+            >
+              <Text
+                style={
+                  [
+                    {
+                      "color": "#000",
+                      "fontSize": 20,
+                      "lineHeight": 26,
+                      "textAlign": "left",
+                    },
+                    {
+                      "textAlign": "center",
+                    },
+                    {
+                      "color": "#fff",
+                    },
+                  ]
+                }
+              >
+                Publish
+              </Text>
+            </View>
+          </View>
+        </View>
+      </View>
+    </View>
+  </View>
+  <Modal
+    hardwareAccelerated={false}
+    onRequestClose={[Function]}
+    transparent={true}
+    visible={true}
+  >
+    <RNGestureHandlerButton
+      collapsable={false}
+      delayLongPress={600}
+      enabled={true}
+      exclusive={true}
+      handlerTag={1}
+      handlerType="NativeViewGestureHandler"
+      onGestureEvent={[Function]}
+      onGestureHandlerEvent={[Function]}
+      onGestureHandlerStateChange={[Function]}
+      onHandlerStateChange={[Function]}
+      rippleColor={0}
+      style={
+        {
+          "backgroundColor": "rgba(0,0,0,0.25)",
+          "bottom": 0,
+          "flex": 1,
+          "left": 0,
+          "padding": 32,
+          "position": "absolute",
+          "right": 0,
+          "top": 0,
+        }
+      }
+      touchSoundDisabled={false}
+    >
+      <View
+        accessible={true}
+        collapsable={false}
+        style={{}}
+      />
+    </RNGestureHandlerButton>
+    <RCTScrollView
+      collapsable={false}
+      handlerTag={2}
+      handlerType="NativeViewGestureHandler"
+      onGestureHandlerEvent={[Function]}
+      onGestureHandlerStateChange={[Function]}
+      style={
+        {
+          "backgroundColor": "rgb(242, 242, 242)",
+          "borderRadius": 8,
+          "margin": 32,
+          "padding": 32,
+        }
+      }
+      waitFor={
+        [
+          {
+            "current": null,
+          },
+        ]
+      }
+    >
+      <View>
+        <View
+          style={
+            {
+              "alignItems": "center",
+              "flexDirection": "row",
+              "justifyContent": "space-between",
+              "marginBottom": 16,
+              "width": "100%",
+            }
+          }
+        >
+          <View />
+          <Text
+            numberOfLines={1}
+            style={
+              {
+                "color": "#000",
+                "fontSize": 20,
+                "fontWeight": "500",
+                "lineHeight": 26,
+                "textAlign": "left",
+              }
+            }
+          >
+            Confirm publication
+          </Text>
+          <View
+            accessible={true}
+            collapsable={false}
+            focusable={true}
+            onClick={[Function]}
+            onResponderGrant={[Function]}
+            onResponderMove={[Function]}
+            onResponderRelease={[Function]}
+            onResponderTerminate={[Function]}
+            onResponderTerminationRequest={[Function]}
+            onStartShouldSetResponder={[Function]}
+            style={
+              {
+                "opacity": 1,
+              }
+            }
+            testID="modal-header-close"
+          >
+            <View>
+              {"name":"ios-close","size":25,"color":"#000"}
+            </View>
+          </View>
+        </View>
+        <Text
+          style={
+            {
+              "color": "#000",
+              "fontSize": 20,
+              "lineHeight": 26,
+              "marginBottom": 16,
+              "textAlign": "left",
+            }
+          }
+        >
+          You have used more spacing characters than allowed. To improve readability, your chirp will be edited to : 
+
+ This text will be trimmed
+
+Do you still want to publish this chirp ?
+        </Text>
         <View
           accessible={true}
           collapsable={false}
           focusable={true}
-          onBlur={[Function]}
           onClick={[Function]}
-          onFocus={[Function]}
           onResponderGrant={[Function]}
           onResponderMove={[Function]}
           onResponderRelease={[Function]}
           onResponderTerminate={[Function]}
           onResponderTerminationRequest={[Function]}
           onStartShouldSetResponder={[Function]}
-          style={{}}
-          testID="new_chirp_publish"
+          style={
+            {
+              "opacity": 1,
+            }
+          }
+          testID="confirm-modal-confirm"
         >
-          <RNGestureHandlerButton
-            collapsable={false}
-            delayLongPress={600}
-            enabled={true}
-            exclusive={true}
-            handlerTag={1}
-            handlerType="NativeViewGestureHandler"
-            onGestureEvent={[Function]}
-            onGestureHandlerEvent={[Function]}
-            onGestureHandlerStateChange={[Function]}
-            onHandlerStateChange={[Function]}
-            rippleColor={0}
-            touchSoundDisabled={false}
-          >
-            <View
-              accessible={true}
-              collapsable={false}
-              style={
+          <View
+            style={
+              [
                 {
-                  "opacity": 1,
-                }
+                  "backgroundColor": "#3742fa",
+                  "borderColor": "#3742fa",
+                  "borderRadius": 8,
+                  "borderWidth": 1,
+                  "padding": 8,
+                },
+              ]
+            }
+          >
+            <Text
+              style={
+                [
+                  {
+                    "color": "#000",
+                    "fontSize": 20,
+                    "lineHeight": 26,
+                    "textAlign": "left",
+                  },
+                  {
+                    "textAlign": "center",
+                  },
+                  {
+                    "color": "#fff",
+                  },
+                ]
               }
             >
-              <View
+              Confirm
+            </Text>
+          </View>
+        </View>
+      </View>
+    </RCTScrollView>
+  </Modal>
+</View>
+`;
+
+exports[`NewChirp shows the modal on trimmed chirp and closes it 2`] = `
+<View
+  style={
+    {
+      "marginBottom": 16,
+    }
+  }
+>
+  <View
+    style={
+      {
+        "backgroundColor": "#fff",
+        "borderColor": "#000",
+        "borderRadius": 8,
+        "flexDirection": "row",
+        "padding": 16,
+      }
+    }
+  >
+    <View
+      style={
+        {
+          "marginRight": 16,
+        }
+      }
+    >
+      <blockies
+        bgColor="#ffffff"
+        scale={5}
+        seed="oKHk3AivbpNXk_SfFcHDaVHcCcY8IBfHE7auXJ7h4ms="
+        size={8}
+        spotColor="#008ec2"
+      />
+    </View>
+    <View
+      style={
+        {
+          "display": "flex",
+          "flexDirection": "column",
+          "flexGrow": 1,
+        }
+      }
+    >
+      <TextInput
+        multiline={true}
+        numberOfLines={1}
+        onBlur={[Function]}
+        onChangeText={[Function]}
+        onFocus={[Function]}
+        placeholder="Your chirp"
+        placeholderTextColor="#8E8E8E"
+        selectTextOnFocus={true}
+        style={
+          [
+            {
+              "color": "#000",
+              "fontSize": 20,
+              "lineHeight": 26,
+              "textAlign": "left",
+            },
+            {
+              "alignContent": "flex-end",
+              "borderColor": "#000",
+              "borderRadius": 8,
+              "borderWidth": 1,
+              "padding": 16,
+            },
+          ]
+        }
+        testID="new_chirp_input"
+        value=""
+      />
+      <View
+        style={
+          {
+            "flexDirection": "row",
+            "marginTop": 16,
+          }
+        }
+      >
+        <View
+          style={
+            {
+              "alignContent": "flex-end",
+              "flexDirection": "row",
+              "marginLeft": "auto",
+            }
+          }
+        >
+          <View
+            style={
+              {
+                "marginRight": 16,
+              }
+            }
+          >
+            <Text
+              style={
+                [
+                  {
+                    "color": "#000",
+                    "fontSize": 20,
+                    "lineHeight": 26,
+                    "textAlign": "left",
+                  },
+                ]
+              }
+            >
+              300
+            </Text>
+          </View>
+          <View
+            accessible={true}
+            collapsable={false}
+            focusable={false}
+            onClick={[Function]}
+            onResponderGrant={[Function]}
+            onResponderMove={[Function]}
+            onResponderRelease={[Function]}
+            onResponderTerminate={[Function]}
+            onResponderTerminationRequest={[Function]}
+            onStartShouldSetResponder={[Function]}
+            style={
+              {
+                "opacity": 1,
+              }
+            }
+            testID="new_chirp_publish"
+          >
+            <View
+              style={
+                [
+                  {
+                    "backgroundColor": "#3742fa",
+                    "borderColor": "#3742fa",
+                    "borderRadius": 8,
+                    "borderWidth": 1,
+                    "padding": 8,
+                  },
+                  {
+                    "backgroundColor": "#8E8E8E",
+                    "borderColor": "#8E8E8E",
+                  },
+                ]
+              }
+            >
+              <Text
                 style={
                   [
                     {
-                      "backgroundColor": "#3742fa",
-                      "borderColor": "#3742fa",
-                      "borderRadius": 8,
-                      "borderWidth": 1,
-                      "padding": 8,
+                      "color": "#000",
+                      "fontSize": 20,
+                      "lineHeight": 26,
+                      "textAlign": "left",
                     },
                     {
-                      "backgroundColor": "#8E8E8E",
-                      "borderColor": "#8E8E8E",
+                      "textAlign": "center",
+                    },
+                    {
+                      "color": "#fff",
                     },
                   ]
                 }
               >
-                <Text
-                  style={
-                    [
-                      {
-                        "color": "#000",
-                        "fontSize": 20,
-                        "lineHeight": 26,
-                        "textAlign": "left",
-                      },
-                      {
-                        "textAlign": "center",
-                      },
-                      {
-                        "color": "#fff",
-                      },
-                    ]
-                  }
-                >
-                  Publish
-                </Text>
-              </View>
+                Publish
+              </Text>
             </View>
-          </RNGestureHandlerButton>
+          </View>
         </View>
       </View>
     </View>
   </View>
+  <Modal
+    hardwareAccelerated={false}
+    onRequestClose={[Function]}
+    transparent={true}
+    visible={false}
+  />
 </View>
 `;

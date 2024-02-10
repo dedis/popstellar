@@ -1,11 +1,22 @@
 package com.github.dedis.popstellar.ui.lao.event.consensus;
 
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.*;
+import static com.github.dedis.popstellar.testutils.pages.lao.LaoActivityPageObject.containerId;
+import static com.github.dedis.popstellar.testutils.pages.lao.LaoActivityPageObject.laoIdExtra;
+import static com.github.dedis.popstellar.testutils.pages.lao.event.consensus.ElectionStartPageObject.*;
+import static org.hamcrest.core.AllOf.allOf;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.when;
+
 import androidx.test.annotation.UiThreadTest;
 import androidx.test.espresso.DataInteraction;
 import androidx.test.espresso.action.ViewActions;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
-
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.*;
@@ -14,8 +25,7 @@ import com.github.dedis.popstellar.model.network.serializer.JsonUtils;
 import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.model.objects.security.KeyPair;
-import com.github.dedis.popstellar.repository.ElectionRepository;
-import com.github.dedis.popstellar.repository.LAORepository;
+import com.github.dedis.popstellar.repository.*;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.testutils.BundleBuilder;
@@ -30,7 +40,14 @@ import com.google.crypto.tink.KeysetHandle;
 import com.google.crypto.tink.signature.Ed25519PrivateKeyManager;
 import com.google.crypto.tink.signature.PublicKeySignWrapper;
 import com.google.gson.Gson;
-
+import dagger.hilt.android.testing.*;
+import io.reactivex.Completable;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.Collections;
+import java.util.List;
+import javax.inject.Inject;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExternalResource;
@@ -41,29 +58,6 @@ import org.mockito.internal.util.collections.Sets;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoTestRule;
 
-import java.time.Instant;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.util.Collections;
-import java.util.List;
-
-import javax.inject.Inject;
-
-import dagger.hilt.android.testing.*;
-import io.reactivex.Completable;
-
-import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.*;
-import static com.github.dedis.popstellar.testutils.pages.lao.LaoActivityPageObject.containerId;
-import static com.github.dedis.popstellar.testutils.pages.lao.LaoActivityPageObject.laoIdExtra;
-import static com.github.dedis.popstellar.testutils.pages.lao.event.consensus.ElectionStartPageObject.*;
-import static org.hamcrest.core.AllOf.allOf;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.when;
-
 @HiltAndroidTest
 @RunWith(AndroidJUnit4.class)
 public class ElectionStartFragmentTest {
@@ -72,6 +66,7 @@ public class ElectionStartFragmentTest {
   @Inject MessageHandler messageHandler;
   @Inject Gson gson;
   @Inject ElectionRepository electionRepo;
+  @Inject ConsensusRepository consensusRepo;
   @Inject LAORepository laoRepo;
 
   @BindValue @Mock GlobalNetworkManager globalNetworkManager;
@@ -130,13 +125,15 @@ public class ElectionStartFragmentTest {
 
           Lao lao = new Lao(LAO_ID);
           lao.setOrganizer(mainKeyPair.getPublicKey());
-          lao.initKeyToNode(Sets.newSet(node2KeyPair.getPublicKey(), node3KeyPair.getPublicKey()));
+          consensusRepo.setOrganizer(lao.getId(), mainKeyPair.getPublicKey());
+          consensusRepo.initKeyToNode(
+              lao.getId(), Sets.newSet(node2KeyPair.getPublicKey(), node3KeyPair.getPublicKey()));
 
           laoRepo.updateLao(lao);
           consensusChannel = lao.getChannel().subChannel("consensus");
-          laoRepo.updateNodes(lao.getChannel());
+          consensusRepo.updateNodesByChannel(lao.getChannel());
 
-          List<ConsensusNode> nodes = lao.getNodes();
+          List<ConsensusNode> nodes = consensusRepo.getNodes(lao.getId());
           for (int i = 0; i < nodes.size(); ++i) {
             String key = nodes.get(i).getPublicKey().getEncoded();
             if (key.equals(publicKey)) {
@@ -196,8 +193,12 @@ public class ElectionStartFragmentTest {
 
   @Test
   public void displayWithUpdatesIsCorrect()
-      throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
-          UnknownElectionException, NoRollCallException, UnknownWitnessMessageException {
+      throws DataHandlingException,
+          UnknownLaoException,
+          UnknownRollCallException,
+          UnknownElectionException,
+          NoRollCallException,
+          UnknownWitnessMessageException {
     setElectionStart(PAST_TIME);
 
     // Election start time has passed, should display that it's ready and start button enabled
@@ -284,8 +285,12 @@ public class ElectionStartFragmentTest {
 
   @Test
   public void acceptButtonSendElectAcceptMessageTest()
-      throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
-          UnknownElectionException, NoRollCallException, UnknownWitnessMessageException {
+      throws DataHandlingException,
+          UnknownLaoException,
+          UnknownRollCallException,
+          UnknownElectionException,
+          NoRollCallException,
+          UnknownWitnessMessageException {
     setElectionStart(PAST_TIME);
 
     // Nodes 3 try to start
@@ -307,8 +312,12 @@ public class ElectionStartFragmentTest {
 
   @Test
   public void failureTest()
-      throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
-          UnknownElectionException, NoRollCallException, UnknownWitnessMessageException {
+      throws DataHandlingException,
+          UnknownLaoException,
+          UnknownRollCallException,
+          UnknownElectionException,
+          NoRollCallException,
+          UnknownWitnessMessageException {
     setElectionStart(PAST_TIME);
 
     // Nodes 3 try to start and failed

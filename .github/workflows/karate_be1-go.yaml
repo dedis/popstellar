@@ -11,10 +11,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Use go >= 1.19
+      - name: Use go >= 1.21
         uses: actions/setup-go@v3
         with:
-          go-version: ">=1.19"
+          go-version: ">=1.21"
 
       - name: Setup repo
         uses: actions/checkout@v3
@@ -116,7 +116,6 @@ jobs:
           branch: report-karate-be1-go
           directory: report-repo
 
-      - name: Fail job if the tests were not successful
-        # Catchup of tests failure such that the job fo fail
-        if: steps.tests.outcome == 'failure'
+      - name: Fail job if either the server or client tests were not successful
+        if: steps.tests_client.outcome == 'failure' || steps.tests_server.outcome == 'failure'
         run: exit 1

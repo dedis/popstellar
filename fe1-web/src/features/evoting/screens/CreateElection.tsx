@@ -414,7 +414,7 @@ const CreateElection = () => {
                   id === idx
                     ? {
                         ...item,
-                        ballot_options: ballot_options.filter((option) => option !== ''),
+                        ballot_options: ballot_options,
                       }
                     : item,
                 ),

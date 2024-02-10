@@ -1,28 +1,25 @@
 package com.github.dedis.popstellar.model.network.method.message.data.lao;
 
-import androidx.test.ext.junit.runners.AndroidJUnit4;
+import static com.github.dedis.popstellar.testutils.Base64DataUtils.generatePublicKey;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.*;
 
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 import com.github.dedis.popstellar.model.network.JsonTestUtils;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.testutils.Base64DataUtils;
-import com.github.dedis.popstellar.utility.security.Hash;
+import com.github.dedis.popstellar.utility.security.HashSHA256;
 import com.google.gson.JsonParseException;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-
-import static com.github.dedis.popstellar.testutils.Base64DataUtils.generatePublicKey;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.*;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 @RunWith(AndroidJUnit4.class)
 public class CreateLaoTest {
@@ -61,7 +58,7 @@ public class CreateLaoTest {
     CreateLao createLao = new CreateLao(name, organizer, witnesses);
     // Hash(organizer||creation||name)
     String expectedId =
-        Hash.hash(
+        HashSHA256.hash(
             createLao.getOrganizer().getEncoded(),
             Long.toString(createLao.getCreation()),
             createLao.getName());

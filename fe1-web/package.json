@@ -25,6 +25,9 @@
     "docs": "typedoc",
     "postinstall": "patch-package --error-on-fail"
   },
+  "overrides": {
+    "react-error-overlay": "6.0.9"
+  },
   "dependencies": {
     "@dedis/kyber": "^3.4.4",
     "@expo/react-native-action-sheet": "^3.13.0",
@@ -129,6 +132,7 @@
     "jest-sonar-reporter": "^2.0.0",
     "patch-package": "^6.5.0",
     "prettier": "^2.5.1",
+    "react-error-overlay": "6.0.9",
     "react-test-renderer": "18.0.0",
     "sharp-cli": "^2.1.0",
     "ts-jest": "^29.0.5",

@@ -30,9 +30,10 @@ class PopchaValidatorSuite extends TestKit(ActorSystem("popChaValidatorTestActor
   private val userIdentifier = MessageExample.PUBLIC_KEY
   private val otherUser = PublicKey(MessageExample.SEED)
   private val laoSeed = MessageExample.SEED
+  private final val ADDRESS: String = "127.0.0.1:8000"
 
-  private val laoDataWithUser = LaoData(userIdentifier, List(userIdentifier), PrivateKey(laoSeed), PublicKey(laoSeed), List())
-  private val laoDataWithoutUser = LaoData(otherUser, List(otherUser), PrivateKey(laoSeed), PublicKey(laoSeed), List())
+  private val laoDataWithUser = LaoData(userIdentifier, List(userIdentifier), PrivateKey(laoSeed), PublicKey(laoSeed), List(), ADDRESS)
+  private val laoDataWithoutUser = LaoData(otherUser, List(otherUser), PrivateKey(laoSeed), PublicKey(laoSeed), List(), ADDRESS)
 
   private val channelDataWithValidObjectType = ChannelData(ObjectType.POPCHA, Nil)
   private val channelDataWithInvalidObjectType = ChannelData(ObjectType.COIN, Nil)

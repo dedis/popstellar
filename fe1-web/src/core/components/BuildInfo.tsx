@@ -7,10 +7,9 @@ import { Spacing, Typography } from 'core/styles';
 const styles = StyleSheet.create({
   container: {
     position: 'absolute',
-    top: Spacing.x3,
+    bottom: Spacing.x075,
     left: Spacing.x05,
     right: Spacing.x05,
-    zIndex: 100,
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'center',

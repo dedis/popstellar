@@ -253,6 +253,11 @@ const socialSlice = createSlice({
 
         const reaction = store.reactionsById[reactionId];
 
+        // reaction was already deleted
+        if (reaction === undefined) {
+          return;
+        }
+
         // delete id from mapping, works even if it does not exist
         delete store.reactionsById[reactionId];
 

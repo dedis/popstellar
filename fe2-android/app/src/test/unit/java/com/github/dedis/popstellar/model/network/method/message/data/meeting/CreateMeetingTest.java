@@ -1,17 +1,15 @@
 package com.github.dedis.popstellar.model.network.method.message.data.meeting;
 
+import static com.github.dedis.popstellar.testutils.Base64DataUtils.generatePublicKey;
+import static org.junit.Assert.*;
+
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.event.EventType;
-import com.github.dedis.popstellar.utility.security.Hash;
-
-import org.junit.Test;
-
+import com.github.dedis.popstellar.utility.security.HashSHA256;
 import java.time.Instant;
 import java.util.Objects;
-
-import static com.github.dedis.popstellar.testutils.Base64DataUtils.generatePublicKey;
-import static org.junit.Assert.*;
+import org.junit.Test;
 
 public class CreateMeetingTest {
   private static final String LAO_ID =
@@ -22,7 +20,7 @@ public class CreateMeetingTest {
   private static final long START = CREATION + 1;
   private static final long END = START + 5;
   private static final String ID =
-      Hash.hash(EventType.MEETING.getSuffix(), LAO_ID, Long.toString(CREATION), NAME);
+      HashSHA256.hash(EventType.MEETING.getSuffix(), LAO_ID, Long.toString(CREATION), NAME);
 
   private static final CreateMeeting CREATE_MEETING =
       new CreateMeeting(LAO_ID, ID, NAME, CREATION, LOCATION, START, END);

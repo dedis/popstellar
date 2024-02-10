@@ -276,7 +276,7 @@ exports[`CreateElection renders correctly when name and question are empty 1`] =
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
-                handlerTag={5}
+                handlerTag={3}
                 handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}
@@ -336,7 +336,7 @@ exports[`CreateElection renders correctly when name and question are empty 1`] =
                       >
                         <RCTScrollView
                           collapsable={false}
-                          handlerTag={6}
+                          handlerTag={4}
                           handlerType="NativeViewGestureHandler"
                           onGestureHandlerEvent={[Function]}
                           onGestureHandlerStateChange={[Function]}
@@ -654,9 +654,7 @@ exports[`CreateElection renders correctly when name and question are empty 1`] =
                               accessible={true}
                               collapsable={false}
                               focusable={true}
-                              onBlur={[Function]}
                               onClick={[Function]}
-                              onFocus={[Function]}
                               onResponderGrant={[Function]}
                               onResponderMove={[Function]}
                               onResponderRelease={[Function]}
@@ -665,69 +663,44 @@ exports[`CreateElection renders correctly when name and question are empty 1`] =
                               onStartShouldSetResponder={[Function]}
                               style={
                                 {
-                                  "marginBottom": 16,
+                                  "opacity": 1,
                                 }
                               }
                             >
-                              <RNGestureHandlerButton
-                                collapsable={false}
-                                delayLongPress={600}
-                                enabled={true}
-                                exclusive={true}
-                                handlerTag={7}
-                                handlerType="NativeViewGestureHandler"
-                                onGestureEvent={[Function]}
-                                onGestureHandlerEvent={[Function]}
-                                onGestureHandlerStateChange={[Function]}
-                                onHandlerStateChange={[Function]}
-                                rippleColor={0}
-                                touchSoundDisabled={false}
-                              >
-                                <View
-                                  accessible={true}
-                                  collapsable={false}
-                                  style={
+                              <View
+                                style={
+                                  [
                                     {
-                                      "opacity": 1,
-                                    }
+                                      "backgroundColor": "#3742fa",
+                                      "borderColor": "#3742fa",
+                                      "borderRadius": 8,
+                                      "borderWidth": 1,
+                                      "padding": 8,
+                                    },
+                                  ]
+                                }
+                              >
+                                <Text
+                                  style={
+                                    [
+                                      {
+                                        "color": "#000",
+                                        "fontSize": 20,
+                                        "lineHeight": 26,
+                                        "textAlign": "left",
+                                      },
+                                      {
+                                        "textAlign": "center",
+                                      },
+                                      {
+                                        "color": "#fff",
+                                      },
+                                    ]
                                   }
                                 >
-                                  <View
-                                    style={
-                                      [
-                                        {
-                                          "backgroundColor": "#3742fa",
-                                          "borderColor": "#3742fa",
-                                          "borderRadius": 8,
-                                          "borderWidth": 1,
-                                          "padding": 8,
-                                        },
-                                      ]
-                                    }
-                                  >
-                                    <Text
-                                      style={
-                                        [
-                                          {
-                                            "color": "#000",
-                                            "fontSize": 20,
-                                            "lineHeight": 26,
-                                            "textAlign": "left",
-                                          },
-                                          {
-                                            "textAlign": "center",
-                                          },
-                                          {
-                                            "color": "#fff",
-                                          },
-                                        ]
-                                      }
-                                    >
-                                      Add Question
-                                    </Text>
-                                  </View>
-                                </View>
-                              </RNGestureHandlerButton>
+                                  Add Question
+                                </Text>
+                              </View>
                             </View>
                             <Text
                               style={
@@ -795,82 +768,59 @@ exports[`CreateElection renders correctly when name and question are empty 1`] =
                           <View
                             accessible={true}
                             collapsable={false}
-                            focusable={true}
-                            onBlur={[Function]}
+                            focusable={false}
                             onClick={[Function]}
-                            onFocus={[Function]}
                             onResponderGrant={[Function]}
                             onResponderMove={[Function]}
                             onResponderRelease={[Function]}
                             onResponderTerminate={[Function]}
                             onResponderTerminationRequest={[Function]}
                             onStartShouldSetResponder={[Function]}
-                            style={{}}
+                            style={
+                              {
+                                "opacity": 1,
+                              }
+                            }
                             testID="election_confirm_selector"
                           >
-                            <RNGestureHandlerButton
-                              collapsable={false}
-                              delayLongPress={600}
-                              enabled={true}
-                              exclusive={true}
-                              handlerTag={8}
-                              handlerType="NativeViewGestureHandler"
-                              onGestureEvent={[Function]}
-                              onGestureHandlerEvent={[Function]}
-                              onGestureHandlerStateChange={[Function]}
-                              onHandlerStateChange={[Function]}
-                              rippleColor={0}
-                              touchSoundDisabled={false}
-                            >
-                              <View
-                                accessible={true}
-                                collapsable={false}
-                                style={
+                            <View
+                              style={
+                                [
                                   {
-                                    "opacity": 1,
-                                  }
+                                    "backgroundColor": "#3742fa",
+                                    "borderColor": "#3742fa",
+                                    "borderRadius": 8,
+                                    "borderWidth": 1,
+                                    "padding": 8,
+                                  },
+                                  {
+                                    "backgroundColor": "#8E8E8E",
+                                    "borderColor": "#8E8E8E",
+                                  },
+                                ]
+                              }
+                            >
+                              <Text
+                                style={
+                                  [
+                                    {
+                                      "color": "#000",
+                                      "fontSize": 20,
+                                      "lineHeight": 26,
+                                      "textAlign": "left",
+                                    },
+                                    {
+                                      "textAlign": "center",
+                                    },
+                                    {
+                                      "color": "#fff",
+                                    },
+                                  ]
                                 }
                               >
-                                <View
-                                  style={
-                                    [
-                                      {
-                                        "backgroundColor": "#3742fa",
-                                        "borderColor": "#3742fa",
-                                        "borderRadius": 8,
-                                        "borderWidth": 1,
-                                        "padding": 8,
-                                      },
-                                      {
-                                        "backgroundColor": "#8E8E8E",
-                                        "borderColor": "#8E8E8E",
-                                      },
-                                    ]
-                                  }
-                                >
-                                  <Text
-                                    style={
-                                      [
-                                        {
-                                          "color": "#000",
-                                          "fontSize": 20,
-                                          "lineHeight": 26,
-                                          "textAlign": "left",
-                                        },
-                                        {
-                                          "textAlign": "center",
-                                        },
-                                        {
-                                          "color": "#fff",
-                                        },
-                                      ]
-                                    }
-                                  >
-                                    Confirm
-                                  </Text>
-                                </View>
-                              </View>
-                            </RNGestureHandlerButton>
+                                Confirm
+                              </Text>
+                            </View>
                           </View>
                         </View>
                       </View>
@@ -1163,7 +1113,7 @@ exports[`CreateElection renders correctly when name and questions are whitespace
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
-                handlerTag={9}
+                handlerTag={5}
                 handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}
@@ -1223,7 +1173,7 @@ exports[`CreateElection renders correctly when name and questions are whitespace
                       >
                         <RCTScrollView
                           collapsable={false}
-                          handlerTag={10}
+                          handlerTag={6}
                           handlerType="NativeViewGestureHandler"
                           onGestureHandlerEvent={[Function]}
                           onGestureHandlerStateChange={[Function]}
@@ -1521,9 +1471,7 @@ exports[`CreateElection renders correctly when name and questions are whitespace
                                       accessible={true}
                                       collapsable={false}
                                       focusable={true}
-                                      onBlur={[Function]}
                                       onClick={[Function]}
-                                      onFocus={[Function]}
                                       onResponderGrant={[Function]}
                                       onResponderMove={[Function]}
                                       onResponderRelease={[Function]}
@@ -1532,40 +1480,14 @@ exports[`CreateElection renders correctly when name and questions are whitespace
                                       onStartShouldSetResponder={[Function]}
                                       style={
                                         {
-                                          "marginBottom": 16,
-                                          "marginLeft": 16,
+                                          "opacity": 1,
                                         }
                                       }
                                       testID="question_0_ballots_option_0_remove"
                                     >
-                                      <RNGestureHandlerButton
-                                        collapsable={false}
-                                        delayLongPress={600}
-                                        enabled={true}
-                                        exclusive={true}
-                                        handlerTag={13}
-                                        handlerType="NativeViewGestureHandler"
-                                        onGestureEvent={[Function]}
-                                        onGestureHandlerEvent={[Function]}
-                                        onGestureHandlerStateChange={[Function]}
-                                        onHandlerStateChange={[Function]}
-                                        rippleColor={0}
-                                        touchSoundDisabled={false}
-                                      >
-                                        <View
-                                          accessible={true}
-                                          collapsable={false}
-                                          style={
-                                            {
-                                              "opacity": 1,
-                                            }
-                                          }
-                                        >
-                                          <View>
-                                            {"name":"ios-trash","size":25,"color":"#000"}
-                                          </View>
-                                        </View>
-                                      </RNGestureHandlerButton>
+                                      <View>
+                                        {"name":"ios-trash","size":25,"color":"#000"}
+                                      </View>
                                     </View>
                                   </View>
                                 </View>
@@ -1677,9 +1599,7 @@ exports[`CreateElection renders correctly when name and questions are whitespace
                               accessible={true}
                               collapsable={false}
                               focusable={true}
-                              onBlur={[Function]}
                               onClick={[Function]}
-                              onFocus={[Function]}
                               onResponderGrant={[Function]}
                               onResponderMove={[Function]}
                               onResponderRelease={[Function]}
@@ -1688,69 +1608,44 @@ exports[`CreateElection renders correctly when name and questions are whitespace
                               onStartShouldSetResponder={[Function]}
                               style={
                                 {
-                                  "marginBottom": 16,
+                                  "opacity": 1,
                                 }
                               }
                             >
-                              <RNGestureHandlerButton
-                                collapsable={false}
-                                delayLongPress={600}
-                                enabled={true}
-                                exclusive={true}
-                                handlerTag={11}
-                                handlerType="NativeViewGestureHandler"
-                                onGestureEvent={[Function]}
-                                onGestureHandlerEvent={[Function]}
-                                onGestureHandlerStateChange={[Function]}
-                                onHandlerStateChange={[Function]}
-                                rippleColor={0}
-                                touchSoundDisabled={false}
-                              >
-                                <View
-                                  accessible={true}
-                                  collapsable={false}
-                                  style={
+                              <View
+                                style={
+                                  [
                                     {
-                                      "opacity": 1,
-                                    }
+                                      "backgroundColor": "#3742fa",
+                                      "borderColor": "#3742fa",
+                                      "borderRadius": 8,
+                                      "borderWidth": 1,
+                                      "padding": 8,
+                                    },
+                                  ]
+                                }
+                              >
+                                <Text
+                                  style={
+                                    [
+                                      {
+                                        "color": "#000",
+                                        "fontSize": 20,
+                                        "lineHeight": 26,
+                                        "textAlign": "left",
+                                      },
+                                      {
+                                        "textAlign": "center",
+                                      },
+                                      {
+                                        "color": "#fff",
+                                      },
+                                    ]
                                   }
                                 >
-                                  <View
-                                    style={
-                                      [
-                                        {
-                                          "backgroundColor": "#3742fa",
-                                          "borderColor": "#3742fa",
-                                          "borderRadius": 8,
-                                          "borderWidth": 1,
-                                          "padding": 8,
-                                        },
-                                      ]
-                                    }
-                                  >
-                                    <Text
-                                      style={
-                                        [
-                                          {
-                                            "color": "#000",
-                                            "fontSize": 20,
-                                            "lineHeight": 26,
-                                            "textAlign": "left",
-                                          },
-                                          {
-                                            "textAlign": "center",
-                                          },
-                                          {
-                                            "color": "#fff",
-                                          },
-                                        ]
-                                      }
-                                    >
-                                      Add Question
-                                    </Text>
-                                  </View>
-                                </View>
-                              </RNGestureHandlerButton>
+                                  Add Question
+                                </Text>
+                              </View>
                             </View>
                             <Text
                               style={
@@ -1818,82 +1713,59 @@ exports[`CreateElection renders correctly when name and questions are whitespace
                           <View
                             accessible={true}
                             collapsable={false}
-                            focusable={true}
-                            onBlur={[Function]}
+                            focusable={false}
                             onClick={[Function]}
-                            onFocus={[Function]}
                             onResponderGrant={[Function]}
                             onResponderMove={[Function]}
                             onResponderRelease={[Function]}
                             onResponderTerminate={[Function]}
                             onResponderTerminationRequest={[Function]}
                             onStartShouldSetResponder={[Function]}
-                            style={{}}
+                            style={
+                              {
+                                "opacity": 1,
+                              }
+                            }
                             testID="election_confirm_selector"
                           >
-                            <RNGestureHandlerButton
-                              collapsable={false}
-                              delayLongPress={600}
-                              enabled={true}
-                              exclusive={true}
-                              handlerTag={12}
-                              handlerType="NativeViewGestureHandler"
-                              onGestureEvent={[Function]}
-                              onGestureHandlerEvent={[Function]}
-                              onGestureHandlerStateChange={[Function]}
-                              onHandlerStateChange={[Function]}
-                              rippleColor={0}
-                              touchSoundDisabled={false}
-                            >
-                              <View
-                                accessible={true}
-                                collapsable={false}
-                                style={
+                            <View
+                              style={
+                                [
                                   {
-                                    "opacity": 1,
-                                  }
+                                    "backgroundColor": "#3742fa",
+                                    "borderColor": "#3742fa",
+                                    "borderRadius": 8,
+                                    "borderWidth": 1,
+                                    "padding": 8,
+                                  },
+                                  {
+                                    "backgroundColor": "#8E8E8E",
+                                    "borderColor": "#8E8E8E",
+                                  },
+                                ]
+                              }
+                            >
+                              <Text
+                                style={
+                                  [
+                                    {
+                                      "color": "#000",
+                                      "fontSize": 20,
+                                      "lineHeight": 26,
+                                      "textAlign": "left",
+                                    },
+                                    {
+                                      "textAlign": "center",
+                                    },
+                                    {
+                                      "color": "#fff",
+                                    },
+                                  ]
                                 }
                               >
-                                <View
-                                  style={
-                                    [
-                                      {
-                                        "backgroundColor": "#3742fa",
-                                        "borderColor": "#3742fa",
-                                        "borderRadius": 8,
-                                        "borderWidth": 1,
-                                        "padding": 8,
-                                      },
-                                      {
-                                        "backgroundColor": "#8E8E8E",
-                                        "borderColor": "#8E8E8E",
-                                      },
-                                    ]
-                                  }
-                                >
-                                  <Text
-                                    style={
-                                      [
-                                        {
-                                          "color": "#000",
-                                          "fontSize": 20,
-                                          "lineHeight": 26,
-                                          "textAlign": "left",
-                                        },
-                                        {
-                                          "textAlign": "center",
-                                        },
-                                        {
-                                          "color": "#fff",
-                                        },
-                                      ]
-                                    }
-                                  >
-                                    Confirm
-                                  </Text>
-                                </View>
-                              </View>
-                            </RNGestureHandlerButton>
+                                Confirm
+                              </Text>
+                            </View>
                           </View>
                         </View>
                       </View>
@@ -2564,9 +2436,7 @@ exports[`CreateElection renders correctly when question is empty 1`] = `
                               accessible={true}
                               collapsable={false}
                               focusable={true}
-                              onBlur={[Function]}
                               onClick={[Function]}
-                              onFocus={[Function]}
                               onResponderGrant={[Function]}
                               onResponderMove={[Function]}
                               onResponderRelease={[Function]}
@@ -2575,69 +2445,44 @@ exports[`CreateElection renders correctly when question is empty 1`] = `
                               onStartShouldSetResponder={[Function]}
                               style={
                                 {
-                                  "marginBottom": 16,
+                                  "opacity": 1,
                                 }
                               }
                             >
-                              <RNGestureHandlerButton
-                                collapsable={false}
-                                delayLongPress={600}
-                                enabled={true}
-                                exclusive={true}
-                                handlerTag={3}
-                                handlerType="NativeViewGestureHandler"
-                                onGestureEvent={[Function]}
-                                onGestureHandlerEvent={[Function]}
-                                onGestureHandlerStateChange={[Function]}
-                                onHandlerStateChange={[Function]}
-                                rippleColor={0}
-                                touchSoundDisabled={false}
-                              >
-                                <View
-                                  accessible={true}
-                                  collapsable={false}
-                                  style={
+                              <View
+                                style={
+                                  [
                                     {
-                                      "opacity": 1,
-                                    }
+                                      "backgroundColor": "#3742fa",
+                                      "borderColor": "#3742fa",
+                                      "borderRadius": 8,
+                                      "borderWidth": 1,
+                                      "padding": 8,
+                                    },
+                                  ]
+                                }
+                              >
+                                <Text
+                                  style={
+                                    [
+                                      {
+                                        "color": "#000",
+                                        "fontSize": 20,
+                                        "lineHeight": 26,
+                                        "textAlign": "left",
+                                      },
+                                      {
+                                        "textAlign": "center",
+                                      },
+                                      {
+                                        "color": "#fff",
+                                      },
+                                    ]
                                   }
                                 >
-                                  <View
-                                    style={
-                                      [
-                                        {
-                                          "backgroundColor": "#3742fa",
-                                          "borderColor": "#3742fa",
-                                          "borderRadius": 8,
-                                          "borderWidth": 1,
-                                          "padding": 8,
-                                        },
-                                      ]
-                                    }
-                                  >
-                                    <Text
-                                      style={
-                                        [
-                                          {
-                                            "color": "#000",
-                                            "fontSize": 20,
-                                            "lineHeight": 26,
-                                            "textAlign": "left",
-                                          },
-                                          {
-                                            "textAlign": "center",
-                                          },
-                                          {
-                                            "color": "#fff",
-                                          },
-                                        ]
-                                      }
-                                    >
-                                      Add Question
-                                    </Text>
-                                  </View>
-                                </View>
-                              </RNGestureHandlerButton>
+                                  Add Question
+                                </Text>
+                              </View>
                             </View>
                             <Text
                               style={
@@ -2687,82 +2532,59 @@ exports[`CreateElection renders correctly when question is empty 1`] = `
                           <View
                             accessible={true}
                             collapsable={false}
-                            focusable={true}
-                            onBlur={[Function]}
+                            focusable={false}
                             onClick={[Function]}
-                            onFocus={[Function]}
                             onResponderGrant={[Function]}
                             onResponderMove={[Function]}
                             onResponderRelease={[Function]}
                             onResponderTerminate={[Function]}
                             onResponderTerminationRequest={[Function]}
                             onStartShouldSetResponder={[Function]}
-                            style={{}}
+                            style={
+                              {
+                                "opacity": 1,
+                              }
+                            }
                             testID="election_confirm_selector"
                           >
-                            <RNGestureHandlerButton
-                              collapsable={false}
-                              delayLongPress={600}
-                              enabled={true}
-                              exclusive={true}
-                              handlerTag={4}
-                              handlerType="NativeViewGestureHandler"
-                              onGestureEvent={[Function]}
-                              onGestureHandlerEvent={[Function]}
-                              onGestureHandlerStateChange={[Function]}
-                              onHandlerStateChange={[Function]}
-                              rippleColor={0}
-                              touchSoundDisabled={false}
-                            >
-                              <View
-                                accessible={true}
-                                collapsable={false}
-                                style={
+                            <View
+                              style={
+                                [
                                   {
-                                    "opacity": 1,
-                                  }
+                                    "backgroundColor": "#3742fa",
+                                    "borderColor": "#3742fa",
+                                    "borderRadius": 8,
+                                    "borderWidth": 1,
+                                    "padding": 8,
+                                  },
+                                  {
+                                    "backgroundColor": "#8E8E8E",
+                                    "borderColor": "#8E8E8E",
+                                  },
+                                ]
+                              }
+                            >
+                              <Text
+                                style={
+                                  [
+                                    {
+                                      "color": "#000",
+                                      "fontSize": 20,
+                                      "lineHeight": 26,
+                                      "textAlign": "left",
+                                    },
+                                    {
+                                      "textAlign": "center",
+                                    },
+                                    {
+                                      "color": "#fff",
+                                    },
+                                  ]
                                 }
                               >
-                                <View
-                                  style={
-                                    [
-                                      {
-                                        "backgroundColor": "#3742fa",
-                                        "borderColor": "#3742fa",
-                                        "borderRadius": 8,
-                                        "borderWidth": 1,
-                                        "padding": 8,
-                                      },
-                                      {
-                                        "backgroundColor": "#8E8E8E",
-                                        "borderColor": "#8E8E8E",
-                                      },
-                                    ]
-                                  }
-                                >
-                                  <Text
-                                    style={
-                                      [
-                                        {
-                                          "color": "#000",
-                                          "fontSize": 20,
-                                          "lineHeight": 26,
-                                          "textAlign": "left",
-                                        },
-                                        {
-                                          "textAlign": "center",
-                                        },
-                                        {
-                                          "color": "#fff",
-                                        },
-                                      ]
-                                    }
-                                  >
-                                    Confirm
-                                  </Text>
-                                </View>
-                              </View>
-                            </RNGestureHandlerButton>
+                                Confirm
+                              </Text>
+                            </View>
                           </View>
                         </View>
                       </View>

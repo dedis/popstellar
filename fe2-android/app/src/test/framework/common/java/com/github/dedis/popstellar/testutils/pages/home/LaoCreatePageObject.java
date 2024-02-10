@@ -1,13 +1,12 @@
 package com.github.dedis.popstellar.testutils.pages.home;
 
-import androidx.annotation.IdRes;
-import androidx.test.espresso.ViewInteraction;
-
-import com.github.dedis.popstellar.R;
-import com.github.dedis.popstellar.ui.home.LaoCreateFragment;
-
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+
+import androidx.annotation.IdRes;
+import androidx.test.espresso.ViewInteraction;
+import com.github.dedis.popstellar.R;
+import com.github.dedis.popstellar.ui.home.LaoCreateFragment;
 
 /**
  * Page object of {@link LaoCreateFragment}
@@ -33,8 +32,8 @@ public class LaoCreatePageObject {
     return onView(withId(R.id.server_url_entry_edit_text));
   }
 
-  public static ViewInteraction cancelButtonLaunch() {
-    return onView(withId(R.id.button_cancel_launch));
+  public static ViewInteraction clearButtonLaunch() {
+    return onView(withId(R.id.button_clear_launch));
   }
 
   public static ViewInteraction confirmButtonLaunch() {
@@ -47,5 +46,13 @@ public class LaoCreatePageObject {
 
   public static ViewInteraction witnessTitle() {
     return onView(withId(R.id.witnesses_title));
+  }
+
+  public static ViewInteraction witnessList() {
+    return onView(withId(R.id.witnesses_list));
+  }
+
+  public static ViewInteraction witnessingSwitch() {
+    return onView(withId(R.id.enable_witnessing_switch));
   }
 }

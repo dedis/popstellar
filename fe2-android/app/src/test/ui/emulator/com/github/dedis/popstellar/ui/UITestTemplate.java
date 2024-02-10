@@ -1,13 +1,16 @@
 package com.github.dedis.popstellar.ui;
 
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
+
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
-
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.ui.home.HomeActivity;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.google.gson.Gson;
-
+import dagger.hilt.android.testing.*;
+import javax.inject.Inject;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExternalResource;
@@ -15,13 +18,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoTestRule;
-
-import javax.inject.Inject;
-
-import dagger.hilt.android.testing.*;
-
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
 
 /**
  * This test class is a template that you can use as a basis to write new UI tests.

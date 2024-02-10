@@ -10,17 +10,19 @@ class LaoDataSuite extends FunSuite with Matchers {
   final val KEYPAIR: Ed25519Sign.KeyPair = Ed25519Sign.KeyPair.newKeyPair
   final val PUBLICKEY: PublicKey = PublicKey(Base64Data.encode(KEYPAIR.getPublicKey))
   final val PRIVATEKEY: PrivateKey = PrivateKey(Base64Data.encode(KEYPAIR.getPrivateKey))
+  final val ADDRESS: String = "127.0.0.1:8000"
 
   test("Apply works with empty/full list for LaoData") {
-    val laoData: LaoData = LaoData(PublicKey(Base64Data("cGs=")), List.empty, PRIVATEKEY, PUBLICKEY, List.empty)
+    val laoData: LaoData = LaoData(PublicKey(Base64Data("cGs=")), List.empty, PRIVATEKEY, PUBLICKEY, List.empty, ADDRESS)
 
     laoData.owner should equal(PublicKey(Base64Data("cGs=")))
     laoData.attendees should equal(List.empty)
     laoData.privateKey should equal(PRIVATEKEY)
     laoData.publicKey should equal(PUBLICKEY)
     laoData.witnesses should equal(List.empty)
+    laoData.address should equal(ADDRESS)
 
-    val laoData2: LaoData = LaoData(PublicKey(Base64Data("cGstYQ==")), List(PublicKey(Base64Data("cGstYg=="))), PRIVATEKEY, PUBLICKEY, List.empty)
+    val laoData2: LaoData = LaoData(PublicKey(Base64Data("cGstYQ==")), List(PublicKey(Base64Data("cGstYg=="))), PRIVATEKEY, PUBLICKEY, List.empty, ADDRESS)
 
     laoData2.owner should equal(PublicKey(Base64Data("cGstYQ==")))
     laoData2.attendees should equal(List(PublicKey(Base64Data("cGstYg=="))))
@@ -30,7 +32,7 @@ class LaoDataSuite extends FunSuite with Matchers {
   }
 
   test("Json conversions work for LaoData") {
-    val laoData: LaoData = LaoData(PublicKey(Base64Data("cGs=")), List.empty, PRIVATEKEY, PUBLICKEY, List.empty)
+    val laoData: LaoData = LaoData(PublicKey(Base64Data("cGs=")), List.empty, PRIVATEKEY, PUBLICKEY, List.empty, ADDRESS)
 
     val laoData2: LaoData = LaoData.buildFromJson(laoData.toJsonString)
 
@@ -40,6 +42,7 @@ class LaoDataSuite extends FunSuite with Matchers {
     laoData2.privateKey should equal(laoData.privateKey)
     laoData2.publicKey should equal(laoData.publicKey)
     laoData2.witnesses should equal(laoData.witnesses)
+    laoData2.address should equal(laoData.address)
   }
 
   test("emptyLaoData generates what it should") {

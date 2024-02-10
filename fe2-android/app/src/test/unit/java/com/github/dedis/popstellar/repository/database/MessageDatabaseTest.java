@@ -1,8 +1,10 @@
 package com.github.dedis.popstellar.repository.database;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
-
 import com.github.dedis.popstellar.di.AppDatabaseModuleHelper;
 import com.github.dedis.popstellar.model.network.JsonTestUtils;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
@@ -12,15 +14,10 @@ import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.repository.database.message.MessageDao;
 import com.github.dedis.popstellar.repository.database.message.MessageEntity;
 import com.github.dedis.popstellar.testutils.Base64DataUtils;
-
+import io.reactivex.observers.TestObserver;
+import java.util.ArrayList;
 import org.junit.*;
 import org.junit.runner.RunWith;
-
-import java.util.ArrayList;
-
-import io.reactivex.observers.TestObserver;
-
-import static org.junit.Assert.assertEquals;
 
 @RunWith(AndroidJUnit4.class)
 public class MessageDatabaseTest {
@@ -53,7 +50,9 @@ public class MessageDatabaseTest {
     testObserver.assertComplete();
 
     // Retrieve and test that the message is the same
-    assertEquals(message.getMessageId(), messageDao.getMessageById(messageID).getMessageId());
+    MessageEntity messageEntity = messageDao.getMessageById(messageID);
+    assertNotNull(messageEntity);
+    assertEquals(message.getMessageId(), messageEntity.getMessageId());
   }
 
   @Test

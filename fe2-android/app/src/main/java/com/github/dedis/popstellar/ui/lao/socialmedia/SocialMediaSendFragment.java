@@ -2,11 +2,9 @@ package com.github.dedis.popstellar.ui.lao.socialmedia;
 
 import android.os.Bundle;
 import android.view.*;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.SocialMediaSendFragmentBinding;
 import com.github.dedis.popstellar.ui.lao.LaoActivity;
@@ -14,11 +12,9 @@ import com.github.dedis.popstellar.ui.lao.LaoViewModel;
 import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
-
+import dagger.hilt.android.AndroidEntryPoint;
 import java.security.GeneralSecurityException;
 import java.time.Instant;
-
-import dagger.hilt.android.AndroidEntryPoint;
 
 /** Fragment where we can write and send a chirp */
 @AndroidEntryPoint
@@ -75,7 +71,7 @@ public class SocialMediaSendFragment extends Fragment {
     // Trying to send a chirp when no LAO has been chosen in the application will not send it, it
     // will make a toast appear and it will log the error
     if (laoViewModel.getLaoId() == null) {
-      ErrorUtils.logAndShow(requireContext(), TAG, R.string.error_no_lao);
+      ErrorUtils.INSTANCE.logAndShow(requireContext(), TAG, R.string.error_no_lao);
     } else {
       laoViewModel.addDisposable(
           socialMediaViewModel
@@ -90,10 +86,10 @@ public class SocialMediaSendFragment extends Fragment {
                   error -> {
                     if (error instanceof KeyException
                         || error instanceof GeneralSecurityException) {
-                      ErrorUtils.logAndShow(
+                      ErrorUtils.INSTANCE.logAndShow(
                           requireContext(), TAG, error, R.string.error_retrieve_own_token);
                     } else {
-                      ErrorUtils.logAndShow(
+                      ErrorUtils.INSTANCE.logAndShow(
                           requireContext(), TAG, error, R.string.error_sending_chirp);
                     }
                   }));

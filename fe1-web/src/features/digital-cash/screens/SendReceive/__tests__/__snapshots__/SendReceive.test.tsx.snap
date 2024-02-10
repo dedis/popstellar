@@ -490,9 +490,7 @@ exports[`SendReceive renders correctly 1`] = `
                                     accessible={true}
                                     collapsable={false}
                                     focusable={true}
-                                    onBlur={[Function]}
                                     onClick={[Function]}
-                                    onFocus={[Function]}
                                     onResponderGrant={[Function]}
                                     onResponderMove={[Function]}
                                     onResponderRelease={[Function]}
@@ -501,52 +499,27 @@ exports[`SendReceive renders correctly 1`] = `
                                     onStartShouldSetResponder={[Function]}
                                     style={
                                       {
-                                        "marginBottom": 16,
+                                        "opacity": 1,
                                       }
                                     }
                                   >
-                                    <RNGestureHandlerButton
-                                      collapsable={false}
-                                      delayLongPress={600}
-                                      enabled={true}
-                                      exclusive={true}
-                                      handlerTag={3}
-                                      handlerType="NativeViewGestureHandler"
-                                      onGestureEvent={[Function]}
-                                      onGestureHandlerEvent={[Function]}
-                                      onGestureHandlerStateChange={[Function]}
-                                      onHandlerStateChange={[Function]}
-                                      rippleColor={0}
-                                      touchSoundDisabled={false}
-                                    >
-                                      <View
-                                        accessible={true}
-                                        collapsable={false}
-                                        style={
+                                    <View
+                                      style={
+                                        [
                                           {
-                                            "opacity": 1,
-                                          }
-                                        }
-                                      >
-                                        <View
-                                          style={
-                                            [
-                                              {
-                                                "backgroundColor": "#3742fa",
-                                                "borderColor": "#3742fa",
-                                                "borderRadius": 8,
-                                                "borderWidth": 1,
-                                                "padding": 8,
-                                              },
-                                            ]
-                                          }
-                                        >
-                                          <View>
-                                            {"name":"ios-scan","size":25,"color":"#fff"}
-                                          </View>
-                                        </View>
+                                            "backgroundColor": "#3742fa",
+                                            "borderColor": "#3742fa",
+                                            "borderRadius": 8,
+                                            "borderWidth": 1,
+                                            "padding": 8,
+                                          },
+                                        ]
+                                      }
+                                    >
+                                      <View>
+                                        {"name":"ios-scan","size":25,"color":"#fff"}
                                       </View>
-                                    </RNGestureHandlerButton>
+                                    </View>
                                   </View>
                                 </View>
                               </View>
@@ -608,10 +581,8 @@ exports[`SendReceive renders correctly 1`] = `
                             <View
                               accessible={true}
                               collapsable={false}
-                              focusable={true}
-                              onBlur={[Function]}
+                              focusable={false}
                               onClick={[Function]}
-                              onFocus={[Function]}
                               onResponderGrant={[Function]}
                               onResponderMove={[Function]}
                               onResponderRelease={[Function]}
@@ -620,73 +591,48 @@ exports[`SendReceive renders correctly 1`] = `
                               onStartShouldSetResponder={[Function]}
                               style={
                                 {
-                                  "marginBottom": 16,
+                                  "opacity": 1,
                                 }
                               }
                             >
-                              <RNGestureHandlerButton
-                                collapsable={false}
-                                delayLongPress={600}
-                                enabled={true}
-                                exclusive={true}
-                                handlerTag={4}
-                                handlerType="NativeViewGestureHandler"
-                                onGestureEvent={[Function]}
-                                onGestureHandlerEvent={[Function]}
-                                onGestureHandlerStateChange={[Function]}
-                                onHandlerStateChange={[Function]}
-                                rippleColor={0}
-                                touchSoundDisabled={false}
-                              >
-                                <View
-                                  accessible={true}
-                                  collapsable={false}
-                                  style={
+                              <View
+                                style={
+                                  [
                                     {
-                                      "opacity": 1,
-                                    }
+                                      "backgroundColor": "#3742fa",
+                                      "borderColor": "#3742fa",
+                                      "borderRadius": 8,
+                                      "borderWidth": 1,
+                                      "padding": 8,
+                                    },
+                                    {
+                                      "backgroundColor": "#8E8E8E",
+                                      "borderColor": "#8E8E8E",
+                                    },
+                                  ]
+                                }
+                              >
+                                <Text
+                                  style={
+                                    [
+                                      {
+                                        "color": "#000",
+                                        "fontSize": 20,
+                                        "lineHeight": 26,
+                                        "textAlign": "left",
+                                      },
+                                      {
+                                        "textAlign": "center",
+                                      },
+                                      {
+                                        "color": "#fff",
+                                      },
+                                    ]
                                   }
                                 >
-                                  <View
-                                    style={
-                                      [
-                                        {
-                                          "backgroundColor": "#3742fa",
-                                          "borderColor": "#3742fa",
-                                          "borderRadius": 8,
-                                          "borderWidth": 1,
-                                          "padding": 8,
-                                        },
-                                        {
-                                          "backgroundColor": "#8E8E8E",
-                                          "borderColor": "#8E8E8E",
-                                        },
-                                      ]
-                                    }
-                                  >
-                                    <Text
-                                      style={
-                                        [
-                                          {
-                                            "color": "#000",
-                                            "fontSize": 20,
-                                            "lineHeight": 26,
-                                            "textAlign": "left",
-                                          },
-                                          {
-                                            "textAlign": "center",
-                                          },
-                                          {
-                                            "color": "#fff",
-                                          },
-                                        ]
-                                      }
-                                    >
-                                      Send Transaction
-                                    </Text>
-                                  </View>
-                                </View>
-                              </RNGestureHandlerButton>
+                                  Send Transaction
+                                </Text>
+                              </View>
                             </View>
                           </View>
                         </RCTScrollView>
@@ -980,7 +926,7 @@ exports[`SendReceive renders correctly with passed scanned pop token 1`] = `
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
-                handlerTag={5}
+                handlerTag={3}
                 handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}
@@ -1040,7 +986,7 @@ exports[`SendReceive renders correctly with passed scanned pop token 1`] = `
                       >
                         <RCTScrollView
                           collapsable={false}
-                          handlerTag={6}
+                          handlerTag={4}
                           handlerType="NativeViewGestureHandler"
                           onGestureHandlerEvent={[Function]}
                           onGestureHandlerStateChange={[Function]}
@@ -1194,9 +1140,7 @@ exports[`SendReceive renders correctly with passed scanned pop token 1`] = `
                                     accessible={true}
                                     collapsable={false}
                                     focusable={true}
-                                    onBlur={[Function]}
                                     onClick={[Function]}
-                                    onFocus={[Function]}
                                     onResponderGrant={[Function]}
                                     onResponderMove={[Function]}
                                     onResponderRelease={[Function]}
@@ -1205,52 +1149,27 @@ exports[`SendReceive renders correctly with passed scanned pop token 1`] = `
                                     onStartShouldSetResponder={[Function]}
                                     style={
                                       {
-                                        "marginBottom": 16,
+                                        "opacity": 1,
                                       }
                                     }
                                   >
-                                    <RNGestureHandlerButton
-                                      collapsable={false}
-                                      delayLongPress={600}
-                                      enabled={true}
-                                      exclusive={true}
-                                      handlerTag={7}
-                                      handlerType="NativeViewGestureHandler"
-                                      onGestureEvent={[Function]}
-                                      onGestureHandlerEvent={[Function]}
-                                      onGestureHandlerStateChange={[Function]}
-                                      onHandlerStateChange={[Function]}
-                                      rippleColor={0}
-                                      touchSoundDisabled={false}
-                                    >
-                                      <View
-                                        accessible={true}
-                                        collapsable={false}
-                                        style={
+                                    <View
+                                      style={
+                                        [
                                           {
-                                            "opacity": 1,
-                                          }
-                                        }
-                                      >
-                                        <View
-                                          style={
-                                            [
-                                              {
-                                                "backgroundColor": "#3742fa",
-                                                "borderColor": "#3742fa",
-                                                "borderRadius": 8,
-                                                "borderWidth": 1,
-                                                "padding": 8,
-                                              },
-                                            ]
-                                          }
-                                        >
-                                          <View>
-                                            {"name":"ios-scan","size":25,"color":"#fff"}
-                                          </View>
-                                        </View>
+                                            "backgroundColor": "#3742fa",
+                                            "borderColor": "#3742fa",
+                                            "borderRadius": 8,
+                                            "borderWidth": 1,
+                                            "padding": 8,
+                                          },
+                                        ]
+                                      }
+                                    >
+                                      <View>
+                                        {"name":"ios-scan","size":25,"color":"#fff"}
                                       </View>
-                                    </RNGestureHandlerButton>
+                                    </View>
                                   </View>
                                 </View>
                               </View>
@@ -1312,10 +1231,8 @@ exports[`SendReceive renders correctly with passed scanned pop token 1`] = `
                             <View
                               accessible={true}
                               collapsable={false}
-                              focusable={true}
-                              onBlur={[Function]}
+                              focusable={false}
                               onClick={[Function]}
-                              onFocus={[Function]}
                               onResponderGrant={[Function]}
                               onResponderMove={[Function]}
                               onResponderRelease={[Function]}
@@ -1324,73 +1241,48 @@ exports[`SendReceive renders correctly with passed scanned pop token 1`] = `
                               onStartShouldSetResponder={[Function]}
                               style={
                                 {
-                                  "marginBottom": 16,
+                                  "opacity": 1,
                                 }
                               }
                             >
-                              <RNGestureHandlerButton
-                                collapsable={false}
-                                delayLongPress={600}
-                                enabled={true}
-                                exclusive={true}
-                                handlerTag={8}
-                                handlerType="NativeViewGestureHandler"
-                                onGestureEvent={[Function]}
-                                onGestureHandlerEvent={[Function]}
-                                onGestureHandlerStateChange={[Function]}
-                                onHandlerStateChange={[Function]}
-                                rippleColor={0}
-                                touchSoundDisabled={false}
-                              >
-                                <View
-                                  accessible={true}
-                                  collapsable={false}
-                                  style={
+                              <View
+                                style={
+                                  [
                                     {
-                                      "opacity": 1,
-                                    }
+                                      "backgroundColor": "#3742fa",
+                                      "borderColor": "#3742fa",
+                                      "borderRadius": 8,
+                                      "borderWidth": 1,
+                                      "padding": 8,
+                                    },
+                                    {
+                                      "backgroundColor": "#8E8E8E",
+                                      "borderColor": "#8E8E8E",
+                                    },
+                                  ]
+                                }
+                              >
+                                <Text
+                                  style={
+                                    [
+                                      {
+                                        "color": "#000",
+                                        "fontSize": 20,
+                                        "lineHeight": 26,
+                                        "textAlign": "left",
+                                      },
+                                      {
+                                        "textAlign": "center",
+                                      },
+                                      {
+                                        "color": "#fff",
+                                      },
+                                    ]
                                   }
                                 >
-                                  <View
-                                    style={
-                                      [
-                                        {
-                                          "backgroundColor": "#3742fa",
-                                          "borderColor": "#3742fa",
-                                          "borderRadius": 8,
-                                          "borderWidth": 1,
-                                          "padding": 8,
-                                        },
-                                        {
-                                          "backgroundColor": "#8E8E8E",
-                                          "borderColor": "#8E8E8E",
-                                        },
-                                      ]
-                                    }
-                                  >
-                                    <Text
-                                      style={
-                                        [
-                                          {
-                                            "color": "#000",
-                                            "fontSize": 20,
-                                            "lineHeight": 26,
-                                            "textAlign": "left",
-                                          },
-                                          {
-                                            "textAlign": "center",
-                                          },
-                                          {
-                                            "color": "#fff",
-                                          },
-                                        ]
-                                      }
-                                    >
-                                      Send Transaction
-                                    </Text>
-                                  </View>
-                                </View>
-                              </RNGestureHandlerButton>
+                                  Send Transaction
+                                </Text>
+                              </View>
                             </View>
                           </View>
                         </RCTScrollView>

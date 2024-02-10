@@ -2,7 +2,7 @@ import { CompositeScreenProps, useNavigation } from '@react-navigation/core';
 import { StackScreenProps } from '@react-navigation/stack';
 import { ListItem } from '@rneui/themed';
 import React, { useEffect, useMemo, useState } from 'react';
-import { View } from 'react-native';
+import { Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import ReactTimeago from 'react-timeago';
 
@@ -38,6 +38,8 @@ const EventLists = () => {
   const eventListSelector = useMemo(() => makeEventListSelector(laoId), [laoId]);
   const events = useSelector(eventListSelector);
 
+  const isOrganizer = EventHooks.useIsLaoOrganizer();
+
   const [{ pastEvents, currentEvents, upcomingEvents }, setEvents] = useState<{
     pastEvents: EventState[];
     currentEvents: EventState[];
@@ -67,7 +69,14 @@ const EventLists = () => {
     [upcomingEvents],
   );
 
-  return (
+  return events.length === 0 ? (
+    // if no events, display a welcome message on the screen
+    <View>
+      <Text style={[Typography.base, Typography.centered]}>
+        {isOrganizer ? STRINGS.events_welcome_organizer : STRINGS.events_welcome_attendee}
+      </Text>
+    </View>
+  ) : (
     <View>
       {upcomingEvents.length > 0 && closestUpcomingEvent && (
         <ListItem
