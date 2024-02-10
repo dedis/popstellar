@@ -5,10 +5,10 @@ import ch.epfl.pop.config.RuntimeEnvironment
 import org.scalatest.funsuite.AnyFunSuite
 import org.scalatest.matchers.should.Matchers
 
-class WebSocketResponseHandlerSuite extends AnyFunSuite with Matchers with ScalatestRouteTest {
+class PopchaWebSocketResponseHandlerSuite extends AnyFunSuite with Matchers with ScalatestRouteTest {
 
   test("Can connect on correct path") {
-    val websocketRoute = WebSocketResponseHandler.buildRoute(RuntimeEnvironment.serverConf)
+    val websocketRoute = PopchaWebSocketResponseHandler.buildRoute(RuntimeEnvironment.serverConf)
     val path = "/response/xyz/authentication/abc/123"
 
     val firstClient = WSProbe.apply()
@@ -19,7 +19,7 @@ class WebSocketResponseHandlerSuite extends AnyFunSuite with Matchers with Scala
   }
 
   test("Cannot connect on wrong path") {
-    val websocketRoute = WebSocketResponseHandler.buildRoute(RuntimeEnvironment.serverConf)
+    val websocketRoute = PopchaWebSocketResponseHandler.buildRoute(RuntimeEnvironment.serverConf)
 
     val wrongPaths = List(
       "response",

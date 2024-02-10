@@ -34,8 +34,8 @@ class PopchaHandler(dbRef: => AskableActorRef, securityModuleActorRef: => Askabl
 
   private val TOKEN_VALIDITY_DURATION = 3600
 
-  /** Handle the Authenticate message received by
-    *   - using [[securityModuleActorRef]] to sign the id token generated
+  /** Handle the Authenticate message received:
+    *   - use [[securityModuleActorRef]] to sign the id token generated
     *   - sending the result jwt to the predetermined websocket over an http request
     * @param rpcMessage
     *   message received
@@ -47,8 +47,8 @@ class PopchaHandler(dbRef: => AskableActorRef, securityModuleActorRef: => Askabl
     handleAuthentication(rpcMessage, sendResponseToWebsocket(rpcMessage, authenticate, laoId))
   }
 
-  /** Handles authentication messages while allowing dependency injection Handle the Authenticate message received by
-    *   - using [[securityModuleActorRef]] to sign the id token generated
+  /** Handle, while allowing dependency injection, the Authenticate message received:
+    *   - use [[securityModuleActorRef]] to sign the id token generated
     *   - the jwt result is given to the given responseHandler
     * @param rpcMessage
     *   message received

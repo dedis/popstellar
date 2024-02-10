@@ -9,7 +9,7 @@ import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.{RequestContext, RouteResult}
 import akka.pattern.AskableActorRef
 import akka.util.Timeout
-import ch.epfl.pop.authentication.{GetRequestHandler, WebSocketResponseHandler}
+import ch.epfl.pop.authentication.{GetRequestHandler, PopchaWebSocketResponseHandler}
 import ch.epfl.pop.config.RuntimeEnvironment
 import ch.epfl.pop.config.RuntimeEnvironment._
 import ch.epfl.pop.decentralized.{ConnectionMediator, HeartbeatGenerator, Monitor}
@@ -84,7 +84,7 @@ object Server {
 
       def getRequestsRoute = GetRequestHandler.buildRoutes(serverConf, securityModuleActorRef)
 
-      def authenticateWsResponseRoute = WebSocketResponseHandler.buildRoute(serverConf)(system)
+      def authenticateWsResponseRoute = PopchaWebSocketResponseHandler.buildRoute(serverConf)(system)
 
       def allRoutes = concat(
         authenticateWsResponseRoute,

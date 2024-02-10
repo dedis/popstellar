@@ -10,7 +10,9 @@ import ch.epfl.pop.model.network.JsonRpcMessage
 import ch.epfl.pop.model.objects.{Base64Data, PublicKey}
 import ch.epfl.pop.pubsub.AskPatternConstants
 import ch.epfl.pop.pubsub.graph.{GraphMessage, PipelineError}
-import ch.epfl.pop.storage.{DbActor, FakeSecurityModuleActor}
+import ch.epfl.pop.storage.SecurityModuleActor.{ReadRsaPublicKey, ReadRsaPublicKeyAck}
+import ch.epfl.pop.storage.SecurityModuleActorSuite.testSecurityDirectory
+import ch.epfl.pop.storage.{DbActor, SecurityModuleActor}
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import org.scalatest.BeforeAndAfterAll
@@ -87,8 +89,11 @@ class PopchaHandlerSuite extends TestKit(ActorSystem("popchaHandlerTestActorSyst
     val respPromise = Promise[Uri]()
 
     val dbActorRef = mockDbWithoutUser(None)
-    val securityModuleActorRef = system.actorOf(Props(FakeSecurityModuleActor()))
+    val securityModuleActorRef: AskableActorRef = system.actorOf(Props(SecurityModuleActor(testSecurityDirectory)))
     val responseHandler: Uri => GraphMessage = handleAuthenticationResponse(AUTHENTICATE_RPC, respPromise)
+
+    val publicKeyAsk = Await.result(securityModuleActorRef ? ReadRsaPublicKey(), duration)
+    val serverPublicKey = publicKeyAsk.asInstanceOf[ReadRsaPublicKeyAck].publicKey
 
     val message = new PopchaHandler(dbActorRef, securityModuleActorRef).handleAuthentication(AUTHENTICATE_RPC, responseHandler)
     message shouldBe Right(AUTHENTICATE_RPC)
@@ -104,7 +109,7 @@ class PopchaHandlerSuite extends TestKit(ActorSystem("popchaHandlerTestActorSyst
     responseParams should contain("state" -> VALID_AUTHENTICATE.state)
     responseParams should contain key "id_token"
 
-    val idToken = JWT.require(Algorithm.RSA256(FakeSecurityModuleActor.rsaPublicKey))
+    val idToken = JWT.require(Algorithm.RSA256(serverPublicKey))
       .build()
       .verify(responseParams("id_token"))
 
@@ -125,7 +130,7 @@ class PopchaHandlerSuite extends TestKit(ActorSystem("popchaHandlerTestActorSyst
     val authPromise = Promise[(PublicKey, String, PublicKey)]()
 
     val dbActorRef = mockDbWithoutUser(Some(authPromise))
-    val securityModuleActorRef = system.actorOf(Props(FakeSecurityModuleActor()))
+    val securityModuleActorRef = system.actorOf(Props(SecurityModuleActor(testSecurityDirectory)))
     val message = new PopchaHandler(dbActorRef, securityModuleActorRef).handleAuthentication(AUTHENTICATE_RPC, dummyResponseHandler(AUTHENTICATE_RPC))
     message shouldBe Right(AUTHENTICATE_RPC)
 
@@ -143,7 +148,7 @@ class PopchaHandlerSuite extends TestKit(ActorSystem("popchaHandlerTestActorSyst
     val authPromise = Promise[(PublicKey, String, PublicKey)]()
 
     val dbActorRef = mockDbWithValidUser(Some(authPromise))
-    val securityModuleActorRef = system.actorOf(Props(FakeSecurityModuleActor()))
+    val securityModuleActorRef = system.actorOf(Props(SecurityModuleActor(testSecurityDirectory)))
     val message = new PopchaHandler(dbActorRef, securityModuleActorRef).handleAuthentication(AUTHENTICATE_RPC, dummyResponseHandler(AUTHENTICATE_RPC))
     message shouldBe Right(AUTHENTICATE_RPC)
 
@@ -153,14 +158,14 @@ class PopchaHandlerSuite extends TestKit(ActorSystem("popchaHandlerTestActorSyst
 
   test("Authentication should fail on second authentication with a different identifier") {
     val dbActorRef = mockDbWithInvalidUser(None)
-    val securityModuleActorRef = system.actorOf(Props(FakeSecurityModuleActor()))
+    val securityModuleActorRef = system.actorOf(Props(SecurityModuleActor(testSecurityDirectory)))
     val message = new PopchaHandler(dbActorRef, securityModuleActorRef).handleAuthentication(AUTHENTICATE_RPC, dummyResponseHandler(AUTHENTICATE_RPC))
     message shouldBe a[Left[_, _]]
   }
 
   test("Failure to send the authentication response should return the failure cause") {
     val dbActorRef = mockDbWithoutUser(None)
-    val securityModuleActorRef = system.actorOf(Props(FakeSecurityModuleActor()))
+    val securityModuleActorRef = system.actorOf(Props(SecurityModuleActor(testSecurityDirectory)))
     val message = new PopchaHandler(dbActorRef, securityModuleActorRef).handleAuthentication(AUTHENTICATE_RPC, failToHandleAuthenticationResponse)
     inside(message) {
       case Left(error) => error shouldEqual serverError

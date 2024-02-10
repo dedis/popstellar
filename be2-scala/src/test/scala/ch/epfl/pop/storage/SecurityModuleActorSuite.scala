@@ -5,19 +5,16 @@ import akka.pattern.ask
 import akka.testkit.TestKit
 import ch.epfl.pop.pubsub.AskPatternConstants
 import ch.epfl.pop.storage.SecurityModuleActor.{ReadRsaPublicKey, ReadRsaPublicKeyAck, SignJwt, SignJwtAck}
+import ch.epfl.pop.storage.SecurityModuleActorSuite.testSecurityDirectory
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import org.scalatest.BeforeAndAfterAll
-import org.scalatest.funsuite.AnyFunSuiteLike
+import org.scalatest.funsuite.{AnyFunSuiteLike => FunSuiteLike}
 import org.scalatest.matchers.should.Matchers
 
 import scala.concurrent.Await
 
-class SecurityModuleActorSuite extends TestKit(ActorSystem("SecurityModuleActorSystem")) with AnyFunSuiteLike with Matchers with BeforeAndAfterAll with AskPatternConstants {
-
-//  private val testSecurityDirectory = "/Users/hugo/Documents/EPFL/BA6/PoP/popstellar/be2-scala/src/security/test/"
-  private val testSecurityDirectory = "src/security/test"
-
+class SecurityModuleActorSuite extends TestKit(ActorSystem("SecurityModuleActorSystem")) with FunSuiteLike with Matchers with BeforeAndAfterAll with AskPatternConstants {
   override def afterAll(): Unit = {
     // Stops the test actor system
     TestKit.shutdownActorSystem(system)
@@ -38,4 +35,8 @@ class SecurityModuleActorSuite extends TestKit(ActorSystem("SecurityModuleActorS
 
     JWT.require(Algorithm.RSA256(publicKey)).build().verify(tokenSigned)
   }
+}
+
+object SecurityModuleActorSuite {
+  val testSecurityDirectory = "src/security/test"
 }

@@ -15,9 +15,9 @@ import java.security.spec.{PKCS8EncodedKeySpec, X509EncodedKeySpec}
 import scala.io.Source
 import scala.util.{Success, Try}
 
-/** Actor to use for logic involving the server's private keys. Only the public keys can exit the module, on the other hand private keys must stay here and can only be used through specific endpoint
+/** Actor to use for logic involving the server's private keys. Only the public keys can exit the module, on the other hand private keys must stay here and can only be used for controlled computations through specific endpoints
   * @param keysFolderPath
-  *   folder where the keys are stored at
+  *   folder where the public and private keys are stored at
   */
 final case class SecurityModuleActor(keysFolderPath: String) extends Actor with ActorLogging {
 

@@ -12,7 +12,8 @@ import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.objects.Channel
 import ch.epfl.pop.pubsub.graph.GraphMessage
 import ch.epfl.pop.pubsub.{AskPatternConstants, MessageRegistry, PubSubMediator, PublishSubscribe}
-import ch.epfl.pop.storage.{DbActor, FakeSecurityModuleActor, InMemoryStorage}
+import ch.epfl.pop.storage.SecurityModuleActorSuite.testSecurityDirectory
+import ch.epfl.pop.storage.{DbActor, InMemoryStorage, SecurityModuleActor}
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.funsuite.AnyFunSuiteLike
 import org.scalatest.matchers.should.Matchers
@@ -32,7 +33,7 @@ class GetMessagesByIdResponseHandlerSuite extends TestKit(ActorSystem("GetMessag
   val messageRegistry: MessageRegistry = MessageRegistry()
   val pubSubMediatorRef: ActorRef = system.actorOf(PubSubMediator.props, "PubSubMediator")
   val dbActorRef: AskableActorRef = system.actorOf(Props(DbActor(pubSubMediatorRef, messageRegistry, inMemoryStorage)), "DbActor")
-  val securityModuleActorRef: AskableActorRef = system.actorOf(Props(FakeSecurityModuleActor()))
+  val securityModuleActorRef: AskableActorRef = system.actorOf(Props(SecurityModuleActor(testSecurityDirectory)))
 
   // Inject dbActor above
   PublishSubscribe.buildGraph(pubSubMediatorRef, dbActorRef, securityModuleActorRef, messageRegistry, ActorRef.noSender, ActorRef.noSender, isServer = false)

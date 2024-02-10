@@ -11,9 +11,16 @@ import ch.epfl.pop.config.ServerConf
 
 import scala.concurrent.{Future, Promise}
 
-/** Websocket handler that acts as a message forwarder between two websocket clients that connect on a common endpoint. The first client connected is considered the listener while the second one is the emitter. Only one Strict message (not a stream message) is expected from the emitter, after it is forward the connection is closed.
+/** Websocket handler that, given two websocket connections on a common endpoint, forwards a single message from the second websocket connected to the first.
+ *  Connections requests are expected to lend on endpoints with format "/laoId/authentication/clientId/nonce". This uniquely
+ *  determines a connection by its socketId (laoId, clientId, nonce).
+ *  The first websocket connected on a given endpoint is assumed to be waiting for a message that will be provided by a second
+ *  websocket on that same endpoint at some point later in time. Once the expected message is received (from the second websocket only), the handler forwards it to the websocket waiting
+ *  (the first one) and then terminates both connections.
+ *  This process is expected to take place by the end of the Popcha authentication mechanism stage 1, when the Pocha Server sends the
+ *  jwt produced during the authentication to the webpage waiting for it. The PopchaWebSocketResponseHandler then acts as a rooter that forwards the message from the Popcha server's websocket to the webpage's websocket (as both are connected on the same endpoint.
   */
-object WebSocketResponseHandler {
+object PopchaWebSocketResponseHandler {
 
   private val LISTENER_BUFFER_SIZE: Int = 256
 
