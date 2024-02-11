@@ -15,11 +15,13 @@ import util.examples.JsonRpcRequestExample._
 
 import scala.concurrent.Await
 import scala.util.Success
+import akka.NotUsed
+import akka.stream.scaladsl.Flow
 class ParamsWithMapHandlerSuite extends TestKit(ActorSystem("HbActorSuiteActorSystem")) with AnyFunSuiteLike with AskPatternConstants {
 
   final val toyDbActorRef: AskableActorRef = system.actorOf(Props(new ToyDbActor))
-  final val heartbeatHandler = ParamsWithMapHandler.heartbeatHandler(toyDbActorRef)
-  final val getMessagesByIdHandler = ParamsWithMapHandler.getMessagesByIdHandler(toyDbActorRef)
+  final val heartbeatHandler: Flow[GraphMessage,GraphMessage,NotUsed] = ParamsWithMapHandler.heartbeatHandler(toyDbActorRef)
+  final val getMessagesByIdHandler: Flow[GraphMessage,GraphMessage,NotUsed] = ParamsWithMapHandler.getMessagesByIdHandler(toyDbActorRef)
   final val rpc: String = "rpc"
   final val id: Option[Int] = Some(0)
 

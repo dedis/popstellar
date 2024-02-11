@@ -19,7 +19,7 @@ object MessageExample {
   private final val EMPTY_SIGNATURE: Signature = Signature(Base64Data(""))
   private final val EMPTY_HASH: Hash = Hash(Base64Data(""))
 
-  final val NOT_STALE_TIMESTAMP = Timestamp(1577833201L)
+  final val NOT_STALE_TIMESTAMP: Timestamp = Timestamp(1577833201L)
 
   final val MESSAGE: Message = Message(
     Base64Data("eyJjcmVhdGlvbiI6MTYzMTg4NzQ5NiwiaWQiOiJ4aWdzV0ZlUG1veGxkd2txMUt1b0wzT1ZhODl4amdYalRPZEJnSldjR1drPSIsIm5hbWUiOiJoZ2dnZ2dnIiwib3JnYW5pemVyIjoidG9fa2xaTHRpSFY0NDZGdjk4T0xOZE5taS1FUDVPYVR0YkJrb3RUWUxpYz0iLCJ3aXRuZXNzZXMiOltdLCJvYmplY3QiOiJsYW8iLCJhY3Rpb24iOiJjcmVhdGUifQ=="),

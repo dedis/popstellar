@@ -1,8 +1,9 @@
 package ch.epfl.pop.authentication
 
-import akka.http.scaladsl.model.{AttributeKey, HttpRequest, HttpResponse, StatusCodes}
+import akka.http.scaladsl.model.{AttributeKey, HttpRequest, HttpResponse, StatusCodes, Uri}
 import akka.http.scaladsl.server
 import akka.http.scaladsl.server.Directives._
+
 
 /** Helper object used to build a server route for handling authentication requests
   */
@@ -44,7 +45,7 @@ object Authenticate {
           }
       }
 
-      val invalidParametersRoute = extractUri { uri =>
+      val invalidParametersRoute = extractUri { (uri: Uri) =>
         complete {
           val parametersFound = uri.query().toMap.keys.toSet
           val missingParams = mandatoryParameters.diff(parametersFound)

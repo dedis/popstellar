@@ -126,13 +126,13 @@ object HighLevelProtocol extends DefaultJsonProtocol {
       Broadcast(params.channel, params.message)
     }
 
-    override def write(obj: Broadcast): JsValue = obj.toJson(ParamsFormat.write)
+    override def write(obj: Broadcast): JsValue = obj.toJson(ParamsFormat.write(_))
   }
 
   implicit object CatchupFormat extends RootJsonFormat[Catchup] {
     override def read(json: JsValue): Catchup = Catchup(json.convertTo[ParamsWithChannel].channel)
 
-    override def write(obj: Catchup): JsValue = obj.toJson(ParamsFormat.write)
+    override def write(obj: Catchup): JsValue = obj.toJson(ParamsFormat.write(_))
   }
 
   implicit object PublishFormat extends RootJsonFormat[Publish] {
@@ -141,33 +141,33 @@ object HighLevelProtocol extends DefaultJsonProtocol {
       Publish(params.channel, params.message)
     }
 
-    override def write(obj: Publish): JsValue = obj.toJson(ParamsFormat.write)
+    override def write(obj: Publish): JsValue = obj.toJson(ParamsFormat.write(_))
   }
 
   implicit object SubscribeFormat extends RootJsonFormat[Subscribe] {
     override def read(json: JsValue): Subscribe = Subscribe(json.convertTo[ParamsWithChannel].channel)
 
-    override def write(obj: Subscribe): JsValue = obj.toJson(ParamsFormat.write)
+    override def write(obj: Subscribe): JsValue = obj.toJson(ParamsFormat.write(_))
   }
 
   implicit object UnsubscribeFormat extends RootJsonFormat[Unsubscribe] {
     override def read(json: JsValue): Unsubscribe = Unsubscribe(json.convertTo[ParamsWithChannel].channel)
 
-    override def write(obj: Unsubscribe): JsValue = obj.toJson(ParamsFormat.write)
+    override def write(obj: Unsubscribe): JsValue = obj.toJson(ParamsFormat.write(_))
   }
 
   implicit object HeartbeatFormat extends RootJsonFormat[Heartbeat] {
     override def read(json: JsValue): Heartbeat =
       Heartbeat(json.convertTo[ParamsWithMap].channelsToMessageIds)
 
-    override def write(obj: Heartbeat): JsValue = obj.toJson(ParamsWithMapFormat.write)
+    override def write(obj: Heartbeat): JsValue = obj.toJson(ParamsWithMapFormat.write(_))
   }
 
   implicit object GetMessagesByIdFormat extends RootJsonFormat[GetMessagesById] {
     override def read(json: JsValue): GetMessagesById =
       GetMessagesById(json.convertTo[ParamsWithMap].channelsToMessageIds)
 
-    override def write(obj: GetMessagesById): JsValue = obj.toJson(ParamsWithMapFormat.write)
+    override def write(obj: GetMessagesById): JsValue = obj.toJson(ParamsWithMapFormat.write(_))
   }
 
   implicit object GreetServerFormat extends RootJsonFormat[GreetServer] {

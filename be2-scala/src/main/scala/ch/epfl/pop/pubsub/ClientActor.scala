@@ -144,7 +144,7 @@ object ClientActor {
   final case class ConnectWsHandle(wsClient: ActorRef) extends Event
 
   // unsubscribe from all channels
-  final case object DisconnectWsHandle extends Event
+  case object DisconnectWsHandle extends Event
 
   // subscribe to a particular channel
   final case class SubscribeTo(channel: Channel) extends Event

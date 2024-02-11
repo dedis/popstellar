@@ -8,7 +8,7 @@ import spray.json._
 
 object AddReactionExamples {
 
-  final val NOT_STALE_TIMESTAMP = Timestamp(1577833201L)
+  final val NOT_STALE_TIMESTAMP: Timestamp = Timestamp(1577833201L)
   final val SENDER_ADDREACTION: PublicKey = AddChirpExamples.SENDER_ADDCHIRP
 
   val invalidTimestamp: Timestamp = Timestamp(0)

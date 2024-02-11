@@ -13,16 +13,16 @@ case class TestObj(ed_signer: Ed25519Sign, keyPair: Ed25519Sign.KeyPair)
 
 class SignatureSuite extends FunSuite with Matchers with BeforeAndAfterAll {
   // Fixture test
-  final val tester = {
+  final val tester: TestObj = {
     val kpair = Ed25519Sign.KeyPair.newKeyPair()
     val privateKey = kpair.getPrivateKey
     val ed_signer = new Ed25519Sign(privateKey)
     TestObj(ed_signer, kpair)
   }
   // Data used for testing signature
-  final val dataTest = Seq("PoP-scala", "HelloWorld", "Not true is false", "😀", "OMEGA \u03A9", "\u03A8", "Non empty can be fully non empty", "Not false is true")
+  final val dataTest: Seq[String] = Seq("PoP-scala", "HelloWorld", "Not true is false", "😀", "OMEGA \u03A9", "\u03A8", "Non empty can be fully non empty", "Not false is true")
 
-  final val verify_pk = PublicKey(Base64Data.encode(tester.keyPair.getPublicKey))
+  final val verify_pk: PublicKey = PublicKey(Base64Data.encode(tester.keyPair.getPublicKey))
 
   /*Provides correct signature for a msg*/
   private def getTrueSignatureTest(msg: String): Signature = {

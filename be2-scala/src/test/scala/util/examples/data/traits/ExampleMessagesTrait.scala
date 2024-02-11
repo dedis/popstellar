@@ -54,8 +54,8 @@ object ExampleMessages {
   val DEFAULT_CHANNEL: Channel = Channel.ROOT_CHANNEL
 
   // Default builder used mid level Message
-  final val DEFAULT_MESSAGE_BUILDER = new HighLevelMessageGenerator.MessageBuilder().withSender(DEFAULT_SENDER)
-  final val DEFAULT_HL_MESSAGE_BUILDER = new HighLevelMessageGenerator.HLMessageBuilder(DEFAULT_MESSAGE_BUILDER).withId(1).withChannel(DEFAULT_CHANNEL)
+  final val DEFAULT_MESSAGE_BUILDER: HighLevelMessageGenerator.MessageBuilder = new HighLevelMessageGenerator.MessageBuilder().withSender(DEFAULT_SENDER)
+  final val DEFAULT_HL_MESSAGE_BUILDER: HighLevelMessageGenerator.HLMessageBuilder = new HighLevelMessageGenerator.HLMessageBuilder(DEFAULT_MESSAGE_BUILDER).withId(1).withChannel(DEFAULT_CHANNEL)
 
   // Reads and returns payload from .json file
   final def getPayloadFromFile(fileName: String): String = {
