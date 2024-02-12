@@ -50,7 +50,7 @@ This is a possible improvement that could be done in the future.
 ### Example: Create a valid roll call scenario
 - The first `read` of the background section uses the full path description of the `constants.feature`.
 Subsequent paths used are defined as constants within this feature to make it easier to change them in the future.
-- `createMockFrontend` is defined in `mockClient.feature` and is an instanciation of the Java class `MockClient`.
+- `createMockFrontend` is defined in `mockClient.feature` and returns an instanciation of the Java class `MockClient`.
 This class provides the functions to create model data for LAOs, roll calls, elections etc.
 - Curly brackets after a `read` allow passing arguments to the called scenario.
 For instance, here the created organizer and LAO are passed to the `createLaoScenario`.
