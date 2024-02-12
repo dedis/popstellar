@@ -3,19 +3,19 @@ import sbtsonar.SonarPlugin.autoImport.sonarProperties
 
 name := "pop"
 
-scalaVersion := "2.13.11"
+scalaVersion := "3.3.1"
 
 // Recommended 2.13 Scala flags (https://nathankleyn.com/2019/05/13/recommended-scalac-flags-for-2-13) slightly adapted for PoP
 scalacOptions ++= Seq(
   "-deprecation", // Emit warning and location for usages of deprecated APIs.
-  // "-explain", // Explain type errors in more detail.
+  "-explain", // Explain type errors in more detail.
   "-feature", // Emit warning and location for usages of features that should be imported explicitly.
   "-language:existentials", // Existential types (besides wildcard types) can be written and inferred
   "-language:experimental.macros", // Allow macro definition (besides implementation and application)
   "-language:higherKinds", // Allow higher-kinded types
   "-language:implicitConversions", // Allow definition of implicit functions called views
   "-unchecked", // Enable additional warnings where generated code depends on assumptions.
-  // "-Ysafe-init", // Wrap field accessors to throw an exception on uninitialized access.
+  "-Ysafe-init", // Wrap field accessors to throw an exception on uninitialized access.
   "-Xfatal-warnings" // Fail the compilation if there are any warnings.
 )
 
@@ -133,7 +133,7 @@ libraryDependencies += "com.google.crypto.tink" % "tink" % "1.5.0"
 libraryDependencies += "ch.epfl.dedis" % "cothority" % "3.3.1"
 
 // Scala unit tests
-libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.12" % Test
+libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.18" % Test
 
 // Json Schema Validator w/ Jackson Databind
 libraryDependencies += "com.networknt" % "json-schema-validator" % "1.0.60"
