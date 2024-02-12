@@ -2,7 +2,7 @@ package ch.epfl.pop.pubsub
 
 import akka.actor.{Actor, ActorLogging, ActorRef, Props}
 import akka.event.LoggingReceive
-import akka.pattern.AskableActorRef
+import akka.pattern.{AskableActorRef, ask}
 import ch.epfl.pop.config.RuntimeEnvironment.serverConf
 import ch.epfl.pop.decentralized.ConnectionMediator
 import ch.epfl.pop.model.network.JsonRpcRequest
