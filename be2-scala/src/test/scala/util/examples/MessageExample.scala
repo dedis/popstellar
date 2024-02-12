@@ -183,7 +183,7 @@ object MessageExample {
   final val HASH_MEETING_OBJECT: Hash = Hash.fromStrings("M", laoIdMeeting, "" + creationMeeting, nameMeeting)
   final val meetingCreate: CreateMeeting = CreateMeeting(HASH_MEETING_OBJECT, nameMeeting, creationMeeting, Some("EPFL"), Timestamp(1633098900), Some(Timestamp(1633102500)), None)
   final val MESSAGE_CREATE_MEETING: Message = new Message(
-    Base64Data.encode(meetingCreate.toJson.toString()),
+    Base64Data.encode(meetingCreate.toJson.toString),
     PublicKey(Base64Data("J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=")),
     EMPTY_SIGNATURE,
     EMPTY_HASH,
@@ -195,7 +195,7 @@ object MessageExample {
   final val HASH_MEETING_OBJECT_WRONG_CHANNEL: Hash = Hash.fromStrings("M", laoIdMeetingWrongChannel, "" + creationMeeting, nameMeeting)
   final val mettingCreateWrongChannel: CreateMeeting = CreateMeeting(HASH_MEETING_OBJECT, nameMeeting, creationMeeting, Some("EPFL"), Timestamp(1633098900), Some(Timestamp(1633102500)), None)
   final val MESSAGE_CREATE_MEETING_WRONG_CHANNEL: Message = new Message(
-    Base64Data.encode(mettingCreateWrongChannel.toJson.toString()),
+    Base64Data.encode(mettingCreateWrongChannel.toJson.toString),
     PublicKey(Base64Data("J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=")),
     EMPTY_SIGNATURE,
     EMPTY_HASH,
@@ -206,7 +206,7 @@ object MessageExample {
   final val HASH_MEETING_OBJECT_WRONG_DATA: Hash = Hash.fromStrings("M", laoIdMeetingWrongChannel, "" + creationMeeting, nameMeeting, "wrongElement")
   final val meetingCreateWrongData: CreateMeeting = CreateMeeting(HASH_MEETING_OBJECT_WRONG_DATA, nameMeeting, creationMeeting, Some("EPFL"), Timestamp(1633098900), Some(Timestamp(1633102500)), None)
   final val MESSAGE_CREATE_MEETING_WRONG_DATA: Message = new Message(
-    Base64Data.encode(meetingCreateWrongData.toJson.toString()),
+    Base64Data.encode(meetingCreateWrongData.toJson.toString),
     PublicKey(Base64Data("J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=")),
     EMPTY_SIGNATURE,
     EMPTY_HASH,
@@ -218,7 +218,7 @@ object MessageExample {
   final val HASH_MEETING_OBJECT_STALE_CREATION: Hash = Hash.fromStrings("M", laoIdMeeting, "" + creationMeetingSmall, nameMeeting)
   final val meetingCreateSmallCreation: CreateMeeting = CreateMeeting(HASH_MEETING_OBJECT_STALE_CREATION, nameMeeting, creationMeetingSmall, Some("EPFL"), Timestamp(1633098900), Some(Timestamp(1633102500)), None)
   final val MESSAGE_CREATE_MEETING_SMALL_CREATION: Message = new Message(
-    Base64Data.encode(meetingCreateSmallCreation.toJson.toString()),
+    Base64Data.encode(meetingCreateSmallCreation.toJson.toString),
     PublicKey(Base64Data("J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=")),
     EMPTY_SIGNATURE,
     EMPTY_HASH,
@@ -228,7 +228,7 @@ object MessageExample {
 
   final val meetingCreateSmallStart: CreateMeeting = CreateMeeting(HASH_MEETING_OBJECT, nameMeeting, creationMeeting, Some("EPFL"), Timestamp(170), Some(Timestamp(1633102500)), None)
   final val MESSAGE_CREATE_MEETING_SMALL_START: Message = new Message(
-    Base64Data.encode(meetingCreateSmallStart.toJson.toString()),
+    Base64Data.encode(meetingCreateSmallStart.toJson.toString),
     PublicKey(Base64Data("J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=")),
     EMPTY_SIGNATURE,
     EMPTY_HASH,
@@ -238,7 +238,7 @@ object MessageExample {
 
   final val meetingCreateInvalidEnd: CreateMeeting = CreateMeeting(HASH_MEETING_OBJECT, nameMeeting, creationMeeting, Some("EPFL"), Timestamp(1633098400), Some(Timestamp(1633098200)), None)
   final val MESSAGE_CREATE_MEETING_SMALL_END: Message = new Message(
-    Base64Data.encode(meetingCreateInvalidEnd.toJson.toString()),
+    Base64Data.encode(meetingCreateInvalidEnd.toJson.toString),
     PublicKey(Base64Data("J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=")),
     EMPTY_SIGNATURE,
     EMPTY_HASH,
@@ -248,7 +248,7 @@ object MessageExample {
 
   final val meetingCreateSmallEnd: CreateMeeting = CreateMeeting(HASH_MEETING_OBJECT, nameMeeting, creationMeeting, Some("EPFL"), Timestamp(1633102500), Some(Timestamp(1633102000)), None)
   final val MESSAGE_CREATE_MEETING_START_BIGGER_THAN_END: Message = new Message(
-    Base64Data.encode(meetingCreateSmallEnd.toJson.toString()),
+    Base64Data.encode(meetingCreateSmallEnd.toJson.toString),
     PublicKey(Base64Data("J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=")),
     EMPTY_SIGNATURE,
     EMPTY_HASH,
@@ -272,7 +272,7 @@ object MessageExample {
     witnessSignatures
   )
   final val MESSAGE_STATE_MEETING: Message = new Message(
-    Base64Data.encode(validStateMeeting.toJson.toString()),
+    Base64Data.encode(validStateMeeting.toJson.toString),
     PublicKey(Base64Data("J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=")),
     EMPTY_SIGNATURE,
     EMPTY_HASH,
@@ -293,7 +293,7 @@ object MessageExample {
     witnessSignatures
   )
   final val MESSAGE_STATE_MEETING_INVALID_DATA: Message = new Message(
-    Base64Data.encode(invalidStateMeetingWrongData.toJson.toString()),
+    Base64Data.encode(invalidStateMeetingWrongData.toJson.toString),
     PublicKey(Base64Data("J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=")),
     EMPTY_SIGNATURE,
     EMPTY_HASH,
@@ -314,7 +314,7 @@ object MessageExample {
     witnessSignatures
   )
   final val MESSAGE_STATE_MEETING_INVALID_CREATION: Message = new Message(
-    Base64Data.encode(invalidStateMeetingStaleCreationTime.toJson.toString()),
+    Base64Data.encode(invalidStateMeetingStaleCreationTime.toJson.toString),
     PublicKey(Base64Data("J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=")),
     EMPTY_SIGNATURE,
     EMPTY_HASH,
@@ -335,7 +335,7 @@ object MessageExample {
     witnessSignatures
   )
   final val MESSAGE_STATE_MEETING_INVALID_START: Message = new Message(
-    Base64Data.encode(invalidStateMeetingStaleStartTime.toJson.toString()),
+    Base64Data.encode(invalidStateMeetingStaleStartTime.toJson.toString),
     PublicKey(Base64Data("J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=")),
     EMPTY_SIGNATURE,
     EMPTY_HASH,
@@ -356,7 +356,7 @@ object MessageExample {
     witnessSignatures
   )
   final val MESSAGE_STATE_MEETING_SMALL_START: Message = new Message(
-    Base64Data.encode(invalidStateMeetingSmallStartTime.toJson.toString()),
+    Base64Data.encode(invalidStateMeetingSmallStartTime.toJson.toString),
     PublicKey(Base64Data("J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=")),
     EMPTY_SIGNATURE,
     EMPTY_HASH,
@@ -377,7 +377,7 @@ object MessageExample {
     witnessSignatures
   )
   final val MESSAGE_STATE_MEETING_SMALL_END: Message = new Message(
-    Base64Data.encode(invalidStateMeetingSmallEndTime.toJson.toString()),
+    Base64Data.encode(invalidStateMeetingSmallEndTime.toJson.toString),
     PublicKey(Base64Data("J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=")),
     EMPTY_SIGNATURE,
     EMPTY_HASH,
@@ -398,7 +398,7 @@ object MessageExample {
     witnessSignatures
   )
   final val MESSAGE_STATE_MEETING_SMALL_MODIFICATION_TIME: Message = new Message(
-    Base64Data.encode(invalidStateMeetingSmallModificationTime.toJson.toString()),
+    Base64Data.encode(invalidStateMeetingSmallModificationTime.toJson.toString),
     PublicKey(Base64Data("J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=")),
     EMPTY_SIGNATURE,
     EMPTY_HASH,
@@ -419,7 +419,7 @@ object MessageExample {
     witnessSignatures
   )
   final val MESSAGE_STATE_MEETING_BIG_START: Message = new Message(
-    Base64Data.encode(invalidStateMeetingBigStartTime.toJson.toString()),
+    Base64Data.encode(invalidStateMeetingBigStartTime.toJson.toString),
     PublicKey(Base64Data("J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=")),
     EMPTY_SIGNATURE,
     EMPTY_HASH,
@@ -441,7 +441,7 @@ object MessageExample {
     invalidWitnessSignatures
   )
   final val MESSAGE_STATE_MEETING_WRONG_WITNESS_SIGNATURE: Message = new Message(
-    Base64Data.encode(invalidStateMeetingWrongWitnessSignature.toJson.toString()),
+    Base64Data.encode(invalidStateMeetingWrongWitnessSignature.toJson.toString),
     PublicKey(Base64Data("J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=")),
     EMPTY_SIGNATURE,
     EMPTY_HASH,
@@ -466,7 +466,7 @@ object MessageExample {
     POPCHA_ADDRESS
   )
   final val MESSAGE_AUTHENTICATE: Message = new Message(
-    Base64Data.encode(VALID_AUTHENTICATE.toJson.toString()),
+    Base64Data.encode(VALID_AUTHENTICATE.toJson.toString),
     PUBLIC_KEY,
     EMPTY_SIGNATURE,
     EMPTY_HASH,
@@ -483,7 +483,7 @@ object MessageExample {
     POPCHA_ADDRESS
   )
   final val MESSAGE_AUTHENTICATE_OTHER_RESPONSE_MODE: Message = new Message(
-    Base64Data.encode(validAuthenticateOtherResponseMode.toJson.toString()),
+    Base64Data.encode(validAuthenticateOtherResponseMode.toJson.toString),
     PUBLIC_KEY,
     EMPTY_SIGNATURE,
     EMPTY_HASH,
@@ -500,7 +500,7 @@ object MessageExample {
     POPCHA_ADDRESS
   )
   final val MESSAGE_AUTHENTICATE_WRONG_SIGNATURE: Message = new Message(
-    Base64Data.encode(invalidAuthenticateWrongSignature.toJson.toString()),
+    Base64Data.encode(invalidAuthenticateWrongSignature.toJson.toString),
     PUBLIC_KEY,
     EMPTY_SIGNATURE,
     EMPTY_HASH,
@@ -517,7 +517,7 @@ object MessageExample {
     POPCHA_ADDRESS
   )
   final val MESSAGE_AUTHENTICATE_WRONG_RESPONSE_MODE: Message = new Message(
-    Base64Data.encode(invalidAuthenticateWrongResponseMode.toJson.toString()),
+    Base64Data.encode(invalidAuthenticateWrongResponseMode.toJson.toString),
     PUBLIC_KEY,
     EMPTY_SIGNATURE,
     EMPTY_HASH,
