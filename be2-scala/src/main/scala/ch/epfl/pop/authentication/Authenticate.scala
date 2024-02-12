@@ -21,8 +21,7 @@ object Authenticate {
     * @return
     *   A route either successfully handling a given authentication request or rejecting it with an error
     */
-  def buildRoute(): Route = { ctx => ctx.complete("yeah") }
-  /*
+  def buildRoute(): Route =
     extractRequest { request =>
 
       val validParametersRoute = parameters(
@@ -53,8 +52,7 @@ object Authenticate {
 
       validParametersRoute ~ invalidParametersRoute
     }
-   */
-
+  
   private def generateChallenge(request: HttpRequest, redirectUri: String, laoId: String, clientId: String, nonce: String): HttpResponse = {
     val challengeEntity = QRCodeChallengeGenerator.generateChallengeContent(request.uri.toString(), redirectUri, laoId, clientId, nonce)
     HttpResponse(status = StatusCodes.OK, entity = challengeEntity)
