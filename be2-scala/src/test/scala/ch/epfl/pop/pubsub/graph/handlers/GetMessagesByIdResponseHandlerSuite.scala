@@ -17,7 +17,7 @@ import ch.epfl.pop.storage.{DbActor, InMemoryStorage, SecurityModuleActor}
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.funsuite.AnyFunSuiteLike
 import org.scalatest.matchers.should.Matchers
-import org.scalatest.matchers.should.Matchers.{convertToAnyShouldWrapper, equal}
+import org.scalatest.matchers.should.Matchers._
 
 import scala.concurrent.Await
 import scala.concurrent.duration.{DurationInt, FiniteDuration}

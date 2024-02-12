@@ -10,7 +10,7 @@ import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse}
 import ch.epfl.pop.pubsub.AskPatternConstants
 import ch.epfl.pop.pubsub.graph.GraphMessage
 import org.scalatest.funsuite.AnyFunSuiteLike
-import org.scalatest.matchers.should.Matchers.{convertToAnyShouldWrapper, equal}
+import org.scalatest.matchers.should.Matchers._
 import util.examples.JsonRpcRequestExample._
 
 import scala.concurrent.Await
@@ -20,8 +20,8 @@ import akka.stream.scaladsl.Flow
 class ParamsWithMapHandlerSuite extends TestKit(ActorSystem("HbActorSuiteActorSystem")) with AnyFunSuiteLike with AskPatternConstants {
 
   final val toyDbActorRef: AskableActorRef = system.actorOf(Props(new ToyDbActor))
-  final val heartbeatHandler: Flow[GraphMessage,GraphMessage,NotUsed] = ParamsWithMapHandler.heartbeatHandler(toyDbActorRef)
-  final val getMessagesByIdHandler: Flow[GraphMessage,GraphMessage,NotUsed] = ParamsWithMapHandler.getMessagesByIdHandler(toyDbActorRef)
+  final val heartbeatHandler: Flow[GraphMessage, GraphMessage, NotUsed] = ParamsWithMapHandler.heartbeatHandler(toyDbActorRef)
+  final val getMessagesByIdHandler: Flow[GraphMessage, GraphMessage, NotUsed] = ParamsWithMapHandler.getMessagesByIdHandler(toyDbActorRef)
   final val rpc: String = "rpc"
   final val id: Option[Int] = Some(0)
 
