@@ -179,16 +179,16 @@ object MessageExample {
 
   final val creationMeeting: Timestamp = Timestamp(1633098331)
   final val nameMeeting: String = "Meeting"
-  final val laoIdMEeeting: String = "p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA="
-  final val HASH_MEETING_OBJECT: Hash = Hash.fromStrings("M", laoIdMEeeting, "" + creationMeeting, nameMeeting)
-  final val mettingCreate: CreateMeeting = CreateMeeting(HASH_MEETING_OBJECT, nameMeeting, creationMeeting, Some("EPFL"), Timestamp(1633098900), Some(Timestamp(1633102500)), None)
+  final val laoIdMeeting: String = "p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA="
+  final val HASH_MEETING_OBJECT: Hash = Hash.fromStrings("M", laoIdMeeting, "" + creationMeeting, nameMeeting)
+  final val meetingCreate: CreateMeeting = CreateMeeting(HASH_MEETING_OBJECT, nameMeeting, creationMeeting, Some("EPFL"), Timestamp(1633098900), Some(Timestamp(1633102500)), None)
   final val MESSAGE_CREATE_MEETING: Message = new Message(
-    Base64Data.encode(mettingCreate.toJson.toString()),
+    Base64Data.encode(meetingCreate.toJson.toString()),
     PublicKey(Base64Data("J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=")),
     EMPTY_SIGNATURE,
     EMPTY_HASH,
     List.empty,
-    Some(mettingCreate)
+    Some(meetingCreate)
   )
 
   final val laoIdMeetingWrongChannel: String = "wrongMeetingChannel/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA="
@@ -215,7 +215,7 @@ object MessageExample {
   )
 
   final val creationMeetingSmall: Timestamp = Timestamp(123)
-  final val HASH_MEETING_OBJECT_STALE_CREATION: Hash = Hash.fromStrings("M", laoIdMEeeting, "" + creationMeetingSmall, nameMeeting)
+  final val HASH_MEETING_OBJECT_STALE_CREATION: Hash = Hash.fromStrings("M", laoIdMeeting, "" + creationMeetingSmall, nameMeeting)
   final val meetingCreateSmallCreation: CreateMeeting = CreateMeeting(HASH_MEETING_OBJECT_STALE_CREATION, nameMeeting, creationMeetingSmall, Some("EPFL"), Timestamp(1633098900), Some(Timestamp(1633102500)), None)
   final val MESSAGE_CREATE_MEETING_SMALL_CREATION: Message = new Message(
     Base64Data.encode(meetingCreateSmallCreation.toJson.toString()),
