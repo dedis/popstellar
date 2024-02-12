@@ -105,7 +105,7 @@ trait MessageHandler extends AskPatternConstants {
     )
 
     val combined = for {
-      DbActorReadLaoDataAck(laoData) <- dbActor ? DbActor.ReadLaoData(channel)
+      case DbActorReadLaoDataAck(laoData) <- dbActor ? DbActor.ReadLaoData(channel)
       encodedData: Base64Data = Base64Data.encode(broadcastData.toString)
       broadcastSignature: Signature = laoData.privateKey.signData(encodedData)
       broadcastId: Hash = Hash.fromStrings(encodedData.toString, broadcastSignature.toString)

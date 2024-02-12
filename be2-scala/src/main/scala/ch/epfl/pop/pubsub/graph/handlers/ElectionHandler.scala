@@ -46,7 +46,7 @@ class ElectionHandler(dbRef: => AskableActorRef) extends MessageHandler {
 
     // need to write and propagate the election message
     val combined = for {
-      (_, message, Some(data)) <- extractParameters[SetupElection](rpcMessage, serverUnexpectedAnswer)
+      case (_, message, Some(data)) <- extractParameters[SetupElection](rpcMessage, serverUnexpectedAnswer)
       electionId: Hash = data.id
       electionChannel: Channel = Channel(s"${rpcMessage.getParamsChannel.channel}${Channel.CHANNEL_SEPARATOR}$electionId")
       keyPair = KeyPair()
@@ -106,7 +106,7 @@ class ElectionHandler(dbRef: => AskableActorRef) extends MessageHandler {
     }
     val electionChannel: Channel = rpcMessage.getParamsChannel
     val combined = for {
-      (_, Some(laoId)) <- extractLaoChannel(rpcMessage, "There is an issue with the id of the LAO")
+      case (_, Some(laoId)) <- extractLaoChannel(rpcMessage, "There is an issue with the id of the LAO")
 
       electionQuestionResults <- createElectionQuestionResults(electionChannel, laoId)
       // propagate the endElection message
@@ -137,7 +137,7 @@ class ElectionHandler(dbRef: => AskableActorRef) extends MessageHandler {
       setupMessage <- electionChannel.getSetupMessage(dbActor)
       // associate the questions ids to their ballots
       questionToBallots = setupMessage.questions.map(question => question.id -> question.ballot_options).toMap
-      DbActorReadElectionDataAck(electionData) <- dbActor ? DbActor.ReadElectionData(laoId, setupMessage.id)
+      case DbActorReadElectionDataAck(electionData) <- dbActor ? DbActor.ReadElectionData(laoId, setupMessage.id)
     } yield {
       // set up the table of results
       val resultsTable = mutable.HashMap.from(for {
