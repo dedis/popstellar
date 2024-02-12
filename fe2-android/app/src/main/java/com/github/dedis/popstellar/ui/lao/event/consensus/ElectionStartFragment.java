@@ -1,35 +1,29 @@
 package com.github.dedis.popstellar.ui.lao.event.consensus;
 
+import static io.reactivex.android.schedulers.AndroidSchedulers.mainThread;
+
 import android.os.Bundle;
 import android.view.*;
 import android.widget.GridView;
-
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.ElectionStartFragmentBinding;
 import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.ElectInstance.State;
-import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.ElectionRepository;
 import com.github.dedis.popstellar.ui.lao.LaoActivity;
 import com.github.dedis.popstellar.ui.lao.LaoViewModel;
 import com.github.dedis.popstellar.utility.error.*;
-
-import java.text.SimpleDateFormat;
-import java.time.Instant;
-import java.util.*;
-
-import javax.inject.Inject;
-
 import dagger.hilt.android.AndroidEntryPoint;
 import io.reactivex.Observable;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.functions.Consumer;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.util.*;
+import javax.inject.Inject;
 import timber.log.Timber;
-
-import static io.reactivex.android.schedulers.AndroidSchedulers.mainThread;
 
 /**
  * A simple {@link Fragment} subclass. Use the {@link ElectionStartFragment#newInstance} factory
@@ -82,12 +76,15 @@ public class ElectionStartFragment extends Fragment {
     binding = ElectionStartFragmentBinding.inflate(inflater, container, false);
 
     laoViewModel = LaoActivity.obtainViewModel(requireActivity());
-    consensusViewModel =
-        LaoActivity.obtainConsensusViewModel(requireActivity(), laoViewModel.getLaoId());
+    final String laoId = laoViewModel.getLaoId();
+    consensusViewModel = LaoActivity.obtainConsensusViewModel(requireActivity(), laoId);
     String electionId = requireArguments().getString(ELECTION_ID);
 
     try {
-      Observable<List<ConsensusNode>> nodes = consensusViewModel.getNodes().observeOn(mainThread());
+      Observable<List<ConsensusNode>> nodes =
+          consensusViewModel
+              .getNodesByChannel(Channel.getLaoChannel(laoId))
+              .observeOn(mainThread());
       Observable<Election> election =
           electionRepo.getElectionObservable(laoViewModel.getLaoId(), electionId);
 
@@ -97,36 +94,28 @@ public class ElectionStartFragment extends Fragment {
       subscribeTo(nodes, this::updateNodes);
       subscribeTo(election, this::updateElection);
       subscribeTo(merged, this::updateNodesAndElection);
-    } catch (UnknownElectionException | UnknownLaoException e) {
-      ErrorUtils.logAndShow(requireContext(), TAG, e, R.string.generic_error);
+    } catch (UnknownElectionException e) {
+      ErrorUtils.INSTANCE.logAndShow(requireContext(), TAG, e, R.string.generic_error);
       return null;
     }
 
     setupButtonListeners(electionId);
 
-    try {
-      LaoView laoView = laoViewModel.getLao();
-      ownNode = laoView.getNode(laoViewModel.getPublicKey());
+    ownNode = consensusViewModel.getNodeByLao(laoId, laoViewModel.getPublicKey());
 
-      if (ownNode == null) {
-        // Only possible if the user wasn't an acceptor, but shouldn't have access to this fragment
-        Timber.tag(TAG)
-            .e("Couldn't find the Node with public key : %s", laoViewModel.getPublicKey());
-        throw new IllegalStateException(
-            "Only acceptors are allowed to access ElectionStartFragment");
-      }
-
-      String instanceId =
-          ElectInstance.generateConsensusId(CONSENSUS_TYPE, electionId, CONSENSUS_PROPERTY);
-      adapter =
-          new NodesAcceptorAdapter(
-              ownNode, instanceId, getViewLifecycleOwner(), laoViewModel, consensusViewModel);
-      GridView gridView = binding.nodesGrid;
-      gridView.setAdapter(adapter);
-    } catch (UnknownLaoException e) {
-      ErrorUtils.logAndShow(requireContext(), TAG, R.string.error_no_lao);
-      return null;
+    if (ownNode == null) {
+      // Only possible if the user wasn't an acceptor, but shouldn't have access to this fragment
+      Timber.tag(TAG).e("Couldn't find the Node with public key : %s", laoViewModel.getPublicKey());
+      throw new IllegalStateException("Only acceptors are allowed to access ElectionStartFragment");
     }
+
+    String instanceId =
+        ElectInstance.generateConsensusId(CONSENSUS_TYPE, electionId, CONSENSUS_PROPERTY);
+    adapter =
+        new NodesAcceptorAdapter(
+            ownNode, instanceId, getViewLifecycleOwner(), laoViewModel, consensusViewModel);
+    GridView gridView = binding.nodesGrid;
+    gridView.setAdapter(adapter);
 
     binding.setLifecycleOwner(getViewLifecycleOwner());
 
@@ -137,7 +126,9 @@ public class ElectionStartFragment extends Fragment {
     disposables.add(
         observable.subscribe(
             onNext,
-            err -> ErrorUtils.logAndShow(requireContext(), TAG, err, R.string.generic_error)));
+            err ->
+                ErrorUtils.INSTANCE.logAndShow(
+                    requireContext(), TAG, err, R.string.generic_error)));
   }
 
   private void updateNodes(List<ConsensusNode> nodes) {
@@ -195,7 +186,7 @@ public class ElectionStartFragment extends Fragment {
                     .subscribe(
                         msg -> {},
                         error ->
-                            ErrorUtils.logAndShow(
+                            ErrorUtils.INSTANCE.logAndShow(
                                 requireContext(), TAG, error, R.string.error_start_election))));
   }
 

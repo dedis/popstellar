@@ -4,6 +4,7 @@ import akka.actor.{ActorRef, ActorSystem, Props}
 import akka.pattern.AskableActorRef
 import akka.testkit.{ImplicitSender, TestKit}
 import ch.epfl.pop.model.network.method.message.Message
+import ch.epfl.pop.model.network.method.message.data.lao.GreetLao
 import ch.epfl.pop.model.network.method.message.data.{ActionType, ObjectType}
 import ch.epfl.pop.model.objects.Channel.ROOT_CHANNEL_PREFIX
 import ch.epfl.pop.model.objects._
@@ -375,7 +376,9 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
     val channelName1: Channel = Channel(CHANNEL_NAME)
     val publicKey: PublicKey = PublicKey(Base64Data("jsNj23IHALvppqV1xQfP71_3IyAHzivxiCz236_zzQc="))
     val privateKey: PrivateKey = PrivateKey(Base64Data("qRfms3wzSLkxAeBz6UtwA-L1qP0h8D9XI1FSvY68t7Y="))
-    val laoData: LaoData = LaoData(PublicKey(Base64Data.encode("key")), List(PublicKey(Base64Data.encode("key"))), privateKey, publicKey, List.empty)
+    val address: String = "127.0.0.1:8000"
+
+    val laoData: LaoData = LaoData(PublicKey(Base64Data.encode("key")), List(PublicKey(Base64Data.encode("key"))), privateKey, publicKey, List.empty, address)
     val laoDataKey: String = initialStorage.DATA_KEY + s"$CHANNEL_NAME${Channel.LAO_DATA_LOCATION}"
     initialStorage.write((laoDataKey, laoData.toJsonString))
     val dbActor: AskableActorRef = system.actorOf(Props(DbActor(mediatorRef, MessageRegistry(), initialStorage)))
@@ -544,6 +547,41 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
 
     successMessage should equal(Some(MESSAGE))
     failingMessage should equal(None)
+  }
+
+  test("GreetLao should appear in catchups on the lao channel") {
+    // arrange
+    val initialStorage: InMemoryStorage = InMemoryStorage()
+    val channel = Channel(CHANNEL_NAME)
+    val address = "127.0.0.1:8000"
+
+    val dbActor: AskableActorRef = system.actorOf(Props(DbActor(mediatorRef, MessageRegistry(), initialStorage)))
+
+    val writeCreateLaoAsk = dbActor ? DbActor.WriteCreateLaoMessage(channel, MESSAGE)
+    val writeCreateLaoAnswer = Await.result(writeCreateLaoAsk, duration)
+
+    val writeLaoDataAsk = dbActor ? DbActor.WriteLaoData(channel, MESSAGE, Some(address))
+    val writeLaoAnswer = Await.result(writeLaoDataAsk, duration)
+
+    // assert
+    writeCreateLaoAnswer shouldBe a[DbActor.DbActorAck]
+    writeLaoAnswer shouldBe a[DbActor.DbActorAck]
+
+    // act
+    val ask = dbActor ? DbActor.Catchup(Channel(CHANNEL_NAME))
+    val answer = Await.result(ask, duration)
+
+    // assert
+    answer shouldBe a[DbActor.DbActorCatchupAck]
+
+    val list: List[Message] = answer.asInstanceOf[DbActor.DbActorCatchupAck].messages
+
+    list.length should equal(2)
+    val msg = list.filterNot(msg => msg == MESSAGE).head.data
+    val greet = GreetLao.buildFromJson(msg.decodeToString())
+
+    greet.address should equal(address)
+    greet.lao should equal(channel.decodeChannelLaoId.get)
   }
 
   test("SetupElection messages should only be written on main lao channel") {
@@ -746,7 +784,7 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
     readRollcallData.updateId should equal(updateId)
   }
 
-  test("writeUserAuthenticated successfully add the authentication triplet in the db") {
+  test("writeUserAuthenticated successfully adds the authentication triplet in the db") {
     val storage: InMemoryStorage = InMemoryStorage()
     val dbActor: AskableActorRef = system.actorOf(Props(DbActor(mediatorRef, MessageRegistry(), storage)))
 
@@ -754,7 +792,7 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
     val popToken = PublicKey(Base64Data.encode("popToken"))
     val clientId = "some_client"
 
-    val write = dbActor ? DbActor.WriteUserAuthenticated(user, popToken, clientId)
+    val write = dbActor ? DbActor.WriteUserAuthenticated(popToken, clientId, user)
     Await.result(write, duration) shouldBe a[DbActor.DbActorAck]
 
     storage.size should equal(1)
@@ -762,7 +800,7 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
     val authKey = storage.AUTHENTICATED_KEY + popToken.base64Data.toString() + Channel.DATA_SEPARATOR + clientId
     val userFound = storage.read(authKey)
 
-    userFound shouldBe Some(user.base64Data.decodeToString())
+    userFound shouldBe Some(user.base64Data.toString())
   }
 
   test("readUserAuthenticated succeeds when an authentication has already occurred") {
@@ -774,7 +812,7 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
     val clientId = "some_client"
 
     val authKey = storage.AUTHENTICATED_KEY + popToken.base64Data.toString() + Channel.DATA_SEPARATOR + clientId
-    storage.write(authKey -> user.base64Data.decodeToString())
+    storage.write(authKey -> user.base64Data.toString())
 
     val read = dbActor ? DbActor.ReadUserAuthenticated(popToken, clientId)
     val answer = Await.result(read, duration)

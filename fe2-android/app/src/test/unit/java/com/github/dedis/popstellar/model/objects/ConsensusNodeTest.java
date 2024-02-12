@@ -1,20 +1,18 @@
 package com.github.dedis.popstellar.model.objects;
 
-import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusElect;
-import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusKey;
-import com.github.dedis.popstellar.model.objects.security.MessageID;
-import com.github.dedis.popstellar.model.objects.security.PublicKey;
-
-import org.junit.Before;
-import org.junit.Test;
-
-import java.util.*;
-
 import static com.github.dedis.popstellar.model.objects.ElectInstance.State.*;
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateMessageID;
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.generatePublicKey;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+
+import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusElect;
+import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusKey;
+import com.github.dedis.popstellar.model.objects.security.MessageID;
+import com.github.dedis.popstellar.model.objects.security.PublicKey;
+import java.util.*;
+import org.junit.Before;
+import org.junit.Test;
 
 public class ConsensusNodeTest {
 

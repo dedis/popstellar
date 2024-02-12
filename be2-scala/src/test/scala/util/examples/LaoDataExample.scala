@@ -7,5 +7,6 @@ object LaoDataExample {
   final val PRIVATEKEY: PrivateKey = PrivateKey(Base64Data("qRfms3wzSLkxAeBz6UtwA-L1qP0h8D9XI1FSvY68t7Y="))
   final val PKOWNER: PublicKey = PublicKey(Base64Data.encode("owner"))
   final val PKATTENDEE: PublicKey = PublicKey(Base64Data.encode("attendee1"))
-  final val LAODATA: LaoData = LaoData(PKOWNER, List(PKATTENDEE), PRIVATEKEY, PUBLICKEY, List.empty)
+  private final val ADDRESS: String = "127.0.0.1:8000"
+  final val LAODATA: LaoData = LaoData(PKOWNER, List(PKATTENDEE), PRIVATEKEY, PUBLICKEY, List.empty, ADDRESS)
 }

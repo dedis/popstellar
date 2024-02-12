@@ -38,9 +38,9 @@ func NewInbox(channelID string) *Inbox {
 // `messageID`. If the message was not yet received, the signature is added
 // to the pending signatures map.
 func (i *Inbox) AddWitnessSignature(messageID string, public string, signature string) {
-	msg, ok := i.GetMessage(messageID)
 	i.mutex.Lock()
 	defer i.mutex.Unlock()
+	msg, ok := i.msgsMap[messageID]
 	if !ok {
 		// Add the signature to the pending signatures
 		i.pendingSignatures[messageID] = append(i.pendingSignatures[messageID], message.WitnessSignature{
@@ -48,7 +48,7 @@ func (i *Inbox) AddWitnessSignature(messageID string, public string, signature s
 			Signature: signature,
 		})
 	} else {
-		msg.WitnessSignatures = append(msg.WitnessSignatures, message.WitnessSignature{
+		msg.message.WitnessSignatures = append(msg.message.WitnessSignatures, message.WitnessSignature{
 			Witness:   public,
 			Signature: signature,
 		})

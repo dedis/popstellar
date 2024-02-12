@@ -1,26 +1,24 @@
 package com.github.dedis.popstellar.model.objects;
 
-import com.github.dedis.popstellar.model.network.method.message.data.consensus.*;
-import com.github.dedis.popstellar.model.objects.security.MessageID;
-import com.github.dedis.popstellar.model.objects.security.PublicKey;
-import com.github.dedis.popstellar.utility.security.Hash;
-
-import org.junit.Test;
-import org.mockito.internal.util.collections.Sets;
-
-import java.util.Map;
-import java.util.Set;
-
 import static com.github.dedis.popstellar.model.objects.ElectInstance.State.STARTING;
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateMessageID;
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.generatePublicKey;
 import static org.junit.Assert.assertEquals;
 
+import com.github.dedis.popstellar.model.network.method.message.data.consensus.*;
+import com.github.dedis.popstellar.model.objects.security.MessageID;
+import com.github.dedis.popstellar.model.objects.security.PublicKey;
+import com.github.dedis.popstellar.utility.security.HashSHA256;
+import java.util.Map;
+import java.util.Set;
+import org.junit.Test;
+import org.mockito.internal.util.collections.Sets;
+
 public class ElectInstanceTest {
 
   private static final long creationInSeconds = 1635277619;
   private static final String type = "TestType";
-  private static final String objId = Hash.hash("TestId");
+  private static final String objId = HashSHA256.hash("TestId");
   private static final String property = "TestProperty";
 
   private static final ConsensusKey key = new ConsensusKey(type, objId, property);
@@ -50,7 +48,7 @@ public class ElectInstanceTest {
   @Test
   public void getInstanceIdTest() {
     // Hash("consensus"||key:type||key:id||key:property)
-    String expectedId = Hash.hash("consensus", type, objId, property);
+    String expectedId = HashSHA256.hash("consensus", type, objId, property);
     assertEquals(expectedId, electInstance.getInstanceId());
   }
 
@@ -110,7 +108,7 @@ public class ElectInstanceTest {
   @Test
   public void generateConsensusIdTest() {
     // Hash(“consensus”||key:type||key:id||key:property)
-    String expectedId = Hash.hash("consensus", type, objId, property);
+    String expectedId = HashSHA256.hash("consensus", type, objId, property);
     assertEquals(expectedId, ElectInstance.generateConsensusId(type, objId, property));
   }
 }

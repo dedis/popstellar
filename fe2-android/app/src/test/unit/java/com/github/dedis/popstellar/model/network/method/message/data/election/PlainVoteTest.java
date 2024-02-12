@@ -1,13 +1,12 @@
 package com.github.dedis.popstellar.model.network.method.message.data.election;
 
-import com.github.dedis.popstellar.model.objects.Election;
-import com.github.dedis.popstellar.utility.security.Hash;
-
-import org.junit.Test;
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.*;
+
+import com.github.dedis.popstellar.model.objects.Election;
+import com.github.dedis.popstellar.utility.security.HashSHA256;
+import org.junit.Test;
 
 public class PlainVoteTest {
 
@@ -22,7 +21,8 @@ public class PlainVoteTest {
   // Hash values util for testing
   private final String expectedIdNoWriteIn =
       Election.generateElectionVoteId(electionId, questionId, plainVote1.getVote(), writeIn, false);
-  private final String wrongFormatId = Hash.hash("Vote", electionId, plainVote2.getQuestionId());
+  private final String wrongFormatId =
+      HashSHA256.hash("Vote", electionId, plainVote2.getQuestionId());
   private final String expectedIdWithWriteIn =
       Election.generateElectionVoteId(electionId, questionId, plainVote2.getVote(), writeIn, true);
 
@@ -38,7 +38,7 @@ public class PlainVoteTest {
     // Hash code shouldn't change with new protocol specifications
     assertThat(plainVote2.getId().equals(wrongFormatId), is(false));
     assertThat(plainVote2.getId().equals(expectedIdWithWriteIn), is(true));
-    assertNull(plainVote2.getVote());
+    assertThat(plainVote2.getVote(), is(-1));
   }
 
   @Test
@@ -48,8 +48,8 @@ public class PlainVoteTest {
 
   @Test
   public void attributesIsNull() {
-    assertNull(plainVote2.getVote());
-    assertNotNull(plainVote1.getVote());
+    assertThat(plainVote2.getVote(), is(-1));
+    assertNotEquals(plainVote1.getVote(), -1);
   }
 
   @Test

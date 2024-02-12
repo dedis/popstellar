@@ -115,10 +115,10 @@ jobs:
         working-directory: ./be1-go
 
     steps:
-      - name: Use go >= 1.19
+      - name: Use go >= 1.21
         uses: actions/setup-go@v3
         with:
-          go-version: ">=1.19"
+          go-version: ">=1.21"
 
       - name: Setup repo
         uses: actions/checkout@v3
@@ -226,6 +226,19 @@ jobs:
         run: |
           # To run the CI with debug informations, add --info
           ./gradlew jacocoTestReport --parallel --build-cache
+          
+      - name: Generate Sarif Lint Report
+        shell: bash
+        run: |
+          # To run the CI with debug informations, add --info
+          ./gradlew lintDebug --parallel --build-cache
+      
+      - name: Upload lint sarif
+        uses: github/codeql-action/upload-sarif@v2
+        if: always()
+        with:
+          sarif_file: fe2-android/app/build/reports/lint-results-debug.sarif
+          category: lint
 
       - name: Cache SonarCloud packages
         uses: actions/cache@v2
@@ -267,7 +280,10 @@ jobs:
         run: sbt scalafmtCheckAll
 
       - name: Run unit tests
-        run: sbt -Dscala.config="src/main/scala/ch/epfl/pop/config" -Dtest clean coverage test
+        run: |
+          cd ./src/security/ && ./generateKeys.sh -test && cd ../.. # Generate test keys
+          sbt -Dscala.config="src/main/scala/ch/epfl/pop/config" -Dscala.security="src/security" -Dtest clean coverage test
+          rm -rf ./src/security/test/ # Remove test keys
 
       - name: Report coverage
         run: sbt coverageReport

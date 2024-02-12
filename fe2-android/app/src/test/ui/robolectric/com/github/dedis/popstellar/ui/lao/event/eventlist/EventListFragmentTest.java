@@ -1,17 +1,27 @@
 package com.github.dedis.popstellar.ui.lao.event.eventlist;
 
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.typeText;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.*;
+import static com.github.dedis.popstellar.testutils.pages.lao.LaoActivityPageObject.*;
+import static com.github.dedis.popstellar.testutils.pages.lao.event.EvenListFragmentPageObject.*;
+import static com.github.dedis.popstellar.testutils.pages.lao.event.election.ElectionSetupPageObject.*;
+import static com.github.dedis.popstellar.testutils.pages.lao.event.rollcall.RollCallCreatePageObject.*;
+import static org.hamcrest.Matchers.not;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.ImageView;
-
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.test.espresso.matcher.BoundedMatcher;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
-
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.rollcall.CreateRollCall;
@@ -30,7 +40,9 @@ import com.google.gson.Gson;
 import com.google.zxing.*;
 import com.google.zxing.common.HybridBinarizer;
 import com.google.zxing.qrcode.QRCodeReader;
-
+import dagger.hilt.android.testing.*;
+import io.reactivex.Completable;
+import javax.inject.Inject;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.junit.Rule;
@@ -40,23 +52,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoTestRule;
-
-import javax.inject.Inject;
-
-import dagger.hilt.android.testing.*;
-import io.reactivex.Completable;
-
-import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.action.ViewActions.typeText;
-import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.*;
-import static com.github.dedis.popstellar.testutils.pages.lao.LaoActivityPageObject.*;
-import static com.github.dedis.popstellar.testutils.pages.lao.event.EvenListFragmentPageObject.*;
-import static com.github.dedis.popstellar.testutils.pages.lao.event.election.ElectionSetupPageObject.*;
-import static com.github.dedis.popstellar.testutils.pages.lao.event.rollcall.RollCallCreatePageObject.*;
-import static org.hamcrest.Matchers.not;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
 
 @LargeTest
 @HiltAndroidTest

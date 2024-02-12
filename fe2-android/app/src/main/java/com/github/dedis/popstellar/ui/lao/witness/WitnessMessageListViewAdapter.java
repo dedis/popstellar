@@ -5,10 +5,8 @@ import android.content.Context;
 import android.view.*;
 import android.widget.BaseAdapter;
 import android.widget.Button;
-
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.FragmentActivity;
-
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.WitnessMessageLayoutBinding;
 import com.github.dedis.popstellar.model.objects.WitnessMessage;
@@ -17,11 +15,9 @@ import com.github.dedis.popstellar.ui.lao.LaoActivity;
 import com.github.dedis.popstellar.ui.lao.LaoViewModel;
 import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
-
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import timber.log.Timber;
 
 /** Adapter to show the messages that have to be signed by the witnesses */
@@ -168,7 +164,7 @@ public class WitnessMessageListViewAdapter extends BaseAdapter {
                             button.setText(signed);
                           },
                           error ->
-                              ErrorUtils.logAndShow(
+                              ErrorUtils.INSTANCE.logAndShow(
                                   activity, TAG, error, R.string.error_sign_message))));
 
       dialogBuilder.show();

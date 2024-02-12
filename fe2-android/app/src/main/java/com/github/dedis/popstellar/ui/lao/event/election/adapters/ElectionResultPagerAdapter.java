@@ -4,24 +4,19 @@ import android.annotation.SuppressLint;
 import android.view.*;
 import android.widget.ListView;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionQuestion;
 import com.github.dedis.popstellar.model.network.method.message.data.election.QuestionResult;
 import com.github.dedis.popstellar.repository.ElectionRepository;
 import com.github.dedis.popstellar.ui.lao.LaoViewModel;
 import com.github.dedis.popstellar.ui.lao.event.election.fragments.ElectionResultFragment;
+import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.UnknownElectionException;
-
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import java.util.*;
 import java.util.stream.Collectors;
-
-import io.reactivex.android.schedulers.AndroidSchedulers;
-
-import static com.github.dedis.popstellar.utility.error.ErrorUtils.logAndShow;
 
 public class ElectionResultPagerAdapter
     extends RecyclerView.Adapter<ElectionResultPagerAdapter.Pager2ViewHolder> {
@@ -53,7 +48,7 @@ public class ElectionResultPagerAdapter
                     }
                   }));
     } catch (UnknownElectionException err) {
-      logAndShow(viewModel.getApplication(), TAG, err, R.string.generic_error);
+      ErrorUtils.INSTANCE.logAndShow(viewModel.getApplication(), TAG, err, R.string.generic_error);
     }
   }
 

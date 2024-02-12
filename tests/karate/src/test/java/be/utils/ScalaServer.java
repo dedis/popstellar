@@ -26,11 +26,13 @@ public class ScalaServer extends Server implements Configurable {
   @Override
   public String[] getCmd() throws IOException {
     String configPath = Paths.get("src", "main", "scala", "ch", "epfl", "pop", "config").toString();
+    String securityDirPath = Paths.get("src", "security").toString();
     File targetJar = getTargetJar();
 
     return new String[] {
       "java",
       "-Dscala.config=" + configPath,
+      "-Dscala.security=" + securityDirPath,
       "-jar", targetJar.getCanonicalPath()
     };
   }

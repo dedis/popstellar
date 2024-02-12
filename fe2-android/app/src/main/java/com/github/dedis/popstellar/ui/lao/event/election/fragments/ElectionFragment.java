@@ -1,18 +1,18 @@
 package com.github.dedis.popstellar.ui.lao.event.election.fragments;
 
+import static com.github.dedis.popstellar.utility.Constants.*;
+
 import android.app.AlertDialog;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.*;
 import android.widget.*;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.widget.ImageViewCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.objects.Election;
 import com.github.dedis.popstellar.model.objects.event.EventState;
@@ -22,17 +22,12 @@ import com.github.dedis.popstellar.ui.lao.LaoViewModel;
 import com.github.dedis.popstellar.ui.lao.event.election.ElectionViewModel;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.UnknownElectionException;
-
-import java.text.SimpleDateFormat;
-import java.util.*;
-
-import javax.inject.Inject;
-
 import dagger.hilt.android.AndroidEntryPoint;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
-
-import static com.github.dedis.popstellar.utility.Constants.*;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import javax.inject.Inject;
 
 @AndroidEntryPoint
 public class ElectionFragment extends Fragment {
@@ -102,7 +97,7 @@ public class ElectionFragment extends Fragment {
           try {
             election = electionRepository.getElection(laoViewModel.getLaoId(), electionId);
           } catch (UnknownElectionException e) {
-            ErrorUtils.logAndShow(requireContext(), TAG, e, R.string.generic_error);
+            ErrorUtils.INSTANCE.logAndShow(requireContext(), TAG, e, R.string.generic_error);
             return;
           }
 
@@ -123,7 +118,7 @@ public class ElectionFragment extends Fragment {
                                   .subscribe(
                                       () -> {},
                                       error ->
-                                          ErrorUtils.logAndShow(
+                                          ErrorUtils.INSTANCE.logAndShow(
                                               requireContext(),
                                               TAG,
                                               error,
@@ -144,7 +139,7 @@ public class ElectionFragment extends Fragment {
                                   .subscribe(
                                       () -> {},
                                       error ->
-                                          ErrorUtils.logAndShow(
+                                          ErrorUtils.INSTANCE.logAndShow(
                                               requireContext(),
                                               TAG,
                                               error,
@@ -165,7 +160,7 @@ public class ElectionFragment extends Fragment {
           try {
             election = electionRepository.getElection(laoViewModel.getLaoId(), electionId);
           } catch (UnknownElectionException e) {
-            ErrorUtils.logAndShow(requireContext(), TAG, e, R.string.generic_error);
+            ErrorUtils.INSTANCE.logAndShow(requireContext(), TAG, e, R.string.generic_error);
             return;
           }
 
@@ -211,9 +206,10 @@ public class ElectionFragment extends Fragment {
               .subscribe(
                   this::setupElectionContent,
                   err ->
-                      ErrorUtils.logAndShow(requireContext(), TAG, err, R.string.generic_error)));
+                      ErrorUtils.INSTANCE.logAndShow(
+                          requireContext(), TAG, err, R.string.generic_error)));
     } catch (UnknownElectionException e) {
-      ErrorUtils.logAndShow(requireContext(), TAG, e, R.string.generic_error);
+      ErrorUtils.INSTANCE.logAndShow(requireContext(), TAG, e, R.string.generic_error);
     }
   }
 

@@ -16,6 +16,7 @@
   <!-- bottom nav -->
   <string name="tab_social_media">Social Media</string>
   <string name="tab_digital_cash">Digital Cash</string>
+  <string name="tab_popcha">PoPCHA</string>
   <string name="event_list">Events</string>
   <string name="witnessing">Witnessing</string>
   <string name="invite">Invite</string>
@@ -57,6 +58,8 @@
   <string name="lao_create_title">Create LAO</string>
   <string name="text_entry_create">Organization name</string>
   <string name="lao_create_witnesses_button">Add witnesses</string>
+  <string name="lao_create_enable_witnessing_switch">Enable witnessing protocol</string>
+  <string name="button_clear">Clear</string>
 
   <!--  Lao Detail-->
   <string name="add_election">New Election</string>
@@ -107,6 +110,7 @@
 
   <!-- QR code -->
   <string name="qrcode_scanning_add_witness">Scan personal QR code of the witness to add</string>
+  <string name="qrcode_scanning_add_popcha">Scan the PoPCHA QR code to log in</string>
   <string name="qrcode_scanning_connect_lao">Scan the invite QR code to join the LAO</string>
   <string name="event_description">Event Description</string>
   <string name="rc_location_title">Location*</string>
@@ -139,6 +143,7 @@
   <string name="sign">Sign</string>
   <string name="signed">Signed</string>
   <string name="confirm_delete_witnessed_messages">Do you want to delete the messages already passing the witnessing policy?</string>
+  <string name="not_a_witness">You\'re not a witness!</string>
 
   <!--  Roll Call -->
   <string name="roll_call_setup_title">Roll Call Setup</string>
@@ -277,6 +282,13 @@
   <string name="deleted_chirp">Deleted chirp!</string>
   <string name="deleted_chirp_2">Chirp is deleted.</string>
 
+  <!-- PoPCHA -->
+  <string name="popcha">PoPCHA</string>
+  <string name="popcha_header">Welcome to the PoPCHA tab, you\'re currently in the LAO:\n%1$s</string>
+  <string name="popcha_add">Log in through PoPCHA</string>
+  <string name="popcha_scan_title">Enter PoPCHA URL to log in</string>
+  <string name="manual_popcha_hint">PoPCHA URL</string>
+
   <!--  Storage-->
   <string name="nothing_stored">No stored data found</string>
   <string name="clear_text">Clear all storage</string>
@@ -356,6 +368,7 @@
   <string name="unknown_witness_message_exception">Unknown Witness Message</string>
   <string name="already_open_roll_call_exception">Another Roll Call is already open</string>
   <string name="lao_coins">LAO coins</string>
-  <string name="invalid_qrcode_data">Invalid QRCode laoData</string>
+  <string name="invalid_qrcode_lao_data">Invalid QRCode laoData</string>
+  <string name="invalid_qrcode_popcha_data">Invalid URL</string>
 
 </resources>

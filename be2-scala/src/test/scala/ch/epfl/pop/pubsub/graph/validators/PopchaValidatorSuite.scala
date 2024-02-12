@@ -30,9 +30,10 @@ class PopchaValidatorSuite extends TestKit(ActorSystem("popChaValidatorTestActor
   private val userIdentifier = MessageExample.PUBLIC_KEY
   private val otherUser = PublicKey(MessageExample.SEED)
   private val laoSeed = MessageExample.SEED
+  private final val ADDRESS: String = "127.0.0.1:8000"
 
-  private val laoDataWithUser = LaoData(userIdentifier, List(userIdentifier), PrivateKey(laoSeed), PublicKey(laoSeed), List())
-  private val laoDataWithoutUser = LaoData(otherUser, List(otherUser), PrivateKey(laoSeed), PublicKey(laoSeed), List())
+  private val laoDataWithUser = LaoData(userIdentifier, List(userIdentifier), PrivateKey(laoSeed), PublicKey(laoSeed), List(), ADDRESS)
+  private val laoDataWithoutUser = LaoData(otherUser, List(otherUser), PrivateKey(laoSeed), PublicKey(laoSeed), List(), ADDRESS)
 
   private val channelDataWithValidObjectType = ChannelData(ObjectType.POPCHA, Nil)
   private val channelDataWithInvalidObjectType = ChannelData(ObjectType.COIN, Nil)
@@ -62,7 +63,6 @@ class PopchaValidatorSuite extends TestKit(ActorSystem("popChaValidatorTestActor
   private val mockDBWithInvalidChannelType: AskableActorRef = setupMockDB(laoDataWithUser, channelDataWithInvalidObjectType)
 
   private val mockDBWithSameUserAuthenticated: AskableActorRef = setupMockDB(laoDataWithUser, channelDataWithValidObjectType, Some(userIdentifier))
-  private val mockDBWithOtherUserAuthenticated: AskableActorRef = setupMockDB(laoDataWithUser, channelDataWithValidObjectType, Some(otherUser))
 
   test("Authenticate works without user already authenticated") {
     val dbActorRef = mockDBWithUser
@@ -96,12 +96,6 @@ class PopchaValidatorSuite extends TestKit(ActorSystem("popChaValidatorTestActor
 
   test("Authenticate with user not in last lao's rollcall fails") {
     val dbActorRef = mockDBWithoutUser
-    val message: GraphMessage = new PopchaValidator(dbActorRef).validateAuthenticateRequest(AUTHENTICATE_RPC)
-    message shouldBe a[Left[_, PipelineError]]
-  }
-
-  test("Authenticate with other pop token already registered fails") {
-    val dbActorRef = mockDBWithOtherUserAuthenticated
     val message: GraphMessage = new PopchaValidator(dbActorRef).validateAuthenticateRequest(AUTHENTICATE_RPC)
     message shouldBe a[Left[_, PipelineError]]
   }

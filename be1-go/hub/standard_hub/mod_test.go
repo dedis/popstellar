@@ -4,7 +4,6 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"golang.org/x/exp/slices"
 	"io"
 	"os"
 	"path/filepath"
@@ -18,6 +17,8 @@ import (
 	"sync"
 	"testing"
 	"time"
+
+	"golang.org/x/exp/slices"
 
 	"github.com/stretchr/testify/assert"
 
@@ -729,8 +730,10 @@ func Test_Create_LAO(t *testing.T) {
 
 	// the server should have saved the channel locally
 
-	require.Contains(t, hub.channelByID, rootPrefix+data.ID)
-	require.Equal(t, fakeChannelFac.c, hub.channelByID[rootPrefix+data.ID])
+	require.Contains(t, hub.channelByID.GetTable(), rootPrefix+data.ID)
+
+	channel, _ := hub.channelByID.Get(rootPrefix + data.ID)
+	require.Equal(t, fakeChannelFac.c, channel)
 }
 
 func Test_Wrong_Root_Publish(t *testing.T) {
@@ -743,7 +746,7 @@ func Test_Wrong_Root_Publish(t *testing.T) {
 
 	laoID := "/root"
 
-	hub.channelByID[rootPrefix+laoID] = c
+	hub.channelByID.Set(rootPrefix+laoID, c)
 
 	data := messagedata.LaoState{
 		Object:    messagedata.LAOObject,
@@ -874,14 +877,12 @@ func Test_Handle_Answer(t *testing.T) {
 	answerBisBuf, err := json.Marshal(serverAnswerBis)
 	require.NoError(t, err)
 
-	queryState := false
-	hub.queries.state[1] = &queryState
-	hub.queries.getMessagesByIdQueries[1] = method.GetMessagesById{
+	query := method.GetMessagesById{
 		Base:   query.Base{},
 		ID:     1,
 		Params: nil,
 	}
-
+	hub.queries.AddQuery(1, query)
 	sock := &fakeSocket{}
 
 	hub.handleMessageFromClient(&socket.IncomingMessage{
@@ -890,6 +891,8 @@ func Test_Handle_Answer(t *testing.T) {
 	})
 	require.Error(t, sock.err, "rpc message sent by a client should be a query")
 	sock.err = nil
+	queryState, err := hub.queries.GetQueryState(1)
+	require.NoError(t, err)
 	require.False(t, queryState)
 
 	hub.handleMessageFromServer(&socket.IncomingMessage{
@@ -897,6 +900,8 @@ func Test_Handle_Answer(t *testing.T) {
 		Message: resultBuf,
 	})
 	require.NoError(t, sock.err)
+	queryState, _ = hub.queries.GetQueryState(1)
+	require.NoError(t, err)
 	require.False(t, queryState)
 
 	hub.handleMessageFromServer(&socket.IncomingMessage{
@@ -904,6 +909,8 @@ func Test_Handle_Answer(t *testing.T) {
 		Message: answerBuf,
 	})
 	require.NoError(t, sock.err)
+	queryState, _ = hub.queries.GetQueryState(1)
+	require.NoError(t, err)
 	require.True(t, queryState)
 
 	hub.handleMessageFromServer(&socket.IncomingMessage{
@@ -932,7 +939,7 @@ func Test_Handle_Publish_From_Client(t *testing.T) {
 
 	laoID := "XXX"
 
-	hub.channelByID[rootPrefix+laoID] = c
+	hub.channelByID.Set(rootPrefix+laoID, c)
 
 	signature, err := schnorr.Sign(suite, keypair.private, []byte("XXX"))
 	require.NoError(t, err)
@@ -999,7 +1006,7 @@ func Test_Handle_Publish_From_Server(t *testing.T) {
 
 	laoID := "XXX"
 
-	hub.channelByID[rootPrefix+laoID] = c
+	hub.channelByID.Set(rootPrefix+laoID, c)
 
 	signature, err := schnorr.Sign(suite, keypair.private, []byte("XXX"))
 	require.NoError(t, err)
@@ -1066,7 +1073,7 @@ func Test_Receive_Publish_Twice(t *testing.T) {
 
 	laoID := "XXX"
 
-	hub.channelByID[rootPrefix+laoID] = c
+	hub.channelByID.Set(rootPrefix+laoID, c)
 
 	signature, err := schnorr.Sign(suite, keypair.private, []byte("XXX"))
 	require.NoError(t, err)
@@ -1191,9 +1198,7 @@ func Test_Create_LAO_GetMessagesById_Result(t *testing.T) {
 		Params: missingMessages,
 	}
 
-	queryState := false
-	hub.queries.state[1] = &queryState
-	hub.queries.getMessagesByIdQueries[1] = getMessagesByIdQuery
+	hub.queries.AddQuery(1, getMessagesByIdQuery)
 
 	ans := struct {
 		JSONRPC string                       `json:"jsonrpc"`
@@ -1228,8 +1233,9 @@ func Test_Create_LAO_GetMessagesById_Result(t *testing.T) {
 
 	// the server should have saved the channel locally
 
-	require.Contains(t, hub.channelByID, rootPrefix+data.ID)
-	require.Equal(t, fakeChannelFac.c, hub.channelByID[rootPrefix+data.ID])
+	require.Contains(t, hub.channelByID.GetTable(), rootPrefix+data.ID)
+	channel, _ := hub.channelByID.Get(rootPrefix + laoID)
+	require.Equal(t, fakeChannelFac.c, channel)
 }
 
 // Tests that an answer to a getMessagesById without a valid message id returns an error
@@ -1294,9 +1300,7 @@ func Test_Create_LAO_GetMessagesById_Wrong_MessageID(t *testing.T) {
 		Params: missingMessages,
 	}
 
-	queryState := false
-	hub.queries.state[1] = &queryState
-	hub.queries.getMessagesByIdQueries[1] = getMessagesByIdQuery
+	hub.queries.AddQuery(1, getMessagesByIdQuery)
 
 	ans := struct {
 		JSONRPC string                       `json:"jsonrpc"`
@@ -1334,7 +1338,7 @@ func Test_Handle_Subscribe(t *testing.T) {
 
 	laoID := "XXX"
 
-	hub.channelByID[rootPrefix+laoID] = c
+	hub.channelByID.Set(rootPrefix+laoID, c)
 
 	subscribe := method.Subscribe{
 		Base: query.Base{
@@ -1397,7 +1401,7 @@ func TestServer_Handle_Unsubscribe(t *testing.T) {
 
 	laoID := "XXX"
 
-	hub.channelByID[rootPrefix+laoID] = c
+	hub.channelByID.Set(rootPrefix+laoID, c)
 
 	unsubscribe := method.Unsubscribe{
 		Base: query.Base{
@@ -1471,7 +1475,7 @@ func TestServer_Handle_Catchup(t *testing.T) {
 
 	laoID := "XXX"
 
-	hub.channelByID[rootPrefix+laoID] = c
+	hub.channelByID.Set(rootPrefix+laoID, c)
 
 	catchup := method.Catchup{
 		Base: query.Base{
@@ -1543,7 +1547,7 @@ func Test_Send_And_Handle_Message(t *testing.T) {
 
 	laoID := "XXX"
 
-	hub.channelByID[rootPrefix+laoID] = c
+	hub.channelByID.Set(rootPrefix+laoID, c)
 
 	signature, err := schnorr.Sign(suite, keypair.private, []byte("XXX"))
 	require.NoError(t, err)
@@ -1611,12 +1615,9 @@ func Test_Send_Heartbeat_Message(t *testing.T) {
 
 	hub.serverSockets.Upsert(sock)
 
-	hub.hubInbox.StoreMessage(msg1)
-	hub.hubInbox.StoreMessage(msg2)
-	hub.hubInbox.StoreMessage(msg3)
-
-	hub.messageIdsByChannel["/root"] = idsRoot
-	hub.messageIdsByChannel["/root/channel1"] = idsChannel1
+	hub.hubInbox.StoreMessage("/root", msg1)
+	hub.hubInbox.StoreMessage("/root", msg2)
+	hub.hubInbox.StoreMessage("/root/channel1", msg3)
 
 	hub.sendHeartbeatToServers()
 
@@ -1630,7 +1631,7 @@ func Test_Send_Heartbeat_Message(t *testing.T) {
 	messageIdsSent := heartbeat.Params
 
 	//Check that all the stored messages where sent
-	for storedChannel, storedIds := range hub.messageIdsByChannel {
+	for storedChannel, storedIds := range hub.hubInbox.GetIDsTable() {
 		sentIds, exists := messageIdsSent[storedChannel]
 		require.True(t, exists)
 		for _, storedId := range storedIds {
@@ -1647,9 +1648,7 @@ func Test_Handle_Heartbeat(t *testing.T) {
 	hub, err := NewHub(keypair.public, "", "", nolog, nil)
 	require.NoError(t, err)
 
-	hub.hubInbox.StoreMessage(msg1)
-
-	hub.messageIdsByChannel["/root"] = []string{msg1.MessageID}
+	hub.hubInbox.StoreMessage("/root", msg1)
 
 	sock := &fakeSocket{}
 
@@ -1711,12 +1710,9 @@ func Test_Handle_GetMessagesById(t *testing.T) {
 
 	hub.serverSockets.Upsert(sock)
 
-	hub.hubInbox.StoreMessage(msg1)
-	hub.hubInbox.StoreMessage(msg2)
-	hub.hubInbox.StoreMessage(msg3)
-
-	hub.messageIdsByChannel["/root"] = idsRoot
-	hub.messageIdsByChannel["/root/channel1"] = idsChannel1
+	hub.hubInbox.StoreMessage("/root", msg1)
+	hub.hubInbox.StoreMessage("/root", msg2)
+	hub.hubInbox.StoreMessage("/root/channel1", msg3)
 
 	//The missing Ids requested by the server
 	missingIds := make(map[string][]string)
@@ -1846,7 +1842,7 @@ func Test_Handle_GreetServer_Already_Greeted(t *testing.T) {
 
 	err = hub.SendGreetServer(sock)
 	require.NoError(t, err)
-	require.True(t, slices.Contains(hub.peersGreeted, sock.ID()))
+	require.True(t, hub.peers.IsPeerGreeted(sock.ID()))
 
 	//reset socket message
 	sock.msg = nil

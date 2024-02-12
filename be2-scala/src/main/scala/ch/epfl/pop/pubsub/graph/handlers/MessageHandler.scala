@@ -19,8 +19,8 @@ trait MessageHandler extends AskPatternConstants {
   /** May be overridden by the reference of the used DbActor
     */
   def dbActor: AskableActorRef = PublishSubscribe.getDbActorRef
+  def securityModuleActor: AskableActorRef = PublishSubscribe.getSecurityModuleActorRef
   def connectionMediator: AskableActorRef = PublishSubscribe.getConnectionMediatorRef
-
   def mediator: AskableActorRef = PublishSubscribe.getMediatorActorRef
 
   def extractParameters[T](rpcRequest: JsonRpcRequest, errorMsg: String): Future[(GraphMessage, Message, Option[T])] = {

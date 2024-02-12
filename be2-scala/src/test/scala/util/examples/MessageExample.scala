@@ -453,10 +453,10 @@ object MessageExample {
   private final val EMPTY_STATE = ""
   private final val POPCHA_ADDRESS = ""
   private final val clientId = "some client"
-  private final val nonce = "EPFL"
-  private final val signature = PRIVATE_KEY.signData(Base64Data.encode(nonce))
+  private final val nonce = Base64Data.encode("EPFL")
+  private final val signature = PRIVATE_KEY.signData(nonce)
   private final val responseMode = "query"
-  private final val validAuthenticate = Authenticate(
+  final val VALID_AUTHENTICATE: Authenticate = Authenticate(
     clientId,
     nonce,
     PUBLIC_KEY,
@@ -466,12 +466,12 @@ object MessageExample {
     POPCHA_ADDRESS
   )
   final val MESSAGE_AUTHENTICATE: Message = new Message(
-    Base64Data.encode(validAuthenticate.toJson.toString()),
+    Base64Data.encode(VALID_AUTHENTICATE.toJson.toString()),
     PUBLIC_KEY,
     EMPTY_SIGNATURE,
     EMPTY_HASH,
     List.empty,
-    Some(validAuthenticate)
+    Some(VALID_AUTHENTICATE)
   )
   private final val validAuthenticateOtherResponseMode = Authenticate(
     clientId,

@@ -2,11 +2,9 @@ package com.github.dedis.popstellar.ui.lao.event.election.fragments;
 
 import android.os.Bundle;
 import android.view.*;
-
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
-
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.ElectionResultFragmentBinding;
 import com.github.dedis.popstellar.model.objects.Election;
@@ -17,13 +15,9 @@ import com.github.dedis.popstellar.ui.lao.LaoViewModel;
 import com.github.dedis.popstellar.ui.lao.event.election.adapters.ElectionResultPagerAdapter;
 import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.error.*;
-
-import javax.inject.Inject;
-
 import dagger.hilt.android.AndroidEntryPoint;
+import javax.inject.Inject;
 import me.relex.circleindicator.CircleIndicator3;
-
-import static com.github.dedis.popstellar.utility.error.ErrorUtils.logAndShow;
 
 @AndroidEntryPoint
 public class ElectionResultFragment extends Fragment {
@@ -74,10 +68,10 @@ public class ElectionResultFragment extends Fragment {
       CircleIndicator3 circleIndicator = binding.swipeIndicatorElectionResults;
       circleIndicator.setViewPager(viewPager2);
     } catch (UnknownLaoException e) {
-      ErrorUtils.logAndShow(requireContext(), TAG, R.string.error_no_lao);
+      ErrorUtils.INSTANCE.logAndShow(requireContext(), TAG, R.string.error_no_lao);
       return null;
     } catch (UnknownElectionException e) {
-      logAndShow(requireContext(), TAG, R.string.error_no_election);
+      ErrorUtils.INSTANCE.logAndShow(requireContext(), TAG, R.string.error_no_election);
       return null;
     }
 

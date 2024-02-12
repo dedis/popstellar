@@ -25,6 +25,11 @@
       android:title="@string/tab_digital_cash" />
 
     <item
+      android:id="@+id/main_menu_popcha"
+      android:icon="@drawable/ic_popcha_icon"
+      android:title="@string/tab_popcha" />
+
+    <item
       android:id="@+id/main_menu_witnessing"
       android:icon="@drawable/ic_lao_detail_witness_foreground"
       android:title="@string/witnessing" />

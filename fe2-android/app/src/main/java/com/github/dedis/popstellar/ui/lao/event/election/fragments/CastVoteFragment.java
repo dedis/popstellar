@@ -3,11 +3,9 @@ package com.github.dedis.popstellar.ui.lao.event.election.fragments;
 import android.os.Bundle;
 import android.view.*;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
-
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.CastVoteFragmentBinding;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionQuestion;
@@ -21,17 +19,11 @@ import com.github.dedis.popstellar.ui.lao.event.election.ElectionViewModel;
 import com.github.dedis.popstellar.ui.lao.event.election.ZoomOutTransformer;
 import com.github.dedis.popstellar.ui.lao.event.election.adapters.CastVoteViewPagerAdapter;
 import com.github.dedis.popstellar.utility.ActivityUtils;
-import com.github.dedis.popstellar.utility.error.UnknownElectionException;
-import com.github.dedis.popstellar.utility.error.UnknownLaoException;
-
-import java.util.*;
-
-import javax.inject.Inject;
-
+import com.github.dedis.popstellar.utility.error.*;
 import dagger.hilt.android.AndroidEntryPoint;
+import java.util.*;
+import javax.inject.Inject;
 import me.relex.circleindicator.CircleIndicator3;
-
-import static com.github.dedis.popstellar.utility.error.ErrorUtils.logAndShow;
 
 /**
  * A simple {@link Fragment} subclass. Use the {@link CastVoteFragment#newInstance} factory method
@@ -102,7 +94,7 @@ public class CastVoteFragment extends Fragment {
       CircleIndicator3 circleIndicator = binding.swipeIndicator;
       circleIndicator.setViewPager(pager);
     } catch (UnknownElectionException err) {
-      logAndShow(requireContext(), TAG, err, R.string.generic_error);
+      ErrorUtils.INSTANCE.logAndShow(requireContext(), TAG, err, R.string.generic_error);
       return null;
     }
 
@@ -148,7 +140,7 @@ public class CastVoteFragment extends Fragment {
       binding.castVoteLaoName.setText(laoView.getName());
       return false;
     } catch (UnknownLaoException e) {
-      logAndShow(requireContext(), TAG, R.string.error_no_lao);
+      ErrorUtils.INSTANCE.logAndShow(requireContext(), TAG, R.string.error_no_lao);
       return true;
     }
   }
@@ -159,7 +151,7 @@ public class CastVoteFragment extends Fragment {
       binding.castVoteElectionName.setText(election.getName());
       return false;
     } catch (UnknownElectionException e) {
-      logAndShow(requireContext(), TAG, R.string.error_no_election);
+      ErrorUtils.INSTANCE.logAndShow(requireContext(), TAG, R.string.error_no_election);
       return true;
     }
   }
@@ -194,12 +186,13 @@ public class CastVoteFragment extends Fragment {
               .sendVote(electionId, plainVotes)
               .subscribe(
                   () ->
-                      Toast.makeText(
-                              requireContext(), R.string.vote_sent, Toast.LENGTH_LONG)
+                      Toast.makeText(requireContext(), R.string.vote_sent, Toast.LENGTH_LONG)
                           .show(),
-                  err -> logAndShow(requireContext(), TAG, err, R.string.error_send_vote)));
+                  err ->
+                      ErrorUtils.INSTANCE.logAndShow(
+                          requireContext(), TAG, err, R.string.error_send_vote)));
     } catch (UnknownElectionException err) {
-      logAndShow(requireContext(), TAG, err, R.string.generic_error);
+      ErrorUtils.INSTANCE.logAndShow(requireContext(), TAG, err, R.string.generic_error);
     } finally {
       voteButton.setEnabled(true);
     }

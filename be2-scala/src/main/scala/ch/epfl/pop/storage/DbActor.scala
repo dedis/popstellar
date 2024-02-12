@@ -3,17 +3,24 @@ package ch.epfl.pop.storage
 import akka.actor.{Actor, ActorLogging, ActorRef, Status}
 import akka.event.LoggingReceive
 import akka.pattern.AskableActorRef
+import ch.epfl.pop.decentralized.ConnectionMediator
 import ch.epfl.pop.json.MessageDataProtocol
+import ch.epfl.pop.json.MessageDataProtocol.GreetLaoFormat
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ActionType.ActionType
+import ch.epfl.pop.model.network.method.message.data.lao.GreetLao
 import ch.epfl.pop.model.network.method.message.data.{ActionType, ObjectType}
 import ch.epfl.pop.model.objects.Channel.{LAO_DATA_LOCATION, ROOT_CHANNEL_PREFIX}
 import ch.epfl.pop.model.objects._
+import ch.epfl.pop.pubsub.graph.AnswerGenerator.timout
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, JsonString}
 import ch.epfl.pop.pubsub.{MessageRegistry, PubSubMediator, PublishSubscribe}
 import ch.epfl.pop.storage.DbActor._
 import com.google.crypto.tink.subtle.Ed25519Sign
 
+import java.util.concurrent.TimeUnit
+import scala.concurrent.Await
+import scala.concurrent.duration.{Duration, FiniteDuration}
 import scala.util.{Failure, Success, Try}
 
 final case class DbActor(
@@ -27,6 +34,7 @@ final case class DbActor(
     super.postStop()
   }
 
+  private val duration: FiniteDuration = Duration(1, TimeUnit.SECONDS)
   /* --------------- Functions handling messages DbActor may receive --------------- */
 
   @throws[DbActorNAckException]
@@ -134,7 +142,7 @@ final case class DbActor(
   private def readLaoData(channel: Channel): LaoData = {
     Try(storage.read(generateLaoDataKey(channel))) match {
       case Success(Some(json)) => LaoData.buildFromJson(json)
-      case Success(None)       => LaoData()
+      case Success(None)       => throw DbActorNAckException(ErrorCodes.SERVER_ERROR.id, s"LaoData for channel $channel not in the database")
       case Failure(ex)         => throw ex
     }
   }
@@ -149,6 +157,33 @@ final case class DbActor(
       val laoDataKey: String = generateLaoDataKey(channel)
       storage.write(laoDataKey -> laoData.updateWith(message, address).toJsonString)
     }
+  }
+
+  @throws[DbActorNAckException]
+  private def readGreetLao(channel: Channel): Option[Message] = {
+    val connectionMediator: AskableActorRef = PublishSubscribe.getConnectionMediatorRef
+    val laoData = Try(readLaoData(channel)) match {
+      case Success(data) => data
+      case Failure(_)    => return None
+    }
+
+    val askAddresses = Await.ready(connectionMediator ? ConnectionMediator.ReadPeersClientAddress(), duration).value.get
+    val addresses = askAddresses match {
+      case Success(ConnectionMediator.ReadPeersClientAddressAck(result)) => result
+      case _                                                             => List.empty
+    }
+
+    val laoChannel = channel.extractLaoChannel.get
+    val laoID = laoChannel.extractChildChannel
+    val greetLao = GreetLao(laoID, laoData.owner, laoData.address, addresses)
+
+    // Need to build a signed message
+    val jsData = GreetLaoFormat.write(greetLao)
+    val encodedData = Base64Data.encode(jsData.toString)
+    val signature = laoData.privateKey.signData(encodedData)
+    val id = Hash.fromStrings(encodedData.toString, signature.toString)
+
+    Some(Message(encodedData, laoData.publicKey, signature, id, List.empty))
   }
 
   @throws[DbActorNAckException]
@@ -170,7 +205,7 @@ final case class DbActor(
 
     val channelData: ChannelData = readChannelData(channel)
 
-    readCreateLao(channel) match {
+    val catchupList = readCreateLao(channel) match {
       case Some(msg) =>
         msg :: buildCatchupList(channelData.messages, Nil)
 
@@ -179,6 +214,11 @@ final case class DbActor(
           log.error("Critical error encountered: no create_lao message was found in the db")
         }
         buildCatchupList(channelData.messages, Nil)
+    }
+
+    readGreetLao(channel) match {
+      case Some(msg) => msg :: catchupList
+      case None      => catchupList
     }
   }
 
@@ -475,9 +515,9 @@ final case class DbActor(
         case failure    => sender() ! failure.recover(Status.Failure(_))
       }
 
-    case WriteUserAuthenticated(user, popToken, clientId) =>
+    case WriteUserAuthenticated(popToken, clientId, user) =>
       log.info(s"Actor $self (db) received a WriteUserAuthenticated request for user $user, id $popToken and clientId $clientId")
-      Try(storage.write(generateAuthenticatedKey(popToken, clientId) -> user.base64Data.decodeToString())) match {
+      Try(storage.write(generateAuthenticatedKey(popToken, clientId) -> user.base64Data.toString())) match {
         case Success(_) => sender() ! DbActorAck()
         case failure    => sender() ! failure.recover(Status.Failure(_))
       }
@@ -485,7 +525,7 @@ final case class DbActor(
     case ReadUserAuthenticated(popToken, clientId) =>
       log.info(s"Actor $self (db) received a ReadUserAuthenticated request for pop token $popToken and clientId $clientId")
       Try(storage.read(generateAuthenticatedKey(popToken, clientId))) match {
-        case Success(Some(id)) => sender() ! DbActorReadUserAuthenticationAck(Some(PublicKey(Base64Data.encode(id))))
+        case Success(Some(id)) => sender() ! DbActorReadUserAuthenticationAck(Some(PublicKey(Base64Data(id))))
         case Success(None)     => sender() ! DbActorReadUserAuthenticationAck(None)
         case failure           => sender() ! failure.recover(Status.Failure(_))
       }
@@ -694,20 +734,20 @@ object DbActor {
   final case class CreateRollCallData(laoId: Hash, updateId: Hash, state: ActionType) extends Event
 
   /** Registers an authentication of a user on a client using a given identifier
+    * @param popToken
+    *   pop token to use for authentication
+    * @param clientId
+    *   client where the user authenticates on
     * @param user
     *   public key of the popcha long term identifier of the user
-    * @param popToken
-    *   pop token to associate to this user for this authentication
-    * @param clientId
-    *   client where the authentication happens on
     */
-  final case class WriteUserAuthenticated(user: PublicKey, popToken: PublicKey, clientId: String) extends Event
+  final case class WriteUserAuthenticated(popToken: PublicKey, clientId: String, user: PublicKey) extends Event
 
   /** Reads the authentication information registered for the given pop token regarding the given client
     * @param popToken
-    *   pop token that may have had a user authenticated for the given client
+    *   pop token that may have been used for authentication
     * @param clientId
-    *   client where the authentication may have happen on
+    *   client where the user may have authenticated on
     */
   final case class ReadUserAuthenticated(popToken: PublicKey, clientId: String) extends Event
 

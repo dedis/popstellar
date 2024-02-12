@@ -1,4 +1,14 @@
+import io.gitlab.arturbosch.detekt.Detekt
+import io.gitlab.arturbosch.detekt.DetektCreateBaselineTask
+
+plugins {
+    id 'kotlin-android'
+    id 'com.ncorti.ktfmt.gradle' version '0.16.0'
+    id 'io.gitlab.arturbosch.detekt' version '1.23.3'
+}
+
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-kapt'
 apply plugin: 'org.sonarqube'
 apply plugin: 'jacoco'
 apply plugin: 'dagger.hilt.android.plugin'
@@ -23,11 +33,13 @@ android {
 
         buildTypes {
             debug {
+                buildConfigField "String", "DEFAULT_URL", "\"ws://10.0.2.2:9000/client\""
                 isDefault true
                 testCoverageEnabled true
             }
 
             release {
+                buildConfigField "String", "DEFAULT_URL", "\"ws://10.0.2.2:9000/client\""
                 minifyEnabled false
                 proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             }
@@ -118,6 +130,10 @@ android {
             resources.srcDirs = []
         }
     }
+
+    lint {
+        sarifReport true
+    }
 }
 
 // Disable every task related to release unit tests
@@ -145,6 +161,7 @@ sonarqube {
         property "sonar.androidLint.reportPaths", "${project.buildDir}/reports/lint-results-debug.xml"
         // Paths to JaCoCo XML coverage report files.
         property "sonar.coverage.jacoco.xmlReportPaths", "${project.buildDir}/reports/jacoco/jacocoTestReport/jacocoTestReport.xml"
+        property "sonar.kotlin.detekt.reportPaths", "${project.buildDir}/reports/detekt/detekt.xml"
     }
 }
 
@@ -171,12 +188,13 @@ copy {
 }
 
 // Jacoco configuration - This configures jacoco for each test task
-tasks.withType(Test) {
+tasks.withType(Test).configureEach {
     jacoco.includeNoLocationClasses = true
     jacoco.excludes = ['jdk.internal.*']
 }
 
-task jacocoTestReport(type: JacocoReport, dependsOn: ['check']) {
+tasks.register('jacocoTestReport', JacocoReport) {
+    dependsOn['check']
     reports {
         xml.required = true
         html.required = true
@@ -213,6 +231,26 @@ task jacocoTestReport(type: JacocoReport, dependsOn: ['check']) {
     ]))
 }
 
+detekt {
+    basePath = projectDir
+    config.setFrom("schemas/detekt/detekt-config.yml")
+    buildUponDefaultConfig = true
+    parallel = true
+}
+
+tasks.withType(Detekt).configureEach {
+    jvmTarget = "1.8"
+    reports {
+        html.required.set(true)
+        xml.required.set(true)
+        sarif.required.set(true)
+        txt.required.set(false)
+    }
+}
+tasks.withType(DetektCreateBaselineTask).configureEach {
+    jvmTarget = "1.8"
+}
+
 dependencies {
     // ============= Android Layout =============
     implementation 'com.google.android.material:material:1.9.0'
@@ -231,13 +269,15 @@ dependencies {
 
     // ================= Hilt ===================
     implementation "com.google.dagger:hilt-android:$hilt_version"
-    annotationProcessor "com.google.dagger:hilt-compiler:$hilt_version"
+    kapt "com.google.dagger:hilt-compiler:$hilt_version"
+
     // Hilt for Robolectric tests
     testImplementation "com.google.dagger:hilt-android-testing:$hilt_version"
-    testAnnotationProcessor "com.google.dagger:hilt-android-compiler:$hilt_version"
+    kaptTest "com.google.dagger:hilt-android-compiler:$hilt_version"
+
     // Hilt for instrumented tests
     androidTestImplementation "com.google.dagger:hilt-android-testing:$hilt_version"
-    androidTestAnnotationProcessor "com.google.dagger:hilt-android-compiler:$hilt_version"
+    kaptAndroidTest "com.google.dagger:hilt-android-compiler:$hilt_version"
 
     // =========== Various Security =============
     implementation 'io.github.novacrypto:BIP39:2019.01.27'
@@ -278,6 +318,10 @@ dependencies {
     implementation "androidx.room:room-rxjava2:$room_version"
     testImplementation "androidx.room:room-testing:$room_version"
 
+    // ============= Room (Kotlin) ===============
+    kapt "androidx.room:room-compiler:$room_version"
+    implementation "androidx.room:room-ktx:$room_version"
+
     // ================= SLF4J =================
     testImplementation "org.slf4j:slf4j-api:$slf4j_version"
     testImplementation "org.slf4j:slf4j-simple:$slf4j_version"
@@ -288,7 +332,16 @@ dependencies {
     // ================= Pretty Time =================
     implementation 'org.ocpsoft.prettytime:prettytime:5.0.4.Final'
 
+    // ================ Emoji ==================
     implementation 'com.vdurmont:emoji-java:5.1.1'
+
+    // ================ Kotlin ========================
+    implementation 'androidx.core:core-ktx:1.12.0'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    testImplementation 'org.jetbrains.kotlin:kotlin-test'
+
+    // =============== Encrypt Preferences =================
+    implementation "androidx.security:security-crypto-ktx:1.1.0-alpha06"
 
     // ============= Test Framework ============
     debugImplementation 'junit:junit:4.13.2'
@@ -310,4 +363,8 @@ dependencies {
     debugImplementation 'org.mockito:mockito-core:4.6.1'
     // We use a special version of mockito that has the capability to mock final classes in android tests
     androidTestImplementation 'com.linkedin.dexmaker:dexmaker-mockito-inline:2.28.1'
+}
+
+kapt {
+    correctErrorTypes true
 }

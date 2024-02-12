@@ -1,17 +1,14 @@
 package com.github.dedis.popstellar.model.objects;
 
+import static org.junit.Assert.assertEquals;
+
 import androidx.test.ext.junit.runners.AndroidJUnit4;
-
 import com.github.dedis.popstellar.model.objects.event.EventState;
-import com.github.dedis.popstellar.utility.security.Hash;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
+import com.github.dedis.popstellar.utility.security.HashSHA256;
 import java.util.ArrayList;
 import java.util.List;
-
-import static org.junit.Assert.assertEquals;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 @RunWith(AndroidJUnit4.class)
 public class MeetingTest {
@@ -30,7 +27,7 @@ public class MeetingTest {
   @Test
   public void getCorrectId() {
     assertEquals(
-        Hash.hash("M", LAO_ID, Long.toString(CREATION), NAME),
+        HashSHA256.hash("M", LAO_ID, Long.toString(CREATION), NAME),
         Meeting.generateCreateMeetingId(LAO_ID, CREATION, NAME));
   }
 

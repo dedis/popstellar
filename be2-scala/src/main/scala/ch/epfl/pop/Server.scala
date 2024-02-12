@@ -9,12 +9,12 @@ import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.{RequestContext, RouteResult}
 import akka.pattern.AskableActorRef
 import akka.util.Timeout
-import ch.epfl.pop.authentication.GetRequestHandler
+import ch.epfl.pop.authentication.{GetRequestHandler, PopchaWebSocketResponseHandler}
 import ch.epfl.pop.config.RuntimeEnvironment
-import ch.epfl.pop.config.RuntimeEnvironment.{ownAuthAddress, ownClientAddress, ownServerAddress, serverConf}
+import ch.epfl.pop.config.RuntimeEnvironment._
 import ch.epfl.pop.decentralized.{ConnectionMediator, HeartbeatGenerator, Monitor}
 import ch.epfl.pop.pubsub.{MessageRegistry, PubSubMediator, PublishSubscribe}
-import ch.epfl.pop.storage.DbActor
+import ch.epfl.pop.storage.{DbActor, SecurityModuleActor}
 import org.iq80.leveldb.Options
 
 import java.util.concurrent.TimeUnit
@@ -44,12 +44,14 @@ object Server {
 
       val messageRegistry: MessageRegistry = MessageRegistry()
       val pubSubMediatorRef: ActorRef = system.actorOf(PubSubMediator.props, "PubSubMediator")
+
       val dbActorRef: AskableActorRef = system.actorOf(Props(DbActor(pubSubMediatorRef, messageRegistry)), "DbActor")
+      val securityModuleActorRef: AskableActorRef = system.actorOf(Props(SecurityModuleActor(RuntimeEnvironment.securityPath)))
 
       // Create necessary actors for server-server communications
       val heartbeatGenRef: ActorRef = system.actorOf(HeartbeatGenerator.props(dbActorRef))
       val monitorRef: ActorRef = system.actorOf(Monitor.props(heartbeatGenRef))
-      val connectionMediatorRef: ActorRef = system.actorOf(ConnectionMediator.props(monitorRef, pubSubMediatorRef, dbActorRef, messageRegistry))
+      val connectionMediatorRef: ActorRef = system.actorOf(ConnectionMediator.props(monitorRef, pubSubMediatorRef, dbActorRef, securityModuleActorRef, messageRegistry))
 
       // Setup routes
       def publishSubscribeRoute: RequestContext => Future[RouteResult] = {
@@ -58,6 +60,7 @@ object Server {
             PublishSubscribe.buildGraph(
               pubSubMediatorRef,
               dbActorRef,
+              securityModuleActorRef,
               messageRegistry,
               monitorRef,
               connectionMediatorRef,
@@ -69,6 +72,7 @@ object Server {
             PublishSubscribe.buildGraph(
               pubSubMediatorRef,
               dbActorRef,
+              securityModuleActorRef,
               messageRegistry,
               monitorRef,
               connectionMediatorRef,
@@ -78,9 +82,12 @@ object Server {
         }
       }
 
-      def getRequestsRoute = GetRequestHandler.buildRoutes(serverConf)
+      def getRequestsRoute = GetRequestHandler.buildRoutes(serverConf, securityModuleActorRef)
+
+      def authenticateWsResponseRoute = PopchaWebSocketResponseHandler.buildRoute(serverConf)(system)
 
       def allRoutes = concat(
+        authenticateWsResponseRoute,
         getRequestsRoute,
         publishSubscribeRoute
       )
@@ -94,6 +101,8 @@ object Server {
           println(f"[Client] ch.epfl.pop.Server online at $ownClientAddress")
           println(f"[Server] ch.epfl.pop.Server online at $ownServerAddress")
           println(f"[Server] ch.epfl.pop.Server auth server online at $ownAuthAddress")
+          println(f"[Server] ch.epfl.pop.Server auth ws server online at $ownResponseAddress")
+          println(f"[Server] ch.epfl.pop.Server public key available at $ownPublicKeyAddress")
 
         case Failure(_) =>
           logger.error(
