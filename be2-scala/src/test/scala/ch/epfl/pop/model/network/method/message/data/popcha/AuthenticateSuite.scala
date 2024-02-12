@@ -5,11 +5,12 @@ import ch.epfl.pop.model.network.method.message.data.popcha.AuthenticateSuite.AU
 import ch.epfl.pop.model.objects.{Base64Data, PrivateKey, PublicKey, Signature}
 import org.scalatest.funsuite.{AnyFunSuite => FunSuite}
 import org.scalatest.matchers.should.Matchers
+import org.scalatest.matchers.should.Matchers._
 import spray.json.enrichAny
 
 class AuthenticateSuite extends FunSuite with Matchers {
   test("json encoding / decoding keeps the object intact") {
-    val encodedDecoded = Authenticate.buildFromJson(AUTHENTICATE_MESSAGE.toJson.toString())
+    val encodedDecoded = Authenticate.buildFromJson(AUTHENTICATE_MESSAGE.toJson.toString)
     encodedDecoded shouldBe AUTHENTICATE_MESSAGE
   }
 }
