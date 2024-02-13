@@ -81,7 +81,6 @@ class CreateLaoDecoderSuite extends FlatSpec with Matchers with Inside with Give
           And("report a correct error code")
           e.code should equal(ErrorCodes.INVALID_DATA.id)
         case Right(_) => fail(s"parsed message should fail with Left[PipelineError] but was a Right: <$parsed>")
-        case _        => fail(s"parsed message <$parsed> resulted with an unexpected type")
       }
     }
 
