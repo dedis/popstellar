@@ -3,7 +3,7 @@ package ch.epfl.pop.authentication
 import akka.actor.Props
 import akka.http.scaladsl.model.StatusCodes.OK
 import akka.http.scaladsl.testkit.ScalatestRouteTest
-import akka.pattern.{AskableActorRef,ask}
+import akka.pattern.{AskableActorRef, ask}
 import akka.testkit.TestKit
 import ch.epfl.pop.config.ServerConf
 import ch.epfl.pop.pubsub.AskPatternConstants

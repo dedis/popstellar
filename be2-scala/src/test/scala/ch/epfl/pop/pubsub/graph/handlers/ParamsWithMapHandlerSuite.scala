@@ -1,7 +1,7 @@
 package ch.epfl.pop.pubsub.graph.handlers
 
 import akka.actor.{ActorSystem, Props}
-import akka.pattern.{AskableActorRef,ask}
+import akka.pattern.{AskableActorRef, ask}
 import akka.stream.scaladsl.{Sink, Source}
 import akka.testkit.TestKit
 import ch.epfl.pop.decentralized.ToyDbActor

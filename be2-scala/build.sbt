@@ -15,7 +15,7 @@ scalacOptions ++= Seq(
   "-language:higherKinds", // Allow higher-kinded types
   "-language:implicitConversions", // Allow definition of implicit functions called views
   "-unchecked", // Enable additional warnings where generated code depends on assumptions.
-  //"-Ysafe-init", // Wrap field accessors to throw an exception on uninitialized access.
+  // "-Ysafe-init", // Wrap field accessors to throw an exception on uninitialized access.
   "-Xfatal-warnings" // Fail the compilation if there are any warnings.
 )
 

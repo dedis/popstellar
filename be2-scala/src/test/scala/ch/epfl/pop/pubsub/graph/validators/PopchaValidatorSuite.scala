@@ -1,7 +1,7 @@
 package ch.epfl.pop.pubsub.graph.validators
 
 import akka.actor.{Actor, ActorSystem, Props}
-import akka.pattern.{AskableActorRef,ask}
+import akka.pattern.{AskableActorRef, ask}
 import akka.testkit.TestKit
 import akka.util.Timeout
 import ch.epfl.pop.model.network.method.message.data.ObjectType

@@ -52,7 +52,7 @@ object Authenticate {
 
       validParametersRoute ~ invalidParametersRoute
     }
-  
+
   private def generateChallenge(request: HttpRequest, redirectUri: String, laoId: String, clientId: String, nonce: String): HttpResponse = {
     val challengeEntity = QRCodeChallengeGenerator.generateChallengeContent(request.uri.toString(), redirectUri, laoId, clientId, nonce)
     HttpResponse(status = StatusCodes.OK, entity = challengeEntity)
