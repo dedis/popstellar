@@ -155,16 +155,16 @@ class PopchaHandler(dbRef: => AskableActorRef, securityModuleActorRef: => Askabl
       Http().singleWebSocketRequest(WebSocketRequest(wsAddress), responseFlow)
 
     val connected = upgradeResponse.map { upgrade =>
-      if (upgrade.response.status == StatusCodes.SwitchingProtocols) {
-        Done
-      } else {
-        return Left(PipelineError(ErrorCodes.SERVER_ERROR.id, "handleAuthentication failed : failed to upgrade web socket request", rpcMessage.getId))
-      }
+      if upgrade.response.status == StatusCodes.SwitchingProtocols then
+        Some(Done)
+      else
+        None
     }
 
-    Await.ready(connected, duration).value.get match {
-      case Success(_)  => Right(rpcMessage)
-      case Failure(ex) => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleAuthentication failed : ${ex.getMessage}", rpcMessage.getId))
-    }
+    Await.ready(connected, duration).value.get match
+      case Success(Some(_)) => Right(rpcMessage)
+      case Success(None)    => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, "handleAuthentication failed : failed to upgrade web socket request", rpcMessage.getId))
+      case Failure(ex)      => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleAuthentication failed : ${ex.getMessage}", rpcMessage.getId))
+
   }
 }
