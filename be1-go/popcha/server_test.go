@@ -265,6 +265,7 @@ func TestAuthorizationServerWebsocket(t *testing.T) {
 // tests the protocol with well-behaved clients using a valid path.
 func TestAuthorizationServerWorkflow(t *testing.T) {
 	logFile, err := os.CreateTemp("", "popcha_test_logs")
+	require.NoError(t, err)
 	defer func() {
 		logFile.Close()
 		os.Remove(logFile.Name())
