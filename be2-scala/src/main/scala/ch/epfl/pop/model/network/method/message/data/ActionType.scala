@@ -1,38 +1,56 @@
 package ch.epfl.pop.model.network.method.message.data
 
-import ch.epfl.pop.model.network.Matching
-
-object ActionType extends Enumeration {
-  type ActionType = Value
-
-  // uninitialized placeholder
-  val INVALID: Value = MatchingValue("__INVALID_ACTION__")
-
-  val CREATE: Value = MatchingValue("create")
-  val UPDATE_PROPERTIES: Value = MatchingValue("update_properties")
-  val STATE: Value = MatchingValue("state")
-  val GREET: Value = MatchingValue("greet")
-  val WITNESS: Value = MatchingValue("witness")
-  val OPEN: Value = MatchingValue("open")
-  val REOPEN: Value = MatchingValue("reopen")
-  val CLOSE: Value = MatchingValue("close")
+enum ActionType:
+  case INVALID extends ActionType
+  case CREATE extends ActionType
+  case UPDATE_PROPERTIES extends ActionType
+  case STATE extends ActionType
+  case GREET extends ActionType
+  case WITNESS extends ActionType
+  case OPEN extends ActionType
+  case REOPEN extends ActionType
+  case CLOSE extends ActionType
   // election actions:
-  val SETUP: Value = MatchingValue("setup")
-  val RESULT: Value = MatchingValue("result")
-  val END: Value = MatchingValue("end")
-  val CAST_VOTE: Value = MatchingValue("cast_vote")
-  val KEY: Value = MatchingValue("key")
+  case SETUP extends ActionType
+  case RESULT extends ActionType
+  case END extends ActionType
+  case CAST_VOTE extends ActionType
+  case KEY extends ActionType
   // social media actions:
-  val ADD: Value = MatchingValue("add")
-  val DELETE: Value = MatchingValue("delete")
-  val NOTIFY_ADD: Value = MatchingValue("notify_add")
-  val NOTIFY_DELETE: Value = MatchingValue("notify_delete")
+  case ADD extends ActionType
+  case DELETE extends ActionType
+  case NOTIFY_ADD extends ActionType
+  case NOTIFY_DELETE extends ActionType
   // digital cash actions:
-  val POST_TRANSACTION: Value = MatchingValue("post_transaction")
+  case POST_TRANSACTION extends ActionType
   // popcha
-  val AUTHENTICATE: Value = MatchingValue("authenticate")
+  case AUTHENTICATE extends ActionType
 
-  def MatchingValue(v: String): Value with Matching = new Val(nextId, v) with Matching
-
-  def unapply(s: String): Option[Value] = values.find(s == _.toString)
-}
+object ActionType:
+  def unapply(actionType: String): Option[ActionType] =
+    actionType match
+      case "__INVALID_ACTION__" => Some(INVALID)
+      case "create"             => Some(CREATE)
+      case "update_properties"  => Some(UPDATE_PROPERTIES)
+      case "state"              => Some(STATE)
+      case "greet"              => Some(GREET)
+      case "witness"            => Some(WITNESS)
+      case "open"               => Some(OPEN)
+      case "reopen"             => Some(REOPEN)
+      case "close"              => Some(CLOSE)
+      // election actions:
+      case "setup"     => Some(SETUP)
+      case "result"    => Some(RESULT)
+      case "end"       => Some(END)
+      case "cast_vote" => Some(CAST_VOTE)
+      case "key"       => Some(KEY)
+      // social media actions:
+      case "add"           => Some(ADD)
+      case "delete"        => Some(DELETE)
+      case "notify_add"    => Some(NOTIFY_ADD)
+      case "notify_delete" => Some(NOTIFY_DELETE)
+      // digital cash actions:
+      case "post_transaction" => Some(POST_TRANSACTION)
+      // popcha
+      case "authenticate" => Some(AUTHENTICATE)
+      case _              => None

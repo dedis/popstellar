@@ -1,20 +1,26 @@
 package ch.epfl.pop.model.network
 
-object MethodType extends Enumeration {
-  type MethodType = Value
+enum MethodType:
+  case INVALID extends MethodType
+  case BROADCAST extends MethodType
+  case PUBLISH extends MethodType
+  case SUBSCRIBE extends MethodType
+  case UNSUBSCRIBE extends MethodType
+  case CATCHUP extends MethodType
+  case HEARTBEAT extends MethodType
+  case GET_MESSAGES_BY_ID extends MethodType
+  case GREET_SERVER extends MethodType
 
-  // uninitialized placeholder
-  val INVALID: Value = MatchingValue("__INVALID_METHOD__")
-  val BROADCAST: Value = MatchingValue("broadcast")
-  val PUBLISH: Value = MatchingValue("publish")
-  val SUBSCRIBE: Value = MatchingValue("subscribe")
-  val UNSUBSCRIBE: Value = MatchingValue("unsubscribe")
-  val CATCHUP: Value = MatchingValue("catchup")
-  val HEARTBEAT: Value = MatchingValue("heartbeat")
-  val GET_MESSAGES_BY_ID: Value = MatchingValue("get_messages_by_id")
-  val GREET_SERVER: Value = MatchingValue("greet_server")
-
-  def MatchingValue(v: String): Value with Matching = new Val(nextId, v) with Matching
-
-  def unapply(s: String): Option[Value] = values.find(s == _.toString)
-}
+object MethodType:
+  def unapply(method: String): Option[MethodType] =
+    method match
+      case "__INVALID_METHOD__" => Some(INVALID)
+      case "broadcast"          => Some(BROADCAST)
+      case "publish"            => Some(PUBLISH)
+      case "subscribe"          => Some(SUBSCRIBE)
+      case "unsubscribe"        => Some(UNSUBSCRIBE)
+      case "catchup"            => Some(CATCHUP)
+      case "heartbeat"          => Some(HEARTBEAT)
+      case "get_messages_by_id" => Some(GET_MESSAGES_BY_ID)
+      case "greet_server"       => Some(GREET_SERVER)
+      case _                    => None
