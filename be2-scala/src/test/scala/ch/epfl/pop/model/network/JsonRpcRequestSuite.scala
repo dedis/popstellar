@@ -24,8 +24,8 @@ class JsonRpcRequestSuite extends FunSuite with Matchers {
   private final val paramsWithMap: ParamsWithMap = new ParamsWithMap(HashMap((channelEx, Set(messageEx.message_id))))
   private final val rpc: String = "rpc"
   private final val id: Option[Int] = Some(0)
-  private final val methodType: MethodType.MethodType = MethodType.BROADCAST
-  private final val methodType2: MethodType.MethodType = MethodType.HEARTBEAT
+  private final val methodType: MethodType = MethodType.BROADCAST
+  private final val methodType2: MethodType = MethodType.HEARTBEAT
   private final val rpcReq: JsonRpcRequest = JsonRpcRequest(rpc, methodType, params, id)
   private final val rpcReq2: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithMessage, id)
   private final val paramsWithMessageAndDecoded: ParamsWithMessage = new ParamsWithMessage(channelEx, messageLao)

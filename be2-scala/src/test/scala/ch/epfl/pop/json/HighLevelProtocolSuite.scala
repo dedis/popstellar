@@ -117,7 +117,7 @@ class HighLevelProtocolSuite extends FunSuite with Matchers {
     // Forms pairs/combinations of different MsgField values (except Witness) and forbidden key types
     // for formating
     val set = for {
-      p <- (MsgField.values - WITNESS_SIGNATURES)
+      p <- MsgField.values.toSet - WITNESS_SIGNATURES
       t <- Set("[]", "{}", "null", "1")
     } yield (t, p)
 
@@ -260,7 +260,5 @@ class HighLevelProtocolSuite extends FunSuite with Matchers {
   }
 }
 
-object MsgField extends Enumeration {
-  type MsgField = Value
-  val MESSAGE_ID, SENDER, SIGNATURE, DATA, WITNESS_SIGNATURES = Value
-}
+enum MsgField:
+  case MESSAGE_ID, SENDER, SIGNATURE, DATA, WITNESS_SIGNATURES

@@ -28,7 +28,7 @@ object JsonRpcRequestExample {
 
   private final val rpc: String = "rpc"
   private final val id: Option[Int] = Some(0)
-  private final val methodType: MethodType.MethodType = MethodType.PUBLISH
+  private final val methodType: MethodType = MethodType.PUBLISH
   private final val channel: Channel = Channel(Channel.ROOT_CHANNEL_PREFIX + "channel")
   private final val paramsWithoutMessage: ParamsWithChannel = new ParamsWithChannel(channel)
   private final val paramsWithMessage: ParamsWithMessage = new ParamsWithMessage(channel, MESSAGE_WORKING_WS_PAIR)

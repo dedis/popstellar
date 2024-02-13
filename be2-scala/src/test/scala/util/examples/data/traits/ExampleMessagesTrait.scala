@@ -1,9 +1,8 @@
 package util.examples.data.traits
 
 import ch.epfl.pop.model.network.JsonRpcRequest
-import ch.epfl.pop.model.network.MethodType.MethodType
-import ch.epfl.pop.model.network.method.message.data.ActionType._
-import ch.epfl.pop.model.network.method.message.data.ObjectType._
+import ch.epfl.pop.model.network.MethodType
+import ch.epfl.pop.model.network.method.message.data.{ObjectType, ActionType}
 import ch.epfl.pop.model.objects.{Base64Data, Channel, PublicKey}
 import util.examples.data.builders.HighLevelMessageGenerator
 

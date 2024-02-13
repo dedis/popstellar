@@ -2,7 +2,6 @@ package util.examples.data
 
 import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.data.ActionType
-import ch.epfl.pop.model.network.method.message.data.ActionType.ActionType
 import ch.epfl.pop.model.objects.Channel
 import util.examples.data.traits.RollCallMessagesTrait
 

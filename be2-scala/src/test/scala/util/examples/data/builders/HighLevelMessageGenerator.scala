@@ -68,7 +68,7 @@ object HighLevelMessageGenerator {
       */
     private var id = Some(1)
     private var payload: String = ""
-    private var methodType: MethodType.MethodType = _
+    private var methodType: MethodType = _
     private var paramsChannel: Channel = Channel.ROOT_CHANNEL
 
     /** *******************
@@ -86,7 +86,7 @@ object HighLevelMessageGenerator {
       this
     }
 
-    def withMethodType(methodeType: MethodType.MethodType): HLMessageBuilder = {
+    def withMethodType(methodeType: MethodType): HLMessageBuilder = {
       this.methodType = methodeType
       this
     }
@@ -106,7 +106,7 @@ object HighLevelMessageGenerator {
       *   Typed High level JsonRpcRequest with decoded and parsed data (MessageData)
       */
     // TODO : implement other object types and actions
-    def generateJsonRpcRequestWith(objType: ObjectType.ObjectType)(actionType: ActionType.ActionType): JsonRpcRequest = {
+    def generateJsonRpcRequestWith(objType: ObjectType)(actionType: ActionType): JsonRpcRequest = {
 
       assume(payload.trim.nonEmpty && methodType != null)
 

@@ -1,8 +1,6 @@
 package ch.epfl.pop.pubsub
 
 import ch.epfl.pop.model.network.JsonRpcRequest
-import ch.epfl.pop.model.network.method.message.data.ActionType.ActionType
-import ch.epfl.pop.model.network.method.message.data.ObjectType.ObjectType
 import ch.epfl.pop.model.network.method.message.data.rollCall.CreateRollCall
 import ch.epfl.pop.model.network.method.message.data.{ActionType, MessageData, ObjectType}
 import ch.epfl.pop.pubsub.MessageRegistry.RegisterEntry
