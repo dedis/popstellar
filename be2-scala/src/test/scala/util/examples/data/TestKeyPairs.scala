@@ -18,7 +18,7 @@ object TestKeyPairs {
 
   val keypairs: Vector[KeyPairWithHash] = for (suffix <- Vector("", "2")) yield {
     val Seq(JsString(privkeyData), JsString(pubkeyData), JsString(pubkeyHash)) =
-      raw.getFields(s"privateKey$suffix", s"publicKey$suffix", s"publicKeyHash$suffix")
+      raw.getFields(s"privateKey$suffix", s"publicKey$suffix", s"publicKeyHash$suffix"): @unchecked
     val fixedPrivkeyData = Base64Data(privkeyData).decode().take(32)
     KeyPairWithHash(KeyPair(PrivateKey(Base64Data.encode(fixedPrivkeyData)), PublicKey(Base64Data(pubkeyData))), Base64Data(pubkeyHash))
   }
