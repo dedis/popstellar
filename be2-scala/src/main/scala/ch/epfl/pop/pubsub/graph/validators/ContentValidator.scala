@@ -15,6 +15,6 @@ trait ContentValidator {
     * @return
     *   a description of the error and where it occurred
     */
-  def validationError(reason: String, validator: String, rpcId: Option[Int], errorCode: ErrorCodes.ErrorCodes = ErrorCodes.INVALID_DATA): PipelineError =
+  def validationError(reason: String, validator: String, rpcId: Option[Int], errorCode: ErrorCodes = ErrorCodes.INVALID_DATA): PipelineError =
     PipelineError(errorCode.id, s"$validator content validation failed: $reason", rpcId)
 }

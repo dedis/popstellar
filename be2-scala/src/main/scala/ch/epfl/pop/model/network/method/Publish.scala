@@ -1,6 +1,6 @@
 package ch.epfl.pop.model.network.method
 
-import ch.epfl.pop.json.HighLevelProtocol._
+import ch.epfl.pop.json.HighLevelProtocol.PublishFormat
 import ch.epfl.pop.model.network.Parsable
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.objects.Channel

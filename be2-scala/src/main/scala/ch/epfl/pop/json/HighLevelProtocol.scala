@@ -1,7 +1,7 @@
 package ch.epfl.pop.json
 
 import ch.epfl.pop.json.ObjectProtocol._
-import ch.epfl.pop.model.network.MethodType.MethodType
+import ch.epfl.pop.model.network.MethodType
 import ch.epfl.pop.model.network._
 import ch.epfl.pop.model.network.method._
 import ch.epfl.pop.model.network.method.message.Message

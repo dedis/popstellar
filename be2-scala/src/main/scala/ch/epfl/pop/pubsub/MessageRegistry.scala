@@ -1,8 +1,6 @@
 package ch.epfl.pop.pubsub
 
 import ch.epfl.pop.model.network.JsonRpcRequest
-import ch.epfl.pop.model.network.method.message.data.ActionType.ActionType
-import ch.epfl.pop.model.network.method.message.data.ObjectType.ObjectType
 import ch.epfl.pop.model.network.method.message.data.coin.PostTransaction
 import ch.epfl.pop.model.network.method.message.data.election._
 import ch.epfl.pop.model.network.method.message.data.lao.{CreateLao, GreetLao, StateLao, UpdateLao}

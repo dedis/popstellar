@@ -3,7 +3,7 @@ package ch.epfl.pop.pubsub.graph.handlers
 import akka.pattern.AskableActorRef
 import ch.epfl.pop.json.MessageDataProtocol.{KeyElectionFormat, resultElectionFormat}
 import ch.epfl.pop.model.network.JsonRpcRequest
-import ch.epfl.pop.model.network.method.message.data.election.VersionType._
+import ch.epfl.pop.model.network.method.message.data.election.VersionType
 import ch.epfl.pop.model.network.method.message.data.election._
 import ch.epfl.pop.model.objects.ElectionChannel._
 import ch.epfl.pop.model.objects._
@@ -58,13 +58,14 @@ class ElectionHandler(dbRef: => AskableActorRef) extends MessageHandler {
       case Some(Success((data, electionId, keyPair, electionChannel))) =>
         // generating a key pair in case the version is secret-ballot, to send then the public key to the frontend
         data.version match {
-          case OPEN_BALLOT => Right(rpcMessage)
-          case SECRET_BALLOT =>
+          case VersionType.OPEN_BALLOT => Right(rpcMessage)
+          case VersionType.SECRET_BALLOT =>
             val keyElection: KeyElection = KeyElection(electionId, keyPair.publicKey)
             Await.result(
               broadcast(rpcMessage, rpcMessage.getParamsChannel, KeyElectionFormat.write(keyElection), electionChannel),
               duration
             )
+          case version => Left(PipelineError(ErrorCodes.INVALID_ACTION.id, s"handleSetupElection failed: unknown election type $version", rpcMessage.getId))
         }
       case Some(Failure(ex: DbActorNAckException)) => Left(PipelineError(ex.code, s"handleSetupElection failed : ${ex.message}", rpcMessage.getId))
       case reply                                   => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleSetupElection failed : unexpected DbActor reply '$reply'", rpcMessage.getId))

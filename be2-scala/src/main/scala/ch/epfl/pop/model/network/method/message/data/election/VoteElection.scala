@@ -1,6 +1,6 @@
 package ch.epfl.pop.model.network.method.message.data.election
 
-import ch.epfl.pop.json.MessageDataProtocol._
+import ch.epfl.pop.json.MessageDataProtocol.VoteElectionFormat
 import ch.epfl.pop.model.network.Parsable
 import ch.epfl.pop.model.objects.{Base64Data, Hash}
 import spray.json._
