@@ -1,12 +1,14 @@
 package popcha
 
 import (
+	"bufio"
 	"bytes"
 	"fmt"
 	"io"
 	"math/rand"
 	"net/http"
 	"net/url"
+	"os"
 	"popstellar"
 	"popstellar/crypto"
 	"popstellar/hub"
@@ -262,9 +264,13 @@ func TestAuthorizationServerWebsocket(t *testing.T) {
 // It tries to connect on /response endpoint without any additional path, and then
 // tests the protocol with well-behaved clients using a valid path.
 func TestAuthorizationServerWorkflow(t *testing.T) {
-	logTester := zltest.New(t)
+	logFile, err := os.CreateTemp("", "popcha_test_logs")
+	defer func() {
+		logFile.Close()
+		os.Remove(logFile.Name())
+	}()
 
-	l := zerolog.New(logTester).With().Timestamp().Logger()
+	l := zerolog.New(logFile).With().Timestamp().Logger()
 	s, err := NewAuthServer(fakeHub{}, "localhost", 3005, l)
 	require.NoError(t, err)
 	s.Start()
@@ -277,8 +283,14 @@ func TestAuthorizationServerWorkflow(t *testing.T) {
 
 	// send any message to the websocket server
 	err = emptyPathClient.conn.WriteMessage(websocket.TextMessage, []byte("test"))
-	logTester.LastEntry().ExpMsg("Error while receiving a request on /response: empty path")
 	require.NoError(t, err)
+
+	// Read log file contents and check for the expected log message
+	err = logFile.Sync()
+	require.NoError(t, err)
+	lastLine, err := getLastLine(logFile.Name())
+	require.NoError(t, err)
+	require.Contains(t, lastLine, "Error while receiving a request on /response: empty path")
 
 	// create two clients, a sender and a receiver, on a valid path
 	validPath := strings.Join([]string{responseEndpoint, "laoid", "authentication", "clientid", "nonce"}, "/")
@@ -313,7 +325,12 @@ func TestAuthorizationServerWorkflow(t *testing.T) {
 
 	<-received
 
-	logTester.LastEntry().ExpLevel(zerolog.InfoLevel)
+	// Read log file contents and check for the expected log message
+	err = logFile.Sync()
+	require.NoError(t, err)
+	lastLine, err = getLastLine(logFile.Name())
+	require.NoError(t, err)
+	require.Contains(t, lastLine, "Received the correct message from the sender client.")
 
 	require.NoError(t, clientReceiver.conn.Close())
 	require.NoError(t, clientSender.conn.Close())
@@ -486,3 +503,25 @@ func (f *fakeResponseWriter) Write(_ []byte) (int, error) {
 }
 
 func (f *fakeResponseWriter) WriteHeader(_ int) {}
+
+// getLastLine returns the last line of a file
+func getLastLine(path string) (string, error) {
+	file, err := os.Open(path)
+	if err != nil {
+		return "", err
+	}
+	defer file.Close()
+
+	var lastLine string
+	scanner := bufio.NewScanner(file)
+	i := 1
+	for scanner.Scan() {
+		lastLine = scanner.Text()
+		log.Info().Msgf("line %d: %s", i, lastLine)
+		i++
+	}
+	if err = scanner.Err(); err != nil {
+		return "", err
+	}
+	return lastLine, scanner.Err()
+}
