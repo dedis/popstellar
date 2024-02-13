@@ -517,7 +517,6 @@ func getLastLine(path string) (string, error) {
 	i := 1
 	for scanner.Scan() {
 		lastLine = scanner.Text()
-		log.Info().Msgf("line %d: %s", i, lastLine)
 		i++
 	}
 	if err = scanner.Err(); err != nil {
