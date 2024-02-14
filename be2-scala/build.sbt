@@ -106,7 +106,7 @@ assembly / assemblyMergeStrategy := {
 
 // ------------------------ DEPENDENCIES ------------------------ 77
 
-val AkkaVersion = "2.8.0"
+val AkkaVersion = "2.9.0-M2"
 val AkkaHttpVersion = "10.6.0-M1"
 
 libraryDependencies ++= Seq(
@@ -123,7 +123,7 @@ libraryDependencies ++= Seq(
 // LevelDB database
 // https://mvnrepository.com/artifact/org.iq80.leveldb/leveldb
 libraryDependencies += "org.iq80.leveldb" % "leveldb" % "0.12"
-libraryDependencies += "org.xerial.snappy" % "snappy-java" % "1.1.9.1"
+libraryDependencies += "org.xerial.snappy" % "snappy-java" % "1.1.10.5"
 
 // Json Parser (https://github.com/spray/spray-json)
 libraryDependencies += "io.spray" %% "spray-json" % "1.3.6"
