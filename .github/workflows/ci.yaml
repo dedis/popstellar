@@ -285,8 +285,8 @@ jobs:
           sbt -Dscala.config="src/main/scala/ch/epfl/pop/config" -Dscala.security="src/security" -Dtest clean coverage test
           rm -rf ./src/security/test/ # Remove test keys
 
-      #- name: Report coverage
-        #  run: sbt coverageReport
+      - name: Report coverage
+        run: sbt coverageReport
 
       #- name: Run static analysis (ScapeGoat)
         #run: sbt scapegoat
