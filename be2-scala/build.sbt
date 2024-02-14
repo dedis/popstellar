@@ -81,6 +81,9 @@ lazy val scoverageSettings = Seq(
   packageBin / coverageEnabled := false
 )
 
+// Scalafix
+semanticdbEnabled := true
+
 // Configure Sonar
 sonarProperties := Map(
   "sonar.organization" -> "dedis",
