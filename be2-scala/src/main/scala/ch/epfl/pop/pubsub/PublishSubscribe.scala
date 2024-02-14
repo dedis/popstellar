@@ -131,7 +131,7 @@ object PublishSubscribe {
                   case `heartbeat`          => portHeartbeat
                   case `get_messages_by_id` => portGetMessagesById
                   case `greet_server`       => portGreetServer
-                  case _                  => portPipelineError
+                  case _                    => portPipelineError
                 }
 
               case _ => portPipelineError // Pipeline error goes directly in merger

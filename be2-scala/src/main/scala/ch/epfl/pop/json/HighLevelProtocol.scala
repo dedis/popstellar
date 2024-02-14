@@ -234,7 +234,7 @@ object HighLevelProtocol extends DefaultJsonProtocol {
           case MethodType.`unsubscribe`        => paramsJsObject.convertTo[Unsubscribe]
           case MethodType.`catchup`            => paramsJsObject.convertTo[Catchup]
           case MethodType.`get_messages_by_id` => paramsJsObject.convertTo[GetMessagesById]
-          case _                             => throw new IllegalArgumentException(s"Can't parse json value $json with unknown method ${method.toString}")
+          case _                               => throw new IllegalArgumentException(s"Can't parse json value $json with unknown method ${method.toString}")
         }
 
         val id: Option[Int] = optId match {
@@ -252,7 +252,7 @@ object HighLevelProtocol extends DefaultJsonProtocol {
           case MethodType.`heartbeat`    => paramsJsObject.convertTo[Heartbeat]
           case MethodType.`broadcast`    => paramsJsObject.convertTo[Broadcast]
           case MethodType.`greet_server` => paramsJsObject.convertTo[GreetServer]
-          case _                       => throw new IllegalArgumentException(s"Can't parse json value $json with unknown method ${method.toString}")
+          case _                         => throw new IllegalArgumentException(s"Can't parse json value $json with unknown method ${method.toString}")
         }
         JsonRpcRequest(version, method, params, None)
       case _ => throw new IllegalArgumentException(s"Can't parse json value $json to a JsonRpcRequest object")
