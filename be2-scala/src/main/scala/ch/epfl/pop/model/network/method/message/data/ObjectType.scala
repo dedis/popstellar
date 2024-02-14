@@ -13,16 +13,15 @@ enum ObjectType:
   case POPCHA extends ObjectType
 
 object ObjectType:
-  def unapply(objectType: String): Option[ObjectType] =
-    objectType match
-      case "__INVALID_OBJECT__" => Some(INVALID)
-      case "lao"                => Some(LAO)
-      case "message"            => Some(MESSAGE)
-      case "meeting"            => Some(MEETING)
-      case "roll_call"          => Some(ROLL_CALL)
-      case "election"           => Some(ELECTION)
-      case "chirp"              => Some(CHIRP)
-      case "reaction"           => Some(REACTION)
-      case "coin"               => Some(COIN)
-      case "popcha"             => Some(POPCHA)
-      case _                    => None
+  def apply(objectType: String): ObjectType =
+    objectType.trim.toLowerCase match
+      case "lao"       => LAO
+      case "message"   => MESSAGE
+      case "meeting"   => MEETING
+      case "roll_call" => ROLL_CALL
+      case "election"  => ELECTION
+      case "chirp"     => CHIRP
+      case "reaction"  => REACTION
+      case "coin"      => COIN
+      case "popcha"    => POPCHA
+      case _           => INVALID

@@ -27,30 +27,29 @@ enum ActionType:
   case AUTHENTICATE extends ActionType
 
 object ActionType:
-  def unapply(actionType: String): Option[ActionType] =
-    actionType match
-      case "__INVALID_ACTION__" => Some(INVALID)
-      case "create"             => Some(CREATE)
-      case "update_properties"  => Some(UPDATE_PROPERTIES)
-      case "state"              => Some(STATE)
-      case "greet"              => Some(GREET)
-      case "witness"            => Some(WITNESS)
-      case "open"               => Some(OPEN)
-      case "reopen"             => Some(REOPEN)
-      case "close"              => Some(CLOSE)
+  def apply(actionType: String): ActionType =
+    actionType.trim.toLowerCase match
+      case "create"            => CREATE
+      case "update_properties" => UPDATE_PROPERTIES
+      case "state"             => STATE
+      case "greet"             => GREET
+      case "witness"           => WITNESS
+      case "open"              => OPEN
+      case "reopen"            => REOPEN
+      case "close"             => CLOSE
       // election actions:
-      case "setup"     => Some(SETUP)
-      case "result"    => Some(RESULT)
-      case "end"       => Some(END)
-      case "cast_vote" => Some(CAST_VOTE)
-      case "key"       => Some(KEY)
+      case "setup"     => SETUP
+      case "result"    => RESULT
+      case "end"       => END
+      case "cast_vote" => CAST_VOTE
+      case "key"       => KEY
       // social media actions:
-      case "add"           => Some(ADD)
-      case "delete"        => Some(DELETE)
-      case "notify_add"    => Some(NOTIFY_ADD)
-      case "notify_delete" => Some(NOTIFY_DELETE)
+      case "add"           => ADD
+      case "delete"        => DELETE
+      case "notify_add"    => NOTIFY_ADD
+      case "notify_delete" => NOTIFY_DELETE
       // digital cash actions:
-      case "post_transaction" => Some(POST_TRANSACTION)
+      case "post_transaction" => POST_TRANSACTION
       // popcha
-      case "authenticate" => Some(AUTHENTICATE)
-      case _              => None
+      case "authenticate" => AUTHENTICATE
+      case _              => INVALID
