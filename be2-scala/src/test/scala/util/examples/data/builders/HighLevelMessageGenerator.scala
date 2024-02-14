@@ -112,81 +112,81 @@ object HighLevelMessageGenerator {
 
       (objType, actionType) match {
         // Roll Calls
-        case (ObjectType.ROLL_CALL, ActionType.CREATE) =>
+        case (ObjectType.`roll_call`, ActionType.`create`) =>
           messageData = CreateRollCall.buildFromJson(payload)
           params = new ParamsWithMessage(Channel.ROOT_CHANNEL, message.withDecodedData(messageData).toMessage)
           JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, methodType, params, id)
 
-        case (ObjectType.ROLL_CALL, ActionType.OPEN) =>
+        case (ObjectType.`roll_call`, ActionType.`open`) =>
           messageData = OpenRollCall.buildFromJson(payload)
           params = new ParamsWithMessage(Channel.ROOT_CHANNEL, message.withDecodedData(messageData).toMessage)
           JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, methodType, params, id)
 
-        case (ObjectType.ROLL_CALL, ActionType.REOPEN) =>
+        case (ObjectType.`roll_call`, ActionType.`reopen`) =>
           messageData = OpenRollCall.buildFromJson(payload)
           params = new ParamsWithMessage(Channel.ROOT_CHANNEL, message.withDecodedData(messageData).toMessage)
           JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, methodType, params, id)
 
-        case (ObjectType.ROLL_CALL, ActionType.CLOSE) =>
+        case (ObjectType.`roll_call`, ActionType.`close`) =>
           messageData = CloseRollCall.buildFromJson(payload)
           params = new ParamsWithMessage(Channel.ROOT_CHANNEL, message.withDecodedData(messageData).toMessage)
           JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, methodType, params, id)
 
         // Social Media
-        case (ObjectType.REACTION, ActionType.ADD) =>
+        case (ObjectType.`reaction`, ActionType.`add`) =>
           messageData = AddReaction.buildFromJson(payload)
           params = new ParamsWithMessage(paramsChannel, message.withDecodedData(messageData).toMessage)
           JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, methodType, params, id)
 
-        case (ObjectType.REACTION, ActionType.DELETE) =>
+        case (ObjectType.`reaction`, ActionType.`delete`) =>
           messageData = DeleteReaction.buildFromJson(payload)
           params = new ParamsWithMessage(paramsChannel, message.withDecodedData(messageData).toMessage)
           JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, methodType, params, id)
 
-        case (ObjectType.CHIRP, ActionType.ADD) =>
+        case (ObjectType.`chirp`, ActionType.`add`) =>
           messageData = AddChirp.buildFromJson(payload)
           params = new ParamsWithMessage(paramsChannel, message.withDecodedData(messageData).toMessage)
           JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, methodType, params, id)
 
-        case (ObjectType.CHIRP, ActionType.DELETE) =>
+        case (ObjectType.`chirp`, ActionType.`delete`) =>
           messageData = DeleteChirp.buildFromJson(payload)
           params = new ParamsWithMessage(paramsChannel, message.withDecodedData(messageData).toMessage)
           JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, methodType, params, id)
 
         // Election
-        case (ObjectType.ELECTION, ActionType.SETUP) =>
+        case (ObjectType.`election`, ActionType.`setup`) =>
           messageData = SetupElection.buildFromJson(payload)
           params = new ParamsWithMessage(paramsChannel, message.withDecodedData(messageData).toMessage)
           JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, methodType, params, id)
 
-        case (ObjectType.ELECTION, ActionType.OPEN) =>
+        case (ObjectType.`election`, ActionType.`open`) =>
           messageData = OpenElection.buildFromJson(payload)
           params = new ParamsWithMessage(paramsChannel, message.withDecodedData(messageData).toMessage)
           JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, methodType, params, id)
 
-        case (ObjectType.ELECTION, ActionType.KEY) =>
+        case (ObjectType.`election`, ActionType.`key`) =>
           messageData = KeyElection.buildFromJson(payload)
           params = new ParamsWithMessage(paramsChannel, message.withDecodedData(messageData).toMessage)
           JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, methodType, params, id)
 
-        case (ObjectType.ELECTION, ActionType.CAST_VOTE) =>
+        case (ObjectType.`election`, ActionType.`cast_vote`) =>
           messageData = CastVoteElection.buildFromJson(payload)
           params = new ParamsWithMessage(paramsChannel, message.withDecodedData(messageData).toMessage)
           JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, methodType, params, id)
 
-        case (ObjectType.ELECTION, ActionType.END) =>
+        case (ObjectType.`election`, ActionType.`end`) =>
           messageData = EndElection.buildFromJson(payload)
           params = new ParamsWithMessage(paramsChannel, message.withDecodedData(messageData).toMessage)
           JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, methodType, params, id)
 
         // Witness
-        case (ObjectType.MESSAGE, ActionType.WITNESS) =>
+        case (ObjectType.`message`, ActionType.`witness`) =>
           messageData = WitnessMessage.buildFromJson(payload)
           params = new ParamsWithMessage(paramsChannel, message.withDecodedData(messageData).toMessage)
           JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, methodType, params, id)
 
         // Digital cash
-        case (ObjectType.COIN, ActionType.POST_TRANSACTION) =>
+        case (ObjectType.`coin`, ActionType.`post_transaction`) =>
           messageData = PostTransaction.buildFromJson(payload)
           params = new ParamsWithMessage(paramsChannel, message.withDecodedData(messageData).toMessage)
           JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, methodType, params, id)

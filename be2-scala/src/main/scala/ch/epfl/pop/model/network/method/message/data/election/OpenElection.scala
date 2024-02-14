@@ -11,8 +11,8 @@ final case class OpenElection(
     election: Hash,
     opened_at: Timestamp
 ) extends MessageData {
-  override val _object: ObjectType = ObjectType.ELECTION
-  override val action: ActionType = ActionType.OPEN
+  override val _object: ObjectType = ObjectType.election
+  override val action: ActionType = ActionType.open
 }
 
 object OpenElection extends Parsable {

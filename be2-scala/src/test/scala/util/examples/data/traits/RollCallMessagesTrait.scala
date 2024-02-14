@@ -6,7 +6,7 @@ import ch.epfl.pop.model.network.method.message.data.ObjectType
 /** Trait to be implemented by RollCallMessages examples
   */
 trait RollCallMessagesTrait extends ExampleMessagesTrait {
-  override val obj: ObjectType = ObjectType.ROLL_CALL
-  override val METHOD_TYPE: MethodType = MethodType.PUBLISH
+  override val obj: ObjectType = ObjectType.roll_call
+  override val METHOD_TYPE: MethodType = MethodType.publish
 
 }

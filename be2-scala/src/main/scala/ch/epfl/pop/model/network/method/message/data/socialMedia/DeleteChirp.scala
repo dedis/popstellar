@@ -10,8 +10,8 @@ final case class DeleteChirp(
     chirp_id: Hash,
     timestamp: Timestamp
 ) extends MessageData {
-  override val _object: ObjectType = ObjectType.CHIRP
-  override val action: ActionType = ActionType.DELETE
+  override val _object: ObjectType = ObjectType.chirp
+  override val action: ActionType = ActionType.delete
 }
 
 object DeleteChirp extends Parsable {

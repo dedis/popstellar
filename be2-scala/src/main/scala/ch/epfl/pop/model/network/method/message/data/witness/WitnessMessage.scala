@@ -10,8 +10,8 @@ final case class WitnessMessage(
     message_id: Hash,
     signature: Signature
 ) extends MessageData {
-  override val _object: ObjectType = ObjectType.MESSAGE
-  override val action: ActionType = ActionType.WITNESS
+  override val _object: ObjectType = ObjectType.message
+  override val action: ActionType = ActionType.witness
 }
 
 object WitnessMessage extends Parsable {

@@ -2,26 +2,29 @@ package ch.epfl.pop.model.network.method.message.data
 
 enum ObjectType:
   case INVALID extends ObjectType
-  case LAO extends ObjectType
-  case MESSAGE extends ObjectType
-  case MEETING extends ObjectType
-  case ROLL_CALL extends ObjectType
-  case ELECTION extends ObjectType
-  case CHIRP extends ObjectType
-  case REACTION extends ObjectType
-  case COIN extends ObjectType
-  case POPCHA extends ObjectType
+  case lao extends ObjectType
+  case message extends ObjectType
+  case meeting extends ObjectType
+  case roll_call extends ObjectType
+  case election extends ObjectType
+  case chirp extends ObjectType
+  case reaction extends ObjectType
+  case coin extends ObjectType
+  case popcha extends ObjectType
 
 object ObjectType:
+  override def toString: String =
+    this.toString.toLowerCase
+
   def apply(objectType: String): ObjectType =
-    objectType.trim.toLowerCase match
-      case "lao"       => LAO
-      case "message"   => MESSAGE
-      case "meeting"   => MEETING
-      case "roll_call" => ROLL_CALL
-      case "election"  => ELECTION
-      case "chirp"     => CHIRP
-      case "reaction"  => REACTION
-      case "coin"      => COIN
-      case "popcha"    => POPCHA
+    objectType match
+      case "lao"       => lao
+      case "message"   => message
+      case "meeting"   => meeting
+      case "roll_call" => roll_call
+      case "election"  => election
+      case "chirp"     => chirp
+      case "reaction"  => reaction
+      case "coin"      => coin
+      case "popcha"    => popcha
       case _           => INVALID

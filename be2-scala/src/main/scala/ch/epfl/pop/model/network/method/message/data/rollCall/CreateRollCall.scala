@@ -15,8 +15,8 @@ final case class CreateRollCall(
     location: String,
     roll_call_description: Option[String]
 ) extends MessageData {
-  override val _object: ObjectType = ObjectType.ROLL_CALL
-  override val action: ActionType = ActionType.CREATE
+  override val _object: ObjectType = ObjectType.roll_call
+  override val action: ActionType = ActionType.create
 }
 
 object CreateRollCall extends Parsable {

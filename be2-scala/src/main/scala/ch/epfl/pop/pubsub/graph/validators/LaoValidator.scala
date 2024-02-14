@@ -209,7 +209,7 @@ object LaoValidator extends MessageDataContentValidator {
                 ),
                 checkChannelType(
                   rpcMessage,
-                  ObjectType.LAO,
+                  ObjectType.lao,
                   channel,
                   dbActorRef,
                   validationError(s"trying to write an UpdateLao message on wrong type of channel $channel")

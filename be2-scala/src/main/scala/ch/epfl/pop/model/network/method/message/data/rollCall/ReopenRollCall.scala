@@ -11,8 +11,8 @@ final case class ReopenRollCall(
     opens: Hash,
     opened_at: Timestamp
 ) extends MessageData with IOpenRollCall {
-  override val _object: ObjectType = ObjectType.ROLL_CALL
-  override val action: ActionType = ActionType.REOPEN
+  override val _object: ObjectType = ObjectType.roll_call
+  override val action: ActionType = ActionType.reopen
 }
 
 object ReopenRollCall extends Parsable {

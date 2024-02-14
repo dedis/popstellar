@@ -50,7 +50,7 @@ class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
         _ <- dbActor ? DbActor.AssertChannelMissing(rollCallChannel)
         // we create a new channel to write uniquely the RollCall, this ensures then if the RollCall already exists or not
         // otherwise, we never write in this channel
-        _ <- dbActor ? DbActor.CreateChannel(rollCallChannel, ObjectType.ROLL_CALL)
+        _ <- dbActor ? DbActor.CreateChannel(rollCallChannel, ObjectType.roll_call)
         _ <- dbAskWritePropagate(rpcRequest)
         _ <- dbActor ? DbActor.WriteRollCallData(laoId, message)
       } yield ()
@@ -122,7 +122,7 @@ class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
     val listAttendeeChannels: List[(Channel, ObjectType)] = data.attendees.flatMap {
       attendee =>
         try {
-          Some((generateSocialChannel(rpcRequest.getParamsChannel, attendee), ObjectType.CHIRP))
+          Some((generateSocialChannel(rpcRequest.getParamsChannel, attendee), ObjectType.chirp))
         } catch {
           case _: Throwable =>
             println(s"Failed to generate attendee social channel for pop token: \"${attendee.base64Data.data}\"")

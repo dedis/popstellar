@@ -56,16 +56,16 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
   private final val laoDataRight: LaoData = LaoData(sender, List(sender), PRIVATE_KEY, PUBLIC_KEY, List.empty, ADDRESS)
   private final val laoDataForResultElection: LaoData = LaoData(sender, List(attendee1, attendee2, attendee3), PRIVATE_KEY, PUBLIC_KEY, List.empty, ADDRESS)
   private final val laoDataWrong: LaoData = LaoData(PK_WRONG, List(PK_WRONG), PRIVATE_KEY, PUBLIC_KEY, List.empty, ADDRESS)
-  private final val channelDataRightSetup: ChannelData = ChannelData(ObjectType.LAO, List.empty)
-  private final val channelDataWrongSetup: ChannelData = ChannelData(ObjectType.ELECTION, List.empty)
+  private final val channelDataRightSetup: ChannelData = ChannelData(ObjectType.lao, List.empty)
+  private final val channelDataWrongSetup: ChannelData = ChannelData(ObjectType.election, List.empty)
 
-  private final val channelDataRightElection: ChannelData = ChannelData(ObjectType.ELECTION, List.empty)
-  private final val channelDataWrongElection: ChannelData = ChannelData(ObjectType.LAO, List.empty)
+  private final val channelDataRightElection: ChannelData = ChannelData(ObjectType.election, List.empty)
+  private final val channelDataWrongElection: ChannelData = ChannelData(ObjectType.lao, List.empty)
 
-  private final val channelDataWithSetupAndOpenAndCastMessage: ChannelData = ChannelData(ObjectType.ELECTION, List(DATA_CAST_VOTE_MESSAGE, DATA_SET_UP_OPEN_BALLOT, DATA_OPEN_MESSAGE))
-  private final val channelDataWrongChannelCastVote: ChannelData = ChannelData(ObjectType.LAO, List(DATA_CAST_VOTE_MESSAGE, DATA_SET_UP_OPEN_BALLOT, DATA_OPEN_MESSAGE))
-  private final val channelDataWithSetupAndCastMessage: ChannelData = ChannelData(ObjectType.ELECTION, List(DATA_CAST_VOTE_MESSAGE, DATA_SET_UP_OPEN_BALLOT))
-  private final val channelDataWithEndElectionMessage: ChannelData = ChannelData(ObjectType.ELECTION, List(DATA_CAST_VOTE_MESSAGE, DATA_SET_UP_OPEN_BALLOT, DATA_OPEN_MESSAGE, DATA_END_ELECTION_MESSAGE))
+  private final val channelDataWithSetupAndOpenAndCastMessage: ChannelData = ChannelData(ObjectType.election, List(DATA_CAST_VOTE_MESSAGE, DATA_SET_UP_OPEN_BALLOT, DATA_OPEN_MESSAGE))
+  private final val channelDataWrongChannelCastVote: ChannelData = ChannelData(ObjectType.lao, List(DATA_CAST_VOTE_MESSAGE, DATA_SET_UP_OPEN_BALLOT, DATA_OPEN_MESSAGE))
+  private final val channelDataWithSetupAndCastMessage: ChannelData = ChannelData(ObjectType.election, List(DATA_CAST_VOTE_MESSAGE, DATA_SET_UP_OPEN_BALLOT))
+  private final val channelDataWithEndElectionMessage: ChannelData = ChannelData(ObjectType.election, List(DATA_CAST_VOTE_MESSAGE, DATA_SET_UP_OPEN_BALLOT, DATA_OPEN_MESSAGE, DATA_END_ELECTION_MESSAGE))
   private final val messagesNotEnd: List[Message] = List(MESSAGE_CAST_VOTE_ELECTION_WORKING, MESSAGE_SETUPELECTION_OPEN_BALLOT_WORKING, MESSAGE_OPEN_ELECTION_WORKING)
   private final val messages: List[Message] = MESSAGE_END_ELECTION_WORKING :: messagesNotEnd
 

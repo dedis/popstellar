@@ -15,8 +15,8 @@ final case class CreateMeeting(
     end: Option[Timestamp],
     extra: Option[Any]
 ) extends MessageData {
-  override val _object: ObjectType = ObjectType.MEETING
-  override val action: ActionType = ActionType.CREATE
+  override val _object: ObjectType = ObjectType.meeting
+  override val action: ActionType = ActionType.create
 }
 
 object CreateMeeting extends Parsable {

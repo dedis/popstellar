@@ -55,7 +55,7 @@ final case class DbActor(
 
   @throws[DbActorNAckException]
   private def writeCreateLao(channel: Channel, message: Message): Unit = {
-    createChannel(channel, ObjectType.LAO)
+    createChannel(channel, ObjectType.lao)
     storage.write((storage.DATA_KEY + storage.CREATE_LAO_KEY + channel.toString, message.message_id.toString()))
     write(Channel.ROOT_CHANNEL, message)
   }
@@ -75,7 +75,7 @@ final case class DbActor(
   private def writeSetupElectionMessage(channel: Channel, message: Message): Unit = {
     channel.extractLaoChannel match {
       case Some(mainLaoChan) =>
-        createChannel(channel, ObjectType.ELECTION)
+        createChannel(channel, ObjectType.election)
         storage.write((storage.DATA_KEY + storage.SETUP_ELECTION_KEY + channel.toString, message.message_id.toString()))
         writeAndPropagate(mainLaoChan, message)
 
@@ -325,7 +325,7 @@ final case class DbActor(
     this.synchronized {
       val rollCallData: RollCallData = Try(readRollCallData(laoId)) match {
         case Success(data) => data
-        case Failure(_)    => RollCallData(Hash(Base64Data("")), ActionType.CREATE)
+        case Failure(_)    => RollCallData(Hash(Base64Data("")), ActionType.create)
       }
       val rollCallDataKey: String = generateRollCallDataKey(laoId)
       storage.write(rollCallDataKey -> rollCallData.updateWith(message).toJsonString)

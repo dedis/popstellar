@@ -55,10 +55,10 @@ class RollCallValidatorSuite extends TestKit(ActorSystem("rollcallValidatorTestA
   private final val laoDataRight: LaoData = LaoData(sender, List(sender), PRIVATE_KEY, PUBLIC_KEY, List.empty, ADDRESS)
   private final val laoDataWrong: LaoData = LaoData(sender, List(PK_OWNER), PRIVATE_KEY, PUBLIC_KEY, List.empty, ADDRESS)
   private final val channelDataWrong: ChannelData = ChannelData(ObjectType.INVALID, List.empty)
-  private final val channelDataRight: ChannelData = ChannelData(ObjectType.LAO, List.empty)
-  private final val rollcallDataCreate: RollCallData = RollCallData(CreateRollCallExamples.R_ID, ActionType.CREATE)
-  private final val rollcallDataOpen: RollCallData = RollCallData(OpenRollCallExamples.UPDATE_ID, ActionType.OPEN)
-  private final val rollcallDataClose: RollCallData = RollCallData(CloseRollCallExamples.UPDATE_ID, ActionType.CLOSE)
+  private final val channelDataRight: ChannelData = ChannelData(ObjectType.lao, List.empty)
+  private final val rollcallDataCreate: RollCallData = RollCallData(CreateRollCallExamples.R_ID, ActionType.create)
+  private final val rollcallDataOpen: RollCallData = RollCallData(OpenRollCallExamples.UPDATE_ID, ActionType.open)
+  private final val rollcallDataClose: RollCallData = RollCallData(CloseRollCallExamples.UPDATE_ID, ActionType.close)
 
   private def mockDbWrongChannelCreate: AskableActorRef = {
     val dbActorMock = Props(new Actor() {

@@ -11,8 +11,8 @@ final case class AddReaction(
     chirp_id: Hash,
     timestamp: Timestamp
 ) extends MessageData {
-  override val _object: ObjectType = ObjectType.REACTION
-  override val action: ActionType = ActionType.ADD
+  override val _object: ObjectType = ObjectType.reaction
+  override val action: ActionType = ActionType.add
 }
 
 object AddReaction extends Parsable {

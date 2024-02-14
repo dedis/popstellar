@@ -16,8 +16,8 @@ final case class StateLao(
     modification_id: Hash,
     modification_signatures: List[WitnessSignaturePair]
 ) extends MessageData {
-  override val _object: ObjectType = ObjectType.LAO
-  override val action: ActionType = ActionType.STATE
+  override val _object: ObjectType = ObjectType.lao
+  override val action: ActionType = ActionType.state
 }
 
 object StateLao extends Parsable {

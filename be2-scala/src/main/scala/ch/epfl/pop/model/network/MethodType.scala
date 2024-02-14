@@ -2,24 +2,24 @@ package ch.epfl.pop.model.network
 
 enum MethodType:
   case INVALID extends MethodType
-  case BROADCAST extends MethodType
-  case PUBLISH extends MethodType
-  case SUBSCRIBE extends MethodType
-  case UNSUBSCRIBE extends MethodType
-  case CATCHUP extends MethodType
-  case HEARTBEAT extends MethodType
-  case GET_MESSAGES_BY_ID extends MethodType
-  case GREET_SERVER extends MethodType
+  case broadcast extends MethodType
+  case publish extends MethodType
+  case subscribe extends MethodType
+  case unsubscribe extends MethodType
+  case catchup extends MethodType
+  case heartbeat extends MethodType
+  case get_messages_by_id extends MethodType
+  case greet_server extends MethodType
 
 object MethodType:
   def apply(method: String): MethodType =
-    method.trim.toLowerCase match
-      case "broadcast"          => BROADCAST
-      case "publish"            => PUBLISH
-      case "subscribe"          => SUBSCRIBE
-      case "unsubscribe"        => UNSUBSCRIBE
-      case "catchup"            => CATCHUP
-      case "heartbeat"          => HEARTBEAT
-      case "get_messages_by_id" => GET_MESSAGES_BY_ID
-      case "greet_server"       => GREET_SERVER
+    method match
+      case "broadcast"          => broadcast
+      case "publish"            => publish
+      case "subscribe"          => subscribe
+      case "unsubscribe"        => unsubscribe
+      case "catchup"            => catchup
+      case "heartbeat"          => heartbeat
+      case "get_messages_by_id" => get_messages_by_id
+      case "greet_server"       => greet_server
       case _                    => INVALID

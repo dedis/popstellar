@@ -50,7 +50,7 @@ sealed class SocialMediaValidator(dbActorRef: => AskableActorRef) extends Messag
           ),
           checkChannelType(
             rpcMessage,
-            ObjectType.CHIRP,
+            ObjectType.chirp,
             channel,
             dbActorRef,
             validationError(s"trying to add a Chirp on a wrong type of channel $channel")
@@ -107,7 +107,7 @@ sealed class SocialMediaValidator(dbActorRef: => AskableActorRef) extends Messag
           ),
           checkChannelType(
             rpcMessage,
-            ObjectType.CHIRP,
+            ObjectType.chirp,
             channel,
             dbActorRef,
             validationError(s"trying to delete a Chirp on a wrong type of channel $channel")
@@ -159,7 +159,7 @@ sealed class SocialMediaValidator(dbActorRef: => AskableActorRef) extends Messag
           ),
           checkChannelType(
             rpcMessage,
-            ObjectType.REACTION,
+            ObjectType.reaction,
             channel,
             dbActorRef,
             validationError(s"trying to add a reaction on a wrong type of channel $channel")
@@ -199,7 +199,7 @@ sealed class SocialMediaValidator(dbActorRef: => AskableActorRef) extends Messag
           ),
           checkChannelType(
             rpcMessage,
-            ObjectType.REACTION,
+            ObjectType.reaction,
             channel,
             dbActorRef,
             validationError(s"trying to delete a reaction on a wrong type of channel $channel")

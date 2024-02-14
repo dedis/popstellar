@@ -16,8 +16,8 @@ final case class SetupElection(
     end_time: Timestamp,
     questions: List[ElectionQuestion]
 ) extends MessageData {
-  override val _object: ObjectType = ObjectType.ELECTION
-  override val action: ActionType = ActionType.SETUP
+  override val _object: ObjectType = ObjectType.election
+  override val action: ActionType = ActionType.setup
 }
 
 object SetupElection extends Parsable {

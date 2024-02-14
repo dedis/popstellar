@@ -35,8 +35,8 @@ class PopchaValidatorSuite extends TestKit(ActorSystem("popChaValidatorTestActor
   private val laoDataWithUser = LaoData(userIdentifier, List(userIdentifier), PrivateKey(laoSeed), PublicKey(laoSeed), List(), ADDRESS)
   private val laoDataWithoutUser = LaoData(otherUser, List(otherUser), PrivateKey(laoSeed), PublicKey(laoSeed), List(), ADDRESS)
 
-  private val channelDataWithValidObjectType = ChannelData(ObjectType.POPCHA, Nil)
-  private val channelDataWithInvalidObjectType = ChannelData(ObjectType.COIN, Nil)
+  private val channelDataWithValidObjectType = ChannelData(ObjectType.popcha, Nil)
+  private val channelDataWithInvalidObjectType = ChannelData(ObjectType.coin, Nil)
 
   override def afterAll(): Unit = {
     // Stops the testKit

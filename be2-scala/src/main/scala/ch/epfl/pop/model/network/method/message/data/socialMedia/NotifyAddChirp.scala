@@ -11,8 +11,8 @@ final case class NotifyAddChirp(
     channel: Channel,
     timestamp: Timestamp
 ) extends MessageData {
-  override val _object: ObjectType = ObjectType.CHIRP
-  override val action: ActionType = ActionType.NOTIFY_ADD
+  override val _object: ObjectType = ObjectType.chirp
+  override val action: ActionType = ActionType.notify_add
 }
 
 object NotifyAddChirp extends Parsable {

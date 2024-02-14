@@ -10,8 +10,8 @@ final case class ResultElection(
     questions: List[ElectionQuestionResult],
     witness_signatures: List[Signature]
 ) extends MessageData {
-  override val _object: ObjectType = ObjectType.ELECTION
-  override val action: ActionType = ActionType.RESULT
+  override val _object: ObjectType = ObjectType.election
+  override val action: ActionType = ActionType.result
 }
 
 object ResultElection extends Parsable {

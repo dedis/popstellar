@@ -15,8 +15,8 @@ class AddChirpSuite extends FunSuite with Matchers {
     ADDCHIRP_MESSAGE.text should equal(TEXT)
     ADDCHIRP_MESSAGE.parent_id should equal(PARENT_ID)
     ADDCHIRP_MESSAGE.timestamp should equal(TIMESTAMP)
-    ADDCHIRP_MESSAGE._object should equal(ObjectType.CHIRP)
-    ADDCHIRP_MESSAGE.action should equal(ActionType.ADD)
+    ADDCHIRP_MESSAGE._object should equal(ObjectType.chirp)
+    ADDCHIRP_MESSAGE.action should equal(ActionType.add)
   }
 
   test("json conversions work back and forth") {

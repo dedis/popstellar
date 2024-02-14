@@ -55,11 +55,11 @@ class MeetingValidatorSuite extends TestKit(ActorSystem("meetingValidatorTestAct
 
   private final val laoDataRight: LaoData = LaoData(sender, List(sender), PRIVATE_KEY, PUBLIC_KEY, List.empty, address)
   private final val laoDataWrong: LaoData = LaoData(PK_OWNER, List(PK_OWNER), PRIVATE_KEY, PUBLIC_KEY, List.empty, address)
-  private final val channelDataRightSetup: ChannelData = ChannelData(ObjectType.LAO, List.empty)
-  private final val channelDataWrongSetup: ChannelData = ChannelData(ObjectType.ELECTION, List.empty)
+  private final val channelDataRightSetup: ChannelData = ChannelData(ObjectType.lao, List.empty)
+  private final val channelDataWrongSetup: ChannelData = ChannelData(ObjectType.election, List.empty)
 
-  private final val channelDataRightElection: ChannelData = ChannelData(ObjectType.ELECTION, List.empty)
-  private final val channelDataWrongElection: ChannelData = ChannelData(ObjectType.LAO, List.empty)
+  private final val channelDataRightElection: ChannelData = ChannelData(ObjectType.election, List.empty)
+  private final val channelDataWrongElection: ChannelData = ChannelData(ObjectType.lao, List.empty)
 
   private def mockDbWorkingSetup: AskableActorRef = {
     val dbActorMock = Props(new Actor() {

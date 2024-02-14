@@ -12,8 +12,8 @@ final case class EndElection(
     created_at: Timestamp,
     registered_votes: Hash
 ) extends MessageData {
-  override val _object: ObjectType = ObjectType.ELECTION
-  override val action: ActionType = ActionType.END
+  override val _object: ObjectType = ObjectType.election
+  override val action: ActionType = ActionType.end
 }
 
 object EndElection extends Parsable {

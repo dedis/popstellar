@@ -11,8 +11,8 @@ final case class AddChirp(
     parent_id: Option[Hash],
     timestamp: Timestamp
 ) extends MessageData {
-  override val _object: ObjectType = ObjectType.CHIRP
-  override val action: ActionType = ActionType.ADD
+  override val _object: ObjectType = ObjectType.chirp
+  override val action: ActionType = ActionType.add
 }
 
 object AddChirp extends Parsable {

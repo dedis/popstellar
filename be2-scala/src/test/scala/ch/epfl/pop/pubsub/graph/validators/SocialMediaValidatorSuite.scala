@@ -49,9 +49,9 @@ class SocialMediaValidatorSuite extends TestKit(ActorSystem("socialMediaValidato
 
   private final val laoDataRight: LaoData = LaoData(PK_OWNER, List(AddChirpExamples.SENDER_ADDCHIRP), PRIVATE_KEY, PUBLIC_KEY, List.empty, ADDRESS)
   private final val laoDataWrong: LaoData = LaoData(PK_OWNER, List(PK_OWNER), PRIVATE_KEY, PUBLIC_KEY, List.empty, ADDRESS)
-  private final val channelDataRight: ChannelData = ChannelData(ObjectType.CHIRP, List.empty)
-  private final val channelDataWrong: ChannelData = ChannelData(ObjectType.LAO, List.empty)
-  private final val channelDataReaction: ChannelData = ChannelData(ObjectType.REACTION, List.empty)
+  private final val channelDataRight: ChannelData = ChannelData(ObjectType.chirp, List.empty)
+  private final val channelDataWrong: ChannelData = ChannelData(ObjectType.lao, List.empty)
+  private final val channelDataReaction: ChannelData = ChannelData(ObjectType.reaction, List.empty)
 
   private def mockDbWorking: AskableActorRef = {
     val dbActorMock = Props(new Actor() {

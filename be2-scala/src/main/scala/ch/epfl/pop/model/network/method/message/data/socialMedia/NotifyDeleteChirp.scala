@@ -11,8 +11,8 @@ final case class NotifyDeleteChirp(
     channel: Channel,
     timestamp: Timestamp
 ) extends MessageData {
-  override val _object: ObjectType = ObjectType.CHIRP
-  override val action: ActionType = ActionType.NOTIFY_DELETE
+  override val _object: ObjectType = ObjectType.chirp
+  override val action: ActionType = ActionType.notify_delete
 }
 
 object NotifyDeleteChirp extends Parsable {

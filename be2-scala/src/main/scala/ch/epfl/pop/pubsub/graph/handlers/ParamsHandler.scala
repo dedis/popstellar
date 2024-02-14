@@ -4,7 +4,7 @@ import akka.NotUsed
 import akka.actor.ActorRef
 import akka.pattern.AskableActorRef
 import akka.stream.scaladsl.Flow
-import ch.epfl.pop.model.network.MethodType.GREET_SERVER
+import ch.epfl.pop.model.network.MethodType.greet_server
 import ch.epfl.pop.model.network.method.GreetServer
 import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse}
 import ch.epfl.pop.model.objects.Channel
@@ -74,7 +74,7 @@ object ParamsHandler extends AskPatternConstants {
   def greetServerHandler(clientActorRef: ActorRef): Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map {
     case Right(jsonRpcMessage: JsonRpcRequest) =>
       jsonRpcMessage.method match {
-        case GREET_SERVER =>
+        case `greet_server` =>
           val greetServer: GreetServer = jsonRpcMessage.getParams.asInstanceOf[GreetServer]
           clientActorRef ! greetServer
           Right(jsonRpcMessage)

@@ -13,8 +13,8 @@ final case class CreateLao(
     organizer: PublicKey,
     witnesses: List[PublicKey]
 ) extends MessageData {
-  override val _object: ObjectType = ObjectType.LAO
-  override val action: ActionType = ActionType.CREATE
+  override val _object: ObjectType = ObjectType.lao
+  override val action: ActionType = ActionType.create
 }
 
 object CreateLao extends Parsable {

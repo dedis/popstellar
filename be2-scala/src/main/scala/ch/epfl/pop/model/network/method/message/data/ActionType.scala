@@ -2,54 +2,54 @@ package ch.epfl.pop.model.network.method.message.data
 
 enum ActionType:
   case INVALID extends ActionType
-  case CREATE extends ActionType
-  case UPDATE_PROPERTIES extends ActionType
-  case STATE extends ActionType
-  case GREET extends ActionType
-  case WITNESS extends ActionType
-  case OPEN extends ActionType
-  case REOPEN extends ActionType
-  case CLOSE extends ActionType
+  case create extends ActionType
+  case update_properties extends ActionType
+  case state extends ActionType
+  case greet extends ActionType
+  case witness extends ActionType
+  case open extends ActionType
+  case reopen extends ActionType
+  case close extends ActionType
   // election actions:
-  case SETUP extends ActionType
-  case RESULT extends ActionType
-  case END extends ActionType
-  case CAST_VOTE extends ActionType
-  case KEY extends ActionType
+  case setup extends ActionType
+  case result extends ActionType
+  case end extends ActionType
+  case cast_vote extends ActionType
+  case key extends ActionType
   // social media actions:
-  case ADD extends ActionType
-  case DELETE extends ActionType
-  case NOTIFY_ADD extends ActionType
-  case NOTIFY_DELETE extends ActionType
+  case add extends ActionType
+  case delete extends ActionType
+  case notify_add extends ActionType
+  case notify_delete extends ActionType
   // digital cash actions:
-  case POST_TRANSACTION extends ActionType
+  case post_transaction extends ActionType
   // popcha
-  case AUTHENTICATE extends ActionType
+  case authenticate extends ActionType
 
 object ActionType:
   def apply(actionType: String): ActionType =
-    actionType.trim.toLowerCase match
-      case "create"            => CREATE
-      case "update_properties" => UPDATE_PROPERTIES
-      case "state"             => STATE
-      case "greet"             => GREET
-      case "witness"           => WITNESS
-      case "open"              => OPEN
-      case "reopen"            => REOPEN
-      case "close"             => CLOSE
+    actionType match
+      case "create"            => create
+      case "update_properties" => update_properties
+      case "state"             => state
+      case "greet"             => greet
+      case "witness"           => witness
+      case "open"              => open
+      case "reopen"            => reopen
+      case "close"             => close
       // election actions:
-      case "setup"     => SETUP
-      case "result"    => RESULT
-      case "end"       => END
-      case "cast_vote" => CAST_VOTE
-      case "key"       => KEY
+      case "setup"     => setup
+      case "result"    => result
+      case "end"       => end
+      case "cast_vote" => cast_vote
+      case "key"       => key
       // social media actions:
-      case "add"           => ADD
-      case "delete"        => DELETE
-      case "notify_add"    => NOTIFY_ADD
-      case "notify_delete" => NOTIFY_DELETE
+      case "add"           => add
+      case "delete"        => delete
+      case "notify_add"    => notify_add
+      case "notify_delete" => notify_delete
       // digital cash actions:
-      case "post_transaction" => POST_TRANSACTION
+      case "post_transaction" => post_transaction
       // popcha
-      case "authenticate" => AUTHENTICATE
+      case "authenticate" => authenticate
       case _              => INVALID

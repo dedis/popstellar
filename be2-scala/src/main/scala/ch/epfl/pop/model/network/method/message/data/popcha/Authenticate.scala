@@ -31,8 +31,8 @@ final case class Authenticate(
     responseMode: String,
     popchaAddress: String
 ) extends MessageData {
-  override val _object: ObjectType = ObjectType.POPCHA
-  override val action: ActionType = ActionType.AUTHENTICATE
+  override val _object: ObjectType = ObjectType.popcha
+  override val action: ActionType = ActionType.authenticate
 }
 
 object Authenticate extends Parsable {

@@ -99,7 +99,7 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
           // note: the SetupElection is the only message sent to the main channel, others are sent in an election channel
           checkChannelType(
             rpcMessage,
-            ObjectType.LAO,
+            ObjectType.lao,
             channel,
             dbActorRef,
             validationError(s"trying to send a SetupElection message on a wrong type of channel $channel")
@@ -121,7 +121,7 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
         runChecks(
           checkChannelType(
             rpcMessage,
-            ObjectType.ELECTION,
+            ObjectType.election,
             channel,
             dbActorRef,
             validationError(s"trying to send a KeyElection message on a wrong type of channel $channel")
@@ -191,7 +191,7 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
               ),
               checkChannelType(
                 rpcMessage,
-                ObjectType.ELECTION,
+                ObjectType.election,
                 channel,
                 dbActorRef,
                 validationError(
@@ -274,7 +274,7 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
           ),
           checkChannelType(
             rpcMessage,
-            ObjectType.ELECTION,
+            ObjectType.election,
             channel,
             dbActorRef,
             validationError(s"trying to send a CastVoteElection message on a wrong type of channel $channel")
@@ -374,7 +374,7 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
               ),
               checkChannelType(
                 rpcMessage,
-                ObjectType.ELECTION,
+                ObjectType.election,
                 channel,
                 dbActorRef,
                 validationError(s"trying to send a EndElection message on a wrong type of channel $channel")

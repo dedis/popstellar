@@ -123,14 +123,14 @@ object PublishSubscribe {
             totalPorts,
             {
               case Right(m: JsonRpcRequest) => m.method match {
-                  case BROADCAST          => portParamsWithMessage
-                  case PUBLISH            => portParamsWithMessage
-                  case SUBSCRIBE          => portSubscribe
-                  case UNSUBSCRIBE        => portUnsubscribe
-                  case CATCHUP            => portCatchup
-                  case HEARTBEAT          => portHeartbeat
-                  case GET_MESSAGES_BY_ID => portGetMessagesById
-                  case GREET_SERVER       => portGreetServer
+                  case `broadcast`          => portParamsWithMessage
+                  case `publish`            => portParamsWithMessage
+                  case `subscribe`          => portSubscribe
+                  case `unsubscribe`        => portUnsubscribe
+                  case `catchup`            => portCatchup
+                  case `heartbeat`          => portHeartbeat
+                  case `get_messages_by_id` => portGetMessagesById
+                  case `greet_server`       => portGreetServer
                   case _                  => portPipelineError
                 }
 

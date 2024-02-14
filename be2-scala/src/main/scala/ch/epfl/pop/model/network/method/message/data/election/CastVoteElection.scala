@@ -12,8 +12,8 @@ final case class CastVoteElection(
     created_at: Timestamp,
     votes: List[VoteElection]
 ) extends MessageData {
-  override val _object: ObjectType = ObjectType.ELECTION
-  override val action: ActionType = ActionType.CAST_VOTE
+  override val _object: ObjectType = ObjectType.election
+  override val action: ActionType = ActionType.cast_vote
 }
 
 object CastVoteElection extends Parsable {

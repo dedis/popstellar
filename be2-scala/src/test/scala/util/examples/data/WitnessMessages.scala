@@ -9,7 +9,7 @@ import util.examples.data.traits.WitnessMessagesTrait
   */
 object WitnessMessages extends WitnessMessagesTrait {
 
-  override val action: ActionType = ActionType.WITNESS
+  override val action: ActionType = ActionType.witness
   override val CHANNEL: Channel = Channel(Channel.ROOT_CHANNEL_PREFIX + Base64Data.encode("witness_message_channel"))
 
   final val witnessMessage: JsonRpcRequest = getJsonRPCRequestFromFile("message_witness.json")()

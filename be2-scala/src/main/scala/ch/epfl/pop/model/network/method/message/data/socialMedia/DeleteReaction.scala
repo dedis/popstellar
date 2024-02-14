@@ -10,8 +10,8 @@ final case class DeleteReaction(
     reaction_id: Hash,
     timestamp: Timestamp
 ) extends MessageData {
-  override val _object: ObjectType = ObjectType.REACTION
-  override val action: ActionType = ActionType.DELETE
+  override val _object: ObjectType = ObjectType.reaction
+  override val action: ActionType = ActionType.delete
 }
 
 object DeleteReaction extends Parsable {

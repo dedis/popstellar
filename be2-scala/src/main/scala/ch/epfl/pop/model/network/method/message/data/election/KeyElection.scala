@@ -10,8 +10,8 @@ final case class KeyElection(
     election: Hash,
     election_key: PublicKey
 ) extends MessageData {
-  override val _object: ObjectType = ObjectType.ELECTION
-  override val action: ActionType = ActionType.KEY
+  override val _object: ObjectType = ObjectType.election
+  override val action: ActionType = ActionType.key
 }
 
 object KeyElection extends Parsable {

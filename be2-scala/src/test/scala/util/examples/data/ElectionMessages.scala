@@ -9,7 +9,7 @@ import util.examples.data.traits.ElectionMessagesTrait
   */
 object SetupElectionMessages extends ElectionMessagesTrait {
 
-  override val action: ActionType = ActionType.SETUP
+  override val action: ActionType = ActionType.setup
   override val CHANNEL: Channel = Channel(Channel.ROOT_CHANNEL_PREFIX + Base64Data.encode("set_up_election_channel"))
 
   final val setupElection: JsonRpcRequest = getJsonRPCRequestFromFile("election_setup/election_setup.json")()
@@ -21,7 +21,7 @@ object SetupElectionMessages extends ElectionMessagesTrait {
 
 object OpenElectionMessages extends ElectionMessagesTrait {
 
-  override val action: ActionType = ActionType.OPEN
+  override val action: ActionType = ActionType.open
 
   override val CHANNEL: Channel = Channel(Channel.ROOT_CHANNEL_PREFIX + Base64Data.encode("open_election_channel"))
 
@@ -32,7 +32,7 @@ object OpenElectionMessages extends ElectionMessagesTrait {
 
 object KeyElectionMessages extends ElectionMessagesTrait {
 
-  override val action: ActionType = ActionType.KEY
+  override val action: ActionType = ActionType.key
 
   override val CHANNEL: Channel = Channel(Channel.ROOT_CHANNEL_PREFIX + Base64Data.encode("key_election_channel"))
 
@@ -42,7 +42,7 @@ object KeyElectionMessages extends ElectionMessagesTrait {
 
 object CastVoteElectionMessages extends ElectionMessagesTrait {
 
-  override val action: ActionType = ActionType.CAST_VOTE
+  override val action: ActionType = ActionType.cast_vote
 
   override val CHANNEL: Channel = Channel(Channel.ROOT_CHANNEL_PREFIX + Base64Data.encode("cast_vote_election_channel"))
 
@@ -53,7 +53,7 @@ object CastVoteElectionMessages extends ElectionMessagesTrait {
 
 object EndElectionMessages extends ElectionMessagesTrait {
 
-  override val action: ActionType = ActionType.END
+  override val action: ActionType = ActionType.end
 
   override val CHANNEL: Channel = Channel(Channel.ROOT_CHANNEL_PREFIX + Base64Data.encode("end_election_channel"))
 

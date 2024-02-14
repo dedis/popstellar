@@ -18,8 +18,8 @@ final case class StateMeeting(
     modification_id: Hash,
     modification_signatures: List[WitnessSignaturePair]
 ) extends MessageData {
-  override val _object: ObjectType = ObjectType.MEETING
-  override val action: ActionType = ActionType.STATE
+  override val _object: ObjectType = ObjectType.meeting
+  override val action: ActionType = ActionType.state
 }
 
 object StateMeeting extends Parsable {
