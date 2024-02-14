@@ -88,10 +88,10 @@ sonarProperties := Map(
   "sonar.sources" -> "src/main/scala",
   "sonar.tests" -> "src/test/scala",
   "sonar.sourceEncoding" -> "UTF-8",
-  "sonar.scala.version" -> "2.13.7",
+  "sonar.scala.version" -> "3.3.1",
   // Paths to the test and coverage reports
-  "sonar.scala.coverage.reportPaths" -> "./target/scala-2.13/scoverage-report/scoverage.xml",
-  "sonar.scala.scapegoat.reportPaths" -> "./target/scala-2.13/scapegoat-report/scapegoat.xml"
+  "sonar.scala.coverage.reportPaths" -> "./target/scala-3.3.1/scoverage-report/scoverage.xml",
+  "sonar.scala.scapegoat.reportPaths" -> "./target/scala-3.3.1/scapegoat-report/scapegoat.xml"
 )
 
 assembly / assemblyMergeStrategy := {
@@ -106,15 +106,15 @@ assembly / assemblyMergeStrategy := {
 
 // ------------------------ DEPENDENCIES ------------------------ 77
 
-val AkkaVersion = "2.7.0"
-val AkkaHttpVersion = "10.5.0-M1"
+val AkkaVersion = "2.8.0"
+val AkkaHttpVersion = "10.6.0-M1"
 
 libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-stream-typed" % AkkaVersion, // Akka streams (Graph)
   "com.typesafe.akka" %% "akka-http" % AkkaHttpVersion, // Akka http (WebSockets)
   "com.typesafe.akka" %% "akka-cluster-tools" % AkkaVersion, // Akka distributed publish/subscribe cluster
 
-  "ch.qos.logback" % "logback-classic" % "1.1.3" % Runtime, // Akka logging library
+  "ch.qos.logback" % "logback-classic" % "1.4.14" % Runtime, // Akka logging library
   "com.typesafe.akka" %% "akka-testkit" % AkkaVersion % Test, // Akka actor test kit (akka actor testing library)
   "com.typesafe.akka" %% "akka-stream-testkit" % AkkaVersion, // Akka stream test kit
   "com.typesafe.akka" %% "akka-http-testkit" % AkkaHttpVersion // Akka http test kit
@@ -123,21 +123,21 @@ libraryDependencies ++= Seq(
 // LevelDB database
 // https://mvnrepository.com/artifact/org.iq80.leveldb/leveldb
 libraryDependencies += "org.iq80.leveldb" % "leveldb" % "0.12"
-libraryDependencies += "org.xerial.snappy" % "snappy-java" % "1.1.7.3"
+libraryDependencies += "org.xerial.snappy" % "snappy-java" % "1.1.9.1"
 
 // Json Parser (https://github.com/spray/spray-json)
 libraryDependencies += "io.spray" %% "spray-json" % "1.3.6"
 
 // Cryptography
-libraryDependencies += "com.google.crypto.tink" % "tink" % "1.5.0"
+libraryDependencies += "com.google.crypto.tink" % "tink" % "1.7.0"
 libraryDependencies += "ch.epfl.dedis" % "cothority" % "3.3.1"
 
 // Scala unit tests
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.18" % Test
 
 // Json Schema Validator w/ Jackson Databind
-libraryDependencies += "com.networknt" % "json-schema-validator" % "1.0.60"
-libraryDependencies += "com.fasterxml.jackson.core" % "jackson-databind" % "2.0.0-RC3"
+libraryDependencies += "com.networknt" % "json-schema-validator" % "1.0.82"
+libraryDependencies += "com.fasterxml.jackson.core" % "jackson-databind" % "2.15.1"
 
 // Scala file system handling
 libraryDependencies += "org.scala-lang" % "scala-reflect" % "2.13.11"
