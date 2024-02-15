@@ -98,9 +98,28 @@ sonarProperties := Map(
 )
 
 assembly / assemblyMergeStrategy := {
-  case PathList("module-info.class")       => MergeStrategy.discard
-  case PathList("reference.conf")          => MergeStrategy.concat
-  case PathList("META-INF", "MANIFEST.MF") => MergeStrategy.discard
+  case PathList("module-info.class")                                              => MergeStrategy.discard
+  case PathList("reference.conf")                                                 => MergeStrategy.concat
+  case PathList("META-INF", "MANIFEST.MF")                                        => MergeStrategy.discard
+  case PathList("META-INF", "LICENSE")                                            => MergeStrategy.concat
+  case PathList("META-INF", "INDEX.LIST")                                         => MergeStrategy.concat
+  case PathList("META-INF", "NOTICE")                                             => MergeStrategy.discard
+  case PathList("META-INF", "services", "com.fasterxml.jackson.core.ObjectCodec") => MergeStrategy.first
+  case PathList("META-INF", "services", "com.fasterxml.jackson.core.JsonFactory") => MergeStrategy.first
+  case PathList("META-INF", "versions", "9", "module-info.class")                 => MergeStrategy.first
+
+  case PathList("google", "protobuf", "api.proto")            => MergeStrategy.first
+  case PathList("google", "protobuf", "struct.proto")         => MergeStrategy.first
+  case PathList("google", "protobuf", "field_mask.proto")     => MergeStrategy.first
+  case PathList("google", "protobuf", "duration.proto")       => MergeStrategy.first
+  case PathList("google", "protobuf", "timestamp.proto")      => MergeStrategy.first
+  case PathList("google", "protobuf", "source_context.proto") => MergeStrategy.first
+  case PathList("google", "protobuf", "empty.proto")          => MergeStrategy.first
+  case PathList("google", "protobuf", "descriptor.proto")     => MergeStrategy.first
+  case PathList("google", "protobuf", "wrappers.proto")       => MergeStrategy.first
+  case PathList("google", "protobuf", "any.proto")            => MergeStrategy.first
+  case PathList("google", "protobuf", "type.proto")           => MergeStrategy.first
+
   // exclude digital signatures because the merging process can invalidate them
   case PathList(ps @ _*) if Seq(".SF", ".DSA", ".RSA").exists(ps.last.endsWith(_)) =>
     MergeStrategy.discard
@@ -108,9 +127,11 @@ assembly / assemblyMergeStrategy := {
 }
 
 // ------------------------ DEPENDENCIES ------------------------ 77
+// Akka repo
+resolvers += "Akka library repository".at("https://repo.akka.io/maven")
 
-val AkkaVersion = "2.9.0-M2"
-val AkkaHttpVersion = "10.6.0-M1"
+val AkkaVersion = "2.9.1"
+val AkkaHttpVersion = "10.6.0"
 
 libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-stream-typed" % AkkaVersion, // Akka streams (Graph)
@@ -140,7 +161,7 @@ libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.18" % Test
 
 // Json Schema Validator w/ Jackson Databind
 libraryDependencies += "com.networknt" % "json-schema-validator" % "1.0.82"
-libraryDependencies += "com.fasterxml.jackson.core" % "jackson-databind" % "2.15.1"
+libraryDependencies += "com.fasterxml.jackson.core" % "jackson-databind" % "2.16.1"
 
 // Scala file system handling
 libraryDependencies += "org.scala-lang" % "scala-reflect" % "2.13.11"
