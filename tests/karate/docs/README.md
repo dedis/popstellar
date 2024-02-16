@@ -167,13 +167,8 @@ Ex: `Android Emulator - Pixel_4_API_30:5554`
   - Go to `Help`, under `Emulator ADB serial number` it should match `emulator-id`\
     Ex: `emulator-5554`
 
-<p align="center">
-  <img src="images/emulator_extended_controls.png" alt="Emulator" width="50%">
-  <br>
-  <em>Emulator standalone window with Extended Controls.</em>
-</p>
-
-\
+<img src="images/emulator_extended_controls.png" alt="Emulator" width="50%">
+<em>Emulator standalone window with Extended Controls.</em>
 
 Make sure the [karate-config](src/test/java/karate-config.js) is correct.
 More precisely :
