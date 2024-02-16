@@ -1,4 +1,4 @@
-@env=go_client,scala_client
+@env=go,scala
 Feature: Terminate an election
   Background:
     # This feature will be called to test End Election
@@ -8,7 +8,7 @@ Feature: Terminate an election
     * call read('classpath:be/features/utils/constants.feature')
     * call read(serverFeature)
     * call read(mockClientFeature)
-    * def organizer = call createMockClient
+    * def organizer = call createMockFrontend
     * def lao = organizer.createValidLao()
     * def rollCall = organizer.createValidRollCall(lao)
     * def election = organizer.createValidElection(lao)
@@ -20,6 +20,7 @@ Feature: Terminate an election
 
   # After a successful election setup and cast vote sending a valid election end
   # message should succeed (message should be accepted and a broadcast with election results received in return)
+  @electionEnd1
   Scenario: Sending a valid election end should succeed
     Given def validElectionEnd =
       """
@@ -41,6 +42,7 @@ Feature: Terminate an election
 
    # After having a successful election setup and vote casts, sending an election end
    # message that has an invalid election id should return an error form the backend
+  @electionEnd2
   Scenario: Sending an election end with invalid election id should return an error
     Given def invalidElectionEnd =
       """
@@ -60,6 +62,7 @@ Feature: Terminate an election
 
   # After having a successful election setup and vote casts, sending an election end
   # message with a wrongly computed registered votes field should return an error form the backend
+  @electionEnd3
   Scenario: Sending an election end message with invalid registered votes field should return an error
     Given def invalidElectionEnd =
       """
@@ -79,6 +82,7 @@ Feature: Terminate an election
 
   # After having a successful election setup and vote casts, sending an election end
   # message with a wrongly computed registered votes field should return an error form the backend
+  @electionEnd4
   Scenario: Sending an election end message with registered votes field set to valid election setup id should return an error
     Given def invalidElectionEnd =
       """
@@ -98,6 +102,7 @@ Feature: Terminate an election
 
   # Testing if sending an election end message with timestamp that is before the election setup
   # creation time should result in an error from the back-end
+  @electionEnd5
   Scenario: Sending a valid election end too early should fail
     Given def invalidElectionEnd =
       """

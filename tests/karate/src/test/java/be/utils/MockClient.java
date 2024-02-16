@@ -16,15 +16,16 @@ import java.util.List;
 public class MockClient extends MultiMsgWebSocketClient {
   public MockClient(String wsURL) {
     super(new WebSocketOptions(wsURL), new Logger(), new MessageQueue());
+    System.out.println("Client is connecting to URL: " + wsURL);
   }
 
   /**
    * @return a valid lao with the client's public key, the current time, and a random valid lao name.
    */
   public Lao createValidLao() {
-    System.out.println("Client with public key: " + publicKey + " is creating a lao");
     // Name needs to be random so that the same organizer does not create the same lao twice if it happens in the same second
     String randomName = RandomUtils.generateRandomName();
+    System.out.println("Client with public key: " + publicKey + " is creating a lao: " + randomName);
     return new Lao(publicKey, Instant.now().getEpochSecond(), randomName);
   }
 

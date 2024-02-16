@@ -1,4 +1,4 @@
-@env=go_client,scala_client
+@env=go,scala
 Feature: Cast a vote
   Background:
     # This feature will be called to test Cast Vote
@@ -8,7 +8,7 @@ Feature: Cast a vote
     * call read('classpath:be/features/utils/constants.feature')
     * call read(serverFeature)
     * call read(mockClientFeature)
-    * def organizer = call createMockClient
+    * def organizer = call createMockFrontend
     * def lao = organizer.createValidLao()
     * def rollCall = organizer.createValidRollCall(lao)
     * def election = organizer.createValidElection(lao)
@@ -20,6 +20,7 @@ Feature: Cast a vote
     * def castVote = election.castVote(vote)
 
   # Testing if after creating an election correctly, casting a valid vote succeeds
+  @castVote1
   Scenario: Casting a valid vote on a started election
     Given def validCastVote =
       """
@@ -45,6 +46,7 @@ Feature: Cast a vote
 
   # Testing if after creating an election correctly, the backend returns an error
   # upon casting a vote on an LAO channel instead of an election one
+  @castVote2
   Scenario: Casting a vote on a lao channel should return an error
     Given def validCastVote =
       """
@@ -70,6 +72,7 @@ Feature: Cast a vote
 
   # Testing if before creating an election, the backend returns an error
   # upon casting a vote
+  @castVote3
   Scenario: Casting a valid vote on non existent election should return an error
     Given def newElection = organizer.createValidElection(lao)
     And def newQuestion = newElection.createQuestion()
@@ -99,6 +102,7 @@ Feature: Cast a vote
 
   # Testing if after creating an election correctly, the backend returns an error
   # upon casting a vote but with wrong vote id
+  @castVote4
   Scenario: Casting a vote with wrong vote id should return an error
     Given def invalidCastVote =
        """
@@ -124,6 +128,7 @@ Feature: Cast a vote
 
   # Testing if after creating an election correctly, the backend returns an error
   # upon casting a vote but with lao id as vote id
+  @castVote5
   Scenario: Casting a vote with lao id as vote id should return an error
     Given def invalidCastVote =
      """
@@ -149,6 +154,7 @@ Feature: Cast a vote
 
   # Testing if after creating an election correctly, the backend returns an error
   # upon a non-attendee casting a valid vote.
+  @castVote6
   Scenario: Non attendee casting a vote should return an error
     Given def nonAttendee = call createMockClient
     And def validCastVote =
@@ -174,6 +180,7 @@ Feature: Cast a vote
     And match nonAttendee.receiveNoMoreResponses() == true
 
   # Testing if casting a valid vote at a time before election creation should fail
+  @castVote7
   Scenario: Casting a valid vote before creation time should fail
     Given def invalidCastVote =
       """

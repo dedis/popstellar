@@ -1,4 +1,4 @@
-@env=go_server,scala_server
+@env=go,scala
 Feature: Request messages by id from other servers
 
   Background:
@@ -9,8 +9,8 @@ Feature: Request messages by id from other servers
     * call read('classpath:be/features/utils/constants.feature')
     * call read(serverFeature)
     * call read(mockClientFeature)
-    * def mockServer = call createMockClient
-    * def mockFrontend = call createMockClient
+    * def mockBackend = call createMockBackend
+    * def mockFrontend = call createMockFrontend
     * def lao = mockFrontend.createValidLao()
 
     # Create the template for heartbeat message
@@ -29,38 +29,42 @@ Feature: Request messages by id from other servers
 
   # Check that after sending a heartbeat message with unknown message id, the server responds with a
   # getMessagesByID requesting this message
+  @getMessagesById1
   Scenario: Server should request the missing message ids in a heartbeat
     Given eval heartbeat.params[lao.channel] = messageIds
 
-    When mockServer.send(heartbeat)
-    And def getMessagesByIdMessages = mockServer.getGetMessagesById()
+    When mockBackend.send(heartbeat)
+    And def getMessagesByIdMessages = mockBackend.getGetMessagesById()
 
     Then assert getMessagesByIdMessages.length == 1
     And match getMessagesByIdMessages[0] contains randomMessageId
 
   # Check that after sending a heartbeat message with unknown message id on a channel missing the /root/'
   # prefix, the server does not request the messages
+  @getMessagesById2
   Scenario: Server should not request messages if channel is missing '/root/' prefix
     Given eval heartbeat.params[lao.id] = messageIds
 
-    When mockServer.send(heartbeat)
-    And def getMessagesByIdMessages = mockServer.getGetMessagesById()
+    When mockBackend.send(heartbeat)
+    And def getMessagesByIdMessages = mockBackend.getGetMessagesById()
 
     Then assert getMessagesByIdMessages.length == 0
 
   # Check that after sending a heartbeat message with invalid message ids, the server does not request the messages
+  @getMessagesById3
   Scenario: Server should not request messages for invalid lao ids
     Given def invalidMessageIds = []
     And eval invalidMessageIds.push('invalid message id')
     And eval heartbeat.params[lao.channel] = invalidMessageIds
 
-    When mockServer.send(heartbeat)
+    When mockBackend.send(heartbeat)
 
-    Then assert mockServer.getGetMessagesById().length == 0
+    Then assert mockBackend.getGetMessagesById().length == 0
 
 
   # Check that after the server confirms it received a message, sending a heartbeat containing that message id does not
   # trigger a getMessagesById anymore
+  @getMessagesById4
   Scenario: Server should not request messages that it already has
     Given def validRollCall = mockFrontend.createValidRollCall(lao)
     And def validCreateRollCall =
@@ -85,10 +89,10 @@ Feature: Request messages by id from other servers
     And eval messageIds.push(message_id)
     And eval heartbeat.params[lao.channel] = messageIds
 
-    When mockServer.send(heartbeat)
+    When mockBackend.send(heartbeat)
 
     Then match answer contains VALID_MESSAGE
-    And assert mockServer.getGetMessagesById().length == 0
+    And assert mockBackend.getGetMessagesById().length == 0
 
 
 

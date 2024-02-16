@@ -1,4 +1,4 @@
-@env=go_client,scala_client
+@env=go,scala
 Feature: Create a Roll Call
 
   Background:
@@ -10,7 +10,7 @@ Feature: Create a Roll Call
     * call read('classpath:be/features/utils/constants.feature')
     * call read(serverFeature)
     * call read(mockClientFeature)
-    * def organizer = call createMockClient
+    * def organizer = call createMockFrontend
     * def lao = organizer.createValidLao()
     * def validRollCall = organizer.createValidRollCall(lao)
 
@@ -21,6 +21,7 @@ Feature: Create a Roll Call
   # Testing if after setting up a valid lao, subscribing to it and sending a catchup
   # we send a valid roll call create request and expect to receive a valid response
   # from the backend
+  @createRollCall1
   Scenario: Valid Roll Call
     Given def validCreateRollCall =
       """
@@ -43,6 +44,7 @@ Feature: Create a Roll Call
 
   # Setting up the lao correctly but send an invalid roll call create request, containing
   # an empty roll call name should result in an error message from the backend.
+  @createRollCall2
   Scenario: Roll Call Creation with empty name should return an error code
     Given def rollCall = validRollCall.setName('')
     And def badCreateRollCall =
@@ -66,6 +68,7 @@ Feature: Create a Roll Call
 
   # Setting up the lao correctly and sending a roll call create message that comes from
   # a non-organizer should result in an error message being sent by the backend.
+  @createRollCall3
   Scenario: Roll Call Creation with non-organizer as sender should return an error
     Given def notOrganizer = call createMockClient
     And def validCreateRollCall =
@@ -90,6 +93,7 @@ Feature: Create a Roll Call
 
   # Setting up a lao correctly but sending a valid roll call create message on the
   # root channel should result in backend rejecting the message and sending an error message
+  @createRollCall4
   Scenario: Roll Call Creation sent on root channel should return an error
     Given def validCreateRollCall =
       """
@@ -114,6 +118,7 @@ Feature: Create a Roll Call
   # Setting up the lao correctly but send an invalid roll call create request, containing
   # a proposed start time larger than proposed end time should result in an error message
   # from the backend.
+  @createRollCall5
   Scenario: Roll Call Creation with proposed start > proposed end should return and error
     Given def rollCall = validRollCall.switchStartAndEnd()
     And def badCreateRollCall =
@@ -137,6 +142,7 @@ Feature: Create a Roll Call
 
   # Setting up the lao correctly but send an invalid roll call create request, containing
   # a negative creation time should result in an error message from the backend.
+  @createRollCall6
   Scenario: Roll Call Creation with negative creation time should return an error
     Given def rollCall = validRollCall.setCreation(-1)
     And def badCreateRollCall =
@@ -161,6 +167,7 @@ Feature: Create a Roll Call
   # Setting up the lao correctly but send an invalid roll call create request, containing
   # a creation time larger than proposed start time should result in an error message
   # from the backend.
+  @createRollCall7
   Scenario: Roll Call Creation with creation time > proposed start should return and error
     Given def rollCall = validRollCall.switchCreationAndStart()
     And def badCreateRollCall =
@@ -184,6 +191,7 @@ Feature: Create a Roll Call
 
   # Setting up the lao correctly but send an invalid roll call create request, containing
   # an invalid roll_call id should result in an error message from the backend.
+  @createRollCall8
   Scenario: Roll Call Creation with invalid roll_call id should return an error
     Given def badCreateRollCall =
       """
@@ -206,6 +214,7 @@ Feature: Create a Roll Call
 
   # Sending a valid roll call create request for a lao that does not exist should result
   # in an error message from the backend.
+  @createRollCall9
   Scenario: Roll Call Creation for non existent lao should return an error
     Given def randomLao = organizer.createValidLao()
     And def randomRollCall = organizer.createValidRollCall(randomLao)

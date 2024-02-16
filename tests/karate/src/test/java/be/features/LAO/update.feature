@@ -1,4 +1,4 @@
-@env=go_client,scala_client
+@env=go,scala
 Feature: Update a LAO
 
   Background:
@@ -9,13 +9,14 @@ Feature: Update a LAO
     * call read('classpath:be/features/utils/constants.feature')
     * call read(serverFeature)
     * call read(mockClientFeature)
-    * def organizer = call createMockClient
+    * def organizer = call createMockFrontend
     * def lao = organizer.createValidLao()
 
     # This call executes all the steps to create a valid lao on the server before every scenario
     # (lao creation, subscribe, catchup)
     * call read(createLaoScenario) { organizer: '#(organizer)', lao: '#(lao)' }
 
+  @update1
   Scenario: Update Lao should succeed with a valid update request with new lao name
     Given def updateLaoRequest =
       """
@@ -33,6 +34,7 @@ Feature: Update a LAO
     Then match answer contains VALID_MESSAGE
     And match organizer.receiveNoMoreResponses() == true
 
+  @update2
   Scenario: Update Lao request with empty lao name should fail with an error response
     Given def badUpdateLaoReq =
       """
@@ -50,7 +52,7 @@ Feature: Update a LAO
     Then match answer contains INVALID_MESSAGE_FIELD
     And match organizer.receiveNoMoreResponses() == true
 
-
+  @update3
   Scenario: Update Lao with last_modified before creation time should fail with an error response
     Given def badUpdateLaoReq =
          """

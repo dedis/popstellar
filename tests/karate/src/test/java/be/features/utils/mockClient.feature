@@ -3,13 +3,22 @@ Feature: Mock Client
 
   Scenario: Creates mock clients that can connect to a server as a frontend or server
     * def mockClients = []
-    * def createMockClient =
+    * def createMockFrontend =
       """
         function(){
           var MockClient = Java.type('be.utils.MockClient')
-          var mockClient = new MockClient(wsURL)
-          mockClients.push(mockClient)
-          return mockClient
+          var mockFrontend = new MockClient(frontendWsURL)
+          mockClients.push(mockFrontend)
+          return mockFrontend
+        }
+      """
+    * def createMockBackend =
+      """
+        function(){
+          var MockClient = Java.type('be.utils.MockClient')
+          var mockBackend = new MockClient(backendWsURL)
+          mockClients.push(mockBackend)
+          return mockBackend
         }
       """
 
