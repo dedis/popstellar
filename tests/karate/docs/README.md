@@ -168,9 +168,10 @@ Ex: `Android Emulator - Pixel_4_API_30:5554`
     Ex: `emulator-5554`
 
 <figure align="center">
-  <img src="images/emulator_extended_controls.png" alt="Emulator"/>
-  <figcaption>Emulator standalone window with Extended Controls.</figcaption>
+  <img src="images/emulator_extended_controls.png" alt="Emulator" width="50%" style="max-width:100%;">
+  <figcaption style="margin-top: 8px; font-style: italic; color: grey;">Emulator standalone window with Extended Controls.</figcaption>
 </figure>
+<br>
 
 Make sure the [karate-config](src/test/java/karate-config.js) is correct.
 More precisely :
