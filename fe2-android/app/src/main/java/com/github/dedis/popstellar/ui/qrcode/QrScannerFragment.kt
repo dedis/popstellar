@@ -186,7 +186,7 @@ class QrScannerFragment : Fragment() {
     @JvmStatic
     fun newInstance(scanningAction: ScanningAction, vararg backArgs: String): QrScannerFragment {
       val fragment = QrScannerFragment()
-      val bundle = Bundle(1)
+      val bundle = Bundle(2)
       bundle.putSerializable(SCANNING_KEY, scanningAction)
       bundle.putSerializable(BACK_ARGS, backArgs)
       fragment.arguments = bundle

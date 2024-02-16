@@ -51,7 +51,7 @@
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:layout_gravity="center"
-          android:text="@{entryBoxChirp.text.length() > 0 ? view_model.getNumberCharsLeft().toString() : view_model.MAX_CHAR_NUMBERS.toString()}"
+          android:text="@{entryBoxChirp.text.length() > 0 ? view_model.getNumberCharsLeft().toString() : view_model.MAX_CHAR_NUMBERS_STR}"
           android:textColor="@{entryBoxChirp.text.length() > 0 ? (view_model.getNumberCharsLeft() >= 0 ? @color/black : @color/red) : @color/black}"
           android:textSize="@dimen/size_title"
           android:textStyle="bold" />

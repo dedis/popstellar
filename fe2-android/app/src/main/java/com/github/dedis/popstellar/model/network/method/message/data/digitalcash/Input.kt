@@ -17,7 +17,7 @@ class Input
     @field:SerializedName("tx_out_hash")
     val txOutHash: String, // index of the previous to-be-used transaction
     @field:SerializedName("tx_out_index")
-    val txOutIndex: Int, // The script describing the unlock mechanism
+    val txOutIndex: Int?, // The script describing the unlock mechanism
     @field:SerializedName("script") val script: ScriptInput
 ) {
 

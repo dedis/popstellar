@@ -91,7 +91,7 @@ class Wallet @Inject constructor(@WalletKeyset keysetManager: AndroidKeysetManag
       KeyGenerationException::class,
       UninitializedWalletException::class,
       InvalidPoPTokenException::class)
-  fun recoverKey(laoID: String, rollCallID: String, rollCallTokens: Set<PublicKey?>): PoPToken {
+  fun recoverKey(laoID: String, rollCallID: String, rollCallTokens: Set<PublicKey>): PoPToken {
     val token = generatePoPToken(laoID, rollCallID)
 
     return if (rollCallTokens.contains(token.publicKey)) {
@@ -134,11 +134,13 @@ class Wallet @Inject constructor(@WalletKeyset keysetManager: AndroidKeysetManag
         else -> throw e
       }
     }
+
     storeEncrypted(words)
+
     Timber.tag(TAG).d("Mnemonic words were successfully imported")
   }
 
-  val isSetUp: Boolean
+  private val isSetUp: Boolean
     /**
      * Determine whether wallet has been initialized
      *

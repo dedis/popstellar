@@ -36,11 +36,11 @@ enum class ScanningAction(
       R.string.add_witness_title,
       R.string.manual_witness_hint,
       R.string.add_witness_title,
-      { activity: FragmentActivity?, _: String? ->
+      { activity: FragmentActivity, _: String? ->
         HomeActivity.obtainWitnessingViewModel(activity)
       },
-      { activity: FragmentActivity? -> HomeActivity.obtainViewModel(activity) },
-      { manager: FragmentManager?, _: Array<String> ->
+      { activity: FragmentActivity -> HomeActivity.obtainViewModel(activity) },
+      { manager: FragmentManager, _: Array<String> ->
         HomeActivity.setCurrentFragment(manager, R.id.fragment_lao_create) { LaoCreateFragment() }
       },
       true),
@@ -50,11 +50,11 @@ enum class ScanningAction(
       R.string.add_witness_title,
       R.string.manual_witness_hint,
       R.string.add_witness_title,
-      { activity: FragmentActivity?, laoId: String? ->
+      { activity: FragmentActivity, laoId: String? ->
         LaoActivity.obtainWitnessingViewModel(activity, laoId)
       },
-      { activity: FragmentActivity? -> LaoActivity.obtainViewModel(activity) },
-      { manager: FragmentManager?, _: Array<String> ->
+      { activity: FragmentActivity -> LaoActivity.obtainViewModel(activity) },
+      { manager: FragmentManager, _: Array<String> ->
         LaoActivity.setCurrentFragment(manager, R.id.fragment_witnessing) {
           com.github.dedis.popstellar.ui.lao.witness.WitnessingFragment()
         }
@@ -66,11 +66,11 @@ enum class ScanningAction(
       R.string.add_attendee_title,
       R.string.rc_manual_hint,
       R.string.add_attendee_title,
-      { activity: FragmentActivity?, laoId: String? ->
+      { activity: FragmentActivity, laoId: String? ->
         LaoActivity.obtainRollCallViewModel(activity, laoId)
       },
-      { activity: FragmentActivity? -> LaoActivity.obtainViewModel(activity) },
-      { manager: FragmentManager?, stringArray: Array<String> ->
+      { activity: FragmentActivity -> LaoActivity.obtainViewModel(activity) },
+      { manager: FragmentManager, stringArray: Array<String> ->
         LaoActivity.setCurrentFragment(manager, R.id.fragment_roll_call) {
           RollCallFragment.newInstance(stringArray[0])
         }
@@ -83,9 +83,9 @@ enum class ScanningAction(
       R.string.join_lao_title,
       R.string.join_manual_hint,
       R.string.add_lao_participant_title,
-      { activity: FragmentActivity?, _: String? -> HomeActivity.obtainViewModel(activity) },
-      { activity: FragmentActivity? -> HomeActivity.obtainViewModel(activity) },
-      { manager: FragmentManager?, _: Array<String> ->
+      { activity: FragmentActivity, _: String? -> HomeActivity.obtainViewModel(activity) },
+      { activity: FragmentActivity -> HomeActivity.obtainViewModel(activity) },
+      { manager: FragmentManager, _: Array<String> ->
         HomeActivity.setCurrentFragment(manager, R.id.fragment_home) { HomeFragment() }
       },
       false),
@@ -95,11 +95,11 @@ enum class ScanningAction(
       R.string.popcha_add,
       R.string.manual_popcha_hint,
       R.string.popcha_scan_title,
-      { activity: FragmentActivity?, laoId: String? ->
+      { activity: FragmentActivity, laoId: String? ->
         LaoActivity.obtainPoPCHAViewModel(activity, laoId)
       },
-      { activity: FragmentActivity? -> LaoActivity.obtainViewModel(activity) },
-      { manager: FragmentManager?, _: Array<String> ->
+      { activity: FragmentActivity -> LaoActivity.obtainViewModel(activity) },
+      { manager: FragmentManager, _: Array<String> ->
         LaoActivity.setCurrentFragment(manager, R.id.fragment_popcha_home) {
           com.github.dedis.popstellar.ui.lao.popcha.PoPCHAHomeFragment()
         }
