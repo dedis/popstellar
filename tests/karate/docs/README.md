@@ -156,7 +156,7 @@ Start the Android Emulator.
 Start Appium : if you use the GUI, delete the text in Host and Port and click on the start server button.
 If you use the terminal, run `appium`.
 
-With Android Bumblebee the emulator can either run in a tool window or a standalone window.
+With Android Hedgehog the emulator can either run in a tool window or a standalone window.
 (To have it in a standalone window, go to `File -> Settings -> Tools -> Emulator` and unselect `Launch in a tool window`).
 - Standalone window : \
 The emulator window name should match : `Android Emulator - avd:id` \
@@ -167,7 +167,10 @@ Ex: `Android Emulator - Pixel_4_API_30:5554`
   - Go to `Help`, under `Emulator ADB serial number` it should match `emulator-id`\
     Ex: `emulator-5554`
 
-
+<figure align="center">
+  <img src="images/emulator_extended_controls.png" alt="Emulator"/>
+  <figcaption>Emulator standalone window with Extended Controls.</figcaption>
+</figure>
 
 Make sure the [karate-config](src/test/java/karate-config.js) is correct.
 More precisely :
