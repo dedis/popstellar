@@ -1,6 +1,7 @@
 # Karate Tests
 
-This folder implements tests for the back-end and front-end. The front-end tests are out of date and currently not expected to pass!
+This folder implements tests for the back-end and front-end.
+The front-end tests are out of date and currently not expected to pass!
 
 ## Functionality
 The key idea is to have a single component being tested at a time, such as a Scala server or an Android front-end.
@@ -18,7 +19,8 @@ Each feature file tests a different message type (i.e. electionOpen, createRollC
 Scenarios are written in the Gerkhin syntax using the following keywords:
 
 - **Given**: Prepare the JSON payload to be sent to the component being tested. 
-- **When**: Defines the action that is to be performed with the payload. For instance, `publish` creates a message of type publish that contains some high-level message data, or `send` to send raw JSON data. 
+- **When**: Defines the action that is to be performed with the payload.
+For instance, `publish` creates a message of type publish that contains some high-level message data, or `send` to send raw JSON data. 
 - **Then**: Asserts that the action taken in the 'When' step has the expected outcome.
 - **And**: Connector that can be used after any of the other keywords.
 
@@ -30,7 +32,8 @@ This means they share definitions (def variables) and configurations.
 JavaScript functions defined in the called feature are also available for use in the current feature's context.
 For instance, reading `mockClient.feature` exposes functions like `createMockFrontend` and `createMockBackend` that can be used to create mock components.
 
-- **Setting up previous steps necessary for a test**: For instance, before roll call messages can be tested, a LAO needs to be created first. `simpleScenarios.feature` contains many such useful setup steps.
+- **Setting up previous steps necessary for a test**: For instance, before roll call messages can be tested, a LAO needs to be created first.
+`simpleScenarios.feature` contains many such useful setup steps.
 
 ### Data model
 To generate valid message data for JSON payloads dynamically, a simplified version of the model is implemented in Java code. 
@@ -111,8 +114,7 @@ Go to `Tools -> AVD Manager` and create an emulator.
 Then you need to install Appium.
 You can install either the command line app with `npm install -g appium`, or the [Desktop App](https://github.com/appium/appium-desktop/releases/).
 
-Finally, you need to set the environment variable `ANDROID_HOME` (The previous name was`ANDROID_SDK_ROOT`
-and it still works) to your Android SDK installation.
+Finally, you need to set the environment variable `ANDROID_HOME` (The previous name was`ANDROID_SDK_ROOT` and it still works) to your Android SDK installation.
 Find it by opening Android Studio and going to `Tools -> SDK Manager`.
 It stands next to `Android SDK Location`.
 
@@ -121,8 +123,7 @@ You will encounter problems you would not have otherwise, some of which might ev
 
 ### Web Front-end
 
-Make sure you have [Google Chrome](https://www.google.com/intl/en/chrome/) and [npm](https://nodejs.org/en/download/)
-installed.
+Make sure you have [Google Chrome](https://www.google.com/intl/en/chrome/) and [npm](https://nodejs.org/en/download/) installed.
 
 ## Running the Tests
 
@@ -169,6 +170,7 @@ Ex: `Android Emulator - Pixel_4_API_30:5554`
 
 <img src="images/emulator_extended_controls.png" alt="Emulator" width="50%">
 <em>Emulator standalone window with Extended Controls.</em>
+
 
 Make sure the [karate-config](src/test/java/karate-config.js) is correct.
 More precisely :
