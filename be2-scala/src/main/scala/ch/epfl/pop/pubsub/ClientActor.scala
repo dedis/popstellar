@@ -5,8 +5,7 @@ import akka.event.LoggingReceive
 import akka.pattern.{AskableActorRef, ask}
 import ch.epfl.pop.config.RuntimeEnvironment.serverConf
 import ch.epfl.pop.decentralized.ConnectionMediator
-import ch.epfl.pop.model.network.JsonRpcRequest
-import ch.epfl.pop.model.network.MethodType.greet_server
+import ch.epfl.pop.model.network.{JsonRpcRequest, MethodType}
 import ch.epfl.pop.model.network.method.GreetServer
 import ch.epfl.pop.model.objects.Channel
 import ch.epfl.pop.pubsub.ClientActor._
@@ -119,7 +118,7 @@ final case class ClientActor(mediator: ActorRef, connectionMediatorRef: ActorRef
       val greetServer = GreetServer(publicKey.get, clientAddress, serverAddress)
       messageWsHandle(ClientAnswer(Right(JsonRpcRequest(
         RpcValidator.JSON_RPC_VERSION,
-        greet_server,
+        MethodType.greet_server,
         greetServer,
         None
       ))))

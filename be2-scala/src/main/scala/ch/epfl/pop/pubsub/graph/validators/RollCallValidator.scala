@@ -3,7 +3,7 @@ package ch.epfl.pop.pubsub.graph.validators
 import akka.pattern.AskableActorRef
 import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.Message
-import ch.epfl.pop.model.network.method.message.data.ActionType.{close, create, open, reopen}
+import ch.epfl.pop.model.network.method.message.data.ActionType
 import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.network.method.message.data.rollCall.{CloseRollCall, CreateRollCall, IOpenRollCall}
 import ch.epfl.pop.model.objects.{Hash, RollCallData}
@@ -157,7 +157,7 @@ sealed class RollCallValidator(dbActorRef: => AskableActorRef) extends MessageDa
     val rollCallData: Option[RollCallData] = getRollCallData(laoId)
     rollCallData match {
       case Some(data) =>
-        if ((data.state == create || data.state == close) && data.updateId == opens)
+        if ((data.state == ActionType.create || data.state == ActionType.close) && data.updateId == opens)
           Right(rpcMessage)
         else
           Left(error)
@@ -234,7 +234,7 @@ sealed class RollCallValidator(dbActorRef: => AskableActorRef) extends MessageDa
     val rollCallData: Option[RollCallData] = getRollCallData(laoId)
     rollCallData match {
       case Some(data) =>
-        if ((data.state == open || data.state == reopen) && data.updateId == closes)
+        if ((data.state == ActionType.open || data.state == ActionType.reopen) && data.updateId == closes)
           Right(rpcMessage)
         else
           Left(error)
