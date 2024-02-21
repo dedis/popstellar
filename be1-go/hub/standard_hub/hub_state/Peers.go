@@ -1,6 +1,7 @@
 package hub_state
 
 import (
+	"golang.org/x/xerrors"
 	"popstellar/message/query/method"
 	"sync"
 
@@ -26,10 +27,17 @@ func NewPeers() Peers {
 }
 
 // AddPeerInfo adds a peer's info to the table
-func (p *Peers) AddPeerInfo(socketId string, info method.ServerInfo) {
+func (p *Peers) AddPeerInfo(socketId string, info method.ServerInfo) error {
 	p.Lock()
 	defer p.Unlock()
+
+	_, ok := p.peersInfo[socketId]
+	if ok {
+		return xerrors.Errorf("peersInfo already contains [%s]", socketId)
+	}
+
 	p.peersInfo[socketId] = info
+	return nil
 }
 
 // AddPeerGreeted adds a peer's socket ID to the slice of peers greeted

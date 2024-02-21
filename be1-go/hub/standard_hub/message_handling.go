@@ -451,7 +451,10 @@ func (h *Hub) handleGreetServer(socket socket.Socket, byteMessage []byte) error 
 	}
 
 	// store information about the server
-	h.peers.AddPeerInfo(socket.ID(), greetServer.Params)
+	err = h.peers.AddPeerInfo(socket.ID(), greetServer.Params)
+	if err != nil {
+		return xerrors.Errorf("failed to add peer info: %v", err)
+	}
 
 	if h.peers.IsPeerGreeted(socket.ID()) {
 		return nil
