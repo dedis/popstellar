@@ -83,8 +83,8 @@ func (h *Hub) handleRootChannelPublishMessage(sock socket.Socket, publish method
 
 // handleRootChannelPublishMessage handles an incoming publish message on the root channel.
 func (h *Hub) handleRootChannelBroadcastMessage(sock socket.Socket,
-	broadcast method.Broadcast) error {
-
+	broadcast method.Broadcast,
+) error {
 	jsonData, err := base64.URLEncoding.DecodeString(broadcast.Params.Message.Data)
 	if err != nil {
 		err := xerrors.Errorf("failed to decode message data: %v", err)
@@ -145,8 +145,8 @@ func (h *Hub) handleRootChannelBroadcastMessage(sock socket.Socket,
 
 // handleRootCatchup handles an incoming catchup message on the root channel
 func (h *Hub) handleRootCatchup(senderSocket socket.Socket,
-	byteMessage []byte) ([]message.Message, int, error) {
-
+	byteMessage []byte,
+) ([]message.Message, int, error) {
 	var catchup method.Catchup
 
 	err := json.Unmarshal(byteMessage, &catchup)
@@ -374,8 +374,8 @@ func (h *Hub) handleUnsubscribe(socket socket.Socket, byteMessage []byte) (int, 
 }
 
 func (h *Hub) handleCatchup(socket socket.Socket,
-	byteMessage []byte) ([]message.Message, int, error) {
-
+	byteMessage []byte,
+) ([]message.Message, int, error) {
 	var catchup method.Catchup
 
 	err := json.Unmarshal(byteMessage, &catchup)
@@ -401,8 +401,8 @@ func (h *Hub) handleCatchup(socket socket.Socket,
 }
 
 func (h *Hub) handleHeartbeat(socket socket.Socket,
-	byteMessage []byte) error {
-
+	byteMessage []byte,
+) error {
 	var heartbeat method.Heartbeat
 
 	err := json.Unmarshal(byteMessage, &heartbeat)
@@ -425,8 +425,8 @@ func (h *Hub) handleHeartbeat(socket socket.Socket,
 }
 
 func (h *Hub) handleGetMessagesById(socket socket.Socket,
-	byteMessage []byte) (map[string][]message.Message, int, error) {
-
+	byteMessage []byte,
+) (map[string][]message.Message, int, error) {
 	var getMessagesById method.GetMessagesById
 
 	err := json.Unmarshal(byteMessage, &getMessagesById)
@@ -571,7 +571,7 @@ func (h *Hub) loopOverMessages(messages *map[string][]json.RawMessage, senderSoc
 	for channel, messageArray := range *messages {
 		newMessageArray := make([]json.RawMessage, 0)
 
-		//Try to process each message
+		// Try to process each message
 		for _, msg := range messageArray {
 			var messageData message.Message
 			err := json.Unmarshal(msg, &messageData)
