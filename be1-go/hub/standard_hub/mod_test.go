@@ -1,6 +1,7 @@
 package standard_hub
 
 import (
+	"bytes"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
@@ -821,7 +822,9 @@ func Test_Handle_Answer(t *testing.T) {
 		c: &fakeChannel{},
 	}
 
-	hub, err := NewHub(keypair.public, "", "", yeslog, fakeChannelFac.newChannel)
+	var output bytes.Buffer
+
+	hub, err := NewHub(keypair.public, "", "", zerolog.New(&output), fakeChannelFac.newChannel)
 	require.NoError(t, err)
 
 	result := struct {
@@ -913,12 +916,19 @@ func Test_Handle_Answer(t *testing.T) {
 	require.NoError(t, err)
 	require.True(t, queryState)
 
+	output.Reset()
+
 	hub.handleMessageFromServer(&socket.IncomingMessage{
 		Socket:  sock,
 		Message: answerBuf,
 	})
 	// Check that receiving twice an answer for a query doesn't return an error
 	require.NoError(t, sock.err)
+
+	// Check that the log for receiving more than on an answer for a query exists
+	outputString := output.String()
+	require.Contains(t, outputString,
+		fmt.Sprintf("query with id %d already answered", serverAnswer.ID))
 
 	hub.handleMessageFromServer(&socket.IncomingMessage{
 		Socket:  sock,
@@ -1885,10 +1895,7 @@ type keypair struct {
 	private   kyber.Scalar
 }
 
-var (
-	yeslog = zerolog.New(os.Stdout)
-	nolog  = zerolog.New(io.Discard)
-)
+var nolog = zerolog.New(io.Discard)
 
 // var suite = crypto.Suite
 
