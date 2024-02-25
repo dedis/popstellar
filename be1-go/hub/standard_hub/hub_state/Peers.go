@@ -33,7 +33,7 @@ func (p *Peers) AddPeerInfo(socketId string, info method.ServerInfo) error {
 
 	_, ok := p.peersInfo[socketId]
 	if ok {
-		return xerrors.Errorf("peersInfo already contains [%s]", socketId)
+		return xerrors.Errorf("peersInfo already contains socketId %s for server %s", socketId, info)
 	}
 
 	p.peersInfo[socketId] = info
