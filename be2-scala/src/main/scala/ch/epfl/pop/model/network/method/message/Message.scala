@@ -1,6 +1,6 @@
 package ch.epfl.pop.model.network.method.message
 
-import ch.epfl.pop.json.HighLevelProtocol._
+import ch.epfl.pop.json.HighLevelProtocol.messageFormat
 import ch.epfl.pop.model.network.Parsable
 import ch.epfl.pop.model.network.method.message.data.MessageData
 import ch.epfl.pop.model.objects._

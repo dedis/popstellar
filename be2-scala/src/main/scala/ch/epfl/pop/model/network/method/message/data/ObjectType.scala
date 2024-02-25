@@ -1,24 +1,30 @@
 package ch.epfl.pop.model.network.method.message.data
 
-import ch.epfl.pop.model.network.Matching
+enum ObjectType:
+  case INVALID extends ObjectType
+  case lao extends ObjectType
+  case message extends ObjectType
+  case meeting extends ObjectType
+  case roll_call extends ObjectType
+  case election extends ObjectType
+  case chirp extends ObjectType
+  case reaction extends ObjectType
+  case coin extends ObjectType
+  case popcha extends ObjectType
 
-object ObjectType extends Enumeration {
-  type ObjectType = Value
+object ObjectType:
+  override def toString: String =
+    this.toString.toLowerCase
 
-  // uninitialized placeholder
-  val INVALID: Value = MatchingValue("__INVALID_OBJECT__")
-
-  val LAO: Value with Matching = MatchingValue("lao")
-  val MESSAGE: Value with Matching = MatchingValue("message")
-  val MEETING: Value with Matching = MatchingValue("meeting")
-  val ROLL_CALL: Value with Matching = MatchingValue("roll_call")
-  val ELECTION: Value with Matching = MatchingValue("election")
-  val CHIRP: Value with Matching = MatchingValue("chirp")
-  val REACTION: Value with Matching = MatchingValue("reaction")
-  val COIN: Value with Matching = MatchingValue("coin")
-  val POPCHA: Value with Matching = MatchingValue("popcha")
-
-  def MatchingValue(v: String): Value with Matching = new Val(nextId, v) with Matching
-
-  def unapply(s: String): Option[Value] = values.find(s == _.toString)
-}
+  def apply(objectType: String): ObjectType =
+    objectType match
+      case "lao"       => lao
+      case "message"   => message
+      case "meeting"   => meeting
+      case "roll_call" => roll_call
+      case "election"  => election
+      case "chirp"     => chirp
+      case "reaction"  => reaction
+      case "coin"      => coin
+      case "popcha"    => popcha
+      case _           => INVALID

@@ -2,7 +2,6 @@ package util.examples.data
 
 import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.data.ActionType
-import ch.epfl.pop.model.network.method.message.data.ActionType.ActionType
 import ch.epfl.pop.model.objects.Channel
 import util.examples.data.traits.CoinMessagesTrait
 
@@ -10,7 +9,7 @@ import util.examples.data.traits.CoinMessagesTrait
   */
 object PostTransactionMessages extends CoinMessagesTrait {
 
-  override val action: ActionType = ActionType.POST_TRANSACTION
+  override val action: ActionType = ActionType.post_transaction
   override val CHANNEL: Channel = Channel(Channel.ROOT_CHANNEL_PREFIX + "coin")
 
   final val postTransaction: JsonRpcRequest = getJsonRPCRequestFromFile("coin/post_transaction.json")()

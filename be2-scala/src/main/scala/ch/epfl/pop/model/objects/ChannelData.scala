@@ -7,7 +7,7 @@ import spray.json._
 
 //the general ObjectType will be LAO (for all but election and chirp channels for now)
 final case class ChannelData(
-    channelType: ObjectType.ObjectType,
+    channelType: ObjectType,
     messages: List[Hash]
 ) {
   def toJsonString: String = {
@@ -23,7 +23,7 @@ final case class ChannelData(
 
 object ChannelData extends Parsable {
   def apply(
-      channelType: ObjectType.ObjectType,
+      channelType: ObjectType,
       messages: List[Hash]
   ): ChannelData = {
     new ChannelData(channelType, messages)

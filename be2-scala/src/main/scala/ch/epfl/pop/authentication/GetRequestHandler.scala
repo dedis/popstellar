@@ -55,8 +55,8 @@ object GetRequestHandler {
 
   private def requestFailure(error: String, errorDescription: String): HttpResponse = {
     HttpResponse(status = StatusCodes.OK)
-      .addAttribute(AttributeKey("error"), error)
-      .addAttribute(AttributeKey("error_description"), errorDescription)
+      .addAttribute(AttributeKey.apply[String]("error"), error)
+      .addAttribute(AttributeKey.apply[String]("error_description"), errorDescription)
   }
 
   private def requestSuccess(response: String) = {

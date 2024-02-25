@@ -1,9 +1,9 @@
 package ch.epfl.pop.model.objects
 
-import ch.epfl.pop.json.MessageDataProtocol._
+import ch.epfl.pop.json.MessageDataProtocol.RollCallDataFormat
 import ch.epfl.pop.model.network.Parsable
 import ch.epfl.pop.model.network.method.message.Message
-import ch.epfl.pop.model.network.method.message.data.ActionType.ActionType
+import ch.epfl.pop.model.network.method.message.data.ActionType
 import ch.epfl.pop.model.network.method.message.data.rollCall.{CloseRollCall, CreateRollCall, OpenRollCall, ReopenRollCall}
 import spray.json._
 

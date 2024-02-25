@@ -36,12 +36,12 @@ object RuntimeEnvironment {
   lazy val appConf: Config = ConfigFactory.parseFile(new File(appConfFile))
   lazy val serverConf: ServerConf = ServerConf(appConf)
 
-  lazy val ownRootPath = s"${serverConf.interface}:${serverConf.port}"
-  lazy val ownClientAddress = f"ws://$ownRootPath/${serverConf.clientPath}"
-  lazy val ownServerAddress = f"ws://$ownRootPath/${serverConf.serverPath}"
-  lazy val ownAuthAddress = f"http://$ownRootPath/${serverConf.authenticationPath}"
-  lazy val ownResponseAddress = f"ws://$ownRootPath/${serverConf.responseEndpoint}"
-  lazy val ownPublicKeyAddress = f"http://$ownRootPath/${serverConf.publicKeyEndpoint}"
+  lazy val ownRootPath: String = s"${serverConf.interface}:${serverConf.port}"
+  lazy val ownClientAddress: String = f"ws://$ownRootPath/${serverConf.clientPath}"
+  lazy val ownServerAddress: String = f"ws://$ownRootPath/${serverConf.serverPath}"
+  lazy val ownAuthAddress: String = f"http://$ownRootPath/${serverConf.authenticationPath}"
+  lazy val ownResponseAddress: String = f"ws://$ownRootPath/${serverConf.responseEndpoint}"
+  lazy val ownPublicKeyAddress: String = f"http://$ownRootPath/${serverConf.publicKeyEndpoint}"
 
   // Needed for unit tests
   lazy val isTestMode: Boolean = testMode(testParam)

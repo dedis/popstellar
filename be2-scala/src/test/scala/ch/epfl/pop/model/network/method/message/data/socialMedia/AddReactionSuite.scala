@@ -13,8 +13,8 @@ class AddReactionSuite extends FunSuite with Matchers {
     ADDREACTION_MESSAGE.reaction_codepoint should equal(REACTION_CODEPOINT)
     ADDREACTION_MESSAGE.chirp_id should equal(CHIRP_ID)
     ADDREACTION_MESSAGE.timestamp should equal(TIMESTAMP)
-    ADDREACTION_MESSAGE._object should equal(ObjectType.REACTION)
-    ADDREACTION_MESSAGE.action should equal(ActionType.ADD)
+    ADDREACTION_MESSAGE._object should equal(ObjectType.reaction)
+    ADDREACTION_MESSAGE.action should equal(ActionType.add)
   }
 
   test("json conversions work back and forth") {

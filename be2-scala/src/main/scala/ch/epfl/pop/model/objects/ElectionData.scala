@@ -1,6 +1,6 @@
 package ch.epfl.pop.model.objects
 
-import ch.epfl.pop.json.MessageDataProtocol._
+import ch.epfl.pop.json.MessageDataProtocol.ElectionDataFormat
 import ch.epfl.pop.model.network.Parsable
 import spray.json._
 

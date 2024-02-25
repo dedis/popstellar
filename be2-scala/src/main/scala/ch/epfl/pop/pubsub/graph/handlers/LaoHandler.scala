@@ -35,11 +35,11 @@ case object LaoHandler extends MessageHandler {
         _ <- dbActor ? DbActor.AssertChannelMissing(laoChannel)
         // create lao channels
         _ <- dbActor ? DbActor.CreateChannelsFromList(List(
-          (coinChannel, ObjectType.COIN),
-          (laoChannel, ObjectType.LAO),
-          (socialChannel, ObjectType.CHIRP),
-          (reactionChannel, ObjectType.REACTION),
-          (popchaChannel, ObjectType.POPCHA)
+          (coinChannel, ObjectType.coin),
+          (laoChannel, ObjectType.lao),
+          (socialChannel, ObjectType.chirp),
+          (reactionChannel, ObjectType.reaction),
+          (popchaChannel, ObjectType.popcha)
         ))
         // write lao creation message
         _ <- dbActor ? DbActor.WriteCreateLaoMessage(laoChannel, message)

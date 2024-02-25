@@ -1,7 +1,7 @@
 package ch.epfl.pop.pubsub.graph.handlers
 
 import akka.actor.{Actor, ActorSystem, Props, Status}
-import akka.pattern.AskableActorRef
+import akka.pattern.{AskableActorRef, ask}
 import akka.testkit.{ImplicitSender, TestKit}
 import akka.util.Timeout
 import ch.epfl.pop.model.network.method.message.Message

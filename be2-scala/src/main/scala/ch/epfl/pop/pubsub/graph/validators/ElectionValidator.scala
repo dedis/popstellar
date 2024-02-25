@@ -99,7 +99,7 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
           // note: the SetupElection is the only message sent to the main channel, others are sent in an election channel
           checkChannelType(
             rpcMessage,
-            ObjectType.LAO,
+            ObjectType.lao,
             channel,
             dbActorRef,
             validationError(s"trying to send a SetupElection message on a wrong type of channel $channel")
@@ -121,7 +121,7 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
         runChecks(
           checkChannelType(
             rpcMessage,
-            ObjectType.ELECTION,
+            ObjectType.election,
             channel,
             dbActorRef,
             validationError(s"trying to send a KeyElection message on a wrong type of channel $channel")
@@ -191,7 +191,7 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
               ),
               checkChannelType(
                 rpcMessage,
-                ObjectType.ELECTION,
+                ObjectType.election,
                 channel,
                 dbActorRef,
                 validationError(
@@ -212,16 +212,15 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
       case Some(_: Message) =>
         val (casteVote, laoId, senderPK, channel) = extractData[CastVoteElection](rpcMessage)
         val electionId = channel.extractChildChannel
-        val questions = Await.ready(channel.getSetupMessage(dbActorRef), duration).value.get match {
+
+        val questions = Await.ready(channel.getSetupMessage(dbActorRef), duration).value.get match
           case Success(setupElection) => setupElection.questions
           case Failure(exception)     => return Left(validationError(FAILED_TO_GET_QUESTION_ERROR_MESSAGE + exception.getMessage))
-          case err @ _                => return Left(validationError(UNKNOWN_ERROR_MESSAGE + err.toString))
-        }
-        val openingTimeStamp = Await.result(channel.extractMessages[OpenElection](dbActorRef), duration) match {
-          case openElection: List[(Message, OpenElection)] =>
-            openElection.head._2.opened_at
-          case _ => return Left(validationError("couldn't retrieve the opening timestamp"))
-        }
+
+        val openingTimeStamp = Await.ready(channel.extractMessages[OpenElection](dbActorRef), duration).value.get match
+          case Success(openElection) => openElection.head._2.opened_at
+          case Failure(exception)    => return Left(validationError("couldn't retrieve the opening timestamp: " + exception.getMessage))
+
         runChecks(
           checkTimestampStaleness(
             rpcMessage,
@@ -275,7 +274,7 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
           ),
           checkChannelType(
             rpcMessage,
-            ObjectType.ELECTION,
+            ObjectType.election,
             channel,
             dbActorRef,
             validationError(s"trying to send a CastVoteElection message on a wrong type of channel $channel")
@@ -296,7 +295,6 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
         val electionQuestions = Await.ready(channel.getSetupMessage(dbActorRef), duration).value.get match {
           case Success(setupElection) => setupElection.questions
           case Failure(exception)     => return Left(validationError(FAILED_TO_GET_QUESTION_ERROR_MESSAGE + exception.getMessage))
-          case err @ _                => return Left(validationError(UNKNOWN_ERROR_MESSAGE + err.toString))
         }
         runChecks(
           checkNumberOfVotes(
@@ -376,7 +374,7 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
               ),
               checkChannelType(
                 rpcMessage,
-                ObjectType.ELECTION,
+                ObjectType.election,
                 channel,
                 dbActorRef,
                 validationError(s"trying to send a EndElection message on a wrong type of channel $channel")
@@ -684,7 +682,6 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
     Await.ready(channel.getSetupMessage(dbActorRef), duration).value.get match {
       case Success(setupElection: SetupElection) => Some(setupElection.created_at)
       case Failure(exception)                    => None
-      case err @ _                               => None
     }
   }
 

@@ -1,6 +1,6 @@
 package ch.epfl.pop.model.network
 
-import ch.epfl.pop.json.HighLevelProtocol._
+import ch.epfl.pop.json.HighLevelProtocol.jsonRpcResponseFormat
 import spray.json._
 
 final case class JsonRpcResponse(

@@ -2,7 +2,7 @@ package ch.epfl.pop.pubsub.graph.handlers
 
 import akka.NotUsed
 import akka.actor.{ActorRef, ActorSystem, Props}
-import akka.pattern.AskableActorRef
+import akka.pattern.{AskableActorRef, ask}
 import akka.stream.scaladsl.{Flow, Sink, Source}
 import akka.testkit.TestKit
 import akka.util.Timeout
@@ -17,7 +17,7 @@ import ch.epfl.pop.storage.{DbActor, InMemoryStorage, SecurityModuleActor}
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.funsuite.AnyFunSuiteLike
 import org.scalatest.matchers.should.Matchers
-import org.scalatest.matchers.should.Matchers.{convertToAnyShouldWrapper, equal}
+import org.scalatest.matchers.should.Matchers._
 
 import scala.concurrent.Await
 import scala.concurrent.duration.{DurationInt, FiniteDuration}
@@ -28,7 +28,7 @@ class GetMessagesByIdResponseHandlerSuite extends TestKit(ActorSystem("GetMessag
   // Implicit for system actors
   implicit val timeout: Timeout = Timeout(1.seconds)
 
-  val MAX_TIME: FiniteDuration = 2 * duration
+  val MAX_TIME: FiniteDuration = duration.mul(2)
   val inMemoryStorage: InMemoryStorage = InMemoryStorage()
   val messageRegistry: MessageRegistry = MessageRegistry()
   val pubSubMediatorRef: ActorRef = system.actorOf(PubSubMediator.props, "PubSubMediator")

@@ -6,22 +6,22 @@ import org.scalatest.matchers.should.Matchers
 
 class ChannelDataSuite extends FunSuite with Matchers {
   test("Apply works with empty/full list for ChannelData") {
-    val channelData: ChannelData = ChannelData(ObjectType.LAO, List.empty)
+    val channelData: ChannelData = ChannelData(ObjectType.lao, List.empty)
 
     channelData.messages should equal(List.empty)
-    channelData.channelType should equal(ObjectType.LAO)
+    channelData.channelType should equal(ObjectType.lao)
 
-    val channelData2: ChannelData = ChannelData(ObjectType.LAO, List(Hash(Base64Data("base64=="))))
+    val channelData2: ChannelData = ChannelData(ObjectType.lao, List(Hash(Base64Data("base64=="))))
 
     channelData2.messages should equal(List(Hash(Base64Data("base64=="))))
-    channelData2.channelType should equal(ObjectType.LAO)
+    channelData2.channelType should equal(ObjectType.lao)
   }
 
   test("New messageId is indeed added") {
-    val channelData: ChannelData = ChannelData(ObjectType.LAO, List.empty)
+    val channelData: ChannelData = ChannelData(ObjectType.lao, List.empty)
 
     channelData.messages should equal(List.empty)
-    channelData.channelType should equal(ObjectType.LAO)
+    channelData.channelType should equal(ObjectType.lao)
 
     val channelData2 = channelData.addMessage(Hash(Base64Data("base64==")))
 
@@ -29,7 +29,7 @@ class ChannelDataSuite extends FunSuite with Matchers {
   }
 
   test("Json conversions work for ChannelData") {
-    val channelData: ChannelData = ChannelData(ObjectType.LAO, List.empty)
+    val channelData: ChannelData = ChannelData(ObjectType.lao, List.empty)
 
     val channelData2: ChannelData = ChannelData.buildFromJson(channelData.toJsonString)
 

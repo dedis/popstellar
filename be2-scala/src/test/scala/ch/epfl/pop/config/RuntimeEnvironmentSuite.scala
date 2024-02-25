@@ -3,9 +3,7 @@ package ch.epfl.pop.config
 import ch.epfl.pop.config.RuntimeEnvironment.readServerPeers
 import ch.epfl.pop.config.RuntimeEnvironmentTestingHelper.testWriteToServerPeersConfig
 import org.scalatest.funsuite.{AnyFunSuiteLike => FunSuite}
-import org.scalatest.matchers.should.Matchers.{convertToAnyShouldWrapper, equal}
-
-import java.io.File
+import org.scalatest.matchers.should.Matchers._
 
 class RuntimeEnvironmentSuite extends FunSuite {
   test("readServerPeers() should only return the addresses that match the regex from the schema") {

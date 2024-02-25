@@ -58,8 +58,8 @@ class MonitorSuite extends TestKit(ActorSystem("MonitorSuiteActorSystem")) with 
 
   test("monitor should not schedule any heartbeats when receiving a heartbeat or get_messages_by_id") {
 
-    val heartbeat = JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, MethodType.HEARTBEAT, new ParamsWithMap(Map.empty), None)
-    val getMessagesById = JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, MethodType.GET_MESSAGES_BY_ID, new ParamsWithMap(Map.empty), None)
+    val heartbeat = JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, MethodType.heartbeat, new ParamsWithMap(Map.empty), None)
+    val getMessagesById = JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, MethodType.get_messages_by_id, new ParamsWithMap(Map.empty), None)
 
     val testProbe = TestProbe()
     val monitorRef = system.actorOf(

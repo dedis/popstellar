@@ -12,8 +12,8 @@ class DeleteChirpSuite extends FunSuite with Matchers {
   test("Constructor/apply works as intended") {
     DELETECHIRP_MESSAGE.chirp_id should equal(CHIRP_ID)
     DELETECHIRP_MESSAGE.timestamp should equal(TIMESTAMP)
-    DELETECHIRP_MESSAGE._object should equal(ObjectType.CHIRP)
-    DELETECHIRP_MESSAGE.action should equal(ActionType.DELETE)
+    DELETECHIRP_MESSAGE._object should equal(ObjectType.chirp)
+    DELETECHIRP_MESSAGE.action should equal(ActionType.delete)
   }
 
   test("json conversions work back and forth") {

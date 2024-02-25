@@ -5,7 +5,7 @@ import ch.epfl.pop.model.objects.DbActorNAckException
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.{Await}
+import scala.concurrent.Await
 import scala.util.{Failure, Success}
 
 case object CoinHandler extends MessageHandler {

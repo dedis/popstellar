@@ -1,6 +1,7 @@
 package ch.epfl.pop.decentralized
 
 import akka.actor.{ActorRef, ActorSystem}
+import akka.pattern.ask
 import akka.testkit.{TestKit, TestProbe}
 import ch.epfl.pop.model.network.method.{GreetServer, Heartbeat}
 import ch.epfl.pop.model.objects.{Base64Data, PublicKey}

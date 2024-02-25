@@ -82,7 +82,7 @@ object Monitor {
       monitorRef,
       DoNothing(),
       {
-        _: Throwable => /* Do nothing */
+        (_: Throwable) => /* Do nothing */
       }
     )
   }
