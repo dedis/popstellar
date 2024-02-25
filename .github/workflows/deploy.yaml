@@ -126,7 +126,7 @@ jobs:
     env:
       base_folder: be2-scala
       deploy_env: ${{ github.event.release.prerelease && 'dev' || 'prod' }}
-      scala_version: 2.13
+      scala_version: 3.3.1
 
     defaults:
       run:
