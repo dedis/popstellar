@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"popstellar/crypto"
+	"popstellar/hub/standard_hub/hub_state"
 	jsonrpc "popstellar/message"
 	"popstellar/message/answer"
 	"popstellar/message/messagedata"
@@ -210,7 +211,7 @@ func (h *Hub) handleGetMessagesByIdAnswer(senderSocket socket.Socket, answerMsg 
 		}
 	}
 	// Add contents from tempBlacklist to h.blacklist
-	h.blacklist = append(h.blacklist, tempBlacklist...)
+	h.blacklist.Append(tempBlacklist...)
 	return xerrors.Errorf("failed to process messages: %v", err)
 }
 
@@ -412,7 +413,7 @@ func (h *Hub) handleHeartbeat(socket socket.Socket,
 
 	receivedIds := heartbeat.Params
 
-	missingIds := getMissingIds(receivedIds, h.hubInbox.GetIDsTable(), h.blacklist)
+	missingIds := getMissingIds(receivedIds, h.hubInbox.GetIDsTable(), &h.blacklist)
 
 	if len(missingIds) > 0 {
 		err = h.sendGetMessagesByIdToServer(socket, missingIds)
@@ -468,11 +469,11 @@ func (h *Hub) handleGreetServer(socket socket.Socket, byteMessage []byte) error 
 
 // getMissingIds compares two maps of channel Ids associated to slices of message Ids to
 // determine the missing Ids from the storedIds map with respect to the receivedIds map
-func getMissingIds(receivedIds map[string][]string, storedIds map[string][]string, blacklist []string) map[string][]string {
+func getMissingIds(receivedIds map[string][]string, storedIds map[string][]string, blacklist *hub_state.ThreadSafeSlice[string]) map[string][]string {
 	missingIds := make(map[string][]string)
 	for channelId, receivedMessageIds := range receivedIds {
 		for _, messageId := range receivedMessageIds {
-			blacklisted := slices.Contains(blacklist, messageId)
+			blacklisted := blacklist.Contains(messageId)
 			storedIdsForChannel, channelKnown := storedIds[channelId]
 			if blacklisted {
 				break
@@ -580,7 +581,7 @@ func (h *Hub) loopOverMessages(messages *map[string][]json.RawMessage, senderSoc
 				continue
 			}
 
-			if slices.Contains(h.blacklist, messageData.MessageID) {
+			if h.blacklist.Contains(messageData.MessageID) {
 				break
 			}
 

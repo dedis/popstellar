@@ -92,7 +92,7 @@ type Hub struct {
 	// the server will not ask for them again in the heartbeat
 	// and will not process them if they are received again
 	// @TODO remove the messages from the blacklist after a certain amount of time by trying to process them again
-	blacklist []string
+	blacklist state.ThreadSafeSlice[string]
 }
 
 // NewHub returns a new Hub.
@@ -126,7 +126,7 @@ func NewHub(pubKeyOwner kyber.Point, clientServerAddress string, serverServerAdd
 		hubInbox:            *inbox.NewHubInbox(rootChannel),
 		queries:             state.NewQueries(log),
 		peers:               state.NewPeers(),
-		blacklist:           make([]string, 0),
+		blacklist:           state.NewThreadSafeSlice[string](),
 	}
 
 	return &hub, nil
