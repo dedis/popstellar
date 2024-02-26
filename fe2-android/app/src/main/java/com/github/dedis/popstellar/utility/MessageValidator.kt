@@ -1,12 +1,14 @@
 package com.github.dedis.popstellar.utility
 
 import android.net.Uri
+import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionQuestion
 import com.github.dedis.popstellar.model.network.method.message.data.election.Vote
 import com.github.dedis.popstellar.model.objects.Lao
 import com.github.dedis.popstellar.model.objects.Meeting
 import com.github.dedis.popstellar.model.objects.Reaction
 import com.github.dedis.popstellar.model.objects.security.PublicKey
 import com.github.dedis.popstellar.model.qrcode.PoPCHAQRCode
+import com.github.dedis.popstellar.ui.lao.event.election.fragments.ElectionSetupFragment
 import java.time.Instant
 import java.util.Arrays
 import java.util.regex.Pattern
@@ -227,6 +229,33 @@ object MessageValidator {
       for (vote in votes) {
         isBase64(vote.questionId, "question id")
         isBase64(vote.id, "vote id")
+      }
+
+      return this
+    }
+
+    /**
+     * Helper method to check a list of questions for validity.
+     *
+     * @param questions the list of questions to check.
+     * @throws IllegalArgumentException if any question does not meet the criteria.
+     */
+    fun validQuestions(questions: List<ElectionQuestion.Question>?): MessageValidatorBuilder {
+      require(!questions.isNullOrEmpty()) { "Questions list cannot be null or empty" }
+
+      for (question in questions) {
+        stringNotEmpty(question.title, "question title")
+
+        val validVotingMethods = ElectionSetupFragment.VotingMethods.values().map { it.desc }
+        require(question.votingMethod in validVotingMethods) {
+          "Unsupported voting method in question: ${question.title}. Must be one of $validVotingMethods."
+        }
+
+        listNotEmpty(question.ballotOptions)
+        require(question.ballotOptions.size >= 2) {
+          "There must be at least 2 ballot options in question: ${question.title}."
+        }
+        noListDuplicates(question.ballotOptions)
       }
 
       return this

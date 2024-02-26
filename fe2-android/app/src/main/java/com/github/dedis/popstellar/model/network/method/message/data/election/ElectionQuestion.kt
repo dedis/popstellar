@@ -2,6 +2,7 @@ package com.github.dedis.popstellar.model.network.method.message.data.election
 
 import com.github.dedis.popstellar.model.Immutable
 import com.github.dedis.popstellar.model.objects.Election
+import com.github.dedis.popstellar.utility.MessageValidator.verify
 import com.google.gson.annotations.SerializedName
 import java.util.Collections
 import java.util.Objects
@@ -9,15 +10,25 @@ import java.util.Objects
 @Immutable
 /** Constructor for a data Question, for the election setup */
 class ElectionQuestion(electionId: String, question: Question) {
-  val question: String = question.title
-  val id: String = Election.generateElectionQuestionId(electionId, question.title)
+  val question: String
+  val id: String
 
-  @SerializedName(value = "voting_method") val votingMethod: String = question.votingMethod
+  @SerializedName(value = "voting_method") val votingMethod: String
 
-  @SerializedName(value = "ballot_options")
-  val ballotOptions: List<String> = Collections.unmodifiableList(question.ballotOptions)
+  @SerializedName(value = "ballot_options") val ballotOptions: List<String>
 
-  @SerializedName(value = "write_in") val writeIn: Boolean = question.writeIn
+  @SerializedName(value = "write_in") val writeIn: Boolean
+
+  init {
+    // Validate electionId and question inputs
+    verify().isNotEmptyBase64(electionId, "election ID").validQuestions(listOf(question))
+
+    this.question = question.title
+    this.id = Election.generateElectionQuestionId(electionId, question.title)
+    this.votingMethod = question.votingMethod
+    this.ballotOptions = Collections.unmodifiableList(question.ballotOptions)
+    this.writeIn = question.writeIn
+  }
 
   override fun equals(other: Any?): Boolean {
     if (this === other) {
@@ -47,10 +58,10 @@ class ElectionQuestion(electionId: String, question: Question) {
    */
   @Immutable
   class Question(
-      val title: String,
-      val votingMethod: String,
-      val ballotOptions: List<String>,
-      val writeIn: Boolean
+    val title: String,
+    val votingMethod: String,
+    val ballotOptions: List<String>,
+    val writeIn: Boolean,
   ) {
     override fun equals(other: Any?): Boolean {
       if (this === other) {
@@ -61,9 +72,9 @@ class ElectionQuestion(electionId: String, question: Question) {
       }
       val that = other as Question
       return writeIn == that.writeIn &&
-          title == that.title &&
-          votingMethod == that.votingMethod &&
-          ballotOptions == that.ballotOptions
+        title == that.title &&
+        votingMethod == that.votingMethod &&
+        ballotOptions == that.ballotOptions
     }
 
     override fun hashCode(): Int {
