@@ -26,43 +26,49 @@ class EncryptedVote : Vote {
    * @param electionId the election id
    */
   constructor(
-      questionId: String,
-      encryptedVote: String?,
-      writeInEnabled: Boolean,
-      encryptedWriteIn: String?,
-      electionId: String
+    questionId: String,
+    encryptedVote: String?,
+    writeInEnabled: Boolean,
+    encryptedWriteIn: String?,
+    electionId: String,
   ) {
-    // Assumes if write-in is disabled, encryptedVote must be non-empty. If write-in is enabled,
+    // Assumes if write-in is disabled, encryptedVote must be non-null and non-empty. If write-in is
+    // enabled,
     // encryptedVote is ignored, and encryptedWriteIn must be non-null and non-empty.
-    // TODO: Need to verify the exact intended behavior.
+    // TODO: Need to verify the exact intended behavior when write-in is supported.
     verify()
-        .stringNotEmpty(questionId, "question ID")
-        .stringNotEmpty(electionId, "election ID")
-        .apply {
-          if (writeInEnabled) {
-            isValidWriteIn(encryptedWriteIn, "encrypted write-in")
-          } else {
-            isNotEmptyBase64(encryptedVote, "encrypted vote")
-          }
+      .isNotEmptyBase64(questionId, "question ID")
+      .isNotEmptyBase64(electionId, "election ID")
+      .apply {
+        if (writeInEnabled) {
+          isValidWriteIn(encryptedWriteIn, "encrypted write-in")
+        } else {
+          isNotEmptyBase64(encryptedVote, "encrypted vote")
         }
+      }
 
     this.questionId = questionId
     this.id =
-        Election.generateEncryptedElectionVoteId(
-            electionId, questionId, encryptedVote, encryptedWriteIn, writeInEnabled)
+      Election.generateEncryptedElectionVoteId(
+        electionId,
+        questionId,
+        encryptedVote,
+        encryptedWriteIn,
+        writeInEnabled,
+      )
     this.vote =
-        if (writeInEnabled) {
-          null
-        } else {
-          encryptedVote
-        }
+      if (writeInEnabled) {
+        null
+      } else {
+        encryptedVote
+      }
   }
 
   constructor(id: String, question: String, vote: String) {
     verify()
-        .stringNotEmpty(id, "vote ID")
-        .stringNotEmpty(question, "question")
-        .isNotEmptyBase64(vote, "vote")
+      .stringNotEmpty(id, "vote ID")
+      .stringNotEmpty(question, "question")
+      .isNotEmptyBase64(vote, "vote")
 
     this.id = id
     this.questionId = question
