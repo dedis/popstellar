@@ -4,6 +4,7 @@ import (
 	"popstellar/message/query/method"
 	"sync"
 
+	"github.com/rs/zerolog"
 	"golang.org/x/xerrors"
 )
 
@@ -17,13 +18,16 @@ type Queries struct {
 	getMessagesByIdQueries map[int]method.GetMessagesById
 	// nextID store the ID of the next query
 	nextID int
+	// zerolog
+	log zerolog.Logger
 }
 
 // NewQueries creates a new queries struct
-func NewQueries() Queries {
+func NewQueries(log zerolog.Logger) Queries {
 	return Queries{
 		state:                  make(map[int]bool),
 		getMessagesByIdQueries: make(map[int]method.GetMessagesById),
+		log:                    log,
 	}
 }
 
@@ -61,7 +65,8 @@ func (q *Queries) SetQueryReceived(id int) error {
 	}
 
 	if currentState {
-		return xerrors.Errorf("query with id %d already answered", id)
+		q.log.Info().Msgf("query with id %d already answered", id)
+		return nil
 	}
 
 	q.state[id] = true
