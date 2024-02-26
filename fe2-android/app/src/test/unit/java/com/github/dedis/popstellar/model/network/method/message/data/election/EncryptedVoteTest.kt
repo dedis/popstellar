@@ -25,7 +25,8 @@ class EncryptedVoteTest {
   private val encryptedVote1 = EncryptedVote(questionId, votes, false, encryptedWriteIn, electionId)
 
   // random base64 value
-  private val randomBase64 = Base64URLData("random".toByteArray()).encoded
+  private val randomNotBase64 = "definitely not base64"
+  private val randomBase64 = Base64URLData("definitely base64".toByteArray()).encoded
 
   // Hash values util for testing
   private val expectedIdNoWriteIn =
@@ -47,6 +48,51 @@ class EncryptedVoteTest {
       encryptedWriteIn,
       true,
     )
+
+  @Test(expected = IllegalArgumentException::class)
+  fun constructorFailsWhenQuestionIdNotBase64() {
+    EncryptedVote(randomNotBase64, votes, false, encryptedWriteIn, electionId)
+  }
+
+  @Test(expected = IllegalArgumentException::class)
+  fun constructorFailsWhenElectionIdNotBase64() {
+    EncryptedVote(questionId, votes, false, encryptedWriteIn, randomNotBase64)
+  }
+
+  @Test(expected = IllegalArgumentException::class)
+  fun constructorFailsWhenEncryptedVoteNotBase64AndWriteInDisabled() {
+    EncryptedVote(questionId, randomNotBase64, false, null, electionId)
+  }
+
+  @Test(expected = IllegalArgumentException::class)
+  fun constructorFailsWhenEncryptedWriteInNotBase64AndWriteInEnabled() {
+    EncryptedVote(questionId, null, true, randomNotBase64, electionId)
+  }
+
+  @Test(expected = IllegalArgumentException::class)
+  fun constructorFailsWhenWriteInEnabledAndEncryptedVoteIsNull() {
+    EncryptedVote(questionId, null, true, encryptedWriteIn, electionId)
+  }
+
+  // This test ensures that when writeIn is disabled, encryptedVote must not be null or an empty
+  // string
+  @Test(expected = IllegalArgumentException::class)
+  fun constructorFailsWhenWriteInDisabledAndEncryptedVoteIsNull() {
+    EncryptedVote(questionId, null, false, null, electionId)
+  }
+
+  // Example test to verify that a valid EncryptedVote does not throw an exception
+  @Test
+  fun constructorSucceedsWithValidDataAndWriteInDisabled() {
+    val encryptedVote = EncryptedVote(questionId, votes, false, null, electionId)
+    Assert.assertNotNull(encryptedVote)
+  }
+
+  @Test
+  fun constructorSucceedsWithValidDataAndWriteInEnabled() {
+    val encryptedVote = EncryptedVote(questionId, null, true, encryptedWriteIn, electionId)
+    Assert.assertNotNull(encryptedVote)
+  }
 
   @Test
   fun electionVoteWriteInDisabledReturnsCorrectId() {
