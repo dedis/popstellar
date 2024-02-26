@@ -1,6 +1,6 @@
 package ch.epfl.pop.model.network.method
 
-import ch.epfl.pop.json.HighLevelProtocol._
+import ch.epfl.pop.json.HighLevelProtocol.HeartbeatFormat
 import ch.epfl.pop.model.network.Parsable
 import ch.epfl.pop.model.objects.{Channel, Hash}
 import spray.json._

@@ -117,7 +117,7 @@ class HighLevelProtocolSuite extends FunSuite with Matchers {
     // Forms pairs/combinations of different MsgField values (except Witness) and forbidden key types
     // for formating
     val set = for {
-      p <- (MsgField.values - WITNESS_SIGNATURES)
+      p <- MsgField.values.toSet - WITNESS_SIGNATURES
       t <- Set("[]", "{}", "null", "1")
     } yield (t, p)
 
@@ -146,12 +146,12 @@ class HighLevelProtocolSuite extends FunSuite with Matchers {
       chan2 -> Set(id2, id3)
     )
 
-    val hbJsValue = HighLevelProtocol.jsonRpcRequestFormat.write(JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, MethodType.HEARTBEAT, new ParamsWithMap(map), None))
+    val hbJsValue = HighLevelProtocol.jsonRpcRequestFormat.write(JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, MethodType.heartbeat, new ParamsWithMap(map), None))
     val hbFromJson = JsonRpcRequest.buildFromJson(hbJsValue.prettyPrint)
 
     // Test
     hbFromJson.jsonrpc should equal(RpcValidator.JSON_RPC_VERSION)
-    hbFromJson.method should equal(MethodType.HEARTBEAT)
+    hbFromJson.method should equal(MethodType.heartbeat)
     hbFromJson.getParams.asInstanceOf[ParamsWithMap].channelsToMessageIds should equal(map)
     hbFromJson.id should equal(None)
 
@@ -172,12 +172,12 @@ class HighLevelProtocolSuite extends FunSuite with Matchers {
     )
 
     val id = Some(5)
-    val getMsgsByIdJsValue = HighLevelProtocol.jsonRpcRequestFormat.write(JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, MethodType.GET_MESSAGES_BY_ID, new ParamsWithMap(map), id))
+    val getMsgsByIdJsValue = HighLevelProtocol.jsonRpcRequestFormat.write(JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, MethodType.get_messages_by_id, new ParamsWithMap(map), id))
     val getMsgsByIdFromJson = JsonRpcRequest.buildFromJson(getMsgsByIdJsValue.prettyPrint)
 
     // Test
     getMsgsByIdFromJson.jsonrpc should equal(RpcValidator.JSON_RPC_VERSION)
-    getMsgsByIdFromJson.method should equal(MethodType.GET_MESSAGES_BY_ID)
+    getMsgsByIdFromJson.method should equal(MethodType.get_messages_by_id)
     getMsgsByIdFromJson.getParams.asInstanceOf[ParamsWithMap].channelsToMessageIds should equal(map)
     getMsgsByIdFromJson.id should equal(id)
   }
@@ -187,12 +187,12 @@ class HighLevelProtocolSuite extends FunSuite with Matchers {
     val clientAddress: String = "wss://popdemo.dedis.ch:9000/client"
     val serverAddress: String = "wss://popdemo.dedis.ch:9001/server"
 
-    val greetServerJsValue = HighLevelProtocol.jsonRpcRequestFormat.write(JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, MethodType.GREET_SERVER, new GreetServer(pk, clientAddress, serverAddress), None))
+    val greetServerJsValue = HighLevelProtocol.jsonRpcRequestFormat.write(JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, MethodType.greet_server, new GreetServer(pk, clientAddress, serverAddress), None))
     val greetServerFromJson = JsonRpcRequest.buildFromJson(greetServerJsValue.prettyPrint)
 
     // Test
     greetServerFromJson.jsonrpc should equal(RpcValidator.JSON_RPC_VERSION)
-    greetServerFromJson.method should equal(MethodType.GREET_SERVER)
+    greetServerFromJson.method should equal(MethodType.greet_server)
     greetServerFromJson.getParams.asInstanceOf[GreetServer].clientAddress should equal(clientAddress)
     greetServerFromJson.getParams.asInstanceOf[GreetServer].serverAddress should equal(serverAddress)
     greetServerFromJson.getParams.asInstanceOf[GreetServer].publicKey should equal(pk)
@@ -204,12 +204,12 @@ class HighLevelProtocolSuite extends FunSuite with Matchers {
     val chan1 = Channel("/root/nLghr9_P406lfkMjaNWqyohLxOiGlQee8zad4qAfj18=/social/8qlv4aUT5-tBodKp4RszY284CFYVaoDZK6XKiw9isSw=")
     val id = Some(5)
 
-    val catchupJsValue = HighLevelProtocol.jsonRpcRequestFormat.write(JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, MethodType.CATCHUP, new ParamsWithChannel(chan1), id))
+    val catchupJsValue = HighLevelProtocol.jsonRpcRequestFormat.write(JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, MethodType.catchup, new ParamsWithChannel(chan1), id))
     val catchupFromJson = JsonRpcRequest.buildFromJson(catchupJsValue.prettyPrint)
 
     // Test
     catchupFromJson.jsonrpc should equal(RpcValidator.JSON_RPC_VERSION)
-    catchupFromJson.method should equal(MethodType.CATCHUP)
+    catchupFromJson.method should equal(MethodType.catchup)
     catchupFromJson.getParams.asInstanceOf[ParamsWithChannel].channel should equal(chan1)
     catchupFromJson.id should equal(id)
   }
@@ -225,12 +225,12 @@ class HighLevelProtocolSuite extends FunSuite with Matchers {
     val data: String = "eyJjcmVhdGlvbiI6MTYzMTg4NzQ5NiwiaWQiOiJ4aWdzV0ZlUG1veGxkd2txMUt1b0wzT1ZhODl4amdYalRPZEJnSldjR1drPSIsIm5hbWUiOiJoZ2dnZ2dnIiwib3JnYW5pemVyIjoidG9fa2xaTHRpSFY0NDZGdjk4T0xOZE5taS1FUDVPYVR0YkJrb3RUWUxpYz0iLCJ3aXRuZXNzZXMiOltdLCJvYmplY3QiOiJsYW8iLCJhY3Rpb24iOiJjcmVhdGUifQ=="
     val message: Message = buildExpected(id, sender, signature, data)
 
-    val broadcastJsValue = HighLevelProtocol.jsonRpcRequestFormat.write(JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, MethodType.BROADCAST, new ParamsWithMessage(chan1, message), None))
+    val broadcastJsValue = HighLevelProtocol.jsonRpcRequestFormat.write(JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, MethodType.broadcast, new ParamsWithMessage(chan1, message), None))
     val broadcastFromJson = JsonRpcRequest.buildFromJson(broadcastJsValue.prettyPrint)
 
     // Test
     broadcastFromJson.jsonrpc should equal(RpcValidator.JSON_RPC_VERSION)
-    broadcastFromJson.method should equal(MethodType.BROADCAST)
+    broadcastFromJson.method should equal(MethodType.broadcast)
     broadcastFromJson.getParams.asInstanceOf[ParamsWithMessage].channel should equal(chan1)
     broadcastFromJson.getParams.asInstanceOf[ParamsWithMessage].message should equal(message)
     broadcastFromJson.id should equal(None)
@@ -260,7 +260,5 @@ class HighLevelProtocolSuite extends FunSuite with Matchers {
   }
 }
 
-object MsgField extends Enumeration {
-  type MsgField = Value
-  val MESSAGE_ID, SENDER, SIGNATURE, DATA, WITNESS_SIGNATURES = Value
-}
+enum MsgField:
+  case MESSAGE_ID, SENDER, SIGNATURE, DATA, WITNESS_SIGNATURES

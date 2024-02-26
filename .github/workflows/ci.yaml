@@ -288,9 +288,6 @@ jobs:
       - name: Report coverage
         run: sbt coverageReport
 
-      - name: Run static analysis (ScapeGoat)
-        run: sbt scapegoat
-
       - name: Run SonarCloud analysis
         if: ${{ !startsWith(github.head_ref, 'dependabot/') }} # execute even if previous steps failed
         env:

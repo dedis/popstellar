@@ -1,7 +1,7 @@
 package ch.epfl.pop.decentralized
 
 import akka.actor.{ActorRef, ActorSystem, Props}
-import akka.pattern.AskableActorRef
+import akka.pattern.{AskableActorRef, ask}
 import akka.testkit.{TestKit, TestProbe}
 import ch.epfl.pop.model.network.method.Heartbeat
 import ch.epfl.pop.model.objects.{Base64Data, Channel, DbActorNAckException, Hash}

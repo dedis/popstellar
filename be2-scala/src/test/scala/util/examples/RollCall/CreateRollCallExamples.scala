@@ -14,9 +14,9 @@ object CreateRollCallExamples {
 
   final val LAO_ID: Hash = Hash(Base64Data.encode("laoId"))
   final val NAME: String = "roll call"
-  final val NOT_STALE_CREATION = Timestamp(1649089860L)
-  final val NOT_STALE_PROPOSED_START = Timestamp(1649089861L)
-  final val NOT_STALE_PROPOSED_END = Timestamp(1649089869L)
+  final val NOT_STALE_CREATION: Timestamp = Timestamp(1649089860L)
+  final val NOT_STALE_PROPOSED_START: Timestamp = Timestamp(1649089861L)
+  final val NOT_STALE_PROPOSED_END: Timestamp = Timestamp(1649089869L)
   final val R_ID: Hash = Hash.fromStrings(EVENT_HASH_PREFIX, LAO_ID.toString, NOT_STALE_CREATION.toString, NAME)
 
   val invalidTimestamp: Timestamp = Timestamp(0)

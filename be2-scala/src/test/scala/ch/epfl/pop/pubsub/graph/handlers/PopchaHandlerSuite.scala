@@ -2,7 +2,7 @@ package ch.epfl.pop.pubsub.graph.handlers
 
 import akka.actor.{Actor, ActorSystem, Props}
 import akka.http.scaladsl.model.Uri
-import akka.pattern.AskableActorRef
+import akka.pattern.{AskableActorRef, ask}
 import akka.testkit.TestKit
 import akka.util.Timeout
 import ch.epfl.pop.config.RuntimeEnvironment

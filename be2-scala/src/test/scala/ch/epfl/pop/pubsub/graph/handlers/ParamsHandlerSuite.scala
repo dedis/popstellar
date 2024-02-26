@@ -2,6 +2,7 @@ package ch.epfl.pop.pubsub.graph.handlers
 
 import akka.actor.ActorSystem
 import akka.stream.scaladsl.{Sink, Source}
+import akka.pattern.ask
 import akka.testkit.TestProbe
 import ch.epfl.pop.IOHelper.readJsonFromPath
 import ch.epfl.pop.json.HighLevelProtocol

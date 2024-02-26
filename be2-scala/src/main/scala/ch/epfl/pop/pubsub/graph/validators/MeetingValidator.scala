@@ -59,7 +59,7 @@ sealed class MeetingValidator(dbActorRef: => AskableActorRef) extends MessageDat
           checkOwner(rpcMessage, sender, channel, dbActorRef, validationError(s"invalid sender $sender")),
           checkChannelType(
             rpcMessage,
-            ObjectType.LAO,
+            ObjectType.lao,
             channel,
             dbActorRef,
             validationError(s"trying to send an CreateMeeting message on a wrong type of channel $channel")

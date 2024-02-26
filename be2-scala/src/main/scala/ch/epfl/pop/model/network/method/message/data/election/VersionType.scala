@@ -1,17 +1,14 @@
 package ch.epfl.pop.model.network.method.message.data.election
 
-import ch.epfl.pop.model.network.Matching
+enum VersionType:
+  case INVALID extends VersionType
+  case OPEN_BALLOT extends VersionType
+  case SECRET_BALLOT extends VersionType
 
-object VersionType extends Enumeration {
-  type VersionType = Value
-
-  // uninitialized placeholder
-  val INVALID: Value = MatchingValue("__INVALID_OBJECT__")
-
-  val OPEN_BALLOT: Value with Matching = MatchingValue("OPEN_BALLOT")
-  val SECRET_BALLOT: Value with Matching = MatchingValue("SECRET_BALLOT")
-
-  def MatchingValue(v: String): Value with Matching = new Val(nextId, v) with Matching
-
-  def unapply(s: String): Option[Value] = values.find(s == _.toString)
-}
+object VersionType:
+  def unapply(versionType: String): Option[VersionType] =
+    versionType match
+      case "__INVALID_OBJECT__" => Some(INVALID)
+      case "OPEN_BALLOT"        => Some(OPEN_BALLOT)
+      case "SECRET_BALLOT"      => Some(SECRET_BALLOT)
+      case _                    => None

@@ -14,7 +14,7 @@ object CloseRollCallExamples {
   final val SIGNATURE: Signature = Signature(Base64Data("nyb5LwNBnw-kAMUI-p9zNmwDWXNBIXeSadGV-h7Kq2TIlezYTTt8S3nEQgEgSlvuvSR7UPy5byJFhiOKdws2Bg=="))
 
   final val LAO_ID: Hash = Hash(Base64Data.encode("laoId"))
-  final val NOT_STALE_CLOSED_AT = Timestamp(1649089861L)
+  final val NOT_STALE_CLOSED_AT: Timestamp = Timestamp(1649089861L)
   final val CLOSES: Hash = OpenRollCallExamples.UPDATE_ID
   final val UPDATE_ID: Hash = Hash.fromStrings(EVENT_HASH_PREFIX, LAO_ID.toString, CLOSES.toString, NOT_STALE_CLOSED_AT.toString)
   final val ATTENDEES: List[PublicKey] = List(SENDER)

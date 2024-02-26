@@ -1,8 +1,6 @@
 package ch.epfl.pop.pubsub
 
 import ch.epfl.pop.model.network.JsonRpcRequest
-import ch.epfl.pop.model.network.method.message.data.ActionType.ActionType
-import ch.epfl.pop.model.network.method.message.data.ObjectType.ObjectType
 import ch.epfl.pop.model.network.method.message.data.rollCall.CreateRollCall
 import ch.epfl.pop.model.network.method.message.data.{ActionType, MessageData, ObjectType}
 import ch.epfl.pop.pubsub.MessageRegistry.RegisterEntry
@@ -25,9 +23,9 @@ class MessageRegistrySuite extends FunSuite with Matchers {
   def unitHandler(r: JsonRpcRequest): GraphMessage = unitValidator(r)
 
   val register: Map[(ObjectType, ActionType), RegisterEntry] = Map(
-    (ObjectType.LAO, ActionType.CREATE) -> RegisterEntry(unitSchemaVerifier, unitBuilder, unitValidator, unitHandler),
-    (ObjectType.ROLL_CALL, ActionType.CREATE) -> RegisterEntry(unitSchemaVerifier, CreateRollCall.buildFromJson, unitValidator, unitHandler),
-    (ObjectType.ROLL_CALL, ActionType.CAST_VOTE) -> RegisterEntry(unitSchemaVerifier, unitBuilder, unitValidator, unitHandler) // combination does not exist
+    (ObjectType.lao, ActionType.create) -> RegisterEntry(unitSchemaVerifier, unitBuilder, unitValidator, unitHandler),
+    (ObjectType.roll_call, ActionType.create) -> RegisterEntry(unitSchemaVerifier, CreateRollCall.buildFromJson, unitValidator, unitHandler),
+    (ObjectType.roll_call, ActionType.cast_vote) -> RegisterEntry(unitSchemaVerifier, unitBuilder, unitValidator, unitHandler) // combination does not exist
   )
   val registry: MessageRegistry = new MessageRegistry(register)
 

@@ -15,8 +15,8 @@ class AddChirpSuite extends FunSuite with Matchers {
     ADDCHIRP_MESSAGE.text should equal(TEXT)
     ADDCHIRP_MESSAGE.parent_id should equal(PARENT_ID)
     ADDCHIRP_MESSAGE.timestamp should equal(TIMESTAMP)
-    ADDCHIRP_MESSAGE._object should equal(ObjectType.CHIRP)
-    ADDCHIRP_MESSAGE.action should equal(ActionType.ADD)
+    ADDCHIRP_MESSAGE._object should equal(ObjectType.chirp)
+    ADDCHIRP_MESSAGE.action should equal(ActionType.add)
   }
 
   test("json conversions work back and forth") {
@@ -29,7 +29,7 @@ class AddChirpSuite extends FunSuite with Matchers {
 object AddChirpExample {
   final val TEXT: String = "text"
   final val PARENT_ID: Option[Hash] = None
-  final val TIMESTAMP = Timestamp(0)
+  final val TIMESTAMP: Timestamp = Timestamp(0)
 
   final val ADDCHIRP_MESSAGE: AddChirp = AddChirp(TEXT, PARENT_ID, TIMESTAMP)
 }

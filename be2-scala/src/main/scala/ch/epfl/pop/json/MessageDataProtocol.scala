@@ -1,10 +1,8 @@
 package ch.epfl.pop.json
 
 import ch.epfl.pop.json.ObjectProtocol._
-import ch.epfl.pop.model.network.method.message.data.ActionType.ActionType
-import ch.epfl.pop.model.network.method.message.data.ObjectType.ObjectType
 import ch.epfl.pop.model.network.method.message.data.coin._
-import ch.epfl.pop.model.network.method.message.data.election.VersionType.VersionType
+import ch.epfl.pop.model.network.method.message.data.election.VersionType
 import ch.epfl.pop.model.network.method.message.data.election._
 import ch.epfl.pop.model.network.method.message.data.lao._
 import ch.epfl.pop.model.network.method.message.data.meeting._
@@ -26,7 +24,7 @@ object MessageDataProtocol extends DefaultJsonProtocol {
   // ----------------------------------- ENUM FORMATTERS ----------------------------------- //
   implicit object objectTypeFormat extends RootJsonFormat[ObjectType] {
     override def read(json: JsValue): ObjectType = json match {
-      case JsString(method) => ObjectType.unapply(method).getOrElse(ObjectType.INVALID)
+      case JsString(method) => ObjectType(method)
       case _                => throw new IllegalArgumentException(s"Can't parse json value $json to an ObjectType")
     }
 
@@ -35,7 +33,7 @@ object MessageDataProtocol extends DefaultJsonProtocol {
 
   implicit object actionTypeFormat extends RootJsonFormat[ActionType] {
     override def read(json: JsValue): ActionType = json match {
-      case JsString(method) => ActionType.unapply(method).getOrElse(ActionType.INVALID)
+      case JsString(method) => ActionType(method)
       case _                => throw new IllegalArgumentException(s"Can't parse json value $json to an ActionType")
     }
 

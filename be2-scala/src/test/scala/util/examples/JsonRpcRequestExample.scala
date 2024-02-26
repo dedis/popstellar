@@ -28,7 +28,7 @@ object JsonRpcRequestExample {
 
   private final val rpc: String = "rpc"
   private final val id: Option[Int] = Some(0)
-  private final val methodType: MethodType.MethodType = MethodType.PUBLISH
+  private final val methodType: MethodType = MethodType.publish
   private final val channel: Channel = Channel(Channel.ROOT_CHANNEL_PREFIX + "channel")
   private final val paramsWithoutMessage: ParamsWithChannel = new ParamsWithChannel(channel)
   private final val paramsWithMessage: ParamsWithMessage = new ParamsWithMessage(channel, MESSAGE_WORKING_WS_PAIR)
@@ -236,7 +236,7 @@ object JsonRpcRequestExample {
   private final val paramsWithTooMuchVotesResultElection: ParamsWithMessage = new ParamsWithMessage(Channel("/root/lao/" + SetupElectionExamples.ELECTION_ID.toString), ResultElectionExamples.MESSAGE_RESULT_ELECTION_TOO_MUCH_VOTES)
   private final val paramsWithWrongIdResultElection: ParamsWithMessage = new ParamsWithMessage(Channel("/root/lao/" + SetupElectionExamples.ELECTION_ID.toString), ResultElectionExamples.MESSAGE_RESULT_ELECTION_WRONG_ID)
   final val RESULT_ELECTION_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithResultElection, id)
-  final val RESULT_ELECTION_RPC_WRONG_BALLOT_OPTIONS = JsonRpcRequest(rpc, methodType, paramsWithWrongBallotOptionElection, id)
+  final val RESULT_ELECTION_RPC_WRONG_BALLOT_OPTIONS: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithWrongBallotOptionElection, id)
   final val RESULT_ELECTION_RPC_WRONG: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithNegativeNumberOfVotesResultElection, id)
   final val RESULT_ELECTION_RPC_TOO_MUCH_VOTES: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithTooMuchVotesResultElection, id)
   final val RESULT_ELECTION_RPC_WRONG_ID: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithWrongIdResultElection, id)
@@ -297,12 +297,12 @@ object JsonRpcRequestExample {
   final val AUTHENTICATE_INVALID_RESPONSE_MODE_RPC: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithAuthenticateWrongResponseMode, id)
 
   // broadcast JsonRpcRequest
-  final val broadcastRpcRequest: JsonRpcRequest = JsonRpcRequest(rpc, MethodType.BROADCAST, paramsWithMessage, None)
+  final val broadcastRpcRequest: JsonRpcRequest = JsonRpcRequest(rpc, MethodType.broadcast, paramsWithMessage, None)
 
   // paramsWithChannel JsonRpcRequest
-  final val subscribeRpcRequest: JsonRpcRequest = JsonRpcRequest(rpc, MethodType.SUBSCRIBE, paramsWithChannel, id)
-  final val unSubscribeRpcRequest: JsonRpcRequest = JsonRpcRequest(rpc, MethodType.UNSUBSCRIBE, paramsWithChannel, id)
-  final val catchupRpcRequest: JsonRpcRequest = JsonRpcRequest(rpc, MethodType.CATCHUP, paramsWithChannel, id)
+  final val subscribeRpcRequest: JsonRpcRequest = JsonRpcRequest(rpc, MethodType.subscribe, paramsWithChannel, id)
+  final val unSubscribeRpcRequest: JsonRpcRequest = JsonRpcRequest(rpc, MethodType.unsubscribe, paramsWithChannel, id)
+  final val catchupRpcRequest: JsonRpcRequest = JsonRpcRequest(rpc, MethodType.catchup, paramsWithChannel, id)
 
   // paramsWithMap JsonRpcRequest
   // defining the channels
@@ -327,28 +327,28 @@ object JsonRpcRequestExample {
   final val MESSAGE5: Message = Message(null, null, null, MESSAGE5_ID, null, null)
   final val MESSAGE6: Message = Message(null, null, null, MESSAGE6_ID, null, null)
   // defining a received heartbeat
-  final val RECEIVED_HEARTBEAT_PARAMS = Map(CHANNEL1 -> Set(MESSAGE1_ID, MESSAGE2_ID, MESSAGE3_ID), CHANNEL2 -> Set(MESSAGE4_ID, MESSAGE5_ID))
+  final val RECEIVED_HEARTBEAT_PARAMS: Map[Channel, Set[Hash]] = Map(CHANNEL1 -> Set(MESSAGE1_ID, MESSAGE2_ID, MESSAGE3_ID), CHANNEL2 -> Set(MESSAGE4_ID, MESSAGE5_ID))
   final val RECEIVED_HEARTBEAT: Heartbeat = Heartbeat(RECEIVED_HEARTBEAT_PARAMS)
-  final val VALID_RECEIVED_HEARTBEAT_RPC: JsonRpcRequest = JsonRpcRequest(rpc, MethodType.HEARTBEAT, RECEIVED_HEARTBEAT, id)
+  final val VALID_RECEIVED_HEARTBEAT_RPC: JsonRpcRequest = JsonRpcRequest(rpc, MethodType.heartbeat, RECEIVED_HEARTBEAT, id)
 
   // defining what the answer to the received heartbeat should be
-  final val EXPECTED_MISSING_MESSAGE_IDS = Map(CHANNEL1 -> Set(MESSAGE2_ID, MESSAGE3_ID), CHANNEL2 -> Set(MESSAGE5_ID))
+  final val EXPECTED_MISSING_MESSAGE_IDS: Map[Channel, Set[Hash]] = Map(CHANNEL1 -> Set(MESSAGE2_ID, MESSAGE3_ID), CHANNEL2 -> Set(MESSAGE5_ID))
   final val EXPECTED_GET_MSGS_BY_ID_RESPONSE: GetMessagesById = GetMessagesById(EXPECTED_MISSING_MESSAGE_IDS)
-  final val EXPECTED_GET_MSGS_BY_ID_RPC: JsonRpcRequest = JsonRpcRequest(rpc, MethodType.GET_MESSAGES_BY_ID, EXPECTED_GET_MSGS_BY_ID_RESPONSE, id)
+  final val EXPECTED_GET_MSGS_BY_ID_RPC: JsonRpcRequest = JsonRpcRequest(rpc, MethodType.get_messages_by_id, EXPECTED_GET_MSGS_BY_ID_RESPONSE, id)
 
   // defining a received getMsgsById
-  final val RECEIVED_GET_MSG_BY_ID_PARAMS = Map(CHANNEL1 -> Set(MESSAGE1_ID))
+  final val RECEIVED_GET_MSG_BY_ID_PARAMS: Map[Channel, Set[Hash]] = Map(CHANNEL1 -> Set(MESSAGE1_ID))
   final val RECEIVED_GET_MSG_BY_ID: GetMessagesById = GetMessagesById(RECEIVED_GET_MSG_BY_ID_PARAMS)
-  final val VALID_RECEIVED_GET_MSG_BY_ID_RPC: JsonRpcRequest = JsonRpcRequest(rpc, MethodType.GET_MESSAGES_BY_ID, RECEIVED_GET_MSG_BY_ID, id)
+  final val VALID_RECEIVED_GET_MSG_BY_ID_RPC: JsonRpcRequest = JsonRpcRequest(rpc, MethodType.get_messages_by_id, RECEIVED_GET_MSG_BY_ID, id)
 
   // defining what the answer to the received getMsgsById should be
-  final val EXPECTED_MISSING_MESSAGES = Map(CHANNEL1 -> Set(MESSAGE1))
+  final val EXPECTED_MISSING_MESSAGES: Map[Channel, Set[Message]] = Map(CHANNEL1 -> Set(MESSAGE1))
   final val EXPECTED_GET_MSGS_BY_ID_RPC_RESPONSE: JsonRpcResponse = JsonRpcResponse(RpcValidator.JSON_RPC_VERSION, Some(new ResultObject(EXPECTED_MISSING_MESSAGES)), None, None)
 
   // defining a heartbeat on an unknown channel
-  final val RECEIVED_UNKNOWN_CHANNEL_HEARTBEAT_PARAMS = Map(CHANNEL3 -> Set(MESSAGE6_ID))
+  final val RECEIVED_UNKNOWN_CHANNEL_HEARTBEAT_PARAMS: Map[Channel, Set[Hash]] = Map(CHANNEL3 -> Set(MESSAGE6_ID))
   final val RECEIVED_UNKNOWN_CHANNEL_HEARTBEAT: Heartbeat = Heartbeat(RECEIVED_UNKNOWN_CHANNEL_HEARTBEAT_PARAMS)
-  final val VALID_RECEIVED_UNKNOWN_CHANNEL_HEARTBEAT_RPC: JsonRpcRequest = JsonRpcRequest(rpc, MethodType.HEARTBEAT, RECEIVED_UNKNOWN_CHANNEL_HEARTBEAT, id)
+  final val VALID_RECEIVED_UNKNOWN_CHANNEL_HEARTBEAT_RPC: JsonRpcRequest = JsonRpcRequest(rpc, MethodType.heartbeat, RECEIVED_UNKNOWN_CHANNEL_HEARTBEAT, id)
 
-  final val EXPECTED_UNKNOWN_CHANNEL_MISSING_MESSAGE_IDS = Map(CHANNEL3 -> Set(MESSAGE6_ID))
+  final val EXPECTED_UNKNOWN_CHANNEL_MISSING_MESSAGE_IDS: Map[Channel, Set[Hash]] = Map(CHANNEL3 -> Set(MESSAGE6_ID))
 }

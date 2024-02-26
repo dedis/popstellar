@@ -2,8 +2,6 @@ package ch.epfl.pop.model.network.method.message.data.election
 
 import ch.epfl.pop.json.MessageDataProtocol._
 import ch.epfl.pop.model.network.Parsable
-import ch.epfl.pop.model.network.method.message.data.ActionType.ActionType
-import ch.epfl.pop.model.network.method.message.data.ObjectType.ObjectType
 import ch.epfl.pop.model.network.method.message.data.{ActionType, MessageData, ObjectType}
 import ch.epfl.pop.model.objects.{Hash, Timestamp}
 import spray.json._
@@ -14,8 +12,8 @@ final case class CastVoteElection(
     created_at: Timestamp,
     votes: List[VoteElection]
 ) extends MessageData {
-  override val _object: ObjectType = ObjectType.ELECTION
-  override val action: ActionType = ActionType.CAST_VOTE
+  override val _object: ObjectType = ObjectType.election
+  override val action: ActionType = ActionType.cast_vote
 }
 
 object CastVoteElection extends Parsable {

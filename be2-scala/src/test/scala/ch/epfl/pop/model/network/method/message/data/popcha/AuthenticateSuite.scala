@@ -9,7 +9,7 @@ import spray.json.enrichAny
 
 class AuthenticateSuite extends FunSuite with Matchers {
   test("json encoding / decoding keeps the object intact") {
-    val encodedDecoded = Authenticate.buildFromJson(AUTHENTICATE_MESSAGE.toJson.toString())
+    val encodedDecoded = Authenticate.buildFromJson(AUTHENTICATE_MESSAGE.toJson.toString)
     encodedDecoded shouldBe AUTHENTICATE_MESSAGE
   }
 }

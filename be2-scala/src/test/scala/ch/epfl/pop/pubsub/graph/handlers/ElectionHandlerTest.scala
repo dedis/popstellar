@@ -1,7 +1,7 @@
 package ch.epfl.pop.pubsub.graph.handlers
 
 import akka.actor.{Actor, ActorSystem, Props, Status}
-import akka.pattern.AskableActorRef
+import akka.pattern.{AskableActorRef, ask}
 import akka.testkit.{ImplicitSender, TestKit}
 import akka.util.Timeout
 import ch.epfl.pop.model.network.method.message.Message
@@ -43,7 +43,7 @@ class ElectionHandlerTest extends TestKit(ActorSystem("Election-DB-System")) wit
   private final val ADDRESS: String = "127.0.0.1:8000"
   private final val laoDataRight: LaoData = LaoData(sender, List(sender), PRIVATE_KEY, PUBLIC_KEY, List.empty, ADDRESS)
 
-  private final val channelDataWithSetupAndOpenAndCastMessage: ChannelData = ChannelData(ObjectType.ELECTION, List(DATA_CAST_VOTE_MESSAGE, DATA_SET_UP_OPEN_BALLOT, DATA_OPEN_MESSAGE))
+  private final val channelDataWithSetupAndOpenAndCastMessage: ChannelData = ChannelData(ObjectType.election, List(DATA_CAST_VOTE_MESSAGE, DATA_SET_UP_OPEN_BALLOT, DATA_OPEN_MESSAGE))
   private final val messages: List[Message] = List(MESSAGE_CAST_VOTE_ELECTION_WORKING, MESSAGE_SETUPELECTION_OPEN_BALLOT_WORKING, MESSAGE_OPEN_ELECTION_WORKING, MESSAGE_END_ELECTION_WORKING)
 
   def mockDbWithNack: AskableActorRef = {
@@ -56,7 +56,7 @@ class ElectionHandlerTest extends TestKit(ActorSystem("Election-DB-System")) wit
             | DbActor.WriteSetupElectionMessage(_, _) =>
           system.log.info(f"Received a message")
           system.log.info("Responding with a Nack")
-          sender() ! Status.Failure(DbActorNAckException(1, "error"))
+          this.sender() ! Status.Failure(DbActorNAckException(1, "error"))
         case x =>
           system.log.info(s"Received - error $x")
       }
@@ -75,15 +75,15 @@ class ElectionHandlerTest extends TestKit(ActorSystem("Election-DB-System")) wit
             | DbActor.WriteSetupElectionMessage(_, _) =>
           system.log.info(f"Received a message")
           system.log.info("Responding with a Ack")
-          sender() ! DbActor.DbActorAck()
+          this.sender() ! DbActor.DbActorAck()
         case DbActor.ReadLaoData(_) =>
           system.log.info("Received a message")
           system.log.info("Responding with a Ack")
-          sender() ! DbActor.DbActorReadLaoDataAck(LaoDataExample.LAODATA)
+          this.sender() ! DbActor.DbActorReadLaoDataAck(LaoDataExample.LAODATA)
         case DbActor.ReadElectionData(_, _) =>
           system.log.info("Received a message")
           system.log.info("Responding with a Ack")
-          sender() ! DbActor.DbActorReadElectionDataAck(electionData)
+          this.sender() ! DbActor.DbActorReadElectionDataAck(electionData)
       }
     })
     system.actorOf(dbActorMock)
@@ -99,19 +99,19 @@ class ElectionHandlerTest extends TestKit(ActorSystem("Election-DB-System")) wit
             | DbActor.WriteSetupElectionMessage(_, _) =>
           system.log.info("Received a message")
           system.log.info("Responding with a Ack")
-          sender() ! DbActor.DbActorAck()
+          this.sender() ! DbActor.DbActorAck()
         case DbActor.ChannelExists(_) =>
           system.log.info("Received a create setup message")
           system.log.info("Responding with a no")
-          sender() ! Status.Failure(DbActorNAckException(1, "no"))
+          this.sender() ! Status.Failure(DbActorNAckException(1, "no"))
         case DbActor.ReadLaoData(_) =>
           system.log.info("Received a message")
           system.log.info("Responding with a Ack")
-          sender() ! DbActor.DbActorReadLaoDataAck(LaoDataExample.LAODATA)
+          this.sender() ! DbActor.DbActorReadLaoDataAck(LaoDataExample.LAODATA)
         case DbActor.ReadElectionData(_, _) =>
           system.log.info("Received a message")
           system.log.info("Responding with a Ack")
-          sender() ! DbActor.DbActorReadElectionDataAck(electionData)
+          this.sender() ! DbActor.DbActorReadElectionDataAck(electionData)
       }
     })
     system.actorOf(dbActorMock)
@@ -127,15 +127,15 @@ class ElectionHandlerTest extends TestKit(ActorSystem("Election-DB-System")) wit
             | DbActor.WriteSetupElectionMessage(_, _) =>
           system.log.info("Received a message")
           system.log.info("Responding with a Ack")
-          sender() ! DbActor.DbActorAck()
+          this.sender() ! DbActor.DbActorAck()
         case DbActor.ChannelExists(_) =>
           system.log.info("Received a channel exist setup message")
           system.log.info("Responding with a no")
-          sender() ! Status.Failure(DbActorNAckException(1, "no"))
+          this.sender() ! Status.Failure(DbActorNAckException(1, "no"))
         case DbActor.ReadLaoData(_) | DbActor.ReadElectionData(_, _) =>
           system.log.info("Received a message")
           system.log.info("Responding with a Ack")
-          sender() ! Status.Failure(DbActorNAckException(1, "no"))
+          this.sender() ! Status.Failure(DbActorNAckException(1, "no"))
       }
     })
     system.actorOf(dbActorMock)
@@ -147,35 +147,35 @@ class ElectionHandlerTest extends TestKit(ActorSystem("Election-DB-System")) wit
         // You can modify the following match case to include more args, names...
         case DbActor.WriteAndPropagate(_, _) | DbActor.ChannelExists(_) | DbActor.CreateChannel(_, _) =>
           system.log.info("Responding with a Ack")
-          sender() ! DbActor.DbActorAck()
+          this.sender() ! DbActor.DbActorAck()
 
         case DbActor.ReadLaoData(_) =>
           system.log.info("Responding with a Ack")
-          sender() ! DbActor.DbActorReadLaoDataAck(laoDataRight)
+          this.sender() ! DbActor.DbActorReadLaoDataAck(laoDataRight)
 
         case DbActor.ReadElectionData(_, _) =>
           system.log.info("Responding with a Ack")
-          sender() ! DbActor.DbActorReadElectionDataAck(electionData)
+          this.sender() ! DbActor.DbActorReadElectionDataAck(electionData)
 
         case DbActor.ReadChannelData(_) =>
           system.log.info("Responding with a Ack")
-          sender() ! DbActor.DbActorReadChannelDataAck(channelDataWithSetupAndOpenAndCastMessage)
+          this.sender() ! DbActor.DbActorReadChannelDataAck(channelDataWithSetupAndOpenAndCastMessage)
 
         case DbActor.Read(_, DATA_CAST_VOTE_MESSAGE) =>
           system.log.info("Responding with a Ack")
-          sender() ! DbActor.DbActorReadAck(Some(MESSAGE_CAST_VOTE_ELECTION_WORKING))
+          this.sender() ! DbActor.DbActorReadAck(Some(MESSAGE_CAST_VOTE_ELECTION_WORKING))
 
         case DbActor.Read(_, DATA_SET_UP_OPEN_BALLOT) =>
           system.log.info("Responding with a Ack")
-          sender() ! DbActor.DbActorReadAck(Some(MESSAGE_SETUPELECTION_OPEN_BALLOT_WORKING))
+          this.sender() ! DbActor.DbActorReadAck(Some(MESSAGE_SETUPELECTION_OPEN_BALLOT_WORKING))
 
         case DbActor.Read(_, DATA_OPEN_MESSAGE) =>
           system.log.info("Responding with a Ack")
-          sender() ! DbActor.DbActorReadAck(Some(MESSAGE_OPEN_ELECTION_WORKING))
+          this.sender() ! DbActor.DbActorReadAck(Some(MESSAGE_OPEN_ELECTION_WORKING))
 
         case DbActor.Catchup(_) =>
           system.log.info("Responding with a Ack")
-          sender() ! DbActor.DbActorCatchupAck(messages)
+          this.sender() ! DbActor.DbActorCatchupAck(messages)
       }
     })
     system.actorOf(dbActorMock)
@@ -188,27 +188,27 @@ class ElectionHandlerTest extends TestKit(ActorSystem("Election-DB-System")) wit
         case DbActor.WriteAndPropagate(_, _) | DbActor.ReadLaoData(_) | DbActor.ReadChannelData(_) =>
           system.log.info(f"Received a message")
           system.log.info("Responding with a Nack")
-          sender() ! Status.Failure(DbActorNAckException(1, "error"))
+          this.sender() ! Status.Failure(DbActorNAckException(1, "error"))
 
         case DbActor.ChannelExists(_) | DbActor.CreateChannel(_, _) =>
           system.log.info("Responding with an Ack")
-          sender() ! DbActor.DbActorAck()
+          this.sender() ! DbActor.DbActorAck()
 
         case DbActor.Read(_, DATA_CAST_VOTE_MESSAGE) =>
           system.log.info("Responding with a Ack")
-          sender() ! DbActor.DbActorReadAck(Some(MESSAGE_CAST_VOTE_ELECTION_WORKING))
+          this.sender() ! DbActor.DbActorReadAck(Some(MESSAGE_CAST_VOTE_ELECTION_WORKING))
 
         case DbActor.Read(_, DATA_SET_UP_OPEN_BALLOT) =>
           system.log.info("Responding with a Ack")
-          sender() ! DbActor.DbActorReadAck(Some(MESSAGE_SETUPELECTION_OPEN_BALLOT_WORKING))
+          this.sender() ! DbActor.DbActorReadAck(Some(MESSAGE_SETUPELECTION_OPEN_BALLOT_WORKING))
 
         case DbActor.Read(_, DATA_OPEN_MESSAGE) =>
           system.log.info("Responding with a Ack")
-          sender() ! DbActor.DbActorReadAck(Some(MESSAGE_OPEN_ELECTION_WORKING))
+          this.sender() ! DbActor.DbActorReadAck(Some(MESSAGE_OPEN_ELECTION_WORKING))
 
         case DbActor.Catchup(_) =>
           system.log.info("Responding with a Ack")
-          sender() ! Status.Failure(DbActorNAckException(1, "error"))
+          this.sender() ! Status.Failure(DbActorNAckException(1, "error"))
       }
     })
     system.actorOf(dbActorMock)

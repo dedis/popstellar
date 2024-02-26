@@ -97,8 +97,8 @@ type Hub struct {
 
 // NewHub returns a new Hub.
 func NewHub(pubKeyOwner kyber.Point, clientServerAddress string, serverServerAddress string, log zerolog.Logger,
-	laoFac channel.LaoFactory) (*Hub, error) {
-
+	laoFac channel.LaoFactory,
+) (*Hub, error) {
 	schemaValidator, err := validation.NewSchemaValidator(log)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to create the schema validator: %v", err)
@@ -124,7 +124,7 @@ func NewHub(pubKeyOwner kyber.Point, clientServerAddress string, serverServerAdd
 		laoFac:              laoFac,
 		serverSockets:       channel.NewSockets(),
 		hubInbox:            *inbox.NewHubInbox(rootChannel),
-		queries:             state.NewQueries(),
+		queries:             state.NewQueries(log),
 		peers:               state.NewPeers(),
 		blacklist:           make([]string, 0),
 	}
@@ -451,7 +451,6 @@ func (h *Hub) handleIncomingMessage(incomingMessage *socket.IncomingMessage) err
 	default:
 		return xerrors.Errorf("invalid socket type")
 	}
-
 }
 
 // sendGetMessagesByIdToServer sends a getMessagesById message to a server
@@ -505,8 +504,8 @@ func (h *Hub) sendHeartbeatToServers() {
 
 // createLao creates a new LAO using the data in the publish parameter.
 func (h *Hub) createLao(msg message.Message, laoCreate messagedata.LaoCreate,
-	socket socket.Socket) error {
-
+	socket socket.Socket,
+) error {
 	laoChannelPath := rootPrefix + laoCreate.ID
 
 	if _, ok := h.channelByID.Get(laoChannelPath); ok {

@@ -2,8 +2,6 @@ package ch.epfl.pop.model.network
 
 import ch.epfl.pop.json.HighLevelProtocol._
 import ch.epfl.pop.model.network.method.message.Message
-import ch.epfl.pop.model.network.method.message.data.ActionType.ActionType
-import ch.epfl.pop.model.network.method.message.data.ObjectType.ObjectType
 import ch.epfl.pop.model.network.method.message.data.{ActionType, MessageData, ObjectType}
 import ch.epfl.pop.model.network.method.{Params, ParamsWithMessage}
 import ch.epfl.pop.model.objects.{Base64Data, Channel, Hash}
@@ -13,7 +11,7 @@ import scala.util.{Success, Try}
 
 class JsonRpcRequest(
     val jsonrpc: String,
-    val method: MethodType.MethodType,
+    val method: MethodType,
     val params: Params,
     val id: Option[Int]
 ) extends JsonRpcMessage {
@@ -74,7 +72,7 @@ class JsonRpcRequest(
     * @return
     *   a typed request with the same parameters as <this>
     */
-  def toTypedRequest[T](typedConstructor: (String, MethodType.MethodType, Params, Option[Int]) => T): T = {
+  def toTypedRequest[T](typedConstructor: (String, MethodType, Params, Option[Int]) => T): T = {
     typedConstructor(jsonrpc, method, params, id)
   }
 
@@ -84,7 +82,7 @@ class JsonRpcRequest(
 object JsonRpcRequest extends Parsable {
   def apply(
       jsonrpc: String,
-      method: MethodType.MethodType,
+      method: MethodType,
       params: Params,
       id: Option[Int]
   ): JsonRpcRequest = {

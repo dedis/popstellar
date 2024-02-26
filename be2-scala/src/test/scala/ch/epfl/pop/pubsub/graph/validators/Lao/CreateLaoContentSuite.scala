@@ -20,7 +20,7 @@ class CreateLaoContentSuite extends FlatSpec with Matchers with Inside with Give
     val decoded = MessageDecoder.parseData(message, MessageRegistry.apply())
     decoded match {
       case Right(r: JsonRpcRequest) =>
-        r.getDecodedDataHeader should equal((ObjectType.LAO, ActionType.CREATE))
+        r.getDecodedDataHeader should equal((ObjectType.lao, ActionType.create))
         testCode(decoded)
       case Right(m) => fail(f"Decoder decoded to bad type: <$m> expected type is JsonRpcRequestCreateLao")
       case Left(_) =>
@@ -42,7 +42,6 @@ class CreateLaoContentSuite extends FlatSpec with Matchers with Inside with Give
               Then("the validation succeeds")
               msg shouldBe a[JsonRpcRequest]
             case _ @Left(_) => fail("fails to validate CreateLao data content")
-            case _          => fail(s"validated message <$validationResult> is of unexpected type")
           }
           And("the message has the same content after validation")
           validationResult should equal(message)

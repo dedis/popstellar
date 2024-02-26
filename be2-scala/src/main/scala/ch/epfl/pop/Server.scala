@@ -7,7 +7,7 @@ import akka.actor.{ActorRef, Props}
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.{RequestContext, RouteResult}
-import akka.pattern.AskableActorRef
+import akka.pattern.{AskableActorRef, ask}
 import akka.util.Timeout
 import ch.epfl.pop.authentication.{GetRequestHandler, PopchaWebSocketResponseHandler}
 import ch.epfl.pop.config.RuntimeEnvironment

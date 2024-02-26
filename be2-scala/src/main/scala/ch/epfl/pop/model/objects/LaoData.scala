@@ -1,6 +1,6 @@
 package ch.epfl.pop.model.objects
 
-import ch.epfl.pop.json.MessageDataProtocol._
+import ch.epfl.pop.json.MessageDataProtocol.LaoDataFormat
 import ch.epfl.pop.model.network.Parsable
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.lao.CreateLao

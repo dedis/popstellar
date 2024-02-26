@@ -52,7 +52,7 @@ object Answerer {
       .to(Sink.actorRef(
         clientActorRef,
         DisconnectWsHandle,
-        { t: Throwable =>
+        { (t: Throwable) =>
           println(t); DisconnectWsHandle
         }
       ))

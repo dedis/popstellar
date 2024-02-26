@@ -13,19 +13,16 @@ package ch.epfl.pop.pubsub.graph
   */
 final case class PipelineError(code: Int, description: String, rpcId: Option[Int])
 
-object ErrorCodes extends Enumeration {
-  type ErrorCodes = Value
-
+enum ErrorCodes(val id: Int, val err: String):
   // invalid action
-  val INVALID_ACTION: ErrorCodes = Value(-1, "invalid action")
+  case INVALID_ACTION extends ErrorCodes(-1, "invalid action")
   // invalid resource (e.g. channel does not exist, channel was not subscribed to, etc.)
-  val INVALID_RESOURCE: ErrorCodes = Value(-2, "invalid resource")
+  case INVALID_RESOURCE extends ErrorCodes(-2, "invalid resource")
   // resource already exists (e.g. lao already exists, channel already exists, etc.)
-  val ALREADY_EXISTS: ErrorCodes = Value(-3, "resource already exists")
+  case ALREADY_EXISTS extends ErrorCodes(-3, "resource already exists")
   // request data is invalid (e.g. message is invalid)
-  val INVALID_DATA: ErrorCodes = Value(-4, "request data is invalid")
+  case INVALID_DATA extends ErrorCodes(-4, "request data is invalid")
   // access denied (e.g. subscribing to a “restricted” channel)
-  val ACCESS_DENIED: ErrorCodes = Value(-5, "access denied")
+  case ACCESS_DENIED extends ErrorCodes(-5, "access denied")
   // internal server error (e.g. crashed while processing, database unavailable, etc.)
-  val SERVER_ERROR: ErrorCodes = Value(-6, "internal server error")
-}
+  case SERVER_ERROR extends ErrorCodes(-6, "internal server error")
