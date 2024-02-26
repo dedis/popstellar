@@ -177,7 +177,7 @@ class ElectionHandlerTest {
         rollCallRepo,
         electionRepo,
         meetingRepo,
-        digitalCashRepo
+        digitalCashRepo,
       )
     messageRepo = MessageRepository(appDatabase, application)
 
@@ -198,7 +198,7 @@ class ElectionHandlerTest {
     UnknownLaoException::class,
     DataHandlingException::class,
     NoRollCallException::class,
-    UnknownWitnessMessageException::class
+    UnknownWitnessMessageException::class,
   )
   private fun handleElectionSetup(election: Election, channel: Channel): MessageID {
     val questions =
@@ -209,7 +209,7 @@ class ElectionHandlerTest {
             elecQuestion.question,
             elecQuestion.votingMethod,
             elecQuestion.ballotOptions,
-            elecQuestion.writeIn
+            elecQuestion.writeIn,
           )
         }
         .collect(Collectors.toList())
@@ -223,7 +223,7 @@ class ElectionHandlerTest {
         election.endTimestamp,
         LAO.id,
         election.electionVersion,
-        questions
+        questions,
       )
     val message = MessageGeneral(SENDER_KEY, electionSetupOpenBallot, gson)
 
@@ -237,7 +237,7 @@ class ElectionHandlerTest {
     UnknownLaoException::class,
     DataHandlingException::class,
     NoRollCallException::class,
-    UnknownWitnessMessageException::class
+    UnknownWitnessMessageException::class,
   )
   private fun handleElectionKey(election: Election, key: String) {
     // Create the election key message
@@ -253,7 +253,7 @@ class ElectionHandlerTest {
     UnknownLaoException::class,
     DataHandlingException::class,
     NoRollCallException::class,
-    UnknownWitnessMessageException::class
+    UnknownWitnessMessageException::class,
   )
   private fun handleElectionOpen(election: Election) {
     val electionOpen = ElectionOpen(LAO.id, election.id, OPENED_AT)
@@ -268,7 +268,7 @@ class ElectionHandlerTest {
     UnknownLaoException::class,
     DataHandlingException::class,
     NoRollCallException::class,
-    UnknownWitnessMessageException::class
+    UnknownWitnessMessageException::class,
   )
   private fun handleCastVote(vote: Vote, senderKey: KeyPair, creation: Long): MessageID {
     val castVote = CastVote(listOf(vote), OPEN_BALLOT_ELECTION.id, CREATE_LAO.id, creation)
@@ -284,7 +284,7 @@ class ElectionHandlerTest {
     UnknownLaoException::class,
     DataHandlingException::class,
     NoRollCallException::class,
-    UnknownWitnessMessageException::class
+    UnknownWitnessMessageException::class,
   )
   private fun handleElectionEnd() {
     // Retrieve current election to use the correct vote hash
@@ -301,7 +301,7 @@ class ElectionHandlerTest {
     UnknownLaoException::class,
     DataHandlingException::class,
     NoRollCallException::class,
-    UnknownWitnessMessageException::class
+    UnknownWitnessMessageException::class,
   )
   private fun handleElectionResults(results: Set<QuestionResult>, electionChannel: Channel) {
     val electionResultQuestion = ElectionResultQuestion(QUESTION.id, results)
@@ -319,7 +319,7 @@ class ElectionHandlerTest {
     UnknownRollCallException::class,
     UnknownElectionException::class,
     NoRollCallException::class,
-    UnknownWitnessMessageException::class
+    UnknownWitnessMessageException::class,
   )
   fun testHandleElectionSetup() {
     val messageID = handleElectionSetup(OPEN_BALLOT_ELECTION, LAO_CHANNEL)
@@ -361,7 +361,7 @@ class ElectionHandlerTest {
     UnknownRollCallException::class,
     UnknownElectionException::class,
     NoRollCallException::class,
-    UnknownWitnessMessageException::class
+    UnknownWitnessMessageException::class,
   )
   fun testElectionKey() {
     handleElectionSetup(OPEN_BALLOT_ELECTION, LAO_CHANNEL)
@@ -378,7 +378,7 @@ class ElectionHandlerTest {
     UnknownRollCallException::class,
     UnknownElectionException::class,
     NoRollCallException::class,
-    UnknownWitnessMessageException::class
+    UnknownWitnessMessageException::class,
   )
   fun testHandleElectionResult() {
     val results = setOf(QuestionResult(OPTION_1, 1))
@@ -402,7 +402,7 @@ class ElectionHandlerTest {
     UnknownRollCallException::class,
     UnknownElectionException::class,
     NoRollCallException::class,
-    UnknownWitnessMessageException::class
+    UnknownWitnessMessageException::class,
   )
   fun testHandleElectionOpen() {
     handleElectionSetup(OPEN_BALLOT_ELECTION, LAO_CHANNEL)
@@ -421,7 +421,7 @@ class ElectionHandlerTest {
     UnknownRollCallException::class,
     UnknownElectionException::class,
     NoRollCallException::class,
-    UnknownWitnessMessageException::class
+    UnknownWitnessMessageException::class,
   )
   fun testHandleElectionOpenInvalidState() {
     handleElectionSetup(OPEN_BALLOT_ELECTION, LAO_CHANNEL)
@@ -453,7 +453,7 @@ class ElectionHandlerTest {
     UnknownRollCallException::class,
     UnknownElectionException::class,
     NoRollCallException::class,
-    UnknownWitnessMessageException::class
+    UnknownWitnessMessageException::class,
   )
   fun testHandleElectionEnd() {
     handleElectionSetup(OPEN_BALLOT_ELECTION, LAO_CHANNEL)
@@ -472,7 +472,7 @@ class ElectionHandlerTest {
     UnknownLaoException::class,
     DataHandlingException::class,
     NoRollCallException::class,
-    UnknownWitnessMessageException::class
+    UnknownWitnessMessageException::class,
   )
   fun castVoteWithOpenBallotScenario() {
     handleElectionSetup(OPEN_BALLOT_ELECTION, LAO_CHANNEL)
@@ -496,7 +496,7 @@ class ElectionHandlerTest {
     UnknownLaoException::class,
     DataHandlingException::class,
     NoRollCallException::class,
-    UnknownWitnessMessageException::class
+    UnknownWitnessMessageException::class,
   )
   fun castVoteOnlyKeepsLastVote() {
     handleElectionSetup(OPEN_BALLOT_ELECTION, LAO_CHANNEL)
@@ -522,7 +522,7 @@ class ElectionHandlerTest {
     UnknownLaoException::class,
     DataHandlingException::class,
     NoRollCallException::class,
-    UnknownWitnessMessageException::class
+    UnknownWitnessMessageException::class,
   )
   fun castVoteDiscardsStaleVote() {
     handleElectionSetup(OPEN_BALLOT_ELECTION, LAO_CHANNEL)
@@ -548,7 +548,7 @@ class ElectionHandlerTest {
     UnknownLaoException::class,
     DataHandlingException::class,
     NoRollCallException::class,
-    UnknownWitnessMessageException::class
+    UnknownWitnessMessageException::class,
   )
   fun castVoteFailsOnPreviousMessageDataNull() {
     // This test checks that the handler fails if the messageMap of the election already has a
@@ -570,7 +570,7 @@ class ElectionHandlerTest {
     UnknownLaoException::class,
     DataHandlingException::class,
     NoRollCallException::class,
-    UnknownWitnessMessageException::class
+    UnknownWitnessMessageException::class,
   )
   fun castVoteFailsOnPreviousMessageDataInvalid() {
     // This test checks that the handler fails if the messageMap of the election already has a
@@ -602,7 +602,7 @@ class ElectionHandlerTest {
     UnknownLaoException::class,
     DataHandlingException::class,
     NoRollCallException::class,
-    UnknownWitnessMessageException::class
+    UnknownWitnessMessageException::class,
   )
   fun castVoteIgnoresVoteOnClosedElection() {
     handleElectionSetup(OPEN_BALLOT_ELECTION, LAO_CHANNEL)
@@ -628,14 +628,16 @@ class ElectionHandlerTest {
     UnknownLaoException::class,
     DataHandlingException::class,
     NoRollCallException::class,
-    UnknownWitnessMessageException::class
+    UnknownWitnessMessageException::class,
   )
   fun castVoteWithSecretBallotScenario() {
     val keys = generateKeyPair()
     val pubKey = keys.encryptionScheme
     val encodedKey = Base64URLData(pubKey.publicKey.toBytes())
-    val vote1 = EncryptedVote(QUESTION.id, "0", false, null, ELECTION_ID)
-    val vote2 = EncryptedVote(QUESTION.id, "1", false, null, ELECTION_ID)
+    val vote1Base64 = Base64URLData(("0").toByteArray()).encoded
+    val vote2Base64 = Base64URLData(("1").toByteArray()).encoded
+    val vote1 = EncryptedVote(QUESTION.id, vote1Base64, false, null, ELECTION_ID)
+    val vote2 = EncryptedVote(QUESTION.id, vote2Base64, false, null, ELECTION_ID)
 
     handleElectionSetup(SECRET_BALLOT_ELECTION, LAO_CHANNEL)
     handleElectionKey(SECRET_BALLOT_ELECTION, encodedKey.encoded)
@@ -670,7 +672,7 @@ class ElectionHandlerTest {
     private val QUESTION =
       ElectionQuestion(
         ELECTION_ID,
-        Question("Does this work ?", "Plurality", listOf(OPTION_1, OPTION_2), false)
+        Question("Does this work ?", "Plurality", listOf(OPTION_1, OPTION_2), false),
       )
     private val VOTE1 = PlainVote(QUESTION.id, 0, false, null, ELECTION_ID)
     private val VOTE2 = PlainVote(QUESTION.id, 1, false, null, ELECTION_ID)

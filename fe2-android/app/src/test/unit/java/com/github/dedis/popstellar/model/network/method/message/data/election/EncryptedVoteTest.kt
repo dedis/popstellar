@@ -24,9 +24,9 @@ class EncryptedVoteTest {
   private val encryptedWriteIn = Base64URLData(("My write-in ballot option").toByteArray()).encoded
   private val encryptedVote1 = EncryptedVote(questionId, votes, false, encryptedWriteIn, electionId)
 
-  // random base64 value
   private val randomNotBase64 = "definitely not base64"
   private val randomBase64 = Base64URLData("definitely base64".toByteArray()).encoded
+  private val emptyBase64 = Base64URLData("".toByteArray()).encoded
 
   // Hash values util for testing
   private val expectedIdNoWriteIn =
@@ -51,12 +51,12 @@ class EncryptedVoteTest {
 
   @Test(expected = IllegalArgumentException::class)
   fun constructorFailsWhenQuestionIdNotBase64() {
-    EncryptedVote(randomNotBase64, votes, false, encryptedWriteIn, electionId)
+    EncryptedVote(randomNotBase64, votes, false, null, electionId)
   }
 
   @Test(expected = IllegalArgumentException::class)
   fun constructorFailsWhenElectionIdNotBase64() {
-    EncryptedVote(questionId, votes, false, encryptedWriteIn, randomNotBase64)
+    EncryptedVote(questionId, votes, false, null, randomNotBase64)
   }
 
   @Test(expected = IllegalArgumentException::class)
@@ -70,14 +70,24 @@ class EncryptedVoteTest {
   }
 
   @Test(expected = IllegalArgumentException::class)
-  fun constructorFailsWhenWriteInEnabledAndEncryptedVoteIsNull() {
-    EncryptedVote(questionId, null, true, encryptedWriteIn, electionId)
+  fun constructorFailsWhenEncryptedVoteEmptyAndWriteInDisabled() {
+    EncryptedVote(questionId, emptyBase64, false, null, electionId)
+  }
+
+  @Test(expected = IllegalArgumentException::class)
+  fun constructorFailsWhenWriteInNullAndWriteInEnabled() {
+    EncryptedVote(questionId, null, true, null, electionId)
+  }
+
+  @Test(expected = IllegalArgumentException::class)
+  fun constructorFailsWhenWriteInEmptyAndWriteInEnabled() {
+    EncryptedVote(questionId, null, true, emptyBase64, electionId)
   }
 
   // This test ensures that when writeIn is disabled, encryptedVote must not be null or an empty
   // string
   @Test(expected = IllegalArgumentException::class)
-  fun constructorFailsWhenWriteInDisabledAndEncryptedVoteIsNull() {
+  fun constructorFailsWhenEncryptedVoteNullAndWriteInDisabled() {
     EncryptedVote(questionId, null, false, null, electionId)
   }
 
@@ -91,6 +101,12 @@ class EncryptedVoteTest {
   @Test
   fun constructorSucceedsWithValidDataAndWriteInEnabled() {
     val encryptedVote = EncryptedVote(questionId, null, true, encryptedWriteIn, electionId)
+    Assert.assertNotNull(encryptedVote)
+  }
+
+  @Test
+  fun constructorSucceedsWhenWriteInDisabledAndWriteInNull() {
+    val encryptedVote = EncryptedVote(questionId, votes, false, null, electionId)
     Assert.assertNotNull(encryptedVote)
   }
 
