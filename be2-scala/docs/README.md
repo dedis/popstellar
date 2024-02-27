@@ -22,7 +22,7 @@ Keep in mind that the [Pre-semester work project](https://docs.google.com/docume
 
 ### IDE/Editors
 
-The two most common Scala IDEs are VSCode and IntelliJ. Both are viable since we are using Scala version *2.13.x* (< 3.x).
+The two most common Scala IDEs are VSCode and IntelliJ. Both are viable since we are using Scala version *3.31.x*.
 
 
 ## 2.	Project Structure
@@ -71,7 +71,7 @@ Once the message has been processed (for instance a LAO has been created or the 
 
 If we look even closer, here is how the real be2 DSL graph is designed.
 
-Between the `ClientActor` and the partitioner sits a module which goal is to validate conformity with our custom JSON-rcp protocol, decode the JSON payload, and then finally validate its fields.
+Between the `ClientActor` and the partitioner sits a module which goal is to validate conformity with our custom JSON-rpc protocol, decode the JSON payload, and then finally validate its fields.
 
 The partitioner decides which path a message is supposed to take depending on its content; more precisely, depending on if it is a request, if it contains a message field, it will be forwarded to the paramsWithMessage handler, otherwise it will be filtered depending on the method carried by the json. Otherwise, if it is a response, it will be forwarded to the ResponseHandler. Further down the line, a handler is used for each type of message (e.g. the LAO handler is able to understand and process LAO messages such as `CreateLao`, `StateLao`, and `UpdateLao`)
 
