@@ -272,7 +272,7 @@ exports[`NewChirp shows the error message on empty trimmed message 1`] = `
             ]
           }
         >
-          You chirp will be cropped to an empty chirp. You cannot send an empty chirp.
+          Your chirp will be cropped to an empty chirp. You cannot send an empty chirp.
         </Text>
         <View
           style={
