@@ -39,7 +39,7 @@ object MessageValidator {
         id: String,
         organizer: PublicKey,
         creation: Long,
-        name: String
+        name: String,
     ): MessageValidatorBuilder {
       // If any of the arguments are empty or null this throws an exception
       require(id == Lao.generateLaoId(organizer, creation, name)) {
@@ -61,7 +61,7 @@ object MessageValidator {
         id: String,
         laoId: String,
         creation: Long,
-        name: String
+        name: String,
     ): MessageValidatorBuilder {
       // If any of the arguments are empty or null this throws an exception
       require(id == Meeting.generateCreateMeetingId(laoId, creation, name)) {
@@ -83,7 +83,7 @@ object MessageValidator {
         id: String,
         laoId: String,
         creation: Long,
-        name: String
+        name: String,
     ): MessageValidatorBuilder {
       // If any of the arguments are empty or null this throws an exception
       require(id == Meeting.generateStateMeetingId(laoId, creation, name)) {
@@ -242,22 +242,43 @@ object MessageValidator {
      */
     fun validQuestions(questions: List<ElectionQuestion.Question>?): MessageValidatorBuilder {
       require(!questions.isNullOrEmpty()) { "Questions list cannot be null or empty" }
-
+      noListDuplicates(questions)
       for (question in questions) {
-        stringNotEmpty(question.title, "question title")
-
-        val validVotingMethods = ElectionSetupFragment.VotingMethods.values().map { it.desc }
-        require(question.votingMethod in validVotingMethods) {
-          "Unsupported voting method in question: ${question.title}. Must be one of $validVotingMethods."
-        }
-
-        listNotEmpty(question.ballotOptions)
-        require(question.ballotOptions.size >= 2) {
-          "There must be at least 2 ballot options in question: ${question.title}."
-        }
-        noListDuplicates(question.ballotOptions)
+        validQuestion(question.title, question.votingMethod, question.ballotOptions)
       }
+      return this
+    }
 
+    /**
+     * Helper method to check a single question for validity.
+     *
+     * @param title the title of the question
+     * @param votingMethod the voting method of the question
+     * @param ballotOptions the ballot options of the question
+     * @throws IllegalArgumentException if the question does not meet the criteria.
+     */
+    fun validQuestion(
+        title: String,
+        votingMethod: String,
+        ballotOptions: List<String>,
+    ): MessageValidatorBuilder {
+      stringNotEmpty(title, "question title")
+      val validVotingMethods = ElectionSetupFragment.VotingMethods.values().map { it.desc }
+      require(votingMethod in validVotingMethods) {
+        "Unsupported voting method in question: ${title}. Must be one of $validVotingMethods."
+      }
+      validBallotOptions(ballotOptions)
+      return this
+    }
+
+    private fun validBallotOptions(ballotOptions: List<String>?): MessageValidatorBuilder {
+      requireNotNull(ballotOptions) { "Ballot options cannot be null" }
+      listNotEmpty(ballotOptions)
+      require(ballotOptions.size >= 2) { "There must be at least 2 ballot options" }
+      noListDuplicates(ballotOptions)
+      ballotOptions.map {
+        stringNotEmpty(it, "ballot option in place " + ballotOptions.indexOf(it))
+      }
       return this
     }
 
@@ -323,7 +344,8 @@ object MessageValidator {
               PoPCHAQRCode.FIELD_CLIENT_ID,
               PoPCHAQRCode.FIELD_NONCE,
               PoPCHAQRCode.FIELD_REDIRECT_URI,
-              PoPCHAQRCode.FIELD_SCOPE)
+              PoPCHAQRCode.FIELD_SCOPE,
+          )
       private const val VALID_RESPONSE_TYPE = "id_token"
       private val REQUIRED_SCOPES = arrayOf("openid", "profile")
       private val VALID_RESPONSE_MODES = arrayOf("query", "fragment")
