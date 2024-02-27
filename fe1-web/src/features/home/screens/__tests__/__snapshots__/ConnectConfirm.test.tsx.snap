@@ -413,7 +413,7 @@ exports[`ConnectNavigation renders correctly 1`] = `
                                       },
                                     ]
                                   }
-                                  value="wss://127.0.0.1:9000/client"
+                                  value="ws://127.0.0.1:9000/client"
                                 />
                               </View>
                               <Text
