@@ -33,6 +33,7 @@ exports[`TextInputChirp renders correctly when writing less than 300 chars 1`] =
         "display": "flex",
         "flexDirection": "column",
         "flexGrow": 1,
+        "flexShrink": 1,
       }
     }
   >
@@ -212,6 +213,7 @@ exports[`TextInputChirp renders correctly when writing more than 300 chars 1`] =
         "display": "flex",
         "flexDirection": "column",
         "flexGrow": 1,
+        "flexShrink": 1,
       }
     }
   >
@@ -391,6 +393,7 @@ exports[`TextInputChirp renders correctly with placeholder 1`] = `
         "display": "flex",
         "flexDirection": "column",
         "flexGrow": 1,
+        "flexShrink": 1,
       }
     }
   >
@@ -550,6 +553,7 @@ exports[`TextInputChirp renders correctly with undefined public key 1`] = `
         "display": "flex",
         "flexDirection": "column",
         "flexGrow": 1,
+        "flexShrink": 1,
       }
     }
   >
@@ -715,6 +719,7 @@ exports[`TextInputChirp renders correctly without placeholder 1`] = `
         "display": "flex",
         "flexDirection": "column",
         "flexGrow": 1,
+        "flexShrink": 1,
       }
     }
   >

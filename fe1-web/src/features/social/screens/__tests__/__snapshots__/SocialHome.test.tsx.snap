@@ -88,6 +88,7 @@ exports[`SocialHome renders correctly 1`] = `
                 "display": "flex",
                 "flexDirection": "column",
                 "flexGrow": 1,
+                "flexShrink": 1,
               }
             }
           >

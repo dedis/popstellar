@@ -40,6 +40,7 @@ exports[`NewChirp renders correctly 1`] = `
           "display": "flex",
           "flexDirection": "column",
           "flexGrow": 1,
+          "flexShrink": 1,
         }
       }
     >
@@ -221,6 +222,7 @@ exports[`NewChirp shows the error message on empty trimmed message 1`] = `
           "display": "flex",
           "flexDirection": "column",
           "flexGrow": 1,
+          "flexShrink": 1,
         }
       }
     >
@@ -278,7 +280,7 @@ exports[`NewChirp shows the error message on empty trimmed message 1`] = `
             ]
           }
         >
-          You chirp will be cropped to an empty chirp. You cannot send an empty chirp.
+          Your chirp will be cropped to an empty chirp. You cannot send an empty chirp.
         </Text>
         <View
           style={
@@ -421,6 +423,7 @@ exports[`NewChirp shows the modal on trimmed chirp and closes it 1`] = `
           "display": "flex",
           "flexDirection": "column",
           "flexGrow": 1,
+          "flexShrink": 1,
         }
       }
     >
@@ -778,6 +781,7 @@ exports[`NewChirp shows the modal on trimmed chirp and closes it 2`] = `
           "display": "flex",
           "flexDirection": "column",
           "flexGrow": 1,
+          "flexShrink": 1,
         }
       }
     >
