@@ -7,18 +7,14 @@ exports[`TextInputChirp renders correctly when writing less than 300 chars 1`] =
       "backgroundColor": "#fff",
       "borderColor": "#000",
       "borderRadius": 8,
+      "columnGap": 16,
+      "display": "flex",
       "flexDirection": "row",
       "padding": 16,
     }
   }
 >
-  <View
-    style={
-      {
-        "marginRight": 16,
-      }
-    }
-  >
+  <View>
     <blockies
       bgColor="#ffffff"
       scale={5}
@@ -33,6 +29,7 @@ exports[`TextInputChirp renders correctly when writing less than 300 chars 1`] =
         "display": "flex",
         "flexDirection": "column",
         "flexGrow": 1,
+        "flexShrink": 1,
       }
     }
   >
@@ -186,18 +183,14 @@ exports[`TextInputChirp renders correctly when writing more than 300 chars 1`] =
       "backgroundColor": "#fff",
       "borderColor": "#000",
       "borderRadius": 8,
+      "columnGap": 16,
+      "display": "flex",
       "flexDirection": "row",
       "padding": 16,
     }
   }
 >
-  <View
-    style={
-      {
-        "marginRight": 16,
-      }
-    }
-  >
+  <View>
     <blockies
       bgColor="#ffffff"
       scale={5}
@@ -212,6 +205,7 @@ exports[`TextInputChirp renders correctly when writing more than 300 chars 1`] =
         "display": "flex",
         "flexDirection": "column",
         "flexGrow": 1,
+        "flexShrink": 1,
       }
     }
   >
@@ -365,18 +359,14 @@ exports[`TextInputChirp renders correctly with placeholder 1`] = `
       "backgroundColor": "#fff",
       "borderColor": "#000",
       "borderRadius": 8,
+      "columnGap": 16,
+      "display": "flex",
       "flexDirection": "row",
       "padding": 16,
     }
   }
 >
-  <View
-    style={
-      {
-        "marginRight": 16,
-      }
-    }
-  >
+  <View>
     <blockies
       bgColor="#ffffff"
       scale={5}
@@ -391,6 +381,7 @@ exports[`TextInputChirp renders correctly with placeholder 1`] = `
         "display": "flex",
         "flexDirection": "column",
         "flexGrow": 1,
+        "flexShrink": 1,
       }
     }
   >
@@ -530,18 +521,14 @@ exports[`TextInputChirp renders correctly with undefined public key 1`] = `
       "backgroundColor": "#fff",
       "borderColor": "#000",
       "borderRadius": 8,
+      "columnGap": 16,
+      "display": "flex",
       "flexDirection": "row",
       "padding": 16,
     }
   }
 >
-  <View
-    style={
-      {
-        "marginRight": 16,
-      }
-    }
-  >
+  <View>
     {"name":"person","size":40,"color":"black"}
   </View>
   <View
@@ -550,6 +537,7 @@ exports[`TextInputChirp renders correctly with undefined public key 1`] = `
         "display": "flex",
         "flexDirection": "column",
         "flexGrow": 1,
+        "flexShrink": 1,
       }
     }
   >
@@ -689,18 +677,14 @@ exports[`TextInputChirp renders correctly without placeholder 1`] = `
       "backgroundColor": "#fff",
       "borderColor": "#000",
       "borderRadius": 8,
+      "columnGap": 16,
+      "display": "flex",
       "flexDirection": "row",
       "padding": 16,
     }
   }
 >
-  <View
-    style={
-      {
-        "marginRight": 16,
-      }
-    }
-  >
+  <View>
     <blockies
       bgColor="#ffffff"
       scale={5}
@@ -715,6 +699,7 @@ exports[`TextInputChirp renders correctly without placeholder 1`] = `
         "display": "flex",
         "flexDirection": "column",
         "flexGrow": 1,
+        "flexShrink": 1,
       }
     }
   >
