@@ -30,6 +30,7 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'column',
     flexGrow: 1,
+    flexShrink: 1,
   } as ViewStyle,
   textInput: {
     alignContent: 'flex-end',
