@@ -202,7 +202,9 @@ abstract class AbstractEventCreationFragment : Fragment() {
     startDateEditText?.setText("")
     startDate = null
 
-    if (compareWithNowByDay(newDate) < 0) {
+    // let the comparison go to -1 for cases where the time is just after midnight
+    // this is handled just fine by computeTimeInSeconds() as an Instant also contains the date
+    if (compareWithNowByDay(newDate) < -1) {
       showToast(R.string.past_date_not_allowed)
       return
     }
@@ -219,7 +221,7 @@ abstract class AbstractEventCreationFragment : Fragment() {
       endTimeEditText?.setText("")
     }
 
-    if (compareWithNowByDay(newDate) == 0) {
+    if (compareWithNowByDay(newDate) <= 0) {
       computeTimesInSeconds()
     }
   }
@@ -251,7 +253,6 @@ abstract class AbstractEventCreationFragment : Fragment() {
   private fun onStartTime(bundle: Bundle) {
     startTime = getSelection(bundle)
     startTimeEditText?.setText(timeFormat.format(startTime!!.time))
-
     if (startDate != null &&
         endDate != null &&
         startDate == endDate &&
@@ -319,7 +320,6 @@ abstract class AbstractEventCreationFragment : Fragment() {
     if (startDate == null || startTime == null) {
       return false
     }
-
     completeStartTime[
         startDate!![Calendar.YEAR],
         startDate!![Calendar.MONTH],
