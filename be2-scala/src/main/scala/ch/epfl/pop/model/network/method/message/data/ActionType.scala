@@ -1,55 +1,29 @@
 package ch.epfl.pop.model.network.method.message.data
 
-enum ActionType:
-  case INVALID extends ActionType
-  case create extends ActionType
-  case update_properties extends ActionType
-  case state extends ActionType
-  case greet extends ActionType
-  case witness extends ActionType
-  case open extends ActionType
-  case reopen extends ActionType
-  case close extends ActionType
+enum ActionType(val action: String):
+  case INVALID extends ActionType("INVALID")
+  case create extends ActionType("create")
+  case update_properties extends ActionType("update_properties")
+  case state extends ActionType("state")
+  case greet extends ActionType("greet")
+  case witness extends ActionType("witness")
+  case open extends ActionType("open")
+  case reopen extends ActionType("reopen")
+  case close extends ActionType("close")
   // election actions:
-  case setup extends ActionType
-  case result extends ActionType
-  case end extends ActionType
-  case cast_vote extends ActionType
-  case key extends ActionType
+  case setup extends ActionType("setup")
+  case result extends ActionType("result")
+  case end extends ActionType("end")
+  case cast_vote extends ActionType("cast_vote")
+  case key extends ActionType("key")
   // social media actions:
-  case add extends ActionType
-  case delete extends ActionType
-  case notify_add extends ActionType
-  case notify_delete extends ActionType
+  case add extends ActionType("add")
+  case delete extends ActionType("delete")
+  case notify_add extends ActionType("notify_add")
+  case notify_delete extends ActionType("notify_delete")
   // digital cash actions:
-  case post_transaction extends ActionType
+  case post_transaction extends ActionType("post_transaction")
   // popcha
-  case authenticate extends ActionType
+  case authenticate extends ActionType("authenticate")
 
-object ActionType:
-  def apply(actionType: String): ActionType =
-    actionType match
-      case "create"            => create
-      case "update_properties" => update_properties
-      case "state"             => state
-      case "greet"             => greet
-      case "witness"           => witness
-      case "open"              => open
-      case "reopen"            => reopen
-      case "close"             => close
-      // election actions:
-      case "setup"     => setup
-      case "result"    => result
-      case "end"       => end
-      case "cast_vote" => cast_vote
-      case "key"       => key
-      // social media actions:
-      case "add"           => add
-      case "delete"        => delete
-      case "notify_add"    => notify_add
-      case "notify_delete" => notify_delete
-      // digital cash actions:
-      case "post_transaction" => post_transaction
-      // popcha
-      case "authenticate" => authenticate
-      case _              => INVALID
+

@@ -18,7 +18,7 @@ object HighLevelProtocol extends DefaultJsonProtocol {
   // ----------------------------------- ENUM FORMATTERS ----------------------------------- //
   implicit object methodTypeFormat extends RootJsonFormat[MethodType] {
     override def read(json: JsValue): MethodType = json match {
-      case JsString(method) => MethodType(method)
+      case JsString(method) => MethodType.valueOf(method)
       case _                => throw new IllegalArgumentException(s"Can't parse json value $json to a MethodType")
     }
 
