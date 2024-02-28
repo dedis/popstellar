@@ -24,7 +24,7 @@ object MessageDataProtocol extends DefaultJsonProtocol {
   // ----------------------------------- ENUM FORMATTERS ----------------------------------- //
   implicit object objectTypeFormat extends RootJsonFormat[ObjectType] {
     override def read(json: JsValue): ObjectType = json match {
-      case JsString(method) => ObjectType(method)
+      case JsString(method) => ObjectType.valueOf(method)
       case _                => throw new IllegalArgumentException(s"Can't parse json value $json to an ObjectType")
     }
 
@@ -33,7 +33,7 @@ object MessageDataProtocol extends DefaultJsonProtocol {
 
   implicit object actionTypeFormat extends RootJsonFormat[ActionType] {
     override def read(json: JsValue): ActionType = json match {
-      case JsString(method) => ActionType(method)
+      case JsString(method) => ActionType.valueOf(method)
       case _                => throw new IllegalArgumentException(s"Can't parse json value $json to an ActionType")
     }
 
@@ -42,7 +42,7 @@ object MessageDataProtocol extends DefaultJsonProtocol {
 
   implicit object versionTypeFormat extends RootJsonFormat[VersionType] {
     override def read(json: JsValue): VersionType = json match {
-      case JsString(version) => VersionType.unapply(version).getOrElse(VersionType.INVALID)
+      case JsString(version) => VersionType.valueOf(version)
       case _                 => throw new IllegalArgumentException(s"Can't parse json value $json to a VersionType")
     }
 
