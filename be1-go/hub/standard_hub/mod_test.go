@@ -1886,6 +1886,76 @@ func Test_Handle_GreetServer_Already_Greeted(t *testing.T) {
 	require.Nil(t, sock.msg)
 }
 
+// Test that receiving multiple greet server messages from the same source will
+// not override the existing server information and that an error is raised
+func Test_Handle_GreetServer_Already_Received(t *testing.T) {
+	keypair := generateKeyPair(t)
+
+	hub, err := NewHub(keypair.public, "", "", nolog, nil)
+	require.NoError(t, err)
+
+	serverInfo1 := method.ServerInfo{
+		PublicKey:     "",
+		ServerAddress: "ws://localhost:9003/server",
+		ClientAddress: "ws://localhost:9002/client",
+	}
+
+	serverInfo2 := method.ServerInfo{
+		PublicKey:     "",
+		ServerAddress: "ws://localhost:9005/server",
+		ClientAddress: "ws://localhost:9004/client",
+	}
+
+	serverGreet1 := method.GreetServer{
+		Base: query.Base{
+			JSONRPCBase: jsonrpc.JSONRPCBase{
+				JSONRPC: "2.0",
+			},
+			Method: query.MethodGreetServer,
+		},
+		Params: serverInfo1,
+	}
+
+	serverGreet2 := method.GreetServer{
+		Base: query.Base{
+			JSONRPCBase: jsonrpc.JSONRPCBase{
+				JSONRPC: "2.0",
+			},
+			Method: query.MethodGreetServer,
+		},
+		Params: serverInfo2,
+	}
+
+	sock := &fakeSocket{id: "fakeID"}
+
+	msg1, err := json.Marshal(serverGreet1)
+	require.NoError(t, err)
+
+	msg2, err := json.Marshal(serverGreet2)
+	require.NoError(t, err)
+
+	err = hub.handleMessageFromServer(&socket.IncomingMessage{
+		Socket:  sock,
+		Message: msg1,
+	})
+	require.NoError(t, err)
+	require.NoError(t, sock.err)
+
+	// check that handling GreetServer from the same source twice throw an error
+	err = hub.handleMessageFromServer(&socket.IncomingMessage{
+		Socket:  sock,
+		Message: msg2,
+	})
+	require.Error(t, err)
+	require.Error(t, sock.err)
+
+	// check that the peersInfo were not modified by the second GreetServer
+	peersInfo := hub.GetPeersInfo()
+	require.Len(t, peersInfo, 1)
+	require.Equal(t, serverInfo1, peersInfo[0])
+	require.NotEqual(t, serverInfo2, peersInfo[0])
+}
+
 // -----------------------------------------------------------------------------
 // Utility functions
 
