@@ -31,9 +31,11 @@ func (p *Peers) AddPeerInfo(socketId string, info method.ServerInfo) error {
 	p.Lock()
 	defer p.Unlock()
 
-	_, ok := p.peersInfo[socketId]
+	currentInfo, ok := p.peersInfo[socketId]
 	if ok {
-		return xerrors.Errorf("peersInfo already contains socketId %s for server %s", socketId, info)
+		return xerrors.Errorf(
+			"cannot add %s because peersInfo[%s] already contains %s",
+			info, socketId, currentInfo)
 	}
 
 	p.peersInfo[socketId] = info
