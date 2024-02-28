@@ -25,5 +25,3 @@ enum ActionType(val action: String):
   case post_transaction extends ActionType("post_transaction")
   // popcha
   case authenticate extends ActionType("authenticate")
-
-
