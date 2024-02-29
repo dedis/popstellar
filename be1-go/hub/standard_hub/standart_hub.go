@@ -482,6 +482,9 @@ func (h *Hub) sendGetMessagesByIdToServer(socket socket.Socket, missingIds map[s
 
 // sendHeartbeatToServers sends a heartbeat message to all servers
 func (h *Hub) sendHeartbeatToServers() {
+	if h.hubInbox.IsEmpty() {
+		return
+	}
 	heartbeatMessage := method.Heartbeat{
 		Base: query.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{

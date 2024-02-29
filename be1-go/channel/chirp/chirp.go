@@ -43,8 +43,8 @@ type Channel struct {
 
 // NewChannel returns a new initialized individual chirping channel
 func NewChannel(channelPath string, ownerKey string, hub channel.HubFunctionalities,
-	generalChannel channel.Broadcastable, log zerolog.Logger) *Channel {
-
+	generalChannel channel.Broadcastable, log zerolog.Logger,
+) *Channel {
 	log = log.With().Str("channel", "chirp").Logger()
 
 	newChannel := &Channel{
@@ -176,8 +176,8 @@ func (c *Channel) NewChirpRegistry() registry.MessageRegistry {
 }
 
 func (c *Channel) processAddChirp(msg message.Message, msgData interface{},
-	_ socket.Socket) error {
-
+	_ socket.Socket,
+) error {
 	data, ok := msgData.(*messagedata.ChirpAdd)
 	if !ok {
 		return xerrors.Errorf("message %v isn't a chirp#add message", msgData)
@@ -192,8 +192,8 @@ func (c *Channel) processAddChirp(msg message.Message, msgData interface{},
 }
 
 func (c *Channel) processDeleteChirp(msg message.Message, msgData interface{},
-	_ socket.Socket) error {
-
+	_ socket.Socket,
+) error {
 	return c.helperProcessDeleteChirp(msg, msgData, true)
 }
 

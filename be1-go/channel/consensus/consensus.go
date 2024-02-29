@@ -112,8 +112,8 @@ type ElectInstance struct {
 
 // NewChannel returns a new initialized consensus channel
 func NewChannel(channelID string, hub channel.HubFunctionalities,
-	log zerolog.Logger, organizerPubKey kyber.Point) channel.Channel {
-
+	log zerolog.Logger, organizerPubKey kyber.Point,
+) channel.Channel {
 	inbox := inbox.NewInbox(channelID)
 
 	log = log.With().Str("channel", "consensus").Logger()
@@ -248,8 +248,8 @@ func (c *Channel) NewConsensusRegistry() registry.MessageRegistry {
 
 // processConsensusElect processes an elect action.
 func (c *Channel) processConsensusElect(message message.Message, msgData interface{},
-	_ socket.Socket) error {
-
+	_ socket.Socket,
+) error {
 	data, ok := msgData.(*messagedata.ConsensusElect)
 	if !ok {
 		return xerrors.Errorf("message %v isn't a consensus#elect message", msgData)
@@ -294,8 +294,8 @@ func (c *Channel) processConsensusElect(message message.Message, msgData interfa
 
 // processConsensusElectAccept processes an elect accept action.
 func (c *Channel) processConsensusElectAccept(message message.Message, msgData interface{},
-	_ socket.Socket) error {
-
+	_ socket.Socket,
+) error {
 	data, ok := msgData.(*messagedata.ConsensusElectAccept)
 	if !ok {
 		return xerrors.Errorf("message %v isn't a consensus#elect_accept message", msgData)
@@ -369,8 +369,8 @@ func (c *Channel) processConsensusElectAccept(message message.Message, msgData i
 
 // processConsensusPrepare processes a prepare action.
 func (c *Channel) processConsensusPrepare(_ message.Message, msgData interface{},
-	_ socket.Socket) error {
-
+	_ socket.Socket,
+) error {
 	data, ok := msgData.(*messagedata.ConsensusPrepare)
 	if !ok {
 		return xerrors.Errorf("message %v isn't a consensus#prepare message", msgData)
@@ -430,8 +430,8 @@ func (c *Channel) processConsensusPrepare(_ message.Message, msgData interface{}
 
 // processConsensusPromise processes a promise action.
 func (c *Channel) processConsensusPromise(msg message.Message, msgData interface{},
-	_ socket.Socket) error {
-
+	_ socket.Socket,
+) error {
 	data, ok := msgData.(*messagedata.ConsensusPromise)
 	if !ok {
 		return xerrors.Errorf("message %v isn't a consensus#promise message", msgData)
@@ -507,8 +507,8 @@ func (c *Channel) processConsensusPromise(msg message.Message, msgData interface
 
 // processConsensusPropose processes a propose action.
 func (c *Channel) processConsensusPropose(_ message.Message, msgData interface{},
-	_ socket.Socket) error {
-
+	_ socket.Socket,
+) error {
 	data, ok := msgData.(*messagedata.ConsensusPropose)
 	if !ok {
 		return xerrors.Errorf("message %v isn't a consensus#propose message", msgData)
@@ -575,8 +575,8 @@ func (c *Channel) processConsensusPropose(_ message.Message, msgData interface{}
 
 // processConsensusAccept proccesses an accept action.
 func (c *Channel) processConsensusAccept(msg message.Message, msgData interface{},
-	_ socket.Socket) error {
-
+	_ socket.Socket,
+) error {
 	data, ok := msgData.(*messagedata.ConsensusAccept)
 	if !ok {
 		return xerrors.Errorf("message %v isn't a consensus#accept message", msgData)
@@ -651,8 +651,8 @@ func (c *Channel) processConsensusAccept(msg message.Message, msgData interface{
 
 // processConsensusLearn processes a learn action.
 func (c *Channel) processConsensusLearn(_ message.Message, msgData interface{},
-	_ socket.Socket) error {
-
+	_ socket.Socket,
+) error {
 	data, ok := msgData.(*messagedata.ConsensusLearn)
 	if !ok {
 		return xerrors.Errorf("message %v isn't a consensus#learn message", msgData)
@@ -694,8 +694,8 @@ func (c *Channel) processConsensusLearn(_ message.Message, msgData interface{},
 
 // processConsensusFailure processes a failure action
 func (c *Channel) processConsensusFailure(_ message.Message, msgData interface{},
-	_ socket.Socket) error {
-
+	_ socket.Socket,
+) error {
 	data, ok := msgData.(*messagedata.ConsensusFailure)
 	if !ok {
 		return xerrors.Errorf("message %v isn't a consensus#failure message", msgData)
@@ -898,7 +898,6 @@ func (i *ConsensusInstance) createElectInstance(messageID string, acceptorNumber
 // consensusInstances array
 func (c *Channel) createConsensusInstance(instanceID string) *ConsensusInstance {
 	consensusInstance := &ConsensusInstance{
-
 		id: instanceID,
 
 		role: acceptorRole,

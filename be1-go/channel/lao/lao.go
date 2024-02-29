@@ -71,7 +71,7 @@ type Channel struct {
 	general   channel.Broadcastable
 	reactions channel.LAOFunctionalities
 
-	//PoPCHA channel for authentication message
+	// PoPCHA channel for authentication message
 	authMsgs channel.LAOFunctionalities
 
 	// /root/<ID>
@@ -105,8 +105,8 @@ type rollCall struct {
 // NewChannel returns a new initialized LAO channel. It automatically creates
 // its associated consensus channel and register it to the hub.
 func NewChannel(channelID string, hub channel.HubFunctionalities, msg message.Message,
-	log zerolog.Logger, organizerPubKey kyber.Point, socket socket.Socket) (channel.Channel, error) {
-
+	log zerolog.Logger, organizerPubKey kyber.Point, socket socket.Socket,
+) (channel.Channel, error) {
 	log = log.With().Str("channel", "lao").Logger()
 
 	box := inbox.NewInbox(channelID)
@@ -266,8 +266,8 @@ func (c *Channel) NewLAORegistry() registry.MessageRegistry {
 
 // processLaoState processes a lao state action.
 func (c *Channel) processLaoState(rawMessage message.Message, msgData interface{},
-	sender socket.Socket) error {
-
+	sender socket.Socket,
+) error {
 	data, ok := msgData.(*messagedata.LaoState)
 	if !ok {
 		return xerrors.Errorf("message %v isn't a lao#state message", msgData)
@@ -339,8 +339,8 @@ func (c *Channel) processLaoState(rawMessage message.Message, msgData interface{
 
 // processRollCallCreate processes a roll call creation object.
 func (c *Channel) processRollCallCreate(msg message.Message, msgData interface{},
-	_ socket.Socket) error {
-
+	_ socket.Socket,
+) error {
 	data, ok := msgData.(*messagedata.RollCallCreate)
 	if !ok {
 		return xerrors.Errorf("message %v isn't a rollcall#create message", msgData)
@@ -366,8 +366,8 @@ func (c *Channel) processRollCallCreate(msg message.Message, msgData interface{}
 
 // processRollCallOpen processes an open roll call object.
 func (c *Channel) processRollCallOpen(msg message.Message, msgData interface{},
-	_ socket.Socket) error {
-
+	_ socket.Socket,
+) error {
 	_, ok := msgData.(*messagedata.RollCallOpen)
 	if !ok {
 		_, ok2 := msgData.(*messagedata.RollCallReOpen)
@@ -404,8 +404,8 @@ func (c *Channel) processRollCallOpen(msg message.Message, msgData interface{},
 
 // processRollCallClose processes a close roll call message.
 func (c *Channel) processRollCallClose(msg message.Message, msgData interface{},
-	senderSocket socket.Socket) error {
-
+	senderSocket socket.Socket,
+) error {
 	data, ok := msgData.(*messagedata.RollCallClose)
 	if !ok {
 		return xerrors.Errorf("message %v isn't a rollcall#close message", msgData)
@@ -444,8 +444,8 @@ func (c *Channel) processRollCallClose(msg message.Message, msgData interface{},
 
 // processElectionObject handles an election object.
 func (c *Channel) processElectionObject(msg message.Message, msgData interface{},
-	senderSocket socket.Socket) error {
-
+	senderSocket socket.Socket,
+) error {
 	_, ok := msgData.(*messagedata.ElectionSetup)
 	if !ok {
 		return xerrors.Errorf("message %v isn't a election#setup message", msgData)
@@ -492,7 +492,8 @@ func (c *Channel) processElectionObject(msg message.Message, msgData interface{}
 
 // processMessageWitness handles a message object.
 func (c *Channel) processMessageWitness(msg message.Message, msgData interface{},
-	_ socket.Socket) error {
+	_ socket.Socket,
+) error {
 	_, ok := msgData.(*messagedata.MessageWitness)
 	if !ok {
 		return xerrors.Errorf("message %v isn't a message#witness message", msgData)
@@ -591,8 +592,8 @@ func (c *Channel) broadcastToAllClients(msg message.Message) error {
 
 // createGeneralChirpingChannel creates a new general chirping channel and returns it
 func createGeneralChirpingChannel(laoID string, hub channel.HubFunctionalities,
-	socket socket.Socket) *generalChirping.Channel {
-
+	socket socket.Socket,
+) *generalChirping.Channel {
 	generalChannelPath := laoID + social + chirps
 	generalChirpingChannel := generalChirping.NewChannel(generalChannelPath, hub, popstellar.Logger)
 	hub.NotifyNewChannel(generalChannelPath, generalChirpingChannel, socket)
@@ -630,8 +631,8 @@ func (c *Channel) createCoinChannel(socket socket.Socket, log zerolog.Logger) {
 
 // createElection creates an election in the LAO.
 func (c *Channel) createElection(msg message.Message,
-	setupMsg messagedata.ElectionSetup, socket socket.Socket) error {
-
+	setupMsg messagedata.ElectionSetup, socket socket.Socket,
+) error {
 	// Check if the Lao ID of the message corresponds to the channel ID
 	channelID := c.channelID[6:]
 	if channelID != setupMsg.Lao {
