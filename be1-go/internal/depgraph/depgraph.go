@@ -36,7 +36,6 @@ type config struct {
 type bag map[string]struct{}
 
 func main() {
-
 	app := &cli.App{
 		Name:      "depgraph",
 		Usage:     "generate a dot graph",
@@ -219,8 +218,6 @@ func getWriter(config config) (io.Writer, error) {
 // folder
 func walkFn(config config, links map[string]bag) filepath.WalkFunc {
 	return func(path string, f os.FileInfo, err error) error {
-		fset := token.NewFileSet()
-
 		if err != nil {
 			return xerrors.Errorf("got an error while walking: %v", err)
 		}
@@ -237,47 +234,52 @@ func walkFn(config config, links map[string]bag) filepath.WalkFunc {
 			return nil
 		}
 
-		astFile, err := parser.ParseFile(fset, path, nil, parser.ImportsOnly)
-		if err != nil {
-			return xerrors.Errorf("failed to parse file: %v", err)
-		}
+		return walkTroughImports(config, links, path)
+	}
+}
 
-		path = filepath.Dir(path)
-		// This is the full package path. From "mino" we want
-		// "go.dedis.ch/dela/mino"
-		packagePath := config.Modname + path
+func walkTroughImports(config config, links map[string]bag, path string) error {
+	fset := token.NewFileSet()
+	astFile, err := parser.ParseFile(fset, path, nil, parser.ImportsOnly)
+	if err != nil {
+		return xerrors.Errorf("failed to parse file: %v", err)
+	}
 
-		if !isIncluded(packagePath, config.Includes) ||
-			isExcluded(packagePath, config.Excludes) {
-			return nil
-		}
+	path = filepath.Dir(path)
+	// This is the full package path. From "mino" we want
+	// "go.dedis.ch/dela/mino"
+	packagePath := config.Modname + path
 
-		for _, s := range astFile.Imports {
-			// because an import path is always surrounded with "" we remove
-			// them
-			importPath := s.Path.Value[1 : len(s.Path.Value)-1]
-
-			if !isIncluded(importPath, config.Includes) ||
-				isExcluded(importPath, config.Excludes) {
-
-				continue
-			}
-
-			// in the case the package imports a package from the same module,
-			// we want to keep only the "relative" name. From
-			// "go.dedis.ch/dela/mino/minogrpc" we want only "mino/minogrpc".
-			importPath = strings.TrimPrefix(importPath, config.Modname)
-
-			if links[packagePath[len(config.Modname):]] == nil {
-				links[packagePath[len(config.Modname):]] = make(bag)
-			}
-
-			// add the dependency to the bag
-			links[packagePath[len(config.Modname):]][importPath] = struct{}{}
-		}
-
+	if !isIncluded(packagePath, config.Includes) ||
+		isExcluded(packagePath, config.Excludes) {
 		return nil
 	}
+
+	for _, s := range astFile.Imports {
+		// because an import path is always surrounded with "" we remove
+		// them
+		importPath := s.Path.Value[1 : len(s.Path.Value)-1]
+
+		if !isIncluded(importPath, config.Includes) ||
+			isExcluded(importPath, config.Excludes) {
+
+			continue
+		}
+
+		// in the case the package imports a package from the same module,
+		// we want to keep only the "relative" name. From
+		// "go.dedis.ch/dela/mino/minogrpc" we want only "mino/minogrpc".
+		importPath = strings.TrimPrefix(importPath, config.Modname)
+
+		if links[packagePath[len(config.Modname):]] == nil {
+			links[packagePath[len(config.Modname):]] = make(bag)
+		}
+
+		// add the dependency to the bag
+		links[packagePath[len(config.Modname):]][importPath] = struct{}{}
+	}
+
+	return nil
 }
 
 func displayGraph(out io.Writer, links map[string]bag, interfaces bag) {
