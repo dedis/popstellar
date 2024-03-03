@@ -2,6 +2,7 @@ package com.github.dedis.popstellar.model.network.method.message.data.election
 
 import com.github.dedis.popstellar.model.Immutable
 import com.github.dedis.popstellar.model.objects.Election
+import com.github.dedis.popstellar.utility.MessageValidator.verify
 import com.google.gson.annotations.SerializedName
 import java.util.Objects
 
@@ -31,14 +32,31 @@ class PlainVote : Vote {
       vote: Int?,
       writeInEnabled: Boolean,
       writeIn: String?,
-      electionId: String?
+      electionId: String?,
   ) {
+    verify()
+        .isNotEmptyBase64(questionId, "question ID")
+        .isNotEmptyBase64(electionId ?: "", "election ID")
+        .apply {
+          if (writeInEnabled) {
+            isNotEmptyBase64(writeIn, "write-in")
+          } else {
+            isNotNull(vote, "vote")
+          }
+        }
+
     this.questionId = questionId
     this.vote = if (writeInEnabled) null else vote
-    this.id = Election.generateElectionVoteId(electionId, questionId, vote, writeIn, writeInEnabled)
+    this.id =
+        Election.generateElectionVoteId(electionId, questionId, this.vote, writeIn, writeInEnabled)
   }
 
   constructor(id: String, question: String, vote: Int) {
+    verify()
+        .isNotEmptyBase64(id, "id")
+        .isNotEmptyBase64(question, "question")
+        .isNotNull(vote, "vote")
+
     this.id = id
     this.questionId = question
     this.vote = vote
