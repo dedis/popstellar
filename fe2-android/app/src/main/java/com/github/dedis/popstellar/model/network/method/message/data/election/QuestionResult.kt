@@ -1,6 +1,7 @@
 package com.github.dedis.popstellar.model.network.method.message.data.election
 
 import com.github.dedis.popstellar.model.Immutable
+import com.github.dedis.popstellar.utility.MessageValidator.verify
 import com.google.gson.annotations.SerializedName
 import java.util.Objects
 
@@ -10,9 +11,9 @@ class QuestionResult(ballotOption: String?, count: Int) {
   val count: Int
 
   init {
-    requireNotNull(ballotOption)
+    verify().stringNotEmpty(ballotOption, "ballot option").greaterOrEqualThan(count, 0, "count")
 
-    ballot = ballotOption
+    ballot = ballotOption!!
     this.count = count
   }
 
