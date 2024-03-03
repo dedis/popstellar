@@ -176,19 +176,6 @@ object MessageValidator {
     }
 
     /**
-     * Helper method to check that a write-in is valid.
-     *
-     * @param input the encrypted write-in to check
-     * @param field name of the field (to print in case of error)
-     * @throws IllegalArgumentException if the string is empty or not a URL-safe base64 encoding
-     */
-    fun isValidWriteIn(input: String?, field: String): MessageValidatorBuilder {
-      requireNotNull(input) { "Write-in is enabled but encrypted write-in is null" }
-      isNotEmptyBase64(input, field)
-      return this
-    }
-
-    /**
      * Helper method to check that a list is not empty.
      *
      * @param list the list to check
@@ -260,7 +247,6 @@ object MessageValidator {
       ballotOptions: List<String>,
     ): MessageValidatorBuilder {
       stringNotEmpty(title, "question title")
-      val validVotingMethods = ElectionSetupFragment.VotingMethods.values().map { it.desc }
       require(votingMethod in validVotingMethods) {
         "Unsupported voting method in question: ${title}. Must be one of $validVotingMethods."
       }
@@ -273,7 +259,7 @@ object MessageValidator {
       listNotEmpty(ballotOptions)
       require(ballotOptions.size >= 2) { "There must be at least 2 ballot options" }
       noListDuplicates(ballotOptions)
-      ballotOptions.map {
+      ballotOptions.forEach{
         stringNotEmpty(it, "ballot option in place " + ballotOptions.indexOf(it))
       }
       return this
@@ -346,6 +332,8 @@ object MessageValidator {
       private const val VALID_RESPONSE_TYPE = "id_token"
       private val REQUIRED_SCOPES = arrayOf("openid", "profile")
       private val VALID_RESPONSE_MODES = arrayOf("query", "fragment")
+
+      private val validVotingMethods = ElectionSetupFragment.VotingMethods.values().map { it.desc }
     }
   }
 }

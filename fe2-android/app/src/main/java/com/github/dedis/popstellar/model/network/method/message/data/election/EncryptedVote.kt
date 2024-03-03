@@ -41,7 +41,7 @@ class EncryptedVote : Vote {
         .isNotEmptyBase64(electionId, "election ID")
         .apply {
           if (writeInEnabled) {
-            isValidWriteIn(encryptedWriteIn, "encrypted write-in")
+            isNotEmptyBase64(encryptedWriteIn, "write-in")
           } else {
             isNotEmptyBase64(encryptedVote, "encrypted vote")
           }
