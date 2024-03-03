@@ -91,7 +91,7 @@ class ElectionQuestion(electionId: String, question: Question) {
     }
 
     override fun hashCode(): Int {
-      return Objects.hash(title, votingMethod, ballotOptions)
+      return Objects.hash(title, votingMethod, ballotOptions, writeIn)
     }
 
     override fun toString(): String {
