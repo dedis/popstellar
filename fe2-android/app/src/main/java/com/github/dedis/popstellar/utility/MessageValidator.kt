@@ -176,19 +176,6 @@ object MessageValidator {
     }
 
     /**
-     * Helper method to check that a write-in is valid.
-     *
-     * @param input the encrypted write-in to check
-     * @param field name of the field (to print in case of error)
-     * @throws IllegalArgumentException if the string is empty or not a URL-safe base64 encoding
-     */
-    fun isValidWriteIn(input: String?, field: String): MessageValidatorBuilder {
-      requireNotNull(input) { "Write-in is enabled but encrypted write-in is null" }
-      isNotEmptyBase64(input, field)
-      return this
-    }
-
-    /**
      * Helper method to check that a list is not empty.
      *
      * @param list the list to check
