@@ -28,7 +28,7 @@ class ElectionTest {
       .build()
 
   // Add some vote for decryption/encryption testing purposes
-  private val questionId1 = " myQuestion1"
+  private val questionId1 = Election.generateElectionQuestionId(election.id, "Question")
 
   // Set up a open ballot election
   private val plainVote1 = PlainVote(questionId1, 1, false, null, election.id)
@@ -40,7 +40,7 @@ class ElectionTest {
   fun versionTest() {
     MatcherAssert.assertThat(
       ElectionVersion.OPEN_BALLOT,
-      CoreMatchers.`is`(election.electionVersion)
+      CoreMatchers.`is`(election.electionVersion),
     )
   }
 
