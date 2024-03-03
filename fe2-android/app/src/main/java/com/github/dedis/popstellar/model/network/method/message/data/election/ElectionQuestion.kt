@@ -20,7 +20,6 @@ class ElectionQuestion(electionId: String, question: Question) {
   @SerializedName(value = "write_in") val writeIn: Boolean
 
   init {
-    // questions are already validated when constructed, but never too much validation.
     verify().isNotEmptyBase64(electionId, "election ID").validQuestions(listOf(question))
 
     this.question = question.title
@@ -58,10 +57,10 @@ class ElectionQuestion(electionId: String, question: Question) {
    */
   @Immutable
   class Question(
-      title: String,
-      votingMethod: String,
-      ballotOptions: List<String>,
-      writeIn: Boolean,
+    title: String,
+    votingMethod: String,
+    ballotOptions: List<String>,
+    writeIn: Boolean,
   ) {
     val title: String
     val votingMethod: String
@@ -86,13 +85,13 @@ class ElectionQuestion(electionId: String, question: Question) {
       }
       val that = other as Question
       return writeIn == that.writeIn &&
-          title == that.title &&
-          votingMethod == that.votingMethod &&
-          ballotOptions == that.ballotOptions
+        title == that.title &&
+        votingMethod == that.votingMethod &&
+        ballotOptions == that.ballotOptions
     }
 
     override fun hashCode(): Int {
-      return Objects.hash(title, votingMethod, ballotOptions)
+      return Objects.hash(title, votingMethod, ballotOptions, writeIn)
     }
 
     override fun toString(): String {
