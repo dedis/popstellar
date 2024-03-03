@@ -247,7 +247,6 @@ object MessageValidator {
       ballotOptions: List<String>,
     ): MessageValidatorBuilder {
       stringNotEmpty(title, "question title")
-      val validVotingMethods = ElectionSetupFragment.VotingMethods.values().map { it.desc }
       require(votingMethod in validVotingMethods) {
         "Unsupported voting method in question: ${title}. Must be one of $validVotingMethods."
       }
@@ -333,6 +332,8 @@ object MessageValidator {
       private const val VALID_RESPONSE_TYPE = "id_token"
       private val REQUIRED_SCOPES = arrayOf("openid", "profile")
       private val VALID_RESPONSE_MODES = arrayOf("query", "fragment")
+
+      private val validVotingMethods = ElectionSetupFragment.VotingMethods.values().map { it.desc }
     }
   }
 }
