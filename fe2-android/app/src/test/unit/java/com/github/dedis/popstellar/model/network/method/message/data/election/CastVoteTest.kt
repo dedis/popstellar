@@ -33,8 +33,8 @@ class CastVoteTest {
   private val vote2Base64 = Base64URLData(vote2.toString().toByteArray()).encoded
 
   // Set up a open ballot election
-  private val plainVote1 = PlainVote(questionId1, 1, writeInEnabled, writeIn, electionId)
-  private val plainVote2 = PlainVote(questionId2, 2, writeInEnabled, writeIn, electionId)
+  private val plainVote1 = PlainVote(questionId1, vote1, writeInEnabled, writeIn, electionId)
+  private val plainVote2 = PlainVote(questionId2, vote2, writeInEnabled, writeIn, electionId)
   private val plainVotes = listOf<Vote>(plainVote1, plainVote2)
 
   // Set up a secret ballot election
@@ -78,7 +78,7 @@ class CastVoteTest {
 
   @Test(expected = IllegalArgumentException::class)
   fun constructorFailsWithVoteQuestionIdNotBase64Test() {
-    val invalid = PlainVote("not base 64", 1, writeInEnabled, writeIn, electionId)
+    val invalid = PlainVote("not base 64", vote1, writeInEnabled, writeIn, electionId)
     val invalidVotes = listOf<Vote>(plainVote1, plainVote2, invalid)
     CastVote(invalidVotes, electionId, laoId, creation)
   }
