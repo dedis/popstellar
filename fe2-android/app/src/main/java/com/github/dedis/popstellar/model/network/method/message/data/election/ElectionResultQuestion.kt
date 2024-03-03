@@ -11,7 +11,7 @@ class ElectionResultQuestion(id: String, result: Set<QuestionResult>) {
 
   init {
     // Set can't have duplicates, so no need to check for duplicates
-    // QuestionResult is already validated when constructed
+    // QuestionResult are already validated when constructed
     verify().stringNotEmpty(id, "election id").listNotEmpty(result.toList())
 
     this.id = id
