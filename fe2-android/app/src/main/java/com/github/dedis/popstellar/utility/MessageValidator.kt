@@ -259,7 +259,7 @@ object MessageValidator {
       listNotEmpty(ballotOptions)
       require(ballotOptions.size >= 2) { "There must be at least 2 ballot options" }
       noListDuplicates(ballotOptions)
-      ballotOptions.map {
+      ballotOptions.forEach{
         stringNotEmpty(it, "ballot option in place " + ballotOptions.indexOf(it))
       }
       return this
