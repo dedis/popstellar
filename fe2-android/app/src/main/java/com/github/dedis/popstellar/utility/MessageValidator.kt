@@ -213,14 +213,7 @@ object MessageValidator {
       if (votes == null) {
         return this
       }
-
       noListDuplicates(votes)
-
-      for (vote in votes) {
-        isBase64(vote.questionId, "question id")
-        isBase64(vote.id, "vote id")
-      }
-
       return this
     }
 
