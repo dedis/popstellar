@@ -17,7 +17,7 @@ import java.util.regex.Pattern
 object MessageValidator {
   /** URL-safe base64 pattern */
   private val BASE64_PATTERN =
-    Pattern.compile("^(?:[A-Za-z0-9-_]{4})*(?:[A-Za-z0-9-_]{2}==|[A-Za-z0-9-_]{3}=)?$")
+      Pattern.compile("^(?:[A-Za-z0-9-_]{4})*(?:[A-Za-z0-9-_]{2}==|[A-Za-z0-9-_]{3}=)?$")
   private val URL_PATTERN = Pattern.compile("\\b(?:http|ws)s?:\\/\\/\\S*[^\\s.\"]")
 
   @JvmStatic
@@ -36,10 +36,10 @@ object MessageValidator {
      * @throws IllegalArgumentException if the id is invalid
      */
     fun validLaoId(
-      id: String,
-      organizer: PublicKey,
-      creation: Long,
-      name: String,
+        id: String,
+        organizer: PublicKey,
+        creation: Long,
+        name: String,
     ): MessageValidatorBuilder {
       // If any of the arguments are empty or null this throws an exception
       require(id == Lao.generateLaoId(organizer, creation, name)) {
@@ -58,10 +58,10 @@ object MessageValidator {
      * @throws IllegalArgumentException if the id is invalid
      */
     fun validCreateMeetingId(
-      id: String,
-      laoId: String,
-      creation: Long,
-      name: String,
+        id: String,
+        laoId: String,
+        creation: Long,
+        name: String,
     ): MessageValidatorBuilder {
       // If any of the arguments are empty or null this throws an exception
       require(id == Meeting.generateCreateMeetingId(laoId, creation, name)) {
@@ -80,10 +80,10 @@ object MessageValidator {
      * @throws IllegalArgumentException if the id is invalid
      */
     fun validStateMeetingId(
-      id: String,
-      laoId: String,
-      creation: Long,
-      name: String,
+        id: String,
+        laoId: String,
+        creation: Long,
+        name: String,
     ): MessageValidatorBuilder {
       // If any of the arguments are empty or null this throws an exception
       require(id == Meeting.generateStateMeetingId(laoId, creation, name)) {
@@ -242,9 +242,9 @@ object MessageValidator {
      * @throws IllegalArgumentException if the question does not meet the criteria.
      */
     fun validQuestion(
-      title: String,
-      votingMethod: String,
-      ballotOptions: List<String>,
+        title: String,
+        votingMethod: String,
+        ballotOptions: List<String>,
     ): MessageValidatorBuilder {
       stringNotEmpty(title, "question title")
       require(votingMethod in validVotingMethods) {
@@ -259,7 +259,7 @@ object MessageValidator {
       listNotEmpty(ballotOptions)
       require(ballotOptions.size >= 2) { "There must be at least 2 ballot options" }
       noListDuplicates(ballotOptions)
-      ballotOptions.forEach{
+      ballotOptions.forEach {
         stringNotEmpty(it, "ballot option in place " + ballotOptions.indexOf(it))
       }
       return this
@@ -274,7 +274,7 @@ object MessageValidator {
       // Check it's a valid url
       verify().validUrl(input)
       val uri =
-        Uri.parse(input) ?: throw IllegalArgumentException("Impossible to parse the URL: $input")
+          Uri.parse(input) ?: throw IllegalArgumentException("Impossible to parse the URL: $input")
 
       // Check required arguments are present
       for (arg in REQUIRED_ARGUMENTS) {
@@ -289,21 +289,21 @@ object MessageValidator {
 
       // Check the scope contains all the required scopes
       require(
-        Arrays.stream(REQUIRED_SCOPES).allMatch { name: String ->
-          uri.getQueryParameter(PoPCHAQRCode.FIELD_SCOPE)!!.contains(name)
-        }
-      ) {
-        "Invalid scope"
-      }
+          Arrays.stream(REQUIRED_SCOPES).allMatch { name: String ->
+            uri.getQueryParameter(PoPCHAQRCode.FIELD_SCOPE)!!.contains(name)
+          }) {
+            "Invalid scope"
+          }
 
       // Check response mode is valid
       val responseMode = uri.getQueryParameter(PoPCHAQRCode.FIELD_RESPONSE_MODE)
       require(
-        responseMode == null ||
-          Arrays.stream(VALID_RESPONSE_MODES).anyMatch { s: String -> responseMode.contains(s) }
-      ) {
-        "Invalid response mode"
-      }
+          responseMode == null ||
+              Arrays.stream(VALID_RESPONSE_MODES).anyMatch { s: String ->
+                responseMode.contains(s)
+              }) {
+            "Invalid response mode"
+          }
 
       // Check lao ID in login hint match the right laoID
       val laoHint = uri.getQueryParameter(PoPCHAQRCode.FIELD_LOGIN_HINT)
@@ -323,12 +323,12 @@ object MessageValidator {
 
       // Constants used for checking PoPCHA URLs
       private val REQUIRED_ARGUMENTS =
-        arrayOf(
-          PoPCHAQRCode.FIELD_CLIENT_ID,
-          PoPCHAQRCode.FIELD_NONCE,
-          PoPCHAQRCode.FIELD_REDIRECT_URI,
-          PoPCHAQRCode.FIELD_SCOPE,
-        )
+          arrayOf(
+              PoPCHAQRCode.FIELD_CLIENT_ID,
+              PoPCHAQRCode.FIELD_NONCE,
+              PoPCHAQRCode.FIELD_REDIRECT_URI,
+              PoPCHAQRCode.FIELD_SCOPE,
+          )
       private const val VALID_RESPONSE_TYPE = "id_token"
       private val REQUIRED_SCOPES = arrayOf("openid", "profile")
       private val VALID_RESPONSE_MODES = arrayOf("query", "fragment")
