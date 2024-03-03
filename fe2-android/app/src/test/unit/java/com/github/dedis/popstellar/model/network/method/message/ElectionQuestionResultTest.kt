@@ -4,28 +4,43 @@ import com.github.dedis.popstellar.model.network.method.message.data.election.El
 import com.github.dedis.popstellar.model.network.method.message.data.election.QuestionResult
 import org.hamcrest.CoreMatchers
 import org.hamcrest.MatcherAssert
-import org.junit.Assert
 import org.junit.Test
 
 class ElectionQuestionResultTest {
-  private val questionId = "questionId"
-  private val results = setOf(QuestionResult("Candidate1", 30))
-  private val electionQuestionResult = ElectionResultQuestion(questionId, results)
+  private val validQuestionId = "questionId"
+  private val validCount = 30
+  private val validResults = setOf(QuestionResult("Candidate1", validCount))
+  private val validElectionQuestionResult = ElectionResultQuestion(validQuestionId, validResults)
+  private val emptyResultSet = emptySet<QuestionResult>()
+
+  @Test
+  fun constructorSucceedsWithValidData() {
+    ElectionResultQuestion(validQuestionId, validResults)
+  }
+
+  @Test(expected = IllegalArgumentException::class)
+  fun constructorFailsWhenIdIsEmpty() {
+    ElectionResultQuestion("", validResults)
+  }
+
+  @Test(expected = IllegalArgumentException::class)
+  fun constructorFailsWhenResultSetIsEmpty() {
+    ElectionResultQuestion(validQuestionId, emptyResultSet)
+  }
+
   @Test
   fun electionQuestionResultGetterReturnsCorrectQuestionId() {
-    MatcherAssert.assertThat(electionQuestionResult.id, CoreMatchers.`is`(questionId))
+    MatcherAssert.assertThat(validElectionQuestionResult.id, CoreMatchers.`is`(validQuestionId))
   }
 
   @Test
   fun electionQuestionResultGetterReturnsCorrectResults() {
-    MatcherAssert.assertThat(electionQuestionResult.result, CoreMatchers.`is`(results))
+    MatcherAssert.assertThat(validElectionQuestionResult.result, CoreMatchers.`is`(validResults))
   }
 
-  @Test
+  @Test(expected = IllegalArgumentException::class)
   fun resultsCantBeEmpty() {
     val emptySet = emptySet<QuestionResult>()
-    Assert.assertThrows(
-      IllegalArgumentException::class.java
-    ) { ElectionResultQuestion(questionId, emptySet) }
+    ElectionResultQuestion(validQuestionId, emptySet)
   }
 }
