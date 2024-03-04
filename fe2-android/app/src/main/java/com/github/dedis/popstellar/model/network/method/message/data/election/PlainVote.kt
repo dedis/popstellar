@@ -32,11 +32,11 @@ class PlainVote : Vote {
       vote: Int?,
       writeInEnabled: Boolean,
       writeIn: String?,
-      electionId: String?,
+      electionId: String
   ) {
     verify()
         .isNotEmptyBase64(questionId, "question ID")
-        .isNotEmptyBase64(electionId ?: "", "election ID")
+        .isNotEmptyBase64(electionId, "election ID")
         .apply {
           if (writeInEnabled) {
             isNotEmptyBase64(writeIn, "write-in")
