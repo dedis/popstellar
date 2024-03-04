@@ -199,12 +199,13 @@ abstract class AbstractEventCreationFragment : Fragment() {
 
   private fun onStartDate(bundle: Bundle) {
     val newDate = getSelection(bundle)
+    val daysFromNow = compareWithNowByDay(newDate)
     startDateEditText?.setText("")
     startDate = null
 
     // let the comparison go to -1 for cases where the time is just after midnight
     // this is handled just fine by computeTimeInSeconds() as an Instant also contains the date
-    if (compareWithNowByDay(newDate) < -1) {
+    if (daysFromNow < -1) {
       showToast(R.string.past_date_not_allowed)
       return
     }
@@ -221,7 +222,7 @@ abstract class AbstractEventCreationFragment : Fragment() {
       endTimeEditText?.setText("")
     }
 
-    if (compareWithNowByDay(newDate) <= 0) {
+    if (daysFromNow <= 0) {
       computeTimesInSeconds()
     }
   }
