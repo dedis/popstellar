@@ -40,16 +40,14 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
-      - name: Setup node cache
+      - name: Setup node npm cache
         uses: actions/cache@v2
         env:
           cache-name: cache-node-npm
         with:
           # npm cache files are stored in `~/.npm` on Linux/macOS
           path: ~/.npm
-          key: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
-            
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-
             ${{ runner.os }}-build-
@@ -61,10 +59,10 @@ jobs:
           cache-name: cache-node-modules
         with:
           path: ./fe1-web/node_modules
-          key: ${{ runner.os }}-${{ env.NODE_VERSION }}-nodemodules-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
-            ${{ runner.os }}-${{ env.NODE_VERSION }}-nodemodules-
-            ${{ runner.os }}-${{ env.NODE_VERSION }}-
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
             ${{ runner.os }}-
 
       - name: Setup expo
