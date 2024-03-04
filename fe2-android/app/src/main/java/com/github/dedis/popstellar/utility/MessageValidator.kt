@@ -147,6 +147,11 @@ object MessageValidator {
       return stringNotEmpty(input, field).isBase64(input, field)
     }
 
+    fun isNotNull(input: Any?, field: String): MessageValidatorBuilder {
+      requireNotNull(input) { "$field cannot be null" }
+      return this
+    }
+
     /**
      * Helper method to check that a string represents a valid unicode emoji supported for reactions
      *
@@ -221,14 +226,7 @@ object MessageValidator {
       if (votes == null) {
         return this
       }
-
       noListDuplicates(votes)
-
-      for (vote in votes) {
-        isBase64(vote.questionId, "question id")
-        isBase64(vote.id, "vote id")
-      }
-
       return this
     }
 
