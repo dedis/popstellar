@@ -1,7 +1,6 @@
 package com.github.dedis.popstellar.utility
 
 import android.net.Uri
-import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionQuestion
 import com.github.dedis.popstellar.model.network.method.message.data.election.Vote
 import com.github.dedis.popstellar.model.objects.Lao
 import com.github.dedis.popstellar.model.objects.Meeting
@@ -218,18 +217,6 @@ object MessageValidator {
         isBase64(vote.id, "vote id")
       }
 
-      return this
-    }
-
-    /**
-     * Helper method to check a list of questions for validity.
-     *
-     * @param questions the list of questions to check.
-     * @throws IllegalArgumentException if any question does not meet the criteria.
-     */
-    fun validQuestions(questions: List<ElectionQuestion.Question>?): MessageValidatorBuilder {
-      require(!questions.isNullOrEmpty()) { "Questions list cannot be null or empty" }
-      noListDuplicates(questions)
       return this
     }
 

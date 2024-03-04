@@ -20,7 +20,7 @@ class ElectionQuestion(electionId: String, question: Question) {
   @SerializedName(value = "write_in") val writeIn: Boolean
 
   init {
-    verify().isNotEmptyBase64(electionId, "election ID").validQuestions(listOf(question))
+    verify().isNotEmptyBase64(electionId, "election ID")
 
     this.question = question.title
     this.id = Election.generateElectionQuestionId(electionId, question.title)
