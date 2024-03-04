@@ -36,12 +36,6 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.reactivex.Completable
 import io.reactivex.subjects.BehaviorSubject
-import java.text.DateFormat
-import java.text.SimpleDateFormat
-import java.time.Instant
-import java.util.Calendar
-import java.util.Locale
-import javax.inject.Inject
 import org.hamcrest.MatcherAssert
 import org.hamcrest.Matchers
 import org.junit.Assert
@@ -54,26 +48,44 @@ import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.junit.MockitoJUnit
 import org.mockito.junit.MockitoTestRule
+import java.text.DateFormat
+import java.text.SimpleDateFormat
+import java.time.Instant
+import java.util.Calendar
+import java.util.Locale
+import javax.inject.Inject
 
 @LargeTest
 @HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
 class ElectionSetupFragmentTest {
-  @Inject lateinit var keyManager: KeyManager
+  @Inject
+  lateinit var keyManager: KeyManager
 
-  @Inject lateinit var messageHandler: MessageHandler
+  @Inject
+  lateinit var messageHandler: MessageHandler
 
-  @Inject lateinit var gson: Gson
+  @Inject
+  lateinit var gson: Gson
 
-  @BindValue @Mock lateinit var repository: LAORepository
+  @BindValue
+  @Mock
+  lateinit var repository: LAORepository
 
-  @BindValue @Mock lateinit var globalNetworkManager: GlobalNetworkManager
+  @BindValue
+  @Mock
+  lateinit var globalNetworkManager: GlobalNetworkManager
 
-  @Mock lateinit var messageSender: MessageSender
+  @Mock
+  lateinit var messageSender: MessageSender
 
-  @JvmField @Rule(order = 0) val mockitoRule: MockitoTestRule = MockitoJUnit.testRule(this)
+  @JvmField
+  @Rule(order = 0)
+  val mockitoRule: MockitoTestRule = MockitoJUnit.testRule(this)
 
-  @JvmField @Rule(order = 1) val hiltRule = HiltAndroidRule(this)
+  @JvmField
+  @Rule(order = 1)
+  val hiltRule = HiltAndroidRule(this)
 
   @JvmField
   @Rule(order = 2)
