@@ -59,11 +59,8 @@ jobs:
           cache-name: cache-node-modules
         with:
           path: ./fe1-web/node_modules
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
+          key:  ${{ runner.os }}-nodemodules-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: ${{ runner.os }}-nodemodules-
 
       - name: Setup expo
         run: npm install -g @expo/cli
