@@ -37,7 +37,7 @@ object MessageValidator {
         id: String,
         organizer: PublicKey,
         creation: Long,
-        name: String
+        name: String,
     ): MessageValidatorBuilder {
       // If any of the arguments are empty or null this throws an exception
       require(id == Lao.generateLaoId(organizer, creation, name)) {
@@ -59,7 +59,7 @@ object MessageValidator {
         id: String,
         laoId: String,
         creation: Long,
-        name: String
+        name: String,
     ): MessageValidatorBuilder {
       // If any of the arguments are empty or null this throws an exception
       require(id == Meeting.generateCreateMeetingId(laoId, creation, name)) {
@@ -81,7 +81,7 @@ object MessageValidator {
         id: String,
         laoId: String,
         creation: Long,
-        name: String
+        name: String,
     ): MessageValidatorBuilder {
       // If any of the arguments are empty or null this throws an exception
       require(id == Meeting.generateStateMeetingId(laoId, creation, name)) {
@@ -170,6 +170,19 @@ object MessageValidator {
      */
     fun stringNotEmpty(input: String?, field: String): MessageValidatorBuilder {
       require(!input.isNullOrEmpty()) { "$field cannot be empty" }
+      return this
+    }
+
+    /**
+     * Helper method to check that a value is greater or equal than a given value.
+     *
+     * @param input the value to check
+     * @param field name of the field (to print in case of error)
+     * @param value the value to compare to
+     * @throws IllegalArgumentException if the value is not greater or equal than the given value
+     */
+    fun greaterOrEqualThan(input: Int, value: Int, field: String): MessageValidatorBuilder {
+      require(input >= value) { "$field must be greater or equal than $value" }
       return this
     }
 
@@ -281,7 +294,8 @@ object MessageValidator {
               PoPCHAQRCode.FIELD_CLIENT_ID,
               PoPCHAQRCode.FIELD_NONCE,
               PoPCHAQRCode.FIELD_REDIRECT_URI,
-              PoPCHAQRCode.FIELD_SCOPE)
+              PoPCHAQRCode.FIELD_SCOPE,
+          )
       private const val VALID_RESPONSE_TYPE = "id_token"
       private val REQUIRED_SCOPES = arrayOf("openid", "profile")
       private val VALID_RESPONSE_MODES = arrayOf("query", "fragment")
