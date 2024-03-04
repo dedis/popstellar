@@ -49,7 +49,9 @@ jobs:
           path: |
             ~/.npm
             ./fe1-web/node_modules
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          key: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+            ${{ runner.os }}-${{ env.NODE_VERSION }}-nodemodules-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-
             ${{ runner.os }}-build-
