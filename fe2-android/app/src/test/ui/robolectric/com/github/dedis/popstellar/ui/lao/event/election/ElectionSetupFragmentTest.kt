@@ -325,11 +325,31 @@ class ElectionSetupFragmentTest {
       )
   }
 
-  // @matteosz: This test will fail if executed between 00:00 and 00:10! TO-FIX
   @Test
   fun cannotChooseStartTimeTooFarInPast() {
     val today = Calendar.getInstance()
     today.add(Calendar.MINUTE, -10)
+    val year = today[Calendar.YEAR]
+    val monthOfYear = today[Calendar.MONTH]
+    val dayOfMonth = today[Calendar.DAY_OF_MONTH]
+    val hourOfDay = today[Calendar.HOUR_OF_DAY]
+    val minutes = today[Calendar.MINUTE]
+
+    EventCreationPageObject.startDateView().perform(ViewActions.click())
+    getLastDialog(DatePickerDialog::class.java).updateDate(year, monthOfYear, dayOfMonth)
+    dialogPositiveButton().performClick()
+
+    EventCreationPageObject.startTimeView().perform(ViewActions.click())
+    getLastDialog(TimePickerDialog::class.java).updateTime(hourOfDay, minutes)
+    dialogPositiveButton().performClick()
+
+    EventCreationPageObject.startTimeView().check(ViewAssertions.matches(ViewMatchers.withText("")))
+  }
+
+  @Test
+  fun cannotChooseStartTimeInPastDay() {
+    val today = Calendar.getInstance()
+    today.add(Calendar.MINUTE, -1430)
     val year = today[Calendar.YEAR]
     val monthOfYear = today[Calendar.MONTH]
     val dayOfMonth = today[Calendar.DAY_OF_MONTH]

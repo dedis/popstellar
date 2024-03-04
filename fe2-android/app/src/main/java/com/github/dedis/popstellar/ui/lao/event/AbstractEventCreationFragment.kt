@@ -253,6 +253,7 @@ abstract class AbstractEventCreationFragment : Fragment() {
   private fun onStartTime(bundle: Bundle) {
     startTime = getSelection(bundle)
     startTimeEditText?.setText(timeFormat.format(startTime!!.time))
+
     if (startDate != null &&
         endDate != null &&
         startDate == endDate &&
@@ -320,6 +321,7 @@ abstract class AbstractEventCreationFragment : Fragment() {
     if (startDate == null || startTime == null) {
       return false
     }
+
     completeStartTime[
         startDate!![Calendar.YEAR],
         startDate!![Calendar.MONTH],
