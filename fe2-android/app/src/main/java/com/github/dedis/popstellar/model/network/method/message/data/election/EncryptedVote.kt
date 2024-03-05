@@ -2,6 +2,7 @@ package com.github.dedis.popstellar.model.network.method.message.data.election
 
 import com.github.dedis.popstellar.model.Immutable
 import com.github.dedis.popstellar.model.objects.Election
+import com.github.dedis.popstellar.utility.MessageValidator.verify
 import com.google.gson.annotations.SerializedName
 import java.util.Objects
 
@@ -29,12 +30,32 @@ class EncryptedVote : Vote {
       encryptedVote: String?,
       writeInEnabled: Boolean,
       encryptedWriteIn: String?,
-      electionId: String
+      electionId: String,
   ) {
+    // Assumes if write-in is disabled, encryptedVote must be non-null and non-empty. If write-in is
+    // enabled,
+    // encryptedVote is ignored, and encryptedWriteIn must be non-null and non-empty.
+    // TODO: Need to verify the exact intended behavior when write-in is supported.
+    verify()
+        .isNotEmptyBase64(questionId, "question ID")
+        .isNotEmptyBase64(electionId, "election ID")
+        .apply {
+          if (writeInEnabled) {
+            isNotEmptyBase64(encryptedWriteIn, "write-in")
+          } else {
+            isNotEmptyBase64(encryptedVote, "encrypted vote")
+          }
+        }
+
     this.questionId = questionId
     this.id =
         Election.generateEncryptedElectionVoteId(
-            electionId, questionId, encryptedVote, encryptedWriteIn, writeInEnabled)
+            electionId,
+            questionId,
+            encryptedVote,
+            encryptedWriteIn,
+            writeInEnabled,
+        )
     this.vote =
         if (writeInEnabled) {
           null
@@ -44,6 +65,11 @@ class EncryptedVote : Vote {
   }
 
   constructor(id: String, question: String, vote: String) {
+    verify()
+        .stringNotEmpty(id, "vote ID")
+        .stringNotEmpty(question, "question")
+        .isNotEmptyBase64(vote, "vote")
+
     this.id = id
     this.questionId = question
     this.vote = vote

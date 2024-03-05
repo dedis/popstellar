@@ -7,6 +7,7 @@ import com.github.dedis.popstellar.model.objects.Meeting
 import com.github.dedis.popstellar.model.objects.Reaction
 import com.github.dedis.popstellar.model.objects.security.PublicKey
 import com.github.dedis.popstellar.model.qrcode.PoPCHAQRCode
+import com.github.dedis.popstellar.ui.lao.event.election.fragments.ElectionSetupFragment
 import java.time.Instant
 import java.util.Arrays
 import java.util.regex.Pattern
@@ -230,6 +231,38 @@ object MessageValidator {
       return this
     }
 
+    /**
+     * Helper method to check a single question for validity.
+     *
+     * @param title the title of the question
+     * @param votingMethod the voting method of the question
+     * @param ballotOptions the ballot options of the question
+     * @throws IllegalArgumentException if the question does not meet the criteria.
+     */
+    fun validQuestion(
+        title: String,
+        votingMethod: String,
+        ballotOptions: List<String>,
+    ): MessageValidatorBuilder {
+      stringNotEmpty(title, "question title")
+      require(votingMethod in validVotingMethods) {
+        "Unsupported voting method in question: ${title}. Must be one of $validVotingMethods."
+      }
+      validBallotOptions(ballotOptions)
+      return this
+    }
+
+    private fun validBallotOptions(ballotOptions: List<String>?): MessageValidatorBuilder {
+      requireNotNull(ballotOptions) { "Ballot options cannot be null" }
+      listNotEmpty(ballotOptions)
+      require(ballotOptions.size >= 2) { "There must be at least 2 ballot options" }
+      noListDuplicates(ballotOptions)
+      ballotOptions.forEach {
+        stringNotEmpty(it, "ballot option in place " + ballotOptions.indexOf(it))
+      }
+      return this
+    }
+
     fun validUrl(input: String?): MessageValidatorBuilder {
       require(input != null && URL_PATTERN.matcher(input).matches()) { "Input is not a url" }
       return this
@@ -297,6 +330,8 @@ object MessageValidator {
       private const val VALID_RESPONSE_TYPE = "id_token"
       private val REQUIRED_SCOPES = arrayOf("openid", "profile")
       private val VALID_RESPONSE_MODES = arrayOf("query", "fragment")
+
+      private val validVotingMethods = ElectionSetupFragment.VotingMethods.values().map { it.desc }
     }
   }
 }

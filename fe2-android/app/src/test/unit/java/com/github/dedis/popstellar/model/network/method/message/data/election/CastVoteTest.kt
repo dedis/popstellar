@@ -7,6 +7,7 @@ import com.github.dedis.popstellar.model.network.JsonTestUtils.testData
 import com.github.dedis.popstellar.model.objects.Election.Companion.generateElectionQuestionId
 import com.github.dedis.popstellar.model.objects.Election.Companion.generateElectionSetupId
 import com.github.dedis.popstellar.model.objects.Lao.Companion.generateLaoId
+import com.github.dedis.popstellar.model.objects.security.Base64URLData
 import com.github.dedis.popstellar.testutils.Base64DataUtils
 import com.google.gson.JsonParseException
 import java.time.Instant
@@ -26,15 +27,21 @@ class CastVoteTest {
   private val questionId2 = generateElectionQuestionId(electionId, "Question 2")
   private val writeInEnabled = false
   private val writeIn = "My write in ballot option"
+  private val vote1 = 1
+  private val vote2 = 2
+  private val vote1Base64 = Base64URLData(vote1.toString().toByteArray()).encoded
+  private val vote2Base64 = Base64URLData(vote2.toString().toByteArray()).encoded
 
   // Set up a open ballot election
-  private val plainVote1 = PlainVote(questionId1, 1, writeInEnabled, writeIn, electionId)
-  private val plainVote2 = PlainVote(questionId2, 2, writeInEnabled, writeIn, electionId)
+  private val plainVote1 = PlainVote(questionId1, vote1, writeInEnabled, writeIn, electionId)
+  private val plainVote2 = PlainVote(questionId2, vote2, writeInEnabled, writeIn, electionId)
   private val plainVotes = listOf<Vote>(plainVote1, plainVote2)
 
   // Set up a secret ballot election
-  private val encryptedVote1 = EncryptedVote(questionId1, "2", writeInEnabled, writeIn, electionId)
-  private val encryptedVote2 = EncryptedVote(questionId2, "1", writeInEnabled, writeIn, electionId)
+  private val encryptedVote1 =
+    EncryptedVote(questionId1, vote2Base64, writeInEnabled, writeIn, electionId)
+  private val encryptedVote2 =
+    EncryptedVote(questionId2, vote1Base64, writeInEnabled, writeIn, electionId)
   private val electionEncryptedVotes = listOf<Vote>(encryptedVote1, encryptedVote2)
 
   // Create the cast votes messages
@@ -71,7 +78,7 @@ class CastVoteTest {
 
   @Test(expected = IllegalArgumentException::class)
   fun constructorFailsWithVoteQuestionIdNotBase64Test() {
-    val invalid = PlainVote("not base 64", 1, writeInEnabled, writeIn, electionId)
+    val invalid = PlainVote("not base 64", vote1, writeInEnabled, writeIn, electionId)
     val invalidVotes = listOf<Vote>(plainVote1, plainVote2, invalid)
     CastVote(invalidVotes, electionId, laoId, creation)
   }
@@ -112,7 +119,7 @@ class CastVoteTest {
     Assert.assertNotEquals(castEncryptedVote, CastVote(listOf(encryptedVote1), randomId, laoId))
     Assert.assertNotEquals(
       castEncryptedVote,
-      CastVote(listOf(encryptedVote1), electionId, randomId)
+      CastVote(listOf(encryptedVote1), electionId, randomId),
     )
   }
 
