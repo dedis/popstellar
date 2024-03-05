@@ -134,7 +134,7 @@ object GetMessagesByIdResponseHandler extends AskPatternConstants {
         set.map(msg =>
           JsonRpcRequest(
             RpcValidator.JSON_RPC_VERSION,
-            MethodType.PUBLISH,
+            MethodType.publish,
             new Publish(channel, msg),
             Some(0)
           )

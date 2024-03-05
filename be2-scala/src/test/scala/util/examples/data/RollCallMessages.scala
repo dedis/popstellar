@@ -2,7 +2,6 @@ package util.examples.data
 
 import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.data.ActionType
-import ch.epfl.pop.model.network.method.message.data.ActionType.ActionType
 import ch.epfl.pop.model.objects.Channel
 import util.examples.data.traits.RollCallMessagesTrait
 
@@ -10,7 +9,7 @@ import util.examples.data.traits.RollCallMessagesTrait
   */
 object CreateRollCallMessages extends RollCallMessagesTrait {
 
-  override val action: ActionType = ActionType.CREATE
+  override val action: ActionType = ActionType.create
   override val CHANNEL: Channel = Channel(Channel.ROOT_CHANNEL_PREFIX + "create_roll_call_channel")
 
   final val createRollCall: JsonRpcRequest = getJsonRPCRequestFromFile("roll_call_create.json")()
@@ -20,7 +19,7 @@ object CreateRollCallMessages extends RollCallMessagesTrait {
 
 object OpenRollCallMessages extends RollCallMessagesTrait {
 
-  override val action: ActionType = ActionType.OPEN
+  override val action: ActionType = ActionType.open
 
   override val CHANNEL: Channel = Channel(Channel.ROOT_CHANNEL_PREFIX + "open_roll_call_channel")
 
@@ -31,7 +30,7 @@ object OpenRollCallMessages extends RollCallMessagesTrait {
 
 object CloseRollCallMessages extends RollCallMessagesTrait {
 
-  override val action: ActionType = ActionType.CLOSE
+  override val action: ActionType = ActionType.close
 
   override val CHANNEL: Channel = Channel(Channel.ROOT_CHANNEL_PREFIX + "close_roll_call_channel")
 
@@ -42,7 +41,7 @@ object CloseRollCallMessages extends RollCallMessagesTrait {
 
 object ReopenRollCallMessages extends RollCallMessagesTrait {
 
-  override val action: ActionType = ActionType.REOPEN
+  override val action: ActionType = ActionType.reopen
 
   override val CHANNEL: Channel = Channel(Channel.ROOT_CHANNEL_PREFIX + "reopen_roll_call_channel")
 

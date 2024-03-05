@@ -40,7 +40,7 @@ const Launch = () => {
   const dispatch = useDispatch();
 
   const [inputLaoName, setInputLaoName] = useState('');
-  const [inputAddress, setInputAddress] = useState('wss://127.0.0.1:9000/client');
+  const [inputAddress, setInputAddress] = useState('ws://127.0.0.1:9000/client');
   // release : disable connect to test lao
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const connectToTestLao = HomeHooks.useConnectToTestLao();

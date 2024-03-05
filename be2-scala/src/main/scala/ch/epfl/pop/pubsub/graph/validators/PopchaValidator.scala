@@ -36,7 +36,7 @@ sealed class PopchaValidator(dbActorRef: => AskableActorRef) extends MessageData
 
         for {
           _ <- checkResponseMode(rpcMessage, authenticate.responseMode, validationError(s"Invalid response mode ${authenticate.responseMode}"))
-          _ <- checkChannelType(rpcMessage, ObjectType.POPCHA, channel, dbActorRef, validationError(s"Incorrect channel $channel for popcha authentication message"))
+          _ <- checkChannelType(rpcMessage, ObjectType.popcha, channel, dbActorRef, validationError(s"Incorrect channel $channel for popcha authentication message"))
           _ <- checkAttendee(rpcMessage, sender, channel, dbActorRef, validationError(s"User doesn't belong to the requested lao $laoId"))
           result <- checkIdentifierProof(
             rpcMessage,

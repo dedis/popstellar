@@ -92,13 +92,13 @@ type Hub struct {
 	// the server will not ask for them again in the heartbeat
 	// and will not process them if they are received again
 	// @TODO remove the messages from the blacklist after a certain amount of time by trying to process them again
-	blacklist []string
+	blacklist state.ThreadSafeSlice[string]
 }
 
 // NewHub returns a new Hub.
 func NewHub(pubKeyOwner kyber.Point, clientServerAddress string, serverServerAddress string, log zerolog.Logger,
-	laoFac channel.LaoFactory) (*Hub, error) {
-
+	laoFac channel.LaoFactory,
+) (*Hub, error) {
 	schemaValidator, err := validation.NewSchemaValidator(log)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to create the schema validator: %v", err)
@@ -124,9 +124,9 @@ func NewHub(pubKeyOwner kyber.Point, clientServerAddress string, serverServerAdd
 		laoFac:              laoFac,
 		serverSockets:       channel.NewSockets(),
 		hubInbox:            *inbox.NewHubInbox(rootChannel),
-		queries:             state.NewQueries(),
+		queries:             state.NewQueries(log),
 		peers:               state.NewPeers(),
-		blacklist:           make([]string, 0),
+		blacklist:           state.NewThreadSafeSlice[string](),
 	}
 
 	return &hub, nil
@@ -451,7 +451,6 @@ func (h *Hub) handleIncomingMessage(incomingMessage *socket.IncomingMessage) err
 	default:
 		return xerrors.Errorf("invalid socket type")
 	}
-
 }
 
 // sendGetMessagesByIdToServer sends a getMessagesById message to a server
@@ -483,9 +482,6 @@ func (h *Hub) sendGetMessagesByIdToServer(socket socket.Socket, missingIds map[s
 
 // sendHeartbeatToServers sends a heartbeat message to all servers
 func (h *Hub) sendHeartbeatToServers() {
-	if h.hubInbox.IsEmpty() {
-		return
-	}
 	heartbeatMessage := method.Heartbeat{
 		Base: query.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
@@ -505,8 +501,8 @@ func (h *Hub) sendHeartbeatToServers() {
 
 // createLao creates a new LAO using the data in the publish parameter.
 func (h *Hub) createLao(msg message.Message, laoCreate messagedata.LaoCreate,
-	socket socket.Socket) error {
-
+	socket socket.Socket,
+) error {
 	laoChannelPath := rootPrefix + laoCreate.ID
 
 	if _, ok := h.channelByID.Get(laoChannelPath); ok {

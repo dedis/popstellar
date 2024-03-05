@@ -28,7 +28,7 @@ class ElectionTest {
       .build()
 
   // Add some vote for decryption/encryption testing purposes
-  private val questionId1 = Base64URLData((" myQuestion1").toByteArray()).encoded
+  private val questionId1 = Election.generateElectionQuestionId(election.id, "Question")
 
   // Set up a open ballot election
   private val plainVote1 = PlainVote(questionId1, 1, false, null, election.id)

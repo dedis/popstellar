@@ -154,12 +154,11 @@ class MessageValidatorTest {
     val validPlainVotes = listOf<Vote>(plainVote1, plainVote2)
 
     validator.validVotes(validPlainVotes)
+    validator.validVotes(null)
 
-    val plainVote3 = PlainVote("not base 64", 1, false, "something", ELECTION_ID)
-    val invalidPlainVotes = listOf<Vote>(plainVote1, plainVote3)
-
+    val duplicatePlainVotes = listOf<Vote>(plainVote1, plainVote1)
     Assert.assertThrows(IllegalArgumentException::class.java) {
-      validator.validVotes(invalidPlainVotes)
+      validator.validVotes(duplicatePlainVotes)
     }
   }
 

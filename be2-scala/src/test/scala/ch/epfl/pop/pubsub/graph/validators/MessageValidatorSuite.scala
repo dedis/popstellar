@@ -1,7 +1,7 @@
 package ch.epfl.pop.pubsub.graph.validators
 
 import akka.actor.{Actor, ActorSystem, Props, Status}
-import akka.pattern.AskableActorRef
+import akka.pattern.{AskableActorRef, ask}
 import akka.testkit.{ImplicitSender, TestKit}
 import akka.util.Timeout
 import ch.epfl.pop.model.network.method.message.data.ObjectType
@@ -37,7 +37,7 @@ class MessageValidatorSuite extends TestKit(ActorSystem("messageValidatorTestAct
   private final val ADDRESS: String = "127.0.0.1:8000"
   private final val laoData: LaoData = LaoData(PK_OWNER, List(PK_ATTENDEE), PRIVATE_KEY, PUBLIC_KEY, List.empty, ADDRESS)
 
-  private final val channelData: ChannelData = ChannelData(ObjectType.LAO, List.empty)
+  private final val channelData: ChannelData = ChannelData(ObjectType.lao, List.empty)
 
   private def mockDbNack: AskableActorRef = {
     val mockedDB = Props(new Actor() {
@@ -121,14 +121,14 @@ class MessageValidatorSuite extends TestKit(ActorSystem("messageValidatorTestAct
 
   test("validateChannelType handles NAck with 'false' output") {
     lazy val dbActorRef = mockDbNack
-    MessageValidator.validateChannelType(ObjectType.LAO, CHANNEL, dbActorRef) should equal(false)
+    MessageValidator.validateChannelType(ObjectType.lao, CHANNEL, dbActorRef) should equal(false)
     system.stop(dbActorRef.actorRef)
   }
 
   test("validateAttendee handles ReadChannelDataAck containing ChannelData with corresponding output") {
     lazy val dbActorRef = mockDbAckWithChannelData(channelData)
-    MessageValidator.validateChannelType(ObjectType.LAO, CHANNEL, dbActorRef) should equal(true)
-    MessageValidator.validateChannelType(ObjectType.CHIRP, CHANNEL, dbActorRef) should equal(false)
+    MessageValidator.validateChannelType(ObjectType.lao, CHANNEL, dbActorRef) should equal(true)
+    MessageValidator.validateChannelType(ObjectType.chirp, CHANNEL, dbActorRef) should equal(false)
     system.stop(dbActorRef.actorRef)
   }
 

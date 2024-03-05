@@ -2,11 +2,10 @@ package ch.epfl.pop.pubsub
 
 import akka.actor.{Actor, ActorLogging, ActorRef, Props}
 import akka.event.LoggingReceive
-import akka.pattern.AskableActorRef
+import akka.pattern.{AskableActorRef, ask}
 import ch.epfl.pop.config.RuntimeEnvironment.serverConf
 import ch.epfl.pop.decentralized.ConnectionMediator
-import ch.epfl.pop.model.network.JsonRpcRequest
-import ch.epfl.pop.model.network.MethodType.GREET_SERVER
+import ch.epfl.pop.model.network.{JsonRpcRequest, MethodType}
 import ch.epfl.pop.model.network.method.GreetServer
 import ch.epfl.pop.model.objects.Channel
 import ch.epfl.pop.pubsub.ClientActor._
@@ -119,7 +118,7 @@ final case class ClientActor(mediator: ActorRef, connectionMediatorRef: ActorRef
       val greetServer = GreetServer(publicKey.get, clientAddress, serverAddress)
       messageWsHandle(ClientAnswer(Right(JsonRpcRequest(
         RpcValidator.JSON_RPC_VERSION,
-        GREET_SERVER,
+        MethodType.greet_server,
         greetServer,
         None
       ))))
@@ -144,7 +143,7 @@ object ClientActor {
   final case class ConnectWsHandle(wsClient: ActorRef) extends Event
 
   // unsubscribe from all channels
-  final case object DisconnectWsHandle extends Event
+  case object DisconnectWsHandle extends Event
 
   // subscribe to a particular channel
   final case class SubscribeTo(channel: Channel) extends Event

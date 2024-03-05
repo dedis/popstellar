@@ -3,13 +3,13 @@ package ch.epfl.pop.pubsub
 import akka.NotUsed
 import akka.actor.{ActorRef, ActorSystem}
 import akka.http.scaladsl.model.ws.{Message, TextMessage}
-import akka.pattern.AskableActorRef
+import akka.pattern.{AskableActorRef, ask}
 import akka.stream.FlowShape
 import akka.stream.scaladsl.{Broadcast, Flow, GraphDSL, Merge, Partition, Sink}
 import ch.epfl.pop.decentralized.Monitor
-import ch.epfl.pop.model.network.MethodType._
-import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse}
-import ch.epfl.pop.pubsub.graph._
+import ch.epfl.pop.model.network.MethodType.*
+import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse, MethodType}
+import ch.epfl.pop.pubsub.graph.*
 import ch.epfl.pop.pubsub.graph.handlers.{GetMessagesByIdResponseHandler, ParamsHandler, ParamsWithMapHandler, ParamsWithMessageHandler}
 
 object PublishSubscribe {
@@ -123,15 +123,15 @@ object PublishSubscribe {
             totalPorts,
             {
               case Right(m: JsonRpcRequest) => m.method match {
-                  case BROADCAST          => portParamsWithMessage
-                  case PUBLISH            => portParamsWithMessage
-                  case SUBSCRIBE          => portSubscribe
-                  case UNSUBSCRIBE        => portUnsubscribe
-                  case CATCHUP            => portCatchup
-                  case HEARTBEAT          => portHeartbeat
-                  case GET_MESSAGES_BY_ID => portGetMessagesById
-                  case GREET_SERVER       => portGreetServer
-                  case _                  => portPipelineError
+                  case MethodType.broadcast          => portParamsWithMessage
+                  case MethodType.publish            => portParamsWithMessage
+                  case MethodType.subscribe          => portSubscribe
+                  case MethodType.unsubscribe        => portUnsubscribe
+                  case MethodType.catchup            => portCatchup
+                  case MethodType.heartbeat          => portHeartbeat
+                  case MethodType.get_messages_by_id => portGetMessagesById
+                  case MethodType.greet_server       => portGreetServer
+                  case _                             => portPipelineError
                 }
 
               case _ => portPipelineError // Pipeline error goes directly in merger

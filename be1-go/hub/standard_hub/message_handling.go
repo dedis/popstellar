@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"popstellar/crypto"
+	"popstellar/hub/standard_hub/hub_state"
 	jsonrpc "popstellar/message"
 	"popstellar/message/answer"
 	"popstellar/message/messagedata"
@@ -83,8 +84,8 @@ func (h *Hub) handleRootChannelPublishMessage(sock socket.Socket, publish method
 
 // handleRootChannelPublishMessage handles an incoming publish message on the root channel.
 func (h *Hub) handleRootChannelBroadcastMessage(sock socket.Socket,
-	broadcast method.Broadcast) error {
-
+	broadcast method.Broadcast,
+) error {
 	jsonData, err := base64.URLEncoding.DecodeString(broadcast.Params.Message.Data)
 	if err != nil {
 		err := xerrors.Errorf("failed to decode message data: %v", err)
@@ -145,8 +146,8 @@ func (h *Hub) handleRootChannelBroadcastMessage(sock socket.Socket,
 
 // handleRootCatchup handles an incoming catchup message on the root channel
 func (h *Hub) handleRootCatchup(senderSocket socket.Socket,
-	byteMessage []byte) ([]message.Message, int, error) {
-
+	byteMessage []byte,
+) ([]message.Message, int, error) {
 	var catchup method.Catchup
 
 	err := json.Unmarshal(byteMessage, &catchup)
@@ -210,7 +211,7 @@ func (h *Hub) handleGetMessagesByIdAnswer(senderSocket socket.Socket, answerMsg 
 		}
 	}
 	// Add contents from tempBlacklist to h.blacklist
-	h.blacklist = append(h.blacklist, tempBlacklist...)
+	h.blacklist.Append(tempBlacklist...)
 	return xerrors.Errorf("failed to process messages: %v", err)
 }
 
@@ -374,8 +375,8 @@ func (h *Hub) handleUnsubscribe(socket socket.Socket, byteMessage []byte) (int, 
 }
 
 func (h *Hub) handleCatchup(socket socket.Socket,
-	byteMessage []byte) ([]message.Message, int, error) {
-
+	byteMessage []byte,
+) ([]message.Message, int, error) {
 	var catchup method.Catchup
 
 	err := json.Unmarshal(byteMessage, &catchup)
@@ -401,8 +402,8 @@ func (h *Hub) handleCatchup(socket socket.Socket,
 }
 
 func (h *Hub) handleHeartbeat(socket socket.Socket,
-	byteMessage []byte) error {
-
+	byteMessage []byte,
+) error {
 	var heartbeat method.Heartbeat
 
 	err := json.Unmarshal(byteMessage, &heartbeat)
@@ -412,7 +413,7 @@ func (h *Hub) handleHeartbeat(socket socket.Socket,
 
 	receivedIds := heartbeat.Params
 
-	missingIds := getMissingIds(receivedIds, h.hubInbox.GetIDsTable(), h.blacklist)
+	missingIds := getMissingIds(receivedIds, h.hubInbox.GetIDsTable(), &h.blacklist)
 
 	if len(missingIds) > 0 {
 		err = h.sendGetMessagesByIdToServer(socket, missingIds)
@@ -425,8 +426,8 @@ func (h *Hub) handleHeartbeat(socket socket.Socket,
 }
 
 func (h *Hub) handleGetMessagesById(socket socket.Socket,
-	byteMessage []byte) (map[string][]message.Message, int, error) {
-
+	byteMessage []byte,
+) (map[string][]message.Message, int, error) {
 	var getMessagesById method.GetMessagesById
 
 	err := json.Unmarshal(byteMessage, &getMessagesById)
@@ -451,7 +452,10 @@ func (h *Hub) handleGreetServer(socket socket.Socket, byteMessage []byte) error 
 	}
 
 	// store information about the server
-	h.peers.AddPeerInfo(socket.ID(), greetServer.Params)
+	err = h.peers.AddPeerInfo(socket.ID(), greetServer.Params)
+	if err != nil {
+		return xerrors.Errorf("failed to add peer info: %v", err)
+	}
 
 	if h.peers.IsPeerGreeted(socket.ID()) {
 		return nil
@@ -468,11 +472,11 @@ func (h *Hub) handleGreetServer(socket socket.Socket, byteMessage []byte) error 
 
 // getMissingIds compares two maps of channel Ids associated to slices of message Ids to
 // determine the missing Ids from the storedIds map with respect to the receivedIds map
-func getMissingIds(receivedIds map[string][]string, storedIds map[string][]string, blacklist []string) map[string][]string {
+func getMissingIds(receivedIds map[string][]string, storedIds map[string][]string, blacklist *hub_state.ThreadSafeSlice[string]) map[string][]string {
 	missingIds := make(map[string][]string)
 	for channelId, receivedMessageIds := range receivedIds {
 		for _, messageId := range receivedMessageIds {
-			blacklisted := slices.Contains(blacklist, messageId)
+			blacklisted := blacklist.Contains(messageId)
 			storedIdsForChannel, channelKnown := storedIds[channelId]
 			if blacklisted {
 				break
@@ -571,7 +575,7 @@ func (h *Hub) loopOverMessages(messages *map[string][]json.RawMessage, senderSoc
 	for channel, messageArray := range *messages {
 		newMessageArray := make([]json.RawMessage, 0)
 
-		//Try to process each message
+		// Try to process each message
 		for _, msg := range messageArray {
 			var messageData message.Message
 			err := json.Unmarshal(msg, &messageData)
@@ -580,7 +584,7 @@ func (h *Hub) loopOverMessages(messages *map[string][]json.RawMessage, senderSoc
 				continue
 			}
 
-			if slices.Contains(h.blacklist, messageData.MessageID) {
+			if h.blacklist.Contains(messageData.MessageID) {
 				break
 			}
 

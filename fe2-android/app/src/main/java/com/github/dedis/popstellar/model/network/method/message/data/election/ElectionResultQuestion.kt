@@ -1,6 +1,7 @@
 package com.github.dedis.popstellar.model.network.method.message.data.election
 
 import com.github.dedis.popstellar.model.Immutable
+import com.github.dedis.popstellar.utility.MessageValidator.verify
 import java.util.Objects
 
 @Immutable
@@ -9,7 +10,9 @@ class ElectionResultQuestion(id: String, result: Set<QuestionResult>) {
   val result: Set<QuestionResult>
 
   init {
-    require(result.isNotEmpty())
+    // Set can't have duplicates, so no need to check for duplicates
+    // QuestionResult are already validated when constructed
+    verify().stringNotEmpty(id, "election id").listNotEmpty(result.toList())
 
     this.id = id
     this.result = HashSet(result)

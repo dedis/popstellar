@@ -10,7 +10,8 @@ import java.nio.ByteBuffer
 import scala.collection.mutable
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
-import scala.util.{Success, Failure}
+import scala.reflect.ClassTag
+import scala.util.{Failure, Success}
 
 object ElectionChannel {
   implicit class ElectionChannelExtensionMethods(channel: Channel) extends AskPatternConstants {
@@ -22,9 +23,9 @@ object ElectionChannel {
       * @return
       *   Future of a list of tuple containing the message and the data extracted
       */
-    def extractMessages[T: Manifest](dbActor: AskableActorRef = DbActor.getInstance): Future[List[(Message, T)]] = {
+    def extractMessages[T: ClassTag](dbActor: AskableActorRef = DbActor.getInstance): Future[List[(Message, T)]] = {
       for {
-        DbActor.DbActorCatchupAck(messages) <- dbActor ? DbActor.Catchup(channel)
+        case DbActor.DbActorCatchupAck(messages) <- dbActor ? DbActor.Catchup(channel)
         result <- Future.traverse(messages.flatMap(message =>
           message.decodedData match {
             case Some(t: T) => Some((message, t))

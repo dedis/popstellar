@@ -1,7 +1,7 @@
 package ch.epfl.pop.json
 
 import ch.epfl.pop.json.ObjectProtocol._
-import ch.epfl.pop.model.network.MethodType.MethodType
+import ch.epfl.pop.model.network.MethodType
 import ch.epfl.pop.model.network._
 import ch.epfl.pop.model.network.method._
 import ch.epfl.pop.model.network.method.message.Message
@@ -18,7 +18,7 @@ object HighLevelProtocol extends DefaultJsonProtocol {
   // ----------------------------------- ENUM FORMATTERS ----------------------------------- //
   implicit object methodTypeFormat extends RootJsonFormat[MethodType] {
     override def read(json: JsValue): MethodType = json match {
-      case JsString(method) => MethodType.unapply(method).getOrElse(MethodType.INVALID)
+      case JsString(method) => MethodType(method)
       case _                => throw new IllegalArgumentException(s"Can't parse json value $json to a MethodType")
     }
 
@@ -126,13 +126,13 @@ object HighLevelProtocol extends DefaultJsonProtocol {
       Broadcast(params.channel, params.message)
     }
 
-    override def write(obj: Broadcast): JsValue = obj.toJson(ParamsFormat.write)
+    override def write(obj: Broadcast): JsValue = obj.toJson(ParamsFormat.write(_))
   }
 
   implicit object CatchupFormat extends RootJsonFormat[Catchup] {
     override def read(json: JsValue): Catchup = Catchup(json.convertTo[ParamsWithChannel].channel)
 
-    override def write(obj: Catchup): JsValue = obj.toJson(ParamsFormat.write)
+    override def write(obj: Catchup): JsValue = obj.toJson(ParamsFormat.write(_))
   }
 
   implicit object PublishFormat extends RootJsonFormat[Publish] {
@@ -141,33 +141,33 @@ object HighLevelProtocol extends DefaultJsonProtocol {
       Publish(params.channel, params.message)
     }
 
-    override def write(obj: Publish): JsValue = obj.toJson(ParamsFormat.write)
+    override def write(obj: Publish): JsValue = obj.toJson(ParamsFormat.write(_))
   }
 
   implicit object SubscribeFormat extends RootJsonFormat[Subscribe] {
     override def read(json: JsValue): Subscribe = Subscribe(json.convertTo[ParamsWithChannel].channel)
 
-    override def write(obj: Subscribe): JsValue = obj.toJson(ParamsFormat.write)
+    override def write(obj: Subscribe): JsValue = obj.toJson(ParamsFormat.write(_))
   }
 
   implicit object UnsubscribeFormat extends RootJsonFormat[Unsubscribe] {
     override def read(json: JsValue): Unsubscribe = Unsubscribe(json.convertTo[ParamsWithChannel].channel)
 
-    override def write(obj: Unsubscribe): JsValue = obj.toJson(ParamsFormat.write)
+    override def write(obj: Unsubscribe): JsValue = obj.toJson(ParamsFormat.write(_))
   }
 
   implicit object HeartbeatFormat extends RootJsonFormat[Heartbeat] {
     override def read(json: JsValue): Heartbeat =
       Heartbeat(json.convertTo[ParamsWithMap].channelsToMessageIds)
 
-    override def write(obj: Heartbeat): JsValue = obj.toJson(ParamsWithMapFormat.write)
+    override def write(obj: Heartbeat): JsValue = obj.toJson(ParamsWithMapFormat.write(_))
   }
 
   implicit object GetMessagesByIdFormat extends RootJsonFormat[GetMessagesById] {
     override def read(json: JsValue): GetMessagesById =
       GetMessagesById(json.convertTo[ParamsWithMap].channelsToMessageIds)
 
-    override def write(obj: GetMessagesById): JsValue = obj.toJson(ParamsWithMapFormat.write)
+    override def write(obj: GetMessagesById): JsValue = obj.toJson(ParamsWithMapFormat.write(_))
   }
 
   implicit object GreetServerFormat extends RootJsonFormat[GreetServer] {
@@ -229,12 +229,12 @@ object HighLevelProtocol extends DefaultJsonProtocol {
       case Seq(JsString(version), methodJsString @ JsString(_), paramsJsObject @ JsObject(_), optId) =>
         val method: MethodType = methodJsString.convertTo[MethodType]
         val params = method match {
-          case MethodType.PUBLISH            => paramsJsObject.convertTo[Publish]
-          case MethodType.SUBSCRIBE          => paramsJsObject.convertTo[Subscribe]
-          case MethodType.UNSUBSCRIBE        => paramsJsObject.convertTo[Unsubscribe]
-          case MethodType.CATCHUP            => paramsJsObject.convertTo[Catchup]
-          case MethodType.GET_MESSAGES_BY_ID => paramsJsObject.convertTo[GetMessagesById]
-          case _                             => throw new IllegalArgumentException(s"Can't parse json value $json with unknown method ${method.toString}")
+          case MethodType.`publish`            => paramsJsObject.convertTo[Publish]
+          case MethodType.`subscribe`          => paramsJsObject.convertTo[Subscribe]
+          case MethodType.`unsubscribe`        => paramsJsObject.convertTo[Unsubscribe]
+          case MethodType.`catchup`            => paramsJsObject.convertTo[Catchup]
+          case MethodType.`get_messages_by_id` => paramsJsObject.convertTo[GetMessagesById]
+          case _                               => throw new IllegalArgumentException(s"Can't parse json value $json with unknown method ${method.toString}")
         }
 
         val id: Option[Int] = optId match {
@@ -249,10 +249,10 @@ object HighLevelProtocol extends DefaultJsonProtocol {
       case Seq(JsString(version), methodJsString @ JsString(_), paramsJsObject @ JsObject(_)) =>
         val method: MethodType = methodJsString.convertTo[MethodType]
         val params = method match {
-          case MethodType.HEARTBEAT    => paramsJsObject.convertTo[Heartbeat]
-          case MethodType.BROADCAST    => paramsJsObject.convertTo[Broadcast]
-          case MethodType.GREET_SERVER => paramsJsObject.convertTo[GreetServer]
-          case _                       => throw new IllegalArgumentException(s"Can't parse json value $json with unknown method ${method.toString}")
+          case MethodType.`heartbeat`    => paramsJsObject.convertTo[Heartbeat]
+          case MethodType.`broadcast`    => paramsJsObject.convertTo[Broadcast]
+          case MethodType.`greet_server` => paramsJsObject.convertTo[GreetServer]
+          case _                         => throw new IllegalArgumentException(s"Can't parse json value $json with unknown method ${method.toString}")
         }
         JsonRpcRequest(version, method, params, None)
       case _ => throw new IllegalArgumentException(s"Can't parse json value $json to a JsonRpcRequest object")

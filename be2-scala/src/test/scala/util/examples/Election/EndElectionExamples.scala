@@ -15,8 +15,8 @@ object EndElectionExamples {
 
   final val ID: Hash = Hash(Base64Data.encode("election"))
   final val LAO_ID: Hash = Hash(Base64Data.encode("laoId"))
-  final val NOT_STALE_CREATED_AT = Timestamp(1649089855L)
-  final val NOT_STALE_CREATED_BEFORE_SETUP = Timestamp(1649089850L)
+  final val NOT_STALE_CREATED_AT: Timestamp = Timestamp(1649089855L)
+  final val NOT_STALE_CREATED_BEFORE_SETUP: Timestamp = Timestamp(1649089850L)
   final val REGISTERED_VOTES: Hash = Hash.fromStrings(VOTE_ID.toString)
 
   val invalidTimestamp: Timestamp = Timestamp(0)

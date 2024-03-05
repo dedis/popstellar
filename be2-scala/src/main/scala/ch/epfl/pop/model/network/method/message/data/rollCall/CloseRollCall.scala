@@ -2,8 +2,6 @@ package ch.epfl.pop.model.network.method.message.data.rollCall
 
 import ch.epfl.pop.json.MessageDataProtocol._
 import ch.epfl.pop.model.network.Parsable
-import ch.epfl.pop.model.network.method.message.data.ActionType.ActionType
-import ch.epfl.pop.model.network.method.message.data.ObjectType.ObjectType
 import ch.epfl.pop.model.network.method.message.data.{ActionType, MessageData, ObjectType}
 import ch.epfl.pop.model.objects.{Hash, PublicKey, Timestamp}
 import spray.json._
@@ -14,8 +12,8 @@ final case class CloseRollCall(
     closed_at: Timestamp,
     attendees: List[PublicKey]
 ) extends MessageData {
-  override val _object: ObjectType = ObjectType.ROLL_CALL
-  override val action: ActionType = ActionType.CLOSE
+  override val _object: ObjectType = ObjectType.roll_call
+  override val action: ActionType = ActionType.close
 }
 
 object CloseRollCall extends Parsable {

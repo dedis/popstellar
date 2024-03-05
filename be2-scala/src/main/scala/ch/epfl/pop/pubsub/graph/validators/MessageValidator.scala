@@ -135,7 +135,7 @@ object MessageValidator extends ContentValidator with AskPatternConstants {
     *   the DbActor we use (by default the main one, obtained through getInstance)
     */
   def validateChannelType(
-      channelObjectType: ObjectType.ObjectType,
+      channelObjectType: ObjectType,
       channel: Channel,
       dbActor: AskableActorRef = DbActor.getInstance
   ): Boolean = {
@@ -149,7 +149,7 @@ object MessageValidator extends ContentValidator with AskPatternConstants {
   // Same as validateChannelType except that it returns a GraphMessage
   def checkChannelType(
       rpcMessage: JsonRpcRequest,
-      channelObjectType: ObjectType.ObjectType,
+      channelObjectType: ObjectType,
       channel: Channel,
       dbActor: AskableActorRef = DbActor.getInstance,
       error: PipelineError

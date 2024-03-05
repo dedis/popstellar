@@ -1,303 +1,70 @@
+// Package socket contains an implementation of the Socket interface which
+// is responsible for low level communication over websockets, i.e. sending
+// and receiving marshaled messages over the wire.
+//
+// The Socket interface has multiple concrete implementations - one for servers
+// and one for clients.
 package socket
 
 import (
-	"encoding/json"
-	"errors"
-	jsonrpc "popstellar/message"
-
-	"popstellar/message/answer"
 	"popstellar/message/query/method/message"
-	"sync"
 	"time"
-
-	"github.com/gorilla/websocket"
-	"github.com/rs/xid"
-	"github.com/rs/zerolog"
 )
-
-// SocketType represents different socket types
-type SocketType string
 
 const (
-	// ClientSocketType denotes a client.
-	ClientSocketType SocketType = "client"
+	// maxMessageSize denotes a maximum possible message size in bytes
+	maxMessageSize = 256 * 1024 // 256K
 
-	// ServerSocketType denotes a server.
-	ServerSocketType SocketType = "server"
+	// writeWait denotes the timeout for writing.
+	writeWait = 10 * time.Second
+
+	// pongWait is the timeout for reading a pong.
+	pongWait = 60 * time.Second
+
+	// pingPeriod is the interval to send ping messages in.
+	pingPeriod = (pongWait * 9) / 10
 )
 
-// baseSocket represents a socket connected to the server.
-type baseSocket struct {
-	id string
+// Socket is an interface which allows reading/writing messages to
+// another client
+type Socket interface {
+	// ID denotes a unique ID of the socket. This allows us to store
+	// sockets in maps
+	ID() string
 
-	socketType SocketType
+	// Type denotes the type of socket.
+	Type() SocketType
 
-	receiver chan<- IncomingMessage
+	// ReadPump is a lower level method for reading messages from the socket.
+	ReadPump()
 
-	// Used to remove sockets which close unexpectedly.
-	closedSockets chan<- string
+	// WritePump is a lower level method for writing messages to the socket.
+	WritePump()
 
-	conn *websocket.Conn
+	// Send is used to send a message to the client.
+	Send(msg []byte)
 
-	send chan []byte
+	// SendError is used to send an error to the client.  Please refer to
+	// the Protocol Specification document for information on the error
+	// codes. id is a pointer type because an error might be for a
+	// message which does not have an ID.
+	SendError(id *int, err error)
 
-	wg *sync.WaitGroup
-
-	done chan struct{}
-
-	log zerolog.Logger
+	// SendResult is used to send a result message to the client. Res can be
+	// nil, empty, or filled if the result is a slice of messages.
+	// MissingMessagesByChannel can be nil or filled if the result is a map
+	// associating a channel to a slice of messages. In case both are nil
+	// it sends the "0" return value. You can either send res or missingMessagesByChannel, not both.
+	SendResult(id int, res []message.Message, missingMessagesByChannel map[string][]message.Message)
 }
 
-func (s *baseSocket) ID() string {
-	return s.id
-}
+// IncomingMessage wraps the raw message from the websocket connection and pairs
+// it with a `Socket` instance.
+type IncomingMessage struct {
+	// Socket denotes where the message is originating from
+	// and allows us to communicate with the other party.
+	Socket Socket
 
-func (s *baseSocket) Type() SocketType {
-	return s.socketType
-}
-
-// ReadPump starts the reader loop for the socket.
-func (s *baseSocket) ReadPump() {
-	defer func() {
-		s.conn.Close()
-		s.wg.Done()
-
-		// it is safe to send a message on s.closedSockets after calling
-		// s.wg.Done() If the hub is still open then it will be processed and
-		// the client will be unsubscribed. Otherwise, since the hub is being
-		// shut down, this won't block because the process will exit.
-		s.closedSockets <- s.ID()
-	}()
-
-	s.log.Info().Msgf("listening for messages from %s", s.socketType)
-
-	s.conn.SetReadLimit(maxMessageSize)
-	s.conn.SetReadDeadline(time.Now().Add(pongWait))
-	s.conn.SetPongHandler(func(string) error {
-		s.conn.SetReadDeadline(time.Now().Add(pongWait))
-		return nil
-	})
-
-	for {
-		_, message, err := s.conn.ReadMessage()
-		if err != nil {
-			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
-				s.log.Err(err).
-					Str("socket", s.conn.RemoteAddr().String()).
-					Msg("connection dropped unexpectedly")
-			} else {
-				s.log.Info().Msg("closing the read pump")
-			}
-			break
-		}
-
-		msg := IncomingMessage{
-			Socket:  s,
-			Message: message,
-		}
-
-		// return if we're done
-		select {
-		case <-s.done:
-			return
-		default:
-			s.receiver <- msg
-		}
-	}
-}
-
-// WritePump starts the writer loop for the socket.
-func (s *baseSocket) WritePump() {
-	ticker := time.NewTicker(pingPeriod)
-	defer func() {
-		ticker.Stop()
-		s.conn.Close()
-		s.wg.Done()
-		// it's safe to send a message on s.closedSockets after calling
-		// s.wg.Done() If the hub is still open then it will be processed and
-		// the client will be unsubscribed. Otherwise, since the hub is being
-		// shut down, this won't block because the process will exit.
-		s.closedSockets <- s.ID()
-	}()
-
-	for {
-		select {
-		case message, ok := <-s.send:
-			s.conn.SetWriteDeadline(time.Now().Add(writeWait))
-			if !ok {
-				s.conn.WriteMessage(websocket.CloseMessage, []byte{})
-				return
-			}
-
-			w, err := s.conn.NextWriter(websocket.TextMessage)
-			if err != nil {
-				s.log.Err(err).Msg("failed to retrieve writer")
-				return
-			}
-
-			w.Write(message)
-
-			if err := w.Close(); err != nil {
-				s.log.Err(err).Msg("failed to close writer")
-				return
-			}
-		case <-ticker.C:
-			s.conn.SetWriteDeadline(time.Now().Add(writeWait))
-			if err := s.conn.WriteMessage(websocket.PingMessage, nil); err != nil {
-				s.log.Err(err).Msg("failed to send ping")
-				return
-			}
-		case <-s.done:
-			s.log.Info().Msg("closing the write pump")
-			s.conn.WriteMessage(websocket.CloseGoingAway, []byte{})
-			return
-		}
-	}
-}
-
-// Send allows sending a serialized message to the socket.
-func (s *baseSocket) Send(msg []byte) {
-	s.log.Info().
-		Str("to", s.conn.RemoteAddr().String()).
-		Str("msg", string(msg)).
-		Msg("send generic msg")
-	s.send <- msg
-}
-
-// SendError is a utility method that allows sending an `error` as a
-// `message.Error` message to the socket.
-func (s *baseSocket) SendError(id *int, err error) {
-	msgError := &answer.Error{}
-
-	if !errors.As(err, &msgError) {
-		msgError = answer.NewError(-6, err.Error())
-	}
-
-	answer := answer.Answer{
-		JSONRPCBase: jsonrpc.JSONRPCBase{
-			JSONRPC: "2.0",
-		},
-		ID:    id,
-		Error: msgError,
-	}
-
-	answerBuf, err := json.Marshal(answer)
-	if err != nil {
-		s.log.Err(err).Msg("failed to marshal answer")
-		return
-	}
-
-	s.log.Info().
-		Str("to", s.conn.RemoteAddr().String()).
-		Str("msg", string(answerBuf)).
-		Msg("send error")
-
-	s.send <- answerBuf
-}
-
-// SendResult is a utility method that allows sending a `message.Result` to the
-// socket.
-func (s *baseSocket) SendResult(id int, res []message.Message, missingMessagesByChannel map[string][]message.Message) {
-	var answer interface{}
-
-	if res != nil && missingMessagesByChannel != nil {
-		s.log.Error().Msg("The result must be either a slice or a map of messages, not both.")
-		return
-	}
-
-	if res == nil && missingMessagesByChannel == nil {
-		answer = struct {
-			JSONRPC string `json:"jsonrpc"`
-			ID      int    `json:"id"`
-			Result  int    `json:"result"`
-		}{
-			"2.0", id, 0,
-		}
-	} else if res != nil {
-		for _, r := range res {
-			if r.WitnessSignatures == nil {
-				r.WitnessSignatures = []message.WitnessSignature{}
-			}
-		}
-		answer = struct {
-			JSONRPC string            `json:"jsonrpc"`
-			ID      int               `json:"id"`
-			Result  []message.Message `json:"result"`
-		}{
-			"2.0", id, res,
-		}
-	} else if missingMessagesByChannel != nil {
-		answer = struct {
-			JSONRPC string                       `json:"jsonrpc"`
-			ID      int                          `json:"id"`
-			Result  map[string][]message.Message `json:"result"`
-		}{
-			"2.0", id, missingMessagesByChannel,
-		}
-	}
-
-	answerBuf, err := json.Marshal(&answer)
-	if err != nil {
-		s.log.Err(err).Msg("failed to marshal answer")
-		return
-	}
-
-	s.log.Info().
-		Str("to", s.id).
-		Str("msg", string(answerBuf)).
-		Msg("send result")
-	s.send <- answerBuf
-}
-
-func newBaseSocket(socketType SocketType, receiver chan<- IncomingMessage,
-	closedSockets chan<- string, conn *websocket.Conn, wg *sync.WaitGroup,
-	done chan struct{}, log zerolog.Logger) *baseSocket {
-
-	return &baseSocket{
-		id:            xid.New().String(),
-		socketType:    socketType,
-		receiver:      receiver,
-		closedSockets: closedSockets,
-		conn:          conn,
-		send:          make(chan []byte, 256),
-		wg:            wg,
-		done:          done,
-		log:           log,
-	}
-}
-
-// ClientSocket denotes a client socket and implements the Socket interface.
-type ClientSocket struct {
-	*baseSocket
-}
-
-// NewClientSocket returns an instance of a baseSocket.
-func NewClientSocket(receiver chan<- IncomingMessage,
-	closedSockets chan<- string, conn *websocket.Conn, wg *sync.WaitGroup,
-	done chan struct{}, log zerolog.Logger) *ClientSocket {
-
-	log = log.With().Str("role", "client socket").Logger()
-
-	return &ClientSocket{
-		baseSocket: newBaseSocket(ClientSocketType, receiver, closedSockets,
-			conn, wg, done, log),
-	}
-}
-
-// ServerSocket denotes an organizer socket and implements the Socket interface.
-type ServerSocket struct {
-	*baseSocket
-}
-
-// NewServerSocket returns a new ServerSocket.
-func NewServerSocket(receiver chan<- IncomingMessage,
-	closedSockets chan<- string, conn *websocket.Conn, wg *sync.WaitGroup,
-	done chan struct{}, log zerolog.Logger) *ServerSocket {
-
-	log = log.With().Str("role", "server socket").Logger()
-
-	return &ServerSocket{
-		baseSocket: newBaseSocket(ServerSocketType, receiver, closedSockets,
-			conn, wg, done, log),
-	}
+	// Message is the marshaled message
+	Message []byte
 }

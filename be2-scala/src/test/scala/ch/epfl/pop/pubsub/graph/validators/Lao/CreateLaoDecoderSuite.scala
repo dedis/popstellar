@@ -31,7 +31,7 @@ class CreateLaoDecoderSuite extends FlatSpec with Matchers with Inside with Give
       inside(parsed) {
         case Right(createJsonRpc: JsonRpcRequest) =>
           And("it should be of type create lao")
-          createJsonRpc.getDecodedDataHeader should equal((ObjectType.LAO, ActionType.CREATE))
+          createJsonRpc.getDecodedDataHeader should equal((ObjectType.lao, ActionType.create))
 
           And("the message params of the JsonRpcRequestCreateLao should not be empty")
           createJsonRpc.getParamsMessage should be(defined)
@@ -81,7 +81,6 @@ class CreateLaoDecoderSuite extends FlatSpec with Matchers with Inside with Give
           And("report a correct error code")
           e.code should equal(ErrorCodes.INVALID_DATA.id)
         case Right(_) => fail(s"parsed message should fail with Left[PipelineError] but was a Right: <$parsed>")
-        case _        => fail(s"parsed message <$parsed> resulted with an unexpected type")
       }
     }
 

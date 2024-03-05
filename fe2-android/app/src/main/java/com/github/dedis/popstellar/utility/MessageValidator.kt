@@ -148,6 +148,11 @@ object MessageValidator {
       return stringNotEmpty(input, field).isBase64(input, field)
     }
 
+    fun isNotNull(input: Any?, field: String): MessageValidatorBuilder {
+      requireNotNull(input) { "$field cannot be null" }
+      return this
+    }
+
     /**
      * Helper method to check that a string represents a valid unicode emoji supported for reactions
      *
@@ -171,6 +176,19 @@ object MessageValidator {
      */
     fun stringNotEmpty(input: String?, field: String): MessageValidatorBuilder {
       require(!input.isNullOrEmpty()) { "$field cannot be empty" }
+      return this
+    }
+
+    /**
+     * Helper method to check that a value is greater or equal than a given value.
+     *
+     * @param input the value to check
+     * @param field name of the field (to print in case of error)
+     * @param value the value to compare to
+     * @throws IllegalArgumentException if the value is not greater or equal than the given value
+     */
+    fun greaterOrEqualThan(input: Int, value: Int, field: String): MessageValidatorBuilder {
+      require(input >= value) { "$field must be greater or equal than $value" }
       return this
     }
 
@@ -209,14 +227,7 @@ object MessageValidator {
       if (votes == null) {
         return this
       }
-
       noListDuplicates(votes)
-
-      for (vote in votes) {
-        isBase64(vote.questionId, "question id")
-        isBase64(vote.id, "vote id")
-      }
-
       return this
     }
 

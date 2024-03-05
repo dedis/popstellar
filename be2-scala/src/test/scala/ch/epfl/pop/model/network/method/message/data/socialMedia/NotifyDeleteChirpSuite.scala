@@ -17,8 +17,8 @@ class NotifyDeleteChirpSuite extends FunSuite with Matchers {
     msg.chirp_id should equal(id)
     msg.channel should equal(channel)
     msg.timestamp should equal(timestamp)
-    msg._object should equal(ObjectType.CHIRP)
-    msg.action should equal(ActionType.NOTIFY_DELETE)
+    msg._object should equal(ObjectType.chirp)
+    msg.action should equal(ActionType.notify_delete)
   }
 
   test("json conversions work back and forth") {

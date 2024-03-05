@@ -1,6 +1,7 @@
 package standard_hub
 
 import (
+	"bytes"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
@@ -821,7 +822,9 @@ func Test_Handle_Answer(t *testing.T) {
 		c: &fakeChannel{},
 	}
 
-	hub, err := NewHub(keypair.public, "", "", nolog, fakeChannelFac.newChannel)
+	var output bytes.Buffer
+
+	hub, err := NewHub(keypair.public, "", "", zerolog.New(&output), fakeChannelFac.newChannel)
 	require.NoError(t, err)
 
 	result := struct {
@@ -913,12 +916,19 @@ func Test_Handle_Answer(t *testing.T) {
 	require.NoError(t, err)
 	require.True(t, queryState)
 
+	output.Reset()
+
 	hub.handleMessageFromServer(&socket.IncomingMessage{
 		Socket:  sock,
 		Message: answerBuf,
 	})
-	require.Error(t, sock.err, "query %v already got an answer", serverAnswer.ID)
-	sock.err = nil
+	// Check that receiving twice an answer for a query doesn't return an error
+	require.NoError(t, sock.err)
+
+	// Check that the log for receiving more than on an answer for a query exists
+	outputString := output.String()
+	require.Contains(t, outputString,
+		fmt.Sprintf("query with id %d already answered", serverAnswer.ID))
 
 	hub.handleMessageFromServer(&socket.IncomingMessage{
 		Socket:  sock,
@@ -1630,7 +1640,7 @@ func Test_Send_Heartbeat_Message(t *testing.T) {
 
 	messageIdsSent := heartbeat.Params
 
-	//Check that all the stored messages where sent
+	// Check that all the stored messages where sent
 	for storedChannel, storedIds := range hub.hubInbox.GetIDsTable() {
 		sentIds, exists := messageIdsSent[storedChannel]
 		require.True(t, exists)
@@ -1638,7 +1648,6 @@ func Test_Send_Heartbeat_Message(t *testing.T) {
 			require.True(t, slices.Contains(sentIds, storedId))
 		}
 	}
-
 }
 
 // Test that the heartbeat messages are properly handled
@@ -1652,12 +1661,12 @@ func Test_Handle_Heartbeat(t *testing.T) {
 
 	sock := &fakeSocket{}
 
-	//The message Ids sent in hearbeat message
+	// The message Ids sent in hearbeat message
 	messageIds := make(map[string][]string)
 	messageIds["/root"] = idsRoot
 	messageIds["/root/channel1"] = idsChannel1
 
-	//The missing Ids the server should request
+	// The missing Ids the server should request
 	missingIds := make(map[string][]string)
 	missingIds["/root"] = []string{msg2.MessageID}
 	missingIds["/root/channel1"] = idsChannel1
@@ -1682,7 +1691,7 @@ func Test_Handle_Heartbeat(t *testing.T) {
 	require.NoError(t, err)
 	require.NoError(t, sock.err)
 
-	//socket should receive a getMessagesById query after handling of heartbeat
+	// socket should receive a getMessagesById query after handling of heartbeat
 	var getMessagesById method.GetMessagesById
 
 	err = json.Unmarshal(sock.msg, &getMessagesById)
@@ -1714,12 +1723,12 @@ func Test_Handle_GetMessagesById(t *testing.T) {
 	hub.hubInbox.StoreMessage("/root", msg2)
 	hub.hubInbox.StoreMessage("/root/channel1", msg3)
 
-	//The missing Ids requested by the server
+	// The missing Ids requested by the server
 	missingIds := make(map[string][]string)
 	missingIds["/root"] = []string{msg2.MessageID}
 	missingIds["/root/channel1"] = idsChannel1
 
-	//The missing messages the server should receive
+	// The missing messages the server should receive
 	missingMessages := make(map[string][]message.Message)
 	missingMessages["/root"] = []message.Message{msg2}
 	missingMessages["/root/channel1"] = res2
@@ -1818,7 +1827,7 @@ func Test_Handle_GreetServer_First_Time(t *testing.T) {
 	require.NoError(t, err)
 	require.NoError(t, sock.err)
 
-	//socket should receive a server greet back after handling of server greet
+	// socket should receive a server greet back after handling of server greet
 	var serverGreetResponse method.GreetServer
 
 	err = json.Unmarshal(sock.msg, &serverGreetResponse)
@@ -1844,7 +1853,7 @@ func Test_Handle_GreetServer_Already_Greeted(t *testing.T) {
 	require.NoError(t, err)
 	require.True(t, hub.peers.IsPeerGreeted(sock.ID()))
 
-	//reset socket message
+	// reset socket message
 	sock.msg = nil
 
 	serverInfo := method.ServerInfo{
@@ -1873,8 +1882,78 @@ func Test_Handle_GreetServer_Already_Greeted(t *testing.T) {
 	require.NoError(t, err)
 	require.NoError(t, sock.err)
 
-	//socket should not receive anything back after handling of server greet
+	// socket should not receive anything back after handling of server greet
 	require.Nil(t, sock.msg)
+}
+
+// Test that receiving multiple greet server messages from the same source will
+// not override the existing server information and that an error is raised
+func Test_Handle_GreetServer_Already_Received(t *testing.T) {
+	keypair := generateKeyPair(t)
+
+	hub, err := NewHub(keypair.public, "", "", nolog, nil)
+	require.NoError(t, err)
+
+	serverInfo1 := method.ServerInfo{
+		PublicKey:     "",
+		ServerAddress: "ws://localhost:9003/server",
+		ClientAddress: "ws://localhost:9002/client",
+	}
+
+	serverInfo2 := method.ServerInfo{
+		PublicKey:     "",
+		ServerAddress: "ws://localhost:9005/server",
+		ClientAddress: "ws://localhost:9004/client",
+	}
+
+	serverGreet1 := method.GreetServer{
+		Base: query.Base{
+			JSONRPCBase: jsonrpc.JSONRPCBase{
+				JSONRPC: "2.0",
+			},
+			Method: query.MethodGreetServer,
+		},
+		Params: serverInfo1,
+	}
+
+	serverGreet2 := method.GreetServer{
+		Base: query.Base{
+			JSONRPCBase: jsonrpc.JSONRPCBase{
+				JSONRPC: "2.0",
+			},
+			Method: query.MethodGreetServer,
+		},
+		Params: serverInfo2,
+	}
+
+	sock := &fakeSocket{id: "fakeID"}
+
+	msg1, err := json.Marshal(serverGreet1)
+	require.NoError(t, err)
+
+	msg2, err := json.Marshal(serverGreet2)
+	require.NoError(t, err)
+
+	err = hub.handleMessageFromServer(&socket.IncomingMessage{
+		Socket:  sock,
+		Message: msg1,
+	})
+	require.NoError(t, err)
+	require.NoError(t, sock.err)
+
+	// check that handling GreetServer from the same source twice throw an error
+	err = hub.handleMessageFromServer(&socket.IncomingMessage{
+		Socket:  sock,
+		Message: msg2,
+	})
+	require.Error(t, err)
+	require.Error(t, sock.err)
+
+	// check that the peersInfo were not modified by the second GreetServer
+	peersInfo := hub.GetPeersInfo()
+	require.Len(t, peersInfo, 1)
+	require.Equal(t, serverInfo1, peersInfo[0])
+	require.NotEqual(t, serverInfo2, peersInfo[0])
 }
 
 // -----------------------------------------------------------------------------
@@ -1911,8 +1990,8 @@ type fakeChannelFac struct {
 
 // newChannel implement the type channel.LaoFactory
 func (c *fakeChannelFac) newChannel(channelID string, hub channel.HubFunctionalities,
-	msg message.Message, log zerolog.Logger, organizerKey kyber.Point, socket socket.Socket) (channel.Channel, error) {
-
+	msg message.Message, log zerolog.Logger, organizerKey kyber.Point, socket socket.Socket,
+) (channel.Channel, error) {
 	c.chanID = channelID
 	c.msg = msg
 	c.log = log
@@ -2052,6 +2131,7 @@ var msg1 = message.Message{
 	MessageID:         "message1",
 	WitnessSignatures: nil,
 }
+
 var msg2 = message.Message{
 	Data:              "data2",
 	Sender:            "sender2",
@@ -2070,5 +2150,7 @@ var msg3 = message.Message{
 
 var res2 = []message.Message{msg3}
 
-var idsRoot = []string{msg1.MessageID, msg2.MessageID}
-var idsChannel1 = []string{msg3.MessageID}
+var (
+	idsRoot     = []string{msg1.MessageID, msg2.MessageID}
+	idsChannel1 = []string{msg3.MessageID}
+)

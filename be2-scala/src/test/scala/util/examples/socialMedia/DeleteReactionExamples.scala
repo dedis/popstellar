@@ -8,7 +8,7 @@ import spray.json._
 
 object DeleteReactionExamples {
 
-  final val NOT_STALE_TIMESTAMP = Timestamp(1577833201L)
+  final val NOT_STALE_TIMESTAMP: Timestamp = Timestamp(1577833201L)
   final val SENDER_DELETEREACTION: PublicKey = AddChirpExamples.SENDER_ADDCHIRP
 
   val invalidTimestamp: Timestamp = Timestamp(0)

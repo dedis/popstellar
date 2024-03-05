@@ -1,8 +1,8 @@
 package ch.epfl.pop.authentication
 
-import akka.http.scaladsl.model.{AttributeKey, HttpRequest, HttpResponse, StatusCodes}
-import akka.http.scaladsl.server
+import akka.http.scaladsl.model.{AttributeKey, HttpRequest, HttpResponse, StatusCodes, Uri}
 import akka.http.scaladsl.server.Directives._
+import akka.http.scaladsl.server.Route
 
 /** Helper object used to build a server route for handling authentication requests
   */
@@ -21,7 +21,7 @@ object Authenticate {
     * @return
     *   A route either successfully handling a given authentication request or rejecting it with an error
     */
-  def buildRoute(): server.Route = {
+  def buildRoute(): Route =
     extractRequest { request =>
 
       val validParametersRoute = parameters(
@@ -33,29 +33,25 @@ object Authenticate {
         "response_mode".optional,
         "login_hint",
         "nonce"
-      ) {
-        (response_type, client_id, redirect_uri, scope, state, response_mode, login_hint, nonce) =>
-          {
-            val params = RequestParameters(response_type, client_id, redirect_uri, scope, state, response_mode, login_hint, nonce)
-            verifyParameters(params) match {
-              case Left(error -> errorDescription) => complete(authenticationFailure(error, errorDescription, state))
-              case Right(_)                        => complete(generateChallenge(request, redirect_uri, login_hint, client_id, nonce))
-            }
+      ) { (response_type, client_id, redirect_uri, scope, state, response_mode, login_hint, nonce) =>
+        complete {
+          val params = RequestParameters(response_type, client_id, redirect_uri, scope, state, response_mode, login_hint, nonce)
+          verifyParameters(params) match {
+            case Left((error, errorDescription)) => authenticationFailure(error, errorDescription, state)
+            case Right(_)                        => generateChallenge(request, redirect_uri, login_hint, client_id, nonce)
           }
+        }
       }
 
-      val invalidParametersRoute = extractUri { uri =>
-        complete {
-          val parametersFound = uri.query().toMap.keys.toSet
-          val missingParams = mandatoryParameters.diff(parametersFound)
-          val errorDescription = missingParams.map(name => s"[$name]").mkString("Missing parameters: ", " ", "")
-          authenticationFailure(INVALID_REQUEST_ERROR, errorDescription, None)
-        }
+      val invalidParametersRoute = extractUri { (uri: Uri) =>
+        val parametersFound = uri.query().toMap.keys.toSet
+        val missingParams = mandatoryParameters.diff(parametersFound)
+        val errorDescription = missingParams.map(name => s"[$name]").mkString("Missing parameters: ", " ", "")
+        complete(authenticationFailure(INVALID_REQUEST_ERROR, errorDescription, None))
       }
 
       validParametersRoute ~ invalidParametersRoute
     }
-  }
 
   private def generateChallenge(request: HttpRequest, redirectUri: String, laoId: String, clientId: String, nonce: String): HttpResponse = {
     val challengeEntity = QRCodeChallengeGenerator.generateChallengeContent(request.uri.toString(), redirectUri, laoId, clientId, nonce)
@@ -109,10 +105,10 @@ object Authenticate {
 
   private def authenticationFailure(error: String, errorDescription: String, state: Option[String]): HttpResponse = {
     var response = HttpResponse(status = StatusCodes.Found)
-      .addAttribute(AttributeKey("error"), error)
-      .addAttribute(AttributeKey("error_description"), errorDescription)
+      .addAttribute(AttributeKey.apply[String]("error"), error)
+      .addAttribute(AttributeKey.apply[String]("error_description"), errorDescription)
     if (state.isDefined)
-      response = response.addAttribute(AttributeKey("state"), state)
+      response = response.addAttribute(AttributeKey.apply[Option[String]]("state"), state)
     response
   }
 }

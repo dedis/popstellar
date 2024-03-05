@@ -7,6 +7,7 @@ import ch.epfl.pop.model.objects.{Channel, DbActorNAckException, Hash}
 import ch.epfl.pop.pubsub.AskPatternConstants
 import ch.epfl.pop.pubsub.graph.ErrorCodes
 import ch.epfl.pop.storage.DbActor
+
 import scala.util.{Failure, Success}
 import scala.collection.immutable.HashMap
 import scala.concurrent.Await
@@ -20,25 +21,10 @@ case class HeartbeatGenerator(dbRef: AskableActorRef) extends Actor with ActorLo
     */
   private def retrieveHeartbeatContent(): Option[HashMap[Channel, Set[Hash]]] = {
     val askForChannels = dbRef ? DbActor.GetAllChannels()
-    val setOfChannels: Set[Channel] = Await.ready(askForChannels, duration).value match {
-      case Some(Success(DbActor.DbActorGetAllChannelsAck(set))) =>
-        set
-      case Some(Failure(ex: DbActorNAckException)) =>
-        log.error(s"Heartbeat generation failed with: ${ex.message}")
-        return None
-      case reply =>
-        log.error(s"${ErrorCodes.SERVER_ERROR.id}," +
-          s" retrieveHeartbeatContent failed : unknown DbActor reply $reply")
-        return None
-    }
-
-    var heartbeatMap: HashMap[Channel, Set[Hash]] = HashMap()
-    setOfChannels.foreach(channel => {
-      val askChannelData = dbRef ? DbActor.ReadChannelData(channel)
-      val setOfIds: Set[Hash] = Await.ready(askChannelData, duration).value match {
-        case Some(Success(DbActor.DbActorReadChannelDataAck(channelData))) =>
-          channelData.messages.toSet
-        case Some(Failure(ex: DbActorNAckException)) =>
+    val setOfChannels: Set[Channel] =
+      Await.ready(askForChannels, duration).value.get match
+        case Success(DbActor.DbActorGetAllChannelsAck(set)) => set
+        case Failure(ex: DbActorNAckException) =>
           log.error(s"Heartbeat generation failed with: ${ex.message}")
           return None
         case reply =>
@@ -46,7 +32,21 @@ case class HeartbeatGenerator(dbRef: AskableActorRef) extends Actor with ActorLo
             s" retrieveHeartbeatContent failed : unknown DbActor reply $reply")
           return None
 
-      }
+    var heartbeatMap: HashMap[Channel, Set[Hash]] = HashMap()
+    setOfChannels.foreach(channel => {
+      val askChannelData = dbRef ? DbActor.ReadChannelData(channel)
+      val setOfIds: Set[Hash] =
+        Await.ready(askChannelData, duration).value match
+          case Some(Success(DbActor.DbActorReadChannelDataAck(channelData))) =>
+            channelData.messages.toSet
+          case Some(Failure(ex: DbActorNAckException)) =>
+            log.error(s"Heartbeat generation failed with: ${ex.message}")
+            Set.empty
+          case reply =>
+            log.error(s"${ErrorCodes.SERVER_ERROR.id}," +
+              s" retrieveHeartbeatContent failed : unknown DbActor reply $reply")
+            Set.empty
+
       if (setOfIds.nonEmpty)
         heartbeatMap = heartbeatMap + (channel -> setOfIds)
     })

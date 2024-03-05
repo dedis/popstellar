@@ -7,7 +7,6 @@ import ch.epfl.pop.decentralized.ConnectionMediator
 import ch.epfl.pop.json.MessageDataProtocol
 import ch.epfl.pop.json.MessageDataProtocol.GreetLaoFormat
 import ch.epfl.pop.model.network.method.message.Message
-import ch.epfl.pop.model.network.method.message.data.ActionType.ActionType
 import ch.epfl.pop.model.network.method.message.data.lao.GreetLao
 import ch.epfl.pop.model.network.method.message.data.{ActionType, ObjectType}
 import ch.epfl.pop.model.objects.Channel.{LAO_DATA_LOCATION, ROOT_CHANNEL_PREFIX}
@@ -56,7 +55,7 @@ final case class DbActor(
 
   @throws[DbActorNAckException]
   private def writeCreateLao(channel: Channel, message: Message): Unit = {
-    createChannel(channel, ObjectType.LAO)
+    createChannel(channel, ObjectType.lao)
     storage.write((storage.DATA_KEY + storage.CREATE_LAO_KEY + channel.toString, message.message_id.toString()))
     write(Channel.ROOT_CHANNEL, message)
   }
@@ -76,7 +75,7 @@ final case class DbActor(
   private def writeSetupElectionMessage(channel: Channel, message: Message): Unit = {
     channel.extractLaoChannel match {
       case Some(mainLaoChan) =>
-        createChannel(channel, ObjectType.ELECTION)
+        createChannel(channel, ObjectType.election)
         storage.write((storage.DATA_KEY + storage.SETUP_ELECTION_KEY + channel.toString, message.message_id.toString()))
         writeAndPropagate(mainLaoChan, message)
 
@@ -235,7 +234,7 @@ final case class DbActor(
   }
 
   @throws[DbActorNAckException]
-  private def createChannel(channel: Channel, objectType: ObjectType.ObjectType): Unit = {
+  private def createChannel(channel: Channel, objectType: ObjectType): Unit = {
     if (!checkChannelExistence(channel)) {
       val pair = (storage.CHANNEL_DATA_KEY + channel.toString) -> ChannelData(objectType, List.empty).toJsonString
       storage.write(pair)
@@ -252,13 +251,13 @@ final case class DbActor(
   }
 
   @throws[DbActorNAckException]
-  private def createChannels(channels: List[(Channel, ObjectType.ObjectType)]): Unit = {
+  private def createChannels(channels: List[(Channel, ObjectType)]): Unit = {
 
     @scala.annotation.tailrec
     def filterExistingChannels(
-        list: List[(Channel, ObjectType.ObjectType)],
-        acc: List[(Channel, ObjectType.ObjectType)]
-    ): List[(Channel, ObjectType.ObjectType)] = {
+        list: List[(Channel, ObjectType)],
+        acc: List[(Channel, ObjectType)]
+    ): List[(Channel, ObjectType)] = {
       list match {
         case Nil => acc
         case head :: tail =>
@@ -271,7 +270,7 @@ final case class DbActor(
     }
 
     // removing channels already present in the db from the list
-    val filtered: List[(Channel, ObjectType.ObjectType)] = filterExistingChannels(channels, Nil)
+    val filtered: List[(Channel, ObjectType)] = filterExistingChannels(channels, Nil)
     // creating ChannelData from the filtered input
     val mapped: List[(String, String)] = filtered.map { case (c, o) => (storage.CHANNEL_DATA_KEY + c.toString, ChannelData(o, List.empty).toJsonString) }
 
@@ -326,7 +325,7 @@ final case class DbActor(
     this.synchronized {
       val rollCallData: RollCallData = Try(readRollCallData(laoId)) match {
         case Success(data) => data
-        case Failure(_)    => RollCallData(Hash(Base64Data("")), ActionType.CREATE)
+        case Failure(_)    => RollCallData(Hash(Base64Data("")), ActionType.create)
       }
       val rollCallDataKey: String = generateRollCallDataKey(laoId)
       storage.write(rollCallDataKey -> rollCallData.updateWith(message).toJsonString)
@@ -659,7 +658,7 @@ object DbActor {
     * @param objectType
     *   channel type
     */
-  final case class CreateChannel(channel: Channel, objectType: ObjectType.ObjectType) extends Event
+  final case class CreateChannel(channel: Channel, objectType: ObjectType) extends Event
 
   /** Request to create election data in the db with an id and a keypair
     *
@@ -675,7 +674,7 @@ object DbActor {
     * @param list
     *   list from which channels are created
     */
-  final case class CreateChannelsFromList(list: List[(Channel, ObjectType.ObjectType)]) extends Event
+  final case class CreateChannelsFromList(list: List[(Channel, ObjectType)]) extends Event
 
   /** Request to check if channel <channel> exists in the db
     *

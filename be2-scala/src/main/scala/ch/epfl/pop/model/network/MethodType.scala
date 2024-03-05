@@ -1,20 +1,25 @@
 package ch.epfl.pop.model.network
 
-object MethodType extends Enumeration {
-  type MethodType = Value
+enum MethodType:
+  case INVALID extends MethodType
+  case broadcast extends MethodType
+  case publish extends MethodType
+  case subscribe extends MethodType
+  case unsubscribe extends MethodType
+  case catchup extends MethodType
+  case heartbeat extends MethodType
+  case get_messages_by_id extends MethodType
+  case greet_server extends MethodType
 
-  // uninitialized placeholder
-  val INVALID: Value = MatchingValue("__INVALID_METHOD__")
-  val BROADCAST: Value = MatchingValue("broadcast")
-  val PUBLISH: Value = MatchingValue("publish")
-  val SUBSCRIBE: Value = MatchingValue("subscribe")
-  val UNSUBSCRIBE: Value = MatchingValue("unsubscribe")
-  val CATCHUP: Value = MatchingValue("catchup")
-  val HEARTBEAT: Value = MatchingValue("heartbeat")
-  val GET_MESSAGES_BY_ID: Value = MatchingValue("get_messages_by_id")
-  val GREET_SERVER: Value = MatchingValue("greet_server")
-
-  def MatchingValue(v: String): Value with Matching = new Val(nextId, v) with Matching
-
-  def unapply(s: String): Option[Value] = values.find(s == _.toString)
-}
+object MethodType:
+  def apply(method: String): MethodType =
+    method match
+      case "broadcast"          => broadcast
+      case "publish"            => publish
+      case "subscribe"          => subscribe
+      case "unsubscribe"        => unsubscribe
+      case "catchup"            => catchup
+      case "heartbeat"          => heartbeat
+      case "get_messages_by_id" => get_messages_by_id
+      case "greet_server"       => greet_server
+      case _                    => INVALID

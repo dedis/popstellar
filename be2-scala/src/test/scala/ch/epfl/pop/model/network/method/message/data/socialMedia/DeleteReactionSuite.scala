@@ -13,8 +13,8 @@ class DeleteReactionSuite extends FunSuite with Matchers {
   test("Constructor/apply works as intended") {
     DELETEREACTION_MESSAGE.reaction_id should equal(REACTION_ID)
     DELETEREACTION_MESSAGE.timestamp should equal(TIMESTAMP)
-    DELETEREACTION_MESSAGE._object should equal(ObjectType.REACTION)
-    DELETEREACTION_MESSAGE.action should equal(ActionType.DELETE)
+    DELETEREACTION_MESSAGE._object should equal(ObjectType.reaction)
+    DELETEREACTION_MESSAGE.action should equal(ActionType.delete)
   }
 
   test("json conversions work back and forth") {

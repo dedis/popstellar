@@ -1,7 +1,7 @@
 package ch.epfl.pop.pubsub.graph.validators
 
 import akka.actor.{Actor, ActorRef, ActorSystem, Props}
-import akka.pattern.AskableActorRef
+import akka.pattern.{AskableActorRef, ask}
 import akka.testkit.{ImplicitSender, TestKit}
 import akka.util.Timeout
 import ch.epfl.pop.model.network.method.message.Message
@@ -55,19 +55,19 @@ class MeetingValidatorSuite extends TestKit(ActorSystem("meetingValidatorTestAct
 
   private final val laoDataRight: LaoData = LaoData(sender, List(sender), PRIVATE_KEY, PUBLIC_KEY, List.empty, address)
   private final val laoDataWrong: LaoData = LaoData(PK_OWNER, List(PK_OWNER), PRIVATE_KEY, PUBLIC_KEY, List.empty, address)
-  private final val channelDataRightSetup: ChannelData = ChannelData(ObjectType.LAO, List.empty)
-  private final val channelDataWrongSetup: ChannelData = ChannelData(ObjectType.ELECTION, List.empty)
+  private final val channelDataRightSetup: ChannelData = ChannelData(ObjectType.lao, List.empty)
+  private final val channelDataWrongSetup: ChannelData = ChannelData(ObjectType.election, List.empty)
 
-  private final val channelDataRightElection: ChannelData = ChannelData(ObjectType.ELECTION, List.empty)
-  private final val channelDataWrongElection: ChannelData = ChannelData(ObjectType.LAO, List.empty)
+  private final val channelDataRightElection: ChannelData = ChannelData(ObjectType.election, List.empty)
+  private final val channelDataWrongElection: ChannelData = ChannelData(ObjectType.lao, List.empty)
 
   private def mockDbWorkingSetup: AskableActorRef = {
     val dbActorMock = Props(new Actor() {
       override def receive: Receive = {
         case DbActor.ReadLaoData(_) =>
-          sender() ! DbActor.DbActorReadLaoDataAck(laoDataRight)
+          this.sender() ! DbActor.DbActorReadLaoDataAck(laoDataRight)
         case DbActor.ReadChannelData(_) =>
-          sender() ! DbActor.DbActorReadChannelDataAck(channelDataRightSetup)
+          this.sender() ! DbActor.DbActorReadChannelDataAck(channelDataRightSetup)
       }
     })
     system.actorOf(dbActorMock)
@@ -77,9 +77,9 @@ class MeetingValidatorSuite extends TestKit(ActorSystem("meetingValidatorTestAct
     val dbActorMock = Props(new Actor() {
       override def receive: Receive = {
         case DbActor.ReadLaoData(_) =>
-          sender() ! DbActor.DbActorReadLaoDataAck(laoDataRight)
+          this.sender() ! DbActor.DbActorReadLaoDataAck(laoDataRight)
         case DbActor.ReadChannelData(_) =>
-          sender() ! DbActor.DbActorReadChannelDataAck(channelDataWrongSetup)
+          this.sender() ! DbActor.DbActorReadChannelDataAck(channelDataWrongSetup)
       }
     })
     system.actorOf(dbActorMock)
@@ -89,9 +89,9 @@ class MeetingValidatorSuite extends TestKit(ActorSystem("meetingValidatorTestAct
     val dbActorMock = Props(new Actor() {
       override def receive: Receive = {
         case DbActor.ReadLaoData(_) =>
-          sender() ! DbActor.DbActorReadLaoDataAck(laoDataWrong)
+          this.sender() ! DbActor.DbActorReadLaoDataAck(laoDataWrong)
         case DbActor.ReadChannelData(_) =>
-          sender() ! DbActor.DbActorReadChannelDataAck(channelDataRightSetup)
+          this.sender() ! DbActor.DbActorReadChannelDataAck(channelDataRightSetup)
       }
     })
     system.actorOf(dbActorMock)

@@ -58,7 +58,7 @@ object ParamsWithMapHandler extends AskPatternConstants {
         if (missingIdsSet.nonEmpty)
           missingIdsMap += (channel -> missingIdsSet)
       })
-      Right(JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, MethodType.GET_MESSAGES_BY_ID, GetMessagesById(missingIdsMap), Some(0)))
+      Right(JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, MethodType.get_messages_by_id, GetMessagesById(missingIdsMap), Some(0)))
 
     case Right(jsonRpcMessage: JsonRpcResponse) =>
       Left(PipelineError(ErrorCodes.SERVER_ERROR.id, "HeartbeatHandler received a 'JsonRpcResponse'", jsonRpcMessage.id))
