@@ -36,12 +36,6 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.reactivex.Completable
 import io.reactivex.subjects.BehaviorSubject
-import java.text.DateFormat
-import java.text.SimpleDateFormat
-import java.time.Instant
-import java.util.Calendar
-import java.util.Locale
-import javax.inject.Inject
 import org.hamcrest.MatcherAssert
 import org.hamcrest.Matchers
 import org.junit.Assert
@@ -54,26 +48,44 @@ import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.junit.MockitoJUnit
 import org.mockito.junit.MockitoTestRule
+import java.text.DateFormat
+import java.text.SimpleDateFormat
+import java.time.Instant
+import java.util.Calendar
+import java.util.Locale
+import javax.inject.Inject
 
 @LargeTest
 @HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
 class ElectionSetupFragmentTest {
-  @Inject lateinit var keyManager: KeyManager
+  @Inject
+  lateinit var keyManager: KeyManager
 
-  @Inject lateinit var messageHandler: MessageHandler
+  @Inject
+  lateinit var messageHandler: MessageHandler
 
-  @Inject lateinit var gson: Gson
+  @Inject
+  lateinit var gson: Gson
 
-  @BindValue @Mock lateinit var repository: LAORepository
+  @BindValue
+  @Mock
+  lateinit var repository: LAORepository
 
-  @BindValue @Mock lateinit var globalNetworkManager: GlobalNetworkManager
+  @BindValue
+  @Mock
+  lateinit var globalNetworkManager: GlobalNetworkManager
 
-  @Mock lateinit var messageSender: MessageSender
+  @Mock
+  lateinit var messageSender: MessageSender
 
-  @JvmField @Rule(order = 0) val mockitoRule: MockitoTestRule = MockitoJUnit.testRule(this)
+  @JvmField
+  @Rule(order = 0)
+  val mockitoRule: MockitoTestRule = MockitoJUnit.testRule(this)
 
-  @JvmField @Rule(order = 1) val hiltRule = HiltAndroidRule(this)
+  @JvmField
+  @Rule(order = 1)
+  val hiltRule = HiltAndroidRule(this)
 
   @JvmField
   @Rule(order = 2)
@@ -325,11 +337,31 @@ class ElectionSetupFragmentTest {
       )
   }
 
-  // @matteosz: This test will fail if executed between 00:00 and 00:10! TO-FIX
   @Test
   fun cannotChooseStartTimeTooFarInPast() {
     val today = Calendar.getInstance()
     today.add(Calendar.MINUTE, -10)
+    val year = today[Calendar.YEAR]
+    val monthOfYear = today[Calendar.MONTH]
+    val dayOfMonth = today[Calendar.DAY_OF_MONTH]
+    val hourOfDay = today[Calendar.HOUR_OF_DAY]
+    val minutes = today[Calendar.MINUTE]
+
+    EventCreationPageObject.startDateView().perform(ViewActions.click())
+    getLastDialog(DatePickerDialog::class.java).updateDate(year, monthOfYear, dayOfMonth)
+    dialogPositiveButton().performClick()
+
+    EventCreationPageObject.startTimeView().perform(ViewActions.click())
+    getLastDialog(TimePickerDialog::class.java).updateTime(hourOfDay, minutes)
+    dialogPositiveButton().performClick()
+
+    EventCreationPageObject.startTimeView().check(ViewAssertions.matches(ViewMatchers.withText("")))
+  }
+
+  @Test
+  fun cannotChooseStartTimeInPastDay() {
+    val today = Calendar.getInstance()
+    today.add(Calendar.MINUTE, -1430)
     val year = today[Calendar.YEAR]
     val monthOfYear = today[Calendar.MONTH]
     val dayOfMonth = today[Calendar.DAY_OF_MONTH]
