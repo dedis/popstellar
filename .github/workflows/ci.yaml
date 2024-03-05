@@ -54,7 +54,7 @@ jobs:
             ${{ runner.os }}-
 
       - name: Setup node modules cache
-        if ${{ runner.os != 'macOS'}}
+        if: ${{ runner.os != 'macOS'}}
         uses: actions/cache@v2
         env:
           cache-name: cache-node-modules
