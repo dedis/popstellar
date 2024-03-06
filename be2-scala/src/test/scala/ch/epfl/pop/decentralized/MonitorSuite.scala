@@ -105,7 +105,7 @@ class MonitorSuite extends TestKit(ActorSystem("MonitorSuiteActorSystem")) with 
     testProbe.expectMsgType[Monitor.GenerateAndSendHeartbeat](timeout)
   }
 
-  test("monitor should send a ConnectTo() upon creation"){
+  test("monitor should send a ConnectTo() upon creation") {
     val mockConnectionMediator = TestProbe()
 
     // Write to mock server peers config file
@@ -119,7 +119,6 @@ class MonitorSuite extends TestKit(ActorSystem("MonitorSuiteActorSystem")) with 
 
     // Expect first read of the server peers list
     mockConnectionMediator.expectMsgType[ConnectionMediator.ConnectTo](timeout)
-
 
   }
 
@@ -173,5 +172,3 @@ class MonitorSuite extends TestKit(ActorSystem("MonitorSuiteActorSystem")) with 
     mockConnectionMediator.expectNoMessage(timeout)
   }
 }
-
-
