@@ -105,6 +105,8 @@ private class FileMonitor(mediatorRef: ActorRef) extends Runnable {
   directory.register(watchService, ENTRY_MODIFY)
 
   override def run(): Unit = {
+    // Upon start, we connect to the servers
+    mediatorRef ! ConnectionMediator.ConnectTo(readServerPeers())
     try {
       while (!Thread.currentThread().isInterrupted) {
         // Blocks until an event happen

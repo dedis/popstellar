@@ -105,12 +105,37 @@ class MonitorSuite extends TestKit(ActorSystem("MonitorSuiteActorSystem")) with 
     testProbe.expectMsgType[Monitor.GenerateAndSendHeartbeat](timeout)
   }
 
-  test("monitor should send ConnectTo() requests to ConnectionMediator upon relevant config file change") {
+  test("monitor should send a ConnectTo() upon creation") {
     val mockConnectionMediator = TestProbe()
+
+    // Write to mock server peers config file
+    val mockConfig = List("mockConfig")
+    testWriteToServerPeersConfig(mockConfig)
+
     val monitorRef = system.actorOf(Monitor.props(ActorRef.noSender))
 
     // Ping monitor to inform it of ConnectionMediatorRef
     mockConnectionMediator.send(monitorRef, ConnectionMediator.Ping())
+
+    // Expect first read of the server peers list
+    mockConnectionMediator.expectMsgType[ConnectionMediator.ConnectTo](timeout)
+
+  }
+
+  test("monitor should send ConnectTo() requests to ConnectionMediator upon relevant config file change besides first read") {
+    val mockConnectionMediator = TestProbe()
+
+    // Write to mock server peers config file
+    val mockConfig = List("mockConfig")
+    testWriteToServerPeersConfig(mockConfig)
+
+    val monitorRef = system.actorOf(Monitor.props(ActorRef.noSender))
+
+    // Ping monitor to inform it of ConnectionMediatorRef
+    mockConnectionMediator.send(monitorRef, ConnectionMediator.Ping())
+
+    // Expect first read of the server peers list
+    mockConnectionMediator.expectMsgType[ConnectionMediator.ConnectTo](timeout)
 
     // Expect no message as long as the server peers list is untouched
     mockConnectionMediator.expectNoMessage(timeout)
@@ -121,12 +146,19 @@ class MonitorSuite extends TestKit(ActorSystem("MonitorSuiteActorSystem")) with 
     mockConnectionMediator.expectMsgType[ConnectionMediator.ConnectTo](timeout)
   }
 
-  test("monitor should not react upon non relevant events in config directory") {
+  test("monitor should not react upon non relevant events in config directory besides first read") {
     val mockConnectionMediator = TestProbe()
     val monitorRef = system.actorOf(Monitor.props(ActorRef.noSender))
 
+    // Write to mock server peers config file
+    val mockConfig = List("mockConfig")
+    testWriteToServerPeersConfig(mockConfig)
+
     // Ping monitor to inform it of ConnectionMediatorRef
     mockConnectionMediator.send(monitorRef, ConnectionMediator.Ping())
+
+    // Expect first read of the server peers list
+    mockConnectionMediator.expectMsgType[ConnectionMediator.ConnectTo](timeout)
 
     // Create new file in the directory
     val filePath = Path.of(serverPeersListPath).getParent.toString + File.separator + "DELETE_ME"
