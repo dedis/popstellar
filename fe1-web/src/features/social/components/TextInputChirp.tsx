@@ -20,16 +20,16 @@ const styles = StyleSheet.create({
     borderColor: Color.primary,
     borderRadius: Border.radius,
     backgroundColor: Color.contrast,
+    display: 'flex',
     flexDirection: 'row',
+    columnGap: Spacing.x1,
     padding: Spacing.contentSpacing,
-  } as ViewStyle,
-  leftView: {
-    marginRight: Spacing.x1,
   } as ViewStyle,
   rightView: {
     display: 'flex',
     flexDirection: 'column',
     flexGrow: 1,
+    flexShrink: 1,
   } as ViewStyle,
   textInput: {
     alignContent: 'flex-end',
@@ -74,7 +74,7 @@ const TextInputChirp = (props: IPropTypes) => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.leftView}>
+      <View>
         {
           // If the current user public key is defined, show the profile picture accordingly
           !currentUserPublicKey ? (

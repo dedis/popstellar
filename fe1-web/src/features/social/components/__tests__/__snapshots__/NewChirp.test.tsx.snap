@@ -14,18 +14,14 @@ exports[`NewChirp renders correctly 1`] = `
         "backgroundColor": "#fff",
         "borderColor": "#000",
         "borderRadius": 8,
+        "columnGap": 16,
+        "display": "flex",
         "flexDirection": "row",
         "padding": 16,
       }
     }
   >
-    <View
-      style={
-        {
-          "marginRight": 16,
-        }
-      }
-    >
+    <View>
       <blockies
         bgColor="#ffffff"
         scale={5}
@@ -40,6 +36,7 @@ exports[`NewChirp renders correctly 1`] = `
           "display": "flex",
           "flexDirection": "column",
           "flexGrow": 1,
+          "flexShrink": 1,
         }
       }
     >
@@ -195,18 +192,14 @@ exports[`NewChirp shows the error message on empty trimmed message 1`] = `
         "backgroundColor": "#fff",
         "borderColor": "#000",
         "borderRadius": 8,
+        "columnGap": 16,
+        "display": "flex",
         "flexDirection": "row",
         "padding": 16,
       }
     }
   >
-    <View
-      style={
-        {
-          "marginRight": 16,
-        }
-      }
-    >
+    <View>
       <blockies
         bgColor="#ffffff"
         scale={5}
@@ -221,6 +214,7 @@ exports[`NewChirp shows the error message on empty trimmed message 1`] = `
           "display": "flex",
           "flexDirection": "column",
           "flexGrow": 1,
+          "flexShrink": 1,
         }
       }
     >
@@ -395,18 +389,14 @@ exports[`NewChirp shows the modal on trimmed chirp and closes it 1`] = `
         "backgroundColor": "#fff",
         "borderColor": "#000",
         "borderRadius": 8,
+        "columnGap": 16,
+        "display": "flex",
         "flexDirection": "row",
         "padding": 16,
       }
     }
   >
-    <View
-      style={
-        {
-          "marginRight": 16,
-        }
-      }
-    >
+    <View>
       <blockies
         bgColor="#ffffff"
         scale={5}
@@ -421,6 +411,7 @@ exports[`NewChirp shows the modal on trimmed chirp and closes it 1`] = `
           "display": "flex",
           "flexDirection": "column",
           "flexGrow": 1,
+          "flexShrink": 1,
         }
       }
     >
@@ -752,18 +743,14 @@ exports[`NewChirp shows the modal on trimmed chirp and closes it 2`] = `
         "backgroundColor": "#fff",
         "borderColor": "#000",
         "borderRadius": 8,
+        "columnGap": 16,
+        "display": "flex",
         "flexDirection": "row",
         "padding": 16,
       }
     }
   >
-    <View
-      style={
-        {
-          "marginRight": 16,
-        }
-      }
-    >
+    <View>
       <blockies
         bgColor="#ffffff"
         scale={5}
@@ -778,6 +765,7 @@ exports[`NewChirp shows the modal on trimmed chirp and closes it 2`] = `
           "display": "flex",
           "flexDirection": "column",
           "flexGrow": 1,
+          "flexShrink": 1,
         }
       }
     >
