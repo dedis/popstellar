@@ -54,6 +54,7 @@ jobs:
             ${{ runner.os }}-
 
       - name: Setup node modules cache
+        # MacOS is excluded since caching node modules made it slower than it was without caching
         if: ${{ runner.os != 'macOS'}}
         uses: actions/cache@v2
         env:
