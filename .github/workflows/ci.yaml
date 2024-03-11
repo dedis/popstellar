@@ -40,10 +40,10 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
-      - name: Setup node cache
+      - name: Setup node npm cache
         uses: actions/cache@v2
         env:
-          cache-name: cache-node-modules
+          cache-name: cache-node-npm
         with:
           # npm cache files are stored in `~/.npm` on Linux/macOS
           path: ~/.npm
@@ -52,6 +52,17 @@ jobs:
             ${{ runner.os }}-build-${{ env.cache-name }}-
             ${{ runner.os }}-build-
             ${{ runner.os }}-
+
+      - name: Setup node modules cache
+        # MacOS is excluded since caching node modules made it slower than it was without caching
+        if: ${{ runner.os != 'macOS'}}
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: ./fe1-web/node_modules
+          key:  ${{ runner.os }}-nodemodules-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: ${{ runner.os }}-nodemodules-
 
       - name: Setup expo
         run: npm install -g @expo/cli
