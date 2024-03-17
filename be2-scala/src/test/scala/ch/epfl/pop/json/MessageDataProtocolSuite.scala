@@ -236,36 +236,50 @@ class MessageDataProtocolSuite extends FunSuite with Matchers {
   test("Parser correctly encodes and decodes ObjectType and rejects incorrect type") {
     ObjectType.values.foreach(obj => {
       val fromJson = MessageDataProtocol.objectTypeFormat.write(obj)
-      val toString = MessageDataProtocol.objectTypeFormat.read(fromJson)
-      toString shouldBe a[ObjectType]
-    })
-    val string = """{"object": "stellarobject"}""".parseJson
+      obj match {
+        case ObjectType.INVALID => assertThrows[IllegalArgumentException] {
+          MessageDataProtocol.objectTypeFormat.read(fromJson)
+        }
+        case _ => val toType = MessageDataProtocol.objectTypeFormat.read(fromJson)
+        toType shouldBe a[ObjectType]
+    }})
+    val invalidJson = """{"object": "stellarobject"}""".parseJson
     assertThrows[IllegalArgumentException] {
-      MessageDataProtocol.objectTypeFormat.read(string)
+      MessageDataProtocol.objectTypeFormat.read(invalidJson)
     }
   }
 
   test("Parser correctly encodes and decodes ActionType and rejects incorrect type") {
     ActionType.values.foreach(obj => {
       val fromJson = MessageDataProtocol.actionTypeFormat.write(obj)
-      val toString = MessageDataProtocol.actionTypeFormat.read(fromJson)
-      toString shouldBe a[ActionType]
+      obj match {
+        case ActionType.INVALID => assertThrows[IllegalArgumentException] {
+          MessageDataProtocol.actionTypeFormat.read(fromJson)
+        }
+        case _ => val toType = MessageDataProtocol.actionTypeFormat.read(fromJson)
+          toType shouldBe a[ActionType]
+      }
     })
-    val string = """{"action": "stellaraction"}""".parseJson
+    val invalidJson = """{"action": "stellaraction"}""".parseJson
     assertThrows[IllegalArgumentException] {
-      MessageDataProtocol.actionTypeFormat.read(string)
+      MessageDataProtocol.actionTypeFormat.read(invalidJson)
     }
   }
 
   test("Parser correctly encodes and decodes VersionType and rejects incorrect type") {
     VersionType.values.foreach(obj => {
       val fromJson = MessageDataProtocol.versionTypeFormat.write(obj)
-      val toString = MessageDataProtocol.versionTypeFormat.read(fromJson)
-      toString shouldBe a[VersionType]
+      obj match {
+        case VersionType.INVALID => assertThrows[IllegalArgumentException] {
+          MessageDataProtocol.versionTypeFormat.read(fromJson)
+        }
+        case _ => val toType = MessageDataProtocol.versionTypeFormat.read(fromJson)
+          toType shouldBe a[VersionType]
+      }
     })
-    val string = """{"action": "stellarversion"}""".parseJson
+    val invalidJson = """{"version": "stellarversion"}""".parseJson
     assertThrows[IllegalArgumentException] {
-      MessageDataProtocol.versionTypeFormat.read(string)
+      MessageDataProtocol.versionTypeFormat.read(invalidJson)
     }
   }
 

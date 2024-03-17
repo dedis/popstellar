@@ -3,11 +3,12 @@ package ch.epfl.pop.json
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.{GreetServer, ParamsWithChannel, ParamsWithMap, ParamsWithMessage}
 import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse, MethodType, ResultObject}
-import ch.epfl.pop.model.objects._
+import ch.epfl.pop.model.objects.*
 import ch.epfl.pop.pubsub.graph.validators.RpcValidator
 import org.scalatest.Inspectors.forEvery
-import org.scalatest.funsuite.{AnyFunSuite => FunSuite}
+import org.scalatest.funsuite.AnyFunSuite as FunSuite
 import org.scalatest.matchers.should.Matchers
+import spray.json.*
 
 import scala.collection.immutable.{HashMap, Set}
 
@@ -258,6 +259,61 @@ class HighLevelProtocolSuite extends FunSuite with Matchers {
     answerFromJson.result.get should equal(resultObject)
     answerFromJson.error should equal(None)
   }
+
+  test("Parser correctly encodes and decodes MethodType and rejects incorrect type") {
+    MethodType.values.foreach(obj => {
+      val fromJson = HighLevelProtocol.methodTypeFormat.write(obj)
+      val toType = HighLevelProtocol.methodTypeFormat.read(fromJson)
+      toType shouldBe a[MethodType]
+    })
+    val invalidJson = """{"method": "stellarmethod"}""".parseJson
+    assertThrows[IllegalArgumentException] {
+      HighLevelProtocol.methodTypeFormat.read(invalidJson)
+    }
+  }
+
+  test("Parser correctly encodes and decodes publish, subscribe, get_messages_by_id and rejects INVALID type") {
+    //Test focused on new MethodType conversion
+    // Setup
+    val chan1 = Channel("/root/nLghr9_P406lfkMjaNWqyohLxOiGlQee8zad4qAfj18=/social/8qlv4aUT5-tBodKp4RszY284CFYVaoDZK6XKiw9isSw=")
+
+    val id: String = "f1jTxH8TU2UGUBnikGU3wRTHjhOmIEQVmxZBK55QpsE="
+    val sender: String = "to_klZLtiHV446Fv98OLNdNmi-EP5OaTtbBkotTYLic="
+    val signature: String = "2VDJCWg11eNPUvZOnvq5YhqqIKLBcik45n-6o87aUKefmiywagivzD4o_YmjWHzYcb9qg-OgDBZbBNWSUgJICA=="
+    val data: String = "eyJjcmVhdGlvbiI6MTYzMTg4NzQ5NiwiaWQiOiJ4aWdzV0ZlUG1veGxkd2txMUt1b0wzT1ZhODl4amdYalRPZEJnSldjR1drPSIsIm5hbWUiOiJoZ2dnZ2dnIiwib3JnYW5pemVyIjoidG9fa2xaTHRpSFY0NDZGdjk4T0xOZE5taS1FUDVPYVR0YkJrb3RUWUxpYz0iLCJ3aXRuZXNzZXMiOltdLCJvYmplY3QiOiJsYW8iLCJhY3Rpb24iOiJjcmVhdGUifQ=="
+    val message: Message = buildExpected(id, sender, signature, data)
+
+
+    val id1 = Hash(Base64Data("DCBX48EuNO6q-Sr42ONqsj7opKiNeXyRzrjqTbZ_aMI="))
+
+    val chan2 = Channel("/root/nLghr9_P406lfkMjaNWqyohLxOiGlQee8zad4qAfj18=/HnXDyvSSron676Icmvcjk5zXvGLkPJ1fVOaWOxItzBE=")
+    val id2 = Hash(Base64Data("z6SbjJ0Hw36k8L09-GVRq4PNmi06yQX4e8aZRSbUDwc="))
+    val id3 = Hash(Base64Data("txbTmVMwCDkZdoaAiEYfAKozVizZzkeMkeOlzq5qMlg="))
+    val map = HashMap(
+      chan1 -> Set(id1),
+      chan2 -> Set(id2, id3)
+    )
+
+    val methodTypesToTest = List(MethodType.publish, MethodType.subscribe, MethodType.get_messages_by_id, MethodType.INVALID)
+    //Other types are already covered in other tests, since it's simply converting to and from json there's no need to test twice
+    //The more interesting part here is testing for invalid types
+    methodTypesToTest.foreach(obj => {
+      val fromJson = HighLevelProtocol.jsonRpcRequestFormat.write(
+        JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, obj, if obj == MethodType.get_messages_by_id then new ParamsWithMap(map) else new ParamsWithMessage(chan1, message),
+          if obj == MethodType.greet_server then None else Some(23)
+        )
+      )
+
+      if obj == MethodType.INVALID then
+        assertThrows[IllegalArgumentException] {HighLevelProtocol.jsonRpcRequestFormat.read(fromJson)}
+      else
+        val toType = HighLevelProtocol.jsonRpcRequestFormat.read(fromJson)
+        toType shouldBe a[JsonRpcRequest]
+        toType.method should equal(obj)
+    })
+  }
+
+
 }
 
 enum MsgField:

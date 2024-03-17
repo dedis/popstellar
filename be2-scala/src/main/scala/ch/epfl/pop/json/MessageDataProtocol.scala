@@ -24,7 +24,9 @@ object MessageDataProtocol extends DefaultJsonProtocol {
   // ----------------------------------- ENUM FORMATTERS ----------------------------------- //
   implicit object objectTypeFormat extends RootJsonFormat[ObjectType] {
     override def read(json: JsValue): ObjectType = json match {
-      case JsString(method) => ObjectType.valueOf(method)
+      // We check for INVALID so that we cannot legitimately pass INVALID as version
+      // We still keep INVALID as a possible version in case we want to show an error somewhere
+      case JsString(method) if method != "INVALID" => ObjectType.valueOf(method)
       case _                => throw new IllegalArgumentException(s"Can't parse json value $json to an ObjectType")
     }
 
@@ -33,7 +35,7 @@ object MessageDataProtocol extends DefaultJsonProtocol {
 
   implicit object actionTypeFormat extends RootJsonFormat[ActionType] {
     override def read(json: JsValue): ActionType = json match {
-      case JsString(method) => ActionType.valueOf(method)
+      case JsString(method) if method != "INVALID" => ActionType.valueOf(method)
       case _                => throw new IllegalArgumentException(s"Can't parse json value $json to an ActionType")
     }
 
@@ -42,7 +44,7 @@ object MessageDataProtocol extends DefaultJsonProtocol {
 
   implicit object versionTypeFormat extends RootJsonFormat[VersionType] {
     override def read(json: JsValue): VersionType = json match {
-      case JsString(version) => VersionType.valueOf(version)
+      case JsString(version) if version != "INVALID" => VersionType.valueOf(version)
       case _                 => throw new IllegalArgumentException(s"Can't parse json value $json to a VersionType")
     }
 
