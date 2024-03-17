@@ -273,7 +273,7 @@ class HighLevelProtocolSuite extends FunSuite with Matchers {
   }
 
   test("Parser correctly encodes and decodes publish, subscribe, get_messages_by_id and rejects INVALID type") {
-    //Test focused on new MethodType conversion
+    // Test focused on new MethodType conversion
     // Setup
     val chan1 = Channel("/root/nLghr9_P406lfkMjaNWqyohLxOiGlQee8zad4qAfj18=/social/8qlv4aUT5-tBodKp4RszY284CFYVaoDZK6XKiw9isSw=")
 
@@ -282,7 +282,6 @@ class HighLevelProtocolSuite extends FunSuite with Matchers {
     val signature: String = "2VDJCWg11eNPUvZOnvq5YhqqIKLBcik45n-6o87aUKefmiywagivzD4o_YmjWHzYcb9qg-OgDBZbBNWSUgJICA=="
     val data: String = "eyJjcmVhdGlvbiI6MTYzMTg4NzQ5NiwiaWQiOiJ4aWdzV0ZlUG1veGxkd2txMUt1b0wzT1ZhODl4amdYalRPZEJnSldjR1drPSIsIm5hbWUiOiJoZ2dnZ2dnIiwib3JnYW5pemVyIjoidG9fa2xaTHRpSFY0NDZGdjk4T0xOZE5taS1FUDVPYVR0YkJrb3RUWUxpYz0iLCJ3aXRuZXNzZXMiOltdLCJvYmplY3QiOiJsYW8iLCJhY3Rpb24iOiJjcmVhdGUifQ=="
     val message: Message = buildExpected(id, sender, signature, data)
-
 
     val id1 = Hash(Base64Data("DCBX48EuNO6q-Sr42ONqsj7opKiNeXyRzrjqTbZ_aMI="))
 
@@ -295,24 +294,26 @@ class HighLevelProtocolSuite extends FunSuite with Matchers {
     )
 
     val methodTypesToTest = List(MethodType.publish, MethodType.subscribe, MethodType.get_messages_by_id, MethodType.INVALID)
-    //Other types are already covered in other tests, since it's simply converting to and from json there's no need to test twice
-    //The more interesting part here is testing for invalid types
+    // Other types are already covered in other tests, since it's simply converting to and from json there's no need to test twice
+    // The more interesting part here is testing for invalid types
     methodTypesToTest.foreach(obj => {
       val fromJson = HighLevelProtocol.jsonRpcRequestFormat.write(
-        JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, obj, if obj == MethodType.get_messages_by_id then new ParamsWithMap(map) else new ParamsWithMessage(chan1, message),
+        JsonRpcRequest(
+          RpcValidator.JSON_RPC_VERSION,
+          obj,
+          if obj == MethodType.get_messages_by_id then new ParamsWithMap(map) else new ParamsWithMessage(chan1, message),
           if obj == MethodType.greet_server then None else Some(23)
         )
       )
-
-      if obj == MethodType.INVALID then
-        assertThrows[IllegalArgumentException] {HighLevelProtocol.jsonRpcRequestFormat.read(fromJson)}
-      else
-        val toType = HighLevelProtocol.jsonRpcRequestFormat.read(fromJson)
-        toType shouldBe a[JsonRpcRequest]
-        toType.method should equal(obj)
+      obj match {
+        case MethodType.INVALID => assertThrows[IllegalArgumentException] { HighLevelProtocol.jsonRpcRequestFormat.read(fromJson) }
+        case _ =>
+          val toType = HighLevelProtocol.jsonRpcRequestFormat.read(fromJson)
+          toType shouldBe a[JsonRpcRequest]
+          toType.method should equal(obj)
+      }
     })
   }
-
 
 }
 
