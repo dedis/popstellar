@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	"popstellar/channel"
 	"popstellar/crypto"
-	state2 "popstellar/hub/state"
+	"popstellar/hub/state"
 	"popstellar/inbox"
 	jsonrpc "popstellar/message"
 	"popstellar/message/answer"
@@ -50,6 +50,30 @@ const (
 
 var suite = crypto.Suite
 
+// Huber defines the methods a PoP server must implement to receive messages
+// and handle clients.
+type Huber interface {
+	// NotifyNewServer add a socket for the hub to send message to other servers
+	NotifyNewServer(socket.Socket)
+
+	// Start invokes the processing loop for the hub.
+	Start()
+
+	// Stop closes the processing loop for the hub.
+	Stop()
+
+	// Receiver returns a channel that may be used to process incoming messages
+	Receiver() chan<- socket.IncomingMessage
+
+	// OnSocketClose returns a channel which accepts socket ids on connection
+	// close events. This allows the hub to cleanup clients which close without
+	// sending an unsubscribe message
+	OnSocketClose() chan<- string
+
+	// SendGreetServer sends a greet server message in the socket
+	SendGreetServer(socket.Socket) error
+}
+
 // Hub implements the Hub interface.
 type Hub struct {
 	clientServerAddress string
@@ -58,7 +82,7 @@ type Hub struct {
 	messageChan chan socket.IncomingMessage
 
 	sync.RWMutex
-	channelByID state2.Channels
+	channelByID state.Channels
 
 	closedSockets chan string
 
@@ -83,16 +107,16 @@ type Hub struct {
 	hubInbox inbox.HubInbox
 
 	// queries are used to help servers catchup to each other
-	queries state2.Queries
+	queries state.Queries
 
 	// peers stores information about the peers
-	peers state2.Peers
+	peers state.Peers
 
 	// blacklist stores the IDs of the messages that failed to be processed by the hub
 	// the server will not ask for them again in the heartbeat
 	// and will not process them if they are received again
 	// @TODO remove the messages from the blacklist after a certain amount of time by trying to process them again
-	blacklist state2.ThreadSafeSlice[string]
+	blacklist state.ThreadSafeSlice[string]
 }
 
 // NewHub returns a new Hub.
@@ -112,7 +136,7 @@ func NewHub(pubKeyOwner kyber.Point, clientServerAddress string, serverServerAdd
 		clientServerAddress: clientServerAddress,
 		serverServerAddress: serverServerAddress,
 		messageChan:         make(chan socket.IncomingMessage),
-		channelByID:         state2.NewChannelsMap(),
+		channelByID:         state.NewChannelsMap(),
 		closedSockets:       make(chan string),
 		pubKeyOwner:         pubKeyOwner,
 		pubKeyServ:          pubServ,
@@ -124,9 +148,9 @@ func NewHub(pubKeyOwner kyber.Point, clientServerAddress string, serverServerAdd
 		laoFac:              laoFac,
 		serverSockets:       channel.NewSockets(),
 		hubInbox:            *inbox.NewHubInbox(rootChannel),
-		queries:             state2.NewQueries(log),
-		peers:               state2.NewPeers(),
-		blacklist:           state2.NewThreadSafeSlice[string](),
+		queries:             state.NewQueries(log),
+		peers:               state.NewPeers(),
+		blacklist:           state.NewThreadSafeSlice[string](),
 	}
 
 	return &hub, nil
@@ -603,28 +627,4 @@ func generateKeys() (kyber.Point, kyber.Scalar) {
 	point := suite.Point().Mul(secret, nil)
 
 	return point, secret
-}
-
-// Huber defines the methods a PoP server must implement to receive messages
-// and handle clients.
-type Huber interface {
-	// NotifyNewServer add a socket for the hub to send message to other servers
-	NotifyNewServer(socket.Socket)
-
-	// Start invokes the processing loop for the hub.
-	Start()
-
-	// Stop closes the processing loop for the hub.
-	Stop()
-
-	// Receiver returns a channel that may be used to process incoming messages
-	Receiver() chan<- socket.IncomingMessage
-
-	// OnSocketClose returns a channel which accepts socket ids on connection
-	// close events. This allows the hub to cleanup clients which close without
-	// sending an unsubscribe message
-	OnSocketClose() chan<- string
-
-	// SendGreetServer sends a greet server message in the socket
-	SendGreetServer(socket.Socket) error
 }
