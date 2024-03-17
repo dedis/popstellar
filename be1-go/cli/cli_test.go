@@ -8,7 +8,7 @@ import (
 	"os"
 	"popstellar/channel/lao"
 	"popstellar/crypto"
-	"popstellar/hub/standard_hub"
+	"popstellar/hub"
 	"popstellar/network"
 	"popstellar/network/socket"
 	"sync"
@@ -36,7 +36,7 @@ const (
 func TestConnectToSocket(t *testing.T) {
 	log := zerolog.New(io.Discard)
 
-	oh, err := standard_hub.NewHub(crypto.Suite.Point(), "", "", log, lao.NewChannel)
+	oh, err := hub.NewHub(crypto.Suite.Point(), "", "", log, lao.NewChannel)
 	require.NoError(t, err)
 	oh.Start()
 
@@ -46,7 +46,7 @@ func TestConnectToSocket(t *testing.T) {
 
 	time.Sleep(1 * time.Second)
 
-	wh, err := standard_hub.NewHub(crypto.Suite.Point(), "", "", log, lao.NewChannel)
+	wh, err := hub.NewHub(crypto.Suite.Point(), "", "", log, lao.NewChannel)
 	require.NoError(t, err)
 	wDone := make(chan struct{})
 	wh.Start()

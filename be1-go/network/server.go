@@ -30,7 +30,7 @@ var upgrader = websocket.Upgrader{
 // Server represents a Websocket Server for server and it may
 // listen to requests from other servers or clients.
 type Server struct {
-	hub hub.Hub
+	hub hub.Huber
 	st  socket.SocketType
 	srv *http.Server
 
@@ -48,7 +48,7 @@ type Server struct {
 // NewServer creates a new Server which is used to handle requests for
 // /<hubType>/<socketType> endpoint. Please use the Start() method to start
 // listening for connections.
-func NewServer(hub hub.Hub, addr string, port int, st socket.SocketType, log zerolog.Logger) *Server {
+func NewServer(hub hub.Huber, addr string, port int, st socket.SocketType, log zerolog.Logger) *Server {
 	log = log.With().Str("role", "server").Logger()
 
 	server := &Server{

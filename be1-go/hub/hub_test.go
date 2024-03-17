@@ -1,4 +1,4 @@
-package standard_hub
+package hub
 
 import (
 	"bytes"
@@ -846,7 +846,7 @@ func Test_Handle_Answer(t *testing.T) {
 		ID:      1,
 		Result:  make([]message.Message, 1),
 	}
-	messageDataPath := filepath.Join("..", "..", "..", "protocol",
+	messageDataPath := filepath.Join("..", "..", "protocol",
 		"examples", "messageData", "lao_create", "lao_create.json")
 
 	messageDataBuf, err := os.ReadFile(messageDataPath)
