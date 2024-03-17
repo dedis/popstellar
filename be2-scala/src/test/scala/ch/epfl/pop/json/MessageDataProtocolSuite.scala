@@ -238,11 +238,13 @@ class MessageDataProtocolSuite extends FunSuite with Matchers {
       val fromJson = MessageDataProtocol.objectTypeFormat.write(obj)
       obj match {
         case ObjectType.INVALID => assertThrows[IllegalArgumentException] {
-          MessageDataProtocol.objectTypeFormat.read(fromJson)
-        }
-        case _ => val toType = MessageDataProtocol.objectTypeFormat.read(fromJson)
-        toType shouldBe a[ObjectType]
-    }})
+            MessageDataProtocol.objectTypeFormat.read(fromJson)
+          }
+        case _ =>
+          val toType = MessageDataProtocol.objectTypeFormat.read(fromJson)
+          toType shouldBe a[ObjectType]
+      }
+    })
     val invalidJson = """{"object": "stellarobject"}""".parseJson
     assertThrows[IllegalArgumentException] {
       MessageDataProtocol.objectTypeFormat.read(invalidJson)
@@ -254,9 +256,10 @@ class MessageDataProtocolSuite extends FunSuite with Matchers {
       val fromJson = MessageDataProtocol.actionTypeFormat.write(obj)
       obj match {
         case ActionType.INVALID => assertThrows[IllegalArgumentException] {
-          MessageDataProtocol.actionTypeFormat.read(fromJson)
-        }
-        case _ => val toType = MessageDataProtocol.actionTypeFormat.read(fromJson)
+            MessageDataProtocol.actionTypeFormat.read(fromJson)
+          }
+        case _ =>
+          val toType = MessageDataProtocol.actionTypeFormat.read(fromJson)
           toType shouldBe a[ActionType]
       }
     })
@@ -271,9 +274,10 @@ class MessageDataProtocolSuite extends FunSuite with Matchers {
       val fromJson = MessageDataProtocol.versionTypeFormat.write(obj)
       obj match {
         case VersionType.INVALID => assertThrows[IllegalArgumentException] {
-          MessageDataProtocol.versionTypeFormat.read(fromJson)
-        }
-        case _ => val toType = MessageDataProtocol.versionTypeFormat.read(fromJson)
+            MessageDataProtocol.versionTypeFormat.read(fromJson)
+          }
+        case _ =>
+          val toType = MessageDataProtocol.versionTypeFormat.read(fromJson)
           toType shouldBe a[VersionType]
       }
     })
