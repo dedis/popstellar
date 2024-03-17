@@ -1,4 +1,4 @@
-package hub_state
+package state
 
 import (
 	"golang.org/x/exp/slices"

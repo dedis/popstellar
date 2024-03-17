@@ -1,10 +1,10 @@
-package standard_hub
+package hub
 
 import (
 	"encoding/base64"
 	"encoding/json"
 	"popstellar/crypto"
-	"popstellar/hub/standard_hub/hub_state"
+	"popstellar/hub/state"
 	jsonrpc "popstellar/message"
 	"popstellar/message/answer"
 	"popstellar/message/messagedata"
@@ -472,7 +472,7 @@ func (h *Hub) handleGreetServer(socket socket.Socket, byteMessage []byte) error 
 
 // getMissingIds compares two maps of channel Ids associated to slices of message Ids to
 // determine the missing Ids from the storedIds map with respect to the receivedIds map
-func getMissingIds(receivedIds map[string][]string, storedIds map[string][]string, blacklist *hub_state.ThreadSafeSlice[string]) map[string][]string {
+func getMissingIds(receivedIds map[string][]string, storedIds map[string][]string, blacklist *state.ThreadSafeSlice[string]) map[string][]string {
 	missingIds := make(map[string][]string)
 	for channelId, receivedMessageIds := range receivedIds {
 		for _, messageId := range receivedMessageIds {

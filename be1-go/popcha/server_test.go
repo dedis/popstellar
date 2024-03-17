@@ -12,7 +12,6 @@ import (
 	"popstellar"
 	"popstellar/crypto"
 	"popstellar/hub"
-	"popstellar/hub/standard_hub"
 	"reflect"
 	"strings"
 	"testing"
@@ -55,7 +54,7 @@ func genString(r *rand.Rand, s int) string {
 func TestAuthServerStartAndShutdown(t *testing.T) {
 	l := popstellar.Logger
 
-	h, err := standard_hub.NewHub(crypto.Suite.Point(), "", "", l, nil)
+	h, err := hub.NewHub(crypto.Suite.Point(), "", "", l, nil)
 	require.NoError(t, err, "could not create hub")
 
 	s, err := NewAuthServer(h, "localhost", 2003, l)
@@ -468,7 +467,7 @@ func validClientParams(c clientParams) bool {
 // Utility functions
 
 type fakeHub struct {
-	hub.Hub
+	hub.Huber
 }
 
 type fakeWSClient struct {

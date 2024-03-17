@@ -1,7 +1,7 @@
 package inbox
 
 import (
-	state "popstellar/hub/standard_hub/hub_state"
+	"popstellar/hub/state"
 	"popstellar/message/query/method/message"
 	"sync"
 )
