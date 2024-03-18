@@ -45,6 +45,10 @@ const (
 	// heartbeatDelay represents the number of seconds
 	// between heartbeat messages
 	heartbeatDelay = 30 * time.Second
+
+	publishError        = "failed to publish: %v"
+	wrongMessageIdError = "message_id is wrong: expected %q found %q"
+	maxRetry            = 10
 )
 
 var suite = crypto.Suite
@@ -474,33 +478,6 @@ func (h *Hub) handleIncomingMessage(incomingMessage *socket.IncomingMessage) err
 	default:
 		return xerrors.Errorf("invalid socket type")
 	}
-}
-
-// sendGetMessagesByIdToServer sends a getMessagesById message to a server
-func (h *Hub) sendGetMessagesByIdToServer(socket socket.Socket, missingIds map[string][]string) error {
-	queryId := h.queries.GetNextID()
-
-	getMessagesById := method.GetMessagesById{
-		Base: query.Base{
-			JSONRPCBase: jsonrpc.JSONRPCBase{
-				JSONRPC: "2.0",
-			},
-			Method: "get_messages_by_id",
-		},
-		ID:     queryId,
-		Params: missingIds,
-	}
-
-	buf, err := json.Marshal(getMessagesById)
-	if err != nil {
-		return xerrors.Errorf("failed to marshal getMessagesById query: %v", err)
-	}
-
-	socket.Send(buf)
-
-	h.queries.AddQuery(queryId, getMessagesById)
-
-	return nil
 }
 
 // sendHeartbeatToServers sends a heartbeat message to all servers
