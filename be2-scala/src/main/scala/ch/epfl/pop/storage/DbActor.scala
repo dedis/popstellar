@@ -369,6 +369,41 @@ final case class DbActor(
     (publicKey, privateKey)
   }
 
+  @throws[DbActorNAckException]
+  private def generateHeartBeat(dbRef: AskableActorRef) : Option[HashMap[Channel, Set[Hash]]] = {
+    val askForChannels = dbRef ? GetAllChannels()
+    val setOfChannels: Set[Channel] =
+      Await.ready(askForChannels, duration).value.get match
+        case Some(Success(DbActorGetAllChannelsAck(set))) => set
+        case Some(Failure(ex: DbActorNAckException)) =>
+          log.error(s"Heartbeat generation failed with: ${ex.message}")
+          return None
+        case reply =>
+          log.error(s"${ErrorCodes.SERVER_ERROR.id}," +
+            s" retrieveHeartbeatContent failed : unknown DbActor reply $reply")
+          return None
+
+    val heartbeatMap : HashMap[Channel, Set[Hash]] = HashMap()
+    setOfChannels.foreach(channel => {
+      val askChannelData = dbRef ? ReadChannelData(channel)
+      val setOfIds: Set[Hash] =
+        Await.ready(askChannelData, duration).value match
+          case Some(Success(DbActorReadChannelDataAck(channelData))) =>
+            channelData.messages.toSet
+          case Some(Failure(ex: DbActorNAckException)) =>
+            log.error(s"Heartbeat generation failed with: ${ex.message}")
+            Set.empty
+          case reply =>
+            log.error(s"${ErrorCodes.SERVER_ERROR.id}," +
+              s" retrieveHeartbeatContent failed : unknown DbActor reply $reply")
+            Set.empty
+
+      if (setOfIds.nonEmpty)
+        heartbeatMap += (channel -> setOfIds)
+    })
+
+    Some(heartbeatMap)
+  }
   override def receive: Receive = LoggingReceive {
     case Write(channel, message) =>
       log.info(s"Actor $self (db) received a WRITE request on channel '$channel'")
@@ -542,10 +577,16 @@ final case class DbActor(
         case Success(privateKey) => sender() ! DbActorReadServerPrivateKeyAck(privateKey)
         case failure             => sender() ! failure.recover(Status.Failure(_))
       }
+    case GenerateHeartBeat(dbRef: AskableActorRef) =>
+      log.info(s"Actor $self (db) received a GenerateHeartBeat request")
+      Try(generateHeartBeat(dbRef: AskableActorRef))
 
     case m =>
       log.info(s"Actor $self (db) received an unknown message")
       sender() ! Status.Failure(DbActorNAckException(ErrorCodes.INVALID_ACTION.id, s"database actor received a message '$m' that it could not recognize"))
+
+
+
   }
 }
 
@@ -757,6 +798,11 @@ object DbActor {
   /** Request for the server private key, created both private and public key if none is found
     */
   final case class ReadServerPrivateKey() extends Event
+
+  /** Request to generate a local heartbeat */
+  final case class GenerateHeartBeat() extends Event
+
+
 
   // DbActor DbActorMessage correspond to messages the actor may emit
   sealed trait DbActorMessage
