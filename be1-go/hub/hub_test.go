@@ -1386,7 +1386,7 @@ func Test_Handle_Subscribe(t *testing.T) {
 	require.Equal(t, subscribe, c.subscribe)
 
 	// check that there is no errors with messages from witness too
-	hub.handleMessageFromServer(&socket.IncomingMessage{
+	hub.handleMessageFromClient(&socket.IncomingMessage{
 		Socket:  sock,
 		Message: publishBuf,
 	})
@@ -1456,12 +1456,7 @@ func TestServer_Handle_Unsubscribe(t *testing.T) {
 	})
 
 	// check the socket
-	require.NoError(t, sock.err)
-	require.Equal(t, unsubscribe.ID, sock.resultID)
-
-	// check that the channel has been called with the publish message
-	require.Equal(t, unsubscribe, c.unsubscribe)
-	require.Equal(t, sock.id, c.socketID)
+	require.Error(t, sock.err)
 }
 
 // Check that if the server receives a catchup message, it will call the

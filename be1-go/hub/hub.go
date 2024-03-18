@@ -430,15 +430,10 @@ func (h *Hub) handleMessageFromServer(incomingMessage *socket.IncomingMessage) e
 	case query.MethodPublish:
 		id, handlerErr = h.handlePublish(socket, byteMessage)
 		h.sendHeartbeatToServers()
-	case query.MethodSubscribe:
-		id, handlerErr = h.handleSubscribe(socket, byteMessage)
-	case query.MethodUnsubscribe:
-		id, handlerErr = h.handleUnsubscribe(socket, byteMessage)
 	case query.MethodHeartbeat:
 		handlerErr = h.handleHeartbeat(socket, byteMessage)
 	case query.MethodGetMessagesById:
 		msgsByChannel, id, handlerErr = h.handleGetMessagesById(socket, byteMessage)
-
 	default:
 		err = answer.NewErrorf(-2, "unexpected method: '%s'", queryBase.Method)
 		socket.SendError(nil, err)
