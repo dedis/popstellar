@@ -118,8 +118,8 @@ type Hub struct {
 	blacklist state.ThreadSafeSlice[string]
 }
 
-// NewHub returns a new Hub.
-func NewHub(pubKeyOwner kyber.Point, clientServerAddress string, serverServerAddress string, log zerolog.Logger,
+// New returns a new Hub.
+func New(pubKeyOwner kyber.Point, clientServerAddress string, serverServerAddress string, log zerolog.Logger,
 	laoFac channel.LaoFactory,
 ) (*Hub, error) {
 	schemaValidator, err := validation.NewSchemaValidator(log)

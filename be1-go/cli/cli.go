@@ -85,7 +85,7 @@ func Serve(cliCtx *cli.Context) error {
 	ownerKey(serverConfig.PublicKey, &point)
 
 	// create user hub
-	h, err := hub.NewHub(point, serverConfig.ClientAddress, serverConfig.ServerAddress, log.With().Str("role", "server").Logger(),
+	h, err := hub.New(point, serverConfig.ClientAddress, serverConfig.ServerAddress, log.With().Str("role", "server").Logger(),
 		lao.NewChannel)
 	if err != nil {
 		return xerrors.Errorf("failed create the hub: %v", err)
