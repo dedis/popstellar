@@ -10,7 +10,6 @@ import (
 	"popstellar/inbox"
 	jsonrpc "popstellar/message"
 	"popstellar/message/answer"
-	"popstellar/message/messagedata"
 	"popstellar/message/query"
 	"popstellar/message/query/method"
 	"popstellar/message/query/method/message"
@@ -521,61 +520,6 @@ func (h *Hub) sendHeartbeatToServers() {
 		h.log.Err(err).Msg("Failed to marshal and send heartbeat query")
 	}
 	h.serverSockets.SendToAll(buf)
-}
-
-// createLao creates a new LAO using the data in the publish parameter.
-func (h *Hub) createLao(msg message.Message, laoCreate messagedata.LaoCreate,
-	socket socket.Socket,
-) error {
-	laoChannelPath := rootPrefix + laoCreate.ID
-
-	if _, ok := h.channelByID.Get(laoChannelPath); ok {
-		return answer.NewDuplicateResourceError("failed to create lao: duplicate lao path: %q", laoChannelPath)
-	}
-
-	senderBuf, err := base64.URLEncoding.DecodeString(msg.Sender)
-	if err != nil {
-		return answer.NewInvalidMessageFieldError("failed to decode public key of the sender: %v", err)
-	}
-
-	// Check if the sender of the LAO creation message is the organizer
-	senderPubKey := crypto.Suite.Point()
-	err = senderPubKey.UnmarshalBinary(senderBuf)
-	if err != nil {
-		return answer.NewInvalidMessageFieldError("failed to unmarshal public key of the sender: %v", err)
-	}
-
-	organizerBuf, err := base64.URLEncoding.DecodeString(laoCreate.Organizer)
-	if err != nil {
-		return answer.NewInvalidMessageFieldError("failed to decode public key of the organizer: %v", err)
-	}
-
-	organizerPubKey := crypto.Suite.Point()
-	err = organizerPubKey.UnmarshalBinary(organizerBuf)
-	if err != nil {
-		return answer.NewInvalidMessageFieldError("failed to unmarshal public key of the organizer: %v", err)
-	}
-
-	// Check if the sender and organizer fields of the create lao message are equal
-	if !organizerPubKey.Equal(senderPubKey) {
-		return answer.NewAccessDeniedError("sender's public key does not match the organizer field: %q != %q", senderPubKey, organizerPubKey)
-	}
-
-	// Check if the sender of the LAO creation message is the owner
-	if h.GetPubKeyOwner() != nil && !h.GetPubKeyOwner().Equal(senderPubKey) {
-		return answer.NewAccessDeniedError("sender's public key does not match the owner's: %q != %q", senderPubKey, h.GetPubKeyOwner())
-	}
-
-	laoCh, err := h.laoFac(laoChannelPath, h, msg, h.log, senderPubKey, socket)
-	if err != nil {
-		return answer.NewInvalidMessageFieldError("failed to create the LAO: %v", err)
-	}
-
-	h.log.Info().Msgf("storing new channel '%s' %v", laoChannelPath, msg)
-
-	h.NotifyNewChannel(laoChannelPath, laoCh, socket)
-
-	return nil
 }
 
 // GetPubKeyOwner implements channel.HubFunctionalities
