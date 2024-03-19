@@ -32,27 +32,11 @@ function fn() {
     config.backendPath = 'server';
     config.frontendWsURL = `ws://${config.host}:${config.frontendPort}/${config.frontendPath}`;
     config.backendWsURL = `ws://${config.host}:${config.backendPort}/${config.backendPath}`;
-  } else {
-    config.port = 9005;
-    config.timeout = 1000;
-
-    if (env === 'web') {
-      config.max_input_retry = 10;
-    } else if (env === 'android') {
-      const android = {};
-      android["desiredConfig"] = {
-        "app" : "../../fe2-android/app/build/outputs/apk/debug/app-debug.apk",
-        "newCommandTimeout" : 1000,
-        "platformVersion" : "9.0",
-        "platformName" : "Android",
-        "connectHardwareKeyboard" : true,
-        "deviceName" : "emulator-5554",
-        "avd" : "Pixel_4_API_30",
-        "automationName" : "UiAutomator2",
-        "autoGrantPermissions" : true
-      }
-      config["android"] = android
-    }
+  } else if (env === 'react') {
+    config.frontendURL = karate.properties['url'] || `file://${karate.toAbsolutePath('file:../../fe1-web/web-build/index.html')}`;
+    config.screenWidth = karate.properties['screenWidth'] || 1920;
+    config.screenHeight = karate.properties['screenHeight'] || 1080;
+    karate.configure('driver', { type: 'chrome', addOptions: ["--remote-allow-origins=*"] });
   }
 
   return config;
