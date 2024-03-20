@@ -39,15 +39,16 @@ function fn() {
     karate.configure('driver', { type: 'chrome', addOptions: ["--remote-allow-origins=*"] });
   } else if (env === 'android') {
     karate.configure('driver', { type: 'android', webDriverPath : "/", start: false });
+    const app = karate.properties['app'] || '../../fe2-android/app/build/outputs/apk/debug/app-debug.apk';
     config.webDriverOptions = {
       webDriverSession: {
         capabilities: {
           alwaysMatch: {
             'appium:platformName': 'Android',
             'appium:automationName': 'uiautomator2',
-            'appium:app': `${karate.toAbsolutePath('file:../../fe2-android/app/build/outputs/apk/debug/app-debug.apk')}`,
+            'appium:app': `${karate.toAbsolutePath(`file:${app}`)}`,
             'appium:autoGrantPermissions': true,
-            'appium:avd': 'Pixel_3a_API_34_extension_level_7_arm64-v8a'
+            'appium:avd': karate.properties['avd'],
           }
         },
         desiredCapabilities: {
