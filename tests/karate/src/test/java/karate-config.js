@@ -32,11 +32,28 @@ function fn() {
     config.backendPath = 'server';
     config.frontendWsURL = `ws://${config.host}:${config.frontendPort}/${config.frontendPath}`;
     config.backendWsURL = `ws://${config.host}:${config.backendPort}/${config.backendPath}`;
-  } else if (env === 'react') {
+  } else if (env === 'web') {
     config.frontendURL = karate.properties['url'] || `file://${karate.toAbsolutePath('file:../../fe1-web/web-build/index.html')}`;
     config.screenWidth = karate.properties['screenWidth'] || 1920;
     config.screenHeight = karate.properties['screenHeight'] || 1080;
     karate.configure('driver', { type: 'chrome', addOptions: ["--remote-allow-origins=*"] });
+  } else if (env === 'android') {
+    karate.configure('driver', { type: 'android', webDriverPath : "/", start: false });
+    config.webDriverOptions = {
+      webDriverSession: {
+        capabilities: {
+          alwaysMatch: {
+            'appium:platformName': 'Android',
+            'appium:automationName': 'uiautomator2',
+            'appium:app': `${karate.toAbsolutePath('file:../../fe2-android/app/build/outputs/apk/debug/app-debug.apk')}`,
+            'appium:autoGrantPermissions': true,
+            'appium:avd': 'Pixel_3a_API_34_extension_level_7_arm64-v8a'
+          }
+        },
+        desiredCapabilities: {
+        }
+      }
+    };
   }
 
   return config;
