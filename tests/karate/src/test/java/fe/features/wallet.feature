@@ -1,12 +1,6 @@
 Feature: Wallet
 
-  Scenario: Create a new wallet
-    * def page_object = 'classpath:fe/utils/<env>.feature@name=basic_setup'
-    * replace page_object.env = karate.env
-    * call read(page_object)
-    * delay(1000).screenshot()
-
-
-
-
-
+  Scenario: Open the app for the first time and see the wallet seed
+    When call read('classpath:fe/utils/platform.feature') { name: 'open_app' }
+    Then match text(wallet_seed_wallet_text) == "#regex ^([a-z]+\\s){11}[a-z]+$"
+    And screenshot()
