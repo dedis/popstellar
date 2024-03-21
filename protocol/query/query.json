@@ -41,6 +41,9 @@
         },
         {
             "$ref": "method/greet_server.json"
+        },
+        {
+            "$ref": "method/rumor.json"
         }
     ],
 
