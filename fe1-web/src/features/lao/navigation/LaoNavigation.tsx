@@ -23,6 +23,7 @@ import { LaoHooks } from '../hooks';
 import { LaoFeature } from '../interface';
 import InviteScreen from '../screens/InviteScreen';
 import EventsNavigation from './EventsNavigation';
+import LinkedOrganizationsNavigation from 'features/linked-organizations/navigation/LinkedOrganizationsNavigation';
 
 const LaoNavigator = createDrawerNavigator<LaoParamList>();
 
@@ -133,6 +134,13 @@ const LaoNavigation: React.FC<unknown> = () => {
             // only show the tab bar if we are on the home events screen, not if we are
             // in a detail screen
             routeName === undefined || routeName === STRINGS.navigation_lao_events_home,
+        } as LaoFeature.LaoScreen,
+        {
+          id: STRINGS.navigation_lao_linked_organizations,
+          Icon: makeIcon('link'),
+          Component: LinkedOrganizationsNavigation,
+          headerShown: false,
+          order: 1000000000,
         } as LaoFeature.LaoScreen,
         // sort screens by order before rendering them
       ]

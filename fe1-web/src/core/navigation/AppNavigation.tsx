@@ -32,7 +32,6 @@ const AppNavigation = ({ screens }: IPropTypes) => {
     // make the reasonable assumption that we haven't passed strings as components here
     <Stack.Screen name={id} key={id} component={Component} options={{ title: title || id }} />
   ));
-
   return (
     <SafeAreaView style={styles.view}>
       <Stack.Navigator

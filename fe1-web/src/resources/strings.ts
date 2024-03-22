@@ -71,6 +71,7 @@ namespace STRINGS {
   export const navigation_lao_digital_cash = 'Digital Cash';
   export const navigation_lao_digital_cash_title = 'Digital Cash';
   export const navigation_lao_popcha = 'PoPCHA';
+  export const navigation_lao_linked_organizations = 'Linked Organizations';
 
   export const navigation_lao_disconnect_title = 'Disconnect';
 
@@ -102,6 +103,10 @@ namespace STRINGS {
   export const navigation_digital_cash_send_receive = 'Send & Receive';
   export const navigation_digital_cash_send_receive_title = 'Your Account';
   export const navigation_digital_cash_wallet_scanner = 'Digital Cash Scanner';
+
+   /* --- Linked Organizations Navigation Strings --- */
+   export const navigation_linked_organizations = 'LinkedOrganizationsNavigation LinkedOrganizations';
+   export const navigation_linked_organizations_title = 'Linked Organizations';
 
   /* --- Social Media Navigation Strings --- */
 
@@ -535,6 +540,10 @@ namespace STRINGS {
   export const popcha_manual_add_title = 'Enter url';
   export const popcha_manual_add_description = 'Enter the url you want to use to login';
   export const popcha_url_type_input = 'Url';
+
+
+  /* --- Linked Organizations Strings --- */
+  export const linked_organizations_description = 'Here you can find all linked organizations, unlink them and add new ones.';
 
   /* --- General creation Strings --- */
   export const create_description = 'Choose the type of event you want to create';

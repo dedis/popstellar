@@ -7,6 +7,7 @@ import { LaoEventsParamList } from './LaoEventsParamList';
 import { NotificationParamList } from './NotificationParamList';
 import { SocialParamList } from './social';
 import { WalletParamList } from './WalletParamList';
+import { LinkedOrganizationsParamList } from './LinkedOrganizationsParamList';
 
 export type LaoParamList = {
   [STRINGS.navigation_lao_invite]: undefined;
@@ -16,4 +17,5 @@ export type LaoParamList = {
   [STRINGS.navigation_lao_wallet]: NavigatorScreenParams<WalletParamList>;
   [STRINGS.navigation_lao_digital_cash]: NavigatorScreenParams<DigitalCashParamList>;
   [STRINGS.navigation_lao_popcha]: undefined;
+  [STRINGS.navigation_lao_linked_organizations]: NavigatorScreenParams<LinkedOrganizationsParamList>;
 };
