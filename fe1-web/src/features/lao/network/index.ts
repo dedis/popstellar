@@ -85,7 +85,7 @@ export function configureNetwork(registry: MessageRegistry) {
       // a connection we have with this lao has been terminated
       // disconnect from it
       const remainingConnections = getNetworkManager().disconnectFrom(address);
-      
+
       // -> navigate back to the home screen if there is no other connection
       if (navigationRef.isReady() && remainingConnections === 0) {
         if (toast) {
