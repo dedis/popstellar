@@ -83,11 +83,11 @@ export function configureNetwork(registry: MessageRegistry) {
 
     if (currentLao.server_addresses.includes(address)) {
       // a connection we have with this lao has been terminated
-      // disconnect from all, i.e. don't try to re-connect
-      getNetworkManager().disconnectFromAll();
-
-      // -> navigate back to the home screen
-      if (navigationRef.isReady()) {
+      // disconnect from it
+      const remainingConnections = getNetworkManager().disconnectFrom(address);
+      
+      // -> navigate back to the home screen if there is no other connection
+      if (navigationRef.isReady() && remainingConnections === 0) {
         if (toast) {
           toast.show(STRINGS.lao_error_disconnect, {
             type: 'danger',
@@ -99,9 +99,6 @@ export function configureNetwork(registry: MessageRegistry) {
           screen: STRINGS.navigation_home_home,
         });
       }
-
-      // in the future this can be handled more gracefully if there are multiple concurrent connections
-      // with different servers
     }
   });
 }
