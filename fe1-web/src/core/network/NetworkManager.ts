@@ -139,7 +139,10 @@ class NetworkManager {
 
     if (alwaysPersistConnection) {
       // always push the connection to the array so that we can re-connect later
-      this.connections.push(connection);
+      // if it doesn't already exist to avoid duplicates
+      if (!this.connections.includes(connection)) {
+        this.connections.push(connection);
+      }
     }
 
     // if the inital connection attempt failed, reject the promise
@@ -162,7 +165,7 @@ class NetworkManager {
     }
   }
 
-  public disconnectFrom(address: string, intentional = true): void {
+  public disconnectFrom(address: string, intentional = true): Number {
     if (!address) {
       throw new Error('No address provided in disconnectFrom');
     }
@@ -170,6 +173,8 @@ class NetworkManager {
     if (connection !== undefined) {
       this.disconnect(connection, intentional);
     }
+    // return the number of remaining connections
+    return this.connections.length;
   }
 
   public disconnectFromAll(intentional = true): void {
