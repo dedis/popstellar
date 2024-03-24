@@ -126,7 +126,7 @@ class MessageDataProtocolSuite extends FunSuite with Matchers {
 
   test("Parser correctly decodes a CastVoteElection message data") {
     val example: String = getExampleMessage("messageData/vote_cast_vote/vote_cast_vote.json")
-    val messageData = CastVoteElection.buildFromJson(example) // here
+    val messageData = CastVoteElection.buildFromJson(example)
 
     val votes = VoteElection(Hash(Base64Data("8L2MWJJYNGG57ZOKdbmhHD9AopvBaBN26y1w5jL07ms=")), Hash(Base64Data("2PLwVvqxMqW5hQJXkFpNCvBI9MZwuN8rf66V1hS-iZU=")), 0)
     val expected = CastVoteElection(
@@ -233,58 +233,75 @@ class MessageDataProtocolSuite extends FunSuite with Matchers {
     greetLaoFromBuiltJson should equal(expectedGreetLao)
   }
 
-  test("Parser correctly encodes and decodes ObjectType and rejects incorrect type") {
+  test("Parser correctly encodes and decodes ObjectType") {
     ObjectType.values.foreach(obj => {
       val fromJson = MessageDataProtocol.objectTypeFormat.write(obj)
-      obj match {
-        case ObjectType.INVALID => assertThrows[IllegalArgumentException] {
-            MessageDataProtocol.objectTypeFormat.read(fromJson)
-          }
-        case _ =>
+      if obj != ObjectType.INVALID then {
           val toType = MessageDataProtocol.objectTypeFormat.read(fromJson)
           toType shouldBe a[ObjectType]
       }
     })
+
+  }
+
+  test("Parser correctly rejects incorrect ObjectType") {
+    val invalidType = ObjectType.INVALID
+    val fromJson = MessageDataProtocol.objectTypeFormat.write(invalidType)
+    assertThrows[IllegalArgumentException] {
+      MessageDataProtocol.objectTypeFormat.read(fromJson)
+    }
+
     val invalidJson = """{"object": "stellarobject"}""".parseJson
     assertThrows[IllegalArgumentException] {
       MessageDataProtocol.objectTypeFormat.read(invalidJson)
     }
   }
 
-  test("Parser correctly encodes and decodes ActionType and rejects incorrect type") {
+  test("Parser correctly encodes and decodes ActionType") {
     ActionType.values.foreach(obj => {
       val fromJson = MessageDataProtocol.actionTypeFormat.write(obj)
-      obj match {
-        case ActionType.INVALID => assertThrows[IllegalArgumentException] {
-            MessageDataProtocol.actionTypeFormat.read(fromJson)
-          }
-        case _ =>
+      if obj != ActionType.INVALID then {
           val toType = MessageDataProtocol.actionTypeFormat.read(fromJson)
           toType shouldBe a[ActionType]
       }
     })
-    val invalidJson = """{"action": "stellaraction"}""".parseJson
+  }
+
+  test("Parser correctly rejects incorrect ActionType") {
+    val invalidType = ActionType.INVALID
+    val fromJson = MessageDataProtocol.actionTypeFormat.write(invalidType)
+    assertThrows[IllegalArgumentException] {
+      MessageDataProtocol.actionTypeFormat.read(fromJson)
+    }
+
+    val invalidJson = """{"object": "stellaraction"}""".parseJson
     assertThrows[IllegalArgumentException] {
       MessageDataProtocol.actionTypeFormat.read(invalidJson)
     }
   }
 
-  test("Parser correctly encodes and decodes VersionType and rejects incorrect type") {
+  test("Parser correctly encodes and decodes VersionType") {
     VersionType.values.foreach(obj => {
       val fromJson = MessageDataProtocol.versionTypeFormat.write(obj)
-      obj match {
-        case VersionType.INVALID => assertThrows[IllegalArgumentException] {
-            MessageDataProtocol.versionTypeFormat.read(fromJson)
-          }
-        case _ =>
+      if obj != VersionType.INVALID then {
           val toType = MessageDataProtocol.versionTypeFormat.read(fromJson)
           toType shouldBe a[VersionType]
       }
     })
-    val invalidJson = """{"version": "stellarversion"}""".parseJson
+  }
+
+  test("Parser correctly rejects incorrect VersionType") {
+    val invalidType = VersionType.INVALID
+    val fromJson = MessageDataProtocol.versionTypeFormat.write(invalidType)
+    assertThrows[IllegalArgumentException] {
+      MessageDataProtocol.versionTypeFormat.read(fromJson)
+    }
+
+    val invalidJson = """{"object": "stellarversion"}""".parseJson
     assertThrows[IllegalArgumentException] {
       MessageDataProtocol.versionTypeFormat.read(invalidJson)
     }
   }
+
 
 }
