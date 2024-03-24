@@ -237,8 +237,8 @@ class MessageDataProtocolSuite extends FunSuite with Matchers {
     ObjectType.values.foreach(obj => {
       val fromJson = MessageDataProtocol.objectTypeFormat.write(obj)
       if obj != ObjectType.INVALID then {
-          val toType = MessageDataProtocol.objectTypeFormat.read(fromJson)
-          toType shouldBe a[ObjectType]
+        val toType = MessageDataProtocol.objectTypeFormat.read(fromJson)
+        toType shouldBe a[ObjectType]
       }
     })
 
@@ -261,8 +261,8 @@ class MessageDataProtocolSuite extends FunSuite with Matchers {
     ActionType.values.foreach(obj => {
       val fromJson = MessageDataProtocol.actionTypeFormat.write(obj)
       if obj != ActionType.INVALID then {
-          val toType = MessageDataProtocol.actionTypeFormat.read(fromJson)
-          toType shouldBe a[ActionType]
+        val toType = MessageDataProtocol.actionTypeFormat.read(fromJson)
+        toType shouldBe a[ActionType]
       }
     })
   }
@@ -284,8 +284,8 @@ class MessageDataProtocolSuite extends FunSuite with Matchers {
     VersionType.values.foreach(obj => {
       val fromJson = MessageDataProtocol.versionTypeFormat.write(obj)
       if obj != VersionType.INVALID then {
-          val toType = MessageDataProtocol.versionTypeFormat.read(fromJson)
-          toType shouldBe a[VersionType]
+        val toType = MessageDataProtocol.versionTypeFormat.read(fromJson)
+        toType shouldBe a[VersionType]
       }
     })
   }
@@ -302,6 +302,5 @@ class MessageDataProtocolSuite extends FunSuite with Matchers {
       MessageDataProtocol.versionTypeFormat.read(invalidJson)
     }
   }
-
 
 }
