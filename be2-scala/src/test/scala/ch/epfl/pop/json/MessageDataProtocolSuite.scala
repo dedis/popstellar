@@ -241,12 +241,10 @@ class MessageDataProtocolSuite extends FunSuite with Matchers {
         toType shouldBe a[ObjectType]
       }
     })
-
   }
 
   test("Parser correctly rejects incorrect ObjectType") {
-    val invalidType = ObjectType.INVALID
-    val fromJson = MessageDataProtocol.objectTypeFormat.write(invalidType)
+    val fromJson = MessageDataProtocol.objectTypeFormat.write(ObjectType.INVALID)
     assertThrows[IllegalArgumentException] {
       MessageDataProtocol.objectTypeFormat.read(fromJson)
     }
@@ -268,8 +266,7 @@ class MessageDataProtocolSuite extends FunSuite with Matchers {
   }
 
   test("Parser correctly rejects incorrect ActionType") {
-    val invalidType = ActionType.INVALID
-    val fromJson = MessageDataProtocol.actionTypeFormat.write(invalidType)
+    val fromJson = MessageDataProtocol.actionTypeFormat.write(ActionType.INVALID)
     assertThrows[IllegalArgumentException] {
       MessageDataProtocol.actionTypeFormat.read(fromJson)
     }
@@ -291,8 +288,7 @@ class MessageDataProtocolSuite extends FunSuite with Matchers {
   }
 
   test("Parser correctly rejects incorrect VersionType") {
-    val invalidType = VersionType.INVALID
-    val fromJson = MessageDataProtocol.versionTypeFormat.write(invalidType)
+    val fromJson = MessageDataProtocol.versionTypeFormat.write(VersionType.INVALID)
     assertThrows[IllegalArgumentException] {
       MessageDataProtocol.versionTypeFormat.read(fromJson)
     }
