@@ -21,6 +21,7 @@ import java.util.concurrent.TimeUnit
 import scala.concurrent.Await
 import scala.concurrent.duration.{Duration, FiniteDuration}
 import scala.util.{Failure, Success, Try}
+import scala.collection.immutable.HashMap
 
 final case class DbActor(
     private val mediatorRef: ActorRef,
@@ -370,12 +371,12 @@ final case class DbActor(
   }
 
   @throws[DbActorNAckException]
-  private def generateHeartBeat(dbRef: AskableActorRef) : Option[HashMap[Channel, Set[Hash]]] = {
+  private def generateHeartbeat(dbRef: AskableActorRef) : Option[HashMap[Channel, Set[Hash]]] = {
     val askForChannels = dbRef ? GetAllChannels()
     val setOfChannels: Set[Channel] =
       Await.ready(askForChannels, duration).value.get match
-        case Some(Success(DbActorGetAllChannelsAck(set))) => set
-        case Some(Failure(ex: DbActorNAckException)) =>
+        case Success(DbActorGetAllChannelsAck(set)) => set
+        case Failure(ex: DbActorNAckException) =>
           log.error(s"Heartbeat generation failed with: ${ex.message}")
           return None
         case reply =>
@@ -383,7 +384,7 @@ final case class DbActor(
             s" retrieveHeartbeatContent failed : unknown DbActor reply $reply")
           return None
 
-    val heartbeatMap : HashMap[Channel, Set[Hash]] = HashMap()
+    var heartbeatMap : HashMap[Channel, Set[Hash]] = HashMap()
     setOfChannels.foreach(channel => {
       val askChannelData = dbRef ? ReadChannelData(channel)
       val setOfIds: Set[Hash] =
@@ -577,9 +578,12 @@ final case class DbActor(
         case Success(privateKey) => sender() ! DbActorReadServerPrivateKeyAck(privateKey)
         case failure             => sender() ! failure.recover(Status.Failure(_))
       }
-    case GenerateHeartBeat(dbRef: AskableActorRef) =>
-      log.info(s"Actor $self (db) received a GenerateHeartBeat request")
-      Try(generateHeartBeat(dbRef: AskableActorRef))
+    case GenerateHeartbeat(dbRef) =>
+      log.info(s"Actor $self (db) received a GenerateHeartbeat request")
+      Try(generateHeartbeat(dbRef)) match {
+        case Success(heartbeat) => sender() ! DbActorGenerateHeartbeatAck(heartbeat)
+        case failure => sender() ! failure.recover(Status.Failure(_))
+      }
 
     case m =>
       log.info(s"Actor $self (db) received an unknown message")
@@ -800,7 +804,7 @@ object DbActor {
   final case class ReadServerPrivateKey() extends Event
 
   /** Request to generate a local heartbeat */
-  final case class GenerateHeartBeat() extends Event
+  final case class GenerateHeartbeat(dbRef: AskableActorRef) extends Event
 
 
 
@@ -877,6 +881,13 @@ object DbActor {
   /** Response for a [[ReadServerPrivateKey]] db request
     */
   final case class DbActorReadServerPrivateKeyAck(privateKey: PrivateKey) extends DbActorMessage
+
+  /** Response for a [[GenerateHeartbeat]] db request Receiving [[DbActorGenerateHeartbeatAck]] works as an acknowledgement that the request was successful
+   *
+   @param heartbeatMap
+   * requested heartbeat as a map from the channels to message ids
+   */
+  final case class DbActorGenerateHeartbeatAck(heartbeatMap : Option[HashMap[Channel, Set[Hash]]]) extends DbActorMessage
 
   /** Response for a general db actor ACK
     */

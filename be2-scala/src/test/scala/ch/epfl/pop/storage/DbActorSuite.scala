@@ -1,19 +1,18 @@
 package ch.epfl.pop.storage
 
-import akka.actor.{ActorRef, ActorSystem, Props}
-import akka.pattern.{AskableActorRef, ask}
-import akka.testkit.{ImplicitSender, TestKit}
+import ch.epfl.pop.decentralized.{FailingToyDbActor, Monitor, ToyDbActor}
+import ch.epfl.pop.model.network.method.Heartbeat
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.lao.GreetLao
 import ch.epfl.pop.model.network.method.message.data.{ActionType, ObjectType}
 import ch.epfl.pop.model.objects.Channel.ROOT_CHANNEL_PREFIX
-import ch.epfl.pop.model.objects._
+import ch.epfl.pop.model.objects.*
 import ch.epfl.pop.pubsub.{AskPatternConstants, MessageRegistry, PubSubMediator}
 import ch.epfl.pop.storage.DbActor.{DbActorReadServerPrivateKeyAck, DbActorReadServerPublicKeyAck, GetAllChannels}
 import com.google.crypto.tink.subtle.Ed25519Sign
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.concurrent.ScalaFutures
-import org.scalatest.funsuite.{AnyFunSuiteLike => FunSuiteLike}
+import org.scalatest.funsuite.AnyFunSuiteLike as FunSuiteLike
 import org.scalatest.matchers.should.Matchers
 import util.examples.MessageExample
 import util.examples.RollCall.{CreateRollCallExamples, OpenRollCallExamples}
@@ -30,6 +29,27 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
   val ELECTION_ID: Hash = Hash(Base64Data.encode("electionId"))
   val ELECTION_DATA_KEY: String = "Data:" + s"${ROOT_CHANNEL_PREFIX}${LAO_ID.toString}/private/${ELECTION_ID.toString}"
   val KEYPAIR: KeyPair = KeyPair()
+
+  final val CHANNEL1_NAME: String = "/root/wex/lao1Id"
+  final val CHANNEL2_NAME: String = "/root/wex/lao2Id"
+  final val CHANNEL1 = new Channel(CHANNEL1_NAME)
+  final val CHANNEL2 = new Channel(CHANNEL2_NAME)
+  
+  final val toyDbActor : Props = Props(new ToyDbActor)
+  final val toyDbActorRef: AskableActorRef = system.actorOf(toyDbActor)
+  //final val toyDbActorRef: AskableActorRef = system.actorOf(Props(new ToyDbActor))
+  
+  final val failingToyDbActor : Props = Props(new FailingToyDbActor)
+  final val failingToyDbActorRef: AskableActorRef = system.actorOf(failingToyDbActor)
+  //final val failingToyDbActorRef: AskableActorRef = system.actorOf(Props(new FailingToyDbActor))
+  
+  final val MESSAGE1_ID: Hash = Hash(Base64Data.encode("message1Id"))
+  final val MESSAGE2_ID: Hash = Hash(Base64Data.encode("message2Id"))
+  final val MESSAGE3_ID: Hash = Hash(Base64Data.encode("message3Id"))
+  final val MESSAGE4_ID: Hash = Hash(Base64Data.encode("message4Id"))
+  final val MESSAGE5_ID: Hash = Hash(Base64Data.encode("message5Id"))
+
+  private val timeout = 3.second
 
   override def afterAll(): Unit = {
     // Stops the test actor system
@@ -872,5 +892,21 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
 
     dbPublicKey should equal(publicKey)
     dbPrivateKey should equal(privateKey)
+  }
+
+  test("generator should send a result to the connectionMediator") {
+    val generatorRef: ActorRef = system.actorOf(toyDbActor) 
+    val expected = Map(CHANNEL1 -> Set(MESSAGE1_ID), CHANNEL2 -> Set(MESSAGE4_ID))
+    val testProbe = TestProbe()
+    generatorRef ! Monitor.GenerateAndSendHeartbeat(testProbe.ref)
+    testProbe.expectMsg(timeout, Heartbeat(expected))
+  }
+
+
+  test("generator should send nothing when failing to query the data base") {
+    val generatorRef: ActorRef = system.actorOf(failingToyDbActor)
+    val testProbe = TestProbe()
+    generatorRef ! Monitor.GenerateAndSendHeartbeat(testProbe.ref)
+    testProbe.expectNoMessage(timeout)
   }
 }
