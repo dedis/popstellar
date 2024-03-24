@@ -262,10 +262,20 @@ class HighLevelProtocolSuite extends FunSuite with Matchers {
 
   test("Parser correctly encodes and decodes MethodType and rejects incorrect type") {
     MethodType.values.foreach(obj => {
-      val fromJson = HighLevelProtocol.methodTypeFormat.write(obj)
-      val toType = HighLevelProtocol.methodTypeFormat.read(fromJson)
-      toType shouldBe a[MethodType]
+      if obj != MethodType.INVALID then {
+        val fromJson = HighLevelProtocol.methodTypeFormat.write(obj)
+        val toType = HighLevelProtocol.methodTypeFormat.read(fromJson)
+        toType should equal(obj)
+      }
     })
+  }
+
+  test("Parser correctly rejects invalid MethodType") {
+    val fromJson = HighLevelProtocol.methodTypeFormat.write(MethodType.INVALID)
+    assertThrows[IllegalArgumentException] {
+      HighLevelProtocol.methodTypeFormat.read(fromJson)
+    }
+
     val invalidJson = """{"method": "stellarmethod"}""".parseJson
     assertThrows[IllegalArgumentException] {
       HighLevelProtocol.methodTypeFormat.read(invalidJson)
