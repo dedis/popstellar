@@ -74,7 +74,7 @@ $(document).ready(function() {
   <tbody>
     <tr class="info">
       <td>scala</td>
-      <td>24 Mar 2024, 04:20</td>
+      <td>25 Mar 2024, 04:21</td>
     </tr>
   </tbody>
 </table>
@@ -138,7 +138,7 @@ $(document).ready(function() {
           <td  class="failed"    >1</td>
           <td class="total">1</td>
 
-          <td class="duration" data-value="270751141">0.270</td>
+          <td class="duration" data-value="245112919">0.245</td>
           <td class="failed">Failed</td>
         </tr>
         </tbody>
@@ -182,7 +182,7 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">0.270</span>
+  <span class="lead-duration duration">0.245</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-1">
@@ -252,7 +252,7 @@ $(document).ready(function() {
   <span class="keyword indention">And</span>
   <span class="name">call read(validCoinIssuanceScenario) { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)', recipient: '#(recipient)', amount: '#(initialAmount)' }</span>
 
-  <span class="lead-duration duration">0.257</span>
+  <span class="lead-duration duration">0.226</span>
 
 </div>
 
@@ -298,10 +298,10 @@ $(document).ready(function() {
       </div>
       <div id="msg-3" class="collapse collapsable-details">
         <pre>{
-  &quot;organizer&quot;: &quot;be.utils.MockClient@7b795db7&quot;,
-  &quot;lao&quot;: &quot;be.model.Lao@586486c&quot;,
-  &quot;rollCall&quot;: &quot;be.model.RollCall@b849fa6&quot;,
-  &quot;recipient&quot;: &quot;be.utils.MockClient@7fbbdd8a&quot;,
+  &quot;organizer&quot;: &quot;be.utils.MockClient@2095c331&quot;,
+  &quot;lao&quot;: &quot;be.model.Lao@3909a854&quot;,
+  &quot;rollCall&quot;: &quot;be.model.RollCall@7b795db7&quot;,
+  &quot;recipient&quot;: &quot;be.utils.MockClient@586486c&quot;,
   &quot;amount&quot;: 32
 }
 </pre>
@@ -323,7 +323,7 @@ $(document).ready(function() {
   <span class="keyword indention">And</span>
   <span class="name">def transaction = organizer.issueCoins(recipient, 20);</span>
 
-  <span class="lead-duration duration">0.001</span>
+  <span class="lead-duration duration">0.002</span>
 
 </div>
 
@@ -377,7 +377,7 @@ $(document).ready(function() {
   <span class="keyword indention">And</span>
   <span class="name">def input = transaction.inputs[1]</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">0.001</span>
 
 </div>
 
@@ -431,7 +431,7 @@ $(document).ready(function() {
   <span class="keyword indention">And</span>
   <span class="name">def validTransfer =</span>
 
-  <span class="lead-duration duration">0.001</span>
+  <span class="lead-duration duration">0.002</span>
 
 </div>
 
@@ -492,7 +492,7 @@ $(document).ready(function() {
   <span class="keyword indention">When</span>
   <span class="name">organizer.publish(validTransfer, lao.cashChannel)</span>
 
-  <span class="lead-duration duration">0.001</span>
+  <span class="lead-duration duration">0.002</span>
 
 </div>
 
@@ -519,7 +519,7 @@ $(document).ready(function() {
   <span class="keyword indention">And</span>
   <span class="name">json answer = organizer.getBackendResponse(validTransfer)</span>
 
-  <span class="lead-duration duration">0.006</span>
+  <span class="lead-duration duration">0.007</span>
 
 </div>
 
@@ -546,7 +546,7 @@ $(document).ready(function() {
   <span class="keyword indention">Then</span>
   <span class="name">match answer contains VALID_MESSAGE</span>
 
-  <span class="lead-duration duration">0.001</span>
+  <span class="lead-duration duration">0.000</span>
 
 </div>
 
@@ -563,7 +563,7 @@ $(document).ready(function() {
       <div id="msg-5" class="collapse collapsable-details  in ">
         <pre>match failed: CONTAINS
   $ | actual does not contain expected | actual does not contain key - 'result' (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:-1831819493,&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;Invalid data: $.transaction.inputs[0].tx_out_index: string found, integer expected; $.transaction.outputs[0].value: string found, integer expected&quot;}}
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:-1823398781,&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;Invalid data: $.transaction.inputs[0].tx_out_index: string found, integer expected; $.transaction.outputs[0].value: string found, integer expected&quot;}}
   {&quot;result&quot;:0}
 
 
@@ -581,11 +581,11 @@ classpath:be/features/digitalCash/transaction.feature:97</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-6" class="collapse collapsable-details">
-        <pre>04:11:01.550 classpath:be/features/digitalCash/transaction.feature:97
+        <pre>04:12:00.070 classpath:be/features/digitalCash/transaction.feature:97
 Then match answer contains VALID_MESSAGE
 match failed: CONTAINS
   $ | actual does not contain expected | actual does not contain key - 'result' (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:-1831819493,&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;Invalid data: $.transaction.inputs[0].tx_out_index: string found, integer expected; $.transaction.outputs[0].value: string found, integer expected&quot;}}
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:-1823398781,&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;Invalid data: $.transaction.inputs[0].tx_out_index: string found, integer expected; $.transaction.outputs[0].value: string found, integer expected&quot;}}
   {&quot;result&quot;:0}
 
 
