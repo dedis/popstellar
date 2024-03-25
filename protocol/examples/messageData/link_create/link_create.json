@@ -1,0 +1,10 @@
+{
+    "object": "link",
+    "action": "create",
+    "local_id": "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=",
+    "local_organizer": "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=",
+    "local_server_address": "wss://epfl.ch:9000/server",
+    "remote_lao_id": "lsWUv1bKBQ0t1DqWZTFwb0nhLsP_EtfGoXHny4hsrwA=",
+    "remote_organizer": "UvViTxoKsB3XVP_ctkmOKCJpMWb7fCzrcb1XDmhNe7Q=",
+    "remote_server_address": "wss://ethz.ch:9000/server"
+}

@@ -38,6 +38,9 @@
   - [Accepting a value during a Consensus (consensus#accept)](#accepting-a-value-during-a-consensus-consensusaccept)
   - [Sending the result of a Consensus (consensus#learn)](#sending-the-result-of-a-consensus-consensuslearn)
   - [Sending the failure of a Consensus (consensus#failure)](#sending-the-failure-of-a-consensus-consensusfailure)
+  - [Link between organization (introduction)](#link-between-organization-introduction)
+  - [Create a link with another LAO (link#create)](#create-a-link-with-another-lao-linkcreate)
+  - [Link with another LAO established (link#established)](#link-with-another-lao-established-linkestablished)
 
 <!-- END doctoc.sh generated TOC please keep comment here to allow auto update -->
 
@@ -73,6 +76,8 @@ Here are the existing `Message data`, identified by their unique
 * election#cast_vote
 * election#end
 * election#result
+* link#create
+* link#established
 
 ## Creating a LAO (lao#create)
 
@@ -2900,4 +2905,182 @@ a consensus/failure message is sent informing the system of the failure.
         "created_at"
     ]
 }
+
+```
+
+## Link between organization (introduction)
+The organizer of a LAO can create connection with another LAO. Allowing PoP 
+tokens from a roll call of one organization to be used within another 
+organization. Events such as election could then be either local or global 
+at the choice of the organizer of the event.
+
+## Create a link with another LAO (link#create)
+By sending a link#create to the main LAO's channel, an organizer requests to 
+its associated server to initiate a connection to the other LAO, relay the 
+message, then waits for a matching link#create from the other organizer.
+
+<details>
+<summary>
+💡 See an example
+</summary>
+
+```json5
+// ../protocol/examples/messageData/link_create/link_create.json
+
+{
+    "object": "link",
+    "action": "create",
+    "local_id": "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=",
+    "local_organizer": "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=",
+    "local_server_address": "wss://epfl.ch:9000/server",
+    "remote_lao_id": "lsWUv1bKBQ0t1DqWZTFwb0nhLsP_EtfGoXHny4hsrwA=",
+    "remote_organizer": "UvViTxoKsB3XVP_ctkmOKCJpMWb7fCzrcb1XDmhNe7Q=",
+    "remote_server_address": "wss://ethz.ch:9000/server"
+}
+
+```
+</details>
+
+```json5
+// ../protocol/query/method/message/data/dataLinkCreate.json
+
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataLinkCreate.json",
+    "description": "Match a create link query",
+    "type": "object",
+    "properties": {
+        "object": {
+            "const": "link"
+        },
+        "action": {
+            "const": "create"
+        },
+        "local_lao_id": {
+            "type": "string",
+            "contentEncoding": "base64",
+            "$comment": "ID of the local LAO"
+        },
+        "local_lao_address": {
+            "type": "string",
+            "contentEncoding": "base64",
+            "$comment": "public address of the local lao"
+        },
+        "local_organizer": {
+            "type": "string",
+            "contentEncoding": "base64",
+            "$comment": "public key of the local organizer"
+        },
+        "remote_lao_id": {
+            "type": "string",
+            "contentEncoding": "base64",
+            "$comment": "ID of the remote LAO"
+        },
+        "remote_lao_address": {
+            "type": "string",
+            "contentEncoding": "base64",
+            "$comment": "public address of the remote lao"
+        },
+        "remote_organizer": {
+            "type": "string",
+            "contentEncoding": "base64",
+            "$comment": "public key of the remote organizer"
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "object",
+        "action",
+        "local_lao_id",
+        "local_lao_address",
+        "local_organizer",
+        "remote_lao_id",
+        "remote_lao_address",
+        "remote_organizer"
+    ],
+    "note": [
+        "The link#create message sent by organizer, initiates a link to another lao",
+        "When an organizer backend receives a link#create from its organizer, ",
+        "it will wait to receive a similar message sent by the other organizer",
+        "When matching link#create are received by both organizer, send a link#established"
+    ]
+}
+
+```
+
+## Link with another LAO established (link#established)
+When a link was created with another LAO and after matching link#create are 
+received from both organizers, the organizer's server will broadcast a 
+link#established on their respective LAO's main channel.
+
+<details>
+<summary>
+💡 See an example
+</summary>
+
+```json5
+// ../protocol/examples/messageData/link_established/link_established.json
+
+{
+    "object": "link",
+    "action": "established",
+    "local_id": "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=",
+    "local_organizer": "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=",
+    "remote_lao_id": "lsWUv1bKBQ0t1DqWZTFwb0nhLsP_EtfGoXHny4hsrwA=",
+    "remote_organizer": "UvViTxoKsB3XVP_ctkmOKCJpMWb7fCzrcb1XDmhNe7Q="
+}
+
+```
+</details>
+
+```json5
+// ../protocol/query/method/message/data/dataLinkEstablished.json
+
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataLinkEstablished.json",
+    "description": "Match a link established query",
+    "type": "object",
+    "properties": {
+        "object": {
+            "const": "link"
+        },
+        "action": {
+            "const": "established"
+        },
+        "local_lao_id": {
+            "type": "string",
+            "contentEncoding": "base64",
+            "$comment": "ID of the local LAO"
+        },
+        "local_organizer_": {
+            "type": "string",
+            "contentEncoding": "base64",
+            "$comment": "public key of the local organizer"
+        },
+        "remote_lao_id": {
+            "type": "string",
+            "contentEncoding": "base64",
+            "$comment": "ID of the remote LAO"
+        },
+        "remote_organizer": {
+            "type": "string",
+            "contentEncoding": "base64",
+            "$comment": "public key of the remote organizer"
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "object",
+        "action",
+        "lao_id_local",
+        "organizer_local",
+        "lao_id_remote",
+        "organizer_remote"
+    ],
+    "note": [
+        "A link#established message is sent after a link to another lao is done"
+    ]
+}
+
 ```

@@ -1,0 +1,61 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataLinkCreate.json",
+    "description": "Match a create link query",
+    "type": "object",
+    "properties": {
+        "object": {
+            "const": "link"
+        },
+        "action": {
+            "const": "create"
+        },
+        "local_lao_id": {
+            "type": "string",
+            "contentEncoding": "base64",
+            "$comment": "ID of the local LAO"
+        },
+        "local_lao_address": {
+            "type": "string",
+            "contentEncoding": "base64",
+            "$comment": "public address of the local lao"
+        },
+        "local_organizer": {
+            "type": "string",
+            "contentEncoding": "base64",
+            "$comment": "public key of the local organizer"
+        },
+        "remote_lao_id": {
+            "type": "string",
+            "contentEncoding": "base64",
+            "$comment": "ID of the remote LAO"
+        },
+        "remote_lao_address": {
+            "type": "string",
+            "contentEncoding": "base64",
+            "$comment": "public address of the remote lao"
+        },
+        "remote_organizer": {
+            "type": "string",
+            "contentEncoding": "base64",
+            "$comment": "public key of the remote organizer"
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "object",
+        "action",
+        "local_lao_id",
+        "local_lao_address",
+        "local_organizer",
+        "remote_lao_id",
+        "remote_lao_address",
+        "remote_organizer"
+    ],
+    "note": [
+        "The link#create message sent by organizer, initiates a link to another lao",
+        "When an organizer backend receives a link#create from its organizer, ",
+        "it will wait to receive a similar message sent by the other organizer",
+        "When matching link#create are received by both organizer, send a link#established"
+    ]
+}

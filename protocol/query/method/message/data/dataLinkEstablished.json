@@ -1,0 +1,46 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataLinkEstablished.json",
+    "description": "Match a link established query",
+    "type": "object",
+    "properties": {
+        "object": {
+            "const": "link"
+        },
+        "action": {
+            "const": "established"
+        },
+        "local_lao_id": {
+            "type": "string",
+            "contentEncoding": "base64",
+            "$comment": "ID of the local LAO"
+        },
+        "local_organizer_": {
+            "type": "string",
+            "contentEncoding": "base64",
+            "$comment": "public key of the local organizer"
+        },
+        "remote_lao_id": {
+            "type": "string",
+            "contentEncoding": "base64",
+            "$comment": "ID of the remote LAO"
+        },
+        "remote_organizer": {
+            "type": "string",
+            "contentEncoding": "base64",
+            "$comment": "public key of the remote organizer"
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "object",
+        "action",
+        "lao_id_local",
+        "organizer_local",
+        "lao_id_remote",
+        "organizer_remote"
+    ],
+    "note": [
+        "A link#established message is sent after a link to another lao is done"
+    ]
+}

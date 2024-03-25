@@ -55,6 +55,9 @@ const message_data_failure_schema = require("../query/method/message/data/dataFa
 
 const message_data_coin_post_transaction = require("../query/method/message/data/dataPostTransactionCoin.json");
 
+const message_data_link_create = require("../query/method/message/data/dataLinkCreate.json")
+const message_data_link_established = require("../query/method/message/data/dataLinkEstablished.json")
+
 const ajv = new Ajv({ allErrors: true, strict: false });
 
 ajv.addSchema([
@@ -115,7 +118,10 @@ ajv.addSchema([
     message_data_learn_schema,
     message_data_failure_schema,
 
-    message_data_coin_post_transaction
+    message_data_coin_post_transaction,
+
+    message_data_link_create,
+    message_data_link_established
 ]);
 
 module.exports = ajv;

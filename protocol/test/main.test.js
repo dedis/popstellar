@@ -342,6 +342,14 @@ test("message data: consensus", () => {
     expect(failure).not.toBeValid(messageDataSchema);
 });
 
+test("message data: link", () => {
+    link_create = require("../examples/messageData/link_create/link_create.json");
+    expect(link_create).toBeValid(messageDataSchema);
+
+    link_established = require("../examples/messageData/link_established/link_established.json");
+    expect(link_established).toBeValid(messageDataSchema);
+});
+
 function printError(errors) {
     return errors
         .map((e) => JSON.stringify(e, null, "  "))
