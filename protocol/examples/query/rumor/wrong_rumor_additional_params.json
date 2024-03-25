@@ -1,7 +1,7 @@
 {
     "jsonrpc": "2.0",
     "id": 4,
-    "method": "publish",
+    "method": "rumor",
     "params": {
         "rumor_id": "rumor_id",
         "rumors": [
