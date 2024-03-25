@@ -5,7 +5,7 @@ const fs = require("fs");
 const ajv = require("./main");
 
 const rootSchema =
-    "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/jsonRPC.json";
+    "https://raw.githubusercontent.com/dedis/popstellar/work-be2-dtavaresa-push-gossip/protocol/jsonRPC.json";
 const messageDataSchema =
     "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/data.json";
 
@@ -79,7 +79,8 @@ describe("Check root schema", () => {
             "query/catchup",
             "query/heartbeat",
             "query/get_messages_by_id",
-            "query/greet_server"
+            "query/greet_server",
+            "query/rumor"
         ],
         rootSchema
     );
