@@ -24,7 +24,6 @@ type SQLite struct {
 
 // New returns a new SQLite instance.
 func New(path string) (SQLite, error) {
-
 	db, err := sql.Open("sqlite", path)
 	if err != nil {
 		return SQLite{}, err
@@ -34,67 +33,100 @@ func New(path string) (SQLite, error) {
 
 	//TODO Delete database if error occurs
 	if err != nil {
+		db.Close()
 		return SQLite{}, err
 	}
+
 	defer tx.Rollback()
 
-	_, err = tx.Exec("CREATE TABLE IF NOT EXISTS configuration (" +
+	err = createConfiguration(tx)
+	if err != nil {
+		db.Close()
+		return SQLite{}, err
+	}
+
+	err = createInbox(tx)
+	if err != nil {
+		db.Close()
+		return SQLite{}, err
+	}
+
+	err = createChannelMessage(tx)
+	if err != nil {
+		db.Close()
+		return SQLite{}, err
+	}
+
+	err = createChannels(tx)
+	if err != nil {
+		db.Close()
+		return SQLite{}, err
+	}
+
+	err = createPendingSignatures(tx)
+	if err != nil {
+		db.Close()
+		return SQLite{}, err
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		db.Close()
+		return SQLite{}, err
+	}
+
+	return SQLite{path: path, database: db}, nil
+}
+
+func createConfiguration(tx *sql.Tx) error {
+	_, err := tx.Exec("CREATE TABLE IF NOT EXISTS configuration (" +
 		"pubKeyOwner BLOB NULL, " +
 		"clientServerAddress TEXT NULL, " +
 		"serverServerAddress TEXT NULL " +
 		")")
-	if err != nil {
-		return SQLite{}, err
-	}
+	return err
+}
 
-	_, err = tx.Exec("CREATE TABLE IF NOT EXISTS inbox (" +
+func createInbox(tx *sql.Tx) error {
+	_, err := tx.Exec("CREATE TABLE IF NOT EXISTS inbox (" +
 		"messageID TEXT, " +
 		"message BLOB, " +
 		"storedTime BIGINT, " +
 		"baseChannel TEXT, " +
 		"PRIMARY KEY (messageID) " +
 		")")
-	if err != nil {
-		return SQLite{}, err
-	}
+	return err
+}
 
-	_, err = tx.Exec("CREATE TABLE IF NOT EXISTS channelMessage (" +
+func createChannelMessage(tx *sql.Tx) error {
+	_, err := tx.Exec("CREATE TABLE IF NOT EXISTS channelMessage (" +
 		"channel TEXT, " +
 		"messageID TEXT, " +
 		"FOREIGN KEY (messageID) REFERENCES inbox(messageID), " +
 		"PRIMARY KEY (channel, messageID) " +
 		")")
-	if err != nil {
-		return SQLite{}, err
-	}
+	return err
+}
 
-	_, err = tx.Exec("CREATE TABLE IF NOT EXISTS channels (" +
+func createChannels(tx *sql.Tx) error {
+	_, err := tx.Exec("CREATE TABLE IF NOT EXISTS channels (" +
 		"channel TEXT, " +
 		"organizerPubKey TEXT, " +
 		"pubElectionKey TEXT NULL, " +
 		"secElectionKey TEXT NULL, " +
 		"PRIMARY KEY (channel) " +
 		")")
-	if err != nil {
-		return SQLite{}, err
-	}
+	return err
+}
 
-	_, err = tx.Exec("CREATE TABLE IF NOT EXISTS pendingSignatures (" +
+func createPendingSignatures(tx *sql.Tx) error {
+	_, err := tx.Exec("CREATE TABLE IF NOT EXISTS pendingSignatures (" +
 		"messageID TEXT, " +
 		"witness TEXT, " +
 		"signature TEXT UNIQUE, " +
 		"PRIMARY KEY (messageID, witness) " +
 		")")
-	if err != nil {
-		return SQLite{}, err
-	}
-
-	err = tx.Commit()
-	if err != nil {
-		return SQLite{}, err
-	}
-
-	return SQLite{path: path, database: db}, nil
+	return err
 }
 
 // Close closes the SQLite database.
@@ -104,17 +136,14 @@ func (s *SQLite) Close() error {
 
 // GetMessagesByID returns a set of messages by their IDs.
 func (s *SQLite) GetMessagesByID(IDs []string) (map[string]message.Message, error) {
-
-	columns := "messageID, message"
 	idStrings := make([]string, 0, len(IDs))
-
 	for _, id := range IDs {
 		idStrings = append(idStrings, fmt.Sprintf("'%s'", id))
 	}
 
-	query := "SELECT " + columns + " FROM inbox WHERE messageID IN (" + strings.Join(idStrings, ",") + ")"
-
-	rows, err := s.database.Query(query)
+	rows, err := s.database.Query("SELECT messageID, message " +
+		"FROM inbox " +
+		"WHERE messageID IN (" + strings.Join(idStrings, ",") + ")")
 	if err != nil {
 		return nil, err
 	}
@@ -122,7 +151,6 @@ func (s *SQLite) GetMessagesByID(IDs []string) (map[string]message.Message, erro
 	messagesByID := make(map[string]message.Message, len(IDs))
 
 	for rows.Next() {
-
 		var messageID string
 		var messageByte []byte
 		if err = rows.Scan(&messageID, &messageByte); err != nil {
@@ -133,7 +161,6 @@ func (s *SQLite) GetMessagesByID(IDs []string) (map[string]message.Message, erro
 		if err = json.Unmarshal(messageByte, &msg); err != nil {
 			return nil, err
 		}
-
 		messagesByID[messageID] = msg
 	}
 
@@ -142,17 +169,13 @@ func (s *SQLite) GetMessagesByID(IDs []string) (map[string]message.Message, erro
 
 // GetSortedMessages returns all messages sorted by stored time.
 func (s *SQLite) GetSortedMessages(channel string) ([]message.Message, error) {
-
 	tx, err := s.database.Begin()
 	if err != nil {
 		return nil, err
 	}
-
 	defer tx.Rollback()
 
-	var count int
-	err = tx.QueryRow("SELECT COUNT(*) FROM channelMessage "+
-		"WHERE channelMessage.channel = ?", channel).Scan(&count)
+	count, err := getNumberOfMessages(tx, channel)
 	if err != nil {
 		return nil, err
 	}
@@ -169,7 +192,6 @@ func (s *SQLite) GetSortedMessages(channel string) ([]message.Message, error) {
 	messages := make([]message.Message, 0, count)
 
 	for rows.Next() {
-
 		var messageByte []byte
 		if err = rows.Scan(&messageByte); err != nil {
 			return nil, err
@@ -185,17 +207,25 @@ func (s *SQLite) GetSortedMessages(channel string) ([]message.Message, error) {
 		return nil, err
 	}
 
-	err = tx.Commit()
-	if err != nil {
+	if err = tx.Commit(); err != nil {
 		return nil, err
 	}
 
 	return messages, nil
 }
 
+func getNumberOfMessages(tx *sql.Tx, channel string) (int, error) {
+	var count int
+	err := tx.QueryRow("SELECT COUNT(*) FROM channelMessage "+
+		"WHERE channelMessage.channel = ?", channel).Scan(&count)
+	if err != nil {
+		return 0, err
+	}
+	return count, nil
+}
+
 // GetMessageByID returns a message by its ID.
 func (s *SQLite) GetMessageByID(ID string) (message.Message, error) {
-
 	var messageByte []byte
 	err := s.database.QueryRow("SELECT message FROM inbox WHERE messageID = ?", ID).Scan(&messageByte)
 	if err != nil {
@@ -212,10 +242,9 @@ func (s *SQLite) GetMessageByID(ID string) (message.Message, error) {
 
 // GetIDsTable returns the map of message IDs by channelID.
 func (s *SQLite) GetIDsTable() (map[string][]string, error) {
-
-	query := "SELECT baseChannel, GROUP_CONCAT(messageID) FROM inbox " +
-		"GROUP BY baseChannel"
-	rows, err := s.database.Query(query)
+	rows, err := s.database.Query("SELECT baseChannel, GROUP_CONCAT(messageID) " +
+		"FROM inbox " +
+		"GROUP BY baseChannel")
 	if err != nil {
 		return nil, err
 	}
@@ -240,16 +269,32 @@ func (s *SQLite) GetIDsTable() (map[string][]string, error) {
 
 // StoreMessage stores a message inside the SQLite database.
 func (s *SQLite) StoreMessage(channel string, msg message.Message) error {
-
-	storedTime := time.Now().UnixNano()
-
 	tx, err := s.database.Begin()
 	if err != nil {
 		return err
 	}
-
 	defer tx.Rollback()
 
+	err = addPendingSignatures(tx, &msg)
+	if err != nil {
+		return err
+	}
+
+	err = storeInbox(tx, msg, channel)
+	if err != nil {
+		return err
+
+	}
+
+	err = storeChannelMessage(tx, channel, msg.MessageID)
+	if err != nil {
+		return err
+	}
+
+	return tx.Commit()
+}
+
+func addPendingSignatures(tx *sql.Tx, msg *message.Message) error {
 	rows, err := tx.Query("SELECT witness, signature "+
 		"FROM pendingSignatures "+
 		"WHERE messageID = ?", msg.MessageID)
@@ -258,7 +303,6 @@ func (s *SQLite) StoreMessage(channel string, msg message.Message) error {
 	}
 
 	for rows.Next() {
-
 		var witness string
 		var signature string
 		if err = rows.Scan(&witness, &signature); err != nil {
@@ -269,6 +313,12 @@ func (s *SQLite) StoreMessage(channel string, msg message.Message) error {
 			Signature: signature,
 		})
 	}
+
+	return rows.Err()
+}
+
+func storeInbox(tx *sql.Tx, msg message.Message, channel string) error {
+	storedTime := time.Now().UnixNano()
 
 	msgByte, err := json.Marshal(msg)
 	if err != nil {
@@ -283,49 +333,29 @@ func (s *SQLite) StoreMessage(channel string, msg message.Message) error {
         baseChannel = excluded.baseChannel
         WHERE baseChannel LIKE excluded.baseChannel || '%'
     `, msg.MessageID, msgByte, storedTime, channel)
-	if err != nil {
-		return err
-	}
 
-	_, err = tx.Exec("INSERT OR IGNORE INTO channelMessage "+
+	return err
+}
+
+func storeChannelMessage(tx *sql.Tx, channel string, messageID string) error {
+	_, err := tx.Exec("INSERT INTO channelMessage "+
 		"(channel, messageID) VALUES "+
-		"(?, ?)", channel, msg.MessageID)
-	if err != nil {
-		return err
-	}
-
-	err = tx.Commit()
-
+		"(?, ?)", channel, messageID)
 	return err
 }
 
 // AddWitnessSignature stores a pending signature inside the SQLite database.
 func (s *SQLite) AddWitnessSignature(messageID string, witness string, signature string) error {
-
 	tx, err := s.database.Begin()
 	if err != nil {
 		return err
 	}
-
 	defer tx.Rollback()
 
 	var messageBytes []byte
 	err = tx.QueryRow("SELECT message FROM inbox WHERE messageID = ?", messageID).Scan(&messageBytes)
 	if err == nil {
-		var msg message.Message
-		err = json.Unmarshal(messageBytes, &msg)
-		if err != nil {
-			return err
-		}
-		msg.WitnessSignatures = append(msg.WitnessSignatures, message.WitnessSignature{
-			Witness:   witness,
-			Signature: signature,
-		})
-		messageBytes, err = json.Marshal(msg)
-		if err != nil {
-			return err
-		}
-		_, err = tx.Exec("UPDATE inbox SET message = ? WHERE messageID = ?", messageBytes, messageID)
+		err = appendSignature(messageBytes, messageID, tx, witness, signature)
 		if err != nil {
 			return err
 		}
@@ -339,8 +369,23 @@ func (s *SQLite) AddWitnessSignature(messageID string, witness string, signature
 	} else {
 		return err
 	}
+	return tx.Commit()
+}
 
-	err = tx.Commit()
-
+func appendSignature(messageBytes []byte, messageID string, tx *sql.Tx, witness string, signature string) error {
+	var msg message.Message
+	err := json.Unmarshal(messageBytes, &msg)
+	if err != nil {
+		return err
+	}
+	msg.WitnessSignatures = append(msg.WitnessSignatures, message.WitnessSignature{
+		Witness:   witness,
+		Signature: signature,
+	})
+	messageBytes, err = json.Marshal(msg)
+	if err != nil {
+		return err
+	}
+	_, err = tx.Exec("UPDATE inbox SET message = ? WHERE messageID = ?", messageBytes, messageID)
 	return err
 }
