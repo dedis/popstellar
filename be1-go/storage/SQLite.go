@@ -3,6 +3,7 @@ package storage
 import (
 	"database/sql"
 	"encoding/json"
+	"errors"
 	"fmt"
 	_ "modernc.org/sqlite"
 	"popstellar/message/query/method/message"
@@ -80,10 +81,9 @@ func New(path string) (SQLite, error) {
 
 	_, err = tx.Exec("CREATE TABLE IF NOT EXISTS pendingSignatures (" +
 		"messageID TEXT, " +
-		"sendPubKey TEXT, " +
+		"witness TEXT, " +
 		"signature TEXT UNIQUE, " +
-		"FOREIGN KEY (messageID) REFERENCES inbox(messageID), " +
-		"PRIMARY KEY (messageID) " +
+		"PRIMARY KEY (messageID, witness) " +
 		")")
 	if err != nil {
 		return SQLite{}, err
@@ -243,17 +243,37 @@ func (s *SQLite) StoreMessage(channel string, msg message.Message) error {
 
 	storedTime := time.Now().UnixNano()
 
-	msgByte, err := json.Marshal(msg)
-	if err != nil {
-		return err
-	}
-
 	tx, err := s.database.Begin()
 	if err != nil {
 		return err
 	}
 
 	defer tx.Rollback()
+
+	rows, err := tx.Query("SELECT witness, signature "+
+		"FROM pendingSignatures "+
+		"WHERE messageID = ?", msg.MessageID)
+	if err != nil {
+		return err
+	}
+
+	for rows.Next() {
+
+		var witness string
+		var signature string
+		if err = rows.Scan(&witness, &signature); err != nil {
+			return err
+		}
+		msg.WitnessSignatures = append(msg.WitnessSignatures, message.WitnessSignature{
+			Witness:   witness,
+			Signature: signature,
+		})
+	}
+
+	msgByte, err := json.Marshal(msg)
+	if err != nil {
+		return err
+	}
 
 	_, err = tx.Exec(`
         INSERT INTO inbox (messageID, message, storedTime, baseChannel)
@@ -271,6 +291,52 @@ func (s *SQLite) StoreMessage(channel string, msg message.Message) error {
 		"(channel, messageID) VALUES "+
 		"(?, ?)", channel, msg.MessageID)
 	if err != nil {
+		return err
+	}
+
+	err = tx.Commit()
+
+	return err
+}
+
+// AddWitnessSignature stores a pending signature inside the SQLite database.
+func (s *SQLite) AddWitnessSignature(messageID string, witness string, signature string) error {
+
+	tx, err := s.database.Begin()
+	if err != nil {
+		return err
+	}
+
+	defer tx.Rollback()
+
+	var messageBytes []byte
+	err = tx.QueryRow("SELECT message FROM inbox WHERE messageID = ?", messageID).Scan(&messageBytes)
+	if err == nil {
+		var msg message.Message
+		err = json.Unmarshal(messageBytes, &msg)
+		if err != nil {
+			return err
+		}
+		msg.WitnessSignatures = append(msg.WitnessSignatures, message.WitnessSignature{
+			Witness:   witness,
+			Signature: signature,
+		})
+		messageBytes, err = json.Marshal(msg)
+		if err != nil {
+			return err
+		}
+		_, err = tx.Exec("UPDATE inbox SET message = ? WHERE messageID = ?", messageBytes, messageID)
+		if err != nil {
+			return err
+		}
+	} else if err != nil && errors.Is(err, sql.ErrNoRows) {
+		_, err := tx.Exec("INSERT INTO pendingSignatures "+
+			"(messageID, witness, signature) VALUES "+
+			"(?, ?, ?)", messageID, witness, signature)
+		if err != nil {
+			return err
+		}
+	} else {
 		return err
 	}
 

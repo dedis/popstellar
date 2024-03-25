@@ -199,3 +199,72 @@ func TestSQLite_GetMessageByID(t *testing.T) {
 		}
 	}
 }
+
+func TestSQLite_AddWitnessSignature(t *testing.T) {
+	lite, dir, err := newFakeSQLite()
+	if err != nil {
+		t.Fatalf("an error '%s' was not expected when creating a new fake SQLite instance", err)
+	}
+
+	defer lite.Close()
+	defer os.RemoveAll(dir)
+
+	testMessages := initMessages()
+
+	for _, m := range testMessages {
+		err = lite.StoreMessage(m.channel, m.msg)
+		if err != nil {
+			t.Fatalf("an error '%s' was not expected when storing a message", err)
+		}
+	}
+
+	expected := []message.WitnessSignature{{Witness: "witness1", Signature: "sig1"}, {Witness: "witness2", Signature: "sig2"}}
+
+	err = lite.AddWitnessSignature("ID1", "witness1", "sig1")
+	if err != nil {
+		t.Fatalf("an error '%s' was not expected when adding witness1 signature1", err)
+	}
+	err = lite.AddWitnessSignature("ID1", "witness2", "sig2")
+	if err != nil {
+		t.Fatalf("an error '%s' was not expected when adding witness2 signature2", err)
+	}
+
+	msg1, err := lite.GetMessageByID("ID1")
+	if err != nil {
+		t.Fatalf("an error '%s' was not expected when getting a message1 by ID", err)
+	}
+	if !reflect.DeepEqual(msg1.WitnessSignatures, expected) {
+
+		t.Fatalf("expected witness signatures to be equal to the stored witness signatures for message1")
+	}
+
+	message4 := message.Message{Data: "data4",
+		Sender:            "sender4",
+		Signature:         "sig4",
+		MessageID:         "ID4",
+		WitnessSignatures: []message.WitnessSignature{},
+	}
+
+	err = lite.AddWitnessSignature("ID4", "witness2", "sig4")
+	if err != nil {
+		t.Fatalf("an error '%s' was not expected when adding a witness2 signature4", err)
+	}
+
+	err = lite.StoreMessage("channel1", message4)
+	if err != nil {
+		t.Fatalf("an error '%s' was not expected when storing message4", err)
+	}
+
+	expected = []message.WitnessSignature{{Witness: "witness2", Signature: "sig4"}}
+	msg4, err := lite.GetMessageByID("ID4")
+	if err != nil {
+		t.Fatalf("an error '%s' was not expected when getting a message4 by ID", err)
+	}
+	if len(msg4.WitnessSignatures) != len(expected) {
+		t.Fatalf("expected %d witness signatures, got %d", len(expected), len(msg4.WitnessSignatures))
+	}
+
+	if !reflect.DeepEqual(msg4.WitnessSignatures, expected) {
+		t.Fatalf("expected witness signatures to be equal to the stored witness signatures for message4")
+	}
+}
