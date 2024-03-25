@@ -18,8 +18,8 @@ object HighLevelProtocol extends DefaultJsonProtocol {
   // ----------------------------------- ENUM FORMATTERS ----------------------------------- //
   implicit object methodTypeFormat extends RootJsonFormat[MethodType] {
     override def read(json: JsValue): MethodType = json match {
-      case JsString(method) => MethodType(method)
-      case _                => throw new IllegalArgumentException(s"Can't parse json value $json to a MethodType")
+      case JsString(method) if method != "INVALID" => MethodType.valueOf(method)
+      case _                                       => throw new IllegalArgumentException(s"Can't parse json value $json to a MethodType")
     }
 
     override def write(obj: MethodType): JsValue = JsString(obj.toString)
@@ -229,12 +229,12 @@ object HighLevelProtocol extends DefaultJsonProtocol {
       case Seq(JsString(version), methodJsString @ JsString(_), paramsJsObject @ JsObject(_), optId) =>
         val method: MethodType = methodJsString.convertTo[MethodType]
         val params = method match {
-          case MethodType.`publish`            => paramsJsObject.convertTo[Publish]
-          case MethodType.`subscribe`          => paramsJsObject.convertTo[Subscribe]
-          case MethodType.`unsubscribe`        => paramsJsObject.convertTo[Unsubscribe]
-          case MethodType.`catchup`            => paramsJsObject.convertTo[Catchup]
-          case MethodType.`get_messages_by_id` => paramsJsObject.convertTo[GetMessagesById]
-          case _                               => throw new IllegalArgumentException(s"Can't parse json value $json with unknown method ${method.toString}")
+          case MethodType.publish            => paramsJsObject.convertTo[Publish]
+          case MethodType.subscribe          => paramsJsObject.convertTo[Subscribe]
+          case MethodType.unsubscribe        => paramsJsObject.convertTo[Unsubscribe]
+          case MethodType.catchup            => paramsJsObject.convertTo[Catchup]
+          case MethodType.get_messages_by_id => paramsJsObject.convertTo[GetMessagesById]
+          case _                             => throw new IllegalArgumentException(s"Can't parse json value $json with unknown method ${method.toString}")
         }
 
         val id: Option[Int] = optId match {
@@ -249,10 +249,10 @@ object HighLevelProtocol extends DefaultJsonProtocol {
       case Seq(JsString(version), methodJsString @ JsString(_), paramsJsObject @ JsObject(_)) =>
         val method: MethodType = methodJsString.convertTo[MethodType]
         val params = method match {
-          case MethodType.`heartbeat`    => paramsJsObject.convertTo[Heartbeat]
-          case MethodType.`broadcast`    => paramsJsObject.convertTo[Broadcast]
-          case MethodType.`greet_server` => paramsJsObject.convertTo[GreetServer]
-          case _                         => throw new IllegalArgumentException(s"Can't parse json value $json with unknown method ${method.toString}")
+          case MethodType.heartbeat    => paramsJsObject.convertTo[Heartbeat]
+          case MethodType.broadcast    => paramsJsObject.convertTo[Broadcast]
+          case MethodType.greet_server => paramsJsObject.convertTo[GreetServer]
+          case _                       => throw new IllegalArgumentException(s"Can't parse json value $json with unknown method ${method.toString}")
         }
         JsonRpcRequest(version, method, params, None)
       case _ => throw new IllegalArgumentException(s"Can't parse json value $json to a JsonRpcRequest object")
