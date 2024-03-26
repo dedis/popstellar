@@ -10,10 +10,10 @@ import com.github.dedis.popstellar.R
 import com.github.dedis.popstellar.model.objects.security.PoPToken
 
 class RollCallArrayAdapter(
-  private val context: Context,
-  private val layout: Int,
-  private val attendeesList: List<String>,
-  private val myToken: PoPToken?,
+    private val context: Context,
+    private val layout: Int,
+    private val attendeesList: List<String>,
+    private val myToken: PoPToken?,
 ) : ArrayAdapter<String>(context, layout, attendeesList) {
 
   override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {

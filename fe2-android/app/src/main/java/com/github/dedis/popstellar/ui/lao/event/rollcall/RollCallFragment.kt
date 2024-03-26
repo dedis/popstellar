@@ -34,11 +34,11 @@ import com.github.dedis.popstellar.utility.error.UnknownRollCallException
 import com.github.dedis.popstellar.utility.error.keys.KeyException
 import com.github.dedis.popstellar.utility.error.keys.NoRollCallException
 import dagger.hilt.android.AndroidEntryPoint
-import net.glxn.qrgen.android.QRCode
-import timber.log.Timber
 import java.util.EnumMap
 import java.util.stream.Collectors
 import javax.inject.Inject
+import net.glxn.qrgen.android.QRCode
+import timber.log.Timber
 
 @AndroidEntryPoint
 class RollCallFragment : AbstractEventFragment {
@@ -271,10 +271,10 @@ class RollCallFragment : AbstractEventFragment {
     if (attendeesList != null) {
       binding.listViewAttendees.adapter =
           RollCallArrayAdapter(
-                  requireContext(),
-                  android.R.layout.simple_list_item_1,
-                  attendeesList,
-                  popToken,
+              requireContext(),
+              android.R.layout.simple_list_item_1,
+              attendeesList,
+              popToken,
           )
     }
   }
