@@ -19,7 +19,6 @@ const (
 type SQLite struct {
 	Storage
 	database *sql.DB
-	path     string
 }
 
 // New returns a new SQLite instance.
@@ -75,7 +74,7 @@ func New(path string) (SQLite, error) {
 		return SQLite{}, err
 	}
 
-	return SQLite{path: path, database: db}, nil
+	return SQLite{database: db}, nil
 }
 
 func createConfiguration(tx *sql.Tx) error {
@@ -103,6 +102,7 @@ func createChannelMessage(tx *sql.Tx) error {
 		"channel TEXT, " +
 		"messageID TEXT, " +
 		"FOREIGN KEY (messageID) REFERENCES inbox(messageID), " +
+		"FOREIGN KEY (channel) REFERENCES channels(channel), " +
 		"PRIMARY KEY (channel, messageID) " +
 		")")
 	return err
@@ -175,11 +175,6 @@ func (s *SQLite) GetSortedMessages(channel string) ([]message.Message, error) {
 	}
 	defer tx.Rollback()
 
-	count, err := getNumberOfMessages(tx, channel)
-	if err != nil {
-		return nil, err
-	}
-
 	rows, err := tx.Query(" SELECT inbox.message "+
 		"FROM inbox "+
 		"JOIN channelMessage ON inbox.messageID = channelMessage.messageID "+
@@ -189,7 +184,7 @@ func (s *SQLite) GetSortedMessages(channel string) ([]message.Message, error) {
 		return nil, err
 	}
 
-	messages := make([]message.Message, 0, count)
+	messages := make([]message.Message, 0)
 
 	for rows.Next() {
 		var messageByte []byte
@@ -212,16 +207,6 @@ func (s *SQLite) GetSortedMessages(channel string) ([]message.Message, error) {
 	}
 
 	return messages, nil
-}
-
-func getNumberOfMessages(tx *sql.Tx, channel string) (int, error) {
-	var count int
-	err := tx.QueryRow("SELECT COUNT(*) FROM channelMessage "+
-		"WHERE channelMessage.channel = ?", channel).Scan(&count)
-	if err != nil {
-		return 0, err
-	}
-	return count, nil
 }
 
 // GetMessageByID returns a message by its ID.
@@ -314,7 +299,14 @@ func addPendingSignatures(tx *sql.Tx, msg *message.Message) error {
 		})
 	}
 
-	return rows.Err()
+	if err = rows.Err(); err != nil {
+		return err
+	}
+
+	_, err = tx.Exec("DELETE "+
+		"FROM pendingSignatures "+
+		"WHERE messageID = ?", msg.MessageID)
+	return err
 }
 
 func storeInbox(tx *sql.Tx, msg message.Message, channel string) error {

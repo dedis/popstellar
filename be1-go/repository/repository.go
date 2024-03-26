@@ -15,6 +15,9 @@ type HubRepository interface {
 
 	// GetMessageByID returns a message by its ID.
 	GetMessageByID(ID string) (message.Message, error)
+
+	// GetIDsTable returns the map of message IDs by channelID.
+	GetIDsTable() (map[string][]string, error)
 }
 
 type ElectionRepository interface {
