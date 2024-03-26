@@ -10,22 +10,22 @@ import com.github.dedis.popstellar.R
 import com.github.dedis.popstellar.model.objects.security.PoPToken
 
 class RollCallArrayAdapter(
-        private val context: Context,
-        private val layout: Int,
-        private val attendeesList: List<String>,
-        private val myToken: PoPToken?
+  private val context: Context,
+  private val layout: Int,
+  private val attendeesList: List<String>,
+  private val myToken: PoPToken?,
 ) : ArrayAdapter<String>(context, layout, attendeesList) {
 
-    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-        val view = super.getView(position, convertView, parent)
+  override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+    val view = super.getView(position, convertView, parent)
 
-        //highlights our token in the list
-        val currentToken = getItem(position)
-        if (myToken != null && currentToken == myToken.publicKey.encoded) {
-            val colorAccent = ContextCompat.getColor(context, R.color.colorAccent)
-            (view as TextView).setTextColor(colorAccent)
-        }
-
-        return view
+    // highlights our token in the list
+    val currentToken = getItem(position)
+    if (myToken != null && currentToken == myToken.publicKey.encoded) {
+      val colorAccent = ContextCompat.getColor(context, R.color.colorAccent)
+      (view as TextView).setTextColor(colorAccent)
     }
+
+    return view
+  }
 }
