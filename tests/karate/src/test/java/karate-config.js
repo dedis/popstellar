@@ -32,27 +32,88 @@ function fn() {
     config.backendPath = 'server';
     config.frontendWsURL = `ws://${config.host}:${config.frontendPort}/${config.frontendPath}`;
     config.backendWsURL = `ws://${config.host}:${config.backendPort}/${config.backendPath}`;
-  } else {
-    config.port = 9005;
-    config.timeout = 1000;
+  } else if (env === 'web') {
+    config.frontendURL = karate.properties['url'] || `file://${karate.toAbsolutePath('file:../../fe1-web/web-build/index.html')}`;
+    config.screenWidth = karate.properties['screenWidth'] || 1920;
+    config.screenHeight = karate.properties['screenHeight'] || 1080;
 
-    if (env === 'web') {
-      config.max_input_retry = 10;
-    } else if (env === 'android') {
-      const android = {};
-      android["desiredConfig"] = {
-        "app" : "../../fe2-android/app/build/outputs/apk/debug/app-debug.apk",
-        "newCommandTimeout" : 1000,
-        "platformVersion" : "9.0",
-        "platformName" : "Android",
-        "connectHardwareKeyboard" : true,
-        "deviceName" : "emulator-5554",
-        "avd" : "Pixel_4_API_30",
-        "automationName" : "UiAutomator2",
-        "autoGrantPermissions" : true
-      }
-      config["android"] = android
+    let platform = karate.properties['platform'] || karate.os.type;
+    if (platform === 'macosx') {
+      platform = 'mac';
     }
+
+    const browser = karate.properties['browser'] || 'chrome';
+    const browserOptions = {
+      chrome: {
+        type: 'chromedriver',
+        capabilities: {
+          alwaysMatch: {
+            'platformName': platform,
+            'appium:automationName': 'Chromium',
+            'browserName': 'chrome'
+          }
+        }
+      },
+      edge: {
+        type: 'chromedriver',
+        capabilities: {
+          alwaysMatch: {
+            'platformName': platform,
+            'appium:automationName': 'Chromium',
+            'browserName': 'MicrosoftEdge'
+          }
+        }
+      },
+      firefox: {
+        type: 'geckodriver',
+        capabilities: {
+          alwaysMatch: {
+            'platformName': platform,
+            'appium:automationName': 'Gecko',
+            'browserName': 'firefox'
+          }
+        }
+      },
+      safari: {
+        type: 'safaridriver',
+        capabilities: {
+          alwaysMatch: {
+            'platformName': platform,
+            'appium:automationName': 'Safari',
+            'browserName': 'safari'
+          }
+        }
+      }
+    };
+
+    const { type, capabilities } = browserOptions[browser];
+
+
+    karate.configure('driver', { type, port: 4723, webDriverPath : "/", start: false });
+    config.webDriverOptions = {
+      webDriverSession: {
+        capabilities,
+        desiredCapabilities: {}
+      }
+    };
+  } else if (env === 'android') {
+    karate.configure('driver', { type: 'android', webDriverPath : "/", start: false });
+    const app = karate.properties['app'] || '../../fe2-android/app/build/outputs/apk/debug/app-debug.apk';
+    config.webDriverOptions = {
+      webDriverSession: {
+        capabilities: {
+          alwaysMatch: {
+            'appium:platformName': 'Android',
+            'appium:automationName': 'uiautomator2',
+            'appium:app': `${karate.toAbsolutePath(`file:${app}`)}`,
+            'appium:autoGrantPermissions': true,
+            'appium:avd': karate.properties['avd'],
+          }
+        },
+        desiredCapabilities: {
+        }
+      }
+    };
   }
 
   return config;

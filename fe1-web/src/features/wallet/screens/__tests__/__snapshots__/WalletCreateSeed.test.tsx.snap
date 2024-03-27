@@ -475,6 +475,7 @@ exports[`Wallet create seed screen renders correctly 1`] = `
                                       "textAlign": "left",
                                     }
                                   }
+                                  testID="seed_wallet_text"
                                 >
                                   one two three
                                 </Text>
