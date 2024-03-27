@@ -25,7 +25,7 @@ ajv.addSchema([
   ...querySchema,
 ]);
 
-const schemaPrefix = 'https://raw.githubusercontent.com/dedis/popstellar/master/protocol';
+const schemaPrefix = 'https://raw.githubusercontent.com/dedis/popstellar/work-be2-dtavaresa-push-gossip/protocol';
 
 const schemaIds: Record<ObjectType, Record<string, string>> = {
   [ObjectType.INVALID]: {},
