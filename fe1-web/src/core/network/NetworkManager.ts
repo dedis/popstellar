@@ -165,7 +165,12 @@ class NetworkManager {
     }
   }
 
-  public disconnectFrom(address: string, intentional = true): Number {
+  /** Disconnects from a server
+   * @param address the server's full address (URI)
+   * @param intentional Whether the disconnection is intended or not
+   * @returns the number of remaining connections
+   */
+  public disconnectFrom(address: string, intentional = true): number {
     if (!address) {
       throw new Error('No address provided in disconnectFrom');
     }
