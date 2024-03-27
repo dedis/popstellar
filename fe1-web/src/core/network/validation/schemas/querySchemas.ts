@@ -7,6 +7,7 @@ import publish from 'protocol/query/method/publish.json';
 import subscribe from 'protocol/query/method/subscribe.json';
 import unsubscribe from 'protocol/query/method/unsubscribe.json';
 import query from 'protocol/query/query.json';
+import rumor from 'protocol/query/method/rumor.json'
 
 const querySchemas = [
   broadcast,
@@ -18,6 +19,7 @@ const querySchemas = [
   get_messages_by_id,
   greet_server,
   query,
+  rumor
 ];
 
 export default querySchemas;
