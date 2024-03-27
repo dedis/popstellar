@@ -429,6 +429,7 @@ func (c *Channel) processRollCallClose(msg message.Message, msgData interface{},
 	c.rollCall.id = data.UpdateID
 	c.rollCall.state = Closed
 
+	c.attendees = make(map[string]struct{})
 	for _, attendee := range data.Attendees {
 		c.attendees[attendee] = struct{}{}
 
