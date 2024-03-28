@@ -73,11 +73,13 @@ type Huber interface {
 type subscribers map[string]map[socket.Socket]struct{}
 
 type handlerParameters struct {
+	log             *zerolog.Logger
 	socket          socket.Socket
 	schemaValidator *validation.SchemaValidator
 	db              storage.Storage
 	subs            subscribers
 	peers           *state.Peers
+	queries         *state.Queries
 }
 
 // Hub implements the Hub interface.
