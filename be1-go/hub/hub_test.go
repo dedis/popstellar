@@ -1058,7 +1058,7 @@ func Test_Handle_Publish_From_Server(t *testing.T) {
 	sock := &fakeSocket{}
 
 	// check that there is no errors with messages from witness
-	hub.handleMessageFromServer(&socket.IncomingMessage{
+	hub.handleMessageFromClient(&socket.IncomingMessage{
 		Socket:  sock,
 		Message: publishBuf,
 	})
@@ -1125,7 +1125,7 @@ func Test_Receive_Publish_Twice(t *testing.T) {
 	sock := &fakeSocket{}
 
 	// Receive message from a server
-	hub.handleMessageFromServer(&socket.IncomingMessage{
+	hub.handleMessageFromClient(&socket.IncomingMessage{
 		Socket:  sock,
 		Message: publishBuf,
 	})

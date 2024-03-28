@@ -1,7 +1,6 @@
 package hub
 
 import (
-	"context"
 	"encoding/base64"
 	"encoding/json"
 	"popstellar/channel"
@@ -9,10 +8,8 @@ import (
 	"popstellar/hub/state"
 	"popstellar/inbox"
 	jsonrpc "popstellar/message"
-	"popstellar/message/answer"
 	"popstellar/message/query"
 	"popstellar/message/query/method"
-	"popstellar/message/query/method/message"
 	"popstellar/network/socket"
 	"popstellar/validation"
 	"strings"
@@ -22,7 +19,6 @@ import (
 	"github.com/rs/zerolog"
 	"go.dedis.ch/kyber/v3"
 	"go.dedis.ch/kyber/v3/sign/schnorr"
-	"golang.org/x/sync/semaphore"
 	"golang.org/x/xerrors"
 )
 
@@ -98,8 +94,6 @@ type Hub struct {
 
 	stop chan struct{}
 
-	workers *semaphore.Weighted
-
 	log zerolog.Logger
 
 	laoFac channel.LaoFactory
@@ -146,7 +140,6 @@ func New(pubKeyOwner kyber.Point, clientServerAddress string, serverServerAddres
 		secKeyServ:          secServ,
 		schemaValidator:     schemaValidator,
 		stop:                make(chan struct{}),
-		workers:             semaphore.NewWeighted(numWorkers),
 		log:                 log,
 		laoFac:              laoFac,
 		serverSockets:       channel.NewSockets(),
@@ -181,18 +174,10 @@ func (h *Hub) Start() {
 		for {
 			select {
 			case incomingMessage := <-h.messageChan:
-				ok := h.workers.TryAcquire(1)
-				if !ok {
-					h.log.Warn().Msg("worker pool full, waiting...")
-					h.workers.Acquire(context.Background(), 1)
+				err := h.handleIncomingMessage(&incomingMessage)
+				if err != nil {
+					h.log.Err(err).Msg("problem handling incoming message")
 				}
-
-				go func() {
-					err := h.handleIncomingMessage(&incomingMessage)
-					if err != nil {
-						h.log.Err(err).Msg("problem handling incoming message")
-					}
-				}()
 			case id := <-h.closedSockets:
 				h.channelByID.ForEach(func(c channel.Channel) {
 					// dummy Unsubscribe message because it's only used for logging...
@@ -209,8 +194,6 @@ func (h *Hub) Start() {
 // Stop implements hub.Hub
 func (h *Hub) Stop() {
 	close(h.stop)
-	h.log.Info().Msg("waiting for existing workers to finish...")
-	h.workers.Acquire(context.Background(), numWorkers)
 }
 
 // Receiver implements hub.Hub
@@ -303,166 +286,9 @@ func (h *Hub) getChan(channelPath string) (channel.Channel, error) {
 	return channel, nil
 }
 
-// handleMessageFromClient handles an incoming message from an end user.
-func (h *Hub) handleMessageFromClient(incomingMessage *socket.IncomingMessage) error {
-	socket := incomingMessage.Socket
-	byteMessage := incomingMessage.Message
-
-	// validate against json schema
-	err := h.schemaValidator.VerifyJSON(byteMessage, validation.GenericMessage)
-	if err != nil {
-		schemaErr := xerrors.Errorf("message is not valid against json schema: %v", err)
-		socket.SendError(nil, schemaErr)
-		return schemaErr
-	}
-
-	rpctype, err := jsonrpc.GetType(byteMessage)
-	if err != nil {
-		rpcErr := xerrors.Errorf("failed to get rpc type: %v", err)
-		socket.SendError(nil, rpcErr)
-		return rpcErr
-	}
-
-	if rpctype != jsonrpc.RPCTypeQuery {
-		rpcErr := xerrors.New("rpc message sent by a client should be a query")
-		socket.SendError(nil, rpcErr)
-		return rpcErr
-	}
-
-	var queryBase query.Base
-
-	err = json.Unmarshal(byteMessage, &queryBase)
-	if err != nil {
-		err := answer.NewErrorf(-4, "failed to unmarshal incoming message: %v", err)
-		socket.SendError(nil, err)
-		return err
-	}
-
-	var id int
-	var msgs []message.Message
-	var handlerErr error
-
-	switch queryBase.Method {
-	case query.MethodPublish:
-		id, handlerErr = h.handlePublish(socket, byteMessage)
-		h.sendHeartbeatToServers()
-	case query.MethodSubscribe:
-		id, handlerErr = h.handleSubscribe(socket, byteMessage)
-	case query.MethodUnsubscribe:
-		id, handlerErr = h.handleUnsubscribe(socket, byteMessage)
-	case query.MethodCatchUp:
-		msgs, id, handlerErr = h.handleCatchup(socket, byteMessage)
-	default:
-		err = answer.NewInvalidResourceError("unexpected method: '%s'", queryBase.Method)
-		socket.SendError(nil, err)
-		return err
-	}
-
-	if handlerErr != nil {
-		socket.SendError(&id, handlerErr)
-		return err
-	}
-
-	if queryBase.Method == query.MethodCatchUp {
-		socket.SendResult(id, msgs, nil)
-		return nil
-	}
-
-	socket.SendResult(id, nil, nil)
-
-	return nil
-}
-
-// handleMessageFromServer handles an incoming message from a server.
-func (h *Hub) handleMessageFromServer(incomingMessage *socket.IncomingMessage) error {
-	socket := incomingMessage.Socket
-	byteMessage := incomingMessage.Message
-
-	// validate against json schema
-	err := h.schemaValidator.VerifyJSON(byteMessage, validation.GenericMessage)
-	if err != nil {
-		schemaErr := xerrors.Errorf("message is not valid against json schema: %v", err)
-		socket.SendError(nil, schemaErr)
-		return schemaErr
-	}
-
-	rpctype, err := jsonrpc.GetType(byteMessage)
-	if err != nil {
-		rpcErr := xerrors.Errorf("failed to get rpc type: %v", err)
-		socket.SendError(nil, rpcErr)
-		return rpcErr
-	}
-
-	// check type (answer or query)
-	if rpctype == jsonrpc.RPCTypeAnswer {
-		err = h.handleAnswer(socket, byteMessage)
-		if err != nil {
-			err = answer.NewErrorf(-4, "failed to handle answer message: %v", err)
-			socket.SendError(nil, err)
-			return err
-		}
-
-		return nil
-	}
-
-	if rpctype != jsonrpc.RPCTypeQuery {
-		rpcErr := xerrors.New("jsonRPC is of unknown type")
-		socket.SendError(nil, rpcErr)
-		return rpcErr
-	}
-
-	var queryBase query.Base
-
-	err = json.Unmarshal(byteMessage, &queryBase)
-	if err != nil {
-		err := answer.NewErrorf(-4, "failed to unmarshal incoming message: %v", err)
-		socket.SendError(nil, err)
-		return err
-	}
-
-	id := -1
-	var msgsByChannel map[string][]message.Message
-	var handlerErr error
-
-	switch queryBase.Method {
-	case query.MethodGreetServer:
-		handlerErr = h.handleGreetServer(socket, byteMessage)
-	case query.MethodPublish:
-		id, handlerErr = h.handlePublish(socket, byteMessage)
-		h.sendHeartbeatToServers()
-	case query.MethodHeartbeat:
-		handlerErr = h.handleHeartbeat(socket, byteMessage)
-	case query.MethodGetMessagesById:
-		msgsByChannel, id, handlerErr = h.handleGetMessagesById(socket, byteMessage)
-	default:
-		err = answer.NewErrorf(-2, "unexpected method: '%s'", queryBase.Method)
-		socket.SendError(nil, err)
-		return err
-	}
-
-	if handlerErr != nil {
-		err := answer.NewErrorf(-4, "failed to handle method: %v", handlerErr)
-		socket.SendError(&id, err)
-		return err
-	}
-
-	if queryBase.Method == query.MethodGetMessagesById {
-		socket.SendResult(id, nil, msgsByChannel)
-		return nil
-	}
-
-	if id != -1 {
-		socket.SendResult(id, nil, nil)
-	}
-
-	return nil
-}
-
 // handleIncomingMessage handles an incoming message based on the socket it
 // originates from.
 func (h *Hub) handleIncomingMessage(incomingMessage *socket.IncomingMessage) error {
-	defer h.workers.Release(1)
-
 	h.log.Info().Str("msg", string(incomingMessage.Message)).Msg("handle incoming message")
 
 	switch incomingMessage.Socket.Type() {

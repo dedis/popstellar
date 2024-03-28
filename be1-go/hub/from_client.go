@@ -6,13 +6,85 @@ import (
 	"go.dedis.ch/kyber/v3/sign/schnorr"
 	"golang.org/x/xerrors"
 	"popstellar/crypto"
+	jsonrpc "popstellar/message"
 	"popstellar/message/answer"
 	"popstellar/message/messagedata"
+	"popstellar/message/query"
 	"popstellar/message/query/method"
 	"popstellar/message/query/method/message"
 	"popstellar/network/socket"
 	"popstellar/validation"
 )
+
+// handleMessageFromClient handles an incoming message from an end user.
+func (h *Hub) handleMessageFromClient(incomingMessage *socket.IncomingMessage) error {
+	socket := incomingMessage.Socket
+	byteMessage := incomingMessage.Message
+
+	// validate against json schema
+	err := h.schemaValidator.VerifyJSON(byteMessage, validation.GenericMessage)
+	if err != nil {
+		schemaErr := xerrors.Errorf("message is not valid against json schema: %v", err)
+		socket.SendError(nil, schemaErr)
+		return schemaErr
+	}
+
+	rpctype, err := jsonrpc.GetType(byteMessage)
+	if err != nil {
+		rpcErr := xerrors.Errorf("failed to get rpc type: %v", err)
+		socket.SendError(nil, rpcErr)
+		return rpcErr
+	}
+
+	if rpctype != jsonrpc.RPCTypeQuery {
+		rpcErr := xerrors.New("rpc message sent by a client should be a query")
+		socket.SendError(nil, rpcErr)
+		return rpcErr
+	}
+
+	var queryBase query.Base
+
+	err = json.Unmarshal(byteMessage, &queryBase)
+	if err != nil {
+		err := answer.NewErrorf(-4, "failed to unmarshal incoming message: %v", err)
+		socket.SendError(nil, err)
+		return err
+	}
+
+	var id int
+	var msgs []message.Message
+	var handlerErr error
+
+	switch queryBase.Method {
+	case query.MethodPublish:
+		id, handlerErr = h.handlePublish(socket, byteMessage)
+		h.sendHeartbeatToServers()
+	case query.MethodSubscribe:
+		id, handlerErr = h.handleSubscribe(socket, byteMessage)
+	case query.MethodUnsubscribe:
+		id, handlerErr = h.handleUnsubscribe(socket, byteMessage)
+	case query.MethodCatchUp:
+		msgs, id, handlerErr = h.handleCatchup(socket, byteMessage)
+	default:
+		err = answer.NewInvalidResourceError("unexpected method: '%s'", queryBase.Method)
+		socket.SendError(nil, err)
+		return err
+	}
+
+	if handlerErr != nil {
+		socket.SendError(&id, handlerErr)
+		return err
+	}
+
+	if queryBase.Method == query.MethodCatchUp {
+		socket.SendResult(id, msgs, nil)
+		return nil
+	}
+
+	socket.SendResult(id, nil, nil)
+
+	return nil
+}
 
 func (h *Hub) handleSubscribe(socket socket.Socket, byteMessage []byte) (int, error) {
 	var subscribe method.Subscribe

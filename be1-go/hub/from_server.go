@@ -6,14 +6,97 @@ import (
 	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 	"popstellar/hub/state"
-	message2 "popstellar/message"
+	jsonrpc "popstellar/message"
 	"popstellar/message/answer"
 	"popstellar/message/messagedata"
 	"popstellar/message/query"
 	"popstellar/message/query/method"
 	"popstellar/message/query/method/message"
 	"popstellar/network/socket"
+	"popstellar/validation"
 )
+
+// handleMessageFromServer handles an incoming message from a server.
+func (h *Hub) handleMessageFromServer(incomingMessage *socket.IncomingMessage) error {
+	socket := incomingMessage.Socket
+	byteMessage := incomingMessage.Message
+
+	// validate against json schema
+	err := h.schemaValidator.VerifyJSON(byteMessage, validation.GenericMessage)
+	if err != nil {
+		schemaErr := xerrors.Errorf("message is not valid against json schema: %v", err)
+		socket.SendError(nil, schemaErr)
+		return schemaErr
+	}
+
+	rpctype, err := jsonrpc.GetType(byteMessage)
+	if err != nil {
+		rpcErr := xerrors.Errorf("failed to get rpc type: %v", err)
+		socket.SendError(nil, rpcErr)
+		return rpcErr
+	}
+
+	// check type (answer or query)
+	if rpctype == jsonrpc.RPCTypeAnswer {
+		err = h.handleAnswer(socket, byteMessage)
+		if err != nil {
+			err = answer.NewErrorf(-4, "failed to handle answer message: %v", err)
+			socket.SendError(nil, err)
+			return err
+		}
+
+		return nil
+	}
+
+	if rpctype != jsonrpc.RPCTypeQuery {
+		rpcErr := xerrors.New("jsonRPC is of unknown type")
+		socket.SendError(nil, rpcErr)
+		return rpcErr
+	}
+
+	var queryBase query.Base
+
+	err = json.Unmarshal(byteMessage, &queryBase)
+	if err != nil {
+		err := answer.NewErrorf(-4, "failed to unmarshal incoming message: %v", err)
+		socket.SendError(nil, err)
+		return err
+	}
+
+	id := -1
+	var msgsByChannel map[string][]message.Message
+	var handlerErr error
+
+	switch queryBase.Method {
+	case query.MethodGreetServer:
+		handlerErr = h.handleGreetServer(socket, byteMessage)
+	case query.MethodHeartbeat:
+		handlerErr = h.handleHeartbeat(socket, byteMessage)
+	case query.MethodGetMessagesById:
+		msgsByChannel, id, handlerErr = h.handleGetMessagesById(socket, byteMessage)
+	default:
+		err = answer.NewErrorf(-2, "unexpected method: '%s'", queryBase.Method)
+		socket.SendError(nil, err)
+		return err
+	}
+
+	if handlerErr != nil {
+		err := answer.NewErrorf(-4, "failed to handle method: %v", handlerErr)
+		socket.SendError(&id, err)
+		return err
+	}
+
+	if queryBase.Method == query.MethodGetMessagesById {
+		socket.SendResult(id, nil, msgsByChannel)
+		return nil
+	}
+
+	if id != -1 {
+		socket.SendResult(id, nil, nil)
+	}
+
+	return nil
+}
 
 func (h *Hub) handleGreetServer(socket socket.Socket, byteMessage []byte) error {
 	var greetServer method.GreetServer
@@ -193,7 +276,7 @@ func (h *Hub) handleReceivedMessage(socket socket.Socket, messageData message.Me
 
 	publish := method.Publish{
 		Base: query.Base{
-			JSONRPCBase: message2.JSONRPCBase{
+			JSONRPCBase: jsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
 			},
 			Method: "publish",
@@ -282,7 +365,7 @@ func (h *Hub) sendGetMessagesByIdToServer(socket socket.Socket, missingIds map[s
 
 	getMessagesById := method.GetMessagesById{
 		Base: query.Base{
-			JSONRPCBase: message2.JSONRPCBase{
+			JSONRPCBase: jsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
 			},
 			Method: "get_messages_by_id",
