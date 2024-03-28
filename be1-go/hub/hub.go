@@ -75,8 +75,9 @@ type subscribers map[string]map[socket.Socket]struct{}
 type handlerParameters struct {
 	socket          socket.Socket
 	schemaValidator *validation.SchemaValidator
-	db              *storage.Storage
-	subs            *subscribers
+	db              storage.Storage
+	subs            subscribers
+	peers           *state.Peers
 }
 
 // Hub implements the Hub interface.
@@ -303,4 +304,20 @@ func generateKeys() (kyber.Point, kyber.Scalar) {
 	point := suite.Point().Mul(secret, nil)
 
 	return point, secret
+}
+
+func Sign(data []byte, params handlerParameters) ([]byte, error) {
+
+	serverSecretBuf, err := params.db.GetServerSecretKey()
+	if err != nil {
+		return nil, xerrors.Errorf("failed to get the server secret key")
+	}
+
+	serverSecretKey := crypto.Suite.Scalar()
+	err = serverSecretKey.UnmarshalBinary(serverSecretBuf)
+	signatureBuf, err := schnorr.Sign(crypto.Suite, serverSecretKey, data)
+	if err != nil {
+		return nil, xerrors.Errorf("failed to sign the data: %v", err)
+	}
+	return signatureBuf, nil
 }
