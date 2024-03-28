@@ -1,4 +1,4 @@
-package repository
+package hub
 
 import (
 	"go.dedis.ch/kyber/v3"
@@ -6,7 +6,7 @@ import (
 	"popstellar/message/query/method/message"
 )
 
-type HubRepository interface {
+type Repository interface {
 
 	// StoreMessage stores a message inside the database.
 	StoreMessage(channelID string, msg message.Message) error

@@ -1,10 +1,12 @@
 package storage
 
-import "popstellar/repository"
+import (
+	"popstellar/hub"
+)
 
-// Storage is an interface that combines the HubRepository and ElectionRepository interfaces.
+// Storage is an interface that combines the Repository and ElectionRepository interfaces.
 type Storage interface {
-	repository.HubRepository
-	repository.ElectionRepository
-	repository.RootRepository
+	hub.Repository
+	hub.ElectionRepository
+	hub.RootRepository
 }

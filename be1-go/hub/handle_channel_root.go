@@ -24,7 +24,7 @@ const (
 	auth      = "/authentication"
 )
 
-func HandleRootMessage(msg message.Message, params handlerParameters) error {
+func handleRootMessage(msg message.Message, params handlerParameters) error {
 	jsonData, err := base64.URLEncoding.DecodeString(msg.Data)
 	if err != nil {
 		err := answer.NewInvalidMessageFieldError("failed to decode message data: %v", err)
@@ -155,11 +155,13 @@ func createLaoChannel(laoChannelPath string, organizerBuf []byte, msg message.Me
 	if err != nil {
 		return xerrors.Errorf("failed to create consensus channel: %v", err)
 	}
+
 	err = createAndSendLaoGreet(laoChannelPath, organizerBuf, params)
 	if err != nil {
 		return xerrors.Errorf("failed to create and send lao#greet message: %v", err)
 
 	}
+
 	coinChannelPath := laoChannelPath + coin
 	err = createChannel(coinChannelPath, organizerBuf, params)
 	if err != nil {
@@ -172,10 +174,8 @@ func createLaoChannel(laoChannelPath string, organizerBuf []byte, msg message.Me
 		return xerrors.Errorf("failed to create authentication channel: %v", err)
 
 	}
-
 	params.subs[laoChannelPath] = make(map[socket.Socket]struct{})
 	return nil
-
 }
 
 func createChannel(channelPath string, organizerBuf []byte, params handlerParameters) error {
