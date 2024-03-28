@@ -1,6 +1,6 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "https://raw.githubusercontent.com/dedis/popstellar/work-be2-dtavaresa-push-gossip/protocol/query/method/greet_server.json",
+    "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/greet_server.json",
     "description": "Sent by the server to the other server when it connects to it. It informs the other server about its public key and client / server endpoints",
     "type": "object",
     "additionalProperties": false,
