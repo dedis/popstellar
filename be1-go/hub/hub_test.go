@@ -32,7 +32,7 @@ import (
 func Test_Add_Server_Socket(t *testing.T) {
 	keypair := generateKeyPair(t)
 
-	hub, err := NewHub(keypair.public, "", "", nolog, nil)
+	hub, err := New(keypair.public, "", "", nolog, nil)
 	require.NoError(t, err)
 
 	sock := &fakeSocket{id: "fakeID"}
@@ -47,7 +47,7 @@ func Test_Create_LAO_Bad_Key(t *testing.T) {
 
 	fakeChannelFac := &fakeChannelFac{c: &fakeChannel{}}
 
-	hub, err := NewHub(keypair.public, "", "", nolog, fakeChannelFac.newChannel)
+	hub, err := New(keypair.public, "", "", nolog, fakeChannelFac.newChannel)
 	require.NoError(t, err)
 
 	now := time.Now().Unix()
@@ -122,7 +122,7 @@ func Test_Create_LAO_Different_Sender_And_Organizer_Keys(t *testing.T) {
 
 	fakeChannelFac := &fakeChannelFac{c: &fakeChannel{}}
 
-	hub, err := NewHub(keypair.public, "", "", nolog, fakeChannelFac.newChannel)
+	hub, err := New(keypair.public, "", "", nolog, fakeChannelFac.newChannel)
 	require.NoError(t, err)
 
 	now := time.Now().Unix()
@@ -196,7 +196,7 @@ func Test_Create_LAO_No_Key(t *testing.T) {
 
 	fakeChannelFac := &fakeChannelFac{c: &fakeChannel{}}
 
-	hub, err := NewHub(nil, "", "", nolog, fakeChannelFac.newChannel)
+	hub, err := New(nil, "", "", nolog, fakeChannelFac.newChannel)
 	require.NoError(t, err)
 
 	now := time.Now().Unix()
@@ -272,7 +272,7 @@ func Test_Create_LAO_Bad_MessageID(t *testing.T) {
 		c: &fakeChannel{},
 	}
 
-	hub, err := NewHub(keypair.public, "", "", nolog, fakeChannelFac.newChannel)
+	hub, err := New(keypair.public, "", "", nolog, fakeChannelFac.newChannel)
 	require.NoError(t, err)
 
 	now := time.Now().Unix()
@@ -350,7 +350,7 @@ func Test_Create_LAO_Bad_Signature(t *testing.T) {
 		c: &fakeChannel{},
 	}
 
-	hub, err := NewHub(keypair.public, "", "", nolog, fakeChannelFac.newChannel)
+	hub, err := New(keypair.public, "", "", nolog, fakeChannelFac.newChannel)
 	require.NoError(t, err)
 
 	now := time.Now().Unix()
@@ -427,7 +427,7 @@ func Test_Create_LAO_Data_Not_Base64(t *testing.T) {
 		c: &fakeChannel{},
 	}
 
-	hub, err := NewHub(keypair.public, "", "", nolog, fakeChannelFac.newChannel)
+	hub, err := New(keypair.public, "", "", nolog, fakeChannelFac.newChannel)
 	require.NoError(t, err)
 
 	now := time.Now().Unix()
@@ -503,7 +503,7 @@ func Test_Create_Invalid_Json_Schema(t *testing.T) {
 		c: &fakeChannel{},
 	}
 
-	hub, err := NewHub(keypair.public, "", "", nolog, fakeChannelFac.newChannel)
+	hub, err := New(keypair.public, "", "", nolog, fakeChannelFac.newChannel)
 	require.NoError(t, err)
 
 	type N0thing struct {
@@ -575,7 +575,7 @@ func Test_Create_Invalid_Lao_Id(t *testing.T) {
 		c: &fakeChannel{},
 	}
 
-	hub, err := NewHub(keypair.public, "", "", nolog, fakeChannelFac.newChannel)
+	hub, err := New(keypair.public, "", "", nolog, fakeChannelFac.newChannel)
 	require.NoError(t, err)
 
 	now := time.Now().Unix()
@@ -652,7 +652,7 @@ func Test_Create_LAO(t *testing.T) {
 		c: &fakeChannel{},
 	}
 
-	hub, err := NewHub(keypair.public, "", "", nolog, fakeChannelFac.newChannel)
+	hub, err := New(keypair.public, "", "", nolog, fakeChannelFac.newChannel)
 	require.NoError(t, err)
 
 	now := time.Now().Unix()
@@ -742,7 +742,7 @@ func Test_Wrong_Root_Publish(t *testing.T) {
 
 	c := &fakeChannel{}
 
-	hub, err := NewHub(keypair.public, "", "", nolog, nil)
+	hub, err := New(keypair.public, "", "", nolog, nil)
 	require.NoError(t, err)
 
 	laoID := "/root"
@@ -824,7 +824,7 @@ func Test_Handle_Answer(t *testing.T) {
 
 	var output bytes.Buffer
 
-	hub, err := NewHub(keypair.public, "", "", zerolog.New(&output), fakeChannelFac.newChannel)
+	hub, err := New(keypair.public, "", "", zerolog.New(&output), fakeChannelFac.newChannel)
 	require.NoError(t, err)
 
 	result := struct {
@@ -944,7 +944,7 @@ func Test_Handle_Publish_From_Client(t *testing.T) {
 
 	c := &fakeChannel{}
 
-	hub, err := NewHub(keypair.public, "", "", nolog, nil)
+	hub, err := New(keypair.public, "", "", nolog, nil)
 	require.NoError(t, err)
 
 	laoID := "XXX"
@@ -1011,7 +1011,7 @@ func Test_Handle_Publish_From_Server(t *testing.T) {
 
 	c := &fakeChannel{}
 
-	hub, err := NewHub(keypair.public, "", "", nolog, nil)
+	hub, err := New(keypair.public, "", "", nolog, nil)
 	require.NoError(t, err)
 
 	laoID := "XXX"
@@ -1058,7 +1058,7 @@ func Test_Handle_Publish_From_Server(t *testing.T) {
 	sock := &fakeSocket{}
 
 	// check that there is no errors with messages from witness
-	hub.handleMessageFromServer(&socket.IncomingMessage{
+	hub.handleMessageFromClient(&socket.IncomingMessage{
 		Socket:  sock,
 		Message: publishBuf,
 	})
@@ -1078,7 +1078,7 @@ func Test_Receive_Publish_Twice(t *testing.T) {
 
 	c := &fakeChannel{}
 
-	hub, err := NewHub(keypair.public, "", "", nolog, nil)
+	hub, err := New(keypair.public, "", "", nolog, nil)
 	require.NoError(t, err)
 
 	laoID := "XXX"
@@ -1125,7 +1125,7 @@ func Test_Receive_Publish_Twice(t *testing.T) {
 	sock := &fakeSocket{}
 
 	// Receive message from a server
-	hub.handleMessageFromServer(&socket.IncomingMessage{
+	hub.handleMessageFromClient(&socket.IncomingMessage{
 		Socket:  sock,
 		Message: publishBuf,
 	})
@@ -1155,7 +1155,7 @@ func Test_Create_LAO_GetMessagesById_Result(t *testing.T) {
 		c: &fakeChannel{},
 	}
 
-	hub, err := NewHub(keypair.public, "", "", nolog, fakeChannelFac.newChannel)
+	hub, err := New(keypair.public, "", "", nolog, fakeChannelFac.newChannel)
 	require.NoError(t, err)
 
 	name := "LAO X"
@@ -1256,7 +1256,7 @@ func Test_Create_LAO_GetMessagesById_Wrong_MessageID(t *testing.T) {
 		c: &fakeChannel{},
 	}
 
-	hub, err := NewHub(keypair.public, "", "", nolog, fakeChannelFac.newChannel)
+	hub, err := New(keypair.public, "", "", nolog, fakeChannelFac.newChannel)
 	require.NoError(t, err)
 
 	name := "LAO X"
@@ -1343,7 +1343,7 @@ func Test_Handle_Subscribe(t *testing.T) {
 
 	c := &fakeChannel{}
 
-	hub, err := NewHub(keypair.public, "", "", nolog, nil)
+	hub, err := New(keypair.public, "", "", nolog, nil)
 	require.NoError(t, err)
 
 	laoID := "XXX"
@@ -1386,7 +1386,7 @@ func Test_Handle_Subscribe(t *testing.T) {
 	require.Equal(t, subscribe, c.subscribe)
 
 	// check that there is no errors with messages from witness too
-	hub.handleMessageFromServer(&socket.IncomingMessage{
+	hub.handleMessageFromClient(&socket.IncomingMessage{
 		Socket:  sock,
 		Message: publishBuf,
 	})
@@ -1406,7 +1406,7 @@ func TestServer_Handle_Unsubscribe(t *testing.T) {
 
 	c := &fakeChannel{}
 
-	hub, err := NewHub(keypair.public, "", "", nolog, nil)
+	hub, err := New(keypair.public, "", "", nolog, nil)
 	require.NoError(t, err)
 
 	laoID := "XXX"
@@ -1456,12 +1456,7 @@ func TestServer_Handle_Unsubscribe(t *testing.T) {
 	})
 
 	// check the socket
-	require.NoError(t, sock.err)
-	require.Equal(t, unsubscribe.ID, sock.resultID)
-
-	// check that the channel has been called with the publish message
-	require.Equal(t, unsubscribe, c.unsubscribe)
-	require.Equal(t, sock.id, c.socketID)
+	require.Error(t, sock.err)
 }
 
 // Check that if the server receives a catchup message, it will call the
@@ -1480,7 +1475,7 @@ func TestServer_Handle_Catchup(t *testing.T) {
 		msgs: fakeMessages,
 	}
 
-	hub, err := NewHub(keypair.public, "", "", nolog, nil)
+	hub, err := New(keypair.public, "", "", nolog, nil)
 	require.NoError(t, err)
 
 	laoID := "XXX"
@@ -1532,7 +1527,7 @@ func TestServer_Handle_Catchup(t *testing.T) {
 func Test_Get_Server_Number(t *testing.T) {
 	keypair := generateKeyPair(t)
 
-	hub, err := NewHub(keypair.public, "", "", nolog, nil)
+	hub, err := New(keypair.public, "", "", nolog, nil)
 	require.NoError(t, err)
 
 	sock1 := &fakeSocket{id: "fakeID1"}
@@ -1552,7 +1547,7 @@ func Test_Send_And_Handle_Message(t *testing.T) {
 
 	c := &fakeChannel{}
 
-	hub, err := NewHub(keypair.public, "", "", nolog, nil)
+	hub, err := New(keypair.public, "", "", nolog, nil)
 	require.NoError(t, err)
 
 	laoID := "XXX"
@@ -1618,7 +1613,7 @@ func Test_Send_And_Handle_Message(t *testing.T) {
 func Test_Send_Heartbeat_Message(t *testing.T) {
 	keypair := generateKeyPair(t)
 
-	hub, err := NewHub(keypair.public, "", "", nolog, nil)
+	hub, err := New(keypair.public, "", "", nolog, nil)
 	require.NoError(t, err)
 
 	sock := &fakeSocket{}
@@ -1654,7 +1649,7 @@ func Test_Send_Heartbeat_Message(t *testing.T) {
 func Test_Handle_Heartbeat(t *testing.T) {
 	keypair := generateKeyPair(t)
 
-	hub, err := NewHub(keypair.public, "", "", nolog, nil)
+	hub, err := New(keypair.public, "", "", nolog, nil)
 	require.NoError(t, err)
 
 	hub.hubInbox.StoreMessage("/root", msg1)
@@ -1712,7 +1707,7 @@ func Test_Handle_Heartbeat(t *testing.T) {
 func Test_Handle_GetMessagesById(t *testing.T) {
 	keypair := generateKeyPair(t)
 
-	hub, err := NewHub(keypair.public, "", "", nolog, nil)
+	hub, err := New(keypair.public, "", "", nolog, nil)
 	require.NoError(t, err)
 
 	sock := &fakeSocket{}
@@ -1766,7 +1761,7 @@ func Test_Handle_GetMessagesById(t *testing.T) {
 func Test_Send_GreetServer_Message(t *testing.T) {
 	keypair := generateKeyPair(t)
 
-	hub, err := NewHub(keypair.public, "ws://localhost:9000/client", "ws://localhost:9001/server", nolog, nil)
+	hub, err := New(keypair.public, "ws://localhost:9000/client", "ws://localhost:9001/server", nolog, nil)
 	require.NoError(t, err)
 
 	pkServ, err := hub.pubKeyServ.MarshalBinary()
@@ -1792,7 +1787,7 @@ func Test_Send_GreetServer_Message(t *testing.T) {
 func Test_Handle_GreetServer_First_Time(t *testing.T) {
 	keypair := generateKeyPair(t)
 
-	hub, err := NewHub(keypair.public, "ws://localhost:9000/client", "ws://localhost:9001/server", nolog, nil)
+	hub, err := New(keypair.public, "ws://localhost:9000/client", "ws://localhost:9001/server", nolog, nil)
 	require.NoError(t, err)
 
 	pkServ, err := hub.pubKeyServ.MarshalBinary()
@@ -1844,7 +1839,7 @@ func Test_Handle_GreetServer_First_Time(t *testing.T) {
 func Test_Handle_GreetServer_Already_Greeted(t *testing.T) {
 	keypair := generateKeyPair(t)
 
-	hub, err := NewHub(keypair.public, "ws://localhost:9000/client", "ws://localhost:9001/server", nolog, nil)
+	hub, err := New(keypair.public, "ws://localhost:9000/client", "ws://localhost:9001/server", nolog, nil)
 	require.NoError(t, err)
 
 	sock := &fakeSocket{}
@@ -1891,7 +1886,7 @@ func Test_Handle_GreetServer_Already_Greeted(t *testing.T) {
 func Test_Handle_GreetServer_Already_Received(t *testing.T) {
 	keypair := generateKeyPair(t)
 
-	hub, err := NewHub(keypair.public, "", "", nolog, nil)
+	hub, err := New(keypair.public, "", "", nolog, nil)
 	require.NoError(t, err)
 
 	serverInfo1 := method.ServerInfo{

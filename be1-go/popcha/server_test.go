@@ -54,7 +54,7 @@ func genString(r *rand.Rand, s int) string {
 func TestAuthServerStartAndShutdown(t *testing.T) {
 	l := popstellar.Logger
 
-	h, err := hub.NewHub(crypto.Suite.Point(), "", "", l, nil)
+	h, err := hub.New(crypto.Suite.Point(), "", "", l, nil)
 	require.NoError(t, err, "could not create hub")
 
 	s, err := NewAuthServer(h, "localhost", 2003, l)
