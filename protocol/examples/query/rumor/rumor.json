@@ -3,7 +3,8 @@
     "id": 4,
     "method": "rumor",
     "params": {
-        "rumor_id": "rumor_id",
+        "sender_id" : "sender",
+        "rumor_id": 1,
         "rumors": [
             {
                 "/root/nLghr9_P406lfkMjaNWqyohLxOiGlQee8zad4qAfj18=/social/8qlv4aUT5-tBodKp4RszY284CFYVaoDZK6XKiw9isSw=": [

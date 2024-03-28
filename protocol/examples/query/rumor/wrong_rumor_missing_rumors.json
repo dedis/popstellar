@@ -3,6 +3,7 @@
     "id": 4,
     "method": "rumor",
     "params": {
-        "rumor_id": "rumor_id"
+        "sender_id" : "sender",
+        "rumor_id": 1
     }
 }
