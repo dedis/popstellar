@@ -15,7 +15,7 @@
             "additionalProperties": false,
             "properties": {
                 "sender_id" : {
-                    "description": "[String] ID of the sender",
+                    "description": "[String] publish key of the sender's server",
                     "type": "string"
                 },
                 "rumor_id": {
