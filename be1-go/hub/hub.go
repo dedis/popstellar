@@ -7,6 +7,7 @@ import (
 	"popstellar/inbox"
 	"popstellar/message/query/method"
 	"popstellar/network/socket"
+	"popstellar/storage"
 	"popstellar/validation"
 	"strings"
 	"sync"
@@ -69,10 +70,21 @@ type Huber interface {
 	SendGreetServer(socket.Socket) error
 }
 
+type subscribers map[string]map[socket.Socket]struct{}
+
+type handlerParameters struct {
+	socket          socket.Socket
+	schemaValidator *validation.SchemaValidator
+	db              *storage.Storage
+	subs            *subscribers
+}
+
 // Hub implements the Hub interface.
 type Hub struct {
 	clientServerAddress string
 	serverServerAddress string
+
+	subs subscribers
 
 	messageChan chan socket.IncomingMessage
 
@@ -128,6 +140,7 @@ func New(pubKeyOwner kyber.Point, clientServerAddress string, serverServerAddres
 	hub := Hub{
 		clientServerAddress: clientServerAddress,
 		serverServerAddress: serverServerAddress,
+		subs:                make(subscribers),
 		messageChan:         make(chan socket.IncomingMessage),
 		channelByID:         state.NewChannelsMap(),
 		closedSockets:       make(chan string),
