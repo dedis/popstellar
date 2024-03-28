@@ -6,4 +6,5 @@ import "popstellar/repository"
 type Storage interface {
 	repository.HubRepository
 	repository.ElectionRepository
+	repository.RootRepository
 }

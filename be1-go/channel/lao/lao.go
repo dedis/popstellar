@@ -617,7 +617,7 @@ func (c *Channel) createAuthChannel(hub channel.HubFunctionalities, socket socke
 	hub.NotifyNewChannel(chanPath, authChan, socket)
 	c.log.Info().Msgf("storing new authentication channel '%s' ", chanPath)
 
-	// adding it to the LaoChannel
+	// adding it to the LaoChannelx
 	c.authMsgs = authChan
 }
 

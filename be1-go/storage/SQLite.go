@@ -3,7 +3,10 @@ package storage
 import (
 	"database/sql"
 	"encoding/json"
+	"errors"
+	"go.dedis.ch/kyber/v3"
 	_ "modernc.org/sqlite"
+	"popstellar/crypto"
 	"popstellar/message/query/method/message"
 	"strings"
 	"time"
@@ -75,9 +78,11 @@ func New(path string) (SQLite, error) {
 
 func createConfiguration(tx *sql.Tx) error {
 	_, err := tx.Exec("CREATE TABLE IF NOT EXISTS configuration (" +
-		"pubKeyOwner BLOB NULL, " +
+		"ownerPubKey BLOB NULL, " +
 		"clientServerAddress TEXT NULL, " +
 		"serverServerAddress TEXT NULL " +
+		"serverPubKey BLOB NULL, " +
+		"serverSecretKey BLOB NULL, " +
 		")")
 	return err
 }
@@ -361,4 +366,58 @@ func (s *SQLite) AddWitnessSignature(messageID string, witness string, signature
 		}
 	}
 	return tx.Commit()
+}
+
+func (s *SQLite) Haslao(laoChannelPath string) (bool, error) {
+	var channel string
+	err := s.database.QueryRow("SELECT channelID from channels WHERE channelsID = ?)", laoChannelPath).Scan(&channel)
+	return !errors.Is(err, sql.ErrNoRows), err
+}
+
+func (s *SQLite) GetOwnerPubKey() (kyber.Point, error) {
+	var pubKeyBuf []byte
+	err := s.database.QueryRow("SELECT ownerPubKey from configuration").Scan(&pubKeyBuf)
+	if err != nil {
+		return nil, err
+	}
+	ownerPubKey := crypto.Suite.Point()
+	err = ownerPubKey.UnmarshalBinary(pubKeyBuf)
+
+	return ownerPubKey, err
+}
+
+// StoreChannel stores a channel that is not an election inside the SQLite database.
+func (s *SQLite) StoreChannel(channel string, organizerPubKey []byte) error {
+	_, err := s.database.Exec("INSERT INTO channels (channel, organizerPubKey) "+
+		"VALUES (?,?)", channel, organizerPubKey)
+	return err
+}
+
+// GetClientServerAddress returns the client address of the server.
+func (s *SQLite) GetClientServerAddress() (string, error) {
+	var address string
+	err := s.database.QueryRow("SELECT clientServerAddress from configuration").Scan(&address)
+	return address, err
+}
+
+// GetServerPubKey returns the public key of the server.
+func (s *SQLite) GetServerPubKey() ([]byte, error) {
+	var pubKeyBuf []byte
+	err := s.database.QueryRow("SELECT serverPubKey from configuration").Scan(&pubKeyBuf)
+	if err != nil {
+		return nil, err
+	}
+
+	return pubKeyBuf, err
+}
+
+// GetServerSecretKey returns the public key of the server.
+func (s *SQLite) GetServerSecretKey() ([]byte, error) {
+	var secretKeyBuf []byte
+	err := s.database.QueryRow("SELECT serverSecretKey from configuration").Scan(&secretKeyBuf)
+	if err != nil {
+		return nil, err
+	}
+
+	return secretKeyBuf, err
 }

@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"go.dedis.ch/kyber/v3"
 	"popstellar/message/messagedata"
 	"popstellar/message/query/method/message"
 )
@@ -36,4 +37,28 @@ type ElectionRepository interface {
 
 	// GetResult returns the result of an election.
 	GetResult(electionID string) (messagedata.ElectionResult, error)
+}
+
+type RootRepository interface {
+
+	// StoreMessage stores a message inside the database.
+	StoreMessage(channelID string, msg message.Message) error
+
+	// Haslao returns true if LAO already exists.
+	Haslao(laoChannelPath string) (bool, error)
+
+	// GetOwnerPubKey returns the public key of the owner of the server.
+	GetOwnerPubKey() (kyber.Point, error)
+
+	// StoreChannel stores a channel inside the database.
+	StoreChannel(channel string, organizerPubKey []byte) error
+
+	// GetClientServerAddress returns the address of the client server.
+	GetClientServerAddress() (string, error)
+
+	// GetServerPubKey returns the public key of the server.
+	GetServerPubKey() ([]byte, error)
+
+	// GetServerSecretKey returns the secret key of the server.
+	GetServerSecretKey() ([]byte, error)
 }
