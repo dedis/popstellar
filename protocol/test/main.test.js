@@ -5,7 +5,7 @@ const fs = require("fs");
 const ajv = require("./main");
 
 const rootSchema =
-    "https://raw.githubusercontent.com/dedis/popstellar/work-be2-dtavaresa-push-gossip/protocol/jsonRPC.json";
+    "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/jsonRPC.json";
 const messageDataSchema =
     "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/data.json";
 
