@@ -3,8 +3,6 @@ package storage
 import (
 	"database/sql"
 	"encoding/json"
-	"errors"
-	"fmt"
 	_ "modernc.org/sqlite"
 	"popstellar/message/query/method/message"
 	"strings"
@@ -29,8 +27,6 @@ func New(path string) (SQLite, error) {
 	}
 
 	tx, err := db.Begin()
-
-	//TODO Delete database if error occurs
 	if err != nil {
 		db.Close()
 		return SQLite{}, err
@@ -89,7 +85,7 @@ func createConfiguration(tx *sql.Tx) error {
 func createInbox(tx *sql.Tx) error {
 	_, err := tx.Exec("CREATE TABLE IF NOT EXISTS inbox (" +
 		"messageID TEXT, " +
-		"message BLOB, " +
+		"message jsonb, " +
 		"storedTime BIGINT, " +
 		"baseChannel TEXT, " +
 		"PRIMARY KEY (messageID) " +
@@ -134,16 +130,19 @@ func (s *SQLite) Close() error {
 	return s.database.Close()
 }
 
+func convertToInterfaceSlice(slice []string) []interface{} {
+	s := make([]interface{}, len(slice))
+	for i, v := range slice {
+		s[i] = v
+	}
+	return s
+}
+
 // GetMessagesByID returns a set of messages by their IDs.
 func (s *SQLite) GetMessagesByID(IDs []string) (map[string]message.Message, error) {
-	idStrings := make([]string, 0, len(IDs))
-	for _, id := range IDs {
-		idStrings = append(idStrings, fmt.Sprintf("'%s'", id))
-	}
-
-	rows, err := s.database.Query("SELECT messageID, message " +
-		"FROM inbox " +
-		"WHERE messageID IN (" + strings.Join(idStrings, ",") + ")")
+	rows, err := s.database.Query("SELECT messageID, message "+
+		"FROM inbox "+
+		"WHERE messageID IN ("+strings.Repeat("?,", len(IDs)-1)+"?"+")", convertToInterfaceSlice(IDs)...)
 	if err != nil {
 		return nil, err
 	}
@@ -198,11 +197,7 @@ func (s *SQLite) GetSortedMessages(channel string) ([]message.Message, error) {
 		messages = append(messages, msg)
 	}
 
-	if err = rows.Err(); err != nil {
-		return nil, err
-	}
-
-	if err = tx.Commit(); err != nil {
+	if rows.Err() != nil || tx.Commit() != nil {
 		return nil, err
 	}
 
@@ -260,19 +255,15 @@ func (s *SQLite) StoreMessage(channel string, msg message.Message) error {
 	}
 	defer tx.Rollback()
 
-	err = addPendingSignatures(tx, &msg)
-	if err != nil {
+	if err = addPendingSignatures(tx, &msg); err != nil {
 		return err
 	}
 
-	err = storeInbox(tx, msg, channel)
-	if err != nil {
+	if err = storeInbox(tx, msg, channel); err != nil {
 		return err
 
 	}
-
-	err = storeChannelMessage(tx, channel, msg.MessageID)
-	if err != nil {
+	if err = storeChannelMessage(tx, channel, msg.MessageID); err != nil {
 		return err
 	}
 
@@ -325,7 +316,6 @@ func storeInbox(tx *sql.Tx, msg message.Message, channel string) error {
         baseChannel = excluded.baseChannel
         WHERE baseChannel LIKE excluded.baseChannel || '%'
     `, msg.MessageID, msgByte, storedTime, channel)
-
 	return err
 }
 
@@ -344,40 +334,31 @@ func (s *SQLite) AddWitnessSignature(messageID string, witness string, signature
 	}
 	defer tx.Rollback()
 
-	var messageBytes []byte
-	err = tx.QueryRow("SELECT message FROM inbox WHERE messageID = ?", messageID).Scan(&messageBytes)
-	if err == nil {
-		err = appendSignature(messageBytes, messageID, tx, witness, signature)
-		if err != nil {
-			return err
-		}
-	} else if err != nil && errors.Is(err, sql.ErrNoRows) {
+	witnessSignature, err := json.Marshal(message.WitnessSignature{
+		Witness:   witness,
+		Signature: signature,
+	})
+	if err != nil {
+		return err
+	}
+
+	res, err := tx.Exec("UPDATE OR IGNORE inbox "+
+		"SET message = jsonb_insert(message,'$.WitnessSignature[#]', ?) "+
+		"WHERE messageID = ?", witnessSignature, messageID)
+	if err != nil {
+		return err
+	}
+	changes, err := res.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if changes == 0 {
 		_, err := tx.Exec("INSERT INTO pendingSignatures "+
 			"(messageID, witness, signature) VALUES "+
 			"(?, ?, ?)", messageID, witness, signature)
 		if err != nil {
 			return err
 		}
-	} else {
-		return err
 	}
 	return tx.Commit()
-}
-
-func appendSignature(messageBytes []byte, messageID string, tx *sql.Tx, witness string, signature string) error {
-	var msg message.Message
-	err := json.Unmarshal(messageBytes, &msg)
-	if err != nil {
-		return err
-	}
-	msg.WitnessSignatures = append(msg.WitnessSignatures, message.WitnessSignature{
-		Witness:   witness,
-		Signature: signature,
-	})
-	messageBytes, err = json.Marshal(msg)
-	if err != nil {
-		return err
-	}
-	_, err = tx.Exec("UPDATE inbox SET message = ? WHERE messageID = ?", messageBytes, messageID)
-	return err
 }
