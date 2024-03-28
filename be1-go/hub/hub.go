@@ -120,7 +120,7 @@ type Hub struct {
 func New(pubKeyOwner kyber.Point, clientServerAddress string, serverServerAddress string, log zerolog.Logger,
 	laoFac channel.LaoFactory,
 ) (*Hub, error) {
-	schemaValidator, err := validation.NewSchemaValidator(log)
+	schemaValidator, err := validation.NewSchemaValidator()
 	if err != nil {
 		return nil, xerrors.Errorf("failed to create the schema validator: %v", err)
 	}

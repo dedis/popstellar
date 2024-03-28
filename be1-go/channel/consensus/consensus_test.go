@@ -1949,7 +1949,7 @@ type fakeHub struct {
 // NewFakeHub returns a fake Hub.
 func NewFakeHub(pubKeyOwner kyber.Point, log zerolog.Logger, laoFac channel.LaoFactory) (*fakeHub, error) {
 
-	schemaValidator, err := validation.NewSchemaValidator(log)
+	schemaValidator, err := validation.NewSchemaValidator()
 	if err != nil {
 		return nil, xerrors.Errorf("failed to create the schema validator: %v", err)
 	}
