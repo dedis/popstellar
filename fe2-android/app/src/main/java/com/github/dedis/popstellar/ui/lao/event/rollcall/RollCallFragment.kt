@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
 import androidx.annotation.VisibleForTesting
 import androidx.appcompat.content.res.AppCompatResources
 import com.github.dedis.popstellar.R
@@ -271,7 +270,12 @@ class RollCallFragment : AbstractEventFragment {
 
     if (attendeesList != null) {
       binding.listViewAttendees.adapter =
-          ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, attendeesList)
+          RollCallArrayAdapter(
+              requireContext(),
+              android.R.layout.simple_list_item_1,
+              attendeesList,
+              popToken,
+          )
     }
   }
 
