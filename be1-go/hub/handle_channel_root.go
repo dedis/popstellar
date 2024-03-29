@@ -252,6 +252,19 @@ func createAndSendLaoGreet(laoChannelPath string, organizerBuf []byte, params ha
 	return nil
 }
 
+// SendToAll sends a message to all sockets.
+func SendToAll(subs subscribers, buf []byte, channel string) error {
+
+	sockets, ok := subs[channel]
+	if !ok {
+		return xerrors.Errorf("channel %s not found", channel)
+	}
+	for s := range sockets {
+		s.Send(buf)
+	}
+	return nil
+}
+
 func broadcastToAllClients(msg message.Message, params handlerParameters, channel string) error {
 	rpcMessage := method.Broadcast{
 		Base: query.Base{

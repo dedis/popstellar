@@ -84,16 +84,3 @@ func (h *Hub) SendGreetServer(socket socket.Socket) error {
 	h.peers.AddPeerGreeted(socket.ID())
 	return nil
 }
-
-// SendToAll sends a message to all sockets.
-func SendToAll(subs subscribers, buf []byte, channel string) error {
-
-	sockets, ok := subs[channel]
-	if !ok {
-		return xerrors.Errorf("channel %s not found", channel)
-	}
-	for s := range sockets {
-		s.Send(buf)
-	}
-	return nil
-}

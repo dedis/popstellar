@@ -1,4 +1,4 @@
-package hub
+package storage
 
 import (
 	"database/sql"
@@ -7,6 +7,7 @@ import (
 	"go.dedis.ch/kyber/v3"
 	_ "modernc.org/sqlite"
 	"popstellar/crypto"
+	"popstellar/hub"
 	"popstellar/message/query/method/message"
 	"strings"
 	"time"
@@ -18,7 +19,7 @@ const (
 
 // SQLite is a wrapper around the SQLite database.
 type SQLite struct {
-	Repository
+	hub.Repository
 	database *sql.DB
 }
 
