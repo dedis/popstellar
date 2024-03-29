@@ -77,17 +77,27 @@ type Hub interface {
 	SendGreetServer(socket.Socket) error
 }
 
-type subscribers map[string]map[socket.Socket]struct{}
+type subscribers map[string]map[string]socket.Socket
+
+func (s subscribers) subscribe(channel string, socket socket.Socket) {
+	s[channel][socket.ID()] = socket
+}
+
+func (s subscribers) unsubscribe(channel string, socket socket.Socket) {
+	delete(s[channel], socket.ID())
+}
 
 type handlerParameters struct {
-	log             zerolog.Logger
-	socket          socket.Socket
-	schemaValidator validation.SchemaValidator
-	db              Repository
-	subs            subscribers
-	peers           *state.Peers
-	queries         *state.Queries
-	ownerPubKey     kyber.Point
+	log                 zerolog.Logger
+	socket              socket.Socket
+	schemaValidator     validation.SchemaValidator
+	db                  Repository
+	subs                subscribers
+	peers               *state.Peers
+	queries             *state.Queries
+	ownerPubKey         kyber.Point
+	clientServerAddress string
+	serverServerAddress string
 }
 
 // SendToAll sends a message to all sockets.
@@ -97,8 +107,8 @@ func SendToAll(subs subscribers, buf []byte, channel string) error {
 	if !ok {
 		return xerrors.Errorf("channel %s not found", channel)
 	}
-	for s := range sockets {
-		s.Send(buf)
+	for _, v := range sockets {
+		v.Send(buf)
 	}
 	return nil
 }
