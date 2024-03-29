@@ -1,4 +1,4 @@
-package state
+package hub_state
 
 import (
 	"golang.org/x/xerrors"

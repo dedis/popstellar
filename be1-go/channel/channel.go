@@ -92,8 +92,8 @@ func (s *Sockets) Delete(ID string) bool {
 
 // HubFunctionalities defines the functions needed by a channel from the hub.
 type HubFunctionalities interface {
-	GetPubKeyOwner() kyber.Point // Become useless
-	GetPubKeyServ() kyber.Point  // Become useless
+	GetPubKeyOwner() kyber.Point
+	GetPubKeyServ() kyber.Point
 	Sign([]byte) ([]byte, error)
 	GetSchemaValidator() validation.SchemaValidator
 	NotifyNewChannel(channelID string, channel Channel, socket socket.Socket)

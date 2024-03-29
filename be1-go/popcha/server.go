@@ -182,7 +182,7 @@ func internalClientParams(clientID string, redURIS []string, respTypes oidc.Resp
 type AuthorizationServer struct {
 	log               zerolog.Logger
 	httpServer        *http.Server
-	hub               hub.Huber
+	hub               hub.Hub
 	challengeServAddr string
 	internalConns     map[string]*websocket.Conn
 	Stopped           chan struct{}
@@ -200,7 +200,7 @@ var popchaFS embed.FS
 
 // NewAuthServer creates an authorization server, given a hub, an address and port,
 // the path of the html file it will display, and a logger.
-func NewAuthServer(hub hub.Huber, httpAddr string, httpPort int, log zerolog.Logger) (*AuthorizationServer, error) {
+func NewAuthServer(hub hub.Hub, httpAddr string, httpPort int, log zerolog.Logger) (*AuthorizationServer, error) {
 
 	file, err := fs.ReadFile(popchaFS, "qrcode/popcha.html")
 	if err != nil {

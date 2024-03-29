@@ -6,6 +6,7 @@ import (
 	"net/http/httptest"
 	"popstellar/crypto"
 	"popstellar/hub"
+	"popstellar/hub/standard_hub"
 	"testing"
 
 	"github.com/rs/zerolog"
@@ -15,7 +16,7 @@ import (
 func TestServerStartAndShutdown(t *testing.T) {
 	log := zerolog.New(io.Discard)
 
-	h, err := hub.New(crypto.Suite.Point(), "", "", log, nil)
+	h, err := standard_hub.NewHub(crypto.Suite.Point(), "", "", log, nil)
 	require.NoErrorf(t, err, "could not create hub")
 
 	srv := NewServer(h, "", 0, "testsocket", log)
@@ -53,5 +54,5 @@ func TestInfoHandler(t *testing.T) {
 // Utility functions
 
 type fakeHub struct {
-	hub.Huber
+	hub.Hub
 }

@@ -1,4 +1,4 @@
-package state
+package hub_state
 
 import (
 	"popstellar/message/query/method"
