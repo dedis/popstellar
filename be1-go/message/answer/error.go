@@ -16,7 +16,7 @@ func (e *Error) Error() string {
 func (e *Error) Wrap(description string) *Error {
 	return &Error{
 		Code:        e.Code,
-		Description: fmt.Sprintf(description+" : %v", e.Description),
+		Description: fmt.Sprintf(description+": %v", e.Description),
 	}
 }
 

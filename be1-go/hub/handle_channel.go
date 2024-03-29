@@ -12,33 +12,33 @@ import (
 func handleChannel(params handlerParameters, channelType string, msg message.Message) *answer.Error {
 	dataBytes, err := base64.URLEncoding.DecodeString(msg.Data)
 	if err != nil {
-		return answer.NewInvalidMessageFieldError("failed to decode data string: %v", err)
+		return answer.NewInvalidMessageFieldError("handleChannel: failed to decode data string: %v", err)
 	}
 
 	publicKeySender, err := base64.URLEncoding.DecodeString(msg.Sender)
 	if err != nil {
-		return answer.NewInvalidMessageFieldError("failed to decode public key string: %v", err)
+		return answer.NewInvalidMessageFieldError("handleChannel: failed to decode public key string: %v", err)
 	}
 
 	signatureBytes, err := base64.URLEncoding.DecodeString(msg.Signature)
 	if err != nil {
-		return answer.NewInvalidMessageFieldError("failed to decode signature string: %v", err)
+		return answer.NewInvalidMessageFieldError("handleChannel: failed to decode signature string: %v", err)
 	}
 
 	err = schnorr.VerifyWithChecks(crypto.Suite, publicKeySender, dataBytes, signatureBytes)
 	if err != nil {
-		return answer.NewInvalidMessageFieldError("failed to verify signature : %v", err)
+		return answer.NewInvalidMessageFieldError("handleChannel: failed to verify signature : %v", err)
 	}
 
 	expectedMessageID := messagedata.Hash(msg.Data, msg.Signature)
 	if expectedMessageID != msg.MessageID {
-		return answer.NewInvalidActionError("message_id is wrong: expected %q found %q",
+		return answer.NewInvalidActionError("handleChannel: message_id is wrong: expected %q found %q",
 			expectedMessageID, msg.MessageID)
 	}
 
 	_, err = params.db.GetMessageByID(msg.MessageID)
 	if err == nil {
-		return answer.NewInvalidActionError("message %s was already received", msg.MessageID)
+		return answer.NewInvalidActionError("handleChannel: message %s was already received", msg.MessageID)
 	}
 
 	var errAnswer *answer.Error
@@ -67,7 +67,7 @@ func handleChannel(params handlerParameters, channelType string, msg message.Mes
 	}
 
 	if errAnswer != nil {
-		return errAnswer.Wrap("failed to handle channel")
+		return errAnswer.Wrap("handleChannel")
 	}
 
 	return nil
