@@ -1,7 +1,7 @@
 package hub_state
 
 import (
-	"golang.org/x/xerrors"
+	"popstellar/message/answer"
 	"popstellar/message/query/method"
 	"sync"
 
@@ -33,7 +33,7 @@ func (p *Peers) AddPeerInfo(socketId string, info method.ServerInfo) error {
 
 	currentInfo, ok := p.peersInfo[socketId]
 	if ok {
-		return xerrors.Errorf(
+		return answer.NewInvalidActionError(
 			"cannot add %s because peersInfo[%s] already contains %s",
 			info, socketId, currentInfo)
 	}
