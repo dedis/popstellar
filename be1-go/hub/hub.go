@@ -4,6 +4,7 @@
 package hub
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"github.com/rs/zerolog"
 	"go.dedis.ch/kyber/v3"
@@ -13,6 +14,7 @@ import (
 	state "popstellar/hub/standard_hub/hub_state"
 	jsonrpc "popstellar/message"
 	"popstellar/message/answer"
+	"popstellar/message/messagedata"
 	"popstellar/message/query"
 	"popstellar/message/query/method"
 	"popstellar/message/query/method/message"
@@ -129,11 +131,11 @@ type handlerParameters struct {
 }
 
 // SendToAll sends a message to all sockets.
-func SendToAll(subs subscribers, buf []byte, channel string) error {
+func SendToAll(subs subscribers, buf []byte, channel string) *answer.Error {
 
 	sockets, ok := subs[channel]
 	if !ok {
-		return xerrors.Errorf("channel %s not found", channel)
+		return answer.NewInvalidResourceError("channel %s not found", channel)
 	}
 	for _, v := range sockets {
 		v.Send(buf)
@@ -141,7 +143,7 @@ func SendToAll(subs subscribers, buf []byte, channel string) error {
 	return nil
 }
 
-func broadcastToAllClients(msg message.Message, params handlerParameters, channel string) error {
+func broadcastToAllClients(msg message.Message, params handlerParameters, channel string) *answer.Error {
 	rpcMessage := method.Broadcast{
 		Base: query.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
@@ -160,12 +162,12 @@ func broadcastToAllClients(msg message.Message, params handlerParameters, channe
 
 	buf, err := json.Marshal(&rpcMessage)
 	if err != nil {
-		return xerrors.Errorf("failed to marshal broadcast query: %v", err)
+		return answer.NewInternalServerError("failed to marshal broadcast query: %v", err)
 	}
 
-	err = SendToAll(params.subs, buf, channel)
+	errAnswer := SendToAll(params.subs, buf, channel)
 	if err != nil {
-		return xerrors.Errorf("failed to send broadcast message to all clients: %v", err)
+		return errAnswer.Wrap("failed to send broadcast message to all clients")
 	}
 
 	return nil
@@ -185,4 +187,24 @@ func Sign(data []byte, params handlerParameters) ([]byte, error) {
 		return nil, xerrors.Errorf("failed to sign the data: %v", err)
 	}
 	return signatureBuf, nil
+}
+
+func verifyMessageAndGetObjectAction(params handlerParameters, msg message.Message) (object string, action string, err error) {
+	jsonData, err := base64.URLEncoding.DecodeString(msg.Data)
+	if err != nil {
+		return "", "", answer.NewInvalidMessageFieldError("failed to decode message data: %v", err)
+	}
+
+	// validate message data against the json schema
+	err = params.schemaValidator.VerifyJSON(jsonData, validation.Data)
+	if err != nil {
+		return "", "", answer.NewInvalidMessageFieldError("failed to validate message against json schema: %v", err)
+	}
+
+	// get object#action
+	object, action, err = messagedata.GetObjectAndAction(jsonData)
+	if err != nil {
+		return "", "", answer.NewInvalidMessageFieldError("failed to get object#action: %v", err)
+	}
+	return object, action, nil
 }
