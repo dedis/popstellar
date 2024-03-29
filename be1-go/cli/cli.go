@@ -12,6 +12,7 @@ import (
 	"popstellar/channel/lao"
 	"popstellar/crypto"
 	"popstellar/hub"
+	"popstellar/hub/standard_hub"
 	"popstellar/network"
 	"popstellar/network/socket"
 	"popstellar/popcha"
@@ -85,7 +86,7 @@ func Serve(cliCtx *cli.Context) error {
 	ownerKey(serverConfig.PublicKey, &point)
 
 	// create user hub
-	h, err := hub.New(point, serverConfig.ClientAddress, serverConfig.ServerAddress, log.With().Str("role", "server").Logger(),
+	h, err := standard_hub.NewHub(point, serverConfig.ClientAddress, serverConfig.ServerAddress, log.With().Str("role", "server").Logger(),
 		lao.NewChannel)
 	if err != nil {
 		return xerrors.Errorf("failed create the hub: %v", err)
@@ -180,7 +181,7 @@ func Serve(cliCtx *cli.Context) error {
 
 // serverConnectionLoop tries to connect to the remote servers following an exponential backoff strategy
 // it also listens for updates in the other-servers field and tries to connect to the new servers
-func serverConnectionLoop(h hub.Huber, wg *sync.WaitGroup, done chan struct{}, otherServers []string, updatedServersChan chan []string, connectedServers *map[string]bool) {
+func serverConnectionLoop(h hub.Hub, wg *sync.WaitGroup, done chan struct{}, otherServers []string, updatedServersChan chan []string, connectedServers *map[string]bool) {
 	// first connection to the servers
 	serversToConnect := otherServers
 	_ = connectToServers(h, wg, done, serversToConnect, connectedServers)
@@ -218,7 +219,7 @@ func serverConnectionLoop(h hub.Huber, wg *sync.WaitGroup, done chan struct{}, o
 
 // connectToServers updates the connection status of the servers and tries to connect to the ones that are not connected
 // it returns an error if at least one connection fails
-func connectToServers(h hub.Huber, wg *sync.WaitGroup, done chan struct{}, servers []string, connectedServers *map[string]bool) error {
+func connectToServers(h hub.Hub, wg *sync.WaitGroup, done chan struct{}, servers []string, connectedServers *map[string]bool) error {
 	updateServersState(servers, connectedServers)
 	var returnErr error
 	for serverAddress, connected := range *connectedServers {
@@ -237,7 +238,7 @@ func connectToServers(h hub.Huber, wg *sync.WaitGroup, done chan struct{}, serve
 
 // connectToSocket establishes a connection to another server's server
 // endpoint.
-func connectToSocket(address string, h hub.Huber,
+func connectToSocket(address string, h hub.Hub,
 	wg *sync.WaitGroup, done chan struct{}) error {
 
 	log := popstellar.Logger
