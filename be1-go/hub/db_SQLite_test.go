@@ -1,4 +1,4 @@
-package storage
+package hub
 
 import (
 	"golang.org/x/xerrors"

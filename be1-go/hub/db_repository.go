@@ -25,6 +25,9 @@ type Repository interface {
 type ChannelRepository interface {
 	ElectionRepository
 	RootRepository
+
+	// GetChannelType returns the type of the channelPath.
+	GetChannelType(channel string) (string, error)
 }
 
 type ElectionRepository interface {
