@@ -12,6 +12,7 @@ import (
 	"popstellar/crypto"
 	state "popstellar/hub/standard_hub/hub_state"
 	jsonrpc "popstellar/message"
+	"popstellar/message/answer"
 	"popstellar/message/query"
 	"popstellar/message/query/method"
 	"popstellar/message/query/method/message"
@@ -79,12 +80,34 @@ type Hub interface {
 
 type subscribers map[string]map[string]socket.Socket
 
-func (s subscribers) subscribe(channel string, socket socket.Socket) {
-	s[channel][socket.ID()] = socket
+func (s subscribers) addChannel(channel string) {
+	s[channel] = make(map[string]socket.Socket)
 }
 
-func (s subscribers) unsubscribe(channel string, socket socket.Socket) {
+func (s subscribers) removeChannel(channel string) {
+	delete(s, channel)
+}
+
+func (s subscribers) subscribe(channel string, socket socket.Socket) error {
+	_, ok := s[channel]
+	if !ok {
+		return answer.NewInvalidActionError("cannot subscribe to unknown channel")
+	}
+
+	s[channel][socket.ID()] = socket
+
+	return nil
+}
+
+func (s subscribers) unsubscribe(channel string, socket socket.Socket) error {
+	_, ok := s[channel]
+	if !ok {
+		return answer.NewInvalidActionError("cannot unsubscribe from unknown channel")
+	}
+
 	delete(s[channel], socket.ID())
+
+	return nil
 }
 
 type handlerParameters struct {
