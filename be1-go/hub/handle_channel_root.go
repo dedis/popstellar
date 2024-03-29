@@ -21,7 +21,7 @@ const (
 	auth      = "/authentication"
 )
 
-func handleRootMessage(msg message.Message, params handlerParameters) error {
+func handleChannelRoot(params handlerParameters, msg message.Message) error {
 	jsonData, err := base64.URLEncoding.DecodeString(msg.Data)
 	if err != nil {
 		err := answer.NewInvalidMessageFieldError("failed to decode message data: %v", err)
