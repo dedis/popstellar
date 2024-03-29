@@ -91,7 +91,7 @@ func (s subscribers) removeChannel(channel string) {
 func (s subscribers) subscribe(channel string, socket socket.Socket) error {
 	_, ok := s[channel]
 	if !ok {
-		return answer.NewInvalidActionError("cannot subscribe to unknown channel")
+		return answer.NewInvalidResourceError("cannot subscribe to unknown channel")
 	}
 
 	s[channel][socket.ID()] = socket
@@ -102,7 +102,12 @@ func (s subscribers) subscribe(channel string, socket socket.Socket) error {
 func (s subscribers) unsubscribe(channel string, socket socket.Socket) error {
 	_, ok := s[channel]
 	if !ok {
-		return answer.NewInvalidActionError("cannot unsubscribe from unknown channel")
+		return answer.NewInvalidResourceError("cannot unsubscribe from unknown channel")
+	}
+
+	_, ok = s[channel][socket.ID()]
+	if !ok {
+		return answer.NewInvalidActionError("cannot unsubscribe from a channel not subscribed")
 	}
 
 	delete(s[channel], socket.ID())
