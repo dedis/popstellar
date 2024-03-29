@@ -7,6 +7,7 @@ import (
 )
 
 type Repository interface {
+	ChannelRepository
 
 	// StoreMessage stores a message inside the database.
 	StoreMessage(channelID string, msg message.Message) error
@@ -19,6 +20,11 @@ type Repository interface {
 
 	// GetIDsTable returns the map of message IDs by channelID.
 	GetIDsTable() (map[string][]string, error)
+}
+
+type ChannelRepository interface {
+	ElectionRepository
+	RootRepository
 }
 
 type ElectionRepository interface {

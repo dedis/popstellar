@@ -7,7 +7,6 @@ import (
 	"popstellar/inbox"
 	"popstellar/message/query/method"
 	"popstellar/network/socket"
-	"popstellar/storage"
 	"popstellar/validation"
 	"strings"
 	"sync"
@@ -76,10 +75,11 @@ type handlerParameters struct {
 	log             *zerolog.Logger
 	socket          socket.Socket
 	schemaValidator *validation.SchemaValidator
-	db              storage.Storage
+	db              Repository
 	subs            subscribers
 	peers           *state.Peers
 	queries         *state.Queries
+	ownerPubKey     kyber.Point
 }
 
 // Hub implements the Hub interface.

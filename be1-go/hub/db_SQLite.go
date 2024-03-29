@@ -1,4 +1,4 @@
-package storage
+package hub
 
 import (
 	"database/sql"
@@ -18,12 +18,12 @@ const (
 
 // SQLite is a wrapper around the SQLite database.
 type SQLite struct {
-	Storage
+	Repository
 	database *sql.DB
 }
 
-// New returns a new SQLite instance.
-func New(path string) (SQLite, error) {
+// NewSQLite returns a new SQLite instance.
+func NewSQLite(path string) (SQLite, error) {
 	db, err := sql.Open("sqlite", path)
 	if err != nil {
 		return SQLite{}, err
@@ -62,6 +62,12 @@ func New(path string) (SQLite, error) {
 	}
 
 	err = createPendingSignatures(tx)
+	if err != nil {
+		db.Close()
+		return SQLite{}, err
+	}
+
+	err = createChannelType(tx)
 	if err != nil {
 		db.Close()
 		return SQLite{}, err
@@ -126,6 +132,15 @@ func createPendingSignatures(tx *sql.Tx) error {
 		"witness TEXT, " +
 		"signature TEXT UNIQUE, " +
 		"PRIMARY KEY (messageID, witness) " +
+		")")
+	return err
+}
+
+func createChannelType(tx *sql.Tx) error {
+	_, err := tx.Exec("CREATE TABLE IF NOT EXISTS channelType (" +
+		"ID INTEGER, " +
+		"name TEXT, " +
+		"PRIMARY KEY (ID) " +
 		")")
 	return err
 }
@@ -407,7 +422,6 @@ func (s *SQLite) GetServerPubKey() ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	return pubKeyBuf, err
 }
 
@@ -418,6 +432,14 @@ func (s *SQLite) GetServerSecretKey() ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	return secretKeyBuf, err
+}
+
+// GetChannelType returns the type of the channelPath.
+func (s *SQLite) GetChannelType(channel string) (string, error) {
+	var name string
+	err := s.database.QueryRow("SELECT name FROM channelType "+
+		"JOIN channels on channels.typeID = channelType.ID "+
+		"WHERE channel = ?", channel).Scan(&name)
+	return name, err
 }

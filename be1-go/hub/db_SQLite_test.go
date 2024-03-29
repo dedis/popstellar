@@ -1,4 +1,4 @@
-package storage
+package hub
 
 import (
 	"golang.org/x/xerrors"
@@ -52,7 +52,7 @@ func newFakeSQLite() (SQLite, string, error) {
 
 	fn := filepath.Join(dir, "test.db")
 
-	lite, err := New(fn)
+	lite, err := NewSQLite(fn)
 	if err != nil {
 		return SQLite{}, "", xerrors.Errorf("an error '%s' was not expected when creating a new SQLite instance", err)
 	}
