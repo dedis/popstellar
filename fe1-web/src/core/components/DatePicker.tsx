@@ -6,7 +6,7 @@ import { Timestamp } from '../objects';
 import Input from './Input';
 import PoPTouchableOpacity from './PoPTouchableOpacity';
 
-import 'react-datepicker/dist/react-datepicker.css';
+// import 'react-datepicker/dist/react-datepicker.css';
 
 const ONE_MINUTE_IN_SECONDS = 60;
 

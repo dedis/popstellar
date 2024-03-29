@@ -24,8 +24,8 @@ module.exports = {
     },
     web: {
       favicon: './src/resources/assets/favicon.png',
+      bundler: 'metro'
     },
-    entryPoint: './src/App.tsx',
     extra: {
       commitHash: `${gitHash}${isDirty}`,
       appVersion: process.env.APP_VERSION || 'v0.0.0',
