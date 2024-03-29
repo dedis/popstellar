@@ -2,24 +2,27 @@ package hub
 
 import (
 	"encoding/json"
-	"golang.org/x/xerrors"
+	"popstellar/message/answer"
 	"popstellar/message/query/method"
 )
 
-func handlePublish(params handlerParameters, msg []byte) (*int, error) {
+func handlePublish(params handlerParameters, msg []byte) (*int, *answer.Error) {
 	var publish method.Publish
 
 	err := json.Unmarshal(msg, &publish)
 	if err != nil {
-		return nil, xerrors.Errorf("failed to unmarshal publish message: %v", err)
+		return nil, answer.NewInvalidMessageFieldError("failed to unmarshal publish message: %v", err)
 	}
 
 	channelType, err := params.db.GetChannelType(publish.Params.Channel)
 	if err != nil {
-		return &publish.ID, xerrors.Errorf("channel %s doesn't exist in the database", publish.Params.Channel)
+		return &publish.ID, answer.NewInvalidResourceError("channel %s doesn't exist in the database", publish.Params.Channel)
 	}
 
-	err = handleChannel(params, channelType, publish.Params.Message)
+	errAnswer := handleChannel(params, channelType, publish.Params.Message)
+	if errAnswer != nil {
+		return &publish.ID, errAnswer.Wrap("failed to handle publish")
+	}
 
-	return &publish.ID, err
+	return &publish.ID, nil
 }

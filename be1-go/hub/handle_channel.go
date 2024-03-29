@@ -3,17 +3,16 @@ package hub
 import (
 	"encoding/base64"
 	"go.dedis.ch/kyber/v3/sign/schnorr"
-	"golang.org/x/xerrors"
 	"popstellar/crypto"
 	"popstellar/message/answer"
 	"popstellar/message/messagedata"
 	"popstellar/message/query/method/message"
 )
 
-func handleChannel(params handlerParameters, channelType string, msg message.Message) error {
+func handleChannel(params handlerParameters, channelType string, msg message.Message) *answer.Error {
 	dataBytes, err := base64.URLEncoding.DecodeString(msg.Data)
 	if err != nil {
-		return xerrors.Errorf("failed to decode data string: %v", err)
+		return answer.NewInvalidMessageFieldError("failed to decode data string: %v", err)
 	}
 
 	publicKeySender, err := base64.URLEncoding.DecodeString(msg.Sender)
@@ -33,37 +32,43 @@ func handleChannel(params handlerParameters, channelType string, msg message.Mes
 
 	expectedMessageID := messagedata.Hash(msg.Data, msg.Signature)
 	if expectedMessageID != msg.MessageID {
-		return answer.NewInvalidMessageFieldError("message_id is wrong: expected %q found %q",
+		return answer.NewInvalidActionError("message_id is wrong: expected %q found %q",
 			expectedMessageID, msg.MessageID)
 	}
 
 	_, err = params.db.GetMessageByID(msg.MessageID)
 	if err == nil {
-		return xerrors.Errorf("message %s was already received", msg.MessageID)
+		return answer.NewInvalidActionError("message %s was already received", msg.MessageID)
 	}
+
+	var errAnswer *answer.Error
 
 	switch channelType {
 	case channelRoot:
-		err = handleChannelRoot(params, msg)
+		errAnswer = handleChannelRoot(params, msg)
 	case channelLao:
-		err = handleChannelLao(params, msg)
+		errAnswer = handleChannelLao(params, msg)
 	case channelElection:
-		err = handleChannelElection(params, msg)
+		errAnswer = handleChannelElection(params, msg)
 	case channelGeneralChirp:
-		err = handleChannelGeneralChirp(params, msg)
+		errAnswer = handleChannelGeneralChirp(params, msg)
 	case channelChirp:
-		err = handleChannelChirp(params, msg)
+		errAnswer = handleChannelChirp(params, msg)
 	case channelReaction:
-		err = handleChannelReaction(params, msg)
+		errAnswer = handleChannelReaction(params, msg)
 	case channelConsensus:
-		err = handleChannelConsensus(params, msg)
+		errAnswer = handleChannelConsensus(params, msg)
 	case channelPopCha:
-		err = handleChannelPopCha(params, msg)
+		errAnswer = handleChannelPopCha(params, msg)
 	case channelCoin:
-		err = handleChannelCoin(params, msg)
+		errAnswer = handleChannelCoin(params, msg)
 	default:
-		err = xerrors.Errorf("unknown channel type %s", channelType)
+		errAnswer = answer.NewInvalidResourceError("unknown channel type %s", channelType)
 	}
 
-	return err
+	if errAnswer != nil {
+		return errAnswer.Wrap("failed to handle channel")
+	}
+
+	return nil
 }

@@ -9,7 +9,7 @@ import (
 	"popstellar/message/query/method"
 )
 
-func handleGreetServer(params handlerParameters, byteMessage []byte) (*int, error) {
+func handleGreetServer(params handlerParameters, byteMessage []byte) (*int, *answer.Error) {
 	var greetServer method.GreetServer
 
 	err := json.Unmarshal(byteMessage, &greetServer)
@@ -19,7 +19,7 @@ func handleGreetServer(params handlerParameters, byteMessage []byte) (*int, erro
 
 	err = params.peers.AddPeerInfo(params.socket.ID(), greetServer.Params)
 	if err != nil {
-		return nil, err
+		return nil, answer.NewInvalidActionError("failed to add peer : %v", err)
 	}
 
 	if params.peers.IsPeerGreeted(params.socket.ID()) {
@@ -28,7 +28,7 @@ func handleGreetServer(params handlerParameters, byteMessage []byte) (*int, erro
 
 	errA := sendGreetServer(params)
 	if errA != nil {
-		return nil, answer.NewErrorf(errA.Code, "failed to send greetServer message: %v", err)
+		return nil, errA.Wrap("failed to send greetServer message")
 	}
 
 	return nil, nil

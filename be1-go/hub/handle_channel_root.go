@@ -8,7 +8,6 @@ import (
 	"popstellar/message/answer"
 	"popstellar/message/messagedata"
 	"popstellar/message/query/method/message"
-	"popstellar/network/socket"
 	"popstellar/validation"
 )
 
@@ -21,7 +20,7 @@ const (
 	auth      = "/authentication"
 )
 
-func handleChannelRoot(params handlerParameters, msg message.Message) error {
+func handleChannelRoot(params handlerParameters, msg message.Message) *answer.Error {
 	jsonData, err := base64.URLEncoding.DecodeString(msg.Data)
 	if err != nil {
 		err := answer.NewInvalidMessageFieldError("failed to decode message data: %v", err)
@@ -50,21 +49,21 @@ func handleChannelRoot(params handlerParameters, msg message.Message) error {
 
 	err = msg.UnmarshalData(&laoCreate)
 	if err != nil {
-		return xerrors.Errorf("failed to unmarshal lao#create: %v", err)
+		return answer.NewInvalidMessageFieldError("failed to unmarshal lao#create: %v", err)
 	}
 
 	err = laoCreate.Verify()
 	if err != nil {
-		return xerrors.Errorf("invalid lao#create message: %v", err)
+		return answer.NewInvalidMessageFieldError("invalid lao#create message: %v", err)
 	}
 
 	err = createLao(msg, laoCreate, params)
 	if err != nil {
-		return xerrors.Errorf("failed to create lao: %v", err)
+		return answer.NewInvalidActionError("failed to create lao: %v", err)
 	}
 
 	if err = params.db.StoreMessage(rootPrefix, msg); err != nil {
-		return xerrors.Errorf("failed to store lao#create message in root channel: %v", err)
+		return answer.NewInternalServerError("failed to store lao#create message in root channel: %v", err)
 	}
 	return nil
 }
@@ -171,7 +170,7 @@ func createLaoChannel(laoChannelPath string, organizerBuf []byte, msg message.Me
 		return xerrors.Errorf("failed to create authentication channel: %v", err)
 
 	}
-	params.subs[laoChannelPath] = make(map[socket.Socket]struct{})
+	params.subs.addChannel(laoChannelPath)
 	return nil
 }
 
@@ -180,7 +179,7 @@ func createChannel(channelPath string, organizerBuf []byte, params handlerParame
 	if err != nil {
 		return xerrors.Errorf("failed to store channel: %v", err)
 	}
-	params.subs[channelPath] = make(map[socket.Socket]struct{})
+	params.subs.addChannel(channelPath)
 	return nil
 }
 

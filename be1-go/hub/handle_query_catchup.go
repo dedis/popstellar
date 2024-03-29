@@ -2,16 +2,16 @@ package hub
 
 import (
 	"encoding/json"
-	"golang.org/x/xerrors"
+	"popstellar/message/answer"
 	"popstellar/message/query/method"
 )
 
-func handleCatchUp(params handlerParameters, msg []byte) (*int, error) {
+func handleCatchUp(params handlerParameters, msg []byte) (*int, *answer.Error) {
 	var catchup method.Catchup
 
 	err := json.Unmarshal(msg, &catchup)
 	if err != nil {
-		return nil, xerrors.Errorf("failed to unmarshal catchup message: %v", err)
+		return nil, answer.NewInvalidMessageFieldError("failed to unmarshal catchup message: %v", err)
 	}
 
 	return &catchup.ID, nil

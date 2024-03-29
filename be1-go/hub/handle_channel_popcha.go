@@ -1,7 +1,10 @@
 package hub
 
-import "popstellar/message/query/method/message"
+import (
+	"popstellar/message/answer"
+	"popstellar/message/query/method/message"
+)
 
-func handleChannelPopCha(params handlerParameters, msg message.Message) error {
+func handleChannelPopCha(params handlerParameters, msg message.Message) *answer.Error {
 	return nil
 }

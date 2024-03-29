@@ -2,16 +2,16 @@ package hub
 
 import (
 	"encoding/json"
-	"golang.org/x/xerrors"
+	"popstellar/message/answer"
 	"popstellar/message/query/method"
 )
 
-func handleHeartbeat(params handlerParameters, byteMessage []byte) (*int, error) {
+func handleHeartbeat(params handlerParameters, byteMessage []byte) (*int, *answer.Error) {
 	var heartbeat method.Heartbeat
 
 	err := json.Unmarshal(byteMessage, &heartbeat)
 	if err != nil {
-		return nil, xerrors.Errorf("failed to unmarshal heartbeat message: %v", err)
+		return nil, answer.NewInvalidMessageFieldError("failed to unmarshal heartbeat message: %v", err)
 	}
 
 	return nil, nil

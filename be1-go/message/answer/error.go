@@ -13,6 +13,13 @@ func (e *Error) Error() string {
 	return e.Description
 }
 
+func (e *Error) Wrap(description string) *Error {
+	return &Error{
+		Code:        e.Code,
+		Description: fmt.Sprintf(description+" : %v", e.Description),
+	}
+}
+
 // NewError returns a *message.Error
 func NewError(code int, description string) *Error {
 	return &Error{

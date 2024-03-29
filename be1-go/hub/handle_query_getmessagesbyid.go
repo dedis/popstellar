@@ -2,16 +2,16 @@ package hub
 
 import (
 	"encoding/json"
-	"golang.org/x/xerrors"
+	"popstellar/message/answer"
 	"popstellar/message/query/method"
 )
 
-func handleGetMessagesById(params handlerParameters, msg []byte) (*int, error) {
+func handleGetMessagesById(params handlerParameters, msg []byte) (*int, *answer.Error) {
 	var getMessagesById method.GetMessagesById
 
 	err := json.Unmarshal(msg, &getMessagesById)
 	if err != nil {
-		return nil, xerrors.Errorf("failed to unmarshal getMessagesById message: %v", err)
+		return nil, answer.NewInvalidMessageFieldError("failed to unmarshal getMessagesById message: %v", err)
 	}
 
 	return &getMessagesById.ID, nil

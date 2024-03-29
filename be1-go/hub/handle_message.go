@@ -2,7 +2,6 @@ package hub
 
 import (
 	"encoding/json"
-	"golang.org/x/xerrors"
 	jsonrpc "popstellar/message"
 	"popstellar/message/answer"
 	"popstellar/message/query"
@@ -12,80 +11,86 @@ import (
 func handleMessage(params handlerParameters, msg []byte) error {
 	err := params.schemaValidator.VerifyJSON(msg, validation.GenericMessage)
 	if err != nil {
-		schemaErr := xerrors.Errorf("message is not valid against json schema: %v", err)
+		schemaErr := answer.NewInvalidMessageFieldError("message is not valid against json schema: %v", err)
 		params.socket.SendError(nil, schemaErr)
 		return schemaErr
 	}
 
 	rpcType, err := jsonrpc.GetType(msg)
 	if err != nil {
-		rpcErr := xerrors.Errorf("failed to get rpc type: %v", err)
+		rpcErr := answer.NewInvalidMessageFieldError("failed to get rpc type: %v", err)
 		params.socket.SendError(nil, rpcErr)
 		return rpcErr
 	}
 
 	var errID *int
+	var errA *answer.Error
 
 	switch rpcType {
 	case jsonrpc.RPCTypeQuery:
-		errID, err = handleQuery(params, msg)
+		errID, errA = handleQuery(params, msg)
 
 	case jsonrpc.RPCTypeAnswer:
-		errID, err = handleAnswer(params, msg)
+		errID, errA = handleAnswer(params, msg)
 
 	default:
 		errID = nil
-		err = xerrors.New("jsonRPC is of unknown type")
+		errA = answer.NewInvalidMessageFieldError("jsonRPC is of unknown type")
 	}
 
-	if err != nil {
-		params.socket.SendError(errID, err)
+	if errA != nil {
+		params.socket.SendError(errID, errA)
 	}
 
-	return err
+	return errA
 }
 
-func handleQuery(params handlerParameters, msg []byte) (*int, error) {
+func handleQuery(params handlerParameters, msg []byte) (*int, *answer.Error) {
 	var queryBase query.Base
 
 	err := json.Unmarshal(msg, &queryBase)
 	if err != nil {
-		err := answer.NewErrorf(-4, "failed to unmarshal incoming message: %v", err)
+		err := answer.NewInvalidMessageFieldError("failed to unmarshal incoming message: %v", err)
 		return nil, err
 	}
 
 	var errID *int
+	var errA *answer.Error
 
 	switch queryBase.Method {
 	case query.MethodGreetServer:
-		errID, err = handleGreetServer(params, msg)
+		errID, errA = handleGreetServer(params, msg)
 	case query.MethodHeartbeat:
-		errID, err = handleHeartbeat(params, msg)
+		errID, errA = handleHeartbeat(params, msg)
 	case query.MethodGetMessagesById:
-		errID, err = handleGetMessagesById(params, msg)
+		errID, errA = handleGetMessagesById(params, msg)
 	case query.MethodPublish:
-		errID, err = handlePublish(params, msg)
+		errID, errA = handlePublish(params, msg)
 	case query.MethodSubscribe:
-		errID, err = handleSubscribe(params, msg)
+		errID, errA = handleSubscribe(params, msg)
 	case query.MethodUnsubscribe:
-		errID, err = handleUnsubscribe(params, msg)
+		errID, errA = handleUnsubscribe(params, msg)
 	case query.MethodCatchUp:
-		errID, err = handleCatchUp(params, msg)
+		errID, errA = handleCatchUp(params, msg)
 	default:
 		errID = nil
-		err = answer.NewErrorf(-2, "unexpected method: '%s'", queryBase.Method)
+		errA = answer.NewInvalidResourceError("unexpected method: '%s'", queryBase.Method)
 	}
 
-	return errID, err
+	if errA != nil {
+		return errID, errA.Wrap("failed to handle query")
+	}
+
+	return errID, nil
 }
 
-func handleAnswer(params handlerParameters, msg []byte) (*int, error) {
+func handleAnswer(params handlerParameters, msg []byte) (*int, *answer.Error) {
 
 	var answerMsg answer.Answer
 
 	err := json.Unmarshal(msg, &answerMsg)
 	if err != nil {
-		return nil, xerrors.Errorf("failed to unmarshal answer: %v", err)
+		return nil, answer.NewInvalidMessageFieldError("failed to unmarshal answer: %v", err)
 	}
 
 	if answerMsg.Result == nil {
@@ -101,7 +106,7 @@ func handleAnswer(params handlerParameters, msg []byte) (*int, error) {
 
 	err = params.queries.SetQueryReceived(*answerMsg.ID)
 	if err != nil {
-		return answerMsg.ID, xerrors.Errorf("failed to set query state: %v", err)
+		return answerMsg.ID, answer.NewInternalServerError("failed to set query state: %v", err)
 	}
 
 	return handleGetMessagesByIdAnswer(params, answerMsg)
