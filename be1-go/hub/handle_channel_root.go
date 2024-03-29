@@ -5,11 +5,8 @@ import (
 	"encoding/json"
 	"golang.org/x/xerrors"
 	"popstellar/crypto"
-	jsonrpc "popstellar/message"
 	"popstellar/message/answer"
 	"popstellar/message/messagedata"
-	"popstellar/message/query"
-	"popstellar/message/query/method"
 	"popstellar/message/query/method/message"
 	"popstellar/network/socket"
 	"popstellar/validation"
@@ -247,49 +244,6 @@ func createAndSendLaoGreet(laoChannelPath string, organizerBuf []byte, params ha
 	err = params.db.StoreMessage(laoChannelPath, laoGreetMsg)
 	if err != nil {
 		return xerrors.Errorf("failed to store lao#greet message in lao channel: %v", err)
-	}
-
-	return nil
-}
-
-// SendToAll sends a message to all sockets.
-func SendToAll(subs subscribers, buf []byte, channel string) error {
-
-	sockets, ok := subs[channel]
-	if !ok {
-		return xerrors.Errorf("channel %s not found", channel)
-	}
-	for s := range sockets {
-		s.Send(buf)
-	}
-	return nil
-}
-
-func broadcastToAllClients(msg message.Message, params handlerParameters, channel string) error {
-	rpcMessage := method.Broadcast{
-		Base: query.Base{
-			JSONRPCBase: jsonrpc.JSONRPCBase{
-				JSONRPC: "2.0",
-			},
-			Method: "broadcast",
-		},
-		Params: struct {
-			Channel string          `json:"channel"`
-			Message message.Message `json:"message"`
-		}{
-			channel,
-			msg,
-		},
-	}
-
-	buf, err := json.Marshal(&rpcMessage)
-	if err != nil {
-		return xerrors.Errorf("failed to marshal broadcast query: %v", err)
-	}
-
-	err = SendToAll(params.subs, buf, channel)
-	if err != nil {
-		return xerrors.Errorf("failed to send broadcast message to all clients: %v", err)
 	}
 
 	return nil

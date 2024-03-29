@@ -4,12 +4,17 @@
 package hub
 
 import (
+	"encoding/json"
 	"github.com/rs/zerolog"
 	"go.dedis.ch/kyber/v3"
 	"go.dedis.ch/kyber/v3/sign/schnorr"
 	"golang.org/x/xerrors"
 	"popstellar/crypto"
 	state "popstellar/hub/standard_hub/hub_state"
+	jsonrpc "popstellar/message"
+	"popstellar/message/query"
+	"popstellar/message/query/method"
+	"popstellar/message/query/method/message"
 	"popstellar/network/socket"
 	"popstellar/validation"
 	"time"
@@ -83,6 +88,36 @@ func SendToAll(subs subscribers, buf []byte, channel string) error {
 	for s := range sockets {
 		s.Send(buf)
 	}
+	return nil
+}
+
+func broadcastToAllClients(msg message.Message, params handlerParameters, channel string) error {
+	rpcMessage := method.Broadcast{
+		Base: query.Base{
+			JSONRPCBase: jsonrpc.JSONRPCBase{
+				JSONRPC: "2.0",
+			},
+			Method: "broadcast",
+		},
+		Params: struct {
+			Channel string          `json:"channel"`
+			Message message.Message `json:"message"`
+		}{
+			channel,
+			msg,
+		},
+	}
+
+	buf, err := json.Marshal(&rpcMessage)
+	if err != nil {
+		return xerrors.Errorf("failed to marshal broadcast query: %v", err)
+	}
+
+	err = SendToAll(params.subs, buf, channel)
+	if err != nil {
+		return xerrors.Errorf("failed to send broadcast message to all clients: %v", err)
+	}
+
 	return nil
 }
 
