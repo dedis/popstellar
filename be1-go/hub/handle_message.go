@@ -11,14 +11,16 @@ import (
 func handleMessage(params handlerParameters, msg []byte) error {
 	err := params.schemaValidator.VerifyJSON(msg, validation.GenericMessage)
 	if err != nil {
-		schemaErr := answer.NewInvalidMessageFieldError("message is not valid against json schema: %v", err)
+		schemaErr := answer.NewInvalidMessageFieldError("message is not valid against json schema: %v",
+			err).Wrap("handleMessage")
 		params.socket.SendError(nil, schemaErr)
 		return schemaErr
 	}
 
 	rpcType, err := jsonrpc.GetType(msg)
 	if err != nil {
-		rpcErr := answer.NewInvalidMessageFieldError("failed to get rpc type: %v", err)
+		rpcErr := answer.NewInvalidMessageFieldError("failed to get rpc type: %v",
+			err).Wrap("handleMessage")
 		params.socket.SendError(nil, rpcErr)
 		return rpcErr
 	}
@@ -39,7 +41,7 @@ func handleMessage(params handlerParameters, msg []byte) error {
 	}
 
 	if errA != nil {
-		params.socket.SendError(errID, errA)
+		params.socket.SendError(errID, errA.Wrap("handleMessage"))
 	}
 
 	return errA
@@ -50,8 +52,9 @@ func handleQuery(params handlerParameters, msg []byte) (*int, *answer.Error) {
 
 	err := json.Unmarshal(msg, &queryBase)
 	if err != nil {
-		err := answer.NewInvalidMessageFieldError("failed to unmarshal incoming message: %v", err)
-		return nil, err
+		errA := answer.NewInvalidMessageFieldError("failed to unmarshal incoming message: %v",
+			err).Wrap("handleQuery")
+		return nil, errA
 	}
 
 	var errID *int
@@ -63,7 +66,7 @@ func handleQuery(params handlerParameters, msg []byte) (*int, *answer.Error) {
 	case query.MethodHeartbeat:
 		errID, errA = handleHeartbeat(params, msg)
 	case query.MethodGetMessagesById:
-		errID, errA = handleGetMessagesById(params, msg)
+		errID, errA = handleGetMessagesByID(params, msg)
 	case query.MethodPublish:
 		errID, errA = handlePublish(params, msg)
 	case query.MethodSubscribe:
@@ -78,7 +81,7 @@ func handleQuery(params handlerParameters, msg []byte) (*int, *answer.Error) {
 	}
 
 	if errA != nil {
-		return errID, errA.Wrap("failed to handle query")
+		return errID, errA.Wrap("handleQuery")
 	}
 
 	return errID, nil
@@ -90,7 +93,8 @@ func handleAnswer(params handlerParameters, msg []byte) (*int, *answer.Error) {
 
 	err := json.Unmarshal(msg, &answerMsg)
 	if err != nil {
-		return nil, answer.NewInvalidMessageFieldError("failed to unmarshal answer: %v", err)
+		return nil, answer.NewInvalidMessageFieldError("failed to unmarshal answer: %v",
+			err).Wrap("handleAnswer")
 	}
 
 	if answerMsg.Result == nil {
@@ -106,8 +110,14 @@ func handleAnswer(params handlerParameters, msg []byte) (*int, *answer.Error) {
 
 	err = params.queries.SetQueryReceived(*answerMsg.ID)
 	if err != nil {
-		return answerMsg.ID, answer.NewInternalServerError("failed to set query state: %v", err)
+		return answerMsg.ID, answer.NewInternalServerError("failed to set query state: %v",
+			err).Wrap("handleAnswer")
 	}
 
-	return handleGetMessagesByIdAnswer(params, answerMsg)
+	errA := handleGetMessagesByIdAnswer(params, answerMsg)
+	if errA != nil {
+		return answerMsg.ID, errA.Wrap("handleAnswer")
+	}
+
+	return answerMsg.ID, nil
 }

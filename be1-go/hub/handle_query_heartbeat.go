@@ -11,7 +11,8 @@ func handleHeartbeat(params handlerParameters, byteMessage []byte) (*int, *answe
 
 	err := json.Unmarshal(byteMessage, &heartbeat)
 	if err != nil {
-		return nil, answer.NewInvalidMessageFieldError("failed to unmarshal heartbeat message: %v", err)
+		return nil, answer.NewInvalidMessageFieldError("failed to unmarshal heartbeat message: %v",
+			err).Wrap("handleHeartbeat")
 	}
 
 	return nil, nil

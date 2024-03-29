@@ -11,7 +11,8 @@ func handleCatchUp(params handlerParameters, msg []byte) (*int, *answer.Error) {
 
 	err := json.Unmarshal(msg, &catchup)
 	if err != nil {
-		return nil, answer.NewInvalidMessageFieldError("failed to unmarshal catchup message: %v", err)
+		return nil, answer.NewInvalidMessageFieldError("failed to unmarshal catchup message: %v",
+			err).Wrap("handleCatchUp")
 	}
 
 	return &catchup.ID, nil

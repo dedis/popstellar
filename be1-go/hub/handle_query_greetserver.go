@@ -14,12 +14,14 @@ func handleGreetServer(params handlerParameters, byteMessage []byte) (*int, *ans
 
 	err := json.Unmarshal(byteMessage, &greetServer)
 	if err != nil {
-		return nil, answer.NewInternalServerError("failed to unmarshal greetServer message: %v", err)
+		return nil, answer.NewInternalServerError("failed to unmarshal greetServer message: %v",
+			err).Wrap("handleGreetServer")
 	}
 
 	err = params.peers.AddPeerInfo(params.socket.ID(), greetServer.Params)
 	if err != nil {
-		return nil, answer.NewInvalidActionError("failed to add peer : %v", err)
+		return nil, answer.NewInvalidActionError("failed to add peer : %v",
+			err).Wrap("handleGreetServer")
 	}
 
 	if params.peers.IsPeerGreeted(params.socket.ID()) {
@@ -28,7 +30,7 @@ func handleGreetServer(params handlerParameters, byteMessage []byte) (*int, *ans
 
 	errA := sendGreetServer(params)
 	if errA != nil {
-		return nil, errA.Wrap("failed to send greetServer message")
+		return nil, errA.Wrap("handleGreetServer")
 	}
 
 	return nil, nil
@@ -37,7 +39,8 @@ func handleGreetServer(params handlerParameters, byteMessage []byte) (*int, *ans
 func sendGreetServer(params handlerParameters) *answer.Error {
 	pkBytes, err := params.db.GetServerPubKey()
 	if err != nil {
-		return answer.NewInternalServerError("was not able to fetch the pk of server")
+		return answer.NewInternalServerError("was not able to fetch the pk of server: %v",
+			err).Wrap("sendGreetServer")
 	}
 
 	serverInfo := method.ServerInfo{
@@ -58,7 +61,8 @@ func sendGreetServer(params handlerParameters) *answer.Error {
 
 	buf, err := json.Marshal(serverGreet)
 	if err != nil {
-		return answer.NewInternalServerError("failed to marshal server greet: %v", err)
+		return answer.NewInternalServerError("failed to marshal server greet: %v",
+			err).Wrap("sendGreetServer")
 	}
 
 	params.socket.Send(buf)
