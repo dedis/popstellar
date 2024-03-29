@@ -41,6 +41,18 @@ const (
 	heartbeatDelay = 30 * time.Second
 )
 
+const (
+	channelRoot         = "root"
+	channelLao          = "lao"
+	channelElection     = "election"
+	channelGeneralChirp = "generalchirp"
+	channelChirp        = "chirp"
+	channelReaction     = "reaction"
+	channelConsensus    = "consensus"
+	channelPopCha       = "popcha"
+	channelCoin         = "coin"
+)
+
 // Hub defines the methods a PoP server must implement to receive messages
 // and handle clients.
 type Hub interface {
