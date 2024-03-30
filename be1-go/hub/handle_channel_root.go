@@ -18,7 +18,7 @@ const (
 	auth      = "/authentication"
 )
 
-func handleChannelRoot(params handlerParameters, msg message.Message) *answer.Error {
+func handleChannelRoot(params handlerParameters, channel string, msg message.Message) *answer.Error {
 	object, action, err := verifyDataAndGetObjectAction(params, msg)
 	var errAnswer *answer.Error
 	if err != nil {

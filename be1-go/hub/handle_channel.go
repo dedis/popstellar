@@ -9,7 +9,7 @@ import (
 	"popstellar/message/query/method/message"
 )
 
-func handleChannel(params handlerParameters, channelType string, msg message.Message) *answer.Error {
+func handleChannel(params handlerParameters, channel, channelType string, msg message.Message) *answer.Error {
 	dataBytes, err := base64.URLEncoding.DecodeString(msg.Data)
 	if err != nil {
 		errAnswer := answer.NewInvalidMessageFieldError("failed to decode data: %v", err).Wrap("handleChannel")
@@ -55,23 +55,23 @@ func handleChannel(params handlerParameters, channelType string, msg message.Mes
 
 	switch channelType {
 	case channelRoot:
-		errAnswer = handleChannelRoot(params, msg)
+		errAnswer = handleChannelRoot(params, channel, msg)
 	case channelLao:
-		errAnswer = handleChannelLao(params, msg)
+		errAnswer = handleChannelLao(params, channel, msg)
 	case channelElection:
-		errAnswer = handleChannelElection(params, msg)
+		errAnswer = handleChannelElection(params, channel, msg)
 	case channelGeneralChirp:
-		errAnswer = handleChannelGeneralChirp(params, msg)
+		errAnswer = handleChannelGeneralChirp(params, channel, msg)
 	case channelChirp:
-		errAnswer = handleChannelChirp(params, msg)
+		errAnswer = handleChannelChirp(params, channel, msg)
 	case channelReaction:
-		errAnswer = handleChannelReaction(params, msg)
+		errAnswer = handleChannelReaction(params, channel, msg)
 	case channelConsensus:
-		errAnswer = handleChannelConsensus(params, msg)
+		errAnswer = handleChannelConsensus(params, channel, msg)
 	case channelPopCha:
-		errAnswer = handleChannelPopCha(params, msg)
+		errAnswer = handleChannelPopCha(params, channel, msg)
 	case channelCoin:
-		errAnswer = handleChannelCoin(params, msg)
+		errAnswer = handleChannelCoin(params, channel, msg)
 	default:
 		errAnswer = answer.NewInvalidResourceError("unknown channel type %s", channelType)
 	}

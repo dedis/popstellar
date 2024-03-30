@@ -21,7 +21,7 @@ func handlePublish(params handlerParameters, msg []byte) (*int, *answer.Error) {
 		return &publish.ID, errAnswer
 	}
 
-	errAnswer := handleChannel(params, channelType, publish.Params.Message)
+	errAnswer := handleChannel(params, publish.Params.Channel, channelType, publish.Params.Message)
 	if errAnswer != nil {
 		errAnswer = errAnswer.Wrap("handlePublish")
 		return &publish.ID, errAnswer

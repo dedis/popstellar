@@ -6,7 +6,7 @@ import (
 	"popstellar/message/query/method/message"
 )
 
-func handleChannelPopCha(params handlerParameters, msg message.Message) *answer.Error {
+func handleChannelPopCha(params handlerParameters, channel string, msg message.Message) *answer.Error {
 	object, action, err := verifyDataAndGetObjectAction(params, msg)
 	var errAnswer *answer.Error
 	if err != nil {
