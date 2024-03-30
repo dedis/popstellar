@@ -16,5 +16,13 @@ func handleGetMessagesByID(params handlerParameters, msg []byte) (*int, *answer.
 		return nil, errAnswer
 	}
 
+	result, err := params.db.GetResultForGetMessagesByID(getMessagesById.Params)
+	if err != nil {
+		errAnswer := answer.NewInternalServerError("failed to query db: %v", err).Wrap("handleGetMessageByID")
+		return &getMessagesById.ID, errAnswer
+	}
+
+	params.socket.SendResult(getMessagesById.ID, nil, result)
+
 	return &getMessagesById.ID, nil
 }

@@ -39,14 +39,17 @@ type HandleGreetServerRepository interface {
 }
 
 type HandleGetMessagesByIDRepository interface {
+	GetResultForGetMessagesByID(params map[string][]string) (map[string][]message.Message, error)
 }
 
 type HandleHeartbeatRepository interface {
-	// GetMessagesPerChannel returns messageIDs received + blacklisted per channel from the parameter
-	GetMessageIDsPerChannel(channelIDs []string) (map[string]map[string]struct{}, error)
+	// GetMessagesPerChannel returns the params to do the getMessageByID msg in reponse of heartbeat
+	GetParamsForGetMessageByID(params map[string][]string) (map[string][]string, error)
 }
 
 type HandleCatchUpRepository interface {
+	// GetAllMsgFromChannel return all the messages received + sent on a channel
+	GetAllMessagesFromChannel(channelID string) ([]message.Message, error)
 }
 
 type HandlePublishRepository interface {
