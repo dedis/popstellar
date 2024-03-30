@@ -27,36 +27,19 @@ type Repository interface {
 // ======================= Query ==========================
 
 type HandleQueryRepository interface {
-	HandleGreetServerRepository
-	HandleGetMessagesByIDRepository
-	HandleHeartbeatRepository
-	HandleCatchUpRepository
-	HandlePublishRepository
-}
-
-type HandleGreetServerRepository interface {
 	GetServerPubKey() ([]byte, error)
-}
-
-type HandleGetMessagesByIDRepository interface {
 	GetResultForGetMessagesByID(params map[string][]string) (map[string][]message.Message, error)
-}
 
-type HandleHeartbeatRepository interface {
-	// GetMessagesPerChannel returns the params to do the getMessageByID msg in reponse of heartbeat
+	// GetParamsForGetMessageByID returns the params to do the getMessageByID msg in reponse of heartbeat
 	GetParamsForGetMessageByID(params map[string][]string) (map[string][]string, error)
-}
 
-type HandleCatchUpRepository interface {
 	// GetAllMsgFromChannel return all the messages received + sent on a channel
 	GetAllMessagesFromChannel(channelID string) ([]message.Message, error)
-}
 
-type HandlePublishRepository interface {
 	GetChannelType(channel string) (string, error)
 }
 
-// ======================= Query ==========================
+// ======================= Answer ==========================
 
 type HandleAnswerRepository interface {
 }
