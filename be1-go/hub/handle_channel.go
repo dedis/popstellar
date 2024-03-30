@@ -45,7 +45,11 @@ func handleChannel(params handlerParameters, channelType string, msg message.Mes
 		return errAnswer
 	}
 
-	msgAlreadyExists := params.db.HasMessage(msg.MessageID)
+	msgAlreadyExists, err := params.db.HasMessage(msg.MessageID)
+	if err != nil {
+		errAnswer := answer.NewInternalServerError("error while querying db: %v", err).Wrap("handleChannel")
+		return errAnswer
+	}
 	if msgAlreadyExists {
 		errAnswer := answer.NewInvalidActionError("message %s was already received",
 			msg.MessageID).Wrap("handleChannel")
