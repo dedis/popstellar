@@ -782,18 +782,18 @@ func (r *rollCall) checkPrevID(prevID []byte) bool {
 func (c *Channel) checkIsFromOrganizer(msg message.Message) error {
 	senderBuf, err := base64.URLEncoding.DecodeString(msg.Sender)
 	if err != nil {
-		return xerrors.Errorf(keyDecodeError, err)
+		return answer.NewInvalidMessageFieldError(keyDecodeError, err)
 	}
 
 	senderPoint := crypto.Suite.Point()
 
 	err = senderPoint.UnmarshalBinary(senderBuf)
 	if err != nil {
-		return answer.NewErrorf(-4, keyUnmarshalError, senderBuf)
+		return answer.NewInvalidMessageFieldError(keyUnmarshalError, senderBuf)
 	}
 
 	if !c.organizerPubKey.Equal(senderPoint) {
-		return answer.NewErrorf(-5,
+		return answer.NewAccessDeniedError(
 			"sender key %v does not match organizer key %v",
 			senderPoint, c.organizerPubKey)
 	}
