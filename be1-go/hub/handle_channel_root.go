@@ -45,7 +45,7 @@ func handleLaoCreate(msg message.Message, params handlerParameters) *answer.Erro
 	err := msg.UnmarshalData(&laoCreate)
 	var errAnswer *answer.Error
 	if err != nil {
-		errAnswer = answer.NewInvalidActionError("failed to unmarshal message: %v", err)
+		errAnswer = answer.NewInvalidActionError("failed to unmarshal message data: %v", err)
 		errAnswer = errAnswer.Wrap("handleLaoCreate")
 		return errAnswer
 	}
@@ -73,7 +73,7 @@ func verifyLAOCreation(msg message.Message, laoCreate messagedata.LaoCreate, lao
 		return nil, errAnswer
 	}
 
-	ok, err := params.db.Haslao(laoPath)
+	ok, err := params.db.HasChannel(laoPath)
 	if err != nil {
 		errAnswer = answer.NewInternalServerError("failed to check if lao already exists: %v", err)
 		errAnswer = errAnswer.Wrap("verifyLAOCreation")
@@ -276,6 +276,5 @@ func createAndSendLaoGreet(laoPath string, organizerBuf []byte, params handlerPa
 		errAnswer = errAnswer.Wrap("createAndSendLaoGreet")
 		return errAnswer
 	}
-
 	return nil
 }

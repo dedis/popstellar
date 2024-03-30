@@ -45,9 +45,30 @@ func handleChannelLao(params handlerParameters, msg message.Message) *answer.Err
 }
 
 func handleLaoState(msg message.Message, params handlerParameters) *answer.Error {
+	var laoState messagedata.LaoState
+	err := msg.UnmarshalData(&laoState)
+	var errAnswer *answer.Error
+	if err != nil {
+		errAnswer = answer.NewInvalidActionError("failed to unmarshal message data: %v", err)
+		errAnswer = errAnswer.Wrap("handleLaoCreate")
+		return errAnswer
+	}
+	ok, err := params.db.HasMessage(laoState.ModificationID)
+	if err != nil {
+		errAnswer = answer.NewInternalServerError("failed to get check if message exists: %v", err)
+		errAnswer = errAnswer.Wrap("handleLaoState")
+		return errAnswer
+	} else if !ok {
+		errAnswer = answer.NewInvalidMessageFieldError("message corresponding to modificationID %s does not exist", laoState.ModificationID)
+		errAnswer = errAnswer.Wrap("handleLaoState")
+		return errAnswer
+	}
+	params.db.GetLaoWitnesses(laoState.ID)
+
 	return nil
 }
 
+// Not implemented yet
 func handleLaoUpdate(msg message.Message, params handlerParameters) *answer.Error {
 	return nil
 }

@@ -63,7 +63,12 @@ type HandleAnswerRepository interface {
 type HandleChannelRepository interface {
 	RootRepository
 	ElectionRepository
+	LAORepository
 
+	// HasChannel returns true if the channel already exists.
+	HasChannel(laoChannelPath string) (bool, error)
+
+	// HasMessage returns true if the message already exists.
 	HasMessage(msgID string) (bool, error)
 }
 
@@ -72,8 +77,8 @@ type RootRepository interface {
 	// StoreMessage stores a message inside the database.
 	StoreMessage(channelID string, msg message.Message) error
 
-	// Haslao returns true if LAO already exists.
-	Haslao(laoChannelPath string) (bool, error)
+	// ChannelExists returns true if the channel already exists.
+	ChannelExists(laoChannelPath string) (bool, error)
 
 	// GetOwnerPubKey returns the public key of the owner of the server.
 	GetOwnerPubKey() (kyber.Point, error)
@@ -107,4 +112,9 @@ type ElectionRepository interface {
 
 	// GetResult returns the result of an election.
 	GetResult(electionID string) (messagedata.ElectionResult, error)
+}
+
+type LAORepository interface {
+	// GetLaoWitnesses returns the list of witnesses of a LAO.
+	GetLaoWitnesses(laoPath string) (map[string]struct{}, error)
 }

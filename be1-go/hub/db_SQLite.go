@@ -383,9 +383,15 @@ func (s *SQLite) AddWitnessSignature(messageID string, witness string, signature
 	return tx.Commit()
 }
 
-func (s *SQLite) Haslao(laoChannelPath string) (bool, error) {
+func (s *SQLite) HasChannel(ChannelPath string) (bool, error) {
 	var channel string
-	err := s.database.QueryRow("SELECT channelID from channels WHERE channelsID = ?)", laoChannelPath).Scan(&channel)
+	err := s.database.QueryRow("SELECT channel from channels WHERE channelsID = ?)", ChannelPath).Scan(&channel)
+	return !errors.Is(err, sql.ErrNoRows), err
+}
+
+func (s *SQLite) HasMessage(messageID string) (bool, error) {
+	var msgID string
+	err := s.database.QueryRow("SELECT messageID from messages WHERE messageID = ?)", messageID).Scan(&msgID)
 	return !errors.Is(err, sql.ErrNoRows), err
 }
 
