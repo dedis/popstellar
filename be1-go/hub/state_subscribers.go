@@ -47,7 +47,7 @@ func (s subscribers) SendToAll(buf []byte, channel string) *answer.Error {
 
 	sockets, ok := s[channel]
 	if !ok {
-		return answer.NewInvalidResourceError("channel %s not found", channel)
+		return answer.NewInvalidResourceError("failed to send to all clients, channel %s not found", channel)
 	}
 	for _, v := range sockets {
 		v.Send(buf)
