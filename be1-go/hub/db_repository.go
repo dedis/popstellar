@@ -47,6 +47,8 @@ type HandleHeartbeatRepository interface {
 }
 
 type HandleCatchUpRepository interface {
+	// GetAllMsgFromChannel return all the messages received + sent on a channel
+	GetAllMessagesFromChannel(channelID string) ([]message.Message, error)
 }
 
 type HandlePublishRepository interface {
