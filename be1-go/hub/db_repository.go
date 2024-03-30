@@ -7,7 +7,9 @@ import (
 )
 
 type Repository interface {
-	ChannelRepository
+	HandleQueryRepository
+	HandleAnswerRepository
+	HandleChannelRepository
 
 	// StoreMessage stores a message inside the database.
 	StoreMessage(channelID string, msg message.Message) error
@@ -22,30 +24,47 @@ type Repository interface {
 	GetIDsTable() (map[string][]string, error)
 }
 
-type ChannelRepository interface {
-	ElectionRepository
-	RootRepository
+// ======================= Query ==========================
 
-	// GetChannelType returns the type of the channelPath.
+type HandleQueryRepository interface {
+	HandleGreetServerRepository
+	HandleGetMessagesByIDRepository
+	HandleHeartbeatRepository
+	HandleCatchUpRepository
+	HandlePublishRepository
+}
+
+type HandleGreetServerRepository interface {
+	GetServerPubKey() ([]byte, error)
+}
+
+type HandleGetMessagesByIDRepository interface {
+}
+
+type HandleHeartbeatRepository interface {
+	// GetMessagesPerChannel returns messageIDs received + blacklisted per channel from the parameter
+	GetMessageIDsPerChannel(channelIDs []string) (map[string]map[string]struct{}, error)
+}
+
+type HandleCatchUpRepository interface {
+}
+
+type HandlePublishRepository interface {
 	GetChannelType(channel string) (string, error)
 }
 
-type ElectionRepository interface {
+// ======================= Query ==========================
 
-	// StoreMessage stores a message inside the database.
-	StoreMessage(channelID string, msg message.Message) error
+type HandleAnswerRepository interface {
+}
 
-	//IsElectionStarted returns true if the election is started.
-	IsElectionStarted(electionID string) (bool, error)
+// ======================= Channel ==========================
 
-	// IsElectionTerminated returns true if the election is terminated.
-	IsElectionTerminated(electionID string) (bool, error)
+type HandleChannelRepository interface {
+	RootRepository
+	ElectionRepository
 
-	// GetLastVote returns the last vote of a sender in an election.
-	GetLastVote(sender, electionID string) (messagedata.VoteCastVote, error)
-
-	// GetResult returns the result of an election.
-	GetResult(electionID string) (messagedata.ElectionResult, error)
+	HasMessage(msgID string) (bool, error)
 }
 
 type RootRepository interface {
@@ -70,4 +89,22 @@ type RootRepository interface {
 
 	// GetServerSecretKey returns the secret key of the server.
 	GetServerSecretKey() ([]byte, error)
+}
+
+type ElectionRepository interface {
+
+	// StoreMessage stores a message inside the database.
+	StoreMessage(channelID string, msg message.Message) error
+
+	//IsElectionStarted returns true if the election is started.
+	IsElectionStarted(electionID string) (bool, error)
+
+	// IsElectionTerminated returns true if the election is terminated.
+	IsElectionTerminated(electionID string) (bool, error)
+
+	// GetLastVote returns the last vote of a sender in an election.
+	GetLastVote(sender, electionID string) (messagedata.VoteCastVote, error)
+
+	// GetResult returns the result of an election.
+	GetResult(electionID string) (messagedata.ElectionResult, error)
 }
