@@ -11,40 +11,38 @@ import (
 func handleMessage(params handlerParameters, msg []byte) error {
 	err := params.schemaValidator.VerifyJSON(msg, validation.GenericMessage)
 	if err != nil {
-		schemaErr := answer.NewInvalidMessageFieldError("message is not valid against json schema: %v",
+		errAnswer := answer.NewInvalidMessageFieldError("message is not valid against json schema: %v",
 			err).Wrap("handleMessage")
-		params.socket.SendError(nil, schemaErr)
-		return schemaErr
+		params.socket.SendError(nil, errAnswer)
+		return errAnswer
 	}
 
 	rpcType, err := jsonrpc.GetType(msg)
 	if err != nil {
-		rpcErr := answer.NewInvalidMessageFieldError("failed to get rpc type: %v",
+		errAnswer := answer.NewInvalidMessageFieldError("failed to get rpc type: %v",
 			err).Wrap("handleMessage")
-		params.socket.SendError(nil, rpcErr)
-		return rpcErr
+		params.socket.SendError(nil, errAnswer)
+		return errAnswer
 	}
 
-	var errID *int
-	var errA *answer.Error
+	var id *int
+	var errAnswer *answer.Error
 
 	switch rpcType {
 	case jsonrpc.RPCTypeQuery:
-		errID, errA = handleQuery(params, msg)
-
+		id, errAnswer = handleQuery(params, msg)
 	case jsonrpc.RPCTypeAnswer:
-		errID, errA = handleAnswer(params, msg)
-
+		id, errAnswer = handleAnswer(params, msg)
 	default:
-		errID = nil
-		errA = answer.NewInvalidMessageFieldError("jsonRPC is of unknown type")
+		id = nil
+		errAnswer = answer.NewInvalidMessageFieldError("jsonRPC is of unknown type")
 	}
 
-	if errA != nil {
-		params.socket.SendError(errID, errA.Wrap("handleMessage"))
+	if errAnswer != nil {
+		params.socket.SendError(id, errAnswer.Wrap("handleMessage"))
 	}
 
-	return errA
+	return errAnswer
 }
 
 func handleQuery(params handlerParameters, msg []byte) (*int, *answer.Error) {
@@ -52,49 +50,50 @@ func handleQuery(params handlerParameters, msg []byte) (*int, *answer.Error) {
 
 	err := json.Unmarshal(msg, &queryBase)
 	if err != nil {
-		errA := answer.NewInvalidMessageFieldError("failed to unmarshal incoming message: %v",
+		errAnswer := answer.NewInvalidMessageFieldError("failed to unmarshal incoming message: %v",
 			err).Wrap("handleQuery")
-		return nil, errA
+		return nil, errAnswer
 	}
 
-	var errID *int
-	var errA *answer.Error
+	var id *int
+	var errAnswer *answer.Error
 
 	switch queryBase.Method {
 	case query.MethodGreetServer:
-		errID, errA = handleGreetServer(params, msg)
+		id, errAnswer = handleGreetServer(params, msg)
 	case query.MethodHeartbeat:
-		errID, errA = handleHeartbeat(params, msg)
+		id, errAnswer = handleHeartbeat(params, msg)
 	case query.MethodGetMessagesById:
-		errID, errA = handleGetMessagesByID(params, msg)
+		id, errAnswer = handleGetMessagesByID(params, msg)
 	case query.MethodPublish:
-		errID, errA = handlePublish(params, msg)
+		id, errAnswer = handlePublish(params, msg)
 	case query.MethodSubscribe:
-		errID, errA = handleSubscribe(params, msg)
+		id, errAnswer = handleSubscribe(params, msg)
 	case query.MethodUnsubscribe:
-		errID, errA = handleUnsubscribe(params, msg)
+		id, errAnswer = handleUnsubscribe(params, msg)
 	case query.MethodCatchUp:
-		errID, errA = handleCatchUp(params, msg)
+		id, errAnswer = handleCatchUp(params, msg)
 	default:
-		errID = nil
-		errA = answer.NewInvalidResourceError("unexpected method: '%s'", queryBase.Method)
+		id = nil
+		errAnswer = answer.NewInvalidResourceError("unexpected method: '%s'", queryBase.Method)
 	}
 
-	if errA != nil {
-		return errID, errA.Wrap("handleQuery")
+	if errAnswer != nil {
+		errAnswer = errAnswer.Wrap("handleQuery")
+		return id, errAnswer
 	}
 
-	return errID, nil
+	return id, nil
 }
 
 func handleAnswer(params handlerParameters, msg []byte) (*int, *answer.Error) {
-
 	var answerMsg answer.Answer
 
 	err := json.Unmarshal(msg, &answerMsg)
 	if err != nil {
-		return nil, answer.NewInvalidMessageFieldError("failed to unmarshal answer: %v",
+		errAnswer := answer.NewInvalidMessageFieldError("failed to unmarshal answer: %v",
 			err).Wrap("handleAnswer")
+		return nil, errAnswer
 	}
 
 	if answerMsg.Result == nil {
@@ -110,13 +109,15 @@ func handleAnswer(params handlerParameters, msg []byte) (*int, *answer.Error) {
 
 	err = params.queries.SetQueryReceived(*answerMsg.ID)
 	if err != nil {
-		return answerMsg.ID, answer.NewInternalServerError("failed to set query state: %v",
+		errAnswer := answer.NewInternalServerError("failed to set query state: %v",
 			err).Wrap("handleAnswer")
+		return answerMsg.ID, errAnswer
 	}
 
-	errA := handleGetMessagesByIdAnswer(params, answerMsg)
-	if errA != nil {
-		return answerMsg.ID, errA.Wrap("handleAnswer")
+	errAnswer := handleGetMessagesByIdAnswer(params, answerMsg)
+	if errAnswer != nil {
+		errAnswer = errAnswer.Wrap("handleAnswer")
+		return answerMsg.ID, errAnswer
 	}
 
 	return answerMsg.ID, nil

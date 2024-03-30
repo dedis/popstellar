@@ -12,38 +12,44 @@ import (
 func handleChannel(params handlerParameters, channelType string, msg message.Message) *answer.Error {
 	dataBytes, err := base64.URLEncoding.DecodeString(msg.Data)
 	if err != nil {
-		return answer.NewInvalidMessageFieldError("failed to decode data string: %v",
+		errAnswer := answer.NewInvalidMessageFieldError("failed to decode data string: %v",
 			err).Wrap("handleChannel")
+		return errAnswer
 	}
 
 	publicKeySender, err := base64.URLEncoding.DecodeString(msg.Sender)
 	if err != nil {
-		return answer.NewInvalidMessageFieldError("failed to decode public key string: %v",
+		errAnswer := answer.NewInvalidMessageFieldError("failed to decode public key string: %v",
 			err).Wrap("handleChannel")
+		return errAnswer
 	}
 
 	signatureBytes, err := base64.URLEncoding.DecodeString(msg.Signature)
 	if err != nil {
-		return answer.NewInvalidMessageFieldError("failed to decode signature string: %v",
+		errAnswer := answer.NewInvalidMessageFieldError("failed to decode signature string: %v",
 			err).Wrap("handleChannel")
+		return errAnswer
 	}
 
 	err = schnorr.VerifyWithChecks(crypto.Suite, publicKeySender, dataBytes, signatureBytes)
 	if err != nil {
-		return answer.NewInvalidMessageFieldError("failed to verify signature : %v",
+		errAnswer := answer.NewInvalidMessageFieldError("failed to verify signature : %v",
 			err).Wrap("handleChannel")
+		return errAnswer
 	}
 
 	expectedMessageID := messagedata.Hash(msg.Data, msg.Signature)
 	if expectedMessageID != msg.MessageID {
-		return answer.NewInvalidActionError("message_id is wrong: expected %q found %q",
+		errAnswer := answer.NewInvalidActionError("message_id is wrong: expected %q found %q",
 			expectedMessageID, msg.MessageID).Wrap("handleChannel")
+		return errAnswer
 	}
 
 	_, err = params.db.GetMessageByID(msg.MessageID)
 	if err == nil {
-		return answer.NewInvalidActionError("message %s was already received",
+		errAnswer := answer.NewInvalidActionError("message %s was already received",
 			msg.MessageID).Wrap("handleChannel")
+		return errAnswer
 	}
 
 	var errAnswer *answer.Error
@@ -72,7 +78,8 @@ func handleChannel(params handlerParameters, channelType string, msg message.Mes
 	}
 
 	if errAnswer != nil {
-		return errAnswer.Wrap("handleChannel")
+		errAnswer = errAnswer.Wrap("handleChannel")
+		return errAnswer
 	}
 
 	return nil

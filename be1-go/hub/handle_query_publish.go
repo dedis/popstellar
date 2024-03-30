@@ -11,19 +11,22 @@ func handlePublish(params handlerParameters, msg []byte) (*int, *answer.Error) {
 
 	err := json.Unmarshal(msg, &publish)
 	if err != nil {
-		return nil, answer.NewInvalidMessageFieldError("failed to unmarshal publish message: %v",
+		errAnswer := answer.NewInvalidMessageFieldError("failed to unmarshal publish message: %v",
 			err).Wrap("handlePublish")
+		return nil, errAnswer
 	}
 
 	channelType, err := params.db.GetChannelType(publish.Params.Channel)
 	if err != nil {
-		return &publish.ID, answer.NewInvalidResourceError("channel %s doesn't exist in the database",
+		errAnswer := answer.NewInvalidResourceError("channel %s doesn't exist in the database",
 			publish.Params.Channel).Wrap("handlePublish")
+		return &publish.ID, errAnswer
 	}
 
 	errAnswer := handleChannel(params, channelType, publish.Params.Message)
 	if errAnswer != nil {
-		return &publish.ID, errAnswer.Wrap("handlePublish")
+		errAnswer = errAnswer.Wrap("handlePublish")
+		return &publish.ID, errAnswer
 	}
 
 	return &publish.ID, nil
