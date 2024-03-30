@@ -10,9 +10,9 @@ import (
 )
 
 const (
-	social    = "/social/"
-	chirps    = "chirps"
-	reactions = "reactions"
+	social    = "/social"
+	chirps    = "/chirps"
+	reactions = "/reactions"
 	consensus = "/consensus"
 	coin      = "/coin"
 	auth      = "/authentication"
