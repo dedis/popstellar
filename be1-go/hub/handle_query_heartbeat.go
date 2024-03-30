@@ -17,39 +17,10 @@ func handleHeartbeat(params handlerParameters, byteMessage []byte) (*int, *answe
 		return nil, errAnswer
 	}
 
-	channelIDs := make([]string, 0)
-	for k := range heartbeat.Params {
-		channelIDs = append(channelIDs, k)
-	}
-
-	myMsgIDsPerChannel, err := params.db.GetMessageIDsPerChannel(channelIDs)
+	result, err := params.db.GetGetMessageByIDParams(heartbeat.Params)
 	if err != nil {
-		answerErr := answer.NewInternalServerError("error while querying db: %v", err).Wrap("handleHeartbeat")
+		answerErr := answer.NewInternalServerError("failed to query db: %v", err).Wrap("handleHeartbeat")
 		return nil, answerErr
-	}
-
-	result := make(map[string][]string)
-
-	for channelID, msgIDs := range heartbeat.Params {
-		myMsgIDs, ok := myMsgIDsPerChannel[channelID]
-		if !ok {
-			continue
-		}
-
-		result[channelID] = make([]string, 0)
-
-		for _, msgID := range msgIDs {
-			_, ok := myMsgIDs[msgID]
-			if !ok {
-				result[channelID] = append(result[channelID], msgID)
-			}
-		}
-
-		if len(result[channelID]) > 0 {
-			continue
-		}
-
-		delete(result, channelID)
 	}
 
 	if len(result) == 0 {

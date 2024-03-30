@@ -42,8 +42,8 @@ type HandleGetMessagesByIDRepository interface {
 }
 
 type HandleHeartbeatRepository interface {
-	// GetMessagesPerChannel returns messageIDs received + blacklisted per channel from the parameter
-	GetMessageIDsPerChannel(channelIDs []string) (map[string]map[string]struct{}, error)
+	// GetMessagesPerChannel returns the params to do the getMessageByID msg in reponse of heartbeat
+	GetGetMessageByIDParams(heartbeatParams map[string][]string) (map[string][]string, error)
 }
 
 type HandleCatchUpRepository interface {
