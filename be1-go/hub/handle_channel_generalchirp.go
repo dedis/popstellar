@@ -12,6 +12,7 @@ func handleChannelGeneralChirp(params handlerParameters, msg message.Message) *a
 	if err != nil {
 		errAnswer = answer.NewInvalidMessageFieldError("failed to verify message and get object#action: %v", err)
 		errAnswer = errAnswer.Wrap("handleChannelGeneralChirp")
+		return errAnswer
 	}
 
 	switch object + "#" + action {

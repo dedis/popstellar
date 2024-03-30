@@ -24,6 +24,7 @@ func handleChannelRoot(params handlerParameters, msg message.Message) *answer.Er
 	if err != nil {
 		errAnswer = answer.NewInvalidMessageFieldError("failed to verify message and get object action: %v", err)
 		errAnswer = errAnswer.Wrap("handleChannelRoot")
+		return errAnswer
 	}
 
 	switch object + "#" + action {
