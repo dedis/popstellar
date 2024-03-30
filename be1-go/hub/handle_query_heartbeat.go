@@ -13,8 +13,7 @@ func handleHeartbeat(params handlerParameters, byteMessage []byte) (*int, *answe
 
 	err := json.Unmarshal(byteMessage, &heartbeat)
 	if err != nil {
-		errAnswer := answer.NewInvalidMessageFieldError("failed to unmarshal heartbeat message: %v",
-			err).Wrap("handleHeartbeat")
+		errAnswer := answer.NewInvalidMessageFieldError("failed to unmarshal: %v", err).Wrap("handleHeartbeat")
 		return nil, errAnswer
 	}
 
@@ -83,7 +82,7 @@ func sendGetMessagesByID(params handlerParameters, missingIds map[string][]strin
 
 	buf, err := json.Marshal(getMessagesById)
 	if err != nil {
-		return answer.NewInternalServerError("failed to marshal getMessagesById query: %v", err).Wrap("sendGetMessagesByID")
+		return answer.NewInternalServerError("failed to marshal: %v", err).Wrap("sendGetMessagesByID")
 	}
 
 	params.socket.Send(buf)

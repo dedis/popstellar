@@ -11,7 +11,7 @@ func handleGetMessagesByID(params handlerParameters, msg []byte) (*int, *answer.
 
 	err := json.Unmarshal(msg, &getMessagesById)
 	if err != nil {
-		errAnswer := answer.NewInvalidMessageFieldError("failed to unmarshal getMessagesById message: %v",
+		errAnswer := answer.NewInvalidMessageFieldError("failed to unmarshal message: %v",
 			err).Wrap("handleGetMessageByID")
 		return nil, errAnswer
 	}

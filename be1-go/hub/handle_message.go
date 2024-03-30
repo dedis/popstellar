@@ -11,16 +11,14 @@ import (
 func handleMessage(params handlerParameters, msg []byte) error {
 	err := params.schemaValidator.VerifyJSON(msg, validation.GenericMessage)
 	if err != nil {
-		errAnswer := answer.NewInvalidMessageFieldError("message is not valid against json schema: %v",
-			err).Wrap("handleMessage")
+		errAnswer := answer.NewInvalidMessageFieldError("invalid json: %v", err).Wrap("handleMessage")
 		params.socket.SendError(nil, errAnswer)
 		return errAnswer
 	}
 
 	rpcType, err := jsonrpc.GetType(msg)
 	if err != nil {
-		errAnswer := answer.NewInvalidMessageFieldError("failed to get rpc type: %v",
-			err).Wrap("handleMessage")
+		errAnswer := answer.NewInvalidMessageFieldError("failed to get rpc type: %v", err).Wrap("handleMessage")
 		params.socket.SendError(nil, errAnswer)
 		return errAnswer
 	}
@@ -39,10 +37,12 @@ func handleMessage(params handlerParameters, msg []byte) error {
 	}
 
 	if errAnswer != nil {
-		params.socket.SendError(id, errAnswer.Wrap("handleMessage"))
+		errAnswer = errAnswer.Wrap("handleMessage")
+		params.socket.SendError(id, errAnswer)
+		return errAnswer
 	}
 
-	return errAnswer
+	return nil
 }
 
 func handleQuery(params handlerParameters, msg []byte) (*int, *answer.Error) {
@@ -50,8 +50,7 @@ func handleQuery(params handlerParameters, msg []byte) (*int, *answer.Error) {
 
 	err := json.Unmarshal(msg, &queryBase)
 	if err != nil {
-		errAnswer := answer.NewInvalidMessageFieldError("failed to unmarshal incoming message: %v",
-			err).Wrap("handleQuery")
+		errAnswer := answer.NewInvalidMessageFieldError("failed to unmarshal: %v", err).Wrap("handleQuery")
 		return nil, errAnswer
 	}
 
@@ -91,8 +90,7 @@ func handleAnswer(params handlerParameters, msg []byte) (*int, *answer.Error) {
 
 	err := json.Unmarshal(msg, &answerMsg)
 	if err != nil {
-		errAnswer := answer.NewInvalidMessageFieldError("failed to unmarshal answer: %v",
-			err).Wrap("handleAnswer")
+		errAnswer := answer.NewInvalidMessageFieldError("failed to unmarshal: %v", err).Wrap("handleAnswer")
 		return nil, errAnswer
 	}
 
@@ -109,8 +107,7 @@ func handleAnswer(params handlerParameters, msg []byte) (*int, *answer.Error) {
 
 	err = params.queries.SetQueryReceived(*answerMsg.ID)
 	if err != nil {
-		errAnswer := answer.NewInternalServerError("failed to set query state: %v",
-			err).Wrap("handleAnswer")
+		errAnswer := answer.NewInternalServerError("failed to set query state: %v", err).Wrap("handleAnswer")
 		return answerMsg.ID, errAnswer
 	}
 

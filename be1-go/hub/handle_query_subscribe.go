@@ -11,14 +11,12 @@ func handleSubscribe(params handlerParameters, msg []byte) (*int, *answer.Error)
 
 	err := json.Unmarshal(msg, &subscribe)
 	if err != nil {
-		errAnswer := answer.NewInvalidMessageFieldError("failed to unmarshal subscribe message: %v",
-			err).Wrap("handleSubscribe")
+		errAnswer := answer.NewInvalidMessageFieldError("failed to unmarshal: %v", err).Wrap("handleSubscribe")
 		return nil, errAnswer
 	}
 
 	if rootChannel == subscribe.Params.Channel {
-		errAnswer := answer.NewInvalidActionError("cannot subscribe to root channel" +
-			"").Wrap("handleSubscribe")
+		errAnswer := answer.NewInvalidActionError("cannot subscribe to root channel").Wrap("handleSubscribe")
 		return &subscribe.ID, errAnswer
 	}
 
