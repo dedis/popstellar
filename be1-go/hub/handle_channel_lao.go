@@ -99,7 +99,7 @@ func handleLaoState(msg message.Message, channel string, params handlerParameter
 	}
 	var updateMsgData messagedata.LaoUpdate
 
-	err := msg.UnmarshalData(&updateMsgData)
+	err = msg.UnmarshalData(&updateMsgData)
 	if err != nil {
 		return &answer.Error{
 			Code:        -4,
