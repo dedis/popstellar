@@ -1,19 +1,20 @@
 package hub
 
 import (
-	"fmt"
 	"popstellar/message/answer"
 	"popstellar/message/messagedata"
 	"popstellar/message/query/method/message"
 )
 
 func handleChannelElection(params handlerParameters, msg message.Message) *answer.Error {
-	object, action, err := verifyMessageAndGetObjectAction(params, msg)
+	object, action, err := verifyDataAndGetObjectAction(params, msg)
+	var errAnswer *answer.Error
 	if err != nil {
-		return answer.NewInvalidMessageFieldError("failed to verify message and get object action: %v", err).Wrap("handleChannelElection")
+		errAnswer = answer.NewInvalidMessageFieldError("failed to verify message and get object#action: %v", err)
+		errAnswer = errAnswer.Wrap("handleChannelElection")
+		return errAnswer
 	}
 
-	var errAnswer *answer.Error
 	switch object + "#" + action {
 	case messagedata.ElectionObject + "#" + messagedata.VoteActionCastVote:
 		errAnswer = handleVoteCastVote(msg, params)
@@ -24,10 +25,11 @@ func handleChannelElection(params handlerParameters, msg message.Message) *answe
 	case messagedata.ElectionObject + "#" + messagedata.ElectionActionResult:
 		errAnswer = handleElectionResult(msg, params)
 	default:
-		errAnswer = answer.NewInvalidMessageFieldError("invalid object and action")
+		errAnswer = answer.NewInvalidMessageFieldError("failed to handle %s#%s, invalid object#action", object, action)
 	}
 	if errAnswer != nil {
-		return errAnswer.Wrap(fmt.Sprintf("failed to handle %s#%s", object, action)).Wrap("handleChannelElection")
+		errAnswer = errAnswer.Wrap("handleChannelElection")
+		return errAnswer
 	}
 	return nil
 }

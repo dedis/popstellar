@@ -1,19 +1,20 @@
 package hub
 
 import (
-	"fmt"
 	"popstellar/message/answer"
 	"popstellar/message/messagedata"
 	"popstellar/message/query/method/message"
 )
 
 func handleChannelLao(params handlerParameters, msg message.Message) *answer.Error {
-	object, action, err := verifyMessageAndGetObjectAction(params, msg)
+	object, action, err := verifyDataAndGetObjectAction(params, msg)
+	var errAnswer *answer.Error
 	if err != nil {
-		return answer.NewInvalidMessageFieldError("failed to verify message and get object action: %v", err).Wrap("handleChannelLao")
+		errAnswer = answer.NewInvalidMessageFieldError("failed to verify message and get object action: %v", err)
+		errAnswer = errAnswer.Wrap("handleChannelLao")
+		return errAnswer
 	}
 
-	var errAnswer *answer.Error
 	switch object + "#" + action {
 	case messagedata.LAOObject + "#" + messagedata.LAOActionState:
 		errAnswer = handleLaoState(msg, params)
@@ -34,10 +35,11 @@ func handleChannelLao(params handlerParameters, msg message.Message) *answer.Err
 	case messagedata.ElectionObject + "#" + messagedata.ElectionActionSetup:
 		errAnswer = handleElectionSetup(msg, params)
 	default:
-		errAnswer = answer.NewInvalidMessageFieldError("invalid object and action")
+		errAnswer = answer.NewInvalidMessageFieldError("failed to handle %s#%s, invalid object#action", object, action)
 	}
 	if errAnswer != nil {
-		return errAnswer.Wrap(fmt.Sprintf("failed to handle %s#%s", object, action)).Wrap("handleChannelLao")
+		err = errAnswer.Wrap("handleChannelLao")
+		return errAnswer
 	}
 	return nil
 }

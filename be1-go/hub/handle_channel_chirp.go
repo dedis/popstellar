@@ -1,29 +1,31 @@
 package hub
 
 import (
-	"fmt"
 	"popstellar/message/answer"
 	"popstellar/message/messagedata"
 	"popstellar/message/query/method/message"
 )
 
 func handleChannelChirp(params handlerParameters, msg message.Message) *answer.Error {
-	object, action, err := verifyMessageAndGetObjectAction(params, msg)
+	object, action, err := verifyDataAndGetObjectAction(params, msg)
+	var errAnswer *answer.Error
 	if err != nil {
-		return answer.NewInvalidMessageFieldError("failed to verify message and get object action: %v", err).Wrap("handleChannelChirp")
+		errAnswer = answer.NewInvalidMessageFieldError("failed to verify message and get object#action: %v", err)
+		errAnswer = errAnswer.Wrap("handleChannelChirp")
+		return errAnswer
 	}
 
-	var errAnswer *answer.Error
 	switch object + "#" + action {
 	case messagedata.ChirpObject + "#" + messagedata.ChirpActionAdd:
 		errAnswer = handleChirpAdd(msg, params)
 	case messagedata.ChirpObject + "#" + messagedata.ChirpActionDelete:
 		errAnswer = handleChirpDelete(msg, params)
 	default:
-		errAnswer = answer.NewInvalidMessageFieldError("invalid object and action")
+		errAnswer = answer.NewInvalidMessageFieldError("failed to handle %s#%s, invalid object#action", object, action)
 	}
 	if errAnswer != nil {
-		return errAnswer.Wrap(fmt.Sprintf("failed to handle %s#%s", object, action)).Wrap("handleChannelChirp")
+		errAnswer = errAnswer.Wrap("handleChannelChirp")
+		return errAnswer
 	}
 	return nil
 }

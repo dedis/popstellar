@@ -5,7 +5,6 @@ package hub
 
 import (
 	"encoding/base64"
-	"encoding/json"
 	"github.com/rs/zerolog"
 	"go.dedis.ch/kyber/v3"
 	"go.dedis.ch/kyber/v3/sign/schnorr"
@@ -159,15 +158,18 @@ func broadcastToAllClients(msg message.Message, params handlerParameters, channe
 			msg,
 		},
 	}
-
+	var errAnswer *answer.Error
 	buf, err := json.Marshal(&rpcMessage)
 	if err != nil {
-		return answer.NewInternalServerError("failed to marshal broadcast query: %v", err)
+		errAnswer = answer.NewInternalServerError("failed to marshal broadcast query: %v", err)
+		errAnswer = errAnswer.Wrap("broadcastToAllClients")
+		return errAnswer
 	}
 
-	errAnswer := SendToAll(params.subs, buf, channel)
-	if err != nil {
-		return errAnswer.Wrap("failed to send broadcast message to all clients")
+	errAnswer = SendToAll(params.subs, buf, channel)
+	if errAnswer != nil {
+		errAnswer = errAnswer.Wrap("broadcastToAllClients")
+		return errAnswer
 	}
 
 	return nil
@@ -189,22 +191,28 @@ func Sign(data []byte, params handlerParameters) ([]byte, error) {
 	return signatureBuf, nil
 }
 
-func verifyMessageAndGetObjectAction(params handlerParameters, msg message.Message) (object string, action string, err error) {
+func verifyDataAndGetObjectAction(params handlerParameters, msg message.Message) (object string, action string, errAnswer *answer.Error) {
 	jsonData, err := base64.URLEncoding.DecodeString(msg.Data)
 	if err != nil {
-		return "", "", answer.NewInvalidMessageFieldError("failed to decode message data: %v", err)
+		errAnswer = answer.NewInvalidMessageFieldError("failed to decode message data: %v", err)
+		errAnswer = errAnswer.Wrap("verifyDataAndGetObjectAction")
+		return "", "", errAnswer
 	}
 
 	// validate message data against the json schema
 	err = params.schemaValidator.VerifyJSON(jsonData, validation.Data)
 	if err != nil {
-		return "", "", answer.NewInvalidMessageFieldError("failed to validate message against json schema: %v", err)
+		errAnswer = answer.NewInvalidMessageFieldError("failed to validate message against json schema: %v", err)
+		errAnswer = errAnswer.Wrap("verifyDataAndGetObjectAction")
+		return "", "", errAnswer
 	}
 
 	// get object#action
 	object, action, err = messagedata.GetObjectAndAction(jsonData)
 	if err != nil {
-		return "", "", answer.NewInvalidMessageFieldError("failed to get object#action: %v", err)
+		errAnswer = answer.NewInvalidMessageFieldError("failed to get object#action: %v", err)
+		errAnswer = errAnswer.Wrap("verifyDataAndGetObjectAction")
+		return "", "", errAnswer
 	}
 	return object, action, nil
 }
