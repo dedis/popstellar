@@ -80,43 +80,6 @@ type Hub interface {
 	SendGreetServer(socket.Socket) error
 }
 
-type subscribers map[string]map[string]socket.Socket
-
-func (s subscribers) addChannel(channel string) {
-	s[channel] = make(map[string]socket.Socket)
-}
-
-func (s subscribers) removeChannel(channel string) {
-	delete(s, channel)
-}
-
-func (s subscribers) subscribe(channel string, socket socket.Socket) *answer.Error {
-	_, ok := s[channel]
-	if !ok {
-		return answer.NewInvalidResourceError("cannot subscribe to unknown channel")
-	}
-
-	s[channel][socket.ID()] = socket
-
-	return nil
-}
-
-func (s subscribers) unsubscribe(channel string, socket socket.Socket) *answer.Error {
-	_, ok := s[channel]
-	if !ok {
-		return answer.NewInvalidResourceError("cannot unsubscribe from unknown channel")
-	}
-
-	_, ok = s[channel][socket.ID()]
-	if !ok {
-		return answer.NewInvalidActionError("cannot unsubscribe from a channel not subscribed")
-	}
-
-	delete(s[channel], socket.ID())
-
-	return nil
-}
-
 type handlerParameters struct {
 	log                 zerolog.Logger
 	socket              socket.Socket
@@ -128,19 +91,6 @@ type handlerParameters struct {
 	ownerPubKey         kyber.Point
 	clientServerAddress string
 	serverServerAddress string
-}
-
-// SendToAll sends a message to all sockets.
-func SendToAll(subs subscribers, buf []byte, channel string) *answer.Error {
-
-	sockets, ok := subs[channel]
-	if !ok {
-		return answer.NewInvalidResourceError("channel %s not found", channel)
-	}
-	for _, v := range sockets {
-		v.Send(buf)
-	}
-	return nil
 }
 
 func broadcastToAllClients(msg message.Message, params handlerParameters, channel string) *answer.Error {
@@ -165,7 +115,7 @@ func broadcastToAllClients(msg message.Message, params handlerParameters, channe
 		return answer.NewInternalServerError("failed to marshal broadcast query: %v", err)
 	}
 
-	errAnswer := SendToAll(params.subs, buf, channel)
+	errAnswer := params.subs.SendToAll(buf, channel)
 	if err != nil {
 		return errAnswer.Wrap("failed to send broadcast message to all clients")
 	}
