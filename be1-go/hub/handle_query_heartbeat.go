@@ -17,10 +17,10 @@ func handleHeartbeat(params handlerParameters, byteMessage []byte) (*int, *answe
 		return nil, errAnswer
 	}
 
-	result, err := params.db.GetGetMessageByIDParams(heartbeat.Params)
+	result, err := params.db.GetParamsForGetMessageByID(heartbeat.Params)
 	if err != nil {
-		answerErr := answer.NewInternalServerError("failed to query db: %v", err).Wrap("handleHeartbeat")
-		return nil, answerErr
+		errAnswer := answer.NewInternalServerError("failed to query db: %v", err).Wrap("handleHeartbeat")
+		return nil, errAnswer
 	}
 
 	if len(result) == 0 {

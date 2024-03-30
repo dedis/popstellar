@@ -39,11 +39,12 @@ type HandleGreetServerRepository interface {
 }
 
 type HandleGetMessagesByIDRepository interface {
+	GetResultForGetMessagesByID(params map[string][]string) (map[string][]message.Message, error)
 }
 
 type HandleHeartbeatRepository interface {
 	// GetMessagesPerChannel returns the params to do the getMessageByID msg in reponse of heartbeat
-	GetGetMessageByIDParams(heartbeatParams map[string][]string) (map[string][]string, error)
+	GetParamsForGetMessageByID(params map[string][]string) (map[string][]string, error)
 }
 
 type HandleCatchUpRepository interface {
