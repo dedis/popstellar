@@ -46,6 +46,7 @@ func Test_MockExample(t *testing.T) {
 }
 
 func Test_handleChannelRoot(t *testing.T) {
+
 	keypair := generateKeyPair(t)
 	now := time.Now().Unix()
 	name := "LAO X"
@@ -130,15 +131,23 @@ func Test_verifyLaoCreation(t *testing.T) {
 	}
 	laoPath := rootPrefix + laoID
 
+	type verifyLaoCreationInputs struct {
+		name      string
+		params    handlerParameters
+		message   message.Message
+		laoCreate messagedata.LaoCreate
+	}
+	var args []verifyLaoCreationInputs
+
 	// Test 1: error when the lao id is not base64URL encoded
 	wrongLaoCreate := laoCreate
 	wrongLaoCreate.ID = "wrongID"
 
 	params := newHandlerParameters(nil)
 
-	_, errAnswer := verifyLAOCreation(params, msg, wrongLaoCreate, laoPath)
-	fmt.Println(errAnswer)
-	require.Error(t, errAnswer)
+	args = append(args, verifyLaoCreationInputs{params: params,
+		message:   msg,
+		laoCreate: wrongLaoCreate})
 
 	// Test 2: error when the lao id is not the expected one
 	wrongLaoCreate = laoCreate
@@ -146,9 +155,10 @@ func Test_verifyLaoCreation(t *testing.T) {
 
 	params = newHandlerParameters(nil)
 
-	_, errAnswer = verifyLAOCreation(params, msg, wrongLaoCreate, laoPath)
-	fmt.Println(errAnswer)
-	require.Error(t, errAnswer)
+	args = append(args, verifyLaoCreationInputs{
+		params:    params,
+		message:   msg,
+		laoCreate: wrongLaoCreate})
 
 	// Test 3: error when the lao name is empty
 	wrongLaoCreate = laoCreate
@@ -157,9 +167,9 @@ func Test_verifyLaoCreation(t *testing.T) {
 
 	params = newHandlerParameters(nil)
 
-	_, errAnswer = verifyLAOCreation(params, msg, wrongLaoCreate, laoPath)
-	fmt.Println(errAnswer)
-	require.Error(t, errAnswer)
+	args = append(args, verifyLaoCreationInputs{params: params,
+		message:   msg,
+		laoCreate: wrongLaoCreate})
 
 	// Test 4: error when the lao creation is negative
 	wrongLaoCreate = laoCreate
@@ -168,9 +178,9 @@ func Test_verifyLaoCreation(t *testing.T) {
 
 	params = newHandlerParameters(nil)
 
-	_, errAnswer = verifyLAOCreation(params, msg, wrongLaoCreate, laoPath)
-	fmt.Println(errAnswer)
-	require.Error(t, errAnswer)
+	args = append(args, verifyLaoCreationInputs{params: params,
+		message:   msg,
+		laoCreate: wrongLaoCreate})
 
 	// Test 5: error when the organizer is not base64URL encoded
 	wrongLaoCreate = laoCreate
@@ -179,9 +189,9 @@ func Test_verifyLaoCreation(t *testing.T) {
 
 	params = newHandlerParameters(nil)
 
-	_, errAnswer = verifyLAOCreation(params, msg, wrongLaoCreate, laoPath)
-	fmt.Println(errAnswer)
-	require.Error(t, errAnswer)
+	args = append(args, verifyLaoCreationInputs{params: params,
+		message:   msg,
+		laoCreate: wrongLaoCreate})
 
 	// Test 6: error when a witness is not base64URL encoded
 	wrongLaoCreate = laoCreate
@@ -189,27 +199,27 @@ func Test_verifyLaoCreation(t *testing.T) {
 
 	params = newHandlerParameters(nil)
 
-	_, errAnswer = verifyLAOCreation(params, msg, wrongLaoCreate, laoPath)
-	fmt.Println(errAnswer)
-	require.Error(t, errAnswer)
+	args = append(args, verifyLaoCreationInputs{params: params,
+		message:   msg,
+		laoCreate: wrongLaoCreate})
 
 	// Test 7: error when the lao already exists
 	mockRepository := mocks.NewRepository(t)
 	mockRepository.On("HasChannel", laoPath).Return(true, nil)
 	params = newHandlerParameters(mockRepository)
 
-	_, errAnswer = verifyLAOCreation(params, msg, laoCreate, laoPath)
-	fmt.Println(errAnswer)
-	require.Error(t, errAnswer)
+	args = append(args, verifyLaoCreationInputs{params: params,
+		message:   msg,
+		laoCreate: laoCreate})
 
 	// Test 8: error when querying the channel
 	mockRepository = mocks.NewRepository(t)
 	mockRepository.On("HasChannel", laoPath).Return(false, fmt.Errorf("db is disconnected"))
 	params = newHandlerParameters(mockRepository)
 
-	_, errAnswer = verifyLAOCreation(params, msg, laoCreate, laoPath)
-	fmt.Println(errAnswer)
-	require.Error(t, errAnswer)
+	args = append(args, verifyLaoCreationInputs{params: params,
+		message:   msg,
+		laoCreate: laoCreate})
 
 	// Test 9: error when the sender's public key is not base64URL encoded
 	wrongMsg := msg
@@ -219,9 +229,9 @@ func Test_verifyLaoCreation(t *testing.T) {
 	mockRepository.On("HasChannel", laoPath).Return(false, nil)
 	params = newHandlerParameters(mockRepository)
 
-	_, errAnswer = verifyLAOCreation(params, wrongMsg, laoCreate, laoPath)
-	fmt.Println(errAnswer)
-	require.Error(t, errAnswer)
+	args = append(args, verifyLaoCreationInputs{params: params,
+		message:   wrongMsg,
+		laoCreate: laoCreate})
 
 	// Test 10: error when the sender's public key is not unmarshable using Kyber
 	wrongMsg = msg
@@ -231,9 +241,9 @@ func Test_verifyLaoCreation(t *testing.T) {
 	mockRepository.On("HasChannel", laoPath).Return(false, nil)
 	params = newHandlerParameters(mockRepository)
 
-	_, errAnswer = verifyLAOCreation(params, wrongMsg, laoCreate, laoPath)
-	fmt.Println(errAnswer)
-	require.Error(t, errAnswer)
+	args = append(args, verifyLaoCreationInputs{params: params,
+		message:   wrongMsg,
+		laoCreate: laoCreate})
 
 	// Test 11: error when the organizer's public key is not base64URL encoded
 	wrongLaoCreate = laoCreate
@@ -242,9 +252,9 @@ func Test_verifyLaoCreation(t *testing.T) {
 
 	params = newHandlerParameters(nil)
 
-	_, errAnswer = verifyLAOCreation(params, msg, wrongLaoCreate, laoPath)
-	fmt.Println(errAnswer)
-	require.Error(t, errAnswer)
+	args = append(args, verifyLaoCreationInputs{params: params,
+		message:   msg,
+		laoCreate: wrongLaoCreate})
 
 	// Test 12: error when the organizer's public key is not unmarshable using Kyber
 	wrongLaoCreate = laoCreate
@@ -255,9 +265,9 @@ func Test_verifyLaoCreation(t *testing.T) {
 	mockRepository.On("HasChannel", laoPath).Return(false, nil)
 	params = newHandlerParameters(mockRepository)
 
-	_, errAnswer = verifyLAOCreation(params, msg, wrongLaoCreate, laoPath)
-	fmt.Println(errAnswer)
-	require.Error(t, errAnswer)
+	args = append(args, verifyLaoCreationInputs{params: params,
+		message:   msg,
+		laoCreate: wrongLaoCreate})
 
 	// Test 13: error when the organizer's public key is not the same as the sender's public key
 	wrongLaoCreate = laoCreate
@@ -268,9 +278,9 @@ func Test_verifyLaoCreation(t *testing.T) {
 	mockRepository.On("HasChannel", laoPath).Return(false, nil)
 	params = newHandlerParameters(mockRepository)
 
-	_, errAnswer = verifyLAOCreation(params, msg, wrongLaoCreate, laoPath)
-	fmt.Println(errAnswer)
-	require.Error(t, errAnswer)
+	args = append(args, verifyLaoCreationInputs{params: params,
+		message:   msg,
+		laoCreate: wrongLaoCreate})
 
 	// Test 14: error when querying the owner's public key
 	mockRepository = mocks.NewRepository(t)
@@ -278,9 +288,9 @@ func Test_verifyLaoCreation(t *testing.T) {
 	mockRepository.On("GetOwnerPubKey").Return(nil, fmt.Errorf("db is disconnected"))
 	params = newHandlerParameters(mockRepository)
 
-	_, errAnswer = verifyLAOCreation(params, msg, laoCreate, laoPath)
-	fmt.Println(errAnswer)
-	require.Error(t, errAnswer)
+	args = append(args, verifyLaoCreationInputs{params: params,
+		message:   msg,
+		laoCreate: laoCreate})
 
 	// Test 15: error when the owner's public key is not the same as the sender's public key
 	mockRepository = mocks.NewRepository(t)
@@ -288,7 +298,15 @@ func Test_verifyLaoCreation(t *testing.T) {
 	mockRepository.On("GetOwnerPubKey").Return(wrongKeyPair.public, nil)
 	params = newHandlerParameters(mockRepository)
 
-	_, errAnswer = verifyLAOCreation(params, msg, laoCreate, laoPath)
-	fmt.Println(errAnswer)
-	require.Error(t, errAnswer)
+	args = append(args, verifyLaoCreationInputs{params: params,
+		message:   msg,
+		laoCreate: laoCreate})
+
+	// Run the tests
+	for _, arg := range args {
+		t.Run(arg.name, func(t *testing.T) {
+			_, errAnswer := verifyLaoCreation(arg.params, arg.message, arg.laoCreate, laoPath)
+			require.Error(t, errAnswer)
+		})
+	}
 }
