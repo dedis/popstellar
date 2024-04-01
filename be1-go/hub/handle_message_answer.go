@@ -11,7 +11,7 @@ const maxRetry = 10
 
 type resultMessages map[string]map[string]message.Message
 
-func (r resultMessages) handleMessages(params handlerParameters) {
+func (r resultMessages) handleResultMessages(params handlerParameters) {
 	sortedChannelIDs := make([]string, 0)
 	for channelID := range r {
 		sortedChannelIDs = append(sortedChannelIDs, channelID)
@@ -69,7 +69,7 @@ func handleGetMessagesByIDAnswer(params handlerParameters, msg answer.Answer) *a
 
 	//
 	for i := 0; i < maxRetry; i++ {
-		resultMsgs.handleMessages(params)
+		resultMsgs.handleResultMessages(params)
 
 		if len(resultMsgs) == 0 {
 			return nil
