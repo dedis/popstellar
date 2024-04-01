@@ -15,7 +15,7 @@ import (
 	"popstellar/validation"
 )
 
-func handleChannel(params handlerParameters, channel, channelType string, msg message.Message) *answer.Error {
+func handleChannel(params handlerParameters, channelID string, msg message.Message) *answer.Error {
 	dataBytes, err := base64.URLEncoding.DecodeString(msg.Data)
 	if err != nil {
 		errAnswer := answer.NewInvalidMessageFieldError("failed to decode data: %v", err).Wrap("handleChannel")
@@ -49,7 +49,7 @@ func handleChannel(params handlerParameters, channel, channelType string, msg me
 
 	msgAlreadyExists, err := params.db.HasMessage(msg.MessageID)
 	if err != nil {
-		errAnswer := answer.NewInternalServerError("error while querying db: %v", err).Wrap("handleChannel")
+		errAnswer := answer.NewInternalServerError("failed to query db: %v", err).Wrap("handleChannel")
 		return errAnswer
 	}
 	if msgAlreadyExists {
@@ -57,27 +57,33 @@ func handleChannel(params handlerParameters, channel, channelType string, msg me
 		return errAnswer
 	}
 
+	channelType, err := params.db.GetChannelType(channelID)
+	if err != nil {
+		errAnswer := answer.NewInvalidResourceError("failed to query db: %v", err).Wrap("handleChannel")
+		return errAnswer
+	}
+
 	var errAnswer *answer.Error
 
 	switch channelType {
 	case channelRoot:
-		errAnswer = handleChannelRoot(params, channel, msg)
+		errAnswer = handleChannelRoot(params, channelID, msg)
 	case channelLao:
-		errAnswer = handleChannelLao(params, channel, msg)
+		errAnswer = handleChannelLao(params, channelID, msg)
 	case channelElection:
-		errAnswer = handleChannelElection(params, channel, msg)
+		errAnswer = handleChannelElection(params, channelID, msg)
 	case channelGeneralChirp:
-		errAnswer = handleChannelGeneralChirp(params, channel, msg)
+		errAnswer = handleChannelGeneralChirp(params, channelID, msg)
 	case channelChirp:
-		errAnswer = handleChannelChirp(params, channel, msg)
+		errAnswer = handleChannelChirp(params, channelID, msg)
 	case channelReaction:
-		errAnswer = handleChannelReaction(params, channel, msg)
+		errAnswer = handleChannelReaction(params, channelID, msg)
 	case channelConsensus:
-		errAnswer = handleChannelConsensus(params, channel, msg)
+		errAnswer = handleChannelConsensus(params, channelID, msg)
 	case channelPopCha:
-		errAnswer = handleChannelPopCha(params, channel, msg)
+		errAnswer = handleChannelPopCha(params, channelID, msg)
 	case channelCoin:
-		errAnswer = handleChannelCoin(params, channel, msg)
+		errAnswer = handleChannelCoin(params, channelID, msg)
 	default:
 		errAnswer = answer.NewInvalidResourceError("unknown channel type %s", channelType)
 	}

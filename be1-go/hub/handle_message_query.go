@@ -178,13 +178,7 @@ func handlePublish(params handlerParameters, msg []byte) (*int, *answer.Error) {
 		return nil, errAnswer
 	}
 
-	channelType, err := params.db.GetChannelType(publish.Params.Channel)
-	if err != nil {
-		errAnswer := answer.NewInvalidResourceError("error while querying the db: %v", err).Wrap("handlePublish")
-		return &publish.ID, errAnswer
-	}
-
-	errAnswer := handleChannel(params, publish.Params.Channel, channelType, publish.Params.Message)
+	errAnswer := handleChannel(params, publish.Params.Channel, publish.Params.Message)
 	if errAnswer != nil {
 		errAnswer = errAnswer.Wrap("handlePublish")
 		return &publish.ID, errAnswer
