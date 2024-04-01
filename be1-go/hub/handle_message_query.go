@@ -151,7 +151,7 @@ func sendGetMessagesByID(params handlerParameters, missingIds map[string][]strin
 			JSONRPCBase: jsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
 			},
-			Method: "get_messages_by_id",
+			Method: query.MethodGetMessagesById,
 		},
 		ID:     queryId,
 		Params: missingIds,
