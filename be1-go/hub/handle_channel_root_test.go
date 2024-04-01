@@ -4,101 +4,16 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"github.com/stretchr/testify/require"
-	"go.dedis.ch/kyber/v3"
 	"go.dedis.ch/kyber/v3/sign/schnorr"
-	"io"
 	"popstellar/crypto"
 	"popstellar/hub/mocks"
-	state "popstellar/hub/standard_hub/hub_state"
 	"popstellar/message/messagedata"
 	"popstellar/message/query/method/message"
-	"popstellar/network/socket"
-	"popstellar/validation"
 	"testing"
 	"time"
 )
-
-// fakeSocket is a fake implementation of a socket
-//
-// - implements socket.Socket
-type fakeSocket struct {
-	socket.Socket
-
-	resultID    int
-	res         []message.Message
-	missingMsgs map[string][]message.Message
-	msg         []byte
-
-	err error
-
-	// the socket ID
-	id string
-}
-
-// Send implements socket.Socket
-func (f *fakeSocket) Send(msg []byte) {
-	f.msg = msg
-}
-
-// SendResult implements socket.Socket
-func (f *fakeSocket) SendResult(id int, res []message.Message, missingMsgs map[string][]message.Message) {
-	f.resultID = id
-	f.res = res
-	f.missingMsgs = missingMsgs
-}
-
-// SendError implements socket.Socket
-func (f *fakeSocket) SendError(id *int, err error) {
-	f.err = err
-}
-
-func (f *fakeSocket) ID() string {
-	return f.id
-}
-
-func (f *fakeSocket) Type() socket.SocketType {
-	return socket.ClientSocketType
-}
-
-func newHandlerParameters(db Repository) handlerParameters {
-	nolog := zerolog.New(io.Discard)
-	schemaValidator, _ := validation.NewSchemaValidator()
-	peers := state.NewPeers()
-	queries := state.NewQueries(nolog)
-
-	return handlerParameters{
-		log:                 nolog,
-		socket:              fakeSocket{id: "fakeID"},
-		schemaValidator:     *schemaValidator,
-		db:                  db,
-		subs:                make(subscribers),
-		peers:               &peers,
-		queries:             &queries,
-		ownerPubKey:         nil,
-		clientServerAddress: "clientServerAddress",
-		serverServerAddress: "serverServerAddress",
-	}
-
-}
-
-type keypair struct {
-	public    kyber.Point
-	publicBuf []byte
-	private   kyber.Scalar
-}
-
-func generateKeyPair(t *testing.T) keypair {
-	secret := crypto.Suite.Scalar().Pick(crypto.Suite.RandomStream())
-	point := crypto.Suite.Point().Mul(secret, nil)
-
-	pkbuf, err := point.MarshalBinary()
-	require.NoError(t, err)
-
-	return keypair{point, pkbuf, secret}
-}
 
 func Test_MockExample(t *testing.T) {
 	repo := mocks.NewRepository(t)
@@ -116,12 +31,9 @@ func Test_MockExample(t *testing.T) {
 }
 
 func Test_handleChannelRoot(t *testing.T) {
-	mockRepository := mocks.NewRepository(t)
-	params := newHandlerParameters(mockRepository)
 	keypair := generateKeyPair(t)
 	now := time.Now().Unix()
 	name := "LAO X"
-
 	laoID := messagedata.Hash(base64.URLEncoding.EncodeToString(keypair.publicBuf), fmt.Sprintf("%d", now), name)
 
 	data := messagedata.LaoCreate{
@@ -149,4 +61,17 @@ func Test_handleChannelRoot(t *testing.T) {
 		MessageID:         messagedata.Hash(dataBase64, signatureBase64),
 		WitnessSignatures: []message.WitnessSignature{},
 	}
+
+	mockRepository := mocks.NewRepository(t)
+	mockRepository.On("HasChannel", "/root/"+laoID).Return(false, nil)
+	mockRepository.On("GetOwnerPubKey").Return(nil, nil)
+	mockRepository.On("StoreMessage", "/root", msg).Return(nil)
+	mockRepository.On("StoreMessage", "/root/"+laoID, msg).Return(nil)
+	mockRepository.On("StoreChannel", "/root").Return(nil)
+	mockRepository.On("StoreChannel", "/root/"+laoID).Return(nil)
+	mockRepository.On("StoreChannel", "/root/"+laoID).Return(nil)
+	params := newHandlerParameters(mockRepository)
+
+	errAnswer := handleChannelRoot(params, "/root", msg)
+	log.Info().Msg(errAnswer.Error())
 }
