@@ -15,6 +15,13 @@ import (
 	"time"
 )
 
+type handleChannelInput struct {
+	name      string
+	params    handlerParameters
+	channelID string
+	message   message.Message
+}
+
 func Test_handleChannel(t *testing.T) {
 	keypair := generateKeyPair(t)
 	now := time.Now().Unix()
@@ -48,6 +55,8 @@ func Test_handleChannel(t *testing.T) {
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
+	inputs := make([]handleChannelInput, 0)
+
 	// unknown channelType
 
 	wrongChannelID := "wrongChannelID"
@@ -58,9 +67,12 @@ func Test_handleChannel(t *testing.T) {
 	mockRepository.On("HasMessage", msg.MessageID).Return(false, nil)
 	mockRepository.On("GetChannelType", wrongChannelID).Return("", nil)
 
-	errAnswer := handleChannel(params, wrongChannelID, msg)
-	fmt.Println(errAnswer)
-	require.Error(t, errAnswer)
+	inputs = append(inputs, handleChannelInput{
+		name:      "unknown channelType",
+		params:    params,
+		channelID: wrongChannelID,
+		message:   msg,
+	})
 
 	// error while querying the channelType
 
@@ -72,9 +84,12 @@ func Test_handleChannel(t *testing.T) {
 	mockRepository.On("HasMessage", msg.MessageID).Return(false, nil)
 	mockRepository.On("GetChannelType", problemDBChannelID).Return("", xerrors.Errorf("db disconnected"))
 
-	errAnswer = handleChannel(params, problemDBChannelID, msg)
-	fmt.Println(errAnswer)
-	require.Error(t, errAnswer)
+	inputs = append(inputs, handleChannelInput{
+		name:      "failed to query channelType",
+		params:    params,
+		channelID: problemDBChannelID,
+		message:   msg,
+	})
 
 	// message already received
 
@@ -83,9 +98,12 @@ func Test_handleChannel(t *testing.T) {
 
 	mockRepository.On("HasMessage", msg.MessageID).Return(true, nil)
 
-	errAnswer = handleChannel(params, "", msg)
-	fmt.Println(errAnswer)
-	require.Error(t, errAnswer)
+	inputs = append(inputs, handleChannelInput{
+		name:      "message already received",
+		params:    params,
+		channelID: wrongChannelID,
+		message:   msg,
+	})
 
 	// error while querying if the message already exists
 
@@ -94,9 +112,12 @@ func Test_handleChannel(t *testing.T) {
 
 	mockRepository.On("HasMessage", msg.MessageID).Return(false, xerrors.Errorf("db disconnected"))
 
-	errAnswer = handleChannel(params, "", msg)
-	fmt.Println(errAnswer)
-	require.Error(t, errAnswer)
+	inputs = append(inputs, handleChannelInput{
+		name:      "failed to query message",
+		params:    params,
+		channelID: wrongChannelID,
+		message:   msg,
+	})
 
 	// wrong messageID
 
@@ -105,9 +126,12 @@ func Test_handleChannel(t *testing.T) {
 
 	params = newHandlerParameters(nil)
 
-	errAnswer = handleChannel(params, "", msgWrongID)
-	fmt.Println(errAnswer)
-	require.Error(t, errAnswer)
+	inputs = append(inputs, handleChannelInput{
+		name:      "wrong messageID",
+		params:    params,
+		channelID: "",
+		message:   msgWrongID,
+	})
 
 	// failed signature check because wrong sender
 
@@ -117,9 +141,12 @@ func Test_handleChannel(t *testing.T) {
 
 	params = newHandlerParameters(nil)
 
-	errAnswer = handleChannel(params, "", msgWrongSender)
-	fmt.Println(errAnswer)
-	require.Error(t, errAnswer)
+	inputs = append(inputs, handleChannelInput{
+		name:      "failed signature check wrong sender",
+		params:    params,
+		channelID: "",
+		message:   msgWrongSender,
+	})
 
 	// failed signature check because wrong data
 
@@ -128,9 +155,12 @@ func Test_handleChannel(t *testing.T) {
 
 	params = newHandlerParameters(nil)
 
-	errAnswer = handleChannel(params, "", msgWrongData)
-	fmt.Println(errAnswer)
-	require.Error(t, errAnswer)
+	inputs = append(inputs, handleChannelInput{
+		name:      "failed signature check wrong data",
+		params:    params,
+		channelID: "",
+		message:   msgWrongData,
+	})
 
 	// failed signature check because wrong signature
 
@@ -143,9 +173,12 @@ func Test_handleChannel(t *testing.T) {
 
 	params = newHandlerParameters(nil)
 
-	errAnswer = handleChannel(params, "", msgWrongSign)
-	fmt.Println(errAnswer)
-	require.Error(t, errAnswer)
+	inputs = append(inputs, handleChannelInput{
+		name:      "failed signature check wrong signature",
+		params:    params,
+		channelID: "",
+		message:   msgWrongSign,
+	})
 
 	// wrong signature encoding
 
@@ -154,9 +187,12 @@ func Test_handleChannel(t *testing.T) {
 
 	params = newHandlerParameters(nil)
 
-	errAnswer = handleChannel(params, "", msgWrongSignEncoding)
-	fmt.Println(errAnswer)
-	require.Error(t, errAnswer)
+	inputs = append(inputs, handleChannelInput{
+		name:      "wrong signature encoding",
+		params:    params,
+		channelID: "",
+		message:   msgWrongSignEncoding,
+	})
 
 	// wrong sender encoding
 
@@ -165,9 +201,12 @@ func Test_handleChannel(t *testing.T) {
 
 	params = newHandlerParameters(nil)
 
-	errAnswer = handleChannel(params, "", msgWrongSenderEncoding)
-	fmt.Println(errAnswer)
-	require.Error(t, errAnswer)
+	inputs = append(inputs, handleChannelInput{
+		name:      "wrong sender encoding",
+		params:    params,
+		channelID: "",
+		message:   msgWrongSenderEncoding,
+	})
 
 	// wrong data encoding
 
@@ -176,7 +215,18 @@ func Test_handleChannel(t *testing.T) {
 
 	params = newHandlerParameters(nil)
 
-	errAnswer = handleChannel(params, "", msgWrongDataEncoding)
-	fmt.Println(errAnswer)
-	require.Error(t, errAnswer)
+	inputs = append(inputs, handleChannelInput{
+		name:      "wrong data encoding",
+		params:    params,
+		channelID: "",
+		message:   msgWrongDataEncoding,
+	})
+
+	for _, i := range inputs {
+		t.Run(i.name, func(t *testing.T) {
+			errAnswer := handleChannel(i.params, i.channelID, i.message)
+			require.Error(t, errAnswer)
+		})
+	}
+
 }
