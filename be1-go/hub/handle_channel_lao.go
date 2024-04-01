@@ -12,7 +12,7 @@ import (
 func handleChannelLao(params handlerParameters, channel string, msg message.Message) *answer.Error {
 	object, action, errAnswer := verifyDataAndGetObjectAction(params, msg)
 	if errAnswer != nil {
-		errAnswer = errAnswer.Wrap("handleChannelChirp")
+		errAnswer = errAnswer.Wrap("handleChannelLao")
 		return errAnswer
 	}
 

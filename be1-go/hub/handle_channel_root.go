@@ -21,7 +21,7 @@ const (
 func handleChannelRoot(params handlerParameters, channel string, msg message.Message) *answer.Error {
 	object, action, errAnswer := verifyDataAndGetObjectAction(params, msg)
 	if errAnswer != nil {
-		errAnswer = errAnswer.Wrap("handleChannelChirp")
+		errAnswer = errAnswer.Wrap("handleChannelRoot")
 		return errAnswer
 	}
 
@@ -134,8 +134,8 @@ func verifyLAOCreation(msg message.Message, laoCreate messagedata.LaoCreate, lao
 	return organizerPubBuf, nil
 }
 
-func createLao(laoPath string, organizerBuf []byte, msg message.Message, params handlerParameters) *answer.Error {
-	err := params.db.StoreChannel(laoPath, organizerBuf)
+func createLao(laoPath string, organizerPubBuf []byte, msg message.Message, params handlerParameters) *answer.Error {
+	err := params.db.StoreChannel(laoPath, organizerPubBuf)
 	var errAnswer *answer.Error
 	if err != nil {
 		errAnswer = answer.NewInternalServerError("failed to store lao channel: %v", err)
@@ -151,39 +151,39 @@ func createLao(laoPath string, organizerBuf []byte, msg message.Message, params 
 	}
 
 	generalChirpPath := laoPath + social + chirps
-	errAnswer = createSubChannel(generalChirpPath, organizerBuf, params)
+	errAnswer = createSubChannel(generalChirpPath, organizerPubBuf, params)
 	if errAnswer != nil {
 		errAnswer = errAnswer.Wrap("createLao")
 		return errAnswer
 	}
 	reactionsPath := laoPath + social + reactions
-	errAnswer = createSubChannel(reactionsPath, organizerBuf, params)
+	errAnswer = createSubChannel(reactionsPath, organizerPubBuf, params)
 	if errAnswer != nil {
 		errAnswer = errAnswer.Wrap("createLao")
 		return errAnswer
 	}
 	consensusPath := laoPath + consensus
-	errAnswer = createSubChannel(consensusPath, organizerBuf, params)
+	errAnswer = createSubChannel(consensusPath, organizerPubBuf, params)
 	if errAnswer != nil {
 		errAnswer = errAnswer.Wrap("createLao")
 		return errAnswer
 	}
 
-	errAnswer = createAndSendLaoGreet(laoPath, organizerBuf, params)
+	errAnswer = createAndSendLaoGreet(laoPath, organizerPubBuf, params)
 	if errAnswer != nil {
 		errAnswer = errAnswer.Wrap("failed to create and send lao#greet message")
 		return errAnswer
 	}
 
 	coinPath := laoPath + coin
-	errAnswer = createSubChannel(coinPath, organizerBuf, params)
+	errAnswer = createSubChannel(coinPath, organizerPubBuf, params)
 	if errAnswer != nil {
 		errAnswer = errAnswer.Wrap("createLao")
 		return errAnswer
 
 	}
 	authPath := laoPath + auth
-	errAnswer = createSubChannel(authPath, organizerBuf, params)
+	errAnswer = createSubChannel(authPath, organizerPubBuf, params)
 	if errAnswer != nil {
 		errAnswer = errAnswer.Wrap("createLao")
 		return errAnswer
