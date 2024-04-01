@@ -1,15 +1,24 @@
 package hub
 
 import (
+	"encoding/base64"
+	"encoding/json"
+	"fmt"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
+	"github.com/stretchr/testify/require"
+	"go.dedis.ch/kyber/v3"
+	"go.dedis.ch/kyber/v3/sign/schnorr"
 	"io"
+	"popstellar/crypto"
 	"popstellar/hub/mocks"
 	state "popstellar/hub/standard_hub/hub_state"
+	"popstellar/message/messagedata"
 	"popstellar/message/query/method/message"
 	"popstellar/network/socket"
 	"popstellar/validation"
 	"testing"
+	"time"
 )
 
 // fakeSocket is a fake implementation of a socket
@@ -75,6 +84,22 @@ func newHandlerParameters(db Repository) handlerParameters {
 
 }
 
+type keypair struct {
+	public    kyber.Point
+	publicBuf []byte
+	private   kyber.Scalar
+}
+
+func generateKeyPair(t *testing.T) keypair {
+	secret := crypto.Suite.Scalar().Pick(crypto.Suite.RandomStream())
+	point := crypto.Suite.Point().Mul(secret, nil)
+
+	pkbuf, err := point.MarshalBinary()
+	require.NoError(t, err)
+
+	return keypair{point, pkbuf, secret}
+}
+
 func Test_MockExample(t *testing.T) {
 	repo := mocks.NewRepository(t)
 	repo.On("GetMessageByID", "messageID1").Return(message.Message{Data: "data1",
@@ -92,34 +117,36 @@ func Test_MockExample(t *testing.T) {
 
 func Test_handleChannelRoot(t *testing.T) {
 	mockRepository := mocks.NewRepository(t)
+	params := newHandlerParameters(mockRepository)
+	keypair := generateKeyPair(t)
+	now := time.Now().Unix()
+	name := "LAO X"
 
-	type args struct {
-		params  handlerParameters
-		channel string
-		msg     message.Message
+	laoID := messagedata.Hash(base64.URLEncoding.EncodeToString(keypair.publicBuf), fmt.Sprintf("%d", now), name)
+
+	data := messagedata.LaoCreate{
+		Object:    messagedata.LAOObject,
+		Action:    messagedata.LAOActionCreate,
+		ID:        laoID,
+		Name:      name,
+		Creation:  now,
+		Organizer: base64.URLEncoding.EncodeToString(keypair.publicBuf),
+		Witnesses: []string{},
 	}
-	tests := []struct {
-		name string
-		args args
-	}{
-		{
-			name: "Test1",
-			args: args{
-				params:  newHandlerParameters(mockRepository),
-				channel: "channel",
-				msg: message.Message{
-					Data:              "data",
-					Sender:            "sender",
-					Signature:         "sig",
-					MessageID:         "ID",
-					WitnessSignatures: nil,
-				},
-			},
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			handleChannelRoot(tt.args.params, tt.args.channel, tt.args.msg)
-		})
+
+	dataBuf, err := json.Marshal(data)
+	require.NoError(t, err)
+	signature, err := schnorr.Sign(crypto.Suite, keypair.private, dataBuf)
+	require.NoError(t, err)
+
+	dataBase64 := base64.URLEncoding.EncodeToString(dataBuf)
+	signatureBase64 := base64.URLEncoding.EncodeToString(signature)
+
+	msg := message.Message{
+		Data:              dataBase64,
+		Sender:            base64.URLEncoding.EncodeToString(keypair.publicBuf),
+		Signature:         signatureBase64,
+		MessageID:         messagedata.Hash(dataBase64, signatureBase64),
+		WitnessSignatures: []message.WitnessSignature{},
 	}
 }
