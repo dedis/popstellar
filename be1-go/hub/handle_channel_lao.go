@@ -10,11 +10,9 @@ import (
 )
 
 func handleChannelLao(params handlerParameters, channel string, msg message.Message) *answer.Error {
-	object, action, err := verifyDataAndGetObjectAction(params, msg)
-	var errAnswer *answer.Error
-	if err != nil {
-		errAnswer = answer.NewInvalidMessageFieldError("failed to verify message and get object action: %v", err)
-		errAnswer = errAnswer.Wrap("handleChannelLao")
+	object, action, errAnswer := verifyDataAndGetObjectAction(params, msg)
+	if errAnswer != nil {
+		errAnswer = errAnswer.Wrap("handleChannelChirp")
 		return errAnswer
 	}
 
@@ -41,7 +39,7 @@ func handleChannelLao(params handlerParameters, channel string, msg message.Mess
 		errAnswer = answer.NewInvalidMessageFieldError("failed to handle %s#%s, invalid object#action", object, action)
 	}
 	if errAnswer != nil {
-		err = errAnswer.Wrap("handleChannelLao")
+		errAnswer = errAnswer.Wrap("handleChannelLao")
 		return errAnswer
 	}
 	return nil

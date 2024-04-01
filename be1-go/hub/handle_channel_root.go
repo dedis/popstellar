@@ -19,11 +19,9 @@ const (
 )
 
 func handleChannelRoot(params handlerParameters, channel string, msg message.Message) *answer.Error {
-	object, action, err := verifyDataAndGetObjectAction(params, msg)
-	var errAnswer *answer.Error
-	if err != nil {
-		errAnswer = answer.NewInvalidMessageFieldError("failed to verify message and get object action: %v", err)
-		errAnswer = errAnswer.Wrap("handleChannelRoot")
+	object, action, errAnswer := verifyDataAndGetObjectAction(params, msg)
+	if errAnswer != nil {
+		errAnswer = errAnswer.Wrap("handleChannelChirp")
 		return errAnswer
 	}
 
