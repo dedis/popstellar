@@ -7,74 +7,76 @@ import (
 	"sort"
 )
 
-func handleGetMessagesByIDAnswer(params handlerParameters, msg answer.Answer) *answer.Error {
-	result := msg.Result.GetMessagesByChannel()
-	tmpResult := make(map[string]map[string]message.Message)
+const maxRetry = 10
 
-	// Sort the channelID by length (/root first, ...)
-	sortedChannelID := make([]string, 0)
-	for channelID := range result {
-		sortedChannelID = append(sortedChannelID, channelID)
+type resultMessages map[string]map[string]message.Message
+
+func (r resultMessages) handleMessages(params handlerParameters) {
+	sortedChannelIDs := make([]string, 0)
+	for channelID := range r {
+		sortedChannelIDs = append(sortedChannelIDs, channelID)
 	}
-	sort.Slice(sortedChannelID, func(i, j int) bool {
-		return len(sortedChannelID[i]) < len(sortedChannelID[j])
+	sort.Slice(sortedChannelIDs, func(i, j int) bool {
+		return len(sortedChannelIDs[i]) < len(sortedChannelIDs[j])
 	})
 
-	// Handle each messages
-	for _, channelID := range sortedChannelID {
-		tmpResult[channelID] = make(map[string]message.Message)
-		rawMsgs := result[channelID]
+	for _, channelID := range sortedChannelIDs {
+		msgs := r[channelID]
+		for msgID, msg := range msgs {
+			errAnswer := handleChannel(params, channelID, msg)
+			if errAnswer == nil {
+				delete(r[channelID], msgID)
+				continue
+			}
+
+			if errAnswer.Code == answer.InvalidMessageFieldErrorCode {
+				delete(r[channelID], msgID)
+			}
+
+			errAnswer = errAnswer.Wrap("handleGetMessagesByIDAnswer")
+			params.log.Error().Msgf(errAnswer.Error())
+		}
+
+		if len(r[channelID]) == 0 {
+			delete(r, channelID)
+		}
+	}
+}
+
+func handleGetMessagesByIDAnswer(params handlerParameters, msg answer.Answer) *answer.Error {
+	result := msg.Result.GetMessagesByChannel()
+	resultMsgs := make(resultMessages)
+
+	// Unmarshal each message
+	for channelID, rawMsgs := range result {
+		resultMsgs[channelID] = make(map[string]message.Message)
 		for _, rawMsg := range rawMsgs {
-			var msgData message.Message
-			err := json.Unmarshal(rawMsg, &msgData)
-			if err != nil {
-				errAnswer := answer.NewInvalidMessageFieldError("failed to unmarshal: %v",
-					err).Wrap("handleGetMessagesByIDAnswer")
-				params.log.Error().Msg(errAnswer.Error())
+			var msg message.Message
+			err := json.Unmarshal(rawMsg, &msg)
+			if err == nil {
+				resultMsgs[channelID][msg.MessageID] = msg
+				continue
 			}
 
-			errAnswer := handleChannel(params, channelID, msgData)
-			if errAnswer != nil {
-				errAnswer = errAnswer.Wrap("handleGetMessagesByIDAnswer")
-				params.log.Error().Msgf(errAnswer.Error())
-				tmpResult[channelID][msgData.MessageID] = msgData
-			}
+			errAnswer := answer.NewInvalidMessageFieldError("failed to unmarshal: %v", err).Wrap("handleGetMessagesByIDAnswer")
+			params.log.Error().Msg(errAnswer.Error())
 		}
 
-		if len(tmpResult[channelID]) == 0 {
-			delete(tmpResult, channelID)
+		if len(resultMsgs[channelID]) == 0 {
+			delete(resultMsgs, channelID)
 		}
 	}
 
-	// Retry failed msgs
-	for i := 0; i < 10; i++ {
-		for channelID, msgsData := range tmpResult {
-			for msgID, msgData := range msgsData {
-				errAnswer := handleChannel(params, channelID, msgData)
-				if errAnswer != nil {
-					errAnswer = errAnswer.Wrap("handleGetMessagesByIDAnswer")
-					params.log.Error().Msgf(errAnswer.Error())
-					continue
-				}
+	//
+	for i := 0; i < maxRetry; i++ {
+		resultMsgs.handleMessages(params)
 
-				delete(tmpResult[channelID], msgID)
-			}
-
-			if len(tmpResult[channelID]) == 0 {
-				delete(tmpResult, channelID)
-			}
-		}
-
-		if len(tmpResult) == 0 {
-			break
+		if len(resultMsgs) == 0 {
+			return nil
 		}
 	}
 
-	if len(tmpResult) == 0 {
-		return nil
-	}
-
-	errAnswer := params.db.AddNewBlackList(tmpResult)
+	errAnswer := params.db.AddNewBlackList(resultMsgs)
 	if errAnswer != nil {
 		errAnswer = errAnswer.Wrap("handleGetMessagesByIDAnswer")
 	}
