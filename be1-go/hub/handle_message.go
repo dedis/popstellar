@@ -112,7 +112,7 @@ func handleAnswer(params handlerParameters, msg []byte) (*int, *answer.Error) {
 		return answerMsg.ID, errAnswer
 	}
 
-	errAnswer := handleGetMessagesByIdAnswer(params, answerMsg)
+	errAnswer := handleGetMessagesByIDAnswer(params, answerMsg)
 	if errAnswer != nil {
 		errAnswer = errAnswer.Wrap("handleAnswer")
 		return answerMsg.ID, errAnswer
