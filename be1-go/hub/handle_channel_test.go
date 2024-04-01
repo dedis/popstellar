@@ -23,6 +23,7 @@ type handleChannelInput struct {
 }
 
 func Test_handleChannel(t *testing.T) {
+	socket := &fakeSocket{id: "fakeID"}
 	keypair := generateKeyPair(t)
 	now := time.Now().Unix()
 	name := "LAO X"
@@ -62,7 +63,7 @@ func Test_handleChannel(t *testing.T) {
 	wrongChannelID := "wrongChannelID"
 
 	mockRepository := mocks.NewRepository(t)
-	params := newHandlerParameters(mockRepository)
+	params := newHandlerParameters(mockRepository, socket)
 
 	mockRepository.On("HasMessage", msg.MessageID).Return(false, nil)
 	mockRepository.On("GetChannelType", wrongChannelID).Return("", nil)
@@ -79,7 +80,7 @@ func Test_handleChannel(t *testing.T) {
 	problemDBChannelID := "problemDBChannelID"
 
 	mockRepository = mocks.NewRepository(t)
-	params = newHandlerParameters(mockRepository)
+	params = newHandlerParameters(mockRepository, socket)
 
 	mockRepository.On("HasMessage", msg.MessageID).Return(false, nil)
 	mockRepository.On("GetChannelType", problemDBChannelID).Return("", xerrors.Errorf("db disconnected"))
@@ -94,7 +95,7 @@ func Test_handleChannel(t *testing.T) {
 	// message already received
 
 	mockRepository = mocks.NewRepository(t)
-	params = newHandlerParameters(mockRepository)
+	params = newHandlerParameters(mockRepository, socket)
 
 	mockRepository.On("HasMessage", msg.MessageID).Return(true, nil)
 
@@ -108,7 +109,7 @@ func Test_handleChannel(t *testing.T) {
 	// error while querying if the message already exists
 
 	mockRepository = mocks.NewRepository(t)
-	params = newHandlerParameters(mockRepository)
+	params = newHandlerParameters(mockRepository, socket)
 
 	mockRepository.On("HasMessage", msg.MessageID).Return(false, xerrors.Errorf("db disconnected"))
 
@@ -124,7 +125,7 @@ func Test_handleChannel(t *testing.T) {
 	msgWrongID := msg
 	msgWrongID.MessageID = messagedata.Hash("wrong messageID")
 
-	params = newHandlerParameters(nil)
+	params = newHandlerParameters(nil, socket)
 
 	inputs = append(inputs, handleChannelInput{
 		name:      "wrong messageID",
@@ -139,7 +140,7 @@ func Test_handleChannel(t *testing.T) {
 	msgWrongSender := msg
 	msgWrongSender.Sender = base64.URLEncoding.EncodeToString(wrongKeypair.publicBuf)
 
-	params = newHandlerParameters(nil)
+	params = newHandlerParameters(nil, socket)
 
 	inputs = append(inputs, handleChannelInput{
 		name:      "failed signature check wrong sender",
@@ -153,7 +154,7 @@ func Test_handleChannel(t *testing.T) {
 	msgWrongData := msg
 	msgWrongData.Data = base64.URLEncoding.EncodeToString([]byte("wrong data"))
 
-	params = newHandlerParameters(nil)
+	params = newHandlerParameters(nil, socket)
 
 	inputs = append(inputs, handleChannelInput{
 		name:      "failed signature check wrong data",
@@ -171,7 +172,7 @@ func Test_handleChannel(t *testing.T) {
 	msgWrongSign := msg
 	msgWrongSign.Signature = base64.URLEncoding.EncodeToString(wrongSignature)
 
-	params = newHandlerParameters(nil)
+	params = newHandlerParameters(nil, socket)
 
 	inputs = append(inputs, handleChannelInput{
 		name:      "failed signature check wrong signature",
@@ -185,7 +186,7 @@ func Test_handleChannel(t *testing.T) {
 	msgWrongSignEncoding := msg
 	msgWrongSignEncoding.Signature = "wrong encoding"
 
-	params = newHandlerParameters(nil)
+	params = newHandlerParameters(nil, socket)
 
 	inputs = append(inputs, handleChannelInput{
 		name:      "wrong signature encoding",
@@ -199,7 +200,7 @@ func Test_handleChannel(t *testing.T) {
 	msgWrongSenderEncoding := msg
 	msgWrongSenderEncoding.Sender = "wrong encoding"
 
-	params = newHandlerParameters(nil)
+	params = newHandlerParameters(nil, socket)
 
 	inputs = append(inputs, handleChannelInput{
 		name:      "wrong sender encoding",
@@ -213,7 +214,7 @@ func Test_handleChannel(t *testing.T) {
 	msgWrongDataEncoding := msg
 	msgWrongDataEncoding.Data = "wrong encoding"
 
-	params = newHandlerParameters(nil)
+	params = newHandlerParameters(nil, socket)
 
 	inputs = append(inputs, handleChannelInput{
 		name:      "wrong data encoding",
