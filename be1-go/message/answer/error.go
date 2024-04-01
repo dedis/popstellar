@@ -41,11 +41,6 @@ func NewInvalidActionError(format string, a ...interface{}) *Error {
 	return NewErrorf(-1, "invalid action: "+format, a...)
 }
 
-// NewInvalidObjectError returns an error with the code -1 for an invalid object.
-func NewInvalidObjectError(format string, a ...interface{}) *Error {
-	return NewErrorf(-1, "invalid object: "+format, a...)
-}
-
 // NewInvalidResourceError returns an error with -2 for an object with invalid resources
 func NewInvalidResourceError(format string, a ...interface{}) *Error {
 	return NewErrorf(-2, "invalid resource: "+format, a...)
