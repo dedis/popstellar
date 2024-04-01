@@ -77,6 +77,26 @@ func newHandlerParameters(db Repository) handlerParameters {
 		clientServerAddress: "clientServerAddress",
 		serverServerAddress: "serverServerAddress",
 	}
+}
+
+func newHandlerParametersWithFakeSocket(db Repository, s *fakeSocket) handlerParameters {
+	nolog := zerolog.New(io.Discard)
+	schemaValidator, _ := validation.NewSchemaValidator()
+	peers := state.NewPeers()
+	queries := state.NewQueries(nolog)
+
+	return handlerParameters{
+		log:                 nolog,
+		socket:              s,
+		schemaValidator:     *schemaValidator,
+		db:                  db,
+		subs:                make(subscribers),
+		peers:               &peers,
+		queries:             &queries,
+		ownerPubKey:         nil,
+		clientServerAddress: "clientServerAddress",
+		serverServerAddress: "serverServerAddress",
+	}
 
 }
 
