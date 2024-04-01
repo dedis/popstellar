@@ -69,20 +69,10 @@ func handleGreetServer(params handlerParameters, byteMessage []byte) (*int, *ans
 		return nil, nil
 	}
 
-	errAnswer := sendGreetServer(params)
-	if errAnswer != nil {
-		errAnswer = errAnswer.Wrap("handleGreetServer")
-		return nil, errAnswer
-	}
-
-	return nil, nil
-}
-
-func sendGreetServer(params handlerParameters) *answer.Error {
 	pkBytes, err := params.db.GetServerPubKey()
 	if err != nil {
-		errAnswer := answer.NewInternalServerError("error while querying db: %v", err).Wrap("sendGreetServer")
-		return errAnswer
+		errAnswer := answer.NewInternalServerError("error while querying db: %v", err).Wrap("handleGreetServer")
+		return nil, errAnswer
 	}
 
 	serverInfo := method.ServerInfo{
@@ -103,16 +93,15 @@ func sendGreetServer(params handlerParameters) *answer.Error {
 
 	buf, err := json.Marshal(serverGreet)
 	if err != nil {
-		errAnswer := answer.NewInternalServerError("failed to marshal: %v",
-			err).Wrap("sendGreetServer")
-		return errAnswer
+		errAnswer := answer.NewInternalServerError("failed to marshal: %v", err).Wrap("handleGreetServer")
+		return nil, errAnswer
 	}
 
 	params.socket.Send(buf)
 
 	params.peers.AddPeerGreeted(params.socket.ID())
 
-	return nil
+	return nil, nil
 }
 
 func handleHeartbeat(params handlerParameters, byteMessage []byte) (*int, *answer.Error) {
@@ -134,16 +123,6 @@ func handleHeartbeat(params handlerParameters, byteMessage []byte) (*int, *answe
 		return nil, nil
 	}
 
-	errAnswer := sendGetMessagesByID(params, result)
-	if errAnswer != nil {
-		errAnswer = errAnswer.Wrap("handleHeartbeat")
-		return nil, errAnswer
-	}
-
-	return nil, nil
-}
-
-func sendGetMessagesByID(params handlerParameters, missingIds map[string][]string) *answer.Error {
 	queryId := params.queries.GetNextID()
 
 	getMessagesById := method.GetMessagesById{
@@ -154,19 +133,20 @@ func sendGetMessagesByID(params handlerParameters, missingIds map[string][]strin
 			Method: query.MethodGetMessagesById,
 		},
 		ID:     queryId,
-		Params: missingIds,
+		Params: result,
 	}
 
 	buf, err := json.Marshal(getMessagesById)
 	if err != nil {
-		return answer.NewInternalServerError("failed to marshal: %v", err).Wrap("sendGetMessagesByID")
+		errAnswer := answer.NewInternalServerError("failed to marshal: %v", err).Wrap("handleHeartbeat")
+		return nil, errAnswer
 	}
 
 	params.socket.Send(buf)
 
 	params.queries.AddQuery(queryId, getMessagesById)
 
-	return nil
+	return nil, nil
 }
 
 func handlePublish(params handlerParameters, msg []byte) (*int, *answer.Error) {
