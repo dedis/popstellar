@@ -51,6 +51,10 @@ func (f *fakeSocket) ID() string {
 	return f.id
 }
 
+func (f *fakeSocket) getMessage() []byte {
+	return f.msg
+}
+
 func (f *fakeSocket) Type() socket.SocketType {
 	return socket.ClientSocketType
 }

@@ -49,7 +49,7 @@ func handleLaoCreate(msg message.Message, params handlerParameters) *answer.Erro
 	}
 
 	laoPath := rootPrefix + laoCreate.ID
-	organizerPubBuf, errAnswer := verifyLAOCreation(msg, laoCreate, laoPath, params)
+	organizerPubBuf, errAnswer := verifyLAOCreation(params, msg, laoCreate, laoPath)
 	if err != nil {
 		errAnswer = errAnswer.Wrap("handleLaoCreate")
 		return errAnswer
@@ -59,10 +59,17 @@ func handleLaoCreate(msg message.Message, params handlerParameters) *answer.Erro
 		errAnswer = errAnswer.Wrap("handleLaoCreate")
 		return errAnswer
 	}
+
+	err = params.db.StoreMessage(rootChannel, msg)
+	if err != nil {
+		errAnswer = answer.NewInternalServerError("failed to store lao#create message in root channel: %v", err)
+		errAnswer = errAnswer.Wrap("handleLaoCreate")
+		return errAnswer
+	}
 	return nil
 }
 
-func verifyLAOCreation(msg message.Message, laoCreate messagedata.LaoCreate, laoPath string, params handlerParameters) ([]byte, *answer.Error) {
+func verifyLAOCreation(params handlerParameters, msg message.Message, laoCreate messagedata.LaoCreate, laoPath string) ([]byte, *answer.Error) {
 	err := laoCreate.Verify()
 	var errAnswer *answer.Error
 	if err != nil {
@@ -210,19 +217,12 @@ func createAndSendLaoGreet(laoPath string, organizerBuf []byte, params handlerPa
 		peers = append(peers, messagedata.Peer{Address: info.ClientAddress})
 	}
 
-	clientServerAddress, err := params.db.GetClientServerAddress()
-	if err != nil {
-		errAnswer = answer.NewInternalServerError("failed to get client server address: %v", err)
-		errAnswer = errAnswer.Wrap("createAndSendLaoGreet")
-		return errAnswer
-	}
-
 	msgData := messagedata.LaoGreet{
 		Object:   messagedata.LAOObject,
 		Action:   messagedata.LAOActionGreet,
 		LaoID:    laoPath,
 		Frontend: base64.URLEncoding.EncodeToString(organizerBuf),
-		Address:  clientServerAddress,
+		Address:  params.clientServerAddress,
 		Peers:    peers,
 	}
 
