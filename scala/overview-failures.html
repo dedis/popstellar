@@ -75,7 +75,7 @@ $(document).ready(function() {
   <tbody>
     <tr class="info">
       <td>scala</td>
-      <td>31 Mar 2024, 04:20</td>
+      <td>01 Apr 2024, 04:20</td>
     </tr>
   </tbody>
 </table>
@@ -205,7 +205,7 @@ classpath:be/features/election/electionOpen.feature:81</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-4" class="collapse collapsable-details">
-        <pre>04:15:43.801 classpath:be/features/election/electionOpen.feature:81
+        <pre>04:15:13.188 classpath:be/features/election/electionOpen.feature:81
 Given def notOrganizer = call createMockClient
 js failed:
 &gt;&gt;&gt;&gt;
@@ -403,7 +403,7 @@ classpath:be/features/election/electionOpen.feature:81
 </div>
 
 
-  <span class="lead-duration duration">0.242</span>
+  <span class="lead-duration duration">0.229</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-6">
@@ -473,7 +473,7 @@ classpath:be/features/election/electionOpen.feature:81
   <span class="keyword indention">And</span>
   <span class="name">call read(validCoinIssuanceScenario) { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)', recipient: '#(recipient)', amount: '#(initialAmount)' }</span>
 
-  <span class="lead-duration duration">0.225</span>
+  <span class="lead-duration duration">0.217</span>
 
 </div>
 
@@ -544,7 +544,7 @@ classpath:be/features/election/electionOpen.feature:81
   <span class="keyword indention">And</span>
   <span class="name">def transaction = organizer.issueCoins(recipient, 20);</span>
 
-  <span class="lead-duration duration">0.001</span>
+  <span class="lead-duration duration">0.000</span>
 
 </div>
 
@@ -713,7 +713,7 @@ classpath:be/features/election/electionOpen.feature:81
   <span class="keyword indention">When</span>
   <span class="name">organizer.publish(validTransfer, lao.cashChannel)</span>
 
-  <span class="lead-duration duration">0.002</span>
+  <span class="lead-duration duration">0.001</span>
 
 </div>
 
@@ -740,7 +740,7 @@ classpath:be/features/election/electionOpen.feature:81
   <span class="keyword indention">And</span>
   <span class="name">json answer = organizer.getBackendResponse(validTransfer)</span>
 
-  <span class="lead-duration duration">0.009</span>
+  <span class="lead-duration duration">0.005</span>
 
 </div>
 
@@ -767,7 +767,7 @@ classpath:be/features/election/electionOpen.feature:81
   <span class="keyword indention">Then</span>
   <span class="name">match answer contains VALID_MESSAGE</span>
 
-  <span class="lead-duration duration">0.001</span>
+  <span class="lead-duration duration">0.000</span>
 
 </div>
 
@@ -784,7 +784,7 @@ classpath:be/features/election/electionOpen.feature:81
       <div id="msg-10" class="collapse collapsable-details  in ">
         <pre>match failed: CONTAINS
   $ | actual does not contain expected | actual does not contain key - 'result' (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:484922478,&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;Invalid data: $.transaction.inputs[0].tx_out_index: string found, integer expected; $.transaction.outputs[0].value: string found, integer expected&quot;}}
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:-2050496967,&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;Invalid data: $.transaction.inputs[0].tx_out_index: string found, integer expected; $.transaction.outputs[0].value: string found, integer expected&quot;}}
   {&quot;result&quot;:0}
 
 
@@ -802,11 +802,11 @@ classpath:be/features/digitalCash/transaction.feature:97</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-11" class="collapse collapsable-details">
-        <pre>04:11:42.690 classpath:be/features/digitalCash/transaction.feature:97
+        <pre>04:11:12.935 classpath:be/features/digitalCash/transaction.feature:97
 Then match answer contains VALID_MESSAGE
 match failed: CONTAINS
   $ | actual does not contain expected | actual does not contain key - 'result' (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:484922478,&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;Invalid data: $.transaction.inputs[0].tx_out_index: string found, integer expected; $.transaction.outputs[0].value: string found, integer expected&quot;}}
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:-2050496967,&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;Invalid data: $.transaction.inputs[0].tx_out_index: string found, integer expected; $.transaction.outputs[0].value: string found, integer expected&quot;}}
   {&quot;result&quot;:0}
 
 
@@ -875,7 +875,7 @@ classpath:be/features/digitalCash/transaction.feature:97
 </div>
 
 
-  <span class="lead-duration duration">45.001</span>
+  <span class="lead-duration duration">45.002</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-12">
@@ -1002,7 +1002,7 @@ classpath:be/features/decentralizedCom/heartbeat.feature:26</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-15" class="collapse collapsable-details">
-        <pre>04:11:08.426 classpath:be/features/decentralizedCom/heartbeat.feature:26
+        <pre>04:10:38.909 classpath:be/features/decentralizedCom/heartbeat.feature:26
 Then assert heartbeatMessages.length == 2
 did not evaluate to 'true': heartbeatMessages.length == 2
 classpath:be/features/decentralizedCom/heartbeat.feature:26
@@ -1043,7 +1043,7 @@ classpath:be/features/decentralizedCom/heartbeat.feature:26
 </div>
 
 
-  <span class="lead-duration duration">5.006</span>
+  <span class="lead-duration duration">5.005</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-16">
@@ -1086,7 +1086,7 @@ classpath:be/features/decentralizedCom/heartbeat.feature:26
   <span class="keyword indention">Given</span>
   <span class="name">def validCreateRollCall =</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">0.001</span>
 
 </div>
 
@@ -1133,7 +1133,7 @@ classpath:be/features/decentralizedCom/heartbeat.feature:26
   <span class="keyword indention">When</span>
   <span class="name">mockFrontend.publish(validCreateRollCall, lao.channel)</span>
 
-  <span class="lead-duration duration">0.002</span>
+  <span class="lead-duration duration">0.001</span>
 
 </div>
 
@@ -1217,7 +1217,7 @@ classpath:be/features/decentralizedCom/heartbeat.feature:49</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-20" class="collapse collapsable-details">
-        <pre>04:11:21.241 classpath:be/features/decentralizedCom/heartbeat.feature:49
+        <pre>04:10:51.633 classpath:be/features/decentralizedCom/heartbeat.feature:49
 Then assert mockBackend.receivedHeartbeatWithSubstring(message_id)
 did not evaluate to 'true': mockBackend.receivedHeartbeatWithSubstring(message_id)
 classpath:be/features/decentralizedCom/heartbeat.feature:49
@@ -1258,7 +1258,7 @@ classpath:be/features/decentralizedCom/heartbeat.feature:49
 </div>
 
 
-  <span class="lead-duration duration">5.011</span>
+  <span class="lead-duration duration">5.014</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-21">
@@ -1301,7 +1301,7 @@ classpath:be/features/decentralizedCom/heartbeat.feature:49
   <span class="keyword indention">Given</span>
   <span class="name">def updateLaoRequest =</span>
 
-  <span class="lead-duration duration">0.002</span>
+  <span class="lead-duration duration">0.003</span>
 
 </div>
 
@@ -1345,7 +1345,7 @@ classpath:be/features/decentralizedCom/heartbeat.feature:49
   <span class="keyword indention">When</span>
   <span class="name">organizer.publish(updateLaoRequest, lao.channel)</span>
 
-  <span class="lead-duration duration">0.003</span>
+  <span class="lead-duration duration">0.007</span>
 
 </div>
 
@@ -1372,7 +1372,7 @@ classpath:be/features/decentralizedCom/heartbeat.feature:49
   <span class="keyword indention">And</span>
   <span class="name">json answer = organizer.getBackendResponse(updateLaoRequest)</span>
 
-  <span class="lead-duration duration">5.004</span>
+  <span class="lead-duration duration">5.003</span>
 
 </div>
 
@@ -1409,7 +1409,7 @@ classpath:be/features/LAO/update.feature:30</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-25" class="collapse collapsable-details">
-        <pre>04:08:06.909 classpath:be/features/LAO/update.feature:30
+        <pre>04:07:38.387 classpath:be/features/LAO/update.feature:30
 And json answer = organizer.getBackendResponse(updateLaoRequest)
 js failed:
 &gt;&gt;&gt;&gt;
@@ -1662,7 +1662,7 @@ classpath:be/features/LAO/update.feature:48</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-30" class="collapse collapsable-details">
-        <pre>04:08:19.803 classpath:be/features/LAO/update.feature:48
+        <pre>04:07:51.240 classpath:be/features/LAO/update.feature:48
 And json answer = organizer.getBackendResponse(badUpdateLaoReq)
 js failed:
 &gt;&gt;&gt;&gt;
@@ -1764,7 +1764,7 @@ classpath:be/features/LAO/update.feature:48
 </div>
 
 
-  <span class="lead-duration duration">5.006</span>
+  <span class="lead-duration duration">5.007</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-31">
@@ -1807,7 +1807,7 @@ classpath:be/features/LAO/update.feature:48
   <span class="keyword indention">Given</span>
   <span class="name">def badUpdateLaoReq =</span>
 
-  <span class="lead-duration duration">0.002</span>
+  <span class="lead-duration duration">0.001</span>
 
 </div>
 
@@ -1851,7 +1851,7 @@ classpath:be/features/LAO/update.feature:48
   <span class="keyword indention">When</span>
   <span class="name">organizer.publish(badUpdateLaoReq, lao.channel)</span>
 
-  <span class="lead-duration duration">0.002</span>
+  <span class="lead-duration duration">0.003</span>
 
 </div>
 
@@ -1915,7 +1915,7 @@ classpath:be/features/LAO/update.feature:66</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-35" class="collapse collapsable-details">
-        <pre>04:08:32.615 classpath:be/features/LAO/update.feature:66
+        <pre>04:08:03.951 classpath:be/features/LAO/update.feature:66
 And json answer = organizer.getBackendResponse(badUpdateLaoReq)
 js failed:
 &gt;&gt;&gt;&gt;
@@ -2096,7 +2096,7 @@ classpath:be/features/rollCall/closeRollCall.feature:42</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-39" class="collapse collapsable-details">
-        <pre>04:17:36.552 classpath:be/features/rollCall/closeRollCall.feature:42
+        <pre>04:17:05.023 classpath:be/features/rollCall/closeRollCall.feature:42
 Given def notOrganizer = call createMockClient
 js failed:
 &gt;&gt;&gt;&gt;
@@ -2374,7 +2374,7 @@ classpath:be/features/rollCall/createRollCall.feature:70</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-44" class="collapse collapsable-details">
-        <pre>04:18:36.055 classpath:be/features/rollCall/createRollCall.feature:70
+        <pre>04:18:04.104 classpath:be/features/rollCall/createRollCall.feature:70
 Given def notOrganizer = call createMockClient
 js failed:
 &gt;&gt;&gt;&gt;
@@ -2655,7 +2655,7 @@ classpath:be/features/election/castVote.feature:156</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-49" class="collapse collapsable-details">
-        <pre>04:13:36.696 classpath:be/features/election/castVote.feature:156
+        <pre>04:13:06.275 classpath:be/features/election/castVote.feature:156
 Given def nonAttendee = call createMockClient
 js failed:
 &gt;&gt;&gt;&gt;
@@ -2860,7 +2860,7 @@ classpath:be/features/election/castVote.feature:156
 </div>
 
 
-  <span class="lead-duration duration">5.365</span>
+  <span class="lead-duration duration">5.295</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-51">
@@ -2975,7 +2975,7 @@ classpath:be/features/election/castVote.feature:156
   <span class="keyword indention">And</span>
   <span class="name">karate.log(&quot;sending a greetServer :\n&quot;, karate.pretty(invalidGreetServer))</span>
 
-  <span class="lead-duration duration">0.001</span>
+  <span class="lead-duration duration">0.000</span>
 
 </div>
 
@@ -2993,7 +2993,7 @@ classpath:be/features/election/castVote.feature:156
           <a>Doc string</a>
       </div>
       <div id="msg-54" class="collapse collapsable-details">
-        <pre>04:09:44.945 sending a greetServer :
+        <pre>04:09:15.746 sending a greetServer :
  {
   &quot;jsonrpc&quot;: &quot;2.0&quot;,
   &quot;method&quot;: &quot;greet_server&quot;,
@@ -3023,7 +3023,7 @@ classpath:be/features/election/castVote.feature:156
   <span class="keyword indention">And</span>
   <span class="name">def greetServers = mockBackend.getGreetServer()</span>
 
-  <span class="lead-duration duration">5.363</span>
+  <span class="lead-duration duration">5.293</span>
 
 </div>
 
@@ -3080,7 +3080,7 @@ classpath:be/features/decentralizedCom/greetServer.feature:47</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-56" class="collapse collapsable-details">
-        <pre>04:09:50.309 classpath:be/features/decentralizedCom/greetServer.feature:47
+        <pre>04:09:21.040 classpath:be/features/decentralizedCom/greetServer.feature:47
 Then assert greetServers.length == 0
 did not evaluate to 'true': greetServers.length == 0
 classpath:be/features/decentralizedCom/greetServer.feature:47
@@ -3200,7 +3200,7 @@ classpath:be/features/rollCall/openRollCall.feature:41</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-60" class="collapse collapsable-details">
-        <pre>04:20:13.638 classpath:be/features/rollCall/openRollCall.feature:41
+        <pre>04:19:41.110 classpath:be/features/rollCall/openRollCall.feature:41
 Given def notOrganizer = call createMockClient
 js failed:
 &gt;&gt;&gt;&gt;
@@ -3477,7 +3477,7 @@ classpath:be/features/LAO/create.feature:113</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-65" class="collapse collapsable-details">
-        <pre>04:07:52.874 classpath:be/features/LAO/create.feature:113
+        <pre>04:07:24.433 classpath:be/features/LAO/create.feature:113
 Given def notOrganizer = call createMockClient
 js failed:
 &gt;&gt;&gt;&gt;
