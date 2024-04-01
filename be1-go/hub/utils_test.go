@@ -59,7 +59,7 @@ func (f *fakeSocket) Type() socket.SocketType {
 	return socket.ClientSocketType
 }
 
-func newHandlerParameters(db Repository, socket socket.Socket) handlerParameters {
+func newHandlerParameters(db Repository) handlerParameters {
 	nolog := zerolog.New(io.Discard)
 	schemaValidator, _ := validation.NewSchemaValidator()
 	peers := state.NewPeers()
@@ -67,7 +67,7 @@ func newHandlerParameters(db Repository, socket socket.Socket) handlerParameters
 
 	return handlerParameters{
 		log:                 nolog,
-		socket:              socket,
+		socket:              &fakeSocket{id: "fakeID"},
 		schemaValidator:     *schemaValidator,
 		db:                  db,
 		subs:                make(subscribers),

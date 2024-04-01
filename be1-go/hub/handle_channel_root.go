@@ -49,7 +49,7 @@ func handleLaoCreate(msg message.Message, params handlerParameters) *answer.Erro
 	}
 
 	laoPath := rootPrefix + laoCreate.ID
-	organizerPubBuf, errAnswer := verifyLaoCreation(params, msg, laoCreate, laoPath)
+	organizerPubBuf, errAnswer := verifyLAOCreation(params, msg, laoCreate, laoPath)
 	if err != nil {
 		errAnswer = errAnswer.Wrap("handleLaoCreate")
 		return errAnswer
@@ -69,7 +69,7 @@ func handleLaoCreate(msg message.Message, params handlerParameters) *answer.Erro
 	return nil
 }
 
-func verifyLaoCreation(params handlerParameters, msg message.Message, laoCreate messagedata.LaoCreate, laoPath string) ([]byte, *answer.Error) {
+func verifyLAOCreation(params handlerParameters, msg message.Message, laoCreate messagedata.LaoCreate, laoPath string) ([]byte, *answer.Error) {
 	err := laoCreate.Verify()
 	var errAnswer *answer.Error
 	if err != nil {
