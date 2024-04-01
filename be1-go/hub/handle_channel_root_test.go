@@ -99,7 +99,6 @@ func Test_handleChannelRoot(t *testing.T) {
 }
 
 func Test_verifyLaoCreation(t *testing.T) {
-	socket := &fakeSocket{id: "fakeID"}
 	keypair := generateKeyPair(t)
 	wrongKeyPair := generateKeyPair(t)
 	now := time.Now().Unix()
@@ -145,7 +144,7 @@ func Test_verifyLaoCreation(t *testing.T) {
 	wrongLaoCreate := laoCreate
 	wrongLaoCreate.ID = "wrongID"
 
-	params := newHandlerParameters(nil, socket)
+	params := newHandlerParameters(nil)
 
 	args = append(args, verifyLaoCreationInputs{params: params,
 		message:   msg,
@@ -155,7 +154,7 @@ func Test_verifyLaoCreation(t *testing.T) {
 	wrongLaoCreate = laoCreate
 	wrongLaoCreate.ID = base64.URLEncoding.EncodeToString([]byte("wrongID"))
 
-	params = newHandlerParameters(nil, socket)
+	params = newHandlerParameters(nil)
 
 	args = append(args, verifyLaoCreationInputs{
 		params:    params,
@@ -167,7 +166,7 @@ func Test_verifyLaoCreation(t *testing.T) {
 	wrongLaoCreate.Name = ""
 	wrongLaoCreate.ID = messagedata.Hash(wrongLaoCreate.Organizer, fmt.Sprintf("%d", wrongLaoCreate.Creation), wrongLaoCreate.Name)
 
-	params = newHandlerParameters(nil, socket)
+	params = newHandlerParameters(nil)
 
 	args = append(args, verifyLaoCreationInputs{params: params,
 		message:   msg,
@@ -189,7 +188,7 @@ func Test_verifyLaoCreation(t *testing.T) {
 	wrongLaoCreate.Organizer = "wrongOrganizer"
 	wrongLaoCreate.ID = messagedata.Hash(wrongLaoCreate.Organizer, fmt.Sprintf("%d", wrongLaoCreate.Creation), wrongLaoCreate.Name)
 
-	params = newHandlerParameters(nil, socket)
+	params = newHandlerParameters(nil)
 
 	args = append(args, verifyLaoCreationInputs{params: params,
 		message:   msg,
@@ -199,7 +198,7 @@ func Test_verifyLaoCreation(t *testing.T) {
 	wrongLaoCreate = laoCreate
 	wrongLaoCreate.Witnesses = []string{"a wrong witness"}
 
-	params = newHandlerParameters(nil, socket)
+	params = newHandlerParameters(nil)
 
 	args = append(args, verifyLaoCreationInputs{params: params,
 		message:   msg,
@@ -208,7 +207,7 @@ func Test_verifyLaoCreation(t *testing.T) {
 	// Test 7: error when the lao already exists
 	mockRepository := mocks.NewRepository(t)
 	mockRepository.On("HasChannel", laoPath).Return(true, nil)
-	params = newHandlerParameters(mockRepository, socket)
+	params = newHandlerParameters(mockRepository)
 
 	args = append(args, verifyLaoCreationInputs{params: params,
 		message:   msg,
@@ -217,7 +216,7 @@ func Test_verifyLaoCreation(t *testing.T) {
 	// Test 8: error when querying the channel
 	mockRepository = mocks.NewRepository(t)
 	mockRepository.On("HasChannel", laoPath).Return(false, fmt.Errorf("db is disconnected"))
-	params = newHandlerParameters(mockRepository, socket)
+	params = newHandlerParameters(mockRepository)
 
 	args = append(args, verifyLaoCreationInputs{params: params,
 		message:   msg,
@@ -229,7 +228,7 @@ func Test_verifyLaoCreation(t *testing.T) {
 
 	mockRepository = mocks.NewRepository(t)
 	mockRepository.On("HasChannel", laoPath).Return(false, nil)
-	params = newHandlerParameters(mockRepository, socket)
+	params = newHandlerParameters(mockRepository)
 
 	args = append(args, verifyLaoCreationInputs{params: params,
 		message:   wrongMsg,
@@ -241,7 +240,7 @@ func Test_verifyLaoCreation(t *testing.T) {
 
 	mockRepository = mocks.NewRepository(t)
 	mockRepository.On("HasChannel", laoPath).Return(false, nil)
-	params = newHandlerParameters(mockRepository, socket)
+	params = newHandlerParameters(mockRepository)
 
 	args = append(args, verifyLaoCreationInputs{params: params,
 		message:   wrongMsg,
@@ -252,7 +251,7 @@ func Test_verifyLaoCreation(t *testing.T) {
 	wrongLaoCreate.Organizer = "wrongOrganizer"
 	wrongLaoCreate.ID = messagedata.Hash(wrongLaoCreate.Organizer, fmt.Sprintf("%d", wrongLaoCreate.Creation), wrongLaoCreate.Name)
 
-	params = newHandlerParameters(nil, socket)
+	params = newHandlerParameters(nil)
 
 	args = append(args, verifyLaoCreationInputs{params: params,
 		message:   msg,
@@ -265,7 +264,7 @@ func Test_verifyLaoCreation(t *testing.T) {
 
 	mockRepository = mocks.NewRepository(t)
 	mockRepository.On("HasChannel", laoPath).Return(false, nil)
-	params = newHandlerParameters(mockRepository, socket)
+	params = newHandlerParameters(mockRepository)
 
 	args = append(args, verifyLaoCreationInputs{params: params,
 		message:   msg,
@@ -278,7 +277,7 @@ func Test_verifyLaoCreation(t *testing.T) {
 
 	mockRepository = mocks.NewRepository(t)
 	mockRepository.On("HasChannel", laoPath).Return(false, nil)
-	params = newHandlerParameters(mockRepository, socket)
+	params = newHandlerParameters(mockRepository)
 
 	args = append(args, verifyLaoCreationInputs{params: params,
 		message:   msg,
@@ -288,7 +287,7 @@ func Test_verifyLaoCreation(t *testing.T) {
 	mockRepository = mocks.NewRepository(t)
 	mockRepository.On("HasChannel", laoPath).Return(false, nil)
 	mockRepository.On("GetOwnerPubKey").Return(nil, fmt.Errorf("db is disconnected"))
-	params = newHandlerParameters(mockRepository, socket)
+	params = newHandlerParameters(mockRepository)
 
 	args = append(args, verifyLaoCreationInputs{params: params,
 		message:   msg,
@@ -298,7 +297,7 @@ func Test_verifyLaoCreation(t *testing.T) {
 	mockRepository = mocks.NewRepository(t)
 	mockRepository.On("HasChannel", laoPath).Return(false, nil)
 	mockRepository.On("GetOwnerPubKey").Return(wrongKeyPair.public, nil)
-	params = newHandlerParameters(mockRepository, socket)
+	params = newHandlerParameters(mockRepository)
 
 	args = append(args, verifyLaoCreationInputs{params: params,
 		message:   msg,
