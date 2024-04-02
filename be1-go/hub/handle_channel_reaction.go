@@ -25,6 +25,13 @@ func handleChannelReaction(params handlerParameters, channel string, msg message
 		errAnswer = errAnswer.Wrap("handleChannelReaction")
 		return errAnswer
 	}
+
+	err := params.db.StoreMessage(channel, msg)
+	if err != nil {
+		errAnswer = answer.NewInternalServerError("failed to store message: %v", err)
+		errAnswer = errAnswer.Wrap("handleChannelReaction")
+		return errAnswer
+	}
 	return nil
 
 }

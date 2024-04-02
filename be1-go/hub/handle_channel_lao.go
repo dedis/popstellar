@@ -1,12 +1,19 @@
 package hub
 
 import (
-	"fmt"
+	"encoding/base64"
 	"go.dedis.ch/kyber/v3/sign/schnorr"
+	"golang.org/x/exp/slices"
 	"popstellar/crypto"
 	"popstellar/message/answer"
 	"popstellar/message/messagedata"
 	"popstellar/message/query/method/message"
+	"strconv"
+	"strings"
+)
+
+const (
+	rollCallFlag = "R"
 )
 
 func handleChannelLao(params handlerParameters, channel string, msg message.Message) *answer.Error {
@@ -28,7 +35,7 @@ func handleChannelLao(params handlerParameters, channel string, msg message.Mess
 	case messagedata.RollCallObject + "#" + messagedata.RollCallActionClose:
 		errAnswer = handleRollCallClose(msg, params)
 	case messagedata.RollCallObject + "#" + messagedata.RollCallActionCreate:
-		errAnswer = handleRollCallCreate(msg, params)
+		errAnswer = handleRollCallCreate(msg, channel, params)
 	case messagedata.RollCallObject + "#" + messagedata.RollCallActionOpen:
 		errAnswer = handleRollCallOpen(msg, params)
 	case messagedata.RollCallObject + "#" + messagedata.RollCallActionReOpen:
@@ -42,6 +49,13 @@ func handleChannelLao(params handlerParameters, channel string, msg message.Mess
 		errAnswer = errAnswer.Wrap("handleChannelLao")
 		return errAnswer
 	}
+
+	err := params.db.StoreMessage(channel, msg)
+	if err != nil {
+		errAnswer = answer.NewInternalServerError("failed to store message: %v", err)
+		errAnswer = errAnswer.Wrap("handleChannelLao")
+		return errAnswer
+	}
 	return nil
 }
 
@@ -49,9 +63,10 @@ func handleLaoState(msg message.Message, channel string, params handlerParameter
 	var laoState messagedata.LaoState
 	err := msg.UnmarshalData(&laoState)
 	var errAnswer *answer.Error
+
 	if err != nil {
 		errAnswer = answer.NewInvalidActionError("failed to unmarshal message data: %v", err)
-		errAnswer = errAnswer.Wrap("handleLaoCreate")
+		errAnswer = errAnswer.Wrap("handleLaoState")
 		return errAnswer
 	}
 	ok, err := params.db.HasMessage(laoState.ModificationID)
@@ -64,17 +79,26 @@ func handleLaoState(msg message.Message, channel string, params handlerParameter
 		errAnswer = errAnswer.Wrap("handleLaoState")
 		return errAnswer
 	}
+
 	witnesses, err := params.db.GetLaoWitnesses(channel)
 	if err != nil {
 		errAnswer = answer.NewInternalServerError("failed to get lao witnesses: %v", err)
 		errAnswer = errAnswer.Wrap("handleLaoState")
 		return errAnswer
 	}
+
+	// Check if the signatures match
 	expected := len(witnesses)
 	match := 0
-	for j := 0; j < len(laoState.ModificationSignatures); j++ {
-		_, ok := witnesses[laoState.ModificationSignatures[j].Witness]
-		if ok {
+	for _, modificationSignature := range laoState.ModificationSignatures {
+		err = schnorr.VerifyWithChecks(crypto.Suite, []byte(modificationSignature.Witness),
+			[]byte(laoState.ModificationID), []byte(modificationSignature.Signature))
+		if err != nil {
+			errAnswer = answer.NewInvalidMessageFieldError("failed to verify signature for witness: %s", modificationSignature.Witness)
+			errAnswer = errAnswer.Wrap("handleLaoState")
+			return errAnswer
+		}
+		if _, ok := witnesses[modificationSignature.Witness]; ok {
 			match++
 		}
 	}
@@ -85,32 +109,20 @@ func handleLaoState(msg message.Message, channel string, params handlerParameter
 		return errAnswer
 	}
 
-	// Check if the signatures match
-	for _, pair := range laoState.ModificationSignatures {
-		err := schnorr.VerifyWithChecks(crypto.Suite, []byte(pair.Witness),
-			[]byte(laoState.ModificationID), []byte(pair.Signature))
-		if err != nil {
-			errAnswer = answer.NewInvalidMessageFieldError("failed to verify signature for witness: %s", pair.Witness)
-			errAnswer = errAnswer.Wrap("handleLaoState")
-			return errAnswer
-		}
-	}
 	var updateMsgData messagedata.LaoUpdate
 
 	err = msg.UnmarshalData(&updateMsgData)
 	if err != nil {
-		return &answer.Error{
-			Code:        -4,
-			Description: fmt.Sprintf("failed to unmarshal message from the inbox: %v", err),
-		}
+		errAnswer = answer.NewInvalidMessageFieldError("failed to unmarshal update message data: %v", err)
+		errAnswer = errAnswer.Wrap("handleLaoState")
+		return errAnswer
 	}
 
 	err = updateMsgData.Verify()
 	if err != nil {
-		return &answer.Error{
-			Code:        -4,
-			Description: fmt.Sprintf("invalid lao#update message: %v", err),
-		}
+		errAnswer = answer.NewInvalidMessageFieldError("failed to verify update message data: %v", err)
+		errAnswer = errAnswer.Wrap("handleLaoState")
+		return errAnswer
 	}
 
 	errAnswer = compareLaoUpdateAndState(updateMsgData, laoState)
@@ -118,7 +130,6 @@ func handleLaoState(msg message.Message, channel string, params handlerParameter
 		errAnswer = errAnswer.Wrap("handleLaoState")
 		return errAnswer
 	}
-
 	return nil
 }
 
@@ -135,32 +146,99 @@ func compareLaoUpdateAndState(update messagedata.LaoUpdate, state messagedata.La
 		errAnswer = errAnswer.Wrap("compareLaoUpdateAndState")
 	}
 
-	M := len(update.Witnesses)
-	N := len(state.Witnesses)
+	numUpdateWitnesses := len(update.Witnesses)
+	numStateWitnesses := len(state.Witnesses)
 
-	if M != N {
-		errAnswer = answer.NewInvalidMessageFieldError("mismatch between witness count: expected %d got %d", M, N)
+	if numUpdateWitnesses != numStateWitnesses {
+		errAnswer = answer.NewInvalidMessageFieldError("mismatch between witness count")
 		errAnswer = errAnswer.Wrap("compareLaoUpdateAndState")
 		return errAnswer
 	}
 
 	match := 0
-
-	for i := 0; i < M; i++ {
-		for j := 0; j < N; j++ {
-			if update.Witnesses[i] == state.Witnesses[j] {
-				match++
-				break
-			}
+	for _, updateWitness := range update.Witnesses {
+		if slices.Contains(state.Witnesses, updateWitness) {
+			match++
 		}
 	}
 
-	if match != M {
-		errAnswer = answer.NewInvalidMessageFieldError("mismatch between witness keys: expected %d keys to match but %d matched", M, match)
+	if match != numUpdateWitnesses {
+		errAnswer = answer.NewInvalidMessageFieldError("mismatch between witness keys")
 		errAnswer = errAnswer.Wrap("compareLaoUpdateAndState")
 		return errAnswer
 	}
+	return nil
+}
 
+func handleRollCallCreate(msg message.Message, channel string, params handlerParameters) *answer.Error {
+	var rollCallCreate messagedata.RollCallCreate
+	err := msg.UnmarshalData(&rollCallCreate)
+	var errAnswer *answer.Error
+
+	if err != nil {
+		errAnswer = answer.NewInvalidActionError("failed to unmarshal message data: %v", err)
+		errAnswer = errAnswer.Wrap("handleRollCallCreate")
+		return errAnswer
+	}
+
+	// verify id is base64URL encoded
+	_, err = base64.URLEncoding.DecodeString(rollCallCreate.ID)
+	if err != nil {
+		errAnswer = answer.NewInvalidMessageFieldError("failed to decode roll call ID: %v", err)
+		errAnswer = errAnswer.Wrap("handleRollCallCreate")
+		return errAnswer
+	}
+
+	// verify roll call create message id
+	expectedID := messagedata.Hash(
+		rollCallFlag,
+		strings.ReplaceAll(channel, messagedata.RootPrefix, ""),
+		strconv.Itoa(int(rollCallCreate.Creation)),
+		rollCallCreate.Name,
+	)
+	if rollCallCreate.ID != expectedID {
+		errAnswer = answer.NewInvalidMessageFieldError("roll call id is %s, should be %s", rollCallCreate.ID, expectedID)
+		errAnswer = errAnswer.Wrap("handleRollCallCreate")
+		return errAnswer
+	}
+
+	// verify creation is positive
+	if rollCallCreate.Creation < 0 {
+		errAnswer = answer.NewInvalidMessageFieldError("roll call creation is %d, should be minimum 0", rollCallCreate.Creation)
+		errAnswer = errAnswer.Wrap("handleRollCallCreate")
+		return errAnswer
+	}
+
+	// verify proposed start after creation and proposed end after creation
+	if rollCallCreate.ProposedStart < rollCallCreate.Creation || rollCallCreate.ProposedEnd < rollCallCreate.Creation {
+		errAnswer = answer.NewInvalidMessageFieldError("roll call proposed start and proposed end should ve greater than creation")
+		errAnswer = errAnswer.Wrap("handleRollCallCreate")
+		return errAnswer
+	}
+
+	// verify proposed end after proposed start
+	if rollCallCreate.ProposedEnd < rollCallCreate.ProposedStart {
+		errAnswer = answer.NewInvalidMessageFieldError("roll call proposed end should be greater than proposed start")
+		errAnswer = errAnswer.Wrap("handleRollCallCreate")
+		return errAnswer
+	}
+
+	return nil
+}
+
+func handleRollCallClose(msg message.Message, params handlerParameters) *answer.Error {
+	return nil
+}
+
+func handleRollCallOpen(msg message.Message, params handlerParameters) *answer.Error {
+	return nil
+}
+
+func handleRollCallReOpen(msg message.Message, params handlerParameters) *answer.Error {
+	return nil
+}
+
+func handleElectionSetup(msg message.Message, params handlerParameters) *answer.Error {
 	return nil
 }
 
@@ -176,25 +254,5 @@ func handleMeetingCreate(msg message.Message, params handlerParameters) *answer.
 
 // Not implemented yet
 func handleMeetingState(msg message.Message, params handlerParameters) *answer.Error {
-	return nil
-}
-
-func handleRollCallClose(msg message.Message, params handlerParameters) *answer.Error {
-	return nil
-}
-
-func handleRollCallCreate(msg message.Message, params handlerParameters) *answer.Error {
-	return nil
-}
-
-func handleRollCallOpen(msg message.Message, params handlerParameters) *answer.Error {
-	return nil
-}
-
-func handleRollCallReOpen(msg message.Message, params handlerParameters) *answer.Error {
-	return nil
-}
-
-func handleElectionSetup(msg message.Message, params handlerParameters) *answer.Error {
 	return nil
 }

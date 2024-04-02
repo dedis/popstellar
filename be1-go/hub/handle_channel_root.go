@@ -35,6 +35,13 @@ func handleChannelRoot(params handlerParameters, channel string, msg message.Mes
 		errAnswer = errAnswer.Wrap("handleChannelRoot")
 		return errAnswer
 	}
+
+	err := params.db.StoreMessage(channel, msg)
+	if err != nil {
+		errAnswer = answer.NewInternalServerError("failed to store message in root channel: %v", err)
+		errAnswer = errAnswer.Wrap("handleChannelRoot")
+		return errAnswer
+	}
 	return nil
 }
 
@@ -62,13 +69,6 @@ func handleLaoCreate(msg message.Message, params handlerParameters) *answer.Erro
 
 	errAnswer = createAndSendLaoGreet(params, organizerPubBuf, laoPath)
 	if errAnswer != nil {
-		errAnswer = errAnswer.Wrap("handleLaoCreate")
-		return errAnswer
-	}
-
-	err = params.db.StoreMessage(rootChannel, msg)
-	if err != nil {
-		errAnswer = answer.NewInternalServerError("failed to store lao#create message in root channel: %v", err)
 		errAnswer = errAnswer.Wrap("handleLaoCreate")
 		return errAnswer
 	}

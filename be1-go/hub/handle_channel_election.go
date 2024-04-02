@@ -29,6 +29,13 @@ func handleChannelElection(params handlerParameters, channel string, msg message
 		errAnswer = errAnswer.Wrap("handleChannelElection")
 		return errAnswer
 	}
+
+	err := params.db.StoreMessage(channel, msg)
+	if err != nil {
+		errAnswer = answer.NewInternalServerError("failed to store message: %v", err)
+		errAnswer = errAnswer.Wrap("handleChannelElection")
+		return errAnswer
+	}
 	return nil
 }
 

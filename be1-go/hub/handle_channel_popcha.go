@@ -23,6 +23,13 @@ func handleChannelPopCha(params handlerParameters, channel string, msg message.M
 		errAnswer = errAnswer.Wrap("handleChannelPopCha")
 		return errAnswer
 	}
+
+	err := params.db.StoreMessage(channel, msg)
+	if err != nil {
+		errAnswer = answer.NewInternalServerError("failed to store message: %v", err)
+		errAnswer = errAnswer.Wrap("handleChannelPopCha")
+		return errAnswer
+	}
 	return nil
 }
 

@@ -25,6 +25,13 @@ func handleChannelChirp(params handlerParameters, channel string, msg message.Me
 		errAnswer = errAnswer.Wrap("handleChannelChirp")
 		return errAnswer
 	}
+
+	err := params.db.StoreMessage(channel, msg)
+	if err != nil {
+		errAnswer = answer.NewInternalServerError("failed to store message: %v", err)
+		errAnswer = errAnswer.Wrap("handleChannelChirp")
+		return errAnswer
+	}
 	return nil
 }
 

@@ -37,6 +37,13 @@ func handleChannelConsensus(params handlerParameters, channel string, msg messag
 		errAnswer = errAnswer.Wrap("handleChannelConsensus")
 		return errAnswer
 	}
+
+	err := params.db.StoreMessage(channel, msg)
+	if err != nil {
+		errAnswer = answer.NewInternalServerError("failed to store message: %v", err)
+		errAnswer = errAnswer.Wrap("handleChannelConsensus")
+		return errAnswer
+	}
 	return nil
 }
 
