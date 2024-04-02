@@ -8,7 +8,9 @@ type Unsubscribe struct {
 
 	ID int `json:"id"`
 
-	Params struct {
-		Channel string `json:"channel"`
-	} `json:"params"`
+	Params UnsubscribeParams `json:"params"`
+}
+
+type UnsubscribeParams struct {
+	Channel string `json:"channel"`
 }

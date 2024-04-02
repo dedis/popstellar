@@ -75,7 +75,7 @@ func handleGreetServer(params handlerParameters, byteMessage []byte) (*int, *ans
 		return nil, errAnswer
 	}
 
-	serverInfo := method.ServerInfo{
+	serverInfo := method.GreetServerParams{
 		PublicKey:     base64.URLEncoding.EncodeToString(pkBytes),
 		ServerAddress: params.serverServerAddress,
 		ClientAddress: params.clientServerAddress,

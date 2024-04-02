@@ -9,8 +9,10 @@ import (
 type Broadcast struct {
 	query.Base
 
-	Params struct {
-		Channel string          `json:"channel"`
-		Message message.Message `json:"message"`
-	} `json:"params"`
+	Params BroadcastParams `json:"params"`
+}
+
+type BroadcastParams struct {
+	Channel string          `json:"channel"`
+	Message message.Message `json:"message"`
 }
