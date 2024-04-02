@@ -41,7 +41,7 @@
 
     <item
       android:id="@+id/main_menu_linked_organisations"
-      android:icon="@drawable/qr_code_button_icon"
+      android:icon="@drawable/ic_linked_organizations_home"
       android:title="@string/linked_organizations" />
   </group>
 
