@@ -103,6 +103,15 @@ type ElectionRepository interface {
 
 	// GetResult returns the result of an election.
 	GetResult(electionID string) (messagedata.ElectionResult, error)
+
+	// CheckPrevID returns true if the previous roll call message ID is the same as the next roll call message ID.
+	CheckPrevID(channel string, nextID string) (bool, error)
+
+	// GetRollCallState returns the state of th lao roll call.
+	GetRollCallState(channel string) (rollCallState, error)
+
+	// StoreOrUpdateChannel stores or updates a channel inside the database.
+	StoreOrUpdateChannel(channel string, organizerPubKey []byte) error
 }
 
 type LAORepository interface {

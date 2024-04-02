@@ -118,7 +118,7 @@ func createChannelMessage(tx *sql.Tx) error {
 func createChannels(tx *sql.Tx) error {
 	_, err := tx.Exec("CREATE TABLE IF NOT EXISTS channels (" +
 		"channel TEXT, " +
-		"organizerPubKey TEXT, " +
+		"organizerPubKey TEXT NULL, " +
 		"pubElectionKey TEXT NULL, " +
 		"secElectionKey TEXT NULL, " +
 		"PRIMARY KEY (channel) " +

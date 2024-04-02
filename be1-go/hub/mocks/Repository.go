@@ -67,6 +67,34 @@ func (_m *Repository) ChannelExists(laoChannelPath string) (bool, error) {
 	return r0, r1
 }
 
+// CheckPrevID provides a mock function with given fields: channel, nextID
+func (_m *Repository) CheckPrevID(channel string, nextID string) (bool, error) {
+	ret := _m.Called(channel, nextID)
+
+	if len(ret) == 0 {
+		panic("no return value specified for CheckPrevID")
+	}
+
+	var r0 bool
+	var r1 error
+	if rf, ok := ret.Get(0).(func(string, string) (bool, error)); ok {
+		return rf(channel, nextID)
+	}
+	if rf, ok := ret.Get(0).(func(string, string) bool); ok {
+		r0 = rf(channel, nextID)
+	} else {
+		r0 = ret.Get(0).(bool)
+	}
+
+	if rf, ok := ret.Get(1).(func(string, string) error); ok {
+		r1 = rf(channel, nextID)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // GetAllMessagesFromChannel provides a mock function with given fields: channelID
 func (_m *Repository) GetAllMessagesFromChannel(channelID string) ([]message.Message, error) {
 	ret := _m.Called(channelID)
@@ -417,6 +445,34 @@ func (_m *Repository) GetResultForGetMessagesByID(params map[string][]string) (m
 	return r0, r1
 }
 
+// GetRollCallState provides a mock function with given fields: channel
+func (_m *Repository) GetRollCallState(channel string) (hub.rollCallState, error) {
+	ret := _m.Called(channel)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetRollCallState")
+	}
+
+	var r0 hub.rollCallState
+	var r1 error
+	if rf, ok := ret.Get(0).(func(string) (hub.rollCallState, error)); ok {
+		return rf(channel)
+	}
+	if rf, ok := ret.Get(0).(func(string) hub.rollCallState); ok {
+		r0 = rf(channel)
+	} else {
+		r0 = ret.Get(0).(hub.rollCallState)
+	}
+
+	if rf, ok := ret.Get(1).(func(string) error); ok {
+		r1 = rf(channel)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // GetServerPubKey provides a mock function with given fields:
 func (_m *Repository) GetServerPubKey() ([]byte, error) {
 	ret := _m.Called()
@@ -636,6 +692,24 @@ func (_m *Repository) StoreMessageID(messageID string, channel string) error {
 	var r0 error
 	if rf, ok := ret.Get(0).(func(string, string) error); ok {
 		r0 = rf(messageID, channel)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// StoreOrUpdateChannel provides a mock function with given fields: channel, organizerPubKey
+func (_m *Repository) StoreOrUpdateChannel(channel string, organizerPubKey []byte) error {
+	ret := _m.Called(channel, organizerPubKey)
+
+	if len(ret) == 0 {
+		panic("no return value specified for StoreOrUpdateChannel")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(string, []byte) error); ok {
+		r0 = rf(channel, organizerPubKey)
 	} else {
 		r0 = ret.Error(0)
 	}

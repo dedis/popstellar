@@ -12,8 +12,13 @@ import (
 	"strings"
 )
 
+type rollCallState string
+
 const (
-	rollCallFlag = "R"
+	rollCallFlag               = "R"
+	open         rollCallState = "open"
+	closed       rollCallState = "closed"
+	created      rollCallState = "created"
 )
 
 func handleChannelLao(params handlerParameters, channel string, msg message.Message) *answer.Error {
@@ -33,11 +38,11 @@ func handleChannelLao(params handlerParameters, channel string, msg message.Mess
 	case messagedata.MeetingObject + "#" + messagedata.MeetingActionState:
 		errAnswer = handleMeetingState(msg, params)
 	case messagedata.RollCallObject + "#" + messagedata.RollCallActionClose:
-		errAnswer = handleRollCallClose(msg, params)
+		errAnswer = handleRollCallClose(msg, channel, params)
 	case messagedata.RollCallObject + "#" + messagedata.RollCallActionCreate:
 		errAnswer = handleRollCallCreate(msg, channel, params)
 	case messagedata.RollCallObject + "#" + messagedata.RollCallActionOpen:
-		errAnswer = handleRollCallOpen(msg, params)
+		errAnswer = handleRollCallOpen(msg, channel, params)
 	case messagedata.RollCallObject + "#" + messagedata.RollCallActionReOpen:
 		errAnswer = handleRollCallReOpen(msg, params)
 	case messagedata.ElectionObject + "#" + messagedata.ElectionActionSetup:
@@ -161,7 +166,6 @@ func compareLaoUpdateAndState(update messagedata.LaoUpdate, state messagedata.La
 			match++
 		}
 	}
-
 	if match != numUpdateWitnesses {
 		errAnswer = answer.NewInvalidMessageFieldError("mismatch between witness keys")
 		errAnswer = errAnswer.Wrap("compareLaoUpdateAndState")
@@ -226,11 +230,130 @@ func handleRollCallCreate(msg message.Message, channel string, params handlerPar
 	return nil
 }
 
-func handleRollCallClose(msg message.Message, params handlerParameters) *answer.Error {
+func handleRollCallOpen(msg message.Message, channel string, params handlerParameters) *answer.Error {
+	var rollCallOpen messagedata.RollCallOpen
+	err := msg.UnmarshalData(&rollCallOpen)
+	var errAnswer *answer.Error
+
+	if err != nil {
+		errAnswer = answer.NewInvalidActionError("failed to unmarshal message data: %v", err)
+		errAnswer = errAnswer.Wrap("handleRollCallOpen")
+		return errAnswer
+	}
+	_, err = base64.URLEncoding.DecodeString(rollCallOpen.UpdateID)
+	if err != nil {
+		errAnswer = answer.NewInvalidMessageFieldError("failed to decode roll call update ID: %v", err)
+		errAnswer = errAnswer.Wrap("handleRollCallOpen")
+		return errAnswer
+	}
+	expectedID := messagedata.Hash(
+		rollCallFlag,
+		strings.ReplaceAll(channel, messagedata.RootPrefix, ""),
+		rollCallOpen.Opens,
+		strconv.Itoa(int(rollCallOpen.OpenedAt)),
+	)
+	if rollCallOpen.UpdateID != expectedID {
+		errAnswer = answer.NewInvalidMessageFieldError("roll call update id is %s, should be %s", rollCallOpen.UpdateID, expectedID)
+		errAnswer = errAnswer.Wrap("handleRollCallOpen")
+		return errAnswer
+	}
+
+	_, err = base64.URLEncoding.DecodeString(rollCallOpen.Opens)
+	if err != nil {
+		errAnswer = answer.NewInvalidMessageFieldError("failed to decode roll call opens: %v", err)
+		errAnswer = errAnswer.Wrap("handleRollCallOpen")
+		return errAnswer
+	}
+
+	if rollCallOpen.OpenedAt < 0 {
+		errAnswer = answer.NewInvalidMessageFieldError("roll call opened at is %d, should be minimum 0", rollCallOpen.OpenedAt)
+		errAnswer = errAnswer.Wrap("handleRollCallOpen")
+		return errAnswer
+	}
+	ok, err := params.db.CheckPrevID(channel, rollCallOpen.Opens)
+	if err != nil {
+		errAnswer = answer.NewInternalServerError("failed to check if previous id exists: %v", err)
+		errAnswer = errAnswer.Wrap("handleRollCallOpen")
+		return errAnswer
+	} else if !ok {
+		errAnswer = answer.NewInvalidMessageFieldError("previous id does not exist")
+		errAnswer = errAnswer.Wrap("handleRollCallOpen")
+		return errAnswer
+	}
 	return nil
 }
 
-func handleRollCallOpen(msg message.Message, params handlerParameters) *answer.Error {
+func handleRollCallClose(msg message.Message, channel string, params handlerParameters) *answer.Error {
+	var rollCallClose messagedata.RollCallClose
+	err := msg.UnmarshalData(&rollCallClose)
+	var errAnswer *answer.Error
+
+	if err != nil {
+		errAnswer = answer.NewInvalidActionError("failed to unmarshal message data: %v", err)
+		errAnswer = errAnswer.Wrap("handleRollCallClose")
+		return errAnswer
+	}
+
+	_, err = base64.URLEncoding.DecodeString(rollCallClose.UpdateID)
+	if err != nil {
+		errAnswer = answer.NewInvalidMessageFieldError("failed to decode roll call update ID: %v", err)
+		errAnswer = errAnswer.Wrap("handleRollCallClose")
+		return errAnswer
+	}
+
+	expectedID := messagedata.Hash(
+		rollCallFlag,
+		strings.ReplaceAll(channel, messagedata.RootPrefix, ""),
+		rollCallClose.Closes,
+		strconv.Itoa(int(rollCallClose.ClosedAt)),
+	)
+	if rollCallClose.UpdateID != expectedID {
+		errAnswer = answer.NewInvalidMessageFieldError("roll call update id is %s, should be %s", rollCallClose.UpdateID, expectedID)
+		errAnswer = errAnswer.Wrap("handleRollCallClose")
+		return errAnswer
+	}
+
+	_, err = base64.URLEncoding.DecodeString(rollCallClose.Closes)
+	if err != nil {
+		errAnswer = answer.NewInvalidMessageFieldError("failed to decode roll call closes: %v", err)
+		errAnswer = errAnswer.Wrap("handleRollCallClose")
+		return errAnswer
+	}
+
+	if rollCallClose.ClosedAt < 0 {
+		errAnswer = answer.NewInvalidMessageFieldError("roll call closed at is %d, should be minimum 0", rollCallClose.ClosedAt)
+		errAnswer = errAnswer.Wrap("handleRollCallClose")
+		return errAnswer
+	}
+
+	state, err := params.db.GetRollCallState(channel)
+	if err != nil {
+		errAnswer = answer.NewInternalServerError("failed to get roll call state: %v", err)
+		errAnswer = errAnswer.Wrap("handleRollCallClose")
+		return errAnswer
+	} else if state != open {
+		errAnswer = answer.NewInvalidMessageFieldError("roll call is not open")
+		errAnswer = errAnswer.Wrap("handleRollCallClose")
+		return errAnswer
+	}
+
+	for _, attendee := range rollCallClose.Attendees {
+		_, err = base64.URLEncoding.DecodeString(attendee)
+		if err != nil {
+			errAnswer = answer.NewInvalidMessageFieldError("failed to decode attendee: %v", err)
+			errAnswer = errAnswer.Wrap("handleRollCallClose")
+			return errAnswer
+		}
+		chirpingChannelPath := channel + social + "/" + attendee
+		err := params.db.StoreOrUpdateChannel(chirpingChannelPath, nil)
+		if err != nil {
+			errAnswer = answer.NewInternalServerError("failed to store chirping channel: %v", err)
+			errAnswer = errAnswer.Wrap("handleRollCallClose")
+			return errAnswer
+		}
+		params.subs.addChannel(chirpingChannelPath)
+	}
+
 	return nil
 }
 
