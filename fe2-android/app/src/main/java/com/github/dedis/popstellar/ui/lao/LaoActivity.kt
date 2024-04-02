@@ -318,7 +318,7 @@ class LaoActivity : AppCompatActivity() {
 
   private fun openLinkedOrganizationsTab() {
     setCurrentFragment(supportFragmentManager, R.id.fragment_linked_organizations_home) {
-      LinkedOrganizationsFragment.newInstance("A", "B")
+      LinkedOrganizationsFragment.newInstance()
     }
   }
 
