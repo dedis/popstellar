@@ -38,6 +38,11 @@
       android:id="@+id/main_menu_tokens"
       android:icon="@drawable/qr_code_button_icon"
       android:title="@string/tokens" />
+
+    <item
+      android:id="@+id/main_menu_linked_organisations"
+      android:icon="@drawable/qr_code_button_icon"
+      android:title="@string/linked_organizations" />
   </group>
 
   <group
