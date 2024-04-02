@@ -4,7 +4,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"github.com/rs/zerolog/log"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 	"go.dedis.ch/kyber/v3/sign/schnorr"
@@ -16,37 +16,7 @@ import (
 	"time"
 )
 
-func Test_MockExample(t *testing.T) {
-	repo := mocks.NewRepository(t)
-	repo.On("GetMessageByID", "messageID1").Return(message.Message{Data: "data1",
-		Sender:            "sender1",
-		Signature:         "sig1",
-		MessageID:         "ID1",
-		WitnessSignatures: []message.WitnessSignature{},
-	}, nil)
-
-	repo.On("GetMessageByID", "messageID2").Return(message.Message{Data: "data1",
-		Sender:            "sender1",
-		Signature:         "sig1",
-		MessageID:         "ID2",
-		WitnessSignatures: []message.WitnessSignature{},
-	}, nil)
-
-	msg, err := repo.GetMessageByID("messageID1")
-	if err != nil {
-		return
-	}
-	log.Info().Msg(msg.MessageID)
-
-	msg, err = repo.GetMessageByID("messageID2")
-	if err != nil {
-		return
-	}
-	log.Info().Msg(msg.MessageID)
-}
-
 func Test_handleChannelRoot(t *testing.T) {
-
 	keypair := generateKeyPair(t)
 	now := time.Now().Unix()
 	name := "LAO X"
@@ -79,22 +49,20 @@ func Test_handleChannelRoot(t *testing.T) {
 	}
 
 	laoPath := rootPrefix + laoID
+
 	mockRepository := mocks.NewRepository(t)
 	mockRepository.On("HasChannel", laoPath).Return(false, nil)
 	mockRepository.On("GetOwnerPubKey").Return(nil, nil)
 	mockRepository.On("StoreMessage", mock.AnythingOfType("string"), mock.AnythingOfType("message.Message")).Return(nil)
+	mockRepository.On("StoreMessageID", mock.AnythingOfType("string"), mock.AnythingOfType("string")).Return(nil)
 	mockRepository.On("StoreChannel", mock.AnythingOfType("string"), mock.AnythingOfType("[]uint8")).Return(nil)
 	mockRepository.On("GetServerPubKey").Return(nil, nil)
 	mockRepository.On("GetServerSecretKey").Return(nil, nil)
-
-	params := newHandlerParameters(mockRepository)
+	socket := &fakeSocket{}
+	params := newHandlerParametersWithFakeSocket(mockRepository, socket)
 
 	errAnswer := handleChannelRoot(params, "/root", msg)
-	if errAnswer != nil {
-		log.Error().Msg(errAnswer.Error())
-	} else {
-		log.Info().Msg("Success")
-	}
+	require.Nil(t, errAnswer)
 }
 
 func Test_verifyLaoCreation(t *testing.T) {
@@ -145,7 +113,8 @@ func Test_verifyLaoCreation(t *testing.T) {
 
 	params := newHandlerParameters(nil)
 
-	args = append(args, verifyLaoCreationInputs{params: params,
+	args = append(args, verifyLaoCreationInputs{name: "Test 1",
+		params:    params,
 		message:   msg,
 		laoCreate: wrongLaoCreate})
 
@@ -155,7 +124,7 @@ func Test_verifyLaoCreation(t *testing.T) {
 
 	params = newHandlerParameters(nil)
 
-	args = append(args, verifyLaoCreationInputs{
+	args = append(args, verifyLaoCreationInputs{name: "Test 2",
 		params:    params,
 		message:   msg,
 		laoCreate: wrongLaoCreate})
@@ -167,7 +136,8 @@ func Test_verifyLaoCreation(t *testing.T) {
 
 	params = newHandlerParameters(nil)
 
-	args = append(args, verifyLaoCreationInputs{params: params,
+	args = append(args, verifyLaoCreationInputs{name: "Test 3",
+		params:    params,
 		message:   msg,
 		laoCreate: wrongLaoCreate})
 
@@ -178,7 +148,8 @@ func Test_verifyLaoCreation(t *testing.T) {
 
 	params = newHandlerParameters(nil)
 
-	args = append(args, verifyLaoCreationInputs{params: params,
+	args = append(args, verifyLaoCreationInputs{name: "Test 4",
+		params:    params,
 		message:   msg,
 		laoCreate: wrongLaoCreate})
 
@@ -189,7 +160,8 @@ func Test_verifyLaoCreation(t *testing.T) {
 
 	params = newHandlerParameters(nil)
 
-	args = append(args, verifyLaoCreationInputs{params: params,
+	args = append(args, verifyLaoCreationInputs{name: "Test 5",
+		params:    params,
 		message:   msg,
 		laoCreate: wrongLaoCreate})
 
@@ -199,7 +171,8 @@ func Test_verifyLaoCreation(t *testing.T) {
 
 	params = newHandlerParameters(nil)
 
-	args = append(args, verifyLaoCreationInputs{params: params,
+	args = append(args, verifyLaoCreationInputs{name: "Test 6",
+		params:    params,
 		message:   msg,
 		laoCreate: wrongLaoCreate})
 
@@ -208,7 +181,8 @@ func Test_verifyLaoCreation(t *testing.T) {
 	mockRepository.On("HasChannel", laoPath).Return(true, nil)
 	params = newHandlerParameters(mockRepository)
 
-	args = append(args, verifyLaoCreationInputs{params: params,
+	args = append(args, verifyLaoCreationInputs{name: "Test 7",
+		params:    params,
 		message:   msg,
 		laoCreate: laoCreate})
 
@@ -217,7 +191,8 @@ func Test_verifyLaoCreation(t *testing.T) {
 	mockRepository.On("HasChannel", laoPath).Return(false, fmt.Errorf("db is disconnected"))
 	params = newHandlerParameters(mockRepository)
 
-	args = append(args, verifyLaoCreationInputs{params: params,
+	args = append(args, verifyLaoCreationInputs{name: "Test 8",
+		params:    params,
 		message:   msg,
 		laoCreate: laoCreate})
 
@@ -229,7 +204,8 @@ func Test_verifyLaoCreation(t *testing.T) {
 	mockRepository.On("HasChannel", laoPath).Return(false, nil)
 	params = newHandlerParameters(mockRepository)
 
-	args = append(args, verifyLaoCreationInputs{params: params,
+	args = append(args, verifyLaoCreationInputs{name: "Test 9",
+		params:    params,
 		message:   wrongMsg,
 		laoCreate: laoCreate})
 
@@ -241,7 +217,8 @@ func Test_verifyLaoCreation(t *testing.T) {
 	mockRepository.On("HasChannel", laoPath).Return(false, nil)
 	params = newHandlerParameters(mockRepository)
 
-	args = append(args, verifyLaoCreationInputs{params: params,
+	args = append(args, verifyLaoCreationInputs{name: "Test 10",
+		params:    params,
 		message:   wrongMsg,
 		laoCreate: laoCreate})
 
@@ -252,7 +229,8 @@ func Test_verifyLaoCreation(t *testing.T) {
 
 	params = newHandlerParameters(nil)
 
-	args = append(args, verifyLaoCreationInputs{params: params,
+	args = append(args, verifyLaoCreationInputs{name: "Test 11",
+		params:    params,
 		message:   msg,
 		laoCreate: wrongLaoCreate})
 
@@ -265,7 +243,8 @@ func Test_verifyLaoCreation(t *testing.T) {
 	mockRepository.On("HasChannel", laoPath).Return(false, nil)
 	params = newHandlerParameters(mockRepository)
 
-	args = append(args, verifyLaoCreationInputs{params: params,
+	args = append(args, verifyLaoCreationInputs{name: "Test 12",
+		params:    params,
 		message:   msg,
 		laoCreate: wrongLaoCreate})
 
@@ -278,7 +257,8 @@ func Test_verifyLaoCreation(t *testing.T) {
 	mockRepository.On("HasChannel", laoPath).Return(false, nil)
 	params = newHandlerParameters(mockRepository)
 
-	args = append(args, verifyLaoCreationInputs{params: params,
+	args = append(args, verifyLaoCreationInputs{name: "Test 13",
+		params:    params,
 		message:   msg,
 		laoCreate: wrongLaoCreate})
 
@@ -288,7 +268,8 @@ func Test_verifyLaoCreation(t *testing.T) {
 	mockRepository.On("GetOwnerPubKey").Return(nil, fmt.Errorf("db is disconnected"))
 	params = newHandlerParameters(mockRepository)
 
-	args = append(args, verifyLaoCreationInputs{params: params,
+	args = append(args, verifyLaoCreationInputs{name: "Test 14",
+		params:    params,
 		message:   msg,
 		laoCreate: laoCreate})
 
@@ -298,7 +279,8 @@ func Test_verifyLaoCreation(t *testing.T) {
 	mockRepository.On("GetOwnerPubKey").Return(wrongKeyPair.public, nil)
 	params = newHandlerParameters(mockRepository)
 
-	args = append(args, verifyLaoCreationInputs{params: params,
+	args = append(args, verifyLaoCreationInputs{name: "Test 15",
+		params:    params,
 		message:   msg,
 		laoCreate: laoCreate})
 
@@ -309,4 +291,180 @@ func Test_verifyLaoCreation(t *testing.T) {
 			require.Error(t, errAnswer)
 		})
 	}
+
+	// Test 16: success
+	mockRepository = mocks.NewRepository(t)
+	mockRepository.On("HasChannel", laoPath).Return(false, nil)
+	mockRepository.On("GetOwnerPubKey").Return(keypair.public, nil)
+	params = newHandlerParameters(mockRepository)
+
+	t.Run("Test 16", func(t *testing.T) {
+		pubKeybuf, errAnswer := verifyLaoCreation(params, msg, laoCreate, laoPath)
+		require.Nil(t, errAnswer)
+		assert.Equal(t, keypair.publicBuf, pubKeybuf)
+
+	})
+}
+
+func Test_createLaoAndSubChannels(t *testing.T) {
+	keypair := generateKeyPair(t)
+	now := time.Now().Unix()
+	name := "LAO X"
+	laoID := messagedata.Hash(base64.URLEncoding.EncodeToString(keypair.publicBuf), fmt.Sprintf("%d", now), name)
+
+	laoCreate := messagedata.LaoCreate{
+		Object:    messagedata.LAOObject,
+		Action:    messagedata.LAOActionCreate,
+		ID:        laoID,
+		Name:      name,
+		Creation:  now,
+		Organizer: base64.URLEncoding.EncodeToString(keypair.publicBuf),
+		Witnesses: []string{},
+	}
+
+	dataBuf, err := json.Marshal(laoCreate)
+	require.NoError(t, err)
+	signature, err := schnorr.Sign(crypto.Suite, keypair.private, dataBuf)
+	require.NoError(t, err)
+
+	dataBase64 := base64.URLEncoding.EncodeToString(dataBuf)
+	signatureBase64 := base64.URLEncoding.EncodeToString(signature)
+
+	msg := message.Message{
+		Data:              dataBase64,
+		Sender:            base64.URLEncoding.EncodeToString(keypair.publicBuf),
+		Signature:         signatureBase64,
+		MessageID:         messagedata.Hash(dataBase64, signatureBase64),
+		WitnessSignatures: []message.WitnessSignature{},
+	}
+	laoPath := rootPrefix + laoID
+
+	type createLaoInputs struct {
+		name      string
+		params    handlerParameters
+		msg       message.Message
+		pubKeyBuf []byte
+	}
+	var args []createLaoInputs
+
+	// Test 1: error when storing the lao channel
+	mockRepository := mocks.NewRepository(t)
+	mockRepository.On("StoreChannel", laoPath, keypair.publicBuf).Return(fmt.Errorf("db is disconnected"))
+	params := newHandlerParameters(mockRepository)
+
+	args = append(args, createLaoInputs{name: "Test 1",
+		params:    params,
+		msg:       msg,
+		pubKeyBuf: keypair.publicBuf})
+
+	// Test 2: error when storing the message in the lao channel
+	mockRepository = mocks.NewRepository(t)
+	mockRepository.On("StoreChannel", laoPath, keypair.publicBuf).Return(nil)
+	mockRepository.On("StoreMessageID", msg.MessageID, laoPath).Return(fmt.Errorf("db is disconnected"))
+	params = newHandlerParameters(mockRepository)
+
+	args = append(args, createLaoInputs{name: "Test 2",
+		params:    params,
+		msg:       msg,
+		pubKeyBuf: keypair.publicBuf})
+
+	// Test 3 error when the storing general chirping channel:
+	generalChirpingPath := laoPath + social + chirps
+	mockRepository = mocks.NewRepository(t)
+	mockRepository.On("StoreChannel", laoPath, keypair.publicBuf).Return(nil)
+	mockRepository.On("StoreMessageID", msg.MessageID, laoPath).Return(nil)
+	mockRepository.On("StoreChannel", generalChirpingPath, keypair.publicBuf).Return(fmt.Errorf("db is disconnected"))
+	params = newHandlerParameters(mockRepository)
+
+	args = append(args, createLaoInputs{name: "Test 3",
+		params:    params,
+		msg:       msg,
+		pubKeyBuf: keypair.publicBuf})
+
+	// Test 4: error when storing the reactions channel
+	reactionsPath := laoPath + social + reactions
+	mockRepository = mocks.NewRepository(t)
+	mockRepository.On("StoreChannel", laoPath, keypair.publicBuf).Return(nil)
+	mockRepository.On("StoreMessageID", msg.MessageID, laoPath).Return(nil)
+	mockRepository.On("StoreChannel", generalChirpingPath, keypair.publicBuf).Return(nil)
+	mockRepository.On("StoreChannel", reactionsPath, keypair.publicBuf).Return(fmt.Errorf("db is disconnected"))
+	params = newHandlerParameters(mockRepository)
+
+	args = append(args, createLaoInputs{name: "Test 4",
+		params:    params,
+		msg:       msg,
+		pubKeyBuf: keypair.publicBuf})
+
+	// Test 5: error when storing the consensus channel
+	consensusPath := laoPath + consensus
+	mockRepository = mocks.NewRepository(t)
+	mockRepository.On("StoreChannel", laoPath, keypair.publicBuf).Return(nil)
+	mockRepository.On("StoreMessageID", msg.MessageID, laoPath).Return(nil)
+	mockRepository.On("StoreChannel", generalChirpingPath, keypair.publicBuf).Return(nil)
+	mockRepository.On("StoreChannel", reactionsPath, keypair.publicBuf).Return(nil)
+	mockRepository.On("StoreChannel", consensusPath, keypair.publicBuf).Return(fmt.Errorf("db is disconnected"))
+	params = newHandlerParameters(mockRepository)
+
+	args = append(args, createLaoInputs{name: "Test 5",
+		params:    params,
+		msg:       msg,
+		pubKeyBuf: keypair.publicBuf})
+
+	// Test 6: error when storing the coin channel
+	coinPath := laoPath + coin
+	mockRepository = mocks.NewRepository(t)
+	mockRepository.On("StoreChannel", laoPath, keypair.publicBuf).Return(nil)
+	mockRepository.On("StoreMessageID", msg.MessageID, laoPath).Return(nil)
+	mockRepository.On("StoreChannel", generalChirpingPath, keypair.publicBuf).Return(nil)
+	mockRepository.On("StoreChannel", reactionsPath, keypair.publicBuf).Return(nil)
+	mockRepository.On("StoreChannel", consensusPath, keypair.publicBuf).Return(nil)
+	mockRepository.On("StoreChannel", coinPath, keypair.publicBuf).Return(fmt.Errorf("db is disconnected"))
+	params = newHandlerParameters(mockRepository)
+
+	args = append(args, createLaoInputs{name: "Test 6",
+		params:    params,
+		msg:       msg,
+		pubKeyBuf: keypair.publicBuf})
+
+	// Test 7: error when storing the auth channel
+	authPath := laoPath + auth
+	mockRepository = mocks.NewRepository(t)
+	mockRepository.On("StoreChannel", laoPath, keypair.publicBuf).Return(nil)
+	mockRepository.On("StoreMessageID", msg.MessageID, laoPath).Return(nil)
+	mockRepository.On("StoreChannel", generalChirpingPath, keypair.publicBuf).Return(nil)
+	mockRepository.On("StoreChannel", reactionsPath, keypair.publicBuf).Return(nil)
+	mockRepository.On("StoreChannel", consensusPath, keypair.publicBuf).Return(nil)
+	mockRepository.On("StoreChannel", coinPath, keypair.publicBuf).Return(nil)
+	mockRepository.On("StoreChannel", authPath, keypair.publicBuf).Return(fmt.Errorf("db is disconnected"))
+	params = newHandlerParameters(mockRepository)
+
+	args = append(args, createLaoInputs{name: "Test 7",
+		params:    params,
+		msg:       msg,
+		pubKeyBuf: keypair.publicBuf})
+
+	// Run the tests
+	for _, arg := range args {
+		t.Run(arg.name, func(t *testing.T) {
+			errAnswer := createLaoAndSubChannels(arg.params, arg.msg, arg.pubKeyBuf, laoPath)
+			require.Error(t, errAnswer)
+		})
+	}
+
+	// Test 8: success
+	mockRepository = mocks.NewRepository(t)
+	mockRepository.On("StoreChannel", laoPath, keypair.publicBuf).Return(nil)
+	mockRepository.On("StoreMessageID", msg.MessageID, laoPath).Return(nil)
+	mockRepository.On("StoreChannel", generalChirpingPath, keypair.publicBuf).Return(nil)
+	mockRepository.On("StoreChannel", reactionsPath, keypair.publicBuf).Return(nil)
+	mockRepository.On("StoreChannel", consensusPath, keypair.publicBuf).Return(nil)
+	mockRepository.On("StoreChannel", coinPath, keypair.publicBuf).Return(nil)
+	mockRepository.On("StoreChannel", authPath, keypair.publicBuf).Return(nil)
+	params = newHandlerParameters(mockRepository)
+
+	t.Run("Test 8", func(t *testing.T) {
+		errAnswer := createLaoAndSubChannels(params, msg, keypair.publicBuf, laoPath)
+		require.Nil(t, errAnswer)
+		assert.Equal(t, 6, len(params.subs))
+	})
 }

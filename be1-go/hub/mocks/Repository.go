@@ -505,9 +505,9 @@ func (_m *Repository) HasChannel(laoChannelPath string) (bool, error) {
 	return r0, r1
 }
 
-// HasMessage provides a mock function with given fields: msgID
-func (_m *Repository) HasMessage(msgID string) (bool, error) {
-	ret := _m.Called(msgID)
+// HasMessage provides a mock function with given fields: messageID
+func (_m *Repository) HasMessage(messageID string) (bool, error) {
+	ret := _m.Called(messageID)
 
 	if len(ret) == 0 {
 		panic("no return value specified for HasMessage")
@@ -516,16 +516,16 @@ func (_m *Repository) HasMessage(msgID string) (bool, error) {
 	var r0 bool
 	var r1 error
 	if rf, ok := ret.Get(0).(func(string) (bool, error)); ok {
-		return rf(msgID)
+		return rf(messageID)
 	}
 	if rf, ok := ret.Get(0).(func(string) bool); ok {
-		r0 = rf(msgID)
+		r0 = rf(messageID)
 	} else {
 		r0 = ret.Get(0).(bool)
 	}
 
 	if rf, ok := ret.Get(1).(func(string) error); ok {
-		r1 = rf(msgID)
+		r1 = rf(messageID)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -618,6 +618,24 @@ func (_m *Repository) StoreMessage(channelID string, msg message.Message) error 
 	var r0 error
 	if rf, ok := ret.Get(0).(func(string, message.Message) error); ok {
 		r0 = rf(channelID, msg)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// StoreMessageID provides a mock function with given fields: messageID, channel
+func (_m *Repository) StoreMessageID(messageID string, channel string) error {
+	ret := _m.Called(messageID, channel)
+
+	if len(ret) == 0 {
+		panic("no return value specified for StoreMessageID")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(string, string) error); ok {
+		r0 = rf(messageID, channel)
 	} else {
 		r0 = ret.Error(0)
 	}

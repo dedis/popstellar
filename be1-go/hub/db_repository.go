@@ -57,7 +57,10 @@ type HandleChannelRepository interface {
 	HasChannel(laoChannelPath string) (bool, error)
 
 	// HasMessage returns true if the message already exists.
-	HasMessage(msgID string) (bool, error)
+	HasMessage(messageID string) (bool, error)
+
+	// StoreMessageID stores a message ID inside the database.
+	StoreMessageID(messageID, channel string) error
 }
 
 type RootRepository interface {
