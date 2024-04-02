@@ -4,7 +4,6 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"go.dedis.ch/kyber/v3/sign/schnorr"
-	"golang.org/x/xerrors"
 	"popstellar/crypto"
 	jsonrpc "popstellar/message"
 	"popstellar/message/answer"
@@ -124,18 +123,29 @@ func verifyDataAndGetObjectAction(params handlerParameters, msg message.Message)
 	return object, action, nil
 }
 
-func Sign(data []byte, params handlerParameters) ([]byte, error) {
+func Sign(data []byte, params handlerParameters) ([]byte, *answer.Error) {
 
+	var errAnswer *answer.Error
 	serverSecretBuf, err := params.db.GetServerSecretKey()
 	if err != nil {
-		return nil, xerrors.Errorf("failed to get the server secret key")
+		errAnswer = answer.NewInternalServerError("failed to get the server secret key: %v", err)
+		errAnswer = errAnswer.Wrap("Sign")
+		return nil, errAnswer
 	}
 
 	serverSecretKey := crypto.Suite.Scalar()
 	err = serverSecretKey.UnmarshalBinary(serverSecretBuf)
+	if err != nil {
+		errAnswer = answer.NewInternalServerError("failed to unmarshal the server secret key: %v", err)
+		errAnswer = errAnswer.Wrap("Sign")
+		return nil, errAnswer
+	}
+
 	signatureBuf, err := schnorr.Sign(crypto.Suite, serverSecretKey, data)
 	if err != nil {
-		return nil, xerrors.Errorf("failed to sign the data: %v", err)
+		errAnswer = answer.NewInternalServerError("failed to sign the data: %v", err)
+		errAnswer = errAnswer.Wrap("Sign")
+		return nil, errAnswer
 	}
 	return signatureBuf, nil
 }
@@ -165,7 +175,7 @@ func broadcastToAllClients(msg message.Message, params handlerParameters, channe
 	}
 
 	errAnswer = params.subs.SendToAll(buf, channel)
-	if err != nil {
+	if errAnswer != nil {
 		errAnswer = errAnswer.Wrap("broadcastToAllClients")
 		return errAnswer
 	}

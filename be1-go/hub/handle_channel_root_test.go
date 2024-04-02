@@ -11,6 +11,7 @@ import (
 	"popstellar/crypto"
 	"popstellar/hub/mocks"
 	"popstellar/message/messagedata"
+	"popstellar/message/query/method"
 	"popstellar/message/query/method/message"
 	"testing"
 	"time"
@@ -466,5 +467,88 @@ func Test_createLaoAndSubChannels(t *testing.T) {
 		errAnswer := createLaoAndSubChannels(params, msg, keypair.publicBuf, laoPath)
 		require.Nil(t, errAnswer)
 		assert.Equal(t, 6, len(params.subs))
+	})
+}
+
+func Test_createAndSendLaoGreet(t *testing.T) {
+	keypair := generateKeyPair(t)
+	privateKeyBuf, err := keypair.private.MarshalBinary()
+	require.NoError(t, err)
+	type createAndSendLaoGreetInputs struct {
+		name      string
+		params    handlerParameters
+		pubKeyBuf []byte
+	}
+	var args []createAndSendLaoGreetInputs
+	laoPath := "laoPath"
+
+	// Test 1: error when getting the server's public key
+	mockRepository := mocks.NewRepository(t)
+	mockRepository.On("GetServerPubKey").Return(nil, fmt.Errorf("db is disconnected"))
+	params := newHandlerParameters(mockRepository)
+	err = params.peers.AddPeerInfo("socketID1", method.GreetServerParams{ClientAddress: "clientAddress1"})
+	require.NoError(t, err)
+
+	args = append(args, createAndSendLaoGreetInputs{name: "Test 1",
+		params:    params,
+		pubKeyBuf: keypair.publicBuf})
+
+	// Test 2: error when querying the server's secret key when signing the laoGreet message
+	mockRepository = mocks.NewRepository(t)
+	mockRepository.On("GetServerPubKey").Return(keypair.publicBuf, nil)
+	mockRepository.On("GetServerSecretKey").Return(nil, fmt.Errorf("db is disconnected"))
+	params = newHandlerParameters(mockRepository)
+	err = params.peers.AddPeerInfo("socketID1", method.GreetServerParams{ClientAddress: "clientAddress1"})
+	require.NoError(t, err)
+
+	args = append(args, createAndSendLaoGreetInputs{name: "Test 2",
+		params:    params,
+		pubKeyBuf: keypair.publicBuf})
+
+	// Test 3: error when unmarshalling the server's secret key
+	mockRepository = mocks.NewRepository(t)
+	mockRepository.On("GetServerPubKey").Return(keypair.publicBuf, nil)
+	mockRepository.On("GetServerSecretKey").Return([]byte("wrongKey"), nil)
+	params = newHandlerParameters(mockRepository)
+	err = params.peers.AddPeerInfo("socketID1", method.GreetServerParams{ClientAddress: "clientAddress1"})
+	require.NoError(t, err)
+
+	args = append(args, createAndSendLaoGreetInputs{name: "Test 3",
+		params:    params,
+		pubKeyBuf: keypair.publicBuf})
+
+	// Test 4: error when lao is not found when broadcasting the laoGreet message to all client
+	mockRepository = mocks.NewRepository(t)
+	mockRepository.On("GetServerPubKey").Return(keypair.publicBuf, nil)
+	mockRepository.On("GetServerSecretKey").Return(privateKeyBuf, nil)
+	params = newHandlerParameters(mockRepository)
+	err = params.peers.AddPeerInfo("socketID1", method.GreetServerParams{ClientAddress: "clientAddress1"})
+	require.NoError(t, err)
+
+	args = append(args, createAndSendLaoGreetInputs{name: "Test 4",
+		params:    params,
+		pubKeyBuf: keypair.publicBuf})
+
+	// Run the tests
+	for _, arg := range args {
+		t.Run(arg.name, func(t *testing.T) {
+			errAnswer := createAndSendLaoGreet(arg.params, arg.pubKeyBuf, laoPath)
+			require.Error(t, errAnswer)
+		})
+	}
+
+	// Test 5: success
+	mockRepository = mocks.NewRepository(t)
+	mockRepository.On("GetServerPubKey").Return(keypair.publicBuf, nil)
+	mockRepository.On("GetServerSecretKey").Return(privateKeyBuf, nil)
+	mockRepository.On("StoreMessage", laoPath, mock.AnythingOfType("message.Message")).Return(nil)
+	params = newHandlerParameters(mockRepository)
+	err = params.peers.AddPeerInfo("socketID1", method.GreetServerParams{ClientAddress: "clientAddress1"})
+	require.NoError(t, err)
+	params.subs.addChannel(laoPath)
+
+	t.Run("Test 5", func(t *testing.T) {
+		errAnswer := createAndSendLaoGreet(params, keypair.publicBuf, laoPath)
+		require.Nil(t, errAnswer)
 	})
 }

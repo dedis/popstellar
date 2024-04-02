@@ -34,7 +34,7 @@ type HandleQueryRepository interface {
 	// GetParamsForGetMessageByID returns the params to do the getMessageByID msg in reponse of heartbeat
 	GetParamsForGetMessageByID(params map[string][]string) (map[string][]string, error)
 
-	// GetAllMsgFromChannel return all the messages received + sent on a channel
+	// GetAllMessagesFromChannel return all the messages received + sent on a channel
 	GetAllMessagesFromChannel(channelID string) ([]message.Message, error)
 
 	GetChannelType(channel string) (string, error)

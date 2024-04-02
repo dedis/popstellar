@@ -60,7 +60,7 @@ func handleLaoCreate(msg message.Message, params handlerParameters) *answer.Erro
 		return errAnswer
 	}
 
-	errAnswer = createAndSendLaoGreet(laoPath, organizerPubBuf, params)
+	errAnswer = createAndSendLaoGreet(params, organizerPubBuf, laoPath)
 	if errAnswer != nil {
 		errAnswer = errAnswer.Wrap("handleLaoCreate")
 		return errAnswer
@@ -209,7 +209,7 @@ func createSubChannel(channelPath string, organizerBuf []byte, params handlerPar
 	return nil
 }
 
-func createAndSendLaoGreet(laoPath string, organizerBuf []byte, params handlerParameters) *answer.Error {
+func createAndSendLaoGreet(params handlerParameters, organizerBuf []byte, laoPath string) *answer.Error {
 	peersInfo := params.peers.GetAllPeersInfo()
 	peers := make([]messagedata.Peer, 0, len(peersInfo))
 	var errAnswer *answer.Error
@@ -246,9 +246,8 @@ func createAndSendLaoGreet(laoPath string, organizerBuf []byte, params handlerPa
 	}
 
 	// Sign the data
-	signatureBuf, err := Sign(dataBuf, params)
-	if err != nil {
-		errAnswer = answer.NewInternalServerError("failed to sign the message data: %v", err)
+	signatureBuf, errAnswer := Sign(dataBuf, params)
+	if errAnswer != nil {
 		errAnswer = errAnswer.Wrap("createAndSendLaoGreet")
 		return errAnswer
 	}
@@ -268,7 +267,6 @@ func createAndSendLaoGreet(laoPath string, organizerBuf []byte, params handlerPa
 		errAnswer = errAnswer.Wrap("createAndSendLaoGreet")
 		return errAnswer
 	}
-
 	err = params.db.StoreMessage(laoPath, laoGreetMsg)
 	if err != nil {
 		errAnswer = answer.NewInternalServerError("failed to store lao#greet message in lao channel: %v", err)
