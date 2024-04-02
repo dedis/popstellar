@@ -37,7 +37,7 @@ func Test_Heartbeat(t *testing.T) {
 	require.Equal(t, "heartbeat", heartbeat.Method)
 	require.Equal(t, "2.0", heartbeat.JSONRPC)
 
-	expected := make(map[string][]string)
+	expected := make(method.HeartbeatParams)
 	channel1 := "/root/nLghr9_P406lfkMjaNWqyohLxOiGlQee8zad4qAfj18=/social/8qlv4aUT5-tBodKp4RszY284CFYVaoDZK6XKiw9isSw="
 	channel2 := "/root/nLghr9_P406lfkMjaNWqyohLxOiGlQee8zad4qAfj18=/HnXDyvSSron676Icmvcjk5zXvGLkPJ1fVOaWOxItzBE="
 	idChannel1 := "DCBX48EuNO6q-Sr42ONqsj7opKiNeXyRzrjqTbZ_aMI="

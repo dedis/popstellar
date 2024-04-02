@@ -754,7 +754,7 @@ func (h *fakeHub) Sign(data []byte) ([]byte, error) {
 func (h *fakeHub) NotifyWitnessMessage(messageId string, publicKey string, signature string) {}
 
 // GetPeersInfo implements channel.HubFunctionalities
-func (h *fakeHub) GetPeersInfo() []method.ServerInfo {
+func (h *fakeHub) GetPeersInfo() []method.GreetServerParams {
 	return nil
 }
 
