@@ -1,65 +1,33 @@
 package hub
 
 import (
-	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"github.com/stretchr/testify/require"
-	"go.dedis.ch/kyber/v3/sign/schnorr"
 	"golang.org/x/xerrors"
-	"popstellar/crypto"
 	"popstellar/hub/mocks"
 	jsonrpc "popstellar/message"
-	"popstellar/message/messagedata"
 	"popstellar/message/query"
 	"popstellar/message/query/method"
 	"popstellar/message/query/method/message"
 	"testing"
-	"time"
 )
 
-type handleQueryInput struct {
-	name    string
-	params  handlerParameters
-	message []byte
-	socket  *fakeSocket
-}
-
-type handleGoodCatchUpInput struct {
-	base              handleQueryInput
-	messagesToCatchUp []message.Message
-}
-
 func Test_handleCatchUp(t *testing.T) {
-	keypair := generateKeyPair(t)
-	now := time.Now().Unix()
-	name := "LAO X"
-
-	laoID := messagedata.Hash(base64.URLEncoding.EncodeToString(keypair.publicBuf), fmt.Sprintf("%d", now), name)
-
-	data := messagedata.LaoCreate{
-		Object:    messagedata.LAOObject,
-		Action:    messagedata.LAOActionCreate,
-		ID:        laoID,
-		Name:      name,
-		Creation:  now,
-		Organizer: base64.URLEncoding.EncodeToString(keypair.publicBuf),
-		Witnesses: []string{},
+	type input struct {
+		name        string
+		params      handlerParameters
+		message     []byte
+		socket      *fakeSocket
+		result      []message.Message
+		isErrorTest bool
 	}
 
-	dataBuf, err := json.Marshal(data)
-	require.NoError(t, err)
-	signature, err := schnorr.Sign(crypto.Suite, keypair.private, dataBuf)
-	require.NoError(t, err)
-
-	dataBase64 := base64.URLEncoding.EncodeToString(dataBuf)
-	signatureBase64 := base64.URLEncoding.EncodeToString(signature)
-
 	msg := message.Message{
-		Data:              dataBase64,
-		Sender:            base64.URLEncoding.EncodeToString(keypair.publicBuf),
-		Signature:         signatureBase64,
-		MessageID:         messagedata.Hash(dataBase64, signatureBase64),
+		Data:              "data",
+		Sender:            "sender",
+		Signature:         "signature",
+		MessageID:         "messageID",
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
@@ -72,17 +40,14 @@ func Test_handleCatchUp(t *testing.T) {
 			Method: query.MethodCatchUp,
 		},
 		ID: 1,
-		Params: struct {
-			Channel string `json:"channel"`
-		}{
+		Params: method.CatchupParams{
 			Channel: "/root",
 		},
 	}
 
-	goodInputs := make([]handleGoodCatchUpInput, 0)
-	badInputs := make([]handleQueryInput, 0)
+	inputs := make([]input, 0)
 
-	// Catch up 2 messages
+	// catch up three messages
 
 	catchupBuf, err := json.Marshal(&catchup)
 	require.NoError(t, err)
@@ -96,14 +61,13 @@ func Test_handleCatchUp(t *testing.T) {
 
 	params := newHandlerParametersWithFakeSocket(mockRepository, s)
 
-	goodInputs = append(goodInputs, handleGoodCatchUpInput{
-		base: handleQueryInput{
-			name:    "catchUp three messages",
-			params:  params,
-			message: catchupBuf,
-			socket:  s,
-		},
-		messagesToCatchUp: messagesToCatchUp,
+	inputs = append(inputs, input{
+		name:        "catch up three messages",
+		params:      params,
+		message:     catchupBuf,
+		socket:      s,
+		result:      messagesToCatchUp,
+		isErrorTest: false,
 	})
 
 	// failed to query db
@@ -116,27 +80,224 @@ func Test_handleCatchUp(t *testing.T) {
 
 	params = newHandlerParameters(mockRepository)
 
-	badInputs = append(badInputs, handleQueryInput{
-		name:    "failed to query db",
-		params:  params,
-		message: catchupBuf,
+	inputs = append(inputs, input{
+		name:        "failed to query db",
+		params:      params,
+		message:     catchupBuf,
+		isErrorTest: true,
 	})
 
 	// run all tests
 
-	for _, i := range goodInputs {
-		t.Run(i.base.name, func(t *testing.T) {
-			_, errAnswer := handleCatchUp(i.base.params, i.base.message)
-			require.Nil(t, errAnswer)
-			require.Equal(t, i.messagesToCatchUp, i.base.socket.res)
+	for _, i := range inputs {
+		t.Run(i.name, func(t *testing.T) {
+			id, errAnswer := handleCatchUp(i.params, i.message)
+			if i.isErrorTest {
+				require.NotNil(t, errAnswer)
+				require.NotNil(t, id)
+			} else {
+				require.Nil(t, errAnswer)
+				require.Equal(t, i.result, i.socket.res)
+			}
 		})
 	}
+}
 
-	for _, i := range badInputs {
+func Test_handleGetMessagesByID(t *testing.T) {
+	type input struct {
+		name        string
+		params      handlerParameters
+		message     []byte
+		socket      *fakeSocket
+		result      map[string][]message.Message
+		isErrorTest bool
+	}
+
+	msg := message.Message{
+		Data:              "data",
+		Sender:            "sender",
+		Signature:         "signature",
+		MessageID:         "messageID",
+		WitnessSignatures: []message.WitnessSignature{},
+	}
+
+	paramsGetMessagesByID := make(map[string][]string)
+	paramsGetMessagesByID["/root"] = []string{msg.MessageID}
+
+	getMessagesByID := method.GetMessagesById{
+		Base: query.Base{
+			JSONRPCBase: jsonrpc.JSONRPCBase{
+				JSONRPC: "2.0",
+			},
+
+			Method: query.MethodCatchUp,
+		},
+		ID:     1,
+		Params: paramsGetMessagesByID,
+	}
+
+	inputs := make([]input, 0)
+
+	// get one message
+
+	getMessagesByIDBuf, err := json.Marshal(&getMessagesByID)
+	require.NoError(t, err)
+
+	result := make(map[string][]message.Message)
+	result["/root"] = []message.Message{msg}
+
+	mockRepository := mocks.NewRepository(t)
+	mockRepository.On("GetResultForGetMessagesByID", paramsGetMessagesByID).Return(result, nil)
+
+	s := &fakeSocket{id: "fakesocket"}
+
+	params := newHandlerParametersWithFakeSocket(mockRepository, s)
+
+	inputs = append(inputs, input{
+		name:        "get one message",
+		params:      params,
+		message:     getMessagesByIDBuf,
+		socket:      s,
+		result:      result,
+		isErrorTest: false,
+	})
+
+	// failed to query db
+
+	getMessagesByIDBuf, err = json.Marshal(&getMessagesByID)
+	require.NoError(t, err)
+
+	mockRepository = mocks.NewRepository(t)
+	mockRepository.On("GetResultForGetMessagesByID", paramsGetMessagesByID).Return(nil, xerrors.Errorf("db is disconnected"))
+
+	params = newHandlerParameters(mockRepository)
+
+	inputs = append(inputs, input{
+		name:        "failed to query db",
+		params:      params,
+		message:     getMessagesByIDBuf,
+		isErrorTest: true,
+	})
+
+	// run all tests
+
+	for _, i := range inputs {
 		t.Run(i.name, func(t *testing.T) {
-			errAnswer := handleMessage(i.params, i.message)
-			fmt.Println(errAnswer)
-			require.NotNil(t, errAnswer)
+			id, errAnswer := handleGetMessagesByID(i.params, i.message)
+			if i.isErrorTest {
+				require.NotNil(t, errAnswer)
+				require.NotNil(t, id)
+			} else {
+				require.Nil(t, errAnswer)
+				fmt.Println(i.socket.missingMsgs)
+				require.Equal(t, i.result, i.socket.missingMsgs)
+			}
+		})
+	}
+}
+
+func Test_handleGreetServer(t *testing.T) {
+	type input struct {
+		name        string
+		params      handlerParameters
+		message     []byte
+		socket      *fakeSocket
+		needSend    bool
+		isErrorTest bool
+	}
+
+	serverInfo1 := method.GreetServerParams{
+		PublicKey:     "pk1",
+		ServerAddress: "srvAddr1",
+		ClientAddress: "cltAddr1",
+	}
+
+	greetServer := method.GreetServer{
+		Base: query.Base{
+			JSONRPCBase: jsonrpc.JSONRPCBase{
+				JSONRPC: "2.0",
+			},
+
+			Method: query.MethodGreetServer,
+		},
+		Params: serverInfo1,
+	}
+
+	inputs := make([]input, 0)
+
+	// reply with greetServer
+
+	greetServerBuf, err := json.Marshal(&greetServer)
+	require.NoError(t, err)
+
+	mockRepository := mocks.NewRepository(t)
+	mockRepository.On("GetServerPubKey").Return([]byte("publicKey"), nil)
+
+	s := &fakeSocket{id: "fakesocket"}
+
+	params := newHandlerParametersWithFakeSocket(mockRepository, s)
+
+	inputs = append(inputs, input{
+		name:        "reply with greetServer",
+		params:      params,
+		message:     greetServerBuf,
+		socket:      s,
+		needSend:    true,
+		isErrorTest: false,
+	})
+
+	// do not reply with greetServer
+
+	greetServerBuf, err = json.Marshal(&greetServer)
+	require.NoError(t, err)
+
+	s = &fakeSocket{id: "fakesocket"}
+
+	params = newHandlerParametersWithFakeSocket(mockRepository, s)
+
+	params.peers.AddPeerGreeted(s.id)
+
+	inputs = append(inputs, input{
+		name:        "server already greeted",
+		params:      params,
+		message:     greetServerBuf,
+		socket:      s,
+		needSend:    false,
+		isErrorTest: false,
+	})
+
+	// failed to query db
+
+	greetServerBuf, err = json.Marshal(&greetServer)
+	require.NoError(t, err)
+
+	mockRepository = mocks.NewRepository(t)
+	mockRepository.On("GetServerPubKey").Return(nil, xerrors.Errorf("db is disconnected"))
+
+	params = newHandlerParameters(mockRepository)
+
+	inputs = append(inputs, input{
+		name:        "failed to query db",
+		params:      params,
+		message:     greetServerBuf,
+		isErrorTest: true,
+	})
+
+	// run all tests
+
+	for _, i := range inputs {
+		t.Run(i.name, func(t *testing.T) {
+			id, errAnswer := handleGreetServer(i.params, i.message)
+			if i.isErrorTest {
+				require.NotNil(t, errAnswer)
+				require.Nil(t, id)
+			} else if i.needSend {
+				require.Nil(t, errAnswer)
+				require.NotNil(t, i.socket.msg)
+			} else {
+				require.Nil(t, errAnswer)
+				require.Nil(t, i.socket.msg)
+			}
 		})
 	}
 }

@@ -10,7 +10,5 @@ type GetMessagesById struct {
 
 	ID int `json:"id"`
 
-	Params GetMessagesByIdParams `json:"params"`
+	Params map[string][]string `json:"params"`
 }
-
-type GetMessagesByIdParams map[string][]string
