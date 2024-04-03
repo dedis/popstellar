@@ -53,29 +53,29 @@ type HandleChannelRepository interface {
 	ElectionRepository
 	LAORepository
 
+	// StoreChannel stores a channel inside the database.
+	StoreChannel(channel string, organizerPubKey []byte) error
+
+	// StoreMessage stores a message inside the database.
+	StoreMessage(channelID string, msg message.Message) error
+
 	// HasChannel returns true if the channel already exists.
 	HasChannel(laoChannelPath string) (bool, error)
 
 	// HasMessage returns true if the message already exists.
 	HasMessage(messageID string) (bool, error)
 
-	// StoreMessageID stores a message ID inside the database.
-	StoreMessageID(messageID, channel string) error
+	// StoreChannelsAndMessage stores a list of "sub" channels and a message inside the database.
+	StoreChannelsAndMessage(channels []string, baseChannel string, organizerPubKey []byte, msg message.Message) error
 }
 
 type RootRepository interface {
-
-	// StoreMessage stores a message inside the database.
-	StoreMessage(channelID string, msg message.Message) error
 
 	// ChannelExists returns true if the channel already exists.
 	ChannelExists(laoChannelPath string) (bool, error)
 
 	// GetOwnerPubKey returns the public key of the owner of the server.
 	GetOwnerPubKey() (kyber.Point, error)
-
-	// StoreChannel stores a channel inside the database.
-	StoreChannel(channel string, organizerPubKey []byte) error
 
 	// GetClientServerAddress returns the address of the client server.
 	GetClientServerAddress() (string, error)
@@ -85,12 +85,16 @@ type RootRepository interface {
 
 	// GetServerSecretKey returns the secret key of the server.
 	GetServerSecretKey() ([]byte, error)
+
+	// StoreChannelsAndMessageWithLaoGreet stores a list of "sub" channels, a message and a lao greet message inside the database.
+	StoreChannelsAndMessageWithLaoGreet(
+		channels []string,
+		baseChannel, channelRelation, messageIDRelation string,
+		organizerPubBuf []byte,
+		msg, laoGreetMsg message.Message) error
 }
 
 type ElectionRepository interface {
-
-	// StoreMessage stores a message inside the database.
-	StoreMessage(channelID string, msg message.Message) error
 
 	//IsElectionStarted returns true if the election is started.
 	IsElectionStarted(electionID string) (bool, error)
@@ -108,10 +112,14 @@ type ElectionRepository interface {
 	CheckPrevID(channel string, nextID string) (bool, error)
 
 	// GetRollCallState returns the state of th lao roll call.
-	GetRollCallState(channel string) (rollCallState, error)
+	GetRollCallState(channel string) (string, error)
 
-	// StoreOrUpdateChannel stores or updates a channel inside the database.
-	StoreOrUpdateChannel(channel string, organizerPubKey []byte) error
+	// StoreMessageWithElectionKey stores a message and a election key message inside the database.
+	StoreMessageWithElectionKey(
+		baseChannel, channelRelation, messageIDRelation string,
+		electionPubKey kyber.Point,
+		electionSecretKey kyber.Scalar,
+		msg, electionKey message.Message) error
 }
 
 type LAORepository interface {

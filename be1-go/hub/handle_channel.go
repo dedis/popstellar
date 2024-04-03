@@ -3,6 +3,7 @@ package hub
 import (
 	"encoding/base64"
 	"encoding/json"
+	"go.dedis.ch/kyber/v3"
 	"go.dedis.ch/kyber/v3/sign/schnorr"
 	"popstellar/crypto"
 	jsonrpc "popstellar/message"
@@ -148,6 +149,13 @@ func Sign(data []byte, params handlerParameters) ([]byte, *answer.Error) {
 		return nil, errAnswer
 	}
 	return signatureBuf, nil
+}
+
+// generateKeys generates and returns a key pair
+func generateKeys() (kyber.Point, kyber.Scalar) {
+	secret := crypto.Suite.Scalar().Pick(crypto.Suite.RandomStream())
+	point := crypto.Suite.Point().Mul(secret, nil)
+	return point, secret
 }
 
 func broadcastToAllClients(msg message.Message, params handlerParameters, channel string) *answer.Error {

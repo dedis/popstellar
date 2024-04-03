@@ -2,6 +2,8 @@ package hub
 
 import (
 	"encoding/base64"
+	"encoding/json"
+	"go.dedis.ch/kyber/v3"
 	"go.dedis.ch/kyber/v3/sign/schnorr"
 	"golang.org/x/exp/slices"
 	"popstellar/crypto"
@@ -12,13 +14,15 @@ import (
 	"strings"
 )
 
-type rollCallState string
-
 const (
-	rollCallFlag               = "R"
-	open         rollCallState = "open"
-	closed       rollCallState = "closed"
-	created      rollCallState = "created"
+	rollCallFlag    = "R"
+	electionFlag    = "Election"
+	questionFlag    = "Question"
+	pluralityMethod = "Plurality"
+	approvalMethod  = "Approval"
+	open            = "open"
+	closed          = "closed"
+	created         = "created"
 )
 
 func handleChannelLao(params handlerParameters, channel string, msg message.Message) *answer.Error {
@@ -28,6 +32,7 @@ func handleChannelLao(params handlerParameters, channel string, msg message.Mess
 		return errAnswer
 	}
 
+	storeMessage := true
 	switch object + "#" + action {
 	case messagedata.LAOObject + "#" + messagedata.LAOActionState:
 		errAnswer = handleLaoState(msg, channel, params)
@@ -38,15 +43,17 @@ func handleChannelLao(params handlerParameters, channel string, msg message.Mess
 	case messagedata.MeetingObject + "#" + messagedata.MeetingActionState:
 		errAnswer = handleMeetingState(msg, params)
 	case messagedata.RollCallObject + "#" + messagedata.RollCallActionClose:
+		storeMessage = false
 		errAnswer = handleRollCallClose(msg, channel, params)
 	case messagedata.RollCallObject + "#" + messagedata.RollCallActionCreate:
 		errAnswer = handleRollCallCreate(msg, channel, params)
 	case messagedata.RollCallObject + "#" + messagedata.RollCallActionOpen:
 		errAnswer = handleRollCallOpen(msg, channel, params)
 	case messagedata.RollCallObject + "#" + messagedata.RollCallActionReOpen:
-		errAnswer = handleRollCallReOpen(msg, params)
+		errAnswer = handleRollCallReOpen(msg, channel, params)
 	case messagedata.ElectionObject + "#" + messagedata.ElectionActionSetup:
-		errAnswer = handleElectionSetup(msg, params)
+		storeMessage = false
+		errAnswer = handleElectionSetup(msg, channel, params)
 	default:
 		errAnswer = answer.NewInvalidMessageFieldError("failed to handle %s#%s, invalid object#action", object, action)
 	}
@@ -55,11 +62,13 @@ func handleChannelLao(params handlerParameters, channel string, msg message.Mess
 		return errAnswer
 	}
 
-	err := params.db.StoreMessage(channel, msg)
-	if err != nil {
-		errAnswer = answer.NewInternalServerError("failed to store message: %v", err)
-		errAnswer = errAnswer.Wrap("handleChannelLao")
-		return errAnswer
+	if storeMessage {
+		err := params.db.StoreMessage(channel, msg)
+		if err != nil {
+			errAnswer = answer.NewInternalServerError("failed to store message: %v", err)
+			errAnswer = errAnswer.Wrap("handleChannelLao")
+			return errAnswer
+		}
 	}
 	return nil
 }
@@ -214,8 +223,8 @@ func handleRollCallCreate(msg message.Message, channel string, params handlerPar
 	}
 
 	// verify proposed start after creation and proposed end after creation
-	if rollCallCreate.ProposedStart < rollCallCreate.Creation || rollCallCreate.ProposedEnd < rollCallCreate.Creation {
-		errAnswer = answer.NewInvalidMessageFieldError("roll call proposed start and proposed end should ve greater than creation")
+	if rollCallCreate.ProposedStart < rollCallCreate.Creation {
+		errAnswer = answer.NewInvalidMessageFieldError("roll call proposed start time should be greater than creation time")
 		errAnswer = errAnswer.Wrap("handleRollCallCreate")
 		return errAnswer
 	}
@@ -240,6 +249,7 @@ func handleRollCallOpen(msg message.Message, channel string, params handlerParam
 		errAnswer = errAnswer.Wrap("handleRollCallOpen")
 		return errAnswer
 	}
+
 	_, err = base64.URLEncoding.DecodeString(rollCallOpen.UpdateID)
 	if err != nil {
 		errAnswer = answer.NewInvalidMessageFieldError("failed to decode roll call update ID: %v", err)
@@ -280,6 +290,26 @@ func handleRollCallOpen(msg message.Message, channel string, params handlerParam
 		errAnswer = errAnswer.Wrap("handleRollCallOpen")
 		return errAnswer
 	}
+	return nil
+}
+
+func handleRollCallReOpen(msg message.Message, channel string, params handlerParameters) *answer.Error {
+	var rollCallReOpen messagedata.RollCallReOpen
+	err := msg.UnmarshalData(&rollCallReOpen)
+	var errAnswer *answer.Error
+
+	if err != nil {
+		errAnswer = answer.NewInvalidActionError("failed to unmarshal message data: %v", err)
+		errAnswer = errAnswer.Wrap("handleRollCallReOpen")
+		return errAnswer
+	}
+
+	errAnswer = handleRollCallOpen(msg, channel, params)
+	if errAnswer != nil {
+		errAnswer = errAnswer.Wrap("handleRollCallReOpen")
+		return errAnswer
+	}
+
 	return nil
 }
 
@@ -337,32 +367,217 @@ func handleRollCallClose(msg message.Message, channel string, params handlerPara
 		return errAnswer
 	}
 
-	for _, attendee := range rollCallClose.Attendees {
-		_, err = base64.URLEncoding.DecodeString(attendee)
+	channelSlice := make([]string, 0, len(rollCallClose.Attendees)+1)
+	channelSlice = append(channelSlice, channel)
+
+	for _, popToken := range rollCallClose.Attendees {
+		_, err = base64.URLEncoding.DecodeString(popToken)
 		if err != nil {
-			errAnswer = answer.NewInvalidMessageFieldError("failed to decode attendee: %v", err)
+			errAnswer = answer.NewInvalidMessageFieldError("failed to decode poptoken: %v", err)
 			errAnswer = errAnswer.Wrap("handleRollCallClose")
 			return errAnswer
 		}
-		chirpingChannelPath := channel + social + "/" + attendee
-		err := params.db.StoreOrUpdateChannel(chirpingChannelPath, nil)
-		if err != nil {
-			errAnswer = answer.NewInternalServerError("failed to store chirping channel: %v", err)
-			errAnswer = errAnswer.Wrap("handleRollCallClose")
-			return errAnswer
-		}
-		params.subs.addChannel(chirpingChannelPath)
+		chirpingChannelPath := channel + social + "/" + popToken
+		channelSlice = append(channelSlice, chirpingChannelPath)
 	}
 
+	err = params.db.StoreChannelsAndMessage(channelSlice, channel, nil, msg)
+	if err != nil {
+		errAnswer = answer.NewInternalServerError("failed to store channels and message: %v", err)
+		errAnswer = errAnswer.Wrap("handleRollCallClose")
+		return errAnswer
+	}
 	return nil
 }
 
-func handleRollCallReOpen(msg message.Message, params handlerParameters) *answer.Error {
+func handleElectionSetup(msg message.Message, channel string, params handlerParameters) *answer.Error {
+	var electionSetup messagedata.ElectionSetup
+	err := msg.UnmarshalData(&electionSetup)
+	var errAnswer *answer.Error
+
+	if err != nil {
+		errAnswer = answer.NewInvalidActionError("failed to unmarshal message data: %v", err)
+		errAnswer = errAnswer.Wrap("handleElectionSetup")
+		return errAnswer
+	}
+
+	senderBuf, err := base64.URLEncoding.DecodeString(msg.Sender)
+	if err != nil {
+		errAnswer = answer.NewInvalidMessageFieldError("failed to decode sender public key: %v", err)
+		errAnswer = errAnswer.Wrap("handleElectionSetup")
+		return errAnswer
+	}
+	senderPubKey := crypto.Suite.Point()
+	err = senderPubKey.UnmarshalBinary(senderBuf)
+	if err != nil {
+		errAnswer = answer.NewInvalidMessageFieldError("failed to unmarshal sender public key: %v", err)
+		errAnswer = errAnswer.Wrap("handleElectionSetup")
+		return errAnswer
+	}
+	//TODO Get organizer public key of the lao
+	organizePubKey := crypto.Suite.Point()
+	if !organizePubKey.Equal(senderPubKey) {
+		errAnswer = answer.NewAccessDeniedError("sender public key does not match organizer public key: %s != %s", senderPubKey, organizePubKey)
+		errAnswer = errAnswer.Wrap("handleElectionSetup")
+		return errAnswer
+	}
+
+	_, err = base64.URLEncoding.DecodeString(electionSetup.Lao)
+	if err != nil {
+		errAnswer = answer.NewInvalidMessageFieldError("failed to decode lao: %v", err)
+		errAnswer = errAnswer.Wrap("handleElectionSetup")
+		return errAnswer
+	}
+
+	if electionSetup.Lao != channel {
+		errAnswer = answer.NewInvalidMessageFieldError("lao id is %s, should be %s", electionSetup.Lao, channel)
+		errAnswer = errAnswer.Wrap("handleElectionSetup")
+		return errAnswer
+	}
+
+	_, err = base64.URLEncoding.DecodeString(electionSetup.ID)
+	if err != nil {
+		errAnswer = answer.NewInvalidMessageFieldError("failed to decode election id: %v", err)
+		errAnswer = errAnswer.Wrap("handleElectionSetup")
+		return errAnswer
+	}
+
+	// verify election setup message id
+	expectedID := messagedata.Hash(
+		electionFlag,
+		channel,
+		strconv.Itoa(int(electionSetup.CreatedAt)),
+		electionSetup.Name,
+	)
+	if electionSetup.ID != expectedID {
+		errAnswer = answer.NewInvalidMessageFieldError("election id is %s, should be %s", electionSetup.ID, expectedID)
+		errAnswer = errAnswer.Wrap("handleElectionSetup")
+		return errAnswer
+	}
+	if len(electionSetup.Name) == 0 {
+		errAnswer = answer.NewInvalidMessageFieldError("election name is empty")
+		errAnswer = errAnswer.Wrap("handleElectionSetup")
+		return errAnswer
+	}
+	if electionSetup.Version != messagedata.OpenBallot && electionSetup.Version != messagedata.SecretBallot {
+		errAnswer = answer.NewInvalidMessageFieldError("election version is %s, should be %s or %s", electionSetup.Version, messagedata.OpenBallot, messagedata.SecretBallot)
+		errAnswer = errAnswer.Wrap("handleElectionSetup")
+		return errAnswer
+	}
+	if electionSetup.CreatedAt < 0 {
+		errAnswer = answer.NewInvalidMessageFieldError("election created at is %d, should be minimum 0", electionSetup.CreatedAt)
+		errAnswer = errAnswer.Wrap("handleElectionSetup")
+		return errAnswer
+	}
+	if electionSetup.StartTime < electionSetup.CreatedAt {
+		errAnswer = answer.NewInvalidMessageFieldError("election start should be greater that creation time")
+		errAnswer = errAnswer.Wrap("handleElectionSetup")
+		return errAnswer
+	}
+	if electionSetup.EndTime < electionSetup.StartTime {
+		errAnswer = answer.NewInvalidMessageFieldError("election end should be greater that start time")
+		errAnswer = errAnswer.Wrap("handleElectionSetup")
+		return errAnswer
+	}
+	if len(electionSetup.Questions) == 0 {
+		errAnswer = answer.NewInvalidMessageFieldError("election contains no questions")
+		errAnswer = errAnswer.Wrap("handleElectionSetup")
+	}
+
+	for _, question := range electionSetup.Questions {
+		_, err = base64.URLEncoding.DecodeString(question.ID)
+		if err != nil {
+			errAnswer = answer.NewInvalidMessageFieldError("failed to decode question id: %v", err)
+			errAnswer = errAnswer.Wrap("handleElectionSetup")
+			return errAnswer
+		}
+		expectedID := messagedata.Hash(
+			questionFlag,
+			electionSetup.ID,
+			question.Question,
+		)
+		if question.ID != expectedID {
+			errAnswer = answer.NewInvalidMessageFieldError("question id is %s, should be %s", question.ID, expectedID)
+			errAnswer = errAnswer.Wrap("handleElectionSetup")
+			return errAnswer
+		}
+		if len(question.Question) == 0 {
+			errAnswer = answer.NewInvalidMessageFieldError("question is empty")
+			errAnswer = errAnswer.Wrap("handleElectionSetup")
+			return errAnswer
+		}
+		if question.VotingMethod != pluralityMethod && question.VotingMethod != approvalMethod {
+			errAnswer = answer.NewInvalidMessageFieldError("question voting method is %s, should be %s or %s", question.VotingMethod, pluralityMethod, approvalMethod)
+			errAnswer = errAnswer.Wrap("handleElectionSetup")
+			return errAnswer
+		}
+	}
+	electionPubKey, electionSecretKey := generateKeys()
+	electionKeyMsg, errAnswer := createElectionKey(params, electionSetup.ID, electionPubKey)
+	if errAnswer != nil {
+		errAnswer = errAnswer.Wrap("handleElectionSetup")
+		return errAnswer
+	}
+	electionPath := channel + "/" + electionSetup.ID
+	err = params.db.StoreMessageWithElectionKey(channel, electionPath, msg.MessageID, electionPubKey, electionSecretKey, msg, electionKeyMsg)
+	if err != nil {
+		errAnswer = answer.NewInternalServerError("failed to store election setup message: %v", err)
+		errAnswer = errAnswer.Wrap("handleElectionSetup")
+		return errAnswer
+	}
+	params.subs.addChannel(electionPath)
+
+	err = params.db.StoreMessage(electionSetup.ID, electionKeyMsg)
+	if err != nil {
+		errAnswer := answer.NewInternalServerError("failed to store election key message: %v", err)
+		errAnswer = errAnswer.Wrap("createAndSendElectionKey")
+		return errAnswer
+	}
 	return nil
 }
 
-func handleElectionSetup(msg message.Message, params handlerParameters) *answer.Error {
-	return nil
+func createElectionKey(params handlerParameters, electionID string, electionPubKey kyber.Point) (message.Message, *answer.Error) {
+	electionPubBuf, err := electionPubKey.MarshalBinary()
+	if err != nil {
+		errAnswer := answer.NewInternalServerError("failed to marshal election public key: %v", err)
+		errAnswer = errAnswer.Wrap("createAndSendElectionKey")
+		return message.Message{}, errAnswer
+	}
+	msgData := messagedata.ElectionKey{
+		Object:   messagedata.ElectionObject,
+		Action:   messagedata.ElectionActionKey,
+		Election: electionID,
+		Key:      base64.URLEncoding.EncodeToString(electionPubBuf),
+	}
+
+	dataBuf, err := json.Marshal(&msgData)
+	if err != nil {
+		errAnswer := answer.NewInternalServerError("failed to marshal message data: %v", err)
+		errAnswer = errAnswer.Wrap("createAndSendElectionKey")
+		return message.Message{}, errAnswer
+	}
+	newData64 := base64.URLEncoding.EncodeToString(dataBuf)
+	//TODO get server public key
+	serverPubBuf, err := params.db.GetServerPubKey()
+	if err != nil {
+		errAnswer := answer.NewInternalServerError("failed to get server public key: %v", err)
+		errAnswer = errAnswer.Wrap("createAndSendElectionKey")
+		return message.Message{}, errAnswer
+	}
+	signatureBuf, errAnswer := Sign(dataBuf, params)
+	if errAnswer != nil {
+		errAnswer = errAnswer.Wrap("createAndSendElectionKey")
+		return message.Message{}, errAnswer
+	}
+	signature := base64.URLEncoding.EncodeToString(signatureBuf)
+	electionKeyMsg := message.Message{
+		Data:              newData64,
+		Sender:            base64.URLEncoding.EncodeToString(serverPubBuf),
+		Signature:         signature,
+		MessageID:         messagedata.Hash(newData64, signature),
+		WitnessSignatures: []message.WitnessSignature{},
+	}
+	return electionKeyMsg, nil
 }
 
 // Not implemented yet

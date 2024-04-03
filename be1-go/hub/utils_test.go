@@ -101,17 +101,19 @@ func newHandlerParametersWithFakeSocket(db Repository, s *fakeSocket) handlerPar
 }
 
 type keypair struct {
-	public    kyber.Point
-	publicBuf []byte
-	private   kyber.Scalar
+	public     kyber.Point
+	publicBuf  []byte
+	private    kyber.Scalar
+	privateBuf []byte
 }
 
 func generateKeyPair(t *testing.T) keypair {
 	secret := crypto.Suite.Scalar().Pick(crypto.Suite.RandomStream())
 	point := crypto.Suite.Point().Mul(secret, nil)
 
-	pkbuf, err := point.MarshalBinary()
+	publicBuf, err := point.MarshalBinary()
 	require.NoError(t, err)
+	privateBuf, err := secret.MarshalBinary()
 
-	return keypair{point, pkbuf, secret}
+	return keypair{point, publicBuf, secret, privateBuf}
 }
