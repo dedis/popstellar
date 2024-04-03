@@ -42,7 +42,7 @@ type HandleQueryRepository interface {
 // ======================= Answer ==========================
 
 type HandleAnswerRepository interface {
-	AddNewBlackList(msgs map[string]map[string]message.Message) error
+	StorePendingMessages(msgs map[string]map[string]message.Message) error
 }
 
 // ======================= Channel ==========================

@@ -36,7 +36,7 @@ func handleGetMessagesByIDAnswer(params handlerParameters, msg answer.Answer) *a
 	// Handle every message and discard them if handled without error
 	handleMessagesByChannel(params, msgsByChan)
 
-	err := params.db.AddNewBlackList(msgsByChan)
+	err := params.db.StorePendingMessages(msgsByChan)
 	if err != nil {
 		errAnswer := answer.NewInternalServerError("failed to query db: ", err).Wrap("handleGetMessagesByIDAnswer")
 		return errAnswer

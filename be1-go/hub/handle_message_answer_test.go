@@ -41,7 +41,7 @@ func Test_handleGetMessagesByIDAnswer(t *testing.T) {
 	}
 
 	mockRepository := mocks.NewRepository(t)
-	mockRepository.On("AddNewBlackList", msgsByChannel).Return(xerrors.Errorf("db disconnected"))
+	mockRepository.On("StorePendingMessages", msgsByChannel).Return(xerrors.Errorf("db disconnected"))
 
 	params := newHandlerParameters(mockRepository)
 

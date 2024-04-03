@@ -16,24 +16,6 @@ type Repository struct {
 	mock.Mock
 }
 
-// AddNewBlackList provides a mock function with given fields: msgs
-func (_m *Repository) AddNewBlackList(msgs map[string]map[string]message.Message) error {
-	ret := _m.Called(msgs)
-
-	if len(ret) == 0 {
-		panic("no return value specified for AddNewBlackList")
-	}
-
-	var r0 error
-	if rf, ok := ret.Get(0).(func(map[string]map[string]message.Message) error); ok {
-		r0 = rf(msgs)
-	} else {
-		r0 = ret.Error(0)
-	}
-
-	return r0
-}
-
 // ChannelExists provides a mock function with given fields: laoChannelPath
 func (_m *Repository) ChannelExists(laoChannelPath string) (bool, error) {
 	ret := _m.Called(laoChannelPath)
@@ -723,6 +705,24 @@ func (_m *Repository) StoreMessageWithElectionKey(baseChannel string, channelRel
 	var r0 error
 	if rf, ok := ret.Get(0).(func(string, string, string, kyber.Point, kyber.Scalar, message.Message, message.Message) error); ok {
 		r0 = rf(baseChannel, channelRelation, messageIDRelation, electionPubKey, electionSecretKey, msg, electionKey)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// StorePendingMessages provides a mock function with given fields: msgs
+func (_m *Repository) StorePendingMessages(msgs map[string]map[string]message.Message) error {
+	ret := _m.Called(msgs)
+
+	if len(ret) == 0 {
+		panic("no return value specified for StorePendingMessages")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(map[string]map[string]message.Message) error); ok {
+		r0 = rf(msgs)
 	} else {
 		r0 = ret.Error(0)
 	}
