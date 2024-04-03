@@ -33,17 +33,18 @@ func handleGetMessagesByIDAnswer(params handlerParameters, msg answer.Answer) *a
 		}
 	}
 
+	// Sort by channelID length
+	sortedChannelIDs := make([]string, 0)
+	for channelID := range resultMsgs {
+		sortedChannelIDs = append(sortedChannelIDs, channelID)
+	}
+	sort.Slice(sortedChannelIDs, func(i, j int) bool {
+		return len(sortedChannelIDs[i]) < len(sortedChannelIDs[j])
+	})
+
 	// Handle every messages
 	for i := 0; i < maxRetry; i++ {
-		sortedChannelIDs := make([]string, 0)
-		for channelID := range resultMsgs {
-			sortedChannelIDs = append(sortedChannelIDs, channelID)
-		}
-		sort.Slice(sortedChannelIDs, func(i, j int) bool {
-			return len(sortedChannelIDs[i]) < len(sortedChannelIDs[j])
-		})
-
-		for _, channelID := range sortedChannelIDs {
+		for j, channelID := range sortedChannelIDs {
 			msgs := resultMsgs[channelID]
 			for msgID, msg := range msgs {
 				errAnswer := handleChannel(params, channelID, msg)
@@ -62,6 +63,7 @@ func handleGetMessagesByIDAnswer(params handlerParameters, msg answer.Answer) *a
 
 			if len(resultMsgs[channelID]) == 0 {
 				delete(resultMsgs, channelID)
+				sortedChannelIDs = append(sortedChannelIDs[:j], sortedChannelIDs[j+1:]...)
 			}
 		}
 
