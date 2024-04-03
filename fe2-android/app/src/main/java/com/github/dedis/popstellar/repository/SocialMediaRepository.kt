@@ -21,11 +21,11 @@ import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.Subject
 import java.util.EnumMap
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.atomic.AtomicInteger
 import java.util.function.Consumer
 import javax.inject.Inject
 import javax.inject.Singleton
 import timber.log.Timber
-import java.util.concurrent.atomic.AtomicInteger
 
 /**
  * This class is the repository of the social media feature
@@ -103,9 +103,9 @@ constructor(appDatabase: AppDatabase, application: Application) {
     return getLaoChirps(laoId).reactionByChirpId[chirpId] ?: emptySet()
   }
 
-    fun queryMoreChirps(laoId: String) {
-        getLaoChirps(laoId).queryMoreChirps()
-    }
+  fun queryMoreChirps(laoId: String) {
+    getLaoChirps(laoId).queryMoreChirps()
+  }
 
   /**
    * @param laoId of the lao we want to observe the chirp list
@@ -176,9 +176,10 @@ constructor(appDatabase: AppDatabase, application: Application) {
     private val chirps = ConcurrentHashMap<MessageID, Chirp>()
     private val chirpSubjects = ConcurrentHashMap<MessageID, Subject<Chirp>>()
     private val chirpsSubject: Subject<Set<MessageID>> = BehaviorSubject.createDefault(emptySet())
-      //TODO : used to fake page loading, to be removed when we will be able to request only wanted chirps. Maxime Teuber @Kaz-ookid - April 2024
-      private var chirpsLoaded : AtomicInteger = AtomicInteger(0)
-      private var storageIsLoaded : Boolean = false
+    // TODO : used to fake page loading, to be removed when we will be able to request only wanted
+    // chirps. Maxime Teuber @Kaz-ookid - April 2024
+    private var chirpsLoaded: AtomicInteger = AtomicInteger(0)
+    private var storageIsLoaded: Boolean = false
 
     // Reactions
     val reactionByChirpId = ConcurrentHashMap<MessageID, MutableSet<Reaction>>()
@@ -187,7 +188,7 @@ constructor(appDatabase: AppDatabase, application: Application) {
 
     init {
       loadStorage()
-        chirpsLoaded.set(CHIRPS_PAGE_SIZE)
+      chirpsLoaded.set(CHIRPS_PAGE_SIZE)
     }
 
     fun add(chirp: Chirp) {
@@ -207,19 +208,23 @@ constructor(appDatabase: AppDatabase, application: Application) {
       chirpSubjects[id] = BehaviorSubject.createDefault(chirp)
       chirpsSubject.toSerialized().onNext(HashSet(chirps.keys))
 
-        if (storageIsLoaded) {
-            //TODO : used to fake page loading, to be removed when we will be able to request only wanted chirps. Maxime Teuber @Kaz-ookid - April 2024
-            // if the storage is loaded, we can increment the number of chirps loaded
-            chirpsLoaded.incrementAndGet()
-        }
+      if (storageIsLoaded) {
+        // TODO : used to fake page loading, to be removed when we will be able to request only
+        // wanted chirps. Maxime Teuber @Kaz-ookid - April 2024
+        // if the storage is loaded, we can increment the number of chirps loaded
+        chirpsLoaded.incrementAndGet()
+      }
     }
 
-      //TODO : used to fake page loading, to be removed when we will be able to request only wanted chirps. Maxime Teuber @Kaz-ookid - April 2024
-      // Either here or directly in DB, we should query to servers tne CHIRPS_PAGE_SIZE next chirps, and not all of them.
-      fun queryMoreChirps() {
-        chirpsLoaded.addAndGet(CHIRPS_PAGE_SIZE)
-          chirpsSubject.onNext(chirps.keys.sortedByDescending { chirps[it]?.timestamp }.take(chirpsLoaded.get()).toSet())
-      }
+    // TODO : used to fake page loading, to be removed when we will be able to request only wanted
+    // chirps. Maxime Teuber @Kaz-ookid - April 2024
+    // Either here or directly in DB, we should query to servers tne CHIRPS_PAGE_SIZE next chirps,
+    // and not all of them.
+    fun queryMoreChirps() {
+      chirpsLoaded.addAndGet(CHIRPS_PAGE_SIZE)
+      chirpsSubject.onNext(
+          chirps.keys.sortedByDescending { chirps[it]?.timestamp }.take(chirpsLoaded.get()).toSet())
+    }
 
     fun addReaction(reaction: Reaction): Boolean {
       // Check if the associated chirp is present
@@ -301,11 +306,14 @@ constructor(appDatabase: AppDatabase, application: Application) {
     }
 
     fun getChirpsSubject(): Observable<Set<MessageID>> {
-        //TODO : used to fake page loading, to be removed when we will be able to request only wanted chirps. Maxime Teuber @Kaz-ookid - April 2024
-        // would normally return chirpsSubject
+      // TODO : used to fake page loading, to be removed when we will be able to request only wanted
+      // chirps. Maxime Teuber @Kaz-ookid - April 2024
+      // would normally return chirpsSubject
 
-        // order chirpsSubject by timestamp then take the first chirpsLoaded
-        return chirpsSubject.map { chirps.keys.sortedByDescending { chirps[it]?.timestamp }.take(chirpsLoaded.get()).toSet() }
+      // order chirpsSubject by timestamp then take the first chirpsLoaded
+      return chirpsSubject.map {
+        chirps.keys.sortedByDescending { chirps[it]?.timestamp }.take(chirpsLoaded.get()).toSet()
+      }
     }
 
     @Throws(UnknownChirpException::class)
@@ -325,7 +333,8 @@ constructor(appDatabase: AppDatabase, application: Application) {
      */
     private fun loadStorage() {
       repository.disposables.add(
-          repository.chirpDao.getChirpsByLaoId(laoId)
+          repository.chirpDao
+              .getChirpsByLaoId(laoId)
               .subscribeOn(Schedulers.io())
               .observeOn(AndroidSchedulers.mainThread())
               .subscribe(
@@ -367,16 +376,16 @@ constructor(appDatabase: AppDatabase, application: Application) {
                                                 chirp.id)
                                       }))
                         })
-                      storageIsLoaded = true
-                  } ,
+                    storageIsLoaded = true
+                  },
                   { err: Throwable ->
                     Timber.tag(TAG).e(err, "No chirp found in the storage for lao %s", laoId)
                   }))
     }
   }
 
-    companion object {
-        private const val CHIRPS_PAGE_SIZE : Int = 10
+  companion object {
+    private const val CHIRPS_PAGE_SIZE: Int = 10
     private val TAG = SocialMediaRepository::class.java.simpleName
   }
 }

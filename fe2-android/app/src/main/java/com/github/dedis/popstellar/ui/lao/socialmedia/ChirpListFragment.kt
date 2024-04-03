@@ -65,11 +65,10 @@ class ChirpListFragment : Fragment() {
   }
 
   private fun addLoadMoreButtonToListView() {
-    val footerView = layoutInflater.inflate(R.layout.chirp_load_more_button, binding.chirpsList, false)
+    val footerView =
+        layoutInflater.inflate(R.layout.chirp_load_more_button, binding.chirpsList, false)
     val buttonLoadMoreChirps = footerView.findViewById<Button>(R.id.button_load_more_chirps)
-    buttonLoadMoreChirps.setOnClickListener {
-      socialMediaViewModel.loadMoreChirps()
-    }
+    buttonLoadMoreChirps.setOnClickListener { socialMediaViewModel.loadMoreChirps() }
     binding.chirpsList.addFooterView(footerView, null, false)
   }
 

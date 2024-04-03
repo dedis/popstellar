@@ -250,9 +250,9 @@ constructor(
             // the view are done on the thread. Otherwise, the app might crash
             .observeOn(schedulerProvider.mainThread())
 
-    fun loadMoreChirps() {
-        socialMediaRepository.queryMoreChirps(laoId)
-    }
+  fun loadMoreChirps() {
+    socialMediaRepository.queryMoreChirps(laoId)
+  }
 
   @Throws(UnknownChirpException::class)
   fun getReactions(chirpId: MessageID): Observable<Set<Reaction>> {
