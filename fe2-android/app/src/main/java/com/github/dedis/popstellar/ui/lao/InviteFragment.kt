@@ -1,10 +1,16 @@
 package com.github.dedis.popstellar.ui.lao
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
+import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.github.dedis.popstellar.R
 import com.github.dedis.popstellar.databinding.InviteFragmentBinding
@@ -59,6 +65,8 @@ class InviteFragment : Fragment() {
     }
 
     handleBackNav()
+    setupCopyServerButton()
+    setupCopyIdentifierButton()
 
     return binding.root
   }
@@ -71,6 +79,33 @@ class InviteFragment : Fragment() {
 
   private fun handleBackNav() {
     LaoActivity.addBackNavigationCallbackToEvents(requireActivity(), viewLifecycleOwner, TAG)
+  }
+
+  private fun setupCopyServerButton() {
+    val serverTextView = view?.findViewById<TextView>(R.id.lao_properties_server_text)
+
+    view?.findViewById<ImageButton>(R.id.copy_server_button)?.setOnClickListener {
+      if (serverTextView != null) {
+        copyTextToClipboard(serverTextView.text.toString())
+      }
+    }
+  }
+
+  private fun setupCopyIdentifierButton() {
+    val identifierTextView = view?.findViewById<TextView>(R.id.lao_properties_identifier_text)
+
+    view?.findViewById<ImageButton>(R.id.copy_identifier_button)?.setOnClickListener {
+      if (identifierTextView != null) {
+        copyTextToClipboard(identifierTextView.text.toString())
+      }
+    }
+  }
+
+  private fun copyTextToClipboard(text: String) {
+    val clipboard = context?.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+    val clip = ClipData.newPlainText("", text)
+    clipboard.setPrimaryClip(clip)
+    Toast.makeText(context, "Copied to clipboard", Toast.LENGTH_SHORT).show()
   }
 
   companion object {
