@@ -76,6 +76,9 @@ class ChirpListFragment : Fragment() {
       }
     }
     binding.chirpsList.addFooterView(footerView, null, false)
+    if (!socialMediaViewModel.canLoadMoreChirps) {
+      disableLoadMoreButton()
+    }
   }
 
   private fun disableLoadMoreButton() {

@@ -202,6 +202,11 @@ constructor(appDatabase: AppDatabase, application: Application) {
         Timber.tag(TAG).w("A chirp with id %s already exist : %s", id, old)
         return
       }
+      if (storageIsLoaded) {
+        // TODO : used to fake page loading, to be removed when we will be able to request only
+        // wanted chirps. Maxime Teuber @Kaz-ookid - April 2024
+        chirpsLoaded.incrementAndGet()
+      }
 
       // Update repository data
       chirps[id] = chirp
@@ -211,17 +216,11 @@ constructor(appDatabase: AppDatabase, application: Application) {
       // Publish new values on subjects
       chirpSubjects[id] = BehaviorSubject.createDefault(chirp)
       chirpsSubject.toSerialized().onNext(HashSet(chirps.keys))
-
-      if (storageIsLoaded) {
-        // TODO : used to fake page loading, to be removed when we will be able to request only
-        // wanted chirps. Maxime Teuber @Kaz-ookid - April 2024
-        chirpsLoaded.incrementAndGet()
-      }
     }
 
     // TODO : used to fake page loading, to be removed when we will be able to request only wanted
     // chirps. Maxime Teuber @Kaz-ookid - April 2024
-    // Either here or directly in DB, we should query to servers tne CHIRPS_PAGE_SIZE next chirps,
+    // Either here or directly in DB, we should query to servers the CHIRPS_PAGE_SIZE next chirps,
     // and not all of them.
     fun queryMoreChirps() {
       val previousSize = getChirpsSubject().blockingFirst().size
@@ -229,7 +228,8 @@ constructor(appDatabase: AppDatabase, application: Application) {
       chirpsSubject.onNext(
           chirps.keys.sortedByDescending { chirps[it]?.timestamp }.take(chirpsLoaded.get()).toSet())
       val newSize = getChirpsSubject().blockingFirst().size
-      if (newSize - previousSize < CHIRPS_PAGE_SIZE) {
+      // if did not load CHIRPS_PAGE_SIZE chirps, then we reached the end of the chirps.
+      if (newSize - previousSize != CHIRPS_PAGE_SIZE) {
         chirpsLoaded.set(newSize)
         reachedEndOfChirps = true
       }
@@ -317,9 +317,7 @@ constructor(appDatabase: AppDatabase, application: Application) {
     fun getChirpsSubject(): Observable<Set<MessageID>> {
       // TODO : used to fake page loading, to be removed when we will be able to request only wanted
       // chirps. Maxime Teuber @Kaz-ookid - April 2024
-      // would normally return chirpsSubject
-
-      // order chirpsSubject by timestamp then take the first chirpsLoaded
+      // would normally return chirpsSubject directly
       return chirpsSubject.map {
         chirps.keys.sortedByDescending { chirps[it]?.timestamp }.take(chirpsLoaded.get()).toSet()
       }
