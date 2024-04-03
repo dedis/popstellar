@@ -3,13 +3,10 @@
 package mocks
 
 import (
-	answer "popstellar/message/answer"
-
-	kyber "go.dedis.ch/kyber/v3"
-
+	messagedata "popstellar/message/messagedata"
 	message "popstellar/message/query/method/message"
 
-	messagedata "popstellar/message/messagedata"
+	kyber "go.dedis.ch/kyber/v3"
 
 	mock "github.com/stretchr/testify/mock"
 )
@@ -20,20 +17,18 @@ type Repository struct {
 }
 
 // AddNewBlackList provides a mock function with given fields: msgs
-func (_m *Repository) AddNewBlackList(msgs map[string]map[string]message.Message) *answer.Error {
+func (_m *Repository) AddNewBlackList(msgs map[string]map[string]message.Message) error {
 	ret := _m.Called(msgs)
 
 	if len(ret) == 0 {
 		panic("no return value specified for AddNewBlackList")
 	}
 
-	var r0 *answer.Error
-	if rf, ok := ret.Get(0).(func(map[string]map[string]message.Message) *answer.Error); ok {
+	var r0 error
+	if rf, ok := ret.Get(0).(func(map[string]map[string]message.Message) error); ok {
 		r0 = rf(msgs)
 	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*answer.Error)
-		}
+		r0 = ret.Error(0)
 	}
 
 	return r0
