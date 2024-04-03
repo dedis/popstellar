@@ -8,8 +8,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageButton
-import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.github.dedis.popstellar.R
@@ -65,8 +63,8 @@ class InviteFragment : Fragment() {
     }
 
     handleBackNav()
-    setupCopyServerButton()
-    setupCopyIdentifierButton()
+    setupCopyServerButton(binding)
+    setupCopyIdentifierButton(binding)
 
     return binding.root
   }
@@ -81,31 +79,33 @@ class InviteFragment : Fragment() {
     LaoActivity.addBackNavigationCallbackToEvents(requireActivity(), viewLifecycleOwner, TAG)
   }
 
-  private fun setupCopyServerButton() {
-    val serverTextView = view?.findViewById<TextView>(R.id.lao_properties_server_text)
+  private fun setupCopyServerButton(binding: InviteFragmentBinding) {
+    val serverTextView = binding.laoPropertiesServerText
+    val copyButton = binding.copyServerButton
 
-    view?.findViewById<ImageButton>(R.id.copy_server_button)?.setOnClickListener {
-      if (serverTextView != null) {
-        copyTextToClipboard(serverTextView.text.toString())
-      }
+    copyButton.setOnClickListener {
+      val text = serverTextView.text.toString()
+      copyTextToClipboard(text)
+      Toast.makeText(requireContext(), R.string.successful_copy, Toast.LENGTH_SHORT).show()
     }
   }
 
-  private fun setupCopyIdentifierButton() {
-    val identifierTextView = view?.findViewById<TextView>(R.id.lao_properties_identifier_text)
+  private fun setupCopyIdentifierButton(binding: InviteFragmentBinding) {
+    val identifierTextView = binding.laoPropertiesIdentifierText
+    val copyButton = binding.copyIdentifierButton
 
-    view?.findViewById<ImageButton>(R.id.copy_identifier_button)?.setOnClickListener {
-      if (identifierTextView != null) {
-        copyTextToClipboard(identifierTextView.text.toString())
-      }
+    copyButton.setOnClickListener {
+      val text = identifierTextView.text.toString()
+      copyTextToClipboard(text)
+      Toast.makeText(requireContext(), R.string.successful_copy, Toast.LENGTH_SHORT).show()
     }
   }
 
-  private fun copyTextToClipboard(text: String) {
-    val clipboard = context?.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-    val clip = ClipData.newPlainText("", text)
+  private fun copyTextToClipboard(token: String) {
+    val clipboard =
+        requireActivity().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+    val clip = ClipData.newPlainText(token, token)
     clipboard.setPrimaryClip(clip)
-    Toast.makeText(context, "Copied to clipboard", Toast.LENGTH_SHORT).show()
   }
 
   companion object {
