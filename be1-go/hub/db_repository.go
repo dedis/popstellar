@@ -2,7 +2,6 @@ package hub
 
 import (
 	"go.dedis.ch/kyber/v3"
-	"popstellar/message/answer"
 	"popstellar/message/messagedata"
 	"popstellar/message/query/method/message"
 )
@@ -43,7 +42,7 @@ type HandleQueryRepository interface {
 // ======================= Answer ==========================
 
 type HandleAnswerRepository interface {
-	AddNewBlackList(msgs map[string]map[string]message.Message) *answer.Error
+	AddNewBlackList(msgs map[string]map[string]message.Message) error
 }
 
 // ======================= Channel ==========================
