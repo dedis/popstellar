@@ -107,6 +107,10 @@ constructor(appDatabase: AppDatabase, application: Application) {
     getLaoChirps(laoId).queryMoreChirps()
   }
 
+  fun canQueryMoreChirps(laoId: String): Boolean {
+    return !getLaoChirps(laoId).isEndOfChirps()
+  }
+
   /**
    * @param laoId of the lao we want to observe the chirp list
    * @return an observable set of message ids whose correspond to the set of chirp published on the
@@ -137,7 +141,6 @@ constructor(appDatabase: AppDatabase, application: Application) {
                 { err: Throwable ->
                   Timber.tag(TAG).e(err, "Error in persisting reaction %s", reaction.id)
                 }))
-
     // Retrieve Lao data and add the reaction to it
     return getLaoChirps(laoId).addReaction(reaction)
   }
@@ -180,6 +183,7 @@ constructor(appDatabase: AppDatabase, application: Application) {
     // chirps. Maxime Teuber @Kaz-ookid - April 2024
     private var chirpsLoaded: AtomicInteger = AtomicInteger(0)
     private var storageIsLoaded: Boolean = false
+    private var reachedEndOfChirps: Boolean = false
 
     // Reactions
     val reactionByChirpId = ConcurrentHashMap<MessageID, MutableSet<Reaction>>()
@@ -211,7 +215,6 @@ constructor(appDatabase: AppDatabase, application: Application) {
       if (storageIsLoaded) {
         // TODO : used to fake page loading, to be removed when we will be able to request only
         // wanted chirps. Maxime Teuber @Kaz-ookid - April 2024
-        // if the storage is loaded, we can increment the number of chirps loaded
         chirpsLoaded.incrementAndGet()
       }
     }
@@ -221,9 +224,15 @@ constructor(appDatabase: AppDatabase, application: Application) {
     // Either here or directly in DB, we should query to servers tne CHIRPS_PAGE_SIZE next chirps,
     // and not all of them.
     fun queryMoreChirps() {
+      val previousSize = getChirpsSubject().blockingFirst().size
       chirpsLoaded.addAndGet(CHIRPS_PAGE_SIZE)
       chirpsSubject.onNext(
           chirps.keys.sortedByDescending { chirps[it]?.timestamp }.take(chirpsLoaded.get()).toSet())
+      val newSize = getChirpsSubject().blockingFirst().size
+      if (newSize - previousSize < CHIRPS_PAGE_SIZE) {
+        chirpsLoaded.set(newSize)
+        reachedEndOfChirps = true
+      }
     }
 
     fun addReaction(reaction: Reaction): Boolean {
@@ -314,6 +323,11 @@ constructor(appDatabase: AppDatabase, application: Application) {
       return chirpsSubject.map {
         chirps.keys.sortedByDescending { chirps[it]?.timestamp }.take(chirpsLoaded.get()).toSet()
       }
+    }
+
+    /** Check if the end of the chirps history has been reached */
+    fun isEndOfChirps(): Boolean {
+      return reachedEndOfChirps
     }
 
     @Throws(UnknownChirpException::class)

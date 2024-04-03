@@ -60,6 +60,9 @@ constructor(
   private val mNumberCharsLeft = MutableLiveData<Int>()
   val bottomNavigationTab = MutableLiveData(SocialMediaTab.HOME)
 
+  val canLoadMoreChirps: Boolean
+    get() = socialMediaRepository.canQueryMoreChirps(laoId)
+
   private val disposables: CompositeDisposable = CompositeDisposable()
 
   override fun onCleared() {

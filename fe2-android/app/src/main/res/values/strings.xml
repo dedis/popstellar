@@ -282,6 +282,7 @@
   <string name="deleted_chirp">Deleted chirp!</string>
   <string name="deleted_chirp_2">Chirp is deleted.</string>
   <string name="load_more_chirps">Load more</string>
+  <string name="load_more_chirps_disabled">No more</string>
 
   <!-- PoPCHA -->
   <string name="popcha">PoPCHA</string>
