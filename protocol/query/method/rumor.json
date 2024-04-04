@@ -22,7 +22,7 @@
                     "description": "[Integer] ID of the rumor",
                     "type": "integer"
                 },
-                "rumors": {
+                "messages": {
                     "description": "[Array] Key-value of channels and messages per channel",
                     "type": "array",
                     "items": {
