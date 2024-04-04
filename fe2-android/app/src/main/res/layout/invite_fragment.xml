@@ -84,7 +84,7 @@
               android:layout_gravity="bottom"
               android:background="?android:attr/selectableItemBackgroundBorderless"
               app:srcCompat="@drawable/ic_content_copy"
-              android:contentDescription="@string/copy_to_clipboard"
+              android:contentDescription="@string/copy_to_clipboard_server"
               android:layout_marginStart="8dp"/>
         </LinearLayout>
 
@@ -120,7 +120,7 @@
               android:layout_height="wrap_content"
               app:srcCompat="@drawable/ic_content_copy"
               android:layout_gravity="bottom"
-              android:contentDescription="@string/copy_to_clipboard"
+              android:contentDescription="@string/copy_to_clipboard_lao_id"
               android:background="?android:attr/selectableItemBackgroundBorderless"
               android:layout_marginStart="8dp"/>
         </LinearLayout>

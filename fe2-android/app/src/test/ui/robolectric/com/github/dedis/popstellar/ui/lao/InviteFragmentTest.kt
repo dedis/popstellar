@@ -1,10 +1,18 @@
 package com.github.dedis.popstellar.ui.lao
 
+import android.content.ClipboardManager
+import android.content.Context
+import android.widget.Button
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.test.espresso.Espresso
+import androidx.test.espresso.EspressoException
+import androidx.test.espresso.action.ViewActions
+import androidx.test.espresso.action.ViewActions.scrollTo
 import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SmallTest
+import androidx.test.platform.app.InstrumentationRegistry
 import com.github.dedis.popstellar.model.objects.Lao
 import com.github.dedis.popstellar.repository.LAORepository
 import com.github.dedis.popstellar.testutils.Base64DataUtils
@@ -12,10 +20,12 @@ import com.github.dedis.popstellar.testutils.BundleBuilder
 import com.github.dedis.popstellar.testutils.fragment.ActivityFragmentScenarioRule
 import com.github.dedis.popstellar.testutils.pages.lao.InviteFragmentPageObject
 import com.github.dedis.popstellar.testutils.pages.lao.LaoActivityPageObject
+import com.github.dedis.popstellar.ui.lao.event.election.CastVoteOpenBallotFragmentTest
 import com.github.dedis.popstellar.utility.security.KeyManager
 import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import junit.framework.TestCase
 import javax.inject.Inject
 import org.junit.Rule
 import org.junit.Test
@@ -73,6 +83,31 @@ class InviteFragmentTest {
     InviteFragmentPageObject.identifierText()
       .check(ViewAssertions.matches(ViewMatchers.withText(LAO.id)))
   }
+
+  @Test
+  fun copyServerButton_CopiesCorrectText() {
+    InviteFragmentPageObject.copyServerButton().perform(scrollTo()).perform(ViewActions.click())
+    val clipboard = InstrumentationRegistry.getInstrumentation().targetContext.getSystemService(
+      Context.CLIPBOARD_SERVICE) as ClipboardManager
+    TestCase.assertTrue(clipboard.hasPrimaryClip())
+    val clipData = clipboard.primaryClip
+    TestCase.assertNotNull(clipData)
+    val copiedText = clipData!!.getItemAt(0).text.toString()
+    InviteFragmentPageObject.serverText().check(ViewAssertions.matches(ViewMatchers.withText(copiedText)))
+  }
+
+  @Test
+  fun copyIdentifierButton_CopiesCorrectText() {
+    InviteFragmentPageObject.copyIdentifierButton().perform(scrollTo()).perform(ViewActions.click())
+    val clipboard = InstrumentationRegistry.getInstrumentation().targetContext.getSystemService(
+      Context.CLIPBOARD_SERVICE) as ClipboardManager
+    TestCase.assertTrue(clipboard.hasPrimaryClip())
+    val clipData = clipboard.primaryClip
+    TestCase.assertNotNull(clipData)
+    val copiedText = clipData!!.getItemAt(0).text.toString()
+    InviteFragmentPageObject.identifierText().check(ViewAssertions.matches(ViewMatchers.withText(copiedText)))
+  }
+
 
   companion object {
     private const val LAO_NAME = "LAO"
