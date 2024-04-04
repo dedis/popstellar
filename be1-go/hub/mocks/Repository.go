@@ -158,6 +158,122 @@ func (_m *Repository) GetClientServerAddress() (string, error) {
 	return r0, r1
 }
 
+// GetElectionAttendees provides a mock function with given fields: electionID
+func (_m *Repository) GetElectionAttendees(electionID string) (map[string]struct{}, error) {
+	ret := _m.Called(electionID)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetElectionAttendees")
+	}
+
+	var r0 map[string]struct{}
+	var r1 error
+	if rf, ok := ret.Get(0).(func(string) (map[string]struct{}, error)); ok {
+		return rf(electionID)
+	}
+	if rf, ok := ret.Get(0).(func(string) map[string]struct{}); ok {
+		r0 = rf(electionID)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(map[string]struct{})
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(string) error); ok {
+		r1 = rf(electionID)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// GetElectionCreationTime provides a mock function with given fields: electionID
+func (_m *Repository) GetElectionCreationTime(electionID string) (int64, error) {
+	ret := _m.Called(electionID)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetElectionCreationTime")
+	}
+
+	var r0 int64
+	var r1 error
+	if rf, ok := ret.Get(0).(func(string) (int64, error)); ok {
+		return rf(electionID)
+	}
+	if rf, ok := ret.Get(0).(func(string) int64); ok {
+		r0 = rf(electionID)
+	} else {
+		r0 = ret.Get(0).(int64)
+	}
+
+	if rf, ok := ret.Get(1).(func(string) error); ok {
+		r1 = rf(electionID)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// GetElectionQuestions provides a mock function with given fields: electionID
+func (_m *Repository) GetElectionQuestions(electionID string) (map[string]hub.question, error) {
+	ret := _m.Called(electionID)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetElectionQuestions")
+	}
+
+	var r0 map[string]hub.question
+	var r1 error
+	if rf, ok := ret.Get(0).(func(string) (map[string]hub.question, error)); ok {
+		return rf(electionID)
+	}
+	if rf, ok := ret.Get(0).(func(string) map[string]hub.question); ok {
+		r0 = rf(electionID)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(map[string]hub.question)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(string) error); ok {
+		r1 = rf(electionID)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// GetElectionType provides a mock function with given fields: electionID
+func (_m *Repository) GetElectionType(electionID string) (string, error) {
+	ret := _m.Called(electionID)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetElectionType")
+	}
+
+	var r0 string
+	var r1 error
+	if rf, ok := ret.Get(0).(func(string) (string, error)); ok {
+		return rf(electionID)
+	}
+	if rf, ok := ret.Get(0).(func(string) string); ok {
+		r0 = rf(electionID)
+	} else {
+		r0 = ret.Get(0).(string)
+	}
+
+	if rf, ok := ret.Get(1).(func(string) error); ok {
+		r1 = rf(electionID)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // GetIDsTable provides a mock function with given fields:
 func (_m *Repository) GetIDsTable() (map[string][]string, error) {
 	ret := _m.Called()
@@ -594,6 +710,34 @@ func (_m *Repository) IsElectionStarted(electionID string) (bool, error) {
 	return r0, r1
 }
 
+// IsElectionStartedOrTerminated provides a mock function with given fields: electionID
+func (_m *Repository) IsElectionStartedOrTerminated(electionID string) (bool, error) {
+	ret := _m.Called(electionID)
+
+	if len(ret) == 0 {
+		panic("no return value specified for IsElectionStartedOrTerminated")
+	}
+
+	var r0 bool
+	var r1 error
+	if rf, ok := ret.Get(0).(func(string) (bool, error)); ok {
+		return rf(electionID)
+	}
+	if rf, ok := ret.Get(0).(func(string) bool); ok {
+		r0 = rf(electionID)
+	} else {
+		r0 = ret.Get(0).(bool)
+	}
+
+	if rf, ok := ret.Get(1).(func(string) error); ok {
+		r1 = rf(electionID)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // IsElectionTerminated provides a mock function with given fields: electionID
 func (_m *Repository) IsElectionTerminated(electionID string) (bool, error) {
 	ret := _m.Called(electionID)
@@ -620,6 +764,24 @@ func (_m *Repository) IsElectionTerminated(electionID string) (bool, error) {
 	}
 
 	return r0, r1
+}
+
+// StoreCastVote provides a mock function with given fields: electionID, msg, vote
+func (_m *Repository) StoreCastVote(electionID string, msg message.Message, vote messagedata.VoteCastVote) error {
+	ret := _m.Called(electionID, msg, vote)
+
+	if len(ret) == 0 {
+		panic("no return value specified for StoreCastVote")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(string, message.Message, messagedata.VoteCastVote) error); ok {
+		r0 = rf(electionID, msg, vote)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
 }
 
 // StoreChannel provides a mock function with given fields: channel, organizerPubKey

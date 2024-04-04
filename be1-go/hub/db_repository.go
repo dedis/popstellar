@@ -101,8 +101,26 @@ type ElectionRepository interface {
 	// IsElectionTerminated returns true if the election is terminated.
 	IsElectionTerminated(electionID string) (bool, error)
 
+	// IsElectionStartedOrTerminated returns true if the election is started or terminated.
+	IsElectionStartedOrTerminated(electionID string) (bool, error)
+
+	// GetElectionCreationTime returns the creation time of an election.
+	GetElectionCreationTime(electionID string) (int64, error)
+
 	// GetLastVote returns the last vote of a sender in an election.
 	GetLastVote(sender, electionID string) (messagedata.VoteCastVote, error)
+
+	// GetElectionAttendees returns the attendees of an election.
+	GetElectionAttendees(electionID string) (map[string]struct{}, error)
+
+	// GetElectionQuestions returns the questions of an election.
+	GetElectionQuestions(electionID string) (map[string]question, error)
+
+	// GetElectionType returns the type of an election.
+	GetElectionType(electionID string) (string, error)
+
+	// StoreCastVote stores a cast vote message inside the database.
+	StoreCastVote(electionID string, msg message.Message, vote messagedata.VoteCastVote) error
 
 	// GetResult returns the result of an election.
 	GetResult(electionID string) (messagedata.ElectionResult, error)
