@@ -31,7 +31,7 @@
                     "minItems": 1
                 }
             },
-            "required": ["sender_id","rumor_id", "rumors"]
+            "required": ["sender_id","rumor_id", "messages"]
         },
 
         "jsonrpc": {
