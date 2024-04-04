@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.github.dedis.popstellar.R
@@ -29,13 +30,14 @@ class InviteFragment : Fragment() {
   @Inject lateinit var networkManager: GlobalNetworkManager
 
   private lateinit var laoViewModel: LaoViewModel
+  private lateinit var binding: InviteFragmentBinding
 
   override fun onCreateView(
       inflater: LayoutInflater,
       container: ViewGroup?,
       savedInstanceState: Bundle?
   ): View? {
-    val binding = InviteFragmentBinding.inflate(inflater, container, false)
+    binding = InviteFragmentBinding.inflate(inflater, container, false)
     laoViewModel = LaoActivity.obtainViewModel(requireActivity())
 
     // Display the LAO identifier, not the device public key
@@ -63,8 +65,8 @@ class InviteFragment : Fragment() {
     }
 
     handleBackNav()
-    setupCopyServerButton(binding)
-    setupCopyIdentifierButton(binding)
+    setupCopyButton(binding.copyServerButton, binding.laoPropertiesServerText, "Server Address")
+    setupCopyButton(binding.copyIdentifierButton, binding.laoPropertiesIdentifierText, "LAO ID")
 
     return binding.root
   }
@@ -79,32 +81,18 @@ class InviteFragment : Fragment() {
     LaoActivity.addBackNavigationCallbackToEvents(requireActivity(), viewLifecycleOwner, TAG)
   }
 
-  private fun setupCopyServerButton(binding: InviteFragmentBinding) {
-    val serverTextView = binding.laoPropertiesServerText
-    val copyButton = binding.copyServerButton
-
-    copyButton.setOnClickListener {
-      val text = serverTextView.text.toString()
-      copyTextToClipboard(text)
+  private fun setupCopyButton(button: View, textView: TextView, label: String) {
+    button.setOnClickListener {
+      val text = textView.text.toString()
+      copyTextToClipboard(label, text)
       Toast.makeText(requireContext(), R.string.successful_copy, Toast.LENGTH_SHORT).show()
     }
   }
 
-  private fun setupCopyIdentifierButton(binding: InviteFragmentBinding) {
-    val identifierTextView = binding.laoPropertiesIdentifierText
-    val copyButton = binding.copyIdentifierButton
-
-    copyButton.setOnClickListener {
-      val text = identifierTextView.text.toString()
-      copyTextToClipboard(text)
-      Toast.makeText(requireContext(), R.string.successful_copy, Toast.LENGTH_SHORT).show()
-    }
-  }
-
-  private fun copyTextToClipboard(token: String) {
+  private fun copyTextToClipboard(label: String, content: String) {
     val clipboard =
         requireActivity().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-    val clip = ClipData.newPlainText(token, token)
+    val clip = ClipData.newPlainText(label, content)
     clipboard.setPrimaryClip(clip)
   }
 
