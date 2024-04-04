@@ -18,9 +18,8 @@
     - [Propagating a message on a channel](#propagating-a-message-on-a-channel)
     - [Catching up on past messages on a channel](#catching-up-on-past-messages-on-a-channel)
     - [Sending a heartbeat message to servers](#sending-a-heartbeat-message-to-servers)
-    - [Retrieving messages from server using ids](#retrieving-messages-from-server-using-ids)
-    - [Spreading a Rumor on the network](#spreading-a-rumor)
-
+    - [Retrieving messages from server using ids ](#retrieving-messages-from-server-using-ids-)
+    - [Spreading a Rumor](#spreading-a-rumor)
   - [Answer](#answer)
     - [RPC answer error](#rpc-answer-error)
 - [Mid-level (message) communication](#mid-level-message-communication)
@@ -182,13 +181,16 @@ and its arguments (`params`).
             "$ref": "method/catchup.json"
         },
         {
-          "$ref": "method/heartbeat.json"
+            "$ref": "method/heartbeat.json"
         },
         {
-          "$ref": "method/get_messages_by_id.json"
+            "$ref": "method/get_messages_by_id.json"
         },
         {
             "$ref": "method/greet_server.json"
+        },
+        {
+            "$ref": "method/rumor.json"
         }
     ],
 
@@ -226,14 +228,15 @@ Notification
 // ../protocol/examples/query/greet_server/greet_server.json
 
 {
-    "jsonrpc": "2.0",
-    "method": "greet_server",
-    "params": {
-        "public_key": "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=",
-        "client_address": "wss://popdemo.dedis.ch:9000/client",
-        "server_address": "wss://popdemo.dedis.ch:9001/server"
-    }
+  "jsonrpc": "2.0",
+  "method": "greet_server",
+  "params": {
+    "public_key": "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=",
+    "client_address": "wss://popdemo.dedis.ch:9000/client",
+    "server_address": "wss://popdemo.dedis.ch:9001/server"
+  }
 }
+
 ```
 
 <details>
@@ -756,7 +759,7 @@ Response (in case of success)
 
 </details>
 
-## Sending a heartbeat message to servers
+### Sending a heartbeat message to servers
 
 🧭 **RPC Message** > **Query** > **Heartbeat**
 
@@ -834,7 +837,7 @@ The heartbeat can then trigger the internal logic of a server: when it receives 
 ```
 </details>
 
-## Retrieving messages from server using ids 
+### Retrieving messages from server using ids 
 
 🧭 **RPC Message** > **Query** > **Get messages by their ids**
   
@@ -964,44 +967,44 @@ RPC
 // ../protocol/examples/query/rumor/rumor.json
 
 {
-  "jsonrpc": "2.0",
-  "id": 4,
-  "method": "rumor",
-  "params": {
-    "sender_id" : "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=",
-    "rumor_id": 1,
-    "rumors": [
-      {
-        "/root/nLghr9_P406lfkMjaNWqyohLxOiGlQee8zad4qAfj18=/social/8qlv4aUT5-tBodKp4RszY284CFYVaoDZK6XKiw9isSw=": [
-          {
-            "data": "eyJvYmplY3QiOiJyb2xsX2NhbGwiLCJhY3Rpb24iOiJjcmVhdGUiLCJuYW1lIjoiUm9sbCBDYWxsIiwiY3JlYXRpb24iOjE2MzMwMzYxMjAsInByb3Bvc2VkX3N0YXJ0IjoxNjMzMDM2Mzg4LCJwcm9wb3NlZF9lbmQiOjE2MzMwMzk2ODgsImxvY2F0aW9uIjoiRVBGTCIsImlkIjoial9kSmhZYnpubXZNYnVMc0ZNQ2dzYlB5YjJ6Nm1vZ2VtSmFON1NWaHVVTT0ifQ==",
-            "sender": "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=",
-            "signature": "FFqBXhZSaKvBnTvrDNIeEYMpFKI5oIa5SAewquxIBHTTEyTIDnUgmvkwgccV9NrujPwDnRt1f4CIEqzXqhbjCw==",
-            "message_id": "DCBX48EuNO6q-Sr42ONqsj7opKiNeXyRzrjqTbZ_aMI=",
-            "witness_signatures": []
-          }
+    "jsonrpc": "2.0",
+    "id": 4,
+    "method": "rumor",
+    "params": {
+        "sender_id" : "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=",
+        "rumor_id": 1,
+        "messages": [
+            {
+                "/root/nLghr9_P406lfkMjaNWqyohLxOiGlQee8zad4qAfj18=/social/8qlv4aUT5-tBodKp4RszY284CFYVaoDZK6XKiw9isSw=": [
+                    {
+                        "data": "eyJvYmplY3QiOiJyb2xsX2NhbGwiLCJhY3Rpb24iOiJjcmVhdGUiLCJuYW1lIjoiUm9sbCBDYWxsIiwiY3JlYXRpb24iOjE2MzMwMzYxMjAsInByb3Bvc2VkX3N0YXJ0IjoxNjMzMDM2Mzg4LCJwcm9wb3NlZF9lbmQiOjE2MzMwMzk2ODgsImxvY2F0aW9uIjoiRVBGTCIsImlkIjoial9kSmhZYnpubXZNYnVMc0ZNQ2dzYlB5YjJ6Nm1vZ2VtSmFON1NWaHVVTT0ifQ==",
+                        "sender": "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=",
+                        "signature": "FFqBXhZSaKvBnTvrDNIeEYMpFKI5oIa5SAewquxIBHTTEyTIDnUgmvkwgccV9NrujPwDnRt1f4CIEqzXqhbjCw==",
+                        "message_id": "DCBX48EuNO6q-Sr42ONqsj7opKiNeXyRzrjqTbZ_aMI=",
+                        "witness_signatures": []
+                    }
+                ]
+            },
+            {
+                "/root/nLghr9_P406lfkMjaNWqyohLxOiGlQee8zad4qAfj18=/HnXDyvSSron676Icmvcjk5zXvGLkPJ1fVOaWOxItzBE=": [
+                    {
+                        "data": "eyJvYmplY3QiOiJyb2xsX2NhbGwiLCJhY3Rpb24iOiJjcmVhdGUiLCJuYW1lIjoiUm9sbCBDYWxsIiwiY3JlYXRpb24iOjE2MzMwMzYxMjAsInByb3Bvc2VkX3N0YXJ0IjoxNjMzMDM2Mzg4LCJwcm9wb3NlZF9lbmQiOjE2MzMwMzk2ODgsImxvY2F0aW9uIjoiRVBGTCIsImlkIjoial9kSmhZYnpubXZNYnVMc0ZNQ2dzYlB5YjJ6Nm1vZ2VtSmFON1NWaHVVTT0ifQ==",
+                        "sender": "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=",
+                        "signature": "FFqBXhZSaKvBnTvrDNIeEYMpFKI5oIa5SAewquxIBHTTEyTIDnUgmvkwgccV9NrujPwDnRt1f4CIEqzXqhbjCw==",
+                        "message_id": "z6SbjJ0Hw36k8L09-GVRq4PNmi06yQX4e8aZRSbUDwc=",
+                        "witness_signatures": []
+                    },
+                    {
+                        "data": "eyJvYmplY3QiOiJyb2xsX2NhbGwiLCJhY3Rpb24iOiJjcmVhdGUiLCJuYW1lIjoiUm9sbCBDYWxsIiwiY3JlYXRpb24iOjE2MzMwMzYxMjAsInByb3Bvc2VkX3N0YXJ0IjoxNjMzMDM2Mzg4LCJwcm9wb3NlZF9lbmQiOjE2MzMwMzk2ODgsImxvY2F0aW9uIjoiRVBGTCIsImlkIjoial9kSmhZYnpubXZNYnVMc0ZNQ2dzYlB5YjJ6Nm1vZ2VtSmFON1NWaHVVTT0ifQ==",
+                        "sender": "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=",
+                        "signature": "FFqBXhZSaKvBnTvrDNIeEYMpFKI5oIa5SAewquxIBHTTEyTIDnUgmvkwgccV9NrujPwDnRt1f4CIEqzXqhbjCw==",
+                        "message_id": "txbTmVMwCDkZdoaAiEYfAKozVizZzkeMkeOlzq5qMlg=",
+                        "witness_signatures": []
+                    }
+                ]
+            }
         ]
-      },
-      {
-        "/root/nLghr9_P406lfkMjaNWqyohLxOiGlQee8zad4qAfj18=/HnXDyvSSron676Icmvcjk5zXvGLkPJ1fVOaWOxItzBE=": [
-          {
-            "data": "eyJvYmplY3QiOiJyb2xsX2NhbGwiLCJhY3Rpb24iOiJjcmVhdGUiLCJuYW1lIjoiUm9sbCBDYWxsIiwiY3JlYXRpb24iOjE2MzMwMzYxMjAsInByb3Bvc2VkX3N0YXJ0IjoxNjMzMDM2Mzg4LCJwcm9wb3NlZF9lbmQiOjE2MzMwMzk2ODgsImxvY2F0aW9uIjoiRVBGTCIsImlkIjoial9kSmhZYnpubXZNYnVMc0ZNQ2dzYlB5YjJ6Nm1vZ2VtSmFON1NWaHVVTT0ifQ==",
-            "sender": "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=",
-            "signature": "FFqBXhZSaKvBnTvrDNIeEYMpFKI5oIa5SAewquxIBHTTEyTIDnUgmvkwgccV9NrujPwDnRt1f4CIEqzXqhbjCw==",
-            "message_id": "z6SbjJ0Hw36k8L09-GVRq4PNmi06yQX4e8aZRSbUDwc=",
-            "witness_signatures": []
-          },
-          {
-            "data": "eyJvYmplY3QiOiJyb2xsX2NhbGwiLCJhY3Rpb24iOiJjcmVhdGUiLCJuYW1lIjoiUm9sbCBDYWxsIiwiY3JlYXRpb24iOjE2MzMwMzYxMjAsInByb3Bvc2VkX3N0YXJ0IjoxNjMzMDM2Mzg4LCJwcm9wb3NlZF9lbmQiOjE2MzMwMzk2ODgsImxvY2F0aW9uIjoiRVBGTCIsImlkIjoial9kSmhZYnpubXZNYnVMc0ZNQ2dzYlB5YjJ6Nm1vZ2VtSmFON1NWaHVVTT0ifQ==",
-            "sender": "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=",
-            "signature": "FFqBXhZSaKvBnTvrDNIeEYMpFKI5oIa5SAewquxIBHTTEyTIDnUgmvkwgccV9NrujPwDnRt1f4CIEqzXqhbjCw==",
-            "message_id": "txbTmVMwCDkZdoaAiEYfAKozVizZzkeMkeOlzq5qMlg=",
-            "witness_signatures": []
-          }
-        ]
-      }
-    ]
-  }
+    }
 }
 
 ```
@@ -1235,9 +1238,9 @@ Please take notice of the error codes that have been defined as part of the spec
         "code": {
             "description": "[Int] error code",
             "type": "integer",
-            "minimum": -5,
+            "minimum": -6,
             "maximum": -1,
-            "$comment": "Note: should be in { -5, -4, ..., -1 }",
+            "$comment": "Note: should be in { -6, -4, ..., -1 }",
             "note": [
                 "0  operation was successful (should never be used)",
                 "-1 invalid action",
