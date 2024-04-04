@@ -198,6 +198,36 @@ object HighLevelProtocol extends DefaultJsonProtocol {
     }
   }
 
+  implicit object RumorFormat extends RootJsonFormat[Rumor] {
+    final private val PARAM_SENDER_PK: String = "sender_id"
+    final private val PARAM_RUMOR_ID: String = "rumor_id"
+    final private val PARAM_RUMORS: String = "rumors"
+
+    override def read(json: JsValue): Rumor = {
+      val jsonObject: JsObject = json.asJsObject
+      jsonObject.getFields(PARAM_SENDER_PK, PARAM_RUMOR_ID, PARAM_RUMORS) match {
+        case Seq(senderPk@JsString(_), rumorId@JsNumber(_), rumors@JsArray(_)) =>
+          val map = mutable.HashMap[Channel, Array[Message]]()
+          rumors.asJsObject.fields.foreach {
+            case (k: String, JsArray(v)) => map.put(Channel(k), v.map(_.convertTo[Message]).toArray)
+            case _ => throw new IllegalArgumentException(s"Unrecognizable rumor in $json")
+          }
+          new Rumor(senderPk.convertTo[PublicKey], rumorId.convertTo[Int], HashMap.from(map))
+        case _ => throw new IllegalArgumentException(s"Can't parse json value $json to a Rumor object")
+      }
+    }
+
+    override def write(obj: Rumor): JsValue = {
+      val jsObjContent: ListMap[String, JsValue] = ListMap[String, JsValue](
+        PARAM_SENDER_PK -> obj.senderPk.toJson,
+        PARAM_RUMOR_ID -> obj.rumorId.toJson,
+        PARAM_RUMORS -> obj.messages.toJson
+      )
+      JsObject(jsObjContent)
+    }
+
+  }
+
   implicit val errorObjectFormat: JsonFormat[ErrorObject] = jsonFormat2(ErrorObject.apply)
 
   implicit object ResultObjectFormat extends RootJsonFormat[ResultObject] {
