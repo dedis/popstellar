@@ -8,7 +8,6 @@ import (
 	"go.dedis.ch/kyber/v3/sign/schnorr"
 	"golang.org/x/xerrors"
 	"popstellar/crypto"
-	"popstellar/hub/mocks"
 	"popstellar/message/messagedata"
 	"popstellar/message/query/method/message"
 	"testing"
@@ -61,7 +60,7 @@ func Test_handleChannel(t *testing.T) {
 
 	wrongChannelID := "wrongChannelID"
 
-	mockRepository := mocks.NewRepository(t)
+	mockRepository := NewMockRepository(t)
 	params := newHandlerParameters(mockRepository)
 
 	mockRepository.On("HasMessage", msg.MessageID).Return(false, nil)
@@ -78,7 +77,7 @@ func Test_handleChannel(t *testing.T) {
 
 	problemDBChannelID := "problemDBChannelID"
 
-	mockRepository = mocks.NewRepository(t)
+	mockRepository = NewMockRepository(t)
 	params = newHandlerParameters(mockRepository)
 
 	mockRepository.On("HasMessage", msg.MessageID).Return(false, nil)
@@ -93,7 +92,7 @@ func Test_handleChannel(t *testing.T) {
 
 	// message already received
 
-	mockRepository = mocks.NewRepository(t)
+	mockRepository = NewMockRepository(t)
 	params = newHandlerParameters(mockRepository)
 
 	mockRepository.On("HasMessage", msg.MessageID).Return(true, nil)
@@ -107,7 +106,7 @@ func Test_handleChannel(t *testing.T) {
 
 	// error while querying if the message already exists
 
-	mockRepository = mocks.NewRepository(t)
+	mockRepository = NewMockRepository(t)
 	params = newHandlerParameters(mockRepository)
 
 	mockRepository.On("HasMessage", msg.MessageID).Return(false, xerrors.Errorf("db disconnected"))

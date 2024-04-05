@@ -9,7 +9,6 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.dedis.ch/kyber/v3/sign/schnorr"
 	"popstellar/crypto"
-	"popstellar/hub/mocks"
 	"popstellar/message/messagedata"
 	"popstellar/message/query/method"
 	"popstellar/message/query/method/message"
@@ -52,7 +51,7 @@ func Test_handleChannelRoot(t *testing.T) {
 
 	laoPath := rootPrefix + laoID
 
-	mockRepository := mocks.NewRepository(t)
+	mockRepository := NewMockRepository(t)
 	mockRepository.On("HasChannel", laoPath).Return(false, nil)
 	mockRepository.On("GetOwnerPubKey").Return(nil, nil)
 	mockRepository.On("StoreChannelsAndMessageWithLaoGreet",
@@ -180,7 +179,7 @@ func Test_verifyLaoCreation(t *testing.T) {
 		laoCreate: wrongLaoCreate})
 
 	// Test 7: error when the lao already exists
-	mockRepository := mocks.NewRepository(t)
+	mockRepository := NewMockRepository(t)
 	mockRepository.On("HasChannel", laoPath).Return(true, nil)
 	params = newHandlerParameters(mockRepository)
 
@@ -190,7 +189,7 @@ func Test_verifyLaoCreation(t *testing.T) {
 		laoCreate: laoCreate})
 
 	// Test 8: error when querying the channel
-	mockRepository = mocks.NewRepository(t)
+	mockRepository = NewMockRepository(t)
 	mockRepository.On("HasChannel", laoPath).Return(false, fmt.Errorf("db is disconnected"))
 	params = newHandlerParameters(mockRepository)
 
@@ -203,7 +202,7 @@ func Test_verifyLaoCreation(t *testing.T) {
 	wrongMsg := msg
 	wrongMsg.Sender = "wrongSender"
 
-	mockRepository = mocks.NewRepository(t)
+	mockRepository = NewMockRepository(t)
 	mockRepository.On("HasChannel", laoPath).Return(false, nil)
 	params = newHandlerParameters(mockRepository)
 
@@ -216,7 +215,7 @@ func Test_verifyLaoCreation(t *testing.T) {
 	wrongMsg = msg
 	wrongMsg.Sender = base64.URLEncoding.EncodeToString([]byte("wrongSender"))
 
-	mockRepository = mocks.NewRepository(t)
+	mockRepository = NewMockRepository(t)
 	mockRepository.On("HasChannel", laoPath).Return(false, nil)
 	params = newHandlerParameters(mockRepository)
 
@@ -242,7 +241,7 @@ func Test_verifyLaoCreation(t *testing.T) {
 	wrongLaoCreate.Organizer = base64.URLEncoding.EncodeToString([]byte("wrongOrganizer"))
 	wrongLaoCreate.ID = messagedata.Hash(wrongLaoCreate.Organizer, fmt.Sprintf("%d", wrongLaoCreate.Creation), wrongLaoCreate.Name)
 
-	mockRepository = mocks.NewRepository(t)
+	mockRepository = NewMockRepository(t)
 	mockRepository.On("HasChannel", laoPath).Return(false, nil)
 	params = newHandlerParameters(mockRepository)
 
@@ -256,7 +255,7 @@ func Test_verifyLaoCreation(t *testing.T) {
 	wrongLaoCreate.Organizer = base64.URLEncoding.EncodeToString(wrongKeyPair.publicBuf)
 	wrongLaoCreate.ID = messagedata.Hash(wrongLaoCreate.Organizer, fmt.Sprintf("%d", wrongLaoCreate.Creation), wrongLaoCreate.Name)
 
-	mockRepository = mocks.NewRepository(t)
+	mockRepository = NewMockRepository(t)
 	mockRepository.On("HasChannel", laoPath).Return(false, nil)
 	params = newHandlerParameters(mockRepository)
 
@@ -266,7 +265,7 @@ func Test_verifyLaoCreation(t *testing.T) {
 		laoCreate: wrongLaoCreate})
 
 	// Test 14: error when querying the owner's public key
-	mockRepository = mocks.NewRepository(t)
+	mockRepository = NewMockRepository(t)
 	mockRepository.On("HasChannel", laoPath).Return(false, nil)
 	mockRepository.On("GetOwnerPubKey").Return(nil, fmt.Errorf("db is disconnected"))
 	params = newHandlerParameters(mockRepository)
@@ -277,7 +276,7 @@ func Test_verifyLaoCreation(t *testing.T) {
 		laoCreate: laoCreate})
 
 	// Test 15: error when the owner's public key is not the same as the sender's public key
-	mockRepository = mocks.NewRepository(t)
+	mockRepository = NewMockRepository(t)
 	mockRepository.On("HasChannel", laoPath).Return(false, nil)
 	mockRepository.On("GetOwnerPubKey").Return(wrongKeyPair.public, nil)
 	params = newHandlerParameters(mockRepository)
@@ -296,7 +295,7 @@ func Test_verifyLaoCreation(t *testing.T) {
 	}
 
 	// Test 16: success
-	mockRepository = mocks.NewRepository(t)
+	mockRepository = NewMockRepository(t)
 	mockRepository.On("HasChannel", laoPath).Return(false, nil)
 	mockRepository.On("GetOwnerPubKey").Return(keypair.public, nil)
 	params = newHandlerParameters(mockRepository)
@@ -322,7 +321,7 @@ func Test_createLaoGreet(t *testing.T) {
 	laoPath := "laoPath"
 
 	// Test 1: error when getting the server's public key
-	mockRepository := mocks.NewRepository(t)
+	mockRepository := NewMockRepository(t)
 	mockRepository.On("GetServerPubKey").Return(nil, fmt.Errorf("db is disconnected"))
 	params := newHandlerParameters(mockRepository)
 	err = params.peers.AddPeerInfo("socketID1", method.GreetServerParams{ClientAddress: "clientAddress1"})
@@ -333,7 +332,7 @@ func Test_createLaoGreet(t *testing.T) {
 		pubKeyBuf: keypair.publicBuf})
 
 	// Test 2: error when querying the server's secret key when signing the laoGreet message
-	mockRepository = mocks.NewRepository(t)
+	mockRepository = NewMockRepository(t)
 	mockRepository.On("GetServerPubKey").Return(keypair.publicBuf, nil)
 	mockRepository.On("GetServerSecretKey").Return(nil, fmt.Errorf("db is disconnected"))
 	params = newHandlerParameters(mockRepository)
@@ -345,7 +344,7 @@ func Test_createLaoGreet(t *testing.T) {
 		pubKeyBuf: keypair.publicBuf})
 
 	// Test 3: error when unmarshalling the server's secret key
-	mockRepository = mocks.NewRepository(t)
+	mockRepository = NewMockRepository(t)
 	mockRepository.On("GetServerPubKey").Return(keypair.publicBuf, nil)
 	mockRepository.On("GetServerSecretKey").Return([]byte("wrongKey"), nil)
 	params = newHandlerParameters(mockRepository)
@@ -366,7 +365,7 @@ func Test_createLaoGreet(t *testing.T) {
 	}
 
 	// Test 5: success
-	mockRepository = mocks.NewRepository(t)
+	mockRepository = NewMockRepository(t)
 	mockRepository.On("GetServerPubKey").Return(keypair.publicBuf, nil)
 	mockRepository.On("GetServerSecretKey").Return(privateKeyBuf, nil)
 	params = newHandlerParameters(mockRepository)
