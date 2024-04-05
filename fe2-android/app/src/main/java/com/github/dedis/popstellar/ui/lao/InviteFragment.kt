@@ -17,6 +17,7 @@ import com.github.dedis.popstellar.model.Role
 import com.github.dedis.popstellar.model.qrcode.ConnectToLao
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager
 import com.github.dedis.popstellar.utility.ActivityUtils.getQRCodeColor
+import com.github.dedis.popstellar.utility.GeneralUtils
 import com.github.dedis.popstellar.utility.error.ErrorUtils.logAndShow
 import com.github.dedis.popstellar.utility.error.UnknownLaoException
 import com.google.gson.Gson
@@ -31,6 +32,7 @@ class InviteFragment : Fragment() {
 
   private lateinit var laoViewModel: LaoViewModel
   private lateinit var binding: InviteFragmentBinding
+  private lateinit var clipboardManager : GeneralUtils.ClipboardUtil
 
   override fun onCreateView(
       inflater: LayoutInflater,
@@ -39,6 +41,7 @@ class InviteFragment : Fragment() {
   ): View? {
     binding = InviteFragmentBinding.inflate(inflater, container, false)
     laoViewModel = LaoActivity.obtainViewModel(requireActivity())
+    clipboardManager = GeneralUtils.ClipboardUtil(requireActivity())
 
     // Display the LAO identifier, not the device public key
     binding.laoPropertiesIdentifierText.text = laoViewModel.laoId
@@ -65,8 +68,8 @@ class InviteFragment : Fragment() {
     }
 
     handleBackNav()
-    setupCopyButton(binding.copyServerButton, binding.laoPropertiesServerText, "Server Address")
-    setupCopyButton(binding.copyIdentifierButton, binding.laoPropertiesIdentifierText, "LAO ID")
+    clipboardManager.setupCopyButton(binding.copyServerButton, binding.laoPropertiesServerText, "Server Address")
+    clipboardManager.setupCopyButton(binding.copyIdentifierButton, binding.laoPropertiesIdentifierText, "LAO ID")
 
     return binding.root
   }
@@ -79,21 +82,6 @@ class InviteFragment : Fragment() {
 
   private fun handleBackNav() {
     LaoActivity.addBackNavigationCallbackToEvents(requireActivity(), viewLifecycleOwner, TAG)
-  }
-
-  private fun setupCopyButton(button: View, textView: TextView, label: String) {
-    button.setOnClickListener {
-      val text = textView.text.toString()
-      copyTextToClipboard(label, text)
-      Toast.makeText(requireContext(), R.string.successful_copy, Toast.LENGTH_SHORT).show()
-    }
-  }
-
-  private fun copyTextToClipboard(label: String, content: String) {
-    val clipboard =
-        requireActivity().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-    val clip = ClipData.newPlainText(label, content)
-    clipboard.setPrimaryClip(clip)
   }
 
   companion object {
