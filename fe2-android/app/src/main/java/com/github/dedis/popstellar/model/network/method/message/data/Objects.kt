@@ -22,7 +22,8 @@ enum class Objects
   CHIRP("chirp"),
   REACTION("reaction"),
   COIN("coin"),
-  POPCHA("popcha");
+  POPCHA("popcha"),
+  GOSSIP("gossip");
 
   /**
    * Function that tells whether the given object type has to be persisted.
