@@ -104,8 +104,6 @@ func newSuccessTestHandleChannelCoin(t *testing.T, filename string, name string)
 	var sender = "M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU="
 	var channelID = "/root/" + laoID + "/coin"
 
-	// Tests that the channel works correctly when it receives a transaction
-
 	file := filepath.Join(coinPath, filename)
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
@@ -152,8 +150,6 @@ func newFailTestHandleChannelCoin(t *testing.T, filename string, name string) in
 	var laoID = "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo="
 	var sender = "M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU="
 	var channelID = "/root/" + laoID + "/coin"
-
-	// Tests that the channel works correctly when it receives a transaction
 
 	file := filepath.Join(coinPath, filename)
 	buf, err := os.ReadFile(file)

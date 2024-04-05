@@ -1,11 +1,9 @@
 package hub
 
 import (
-	"encoding/base64"
 	"popstellar/message/answer"
 	"popstellar/message/messagedata"
 	"popstellar/message/query/method/message"
-	"popstellar/validation"
 )
 
 func handleChannelCoin(params handlerParameters, channel string, msg message.Message) *answer.Error {
@@ -43,23 +41,9 @@ func handleChannelCoin(params handlerParameters, channel string, msg message.Mes
 }
 
 func handleCoinPostTransaction(params handlerParameters, msg message.Message) *answer.Error {
-	jsonData, err := base64.URLEncoding.DecodeString(msg.Data)
-	if err != nil {
-		errAnswer := answer.NewInvalidMessageFieldError("failed to decode message data: %v", err).
-			Wrap("handleCoinPostTransaction")
-		return errAnswer
-	}
-
-	err = params.schemaValidator.VerifyJSON(jsonData, validation.Data)
-	if err != nil {
-		errAnswer := answer.NewInvalidMessageFieldError("failed to verify json schema: %w", err).
-			Wrap("handleCoinPostTransaction")
-		return errAnswer
-	}
-
 	var data messagedata.PostTransaction
 
-	err = msg.UnmarshalData(&data)
+	err := msg.UnmarshalData(&data)
 	if err != nil {
 		errAnswer := answer.NewInvalidMessageFieldError("failed to unmarshal: %v", err).
 			Wrap("handleCoinPostTransaction")
