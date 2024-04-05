@@ -15,13 +15,13 @@ enum MethodType:
 object MethodType:
   def apply(method: String): MethodType =
     method match
-      case "broadcast" => broadcast
-      case "publish" => publish
-      case "subscribe" => subscribe
-      case "unsubscribe" => unsubscribe
-      case "catchup" => catchup
-      case "heartbeat" => heartbeat
+      case "broadcast"          => broadcast
+      case "publish"            => publish
+      case "subscribe"          => subscribe
+      case "unsubscribe"        => unsubscribe
+      case "catchup"            => catchup
+      case "heartbeat"          => heartbeat
       case "get_messages_by_id" => get_messages_by_id
-      case "greet_server" => greet_server
-      case "rumor" => rumor
-      case _ => INVALID
+      case "greet_server"       => greet_server
+      case "rumor"              => rumor
+      case _                    => INVALID
