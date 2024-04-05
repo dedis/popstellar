@@ -1,6 +1,8 @@
 package hub
 
 import (
+	"bytes"
+	"encoding/base64"
 	"popstellar/message/answer"
 	"popstellar/message/messagedata"
 	"popstellar/message/query/method/message"
@@ -15,9 +17,9 @@ func handleChannelGeneralChirp(params handlerParameters, channel string, msg mes
 
 	switch object + "#" + action {
 	case messagedata.ChirpObject + "#" + messagedata.ChirpActionNotifyAdd:
-		errAnswer = handleChirpNotifyAdd(msg, params)
+		errAnswer = handleChirpNotifyAdd(params, msg)
 	case messagedata.ChirpObject + "#" + messagedata.ChirpActionNotifyDelete:
-		errAnswer = handleChirpNotifyDelete(msg, params)
+		errAnswer = handleChirpNotifyDelete(params, msg)
 	default:
 		errAnswer = answer.NewInvalidMessageFieldError("failed to handle %s#%s, invalid object#action", object, action)
 	}
@@ -32,13 +34,84 @@ func handleChannelGeneralChirp(params handlerParameters, channel string, msg mes
 		errAnswer = errAnswer.Wrap("handleChannelGeneralChirp")
 		return errAnswer
 	}
+
+	errAnswer = broadcastToAllClients(msg, params, channel)
+	if errAnswer != nil {
+		errAnswer = errAnswer.Wrap("handleChannelGeneralChirp")
+		return errAnswer
+	}
+
 	return nil
 }
 
-func handleChirpNotifyAdd(msg message.Message, params handlerParameters) *answer.Error {
+func handleChirpNotifyAdd(params handlerParameters, msg message.Message) *answer.Error {
+	var data messagedata.ChirpNotifyAdd
+
+	err := msg.UnmarshalData(&data)
+	if err != nil {
+		errAnswer := answer.NewInvalidMessageFieldError("failed to unmarshal: %v", err).
+			Wrap("handleChirpNotifyAdd")
+		return errAnswer
+	}
+
+	errAnswer := verifyNotifyChirp(params, msg, data)
+	if errAnswer != nil {
+		errAnswer = errAnswer.Wrap("handleChirpNotifyAdd")
+		return errAnswer
+	}
+
 	return nil
 }
 
-func handleChirpNotifyDelete(msg message.Message, params handlerParameters) *answer.Error {
+func handleChirpNotifyDelete(params handlerParameters, msg message.Message) *answer.Error {
+	var data messagedata.ChirpNotifyDelete
+
+	err := msg.UnmarshalData(&data)
+	if err != nil {
+		errAnswer := answer.NewInvalidMessageFieldError("failed to unmarshal: %v", err).
+			Wrap("handleChirpNotifyDelete")
+		return errAnswer
+	}
+
+	errAnswer := verifyNotifyChirp(params, msg, data)
+	if errAnswer != nil {
+		errAnswer = errAnswer.Wrap("handleChirpNotifyDelete")
+		return errAnswer
+	}
+
+	return nil
+}
+
+// Utils
+
+func verifyNotifyChirp(params handlerParameters, msg message.Message, chirpMsg messagedata.Verifiable) *answer.Error {
+	err := chirpMsg.Verify()
+	if err != nil {
+		errAnswer := answer.NewInvalidMessageFieldError("invalid chirp broadcast message: %v", err)
+		errAnswer = errAnswer.Wrap("verifyNotifyChirp")
+		return errAnswer
+	}
+
+	senderBuf, err := base64.URLEncoding.DecodeString(msg.Sender)
+	if err != nil {
+		errAnswer := answer.NewInvalidMessageFieldError("failed to decode sender key: %v", err)
+		errAnswer = errAnswer.Wrap("verifyNotifyChirp")
+		return errAnswer
+	}
+
+	pk, err := params.db.GetServerPubKey()
+	if err != nil {
+		errAnswer := answer.NewInternalServerError("failed to query db: %v", err)
+		errAnswer = errAnswer.Wrap("verifyNotifyChirp")
+		return errAnswer
+	}
+
+	ok := bytes.Equal(senderBuf, pk)
+	if !ok {
+		errAnswer := answer.NewInvalidMessageFieldError("only the server can broadcast the chirp messages")
+		errAnswer = errAnswer.Wrap("verifyNotifyChirp")
+		return errAnswer
+	}
+
 	return nil
 }
