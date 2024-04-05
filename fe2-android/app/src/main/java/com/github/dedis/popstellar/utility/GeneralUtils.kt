@@ -78,7 +78,7 @@ object GeneralUtils {
    *
    * @param context the context of the application
    */
-  class ClipboardUtil(val context : Context) {
+  class ClipboardUtil(val context: Context) {
 
     fun setupCopyButton(button: View, textView: TextView, label: String) {
       button.setOnClickListener {
@@ -94,7 +94,6 @@ object GeneralUtils {
       clipboard.setPrimaryClip(clip)
     }
   }
-
 
   /**
    * This function converts a base64 string into some mnemonic words.

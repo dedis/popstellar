@@ -1,15 +1,10 @@
 package com.github.dedis.popstellar.ui.lao
 
-import android.content.ClipData
-import android.content.ClipboardManager
-import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.github.dedis.popstellar.R
 import com.github.dedis.popstellar.databinding.InviteFragmentBinding
@@ -32,7 +27,7 @@ class InviteFragment : Fragment() {
 
   private lateinit var laoViewModel: LaoViewModel
   private lateinit var binding: InviteFragmentBinding
-  private lateinit var clipboardManager : GeneralUtils.ClipboardUtil
+  private lateinit var clipboardManager: GeneralUtils.ClipboardUtil
 
   override fun onCreateView(
       inflater: LayoutInflater,
@@ -68,8 +63,10 @@ class InviteFragment : Fragment() {
     }
 
     handleBackNav()
-    clipboardManager.setupCopyButton(binding.copyServerButton, binding.laoPropertiesServerText, "Server Address")
-    clipboardManager.setupCopyButton(binding.copyIdentifierButton, binding.laoPropertiesIdentifierText, "LAO ID")
+    clipboardManager.setupCopyButton(
+        binding.copyServerButton, binding.laoPropertiesServerText, "Server Address")
+    clipboardManager.setupCopyButton(
+        binding.copyIdentifierButton, binding.laoPropertiesIdentifierText, "LAO ID")
 
     return binding.root
   }
