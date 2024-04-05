@@ -72,7 +72,6 @@ func handleQuery(params handlerParameters, msg []byte) (*int, *answer.Error) {
 		id, errAnswer = handleSubscribe(params, msg)
 	case query.MethodUnsubscribe:
 		id, errAnswer = handleUnsubscribe(params, msg)
-
 	default:
 		id = nil
 		errAnswer = answer.NewInvalidResourceError("unexpected method: '%s'", queryBase.Method)

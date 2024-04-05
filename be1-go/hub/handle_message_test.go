@@ -1,11 +1,14 @@
 package hub
 
 import (
+	"encoding/base64"
 	"encoding/json"
+	"fmt"
 	"github.com/stretchr/testify/require"
 	jsonrpc "popstellar/message"
 	"popstellar/message/query"
 	"popstellar/message/query/method"
+	"popstellar/message/query/method/message"
 	"testing"
 )
 
@@ -20,7 +23,7 @@ func Test_handleMessage(t *testing.T) {
 
 	// wrong json
 
-	msg := struct {
+	wrongJson := struct {
 		jsonrpc string `json:"jsonrpc"`
 		id      string `json:"id"`
 	}{
@@ -28,7 +31,7 @@ func Test_handleMessage(t *testing.T) {
 		id:      "999",
 	}
 
-	msgBuf, err := json.Marshal(msg)
+	wrongJsonBuf, err := json.Marshal(wrongJson)
 	require.NoError(t, err)
 
 	params := newHandlerParameters(nil)
@@ -36,12 +39,65 @@ func Test_handleMessage(t *testing.T) {
 	inputs = append(inputs, input{
 		"wrong json",
 		params,
-		msgBuf,
+		wrongJsonBuf,
 	})
+
+	// wrong publish
+
+	publish := method.Publish{
+		Base: query.Base{
+			JSONRPCBase: jsonrpc.JSONRPCBase{
+				JSONRPC: "2.0",
+			},
+			Method: "publish",
+		},
+		ID: 1,
+		Params: method.PublishParams{
+			Channel: "/root",
+			Message: message.Message{
+				Data:              base64.URLEncoding.EncodeToString([]byte("wrong data")),
+				Sender:            base64.URLEncoding.EncodeToString([]byte("wrong sender")),
+				Signature:         base64.URLEncoding.EncodeToString([]byte("wrong signature")),
+				MessageID:         base64.URLEncoding.EncodeToString([]byte("wrong messageID")),
+				WitnessSignatures: make([]message.WitnessSignature, 0),
+			},
+		},
+	}
+
+	wrongPublish, err := json.Marshal(publish)
+	require.NoError(t, err)
+
+	params = newHandlerParameters(nil)
+
+	inputs = append(inputs, input{
+		name:    "wrong publish",
+		params:  params,
+		message: wrongPublish,
+	})
+
+	// run all tests
+
+	for _, i := range inputs {
+		t.Run(i.name, func(t *testing.T) {
+			err := handleMessage(i.params, i.message)
+			fmt.Println(err)
+			require.Error(t, err)
+		})
+	}
+}
+
+func Test_handleQuery(t *testing.T) {
+	type input struct {
+		name    string
+		params  handlerParameters
+		message []byte
+	}
+
+	inputs := make([]input, 0)
 
 	// missing method
 
-	msg2 := method.GreetServer{
+	msg := method.GreetServer{
 		Base: query.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
@@ -55,20 +111,23 @@ func Test_handleMessage(t *testing.T) {
 		},
 	}
 
-	msgBuf2, err := json.Marshal(msg2)
+	params := newHandlerParameters(nil)
+
+	msgBuf, err := json.Marshal(msg)
+	require.NoError(t, err)
 
 	inputs = append(inputs, input{
-		"missing method",
-		params,
-		msgBuf2,
+		name:    "wrong method",
+		params:  params,
+		message: msgBuf,
 	})
 
 	// run all tests
 
 	for _, i := range inputs {
 		t.Run(i.name, func(t *testing.T) {
-			err := handleMessage(i.params, i.message)
-			require.Error(t, err)
+			_, errAnswer := handleQuery(i.params, i.message)
+			require.NotNil(t, errAnswer)
 		})
 	}
 }
