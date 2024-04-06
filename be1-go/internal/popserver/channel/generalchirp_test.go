@@ -7,7 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	"popstellar/internal/popserver"
-	"popstellar/internal/popserver/db"
+	"popstellar/internal/popserver/repo"
 	"popstellar/internal/popserver/state"
 	"popstellar/message/messagedata"
 	"popstellar/message/query/method"
@@ -103,7 +103,7 @@ func newSuccessTestHandleChannelGeneralChirp(t *testing.T, filename string, name
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
-	mockRepo := db.NewMockRepository(t)
+	mockRepo := repo.NewMockRepository(t)
 	senderBuf, err := base64.URLEncoding.DecodeString(sender)
 	require.NoError(t, err)
 	mockRepo.On("GetServerPubKey").Return(senderBuf, nil)
@@ -153,7 +153,7 @@ func newFailTestHandleChannelGeneralChirp(t *testing.T, filename string, name st
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
-	mockRepo := db.NewMockRepository(t)
+	mockRepo := repo.NewMockRepository(t)
 
 	senderBuf, err := base64.URLEncoding.DecodeString(sender)
 	require.NoError(t, err)

@@ -9,7 +9,7 @@ import (
 	"golang.org/x/xerrors"
 	"popstellar/crypto"
 	"popstellar/internal/popserver"
-	"popstellar/internal/popserver/db"
+	"popstellar/internal/popserver/repo"
 	"popstellar/internal/popserver/state"
 	"popstellar/message/messagedata"
 	"popstellar/message/query/method/message"
@@ -63,7 +63,7 @@ func Test_handleChannel(t *testing.T) {
 
 	wrongChannelID := "wrongChannelID"
 
-	mockRepository := db.NewMockRepository(t)
+	mockRepository := repo.NewMockRepository(t)
 	params := popserver.NewHandlerParameters(mockRepository)
 
 	mockRepository.On("HasMessage", msg.MessageID).Return(false, nil)
@@ -80,7 +80,7 @@ func Test_handleChannel(t *testing.T) {
 
 	problemDBChannelID := "problemDBChannelID"
 
-	mockRepository = db.NewMockRepository(t)
+	mockRepository = repo.NewMockRepository(t)
 	params = popserver.NewHandlerParameters(mockRepository)
 
 	mockRepository.On("HasMessage", msg.MessageID).Return(false, nil)
@@ -95,7 +95,7 @@ func Test_handleChannel(t *testing.T) {
 
 	// message already received
 
-	mockRepository = db.NewMockRepository(t)
+	mockRepository = repo.NewMockRepository(t)
 	params = popserver.NewHandlerParameters(mockRepository)
 
 	mockRepository.On("HasMessage", msg.MessageID).Return(true, nil)
@@ -109,7 +109,7 @@ func Test_handleChannel(t *testing.T) {
 
 	// error while querying if the message already exists
 
-	mockRepository = db.NewMockRepository(t)
+	mockRepository = repo.NewMockRepository(t)
 	params = popserver.NewHandlerParameters(mockRepository)
 
 	mockRepository.On("HasMessage", msg.MessageID).Return(false, xerrors.Errorf("DB disconnected"))

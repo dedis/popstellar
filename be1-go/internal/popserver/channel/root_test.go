@@ -10,7 +10,7 @@ import (
 	"go.dedis.ch/kyber/v3/sign/schnorr"
 	"popstellar/crypto"
 	"popstellar/internal/popserver"
-	"popstellar/internal/popserver/db"
+	"popstellar/internal/popserver/repo"
 	"popstellar/internal/popserver/state"
 	"popstellar/message/messagedata"
 	"popstellar/message/query/method"
@@ -54,7 +54,7 @@ func Test_handleChannelRoot(t *testing.T) {
 
 	laoPath := rootPrefix + laoID
 
-	mockRepository := db.NewMockRepository(t)
+	mockRepository := repo.NewMockRepository(t)
 	mockRepository.On("HasChannel", laoPath).Return(false, nil)
 	mockRepository.On("GetOwnerPubKey").Return(nil, nil)
 	mockRepository.On("StoreChannelsAndMessageWithLaoGreet",
@@ -182,7 +182,7 @@ func Test_verifyLaoCreation(t *testing.T) {
 		laoCreate: wrongLaoCreate})
 
 	// Test 7: error when the lao already exists
-	mockRepository := db.NewMockRepository(t)
+	mockRepository := repo.NewMockRepository(t)
 	mockRepository.On("HasChannel", laoPath).Return(true, nil)
 	params = popserver.NewHandlerParameters(mockRepository)
 
@@ -192,7 +192,7 @@ func Test_verifyLaoCreation(t *testing.T) {
 		laoCreate: laoCreate})
 
 	// Test 8: error when querying the channel
-	mockRepository = db.NewMockRepository(t)
+	mockRepository = repo.NewMockRepository(t)
 	mockRepository.On("HasChannel", laoPath).Return(false, fmt.Errorf("DB is disconnected"))
 	params = popserver.NewHandlerParameters(mockRepository)
 
@@ -205,7 +205,7 @@ func Test_verifyLaoCreation(t *testing.T) {
 	wrongMsg := msg
 	wrongMsg.Sender = "wrongSender"
 
-	mockRepository = db.NewMockRepository(t)
+	mockRepository = repo.NewMockRepository(t)
 	mockRepository.On("HasChannel", laoPath).Return(false, nil)
 	params = popserver.NewHandlerParameters(mockRepository)
 
@@ -218,7 +218,7 @@ func Test_verifyLaoCreation(t *testing.T) {
 	wrongMsg = msg
 	wrongMsg.Sender = base64.URLEncoding.EncodeToString([]byte("wrongSender"))
 
-	mockRepository = db.NewMockRepository(t)
+	mockRepository = repo.NewMockRepository(t)
 	mockRepository.On("HasChannel", laoPath).Return(false, nil)
 	params = popserver.NewHandlerParameters(mockRepository)
 
@@ -244,7 +244,7 @@ func Test_verifyLaoCreation(t *testing.T) {
 	wrongLaoCreate.Organizer = base64.URLEncoding.EncodeToString([]byte("wrongOrganizer"))
 	wrongLaoCreate.ID = messagedata.Hash(wrongLaoCreate.Organizer, fmt.Sprintf("%d", wrongLaoCreate.Creation), wrongLaoCreate.Name)
 
-	mockRepository = db.NewMockRepository(t)
+	mockRepository = repo.NewMockRepository(t)
 	mockRepository.On("HasChannel", laoPath).Return(false, nil)
 	params = popserver.NewHandlerParameters(mockRepository)
 
@@ -258,7 +258,7 @@ func Test_verifyLaoCreation(t *testing.T) {
 	wrongLaoCreate.Organizer = base64.URLEncoding.EncodeToString(wrongKeyPair.PublicBuf)
 	wrongLaoCreate.ID = messagedata.Hash(wrongLaoCreate.Organizer, fmt.Sprintf("%d", wrongLaoCreate.Creation), wrongLaoCreate.Name)
 
-	mockRepository = db.NewMockRepository(t)
+	mockRepository = repo.NewMockRepository(t)
 	mockRepository.On("HasChannel", laoPath).Return(false, nil)
 	params = popserver.NewHandlerParameters(mockRepository)
 
@@ -268,7 +268,7 @@ func Test_verifyLaoCreation(t *testing.T) {
 		laoCreate: wrongLaoCreate})
 
 	// Test 14: error when querying the owner's public key
-	mockRepository = db.NewMockRepository(t)
+	mockRepository = repo.NewMockRepository(t)
 	mockRepository.On("HasChannel", laoPath).Return(false, nil)
 	mockRepository.On("GetOwnerPubKey").Return(nil, fmt.Errorf("DB is disconnected"))
 	params = popserver.NewHandlerParameters(mockRepository)
@@ -279,7 +279,7 @@ func Test_verifyLaoCreation(t *testing.T) {
 		laoCreate: laoCreate})
 
 	// Test 15: error when the owner's public key is not the same as the sender's public key
-	mockRepository = db.NewMockRepository(t)
+	mockRepository = repo.NewMockRepository(t)
 	mockRepository.On("HasChannel", laoPath).Return(false, nil)
 	mockRepository.On("GetOwnerPubKey").Return(wrongKeyPair.Public, nil)
 	params = popserver.NewHandlerParameters(mockRepository)
@@ -298,7 +298,7 @@ func Test_verifyLaoCreation(t *testing.T) {
 	}
 
 	// Test 16: success
-	mockRepository = db.NewMockRepository(t)
+	mockRepository = repo.NewMockRepository(t)
 	mockRepository.On("HasChannel", laoPath).Return(false, nil)
 	mockRepository.On("GetOwnerPubKey").Return(keypair.Public, nil)
 	params = popserver.NewHandlerParameters(mockRepository)
@@ -324,7 +324,7 @@ func Test_createLaoGreet(t *testing.T) {
 	laoPath := "laoPath"
 
 	// Test 1: error when getting the server's public key
-	mockRepository := db.NewMockRepository(t)
+	mockRepository := repo.NewMockRepository(t)
 	mockRepository.On("GetServerPubKey").Return(nil, fmt.Errorf("DB is disconnected"))
 	params := popserver.NewHandlerParameters(mockRepository)
 	err = params.Peers.AddPeerInfo("socketID1", method.GreetServerParams{ClientAddress: "clientAddress1"})
@@ -335,7 +335,7 @@ func Test_createLaoGreet(t *testing.T) {
 		pubKeyBuf: keypair.PublicBuf})
 
 	// Test 2: error when querying the server's secret key when signing the laoGreet message
-	mockRepository = db.NewMockRepository(t)
+	mockRepository = repo.NewMockRepository(t)
 	mockRepository.On("GetServerPubKey").Return(keypair.PublicBuf, nil)
 	mockRepository.On("GetServerSecretKey").Return(nil, fmt.Errorf("DB is disconnected"))
 	params = popserver.NewHandlerParameters(mockRepository)
@@ -347,7 +347,7 @@ func Test_createLaoGreet(t *testing.T) {
 		pubKeyBuf: keypair.PublicBuf})
 
 	// Test 3: error when unmarshalling the server's secret key
-	mockRepository = db.NewMockRepository(t)
+	mockRepository = repo.NewMockRepository(t)
 	mockRepository.On("GetServerPubKey").Return(keypair.PublicBuf, nil)
 	mockRepository.On("GetServerSecretKey").Return([]byte("wrongKey"), nil)
 	params = popserver.NewHandlerParameters(mockRepository)
@@ -368,7 +368,7 @@ func Test_createLaoGreet(t *testing.T) {
 	}
 
 	// Test 5: success
-	mockRepository = db.NewMockRepository(t)
+	mockRepository = repo.NewMockRepository(t)
 	mockRepository.On("GetServerPubKey").Return(keypair.PublicBuf, nil)
 	mockRepository.On("GetServerSecretKey").Return(privateKeyBuf, nil)
 	params = popserver.NewHandlerParameters(mockRepository)

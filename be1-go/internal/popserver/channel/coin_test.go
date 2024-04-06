@@ -7,7 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	"popstellar/internal/popserver"
-	"popstellar/internal/popserver/db"
+	"popstellar/internal/popserver/repo"
 	"popstellar/internal/popserver/state"
 	"popstellar/message/messagedata"
 	"popstellar/message/query/method"
@@ -121,7 +121,7 @@ func newSuccessTestHandleChannelCoin(t *testing.T, filename string, name string)
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
-	mockRepo := db.NewMockRepository(t)
+	mockRepo := repo.NewMockRepository(t)
 	mockRepo.On("StoreMessage", channelID, m).Return(nil)
 
 	sockets := []*popserver.FakeSocket{

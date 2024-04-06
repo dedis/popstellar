@@ -9,7 +9,7 @@ import (
 	"golang.org/x/xerrors"
 	"popstellar/crypto"
 	"popstellar/internal/popserver"
-	"popstellar/internal/popserver/db"
+	"popstellar/internal/popserver/repo"
 	"popstellar/internal/popserver/state"
 	"popstellar/message/answer"
 	"popstellar/message/messagedata"
@@ -42,7 +42,7 @@ func Test_handleGetMessagesByIDAnswer(t *testing.T) {
 		},
 	}
 
-	mockRepository := db.NewMockRepository(t)
+	mockRepository := repo.NewMockRepository(t)
 	mockRepository.On("StorePendingMessages", msgsByChannel).Return(xerrors.Errorf("DB disconnected"))
 
 	params := popserver.NewHandlerParameters(mockRepository)
@@ -131,7 +131,7 @@ func Test_handleMessagesByChannel(t *testing.T) {
 	expected["/root/lao1"] = make(map[string]message.Message)
 	expected["/root/lao1"][msgValid.MessageID] = msgValid
 
-	mockRepository := db.NewMockRepository(t)
+	mockRepository := repo.NewMockRepository(t)
 	mockRepository.On("HasMessage", msgValid.MessageID).Return(false, nil)
 	mockRepository.On("GetChannelType", "/root").Return("", nil)
 	mockRepository.On("GetChannelType", "/root/lao1").Return("", nil)

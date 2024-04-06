@@ -5,7 +5,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"golang.org/x/xerrors"
 	"popstellar/internal/popserver"
-	"popstellar/internal/popserver/db"
+	"popstellar/internal/popserver/repo"
 	"popstellar/internal/popserver/state"
 	jsonrpc "popstellar/message"
 	"popstellar/message/query"
@@ -56,7 +56,7 @@ func Test_handleCatchUp(t *testing.T) {
 
 	messagesToCatchUp := []message.Message{msg, msg, msg}
 
-	mockRepository := db.NewMockRepository(t)
+	mockRepository := repo.NewMockRepository(t)
 	mockRepository.On("GetAllMessagesFromChannel", catchup.Params.Channel).Return(messagesToCatchUp, nil)
 
 	s := &popserver.FakeSocket{Id: "fakesocket"}
@@ -77,7 +77,7 @@ func Test_handleCatchUp(t *testing.T) {
 	catchupBuf, err = json.Marshal(&catchup)
 	require.NoError(t, err)
 
-	mockRepository = db.NewMockRepository(t)
+	mockRepository = repo.NewMockRepository(t)
 	mockRepository.On("GetAllMessagesFromChannel", catchup.Params.Channel).Return(nil, xerrors.Errorf("DB is disconnected"))
 
 	params = popserver.NewHandlerParameters(mockRepository)
@@ -148,7 +148,7 @@ func Test_handleGetMessagesByID(t *testing.T) {
 	result := make(map[string][]message.Message)
 	result["/root"] = []message.Message{msg}
 
-	mockRepository := db.NewMockRepository(t)
+	mockRepository := repo.NewMockRepository(t)
 	mockRepository.On("GetResultForGetMessagesByID", paramsGetMessagesByID).Return(result, nil)
 
 	s := &popserver.FakeSocket{Id: "fakesocket"}
@@ -169,7 +169,7 @@ func Test_handleGetMessagesByID(t *testing.T) {
 	getMessagesByIDBuf, err = json.Marshal(&getMessagesByID)
 	require.NoError(t, err)
 
-	mockRepository = db.NewMockRepository(t)
+	mockRepository = repo.NewMockRepository(t)
 	mockRepository.On("GetResultForGetMessagesByID", paramsGetMessagesByID).Return(nil, xerrors.Errorf("DB is disconnected"))
 
 	params = popserver.NewHandlerParameters(mockRepository)
@@ -231,7 +231,7 @@ func Test_handleGreetServer(t *testing.T) {
 	greetServerBuf, err := json.Marshal(&greetServer)
 	require.NoError(t, err)
 
-	mockRepository := db.NewMockRepository(t)
+	mockRepository := repo.NewMockRepository(t)
 	mockRepository.On("GetServerPubKey").Return([]byte("publicKey"), nil)
 
 	s := &popserver.FakeSocket{Id: "fakesocket"}
@@ -288,7 +288,7 @@ func Test_handleGreetServer(t *testing.T) {
 	greetServerBuf, err = json.Marshal(&greetServer)
 	require.NoError(t, err)
 
-	mockRepository = db.NewMockRepository(t)
+	mockRepository = repo.NewMockRepository(t)
 	mockRepository.On("GetServerPubKey").Return(nil, xerrors.Errorf("DB is disconnected"))
 
 	params = popserver.NewHandlerParameters(mockRepository)
@@ -374,7 +374,7 @@ func Test_handleHeartbeat(t *testing.T) {
 		msgIDs[4],
 	}
 
-	mockRepository := db.NewMockRepository(t)
+	mockRepository := repo.NewMockRepository(t)
 	mockRepository.On("GetParamsForGetMessageByID", listMsg).Return(expected, nil)
 
 	s := &popserver.FakeSocket{Id: "fakesocket"}
@@ -396,7 +396,7 @@ func Test_handleHeartbeat(t *testing.T) {
 	heartbeatBuf, err = json.Marshal(&heartbeat)
 	require.NoError(t, err)
 
-	mockRepository = db.NewMockRepository(t)
+	mockRepository = repo.NewMockRepository(t)
 	mockRepository.On("GetParamsForGetMessageByID", listMsg).Return(nil, nil)
 
 	s = &popserver.FakeSocket{Id: "fakesocket"}
@@ -417,7 +417,7 @@ func Test_handleHeartbeat(t *testing.T) {
 	heartbeatBuf, err = json.Marshal(&heartbeat)
 	require.NoError(t, err)
 
-	mockRepository = db.NewMockRepository(t)
+	mockRepository = repo.NewMockRepository(t)
 	mockRepository.On("GetParamsForGetMessageByID", listMsg).Return(nil, xerrors.Errorf("DB is disconnected"))
 
 	params = popserver.NewHandlerParameters(mockRepository)
