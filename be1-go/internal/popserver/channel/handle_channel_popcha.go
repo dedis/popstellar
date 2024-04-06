@@ -1,12 +1,13 @@
-package hub
+package channel
 
 import (
+	"popstellar/internal/popserver/state"
 	"popstellar/message/answer"
 	"popstellar/message/messagedata"
 	"popstellar/message/query/method/message"
 )
 
-func handleChannelPopCha(params handlerParameters, channel string, msg message.Message) *answer.Error {
+func handleChannelPopCha(params state.HandlerParameters, channel string, msg message.Message) *answer.Error {
 	object, action, errAnswer := verifyDataAndGetObjectAction(params, msg)
 	if errAnswer != nil {
 		errAnswer = errAnswer.Wrap("handleChannelPopCha")
@@ -24,7 +25,7 @@ func handleChannelPopCha(params handlerParameters, channel string, msg message.M
 		return errAnswer
 	}
 
-	err := params.db.StoreMessage(channel, msg)
+	err := params.DB.StoreMessage(channel, msg)
 	if err != nil {
 		errAnswer = answer.NewInternalServerError("failed to store message: %v", err)
 		errAnswer = errAnswer.Wrap("handleChannelPopCha")
@@ -33,6 +34,6 @@ func handleChannelPopCha(params handlerParameters, channel string, msg message.M
 	return nil
 }
 
-func handleAuth(params handlerParameters, msg message.Message) *answer.Error {
+func handleAuth(params state.HandlerParameters, msg message.Message) *answer.Error {
 	return nil
 }

@@ -1,4 +1,4 @@
-package hub
+package db
 
 //
 //import (
@@ -51,7 +51,7 @@ package hub
 //		return SQLite{}, "", xerrors.Errorf("an error '%s' was not expected when creating a temporary directory", err)
 //	}
 //
-//	fn := filepath.Join(dir, "test.db")
+//	fn := filepath.Join(dir, "test.DB")
 //
 //	lite, err := NewSQLite(fn)
 //	if err != nil {

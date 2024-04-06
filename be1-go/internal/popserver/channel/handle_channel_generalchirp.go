@@ -1,14 +1,15 @@
-package hub
+package channel
 
 import (
 	"bytes"
 	"encoding/base64"
+	"popstellar/internal/popserver/state"
 	"popstellar/message/answer"
 	"popstellar/message/messagedata"
 	"popstellar/message/query/method/message"
 )
 
-func handleChannelGeneralChirp(params handlerParameters, channel string, msg message.Message) *answer.Error {
+func handleChannelGeneralChirp(params state.HandlerParameters, channel string, msg message.Message) *answer.Error {
 	object, action, errAnswer := verifyDataAndGetObjectAction(params, msg)
 	if errAnswer != nil {
 		errAnswer = errAnswer.Wrap("handleChannelGeneralChirp")
@@ -28,7 +29,7 @@ func handleChannelGeneralChirp(params handlerParameters, channel string, msg mes
 		return errAnswer
 	}
 
-	err := params.db.StoreMessage(channel, msg)
+	err := params.DB.StoreMessage(channel, msg)
 	if err != nil {
 		errAnswer = answer.NewInternalServerError("failed to store message: %v", err)
 		errAnswer = errAnswer.Wrap("handleChannelGeneralChirp")
@@ -44,7 +45,7 @@ func handleChannelGeneralChirp(params handlerParameters, channel string, msg mes
 	return nil
 }
 
-func handleChirpNotifyAdd(params handlerParameters, msg message.Message) *answer.Error {
+func handleChirpNotifyAdd(params state.HandlerParameters, msg message.Message) *answer.Error {
 	var data messagedata.ChirpNotifyAdd
 
 	err := msg.UnmarshalData(&data)
@@ -63,7 +64,7 @@ func handleChirpNotifyAdd(params handlerParameters, msg message.Message) *answer
 	return nil
 }
 
-func handleChirpNotifyDelete(params handlerParameters, msg message.Message) *answer.Error {
+func handleChirpNotifyDelete(params state.HandlerParameters, msg message.Message) *answer.Error {
 	var data messagedata.ChirpNotifyDelete
 
 	err := msg.UnmarshalData(&data)
@@ -84,7 +85,7 @@ func handleChirpNotifyDelete(params handlerParameters, msg message.Message) *ans
 
 // Utils
 
-func verifyNotifyChirp(params handlerParameters, msg message.Message, chirpMsg messagedata.Verifiable) *answer.Error {
+func verifyNotifyChirp(params state.HandlerParameters, msg message.Message, chirpMsg messagedata.Verifiable) *answer.Error {
 	err := chirpMsg.Verify()
 	if err != nil {
 		errAnswer := answer.NewInvalidMessageFieldError("invalid chirp broadcast message: %v", err)
@@ -99,9 +100,9 @@ func verifyNotifyChirp(params handlerParameters, msg message.Message, chirpMsg m
 		return errAnswer
 	}
 
-	pk, err := params.db.GetServerPubKey()
+	pk, err := params.DB.GetServerPubKey()
 	if err != nil {
-		errAnswer := answer.NewInternalServerError("failed to query db: %v", err)
+		errAnswer := answer.NewInternalServerError("failed to query DB: %v", err)
 		errAnswer = errAnswer.Wrap("verifyNotifyChirp")
 		return errAnswer
 	}

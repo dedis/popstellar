@@ -1,25 +1,26 @@
-package hub
+package message
 
 import (
 	"encoding/json"
+	"popstellar/internal/popserver/state"
 	jsonrpc "popstellar/message"
 	"popstellar/message/answer"
 	"popstellar/message/query"
 	"popstellar/validation"
 )
 
-func handleMessage(params handlerParameters, msg []byte) error {
-	err := params.schemaValidator.VerifyJSON(msg, validation.GenericMessage)
+func HandleMessage(params state.HandlerParameters, msg []byte) error {
+	err := params.SchemaValidator.VerifyJSON(msg, validation.GenericMessage)
 	if err != nil {
-		errAnswer := answer.NewInvalidMessageFieldError("invalid json: %v", err).Wrap("handleMessage")
-		params.socket.SendError(nil, errAnswer)
+		errAnswer := answer.NewInvalidMessageFieldError("invalid json: %v", err).Wrap("HandleMessage")
+		params.Socket.SendError(nil, errAnswer)
 		return errAnswer
 	}
 
 	rpcType, err := jsonrpc.GetType(msg)
 	if err != nil {
-		errAnswer := answer.NewInvalidMessageFieldError("failed to get rpc type: %v", err).Wrap("handleMessage")
-		params.socket.SendError(nil, errAnswer)
+		errAnswer := answer.NewInvalidMessageFieldError("failed to get rpc type: %v", err).Wrap("HandleMessage")
+		params.Socket.SendError(nil, errAnswer)
 		return errAnswer
 	}
 
@@ -37,15 +38,15 @@ func handleMessage(params handlerParameters, msg []byte) error {
 	}
 
 	if errAnswer != nil {
-		errAnswer = errAnswer.Wrap("handleMessage")
-		params.socket.SendError(id, errAnswer)
+		errAnswer = errAnswer.Wrap("HandleMessage")
+		params.Socket.SendError(id, errAnswer)
 		return errAnswer
 	}
 
 	return nil
 }
 
-func handleQuery(params handlerParameters, msg []byte) (*int, *answer.Error) {
+func handleQuery(params state.HandlerParameters, msg []byte) (*int, *answer.Error) {
 	var queryBase query.Base
 
 	err := json.Unmarshal(msg, &queryBase)
@@ -85,7 +86,7 @@ func handleQuery(params handlerParameters, msg []byte) (*int, *answer.Error) {
 	return id, nil
 }
 
-func handleAnswer(params handlerParameters, msg []byte) (*int, *answer.Error) {
+func handleAnswer(params state.HandlerParameters, msg []byte) (*int, *answer.Error) {
 	var answerMsg answer.Answer
 
 	err := json.Unmarshal(msg, &answerMsg)
@@ -95,17 +96,17 @@ func handleAnswer(params handlerParameters, msg []byte) (*int, *answer.Error) {
 	}
 
 	if answerMsg.Result == nil {
-		params.log.Warn().Msg("received an error, nothing to handle")
+		params.Log.Warn().Msg("received an error, nothing to handle")
 		// don't send any error to avoid infinite error loop as a server will
 		// send an error to another server that will create another error
 		return nil, nil
 	}
 	if answerMsg.Result.IsEmpty() {
-		params.log.Info().Msg("result isn't an answer to a query, nothing to handle")
+		params.Log.Info().Msg("result isn't an answer to a query, nothing to handle")
 		return nil, nil
 	}
 
-	err = params.queries.SetQueryReceived(*answerMsg.ID)
+	err = params.Queries.SetQueryReceived(*answerMsg.ID)
 	if err != nil {
 		errAnswer := answer.NewInternalServerError("failed to set query state: %v", err).Wrap("handleAnswer")
 		return answerMsg.ID, errAnswer

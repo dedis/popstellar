@@ -1,10 +1,12 @@
-package hub
+package message
 
 import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"github.com/stretchr/testify/require"
+	"popstellar/internal/popserver"
+	"popstellar/internal/popserver/state"
 	jsonrpc "popstellar/message"
 	"popstellar/message/query"
 	"popstellar/message/query/method"
@@ -15,7 +17,7 @@ import (
 func Test_handleMessage(t *testing.T) {
 	type input struct {
 		name    string
-		params  handlerParameters
+		params  state.HandlerParameters
 		message []byte
 	}
 
@@ -34,7 +36,7 @@ func Test_handleMessage(t *testing.T) {
 	wrongJsonBuf, err := json.Marshal(wrongJson)
 	require.NoError(t, err)
 
-	params := newHandlerParameters(nil)
+	params := popserver.NewHandlerParameters(nil)
 
 	inputs = append(inputs, input{
 		"wrong json",
@@ -67,7 +69,7 @@ func Test_handleMessage(t *testing.T) {
 	wrongPublish, err := json.Marshal(publish)
 	require.NoError(t, err)
 
-	params = newHandlerParameters(nil)
+	params = popserver.NewHandlerParameters(nil)
 
 	inputs = append(inputs, input{
 		name:    "wrong publish",
@@ -79,7 +81,7 @@ func Test_handleMessage(t *testing.T) {
 
 	for _, i := range inputs {
 		t.Run(i.name, func(t *testing.T) {
-			err := handleMessage(i.params, i.message)
+			err := HandleMessage(i.params, i.message)
 			fmt.Println(err)
 			require.Error(t, err)
 		})
@@ -89,7 +91,7 @@ func Test_handleMessage(t *testing.T) {
 func Test_handleQuery(t *testing.T) {
 	type input struct {
 		name    string
-		params  handlerParameters
+		params  state.HandlerParameters
 		message []byte
 	}
 
@@ -111,7 +113,7 @@ func Test_handleQuery(t *testing.T) {
 		},
 	}
 
-	params := newHandlerParameters(nil)
+	params := popserver.NewHandlerParameters(nil)
 
 	msgBuf, err := json.Marshal(msg)
 	require.NoError(t, err)

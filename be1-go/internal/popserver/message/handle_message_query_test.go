@@ -1,9 +1,12 @@
-package hub
+package message
 
 import (
 	"encoding/json"
 	"github.com/stretchr/testify/require"
 	"golang.org/x/xerrors"
+	"popstellar/internal/popserver"
+	"popstellar/internal/popserver/db"
+	"popstellar/internal/popserver/state"
 	jsonrpc "popstellar/message"
 	"popstellar/message/query"
 	"popstellar/message/query/method"
@@ -15,9 +18,9 @@ import (
 func Test_handleCatchUp(t *testing.T) {
 	type input struct {
 		name        string
-		params      handlerParameters
+		params      state.HandlerParameters
 		message     []byte
-		socket      *fakeSocket
+		socket      *popserver.FakeSocket
 		result      []message.Message
 		isErrorTest bool
 	}
@@ -53,12 +56,12 @@ func Test_handleCatchUp(t *testing.T) {
 
 	messagesToCatchUp := []message.Message{msg, msg, msg}
 
-	mockRepository := NewMockRepository(t)
+	mockRepository := db.NewMockRepository(t)
 	mockRepository.On("GetAllMessagesFromChannel", catchup.Params.Channel).Return(messagesToCatchUp, nil)
 
-	s := &fakeSocket{id: "fakesocket"}
+	s := &popserver.FakeSocket{Id: "fakesocket"}
 
-	params := newHandlerParametersWithFakeSocket(mockRepository, s)
+	params := popserver.NewHandlerParametersWithFakeSocket(mockRepository, s)
 
 	inputs = append(inputs, input{
 		name:        "catch up three messages",
@@ -69,18 +72,18 @@ func Test_handleCatchUp(t *testing.T) {
 		isErrorTest: false,
 	})
 
-	// failed to query db
+	// failed to query DB
 
 	catchupBuf, err = json.Marshal(&catchup)
 	require.NoError(t, err)
 
-	mockRepository = NewMockRepository(t)
-	mockRepository.On("GetAllMessagesFromChannel", catchup.Params.Channel).Return(nil, xerrors.Errorf("db is disconnected"))
+	mockRepository = db.NewMockRepository(t)
+	mockRepository.On("GetAllMessagesFromChannel", catchup.Params.Channel).Return(nil, xerrors.Errorf("DB is disconnected"))
 
-	params = newHandlerParameters(mockRepository)
+	params = popserver.NewHandlerParameters(mockRepository)
 
 	inputs = append(inputs, input{
-		name:        "failed to query db",
+		name:        "failed to query DB",
 		params:      params,
 		message:     catchupBuf,
 		isErrorTest: true,
@@ -96,7 +99,7 @@ func Test_handleCatchUp(t *testing.T) {
 				require.NotNil(t, id)
 			} else {
 				require.Nil(t, errAnswer)
-				require.Equal(t, i.result, i.socket.res)
+				require.Equal(t, i.result, i.socket.Res)
 			}
 		})
 	}
@@ -105,9 +108,9 @@ func Test_handleCatchUp(t *testing.T) {
 func Test_handleGetMessagesByID(t *testing.T) {
 	type input struct {
 		name        string
-		params      handlerParameters
+		params      state.HandlerParameters
 		message     []byte
-		socket      *fakeSocket
+		socket      *popserver.FakeSocket
 		result      map[string][]message.Message
 		isErrorTest bool
 	}
@@ -145,12 +148,12 @@ func Test_handleGetMessagesByID(t *testing.T) {
 	result := make(map[string][]message.Message)
 	result["/root"] = []message.Message{msg}
 
-	mockRepository := NewMockRepository(t)
+	mockRepository := db.NewMockRepository(t)
 	mockRepository.On("GetResultForGetMessagesByID", paramsGetMessagesByID).Return(result, nil)
 
-	s := &fakeSocket{id: "fakesocket"}
+	s := &popserver.FakeSocket{Id: "fakesocket"}
 
-	params := newHandlerParametersWithFakeSocket(mockRepository, s)
+	params := popserver.NewHandlerParametersWithFakeSocket(mockRepository, s)
 
 	inputs = append(inputs, input{
 		name:        "get one message",
@@ -161,18 +164,18 @@ func Test_handleGetMessagesByID(t *testing.T) {
 		isErrorTest: false,
 	})
 
-	// failed to query db
+	// failed to query DB
 
 	getMessagesByIDBuf, err = json.Marshal(&getMessagesByID)
 	require.NoError(t, err)
 
-	mockRepository = NewMockRepository(t)
-	mockRepository.On("GetResultForGetMessagesByID", paramsGetMessagesByID).Return(nil, xerrors.Errorf("db is disconnected"))
+	mockRepository = db.NewMockRepository(t)
+	mockRepository.On("GetResultForGetMessagesByID", paramsGetMessagesByID).Return(nil, xerrors.Errorf("DB is disconnected"))
 
-	params = newHandlerParameters(mockRepository)
+	params = popserver.NewHandlerParameters(mockRepository)
 
 	inputs = append(inputs, input{
-		name:        "failed to query db",
+		name:        "failed to query DB",
 		params:      params,
 		message:     getMessagesByIDBuf,
 		isErrorTest: true,
@@ -188,7 +191,7 @@ func Test_handleGetMessagesByID(t *testing.T) {
 				require.NotNil(t, id)
 			} else {
 				require.Nil(t, errAnswer)
-				require.Equal(t, i.result, i.socket.missingMsgs)
+				require.Equal(t, i.result, i.socket.MissingMsgs)
 			}
 		})
 	}
@@ -197,9 +200,9 @@ func Test_handleGetMessagesByID(t *testing.T) {
 func Test_handleGreetServer(t *testing.T) {
 	type input struct {
 		name        string
-		params      handlerParameters
+		params      state.HandlerParameters
 		message     []byte
-		socket      *fakeSocket
+		socket      *popserver.FakeSocket
 		needSend    bool
 		isErrorTest bool
 	}
@@ -228,12 +231,12 @@ func Test_handleGreetServer(t *testing.T) {
 	greetServerBuf, err := json.Marshal(&greetServer)
 	require.NoError(t, err)
 
-	mockRepository := NewMockRepository(t)
+	mockRepository := db.NewMockRepository(t)
 	mockRepository.On("GetServerPubKey").Return([]byte("publicKey"), nil)
 
-	s := &fakeSocket{id: "fakesocket"}
+	s := &popserver.FakeSocket{Id: "fakesocket"}
 
-	params := newHandlerParametersWithFakeSocket(mockRepository, s)
+	params := popserver.NewHandlerParametersWithFakeSocket(mockRepository, s)
 
 	inputs = append(inputs, input{
 		name:        "reply with greetServer",
@@ -249,11 +252,11 @@ func Test_handleGreetServer(t *testing.T) {
 	greetServerBuf, err = json.Marshal(&greetServer)
 	require.NoError(t, err)
 
-	s = &fakeSocket{id: "fakesocket"}
+	s = &popserver.FakeSocket{Id: "fakesocket"}
 
-	params = newHandlerParametersWithFakeSocket(mockRepository, s)
+	params = popserver.NewHandlerParametersWithFakeSocket(mockRepository, s)
 
-	params.peers.AddPeerGreeted(s.id)
+	params.Peers.AddPeerGreeted(s.Id)
 
 	inputs = append(inputs, input{
 		name:        "server already greeted",
@@ -264,34 +267,34 @@ func Test_handleGreetServer(t *testing.T) {
 		isErrorTest: false,
 	})
 
-	// socket already used
+	// Socket already used
 
 	greetServerBuf, err = json.Marshal(&greetServer)
 	require.NoError(t, err)
 
-	params = newHandlerParameters(nil)
-	err = params.peers.AddPeerInfo(params.socket.ID(), serverInfo1)
+	params = popserver.NewHandlerParameters(nil)
+	err = params.Peers.AddPeerInfo(params.Socket.ID(), serverInfo1)
 	require.NoError(t, err)
 
 	inputs = append(inputs, input{
-		name:        "socket already used",
+		name:        "Socket already used",
 		params:      params,
 		message:     greetServerBuf,
 		isErrorTest: true,
 	})
 
-	// failed to query db
+	// failed to query DB
 
 	greetServerBuf, err = json.Marshal(&greetServer)
 	require.NoError(t, err)
 
-	mockRepository = NewMockRepository(t)
-	mockRepository.On("GetServerPubKey").Return(nil, xerrors.Errorf("db is disconnected"))
+	mockRepository = db.NewMockRepository(t)
+	mockRepository.On("GetServerPubKey").Return(nil, xerrors.Errorf("DB is disconnected"))
 
-	params = newHandlerParameters(mockRepository)
+	params = popserver.NewHandlerParameters(mockRepository)
 
 	inputs = append(inputs, input{
-		name:        "failed to query db",
+		name:        "failed to query DB",
 		params:      params,
 		message:     greetServerBuf,
 		isErrorTest: true,
@@ -307,10 +310,10 @@ func Test_handleGreetServer(t *testing.T) {
 				require.Nil(t, id)
 			} else if i.needSend {
 				require.Nil(t, errAnswer)
-				require.NotNil(t, i.socket.msg)
+				require.NotNil(t, i.socket.Msg)
 			} else {
 				require.Nil(t, errAnswer)
-				require.Nil(t, i.socket.msg)
+				require.Nil(t, i.socket.Msg)
 			}
 		})
 	}
@@ -319,9 +322,9 @@ func Test_handleGreetServer(t *testing.T) {
 func Test_handleHeartbeat(t *testing.T) {
 	type input struct {
 		name        string
-		params      handlerParameters
+		params      state.HandlerParameters
 		message     []byte
-		socket      *fakeSocket
+		socket      *popserver.FakeSocket
 		needSend    bool
 		isErrorTest bool
 		expected    map[string][]string
@@ -371,12 +374,12 @@ func Test_handleHeartbeat(t *testing.T) {
 		msgIDs[4],
 	}
 
-	mockRepository := NewMockRepository(t)
+	mockRepository := db.NewMockRepository(t)
 	mockRepository.On("GetParamsForGetMessageByID", listMsg).Return(expected, nil)
 
-	s := &fakeSocket{id: "fakesocket"}
+	s := &popserver.FakeSocket{Id: "fakesocket"}
 
-	params := newHandlerParametersWithFakeSocket(mockRepository, s)
+	params := popserver.NewHandlerParametersWithFakeSocket(mockRepository, s)
 
 	inputs = append(inputs, input{
 		name:        "reply with missingIDs",
@@ -393,12 +396,12 @@ func Test_handleHeartbeat(t *testing.T) {
 	heartbeatBuf, err = json.Marshal(&heartbeat)
 	require.NoError(t, err)
 
-	mockRepository = NewMockRepository(t)
+	mockRepository = db.NewMockRepository(t)
 	mockRepository.On("GetParamsForGetMessageByID", listMsg).Return(nil, nil)
 
-	s = &fakeSocket{id: "fakesocket"}
+	s = &popserver.FakeSocket{Id: "fakesocket"}
 
-	params = newHandlerParametersWithFakeSocket(mockRepository, s)
+	params = popserver.NewHandlerParametersWithFakeSocket(mockRepository, s)
 
 	inputs = append(inputs, input{
 		name:        "already up to date",
@@ -409,18 +412,18 @@ func Test_handleHeartbeat(t *testing.T) {
 		isErrorTest: false,
 	})
 
-	// failed to query db
+	// failed to query DB
 
 	heartbeatBuf, err = json.Marshal(&heartbeat)
 	require.NoError(t, err)
 
-	mockRepository = NewMockRepository(t)
-	mockRepository.On("GetParamsForGetMessageByID", listMsg).Return(nil, xerrors.Errorf("db is disconnected"))
+	mockRepository = db.NewMockRepository(t)
+	mockRepository.On("GetParamsForGetMessageByID", listMsg).Return(nil, xerrors.Errorf("DB is disconnected"))
 
-	params = newHandlerParameters(mockRepository)
+	params = popserver.NewHandlerParameters(mockRepository)
 
 	inputs = append(inputs, input{
-		name:        "failed to query db",
+		name:        "failed to query DB",
 		params:      params,
 		message:     heartbeatBuf,
 		isErrorTest: true,
@@ -436,16 +439,16 @@ func Test_handleHeartbeat(t *testing.T) {
 				require.Nil(t, id)
 			} else if i.needSend {
 				require.Nil(t, errAnswer)
-				require.NotNil(t, i.socket.msg)
+				require.NotNil(t, i.socket.Msg)
 
 				var getMessageByID method.GetMessagesById
-				err := json.Unmarshal(i.socket.msg, &getMessageByID)
+				err := json.Unmarshal(i.socket.Msg, &getMessageByID)
 				require.NoError(t, err)
 
 				require.Equal(t, i.expected, getMessageByID.Params)
 			} else {
 				require.Nil(t, errAnswer)
-				require.Nil(t, i.socket.msg)
+				require.Nil(t, i.socket.Msg)
 			}
 		})
 	}
@@ -454,7 +457,7 @@ func Test_handleHeartbeat(t *testing.T) {
 func Test_handleSubscribe(t *testing.T) {
 	type input struct {
 		name        string
-		params      handlerParameters
+		params      state.HandlerParameters
 		message     []byte
 		isErrorTest bool
 		subscribe   method.Subscribe
@@ -476,16 +479,16 @@ func Test_handleSubscribe(t *testing.T) {
 
 	inputs := make([]input, 0)
 
-	// subscribe to channel
+	// Subscribe to channel
 
 	subscribeBuf, err := json.Marshal(&subscribe)
 	require.NoError(t, err)
 
-	params := newHandlerParameters(nil)
-	params.subs.addChannel("/root/lao1")
+	params := popserver.NewHandlerParameters(nil)
+	params.Subs.AddChannel("/root/lao1")
 
 	inputs = append(inputs, input{
-		name:        "subscribe to channel",
+		name:        "Subscribe to channel",
 		params:      params,
 		message:     subscribeBuf,
 		isErrorTest: false,
@@ -497,7 +500,7 @@ func Test_handleSubscribe(t *testing.T) {
 	subscribeBuf, err = json.Marshal(&subscribe)
 	require.NoError(t, err)
 
-	params = newHandlerParameters(nil)
+	params = popserver.NewHandlerParameters(nil)
 
 	inputs = append(inputs, input{
 		name:        "unknown channel",
@@ -507,7 +510,7 @@ func Test_handleSubscribe(t *testing.T) {
 		subscribe:   subscribe,
 	})
 
-	// cannot subscribe to root
+	// cannot Subscribe to root
 
 	subscribeRoot := subscribe
 	subscribeRoot.Params.Channel = "/root"
@@ -515,10 +518,10 @@ func Test_handleSubscribe(t *testing.T) {
 	subscribeRootBuf, err := json.Marshal(&subscribeRoot)
 	require.NoError(t, err)
 
-	params = newHandlerParameters(nil)
+	params = popserver.NewHandlerParameters(nil)
 
 	inputs = append(inputs, input{
-		name:        "cannot subscribe to root",
+		name:        "cannot Subscribe to root",
 		params:      params,
 		message:     subscribeRootBuf,
 		isErrorTest: true,
@@ -536,7 +539,7 @@ func Test_handleSubscribe(t *testing.T) {
 			} else {
 				require.Nil(t, errAnswer)
 
-				_, isSubscribed := i.params.subs[i.subscribe.Params.Channel][i.params.socket.ID()]
+				_, isSubscribed := i.params.Subs[i.subscribe.Params.Channel][i.params.Socket.ID()]
 				require.True(t, isSubscribed)
 			}
 		})
@@ -546,7 +549,7 @@ func Test_handleSubscribe(t *testing.T) {
 func Test_handleUnsubscribe(t *testing.T) {
 	type input struct {
 		name        string
-		params      handlerParameters
+		params      state.HandlerParameters
 		message     []byte
 		isErrorTest bool
 		unsubscribe method.Unsubscribe
@@ -568,33 +571,33 @@ func Test_handleUnsubscribe(t *testing.T) {
 
 	inputs := make([]input, 0)
 
-	// unsubscribe from channel
+	// Unsubscribe from channel
 
 	unsubscribeBuf, err := json.Marshal(&unsubscribe)
 	require.NoError(t, err)
 
-	params := newHandlerParameters(nil)
-	params.subs["/root/lao1"] = make(map[string]socket.Socket)
-	params.subs["/root/lao1"][params.socket.ID()] = params.socket
+	params := popserver.NewHandlerParameters(nil)
+	params.Subs["/root/lao1"] = make(map[string]socket.Socket)
+	params.Subs["/root/lao1"][params.Socket.ID()] = params.Socket
 
 	inputs = append(inputs, input{
-		name:        "unsubscribe from channel",
+		name:        "Unsubscribe from channel",
 		params:      params,
 		message:     unsubscribeBuf,
 		isErrorTest: false,
 		unsubscribe: unsubscribe,
 	})
 
-	// cannot unsubscribe without being subscribed
+	// cannot Unsubscribe without being subscribed
 
 	unsubscribeBuf, err = json.Marshal(&unsubscribe)
 	require.NoError(t, err)
 
-	params = newHandlerParameters(nil)
-	params.subs["/root/lao1"] = make(map[string]socket.Socket)
+	params = popserver.NewHandlerParameters(nil)
+	params.Subs["/root/lao1"] = make(map[string]socket.Socket)
 
 	inputs = append(inputs, input{
-		name:        "cannot unsubscribe without being subscribed",
+		name:        "cannot Unsubscribe without being subscribed",
 		params:      params,
 		message:     unsubscribeBuf,
 		isErrorTest: true,
@@ -606,7 +609,7 @@ func Test_handleUnsubscribe(t *testing.T) {
 	unsubscribeBuf, err = json.Marshal(&unsubscribe)
 	require.NoError(t, err)
 
-	params = newHandlerParameters(nil)
+	params = popserver.NewHandlerParameters(nil)
 
 	inputs = append(inputs, input{
 		name:        "unknown channel",
@@ -616,7 +619,7 @@ func Test_handleUnsubscribe(t *testing.T) {
 		unsubscribe: unsubscribe,
 	})
 
-	// cannot unsubscribe from root
+	// cannot Unsubscribe from root
 
 	unsubscribeRoot := unsubscribe
 	unsubscribeRoot.Params.Channel = "/root"
@@ -624,10 +627,10 @@ func Test_handleUnsubscribe(t *testing.T) {
 	unsubscribeRootBuf, err := json.Marshal(&unsubscribeRoot)
 	require.NoError(t, err)
 
-	params = newHandlerParameters(nil)
+	params = popserver.NewHandlerParameters(nil)
 
 	inputs = append(inputs, input{
-		name:        "cannot unsubscribe from root",
+		name:        "cannot Unsubscribe from root",
 		params:      params,
 		message:     unsubscribeRootBuf,
 		isErrorTest: true,
@@ -645,7 +648,7 @@ func Test_handleUnsubscribe(t *testing.T) {
 			} else {
 				require.Nil(t, errAnswer)
 
-				_, isUnsubscribed := i.params.subs[i.unsubscribe.Params.Channel][i.params.socket.ID()]
+				_, isUnsubscribed := i.params.Subs[i.unsubscribe.Params.Channel][i.params.Socket.ID()]
 				require.False(t, isUnsubscribed)
 			}
 		})

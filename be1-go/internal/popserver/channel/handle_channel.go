@@ -1,4 +1,4 @@
-package hub
+package channel
 
 import (
 	"encoding/base64"
@@ -6,6 +6,7 @@ import (
 	"go.dedis.ch/kyber/v3"
 	"go.dedis.ch/kyber/v3/sign/schnorr"
 	"popstellar/crypto"
+	"popstellar/internal/popserver/state"
 	jsonrpc "popstellar/message"
 	"popstellar/message/answer"
 	"popstellar/message/messagedata"
@@ -15,51 +16,51 @@ import (
 	"popstellar/validation"
 )
 
-func handleChannel(params handlerParameters, channelID string, msg message.Message) *answer.Error {
+func HandleChannel(params state.HandlerParameters, channelID string, msg message.Message) *answer.Error {
 	dataBytes, err := base64.URLEncoding.DecodeString(msg.Data)
 	if err != nil {
-		errAnswer := answer.NewInvalidMessageFieldError("failed to decode data: %v", err).Wrap("handleChannel")
+		errAnswer := answer.NewInvalidMessageFieldError("failed to decode data: %v", err).Wrap("HandleChannel")
 		return errAnswer
 	}
 
 	publicKeySender, err := base64.URLEncoding.DecodeString(msg.Sender)
 	if err != nil {
-		errAnswer := answer.NewInvalidMessageFieldError("failed to decode public key: %v", err).Wrap("handleChannel")
+		errAnswer := answer.NewInvalidMessageFieldError("failed to decode public key: %v", err).Wrap("HandleChannel")
 		return errAnswer
 	}
 
 	signatureBytes, err := base64.URLEncoding.DecodeString(msg.Signature)
 	if err != nil {
-		errAnswer := answer.NewInvalidMessageFieldError("failed to decode signature: %v", err).Wrap("handleChannel")
+		errAnswer := answer.NewInvalidMessageFieldError("failed to decode signature: %v", err).Wrap("HandleChannel")
 		return errAnswer
 	}
 
 	err = schnorr.VerifyWithChecks(crypto.Suite, publicKeySender, dataBytes, signatureBytes)
 	if err != nil {
-		errAnswer := answer.NewInvalidMessageFieldError("failed to verify signature : %v", err).Wrap("handleChannel")
+		errAnswer := answer.NewInvalidMessageFieldError("failed to verify signature : %v", err).Wrap("HandleChannel")
 		return errAnswer
 	}
 
 	expectedMessageID := messagedata.Hash(msg.Data, msg.Signature)
 	if expectedMessageID != msg.MessageID {
 		errAnswer := answer.NewInvalidActionError("messageID is wrong: expected %q found %q",
-			expectedMessageID, msg.MessageID).Wrap("handleChannel")
+			expectedMessageID, msg.MessageID).Wrap("HandleChannel")
 		return errAnswer
 	}
 
-	msgAlreadyExists, err := params.db.HasMessage(msg.MessageID)
+	msgAlreadyExists, err := params.DB.HasMessage(msg.MessageID)
 	if err != nil {
-		errAnswer := answer.NewInternalServerError("failed to query db: %v", err).Wrap("handleChannel")
+		errAnswer := answer.NewInternalServerError("failed to query DB: %v", err).Wrap("HandleChannel")
 		return errAnswer
 	}
 	if msgAlreadyExists {
-		errAnswer := answer.NewInvalidActionError("message %s was already received", msg.MessageID).Wrap("handleChannel")
+		errAnswer := answer.NewInvalidActionError("message %s was already received", msg.MessageID).Wrap("HandleChannel")
 		return errAnswer
 	}
 
-	channelType, err := params.db.GetChannelType(channelID)
+	channelType, err := params.DB.GetChannelType(channelID)
 	if err != nil {
-		errAnswer := answer.NewInvalidResourceError("failed to query db: %v", err).Wrap("handleChannel")
+		errAnswer := answer.NewInvalidResourceError("failed to query DB: %v", err).Wrap("HandleChannel")
 		return errAnswer
 	}
 
@@ -89,7 +90,7 @@ func handleChannel(params handlerParameters, channelID string, msg message.Messa
 	}
 
 	if errAnswer != nil {
-		errAnswer = errAnswer.Wrap("handleChannel")
+		errAnswer = errAnswer.Wrap("HandleChannel")
 		return errAnswer
 	}
 
@@ -98,7 +99,7 @@ func handleChannel(params handlerParameters, channelID string, msg message.Messa
 
 // utils for the channels
 
-func verifyDataAndGetObjectAction(params handlerParameters, msg message.Message) (object string, action string, errAnswer *answer.Error) {
+func verifyDataAndGetObjectAction(params state.HandlerParameters, msg message.Message) (object string, action string, errAnswer *answer.Error) {
 	jsonData, err := base64.URLEncoding.DecodeString(msg.Data)
 	if err != nil {
 		errAnswer = answer.NewInvalidMessageFieldError("failed to decode message data: %v", err)
@@ -107,7 +108,7 @@ func verifyDataAndGetObjectAction(params handlerParameters, msg message.Message)
 	}
 
 	// validate message data against the json schema
-	err = params.schemaValidator.VerifyJSON(jsonData, validation.Data)
+	err = params.SchemaValidator.VerifyJSON(jsonData, validation.Data)
 	if err != nil {
 		errAnswer = answer.NewInvalidMessageFieldError("failed to validate message against json schema: %v", err)
 		errAnswer = errAnswer.Wrap("verifyDataAndGetObjectAction")
@@ -124,10 +125,10 @@ func verifyDataAndGetObjectAction(params handlerParameters, msg message.Message)
 	return object, action, nil
 }
 
-func Sign(data []byte, params handlerParameters) ([]byte, *answer.Error) {
+func Sign(data []byte, params state.HandlerParameters) ([]byte, *answer.Error) {
 
 	var errAnswer *answer.Error
-	serverSecretBuf, err := params.db.GetServerSecretKey()
+	serverSecretBuf, err := params.DB.GetServerSecretKey()
 	if err != nil {
 		errAnswer = answer.NewInternalServerError("failed to get the server secret key: %v", err)
 		errAnswer = errAnswer.Wrap("Sign")
@@ -158,7 +159,7 @@ func generateKeys() (kyber.Point, kyber.Scalar) {
 	return point, secret
 }
 
-func broadcastToAllClients(msg message.Message, params handlerParameters, channel string) *answer.Error {
+func broadcastToAllClients(msg message.Message, params state.HandlerParameters, channel string) *answer.Error {
 	rpcMessage := method.Broadcast{
 		Base: query.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
@@ -182,7 +183,7 @@ func broadcastToAllClients(msg message.Message, params handlerParameters, channe
 		return errAnswer
 	}
 
-	errAnswer = params.subs.SendToAll(buf, channel)
+	errAnswer = params.Subs.SendToAll(buf, channel)
 	if errAnswer != nil {
 		errAnswer = errAnswer.Wrap("broadcastToAllClients")
 		return errAnswer
@@ -190,3 +191,15 @@ func broadcastToAllClients(msg message.Message, params handlerParameters, channe
 
 	return nil
 }
+
+const (
+	channelRoot         = "root"
+	channelLao          = "lao"
+	channelElection     = "election"
+	channelGeneralChirp = "generalchirp"
+	channelChirp        = "chirp"
+	channelReaction     = "reaction"
+	channelConsensus    = "consensus"
+	channelPopCha       = "popcha"
+	channelCoin         = "coin"
+)

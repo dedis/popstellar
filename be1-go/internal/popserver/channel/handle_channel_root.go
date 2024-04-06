@@ -1,24 +1,26 @@
-package hub
+package channel
 
 import (
 	"encoding/base64"
 	"encoding/json"
 	"popstellar/crypto"
+	"popstellar/internal/popserver/state"
 	"popstellar/message/answer"
 	"popstellar/message/messagedata"
 	"popstellar/message/query/method/message"
 )
 
 const (
-	social    = "/social"
-	chirps    = "/chirps"
-	reactions = "/reactions"
-	consensus = "/consensus"
-	coin      = "/coin"
-	auth      = "/authentication"
+	rootPrefix = "/root"
+	social     = "/social"
+	chirps     = "/chirps"
+	reactions  = "/reactions"
+	consensus  = "/consensus"
+	coin       = "/coin"
+	auth       = "/authentication"
 )
 
-func handleChannelRoot(params handlerParameters, channel string, msg message.Message) *answer.Error {
+func handleChannelRoot(params state.HandlerParameters, channel string, msg message.Message) *answer.Error {
 	object, action, errAnswer := verifyDataAndGetObjectAction(params, msg)
 	if errAnswer != nil {
 		errAnswer = errAnswer.Wrap("handleChannelRoot")
@@ -39,7 +41,7 @@ func handleChannelRoot(params handlerParameters, channel string, msg message.Mes
 	}
 
 	if storeMessage {
-		err := params.db.StoreMessage(channel, msg)
+		err := params.DB.StoreMessage(channel, msg)
 		if err != nil {
 			errAnswer = answer.NewInternalServerError("failed to store message in root channel: %v", err)
 			errAnswer = errAnswer.Wrap("handleChannelRoot")
@@ -49,7 +51,7 @@ func handleChannelRoot(params handlerParameters, channel string, msg message.Mes
 	return nil
 }
 
-func handleLaoCreate(msg message.Message, channel string, params handlerParameters) *answer.Error {
+func handleLaoCreate(msg message.Message, channel string, params state.HandlerParameters) *answer.Error {
 	var laoCreate messagedata.LaoCreate
 	err := msg.UnmarshalData(&laoCreate)
 	var errAnswer *answer.Error
@@ -83,7 +85,7 @@ func handleLaoCreate(msg message.Message, channel string, params handlerParamete
 	return nil
 }
 
-func verifyLaoCreation(params handlerParameters, msg message.Message, laoCreate messagedata.LaoCreate, laoPath string) ([]byte, *answer.Error) {
+func verifyLaoCreation(params state.HandlerParameters, msg message.Message, laoCreate messagedata.LaoCreate, laoPath string) ([]byte, *answer.Error) {
 	err := laoCreate.Verify()
 	var errAnswer *answer.Error
 	if err != nil {
@@ -92,7 +94,7 @@ func verifyLaoCreation(params handlerParameters, msg message.Message, laoCreate 
 		return nil, errAnswer
 	}
 
-	ok, err := params.db.HasChannel(laoPath)
+	ok, err := params.DB.HasChannel(laoPath)
 	if err != nil {
 		errAnswer = answer.NewInternalServerError("failed to check if lao already exists: %v", err)
 		errAnswer = errAnswer.Wrap("verifyLAOCreation")
@@ -139,7 +141,7 @@ func verifyLaoCreation(params handlerParameters, msg message.Message, laoCreate 
 		return nil, errAnswer
 	}
 
-	ownerPubKey, err := params.db.GetOwnerPubKey()
+	ownerPubKey, err := params.DB.GetOwnerPubKey()
 	if err != nil {
 		errAnswer = answer.NewInternalServerError("failed to get owner's public key: %v", err)
 		errAnswer = errAnswer.Wrap("verifyLAOCreation")
@@ -155,7 +157,7 @@ func verifyLaoCreation(params handlerParameters, msg message.Message, laoCreate 
 	return organizerPubBuf, nil
 }
 
-func createLaoAndSubChannels(params handlerParameters, channel string, msg, laoGreetMsg message.Message, organizerPubBuf []byte, laoPath string) *answer.Error {
+func createLaoAndSubChannels(params state.HandlerParameters, channel string, msg, laoGreetMsg message.Message, organizerPubBuf []byte, laoPath string) *answer.Error {
 	var errAnswer *answer.Error
 	channelSlice := make([]string, 0, 6)
 	channelSlice = append(channelSlice, laoPath)
@@ -165,20 +167,20 @@ func createLaoAndSubChannels(params handlerParameters, channel string, msg, laoG
 	channelSlice = append(channelSlice, laoPath+coin)
 	channelSlice = append(channelSlice, laoPath+auth)
 
-	err := params.db.StoreChannelsAndMessageWithLaoGreet(channelSlice, channel, laoPath, msg.MessageID, organizerPubBuf, msg, laoGreetMsg)
+	err := params.DB.StoreChannelsAndMessageWithLaoGreet(channelSlice, channel, laoPath, msg.MessageID, organizerPubBuf, msg, laoGreetMsg)
 	if err != nil {
 		errAnswer = answer.NewInternalServerError("failed to store lao and sub channels: %v", err)
 		errAnswer = errAnswer.Wrap("createLaoAndSubChannels")
 	}
 
 	for _, channelPath := range channelSlice {
-		params.subs.addChannel(channelPath)
+		params.Subs.AddChannel(channelPath)
 	}
 	return nil
 }
 
-func createLaoGreet(params handlerParameters, organizerBuf []byte, laoPath string) (message.Message, *answer.Error) {
-	peersInfo := params.peers.GetAllPeersInfo()
+func createLaoGreet(params state.HandlerParameters, organizerBuf []byte, laoPath string) (message.Message, *answer.Error) {
+	peersInfo := params.Peers.GetAllPeersInfo()
 	peers := make([]messagedata.Peer, 0, len(peersInfo))
 	var errAnswer *answer.Error
 
@@ -191,7 +193,7 @@ func createLaoGreet(params handlerParameters, organizerBuf []byte, laoPath strin
 		Action:   messagedata.LAOActionGreet,
 		LaoID:    laoPath,
 		Frontend: base64.URLEncoding.EncodeToString(organizerBuf),
-		Address:  params.clientServerAddress,
+		Address:  params.ClientServerAddress,
 		Peers:    peers,
 	}
 
@@ -206,7 +208,7 @@ func createLaoGreet(params handlerParameters, organizerBuf []byte, laoPath strin
 	newData64 := base64.URLEncoding.EncodeToString(dataBuf)
 
 	// Marshall the server public key
-	serverPubBuf, err := params.db.GetServerPubKey()
+	serverPubBuf, err := params.DB.GetServerPubKey()
 	if err != nil {
 		errAnswer = answer.NewInternalServerError("failed to get server public key: %v", err)
 		errAnswer = errAnswer.Wrap("createAndSendLaoGreet")

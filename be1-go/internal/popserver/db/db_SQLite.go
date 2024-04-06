@@ -1,4 +1,4 @@
-package hub
+package db
 
 import (
 	"database/sql"
@@ -7,18 +7,19 @@ import (
 	"go.dedis.ch/kyber/v3"
 	_ "modernc.org/sqlite"
 	"popstellar/crypto"
+	"popstellar/internal/popserver/repo"
 	"popstellar/message/query/method/message"
 	"strings"
 	"time"
 )
 
 const (
-	defaultPath = "sqlite.db"
+	defaultPath = "sqlite.DB"
 )
 
 // SQLite is a wrapper around the SQLite database.
 type SQLite struct {
-	Repository
+	repo.Repository
 	database *sql.DB
 }
 
@@ -84,9 +85,9 @@ func NewSQLite(path string) (SQLite, error) {
 
 func createConfiguration(tx *sql.Tx) error {
 	_, err := tx.Exec("CREATE TABLE IF NOT EXISTS configuration (" +
-		"ownerPubKey BLOB NULL, " +
-		"clientServerAddress TEXT NULL, " +
-		"serverServerAddress TEXT NULL " +
+		"OwnerPubKey BLOB NULL, " +
+		"ClientServerAddress TEXT NULL, " +
+		"ServerServerAddress TEXT NULL " +
 		"serverPubKey BLOB NULL, " +
 		"serverSecretKey BLOB NULL, " +
 		")")
@@ -397,7 +398,7 @@ func (s *SQLite) HasMessage(messageID string) (bool, error) {
 
 func (s *SQLite) GetOwnerPubKey() (kyber.Point, error) {
 	var pubKeyBuf []byte
-	err := s.database.QueryRow("SELECT ownerPubKey from configuration").Scan(&pubKeyBuf)
+	err := s.database.QueryRow("SELECT OwnerPubKey from configuration").Scan(&pubKeyBuf)
 	if err != nil {
 		return nil, err
 	}
@@ -417,7 +418,7 @@ func (s *SQLite) StoreChannel(channel string, organizerPubKey []byte) error {
 // GetClientServerAddress returns the client address of the server.
 func (s *SQLite) GetClientServerAddress() (string, error) {
 	var address string
-	err := s.database.QueryRow("SELECT clientServerAddress from configuration").Scan(&address)
+	err := s.database.QueryRow("SELECT ClientServerAddress from configuration").Scan(&address)
 	return address, err
 }
 

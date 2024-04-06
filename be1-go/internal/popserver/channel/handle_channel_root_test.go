@@ -1,4 +1,4 @@
-package hub
+package channel
 
 import (
 	"encoding/base64"
@@ -9,6 +9,9 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.dedis.ch/kyber/v3/sign/schnorr"
 	"popstellar/crypto"
+	"popstellar/internal/popserver"
+	"popstellar/internal/popserver/db"
+	"popstellar/internal/popserver/state"
 	"popstellar/message/messagedata"
 	"popstellar/message/query/method"
 	"popstellar/message/query/method/message"
@@ -17,11 +20,11 @@ import (
 )
 
 func Test_handleChannelRoot(t *testing.T) {
-	keypair := generateKeyPair(t)
-	serverKeyPair := generateKeyPair(t)
+	keypair := popserver.GenerateKeyPair(t)
+	serverkeyPair := popserver.GenerateKeyPair(t)
 	now := time.Now().Unix()
 	name := "LAO X"
-	laoID := messagedata.Hash(base64.URLEncoding.EncodeToString(keypair.publicBuf), fmt.Sprintf("%d", now), name)
+	laoID := messagedata.Hash(base64.URLEncoding.EncodeToString(keypair.PublicBuf), fmt.Sprintf("%d", now), name)
 
 	data := messagedata.LaoCreate{
 		Object:    messagedata.LAOObject,
@@ -29,13 +32,13 @@ func Test_handleChannelRoot(t *testing.T) {
 		ID:        laoID,
 		Name:      name,
 		Creation:  now,
-		Organizer: base64.URLEncoding.EncodeToString(keypair.publicBuf),
+		Organizer: base64.URLEncoding.EncodeToString(keypair.PublicBuf),
 		Witnesses: []string{},
 	}
 
 	dataBuf, err := json.Marshal(data)
 	require.NoError(t, err)
-	signature, err := schnorr.Sign(crypto.Suite, keypair.private, dataBuf)
+	signature, err := schnorr.Sign(crypto.Suite, keypair.Private, dataBuf)
 	require.NoError(t, err)
 
 	dataBase64 := base64.URLEncoding.EncodeToString(dataBuf)
@@ -43,7 +46,7 @@ func Test_handleChannelRoot(t *testing.T) {
 
 	msg := message.Message{
 		Data:              dataBase64,
-		Sender:            base64.URLEncoding.EncodeToString(keypair.publicBuf),
+		Sender:            base64.URLEncoding.EncodeToString(keypair.PublicBuf),
 		Signature:         signatureBase64,
 		MessageID:         messagedata.Hash(dataBase64, signatureBase64),
 		WitnessSignatures: []message.WitnessSignature{},
@@ -51,7 +54,7 @@ func Test_handleChannelRoot(t *testing.T) {
 
 	laoPath := rootPrefix + laoID
 
-	mockRepository := NewMockRepository(t)
+	mockRepository := db.NewMockRepository(t)
 	mockRepository.On("HasChannel", laoPath).Return(false, nil)
 	mockRepository.On("GetOwnerPubKey").Return(nil, nil)
 	mockRepository.On("StoreChannelsAndMessageWithLaoGreet",
@@ -59,20 +62,20 @@ func Test_handleChannelRoot(t *testing.T) {
 		mock.AnythingOfType("string"), laoPath, mock.AnythingOfType("string"),
 		mock.AnythingOfType("[]uint8"),
 		mock.AnythingOfType("message.Message"), mock.AnythingOfType("message.Message")).Return(nil)
-	mockRepository.On("GetServerPubKey").Return(serverKeyPair.publicBuf, nil)
-	mockRepository.On("GetServerSecretKey").Return(serverKeyPair.privateBuf, nil)
-	params := newHandlerParameters(mockRepository)
+	mockRepository.On("GetServerPubKey").Return(serverkeyPair.PublicBuf, nil)
+	mockRepository.On("GetServerSecretKey").Return(serverkeyPair.PrivateBuf, nil)
+	params := popserver.NewHandlerParameters(mockRepository)
 
 	errAnswer := handleChannelRoot(params, "/root", msg)
 	require.Nil(t, errAnswer)
 }
 
 func Test_verifyLaoCreation(t *testing.T) {
-	keypair := generateKeyPair(t)
-	wrongKeyPair := generateKeyPair(t)
+	keypair := popserver.GenerateKeyPair(t)
+	wrongKeyPair := popserver.GenerateKeyPair(t)
 	now := time.Now().Unix()
 	name := "LAO X"
-	laoID := messagedata.Hash(base64.URLEncoding.EncodeToString(keypair.publicBuf), fmt.Sprintf("%d", now), name)
+	laoID := messagedata.Hash(base64.URLEncoding.EncodeToString(keypair.PublicBuf), fmt.Sprintf("%d", now), name)
 
 	laoCreate := messagedata.LaoCreate{
 		Object:    messagedata.LAOObject,
@@ -80,13 +83,13 @@ func Test_verifyLaoCreation(t *testing.T) {
 		ID:        laoID,
 		Name:      name,
 		Creation:  now,
-		Organizer: base64.URLEncoding.EncodeToString(keypair.publicBuf),
+		Organizer: base64.URLEncoding.EncodeToString(keypair.PublicBuf),
 		Witnesses: []string{},
 	}
 
 	dataBuf, err := json.Marshal(laoCreate)
 	require.NoError(t, err)
-	signature, err := schnorr.Sign(crypto.Suite, keypair.private, dataBuf)
+	signature, err := schnorr.Sign(crypto.Suite, keypair.Private, dataBuf)
 	require.NoError(t, err)
 
 	dataBase64 := base64.URLEncoding.EncodeToString(dataBuf)
@@ -94,7 +97,7 @@ func Test_verifyLaoCreation(t *testing.T) {
 
 	msg := message.Message{
 		Data:              dataBase64,
-		Sender:            base64.URLEncoding.EncodeToString(keypair.publicBuf),
+		Sender:            base64.URLEncoding.EncodeToString(keypair.PublicBuf),
 		Signature:         signatureBase64,
 		MessageID:         messagedata.Hash(dataBase64, signatureBase64),
 		WitnessSignatures: []message.WitnessSignature{},
@@ -103,7 +106,7 @@ func Test_verifyLaoCreation(t *testing.T) {
 
 	type verifyLaoCreationInputs struct {
 		name      string
-		params    handlerParameters
+		params    state.HandlerParameters
 		message   message.Message
 		laoCreate messagedata.LaoCreate
 	}
@@ -113,7 +116,7 @@ func Test_verifyLaoCreation(t *testing.T) {
 	wrongLaoCreate := laoCreate
 	wrongLaoCreate.ID = "wrongID"
 
-	params := newHandlerParameters(nil)
+	params := popserver.NewHandlerParameters(nil)
 
 	args = append(args, verifyLaoCreationInputs{name: "Test 1",
 		params:    params,
@@ -124,7 +127,7 @@ func Test_verifyLaoCreation(t *testing.T) {
 	wrongLaoCreate = laoCreate
 	wrongLaoCreate.ID = base64.URLEncoding.EncodeToString([]byte("wrongID"))
 
-	params = newHandlerParameters(nil)
+	params = popserver.NewHandlerParameters(nil)
 
 	args = append(args, verifyLaoCreationInputs{name: "Test 2",
 		params:    params,
@@ -136,7 +139,7 @@ func Test_verifyLaoCreation(t *testing.T) {
 	wrongLaoCreate.Name = ""
 	wrongLaoCreate.ID = messagedata.Hash(wrongLaoCreate.Organizer, fmt.Sprintf("%d", wrongLaoCreate.Creation), wrongLaoCreate.Name)
 
-	params = newHandlerParameters(nil)
+	params = popserver.NewHandlerParameters(nil)
 
 	args = append(args, verifyLaoCreationInputs{name: "Test 3",
 		params:    params,
@@ -148,7 +151,7 @@ func Test_verifyLaoCreation(t *testing.T) {
 	wrongLaoCreate.Creation = -1
 	wrongLaoCreate.ID = messagedata.Hash(wrongLaoCreate.Organizer, fmt.Sprintf("%d", wrongLaoCreate.Creation), wrongLaoCreate.Name)
 
-	params = newHandlerParameters(nil)
+	params = popserver.NewHandlerParameters(nil)
 
 	args = append(args, verifyLaoCreationInputs{name: "Test 4",
 		params:    params,
@@ -160,7 +163,7 @@ func Test_verifyLaoCreation(t *testing.T) {
 	wrongLaoCreate.Organizer = "wrongOrganizer"
 	wrongLaoCreate.ID = messagedata.Hash(wrongLaoCreate.Organizer, fmt.Sprintf("%d", wrongLaoCreate.Creation), wrongLaoCreate.Name)
 
-	params = newHandlerParameters(nil)
+	params = popserver.NewHandlerParameters(nil)
 
 	args = append(args, verifyLaoCreationInputs{name: "Test 5",
 		params:    params,
@@ -171,7 +174,7 @@ func Test_verifyLaoCreation(t *testing.T) {
 	wrongLaoCreate = laoCreate
 	wrongLaoCreate.Witnesses = []string{"a wrong witness"}
 
-	params = newHandlerParameters(nil)
+	params = popserver.NewHandlerParameters(nil)
 
 	args = append(args, verifyLaoCreationInputs{name: "Test 6",
 		params:    params,
@@ -179,9 +182,9 @@ func Test_verifyLaoCreation(t *testing.T) {
 		laoCreate: wrongLaoCreate})
 
 	// Test 7: error when the lao already exists
-	mockRepository := NewMockRepository(t)
+	mockRepository := db.NewMockRepository(t)
 	mockRepository.On("HasChannel", laoPath).Return(true, nil)
-	params = newHandlerParameters(mockRepository)
+	params = popserver.NewHandlerParameters(mockRepository)
 
 	args = append(args, verifyLaoCreationInputs{name: "Test 7",
 		params:    params,
@@ -189,9 +192,9 @@ func Test_verifyLaoCreation(t *testing.T) {
 		laoCreate: laoCreate})
 
 	// Test 8: error when querying the channel
-	mockRepository = NewMockRepository(t)
-	mockRepository.On("HasChannel", laoPath).Return(false, fmt.Errorf("db is disconnected"))
-	params = newHandlerParameters(mockRepository)
+	mockRepository = db.NewMockRepository(t)
+	mockRepository.On("HasChannel", laoPath).Return(false, fmt.Errorf("DB is disconnected"))
+	params = popserver.NewHandlerParameters(mockRepository)
 
 	args = append(args, verifyLaoCreationInputs{name: "Test 8",
 		params:    params,
@@ -202,9 +205,9 @@ func Test_verifyLaoCreation(t *testing.T) {
 	wrongMsg := msg
 	wrongMsg.Sender = "wrongSender"
 
-	mockRepository = NewMockRepository(t)
+	mockRepository = db.NewMockRepository(t)
 	mockRepository.On("HasChannel", laoPath).Return(false, nil)
-	params = newHandlerParameters(mockRepository)
+	params = popserver.NewHandlerParameters(mockRepository)
 
 	args = append(args, verifyLaoCreationInputs{name: "Test 9",
 		params:    params,
@@ -215,9 +218,9 @@ func Test_verifyLaoCreation(t *testing.T) {
 	wrongMsg = msg
 	wrongMsg.Sender = base64.URLEncoding.EncodeToString([]byte("wrongSender"))
 
-	mockRepository = NewMockRepository(t)
+	mockRepository = db.NewMockRepository(t)
 	mockRepository.On("HasChannel", laoPath).Return(false, nil)
-	params = newHandlerParameters(mockRepository)
+	params = popserver.NewHandlerParameters(mockRepository)
 
 	args = append(args, verifyLaoCreationInputs{name: "Test 10",
 		params:    params,
@@ -229,7 +232,7 @@ func Test_verifyLaoCreation(t *testing.T) {
 	wrongLaoCreate.Organizer = "wrongOrganizer"
 	wrongLaoCreate.ID = messagedata.Hash(wrongLaoCreate.Organizer, fmt.Sprintf("%d", wrongLaoCreate.Creation), wrongLaoCreate.Name)
 
-	params = newHandlerParameters(nil)
+	params = popserver.NewHandlerParameters(nil)
 
 	args = append(args, verifyLaoCreationInputs{name: "Test 11",
 		params:    params,
@@ -241,9 +244,9 @@ func Test_verifyLaoCreation(t *testing.T) {
 	wrongLaoCreate.Organizer = base64.URLEncoding.EncodeToString([]byte("wrongOrganizer"))
 	wrongLaoCreate.ID = messagedata.Hash(wrongLaoCreate.Organizer, fmt.Sprintf("%d", wrongLaoCreate.Creation), wrongLaoCreate.Name)
 
-	mockRepository = NewMockRepository(t)
+	mockRepository = db.NewMockRepository(t)
 	mockRepository.On("HasChannel", laoPath).Return(false, nil)
-	params = newHandlerParameters(mockRepository)
+	params = popserver.NewHandlerParameters(mockRepository)
 
 	args = append(args, verifyLaoCreationInputs{name: "Test 12",
 		params:    params,
@@ -252,12 +255,12 @@ func Test_verifyLaoCreation(t *testing.T) {
 
 	// Test 13: error when the organizer's public key is not the same as the sender's public key
 	wrongLaoCreate = laoCreate
-	wrongLaoCreate.Organizer = base64.URLEncoding.EncodeToString(wrongKeyPair.publicBuf)
+	wrongLaoCreate.Organizer = base64.URLEncoding.EncodeToString(wrongKeyPair.PublicBuf)
 	wrongLaoCreate.ID = messagedata.Hash(wrongLaoCreate.Organizer, fmt.Sprintf("%d", wrongLaoCreate.Creation), wrongLaoCreate.Name)
 
-	mockRepository = NewMockRepository(t)
+	mockRepository = db.NewMockRepository(t)
 	mockRepository.On("HasChannel", laoPath).Return(false, nil)
-	params = newHandlerParameters(mockRepository)
+	params = popserver.NewHandlerParameters(mockRepository)
 
 	args = append(args, verifyLaoCreationInputs{name: "Test 13",
 		params:    params,
@@ -265,10 +268,10 @@ func Test_verifyLaoCreation(t *testing.T) {
 		laoCreate: wrongLaoCreate})
 
 	// Test 14: error when querying the owner's public key
-	mockRepository = NewMockRepository(t)
+	mockRepository = db.NewMockRepository(t)
 	mockRepository.On("HasChannel", laoPath).Return(false, nil)
-	mockRepository.On("GetOwnerPubKey").Return(nil, fmt.Errorf("db is disconnected"))
-	params = newHandlerParameters(mockRepository)
+	mockRepository.On("GetOwnerPubKey").Return(nil, fmt.Errorf("DB is disconnected"))
+	params = popserver.NewHandlerParameters(mockRepository)
 
 	args = append(args, verifyLaoCreationInputs{name: "Test 14",
 		params:    params,
@@ -276,10 +279,10 @@ func Test_verifyLaoCreation(t *testing.T) {
 		laoCreate: laoCreate})
 
 	// Test 15: error when the owner's public key is not the same as the sender's public key
-	mockRepository = NewMockRepository(t)
+	mockRepository = db.NewMockRepository(t)
 	mockRepository.On("HasChannel", laoPath).Return(false, nil)
-	mockRepository.On("GetOwnerPubKey").Return(wrongKeyPair.public, nil)
-	params = newHandlerParameters(mockRepository)
+	mockRepository.On("GetOwnerPubKey").Return(wrongKeyPair.Public, nil)
+	params = popserver.NewHandlerParameters(mockRepository)
 
 	args = append(args, verifyLaoCreationInputs{name: "Test 15",
 		params:    params,
@@ -295,65 +298,65 @@ func Test_verifyLaoCreation(t *testing.T) {
 	}
 
 	// Test 16: success
-	mockRepository = NewMockRepository(t)
+	mockRepository = db.NewMockRepository(t)
 	mockRepository.On("HasChannel", laoPath).Return(false, nil)
-	mockRepository.On("GetOwnerPubKey").Return(keypair.public, nil)
-	params = newHandlerParameters(mockRepository)
+	mockRepository.On("GetOwnerPubKey").Return(keypair.Public, nil)
+	params = popserver.NewHandlerParameters(mockRepository)
 
 	t.Run("Test 16", func(t *testing.T) {
 		pubKeybuf, errAnswer := verifyLaoCreation(params, msg, laoCreate, laoPath)
 		require.Nil(t, errAnswer)
-		assert.Equal(t, keypair.publicBuf, pubKeybuf)
+		assert.Equal(t, keypair.PublicBuf, pubKeybuf)
 
 	})
 }
 
 func Test_createLaoGreet(t *testing.T) {
-	keypair := generateKeyPair(t)
-	privateKeyBuf, err := keypair.private.MarshalBinary()
+	keypair := popserver.GenerateKeyPair(t)
+	privateKeyBuf, err := keypair.Private.MarshalBinary()
 	require.NoError(t, err)
 	type createAndSendLaoGreetInputs struct {
 		name      string
-		params    handlerParameters
+		params    state.HandlerParameters
 		pubKeyBuf []byte
 	}
 	var args []createAndSendLaoGreetInputs
 	laoPath := "laoPath"
 
 	// Test 1: error when getting the server's public key
-	mockRepository := NewMockRepository(t)
-	mockRepository.On("GetServerPubKey").Return(nil, fmt.Errorf("db is disconnected"))
-	params := newHandlerParameters(mockRepository)
-	err = params.peers.AddPeerInfo("socketID1", method.GreetServerParams{ClientAddress: "clientAddress1"})
+	mockRepository := db.NewMockRepository(t)
+	mockRepository.On("GetServerPubKey").Return(nil, fmt.Errorf("DB is disconnected"))
+	params := popserver.NewHandlerParameters(mockRepository)
+	err = params.Peers.AddPeerInfo("socketID1", method.GreetServerParams{ClientAddress: "clientAddress1"})
 	require.NoError(t, err)
 
 	args = append(args, createAndSendLaoGreetInputs{name: "Test 1",
 		params:    params,
-		pubKeyBuf: keypair.publicBuf})
+		pubKeyBuf: keypair.PublicBuf})
 
 	// Test 2: error when querying the server's secret key when signing the laoGreet message
-	mockRepository = NewMockRepository(t)
-	mockRepository.On("GetServerPubKey").Return(keypair.publicBuf, nil)
-	mockRepository.On("GetServerSecretKey").Return(nil, fmt.Errorf("db is disconnected"))
-	params = newHandlerParameters(mockRepository)
-	err = params.peers.AddPeerInfo("socketID1", method.GreetServerParams{ClientAddress: "clientAddress1"})
+	mockRepository = db.NewMockRepository(t)
+	mockRepository.On("GetServerPubKey").Return(keypair.PublicBuf, nil)
+	mockRepository.On("GetServerSecretKey").Return(nil, fmt.Errorf("DB is disconnected"))
+	params = popserver.NewHandlerParameters(mockRepository)
+	err = params.Peers.AddPeerInfo("socketID1", method.GreetServerParams{ClientAddress: "clientAddress1"})
 	require.NoError(t, err)
 
 	args = append(args, createAndSendLaoGreetInputs{name: "Test 2",
 		params:    params,
-		pubKeyBuf: keypair.publicBuf})
+		pubKeyBuf: keypair.PublicBuf})
 
 	// Test 3: error when unmarshalling the server's secret key
-	mockRepository = NewMockRepository(t)
-	mockRepository.On("GetServerPubKey").Return(keypair.publicBuf, nil)
+	mockRepository = db.NewMockRepository(t)
+	mockRepository.On("GetServerPubKey").Return(keypair.PublicBuf, nil)
 	mockRepository.On("GetServerSecretKey").Return([]byte("wrongKey"), nil)
-	params = newHandlerParameters(mockRepository)
-	err = params.peers.AddPeerInfo("socketID1", method.GreetServerParams{ClientAddress: "clientAddress1"})
+	params = popserver.NewHandlerParameters(mockRepository)
+	err = params.Peers.AddPeerInfo("socketID1", method.GreetServerParams{ClientAddress: "clientAddress1"})
 	require.NoError(t, err)
 
 	args = append(args, createAndSendLaoGreetInputs{name: "Test 3",
 		params:    params,
-		pubKeyBuf: keypair.publicBuf})
+		pubKeyBuf: keypair.PublicBuf})
 
 	// Run the tests
 	for _, arg := range args {
@@ -365,16 +368,16 @@ func Test_createLaoGreet(t *testing.T) {
 	}
 
 	// Test 5: success
-	mockRepository = NewMockRepository(t)
-	mockRepository.On("GetServerPubKey").Return(keypair.publicBuf, nil)
+	mockRepository = db.NewMockRepository(t)
+	mockRepository.On("GetServerPubKey").Return(keypair.PublicBuf, nil)
 	mockRepository.On("GetServerSecretKey").Return(privateKeyBuf, nil)
-	params = newHandlerParameters(mockRepository)
-	err = params.peers.AddPeerInfo("socketID1", method.GreetServerParams{ClientAddress: "clientAddress1"})
+	params = popserver.NewHandlerParameters(mockRepository)
+	err = params.Peers.AddPeerInfo("socketID1", method.GreetServerParams{ClientAddress: "clientAddress1"})
 	require.NoError(t, err)
-	params.subs.addChannel(laoPath)
+	params.Subs.AddChannel(laoPath)
 
 	t.Run("Test 5", func(t *testing.T) {
-		laoGreetMsg, errAnswer := createLaoGreet(params, keypair.publicBuf, laoPath)
+		laoGreetMsg, errAnswer := createLaoGreet(params, keypair.PublicBuf, laoPath)
 		require.Nil(t, errAnswer)
 		require.NotNil(t, laoGreetMsg)
 	})

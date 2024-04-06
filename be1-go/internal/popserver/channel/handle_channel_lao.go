@@ -1,4 +1,4 @@
-package hub
+package channel
 
 import (
 	"encoding/base64"
@@ -7,6 +7,7 @@ import (
 	"go.dedis.ch/kyber/v3/sign/schnorr"
 	"golang.org/x/exp/slices"
 	"popstellar/crypto"
+	"popstellar/internal/popserver/state"
 	"popstellar/message/answer"
 	"popstellar/message/messagedata"
 	"popstellar/message/query/method/message"
@@ -25,7 +26,7 @@ const (
 	created         = "created"
 )
 
-func handleChannelLao(params handlerParameters, channel string, msg message.Message) *answer.Error {
+func handleChannelLao(params state.HandlerParameters, channel string, msg message.Message) *answer.Error {
 	object, action, errAnswer := verifyDataAndGetObjectAction(params, msg)
 	if errAnswer != nil {
 		errAnswer = errAnswer.Wrap("handleChannelLao")
@@ -63,7 +64,7 @@ func handleChannelLao(params handlerParameters, channel string, msg message.Mess
 	}
 
 	if storeMessage {
-		err := params.db.StoreMessage(channel, msg)
+		err := params.DB.StoreMessage(channel, msg)
 		if err != nil {
 			errAnswer = answer.NewInternalServerError("failed to store message: %v", err)
 			errAnswer = errAnswer.Wrap("handleChannelLao")
@@ -73,7 +74,7 @@ func handleChannelLao(params handlerParameters, channel string, msg message.Mess
 	return nil
 }
 
-func handleLaoState(msg message.Message, channel string, params handlerParameters) *answer.Error {
+func handleLaoState(msg message.Message, channel string, params state.HandlerParameters) *answer.Error {
 	var laoState messagedata.LaoState
 	err := msg.UnmarshalData(&laoState)
 	var errAnswer *answer.Error
@@ -83,7 +84,7 @@ func handleLaoState(msg message.Message, channel string, params handlerParameter
 		errAnswer = errAnswer.Wrap("handleLaoState")
 		return errAnswer
 	}
-	ok, err := params.db.HasMessage(laoState.ModificationID)
+	ok, err := params.DB.HasMessage(laoState.ModificationID)
 	if err != nil {
 		errAnswer = answer.NewInternalServerError("failed to get check if message exists: %v", err)
 		errAnswer = errAnswer.Wrap("handleLaoState")
@@ -94,7 +95,7 @@ func handleLaoState(msg message.Message, channel string, params handlerParameter
 		return errAnswer
 	}
 
-	witnesses, err := params.db.GetLaoWitnesses(channel)
+	witnesses, err := params.DB.GetLaoWitnesses(channel)
 	if err != nil {
 		errAnswer = answer.NewInternalServerError("failed to get lao witnesses: %v", err)
 		errAnswer = errAnswer.Wrap("handleLaoState")
@@ -183,7 +184,7 @@ func compareLaoUpdateAndState(update messagedata.LaoUpdate, state messagedata.La
 	return nil
 }
 
-func handleRollCallCreate(msg message.Message, channel string, params handlerParameters) *answer.Error {
+func handleRollCallCreate(msg message.Message, channel string, params state.HandlerParameters) *answer.Error {
 	var rollCallCreate messagedata.RollCallCreate
 	err := msg.UnmarshalData(&rollCallCreate)
 	var errAnswer *answer.Error
@@ -239,7 +240,7 @@ func handleRollCallCreate(msg message.Message, channel string, params handlerPar
 	return nil
 }
 
-func handleRollCallOpen(msg message.Message, channel string, params handlerParameters) *answer.Error {
+func handleRollCallOpen(msg message.Message, channel string, params state.HandlerParameters) *answer.Error {
 	var rollCallOpen messagedata.RollCallOpen
 	err := msg.UnmarshalData(&rollCallOpen)
 	var errAnswer *answer.Error
@@ -280,7 +281,7 @@ func handleRollCallOpen(msg message.Message, channel string, params handlerParam
 		errAnswer = errAnswer.Wrap("handleRollCallOpen")
 		return errAnswer
 	}
-	ok, err := params.db.CheckPrevID(channel, rollCallOpen.Opens)
+	ok, err := params.DB.CheckPrevID(channel, rollCallOpen.Opens)
 	if err != nil {
 		errAnswer = answer.NewInternalServerError("failed to check if previous id exists: %v", err)
 		errAnswer = errAnswer.Wrap("handleRollCallOpen")
@@ -293,7 +294,7 @@ func handleRollCallOpen(msg message.Message, channel string, params handlerParam
 	return nil
 }
 
-func handleRollCallReOpen(msg message.Message, channel string, params handlerParameters) *answer.Error {
+func handleRollCallReOpen(msg message.Message, channel string, params state.HandlerParameters) *answer.Error {
 	var rollCallReOpen messagedata.RollCallReOpen
 	err := msg.UnmarshalData(&rollCallReOpen)
 	var errAnswer *answer.Error
@@ -313,7 +314,7 @@ func handleRollCallReOpen(msg message.Message, channel string, params handlerPar
 	return nil
 }
 
-func handleRollCallClose(msg message.Message, channel string, params handlerParameters) *answer.Error {
+func handleRollCallClose(msg message.Message, channel string, params state.HandlerParameters) *answer.Error {
 	var rollCallClose messagedata.RollCallClose
 	err := msg.UnmarshalData(&rollCallClose)
 	var errAnswer *answer.Error
@@ -356,7 +357,7 @@ func handleRollCallClose(msg message.Message, channel string, params handlerPara
 		return errAnswer
 	}
 
-	state, err := params.db.GetRollCallState(channel)
+	state, err := params.DB.GetRollCallState(channel)
 	if err != nil {
 		errAnswer = answer.NewInternalServerError("failed to get roll call state: %v", err)
 		errAnswer = errAnswer.Wrap("handleRollCallClose")
@@ -381,7 +382,7 @@ func handleRollCallClose(msg message.Message, channel string, params handlerPara
 		channelSlice = append(channelSlice, chirpingChannelPath)
 	}
 
-	err = params.db.StoreChannelsAndMessage(channelSlice, channel, nil, msg)
+	err = params.DB.StoreChannelsAndMessage(channelSlice, channel, nil, msg)
 	if err != nil {
 		errAnswer = answer.NewInternalServerError("failed to store channels and message: %v", err)
 		errAnswer = errAnswer.Wrap("handleRollCallClose")
@@ -390,7 +391,7 @@ func handleRollCallClose(msg message.Message, channel string, params handlerPara
 	return nil
 }
 
-func handleElectionSetup(msg message.Message, channel string, params handlerParameters) *answer.Error {
+func handleElectionSetup(msg message.Message, channel string, params state.HandlerParameters) *answer.Error {
 	var electionSetup messagedata.ElectionSetup
 	err := msg.UnmarshalData(&electionSetup)
 	var errAnswer *answer.Error
@@ -487,7 +488,7 @@ func handleElectionSetup(msg message.Message, channel string, params handlerPara
 	for _, question := range electionSetup.Questions {
 		_, err = base64.URLEncoding.DecodeString(question.ID)
 		if err != nil {
-			errAnswer = answer.NewInvalidMessageFieldError("failed to decode question id: %v", err)
+			errAnswer = answer.NewInvalidMessageFieldError("failed to decode Question id: %v", err)
 			errAnswer = errAnswer.Wrap("handleElectionSetup")
 			return errAnswer
 		}
@@ -497,17 +498,17 @@ func handleElectionSetup(msg message.Message, channel string, params handlerPara
 			question.Question,
 		)
 		if question.ID != expectedID {
-			errAnswer = answer.NewInvalidMessageFieldError("question id is %s, should be %s", question.ID, expectedID)
+			errAnswer = answer.NewInvalidMessageFieldError("Question id is %s, should be %s", question.ID, expectedID)
 			errAnswer = errAnswer.Wrap("handleElectionSetup")
 			return errAnswer
 		}
 		if len(question.Question) == 0 {
-			errAnswer = answer.NewInvalidMessageFieldError("question is empty")
+			errAnswer = answer.NewInvalidMessageFieldError("Question is empty")
 			errAnswer = errAnswer.Wrap("handleElectionSetup")
 			return errAnswer
 		}
 		if question.VotingMethod != pluralityMethod && question.VotingMethod != approvalMethod {
-			errAnswer = answer.NewInvalidMessageFieldError("question voting method is %s, should be %s or %s", question.VotingMethod, pluralityMethod, approvalMethod)
+			errAnswer = answer.NewInvalidMessageFieldError("Question voting method is %s, should be %s or %s", question.VotingMethod, pluralityMethod, approvalMethod)
 			errAnswer = errAnswer.Wrap("handleElectionSetup")
 			return errAnswer
 		}
@@ -519,15 +520,15 @@ func handleElectionSetup(msg message.Message, channel string, params handlerPara
 		return errAnswer
 	}
 	electionPath := channel + "/" + electionSetup.ID
-	err = params.db.StoreMessageWithElectionKey(channel, electionPath, msg.MessageID, electionPubKey, electionSecretKey, msg, electionKeyMsg)
+	err = params.DB.StoreMessageWithElectionKey(channel, electionPath, msg.MessageID, electionPubKey, electionSecretKey, msg, electionKeyMsg)
 	if err != nil {
 		errAnswer = answer.NewInternalServerError("failed to store election setup message: %v", err)
 		errAnswer = errAnswer.Wrap("handleElectionSetup")
 		return errAnswer
 	}
-	params.subs.addChannel(electionPath)
+	params.Subs.AddChannel(electionPath)
 
-	err = params.db.StoreMessage(electionSetup.ID, electionKeyMsg)
+	err = params.DB.StoreMessage(electionSetup.ID, electionKeyMsg)
 	if err != nil {
 		errAnswer := answer.NewInternalServerError("failed to store election key message: %v", err)
 		errAnswer = errAnswer.Wrap("createAndSendElectionKey")
@@ -536,7 +537,7 @@ func handleElectionSetup(msg message.Message, channel string, params handlerPara
 	return nil
 }
 
-func createElectionKey(params handlerParameters, electionID string, electionPubKey kyber.Point) (message.Message, *answer.Error) {
+func createElectionKey(params state.HandlerParameters, electionID string, electionPubKey kyber.Point) (message.Message, *answer.Error) {
 	electionPubBuf, err := electionPubKey.MarshalBinary()
 	if err != nil {
 		errAnswer := answer.NewInternalServerError("failed to marshal election public key: %v", err)
@@ -558,7 +559,7 @@ func createElectionKey(params handlerParameters, electionID string, electionPubK
 	}
 	newData64 := base64.URLEncoding.EncodeToString(dataBuf)
 	//TODO get server public key
-	serverPubBuf, err := params.db.GetServerPubKey()
+	serverPubBuf, err := params.DB.GetServerPubKey()
 	if err != nil {
 		errAnswer := answer.NewInternalServerError("failed to get server public key: %v", err)
 		errAnswer = errAnswer.Wrap("createAndSendElectionKey")
@@ -581,16 +582,16 @@ func createElectionKey(params handlerParameters, electionID string, electionPubK
 }
 
 // Not implemented yet
-func handleLaoUpdate(msg message.Message, params handlerParameters) *answer.Error {
+func handleLaoUpdate(msg message.Message, params state.HandlerParameters) *answer.Error {
 	return nil
 }
 
 // Not implemented yet
-func handleMeetingCreate(msg message.Message, params handlerParameters) *answer.Error {
+func handleMeetingCreate(msg message.Message, params state.HandlerParameters) *answer.Error {
 	return nil
 }
 
 // Not implemented yet
-func handleMeetingState(msg message.Message, params handlerParameters) *answer.Error {
+func handleMeetingState(msg message.Message, params state.HandlerParameters) *answer.Error {
 	return nil
 }

@@ -1,4 +1,4 @@
-package hub
+package repo
 
 import (
 	"go.dedis.ch/kyber/v3"
@@ -114,7 +114,7 @@ type ElectionRepository interface {
 	GetElectionAttendees(electionID string) (map[string]struct{}, error)
 
 	// GetElectionQuestions returns the questions of an election.
-	GetElectionQuestions(electionID string) (map[string]question, error)
+	//GetElectionQuestions(electionID string) (map[string]channel.Question, error)
 
 	// GetElectionType returns the type of an election.
 	GetElectionType(electionID string) (string, error)

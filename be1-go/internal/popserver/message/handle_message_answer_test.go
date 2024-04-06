@@ -1,4 +1,4 @@
-package hub
+package message
 
 import (
 	"encoding/base64"
@@ -8,6 +8,9 @@ import (
 	"go.dedis.ch/kyber/v3/sign/schnorr"
 	"golang.org/x/xerrors"
 	"popstellar/crypto"
+	"popstellar/internal/popserver"
+	"popstellar/internal/popserver/db"
+	"popstellar/internal/popserver/state"
 	"popstellar/message/answer"
 	"popstellar/message/messagedata"
 	"popstellar/message/query/method/message"
@@ -18,14 +21,14 @@ import (
 func Test_handleGetMessagesByIDAnswer(t *testing.T) {
 	type input struct {
 		name        string
-		params      handlerParameters
+		params      state.HandlerParameters
 		message     answer.Answer
 		isErrorTest bool
 	}
 
 	inputs := make([]input, 0)
 
-	// failed to query db
+	// failed to query DB
 
 	id := 1
 
@@ -39,13 +42,13 @@ func Test_handleGetMessagesByIDAnswer(t *testing.T) {
 		},
 	}
 
-	mockRepository := NewMockRepository(t)
-	mockRepository.On("StorePendingMessages", msgsByChannel).Return(xerrors.Errorf("db disconnected"))
+	mockRepository := db.NewMockRepository(t)
+	mockRepository.On("StorePendingMessages", msgsByChannel).Return(xerrors.Errorf("DB disconnected"))
 
-	params := newHandlerParameters(mockRepository)
+	params := popserver.NewHandlerParameters(mockRepository)
 
 	inputs = append(inputs, input{
-		name:        "failed to query db",
+		name:        "failed to query DB",
 		params:      params,
 		message:     msg,
 		isErrorTest: true,
@@ -65,16 +68,16 @@ func Test_handleGetMessagesByIDAnswer(t *testing.T) {
 func Test_handleMessagesByChannel(t *testing.T) {
 	type input struct {
 		name     string
-		params   handlerParameters
+		params   state.HandlerParameters
 		messages map[string]map[string]message.Message
 		expected map[string]map[string]message.Message
 	}
 
-	keypair := generateKeyPair(t)
+	keypair := popserver.GenerateKeyPair(t)
 	now := time.Now().Unix()
 	name := "LAO X"
 
-	laoID := messagedata.Hash(base64.URLEncoding.EncodeToString(keypair.publicBuf), fmt.Sprintf("%d", now), name)
+	laoID := messagedata.Hash(base64.URLEncoding.EncodeToString(keypair.PublicBuf), fmt.Sprintf("%d", now), name)
 
 	data := messagedata.LaoCreate{
 		Object:    messagedata.LAOObject,
@@ -82,13 +85,13 @@ func Test_handleMessagesByChannel(t *testing.T) {
 		ID:        laoID,
 		Name:      name,
 		Creation:  now,
-		Organizer: base64.URLEncoding.EncodeToString(keypair.publicBuf),
+		Organizer: base64.URLEncoding.EncodeToString(keypair.PublicBuf),
 		Witnesses: []string{},
 	}
 
 	dataBuf, err := json.Marshal(data)
 	require.NoError(t, err)
-	signature, err := schnorr.Sign(crypto.Suite, keypair.private, dataBuf)
+	signature, err := schnorr.Sign(crypto.Suite, keypair.Private, dataBuf)
 	require.NoError(t, err)
 
 	dataBase64 := base64.URLEncoding.EncodeToString(dataBuf)
@@ -96,7 +99,7 @@ func Test_handleMessagesByChannel(t *testing.T) {
 
 	msgValid := message.Message{
 		Data:              dataBase64,
-		Sender:            base64.URLEncoding.EncodeToString(keypair.publicBuf),
+		Sender:            base64.URLEncoding.EncodeToString(keypair.PublicBuf),
 		Signature:         signatureBase64,
 		MessageID:         messagedata.Hash(dataBase64, signatureBase64),
 		WitnessSignatures: []message.WitnessSignature{},
@@ -128,12 +131,12 @@ func Test_handleMessagesByChannel(t *testing.T) {
 	expected["/root/lao1"] = make(map[string]message.Message)
 	expected["/root/lao1"][msgValid.MessageID] = msgValid
 
-	mockRepository := NewMockRepository(t)
+	mockRepository := db.NewMockRepository(t)
 	mockRepository.On("HasMessage", msgValid.MessageID).Return(false, nil)
 	mockRepository.On("GetChannelType", "/root").Return("", nil)
 	mockRepository.On("GetChannelType", "/root/lao1").Return("", nil)
 
-	params := newHandlerParameters(mockRepository)
+	params := popserver.NewHandlerParameters(mockRepository)
 
 	inputs = append(inputs, input{
 		name:     "blacklist without invalid field error",

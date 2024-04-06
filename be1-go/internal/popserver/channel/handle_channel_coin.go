@@ -1,12 +1,13 @@
-package hub
+package channel
 
 import (
+	"popstellar/internal/popserver/state"
 	"popstellar/message/answer"
 	"popstellar/message/messagedata"
 	"popstellar/message/query/method/message"
 )
 
-func handleChannelCoin(params handlerParameters, channel string, msg message.Message) *answer.Error {
+func handleChannelCoin(params state.HandlerParameters, channel string, msg message.Message) *answer.Error {
 	object, action, errAnswer := verifyDataAndGetObjectAction(params, msg)
 	if errAnswer != nil {
 		errAnswer = errAnswer.Wrap("handleChannelCoin")
@@ -24,7 +25,7 @@ func handleChannelCoin(params handlerParameters, channel string, msg message.Mes
 		return errAnswer
 	}
 
-	err := params.db.StoreMessage(channel, msg)
+	err := params.DB.StoreMessage(channel, msg)
 	if err != nil {
 		errAnswer = answer.NewInternalServerError("failed to store message: %v", err)
 		errAnswer = errAnswer.Wrap("handleChannelCoin")
@@ -40,7 +41,7 @@ func handleChannelCoin(params handlerParameters, channel string, msg message.Mes
 	return nil
 }
 
-func handleCoinPostTransaction(params handlerParameters, msg message.Message) *answer.Error {
+func handleCoinPostTransaction(params state.HandlerParameters, msg message.Message) *answer.Error {
 	var data messagedata.PostTransaction
 
 	err := msg.UnmarshalData(&data)

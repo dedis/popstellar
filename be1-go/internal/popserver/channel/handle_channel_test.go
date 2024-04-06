@@ -1,4 +1,4 @@
-package hub
+package channel
 
 import (
 	"encoding/base64"
@@ -8,6 +8,9 @@ import (
 	"go.dedis.ch/kyber/v3/sign/schnorr"
 	"golang.org/x/xerrors"
 	"popstellar/crypto"
+	"popstellar/internal/popserver"
+	"popstellar/internal/popserver/db"
+	"popstellar/internal/popserver/state"
 	"popstellar/message/messagedata"
 	"popstellar/message/query/method/message"
 	"testing"
@@ -16,17 +19,17 @@ import (
 
 type handleChannelInput struct {
 	name      string
-	params    handlerParameters
+	params    state.HandlerParameters
 	channelID string
 	message   message.Message
 }
 
 func Test_handleChannel(t *testing.T) {
-	keypair := generateKeyPair(t)
+	keypair := popserver.GenerateKeyPair(t)
 	now := time.Now().Unix()
 	name := "LAO X"
 
-	laoID := messagedata.Hash(base64.URLEncoding.EncodeToString(keypair.publicBuf), fmt.Sprintf("%d", now), name)
+	laoID := messagedata.Hash(base64.URLEncoding.EncodeToString(keypair.PublicBuf), fmt.Sprintf("%d", now), name)
 
 	data := messagedata.LaoCreate{
 		Object:    messagedata.LAOObject,
@@ -34,13 +37,13 @@ func Test_handleChannel(t *testing.T) {
 		ID:        laoID,
 		Name:      name,
 		Creation:  now,
-		Organizer: base64.URLEncoding.EncodeToString(keypair.publicBuf),
+		Organizer: base64.URLEncoding.EncodeToString(keypair.PublicBuf),
 		Witnesses: []string{},
 	}
 
 	dataBuf, err := json.Marshal(data)
 	require.NoError(t, err)
-	signature, err := schnorr.Sign(crypto.Suite, keypair.private, dataBuf)
+	signature, err := schnorr.Sign(crypto.Suite, keypair.Private, dataBuf)
 	require.NoError(t, err)
 
 	dataBase64 := base64.URLEncoding.EncodeToString(dataBuf)
@@ -48,7 +51,7 @@ func Test_handleChannel(t *testing.T) {
 
 	msg := message.Message{
 		Data:              dataBase64,
-		Sender:            base64.URLEncoding.EncodeToString(keypair.publicBuf),
+		Sender:            base64.URLEncoding.EncodeToString(keypair.PublicBuf),
 		Signature:         signatureBase64,
 		MessageID:         messagedata.Hash(dataBase64, signatureBase64),
 		WitnessSignatures: []message.WitnessSignature{},
@@ -60,8 +63,8 @@ func Test_handleChannel(t *testing.T) {
 
 	wrongChannelID := "wrongChannelID"
 
-	mockRepository := NewMockRepository(t)
-	params := newHandlerParameters(mockRepository)
+	mockRepository := db.NewMockRepository(t)
+	params := popserver.NewHandlerParameters(mockRepository)
 
 	mockRepository.On("HasMessage", msg.MessageID).Return(false, nil)
 	mockRepository.On("GetChannelType", wrongChannelID).Return("", nil)
@@ -77,11 +80,11 @@ func Test_handleChannel(t *testing.T) {
 
 	problemDBChannelID := "problemDBChannelID"
 
-	mockRepository = NewMockRepository(t)
-	params = newHandlerParameters(mockRepository)
+	mockRepository = db.NewMockRepository(t)
+	params = popserver.NewHandlerParameters(mockRepository)
 
 	mockRepository.On("HasMessage", msg.MessageID).Return(false, nil)
-	mockRepository.On("GetChannelType", problemDBChannelID).Return("", xerrors.Errorf("db disconnected"))
+	mockRepository.On("GetChannelType", problemDBChannelID).Return("", xerrors.Errorf("DB disconnected"))
 
 	inputs = append(inputs, handleChannelInput{
 		name:      "failed to query channelType",
@@ -92,8 +95,8 @@ func Test_handleChannel(t *testing.T) {
 
 	// message already received
 
-	mockRepository = NewMockRepository(t)
-	params = newHandlerParameters(mockRepository)
+	mockRepository = db.NewMockRepository(t)
+	params = popserver.NewHandlerParameters(mockRepository)
 
 	mockRepository.On("HasMessage", msg.MessageID).Return(true, nil)
 
@@ -106,10 +109,10 @@ func Test_handleChannel(t *testing.T) {
 
 	// error while querying if the message already exists
 
-	mockRepository = NewMockRepository(t)
-	params = newHandlerParameters(mockRepository)
+	mockRepository = db.NewMockRepository(t)
+	params = popserver.NewHandlerParameters(mockRepository)
 
-	mockRepository.On("HasMessage", msg.MessageID).Return(false, xerrors.Errorf("db disconnected"))
+	mockRepository.On("HasMessage", msg.MessageID).Return(false, xerrors.Errorf("DB disconnected"))
 
 	inputs = append(inputs, handleChannelInput{
 		name:      "failed to query message",
@@ -123,7 +126,7 @@ func Test_handleChannel(t *testing.T) {
 	msgWrongID := msg
 	msgWrongID.MessageID = messagedata.Hash("wrong messageID")
 
-	params = newHandlerParameters(nil)
+	params = popserver.NewHandlerParameters(nil)
 
 	inputs = append(inputs, handleChannelInput{
 		name:      "wrong messageID",
@@ -134,11 +137,11 @@ func Test_handleChannel(t *testing.T) {
 
 	// failed signature check because wrong sender
 
-	wrongKeypair := generateKeyPair(t)
+	wrongKeypair := popserver.GenerateKeyPair(t)
 	msgWrongSender := msg
-	msgWrongSender.Sender = base64.URLEncoding.EncodeToString(wrongKeypair.publicBuf)
+	msgWrongSender.Sender = base64.URLEncoding.EncodeToString(wrongKeypair.PublicBuf)
 
-	params = newHandlerParameters(nil)
+	params = popserver.NewHandlerParameters(nil)
 
 	inputs = append(inputs, handleChannelInput{
 		name:      "failed signature check wrong sender",
@@ -152,7 +155,7 @@ func Test_handleChannel(t *testing.T) {
 	msgWrongData := msg
 	msgWrongData.Data = base64.URLEncoding.EncodeToString([]byte("wrong data"))
 
-	params = newHandlerParameters(nil)
+	params = popserver.NewHandlerParameters(nil)
 
 	inputs = append(inputs, handleChannelInput{
 		name:      "failed signature check wrong data",
@@ -163,14 +166,14 @@ func Test_handleChannel(t *testing.T) {
 
 	// failed signature check because wrong signature
 
-	wrongKeypair = generateKeyPair(t)
-	wrongSignature, err := schnorr.Sign(crypto.Suite, wrongKeypair.private, dataBuf)
+	wrongKeypair = popserver.GenerateKeyPair(t)
+	wrongSignature, err := schnorr.Sign(crypto.Suite, wrongKeypair.Private, dataBuf)
 	require.NoError(t, err)
 
 	msgWrongSign := msg
 	msgWrongSign.Signature = base64.URLEncoding.EncodeToString(wrongSignature)
 
-	params = newHandlerParameters(nil)
+	params = popserver.NewHandlerParameters(nil)
 
 	inputs = append(inputs, handleChannelInput{
 		name:      "failed signature check wrong signature",
@@ -184,7 +187,7 @@ func Test_handleChannel(t *testing.T) {
 	msgWrongSignEncoding := msg
 	msgWrongSignEncoding.Signature = "wrong encoding"
 
-	params = newHandlerParameters(nil)
+	params = popserver.NewHandlerParameters(nil)
 
 	inputs = append(inputs, handleChannelInput{
 		name:      "wrong signature encoding",
@@ -198,7 +201,7 @@ func Test_handleChannel(t *testing.T) {
 	msgWrongSenderEncoding := msg
 	msgWrongSenderEncoding.Sender = "wrong encoding"
 
-	params = newHandlerParameters(nil)
+	params = popserver.NewHandlerParameters(nil)
 
 	inputs = append(inputs, handleChannelInput{
 		name:      "wrong sender encoding",
@@ -212,7 +215,7 @@ func Test_handleChannel(t *testing.T) {
 	msgWrongDataEncoding := msg
 	msgWrongDataEncoding.Data = "wrong encoding"
 
-	params = newHandlerParameters(nil)
+	params = popserver.NewHandlerParameters(nil)
 
 	inputs = append(inputs, handleChannelInput{
 		name:      "wrong data encoding",
@@ -223,7 +226,7 @@ func Test_handleChannel(t *testing.T) {
 
 	for _, i := range inputs {
 		t.Run(i.name, func(t *testing.T) {
-			errAnswer := handleChannel(i.params, i.channelID, i.message)
+			errAnswer := HandleChannel(i.params, i.channelID, i.message)
 			require.Error(t, errAnswer)
 		})
 	}

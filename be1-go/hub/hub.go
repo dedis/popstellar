@@ -4,11 +4,7 @@
 package hub
 
 import (
-	"github.com/rs/zerolog"
-	"go.dedis.ch/kyber/v3"
-	state "popstellar/hub/standard_hub/hub_state"
 	"popstellar/network/socket"
-	"popstellar/validation"
 	"time"
 )
 
@@ -33,22 +29,10 @@ const (
 	heartbeatDelay = 30 * time.Second
 )
 
-const (
-	channelRoot         = "root"
-	channelLao          = "lao"
-	channelElection     = "election"
-	channelGeneralChirp = "generalchirp"
-	channelChirp        = "chirp"
-	channelReaction     = "reaction"
-	channelConsensus    = "consensus"
-	channelPopCha       = "popcha"
-	channelCoin         = "coin"
-)
-
 // Hub defines the methods a PoP server must implement to receive messages
 // and handle clients.
 type Hub interface {
-	// NotifyNewServer add a socket for the hub to send message to other servers
+	// NotifyNewServer add a Socket for the hub to send message to other servers
 	NotifyNewServer(socket.Socket)
 
 	// Start invokes the processing loop for the hub.
@@ -60,24 +44,11 @@ type Hub interface {
 	// Receiver returns a channel that may be used to process incoming messages
 	Receiver() chan<- socket.IncomingMessage
 
-	// OnSocketClose returns a channel which accepts socket ids on connection
+	// OnSocketClose returns a channel which accepts Socket ids on connection
 	// close events. This allows the hub to cleanup clients which close without
-	// sending an unsubscribe message
+	// sending an Unsubscribe message
 	OnSocketClose() chan<- string
 
-	// SendGreetServer sends a greet server message in the socket
+	// SendGreetServer sends a greet server message in the Socket
 	SendGreetServer(socket.Socket) error
-}
-
-type handlerParameters struct {
-	log                 zerolog.Logger
-	socket              socket.Socket
-	schemaValidator     validation.SchemaValidator
-	db                  Repository
-	subs                subscribers
-	peers               *state.Peers
-	queries             *state.Queries
-	ownerPubKey         kyber.Point
-	clientServerAddress string
-	serverServerAddress string
 }

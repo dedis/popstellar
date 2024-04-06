@@ -1,4 +1,4 @@
-package hub
+package channel
 
 import (
 	"encoding/base64"
@@ -6,21 +6,24 @@ import (
 	"github.com/stretchr/testify/require"
 	"os"
 	"path/filepath"
+	"popstellar/internal/popserver"
+	"popstellar/internal/popserver/db"
+	"popstellar/internal/popserver/state"
 	"popstellar/message/messagedata"
 	"popstellar/message/query/method"
 	"popstellar/message/query/method/message"
 	"testing"
 )
 
-const coinPath string = "../validation/protocol/examples/messageData/coin"
+const coinPath string = "../../../validation/protocol/examples/messageData/coin"
 
 type inputTestHandleChannelCoin struct {
 	name      string
-	params    handlerParameters
+	params    state.HandlerParameters
 	channelID string
 	message   message.Message
 	hasError  bool
-	sockets   []*fakeSocket
+	sockets   []*popserver.FakeSocket
 }
 
 func Test_handleChannelCoin(t *testing.T) {
@@ -85,10 +88,10 @@ func Test_handleChannelCoin(t *testing.T) {
 				require.Nil(t, errAnswer)
 
 				for _, s := range i.sockets {
-					require.NotNil(t, s.msg)
+					require.NotNil(t, s.Msg)
 
 					var msg method.Broadcast
-					err := json.Unmarshal(s.msg, &msg)
+					err := json.Unmarshal(s.Msg, &msg)
 					require.NoError(t, err)
 
 					require.Equal(t, i.message, msg.Params.Message)
@@ -118,21 +121,21 @@ func newSuccessTestHandleChannelCoin(t *testing.T, filename string, name string)
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
-	mockRepo := NewMockRepository(t)
+	mockRepo := db.NewMockRepository(t)
 	mockRepo.On("StoreMessage", channelID, m).Return(nil)
 
-	sockets := []*fakeSocket{
-		{id: "0"},
-		{id: "1"},
-		{id: "2"},
-		{id: "3"},
+	sockets := []*popserver.FakeSocket{
+		{Id: "0"},
+		{Id: "1"},
+		{Id: "2"},
+		{Id: "3"},
 	}
 
-	params := newHandlerParametersWithFakeSocket(mockRepo, sockets[0])
-	params.subs.addChannel(channelID)
+	params := popserver.NewHandlerParametersWithFakeSocket(mockRepo, sockets[0])
+	params.Subs.AddChannel(channelID)
 
 	for _, s := range sockets {
-		err := params.subs.subscribe(channelID, s)
+		err := params.Subs.Subscribe(channelID, s)
 		require.Nil(t, err)
 	}
 
@@ -165,7 +168,7 @@ func newFailTestHandleChannelCoin(t *testing.T, filename string, name string) in
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
-	params := newHandlerParameters(nil)
+	params := popserver.NewHandlerParameters(nil)
 
 	return inputTestHandleChannelCoin{
 		name:      name,
