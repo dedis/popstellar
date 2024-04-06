@@ -2,14 +2,14 @@ package message
 
 import (
 	"encoding/json"
-	"popstellar/internal/popserver/state"
+	"popstellar/internal/popserver/types"
 	jsonrpc "popstellar/message"
 	"popstellar/message/answer"
 	"popstellar/message/query"
 	"popstellar/validation"
 )
 
-func HandleMessage(params state.HandlerParameters, msg []byte) error {
+func HandleMessage(params types.HandlerParameters, msg []byte) error {
 	err := params.SchemaValidator.VerifyJSON(msg, validation.GenericMessage)
 	if err != nil {
 		errAnswer := answer.NewInvalidMessageFieldError("invalid json: %v", err).Wrap("HandleMessage")
@@ -46,7 +46,7 @@ func HandleMessage(params state.HandlerParameters, msg []byte) error {
 	return nil
 }
 
-func handleQuery(params state.HandlerParameters, msg []byte) (*int, *answer.Error) {
+func handleQuery(params types.HandlerParameters, msg []byte) (*int, *answer.Error) {
 	var queryBase query.Base
 
 	err := json.Unmarshal(msg, &queryBase)
@@ -86,7 +86,7 @@ func handleQuery(params state.HandlerParameters, msg []byte) (*int, *answer.Erro
 	return id, nil
 }
 
-func handleAnswer(params state.HandlerParameters, msg []byte) (*int, *answer.Error) {
+func handleAnswer(params types.HandlerParameters, msg []byte) (*int, *answer.Error) {
 	var answerMsg answer.Answer
 
 	err := json.Unmarshal(msg, &answerMsg)

@@ -6,7 +6,7 @@ import (
 	"golang.org/x/xerrors"
 	"popstellar/internal/popserver"
 	"popstellar/internal/popserver/repo"
-	"popstellar/internal/popserver/state"
+	"popstellar/internal/popserver/types"
 	jsonrpc "popstellar/message"
 	"popstellar/message/query"
 	"popstellar/message/query/method"
@@ -18,7 +18,7 @@ import (
 func Test_handleCatchUp(t *testing.T) {
 	type input struct {
 		name        string
-		params      state.HandlerParameters
+		params      types.HandlerParameters
 		message     []byte
 		socket      *popserver.FakeSocket
 		result      []message.Message
@@ -108,7 +108,7 @@ func Test_handleCatchUp(t *testing.T) {
 func Test_handleGetMessagesByID(t *testing.T) {
 	type input struct {
 		name        string
-		params      state.HandlerParameters
+		params      types.HandlerParameters
 		message     []byte
 		socket      *popserver.FakeSocket
 		result      map[string][]message.Message
@@ -200,7 +200,7 @@ func Test_handleGetMessagesByID(t *testing.T) {
 func Test_handleGreetServer(t *testing.T) {
 	type input struct {
 		name        string
-		params      state.HandlerParameters
+		params      types.HandlerParameters
 		message     []byte
 		socket      *popserver.FakeSocket
 		needSend    bool
@@ -322,7 +322,7 @@ func Test_handleGreetServer(t *testing.T) {
 func Test_handleHeartbeat(t *testing.T) {
 	type input struct {
 		name        string
-		params      state.HandlerParameters
+		params      types.HandlerParameters
 		message     []byte
 		socket      *popserver.FakeSocket
 		needSend    bool
@@ -457,7 +457,7 @@ func Test_handleHeartbeat(t *testing.T) {
 func Test_handleSubscribe(t *testing.T) {
 	type input struct {
 		name        string
-		params      state.HandlerParameters
+		params      types.HandlerParameters
 		message     []byte
 		isErrorTest bool
 		subscribe   method.Subscribe
@@ -549,7 +549,7 @@ func Test_handleSubscribe(t *testing.T) {
 func Test_handleUnsubscribe(t *testing.T) {
 	type input struct {
 		name        string
-		params      state.HandlerParameters
+		params      types.HandlerParameters
 		message     []byte
 		isErrorTest bool
 		unsubscribe method.Unsubscribe

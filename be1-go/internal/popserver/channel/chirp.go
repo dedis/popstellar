@@ -3,14 +3,14 @@ package channel
 import (
 	"encoding/base64"
 	"encoding/json"
-	"popstellar/internal/popserver/state"
+	"popstellar/internal/popserver/types"
 	"popstellar/message/answer"
 	"popstellar/message/messagedata"
 	"popstellar/message/query/method/message"
 	"strings"
 )
 
-func handleChannelChirp(params state.HandlerParameters, channelID string, msg message.Message) *answer.Error {
+func handleChannelChirp(params types.HandlerParameters, channelID string, msg message.Message) *answer.Error {
 	object, action, errAnswer := verifyDataAndGetObjectAction(params, msg)
 	if errAnswer != nil {
 		errAnswer = errAnswer.Wrap("handleChannelChirp")
@@ -70,7 +70,7 @@ func handleChirpAdd(channelID string, msg message.Message) *answer.Error {
 	return nil
 }
 
-func handleChirpDelete(params state.HandlerParameters, channelID string, msg message.Message) *answer.Error {
+func handleChirpDelete(params types.HandlerParameters, channelID string, msg message.Message) *answer.Error {
 	var data messagedata.ChirpDelete
 
 	err := msg.UnmarshalData(&data)
@@ -115,7 +115,7 @@ func verifyChirpMessage(channelID string, msg message.Message, chirpMsg messaged
 	return nil
 }
 
-func copyToGeneral(params state.HandlerParameters, channelID string, msg message.Message) *answer.Error {
+func copyToGeneral(params types.HandlerParameters, channelID string, msg message.Message) *answer.Error {
 	jsonData, err := base64.URLEncoding.DecodeString(msg.Data)
 	if err != nil {
 		errAnswer := answer.NewInvalidMessageFieldError("failed to decode the data: %v", err)

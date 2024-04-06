@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"github.com/stretchr/testify/require"
 	"popstellar/internal/popserver"
-	"popstellar/internal/popserver/state"
+	"popstellar/internal/popserver/types"
 	jsonrpc "popstellar/message"
 	"popstellar/message/query"
 	"popstellar/message/query/method"
@@ -17,7 +17,7 @@ import (
 func Test_handleMessage(t *testing.T) {
 	type input struct {
 		name    string
-		params  state.HandlerParameters
+		params  types.HandlerParameters
 		message []byte
 	}
 
@@ -91,7 +91,7 @@ func Test_handleMessage(t *testing.T) {
 func Test_handleQuery(t *testing.T) {
 	type input struct {
 		name    string
-		params  state.HandlerParameters
+		params  types.HandlerParameters
 		message []byte
 	}
 

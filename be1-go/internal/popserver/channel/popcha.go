@@ -1,13 +1,13 @@
 package channel
 
 import (
-	"popstellar/internal/popserver/state"
+	"popstellar/internal/popserver/types"
 	"popstellar/message/answer"
 	"popstellar/message/messagedata"
 	"popstellar/message/query/method/message"
 )
 
-func handleChannelPopCha(params state.HandlerParameters, channel string, msg message.Message) *answer.Error {
+func handleChannelPopCha(params types.HandlerParameters, channel string, msg message.Message) *answer.Error {
 	object, action, errAnswer := verifyDataAndGetObjectAction(params, msg)
 	if errAnswer != nil {
 		errAnswer = errAnswer.Wrap("handleChannelPopCha")
@@ -34,6 +34,6 @@ func handleChannelPopCha(params state.HandlerParameters, channel string, msg mes
 	return nil
 }
 
-func handleAuth(params state.HandlerParameters, msg message.Message) *answer.Error {
+func handleAuth(params types.HandlerParameters, msg message.Message) *answer.Error {
 	return nil
 }

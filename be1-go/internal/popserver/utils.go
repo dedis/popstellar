@@ -8,7 +8,7 @@ import (
 	"popstellar/crypto"
 	state "popstellar/hub/standard_hub/hub_state"
 	"popstellar/internal/popserver/repo"
-	state2 "popstellar/internal/popserver/state"
+	"popstellar/internal/popserver/types"
 	"popstellar/message/query/method/message"
 	"popstellar/network/socket"
 	"popstellar/validation"
@@ -61,38 +61,62 @@ func (f *FakeSocket) Type() socket.SocketType {
 	return socket.ClientSocketType
 }
 
-func NewHandlerParameters(db repo.Repository) state2.HandlerParameters {
+func NewHandlerParameters(db repo.Repository) types.HandlerParameters {
 	nolog := zerolog.New(io.Discard)
 	schemaValidator, _ := validation.NewSchemaValidator()
 	peers := state.NewPeers()
 	queries := state.NewQueries(nolog)
 
-	return state2.HandlerParameters{
+	return types.HandlerParameters{
 		Log:                 nolog,
 		Socket:              &FakeSocket{Id: "fakeID"},
 		SchemaValidator:     *schemaValidator,
 		DB:                  db,
-		Subs:                make(state2.Subscribers),
+		Subs:                make(types.Subscribers),
 		Peers:               &peers,
 		Queries:             &queries,
 		OwnerPubKey:         nil,
 		ClientServerAddress: "ClientServerAddress",
 		ServerServerAddress: "ServerServerAddress",
+		ServerPubKey:        nil,
+		ServerSecretKey:     nil,
 	}
 }
 
-func NewHandlerParametersWithFakeSocket(db repo.Repository, s *FakeSocket) state2.HandlerParameters {
+func NewHandlerParametersWithOwnerAndServer(db repo.Repository, owner kyber.Point, server Keypair) types.HandlerParameters {
 	nolog := zerolog.New(io.Discard)
 	schemaValidator, _ := validation.NewSchemaValidator()
 	peers := state.NewPeers()
 	queries := state.NewQueries(nolog)
 
-	return state2.HandlerParameters{
+	return types.HandlerParameters{
+		Log:                 nolog,
+		Socket:              &FakeSocket{Id: "fakeID"},
+		SchemaValidator:     *schemaValidator,
+		DB:                  db,
+		Subs:                make(types.Subscribers),
+		Peers:               &peers,
+		Queries:             &queries,
+		OwnerPubKey:         owner,
+		ClientServerAddress: "ClientServerAddress",
+		ServerServerAddress: "ServerServerAddress",
+		ServerPubKey:        server.Public,
+		ServerSecretKey:     server.Private,
+	}
+}
+
+func NewHandlerParametersWithFakeSocket(db repo.Repository, s *FakeSocket) types.HandlerParameters {
+	nolog := zerolog.New(io.Discard)
+	schemaValidator, _ := validation.NewSchemaValidator()
+	peers := state.NewPeers()
+	queries := state.NewQueries(nolog)
+
+	return types.HandlerParameters{
 		Log:                 nolog,
 		Socket:              s,
 		SchemaValidator:     *schemaValidator,
 		DB:                  db,
-		Subs:                make(state2.Subscribers),
+		Subs:                make(types.Subscribers),
 		Peers:               &peers,
 		Queries:             &queries,
 		OwnerPubKey:         nil,

@@ -3,7 +3,7 @@ package message
 import (
 	"encoding/json"
 	"popstellar/internal/popserver/channel"
-	"popstellar/internal/popserver/state"
+	"popstellar/internal/popserver/types"
 	"popstellar/message/answer"
 	"popstellar/message/query/method/message"
 	"sort"
@@ -11,7 +11,7 @@ import (
 
 const maxRetry = 10
 
-func handleGetMessagesByIDAnswer(params state.HandlerParameters, msg answer.Answer) *answer.Error {
+func handleGetMessagesByIDAnswer(params types.HandlerParameters, msg answer.Answer) *answer.Error {
 	result := msg.Result.GetMessagesByChannel()
 	msgsByChan := make(map[string]map[string]message.Message)
 
@@ -47,7 +47,7 @@ func handleGetMessagesByIDAnswer(params state.HandlerParameters, msg answer.Answ
 	return nil
 }
 
-func handleMessagesByChannel(params state.HandlerParameters, msgsByChannel map[string]map[string]message.Message) {
+func handleMessagesByChannel(params types.HandlerParameters, msgsByChannel map[string]map[string]message.Message) {
 	// Handle every messages
 	for i := 0; i < maxRetry; i++ {
 		// Sort by channelID length

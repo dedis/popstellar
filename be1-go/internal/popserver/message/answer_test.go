@@ -10,7 +10,7 @@ import (
 	"popstellar/crypto"
 	"popstellar/internal/popserver"
 	"popstellar/internal/popserver/repo"
-	"popstellar/internal/popserver/state"
+	"popstellar/internal/popserver/types"
 	"popstellar/message/answer"
 	"popstellar/message/messagedata"
 	"popstellar/message/query/method/message"
@@ -21,7 +21,7 @@ import (
 func Test_handleGetMessagesByIDAnswer(t *testing.T) {
 	type input struct {
 		name        string
-		params      state.HandlerParameters
+		params      types.HandlerParameters
 		message     answer.Answer
 		isErrorTest bool
 	}
@@ -68,7 +68,7 @@ func Test_handleGetMessagesByIDAnswer(t *testing.T) {
 func Test_handleMessagesByChannel(t *testing.T) {
 	type input struct {
 		name     string
-		params   state.HandlerParameters
+		params   types.HandlerParameters
 		messages map[string]map[string]message.Message
 		expected map[string]map[string]message.Message
 	}

@@ -1,13 +1,13 @@
 package channel
 
 import (
-	"popstellar/internal/popserver/state"
+	"popstellar/internal/popserver/types"
 	"popstellar/message/answer"
 	"popstellar/message/messagedata"
 	"popstellar/message/query/method/message"
 )
 
-func handleChannelReaction(params state.HandlerParameters, channel string, msg message.Message) *answer.Error {
+func handleChannelReaction(params types.HandlerParameters, channel string, msg message.Message) *answer.Error {
 	object, action, errAnswer := verifyDataAndGetObjectAction(params, msg)
 	if errAnswer != nil {
 		errAnswer = errAnswer.Wrap("handleChannelReaction")
@@ -37,10 +37,10 @@ func handleChannelReaction(params state.HandlerParameters, channel string, msg m
 
 }
 
-func handleReactionAdd(params state.HandlerParameters, msg message.Message) *answer.Error {
+func handleReactionAdd(params types.HandlerParameters, msg message.Message) *answer.Error {
 	return nil
 }
 
-func handleReactionDelete(params state.HandlerParameters, msg message.Message) *answer.Error {
+func handleReactionDelete(params types.HandlerParameters, msg message.Message) *answer.Error {
 	return nil
 }

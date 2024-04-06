@@ -6,7 +6,7 @@ import (
 	"go.dedis.ch/kyber/v3"
 	"go.dedis.ch/kyber/v3/sign/schnorr"
 	"popstellar/crypto"
-	"popstellar/internal/popserver/state"
+	"popstellar/internal/popserver/types"
 	jsonrpc "popstellar/message"
 	"popstellar/message/answer"
 	"popstellar/message/messagedata"
@@ -16,7 +16,7 @@ import (
 	"popstellar/validation"
 )
 
-func HandleChannel(params state.HandlerParameters, channelID string, msg message.Message) *answer.Error {
+func HandleChannel(params types.HandlerParameters, channelID string, msg message.Message) *answer.Error {
 	dataBytes, err := base64.URLEncoding.DecodeString(msg.Data)
 	if err != nil {
 		errAnswer := answer.NewInvalidMessageFieldError("failed to decode data: %v", err).Wrap("HandleChannel")
@@ -99,7 +99,7 @@ func HandleChannel(params state.HandlerParameters, channelID string, msg message
 
 // utils for the channels
 
-func verifyDataAndGetObjectAction(params state.HandlerParameters, msg message.Message) (object string, action string, errAnswer *answer.Error) {
+func verifyDataAndGetObjectAction(params types.HandlerParameters, msg message.Message) (object string, action string, errAnswer *answer.Error) {
 	jsonData, err := base64.URLEncoding.DecodeString(msg.Data)
 	if err != nil {
 		errAnswer = answer.NewInvalidMessageFieldError("failed to decode message data: %v", err)
@@ -125,12 +125,12 @@ func verifyDataAndGetObjectAction(params state.HandlerParameters, msg message.Me
 	return object, action, nil
 }
 
-func Sign(data []byte, params state.HandlerParameters) ([]byte, *answer.Error) {
+func Sign(data []byte, params types.HandlerParameters) ([]byte, *answer.Error) {
 
 	var errAnswer *answer.Error
-	serverSecretBuf, err := params.DB.GetServerSecretKey()
+	serverSecretBuf, err := params.ServerSecretKey.MarshalBinary()
 	if err != nil {
-		errAnswer = answer.NewInternalServerError("failed to get the server secret key: %v", err)
+		errAnswer = answer.NewInternalServerError("failed to marshal the server secret key: %v", err)
 		errAnswer = errAnswer.Wrap("Sign")
 		return nil, errAnswer
 	}
@@ -159,7 +159,7 @@ func generateKeys() (kyber.Point, kyber.Scalar) {
 	return point, secret
 }
 
-func broadcastToAllClients(msg message.Message, params state.HandlerParameters, channel string) *answer.Error {
+func broadcastToAllClients(msg message.Message, params types.HandlerParameters, channel string) *answer.Error {
 	rpcMessage := method.Broadcast{
 		Base: query.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{

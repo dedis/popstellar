@@ -3,13 +3,13 @@ package channel
 import (
 	"bytes"
 	"encoding/base64"
-	"popstellar/internal/popserver/state"
+	"popstellar/internal/popserver/types"
 	"popstellar/message/answer"
 	"popstellar/message/messagedata"
 	"popstellar/message/query/method/message"
 )
 
-func handleChannelGeneralChirp(params state.HandlerParameters, channel string, msg message.Message) *answer.Error {
+func handleChannelGeneralChirp(params types.HandlerParameters, channel string, msg message.Message) *answer.Error {
 	object, action, errAnswer := verifyDataAndGetObjectAction(params, msg)
 	if errAnswer != nil {
 		errAnswer = errAnswer.Wrap("handleChannelGeneralChirp")
@@ -45,7 +45,7 @@ func handleChannelGeneralChirp(params state.HandlerParameters, channel string, m
 	return nil
 }
 
-func handleChirpNotifyAdd(params state.HandlerParameters, msg message.Message) *answer.Error {
+func handleChirpNotifyAdd(params types.HandlerParameters, msg message.Message) *answer.Error {
 	var data messagedata.ChirpNotifyAdd
 
 	err := msg.UnmarshalData(&data)
@@ -64,7 +64,7 @@ func handleChirpNotifyAdd(params state.HandlerParameters, msg message.Message) *
 	return nil
 }
 
-func handleChirpNotifyDelete(params state.HandlerParameters, msg message.Message) *answer.Error {
+func handleChirpNotifyDelete(params types.HandlerParameters, msg message.Message) *answer.Error {
 	var data messagedata.ChirpNotifyDelete
 
 	err := msg.UnmarshalData(&data)
@@ -85,7 +85,7 @@ func handleChirpNotifyDelete(params state.HandlerParameters, msg message.Message
 
 // Utils
 
-func verifyNotifyChirp(params state.HandlerParameters, msg message.Message, chirpMsg messagedata.Verifiable) *answer.Error {
+func verifyNotifyChirp(params types.HandlerParameters, msg message.Message, chirpMsg messagedata.Verifiable) *answer.Error {
 	err := chirpMsg.Verify()
 	if err != nil {
 		errAnswer := answer.NewInvalidMessageFieldError("invalid chirp broadcast message: %v", err)

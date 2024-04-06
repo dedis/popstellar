@@ -3,7 +3,7 @@ package channel
 import (
 	"encoding/base64"
 	"popstellar/crypto"
-	"popstellar/internal/popserver/state"
+	"popstellar/internal/popserver/types"
 	"popstellar/message/answer"
 	"popstellar/message/messagedata"
 	"popstellar/message/query/method/message"
@@ -14,7 +14,7 @@ const (
 	voteFlag = "Vote"
 )
 
-func handleChannelElection(params state.HandlerParameters, channel string, msg message.Message) *answer.Error {
+func handleChannelElection(params types.HandlerParameters, channel string, msg message.Message) *answer.Error {
 	object, action, errAnswer := verifyDataAndGetObjectAction(params, msg)
 	if errAnswer != nil {
 		errAnswer = errAnswer.Wrap("handleChannelElection")
@@ -77,7 +77,7 @@ type validVote struct {
 	index interface{}
 }
 
-func handleVoteCastVote(params state.HandlerParameters, msg message.Message, channel string) *answer.Error {
+func handleVoteCastVote(params types.HandlerParameters, msg message.Message, channel string) *answer.Error {
 	var voteCastVote messagedata.VoteCastVote
 	err := msg.UnmarshalData(&voteCastVote)
 	var errAnswer *answer.Error
@@ -217,7 +217,7 @@ func handleVoteCastVote(params state.HandlerParameters, msg message.Message, cha
 	return nil
 }
 
-func verifyVote(params state.HandlerParameters, vote messagedata.Vote, channel, electionID string) *answer.Error {
+func verifyVote(params types.HandlerParameters, vote messagedata.Vote, channel, electionID string) *answer.Error {
 	//var errAnswer *answer.Error
 	////questions, err := params.DB.GetElectionQuestions(channel)
 	////if err != nil {
@@ -275,7 +275,7 @@ func verifyVote(params state.HandlerParameters, vote messagedata.Vote, channel, 
 	return nil
 }
 
-func handleElectionOpen(params state.HandlerParameters, msg message.Message, channel string) *answer.Error {
+func handleElectionOpen(params types.HandlerParameters, msg message.Message, channel string) *answer.Error {
 	var electionOpen messagedata.ElectionOpen
 	err := msg.UnmarshalData(&electionOpen)
 	var errAnswer *answer.Error
@@ -382,10 +382,10 @@ func handleElectionOpen(params state.HandlerParameters, msg message.Message, cha
 	return nil
 }
 
-func handleElectionEnd(msg message.Message, params state.HandlerParameters) *answer.Error {
+func handleElectionEnd(msg message.Message, params types.HandlerParameters) *answer.Error {
 	return nil
 }
 
-func handleElectionResult(msg message.Message, params state.HandlerParameters) *answer.Error {
+func handleElectionResult(msg message.Message, params types.HandlerParameters) *answer.Error {
 	return nil
 }

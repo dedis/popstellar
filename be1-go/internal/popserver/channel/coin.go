@@ -1,13 +1,13 @@
 package channel
 
 import (
-	"popstellar/internal/popserver/state"
+	"popstellar/internal/popserver/types"
 	"popstellar/message/answer"
 	"popstellar/message/messagedata"
 	"popstellar/message/query/method/message"
 )
 
-func handleChannelCoin(params state.HandlerParameters, channel string, msg message.Message) *answer.Error {
+func handleChannelCoin(params types.HandlerParameters, channel string, msg message.Message) *answer.Error {
 	object, action, errAnswer := verifyDataAndGetObjectAction(params, msg)
 	if errAnswer != nil {
 		errAnswer = errAnswer.Wrap("handleChannelCoin")
@@ -41,7 +41,7 @@ func handleChannelCoin(params state.HandlerParameters, channel string, msg messa
 	return nil
 }
 
-func handleCoinPostTransaction(params state.HandlerParameters, msg message.Message) *answer.Error {
+func handleCoinPostTransaction(params types.HandlerParameters, msg message.Message) *answer.Error {
 	var data messagedata.PostTransaction
 
 	err := msg.UnmarshalData(&data)

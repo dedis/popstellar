@@ -4,7 +4,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"popstellar/internal/popserver/channel"
-	"popstellar/internal/popserver/state"
+	"popstellar/internal/popserver/types"
 	jsonrpc "popstellar/message"
 	"popstellar/message/answer"
 	"popstellar/message/query"
@@ -13,7 +13,7 @@ import (
 
 const rootChannel = "/root"
 
-func handleCatchUp(params state.HandlerParameters, msg []byte) (*int, *answer.Error) {
+func handleCatchUp(params types.HandlerParameters, msg []byte) (*int, *answer.Error) {
 	var catchup method.Catchup
 
 	err := json.Unmarshal(msg, &catchup)
@@ -33,7 +33,7 @@ func handleCatchUp(params state.HandlerParameters, msg []byte) (*int, *answer.Er
 	return &catchup.ID, nil
 }
 
-func handleGetMessagesByID(params state.HandlerParameters, msg []byte) (*int, *answer.Error) {
+func handleGetMessagesByID(params types.HandlerParameters, msg []byte) (*int, *answer.Error) {
 	var getMessagesById method.GetMessagesById
 
 	err := json.Unmarshal(msg, &getMessagesById)
@@ -54,7 +54,7 @@ func handleGetMessagesByID(params state.HandlerParameters, msg []byte) (*int, *a
 	return &getMessagesById.ID, nil
 }
 
-func handleGreetServer(params state.HandlerParameters, byteMessage []byte) (*int, *answer.Error) {
+func handleGreetServer(params types.HandlerParameters, byteMessage []byte) (*int, *answer.Error) {
 	var greetServer method.GreetServer
 
 	err := json.Unmarshal(byteMessage, &greetServer)
@@ -108,7 +108,7 @@ func handleGreetServer(params state.HandlerParameters, byteMessage []byte) (*int
 	return nil, nil
 }
 
-func handleHeartbeat(params state.HandlerParameters, byteMessage []byte) (*int, *answer.Error) {
+func handleHeartbeat(params types.HandlerParameters, byteMessage []byte) (*int, *answer.Error) {
 	var heartbeat method.Heartbeat
 
 	err := json.Unmarshal(byteMessage, &heartbeat)
@@ -153,7 +153,7 @@ func handleHeartbeat(params state.HandlerParameters, byteMessage []byte) (*int, 
 	return nil, nil
 }
 
-func handlePublish(params state.HandlerParameters, msg []byte) (*int, *answer.Error) {
+func handlePublish(params types.HandlerParameters, msg []byte) (*int, *answer.Error) {
 	var publish method.Publish
 
 	err := json.Unmarshal(msg, &publish)
@@ -171,7 +171,7 @@ func handlePublish(params state.HandlerParameters, msg []byte) (*int, *answer.Er
 	return &publish.ID, nil
 }
 
-func handleSubscribe(params state.HandlerParameters, msg []byte) (*int, *answer.Error) {
+func handleSubscribe(params types.HandlerParameters, msg []byte) (*int, *answer.Error) {
 	var subscribe method.Subscribe
 
 	err := json.Unmarshal(msg, &subscribe)
@@ -194,7 +194,7 @@ func handleSubscribe(params state.HandlerParameters, msg []byte) (*int, *answer.
 	return &subscribe.ID, nil
 }
 
-func handleUnsubscribe(params state.HandlerParameters, msg []byte) (*int, *answer.Error) {
+func handleUnsubscribe(params types.HandlerParameters, msg []byte) (*int, *answer.Error) {
 	var unsubscribe method.Unsubscribe
 
 	err := json.Unmarshal(msg, &unsubscribe)

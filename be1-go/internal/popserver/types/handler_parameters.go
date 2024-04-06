@@ -1,4 +1,4 @@
-package state
+package types
 
 import (
 	"github.com/rs/zerolog"
@@ -20,4 +20,6 @@ type HandlerParameters struct {
 	OwnerPubKey         kyber.Point
 	ClientServerAddress string
 	ServerServerAddress string
+	ServerPubKey        kyber.Point
+	ServerSecretKey     kyber.Scalar
 }

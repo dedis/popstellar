@@ -7,7 +7,7 @@ import (
 	"go.dedis.ch/kyber/v3/sign/schnorr"
 	"golang.org/x/exp/slices"
 	"popstellar/crypto"
-	"popstellar/internal/popserver/state"
+	"popstellar/internal/popserver/types"
 	"popstellar/message/answer"
 	"popstellar/message/messagedata"
 	"popstellar/message/query/method/message"
@@ -26,7 +26,7 @@ const (
 	created         = "created"
 )
 
-func handleChannelLao(params state.HandlerParameters, channel string, msg message.Message) *answer.Error {
+func handleChannelLao(params types.HandlerParameters, channel string, msg message.Message) *answer.Error {
 	object, action, errAnswer := verifyDataAndGetObjectAction(params, msg)
 	if errAnswer != nil {
 		errAnswer = errAnswer.Wrap("handleChannelLao")
@@ -74,7 +74,7 @@ func handleChannelLao(params state.HandlerParameters, channel string, msg messag
 	return nil
 }
 
-func handleLaoState(msg message.Message, channel string, params state.HandlerParameters) *answer.Error {
+func handleLaoState(msg message.Message, channel string, params types.HandlerParameters) *answer.Error {
 	var laoState messagedata.LaoState
 	err := msg.UnmarshalData(&laoState)
 	var errAnswer *answer.Error
@@ -184,7 +184,7 @@ func compareLaoUpdateAndState(update messagedata.LaoUpdate, state messagedata.La
 	return nil
 }
 
-func handleRollCallCreate(msg message.Message, channel string, params state.HandlerParameters) *answer.Error {
+func handleRollCallCreate(msg message.Message, channel string, params types.HandlerParameters) *answer.Error {
 	var rollCallCreate messagedata.RollCallCreate
 	err := msg.UnmarshalData(&rollCallCreate)
 	var errAnswer *answer.Error
@@ -240,7 +240,7 @@ func handleRollCallCreate(msg message.Message, channel string, params state.Hand
 	return nil
 }
 
-func handleRollCallOpen(msg message.Message, channel string, params state.HandlerParameters) *answer.Error {
+func handleRollCallOpen(msg message.Message, channel string, params types.HandlerParameters) *answer.Error {
 	var rollCallOpen messagedata.RollCallOpen
 	err := msg.UnmarshalData(&rollCallOpen)
 	var errAnswer *answer.Error
@@ -294,7 +294,7 @@ func handleRollCallOpen(msg message.Message, channel string, params state.Handle
 	return nil
 }
 
-func handleRollCallReOpen(msg message.Message, channel string, params state.HandlerParameters) *answer.Error {
+func handleRollCallReOpen(msg message.Message, channel string, params types.HandlerParameters) *answer.Error {
 	var rollCallReOpen messagedata.RollCallReOpen
 	err := msg.UnmarshalData(&rollCallReOpen)
 	var errAnswer *answer.Error
@@ -314,7 +314,7 @@ func handleRollCallReOpen(msg message.Message, channel string, params state.Hand
 	return nil
 }
 
-func handleRollCallClose(msg message.Message, channel string, params state.HandlerParameters) *answer.Error {
+func handleRollCallClose(msg message.Message, channel string, params types.HandlerParameters) *answer.Error {
 	var rollCallClose messagedata.RollCallClose
 	err := msg.UnmarshalData(&rollCallClose)
 	var errAnswer *answer.Error
@@ -391,7 +391,7 @@ func handleRollCallClose(msg message.Message, channel string, params state.Handl
 	return nil
 }
 
-func handleElectionSetup(msg message.Message, channel string, params state.HandlerParameters) *answer.Error {
+func handleElectionSetup(msg message.Message, channel string, params types.HandlerParameters) *answer.Error {
 	var electionSetup messagedata.ElectionSetup
 	err := msg.UnmarshalData(&electionSetup)
 	var errAnswer *answer.Error
@@ -537,7 +537,7 @@ func handleElectionSetup(msg message.Message, channel string, params state.Handl
 	return nil
 }
 
-func createElectionKey(params state.HandlerParameters, electionID string, electionPubKey kyber.Point) (message.Message, *answer.Error) {
+func createElectionKey(params types.HandlerParameters, electionID string, electionPubKey kyber.Point) (message.Message, *answer.Error) {
 	electionPubBuf, err := electionPubKey.MarshalBinary()
 	if err != nil {
 		errAnswer := answer.NewInternalServerError("failed to marshal election public key: %v", err)
@@ -582,16 +582,16 @@ func createElectionKey(params state.HandlerParameters, electionID string, electi
 }
 
 // Not implemented yet
-func handleLaoUpdate(msg message.Message, params state.HandlerParameters) *answer.Error {
+func handleLaoUpdate(msg message.Message, params types.HandlerParameters) *answer.Error {
 	return nil
 }
 
 // Not implemented yet
-func handleMeetingCreate(msg message.Message, params state.HandlerParameters) *answer.Error {
+func handleMeetingCreate(msg message.Message, params types.HandlerParameters) *answer.Error {
 	return nil
 }
 
 // Not implemented yet
-func handleMeetingState(msg message.Message, params state.HandlerParameters) *answer.Error {
+func handleMeetingState(msg message.Message, params types.HandlerParameters) *answer.Error {
 	return nil
 }

@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"popstellar/internal/popserver"
 	"popstellar/internal/popserver/repo"
-	"popstellar/internal/popserver/state"
+	"popstellar/internal/popserver/types"
 	"popstellar/message/messagedata"
 	"popstellar/message/query/method"
 	"popstellar/message/query/method/message"
@@ -19,7 +19,7 @@ const coinPath string = "../../../validation/protocol/examples/messageData/coin"
 
 type inputTestHandleChannelCoin struct {
 	name      string
-	params    state.HandlerParameters
+	params    types.HandlerParameters
 	channelID string
 	message   message.Message
 	hasError  bool
