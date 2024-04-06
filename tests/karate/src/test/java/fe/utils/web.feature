@@ -3,6 +3,11 @@ Feature: web page object
   Background:
     # Wallet screen
     * def wallet_seed_wallet_text = "[data-testid='seed_wallet_text']"
+    * def wallet_new_wallet_button = "[data-testid='exploring_selector']"
+
+    # Lao screen
+    * def lao_create_button = "{}Create"
+    * def lao_join_button = "{^}Join"
 
   @name=open_app
   Scenario:
@@ -10,4 +15,9 @@ Feature: web page object
     Given driver 'about:blank'
     And driver.dimensions = { left: 0, top: 0, width: screenWidth, height: screenHeight }
     Then driver frontendURL
-    And delay(1000)
+
+  @name=create_new_wallet
+  Scenario:
+    Given call read('web.feature@name=open_app')
+    When waitFor(wallet_new_wallet_button)
+    Then click(wallet_new_wallet_button)
