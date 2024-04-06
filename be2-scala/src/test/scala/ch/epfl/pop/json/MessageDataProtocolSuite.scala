@@ -1,14 +1,16 @@
 package ch.epfl.pop.json
 
-import ch.epfl.pop.model.network.method.message.data.election._
+import ch.epfl.pop.model.network.method.message.data.election.*
 import ch.epfl.pop.model.network.method.message.data.lao.{CreateLao, GreetLao}
-import ch.epfl.pop.model.objects._
-import org.scalatest.funsuite.{AnyFunSuite => FunSuite}
+import ch.epfl.pop.model.objects.*
+import org.scalatest.funsuite.AnyFunSuite as FunSuite
 import org.scalatest.matchers.should.Matchers
 
 import scala.io.{BufferedSource, Source}
 import ch.epfl.pop.model.network.method.message.data.coin.PostTransaction
-import ch.epfl.pop.model.network.method.message.data.election.VersionType._
+import ch.epfl.pop.model.network.method.message.data.election.VersionType.*
+import ch.epfl.pop.model.network.method.message.data.{ActionType, ObjectType}
+import spray.json.*
 
 class MessageDataProtocolSuite extends FunSuite with Matchers {
 
@@ -135,7 +137,7 @@ class MessageDataProtocolSuite extends FunSuite with Matchers {
     )
 
     messageData shouldBe a[CastVoteElection]
-    messageData shouldEqualTo (expected)
+    messageData shouldEqualTo expected
   }
 
   test("Parser correctly decodes a KeyElection message data") {
@@ -230,4 +232,71 @@ class MessageDataProtocolSuite extends FunSuite with Matchers {
     greetLaoFromExample should equal(expectedGreetLao)
     greetLaoFromBuiltJson should equal(expectedGreetLao)
   }
+
+  test("Parser correctly encodes and decodes ObjectType") {
+    ObjectType.values.foreach(obj => {
+      val fromJson = MessageDataProtocol.objectTypeFormat.write(obj)
+      if obj != ObjectType.INVALID then {
+        val toType = MessageDataProtocol.objectTypeFormat.read(fromJson)
+        toType shouldBe a[ObjectType]
+      }
+    })
+  }
+
+  test("Parser correctly rejects incorrect ObjectType") {
+    val fromJson = MessageDataProtocol.objectTypeFormat.write(ObjectType.INVALID)
+    assertThrows[IllegalArgumentException] {
+      MessageDataProtocol.objectTypeFormat.read(fromJson)
+    }
+
+    val invalidJson = """{"object": "stellarobject"}""".parseJson
+    assertThrows[IllegalArgumentException] {
+      MessageDataProtocol.objectTypeFormat.read(invalidJson)
+    }
+  }
+
+  test("Parser correctly encodes and decodes ActionType") {
+    ActionType.values.foreach(obj => {
+      val fromJson = MessageDataProtocol.actionTypeFormat.write(obj)
+      if obj != ActionType.INVALID then {
+        val toType = MessageDataProtocol.actionTypeFormat.read(fromJson)
+        toType shouldBe a[ActionType]
+      }
+    })
+  }
+
+  test("Parser correctly rejects incorrect ActionType") {
+    val fromJson = MessageDataProtocol.actionTypeFormat.write(ActionType.INVALID)
+    assertThrows[IllegalArgumentException] {
+      MessageDataProtocol.actionTypeFormat.read(fromJson)
+    }
+
+    val invalidJson = """{"object": "stellaraction"}""".parseJson
+    assertThrows[IllegalArgumentException] {
+      MessageDataProtocol.actionTypeFormat.read(invalidJson)
+    }
+  }
+
+  test("Parser correctly encodes and decodes VersionType") {
+    VersionType.values.foreach(obj => {
+      val fromJson = MessageDataProtocol.versionTypeFormat.write(obj)
+      if obj != VersionType.INVALID then {
+        val toType = MessageDataProtocol.versionTypeFormat.read(fromJson)
+        toType shouldBe a[VersionType]
+      }
+    })
+  }
+
+  test("Parser correctly rejects incorrect VersionType") {
+    val fromJson = MessageDataProtocol.versionTypeFormat.write(VersionType.INVALID)
+    assertThrows[IllegalArgumentException] {
+      MessageDataProtocol.versionTypeFormat.read(fromJson)
+    }
+
+    val invalidJson = """{"object": "stellarversion"}""".parseJson
+    assertThrows[IllegalArgumentException] {
+      MessageDataProtocol.versionTypeFormat.read(invalidJson)
+    }
+  }
+
 }
