@@ -116,6 +116,7 @@ object HighLevelProtocol extends DefaultJsonProtocol {
         case paramsWithChannel: ParamsWithChannel => paramsWithChannel.toJson
         case paramsWithMap: ParamsWithMap         => paramsWithMap.toJson
         case greetServer: GreetServer             => greetServer.toJson(GreetServerFormat)
+        case rumor: Rumor                         => rumor.toJson(RumorFormat)
       }
 
   }
@@ -264,7 +265,7 @@ object HighLevelProtocol extends DefaultJsonProtocol {
           case MethodType.unsubscribe        => paramsJsObject.convertTo[Unsubscribe]
           case MethodType.catchup            => paramsJsObject.convertTo[Catchup]
           case MethodType.get_messages_by_id => paramsJsObject.convertTo[GetMessagesById]
-          case MethodType.rumor => paramsJsObject.convertTo[Rumor]
+          case MethodType.rumor              => paramsJsObject.convertTo[Rumor]
           case _                             => throw new IllegalArgumentException(s"Can't parse json value $json with unknown method ${method.toString}")
         }
 
