@@ -10,3 +10,8 @@ Feature: Wallet
     When waitFor(lao_join_button)
     Then screenshot()
 
+  Scenario: Restore a wallet
+    Given call read('classpath:fe/utils/platform.feature') {name: 'restore_wallet', params: { seed: 'present guilt frost screen fabric rotate citizen decide have message chat hood' } }
+    When waitFor(lao_join_button)
+    Then screenshot()
+
