@@ -172,6 +172,17 @@ object MessageValidator {
      *
      * @param input the string to check
      * @param field name of the field (to print in case of error)
+     */
+    fun isNotNegative(input: Int, field: String): MessageValidatorBuilder {
+      require(input >= 0) { "$field cannot be negative" }
+      return this
+    }
+
+    /**
+     * Helper method to check that a string is not empty.
+     *
+     * @param input the string to check
+     * @param field name of the field (to print in case of error)
      * @throws IllegalArgumentException if the string is empty or null
      */
     fun stringNotEmpty(input: String?, field: String): MessageValidatorBuilder {
@@ -228,6 +239,27 @@ object MessageValidator {
         return this
       }
       noListDuplicates(votes)
+      return this
+    }
+
+    /**
+     * Helper method to check that a message has a valid structure.
+     *
+     * @param message the message to check
+     */
+    fun validMessage(message: Any): MessageValidatorBuilder {
+      message as Map<*, *>
+      isNotEmptyBase64(message["data"] as String?, "data")
+      isNotEmptyBase64(message["sender"] as String?, "sender")
+      isNotEmptyBase64(message["signature"] as String?, "signature")
+      isNotEmptyBase64(message["message_id"] as String?, "message_id")
+
+      if (message["witness_signatures"] == null) {
+        return this
+      }
+      val witnessSignatures = message["witness_signatures"] as List<*>
+      witnessSignatures.forEach { isNotEmptyBase64(it as String?, "witness_signature") }
+
       return this
     }
 

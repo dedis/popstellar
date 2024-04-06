@@ -16,36 +16,49 @@ class Rumor
  * @param senderId the publish key of the sender's server
  * @param rumorId ID of the rumor
  * @param messages the messages being propagated as part of this rumor
- */(
+ */
+(
     @SerializedName("sender_id") val senderId: String,
     @SerializedName("rumor_id") val rumorId: Int,
     @SerializedName("messages") val messages: List<Map<String, List<Any>>>
 ) : Data {
 
-    init {
-        verify().isNotEmptyBase64(senderId, "Sender ID")
-    }
+  init {
+    verify()
+        .isNotEmptyBase64(senderId, "Sender ID")
+        .isNotNegative(rumorId, "Rumor ID")
+        .listNotEmpty(messages)
+        .apply {
+          messages.forEach { channel ->
+            channel.forEach { (chan, messages) ->
+              verify().isNotEmptyBase64(chan, "Message key").listNotEmpty(messages).apply {
+                messages.forEach { element -> verify().validMessage(element) }
+              }
+            }
+          }
+        }
+  }
 
-    override val `object`: String
-        get() = Objects.GOSSIP.`object`
+  override val `object`: String
+    get() = Objects.GOSSIP.`object`
 
-    override val action: String
-        get() = Action.RUMOR.action
+  override val action: String
+    get() = Action.RUMOR.action
 
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other == null || javaClass != other.javaClass) return false
+  override fun equals(other: Any?): Boolean {
+    if (this === other) return true
+    if (other == null || javaClass != other.javaClass) return false
 
-        val rumor = other as Rumor
+    val rumor = other as Rumor
 
-        return  senderId != rumor.senderId && rumorId != rumor.rumorId && messages == rumor.messages
-    }
+    return senderId != rumor.senderId && rumorId != rumor.rumorId && messages == rumor.messages
+  }
 
-    override fun hashCode(): Int {
-        return java.util.Objects.hash(senderId, rumorId, messages)
-    }
+  override fun hashCode(): Int {
+    return java.util.Objects.hash(senderId, rumorId, messages)
+  }
 
-    override fun toString(): String {
-        return "Rumor(senderId='$senderId', rumorId=$rumorId, messages=$messages)"
-    }
+  override fun toString(): String {
+    return "Rumor(senderId='$senderId', rumorId=$rumorId, messages=$messages)"
+  }
 }
