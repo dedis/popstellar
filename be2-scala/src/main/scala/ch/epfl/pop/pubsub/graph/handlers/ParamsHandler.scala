@@ -5,9 +5,10 @@ import akka.actor.ActorRef
 import akka.pattern.AskableActorRef
 import akka.stream.scaladsl.Flow
 import ch.epfl.pop.model.network.MethodType
-import ch.epfl.pop.model.network.method.GreetServer
+import ch.epfl.pop.model.network.method.message.Message
+import ch.epfl.pop.model.network.method.{GreetServer, Rumor}
 import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse}
-import ch.epfl.pop.model.objects.Channel
+import ch.epfl.pop.model.objects.{Channel, PublicKey}
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
 import ch.epfl.pop.pubsub.{AskPatternConstants, ClientActor, PubSubMediator}
 
@@ -84,5 +85,18 @@ object ParamsHandler extends AskPatternConstants {
       Left(PipelineError(ErrorCodes.SERVER_ERROR.id, "GreetServerHandler received a 'JsonRpcResponse'", jsonRpcMessage.id))
     case graphMessage @ _ => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, "GreetServerHandler received an unexpected message:" + graphMessage, None))
   }.filter(_ => false)
+
+  def rumorHandler(dbActorRef: AskableActorRef): Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map{
+    case Right(jsonRpcMessage: JsonRpcRequest) =>
+      jsonRpcMessage.method match {
+        case MethodType.rumor =>
+          val rumor: Rumor = jsonRpcMessage.getParams.asInstanceOf[Rumor]
+          val senderPk: PublicKey = rumor.senderPk
+          val rumorId: Int = rumor.rumorId
+          val messages: Map[Channel,Array[Message]] = rumor.messages
+          
+
+      }
+  }
 
 }

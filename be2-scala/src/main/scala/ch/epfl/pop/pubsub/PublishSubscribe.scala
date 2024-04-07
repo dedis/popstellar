@@ -113,7 +113,8 @@ object PublishSubscribe {
           val portHeartbeat = 5
           val portGetMessagesById = 6
           val portGreetServer = 7
-          val totalPorts = 8
+          val portRumor = 8
+          val totalPorts = 9
 
           /* building blocks */
           val input = builder.add(Flow[GraphMessage].collect { case msg: GraphMessage => msg })
@@ -131,6 +132,7 @@ object PublishSubscribe {
                   case MethodType.heartbeat          => portHeartbeat
                   case MethodType.get_messages_by_id => portGetMessagesById
                   case MethodType.greet_server       => portGreetServer
+                  case MethodType.rumor              => portRumor
                   case _                             => portPipelineError
                 }
 
@@ -145,6 +147,7 @@ object PublishSubscribe {
           val heartbeatPartition = builder.add(ParamsWithMapHandler.heartbeatHandler(dbActorRef))
           val getMessagesByIdPartition = builder.add(ParamsWithMapHandler.getMessagesByIdHandler(dbActorRef))
           val greetServerPartition = builder.add(ParamsHandler.greetServerHandler(clientActorRef))
+          val rumorPartition = builder.add(ParamsHandler.rumorHandler(dbActorRef))
 
           val merger = builder.add(Merge[GraphMessage](totalPorts))
 
