@@ -1015,6 +1015,8 @@ RPC
 </summary>
 
 ```json5
+// ../protocol/query/method/rumor.json
+
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
     "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/rumor.json",
@@ -1033,13 +1035,14 @@ RPC
             "properties": {
                 "sender_id" : {
                     "description": "[String] publish key of the sender's server",
-                    "type": "string"
+                    "type": "string",
+                    "contentEncoding": "base64"
                 },
                 "rumor_id": {
                     "description": "[Integer] ID of the rumor",
                     "type": "integer"
                 },
-                "rumors": {
+                "messages": {
                     "description": "[Array] Key-value of channels and messages per channel",
                     "type": "array",
                     "items": {
@@ -1048,7 +1051,7 @@ RPC
                     "minItems": 1
                 }
             },
-            "required": ["sender_id","rumor_id", "rumors"]
+            "required": ["sender_id","rumor_id", "messages"]
         },
 
         "jsonrpc": {

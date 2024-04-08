@@ -16,7 +16,8 @@
             "properties": {
                 "sender_id" : {
                     "description": "[String] publish key of the sender's server",
-                    "type": "string"
+                    "type": "string",
+                    "contentEncoding": "base64"
                 },
                 "rumor_id": {
                     "description": "[Integer] ID of the rumor",
