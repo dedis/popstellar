@@ -178,28 +178,12 @@ With the Karate plugin for IntelliJ, the full tests can also be run directly fro
 ### Android Front-end
 Build the application by running `./gradlew assembleDebug` in the corresponding directory.
 
-Then, start an emulator from Android Studio and launch the Appium server (using the command `appium`).
+Then, launch the Appium server (using the command `appium`) as well as a backend server.
 
-Finally run the tests.
-```
-mvn test -Dkarate.env=android -Dtest=FrontEndTest#fullTest
-```
-
-In case you have multiple emulator running, you may specify one by name.
-```shell
-mvn test -Dkarate.env=android -Davd=<avd_name> -Dtest=FrontEndTest#fullTest
-#e.g. mvn test -Dkarate.env=android -Davd=Pixel_3a_API_34 -Dtest=FrontEndTest#fullTest
-```
-
-### Web Front-end
-Build the app with `npm run build-web` in the corresponding directory.
-
-Launch the Appium server (with `appium`).
-
-Run the tests.
-```
-mvn test -Dkarate.env=web -Dtest=FrontEndTest#fullTest
-```
+Finally run the tests:
+* All tests: `mvn test -Dkarate.env=android -Dtest=FrontEndTest#fullTest`
+* One feature: `mvn test -Dkarate.env=android -Dtest=FrontEndTest#fullTest -Dkarate.options="classpath:fe/features/<file_name>.feature"`
+* One scenario: `mvn test -Dkarate.env=android -Dtest=FrontEndTest#fullTest -Dkarate.options="classpath:fe/features/<file_name>.feature --tags=@name=<scenario_name>"`
 
 The following options are available (option names must be prefixed by `-D`).
 | Name         | Description                                    | Default                                   |
@@ -208,3 +192,20 @@ The following options are available (option names must be prefixed by `-D`).
 | url          | URL of the web app                             | 'file:../../fe1-web/web-build/index.html' |
 | screenWidth  | Width of the browser                           | 1920                                      |
 | screenHeight | Height of the browser                          | 1080                                      |
+| serverURL    | Client URL of the backend server               | 'ws://localhost:9000/client' for the web and 'ws://10.0.2.2:9000/client' for android |
+
+### Web Front-end
+Build the app with `npm run build-web` in the corresponding directory.
+
+Launch the Appium server (with `appium`).
+
+Finally run the tests:
+* All tests: `mvn test -Dkarate.env=android -Dtest=FrontEndTest#fullTest`
+* One feature: `mvn test -Dkarate.env=android -Dtest=FrontEndTest#fullTest -Dkarate.options="classpath:fe/features/<file_name>.feature"`
+* One scenario: `mvn test -Dkarate.env=android -Dtest=FrontEndTest#fullTest -Dkarate.options="classpath:fe/features/<file_name>.feature --tags=@name=<scenario_name>"`
+
+The following options are available (option names must be prefixed by `-D`).
+| Name         | Description                                    | Default                                   |
+|--------------|------------------------------------------------|-------------------------------------------|
+| avd          | Name of the android emulator                   | Choosen automatically by appium           |
+| serverURL    | Client URL of the backend server               | 'ws://localhost:9000/client' for the web and 'ws://10.0.2.2:9000/client' for android |

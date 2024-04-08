@@ -10,7 +10,14 @@ Feature: android page object
     * def wallet_restore_input = '#com.github.dedis.popstellar:id/import_seed_entry_edit_text'
 
     # Lao screen
+    * def lao_create_button = "#com.github.dedis.popstellar:id/home_create_button"
     * def lao_join_button = '#com.github.dedis.popstellar:id/home_join_button'
+    * def lao_organization_name_input = "#com.github.dedis.popstellar:id/lao_name_entry_edit_text"
+    * def lao_server_url_input = "#com.github.dedis.popstellar:id/server_url_entry_edit_text"
+    * def lao_launch_button = "#com.github.dedis.popstellar:id/button_create"
+
+    # Event screen
+    * def event_create_button = "#com.github.dedis.popstellar:id/add_event"
 
   @name=open_app
   Scenario:
