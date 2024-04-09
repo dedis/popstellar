@@ -6,15 +6,16 @@ import akka.pattern.AskableActorRef
 import ch.epfl.pop.decentralized.ConnectionMediator
 import ch.epfl.pop.json.MessageDataProtocol
 import ch.epfl.pop.json.MessageDataProtocol.GreetLaoFormat
+import ch.epfl.pop.model.network.method.Rumor
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.lao.GreetLao
 import ch.epfl.pop.model.network.method.message.data.{ActionType, ObjectType}
 import ch.epfl.pop.model.objects.Channel.{LAO_DATA_LOCATION, ROOT_CHANNEL_PREFIX}
-import ch.epfl.pop.model.objects._
+import ch.epfl.pop.model.objects.*
 import ch.epfl.pop.pubsub.graph.AnswerGenerator.timout
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, JsonString}
 import ch.epfl.pop.pubsub.{MessageRegistry, PubSubMediator, PublishSubscribe}
-import ch.epfl.pop.storage.DbActor._
+import ch.epfl.pop.storage.DbActor.*
 import com.google.crypto.tink.subtle.Ed25519Sign
 
 import java.util.concurrent.TimeUnit
@@ -368,6 +369,33 @@ final case class DbActor(
     storage.write((storage.SERVER_PRIVATE_KEY + storage.DEFAULT, privateKey.base64Data.data))
     (publicKey, privateKey)
   }
+
+  private def generateRumorKey(rumor: Rumor): String = {
+    s"${storage.RUMOR_KEY}${rumor.senderPk.base64Data.data}${Channel.DATA_SEPARATOR}${rumor.rumorId}"
+  }
+  
+  private def generateRumorDataKey(rumor: Rumor): String = {
+    s"${storage.RUMOR_DATA_KEY}${rumor.senderPk.base64Data.data}"
+  }
+  
+  private def readRumorData(path: String): RumorData = {
+    
+  }
+  
+  private def writeRumor(rumor: Rumor): Unit = {
+    this.synchronized {
+      val rumorDataKey = generateRumorDataKey(rumor)
+      val rumorData: RumorData = Try(readRumorData(rumorDataKey)) match {
+        case Success(data) => data
+        case Failure(_) => RumorData()
+      }
+      storage.write(rumorDataKey -> rumorData.updateWith(rumor).toJsonString)
+      storage.write(generateRumorKey(rumor) -> rumor.toJsonString)
+      
+    }
+  }
+
+  
 
   override def receive: Receive = LoggingReceive {
     case Write(channel, message) =>
