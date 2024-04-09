@@ -19,6 +19,7 @@ import ch.epfl.pop.storage.DbActor.*
 import com.google.crypto.tink.subtle.Ed25519Sign
 
 import java.util.concurrent.TimeUnit
+import scala.collection.mutable.ListBuffer
 import scala.concurrent.Await
 import scala.concurrent.duration.{Duration, FiniteDuration}
 import scala.util.{Failure, Success, Try}
@@ -370,32 +371,51 @@ final case class DbActor(
     (publicKey, privateKey)
   }
 
-  private def generateRumorKey(rumor: Rumor): String = {
-    s"${storage.RUMOR_KEY}${rumor.senderPk.base64Data.data}${Channel.DATA_SEPARATOR}${rumor.rumorId}"
+  private def generateRumorKey(senderPk: String, rumorId: Int): String = {
+    s"${storage.RUMOR_KEY}${senderPk}${Channel.DATA_SEPARATOR}${rumorId}"
   }
-  
+
   private def generateRumorDataKey(rumor: Rumor): String = {
     s"${storage.RUMOR_DATA_KEY}${rumor.senderPk.base64Data.data}"
   }
-  
+
+  @throws[DbActorNAckException]
   private def readRumorData(path: String): RumorData = {
-    
+    Try(storage.read(path)) match {
+      case Success(Some(json)) => RumorData.buildFromJson(json)
+      case Success(None)       => throw DbActorNAckException(ErrorCodes.SERVER_ERROR.id, s"RumorData for path $path not in database")
+      case Failure(ex)         => throw ex
+    }
   }
-  
+
+  @throws[DbActorNAckException]
+  private def readRumors(desiredRumors: Map[String, List[Int]]): Map[String, Map[Int,Rumor]] = {
+    var rumors: Map[String, Map[Int, Rumor]] = Map.empty
+    for ((senderPk, rumorIds) <- desiredRumors) {
+      for (rumorId <- rumorIds) {
+        Try(storage.read(generateRumorKey(senderPk, rumorId))) match{
+          case Success(Some(json)) =>
+            rumors += (senderPk -> Map(rumorId -> Rumor.buildFromJson(json)))
+          case Success(None) => throw DbActorNAckException(ErrorCodes.SERVER_ERROR.id, s"Rumor $rumorId from sender $senderPk not in database")
+          case Failure(ex) => throw ex
+        }
+      }
+    }
+    rumors
+  }
+
+  @throws[DbActorNAckException]
   private def writeRumor(rumor: Rumor): Unit = {
     this.synchronized {
       val rumorDataKey = generateRumorDataKey(rumor)
       val rumorData: RumorData = Try(readRumorData(rumorDataKey)) match {
         case Success(data) => data
-        case Failure(_) => RumorData()
+        case Failure(_)    => RumorData(List.empty)
       }
       storage.write(rumorDataKey -> rumorData.updateWith(rumor).toJsonString)
-      storage.write(generateRumorKey(rumor) -> rumor.toJsonString)
-      
+      storage.write(generateRumorKey(rumor.senderPk.base64Data.data, rumor.rumorId) -> rumor.toJsonString)
     }
   }
-
-  
 
   override def receive: Receive = LoggingReceive {
     case Write(channel, message) =>

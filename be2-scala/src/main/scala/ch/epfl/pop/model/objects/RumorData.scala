@@ -14,7 +14,7 @@ final case class RumorData(
   }
   
   def updateWith(rumor: Rumor): RumorData = {
-    new RumorData(rumor.rumorId :: rumorIds)
+    new RumorData((rumor.rumorId :: rumorIds).sorted)
   }
 
 }

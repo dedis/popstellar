@@ -24,6 +24,6 @@ object Rumor extends Parsable {
     new Rumor(senderPk, rumorId, messages)
   }
 
-  override def buildFromJson(payload: String): Any = payload.parseJson.asJsObject.convertTo[Rumor]
+  override def buildFromJson(payload: String): Rumor = payload.parseJson.asJsObject.convertTo[Rumor]
 
 }
