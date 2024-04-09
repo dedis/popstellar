@@ -95,6 +95,19 @@ object ObjectProtocol extends DefaultJsonProtocol {
     )
   }
 
+  implicit object RumorData extends JsonFormat[RumorData] {
+    final private val PARAM_RUMOR_IDS: String = "rumor_ids"
+
+    override def read(json: JsValue): RumorData = json.asJsObject().getFields(PARAM_RUMOR_IDS) match {
+      case Seq(rumorIds @ JsArray(_)) => rumorIds.convertTo[RumorData]
+      case _                          => throw new IllegalArgumentException(s"Can't parse json value $json to a RumorData object")
+    }
+    
+    override def write(obj: RumorData): JsValue = JsObject(
+      PARAM_RUMOR_IDS -> obj.rumorIds.toJson
+    )
+  }
+
   implicit val lockScriptFormat: JsonFormat[LockScript] = jsonFormat[String, Address, LockScript](LockScript.apply, "type", "pubkey_hash")
   implicit val unlockScriptFormat: JsonFormat[UnlockScript] = jsonFormat[String, PublicKey, Base64Data, UnlockScript](UnlockScript.apply, "type", "pubkey", "sig")
 
