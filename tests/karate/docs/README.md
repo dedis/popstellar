@@ -108,10 +108,7 @@ Use the resources provided by those projects.
 ### Frontend
 
 #### Appium
-Appium provides the API that will allow use to test both frontends on multiple platforms. You can install it with the following command.
-```sh
-npm install -g appium
-```
+Appium provides the API that will allow us to test both frontends on multiple platforms. You can install the CLI version with the command `npm install -g appium` or install the [Desktop App](https://github.com/appium/appium-desktop/releases/) instead.
 
 #### Android
 You need to add the Android driver to Appium with the following command.
@@ -119,11 +116,13 @@ You need to add the Android driver to Appium with the following command.
 appium driver install uiautomator2
 ```
 
-Then, you need to create an Android emulator in Android studio if you don't have one yet.
+Then, you need to create an Android emulator in Android studio if you don't have one yet. The easiest way to achieve it is to install it through [Android Studio](https://developer.android.com/studio): Go to `Tools -> Device Manager` and create a virtual device.
 
 Finally, you need to set the environment variable `ANDROID_HOME` (The previous name was`ANDROID_SDK_ROOT` and it still works) to your Android SDK installation.
 Find it by opening Android Studio and going to `Tools -> SDK Manager`.
 It stands next to `Android SDK Location`.
+
+If your Computer runs on Windows: we strongly advise that you do not use a VM or WSL. You will encounter problems you would not have otherwise, some of which might even be technically impossible to solve.
 
 ### Google Chrome & Microsoft Edge
 Make sure you have Google Chrome and/or Microsoft Edge installed.
@@ -185,10 +184,14 @@ Finally run the tests.
 mvn test -Dkarate.env=android -Dtest=FrontEndTest#fullTest
 ```
 
-In case you have multiple emulator running, you may specify one by name.
+In case you have multiple emulators running, you may specify one by avd id. To find the avd id of some emulator, go to the Device Manager (`Tools -> Device Manager`) and follow the steps on the image below.
+
+![Find avd id Android Studio](./images/android_studio_find_avd_id.png)
+
+Once you now the avd id of your emulator, you can use the command below.
 ```shell
-mvn test -Dkarate.env=android -Davd=<avd_name> -Dtest=FrontEndTest#fullTest
-#e.g. mvn test -Dkarate.env=android -Davd=Pixel_3a_API_34 -Dtest=FrontEndTest#fullTest
+mvn test -Dkarate.env=android -Davd=<avd_id> -Dtest=FrontEndTest#fullTest
+#e.g. mvn test -Dkarate.env=android -Davd=Galaxy_Note_9_API_29 -Dtest=FrontEndTest#fullTest
 ```
 
 ### Web Front-end
