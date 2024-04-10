@@ -250,6 +250,14 @@ test("message data: message", () => {
     expect(message_witness).toBeValid(messageDataSchema);
 });
 
+test("message data: federation", () => {
+    federation_init = require("../examples/messageData/federation_init/federation_init.json");
+    expect(federation_init).toBeValid(messageDataSchema);
+
+    federation_expect = require("../examples/messageData/federation_expect/federation_expect.json");
+    expect(federation_expect).toBeValid(messageDataSchema);
+});
+
 test("message data: chirp", () => {
     chirp_add = require("../examples/messageData/chirp_add_publish/chirp_add_publish.json");
     expect(chirp_add).toBeValid(messageDataSchema);
