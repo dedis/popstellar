@@ -12,10 +12,14 @@ Feature: web page object
 
     # Lao screen
     * def lao_create_button = "{}Create"
-    * def lao_join_button = "{^}Join"
+    * def lao_join_button = "{}Join"
     * def lao_organization_name_input = "input[data-testid='launch_organization_name_selector']"
     * def lao_server_url_input = "input[data-testid='launch_address_selector']"
     * def lao_launch_button = "[data-testid='launch_launch_selector']"
+    * def lao_enter_manually_button = "{}Enter Manually"
+    * def lao_enter_manually_server_input = "input[placeholder='Server URI']"
+    * def lao_enter_manually_lao_input = "input[placeholder='LAO ID']"
+    * def lao_enter_manually_submit_button = "[data-testid='connect-button']"
 
     # Event screen
     * def event_create_button = "[data-testid='create_event_selector']"

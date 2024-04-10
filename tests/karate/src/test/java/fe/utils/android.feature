@@ -15,6 +15,9 @@ Feature: android page object
     * def lao_organization_name_input = "#com.github.dedis.popstellar:id/lao_name_entry_edit_text"
     * def lao_server_url_input = "#com.github.dedis.popstellar:id/server_url_entry_edit_text"
     * def lao_launch_button = "#com.github.dedis.popstellar:id/button_create"
+    * def lao_enter_manually_button = "#com.github.dedis.popstellar:id/scanner_enter_manually"
+    * def lao_enter_manually_lao_input = "#com.github.dedis.popstellar:id/manual_add_edit_text"
+    * def lao_enter_manually_submit_button = "#com.github.dedis.popstellar:id/manual_add_button"
 
     # Event screen
     * def event_create_button = "#com.github.dedis.popstellar:id/add_event"
