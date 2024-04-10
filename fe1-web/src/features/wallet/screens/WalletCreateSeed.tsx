@@ -116,7 +116,9 @@ const WalletCreateSeed = () => {
           <Text>{STRINGS.wallet_welcome_text_wallet_explanation_4}</Text>
         </Text>
         <View style={styles.words}>
-          <Text style={styles.seed}>{seed}</Text>
+          <Text style={styles.seed} testID="seed_wallet_text">
+            {seed}
+          </Text>
         </View>
         <Text style={Typography.paragraph}>
           <Text>{STRINGS.wallet_welcome_text_wallet_explanation_5}</Text>

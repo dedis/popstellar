@@ -959,7 +959,7 @@ Response (in case of success)
 
 By sending a Rumor message, a server propagates to all Servers in the network messages it encapsulates. 
 
-In order to propagate quicker messages across the network, a Rumor message would be used upon receiving a new message that should be spread. This would trigger the Gossip network protocol and rumor would be relayed according to it. When receiving a new Rumor, Servers process contained messages if they are new.
+In order to propagate messages faster across the network, a Rumor message would be used upon receiving a new message that should be spread. This would trigger the Gossip network protocol and rumor would be relayed according to it. When receiving a new Rumor, Servers process the contained messages if they are new.
 
 RPC
 
@@ -1015,6 +1015,8 @@ RPC
 </summary>
 
 ```json5
+// ../protocol/query/method/rumor.json
+
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
     "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/rumor.json",
@@ -1033,13 +1035,14 @@ RPC
             "properties": {
                 "sender_id" : {
                     "description": "[String] publish key of the sender's server",
-                    "type": "string"
+                    "type": "string",
+                    "contentEncoding": "base64"
                 },
                 "rumor_id": {
                     "description": "[Integer] ID of the rumor",
                     "type": "integer"
                 },
-                "rumors": {
+                "messages": {
                     "description": "[Array] Key-value of channels and messages per channel",
                     "type": "array",
                     "items": {
@@ -1048,7 +1051,7 @@ RPC
                     "minItems": 1
                 }
             },
-            "required": ["sender_id","rumor_id", "rumors"]
+            "required": ["sender_id","rumor_id", "messages"]
         },
 
         "jsonrpc": {
