@@ -184,11 +184,11 @@ Finally run the tests.
 mvn test -Dkarate.env=android -Dtest=FrontEndTest#fullTest
 ```
 
-In case you have multiple emulators running, you may specify one by avd id. To find the avd id of some emulator, go to the Device Manager (`Tools -> Device Manager`) and follow the steps on the image below.
+In case you have multiple emulators running, you may specify one by avd id. To find the avd id of some emulator, go to the Device Manager (`Tools -> Device Manager`) and follow the steps in the image below.
 
 ![Find avd id Android Studio](./images/android_studio_find_avd_id.png)
 
-Once you now the avd id of your emulator, you can use the command below.
+Once you have the avd id of your emulator, you can use the command below to run the tests on this specific emulator.
 ```shell
 mvn test -Dkarate.env=android -Davd=<avd_id> -Dtest=FrontEndTest#fullTest
 #e.g. mvn test -Dkarate.env=android -Davd=Galaxy_Note_9_API_29 -Dtest=FrontEndTest#fullTest
