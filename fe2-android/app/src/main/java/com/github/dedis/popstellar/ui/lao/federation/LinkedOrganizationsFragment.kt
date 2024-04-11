@@ -50,6 +50,12 @@ class LinkedOrganizationsFragment : Fragment() {
         //return inflater.inflate(R.layout.linked_organizations_fragment, container, false)
     }
 
+    override fun onResume() {
+        super.onResume()
+        laoViewModel.setPageTitle(R.string.linked_organizations)
+        laoViewModel.setIsTab(true)
+    }
+
     //Changes the display when the + button is pressed
     private var observeButton =
             View.OnClickListener { v: View ->
