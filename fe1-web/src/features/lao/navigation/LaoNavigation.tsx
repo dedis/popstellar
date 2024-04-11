@@ -135,13 +135,6 @@ const LaoNavigation: React.FC<unknown> = () => {
             // in a detail screen
             routeName === undefined || routeName === STRINGS.navigation_lao_events_home,
         } as LaoFeature.LaoScreen,
-        {
-          id: STRINGS.navigation_lao_linked_organizations,
-          Icon: makeIcon('link'),
-          Component: LinkedOrganizationsNavigation,
-          headerShown: false,
-          order: 1000000000,
-        } as LaoFeature.LaoScreen,
         // sort screens by order before rendering them
       ]
         .sort((a, b) => a.order - b.order)

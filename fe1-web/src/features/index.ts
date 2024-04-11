@@ -15,6 +15,7 @@ import * as rollCall from './rollCall';
 import * as social from './social';
 import * as wallet from './wallet';
 import * as witness from './witness';
+import * as linkedOrganizations from './linked-organizations';
 
 export function configureFeatures() {
   const messageRegistry = new MessageRegistry();
@@ -26,6 +27,7 @@ export function configureFeatures() {
   const digitalCashConfiguration = digitalCash.configure();
 
   const notificationConfiguration = notification.configure();
+  const linkedOrganizationsConfiguration = linkedOrganizations.configure();
   const laoConfiguration = lao.configure({ registry: messageRegistry });
 
   const evotingConfiguration = evoting.configure({
@@ -167,6 +169,13 @@ export function configureFeatures() {
     useCurrentLaoId: laoConfiguration.hooks.useCurrentLaoId,
   });
 
+  const linkedOrganizationsComposition = linkedOrganizations.compose({
+    messageRegistry: messageRegistry,
+    keyPairRegistry: keyPairRegistry,
+    useCurrentLaoId: laoConfiguration.hooks.useCurrentLaoId,
+    useIsLaoOrganizer: laoConfiguration.hooks.useIsLaoOrganizer,
+  });
+
   const laoComposition = lao.compose({
     /* events */
     EventList: eventConfiguration.components.EventList,
@@ -180,6 +189,7 @@ export function configureFeatures() {
       ...walletComposition.laoScreens,
       ...digitalCashConfiguration.laoScreens,
       ...popchaConfiguration.laoScreens,
+      ...linkedOrganizationsConfiguration.laoScreens,
     ],
     eventsNavigationScreens: [
       ...eventConfiguration.laoEventScreens,
@@ -232,6 +242,7 @@ export function configureFeatures() {
       [digitalCashComposition.identifier]: digitalCashComposition.context,
       [socialConfiguration.identifier]: socialConfiguration.context,
       [popchaConfiguration.identifier]: popchaConfiguration.context,
+      [linkedOrganizationsComposition.identifier]: linkedOrganizationsComposition.context,
     },
   };
 }
