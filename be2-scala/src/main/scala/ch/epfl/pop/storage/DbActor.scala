@@ -10,11 +10,11 @@ import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.lao.GreetLao
 import ch.epfl.pop.model.network.method.message.data.{ActionType, ObjectType}
 import ch.epfl.pop.model.objects.Channel.{LAO_DATA_LOCATION, ROOT_CHANNEL_PREFIX}
-import ch.epfl.pop.model.objects._
+import ch.epfl.pop.model.objects.*
 import ch.epfl.pop.pubsub.graph.AnswerGenerator.timout
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, JsonString}
 import ch.epfl.pop.pubsub.{MessageRegistry, PubSubMediator, PublishSubscribe}
-import ch.epfl.pop.storage.DbActor._
+import ch.epfl.pop.storage.DbActor.*
 import com.google.crypto.tink.subtle.Ed25519Sign
 
 import java.util.concurrent.TimeUnit
@@ -22,6 +22,7 @@ import scala.concurrent.Await
 import scala.concurrent.duration.{Duration, FiniteDuration}
 import scala.util.{Failure, Success, Try}
 import scala.collection.immutable.HashMap
+import scala.collection.mutable
 
 final case class DbActor(
     private val mediatorRef: ActorRef,
@@ -371,34 +372,12 @@ final case class DbActor(
   }
 
   @throws[DbActorNAckException]
-  private def generateHeartbeat(dbRef: AskableActorRef) : Option[HashMap[Channel, Set[Hash]]] = {
-    val askForChannels = dbRef ? GetAllChannels()
-    val setOfChannels: Set[Channel] =
-      Await.ready(askForChannels, duration).value.get match
-        case Success(DbActorGetAllChannelsAck(set)) => set
-        case Failure(ex: DbActorNAckException) =>
-          log.error(s"Heartbeat generation failed with: ${ex.message}")
-          return None
-        case reply =>
-          log.error(s"${ErrorCodes.SERVER_ERROR.id}," +
-            s" retrieveHeartbeatContent failed : unknown DbActor reply $reply")
-          return None
-
+  private def generateHeartbeat() : Option[HashMap[Channel, Set[Hash]]] = {
+    val setOfChannels = getAllChannels
     var heartbeatMap : HashMap[Channel, Set[Hash]] = HashMap()
     setOfChannels.foreach(channel => {
-      val askChannelData = dbRef ? ReadChannelData(channel)
-      val setOfIds: Set[Hash] =
-        Await.ready(askChannelData, duration).value match
-          case Some(Success(DbActorReadChannelDataAck(channelData))) =>
-            channelData.messages.toSet
-          case Some(Failure(ex: DbActorNAckException)) =>
-            log.error(s"Heartbeat generation failed with: ${ex.message}")
-            Set.empty
-          case reply =>
-            log.error(s"${ErrorCodes.SERVER_ERROR.id}," +
-              s" retrieveHeartbeatContent failed : unknown DbActor reply $reply")
-            Set.empty
-
+      val channelData = readChannelData(channel)
+      val setOfIds: Set[Hash] = channelData.messages.toSet
       if (setOfIds.nonEmpty)
         heartbeatMap += (channel -> setOfIds)
     })
@@ -578,9 +557,9 @@ final case class DbActor(
         case Success(privateKey) => sender() ! DbActorReadServerPrivateKeyAck(privateKey)
         case failure             => sender() ! failure.recover(Status.Failure(_))
       }
-    case GenerateHeartbeat(dbRef) =>
+    case GenerateHeartbeat() =>
       log.info(s"Actor $self (db) received a GenerateHeartbeat request")
-      Try(generateHeartbeat(dbRef)) match {
+      Try(generateHeartbeat()) match {
         case Success(heartbeat) => sender() ! DbActorGenerateHeartbeatAck(heartbeat)
         case failure => sender() ! failure.recover(Status.Failure(_))
       }
@@ -804,7 +783,7 @@ object DbActor {
   final case class ReadServerPrivateKey() extends Event
 
   /** Request to generate a local heartbeat */
-  final case class GenerateHeartbeat(dbRef: AskableActorRef) extends Event
+  final case class GenerateHeartbeat() extends Event
 
 
 

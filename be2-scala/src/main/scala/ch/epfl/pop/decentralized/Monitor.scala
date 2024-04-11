@@ -2,28 +2,37 @@ package ch.epfl.pop.decentralized
 
 import akka.NotUsed
 import akka.actor.{Actor, ActorLogging, ActorRef, Props, Timers}
+import akka.pattern.{AskableActorRef, ask}
 import akka.event.LoggingReceive
 import akka.stream.scaladsl.Sink
 import ch.epfl.pop.config.RuntimeEnvironment.{readServerPeers, serverPeersListPath}
 import ch.epfl.pop.decentralized.Monitor.TriggerHeartbeat
 import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.ParamsWithMap
+import ch.epfl.pop.model.network.method.Heartbeat
+import ch.epfl.pop.model.objects.{Channel, DbActorNAckException, Hash}
 import ch.epfl.pop.pubsub.graph.GraphMessage
+import ch.epfl.pop.storage.DbActor
 
 import java.nio.file.{Path, WatchService}
 import java.nio.file.StandardWatchEventKinds.{ENTRY_CREATE, ENTRY_MODIFY}
+import scala.concurrent.Await
 import scala.concurrent.duration.{DurationInt, FiniteDuration}
 import scala.jdk.CollectionConverters.CollectionHasAsScala
+import ch.epfl.pop.pubsub.AskPatternConstants
+
+import scala.collection.immutable.HashMap
+import scala.util.{Failure, Success}
 
 //This actor is tasked with scheduling heartbeats.
-// To that end it sees every messages the system receives.
+// To that end it sees every message the system receives.
 // When a message is seen it schedule a heartbeat in the next heartbeatRate seconds.
 // Periodic heartbeats are sent with a period of messageDelay seconds.
 final case class Monitor(
-    heartbeatGenRef: ActorRef,
+    dbActorRef: ActorRef,
     heartbeatRate: FiniteDuration,
     messageDelay: FiniteDuration
-) extends Actor with ActorLogging with Timers {
+) extends Actor with ActorLogging with Timers with AskPatternConstants() {
 
   // These keys are used to keep track of the timers states
   private val periodicHbKey = 0
@@ -51,7 +60,19 @@ final case class Monitor(
     case Monitor.TriggerHeartbeat =>
       log.info("triggering a heartbeat")
       timers.cancel(singleHbKey)
-      heartbeatGenRef ! Monitor.GenerateAndSendHeartbeat(connectionMediatorRef)
+      //dbActorRef ! Monitor.GenerateAndSendHeartbeat(connectionMediatorRef)
+
+      val askForHeartbeat = dbActorRef ? DbActor.GenerateHeartbeat
+      val heartbeat : HashMap[Channel, Set[Hash]] =
+        Await.ready(askForHeartbeat, duration).value.get match
+          case Success(DbActor.DbActorGenerateHeartbeatAck(Some(map))) => map
+          case Failure(ex: DbActorNAckException) => HashMap.empty[Channel, Set[Hash]] // Specific failure
+          case _ => HashMap.empty[Channel, Set[Hash]] // Handle anything else
+
+      if (heartbeat.nonEmpty) 
+        connectionMediatorRef ! Heartbeat(heartbeat)
+      
+
 
     case Right(jsonRpcMessage: JsonRpcRequest) =>
       jsonRpcMessage.getParams match {
@@ -74,8 +95,8 @@ final case class Monitor(
 }
 
 object Monitor {
-  def props(heartbeatGenRef: ActorRef, heartbeatRate: FiniteDuration = 15.seconds, messageDelay: FiniteDuration = 1.seconds): Props =
-    Props(new Monitor(heartbeatGenRef, heartbeatRate, messageDelay))
+  def props(dbActorRef: ActorRef, heartbeatRate: FiniteDuration = 15.seconds, messageDelay: FiniteDuration = 1.seconds): Props =
+    Props(new Monitor(dbActorRef, heartbeatRate, messageDelay))
 
   def sink(monitorRef: ActorRef): Sink[GraphMessage, NotUsed] = {
     Sink.actorRef(
@@ -90,8 +111,8 @@ object Monitor {
   sealed trait Event
   final case class AtLeastOneServerConnected() extends Event
   final case class NoServerConnected() extends Event
-  final case class GenerateAndSendHeartbeat(connectionMediatorRef: ActorRef) extends Event
   final case class TriggerHeartbeat() extends Event
+  //final case class GenerateAndSendHeartbeat() extends Event
   private final case class DoNothing() extends Event
 }
 

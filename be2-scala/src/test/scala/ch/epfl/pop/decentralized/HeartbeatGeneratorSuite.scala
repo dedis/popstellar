@@ -1,4 +1,4 @@
-package ch.epfl.pop.decentralized
+/*package ch.epfl.pop.decentralized
 
 import akka.actor.{ActorRef, ActorSystem, Props}
 import akka.pattern.{AskableActorRef, ask}
@@ -50,3 +50,4 @@ class HeartbeatGeneratorSuite extends TestKit(ActorSystem("HeartbeatGeneratorSui
   }
 
 }
+*/

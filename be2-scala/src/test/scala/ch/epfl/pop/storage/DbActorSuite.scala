@@ -8,7 +8,7 @@ import ch.epfl.pop.model.network.method.message.data.{ActionType, ObjectType}
 import ch.epfl.pop.model.objects.Channel.ROOT_CHANNEL_PREFIX
 import ch.epfl.pop.model.objects.*
 import ch.epfl.pop.pubsub.{AskPatternConstants, MessageRegistry, PubSubMediator}
-import ch.epfl.pop.storage.DbActor.{DbActorReadServerPrivateKeyAck, DbActorReadServerPublicKeyAck, GetAllChannels}
+import ch.epfl.pop.storage.DbActor.{DbActorGenerateHeartbeatAck, DbActorReadServerPrivateKeyAck, DbActorReadServerPublicKeyAck, GenerateHeartbeat, GetAllChannels}
 import com.google.crypto.tink.subtle.Ed25519Sign
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.concurrent.ScalaFutures
@@ -16,8 +16,14 @@ import org.scalatest.funsuite.AnyFunSuiteLike as FunSuiteLike
 import org.scalatest.matchers.should.Matchers
 import util.examples.MessageExample
 import util.examples.RollCall.{CreateRollCallExamples, OpenRollCallExamples}
+import akka.actor.{ActorRef, ActorSystem, Props}
+import akka.pattern.{AskableActorRef, ask}
+import akka.testkit.{ImplicitSender, TestKit, TestProbe}
 
+import scala.collection.immutable.HashMap
+import scala.concurrent.duration.DurationInt
 import scala.concurrent.Await
+import scala.util.{Failure, Success}
 
 class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with FunSuiteLike with ImplicitSender with Matchers with ScalaFutures with BeforeAndAfterAll with AskPatternConstants {
 
@@ -29,26 +35,7 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
   val ELECTION_ID: Hash = Hash(Base64Data.encode("electionId"))
   val ELECTION_DATA_KEY: String = "Data:" + s"${ROOT_CHANNEL_PREFIX}${LAO_ID.toString}/private/${ELECTION_ID.toString}"
   val KEYPAIR: KeyPair = KeyPair()
-
-  final val CHANNEL1_NAME: String = "/root/wex/lao1Id"
-  final val CHANNEL2_NAME: String = "/root/wex/lao2Id"
-  final val CHANNEL1 = new Channel(CHANNEL1_NAME)
-  final val CHANNEL2 = new Channel(CHANNEL2_NAME)
   
-  final val toyDbActor : Props = Props(new ToyDbActor)
-  final val toyDbActorRef: AskableActorRef = system.actorOf(toyDbActor)
-  //final val toyDbActorRef: AskableActorRef = system.actorOf(Props(new ToyDbActor))
-  
-  final val failingToyDbActor : Props = Props(new FailingToyDbActor)
-  final val failingToyDbActorRef: AskableActorRef = system.actorOf(failingToyDbActor)
-  //final val failingToyDbActorRef: AskableActorRef = system.actorOf(Props(new FailingToyDbActor))
-  
-  final val MESSAGE1_ID: Hash = Hash(Base64Data.encode("message1Id"))
-  final val MESSAGE2_ID: Hash = Hash(Base64Data.encode("message2Id"))
-  final val MESSAGE3_ID: Hash = Hash(Base64Data.encode("message3Id"))
-  final val MESSAGE4_ID: Hash = Hash(Base64Data.encode("message4Id"))
-  final val MESSAGE5_ID: Hash = Hash(Base64Data.encode("message5Id"))
-
   private val timeout = 3.second
 
   override def afterAll(): Unit = {
@@ -894,19 +881,46 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
     dbPrivateKey should equal(privateKey)
   }
 
-  test("generator should send a result to the connectionMediator") {
-    val generatorRef: ActorRef = system.actorOf(toyDbActor) 
-    val expected = Map(CHANNEL1 -> Set(MESSAGE1_ID), CHANNEL2 -> Set(MESSAGE4_ID))
-    val testProbe = TestProbe()
-    generatorRef ! Monitor.GenerateAndSendHeartbeat(testProbe.ref)
-    testProbe.expectMsg(timeout, Heartbeat(expected))
+
+  test("GenerateHeartBeat returns a non-empty localHeartbeat") {
+    val channelName1 = CHANNEL_NAME
+    val channelName2 = s"${CHANNEL_NAME}2"
+
+    val initialStorage: InMemoryStorage = InMemoryStorage()
+    val messageId: Hash = Hash(Base64Data("RmFrZSBtZXNzYWdlX2lkIDopIE5vIGVhc3RlciBlZ2cgcmlnaHQgdGhlcmUhIC0tIE5pY29sYXMgUmF1bGlu"))
+    val listIds: List[Hash] = MESSAGE.message_id :: messageId :: Nil
+    val channelData: ChannelData = ChannelData(ObjectType.lao, listIds)
+    initialStorage.write(
+      (initialStorage.CHANNEL_DATA_KEY + channelName1, channelData.toJsonString),
+      (initialStorage.DATA_KEY + s"$channelName1${Channel.DATA_SEPARATOR}${MESSAGE.message_id}", MESSAGE.toJsonString)
+    )
+    initialStorage.write(
+      (initialStorage.CHANNEL_DATA_KEY + channelName2, channelData.toJsonString),
+      (initialStorage.DATA_KEY + s"$channelName2${Channel.DATA_SEPARATOR}$messageId", MESSAGE.toJsonString)
+    )
+    val dbActor: ActorRef = system.actorOf(Props(DbActor(mediatorRef, MessageRegistry(), initialStorage)))
+
+    val ask = dbActor ? GenerateHeartbeat()
+    val answer = Await.result(ask, duration)
+
+    answer shouldBe a[DbActor.DbActorGenerateHeartbeatAck]
+    val heartbeat = answer.asInstanceOf[DbActorGenerateHeartbeatAck].heartbeatMap
+    val expected = Map(Channel(channelName1) -> Set(MESSAGE.message_id), Channel(channelName2) -> Set(messageId))
+    
+    heartbeat should equal(expected)
   }
 
+  test("GenerateHearbeat returns an empty localHeartbeat"){
+    val initialStorage: InMemoryStorage = InMemoryStorage()
+    val dbActor: ActorRef = system.actorOf(Props(DbActor(mediatorRef, MessageRegistry(), initialStorage)))
 
-  test("generator should send nothing when failing to query the data base") {
-    val generatorRef: ActorRef = system.actorOf(failingToyDbActor)
-    val testProbe = TestProbe()
-    generatorRef ! Monitor.GenerateAndSendHeartbeat(testProbe.ref)
-    testProbe.expectNoMessage(timeout)
+    val ask = dbActor ? GenerateHeartbeat()
+    val answer = Await.result(ask, duration)
+    val heartbeat = answer.asInstanceOf[DbActorGenerateHeartbeatAck].heartbeatMap
+    
+    heartbeat should equal(HashMap())
+        
   }
+  
+  
 }

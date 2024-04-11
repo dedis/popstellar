@@ -1,4 +1,4 @@
-package ch.epfl.pop.decentralized
+/*package ch.epfl.pop.decentralized
 
 import akka.actor.{Actor, ActorLogging, Props}
 import akka.pattern.AskableActorRef
@@ -72,3 +72,4 @@ object HeartbeatGenerator {
     Props(new HeartbeatGenerator(dbActorRef))
 
 }
+*/

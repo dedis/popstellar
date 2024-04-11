@@ -1,17 +1,21 @@
 package ch.epfl.pop.decentralized
 
-import akka.actor.{ActorRef, ActorSystem}
+import akka.actor.{ActorRef, ActorSystem, Props}
+import akka.pattern.AskableActorRef
 import akka.stream.scaladsl.Source
 import akka.testkit.{TestKit, TestProbe}
 import ch.epfl.pop.config.RuntimeEnvironment.serverPeersListPath
 import ch.epfl.pop.config.RuntimeEnvironmentTestingHelper.testWriteToServerPeersConfig
-import ch.epfl.pop.model.network.method.ParamsWithMap
+import ch.epfl.pop.model.network.method.{Heartbeat, ParamsWithMap}
 import ch.epfl.pop.model.network.{JsonRpcRequest, MethodType}
+import ch.epfl.pop.model.objects.{Base64Data, Channel, Hash}
 import ch.epfl.pop.pubsub.graph.validators.RpcValidator
 import org.scalatest.BeforeAndAfterAll
-import org.scalatest.funsuite.{AnyFunSuiteLike => FunSuiteLike}
+import org.scalatest.funsuite.AnyFunSuiteLike as FunSuiteLike
 import org.scalatest.matchers.should.Matchers
 import util.examples.JsonRpcRequestExample
+import ch.epfl.pop.storage.DbActor
+import akka.pattern.ask
 
 import java.io.{File, PrintWriter}
 import java.nio.file.Path
@@ -22,6 +26,20 @@ class MonitorSuite extends TestKit(ActorSystem("MonitorSuiteActorSystem")) with 
   private val fastRate = 1.seconds
   private val slowRate = 60.seconds
   private val timeout = 3.seconds
+
+  final val CHANNEL1_NAME: String = "/root/wex/lao1Id"
+  final val CHANNEL2_NAME: String = "/root/wex/lao2Id"
+  final val CHANNEL1 = new Channel(CHANNEL1_NAME)
+  final val CHANNEL2 = new Channel(CHANNEL2_NAME)
+
+  final val MESSAGE1_ID: Hash = Hash(Base64Data.encode("message1Id"))
+  final val MESSAGE2_ID: Hash = Hash(Base64Data.encode("message2Id"))
+  final val MESSAGE3_ID: Hash = Hash(Base64Data.encode("message3Id"))
+  final val MESSAGE4_ID: Hash = Hash(Base64Data.encode("message4Id"))
+  final val MESSAGE5_ID: Hash = Hash(Base64Data.encode("message5Id"))
+
+  final val toyDbActorRef: ActorRef = system.actorOf(Props(new ToyDbActor))
+  final val failingToyDbActorRef: ActorRef = system.actorOf(Props(new FailingToyDbActor))
 
   override def afterAll(): Unit = {
     // Stops the test actor system
@@ -36,9 +54,12 @@ class MonitorSuite extends TestKit(ActorSystem("MonitorSuiteActorSystem")) with 
     )
 
     testProbe.send(monitorRef, Monitor.AtLeastOneServerConnected)
-    testProbe.expectMsgType[Monitor.GenerateAndSendHeartbeat](timeout)
-    testProbe.expectMsgType[Monitor.GenerateAndSendHeartbeat](timeout)
-    testProbe.expectMsgType[Monitor.GenerateAndSendHeartbeat](timeout)
+    testProbe.expectMsgType[DbActor.GenerateHeartbeat](timeout)
+    testProbe.expectMsgType[DbActor.GenerateHeartbeat](timeout)
+    testProbe.expectMsgType[DbActor.GenerateHeartbeat](timeout)
+    //testProbe.expectMsgType[Monitor.GenerateAndSendHeartbeat](timeout)
+    //testProbe.expectMsgType[Monitor.GenerateAndSendHeartbeat](timeout)
+    //testProbe.expectMsgType[Monitor.GenerateAndSendHeartbeat](timeout)
   }
 
   test("monitor should schedule single heartbeat when receiving a Right GraphMessage") {
@@ -53,7 +74,8 @@ class MonitorSuite extends TestKit(ActorSystem("MonitorSuiteActorSystem")) with 
     testProbe.send(monitorRef, Monitor.AtLeastOneServerConnected)
 
     Source.single(Right(JsonRpcRequestExample.subscribeRpcRequest)).to(sink).run()
-    testProbe.expectMsgType[Monitor.GenerateAndSendHeartbeat](timeout)
+    testProbe.expectMsgType[DbActor.GenerateHeartbeat](timeout)
+    //testProbe.expectMsgType[Monitor.GenerateAndSendHeartbeat](timeout)
   }
 
   test("monitor should not schedule any heartbeats when receiving a heartbeat or get_messages_by_id") {
@@ -75,7 +97,8 @@ class MonitorSuite extends TestKit(ActorSystem("MonitorSuiteActorSystem")) with 
 
     // Check that monitor is still doing fine when receiving other Right(...)
     Source.single(Right(JsonRpcRequestExample.subscribeRpcRequest)).to(sink).run()
-    testProbe.expectMsgType[Monitor.GenerateAndSendHeartbeat](timeout)
+    testProbe.expectMsgType[DbActor.GenerateHeartbeat](timeout)
+    //testProbe.expectMsgType[Monitor.GenerateAndSendHeartbeat](timeout)
 
     Source.single(Right(getMessagesById)).to(sink).run()
     testProbe.expectNoMessage(timeout)
@@ -92,7 +115,8 @@ class MonitorSuite extends TestKit(ActorSystem("MonitorSuiteActorSystem")) with 
     testProbe.send(monitorRef, Monitor.AtLeastOneServerConnected)
 
     // Wait for the first heartbeat then "disconnect" servers
-    testProbe.expectMsgType[Monitor.GenerateAndSendHeartbeat](timeout)
+    testProbe.expectMsgType[DbActor.GenerateHeartbeat](timeout)
+    //testProbe.expectMsgType[Monitor.GenerateAndSendHeartbeat](timeout)
     testProbe.send(monitorRef, Monitor.NoServerConnected)
     testProbe.expectNoMessage(timeout)
 
@@ -102,7 +126,8 @@ class MonitorSuite extends TestKit(ActorSystem("MonitorSuiteActorSystem")) with 
 
     // Connect a server and check for heartbeats again
     testProbe.send(monitorRef, Monitor.AtLeastOneServerConnected)
-    testProbe.expectMsgType[Monitor.GenerateAndSendHeartbeat](timeout)
+    testProbe.expectMsgType[DbActor.GenerateHeartbeat](timeout)
+    //testProbe.expectMsgType[Monitor.GenerateAndSendHeartbeat](timeout)
   }
 
   test("monitor should send a ConnectTo() upon creation") {
@@ -170,5 +195,22 @@ class MonitorSuite extends TestKit(ActorSystem("MonitorSuiteActorSystem")) with 
     new File(filePath).deleteOnExit()
 
     mockConnectionMediator.expectNoMessage(timeout)
+  }
+
+  test("monitor should send a result to the connectionMediator") {
+    val dbRef: ActorRef = toyDbActorRef
+    val monitorRef = system.actorOf(Monitor.props(dbRef))
+    val expected = Map(CHANNEL1 -> Set(MESSAGE1_ID), CHANNEL2 -> Set(MESSAGE4_ID))
+    val testProbe = TestProbe()
+    monitorRef ! Monitor.TriggerHeartbeat
+    testProbe.expectMsg(timeout, Heartbeat(expected))
+  }
+
+  test("monitor should send nothing when failing to query the data base") {
+    val dbRef: ActorRef = failingToyDbActorRef
+    val monitorRef = system.actorOf(Monitor.props(dbRef))
+    val testProbe = TestProbe()
+    monitorRef ! Monitor.TriggerHeartbeat
+    testProbe.expectNoMessage(timeout)
   }
 }

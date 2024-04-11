@@ -24,32 +24,15 @@ object ParamsWithMapHandler extends AskPatternConstants {
       /** first step is to retrieve the received heartbeat from the jsonRpcRequest */
       val receivedHeartBeat: Map[Channel, Set[Hash]] = jsonRpcMessage.getParams.asInstanceOf[Heartbeat].channelsToMessageIds
 
-      /** second step is to retrieve the local set of channels */
-      var setOfChannels: Set[Channel] = Set()
-      val ask = dbActorRef ? DbActor.GetAllChannels()
-      Await.ready(ask, duration).value match {
-        case Some(Success(DbActor.DbActorGetAllChannelsAck(channels))) =>
-          setOfChannels = channels
-        case Some(Failure(ex: DbActorNAckException)) =>
-          Left(PipelineError(ex.code, s"couldn't retrieve local set of channels", jsonRpcMessage.getId))
-        case reply =>
-          Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"heartbeatHandler failed : unexpected DbActor reply '$reply'", jsonRpcMessage.getId))
-      }
-
-      /** third step is to ask the DB for the content of each channel in terms of message ids. */
       val localHeartBeat: mutable.HashMap[Channel, Set[Hash]] = mutable.HashMap()
-      setOfChannels.foreach(channel => {
-        val ask = dbActorRef ? DbActor.ReadChannelData(channel)
-        Await.ready(ask, duration).value match {
-          case Some(Success(DbActor.DbActorReadChannelDataAck(channelData))) =>
-            val setOfIds = channelData.messages.toSet
-            localHeartBeat += (channel -> setOfIds)
-          case Some(Failure(ex: DbActorNAckException)) =>
-            Left(PipelineError(ex.code, s"couldn't readChannelData for local heartbeat", jsonRpcMessage.getId))
+      val ask = dbActorRef ? DbActor.GenerateHeartbeat
+        Await.ready(ask, duration).value.get match
+          case Success(DbActor.DbActorGenerateHeartbeatAck(Some(map))) => 
+            map.foreach { case (key, value) => localHeartBeat(key) = value }
+          case Failure(ex: DbActorNAckException) =>
+            Left(PipelineError(ex.code, s"couldn't retrieve localHeartBeat", jsonRpcMessage.getId))
           case reply =>
             Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"heartbeatHandler failed : unexpected DbActor reply '$reply'", jsonRpcMessage.getId))
-        }
-      })
 
       /** finally, we only keep from the received heartbeat the message ids that are not contained in the locally extracted heartbeat. */
       var missingIdsMap: HashMap[Channel, Set[Hash]] = HashMap()

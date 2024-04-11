@@ -12,7 +12,7 @@ import akka.util.Timeout
 import ch.epfl.pop.authentication.{GetRequestHandler, PopchaWebSocketResponseHandler}
 import ch.epfl.pop.config.RuntimeEnvironment
 import ch.epfl.pop.config.RuntimeEnvironment._
-import ch.epfl.pop.decentralized.{ConnectionMediator, HeartbeatGenerator, Monitor}
+import ch.epfl.pop.decentralized.{ConnectionMediator, Monitor}
 import ch.epfl.pop.pubsub.{MessageRegistry, PubSubMediator, PublishSubscribe}
 import ch.epfl.pop.storage.{DbActor, SecurityModuleActor}
 import org.iq80.leveldb.Options
