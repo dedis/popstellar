@@ -27,17 +27,17 @@ type NavigationProps = CompositeScreenProps<
 
 
 const initialOrganizations: Organization[] = [
-  Organization.fromState({ id: 1, name: 'Linked Org 1' }),
-  Organization.fromState({ id: 2, name: 'Linked Org 2' }),
-  Organization.fromState({ id: 3, name: 'Linked Org 3' }),
+  Organization.fromState({ laoId: "1", name: 'Linked Org 1' }),
+  Organization.fromState({ laoId: "2", name: 'Linked Org 2' }),
+  Organization.fromState({ laoId: "3", name: 'Linked Org 3' }),
   // Add your initial organization items here
 ];
 
 const LinkedOrganizationsScreen = () => {
   const navigation = useNavigation<NavigationProps['navigation']>();
-  //const laoId = LinkedOrganizationsHooks.useCurrentLaoId();
+  const laoId = LinkedOrganizationsHooks.useCurrentLaoId();
 
-  //const isOrganizer = LinkedOrganizationsHooks.useIsLaoOrganizer(laoId);
+  const isOrganizer = LinkedOrganizationsHooks.useIsLaoOrganizer(laoId);
 
   const [organizations, setOrganizations] = useState<Organization[]>(initialOrganizations);
 
@@ -58,14 +58,14 @@ const LinkedOrganizationsScreen = () => {
           );
 
           return (
-            <ListItem key={organization.id}
+            <ListItem
             containerStyle={listStyle}
             style={listStyle}
             bottomDivider>
               <PoPIcon name="business"/>
               <ListItem.Content>
                 <ListItem.Title>{organization.name}</ListItem.Title>
-                <ListItem.Subtitle>ID: {organization.id}</ListItem.Subtitle>
+                <ListItem.Subtitle>ID: {organization.laoId}</ListItem.Subtitle>
               </ListItem.Content>
               <ListItem.Chevron />
             </ListItem>

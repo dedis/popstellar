@@ -5,8 +5,6 @@ import { MessageRegistry } from 'core/network/jsonrpc/messages';
 
 import { LinkedOrganizationsFeature } from './Feature';
 import { Hash, PublicKey } from 'core/objects';
-import { LINKED_ORGANIZATIONS_REDUCER_PATH, LinkedOrganizationsReducerState } from '../reducer';
-import { Reducer } from '@reduxjs/toolkit';
 
 export const LINKED_ORGANIZATIONS_FEATURE_IDENTIFIER = 'linked-organizations';
 
@@ -81,5 +79,5 @@ export interface LinkedOrganizationsInterface extends FeatureInterface {
 
 export interface LinkedOrganizationsCompositionInterface extends FeatureInterface {
   context: LinkedOrganizationsReactContext;
-  reducers: {[LINKED_ORGANIZATIONS_REDUCER_PATH]: Reducer<LinkedOrganizationsReducerState>};
+  reducers: {};
 }
