@@ -6,8 +6,4 @@ export namespace LinkedOrganizationsFeature {
   export interface LaoScreen extends NavigationDrawerScreen {
     id: keyof LaoParamList;
   }
-
-  export interface Lao {
-    id: Hash;
-  }
 }

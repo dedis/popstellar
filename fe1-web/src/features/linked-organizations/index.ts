@@ -5,7 +5,6 @@ import {
   LinkedOrganizationsCompositionInterface,
 } from './interface';
 import {  LinkedOrganizationsLaoScreen } from './navigation/LinkedOrganizationsNavigation';
-import { linkedOrganizationsReducer } from './reducer';
 
 /**
  * Configures the wallet feature
@@ -22,12 +21,9 @@ export function compose(
 ): LinkedOrganizationsCompositionInterface {
   return {
     identifier: LINKED_ORGANIZATIONS_FEATURE_IDENTIFIER,
-    reducers: {
-      ...linkedOrganizationsReducer,
-    },
+    reducers: {},
     context: {
       useCurrentLaoId: configuration.useCurrentLaoId,
-      useConnectedToLao: configuration.useConnectedToLao,
       useIsLaoOrganizer: configuration.useIsLaoOrganizer,
     },
   };
