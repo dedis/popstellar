@@ -321,6 +321,7 @@
   <string name="qr_sight_content_desc">The sight on top of camera</string>
   <string name="add_manual_close_button_desc">Close button for manual add window</string>
   <string name="add_linked_organization_desc">Create a new link</string>
+  <string name="invite_other_organization_desc">Invite another organization</string>
 
   <!-- Error Messages -->
   <string name="error_no_lao">You are not in a LAO</string>

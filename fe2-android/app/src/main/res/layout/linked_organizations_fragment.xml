@@ -31,6 +31,23 @@
       app:srcCompat="@drawable/ic_plus"
       android:contentDescription="@string/linked_organizations" />
 
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+      android:id="@+id/invite_other_organization"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:visibility="gone"
+      android:layout_marginBottom="@dimen/mini_fab_bottom_margin"
+      android:backgroundTint="@color/white"
+      android:tint="@color/black"
+      android:elevation="@dimen/floating_action_button_elevation"
+      app:fabSize="mini"
+      app:borderWidth="@dimen/fab_border_width"
+      app:backgroundTint="@color/black"
+      app:layout_constraintStart_toStartOf="@+id/add_linked_organization"
+      app:layout_constraintEnd_toEndOf="@id/add_linked_organization"
+      app:layout_constraintBottom_toTopOf="@+id/add_linked_organization"
+      android:contentDescription="@string/invite_other_organization_desc"/>
+
     <LinearLayout
       android:id="@+id/empty_events_layout"
       android:layout_width="match_parent"
