@@ -8,7 +8,7 @@
     android:background="@color/background_gray"
     app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-    <!-- TODO: Update blank fragment layout -->
+    <!-- Buttons -->
     <TextView
         android:id="@+id/test_text"
         android:layout_width="match_parent"
@@ -40,6 +40,40 @@
       android:backgroundTint="@color/white"
       android:tint="@color/black"
       android:elevation="@dimen/floating_action_button_elevation"
+      android:src="@drawable/ic_add_linked_organization"
+      app:fabSize="mini"
+      app:borderWidth="@dimen/fab_border_width"
+      app:backgroundTint="@color/black"
+      app:layout_constraintStart_toStartOf="@+id/add_linked_organization"
+      app:layout_constraintEnd_toEndOf="@id/add_linked_organization"
+      app:layout_constraintBottom_toTopOf="@+id/join_other_organization_invitation"
+      android:contentDescription="@string/invite_other_organization_desc"/>
+
+    <TextView
+      android:id="@+id/invite_other_organization_text"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="@string/invite_other_organization"
+      android:fontFamily="sans-serif-medium"
+      android:textColor="@color/black"
+      android:textStyle="bold"
+      android:textSize="@dimen/add_event_texts_size"
+      android:layout_marginEnd="@dimen/add_button_margin_end"
+      android:visibility="gone"
+      app:layout_constraintTop_toTopOf="@id/invite_other_organization"
+      app:layout_constraintBottom_toBottomOf="@id/invite_other_organization"
+      app:layout_constraintEnd_toStartOf="@id/invite_other_organization" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+      android:id="@+id/join_other_organization_invitation"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:visibility="gone"
+      android:layout_marginBottom="@dimen/mini_fab_bottom_margin"
+      android:backgroundTint="@color/white"
+      android:tint="@color/black"
+      android:elevation="@dimen/floating_action_button_elevation"
+      android:src="@drawable/qr_code_button_icon"
       app:fabSize="mini"
       app:borderWidth="@dimen/fab_border_width"
       app:backgroundTint="@color/black"
@@ -48,6 +82,22 @@
       app:layout_constraintBottom_toTopOf="@+id/add_linked_organization"
       android:contentDescription="@string/invite_other_organization_desc"/>
 
+    <TextView
+      android:id="@+id/join_other_organization_invitation_text"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="@string/join_other_organization_invitation"
+      android:fontFamily="sans-serif-medium"
+      android:textColor="@color/black"
+      android:textStyle="bold"
+      android:textSize="@dimen/add_event_texts_size"
+      android:layout_marginEnd="@dimen/add_button_margin_end"
+      android:visibility="gone"
+      app:layout_constraintTop_toTopOf="@id/join_other_organization_invitation"
+      app:layout_constraintBottom_toBottomOf="@id/join_other_organization_invitation"
+      app:layout_constraintEnd_toStartOf="@id/join_other_organization_invitation" />
+
+    <!-- No linked organizations text -->
     <LinearLayout
       android:id="@+id/empty_events_layout"
       android:layout_width="match_parent"

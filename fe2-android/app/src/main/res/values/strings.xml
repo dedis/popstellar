@@ -293,6 +293,8 @@
   <!-- Federation -->
   <string name="no_organizations_organizer_text">There are no linked organizations for now. To create a new link, tap the + button on the bottom right corner.</string>
   <string name="no_organizations_non_organizer_text">There are no linked organizations for now.</string>
+  <string name="invite_other_organization">Invite an organization</string>
+  <string name="join_other_organization_invitation">Join an invitation</string>
 
   <!--  Storage-->
   <string name="nothing_stored">No stored data found</string>
@@ -322,6 +324,7 @@
   <string name="add_manual_close_button_desc">Close button for manual add window</string>
   <string name="add_linked_organization_desc">Create a new link</string>
   <string name="invite_other_organization_desc">Invite another organization</string>
+  <string name="join_other_organization_invitation_desc">Join another organization invitation</string>
 
   <!-- Error Messages -->
   <string name="error_no_lao">You are not in a LAO</string>
