@@ -1,19 +1,18 @@
 import { CompositeScreenProps, useNavigation } from '@react-navigation/core';
 import { StackScreenProps } from '@react-navigation/stack';
 import { ListItem, FAB } from '@rneui/themed';
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import { Text, View } from 'react-native';
 
 import ScreenWrapper from 'core/components/ScreenWrapper';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { LinkedOrganizationsParamList } from 'core/navigation/typing/LinkedOrganizationsParamList';
 import { LaoParamList } from 'core/navigation/typing/LaoParamList';
-import { Hash } from 'core/objects';
 import { List, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 import { LinkedOrganizationsHooks } from '../hooks';
 import { Organization } from '../objects/Organizations';
-import { accent, contrast, primary } from 'core/styles/color';
+import { accent, contrast } from 'core/styles/color';
 import { PoPIcon } from 'core/components';
 
 
@@ -48,37 +47,37 @@ const LinkedOrganizationsScreen = () => {
 
   return (
     <View style={{flex: 1}}>
-    <ScreenWrapper>
-      <Text style={Typography.paragraph}>{STRINGS.linked_organizations_description}</Text>
-      <View style={List.container}>
-        {organizations.map((organization, idx) => {
-          const listStyle = List.getListItemStyles(
-            true && idx === 0,
-            idx === organizations.length-1,
-          );
+      {isOrganizer && (
+    <><ScreenWrapper>
+          <Text style={Typography.paragraph}>{STRINGS.linked_organizations_description}</Text>
+          <View style={List.container}>
+            {organizations.map((organization, idx) => {
+              const listStyle = List.getListItemStyles(
+                true && idx === 0,
+                idx === organizations.length - 1
+              );
 
-          return (
-            <ListItem
-            containerStyle={listStyle}
-            style={listStyle}
-            bottomDivider>
-              <PoPIcon name="business"/>
-              <ListItem.Content>
-                <ListItem.Title>{organization.name}</ListItem.Title>
-                <ListItem.Subtitle>ID: {organization.laoId}</ListItem.Subtitle>
-              </ListItem.Content>
-              <ListItem.Chevron />
-            </ListItem>
-          );})}
-      </View>
-    </ScreenWrapper>
-    <FAB 
-        placement="right"
-        color={accent}
-        onPress={handleAdd}
-        icon={{ name: 'add', color: contrast }}
-        style={{position: 'absolute', bottom: 30, right: 30}}
-      />
+              return (
+                <ListItem
+                  containerStyle={listStyle}
+                  style={listStyle}
+                  bottomDivider>
+                  <PoPIcon name="business" />
+                  <ListItem.Content>
+                    <ListItem.Title>{organization.name}</ListItem.Title>
+                    <ListItem.Subtitle>ID: {organization.laoId}</ListItem.Subtitle>
+                  </ListItem.Content>
+                  <ListItem.Chevron />
+                </ListItem>
+              );
+            })}
+          </View>
+        </ScreenWrapper><FAB
+            placement="right"
+            color={accent}
+            onPress={handleAdd}
+            icon={{ name: 'add', color: contrast }}
+            style={{ position: 'absolute', bottom: 30, right: 30 }} /></>)}
     </View>
   );
 };

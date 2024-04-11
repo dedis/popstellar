@@ -19,3 +19,4 @@ export type LaoParamList = {
   [STRINGS.navigation_lao_popcha]: undefined;
   [STRINGS.navigation_lao_linked_organizations]: NavigatorScreenParams<LinkedOrganizationsParamList>;
 };
+

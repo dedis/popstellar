@@ -12,7 +12,7 @@ export namespace LinkedOrganizationsHooks {
     // assert that the linked organizations context exists
     if (!(LINKED_ORGANIZATIONS_FEATURE_IDENTIFIER in featureContext)) {
       throw new Error('Linked organization context could not be found!');
-    }
+    }  
     return featureContext[LINKED_ORGANIZATIONS_FEATURE_IDENTIFIER] as LinkedOrganizationsReactContext;
   };
 
