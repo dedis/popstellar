@@ -28,11 +28,11 @@ class LinkedOrganizationsFragment : Fragment() {
         binding = LinkedOrganizationsFragmentBinding.inflate(inflater, container, false)
         laoViewModel = obtainViewModel(requireActivity())
 
-        //Test with text TODO remove
+        // Sets the text depending on the user's role
         laoViewModel.role.observe(viewLifecycleOwner) {role: Role ->
-            binding.testText.setText(
-                    if(role == Role.ORGANIZER) "Welcome to linked org. You're the organizer"
-                    else "Welcome to linked org. You're not the organiser"
+            binding.noOrganizationsText.setText(
+                    if(role == Role.ORGANIZER) R.string.no_organizations_organizer_text
+                    else R.string.no_organizations_non_organizer_text
             )
         }
 
@@ -41,15 +41,6 @@ class LinkedOrganizationsFragment : Fragment() {
     }
 
     companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment LinkedOrganizationsFragment.
-         */
-        // TODO: Rename and change types and number of parameters
         @JvmStatic
         fun newInstance(): LinkedOrganizationsFragment {
             return LinkedOrganizationsFragment()

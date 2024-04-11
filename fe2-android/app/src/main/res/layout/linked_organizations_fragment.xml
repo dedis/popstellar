@@ -5,6 +5,7 @@
     android:id="@+id/fragment_linked_organizations_home"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/background_gray"
     app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
     <!-- TODO: Update blank fragment layout -->
@@ -12,6 +13,38 @@
         android:id="@+id/test_text"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+      android:id="@+id/add_linked_organization"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:elevation="@dimen/floating_action_button_elevation"
+      android:layout_marginBottom="@dimen/fab_margin_bottom"
+      android:layout_marginEnd="@dimen/fab_margin_end"
+      android:clickable="true"
+      android:backgroundTint="@color/colorPrimary"
+      android:tintMode="@color/white"
+      app:backgroundTint="@color/colorPrimary"
+      app:fabSize="normal"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:srcCompat="@drawable/ic_plus"
+      android:contentDescription="@string/linked_organizations" />
+
+    <LinearLayout
+      android:id="@+id/empty_events_layout"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:layout_margin="@dimen/main_horizontal_margin">
+
+      <TextView
+        android:id="@+id/no_organizations_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/text_high_emphasis" />
+
+    </LinearLayout>
+
   </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>

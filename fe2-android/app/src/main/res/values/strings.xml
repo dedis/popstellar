@@ -290,6 +290,10 @@
   <string name="popcha_scan_title">Enter PoPCHA URL to log in</string>
   <string name="manual_popcha_hint">PoPCHA URL</string>
 
+  <!-- Federation -->
+  <string name="no_organizations_organizer_text">There are no linked organizations for now. To create a new link, tap the + button on the bottom right corner.</string>
+  <string name="no_organizations_non_organizer_text">There are no linked organizations for now.</string>
+
   <!--  Storage-->
   <string name="nothing_stored">No stored data found</string>
   <string name="clear_text">Clear all storage</string>
@@ -316,6 +320,7 @@
   <string name="receive_button_content_desc">Receive button</string>
   <string name="qr_sight_content_desc">The sight on top of camera</string>
   <string name="add_manual_close_button_desc">Close button for manual add window</string>
+  <string name="add_linked_organization_desc">Create a new link</string>
 
   <!-- Error Messages -->
   <string name="error_no_lao">You are not in a LAO</string>
