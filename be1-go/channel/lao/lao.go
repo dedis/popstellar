@@ -352,6 +352,12 @@ func (c *Channel) processRollCallCreate(msg message.Message, msgData interface{}
 		return xerrors.Errorf("invalid roll_call#create message: %v", err)
 	}
 
+	// check that the message was from an organizer
+	err = c.checkIsFromOrganizer(msg)
+	if err != nil {
+		return err
+	}
+
 	// Check that the ProposedEnd is greater than the ProposedStart
 	if data.ProposedStart > data.ProposedEnd {
 		return answer.NewErrorf(-4, "The field `proposed_start` is greater than the field "+
@@ -391,6 +397,12 @@ func (c *Channel) processRollCallOpen(msg message.Message, msgData interface{},
 		return xerrors.Errorf("invalid roll_call#open message: %v", err)
 	}
 
+	// check that the message was from an organizer
+	err = c.checkIsFromOrganizer(msg)
+	if err != nil {
+		return err
+	}
+
 	if !c.rollCall.checkPrevID([]byte(rollCallOpen.Opens)) {
 		return answer.NewError(-1, "The field `opens` does not correspond to the id of "+
 			"the previous roll call message")
@@ -417,6 +429,12 @@ func (c *Channel) processRollCallClose(msg message.Message, msgData interface{},
 		return xerrors.Errorf("invalid roll_call#close message: %v", err)
 	}
 
+	// check that the message was from an organizer
+	err = c.checkIsFromOrganizer(msg)
+	if err != nil {
+		return err
+	}
+
 	if c.rollCall.state != Open {
 		return answer.NewError(-1, "The roll call cannot be closed since it's not open")
 	}
@@ -429,6 +447,7 @@ func (c *Channel) processRollCallClose(msg message.Message, msgData interface{},
 	c.rollCall.id = data.UpdateID
 	c.rollCall.state = Closed
 
+	c.attendees = make(map[string]struct{})
 	for _, attendee := range data.Attendees {
 		c.attendees[attendee] = struct{}{}
 
@@ -451,21 +470,10 @@ func (c *Channel) processElectionObject(msg message.Message, msgData interface{}
 		return xerrors.Errorf("message %v isn't a election#setup message", msgData)
 	}
 
-	senderBuf, err := base64.URLEncoding.DecodeString(msg.Sender)
+	// check that the message was from an organizer
+	err := c.checkIsFromOrganizer(msg)
 	if err != nil {
-		return xerrors.Errorf(keyDecodeError, err)
-	}
-
-	// Check if the sender of election creation message is the organizer
-	senderPoint := crypto.Suite.Point()
-	err = senderPoint.UnmarshalBinary(senderBuf)
-	if err != nil {
-		return answer.NewErrorf(-4, keyUnmarshalError, err)
-	}
-
-	if !c.organizerPubKey.Equal(senderPoint) {
-		return answer.NewErrorf(-5, "Sender key does not match the "+
-			"organizer's one: %s != %s", senderPoint, c.organizerPubKey)
+		return err
 	}
 
 	var electionSetup messagedata.ElectionSetup
@@ -767,4 +775,29 @@ func (c *Channel) extractLaoID() string {
 // checkPrevID is a helper method which validates the roll call ID.
 func (r *rollCall) checkPrevID(prevID []byte) bool {
 	return string(prevID) == r.id
+}
+
+// checkIsFromOrganizer is a helper method which validates that the message's
+// sender is the organizer. Return an error if it failed or if it's false,
+// return nil if it was from the organizer.
+func (c *Channel) checkIsFromOrganizer(msg message.Message) error {
+	senderBuf, err := base64.URLEncoding.DecodeString(msg.Sender)
+	if err != nil {
+		return answer.NewInvalidMessageFieldError(keyDecodeError, err)
+	}
+
+	senderPoint := crypto.Suite.Point()
+
+	err = senderPoint.UnmarshalBinary(senderBuf)
+	if err != nil {
+		return answer.NewInvalidMessageFieldError(keyUnmarshalError, senderBuf)
+	}
+
+	if !c.organizerPubKey.Equal(senderPoint) {
+		return answer.NewAccessDeniedError(
+			"sender key %v does not match organizer key %v",
+			senderPoint, c.organizerPubKey)
+	}
+
+	return nil
 }
