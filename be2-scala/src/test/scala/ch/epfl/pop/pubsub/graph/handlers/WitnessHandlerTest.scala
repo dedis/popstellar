@@ -13,7 +13,7 @@ import org.scalatest.BeforeAndAfterAll
 import org.scalatest.funsuite.{AnyFunSuiteLike => FunSuiteLike}
 import org.scalatest.matchers.should.Matchers
 import util.examples.data.WitnessMessages
-import util.examples.lao.CreateLaoExamples.{SENDER, createLao}
+import util.examples.Lao.CreateLaoExamples.{SENDER, createLao}
 
 import scala.concurrent.duration.FiniteDuration
 
