@@ -6,9 +6,8 @@ const ajv = require("./main");
 
 const rootSchema =
     "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/jsonRPC.json";
-//const messageDataSchema =
-//    "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/data.json";
-const messageDataSchema = require("../query/method/message/data/data.json");
+const messageDataSchema =
+    "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/data.json";
 
 // custom validator to display better error message.
 expect.extend({
