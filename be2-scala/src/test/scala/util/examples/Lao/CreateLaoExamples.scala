@@ -1,4 +1,4 @@
-package util.examples.lao
+package util.examples.Lao
 
 import ch.epfl.pop.model.network.method.ParamsWithMessage
 import ch.epfl.pop.model.network.method.message.Message
