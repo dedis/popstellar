@@ -25,23 +25,23 @@ object ParamsWithMapHandler extends AskPatternConstants {
       val receivedHeartBeat: Map[Channel, Set[Hash]] = jsonRpcMessage.getParams.asInstanceOf[Heartbeat].channelsToMessageIds
 
       val localHeartBeat: mutable.HashMap[Channel, Set[Hash]] = mutable.HashMap()
-      val ask = dbActorRef ? DbActor.GenerateHeartbeat
+      val ask = dbActorRef ? DbActor.GenerateHeartbeat()
         Await.ready(ask, duration).value.get match
-          case Success(DbActor.DbActorGenerateHeartbeatAck(Some(map))) => 
+          case Success(DbActor.DbActorGenerateHeartbeatAck(Some(map))) =>
             map.foreach { case (key, value) => localHeartBeat(key) = value }
+            /** finally, we only keep from the received heartbeat the message ids that are not contained in the locally extracted heartbeat. */
+            var missingIdsMap: HashMap[Channel, Set[Hash]] = HashMap()
+            receivedHeartBeat.keys.foreach(channel => {
+              val missingIdsSet = receivedHeartBeat(channel).diff(localHeartBeat.getOrElse(channel, Set.empty))
+              if (missingIdsSet.nonEmpty)
+                 missingIdsMap += (channel -> missingIdsSet)
+            })
+            Right(JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, MethodType.get_messages_by_id, GetMessagesById(missingIdsMap), Some(0)))
+
           case Failure(ex: DbActorNAckException) =>
             Left(PipelineError(ex.code, s"couldn't retrieve localHeartBeat", jsonRpcMessage.getId))
           case reply =>
             Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"heartbeatHandler failed : unexpected DbActor reply '$reply'", jsonRpcMessage.getId))
-
-      /** finally, we only keep from the received heartbeat the message ids that are not contained in the locally extracted heartbeat. */
-      var missingIdsMap: HashMap[Channel, Set[Hash]] = HashMap()
-      receivedHeartBeat.keys.foreach(channel => {
-        val missingIdsSet = receivedHeartBeat(channel).diff(localHeartBeat.getOrElse(channel, Set.empty))
-        if (missingIdsSet.nonEmpty)
-          missingIdsMap += (channel -> missingIdsSet)
-      })
-      Right(JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, MethodType.get_messages_by_id, GetMessagesById(missingIdsMap), Some(0)))
 
     case Right(jsonRpcMessage: JsonRpcResponse) =>
       Left(PipelineError(ErrorCodes.SERVER_ERROR.id, "HeartbeatHandler received a 'JsonRpcResponse'", jsonRpcMessage.id))

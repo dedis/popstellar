@@ -896,7 +896,7 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
     )
     initialStorage.write(
       (initialStorage.CHANNEL_DATA_KEY + channelName2, channelData.toJsonString),
-      (initialStorage.DATA_KEY + s"$channelName2${Channel.DATA_SEPARATOR}$messageId", MESSAGE.toJsonString)
+      (initialStorage.DATA_KEY + s"$channelName2${Channel.DATA_SEPARATOR}${MESSAGE.message_id}", MESSAGE.toJsonString)
     )
     val dbActor: ActorRef = system.actorOf(Props(DbActor(mediatorRef, MessageRegistry(), initialStorage)))
 
@@ -905,7 +905,7 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
 
     answer shouldBe a[DbActor.DbActorGenerateHeartbeatAck]
     val heartbeat = answer.asInstanceOf[DbActorGenerateHeartbeatAck].heartbeatMap
-    val expected = Map(Channel(channelName1) -> Set(MESSAGE.message_id), Channel(channelName2) -> Set(messageId))
+    val expected = Some(HashMap(Channel(channelName2) -> Set(MESSAGE.message_id, messageId), Channel(channelName1) -> Set(MESSAGE.message_id, messageId)))
     
     heartbeat should equal(expected)
   }
@@ -918,7 +918,7 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
     val answer = Await.result(ask, duration)
     val heartbeat = answer.asInstanceOf[DbActorGenerateHeartbeatAck].heartbeatMap
     
-    heartbeat should equal(HashMap())
+    heartbeat should equal(Some(HashMap()))
         
   }
   
