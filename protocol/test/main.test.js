@@ -6,8 +6,9 @@ const ajv = require("./main");
 
 const rootSchema =
     "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/jsonRPC.json";
-const messageDataSchema =
-    "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/data.json";
+//const messageDataSchema =
+//    "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/data.json";
+const messageDataSchema = require("../query/method/message/data/data.json");
 
 // custom validator to display better error message.
 expect.extend({
@@ -256,6 +257,13 @@ test("message data: federation", () => {
 
     federation_expect = require("../examples/messageData/federation_expect/federation_expect.json");
     expect(federation_expect).toBeValid(messageDataSchema);
+
+    federation_challenge_request = require("../examples/messageData/federation_challenge_request/federation_challenge_request.json");
+    expect(federation_challenge_request).toBeValid(messageDataSchema);
+
+    federation_challenge = require("../examples/messageData/federation_challenge/federation_challenge.json");
+    expect(federation_challenge).toBeValid(messageDataSchema);
+
 });
 
 test("message data: chirp", () => {

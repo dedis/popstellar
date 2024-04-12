@@ -59,6 +59,12 @@
             "$ref": "dataFederationExpect.json"
         },
         {
+            "$ref": "dataFederationChallengeRequest.json"
+        },
+        {
+            "$ref": "dataFederationChallenge.json"
+        },
+        {
             "$ref": "dataWitnessMessage.json"
         },
         {
