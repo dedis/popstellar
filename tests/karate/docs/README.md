@@ -68,8 +68,8 @@ Feature: Create a Roll Call
     * call read(serverFeature)
     * call read(mockClientFeature)
     * def organizer = call createMockFrontend
-    * def lao = organizer.createValidLao()
-    * def validRollCall = organizer.createValidRollCall(lao)
+    * def lao = organizer.generateValidLao()
+    * def validRollCall = organizer.generateValidRollCall(lao)
     * call read(createLaoScenario) { organizer: '#(organizer)', lao: '#(lao)' }
 
   @createRollCall1

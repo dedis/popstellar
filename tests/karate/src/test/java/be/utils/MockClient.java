@@ -22,7 +22,7 @@ public class MockClient extends MultiMsgWebSocketClient {
   /**
    * @return a valid lao with the client's public key, the current time, and a random valid lao name.
    */
-  public Lao createValidLao() {
+  public Lao generateValidLao() {
     // Name needs to be random so that the same organizer does not create the same lao twice if it happens in the same second
     String randomName = RandomUtils.generateRandomName();
     System.out.println("Client with public key: " + publicKey + " is creating a lao: " + randomName);
@@ -33,7 +33,7 @@ public class MockClient extends MultiMsgWebSocketClient {
    * @param lao the lao to create a roll call for
    * @return a valid roll call for the given lao
    */
-  public RollCall createValidRollCall(Lao lao) {
+  public RollCall generateValidRollCall(Lao lao) {
     System.out.println("Client with public key: " + publicKey + " is creating roll call for lao: " + lao.id);
     long rollCallCreation = Instant.now().getEpochSecond();
     // Name needs to be random so that the same organizer does not create the same roll call twice if it happens in the same second
@@ -57,7 +57,7 @@ public class MockClient extends MultiMsgWebSocketClient {
    * @param lao the lao to create an election for
    * @return a valid empty election for the given lao, questions still need to be added!
    */
-  public Election createValidElection(Lao lao) {
+  public Election generateValidElection(Lao lao) {
     System.out.println("Client with public key: " + publicKey + " is creating an election for lao: " + lao.id);
     long electionCreation = Instant.now().getEpochSecond();
     // Name needs to be random so that the same organizer does not create the same election twice if it happens in the same second
@@ -89,5 +89,9 @@ public class MockClient extends MultiMsgWebSocketClient {
     Transaction transaction = new Transaction();
     transaction.issueInitialCoins(receiver.publicKey, publicKey, privateKey, amountToGive);
     return transaction;
+  }
+
+  public void sendCreateLao(Lao lao = lao) {
+
   }
 }

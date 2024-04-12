@@ -18,7 +18,7 @@ Feature: LAO
   @name=lao_join
   Scenario: Manually connect to an existing LAO
     * def organizer = mock.create_client()
-    * def lao = organizer.createValidLao()
+    * def lao = organizer.generateValidLao()
     * mock.create_lao(organizer, lao)
     * waitFor(lao_join_button).click()
     * waitFor(lao_enter_manually_button).click()
