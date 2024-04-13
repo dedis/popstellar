@@ -2950,8 +2950,104 @@ The two organizers meet in person to exchange the federation_details message (th
 They also decide on a time slot to perform their next roll-calls---these have to happen simultaneously.
 
 ## Requesting a challenge (federation#challenge_request)
+The organizer of one of the two LAOs will request a challenge from his server. 
+This challenge will be then used by the other server to authenticate itself.
+
+<details>
+<summary>
+💡 See an example
+</summary>
+
+```json5
+// ../protocol/examples/messageData/federation_challenge_request/federation_challenge_request.json
+{
+  "object": "federation",
+  "action": "challenge_request",
+  "timestamp": 1712854874
+}
+
+```
+</details>
+
+```json5
+// ../protocol/query/method/message/data/dataFederationChallengeRequest.json
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataFederationChallengeRequest.json",
+  "description": "Sent by an organizer client to its server, to retrieve a challenge object",
+  "type": "object",
+  "properties": {
+    "object": {
+      "const": "federation"
+    },
+    "action": {
+      "const": "challenge_request"
+    },
+    "timestamp": {
+      "type": "integer",
+      "description": "[Timestamp] of the request",
+      "minimum": 0
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "timestamp"
+  ]
+}
+
+```
 
 ## Answering the challenge request (federation#challenge_response)
+The server will provide his corresponding organizer with the requested challenge.
+<details>
+<summary>
+💡 See an example
+</summary>
+
+```json5
+{
+    "object": "federation",
+    "action": "challenge",
+    "value": "82eadde2a4ba832518b90bb93c8480ee1ae16a91d5efe9281e91e2ec11da03e4",
+    "valid_until": 1712854874
+}
+```
+</details>
+
+```json5
+// ../protocol/query/method/message/data/dataFederationChallenge.json
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataFederationChallenge.json",
+  "description": "Challenge object in the context of federation authentication",
+  "type": "object",
+  "properties": {
+    "object": {
+      "const": "federation"
+    },
+    "action": {
+      "const": "challenge"
+    },
+    "value": {
+      "type": "string",
+      "contentEncoding": "hex",
+      "pattern": "^[0-9a-fA-F]{64}$",
+      "$comment": "A 32 bytes array encoded in hexadecimal"
+    },
+    "valid_until": {
+      "type": "integer",
+      "description": "[Timestamp] of the expiration time",
+      "minimum": 0
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "value",
+    "valid_until"
+  ]
+}
+
+```
 
 ## Expecting a connection (federation#expect)
 With this message the organizer lets the server know to expect a federation_init message from the remote party idetailed in the message body.
@@ -3133,5 +3229,6 @@ It contains the necessary connection details, and a challenge which the remote p
 ```
 
 ## Authenticating the remote LAO (federation#authenticate)
+
 ## Establishing or Aborting the connection (federation#result)
 
