@@ -389,15 +389,15 @@ final case class DbActor(
   }
 
   @throws[DbActorNAckException]
-  private def readRumors(desiredRumors: Map[String, List[Int]]): Map[String, Map[Int,Rumor]] = {
+  private def readRumors(desiredRumors: Map[String, List[Int]]): Map[String, Map[Int, Rumor]] = {
     var rumors: Map[String, Map[Int, Rumor]] = Map.empty
     for ((senderPk, rumorIds) <- desiredRumors) {
       for (rumorId <- rumorIds) {
-        Try(storage.read(generateRumorKey(senderPk, rumorId))) match{
+        Try(storage.read(generateRumorKey(senderPk, rumorId))) match {
           case Success(Some(json)) =>
             rumors += (senderPk -> Map(rumorId -> Rumor.buildFromJson(json)))
           case Success(None) => throw DbActorNAckException(ErrorCodes.SERVER_ERROR.id, s"Rumor $rumorId from sender $senderPk not in database")
-          case Failure(ex) => throw ex
+          case Failure(ex)   => throw ex
         }
       }
     }
@@ -589,6 +589,13 @@ final case class DbActor(
       Try(readServerPrivateKey()) match {
         case Success(privateKey) => sender() ! DbActorReadServerPrivateKeyAck(privateKey)
         case failure             => sender() ! failure.recover(Status.Failure(_))
+      }
+
+    case WriteRumor(rumor) =>
+      log.info(s"Actor $self (db) received a WriteRumor request")
+      Try(writeRumor(rumor)) match {
+        case Success(_) => sender() ! DbActorAck()
+        case failure    => sender() ! failure.recover(Status.Failure(_))
       }
 
     case m =>
@@ -805,6 +812,12 @@ object DbActor {
   /** Request for the server private key, created both private and public key if none is found
     */
   final case class ReadServerPrivateKey() extends Event
+
+  /** Writes the given rumor in Db and updates RumorData accordingly
+    * @param rumor
+    *   rumor to write in memory
+    */
+  final case class WriteRumor(rumor: Rumor) extends Event
 
   // DbActor DbActorMessage correspond to messages the actor may emit
   sealed trait DbActorMessage
