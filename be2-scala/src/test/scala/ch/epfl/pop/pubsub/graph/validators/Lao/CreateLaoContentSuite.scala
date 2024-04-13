@@ -8,7 +8,7 @@ import ch.epfl.pop.pubsub.graph.{GraphMessage, MessageDecoder, Validator}
 import org.scalatest.{GivenWhenThen, Inside}
 import org.scalatest.flatspec.{AnyFlatSpec => FlatSpec}
 import org.scalatest.matchers.should.Matchers
-import util.examples.lao.CreateLaoExamples
+import util.examples.Lao.CreateLaoExamples
 
 class CreateLaoContentSuite extends FlatSpec with Matchers with Inside with GivenWhenThen {
 
