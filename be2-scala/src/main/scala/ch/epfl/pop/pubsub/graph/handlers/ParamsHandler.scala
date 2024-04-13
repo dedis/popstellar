@@ -86,17 +86,19 @@ object ParamsHandler extends AskPatternConstants {
     case graphMessage @ _ => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, "GreetServerHandler received an unexpected message:" + graphMessage, None))
   }.filter(_ => false)
 
-  def rumorHandler(dbActorRef: AskableActorRef): Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map{
+  def rumorHandler(dbActorRef: AskableActorRef): Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map {
     case Right(jsonRpcMessage: JsonRpcRequest) =>
       jsonRpcMessage.method match {
         case MethodType.rumor =>
           val rumor: Rumor = jsonRpcMessage.getParams.asInstanceOf[Rumor]
           val senderPk: PublicKey = rumor.senderPk
           val rumorId: Int = rumor.rumorId
-          val messages: Map[Channel,Array[Message]] = rumor.messages
-          
-
+          val messages: Map[Channel, Array[Message]] = rumor.messages
+          Right(jsonRpcMessage)
+        case _ => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, "RumorHandler received a non expected jsonRpcRequest", jsonRpcMessage.id))
       }
+    case graphMessage @ _ => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, "RumorHandler received an unexpected message:" + graphMessage, None))
+
   }
 
 }

@@ -17,6 +17,8 @@ import org.scalatest.funsuite.{AnyFunSuiteLike => FunSuiteLike}
 import org.scalatest.matchers.should.Matchers
 import util.examples.MessageExample
 import util.examples.RollCall.{CreateRollCallExamples, OpenRollCallExamples}
+import util.examples.Rumor.RumorExample
+import ch.epfl.pop.model.network.method.Rumor
 
 import scala.concurrent.Await
 
@@ -872,5 +874,30 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
 
     dbPublicKey should equal(publicKey)
     dbPrivateKey should equal(privateKey)
+  }
+
+  test("writeRumor() writes correctly rumor") {
+
+    val initialStorage = InMemoryStorage()
+    val dbActor: AskableActorRef = system.actorOf(Props(DbActor(mediatorRef, MessageRegistry(), initialStorage)))
+
+    val rumor: Rumor = RumorExample.rumorExample
+
+    val write = dbActor ? DbActor.WriteRumor(rumor)
+    Await.result(write, duration) shouldBe a[DbActor.DbActorAck]
+
+    initialStorage.size should equal(2)
+
+    val rumorDataKey = s"${initialStorage.RUMOR_DATA_KEY}${rumor.senderPk.base64Data.data}"
+    val rumorDataFound = initialStorage.read(rumorDataKey)
+    val expectedRumorData = RumorData(List(rumor.rumorId))
+    
+    rumorDataFound shouldBe Some(expectedRumorData.toJsonString)
+
+    val rumorKey = s"${initialStorage.RUMOR_KEY}${rumor.senderPk.base64Data.data}${Channel.DATA_SEPARATOR}${rumor.rumorId}"
+    val rumorFound = initialStorage.read(rumorKey)
+
+    rumorFound shouldBe Some(rumor.toJsonString)
+
   }
 }
