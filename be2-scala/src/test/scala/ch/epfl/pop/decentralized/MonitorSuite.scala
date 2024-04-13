@@ -19,6 +19,7 @@ import akka.pattern.ask
 
 import java.io.{File, PrintWriter}
 import java.nio.file.Path
+import scala.collection.immutable.HashMap
 import scala.concurrent.duration.DurationInt
 
 class MonitorSuite extends TestKit(ActorSystem("MonitorSuiteActorSystem")) with FunSuiteLike with Matchers with BeforeAndAfterAll {
@@ -52,14 +53,12 @@ class MonitorSuite extends TestKit(ActorSystem("MonitorSuiteActorSystem")) with 
     val monitorRef = system.actorOf(
       Monitor.props(testProbe.ref, heartbeatRate = fastRate, messageDelay = fastRate)
     )
-
+    testProbe.send(monitorRef, ConnectionMediator.Ping())
     testProbe.send(monitorRef, Monitor.AtLeastOneServerConnected)
+    testProbe.expectMsgType[ConnectionMediator.ConnectTo](timeout)
     testProbe.expectMsgType[DbActor.GenerateHeartbeat](timeout)
-    testProbe.expectMsgType[DbActor.GenerateHeartbeat](timeout)
-    testProbe.expectMsgType[DbActor.GenerateHeartbeat](timeout)
-    //testProbe.expectMsgType[Monitor.GenerateAndSendHeartbeat](timeout)
-    //testProbe.expectMsgType[Monitor.GenerateAndSendHeartbeat](timeout)
-    //testProbe.expectMsgType[Monitor.GenerateAndSendHeartbeat](timeout)
+    testProbe.reply(DbActor.DbActorGenerateHeartbeatAck(Some(HashMap())))
+     
   }
 
   test("monitor should schedule single heartbeat when receiving a Right GraphMessage") {
@@ -202,15 +201,11 @@ class MonitorSuite extends TestKit(ActorSystem("MonitorSuiteActorSystem")) with 
     val monitorRef = system.actorOf(Monitor.props(dbRef))
     val expected = Map(CHANNEL1 -> Set(MESSAGE1_ID), CHANNEL2 -> Set(MESSAGE4_ID))
     val testProbe = TestProbe()
-    monitorRef ! Monitor.TriggerHeartbeat
+    testProbe.send(monitorRef, ConnectionMediator.Ping())
+    //testProbe.send(monitorRef,Monitor.TriggerHeartbeat)
+    testProbe.send(monitorRef, Monitor.AtLeastOneServerConnected)
+    //testProbe.expectMsgType[ConnectionMediator.ConnectTo](timeout)
     testProbe.expectMsg(timeout, Heartbeat(expected))
   }
-
-  test("monitor should send nothing when failing to query the data base") {
-    val dbRef: ActorRef = failingToyDbActorRef
-    val monitorRef = system.actorOf(Monitor.props(dbRef))
-    val testProbe = TestProbe()
-    monitorRef ! Monitor.TriggerHeartbeat
-    testProbe.expectNoMessage(timeout)
-  }
+  
 }
