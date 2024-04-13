@@ -38,9 +38,15 @@
   - [Accepting a value during a Consensus (consensus#accept)](#accepting-a-value-during-a-consensus-consensusaccept)
   - [Sending the result of a Consensus (consensus#learn)](#sending-the-result-of-a-consensus-consensuslearn)
   - [Sending the failure of a Consensus (consensus#failure)](#sending-the-failure-of-a-consensus-consensusfailure)
+  - [Federation (introduction)](#federation-introduction)
   - [Federation (Authentication Protocol)](#federation-authentication-protocol)
-  - [Federation expect](#federation-expect)
-  - [Federation init](#federation-init)
+  - [Requesting a challenge (federation#challenge_request)](#requesting-a-challenge-federationchallenge_request)
+  - [Answering the challenge request (federation#challenge_response)](#answering-the-challenge-request-federationchallenge_response)
+  - [Expecting a connection (federation#expect)](#expecting-a-connection-federationexpect)
+  - [Initiating a connection (federation#init)](#initiating-a-connection-federationinit)
+  - [Authenticating the remote LAO (federation#authenticate)](#authenticating-the-remote-lao-federationauthenticate)
+  - [Establishing or Aborting the connection (federation#result)](#establishing-or-aborting-the-connection-federationresult)
+
 
 <!-- END doctoc.sh generated TOC please keep comment here to allow auto update -->
 
@@ -65,6 +71,7 @@ Here are the existing `Message data`, identified by their unique
 * lao#create
 * lao#update_properties
 * lao#state
+* lao#greet
 * message#witness
 * meeting#create
 * meeting#state
@@ -73,9 +80,29 @@ Here are the existing `Message data`, identified by their unique
 * roll_call#close
 * roll_call#reopen
 * election#setup
+* election#key
+* election#open
 * election#cast_vote
 * election#end
 * election#result
+* chirp#add
+* chirp#delete
+* reaction#add
+* reaction#delete
+* consensus#elect
+* consensus#elect_accept
+* consensus#prepare
+* consensus#promise
+* consensus#propose
+* consensus#accept
+* consensus#learn
+* consensus#failure
+* federation#challenge_request
+* federation#challengre_response
+* federation#expect
+* federation#init
+* federation#authenticate
+* federation#result
 
 ## Creating a LAO (lao#create)
 
@@ -496,7 +523,7 @@ Last but not least, the greeting message contains a list of peers that tells cli
 
 ```
 
-</details>
+
 
 ## Witness a message (message#witness)
 
@@ -1486,7 +1513,7 @@ The election can be opened by publishing an election/open message on the electio
     ]
 }
 ```
-</details>
+
 
 ## Casting a vote (election#cast_vote)
 
@@ -2906,6 +2933,8 @@ a consensus/failure message is sent informing the system of the failure.
 ```
 
 
+## Federation introduction
+This feature will allow both LAOs to establish a connection between each other, send and receive data from one another, enhancing the existing functionalities like roll calls, events, and social media interactions, all while maintaining their autonomy.
 
 ## Federation (Authentication Protocol)
 
@@ -2920,8 +2949,11 @@ The two organizers meet in person to exchange the federation_details message (th
 
 They also decide on a time slot to perform their next roll-calls---these have to happen simultaneously.
 
+## Requesting a challenge (federation#challenge_request)
 
-## Federation expect
+## Answering the challenge request (federation#challenge_response)
+
+## Expecting a connection (federation#expect)
 With this message the organizer lets the server know to expect a federation_init message from the remote party idetailed in the message body.
 
 <details>
@@ -3011,7 +3043,7 @@ With this message the organizer lets the server know to expect a federation_init
 
 
 
-## Federation init
+## Initiating a connection (federation#init)
 This message is used to let a server know to initiate a connection with a remote server.
 
 It contains the necessary connection details, and a challenge which the remote party will expect to receive and the server will use to authenticate himself.
@@ -3099,4 +3131,7 @@ It contains the necessary connection details, and a challenge which the remote p
 }
 
 ```
+
+## Authenticating the remote LAO (federation#authenticate)
+## Establishing or Aborting the connection (federation#result)
 
