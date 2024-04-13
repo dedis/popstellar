@@ -891,7 +891,7 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
     val rumorDataKey = s"${initialStorage.RUMOR_DATA_KEY}${rumor.senderPk.base64Data.data}"
     val rumorDataFound = initialStorage.read(rumorDataKey)
     val expectedRumorData = RumorData(List(rumor.rumorId))
-    
+
     rumorDataFound shouldBe Some(expectedRumorData.toJsonString)
 
     val rumorKey = s"${initialStorage.RUMOR_KEY}${rumor.senderPk.base64Data.data}${Channel.DATA_SEPARATOR}${rumor.rumorId}"

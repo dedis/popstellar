@@ -162,6 +162,7 @@ object PublishSubscribe {
           methodPartitioner.out(portHeartbeat) ~> heartbeatPartition ~> merger
           methodPartitioner.out(portGetMessagesById) ~> getMessagesByIdPartition ~> merger
           methodPartitioner.out(portGreetServer) ~> greetServerPartition ~> merger
+          methodPartitioner.out(portRumor) ~> rumorPartition ~> merger
 
           /* close the shape */
           FlowShape(input.in, merger.out)
