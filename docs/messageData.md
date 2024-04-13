@@ -38,6 +38,9 @@
   - [Accepting a value during a Consensus (consensus#accept)](#accepting-a-value-during-a-consensus-consensusaccept)
   - [Sending the result of a Consensus (consensus#learn)](#sending-the-result-of-a-consensus-consensuslearn)
   - [Sending the failure of a Consensus (consensus#failure)](#sending-the-failure-of-a-consensus-consensusfailure)
+  - [Federation (Authentication Protocol)](#federation-authentication-protocol)
+  - [Federation expect](#federation-expect)
+  - [Federation init](#federation-init)
 
 <!-- END doctoc.sh generated TOC please keep comment here to allow auto update -->
 
@@ -2901,3 +2904,199 @@ a consensus/failure message is sent informing the system of the failure.
     ]
 }
 ```
+
+
+
+## Federation (Authentication Protocol)
+
+Schematic Illustration
+![](assets/authentication_protocol.png)
+
+
+Sequential Illustration
+![](assets/authentication_protocol_sequential.png)
+
+The two organizers meet in person to exchange the federation_details message (this will be handled in the frontend via a new interface).
+
+They also decide on a time slot to perform their next roll-calls---these have to happen simultaneously.
+
+
+## Federation expect
+With this message the organizer lets the server know to expect a federation_init message from the remote party idetailed in the message body.
+
+<details>
+<summary>
+💡 See an example
+</summary>
+
+```json5
+// ../protocol/examples/messageData/federation_expect/federation_expect.json
+
+{
+    "object": "federation",
+    "action": "expect",
+    "lao_id": "lsWUv1bKBQ0t1DqWZTFwb0nhLsP_EtfGoXHny4hsrwA=",
+    "public_key": "UvViTxoKsB3XVP_ctkmOKCJpMWb7fCzrcb1XDmhNe7Q=",
+    "server_address": "wss://ethz.ch:9000/server",
+    "challenge": {
+        "value": "82eadde2a4ba832518b90bb93c8480ee1ae16a91d5efe9281e91e2ec11da03e4",
+        "valid_until": 1712854874
+    }
+}
+
+```
+</details>
+
+```json5
+// ../protocol/query/method/message/data/dataFederationExpect.json
+
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataFederationExpect.json",
+    "description": "Sent by an organizer client to its server, signals that a connection from a remote LAO is expected",
+    "type": "object",
+    "properties": {
+        "object": {
+            "const": "federation"
+        },
+        "action": {
+            "const": "expect"
+        },
+        "lao_id": {
+            "type": "string",
+            "contentEncoding": "base64",
+            "$comment": "ID of the remote LAO"
+        },
+        "server_address": {
+            "type": "string",
+            "pattern": "^(ws|wss):\/\/.*(:\\d{0,5})?\/.*$",
+            "$comment": "public address of the remote organizer server"
+        },
+        "public_key": {
+            "type": "string",
+            "contentEncoding": "base64",
+            "$comment": "public key of the remote organizer"
+        },
+        "challenge": {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "type": "string",
+                    "contentEncoding": "hex",
+                    "pattern": "^[0-9a-fA-F]{64}$",
+                    "$comment": "A 32 bytes array encoded in hexadecimal"
+                },
+                "valid_until": {
+                    "type": "integer",
+                    "description": "[Timestamp] of the expiration time",
+                    "minimum": 0
+                }
+            },
+            "additionalProperties": false,
+            "required": ["value", "valid_until"]
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "object",
+        "action",
+        "lao_id",
+        "server_address",
+        "public_key",
+        "challenge"
+    ]
+}
+
+```
+
+
+
+## Federation init
+This message is used to let a server know to initiate a connection with a remote server.
+
+It contains the necessary connection details, and a challenge which the remote party will expect to receive and the server will use to authenticate himself.
+<details>
+<summary>
+💡 See an example
+</summary>
+
+```json5
+// ../protocol/examples/messageData/federation_init/federation_init.json
+
+{
+    "object": "federation",
+    "action": "init",
+    "lao_id": "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=",
+    "public_key": "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=",
+    "server_address": "wss://epfl.ch:9000/server",
+    "challenge": {
+        "value": "82eadde2a4ba832518b90bb93c8480ee1ae16a91d5efe9281e91e2ec11da03e4",
+        "valid_until": 1712854874
+    }
+}
+
+```
+</details>
+
+```json5
+// ../protocol/query/method/message/data/dataFederationInit.json
+
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataFederationInit.json",
+    "description": "Sent by an organizer client to its server, initiates a connection to a remote LAO",
+    "type": "object",
+    "properties": {
+        "object": {
+            "const": "federation"
+        },
+        "action": {
+            "const": "init"
+        },
+        "lao_id": {
+            "type": "string",
+            "contentEncoding": "base64",
+            "$comment": "ID of the remote LAO"
+        },
+        "server_address": {
+            "type": "string",
+            "pattern": "^(ws|wss):\/\/.*(:\\d{0,5})?\/.*$",
+            "$comment": "public address of the remote organizer server"
+        },
+        "public_key": {
+            "type": "string",
+            "contentEncoding": "base64",
+            "$comment": "public key of the remote organizer"
+        },
+        "challenge": {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "type": "string",
+                    "contentEncoding": "hex",
+                    "pattern": "^[0-9a-fA-F]{64}$",
+                    "$comment": "A 32 bytes array encoded in hexadecimal"
+                },
+                "valid_until": {
+                    "type": "integer",
+                    "description": "[Timestamp] of the expiration time",
+                    "minimum": 0
+                }
+            },
+            "additionalProperties": false,
+            "required": ["value", "valid_until"]
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "object",
+        "action",
+        "lao_id",
+        "server_address",
+        "public_key",
+        "challenge"
+    ]
+}
+
+```
+

@@ -39,6 +39,11 @@ const message_data_meeting_create_schema = require("../query/method/message/data
 const message_data_meeting_state_schema = require("../query/method/message/data/dataStateMeeting.json");
 const message_data_message_witness_schema = require("../query/method/message/data/dataWitnessMessage.json");
 
+const message_data_federation_init_schema = require("../query/method/message/data/dataFederationInit.json")
+const message_data_federation_expect_schema = require("../query/method/message/data/dataFederationExpect.json")
+const message_data_federation_challenge_request_schema = require("../query/method/message/data/dataFederationChallengeRequest.json")
+const message_data_federation_challenge_schema = require("../query/method/message/data/dataFederationChallenge.json")
+
 const message_data_chirp_add_schema = require("../query/method/message/data/dataAddChirp.json");
 const message_data_chirp_notify_add_schema = require("../query/method/message/data/dataNotifyAddChirp.json");
 const message_data_chirp_delete_schema = require("../query/method/message/data/dataDeleteChirp.json");
@@ -102,6 +107,11 @@ ajv.addSchema([
     message_data_meeting_create_schema,
     message_data_meeting_state_schema,
     message_data_message_witness_schema,
+
+    message_data_federation_init_schema,
+    message_data_federation_expect_schema,
+    message_data_federation_challenge_request_schema,
+    message_data_federation_challenge_schema,
 
     message_data_chirp_notify_add_schema,
     message_data_chirp_add_schema,
