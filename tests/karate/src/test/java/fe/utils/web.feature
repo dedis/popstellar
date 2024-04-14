@@ -28,22 +28,22 @@ Feature: web page object
   @name=open_app
   Scenario:
     Given driver webDriverOptions
-    Given driver 'about:blank'
+    And driver 'about:blank'
     And driver.dimensions = { left: 0, top: 0, width: screenWidth, height: screenHeight }
-    Then driver frontendURL
+    When driver frontendURL
 
   @name=create_new_wallet
   Scenario:
     Given call read('web.feature@name=open_app')
     When waitFor(wallet_new_wallet_button)
-    Then click(wallet_new_wallet_button)
+    And click(wallet_new_wallet_button)
 
   @name=restore_wallet
   Scenario:
     Given call read('web.feature@name=open_app')
     When waitFor(wallet_goto_restore_wallet_button).click()
-    Then input(wallet_restore_input, params.seed)
-    Then click(wallet_restore_wallet_button)
+    And input(wallet_restore_input, params.seed)
+    And click(wallet_restore_wallet_button)
 
   @name=lao_join
   Scenario:

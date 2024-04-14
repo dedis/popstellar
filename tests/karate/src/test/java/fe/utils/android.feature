@@ -25,20 +25,20 @@ Feature: android page object
   @name=open_app
   Scenario:
     Given driver webDriverOptions
-    Then waitFor(wallet_button_empty_ok).click()
+    When waitFor(wallet_button_empty_ok).click()
 
   @name=create_new_wallet
   Scenario:
     Given call read('android.feature@name=open_app')
     When waitFor(wallet_new_wallet_button)
-    Then click(wallet_new_wallet_button)
-    Then waitFor(wallet_confirm_new_wallet_button).click()
+    And click(wallet_new_wallet_button)
+    And waitFor(wallet_confirm_new_wallet_button).click()
 
   @name=restore_wallet
   Scenario:
     Given call read('android.feature@name=open_app')
     When input(wallet_restore_input, params.seed)
-    Then click(wallet_restore_button)
+    And click(wallet_restore_button)
 
   @name=lao_join
   Scenario:

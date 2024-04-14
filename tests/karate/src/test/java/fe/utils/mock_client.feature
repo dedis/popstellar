@@ -1,7 +1,7 @@
 @ignore @report=false
 Feature: Mock Client
 
-  Scenario: Creates mock clients that can connect to a server as a frontend or server
+  Scenario: Creates mock clients that can connect to a server as a frontend or server. Close the connections after each scenario.
     * def mockClients = []
     * def createMockClient =
       """
