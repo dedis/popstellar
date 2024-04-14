@@ -11,8 +11,7 @@ To create test cases, we handcraft messages with either valid or invalid message
 The mock components then send these messages to the component being tested.
 We then check that the responses the mock components receive are as expected.
 
-## Architecture
-### Features and Scenarios
+## Features and Scenarios
 Karate test cases are called scenarios and they are grouped within different feature files.
 Each feature file tests a different message type (i.e. electionOpen, createRollCall etc.).
 
@@ -24,7 +23,7 @@ For instance, `publish` creates a message of type publish that contains some hig
 - **Then**: Asserts that the action taken in the 'When' step has the expected outcome.
 - **And**: Connector that can be used after any of the other keywords.
 
-### Background section
+## Background section
 Code defined in the background section of a feature file runs before each scenario. This is especially useful for:
 
 - **Sharing scopes with other features**: The call to `read(classpath: "path/to/feature")` is used to make the current feature share the same scope as the feature that is called.
@@ -35,6 +34,7 @@ For instance, reading `mockClient.feature` exposes functions like `createMockFro
 - **Setting up previous steps necessary for a test**: For instance, before roll call messages can be tested, a LAO needs to be created first.
 `simpleScenarios.feature` contains many such useful setup steps.
 
+## Backend tests architecture
 ### Data model
 To generate valid message data for JSON payloads dynamically, a simplified version of the model is implemented in Java code.
 Mock components can create valid objects (for instance LAO, RollCall, Elections etc.), that can be used to handcraft messages.
@@ -93,6 +93,37 @@ Feature: Create a Roll Call
     Then match answer contains VALID_MESSAGE
     And match organizer.receiveNoMoreResponses() == true
 ```
+
+## Frontend tests architecture
+### Files
+* `utils`
+  * `constants.feature`: Contains all the necessary constants. Usually called at the beginning of any feature.
+  * `android.feature` and `web.feature`: Contain platform specific scenarios that will be used by the actual tests. Both files should implement the same scenarios.
+  * `platform.feature`: A simple wrapper around `android.feature` and `web.feature` that allows you to call the right scenario depending on the current env you are testing for. (i.e. if you set `karate.env=web`, if will call scenarios from `web.feature`)
+  * `mock_client.feature`: Allows you to create a mock client via `createMockClient`. Automatically stops all clients after each scenario.
+* `features`: The actual tests
+
+### Example: Lao join
+```gherkin
+Feature: LAO
+  Background:
+    # Get the needed utils
+    * call read('classpath:fe/utils/constants.feature')
+    * call read(MOCK_CLIENT_FEATURE)
+
+  @name=lao_join
+  Scenario: Manually connect to an existing LAO
+    # Use a mock client to create a random lao
+    Given def organizer = createMockClient()
+    And def lao = organizer.createLao()
+    # Call platform specific code with some parameters
+    # i.e. if karate.env=web, equals to call('classpath:fe/utils/web.feature@name=lao_join') { params: { lao: "#(lao)" } }
+    When call read(PLATFORM_FEATURE) { name: "#(JOIN_LAO)", params: { lao: "#(lao)" } }
+    # Actual test: The user should not have access to the button
+    Then assert !exists(event_create_button)
+    And screenshot()
+```
+
 
 ## First Setup
 
@@ -173,36 +204,15 @@ mvn test -Dkarate.options="--tags @scenarioTagName"
 
 With the Karate plugin for IntelliJ, the full tests can also be run directly from inside IDE in the `BackEndTest` class.
 
-
-### Android Front-end
-Build the application by running `./gradlew assembleDebug` in the corresponding directory.
-
-Then, launch the Appium server (using the command `appium`) as well as a backend server.
-
-Finally run the tests.
-```
-mvn test -Dkarate.env=android -Dtest=FrontEndTest#fullTest
-```
-
-In case you have multiple emulators running, you may specify one by avd id. To find the avd id of some emulator, go to the Device Manager (`Tools -> Device Manager`) and follow the steps in the image below.
-
-![Find avd id Android Studio](./images/android_studio_find_avd_id.png)
-
-Once you have the avd id of your emulator, you can use the command below to run the tests on this specific emulator.
-```shell
-mvn test -Dkarate.env=android -Davd=<avd_id> -Dtest=FrontEndTest#fullTest
-#e.g. mvn test -Dkarate.env=android -Davd=Galaxy_Note_9_API_29 -Dtest=FrontEndTest#fullTest
-```
-
 ### Web Front-end
 Build the app with `npm run build-web` in the corresponding directory.
 
 Launch the Appium server (with `appium`).
 
-Run the tests.
-```
-mvn test -Dkarate.env=web -Dtest=FrontEndTest#fullTest
-```
+Finally run the tests:
+* All tests: `mvn test -Dkarate.env=web -Dtest=FrontEndTest#fullTest`
+* One feature: `mvn test -Dkarate.env=web -Dtest=FrontEndTest#fullTest -Dkarate.options="classpath:fe/features/<file_name>.feature"`
+* One scenario: `mvn test -Dkarate.env=web -Dtest=FrontEndTest#fullTest -Dkarate.options="classpath:fe/features/<file_name>.feature --tags=@name=<scenario_name>"`
 
 The following options are available (option names must be prefixed by `-D`).
 | Name         | Description                                    | Default                                   |
@@ -213,8 +223,8 @@ The following options are available (option names must be prefixed by `-D`).
 | screenHeight | Height of the browser                          | 1080                                      |
 | serverURL    | Client URL of the backend server               | 'ws://localhost:9000/client' for the web and 'ws://10.0.2.2:9000/client' for android |
 
-### Web Front-end
-Build the app with `npm run build-web` in the corresponding directory.
+### Android Front-end
+Build the application by running `./gradlew assembleDebug` in the corresponding directory.
 
 Launch the Appium server (with `appium`).
 
@@ -222,6 +232,16 @@ Finally run the tests:
 * All tests: `mvn test -Dkarate.env=android -Dtest=FrontEndTest#fullTest`
 * One feature: `mvn test -Dkarate.env=android -Dtest=FrontEndTest#fullTest -Dkarate.options="classpath:fe/features/<file_name>.feature"`
 * One scenario: `mvn test -Dkarate.env=android -Dtest=FrontEndTest#fullTest -Dkarate.options="classpath:fe/features/<file_name>.feature --tags=@name=<scenario_name>"`
+
+In case you have multiple emulators running, you may specify one by avd id. To find the avd id of some emulator, go to the Device Manager (`Tools -> Device Manager`) and follow the steps in the image below.
+
+![Find avd id Android Studio](./images/android_studio_find_avd_id.png)
+
+Once you have the avd id of your emulator, you can use the command below to run the tests on this specific emulator.
+```shell
+mvn test -Dkarate.env=android -Davd=<avd_id> -Dtest=FrontEndTest#fullTest
+#e.g. mvn test -Dkarate.env=android -Davd=Galaxy_Note_9_API_29 -Dtest=FrontEndTest#fullTest
+```
 
 The following options are available (option names must be prefixed by `-D`).
 | Name         | Description                                    | Default                                   |
