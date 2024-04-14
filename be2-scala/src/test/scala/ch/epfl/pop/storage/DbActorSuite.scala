@@ -1,14 +1,15 @@
 package ch.epfl.pop.storage
 
-import ch.epfl.pop.decentralized.{FailingToyDbActor, Monitor, ToyDbActor}
-import ch.epfl.pop.model.network.method.Heartbeat
+import akka.actor.{ActorRef, ActorSystem, Props}
+import akka.pattern.{AskableActorRef, ask}
+import akka.testkit.{ImplicitSender, TestKit}
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.lao.GreetLao
 import ch.epfl.pop.model.network.method.message.data.{ActionType, ObjectType}
-import ch.epfl.pop.model.objects.Channel.ROOT_CHANNEL_PREFIX
 import ch.epfl.pop.model.objects.*
+import ch.epfl.pop.model.objects.Channel.ROOT_CHANNEL_PREFIX
 import ch.epfl.pop.pubsub.{AskPatternConstants, MessageRegistry, PubSubMediator}
-import ch.epfl.pop.storage.DbActor.{DbActorGenerateHeartbeatAck, DbActorReadServerPrivateKeyAck, DbActorReadServerPublicKeyAck, GenerateHeartbeat, GetAllChannels}
+import ch.epfl.pop.storage.DbActor.*
 import com.google.crypto.tink.subtle.Ed25519Sign
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.concurrent.ScalaFutures
@@ -16,14 +17,10 @@ import org.scalatest.funsuite.AnyFunSuiteLike as FunSuiteLike
 import org.scalatest.matchers.should.Matchers
 import util.examples.MessageExample
 import util.examples.RollCall.{CreateRollCallExamples, OpenRollCallExamples}
-import akka.actor.{ActorRef, ActorSystem, Props}
-import akka.pattern.{AskableActorRef, ask}
-import akka.testkit.{ImplicitSender, TestKit, TestProbe}
 
 import scala.collection.immutable.HashMap
-import scala.concurrent.duration.DurationInt
 import scala.concurrent.Await
-import scala.util.{Failure, Success}
+import scala.concurrent.duration.DurationInt
 
 class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with FunSuiteLike with ImplicitSender with Matchers with ScalaFutures with BeforeAndAfterAll with AskPatternConstants {
 
@@ -918,7 +915,7 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
     val answer = Await.result(ask, duration)
     val heartbeat = answer.asInstanceOf[DbActorGenerateHeartbeatAck].heartbeatMap
     
-    heartbeat should equal(Some(HashMap()))
+    heartbeat should equal(None)
         
   }
   

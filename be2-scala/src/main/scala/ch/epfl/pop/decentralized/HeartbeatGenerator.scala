@@ -71,5 +71,4 @@ object HeartbeatGenerator {
   def props(dbActorRef: AskableActorRef): Props =
     Props(new HeartbeatGenerator(dbActorRef))
 
-}
-*/
+}*/

@@ -9,8 +9,8 @@ import ch.epfl.pop.json.MessageDataProtocol.GreetLaoFormat
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.lao.GreetLao
 import ch.epfl.pop.model.network.method.message.data.{ActionType, ObjectType}
-import ch.epfl.pop.model.objects.Channel.{LAO_DATA_LOCATION, ROOT_CHANNEL_PREFIX}
 import ch.epfl.pop.model.objects.*
+import ch.epfl.pop.model.objects.Channel.{LAO_DATA_LOCATION, ROOT_CHANNEL_PREFIX}
 import ch.epfl.pop.pubsub.graph.AnswerGenerator.timout
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, JsonString}
 import ch.epfl.pop.pubsub.{MessageRegistry, PubSubMediator, PublishSubscribe}
@@ -18,11 +18,10 @@ import ch.epfl.pop.storage.DbActor.*
 import com.google.crypto.tink.subtle.Ed25519Sign
 
 import java.util.concurrent.TimeUnit
+import scala.collection.immutable.HashMap
 import scala.concurrent.Await
 import scala.concurrent.duration.{Duration, FiniteDuration}
 import scala.util.{Failure, Success, Try}
-import scala.collection.immutable.HashMap
-import scala.collection.mutable
 
 final case class DbActor(
     private val mediatorRef: ActorRef,
@@ -374,6 +373,7 @@ final case class DbActor(
   @throws[DbActorNAckException]
   private def generateHeartbeat() : Option[HashMap[Channel, Set[Hash]]] = {
     val setOfChannels = getAllChannels
+    if (setOfChannels.isEmpty) return None
     var heartbeatMap : HashMap[Channel, Set[Hash]] = HashMap()
     setOfChannels.foreach(channel => {
       val channelData = readChannelData(channel)
@@ -384,6 +384,7 @@ final case class DbActor(
 
     Some(heartbeatMap)
   }
+  
   override def receive: Receive = LoggingReceive {
     case Write(channel, message) =>
       log.info(s"Actor $self (db) received a WRITE request on channel '$channel'")
