@@ -6,7 +6,7 @@ Feature: Mock Client
     * def createMockFrontend =
       """
         function(){
-          var MockClient = Java.type('be.utils.MockClient')
+          var MockClient = Java.type('common.utils.MockClient')
           var mockFrontend = new MockClient(frontendWsURL)
           mockClients.push(mockFrontend)
           return mockFrontend
@@ -15,7 +15,7 @@ Feature: Mock Client
     * def createMockBackend =
       """
         function(){
-          var MockClient = Java.type('be.utils.MockClient')
+          var MockClient = Java.type('common.utils.MockClient')
           var mockBackend = new MockClient(backendWsURL)
           mockClients.push(mockBackend)
           return mockBackend

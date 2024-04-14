@@ -1,4 +1,4 @@
-package be.model;
+package common.model;
 
 /** Simplified version of a non-encrypted vote for one question, used to generate valid vote data. */
 public class PlainVote {

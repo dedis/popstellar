@@ -1,6 +1,6 @@
-package be.utils;
+package common.utils;
 
-import be.model.*;
+import common.model.*;
 import com.intuit.karate.http.WebSocketOptions;
 import com.intuit.karate.Logger;
 import common.net.MessageQueue;
