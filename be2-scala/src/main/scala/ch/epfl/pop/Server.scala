@@ -49,8 +49,8 @@ object Server {
       val securityModuleActorRef: AskableActorRef = system.actorOf(Props(SecurityModuleActor(RuntimeEnvironment.securityPath)))
 
       // Create necessary actors for server-server communications
-      //val heartbeatGenRef: ActorRef = system.actorOf(HeartbeatGenerator.props(dbActorRef))
-      //val monitorRef: ActorRef = system.actorOf(Monitor.props(heartbeatGenRef))
+      // val heartbeatGenRef: ActorRef = system.actorOf(HeartbeatGenerator.props(dbActorRef))
+      // val monitorRef: ActorRef = system.actorOf(Monitor.props(heartbeatGenRef))
       val monitorRef: ActorRef = system.actorOf(Monitor.props(dbActorRef))
       val connectionMediatorRef: ActorRef = system.actorOf(ConnectionMediator.props(monitorRef, pubSubMediatorRef, dbActorRef, securityModuleActorRef, messageRegistry))
 

@@ -60,16 +60,14 @@ final case class Monitor(
       timers.cancel(singleHbKey)
 
       val askForHeartbeat = dbActorRef ? DbActor.GenerateHeartbeat()
-      val heartbeat : HashMap[Channel, Set[Hash]] =
+      val heartbeat: HashMap[Channel, Set[Hash]] =
         Await.ready(askForHeartbeat, duration).value.get match
           case Success(DbActor.DbActorGenerateHeartbeatAck(Some(map))) => map
-          case Failure(ex: DbActorNAckException) => HashMap.empty[Channel, Set[Hash]] // Specific failure
-          case _ => HashMap.empty[Channel, Set[Hash]] // Handle anything else
+          case Failure(ex: DbActorNAckException)                       => HashMap.empty[Channel, Set[Hash]] // Specific failure
+          case _                                                       => HashMap.empty[Channel, Set[Hash]] // Handle anything else
 
       if (heartbeat.nonEmpty)
         connectionMediatorRef ! Heartbeat(heartbeat)
-
-
 
     case Right(jsonRpcMessage: JsonRpcRequest) =>
       jsonRpcMessage.getParams match {

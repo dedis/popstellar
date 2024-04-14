@@ -32,7 +32,7 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
   val ELECTION_ID: Hash = Hash(Base64Data.encode("electionId"))
   val ELECTION_DATA_KEY: String = "Data:" + s"${ROOT_CHANNEL_PREFIX}${LAO_ID.toString}/private/${ELECTION_ID.toString}"
   val KEYPAIR: KeyPair = KeyPair()
-  
+
   private val timeout = 3.second
 
   override def afterAll(): Unit = {
@@ -878,7 +878,6 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
     dbPrivateKey should equal(privateKey)
   }
 
-
   test("GenerateHeartBeat returns a non-empty localHeartbeat") {
     val channelName1 = CHANNEL_NAME
     val channelName2 = s"${CHANNEL_NAME}2"
@@ -903,21 +902,20 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
     answer shouldBe a[DbActor.DbActorGenerateHeartbeatAck]
     val heartbeat = answer.asInstanceOf[DbActorGenerateHeartbeatAck].heartbeatMap
     val expected = Some(HashMap(Channel(channelName2) -> Set(MESSAGE.message_id, messageId), Channel(channelName1) -> Set(MESSAGE.message_id, messageId)))
-    
+
     heartbeat should equal(expected)
   }
 
-  test("GenerateHearbeat returns an empty localHeartbeat"){
+  test("GenerateHearbeat returns an empty localHeartbeat") {
     val initialStorage: InMemoryStorage = InMemoryStorage()
     val dbActor: ActorRef = system.actorOf(Props(DbActor(mediatorRef, MessageRegistry(), initialStorage)))
 
     val ask = dbActor ? GenerateHeartbeat()
     val answer = Await.result(ask, duration)
     val heartbeat = answer.asInstanceOf[DbActorGenerateHeartbeatAck].heartbeatMap
-    
+
     heartbeat should equal(None)
-        
+
   }
-  
-  
+
 }

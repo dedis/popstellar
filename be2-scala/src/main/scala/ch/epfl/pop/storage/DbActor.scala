@@ -371,10 +371,10 @@ final case class DbActor(
   }
 
   @throws[DbActorNAckException]
-  private def generateHeartbeat() : Option[HashMap[Channel, Set[Hash]]] = {
+  private def generateHeartbeat(): Option[HashMap[Channel, Set[Hash]]] = {
     val setOfChannels = getAllChannels
     if (setOfChannels.isEmpty) return None
-    var heartbeatMap : HashMap[Channel, Set[Hash]] = HashMap()
+    var heartbeatMap: HashMap[Channel, Set[Hash]] = HashMap()
     setOfChannels.foreach(channel => {
       val channelData = readChannelData(channel)
       val setOfIds: Set[Hash] = channelData.messages.toSet
@@ -384,7 +384,7 @@ final case class DbActor(
 
     Some(heartbeatMap)
   }
-  
+
   override def receive: Receive = LoggingReceive {
     case Write(channel, message) =>
       log.info(s"Actor $self (db) received a WRITE request on channel '$channel'")
@@ -562,14 +562,12 @@ final case class DbActor(
       log.info(s"Actor $self (db) received a GenerateHeartbeat request")
       Try(generateHeartbeat()) match {
         case Success(heartbeat) => sender() ! DbActorGenerateHeartbeatAck(heartbeat)
-        case failure => sender() ! failure.recover(Status.Failure(_))
+        case failure            => sender() ! failure.recover(Status.Failure(_))
       }
 
     case m =>
       log.info(s"Actor $self (db) received an unknown message")
       sender() ! Status.Failure(DbActorNAckException(ErrorCodes.INVALID_ACTION.id, s"database actor received a message '$m' that it could not recognize"))
-
-
 
   }
 }
@@ -786,8 +784,6 @@ object DbActor {
   /** Request to generate a local heartbeat */
   final case class GenerateHeartbeat() extends Event
 
-
-
   // DbActor DbActorMessage correspond to messages the actor may emit
   sealed trait DbActorMessage
 
@@ -863,11 +859,11 @@ object DbActor {
   final case class DbActorReadServerPrivateKeyAck(privateKey: PrivateKey) extends DbActorMessage
 
   /** Response for a [[GenerateHeartbeat]] db request Receiving [[DbActorGenerateHeartbeatAck]] works as an acknowledgement that the request was successful
-   *
-   @param heartbeatMap
-   * requested heartbeat as a map from the channels to message ids
-   */
-  final case class DbActorGenerateHeartbeatAck(heartbeatMap : Option[HashMap[Channel, Set[Hash]]]) extends DbActorMessage
+    *
+    * @param heartbeatMap
+    *   requested heartbeat as a map from the channels to message ids
+    */
+  final case class DbActorGenerateHeartbeatAck(heartbeatMap: Option[HashMap[Channel, Set[Hash]]]) extends DbActorMessage
 
   /** Response for a general db actor ACK
     */

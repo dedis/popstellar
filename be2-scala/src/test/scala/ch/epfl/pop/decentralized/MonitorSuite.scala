@@ -15,7 +15,6 @@ import org.scalatest.matchers.should.Matchers
 import util.examples.JsonRpcRequestExample
 import ch.epfl.pop.storage.DbActor
 
-
 import java.io.{File, PrintWriter}
 import java.nio.file.Path
 import scala.collection.immutable.HashMap
@@ -52,13 +51,13 @@ class MonitorSuite extends TestKit(ActorSystem("MonitorSuiteActorSystem")) with 
     val monitorRef = system.actorOf(
       Monitor.props(testProbe.ref, heartbeatRate = fastRate, messageDelay = fastRate)
     )
-    
+
     testProbe.send(monitorRef, ConnectionMediator.Ping())
     testProbe.expectMsgType[ConnectionMediator.ConnectTo](timeout)
     testProbe.send(monitorRef, Monitor.AtLeastOneServerConnected)
     testProbe.expectMsgType[DbActor.GenerateHeartbeat](timeout)
     testProbe.reply(DbActor.DbActorGenerateHeartbeatAck(Some(HashMap())))
-     
+
   }
 
   test("monitor should schedule single heartbeat when receiving a Right GraphMessage") {
@@ -74,7 +73,7 @@ class MonitorSuite extends TestKit(ActorSystem("MonitorSuiteActorSystem")) with 
 
     Source.single(Right(JsonRpcRequestExample.subscribeRpcRequest)).to(sink).run()
     testProbe.expectMsgType[DbActor.GenerateHeartbeat](timeout)
-    
+
   }
 
   test("monitor should not schedule any heartbeats when receiving a heartbeat or get_messages_by_id") {
@@ -97,7 +96,7 @@ class MonitorSuite extends TestKit(ActorSystem("MonitorSuiteActorSystem")) with 
     // Check that monitor is still doing fine when receiving other Right(...)
     Source.single(Right(JsonRpcRequestExample.subscribeRpcRequest)).to(sink).run()
     testProbe.expectMsgType[DbActor.GenerateHeartbeat](timeout)
-    //testProbe.expectMsgType[Monitor.GenerateAndSendHeartbeat](timeout)
+    // testProbe.expectMsgType[Monitor.GenerateAndSendHeartbeat](timeout)
 
     Source.single(Right(getMessagesById)).to(sink).run()
     testProbe.expectNoMessage(timeout)
@@ -200,15 +199,14 @@ class MonitorSuite extends TestKit(ActorSystem("MonitorSuiteActorSystem")) with 
       Monitor.props(toyDbActorRef, heartbeatRate = fastRate, messageDelay = fastRate)
     )
     val expected = Map(CHANNEL1 -> Set(MESSAGE1_ID), CHANNEL2 -> Set(MESSAGE4_ID))
-    
+
     // Ping monitor to inform it of ConnectionMediatorRef
     mockConnectionMediator.send(monitorRef, ConnectionMediator.Ping())
     mockConnectionMediator.expectMsgType[ConnectionMediator.ConnectTo](timeout)
-    
+
     mockConnectionMediator.send(monitorRef, Monitor.TriggerHeartbeat)
     mockConnectionMediator.expectMsg(timeout, Heartbeat(expected))
-    
-    
+
   }
 
   test("monitor should send nothing when failing to query the data base") {
@@ -223,5 +221,5 @@ class MonitorSuite extends TestKit(ActorSystem("MonitorSuiteActorSystem")) with 
     mockConnectionMediator.send(monitorRef, Monitor.TriggerHeartbeat)
     mockConnectionMediator.expectNoMessage(timeout)
   }
-  
+
 }
