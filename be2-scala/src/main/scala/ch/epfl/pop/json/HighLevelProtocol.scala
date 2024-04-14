@@ -209,9 +209,10 @@ object HighLevelProtocol extends DefaultJsonProtocol {
       jsonObject.getFields(PARAM_SENDER_PK, PARAM_RUMOR_ID, PARAM_MESSAGES) match {
         case Seq(senderPk @ JsString(_), rumorId @ JsNumber(_), JsArray(messages)) =>
           val map: Map[Channel, Array[Message]] = messages.map {
-            case JsObject(obj) => val channelKey = obj.keys.headOption.getOrElse {
-              throw new IllegalArgumentException(s"No key found in JSON object: $obj")
-            }
+            case JsObject(obj) =>
+              val channelKey = obj.keys.headOption.getOrElse {
+                throw new IllegalArgumentException(s"No key found in JSON object: $obj")
+              }
               val channel = Channel(channelKey)
               val messagesJson = obj(channelKey).asInstanceOf[JsArray]
               val messages = messagesJson.elements.map(_.convertTo[Message]).toArray

@@ -269,9 +269,9 @@ class HighLevelProtocolSuite extends FunSuite with Matchers {
 
   }
 
-  test("parse jsonRPC correctly to rumor"){
+  test("parse jsonRPC correctly to rumor") {
     val jsonRpcRequest: JsonRpcRequest = JsonRpcRequest.buildFromJson(exampleRumor.rumorJson)
-    val rumor : Rumor = jsonRpcRequest.getParams.asInstanceOf[Rumor]
+    val rumor: Rumor = jsonRpcRequest.getParams.asInstanceOf[Rumor]
 
     rumor.rumorId should equal(1)
     rumor.senderPk should equal(PublicKey(Base64Data("J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=")))
