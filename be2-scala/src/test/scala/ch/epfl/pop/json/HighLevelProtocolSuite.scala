@@ -8,6 +8,7 @@ import ch.epfl.pop.pubsub.graph.validators.RpcValidator
 import org.scalatest.Inspectors.forEvery
 import org.scalatest.funsuite.AnyFunSuite as FunSuite
 import org.scalatest.matchers.should.Matchers
+import util.examples.json.rumor.exampleRumor
 import spray.json.*
 
 import scala.collection.immutable.{HashMap, Set}
@@ -266,6 +267,18 @@ class HighLevelProtocolSuite extends FunSuite with Matchers {
     rumorFromJson.getParams.asInstanceOf[Rumor].messages.values.zip(messages.values).foreach((arrMsg1, arrMsg2) => arrMsg1 should equal(arrMsg2))
     rumorFromJson.id should equal(rpcId)
 
+  }
+
+  test("parse jsonRPC correctly to rumor"){
+    val jsonRpcRequest: JsonRpcRequest = JsonRpcRequest.buildFromJson(exampleRumor.rumorJson)
+    val rumor : Rumor = jsonRpcRequest.getParams.asInstanceOf[Rumor]
+
+    rumor.rumorId should equal(1)
+    rumor.senderPk should equal(PublicKey(Base64Data("J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=")))
+    rumor.messages.keys.size should equal(2)
+    rumor.messages.values.foreach { x =>
+      x.length should not be 0
+    }
   }
 
   test("parse correctly get_messages_by_id answers") {
