@@ -39,3 +39,8 @@ Feature: android page object
     Given call read('android.feature@name=open_app')
     When input(wallet_restore_input, params.seed)
     Then click(wallet_restore_button)
+
+  @name=lao_join
+  Scenario:
+    # Not implemented yet
+    * assert false

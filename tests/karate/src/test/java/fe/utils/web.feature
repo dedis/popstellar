@@ -23,6 +23,7 @@ Feature: web page object
 
     # Event screen
     * def event_create_button = "[data-testid='create_event_selector']"
+    * def event_title = "{}Events"
 
   @name=open_app
   Scenario:
@@ -44,3 +45,12 @@ Feature: web page object
     Then input(wallet_restore_input, params.seed)
     Then click(wallet_restore_wallet_button)
 
+  @name=lao_join
+  Scenario:
+    Given call read('web.feature@name=create_new_wallet')
+    When waitFor(lao_join_button).click()
+    And waitFor(lao_enter_manually_button).click()
+    And waitFor(lao_enter_manually_server_input).clear().input(serverURL)
+    And waitFor(lao_enter_manually_lao_input).clear().input(params.lao.id)
+    And click(lao_enter_manually_submit_button)
+    Then waitFor(event_title)

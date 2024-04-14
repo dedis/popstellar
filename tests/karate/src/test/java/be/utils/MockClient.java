@@ -11,6 +11,8 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 /** Websocket client capable of creating lao, roll call, and election objects and issuing coins */
 public class MockClient extends MultiMsgWebSocketClient {
@@ -91,7 +93,33 @@ public class MockClient extends MultiMsgWebSocketClient {
     return transaction;
   }
 
-  public void sendCreateLao(Lao lao = lao) {
+  /**
+   * Creates a newly generated lao.
+   * @return the lao created
+   */
+  public Lao createLao() {
+    Lao lao = generateValidLao();
+    return createLao(lao);
+  }
 
+  /**
+   * Creates a lao.
+   * @param lao the lao to create
+   * @return the lao passed as argument
+   */
+  public Lao createLao(Lao lao) {
+    Map<String, Object> request = new HashMap<>();
+    request.put("object", "lao");
+    request.put("action", "create");
+    request.put("id", lao.id);
+    request.put("name", lao.name);
+    request.put("creation", lao.creation);
+    request.put("organizer", lao.organizerPk);
+    request.put("witnesses", lao.witnesses);
+
+    this.publish(request, "/root");
+    this.getBackendResponse(request);
+
+    return lao;
   }
 }
