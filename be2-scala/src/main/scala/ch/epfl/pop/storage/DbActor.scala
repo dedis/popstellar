@@ -374,13 +374,13 @@ final case class DbActor(
   private def generateHeartbeat(): Option[HashMap[Channel, Set[Hash]]] = {
     val setOfChannels = getAllChannels
     if (setOfChannels.isEmpty) return None
-    var heartbeatMap: HashMap[Channel, Set[Hash]] = HashMap()
-    setOfChannels.foreach(channel => {
-      val channelData = readChannelData(channel)
-      val setOfIds: Set[Hash] = channelData.messages.toSet
-      if (setOfIds.nonEmpty)
-        heartbeatMap += (channel -> setOfIds)
-    })
+    val heartbeatMap: HashMap[Channel, Set[Hash]] = setOfChannels.foldLeft(HashMap.empty[Channel, Set[Hash]]) {
+      (acc, channel) =>
+        readChannelData(channel).messages.toSet match {
+          case setOfIds if setOfIds.nonEmpty => acc + (channel -> setOfIds)
+          case _                             => acc
+        }
+    }
 
     Some(heartbeatMap)
   }

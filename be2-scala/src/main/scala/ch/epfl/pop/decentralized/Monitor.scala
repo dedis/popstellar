@@ -63,7 +63,6 @@ final case class Monitor(
       val heartbeat: HashMap[Channel, Set[Hash]] =
         Await.ready(askForHeartbeat, duration).value.get match
           case Success(DbActor.DbActorGenerateHeartbeatAck(Some(map))) => map
-          case Failure(ex: DbActorNAckException)                       => HashMap.empty[Channel, Set[Hash]] // Specific failure
           case _                                                       => HashMap.empty[Channel, Set[Hash]] // Handle anything else
 
       if (heartbeat.nonEmpty)
