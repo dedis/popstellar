@@ -544,6 +544,10 @@ namespace STRINGS {
 
   /* --- Linked Organizations Strings --- */
   export const linked_organizations_description = 'Here you can find all linked organizations, unlink them and add new ones.';
+  export const linked_organizations_addlinkedorg_title = 'Add Linked Organization'
+  export const linked_organizations_addlinkedorg_info = 'To link a new organization, one organizer has to first generate a QR Code (Generate new QR Code), while the other one scans it (Scan QR Code). After scanning the first QR Code, the other QR Code will appear . After the first QR Code was scanned, you can open the other scanner to scan the second QR Code by clicking the “Next” button. '
+  export const linked_organizations_addlinkedorg_genQRCode = 'Generate QR Code'
+  export const linked_organizations_addlinkedorg_scanQRCode = 'Scan QR Code'
 
   /* --- General creation Strings --- */
   export const create_description = 'Choose the type of event you want to create';

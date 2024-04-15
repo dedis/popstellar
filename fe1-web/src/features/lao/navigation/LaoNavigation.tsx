@@ -128,6 +128,7 @@ const LaoNavigation: React.FC<unknown> = () => {
 
 
 
+
   // add the organizer or attendee screen depeding on the user
   const screens: LaoFeature.LaoScreen[] = useMemo(() => {
     return (

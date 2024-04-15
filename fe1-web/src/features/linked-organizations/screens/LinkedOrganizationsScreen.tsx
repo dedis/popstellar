@@ -2,18 +2,21 @@ import { CompositeScreenProps, useNavigation } from '@react-navigation/core';
 import { StackScreenProps } from '@react-navigation/stack';
 import { ListItem, FAB } from '@rneui/themed';
 import React, { useState } from 'react';
-import { Text, View } from 'react-native';
-
+import { Text, View, Modal } from 'react-native';
+import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
+import ModalHeader from 'core/components/ModalHeader';
 import ScreenWrapper from 'core/components/ScreenWrapper';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { LinkedOrganizationsParamList } from 'core/navigation/typing/LinkedOrganizationsParamList';
 import { LaoParamList } from 'core/navigation/typing/LaoParamList';
-import { List, Typography } from 'core/styles';
+import { List, ModalStyles, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 import { LinkedOrganizationsHooks } from '../hooks';
 import { Organization } from '../objects/Organizations';
 import { accent, contrast } from 'core/styles/color';
-import { PoPIcon } from 'core/components';
+import { PoPButton, PoPIcon } from 'core/components';
+
+
 
 
 type NavigationProps = CompositeScreenProps<
@@ -39,6 +42,7 @@ const LinkedOrganizationsScreen = () => {
   const isOrganizer = LinkedOrganizationsHooks.useIsLaoOrganizer(laoId);
 
   const [organizations, setOrganizations] = useState<Organization[]>(initialOrganizations);
+  const [showModal, setShowModal] = useState<boolean>(false);
 
   const handleAdd = () => {
     // Logic for adding a new organization
@@ -67,15 +71,57 @@ const LinkedOrganizationsScreen = () => {
                     <ListItem.Title>{organization.name}</ListItem.Title>
                     <ListItem.Subtitle>ID: {organization.laoId}</ListItem.Subtitle>
                   </ListItem.Content>
-                  <ListItem.Chevron />
                 </ListItem>
               );
             })}
           </View>
+
+
+
+          <Modal
+        transparent
+        visible={showModal}
+        onRequestClose={() => {
+          setShowModal(!showModal);
+        }}>
+        <TouchableWithoutFeedback
+          containerStyle={ModalStyles.modalBackground}
+          onPress={() => {
+            setShowModal(!showModal);
+          }}
+        />
+        <View style={ModalStyles.modalContainer}>
+          <ModalHeader onClose={() => setShowModal(!showModal)}>
+            {STRINGS.linked_organizations_addlinkedorg_title}
+          </ModalHeader>
+          <Text style={Typography.paragraph}>{STRINGS.linked_organizations_addlinkedorg_info}</Text>
+          <View style={{ marginBottom: 10 }}>
+          <PoPButton
+          buttonStyle={'primary'}
+            onPress={handleAdd}
+            disabled={false}>
+            <Text style={{ ...Typography.paragraph, color: contrast, textAlign: 'center', margin: 15, }}>{STRINGS.linked_organizations_addlinkedorg_genQRCode}</Text>
+          </PoPButton>
+          </View>
+          <PoPButton
+            buttonStyle={'tertiary'}
+            onPress={handleAdd}
+            disabled={false}>
+            <Text style={{ ...Typography.paragraph, color: contrast, textAlign: 'center', margin: 15,}}>{STRINGS.linked_organizations_addlinkedorg_scanQRCode}</Text>
+          </PoPButton>
+        </View>
+      </Modal>
+
+
+
+
         </ScreenWrapper><FAB
             placement="right"
             color={accent}
-            onPress={handleAdd}
+            onPress={() => {
+                setShowModal(true);
+                handleAdd();
+              }}
             icon={{ name: 'add', color: contrast }}
             style={{ position: 'absolute', bottom: 30, right: 30 }} /></>)}
     </View>

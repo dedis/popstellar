@@ -4,6 +4,7 @@ import { StyleSheet, View, ViewStyle } from 'react-native';
 
 import { Border, Color, Spacing } from '../styles';
 import PoPTouchableOpacity from './PoPTouchableOpacity';
+import { background, popBlue } from 'core/styles/color';
 
 const styles = StyleSheet.create({
   toolbar: {} as ViewStyle,
@@ -41,6 +42,12 @@ const PoPButton = (props: IPropTypes) => {
     viewStyles.push(styles.outline);
   }
 
+
+  // popBlue button style changes background color
+  if (buttonStyle === 'tertiary') {
+    viewStyles.push({ backgroundColor: popBlue, borderColor: popBlue });
+  }
+
   return (
     <PoPTouchableOpacity
       containerStyle={toolbar ? styles.toolbar : styles.containerMargin}
@@ -55,7 +62,7 @@ const propTypes = {
   onPress: PropTypes.func.isRequired,
   // primary: colored background, negative text
   // secondary: outlined button
-  buttonStyle: PropTypes.oneOf<'primary' | 'secondary'>(['primary', 'secondary']),
+  buttonStyle: PropTypes.oneOf<'primary' | 'secondary' | 'tertiary' >(['primary', 'secondary', 'tertiary']),
   // changes background color / border color to be gray
   disabled: PropTypes.bool,
   // makes the button placement work in the toolbar
