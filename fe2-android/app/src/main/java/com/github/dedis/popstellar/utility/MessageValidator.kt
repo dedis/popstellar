@@ -156,12 +156,9 @@ object MessageValidator {
      * @throws IllegalArgumentException if any string is empty or not a URL-safe base64 encoding
      */
     fun areNotEmptyBase64(vararg inputs: String?, field: String): MessageValidatorBuilder {
-      inputs.forEach { input ->
-        isNotEmptyBase64(input, field)
-      }
+      inputs.forEach { input -> isNotEmptyBase64(input, field) }
       return this
     }
-
 
     fun isNotNull(input: Any?, field: String): MessageValidatorBuilder {
       requireNotNull(input) { "$field cannot be null" }
@@ -260,7 +257,8 @@ object MessageValidator {
     /**
      * Helper method to check that a message has a valid structure.
      *
-     * @param message the message to check, expected to be a map with string keys and optional string values
+     * @param message the message to check, expected to be a map with string keys and optional
+     *   string values
      */
     fun validMessage(message: Any): MessageValidatorBuilder {
       message as Map<*, *>
@@ -273,14 +271,10 @@ object MessageValidator {
       verify().areNotEmptyBase64(data, sender, signature, messageId, field = "Message Fields")
 
       val witnessSignatures = message["witness_signatures"] as? List<*>
-      witnessSignatures?.forEach {
-        verify().isNotEmptyBase64(it as String?, "Witness Signature")
-      }
+      witnessSignatures?.forEach { verify().isNotEmptyBase64(it as String?, "Witness Signature") }
 
       return this
     }
-
-
 
     /**
      * Helper method to check a single question for validity.
