@@ -122,3 +122,7 @@ export function validateScannableMainPublicKey(obj: any): ValidationResult {
 export function validateScannablePopToken(obj: any): ValidationResult {
   return validate(`${schemaPrefix}/qrcode/pop_token.json`, obj);
 }
+
+export function validateFederationExchange(obj: any): ValidationResult {
+  return validate(`${schemaPrefix}/qrcode/federation_exchange.json`, obj);
+}
