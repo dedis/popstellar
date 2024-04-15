@@ -148,6 +148,21 @@ object MessageValidator {
       return stringNotEmpty(input, field).isBase64(input, field)
     }
 
+    /**
+     * Helper method to ensure all provided strings are valid, not-empty URL-safe base64 encodings.
+     *
+     * @param inputs the strings to check
+     * @param field the name of the field (to print in case of error)
+     * @throws IllegalArgumentException if any string is empty or not a URL-safe base64 encoding
+     */
+    fun areNotEmptyBase64(vararg inputs: String?, field: String): MessageValidatorBuilder {
+      inputs.forEach { input ->
+        isNotEmptyBase64(input, field)
+      }
+      return this
+    }
+
+
     fun isNotNull(input: Any?, field: String): MessageValidatorBuilder {
       requireNotNull(input) { "$field cannot be null" }
       return this
@@ -245,23 +260,27 @@ object MessageValidator {
     /**
      * Helper method to check that a message has a valid structure.
      *
-     * @param message the message to check
+     * @param message the message to check, expected to be a map with string keys and optional string values
      */
     fun validMessage(message: Any): MessageValidatorBuilder {
       message as Map<*, *>
-      isNotEmptyBase64(message["data"] as String?, "data")
-      isNotEmptyBase64(message["sender"] as String?, "sender")
-      isNotEmptyBase64(message["signature"] as String?, "signature")
-      isNotEmptyBase64(message["message_id"] as String?, "message_id")
 
-      if (message["witness_signatures"] == null) {
-        return this
+      val data = message["data"] as String?
+      val sender = message["sender"] as String?
+      val signature = message["signature"] as String?
+      val messageId = message["message_id"] as String?
+
+      verify().areNotEmptyBase64(data, sender, signature, messageId, field = "Message Fields")
+
+      val witnessSignatures = message["witness_signatures"] as? List<*>
+      witnessSignatures?.forEach {
+        verify().isNotEmptyBase64(it as String?, "Witness Signature")
       }
-      val witnessSignatures = message["witness_signatures"] as List<*>
-      witnessSignatures.forEach { isNotEmptyBase64(it as String?, "witness_signature") }
 
       return this
     }
+
+
 
     /**
      * Helper method to check a single question for validity.
