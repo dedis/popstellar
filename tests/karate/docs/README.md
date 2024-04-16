@@ -59,7 +59,7 @@ This class provides the functions to create model data for LAOs, roll calls, ele
 For instance, here the created organizer and LAO are passed to the `createLaoScenario`.
 - The name tag `@createRollCall1` is used to call individual scenarios on the command line, see [Running the Tests](#running-the-tests)
 
-```
+```gherkin
 Feature: Create a Roll Call
 
   Background:
