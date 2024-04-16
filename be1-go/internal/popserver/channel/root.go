@@ -74,7 +74,7 @@ func handleLaoCreate(params types.HandlerParameters, msg message.Message, channe
 		errAnswer = errAnswer.Wrap("handleLaoCreate")
 		return errAnswer
 	}
-	errAnswer = createLaoAndSubChannels(params, channel, msg, laoGreetMsg, organizerPubBuf, laoPath)
+	errAnswer = createLaoAndChannels(params, msg, laoGreetMsg, organizerPubBuf, laoPath)
 	if errAnswer != nil {
 		errAnswer = errAnswer.Wrap("handleLaoCreate")
 		return errAnswer
@@ -147,15 +147,18 @@ func verifyLaoCreation(params types.HandlerParameters, msg message.Message, laoC
 	return organizerPubBuf, nil
 }
 
-func createLaoAndSubChannels(params types.HandlerParameters, channel string, msg, laoGreetMsg message.Message, organizerPubBuf []byte, laoPath string) *answer.Error {
+func createLaoAndChannels(params types.HandlerParameters, msg, laoGreetMsg message.Message, organizerPubBuf []byte, laoPath string) *answer.Error {
 	var errAnswer *answer.Error
 
-	channels := []string{laoPath + social + chirps,
-		laoPath + social + reactions,
-		laoPath + consensus,
-		laoPath + coin,
-		laoPath + auth}
-	err := params.DB.StoreChannelsAndMessageWithLaoGreet(channels, channel, laoPath, msg.MessageID, organizerPubBuf, msg, laoGreetMsg)
+	channels := map[string]string{
+		laoPath + social + chirps:    channelChirp,
+		laoPath + social + reactions: channelReaction,
+		laoPath + consensus:          channelConsensus,
+		laoPath + coin:               channelCoin,
+		laoPath + auth:               channelAuth,
+	}
+
+	err := params.DB.StoreChannelsAndMessageWithLaoGreet(channels, laoPath, organizerPubBuf, msg, laoGreetMsg)
 	if err != nil {
 		errAnswer = answer.NewInternalServerError("failed to store lao and sub channels: %v", err)
 		errAnswer = errAnswer.Wrap("createLaoAndSubChannels")

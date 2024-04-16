@@ -202,4 +202,5 @@ const (
 	channelConsensus    = "consensus"
 	channelPopCha       = "popcha"
 	channelCoin         = "coin"
+	channelAuth         = "auth"
 )

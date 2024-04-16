@@ -138,5 +138,16 @@ func Test_handleChannelLao_RollCallOpen(t *testing.T) {
 	require.Contains(t, errAnswer.Error(), fmt.Sprintf("roll call update id is %s, should be", wrongID))
 
 	//Test 2: error when RollCallOpen opens is not the same as previous RollCallCreate
-	
+
+	file = filepath.Join(laoTestDataPath, "wrong_rollCall_open_opens.json")
+	buf, err = os.ReadFile(file)
+	require.NoError(t, err)
+	buf64 = base64.URLEncoding.EncodeToString(buf)
+	openMsg = message.Message{
+		Data:              buf64,
+		Sender:            sender,
+		Signature:         "h",
+		MessageID:         messagedata.Hash(buf64, sender),
+		WitnessSignatures: []message.WitnessSignature{},
+	}
 }

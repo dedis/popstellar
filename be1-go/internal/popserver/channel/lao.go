@@ -525,7 +525,7 @@ func handleElectionSetup(msg message.Message, channel string, params types.Handl
 		return errAnswer
 	}
 	electionPath := channel + "/" + electionSetup.ID
-	err = params.DB.StoreMessageWithElectionKey(channel, electionPath, msg.MessageID, electionPubKey, electionSecretKey, msg, electionKeyMsg)
+	err = params.DB.StoreMessageWithElectionKey(channel, electionPath, electionPubKey, electionSecretKey, msg, electionKeyMsg)
 	if err != nil {
 		errAnswer = answer.NewInternalServerError("failed to store election setup message: %v", err)
 		errAnswer = errAnswer.Wrap("handleElectionSetup")
