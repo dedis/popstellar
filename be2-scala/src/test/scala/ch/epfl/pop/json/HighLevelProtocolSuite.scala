@@ -287,8 +287,6 @@ class HighLevelProtocolSuite extends FunSuite with Matchers {
     an[IllegalArgumentException] should be thrownBy JsonRpcRequest.buildFromJson(jsonRumor)
   }
 
-
-
   test("parse correctly get_messages_by_id answers") {
 
     val chan1 = Channel("/root/nLghr9_P406lfkMjaNWqyohLxOiGlQee8zad4qAfj18=/social/8qlv4aUT5-tBodKp4RszY284CFYVaoDZK6XKiw9isSw=")
