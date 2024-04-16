@@ -178,11 +178,13 @@ func newInputSuccess(t *testing.T, fileName, sender string, ownerKey kyber.Point
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
-	channels := []string{laoPath + social + chirps,
-		laoPath + social + reactions,
-		laoPath + consensus,
-		laoPath + coin,
-		laoPath + auth}
+	channels := map[string]string{
+		laoPath + social + chirps:    channelChirp,
+		laoPath + social + reactions: channelReaction,
+		laoPath + consensus:          channelConsensus,
+		laoPath + coin:               channelCoin,
+		laoPath + auth:               channelAuth,
+	}
 
 	organizerBuf, err := base64.URLEncoding.DecodeString(laoCreate.Organizer)
 	require.NoError(t, err)
@@ -190,7 +192,7 @@ func newInputSuccess(t *testing.T, fileName, sender string, ownerKey kyber.Point
 	mockRepository.On("HasChannel", laoPath).Return(false, nil)
 	mockRepository.On("StoreChannelsAndMessageWithLaoGreet",
 		channels,
-		rootChannel, laoPath, msg.MessageID,
+		laoPath,
 		organizerBuf,
 		msg, mock.AnythingOfType("message.Message")).Return(nil)
 	params := popserver.NewHandlerParametersWithOwnerAndServer(mockRepository, ownerKey, serverKeypair)

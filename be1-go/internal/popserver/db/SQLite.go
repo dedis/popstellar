@@ -449,50 +449,11 @@ func (s *SQLite) HasMessage(messageID string) (bool, error) {
 	return !errors.Is(err, sql.ErrNoRows), err
 }
 
-func (s *SQLite) GetOwnerPubKey() (kyber.Point, error) {
-	var pubKeyBuf []byte
-	err := s.database.QueryRow("SELECT OwnerPubKey from configuration").Scan(&pubKeyBuf)
-	if err != nil {
-		return nil, err
-	}
-	ownerPubKey := crypto.Suite.Point()
-	err = ownerPubKey.UnmarshalBinary(pubKeyBuf)
-
-	return ownerPubKey, err
-}
-
 // StoreChannel stores a channel that is not an election inside the SQLite database.
 func (s *SQLite) StoreChannel(channel string, organizerPubKey []byte) error {
 	_, err := s.database.Exec("INSERT INTO channels (channel, organizerPubKey) "+
 		"VALUES (?,?)", channel, organizerPubKey)
 	return err
-}
-
-// GetClientServerAddress returns the client address of the server.
-func (s *SQLite) GetClientServerAddress() (string, error) {
-	var address string
-	err := s.database.QueryRow("SELECT ClientServerAddress from configuration").Scan(&address)
-	return address, err
-}
-
-// GetServerPubKey returns the public key of the server.
-func (s *SQLite) GetServerPubKey() ([]byte, error) {
-	var pubKeyBuf []byte
-	err := s.database.QueryRow("SELECT serverPubKey from configuration").Scan(&pubKeyBuf)
-	if err != nil {
-		return nil, err
-	}
-	return pubKeyBuf, err
-}
-
-// GetServerSecretKey returns the public key of the server.
-func (s *SQLite) GetServerSecretKey() ([]byte, error) {
-	var secretKeyBuf []byte
-	err := s.database.QueryRow("SELECT serverSecretKey from configuration").Scan(&secretKeyBuf)
-	if err != nil {
-		return nil, err
-	}
-	return secretKeyBuf, err
 }
 
 // GetChannelType returns the type of the channelPath.
@@ -503,6 +464,10 @@ func (s *SQLite) GetChannelType(channel string) (string, error) {
 		"WHERE channel = ?", channel).Scan(&name)
 	return name, err
 }
+
+//======================================================================================================================
+// QueryRepository interface implementation
+//======================================================================================================================
 
 //======================================================================================================================
 // RootRepository interface implementation
