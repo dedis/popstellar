@@ -6,7 +6,7 @@ import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.objects.{Channel, PublicKey}
 import spray.json._
 
-final case class Rumor(senderPk: PublicKey, rumorId: Int, messages: Map[Channel, Array[Message]]) extends Params {
+final case class Rumor(senderPk: PublicKey, rumorId: Int, messages: Map[Channel, List[Message]]) extends Params {
 
   override def hasChannel: Boolean = true
 
@@ -16,7 +16,7 @@ final case class Rumor(senderPk: PublicKey, rumorId: Int, messages: Map[Channel,
 
 object Rumor extends Parsable {
 
-  def apply(senderPk: PublicKey, rumorId: Int, messages: Map[Channel, Array[Message]]): Rumor = {
+  def apply(senderPk: PublicKey, rumorId: Int, messages: Map[Channel, List[Message]]): Rumor = {
     new Rumor(senderPk, rumorId, messages)
   }
 

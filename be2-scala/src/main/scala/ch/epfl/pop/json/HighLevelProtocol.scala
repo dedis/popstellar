@@ -205,20 +205,13 @@ object HighLevelProtocol extends DefaultJsonProtocol {
     final private val PARAM_MESSAGES: String = "messages"
 
     override def read(json: JsValue): Rumor = {
-      val jsonObject: JsObject = json.asJsObject
-      jsonObject.getFields(PARAM_SENDER_PK, PARAM_RUMOR_ID, PARAM_MESSAGES) match {
-        case Seq(senderPk @ JsString(_), rumorId @ JsNumber(_), JsArray(messages)) =>
-          val map: Map[Channel, Array[Message]] = messages.map {
-            case JsObject(obj) =>
-              val channelKey = obj.keys.headOption.getOrElse {
-                throw new IllegalArgumentException(s"No key found in JSON object: $obj")
-              }
-              val channel = Channel(channelKey)
-              val messagesJson = obj(channelKey).asInstanceOf[JsArray]
-              val messages = messagesJson.elements.map(_.convertTo[Message]).toArray
-              channel -> messages
-            case _ => throw new IllegalArgumentException(s"Unrecognizable rumor in $json")
-          }.toMap
+      json.asJsObject.getFields(PARAM_SENDER_PK, PARAM_RUMOR_ID, PARAM_MESSAGES) match {
+        case Seq(senderPk @ JsString(_), rumorId @ JsNumber(_), rumors @ JsObject(_)) =>
+          val map = mutable.HashMap[Channel, List[Message]]()
+          rumors.asJsObject.fields.foreach {
+            case (k: String, JsArray(v)) => map.put(Channel(k), v.map(_.convertTo[Message]).toList)
+            case _                       => throw new IllegalArgumentException(s"Unrecognizable rumor in $json")
+          }
           new Rumor(senderPk.convertTo[PublicKey], rumorId.convertTo[Int], HashMap.from(map))
         case _ => throw new IllegalArgumentException(s"Can't parse json value $json to a Rumor object")
       }
@@ -228,7 +221,7 @@ object HighLevelProtocol extends DefaultJsonProtocol {
       val jsObjContent: ListMap[String, JsValue] = ListMap[String, JsValue](
         PARAM_SENDER_PK -> obj.senderPk.toJson,
         PARAM_RUMOR_ID -> obj.rumorId.toJson,
-        PARAM_MESSAGES -> obj.messages.map((chan, messages) => Map(chan -> messages)).toJson
+        PARAM_MESSAGES -> obj.messages.toJson
       )
       JsObject(jsObjContent)
     }

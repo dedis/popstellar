@@ -31,8 +31,8 @@ class RumorSuite extends FunSuite with Matchers {
     val data: String = "eyJjcmVhdGlvbiI6MTYzMTg4NzQ5NiwiaWQiOiJ4aWdzV0ZlUG1veGxkd2txMUt1b0wzT1ZhODl4amdYalRPZEJnSldjR1drPSIsIm5hbWUiOiJoZ2dnZ2dnIiwib3JnYW5pemVyIjoidG9fa2xaTHRpSFY0NDZGdjk4T0xOZE5taS1FUDVPYVR0YkJrb3RUWUxpYz0iLCJ3aXRuZXNzZXMiOltdLCJvYmplY3QiOiJsYW8iLCJhY3Rpb24iOiJjcmVhdGUifQ=="
     val message: Message = buildExpected(id, sender, signature, data)
 
-    val messages: Map[Channel, Array[Message]] = HashMap(
-      chan -> Array(message)
+    val messages: Map[Channel, List[Message]] = HashMap(
+      chan -> List(message)
     )
     val rumor: Rumor = new Rumor(senderPk = serverPk, rumorId = 1, messages = messages)
 
