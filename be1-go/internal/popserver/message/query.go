@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"popstellar/internal/popserver/channel"
+	"popstellar/internal/popserver/state"
 	"popstellar/internal/popserver/types"
 	jsonrpc "popstellar/message"
 	"popstellar/message/answer"
@@ -63,13 +64,19 @@ func handleGreetServer(params types.HandlerParameters, byteMessage []byte) (*int
 		return nil, errAnswer
 	}
 
-	err = params.Peers.AddPeerInfo(params.Socket.ID(), greetServer.Params)
+	peers, ok := state.GetPeersInstance()
+	if !ok {
+		errAnswer := answer.NewInternalServerError("failed to get state").Wrap("handleGreetServer")
+		return nil, errAnswer
+	}
+
+	err = peers.AddPeerInfo(params.Socket.ID(), greetServer.Params)
 	if err != nil {
 		errAnswer := answer.NewInvalidActionError("failed to add peer: %v", err).Wrap("handleGreetServer")
 		return nil, errAnswer
 	}
 
-	if params.Peers.IsPeerGreeted(params.Socket.ID()) {
+	if peers.IsPeerGreeted(params.Socket.ID()) {
 		return nil, nil
 	}
 
@@ -103,7 +110,7 @@ func handleGreetServer(params types.HandlerParameters, byteMessage []byte) (*int
 
 	params.Socket.Send(buf)
 
-	params.Peers.AddPeerGreeted(params.Socket.ID())
+	peers.AddPeerGreeted(params.Socket.ID())
 
 	return nil, nil
 }
@@ -127,7 +134,13 @@ func handleHeartbeat(params types.HandlerParameters, byteMessage []byte) (*int, 
 		return nil, nil
 	}
 
-	queryId := params.Queries.GetNextID()
+	queries, ok := state.GetQueriesInstance()
+	if !ok {
+		errAnswer := answer.NewInternalServerError("failed to get state").Wrap("handleGreetServer")
+		return nil, errAnswer
+	}
+
+	queryId := queries.GetNextID()
 
 	getMessagesById := method.GetMessagesById{
 		Base: query.Base{
@@ -148,7 +161,7 @@ func handleHeartbeat(params types.HandlerParameters, byteMessage []byte) (*int, 
 
 	params.Socket.Send(buf)
 
-	params.Queries.AddQuery(queryId, getMessagesById)
+	queries.AddQuery(queryId, getMessagesById)
 
 	return nil, nil
 }
@@ -185,7 +198,13 @@ func handleSubscribe(params types.HandlerParameters, msg []byte) (*int, *answer.
 		return &subscribe.ID, errAnswer
 	}
 
-	errAnswer := params.Subs.Subscribe(subscribe.Params.Channel, params.Socket)
+	subs, ok := state.GetSubsInstance()
+	if !ok {
+		errAnswer := answer.NewInternalServerError("failed to get state").Wrap("handleGreetServer")
+		return &subscribe.ID, errAnswer
+	}
+
+	errAnswer := subs.Subscribe(subscribe.Params.Channel, params.Socket)
 	if errAnswer != nil {
 		errAnswer = errAnswer.Wrap("handleSubscribe")
 		return &subscribe.ID, errAnswer
@@ -208,7 +227,13 @@ func handleUnsubscribe(params types.HandlerParameters, msg []byte) (*int, *answe
 		return &unsubscribe.ID, errAnswer
 	}
 
-	errAnswer := params.Subs.Unsubscribe(unsubscribe.Params.Channel, params.Socket)
+	subs, ok := state.GetSubsInstance()
+	if !ok {
+		errAnswer := answer.NewInternalServerError("failed to get state").Wrap("handleGreetServer")
+		return &unsubscribe.ID, errAnswer
+	}
+
+	errAnswer := subs.Unsubscribe(unsubscribe.Params.Channel, params.Socket)
 	if errAnswer != nil {
 		errAnswer = errAnswer.Wrap("handleUnsubscribe")
 		return &unsubscribe.ID, errAnswer

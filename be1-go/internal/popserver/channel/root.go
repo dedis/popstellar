@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"popstellar/crypto"
+	"popstellar/internal/popserver/state"
 	"popstellar/internal/popserver/types"
 	"popstellar/message/answer"
 	"popstellar/message/messagedata"
@@ -164,19 +165,31 @@ func createLaoAndChannels(params types.HandlerParameters, msg, laoGreetMsg messa
 		errAnswer = errAnswer.Wrap("createLaoAndSubChannels")
 	}
 
+	subs, ok := state.GetSubsInstance()
+	if !ok {
+		errAnswer := answer.NewInternalServerError("failed to get state").Wrap("handleGreetServer")
+		return errAnswer
+	}
+
 	for _, channelPath := range channels {
-		params.Subs.AddChannel(channelPath)
+		subs.AddChannel(channelPath)
 	}
 	return nil
 }
 
 func createLaoGreet(params types.HandlerParameters, organizerBuf []byte, laoPath string) (message.Message, *answer.Error) {
-	peersInfo := params.Peers.GetAllPeersInfo()
-	peers := make([]messagedata.Peer, 0, len(peersInfo))
+	peers, ok := state.GetPeersInstance()
+	if !ok {
+		errAnswer := answer.NewInternalServerError("failed to get state").Wrap("handleGreetServer")
+		return message.Message{}, errAnswer
+	}
+
+	peersInfo := peers.GetAllPeersInfo()
+	knownPeers := make([]messagedata.Peer, 0, len(peersInfo))
 	var errAnswer *answer.Error
 
 	for _, info := range peersInfo {
-		peers = append(peers, messagedata.Peer{Address: info.ClientAddress})
+		knownPeers = append(knownPeers, messagedata.Peer{Address: info.ClientAddress})
 	}
 
 	msgData := messagedata.LaoGreet{
@@ -185,7 +198,7 @@ func createLaoGreet(params types.HandlerParameters, organizerBuf []byte, laoPath
 		LaoID:    laoPath,
 		Frontend: base64.URLEncoding.EncodeToString(organizerBuf),
 		Address:  params.ClientServerAddress,
-		Peers:    peers,
+		Peers:    knownPeers,
 	}
 
 	// Marshall the message data

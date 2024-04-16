@@ -2,18 +2,35 @@ package message
 
 import (
 	"encoding/json"
+	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/require"
 	"golang.org/x/xerrors"
+	"io"
+	"popstellar/hub/standard_hub/hub_state"
 	"popstellar/internal/popserver"
 	"popstellar/internal/popserver/repo"
+	"popstellar/internal/popserver/state"
 	"popstellar/internal/popserver/types"
 	jsonrpc "popstellar/message"
 	"popstellar/message/query"
 	"popstellar/message/query/method"
 	"popstellar/message/query/method/message"
-	"popstellar/network/socket"
 	"testing"
 )
+
+var subs *popserver.FakeSubscribers
+var queries hub_state.Queries
+var peers hub_state.Peers
+
+func TestMain(m *testing.M) {
+	subs = popserver.NewFakeSubscribers()
+	queries = hub_state.NewQueries(zerolog.New(io.Discard))
+	peers = hub_state.NewPeers()
+
+	state.InitPopState(subs, &peers, &queries)
+
+	m.Run()
+}
 
 func Test_handleCatchUp(t *testing.T) {
 	type input struct {
@@ -207,13 +224,17 @@ func Test_handleGreetServer(t *testing.T) {
 		isErrorTest bool
 	}
 
+	inputs := make([]input, 0)
+
+	// reply with greetServer
+
 	serverInfo1 := method.GreetServerParams{
 		PublicKey:     "pk1",
 		ServerAddress: "srvAddr1",
 		ClientAddress: "cltAddr1",
 	}
 
-	greetServer := method.GreetServer{
+	greetServer1 := method.GreetServer{
 		Base: query.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
@@ -224,17 +245,13 @@ func Test_handleGreetServer(t *testing.T) {
 		Params: serverInfo1,
 	}
 
-	inputs := make([]input, 0)
-
-	// reply with greetServer
-
-	greetServerBuf, err := json.Marshal(&greetServer)
+	greetServerBuf, err := json.Marshal(&greetServer1)
 	require.NoError(t, err)
 
 	mockRepository := repo.NewMockRepository(t)
 	mockRepository.On("GetServerPubKey").Return([]byte("publicKey"), nil)
 
-	s := &popserver.FakeSocket{Id: "fakesocket"}
+	s := &popserver.FakeSocket{Id: "fakesocket1"}
 
 	params := popserver.NewHandlerParametersWithFakeSocket(mockRepository, s)
 
@@ -249,14 +266,31 @@ func Test_handleGreetServer(t *testing.T) {
 
 	// do not reply with greetServer
 
-	greetServerBuf, err = json.Marshal(&greetServer)
+	serverInfo2 := method.GreetServerParams{
+		PublicKey:     "pk1",
+		ServerAddress: "srvAddr1",
+		ClientAddress: "cltAddr1",
+	}
+
+	greetServer2 := method.GreetServer{
+		Base: query.Base{
+			JSONRPCBase: jsonrpc.JSONRPCBase{
+				JSONRPC: "2.0",
+			},
+
+			Method: query.MethodGreetServer,
+		},
+		Params: serverInfo2,
+	}
+
+	greetServerBuf, err = json.Marshal(&greetServer2)
 	require.NoError(t, err)
 
-	s = &popserver.FakeSocket{Id: "fakesocket"}
+	s = &popserver.FakeSocket{Id: "fakesocket2"}
 
 	params = popserver.NewHandlerParametersWithFakeSocket(mockRepository, s)
 
-	params.Peers.AddPeerGreeted(s.Id)
+	peers.AddPeerGreeted(s.Id)
 
 	inputs = append(inputs, input{
 		name:        "server already greeted",
@@ -267,25 +301,26 @@ func Test_handleGreetServer(t *testing.T) {
 		isErrorTest: false,
 	})
 
-	// Socket already used
-
-	greetServerBuf, err = json.Marshal(&greetServer)
-	require.NoError(t, err)
-
-	params = popserver.NewHandlerParameters(nil)
-	err = params.Peers.AddPeerInfo(params.Socket.ID(), serverInfo1)
-	require.NoError(t, err)
-
-	inputs = append(inputs, input{
-		name:        "Socket already used",
-		params:      params,
-		message:     greetServerBuf,
-		isErrorTest: true,
-	})
-
 	// failed to query DB
 
-	greetServerBuf, err = json.Marshal(&greetServer)
+	serverInfo3 := method.GreetServerParams{
+		PublicKey:     "pk1",
+		ServerAddress: "srvAddr1",
+		ClientAddress: "cltAddr1",
+	}
+
+	greetServer3 := method.GreetServer{
+		Base: query.Base{
+			JSONRPCBase: jsonrpc.JSONRPCBase{
+				JSONRPC: "2.0",
+			},
+
+			Method: query.MethodGreetServer,
+		},
+		Params: serverInfo3,
+	}
+
+	greetServerBuf, err = json.Marshal(&greetServer3)
 	require.NoError(t, err)
 
 	mockRepository = repo.NewMockRepository(t)
@@ -295,6 +330,41 @@ func Test_handleGreetServer(t *testing.T) {
 
 	inputs = append(inputs, input{
 		name:        "failed to query DB",
+		params:      params,
+		message:     greetServerBuf,
+		isErrorTest: true,
+	})
+
+	// Socket already used
+
+	serverInfo4 := method.GreetServerParams{
+		PublicKey:     "pk1",
+		ServerAddress: "srvAddr1",
+		ClientAddress: "cltAddr1",
+	}
+
+	greetServer4 := method.GreetServer{
+		Base: query.Base{
+			JSONRPCBase: jsonrpc.JSONRPCBase{
+				JSONRPC: "2.0",
+			},
+
+			Method: query.MethodGreetServer,
+		},
+		Params: serverInfo4,
+	}
+
+	greetServerBuf, err = json.Marshal(&greetServer4)
+	require.NoError(t, err)
+
+	s = &popserver.FakeSocket{Id: "fakesocket4"}
+
+	params = popserver.NewHandlerParametersWithFakeSocket(nil, s)
+	err = peers.AddPeerInfo(s.Id, serverInfo4)
+	require.NoError(t, err)
+
+	inputs = append(inputs, input{
+		name:        "Socket already used",
 		params:      params,
 		message:     greetServerBuf,
 		isErrorTest: true,
@@ -461,9 +531,14 @@ func Test_handleSubscribe(t *testing.T) {
 		message     []byte
 		isErrorTest bool
 		subscribe   method.Subscribe
+		fakeSubs    *popserver.FakeSubscribers
 	}
 
-	subscribe := method.Subscribe{
+	inputs := make([]input, 0)
+
+	// Subscribe to channel
+
+	subscribe1 := method.Subscribe{
 		Base: query.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
@@ -477,27 +552,38 @@ func Test_handleSubscribe(t *testing.T) {
 		},
 	}
 
-	inputs := make([]input, 0)
-
-	// Subscribe to channel
-
-	subscribeBuf, err := json.Marshal(&subscribe)
+	subscribeBuf, err := json.Marshal(&subscribe1)
 	require.NoError(t, err)
 
 	params := popserver.NewHandlerParameters(nil)
-	params.Subs.AddChannel("/root/lao1")
+	subs.AddChannel("/root/lao1")
 
 	inputs = append(inputs, input{
 		name:        "Subscribe to channel",
 		params:      params,
 		message:     subscribeBuf,
 		isErrorTest: false,
-		subscribe:   subscribe,
+		subscribe:   subscribe1,
+		fakeSubs:    subs,
 	})
 
 	// unknown channel
 
-	subscribeBuf, err = json.Marshal(&subscribe)
+	subscribe2 := method.Subscribe{
+		Base: query.Base{
+			JSONRPCBase: jsonrpc.JSONRPCBase{
+				JSONRPC: "2.0",
+			},
+
+			Method: query.MethodSubscribe,
+		},
+		ID: 1,
+		Params: method.SubscribeParams{
+			Channel: "/root/lao2",
+		},
+	}
+
+	subscribeBuf, err = json.Marshal(&subscribe2)
 	require.NoError(t, err)
 
 	params = popserver.NewHandlerParameters(nil)
@@ -507,15 +593,27 @@ func Test_handleSubscribe(t *testing.T) {
 		params:      params,
 		message:     subscribeBuf,
 		isErrorTest: true,
-		subscribe:   subscribe,
+		subscribe:   subscribe2,
+		fakeSubs:    subs,
 	})
 
 	// cannot Subscribe to root
 
-	subscribeRoot := subscribe
-	subscribeRoot.Params.Channel = "/root"
+	subscribe3 := method.Subscribe{
+		Base: query.Base{
+			JSONRPCBase: jsonrpc.JSONRPCBase{
+				JSONRPC: "2.0",
+			},
 
-	subscribeRootBuf, err := json.Marshal(&subscribeRoot)
+			Method: query.MethodSubscribe,
+		},
+		ID: 1,
+		Params: method.SubscribeParams{
+			Channel: "/root",
+		},
+	}
+
+	subscribeRootBuf, err := json.Marshal(&subscribe3)
 	require.NoError(t, err)
 
 	params = popserver.NewHandlerParameters(nil)
@@ -525,7 +623,8 @@ func Test_handleSubscribe(t *testing.T) {
 		params:      params,
 		message:     subscribeRootBuf,
 		isErrorTest: true,
-		subscribe:   subscribeRoot,
+		subscribe:   subscribe3,
+		fakeSubs:    subs,
 	})
 
 	// run all tests
@@ -539,7 +638,8 @@ func Test_handleSubscribe(t *testing.T) {
 			} else {
 				require.Nil(t, errAnswer)
 
-				_, isSubscribed := i.params.Subs[i.subscribe.Params.Channel][i.params.Socket.ID()]
+				isSubscribed, err := i.fakeSubs.IsSubscribed(i.subscribe.Params.Channel, i.params.Socket)
+				require.NoError(t, err)
 				require.True(t, isSubscribed)
 			}
 		})
@@ -553,9 +653,14 @@ func Test_handleUnsubscribe(t *testing.T) {
 		message     []byte
 		isErrorTest bool
 		unsubscribe method.Unsubscribe
+		fakeSubs    *popserver.FakeSubscribers
 	}
 
-	unsubscribe := method.Unsubscribe{
+	inputs := make([]input, 0)
+
+	// Unsubscribe from channel
+
+	unsubscribe1 := method.Unsubscribe{
 		Base: query.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
@@ -569,44 +674,71 @@ func Test_handleUnsubscribe(t *testing.T) {
 		},
 	}
 
-	inputs := make([]input, 0)
-
-	// Unsubscribe from channel
-
-	unsubscribeBuf, err := json.Marshal(&unsubscribe)
+	unsubscribeBuf, err := json.Marshal(&unsubscribe1)
 	require.NoError(t, err)
 
 	params := popserver.NewHandlerParameters(nil)
-	params.Subs["/root/lao1"] = make(map[string]socket.Socket)
-	params.Subs["/root/lao1"][params.Socket.ID()] = params.Socket
+	subs.AddChannel("/root/lao1")
+	errAnswer := subs.Subscribe("/root/lao1", params.Socket)
+	require.Nil(t, errAnswer)
 
 	inputs = append(inputs, input{
 		name:        "Unsubscribe from channel",
 		params:      params,
 		message:     unsubscribeBuf,
 		isErrorTest: false,
-		unsubscribe: unsubscribe,
+		unsubscribe: unsubscribe1,
+		fakeSubs:    subs,
 	})
 
 	// cannot Unsubscribe without being subscribed
 
-	unsubscribeBuf, err = json.Marshal(&unsubscribe)
+	unsubscribe2 := method.Unsubscribe{
+		Base: query.Base{
+			JSONRPCBase: jsonrpc.JSONRPCBase{
+				JSONRPC: "2.0",
+			},
+
+			Method: query.MethodUnsubscribe,
+		},
+		ID: 1,
+		Params: method.UnsubscribeParams{
+			Channel: "/root/lao2",
+		},
+	}
+
+	unsubscribeBuf, err = json.Marshal(&unsubscribe2)
 	require.NoError(t, err)
 
 	params = popserver.NewHandlerParameters(nil)
-	params.Subs["/root/lao1"] = make(map[string]socket.Socket)
+	subs.AddChannel("/root/lao2")
 
 	inputs = append(inputs, input{
 		name:        "cannot Unsubscribe without being subscribed",
 		params:      params,
 		message:     unsubscribeBuf,
 		isErrorTest: true,
-		unsubscribe: unsubscribe,
+		unsubscribe: unsubscribe2,
+		fakeSubs:    subs,
 	})
 
 	// unknown channel
 
-	unsubscribeBuf, err = json.Marshal(&unsubscribe)
+	unsubscribe3 := method.Unsubscribe{
+		Base: query.Base{
+			JSONRPCBase: jsonrpc.JSONRPCBase{
+				JSONRPC: "2.0",
+			},
+
+			Method: query.MethodUnsubscribe,
+		},
+		ID: 1,
+		Params: method.UnsubscribeParams{
+			Channel: "/root/lao3",
+		},
+	}
+
+	unsubscribeBuf, err = json.Marshal(&unsubscribe3)
 	require.NoError(t, err)
 
 	params = popserver.NewHandlerParameters(nil)
@@ -616,15 +748,27 @@ func Test_handleUnsubscribe(t *testing.T) {
 		params:      params,
 		message:     unsubscribeBuf,
 		isErrorTest: true,
-		unsubscribe: unsubscribe,
+		unsubscribe: unsubscribe1,
+		fakeSubs:    subs,
 	})
 
 	// cannot Unsubscribe from root
 
-	unsubscribeRoot := unsubscribe
-	unsubscribeRoot.Params.Channel = "/root"
+	unsubscribe4 := method.Unsubscribe{
+		Base: query.Base{
+			JSONRPCBase: jsonrpc.JSONRPCBase{
+				JSONRPC: "2.0",
+			},
 
-	unsubscribeRootBuf, err := json.Marshal(&unsubscribeRoot)
+			Method: query.MethodUnsubscribe,
+		},
+		ID: 1,
+		Params: method.UnsubscribeParams{
+			Channel: "/root",
+		},
+	}
+
+	unsubscribeRootBuf, err := json.Marshal(&unsubscribe4)
 	require.NoError(t, err)
 
 	params = popserver.NewHandlerParameters(nil)
@@ -634,7 +778,8 @@ func Test_handleUnsubscribe(t *testing.T) {
 		params:      params,
 		message:     unsubscribeRootBuf,
 		isErrorTest: true,
-		unsubscribe: unsubscribeRoot,
+		unsubscribe: unsubscribe4,
+		fakeSubs:    subs,
 	})
 
 	// run all tests
@@ -648,8 +793,9 @@ func Test_handleUnsubscribe(t *testing.T) {
 			} else {
 				require.Nil(t, errAnswer)
 
-				_, isUnsubscribed := i.params.Subs[i.unsubscribe.Params.Channel][i.params.Socket.ID()]
-				require.False(t, isUnsubscribed)
+				isSubscribe, err := i.fakeSubs.IsSubscribed(i.unsubscribe.Params.Channel, i.params.Socket)
+				require.NoError(t, err)
+				require.False(t, isSubscribe)
 			}
 		})
 	}

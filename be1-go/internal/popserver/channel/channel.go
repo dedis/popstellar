@@ -6,6 +6,7 @@ import (
 	"go.dedis.ch/kyber/v3"
 	"go.dedis.ch/kyber/v3/sign/schnorr"
 	"popstellar/crypto"
+	"popstellar/internal/popserver/state"
 	"popstellar/internal/popserver/types"
 	jsonrpc "popstellar/message"
 	"popstellar/message/answer"
@@ -183,7 +184,13 @@ func broadcastToAllClients(msg message.Message, params types.HandlerParameters, 
 		return errAnswer
 	}
 
-	errAnswer = params.Subs.SendToAll(buf, channel)
+	subs, ok := state.GetSubsInstance()
+	if !ok {
+		errAnswer := answer.NewInternalServerError("failed to get state").Wrap("handleGreetServer")
+		return errAnswer
+	}
+
+	errAnswer = subs.SendToAll(buf, channel)
 	if errAnswer != nil {
 		errAnswer = errAnswer.Wrap("broadcastToAllClients")
 		return errAnswer

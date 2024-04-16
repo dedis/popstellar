@@ -14,7 +14,7 @@ type HandlerParameters struct {
 	Socket              socket.Socket
 	SchemaValidator     validation.SchemaValidator
 	DB                  repo.Repository
-	Subs                Subscribers
+	Subs                *Subscribers
 	Peers               *hub_state.Peers
 	Queries             *hub_state.Queries
 	OwnerPubKey         kyber.Point
