@@ -130,34 +130,6 @@ func (_m *MockRepository) GetChannelType(channel string) (string, error) {
 	return r0, r1
 }
 
-// GetClientServerAddress provides a mock function with given fields:
-func (_m *MockRepository) GetClientServerAddress() (string, error) {
-	ret := _m.Called()
-
-	if len(ret) == 0 {
-		panic("no return value specified for GetClientServerAddress")
-	}
-
-	var r0 string
-	var r1 error
-	if rf, ok := ret.Get(0).(func() (string, error)); ok {
-		return rf()
-	}
-	if rf, ok := ret.Get(0).(func() string); ok {
-		r0 = rf()
-	} else {
-		r0 = ret.Get(0).(string)
-	}
-
-	if rf, ok := ret.Get(1).(func() error); ok {
-		r1 = rf()
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
-}
-
 // GetElectionAttendees provides a mock function with given fields: electionID
 func (_m *MockRepository) GetElectionAttendees(electionID string) (map[string]struct{}, error) {
 	ret := _m.Called(electionID)
@@ -420,36 +392,6 @@ func (_m *MockRepository) GetOrganizerPubKey(laoPath string) (kyber.Point, error
 	return r0, r1
 }
 
-// GetOwnerPubKey provides a mock function with given fields:
-func (_m *MockRepository) GetOwnerPubKey() (kyber.Point, error) {
-	ret := _m.Called()
-
-	if len(ret) == 0 {
-		panic("no return value specified for GetOwnerPubKey")
-	}
-
-	var r0 kyber.Point
-	var r1 error
-	if rf, ok := ret.Get(0).(func() (kyber.Point, error)); ok {
-		return rf()
-	}
-	if rf, ok := ret.Get(0).(func() kyber.Point); ok {
-		r0 = rf()
-	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(kyber.Point)
-		}
-	}
-
-	if rf, ok := ret.Get(1).(func() error); ok {
-		r1 = rf()
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
-}
-
 // GetParamsForGetMessageByID provides a mock function with given fields: params
 func (_m *MockRepository) GetParamsForGetMessageByID(params map[string][]string) (map[string][]string, error) {
 	ret := _m.Called(params)
@@ -559,36 +501,6 @@ func (_m *MockRepository) GetRollCallState(channel string) (string, error) {
 
 	if rf, ok := ret.Get(1).(func(string) error); ok {
 		r1 = rf(channel)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
-}
-
-// GetServerPubKey provides a mock function with given fields:
-func (_m *MockRepository) GetServerPubKey() ([]byte, error) {
-	ret := _m.Called()
-
-	if len(ret) == 0 {
-		panic("no return value specified for GetServerPubKey")
-	}
-
-	var r0 []byte
-	var r1 error
-	if rf, ok := ret.Get(0).(func() ([]byte, error)); ok {
-		return rf()
-	}
-	if rf, ok := ret.Get(0).(func() []byte); ok {
-		r0 = rf()
-	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]byte)
-		}
-	}
-
-	if rf, ok := ret.Get(1).(func() error); ok {
-		r1 = rf()
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -772,9 +684,9 @@ func (_m *MockRepository) StoreChannel(channel string) error {
 	return r0
 }
 
-// StoreChannelsAndMessage provides a mock function with given fields: channels, baseChannel, msg
-func (_m *MockRepository) StoreChannelsAndMessage(channels []string, baseChannel string, msg message.Message) error {
-	ret := _m.Called(channels, baseChannel, msg)
+// StoreChannelsAndMessage provides a mock function with given fields: channels, laoID, msg
+func (_m *MockRepository) StoreChannelsAndMessage(channels []string, laoID string, msg message.Message) error {
+	ret := _m.Called(channels, laoID, msg)
 
 	if len(ret) == 0 {
 		panic("no return value specified for StoreChannelsAndMessage")
@@ -782,7 +694,7 @@ func (_m *MockRepository) StoreChannelsAndMessage(channels []string, baseChannel
 
 	var r0 error
 	if rf, ok := ret.Get(0).(func([]string, string, message.Message) error); ok {
-		r0 = rf(channels, baseChannel, msg)
+		r0 = rf(channels, laoID, msg)
 	} else {
 		r0 = ret.Error(0)
 	}
@@ -790,17 +702,17 @@ func (_m *MockRepository) StoreChannelsAndMessage(channels []string, baseChannel
 	return r0
 }
 
-// StoreChannelsAndMessageWithLaoGreet provides a mock function with given fields: channels, baseChannel, channelRelation, messageIDRelation, organizerPubBuf, msg, laoGreetMsg
-func (_m *MockRepository) StoreChannelsAndMessageWithLaoGreet(channels []string, baseChannel string, channelRelation string, messageIDRelation string, organizerPubBuf []byte, msg message.Message, laoGreetMsg message.Message) error {
-	ret := _m.Called(channels, baseChannel, channelRelation, messageIDRelation, organizerPubBuf, msg, laoGreetMsg)
+// StoreChannelsAndMessageWithLaoGreet provides a mock function with given fields: channels, laoID, organizerPubBuf, msg, laoGreetMsg
+func (_m *MockRepository) StoreChannelsAndMessageWithLaoGreet(channels map[string]string, laoID string, organizerPubBuf []byte, msg message.Message, laoGreetMsg message.Message) error {
+	ret := _m.Called(channels, laoID, organizerPubBuf, msg, laoGreetMsg)
 
 	if len(ret) == 0 {
 		panic("no return value specified for StoreChannelsAndMessageWithLaoGreet")
 	}
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func([]string, string, string, string, []byte, message.Message, message.Message) error); ok {
-		r0 = rf(channels, baseChannel, channelRelation, messageIDRelation, organizerPubBuf, msg, laoGreetMsg)
+	if rf, ok := ret.Get(0).(func(map[string]string, string, []byte, message.Message, message.Message) error); ok {
+		r0 = rf(channels, laoID, organizerPubBuf, msg, laoGreetMsg)
 	} else {
 		r0 = ret.Error(0)
 	}
@@ -826,17 +738,35 @@ func (_m *MockRepository) StoreMessage(channelID string, msg message.Message) er
 	return r0
 }
 
-// StoreMessageWithElectionKey provides a mock function with given fields: baseChannel, channelRelation, messageIDRelation, electionPubKey, electionSecretKey, msg, electionKey
-func (_m *MockRepository) StoreMessageWithElectionKey(baseChannel string, channelRelation string, messageIDRelation string, electionPubKey kyber.Point, electionSecretKey kyber.Scalar, msg message.Message, electionKey message.Message) error {
-	ret := _m.Called(baseChannel, channelRelation, messageIDRelation, electionPubKey, electionSecretKey, msg, electionKey)
+// StoreMessageWithElectionKey provides a mock function with given fields: laoID, electionID, electionPubKey, electionSecretKey, msg, electionKeyMsg
+func (_m *MockRepository) StoreMessageWithElectionKey(laoID string, electionID string, electionPubKey kyber.Point, electionSecretKey kyber.Scalar, msg message.Message, electionKeyMsg message.Message) error {
+	ret := _m.Called(laoID, electionID, electionPubKey, electionSecretKey, msg, electionKeyMsg)
 
 	if len(ret) == 0 {
 		panic("no return value specified for StoreMessageWithElectionKey")
 	}
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(string, string, string, kyber.Point, kyber.Scalar, message.Message, message.Message) error); ok {
-		r0 = rf(baseChannel, channelRelation, messageIDRelation, electionPubKey, electionSecretKey, msg, electionKey)
+	if rf, ok := ret.Get(0).(func(string, string, kyber.Point, kyber.Scalar, message.Message, message.Message) error); ok {
+		r0 = rf(laoID, electionID, electionPubKey, electionSecretKey, msg, electionKeyMsg)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// StoreMessageWithObjectAction provides a mock function with given fields: channelID, object, action, msg
+func (_m *MockRepository) StoreMessageWithObjectAction(channelID string, object string, action string, msg message.Message) error {
+	ret := _m.Called(channelID, object, action, msg)
+
+	if len(ret) == 0 {
+		panic("no return value specified for StoreMessageWithObjectAction")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(string, string, string, message.Message) error); ok {
+		r0 = rf(channelID, object, action, msg)
 	} else {
 		r0 = ret.Error(0)
 	}

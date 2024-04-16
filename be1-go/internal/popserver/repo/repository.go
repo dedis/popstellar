@@ -29,7 +29,6 @@ type Repository interface {
 // ======================= Query ==========================
 
 type HandleQueryRepository interface {
-	GetServerPubKey() ([]byte, error)
 	GetResultForGetMessagesByID(params map[string][]string) (map[string][]message.Message, error)
 
 	// GetParamsForGetMessageByID returns the params to do the getMessageByID msg in reponse of heartbeat

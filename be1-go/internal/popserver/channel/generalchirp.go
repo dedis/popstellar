@@ -100,14 +100,14 @@ func verifyNotifyChirp(params types.HandlerParameters, msg message.Message, chir
 		return errAnswer
 	}
 
-	pk, err := params.DB.GetServerPubKey()
+	pkBuf, err := params.ServerPubKey.MarshalBinary()
 	if err != nil {
-		errAnswer := answer.NewInternalServerError("failed to query DB: %v", err)
-		errAnswer = errAnswer.Wrap("verifyNotifyChirp")
+		errAnswer := answer.NewInternalServerError("failed to unmarshall server public key", err)
+		errAnswer = errAnswer.Wrap("copyToGeneral")
 		return errAnswer
 	}
 
-	ok := bytes.Equal(senderBuf, pk)
+	ok := bytes.Equal(senderBuf, pkBuf)
 	if !ok {
 		errAnswer := answer.NewInvalidMessageFieldError("only the server can broadcast the chirp messages")
 		errAnswer = errAnswer.Wrap("verifyNotifyChirp")

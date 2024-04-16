@@ -80,14 +80,15 @@ func handleGreetServer(params types.HandlerParameters, byteMessage []byte) (*int
 		return nil, nil
 	}
 
-	pkBytes, err := params.DB.GetServerPubKey()
+	pkBuf, err := params.ServerPubKey.MarshalBinary()
 	if err != nil {
-		errAnswer := answer.NewInternalServerError("error while querying DB: %v", err).Wrap("handleGreetServer")
+		errAnswer := answer.NewInternalServerError("failed to unmarshall server public key", err)
+		errAnswer = errAnswer.Wrap("copyToGeneral")
 		return nil, errAnswer
 	}
 
 	serverInfo := method.GreetServerParams{
-		PublicKey:     base64.URLEncoding.EncodeToString(pkBytes),
+		PublicKey:     base64.URLEncoding.EncodeToString(pkBuf),
 		ServerAddress: params.ServerServerAddress,
 		ClientAddress: params.ClientServerAddress,
 	}

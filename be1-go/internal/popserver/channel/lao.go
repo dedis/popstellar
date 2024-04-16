@@ -572,10 +572,10 @@ func createElectionKey(params types.HandlerParameters, electionID string, electi
 	}
 	newData64 := base64.URLEncoding.EncodeToString(dataBuf)
 	//TODO get server public key
-	serverPubBuf, err := params.DB.GetServerPubKey()
+	serverPubBuf, err := params.ServerPubKey.MarshalBinary()
 	if err != nil {
-		errAnswer := answer.NewInternalServerError("failed to get server public key: %v", err)
-		errAnswer = errAnswer.Wrap("createAndSendElectionKey")
+		errAnswer := answer.NewInternalServerError("failed to unmarshall server secret key", err)
+		errAnswer = errAnswer.Wrap("copyToGeneral")
 		return message.Message{}, errAnswer
 	}
 	signatureBuf, errAnswer := Sign(dataBuf, params)

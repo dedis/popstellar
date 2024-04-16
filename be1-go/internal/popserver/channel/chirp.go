@@ -155,9 +155,10 @@ func copyToGeneral(params types.HandlerParameters, channelID string, msg message
 
 	data64 := base64.URLEncoding.EncodeToString(dataBuf)
 
-	pkBuf, err := params.DB.GetServerPubKey()
+	pkBuf, err := params.ServerPubKey.MarshalBinary()
 	if err != nil {
-		errAnswer := answer.NewInternalServerError("failed to query DB: %v", err).Wrap("copyToGeneral")
+		errAnswer := answer.NewInternalServerError("failed to unmarshall server public key", err)
+		errAnswer = errAnswer.Wrap("copyToGeneral")
 		return errAnswer
 	}
 	pk64 := base64.URLEncoding.EncodeToString(pkBuf)
