@@ -141,7 +141,7 @@ func handleLaoState(msg message.Message, channel string, params types.HandlerPar
 	}
 
 	errAnswer = compareLaoUpdateAndState(updateMsgData, laoState)
-	if err != nil {
+	if errAnswer != nil {
 		errAnswer = errAnswer.Wrap("handleLaoState")
 		return errAnswer
 	}
@@ -223,7 +223,7 @@ func handleRollCallCreate(msg message.Message, channel string, params types.Hand
 		return errAnswer
 	}
 
-	// verify proposed start after creation and proposed end after creation
+	// verify proposed start after creation
 	if rollCallCreate.ProposedStart < rollCallCreate.Creation {
 		errAnswer = answer.NewInvalidMessageFieldError("roll call proposed start time should be greater than creation time")
 		errAnswer = errAnswer.Wrap("handleRollCallCreate")
@@ -368,8 +368,7 @@ func handleRollCallClose(msg message.Message, channel string, params types.Handl
 		return errAnswer
 	}
 
-	channelSlice := make([]string, 0, len(rollCallClose.Attendees)+1)
-	channelSlice = append(channelSlice, channel)
+	channels := make([]string, 0, len(rollCallClose.Attendees))
 
 	for _, popToken := range rollCallClose.Attendees {
 		_, err = base64.URLEncoding.DecodeString(popToken)
@@ -379,10 +378,10 @@ func handleRollCallClose(msg message.Message, channel string, params types.Handl
 			return errAnswer
 		}
 		chirpingChannelPath := channel + social + "/" + popToken
-		channelSlice = append(channelSlice, chirpingChannelPath)
+		channels = append(channels, chirpingChannelPath)
 	}
 
-	err = params.DB.StoreChannelsAndMessage(channelSlice, channel, nil, msg)
+	err = params.DB.StoreChannelsAndMessage(channels, channel, msg)
 	if err != nil {
 		errAnswer = answer.NewInternalServerError("failed to store channels and message: %v", err)
 		errAnswer = errAnswer.Wrap("handleRollCallClose")
@@ -415,8 +414,14 @@ func handleElectionSetup(msg message.Message, channel string, params types.Handl
 		errAnswer = errAnswer.Wrap("handleElectionSetup")
 		return errAnswer
 	}
-	//TODO Get organizer public key of the lao
-	organizePubKey := crypto.Suite.Point()
+
+	organizePubKey, err := params.DB.GetOrganizerPubKey(channel)
+	if err != nil {
+		errAnswer = answer.NewInternalServerError("failed to get organizer public key: %v", err)
+		errAnswer = errAnswer.Wrap("handleElectionSetup")
+		return errAnswer
+	}
+
 	if !organizePubKey.Equal(senderPubKey) {
 		errAnswer = answer.NewAccessDeniedError("sender public key does not match organizer public key: %s != %s", senderPubKey, organizePubKey)
 		errAnswer = errAnswer.Wrap("handleElectionSetup")
