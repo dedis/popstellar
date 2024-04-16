@@ -7,7 +7,7 @@ Feature: Update a LAO
     * call read(serverFeature)
     * call read(mockClientFeature)
     * def organizer = call createMockFrontend
-    * def lao = organizer.createValidLao()
+    * def lao = organizer.generateValidLao()
 
     # This call executes all the steps to create a valid lao on the server before every scenario
     # (lao creation, subscribe, catchup)
