@@ -1,6 +1,6 @@
-package be.utils;
+package common.utils;
 
-import be.model.*;
+import common.model.*;
 import com.intuit.karate.http.WebSocketOptions;
 import com.intuit.karate.Logger;
 import common.net.MessageQueue;
@@ -11,6 +11,8 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 /** Websocket client capable of creating lao, roll call, and election objects and issuing coins */
 public class MockClient extends MultiMsgWebSocketClient {
@@ -22,7 +24,7 @@ public class MockClient extends MultiMsgWebSocketClient {
   /**
    * @return a valid lao with the client's public key, the current time, and a random valid lao name.
    */
-  public Lao createValidLao() {
+  public Lao generateValidLao() {
     // Name needs to be random so that the same organizer does not create the same lao twice if it happens in the same second
     String randomName = RandomUtils.generateRandomName();
     System.out.println("Client with public key: " + publicKey + " is creating a lao: " + randomName);
@@ -33,7 +35,7 @@ public class MockClient extends MultiMsgWebSocketClient {
    * @param lao the lao to create a roll call for
    * @return a valid roll call for the given lao
    */
-  public RollCall createValidRollCall(Lao lao) {
+  public RollCall generateValidRollCall(Lao lao) {
     System.out.println("Client with public key: " + publicKey + " is creating roll call for lao: " + lao.id);
     long rollCallCreation = Instant.now().getEpochSecond();
     // Name needs to be random so that the same organizer does not create the same roll call twice if it happens in the same second
@@ -57,7 +59,7 @@ public class MockClient extends MultiMsgWebSocketClient {
    * @param lao the lao to create an election for
    * @return a valid empty election for the given lao, questions still need to be added!
    */
-  public Election createValidElection(Lao lao) {
+  public Election generateValidElection(Lao lao) {
     System.out.println("Client with public key: " + publicKey + " is creating an election for lao: " + lao.id);
     long electionCreation = Instant.now().getEpochSecond();
     // Name needs to be random so that the same organizer does not create the same election twice if it happens in the same second
@@ -89,5 +91,35 @@ public class MockClient extends MultiMsgWebSocketClient {
     Transaction transaction = new Transaction();
     transaction.issueInitialCoins(receiver.publicKey, publicKey, privateKey, amountToGive);
     return transaction;
+  }
+
+  /**
+   * Creates a newly generated lao.
+   * @return the lao created
+   */
+  public Lao createLao() {
+    Lao lao = generateValidLao();
+    return createLao(lao);
+  }
+
+  /**
+   * Creates a lao.
+   * @param lao the lao to create
+   * @return the lao passed as argument
+   */
+  public Lao createLao(Lao lao) {
+    Map<String, Object> request = new HashMap<>();
+    request.put("object", "lao");
+    request.put("action", "create");
+    request.put("id", lao.id);
+    request.put("name", lao.name);
+    request.put("creation", lao.creation);
+    request.put("organizer", lao.organizerPk);
+    request.put("witnesses", lao.witnesses);
+
+    this.publish(request, "/root");
+    this.getBackendResponse(request);
+
+    return lao;
   }
 }
