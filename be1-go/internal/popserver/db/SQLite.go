@@ -437,18 +437,6 @@ func (s *SQLite) AddWitnessSignature(messageID string, witness string, signature
 	return tx.Commit()
 }
 
-func (s *SQLite) HasChannel(ChannelPath string) (bool, error) {
-	var channel string
-	err := s.database.QueryRow("SELECT channel from channels WHERE channelsID = ?)", ChannelPath).Scan(&channel)
-	return !errors.Is(err, sql.ErrNoRows), err
-}
-
-func (s *SQLite) HasMessage(messageID string) (bool, error) {
-	var msgID string
-	err := s.database.QueryRow("SELECT messageID from messages WHERE messageID = ?)", messageID).Scan(&msgID)
-	return !errors.Is(err, sql.ErrNoRows), err
-}
-
 // StoreChannel stores a channel that is not an election inside the SQLite database.
 func (s *SQLite) StoreChannel(channel string, organizerPubKey []byte) error {
 	_, err := s.database.Exec("INSERT INTO channels (channel, organizerPubKey) "+
@@ -468,6 +456,34 @@ func (s *SQLite) GetChannelType(channel string) (string, error) {
 //======================================================================================================================
 // QueryRepository interface implementation
 //======================================================================================================================
+
+//======================================================================================================================
+// ChannelRepository interface implementation
+//======================================================================================================================
+
+func (s *SQLite) HasChannel(channel string) (bool, error) {
+	var c string
+	err := s.database.QueryRow("SELECT channel from channels WHERE channelID = ?)", channel).Scan(&c)
+	if err != nil && errors.Is(err, sql.ErrNoRows) {
+		return false, nil
+	} else if err != nil && !errors.Is(err, sql.ErrNoRows) {
+		return false, err
+	} else {
+		return true, nil
+	}
+}
+
+func (s *SQLite) HasMessage(messageID string) (bool, error) {
+	var msgID string
+	err := s.database.QueryRow("SELECT messageID from inbox WHERE messageID = ?)", messageID).Scan(&msgID)
+	if err != nil && errors.Is(err, sql.ErrNoRows) {
+		return false, nil
+	} else if err != nil && !errors.Is(err, sql.ErrNoRows) {
+		return false, err
+	} else {
+		return true, nil
+	}
+}
 
 //======================================================================================================================
 // RootRepository interface implementation

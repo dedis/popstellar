@@ -54,11 +54,8 @@ type HandleChannelRepository interface {
 	ElectionRepository
 	LAORepository
 
-	// StoreChannel stores a channel inside the database.
-	StoreChannel(channel string) error
-
 	// HasChannel returns true if the channel already exists.
-	HasChannel(laoChannelPath string) (bool, error)
+	HasChannel(channel string) (bool, error)
 
 	// HasMessage returns true if the message already exists.
 	HasMessage(messageID string) (bool, error)

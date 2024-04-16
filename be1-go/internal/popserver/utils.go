@@ -66,7 +66,8 @@ func (f *FakeSocket) Type() socket.SocketType {
 func NewHandlerParameters(db repo.Repository) types.HandlerParameters {
 	nolog := zerolog.New(io.Discard)
 	schemaValidator, _ := validation.NewSchemaValidator()
-
+	secret := crypto.Suite.Scalar().Pick(crypto.Suite.RandomStream())
+	point := crypto.Suite.Point().Mul(secret, nil)
 	return types.HandlerParameters{
 		Log:                 nolog,
 		Socket:              &FakeSocket{Id: "fakeID"},
@@ -75,8 +76,8 @@ func NewHandlerParameters(db repo.Repository) types.HandlerParameters {
 		OwnerPubKey:         nil,
 		ClientServerAddress: "ClientServerAddress",
 		ServerServerAddress: "ServerServerAddress",
-		ServerPubKey:        nil,
-		ServerSecretKey:     nil,
+		ServerPubKey:        point,
+		ServerSecretKey:     secret,
 	}
 }
 
