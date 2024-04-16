@@ -103,7 +103,7 @@ func Test_handleChannelCoin(t *testing.T) {
 }
 
 func newSuccessTestHandleChannelCoin(t *testing.T, filename string, name string) inputTestHandleChannelCoin {
-	var laoID = "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo="
+	laoID := messagedata.Hash(name)
 	var sender = "M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU="
 	var channelID = "/root/" + laoID + "/coin"
 
@@ -132,10 +132,10 @@ func newSuccessTestHandleChannelCoin(t *testing.T, filename string, name string)
 	}
 
 	params := popserver.NewHandlerParametersWithFakeSocket(mockRepo, sockets[0])
-	params.Subs.AddChannel(channelID)
+	subs.AddChannel(channelID)
 
 	for _, s := range sockets {
-		err := params.Subs.Subscribe(channelID, s)
+		err := subs.Subscribe(channelID, s)
 		require.Nil(t, err)
 	}
 
@@ -150,7 +150,7 @@ func newSuccessTestHandleChannelCoin(t *testing.T, filename string, name string)
 }
 
 func newFailTestHandleChannelCoin(t *testing.T, filename string, name string) inputTestHandleChannelCoin {
-	var laoID = "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo="
+	laoID := messagedata.Hash(name)
 	var sender = "M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU="
 	var channelID = "/root/" + laoID + "/coin"
 
@@ -169,6 +169,7 @@ func newFailTestHandleChannelCoin(t *testing.T, filename string, name string) in
 	}
 
 	params := popserver.NewHandlerParameters(nil)
+	subs.AddChannel(channelID)
 
 	return inputTestHandleChannelCoin{
 		name:      name,

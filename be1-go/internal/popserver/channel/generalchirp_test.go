@@ -85,7 +85,7 @@ func Test_handleChannelGeneralChirp(t *testing.T) {
 }
 
 func newSuccessTestHandleChannelGeneralChirp(t *testing.T, filename string, name string) inputTestHandleChannelGeneralChirp {
-	var laoID = "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo="
+	laoID := messagedata.Hash(name)
 	var sender = "M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU="
 	var channelID = "/root/" + laoID + "/social/chirps"
 
@@ -117,10 +117,10 @@ func newSuccessTestHandleChannelGeneralChirp(t *testing.T, filename string, name
 	}
 
 	params := popserver.NewHandlerParametersWithFakeSocket(mockRepo, sockets[0])
-	params.Subs.AddChannel(channelID)
+	subs.AddChannel(channelID)
 
 	for _, s := range sockets {
-		err := params.Subs.Subscribe(channelID, s)
+		err := subs.Subscribe(channelID, s)
 		require.Nil(t, err)
 	}
 
@@ -135,7 +135,7 @@ func newSuccessTestHandleChannelGeneralChirp(t *testing.T, filename string, name
 }
 
 func newFailTestHandleChannelGeneralChirp(t *testing.T, filename string, name string) inputTestHandleChannelGeneralChirp {
-	var laoID = "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo="
+	laoID := messagedata.Hash(name)
 	var sender = "M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU="
 	var channelID = "/root/" + laoID + "/social/chirps"
 
@@ -160,6 +160,7 @@ func newFailTestHandleChannelGeneralChirp(t *testing.T, filename string, name st
 	mockRepo.On("GetServerPubKey").Return(senderBuf, nil).Maybe()
 
 	params := popserver.NewHandlerParameters(mockRepo)
+	subs.AddChannel(channelID)
 
 	return inputTestHandleChannelGeneralChirp{
 		name:      name,

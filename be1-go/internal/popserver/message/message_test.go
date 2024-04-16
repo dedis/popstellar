@@ -3,7 +3,6 @@ package message
 import (
 	"encoding/base64"
 	"encoding/json"
-	"fmt"
 	"github.com/stretchr/testify/require"
 	"popstellar/internal/popserver"
 	"popstellar/internal/popserver/types"
@@ -82,7 +81,6 @@ func Test_handleMessage(t *testing.T) {
 	for _, i := range inputs {
 		t.Run(i.name, func(t *testing.T) {
 			err := HandleMessage(i.params, i.message)
-			fmt.Println(err)
 			require.Error(t, err)
 		})
 	}

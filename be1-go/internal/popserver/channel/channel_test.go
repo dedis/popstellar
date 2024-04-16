@@ -4,18 +4,36 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/require"
 	"go.dedis.ch/kyber/v3/sign/schnorr"
 	"golang.org/x/xerrors"
+	"io"
 	"popstellar/crypto"
+	"popstellar/hub/standard_hub/hub_state"
 	"popstellar/internal/popserver"
 	"popstellar/internal/popserver/repo"
+	"popstellar/internal/popserver/state"
 	"popstellar/internal/popserver/types"
 	"popstellar/message/messagedata"
 	"popstellar/message/query/method/message"
 	"testing"
 	"time"
 )
+
+var subs *popserver.FakeSubscribers
+var queries hub_state.Queries
+var peers hub_state.Peers
+
+func TestMain(m *testing.M) {
+	subs = popserver.NewFakeSubscribers()
+	queries = hub_state.NewQueries(zerolog.New(io.Discard))
+	peers = hub_state.NewPeers()
+
+	state.InitPopState(subs, &peers, &queries)
+
+	m.Run()
+}
 
 type handleChannelInput struct {
 	name      string

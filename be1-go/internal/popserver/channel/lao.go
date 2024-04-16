@@ -7,6 +7,7 @@ import (
 	"go.dedis.ch/kyber/v3/sign/schnorr"
 	"golang.org/x/exp/slices"
 	"popstellar/crypto"
+	"popstellar/internal/popserver/state"
 	"popstellar/internal/popserver/types"
 	"popstellar/message/answer"
 	"popstellar/message/messagedata"
@@ -531,7 +532,14 @@ func handleElectionSetup(msg message.Message, channel string, params types.Handl
 		errAnswer = errAnswer.Wrap("handleElectionSetup")
 		return errAnswer
 	}
-	params.Subs.AddChannel(electionPath)
+
+	subs, ok := state.GetSubsInstance()
+	if !ok {
+		errAnswer := answer.NewInternalServerError("failed to get state").Wrap("handleGreetServer")
+		return errAnswer
+	}
+
+	subs.AddChannel(electionPath)
 
 	err = params.DB.StoreMessage(electionSetup.ID, electionKeyMsg)
 	if err != nil {

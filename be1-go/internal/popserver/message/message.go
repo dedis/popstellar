@@ -2,6 +2,7 @@ package message
 
 import (
 	"encoding/json"
+	"popstellar/internal/popserver/state"
 	"popstellar/internal/popserver/types"
 	jsonrpc "popstellar/message"
 	"popstellar/message/answer"
@@ -106,7 +107,13 @@ func handleAnswer(params types.HandlerParameters, msg []byte) (*int, *answer.Err
 		return nil, nil
 	}
 
-	err = params.Queries.SetQueryReceived(*answerMsg.ID)
+	queries, ok := state.GetQueriesInstance()
+	if !ok {
+		errAnswer := answer.NewInternalServerError("failed to get state").Wrap("handleAnswer")
+		return answerMsg.ID, errAnswer
+	}
+
+	err = queries.SetQueryReceived(*answerMsg.ID)
 	if err != nil {
 		errAnswer := answer.NewInternalServerError("failed to set query state: %v", err).Wrap("handleAnswer")
 		return answerMsg.ID, errAnswer

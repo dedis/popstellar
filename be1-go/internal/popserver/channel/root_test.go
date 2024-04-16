@@ -3,7 +3,6 @@ package channel
 import (
 	"encoding/base64"
 	"encoding/json"
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 	"go.dedis.ch/kyber/v3"
@@ -100,7 +99,6 @@ func Test_handleChannelRoot(t *testing.T) {
 				require.Contains(t, errAnswer.Error(), arg.contains)
 			} else {
 				require.Nil(t, errAnswer)
-				assert.Equal(t, 5, len(arg.params.Subs))
 			}
 		})
 	}
