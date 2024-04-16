@@ -51,7 +51,7 @@ class Rumor
 
     val rumor = other as Rumor
 
-    return senderId != rumor.senderId && rumorId != rumor.rumorId && messages == rumor.messages
+    return senderId == rumor.senderId && rumorId == rumor.rumorId && messages == rumor.messages
   }
 
   override fun hashCode(): Int {
