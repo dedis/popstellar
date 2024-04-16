@@ -7,7 +7,6 @@ import (
 	"golang.org/x/xerrors"
 	"io"
 	"popstellar/crypto"
-	state "popstellar/hub/standard_hub/hub_state"
 	"popstellar/internal/popserver/repo"
 	"popstellar/internal/popserver/types"
 	"popstellar/message/answer"
@@ -67,17 +66,12 @@ func (f *FakeSocket) Type() socket.SocketType {
 func NewHandlerParameters(db repo.Repository) types.HandlerParameters {
 	nolog := zerolog.New(io.Discard)
 	schemaValidator, _ := validation.NewSchemaValidator()
-	peers := state.NewPeers()
-	queries := state.NewQueries(nolog)
 
 	return types.HandlerParameters{
 		Log:                 nolog,
 		Socket:              &FakeSocket{Id: "fakeID"},
 		SchemaValidator:     *schemaValidator,
 		DB:                  db,
-		Subs:                types.NewSubscribers(),
-		Peers:               &peers,
-		Queries:             &queries,
 		OwnerPubKey:         nil,
 		ClientServerAddress: "ClientServerAddress",
 		ServerServerAddress: "ServerServerAddress",
@@ -89,17 +83,12 @@ func NewHandlerParameters(db repo.Repository) types.HandlerParameters {
 func NewHandlerParametersWithOwnerAndServer(db repo.Repository, owner kyber.Point, server Keypair) types.HandlerParameters {
 	nolog := zerolog.New(io.Discard)
 	schemaValidator, _ := validation.NewSchemaValidator()
-	peers := state.NewPeers()
-	queries := state.NewQueries(nolog)
 
 	return types.HandlerParameters{
 		Log:                 nolog,
 		Socket:              &FakeSocket{Id: "fakeID"},
 		SchemaValidator:     *schemaValidator,
 		DB:                  db,
-		Subs:                types.NewSubscribers(),
-		Peers:               &peers,
-		Queries:             &queries,
 		OwnerPubKey:         owner,
 		ClientServerAddress: "ClientServerAddress",
 		ServerServerAddress: "ServerServerAddress",
@@ -111,17 +100,12 @@ func NewHandlerParametersWithOwnerAndServer(db repo.Repository, owner kyber.Poin
 func NewHandlerParametersWithFakeSocket(db repo.Repository, s *FakeSocket) types.HandlerParameters {
 	nolog := zerolog.New(io.Discard)
 	schemaValidator, _ := validation.NewSchemaValidator()
-	peers := state.NewPeers()
-	queries := state.NewQueries(nolog)
 
 	return types.HandlerParameters{
 		Log:                 nolog,
 		Socket:              s,
 		SchemaValidator:     *schemaValidator,
 		DB:                  db,
-		Subs:                types.NewSubscribers(),
-		Peers:               &peers,
-		Queries:             &queries,
 		OwnerPubKey:         nil,
 		ClientServerAddress: "ClientServerAddress",
 		ServerServerAddress: "ServerServerAddress",
