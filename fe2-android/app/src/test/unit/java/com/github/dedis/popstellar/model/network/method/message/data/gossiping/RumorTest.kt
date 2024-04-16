@@ -2,10 +2,13 @@ package com.github.dedis.popstellar.model.network.method.message.data.gossiping
 
 import androidx.test.espresso.matcher.ViewMatchers.assertThat
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.github.dedis.popstellar.model.network.JsonTestUtils.loadFile
+import com.github.dedis.popstellar.model.network.JsonTestUtils.parse
 import com.github.dedis.popstellar.model.network.JsonTestUtils.testData
 import com.github.dedis.popstellar.model.objects.security.Base64URLData
 import com.github.dedis.popstellar.testutils.Base64DataUtils
 import com.github.dedis.popstellar.utility.security.HashSHA256.hash
+import com.google.gson.JsonParseException
 import okio.ByteString.Companion.encode
 import org.hamcrest.CoreMatchers
 import org.hamcrest.EasyMock2Matchers.equalTo
@@ -115,6 +118,23 @@ class RumorTest {
 
     @Test
     fun jsonValidationTest() {
-        testData(rumor)
+        val pathDir = "protocol/examples/query/rumor/"
+        val jsonFiles = listOf(
+            "rumor.json",
+            "wrong_rumor_additional_params.json",
+            "wrong_rumor_missing_channel.json",
+            "wrong_rumor_missing_messages.json",
+            "wrong_rumor_missing_rumor_id.json",
+            "wrong_rumor_missing_sender_id.json"
+        )
+
+        val validJson = loadFile(pathDir + jsonFiles[0])
+        parse(validJson)
+
+        for (i in 1 until jsonFiles.size) {
+            val invalidJson = loadFile(pathDir + jsonFiles[i])
+            Assert.assertThrows(JsonParseException::class.java) { parse(invalidJson) }
+        }
     }
+
 }
