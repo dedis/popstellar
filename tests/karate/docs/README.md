@@ -99,7 +99,7 @@ Feature: Create a Roll Call
 * `utils`
   * `constants.feature`: Contains all the necessary constants. Usually called at the beginning of any feature.
   * `android.feature` and `web.feature`: Contain platform specific scenarios that will be used by the actual tests. Both files should implement the same scenarios.
-  * `platform.feature`: A simple wrapper around `android.feature` and `web.feature` that allows you to call the right scenario depending on the current env you are testing for. (i.e. if you set `karate.env=web`, if will call scenarios from `web.feature`)
+  * `platform.feature`: A simple wrapper around `android.feature` and `web.feature` that allows you to call the right scenario depending on the current env you are testing for. (i.e. if you set `karate.env=web`, it will call scenarios from `web.feature`)
   * `mock_client.feature`: Allows you to create a mock client via `createMockClient`. Automatically stops all clients after each scenario.
 * `features`: The actual tests
 
