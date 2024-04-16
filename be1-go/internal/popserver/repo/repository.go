@@ -53,7 +53,7 @@ type HandleChannelRepository interface {
 	LAORepository
 
 	// StoreChannel stores a channel inside the database.
-	StoreChannel(channel string, organizerPubKey []byte) error
+	StoreChannel(channel string) error
 
 	// StoreMessage stores a message inside the database.
 	StoreMessage(channelID string, msg message.Message) error
@@ -65,7 +65,7 @@ type HandleChannelRepository interface {
 	HasMessage(messageID string) (bool, error)
 
 	// StoreChannelsAndMessage stores a list of "sub" channels and a message inside the database.
-	StoreChannelsAndMessage(channels []string, baseChannel string, organizerPubKey []byte, msg message.Message) error
+	StoreChannelsAndMessage(channels []string, baseChannel string, msg message.Message) error
 }
 
 type RootRepository interface {
@@ -78,12 +78,6 @@ type RootRepository interface {
 
 	// GetClientServerAddress returns the address of the client server.
 	GetClientServerAddress() (string, error)
-
-	// GetServerPubKey returns the public key of the server.
-	GetServerPubKey() ([]byte, error)
-
-	// GetServerSecretKey returns the secret key of the server.
-	GetServerSecretKey() ([]byte, error)
 
 	// StoreChannelsAndMessageWithLaoGreet stores a list of "sub" channels, a message and a lao greet message inside the database.
 	StoreChannelsAndMessageWithLaoGreet(
@@ -142,4 +136,7 @@ type ElectionRepository interface {
 type LAORepository interface {
 	// GetLaoWitnesses returns the list of witnesses of a LAO.
 	GetLaoWitnesses(laoPath string) (map[string]struct{}, error)
+
+	// GetOrganizerPubKey returns the organizer public key of a LAO.
+	GetOrganizerPubKey(laoPath string) (kyber.Point, error)
 }
