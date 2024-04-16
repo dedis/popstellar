@@ -101,6 +101,8 @@ func NewHandlerParametersWithOwnerAndServer(db repo.Repository, owner kyber.Poin
 func NewHandlerParametersWithFakeSocket(db repo.Repository, s *FakeSocket) types.HandlerParameters {
 	nolog := zerolog.New(io.Discard)
 	schemaValidator, _ := validation.NewSchemaValidator()
+	secret := crypto.Suite.Scalar().Pick(crypto.Suite.RandomStream())
+	point := crypto.Suite.Point().Mul(secret, nil)
 
 	return types.HandlerParameters{
 		Log:                 nolog,
@@ -110,6 +112,8 @@ func NewHandlerParametersWithFakeSocket(db repo.Repository, s *FakeSocket) types
 		OwnerPubKey:         nil,
 		ClientServerAddress: "ClientServerAddress",
 		ServerServerAddress: "ServerServerAddress",
+		ServerPubKey:        point,
+		ServerSecretKey:     secret,
 	}
 
 }

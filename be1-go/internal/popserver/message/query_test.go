@@ -249,7 +249,6 @@ func Test_handleGreetServer(t *testing.T) {
 	require.NoError(t, err)
 
 	mockRepository := repo.NewMockRepository(t)
-	mockRepository.On("GetServerPubKey").Return([]byte("publicKey"), nil)
 
 	s := &popserver.FakeSocket{Id: "fakesocket1"}
 
@@ -299,40 +298,6 @@ func Test_handleGreetServer(t *testing.T) {
 		socket:      s,
 		needSend:    false,
 		isErrorTest: false,
-	})
-
-	// failed to query DB
-
-	serverInfo3 := method.GreetServerParams{
-		PublicKey:     "pk1",
-		ServerAddress: "srvAddr1",
-		ClientAddress: "cltAddr1",
-	}
-
-	greetServer3 := method.GreetServer{
-		Base: query.Base{
-			JSONRPCBase: jsonrpc.JSONRPCBase{
-				JSONRPC: "2.0",
-			},
-
-			Method: query.MethodGreetServer,
-		},
-		Params: serverInfo3,
-	}
-
-	greetServerBuf, err = json.Marshal(&greetServer3)
-	require.NoError(t, err)
-
-	mockRepository = repo.NewMockRepository(t)
-	mockRepository.On("GetServerPubKey").Return(nil, xerrors.Errorf("DB is disconnected"))
-
-	params = popserver.NewHandlerParameters(mockRepository)
-
-	inputs = append(inputs, input{
-		name:        "failed to query DB",
-		params:      params,
-		message:     greetServerBuf,
-		isErrorTest: true,
 	})
 
 	// Socket already used
