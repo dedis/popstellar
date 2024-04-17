@@ -2,7 +2,9 @@ package message
 
 import (
 	"encoding/json"
+	"github.com/rs/zerolog"
 	"popstellar/internal/popserver/channel"
+	"popstellar/internal/popserver/singleton/utils"
 	"popstellar/internal/popserver/types"
 	"popstellar/message/answer"
 	"popstellar/message/query/method/message"
@@ -14,6 +16,12 @@ const maxRetry = 10
 func handleGetMessagesByIDAnswer(params types.HandlerParameters, msg answer.Answer) *answer.Error {
 	result := msg.Result.GetMessagesByChannel()
 	msgsByChan := make(map[string]map[string]message.Message)
+
+	log, ok := utils.GetLogInstance()
+	if !ok {
+		errAnswer := answer.NewInternalServerError("failed to get utils").Wrap("handleGetMessagesByIDAnswer")
+		return errAnswer
+	}
 
 	// Unmarshal each message
 	for channelID, rawMsgs := range result {
@@ -27,7 +35,7 @@ func handleGetMessagesByIDAnswer(params types.HandlerParameters, msg answer.Answ
 			}
 
 			errAnswer := answer.NewInvalidMessageFieldError("failed to unmarshal: %v", err).Wrap("handleGetMessagesByIDAnswer")
-			params.Log.Error().Msg(errAnswer.Error())
+			log.Error().Msg(errAnswer.Error())
 		}
 
 		if len(msgsByChan[channelID]) == 0 {
@@ -36,7 +44,7 @@ func handleGetMessagesByIDAnswer(params types.HandlerParameters, msg answer.Answ
 	}
 
 	// Handle every message and discard them if handled without error
-	handleMessagesByChannel(params, msgsByChan)
+	handleMessagesByChannel(params, msgsByChan, log)
 
 	err := params.DB.StorePendingMessages(msgsByChan)
 	if err != nil {
@@ -47,7 +55,7 @@ func handleGetMessagesByIDAnswer(params types.HandlerParameters, msg answer.Answ
 	return nil
 }
 
-func handleMessagesByChannel(params types.HandlerParameters, msgsByChannel map[string]map[string]message.Message) {
+func handleMessagesByChannel(params types.HandlerParameters, msgsByChannel map[string]map[string]message.Message, log *zerolog.Logger) {
 	// Handle every messages
 	for i := 0; i < maxRetry; i++ {
 		// Sort by channelID length
@@ -73,7 +81,7 @@ func handleMessagesByChannel(params types.HandlerParameters, msgsByChannel map[s
 				}
 
 				errAnswer = errAnswer.Wrap(msgID).Wrap("handleGetMessagesByIDAnswer")
-				params.Log.Error().Msg(errAnswer.Error())
+				log.Error().Msg(errAnswer.Error())
 			}
 
 			if len(msgsByChannel[channelID]) == 0 {

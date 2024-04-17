@@ -3,6 +3,7 @@ package message
 import (
 	"encoding/json"
 	"popstellar/internal/popserver/singleton/state"
+	"popstellar/internal/popserver/singleton/utils"
 	"popstellar/internal/popserver/types"
 	jsonrpc "popstellar/message"
 	"popstellar/message/answer"
@@ -11,7 +12,13 @@ import (
 )
 
 func HandleMessage(params types.HandlerParameters, msg []byte) error {
-	err := params.SchemaValidator.VerifyJSON(msg, validation.GenericMessage)
+	schemaValidator, ok := utils.GetSchemaValidatorInstance()
+	if !ok {
+		errAnswer := answer.NewInternalServerError("failed to get utils").Wrap("HandleMessage")
+		return errAnswer
+	}
+
+	err := schemaValidator.VerifyJSON(msg, validation.GenericMessage)
 	if err != nil {
 		errAnswer := answer.NewInvalidMessageFieldError("invalid json: %v", err).Wrap("HandleMessage")
 		params.Socket.SendError(nil, errAnswer)
@@ -96,14 +103,20 @@ func handleAnswer(params types.HandlerParameters, msg []byte) (*int, *answer.Err
 		return nil, errAnswer
 	}
 
+	log, ok := utils.GetLogInstance()
+	if !ok {
+		errAnswer := answer.NewInternalServerError("failed to get utils").Wrap("handleAnswer")
+		return answerMsg.ID, errAnswer
+	}
+
 	if answerMsg.Result == nil {
-		params.Log.Warn().Msg("received an error, nothing to handle")
+		log.Warn().Msg("received an error, nothing to handle")
 		// don't send any error to avoid infinite error loop as a server will
 		// send an error to another server that will create another error
 		return nil, nil
 	}
 	if answerMsg.Result.IsEmpty() {
-		params.Log.Info().Msg("result isn't an answer to a query, nothing to handle")
+		log.Info().Msg("result isn't an answer to a query, nothing to handle")
 		return nil, nil
 	}
 

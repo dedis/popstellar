@@ -4,9 +4,11 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/require"
 	"go.dedis.ch/kyber/v3/sign/schnorr"
 	"golang.org/x/xerrors"
+	"io"
 	"popstellar/crypto"
 	"popstellar/internal/popserver"
 	"popstellar/internal/popserver/repo"
@@ -147,7 +149,8 @@ func Test_handleMessagesByChannel(t *testing.T) {
 
 	for _, i := range inputs {
 		t.Run(i.name, func(t *testing.T) {
-			handleMessagesByChannel(i.params, i.messages)
+			log := zerolog.New(io.Discard)
+			handleMessagesByChannel(i.params, i.messages, &log)
 
 			for k0, v0 := range i.expected {
 				for k1 := range v0 {

@@ -1,16 +1,13 @@
 package popserver
 
 import (
-	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/require"
 	"go.dedis.ch/kyber/v3"
-	"io"
 	"popstellar/crypto"
 	"popstellar/internal/popserver/repo"
 	"popstellar/internal/popserver/types"
 	"popstellar/message/query/method/message"
 	"popstellar/network/socket"
-	"popstellar/validation"
 	"testing"
 )
 
@@ -61,14 +58,10 @@ func (f *FakeSocket) Type() socket.SocketType {
 }
 
 func NewHandlerParameters(db repo.Repository) types.HandlerParameters {
-	nolog := zerolog.New(io.Discard)
-	schemaValidator, _ := validation.NewSchemaValidator()
 	secret := crypto.Suite.Scalar().Pick(crypto.Suite.RandomStream())
 	point := crypto.Suite.Point().Mul(secret, nil)
 	return types.HandlerParameters{
-		Log:                 nolog,
 		Socket:              &FakeSocket{Id: "fakeID"},
-		SchemaValidator:     *schemaValidator,
 		DB:                  db,
 		OwnerPubKey:         nil,
 		ClientServerAddress: "ClientServerAddress",
@@ -79,13 +72,8 @@ func NewHandlerParameters(db repo.Repository) types.HandlerParameters {
 }
 
 func NewHandlerParametersWithOwnerAndServer(db repo.Repository, owner kyber.Point, server Keypair) types.HandlerParameters {
-	nolog := zerolog.New(io.Discard)
-	schemaValidator, _ := validation.NewSchemaValidator()
-
 	return types.HandlerParameters{
-		Log:                 nolog,
 		Socket:              &FakeSocket{Id: "fakeID"},
-		SchemaValidator:     *schemaValidator,
 		DB:                  db,
 		OwnerPubKey:         owner,
 		ClientServerAddress: "ClientServerAddress",
@@ -96,15 +84,11 @@ func NewHandlerParametersWithOwnerAndServer(db repo.Repository, owner kyber.Poin
 }
 
 func NewHandlerParametersWithFakeSocket(db repo.Repository, s *FakeSocket) types.HandlerParameters {
-	nolog := zerolog.New(io.Discard)
-	schemaValidator, _ := validation.NewSchemaValidator()
 	secret := crypto.Suite.Scalar().Pick(crypto.Suite.RandomStream())
 	point := crypto.Suite.Point().Mul(secret, nil)
 
 	return types.HandlerParameters{
-		Log:                 nolog,
 		Socket:              s,
-		SchemaValidator:     *schemaValidator,
 		DB:                  db,
 		OwnerPubKey:         nil,
 		ClientServerAddress: "ClientServerAddress",

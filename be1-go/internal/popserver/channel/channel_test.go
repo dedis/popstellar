@@ -9,14 +9,17 @@ import (
 	"go.dedis.ch/kyber/v3/sign/schnorr"
 	"golang.org/x/xerrors"
 	"io"
+	"os"
 	"popstellar/crypto"
 	"popstellar/hub/standard_hub/hub_state"
 	"popstellar/internal/popserver"
 	"popstellar/internal/popserver/repo"
 	"popstellar/internal/popserver/singleton/state"
+	"popstellar/internal/popserver/singleton/utils"
 	"popstellar/internal/popserver/types"
 	"popstellar/message/messagedata"
 	"popstellar/message/query/method/message"
+	"popstellar/validation"
 	"testing"
 	"time"
 )
@@ -32,7 +35,18 @@ func TestMain(m *testing.M) {
 
 	state.InitState(subs, &peers, &queries)
 
-	m.Run()
+	log := zerolog.New(io.Discard)
+	schemaValidator, err := validation.NewSchemaValidator()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "error: %v\n", err)
+		os.Exit(1)
+	}
+
+	utils.InitUtils(&log, schemaValidator)
+
+	exitVal := m.Run()
+
+	os.Exit(exitVal)
 }
 
 type handleChannelInput struct {
