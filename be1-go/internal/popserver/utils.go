@@ -1,19 +1,13 @@
 package popserver
 
 import (
-	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/require"
 	"go.dedis.ch/kyber/v3"
-	"golang.org/x/xerrors"
-	"io"
 	"popstellar/crypto"
 	"popstellar/internal/popserver/repo"
 	"popstellar/internal/popserver/types"
-	"popstellar/message/answer"
 	"popstellar/message/query/method/message"
 	"popstellar/network/socket"
-	"popstellar/validation"
-	"sync"
 	"testing"
 )
 
@@ -64,14 +58,10 @@ func (f *FakeSocket) Type() socket.SocketType {
 }
 
 func NewHandlerParameters(db repo.Repository) types.HandlerParameters {
-	nolog := zerolog.New(io.Discard)
-	schemaValidator, _ := validation.NewSchemaValidator()
 	secret := crypto.Suite.Scalar().Pick(crypto.Suite.RandomStream())
 	point := crypto.Suite.Point().Mul(secret, nil)
 	return types.HandlerParameters{
-		Log:                 nolog,
 		Socket:              &FakeSocket{Id: "fakeID"},
-		SchemaValidator:     *schemaValidator,
 		DB:                  db,
 		OwnerPubKey:         nil,
 		ClientServerAddress: "ClientServerAddress",
@@ -82,13 +72,8 @@ func NewHandlerParameters(db repo.Repository) types.HandlerParameters {
 }
 
 func NewHandlerParametersWithOwnerAndServer(db repo.Repository, owner kyber.Point, server Keypair) types.HandlerParameters {
-	nolog := zerolog.New(io.Discard)
-	schemaValidator, _ := validation.NewSchemaValidator()
-
 	return types.HandlerParameters{
-		Log:                 nolog,
 		Socket:              &FakeSocket{Id: "fakeID"},
-		SchemaValidator:     *schemaValidator,
 		DB:                  db,
 		OwnerPubKey:         owner,
 		ClientServerAddress: "ClientServerAddress",
@@ -99,15 +84,11 @@ func NewHandlerParametersWithOwnerAndServer(db repo.Repository, owner kyber.Poin
 }
 
 func NewHandlerParametersWithFakeSocket(db repo.Repository, s *FakeSocket) types.HandlerParameters {
-	nolog := zerolog.New(io.Discard)
-	schemaValidator, _ := validation.NewSchemaValidator()
 	secret := crypto.Suite.Scalar().Pick(crypto.Suite.RandomStream())
 	point := crypto.Suite.Point().Mul(secret, nil)
 
 	return types.HandlerParameters{
-		Log:                 nolog,
 		Socket:              s,
-		SchemaValidator:     *schemaValidator,
 		DB:                  db,
 		OwnerPubKey:         nil,
 		ClientServerAddress: "ClientServerAddress",
@@ -134,97 +115,4 @@ func GenerateKeyPair(t *testing.T) Keypair {
 	privateBuf, err := secret.MarshalBinary()
 
 	return Keypair{point, publicBuf, secret, privateBuf}
-}
-
-type FakeSubscribers struct {
-	sync.RWMutex
-	list map[string]map[string]socket.Socket
-}
-
-func NewFakeSubscribers() *FakeSubscribers {
-	return &FakeSubscribers{list: make(map[string]map[string]socket.Socket)}
-}
-
-func (s *FakeSubscribers) AddChannel(channel string) {
-	s.Lock()
-	defer s.Unlock()
-
-	s.list[channel] = make(map[string]socket.Socket)
-}
-
-func (s *FakeSubscribers) Subscribe(channel string, socket socket.Socket) *answer.Error {
-	s.Lock()
-	defer s.Unlock()
-
-	_, ok := s.list[channel]
-	if !ok {
-		return answer.NewInvalidResourceError("cannot Subscribe to unknown channel")
-	}
-
-	s.list[channel][socket.ID()] = socket
-
-	return nil
-}
-
-func (s *FakeSubscribers) Unsubscribe(channel string, socket socket.Socket) *answer.Error {
-	s.Lock()
-	defer s.Unlock()
-
-	_, ok := s.list[channel]
-	if !ok {
-		return answer.NewInvalidResourceError("cannot Unsubscribe from unknown channel")
-	}
-
-	_, ok = s.list[channel][socket.ID()]
-	if !ok {
-		return answer.NewInvalidActionError("cannot Unsubscribe from a channel not subscribed")
-	}
-
-	delete(s.list[channel], socket.ID())
-
-	return nil
-}
-
-// SendToAll sends a message to all sockets.
-func (s *FakeSubscribers) SendToAll(buf []byte, channel string) *answer.Error {
-	s.RLock()
-	defer s.RUnlock()
-
-	sockets, ok := s.list[channel]
-	if !ok {
-		return answer.NewInvalidResourceError("failed to send to all clients, channel %s not found", channel)
-	}
-	for _, v := range sockets {
-		v.Send(buf)
-	}
-
-	return nil
-}
-
-func (s *FakeSubscribers) HasChannel(channel string) bool {
-	s.RLock()
-	defer s.RUnlock()
-
-	_, ok := s.list[channel]
-	if !ok {
-		return false
-	}
-
-	return true
-}
-
-func (s *FakeSubscribers) IsSubscribed(channel string, socket socket.Socket) (bool, error) {
-	s.RLock()
-	defer s.RUnlock()
-
-	sockets, ok := s.list[channel]
-	if !ok {
-		return false, xerrors.Errorf("channel doesn't exist")
-	}
-	_, ok = sockets[socket.ID()]
-	if !ok {
-		return false, nil
-	}
-
-	return true, nil
 }

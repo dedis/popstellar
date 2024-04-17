@@ -2,34 +2,49 @@ package message
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/require"
 	"golang.org/x/xerrors"
 	"io"
+	"os"
 	"popstellar/hub/standard_hub/hub_state"
 	"popstellar/internal/popserver"
 	"popstellar/internal/popserver/repo"
-	"popstellar/internal/popserver/state"
+	"popstellar/internal/popserver/singleton/state"
+	"popstellar/internal/popserver/singleton/utils"
 	"popstellar/internal/popserver/types"
 	jsonrpc "popstellar/message"
 	"popstellar/message/query"
 	"popstellar/message/query/method"
 	"popstellar/message/query/method/message"
+	"popstellar/validation"
 	"testing"
 )
 
-var subs *popserver.FakeSubscribers
+var subs *types.Subscribers
 var queries hub_state.Queries
 var peers hub_state.Peers
 
 func TestMain(m *testing.M) {
-	subs = popserver.NewFakeSubscribers()
+	subs = types.NewSubscribers()
 	queries = hub_state.NewQueries(zerolog.New(io.Discard))
 	peers = hub_state.NewPeers()
 
-	state.InitPopState(subs, &peers, &queries)
+	state.InitState(subs, &peers, &queries)
 
-	m.Run()
+	log := zerolog.New(io.Discard)
+	schemaValidator, err := validation.NewSchemaValidator()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "error: %v\n", err)
+		os.Exit(1)
+	}
+
+	utils.InitUtils(&log, schemaValidator)
+
+	exitVal := m.Run()
+
+	os.Exit(exitVal)
 }
 
 func Test_handleCatchUp(t *testing.T) {
@@ -496,7 +511,6 @@ func Test_handleSubscribe(t *testing.T) {
 		message     []byte
 		isErrorTest bool
 		subscribe   method.Subscribe
-		fakeSubs    *popserver.FakeSubscribers
 	}
 
 	inputs := make([]input, 0)
@@ -529,7 +543,6 @@ func Test_handleSubscribe(t *testing.T) {
 		message:     subscribeBuf,
 		isErrorTest: false,
 		subscribe:   subscribe1,
-		fakeSubs:    subs,
 	})
 
 	// unknown channel
@@ -559,7 +572,6 @@ func Test_handleSubscribe(t *testing.T) {
 		message:     subscribeBuf,
 		isErrorTest: true,
 		subscribe:   subscribe2,
-		fakeSubs:    subs,
 	})
 
 	// cannot Subscribe to root
@@ -589,7 +601,6 @@ func Test_handleSubscribe(t *testing.T) {
 		message:     subscribeRootBuf,
 		isErrorTest: true,
 		subscribe:   subscribe3,
-		fakeSubs:    subs,
 	})
 
 	// run all tests
@@ -603,7 +614,7 @@ func Test_handleSubscribe(t *testing.T) {
 			} else {
 				require.Nil(t, errAnswer)
 
-				isSubscribed, err := i.fakeSubs.IsSubscribed(i.subscribe.Params.Channel, i.params.Socket)
+				isSubscribed, err := subs.IsSubscribed(i.subscribe.Params.Channel, i.params.Socket)
 				require.NoError(t, err)
 				require.True(t, isSubscribed)
 			}
@@ -618,7 +629,6 @@ func Test_handleUnsubscribe(t *testing.T) {
 		message     []byte
 		isErrorTest bool
 		unsubscribe method.Unsubscribe
-		fakeSubs    *popserver.FakeSubscribers
 	}
 
 	inputs := make([]input, 0)
@@ -653,7 +663,6 @@ func Test_handleUnsubscribe(t *testing.T) {
 		message:     unsubscribeBuf,
 		isErrorTest: false,
 		unsubscribe: unsubscribe1,
-		fakeSubs:    subs,
 	})
 
 	// cannot Unsubscribe without being subscribed
@@ -684,7 +693,6 @@ func Test_handleUnsubscribe(t *testing.T) {
 		message:     unsubscribeBuf,
 		isErrorTest: true,
 		unsubscribe: unsubscribe2,
-		fakeSubs:    subs,
 	})
 
 	// unknown channel
@@ -714,7 +722,6 @@ func Test_handleUnsubscribe(t *testing.T) {
 		message:     unsubscribeBuf,
 		isErrorTest: true,
 		unsubscribe: unsubscribe1,
-		fakeSubs:    subs,
 	})
 
 	// cannot Unsubscribe from root
@@ -744,7 +751,6 @@ func Test_handleUnsubscribe(t *testing.T) {
 		message:     unsubscribeRootBuf,
 		isErrorTest: true,
 		unsubscribe: unsubscribe4,
-		fakeSubs:    subs,
 	})
 
 	// run all tests
@@ -758,7 +764,7 @@ func Test_handleUnsubscribe(t *testing.T) {
 			} else {
 				require.Nil(t, errAnswer)
 
-				isSubscribe, err := i.fakeSubs.IsSubscribed(i.unsubscribe.Params.Channel, i.params.Socket)
+				isSubscribe, err := subs.IsSubscribed(i.unsubscribe.Params.Channel, i.params.Socket)
 				require.NoError(t, err)
 				require.False(t, isSubscribe)
 			}

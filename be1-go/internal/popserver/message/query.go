@@ -4,7 +4,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"popstellar/internal/popserver/channel"
-	"popstellar/internal/popserver/state"
+	"popstellar/internal/popserver/singleton/state"
 	"popstellar/internal/popserver/types"
 	jsonrpc "popstellar/message"
 	"popstellar/message/answer"

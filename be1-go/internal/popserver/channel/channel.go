@@ -6,7 +6,8 @@ import (
 	"go.dedis.ch/kyber/v3"
 	"go.dedis.ch/kyber/v3/sign/schnorr"
 	"popstellar/crypto"
-	"popstellar/internal/popserver/state"
+	"popstellar/internal/popserver/singleton/state"
+	"popstellar/internal/popserver/singleton/utils"
 	"popstellar/internal/popserver/types"
 	jsonrpc "popstellar/message"
 	"popstellar/message/answer"
@@ -108,8 +109,14 @@ func verifyDataAndGetObjectAction(params types.HandlerParameters, msg message.Me
 		return "", "", errAnswer
 	}
 
+	schemaValidator, ok := utils.GetSchemaValidatorInstance()
+	if !ok {
+		errAnswer := answer.NewInternalServerError("failed to get utils").Wrap("verifyDataAndGetObjectAction")
+		return "", "", errAnswer
+	}
+
 	// validate message data against the json schema
-	err = params.SchemaValidator.VerifyJSON(jsonData, validation.Data)
+	err = schemaValidator.VerifyJSON(jsonData, validation.Data)
 	if err != nil {
 		errAnswer = answer.NewInvalidMessageFieldError("failed to validate message against json schema: %v", err)
 		errAnswer = errAnswer.Wrap("verifyDataAndGetObjectAction")
