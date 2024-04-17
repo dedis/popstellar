@@ -8,11 +8,9 @@
         "jsonrpc": {
             "$comment": "Defined by the parent, but needed here for the validation"
         },
-
         "method": {
             "type": "string"
         },
-
         "params": {
             "type": "object"
         }
@@ -44,10 +42,24 @@
         },
         {
             "$ref": "method/rumor.json"
+        },
+        {
+            "$ref": "method/federation_init.json"
+        },
+        {
+            "$ref": "method/federation_expect.json"
+        },
+        {
+            "$ref": "method/federation_challenge.json"
+        },
+        {
+            "$ref": "method/federation_challenge_request.json"
         }
     ],
-
-    "required": ["method", "params", "jsonrpc"],
-
+    "required": [
+        "method",
+        "params",
+        "jsonrpc"
+    ],
     "$comment": "can have an additional property `id` if not a broadcast"
 }

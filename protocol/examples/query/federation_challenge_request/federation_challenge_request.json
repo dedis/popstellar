@@ -1,0 +1,7 @@
+{
+    "jsonrpc": "2.0",
+    "method": "federation_challenge_request",
+    "params": {
+        "timestamp": 1712854874
+    }
+}

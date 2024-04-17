@@ -1,0 +1,13 @@
+{
+    "jsonrpc": "2.0",
+    "method": "federation_expect",
+    "params": {
+        "lao_id": "lsWUv1bKBQ0t1DqWZTFwb0nhLsP_EtfGoXHny4hsrwA=",
+        "public_key": "UvViTxoKsB3XVP_ctkmOKCJpMWb7fCzrcb1XDmhNe7Q=",
+        "server_address": "wss://ethz.ch:9000/server",
+        "challenge": {
+            "value": "82eadde2a4ba832518b90bb93c8480ee1ae16a91d5efe9281e91e2ec11da03e4",
+            "valid_until": 1712854874
+        }
+    }
+}

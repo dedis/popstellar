@@ -1,0 +1,38 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/federation_challenge.json",
+    "description": "Challenge object in the context of federation authentication",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "method": {
+            "description": "[String] operation to be performed by the query",
+            "const": "federation_challenge"
+        },
+        "params": {
+            "value": {
+                "type": "string",
+                "contentEncoding": "hex",
+                "pattern": "^[0-9a-fA-F]{64}$",
+                "$comment": "A 32 bytes array encoded in hexadecimal"
+            },
+            "valid_until": {
+                "type": "integer",
+                "description": "[Timestamp] of the expiration time",
+                "minimum": 0
+            },
+            "required": [
+                "value",
+                "valid_until"
+            ]
+        },
+        "jsonrpc": {
+            "$comment": "Defined by the parent, but needed here for the validation"
+        }
+    },
+    "required": [
+        "method",
+        "params",
+        "jsonrpc"
+    ]
+}
