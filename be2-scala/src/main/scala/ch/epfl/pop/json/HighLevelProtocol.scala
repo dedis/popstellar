@@ -207,9 +207,8 @@ object HighLevelProtocol extends DefaultJsonProtocol {
     override def read(json: JsValue): Rumor = {
       json.asJsObject.getFields(PARAM_SENDER_PK, PARAM_RUMOR_ID, PARAM_MESSAGES) match {
         case Seq(senderPk @ JsString(_), rumorId @ JsNumber(_), rumors @ JsObject(_)) =>
-          val map = mutable.HashMap[Channel, List[Message]]()
-          rumors.asJsObject.fields.foreach {
-            case (k: String, JsArray(v)) => map.put(Channel(k), v.map(_.convertTo[Message]).toList)
+          val map: Map[Channel, List[Message]] = rumors.asJsObject.fields.map {
+            case (k: String, JsArray(v)) => Channel(k) -> v.map(_.convertTo[Message]).toList
             case _                       => throw new IllegalArgumentException(s"Unrecognizable rumor in $json")
           }
           new Rumor(senderPk.convertTo[PublicKey], rumorId.convertTo[Int], HashMap.from(map))
