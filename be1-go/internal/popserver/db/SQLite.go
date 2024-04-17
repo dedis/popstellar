@@ -24,19 +24,32 @@ type SQLite struct {
 	database *sql.DB
 }
 
+var channelTypeNameToID = map[string]string{
+	"root":         "1",
+	"lao":          "2",
+	"election":     "3",
+	"generalchirp": "4",
+	"chirp":        "5",
+	"reaction":     "6",
+	"consensus":    "7",
+	"popcha":       "8",
+	"coin":         "9",
+	"auth":         "10",
+}
+
 //======================================================================================================================
 // Database initialization
 //======================================================================================================================
 
 // NewSQLite returns a new SQLite instance.
-func NewSQLite(path string, foreignKeyOn bool) (SQLite, error) {
+func NewSQLite(path string, foreignKeyOff bool) (SQLite, error) {
 	db, err := sql.Open("sqlite", path)
 	if err != nil {
 		return SQLite{}, err
 	}
 
-	if foreignKeyOn {
-		_, err = db.Exec("PRAGMA foreign_keys = ON")
+	if foreignKeyOff {
+		_, err = db.Exec("PRAGMA foreign_keys = OFF;")
 		if err != nil {
 			db.Close()
 			return SQLite{}, err
@@ -234,10 +247,15 @@ func (s *SQLite) StoreMessage(channel string, msg message.Message) error {
 	_, err = tx.Exec("INSERT INTO inbox "+
 		"(messageID, message, storedTime) VALUES "+
 		"(?, ?, ?)", msg.MessageID, string(msgByte), time.Now().UnixNano())
-
+	if err != nil {
+		return err
+	}
 	_, err = tx.Exec("INSERT INTO channelMessage "+
 		"(channelID, messageID, isBaseChannel) VALUES "+
-		"(?, ?, ?)", channel, msg.MessageID, false)
+		"(?, ?, ?)", channel, msg.MessageID, true)
+	if err != nil {
+		return err
+	}
 	return tx.Commit()
 }
 
@@ -259,10 +277,17 @@ func (s *SQLite) StoreMessageWithObjectAction(channelID, object, action string, 
 	_, err = tx.Exec("INSERT INTO inbox "+
 		"(messageID, object, action, message, storedTime) VALUES "+
 		"(?, ?, ?, ?, ?)", msg.MessageID, object, action, msgByte, time.Now().UnixNano())
+	if err != nil {
+		return err
 
+	}
 	_, err = tx.Exec("INSERT INTO channelMessage "+
 		"(channelID, messageID, isBaseChannel) VALUES "+
-		"(?, ?, ?)", channelID, msg.MessageID, false)
+		"(?, ?, ?)", channelID, msg.MessageID, true)
+	if err != nil {
+		return err
+
+	}
 	return tx.Commit()
 }
 
@@ -346,44 +371,6 @@ func (s *SQLite) GetMessageByID(ID string) (message.Message, error) {
 	return msg, nil
 }
 
-// GetSortedMessages returns all messages sorted by stored time.
-func (s *SQLite) GetSortedMessages(channel string) ([]message.Message, error) {
-	tx, err := s.database.Begin()
-	if err != nil {
-		return nil, err
-	}
-	defer tx.Rollback()
-
-	rows, err := tx.Query(" SELECT inbox.message "+
-		"FROM inbox "+
-		"JOIN channelMessage ON inbox.messageID = channelMessage.messageID "+
-		"WHERE channelMessage.channelID = ?"+
-		"ORDER BY inbox.storedTime DESC ", channel)
-	if err != nil {
-		return nil, err
-	}
-
-	messages := make([]message.Message, 0)
-
-	for rows.Next() {
-		var messageByte []byte
-		if err = rows.Scan(&messageByte); err != nil {
-			return nil, err
-		}
-		var msg message.Message
-		if err = json.Unmarshal(messageByte, &msg); err != nil {
-			return nil, err
-		}
-		messages = append(messages, msg)
-	}
-
-	if rows.Err() != nil || tx.Commit() != nil {
-		return nil, err
-	}
-
-	return messages, nil
-}
-
 // AddWitnessSignature stores a pending signature inside the SQLite database.
 func (s *SQLite) AddWitnessSignature(messageID string, witness string, signature string) error {
 	tx, err := s.database.Begin()
@@ -421,6 +408,13 @@ func (s *SQLite) AddWitnessSignature(messageID string, witness string, signature
 	return tx.Commit()
 }
 
+// StoreChannel mainly used for testing and storing the root channel
+func (s *SQLite) StoreChannel(channelID, typeName, laoID string) error {
+	_, err := s.database.Exec("INSERT INTO channel (channelID, typeID, laoID) VALUES (?, ?, ?)",
+		channelID, channelTypeNameToID[typeName], laoID)
+	return err
+}
+
 //======================================================================================================================
 // QueryRepository interface implementation
 //======================================================================================================================
@@ -429,15 +423,47 @@ func (s *SQLite) AddWitnessSignature(messageID string, witness string, signature
 func (s *SQLite) GetChannelType(channel string) (string, error) {
 	var name string
 	err := s.database.QueryRow("SELECT name FROM channelType "+
-		"JOIN channel on channels.typeID = channelType.ID "+
+		"JOIN channel on channel.typeID = channelType.ID "+
 		"WHERE channelID = ?", channel).Scan(&name)
 	return name, err
+}
+
+// GetAllMessagesFromChannel returns all the messages received + sent on a channel sorted by stored time.
+func (s *SQLite) GetAllMessagesFromChannel(channelID string) ([]message.Message, error) {
+
+	rows, err := s.database.Query("SELECT inbox.message "+
+		"FROM inbox "+
+		"JOIN channelMessage ON inbox.messageID = channelMessage.messageID "+
+		"WHERE channelMessage.channelID = ? "+
+		"ORDER BY inbox.storedTime DESC", channelID)
+	if err != nil {
+		return nil, err
+	}
+
+	var messages []message.Message
+	for rows.Next() {
+		var messageByte []byte
+		if err = rows.Scan(&messageByte); err != nil {
+			return nil, err
+		}
+		var msg message.Message
+		if err = json.Unmarshal(messageByte, &msg); err != nil {
+			return nil, err
+		}
+		messages = append(messages, msg)
+	}
+
+	if rows.Err() != nil {
+		return nil, err
+	}
+
+	return messages, nil
 }
 
 func (s *SQLite) GetResultForGetMessagesByID(params map[string][]string) (map[string][]message.Message, error) {
 	var interfaces []interface{}
 	// isBaseChannel must be true
-	interfaces = append(interfaces, "true")
+	interfaces = append(interfaces, true)
 	for _, value := range params {
 		for _, v := range value {
 			interfaces = append(interfaces, v)
@@ -445,9 +471,9 @@ func (s *SQLite) GetResultForGetMessagesByID(params map[string][]string) (map[st
 	}
 
 	rows, err := s.database.Query("SELECT message, channelID "+
-		"FROM inbox JOIN channelMessage on inbox.messageID = channelMessage.messageID"+
+		"FROM inbox JOIN channelMessage on inbox.messageID = channelMessage.messageID "+
 		"WHERE isBaseChannel = ? "+
-		"AND messageID IN ("+strings.Repeat("?,", len(interfaces)-1)+"?"+") ", interfaces...)
+		"AND inbox.messageID IN ("+strings.Repeat("?,", len(interfaces)-2)+"?"+") ", interfaces...)
 	if err != nil {
 		return nil, err
 	}
@@ -476,36 +502,44 @@ func (s *SQLite) GetResultForGetMessagesByID(params map[string][]string) (map[st
 func (s *SQLite) GetParamsForGetMessageByID(params map[string][]string) (map[string][]string, error) {
 	var interfaces []interface{}
 	// isBaseChannel must be true
-	interfaces = append(interfaces, "true")
+	interfaces = append(interfaces, true)
 	for _, value := range params {
 		for _, v := range value {
 			interfaces = append(interfaces, v)
 		}
 	}
 
-	rows, err := s.database.Query("SELECT messageID, channelID "+
-		"FROM inbox JOIN channelMessage on inbox.messageID = channelMessage.messageID"+
+	rows, err := s.database.Query("SELECT inbox.messageID, channelID "+
+		"FROM inbox JOIN channelMessage on inbox.messageID = channelMessage.messageID "+
 		"WHERE isBaseChannel = ? "+
-		"AND messageID NOT IN ("+strings.Repeat("?,", len(interfaces)-1)+"?"+") ", interfaces...)
+		"AND inbox.messageID IN ("+strings.Repeat("?,", len(interfaces)-2)+"?"+") ", interfaces...)
 	if err != nil {
 		return nil, err
 	}
 
-	result := make(map[string][]string)
+	result := make(map[string]struct{})
 	for rows.Next() {
 		var messageID string
 		var channel string
 		if err = rows.Scan(&messageID, &channel); err != nil {
 			return nil, err
 		}
-		result[channel] = append(result[channel], messageID)
+		result[messageID] = struct{}{}
 	}
 
 	if err = rows.Err(); err != nil {
 		return nil, err
 	}
 
-	return result, nil
+	missingIDs := make(map[string][]string)
+	for channel, messageIDs := range params {
+		for _, messageID := range messageIDs {
+			if _, ok := result[messageID]; !ok {
+				missingIDs[channel] = append(missingIDs[channel], messageID)
+			}
+		}
+	}
+	return missingIDs, nil
 }
 
 //======================================================================================================================
@@ -514,7 +548,7 @@ func (s *SQLite) GetParamsForGetMessageByID(params map[string][]string) (map[str
 
 func (s *SQLite) HasChannel(channel string) (bool, error) {
 	var c string
-	err := s.database.QueryRow("SELECT channelID from channel WHERE channelID = ?)", channel).Scan(&c)
+	err := s.database.QueryRow("SELECT channelID from channel WHERE channelID = ?", channel).Scan(&c)
 	if err != nil && errors.Is(err, sql.ErrNoRows) {
 		return false, nil
 	} else if err != nil && !errors.Is(err, sql.ErrNoRows) {
@@ -526,7 +560,7 @@ func (s *SQLite) HasChannel(channel string) (bool, error) {
 
 func (s *SQLite) HasMessage(messageID string) (bool, error) {
 	var msgID string
-	err := s.database.QueryRow("SELECT messageID from inbox WHERE messageID = ?)", messageID).Scan(&msgID)
+	err := s.database.QueryRow("SELECT messageID from inbox WHERE messageID = ?", messageID).Scan(&msgID)
 	if err != nil && errors.Is(err, sql.ErrNoRows) {
 		return false, nil
 	} else if err != nil && !errors.Is(err, sql.ErrNoRows) {
