@@ -102,6 +102,7 @@ type HubFunctionalities interface {
 	NotifyWitnessMessage(messageId string, publicKey string, signature string)
 	GetClientServerAddress() string
 	GetPeersInfo() []method.ServerInfo
+	ConnectToServerAsClient(serverAddress string) (*socket.ClientSocket, error)
 }
 
 // Broadcastable defines a channel that can broadcast

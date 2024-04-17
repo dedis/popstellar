@@ -49,6 +49,12 @@ const (
 	VoteActionCastVote = "cast_vote"
 	VoteActionWriteIn  = "write_in"
 
+	FederationObject                 = "federation"
+	FederationActionRequestChallenge = "request_challenge"
+	FederationActionChallenge        = "challenge"
+	FederationActionInit             = "init"
+	FederationActionExpect           = "expect"
+
 	ChirpObject             = "chirp"
 	ChirpActionAdd          = "add"
 	ChirpActionDelete       = "delete"
