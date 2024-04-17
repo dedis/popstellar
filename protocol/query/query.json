@@ -56,10 +56,6 @@
             "$ref": "method/federation_challenge_request.json"
         }
     ],
-    "required": [
-        "method",
-        "params",
-        "jsonrpc"
-    ],
+    "required": ["method", "params", "jsonrpc"],
     "$comment": "can have an additional property `id` if not a broadcast"
 }
