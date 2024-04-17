@@ -36,19 +36,17 @@ type input struct {
 
 func Test_handleChannelRoot(t *testing.T) {
 	var args []input
-
 	organizerKey := crypto.Suite.Point()
 	organizerBuf, err := base64.URLEncoding.DecodeString(organizer)
 	require.NoError(t, err)
 	err = organizerKey.UnmarshalBinary(organizerBuf)
 	require.NoError(t, err)
-	wrongOwnerKeypair := popserver.GenerateKeyPair(t)
 
 	// Test 1: error when different sender and owner keys
 	args = append(args, newInputError(t,
 		"wrong_lao_create_different_sender_owner.json",
-		organizer,                // sender public key in base64 format
-		wrongOwnerKeypair.Public, // owner public key
+		wrongSender,  // sender public key in base64 format
+		organizerKey, // owner public key
 		"Test 1",
 		"sender's public key does not match the owner public key"))
 
