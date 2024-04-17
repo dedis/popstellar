@@ -30,7 +30,7 @@ func TestMain(m *testing.M) {
 	queries = hub_state.NewQueries(zerolog.New(io.Discard))
 	peers = hub_state.NewPeers()
 
-	state.InitPopState(subs, &peers, &queries)
+	state.InitState(subs, &peers, &queries)
 
 	m.Run()
 }

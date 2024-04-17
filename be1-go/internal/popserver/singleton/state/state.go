@@ -37,7 +37,7 @@ type Querier interface {
 	AddQuery(ID int, query method.GetMessagesById)
 }
 
-func InitPopState(subs Subscriber, peers Peerer, queries Querier) {
+func InitState(subs Subscriber, peers Peerer, queries Querier) {
 	once.Do(func() {
 		instance = &state{
 			subs:    subs,
