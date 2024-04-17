@@ -1,6 +1,7 @@
 package types
 
 import (
+	"golang.org/x/xerrors"
 	"popstellar/message/answer"
 	"popstellar/network/socket"
 	"sync"
@@ -71,4 +72,32 @@ func (s *Subscribers) SendToAll(buf []byte, channel string) *answer.Error {
 	}
 
 	return nil
+}
+
+func (s *Subscribers) HasChannel(channel string) bool {
+	s.RLock()
+	defer s.RUnlock()
+
+	_, ok := s.list[channel]
+	if !ok {
+		return false
+	}
+
+	return true
+}
+
+func (s *Subscribers) IsSubscribed(channel string, socket socket.Socket) (bool, error) {
+	s.RLock()
+	defer s.RUnlock()
+
+	sockets, ok := s.list[channel]
+	if !ok {
+		return false, xerrors.Errorf("channel doesn't exist")
+	}
+	_, ok = sockets[socket.ID()]
+	if !ok {
+		return false, nil
+	}
+
+	return true, nil
 }

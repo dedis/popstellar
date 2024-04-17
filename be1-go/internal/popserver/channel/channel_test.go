@@ -21,12 +21,12 @@ import (
 	"time"
 )
 
-var subs *popserver.FakeSubscribers
+var subs *types.Subscribers
 var queries hub_state.Queries
 var peers hub_state.Peers
 
 func TestMain(m *testing.M) {
-	subs = popserver.NewFakeSubscribers()
+	subs = types.NewSubscribers()
 	queries = hub_state.NewQueries(zerolog.New(io.Discard))
 	peers = hub_state.NewPeers()
 
