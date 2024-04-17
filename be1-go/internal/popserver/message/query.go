@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"popstellar/internal/popserver/channel"
 	"popstellar/internal/popserver/singleton/config"
+	"popstellar/internal/popserver/singleton/database"
 	"popstellar/internal/popserver/singleton/state"
 	"popstellar/internal/popserver/types"
 	jsonrpc "popstellar/message"
@@ -24,7 +25,13 @@ func handleCatchUp(params types.HandlerParameters, msg []byte) (*int, *answer.Er
 		return nil, errAnswer
 	}
 
-	result, err := params.DB.GetAllMessagesFromChannel(catchup.Params.Channel)
+	db, ok := database.GetQueryRepositoryInstance()
+	if !ok {
+		errAnswer := answer.NewInternalServerError("failed to get database").Wrap("handleCatchUp")
+		return &catchup.ID, errAnswer
+	}
+
+	result, err := db.GetAllMessagesFromChannel(catchup.Params.Channel)
 	if err != nil {
 		errAnswer := answer.NewInternalServerError("failed to query DB: %v", err).Wrap("handleCatchUp")
 		return &catchup.ID, errAnswer
@@ -45,7 +52,13 @@ func handleGetMessagesByID(params types.HandlerParameters, msg []byte) (*int, *a
 		return nil, errAnswer
 	}
 
-	result, err := params.DB.GetResultForGetMessagesByID(getMessagesById.Params)
+	db, ok := database.GetQueryRepositoryInstance()
+	if !ok {
+		errAnswer := answer.NewInternalServerError("failed to get database").Wrap("handleGetMessageByID")
+		return &getMessagesById.ID, errAnswer
+	}
+
+	result, err := db.GetResultForGetMessagesByID(getMessagesById.Params)
 	if err != nil {
 		errAnswer := answer.NewInternalServerError("failed to query DB: %v", err).Wrap("handleGetMessageByID")
 		return &getMessagesById.ID, errAnswer
@@ -132,7 +145,13 @@ func handleHeartbeat(params types.HandlerParameters, byteMessage []byte) (*int, 
 		return nil, errAnswer
 	}
 
-	result, err := params.DB.GetParamsForGetMessageByID(heartbeat.Params)
+	db, ok := database.GetQueryRepositoryInstance()
+	if !ok {
+		errAnswer := answer.NewInternalServerError("failed to get database").Wrap("handleHeartbeat")
+		return nil, errAnswer
+	}
+
+	result, err := db.GetParamsForGetMessageByID(heartbeat.Params)
 	if err != nil {
 		errAnswer := answer.NewInternalServerError("failed to query DB: %v", err).Wrap("handleHeartbeat")
 		return nil, errAnswer
@@ -144,7 +163,7 @@ func handleHeartbeat(params types.HandlerParameters, byteMessage []byte) (*int, 
 
 	queries, ok := state.GetQueriesInstance()
 	if !ok {
-		errAnswer := answer.NewInternalServerError("failed to get state").Wrap("handleGreetServer")
+		errAnswer := answer.NewInternalServerError("failed to get state").Wrap("handleHeartbeat")
 		return nil, errAnswer
 	}
 

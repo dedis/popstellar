@@ -8,7 +8,7 @@ import (
 	"os"
 	"path/filepath"
 	"popstellar/internal/popserver"
-	"popstellar/internal/popserver/repo"
+	"popstellar/internal/popserver/singleton/database"
 	"popstellar/internal/popserver/types"
 	"popstellar/message/messagedata"
 	"popstellar/message/query/method/message"
@@ -35,47 +35,56 @@ type input struct {
 func Test_handleChannelRoot(t *testing.T) {
 	var args []input
 
+	mockRepo, err := database.SetDatabase(t)
+	require.NoError(t, err)
+
 	// Test 1: error when different sender and owner keys
 	args = append(args, newInputError(t,
 		"wrong_lao_create_different_sender_owner.json",
 		wrongSender, // sender public key in base64 format
 		"Test 1",
-		"sender's public key does not match the owner public key"))
+		"sender's public key does not match the owner public key",
+		mockRepo))
 
 	// Test 2: error when different organizer and sender keys
 	args = append(args, newInputError(t,
 		"wrong_lao_create_different_sender_organizer.json",
 		wrongSender, // sender public key in base64 format
 		"Test 2",
-		"sender's public key does not match the organizer public key"))
+		"sender's public key does not match the organizer public key",
+		mockRepo))
 
 	// Test 3: error when the lao name is not the same as the one used for the laoID
 	args = append(args, newInputError(t,
 		"wrong_lao_create_wrong_name.json",
 		organizer, // sender public key in base64 format
 		"Test 3",
-		"failed to verify message data: invalid message field: lao id"))
+		"failed to verify message data: invalid message field: lao id",
+		mockRepo))
 
 	// Test 4: error when message data is not lao_create
 	args = append(args, newInputError(t,
 		"",
 		organizer, // sender public key in base64 format
 		"Test 4",
-		"failed to validate message against json schema"))
+		"failed to validate message against json schema",
+		mockRepo))
 
 	// Test 5: success with owner public key not nil
 	args = append(args, newInputSuccess(t,
 		"good_lao_create.json",
 		organizer, // sender public key in base64 format
 		"Test 5",
-		""))
+		"",
+		mockRepo))
 
 	// Test 6: success with owner public key nil
 	args = append(args, newInputSuccess(t,
 		"good_lao_create.json",
 		organizer, // sender public key in base64 format
 		"Test 6",
-		""))
+		"",
+		mockRepo))
 
 	for _, arg := range args {
 		t.Run(arg.name, func(t *testing.T) {
@@ -89,7 +98,7 @@ func Test_handleChannelRoot(t *testing.T) {
 	}
 }
 
-func newInputError(t *testing.T, fileName, sender string, testName, contains string) input {
+func newInputError(t *testing.T, fileName, sender string, testName, contains string, mockRepository *database.MockRepository) input {
 
 	var buf []byte
 	var err error
@@ -126,12 +135,8 @@ func newInputError(t *testing.T, fileName, sender string, testName, contains str
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
-	var mockRepository *repo.MockRepository
 	if fileName != "" {
-		mockRepository = repo.NewMockRepository(t)
 		mockRepository.On("HasChannel", rootPrefix+laoCreate.ID).Return(false, nil)
-	} else {
-		mockRepository = nil
 	}
 	params := popserver.NewHandlerParametersWithOwnerAndServer(mockRepository)
 
@@ -143,7 +148,7 @@ func newInputError(t *testing.T, fileName, sender string, testName, contains str
 		contains: contains}
 }
 
-func newInputSuccess(t *testing.T, fileName, sender string, testName, contains string) input {
+func newInputSuccess(t *testing.T, fileName, sender string, testName, contains string, mockRepository *database.MockRepository) input {
 	file := filepath.Join(rootPath, fileName)
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
@@ -172,7 +177,6 @@ func newInputSuccess(t *testing.T, fileName, sender string, testName, contains s
 
 	organizerBuf, err := base64.URLEncoding.DecodeString(laoCreate.Organizer)
 	require.NoError(t, err)
-	mockRepository := repo.NewMockRepository(t)
 	mockRepository.On("HasChannel", laoPath).Return(false, nil)
 	mockRepository.On("StoreChannelsAndMessageWithLaoGreet",
 		channels,

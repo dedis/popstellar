@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/rs/zerolog"
 	"popstellar/internal/popserver/channel"
+	"popstellar/internal/popserver/singleton/database"
 	"popstellar/internal/popserver/singleton/utils"
 	"popstellar/internal/popserver/types"
 	"popstellar/message/answer"
@@ -46,7 +47,13 @@ func handleGetMessagesByIDAnswer(params types.HandlerParameters, msg answer.Answ
 	// Handle every message and discard them if handled without error
 	handleMessagesByChannel(params, msgsByChan, log)
 
-	err := params.DB.StorePendingMessages(msgsByChan)
+	db, ok := database.GetAnswerRepositoryInstance()
+	if !ok {
+		errAnswer := answer.NewInternalServerError("failed to get database").Wrap("handleGetMessagesByIDAnswer")
+		return errAnswer
+	}
+
+	err := db.StorePendingMessages(msgsByChan)
 	if err != nil {
 		errAnswer := answer.NewInternalServerError("failed to query DB: ", err).Wrap("handleGetMessagesByIDAnswer")
 		return errAnswer

@@ -4,7 +4,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.dedis.ch/kyber/v3"
 	"popstellar/crypto"
-	"popstellar/internal/popserver/repo"
+	"popstellar/internal/popserver/singleton/database"
 	"popstellar/internal/popserver/types"
 	"popstellar/message/query/method/message"
 	"popstellar/network/socket"
@@ -57,24 +57,21 @@ func (f *FakeSocket) Type() socket.SocketType {
 	return socket.ClientSocketType
 }
 
-func NewHandlerParameters(db repo.Repository) types.HandlerParameters {
+func NewHandlerParameters(db database.Repository) types.HandlerParameters {
 	return types.HandlerParameters{
 		Socket: &FakeSocket{Id: "fakeID"},
-		DB:     db,
 	}
 }
 
-func NewHandlerParametersWithOwnerAndServer(db repo.Repository) types.HandlerParameters {
+func NewHandlerParametersWithOwnerAndServer(db database.Repository) types.HandlerParameters {
 	return types.HandlerParameters{
 		Socket: &FakeSocket{Id: "fakeID"},
-		DB:     db,
 	}
 }
 
-func NewHandlerParametersWithFakeSocket(db repo.Repository, s *FakeSocket) types.HandlerParameters {
+func NewHandlerParametersWithFakeSocket(db database.Repository, s *FakeSocket) types.HandlerParameters {
 	return types.HandlerParameters{
 		Socket: s,
-		DB:     db,
 	}
 
 }

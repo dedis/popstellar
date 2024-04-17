@@ -1,6 +1,7 @@
 package channel
 
 import (
+	"popstellar/internal/popserver/singleton/database"
 	"popstellar/internal/popserver/types"
 	"popstellar/message/answer"
 	"popstellar/message/messagedata"
@@ -39,12 +40,19 @@ func handleChannelConsensus(params types.HandlerParameters, channel string, msg 
 		return errAnswer
 	}
 
-	err := params.DB.StoreMessage(channel, msg)
+	db, ok := database.GetConsensusRepositoryInstance()
+	if !ok {
+		errAnswer := answer.NewInternalServerError("failed to get database").Wrap("handleChannelConsensus")
+		return errAnswer
+	}
+
+	err := db.StoreMessage(channel, msg)
 	if err != nil {
 		errAnswer = answer.NewInternalServerError("failed to store message: %v", err)
 		errAnswer = errAnswer.Wrap("handleChannelConsensus")
 		return errAnswer
 	}
+
 	return nil
 }
 

@@ -7,7 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	"popstellar/internal/popserver"
-	"popstellar/internal/popserver/repo"
+	"popstellar/internal/popserver/singleton/database"
 	"popstellar/internal/popserver/types"
 	"popstellar/message/messagedata"
 	"popstellar/message/query/method"
@@ -27,11 +27,15 @@ type inputTestHandleChannelGeneralChirp struct {
 }
 
 func Test_handleChannelGeneralChirp(t *testing.T) {
+	mockRepo, err := database.SetDatabase(t)
+	require.NoError(t, err)
+
 	inputs := make([]inputTestHandleChannelGeneralChirp, 0)
 
 	inputs = append(inputs, newSuccessTestHandleChannelGeneralChirp(t,
 		"chirp_notify_add/chirp_notify_add.json",
-		"send chirp notify add"))
+		"send chirp notify add",
+		mockRepo))
 
 	inputs = append(inputs, newFailTestHandleChannelGeneralChirp(t,
 		"chirp_notify_add/wrong_chirp_notify_add_negative_time.json",
@@ -43,7 +47,8 @@ func Test_handleChannelGeneralChirp(t *testing.T) {
 
 	inputs = append(inputs, newSuccessTestHandleChannelGeneralChirp(t,
 		"chirp_notify_delete/chirp_notify_delete.json",
-		"send chirp notify delete"))
+		"send chirp notify delete",
+		mockRepo))
 
 	inputs = append(inputs, newFailTestHandleChannelGeneralChirp(t,
 		"chirp_notify_delete/wrong_chirp_notify_delete_negative_time.json",
@@ -84,7 +89,7 @@ func Test_handleChannelGeneralChirp(t *testing.T) {
 
 }
 
-func newSuccessTestHandleChannelGeneralChirp(t *testing.T, filename string, name string) inputTestHandleChannelGeneralChirp {
+func newSuccessTestHandleChannelGeneralChirp(t *testing.T, filename string, name string, mockRepo *database.MockRepository) inputTestHandleChannelGeneralChirp {
 	laoID := messagedata.Hash(name)
 	var channelID = "/root/" + laoID + "/social/chirps"
 
@@ -106,7 +111,6 @@ func newSuccessTestHandleChannelGeneralChirp(t *testing.T, filename string, name
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
-	mockRepo := repo.NewMockRepository(t)
 	mockRepo.On("StoreMessage", channelID, m).Return(nil)
 
 	sockets := []*popserver.FakeSocket{
@@ -156,9 +160,7 @@ func newFailTestHandleChannelGeneralChirp(t *testing.T, filename string, name st
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
-	mockRepo := repo.NewMockRepository(t)
-
-	params := popserver.NewHandlerParameters(mockRepo)
+	params := popserver.NewHandlerParameters(nil)
 	subs.AddChannel(channelID)
 
 	return inputTestHandleChannelGeneralChirp{

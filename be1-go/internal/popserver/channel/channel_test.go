@@ -14,8 +14,8 @@ import (
 	"popstellar/crypto"
 	"popstellar/hub/standard_hub/hub_state"
 	"popstellar/internal/popserver"
-	"popstellar/internal/popserver/repo"
 	"popstellar/internal/popserver/singleton/config"
+	"popstellar/internal/popserver/singleton/database"
 	"popstellar/internal/popserver/singleton/state"
 	"popstellar/internal/popserver/singleton/utils"
 	"popstellar/internal/popserver/types"
@@ -80,6 +80,9 @@ type handleChannelInput struct {
 }
 
 func Test_handleChannel(t *testing.T) {
+	mockRepository, err := database.SetDatabase(t)
+	require.NoError(t, err)
+
 	keypair := popserver.GenerateKeyPair(t)
 	now := time.Now().Unix()
 	name := "LAO X"
@@ -118,7 +121,6 @@ func Test_handleChannel(t *testing.T) {
 
 	wrongChannelID := "wrongChannelID"
 
-	mockRepository := repo.NewMockRepository(t)
 	params := popserver.NewHandlerParameters(mockRepository)
 
 	mockRepository.On("HasMessage", msg.MessageID).Return(false, nil)
@@ -135,7 +137,6 @@ func Test_handleChannel(t *testing.T) {
 
 	problemDBChannelID := "problemDBChannelID"
 
-	mockRepository = repo.NewMockRepository(t)
 	params = popserver.NewHandlerParameters(mockRepository)
 
 	mockRepository.On("HasMessage", msg.MessageID).Return(false, nil)
@@ -150,7 +151,6 @@ func Test_handleChannel(t *testing.T) {
 
 	// message already received
 
-	mockRepository = repo.NewMockRepository(t)
 	params = popserver.NewHandlerParameters(mockRepository)
 
 	mockRepository.On("HasMessage", msg.MessageID).Return(true, nil)
@@ -164,7 +164,6 @@ func Test_handleChannel(t *testing.T) {
 
 	// error while querying if the message already exists
 
-	mockRepository = repo.NewMockRepository(t)
 	params = popserver.NewHandlerParameters(mockRepository)
 
 	mockRepository.On("HasMessage", msg.MessageID).Return(false, xerrors.Errorf("DB disconnected"))

@@ -7,6 +7,7 @@ import (
 	"go.dedis.ch/kyber/v3/sign/schnorr"
 	"popstellar/crypto"
 	"popstellar/internal/popserver/singleton/config"
+	"popstellar/internal/popserver/singleton/database"
 	"popstellar/internal/popserver/singleton/state"
 	"popstellar/internal/popserver/singleton/utils"
 	"popstellar/internal/popserver/types"
@@ -51,7 +52,13 @@ func HandleChannel(params types.HandlerParameters, channelID string, msg message
 		return errAnswer
 	}
 
-	msgAlreadyExists, err := params.DB.HasMessage(msg.MessageID)
+	db, ok := database.GetChannelRepositoryInstance()
+	if !ok {
+		errAnswer := answer.NewInternalServerError("failed to get database").Wrap("HandleChannel")
+		return errAnswer
+	}
+
+	msgAlreadyExists, err := db.HasMessage(msg.MessageID)
 	if err != nil {
 		errAnswer := answer.NewInternalServerError("failed to query DB: %v", err).Wrap("HandleChannel")
 		return errAnswer
@@ -61,7 +68,7 @@ func HandleChannel(params types.HandlerParameters, channelID string, msg message
 		return errAnswer
 	}
 
-	channelType, err := params.DB.GetChannelType(channelID)
+	channelType, err := db.GetChannelType(channelID)
 	if err != nil {
 		errAnswer := answer.NewInvalidResourceError("failed to query DB: %v", err).Wrap("HandleChannel")
 		return errAnswer

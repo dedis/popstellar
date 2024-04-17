@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"popstellar/crypto"
 	"popstellar/internal/popserver/singleton/config"
+	"popstellar/internal/popserver/singleton/database"
 	"popstellar/internal/popserver/singleton/state"
 	"popstellar/internal/popserver/types"
 	"popstellar/message/answer"
@@ -44,7 +45,13 @@ func handleChannelRoot(params types.HandlerParameters, channel string, msg messa
 		return errAnswer
 	}
 	if storeMessage {
-		err := params.DB.StoreMessage(channel, msg)
+		db, ok := database.GetRootRepositoryInstance()
+		if !ok {
+			errAnswer := answer.NewInternalServerError("failed to get database").Wrap("handleChannelRoot")
+			return errAnswer
+		}
+
+		err := db.StoreMessage(channel, msg)
 		if err != nil {
 			errAnswer = answer.NewInternalServerError("failed to store message in root channel: %v", err)
 			errAnswer = errAnswer.Wrap("handleChannelRoot")
@@ -86,7 +93,14 @@ func handleLaoCreate(params types.HandlerParameters, msg message.Message, channe
 
 func verifyLaoCreation(params types.HandlerParameters, msg message.Message, laoCreate messagedata.LaoCreate, laoPath string) ([]byte, *answer.Error) {
 	var errAnswer *answer.Error
-	ok, err := params.DB.HasChannel(laoPath)
+
+	db, ok := database.GetRootRepositoryInstance()
+	if !ok {
+		errAnswer := answer.NewInternalServerError("failed to get database").Wrap("verifyLAOCreation")
+		return nil, errAnswer
+	}
+
+	ok, err := db.HasChannel(laoPath)
 	if err != nil {
 		errAnswer = answer.NewInternalServerError("failed to check if lao already exists: %v", err)
 		errAnswer = errAnswer.Wrap("verifyLAOCreation")
@@ -166,7 +180,13 @@ func createLaoAndChannels(params types.HandlerParameters, msg, laoGreetMsg messa
 		laoPath + auth:               channelAuth,
 	}
 
-	err := params.DB.StoreChannelsAndMessageWithLaoGreet(channels, laoPath, organizerPubBuf, msg, laoGreetMsg)
+	db, ok := database.GetRootRepositoryInstance()
+	if !ok {
+		errAnswer := answer.NewInternalServerError("failed to get database").Wrap("createLaoAndSubChannels")
+		return errAnswer
+	}
+
+	err := db.StoreChannelsAndMessageWithLaoGreet(channels, laoPath, organizerPubBuf, msg, laoGreetMsg)
 	if err != nil {
 		errAnswer = answer.NewInternalServerError("failed to store lao and sub channels: %v", err)
 		errAnswer = errAnswer.Wrap("createLaoAndSubChannels")
@@ -174,7 +194,7 @@ func createLaoAndChannels(params types.HandlerParameters, msg, laoGreetMsg messa
 
 	subs, ok := state.GetSubsInstance()
 	if !ok {
-		errAnswer := answer.NewInternalServerError("failed to get state").Wrap("handleGreetServer")
+		errAnswer := answer.NewInternalServerError("failed to get state").Wrap("createLaoAndSubChannels")
 		return errAnswer
 	}
 

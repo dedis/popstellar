@@ -12,8 +12,8 @@ import (
 	"popstellar/crypto"
 	"popstellar/hub/standard_hub/hub_state"
 	"popstellar/internal/popserver"
-	"popstellar/internal/popserver/repo"
 	"popstellar/internal/popserver/singleton/config"
+	"popstellar/internal/popserver/singleton/database"
 	"popstellar/internal/popserver/singleton/state"
 	"popstellar/internal/popserver/singleton/utils"
 	"popstellar/internal/popserver/types"
@@ -59,6 +59,9 @@ func TestMain(m *testing.M) {
 }
 
 func Test_handleCatchUp(t *testing.T) {
+	mockRepo, err := database.SetDatabase(t)
+	require.NoError(t, err)
+
 	type input struct {
 		name        string
 		params      types.HandlerParameters
@@ -76,6 +79,10 @@ func Test_handleCatchUp(t *testing.T) {
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
+	inputs := make([]input, 0)
+
+	// catch up three messages
+
 	catchup := method.Catchup{
 		Base: query.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
@@ -90,21 +97,16 @@ func Test_handleCatchUp(t *testing.T) {
 		},
 	}
 
-	inputs := make([]input, 0)
-
-	// catch up three messages
-
 	catchupBuf, err := json.Marshal(&catchup)
 	require.NoError(t, err)
 
 	messagesToCatchUp := []message.Message{msg, msg, msg}
 
-	mockRepository := repo.NewMockRepository(t)
-	mockRepository.On("GetAllMessagesFromChannel", catchup.Params.Channel).Return(messagesToCatchUp, nil)
+	mockRepo.On("GetAllMessagesFromChannel", catchup.Params.Channel).Return(messagesToCatchUp, nil)
 
 	s := &popserver.FakeSocket{Id: "fakesocket"}
 
-	params := popserver.NewHandlerParametersWithFakeSocket(mockRepository, s)
+	params := popserver.NewHandlerParametersWithFakeSocket(mockRepo, s)
 
 	inputs = append(inputs, input{
 		name:        "catch up three messages",
@@ -117,13 +119,26 @@ func Test_handleCatchUp(t *testing.T) {
 
 	// failed to query DB
 
-	catchupBuf, err = json.Marshal(&catchup)
+	catchup2 := method.Catchup{
+		Base: query.Base{
+			JSONRPCBase: jsonrpc.JSONRPCBase{
+				JSONRPC: "2.0",
+			},
+
+			Method: query.MethodCatchUp,
+		},
+		ID: 1,
+		Params: method.CatchupParams{
+			Channel: "/root2",
+		},
+	}
+
+	catchupBuf, err = json.Marshal(&catchup2)
 	require.NoError(t, err)
 
-	mockRepository = repo.NewMockRepository(t)
-	mockRepository.On("GetAllMessagesFromChannel", catchup.Params.Channel).Return(nil, xerrors.Errorf("DB is disconnected"))
+	mockRepo.On("GetAllMessagesFromChannel", catchup2.Params.Channel).Return(nil, xerrors.Errorf("DB is disconnected"))
 
-	params = popserver.NewHandlerParameters(mockRepository)
+	params = popserver.NewHandlerParameters(mockRepo)
 
 	inputs = append(inputs, input{
 		name:        "failed to query DB",
@@ -138,9 +153,11 @@ func Test_handleCatchUp(t *testing.T) {
 		t.Run(i.name, func(t *testing.T) {
 			id, errAnswer := handleCatchUp(i.params, i.message)
 			if i.isErrorTest {
+				fmt.Println(errAnswer)
 				require.NotNil(t, errAnswer)
 				require.NotNil(t, id)
 			} else {
+				fmt.Println(errAnswer)
 				require.Nil(t, errAnswer)
 				require.Equal(t, i.result, i.socket.Res)
 			}
@@ -149,6 +166,9 @@ func Test_handleCatchUp(t *testing.T) {
 }
 
 func Test_handleGetMessagesByID(t *testing.T) {
+	mockRepository, err := database.SetDatabase(t)
+	require.NoError(t, err)
+
 	type input struct {
 		name        string
 		params      types.HandlerParameters
@@ -185,14 +205,18 @@ func Test_handleGetMessagesByID(t *testing.T) {
 
 	// get one message
 
-	getMessagesByIDBuf, err := json.Marshal(&getMessagesByID)
+	getMessagesByID2 := getMessagesByID
+	paramsGetMessagesByID2 := make(map[string][]string)
+	paramsGetMessagesByID2["/root2"] = []string{msg.MessageID}
+	getMessagesByID2.Params = paramsGetMessagesByID2
+
+	getMessagesByIDBuf, err := json.Marshal(&getMessagesByID2)
 	require.NoError(t, err)
 
 	result := make(map[string][]message.Message)
 	result["/root"] = []message.Message{msg}
 
-	mockRepository := repo.NewMockRepository(t)
-	mockRepository.On("GetResultForGetMessagesByID", paramsGetMessagesByID).Return(result, nil)
+	mockRepository.On("GetResultForGetMessagesByID", paramsGetMessagesByID2).Return(result, nil)
 
 	s := &popserver.FakeSocket{Id: "fakesocket"}
 
@@ -209,11 +233,15 @@ func Test_handleGetMessagesByID(t *testing.T) {
 
 	// failed to query DB
 
-	getMessagesByIDBuf, err = json.Marshal(&getMessagesByID)
+	getMessagesByID3 := getMessagesByID
+	paramsGetMessagesByID3 := make(map[string][]string)
+	paramsGetMessagesByID3["/root3"] = []string{msg.MessageID}
+	getMessagesByID3.Params = paramsGetMessagesByID3
+
+	getMessagesByIDBuf, err = json.Marshal(&getMessagesByID3)
 	require.NoError(t, err)
 
-	mockRepository = repo.NewMockRepository(t)
-	mockRepository.On("GetResultForGetMessagesByID", paramsGetMessagesByID).Return(nil, xerrors.Errorf("DB is disconnected"))
+	mockRepository.On("GetResultForGetMessagesByID", paramsGetMessagesByID3).Return(nil, xerrors.Errorf("DB is disconnected"))
 
 	params = popserver.NewHandlerParameters(mockRepository)
 
@@ -241,6 +269,9 @@ func Test_handleGetMessagesByID(t *testing.T) {
 }
 
 func Test_handleGreetServer(t *testing.T) {
+	mockRepository, err := database.SetDatabase(t)
+	require.NoError(t, err)
+
 	type input struct {
 		name        string
 		params      types.HandlerParameters
@@ -273,8 +304,6 @@ func Test_handleGreetServer(t *testing.T) {
 
 	greetServerBuf, err := json.Marshal(&greetServer1)
 	require.NoError(t, err)
-
-	mockRepository := repo.NewMockRepository(t)
 
 	s := &popserver.FakeSocket{Id: "fakesocket1"}
 
@@ -381,6 +410,9 @@ func Test_handleGreetServer(t *testing.T) {
 }
 
 func Test_handleHeartbeat(t *testing.T) {
+	mockRepository, err := database.SetDatabase(t)
+	require.NoError(t, err)
+
 	type input struct {
 		name        string
 		params      types.HandlerParameters
@@ -406,6 +438,24 @@ func Test_handleHeartbeat(t *testing.T) {
 	listMsg["root/lao2"] = []string{
 		msgIDs[5],
 		msgIDs[6],
+	}
+
+	listMsg2 := make(map[string][]string)
+	listMsg2["/root"] = []string{
+		msgIDs[0],
+		msgIDs[1],
+		msgIDs[2],
+	}
+
+	listMsg3 := make(map[string][]string)
+	listMsg3["/root"] = []string{
+		msgIDs[0],
+		msgIDs[1],
+		msgIDs[2],
+	}
+	listMsg3["root/lao1"] = []string{
+		msgIDs[3],
+		msgIDs[4],
 	}
 
 	heartbeat := method.Heartbeat{
@@ -435,7 +485,6 @@ func Test_handleHeartbeat(t *testing.T) {
 		msgIDs[4],
 	}
 
-	mockRepository := repo.NewMockRepository(t)
 	mockRepository.On("GetParamsForGetMessageByID", listMsg).Return(expected, nil)
 
 	s := &popserver.FakeSocket{Id: "fakesocket"}
@@ -454,11 +503,13 @@ func Test_handleHeartbeat(t *testing.T) {
 
 	// already up to date
 
-	heartbeatBuf, err = json.Marshal(&heartbeat)
+	heartbeat2 := heartbeat
+	heartbeat2.Params = listMsg2
+
+	heartbeatBuf, err = json.Marshal(&heartbeat2)
 	require.NoError(t, err)
 
-	mockRepository = repo.NewMockRepository(t)
-	mockRepository.On("GetParamsForGetMessageByID", listMsg).Return(nil, nil)
+	mockRepository.On("GetParamsForGetMessageByID", listMsg2).Return(nil, nil)
 
 	s = &popserver.FakeSocket{Id: "fakesocket"}
 
@@ -475,11 +526,13 @@ func Test_handleHeartbeat(t *testing.T) {
 
 	// failed to query DB
 
-	heartbeatBuf, err = json.Marshal(&heartbeat)
+	heartbeat3 := heartbeat
+	heartbeat3.Params = listMsg3
+
+	heartbeatBuf, err = json.Marshal(&heartbeat3)
 	require.NoError(t, err)
 
-	mockRepository = repo.NewMockRepository(t)
-	mockRepository.On("GetParamsForGetMessageByID", listMsg).Return(nil, xerrors.Errorf("DB is disconnected"))
+	mockRepository.On("GetParamsForGetMessageByID", listMsg3).Return(nil, xerrors.Errorf("DB is disconnected"))
 
 	params = popserver.NewHandlerParameters(mockRepository)
 

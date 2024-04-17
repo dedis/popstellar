@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"popstellar/internal/popserver/singleton/config"
+	"popstellar/internal/popserver/singleton/database"
 	"popstellar/internal/popserver/types"
 	"popstellar/message/answer"
 	"popstellar/message/messagedata"
@@ -31,7 +32,13 @@ func handleChannelChirp(params types.HandlerParameters, channelID string, msg me
 		return errAnswer
 	}
 
-	err := params.DB.StoreMessage(channelID, msg)
+	db, ok := database.GetChirpRepositoryInstance()
+	if !ok {
+		errAnswer := answer.NewInternalServerError("failed to get database").Wrap("handleChannelChirp")
+		return errAnswer
+	}
+
+	err := db.StoreMessage(channelID, msg)
 	if err != nil {
 		errAnswer = answer.NewInternalServerError("failed to store message: %v", err)
 		errAnswer = errAnswer.Wrap("handleChannelChirp")
@@ -86,7 +93,13 @@ func handleChirpDelete(params types.HandlerParameters, channelID string, msg mes
 		return errAnswer
 	}
 
-	msgToDeleteExists, err := params.DB.HasMessage(data.ChirpID)
+	db, ok := database.GetChirpRepositoryInstance()
+	if !ok {
+		errAnswer := answer.NewInternalServerError("failed to get database").Wrap("handleChirpDelete")
+		return errAnswer
+	}
+
+	msgToDeleteExists, err := db.HasMessage(data.ChirpID)
 	if err != nil {
 		errAnswer := answer.NewInternalServerError("failed to query DB: %v", err).Wrap("handleChirpDelete")
 		return errAnswer

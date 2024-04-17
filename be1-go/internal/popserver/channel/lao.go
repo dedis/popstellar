@@ -8,6 +8,7 @@ import (
 	"golang.org/x/exp/slices"
 	"popstellar/crypto"
 	"popstellar/internal/popserver/singleton/config"
+	"popstellar/internal/popserver/singleton/database"
 	"popstellar/internal/popserver/singleton/state"
 	"popstellar/internal/popserver/types"
 	"popstellar/message/answer"
@@ -66,7 +67,13 @@ func handleChannelLao(params types.HandlerParameters, channel string, msg messag
 	}
 
 	if storeMessage {
-		err := params.DB.StoreMessage(channel, msg)
+		db, ok := database.GetLAORepositoryInstance()
+		if !ok {
+			errAnswer := answer.NewInternalServerError("failed to get database").Wrap("handleChannelLao")
+			return errAnswer
+		}
+
+		err := db.StoreMessage(channel, msg)
 		if err != nil {
 			errAnswer = answer.NewInternalServerError("failed to store message: %v", err)
 			errAnswer = errAnswer.Wrap("handleChannelLao")
@@ -86,7 +93,14 @@ func handleLaoState(msg message.Message, channel string, params types.HandlerPar
 		errAnswer = errAnswer.Wrap("handleLaoState")
 		return errAnswer
 	}
-	ok, err := params.DB.HasMessage(laoState.ModificationID)
+
+	db, ok := database.GetLAORepositoryInstance()
+	if !ok {
+		errAnswer := answer.NewInternalServerError("failed to get database").Wrap("handleLaoState")
+		return errAnswer
+	}
+
+	ok, err = db.HasMessage(laoState.ModificationID)
 	if err != nil {
 		errAnswer = answer.NewInternalServerError("failed to get check if message exists: %v", err)
 		errAnswer = errAnswer.Wrap("handleLaoState")
@@ -97,7 +111,7 @@ func handleLaoState(msg message.Message, channel string, params types.HandlerPar
 		return errAnswer
 	}
 
-	witnesses, err := params.DB.GetLaoWitnesses(channel)
+	witnesses, err := db.GetLaoWitnesses(channel)
 	if err != nil {
 		errAnswer = answer.NewInternalServerError("failed to get lao witnesses: %v", err)
 		errAnswer = errAnswer.Wrap("handleLaoState")
@@ -283,7 +297,14 @@ func handleRollCallOpen(msg message.Message, channel string, params types.Handle
 		errAnswer = errAnswer.Wrap("handleRollCallOpen")
 		return errAnswer
 	}
-	ok, err := params.DB.CheckPrevID(channel, rollCallOpen.Opens)
+
+	db, ok := database.GetLAORepositoryInstance()
+	if !ok {
+		errAnswer := answer.NewInternalServerError("failed to get database").Wrap("handleRollCallOpen")
+		return errAnswer
+	}
+
+	ok, err = db.CheckPrevID(channel, rollCallOpen.Opens)
 	if err != nil {
 		errAnswer = answer.NewInternalServerError("failed to check if previous id exists: %v", err)
 		errAnswer = errAnswer.Wrap("handleRollCallOpen")
@@ -359,12 +380,18 @@ func handleRollCallClose(msg message.Message, channel string, params types.Handl
 		return errAnswer
 	}
 
-	state, err := params.DB.GetRollCallState(channel)
+	db, ok := database.GetLAORepositoryInstance()
+	if !ok {
+		errAnswer := answer.NewInternalServerError("failed to get database").Wrap("handleRollCallClose")
+		return errAnswer
+	}
+
+	rollCallState, err := db.GetRollCallState(channel)
 	if err != nil {
-		errAnswer = answer.NewInternalServerError("failed to get roll call state: %v", err)
+		errAnswer = answer.NewInternalServerError("failed to get roll call rollCallState: %v", err)
 		errAnswer = errAnswer.Wrap("handleRollCallClose")
 		return errAnswer
-	} else if state != open {
+	} else if rollCallState != open {
 		errAnswer = answer.NewInvalidMessageFieldError("roll call is not open")
 		errAnswer = errAnswer.Wrap("handleRollCallClose")
 		return errAnswer
@@ -383,7 +410,7 @@ func handleRollCallClose(msg message.Message, channel string, params types.Handl
 		channels = append(channels, chirpingChannelPath)
 	}
 
-	err = params.DB.StoreChannelsAndMessage(channels, channel, msg)
+	err = db.StoreChannelsAndMessage(channels, channel, msg)
 	if err != nil {
 		errAnswer = answer.NewInternalServerError("failed to store channels and message: %v", err)
 		errAnswer = errAnswer.Wrap("handleRollCallClose")
@@ -417,7 +444,13 @@ func handleElectionSetup(msg message.Message, channel string, params types.Handl
 		return errAnswer
 	}
 
-	organizePubKey, err := params.DB.GetOrganizerPubKey(channel)
+	db, ok := database.GetLAORepositoryInstance()
+	if !ok {
+		errAnswer := answer.NewInternalServerError("failed to get database").Wrap("handleElectionSetup")
+		return errAnswer
+	}
+
+	organizePubKey, err := db.GetOrganizerPubKey(channel)
 	if err != nil {
 		errAnswer = answer.NewInternalServerError("failed to get organizer public key: %v", err)
 		errAnswer = errAnswer.Wrap("handleElectionSetup")
@@ -527,7 +560,7 @@ func handleElectionSetup(msg message.Message, channel string, params types.Handl
 		return errAnswer
 	}
 	electionPath := channel + "/" + electionSetup.ID
-	err = params.DB.StoreMessageWithElectionKey(channel, electionPath, electionPubKey, electionSecretKey, msg, electionKeyMsg)
+	err = db.StoreMessageWithElectionKey(channel, electionPath, electionPubKey, electionSecretKey, msg, electionKeyMsg)
 	if err != nil {
 		errAnswer = answer.NewInternalServerError("failed to store election setup message: %v", err)
 		errAnswer = errAnswer.Wrap("handleElectionSetup")
@@ -542,7 +575,7 @@ func handleElectionSetup(msg message.Message, channel string, params types.Handl
 
 	subs.AddChannel(electionPath)
 
-	err = params.DB.StoreMessage(electionSetup.ID, electionKeyMsg)
+	err = db.StoreMessage(electionSetup.ID, electionKeyMsg)
 	if err != nil {
 		errAnswer := answer.NewInternalServerError("failed to store election key message: %v", err)
 		errAnswer = errAnswer.Wrap("createAndSendElectionKey")

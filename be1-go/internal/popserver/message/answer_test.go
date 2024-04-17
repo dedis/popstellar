@@ -11,7 +11,7 @@ import (
 	"io"
 	"popstellar/crypto"
 	"popstellar/internal/popserver"
-	"popstellar/internal/popserver/repo"
+	"popstellar/internal/popserver/singleton/database"
 	"popstellar/internal/popserver/types"
 	"popstellar/message/answer"
 	"popstellar/message/messagedata"
@@ -21,6 +21,9 @@ import (
 )
 
 func Test_handleGetMessagesByIDAnswer(t *testing.T) {
+	mockRepository, err := database.SetDatabase(t)
+	require.NoError(t, err)
+
 	type input struct {
 		name        string
 		params      types.HandlerParameters
@@ -44,7 +47,6 @@ func Test_handleGetMessagesByIDAnswer(t *testing.T) {
 		},
 	}
 
-	mockRepository := repo.NewMockRepository(t)
 	mockRepository.On("StorePendingMessages", msgsByChannel).Return(xerrors.Errorf("DB disconnected"))
 
 	params := popserver.NewHandlerParameters(mockRepository)
@@ -68,6 +70,9 @@ func Test_handleGetMessagesByIDAnswer(t *testing.T) {
 }
 
 func Test_handleMessagesByChannel(t *testing.T) {
+	mockRepository, err := database.SetDatabase(t)
+	require.NoError(t, err)
+
 	type input struct {
 		name     string
 		params   types.HandlerParameters
@@ -133,7 +138,6 @@ func Test_handleMessagesByChannel(t *testing.T) {
 	expected["/root/lao1"] = make(map[string]message.Message)
 	expected["/root/lao1"][msgValid.MessageID] = msgValid
 
-	mockRepository := repo.NewMockRepository(t)
 	mockRepository.On("HasMessage", msgValid.MessageID).Return(false, nil)
 	mockRepository.On("GetChannelType", "/root").Return("", nil)
 	mockRepository.On("GetChannelType", "/root/lao1").Return("", nil)
