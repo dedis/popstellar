@@ -21,9 +21,6 @@ type Repository interface {
 
 	// GetMessageByID returns a message by its ID.
 	GetMessageByID(ID string) (message.Message, error)
-
-	// GetIDsTable returns the map of message IDs by channelID.
-	GetIDsTable() (map[string][]string, error)
 }
 
 // ======================= Query ==========================
@@ -63,9 +60,6 @@ type HandleChannelRepository interface {
 
 type RootRepository interface {
 
-	// ChannelExists returns true if the channel already exists.
-	ChannelExists(laoChannelPath string) (bool, error)
-
 	// StoreChannelsAndMessageWithLaoGreet stores a list of "sub" channels, a message and a lao greet message inside the database.
 	StoreChannelsAndMessageWithLaoGreet(
 		channels map[string]string,
@@ -95,7 +89,7 @@ type ElectionRepository interface {
 	GetElectionAttendees(electionID string) (map[string]struct{}, error)
 
 	// GetElectionQuestions returns the questions of an election.
-	//GetElectionQuestions(electionID string) (map[string]channel.Question, error)
+	// GetElectionQuestions(electionID string) (map[string]channel.Question, error)
 
 	// GetElectionType returns the type of an election.
 	GetElectionType(electionID string) (string, error)
