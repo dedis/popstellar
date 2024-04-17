@@ -7,9 +7,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"os"
 	"path/filepath"
-	"popstellar/internal/popserver"
 	"popstellar/internal/popserver/singleton/database"
-	"popstellar/internal/popserver/types"
 	"popstellar/message/messagedata"
 	"popstellar/message/query/method/message"
 	"testing"
@@ -25,7 +23,6 @@ const (
 
 type input struct {
 	name     string
-	params   types.HandlerParameters
 	msg      message.Message
 	channel  string
 	isError  bool
@@ -88,7 +85,7 @@ func Test_handleChannelRoot(t *testing.T) {
 
 	for _, arg := range args {
 		t.Run(arg.name, func(t *testing.T) {
-			errAnswer := handleChannelRoot(arg.params, arg.channel, arg.msg)
+			errAnswer := handleChannelRoot(arg.channel, arg.msg)
 			if arg.isError {
 				require.Contains(t, errAnswer.Error(), arg.contains)
 			} else {
@@ -138,10 +135,8 @@ func newInputError(t *testing.T, fileName, sender string, testName, contains str
 	if fileName != "" {
 		mockRepository.On("HasChannel", rootPrefix+laoCreate.ID).Return(false, nil)
 	}
-	params := popserver.NewHandlerParametersWithOwnerAndServer(mockRepository)
 
 	return input{name: testName,
-		params:   params,
 		msg:      msg,
 		channel:  rootChannel,
 		isError:  true,
@@ -183,10 +178,8 @@ func newInputSuccess(t *testing.T, fileName, sender string, testName, contains s
 		laoPath,
 		organizerBuf,
 		msg, mock.AnythingOfType("message.Message")).Return(nil)
-	params := popserver.NewHandlerParametersWithOwnerAndServer(mockRepository)
 
 	return input{name: testName,
-		params:   params,
 		msg:      msg,
 		channel:  rootChannel,
 		isError:  false,

@@ -6,15 +6,15 @@ import (
 	"popstellar/internal/popserver/channel"
 	"popstellar/internal/popserver/singleton/database"
 	"popstellar/internal/popserver/singleton/utils"
-	"popstellar/internal/popserver/types"
 	"popstellar/message/answer"
 	"popstellar/message/query/method/message"
+	"popstellar/network/socket"
 	"sort"
 )
 
 const maxRetry = 10
 
-func handleGetMessagesByIDAnswer(params types.HandlerParameters, msg answer.Answer) *answer.Error {
+func handleGetMessagesByIDAnswer(socket socket.Socket, msg answer.Answer) *answer.Error {
 	result := msg.Result.GetMessagesByChannel()
 	msgsByChan := make(map[string]map[string]message.Message)
 
@@ -45,7 +45,7 @@ func handleGetMessagesByIDAnswer(params types.HandlerParameters, msg answer.Answ
 	}
 
 	// Handle every message and discard them if handled without error
-	handleMessagesByChannel(params, msgsByChan, log)
+	handleMessagesByChannel(socket, msgsByChan, log)
 
 	db, ok := database.GetAnswerRepositoryInstance()
 	if !ok {
@@ -62,7 +62,7 @@ func handleGetMessagesByIDAnswer(params types.HandlerParameters, msg answer.Answ
 	return nil
 }
 
-func handleMessagesByChannel(params types.HandlerParameters, msgsByChannel map[string]map[string]message.Message, log *zerolog.Logger) {
+func handleMessagesByChannel(socket socket.Socket, msgsByChannel map[string]map[string]message.Message, log *zerolog.Logger) {
 	// Handle every messages
 	for i := 0; i < maxRetry; i++ {
 		// Sort by channelID length
@@ -77,7 +77,7 @@ func handleMessagesByChannel(params types.HandlerParameters, msgsByChannel map[s
 		for _, channelID := range sortedChannelIDs {
 			msgs := msgsByChannel[channelID]
 			for msgID, msg := range msgs {
-				errAnswer := channel.HandleChannel(params, channelID, msg)
+				errAnswer := channel.HandleChannel(socket, channelID, msg)
 				if errAnswer == nil {
 					delete(msgsByChannel[channelID], msgID)
 					continue

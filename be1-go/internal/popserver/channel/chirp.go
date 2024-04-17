@@ -5,15 +5,15 @@ import (
 	"encoding/json"
 	"popstellar/internal/popserver/singleton/config"
 	"popstellar/internal/popserver/singleton/database"
-	"popstellar/internal/popserver/types"
 	"popstellar/message/answer"
 	"popstellar/message/messagedata"
 	"popstellar/message/query/method/message"
+	"popstellar/network/socket"
 	"strings"
 )
 
-func handleChannelChirp(params types.HandlerParameters, channelID string, msg message.Message) *answer.Error {
-	object, action, errAnswer := verifyDataAndGetObjectAction(params, msg)
+func handleChannelChirp(socket socket.Socket, channelID string, msg message.Message) *answer.Error {
+	object, action, errAnswer := verifyDataAndGetObjectAction(msg)
 	if errAnswer != nil {
 		errAnswer = errAnswer.Wrap("handleChannelChirp")
 		return errAnswer
@@ -23,7 +23,7 @@ func handleChannelChirp(params types.HandlerParameters, channelID string, msg me
 	case messagedata.ChirpObject + "#" + messagedata.ChirpActionAdd:
 		errAnswer = handleChirpAdd(channelID, msg)
 	case messagedata.ChirpObject + "#" + messagedata.ChirpActionDelete:
-		errAnswer = handleChirpDelete(params, channelID, msg)
+		errAnswer = handleChirpDelete(channelID, msg)
 	default:
 		errAnswer = answer.NewInvalidMessageFieldError("failed to handle %s#%s, invalid object#action", object, action)
 	}
@@ -45,13 +45,13 @@ func handleChannelChirp(params types.HandlerParameters, channelID string, msg me
 		return errAnswer
 	}
 
-	errAnswer = copyToGeneral(params, channelID, msg)
+	errAnswer = copyToGeneral(socket, channelID, msg)
 	if errAnswer != nil {
 		errAnswer = errAnswer.Wrap("handleChannelGeneralChirp")
 		return errAnswer
 	}
 
-	errAnswer = broadcastToAllClients(msg, params, channelID)
+	errAnswer = broadcastToAllClients(msg, channelID)
 	if errAnswer != nil {
 		errAnswer = errAnswer.Wrap("handleChannelGeneralChirp")
 		return errAnswer
@@ -78,7 +78,7 @@ func handleChirpAdd(channelID string, msg message.Message) *answer.Error {
 	return nil
 }
 
-func handleChirpDelete(params types.HandlerParameters, channelID string, msg message.Message) *answer.Error {
+func handleChirpDelete(channelID string, msg message.Message) *answer.Error {
 	var data messagedata.ChirpDelete
 
 	err := msg.UnmarshalData(&data)
@@ -129,7 +129,7 @@ func verifyChirpMessage(channelID string, msg message.Message, chirpMsg messaged
 	return nil
 }
 
-func copyToGeneral(params types.HandlerParameters, channelID string, msg message.Message) *answer.Error {
+func copyToGeneral(socket socket.Socket, channelID string, msg message.Message) *answer.Error {
 	jsonData, err := base64.URLEncoding.DecodeString(msg.Data)
 	if err != nil {
 		errAnswer := answer.NewInvalidMessageFieldError("failed to decode the data: %v", err)
@@ -183,7 +183,7 @@ func copyToGeneral(params types.HandlerParameters, channelID string, msg message
 	}
 	pk64 := base64.URLEncoding.EncodeToString(pkBuf)
 
-	signatureBuf, errAnswer := Sign(dataBuf, params)
+	signatureBuf, errAnswer := Sign(dataBuf)
 	if errAnswer != nil {
 		errAnswer := errAnswer.Wrap("copyToGeneral")
 		return errAnswer
@@ -203,7 +203,7 @@ func copyToGeneral(params types.HandlerParameters, channelID string, msg message
 	splitChannelID := strings.Split(channelID, "/")
 	generalChirpsChannelID := "/root" + splitChannelID[1] + "/social/chirps"
 
-	errAnswer = HandleChannel(params, generalChirpsChannelID, newMsg)
+	errAnswer = HandleChannel(socket, generalChirpsChannelID, newMsg)
 	if errAnswer != nil {
 		errAnswer = errAnswer.Wrap("copyToGeneral")
 		return errAnswer

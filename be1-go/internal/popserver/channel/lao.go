@@ -10,7 +10,6 @@ import (
 	"popstellar/internal/popserver/singleton/config"
 	"popstellar/internal/popserver/singleton/database"
 	"popstellar/internal/popserver/singleton/state"
-	"popstellar/internal/popserver/types"
 	"popstellar/message/answer"
 	"popstellar/message/messagedata"
 	"popstellar/message/query/method/message"
@@ -29,8 +28,8 @@ const (
 	created         = "created"
 )
 
-func handleChannelLao(params types.HandlerParameters, channel string, msg message.Message) *answer.Error {
-	object, action, errAnswer := verifyDataAndGetObjectAction(params, msg)
+func handleChannelLao(channel string, msg message.Message) *answer.Error {
+	object, action, errAnswer := verifyDataAndGetObjectAction(msg)
 	if errAnswer != nil {
 		errAnswer = errAnswer.Wrap("handleChannelLao")
 		return errAnswer
@@ -39,25 +38,25 @@ func handleChannelLao(params types.HandlerParameters, channel string, msg messag
 	storeMessage := true
 	switch object + "#" + action {
 	case messagedata.LAOObject + "#" + messagedata.LAOActionState:
-		errAnswer = handleLaoState(msg, channel, params)
+		errAnswer = handleLaoState(msg, channel)
 	case messagedata.LAOObject + "#" + messagedata.LAOActionUpdate:
-		errAnswer = handleLaoUpdate(msg, params)
+		errAnswer = handleLaoUpdate(msg)
 	case messagedata.MeetingObject + "#" + messagedata.MeetingActionCreate:
-		errAnswer = handleMeetingCreate(msg, params)
+		errAnswer = handleMeetingCreate(msg)
 	case messagedata.MeetingObject + "#" + messagedata.MeetingActionState:
-		errAnswer = handleMeetingState(msg, params)
+		errAnswer = handleMeetingState(msg)
 	case messagedata.RollCallObject + "#" + messagedata.RollCallActionClose:
 		storeMessage = false
-		errAnswer = handleRollCallClose(msg, channel, params)
+		errAnswer = handleRollCallClose(msg, channel)
 	case messagedata.RollCallObject + "#" + messagedata.RollCallActionCreate:
-		errAnswer = handleRollCallCreate(msg, channel, params)
+		errAnswer = handleRollCallCreate(msg, channel)
 	case messagedata.RollCallObject + "#" + messagedata.RollCallActionOpen:
-		errAnswer = handleRollCallOpen(msg, channel, params)
+		errAnswer = handleRollCallOpen(msg, channel)
 	case messagedata.RollCallObject + "#" + messagedata.RollCallActionReOpen:
-		errAnswer = handleRollCallReOpen(msg, channel, params)
+		errAnswer = handleRollCallReOpen(msg, channel)
 	case messagedata.ElectionObject + "#" + messagedata.ElectionActionSetup:
 		storeMessage = false
-		errAnswer = handleElectionSetup(msg, channel, params)
+		errAnswer = handleElectionSetup(msg, channel)
 	default:
 		errAnswer = answer.NewInvalidMessageFieldError("failed to handle %s#%s, invalid object#action", object, action)
 	}
@@ -83,7 +82,7 @@ func handleChannelLao(params types.HandlerParameters, channel string, msg messag
 	return nil
 }
 
-func handleLaoState(msg message.Message, channel string, params types.HandlerParameters) *answer.Error {
+func handleLaoState(msg message.Message, channel string) *answer.Error {
 	var laoState messagedata.LaoState
 	err := msg.UnmarshalData(&laoState)
 	var errAnswer *answer.Error
@@ -200,7 +199,7 @@ func compareLaoUpdateAndState(update messagedata.LaoUpdate, state messagedata.La
 	return nil
 }
 
-func handleRollCallCreate(msg message.Message, channel string, params types.HandlerParameters) *answer.Error {
+func handleRollCallCreate(msg message.Message, channel string) *answer.Error {
 	var rollCallCreate messagedata.RollCallCreate
 	err := msg.UnmarshalData(&rollCallCreate)
 	var errAnswer *answer.Error
@@ -256,7 +255,7 @@ func handleRollCallCreate(msg message.Message, channel string, params types.Hand
 	return nil
 }
 
-func handleRollCallOpen(msg message.Message, channel string, params types.HandlerParameters) *answer.Error {
+func handleRollCallOpen(msg message.Message, channel string) *answer.Error {
 	var rollCallOpen messagedata.RollCallOpen
 	err := msg.UnmarshalData(&rollCallOpen)
 	var errAnswer *answer.Error
@@ -317,7 +316,7 @@ func handleRollCallOpen(msg message.Message, channel string, params types.Handle
 	return nil
 }
 
-func handleRollCallReOpen(msg message.Message, channel string, params types.HandlerParameters) *answer.Error {
+func handleRollCallReOpen(msg message.Message, channel string) *answer.Error {
 	var rollCallReOpen messagedata.RollCallReOpen
 	err := msg.UnmarshalData(&rollCallReOpen)
 	var errAnswer *answer.Error
@@ -328,7 +327,7 @@ func handleRollCallReOpen(msg message.Message, channel string, params types.Hand
 		return errAnswer
 	}
 
-	errAnswer = handleRollCallOpen(msg, channel, params)
+	errAnswer = handleRollCallOpen(msg, channel)
 	if errAnswer != nil {
 		errAnswer = errAnswer.Wrap("handleRollCallReOpen")
 		return errAnswer
@@ -337,7 +336,7 @@ func handleRollCallReOpen(msg message.Message, channel string, params types.Hand
 	return nil
 }
 
-func handleRollCallClose(msg message.Message, channel string, params types.HandlerParameters) *answer.Error {
+func handleRollCallClose(msg message.Message, channel string) *answer.Error {
 	var rollCallClose messagedata.RollCallClose
 	err := msg.UnmarshalData(&rollCallClose)
 	var errAnswer *answer.Error
@@ -419,7 +418,7 @@ func handleRollCallClose(msg message.Message, channel string, params types.Handl
 	return nil
 }
 
-func handleElectionSetup(msg message.Message, channel string, params types.HandlerParameters) *answer.Error {
+func handleElectionSetup(msg message.Message, channel string) *answer.Error {
 	var electionSetup messagedata.ElectionSetup
 	err := msg.UnmarshalData(&electionSetup)
 	var errAnswer *answer.Error
@@ -554,7 +553,7 @@ func handleElectionSetup(msg message.Message, channel string, params types.Handl
 		}
 	}
 	electionPubKey, electionSecretKey := generateKeys()
-	electionKeyMsg, errAnswer := createElectionKey(params, electionSetup.ID, electionPubKey)
+	electionKeyMsg, errAnswer := createElectionKey(electionSetup.ID, electionPubKey)
 	if errAnswer != nil {
 		errAnswer = errAnswer.Wrap("handleElectionSetup")
 		return errAnswer
@@ -584,7 +583,7 @@ func handleElectionSetup(msg message.Message, channel string, params types.Handl
 	return nil
 }
 
-func createElectionKey(params types.HandlerParameters, electionID string, electionPubKey kyber.Point) (message.Message, *answer.Error) {
+func createElectionKey(electionID string, electionPubKey kyber.Point) (message.Message, *answer.Error) {
 	electionPubBuf, err := electionPubKey.MarshalBinary()
 	if err != nil {
 		errAnswer := answer.NewInternalServerError("failed to marshal election public key: %v", err)
@@ -618,7 +617,7 @@ func createElectionKey(params types.HandlerParameters, electionID string, electi
 		errAnswer = errAnswer.Wrap("createAndSendElectionKey")
 		return message.Message{}, errAnswer
 	}
-	signatureBuf, errAnswer := Sign(dataBuf, params)
+	signatureBuf, errAnswer := Sign(dataBuf)
 	if errAnswer != nil {
 		errAnswer = errAnswer.Wrap("createAndSendElectionKey")
 		return message.Message{}, errAnswer
@@ -635,16 +634,16 @@ func createElectionKey(params types.HandlerParameters, electionID string, electi
 }
 
 // Not implemented yet
-func handleLaoUpdate(msg message.Message, params types.HandlerParameters) *answer.Error {
+func handleLaoUpdate(msg message.Message) *answer.Error {
 	return nil
 }
 
 // Not implemented yet
-func handleMeetingCreate(msg message.Message, params types.HandlerParameters) *answer.Error {
+func handleMeetingCreate(msg message.Message) *answer.Error {
 	return nil
 }
 
 // Not implemented yet
-func handleMeetingState(msg message.Message, params types.HandlerParameters) *answer.Error {
+func handleMeetingState(msg message.Message) *answer.Error {
 	return nil
 }

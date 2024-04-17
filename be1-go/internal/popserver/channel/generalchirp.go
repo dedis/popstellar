@@ -5,14 +5,13 @@ import (
 	"encoding/base64"
 	"popstellar/internal/popserver/singleton/config"
 	"popstellar/internal/popserver/singleton/database"
-	"popstellar/internal/popserver/types"
 	"popstellar/message/answer"
 	"popstellar/message/messagedata"
 	"popstellar/message/query/method/message"
 )
 
-func handleChannelGeneralChirp(params types.HandlerParameters, channel string, msg message.Message) *answer.Error {
-	object, action, errAnswer := verifyDataAndGetObjectAction(params, msg)
+func handleChannelGeneralChirp(channel string, msg message.Message) *answer.Error {
+	object, action, errAnswer := verifyDataAndGetObjectAction(msg)
 	if errAnswer != nil {
 		errAnswer = errAnswer.Wrap("handleChannelGeneralChirp")
 		return errAnswer
@@ -20,9 +19,9 @@ func handleChannelGeneralChirp(params types.HandlerParameters, channel string, m
 
 	switch object + "#" + action {
 	case messagedata.ChirpObject + "#" + messagedata.ChirpActionNotifyAdd:
-		errAnswer = handleChirpNotifyAdd(params, msg)
+		errAnswer = handleChirpNotifyAdd(msg)
 	case messagedata.ChirpObject + "#" + messagedata.ChirpActionNotifyDelete:
-		errAnswer = handleChirpNotifyDelete(params, msg)
+		errAnswer = handleChirpNotifyDelete(msg)
 	default:
 		errAnswer = answer.NewInvalidMessageFieldError("failed to handle %s#%s, invalid object#action", object, action)
 	}
@@ -44,7 +43,7 @@ func handleChannelGeneralChirp(params types.HandlerParameters, channel string, m
 		return errAnswer
 	}
 
-	errAnswer = broadcastToAllClients(msg, params, channel)
+	errAnswer = broadcastToAllClients(msg, channel)
 	if errAnswer != nil {
 		errAnswer = errAnswer.Wrap("handleChannelGeneralChirp")
 		return errAnswer
@@ -53,7 +52,7 @@ func handleChannelGeneralChirp(params types.HandlerParameters, channel string, m
 	return nil
 }
 
-func handleChirpNotifyAdd(params types.HandlerParameters, msg message.Message) *answer.Error {
+func handleChirpNotifyAdd(msg message.Message) *answer.Error {
 	var data messagedata.ChirpNotifyAdd
 
 	err := msg.UnmarshalData(&data)
@@ -63,7 +62,7 @@ func handleChirpNotifyAdd(params types.HandlerParameters, msg message.Message) *
 		return errAnswer
 	}
 
-	errAnswer := verifyNotifyChirp(params, msg, data)
+	errAnswer := verifyNotifyChirp(msg, data)
 	if errAnswer != nil {
 		errAnswer = errAnswer.Wrap("handleChirpNotifyAdd")
 		return errAnswer
@@ -72,7 +71,7 @@ func handleChirpNotifyAdd(params types.HandlerParameters, msg message.Message) *
 	return nil
 }
 
-func handleChirpNotifyDelete(params types.HandlerParameters, msg message.Message) *answer.Error {
+func handleChirpNotifyDelete(msg message.Message) *answer.Error {
 	var data messagedata.ChirpNotifyDelete
 
 	err := msg.UnmarshalData(&data)
@@ -82,7 +81,7 @@ func handleChirpNotifyDelete(params types.HandlerParameters, msg message.Message
 		return errAnswer
 	}
 
-	errAnswer := verifyNotifyChirp(params, msg, data)
+	errAnswer := verifyNotifyChirp(msg, data)
 	if errAnswer != nil {
 		errAnswer = errAnswer.Wrap("handleChirpNotifyDelete")
 		return errAnswer
@@ -93,7 +92,7 @@ func handleChirpNotifyDelete(params types.HandlerParameters, msg message.Message
 
 // Utils
 
-func verifyNotifyChirp(params types.HandlerParameters, msg message.Message, chirpMsg messagedata.Verifiable) *answer.Error {
+func verifyNotifyChirp(msg message.Message, chirpMsg messagedata.Verifiable) *answer.Error {
 	err := chirpMsg.Verify()
 	if err != nil {
 		errAnswer := answer.NewInvalidMessageFieldError("invalid chirp broadcast message: %v", err)

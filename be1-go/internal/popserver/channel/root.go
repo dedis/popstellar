@@ -7,7 +7,6 @@ import (
 	"popstellar/internal/popserver/singleton/config"
 	"popstellar/internal/popserver/singleton/database"
 	"popstellar/internal/popserver/singleton/state"
-	"popstellar/internal/popserver/types"
 	"popstellar/message/answer"
 	"popstellar/message/messagedata"
 	"popstellar/message/query/method/message"
@@ -24,8 +23,8 @@ const (
 	auth        = "/authentication"
 )
 
-func handleChannelRoot(params types.HandlerParameters, channel string, msg message.Message) *answer.Error {
-	object, action, errAnswer := verifyDataAndGetObjectAction(params, msg)
+func handleChannelRoot(channel string, msg message.Message) *answer.Error {
+	object, action, errAnswer := verifyDataAndGetObjectAction(msg)
 	if errAnswer != nil {
 		errAnswer = errAnswer.Wrap("handleChannelRoot")
 		return errAnswer
@@ -35,7 +34,7 @@ func handleChannelRoot(params types.HandlerParameters, channel string, msg messa
 	switch object + "#" + action {
 	case messagedata.LAOObject + "#" + messagedata.LAOActionCreate:
 		storeMessage = false
-		errAnswer = handleLaoCreate(params, msg, channel)
+		errAnswer = handleLaoCreate(msg)
 	default:
 		errAnswer = answer.NewInvalidMessageFieldError("failed to handle %s#%s, invalid object#action", object, action)
 	}
@@ -62,7 +61,7 @@ func handleChannelRoot(params types.HandlerParameters, channel string, msg messa
 	return nil
 }
 
-func handleLaoCreate(params types.HandlerParameters, msg message.Message, channel string) *answer.Error {
+func handleLaoCreate(msg message.Message) *answer.Error {
 	var laoCreate messagedata.LaoCreate
 	err := msg.UnmarshalData(&laoCreate)
 	var errAnswer *answer.Error
@@ -73,17 +72,17 @@ func handleLaoCreate(params types.HandlerParameters, msg message.Message, channe
 	}
 
 	laoPath := rootPrefix + laoCreate.ID
-	organizerPubBuf, errAnswer := verifyLaoCreation(params, msg, laoCreate, laoPath)
+	organizerPubBuf, errAnswer := verifyLaoCreation(msg, laoCreate, laoPath)
 	if errAnswer != nil {
 		errAnswer = errAnswer.Wrap("handleLaoCreate")
 		return errAnswer
 	}
-	laoGreetMsg, errAnswer := createLaoGreet(params, organizerPubBuf, laoPath)
+	laoGreetMsg, errAnswer := createLaoGreet(organizerPubBuf, laoPath)
 	if errAnswer != nil {
 		errAnswer = errAnswer.Wrap("handleLaoCreate")
 		return errAnswer
 	}
-	errAnswer = createLaoAndChannels(params, msg, laoGreetMsg, organizerPubBuf, laoPath)
+	errAnswer = createLaoAndChannels(msg, laoGreetMsg, organizerPubBuf, laoPath)
 	if errAnswer != nil {
 		errAnswer = errAnswer.Wrap("handleLaoCreate")
 		return errAnswer
@@ -91,7 +90,7 @@ func handleLaoCreate(params types.HandlerParameters, msg message.Message, channe
 	return nil
 }
 
-func verifyLaoCreation(params types.HandlerParameters, msg message.Message, laoCreate messagedata.LaoCreate, laoPath string) ([]byte, *answer.Error) {
+func verifyLaoCreation(msg message.Message, laoCreate messagedata.LaoCreate, laoPath string) ([]byte, *answer.Error) {
 	var errAnswer *answer.Error
 
 	db, ok := database.GetRootRepositoryInstance()
@@ -169,7 +168,7 @@ func verifyLaoCreation(params types.HandlerParameters, msg message.Message, laoC
 	return organizerPubBuf, nil
 }
 
-func createLaoAndChannels(params types.HandlerParameters, msg, laoGreetMsg message.Message, organizerPubBuf []byte, laoPath string) *answer.Error {
+func createLaoAndChannels(msg, laoGreetMsg message.Message, organizerPubBuf []byte, laoPath string) *answer.Error {
 	var errAnswer *answer.Error
 
 	channels := map[string]string{
@@ -204,7 +203,7 @@ func createLaoAndChannels(params types.HandlerParameters, msg, laoGreetMsg messa
 	return nil
 }
 
-func createLaoGreet(params types.HandlerParameters, organizerBuf []byte, laoPath string) (message.Message, *answer.Error) {
+func createLaoGreet(organizerBuf []byte, laoPath string) (message.Message, *answer.Error) {
 	peers, ok := state.GetPeersInstance()
 	if !ok {
 		errAnswer := answer.NewInternalServerError("failed to get state").Wrap("createAndSendLaoGreet")
@@ -259,7 +258,7 @@ func createLaoGreet(params types.HandlerParameters, organizerBuf []byte, laoPath
 	}
 
 	// Sign the data
-	signatureBuf, errAnswer := Sign(dataBuf, params)
+	signatureBuf, errAnswer := Sign(dataBuf)
 	if errAnswer != nil {
 		errAnswer = errAnswer.Wrap("createAndSendLaoGreet")
 		return message.Message{}, errAnswer

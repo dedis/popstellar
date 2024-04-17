@@ -8,7 +8,6 @@ import (
 	"path/filepath"
 	"popstellar/internal/popserver"
 	"popstellar/internal/popserver/singleton/database"
-	"popstellar/internal/popserver/types"
 	"popstellar/message/messagedata"
 	"popstellar/message/query/method"
 	"popstellar/message/query/method/message"
@@ -19,7 +18,6 @@ const coinPath string = "../../../validation/protocol/examples/messageData/coin"
 
 type inputTestHandleChannelCoin struct {
 	name      string
-	params    types.HandlerParameters
 	channelID string
 	message   message.Message
 	hasError  bool
@@ -88,7 +86,7 @@ func Test_handleChannelCoin(t *testing.T) {
 
 	for _, i := range inputs {
 		t.Run(i.name, func(t *testing.T) {
-			errAnswer := handleChannelCoin(i.params, i.channelID, i.message)
+			errAnswer := handleChannelCoin(i.channelID, i.message)
 			if i.hasError {
 				require.NotNil(t, errAnswer)
 			} else {
@@ -137,7 +135,6 @@ func newSuccessTestHandleChannelCoin(t *testing.T, filename string, name string,
 		{Id: laoID + "3"},
 	}
 
-	params := popserver.NewHandlerParametersWithFakeSocket(mockRepo, sockets[0])
 	subs.AddChannel(channelID)
 
 	for _, s := range sockets {
@@ -147,7 +144,6 @@ func newSuccessTestHandleChannelCoin(t *testing.T, filename string, name string,
 
 	return inputTestHandleChannelCoin{
 		name:      name,
-		params:    params,
 		channelID: channelID,
 		message:   m,
 		hasError:  false,
@@ -174,12 +170,10 @@ func newFailTestHandleChannelCoin(t *testing.T, filename string, name string) in
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
-	params := popserver.NewHandlerParameters(nil)
 	subs.AddChannel(channelID)
 
 	return inputTestHandleChannelCoin{
 		name:      name,
-		params:    params,
 		channelID: channelID,
 		message:   m,
 		hasError:  true,

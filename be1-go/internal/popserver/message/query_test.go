@@ -64,7 +64,6 @@ func Test_handleCatchUp(t *testing.T) {
 
 	type input struct {
 		name        string
-		params      types.HandlerParameters
 		message     []byte
 		socket      *popserver.FakeSocket
 		result      []message.Message
@@ -106,11 +105,8 @@ func Test_handleCatchUp(t *testing.T) {
 
 	s := &popserver.FakeSocket{Id: "fakesocket"}
 
-	params := popserver.NewHandlerParametersWithFakeSocket(mockRepo, s)
-
 	inputs = append(inputs, input{
 		name:        "catch up three messages",
-		params:      params,
 		message:     catchupBuf,
 		socket:      s,
 		result:      messagesToCatchUp,
@@ -138,11 +134,8 @@ func Test_handleCatchUp(t *testing.T) {
 
 	mockRepo.On("GetAllMessagesFromChannel", catchup2.Params.Channel).Return(nil, xerrors.Errorf("DB is disconnected"))
 
-	params = popserver.NewHandlerParameters(mockRepo)
-
 	inputs = append(inputs, input{
 		name:        "failed to query DB",
-		params:      params,
 		message:     catchupBuf,
 		isErrorTest: true,
 	})
@@ -151,7 +144,7 @@ func Test_handleCatchUp(t *testing.T) {
 
 	for _, i := range inputs {
 		t.Run(i.name, func(t *testing.T) {
-			id, errAnswer := handleCatchUp(i.params, i.message)
+			id, errAnswer := handleCatchUp(i.socket, i.message)
 			if i.isErrorTest {
 				fmt.Println(errAnswer)
 				require.NotNil(t, errAnswer)
@@ -171,7 +164,6 @@ func Test_handleGetMessagesByID(t *testing.T) {
 
 	type input struct {
 		name        string
-		params      types.HandlerParameters
 		message     []byte
 		socket      *popserver.FakeSocket
 		result      map[string][]message.Message
@@ -220,11 +212,8 @@ func Test_handleGetMessagesByID(t *testing.T) {
 
 	s := &popserver.FakeSocket{Id: "fakesocket"}
 
-	params := popserver.NewHandlerParametersWithFakeSocket(mockRepository, s)
-
 	inputs = append(inputs, input{
 		name:        "get one message",
-		params:      params,
 		message:     getMessagesByIDBuf,
 		socket:      s,
 		result:      result,
@@ -243,11 +232,8 @@ func Test_handleGetMessagesByID(t *testing.T) {
 
 	mockRepository.On("GetResultForGetMessagesByID", paramsGetMessagesByID3).Return(nil, xerrors.Errorf("DB is disconnected"))
 
-	params = popserver.NewHandlerParameters(mockRepository)
-
 	inputs = append(inputs, input{
 		name:        "failed to query DB",
-		params:      params,
 		message:     getMessagesByIDBuf,
 		isErrorTest: true,
 	})
@@ -256,7 +242,7 @@ func Test_handleGetMessagesByID(t *testing.T) {
 
 	for _, i := range inputs {
 		t.Run(i.name, func(t *testing.T) {
-			id, errAnswer := handleGetMessagesByID(i.params, i.message)
+			id, errAnswer := handleGetMessagesByID(i.socket, i.message)
 			if i.isErrorTest {
 				require.NotNil(t, errAnswer)
 				require.NotNil(t, id)
@@ -269,12 +255,8 @@ func Test_handleGetMessagesByID(t *testing.T) {
 }
 
 func Test_handleGreetServer(t *testing.T) {
-	mockRepository, err := database.SetDatabase(t)
-	require.NoError(t, err)
-
 	type input struct {
 		name        string
-		params      types.HandlerParameters
 		message     []byte
 		socket      *popserver.FakeSocket
 		needSend    bool
@@ -307,11 +289,8 @@ func Test_handleGreetServer(t *testing.T) {
 
 	s := &popserver.FakeSocket{Id: "fakesocket1"}
 
-	params := popserver.NewHandlerParametersWithFakeSocket(mockRepository, s)
-
 	inputs = append(inputs, input{
 		name:        "reply with greetServer",
-		params:      params,
 		message:     greetServerBuf,
 		socket:      s,
 		needSend:    true,
@@ -342,13 +321,10 @@ func Test_handleGreetServer(t *testing.T) {
 
 	s = &popserver.FakeSocket{Id: "fakesocket2"}
 
-	params = popserver.NewHandlerParametersWithFakeSocket(mockRepository, s)
-
 	peers.AddPeerGreeted(s.Id)
 
 	inputs = append(inputs, input{
 		name:        "server already greeted",
-		params:      params,
 		message:     greetServerBuf,
 		socket:      s,
 		needSend:    false,
@@ -379,13 +355,12 @@ func Test_handleGreetServer(t *testing.T) {
 
 	s = &popserver.FakeSocket{Id: "fakesocket4"}
 
-	params = popserver.NewHandlerParametersWithFakeSocket(nil, s)
 	err = peers.AddPeerInfo(s.Id, serverInfo4)
 	require.NoError(t, err)
 
 	inputs = append(inputs, input{
 		name:        "Socket already used",
-		params:      params,
+		socket:      s,
 		message:     greetServerBuf,
 		isErrorTest: true,
 	})
@@ -394,7 +369,7 @@ func Test_handleGreetServer(t *testing.T) {
 
 	for _, i := range inputs {
 		t.Run(i.name, func(t *testing.T) {
-			id, errAnswer := handleGreetServer(i.params, i.message)
+			id, errAnswer := handleGreetServer(i.socket, i.message)
 			if i.isErrorTest {
 				require.NotNil(t, errAnswer)
 				require.Nil(t, id)
@@ -415,7 +390,6 @@ func Test_handleHeartbeat(t *testing.T) {
 
 	type input struct {
 		name        string
-		params      types.HandlerParameters
 		message     []byte
 		socket      *popserver.FakeSocket
 		needSend    bool
@@ -489,11 +463,8 @@ func Test_handleHeartbeat(t *testing.T) {
 
 	s := &popserver.FakeSocket{Id: "fakesocket"}
 
-	params := popserver.NewHandlerParametersWithFakeSocket(mockRepository, s)
-
 	inputs = append(inputs, input{
 		name:        "reply with missingIDs",
-		params:      params,
 		message:     heartbeatBuf,
 		socket:      s,
 		needSend:    true,
@@ -513,11 +484,8 @@ func Test_handleHeartbeat(t *testing.T) {
 
 	s = &popserver.FakeSocket{Id: "fakesocket"}
 
-	params = popserver.NewHandlerParametersWithFakeSocket(mockRepository, s)
-
 	inputs = append(inputs, input{
 		name:        "already up to date",
-		params:      params,
 		message:     heartbeatBuf,
 		socket:      s,
 		needSend:    false,
@@ -534,11 +502,8 @@ func Test_handleHeartbeat(t *testing.T) {
 
 	mockRepository.On("GetParamsForGetMessageByID", listMsg3).Return(nil, xerrors.Errorf("DB is disconnected"))
 
-	params = popserver.NewHandlerParameters(mockRepository)
-
 	inputs = append(inputs, input{
 		name:        "failed to query DB",
-		params:      params,
 		message:     heartbeatBuf,
 		isErrorTest: true,
 	})
@@ -547,7 +512,7 @@ func Test_handleHeartbeat(t *testing.T) {
 
 	for _, i := range inputs {
 		t.Run(i.name, func(t *testing.T) {
-			id, errAnswer := handleHeartbeat(i.params, i.message)
+			id, errAnswer := handleHeartbeat(i.socket, i.message)
 			if i.isErrorTest {
 				require.NotNil(t, errAnswer)
 				require.Nil(t, id)
@@ -571,7 +536,7 @@ func Test_handleHeartbeat(t *testing.T) {
 func Test_handleSubscribe(t *testing.T) {
 	type input struct {
 		name        string
-		params      types.HandlerParameters
+		socket      *popserver.FakeSocket
 		message     []byte
 		isErrorTest bool
 		subscribe   method.Subscribe
@@ -598,12 +563,13 @@ func Test_handleSubscribe(t *testing.T) {
 	subscribeBuf, err := json.Marshal(&subscribe1)
 	require.NoError(t, err)
 
-	params := popserver.NewHandlerParameters(nil)
+	fakeSocket := popserver.FakeSocket{Id: "fakesocket1"}
+
 	subs.AddChannel("/root/lao1")
 
 	inputs = append(inputs, input{
 		name:        "Subscribe to channel",
-		params:      params,
+		socket:      &fakeSocket,
 		message:     subscribeBuf,
 		isErrorTest: false,
 		subscribe:   subscribe1,
@@ -628,11 +594,8 @@ func Test_handleSubscribe(t *testing.T) {
 	subscribeBuf, err = json.Marshal(&subscribe2)
 	require.NoError(t, err)
 
-	params = popserver.NewHandlerParameters(nil)
-
 	inputs = append(inputs, input{
 		name:        "unknown channel",
-		params:      params,
 		message:     subscribeBuf,
 		isErrorTest: true,
 		subscribe:   subscribe2,
@@ -657,11 +620,8 @@ func Test_handleSubscribe(t *testing.T) {
 	subscribeRootBuf, err := json.Marshal(&subscribe3)
 	require.NoError(t, err)
 
-	params = popserver.NewHandlerParameters(nil)
-
 	inputs = append(inputs, input{
 		name:        "cannot Subscribe to root",
-		params:      params,
 		message:     subscribeRootBuf,
 		isErrorTest: true,
 		subscribe:   subscribe3,
@@ -671,14 +631,14 @@ func Test_handleSubscribe(t *testing.T) {
 
 	for _, i := range inputs {
 		t.Run(i.name, func(t *testing.T) {
-			id, errAnswer := handleSubscribe(i.params, i.message)
+			id, errAnswer := handleSubscribe(i.socket, i.message)
 			if i.isErrorTest {
 				require.NotNil(t, errAnswer)
 				require.Equal(t, i.subscribe.ID, *id)
 			} else {
 				require.Nil(t, errAnswer)
 
-				isSubscribed, err := subs.IsSubscribed(i.subscribe.Params.Channel, i.params.Socket)
+				isSubscribed, err := subs.IsSubscribed(i.subscribe.Params.Channel, i.socket)
 				require.NoError(t, err)
 				require.True(t, isSubscribed)
 			}
@@ -689,7 +649,7 @@ func Test_handleSubscribe(t *testing.T) {
 func Test_handleUnsubscribe(t *testing.T) {
 	type input struct {
 		name        string
-		params      types.HandlerParameters
+		socket      *popserver.FakeSocket
 		message     []byte
 		isErrorTest bool
 		unsubscribe method.Unsubscribe
@@ -716,14 +676,14 @@ func Test_handleUnsubscribe(t *testing.T) {
 	unsubscribeBuf, err := json.Marshal(&unsubscribe1)
 	require.NoError(t, err)
 
-	params := popserver.NewHandlerParameters(nil)
+	fakeSocket := popserver.FakeSocket{Id: "fakesocket1"}
 	subs.AddChannel("/root/lao1")
-	errAnswer := subs.Subscribe("/root/lao1", params.Socket)
+	errAnswer := subs.Subscribe("/root/lao1", &fakeSocket)
 	require.Nil(t, errAnswer)
 
 	inputs = append(inputs, input{
 		name:        "Unsubscribe from channel",
-		params:      params,
+		socket:      &fakeSocket,
 		message:     unsubscribeBuf,
 		isErrorTest: false,
 		unsubscribe: unsubscribe1,
@@ -745,16 +705,17 @@ func Test_handleUnsubscribe(t *testing.T) {
 		},
 	}
 
+	s := &popserver.FakeSocket{Id: "fakesocket2"}
+
 	unsubscribeBuf, err = json.Marshal(&unsubscribe2)
 	require.NoError(t, err)
 
-	params = popserver.NewHandlerParameters(nil)
 	subs.AddChannel("/root/lao2")
 
 	inputs = append(inputs, input{
 		name:        "cannot Unsubscribe without being subscribed",
-		params:      params,
 		message:     unsubscribeBuf,
+		socket:      s,
 		isErrorTest: true,
 		unsubscribe: unsubscribe2,
 	})
@@ -775,15 +736,15 @@ func Test_handleUnsubscribe(t *testing.T) {
 		},
 	}
 
+	s = &popserver.FakeSocket{Id: "fakesocket3"}
+
 	unsubscribeBuf, err = json.Marshal(&unsubscribe3)
 	require.NoError(t, err)
 
-	params = popserver.NewHandlerParameters(nil)
-
 	inputs = append(inputs, input{
 		name:        "unknown channel",
-		params:      params,
 		message:     unsubscribeBuf,
+		socket:      s,
 		isErrorTest: true,
 		unsubscribe: unsubscribe1,
 	})
@@ -804,15 +765,15 @@ func Test_handleUnsubscribe(t *testing.T) {
 		},
 	}
 
+	s = &popserver.FakeSocket{Id: "fakesocket4"}
+
 	unsubscribeRootBuf, err := json.Marshal(&unsubscribe4)
 	require.NoError(t, err)
 
-	params = popserver.NewHandlerParameters(nil)
-
 	inputs = append(inputs, input{
 		name:        "cannot Unsubscribe from root",
-		params:      params,
 		message:     unsubscribeRootBuf,
+		socket:      s,
 		isErrorTest: true,
 		unsubscribe: unsubscribe4,
 	})
@@ -821,14 +782,14 @@ func Test_handleUnsubscribe(t *testing.T) {
 
 	for _, i := range inputs {
 		t.Run(i.name, func(t *testing.T) {
-			id, errAnswer := handleUnsubscribe(i.params, i.message)
+			id, errAnswer := handleUnsubscribe(i.socket, i.message)
 			if i.isErrorTest {
 				require.NotNil(t, errAnswer)
 				require.Equal(t, i.unsubscribe.ID, *id)
 			} else {
 				require.Nil(t, errAnswer)
 
-				isSubscribe, err := subs.IsSubscribed(i.unsubscribe.Params.Channel, i.params.Socket)
+				isSubscribe, err := subs.IsSubscribed(i.unsubscribe.Params.Channel, i.socket)
 				require.NoError(t, err)
 				require.False(t, isSubscribe)
 			}

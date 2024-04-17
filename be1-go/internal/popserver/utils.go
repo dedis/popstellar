@@ -4,8 +4,6 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.dedis.ch/kyber/v3"
 	"popstellar/crypto"
-	"popstellar/internal/popserver/singleton/database"
-	"popstellar/internal/popserver/types"
 	"popstellar/message/query/method/message"
 	"popstellar/network/socket"
 	"testing"
@@ -55,25 +53,6 @@ func (f *FakeSocket) GetMessage() []byte {
 
 func (f *FakeSocket) Type() socket.SocketType {
 	return socket.ClientSocketType
-}
-
-func NewHandlerParameters(db database.Repository) types.HandlerParameters {
-	return types.HandlerParameters{
-		Socket: &FakeSocket{Id: "fakeID"},
-	}
-}
-
-func NewHandlerParametersWithOwnerAndServer(db database.Repository) types.HandlerParameters {
-	return types.HandlerParameters{
-		Socket: &FakeSocket{Id: "fakeID"},
-	}
-}
-
-func NewHandlerParametersWithFakeSocket(db database.Repository, s *FakeSocket) types.HandlerParameters {
-	return types.HandlerParameters{
-		Socket: s,
-	}
-
 }
 
 type Keypair struct {

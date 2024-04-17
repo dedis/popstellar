@@ -5,7 +5,6 @@ import (
 	"popstellar/crypto"
 	"popstellar/internal/popserver/singleton/config"
 	"popstellar/internal/popserver/singleton/database"
-	"popstellar/internal/popserver/types"
 	"popstellar/message/answer"
 	"popstellar/message/messagedata"
 	"popstellar/message/query/method/message"
@@ -16,8 +15,8 @@ const (
 	voteFlag = "Vote"
 )
 
-func handleChannelElection(params types.HandlerParameters, channel string, msg message.Message) *answer.Error {
-	object, action, errAnswer := verifyDataAndGetObjectAction(params, msg)
+func handleChannelElection(channel string, msg message.Message) *answer.Error {
+	object, action, errAnswer := verifyDataAndGetObjectAction(msg)
 	if errAnswer != nil {
 		errAnswer = errAnswer.Wrap("handleChannelElection")
 		return errAnswer
@@ -25,13 +24,13 @@ func handleChannelElection(params types.HandlerParameters, channel string, msg m
 
 	switch object + "#" + action {
 	case messagedata.ElectionObject + "#" + messagedata.VoteActionCastVote:
-		errAnswer = handleVoteCastVote(params, msg, channel)
+		errAnswer = handleVoteCastVote(msg, channel)
 	case messagedata.ElectionObject + "#" + messagedata.ElectionActionOpen:
-		errAnswer = handleElectionOpen(params, msg, channel)
+		errAnswer = handleElectionOpen(msg, channel)
 	case messagedata.ElectionObject + "#" + messagedata.ElectionActionEnd:
-		errAnswer = handleElectionEnd(msg, params)
+		errAnswer = handleElectionEnd(msg)
 	case messagedata.ElectionObject + "#" + messagedata.ElectionActionResult:
-		errAnswer = handleElectionResult(msg, params)
+		errAnswer = handleElectionResult(msg)
 	default:
 		errAnswer = answer.NewInvalidMessageFieldError("failed to handle %s#%s, invalid object#action", object, action)
 	}
@@ -85,7 +84,7 @@ type validVote struct {
 	index interface{}
 }
 
-func handleVoteCastVote(params types.HandlerParameters, msg message.Message, channel string) *answer.Error {
+func handleVoteCastVote(msg message.Message, channel string) *answer.Error {
 	var voteCastVote messagedata.VoteCastVote
 	err := msg.UnmarshalData(&voteCastVote)
 	var errAnswer *answer.Error
@@ -217,7 +216,7 @@ func handleVoteCastVote(params types.HandlerParameters, msg message.Message, cha
 	}
 	// verify votes
 	for i, vote := range voteCastVote.Votes {
-		err := verifyVote(params, vote, channel, electionID)
+		err := verifyVote(vote, channel, electionID)
 		if err != nil {
 			errAnswer = answer.NewInvalidMessageFieldError("failed to validate vote %d: %v", i, err)
 			errAnswer = errAnswer.Wrap("handleVoteCastVote")
@@ -235,7 +234,7 @@ func handleVoteCastVote(params types.HandlerParameters, msg message.Message, cha
 	return nil
 }
 
-func verifyVote(params types.HandlerParameters, vote messagedata.Vote, channel, electionID string) *answer.Error {
+func verifyVote(vote messagedata.Vote, channel, electionID string) *answer.Error {
 	//var errAnswer *answer.Error
 	////questions, err := params.DB.GetElectionQuestions(channel)
 	////if err != nil {
@@ -293,7 +292,7 @@ func verifyVote(params types.HandlerParameters, vote messagedata.Vote, channel, 
 	return nil
 }
 
-func handleElectionOpen(params types.HandlerParameters, msg message.Message, channel string) *answer.Error {
+func handleElectionOpen(msg message.Message, channel string) *answer.Error {
 	var electionOpen messagedata.ElectionOpen
 	err := msg.UnmarshalData(&electionOpen)
 	var errAnswer *answer.Error
@@ -402,7 +401,7 @@ func handleElectionOpen(params types.HandlerParameters, msg message.Message, cha
 		return errAnswer
 	}
 
-	errAnswer = broadcastToAllClients(msg, params, channel)
+	errAnswer = broadcastToAllClients(msg, channel)
 	if errAnswer != nil {
 		errAnswer = errAnswer.Wrap("handleElectionOpen")
 		return errAnswer
@@ -410,10 +409,10 @@ func handleElectionOpen(params types.HandlerParameters, msg message.Message, cha
 	return nil
 }
 
-func handleElectionEnd(msg message.Message, params types.HandlerParameters) *answer.Error {
+func handleElectionEnd(msg message.Message) *answer.Error {
 	return nil
 }
 
-func handleElectionResult(msg message.Message, params types.HandlerParameters) *answer.Error {
+func handleElectionResult(msg message.Message) *answer.Error {
 	return nil
 }

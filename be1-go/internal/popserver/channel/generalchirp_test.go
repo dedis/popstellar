@@ -8,7 +8,6 @@ import (
 	"path/filepath"
 	"popstellar/internal/popserver"
 	"popstellar/internal/popserver/singleton/database"
-	"popstellar/internal/popserver/types"
 	"popstellar/message/messagedata"
 	"popstellar/message/query/method"
 	"popstellar/message/query/method/message"
@@ -19,7 +18,6 @@ const messageDataPath string = "../../../validation/protocol/examples/messageDat
 
 type inputTestHandleChannelGeneralChirp struct {
 	name      string
-	params    types.HandlerParameters
 	channelID string
 	message   message.Message
 	hasError  bool
@@ -68,7 +66,7 @@ func Test_handleChannelGeneralChirp(t *testing.T) {
 
 	for _, i := range inputs {
 		t.Run(i.name, func(t *testing.T) {
-			errAnswer := handleChannelGeneralChirp(i.params, i.channelID, i.message)
+			errAnswer := handleChannelGeneralChirp(i.channelID, i.message)
 			if i.hasError {
 				require.NotNil(t, errAnswer)
 			} else {
@@ -120,7 +118,6 @@ func newSuccessTestHandleChannelGeneralChirp(t *testing.T, filename string, name
 		{Id: "3"},
 	}
 
-	params := popserver.NewHandlerParametersWithFakeSocket(mockRepo, sockets[0])
 	subs.AddChannel(channelID)
 
 	for _, s := range sockets {
@@ -130,7 +127,6 @@ func newSuccessTestHandleChannelGeneralChirp(t *testing.T, filename string, name
 
 	return inputTestHandleChannelGeneralChirp{
 		name:      name,
-		params:    params,
 		channelID: channelID,
 		message:   m,
 		hasError:  false,
@@ -160,12 +156,10 @@ func newFailTestHandleChannelGeneralChirp(t *testing.T, filename string, name st
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
-	params := popserver.NewHandlerParameters(nil)
 	subs.AddChannel(channelID)
 
 	return inputTestHandleChannelGeneralChirp{
 		name:      name,
-		params:    params,
 		channelID: channelID,
 		message:   m,
 		hasError:  true,

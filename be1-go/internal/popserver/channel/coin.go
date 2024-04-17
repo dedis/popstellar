@@ -2,14 +2,13 @@ package channel
 
 import (
 	"popstellar/internal/popserver/singleton/database"
-	"popstellar/internal/popserver/types"
 	"popstellar/message/answer"
 	"popstellar/message/messagedata"
 	"popstellar/message/query/method/message"
 )
 
-func handleChannelCoin(params types.HandlerParameters, channel string, msg message.Message) *answer.Error {
-	object, action, errAnswer := verifyDataAndGetObjectAction(params, msg)
+func handleChannelCoin(channel string, msg message.Message) *answer.Error {
+	object, action, errAnswer := verifyDataAndGetObjectAction(msg)
 	if errAnswer != nil {
 		errAnswer = errAnswer.Wrap("handleChannelCoin")
 		return errAnswer
@@ -17,7 +16,7 @@ func handleChannelCoin(params types.HandlerParameters, channel string, msg messa
 
 	switch object + "#" + action {
 	case messagedata.CoinObject + "#" + messagedata.CoinActionPostTransaction:
-		errAnswer = handleCoinPostTransaction(params, msg)
+		errAnswer = handleCoinPostTransaction(msg)
 	default:
 		errAnswer = answer.NewInvalidMessageFieldError("failed to handle %s#%s, invalid object#action", object, action)
 	}
@@ -39,7 +38,7 @@ func handleChannelCoin(params types.HandlerParameters, channel string, msg messa
 		return errAnswer
 	}
 
-	errAnswer = broadcastToAllClients(msg, params, channel)
+	errAnswer = broadcastToAllClients(msg, channel)
 	if errAnswer != nil {
 		errAnswer = errAnswer.Wrap("handleChannelCoin")
 		return errAnswer
@@ -48,7 +47,7 @@ func handleChannelCoin(params types.HandlerParameters, channel string, msg messa
 	return nil
 }
 
-func handleCoinPostTransaction(params types.HandlerParameters, msg message.Message) *answer.Error {
+func handleCoinPostTransaction(msg message.Message) *answer.Error {
 	var data messagedata.PostTransaction
 
 	err := msg.UnmarshalData(&data)

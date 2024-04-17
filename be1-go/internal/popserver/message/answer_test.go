@@ -12,7 +12,6 @@ import (
 	"popstellar/crypto"
 	"popstellar/internal/popserver"
 	"popstellar/internal/popserver/singleton/database"
-	"popstellar/internal/popserver/types"
 	"popstellar/message/answer"
 	"popstellar/message/messagedata"
 	"popstellar/message/query/method/message"
@@ -26,7 +25,6 @@ func Test_handleGetMessagesByIDAnswer(t *testing.T) {
 
 	type input struct {
 		name        string
-		params      types.HandlerParameters
 		message     answer.Answer
 		isErrorTest bool
 	}
@@ -49,18 +47,16 @@ func Test_handleGetMessagesByIDAnswer(t *testing.T) {
 
 	mockRepository.On("StorePendingMessages", msgsByChannel).Return(xerrors.Errorf("DB disconnected"))
 
-	params := popserver.NewHandlerParameters(mockRepository)
-
 	inputs = append(inputs, input{
 		name:        "failed to query DB",
-		params:      params,
 		message:     msg,
 		isErrorTest: true,
 	})
 
 	for _, i := range inputs {
 		t.Run(i.name, func(t *testing.T) {
-			errAnswer := handleGetMessagesByIDAnswer(i.params, i.message)
+			fakeSocket := popserver.FakeSocket{Id: "fakesocket"}
+			errAnswer := handleGetMessagesByIDAnswer(&fakeSocket, i.message)
 			if i.isErrorTest {
 				require.Error(t, errAnswer)
 			}
@@ -75,7 +71,6 @@ func Test_handleMessagesByChannel(t *testing.T) {
 
 	type input struct {
 		name     string
-		params   types.HandlerParameters
 		messages map[string]map[string]message.Message
 		expected map[string]map[string]message.Message
 	}
@@ -142,11 +137,8 @@ func Test_handleMessagesByChannel(t *testing.T) {
 	mockRepository.On("GetChannelType", "/root").Return("", nil)
 	mockRepository.On("GetChannelType", "/root/lao1").Return("", nil)
 
-	params := popserver.NewHandlerParameters(mockRepository)
-
 	inputs = append(inputs, input{
 		name:     "blacklist without invalid field error",
-		params:   params,
 		messages: messages,
 		expected: expected,
 	})
@@ -154,7 +146,8 @@ func Test_handleMessagesByChannel(t *testing.T) {
 	for _, i := range inputs {
 		t.Run(i.name, func(t *testing.T) {
 			log := zerolog.New(io.Discard)
-			handleMessagesByChannel(i.params, i.messages, &log)
+			fakeSocket := popserver.FakeSocket{Id: "fakesocket"}
+			handleMessagesByChannel(&fakeSocket, i.messages, &log)
 
 			for k0, v0 := range i.expected {
 				for k1 := range v0 {
