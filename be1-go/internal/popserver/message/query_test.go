@@ -9,7 +9,7 @@ import (
 	"popstellar/hub/standard_hub/hub_state"
 	"popstellar/internal/popserver"
 	"popstellar/internal/popserver/repo"
-	"popstellar/internal/popserver/state"
+	"popstellar/internal/popserver/singleton/state"
 	"popstellar/internal/popserver/types"
 	jsonrpc "popstellar/message"
 	"popstellar/message/query"

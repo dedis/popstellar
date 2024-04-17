@@ -2,7 +2,7 @@ package message
 
 import (
 	"encoding/json"
-	"popstellar/internal/popserver/state"
+	"popstellar/internal/popserver/singleton/state"
 	"popstellar/internal/popserver/types"
 	jsonrpc "popstellar/message"
 	"popstellar/message/answer"

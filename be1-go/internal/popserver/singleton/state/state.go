@@ -7,10 +7,10 @@ import (
 	"sync"
 )
 
-var popStateOnce sync.Once
-var instancePopState *popState
+var once sync.Once
+var instance *state
 
-type popState struct {
+type state struct {
 	subs    Subscriber
 	peers   Peerer
 	queries Querier
@@ -38,8 +38,8 @@ type Querier interface {
 }
 
 func InitPopState(subs Subscriber, peers Peerer, queries Querier) {
-	popStateOnce.Do(func() {
-		instancePopState = &popState{
+	once.Do(func() {
+		instance = &state{
 			subs:    subs,
 			peers:   peers,
 			queries: queries,
@@ -48,25 +48,25 @@ func InitPopState(subs Subscriber, peers Peerer, queries Querier) {
 }
 
 func GetSubsInstance() (Subscriber, bool) {
-	if instancePopState == nil || instancePopState.subs == nil {
+	if instance == nil || instance.subs == nil {
 		return nil, false
 	}
 
-	return instancePopState.subs, true
+	return instance.subs, true
 }
 
 func GetPeersInstance() (Peerer, bool) {
-	if instancePopState == nil || instancePopState.peers == nil {
+	if instance == nil || instance.peers == nil {
 		return nil, false
 	}
 
-	return instancePopState.peers, true
+	return instance.peers, true
 }
 
 func GetQueriesInstance() (Querier, bool) {
-	if instancePopState == nil || instancePopState.queries == nil {
+	if instance == nil || instance.queries == nil {
 		return nil, false
 	}
 
-	return instancePopState.queries, true
+	return instance.queries, true
 }
