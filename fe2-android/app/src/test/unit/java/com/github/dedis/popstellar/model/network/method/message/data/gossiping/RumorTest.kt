@@ -128,7 +128,7 @@ class RumorTest {
             "wrong_rumor_missing_sender_id.json"
         )
 
-        val validJson = loadFile(pathDir + jsonFiles[1])
+        val validJson = loadFile(pathDir + jsonFiles[0])
         parse(validJson)
 
         for (i in 1 until jsonFiles.size) {
