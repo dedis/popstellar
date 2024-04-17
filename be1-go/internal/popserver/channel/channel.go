@@ -6,6 +6,7 @@ import (
 	"go.dedis.ch/kyber/v3"
 	"go.dedis.ch/kyber/v3/sign/schnorr"
 	"popstellar/crypto"
+	"popstellar/internal/popserver/singleton/config"
 	"popstellar/internal/popserver/singleton/state"
 	"popstellar/internal/popserver/singleton/utils"
 	"popstellar/internal/popserver/types"
@@ -134,20 +135,11 @@ func verifyDataAndGetObjectAction(params types.HandlerParameters, msg message.Me
 }
 
 func Sign(data []byte, params types.HandlerParameters) ([]byte, *answer.Error) {
-
 	var errAnswer *answer.Error
-	serverSecretBuf, err := params.ServerSecretKey.MarshalBinary()
-	if err != nil {
-		errAnswer = answer.NewInternalServerError("failed to marshal the server secret key: %v", err)
-		errAnswer = errAnswer.Wrap("Sign")
-		return nil, errAnswer
-	}
 
-	serverSecretKey := crypto.Suite.Scalar()
-	err = serverSecretKey.UnmarshalBinary(serverSecretBuf)
-	if err != nil {
-		errAnswer = answer.NewInternalServerError("failed to unmarshal the server secret key: %v", err)
-		errAnswer = errAnswer.Wrap("Sign")
+	serverSecretKey, ok := config.GetServerSecretKeyInstance()
+	if !ok {
+		errAnswer := answer.NewInternalServerError("failed to get utils").Wrap("Sign")
 		return nil, errAnswer
 	}
 

@@ -17,8 +17,6 @@ const laoTestDataPath = "../test_data/lao/"
 const sender = "HynYISQNI6XqvQNVzA8IzinV8ToiXyKRFsgR2zpP7j8="
 
 func Test_handleChannelLao_LaoState(t *testing.T) {
-	serverKeypair := popserver.GenerateKeyPair(t)
-
 	file := filepath.Join(laoTestDataPath, "good_lao_update.json")
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
@@ -54,7 +52,7 @@ func Test_handleChannelLao_LaoState(t *testing.T) {
 	mockRepository.On("StoreMessage", laoID, stateMsg).
 		Return(nil)
 
-	params := popserver.NewHandlerParametersWithOwnerAndServer(mockRepository, nil, serverKeypair)
+	params := popserver.NewHandlerParametersWithOwnerAndServer(mockRepository)
 	errAnswer := handleChannelLao(params, laoID, stateMsg)
 	require.Nil(t, errAnswer)
 }

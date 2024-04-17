@@ -3,6 +3,7 @@ package channel
 import (
 	"bytes"
 	"encoding/base64"
+	"popstellar/internal/popserver/singleton/config"
 	"popstellar/internal/popserver/types"
 	"popstellar/message/answer"
 	"popstellar/message/messagedata"
@@ -100,14 +101,20 @@ func verifyNotifyChirp(params types.HandlerParameters, msg message.Message, chir
 		return errAnswer
 	}
 
-	pkBuf, err := params.ServerPubKey.MarshalBinary()
-	if err != nil {
-		errAnswer := answer.NewInternalServerError("failed to unmarshall server public key", err)
-		errAnswer = errAnswer.Wrap("copyToGeneral")
+	serverPublicKey, ok := config.GetServerPublicKeyInstance()
+	if !ok {
+		errAnswer := answer.NewInternalServerError("failed to get config").Wrap("verifyNotifyChirp")
 		return errAnswer
 	}
 
-	ok := bytes.Equal(senderBuf, pkBuf)
+	pkBuf, err := serverPublicKey.MarshalBinary()
+	if err != nil {
+		errAnswer := answer.NewInternalServerError("failed to unmarshall server public key", err)
+		errAnswer = errAnswer.Wrap("verifyNotifyChirp")
+		return errAnswer
+	}
+
+	ok = bytes.Equal(senderBuf, pkBuf)
 	if !ok {
 		errAnswer := answer.NewInvalidMessageFieldError("only the server can broadcast the chirp messages")
 		errAnswer = errAnswer.Wrap("verifyNotifyChirp")

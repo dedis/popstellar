@@ -5,12 +5,15 @@ import (
 	"fmt"
 	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/require"
+	"go.dedis.ch/kyber/v3"
 	"golang.org/x/xerrors"
 	"io"
 	"os"
+	"popstellar/crypto"
 	"popstellar/hub/standard_hub/hub_state"
 	"popstellar/internal/popserver"
 	"popstellar/internal/popserver/repo"
+	"popstellar/internal/popserver/singleton/config"
 	"popstellar/internal/popserver/singleton/state"
 	"popstellar/internal/popserver/singleton/utils"
 	"popstellar/internal/popserver/types"
@@ -25,6 +28,9 @@ import (
 var subs *types.Subscribers
 var queries hub_state.Queries
 var peers hub_state.Peers
+
+var serverPublicKey kyber.Point
+var serverSecretKey kyber.Scalar
 
 func TestMain(m *testing.M) {
 	subs = types.NewSubscribers()
@@ -41,6 +47,11 @@ func TestMain(m *testing.M) {
 	}
 
 	utils.InitUtils(&log, schemaValidator)
+
+	serverSecretKey = crypto.Suite.Scalar().Pick(crypto.Suite.RandomStream())
+	serverPublicKey = crypto.Suite.Point().Mul(serverSecretKey, nil)
+
+	config.InitConfig(nil, serverPublicKey, serverSecretKey, "clientAddress", "serverAddress")
 
 	exitVal := m.Run()
 

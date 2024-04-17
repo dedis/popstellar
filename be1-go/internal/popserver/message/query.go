@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"popstellar/internal/popserver/channel"
+	"popstellar/internal/popserver/singleton/config"
 	"popstellar/internal/popserver/singleton/state"
 	"popstellar/internal/popserver/types"
 	jsonrpc "popstellar/message"
@@ -80,17 +81,23 @@ func handleGreetServer(params types.HandlerParameters, byteMessage []byte) (*int
 		return nil, nil
 	}
 
-	pkBuf, err := params.ServerPubKey.MarshalBinary()
-	if err != nil {
-		errAnswer := answer.NewInternalServerError("failed to unmarshall server public key", err)
-		errAnswer = errAnswer.Wrap("copyToGeneral")
+	pk, clientAddress, serverAddress, ok := config.GetServerInfo()
+	if !ok {
+		errAnswer := answer.NewInternalServerError("failed to get config").Wrap("handleGreetServer")
 		return nil, errAnswer
 	}
 
-	serverInfo := method.GreetServerParams{
+	pkBuf, err := pk.MarshalBinary()
+	if err != nil {
+		errAnswer := answer.NewInternalServerError("failed to unmarshall server public key", err)
+		errAnswer = errAnswer.Wrap("handleGreetServer")
+		return nil, errAnswer
+	}
+
+	greetServerParams := method.GreetServerParams{
 		PublicKey:     base64.URLEncoding.EncodeToString(pkBuf),
-		ServerAddress: params.ServerServerAddress,
-		ClientAddress: params.ClientServerAddress,
+		ServerAddress: serverAddress,
+		ClientAddress: clientAddress,
 	}
 
 	serverGreet := &method.GreetServer{
@@ -100,7 +107,7 @@ func handleGreetServer(params types.HandlerParameters, byteMessage []byte) (*int
 			},
 			Method: query.MethodGreetServer,
 		},
-		Params: serverInfo,
+		Params: greetServerParams,
 	}
 
 	buf, err := json.Marshal(serverGreet)

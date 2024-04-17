@@ -7,6 +7,7 @@ import (
 	"go.dedis.ch/kyber/v3/sign/schnorr"
 	"golang.org/x/exp/slices"
 	"popstellar/crypto"
+	"popstellar/internal/popserver/singleton/config"
 	"popstellar/internal/popserver/singleton/state"
 	"popstellar/internal/popserver/types"
 	"popstellar/message/answer"
@@ -571,11 +572,17 @@ func createElectionKey(params types.HandlerParameters, electionID string, electi
 		return message.Message{}, errAnswer
 	}
 	newData64 := base64.URLEncoding.EncodeToString(dataBuf)
-	//TODO get server public key
-	serverPubBuf, err := params.ServerPubKey.MarshalBinary()
+
+	serverPublicKey, ok := config.GetServerPublicKeyInstance()
+	if !ok {
+		errAnswer := answer.NewInternalServerError("failed to get config").Wrap("createAndSendElectionKey")
+		return message.Message{}, errAnswer
+	}
+
+	serverPubBuf, err := serverPublicKey.MarshalBinary()
 	if err != nil {
 		errAnswer := answer.NewInternalServerError("failed to unmarshall server secret key", err)
-		errAnswer = errAnswer.Wrap("copyToGeneral")
+		errAnswer = errAnswer.Wrap("createAndSendElectionKey")
 		return message.Message{}, errAnswer
 	}
 	signatureBuf, errAnswer := Sign(dataBuf, params)

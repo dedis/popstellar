@@ -5,10 +5,8 @@ import (
 	"encoding/json"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
-	"go.dedis.ch/kyber/v3"
 	"os"
 	"path/filepath"
-	"popstellar/crypto"
 	"popstellar/internal/popserver"
 	"popstellar/internal/popserver/repo"
 	"popstellar/internal/popserver/types"
@@ -36,49 +34,39 @@ type input struct {
 
 func Test_handleChannelRoot(t *testing.T) {
 	var args []input
-	organizerKey := crypto.Suite.Point()
-	organizerBuf, err := base64.URLEncoding.DecodeString(organizer)
-	require.NoError(t, err)
-	err = organizerKey.UnmarshalBinary(organizerBuf)
-	require.NoError(t, err)
 
 	// Test 1: error when different sender and owner keys
 	args = append(args, newInputError(t,
 		"wrong_lao_create_different_sender_owner.json",
-		wrongSender,  // sender public key in base64 format
-		organizerKey, // owner public key
+		wrongSender, // sender public key in base64 format
 		"Test 1",
 		"sender's public key does not match the owner public key"))
 
 	// Test 2: error when different organizer and sender keys
 	args = append(args, newInputError(t,
 		"wrong_lao_create_different_sender_organizer.json",
-		wrongSender,  // sender public key in base64 format
-		organizerKey, // owner public key
+		wrongSender, // sender public key in base64 format
 		"Test 2",
 		"sender's public key does not match the organizer public key"))
 
 	// Test 3: error when the lao name is not the same as the one used for the laoID
 	args = append(args, newInputError(t,
 		"wrong_lao_create_wrong_name.json",
-		organizer,    // sender public key in base64 format
-		organizerKey, // owner public key
+		organizer, // sender public key in base64 format
 		"Test 3",
 		"failed to verify message data: invalid message field: lao id"))
 
 	// Test 4: error when message data is not lao_create
 	args = append(args, newInputError(t,
 		"",
-		organizer,    // sender public key in base64 format
-		organizerKey, // owner public key
+		organizer, // sender public key in base64 format
 		"Test 4",
 		"failed to validate message against json schema"))
 
 	// Test 5: success with owner public key not nil
 	args = append(args, newInputSuccess(t,
 		"good_lao_create.json",
-		organizer,    // sender public key in base64 format
-		organizerKey, // owner public key
+		organizer, // sender public key in base64 format
 		"Test 5",
 		""))
 
@@ -86,7 +74,6 @@ func Test_handleChannelRoot(t *testing.T) {
 	args = append(args, newInputSuccess(t,
 		"good_lao_create.json",
 		organizer, // sender public key in base64 format
-		nil,       // owner public key
 		"Test 6",
 		""))
 
@@ -102,7 +89,7 @@ func Test_handleChannelRoot(t *testing.T) {
 	}
 }
 
-func newInputError(t *testing.T, fileName, sender string, ownerKey kyber.Point, testName, contains string) input {
+func newInputError(t *testing.T, fileName, sender string, testName, contains string) input {
 
 	var buf []byte
 	var err error
@@ -146,7 +133,7 @@ func newInputError(t *testing.T, fileName, sender string, ownerKey kyber.Point, 
 	} else {
 		mockRepository = nil
 	}
-	params := popserver.NewHandlerParametersWithOwnerAndServer(mockRepository, ownerKey, popserver.GenerateKeyPair(t))
+	params := popserver.NewHandlerParametersWithOwnerAndServer(mockRepository)
 
 	return input{name: testName,
 		params:   params,
@@ -156,7 +143,7 @@ func newInputError(t *testing.T, fileName, sender string, ownerKey kyber.Point, 
 		contains: contains}
 }
 
-func newInputSuccess(t *testing.T, fileName, sender string, ownerKey kyber.Point, testName, contains string) input {
+func newInputSuccess(t *testing.T, fileName, sender string, testName, contains string) input {
 	file := filepath.Join(rootPath, fileName)
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
@@ -166,7 +153,6 @@ func newInputSuccess(t *testing.T, fileName, sender string, ownerKey kyber.Point
 	err = json.Unmarshal(buf, &laoCreate)
 	require.NoError(t, err)
 	laoPath := rootPrefix + laoCreate.ID
-	serverKeypair := popserver.GenerateKeyPair(t)
 
 	msg := message.Message{
 		Data:              buf64,
@@ -193,7 +179,7 @@ func newInputSuccess(t *testing.T, fileName, sender string, ownerKey kyber.Point
 		laoPath,
 		organizerBuf,
 		msg, mock.AnythingOfType("message.Message")).Return(nil)
-	params := popserver.NewHandlerParametersWithOwnerAndServer(mockRepository, ownerKey, serverKeypair)
+	params := popserver.NewHandlerParametersWithOwnerAndServer(mockRepository)
 
 	return input{name: testName,
 		params:   params,

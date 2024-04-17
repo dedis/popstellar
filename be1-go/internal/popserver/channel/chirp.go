@@ -3,6 +3,7 @@ package channel
 import (
 	"encoding/base64"
 	"encoding/json"
+	"popstellar/internal/popserver/singleton/config"
 	"popstellar/internal/popserver/types"
 	"popstellar/message/answer"
 	"popstellar/message/messagedata"
@@ -155,7 +156,13 @@ func copyToGeneral(params types.HandlerParameters, channelID string, msg message
 
 	data64 := base64.URLEncoding.EncodeToString(dataBuf)
 
-	pkBuf, err := params.ServerPubKey.MarshalBinary()
+	serverPublicKey, ok := config.GetServerPublicKeyInstance()
+	if !ok {
+		errAnswer := answer.NewInternalServerError("failed to get config").Wrap("copyToGeneral")
+		return errAnswer
+	}
+
+	pkBuf, err := serverPublicKey.MarshalBinary()
 	if err != nil {
 		errAnswer := answer.NewInternalServerError("failed to unmarshall server public key", err)
 		errAnswer = errAnswer.Wrap("copyToGeneral")

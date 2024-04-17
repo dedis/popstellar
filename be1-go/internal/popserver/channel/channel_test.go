@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/require"
+	"go.dedis.ch/kyber/v3"
 	"go.dedis.ch/kyber/v3/sign/schnorr"
 	"golang.org/x/xerrors"
 	"io"
@@ -14,6 +15,7 @@ import (
 	"popstellar/hub/standard_hub/hub_state"
 	"popstellar/internal/popserver"
 	"popstellar/internal/popserver/repo"
+	"popstellar/internal/popserver/singleton/config"
 	"popstellar/internal/popserver/singleton/state"
 	"popstellar/internal/popserver/singleton/utils"
 	"popstellar/internal/popserver/types"
@@ -27,6 +29,10 @@ import (
 var subs *types.Subscribers
 var queries hub_state.Queries
 var peers hub_state.Peers
+
+var ownerPublicKey kyber.Point
+var serverPublicKey kyber.Point
+var serverSecretKey kyber.Scalar
 
 func TestMain(m *testing.M) {
 	subs = types.NewSubscribers()
@@ -43,6 +49,23 @@ func TestMain(m *testing.M) {
 	}
 
 	utils.InitUtils(&log, schemaValidator)
+	organizerBuf, err := base64.URLEncoding.DecodeString(organizer)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "error: %v\n", err)
+		os.Exit(1)
+	}
+
+	ownerPublicKey = crypto.Suite.Point()
+	err = ownerPublicKey.UnmarshalBinary(organizerBuf)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "error: %v\n", err)
+		os.Exit(1)
+	}
+
+	serverSecretKey = crypto.Suite.Scalar().Pick(crypto.Suite.RandomStream())
+	serverPublicKey = crypto.Suite.Point().Mul(serverSecretKey, nil)
+
+	config.InitConfig(ownerPublicKey, serverPublicKey, serverSecretKey, "clientAddress", "serverAddress")
 
 	exitVal := m.Run()
 

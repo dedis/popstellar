@@ -6,7 +6,6 @@ import (
 	"github.com/stretchr/testify/require"
 	"os"
 	"path/filepath"
-	"popstellar/crypto"
 	"popstellar/internal/popserver"
 	"popstellar/internal/popserver/repo"
 	"popstellar/internal/popserver/types"
@@ -86,8 +85,6 @@ func Test_handleChannelGeneralChirp(t *testing.T) {
 }
 
 func newSuccessTestHandleChannelGeneralChirp(t *testing.T, filename string, name string) inputTestHandleChannelGeneralChirp {
-	secret := crypto.Suite.Scalar().Pick(crypto.Suite.RandomStream())
-	point := crypto.Suite.Point().Mul(secret, nil)
 	laoID := messagedata.Hash(name)
 	var channelID = "/root/" + laoID + "/social/chirps"
 
@@ -95,7 +92,7 @@ func newSuccessTestHandleChannelGeneralChirp(t *testing.T, filename string, name
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
 
-	pubKeyBuf, err := point.MarshalBinary()
+	pubKeyBuf, err := serverPublicKey.MarshalBinary()
 	require.NoError(t, err)
 	sender64 := base64.URLEncoding.EncodeToString(pubKeyBuf)
 
@@ -120,8 +117,6 @@ func newSuccessTestHandleChannelGeneralChirp(t *testing.T, filename string, name
 	}
 
 	params := popserver.NewHandlerParametersWithFakeSocket(mockRepo, sockets[0])
-	params.ServerSecretKey = secret
-	params.ServerPubKey = point
 	subs.AddChannel(channelID)
 
 	for _, s := range sockets {
@@ -141,15 +136,13 @@ func newSuccessTestHandleChannelGeneralChirp(t *testing.T, filename string, name
 
 func newFailTestHandleChannelGeneralChirp(t *testing.T, filename string, name string) inputTestHandleChannelGeneralChirp {
 	laoID := messagedata.Hash(name)
-	secret := crypto.Suite.Scalar().Pick(crypto.Suite.RandomStream())
-	point := crypto.Suite.Point().Mul(secret, nil)
 	var channelID = "/root/" + laoID + "/social/chirps"
 
 	file := filepath.Join(messageDataPath, filename)
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
 
-	pubKeyBuf, err := point.MarshalBinary()
+	pubKeyBuf, err := serverPublicKey.MarshalBinary()
 	require.NoError(t, err)
 	sender64 := base64.URLEncoding.EncodeToString(pubKeyBuf)
 
@@ -166,8 +159,6 @@ func newFailTestHandleChannelGeneralChirp(t *testing.T, filename string, name st
 	mockRepo := repo.NewMockRepository(t)
 
 	params := popserver.NewHandlerParameters(mockRepo)
-	params.ServerSecretKey = secret
-	params.ServerPubKey = point
 	subs.AddChannel(channelID)
 
 	return inputTestHandleChannelGeneralChirp{

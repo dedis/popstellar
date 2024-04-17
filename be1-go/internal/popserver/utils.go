@@ -58,43 +58,23 @@ func (f *FakeSocket) Type() socket.SocketType {
 }
 
 func NewHandlerParameters(db repo.Repository) types.HandlerParameters {
-	secret := crypto.Suite.Scalar().Pick(crypto.Suite.RandomStream())
-	point := crypto.Suite.Point().Mul(secret, nil)
 	return types.HandlerParameters{
-		Socket:              &FakeSocket{Id: "fakeID"},
-		DB:                  db,
-		OwnerPubKey:         nil,
-		ClientServerAddress: "ClientServerAddress",
-		ServerServerAddress: "ServerServerAddress",
-		ServerPubKey:        point,
-		ServerSecretKey:     secret,
+		Socket: &FakeSocket{Id: "fakeID"},
+		DB:     db,
 	}
 }
 
-func NewHandlerParametersWithOwnerAndServer(db repo.Repository, owner kyber.Point, server Keypair) types.HandlerParameters {
+func NewHandlerParametersWithOwnerAndServer(db repo.Repository) types.HandlerParameters {
 	return types.HandlerParameters{
-		Socket:              &FakeSocket{Id: "fakeID"},
-		DB:                  db,
-		OwnerPubKey:         owner,
-		ClientServerAddress: "ClientServerAddress",
-		ServerServerAddress: "ServerServerAddress",
-		ServerPubKey:        server.Public,
-		ServerSecretKey:     server.Private,
+		Socket: &FakeSocket{Id: "fakeID"},
+		DB:     db,
 	}
 }
 
 func NewHandlerParametersWithFakeSocket(db repo.Repository, s *FakeSocket) types.HandlerParameters {
-	secret := crypto.Suite.Scalar().Pick(crypto.Suite.RandomStream())
-	point := crypto.Suite.Point().Mul(secret, nil)
-
 	return types.HandlerParameters{
-		Socket:              s,
-		DB:                  db,
-		OwnerPubKey:         nil,
-		ClientServerAddress: "ClientServerAddress",
-		ServerServerAddress: "ServerServerAddress",
-		ServerPubKey:        point,
-		ServerSecretKey:     secret,
+		Socket: s,
+		DB:     db,
 	}
 
 }
