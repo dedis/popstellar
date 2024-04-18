@@ -26,22 +26,9 @@
             "$comment": "public key of the remote organizer"
         },
         "challenge": {
-            "type": "object",
-            "properties": {
-                "value": {
-                    "type": "string",
-                    "contentEncoding": "hex",
-                    "pattern": "^[0-9a-fA-F]{64}$",
-                    "$comment": "A 32 bytes array encoded in hexadecimal"
-                },
-                "valid_until": {
-                    "type": "integer",
-                    "description": "[Timestamp] of the expiration time",
-                    "minimum": 0
-                }
-            },
-            "additionalProperties": false,
-            "required": ["value", "valid_until"]
+            "type": "string",
+            "contentEncoding": "base64",
+            "$comment": "message/message containing a FederationChallenge data"
         }
     },
     "additionalProperties": false,

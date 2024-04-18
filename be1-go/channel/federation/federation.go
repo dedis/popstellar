@@ -1,12 +1,12 @@
 package federation
 
 import (
+	"crypto/rand"
 	"encoding/base64"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"github.com/rs/zerolog"
-	"golang.org/x/exp/rand"
 	"golang.org/x/xerrors"
 	"popstellar/channel"
 	"popstellar/channel/registry"
@@ -209,6 +209,17 @@ func (c *Channel) processFederationInit(msg message.Message,
 
 	// send the challenge to the other server
 	remoteChannel := fmt.Sprintf("/root/%s/federation", federationInit.LaoId)
+	challengeMsgBase64, err := base64.URLEncoding.DecodeString(federationInit.ChallengeMsg)
+	if err != nil {
+		return xerrors.Errorf("failed to decode challenge base64: %v", err)
+	}
+
+	var challengeMsg message.Message
+	err = challengeMsg.UnmarshalData(&challengeMsgBase64)
+	if err != nil {
+		return xerrors.Errorf("failed to unmarshal  message: %v", err)
+	}
+
 	challengePublish := method.Publish{
 		Base: query.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
@@ -222,7 +233,7 @@ func (c *Channel) processFederationInit(msg message.Message,
 			Message message.Message `json:"message"`
 		}{
 			Channel: remoteChannel,
-			Message: federationInit.ChallengeMsg,
+			Message: challengeMsg,
 		},
 	}
 
@@ -352,8 +363,63 @@ func (c *Channel) processChallengeRequest(msg message.Message,
 	}
 	c.state = None
 
+	federationChallenge := messagedata.FederationChallenge{
+		Object:    "federation",
+		Action:    "challenge",
+		Value:     c.challenge.Value,
+		Timestamp: c.challenge.ValidUntil,
+	}
+
+	challengeData, err := json.Marshal(federationChallenge)
+	if err != nil {
+		return xerrors.Errorf(
+			"failed to marshal federationChallenge data: %v", err)
+	}
+	data := base64.URLEncoding.EncodeToString(challengeData)
+
+	senderBytes, err := c.hub.GetPubKeyServ().MarshalBinary()
+	if err != nil {
+		return xerrors.Errorf("failed to marshal server public key: %v", err)
+	}
+	sender := base64.URLEncoding.EncodeToString(senderBytes)
+
+	signatureBytes, err := c.hub.Sign(challengeData)
+	if err != nil {
+		return xerrors.Errorf("failed to sign message: %v", err)
+	}
+	signature := base64.URLEncoding.EncodeToString(signatureBytes)
+
+	challengeMsg := message.Message{
+		Data:              data,
+		Sender:            sender,
+		Signature:         signature,
+		MessageID:         messagedata.Hash(data, signature),
+		WitnessSignatures: []message.WitnessSignature{},
+	}
+
+	rpcMessage := method.Broadcast{
+		Base: query.Base{
+			JSONRPCBase: jsonrpc.JSONRPCBase{
+				JSONRPC: "2.0",
+			},
+			Method: "broadcast",
+		},
+		Params: struct {
+			Channel string          `json:"channel"`
+			Message message.Message `json:"message"`
+		}{
+			c.channelID,
+			challengeMsg,
+		},
+	}
+
+	buf, err := json.Marshal(&rpcMessage)
+	if err != nil {
+		return xerrors.Errorf("failed to marshal broadcast query: %v", err)
+	}
+
 	// send back the challenge directly to the organizer only
-	s.Send(nil) //challengeMsg)
+	s.Send(buf)
 
 	return nil
 }

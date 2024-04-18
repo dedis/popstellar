@@ -300,6 +300,10 @@ func (h *fakeHub) SendAndHandleMessage(_ method.Broadcast) error {
 	return nil
 }
 
+func (h *fakeHub) ConnectToServerAsClient(serverAddress string) (*socket.ClientSocket, error) {
+	return nil, nil
+}
+
 var upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
