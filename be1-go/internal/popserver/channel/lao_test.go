@@ -12,7 +12,7 @@ import (
 	"testing"
 )
 
-const laoTestDataPath = "../test_data/lao/"
+const laoTestDataPath = "./test_data/lao/"
 const sender = "HynYISQNI6XqvQNVzA8IzinV8ToiXyKRFsgR2zpP7j8="
 
 func Test_handleChannelLao_LaoState(t *testing.T) {

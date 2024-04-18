@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	rootPath = "../test_data/root/"
+	rootPath = "./test_data/root/"
 	//the public key used in every lao_create json files in the test_data/root folder
 	organizer = "3yPmdBu8DM7jT30IKqkPjuFFIHnubO0z4E0dV7dR4sY="
 	// A public key different from the organizer public key
