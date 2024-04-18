@@ -86,7 +86,7 @@ func HandleChannel(socket socket.Socket, channelID string, msg message.Message) 
 	case channelGeneralChirp:
 		errAnswer = handleChannelGeneralChirp(channelID, msg)
 	case channelChirp:
-		errAnswer = handleChannelChirp(socket, channelID, msg)
+		errAnswer = handleChannelChirp(channelID, msg)
 	case channelReaction:
 		errAnswer = handleChannelReaction(channelID, msg)
 	case channelConsensus:

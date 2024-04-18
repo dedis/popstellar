@@ -8,11 +8,10 @@ import (
 	"popstellar/message/answer"
 	"popstellar/message/messagedata"
 	"popstellar/message/query/method/message"
-	"popstellar/network/socket"
 	"strings"
 )
 
-func handleChannelChirp(socket socket.Socket, channelID string, msg message.Message) *answer.Error {
+func handleChannelChirp(channelID string, msg message.Message) *answer.Error {
 	object, action, errAnswer := verifyDataAndGetObjectAction(msg)
 	if errAnswer != nil {
 		errAnswer = errAnswer.Wrap("handleChannelChirp")
@@ -45,7 +44,7 @@ func handleChannelChirp(socket socket.Socket, channelID string, msg message.Mess
 		return errAnswer
 	}
 
-	errAnswer = copyToGeneral(socket, channelID, msg)
+	errAnswer = copyToGeneral(channelID, msg)
 	if errAnswer != nil {
 		errAnswer = errAnswer.Wrap("handleChannelGeneralChirp")
 		return errAnswer
@@ -129,7 +128,7 @@ func verifyChirpMessage(channelID string, msg message.Message, chirpMsg messaged
 	return nil
 }
 
-func copyToGeneral(socket socket.Socket, channelID string, msg message.Message) *answer.Error {
+func copyToGeneral(channelID string, msg message.Message) *answer.Error {
 	jsonData, err := base64.URLEncoding.DecodeString(msg.Data)
 	if err != nil {
 		errAnswer := answer.NewInvalidMessageFieldError("failed to decode the data: %v", err)
@@ -203,7 +202,7 @@ func copyToGeneral(socket socket.Socket, channelID string, msg message.Message) 
 	splitChannelID := strings.Split(channelID, "/")
 	generalChirpsChannelID := "/root" + splitChannelID[1] + "/social/chirps"
 
-	errAnswer = HandleChannel(socket, generalChirpsChannelID, newMsg)
+	errAnswer = HandleChannel(nil, generalChirpsChannelID, newMsg)
 	if errAnswer != nil {
 		errAnswer = errAnswer.Wrap("copyToGeneral")
 		return errAnswer
