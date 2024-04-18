@@ -2,8 +2,9 @@ package method
 
 import "popstellar/message/query"
 
-// FederationInit defines a JSON RPC federationInit message
-type FederationInit struct {
+
+// FederationExpect defines a JSON RPC federationExpect message
+type FederationExpect struct {
 	query.Base
 
 	Params struct {
