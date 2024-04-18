@@ -10,6 +10,6 @@ type FederationInit struct {
 		LaoID         string              `json:"lao_id"`
 		ServerAddress string              `json:"server_address"`
 		PublicKey     string              `json:"public_key"`
-		challenge     FederationChallenge `json:"challenge"`
+		Challenge     FederationChallenge `json:"challenge"`
 	} `json:"params"`
 }
