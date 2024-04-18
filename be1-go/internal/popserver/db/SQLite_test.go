@@ -1,9 +1,14 @@
 package db
 
 import (
+	"bufio"
+	"encoding/base64"
+	"fmt"
 	"github.com/stretchr/testify/require"
 	"os"
 	"path/filepath"
+	"popstellar/crypto"
+	"popstellar/message/messagedata"
 	"popstellar/message/query/method/message"
 	"testing"
 )
@@ -151,10 +156,10 @@ func Test_SQLite_AddWitnessSignature(t *testing.T) {
 }
 
 //======================================================================================================================
-// HandleQueryRepository interface implementation tests
+// QueryRepository interface implementation tests
 //======================================================================================================================
 
-func Test_GetAllMessagesFromChannel(t *testing.T) {
+func Test_SQLite_GetAllMessagesFromChannel(t *testing.T) {
 	lite, dir, err := newFakeSQLite(t)
 	require.NoError(t, err)
 	defer lite.Close()
@@ -172,7 +177,7 @@ func Test_GetAllMessagesFromChannel(t *testing.T) {
 	require.Equal(t, expected, messages)
 }
 
-func Test_GetChannelType(t *testing.T) {
+func Test_SQLite_GetChannelType(t *testing.T) {
 	lite, dir, err := newFakeSQLite(t)
 	require.NoError(t, err)
 	defer lite.Close()
@@ -239,10 +244,10 @@ func Test_SQLite_GetParamsForGetMessageByID(t *testing.T) {
 }
 
 //======================================================================================================================
-// HandleChannelRepository interface implementation tests
+// ChannelRepository interface implementation tests
 //======================================================================================================================
 
-func TestSQLite_HasChannel(t *testing.T) {
+func Test_SQLite_HasChannel(t *testing.T) {
 	lite, dir, err := newFakeSQLite(t)
 	require.NoError(t, err)
 	defer lite.Close()
@@ -289,5 +294,122 @@ func TestSQLite_HasMessage(t *testing.T) {
 }
 
 //======================================================================================================================
-// HandleRootRepository interface implementation tests
+// RootRepository interface implementation tests
 //======================================================================================================================
+
+func Test_SQLite_StoreChannelsAndMessageWithLaoGreet(t *testing.T) {
+	lite, dir, err := newFakeSQLite(t)
+	require.NoError(t, err)
+	defer lite.Close()
+	defer os.RemoveAll(dir)
+
+	channels := map[string]string{
+		"channel1": "chirp",
+		"channel2": "coin",
+		"channel3": "auth",
+		"channel4": "consensus",
+		"channel5": "reaction"}
+	laoID := "laoID"
+	laoGreetMsg := message.Message{Data: "laoGreet",
+		Sender:            "sender1",
+		Signature:         "sig1",
+		MessageID:         "ID1",
+		WitnessSignatures: []message.WitnessSignature{}}
+
+	laoCreateMSg := message.Message{Data: "laoCreate",
+		Sender:            "sender2",
+		Signature:         "sig2",
+		MessageID:         "ID2",
+		WitnessSignatures: []message.WitnessSignature{}}
+
+	secret := crypto.Suite.Scalar().Pick(crypto.Suite.RandomStream())
+	point := crypto.Suite.Point().Mul(secret, nil)
+	organizerPubKey := point
+	organizerPubBuf, err := organizerPubKey.MarshalBinary()
+	require.NoError(t, err)
+
+	err = lite.StoreChannelsAndMessageWithLaoGreet(channels, laoID, organizerPubBuf, laoCreateMSg, laoGreetMsg)
+	require.NoError(t, err)
+
+	expected := []message.Message{laoGreetMsg, laoCreateMSg}
+	messages, err := lite.GetAllMessagesFromChannel(laoID)
+	require.NoError(t, err)
+	require.Equal(t, expected, messages)
+
+	expected = []message.Message{laoCreateMSg}
+	messages, err = lite.GetAllMessagesFromChannel("/root")
+	require.NoError(t, err)
+	require.Equal(t, expected, messages)
+
+	for channel, expectedType := range channels {
+		ok, err := lite.HasChannel(channel)
+		require.NoError(t, err)
+		require.True(t, ok)
+		channelType, err := lite.GetChannelType(channel)
+		require.NoError(t, err)
+		require.Equal(t, expectedType, channelType)
+	}
+
+	returnedKey, err := lite.GetOrganizerPubKey(laoID)
+	require.NoError(t, err)
+	organizerPubKey.Equal(returnedKey)
+	require.True(t, organizerPubKey.Equal(returnedKey))
+}
+
+//======================================================================================================================
+// LaoRepository interface implementation tests
+//======================================================================================================================
+
+func Test_SQLite_GetRollCallState(t *testing.T) {
+	lite, dir, err := newFakeSQLite(t)
+	require.NoError(t, err)
+	defer lite.Close()
+	defer os.RemoveAll(dir)
+
+	lines := load_jsonl(t, "rollCall_state_scenario.jsonl")
+	states := []string{"create", "open", "close"}
+
+	actions := []string{
+		messagedata.RollCallActionCreate,
+		messagedata.RollCallActionOpen,
+		messagedata.RollCallActionClose,
+	}
+	for i, line := range lines {
+		msg := message.Message{
+			Data:              base64.URLEncoding.EncodeToString(line),
+			Sender:            "sender" + fmt.Sprint(i),
+			Signature:         "sig" + fmt.Sprint(i),
+			MessageID:         "ID" + fmt.Sprint(i),
+			WitnessSignatures: []message.WitnessSignature{},
+		}
+		err = lite.StoreMessageWithObjectAction("channel1", actions[i],
+			messagedata.RollCallObject, msg)
+		require.NoError(t, err)
+		state, err := lite.GetRollCallState("channel1")
+		require.NoError(t, err)
+		require.Equal(t, states[i], state)
+	}
+
+	expected := "close"
+	state, err := lite.GetRollCallState("channel1")
+	require.NoError(t, err)
+	require.Equal(t, expected, state)
+
+}
+
+func load_jsonl(t *testing.T, fileName string) [][]byte {
+	file := filepath.Join("../test_data/SQLite/", fileName)
+	f, err := os.Open(file)
+	require.NoError(t, err)
+	defer f.Close()
+
+	scanner := bufio.NewScanner(f)
+	var lines [][]byte
+	for scanner.Scan() {
+		lines = append(lines, scanner.Bytes())
+
+	}
+
+	require.NoError(t, scanner.Err())
+	return lines
+}

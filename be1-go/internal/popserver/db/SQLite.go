@@ -584,8 +584,18 @@ func (s *SQLite) StoreChannelsAndMessageWithLaoGreet(
 	if err != nil {
 		return err
 	}
+
+	msgByte, err := json.Marshal(msg)
+	if err != nil {
+		return err
+	}
+	laoGreetMsgByte, err := json.Marshal(laoGreetMsg)
+	if err != nil {
+		return err
+	}
+
 	storedTime := time.Now().UnixNano()
-	_, err = tx.Exec("INSERT INTO INBOX (messageID, message, storedTime) VALUES (?, ?, ?)", msg.MessageID, msg, storedTime)
+	_, err = tx.Exec("INSERT INTO INBOX (messageID, message, storedTime) VALUES (?, ?, ?)", msg.MessageID, msgByte, storedTime)
 	if err != nil {
 		return err
 	}
@@ -597,12 +607,12 @@ func (s *SQLite) StoreChannelsAndMessageWithLaoGreet(
 	if err != nil {
 		return err
 	}
-	_, err = tx.Exec("INSERT INTO channelMessage (channelID, messageID, isBaseChannel) VALUES (?, ?)", laoID, msg.MessageID, false)
+	_, err = tx.Exec("INSERT INTO channelMessage (channelID, messageID, isBaseChannel) VALUES (?, ?, ?)", laoID, msg.MessageID, false)
 	if err != nil {
 		return err
 	}
 	for channel, channelType := range channels {
-		_, err = tx.Exec("INSERT INTO channel (channelID, typeID, laoID) VALUES (?, ?, ?)", channel, channelType, laoID)
+		_, err = tx.Exec("INSERT INTO channel (channelID, typeID, laoID) VALUES (?, ?, ?)", channel, channelTypeNameToID[channelType], laoID)
 		if err != nil {
 			return err
 		}
@@ -611,11 +621,11 @@ func (s *SQLite) StoreChannelsAndMessageWithLaoGreet(
 	if err != nil {
 		return err
 	}
-	_, err = tx.Exec("INSERT INTO INBOX (messageID, message, storedTime) VALUES (?, ?, ?)", laoGreetMsg.MessageID, laoGreetMsg, storedTime)
+	_, err = tx.Exec("INSERT INTO INBOX (messageID, message, storedTime) VALUES (?, ?, ?)", laoGreetMsg.MessageID, laoGreetMsgByte, storedTime)
 	if err != nil {
 		return err
 	}
-	_, err = tx.Exec("INSERT INTO channelMessage (channelID, messageID) VALUES (?, ?)", laoID, laoGreetMsg.MessageID)
+	_, err = tx.Exec("INSERT INTO channelMessage (channelID, messageID, isBaseChannel) VALUES (?, ?, ?)", laoID, laoGreetMsg.MessageID, true)
 	if err != nil {
 		return err
 	}
@@ -633,35 +643,6 @@ func (s *SQLite) StoreChannelsAndMessageWithLaoGreet(
 // LaoRepository interface implementation
 //======================================================================================================================
 
-// GetLaoWitnesses returns the witnesses of the LAO.
-func (s *SQLite) GetLaoWitnesses(laoID string) (map[string]struct{}, error) {
-	tx, err := s.database.Begin()
-	if err != nil {
-		return nil, err
-	}
-	defer tx.Rollback()
-
-	rows, err := tx.Query("SELECT token FROM tokenLao WHERE laoID = ? AND "+
-		"creationTime = SELECT MAX(storedTime) FROM tokenLao WHERE laoID = ?", laoID, laoID)
-	if err != nil {
-		return nil, err
-	}
-
-	witnesses := make(map[string]struct{})
-	for rows.Next() {
-		var token string
-		if err = rows.Scan(&token); err != nil {
-			return nil, err
-		}
-		witnesses[token] = struct{}{}
-	}
-
-	if err = rows.Err(); err != nil {
-		return nil, err
-	}
-	return witnesses, nil
-}
-
 func (s *SQLite) GetOrganizerPubKey(laoID string) (kyber.Point, error) {
 	var organizerPubBuf []byte
 	err := s.database.QueryRow("SELECT publicKey FROM key WHERE channelID = ?", laoID).Scan(&organizerPubBuf)
@@ -676,9 +657,11 @@ func (s *SQLite) GetOrganizerPubKey(laoID string) (kyber.Point, error) {
 func (s *SQLite) GetRollCallState(channel string) (string, error) {
 	var state string
 	err := s.database.QueryRow("SELECT action FROM inbox"+
-		" JOIN channelMessage ON inbox.messageID = channelMessage.messageID WHERE channelID = ?)"+
-		" WHERE storedTime= SELECT MAX(storedTime) FROM inbox WHERE object= ?",
-		channel, messagedata.RollCallObject).Scan(&state)
+		" JOIN channelMessage ON inbox.messageID = channelMessage.messageID"+
+		" WHERE channelID = ?"+
+		" AND storedTime = (SELECT MAX(storedTime) "+
+		"FROM inbox JOIN channelMessage ON inbox.messageID = channelMessage.messageID WHERE object= ? AND channelID = ?)",
+		channel, messagedata.RollCallObject, channel).Scan(&state)
 	if err != nil {
 		return "", err
 	}
