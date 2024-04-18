@@ -46,7 +46,6 @@ type QueryRepository interface {
 // ======================= Answer ==========================
 
 type AnswerRepository interface {
-	StorePendingMessages(msgs map[string]map[string]message.Message) error
 }
 
 // ======================= Channel ==========================

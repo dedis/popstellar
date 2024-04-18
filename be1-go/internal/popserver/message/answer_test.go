@@ -4,66 +4,16 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/require"
 	"go.dedis.ch/kyber/v3/sign/schnorr"
-	"golang.org/x/xerrors"
-	"io"
 	"popstellar/crypto"
 	"popstellar/internal/popserver"
 	"popstellar/internal/popserver/singleton/database"
-	"popstellar/message/answer"
 	"popstellar/message/messagedata"
 	"popstellar/message/query/method/message"
 	"testing"
 	"time"
 )
-
-func Test_handleGetMessagesByIDAnswer(t *testing.T) {
-	mockRepository, err := database.SetDatabase(t)
-	require.NoError(t, err)
-
-	type input struct {
-		name        string
-		message     answer.Answer
-		isErrorTest bool
-	}
-
-	inputs := make([]input, 0)
-
-	// failed to query DB
-
-	id := 1
-
-	result := make(map[string][]json.RawMessage)
-	msgsByChannel := make(map[string]map[string]message.Message)
-
-	msg := answer.Answer{
-		ID: &id,
-		Result: &answer.Result{
-			MessagesByChannel: result,
-		},
-	}
-
-	mockRepository.On("StorePendingMessages", msgsByChannel).Return(xerrors.Errorf("DB disconnected"))
-
-	inputs = append(inputs, input{
-		name:        "failed to query DB",
-		message:     msg,
-		isErrorTest: true,
-	})
-
-	for _, i := range inputs {
-		t.Run(i.name, func(t *testing.T) {
-			fakeSocket := popserver.FakeSocket{Id: "fakesocket"}
-			errAnswer := handleGetMessagesByIDAnswer(&fakeSocket, i.message)
-			if i.isErrorTest {
-				require.Error(t, errAnswer)
-			}
-		})
-	}
-
-}
 
 func Test_handleMessagesByChannel(t *testing.T) {
 	mockRepository, err := database.SetDatabase(t)
@@ -145,9 +95,8 @@ func Test_handleMessagesByChannel(t *testing.T) {
 
 	for _, i := range inputs {
 		t.Run(i.name, func(t *testing.T) {
-			log := zerolog.New(io.Discard)
 			fakeSocket := popserver.FakeSocket{Id: "fakesocket"}
-			handleMessagesByChannel(&fakeSocket, i.messages, &log)
+			handleMessagesByChannel(&fakeSocket, i.messages)
 
 			for k0, v0 := range i.expected {
 				for k1 := range v0 {

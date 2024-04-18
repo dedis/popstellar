@@ -16,34 +16,6 @@ type MockRepository struct {
 	mock.Mock
 }
 
-// ChannelExists provides a mock function with given fields: laoChannelPath
-func (_m *MockRepository) ChannelExists(laoChannelPath string) (bool, error) {
-	ret := _m.Called(laoChannelPath)
-
-	if len(ret) == 0 {
-		panic("no return value specified for ChannelExists")
-	}
-
-	var r0 bool
-	var r1 error
-	if rf, ok := ret.Get(0).(func(string) (bool, error)); ok {
-		return rf(laoChannelPath)
-	}
-	if rf, ok := ret.Get(0).(func(string) bool); ok {
-		r0 = rf(laoChannelPath)
-	} else {
-		r0 = ret.Get(0).(bool)
-	}
-
-	if rf, ok := ret.Get(1).(func(string) error); ok {
-		r1 = rf(laoChannelPath)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
-}
-
 // CheckPrevID provides a mock function with given fields: channel, nextID
 func (_m *MockRepository) CheckPrevID(channel string, nextID string) (bool, error) {
 	ret := _m.Called(channel, nextID)
@@ -209,36 +181,6 @@ func (_m *MockRepository) GetElectionType(electionID string) (string, error) {
 
 	if rf, ok := ret.Get(1).(func(string) error); ok {
 		r1 = rf(electionID)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
-}
-
-// GetIDsTable provides a mock function with given fields:
-func (_m *MockRepository) GetIDsTable() (map[string][]string, error) {
-	ret := _m.Called()
-
-	if len(ret) == 0 {
-		panic("no return value specified for GetIDsTable")
-	}
-
-	var r0 map[string][]string
-	var r1 error
-	if rf, ok := ret.Get(0).(func() (map[string][]string, error)); ok {
-		return rf()
-	}
-	if rf, ok := ret.Get(0).(func() map[string][]string); ok {
-		r0 = rf()
-	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(map[string][]string)
-		}
-	}
-
-	if rf, ok := ret.Get(1).(func() error); ok {
-		r1 = rf()
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -508,9 +450,9 @@ func (_m *MockRepository) GetRollCallState(channel string) (string, error) {
 	return r0, r1
 }
 
-// HasChannel provides a mock function with given fields: laoChannelPath
-func (_m *MockRepository) HasChannel(laoChannelPath string) (bool, error) {
-	ret := _m.Called(laoChannelPath)
+// HasChannel provides a mock function with given fields: channel
+func (_m *MockRepository) HasChannel(channel string) (bool, error) {
+	ret := _m.Called(channel)
 
 	if len(ret) == 0 {
 		panic("no return value specified for HasChannel")
@@ -519,16 +461,16 @@ func (_m *MockRepository) HasChannel(laoChannelPath string) (bool, error) {
 	var r0 bool
 	var r1 error
 	if rf, ok := ret.Get(0).(func(string) (bool, error)); ok {
-		return rf(laoChannelPath)
+		return rf(channel)
 	}
 	if rf, ok := ret.Get(0).(func(string) bool); ok {
-		r0 = rf(laoChannelPath)
+		r0 = rf(channel)
 	} else {
 		r0 = ret.Get(0).(bool)
 	}
 
 	if rf, ok := ret.Get(1).(func(string) error); ok {
-		r1 = rf(laoChannelPath)
+		r1 = rf(channel)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -666,24 +608,6 @@ func (_m *MockRepository) StoreCastVote(electionID string, msg message.Message, 
 	return r0
 }
 
-// StoreChannel provides a mock function with given fields: channel
-func (_m *MockRepository) StoreChannel(channel string) error {
-	ret := _m.Called(channel)
-
-	if len(ret) == 0 {
-		panic("no return value specified for StoreChannel")
-	}
-
-	var r0 error
-	if rf, ok := ret.Get(0).(func(string) error); ok {
-		r0 = rf(channel)
-	} else {
-		r0 = ret.Error(0)
-	}
-
-	return r0
-}
-
 // StoreChannelsAndMessage provides a mock function with given fields: channels, laoID, msg
 func (_m *MockRepository) StoreChannelsAndMessage(channels []string, laoID string, msg message.Message) error {
 	ret := _m.Called(channels, laoID, msg)
@@ -767,24 +691,6 @@ func (_m *MockRepository) StoreMessageWithObjectAction(channelID string, object 
 	var r0 error
 	if rf, ok := ret.Get(0).(func(string, string, string, message.Message) error); ok {
 		r0 = rf(channelID, object, action, msg)
-	} else {
-		r0 = ret.Error(0)
-	}
-
-	return r0
-}
-
-// StorePendingMessages provides a mock function with given fields: msgs
-func (_m *MockRepository) StorePendingMessages(msgs map[string]map[string]message.Message) error {
-	ret := _m.Called(msgs)
-
-	if len(ret) == 0 {
-		panic("no return value specified for StorePendingMessages")
-	}
-
-	var r0 error
-	if rf, ok := ret.Get(0).(func(map[string]map[string]message.Message) error); ok {
-		r0 = rf(msgs)
 	} else {
 		r0 = ret.Error(0)
 	}

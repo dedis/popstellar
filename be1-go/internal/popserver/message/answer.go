@@ -2,9 +2,7 @@ package message
 
 import (
 	"encoding/json"
-	"github.com/rs/zerolog"
 	"popstellar/internal/popserver/channel"
-	"popstellar/internal/popserver/singleton/database"
 	"popstellar/internal/popserver/singleton/utils"
 	"popstellar/message/answer"
 	"popstellar/message/query/method/message"
@@ -45,24 +43,17 @@ func handleGetMessagesByIDAnswer(socket socket.Socket, msg answer.Answer) *answe
 	}
 
 	// Handle every message and discard them if handled without error
-	handleMessagesByChannel(socket, msgsByChan, log)
-
-	db, ok := database.GetAnswerRepositoryInstance()
-	if !ok {
-		errAnswer := answer.NewInternalServerError("failed to get database").Wrap("handleGetMessagesByIDAnswer")
-		return errAnswer
-	}
-
-	err := db.StorePendingMessages(msgsByChan)
-	if err != nil {
-		errAnswer := answer.NewInternalServerError("failed to query DB: ", err).Wrap("handleGetMessagesByIDAnswer")
-		return errAnswer
-	}
+	handleMessagesByChannel(socket, msgsByChan)
 
 	return nil
 }
 
-func handleMessagesByChannel(socket socket.Socket, msgsByChannel map[string]map[string]message.Message, log *zerolog.Logger) {
+func handleMessagesByChannel(socket socket.Socket, msgsByChannel map[string]map[string]message.Message) {
+	log, ok := utils.GetLogInstance()
+	if !ok {
+		return
+	}
+
 	// Handle every messages
 	for i := 0; i < maxRetry; i++ {
 		// Sort by channelID length
