@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"os"
 	"path/filepath"
-	"popstellar/internal/popserver/singleton/database"
+	database2 "popstellar/internal/popserver/database"
 	"popstellar/message/messagedata"
 	"popstellar/message/query/method/message"
 	"testing"
@@ -32,7 +32,7 @@ type input struct {
 func Test_handleChannelRoot(t *testing.T) {
 	var args []input
 
-	mockRepo, err := database.SetDatabase(t)
+	mockRepo, err := database2.SetDatabase(t)
 	require.NoError(t, err)
 
 	// Test 1: error when different sender and owner keys
@@ -95,7 +95,7 @@ func Test_handleChannelRoot(t *testing.T) {
 	}
 }
 
-func newInputError(t *testing.T, fileName, sender string, testName, contains string, mockRepository *database.MockRepository) input {
+func newInputError(t *testing.T, fileName, sender string, testName, contains string, mockRepository *database2.MockRepository) input {
 
 	var buf []byte
 	var err error
@@ -143,7 +143,7 @@ func newInputError(t *testing.T, fileName, sender string, testName, contains str
 		contains: contains}
 }
 
-func newInputSuccess(t *testing.T, fileName, sender string, testName, contains string, mockRepository *database.MockRepository) input {
+func newInputSuccess(t *testing.T, fileName, sender string, testName, contains string, mockRepository *database2.MockRepository) input {
 	file := filepath.Join(rootPath, fileName)
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)

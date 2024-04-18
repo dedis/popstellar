@@ -7,7 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	"popstellar/internal/popserver"
-	"popstellar/internal/popserver/singleton/database"
+	database2 "popstellar/internal/popserver/database"
 	"popstellar/message/messagedata"
 	"popstellar/message/query/method"
 	"popstellar/message/query/method/message"
@@ -25,7 +25,7 @@ type inputTestHandleChannelCoin struct {
 }
 
 func Test_handleChannelCoin(t *testing.T) {
-	mockRepo, err := database.SetDatabase(t)
+	mockRepo, err := database2.SetDatabase(t)
 	require.NoError(t, err)
 
 	inputs := make([]inputTestHandleChannelCoin, 0)
@@ -107,7 +107,7 @@ func Test_handleChannelCoin(t *testing.T) {
 
 }
 
-func newSuccessTestHandleChannelCoin(t *testing.T, filename string, name string, mockRepo *database.MockRepository) inputTestHandleChannelCoin {
+func newSuccessTestHandleChannelCoin(t *testing.T, filename string, name string, mockRepo *database2.MockRepository) inputTestHandleChannelCoin {
 	laoID := messagedata.Hash(name)
 	var sender = "M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU="
 	var channelID = "/root/" + laoID + "/coin"

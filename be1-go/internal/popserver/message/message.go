@@ -2,8 +2,8 @@ package message
 
 import (
 	"encoding/json"
-	"popstellar/internal/popserver/singleton/state"
-	"popstellar/internal/popserver/singleton/utils"
+	"popstellar/internal/popserver/state"
+	"popstellar/internal/popserver/utils"
 	jsonrpc "popstellar/message"
 	"popstellar/message/answer"
 	"popstellar/message/query"

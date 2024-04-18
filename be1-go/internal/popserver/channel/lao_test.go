@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"os"
 	"path/filepath"
-	"popstellar/internal/popserver/singleton/database"
+	"popstellar/internal/popserver/database"
 	"popstellar/message/messagedata"
 	"popstellar/message/query/method/message"
 	"testing"

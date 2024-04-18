@@ -1,7 +1,7 @@
 package channel
 
 import (
-	"popstellar/internal/popserver/singleton/database"
+	"popstellar/internal/popserver/database"
 	"popstellar/message/answer"
 	"popstellar/message/messagedata"
 	"popstellar/message/query/method/message"

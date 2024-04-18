@@ -8,7 +8,7 @@ import (
 	"go.dedis.ch/kyber/v3/sign/schnorr"
 	"popstellar/crypto"
 	"popstellar/internal/popserver"
-	"popstellar/internal/popserver/singleton/database"
+	"popstellar/internal/popserver/database"
 	"popstellar/message/messagedata"
 	"popstellar/message/query/method/message"
 	"testing"

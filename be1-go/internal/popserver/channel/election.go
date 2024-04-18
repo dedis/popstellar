@@ -3,8 +3,8 @@ package channel
 import (
 	"encoding/base64"
 	"popstellar/crypto"
-	"popstellar/internal/popserver/singleton/config"
-	"popstellar/internal/popserver/singleton/database"
+	"popstellar/internal/popserver/config"
+	"popstellar/internal/popserver/database"
 	"popstellar/message/answer"
 	"popstellar/message/messagedata"
 	"popstellar/message/query/method/message"

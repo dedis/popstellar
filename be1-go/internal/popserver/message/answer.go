@@ -3,7 +3,7 @@ package message
 import (
 	"encoding/json"
 	"popstellar/internal/popserver/channel"
-	"popstellar/internal/popserver/singleton/utils"
+	"popstellar/internal/popserver/utils"
 	"popstellar/message/answer"
 	"popstellar/message/query/method/message"
 	"popstellar/network/socket"
