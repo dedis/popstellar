@@ -1,5 +1,6 @@
 package ch.epfl.pop.json
 
+import ch.epfl.pop.IOHelper
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.{GreetServer, ParamsWithChannel, ParamsWithMap, ParamsWithMessage, Rumor}
 import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse, MethodType, ResultObject}
@@ -248,8 +249,8 @@ class HighLevelProtocolSuite extends FunSuite with Matchers {
     val data: String = "eyJjcmVhdGlvbiI6MTYzMTg4NzQ5NiwiaWQiOiJ4aWdzV0ZlUG1veGxkd2txMUt1b0wzT1ZhODl4amdYalRPZEJnSldjR1drPSIsIm5hbWUiOiJoZ2dnZ2dnIiwib3JnYW5pemVyIjoidG9fa2xaTHRpSFY0NDZGdjk4T0xOZE5taS1FUDVPYVR0YkJrb3RUWUxpYz0iLCJ3aXRuZXNzZXMiOltdLCJvYmplY3QiOiJsYW8iLCJhY3Rpb24iOiJjcmVhdGUifQ=="
     val message: Message = buildExpected(id, sender, signature, data)
 
-    val messages: Map[Channel, Array[Message]] = HashMap(
-      chan -> Array(message)
+    val messages: Map[Channel, List[Message]] = HashMap(
+      chan -> List(message)
     )
 
     val rpcId: Option[Int] = Some(1)
@@ -266,6 +267,24 @@ class HighLevelProtocolSuite extends FunSuite with Matchers {
     rumorFromJson.getParams.asInstanceOf[Rumor].messages.values.zip(messages.values).foreach((arrMsg1, arrMsg2) => arrMsg1 should equal(arrMsg2))
     rumorFromJson.id should equal(rpcId)
 
+  }
+
+  test("parse jsonRPC correctly to rumor") {
+    val jsonRumor = IOHelper.readJsonFromPath("src/test/scala/util/examples/json/rumor/rumor.json")
+    val jsonRpcRequest: JsonRpcRequest = JsonRpcRequest.buildFromJson(jsonRumor)
+    val rumor: Rumor = jsonRpcRequest.getParams.asInstanceOf[Rumor]
+
+    rumor.rumorId should equal(1)
+    rumor.senderPk should equal(PublicKey(Base64Data("J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=")))
+    rumor.messages.keys.size should equal(2)
+    rumor.messages.values.foreach { x =>
+      x.length should not be 0
+    }
+  }
+
+  test("parse rumor jsonRPC fails on missing messages ") {
+    val jsonRumor = IOHelper.readJsonFromPath("src/test/scala/util/examples/json/rumor/wrong_rumor_missing_messages.json")
+    an[IllegalArgumentException] should be thrownBy JsonRpcRequest.buildFromJson(jsonRumor)
   }
 
   test("parse correctly get_messages_by_id answers") {

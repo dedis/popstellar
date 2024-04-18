@@ -11,7 +11,7 @@ Feature: Constants
     * def ELECTION_RESULTS =        {"object": "election", "action": "result"}
 
     * def rootChannel = '/root'
-    * def random = Java.type('be.utils.RandomUtils')
+    * def random = Java.type('common.utils.RandomUtils')
 
     # Paths to util features
     * def utilsPath = 'classpath:be/features/utils/'

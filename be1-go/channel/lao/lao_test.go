@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"go.dedis.ch/kyber/v3/sign/schnorr"
 	"io"
 	"os"
 	"path/filepath"
@@ -16,6 +17,7 @@ import (
 	"popstellar/message/query/method/message"
 	"popstellar/network/socket"
 	"popstellar/validation"
+	"strconv"
 	"sync"
 	"testing"
 	"time"
@@ -488,6 +490,82 @@ func TestBaseChannel_SimulateRollCall(t *testing.T) {
 	require.NoError(t, channel.Publish(messageClosePub, nil))
 }
 
+func TestLAOChannel_Rollcall_Creation_Not_Organizer(t *testing.T) {
+	keypair := generateKeyPair(t)
+
+	fakeHub, err := NewFakeHub("", keypair.public, nolog, nil)
+	require.NoError(t, err)
+
+	m := message.Message{MessageID: "0"}
+	channel, err := NewChannel(sampleLao, fakeHub, m, nolog, keypair.public, nil)
+	require.NoError(t, err)
+
+	// Publish a rollcall create message with a different key than the
+	// organizer, an error is expected
+	err = channel.Publish(sampleRollCallCreatePublish, nil)
+	require.Error(t, err)
+}
+
+func TestLAOChannel_Rollcall_Open_Not_Organizer(t *testing.T) {
+	keypairOrg := generateKeyPair(t)
+	keypairOther := generateKeyPair(t)
+
+	fakeHub, err := NewFakeHub("", keypairOrg.public, nolog, nil)
+	require.NoError(t, err)
+
+	laoId := messagedata.Hash(base64.URLEncoding.EncodeToString(keypairOrg.
+		publicBuf), strconv.FormatInt(time.Now().Unix(), 10), "Lao 1")
+	laoChannel := "/root/" + laoId
+
+	m := message.Message{MessageID: "0"}
+	channel, err := NewChannel(laoChannel, fakeHub, m, nolog, keypairOrg.public, nil)
+	require.NoError(t, err)
+
+	rollcallCreate, rollcallId := createRollCallCreate(t, keypairOrg, laoId)
+
+	err = channel.Publish(rollcallCreate, nil)
+	require.NoError(t, err)
+
+	rollcallOpen := createRollCallOpen(t, keypairOther, laoId, rollcallId)
+
+	// Publish a rollcall open message with a different key than the
+	// organizer, an error is expected
+	err = channel.Publish(rollcallOpen, nil)
+	require.Error(t, err)
+}
+
+func TestLAOChannel_Rollcall_Close_Not_Organizer(t *testing.T) {
+	keypairOrg := generateKeyPair(t)
+	keypairOther := generateKeyPair(t)
+
+	fakeHub, err := NewFakeHub("", keypairOrg.public, nolog, nil)
+	require.NoError(t, err)
+
+	laoId := messagedata.Hash(base64.URLEncoding.EncodeToString(keypairOrg.
+		publicBuf), strconv.FormatInt(time.Now().Unix(), 10), "Lao 1")
+	laoChannel := "/root/" + laoId
+
+	m := message.Message{MessageID: "0"}
+	channel, err := NewChannel(laoChannel, fakeHub, m, nolog, keypairOrg.public, nil)
+	require.NoError(t, err)
+
+	rollcallCreate, rollcallId := createRollCallCreate(t, keypairOrg, laoId)
+
+	err = channel.Publish(rollcallCreate, nil)
+	require.NoError(t, err)
+
+	rollcallOpen := createRollCallOpen(t, keypairOrg, laoId, rollcallId)
+	err = channel.Publish(rollcallOpen, nil)
+	require.NoError(t, err)
+
+	rollcallClose := createRollCallClose(t, keypairOther, laoId, rollcallId)
+
+	// Publish a rollcall close message with a different key than the
+	// organizer, an error is expected
+	err = channel.Publish(rollcallClose, nil)
+	require.Error(t, err)
+}
+
 func TestLAOChannel_Election_Creation(t *testing.T) {
 	keypair := generateKeyPair(t)
 	publicKey64 := base64.URLEncoding.EncodeToString(keypair.publicBuf)
@@ -572,13 +650,14 @@ func TestLAOChannel_Sends_Greeting(t *testing.T) {
 }
 
 func Test_LAOChannel_Witness_Message(t *testing.T) {
-	keypair := generateKeyPair(t)
-	fakeHub, err := NewFakeHub("", keypair.public, nolog, nil)
+	organizerPk := getPublicKeyPoint(t, organizerPublicKey)
+
+	fakeHub, err := NewFakeHub("", organizerPk, nolog, nil)
 	require.NoError(t, err)
 
 	// Create new Lao channel
 	m := message.Message{MessageID: "0"}
-	channel, err := NewChannel(sampleLao, fakeHub, m, nolog, keypair.public, nil)
+	channel, err := NewChannel(sampleLao, fakeHub, m, nolog, organizerPk, nil)
 	require.NoError(t, err)
 
 	// Publish roll_call_create message
@@ -593,13 +672,14 @@ func Test_LAOChannel_Witness_Message(t *testing.T) {
 }
 
 func Test_LAOChannel_Witness_Message_Not_Received_Yet(t *testing.T) {
-	keypair := generateKeyPair(t)
-	fakeHub, err := NewFakeHub("", keypair.public, nolog, nil)
+	organizerPk := getPublicKeyPoint(t, organizerPublicKey)
+
+	fakeHub, err := NewFakeHub("", organizerPk, nolog, nil)
 	require.NoError(t, err)
 
 	// Create new Lao channel
 	m := message.Message{MessageID: "0"}
-	channel, err := NewChannel(sampleLao, fakeHub, m, nolog, keypair.public, nil)
+	channel, err := NewChannel(sampleLao, fakeHub, m, nolog, organizerPk, nil)
 	require.NoError(t, err)
 
 	// Publish witness message and catchup on channel to get the message back
@@ -803,6 +883,19 @@ func (f *fakeSocket) ID() string {
 var sampleLao = "/root/QNNTcGQk-rnehNjgizdzi9IT1nIlmXsOXy1BCWsNaVE="
 var organizerPublicKey = "A2nPAZfsvBRPb5uOb1_hUVuAKt5YKPRZdiFq1g0TLr0="
 
+// getPublicKeyPoint convert a base64 encoded public key to a Kyber.Point
+func getPublicKeyPoint(t *testing.T, publicKeyBase64 string) kyber.Point {
+	keyBuf, err := base64.URLEncoding.DecodeString(publicKeyBase64)
+	require.NoError(t, err)
+
+	senderPk := crypto.Suite.Point()
+
+	err = senderPk.UnmarshalBinary(keyBuf)
+	require.NoError(t, err)
+
+	return senderPk
+}
+
 var sampleRollCallCreate = message.Message{
 	Data: "eyJjcmVhdGlvbiI6MTY4NDI1OTU4MSwiZGVzY3JpcHRpb24iOiIiLCJpZCI6IktxLV9CbUJUZTFEWnFjSXEzU2pOcklzdHAzTFdCM0N6VFhoOVpBaHctUUU9IiwibG9jYXRpb24iOiJ0ZSI" +
 		"sIm5hbWUiOiJ0ZSIsInByb3Bvc2VkX2VuZCI6MTY4NDI2MzEyMCwicHJvcG9zZWRfc3RhcnQiOjE2ODQyNTk1ODEsIm9iamVjdCI6InJvbGxfY2FsbCIsImFjdGlvbiI6ImNyZWF0ZSJ9",
@@ -850,4 +943,108 @@ var sampleWitnessMessagePublish = method.Publish{
 		Channel: sampleLao,
 		Message: sampleWitnessMessage,
 	},
+}
+
+// createPublish is a helper function that create a Publish message
+// containing a message data with valid signature and ids
+func createPublish(t *testing.T, sender keypair, laoId string,
+	data []byte) method.Publish {
+
+	data64 := base64.URLEncoding.EncodeToString(data)
+	senderPk := base64.URLEncoding.EncodeToString(sender.publicBuf)
+	signature, err := schnorr.Sign(suite, sender.private, data)
+	require.NoError(t, err)
+
+	msg := message.Message{
+		Data:              data64,
+		Sender:            senderPk,
+		Signature:         base64.URLEncoding.EncodeToString(signature),
+		MessageID:         messagedata.Hash(data64, senderPk),
+		WitnessSignatures: nil,
+	}
+
+	publishMsg := method.Publish{
+		Base: query.Base{
+			JSONRPCBase: jsonrpc.JSONRPCBase{
+				JSONRPC: "2.0",
+			},
+			Method: "publish",
+		},
+
+		Params: struct {
+			Channel string          `json:"channel"`
+			Message message.Message `json:"message"`
+		}{
+			Channel: "/root/" + laoId,
+			Message: msg,
+		},
+	}
+
+	return publishMsg
+}
+
+func createRollCallCreate(t *testing.T, sender keypair,
+	laoId string) (method.Publish, string) {
+
+	now := time.Now().Unix()
+	rollcallName := "Roll Call"
+	rollcallId := messagedata.Hash("R", laoId, strconv.FormatInt(now, 10), rollcallName)
+	rollcallCreate, err := json.Marshal(messagedata.RollCallCreate{
+		Object:        "roll_call",
+		Action:        "create",
+		ID:            rollcallId,
+		Name:          rollcallName,
+		Creation:      now,
+		ProposedStart: now,
+		ProposedEnd:   now + 1000,
+		Location:      "EPFL",
+		Description:   "",
+	})
+	require.NoError(t, err)
+
+	rollcallCreatePublish := createPublish(t, sender, laoId, rollcallCreate)
+
+	return rollcallCreatePublish, rollcallId
+}
+
+func createRollCallOpen(t *testing.T, sender keypair,
+	laoId string, rollcallId string) method.Publish {
+
+	openAt := time.Now().Unix()
+	updateId := messagedata.Hash("R", laoId, rollcallId, strconv.FormatInt(openAt, 10))
+
+	rollcallOpen, err := json.Marshal(messagedata.RollCallOpen{
+		Object:   "roll_call",
+		Action:   "open",
+		UpdateID: updateId,
+		Opens:    rollcallId,
+		OpenedAt: openAt,
+	})
+	require.NoError(t, err)
+
+	rollcallOpenPublish := createPublish(t, sender, laoId, rollcallOpen)
+
+	return rollcallOpenPublish
+}
+
+func createRollCallClose(t *testing.T, sender keypair,
+	laoId string, openId string) method.Publish {
+
+	closeAt := time.Now().Unix()
+	updateId := messagedata.Hash("R", laoId, openId, strconv.FormatInt(closeAt, 10))
+	attendees := []string{base64.URLEncoding.EncodeToString(sender.publicBuf)}
+
+	rollcallClose, err := json.Marshal(messagedata.RollCallClose{
+		Object:    "roll_call",
+		Action:    "close",
+		UpdateID:  updateId,
+		Closes:    openId,
+		ClosedAt:  closeAt,
+		Attendees: attendees,
+	})
+	require.NoError(t, err)
+
+	rollcallClosePublish := createPublish(t, sender, laoId, rollcallClose)
+
+	return rollcallClosePublish
 }
