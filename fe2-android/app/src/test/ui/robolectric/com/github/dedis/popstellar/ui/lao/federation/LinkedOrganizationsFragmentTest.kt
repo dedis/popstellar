@@ -95,6 +95,13 @@ class LinkedOrganizationsFragmentTest {
                 .check(matches(isDisplayed()))
         LinkedOrganizationsFragmentPageObject.joinInvitationButton()
                 .check(matches(isDisplayed()))
+
+        LinkedOrganizationsFragmentPageObject.createLinkButton().perform(ViewActions.click())
+
+        LinkedOrganizationsFragmentPageObject.inviteButton()
+                .check(matches(withEffectiveVisibility(Visibility.GONE)))
+        LinkedOrganizationsFragmentPageObject.joinInvitationButton()
+                .check(matches(withEffectiveVisibility(Visibility.GONE)))
     }
 
     companion object {

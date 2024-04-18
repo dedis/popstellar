@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import com.github.dedis.popstellar.R
 import com.github.dedis.popstellar.databinding.LinkedOrganizationsFragmentBinding
 import com.github.dedis.popstellar.model.Role
+import com.github.dedis.popstellar.ui.lao.LaoActivity
 import com.github.dedis.popstellar.ui.lao.LaoActivity.Companion.obtainViewModel
 import com.github.dedis.popstellar.ui.lao.LaoViewModel
 import com.github.dedis.popstellar.ui.lao.event.LaoDetailAnimation.rotateFab
@@ -28,7 +29,7 @@ class LinkedOrganizationsFragment : Fragment() {
   override fun onCreateView(
       inflater: LayoutInflater,
       container: ViewGroup?,
-      savedInstanceState: Bundle?
+      savedInstanceState: Bundle?,
   ): View {
     // Inflate the layout for this fragment
     binding = LinkedOrganizationsFragmentBinding.inflate(inflater, container, false)
@@ -46,6 +47,7 @@ class LinkedOrganizationsFragment : Fragment() {
     }
 
     binding.addLinkedOrganization.setOnClickListener(observeButton)
+    binding.inviteOtherOrganization.setOnClickListener(invitationPage)
 
     return binding.root
     // return inflater.inflate(R.layout.linked_organizations_fragment, container, false)
@@ -72,6 +74,14 @@ class LinkedOrganizationsFragment : Fragment() {
           showOut(binding.joinOtherOrganizationInvitation)
           showOut(binding.joinOtherOrganizationInvitationText)
         }
+      }
+
+  private var invitationPage =
+      View.OnClickListener {
+        LaoActivity.setCurrentFragment(
+            parentFragmentManager, R.id.fragment_linked_organizations_invite) {
+              LinkedOrganizationsInviteFragment.newInstance()
+            }
       }
 
   companion object {

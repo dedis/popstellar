@@ -325,6 +325,7 @@
   <string name="add_linked_organization_desc">Create a new link</string>
   <string name="invite_other_organization_desc">Invite another organization</string>
   <string name="join_other_organization_invitation_desc">Join another organization invitation</string>
+  <string name="qr_code_federation_image_description">Qr code image to display federation connecting information</string>
 
   <!-- Error Messages -->
   <string name="error_no_lao">You are not in a LAO</string>
