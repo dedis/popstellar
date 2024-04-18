@@ -6,10 +6,8 @@ import (
 	"github.com/stretchr/testify/require"
 	"os"
 	"path/filepath"
-	"popstellar/crypto"
 	"popstellar/internal/popserver"
-	"popstellar/internal/popserver/repo"
-	"popstellar/internal/popserver/types"
+	database2 "popstellar/internal/popserver/database"
 	"popstellar/message/messagedata"
 	"popstellar/message/query/method"
 	"popstellar/message/query/method/message"
@@ -20,7 +18,6 @@ const messageDataPath string = "../../../validation/protocol/examples/messageDat
 
 type inputTestHandleChannelGeneralChirp struct {
 	name      string
-	params    types.HandlerParameters
 	channelID string
 	message   message.Message
 	hasError  bool
@@ -28,11 +25,15 @@ type inputTestHandleChannelGeneralChirp struct {
 }
 
 func Test_handleChannelGeneralChirp(t *testing.T) {
+	mockRepo, err := database2.SetDatabase(t)
+	require.NoError(t, err)
+
 	inputs := make([]inputTestHandleChannelGeneralChirp, 0)
 
 	inputs = append(inputs, newSuccessTestHandleChannelGeneralChirp(t,
 		"chirp_notify_add/chirp_notify_add.json",
-		"send chirp notify add"))
+		"send chirp notify add",
+		mockRepo))
 
 	inputs = append(inputs, newFailTestHandleChannelGeneralChirp(t,
 		"chirp_notify_add/wrong_chirp_notify_add_negative_time.json",
@@ -44,7 +45,8 @@ func Test_handleChannelGeneralChirp(t *testing.T) {
 
 	inputs = append(inputs, newSuccessTestHandleChannelGeneralChirp(t,
 		"chirp_notify_delete/chirp_notify_delete.json",
-		"send chirp notify delete"))
+		"send chirp notify delete",
+		mockRepo))
 
 	inputs = append(inputs, newFailTestHandleChannelGeneralChirp(t,
 		"chirp_notify_delete/wrong_chirp_notify_delete_negative_time.json",
@@ -64,7 +66,7 @@ func Test_handleChannelGeneralChirp(t *testing.T) {
 
 	for _, i := range inputs {
 		t.Run(i.name, func(t *testing.T) {
-			errAnswer := handleChannelGeneralChirp(i.params, i.channelID, i.message)
+			errAnswer := handleChannelGeneralChirp(i.channelID, i.message)
 			if i.hasError {
 				require.NotNil(t, errAnswer)
 			} else {
@@ -85,9 +87,7 @@ func Test_handleChannelGeneralChirp(t *testing.T) {
 
 }
 
-func newSuccessTestHandleChannelGeneralChirp(t *testing.T, filename string, name string) inputTestHandleChannelGeneralChirp {
-	secret := crypto.Suite.Scalar().Pick(crypto.Suite.RandomStream())
-	point := crypto.Suite.Point().Mul(secret, nil)
+func newSuccessTestHandleChannelGeneralChirp(t *testing.T, filename string, name string, mockRepo *database2.MockRepository) inputTestHandleChannelGeneralChirp {
 	laoID := messagedata.Hash(name)
 	var channelID = "/root/" + laoID + "/social/chirps"
 
@@ -95,7 +95,7 @@ func newSuccessTestHandleChannelGeneralChirp(t *testing.T, filename string, name
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
 
-	pubKeyBuf, err := point.MarshalBinary()
+	pubKeyBuf, err := serverPublicKey.MarshalBinary()
 	require.NoError(t, err)
 	sender64 := base64.URLEncoding.EncodeToString(pubKeyBuf)
 
@@ -109,7 +109,6 @@ func newSuccessTestHandleChannelGeneralChirp(t *testing.T, filename string, name
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
-	mockRepo := repo.NewMockRepository(t)
 	mockRepo.On("StoreMessage", channelID, m).Return(nil)
 
 	sockets := []*popserver.FakeSocket{
@@ -119,9 +118,6 @@ func newSuccessTestHandleChannelGeneralChirp(t *testing.T, filename string, name
 		{Id: "3"},
 	}
 
-	params := popserver.NewHandlerParametersWithFakeSocket(mockRepo, sockets[0])
-	params.ServerSecretKey = secret
-	params.ServerPubKey = point
 	subs.AddChannel(channelID)
 
 	for _, s := range sockets {
@@ -131,7 +127,6 @@ func newSuccessTestHandleChannelGeneralChirp(t *testing.T, filename string, name
 
 	return inputTestHandleChannelGeneralChirp{
 		name:      name,
-		params:    params,
 		channelID: channelID,
 		message:   m,
 		hasError:  false,
@@ -141,15 +136,13 @@ func newSuccessTestHandleChannelGeneralChirp(t *testing.T, filename string, name
 
 func newFailTestHandleChannelGeneralChirp(t *testing.T, filename string, name string) inputTestHandleChannelGeneralChirp {
 	laoID := messagedata.Hash(name)
-	secret := crypto.Suite.Scalar().Pick(crypto.Suite.RandomStream())
-	point := crypto.Suite.Point().Mul(secret, nil)
 	var channelID = "/root/" + laoID + "/social/chirps"
 
 	file := filepath.Join(messageDataPath, filename)
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
 
-	pubKeyBuf, err := point.MarshalBinary()
+	pubKeyBuf, err := serverPublicKey.MarshalBinary()
 	require.NoError(t, err)
 	sender64 := base64.URLEncoding.EncodeToString(pubKeyBuf)
 
@@ -163,16 +156,10 @@ func newFailTestHandleChannelGeneralChirp(t *testing.T, filename string, name st
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
-	mockRepo := repo.NewMockRepository(t)
-
-	params := popserver.NewHandlerParameters(mockRepo)
-	params.ServerSecretKey = secret
-	params.ServerPubKey = point
 	subs.AddChannel(channelID)
 
 	return inputTestHandleChannelGeneralChirp{
 		name:      name,
-		params:    params,
 		channelID: channelID,
 		message:   m,
 		hasError:  true,

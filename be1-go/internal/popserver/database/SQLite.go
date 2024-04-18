@@ -1,4 +1,4 @@
-package db
+package database
 
 import (
 	"database/sql"
@@ -7,7 +7,6 @@ import (
 	"go.dedis.ch/kyber/v3"
 	_ "modernc.org/sqlite"
 	"popstellar/crypto"
-	"popstellar/internal/popserver/repo"
 	"popstellar/message/messagedata"
 	"popstellar/message/query/method/message"
 	"strings"
@@ -20,7 +19,7 @@ const (
 
 // SQLite is a wrapper around the SQLite database.
 type SQLite struct {
-	repo.Repository
+	Repository
 	database *sql.DB
 }
 

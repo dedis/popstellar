@@ -6,18 +6,18 @@ import (
 	"github.com/stretchr/testify/require"
 	"os"
 	"path/filepath"
-	"popstellar/internal/popserver"
-	"popstellar/internal/popserver/repo"
+	"popstellar/internal/popserver/database"
 	"popstellar/message/messagedata"
 	"popstellar/message/query/method/message"
 	"testing"
 )
 
-const laoTestDataPath = "../test_data/lao/"
+const laoTestDataPath = "./test_data/lao/"
 const sender = "HynYISQNI6XqvQNVzA8IzinV8ToiXyKRFsgR2zpP7j8="
 
 func Test_handleChannelLao_LaoState(t *testing.T) {
-	serverKeypair := popserver.GenerateKeyPair(t)
+	mockRepository, err := database.SetDatabase(t)
+	require.NoError(t, err)
 
 	file := filepath.Join(laoTestDataPath, "good_lao_update.json")
 	buf, err := os.ReadFile(file)
@@ -46,7 +46,6 @@ func Test_handleChannelLao_LaoState(t *testing.T) {
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
-	mockRepository := repo.NewMockRepository(t)
 	mockRepository.On("HasMessage", UpdateMsg.MessageID).
 		Return(true, nil)
 	mockRepository.On("GetLaoWitnesses", laoID).
@@ -54,8 +53,7 @@ func Test_handleChannelLao_LaoState(t *testing.T) {
 	mockRepository.On("StoreMessage", laoID, stateMsg).
 		Return(nil)
 
-	params := popserver.NewHandlerParametersWithOwnerAndServer(mockRepository, nil, serverKeypair)
-	errAnswer := handleChannelLao(params, laoID, stateMsg)
+	errAnswer := handleChannelLao(laoID, stateMsg)
 	require.Nil(t, errAnswer)
 }
 
@@ -74,8 +72,8 @@ func Test_handlerChanelLao_RollCallCreate(t *testing.T) {
 		MessageID:         messagedata.Hash(buf64, sender),
 		WitnessSignatures: []message.WitnessSignature{},
 	}
-	params := popserver.NewHandlerParameters(repo.NewMockRepository(t))
-	errAnswer := handleChannelLao(params, laoID, createMsg)
+
+	errAnswer := handleChannelLao(laoID, createMsg)
 
 	wrongID := base64.URLEncoding.EncodeToString([]byte("test"))
 	require.Contains(t, errAnswer.Error(), fmt.Sprintf("roll call id is %s, should be", wrongID))
@@ -93,8 +91,8 @@ func Test_handlerChanelLao_RollCallCreate(t *testing.T) {
 		MessageID:         messagedata.Hash(buf64, sender),
 		WitnessSignatures: []message.WitnessSignature{},
 	}
-	params = popserver.NewHandlerParameters(repo.NewMockRepository(t))
-	errAnswer = handleChannelLao(params, laoID, createMsg)
+
+	errAnswer = handleChannelLao(laoID, createMsg)
 	require.Contains(t, errAnswer.Error(), "roll call proposed start time should be greater than creation time")
 
 	//Test 3: error when RollCallCreate proposed end is after proposed start
@@ -110,8 +108,8 @@ func Test_handlerChanelLao_RollCallCreate(t *testing.T) {
 		MessageID:         messagedata.Hash(buf64, sender),
 		WitnessSignatures: []message.WitnessSignature{},
 	}
-	params = popserver.NewHandlerParameters(repo.NewMockRepository(t))
-	errAnswer = handleChannelLao(params, laoID, createMsg)
+
+	errAnswer = handleChannelLao(laoID, createMsg)
 	require.Contains(t, errAnswer.Error(), "roll call proposed end should be greater than proposed start")
 
 }
@@ -131,8 +129,8 @@ func Test_handleChannelLao_RollCallOpen(t *testing.T) {
 		MessageID:         messagedata.Hash(buf64, sender),
 		WitnessSignatures: []message.WitnessSignature{},
 	}
-	params := popserver.NewHandlerParameters(repo.NewMockRepository(t))
-	errAnswer := handleChannelLao(params, laoID, openMsg)
+
+	errAnswer := handleChannelLao(laoID, openMsg)
 
 	wrongID := base64.URLEncoding.EncodeToString([]byte("test"))
 	require.Contains(t, errAnswer.Error(), fmt.Sprintf("roll call update id is %s, should be", wrongID))

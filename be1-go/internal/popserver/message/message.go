@@ -2,16 +2,16 @@ package message
 
 import (
 	"encoding/json"
-	"popstellar/internal/popserver/singleton/state"
-	"popstellar/internal/popserver/singleton/utils"
-	"popstellar/internal/popserver/types"
+	"popstellar/internal/popserver/state"
+	"popstellar/internal/popserver/utils"
 	jsonrpc "popstellar/message"
 	"popstellar/message/answer"
 	"popstellar/message/query"
+	"popstellar/network/socket"
 	"popstellar/validation"
 )
 
-func HandleMessage(params types.HandlerParameters, msg []byte) error {
+func HandleMessage(socket socket.Socket, msg []byte) error {
 	schemaValidator, ok := utils.GetSchemaValidatorInstance()
 	if !ok {
 		errAnswer := answer.NewInternalServerError("failed to get utils").Wrap("HandleMessage")
@@ -21,14 +21,14 @@ func HandleMessage(params types.HandlerParameters, msg []byte) error {
 	err := schemaValidator.VerifyJSON(msg, validation.GenericMessage)
 	if err != nil {
 		errAnswer := answer.NewInvalidMessageFieldError("invalid json: %v", err).Wrap("HandleMessage")
-		params.Socket.SendError(nil, errAnswer)
+		socket.SendError(nil, errAnswer)
 		return errAnswer
 	}
 
 	rpcType, err := jsonrpc.GetType(msg)
 	if err != nil {
 		errAnswer := answer.NewInvalidMessageFieldError("failed to get rpc type: %v", err).Wrap("HandleMessage")
-		params.Socket.SendError(nil, errAnswer)
+		socket.SendError(nil, errAnswer)
 		return errAnswer
 	}
 
@@ -37,9 +37,9 @@ func HandleMessage(params types.HandlerParameters, msg []byte) error {
 
 	switch rpcType {
 	case jsonrpc.RPCTypeQuery:
-		id, errAnswer = handleQuery(params, msg)
+		id, errAnswer = handleQuery(socket, msg)
 	case jsonrpc.RPCTypeAnswer:
-		id, errAnswer = handleAnswer(params, msg)
+		id, errAnswer = handleAnswer(socket, msg)
 	default:
 		id = nil
 		errAnswer = answer.NewInvalidMessageFieldError("jsonRPC is of unknown type")
@@ -47,14 +47,14 @@ func HandleMessage(params types.HandlerParameters, msg []byte) error {
 
 	if errAnswer != nil {
 		errAnswer = errAnswer.Wrap("HandleMessage")
-		params.Socket.SendError(id, errAnswer)
+		socket.SendError(id, errAnswer)
 		return errAnswer
 	}
 
 	return nil
 }
 
-func handleQuery(params types.HandlerParameters, msg []byte) (*int, *answer.Error) {
+func handleQuery(socket socket.Socket, msg []byte) (*int, *answer.Error) {
 	var queryBase query.Base
 
 	err := json.Unmarshal(msg, &queryBase)
@@ -68,19 +68,19 @@ func handleQuery(params types.HandlerParameters, msg []byte) (*int, *answer.Erro
 
 	switch queryBase.Method {
 	case query.MethodCatchUp:
-		id, errAnswer = handleCatchUp(params, msg)
+		id, errAnswer = handleCatchUp(socket, msg)
 	case query.MethodGetMessagesById:
-		id, errAnswer = handleGetMessagesByID(params, msg)
+		id, errAnswer = handleGetMessagesByID(socket, msg)
 	case query.MethodGreetServer:
-		id, errAnswer = handleGreetServer(params, msg)
+		id, errAnswer = handleGreetServer(socket, msg)
 	case query.MethodHeartbeat:
-		id, errAnswer = handleHeartbeat(params, msg)
+		id, errAnswer = handleHeartbeat(socket, msg)
 	case query.MethodPublish:
-		id, errAnswer = handlePublish(params, msg)
+		id, errAnswer = handlePublish(socket, msg)
 	case query.MethodSubscribe:
-		id, errAnswer = handleSubscribe(params, msg)
+		id, errAnswer = handleSubscribe(socket, msg)
 	case query.MethodUnsubscribe:
-		id, errAnswer = handleUnsubscribe(params, msg)
+		id, errAnswer = handleUnsubscribe(socket, msg)
 	default:
 		id = nil
 		errAnswer = answer.NewInvalidResourceError("unexpected method: '%s'", queryBase.Method)
@@ -94,7 +94,7 @@ func handleQuery(params types.HandlerParameters, msg []byte) (*int, *answer.Erro
 	return id, nil
 }
 
-func handleAnswer(params types.HandlerParameters, msg []byte) (*int, *answer.Error) {
+func handleAnswer(socket socket.Socket, msg []byte) (*int, *answer.Error) {
 	var answerMsg answer.Answer
 
 	err := json.Unmarshal(msg, &answerMsg)
@@ -132,7 +132,7 @@ func handleAnswer(params types.HandlerParameters, msg []byte) (*int, *answer.Err
 		return answerMsg.ID, errAnswer
 	}
 
-	errAnswer := handleGetMessagesByIDAnswer(params, answerMsg)
+	errAnswer := handleGetMessagesByIDAnswer(socket, answerMsg)
 	if errAnswer != nil {
 		errAnswer = errAnswer.Wrap("handleAnswer")
 		return answerMsg.ID, errAnswer

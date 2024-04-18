@@ -1,14 +1,14 @@
 package channel
 
 import (
-	"popstellar/internal/popserver/types"
+	"popstellar/internal/popserver/database"
 	"popstellar/message/answer"
 	"popstellar/message/messagedata"
 	"popstellar/message/query/method/message"
 )
 
-func handleChannelReaction(params types.HandlerParameters, channel string, msg message.Message) *answer.Error {
-	object, action, errAnswer := verifyDataAndGetObjectAction(params, msg)
+func handleChannelReaction(channel string, msg message.Message) *answer.Error {
+	object, action, errAnswer := verifyDataAndGetObjectAction(msg)
 	if errAnswer != nil {
 		errAnswer = errAnswer.Wrap("handleChannelReaction")
 		return errAnswer
@@ -16,9 +16,9 @@ func handleChannelReaction(params types.HandlerParameters, channel string, msg m
 
 	switch object + "#" + action {
 	case messagedata.ReactionObject + "#" + messagedata.ReactionActionAdd:
-		errAnswer = handleReactionAdd(params, msg)
+		errAnswer = handleReactionAdd(msg)
 	case messagedata.ReactionObject + "#" + messagedata.ReactionActionDelete:
-		errAnswer = handleReactionDelete(params, msg)
+		errAnswer = handleReactionDelete(msg)
 	default:
 		errAnswer = answer.NewInvalidMessageFieldError("failed to handle %s#%s, invalid object#action", object, action)
 	}
@@ -27,7 +27,13 @@ func handleChannelReaction(params types.HandlerParameters, channel string, msg m
 		return errAnswer
 	}
 
-	err := params.DB.StoreMessage(channel, msg)
+	db, ok := database.GetReactionRepositoryInstance()
+	if !ok {
+		errAnswer := answer.NewInternalServerError("failed to get database").Wrap("handleChannelReaction")
+		return errAnswer
+	}
+
+	err := db.StoreMessage(channel, msg)
 	if err != nil {
 		errAnswer = answer.NewInternalServerError("failed to store message: %v", err)
 		errAnswer = errAnswer.Wrap("handleChannelReaction")
@@ -37,10 +43,10 @@ func handleChannelReaction(params types.HandlerParameters, channel string, msg m
 
 }
 
-func handleReactionAdd(params types.HandlerParameters, msg message.Message) *answer.Error {
+func handleReactionAdd(msg message.Message) *answer.Error {
 	return nil
 }
 
-func handleReactionDelete(params types.HandlerParameters, msg message.Message) *answer.Error {
+func handleReactionDelete(msg message.Message) *answer.Error {
 	return nil
 }

@@ -1,4 +1,4 @@
-package repo
+package database
 
 import (
 	"go.dedis.ch/kyber/v3"
@@ -7,9 +7,17 @@ import (
 )
 
 type Repository interface {
-	HandleQueryRepository
-	HandleAnswerRepository
-	HandleChannelRepository
+	QueryRepository
+	AnswerRepository
+	ChannelRepository
+	RootRepository
+	ElectionRepository
+	LAORepository
+	ChirpRepository
+	CoinRepository
+	ConsensusRepository
+	GeneralChirpRepository
+	PopChaRepository
 
 	// StoreMessageWithObjectAction stores a message with an object and an action inside the database.
 	StoreMessageWithObjectAction(channelID, object, action string, msg message.Message) error
@@ -25,7 +33,7 @@ type Repository interface {
 
 // ======================= Query ==========================
 
-type HandleQueryRepository interface {
+type QueryRepository interface {
 	GetResultForGetMessagesByID(params map[string][]string) (map[string][]message.Message, error)
 
 	// GetParamsForGetMessageByID returns the params to do the getMessageByID msg in reponse of heartbeat
@@ -33,29 +41,24 @@ type HandleQueryRepository interface {
 
 	// GetAllMessagesFromChannel return all the messages received + sent on a channel
 	GetAllMessagesFromChannel(channelID string) ([]message.Message, error)
-
-	// GetChannelType returns the type of the channel.
-	GetChannelType(channel string) (string, error)
 }
 
 // ======================= Answer ==========================
 
-type HandleAnswerRepository interface {
-	StorePendingMessages(msgs map[string]map[string]message.Message) error
+type AnswerRepository interface {
 }
 
 // ======================= Channel ==========================
 
-type HandleChannelRepository interface {
-	RootRepository
-	ElectionRepository
-	LAORepository
-
+type ChannelRepository interface {
 	// HasChannel returns true if the channel already exists.
 	HasChannel(channel string) (bool, error)
 
 	// HasMessage returns true if the message already exists.
 	HasMessage(messageID string) (bool, error)
+
+	// GetChannelType returns the type of the channel.
+	GetChannelType(channel string) (string, error)
 }
 
 type RootRepository interface {
@@ -66,6 +69,12 @@ type RootRepository interface {
 		laoID string,
 		organizerPubBuf []byte,
 		msg, laoGreetMsg message.Message) error
+
+	// StoreMessage stores a message inside the database.
+	StoreMessage(channelID string, msg message.Message) error
+
+	// HasChannel returns true if the channel already exists.
+	HasChannel(channel string) (bool, error)
 }
 
 type ElectionRepository interface {
@@ -99,6 +108,9 @@ type ElectionRepository interface {
 
 	// GetResult returns the result of an election.
 	GetResult(electionID string) (messagedata.ElectionResult, error)
+
+	// StoreMessage stores a message inside the database.
+	StoreMessage(channelID string, msg message.Message) error
 }
 
 type LAORepository interface {
@@ -123,4 +135,43 @@ type LAORepository interface {
 		electionPubKey kyber.Point,
 		electionSecretKey kyber.Scalar,
 		msg, electionKeyMsg message.Message) error
+
+	// StoreMessage stores a message inside the database.
+	StoreMessage(channelID string, msg message.Message) error
+
+	// HasMessage returns true if the message already exists.
+	HasMessage(messageID string) (bool, error)
+}
+
+type ChirpRepository interface {
+	// StoreMessage stores a message inside the database.
+	StoreMessage(channelID string, msg message.Message) error
+
+	// HasMessage returns true if the message already exists.
+	HasMessage(messageID string) (bool, error)
+}
+
+type CoinRepository interface {
+	// StoreMessage stores a message inside the database.
+	StoreMessage(channelID string, msg message.Message) error
+}
+
+type ConsensusRepository interface {
+	// StoreMessage stores a message inside the database.
+	StoreMessage(channelID string, msg message.Message) error
+}
+
+type GeneralChirpRepository interface {
+	// StoreMessage stores a message inside the database.
+	StoreMessage(channelID string, msg message.Message) error
+}
+
+type PopChaRepository interface {
+	// StoreMessage stores a message inside the database.
+	StoreMessage(channelID string, msg message.Message) error
+}
+
+type ReactionRepository interface {
+	// StoreMessage stores a message inside the database.
+	StoreMessage(channelID string, msg message.Message) error
 }

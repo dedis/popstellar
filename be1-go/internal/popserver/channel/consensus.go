@@ -1,14 +1,15 @@
 package channel
 
 import (
-	"popstellar/internal/popserver/types"
+	"popstellar/internal/popserver/database"
 	"popstellar/message/answer"
 	"popstellar/message/messagedata"
 	"popstellar/message/query/method/message"
+	"popstellar/network/socket"
 )
 
-func handleChannelConsensus(params types.HandlerParameters, channel string, msg message.Message) *answer.Error {
-	object, action, errAnswer := verifyDataAndGetObjectAction(params, msg)
+func handleChannelConsensus(socket socket.Socket, channel string, msg message.Message) *answer.Error {
+	object, action, errAnswer := verifyDataAndGetObjectAction(msg)
 	if errAnswer != nil {
 		errAnswer = errAnswer.Wrap("handleChannelConsensus")
 		return errAnswer
@@ -16,21 +17,21 @@ func handleChannelConsensus(params types.HandlerParameters, channel string, msg 
 
 	switch object + "#" + action {
 	case messagedata.ConsensusObject + "#" + messagedata.ConsensusActionElect:
-		errAnswer = handleConsensusElect(params, msg)
+		errAnswer = handleConsensusElect(msg)
 	case messagedata.ConsensusObject + "#" + messagedata.ConsensusActionElectAccept:
-		errAnswer = handleConsensusDelete(params, msg)
+		errAnswer = handleConsensusDelete(msg)
 	case messagedata.ConsensusObject + "#" + messagedata.ConsensusActionPrepare:
-		errAnswer = handleConsensusPrepare(params, msg)
+		errAnswer = handleConsensusPrepare(msg)
 	case messagedata.ConsensusObject + "#" + messagedata.ConsensusActionPromise:
-		errAnswer = handleConsensusPromise(params, msg)
+		errAnswer = handleConsensusPromise(msg)
 	case messagedata.ConsensusObject + "#" + messagedata.ConsensusActionPropose:
-		errAnswer = handleConsensusPropose(params, msg)
+		errAnswer = handleConsensusPropose(msg)
 	case messagedata.ConsensusObject + "#" + messagedata.ConsensusActionAccept:
-		errAnswer = handleConsensusAccept(params, msg)
+		errAnswer = handleConsensusAccept(msg)
 	case messagedata.ConsensusObject + "#" + messagedata.ConsensusActionLearn:
-		errAnswer = handleConsensusLearn(params, msg)
+		errAnswer = handleConsensusLearn(msg)
 	case messagedata.ConsensusObject + "#" + messagedata.ConsensusActionFailure:
-		errAnswer = handleConsensusFailure(params, msg)
+		errAnswer = handleConsensusFailure(msg)
 	default:
 		errAnswer = answer.NewInvalidMessageFieldError("failed to handle %s#%s, invalid object#action", object, action)
 	}
@@ -39,43 +40,50 @@ func handleChannelConsensus(params types.HandlerParameters, channel string, msg 
 		return errAnswer
 	}
 
-	err := params.DB.StoreMessage(channel, msg)
+	db, ok := database.GetConsensusRepositoryInstance()
+	if !ok {
+		errAnswer := answer.NewInternalServerError("failed to get database").Wrap("handleChannelConsensus")
+		return errAnswer
+	}
+
+	err := db.StoreMessage(channel, msg)
 	if err != nil {
 		errAnswer = answer.NewInternalServerError("failed to store message: %v", err)
 		errAnswer = errAnswer.Wrap("handleChannelConsensus")
 		return errAnswer
 	}
+
 	return nil
 }
 
-func handleConsensusElect(params types.HandlerParameters, msg message.Message) *answer.Error {
+func handleConsensusElect(msg message.Message) *answer.Error {
 	return nil
 }
 
-func handleConsensusDelete(params types.HandlerParameters, msg message.Message) *answer.Error {
+func handleConsensusDelete(msg message.Message) *answer.Error {
 	return nil
 }
 
-func handleConsensusPrepare(params types.HandlerParameters, msg message.Message) *answer.Error {
+func handleConsensusPrepare(msg message.Message) *answer.Error {
 	return nil
 }
 
-func handleConsensusPromise(params types.HandlerParameters, msg message.Message) *answer.Error {
+func handleConsensusPromise(msg message.Message) *answer.Error {
 	return nil
 }
 
-func handleConsensusPropose(params types.HandlerParameters, msg message.Message) *answer.Error {
+func handleConsensusPropose(msg message.Message) *answer.Error {
 	return nil
 }
 
-func handleConsensusAccept(params types.HandlerParameters, msg message.Message) *answer.Error {
+func handleConsensusAccept(msg message.Message) *answer.Error {
 	return nil
 }
 
-func handleConsensusLearn(params types.HandlerParameters, msg message.Message) *answer.Error {
+func handleConsensusLearn(msg message.Message) *answer.Error {
 	return nil
 }
 
-func handleConsensusFailure(params types.HandlerParameters, msg message.Message) *answer.Error {
+func handleConsensusFailure(msg message.Message) *answer.Error {
 	return nil
 }

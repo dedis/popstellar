@@ -4,8 +4,6 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.dedis.ch/kyber/v3"
 	"popstellar/crypto"
-	"popstellar/internal/popserver/repo"
-	"popstellar/internal/popserver/types"
 	"popstellar/message/query/method/message"
 	"popstellar/network/socket"
 	"testing"
@@ -55,48 +53,6 @@ func (f *FakeSocket) GetMessage() []byte {
 
 func (f *FakeSocket) Type() socket.SocketType {
 	return socket.ClientSocketType
-}
-
-func NewHandlerParameters(db repo.Repository) types.HandlerParameters {
-	secret := crypto.Suite.Scalar().Pick(crypto.Suite.RandomStream())
-	point := crypto.Suite.Point().Mul(secret, nil)
-	return types.HandlerParameters{
-		Socket:              &FakeSocket{Id: "fakeID"},
-		DB:                  db,
-		OwnerPubKey:         nil,
-		ClientServerAddress: "ClientServerAddress",
-		ServerServerAddress: "ServerServerAddress",
-		ServerPubKey:        point,
-		ServerSecretKey:     secret,
-	}
-}
-
-func NewHandlerParametersWithOwnerAndServer(db repo.Repository, owner kyber.Point, server Keypair) types.HandlerParameters {
-	return types.HandlerParameters{
-		Socket:              &FakeSocket{Id: "fakeID"},
-		DB:                  db,
-		OwnerPubKey:         owner,
-		ClientServerAddress: "ClientServerAddress",
-		ServerServerAddress: "ServerServerAddress",
-		ServerPubKey:        server.Public,
-		ServerSecretKey:     server.Private,
-	}
-}
-
-func NewHandlerParametersWithFakeSocket(db repo.Repository, s *FakeSocket) types.HandlerParameters {
-	secret := crypto.Suite.Scalar().Pick(crypto.Suite.RandomStream())
-	point := crypto.Suite.Point().Mul(secret, nil)
-
-	return types.HandlerParameters{
-		Socket:              s,
-		DB:                  db,
-		OwnerPubKey:         nil,
-		ClientServerAddress: "ClientServerAddress",
-		ServerServerAddress: "ServerServerAddress",
-		ServerPubKey:        point,
-		ServerSecretKey:     secret,
-	}
-
 }
 
 type Keypair struct {

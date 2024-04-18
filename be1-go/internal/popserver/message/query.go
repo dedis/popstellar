@@ -4,17 +4,19 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"popstellar/internal/popserver/channel"
-	"popstellar/internal/popserver/singleton/state"
-	"popstellar/internal/popserver/types"
+	"popstellar/internal/popserver/config"
+	"popstellar/internal/popserver/database"
+	"popstellar/internal/popserver/state"
 	jsonrpc "popstellar/message"
 	"popstellar/message/answer"
 	"popstellar/message/query"
 	"popstellar/message/query/method"
+	"popstellar/network/socket"
 )
 
 const rootChannel = "/root"
 
-func handleCatchUp(params types.HandlerParameters, msg []byte) (*int, *answer.Error) {
+func handleCatchUp(socket socket.Socket, msg []byte) (*int, *answer.Error) {
 	var catchup method.Catchup
 
 	err := json.Unmarshal(msg, &catchup)
@@ -23,18 +25,24 @@ func handleCatchUp(params types.HandlerParameters, msg []byte) (*int, *answer.Er
 		return nil, errAnswer
 	}
 
-	result, err := params.DB.GetAllMessagesFromChannel(catchup.Params.Channel)
+	db, ok := database.GetQueryRepositoryInstance()
+	if !ok {
+		errAnswer := answer.NewInternalServerError("failed to get database").Wrap("handleCatchUp")
+		return &catchup.ID, errAnswer
+	}
+
+	result, err := db.GetAllMessagesFromChannel(catchup.Params.Channel)
 	if err != nil {
 		errAnswer := answer.NewInternalServerError("failed to query DB: %v", err).Wrap("handleCatchUp")
 		return &catchup.ID, errAnswer
 	}
 
-	params.Socket.SendResult(catchup.ID, result, nil)
+	socket.SendResult(catchup.ID, result, nil)
 
 	return &catchup.ID, nil
 }
 
-func handleGetMessagesByID(params types.HandlerParameters, msg []byte) (*int, *answer.Error) {
+func handleGetMessagesByID(socket socket.Socket, msg []byte) (*int, *answer.Error) {
 	var getMessagesById method.GetMessagesById
 
 	err := json.Unmarshal(msg, &getMessagesById)
@@ -44,18 +52,24 @@ func handleGetMessagesByID(params types.HandlerParameters, msg []byte) (*int, *a
 		return nil, errAnswer
 	}
 
-	result, err := params.DB.GetResultForGetMessagesByID(getMessagesById.Params)
+	db, ok := database.GetQueryRepositoryInstance()
+	if !ok {
+		errAnswer := answer.NewInternalServerError("failed to get database").Wrap("handleGetMessageByID")
+		return &getMessagesById.ID, errAnswer
+	}
+
+	result, err := db.GetResultForGetMessagesByID(getMessagesById.Params)
 	if err != nil {
 		errAnswer := answer.NewInternalServerError("failed to query DB: %v", err).Wrap("handleGetMessageByID")
 		return &getMessagesById.ID, errAnswer
 	}
 
-	params.Socket.SendResult(getMessagesById.ID, nil, result)
+	socket.SendResult(getMessagesById.ID, nil, result)
 
 	return &getMessagesById.ID, nil
 }
 
-func handleGreetServer(params types.HandlerParameters, byteMessage []byte) (*int, *answer.Error) {
+func handleGreetServer(socket socket.Socket, byteMessage []byte) (*int, *answer.Error) {
 	var greetServer method.GreetServer
 
 	err := json.Unmarshal(byteMessage, &greetServer)
@@ -70,27 +84,33 @@ func handleGreetServer(params types.HandlerParameters, byteMessage []byte) (*int
 		return nil, errAnswer
 	}
 
-	err = peers.AddPeerInfo(params.Socket.ID(), greetServer.Params)
+	err = peers.AddPeerInfo(socket.ID(), greetServer.Params)
 	if err != nil {
 		errAnswer := answer.NewInvalidActionError("failed to add peer: %v", err).Wrap("handleGreetServer")
 		return nil, errAnswer
 	}
 
-	if peers.IsPeerGreeted(params.Socket.ID()) {
+	if peers.IsPeerGreeted(socket.ID()) {
 		return nil, nil
 	}
 
-	pkBuf, err := params.ServerPubKey.MarshalBinary()
-	if err != nil {
-		errAnswer := answer.NewInternalServerError("failed to unmarshall server public key", err)
-		errAnswer = errAnswer.Wrap("copyToGeneral")
+	pk, clientAddress, serverAddress, ok := config.GetServerInfo()
+	if !ok {
+		errAnswer := answer.NewInternalServerError("failed to get config").Wrap("handleGreetServer")
 		return nil, errAnswer
 	}
 
-	serverInfo := method.GreetServerParams{
+	pkBuf, err := pk.MarshalBinary()
+	if err != nil {
+		errAnswer := answer.NewInternalServerError("failed to unmarshall server public key", err)
+		errAnswer = errAnswer.Wrap("handleGreetServer")
+		return nil, errAnswer
+	}
+
+	greetServerParams := method.GreetServerParams{
 		PublicKey:     base64.URLEncoding.EncodeToString(pkBuf),
-		ServerAddress: params.ServerServerAddress,
-		ClientAddress: params.ClientServerAddress,
+		ServerAddress: serverAddress,
+		ClientAddress: clientAddress,
 	}
 
 	serverGreet := &method.GreetServer{
@@ -100,7 +120,7 @@ func handleGreetServer(params types.HandlerParameters, byteMessage []byte) (*int
 			},
 			Method: query.MethodGreetServer,
 		},
-		Params: serverInfo,
+		Params: greetServerParams,
 	}
 
 	buf, err := json.Marshal(serverGreet)
@@ -109,14 +129,14 @@ func handleGreetServer(params types.HandlerParameters, byteMessage []byte) (*int
 		return nil, errAnswer
 	}
 
-	params.Socket.Send(buf)
+	socket.Send(buf)
 
-	peers.AddPeerGreeted(params.Socket.ID())
+	peers.AddPeerGreeted(socket.ID())
 
 	return nil, nil
 }
 
-func handleHeartbeat(params types.HandlerParameters, byteMessage []byte) (*int, *answer.Error) {
+func handleHeartbeat(socket socket.Socket, byteMessage []byte) (*int, *answer.Error) {
 	var heartbeat method.Heartbeat
 
 	err := json.Unmarshal(byteMessage, &heartbeat)
@@ -125,7 +145,13 @@ func handleHeartbeat(params types.HandlerParameters, byteMessage []byte) (*int, 
 		return nil, errAnswer
 	}
 
-	result, err := params.DB.GetParamsForGetMessageByID(heartbeat.Params)
+	db, ok := database.GetQueryRepositoryInstance()
+	if !ok {
+		errAnswer := answer.NewInternalServerError("failed to get database").Wrap("handleHeartbeat")
+		return nil, errAnswer
+	}
+
+	result, err := db.GetParamsForGetMessageByID(heartbeat.Params)
 	if err != nil {
 		errAnswer := answer.NewInternalServerError("failed to query DB: %v", err).Wrap("handleHeartbeat")
 		return nil, errAnswer
@@ -137,7 +163,7 @@ func handleHeartbeat(params types.HandlerParameters, byteMessage []byte) (*int, 
 
 	queries, ok := state.GetQueriesInstance()
 	if !ok {
-		errAnswer := answer.NewInternalServerError("failed to get state").Wrap("handleGreetServer")
+		errAnswer := answer.NewInternalServerError("failed to get state").Wrap("handleHeartbeat")
 		return nil, errAnswer
 	}
 
@@ -160,14 +186,14 @@ func handleHeartbeat(params types.HandlerParameters, byteMessage []byte) (*int, 
 		return nil, errAnswer
 	}
 
-	params.Socket.Send(buf)
+	socket.Send(buf)
 
 	queries.AddQuery(queryId, getMessagesById)
 
 	return nil, nil
 }
 
-func handlePublish(params types.HandlerParameters, msg []byte) (*int, *answer.Error) {
+func handlePublish(socket socket.Socket, msg []byte) (*int, *answer.Error) {
 	var publish method.Publish
 
 	err := json.Unmarshal(msg, &publish)
@@ -176,7 +202,7 @@ func handlePublish(params types.HandlerParameters, msg []byte) (*int, *answer.Er
 		return nil, errAnswer
 	}
 
-	errAnswer := channel.HandleChannel(params, publish.Params.Channel, publish.Params.Message)
+	errAnswer := channel.HandleChannel(socket, publish.Params.Channel, publish.Params.Message)
 	if errAnswer != nil {
 		errAnswer = errAnswer.Wrap("handlePublish")
 		return &publish.ID, errAnswer
@@ -185,7 +211,7 @@ func handlePublish(params types.HandlerParameters, msg []byte) (*int, *answer.Er
 	return &publish.ID, nil
 }
 
-func handleSubscribe(params types.HandlerParameters, msg []byte) (*int, *answer.Error) {
+func handleSubscribe(socket socket.Socket, msg []byte) (*int, *answer.Error) {
 	var subscribe method.Subscribe
 
 	err := json.Unmarshal(msg, &subscribe)
@@ -205,7 +231,7 @@ func handleSubscribe(params types.HandlerParameters, msg []byte) (*int, *answer.
 		return &subscribe.ID, errAnswer
 	}
 
-	errAnswer := subs.Subscribe(subscribe.Params.Channel, params.Socket)
+	errAnswer := subs.Subscribe(subscribe.Params.Channel, socket)
 	if errAnswer != nil {
 		errAnswer = errAnswer.Wrap("handleSubscribe")
 		return &subscribe.ID, errAnswer
@@ -214,7 +240,7 @@ func handleSubscribe(params types.HandlerParameters, msg []byte) (*int, *answer.
 	return &subscribe.ID, nil
 }
 
-func handleUnsubscribe(params types.HandlerParameters, msg []byte) (*int, *answer.Error) {
+func handleUnsubscribe(socket socket.Socket, msg []byte) (*int, *answer.Error) {
 	var unsubscribe method.Unsubscribe
 
 	err := json.Unmarshal(msg, &unsubscribe)
@@ -234,7 +260,7 @@ func handleUnsubscribe(params types.HandlerParameters, msg []byte) (*int, *answe
 		return &unsubscribe.ID, errAnswer
 	}
 
-	errAnswer := subs.Unsubscribe(unsubscribe.Params.Channel, params.Socket)
+	errAnswer := subs.Unsubscribe(unsubscribe.Params.Channel, socket)
 	if errAnswer != nil {
 		errAnswer = errAnswer.Wrap("handleUnsubscribe")
 		return &unsubscribe.ID, errAnswer

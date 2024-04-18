@@ -5,20 +5,16 @@ import (
 	"encoding/json"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
-	"go.dedis.ch/kyber/v3"
 	"os"
 	"path/filepath"
-	"popstellar/crypto"
-	"popstellar/internal/popserver"
-	"popstellar/internal/popserver/repo"
-	"popstellar/internal/popserver/types"
+	database2 "popstellar/internal/popserver/database"
 	"popstellar/message/messagedata"
 	"popstellar/message/query/method/message"
 	"testing"
 )
 
 const (
-	rootPath = "../test_data/root/"
+	rootPath = "./test_data/root/"
 	//the public key used in every lao_create json files in the test_data/root folder
 	organizer = "3yPmdBu8DM7jT30IKqkPjuFFIHnubO0z4E0dV7dR4sY="
 	// A public key different from the organizer public key
@@ -27,7 +23,6 @@ const (
 
 type input struct {
 	name     string
-	params   types.HandlerParameters
 	msg      message.Message
 	channel  string
 	isError  bool
@@ -36,63 +31,61 @@ type input struct {
 
 func Test_handleChannelRoot(t *testing.T) {
 	var args []input
-	organizerKey := crypto.Suite.Point()
-	organizerBuf, err := base64.URLEncoding.DecodeString(organizer)
-	require.NoError(t, err)
-	err = organizerKey.UnmarshalBinary(organizerBuf)
+
+	mockRepo, err := database2.SetDatabase(t)
 	require.NoError(t, err)
 
 	// Test 1: error when different sender and owner keys
 	args = append(args, newInputError(t,
 		"wrong_lao_create_different_sender_owner.json",
-		wrongSender,  // sender public key in base64 format
-		organizerKey, // owner public key
+		wrongSender, // sender public key in base64 format
 		"Test 1",
-		"sender's public key does not match the owner public key"))
+		"sender's public key does not match the owner public key",
+		mockRepo))
 
 	// Test 2: error when different organizer and sender keys
 	args = append(args, newInputError(t,
 		"wrong_lao_create_different_sender_organizer.json",
-		wrongSender,  // sender public key in base64 format
-		organizerKey, // owner public key
+		wrongSender, // sender public key in base64 format
 		"Test 2",
-		"sender's public key does not match the organizer public key"))
+		"sender's public key does not match the organizer public key",
+		mockRepo))
 
 	// Test 3: error when the lao name is not the same as the one used for the laoID
 	args = append(args, newInputError(t,
 		"wrong_lao_create_wrong_name.json",
-		organizer,    // sender public key in base64 format
-		organizerKey, // owner public key
+		organizer, // sender public key in base64 format
 		"Test 3",
-		"failed to verify message data: invalid message field: lao id"))
+		"failed to verify message data: invalid message field: lao id",
+		mockRepo))
 
 	// Test 4: error when message data is not lao_create
 	args = append(args, newInputError(t,
 		"",
-		organizer,    // sender public key in base64 format
-		organizerKey, // owner public key
+		organizer, // sender public key in base64 format
 		"Test 4",
-		"failed to validate message against json schema"))
+		"failed to validate message against json schema",
+		mockRepo))
 
 	// Test 5: success with owner public key not nil
 	args = append(args, newInputSuccess(t,
 		"good_lao_create.json",
-		organizer,    // sender public key in base64 format
-		organizerKey, // owner public key
+		organizer, // sender public key in base64 format
 		"Test 5",
-		""))
+		"",
+		mockRepo))
 
 	// Test 6: success with owner public key nil
 	args = append(args, newInputSuccess(t,
 		"good_lao_create.json",
 		organizer, // sender public key in base64 format
-		nil,       // owner public key
 		"Test 6",
-		""))
+		"",
+		mockRepo))
 
 	for _, arg := range args {
 		t.Run(arg.name, func(t *testing.T) {
-			errAnswer := handleChannelRoot(arg.params, arg.channel, arg.msg)
+			errAnswer := handleChannelRoot(arg.channel, arg.msg)
 			if arg.isError {
 				require.Contains(t, errAnswer.Error(), arg.contains)
 			} else {
@@ -102,7 +95,7 @@ func Test_handleChannelRoot(t *testing.T) {
 	}
 }
 
-func newInputError(t *testing.T, fileName, sender string, ownerKey kyber.Point, testName, contains string) input {
+func newInputError(t *testing.T, fileName, sender string, testName, contains string, mockRepository *database2.MockRepository) input {
 
 	var buf []byte
 	var err error
@@ -139,24 +132,18 @@ func newInputError(t *testing.T, fileName, sender string, ownerKey kyber.Point, 
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
-	var mockRepository *repo.MockRepository
 	if fileName != "" {
-		mockRepository = repo.NewMockRepository(t)
 		mockRepository.On("HasChannel", rootPrefix+laoCreate.ID).Return(false, nil)
-	} else {
-		mockRepository = nil
 	}
-	params := popserver.NewHandlerParametersWithOwnerAndServer(mockRepository, ownerKey, popserver.GenerateKeyPair(t))
 
 	return input{name: testName,
-		params:   params,
 		msg:      msg,
 		channel:  rootChannel,
 		isError:  true,
 		contains: contains}
 }
 
-func newInputSuccess(t *testing.T, fileName, sender string, ownerKey kyber.Point, testName, contains string) input {
+func newInputSuccess(t *testing.T, fileName, sender string, testName, contains string, mockRepository *database2.MockRepository) input {
 	file := filepath.Join(rootPath, fileName)
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
@@ -166,7 +153,6 @@ func newInputSuccess(t *testing.T, fileName, sender string, ownerKey kyber.Point
 	err = json.Unmarshal(buf, &laoCreate)
 	require.NoError(t, err)
 	laoPath := rootPrefix + laoCreate.ID
-	serverKeypair := popserver.GenerateKeyPair(t)
 
 	msg := message.Message{
 		Data:              buf64,
@@ -186,17 +172,14 @@ func newInputSuccess(t *testing.T, fileName, sender string, ownerKey kyber.Point
 
 	organizerBuf, err := base64.URLEncoding.DecodeString(laoCreate.Organizer)
 	require.NoError(t, err)
-	mockRepository := repo.NewMockRepository(t)
 	mockRepository.On("HasChannel", laoPath).Return(false, nil)
 	mockRepository.On("StoreChannelsAndMessageWithLaoGreet",
 		channels,
 		laoPath,
 		organizerBuf,
 		msg, mock.AnythingOfType("message.Message")).Return(nil)
-	params := popserver.NewHandlerParametersWithOwnerAndServer(mockRepository, ownerKey, serverKeypair)
 
 	return input{name: testName,
-		params:   params,
 		msg:      msg,
 		channel:  rootChannel,
 		isError:  false,

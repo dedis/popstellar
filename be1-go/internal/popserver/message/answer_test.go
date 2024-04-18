@@ -4,73 +4,23 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/require"
 	"go.dedis.ch/kyber/v3/sign/schnorr"
-	"golang.org/x/xerrors"
-	"io"
 	"popstellar/crypto"
 	"popstellar/internal/popserver"
-	"popstellar/internal/popserver/repo"
-	"popstellar/internal/popserver/types"
-	"popstellar/message/answer"
+	"popstellar/internal/popserver/database"
 	"popstellar/message/messagedata"
 	"popstellar/message/query/method/message"
 	"testing"
 	"time"
 )
 
-func Test_handleGetMessagesByIDAnswer(t *testing.T) {
-	type input struct {
-		name        string
-		params      types.HandlerParameters
-		message     answer.Answer
-		isErrorTest bool
-	}
-
-	inputs := make([]input, 0)
-
-	// failed to query DB
-
-	id := 1
-
-	result := make(map[string][]json.RawMessage)
-	msgsByChannel := make(map[string]map[string]message.Message)
-
-	msg := answer.Answer{
-		ID: &id,
-		Result: &answer.Result{
-			MessagesByChannel: result,
-		},
-	}
-
-	mockRepository := repo.NewMockRepository(t)
-	mockRepository.On("StorePendingMessages", msgsByChannel).Return(xerrors.Errorf("DB disconnected"))
-
-	params := popserver.NewHandlerParameters(mockRepository)
-
-	inputs = append(inputs, input{
-		name:        "failed to query DB",
-		params:      params,
-		message:     msg,
-		isErrorTest: true,
-	})
-
-	for _, i := range inputs {
-		t.Run(i.name, func(t *testing.T) {
-			errAnswer := handleGetMessagesByIDAnswer(i.params, i.message)
-			if i.isErrorTest {
-				require.Error(t, errAnswer)
-			}
-		})
-	}
-
-}
-
 func Test_handleMessagesByChannel(t *testing.T) {
+	mockRepository, err := database.SetDatabase(t)
+	require.NoError(t, err)
+
 	type input struct {
 		name     string
-		params   types.HandlerParameters
 		messages map[string]map[string]message.Message
 		expected map[string]map[string]message.Message
 	}
@@ -133,24 +83,20 @@ func Test_handleMessagesByChannel(t *testing.T) {
 	expected["/root/lao1"] = make(map[string]message.Message)
 	expected["/root/lao1"][msgValid.MessageID] = msgValid
 
-	mockRepository := repo.NewMockRepository(t)
 	mockRepository.On("HasMessage", msgValid.MessageID).Return(false, nil)
 	mockRepository.On("GetChannelType", "/root").Return("", nil)
 	mockRepository.On("GetChannelType", "/root/lao1").Return("", nil)
 
-	params := popserver.NewHandlerParameters(mockRepository)
-
 	inputs = append(inputs, input{
 		name:     "blacklist without invalid field error",
-		params:   params,
 		messages: messages,
 		expected: expected,
 	})
 
 	for _, i := range inputs {
 		t.Run(i.name, func(t *testing.T) {
-			log := zerolog.New(io.Discard)
-			handleMessagesByChannel(i.params, i.messages, &log)
+			fakeSocket := popserver.FakeSocket{Id: "fakesocket"}
+			handleMessagesByChannel(&fakeSocket, i.messages)
 
 			for k0, v0 := range i.expected {
 				for k1 := range v0 {

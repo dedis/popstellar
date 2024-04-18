@@ -5,28 +5,6 @@ package hub
 
 import (
 	"popstellar/network/socket"
-	"time"
-)
-
-const (
-	// rootChannel denotes the id of the root channel
-	rootChannel = "/root"
-
-	// rootPrefix denotes the prefix for the root channel
-	// used to keep an image of the laos
-	rootPrefix = rootChannel + "/"
-
-	// Strings used to return error messages
-	rootChannelErr = "failed to handle root channel message: %v"
-	getChannelErr  = "failed to get channel: %v"
-
-	// numWorkers denote the number of worker go-routines
-	// allowed to process requests concurrently.
-	numWorkers = 10
-
-	// heartbeatDelay represents the number of seconds
-	// between heartbeat messages
-	heartbeatDelay = 30 * time.Second
 )
 
 // Hub defines the methods a PoP server must implement to receive messages

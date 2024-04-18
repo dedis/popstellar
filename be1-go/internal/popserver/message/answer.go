@@ -2,18 +2,17 @@ package message
 
 import (
 	"encoding/json"
-	"github.com/rs/zerolog"
 	"popstellar/internal/popserver/channel"
-	"popstellar/internal/popserver/singleton/utils"
-	"popstellar/internal/popserver/types"
+	"popstellar/internal/popserver/utils"
 	"popstellar/message/answer"
 	"popstellar/message/query/method/message"
+	"popstellar/network/socket"
 	"sort"
 )
 
 const maxRetry = 10
 
-func handleGetMessagesByIDAnswer(params types.HandlerParameters, msg answer.Answer) *answer.Error {
+func handleGetMessagesByIDAnswer(socket socket.Socket, msg answer.Answer) *answer.Error {
 	result := msg.Result.GetMessagesByChannel()
 	msgsByChan := make(map[string]map[string]message.Message)
 
@@ -44,18 +43,17 @@ func handleGetMessagesByIDAnswer(params types.HandlerParameters, msg answer.Answ
 	}
 
 	// Handle every message and discard them if handled without error
-	handleMessagesByChannel(params, msgsByChan, log)
-
-	err := params.DB.StorePendingMessages(msgsByChan)
-	if err != nil {
-		errAnswer := answer.NewInternalServerError("failed to query DB: ", err).Wrap("handleGetMessagesByIDAnswer")
-		return errAnswer
-	}
+	handleMessagesByChannel(socket, msgsByChan)
 
 	return nil
 }
 
-func handleMessagesByChannel(params types.HandlerParameters, msgsByChannel map[string]map[string]message.Message, log *zerolog.Logger) {
+func handleMessagesByChannel(socket socket.Socket, msgsByChannel map[string]map[string]message.Message) {
+	log, ok := utils.GetLogInstance()
+	if !ok {
+		return
+	}
+
 	// Handle every messages
 	for i := 0; i < maxRetry; i++ {
 		// Sort by channelID length
@@ -70,7 +68,7 @@ func handleMessagesByChannel(params types.HandlerParameters, msgsByChannel map[s
 		for _, channelID := range sortedChannelIDs {
 			msgs := msgsByChannel[channelID]
 			for msgID, msg := range msgs {
-				errAnswer := channel.HandleChannel(params, channelID, msg)
+				errAnswer := channel.HandleChannel(socket, channelID, msg)
 				if errAnswer == nil {
 					delete(msgsByChannel[channelID], msgID)
 					continue

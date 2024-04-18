@@ -6,19 +6,21 @@ import (
 	"go.dedis.ch/kyber/v3"
 	"go.dedis.ch/kyber/v3/sign/schnorr"
 	"popstellar/crypto"
-	"popstellar/internal/popserver/singleton/state"
-	"popstellar/internal/popserver/singleton/utils"
-	"popstellar/internal/popserver/types"
+	"popstellar/internal/popserver/config"
+	"popstellar/internal/popserver/database"
+	"popstellar/internal/popserver/state"
+	"popstellar/internal/popserver/utils"
 	jsonrpc "popstellar/message"
 	"popstellar/message/answer"
 	"popstellar/message/messagedata"
 	"popstellar/message/query"
 	"popstellar/message/query/method"
 	"popstellar/message/query/method/message"
+	"popstellar/network/socket"
 	"popstellar/validation"
 )
 
-func HandleChannel(params types.HandlerParameters, channelID string, msg message.Message) *answer.Error {
+func HandleChannel(socket socket.Socket, channelID string, msg message.Message) *answer.Error {
 	dataBytes, err := base64.URLEncoding.DecodeString(msg.Data)
 	if err != nil {
 		errAnswer := answer.NewInvalidMessageFieldError("failed to decode data: %v", err).Wrap("HandleChannel")
@@ -50,7 +52,13 @@ func HandleChannel(params types.HandlerParameters, channelID string, msg message
 		return errAnswer
 	}
 
-	msgAlreadyExists, err := params.DB.HasMessage(msg.MessageID)
+	db, ok := database.GetChannelRepositoryInstance()
+	if !ok {
+		errAnswer := answer.NewInternalServerError("failed to get database").Wrap("HandleChannel")
+		return errAnswer
+	}
+
+	msgAlreadyExists, err := db.HasMessage(msg.MessageID)
 	if err != nil {
 		errAnswer := answer.NewInternalServerError("failed to query DB: %v", err).Wrap("HandleChannel")
 		return errAnswer
@@ -60,7 +68,7 @@ func HandleChannel(params types.HandlerParameters, channelID string, msg message
 		return errAnswer
 	}
 
-	channelType, err := params.DB.GetChannelType(channelID)
+	channelType, err := db.GetChannelType(channelID)
 	if err != nil {
 		errAnswer := answer.NewInvalidResourceError("failed to query DB: %v", err).Wrap("HandleChannel")
 		return errAnswer
@@ -70,23 +78,23 @@ func HandleChannel(params types.HandlerParameters, channelID string, msg message
 
 	switch channelType {
 	case channelRoot:
-		errAnswer = handleChannelRoot(params, channelID, msg)
+		errAnswer = handleChannelRoot(channelID, msg)
 	case channelLao:
-		errAnswer = handleChannelLao(params, channelID, msg)
+		errAnswer = handleChannelLao(channelID, msg)
 	case channelElection:
-		errAnswer = handleChannelElection(params, channelID, msg)
+		errAnswer = handleChannelElection(channelID, msg)
 	case channelGeneralChirp:
-		errAnswer = handleChannelGeneralChirp(params, channelID, msg)
+		errAnswer = handleChannelGeneralChirp(channelID, msg)
 	case channelChirp:
-		errAnswer = handleChannelChirp(params, channelID, msg)
+		errAnswer = handleChannelChirp(channelID, msg)
 	case channelReaction:
-		errAnswer = handleChannelReaction(params, channelID, msg)
+		errAnswer = handleChannelReaction(channelID, msg)
 	case channelConsensus:
-		errAnswer = handleChannelConsensus(params, channelID, msg)
+		errAnswer = handleChannelConsensus(socket, channelID, msg)
 	case channelPopCha:
-		errAnswer = handleChannelPopCha(params, channelID, msg)
+		errAnswer = handleChannelPopCha(channelID, msg)
 	case channelCoin:
-		errAnswer = handleChannelCoin(params, channelID, msg)
+		errAnswer = handleChannelCoin(channelID, msg)
 	default:
 		errAnswer = answer.NewInvalidResourceError("unknown channel type %s", channelType)
 	}
@@ -101,7 +109,7 @@ func HandleChannel(params types.HandlerParameters, channelID string, msg message
 
 // utils for the channels
 
-func verifyDataAndGetObjectAction(params types.HandlerParameters, msg message.Message) (object string, action string, errAnswer *answer.Error) {
+func verifyDataAndGetObjectAction(msg message.Message) (object string, action string, errAnswer *answer.Error) {
 	jsonData, err := base64.URLEncoding.DecodeString(msg.Data)
 	if err != nil {
 		errAnswer = answer.NewInvalidMessageFieldError("failed to decode message data: %v", err)
@@ -133,21 +141,12 @@ func verifyDataAndGetObjectAction(params types.HandlerParameters, msg message.Me
 	return object, action, nil
 }
 
-func Sign(data []byte, params types.HandlerParameters) ([]byte, *answer.Error) {
-
+func Sign(data []byte) ([]byte, *answer.Error) {
 	var errAnswer *answer.Error
-	serverSecretBuf, err := params.ServerSecretKey.MarshalBinary()
-	if err != nil {
-		errAnswer = answer.NewInternalServerError("failed to marshal the server secret key: %v", err)
-		errAnswer = errAnswer.Wrap("Sign")
-		return nil, errAnswer
-	}
 
-	serverSecretKey := crypto.Suite.Scalar()
-	err = serverSecretKey.UnmarshalBinary(serverSecretBuf)
-	if err != nil {
-		errAnswer = answer.NewInternalServerError("failed to unmarshal the server secret key: %v", err)
-		errAnswer = errAnswer.Wrap("Sign")
+	serverSecretKey, ok := config.GetServerSecretKeyInstance()
+	if !ok {
+		errAnswer := answer.NewInternalServerError("failed to get utils").Wrap("Sign")
 		return nil, errAnswer
 	}
 
@@ -167,7 +166,7 @@ func generateKeys() (kyber.Point, kyber.Scalar) {
 	return point, secret
 }
 
-func broadcastToAllClients(msg message.Message, params types.HandlerParameters, channel string) *answer.Error {
+func broadcastToAllClients(msg message.Message, channel string) *answer.Error {
 	rpcMessage := method.Broadcast{
 		Base: query.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{

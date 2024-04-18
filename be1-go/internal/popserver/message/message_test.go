@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"github.com/stretchr/testify/require"
 	"popstellar/internal/popserver"
-	"popstellar/internal/popserver/types"
 	jsonrpc "popstellar/message"
 	"popstellar/message/query"
 	"popstellar/message/query/method"
@@ -16,7 +15,6 @@ import (
 func Test_handleMessage(t *testing.T) {
 	type input struct {
 		name    string
-		params  types.HandlerParameters
 		message []byte
 	}
 
@@ -35,11 +33,8 @@ func Test_handleMessage(t *testing.T) {
 	wrongJsonBuf, err := json.Marshal(wrongJson)
 	require.NoError(t, err)
 
-	params := popserver.NewHandlerParameters(nil)
-
 	inputs = append(inputs, input{
 		"wrong json",
-		params,
 		wrongJsonBuf,
 	})
 
@@ -68,11 +63,8 @@ func Test_handleMessage(t *testing.T) {
 	wrongPublish, err := json.Marshal(publish)
 	require.NoError(t, err)
 
-	params = popserver.NewHandlerParameters(nil)
-
 	inputs = append(inputs, input{
 		name:    "wrong publish",
-		params:  params,
 		message: wrongPublish,
 	})
 
@@ -80,7 +72,8 @@ func Test_handleMessage(t *testing.T) {
 
 	for _, i := range inputs {
 		t.Run(i.name, func(t *testing.T) {
-			err := HandleMessage(i.params, i.message)
+			fakeSocket := popserver.FakeSocket{Id: "fakesocket"}
+			err := HandleMessage(&fakeSocket, i.message)
 			require.Error(t, err)
 		})
 	}
@@ -89,7 +82,6 @@ func Test_handleMessage(t *testing.T) {
 func Test_handleQuery(t *testing.T) {
 	type input struct {
 		name    string
-		params  types.HandlerParameters
 		message []byte
 	}
 
@@ -111,14 +103,11 @@ func Test_handleQuery(t *testing.T) {
 		},
 	}
 
-	params := popserver.NewHandlerParameters(nil)
-
 	msgBuf, err := json.Marshal(msg)
 	require.NoError(t, err)
 
 	inputs = append(inputs, input{
 		name:    "wrong method",
-		params:  params,
 		message: msgBuf,
 	})
 
@@ -126,7 +115,8 @@ func Test_handleQuery(t *testing.T) {
 
 	for _, i := range inputs {
 		t.Run(i.name, func(t *testing.T) {
-			_, errAnswer := handleQuery(i.params, i.message)
+			fakeSocket := popserver.FakeSocket{Id: "fakesocket"}
+			_, errAnswer := handleQuery(&fakeSocket, i.message)
 			require.NotNil(t, errAnswer)
 		})
 	}

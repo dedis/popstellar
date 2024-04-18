@@ -3,15 +3,16 @@ package channel
 import (
 	"encoding/base64"
 	"encoding/json"
-	"popstellar/internal/popserver/types"
+	"popstellar/internal/popserver/config"
+	"popstellar/internal/popserver/database"
 	"popstellar/message/answer"
 	"popstellar/message/messagedata"
 	"popstellar/message/query/method/message"
 	"strings"
 )
 
-func handleChannelChirp(params types.HandlerParameters, channelID string, msg message.Message) *answer.Error {
-	object, action, errAnswer := verifyDataAndGetObjectAction(params, msg)
+func handleChannelChirp(channelID string, msg message.Message) *answer.Error {
+	object, action, errAnswer := verifyDataAndGetObjectAction(msg)
 	if errAnswer != nil {
 		errAnswer = errAnswer.Wrap("handleChannelChirp")
 		return errAnswer
@@ -21,7 +22,7 @@ func handleChannelChirp(params types.HandlerParameters, channelID string, msg me
 	case messagedata.ChirpObject + "#" + messagedata.ChirpActionAdd:
 		errAnswer = handleChirpAdd(channelID, msg)
 	case messagedata.ChirpObject + "#" + messagedata.ChirpActionDelete:
-		errAnswer = handleChirpDelete(params, channelID, msg)
+		errAnswer = handleChirpDelete(channelID, msg)
 	default:
 		errAnswer = answer.NewInvalidMessageFieldError("failed to handle %s#%s, invalid object#action", object, action)
 	}
@@ -30,20 +31,26 @@ func handleChannelChirp(params types.HandlerParameters, channelID string, msg me
 		return errAnswer
 	}
 
-	err := params.DB.StoreMessage(channelID, msg)
+	db, ok := database.GetChirpRepositoryInstance()
+	if !ok {
+		errAnswer := answer.NewInternalServerError("failed to get database").Wrap("handleChannelChirp")
+		return errAnswer
+	}
+
+	err := db.StoreMessage(channelID, msg)
 	if err != nil {
 		errAnswer = answer.NewInternalServerError("failed to store message: %v", err)
 		errAnswer = errAnswer.Wrap("handleChannelChirp")
 		return errAnswer
 	}
 
-	errAnswer = copyToGeneral(params, channelID, msg)
+	errAnswer = copyToGeneral(channelID, msg)
 	if errAnswer != nil {
 		errAnswer = errAnswer.Wrap("handleChannelGeneralChirp")
 		return errAnswer
 	}
 
-	errAnswer = broadcastToAllClients(msg, params, channelID)
+	errAnswer = broadcastToAllClients(msg, channelID)
 	if errAnswer != nil {
 		errAnswer = errAnswer.Wrap("handleChannelGeneralChirp")
 		return errAnswer
@@ -70,7 +77,7 @@ func handleChirpAdd(channelID string, msg message.Message) *answer.Error {
 	return nil
 }
 
-func handleChirpDelete(params types.HandlerParameters, channelID string, msg message.Message) *answer.Error {
+func handleChirpDelete(channelID string, msg message.Message) *answer.Error {
 	var data messagedata.ChirpDelete
 
 	err := msg.UnmarshalData(&data)
@@ -85,7 +92,13 @@ func handleChirpDelete(params types.HandlerParameters, channelID string, msg mes
 		return errAnswer
 	}
 
-	msgToDeleteExists, err := params.DB.HasMessage(data.ChirpID)
+	db, ok := database.GetChirpRepositoryInstance()
+	if !ok {
+		errAnswer := answer.NewInternalServerError("failed to get database").Wrap("handleChirpDelete")
+		return errAnswer
+	}
+
+	msgToDeleteExists, err := db.HasMessage(data.ChirpID)
 	if err != nil {
 		errAnswer := answer.NewInternalServerError("failed to query DB: %v", err).Wrap("handleChirpDelete")
 		return errAnswer
@@ -115,7 +128,7 @@ func verifyChirpMessage(channelID string, msg message.Message, chirpMsg messaged
 	return nil
 }
 
-func copyToGeneral(params types.HandlerParameters, channelID string, msg message.Message) *answer.Error {
+func copyToGeneral(channelID string, msg message.Message) *answer.Error {
 	jsonData, err := base64.URLEncoding.DecodeString(msg.Data)
 	if err != nil {
 		errAnswer := answer.NewInvalidMessageFieldError("failed to decode the data: %v", err)
@@ -155,7 +168,13 @@ func copyToGeneral(params types.HandlerParameters, channelID string, msg message
 
 	data64 := base64.URLEncoding.EncodeToString(dataBuf)
 
-	pkBuf, err := params.ServerPubKey.MarshalBinary()
+	serverPublicKey, ok := config.GetServerPublicKeyInstance()
+	if !ok {
+		errAnswer := answer.NewInternalServerError("failed to get config").Wrap("copyToGeneral")
+		return errAnswer
+	}
+
+	pkBuf, err := serverPublicKey.MarshalBinary()
 	if err != nil {
 		errAnswer := answer.NewInternalServerError("failed to unmarshall server public key", err)
 		errAnswer = errAnswer.Wrap("copyToGeneral")
@@ -163,7 +182,7 @@ func copyToGeneral(params types.HandlerParameters, channelID string, msg message
 	}
 	pk64 := base64.URLEncoding.EncodeToString(pkBuf)
 
-	signatureBuf, errAnswer := Sign(dataBuf, params)
+	signatureBuf, errAnswer := Sign(dataBuf)
 	if errAnswer != nil {
 		errAnswer := errAnswer.Wrap("copyToGeneral")
 		return errAnswer
@@ -183,7 +202,7 @@ func copyToGeneral(params types.HandlerParameters, channelID string, msg message
 	splitChannelID := strings.Split(channelID, "/")
 	generalChirpsChannelID := "/root" + splitChannelID[1] + "/social/chirps"
 
-	errAnswer = HandleChannel(params, generalChirpsChannelID, newMsg)
+	errAnswer = HandleChannel(nil, generalChirpsChannelID, newMsg)
 	if errAnswer != nil {
 		errAnswer = errAnswer.Wrap("copyToGeneral")
 		return errAnswer

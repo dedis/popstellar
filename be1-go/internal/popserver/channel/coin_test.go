@@ -7,8 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	"popstellar/internal/popserver"
-	"popstellar/internal/popserver/repo"
-	"popstellar/internal/popserver/types"
+	database2 "popstellar/internal/popserver/database"
 	"popstellar/message/messagedata"
 	"popstellar/message/query/method"
 	"popstellar/message/query/method/message"
@@ -19,7 +18,6 @@ const coinPath string = "../../../validation/protocol/examples/messageData/coin"
 
 type inputTestHandleChannelCoin struct {
 	name      string
-	params    types.HandlerParameters
 	channelID string
 	message   message.Message
 	hasError  bool
@@ -27,19 +25,24 @@ type inputTestHandleChannelCoin struct {
 }
 
 func Test_handleChannelCoin(t *testing.T) {
+	mockRepo, err := database2.SetDatabase(t)
+	require.NoError(t, err)
+
 	inputs := make([]inputTestHandleChannelCoin, 0)
 
 	// Tests that the channel works correctly when it receives a transaction
 
 	inputs = append(inputs, newSuccessTestHandleChannelCoin(t,
 		"post_transaction.json",
-		"send transaction"))
+		"send transaction",
+		mockRepo))
 
 	// Tests that the channel works correctly when it receives a large transaction
 
 	inputs = append(inputs, newSuccessTestHandleChannelCoin(t,
 		"post_transaction_max_amount.json",
-		"send transaction max amount"))
+		"send transaction max amount",
+		mockRepo))
 
 	// Tests that the channel rejects transactions that exceed the maximum amount
 
@@ -51,7 +54,8 @@ func Test_handleChannelCoin(t *testing.T) {
 
 	inputs = append(inputs, newSuccessTestHandleChannelCoin(t,
 		"post_transaction_zero_amount.json",
-		"send transaction zero amount"))
+		"send transaction zero amount",
+		mockRepo))
 
 	// Tests that the channel rejects transactions with negative amounts
 
@@ -75,13 +79,14 @@ func Test_handleChannelCoin(t *testing.T) {
 
 	inputs = append(inputs, newSuccessTestHandleChannelCoin(t,
 		"post_transaction_coinbase.json",
-		"send transaction coinbase"))
+		"send transaction coinbase",
+		mockRepo))
 
 	// Tests all cases
 
 	for _, i := range inputs {
 		t.Run(i.name, func(t *testing.T) {
-			errAnswer := handleChannelCoin(i.params, i.channelID, i.message)
+			errAnswer := handleChannelCoin(i.channelID, i.message)
 			if i.hasError {
 				require.NotNil(t, errAnswer)
 			} else {
@@ -102,7 +107,7 @@ func Test_handleChannelCoin(t *testing.T) {
 
 }
 
-func newSuccessTestHandleChannelCoin(t *testing.T, filename string, name string) inputTestHandleChannelCoin {
+func newSuccessTestHandleChannelCoin(t *testing.T, filename string, name string, mockRepo *database2.MockRepository) inputTestHandleChannelCoin {
 	laoID := messagedata.Hash(name)
 	var sender = "M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU="
 	var channelID = "/root/" + laoID + "/coin"
@@ -121,17 +126,15 @@ func newSuccessTestHandleChannelCoin(t *testing.T, filename string, name string)
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
-	mockRepo := repo.NewMockRepository(t)
 	mockRepo.On("StoreMessage", channelID, m).Return(nil)
 
 	sockets := []*popserver.FakeSocket{
-		{Id: "0"},
-		{Id: "1"},
-		{Id: "2"},
-		{Id: "3"},
+		{Id: laoID + "0"},
+		{Id: laoID + "1"},
+		{Id: laoID + "2"},
+		{Id: laoID + "3"},
 	}
 
-	params := popserver.NewHandlerParametersWithFakeSocket(mockRepo, sockets[0])
 	subs.AddChannel(channelID)
 
 	for _, s := range sockets {
@@ -141,7 +144,6 @@ func newSuccessTestHandleChannelCoin(t *testing.T, filename string, name string)
 
 	return inputTestHandleChannelCoin{
 		name:      name,
-		params:    params,
 		channelID: channelID,
 		message:   m,
 		hasError:  false,
@@ -168,12 +170,10 @@ func newFailTestHandleChannelCoin(t *testing.T, filename string, name string) in
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
-	params := popserver.NewHandlerParameters(nil)
 	subs.AddChannel(channelID)
 
 	return inputTestHandleChannelCoin{
 		name:      name,
-		params:    params,
 		channelID: channelID,
 		message:   m,
 		hasError:  true,

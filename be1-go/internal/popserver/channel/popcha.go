@@ -1,14 +1,14 @@
 package channel
 
 import (
-	"popstellar/internal/popserver/types"
+	"popstellar/internal/popserver/database"
 	"popstellar/message/answer"
 	"popstellar/message/messagedata"
 	"popstellar/message/query/method/message"
 )
 
-func handleChannelPopCha(params types.HandlerParameters, channel string, msg message.Message) *answer.Error {
-	object, action, errAnswer := verifyDataAndGetObjectAction(params, msg)
+func handleChannelPopCha(channel string, msg message.Message) *answer.Error {
+	object, action, errAnswer := verifyDataAndGetObjectAction(msg)
 	if errAnswer != nil {
 		errAnswer = errAnswer.Wrap("handleChannelPopCha")
 		return errAnswer
@@ -16,7 +16,7 @@ func handleChannelPopCha(params types.HandlerParameters, channel string, msg mes
 
 	switch object + "#" + action {
 	case messagedata.AuthObject + "#" + messagedata.AuthAction:
-		errAnswer = handleAuth(params, msg)
+		errAnswer = handleAuth(msg)
 	default:
 		errAnswer = answer.NewInvalidMessageFieldError("failed to handle %s#%s, invalid object#action", object, action)
 	}
@@ -25,7 +25,13 @@ func handleChannelPopCha(params types.HandlerParameters, channel string, msg mes
 		return errAnswer
 	}
 
-	err := params.DB.StoreMessage(channel, msg)
+	db, ok := database.GetPopChaRepositoryInstance()
+	if !ok {
+		errAnswer := answer.NewInternalServerError("failed to get database").Wrap("handleChannelPopCha")
+		return errAnswer
+	}
+
+	err := db.StoreMessage(channel, msg)
 	if err != nil {
 		errAnswer = answer.NewInternalServerError("failed to store message: %v", err)
 		errAnswer = errAnswer.Wrap("handleChannelPopCha")
@@ -34,6 +40,6 @@ func handleChannelPopCha(params types.HandlerParameters, channel string, msg mes
 	return nil
 }
 
-func handleAuth(params types.HandlerParameters, msg message.Message) *answer.Error {
+func handleAuth(msg message.Message) *answer.Error {
 	return nil
 }

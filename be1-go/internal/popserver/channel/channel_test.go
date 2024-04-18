@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/require"
+	"go.dedis.ch/kyber/v3"
 	"go.dedis.ch/kyber/v3/sign/schnorr"
 	"golang.org/x/xerrors"
 	"io"
@@ -13,10 +14,11 @@ import (
 	"popstellar/crypto"
 	"popstellar/hub/standard_hub/hub_state"
 	"popstellar/internal/popserver"
-	"popstellar/internal/popserver/repo"
-	"popstellar/internal/popserver/singleton/state"
-	"popstellar/internal/popserver/singleton/utils"
+	"popstellar/internal/popserver/config"
+	"popstellar/internal/popserver/database"
+	"popstellar/internal/popserver/state"
 	"popstellar/internal/popserver/types"
+	"popstellar/internal/popserver/utils"
 	"popstellar/message/messagedata"
 	"popstellar/message/query/method/message"
 	"popstellar/validation"
@@ -27,6 +29,10 @@ import (
 var subs *types.Subscribers
 var queries hub_state.Queries
 var peers hub_state.Peers
+
+var ownerPublicKey kyber.Point
+var serverPublicKey kyber.Point
+var serverSecretKey kyber.Scalar
 
 func TestMain(m *testing.M) {
 	subs = types.NewSubscribers()
@@ -43,6 +49,23 @@ func TestMain(m *testing.M) {
 	}
 
 	utils.InitUtils(&log, schemaValidator)
+	organizerBuf, err := base64.URLEncoding.DecodeString(organizer)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "error: %v\n", err)
+		os.Exit(1)
+	}
+
+	ownerPublicKey = crypto.Suite.Point()
+	err = ownerPublicKey.UnmarshalBinary(organizerBuf)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "error: %v\n", err)
+		os.Exit(1)
+	}
+
+	serverSecretKey = crypto.Suite.Scalar().Pick(crypto.Suite.RandomStream())
+	serverPublicKey = crypto.Suite.Point().Mul(serverSecretKey, nil)
+
+	config.InitConfig(ownerPublicKey, serverPublicKey, serverSecretKey, "clientAddress", "serverAddress")
 
 	exitVal := m.Run()
 
@@ -51,12 +74,14 @@ func TestMain(m *testing.M) {
 
 type handleChannelInput struct {
 	name      string
-	params    types.HandlerParameters
 	channelID string
 	message   message.Message
 }
 
 func Test_handleChannel(t *testing.T) {
+	mockRepository, err := database.SetDatabase(t)
+	require.NoError(t, err)
+
 	keypair := popserver.GenerateKeyPair(t)
 	now := time.Now().Unix()
 	name := "LAO X"
@@ -95,15 +120,11 @@ func Test_handleChannel(t *testing.T) {
 
 	wrongChannelID := "wrongChannelID"
 
-	mockRepository := repo.NewMockRepository(t)
-	params := popserver.NewHandlerParameters(mockRepository)
-
 	mockRepository.On("HasMessage", msg.MessageID).Return(false, nil)
 	mockRepository.On("GetChannelType", wrongChannelID).Return("", nil)
 
 	inputs = append(inputs, handleChannelInput{
 		name:      "unknown channelType",
-		params:    params,
 		channelID: wrongChannelID,
 		message:   msg,
 	})
@@ -112,43 +133,31 @@ func Test_handleChannel(t *testing.T) {
 
 	problemDBChannelID := "problemDBChannelID"
 
-	mockRepository = repo.NewMockRepository(t)
-	params = popserver.NewHandlerParameters(mockRepository)
-
 	mockRepository.On("HasMessage", msg.MessageID).Return(false, nil)
 	mockRepository.On("GetChannelType", problemDBChannelID).Return("", xerrors.Errorf("DB disconnected"))
 
 	inputs = append(inputs, handleChannelInput{
 		name:      "failed to query channelType",
-		params:    params,
 		channelID: problemDBChannelID,
 		message:   msg,
 	})
 
 	// message already received
 
-	mockRepository = repo.NewMockRepository(t)
-	params = popserver.NewHandlerParameters(mockRepository)
-
 	mockRepository.On("HasMessage", msg.MessageID).Return(true, nil)
 
 	inputs = append(inputs, handleChannelInput{
 		name:      "message already received",
-		params:    params,
 		channelID: wrongChannelID,
 		message:   msg,
 	})
 
 	// error while querying if the message already exists
 
-	mockRepository = repo.NewMockRepository(t)
-	params = popserver.NewHandlerParameters(mockRepository)
-
 	mockRepository.On("HasMessage", msg.MessageID).Return(false, xerrors.Errorf("DB disconnected"))
 
 	inputs = append(inputs, handleChannelInput{
 		name:      "failed to query message",
-		params:    params,
 		channelID: wrongChannelID,
 		message:   msg,
 	})
@@ -158,11 +167,8 @@ func Test_handleChannel(t *testing.T) {
 	msgWrongID := msg
 	msgWrongID.MessageID = messagedata.Hash("wrong messageID")
 
-	params = popserver.NewHandlerParameters(nil)
-
 	inputs = append(inputs, handleChannelInput{
 		name:      "wrong messageID",
-		params:    params,
 		channelID: "",
 		message:   msgWrongID,
 	})
@@ -173,11 +179,8 @@ func Test_handleChannel(t *testing.T) {
 	msgWrongSender := msg
 	msgWrongSender.Sender = base64.URLEncoding.EncodeToString(wrongKeypair.PublicBuf)
 
-	params = popserver.NewHandlerParameters(nil)
-
 	inputs = append(inputs, handleChannelInput{
 		name:      "failed signature check wrong sender",
-		params:    params,
 		channelID: "",
 		message:   msgWrongSender,
 	})
@@ -187,11 +190,8 @@ func Test_handleChannel(t *testing.T) {
 	msgWrongData := msg
 	msgWrongData.Data = base64.URLEncoding.EncodeToString([]byte("wrong data"))
 
-	params = popserver.NewHandlerParameters(nil)
-
 	inputs = append(inputs, handleChannelInput{
 		name:      "failed signature check wrong data",
-		params:    params,
 		channelID: "",
 		message:   msgWrongData,
 	})
@@ -205,11 +205,8 @@ func Test_handleChannel(t *testing.T) {
 	msgWrongSign := msg
 	msgWrongSign.Signature = base64.URLEncoding.EncodeToString(wrongSignature)
 
-	params = popserver.NewHandlerParameters(nil)
-
 	inputs = append(inputs, handleChannelInput{
 		name:      "failed signature check wrong signature",
-		params:    params,
 		channelID: "",
 		message:   msgWrongSign,
 	})
@@ -219,11 +216,8 @@ func Test_handleChannel(t *testing.T) {
 	msgWrongSignEncoding := msg
 	msgWrongSignEncoding.Signature = "wrong encoding"
 
-	params = popserver.NewHandlerParameters(nil)
-
 	inputs = append(inputs, handleChannelInput{
 		name:      "wrong signature encoding",
-		params:    params,
 		channelID: "",
 		message:   msgWrongSignEncoding,
 	})
@@ -233,11 +227,8 @@ func Test_handleChannel(t *testing.T) {
 	msgWrongSenderEncoding := msg
 	msgWrongSenderEncoding.Sender = "wrong encoding"
 
-	params = popserver.NewHandlerParameters(nil)
-
 	inputs = append(inputs, handleChannelInput{
 		name:      "wrong sender encoding",
-		params:    params,
 		channelID: "",
 		message:   msgWrongSenderEncoding,
 	})
@@ -247,18 +238,16 @@ func Test_handleChannel(t *testing.T) {
 	msgWrongDataEncoding := msg
 	msgWrongDataEncoding.Data = "wrong encoding"
 
-	params = popserver.NewHandlerParameters(nil)
-
 	inputs = append(inputs, handleChannelInput{
 		name:      "wrong data encoding",
-		params:    params,
 		channelID: "",
 		message:   msgWrongDataEncoding,
 	})
 
 	for _, i := range inputs {
 		t.Run(i.name, func(t *testing.T) {
-			errAnswer := HandleChannel(i.params, i.channelID, i.message)
+			fakeSocket := popserver.FakeSocket{Id: "fakesocket"}
+			errAnswer := HandleChannel(&fakeSocket, i.channelID, i.message)
 			require.Error(t, errAnswer)
 		})
 	}
