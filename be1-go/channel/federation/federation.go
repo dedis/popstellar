@@ -49,7 +49,7 @@ type Channel struct {
 	localOrganizerPk  string
 	remoteOrganizerPk string
 
-	remoteServer *socket.ClientSocket
+	remoteServer socket.Socket
 
 	challenge messagedata.Challenge
 
@@ -318,6 +318,9 @@ func (c *Channel) processFederationChallenge(msg message.Message,
 	}
 
 	c.state = Connected
+	c.remoteServer = s
+	// Send Federation result to S1
+	// c.remoteServer.Send(...)
 
 	return nil
 }
