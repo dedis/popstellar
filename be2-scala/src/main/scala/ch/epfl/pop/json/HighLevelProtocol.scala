@@ -116,6 +116,7 @@ object HighLevelProtocol extends DefaultJsonProtocol {
         case paramsWithChannel: ParamsWithChannel => paramsWithChannel.toJson
         case paramsWithMap: ParamsWithMap         => paramsWithMap.toJson
         case greetServer: GreetServer             => greetServer.toJson(GreetServerFormat)
+        case rumor: Rumor                         => rumor.toJson(RumorFormat)
       }
 
   }
@@ -198,6 +199,34 @@ object HighLevelProtocol extends DefaultJsonProtocol {
     }
   }
 
+  implicit object RumorFormat extends RootJsonFormat[Rumor] {
+    final private val PARAM_SENDER_PK: String = "sender_id"
+    final private val PARAM_RUMOR_ID: String = "rumor_id"
+    final private val PARAM_MESSAGES: String = "messages"
+
+    override def read(json: JsValue): Rumor = {
+      json.asJsObject.getFields(PARAM_SENDER_PK, PARAM_RUMOR_ID, PARAM_MESSAGES) match {
+        case Seq(senderPk @ JsString(_), rumorId @ JsNumber(_), rumors @ JsObject(_)) =>
+          val map: Map[Channel, List[Message]] = rumors.asJsObject.fields.map {
+            case (k: String, JsArray(v)) => Channel(k) -> v.map(_.convertTo[Message]).toList
+            case _                       => throw new IllegalArgumentException(s"Unrecognizable rumor in $json")
+          }
+          new Rumor(senderPk.convertTo[PublicKey], rumorId.convertTo[Int], HashMap.from(map))
+        case _ => throw new IllegalArgumentException(s"Can't parse json value $json to a Rumor object")
+      }
+    }
+
+    override def write(obj: Rumor): JsValue = {
+      val jsObjContent: ListMap[String, JsValue] = ListMap[String, JsValue](
+        PARAM_SENDER_PK -> obj.senderPk.toJson,
+        PARAM_RUMOR_ID -> obj.rumorId.toJson,
+        PARAM_MESSAGES -> obj.messages.toJson
+      )
+      JsObject(jsObjContent)
+    }
+
+  }
+
   implicit val errorObjectFormat: JsonFormat[ErrorObject] = jsonFormat2(ErrorObject.apply)
 
   implicit object ResultObjectFormat extends RootJsonFormat[ResultObject] {
@@ -234,6 +263,7 @@ object HighLevelProtocol extends DefaultJsonProtocol {
           case MethodType.unsubscribe        => paramsJsObject.convertTo[Unsubscribe]
           case MethodType.catchup            => paramsJsObject.convertTo[Catchup]
           case MethodType.get_messages_by_id => paramsJsObject.convertTo[GetMessagesById]
+          case MethodType.rumor              => paramsJsObject.convertTo[Rumor]
           case _                             => throw new IllegalArgumentException(s"Can't parse json value $json with unknown method ${method.toString}")
         }
 
