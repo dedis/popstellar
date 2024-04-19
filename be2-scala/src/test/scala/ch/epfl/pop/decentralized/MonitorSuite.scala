@@ -17,6 +17,7 @@ import ch.epfl.pop.storage.DbActor
 import akka.pattern.ask
 
 import java.io.{File, PrintWriter}
+import java.lang.Thread.sleep
 import java.nio.file.Path
 import scala.collection.immutable.HashMap
 import scala.concurrent.duration.DurationInt
@@ -190,6 +191,7 @@ class MonitorSuite extends TestKit(ActorSystem("MonitorSuiteActorSystem")) with 
 
     val newContent = List("some", "strings")
     testWriteToServerPeersConfig(newContent)
+    sleep(1)
 
     mockConnectionMediator.expectMsgType[ConnectionMediator.ConnectTo](timeout)
 
