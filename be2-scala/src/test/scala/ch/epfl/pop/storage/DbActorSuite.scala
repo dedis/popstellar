@@ -900,6 +900,7 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
     val answer = Await.result(ask, duration)
 
     answer shouldBe a[DbActor.DbActorGenerateHeartbeatAck]
+
     val heartbeat = answer.asInstanceOf[DbActorGenerateHeartbeatAck].heartbeatMap
     val expected = HashMap(Channel(channelName2) -> Set(MESSAGE.message_id, messageId), Channel(channelName1) -> Set(MESSAGE.message_id, messageId))
 
@@ -914,8 +915,8 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
     val answer = Await.result(ask, duration)
     val heartbeat = answer.asInstanceOf[DbActorGenerateHeartbeatAck].heartbeatMap
     val expected = HashMap.empty[Channel, Set[Hash]]
-    heartbeat should equal(expected)
 
+    heartbeat should equal(expected)
   }
 
 }

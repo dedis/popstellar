@@ -371,9 +371,9 @@ final case class DbActor(
   }
 
   @throws[DbActorNAckException]
-  private def generateHeartbeat(): Option[HashMap[Channel, Set[Hash]]] = {
+  private def generateHeartbeat(): HashMap[Channel, Set[Hash]] = {
     val setOfChannels = getAllChannels
-    if (setOfChannels.isEmpty) return None
+    if (setOfChannels.isEmpty) return HashMap()
     val heartbeatMap: HashMap[Channel, Set[Hash]] = setOfChannels.foldLeft(HashMap.empty[Channel, Set[Hash]]) {
       (acc, channel) =>
         readChannelData(channel).messages.toSet match {
@@ -381,8 +381,7 @@ final case class DbActor(
           case _                             => acc
         }
     }
-
-    Some(heartbeatMap)
+    heartbeatMap
   }
 
   override def receive: Receive = LoggingReceive {
@@ -558,18 +557,17 @@ final case class DbActor(
         case Success(privateKey) => sender() ! DbActorReadServerPrivateKeyAck(privateKey)
         case failure             => sender() ! failure.recover(Status.Failure(_))
       }
+
     case GenerateHeartbeat() =>
       log.info(s"Actor $self (db) received a GenerateHeartbeat request")
       Try(generateHeartbeat()) match {
-        case Success(Some(heartbeat)) => sender() ! DbActorGenerateHeartbeatAck(heartbeat)
-        case Success(None)            => sender() ! DbActorGenerateHeartbeatAck(HashMap())
-        case failure                  => sender() ! failure.recover(Status.Failure(_))
+        case Success(heartbeat) => sender() ! DbActorGenerateHeartbeatAck(heartbeat)
+        case failure            => sender() ! failure.recover(Status.Failure(_))
       }
 
     case m =>
       log.info(s"Actor $self (db) received an unknown message")
       sender() ! Status.Failure(DbActorNAckException(ErrorCodes.INVALID_ACTION.id, s"database actor received a message '$m' that it could not recognize"))
-
   }
 }
 
