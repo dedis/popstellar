@@ -24,16 +24,13 @@ object ParamsWithMapHandler extends AskPatternConstants {
       /** first step is to retrieve the received heartbeat from the jsonRpcRequest */
       val receivedHeartBeat: Map[Channel, Set[Hash]] = jsonRpcMessage.getParams.asInstanceOf[Heartbeat].channelsToMessageIds
 
-      var localHeartBeat: HashMap[Channel, Set[Hash]] = HashMap()
+      /** finally, we only keep from the received heartbeat the message ids that are not contained in the locally extracted heartbeat. */
       val ask = dbActorRef ? DbActor.GenerateHeartbeat()
       Await.ready(ask, duration).value.get match
         case Success(DbActor.DbActorGenerateHeartbeatAck(map)) =>
-          localHeartBeat = map
-
-          /** finally, we only keep from the received heartbeat the message ids that are not contained in the locally extracted heartbeat. */
           var missingIdsMap: HashMap[Channel, Set[Hash]] = HashMap()
           receivedHeartBeat.keys.foreach(channel => {
-            val missingIdsSet = receivedHeartBeat(channel).diff(localHeartBeat.getOrElse(channel, Set.empty))
+            val missingIdsSet = receivedHeartBeat(channel).diff(map.getOrElse(channel, Set.empty))
             if (missingIdsSet.nonEmpty)
               missingIdsMap += (channel -> missingIdsSet)
           })
