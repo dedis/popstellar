@@ -12,7 +12,7 @@ import akka.util.Timeout
 import ch.epfl.pop.authentication.{GetRequestHandler, PopchaWebSocketResponseHandler}
 import ch.epfl.pop.config.RuntimeEnvironment
 import ch.epfl.pop.config.RuntimeEnvironment._
-import ch.epfl.pop.decentralized.{ConnectionMediator, HeartbeatGenerator, Monitor}
+import ch.epfl.pop.decentralized.{ConnectionMediator, Monitor}
 import ch.epfl.pop.pubsub.{MessageRegistry, PubSubMediator, PublishSubscribe}
 import ch.epfl.pop.storage.{DbActor, SecurityModuleActor}
 import org.iq80.leveldb.Options
@@ -49,8 +49,7 @@ object Server {
       val securityModuleActorRef: AskableActorRef = system.actorOf(Props(SecurityModuleActor(RuntimeEnvironment.securityPath)))
 
       // Create necessary actors for server-server communications
-      val heartbeatGenRef: ActorRef = system.actorOf(HeartbeatGenerator.props(dbActorRef))
-      val monitorRef: ActorRef = system.actorOf(Monitor.props(heartbeatGenRef))
+      val monitorRef: ActorRef = system.actorOf(Monitor.props(dbActorRef))
       val connectionMediatorRef: ActorRef = system.actorOf(ConnectionMediator.props(monitorRef, pubSubMediatorRef, dbActorRef, securityModuleActorRef, messageRegistry))
 
       // Setup routes
