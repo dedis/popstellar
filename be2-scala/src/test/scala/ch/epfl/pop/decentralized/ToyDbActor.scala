@@ -37,6 +37,6 @@ final case class ToyDbActor() extends Actor {
         sender() ! DbActor.DbActorCatchupAck(List(MESSAGE4))
       }
     case DbActor.GenerateHeartbeat() =>
-      sender() ! DbActor.DbActorGenerateHeartbeatAck(Some(HashMap(CHANNEL1 -> Set(MESSAGE1_ID), CHANNEL2 -> Set(MESSAGE4_ID))))
+      sender() ! DbActor.DbActorGenerateHeartbeatAck(HashMap(CHANNEL1 -> Set(MESSAGE1_ID), CHANNEL2 -> Set(MESSAGE4_ID)))
   }
 }

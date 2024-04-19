@@ -30,7 +30,7 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
   final val MESSAGE: Message = MessageExample.MESSAGE_CREATELAO_WORKING
   val LAO_ID: Hash = Hash(Base64Data.encode("laoId"))
   val ELECTION_ID: Hash = Hash(Base64Data.encode("electionId"))
-  val ELECTION_DATA_KEY: String = "Data:" + s"${ROOT_CHANNEL_PREFIX}${LAO_ID.toString}/private/${ELECTION_ID.toString}"
+  val ELECTION_DATA_KEY: String = "Data:" + s"$ROOT_CHANNEL_PREFIX${LAO_ID.toString}/private/${ELECTION_ID.toString}"
   val KEYPAIR: KeyPair = KeyPair()
 
   private val timeout = 3.second
@@ -57,7 +57,7 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
     storage.size should equal(1)
 
     // writing to the previously created channel
-    dbActor ! DbActor.Write(Channel(CHANNEL_NAME), MESSAGE);
+    dbActor ! DbActor.Write(Channel(CHANNEL_NAME), MESSAGE)
     sleep()
 
     expectMsg(DbActor.DbActorAck())
@@ -73,7 +73,7 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
     storage.size should equal(0)
 
     // writing to non-(yet-)existing channel
-    dbActor ! DbActor.Write(Channel(CHANNEL_NAME), MESSAGE);
+    dbActor ! DbActor.Write(Channel(CHANNEL_NAME), MESSAGE)
     sleep()
 
     expectMsg(DbActor.DbActorAck())
@@ -95,7 +95,7 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
     storage.size should equal(0)
 
     // adding a channel (channel 1)
-    dbActor ! DbActor.CreateChannel(Channel(channelName1), ObjectType.lao);
+    dbActor ! DbActor.CreateChannel(Channel(channelName1), ObjectType.lao)
     sleep()
 
     expectMsg(DbActor.DbActorAck())
@@ -104,7 +104,7 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
     // ------------------------- 1st WRITE REQUEST ------------------------- //
 
     // writing to the existing channel 1
-    dbActor ! DbActor.Write(Channel(channelName1), message1);
+    dbActor ! DbActor.Write(Channel(channelName1), message1)
     sleep()
 
     expectMsg(DbActor.DbActorAck())
@@ -115,7 +115,7 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
     // ------------------------- 2nd WRITE REQUEST ------------------------- //
 
     // writing to the non-(yet-)existing channel 2
-    dbActor ! DbActor.Write(Channel(channelName2), message2);
+    dbActor ! DbActor.Write(Channel(channelName2), message2)
     sleep()
 
     expectMsg(DbActor.DbActorAck())
@@ -128,7 +128,7 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
     // ------------------------- 3rd WRITE REQUEST ------------------------- //
 
     // writing (a new message) to the existing channel 1
-    dbActor ! DbActor.Write(Channel(channelName1), message2);
+    dbActor ! DbActor.Write(Channel(channelName1), message2)
     sleep()
 
     expectMsg(DbActor.DbActorAck())
@@ -146,7 +146,7 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
 
     storage.size should equal(0)
 
-    dbActor ! DbActor.CreateChannel(Channel(CHANNEL_NAME), ObjectType.lao);
+    dbActor ! DbActor.CreateChannel(Channel(CHANNEL_NAME), ObjectType.lao)
     sleep()
 
     expectMsg(DbActor.DbActorAck())
@@ -160,14 +160,14 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
 
     storage.size should equal(0)
 
-    dbActor ! DbActor.CreateChannel(Channel(CHANNEL_NAME), ObjectType.lao);
+    dbActor ! DbActor.CreateChannel(Channel(CHANNEL_NAME), ObjectType.lao)
     sleep()
 
     expectMsg(DbActor.DbActorAck())
     storage.size should equal(1)
     storage.elements(storage.CHANNEL_DATA_KEY + CHANNEL_NAME) should equal(ChannelData(ObjectType.lao, Nil).toJsonString)
 
-    dbActor ! DbActor.CreateChannel(Channel(CHANNEL_NAME), ObjectType.lao);
+    dbActor ! DbActor.CreateChannel(Channel(CHANNEL_NAME), ObjectType.lao)
     sleep()
 
     storage.size should equal(1)
@@ -180,7 +180,7 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
 
     storage.size should equal(0)
 
-    dbActor ! DbActor.CreateElectionData(LAO_ID, ELECTION_ID, KEYPAIR);
+    dbActor ! DbActor.CreateElectionData(LAO_ID, ELECTION_ID, KEYPAIR)
     sleep()
 
     expectMsg(DbActor.DbActorAck())
@@ -194,14 +194,14 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
 
     storage.size should equal(0)
 
-    dbActor ! DbActor.CreateElectionData(LAO_ID, ELECTION_ID, KEYPAIR);
+    dbActor ! DbActor.CreateElectionData(LAO_ID, ELECTION_ID, KEYPAIR)
     sleep()
 
     expectMsg(DbActor.DbActorAck())
     storage.size should equal(1)
     storage.elements(ELECTION_DATA_KEY) should equal(ElectionData(ELECTION_ID, KEYPAIR).toJsonString)
 
-    dbActor ! DbActor.CreateElectionData(LAO_ID, ELECTION_ID, KEYPAIR);
+    dbActor ! DbActor.CreateElectionData(LAO_ID, ELECTION_ID, KEYPAIR)
     sleep()
 
     storage.size should equal(1)
@@ -214,7 +214,7 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
 
     storage.size should equal(0)
 
-    dbActor ! DbActor.CreateChannelsFromList((Channel(CHANNEL_NAME), ObjectType.election) :: (Channel(s"${CHANNEL_NAME}2"), ObjectType.roll_call) :: Nil);
+    dbActor ! DbActor.CreateChannelsFromList((Channel(CHANNEL_NAME), ObjectType.election) :: (Channel(s"${CHANNEL_NAME}2"), ObjectType.roll_call) :: Nil)
     sleep()
 
     expectMsg(DbActor.DbActorAck())
@@ -229,14 +229,14 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
 
     storage.size should equal(0)
 
-    dbActor ! DbActor.CreateChannel(Channel(CHANNEL_NAME), ObjectType.lao);
+    dbActor ! DbActor.CreateChannel(Channel(CHANNEL_NAME), ObjectType.lao)
     sleep()
 
     expectMsg(DbActor.DbActorAck())
     storage.size should equal(1)
 
     // adding 2 new channels (one of which already exists)
-    dbActor ! DbActor.CreateChannelsFromList((Channel(CHANNEL_NAME), ObjectType.election) :: (Channel(s"${CHANNEL_NAME}2"), ObjectType.roll_call) :: Nil);
+    dbActor ! DbActor.CreateChannelsFromList((Channel(CHANNEL_NAME), ObjectType.election) :: (Channel(s"${CHANNEL_NAME}2"), ObjectType.roll_call) :: Nil)
     sleep()
 
     expectMsg(DbActor.DbActorAck())
@@ -252,7 +252,7 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
     storage.size should equal(0)
 
     // adding 2 new channels (same elements)
-    dbActor ! DbActor.CreateChannelsFromList((Channel(CHANNEL_NAME), ObjectType.lao) :: (Channel(CHANNEL_NAME), ObjectType.lao) :: Nil);
+    dbActor ! DbActor.CreateChannelsFromList((Channel(CHANNEL_NAME), ObjectType.lao) :: (Channel(CHANNEL_NAME), ObjectType.lao) :: Nil)
     sleep()
 
     expectMsg(DbActor.DbActorAck())
@@ -267,13 +267,13 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
     storage.size should equal(0)
 
     // adding no channel
-    dbActor ! DbActor.CreateChannelsFromList(Nil);
+    dbActor ! DbActor.CreateChannelsFromList(Nil)
     sleep()
 
     expectMsg(DbActor.DbActorAck())
     storage.size should equal(0)
 
-    dbActor ! DbActor.CreateChannelsFromList((Channel(CHANNEL_NAME), ObjectType.lao) :: Nil);
+    dbActor ! DbActor.CreateChannelsFromList((Channel(CHANNEL_NAME), ObjectType.lao) :: Nil)
     sleep()
 
     expectMsg(DbActor.DbActorAck())
@@ -304,13 +304,13 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
 
     storage.size should equal(0)
 
-    dbActor ! DbActor.CreateChannel(Channel(CHANNEL_NAME), ObjectType.lao);
+    dbActor ! DbActor.CreateChannel(Channel(CHANNEL_NAME), ObjectType.lao)
     sleep()
 
     storage.size should equal(1)
 
     // checking the existence of an existing channel
-    dbActor ! DbActor.ChannelExists(Channel(CHANNEL_NAME));
+    dbActor ! DbActor.ChannelExists(Channel(CHANNEL_NAME))
     sleep()
 
     expectMsg(DbActor.DbActorAck())
@@ -329,7 +329,7 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
     storage.size should equal(0)
 
     // act
-    dbActor ! DbActor.WriteLaoData(Channel(CHANNEL_NAME), messageLao, address);
+    dbActor ! DbActor.WriteLaoData(Channel(CHANNEL_NAME), messageLao, address)
     sleep()
 
     // assert
@@ -356,7 +356,7 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
     val dbActor: ActorRef = system.actorOf(Props(DbActor(mediatorRef, MessageRegistry(), initialStorage)))
 
     // act
-    dbActor ! DbActor.WriteLaoData(Channel(CHANNEL_NAME), messageRollCall, address);
+    dbActor ! DbActor.WriteLaoData(Channel(CHANNEL_NAME), messageRollCall, address)
     sleep()
 
     // assert
@@ -682,10 +682,10 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
     storage.size should equal(0)
 
     // act
-    dbActor ! DbActor.CreateChannel(Channel(CHANNEL_NAME), ObjectType.lao);
+    dbActor ! DbActor.CreateChannel(Channel(CHANNEL_NAME), ObjectType.lao)
     sleep()
     // writing to the previously created channel
-    dbActor ! DbActor.Write(Channel(CHANNEL_NAME), MESSAGE);
+    dbActor ! DbActor.Write(Channel(CHANNEL_NAME), MESSAGE)
     sleep()
     dbActor ! DbActor.AddWitnessSignature(Channel(CHANNEL_NAME), messageId, signature)
 
@@ -730,14 +730,14 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
     val storage: InMemoryStorage = InMemoryStorage()
     val dbActor: ActorRef = system.actorOf(Props(DbActor(mediatorRef, MessageRegistry(), storage)))
     val laoId: Hash = Hash(Base64Data.encode("laoId"))
-    val rollcallKey: String = storage.DATA_KEY + s"${ROOT_CHANNEL_PREFIX}${laoId.toString}/rollcall"
+    val rollcallKey: String = storage.DATA_KEY + s"$ROOT_CHANNEL_PREFIX${laoId.toString}/rollcall"
 
     val messageRollcall: Message = CreateRollCallExamples.MESSAGE_CREATE_ROLL_CALL_WORKING
 
     storage.size should equal(0)
 
     // act (1)
-    dbActor ! DbActor.WriteRollCallData(laoId, messageRollcall);
+    dbActor ! DbActor.WriteRollCallData(laoId, messageRollcall)
     sleep()
 
     // assert
@@ -751,7 +751,7 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
 
     // act (2)
     val messageRollcall2: Message = OpenRollCallExamples.MESSAGE_OPEN_ROLL_CALL_WORKING
-    dbActor ! DbActor.WriteRollCallData(laoId, messageRollcall2);
+    dbActor ! DbActor.WriteRollCallData(laoId, messageRollcall2)
     sleep()
 
     // assert (2)
@@ -770,7 +770,7 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
 
     val laoId: Hash = Hash(Base64Data.encode("laoId"))
     val updateId: Hash = Hash(Base64Data.encode("updateId"))
-    val rollcallKey: String = initialStorage.DATA_KEY + s"${ROOT_CHANNEL_PREFIX}${laoId.toString}/rollcall"
+    val rollcallKey: String = initialStorage.DATA_KEY + s"$ROOT_CHANNEL_PREFIX${laoId.toString}/rollcall"
     val rollcallData: RollCallData = RollCallData(updateId, ActionType.create)
     initialStorage.write((rollcallKey, rollcallData.toJsonString))
     val dbActor: AskableActorRef = system.actorOf(Props(DbActor(mediatorRef, MessageRegistry(), initialStorage)))
@@ -901,7 +901,7 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
 
     answer shouldBe a[DbActor.DbActorGenerateHeartbeatAck]
     val heartbeat = answer.asInstanceOf[DbActorGenerateHeartbeatAck].heartbeatMap
-    val expected = Some(HashMap(Channel(channelName2) -> Set(MESSAGE.message_id, messageId), Channel(channelName1) -> Set(MESSAGE.message_id, messageId)))
+    val expected = HashMap(Channel(channelName2) -> Set(MESSAGE.message_id, messageId), Channel(channelName1) -> Set(MESSAGE.message_id, messageId))
 
     heartbeat should equal(expected)
   }
@@ -913,8 +913,8 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
     val ask = dbActor ? GenerateHeartbeat()
     val answer = Await.result(ask, duration)
     val heartbeat = answer.asInstanceOf[DbActorGenerateHeartbeatAck].heartbeatMap
-
-    heartbeat should equal(None)
+    val expected = HashMap.empty[Channel, Set[Hash]]
+    heartbeat should equal(expected)
 
   }
 

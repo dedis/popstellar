@@ -3,13 +3,13 @@ package ch.epfl.pop.decentralized
 import akka.NotUsed
 import akka.actor.{Actor, ActorLogging, ActorRef, Props, Timers}
 import akka.event.LoggingReceive
-import akka.pattern.ask
+import akka.pattern.{AskableActorRef, ask}
 import akka.stream.scaladsl.Sink
 import ch.epfl.pop.config.RuntimeEnvironment.{readServerPeers, serverPeersListPath}
 import ch.epfl.pop.decentralized.Monitor.TriggerHeartbeat
 import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.{Heartbeat, ParamsWithMap}
-import ch.epfl.pop.model.objects.{Channel, DbActorNAckException, Hash}
+import ch.epfl.pop.model.objects.{Channel, Hash}
 import ch.epfl.pop.pubsub.AskPatternConstants
 import ch.epfl.pop.pubsub.graph.GraphMessage
 import ch.epfl.pop.storage.DbActor
@@ -20,14 +20,14 @@ import scala.collection.immutable.HashMap
 import scala.concurrent.Await
 import scala.concurrent.duration.{DurationInt, FiniteDuration}
 import scala.jdk.CollectionConverters.CollectionHasAsScala
-import scala.util.{Failure, Success}
+import scala.util.Success
 
 //This actor is tasked with scheduling heartbeats.
 // To that end it sees every message the system receives.
 // When a message is seen it schedule a heartbeat in the next heartbeatRate seconds.
 // Periodic heartbeats are sent with a period of messageDelay seconds.
 final case class Monitor(
-    dbActorRef: ActorRef,
+    dbActorRef: AskableActorRef,
     heartbeatRate: FiniteDuration,
     messageDelay: FiniteDuration
 ) extends Actor with ActorLogging with Timers with AskPatternConstants() {
@@ -62,8 +62,8 @@ final case class Monitor(
       val askForHeartbeat = dbActorRef ? DbActor.GenerateHeartbeat()
       val heartbeat: HashMap[Channel, Set[Hash]] =
         Await.ready(askForHeartbeat, duration).value.get match
-          case Success(DbActor.DbActorGenerateHeartbeatAck(Some(map))) => map
-          case _                                                       => HashMap.empty[Channel, Set[Hash]] // Handle anything else
+          case Success(DbActor.DbActorGenerateHeartbeatAck(map)) => map
+          case _                                                 => HashMap.empty[Channel, Set[Hash]] // Handle anything else
 
       if (heartbeat.nonEmpty)
         connectionMediatorRef ! Heartbeat(heartbeat)
@@ -89,7 +89,7 @@ final case class Monitor(
 }
 
 object Monitor {
-  def props(dbActorRef: ActorRef, heartbeatRate: FiniteDuration = 15.seconds, messageDelay: FiniteDuration = 1.seconds): Props =
+  def props(dbActorRef: AskableActorRef, heartbeatRate: FiniteDuration = 15.seconds, messageDelay: FiniteDuration = 1.seconds): Props =
     Props(new Monitor(dbActorRef, heartbeatRate, messageDelay))
 
   def sink(monitorRef: ActorRef): Sink[GraphMessage, NotUsed] = {
