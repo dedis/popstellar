@@ -7,13 +7,13 @@ import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.lao.GreetLao
 import ch.epfl.pop.model.network.method.message.data.{ActionType, ObjectType}
 import ch.epfl.pop.model.objects.Channel.ROOT_CHANNEL_PREFIX
-import ch.epfl.pop.model.objects._
+import ch.epfl.pop.model.objects.*
 import ch.epfl.pop.pubsub.{AskPatternConstants, MessageRegistry, PubSubMediator}
-import ch.epfl.pop.storage.DbActor.{DbActorReadServerPrivateKeyAck, DbActorReadServerPublicKeyAck, GetAllChannels}
+import ch.epfl.pop.storage.DbActor.{DbActorReadRumors, DbActorReadServerPrivateKeyAck, DbActorReadServerPublicKeyAck, GetAllChannels}
 import com.google.crypto.tink.subtle.Ed25519Sign
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.concurrent.ScalaFutures
-import org.scalatest.funsuite.{AnyFunSuiteLike => FunSuiteLike}
+import org.scalatest.funsuite.AnyFunSuiteLike as FunSuiteLike
 import org.scalatest.matchers.should.Matchers
 import util.examples.MessageExample
 import util.examples.RollCall.{CreateRollCallExamples, OpenRollCallExamples}
@@ -898,6 +898,30 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
     val rumorFound = initialStorage.read(rumorKey)
 
     rumorFound shouldBe Some(rumor.toJsonString)
+  }
+
+  test("can writeRumor() and then readRumors() correctly from storage") {
+
+    val initialStorage = InMemoryStorage()
+    val dbActor: AskableActorRef = system.actorOf(Props(DbActor(mediatorRef, MessageRegistry(), initialStorage)))
+
+    val rumor : Rumor = RumorExample.rumorExample
+
+    val write = dbActor ? DbActor.WriteRumor(rumor)
+    Await.result(write, duration) shouldBe a[DbActor.DbActorAck]
+
+    val desiredRumors : Map[String, List[Int]] = Map(rumor.senderPk.base64Data.data -> List(rumor.rumorId))
+
+    val read = dbActor ? DbActor.ReadRumors(desiredRumors)
+    val foundRumors = Await.result(read, duration).asInstanceOf[DbActorReadRumors].foundRumors
+
+    foundRumors.foreach{(serverPk, rumorMap) =>
+      desiredRumors.keys should contain(serverPk)
+      desiredRumors(serverPk) should equal(rumorMap.keys.toList)
+      rumorMap.foreach{(rumorId, rumorFromDb) =>
+        rumorFromDb should equal(rumor)
+      }
+    }
 
   }
 }

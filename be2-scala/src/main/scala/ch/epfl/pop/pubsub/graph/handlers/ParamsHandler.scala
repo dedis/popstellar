@@ -93,7 +93,7 @@ object ParamsHandler extends AskPatternConstants {
           val rumor: Rumor = jsonRpcMessage.getParams.asInstanceOf[Rumor]
           val senderPk: PublicKey = rumor.senderPk
           val rumorId: Int = rumor.rumorId
-          val messages: Map[Channel, Array[Message]] = rumor.messages
+          val messages: Map[Channel, List[Message]] = rumor.messages
           Right(jsonRpcMessage)
         case _ => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, "RumorHandler received a non expected jsonRpcRequest", jsonRpcMessage.id))
       }

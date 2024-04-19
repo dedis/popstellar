@@ -9,7 +9,7 @@ object RumorExample {
 
   private val senderPk: PublicKey = PublicKey(Base64Data.encode("publicKey"))
   private val channel: Channel = Channel(Channel.ROOT_CHANNEL_PREFIX+"rumorExample")
-  private val messages: Array[Message] = (for i <- 0 until 10 yield MessageExample.MESSAGE).toArray
+  private val messages: List[Message] = (for i <- 0 until 10 yield MessageExample.MESSAGE).toList
   val rumorExample : Rumor = Rumor(senderPk, 1, Map(channel -> messages))
 
 

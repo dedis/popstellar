@@ -598,6 +598,13 @@ final case class DbActor(
         case failure    => sender() ! failure.recover(Status.Failure(_))
       }
 
+    case ReadRumors(desiredRumors) =>
+      log.info(s"Actor $self (db) received a ReadRumor request")
+      Try(readRumors(desiredRumors)) match {
+        case Success(foundRumors) => sender() ! DbActorReadRumors(foundRumors)
+        case failure              => sender() ! failure.recover(Status.Failure(_))
+      }
+
     case m =>
       log.info(s"Actor $self (db) received an unknown message")
       sender() ! Status.Failure(DbActorNAckException(ErrorCodes.INVALID_ACTION.id, s"database actor received a message '$m' that it could not recognize"))
@@ -819,6 +826,12 @@ object DbActor {
     */
   final case class WriteRumor(rumor: Rumor) extends Event
 
+  /** Requests the Db for rumors corresponding to keys {server public key:rumor id}
+    * @param desiredRumors
+    *   Map of server public keys and list of desired rumor id for each
+    */
+  final case class ReadRumors(desiredRumors: Map[String, List[Int]]) extends Event
+
   // DbActor DbActorMessage correspond to messages the actor may emit
   sealed trait DbActorMessage
 
@@ -892,6 +905,10 @@ object DbActor {
   /** Response for a [[ReadServerPrivateKey]] db request
     */
   final case class DbActorReadServerPrivateKeyAck(privateKey: PrivateKey) extends DbActorMessage
+
+  /** Response for a [[ReadRumors]]
+    */
+  final case class DbActorReadRumors(foundRumors: Map[String, Map[Int, Rumor]]) extends DbActorMessage
 
   /** Response for a general db actor ACK
     */
