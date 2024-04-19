@@ -1,8 +1,8 @@
 package common.net;
 
 import be.utils.JsonConverter;
-import be.model.KeyPair;
-import be.utils.RandomUtils;
+import common.model.KeyPair;
+import common.utils.RandomUtils;
 import com.intuit.karate.Json;
 import com.intuit.karate.Logger;
 import com.intuit.karate.http.WebSocketClient;

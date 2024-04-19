@@ -7,8 +7,8 @@ Feature: Simple Transactions for digital cash
     * call read(mockClientFeature)
     * def organizer = call createMockFrontend
     * def recipient = call createMockFrontend
-    * def lao = organizer.createValidLao()
-    * def rollCall = organizer.createValidRollCall(lao)
+    * def lao = organizer.generateValidLao()
+    * def rollCall = organizer.generateValidRollCall(lao)
 
     # This call executes all the steps to set up a lao, complete a roll call and subscribe to the coin channel
     * call read(setupCoinChannelScenario) { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)' }
