@@ -12,3 +12,5 @@ Feature: Constants
     # Lao
     * def JOIN_LAO = 'lao_join'
     * def CREATE_LAO = 'lao_create'
+    # Event
+    * def CLICK_CREATE_ROLLCALL = 'click_rollcall_create'

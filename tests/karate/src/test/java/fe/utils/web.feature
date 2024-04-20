@@ -70,3 +70,7 @@ Feature: web page object
     And waitFor(lao_organization_name_input).input(organization_name)
     And waitFor(lao_server_url_input).clear().input(serverURL)
     Then click(lao_launch_button)
+
+  @name=click_rollcall_create
+  Scenario:
+    * actionSheetClick(event_create_rollcall)

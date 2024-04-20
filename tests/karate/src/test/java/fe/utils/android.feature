@@ -21,6 +21,14 @@ Feature: android page object
 
     # Event screen
     * def event_create_button = "#com.github.dedis.popstellar:id/add_event"
+    * def event_create_rollcall = "#com.github.dedis.popstellar:id/add_roll_call"
+    * def event_title = "{}Events"
+    * def event_rollcall_name_input = "#com.github.dedis.popstellar:id/roll_call_title_text"
+    * def event_rollcall_location_input = "#com.github.dedis.popstellar:id/roll_call_event_location_text"
+    * def event_rollcall_confirm_button = "#com.github.dedis.popstellar:id/roll_call_confirm"
+    * def event_rollcall_pop_token = "div[data-testid='roll_call_pop_token']"
+    * def event_rollcall_first_attendee = "#android:id/text1"
+    * def event_first_current_event = "#com.github.dedis.popstellar:id/event_card_text_view"
 
   @name=open_app
   Scenario:
@@ -52,3 +60,7 @@ Feature: android page object
     And waitFor(lao_organization_name_input).input(organization_name)
     And waitFor(lao_server_url_input).clear().input(serverURL)
     Then click(lao_launch_button)
+
+  @name=click_rollcall_create
+  Scenario:
+    * waitFor(event_create_rollcall).click()

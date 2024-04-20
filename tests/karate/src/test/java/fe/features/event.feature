@@ -8,7 +8,7 @@ Feature: Event
     Given call read(PLATFORM_FEATURE) { name: '#(CREATE_LAO)', params: { organization_name: 'Create Roll-Call Org' } }
     And def rollCallName = 'My Roll-Call'
     When waitFor(event_create_button).click()
-    And actionSheetClick(event_create_rollcall)
+    And call read(PLATFORM_FEATURE) { name: '#(CLICK_CREATE_ROLLCALL)' }
     And waitFor(event_rollcall_name_input).input(rollCallName)
     And waitFor(event_rollcall_location_input).input('Between 1 and 0s')
     And waitFor(event_rollcall_confirm_button).click()
