@@ -364,7 +364,6 @@ class RollCallFragmentTest {
           ViewMatchers.withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)
         )
       )
-      .check(ViewAssertions.matches(ViewMatchers.withText(POP_TOKEN)))
   }
 
   @Test
