@@ -71,8 +71,7 @@ const AttendeeList = ({ popTokens, personalToken }: IPropTypes) => {
                   style={[Typography.base, Typography.code]}
                   numberOfLines={1}
                   testID={`attendee_${idx}`}
-                  selectable
-                >
+                  selectable>
                   {token.valueOf()}
                 </ListItem.Title>
               </ListItem.Content>
