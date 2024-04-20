@@ -304,7 +304,6 @@ class RollCallFragment : AbstractEventFragment {
       binding.rollCallPkQrCode.visibility = View.INVISIBLE
       binding.rollCallPopTokenText.visibility = View.INVISIBLE
     }
-    binding.rollCallPkQrCode.visibility = if (rollCall.isOpen) View.VISIBLE else View.INVISIBLE
 
     // Don't lose time generating the QR code if it's not visible
     if (laoViewModel.isOrganizer || rollCall.isClosed) {
