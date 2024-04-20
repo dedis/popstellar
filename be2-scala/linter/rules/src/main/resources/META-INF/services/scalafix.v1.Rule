@@ -1,3 +1,4 @@
 fix.ArraysInFormat
 fix.CatchNpe
 fix.ComparingFloatingTypes
+fix.EmptyInterpolatedString
