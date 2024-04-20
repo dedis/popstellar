@@ -44,3 +44,11 @@ Feature: android page object
   Scenario:
     # Not implemented yet
     * assert false
+
+  @name=lao_create
+  Scenario:
+    Given call read('android.feature@name=create_new_wallet')
+    When waitFor(lao_create_button).click()
+    And waitFor(lao_organization_name_input).input(organization_name)
+    And waitFor(lao_server_url_input).clear().input(serverURL)
+    Then click(lao_launch_button)

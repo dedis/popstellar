@@ -5,13 +5,8 @@ Feature: LAO
 
   @name=lao_create
   Scenario: Create a new LAO
-    Given call read(PLATFORM_FEATURE) { name: '#(CREATE_NEW_WALLET)' }
-    And def organization_name = 'My test organization'
-    When waitFor(lao_create_button).click()
-    And waitFor(lao_organization_name_input).input(organization_name)
-    And waitFor(lao_server_url_input).clear().input(serverURL)
-    And click(lao_launch_button)
-    Then waitFor(event_create_button)
+    Given call read(PLATFORM_FEATURE) { name: '#(CREATE_LAO)', params: { organization_name: 'My test organization' } }
+    When waitFor(event_create_button)
     Then screenshot()
 
   @name=lao_join

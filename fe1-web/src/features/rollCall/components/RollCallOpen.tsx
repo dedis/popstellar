@@ -196,7 +196,9 @@ const RollCallOpen = ({
                 Typography.centered,
                 Typography.code,
                 textStyle.topSpace,
-              ]}>
+              ]}
+              testID='roll_call_pop_token'
+            >
               {popToken}
             </Text>
             <PoPTextButton onPress={() => Clipboard.setStringAsync(popToken)}>
