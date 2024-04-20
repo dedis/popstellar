@@ -1,0 +1,47 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/paged_catchup.json",
+    "description": "Match catchup on past message on a channel query",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "method": {
+            "description": "[String] operation to be performed by the query",
+            "const": "paged_catchup"
+        },
+
+        "params": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "channel": {
+                    "description": "[String] name of the channel",
+                    "type": "string",
+                    "pattern": "^/root(/[^/]+)*$"
+                },
+                "number_of_messages": {
+                    "description": "[Integer] Number of messages requested",
+                    "type": "integer"
+                },
+                "everything_after_message_id": {
+                    "description": "[Base64String] final message id on the client : HashLen(data, signature)",
+                    "type": "string",
+                    "contentEncoding": "base64",
+                    "$comment": "Note: the string is encoded in Base64"
+                }
+            },
+
+            "required": ["channel", "number_of_messages", "everything_after_message_id"]
+        },
+
+        "jsonrpc": {
+            "$comment": "Defined by the parent, but needed here for the validation"
+        },
+
+        "id": {
+            "type": "integer"
+        }
+    },
+
+    "required": ["method", "params", "id", "jsonrpc"]
+}
