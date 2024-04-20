@@ -34,10 +34,10 @@ class ArraysInFormat extends SemanticRule("ArraysInFormat") {
     doc.tree.collect {
       case Term.Apply.After_4_6_0(Term.Select(_, Term.Name("format")), args) =>
         args.values.collect {
-          case t @Term.Name(_) =>
+          case t @ Term.Name(_) =>
             t.symbol.info match {
               case Some(symInfo) => symInfo.signature match {
-                case ValueSignature(TypeRef(_, symbol, _)) if symbol.toString().equals("scala/Array#") => Patch.lint(ArraysInFormatDiag(t))
+                case ValueSignature(TypeRef(_, symbol, _)) if SymbolMatcher.exact("scala/Array#").matches(symbol) => Patch.lint(ArraysInFormatDiag(t))
                 case _ => Patch.empty
               }
               case _ => Patch.empty
