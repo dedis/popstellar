@@ -221,7 +221,8 @@ The following options are available (option names must be prefixed by `-D`).
 | url          | URL of the web app                             | 'file:../../fe1-web/web-build/index.html' |
 | screenWidth  | Width of the browser                           | 1920                                      |
 | screenHeight | Height of the browser                          | 1080                                      |
-| serverURL    | Client URL of the backend server               | 'ws://localhost:9000/client' for the web and 'ws://10.0.2.2:9000/client' for android |
+| serverURL    | Client URL of the backend server from the test host perspective               | 'ws://localhost:9000/client' |
+| platformServerURL    | Client URL of the backend server from the tested platform perspective              | 'ws://localhost:9000/client' |
 
 ### Android Front-end
 Build the application by running `./gradlew assembleDebug` in the corresponding directory.
@@ -247,4 +248,5 @@ The following options are available (option names must be prefixed by `-D`).
 | Name         | Description                                    | Default                                   |
 |--------------|------------------------------------------------|-------------------------------------------|
 | avd          | Name of the android emulator                   | Choosen automatically by appium           |
-| serverURL    | Client URL of the backend server               | 'ws://localhost:9000/client' for the web and 'ws://10.0.2.2:9000/client' for android |
+| serverURL    | Client URL of the backend server from the test host perspective               | 'ws://localhost:9000/client' |
+| platformServerURL    | Client URL of the backend server from the tested platform perspective              | 'ws://10.0.2.2:9000/client' |

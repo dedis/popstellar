@@ -22,11 +22,11 @@ Feature: android page object
     # Event screen
     * def event_create_button = "#com.github.dedis.popstellar:id/add_event"
     * def event_create_rollcall = "#com.github.dedis.popstellar:id/add_roll_call"
-    * def event_title = "{}Events"
+    * def event_title = '//android.widget.TextView[@text="Events"]'
     * def event_rollcall_name_input = "#com.github.dedis.popstellar:id/roll_call_title_text"
     * def event_rollcall_location_input = "#com.github.dedis.popstellar:id/roll_call_event_location_text"
     * def event_rollcall_confirm_button = "#com.github.dedis.popstellar:id/roll_call_confirm"
-    * def event_rollcall_pop_token = "div[data-testid='roll_call_pop_token']"
+    * def event_rollcall_pop_token = "#com.github.dedis.popstellar:id/roll_call_pop_token_text"
     * def event_rollcall_first_attendee = "#android:id/text1"
     * def event_first_current_event = "#com.github.dedis.popstellar:id/event_card_text_view"
 
@@ -50,15 +50,24 @@ Feature: android page object
 
   @name=lao_join
   Scenario:
-    # Not implemented yet
-    * assert false
+    Given call read('android.feature@name=create_new_wallet')
+    When waitFor(lao_join_button).click()
+    And waitFor(lao_enter_manually_button).click()
+    # For some reason, karate always converts json strings to javascript objects when passed as parameters to the input function.
+    # This workaround is the only solution I found to pass a json string as a parameter to the input field.
+    # This should be fixed once multiple fields are used instead of a single field accepting json.
+    And json jsonArray = ['{"lao":"', "#(params.lao.id)", '","server":"', "#(platformServerURL)", '"}']
+    And string jsonString = jsonArray
+    And input(lao_enter_manually_lao_input, jsonString)
+    And click(lao_enter_manually_submit_button)
+    Then waitFor(event_title)
 
   @name=lao_create
   Scenario:
     Given call read('android.feature@name=create_new_wallet')
     When waitFor(lao_create_button).click()
     And waitFor(lao_organization_name_input).input(organization_name)
-    And waitFor(lao_server_url_input).clear().input(serverURL)
+    And waitFor(lao_server_url_input).clear().input(platformServerURL)
     Then click(lao_launch_button)
 
   @name=click_rollcall_create

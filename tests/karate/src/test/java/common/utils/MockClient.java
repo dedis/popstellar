@@ -154,6 +154,17 @@ public class MockClient extends MultiMsgWebSocketClient {
     this.publish(request, lao.channel);
     this.getBackendResponse(request);
 
+    Map<String, Object> sub = new HashMap<>();
+    sub.put("method", "subscribe");
+    sub.put("id", 2);
+    Map<String, Object> params = new HashMap<>();
+    params.put("channel", lao.channel);
+    sub.put("params", params);
+    sub.put("jsonrpc", "2.0");
+
+    this.send(sub);
+    this.takeTimeout(1000);
+
     return rollCall;
   }
 
