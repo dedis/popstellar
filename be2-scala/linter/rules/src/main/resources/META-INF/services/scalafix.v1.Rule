@@ -1,2 +1,3 @@
 fix.ArraysInFormat
 fix.CatchNpe
+fix.ComparingFloatingTypes

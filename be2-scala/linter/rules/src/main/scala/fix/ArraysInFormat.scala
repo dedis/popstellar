@@ -5,14 +5,8 @@ package fix
 
 import scalafix.lint.LintSeverity
 
-import scala.meta.{Stat, _}
+import scala.meta._
 import scalafix.v1._
-
-import scala.meta.Term.unapply
-import scala.meta.contrib.XtensionTreeOps
-import scala.meta.internal.semanticdb.Scala.Names.TermName
-import scala.meta.internal.semanticdb.SymbolInformation
-
 
 case class ArraysInFormatDiag(array: Tree) extends Diagnostic {
   override def message: String = "Array passed to String.format"
