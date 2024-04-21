@@ -4,4 +4,5 @@ Feature: current env page object
     * def page_object = 'classpath:fe/utils/<env>.feature@name=<name>'
     * replace page_object.env = karate.env
     * replace page_object.name = name
-    * call read(page_object)
+    * def params = karate.get('params', {})
+    * call read(page_object) params

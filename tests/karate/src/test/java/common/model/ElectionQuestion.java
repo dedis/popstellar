@@ -1,4 +1,4 @@
-package be.model;
+package common.model;
 
 import java.util.List;
 

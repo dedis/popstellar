@@ -8,8 +8,8 @@ Feature: Send heartbeats to other servers
     * call read(mockClientFeature)
     * def mockBackend = call createMockBackend
     * def mockFrontend = call createMockFrontend
-    * def lao = mockFrontend.createValidLao()
-    * def validRollCall = mockFrontend.createValidRollCall(lao)
+    * def lao = mockFrontend.generateValidLao()
+    * def validRollCall = mockFrontend.generateValidRollCall(lao)
 
     # This call executes all the steps to create a valid lao on the server before every scenario
     # (lao creation, subscribe, catchup)
