@@ -133,8 +133,8 @@ private class FileMonitor(mediatorRef: ActorRef) extends Runnable {
             sendConnectToMessage = true
           }
         }
-        
-        if (sendConnectToMessage){
+
+        if (sendConnectToMessage) {
           mediatorRef ! ConnectionMediator.ConnectTo(readServerPeers())
           sendConnectToMessage = false
         }
