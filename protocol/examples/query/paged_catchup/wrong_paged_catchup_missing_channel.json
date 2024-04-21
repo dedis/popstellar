@@ -1,6 +1,6 @@
 {
     "jsonrpc": "2.0",
-    "id": 1468,
+    "id": 3,
     "method": "paged_catchup",
     "params": {
         "number_of_messages": 10,

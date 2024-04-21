@@ -20,6 +20,7 @@
     - [Sending a heartbeat message to servers](#sending-a-heartbeat-message-to-servers)
     - [Retrieving messages from server using ids ](#retrieving-messages-from-server-using-ids-)
     - [Spreading a Rumor](#spreading-a-rumor)
+    - [Catching up on past messages on a channel using paging](#catching-up-on-past-messages-on-a-channel-using-paging)
   - [Answer](#answer)
     - [RPC answer error](#rpc-answer-error)
 - [Mid-level (message) communication](#mid-level-message-communication)
@@ -1060,6 +1061,118 @@ RPC
 }
 
 ```
+</details>
+
+### Catching up on past messages on a channel using paging
+
+🧭 **RPC Message** > **Query** > **Paged Catchup**
+
+By executing a paged catchup action, a client can ask the server to receive a specified number of
+past messages on a specific channel.
+
+For now, it is to be used to retrieve chirps on the social media channel by paging when a new client joins the LAO instead of getting all chirps at once. This is done in an effort to reduce network traffic at catchup.
+
+This may serve as a starting point for the paging of messages in other channels as a future optimization.
+
+RPC 
+
+```json5
+// ../protocol/examples/query/paged_catchup/paged_catchup.json
+
+{
+    "jsonrpc": "2.0",
+    "id": 3,
+    "method": "paged_catchup",
+    "params": {
+        "channel": "/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=/social/chirps",
+        "number_of_messages": 10,
+        "everything_before_message_id": "DCBX48EuNO6q-Sr42ONqsj7opKiNeXyRzrjqTbZ_aMI="
+    }
+}
+
+```
+
+Response (in case of success)
+
+
+```json5
+// ../protocol/examples/answer/general_message.json
+
+{
+    "jsonrpc": "2.0",
+    "id": 3,
+    "result": [
+        {
+            "data": "eyJvYmplY3QiOiJsYW8iLCJhY3Rpb24iOiJjcmVhdGUiLCJuYW1lIjoiTEFPIiwiY3JlYXRpb24iOjE2MzMwMzU3MjEsIm9yZ2FuaXplciI6Iko5ZkJ6SlY3MEprNWMtaTMyNzdVcTRDbWVMNHQ1M1dEZlVnaGFLMEhwZU09Iiwid2l0bmVzc2VzIjpbXSwiaWQiOiJwX0VZYkh5TXY2c29wSTVRaEVYQmY0ME1PX2VOb3E3Vl9MeWdCZDRjOVJBPSJ9",
+            "sender": "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=",
+            "signature": "ONylxgHA9cbsB_lwdfbn3iyzRd4aTpJhBMnvEKhmJF_niE_pUHdmjxDXjEwFyvo5WiH1NZXWyXG27SYEpkasCA==",
+            "message_id": "2mAAevx61TZJi4groVGqqkeLEQq0e-qM6PGmTWuShyY=",
+            "witness_signatures": []
+        },
+        // ...9 other messages
+    ]
+}
+
+```
+  
+<details>
+<summary>
+💡 See the full specification
+</summary>
+  
+```json5
+// ../protocol/query/method/paged_catchup.json
+
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/paged_catchup.json",
+    "description": "Match catchup on past message on a channel query",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "method": {
+            "description": "[String] operation to be performed by the query",
+            "const": "paged_catchup"
+        },
+
+        "params": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "channel": {
+                    "description": "[String] name of the channel",
+                    "type": "string",
+                    "pattern": "^/root(/[^/]+)*$"
+                },
+                "number_of_messages": {
+                    "description": "[Integer] Number of messages requested",
+                    "type": "integer"
+                },
+                "everything_before_message_id": {
+                    "description": "[Base64String] final message id on the client : HashLen(data, signature)",
+                    "type": "string",
+                    "contentEncoding": "base64",
+                    "$comment": "Note: the string is encoded in Base64"
+                }
+            },
+
+            "required": ["channel", "number_of_messages", "everything_before_message_id"]
+        },
+
+        "jsonrpc": {
+            "$comment": "Defined by the parent, but needed here for the validation"
+        },
+
+        "id": {
+            "type": "integer"
+        }
+    },
+
+    "required": ["method", "params", "id", "jsonrpc"]
+}
+
+```
+
 </details>
 
 ## Answer
