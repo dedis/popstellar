@@ -1,13 +1,12 @@
 /*
 rule = CatchNpe
-*/
+ */
 package fix
 
 import scalafix.lint.LintSeverity
 
 import scala.meta._
 import scalafix.v1._
-
 
 case class ComparingFloatingTypesDiag(floats: Tree) extends Diagnostic {
   override def message: String = "Floating type comparison"
@@ -19,16 +18,14 @@ case class ComparingFloatingTypesDiag(floats: Tree) extends Diagnostic {
   override def position: Position = floats.pos
 }
 
-
-
 class ComparingFloatingTypes extends SemanticRule("ComparingFloatingTypes") {
 
   override def fix(implicit doc: SemanticDocument): Patch = {
     def getType(term: Term): Symbol = {
       term.symbol.info match {
         case Some(symInfo) => symInfo.signature match {
-          case ValueSignature(TypeRef(_, symbol, _)) => symbol
-        }
+            case ValueSignature(TypeRef(_, symbol, _)) => symbol
+          }
         case _ => null
       }
     }
@@ -38,10 +35,10 @@ class ComparingFloatingTypes extends SemanticRule("ComparingFloatingTypes") {
         val floatOrDoubleMatcher = SymbolMatcher.exact("scala/Float#", "scala/Double#")
         val leftIsFloat = floatOrDoubleMatcher.matches(getType(lhs))
         val rightIsFloat = floatOrDoubleMatcher.matches(getType(right))
-        if(leftIsFloat && rightIsFloat) {
+        if (leftIsFloat && rightIsFloat) {
           op match {
             case (Term.Name("==") | Term.Name("!=")) => Patch.lint(ComparingFloatingTypesDiag(t))
-            case _ => Patch.empty
+            case _                                   => Patch.empty
           }
         } else {
           Patch.empty

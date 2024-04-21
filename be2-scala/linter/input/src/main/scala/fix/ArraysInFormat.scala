@@ -1,6 +1,6 @@
 /*
 rule = ArraysInFormat
-*/
+ */
 package fix
 
 import java.io.FileNotFoundException
@@ -14,8 +14,7 @@ object ArraysInFormat {
     String.format("Here are my cool elements %d", array) /* assert: ArraysInFormat
                                                   ^^^^^
     Array passed to format / interpolate string
-    */
+     */
   }
-
 
 }

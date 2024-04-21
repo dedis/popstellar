@@ -199,7 +199,6 @@ class MonitorSuite extends TestKit(ActorSystem("MonitorSuiteActorSystem")) with 
     mockConnectionMediator.expectTerminated(monitorRef)
   }
 
-
   test("monitor should not react upon non relevant events in config directory besides first read") {
 
     val mockConnectionMediator = TestProbe()

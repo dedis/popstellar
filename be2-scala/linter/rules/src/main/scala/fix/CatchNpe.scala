@@ -1,13 +1,12 @@
 /*
 rule = CatchNpe
-*/
+ */
 package fix
 
 import scalafix.lint.LintSeverity
 
 import scala.meta._
 import scalafix.v1._
-
 
 case class CatchNpeDiag(catch_tree: Tree) extends Diagnostic {
   override def message: String = "Catching NPE"
@@ -19,17 +18,15 @@ case class CatchNpeDiag(catch_tree: Tree) extends Diagnostic {
   override def position: Position = catch_tree.pos
 }
 
-
-
 class CatchNpe extends SemanticRule("CatchNpe") {
   override def fix(implicit doc: SemanticDocument): Patch = {
     doc.tree.collect {
       case Term.Try(_, catches, _) => catches.collect {
-        case Case(pat, _, _) => pat match {
-          case Pat.Typed(_, tpe) if tpe.toString().equals("NullPointerException") => Patch.lint(CatchNpeDiag(pat))
-          case _ => Patch.empty
-          }
+          case Case(pat, _, _) => pat match {
+              case Pat.Typed(_, tpe) if tpe.toString().equals("NullPointerException") => Patch.lint(CatchNpeDiag(pat))
+              case _                                                                  => Patch.empty
+            }
         }
-      }
-    }.flatten.asPatch
+    }
+  }.flatten.asPatch
 }
