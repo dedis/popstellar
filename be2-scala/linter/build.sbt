@@ -4,19 +4,7 @@ lazy val scala3Version = "3.3.1"
 
 inThisBuild(
   List(
-    organization := "com.example",
-    homepage := Some(url("https://github.com/com/example")),
-    licenses := List(
-      "Apache-2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0")
-    ),
-    developers := List(
-      Developer(
-        "example-username",
-        "Example Full Name",
-        "example@email.com",
-        url("https://example.com")
-      )
-    ),
+    organization := "dedis",
     semanticdbEnabled := true,
     semanticdbVersion := scalafixSemanticdb.revision
   )
