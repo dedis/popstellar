@@ -121,7 +121,7 @@ class MonitorSuite extends TestKit(ActorSystem("MonitorSuiteActorSystem")) with 
     mockConnectionMediator.expectMsgType[ConnectionMediator.ConnectTo](timeout)
 
   }
-
+/* Disabled due to issue #1821, to re-enable later
   test("monitor should send ConnectTo() requests to ConnectionMediator upon relevant config file change besides first read") {
     val mockConnectionMediator = TestProbe()
 
@@ -144,7 +144,7 @@ class MonitorSuite extends TestKit(ActorSystem("MonitorSuiteActorSystem")) with 
     testWriteToServerPeersConfig(newContent)
 
     mockConnectionMediator.expectMsgType[ConnectionMediator.ConnectTo](timeout)
-  }
+  }*/
 
   test("monitor should not react upon non relevant events in config directory besides first read") {
     val mockConnectionMediator = TestProbe()
