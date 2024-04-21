@@ -117,6 +117,7 @@ private class FileMonitor(mediatorRef: ActorRef) extends Runnable {
   private val directory: Path = Path.of(serverPeersListPath).getParent
   private val watchService: WatchService = directory.getFileSystem.newWatchService()
   directory.register(watchService, ENTRY_MODIFY)
+  var sendConnectToMessage = false
 
   override def run(): Unit = {
     // Upon start, we connect to the servers
@@ -129,8 +130,13 @@ private class FileMonitor(mediatorRef: ActorRef) extends Runnable {
         // For any event, read the file and send it
         for (event <- watchKey.pollEvents().asScala.toList) {
           if (serverPeersListPath.endsWith(event.context().toString)) {
-            mediatorRef ! ConnectionMediator.ConnectTo(readServerPeers())
+            sendConnectToMessage = true
           }
+        }
+        
+        if (sendConnectToMessage){
+          mediatorRef ! ConnectionMediator.ConnectTo(readServerPeers())
+          sendConnectToMessage = false
         }
         watchKey.reset()
       }
