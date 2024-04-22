@@ -49,6 +49,8 @@ class LinkedOrganizationsFragment : Fragment() {
     binding.addLinkedOrganization.setOnClickListener(observeButton)
     binding.inviteOtherOrganization.setOnClickListener(invitationPage)
 
+    handleBackNav()
+
     return binding.root
     // return inflater.inflate(R.layout.linked_organizations_fragment, container, false)
   }
@@ -84,7 +86,12 @@ class LinkedOrganizationsFragment : Fragment() {
             }
       }
 
+  private fun handleBackNav() {
+    LaoActivity.addBackNavigationCallbackToEvents(requireActivity(), viewLifecycleOwner, TAG)
+  }
+
   companion object {
+    private val TAG: String = LinkedOrganizationsInviteFragment::class.java.simpleName
     @JvmStatic
     fun newInstance(): LinkedOrganizationsFragment {
       return LinkedOrganizationsFragment()

@@ -16,6 +16,16 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
+        <TextView
+          android:id="@+id/scan_qr_text"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginTop="@dimen/margin_top"
+          android:text="@string/scan_qr_code"
+          app:layout_constraintStart_toStartOf="parent"
+          app:layout_constraintTop_toTopOf="parent"
+          style="@style/explication_welcome_style" />
+
         <ImageView
           android:id="@+id/federation_qr_code"
           android:layout_width="wrap_content"
@@ -23,7 +33,7 @@
           android:contentDescription="@string/qr_code_image_description"
           app:layout_constraintEnd_toEndOf="parent"
           app:layout_constraintStart_toStartOf="parent"
-          app:layout_constraintTop_toTopOf="parent" />
+          app:layout_constraintTop_toBottomOf="@id/scan_qr_text" />
 
         <TextView
           android:id="@+id/linked_organizations_name_title"
