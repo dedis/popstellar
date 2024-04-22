@@ -375,44 +375,42 @@ final case class DbActor(
     s"${storage.RUMOR_KEY}${senderPk}${Channel.DATA_SEPARATOR}${rumorId}"
   }
 
-  private def generateRumorDataKey(rumor: Rumor): String = {
-    s"${storage.RUMOR_DATA_KEY}${rumor.senderPk.base64Data.data}"
+  private def generateRumorDataKey(senderPk: String): String = {
+    s"${storage.RUMOR_DATA_KEY}$senderPk"
   }
 
   @throws[DbActorNAckException]
-  private def readRumorData(path: String): RumorData = {
-    Try(storage.read(path)) match {
+  private def readRumorData(senderPk: String): RumorData = {
+    Try(storage.read(generateRumorDataKey(senderPk))) match {
       case Success(Some(json)) => RumorData.buildFromJson(json)
-      case Success(None)       => throw DbActorNAckException(ErrorCodes.SERVER_ERROR.id, s"RumorData for path $path not in database")
+      case Success(None)       => throw DbActorNAckException(ErrorCodes.SERVER_ERROR.id, s"RumorData for senderPk $senderPk not in database")
       case Failure(ex)         => throw ex
     }
   }
 
   @throws[DbActorNAckException]
   private def readRumors(desiredRumors: Map[String, List[Int]]): Map[String, Map[Int, Rumor]] = {
-    var rumors: Map[String, Map[Int, Rumor]] = Map.empty
-    for ((senderPk, rumorIds) <- desiredRumors) {
-      for (rumorId <- rumorIds) {
-        Try(storage.read(generateRumorKey(senderPk, rumorId))) match {
-          case Success(Some(json)) =>
-            rumors += (senderPk -> Map(rumorId -> Rumor.buildFromJson(json)))
-          case Success(None) => throw DbActorNAckException(ErrorCodes.SERVER_ERROR.id, s"Rumor $rumorId from sender $senderPk not in database")
-          case Failure(ex)   => throw ex
-        }
-      }
+    desiredRumors.flatMap { case (senderPk, rumorIds) =>
+      val rumorsForSender: Map[Int, Rumor] = rumorIds.flatMap { rumorId =>
+        val rumorKey = generateRumorKey(senderPk, rumorId)
+        storage.read(rumorKey).map(json => rumorId -> Rumor.buildFromJson(json))
+      }.toMap
+      if (rumorsForSender.isEmpty)
+        throw DbActorNAckException(ErrorCodes.SERVER_ERROR.id, s"No rumors found for sender $senderPk")
+      else
+        Map(senderPk -> rumorsForSender)
     }
-    rumors
   }
 
   @throws[DbActorNAckException]
   private def writeRumor(rumor: Rumor): Unit = {
     this.synchronized {
-      val rumorDataKey = generateRumorDataKey(rumor)
-      val rumorData: RumorData = Try(readRumorData(rumorDataKey)) match {
+      val senderPk: String = rumor.senderPk.base64Data.data
+      val rumorData: RumorData = Try(readRumorData(senderPk)) match {
         case Success(data) => data
         case Failure(_)    => RumorData(List.empty)
       }
-      storage.write(rumorDataKey -> rumorData.updateWith(rumor).toJsonString)
+      storage.write(generateRumorDataKey(rumor.senderPk.base64Data.data) -> rumorData.updateWith(rumor.rumorId).toJsonString)
       storage.write(generateRumorKey(rumor.senderPk.base64Data.data, rumor.rumorId) -> rumor.toJsonString)
     }
   }
@@ -603,6 +601,13 @@ final case class DbActor(
       Try(readRumors(desiredRumors)) match {
         case Success(foundRumors) => sender() ! DbActorReadRumors(foundRumors)
         case failure              => sender() ! failure.recover(Status.Failure(_))
+      }
+
+    case ReadRumorData(senderPk) =>
+      log.info(s"Actor $self (db) received a ReadRumorData request")
+      Try(readRumorData(senderPk)) match {
+        case Success(foundRumorIds) => sender() ! DbActorReadRumorData(foundRumorIds)
+        case failure                => sender() ! failure.recover(Status.Failure(_))
       }
 
     case m =>
@@ -832,6 +837,12 @@ object DbActor {
     */
   final case class ReadRumors(desiredRumors: Map[String, List[Int]]) extends Event
 
+  /** Requests the Db for the list of rumorId received for a senderPk
+    * @param senderPk
+    *   Public key that we want to request
+    */
+  final case class ReadRumorData(senderPk: String) extends Event
+
   // DbActor DbActorMessage correspond to messages the actor may emit
   sealed trait DbActorMessage
 
@@ -909,6 +920,10 @@ object DbActor {
   /** Response for a [[ReadRumors]]
     */
   final case class DbActorReadRumors(foundRumors: Map[String, Map[Int, Rumor]]) extends DbActorMessage
+
+  /** Response for a [[ReadRumorData]]
+    */
+  final case class DbActorReadRumorData(rumorIds: RumorData) extends DbActorMessage
 
   /** Response for a general db actor ACK
     */
