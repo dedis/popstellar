@@ -924,7 +924,7 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
     }
   }
 
-  test("can recover list of rumorId received for a senderPk"){
+  test("can recover list of rumorId received for a senderPk") {
     val initialStorage = InMemoryStorage()
     val dbActor: AskableActorRef = system.actorOf(Props(DbActor(mediatorRef, MessageRegistry(), initialStorage)))
 
