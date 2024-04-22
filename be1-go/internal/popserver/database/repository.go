@@ -19,8 +19,8 @@ type Repository interface {
 	GeneralChirpRepository
 	PopChaRepository
 
-	// StoreMessageWithObjectAction stores a message with an object and an action inside the database.
-	StoreMessageWithObjectAction(channelID, object, action string, msg message.Message) error
+	// StoreMessageAndData stores a message with an object and an action inside the database.
+	StoreMessageAndData(channelID string, msg message.Message) error
 
 	// StoreMessage stores a message inside the database.
 	StoreMessage(channelID string, msg message.Message) error
@@ -77,7 +77,40 @@ type RootRepository interface {
 	HasChannel(channel string) (bool, error)
 }
 
+type LAORepository interface {
+	// GetLaoWitnesses returns the list of witnesses of a LAO.
+	GetLaoWitnesses(laoPath string) (map[string]struct{}, error)
+
+	// GetOrganizerPubKey returns the organizer public key of a LAO.
+	GetOrganizerPubKey(laoPath string) (kyber.Point, error)
+
+	// GetRollCallState returns the state of th lao roll call.
+	GetRollCallState(channel string) (string, error)
+
+	// CheckPrevID returns true if the previous roll call message ID is the same as the next roll call message ID.
+	CheckPrevID(channel string, nextID string) (bool, error)
+
+	// StoreChannelsAndMessage stores a list of "sub" channels and a message inside the database.
+	StoreChannelsAndMessage(channels []string, laoID string, msg message.Message) error
+
+	// StoreMessageWithElectionKey stores a message and a election key message inside the database.
+	StoreMessageWithElectionKey(
+		laoID, electionID string,
+		electionPubKey kyber.Point,
+		electionSecretKey kyber.Scalar,
+		msg, electionKeyMsg message.Message) error
+
+	// StoreMessage stores a message inside the database.
+	StoreMessage(channelID string, msg message.Message) error
+
+	// HasMessage returns true if the message already exists.
+	HasMessage(messageID string) (bool, error)
+}
+
 type ElectionRepository interface {
+
+	// GetLAOOrganizerPubKey returns the organizer public key of an election.
+	GetLAOOrganizerPubKey(electionID string) (kyber.Point, error)
 
 	//IsElectionStarted returns true if the election is started.
 	IsElectionStarted(electionID string) (bool, error)
@@ -111,36 +144,6 @@ type ElectionRepository interface {
 
 	// StoreMessage stores a message inside the database.
 	StoreMessage(channelID string, msg message.Message) error
-}
-
-type LAORepository interface {
-	// GetLaoWitnesses returns the list of witnesses of a LAO.
-	GetLaoWitnesses(laoPath string) (map[string]struct{}, error)
-
-	// GetOrganizerPubKey returns the organizer public key of a LAO.
-	GetOrganizerPubKey(laoPath string) (kyber.Point, error)
-
-	// GetRollCallState returns the state of th lao roll call.
-	GetRollCallState(channel string) (string, error)
-
-	// CheckPrevID returns true if the previous roll call message ID is the same as the next roll call message ID.
-	CheckPrevID(channel string, nextID string) (bool, error)
-
-	// StoreChannelsAndMessage stores a list of "sub" channels and a message inside the database.
-	StoreChannelsAndMessage(channels []string, laoID string, msg message.Message) error
-
-	// StoreMessageWithElectionKey stores a message and a election key message inside the database.
-	StoreMessageWithElectionKey(
-		laoID, electionID string,
-		electionPubKey kyber.Point,
-		electionSecretKey kyber.Scalar,
-		msg, electionKeyMsg message.Message) error
-
-	// StoreMessage stores a message inside the database.
-	StoreMessage(channelID string, msg message.Message) error
-
-	// HasMessage returns true if the message already exists.
-	HasMessage(messageID string) (bool, error)
 }
 
 type ChirpRepository interface {

@@ -3,7 +3,6 @@ package channel
 import (
 	"encoding/base64"
 	"popstellar/crypto"
-	"popstellar/internal/popserver/config"
 	"popstellar/internal/popserver/database"
 	"popstellar/message/answer"
 	"popstellar/message/messagedata"
@@ -48,6 +47,12 @@ func handleChannelElection(channel string, msg message.Message) *answer.Error {
 	err := db.StoreMessage(channel, msg)
 	if err != nil {
 		errAnswer = answer.NewInternalServerError("failed to store message: %v", err)
+		errAnswer = errAnswer.Wrap("handleChannelElection")
+		return errAnswer
+	}
+
+	errAnswer = broadcastToAllClients(msg, channel)
+	if errAnswer != nil {
 		errAnswer = errAnswer.Wrap("handleChannelElection")
 		return errAnswer
 	}
@@ -124,8 +129,8 @@ func handleVoteCastVote(msg message.Message, channel string) *answer.Error {
 		return errAnswer
 	}
 
-	organizerPubKey, ok := config.GetOwnerPublicKeyInstance()
-	if !ok {
+	organizerPubKey, err := db.GetLAOOrganizerPubKey(channel)
+	if err != nil {
 		errAnswer := answer.NewInternalServerError("failed to get config").Wrap("handleElectionOpen")
 		return errAnswer
 	}
@@ -317,13 +322,19 @@ func handleElectionOpen(msg message.Message, channel string) *answer.Error {
 		return errAnswer
 	}
 
-	organizerPubKey, ok := config.GetOwnerPublicKeyInstance()
+	db, ok := database.GetElectionRepositoryInstance()
 	if !ok {
+		errAnswer := answer.NewInternalServerError("failed to get database").Wrap("handleElectionOpen")
+		return errAnswer
+	}
+
+	organizerPubKey, err := db.GetLAOOrganizerPubKey(channel)
+	if err != nil {
 		errAnswer := answer.NewInternalServerError("failed to get config").Wrap("handleElectionOpen")
 		return errAnswer
 	}
 
-	// check if the sender is the owner of the channel
+	// check if the sender is the LAO organizer
 	if !senderPubKey.Equal(organizerPubKey) {
 		errAnswer = answer.NewInvalidMessageFieldError("sender is not the organizer of the channel")
 		errAnswer = errAnswer.Wrap("handleElectionOpen")
@@ -375,14 +386,13 @@ func handleElectionOpen(msg message.Message, channel string) *answer.Error {
 		return errAnswer
 	}
 
-	db, ok := database.GetElectionRepositoryInstance()
-	if !ok {
-		errAnswer := answer.NewInternalServerError("failed to get database").Wrap("handleElectionOpen")
-		return errAnswer
-	}
-
 	// verify if the election was already started or terminated
 	ok, err = db.IsElectionStartedOrTerminated(electionID)
+	if err != nil {
+		errAnswer = answer.NewInternalServerError("failed to get election start or termination status: %v", err)
+		errAnswer = errAnswer.Wrap("handleElectionOpen")
+		return errAnswer
+	}
 	if ok {
 		errAnswer = answer.NewInvalidMessageFieldError("election was already started or terminated")
 		errAnswer = errAnswer.Wrap("handleElectionOpen")
@@ -397,12 +407,6 @@ func handleElectionOpen(msg message.Message, channel string) *answer.Error {
 	}
 	if electionOpen.OpenedAt < createdAt {
 		errAnswer = answer.NewInvalidMessageFieldError("election open cannot have a creation time prior to election setup")
-		errAnswer = errAnswer.Wrap("handleElectionOpen")
-		return errAnswer
-	}
-
-	errAnswer = broadcastToAllClients(msg, channel)
-	if errAnswer != nil {
 		errAnswer = errAnswer.Wrap("handleElectionOpen")
 		return errAnswer
 	}
