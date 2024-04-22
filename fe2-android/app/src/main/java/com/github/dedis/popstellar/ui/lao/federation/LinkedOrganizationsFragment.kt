@@ -92,6 +92,7 @@ class LinkedOrganizationsFragment : Fragment() {
 
   companion object {
     private val TAG: String = LinkedOrganizationsInviteFragment::class.java.simpleName
+
     @JvmStatic
     fun newInstance(): LinkedOrganizationsFragment {
       return LinkedOrganizationsFragment()
