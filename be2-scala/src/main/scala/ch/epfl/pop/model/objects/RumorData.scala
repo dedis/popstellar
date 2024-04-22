@@ -13,8 +13,8 @@ final case class RumorData(
     this.toJson.toString
   }
   
-  def updateWith(rumor: Rumor): RumorData = {
-    new RumorData((rumor.rumorId :: rumorIds).sorted)
+  def updateWith(rumorId: Int): RumorData = {
+    new RumorData((rumorId :: rumorIds).sorted)
   }
 
 }

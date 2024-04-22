@@ -95,14 +95,14 @@ object ObjectProtocol extends DefaultJsonProtocol {
     )
   }
 
-  implicit object RumorData extends JsonFormat[RumorData] {
+  implicit object RumorDataFormat extends JsonFormat[RumorData] {
     final private val PARAM_RUMOR_IDS: String = "rumor_ids"
 
-    override def read(json: JsValue): RumorData = json.asJsObject().getFields(PARAM_RUMOR_IDS) match {
-      case Seq(rumorIds @ JsArray(_)) => rumorIds.convertTo[RumorData]
+    override def read(json: JsValue): RumorData = json.asJsObject.getFields(PARAM_RUMOR_IDS) match {
+      case Seq(rumorIds @ JsArray(_)) => RumorData(rumorIds.convertTo[List[Int]])
       case _                          => throw new IllegalArgumentException(s"Can't parse json value $json to a RumorData object")
     }
-    
+
     override def write(obj: RumorData): JsValue = JsObject(
       PARAM_RUMOR_IDS -> obj.rumorIds.toJson
     )
