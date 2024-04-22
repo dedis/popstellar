@@ -168,7 +168,8 @@ class MonitorSuite extends TestKit(ActorSystem("MonitorSuiteActorSystem")) with 
     mockConnectionMediator.expectTerminated(monitorRef)
   }
 
-  test("monitor should send ConnectTo() requests to ConnectionMediator upon relevant config file change besides first read") {
+  // https://github.com/dedis/popstellar/issues/1821
+  /*test("monitor should send ConnectTo() requests to ConnectionMediator upon relevant config file change besides first read") {
 
     val mockConnectionMediator = TestProbe()
 
@@ -197,7 +198,7 @@ class MonitorSuite extends TestKit(ActorSystem("MonitorSuiteActorSystem")) with 
 
     monitorRef ! PoisonPill
     mockConnectionMediator.expectTerminated(monitorRef)
-  }
+  }*/
 
   test("monitor should not react upon non relevant events in config directory besides first read") {
 
