@@ -35,7 +35,7 @@ func run(ctx context.Context, args []string) {
 	publicKeyFlag := &cli.StringFlag{
 		Name:    "public-key",
 		Aliases: []string{"pk"},
-		Usage:   "base64url encoded server's public key",
+		Usage:   "base64url encoded public key of the server owner (organizer)",
 	}
 	serverAddressFlag := &cli.StringFlag{
 		Name:    "server-address",
