@@ -921,7 +921,6 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
     heartbeat should equal(expected)
   }
 
-
   test("writeRumor() writes correctly rumor") {
 
     val initialStorage = InMemoryStorage()
