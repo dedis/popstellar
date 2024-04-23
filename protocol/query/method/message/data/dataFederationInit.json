@@ -26,8 +26,7 @@
             "$comment": "public key of the remote organizer"
         },
         "challenge": {
-            "type": "string",
-            "contentEncoding": "base64",
+            "$ref": "../message.json",
             "$comment": "message/message containing a FederationChallenge data"
         }
     },

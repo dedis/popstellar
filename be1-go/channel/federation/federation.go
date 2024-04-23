@@ -49,7 +49,8 @@ type Channel struct {
 	localOrganizerPk  string
 	remoteOrganizerPk string
 
-	remoteServer socket.Socket
+	remoteChannel string
+	remoteServer  socket.Socket
 
 	challenge messagedata.Challenge
 
@@ -208,17 +209,7 @@ func (c *Channel) processFederationInit(msg message.Message,
 	}
 
 	// send the challenge to the other server
-	remoteChannel := fmt.Sprintf("/root/%s/federation", federationInit.LaoId)
-	challengeMsgBase64, err := base64.URLEncoding.DecodeString(federationInit.ChallengeMsg)
-	if err != nil {
-		return xerrors.Errorf("failed to decode challenge base64: %v", err)
-	}
-
-	var challengeMsg message.Message
-	err = challengeMsg.UnmarshalData(&challengeMsgBase64)
-	if err != nil {
-		return xerrors.Errorf("failed to unmarshal  message: %v", err)
-	}
+	c.remoteChannel = fmt.Sprintf("/root/%s/federation", federationInit.LaoId)
 
 	challengePublish := method.Publish{
 		Base: query.Base{
@@ -232,8 +223,8 @@ func (c *Channel) processFederationInit(msg message.Message,
 			Channel string          `json:"channel"`
 			Message message.Message `json:"message"`
 		}{
-			Channel: remoteChannel,
-			Message: challengeMsg,
+			Channel: c.remoteChannel,
+			Message: federationInit.ChallengeMsg,
 		},
 	}
 
@@ -276,6 +267,7 @@ func (c *Channel) processFederationExpect(msg message.Message,
 
 	c.state = ExpectConnect
 	c.remoteOrganizerPk = federationExpect.PublicKey
+	c.remoteChannel = fmt.Sprintf("/root/%s/federation", federationExpect.LaoId)
 
 	return nil
 }
