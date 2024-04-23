@@ -353,36 +353,17 @@ class RollCallFragmentTest {
 
   @Test
   @Throws(UnknownLaoException::class)
-  fun popTokenVisibilityClientTest() {
+  fun popTokenVisibilityTest() {
     // Fake to be a client
     fakeClientLao()
-    // Invisible while closed
+    // Invisible when closed
     RollCallFragmentPageObject.rollCallPopTokenText()
       .check(
         ViewAssertions.matches(
-          ViewMatchers.withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)
+          ViewMatchers.withEffectiveVisibility(ViewMatchers.Visibility.INVISIBLE)
         )
       )
     // Visible when opened
-    rollCallRepo.updateRollCall(LAO_ID, openRollCall(ROLL_CALL))
-    RollCallFragmentPageObject.rollCallPopTokenText()
-      .check(
-        ViewAssertions.matches(
-          ViewMatchers.withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)
-        )
-      )
-  }
-
-  @Test
-  @Throws(UnknownLaoException::class)
-  fun popTokenVisibilityOrganizerTest() {
-    // Always invisible 
-    RollCallFragmentPageObject.rollCallPopTokenText()
-      .check(
-        ViewAssertions.matches(
-          ViewMatchers.withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)
-        )
-      )
     rollCallRepo.updateRollCall(LAO_ID, openRollCall(ROLL_CALL))
     RollCallFragmentPageObject.rollCallPopTokenText()
       .check(
