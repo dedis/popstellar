@@ -364,8 +364,6 @@ class RollCallFragmentTest {
   @Test
   @Throws(UnknownLaoException::class)
   fun popTokenVisibilityTest() {
-    // Fake to be a client
-    fakeClientLao()
     // Invisible when created
     RollCallFragmentPageObject.rollCallPopTokenText()
       .check(

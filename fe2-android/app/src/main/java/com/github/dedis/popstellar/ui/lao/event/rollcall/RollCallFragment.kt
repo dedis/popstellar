@@ -298,6 +298,7 @@ class RollCallFragment : AbstractEventFragment {
 
     // Set the QR visible only if the rollcall is opened and the user isn't the organizer
     if (rollCall.isOpen) {
+      binding.rollCallPopTokenText.text = pk
       binding.rollCallPkQrCode.visibility = View.VISIBLE
       binding.rollCallPopTokenText.visibility = View.VISIBLE
     } else {
@@ -309,8 +310,6 @@ class RollCallFragment : AbstractEventFragment {
     if (laoViewModel.isOrganizer || rollCall.isClosed) {
       return
     }
-
-    binding.rollCallPopTokenText.text = pk
 
     val data = PopTokenData(PublicKey(pk))
     val myBitmap =
