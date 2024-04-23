@@ -11,6 +11,7 @@ import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse}
 import ch.epfl.pop.model.objects.{Channel, PublicKey}
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
 import ch.epfl.pop.pubsub.{AskPatternConstants, ClientActor, PubSubMediator}
+import ch.epfl.pop.storage.DbActor.{DbActorReadRumors, ReadRumors, WriteRumor}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
@@ -94,6 +95,16 @@ object ParamsHandler extends AskPatternConstants {
           val senderPk: PublicKey = rumor.senderPk
           val rumorId: Int = rumor.rumorId
           val messages: Map[Channel, List[Message]] = rumor.messages
+
+          // check if rumor already received
+          val readRumorDb = dbActorRef ? ReadRumors(Map(senderPk.base64Data.data -> List(rumorId)))
+          Await.result(readRumorDb, duration) match {
+            // already present
+            case DbActorReadRumors(foundRumors) => // do nothing
+            // absent
+            case failure =>
+              val writeRumor = dbActorRef ? WriteRumor(rumor)
+          }
           Right(jsonRpcMessage)
         case _ => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, "RumorHandler received a non expected jsonRpcRequest", jsonRpcMessage.id))
       }
