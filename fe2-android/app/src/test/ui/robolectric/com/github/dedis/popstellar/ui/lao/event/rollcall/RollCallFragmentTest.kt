@@ -228,6 +228,16 @@ class RollCallFragmentTest {
   }
 
   @Test
+  fun managementButtonVisibilityTest() {
+    rollCallRepo.updateRollCall(LAO_ID, openRollCall(ROLL_CALL))
+    
+    RollCallFragmentPageObject.managementButton()
+      .check(
+        ViewAssertions.matches(ViewMatchers.withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE))
+      )
+  }
+
+  @Test
   fun scanButtonOpenScanningTest() {
     rollCallRepo.updateRollCall(LAO_ID, openRollCall(ROLL_CALL))
     RollCallFragmentPageObject.rollCallScanButton().perform(ViewActions.click())
@@ -356,7 +366,7 @@ class RollCallFragmentTest {
   fun popTokenVisibilityTest() {
     // Fake to be a client
     fakeClientLao()
-    // Invisible when closed
+    // Invisible when created
     RollCallFragmentPageObject.rollCallPopTokenText()
       .check(
         ViewAssertions.matches(
@@ -369,6 +379,15 @@ class RollCallFragmentTest {
       .check(
         ViewAssertions.matches(
           ViewMatchers.withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)
+        )
+      )
+
+    // Invisible after
+    rollCallRepo.updateRollCall(LAO_ID, closeRollCall(ROLL_CALL))
+    RollCallFragmentPageObject.rollCallPopTokenText()
+      .check(
+        ViewAssertions.matches(
+          ViewMatchers.withEffectiveVisibility(ViewMatchers.Visibility.INVISIBLE)
         )
       )
   }
