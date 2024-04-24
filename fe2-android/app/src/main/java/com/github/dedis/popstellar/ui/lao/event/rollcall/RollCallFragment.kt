@@ -297,7 +297,14 @@ class RollCallFragment : AbstractEventFragment {
     Timber.tag(TAG).d("key displayed is %s", pk)
 
     // Set the QR visible only if the rollcall is opened and the user isn't the organizer
-    binding.rollCallPkQrCode.visibility = if (rollCall.isOpen) View.VISIBLE else View.INVISIBLE
+    if (rollCall.isOpen) {
+      binding.rollCallPopTokenText.text = pk
+      binding.rollCallPkQrCode.visibility = View.VISIBLE
+      binding.rollCallPopTokenText.visibility = View.VISIBLE
+    } else {
+      binding.rollCallPkQrCode.visibility = View.INVISIBLE
+      binding.rollCallPopTokenText.visibility = View.INVISIBLE
+    }
 
     // Don't lose time generating the QR code if it's not visible
     if (laoViewModel.isOrganizer || rollCall.isClosed) {
