@@ -32,6 +32,7 @@ class RumorHandlerSuite extends TestKit(ActorSystem("RumorActorSuiteActorSystem"
   val pathCorrectRumor: String = "src/test/scala/util/examples/json/rumor/rumor.json"
 
   val rumorRequest: JsonRpcRequest = JsonRpcRequest.buildFromJson(readJsonFromPath(pathCorrectRumor))
+
   val rumor: Rumor = rumorRequest.getParams.asInstanceOf[Rumor]
 
   override def afterAll(): Unit = {
@@ -46,6 +47,22 @@ class RumorHandlerSuite extends TestKit(ActorSystem("RumorActorSuiteActorSystem"
 
     val readRumor = dbActorRef ? ReadRumors(Map(rumor.senderPk.base64Data.data -> List(rumor.rumorId)))
     Await.result(readRumor, duration) shouldBe a[DbActorReadRumors]
+  }
+
+  test("rumor handler should handle correct rumors without error") {
+    val output = Source.single(Right(rumorRequest)).via(rumorHandler).runWith(Sink.head)
+
+    Await.result(output, duration) shouldBe a[Right[_, _]]
+  }
+
+  test("rumor handler should fail on processing something else than a rumor") {
+    val publishRequest: JsonRpcRequest = JsonRpcRequest.buildFromJson(readJsonFromPath("src/test/scala/util/examples/json/election/open_election.json"))
+    
+    val output = Source.single(Right(publishRequest)).via(rumorHandler).runWith(Sink.head)
+    
+    Await.result(output, duration) shouldBe a[Left[_,_]]
+    
+
   }
 
 }
