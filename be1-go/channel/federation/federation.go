@@ -24,7 +24,8 @@ import (
 )
 
 const (
-	msgID = "msg id"
+	msgID             = "msg id"
+	invalidStateError = "Invalid state %v for message %v"
 )
 
 type State int
@@ -131,14 +132,14 @@ func (c *Channel) Broadcast(broadcast method.Broadcast, socket socket.Socket) er
 
 // NewFederationRegistry creates a new registry for the federation channel
 func (c *Channel) NewFederationRegistry() registry.MessageRegistry {
-	registry := registry.NewMessageRegistry()
+	fedRegistry := registry.NewMessageRegistry()
 
-	registry.Register(messagedata.FederationChallengeRequest{}, c.processChallengeRequest)
-	registry.Register(messagedata.FederationExpect{}, c.processFederationExpect)
-	registry.Register(messagedata.FederationInit{}, c.processFederationInit)
-	registry.Register(messagedata.FederationChallenge{}, c.processFederationChallenge)
+	fedRegistry.Register(messagedata.FederationChallengeRequest{}, c.processChallengeRequest)
+	fedRegistry.Register(messagedata.FederationExpect{}, c.processFederationExpect)
+	fedRegistry.Register(messagedata.FederationInit{}, c.processFederationInit)
+	fedRegistry.Register(messagedata.FederationChallenge{}, c.processFederationChallenge)
 
-	return registry
+	return fedRegistry
 }
 
 func (c *Channel) handleMessage(msg message.Message,
@@ -173,7 +174,7 @@ func (c *Channel) verifyMessage(msg message.Message) error {
 }
 
 func (c *Channel) processFederationInit(msg message.Message,
-	msgData interface{}, s socket.Socket) error {
+	msgData interface{}, _ socket.Socket) error {
 
 	_, ok := msgData.(*messagedata.FederationInit)
 	if !ok {
@@ -188,7 +189,7 @@ func (c *Channel) processFederationInit(msg message.Message,
 	}
 
 	if c.state != None {
-		return answer.NewInternalServerError("The current state is %v", c.state)
+		return answer.NewInternalServerError(invalidStateError, c.state, msg)
 	}
 	c.state = Initiating
 
@@ -240,7 +241,7 @@ func (c *Channel) processFederationInit(msg message.Message,
 }
 
 func (c *Channel) processFederationExpect(msg message.Message,
-	msgData interface{}, s socket.Socket) error {
+	msgData interface{}, _ socket.Socket) error {
 
 	_, ok := msgData.(*messagedata.FederationExpect)
 	if !ok {
@@ -255,7 +256,7 @@ func (c *Channel) processFederationExpect(msg message.Message,
 	}
 
 	if c.state != None {
-		return answer.NewInternalServerError("The current state is %v", c.state)
+		return answer.NewInternalServerError(invalidStateError, c.state, msg)
 	}
 
 	var federationExpect messagedata.FederationExpect
@@ -293,7 +294,7 @@ func (c *Channel) processFederationChallenge(msg message.Message,
 	}
 
 	if c.state != ExpectConnect {
-		return answer.NewInternalServerError("The current state is %v", c.state)
+		return answer.NewInternalServerError(invalidStateError, c.state, msg)
 	}
 
 	var federationChallenge messagedata.FederationChallenge
@@ -338,7 +339,7 @@ func (c *Channel) processChallengeRequest(msg message.Message,
 	}
 
 	if c.state != None && c.state != ExpectConnect {
-		return answer.NewInternalServerError("The current state is %v", c.state)
+		return answer.NewInternalServerError(invalidStateError, c.state, msg)
 	}
 
 	var federationChallengeRequest messagedata.FederationChallengeRequest
