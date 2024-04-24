@@ -133,7 +133,7 @@ func (c *Channel) Broadcast(broadcast method.Broadcast, socket socket.Socket) er
 func (c *Channel) NewFederationRegistry() registry.MessageRegistry {
 	registry := registry.NewMessageRegistry()
 
-	registry.Register(messagedata.FederationRequestChallenge{}, c.processChallengeRequest)
+	registry.Register(messagedata.FederationChallengeRequest{}, c.processChallengeRequest)
 	registry.Register(messagedata.FederationExpect{}, c.processFederationExpect)
 	registry.Register(messagedata.FederationInit{}, c.processFederationInit)
 	registry.Register(messagedata.FederationChallenge{}, c.processFederationChallenge)
@@ -175,7 +175,7 @@ func (c *Channel) verifyMessage(msg message.Message) error {
 func (c *Channel) processFederationInit(msg message.Message,
 	msgData interface{}, s socket.Socket) error {
 
-	_, ok := msgData.(messagedata.FederationInit)
+	_, ok := msgData.(*messagedata.FederationInit)
 	if !ok {
 		return xerrors.Errorf("message %v is not a federation#init message",
 			msgData)
@@ -242,7 +242,7 @@ func (c *Channel) processFederationInit(msg message.Message,
 func (c *Channel) processFederationExpect(msg message.Message,
 	msgData interface{}, s socket.Socket) error {
 
-	_, ok := msgData.(messagedata.FederationExpect)
+	_, ok := msgData.(*messagedata.FederationExpect)
 	if !ok {
 		return xerrors.Errorf("message %v is not a federation#expect message",
 			msgData)
@@ -265,6 +265,11 @@ func (c *Channel) processFederationExpect(msg message.Message,
 		return xerrors.Errorf("failed to unmarshal federationExpect data: %v", err)
 	}
 
+	if federationExpect.Challenge != c.challenge {
+		return answer.NewAccessDeniedError("Invalid challenge %v",
+			federationExpect.Challenge)
+	}
+
 	c.state = ExpectConnect
 	c.remoteOrganizerPk = federationExpect.PublicKey
 	c.remoteChannel = fmt.Sprintf("/root/%s/federation", federationExpect.LaoId)
@@ -275,7 +280,7 @@ func (c *Channel) processFederationExpect(msg message.Message,
 func (c *Channel) processFederationChallenge(msg message.Message,
 	msgData interface{}, s socket.Socket) error {
 
-	_, ok := msgData.(messagedata.FederationChallenge)
+	_, ok := msgData.(*messagedata.FederationChallenge)
 	if !ok {
 		return xerrors.Errorf(
 			"message %v is not a federation#challenge message", msgData)
@@ -320,28 +325,28 @@ func (c *Channel) processFederationChallenge(msg message.Message,
 func (c *Channel) processChallengeRequest(msg message.Message,
 	msgData interface{}, s socket.Socket) error {
 
-	_, ok := msgData.(messagedata.FederationRequestChallenge)
+	_, ok := msgData.(*messagedata.FederationChallengeRequest)
 	if !ok {
 		return xerrors.Errorf(
-			"message %v is not a federation#request_challenge message", msgData)
+			"message %v is not a federation#challenge_request message", msgData)
 	}
 
 	// check if it is from the local organizer
 	if c.localOrganizerPk != msg.Sender {
 		return answer.NewAccessDeniedError(
-			"Only local organizer is allowed to send federation#request_challenge")
+			"Only local organizer is allowed to send federation#challenge_request")
 	}
 
 	if c.state != None && c.state != ExpectConnect {
 		return answer.NewInternalServerError("The current state is %v", c.state)
 	}
 
-	var federationRequestChallenge messagedata.FederationRequestChallenge
+	var federationChallengeRequest messagedata.FederationChallengeRequest
 
-	err := msg.UnmarshalData(&federationRequestChallenge)
+	err := msg.UnmarshalData(&federationChallengeRequest)
 	if err != nil {
 		return xerrors.Errorf(
-			"failed to unmarshal federationRequestChallenge data: %v", err)
+			"failed to unmarshal federationChallengeRequest data: %v", err)
 	}
 
 	randomBytes := make([]byte, 32)

@@ -50,7 +50,7 @@ const (
 	VoteActionWriteIn  = "write_in"
 
 	FederationObject                 = "federation"
-	FederationActionRequestChallenge = "request_challenge"
+	FederationActionChallengeRequest = "challenge_request"
 	FederationActionChallenge        = "challenge"
 	FederationActionInit             = "init"
 	FederationActionExpect           = "expect"

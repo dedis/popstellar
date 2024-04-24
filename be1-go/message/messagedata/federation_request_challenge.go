@@ -1,7 +1,7 @@
 package messagedata
 
-// FederationRequestChallenge defines a message data
-type FederationRequestChallenge struct {
+// FederationChallengeRequest defines a message data
+type FederationChallengeRequest struct {
 	Object string `json:"object"`
 	Action string `json:"action"`
 
@@ -10,16 +10,16 @@ type FederationRequestChallenge struct {
 }
 
 // GetObject implements MessageData
-func (FederationRequestChallenge) GetObject() string {
+func (FederationChallengeRequest) GetObject() string {
 	return FederationObject
 }
 
 // GetAction implements MessageData
-func (FederationRequestChallenge) GetAction() string {
-	return FederationActionRequestChallenge
+func (FederationChallengeRequest) GetAction() string {
+	return FederationActionChallengeRequest
 }
 
 // NewEmpty implements MessageData
-func (FederationRequestChallenge) NewEmpty() MessageData {
-	return &FederationRequestChallenge{}
+func (FederationChallengeRequest) NewEmpty() MessageData {
+	return &FederationChallengeRequest{}
 }
