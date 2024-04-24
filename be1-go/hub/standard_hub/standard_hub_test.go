@@ -2,10 +2,13 @@ package standard_hub
 
 import (
 	"bytes"
+	"crypto/rand"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"github.com/gorilla/websocket"
 	"io"
+	"net/http"
 	"os"
 	"path/filepath"
 	"popstellar/channel"
@@ -1956,8 +1959,78 @@ func Test_Handle_GreetServer_Already_Received(t *testing.T) {
 	require.NotEqual(t, serverInfo2, peersInfo[0])
 }
 
+// Test_ConnectToServerAsClient tests that a websocket connection to the given
+// address is created, and that messages sent using this client are received
+func Test_ConnectToServerAsClient(t *testing.T) {
+	listenAddress := "localhost:18004"
+	serverAddress := fmt.Sprintf("ws://%s/client", listenAddress)
+	keypair := generateKeyPair(t)
+
+	hub, err := NewHub(keypair.public, "", "", nolog, nil)
+	require.NoError(t, err)
+
+	mb := &messageBuffer{}
+	startWsServer(t, listenAddress, mb)
+
+	time.Sleep(time.Millisecond)
+
+	client, err := hub.ConnectToServerAsClient(serverAddress)
+	require.NoError(t, err)
+	require.IsType(t, &socket.ClientSocket{}, client)
+
+	randomMsg0 := make([]byte, 128)
+	randomMsg1 := make([]byte, 128)
+	_, _ = rand.Read(randomMsg0)
+	_, _ = rand.Read(randomMsg1)
+	client.Send(randomMsg0)
+	client.Send(randomMsg1)
+
+	time.Sleep(time.Millisecond)
+
+	mb.Lock()
+	require.Len(t, mb.messages, 2)
+	require.Equal(t, randomMsg0, mb.messages[0])
+	require.Equal(t, randomMsg1, mb.messages[1])
+	mb.Unlock()
+}
+
 // -----------------------------------------------------------------------------
 // Utility functions
+var upgrader = websocket.Upgrader{
+	ReadBufferSize:  1024,
+	WriteBufferSize: 1024,
+}
+
+type messageBuffer struct {
+	sync.Mutex
+	messages [][]byte
+}
+
+func websocketHandler(t *testing.T, mb *messageBuffer) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		conn, err := upgrader.Upgrade(w, r, nil)
+		require.NoError(t, err)
+		defer conn.Close()
+
+		for {
+			mt, msg, err := conn.ReadMessage()
+			require.NoError(t, err)
+
+			require.Equal(t, websocket.TextMessage, mt)
+			mb.Lock()
+			mb.messages = append(mb.messages, msg)
+			mb.Unlock()
+		}
+	}
+}
+
+func startWsServer(t *testing.T, listenAddress string, mb *messageBuffer) {
+	http.HandleFunc("/client", websocketHandler(t, mb))
+	go func() {
+		err := http.ListenAndServe(listenAddress, nil)
+		require.NoError(t, err)
+	}()
+}
 
 type keypair struct {
 	public    kyber.Point
