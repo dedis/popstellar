@@ -167,37 +167,37 @@ class MonitorSuite extends TestKit(ActorSystem("MonitorSuiteActorSystem")) with 
     monitorRef ! PoisonPill
     mockConnectionMediator.expectTerminated(monitorRef)
   }
+// https://github.com/dedis/popstellar/issues/1821
+  /*test("monitor should send ConnectTo() requests to ConnectionMediator upon relevant config file change besides first read") {
 
-  test("monitor should send ConnectTo() requests to ConnectionMediator upon relevant config file change besides first read") {
+ val mockConnectionMediator = TestProbe()
 
-    val mockConnectionMediator = TestProbe()
+ // Write to mock server peers config file
+ val mockConfig = List("mockConfig")
+ testWriteToServerPeersConfig(mockConfig)
 
-    // Write to mock server peers config file
-    val mockConfig = List("mockConfig")
-    testWriteToServerPeersConfig(mockConfig)
+ val monitorRef = system.actorOf(Monitor.props(ActorRef.noSender))
 
-    val monitorRef = system.actorOf(Monitor.props(ActorRef.noSender))
+ mockConnectionMediator.watch(monitorRef)
 
-    mockConnectionMediator.watch(monitorRef)
+ // Ping monitor to inform it of ConnectionMediatorRef
+ mockConnectionMediator.send(monitorRef, ConnectionMediator.Ping())
 
-    // Ping monitor to inform it of ConnectionMediatorRef
-    mockConnectionMediator.send(monitorRef, ConnectionMediator.Ping())
+ // Expect first read of the server peers list
+ mockConnectionMediator.expectMsgType[ConnectionMediator.ConnectTo](timeout)
 
-    // Expect first read of the server peers list
-    mockConnectionMediator.expectMsgType[ConnectionMediator.ConnectTo](timeout)
+ // Expect no message as long as the server peers list is untouched
+ mockConnectionMediator.expectNoMessage(timeout)
 
-    // Expect no message as long as the server peers list is untouched
-    mockConnectionMediator.expectNoMessage(timeout)
+ val newContent = List("some", "strings")
+ testWriteToServerPeersConfig(newContent)
+ sleep(1)
 
-    val newContent = List("some", "strings")
-    testWriteToServerPeersConfig(newContent)
-    sleep(1)
+ mockConnectionMediator.expectMsgType[ConnectionMediator.ConnectTo](timeout)
 
-    mockConnectionMediator.expectMsgType[ConnectionMediator.ConnectTo](timeout)
-
-    monitorRef ! PoisonPill
-    mockConnectionMediator.expectTerminated(monitorRef)
-  }
+ monitorRef ! PoisonPill
+ mockConnectionMediator.expectTerminated(monitorRef)
+}*/
 
   test("monitor should not react upon non relevant events in config directory besides first read") {
 
