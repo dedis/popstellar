@@ -600,8 +600,7 @@ func (h *Hub) GetPeersInfo() []method.ServerInfo {
 	return h.peers.GetAllPeersInfo()
 }
 
-func (h *Hub) ConnectToServerAsClient(serverAddress string) (
-	*socket.ClientSocket, error) {
+func (h *Hub) ConnectToServerAsClient(serverAddress string) (socket.Socket, error) {
 	ws, _, err := websocket.DefaultDialer.Dial(serverAddress, nil)
 	if err != nil {
 		return nil, err

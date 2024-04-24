@@ -12,6 +12,8 @@ import (
 	"golang.org/x/sync/semaphore"
 	"golang.org/x/xerrors"
 	"io"
+	"os"
+	"path/filepath"
 	"popstellar/channel"
 	"popstellar/crypto"
 	jsonrpc "popstellar/message"
@@ -27,12 +29,14 @@ import (
 )
 
 const (
-	localServerAddress  = "ws://localhost:19008/client"
-	remoteServerAddress = "ws://localhost:19009/client"
-	localLaoId          = "JYYWSfI2Au1lS7gGAZCUueY9PRMtu3ltKOFLjsdQs7s="
-	remoteLaoId         = "ztPxKxfhToSloYcruyjfurcFD3sfDJ2B3o9l6v7Erho="
-	localLaoChannel     = "/root/" + localLaoId
-	localFedChannel     = localLaoChannel + "/federation"
+	relativeMsgDataExamplePath string = "../../../protocol/examples/messageData"
+	relativeQueryExamplePath   string = "../../../protocol/examples/query"
+	localServerAddress                = "ws://localhost:19008/client"
+	remoteServerAddress               = "ws://localhost:19009/client"
+	localLaoId                        = "JYYWSfI2Au1lS7gGAZCUueY9PRMtu3ltKOFLjsdQs7s="
+	remoteLaoId                       = "ztPxKxfhToSloYcruyjfurcFD3sfDJ2B3o9l6v7Erho="
+	localFedChannel                   = "/root/" + localLaoId + "/federation"
+	remoteFedChannel                  = "/root/" + remoteLaoId + "/federation"
 )
 
 // TestChannel_FederationRequestChallenge tests that a FederationChallenge is
@@ -279,6 +283,68 @@ func Test_FederationChallenge_not_organizer(t *testing.T) {
 }
 
 func Test_FederationInit(t *testing.T) {
+	organizerKeypair := generateKeyPair(t)
+	remoteOrganizerKeypair := generateKeyPair(t)
+	fakeHub, err := NewFakeHub("", organizerKeypair.public, nolog, nil)
+	require.NoError(t, err)
+
+	fedChannel := NewChannel(localFedChannel, fakeHub, nolog,
+		organizerKeypair.publicKey)
+
+	challengeFile := filepath.Join(relativeMsgDataExamplePath,
+		"federation_challenge",
+		"federation_challenge.json")
+	challengeBytes, err := os.ReadFile(challengeFile)
+	require.NoError(t, err)
+
+	challengeBase64 := base64.URLEncoding.EncodeToString(challengeBytes)
+
+	signatureBytes, err := schnorr.Sign(crypto.Suite, organizerKeypair.private, challengeBytes)
+	require.NoError(t, err)
+
+	signatureBase64 := base64.URLEncoding.EncodeToString(signatureBytes)
+
+	federationInitData := messagedata.FederationInit{
+		Object:        messagedata.FederationObject,
+		Action:        messagedata.FederationActionInit,
+		LaoId:         remoteLaoId,
+		ServerAddress: remoteServerAddress,
+		PublicKey:     remoteOrganizerKeypair.publicKey,
+		ChallengeMsg: message.Message{
+			Data:              challengeBase64,
+			Sender:            organizerKeypair.publicKey,
+			Signature:         signatureBase64,
+			MessageID:         messagedata.Hash(challengeBase64, signatureBase64),
+			WitnessSignatures: []message.WitnessSignature{},
+		},
+	}
+
+	initMsg := generateMessage(t, organizerKeypair, federationInitData)
+	publishMsg := generatePublish(t, localFedChannel, initMsg)
+	socket := &fakeSocket{id: "sockSocket"}
+
+	err = fedChannel.Publish(publishMsg, socket)
+	require.NoError(t, err)
+
+	require.NotNil(t, fakeHub.socketClient)
+	require.Equal(t, remoteServerAddress, fakeHub.socketClient.ID())
+
+	// A Publish message containing the challenge message should be sent
+	msgBytes := fakeHub.socketClient.msg
+	require.NotNil(t, msgBytes)
+
+	var publishMsg2 method.Publish
+	err = json.Unmarshal(msgBytes, &publishMsg2)
+	require.NoError(t, err)
+
+	require.Equal(t, remoteFedChannel, publishMsg2.Params.Channel)
+	require.Equal(t, challengeBase64, publishMsg2.Params.Message.Data)
+	require.Equal(t, signatureBase64, publishMsg2.Params.Message.Signature)
+	require.Equal(t, organizerKeypair.publicKey, publishMsg2.Params.Message.Sender)
+
+	// should expect to receive back a FedererationResult
+	require.NoError(t, socket.err)
+	//require.NotNil(t, socket.msg)
 
 }
 
@@ -330,6 +396,8 @@ type fakeHub struct {
 	log zerolog.Logger
 
 	laoFac channel.LaoFactory
+
+	socketClient *fakeSocket
 }
 
 // NewFakeHub returns a fake Hub.
@@ -420,8 +488,10 @@ func (h *fakeHub) SendAndHandleMessage(msg method.Broadcast) error {
 	return nil
 }
 
-func (h *fakeHub) ConnectToServerAsClient(serverAddress string) (*socket.ClientSocket, error) {
-	return nil, nil
+func (h *fakeHub) ConnectToServerAsClient(serverAddress string) (socket.Socket, error) {
+	h.socketClient = &fakeSocket{id: serverAddress}
+
+	return h.socketClient, nil
 }
 
 // fakeSocket is a fake implementation of a Socket
@@ -494,6 +564,7 @@ func generateMessage(t *testing.T, keys keypair,
 	dataBase64 := base64.URLEncoding.EncodeToString(dataBytes)
 
 	signatureBytes, err := schnorr.Sign(crypto.Suite, keys.private, dataBytes)
+	require.NoError(t, err)
 	signatureBase64 := base64.URLEncoding.EncodeToString(signatureBytes)
 
 	return message.Message{
