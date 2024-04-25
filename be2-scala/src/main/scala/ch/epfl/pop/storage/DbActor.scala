@@ -398,7 +398,7 @@ final case class DbActor(
   private def readRumorData(senderPk: PublicKey): RumorData = {
     Try(storage.read(generateRumorDataKey(senderPk))) match {
       case Success(Some(json)) => RumorData.buildFromJson(json)
-      case Success(None)       => throw DbActorNAckException(ErrorCodes.SERVER_ERROR.id, s"RumorData for senderPk $senderPk not in database")
+      case Success(None)       => RumorData(List.empty)
       case Failure(ex)         => throw ex
     }
   }
