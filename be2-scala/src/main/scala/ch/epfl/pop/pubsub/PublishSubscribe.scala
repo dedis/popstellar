@@ -147,7 +147,7 @@ object PublishSubscribe {
           val heartbeatPartition = builder.add(ParamsWithMapHandler.heartbeatHandler(dbActorRef))
           val getMessagesByIdPartition = builder.add(ParamsWithMapHandler.getMessagesByIdHandler(dbActorRef))
           val greetServerPartition = builder.add(ParamsHandler.greetServerHandler(clientActorRef))
-          val rumorPartition = builder.add(ParamsHandler.rumorHandler(dbActorRef))
+          val rumorPartition = builder.add(ParamsHandler.rumorHandler(dbActorRef, connectionMediatorRef))
 
           val merger = builder.add(Merge[GraphMessage](totalPorts))
 

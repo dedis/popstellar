@@ -4,11 +4,13 @@ import akka.NotUsed
 import akka.actor.ActorRef
 import akka.pattern.AskableActorRef
 import akka.stream.scaladsl.Flow
+import ch.epfl.pop.decentralized.ConnectionMediator
 import ch.epfl.pop.model.network.MethodType
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.{GreetServer, Rumor}
 import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse}
 import ch.epfl.pop.model.objects.{Channel, PublicKey}
+import ch.epfl.pop.pubsub.ClientActor.ClientAnswer
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
 import ch.epfl.pop.pubsub.{AskPatternConstants, ClientActor, PubSubMediator}
 import ch.epfl.pop.storage.DbActor.{DbActorReadRumors, ReadRumors, WriteRumor}
@@ -87,7 +89,7 @@ object ParamsHandler extends AskPatternConstants {
     case graphMessage @ _ => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, "GreetServerHandler received an unexpected message:" + graphMessage, None))
   }.filter(_ => false)
 
-  def rumorHandler(dbActorRef: AskableActorRef): Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map {
+  def rumorHandler(dbActorRef: AskableActorRef, connectionMediatorRef: AskableActorRef): Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map {
     case Right(jsonRpcMessage: JsonRpcRequest) =>
       jsonRpcMessage.method match {
         case MethodType.rumor =>
@@ -104,6 +106,18 @@ object ParamsHandler extends AskPatternConstants {
             // absent
             case failure =>
               val writeRumor = dbActorRef ? WriteRumor(rumor)
+          }
+
+          // asks for a random server
+          val randomServerRef = connectionMediatorRef ? ConnectionMediator.GetRandomPeer()
+          Await.result(randomServerRef, duration) match {
+            case ConnectionMediator.GetRandomPeerAck(serverRef) =>
+              serverRef ! ClientAnswer(
+                Right(jsonRpcMessage)
+              )
+
+            // do not send if there is nobody to receive
+            case ConnectionMediator.NoPeer =>
           }
           Right(jsonRpcMessage)
         case _ => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, "RumorHandler received a non expected jsonRpcRequest", jsonRpcMessage.id))
