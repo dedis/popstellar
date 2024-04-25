@@ -43,10 +43,14 @@ exports[`WitnessNotification renders correctly 1`] = `
   </Text>
   <View
     style={
-      {
-        "marginBottom": 10,
-        "marginTop": 10,
-      }
+      [
+        {
+          "marginBottom": 10,
+        },
+        {
+          "marginTop": 10,
+        },
+      ]
     }
   >
     <View

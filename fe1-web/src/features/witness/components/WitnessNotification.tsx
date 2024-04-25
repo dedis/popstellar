@@ -124,6 +124,11 @@ const WitnessNotification = ({ notification, navigateToNotificationScreen }: IPr
               Proposed end: {new Date(decodedData.proposed_end * 1000).toLocaleString()}
             </Text>
             <Text style={Typography.small}>Location: {decodedData.location}</Text>
+            {decodedData.description ? (
+              <Text style={Typography.small}>Description: {decodedData.description}</Text>
+            ) : (
+              <Text />
+            )}
           </View>
 
           <View style={styles.marginB15}>
