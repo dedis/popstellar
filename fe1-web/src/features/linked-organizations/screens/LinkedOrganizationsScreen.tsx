@@ -167,7 +167,9 @@ const LinkedOrganizationsScreen = () => {
                 <ListItem
                   containerStyle={listStyle}
                   style={listStyle}
-                  bottomDivider>
+                  bottomDivider
+                  key={organization.lao_id.valueOf()}
+                  >
                   <PoPIcon name="business" />
                   <ListItem.Content>
                     <ListItem.Title>ID: {organization.lao_id}</ListItem.Title>
@@ -247,6 +249,7 @@ const LinkedOrganizationsScreen = () => {
           }>
             {STRINGS.linked_organizations_addlinkedorg_scanQRCode}
           </ModalHeader>
+          <Text style={{ ...Typography.paragraph, textAlign: 'center'}}>{STRINGS.linked_organizations_addlinkedorg_Scanner_info}</Text>
           <QrCodeScanner showCamera={showScanner} handleScan={onScanData}>
           <View style={container}>
           <View style={styles.qrCode}>
@@ -381,9 +384,13 @@ const LinkedOrganizationsScreen = () => {
               server_address: manualServerAddress, 
               challenge: new Challenge({value: new Hash(manualChallengeValue), valid_until: manualChallengeValidUntil})
             });
-            console.log(tmpOrg.toJson());
             onScanData(tmpOrg.toJson());
             setInputModalIsVisible(!inputModalIsVisible);
+            setManualLaoID('');
+            setManualPublicKey('');
+            setManualServerAddress('');
+            setManualChallengeValue('');
+            setManualChallengeValidUntil(Timestamp.EpochNow());
           }}>
             {STRINGS.general_add}
           </PoPTextButton>
