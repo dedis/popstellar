@@ -955,7 +955,7 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
     val write = dbActor ? DbActor.WriteRumor(rumor)
     Await.result(write, duration) shouldBe a[DbActor.DbActorAck]
 
-    val desiredRumors: Map[String, List[Int]] = Map(rumor.senderPk.base64Data.data -> List(rumor.rumorId))
+    val desiredRumors: Map[PublicKey, List[Int]] = Map(rumor.senderPk -> List(rumor.rumorId))
 
     val read = dbActor ? DbActor.ReadRumors(desiredRumors)
     val foundRumors = Await.result(read, duration).asInstanceOf[DbActorReadRumors].foundRumors
@@ -978,7 +978,7 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
     val write = dbActor ? DbActor.WriteRumor(rumor)
     Await.result(write, duration) shouldBe a[DbActor.DbActorAck]
 
-    val desiredRumorDataKey: String = rumor.senderPk.base64Data.data
+    val desiredRumorDataKey: PublicKey = rumor.senderPk
     val readRumorData = dbActor ? DbActor.ReadRumorData(desiredRumorDataKey)
     val foundRumorData = Await.result(readRumorData, duration)
     val rumorData = foundRumorData.asInstanceOf[DbActorReadRumorData].rumorIds
