@@ -1,6 +1,6 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/qrcode/federation_exchange.json",
+    "$id": "https://raw.githubusercontent.com/dedis/popstellar/work-fe1-ljankoschek-LinkedOrgUI/protocol/qrcode/federation_exchange.json",
     "title": "QRCode data for exchanging information between the organizers in the federation protocol",
     "description": "Match a data contained in a qrcode encoding lao_id, server_address, public_key (organizer), challenge",
     "type": "object",
@@ -40,5 +40,5 @@
             "required": ["value", "valid_until"]
         }
     },
-    "required": ["pop_token"]
+    "required": ["lao_id", "server_address", "public_key", "challenge"]
 }

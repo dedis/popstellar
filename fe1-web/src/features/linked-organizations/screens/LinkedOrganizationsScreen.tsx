@@ -2,26 +2,28 @@ import { CompositeScreenProps, useNavigation } from '@react-navigation/core';
 import { StackScreenProps } from '@react-navigation/stack';
 import { ListItem, FAB } from '@rneui/themed';
 import React, { useState } from 'react';
-import { Text, View, Modal, TouchableOpacity, StyleSheet, ViewStyle} from 'react-native';
+import { Text, View, Modal, TouchableOpacity, StyleSheet, ViewStyle, ScrollView} from 'react-native';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import ModalHeader from 'core/components/ModalHeader';
 import ScreenWrapper from 'core/components/ScreenWrapper';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { LinkedOrganizationsParamList } from 'core/navigation/typing/LinkedOrganizationsParamList';
 import { LaoParamList } from 'core/navigation/typing/LaoParamList';
-import { List, ModalStyles, Spacing, Typography } from 'core/styles';
+import { Border, List, ModalStyles, Spacing, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 import { LinkedOrganizationsHooks } from '../hooks';
-import { Organization } from '../objects/Organizations';
+import { Organization } from '../objects/Organization';
 import { accent, contrast } from 'core/styles/color';
-import { PoPButton, PoPIcon, QRCode } from 'core/components';
+import { ConfirmModal, DatePicker, Input, PoPButton, PoPIcon, PoPTextButton, QRCode } from 'core/components';
 import QrCodeScanner, { QrCodeScannerUIElementContainer } from 'core/components/QrCodeScanner';
-import { Color, Icon } from 'core/styles';
+import { Color } from 'core/styles';
 import QrCodeScanOverlay from 'core/components/QrCodeScanOverlay';
-import { centered } from 'core/styles/typography';
 import { container } from 'core/styles/list';
-
-
+import { useToast } from 'react-native-toast-notifications';
+import { FOUR_SECONDS } from 'resources/const';
+import PoPTouchableOpacity from 'core/components/PoPTouchableOpacity';
+import { Challenge } from '../objects/Challenge';
+import { Hash, Timestamp } from 'core/objects';
 
 
 type NavigationProps = CompositeScreenProps<
@@ -33,12 +35,7 @@ type NavigationProps = CompositeScreenProps<
 >;
 
 
-const initialOrganizations: Organization[] = [
-  Organization.fromState({ laoId: "1", name: 'Linked Org 1' }),
-  Organization.fromState({ laoId: "2", name: 'Linked Org 2' }),
-  Organization.fromState({ laoId: "3", name: 'Linked Org 3' }),
-  // Add your initial organization items here
-];
+const initialOrganizations: Organization[] = [];
 
 
 const styles = StyleSheet.create({
@@ -52,20 +49,43 @@ const styles = StyleSheet.create({
       alignItems: 'center',
       justifyContent: 'center',
       opacity: 0.5,
-      top: '35%',
+      top: '50%',
       bottom: '50%',
-      
-    } as ViewStyle,
-    container: {
-      flex: 1,
-      justifyContent: 'center',
-      marginVertical: Spacing.contentSpacing,
-      position: 'relative'
-    } as ViewStyle,
+  } as ViewStyle,
+container: {
+    flex: 1,
+    justifyContent: 'space-between',
+    marginVertical: Spacing.contentSpacing,
+  } as ViewStyle,
+scannerTextItems: {
+  top: '105%',
+  } as ViewStyle,
+enterButton: {
+    ...QrCodeScannerUIElementContainer,
+    borderColor: Color.blue,
+    borderWidth: Spacing.x025,
+    alignSelf: 'center',
+    marginBottom: Spacing.contentSpacing,
+  } as ViewStyle,
+inputContainer: {
+    flex: 1,
+    flexDirection: 'row',
+} as ViewStyle,
+input: {
+  // this makes the input field shrink down to a width of 50
+  width: 50,
+  flex: 1,
+  backgroundColor: Color.contrast,
+  borderRadius: Border.inputRadius,
+  borderWidth: Border.width,
+  borderColor: Color.contrast,
+  padding: Spacing.x05,
+},
 });
 
 const LinkedOrganizationsScreen = () => {
   const navigation = useNavigation<NavigationProps['navigation']>();
+  const toast = useToast();
   const laoId = LinkedOrganizationsHooks.useCurrentLaoId();
 
   const isOrganizer = LinkedOrganizationsHooks.useIsLaoOrganizer(laoId);
@@ -76,9 +96,27 @@ const LinkedOrganizationsScreen = () => {
   const [showQRScannerModal, setShowQRScannerModal] = useState<boolean>(false);
   const [showQRCodeModal, setShowQRCodeModal] = useState<boolean>(false);
 
+  const [inputModalIsVisible, setInputModalIsVisible] = useState(false);
+
   const [qrCodeData, setQrCodeData] = useState<string>("");
-  const [genQrCodeData, setGenQrCodeData] = useState<string>("test");
+  const sampleJsonString = `{
+    "lao_id": "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=",
+    "public_key": "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=",
+    "server_adress": "wss://epfl.ch:9000/server",
+    "challenge": {
+      "value": "82520f235f413b26571529f69d53d751335873efca97e15cd7c47d063ead830d",
+      "valid_until": 1714491502
+  }
+}`;
+  const [genQrCodeData, setGenQrCodeData] = useState<JSON>(JSON.parse(sampleJsonString));
   const [isClientA, setIsClientA] = useState<boolean>(false);
+  const [manualLaoId, setManualLaoID] = useState<string>('');
+  const [manualPublicKey, setManualPublicKey] = useState<string>('');
+  const [manualServerAddress, setManualServerAddress] = useState<string>('');
+  const [manualChallengeValue, setManualChallengeValue] = useState<string>('');
+  const [manualChallengeValidUntil, setManualChallengeValidUntil] = useState<Timestamp>(Timestamp.EpochNow());
+
+  const [startDate, setStartDate] = useState(Timestamp.EpochNow().toDate());
 
   // this is needed as otherwise the camera may stay turned on
   const [showScanner, setShowScanner] = useState(false);
@@ -89,10 +127,26 @@ const LinkedOrganizationsScreen = () => {
       qrCode = "";
     }
     setQrCodeData(qrCode);
-    setShowScanner(false);
-    setShowQRScannerModal(!showQRScannerModal);
-    if (!isClientA) {
-      setShowQRCodeModal(!showQRCodeModal);
+    try {
+      let org1 = Organization.fromJson(JSON.parse(qrCode));
+      console.log(org1.toJson());
+      setOrganizations([...organizations, org1]);
+      setShowScanner(false);
+      setShowQRScannerModal(!showQRScannerModal);
+      if (!isClientA) {
+        setShowQRCodeModal(!showQRCodeModal);
+      }
+      toast.show(`QR Code successfully scanned`, {
+        type: 'success',
+        placement: 'bottom',
+        duration: FOUR_SECONDS,
+      });
+    } catch (error) {
+      toast.show(`Could not scan QR Code, error: ${error}`, {
+        type: 'danger',
+        placement: 'bottom',
+        duration: FOUR_SECONDS,
+      });
     }
   };
 
@@ -116,8 +170,8 @@ const LinkedOrganizationsScreen = () => {
                   bottomDivider>
                   <PoPIcon name="business" />
                   <ListItem.Content>
-                    <ListItem.Title>{organization.name}</ListItem.Title>
-                    <ListItem.Subtitle>ID: {organization.laoId}</ListItem.Subtitle>
+                    <ListItem.Title>ID: {organization.lao_id}</ListItem.Title>
+                    <ListItem.Subtitle>Public Key: {organization.public_key}, Server Address: {organization.server_address}, Challenge Value: {organization.challenge.value}, Challenge Valid_until: {organization.challenge.valid_until.valueOf()}</ListItem.Subtitle>
                   </ListItem.Content>
                 </ListItem>
               );
@@ -198,6 +252,17 @@ const LinkedOrganizationsScreen = () => {
           <View style={styles.qrCode}>
             <QrCodeScanOverlay width={300} height={300} />
           </View>
+          <View style={styles.scannerTextItems}>
+            <View style={styles.enterButton}>
+              <PoPTouchableOpacity
+                testID="roll_call_open_add_manually"
+                onPress={() => setInputModalIsVisible(true)}>
+                <Text style={[Typography.base, Typography.accent, Typography.centered]}>
+                  {STRINGS.general_enter_manually}
+                </Text>
+              </PoPTouchableOpacity>
+            </View>
+          </View>
           </View>
           </QrCodeScanner>
         </View>
@@ -223,7 +288,7 @@ const LinkedOrganizationsScreen = () => {
           </ModalHeader>
           <Text style={{ ...Typography.paragraph, textAlign: 'center'}}>{STRINGS.linked_organizations_addlinkedorg_QRCode_info}</Text>
           <QRCode
-              value={genQrCodeData}
+              value={JSON.stringify(genQrCodeData)}
               overlayText={STRINGS.linked_organizations_addlinkedorg_QRCode_overlay}
           />
           <View style={{ marginTop: 15 }}>
@@ -244,6 +309,87 @@ const LinkedOrganizationsScreen = () => {
           </View>
         </View>
       </Modal>
+
+
+      <Modal
+        transparent
+        visible={inputModalIsVisible}
+        onRequestClose={() => {
+          setInputModalIsVisible(!inputModalIsVisible);
+        }}>
+        <TouchableWithoutFeedback
+          containerStyle={ModalStyles.modalBackground}
+          onPress={() => {
+            setInputModalIsVisible(!inputModalIsVisible);
+          }}
+        />
+        <ScrollView style={ModalStyles.modalContainer}>
+          <ModalHeader onClose={() => setInputModalIsVisible(!inputModalIsVisible)}>
+            {STRINGS.linked_organizations_addmanually_title}
+          </ModalHeader>
+          <Text style={Typography.paragraph}>{STRINGS.linked_organizations_enterLaoId}</Text>
+          <Input
+            testID="modal-input-laoid"
+            value={manualLaoId}
+            onChange={setManualLaoID}
+            placeholder={STRINGS.linked_organizations_placeholderLaoID}
+          />
+          <Text style={Typography.paragraph}>{STRINGS.linked_organizations_enterPublicKey}</Text>
+          <Input
+            testID="modal-input-publickey"
+            value={manualPublicKey}
+            onChange={setManualPublicKey}
+            placeholder={STRINGS.linked_organizations_placeholderPublicKey}
+          />
+          <Text style={Typography.paragraph}>{STRINGS.linked_organizations_enterServerAddress}</Text>
+          <Input
+            testID="modal-input-serveraddress"
+            value={manualServerAddress}
+            onChange={setManualServerAddress}
+            placeholder={STRINGS.linked_organizations_placeholderServerAddress}
+          />
+          <Text style={Typography.paragraph}>{STRINGS.linked_organizations_enterChallengeValue}</Text>
+          <Input
+            testID="modal-input-challengeval"
+            value={manualChallengeValue}
+            onChange={setManualChallengeValue}
+            placeholder={STRINGS.linked_organizations_placeholderChallengeValue}
+          />
+
+          <Text style={Typography.paragraph}>{STRINGS.linked_organizations_enterChallengeValidUntil}</Text>
+          <DatePicker
+          selected={startDate}
+          onChange={(date: Date) => {
+            setStartDate(date);
+            setManualChallengeValidUntil(Timestamp.fromDate(date));
+          }
+          }
+        />
+          
+          <PoPTextButton onPress={() => {
+             if (!manualLaoId || !manualPublicKey || !manualServerAddress || !manualChallengeValue || manualChallengeValidUntil <= Timestamp.EpochNow()) {
+              toast.show(`All fields are required and Valid Until has to be in the Future`, {
+                type: 'danger',
+                placement: 'bottom',
+                duration: FOUR_SECONDS,
+              });
+              return;
+            }
+            
+            let tmpOrg = new Organization({lao_id: new Hash(manualLaoId), 
+              public_key: new Hash(manualPublicKey), 
+              server_address: manualServerAddress, 
+              challenge: new Challenge({value: new Hash(manualChallengeValue), valid_until: manualChallengeValidUntil})
+            });
+            console.log(tmpOrg.toJson());
+            onScanData(tmpOrg.toJson());
+            setInputModalIsVisible(!inputModalIsVisible);
+          }}>
+            {STRINGS.general_add}
+          </PoPTextButton>
+        </ScrollView>
+      </Modal>
+
 
         </ScreenWrapper><FAB
             placement="right"
