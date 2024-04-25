@@ -60,7 +60,3 @@ export class Notification {
     });
   }
 }
-
-
-  
-

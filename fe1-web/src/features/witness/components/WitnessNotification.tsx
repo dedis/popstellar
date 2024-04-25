@@ -3,11 +3,13 @@ import React, { FunctionComponent, useEffect, useMemo } from 'react';
 import { Text, View, ViewStyle, StyleSheet } from 'react-native';
 import { useSelector } from 'react-redux';
 
-import { PoPButton, PoPTextButton } from 'core/components';
+import { PoPButton } from 'core/components';
 import { makeIcon } from 'core/components/PoPIcon';
 import { makeMessageSelector } from 'core/network/ingestion';
-import { Hash, Timestamp } from 'core/objects';
+import { Hash } from 'core/objects';
 import { dispatch } from 'core/redux';
+import { Color, Typography } from 'core/styles';
+import { contrast } from 'core/styles/color';
 import STRINGS from 'resources/strings';
 
 import { WitnessHooks } from '../hooks';
@@ -18,26 +20,37 @@ import {
   MessageToWitnessNotificationState,
 } from '../objects/MessageToWitnessNotification';
 import { removeMessageToWitness } from '../reducer';
-import { Spacing, Typography } from 'core/styles';
-import ReactTimeago from 'react-timeago';
-import { contrast } from 'core/styles/color';
-
-
-
 
 const styles = StyleSheet.create({
-  buttonContainer: {
-    margin: '10px 0px',
-    padding: '10px 0px',
-  } as ViewStyle,
   container: {
-    flex: 1,
-    justifyContent: 'space-between',
-    marginVertical: Spacing.contentSpacing,
+    padding: 20,
+    backgroundColor: Color.contrast,
+    borderRadius: 10,
+    shadowColor: Color.primary,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 3,
   } as ViewStyle,
+  marginB10: {
+    marginBottom: 10,
+  },
+  marginB15: {
+    marginBottom: 15,
+  },
+  marginT10: {
+    marginTop: 10,
+  },
+  buttonTextStyle: {
+    color: contrast,
+    textAlign: 'center',
+    fontSize: 18,
+    margin: 3,
+  },
+  boldText: {
+    fontWeight: 'bold',
+  },
 });
-
-
 
 const WitnessNotification = ({ notification, navigateToNotificationScreen }: IPropTypes) => {
   const messageSelector = useMemo(
@@ -45,7 +58,7 @@ const WitnessNotification = ({ notification, navigateToNotificationScreen }: IPr
     [notification.messageId],
   );
   const message = useSelector(messageSelector);
-  const decodedData = message == undefined ? undefined : JSON.parse(message.data.decode());
+  const decodedData = message === undefined ? undefined : JSON.parse(message.data.decode());
 
   const discardNotifications = WitnessHooks.useDiscardNotifications();
   const markNotificationAsRead = WitnessHooks.useMarkNotificationAsRead();
@@ -88,54 +101,57 @@ const WitnessNotification = ({ notification, navigateToNotificationScreen }: IPr
       navigateToNotificationScreen();
     }
   };
-
   return (
-    <View style={{ padding: 20, backgroundColor: '#fff', borderRadius: 10, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 2, elevation: 3 }}>
-    <Text style={[Typography.base, Typography.important, { marginBottom: 10 }]}>
-      {STRINGS.witnessing_req}
-    </Text>
+    <View style={styles.container}>
+      <Text style={[Typography.base, Typography.important, styles.marginB10]}>
+        {STRINGS.witnessing_req}
+      </Text>
       {decodedData && message ? (
         <>
-    <View style={{ marginBottom: 15 }}>
-      <Text style={[Typography.small, { fontWeight: 'bold' }]}>{decodedData.object}#{decodedData.action}:</Text>
-      <Text style={Typography.small}>Name: {decodedData.name}</Text>
-      <Text style={Typography.small}>ID: {decodedData.id}</Text>
-      <Text style={Typography.small}>Created at: {new Date(decodedData.creation * 1000).toLocaleString()}</Text>
-      <Text style={Typography.small}>Proposed start: {new Date(decodedData.proposed_start * 1000).toLocaleString()}</Text>
-      <Text style={Typography.small}>Proposed end: {new Date(decodedData.proposed_end * 1000).toLocaleString()}</Text>
-      <Text style={Typography.small}>Location: {decodedData.location}</Text>
-    </View>
+          <View style={styles.marginB15}>
+            <Text style={[Typography.small, styles.boldText]}>
+              {decodedData.object}#{decodedData.action}:
+            </Text>
+            <Text style={Typography.small}>Name: {decodedData.name}</Text>
+            <Text style={Typography.small}>ID: {decodedData.id}</Text>
+            <Text style={Typography.small}>
+              Created at: {new Date(decodedData.creation * 1000).toLocaleString()}
+            </Text>
+            <Text style={Typography.small}>
+              Proposed start: {new Date(decodedData.proposed_start * 1000).toLocaleString()}
+            </Text>
+            <Text style={Typography.small}>
+              Proposed end: {new Date(decodedData.proposed_end * 1000).toLocaleString()}
+            </Text>
+            <Text style={Typography.small}>Location: {decodedData.location}</Text>
+          </View>
 
-    <View style={{ marginBottom: 15 }}>
-      <Text style={[Typography.small, { fontWeight: 'bold' }]}>Message Information:</Text>
-      <Text style={Typography.small}>Message ID: {notification.messageId}</Text>
-      <Text style={Typography.small}>Received from: {message.receivedFrom}</Text>
-      <Text style={Typography.small}>Channel: {message.channel}</Text>
-      <Text style={Typography.small}>Sender: {message.sender}</Text>
-      <Text style={Typography.small}>Signature: {message.signature}</Text>
-      <Text style={Typography.small}>Received at: {message.receivedAt.toDateString()}</Text>
-      <Text style={Typography.small}>Processed at: {message.processedAt?.toDateString()}</Text>
-    </View>
+          <View style={styles.marginB15}>
+            <Text style={[Typography.small, styles.boldText]}>Message Information:</Text>
+            <Text style={Typography.small}>Message ID: {notification.messageId}</Text>
+            <Text style={Typography.small}>Received from: {message.receivedFrom}</Text>
+            <Text style={Typography.small}>Channel: {message.channel}</Text>
+            <Text style={Typography.small}>Sender: {message.sender}</Text>
+            <Text style={Typography.small}>Signature: {message.signature}</Text>
+            <Text style={Typography.small}>Received at: {message.receivedAt.toDateString()}</Text>
+            <Text style={Typography.small}>
+              Processed at: {message.processedAt?.toDateString()}
+            </Text>
+          </View>
         </>
       ) : (
-        <Text>
-          No data available.
-        </Text>
+        <Text>No data available.</Text>
       )}
-      <View style={{ marginBottom: 10, marginTop: 10 }}>
-          <PoPButton
-          onPress={onWitness} disabled={!isConnected}
-          buttonStyle={'primary'}>
-            <Text style={{ color: contrast, textAlign: 'center', fontSize: 18, margin: 3}}>{STRINGS.witness_message_witness}</Text>
-          </PoPButton>
-        </View>
-        <View style={{ marginBottom: 10 }}>
-          <PoPButton
-          onPress={onDecline} disabled={!isConnected}
-          buttonStyle={'primary'}>
-            <Text style={{ color: contrast, textAlign: 'center', fontSize: 18, margin: 3}}>{STRINGS.meeting_message_decline}</Text>
-          </PoPButton>
-        </View>
+      <View style={[styles.marginB10, styles.marginT10]}>
+        <PoPButton onPress={onWitness} disabled={!isConnected} buttonStyle="primary">
+          <Text style={styles.buttonTextStyle}>{STRINGS.witness_message_witness}</Text>
+        </PoPButton>
+      </View>
+      <View style={styles.marginB10}>
+        <PoPButton onPress={onDecline} disabled={!isConnected} buttonStyle="primary">
+          <Text style={styles.buttonTextStyle}>{STRINGS.meeting_message_decline}</Text>
+        </PoPButton>
+      </View>
     </View>
   );
 };
