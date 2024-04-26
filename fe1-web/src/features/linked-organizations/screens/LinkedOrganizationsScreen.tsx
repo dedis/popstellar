@@ -102,7 +102,7 @@ const LinkedOrganizationsScreen = () => {
   const sampleJsonString = `{
     "lao_id": "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=",
     "public_key": "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=",
-    "server_adress": "wss://epfl.ch:9000/server",
+    "server_address": "wss://epfl.ch:9000/server",
     "challenge": {
       "value": "82520f235f413b26571529f69d53d751335873efca97e15cd7c47d063ead830d",
       "valid_until": 1714491502
@@ -172,7 +172,7 @@ const LinkedOrganizationsScreen = () => {
                   >
                   <PoPIcon name="business" />
                   <ListItem.Content>
-                    <ListItem.Title>ID: {organization.lao_id}</ListItem.Title>
+                    <ListItem.Title>Lao ID: {organization.lao_id}</ListItem.Title>
                     <ListItem.Subtitle>Public Key: {organization.public_key}, Server Address: {organization.server_address}, Challenge Value: {organization.challenge.value}, Challenge Valid_until: {organization.challenge.valid_until.valueOf()}</ListItem.Subtitle>
                   </ListItem.Content>
                 </ListItem>
