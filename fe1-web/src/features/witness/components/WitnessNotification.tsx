@@ -59,6 +59,7 @@ const WitnessNotification = ({ notification, navigateToNotificationScreen }: IPr
   );
   const message = useSelector(messageSelector);
   const decodedData = message === undefined ? undefined : JSON.parse(message.data.decode());
+  console.log(decodedData);
 
   const discardNotifications = WitnessHooks.useDiscardNotifications();
   const markNotificationAsRead = WitnessHooks.useMarkNotificationAsRead();
@@ -148,12 +149,20 @@ const WitnessNotification = ({ notification, navigateToNotificationScreen }: IPr
         <Text>No data available.</Text>
       )}
       <View style={[styles.marginB10, styles.marginT10]}>
-        <PoPButton onPress={onWitness} disabled={!isConnected} buttonStyle="primary">
+        <PoPButton
+          onPress={onWitness}
+          disabled={!isConnected}
+          buttonStyle="primary"
+          testID="on-witness">
           <Text style={styles.buttonTextStyle}>{STRINGS.witness_message_witness}</Text>
         </PoPButton>
       </View>
       <View style={styles.marginB10}>
-        <PoPButton onPress={onDecline} disabled={!isConnected} buttonStyle="primary">
+        <PoPButton
+          onPress={onDecline}
+          disabled={!isConnected}
+          buttonStyle="primary"
+          testID="on-decline">
           <Text style={styles.buttonTextStyle}>{STRINGS.meeting_message_decline}</Text>
         </PoPButton>
       </View>

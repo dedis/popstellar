@@ -1,5 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit';
-import { render } from '@testing-library/react-native';
+import { fireEvent, render } from '@testing-library/react-native';
 import React from 'react';
 import { Provider } from 'react-redux';
 import { combineReducers } from 'redux';
@@ -61,10 +61,15 @@ const mockNotification = new MessageToWitnessNotification({
 const msg = ExtendedMessage.fromMessage(
   ExtendedMessage.fromData(
     {
-      object: ObjectType.CHIRP,
-      action: ActionType.ADD,
-      text: 'hi',
-      timestamp,
+      object: ObjectType.ROLL_CALL,
+      action: ActionType.CREATE,
+      name: 'rollcall1',
+      description: 'a description',
+      id: 'uO7c5qv5zenCd99Q8gLgBg0amZpjUOrmSkN7wAuZ-KM=',
+      creation: timestamp,
+      location: 'BC410',
+      proposed_end: 1718888400,
+      proposed_start: 1718884800,
     } as MessageData,
     mockKeyPair,
     mockChannel,
@@ -102,5 +107,54 @@ describe('WitnessNotification', () => {
       </Provider>,
     ).toJSON();
     expect(component).toMatchSnapshot();
+  });
+});
+
+describe('WitnessNotification actions', () => {
+  let dispatchSpy: jest.SpyInstance;
+
+  beforeEach(() => {
+    // Spy on the store's dispatch function
+    dispatchSpy = jest.spyOn(mockStore, 'dispatch');
+  });
+
+  afterEach(() => {
+    // Restore the original function after each test
+    dispatchSpy.mockRestore();
+  });
+
+  it('renders correctly for witnessing', () => {
+    const { getByTestId } = render(
+      <Provider store={mockStore}>
+        <FeatureContext.Provider value={contextValue}>
+          <WitnessNotification
+            notification={mockNotification}
+            navigateToNotificationScreen={() => {}}
+          />
+        </FeatureContext.Provider>
+      </Provider>,
+    );
+
+    fireEvent.press(getByTestId('on-witness'));
+    expect(dispatchSpy).toHaveBeenCalledWith(
+      discardNotifications({ laoId: mockLaoId, notificationIds: [mockNotification.id] }),
+    );
+  });
+  it('renders correctly for declining', () => {
+    const { getByTestId } = render(
+      <Provider store={mockStore}>
+        <FeatureContext.Provider value={contextValue}>
+          <WitnessNotification
+            notification={mockNotification}
+            navigateToNotificationScreen={() => {}}
+          />
+        </FeatureContext.Provider>
+      </Provider>,
+    );
+
+    fireEvent.press(getByTestId('on-decline'));
+    expect(dispatchSpy).toHaveBeenCalledWith(
+      discardNotifications({ laoId: mockLaoId, notificationIds: [mockNotification.id] }),
+    );
   });
 });
