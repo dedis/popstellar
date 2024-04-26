@@ -78,9 +78,41 @@ const msg = ExtendedMessage.fromMessage(
   mockChannel,
 );
 
+const mockNotification2 = new MessageToWitnessNotification({
+  id: 0,
+  laoId: mockLaoId,
+  title: 'a notification',
+  timestamp: new Timestamp(0),
+  type: WitnessFeature.NotificationTypes.MESSAGE_TO_WITNESS,
+  hasBeenRead: false,
+  messageId: mockMessageId,
+});
+
+const msg2 = ExtendedMessage.fromMessage(
+  ExtendedMessage.fromData(
+    {
+      object: ObjectType.ROLL_CALL,
+      action: ActionType.CREATE,
+      name: 'rollcall2',
+      id: 'hA4d8e-lYmd4u5_Ltv5Lft_P8Q_YRMXI1UmikEYD8vc=',
+      creation: timestamp,
+      location: 'BC411',
+      proposed_end: 1718888400,
+      proposed_start: 1718884800,
+    } as MessageData,
+    mockKeyPair,
+    mockChannel,
+  ),
+  mockAddress,
+  mockChannel,
+);
+
 mockStore.dispatch(addMessages(msg.toState()));
 mockStore.dispatch(addMessageToWitness(msg.message_id));
 mockStore.dispatch(addNotification(mockNotification.toState()));
+mockStore.dispatch(addMessages(msg2.toState()));
+mockStore.dispatch(addMessageToWitness(msg2.message_id));
+mockStore.dispatch(addNotification(mockNotification2.toState()));
 
 const contextValue = {
   [WITNESS_FEATURE_IDENTIFIER]: {
@@ -101,6 +133,20 @@ describe('WitnessNotification', () => {
         <FeatureContext.Provider value={contextValue}>
           <WitnessNotification
             notification={mockNotification}
+            navigateToNotificationScreen={() => {}}
+          />
+        </FeatureContext.Provider>
+      </Provider>,
+    ).toJSON();
+    expect(component).toMatchSnapshot();
+  });
+
+  it('renders correctly without description', () => {
+    const component = render(
+      <Provider store={mockStore}>
+        <FeatureContext.Provider value={contextValue}>
+          <WitnessNotification
+            notification={mockNotification2}
             navigateToNotificationScreen={() => {}}
           />
         </FeatureContext.Provider>
