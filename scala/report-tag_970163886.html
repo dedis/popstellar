@@ -74,7 +74,7 @@ $(document).ready(function() {
   <tbody>
     <tr class="info">
       <td>scala</td>
-      <td>26 Apr 2024, 04:20</td>
+      <td>27 Apr 2024, 04:19</td>
     </tr>
   </tbody>
 </table>
@@ -127,19 +127,19 @@ $(document).ready(function() {
         <tbody>
         <tr>
           <td class="tagname">@electionEnd1</td>
-          <td      class="passed"    >3</td>
-          <td      class="failed"    >1</td>
-          <td     class="skipped"   >3</td>
+          <td      class="passed"    >7</td>
+          <td >0</td>
+          <td >0</td>
           <td >0</td>
           <td >0</td>
           <td class="total">7</td>
 
+          <td  class="passed"    >1</td>
           <td >0</td>
-          <td  class="failed"    >1</td>
           <td class="total">1</td>
 
-          <td class="duration" data-value="31490339">0.031</td>
-          <td class="failed">Failed</td>
+          <td class="duration" data-value="5029559865">5.029</td>
+          <td class="passed">Passed</td>
         </tr>
         </tbody>
 
@@ -182,12 +182,12 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">0.031</span>
+  <span class="lead-duration duration">5.029</span>
 
 
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-1">
+  <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-1">
 
-<div class="brief failed">
+<div class="brief passed">
   <span class="keyword indention">Scenario</span>
   <span class="name">Sending a valid election end should succeed</span>
 
@@ -198,16 +198,16 @@ $(document).ready(function() {
   </span>
   <div class="description indention"></div>
 
-  <div id="element-1" class="collapse collapsable-details  in ">
+  <div id="element-1" class="collapse collapsable-details ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-2">
+  <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-2">
 
-<div class="brief failed">
+<div class="brief passed">
   <span class="keyword indention">Steps</span>
   <span class="name"></span>
 
@@ -217,7 +217,7 @@ $(document).ready(function() {
 
   </div>
 
-  <div id="steps-2" class="inner-level collapse collapsable-details  in ">
+  <div id="steps-2" class="inner-level collapse collapsable-details ">
       <div class="step">
 
 
@@ -296,7 +296,7 @@ $(document).ready(function() {
   <span class="keyword indention">And</span>
   <span class="name">json answer = organizer.getBackendResponse(validElectionEnd)</span>
 
-  <span class="lead-duration duration">0.028</span>
+  <span class="lead-duration duration">0.026</span>
 
 </div>
 
@@ -319,11 +319,11 @@ $(document).ready(function() {
       <div class="step">
 
 
-<div class="brief step-name-And failed">
+<div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
   <span class="name">json results = organizer.getElectionResults()</span>
 
-  <span class="lead-duration duration">0.001</span>
+  <span class="lead-duration duration">0.000</span>
 
 </div>
 
@@ -332,49 +332,9 @@ $(document).ready(function() {
 
 
 
-  <div class="inner-level">
-    <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-4">
-          <a>js</a>
-      </div>
-      <div id="msg-4" class="collapse collapsable-details  in ">
-        <pre>js failed:
-&gt;&gt;&gt;&gt;
-01: organizer.getElectionResults()
-&lt;&lt;&lt;&lt;
-org.graalvm.polyglot.PolyglotException
-- common.net.MultiMsgWebSocketClient.getElectionResults(MultiMsgWebSocketClient.java:127)
-- &lt;js&gt;.:program(Unnamed:1)
-
-classpath:be/features/election/electionEnd.feature:35</pre>
-      </div>
-    </div>
-  </div>
 
 
 
-
-  <div class="inner-level">
-    <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-5">
-          <a>Doc string</a>
-      </div>
-      <div id="msg-5" class="collapse collapsable-details">
-        <pre>04:13:22.540 classpath:be/features/election/electionEnd.feature:35
-And json results = organizer.getElectionResults()
-js failed:
-&gt;&gt;&gt;&gt;
-01: organizer.getElectionResults()
-&lt;&lt;&lt;&lt;
-org.graalvm.polyglot.PolyglotException
-- common.net.MultiMsgWebSocketClient.getElectionResults(MultiMsgWebSocketClient.java:127)
-- &lt;js&gt;.:program(Unnamed:1)
-
-classpath:be/features/election/electionEnd.feature:35
-</pre>
-      </div>
-    </div>
-  </div>
 
 
 
@@ -386,7 +346,7 @@ classpath:be/features/election/electionEnd.feature:35
       <div class="step">
 
 
-<div class="brief step-name-And skipped">
+<div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
   <span class="name">match answer contains VALID_MESSAGE</span>
 
@@ -413,7 +373,7 @@ classpath:be/features/election/electionEnd.feature:35
       <div class="step">
 
 
-<div class="brief step-name-And skipped">
+<div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
   <span class="name">match results contains ELECTION_RESULTS</span>
 
@@ -440,11 +400,11 @@ classpath:be/features/election/electionEnd.feature:35
       <div class="step">
 
 
-<div class="brief step-name-And skipped">
+<div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
   <span class="name">match organizer.receiveNoMoreResponses() == true</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">5.000</span>
 
 </div>
 
