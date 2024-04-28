@@ -122,4 +122,89 @@ public class MockClient extends MultiMsgWebSocketClient {
 
     return lao;
   }
+
+  /**
+   * Creates a roll call.
+   * @param lao the lao to create the roll call for
+   * @return the roll call created
+   */
+  public RollCall createRollCall(Lao lao) {
+    RollCall rollCall = generateValidRollCall(lao);
+    return createRollCall(lao, rollCall);
+  }
+
+  /**
+   * Creates a roll call.
+   * @param lao the lao to create the roll call for
+   * @param rollCall the roll call to create
+   * @return the roll call passed as argument
+   */
+  public RollCall createRollCall(Lao lao, RollCall rollCall) {
+    Map<String, Object> request = new HashMap<>();
+    request.put("object", "roll_call");
+    request.put("action", "create");
+    request.put("id", rollCall.id);
+    request.put("name", rollCall.name);
+    request.put("creation", rollCall.creation);
+    request.put("proposed_start", rollCall.start);
+    request.put("proposed_end", rollCall.end);
+    request.put("location", rollCall.location);
+    request.put("description", rollCall.description);
+
+    this.publish(request, lao.channel);
+    this.getBackendResponse(request);
+
+    Map<String, Object> sub = new HashMap<>();
+    sub.put("method", "subscribe");
+    sub.put("id", 2);
+    Map<String, Object> params = new HashMap<>();
+    params.put("channel", lao.channel);
+    sub.put("params", params);
+    sub.put("jsonrpc", "2.0");
+
+    this.send(sub);
+    this.takeTimeout(1000);
+
+    return rollCall;
+  }
+
+  /**
+   * Opens a roll call.
+   * @param lao the lao the roll call belongs to
+   * @param rollCall the roll call to open
+   */
+  public void openRollCall(Lao lao, RollCall rollCall) {
+    RollCall.RollCallOpen openRollCall = rollCall.open();
+
+    Map<String, Object> request = new HashMap<>();
+    request.put("object", "roll_call");
+    request.put("action", "open");
+    request.put("update_id", openRollCall.updateId);
+    request.put("opens", openRollCall.opens);
+    request.put("opened_at", openRollCall.openedAt);
+
+    this.publish(request, lao.channel);
+    this.getBackendResponse(request);
+  }
+
+  /**
+   * Closes a roll call.
+   * @param lao the lao the roll call belongs to
+   * @param rollCall the roll call to close
+   */
+  public void closeRollCall(Lao lao, RollCall rollCall, List<String> attendees) {
+    RollCall.RollCallClose closeRollCall = rollCall.close();
+
+    Map<String, Object> request = new HashMap<>();
+    request.put("object", "roll_call");
+    request.put("action", "close");
+    request.put("update_id", closeRollCall.updateId);
+    request.put("closes", closeRollCall.closes);
+    request.put("closed_at", closeRollCall.closedAt);
+    request.put("attendees", attendees);
+
+
+    this.publish(request, lao.channel);
+    this.getBackendResponse(request);
+  }
 }
