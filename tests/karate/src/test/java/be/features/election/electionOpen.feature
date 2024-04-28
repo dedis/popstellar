@@ -6,9 +6,9 @@ Feature: Open an Election
     * call read(serverFeature)
     * call read(mockClientFeature)
     * def organizer = call createMockFrontend
-    * def lao = organizer.createValidLao()
-    * def rollCall = organizer.createValidRollCall(lao)
-    * def election = organizer.createValidElection(lao)
+    * def lao = organizer.generateValidLao()
+    * def rollCall = organizer.generateValidRollCall(lao)
+    * def election = organizer.generateValidElection(lao)
     * def question = election.createQuestion()
 
     # This call executes all the steps to set up a lao, complete a roll call and create an election with one question
@@ -38,7 +38,7 @@ Feature: Open an Election
   # upon an open election message
   @electionOpen2
   Scenario: Opening the election without a setup should result in an error
-    Given def newElection = organizer.createValidElection(lao)
+    Given def newElection = organizer.generateValidElection(lao)
     And def newElectionOpen = newElection.open()
     And def validElectionOpen =
       """

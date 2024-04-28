@@ -1,7 +1,7 @@
-package be.model;
+package common.model;
 
-import be.utils.Hash;
-import be.utils.RandomUtils;
+import common.utils.Hash;
+import common.utils.RandomUtils;
 
 import java.time.Instant;
 import java.util.*;

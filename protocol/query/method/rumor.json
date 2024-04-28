@@ -14,7 +14,7 @@
             "type": "object",
             "additionalProperties": false,
             "properties": {
-                "sender_id" : {
+                "sender_id": {
                     "description": "[String] publish key of the sender's server",
                     "type": "string",
                     "contentEncoding": "base64"
@@ -24,15 +24,12 @@
                     "type": "integer"
                 },
                 "messages": {
-                    "description": "[Array] Key-value of channels and messages per channel",
-                    "type": "array",
-                    "items": {
-                        "$ref": "../../answer/result/messages_by_channel.json"
-                    },
-                    "minItems": 1
+                    "description": "Key-value of channels and messages per channel",
+                    "type": "object",
+                    "$ref": "../../answer/result/messages_by_channel.json"
                 }
             },
-            "required": ["sender_id","rumor_id", "messages"]
+            "required": ["sender_id", "rumor_id", "messages"]
         },
 
         "jsonrpc": {

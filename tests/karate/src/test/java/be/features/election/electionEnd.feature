@@ -6,9 +6,9 @@ Feature: Terminate an election
     * call read(serverFeature)
     * call read(mockClientFeature)
     * def organizer = call createMockFrontend
-    * def lao = organizer.createValidLao()
-    * def rollCall = organizer.createValidRollCall(lao)
-    * def election = organizer.createValidElection(lao)
+    * def lao = organizer.generateValidLao()
+    * def rollCall = organizer.generateValidRollCall(lao)
+    * def election = organizer.generateValidElection(lao)
     * def question = election.createQuestion()
 
     # This call executes all the steps to set up a lao, complete a roll call, open an election and cast a vote

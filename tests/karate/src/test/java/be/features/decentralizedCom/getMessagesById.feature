@@ -8,7 +8,7 @@ Feature: Request messages by id from other servers
     * call read(mockClientFeature)
     * def mockBackend = call createMockBackend
     * def mockFrontend = call createMockFrontend
-    * def lao = mockFrontend.createValidLao()
+    * def lao = mockFrontend.generateValidLao()
 
     # Create the template for heartbeat message
     # This is used in combination with 'eval' to dynamically resolve the channel keys in the heartbeat JSON
@@ -63,7 +63,7 @@ Feature: Request messages by id from other servers
   # trigger a getMessagesById anymore
   @getMessagesById4
   Scenario: Server should not request messages that it already has
-    Given def validRollCall = mockFrontend.createValidRollCall(lao)
+    Given def validRollCall = mockFrontend.generateValidRollCall(lao)
     And def validCreateRollCall =
       """
         {
