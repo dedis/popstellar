@@ -9,15 +9,16 @@ import ch.epfl.pop.json.MessageDataProtocol.GreetLaoFormat
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.lao.GreetLao
 import ch.epfl.pop.model.network.method.message.data.{ActionType, ObjectType}
+import ch.epfl.pop.model.objects.*
 import ch.epfl.pop.model.objects.Channel.{LAO_DATA_LOCATION, ROOT_CHANNEL_PREFIX}
-import ch.epfl.pop.model.objects._
 import ch.epfl.pop.pubsub.graph.AnswerGenerator.timout
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, JsonString}
 import ch.epfl.pop.pubsub.{MessageRegistry, PubSubMediator, PublishSubscribe}
-import ch.epfl.pop.storage.DbActor._
+import ch.epfl.pop.storage.DbActor.*
 import com.google.crypto.tink.subtle.Ed25519Sign
 
 import java.util.concurrent.TimeUnit
+import scala.collection.immutable.HashMap
 import scala.concurrent.Await
 import scala.concurrent.duration.{Duration, FiniteDuration}
 import scala.util.{Failure, Success, Try}
@@ -130,7 +131,7 @@ final case class DbActor(
 
   @throws[DbActorNAckException]
   private def readElectionData(laoId: Hash, electionId: Hash): ElectionData = {
-    Try(storage.read(storage.DATA_KEY + s"${ROOT_CHANNEL_PREFIX}${laoId.toString}/private/${electionId.toString}")) match {
+    Try(storage.read(storage.DATA_KEY + s"$ROOT_CHANNEL_PREFIX${laoId.toString}/private/${electionId.toString}")) match {
       case Success(Some(json)) => ElectionData.buildFromJson(json)
       case Success(None)       => throw DbActorNAckException(ErrorCodes.SERVER_ERROR.id, s"ElectionData for election $electionId not in the database")
       case Failure(ex)         => throw ex
@@ -243,7 +244,7 @@ final case class DbActor(
 
   @throws[DbActorNAckException]
   private def createElectionData(laoId: Hash, electionId: Hash, keyPair: KeyPair): Unit = {
-    val channel = Channel(s"${ROOT_CHANNEL_PREFIX}${laoId.toString}/private/${electionId.toString}")
+    val channel = Channel(s"$ROOT_CHANNEL_PREFIX${laoId.toString}/private/${electionId.toString}")
     if (!checkChannelExistence(channel)) {
       val pair = (storage.DATA_KEY + channel.toString) -> ElectionData(electionId, keyPair).toJsonString
       storage.write(pair)
@@ -299,7 +300,7 @@ final case class DbActor(
   @throws[DbActorNAckException]
   private def generateLaoDataKey(channel: Channel): String = {
     channel.decodeChannelLaoId match {
-      case Some(data) => storage.DATA_KEY + s"${Channel.ROOT_CHANNEL_PREFIX}$data${LAO_DATA_LOCATION}"
+      case Some(data) => storage.DATA_KEY + s"${Channel.ROOT_CHANNEL_PREFIX}$data$LAO_DATA_LOCATION"
       case None =>
         log.error(s"Actor $self (db) encountered a problem while decoding LAO channel from '$channel'")
         throw DbActorNAckException(ErrorCodes.SERVER_ERROR.id, s"Could not extract the LAO id for channel $channel")
@@ -308,7 +309,7 @@ final case class DbActor(
 
   // generates the key of the RollCallData to store in the database
   private def generateRollCallDataKey(laoId: Hash): String = {
-    storage.DATA_KEY + s"${ROOT_CHANNEL_PREFIX}${laoId.toString}/rollcall"
+    storage.DATA_KEY + s"$ROOT_CHANNEL_PREFIX${laoId.toString}/rollcall"
   }
 
   @throws[DbActorNAckException]
@@ -367,6 +368,20 @@ final case class DbActor(
     storage.write((storage.SERVER_PUBLIC_KEY + storage.DEFAULT, publicKey.base64Data.data))
     storage.write((storage.SERVER_PRIVATE_KEY + storage.DEFAULT, privateKey.base64Data.data))
     (publicKey, privateKey)
+  }
+
+  @throws[DbActorNAckException]
+  private def generateHeartbeat(): HashMap[Channel, Set[Hash]] = {
+    val setOfChannels = getAllChannels
+    if (setOfChannels.isEmpty) return HashMap()
+    val heartbeatMap: HashMap[Channel, Set[Hash]] = setOfChannels.foldLeft(HashMap.empty[Channel, Set[Hash]]) {
+      (acc, channel) =>
+        readChannelData(channel).messages.toSet match {
+          case setOfIds if setOfIds.nonEmpty => acc + (channel -> setOfIds)
+          case _                             => acc
+        }
+    }
+    heartbeatMap
   }
 
   override def receive: Receive = LoggingReceive {
@@ -541,6 +556,13 @@ final case class DbActor(
       Try(readServerPrivateKey()) match {
         case Success(privateKey) => sender() ! DbActorReadServerPrivateKeyAck(privateKey)
         case failure             => sender() ! failure.recover(Status.Failure(_))
+      }
+
+    case GenerateHeartbeat() =>
+      log.info(s"Actor $self (db) received a GenerateHeartbeat request")
+      Try(generateHeartbeat()) match {
+        case Success(heartbeat) => sender() ! DbActorGenerateHeartbeatAck(heartbeat)
+        case failure            => sender() ! failure.recover(Status.Failure(_))
       }
 
     case m =>
@@ -758,6 +780,9 @@ object DbActor {
     */
   final case class ReadServerPrivateKey() extends Event
 
+  /** Request to generate a local heartbeat */
+  final case class GenerateHeartbeat() extends Event
+
   // DbActor DbActorMessage correspond to messages the actor may emit
   sealed trait DbActorMessage
 
@@ -831,6 +856,13 @@ object DbActor {
   /** Response for a [[ReadServerPrivateKey]] db request
     */
   final case class DbActorReadServerPrivateKeyAck(privateKey: PrivateKey) extends DbActorMessage
+
+  /** Response for a [[GenerateHeartbeat]] db request Receiving [[DbActorGenerateHeartbeatAck]] works as an acknowledgement that the request was successful
+    *
+    * @param heartbeatMap
+    *   requested heartbeat as a map from the channels to message ids
+    */
+  final case class DbActorGenerateHeartbeatAck(heartbeatMap: HashMap[Channel, Set[Hash]]) extends DbActorMessage
 
   /** Response for a general db actor ACK
     */
