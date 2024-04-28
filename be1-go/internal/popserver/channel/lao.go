@@ -13,19 +13,6 @@ import (
 	"popstellar/message/answer"
 	"popstellar/message/messagedata"
 	"popstellar/message/query/method/message"
-	"strconv"
-	"strings"
-)
-
-const (
-	rollCallFlag    = "R"
-	electionFlag    = "Election"
-	questionFlag    = "Question"
-	pluralityMethod = "Plurality"
-	approvalMethod  = "Approval"
-	open            = "open"
-	closed          = "closed"
-	created         = "created"
 )
 
 func handleChannelLao(channel string, msg message.Message) *answer.Error {
@@ -82,6 +69,273 @@ func handleChannelLao(channel string, msg message.Message) *answer.Error {
 	return nil
 }
 
+func handleRollCallCreate(msg message.Message, channel string) *answer.Error {
+	var rollCallCreate messagedata.RollCallCreate
+	err := msg.UnmarshalData(&rollCallCreate)
+	var errAnswer *answer.Error
+
+	if err != nil {
+		errAnswer = answer.NewInvalidActionError("failed to unmarshal message data: %v", err)
+		errAnswer = errAnswer.Wrap("handleRollCallCreate")
+		return errAnswer
+	}
+
+	errAnswer = rollCallCreate.Verify(channel)
+	if errAnswer != nil {
+		errAnswer = errAnswer.Wrap("handleRollCallCreate")
+		return errAnswer
+	}
+
+	return nil
+}
+
+func handleRollCallOpen(msg message.Message, channel string) *answer.Error {
+	var rollCallOpen messagedata.RollCallOpen
+	err := msg.UnmarshalData(&rollCallOpen)
+	var errAnswer *answer.Error
+
+	if err != nil {
+		errAnswer = answer.NewInvalidActionError("failed to unmarshal message data: %v", err)
+		errAnswer = errAnswer.Wrap("handleRollCallOpen")
+		return errAnswer
+	}
+
+	errAnswer = rollCallOpen.Verify(channel)
+	if errAnswer != nil {
+		errAnswer = errAnswer.Wrap("handleRollCallOpen")
+		return errAnswer
+	}
+
+	db, ok := database.GetLAORepositoryInstance()
+	if !ok {
+		errAnswer := answer.NewInternalServerError("failed to get database")
+		errAnswer = errAnswer.Wrap("handleRollCallOpen")
+		return errAnswer
+	}
+
+	ok, err = db.CheckPrevID(channel, rollCallOpen.Opens, messagedata.RollCallActionCreate)
+
+	if err != nil {
+		errAnswer = answer.NewInternalServerError("failed to check if previous id exists: %v", err)
+		errAnswer = errAnswer.Wrap("handleRollCallOpen")
+		return errAnswer
+	} else if !ok {
+		errAnswer = answer.NewInvalidMessageFieldError("previous id does not exist")
+		errAnswer = errAnswer.Wrap("handleRollCallOpen")
+		return errAnswer
+	}
+	return nil
+}
+
+func handleRollCallReOpen(msg message.Message, channel string) *answer.Error {
+	var rollCallReOpen messagedata.RollCallReOpen
+	err := msg.UnmarshalData(&rollCallReOpen)
+	var errAnswer *answer.Error
+
+	if err != nil {
+		errAnswer = answer.NewInvalidActionError("failed to unmarshal message data: %v", err)
+		errAnswer = errAnswer.Wrap("handleRollCallReOpen")
+		return errAnswer
+	}
+
+	errAnswer = handleRollCallOpen(msg, channel)
+	if errAnswer != nil {
+		errAnswer = errAnswer.Wrap("handleRollCallReOpen")
+		return errAnswer
+	}
+
+	return nil
+}
+
+func handleRollCallClose(msg message.Message, channel string) *answer.Error {
+	var rollCallClose messagedata.RollCallClose
+	err := msg.UnmarshalData(&rollCallClose)
+	var errAnswer *answer.Error
+
+	if err != nil {
+		errAnswer = answer.NewInvalidActionError("failed to unmarshal message data: %v", err)
+		errAnswer = errAnswer.Wrap("handleRollCallClose")
+		return errAnswer
+	}
+
+	errAnswer = rollCallClose.Verify(channel)
+	if errAnswer != nil {
+		errAnswer = errAnswer.Wrap("handleRollCallClose")
+		return errAnswer
+	}
+
+	db, ok := database.GetLAORepositoryInstance()
+	if !ok {
+		errAnswer := answer.NewInternalServerError("failed to get database")
+		errAnswer = errAnswer.Wrap("handleRollCallClose")
+		return errAnswer
+	}
+
+	ok, err = db.CheckPrevID(channel, rollCallClose.Closes, messagedata.RollCallActionOpen)
+	if err != nil {
+		errAnswer = answer.NewInternalServerError("failed to check if previous id exists: %v", err)
+		errAnswer = errAnswer.Wrap("handleRollCallClose")
+		return errAnswer
+	} else if !ok {
+		errAnswer = answer.NewInvalidMessageFieldError("previous id does not exist")
+		errAnswer = errAnswer.Wrap("handleRollCallClose")
+		return errAnswer
+	}
+
+	channels := make([]string, 0, len(rollCallClose.Attendees))
+
+	for _, popToken := range rollCallClose.Attendees {
+		_, err = base64.URLEncoding.DecodeString(popToken)
+		if err != nil {
+			errAnswer = answer.NewInvalidMessageFieldError("failed to decode poptoken: %v", err)
+			errAnswer = errAnswer.Wrap("handleRollCallClose")
+			return errAnswer
+		}
+		chirpingChannelPath := channel + Social + "/" + popToken
+		channels = append(channels, chirpingChannelPath)
+	}
+
+	err = db.StoreChannelsAndMessage(channels, channel, msg)
+	if err != nil {
+		errAnswer = answer.NewInternalServerError("failed to store channels and message: %v", err)
+		errAnswer = errAnswer.Wrap("handleRollCallClose")
+		return errAnswer
+	}
+	return nil
+}
+
+func handleElectionSetup(msg message.Message, channel string) *answer.Error {
+	var electionSetup messagedata.ElectionSetup
+	err := msg.UnmarshalData(&electionSetup)
+	var errAnswer *answer.Error
+
+	if err != nil {
+		errAnswer = answer.NewInvalidActionError("failed to unmarshal message data: %v", err)
+		errAnswer = errAnswer.Wrap("handleElectionSetup")
+		return errAnswer
+	}
+
+	senderBuf, err := base64.URLEncoding.DecodeString(msg.Sender)
+	if err != nil {
+		errAnswer = answer.NewInvalidMessageFieldError("failed to decode sender public key: %v", err)
+		errAnswer = errAnswer.Wrap("handleElectionSetup")
+		return errAnswer
+	}
+	senderPubKey := crypto.Suite.Point()
+	err = senderPubKey.UnmarshalBinary(senderBuf)
+	if err != nil {
+		errAnswer = answer.NewInvalidMessageFieldError("failed to unmarshal sender public key: %v", err)
+		errAnswer = errAnswer.Wrap("handleElectionSetup")
+		return errAnswer
+	}
+
+	db, ok := database.GetLAORepositoryInstance()
+	if !ok {
+		errAnswer := answer.NewInternalServerError("failed to get database").Wrap("handleElectionSetup")
+		return errAnswer
+	}
+
+	organizePubKey, err := db.GetOrganizerPubKey(channel)
+	if err != nil {
+		errAnswer = answer.NewInternalServerError("failed to get organizer public key: %v", err)
+		errAnswer = errAnswer.Wrap("handleElectionSetup")
+		return errAnswer
+	}
+
+	if !organizePubKey.Equal(senderPubKey) {
+		errAnswer = answer.NewAccessDeniedError("sender public key does not match organizer public key: %s != %s", senderPubKey, organizePubKey)
+		errAnswer = errAnswer.Wrap("handleElectionSetup")
+		return errAnswer
+	}
+
+	errAnswer = electionSetup.Verify(channel)
+	if errAnswer != nil {
+		errAnswer = errAnswer.Wrap("handleElectionSetup")
+		return errAnswer
+	}
+
+	for _, question := range electionSetup.Questions {
+		errAnswer = question.Verify(electionSetup.ID)
+		if errAnswer != nil {
+			errAnswer = errAnswer.Wrap("handleElectionSetup")
+			return errAnswer
+		}
+	}
+	electionPubKey, electionSecretKey := generateKeys()
+	electionKeyMsg, errAnswer := createElectionKey(electionSetup.ID, electionPubKey)
+	if errAnswer != nil {
+		errAnswer = errAnswer.Wrap("handleElectionSetup")
+		return errAnswer
+	}
+	electionPath := channel + "/" + electionSetup.ID
+	err = db.StoreMessageWithElectionKey(channel, electionPath, electionPubKey, electionSecretKey, msg, electionKeyMsg)
+	if err != nil {
+		errAnswer = answer.NewInternalServerError("failed to store election setup message: %v", err)
+		errAnswer = errAnswer.Wrap("handleElectionSetup")
+		return errAnswer
+	}
+
+	subs, ok := state.GetSubsInstance()
+	if !ok {
+		errAnswer := answer.NewInternalServerError("failed to get state").Wrap("handleGreetServer")
+		return errAnswer
+	}
+
+	subs.AddChannel(electionPath)
+	return nil
+}
+
+func createElectionKey(electionID string, electionPubKey kyber.Point) (message.Message, *answer.Error) {
+	electionPubBuf, err := electionPubKey.MarshalBinary()
+	if err != nil {
+		errAnswer := answer.NewInternalServerError("failed to marshal election public key: %v", err)
+		errAnswer = errAnswer.Wrap("createAndSendElectionKey")
+		return message.Message{}, errAnswer
+	}
+	msgData := messagedata.ElectionKey{
+		Object:   messagedata.ElectionObject,
+		Action:   messagedata.ElectionActionKey,
+		Election: electionID,
+		Key:      base64.URLEncoding.EncodeToString(electionPubBuf),
+	}
+
+	dataBuf, err := json.Marshal(&msgData)
+	if err != nil {
+		errAnswer := answer.NewInternalServerError("failed to marshal message data: %v", err)
+		errAnswer = errAnswer.Wrap("createAndSendElectionKey")
+		return message.Message{}, errAnswer
+	}
+	newData64 := base64.URLEncoding.EncodeToString(dataBuf)
+
+	serverPublicKey, ok := config.GetServerPublicKeyInstance()
+	if !ok {
+		errAnswer := answer.NewInternalServerError("failed to get config").Wrap("createAndSendElectionKey")
+		return message.Message{}, errAnswer
+	}
+
+	serverPubBuf, err := serverPublicKey.MarshalBinary()
+	if err != nil {
+		errAnswer := answer.NewInternalServerError("failed to unmarshall server secret key", err)
+		errAnswer = errAnswer.Wrap("createAndSendElectionKey")
+		return message.Message{}, errAnswer
+	}
+	signatureBuf, errAnswer := Sign(dataBuf)
+	if errAnswer != nil {
+		errAnswer = errAnswer.Wrap("createAndSendElectionKey")
+		return message.Message{}, errAnswer
+	}
+	signature := base64.URLEncoding.EncodeToString(signatureBuf)
+	electionKeyMsg := message.Message{
+		Data:              newData64,
+		Sender:            base64.URLEncoding.EncodeToString(serverPubBuf),
+		Signature:         signature,
+		MessageID:         messagedata.Hash(newData64, signature),
+		WitnessSignatures: []message.WitnessSignature{},
+	}
+	return electionKeyMsg, nil
+}
+
+// Not working
 func handleLaoState(msg message.Message, channel string) *answer.Error {
 	var laoState messagedata.LaoState
 	err := msg.UnmarshalData(&laoState)
@@ -197,440 +451,6 @@ func compareLaoUpdateAndState(update messagedata.LaoUpdate, state messagedata.La
 		return errAnswer
 	}
 	return nil
-}
-
-func handleRollCallCreate(msg message.Message, channel string) *answer.Error {
-	var rollCallCreate messagedata.RollCallCreate
-	err := msg.UnmarshalData(&rollCallCreate)
-	var errAnswer *answer.Error
-
-	if err != nil {
-		errAnswer = answer.NewInvalidActionError("failed to unmarshal message data: %v", err)
-		errAnswer = errAnswer.Wrap("handleRollCallCreate")
-		return errAnswer
-	}
-
-	// verify id is base64URL encoded
-	_, err = base64.URLEncoding.DecodeString(rollCallCreate.ID)
-	if err != nil {
-		errAnswer = answer.NewInvalidMessageFieldError("failed to decode roll call ID: %v", err)
-		errAnswer = errAnswer.Wrap("handleRollCallCreate")
-		return errAnswer
-	}
-
-	// verify roll call create message id
-	expectedID := messagedata.Hash(
-		rollCallFlag,
-		strings.ReplaceAll(channel, messagedata.RootPrefix, ""),
-		strconv.Itoa(int(rollCallCreate.Creation)),
-		rollCallCreate.Name,
-	)
-	if rollCallCreate.ID != expectedID {
-		errAnswer = answer.NewInvalidMessageFieldError("roll call id is %s, should be %s", rollCallCreate.ID, expectedID)
-		errAnswer = errAnswer.Wrap("handleRollCallCreate")
-		return errAnswer
-	}
-
-	// verify creation is positive
-	if rollCallCreate.Creation < 0 {
-		errAnswer = answer.NewInvalidMessageFieldError("roll call creation is %d, should be minimum 0", rollCallCreate.Creation)
-		errAnswer = errAnswer.Wrap("handleRollCallCreate")
-		return errAnswer
-	}
-
-	// verify proposed start after creation
-	if rollCallCreate.ProposedStart < rollCallCreate.Creation {
-		errAnswer = answer.NewInvalidMessageFieldError("roll call proposed start time should be greater than creation time")
-		errAnswer = errAnswer.Wrap("handleRollCallCreate")
-		return errAnswer
-	}
-
-	// verify proposed end after proposed start
-	if rollCallCreate.ProposedEnd < rollCallCreate.ProposedStart {
-		errAnswer = answer.NewInvalidMessageFieldError("roll call proposed end should be greater than proposed start")
-		errAnswer = errAnswer.Wrap("handleRollCallCreate")
-		return errAnswer
-	}
-
-	return nil
-}
-
-func handleRollCallOpen(msg message.Message, channel string) *answer.Error {
-	var rollCallOpen messagedata.RollCallOpen
-	err := msg.UnmarshalData(&rollCallOpen)
-	var errAnswer *answer.Error
-
-	if err != nil {
-		errAnswer = answer.NewInvalidActionError("failed to unmarshal message data: %v", err)
-		errAnswer = errAnswer.Wrap("handleRollCallOpen")
-		return errAnswer
-	}
-
-	_, err = base64.URLEncoding.DecodeString(rollCallOpen.UpdateID)
-	if err != nil {
-		errAnswer = answer.NewInvalidMessageFieldError("failed to decode roll call update ID: %v", err)
-		errAnswer = errAnswer.Wrap("handleRollCallOpen")
-		return errAnswer
-	}
-	expectedID := messagedata.Hash(
-		rollCallFlag,
-		strings.ReplaceAll(channel, messagedata.RootPrefix, ""),
-		rollCallOpen.Opens,
-		strconv.Itoa(int(rollCallOpen.OpenedAt)),
-	)
-	if rollCallOpen.UpdateID != expectedID {
-		errAnswer = answer.NewInvalidMessageFieldError("roll call update id is %s, should be %s", rollCallOpen.UpdateID, expectedID)
-		errAnswer = errAnswer.Wrap("handleRollCallOpen")
-		return errAnswer
-	}
-
-	_, err = base64.URLEncoding.DecodeString(rollCallOpen.Opens)
-	if err != nil {
-		errAnswer = answer.NewInvalidMessageFieldError("failed to decode roll call opens: %v", err)
-		errAnswer = errAnswer.Wrap("handleRollCallOpen")
-		return errAnswer
-	}
-
-	if rollCallOpen.OpenedAt < 0 {
-		errAnswer = answer.NewInvalidMessageFieldError("roll call opened at is %d, should be minimum 0", rollCallOpen.OpenedAt)
-		errAnswer = errAnswer.Wrap("handleRollCallOpen")
-		return errAnswer
-	}
-
-	db, ok := database.GetLAORepositoryInstance()
-	if !ok {
-		errAnswer := answer.NewInternalServerError("failed to get database").Wrap("handleRollCallOpen")
-		return errAnswer
-	}
-
-	ok, err = db.CheckPrevID(channel, rollCallOpen.Opens)
-	if err != nil {
-		errAnswer = answer.NewInternalServerError("failed to check if previous id exists: %v", err)
-		errAnswer = errAnswer.Wrap("handleRollCallOpen")
-		return errAnswer
-	} else if !ok {
-		errAnswer = answer.NewInvalidMessageFieldError("previous id does not exist")
-		errAnswer = errAnswer.Wrap("handleRollCallOpen")
-		return errAnswer
-	}
-	return nil
-}
-
-func handleRollCallReOpen(msg message.Message, channel string) *answer.Error {
-	var rollCallReOpen messagedata.RollCallReOpen
-	err := msg.UnmarshalData(&rollCallReOpen)
-	var errAnswer *answer.Error
-
-	if err != nil {
-		errAnswer = answer.NewInvalidActionError("failed to unmarshal message data: %v", err)
-		errAnswer = errAnswer.Wrap("handleRollCallReOpen")
-		return errAnswer
-	}
-
-	errAnswer = handleRollCallOpen(msg, channel)
-	if errAnswer != nil {
-		errAnswer = errAnswer.Wrap("handleRollCallReOpen")
-		return errAnswer
-	}
-
-	return nil
-}
-
-func handleRollCallClose(msg message.Message, channel string) *answer.Error {
-	var rollCallClose messagedata.RollCallClose
-	err := msg.UnmarshalData(&rollCallClose)
-	var errAnswer *answer.Error
-
-	if err != nil {
-		errAnswer = answer.NewInvalidActionError("failed to unmarshal message data: %v", err)
-		errAnswer = errAnswer.Wrap("handleRollCallClose")
-		return errAnswer
-	}
-
-	_, err = base64.URLEncoding.DecodeString(rollCallClose.UpdateID)
-	if err != nil {
-		errAnswer = answer.NewInvalidMessageFieldError("failed to decode roll call update ID: %v", err)
-		errAnswer = errAnswer.Wrap("handleRollCallClose")
-		return errAnswer
-	}
-
-	expectedID := messagedata.Hash(
-		rollCallFlag,
-		strings.ReplaceAll(channel, messagedata.RootPrefix, ""),
-		rollCallClose.Closes,
-		strconv.Itoa(int(rollCallClose.ClosedAt)),
-	)
-	if rollCallClose.UpdateID != expectedID {
-		errAnswer = answer.NewInvalidMessageFieldError("roll call update id is %s, should be %s", rollCallClose.UpdateID, expectedID)
-		errAnswer = errAnswer.Wrap("handleRollCallClose")
-		return errAnswer
-	}
-
-	_, err = base64.URLEncoding.DecodeString(rollCallClose.Closes)
-	if err != nil {
-		errAnswer = answer.NewInvalidMessageFieldError("failed to decode roll call closes: %v", err)
-		errAnswer = errAnswer.Wrap("handleRollCallClose")
-		return errAnswer
-	}
-
-	if rollCallClose.ClosedAt < 0 {
-		errAnswer = answer.NewInvalidMessageFieldError("roll call closed at is %d, should be minimum 0", rollCallClose.ClosedAt)
-		errAnswer = errAnswer.Wrap("handleRollCallClose")
-		return errAnswer
-	}
-
-	db, ok := database.GetLAORepositoryInstance()
-	if !ok {
-		errAnswer := answer.NewInternalServerError("failed to get database").Wrap("handleRollCallClose")
-		return errAnswer
-	}
-
-	rollCallState, err := db.GetRollCallState(channel)
-	if err != nil {
-		errAnswer = answer.NewInternalServerError("failed to get roll call rollCallState: %v", err)
-		errAnswer = errAnswer.Wrap("handleRollCallClose")
-		return errAnswer
-	} else if rollCallState != open {
-		errAnswer = answer.NewInvalidMessageFieldError("roll call is not open")
-		errAnswer = errAnswer.Wrap("handleRollCallClose")
-		return errAnswer
-	}
-
-	channels := make([]string, 0, len(rollCallClose.Attendees))
-
-	for _, popToken := range rollCallClose.Attendees {
-		_, err = base64.URLEncoding.DecodeString(popToken)
-		if err != nil {
-			errAnswer = answer.NewInvalidMessageFieldError("failed to decode poptoken: %v", err)
-			errAnswer = errAnswer.Wrap("handleRollCallClose")
-			return errAnswer
-		}
-		chirpingChannelPath := channel + social + "/" + popToken
-		channels = append(channels, chirpingChannelPath)
-	}
-
-	err = db.StoreChannelsAndMessage(channels, channel, msg)
-	if err != nil {
-		errAnswer = answer.NewInternalServerError("failed to store channels and message: %v", err)
-		errAnswer = errAnswer.Wrap("handleRollCallClose")
-		return errAnswer
-	}
-	return nil
-}
-
-func handleElectionSetup(msg message.Message, channel string) *answer.Error {
-	var electionSetup messagedata.ElectionSetup
-	err := msg.UnmarshalData(&electionSetup)
-	var errAnswer *answer.Error
-
-	if err != nil {
-		errAnswer = answer.NewInvalidActionError("failed to unmarshal message data: %v", err)
-		errAnswer = errAnswer.Wrap("handleElectionSetup")
-		return errAnswer
-	}
-
-	senderBuf, err := base64.URLEncoding.DecodeString(msg.Sender)
-	if err != nil {
-		errAnswer = answer.NewInvalidMessageFieldError("failed to decode sender public key: %v", err)
-		errAnswer = errAnswer.Wrap("handleElectionSetup")
-		return errAnswer
-	}
-	senderPubKey := crypto.Suite.Point()
-	err = senderPubKey.UnmarshalBinary(senderBuf)
-	if err != nil {
-		errAnswer = answer.NewInvalidMessageFieldError("failed to unmarshal sender public key: %v", err)
-		errAnswer = errAnswer.Wrap("handleElectionSetup")
-		return errAnswer
-	}
-
-	db, ok := database.GetLAORepositoryInstance()
-	if !ok {
-		errAnswer := answer.NewInternalServerError("failed to get database").Wrap("handleElectionSetup")
-		return errAnswer
-	}
-
-	organizePubKey, err := db.GetOrganizerPubKey(channel)
-	if err != nil {
-		errAnswer = answer.NewInternalServerError("failed to get organizer public key: %v", err)
-		errAnswer = errAnswer.Wrap("handleElectionSetup")
-		return errAnswer
-	}
-
-	if !organizePubKey.Equal(senderPubKey) {
-		errAnswer = answer.NewAccessDeniedError("sender public key does not match organizer public key: %s != %s", senderPubKey, organizePubKey)
-		errAnswer = errAnswer.Wrap("handleElectionSetup")
-		return errAnswer
-	}
-
-	_, err = base64.URLEncoding.DecodeString(electionSetup.Lao)
-	if err != nil {
-		errAnswer = answer.NewInvalidMessageFieldError("failed to decode lao: %v", err)
-		errAnswer = errAnswer.Wrap("handleElectionSetup")
-		return errAnswer
-	}
-
-	if electionSetup.Lao != channel {
-		errAnswer = answer.NewInvalidMessageFieldError("lao id is %s, should be %s", electionSetup.Lao, channel)
-		errAnswer = errAnswer.Wrap("handleElectionSetup")
-		return errAnswer
-	}
-
-	_, err = base64.URLEncoding.DecodeString(electionSetup.ID)
-	if err != nil {
-		errAnswer = answer.NewInvalidMessageFieldError("failed to decode election id: %v", err)
-		errAnswer = errAnswer.Wrap("handleElectionSetup")
-		return errAnswer
-	}
-
-	// verify election setup message id
-	expectedID := messagedata.Hash(
-		electionFlag,
-		channel,
-		strconv.Itoa(int(electionSetup.CreatedAt)),
-		electionSetup.Name,
-	)
-	if electionSetup.ID != expectedID {
-		errAnswer = answer.NewInvalidMessageFieldError("election id is %s, should be %s", electionSetup.ID, expectedID)
-		errAnswer = errAnswer.Wrap("handleElectionSetup")
-		return errAnswer
-	}
-	if len(electionSetup.Name) == 0 {
-		errAnswer = answer.NewInvalidMessageFieldError("election name is empty")
-		errAnswer = errAnswer.Wrap("handleElectionSetup")
-		return errAnswer
-	}
-	if electionSetup.Version != messagedata.OpenBallot && electionSetup.Version != messagedata.SecretBallot {
-		errAnswer = answer.NewInvalidMessageFieldError("election version is %s, should be %s or %s", electionSetup.Version, messagedata.OpenBallot, messagedata.SecretBallot)
-		errAnswer = errAnswer.Wrap("handleElectionSetup")
-		return errAnswer
-	}
-	if electionSetup.CreatedAt < 0 {
-		errAnswer = answer.NewInvalidMessageFieldError("election created at is %d, should be minimum 0", electionSetup.CreatedAt)
-		errAnswer = errAnswer.Wrap("handleElectionSetup")
-		return errAnswer
-	}
-	if electionSetup.StartTime < electionSetup.CreatedAt {
-		errAnswer = answer.NewInvalidMessageFieldError("election start should be greater that creation time")
-		errAnswer = errAnswer.Wrap("handleElectionSetup")
-		return errAnswer
-	}
-	if electionSetup.EndTime < electionSetup.StartTime {
-		errAnswer = answer.NewInvalidMessageFieldError("election end should be greater that start time")
-		errAnswer = errAnswer.Wrap("handleElectionSetup")
-		return errAnswer
-	}
-	if len(electionSetup.Questions) == 0 {
-		errAnswer = answer.NewInvalidMessageFieldError("election contains no questions")
-		errAnswer = errAnswer.Wrap("handleElectionSetup")
-	}
-
-	for _, question := range electionSetup.Questions {
-		_, err = base64.URLEncoding.DecodeString(question.ID)
-		if err != nil {
-			errAnswer = answer.NewInvalidMessageFieldError("failed to decode Question id: %v", err)
-			errAnswer = errAnswer.Wrap("handleElectionSetup")
-			return errAnswer
-		}
-		expectedID := messagedata.Hash(
-			questionFlag,
-			electionSetup.ID,
-			question.Question,
-		)
-		if question.ID != expectedID {
-			errAnswer = answer.NewInvalidMessageFieldError("Question id is %s, should be %s", question.ID, expectedID)
-			errAnswer = errAnswer.Wrap("handleElectionSetup")
-			return errAnswer
-		}
-		if len(question.Question) == 0 {
-			errAnswer = answer.NewInvalidMessageFieldError("Question is empty")
-			errAnswer = errAnswer.Wrap("handleElectionSetup")
-			return errAnswer
-		}
-		if question.VotingMethod != pluralityMethod && question.VotingMethod != approvalMethod {
-			errAnswer = answer.NewInvalidMessageFieldError("Question voting method is %s, should be %s or %s", question.VotingMethod, pluralityMethod, approvalMethod)
-			errAnswer = errAnswer.Wrap("handleElectionSetup")
-			return errAnswer
-		}
-	}
-	electionPubKey, electionSecretKey := generateKeys()
-	electionKeyMsg, errAnswer := createElectionKey(electionSetup.ID, electionPubKey)
-	if errAnswer != nil {
-		errAnswer = errAnswer.Wrap("handleElectionSetup")
-		return errAnswer
-	}
-	electionPath := channel + "/" + electionSetup.ID
-	err = db.StoreMessageWithElectionKey(channel, electionPath, electionPubKey, electionSecretKey, msg, electionKeyMsg)
-	if err != nil {
-		errAnswer = answer.NewInternalServerError("failed to store election setup message: %v", err)
-		errAnswer = errAnswer.Wrap("handleElectionSetup")
-		return errAnswer
-	}
-
-	subs, ok := state.GetSubsInstance()
-	if !ok {
-		errAnswer := answer.NewInternalServerError("failed to get state").Wrap("handleGreetServer")
-		return errAnswer
-	}
-
-	subs.AddChannel(electionPath)
-
-	err = db.StoreMessage(electionSetup.ID, electionKeyMsg)
-	if err != nil {
-		errAnswer := answer.NewInternalServerError("failed to store election key message: %v", err)
-		errAnswer = errAnswer.Wrap("createAndSendElectionKey")
-		return errAnswer
-	}
-	return nil
-}
-
-func createElectionKey(electionID string, electionPubKey kyber.Point) (message.Message, *answer.Error) {
-	electionPubBuf, err := electionPubKey.MarshalBinary()
-	if err != nil {
-		errAnswer := answer.NewInternalServerError("failed to marshal election public key: %v", err)
-		errAnswer = errAnswer.Wrap("createAndSendElectionKey")
-		return message.Message{}, errAnswer
-	}
-	msgData := messagedata.ElectionKey{
-		Object:   messagedata.ElectionObject,
-		Action:   messagedata.ElectionActionKey,
-		Election: electionID,
-		Key:      base64.URLEncoding.EncodeToString(electionPubBuf),
-	}
-
-	dataBuf, err := json.Marshal(&msgData)
-	if err != nil {
-		errAnswer := answer.NewInternalServerError("failed to marshal message data: %v", err)
-		errAnswer = errAnswer.Wrap("createAndSendElectionKey")
-		return message.Message{}, errAnswer
-	}
-	newData64 := base64.URLEncoding.EncodeToString(dataBuf)
-
-	serverPublicKey, ok := config.GetServerPublicKeyInstance()
-	if !ok {
-		errAnswer := answer.NewInternalServerError("failed to get config").Wrap("createAndSendElectionKey")
-		return message.Message{}, errAnswer
-	}
-
-	serverPubBuf, err := serverPublicKey.MarshalBinary()
-	if err != nil {
-		errAnswer := answer.NewInternalServerError("failed to unmarshall server secret key", err)
-		errAnswer = errAnswer.Wrap("createAndSendElectionKey")
-		return message.Message{}, errAnswer
-	}
-	signatureBuf, errAnswer := Sign(dataBuf)
-	if errAnswer != nil {
-		errAnswer = errAnswer.Wrap("createAndSendElectionKey")
-		return message.Message{}, errAnswer
-	}
-	signature := base64.URLEncoding.EncodeToString(signatureBuf)
-	electionKeyMsg := message.Message{
-		Data:              newData64,
-		Sender:            base64.URLEncoding.EncodeToString(serverPubBuf),
-		Signature:         signature,
-		MessageID:         messagedata.Hash(newData64, signature),
-		WitnessSignatures: []message.WitnessSignature{},
-	}
-	return electionKeyMsg, nil
 }
 
 // Not implemented yet

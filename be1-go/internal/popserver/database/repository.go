@@ -2,7 +2,7 @@ package database
 
 import (
 	"go.dedis.ch/kyber/v3"
-	"popstellar/message/messagedata"
+	"popstellar/internal/popserver/types"
 	"popstellar/message/query/method/message"
 )
 
@@ -79,16 +79,16 @@ type RootRepository interface {
 
 type LAORepository interface {
 	// GetLaoWitnesses returns the list of witnesses of a LAO.
-	GetLaoWitnesses(laoPath string) (map[string]struct{}, error)
+	GetLaoWitnesses(laoID string) (map[string]struct{}, error)
 
 	// GetOrganizerPubKey returns the organizer public key of a LAO.
-	GetOrganizerPubKey(laoPath string) (kyber.Point, error)
+	GetOrganizerPubKey(laoID string) (kyber.Point, error)
 
 	// GetRollCallState returns the state of th lao roll call.
 	GetRollCallState(channel string) (string, error)
 
 	// CheckPrevID returns true if the previous roll call message ID is the same as the next roll call message ID.
-	CheckPrevID(channel string, nextID string) (bool, error)
+	CheckPrevID(channel, nextID, expectedState string) (bool, error)
 
 	// StoreChannelsAndMessage stores a list of "sub" channels and a message inside the database.
 	StoreChannelsAndMessage(channels []string, laoID string, msg message.Message) error
@@ -112,35 +112,35 @@ type ElectionRepository interface {
 	// GetLAOOrganizerPubKey returns the organizer public key of an election.
 	GetLAOOrganizerPubKey(electionID string) (kyber.Point, error)
 
-	//IsElectionStarted returns true if the election is started.
-	IsElectionStarted(electionID string) (bool, error)
-
-	// IsElectionTerminated returns true if the election is terminated.
-	IsElectionTerminated(electionID string) (bool, error)
+	// GetElectionSecretKey returns the secret key of an election.
+	GetElectionSecretKey(electionID string) (kyber.Scalar, error)
 
 	// IsElectionStartedOrTerminated returns true if the election is started or terminated.
 	IsElectionStartedOrTerminated(electionID string) (bool, error)
 
+	// IsElectionTerminated returns true if the election is terminated.
+	IsElectionTerminated(electionID string) (bool, error)
+
+	//IsElectionStarted returns true if the election is started.
+	IsElectionStarted(electionID string) (bool, error)
+
+	// GetElectionType returns the type of an election.
+	GetElectionType(electionID string) (string, error)
+
 	// GetElectionCreationTime returns the creation time of an election.
 	GetElectionCreationTime(electionID string) (int64, error)
-
-	// GetLastVote returns the last vote of a sender in an election.
-	GetLastVote(sender, electionID string) (messagedata.VoteCastVote, error)
 
 	// GetElectionAttendees returns the attendees of an election.
 	GetElectionAttendees(electionID string) (map[string]struct{}, error)
 
 	// GetElectionQuestions returns the questions of an election.
-	// GetElectionQuestions(electionID string) (map[string]channel.Question, error)
+	GetElectionQuestions(electionID string) (map[string]types.Question, error)
 
-	// GetElectionType returns the type of an election.
-	GetElectionType(electionID string) (string, error)
+	//GetElectionQuestionsWithValidVotes returns the questions of an election with valid votes.
+	GetElectionQuestionsWithValidVotes(electionID string) (map[string]types.Question, error)
 
-	// StoreCastVote stores a cast vote message inside the database.
-	StoreCastVote(electionID string, msg message.Message, vote messagedata.VoteCastVote) error
-
-	// GetResult returns the result of an election.
-	GetResult(electionID string) (messagedata.ElectionResult, error)
+	// StoreMessageAndElectionResult stores a message and an election result message inside the database.
+	StoreMessageAndElectionResult(channelID string, msg, electionResultMsg message.Message) error
 
 	// StoreMessage stores a message inside the database.
 	StoreMessage(channelID string, msg message.Message) error

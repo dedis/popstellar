@@ -6,8 +6,10 @@ import (
 	"encoding/json"
 	"errors"
 	"go.dedis.ch/kyber/v3"
+	"golang.org/x/xerrors"
 	_ "modernc.org/sqlite"
 	"popstellar/crypto"
+	"popstellar/internal/popserver/types"
 	"popstellar/message/messagedata"
 	"popstellar/message/query/method/message"
 	"strings"
@@ -36,6 +38,16 @@ var channelTypeNameToID = map[string]string{
 	"coin":         "9",
 	"auth":         "10",
 }
+var channelTypeNames = []string{"root",
+	"lao",
+	"election",
+	"generalchirp",
+	"chirp",
+	"reaction",
+	"consensus",
+	"popcha",
+	"coin",
+	"auth"}
 
 //======================================================================================================================
 // Database initialization
@@ -80,19 +92,8 @@ func NewSQLite(path string, foreignKeyOff bool) (SQLite, error) {
 		db.Close()
 		return SQLite{}, err
 	}
-	err = createToken(tx)
-	if err != nil {
-		db.Close()
-		return SQLite{}, err
-	}
 
 	err = createChannel(tx)
-	if err != nil {
-		db.Close()
-		return SQLite{}, err
-	}
-
-	err = createTokenLao(tx)
 	if err != nil {
 		db.Close()
 		return SQLite{}, err
@@ -169,17 +170,8 @@ func createChannelType(tx *sql.Tx) error {
 		"ID INTEGER PRIMARY KEY, " +
 		"name TEXT" +
 		")")
-	channelTypes := []string{"root",
-		"lao",
-		"election",
-		"generalchirp",
-		"chirp",
-		"reaction",
-		"consensus",
-		"popcha",
-		"coin",
-		"auth"}
-	for _, channelType := range channelTypes {
+
+	for _, channelType := range channelTypeNames {
 		_, err = tx.Exec("INSERT INTO channelType (name) VALUES (?)", channelType)
 		if err != nil {
 			return err
@@ -195,25 +187,6 @@ func createKey(tx *sql.Tx) error {
 		"privateKey BLOB NULL, " +
 		"FOREIGN KEY (channelID) REFERENCES channel(channelID), " +
 		"PRIMARY KEY (channelID) " +
-		")")
-	return err
-}
-
-func createTokenLao(tx *sql.Tx) error {
-	_, err := tx.Exec("CREATE TABLE IF NOT EXISTS tokenLao (" +
-		"laoID TEXT, " +
-		"token TEXT, " +
-		"creationTime BIGINT, " +
-		"FOREIGN KEY (laoID) REFERENCES channel(channelID), " +
-		"PRIMARY KEY (laoID, token) " +
-		")")
-	return err
-}
-
-func createToken(tx *sql.Tx) error {
-	_, err := tx.Exec("CREATE TABLE IF NOT EXISTS token (" +
-		"token TEXT, " +
-		"PRIMARY KEY (token) " +
 		")")
 	return err
 }
@@ -245,7 +218,7 @@ func (s *SQLite) StoreMessage(channel string, msg message.Message) error {
 	}
 	_, err = tx.Exec("INSERT INTO inbox "+
 		"(messageID, message, storedTime) VALUES "+
-		"(?, ?, ?)", msg.MessageID, string(msgByte), time.Now().UnixNano())
+		"(?, ?, ?)", msg.MessageID, msgByte, time.Now().UnixNano())
 	if err != nil {
 		return err
 	}
@@ -280,7 +253,7 @@ func (s *SQLite) StoreMessageAndData(channelID string, msg message.Message) erro
 	}
 	_, err = tx.Exec("INSERT INTO inbox "+
 		"(messageID, message, messageData, storedTime) VALUES "+
-		"(?, ?, ?, ?)", msg.MessageID, string(msgByte), string(messageData), time.Now().UnixNano())
+		"(?, ?, ?, ?)", msg.MessageID, msgByte, messageData, time.Now().UnixNano())
 	if err != nil {
 		return err
 
@@ -678,7 +651,7 @@ func (s *SQLite) GetRollCallState(channel string) (string, error) {
 	return state, nil
 }
 
-func (s *SQLite) CheckPrevID(channel string, nextID string) (bool, error) {
+func (s *SQLite) CheckPrevID(channel, nextID, expectedState string) (bool, error) {
 	var lastMsg []byte
 	err := s.database.QueryRow("SELECT messageData"+
 		" FROM inbox"+
@@ -690,24 +663,49 @@ func (s *SQLite) CheckPrevID(channel string, nextID string) (bool, error) {
 		return false, err
 	}
 
-	var prevID1 struct {
-		PrevID1 string `json:"update_id"`
-	}
-	var prevID2 struct {
-		PrevID2 string `json:"id"`
-	}
-	err = json.Unmarshal(lastMsg, &prevID1)
-	if err != nil || prevID1.PrevID1 == "" {
-		err = json.Unmarshal(lastMsg, &prevID2)
-		if err != nil || prevID2.PrevID2 == "" {
-			return false, nil
+	switch expectedState {
+	case messagedata.LAOActionCreate:
+		var laoCreate messagedata.LaoCreate
+		err = json.Unmarshal(lastMsg, &laoCreate)
+		if err != nil {
+			var unmarshalTypeError *json.UnmarshalTypeError
+			if errors.As(err, &unmarshalTypeError) {
+				return false, nil
+			}
+			return false, err
 		}
-		return prevID2.PrevID2 == nextID, nil
+		return laoCreate.ID == nextID, nil
+
+	case messagedata.RollCallActionOpen:
+		var rollCallOpen messagedata.RollCallOpen
+		err = json.Unmarshal(lastMsg, &rollCallOpen)
+		if err != nil {
+			var unmarshalTypeError *json.UnmarshalTypeError
+			if errors.As(err, &unmarshalTypeError) {
+				return false, nil
+			}
+			return false, err
+		}
+		return rollCallOpen.UpdateID == nextID, nil
+
+	case messagedata.RollCallActionClose:
+		var rollCallClose messagedata.RollCallClose
+		err = json.Unmarshal(lastMsg, &rollCallClose)
+		if err != nil {
+			var unmarshalTypeError *json.UnmarshalTypeError
+			if errors.As(err, &unmarshalTypeError) {
+				return false, nil
+			}
+			return false, err
+		}
+		return rollCallClose.UpdateID == nextID, nil
+
+	default:
+		return false, xerrors.New("unexpected state")
 	}
-	return prevID1.PrevID1 == nextID, nil
 }
 
-func (s *SQLite) GetLaoWitnesses(laoID string) ([]string, error) {
+func (s *SQLite) GetLaoWitnesses(laoID string) (map[string]struct{}, error) {
 
 	var witnesses []string
 	err := s.database.QueryRow("SELECT json_extract(messageData, '$.witnesses')"+
@@ -718,7 +716,12 @@ func (s *SQLite) GetLaoWitnesses(laoID string) ([]string, error) {
 		return nil, err
 	}
 
-	return witnesses, nil
+	var witnessesMap = make(map[string]struct{})
+	for _, witness := range witnesses {
+		witnessesMap[witness] = struct{}{}
+	}
+
+	return witnessesMap, nil
 }
 
 func (s *SQLite) StoreChannelsAndMessage(channels []string, laoID string, msg message.Message) error {
@@ -739,7 +742,7 @@ func (s *SQLite) StoreChannelsAndMessage(channels []string, laoID string, msg me
 	}
 
 	_, err = tx.Exec("INSERT INTO INBOX (messageID, message, messageData, storedTime) VALUES (?, ?, ?, ?)",
-		msg.MessageID, string(msgBytes), string(messageData), time.Now().UnixNano())
+		msg.MessageID, msgBytes, messageData, time.Now().UnixNano())
 	if err != nil {
 		return err
 	}
@@ -839,7 +842,6 @@ func (s *SQLite) StoreMessageWithElectionKey(
 //======================================================================================================================
 
 func (s *SQLite) GetLAOOrganizerPubKey(electionID string) (kyber.Point, error) {
-
 	tx, err := s.database.Begin()
 	if err != nil {
 		return nil, err
@@ -868,7 +870,22 @@ func (s *SQLite) GetLAOOrganizerPubKey(electionID string) (kyber.Point, error) {
 	return electionPubKey, nil
 }
 
-func (s *SQLite) IsElectionStartedOrTerminated(electionID string) (bool, error) {
+func (s *SQLite) GetElectionSecretKey(electionID string) (kyber.Scalar, error) {
+	var electionSecretBuf []byte
+	err := s.database.QueryRow("SELECT privateKey FROM key WHERE channelID = ?", electionID).Scan(&electionSecretBuf)
+	if err != nil {
+		return nil, err
+	}
+
+	electionSecretKey := crypto.Suite.Scalar()
+	err = electionSecretKey.UnmarshalBinary(electionSecretBuf)
+	if err != nil {
+		return nil, err
+	}
+	return electionSecretKey, nil
+}
+
+func (s *SQLite) getElectiontSateCounter(electionID string) (int, error) {
 	rows, err := s.database.Query("SELECT json_extract(messageData, '$.started')"+
 		" FROM inbox"+
 		" WHERE storedTime = (SELECT MAX(storedTime)"+
@@ -878,16 +895,46 @@ func (s *SQLite) IsElectionStartedOrTerminated(electionID string) (bool, error) 
 		electionID, messagedata.ElectionObject, messagedata.ElectionActionOpen, messagedata.ElectionActionEnd)
 
 	if err != nil {
-		return false, err
+		return -1, err
 	}
 	count := 0
 	for rows.Next() {
 		count++
 	}
 	if rows.Err() != nil {
+		return -1, err
+	}
+	return count, nil
+}
+
+func (s *SQLite) IsElectionStartedOrTerminated(electionID string) (bool, error) {
+	count, err := s.getElectiontSateCounter(electionID)
+	if err != nil {
 		return false, err
 	}
 	if count >= 1 {
+		return true, nil
+	}
+	return false, nil
+}
+
+func (s *SQLite) IsElectionStarted(electionID string) (bool, error) {
+	count, err := s.getElectiontSateCounter(electionID)
+	if err != nil {
+		return false, err
+	}
+	if count == 1 {
+		return true, nil
+	}
+	return false, nil
+}
+
+func (s *SQLite) IsElectionTerminated(electionID string) (bool, error) {
+	count, err := s.getElectiontSateCounter(electionID)
+	if err != nil {
+		return false, err
+	}
+	if count == 2 {
 		return true, nil
 	}
 	return false, nil
@@ -904,4 +951,247 @@ func (s *SQLite) GetElectionCreationTime(electionID string) (int64, error) {
 		return 0, err
 	}
 	return creationTime, nil
+}
+
+func (s *SQLite) GetElectionType(electionID string) (string, error) {
+	var electionType string
+	err := s.database.QueryRow("SELECT json_extract(messageData, '$.version')"+
+		"FROM (SELECT * FROM inbox JOIN channelMessage ON inbox.messageID = channelMessage.messageID)"+
+		"WHERE channelID = ? AND json_extract(messageData, '$.object') = ? AND json_extract(messageData, '$.action') = ?",
+		electionID, messagedata.ElectionObject, messagedata.ElectionActionSetup).Scan(&electionType)
+
+	if err != nil {
+		return "", err
+	}
+	return electionType, nil
+}
+
+func (s *SQLite) GetElectionAttendees(electionID string) (map[string]struct{}, error) {
+	var rollCallCloseBytes []byte
+	err := s.database.QueryRow(`
+	SELECT i.messageData
+	FROM (
+		SELECT * FROM inbox
+		JOIN channelMessage ON inbox.messageID = channelMessage.messageID
+	) joined
+	JOIN channel c ON joined.channelID = c.laoID
+	WHERE c.channelID = ? 
+	AND json_extract(joined.messageData, '$.object') = ? 
+	AND json_extract(joined.messageData, '$.action') = ?
+	AND joined.storedTime = (
+		SELECT MAX(storedTime)
+		FROM (
+			SELECT * FROM inbox
+			JOIN channelMessage ON inbox.messageID = channelMessage.messageID
+		)
+		WHERE channelID = c.laoID 
+		AND json_extract(messageData, '$.object') = ? 
+		AND json_extract(messageData, '$.action') = ?
+	)`,
+		electionID,
+		messagedata.RollCallObject,
+		messagedata.RollCallActionClose,
+		messagedata.RollCallObject,
+		messagedata.RollCallActionClose,
+	).Scan(&rollCallCloseBytes)
+	if err != nil {
+		return nil, err
+	}
+
+	var rollCallClose messagedata.RollCallClose
+	err = json.Unmarshal(rollCallCloseBytes, &rollCallClose)
+	if err != nil {
+		return nil, err
+	}
+
+	attendeesMap := make(map[string]struct{})
+	for _, attendee := range rollCallClose.Attendees {
+		attendeesMap[attendee] = struct{}{}
+	}
+	return attendeesMap, nil
+}
+
+func (s *SQLite) getElectionSetup(electionID string, tx *sql.Tx) (messagedata.ElectionSetup, error) {
+	var electionSetupBytes []byte
+	err := tx.QueryRow("SELECT messageData"+
+		" FROM (SELECT * FROM inbox JOIN channelMessage ON inbox.messageID = channelMessage.messageID)"+
+		" WHERE channelID = ? AND json_extract(messageData, '$.object') = ? AND json_extract(messageData, '$.action') = ?",
+		electionID, messagedata.ElectionObject, messagedata.ElectionActionSetup).Scan(&electionSetupBytes)
+	if err != nil {
+		return messagedata.ElectionSetup{}, err
+	}
+
+	var electionSetup messagedata.ElectionSetup
+	err = json.Unmarshal(electionSetupBytes, &electionSetup)
+	if err != nil {
+		return messagedata.ElectionSetup{}, err
+	}
+	return electionSetup, nil
+
+}
+
+func (s *SQLite) GetElectionQuestions(electionID string) (map[string]types.Question, error) {
+	tx, err := s.database.Begin()
+	if err != nil {
+		return nil, err
+
+	}
+	defer tx.Rollback()
+
+	electionSetup, err := s.getElectionSetup(electionID, tx)
+	if err != nil {
+		return nil, err
+
+	}
+	questions, err := getQuestionsFromMessage(electionSetup)
+	if err != nil {
+		return nil, err
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		return nil, err
+
+	}
+	return questions, nil
+}
+
+func (s *SQLite) GetElectionQuestionsWithValidVotes(electionID string) (map[string]types.Question, error) {
+
+	tx, err := s.database.Begin()
+	if err != nil {
+		return nil, err
+	}
+	defer tx.Rollback()
+
+	electionSetup, err := s.getElectionSetup(electionID, tx)
+	if err != nil {
+		return nil, err
+	}
+	questions, err := getQuestionsFromMessage(electionSetup)
+	if err != nil {
+		return nil, err
+	}
+
+	rows, err := tx.Query("SELECT messageData, messageID, json_extract(message, '$.sender')"+
+		" FROM (SELECT * FROM inbox JOIN channelMessage ON inbox.messageID = channelMessage.messageID)"+
+		" WHERE channelID = ? AND json_extract(messageData, '$.object') = ? AND json_extract(messageData, '$.action') = ?",
+		electionID, messagedata.ElectionObject, messagedata.VoteActionCastVote)
+
+	if err != nil {
+		return nil, err
+	}
+
+	for rows.Next() {
+		var voteBytes []byte
+		var msgID string
+		var sender string
+		if err = rows.Scan(&voteBytes, &msgID, &sender); err != nil {
+			return nil, err
+		}
+		var vote messagedata.VoteCastVote
+		err = json.Unmarshal(voteBytes, &vote)
+		if err != nil {
+			return nil, err
+		}
+		err = updateVote(msgID, sender, vote, questions)
+		if err != nil {
+			return nil, err
+		}
+	}
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+	err = tx.Commit()
+	if err != nil {
+		return nil, err
+	}
+	return questions, nil
+}
+
+func getQuestionsFromMessage(electionSetup messagedata.ElectionSetup) (map[string]types.Question, error) {
+	questions := make(map[string]types.Question)
+	for _, question := range electionSetup.Questions {
+		ballotOptions := make([]string, len(question.BallotOptions))
+		copy(ballotOptions, question.BallotOptions)
+		_, ok := questions[question.ID]
+		if ok {
+			return nil, xerrors.Errorf("duplicate question ID")
+		}
+		questions[question.ID] = types.Question{
+			ID:            []byte(question.ID),
+			BallotOptions: ballotOptions,
+			ValidVotes:    nil,
+			Method:        question.VotingMethod,
+		}
+	}
+	return questions, nil
+}
+
+func updateVote(msgID, sender string, castVote messagedata.VoteCastVote, questions map[string]types.Question) error {
+	for idx, vote := range castVote.Votes {
+		question, ok := questions[vote.Question]
+		if !ok {
+			return xerrors.Errorf("question not found for vote number %d sent by %s", idx, sender)
+		}
+		earlierVote, ok := question.ValidVotes[sender]
+		if !ok || earlierVote.VoteTime < castVote.CreatedAt {
+			question.ValidVotes[sender] = types.ValidVote{
+				MsgID:    msgID,
+				ID:       vote.ID,
+				VoteTime: castVote.CreatedAt,
+				Index:    vote.Vote,
+			}
+		}
+	}
+	return nil
+}
+
+func (s *SQLite) StoreMessageAndElectionResult(channelID string, msg, electionResultMsg message.Message) error {
+	tx, err := s.database.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+
+	msgBytes, err := json.Marshal(msg)
+	if err != nil {
+		return err
+	}
+	messageData, err := base64.URLEncoding.DecodeString(msg.Data)
+	if err != nil {
+		return err
+	}
+	electionResult, err := base64.URLEncoding.DecodeString(electionResultMsg.Data)
+	if err != nil {
+		return err
+	}
+	electionResultMsgBytes, err := json.Marshal(electionResultMsg)
+	if err != nil {
+		return err
+	}
+	storedTime := time.Now().UnixNano()
+
+	_, err = tx.Exec("INSERT INTO inbox (messageID, message, messageData, storedTime) VALUES (?, ?, ?, ?)",
+		msg.MessageID, msgBytes, messageData, storedTime)
+	if err != nil {
+		return err
+	}
+	_, err = tx.Exec("INSERT INTO channelMessage (channelID, messageID, isBaseChannel) VALUES (?, ?, ?)",
+		channelID, msg.MessageID, true)
+	if err != nil {
+		return err
+	}
+	_, err = tx.Exec("INSERT INTO inbox (messageID, message, messageData, storedTime) VALUES (?, ?, ?, ?)",
+		electionResultMsg.MessageID, electionResultMsgBytes, electionResult, storedTime)
+	if err != nil {
+		return err
+	}
+	_, err = tx.Exec("INSERT INTO channelMessage (channelID, messageID) VALUES (?, ?)",
+		channelID, electionResultMsg.MessageID)
+	if err != nil {
+		return err
+	}
+	err = tx.Commit()
+	return err
 }

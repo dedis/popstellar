@@ -26,6 +26,9 @@ import (
 	"time"
 )
 
+// the public key used in every lao_create json files in the test_data/root folder
+const ownerPubBuf64 = "3yPmdBu8DM7jT30IKqkPjuFFIHnubO0z4E0dV7dR4sY="
+
 var subs *types.Subscribers
 var queries hub_state.Queries
 var peers hub_state.Peers
@@ -35,6 +38,7 @@ var serverPublicKey kyber.Point
 var serverSecretKey kyber.Scalar
 
 func TestMain(m *testing.M) {
+
 	subs = types.NewSubscribers()
 	queries = hub_state.NewQueries(zerolog.New(io.Discard))
 	peers = hub_state.NewPeers()
@@ -49,7 +53,7 @@ func TestMain(m *testing.M) {
 	}
 
 	utils.InitUtils(&log, schemaValidator)
-	organizerBuf, err := base64.URLEncoding.DecodeString(organizer)
+	organizerBuf, err := base64.URLEncoding.DecodeString(ownerPubBuf64)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "error: %v\n", err)
 		os.Exit(1)

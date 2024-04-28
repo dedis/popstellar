@@ -85,15 +85,15 @@ func HandleChannel(socket socket.Socket, channelID string, msg message.Message) 
 		errAnswer = handleChannelElection(channelID, msg)
 	case channelGeneralChirp:
 		errAnswer = handleChannelGeneralChirp(channelID, msg)
-	case channelChirp:
+	case ChannelChirp:
 		errAnswer = handleChannelChirp(channelID, msg)
-	case channelReaction:
+	case ChannelReaction:
 		errAnswer = handleChannelReaction(channelID, msg)
-	case channelConsensus:
+	case ChannelConsensus:
 		errAnswer = handleChannelConsensus(socket, channelID, msg)
 	case channelPopCha:
 		errAnswer = handleChannelPopCha(channelID, msg)
-	case channelCoin:
+	case ChannelCoin:
 		errAnswer = handleChannelCoin(channelID, msg)
 	default:
 		errAnswer = answer.NewInvalidResourceError("unknown channel type %s", channelType)
@@ -210,10 +210,10 @@ const (
 	channelLao          = "lao"
 	channelElection     = "election"
 	channelGeneralChirp = "generalchirp"
-	channelChirp        = "chirp"
-	channelReaction     = "reaction"
-	channelConsensus    = "consensus"
+	ChannelChirp        = "chirp"
+	ChannelReaction     = "reaction"
+	ChannelConsensus    = "consensus"
 	channelPopCha       = "popcha"
-	channelCoin         = "coin"
-	channelAuth         = "auth"
+	ChannelCoin         = "coin"
+	ChannelAuth         = "auth"
 )

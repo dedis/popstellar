@@ -378,8 +378,8 @@ func Test_SQLite_CheckPrevID(t *testing.T) {
 		"fEvAfdtNrykd9NPYl9ReHLX-6IP6SFLKTZJLeGUHZ_U=",
 		"krCHh6OFWIjSHQiUSrWyx1FV0Jp8deC3zUyelhPG-Yk=",
 	}
-
-	lines := readJSONL(t, "rollCall_state_scenario.jsonl")
+	states := []string{messagedata.RollCallActionCreate, messagedata.RollCallActionOpen}
+	lines := readJSONL(t, "rollCall_states.jsonl")
 	for i, line := range lines {
 		msg := message.Message{
 			Data:              base64.URLEncoding.EncodeToString(line),
@@ -389,7 +389,7 @@ func Test_SQLite_CheckPrevID(t *testing.T) {
 			WitnessSignatures: []message.WitnessSignature{},
 		}
 		if i > 0 {
-			ok, err := lite.CheckPrevID("channel1", prevIDs[i-1])
+			ok, err := lite.CheckPrevID("channel1", prevIDs[i-1], states[i-1])
 			require.NoError(t, err)
 			require.True(t, ok)
 		}

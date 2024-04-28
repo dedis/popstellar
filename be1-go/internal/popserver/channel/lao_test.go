@@ -2,150 +2,227 @@ package channel
 
 import (
 	"encoding/base64"
-	"fmt"
 	"github.com/stretchr/testify/require"
-	"os"
-	"path/filepath"
 	"popstellar/internal/popserver/database"
 	"popstellar/message/messagedata"
-	"popstellar/message/query/method/message"
 	"testing"
+	"time"
 )
 
-const laoTestDataPath = "./test_data/lao/"
-const sender = "HynYISQNI6XqvQNVzA8IzinV8ToiXyKRFsgR2zpP7j8="
-
-func Test_handleChannelLao_LaoState(t *testing.T) {
-	mockRepository, err := database.SetDatabase(t)
+func Test_handleChannelLao(t *testing.T) {
+	var args []input
+	mockRepo, err := database.SetDatabase(t)
 	require.NoError(t, err)
 
-	file := filepath.Join(laoTestDataPath, "good_lao_update.json")
-	buf, err := os.ReadFile(file)
+	ownerPubBuf, err := ownerPublicKey.MarshalBinary()
 	require.NoError(t, err)
-	buf64 := base64.URLEncoding.EncodeToString(buf)
-	laoID := "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo="
+	owner := base64.URLEncoding.EncodeToString(ownerPubBuf)
+	laoID := base64.URLEncoding.EncodeToString([]byte("laoID"))
 
-	UpdateMsg := message.Message{
-		Data:              buf64,
-		Sender:            sender,
-		Signature:         "h",
-		MessageID:         messagedata.Hash(buf64, sender),
-		WitnessSignatures: []message.WitnessSignature{},
-	}
+	// Test 1:Success For LaoState message
+	args = append(args, input{
+		name:     "Test 1",
+		msg:      NewLaoStateMsg(t, owner, laoID, mockRepo),
+		channel:  laoID,
+		isError:  false,
+		contains: "",
+	})
 
-	file = filepath.Join(laoTestDataPath, "good_lao_state.json")
-	buf, err = os.ReadFile(file)
-	require.NoError(t, err)
-	buf64 = base64.URLEncoding.EncodeToString(buf)
+	creation := time.Now().Unix()
+	start := creation + 2
+	end := start + 1
 
-	stateMsg := message.Message{
-		Data:              buf64,
-		Sender:            sender,
-		Signature:         "h",
-		MessageID:         messagedata.Hash(buf64, sender),
-		WitnessSignatures: []message.WitnessSignature{},
-	}
+	// Test 2: Error when RollCallCreate ID is not the expected hash
+	args = append(args, input{
+		name:     "Test 2",
+		msg:      NewRollCallCreateMsg(t, owner, laoID, WrongLaoName, creation, start, end, true, mockRepo),
+		channel:  laoID,
+		isError:  true,
+		contains: "roll call id is",
+	})
 
-	mockRepository.On("HasMessage", UpdateMsg.MessageID).
-		Return(true, nil)
-	mockRepository.On("GetLaoWitnesses", laoID).
-		Return(map[string]struct{}{}, nil)
-	mockRepository.On("StoreMessage", laoID, stateMsg).
-		Return(nil)
+	// Test 3: Error when RollCallCreate proposed start is before creation
+	args = append(args, input{
+		name:     "Test 3",
+		msg:      NewRollCallCreateMsg(t, owner, laoID, GoodLaoName, creation, creation-1, end, true, mockRepo),
+		channel:  laoID,
+		isError:  true,
+		contains: "roll call proposed start time should be greater than creation time",
+	})
 
-	errAnswer := handleChannelLao(laoID, stateMsg)
-	require.Nil(t, errAnswer)
-}
+	// Test 4: Error when RollCallCreate proposed end is before proposed start
+	args = append(args, input{
+		name:     "Test 4",
+		msg:      NewRollCallCreateMsg(t, owner, laoID, GoodLaoName, creation, start, start-1, true, mockRepo),
+		channel:  laoID,
+		isError:  true,
+		contains: "roll call proposed end should be greater than proposed start",
+	})
 
-func Test_handlerChanelLao_RollCallCreate(t *testing.T) {
-	laoID := "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo="
+	// Test 5: Success for RollCallCreate message
+	args = append(args, input{
+		name:     "Test 5",
+		msg:      NewRollCallCreateMsg(t, owner, laoID, GoodLaoName, creation, start, end, false, mockRepo),
+		channel:  laoID,
+		isError:  false,
+		contains: "",
+	})
 
-	//Test 1: error when RollCallCreate ID is not the expected hash
-	file := filepath.Join(laoTestDataPath, "wrong_rollCall_create_ID.json")
-	buf, err := os.ReadFile(file)
-	require.NoError(t, err)
-	buf64 := base64.URLEncoding.EncodeToString(buf)
-	createMsg := message.Message{
-		Data:              buf64,
-		Sender:            sender,
-		Signature:         "h",
-		MessageID:         messagedata.Hash(buf64, sender),
-		WitnessSignatures: []message.WitnessSignature{},
-	}
+	opens := base64.URLEncoding.EncodeToString([]byte("opens"))
+	wrongOpens := base64.URLEncoding.EncodeToString([]byte("wrongOpens"))
 
-	errAnswer := handleChannelLao(laoID, createMsg)
+	// Test 6: Error when RollCallOpen ID is not the expected hash
+	args = append(args, input{
+		name:     "Test 6",
+		msg:      NewRollCallOpenMsg(t, owner, laoID, wrongOpens, "", time.Now().Unix(), true, mockRepo),
+		channel:  laoID,
+		isError:  true,
+		contains: "roll call update id is",
+	})
 
-	wrongID := base64.URLEncoding.EncodeToString([]byte("test"))
-	require.Contains(t, errAnswer.Error(), fmt.Sprintf("roll call id is %s, should be", wrongID))
+	// Test 7: Error when RollCallOpen opens is not the same as previous RollCallCreate
+	args = append(args, input{
+		name:     "Test 7",
+		msg:      NewRollCallOpenMsg(t, owner, laoID, opens, wrongOpens, time.Now().Unix(), true, mockRepo),
+		channel:  laoID,
+		isError:  true,
+		contains: "previous id does not exist",
+	})
 
-	//Test 2: error when RollCallCreate proposed start is after creation
+	// Test 8: Success for RollCallOpen message
+	laoID = base64.URLEncoding.EncodeToString([]byte("laoID2"))
+	args = append(args, input{
+		name:     "Test 8",
+		msg:      NewRollCallOpenMsg(t, owner, laoID, opens, opens, time.Now().Unix(), false, mockRepo),
+		channel:  laoID,
+		isError:  false,
+		contains: "",
+	})
 
-	file = filepath.Join(laoTestDataPath, "wrong_rollCall_create_start.json")
-	buf, err = os.ReadFile(file)
-	require.NoError(t, err)
-	buf64 = base64.URLEncoding.EncodeToString(buf)
-	createMsg = message.Message{
-		Data:              buf64,
-		Sender:            sender,
-		Signature:         "h",
-		MessageID:         messagedata.Hash(buf64, sender),
-		WitnessSignatures: []message.WitnessSignature{},
-	}
+	closes := base64.URLEncoding.EncodeToString([]byte("closes"))
+	wrongCloses := base64.URLEncoding.EncodeToString([]byte("wrongCloses"))
 
-	errAnswer = handleChannelLao(laoID, createMsg)
-	require.Contains(t, errAnswer.Error(), "roll call proposed start time should be greater than creation time")
+	// Test 9: Error when RollCallClose ID is not the expected hash
+	args = append(args, input{
+		name:     "Test 9",
+		msg:      NewRollCallCloseMsg(t, owner, laoID, wrongCloses, "", time.Now().Unix(), true, mockRepo),
+		channel:  laoID,
+		isError:  true,
+		contains: "roll call update id is",
+	})
 
-	//Test 3: error when RollCallCreate proposed end is after proposed start
+	// Test 10: Error when RollCallClose closes is not the same as previous RollCallOpen
+	args = append(args, input{
+		name:     "Test 10",
+		msg:      NewRollCallCloseMsg(t, owner, laoID, closes, wrongCloses, time.Now().Unix(), true, mockRepo),
+		channel:  laoID,
+		isError:  true,
+		contains: "previous id does not exist",
+	})
 
-	file = filepath.Join(laoTestDataPath, "wrong_rollCall_create_end.json")
-	buf, err = os.ReadFile(file)
-	require.NoError(t, err)
-	buf64 = base64.URLEncoding.EncodeToString(buf)
-	createMsg = message.Message{
-		Data:              buf64,
-		Sender:            sender,
-		Signature:         "h",
-		MessageID:         messagedata.Hash(buf64, sender),
-		WitnessSignatures: []message.WitnessSignature{},
-	}
+	// Test 11: Success for RollCallClose message
+	laoID = base64.URLEncoding.EncodeToString([]byte("laoID3"))
+	args = append(args, input{
+		name:     "Test 11",
+		msg:      NewRollCallCloseMsg(t, owner, laoID, closes, closes, time.Now().Unix(), false, mockRepo),
+		channel:  laoID,
+		isError:  false,
+		contains: "",
+	})
 
-	errAnswer = handleChannelLao(laoID, createMsg)
-	require.Contains(t, errAnswer.Error(), "roll call proposed end should be greater than proposed start")
+	electionsName := "electionName"
+	question := "question"
+	wrongQuestion := "wrongQuestion"
+	// Test 12: Error when sender is not the organizer of the lao for ElectionSetup
+	args = append(args, input{
+		name: "Test 12",
+		msg: NewElectionSetupMsg(t, ownerPublicKey, WrongSender, laoID, laoID, electionsName, question, messagedata.OpenBallot,
+			creation, start, end, true, mockRepo),
+		channel:  laoID,
+		isError:  true,
+		contains: "sender public key does not match organizer public key",
+	})
 
-}
+	wrongLaoID := base64.URLEncoding.EncodeToString([]byte("wrongLaoID"))
+	// Test 13: Error when ElectionSetup lao is not the same as the channel
+	args = append(args, input{
+		name: "Test 13",
+		msg: NewElectionSetupMsg(t, ownerPublicKey, owner, wrongLaoID, laoID, electionsName, question, messagedata.OpenBallot,
+			creation, start, end, true, mockRepo),
+		channel:  laoID,
+		isError:  true,
+		contains: "lao id is",
+	})
 
-func Test_handleChannelLao_RollCallOpen(t *testing.T) {
-	laoID := "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo="
+	// Test 14: Error when ElectionSetup ID is not the expected hash
+	args = append(args, input{
+		name: "Test 14",
+		msg: NewElectionSetupMsg(t, ownerPublicKey, owner, laoID, laoID, "wrongName", question, messagedata.OpenBallot,
+			creation, start, end, true, mockRepo),
+		channel:  laoID,
+		isError:  true,
+		contains: "election id is",
+	})
 
-	//Test 1: error when RollCallOpen ID is not the expected hash
-	file := filepath.Join(laoTestDataPath, "wrong_rollCall_open_ID.json")
-	buf, err := os.ReadFile(file)
-	require.NoError(t, err)
-	buf64 := base64.URLEncoding.EncodeToString(buf)
-	openMsg := message.Message{
-		Data:              buf64,
-		Sender:            sender,
-		Signature:         "h",
-		MessageID:         messagedata.Hash(buf64, sender),
-		WitnessSignatures: []message.WitnessSignature{},
-	}
+	// Test 15: Error when proposedStart is before createdAt
+	args = append(args, input{
+		name: "Test 15",
+		msg: NewElectionSetupMsg(t, ownerPublicKey, owner, laoID, laoID, electionsName, question, messagedata.OpenBallot,
+			creation, creation-1, end, true, mockRepo),
+		channel:  laoID,
+		isError:  true,
+		contains: "election start should be greater that creation time",
+	})
 
-	errAnswer := handleChannelLao(laoID, openMsg)
+	// Test 16: Error when proposedEnd is before proposedStart
+	args = append(args, input{
+		name: "Test 16",
+		msg: NewElectionSetupMsg(t, ownerPublicKey, owner, laoID, laoID, electionsName, question, messagedata.OpenBallot,
+			creation, start, start-1, true, mockRepo),
+		channel:  laoID,
+		isError:  true,
+		contains: "election end should be greater that start time",
+	})
 
-	wrongID := base64.URLEncoding.EncodeToString([]byte("test"))
-	require.Contains(t, errAnswer.Error(), fmt.Sprintf("roll call update id is %s, should be", wrongID))
+	// Test 17: Error when ElectionSetup question is empty
+	args = append(args, input{
+		name: "Test 17",
+		msg: NewElectionSetupMsg(t, ownerPublicKey, owner, laoID, laoID, electionsName, "", messagedata.OpenBallot,
+			creation, start, end, true, mockRepo),
+		channel:  laoID,
+		isError:  true,
+		contains: "Question is empty",
+	})
 
-	//Test 2: error when RollCallOpen opens is not the same as previous RollCallCreate
+	//Test 18: Error when question hash is not the same as the expected hash
+	args = append(args, input{
+		name: "Test 18",
+		msg: NewElectionSetupMsg(t, ownerPublicKey, owner, laoID, laoID, electionsName, wrongQuestion, messagedata.OpenBallot,
+			creation, start, end, true, mockRepo),
+		channel:  laoID,
+		isError:  true,
+		contains: "Question id is",
+	})
 
-	file = filepath.Join(laoTestDataPath, "wrong_rollCall_open_opens.json")
-	buf, err = os.ReadFile(file)
-	require.NoError(t, err)
-	buf64 = base64.URLEncoding.EncodeToString(buf)
-	openMsg = message.Message{
-		Data:              buf64,
-		Sender:            sender,
-		Signature:         "h",
-		MessageID:         messagedata.Hash(buf64, sender),
-		WitnessSignatures: []message.WitnessSignature{},
+	// Test 19: Success for ElectionSetup message
+	laoID = base64.URLEncoding.EncodeToString([]byte("laoID4"))
+	args = append(args, input{
+		name: "Test 19",
+		msg: NewElectionSetupMsg(t, ownerPublicKey, owner, laoID, laoID, electionsName, question, messagedata.OpenBallot,
+			creation, start, end, false, mockRepo),
+		channel:  laoID,
+		isError:  false,
+		contains: "",
+	})
+
+	for _, arg := range args {
+		t.Run(arg.name, func(t *testing.T) {
+			errAnswer := handleChannelLao(arg.channel, arg.msg)
+			if arg.isError {
+				require.Contains(t, errAnswer.Error(), arg.contains)
+			} else {
+				require.Nil(t, errAnswer)
+			}
+		})
 	}
 }

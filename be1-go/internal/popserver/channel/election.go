@@ -1,12 +1,19 @@
 package channel
 
 import (
+	"bytes"
 	"encoding/base64"
+	"encoding/binary"
+	"encoding/json"
+	"fmt"
 	"popstellar/crypto"
+	"popstellar/internal/popserver/config"
 	"popstellar/internal/popserver/database"
+	"popstellar/internal/popserver/types"
 	"popstellar/message/answer"
 	"popstellar/message/messagedata"
 	"popstellar/message/query/method/message"
+	"sort"
 	"strings"
 )
 
@@ -27,7 +34,7 @@ func handleChannelElection(channel string, msg message.Message) *answer.Error {
 	case messagedata.ElectionObject + "#" + messagedata.ElectionActionOpen:
 		errAnswer = handleElectionOpen(msg, channel)
 	case messagedata.ElectionObject + "#" + messagedata.ElectionActionEnd:
-		errAnswer = handleElectionEnd(msg)
+		errAnswer = handleElectionEnd(msg, channel)
 	case messagedata.ElectionObject + "#" + messagedata.ElectionActionResult:
 		errAnswer = handleElectionResult(msg)
 	default:
@@ -51,42 +58,7 @@ func handleChannelElection(channel string, msg message.Message) *answer.Error {
 		return errAnswer
 	}
 
-	errAnswer = broadcastToAllClients(msg, channel)
-	if errAnswer != nil {
-		errAnswer = errAnswer.Wrap("handleChannelElection")
-		return errAnswer
-	}
 	return nil
-}
-
-type Question struct {
-	// ID represents the ID of the Question.
-	ID []byte
-
-	// ballotOptions represents different ballot options.
-	ballotOptions []string
-
-	// validVotes represents the list of all valid votes. The key represents
-	// the public key of the person casting the vote.
-	validVotes map[string]validVote
-
-	// method represents the voting method of the election. Either "Plurality"
-	// or "Approval".
-	method string
-}
-
-type validVote struct {
-	// msgID represents the ID of the message containing the cast vote
-	msgID string
-
-	// ID represents the ID of the valid cast vote
-	ID string
-
-	// voteTime represents the time of the creation of the vote
-	voteTime int64
-
-	// index represents the index of the ballot options
-	index interface{}
 }
 
 func handleVoteCastVote(msg message.Message, channel string) *answer.Error {
@@ -190,8 +162,8 @@ func handleVoteCastVote(msg message.Message, channel string) *answer.Error {
 		errAnswer = errAnswer.Wrap("handleVoteCastVote")
 		return errAnswer
 	}
-	// verify if election is not open
-	started, err := db.IsElectionTerminated(channel)
+	// verify that the election is  open
+	started, err := db.IsElectionStarted(channel)
 	if err != nil {
 		errAnswer = answer.NewInternalServerError("failed to get election start status: %v", err)
 		errAnswer = errAnswer.Wrap("handleVoteCastVote")
@@ -202,6 +174,12 @@ func handleVoteCastVote(msg message.Message, channel string) *answer.Error {
 		errAnswer = errAnswer.Wrap("handleVoteCastVote")
 		return errAnswer
 	}
+	if voteCastVote.CreatedAt < 0 {
+		errAnswer = answer.NewInvalidMessageFieldError("cast vote created at is negative")
+		errAnswer = errAnswer.Wrap("handleVoteCastVote")
+		return errAnswer
+	}
+
 	// verify created at is positive
 	createdAt, err := db.GetElectionCreationTime(channel)
 	if err != nil {
@@ -209,11 +187,7 @@ func handleVoteCastVote(msg message.Message, channel string) *answer.Error {
 		errAnswer = errAnswer.Wrap("handleVoteCastVote")
 		return errAnswer
 	}
-	if createdAt < 0 {
-		errAnswer = answer.NewInvalidMessageFieldError("cast vote created at is negative")
-		errAnswer = errAnswer.Wrap("handleVoteCastVote")
-		return errAnswer
-	}
+
 	if createdAt > voteCastVote.CreatedAt {
 		errAnswer = answer.NewInvalidMessageFieldError("cast vote cannot have a creation time prior to election setup")
 		errAnswer = errAnswer.Wrap("handleVoteCastVote")
@@ -228,72 +202,72 @@ func handleVoteCastVote(msg message.Message, channel string) *answer.Error {
 			return errAnswer
 		}
 	}
-	// store message and update votes
-	err = db.StoreCastVote(channel, msg, voteCastVote)
-	if err != nil {
-		errAnswer = answer.NewInternalServerError("failed to store cast vote: %v", err)
-		errAnswer = errAnswer.Wrap("handleVoteCastVote")
-		return errAnswer
-	}
 
 	return nil
 }
 
 func verifyVote(vote messagedata.Vote, channel, electionID string) *answer.Error {
-	//var errAnswer *answer.Error
-	////questions, err := params.DB.GetElectionQuestions(channel)
-	////if err != nil {
-	////	errAnswer = answer.NewInternalServerError("failed to get election questions: %v", err)
-	////	errAnswer = errAnswer.Wrap("verifyVote")
-	////	return errAnswer
-	////}
-	//question, ok := questions[vote.Question]
-	//if !ok {
-	//	errAnswer = answer.NewInvalidMessageFieldError("Question does not exist")
-	//	errAnswer = errAnswer.Wrap("verifyVote")
-	//	return errAnswer
-	//}
-	//electionType, err := params.DB.GetElectionType(channel)
-	//if err != nil {
-	//	errAnswer = answer.NewInternalServerError("failed to get election type: %v", err)
-	//	errAnswer = errAnswer.Wrap("verifyVote")
-	//	return errAnswer
-	//}
-	//var voteString string
-	//switch electionType {
-	//case messagedata.OpenBallot:
-	//	voteInt, ok := vote.Vote.(int)
-	//	if !ok {
-	//		errAnswer = answer.NewInvalidMessageFieldError("vote in open ballot should be an integer")
-	//		errAnswer = errAnswer.Wrap("verifyVote")
-	//		return errAnswer
-	//	}
-	//	voteString = fmt.Sprintf("%d", voteInt)
-	//case messagedata.SecretBallot:
-	//	voteString, ok = vote.Vote.(string)
-	//	if !ok {
-	//		errAnswer = answer.NewInvalidMessageFieldError("vote in secret ballot should be a string")
-	//		errAnswer = errAnswer.Wrap("verifyVote")
-	//		return errAnswer
-	//	}
-	//	voteBytes, err := base64.URLEncoding.DecodeString(voteString)
-	//	if err != nil {
-	//		errAnswer = answer.NewInvalidMessageFieldError("vote should be base64 encoded: %v", err)
-	//		errAnswer = errAnswer.Wrap("verifyVote")
-	//		return errAnswer
-	//	}
-	//	if len(voteBytes) != 64 {
-	//		errAnswer = answer.NewInvalidMessageFieldError("vote should be 64 bytes long")
-	//		errAnswer = errAnswer.Wrap("verifyVote")
-	//		return errAnswer
-	//	}
-	//}
-	//hash := messagedata.Hash(voteFlag, electionID, string(question.ID), voteString)
-	//if vote.ID != hash {
-	//	errAnswer = answer.NewInvalidMessageFieldError("vote ID is incorrect")
-	//	errAnswer = errAnswer.Wrap("verifyVote")
-	//	return errAnswer
-	//}
+	var errAnswer *answer.Error
+
+	db, ok := database.GetElectionRepositoryInstance()
+	if !ok {
+		errAnswer := answer.NewInternalServerError("failed to get database").Wrap("handleElectionOpen")
+		return errAnswer
+	}
+
+	questions, err := db.GetElectionQuestions(channel)
+	if err != nil {
+		errAnswer = answer.NewInternalServerError("failed to get election questions: %v", err)
+		errAnswer = errAnswer.Wrap("verifyVote")
+		return errAnswer
+	}
+	question, ok := questions[vote.Question]
+	if !ok {
+		errAnswer = answer.NewInvalidMessageFieldError("Question does not exist")
+		errAnswer = errAnswer.Wrap("verifyVote")
+		return errAnswer
+	}
+	electionType, err := db.GetElectionType(channel)
+	if err != nil {
+		errAnswer = answer.NewInternalServerError("failed to get election type: %v", err)
+		errAnswer = errAnswer.Wrap("verifyVote")
+		return errAnswer
+	}
+	var voteString string
+	switch electionType {
+	case messagedata.OpenBallot:
+		voteInt, ok := vote.Vote.(int)
+		if !ok {
+			errAnswer = answer.NewInvalidMessageFieldError("vote in open ballot should be an integer")
+			errAnswer = errAnswer.Wrap("verifyVote")
+			return errAnswer
+		}
+		voteString = fmt.Sprintf("%d", voteInt)
+	case messagedata.SecretBallot:
+		voteString, ok = vote.Vote.(string)
+		if !ok {
+			errAnswer = answer.NewInvalidMessageFieldError("vote in secret ballot should be a string")
+			errAnswer = errAnswer.Wrap("verifyVote")
+			return errAnswer
+		}
+		voteBytes, err := base64.URLEncoding.DecodeString(voteString)
+		if err != nil {
+			errAnswer = answer.NewInvalidMessageFieldError("vote should be base64 encoded: %v", err)
+			errAnswer = errAnswer.Wrap("verifyVote")
+			return errAnswer
+		}
+		if len(voteBytes) != 64 {
+			errAnswer = answer.NewInvalidMessageFieldError("vote should be 64 bytes long")
+			errAnswer = errAnswer.Wrap("verifyVote")
+			return errAnswer
+		}
+	}
+	hash := messagedata.Hash(voteFlag, electionID, string(question.ID), voteString)
+	if vote.ID != hash {
+		errAnswer = answer.NewInvalidMessageFieldError("vote ID is incorrect")
+		errAnswer = errAnswer.Wrap("verifyVote")
+		return errAnswer
+	}
 	return nil
 }
 
@@ -410,13 +384,399 @@ func handleElectionOpen(msg message.Message, channel string) *answer.Error {
 		errAnswer = errAnswer.Wrap("handleElectionOpen")
 		return errAnswer
 	}
+
+	errAnswer = broadcastToAllClients(msg, channel)
+	if errAnswer != nil {
+		errAnswer = errAnswer.Wrap("handleElectionOpen")
+		return errAnswer
+	}
 	return nil
 }
 
-func handleElectionEnd(msg message.Message) *answer.Error {
+func handleElectionEnd(msg message.Message, channel string) *answer.Error {
+	var errAnswer *answer.Error
+	var electionEnd messagedata.ElectionEnd
+	err := msg.UnmarshalData(&electionEnd)
+	if err != nil {
+		errAnswer = answer.NewInvalidActionError("failed to unmarshal message data: %v", err)
+		errAnswer = errAnswer.Wrap("handleElectionEnd")
+		return errAnswer
+	}
+
+	// verify sender
+	senderBuf, err := base64.URLEncoding.DecodeString(msg.Sender)
+	if err != nil {
+		errAnswer = answer.NewInvalidMessageFieldError("failed to decode sender: %v", err)
+		errAnswer = errAnswer.Wrap("handleElectionEnd")
+		return errAnswer
+	}
+	senderPubKey := crypto.Suite.Point()
+	err = senderPubKey.UnmarshalBinary(senderBuf)
+	if err != nil {
+		errAnswer = answer.NewInvalidMessageFieldError("failed to unmarshal sender: %v", err)
+		errAnswer = errAnswer.Wrap("handleElectionEnd")
+		return errAnswer
+	}
+
+	db, ok := database.GetElectionRepositoryInstance()
+	if !ok {
+		errAnswer := answer.NewInternalServerError("failed to get database").Wrap("handleElectionEnd")
+		return errAnswer
+	}
+
+	organizerPubKey, err := db.GetLAOOrganizerPubKey(electionEnd.Election)
+	if err != nil {
+		errAnswer := answer.NewInternalServerError("failed to get config").Wrap("handleElectionEnd")
+		return errAnswer
+	}
+
+	// check if the sender is the LAO organizer
+	if !senderPubKey.Equal(organizerPubKey) {
+		errAnswer = answer.NewInvalidMessageFieldError("sender is not the organizer of the channel")
+		errAnswer = errAnswer.Wrap("handleElectionEnd")
+		return errAnswer
+	}
+
+	// verify message data
+	_, err = base64.URLEncoding.DecodeString(electionEnd.Lao)
+	if err != nil {
+		errAnswer = answer.NewInvalidMessageFieldError("failed to decode lao: %v", err)
+		errAnswer = errAnswer.Wrap("handleElectionEnd")
+		return errAnswer
+	}
+
+	_, err = base64.URLEncoding.DecodeString(electionEnd.Election)
+	if err != nil {
+		errAnswer = answer.NewInvalidMessageFieldError("failed to decode election: %v", err)
+		errAnswer = errAnswer.Wrap("handleElectionEnd")
+		return errAnswer
+	}
+
+	noRoot := strings.ReplaceAll(channel, messagedata.RootPrefix, "")
+	IDs := strings.Split(noRoot, "/")
+	if len(IDs) != 2 {
+		errAnswer = answer.NewInvalidMessageFieldError("failed to split channel: %v", channel)
+		errAnswer = errAnswer.Wrap("handleElectionEnd")
+		return errAnswer
+	}
+	laoID := IDs[0]
+	electionID := IDs[1]
+
+	// verify if lao id is the same as the channel
+	if electionEnd.Lao != laoID {
+		errAnswer = answer.NewInvalidMessageFieldError("lao id is not the same as the channel")
+		errAnswer = errAnswer.Wrap("handleElectionEnd")
+		return errAnswer
+	}
+
+	// verify if election id is the same as the channel
+	if electionEnd.Election != electionID {
+		errAnswer = answer.NewInvalidMessageFieldError("election id is not the same as the channel")
+		errAnswer = errAnswer.Wrap("handleElectionEnd")
+		return errAnswer
+	}
+
+	// verify message created at is positive
+	if electionEnd.CreatedAt < 0 {
+		errAnswer = answer.NewInvalidMessageFieldError("message created at is negative")
+		errAnswer = errAnswer.Wrap("handleElectionEnd")
+		return errAnswer
+	}
+
+	// verify if the election was already terminated
+	terminated, err := db.IsElectionTerminated(channel)
+	if err != nil {
+		errAnswer = answer.NewInternalServerError("failed to get election termination status: %v", err)
+		errAnswer = errAnswer.Wrap("handleElectionEnd")
+		return errAnswer
+	}
+	if terminated {
+		errAnswer = answer.NewInvalidMessageFieldError("election was already terminated")
+		errAnswer = errAnswer.Wrap("handleElectionEnd")
+		return errAnswer
+	}
+
+	// verify if the election is started
+	started, err := db.IsElectionStarted(channel)
+	if err != nil {
+		errAnswer = answer.NewInternalServerError("failed to get election start status: %v", err)
+		errAnswer = errAnswer.Wrap("handleElectionEnd")
+		return errAnswer
+	}
+	if !started {
+		errAnswer = answer.NewInvalidMessageFieldError("election was not started")
+		errAnswer = errAnswer.Wrap("handleElectionEnd")
+		return errAnswer
+	}
+
+	// verify registered votes are base64URL encoded
+	if _, err := base64.URLEncoding.DecodeString(electionEnd.RegisteredVotes); err != nil {
+		errAnswer = answer.NewInvalidMessageFieldError("registered votes are not base64 encoded")
+		errAnswer = errAnswer.Wrap("handleElectionEnd")
+		return errAnswer
+	}
+
+	// verify if the timestamp is stale
+	createdAt, err := db.GetElectionCreationTime(channel)
+	if err != nil {
+		errAnswer = answer.NewInternalServerError("failed to get election creation time: %v", err)
+		errAnswer = errAnswer.Wrap("handleElectionEnd")
+		return errAnswer
+	}
+	if electionEnd.CreatedAt < createdAt {
+		errAnswer = answer.NewInvalidMessageFieldError("election end cannot have a creation time prior to election setup")
+		errAnswer = errAnswer.Wrap("handleElectionEnd")
+		return errAnswer
+	}
+
+	questions, err := db.GetElectionQuestionsWithValidVotes(channel)
+	if err != nil {
+		errAnswer = answer.NewInternalServerError("failed to get election questions: %v", err)
+		errAnswer = errAnswer.Wrap("verifyRegisteredVotes")
+		return errAnswer
+	}
+
+	if len(electionEnd.RegisteredVotes) != 0 {
+		errAnswer = verifyRegisteredVotes(electionEnd, questions)
+		if errAnswer != nil {
+			errAnswer = errAnswer.Wrap("handleElectionEnd")
+			return errAnswer
+		}
+	}
+
+	electionResultMsg, errAnswer := createElectionResult(questions, channel)
+	if errAnswer != nil {
+		errAnswer = errAnswer.Wrap("handleElectionEnd")
+		return errAnswer
+	}
+
+	err = db.StoreMessageAndElectionResult(channel, msg, electionResultMsg)
+	if err != nil {
+		errAnswer = answer.NewInternalServerError("failed to store message and election result: %v", err)
+		errAnswer = errAnswer.Wrap("handleElectionEnd")
+		return errAnswer
+	}
+
+	errAnswer = broadcastToAllClients(msg, channel)
+	if errAnswer != nil {
+		errAnswer = errAnswer.Wrap("handleElectionEnd")
+		return errAnswer
+	}
+	errAnswer = broadcastToAllClients(electionResultMsg, channel)
+	if errAnswer != nil {
+		errAnswer = errAnswer.Wrap("handleElectionEnd")
+		return errAnswer
+	}
+
 	return nil
+}
+
+func verifyRegisteredVotes(electionEnd messagedata.ElectionEnd, questions map[string]types.Question) *answer.Error {
+	var errAnswer *answer.Error
+
+	var voteIDs []string
+	for _, question := range questions {
+		for _, validVote := range question.ValidVotes {
+			voteIDs = append(voteIDs, validVote.ID)
+		}
+	}
+	// sort vote IDs
+	sort.Strings(voteIDs)
+
+	// hash all valid vote ids
+	validVotesHash := messagedata.Hash(voteIDs...)
+
+	// compare registered votes with local saved votes
+	if electionEnd.RegisteredVotes != validVotesHash {
+		errAnswer = answer.NewInvalidMessageFieldError("registered votes is %s, should be sorted and equal to %s", electionEnd.RegisteredVotes, validVotesHash)
+		errAnswer = errAnswer.Wrap("verifyRegisteredVotes")
+		return errAnswer
+	}
+	return nil
+}
+
+func createElectionResult(questions map[string]types.Question, channel string) (message.Message, *answer.Error) {
+	var errAnswer *answer.Error
+	db, ok := database.GetElectionRepositoryInstance()
+	if !ok {
+		errAnswer = answer.NewInternalServerError("failed to get database")
+		errAnswer = errAnswer.Wrap("broadcastElectionResult")
+		return message.Message{}, errAnswer
+	}
+
+	electionType, err := db.GetElectionType(channel)
+	if err != nil {
+		errAnswer = answer.NewInternalServerError("failed to get election type: %v", err)
+		errAnswer = errAnswer.Wrap("broadcastElectionResult")
+		return message.Message{}, errAnswer
+	}
+
+	resultElection := messagedata.ElectionResult{
+		Object:    messagedata.ElectionObject,
+		Action:    messagedata.ElectionActionResult,
+		Questions: []messagedata.ElectionResultQuestion{},
+	}
+
+	for id, question := range questions {
+		if question.Method != messagedata.PluralityMethod {
+			continue
+		}
+		votesPerBallotOption := make([]int, len(question.BallotOptions))
+		for _, validVote := range question.ValidVotes {
+			index, ok := getVoteIndex(validVote, electionType, channel)
+			if ok && index >= 0 && index < len(question.BallotOptions) {
+				votesPerBallotOption[index]++
+			}
+		}
+		var questionResults []messagedata.ElectionResultQuestionResult
+		for i, options := range question.BallotOptions {
+			questionResults = append(questionResults, messagedata.ElectionResultQuestionResult{
+				BallotOption: options,
+				Count:        votesPerBallotOption[i],
+			})
+		}
+
+		electionResult := messagedata.ElectionResultQuestion{
+			ID:     id,
+			Result: questionResults,
+		}
+		resultElection.Questions = append(resultElection.Questions, electionResult)
+	}
+
+	buf, err := json.Marshal(resultElection)
+	if err != nil {
+		errAnswer = answer.NewInternalServerError("failed to marshal election result: %v", err)
+		errAnswer = errAnswer.Wrap("broadcastElectionResult")
+		return message.Message{}, errAnswer
+	}
+	buf64 := base64.URLEncoding.EncodeToString(buf)
+
+	serverPubKey, ok := config.GetServerPublicKeyInstance()
+	if !ok {
+		errAnswer = answer.NewInternalServerError("failed to get server public key")
+		errAnswer = errAnswer.Wrap("createElectionResult")
+		return message.Message{}, errAnswer
+	}
+	serverPubBuf, err := serverPubKey.MarshalBinary()
+	if err != nil {
+		errAnswer = answer.NewInternalServerError("failed to marshal server public key: %v", err)
+		errAnswer = errAnswer.Wrap("createElectionResult")
+		return message.Message{}, errAnswer
+	}
+	signatureBuf, errAnswer := Sign(buf)
+	signature := base64.URLEncoding.EncodeToString(signatureBuf)
+	electionResultMsg := message.Message{
+		Data:              buf64,
+		Sender:            base64.URLEncoding.EncodeToString(serverPubBuf),
+		Signature:         signature,
+		MessageID:         messagedata.Hash(buf64, signature),
+		WitnessSignatures: []message.WitnessSignature{},
+	}
+
+	return electionResultMsg, nil
+}
+
+func getVoteIndex(vote types.ValidVote, electionType, channel string) (int, bool) {
+	switch electionType {
+	case messagedata.OpenBallot:
+		index, _ := vote.Index.(int)
+		return index, true
+
+	case messagedata.SecretBallot:
+		encryptedVote, _ := vote.Index.(string)
+		index, err := decryptVote(encryptedVote, channel)
+		if err != nil {
+			return index, false
+		}
+		return index, true
+	}
+	return -1, false
+}
+
+func decryptVote(vote, channel string) (int, *answer.Error) {
+	var errAnswer *answer.Error
+	voteBuff, err := base64.URLEncoding.DecodeString(vote)
+	if err != nil {
+		errAnswer = answer.NewInvalidMessageFieldError("failed to decode vote: %v", err)
+		errAnswer = errAnswer.Wrap("decryptVote")
+		return -1, errAnswer
+	}
+	if len(voteBuff) != 64 {
+		errAnswer = answer.NewInvalidMessageFieldError("vote should be 64 bytes long")
+		errAnswer = errAnswer.Wrap("decryptVote")
+		return -1, errAnswer
+	}
+
+	// K and C are respectively the first and last 32 bytes of the vote
+	K := crypto.Suite.Point()
+	C := crypto.Suite.Point()
+
+	err = K.UnmarshalBinary(voteBuff[:32])
+	if err != nil {
+		errAnswer = answer.NewInvalidMessageFieldError("failed to unmarshal K: %v", err)
+		errAnswer = errAnswer.Wrap("decryptVote")
+		return -1, errAnswer
+	}
+	err = C.UnmarshalBinary(voteBuff[32:])
+	if err != nil {
+		errAnswer = answer.NewInvalidMessageFieldError("failed to unmarshal C: %v", err)
+		errAnswer = errAnswer.Wrap("decryptVote")
+		return -1, errAnswer
+	}
+
+	db, ok := database.GetElectionRepositoryInstance()
+	if !ok {
+		errAnswer = answer.NewInternalServerError("failed to get database")
+		errAnswer = errAnswer.Wrap("decryptVote")
+		return -1, errAnswer
+	}
+	electionSecretKey, err := db.GetElectionSecretKey(channel)
+	if err != nil {
+		errAnswer = answer.NewInternalServerError("failed to get election secret key: %v", err)
+		errAnswer = errAnswer.Wrap("decryptVote")
+		return -1, errAnswer
+	}
+
+	// performs the ElGamal decryption
+	S := crypto.Suite.Point().Mul(electionSecretKey, K)
+	data, err := crypto.Suite.Point().Sub(C, S).Data()
+	if err != nil {
+		errAnswer = answer.NewInternalServerError("failed to decrypt vote: %v", err)
+		errAnswer = errAnswer.Wrap("decryptVote")
+		return -1, errAnswer
+	}
+
+	var index uint16
+
+	// interprets the data as a big endian int
+	buf := bytes.NewReader(data)
+	err = binary.Read(buf, binary.BigEndian, &index)
+	if err != nil {
+		errAnswer = answer.NewInternalServerError("failed to interpret decrypted data: %v", err)
+		errAnswer = errAnswer.Wrap("decryptVote")
+		return -1, errAnswer
+	}
+	return int(index), nil
 }
 
 func handleElectionResult(msg message.Message) *answer.Error {
+	var errAnswer *answer.Error
+	var electionResult messagedata.ElectionResult
+	err := msg.UnmarshalData(&electionResult)
+	if err != nil {
+		errAnswer = answer.NewInvalidActionError("failed to unmarshal message data: %v", err)
+		errAnswer = errAnswer.Wrap("handleElectionResult")
+		return errAnswer
+	}
+
+	// verify that the election ids are base64URL encoded
+	for _, question := range electionResult.Questions {
+		_, err := base64.URLEncoding.DecodeString(question.ID)
+		if err != nil {
+			errAnswer = answer.NewInvalidMessageFieldError("failed to decode question id: %v", err)
+			errAnswer = errAnswer.Wrap("handleElectionResult")
+			return errAnswer
+		}
+	}
 	return nil
 }

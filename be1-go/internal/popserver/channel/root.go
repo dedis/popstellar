@@ -14,13 +14,13 @@ import (
 
 const (
 	rootChannel = "/root"
-	rootPrefix  = "/root/"
-	social      = "/social"
-	chirps      = "/chirps"
-	reactions   = "/reactions"
-	consensus   = "/consensus"
-	coin        = "/coin"
-	auth        = "/authentication"
+	RootPrefix  = "/root/"
+	Social      = "/social"
+	Chirps      = "/chirps"
+	Reactions   = "/reactions"
+	Consensus   = "/consensus"
+	Coin        = "/coin"
+	Auth        = "/authentication"
 )
 
 func handleChannelRoot(channel string, msg message.Message) *answer.Error {
@@ -71,7 +71,7 @@ func handleLaoCreate(msg message.Message) *answer.Error {
 		return errAnswer
 	}
 
-	laoPath := rootPrefix + laoCreate.ID
+	laoPath := RootPrefix + laoCreate.ID
 	organizerPubBuf, errAnswer := verifyLaoCreation(msg, laoCreate, laoPath)
 	if errAnswer != nil {
 		errAnswer = errAnswer.Wrap("handleLaoCreate")
@@ -172,11 +172,11 @@ func createLaoAndChannels(msg, laoGreetMsg message.Message, organizerPubBuf []by
 	var errAnswer *answer.Error
 
 	channels := map[string]string{
-		laoPath + social + chirps:    channelChirp,
-		laoPath + social + reactions: channelReaction,
-		laoPath + consensus:          channelConsensus,
-		laoPath + coin:               channelCoin,
-		laoPath + auth:               channelAuth,
+		laoPath + Social + Chirps:    ChannelChirp,
+		laoPath + Social + Reactions: ChannelReaction,
+		laoPath + Consensus:          ChannelConsensus,
+		laoPath + Coin:               ChannelCoin,
+		laoPath + Auth:               ChannelAuth,
 	}
 
 	db, ok := database.GetRootRepositoryInstance()
