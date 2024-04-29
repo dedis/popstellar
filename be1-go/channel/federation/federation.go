@@ -138,6 +138,7 @@ func (c *Channel) NewFederationRegistry() registry.MessageRegistry {
 	fedRegistry.Register(messagedata.FederationExpect{}, c.processFederationExpect)
 	fedRegistry.Register(messagedata.FederationInit{}, c.processFederationInit)
 	fedRegistry.Register(messagedata.FederationChallenge{}, c.processFederationChallenge)
+	fedRegistry.Register(messagedata.FederationResult{}, c.processFederationResult)
 
 	return fedRegistry
 }
@@ -237,6 +238,8 @@ func (c *Channel) processFederationInit(msg message.Message,
 
 	c.remoteServer.Send(buf)
 
+	c.state = WaitResult
+
 	return nil
 }
 
@@ -318,7 +321,55 @@ func (c *Channel) processFederationChallenge(msg message.Message,
 	c.state = Connected
 	c.remoteServer = s
 	// Send Federation result to S1
-	// c.remoteServer.Send(...)
+
+	federationResultData := messagedata.FederationResult{
+		Object: messagedata.FederationObject,
+		Action: messagedata.FederationActionResult,
+		Status: "success",
+	}
+
+	dataBytes, err := json.Marshal(federationResultData)
+	if err != nil {
+		return xerrors.Errorf("failed to marshal federation result message data: %v", err)
+	}
+
+	dataBase64 := base64.URLEncoding.EncodeToString(dataBytes)
+	signatureBytes, err := c.hub.Sign(dataBytes)
+	if err != nil {
+		return xerrors.Errorf("failed to sign federation result message: %v", err)
+	}
+	signatureBase64 := base64.URLEncoding.EncodeToString(signatureBytes)
+
+	federationResultMsg := message.Message{
+		Data:              dataBase64,
+		Sender:            c.hub.GetPubKeyServ().String(),
+		Signature:         signatureBase64,
+		MessageID:         messagedata.Hash(dataBase64, signatureBase64),
+		WitnessSignatures: []message.WitnessSignature{},
+	}
+
+	rpcMessage := method.Publish{
+		Base: query.Base{
+			JSONRPCBase: jsonrpc.JSONRPCBase{
+				JSONRPC: "2.0",
+			},
+			Method: "publish",
+		},
+
+		Params: struct {
+			Channel string          `json:"channel"`
+			Message message.Message `json:"message"`
+		}{
+			Channel: c.remoteChannel,
+			Message: federationResultMsg,
+		},
+	}
+	buf, err := json.Marshal(&rpcMessage)
+	if err != nil {
+		return xerrors.Errorf("failed to marshal publish query: %v", err)
+	}
+
+	c.remoteServer.Send(buf)
 
 	return nil
 }
@@ -421,6 +472,39 @@ func (c *Channel) processChallengeRequest(msg message.Message,
 
 	// send back the challenge directly to the organizer only
 	s.Send(buf)
+
+	return nil
+}
+
+func (c *Channel) processFederationResult(msg message.Message,
+	msgData interface{}, s socket.Socket) error {
+	_, ok := msgData.(*messagedata.FederationResult)
+	if !ok {
+		return xerrors.Errorf("message %v is not a federation#result message",
+			msgData)
+	}
+
+	/*
+	   This state should probably be set after sending the FederationInit message?
+	*/
+	//if c.state != WaitResult {
+	//	return answer.NewInternalServerError(invalidStateError, c.state, msg)
+	//}
+
+	var federationResult messagedata.FederationResult
+
+	err := msg.UnmarshalData(&federationResult)
+	if err != nil {
+		c.state = None
+		return xerrors.Errorf("failed to unmarshal FederationResult data: %v", err)
+	}
+
+	if federationResult.Status != "success" {
+		if len(federationResult.Reason) > 0 {
+			return xerrors.Errorf("failed to establish federated connection: %v", federationResult.Reason)
+		}
+		return xerrors.Errorf("failed to establish federated connection")
+	}
 
 	return nil
 }

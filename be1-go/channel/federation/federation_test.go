@@ -348,6 +348,49 @@ func Test_FederationInit(t *testing.T) {
 
 }
 
+func Test_FederationResult(t *testing.T) {
+	organizerKeypair := generateKeyPair(t)
+	remoteOrganizerKeypair := generateKeyPair(t)
+	fakeHub, err := NewFakeHub("", organizerKeypair.public, nolog, nil)
+	require.NoError(t, err)
+
+	fedChannel := NewChannel(localFedChannel, fakeHub, nolog,
+		organizerKeypair.publicKey)
+
+	remotePublicKeyBytes, err := remoteOrganizerKeypair.public.MarshalBinary()
+	require.NoError(t, err)
+	signedRemotePublicKey, err := schnorr.Sign(crypto.Suite, organizerKeypair.private, remotePublicKeyBytes)
+	require.NoError(t, err)
+
+	signedRemotePublicKeyBase64 := base64.URLEncoding.EncodeToString(signedRemotePublicKey)
+
+	challengeFile := filepath.Join(relativeMsgDataExamplePath,
+		"federation_challenge",
+		"federation_challenge.json")
+	challengeBytes, err := os.ReadFile(challengeFile)
+	require.NoError(t, err)
+	signedChallengeBytes, err := schnorr.Sign(crypto.Suite, organizerKeypair.private, challengeBytes)
+	require.NoError(t, err)
+	signedChallengeBase64 := base64.URLEncoding.EncodeToString(signedChallengeBytes)
+
+	t.Log(signedRemotePublicKeyBase64)
+	t.Log(signedChallengeBase64)
+	t.Log()
+	t.Log()
+
+	federationResultData := messagedata.FederationResult{
+		Object: messagedata.FederationObject,
+		Action: messagedata.FederationActionResult,
+		Status: "success",
+	}
+	resultMsg := generateMessage(t, organizerKeypair, federationResultData)
+	publishMsg := generatePublish(t, localFedChannel, resultMsg)
+	socket := &fakeSocket{id: "sockSocket"}
+
+	err = fedChannel.Publish(publishMsg, socket)
+	require.NoError(t, err)
+}
+
 // -----------------------------------------------------------------------------
 // Utility functions
 
