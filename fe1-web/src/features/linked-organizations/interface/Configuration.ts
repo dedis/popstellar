@@ -1,10 +1,9 @@
-
-import FeatureInterface from 'core/objects/FeatureInterface';
 import { KeyPairRegistry } from 'core/keypair';
 import { MessageRegistry } from 'core/network/jsonrpc/messages';
+import { Hash } from 'core/objects';
+import FeatureInterface from 'core/objects/FeatureInterface';
 
 import { LinkedOrganizationsFeature } from './Feature';
-import { Hash, PublicKey } from 'core/objects';
 
 export const LINKED_ORGANIZATIONS_FEATURE_IDENTIFIER = 'linked-organizations';
 
@@ -13,8 +12,6 @@ export interface LinkedOrganizationsCompositionConfiguration {
 
   keyPairRegistry: KeyPairRegistry;
   messageRegistry: MessageRegistry;
-
-
 
   /* lao */
 
@@ -29,25 +26,21 @@ export interface LinkedOrganizationsCompositionConfiguration {
    * To use only in a React component
    */
   useIsLaoOrganizer: (laoId: Hash) => boolean;
-
-
 }
 
-
-  /**
-   * The type of the context that is provided to react digital cash components
-   */
+/**
+ * The type of the context that is provided to react digital cash components
+ */
 export type LinkedOrganizationsReactContext = Pick<
-LinkedOrganizationsCompositionConfiguration,'useCurrentLaoId' | 'useIsLaoOrganizer'>;
-
-
+  LinkedOrganizationsCompositionConfiguration,
+  'useCurrentLaoId' | 'useIsLaoOrganizer'
+>;
 
 /**
  * The interface the linked organizations feature exposes
  */
 export interface LinkedOrganizationsInterface extends FeatureInterface {
   laoScreens: LinkedOrganizationsFeature.LaoScreen[];
-  
 }
 
 export interface LinkedOrganizationsCompositionInterface extends FeatureInterface {

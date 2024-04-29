@@ -2,10 +2,9 @@ import Ajv from 'ajv';
 import addFormats from 'ajv-formats';
 import jsonRPC from 'protocol/jsonRPC.json';
 import connectToLaoSchema from 'protocol/qrcode/connect_to_lao.json';
+import federationExchangeSchema from 'protocol/qrcode/federation_exchange.json';
 import mainPublicKeySchema from 'protocol/qrcode/main_public_key.json';
 import popTokenSchema from 'protocol/qrcode/pop_token.json';
-import federationExchangeSchema from 'protocol/qrcode/federation_exchange.json';
-
 
 import answerSchema from 'core/network/validation/schemas/answerSchemas';
 import dataSchema from 'core/network/validation/schemas/dataSchemas';
@@ -129,5 +128,8 @@ export function validateScannablePopToken(obj: any): ValidationResult {
 export function validateFederationExchange(obj: any): ValidationResult {
   // TODO change URL before merging to master
   // also in federation_exchange.json
-  return validate(`https://raw.githubusercontent.com/dedis/popstellar/work-fe1-ljankoschek-LinkedOrgUI/protocol/qrcode/federation_exchange.json`, obj);
+  return validate(
+    `https://raw.githubusercontent.com/dedis/popstellar/work-fe1-ljankoschek-LinkedOrgUI/protocol/qrcode/federation_exchange.json`,
+    obj,
+  );
 }

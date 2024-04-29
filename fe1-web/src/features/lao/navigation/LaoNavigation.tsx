@@ -24,9 +24,7 @@ import { LaoFeature } from '../interface';
 import InviteScreen from '../screens/InviteScreen';
 import EventsNavigation from './EventsNavigation';
 
-
 const LaoNavigator = createDrawerNavigator<LaoParamList>();
-
 
 const styles = StyleSheet.create({
   offlineHeader: {
@@ -110,24 +108,21 @@ const LaoDrawerContent = ({ descriptors, navigation, state }: DrawerContentCompo
  * Navigation when connected to a lao
  */
 const LaoNavigation: React.FC<unknown> = () => {
-  let passedScreens = LaoHooks.useLaoNavigationScreens();
+  const passedScreens = LaoHooks.useLaoNavigationScreens();
 
   const laoId = LaoHooks.useCurrentLaoId();
   const isOrganizer = LaoHooks.useIsLaoOrganizer(laoId);
-  if(!isOrganizer) {
+  if (!isOrganizer) {
     const iterator = passedScreens.entries();
     let result = iterator.next();
     while (!result.done) {
       const [index, value] = result.value;
-      if (value["id"] == "Linked Organizations") {
+      if (value.id === 'Linked Organizations') {
         passedScreens.splice(index, 1);
       }
       result = iterator.next();
     }
   }
-
-
-
 
   // add the organizer or attendee screen depeding on the user
   const screens: LaoFeature.LaoScreen[] = useMemo(() => {

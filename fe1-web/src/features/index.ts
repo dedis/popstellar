@@ -7,6 +7,7 @@ import * as events from './events';
 import * as evoting from './evoting';
 import * as home from './home';
 import * as lao from './lao';
+import * as linkedOrganizations from './linked-organizations';
 import * as meeting from './meeting';
 import * as notification from './notification';
 import { NotificationCompositionConfiguration } from './notification/interface/Configuration';
@@ -15,7 +16,6 @@ import * as rollCall from './rollCall';
 import * as social from './social';
 import * as wallet from './wallet';
 import * as witness from './witness';
-import * as linkedOrganizations from './linked-organizations';
 
 export function configureFeatures() {
   const messageRegistry = new MessageRegistry();

@@ -31,7 +31,6 @@ const LinkedOrganizationsNavigation = () => {
 
 export default LinkedOrganizationsNavigation;
 
-
 export const LinkedOrganizationsLaoScreen: LinkedOrganizationsFeature.LaoScreen = {
   id: STRINGS.navigation_lao_linked_organizations,
   Component: LinkedOrganizationsNavigation,

@@ -1,22 +1,23 @@
-import { Hash, HashState, ProtocolError } from 'core/objects';
-import { OmitMethods } from 'core/types';
-import { Challenge, ChallengeState } from './Challenge';
 import { validateFederationExchange } from 'core/network/validation/Validator';
-import { err } from 'react-native-svg/lib/typescript/xml';
-import { error } from 'core/styles/color';
+import { Hash, HashState, ProtocolError, PublicKey, PublicKeyState } from 'core/objects';
+import { OmitMethods } from 'core/types';
+
+import { Challenge, ChallengeState } from './Challenge';
 
 export interface OrganizationState {
   lao_id: HashState;
   server_address: string;
-  public_key: HashState;
+  public_key: PublicKeyState;
   challenge: ChallengeState;
 }
 
 export class Organization {
-  /*the id of the lao*/
   public readonly lao_id: Hash;
+
   public readonly server_address: string;
-  public readonly public_key: Hash;
+
+  public readonly public_key: PublicKey;
+
   public readonly challenge: Challenge;
 
   constructor(org: OmitMethods<Organization>) {
@@ -31,7 +32,7 @@ export class Organization {
       lao_id: this.lao_id.toState(),
       server_address: this.server_address,
       public_key: this.public_key.toState(),
-      challenge: this.challenge.toState()
+      challenge: this.challenge.toState(),
     };
   }
 
@@ -39,8 +40,8 @@ export class Organization {
     return new Organization({
       lao_id: Hash.fromState(orgState.lao_id),
       server_address: orgState.server_address,
-      public_key: Hash.fromState(orgState.public_key),
-      challenge: Challenge.fromState(orgState.challenge)
+      public_key: PublicKey.fromState(orgState.public_key),
+      challenge: Challenge.fromState(orgState.challenge),
     });
   }
 
@@ -53,8 +54,8 @@ export class Organization {
     return new Organization({
       lao_id: new Hash(obj.lao_id),
       server_address: obj.server_address,
-      public_key: new Hash(obj.public_key),
-      challenge: Challenge.fromJson(obj.challenge)
+      public_key: new PublicKey(obj.public_key),
+      challenge: Challenge.fromJson(obj.challenge),
     });
   }
 
@@ -62,11 +63,11 @@ export class Organization {
     return JSON.stringify({
       lao_id: this.lao_id,
       server_address: this.server_address,
-      public_key: this.public_key,
+      public_key: this.public_key.valueOf(),
       challenge: {
         value: this.challenge.value,
-        valid_until: this.challenge.valid_until.valueOf()
-      }
+        valid_until: this.challenge.valid_until.valueOf(),
+      },
     });
   }
 }

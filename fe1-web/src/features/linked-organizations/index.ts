@@ -4,7 +4,7 @@ import {
   LinkedOrganizationsCompositionConfiguration,
   LinkedOrganizationsCompositionInterface,
 } from './interface';
-import {  LinkedOrganizationsLaoScreen } from './navigation/LinkedOrganizationsNavigation';
+import { LinkedOrganizationsLaoScreen } from './navigation/LinkedOrganizationsNavigation';
 
 /**
  * Configures the wallet feature
