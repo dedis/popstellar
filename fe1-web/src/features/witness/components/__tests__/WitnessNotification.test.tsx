@@ -97,8 +97,8 @@ const msg2 = ExtendedMessage.fromMessage(
       id: 'hA4d8e-lYmd4u5_Ltv5Lft_P8Q_YRMXI1UmikEYD8vc=',
       creation: timestamp,
       location: 'BC411',
-      proposed_end: 1718888400,
-      proposed_start: 1718884800,
+      proposed_end: 1714385635,
+      proposed_start: 1714378435,
     } as MessageData,
     mockKeyPair,
     mockChannel,
@@ -169,7 +169,7 @@ describe('WitnessNotification actions', () => {
     dispatchSpy.mockRestore();
   });
 
-  it('renders correctly for witnessing', () => {
+  it('renders correctly for witnessing not1', () => {
     const { getByTestId } = render(
       <Provider store={mockStore}>
         <FeatureContext.Provider value={contextValue}>
@@ -186,7 +186,7 @@ describe('WitnessNotification actions', () => {
       discardNotifications({ laoId: mockLaoId, notificationIds: [mockNotification.id] }),
     );
   });
-  it('renders correctly for declining', () => {
+  it('renders correctly for declining not1', () => {
     const { getByTestId } = render(
       <Provider store={mockStore}>
         <FeatureContext.Provider value={contextValue}>
@@ -201,6 +201,41 @@ describe('WitnessNotification actions', () => {
     fireEvent.press(getByTestId('on-decline'));
     expect(dispatchSpy).toHaveBeenCalledWith(
       discardNotifications({ laoId: mockLaoId, notificationIds: [mockNotification.id] }),
+    );
+  });
+
+  it('renders correctly for witnessing not2', () => {
+    const { getByTestId } = render(
+      <Provider store={mockStore}>
+        <FeatureContext.Provider value={contextValue}>
+          <WitnessNotification
+            notification={mockNotification2}
+            navigateToNotificationScreen={() => {}}
+          />
+        </FeatureContext.Provider>
+      </Provider>,
+    );
+
+    fireEvent.press(getByTestId('on-witness'));
+    expect(dispatchSpy).toHaveBeenCalledWith(
+      discardNotifications({ laoId: mockLaoId, notificationIds: [mockNotification2.id] }),
+    );
+  });
+  it('renders correctly for declining not2', () => {
+    const { getByTestId } = render(
+      <Provider store={mockStore}>
+        <FeatureContext.Provider value={contextValue}>
+          <WitnessNotification
+            notification={mockNotification2}
+            navigateToNotificationScreen={() => {}}
+          />
+        </FeatureContext.Provider>
+      </Provider>,
+    );
+
+    fireEvent.press(getByTestId('on-decline'));
+    expect(dispatchSpy).toHaveBeenCalledWith(
+      discardNotifications({ laoId: mockLaoId, notificationIds: [mockNotification2.id] }),
     );
   });
 });

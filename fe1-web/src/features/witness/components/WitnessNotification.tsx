@@ -59,7 +59,6 @@ const WitnessNotification = ({ notification, navigateToNotificationScreen }: IPr
   );
   const message = useSelector(messageSelector);
   const decodedData = message === undefined ? undefined : JSON.parse(message.data.decode());
-  console.log(decodedData);
 
   const discardNotifications = WitnessHooks.useDiscardNotifications();
   const markNotificationAsRead = WitnessHooks.useMarkNotificationAsRead();
@@ -105,7 +104,7 @@ const WitnessNotification = ({ notification, navigateToNotificationScreen }: IPr
   return (
     <View style={styles.container}>
       <Text style={[Typography.base, Typography.important, styles.marginB10]}>
-        {STRINGS.witnessing_req}
+        {STRINGS.witness_req}
       </Text>
       {decodedData && message ? (
         <>

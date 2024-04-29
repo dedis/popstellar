@@ -525,7 +525,7 @@ namespace STRINGS {
   /* --- Witness Feature Strings --- */
   export const witness_message_witness = 'Witness Message';
   export const meeting_message_decline = 'Decline Message';
-  export const witnessing_req = 'Witnessing Required';
+  export const witness_req = 'Witnessing Required';
 
   /* --- Popcha Screen Strings --- */
   export const popcha_display_current_lao =
