@@ -836,10 +836,6 @@ func (h *fakeHub) SendAndHandleMessage(msg method.Broadcast) error {
 	return nil
 }
 
-func (h *fakeHub) ConnectToServerAsClient(serverAddress string) (socket.Socket, error) {
-	return nil, nil
-}
-
 // fakeSocket is a fake implementation of a Socket
 //
 // - implements socket.Socket

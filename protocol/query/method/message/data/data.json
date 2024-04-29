@@ -65,6 +65,9 @@
             "$ref": "dataFederationChallenge.json"
         },
         {
+            "$ref": "dataFederationAuthenticate.json"
+        },
+        {
             "$ref": "dataFederationResult.json"
         },
         {

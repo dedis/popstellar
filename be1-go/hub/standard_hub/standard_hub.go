@@ -4,8 +4,6 @@ import (
 	"context"
 	"encoding/base64"
 	"encoding/json"
-	"github.com/gorilla/websocket"
-	"popstellar"
 	"popstellar/channel"
 	"popstellar/crypto"
 	state "popstellar/hub/standard_hub/hub_state"
@@ -598,26 +596,6 @@ func (h *Hub) NotifyWitnessMessage(messageId string, publicKey string, signature
 
 func (h *Hub) GetPeersInfo() []method.ServerInfo {
 	return h.peers.GetAllPeersInfo()
-}
-
-func (h *Hub) ConnectToServerAsClient(serverAddress string) (socket.Socket, error) {
-	ws, _, err := websocket.DefaultDialer.Dial(serverAddress, nil)
-	if err != nil {
-		return nil, err
-	}
-
-	wg := &sync.WaitGroup{}
-	done := make(chan struct{})
-	log := popstellar.Logger
-
-	client := socket.NewClientSocket(h.Receiver(), h.OnSocketClose(), ws, wg,
-		done, log)
-	wg.Add(2)
-
-	go client.WritePump()
-	go client.ReadPump()
-
-	return client, nil
 }
 
 func generateKeys() (kyber.Point, kyber.Scalar) {

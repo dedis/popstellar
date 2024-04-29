@@ -49,7 +49,6 @@ func init() {
 	// Override the defaults for loading files and decoding base64 encoded data
 	jsonschema.Loaders["file"] = loadFileURL
 	jsonschema.Decoders["base64"] = base64.URLEncoding.DecodeString
-	jsonschema.Loaders["https"] = loadHttpURL
 }
 
 // VerifyJSON verifies that the `msg` follow the schema protocol of name
@@ -137,11 +136,4 @@ func loadFileURL(s string) (io.ReadCloser, error) {
 	path := strings.TrimPrefix(s, "file://")
 
 	return protocolFS.Open(path)
-}
-
-func loadHttpURL(s string) (io.ReadCloser, error) {
-	// If for example a message data use a $ref to ../message.json,
-	// it will try to load using the baseURL => replace path,
-	// so that only local file is loaded.
-	return loadFileURL(strings.ReplaceAll(s, baseURL, "file://"))
 }
