@@ -158,6 +158,9 @@ func Test_Authenticate_User(t *testing.T) {
 	err = authCha.Publish(msg, socket.ClientSocket{})
 	require.NoError(t, err)
 
+	// The websocket server may take some time to receive and process a message
+	time.Sleep(time.Millisecond * 100)
+
 	require.True(t, rb.get())
 }
 
