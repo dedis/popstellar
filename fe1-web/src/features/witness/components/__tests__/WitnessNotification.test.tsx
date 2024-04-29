@@ -29,7 +29,7 @@ import {
   WitnessReactContext,
 } from 'features/witness/interface';
 import { MessageToWitnessNotification } from 'features/witness/objects/MessageToWitnessNotification';
-import { addMessageToWitness, removeMessageToWitness, witnessReducer } from 'features/witness/reducer';
+import { addMessageToWitness, witnessReducer } from 'features/witness/reducer';
 
 import WitnessNotification from '../WitnessNotification';
 
@@ -108,7 +108,6 @@ const msg2 = ExtendedMessage.fromMessage(
   mockChannel,
 );
 
-
 const mockNotification3 = new MessageToWitnessNotification({
   id: 2,
   laoId: mockLaoId,
@@ -117,7 +116,7 @@ const mockNotification3 = new MessageToWitnessNotification({
   type: WitnessFeature.NotificationTypes.MESSAGE_TO_WITNESS,
   hasBeenRead: false,
   messageId: new Hash('some message id3'),
-})
+});
 
 mockStore.dispatch(addMessages(msg.toState()));
 mockStore.dispatch(addMessageToWitness(msg.message_id));
