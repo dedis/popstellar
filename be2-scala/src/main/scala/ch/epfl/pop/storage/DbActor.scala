@@ -404,16 +404,16 @@ final case class DbActor(
   }
 
   @throws[DbActorNAckException]
-  private def readRumors(desiredRumors: Map[PublicKey, List[Int]]): Map[PublicKey, Map[Int, Rumor]] = {
+  private def readRumors(desiredRumors: Map[PublicKey, List[Int]]): Map[PublicKey, List[Rumor]] = {
     desiredRumors.map { case (senderPk, rumorIds) =>
-      val rumorsForSender: Map[Int, Rumor] = rumorIds.flatMap { rumorId =>
+      val rumorsForSender: List[Rumor] = rumorIds.flatMap { rumorId =>
         val rumorKey = generateRumorKey(senderPk, rumorId)
         Try(storage.read(rumorKey)) match {
-          case Success(Some(json)) => Map(rumorId -> Rumor.buildFromJson(json))
-          case Success(None)       => Map.empty
+          case Success(Some(json)) => Some(Rumor.buildFromJson(json))
+          case Success(None)       => None
           case Failure(ex)         => throw ex
         }
-      }.toMap
+      }
       senderPk -> rumorsForSender
     }
   }
@@ -951,7 +951,7 @@ object DbActor {
 
   /** Response for a [[ReadRumors]]
     */
-  final case class DbActorReadRumors(foundRumors: Map[PublicKey, Map[Int, Rumor]]) extends DbActorMessage
+  final case class DbActorReadRumors(foundRumors: Map[PublicKey, List[Rumor]]) extends DbActorMessage
 
   /** Response for a [[ReadRumorData]]
     */

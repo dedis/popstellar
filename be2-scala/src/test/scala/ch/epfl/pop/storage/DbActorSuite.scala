@@ -960,10 +960,10 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
     val read = dbActor ? DbActor.ReadRumors(desiredRumors)
     val foundRumors = Await.result(read, duration).asInstanceOf[DbActorReadRumors].foundRumors
 
-    foundRumors.foreach { (serverPk, rumorMap) =>
+    foundRumors.foreach { (serverPk, rumorList) =>
       desiredRumors.keys should contain(serverPk)
-      desiredRumors(serverPk) should equal(rumorMap.keys.toList)
-      rumorMap.foreach { (rumorId, rumorFromDb) =>
+      desiredRumors(serverPk) should equal(rumorList.map(_.rumorId))
+      rumorList.foreach { rumorFromDb =>
         rumorFromDb should equal(rumor)
       }
     }
