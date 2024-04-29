@@ -12,6 +12,10 @@ final case class Rumor(senderPk: PublicKey, rumorId: Int, messages: Map[Channel,
 
   override def hasMessage: Boolean = true
 
+  def toJsonString: String = {
+    this.toJson.toString
+  }
+
 }
 
 object Rumor extends Parsable {
