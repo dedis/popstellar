@@ -23,6 +23,7 @@ final case class ConnectionMediator(
   implicit val system: ActorSystem = ActorSystem()
 
   private var serverMap: HashMap[ActorRef, GreetServer] = HashMap()
+  
 
   // Ping Monitor to inform it of our ActorRef
   monitorRef ! ConnectionMediator.Ping()
@@ -80,12 +81,15 @@ final case class ConnectionMediator(
         )
       )
 
-    case ConnectionMediator.GetRandomPeer() =>
+    case ConnectionMediator.GetRandomPeer(excludes) =>
       if (serverMap.isEmpty)
         sender() ! ConnectionMediator.NoPeer
       else
-        val serverRefs = serverMap.keys.toList
-        sender() ! ConnectionMediator.GetRandomPeerAck(serverRefs(Random.nextInt(serverRefs.size)))
+        val serverRefs = serverMap.filter((k,_) => !excludes.contains(k))
+        val randomKey = serverRefs.keys.toList(Random.nextInt(serverRefs.size))
+        sender() ! ConnectionMediator.GetRandomPeerAck(randomKey, serverRefs(randomKey))
+
+    case GossipManager.Ping =>
   }
 }
 
@@ -100,10 +104,10 @@ object ConnectionMediator {
   final case class ServerLeft(serverRef: ActorRef) extends Event
   final case class Ping() extends Event
   final case class ReadPeersClientAddress() extends Event
-  final case class GetRandomPeer() extends Event
-
+  final case class GetRandomPeer(excludes: List[ActorRef] = List.empty) extends Event
+  
   sealed trait ConnectionMediatorMessage
   final case class ReadPeersClientAddressAck(list: List[String]) extends ConnectionMediatorMessage
-  final case class GetRandomPeerAck(serverRef: ActorRef) extends ConnectionMediatorMessage
+  final case class GetRandomPeerAck(serverRef: ActorRef, greetServer: GreetServer) extends ConnectionMediatorMessage
   final case class NoPeer() extends ConnectionMediatorMessage
 }

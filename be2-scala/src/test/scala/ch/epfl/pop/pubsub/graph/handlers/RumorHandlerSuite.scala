@@ -52,7 +52,7 @@ class RumorHandlerSuite extends TestKit(ActorSystem("RumorActorSuiteActorSystem"
 
     Await.result(output, duration)
 
-    val readRumor = dbActorRef ? ReadRumors(Map(rumor.senderPk.base64Data.data -> List(rumor.rumorId)))
+    val readRumor = dbActorRef ? ReadRumors(Map(rumor.senderPk -> List(rumor.rumorId)))
     Await.result(readRumor, duration) shouldBe a[DbActorReadRumors]
   }
 
