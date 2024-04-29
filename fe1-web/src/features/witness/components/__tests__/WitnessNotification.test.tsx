@@ -29,11 +29,12 @@ import {
   WitnessReactContext,
 } from 'features/witness/interface';
 import { MessageToWitnessNotification } from 'features/witness/objects/MessageToWitnessNotification';
-import { addMessageToWitness, witnessReducer } from 'features/witness/reducer';
+import { addMessageToWitness, removeMessageToWitness, witnessReducer } from 'features/witness/reducer';
 
 import WitnessNotification from '../WitnessNotification';
 
 const mockMessageId = new Hash('some message id');
+const mockMessageId2 = new Hash('some message id2');
 
 // otherwise .fromData won't work
 configureTestFeatures();
@@ -79,13 +80,13 @@ const msg = ExtendedMessage.fromMessage(
 );
 
 const mockNotification2 = new MessageToWitnessNotification({
-  id: 0,
+  id: 1,
   laoId: mockLaoId,
   title: 'a notification',
   timestamp: new Timestamp(0),
   type: WitnessFeature.NotificationTypes.MESSAGE_TO_WITNESS,
   hasBeenRead: false,
-  messageId: mockMessageId,
+  messageId: mockMessageId2,
 });
 
 const msg2 = ExtendedMessage.fromMessage(
@@ -107,12 +108,24 @@ const msg2 = ExtendedMessage.fromMessage(
   mockChannel,
 );
 
+
+const mockNotification3 = new MessageToWitnessNotification({
+  id: 2,
+  laoId: mockLaoId,
+  title: 'a notification',
+  timestamp: new Timestamp(0),
+  type: WitnessFeature.NotificationTypes.MESSAGE_TO_WITNESS,
+  hasBeenRead: false,
+  messageId: new Hash('some message id3'),
+})
+
 mockStore.dispatch(addMessages(msg.toState()));
 mockStore.dispatch(addMessageToWitness(msg.message_id));
 mockStore.dispatch(addNotification(mockNotification.toState()));
 mockStore.dispatch(addMessages(msg2.toState()));
 mockStore.dispatch(addMessageToWitness(msg2.message_id));
 mockStore.dispatch(addNotification(mockNotification2.toState()));
+mockStore.dispatch(addNotification(mockNotification3.toState()));
 
 const contextValue = {
   [WITNESS_FEATURE_IDENTIFIER]: {
@@ -147,6 +160,20 @@ describe('WitnessNotification', () => {
         <FeatureContext.Provider value={contextValue}>
           <WitnessNotification
             notification={mockNotification2}
+            navigateToNotificationScreen={() => {}}
+          />
+        </FeatureContext.Provider>
+      </Provider>,
+    ).toJSON();
+    expect(component).toMatchSnapshot();
+  });
+
+  it('renders correctly 3', () => {
+    const component = render(
+      <Provider store={mockStore}>
+        <FeatureContext.Provider value={contextValue}>
+          <WitnessNotification
+            notification={mockNotification3}
             navigateToNotificationScreen={() => {}}
           />
         </FeatureContext.Provider>
@@ -236,6 +263,40 @@ describe('WitnessNotification actions', () => {
     fireEvent.press(getByTestId('on-decline'));
     expect(dispatchSpy).toHaveBeenCalledWith(
       discardNotifications({ laoId: mockLaoId, notificationIds: [mockNotification2.id] }),
+    );
+  });
+
+  it('renders correctly for witnessing not3', () => {
+    const { getByTestId } = render(
+      <Provider store={mockStore}>
+        <FeatureContext.Provider value={contextValue}>
+          <WitnessNotification
+            notification={mockNotification3}
+            navigateToNotificationScreen={() => {}}
+          />
+        </FeatureContext.Provider>
+      </Provider>,
+    );
+
+    fireEvent.press(getByTestId('on-witness'));
+    expect(dispatchSpy).toHaveBeenCalledWith(
+      discardNotifications({ laoId: mockLaoId, notificationIds: [mockNotification3.id] }),
+    );
+  });
+  it('renders correctly for declining not3', () => {
+    const { getByTestId } = render(
+      <Provider store={mockStore}>
+        <FeatureContext.Provider value={contextValue}>
+          <WitnessNotification
+            notification={mockNotification3}
+            navigateToNotificationScreen={() => {}}
+          />
+        </FeatureContext.Provider>
+      </Provider>,
+    );
+    fireEvent.press(getByTestId('on-decline'));
+    expect(dispatchSpy).toHaveBeenCalledWith(
+      discardNotifications({ laoId: mockLaoId, notificationIds: [mockNotification3.id] }),
     );
   });
 });
