@@ -41,10 +41,9 @@
   - [Federation (introduction)](#federation-introduction)
   - [Federation (Authentication Protocol)](#federation-authentication-protocol)
   - [Requesting a challenge (federation#challenge_request)](#requesting-a-challenge-federationchallenge_request)
-  - [Answering the challenge request (federation#challenge_response)](#answering-the-challenge-request-federationchallenge_response)
+  - [Answering the challenge request (federation#challenge)](#answering-the-challenge-request-federationchallenge)
   - [Expecting a connection (federation#expect)](#expecting-a-connection-federationexpect)
   - [Initiating a connection (federation#init)](#initiating-a-connection-federationinit)
-  - [Authenticating the remote LAO (federation#authenticate)](#authenticating-the-remote-lao-federationauthenticate)
   - [Establishing or Aborting the connection (federation#result)](#establishing-or-aborting-the-connection-federationresult)
 
 
@@ -2997,7 +2996,7 @@ This challenge will be then used by the other server to authenticate itself.
 
 ```
 
-## Answering the challenge request (federation#challenge_response)
+## Answering the challenge request (federation#challenge)
 The server will provide his corresponding organizer with the requested challenge.
 <details>
 <summary>
@@ -3228,7 +3227,51 @@ It contains the necessary connection details, and a challenge which the remote p
 
 ```
 
-## Authenticating the remote LAO (federation#authenticate)
-
 ## Establishing or Aborting the connection (federation#result)
+This message is used to know the status of the connection, whether it was a success and a connection between the two LAOs was established or it was a failure.
+<details>
+<summary>
+💡 See an example
+</summary>
 
+```json5
+// ../protocol/examples/messageData/federation_init/federation_init.json
+{
+  "object": "federation",
+  "action": "result",
+  "status": "success"
+}
+```
+</details>
+
+```json5
+// ../protocol/query/method/message/data/dataFederationResult.json
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataFederationResult.json",
+  "description": "Sent by an server to a remote server, to inform them about the result of the authentication procedure",
+  "type": "object",
+  "properties": {
+    "object": {
+      "const": "federation"
+    },
+    "action": {
+      "const": "result"
+    },
+    "status": {
+      "type": "string",
+      "$comment": "status of the authentication attempt"
+    },
+    "reason": {
+      "type": "string",
+      "$comment": "to be used in failures, describing the error that happened"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "object",
+    "action",
+    "status"
+  ]
+}
+```
