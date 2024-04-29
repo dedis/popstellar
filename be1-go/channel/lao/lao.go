@@ -11,6 +11,7 @@ import (
 	"popstellar/channel/coin"
 	"popstellar/channel/consensus"
 	"popstellar/channel/election"
+	"popstellar/channel/federation"
 	"popstellar/channel/generalChirping"
 	"popstellar/channel/reaction"
 	"popstellar/channel/registry"
@@ -122,6 +123,15 @@ func NewChannel(channelID string, hub channel.HubFunctionalities, msg message.Me
 	consensusCh := consensus.NewChannel(consensusPath, hub, log, organizerPubKey)
 	hub.NotifyNewChannel(consensusPath, consensusCh, socket)
 
+	federationPath := fmt.Sprintf("%s/federation", channelID)
+	organizerPkBytes, err := organizerPubKey.MarshalBinary()
+	if err != nil {
+		return nil, xerrors.Errorf("failed to encode organizer key: %v", err)
+	}
+	organizerPk := base64.URLEncoding.EncodeToString(organizerPkBytes)
+	federationCh := federation.NewChannel(federationPath, hub, log, organizerPk)
+	hub.NotifyNewChannel(federationPath, federationCh, socket)
+
 	newChannel := &Channel{
 		channelID:       channelID,
 		sockets:         channel.NewSockets(),
@@ -138,7 +148,7 @@ func NewChannel(channelID string, hub channel.HubFunctionalities, msg message.Me
 
 	newChannel.registry = newChannel.NewLAORegistry()
 
-	err := newChannel.createAndSendLAOGreet()
+	err = newChannel.createAndSendLAOGreet()
 	if err != nil {
 		return nil, xerrors.Errorf("failed to send the greeting message: %v", err)
 	}

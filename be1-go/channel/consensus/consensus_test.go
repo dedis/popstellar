@@ -2042,6 +2042,10 @@ func (h *fakeHub) SendAndHandleMessage(msg method.Broadcast) error {
 	return nil
 }
 
+func (h *fakeHub) ConnectToServerAsClient(serverAddress string) (socket.Socket, error) {
+	return nil, nil
+}
+
 func (h *fakeHub) NotifyNewChannel(channelID string, channel channel.Channel, socket socket.Socket) {}
 
 // fakeSocket is a fake implementation of a socket
