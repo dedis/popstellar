@@ -534,7 +534,6 @@ exports[`LinkedOrganizationsScreen opens modal on FAB press 1`] = `
                                         <Text
                                           style={
                                             {
-                                              "color": "#fff",
                                               "fontSize": 18,
                                               "margin": 3,
                                               "textAlign": "center",
@@ -584,7 +583,6 @@ exports[`LinkedOrganizationsScreen opens modal on FAB press 1`] = `
                                       <Text
                                         style={
                                           {
-                                            "color": "#fff",
                                             "fontSize": 18,
                                             "margin": 3,
                                             "textAlign": "center",

@@ -59,7 +59,7 @@ describe('constructor', () => {
 describe('fromJson', () => {
   it('throws a ProtocolError if validation fails', () => {
     const ret = validateFederationExchange({ errors: 'Invalid data' });
-    expect(ret.errors != null);
+    expect(ret.errors).not.toBeNull();
   });
 
   it('creates an organization correctly when validation passes', () => {
@@ -74,7 +74,7 @@ describe('fromJson', () => {
     }`;
     const sampleJson = JSON.parse(sampleJsonString);
     const ret = validateFederationExchange(sampleJson);
-    expect(ret.errors == null);
+    expect(ret.errors).toBeNull();
 
     const org = Organization.fromJson(sampleJson);
     expect(org).toBeInstanceOf(Organization);

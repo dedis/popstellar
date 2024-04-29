@@ -11,7 +11,6 @@ import {
   LINKED_ORGANIZATIONS_FEATURE_IDENTIFIER,
   LinkedOrganizationsReactContext,
 } from 'features/linked-organizations/interface';
-import { mockRollCall } from 'features/rollCall/__tests__/utils';
 
 import LinkedOrganizationsScreen from '../LinkedOrganizationsScreen';
 
@@ -20,10 +19,6 @@ const mockLinkedOrganizationsContextValue = (isOrganizer: boolean) => ({
     useCurrentLaoId: () => mockLaoId,
     useConnectedToLao: () => true,
     useIsLaoOrganizer: () => isOrganizer,
-    useRollCallById: () => mockRollCall,
-    useRollCallsByLaoId: () => ({
-      [mockRollCall.id.valueOf()]: mockRollCall,
-    }),
   } as LinkedOrganizationsReactContext,
 });
 
@@ -31,13 +26,7 @@ const mockLinkedOrganizationsContextValue = (isOrganizer: boolean) => ({
 const mockStore = configureStore({
   reducer: combineReducers({}),
 });
-jest.mock('react-native-toast-notifications', () => ({
-  useToast: () => ({
-    show: jest.fn(),
-  }),
-}));
 
-// Wrap the screen in necessary providers and navigation contexts
 const renderLinkedOrganizationsScreen = () =>
   render(
     <Provider store={mockStore}>

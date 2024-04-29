@@ -21,16 +21,6 @@ import { LinkedOrganizationsHooks } from '../hooks';
 import { Challenge } from '../objects/Challenge';
 import { Organization } from '../objects/Organization';
 
-/*
-type NavigationProps = CompositeScreenProps<
-  StackScreenProps<LinkedOrganizationsParamList, typeof STRINGS.navigation_linked_organizations>,
-  CompositeScreenProps<
-    StackScreenProps<AppParamList, typeof STRINGS.navigation_app_lao>,
-    StackScreenProps<LaoParamList, typeof STRINGS.navigation_lao_linked_organizations>
-  >
->;
-*/
-
 const initialOrganizations: Organization[] = [];
 
 const styles = StyleSheet.create({
@@ -76,7 +66,6 @@ const styles = StyleSheet.create({
 });
 
 const LinkedOrganizationsScreen = () => {
-  // const navigation = useNavigation<NavigationProps['navigation']>();
   const toast = useToast();
   const laoId = LinkedOrganizationsHooks.useCurrentLaoId();
 
@@ -99,8 +88,7 @@ const LinkedOrganizationsScreen = () => {
       "valid_until": 1714491502
   }
 }`;
-  const [genQrCodeData, setGenQrCodeData] = useState<JSON>();
-  setGenQrCodeData(JSON.parse(sampleJsonString));
+  const genQrCodeData = JSON.parse(sampleJsonString);
   const [isClientA, setIsClientA] = useState<boolean>(false);
   const [manualLaoId, setManualLaoID] = useState<string>('');
   const [manualPublicKey, setManualPublicKey] = useState<string>('');
