@@ -11,7 +11,7 @@ import QrCodeScanner, { QrCodeScannerUIElementContainer } from 'core/components/
 import QrCodeScanOverlay from 'core/components/QrCodeScanOverlay';
 import ScreenWrapper from 'core/components/ScreenWrapper';
 import { Hash, Timestamp } from 'core/objects';
-import { List, ModalStyles, Spacing, Typography, Color } from 'core/styles';
+import { List, ModalStyles, Spacing, Typography, Color, Border } from 'core/styles';
 import { accent, contrast } from 'core/styles/color';
 import { container } from 'core/styles/list';
 import { FOUR_SECONDS } from 'resources/const';
@@ -28,11 +28,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     opacity: 0.5,
-    top: '50%',
+    top: '25%',
     bottom: '50%',
   } as ViewStyle,
   scannerTextItems: {
-    top: '105%',
+    top: '35%',
   } as ViewStyle,
   enterButton: {
     ...QrCodeScannerUIElementContainer,
@@ -57,6 +57,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 18,
     margin: 3,
+    color: contrast,
   },
   fabStyle: {
     position: 'absolute',
@@ -95,10 +96,9 @@ const LinkedOrganizationsScreen = () => {
   const [manualServerAddress, setManualServerAddress] = useState<string>('');
   const [manualChallengeValue, setManualChallengeValue] = useState<string>('');
   const [manualChallengeValidUntil, setManualChallengeValidUntil] = useState<Timestamp>(
-    Timestamp.EpochNow(),
+    Timestamp.EpochNow().addSeconds(86400)
   );
-
-  const [startDate, setStartDate] = useState(Timestamp.EpochNow().toDate());
+  const [startDate, setStartDate] = useState(manualChallengeValidUntil.toDate());
 
   // this is needed as otherwise the camera may stay turned on
   const [showScanner, setShowScanner] = useState(false);
@@ -108,7 +108,6 @@ const LinkedOrganizationsScreen = () => {
     const qrcode1 = qrCode ?? '';
     try {
       const org1 = Organization.fromJson(JSON.parse(qrcode1));
-      console.log(org1.toJson());
       setOrganizations([...organizations, org1]);
       setShowScanner(false);
       setShowQRScannerModal(!showQRScannerModal);
@@ -249,8 +248,8 @@ const LinkedOrganizationsScreen = () => {
                     </View>
                     <View style={styles.scannerTextItems}>
                       <View style={styles.enterButton}>
-                        <PoPTouchableOpacity
-                          testID="roll_call_open_add_manually"
+                      <PoPTouchableOpacity
+                          testID="open_add_manually"
                           onPress={() => setInputModalIsVisible(true)}>
                           <Text style={[Typography.base, Typography.accent, Typography.centered]}>
                             {STRINGS.general_enter_manually}
@@ -310,6 +309,7 @@ const LinkedOrganizationsScreen = () => {
             </Modal>
 
             <Modal
+              testID='modal-manual-input'
               transparent
               visible={inputModalIsVisible}
               onRequestClose={() => {
@@ -372,6 +372,7 @@ const LinkedOrganizationsScreen = () => {
                 />
 
                 <PoPTextButton
+                  testID="add-manually"
                   onPress={() => {
                     if (
                       !manualLaoId ||

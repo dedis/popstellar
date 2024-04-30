@@ -15,6 +15,8 @@ jest.mock('react-blockies', () => 'blockies');
 // qr codes are svgs and thus generate huge snapshot files
 jest.mock('react-qr-code', () => 'qrcode');
 
+jest.mock('react-datepicker', () => () => 'MockedDatePicker');
+
 // make functions return a value independent of the CI locale
 jest.spyOn(Date.prototype, 'toLocaleDateString').mockReturnValue('2022-05-28');
 jest.spyOn(Date.prototype, 'toLocaleTimeString').mockReturnValue('00:00:00');
