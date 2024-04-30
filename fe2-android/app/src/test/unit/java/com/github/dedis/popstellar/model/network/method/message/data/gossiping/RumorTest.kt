@@ -1,14 +1,17 @@
 package com.github.dedis.popstellar.model.network.method.message.data.gossiping
 
-import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.github.dedis.popstellar.model.objects.security.Base64URLData
-import com.github.dedis.popstellar.testutils.Base64DataUtils
-import org.hamcrest.CoreMatchers
-import org.hamcrest.MatcherAssert
-import org.junit.Assert
-import org.junit.Test
-import org.junit.runner.RunWith
-import kotlin.test.assertEquals
+    import androidx.test.ext.junit.runners.AndroidJUnit4
+    import com.github.dedis.popstellar.model.network.method.message.MessageGeneral
+    import com.github.dedis.popstellar.testutils.Base64DataUtils
+    import com.github.dedis.popstellar.testutils.MessageGeneralUtils.Companion.generateListMessageGeneral
+    import com.github.dedis.popstellar.testutils.MessageGeneralUtils.Companion.getInvalidMessageGeneralOfEach
+    import org.hamcrest.CoreMatchers
+    import org.hamcrest.MatcherAssert
+    import org.junit.Assert
+    import org.junit.Assert.assertThrows
+    import org.junit.Test
+    import org.junit.runner.RunWith
+    import kotlin.test.assertEquals
 
 @RunWith(AndroidJUnit4::class)
 class RumorTest {
@@ -17,25 +20,19 @@ class RumorTest {
     private val invalidSenderId = "this is not base64"
     private val validRumorId = 12345
     private val invalidRumorId = -1
-    private val validData = Base64URLData("Message data".toByteArray()).encoded
-    private val validSignature = Base64URLData("signature".toByteArray()).encoded
-    private val validMessageId = Base64URLData("messageId".toByteArray()).encoded
 
     private val validChannelId = Base64DataUtils.generateMessageID().encoded
     private val validChannelId2 = Base64DataUtils.generateMessageID().encoded
 
-    private val validMessages = listOf(
-        mapOf(validChannelId to listOf(mapOf("data" to validData, "sender" to validSenderId, "signature" to validSignature, "message_id" to validMessageId))),
-        mapOf(validChannelId2 to listOf(mapOf("data" to validData, "sender" to validSenderId, "signature" to validSignature, "message_id" to validMessageId)))
-    )
-    private val differentValidMessages = listOf(
-        mapOf(validChannelId to listOf(mapOf("data" to validData, "sender" to validSenderId, "signature" to validSignature, "message_id" to validMessageId))),
-        mapOf(validChannelId2 to listOf(mapOf("data" to validData, "sender" to validSenderId, "signature" to validSignature, "message_id" to validMessageId))),
-        mapOf(validChannelId to listOf(mapOf("data" to validData, "sender" to validSenderId, "signature" to validSignature, "message_id" to validMessageId)))
-    )
+    private val messagesGeneral1 = generateListMessageGeneral(10)
+    private val messagesGeneral2 = generateListMessageGeneral(5)
+    private val messagesGeneral3 = generateListMessageGeneral(3)
 
-    private val emptyMessagesList = emptyList<Map<String, List<Any>>>()
-    private val invalidMessages = listOf(mapOf("channelId" to listOf(mapOf("data" to "Invalid message data", "sender" to Base64DataUtils.generatePublicKey(), "signature" to Base64DataUtils.generateSignature(), "message_id" to Base64DataUtils.generateMessageID())))    )
+    private val validMessages = mapOf(validChannelId to messagesGeneral1, validChannelId2 to messagesGeneral2)
+    private val differentValidMessages = mapOf(validChannelId to messagesGeneral3, validChannelId2 to messagesGeneral2)
+
+    private val emptyMessagesList = mapOf<String, List<MessageGeneral>>()
+    private val invalidMessages = getInvalidMessageGeneralOfEach()
 
     private val rumor = Rumor(validSenderId, validRumorId, validMessages)
     private val rumorDifferentSenderId = Rumor(Base64DataUtils.generatePublicKey().encoded, validRumorId, validMessages)
@@ -64,9 +61,14 @@ class RumorTest {
         Rumor(validSenderId, validRumorId, emptyMessagesList)
     }
 
-    @Test(expected = IllegalArgumentException::class)
+    @Test
     fun constructorFailsWithInvalidMessages() {
-        Rumor(validSenderId, validRumorId, invalidMessages)
+        for (invalidMessage in invalidMessages) {
+            val messages = mapOf(validChannelId to listOf(invalidMessage))
+            assertThrows(IllegalArgumentException::class.java) {
+                Rumor(validSenderId, validRumorId, messages)
+            }
+        }
     }
 
     @Test
@@ -90,6 +92,8 @@ class RumorTest {
     @Test
     fun equalsTest() {
         val rumor2 = Rumor(validSenderId, validRumorId, validMessages)
+        val notARumor = "Not a rumor"
+
         Assert.assertEquals(rumor, rumor2)
         Assert.assertEquals(rumor.hashCode(), rumor2.hashCode())
 
@@ -100,6 +104,8 @@ class RumorTest {
         Assert.assertNotEquals(rumor, rumorDifferentSenderId)
 
         Assert.assertNotEquals(rumor, null)
+
+        Assert.assertNotEquals(rumor, notARumor)
     }
 
     @Test

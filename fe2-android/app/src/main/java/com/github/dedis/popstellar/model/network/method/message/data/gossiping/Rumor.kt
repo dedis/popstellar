@@ -1,6 +1,7 @@
 package com.github.dedis.popstellar.model.network.method.message.data.gossiping
 
 import com.github.dedis.popstellar.model.Immutable
+import com.github.dedis.popstellar.model.network.method.message.MessageGeneral
 import com.github.dedis.popstellar.model.network.method.message.data.Action
 import com.github.dedis.popstellar.model.network.method.message.data.Data
 import com.github.dedis.popstellar.model.network.method.message.data.Objects
@@ -20,20 +21,18 @@ class Rumor
 (
     @SerializedName("sender_id") val senderId: String,
     @SerializedName("rumor_id") val rumorId: Int,
-    @SerializedName("messages") val messages: List<Map<String, List<Any>>>
+    @SerializedName("messages") val messages: Map<String, List<MessageGeneral>>
 ) : Data {
 
   init {
     verify()
         .isNotEmptyBase64(senderId, "Sender ID")
         .isNotNegative(rumorId, "Rumor ID")
-        .listNotEmpty(messages)
+        .listNotEmpty(messages.toList())
         .apply {
-          messages.forEach { channel ->
-            channel.forEach { (chan, messages) ->
-              verify().isNotEmptyBase64(chan, "Message key").listNotEmpty(messages).apply {
-                messages.forEach { element -> verify().validMessage(element) }
-              }
+          messages.forEach { (channel, messageList) ->
+            verify().isNotEmptyBase64(channel, "Channel ID").listNotEmpty(messageList).apply {
+              messageList.forEach { message -> validMessage(message) }
             }
           }
         }

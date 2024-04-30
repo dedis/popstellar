@@ -1,6 +1,7 @@
 package com.github.dedis.popstellar.utility
 
 import android.net.Uri
+import com.github.dedis.popstellar.model.network.method.message.MessageGeneral
 import com.github.dedis.popstellar.model.network.method.message.data.election.Vote
 import com.github.dedis.popstellar.model.objects.Lao
 import com.github.dedis.popstellar.model.objects.Meeting
@@ -180,9 +181,9 @@ object MessageValidator {
     }
 
     /**
-     * Helper method to check that a string is not empty.
+     * Helper method to check that an int is not negative.
      *
-     * @param input the string to check
+     * @param input the int to check
      * @param field name of the field (to print in case of error)
      */
     fun isNotNegative(input: Int, field: String): MessageValidatorBuilder {
@@ -260,18 +261,25 @@ object MessageValidator {
      * @param message the message to check, expected to be a map with string keys and optional
      *   string values
      */
-    fun validMessage(message: Any): MessageValidatorBuilder {
-      message as Map<*, *>
+    fun validMessage(message: MessageGeneral): MessageValidatorBuilder {
 
-      val data = message["data"] as String?
-      val sender = message["sender"] as String?
-      val signature = message["signature"] as String?
-      val messageId = message["message_id"] as String?
+      val data = message.dataEncoded
+      val sender = message.sender
+      val signature = message.signature
+      val messageId = message.messageId
 
-      verify().areNotEmptyBase64(data, sender, signature, messageId, field = "Message Fields")
+      verify()
+          .areNotEmptyBase64(
+              data.encoded,
+              sender.encoded,
+              signature.encoded,
+              messageId.encoded,
+              field = "Message Fields")
 
-      val witnessSignatures = message["witness_signatures"] as? List<*>
-      witnessSignatures?.forEach { verify().isNotEmptyBase64(it as String?, "Witness Signature") }
+      val witnessSignatures = message.witnessSignatures
+      witnessSignatures.forEach {
+        verify().isNotEmptyBase64(it.signature.encoded, "Witness Signature")
+      }
 
       return this
     }
