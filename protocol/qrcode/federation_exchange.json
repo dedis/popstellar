@@ -13,7 +13,7 @@
         },
         "server_address": {
             "type": "string",
-            "pattern": "^(ws|wss):\/\/.*(:\\d{0,5})?\/.*$",
+            "pattern": "^(ws|wss)://.*(:\\d{0,5})?/.*$",
             "$comment": "public address of the remote organizer server"
         },
         "public_key": {
