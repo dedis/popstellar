@@ -40,7 +40,7 @@
       android:title="@string/tokens" />
 
     <item
-      android:id="@+id/main_menu_linked_organisations"
+      android:id="@+id/main_menu_linked_organizations"
       android:icon="@drawable/ic_linked_organizations_home"
       android:title="@string/linked_organizations" />
   </group>

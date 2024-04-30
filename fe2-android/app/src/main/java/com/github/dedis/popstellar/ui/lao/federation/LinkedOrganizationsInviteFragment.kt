@@ -12,6 +12,7 @@ import com.github.dedis.popstellar.model.qrcode.ConnectToLao
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager
 import com.github.dedis.popstellar.ui.lao.LaoActivity
 import com.github.dedis.popstellar.ui.lao.LaoViewModel
+import com.github.dedis.popstellar.utility.ActivityUtils
 import com.github.dedis.popstellar.utility.ActivityUtils.getQRCodeColor
 import com.github.dedis.popstellar.utility.error.ErrorUtils.logAndShow
 import com.github.dedis.popstellar.utility.error.UnknownLaoException
@@ -71,7 +72,16 @@ class LinkedOrganizationsInviteFragment : Fragment() {
   }
 
   private fun handleBackNav() {
-    LaoActivity.addBackNavigationCallbackToEvents(requireActivity(), viewLifecycleOwner, TAG)
+    val activity = requireActivity()
+    LaoActivity.addBackNavigationCallback(
+        activity,
+        viewLifecycleOwner,
+        ActivityUtils.buildBackButtonCallback(TAG, "Linked organizations") {
+          LaoActivity.setCurrentFragment(
+              parentFragmentManager, R.id.fragment_linked_organizations_home) {
+                LinkedOrganizationsFragment()
+              }
+        })
   }
 
   companion object {
