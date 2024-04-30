@@ -15,7 +15,7 @@
                 },
                 "status": {
                     "type": "string",
-                    "pattern": "^(success|failure)$",
+                    "pattern": "^failure$",
                     "$comment": "status of the authentication attempt"
                 },
                 "reason": {
@@ -47,7 +47,7 @@
                 },
                 "status": {
                     "type": "string",
-                    "pattern": "^(success|failure)$",
+                    "pattern": "^success$",
                     "$comment": "status of the authentication attempt"
                 },
                 "public_key": {
