@@ -45,11 +45,17 @@ class MessageGeneralUtils {
 
         /**
          * generates a MessageGeneral object with valid data
+         * @param size number of MessageGeneral objects to generate
+         * @return a list of MessageGeneral objects with valid data of size [size]
          */
         fun generateListMessageGeneral(size: Int) : List<MessageGeneral> {
             return List(size) { generateMessageGeneral() }
         }
 
+        /**
+         * generates a list of MessageGeneral objects with invalid data. Each object will have one invalidated field.
+         * @return a list of MessageGeneral objects with invalid data
+         */
         fun getInvalidMessageGeneralOfEach(): List<MessageGeneral> {
             val invalidFields = listOf("data", "sender", "signature", "messageId")
             val invalidityType = listOf("nonBase64", "empty")
