@@ -108,18 +108,6 @@ object ParamsHandler extends AskPatternConstants {
               val writeRumor = dbActorRef ? WriteRumor(rumor)
 
           }
-
-          // asks for a random server
-          val randomServerRef = connectionMediatorRef ? ConnectionMediator.GetRandomPeer()
-          Await.result(randomServerRef, duration) match {
-            case ConnectionMediator.GetRandomPeerAck(serverRef) =>
-              serverRef ! ClientAnswer(
-                Right(jsonRpcMessage)
-              )
-
-            // do not send if there is nobody to receive
-            case ConnectionMediator.NoPeer =>
-          }
           Right(jsonRpcMessage)
         case _ => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, "RumorHandler received a non expected jsonRpcRequest", jsonRpcMessage.id))
       }

@@ -6,7 +6,7 @@ import akka.http.scaladsl.model.ws.{Message, TextMessage}
 import akka.pattern.{AskableActorRef, ask}
 import akka.stream.FlowShape
 import akka.stream.scaladsl.{Broadcast, Flow, GraphDSL, Merge, Partition, Sink}
-import ch.epfl.pop.decentralized.Monitor
+import ch.epfl.pop.decentralized.{GossipManager, Monitor}
 import ch.epfl.pop.model.network.MethodType.*
 import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse, MethodType}
 import ch.epfl.pop.pubsub.graph.*
@@ -18,11 +18,13 @@ object PublishSubscribe {
   private var securityModuleActorRef: AskableActorRef = _
   private var connectionMediatorRef: AskableActorRef = _
   private var mediatorActorRef: ActorRef = _
+  private var gossipManager: AskableActorRef = _
 
   def getDbActorRef: AskableActorRef = dbActorRef
   def getSecurityModuleActorRef: AskableActorRef = securityModuleActorRef
   def getConnectionMediatorRef: AskableActorRef = connectionMediatorRef
   def getMediatorActorRef: ActorRef = mediatorActorRef
+  def getGossipManager: AskableActorRef = gossipManager
 
   def buildGraph(
       mediatorActorRefT: ActorRef,
@@ -31,6 +33,7 @@ object PublishSubscribe {
       messageRegistry: MessageRegistry,
       monitorRef: ActorRef,
       connectionMediatorRefT: ActorRef,
+      gossipManager: AskableActorRef,
       isServer: Boolean,
       initGreetServer: Boolean = false
   )(implicit system: ActorSystem): Flow[Message, Message, NotUsed] = Flow.fromGraph(GraphDSL.create() {
@@ -148,6 +151,7 @@ object PublishSubscribe {
           val getMessagesByIdPartition = builder.add(ParamsWithMapHandler.getMessagesByIdHandler(dbActorRef))
           val greetServerPartition = builder.add(ParamsHandler.greetServerHandler(clientActorRef))
           val rumorPartition = builder.add(ParamsHandler.rumorHandler(dbActorRef, connectionMediatorRef))
+          val gossipManagerPartition = builder.add(GossipManager.gossipHandler(gossipManager))
 
           val merger = builder.add(Merge[GraphMessage](totalPorts))
 
@@ -162,7 +166,7 @@ object PublishSubscribe {
           methodPartitioner.out(portHeartbeat) ~> heartbeatPartition ~> merger
           methodPartitioner.out(portGetMessagesById) ~> getMessagesByIdPartition ~> merger
           methodPartitioner.out(portGreetServer) ~> greetServerPartition ~> merger
-          methodPartitioner.out(portRumor) ~> rumorPartition ~> merger
+          methodPartitioner.out(portRumor) ~> gossipManagerPartition ~> rumorPartition ~> merger
 
           /* close the shape */
           FlowShape(input.in, merger.out)

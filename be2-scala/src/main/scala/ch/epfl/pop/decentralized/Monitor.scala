@@ -73,9 +73,9 @@ final case class Monitor(
       jsonRpcMessage.getParams match {
         case _: ParamsWithMap => /* Actively ignoring this specific message */
         // For any other message, we schedule a single heartbeat to reduce messages propagation delay
-        
+
         case _ =>
-          if(jsonRpcMessage.method == MethodType.rumor){
+          if (jsonRpcMessage.method == MethodType.rumor) {
             gossipManagerRef ! GossipManager.MonitoredRumor(jsonRpcMessage)
           }
           if (someServerConnected && !timers.isTimerActive(singleHbKey)) {
@@ -92,7 +92,6 @@ final case class Monitor(
     case GossipManager.Ping() =>
       log.info("Received GossipManager Ping")
       gossipManagerRef = sender()
-      
 
     case _ => /* DO NOTHING */
   }

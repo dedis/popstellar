@@ -71,18 +71,6 @@ class RumorHandlerSuite extends TestKit(ActorSystem("RumorActorSuiteActorSystem"
 
   }
 
-  test("rumor handler should forward a rumor to a random server") {
-    val peerServer = TestProbe()
 
-    // register server
-    connectionMediatorRef ? ConnectionMediator.NewServerConnected(peerServer.ref, GreetServer(PublicKey(Base64Data("")), "", ""))
-
-    val output = Source.single(Right(rumorRequest)).via(rumorHandler).runWith(Sink.head)
-
-    Await.result(output, duration)
-
-    peerServer.expectMsg(duration, ClientAnswer(Right(rumorRequest)))
-
-  }
 
 }
