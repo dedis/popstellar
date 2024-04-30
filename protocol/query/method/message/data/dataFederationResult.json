@@ -15,6 +15,7 @@
                 },
                 "status": {
                     "type": "string",
+                    "pattern": "^failure$",
                     "$comment": "status of the authentication attempt"
                 },
                 "reason": {
@@ -31,6 +32,7 @@
                 "object",
                 "action",
                 "status",
+                "reason",
                 "challenge"
             ]
         },
@@ -45,6 +47,7 @@
                 },
                 "status": {
                     "type": "string",
+                    "pattern": "^success$",
                     "$comment": "status of the authentication attempt"
                 },
                 "public_key": {
