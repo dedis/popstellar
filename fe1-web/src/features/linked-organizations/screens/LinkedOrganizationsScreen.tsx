@@ -11,7 +11,7 @@ import QrCodeScanner, { QrCodeScannerUIElementContainer } from 'core/components/
 import QrCodeScanOverlay from 'core/components/QrCodeScanOverlay';
 import ScreenWrapper from 'core/components/ScreenWrapper';
 import { Hash, Timestamp } from 'core/objects';
-import { List, ModalStyles, Spacing, Typography, Color, Border } from 'core/styles';
+import { List, ModalStyles, Spacing, Typography, Color } from 'core/styles';
 import { accent, contrast } from 'core/styles/color';
 import { container } from 'core/styles/list';
 import { FOUR_SECONDS } from 'resources/const';
@@ -96,7 +96,7 @@ const LinkedOrganizationsScreen = () => {
   const [manualServerAddress, setManualServerAddress] = useState<string>('');
   const [manualChallengeValue, setManualChallengeValue] = useState<string>('');
   const [manualChallengeValidUntil, setManualChallengeValidUntil] = useState<Timestamp>(
-    Timestamp.EpochNow().addSeconds(86400)
+    Timestamp.EpochNow().addSeconds(86400),
   );
   const [startDate, setStartDate] = useState(manualChallengeValidUntil.toDate());
 
@@ -248,7 +248,7 @@ const LinkedOrganizationsScreen = () => {
                     </View>
                     <View style={styles.scannerTextItems}>
                       <View style={styles.enterButton}>
-                      <PoPTouchableOpacity
+                        <PoPTouchableOpacity
                           testID="open_add_manually"
                           onPress={() => setInputModalIsVisible(true)}>
                           <Text style={[Typography.base, Typography.accent, Typography.centered]}>
@@ -309,7 +309,7 @@ const LinkedOrganizationsScreen = () => {
             </Modal>
 
             <Modal
-              testID='modal-manual-input'
+              testID="modal-manual-input"
               transparent
               visible={inputModalIsVisible}
               onRequestClose={() => {

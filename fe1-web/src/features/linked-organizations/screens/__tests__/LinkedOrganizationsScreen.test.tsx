@@ -1,6 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
-import { useToast } from 'react-native-toast-notifications';
 import React from 'react';
 import { Provider } from 'react-redux';
 import { combineReducers } from 'redux';
@@ -31,7 +30,7 @@ const mockStore = configureStore({
 jest.mock('react-native-toast-notifications', () => ({
   useToast: jest.fn(() => ({
     show: jest.fn(),
-  }))
+  })),
 }));
 
 const renderLinkedOrganizationsScreen = () =>
@@ -43,7 +42,7 @@ const renderLinkedOrganizationsScreen = () =>
     </Provider>,
   );
 
-describe('LinkedOrganizationsScreenNoOrganizer' , () => {
+describe('LinkedOrganizationsScreenNoOrganizer', () => {
   it('renders correctly no organizer', () => {
     const renderLinkedOrganizationsScreen2 = () =>
       render(
@@ -95,15 +94,15 @@ describe('LinkedOrganizationsScreen', () => {
     fireEvent.press(getByTestId('button-next-finish'));
     expect(getByTestId('modal-show-scanner').props.visible).toBe(true);
     expect(toJSON()).toMatchSnapshot();
-  });  
+  });
 
   it('input of correct organization details manually', async () => {
     const { getByTestId, toJSON } = renderLinkedOrganizationsScreen();
     fireEvent.press(getByTestId('fab-button'));
     fireEvent.press(getByTestId('show-scanner'));
     await waitFor(() => {
-      expect(getByTestId('open_add_manually')).toBeTruthy()
-    })
+      expect(getByTestId('open_add_manually')).toBeTruthy();
+    });
     fireEvent(getByTestId('open_add_manually'), 'click');
     const laoIdInput = getByTestId('modal-input-laoid');
     fireEvent.changeText(laoIdInput, 'fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=');
@@ -112,18 +111,21 @@ describe('LinkedOrganizationsScreen', () => {
     const serverAddressInput = getByTestId('modal-input-serveraddress');
     fireEvent.changeText(serverAddressInput, 'wss://epfl.ch:9000/server');
     const challengeValueInput = getByTestId('modal-input-challengeval');
-    fireEvent.changeText(challengeValueInput, '82520f235f413b26571529f69d53d751335873efca97e15cd7c47d063ead830d');
+    fireEvent.changeText(
+      challengeValueInput,
+      '82520f235f413b26571529f69d53d751335873efca97e15cd7c47d063ead830d',
+    );
     fireEvent.press(getByTestId('add-manually'));
     expect(toJSON()).toMatchSnapshot();
-  });  
+  });
 
   it('input of wrong organization details manually', async () => {
     const { getByTestId, toJSON } = renderLinkedOrganizationsScreen();
     fireEvent.press(getByTestId('fab-button'));
     fireEvent.press(getByTestId('show-scanner'));
     await waitFor(() => {
-      expect(getByTestId('open_add_manually')).toBeTruthy()
-    })
+      expect(getByTestId('open_add_manually')).toBeTruthy();
+    });
     fireEvent(getByTestId('open_add_manually'), 'click');
     const laoIdInput = getByTestId('modal-input-laoid');
     fireEvent.changeText(laoIdInput, 'acb123');
@@ -135,5 +137,5 @@ describe('LinkedOrganizationsScreen', () => {
     fireEvent.changeText(challengeValueInput, 'abc123');
     fireEvent.press(getByTestId('add-manually'));
     expect(toJSON()).toMatchSnapshot();
-  });  
+  });
 });
