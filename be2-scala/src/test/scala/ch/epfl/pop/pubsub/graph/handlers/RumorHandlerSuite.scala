@@ -71,6 +71,4 @@ class RumorHandlerSuite extends TestKit(ActorSystem("RumorActorSuiteActorSystem"
 
   }
 
-
-
 }

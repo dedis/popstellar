@@ -40,7 +40,7 @@ class GossipManagerSuite extends TestKit(ActorSystem("GossipManagerSuiteActorSys
 
     val gossipManager: ActorRef = system.actorOf(GossipManager.props(dbActorRef, monitorRef, connectionMediatorRef))
     val gossipHandler = GossipManager.gossipHandler(gossipManager)
-    
+
     val peerServer = TestProbe()
 
     // register server

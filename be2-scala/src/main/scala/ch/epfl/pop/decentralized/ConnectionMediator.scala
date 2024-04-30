@@ -25,7 +25,6 @@ final case class ConnectionMediator(
 
   private var serverMap: HashMap[ActorRef, GreetServer] = HashMap()
   private var gossipManagerRef: AskableActorRef = _
-  
 
   // Ping Monitor to inform it of our ActorRef
   monitorRef ! ConnectionMediator.Ping()
@@ -91,10 +90,10 @@ final case class ConnectionMediator(
         val serverRefs = serverMap.filter((k, _) => !excludes.contains(k))
         val randomKey = serverRefs.keys.toList(Random.nextInt(serverRefs.size))
         sender() ! ConnectionMediator.GetRandomPeerAck(randomKey, serverRefs(randomKey))
-    
+
     case GossipManager.Ping() =>
       gossipManagerRef = sender()
-      
+
   }
 }
 
