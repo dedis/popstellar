@@ -296,6 +296,8 @@
   <string name="invite_other_organization">Invite an organization</string>
   <string name="join_other_organization_invitation">Join an invitation</string>
   <string name="scan_qr_code">Scan the QR code with the other organizers device</string>
+  <string name="next_step">Next step</string>
+  <string name="finish">Finish</string>
 
   <!--  Storage-->
   <string name="nothing_stored">No stored data found</string>

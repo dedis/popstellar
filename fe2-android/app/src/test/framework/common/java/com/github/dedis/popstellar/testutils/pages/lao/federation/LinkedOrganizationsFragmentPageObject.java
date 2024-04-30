@@ -1,4 +1,4 @@
-package com.github.dedis.popstellar.testutils.pages.lao.fragment;
+package com.github.dedis.popstellar.testutils.pages.lao.federation;
 
 import com.github.dedis.popstellar.R;
 

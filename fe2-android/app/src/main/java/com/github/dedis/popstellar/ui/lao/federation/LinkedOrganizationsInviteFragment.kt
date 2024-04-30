@@ -48,6 +48,12 @@ class LinkedOrganizationsInviteFragment : Fragment() {
 
       binding.federationQrCode.setImageBitmap(myBitmap)
       binding.linkedOrganizationsNameText.text = laoView.name
+
+      if (CREATES_INVITATION) {
+        binding.nextStepButton.setText(R.string.next_step)
+      } else {
+        binding.nextStepButton.setText(R.string.finish)
+      }
     } catch (e: UnknownLaoException) {
       logAndShow(requireContext(), TAG, e, R.string.unknown_lao_exception)
       return null
@@ -71,9 +77,11 @@ class LinkedOrganizationsInviteFragment : Fragment() {
   companion object {
     private val TAG: String = LinkedOrganizationsInviteFragment::class.java.simpleName
     private const val QR_SIDE = 800
+    private var CREATES_INVITATION = false
 
     @JvmStatic
-    fun newInstance(): LinkedOrganizationsInviteFragment {
+    fun newInstance(createsInvitation: Boolean): LinkedOrganizationsInviteFragment {
+      CREATES_INVITATION = createsInvitation
       return LinkedOrganizationsInviteFragment()
     }
   }

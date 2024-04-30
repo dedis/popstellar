@@ -52,7 +52,6 @@ class LinkedOrganizationsFragment : Fragment() {
     handleBackNav()
 
     return binding.root
-    // return inflater.inflate(R.layout.linked_organizations_fragment, container, false)
   }
 
   override fun onResume() {
@@ -82,7 +81,7 @@ class LinkedOrganizationsFragment : Fragment() {
       View.OnClickListener {
         LaoActivity.setCurrentFragment(
             parentFragmentManager, R.id.fragment_linked_organizations_invite) {
-              LinkedOrganizationsInviteFragment.newInstance()
+              LinkedOrganizationsInviteFragment.newInstance(true)
             }
       }
 

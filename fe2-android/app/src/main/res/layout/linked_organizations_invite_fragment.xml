@@ -76,5 +76,14 @@
 
     </ScrollView>
 
+    <com.google.android.material.button.MaterialButton
+      android:id="@+id/next_step_button"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:textAllCaps="false"
+      app:cornerRadius="@dimen/corner_radius_small"
+      app:layout_constraintBottom_toBottomOf="parent"
+      android:layout_margin="@dimen/main_horizontal_margin" />
+
   </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
