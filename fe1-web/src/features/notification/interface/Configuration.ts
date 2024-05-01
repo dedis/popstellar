@@ -1,5 +1,5 @@
 import React from 'react';
-import { AnyAction, Reducer } from 'redux';
+import { AnyAction, Dispatch, Reducer } from 'redux';
 
 import { Hash } from 'core/objects';
 import FeatureInterface from 'core/objects/FeatureInterface';
@@ -56,7 +56,7 @@ export interface NotificationCompositionConfiguration {
     /**
      * Callback function that is called when a notification is deleted
      */
-    delete?: (notification: NotificationState) => void;
+    delete?: (notification: NotificationState, dispatch: Dispatch) => void;
 
     /**
      * Renders the single notification view for this notification

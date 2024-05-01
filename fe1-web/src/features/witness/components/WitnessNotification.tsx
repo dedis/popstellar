@@ -1,13 +1,13 @@
 import PropTypes from 'prop-types';
 import React, { FunctionComponent, useEffect, useMemo } from 'react';
 import { Text, View, ViewStyle, StyleSheet } from 'react-native';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { Dispatch } from 'redux';
 
 import { PoPButton } from 'core/components';
 import { makeIcon } from 'core/components/PoPIcon';
 import { makeMessageSelector } from 'core/network/ingestion';
 import { Hash } from 'core/objects';
-import { dispatch } from 'core/redux';
 import { Color, Typography } from 'core/styles';
 import { contrast } from 'core/styles/color';
 import STRINGS from 'resources/strings';
@@ -58,8 +58,9 @@ const WitnessNotification = ({ notification, navigateToNotificationScreen }: IPr
     [notification.messageId],
   );
   const message = useSelector(messageSelector);
-  const decodedData = message === undefined ? undefined : JSON.parse(message.data.decode());
+  const decodedData = message && JSON.parse(message.data.decode());
 
+  const dispatch = useDispatch();
   const discardNotifications = WitnessHooks.useDiscardNotifications();
   const markNotificationAsRead = WitnessHooks.useMarkNotificationAsRead();
   const isEnabled = WitnessHooks.useIsEnabled();
@@ -82,6 +83,7 @@ const WitnessNotification = ({ notification, navigateToNotificationScreen }: IPr
     notification.id,
     notification.messageId,
     message,
+    dispatch,
   ]);
 
   const onWitness = () => {
@@ -106,7 +108,7 @@ const WitnessNotification = ({ notification, navigateToNotificationScreen }: IPr
       <Text style={[Typography.base, Typography.important, styles.marginB10]}>
         {STRINGS.witness_req}
       </Text>
-      {decodedData && message ? (
+      {decodedData ? (
         <>
           <View style={styles.marginB15}>
             <Text style={[Typography.small, styles.boldText]}>
@@ -196,7 +198,10 @@ export const WitnessNotificationType = {
   /**
    * Custom cleanup function that removes the message from the witness store
    */
-  delete: (notification: WitnessFeature.NotificationState | MessageToWitnessNotificationState) => {
+  delete: (
+    notification: WitnessFeature.NotificationState | MessageToWitnessNotificationState,
+    dispatch: Dispatch,
+  ) => {
     if (!('messageId' in notification)) {
       throw new Error(
         `MessageToWitnessNotificationState.delete called on notification of type '${notification.type}'`,

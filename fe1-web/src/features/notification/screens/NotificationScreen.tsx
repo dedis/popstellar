@@ -1,12 +1,11 @@
 import React, { useMemo } from 'react';
 import { View } from 'react-native';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { PoPIcon } from 'core/components';
 import PoPTouchableOpacity from 'core/components/PoPTouchableOpacity';
 import ScreenWrapper from 'core/components/ScreenWrapper';
 import { useActionSheet } from 'core/hooks/ActionSheet';
-import { dispatch } from 'core/redux';
 import { Color, Icon, List } from 'core/styles';
 import STRINGS from 'resources/strings';
 
@@ -30,6 +29,7 @@ const NotificationScreen = () => {
     () => makeUnreadNotificationsSelector(laoId),
     [laoId],
   );
+
   const selectReadNotificationStates = useMemo(() => makeReadNotificationsSelector(laoId), [laoId]);
   const unreadNotificationStates = useSelector(selectUnreadNotificationStates);
   const readNotificationStates = useSelector(selectReadNotificationStates);
@@ -91,6 +91,7 @@ export const NotificationScreenRightHeader = () => {
 
   const laoId = NotificationHooks.useCurrentLaoId();
 
+  const dispatch = useDispatch();
   const selectUnreadNotificationStates = useMemo(
     () => makeUnreadNotificationsSelector(laoId),
     [laoId],
@@ -107,7 +108,7 @@ export const NotificationScreenRightHeader = () => {
 
       // if a delete function was provided for this type, then call it
       if (deleteFn) {
-        deleteFn(notification);
+        deleteFn(notification, dispatch);
       }
     }
     // remove notifications from the notification reducer
