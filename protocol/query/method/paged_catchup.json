@@ -23,7 +23,7 @@
                     "description": "[Integer] Number of messages requested",
                     "type": "integer"
                 },
-                "everything_before_message_id": {
+                "before_message_id": {
                     "description": "[Base64String] final message id on the client : HashLen(data, signature)",
                     "type": "string",
                     "contentEncoding": "base64",
@@ -31,7 +31,7 @@
                 }
             },
 
-            "required": ["channel", "number_of_messages", "everything_before_message_id"]
+            "required": ["channel", "number_of_messages", "before_message_id"]
         },
 
         "jsonrpc": {
