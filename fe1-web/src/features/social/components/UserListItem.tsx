@@ -62,7 +62,7 @@ const UserListItem = ({ publicKey, isFirstItem, isLastItem }: IPropTypes) => {
       style={listStyle}
       bottomDivider
       onPress={goToUserProfile}
-      testID="user_list_item">
+      testID={`user_list_item_${publicKey.toString()}`}>
       <View style={[List.icon, styles.leftView]}>
         <ProfileIcon publicKey={publicKey} />
       </View>

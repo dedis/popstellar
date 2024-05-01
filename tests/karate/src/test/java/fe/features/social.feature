@@ -75,7 +75,7 @@ Feature: Social Media
     Given call read(PLATFORM_FEATURE) { name: '#(JOIN_ROLLCALL)', params: { lao: '#(lao)', organizer: '#(organizer)' } }
     And call read(PLATFORM_FEATURE) { name: '#(SWITCH_TO_SOCIAL_PAGE)' }
     When waitFor(social_menu_search_button).click()
-    And waitFor(user_list_item).click()
+    And call read(PLATFORM_FEATURE) { name: '#(CLICK_USER)', params: { token: '#(organizer.publicKey)' } }
     Then waitFor('{}' + organizer.publicKey)
     And screenshot()
 

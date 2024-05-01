@@ -3,7 +3,6 @@ Feature: web page object
   Background:
     # Functions
     * def actionSheetClick = (text) => script("setTimeout(() => document.evaluate('//div[text()=\\'" + text + "\\']', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.click(), 1000)")
-    * def user_list_item = "[data-testid=user_list_item]"
 
     # Wallet screen
     * def wallet_seed_wallet_text = "[data-testid='seed_wallet_text']"
@@ -105,6 +104,11 @@ Feature: web page object
   Scenario:
     * actionSheetClick(event_create_rollcall)
 
+  @name=user_click
+  Scenario:
+
+    * waitFor("[data-testid='user_list_item_" + params.token + "']").click()
+
   @name=join_rollcall
   Scenario:
     And def rollCall = params.organizer.createRollCall(lao)
@@ -121,5 +125,4 @@ Feature: web page object
   Scenario:
     Given waitFor(drawer_menu_button).click()
     And waitFor(drawer_menu_social).click()
-    And waitFor(social_home_page)
     And delay(500)
