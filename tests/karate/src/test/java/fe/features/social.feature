@@ -17,7 +17,7 @@ Feature: Social Media
     And screenshot()
 
   @name=social_send_message
-  Scenario: Open social media page with pop token
+  Scenario: Send chirp message
     Given call read(PLATFORM_FEATURE) { name: '#(JOIN_ROLLCALL)', params: { lao: '#(lao)', organizer: '#(organizer)' } }
     And call read(PLATFORM_FEATURE) { name: '#(SWITCH_TO_SOCIAL_PAGE)' }
     And def message = 'Hello from the test'
@@ -28,7 +28,7 @@ Feature: Social Media
     And screenshot()
 
   @name=social_receive_message
-  Scenario: Open social media page with pop token
+  Scenario: Receive chirp message
     Given call read(PLATFORM_FEATURE) { name: '#(JOIN_ROLLCALL)', params: { lao: '#(lao)', organizer: '#(organizer)' } }
     And call read(PLATFORM_FEATURE) { name: '#(SWITCH_TO_SOCIAL_PAGE)' }
     And def message = 'Hello from the test'
@@ -36,3 +36,16 @@ Feature: Social Media
     Then waitForText(social_chirp_message, message)
     And screenshot()
 
+  @name=social_react_message
+  Scenario: React to chirp message
+    Given call read(PLATFORM_FEATURE) { name: '#(JOIN_ROLLCALL)', params: { lao: '#(lao)', organizer: '#(organizer)' } }
+    And call read(PLATFORM_FEATURE) { name: '#(SWITCH_TO_SOCIAL_PAGE)' }
+    And def message = 'Hello from the test'
+    When organizer.sendChirp(lao, message)
+    And waitFor(social_chirp_like_button).click()
+    And waitFor(social_chirp_dislike_button).click()
+    And waitFor(social_chirp_love_button).click()
+    Then waitForText(social_chirp_like_count, '1')
+    And waitForText(social_chirp_dislike_count, '1')
+    And waitForText(social_chirp_love_count, '1')
+    And screenshot()
