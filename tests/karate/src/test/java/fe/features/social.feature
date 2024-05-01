@@ -60,3 +60,12 @@ Feature: Social Media
     Then waitFor(social_top_chirps_page)
     And waitForText(social_chirp_message, message)
     And screenshot()
+
+  @name=social_search_page
+  Scenario: Open search page
+    Given call read(PLATFORM_FEATURE) { name: '#(JOIN_ROLLCALL)', params: { lao: '#(lao)', organizer: '#(organizer)' } }
+    And call read(PLATFORM_FEATURE) { name: '#(SWITCH_TO_SOCIAL_PAGE)' }
+    When waitFor(social_menu_search_button).click()
+    Then waitFor('{}' + popToken)
+    And waitFor('{}' + organizer.publicKey)
+    And screenshot()
