@@ -37,6 +37,18 @@ Feature: web page object
     # Drawer menu
     * def drawer_menu_button = "[data-testid='drawer_menu_button']"
     * def drawer_menu_container = "[data-testid='drawer_menu_container']"
+    * def drawer_menu_social = "[data-testid='drawer_menu_social_media']"
+    * def drawer_menu_disconnect = "[data-testid='drawer_menu_disconnect_button']"
+    * def drawer_menu_digital_cash = "[data-testid='drawer_menu_digital_cash']"
+
+    # Social screen
+    * def social_home_page = "[data-testid='social_home_page']"
+    * def social_profile_page = "[data-testid='social_profile_page']"
+    * def social_search_page = "[data-testid='social_search_page']"
+    * def social_top_chirps_page = "[data-testid='social_top_chirps_page']"
+    * def social_user_profile_page = "[data-testid='social_user_profile_page']"
+    * def social_chirp_input = "textarea[data-testid='new_chirp_input']"
+    * def social_chirp_publish_button = "[data-testid='new_chirp_publish']"
 
   @name=open_app
   Scenario:
@@ -79,3 +91,15 @@ Feature: web page object
   @name=click_rollcall_create
   Scenario:
     * actionSheetClick(event_create_rollcall)
+
+  @name=join_rollcall
+  Scenario:
+    And def rollCall = params.organizer.createRollCall(lao)
+    And organizer.openRollCall(lao, rollCall)
+    And call read(PLATFORM_FEATURE) { name: '#(JOIN_LAO)', params: { lao: '#(params.lao)' } }
+    When waitFor(event_first_current_event).click()
+    And waitFor(event_rollcall_pop_token)
+    And delay(1000)
+    And def popToken = text(event_rollcall_pop_token)
+    And organizer.closeRollCall(lao, rollCall, [popToken])
+    Then waitForText(event_rollcall_first_attendee, popToken)
