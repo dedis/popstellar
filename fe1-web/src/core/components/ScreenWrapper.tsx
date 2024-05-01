@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { StyleSheet, View, ViewProps, ViewStyle } from 'react-native';
+import { StyleSheet, View, ViewStyle } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 
 import { Spacing } from 'core/styles';
@@ -20,8 +20,8 @@ const styles = StyleSheet.create({
  * Wraps react components in a screen wrapper that adds a scroll view
  * and thus makes sure that all content can be accessed
  */
-const ScreenWrapper = ({ children, toolbarItems, ...viewProps }: IPropTypes) => (
-  <View style={styles.container} { ...viewProps }>
+const ScreenWrapper = ({ children, toolbarItems, containerTestID }: IPropTypes) => (
+  <View style={styles.container} testID={containerTestID}>
     <ScrollView style={styles.view}>{children}</ScrollView>
     {toolbarItems && <Toolbar items={toolbarItems} />}
   </View>
@@ -35,8 +35,11 @@ const propTypes = {
 ScreenWrapper.propTypes = propTypes;
 ScreenWrapper.defaultProps = {
   toolbarItems: undefined,
+  containerTestID: undefined,
 };
 
-type IPropTypes = PropTypes.InferProps<typeof propTypes> & ViewProps;
+type IPropTypes = PropTypes.InferProps<typeof propTypes> & {
+  containerTestID?: string;
+};
 
 export default ScreenWrapper;

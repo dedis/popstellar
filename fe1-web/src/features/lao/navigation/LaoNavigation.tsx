@@ -71,7 +71,7 @@ const wrapWithOfflineHeader = (Component: React.ComponentType<unknown>) => () =>
   );
 };
 
-const DisconnectIcon = makeIcon('logout');
+const DisconnectIcon = makeIcon('logout', 'menu_drawer_disconnect_button');
 
 const LaoDrawerContent = ({ descriptors, navigation, state }: DrawerContentComponentProps) => {
   const lao = LaoHooks.useCurrentLao();
@@ -80,7 +80,9 @@ const LaoDrawerContent = ({ descriptors, navigation, state }: DrawerContentCompo
     <View style={styles.drawerWapper} testID="drawer_menu_container">
       <DrawerContentScrollView style={styles.drawerContentWrapper}>
         <View style={styles.drawerHeader}>
-          <Text style={[Typography.base, Typography.important]} testID="lao_name_text">{lao.name}</Text>
+          <Text style={[Typography.base, Typography.important]} testID="lao_name_text">
+            {lao.name}
+          </Text>
         </View>
         <DrawerItemList navigation={navigation} descriptors={descriptors} state={state} />
         <DrawerItem
@@ -91,7 +93,7 @@ const LaoDrawerContent = ({ descriptors, navigation, state }: DrawerContentCompo
               screen: STRINGS.navigation_home_home,
             });
           }}
-          icon={props =>  <DisconnectIcon {...props} testID="menu_drawer_disconnect_button" />}
+          icon={DisconnectIcon}
           style={drawerNavigationOptions.drawerItemStyle}
           labelStyle={drawerNavigationOptions.drawerLabelStyle}
           activeTintColor={drawerNavigationOptions.drawerActiveTintColor}

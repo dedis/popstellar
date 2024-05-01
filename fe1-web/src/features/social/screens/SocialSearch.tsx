@@ -38,7 +38,7 @@ const SocialSearch = () => {
 
   if (!rollCallId) {
     return (
-      <ScreenWrapper testID='social_search_page'>
+      <ScreenWrapper testID="social_search_page">
         <Text style={Typography.base}>{STRINGS.social_media_user_list_unavailable}</Text>
       </ScreenWrapper>
     );

@@ -264,8 +264,8 @@ export const makeIcon = (name: PopIconName, defaultTestID?: string) => {
     throw new Error(`Unkown icon name ${name}`);
   }
 
-  return ({ color, size, focused, ...props }: Omit<IconPropTypes, 'name'>) => (
-    <View style={focused ? styles.focused : undefined} testID={defaultTestID} { ...props }>
+  return ({ color, size, focused, testID }: Omit<IconPropTypes, 'name'>) => (
+    <View style={focused ? styles.focused : undefined} testID={testID || defaultTestID}>
       <Entry.IconFamily name={Entry.iconName} size={size} color={color} />
     </View>
   );

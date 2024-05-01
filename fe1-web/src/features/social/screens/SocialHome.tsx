@@ -14,7 +14,6 @@ import { SocialHooks } from '../hooks';
 import { Chirp } from '../objects';
 import { makeChirpsList } from '../reducer';
 
-
 const SocialHome = () => {
   const laoId = SocialHooks.useCurrentLaoId();
   const { currentUserPopTokenPublicKey } = useContext(SocialMediaContext);
@@ -35,7 +34,7 @@ const SocialHome = () => {
 
   if (chirpList.length === 0) {
     return (
-      <ScreenWrapper testID='social_home_page'>
+      <ScreenWrapper testID="social_home_page">
         <Text style={[Typography.base, Typography.paragraph]}>
           {STRINGS.social_media_create_chirps_yet}
         </Text>
@@ -50,7 +49,7 @@ const SocialHome = () => {
   }
 
   return (
-    <ScreenWrapper testID='social_home_page'>
+    <ScreenWrapper testID="social_home_page">
       <NewChirp />
       <View style={List.container}>
         <FlatList
