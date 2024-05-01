@@ -77,7 +77,7 @@ const LaoDrawerContent = ({ descriptors, navigation, state }: DrawerContentCompo
   const lao = LaoHooks.useCurrentLao();
 
   return (
-    <View style={styles.drawerWapper}>
+    <View style={styles.drawerWapper} testID="drawer_menu_container">
       <DrawerContentScrollView style={styles.drawerContentWrapper}>
         <View style={styles.drawerHeader}>
           <Text style={[Typography.base, Typography.important]} testID="lao_name_text">{lao.name}</Text>

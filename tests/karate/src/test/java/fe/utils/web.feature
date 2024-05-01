@@ -36,6 +36,7 @@ Feature: web page object
 
     # Drawer menu
     * def drawer_menu_button = "[data-testid='drawer_menu_button']"
+    * def drawer_menu_container = "[data-testid='drawer_menu_container']"
 
   @name=open_app
   Scenario:
