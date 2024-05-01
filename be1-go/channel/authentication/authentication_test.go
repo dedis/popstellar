@@ -14,6 +14,7 @@ import (
 	"golang.org/x/sync/semaphore"
 	"golang.org/x/xerrors"
 	"io"
+	"net"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -114,11 +115,16 @@ func Test_Authenticate_User(t *testing.T) {
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
 
-	// channel where the ws server put message it received from the pop backend
+	// channel where the ws server signals when it has started listening
 	msgCh := make(chan []byte, 1)
+	// channel where the ws server put message it received from the pop backend
+	startCh := make(chan struct{}, 1)
 
 	// creating dummy websocket server
-	newWSServer(t, "localhost:19006", msgCh)
+	newWSServer(t, "localhost:19006", msgCh, startCh)
+
+	// wait that the ws server has started listening
+	<-startCh
 
 	buf64 := base64.URLEncoding.EncodeToString(buf)
 
@@ -318,10 +324,16 @@ func websocketHandler(t *testing.T, msgCh chan []byte) func(http.ResponseWriter,
 	}
 }
 
-func newWSServer(t *testing.T, addr string, msgCh chan []byte) {
+func newWSServer(t *testing.T, addr string, msgCh chan []byte, startCh chan struct{}) {
 	http.HandleFunc("/", websocketHandler(t, msgCh))
 	go func() {
-		err := http.ListenAndServe(addr, nil)
+		listener, err := net.Listen("tcp", addr)
+		require.NoError(t, err)
+
+		// signal that the ws server has started listening
+		startCh <- struct{}{}
+
+		err = http.Serve(listener, nil)
 		require.NoError(t, err)
 	}()
 }
