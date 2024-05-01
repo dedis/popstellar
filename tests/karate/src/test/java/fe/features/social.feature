@@ -69,3 +69,20 @@ Feature: Social Media
     Then waitFor('{}' + popToken)
     And waitFor('{}' + organizer.publicKey)
     And screenshot()
+
+  @name=social_user_profile_page
+  Scenario: Open user profile page
+    Given call read(PLATFORM_FEATURE) { name: '#(JOIN_ROLLCALL)', params: { lao: '#(lao)', organizer: '#(organizer)' } }
+    And call read(PLATFORM_FEATURE) { name: '#(SWITCH_TO_SOCIAL_PAGE)' }
+    When waitFor(social_menu_search_button).click()
+    And waitFor(user_list_item).click()
+    Then waitFor('{}' + organizer.publicKey)
+    And screenshot()
+
+  @name=social_own_user_profile_page
+  Scenario: Open user profile page
+    Given call read(PLATFORM_FEATURE) { name: '#(JOIN_ROLLCALL)', params: { lao: '#(lao)', organizer: '#(organizer)' } }
+    And call read(PLATFORM_FEATURE) { name: '#(SWITCH_TO_SOCIAL_PAGE)' }
+    When waitFor(social_menu_profile_button).click()
+    Then waitFor('{}' + popToken)
+    And screenshot()

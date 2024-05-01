@@ -3,6 +3,7 @@ Feature: web page object
   Background:
     # Functions
     * def actionSheetClick = (text) => script("setTimeout(() => document.evaluate('//div[text()=\\'" + text + "\\']', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.click(), 1000)")
+    * def user_list_item = "[data-testid=user_list_item]"
 
     # Wallet screen
     * def wallet_seed_wallet_text = "[data-testid='seed_wallet_text']"
