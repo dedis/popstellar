@@ -374,16 +374,11 @@ func Test_FederationResult(t *testing.T) {
 	require.NoError(t, err)
 	signedChallengeBase64 := base64.URLEncoding.EncodeToString(signedChallengeBytes)
 
-	t.Log(signedRemotePublicKeyBase64)
-	t.Log(signedChallengeBase64)
-	t.Log()
-	t.Log()
-
 	federationResultData := messagedata.FederationResult{
 		Object:    messagedata.FederationObject,
 		Action:    messagedata.FederationActionResult,
 		Status:    "success",
-		PublicKey: remoteOrganizerKeypair.publicKey,
+		PublicKey: signedRemotePublicKeyBase64,
 		ChallengeMsg: message.Message{
 			Data:              challengeBase64,
 			Sender:            organizerKeypair.publicKey,

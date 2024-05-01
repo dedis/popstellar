@@ -7,9 +7,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/rs/zerolog"
+	"go.dedis.ch/kyber/v3"
+	"go.dedis.ch/kyber/v3/sign/schnorr"
 	"golang.org/x/xerrors"
 	"popstellar/channel"
 	"popstellar/channel/registry"
+	"popstellar/crypto"
 	"popstellar/inbox"
 	jsonrpc "popstellar/message"
 	"popstellar/message/answer"
@@ -504,6 +507,35 @@ func (c *Channel) processFederationResult(msg message.Message,
 			return xerrors.Errorf("failed to establish federated connection: %v", federationResult.Reason)
 		}
 		return xerrors.Errorf("failed to establish federated connection")
+	}
+
+	challengeDataBytes, err := base64.URLEncoding.DecodeString(federationResult.ChallengeMsg.Data)
+	if err != nil {
+		return xerrors.Errorf("failed to decode challenge data in FederationResult: %v", err)
+
+	}
+
+	challengeSignatureBytes, err := base64.URLEncoding.DecodeString(federationResult.ChallengeMsg.Signature)
+	if err != nil {
+		return xerrors.Errorf("failed to decode challenge signature in FederationResult: %v", err)
+
+	}
+
+	pkBytes, err := base64.URLEncoding.DecodeString(c.remoteOrganizerPk)
+	if err != nil {
+		return xerrors.Errorf("failed to decode remote organizers public key: %v", err)
+
+	}
+	var remotePk kyber.Point
+	err = kyber.Point.UnmarshalBinary(remotePk, pkBytes)
+	if err != nil {
+		return xerrors.Errorf("failed to decode remote organizers public key: %v", err)
+
+	}
+	err = schnorr.Verify(crypto.Suite, remotePk, challengeDataBytes, challengeSignatureBytes)
+	if err != nil {
+		return xerrors.Errorf("failed to verify signature on challenge in FederationResult message: %v", err)
+
 	}
 
 	return nil
