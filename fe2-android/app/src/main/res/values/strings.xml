@@ -25,6 +25,7 @@
   <string name="witnessing">Witnessing</string>
   <string name="invite">Invite</string>
   <string name="tokens">Tokens</string>
+  <string name="linked_organizations">Linked organizations</string>
   <string name="disconnect">Disconnect</string>
 
   <!-- Home -->
@@ -293,6 +294,15 @@
   <string name="popcha_scan_title">Enter PoPCHA URL to log in</string>
   <string name="manual_popcha_hint">PoPCHA URL</string>
 
+  <!-- Federation -->
+  <string name="no_organizations_organizer_text">There are no linked organizations for now. To create a new link, tap the + button on the bottom right corner.</string>
+  <string name="no_organizations_non_organizer_text">There are no linked organizations for now.</string>
+  <string name="invite_other_organization">Invite an organization</string>
+  <string name="join_other_organization_invitation">Join an invitation</string>
+  <string name="scan_qr_code">Scan the QR code with the other organizers device</string>
+  <string name="next_step">Next step</string>
+  <string name="finish">Finish</string>
+
   <!--  Storage-->
   <string name="nothing_stored">No stored data found</string>
   <string name="clear_text">Clear all storage</string>
@@ -319,6 +329,10 @@
   <string name="receive_button_content_desc">Receive button</string>
   <string name="qr_sight_content_desc">The sight on top of camera</string>
   <string name="add_manual_close_button_desc">Close button for manual add window</string>
+  <string name="add_linked_organization_desc">Create a new link</string>
+  <string name="invite_other_organization_desc">Invite another organization</string>
+  <string name="join_other_organization_invitation_desc">Join another organization invitation</string>
+  <string name="qr_code_federation_image_description">Qr code image to display federation connecting information</string>
 
   <!-- Error Messages -->
   <string name="error_no_lao">You are not in a LAO</string>
