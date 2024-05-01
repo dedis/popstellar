@@ -5,20 +5,20 @@ import com.github.dedis.popstellar.model.network.method.message.data.Data
 import com.github.dedis.popstellar.model.network.method.message.data.Objects
 import com.google.gson.annotations.SerializedName
 
-/** Initiates a federation link */
-class FederationInit : Data {
+/** Federation Expect message */
+class FederationExpect : Data {
   @SerializedName("lao_id") val laoId: String
   @SerializedName("server_address") val serverAddress: String
   @SerializedName("public_key") val publicKey: String
   val challenge: Challenge
 
   /**
-   * Constructor for a data Federation Init
+   * Constructor for a data Federation Expect
    *
    * @param laoId ID of the remote LAO
    * @param serverAddress public address of the remote organizer server
    * @param publicKey public key of the remote organizer
-   * @param challenge challenge from the other server
+   * @param challenge challenge for the server
    */
   constructor(laoId: String, serverAddress: String, publicKey: String, challenge: Challenge) {
     this.laoId = laoId
@@ -31,7 +31,7 @@ class FederationInit : Data {
     get() = Objects.FEDERATION.`object`
 
   override val action: String
-    get() = Action.INIT.action
+    get() = Action.EXPECT.action
 
   override fun equals(other: Any?): Boolean {
     if (this === other) {
@@ -52,7 +52,7 @@ class FederationInit : Data {
   }
 
   override fun toString(): String {
-    return "FederationInit{lao_id='$laoId', server_address='$serverAddress'," +
+    return "FederationExpect{lao_id='$laoId', server_address='$serverAddress'," +
         "public_key='$publicKey', challenge='$challenge'}"
   }
 }
