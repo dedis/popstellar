@@ -41,7 +41,8 @@ enum class Action
   POST_TRANSACTION("post_transaction"),
   AUTH("authenticate"),
   CHALLENGE_REQUEST("challenge_request"),
-  CHALLENGE("challenge");
+  CHALLENGE("challenge"),
+  INIT("init");
 
   /**
    * Field to decide whether to store the message content. This is used to save memory, as some
