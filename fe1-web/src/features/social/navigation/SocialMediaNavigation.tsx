@@ -21,10 +21,10 @@ import SocialSearchNavigation from './SocialSearchNavigation';
 
 const Tab = createBottomTabNavigator<SocialParamList>();
 
-const homeIcon = makeIcon('home');
-const searchIcon = makeIcon('userList');
-const topChirpsIcon = makeIcon('topItems');
-const profileIcon = makeIcon('profile');
+const homeIcon = makeIcon('home', 'social_menu_home_button');
+const searchIcon = makeIcon('userList', 'social_menu_search_button');
+const topChirpsIcon = makeIcon('topItems', 'social_menu_top_chirps_button');
+const profileIcon = makeIcon('profile', 'social_menu_profile_button');
 
 type NavigationProps = CompositeScreenProps<
   StackScreenProps<LaoParamList, typeof STRINGS.navigation_social_media>,

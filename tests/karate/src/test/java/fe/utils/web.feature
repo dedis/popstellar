@@ -43,9 +43,13 @@ Feature: web page object
 
     # Social screen
     * def social_home_page = "[data-testid='social_home_page']"
+    * def social_menu_home_button = "[data-testid='social_menu_home_button']"
     * def social_profile_page = "[data-testid='social_profile_page']"
+    * def social_menu_profile_button = "[data-testid='social_menu_profile_button']"
     * def social_search_page = "[data-testid='social_search_page']"
+    * def social_menu_search_button = "[data-testid='social_menu_search_button']"
     * def social_top_chirps_page = "[data-testid='social_top_chirps_page']"
+    * def social_menu_top_chirps_button = "[data-testid='social_menu_top_chirps_button']"
     * def social_user_profile_page = "[data-testid='social_user_profile_page']"
     * def social_chirp_input = "textarea[data-testid='new_chirp_input']"
     * def social_chirp_publish_button = "[data-testid='new_chirp_publish']"

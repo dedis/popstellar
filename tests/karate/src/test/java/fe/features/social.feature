@@ -49,3 +49,14 @@ Feature: Social Media
     And waitForText(social_chirp_dislike_count, '1')
     And waitForText(social_chirp_love_count, '1')
     And screenshot()
+
+  @name=social_top_chirps_page
+  Scenario: Open top chirps page
+    Given call read(PLATFORM_FEATURE) { name: '#(JOIN_ROLLCALL)', params: { lao: '#(lao)', organizer: '#(organizer)' } }
+    And call read(PLATFORM_FEATURE) { name: '#(SWITCH_TO_SOCIAL_PAGE)' }
+    And def message = 'Hello from the test'
+    And organizer.sendChirp(lao, message)
+    When waitFor(social_menu_top_chirps_button).click()
+    Then waitFor(social_top_chirps_page)
+    And waitForText(social_chirp_message, message)
+    And screenshot()
