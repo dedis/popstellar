@@ -91,7 +91,7 @@ const LaoDrawerContent = ({ descriptors, navigation, state }: DrawerContentCompo
               screen: STRINGS.navigation_home_home,
             });
           }}
-          icon={DisconnectIcon}
+          icon={props =>  <DisconnectIcon {...props} testID="menu_drawer_disconnect_button" />}
           style={drawerNavigationOptions.drawerItemStyle}
           labelStyle={drawerNavigationOptions.drawerLabelStyle}
           activeTintColor={drawerNavigationOptions.drawerActiveTintColor}
@@ -117,7 +117,7 @@ const LaoNavigation: React.FC<unknown> = () => {
         ...passedScreens,
         {
           id: STRINGS.navigation_lao_invite,
-          Icon: makeIcon('invite'),
+          Icon: makeIcon('invite', 'drawer_menu_invite'),
           Component: InviteScreen,
           headerShown: true,
           headerRight: ButtonPadding,
@@ -125,7 +125,7 @@ const LaoNavigation: React.FC<unknown> = () => {
         } as LaoFeature.LaoScreen,
         {
           id: STRINGS.navigation_lao_events,
-          Icon: makeIcon('event'),
+          Icon: makeIcon('event', 'drawer_menu_events'),
           Component: EventsNavigation,
           headerShown: false,
           order: 0,

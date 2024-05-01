@@ -154,7 +154,7 @@ export const SocialMediaScreen: SocialFeature.LaoScreen = {
   id: STRINGS.navigation_social_media,
   Component: SocialMediaNavigation,
   headerShown: false,
-  Icon: makeIcon('socialMedia'),
+  Icon: makeIcon('socialMedia', 'drawer_menu_social_media'),
   headerLeft: DrawerMenuButton,
   order: 10000,
 };
