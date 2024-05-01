@@ -110,41 +110,51 @@ const WitnessNotification = ({ notification, navigateToNotificationScreen }: IPr
       </Text>
       {decodedData ? (
         <>
-          <View style={styles.marginB15}>
-            <Text style={[Typography.small, styles.boldText]}>
-              {decodedData.object}#{decodedData.action}:
-            </Text>
-            <Text style={Typography.small}>Name: {decodedData.name}</Text>
-            <Text style={Typography.small}>ID: {decodedData.id}</Text>
-            <Text style={Typography.small}>
-              Created at: {new Date(decodedData.creation * 1000).toLocaleString()}
-            </Text>
-            <Text style={Typography.small}>
-              Proposed start: {new Date(decodedData.proposed_start * 1000).toLocaleString()}
-            </Text>
-            <Text style={Typography.small}>
-              Proposed end: {new Date(decodedData.proposed_end * 1000).toLocaleString()}
-            </Text>
-            <Text style={Typography.small}>Location: {decodedData.location}</Text>
-            {decodedData.description ? (
-              <Text style={Typography.small}>Description: {decodedData.description}</Text>
-            ) : (
-              <Text />
-            )}
-          </View>
-
-          <View style={styles.marginB15}>
-            <Text style={[Typography.small, styles.boldText]}>Message Information:</Text>
-            <Text style={Typography.small}>Message ID: {notification.messageId}</Text>
-            <Text style={Typography.small}>Received from: {message.receivedFrom}</Text>
-            <Text style={Typography.small}>Channel: {message.channel}</Text>
-            <Text style={Typography.small}>Sender: {message.sender}</Text>
-            <Text style={Typography.small}>Signature: {message.signature}</Text>
-            <Text style={Typography.small}>Received at: {message.receivedAt.toDateString()}</Text>
-            <Text style={Typography.small}>
-              Processed at: {message.processedAt?.toDateString()}
-            </Text>
-          </View>
+          {decodedData.object === 'roll_call' && decodedData.action === 'create' ? (
+            <>
+              <View style={styles.marginB15}>
+                <Text style={[Typography.small, styles.boldText]}>
+                  {decodedData.object}#{decodedData.action}:
+                </Text>
+                <Text style={Typography.small}>Name: {decodedData.name}</Text>
+                <Text style={Typography.small}>ID: {decodedData.id}</Text>
+                <Text style={Typography.small}>
+                  Created at: {new Date(decodedData.creation * 1000).toLocaleString()}
+                </Text>
+                <Text style={Typography.small}>
+                  Proposed start: {new Date(decodedData.proposed_start * 1000).toLocaleString()}
+                </Text>
+                <Text style={Typography.small}>
+                  Proposed end: {new Date(decodedData.proposed_end * 1000).toLocaleString()}
+                </Text>
+                <Text style={Typography.small}>Location: {decodedData.location}</Text>
+                {decodedData.description ? (
+                  <Text style={Typography.small}>Description: {decodedData.description}</Text>
+                ) : (
+                  <Text />
+                )}
+              </View>
+              <View style={styles.marginB15}>
+                <Text style={[Typography.small, styles.boldText]}>Message Information:</Text>
+                <Text style={Typography.small}>Message ID: {notification.messageId}</Text>
+                <Text style={Typography.small}>Received from: {message.receivedFrom}</Text>
+                <Text style={Typography.small}>Channel: {message.channel}</Text>
+                <Text style={Typography.small}>Sender: {message.sender}</Text>
+                <Text style={Typography.small}>Signature: {message.signature}</Text>
+                <Text style={Typography.small}>
+                  Received at: {message.receivedAt.toDateString()}
+                </Text>
+                <Text style={Typography.small}>
+                  Processed at: {message.processedAt?.toDateString()}
+                </Text>
+              </View>
+            </>
+          ) : (
+            <View style={styles.marginB15}>
+              <Text>{JSON.stringify(notification)}</Text>
+              <Text>{JSON.stringify(message)}</Text>
+            </View>
+          )}
         </>
       ) : (
         <Text>No data available.</Text>

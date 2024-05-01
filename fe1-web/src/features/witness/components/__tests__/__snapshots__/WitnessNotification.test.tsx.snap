@@ -527,7 +527,7 @@ exports[`WitnessNotification renders correctly 1`] = `
 </View>
 `;
 
-exports[`WitnessNotification renders correctly 3 1`] = `
+exports[`WitnessNotification renders correctly without corresponding message 1`] = `
 <View
   style={
     {

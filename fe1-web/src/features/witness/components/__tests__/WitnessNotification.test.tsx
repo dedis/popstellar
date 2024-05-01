@@ -42,7 +42,7 @@ configureTestFeatures();
 
 const timestamp = new Timestamp(1607277600);
 
-const msg0 = ExtendedMessage.fromMessage(
+const msgWithDescription = ExtendedMessage.fromMessage(
   ExtendedMessage.fromData(
     {
       object: ObjectType.ROLL_CALL,
@@ -62,17 +62,17 @@ const msg0 = ExtendedMessage.fromMessage(
   mockChannel,
 );
 
-const mockNotification0 = new MessageToWitnessNotification({
+const mockNotificationForMsgWithDescr = new MessageToWitnessNotification({
   id: 0,
   laoId: mockLaoId,
   title: 'a notification',
   timestamp: new Timestamp(0),
   type: WitnessFeature.NotificationTypes.MESSAGE_TO_WITNESS,
   hasBeenRead: false,
-  messageId: msg0.message_id,
+  messageId: msgWithDescription.message_id,
 });
 
-const msg1 = ExtendedMessage.fromMessage(
+const msgWithoutDescription = ExtendedMessage.fromMessage(
   ExtendedMessage.fromData(
     {
       object: ObjectType.ROLL_CALL,
@@ -91,17 +91,17 @@ const msg1 = ExtendedMessage.fromMessage(
   mockChannel,
 );
 
-const mockNotification1 = new MessageToWitnessNotification({
+const mockNotificationForMsgWithoutDescr = new MessageToWitnessNotification({
   id: 1,
   laoId: mockLaoId,
   title: 'a notification',
   timestamp: new Timestamp(0),
   type: WitnessFeature.NotificationTypes.MESSAGE_TO_WITNESS,
   hasBeenRead: false,
-  messageId: msg1.message_id,
+  messageId: msgWithoutDescription.message_id,
 });
 
-const mockNotification2 = new MessageToWitnessNotification({
+const mockNotificationWithoutMsg = new MessageToWitnessNotification({
   id: 2,
   laoId: mockLaoId,
   title: 'a notification',
@@ -121,15 +121,15 @@ const setupStore = (): Store => {
     }),
   });
 
-  mockStore.dispatch(addMessages(msg0.toState()));
-  mockStore.dispatch(addMessageToWitness(msg0.message_id));
-  mockStore.dispatch(addNotification(mockNotification0.toState()));
+  mockStore.dispatch(addMessages(msgWithDescription.toState()));
+  mockStore.dispatch(addMessageToWitness(msgWithDescription.message_id));
+  mockStore.dispatch(addNotification(mockNotificationForMsgWithDescr.toState()));
 
-  mockStore.dispatch(addMessages(msg1.toState()));
-  mockStore.dispatch(addMessageToWitness(msg1.message_id));
-  mockStore.dispatch(addNotification(mockNotification1.toState()));
+  mockStore.dispatch(addMessages(msgWithoutDescription.toState()));
+  mockStore.dispatch(addMessageToWitness(msgWithoutDescription.message_id));
+  mockStore.dispatch(addNotification(mockNotificationForMsgWithoutDescr.toState()));
 
-  mockStore.dispatch(addNotification(mockNotification2.toState()));
+  mockStore.dispatch(addNotification(mockNotificationWithoutMsg.toState()));
 
   return mockStore;
 };
@@ -174,7 +174,7 @@ describe('WitnessNotification', () => {
       <Provider store={mockStore}>
         <FeatureContext.Provider value={contextValue}>
           <WitnessNotification
-            notification={mockNotification0}
+            notification={mockNotificationForMsgWithDescr}
             navigateToNotificationScreen={() => {}}
           />
         </FeatureContext.Provider>
@@ -188,7 +188,7 @@ describe('WitnessNotification', () => {
       <Provider store={mockStore}>
         <FeatureContext.Provider value={contextValue}>
           <WitnessNotification
-            notification={mockNotification1}
+            notification={mockNotificationForMsgWithoutDescr}
             navigateToNotificationScreen={() => {}}
           />
         </FeatureContext.Provider>
@@ -197,12 +197,12 @@ describe('WitnessNotification', () => {
     expect(component).toMatchSnapshot();
   });
 
-  it('renders correctly 3', () => {
+  it('renders correctly without corresponding message', () => {
     const component = render(
       <Provider store={mockStore}>
         <FeatureContext.Provider value={contextValue}>
           <WitnessNotification
-            notification={mockNotification2}
+            notification={mockNotificationWithoutMsg}
             navigateToNotificationScreen={() => {}}
           />
         </FeatureContext.Provider>
@@ -230,12 +230,12 @@ describe('WitnessNotification actions', () => {
     dispatchSpy.mockRestore();
   });
 
-  it('renders correctly for witnessing not1', () => {
+  it('witnesses correctly for message with roll call description', () => {
     const { getByTestId } = render(
       <Provider store={mockStore}>
         <FeatureContext.Provider value={contextValue}>
           <WitnessNotification
-            notification={mockNotification0}
+            notification={mockNotificationForMsgWithDescr}
             navigateToNotificationScreen={() => {}}
           />
         </FeatureContext.Provider>
@@ -244,15 +244,18 @@ describe('WitnessNotification actions', () => {
 
     fireEvent.press(getByTestId('on-witness'));
     expect(dispatchSpy).toHaveBeenCalledWith(
-      discardNotifications({ laoId: mockLaoId, notificationIds: [mockNotification0.id] }),
+      discardNotifications({
+        laoId: mockLaoId,
+        notificationIds: [mockNotificationForMsgWithDescr.id],
+      }),
     );
   });
-  it('renders correctly for declining not1', () => {
+  it('declines correctly for message with roll call description', () => {
     const { getByTestId } = render(
       <Provider store={mockStore}>
         <FeatureContext.Provider value={contextValue}>
           <WitnessNotification
-            notification={mockNotification0}
+            notification={mockNotificationForMsgWithDescr}
             navigateToNotificationScreen={() => {}}
           />
         </FeatureContext.Provider>
@@ -261,16 +264,19 @@ describe('WitnessNotification actions', () => {
 
     fireEvent.press(getByTestId('on-decline'));
     expect(dispatchSpy).toHaveBeenCalledWith(
-      markNotificationAsRead({ laoId: mockLaoId, notificationId: mockNotification0.id }),
+      markNotificationAsRead({
+        laoId: mockLaoId,
+        notificationId: mockNotificationForMsgWithDescr.id,
+      }),
     );
   });
 
-  it('renders correctly for witnessing not2', () => {
+  it('witnesses correctly for message without roll call description', () => {
     const { getByTestId } = render(
       <Provider store={mockStore}>
         <FeatureContext.Provider value={contextValue}>
           <WitnessNotification
-            notification={mockNotification1}
+            notification={mockNotificationForMsgWithoutDescr}
             navigateToNotificationScreen={() => {}}
           />
         </FeatureContext.Provider>
@@ -279,15 +285,18 @@ describe('WitnessNotification actions', () => {
 
     fireEvent.press(getByTestId('on-witness'));
     expect(dispatchSpy).toHaveBeenCalledWith(
-      discardNotifications({ laoId: mockLaoId, notificationIds: [mockNotification1.id] }),
+      discardNotifications({
+        laoId: mockLaoId,
+        notificationIds: [mockNotificationForMsgWithoutDescr.id],
+      }),
     );
   });
-  it('renders correctly for declining not2', () => {
+  it('declines correctly for message without roll call description', () => {
     const { getByTestId } = render(
       <Provider store={mockStore}>
         <FeatureContext.Provider value={contextValue}>
           <WitnessNotification
-            notification={mockNotification1}
+            notification={mockNotificationForMsgWithoutDescr}
             navigateToNotificationScreen={() => {}}
           />
         </FeatureContext.Provider>
@@ -296,16 +305,19 @@ describe('WitnessNotification actions', () => {
 
     fireEvent.press(getByTestId('on-decline'));
     expect(dispatchSpy).toHaveBeenCalledWith(
-      markNotificationAsRead({ laoId: mockLaoId, notificationId: mockNotification1.id }),
+      markNotificationAsRead({
+        laoId: mockLaoId,
+        notificationId: mockNotificationForMsgWithoutDescr.id,
+      }),
     );
   });
 
-  it('renders correctly for witnessing not3', () => {
+  it('witnesses correctly for notification without corresponding message', () => {
     const { getByTestId } = render(
       <Provider store={mockStore}>
         <FeatureContext.Provider value={contextValue}>
           <WitnessNotification
-            notification={mockNotification2}
+            notification={mockNotificationWithoutMsg}
             navigateToNotificationScreen={() => {}}
           />
         </FeatureContext.Provider>
@@ -314,15 +326,15 @@ describe('WitnessNotification actions', () => {
 
     fireEvent.press(getByTestId('on-witness'));
     expect(dispatchSpy).toHaveBeenCalledWith(
-      discardNotifications({ laoId: mockLaoId, notificationIds: [mockNotification2.id] }),
+      discardNotifications({ laoId: mockLaoId, notificationIds: [mockNotificationWithoutMsg.id] }),
     );
   });
-  it('renders correctly for declining not3', () => {
+  it('declines correctly for notification without corresponding message', () => {
     const { getByTestId } = render(
       <Provider store={mockStore}>
         <FeatureContext.Provider value={contextValue}>
           <WitnessNotification
-            notification={mockNotification2}
+            notification={mockNotificationWithoutMsg}
             navigateToNotificationScreen={() => {}}
           />
         </FeatureContext.Provider>
