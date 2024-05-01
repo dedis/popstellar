@@ -29,7 +29,7 @@ const SocialTopChirps = () => {
 
   if (topChirps.length === 0) {
     return (
-      <ScreenWrapper>
+      <ScreenWrapper testID='social_top_chirps_page'>
         <Text style={[Typography.base, Typography.paragraph]}>
           {STRINGS.social_media_create_chirps_yet}
         </Text>
@@ -38,7 +38,7 @@ const SocialTopChirps = () => {
   }
 
   return (
-    <ScreenWrapper>
+    <ScreenWrapper testID='social_top_chirps_page'>
       <View style={List.container}>
         {topChirps.map((chirp, i) => (
           <ChirpCard

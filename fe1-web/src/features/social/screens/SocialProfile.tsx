@@ -18,14 +18,14 @@ const SocialProfile = () => {
 
   if (!currentUserPopTokenPublicKey) {
     return (
-      <ScreenWrapper>
+      <ScreenWrapper testID='social_profile_page'>
         <Text style={Typography.base}>{STRINGS.social_media_your_profile_unavailable}</Text>
       </ScreenWrapper>
     );
   }
 
   return (
-    <ScreenWrapper>
+    <ScreenWrapper testID='social_profile_page'>
       <Profile publicKey={currentUserPopTokenPublicKey} />
     </ScreenWrapper>
   );
