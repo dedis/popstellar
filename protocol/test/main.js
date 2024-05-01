@@ -19,6 +19,8 @@ const method_greet_server_schema = require("../query/method/greet_server.json");
 
 const method_rumor_schema = require("../query/method/rumor.json")
 
+const method_paged_catchup_schema = require("../query/method/paged_catchup.json")
+
 const message_data_schema = require("../query/method/message/data/data.json");
 const message_data_roll_call_close_schema = require("../query/method/message/data/dataCloseRollCall.json");
 const message_data_authenticate_user = require("../query/method/message/data/dataAuthenticateUser.json");
@@ -77,6 +79,8 @@ ajv.addSchema([
     method_greet_server_schema,
 
     method_rumor_schema,
+
+    method_paged_catchup_schema,
 
     message_data_schema,
 
