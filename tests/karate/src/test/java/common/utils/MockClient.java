@@ -201,7 +201,9 @@ public class MockClient extends MultiMsgWebSocketClient {
     request.put("update_id", closeRollCall.updateId);
     request.put("closes", closeRollCall.closes);
     request.put("closed_at", closeRollCall.closedAt);
-    request.put("attendees", attendees);
+    List<String> sortedAttendees = new ArrayList<>(attendees);
+    Collections.sort(sortedAttendees);
+    request.put("attendees", sortedAttendees);
 
 
     this.publish(request, lao.channel);
