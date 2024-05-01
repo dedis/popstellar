@@ -80,7 +80,7 @@ Feature: Social Media
     And screenshot()
 
   @name=social_own_user_profile_page
-  Scenario: Open user profile page
+  Scenario: Open own profile page
     Given call read(PLATFORM_FEATURE) { name: '#(JOIN_ROLLCALL)', params: { lao: '#(lao)', organizer: '#(organizer)' } }
     And call read(PLATFORM_FEATURE) { name: '#(SWITCH_TO_SOCIAL_PAGE)' }
     When waitFor(social_menu_profile_button).click()

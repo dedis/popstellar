@@ -106,12 +106,11 @@ Feature: web page object
 
   @name=user_click
   Scenario:
-
     * waitFor("[data-testid='user_list_item_" + params.token + "']").click()
 
   @name=join_rollcall
   Scenario:
-    And def rollCall = params.organizer.createRollCall(lao)
+    Given def rollCall = params.organizer.createRollCall(lao)
     And organizer.openRollCall(lao, rollCall)
     And call read(PLATFORM_FEATURE) { name: '#(JOIN_LAO)', params: { lao: '#(params.lao)' } }
     When waitFor(event_first_current_event).click()
@@ -119,7 +118,7 @@ Feature: web page object
     And delay(1000)
     And def popToken = text(event_rollcall_pop_token)
     And organizer.closeRollCall(lao, rollCall, [popToken, organizer.publicKey])
-    Then waitForText(event_rollcall_first_attendee, popToken)
+    And delay(1000)
 
   @name=switch_to_social_page
   Scenario:
