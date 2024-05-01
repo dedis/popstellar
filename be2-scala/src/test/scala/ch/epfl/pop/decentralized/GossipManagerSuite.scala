@@ -52,4 +52,28 @@ class GossipManagerSuite extends TestKit(ActorSystem("GossipManagerSuiteActorSys
 
     peerServer.expectMsg(duration, ClientAnswer(Right(rumorRequest)))
   }
+
+  test("gossip handler should send to only one server if multiples are present") {
+    val gossipManager: ActorRef = system.actorOf(GossipManager.props(dbActorRef, monitorRef, connectionMediatorRef))
+    val gossipHandler = GossipManager.gossipHandler(gossipManager)
+
+    val peerServer1 = TestProbe()
+    val peerServer2 = TestProbe()
+    val peerServer3 = TestProbe()
+    val peerServer4 = TestProbe()
+
+    val peers = List(peerServer1, peerServer2, peerServer3, peerServer4)
+
+    // register server
+    connectionMediatorRef ? ConnectionMediator.NewServerConnected(peerServer1.ref, GreetServer(PublicKey(Base64Data("")), "", ""))
+    connectionMediatorRef ? ConnectionMediator.NewServerConnected(peerServer2.ref, GreetServer(PublicKey(Base64Data("")), "", ""))
+    connectionMediatorRef ? ConnectionMediator.NewServerConnected(peerServer3.ref, GreetServer(PublicKey(Base64Data("")), "", ""))
+    connectionMediatorRef ? ConnectionMediator.NewServerConnected(peerServer4.ref, GreetServer(PublicKey(Base64Data("")), "", ""))
+
+    val output = Source.single(Right(rumorRequest)).via(gossipHandler).runWith(Sink.head)
+
+    peers.map(_.receiveOne(duration)).count(_ != null) shouldBe 1
+
+  }
+
 }
