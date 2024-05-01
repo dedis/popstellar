@@ -1,12 +1,17 @@
 package messagedata
 
+import "popstellar/message/query/method/message"
+
 // FederationResult defines a message data
 type FederationResult struct {
 	Object string `json:"object"`
 	Action string `json:"action"`
-
 	Status string `json:"status"`
+
 	Reason string `json:"reason,omitempty"`
+
+	PublicKey    string          `json:"public_key,omitempty"`
+	ChallengeMsg message.Message `json:"challenge"`
 }
 
 // GetObject implements MessageData

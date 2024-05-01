@@ -368,6 +368,7 @@ func Test_FederationResult(t *testing.T) {
 		"federation_challenge",
 		"federation_challenge.json")
 	challengeBytes, err := os.ReadFile(challengeFile)
+	challengeBase64 := base64.URLEncoding.EncodeToString(challengeBytes)
 	require.NoError(t, err)
 	signedChallengeBytes, err := schnorr.Sign(crypto.Suite, organizerKeypair.private, challengeBytes)
 	require.NoError(t, err)
@@ -379,9 +380,17 @@ func Test_FederationResult(t *testing.T) {
 	t.Log()
 
 	federationResultData := messagedata.FederationResult{
-		Object: messagedata.FederationObject,
-		Action: messagedata.FederationActionResult,
-		Status: "success",
+		Object:    messagedata.FederationObject,
+		Action:    messagedata.FederationActionResult,
+		Status:    "success",
+		PublicKey: remoteOrganizerKeypair.publicKey,
+		ChallengeMsg: message.Message{
+			Data:              challengeBase64,
+			Sender:            organizerKeypair.publicKey,
+			Signature:         signedChallengeBase64,
+			MessageID:         messagedata.Hash(challengeBase64, signedChallengeBase64),
+			WitnessSignatures: []message.WitnessSignature{},
+		},
 	}
 	resultMsg := generateMessage(t, organizerKeypair, federationResultData)
 	publishMsg := generatePublish(t, localFedChannel, resultMsg)
