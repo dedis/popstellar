@@ -208,7 +208,7 @@ const ChirpCard = ({ chirp, isFirstItem, isLastItem }: IPropTypes) => {
         </View>
       </PoPTouchableOpacity>
       <ListItem.Content>
-        <ListItem.Subtitle style={styles.noOverflow}>
+        <ListItem.Subtitle style={styles.noOverflow} testID="chirp_message">
           {chirp.isDeleted ? (
             <Text style={[Typography.base, Typography.inactive]}>{STRINGS.deleted_chirp}</Text>
           ) : (

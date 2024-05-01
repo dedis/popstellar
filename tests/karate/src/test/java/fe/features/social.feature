@@ -19,17 +19,16 @@ Feature: Social Media
   @name=social_send_message
   Scenario: Open social media page with pop token
     Given call read(PLATFORM_FEATURE) { name: '#(JOIN_ROLLCALL)', params: { lao: '#(lao)', organizer: '#(organizer)' } }
+    And def message = 'Hello from the test'
     And waitFor(drawer_menu_button).click()
     And delay(500)
     And click(drawer_menu_social)
     And waitFor(social_home_page)
     And delay(500)
-    When def social_chirp_message = 'Hello from the test'
-    And waitFor(social_chirp_input).input(social_chirp_message)
+    And waitFor(social_chirp_input).input(message)
     And screenshot()
     And click(social_chirp_publish_button)
-    And delay(500)
-    Then waitFor('{}' + social_chirp_message)
+    Then waitForText(social_chirp_message, message)
     And screenshot()
 
 

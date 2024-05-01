@@ -49,6 +49,11 @@ Feature: web page object
     * def social_user_profile_page = "[data-testid='social_user_profile_page']"
     * def social_chirp_input = "textarea[data-testid='new_chirp_input']"
     * def social_chirp_publish_button = "[data-testid='new_chirp_publish']"
+    * def social_chirp_message = "[data-testid='chirp_message']"
+    * def social_chirp_like_button = "[data-testid='thumbs-up']"
+    * def social_chirp_dislike_button = "[data-testid='thumbs-down']"
+    * def social_chirp_love_button = "[data-testid='heart']"
+    * def social_chirp_delete = "[data-testid='delete_chirp']"
 
   @name=open_app
   Scenario:
