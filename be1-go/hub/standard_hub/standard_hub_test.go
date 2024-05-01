@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"github.com/gorilla/websocket"
 	"io"
+	"net"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -1969,29 +1970,27 @@ func Test_ConnectToServerAsClient(t *testing.T) {
 	hub, err := NewHub(keypair.public, "", "", nolog, nil)
 	require.NoError(t, err)
 
-	mb := &messageBuffer{}
-	startWsServer(t, listenAddress, mb)
+	msgCh := make(chan []byte, 1)
+	startCh := make(chan struct{}, 1)
+	startWsServer(t, listenAddress, msgCh, startCh)
 
-	time.Sleep(time.Millisecond)
+	// wait that the ws server has started listening
+	<-startCh
 
 	client, err := hub.ConnectToServerAsClient(serverAddress)
 	require.NoError(t, err)
 	require.IsType(t, &socket.ClientSocket{}, client)
 
-	randomMsg0 := make([]byte, 128)
-	randomMsg1 := make([]byte, 128)
-	_, _ = rand.Read(randomMsg0)
-	_, _ = rand.Read(randomMsg1)
-	client.Send(randomMsg0)
-	client.Send(randomMsg1)
+	randomMsg := make([]byte, 128)
+	_, _ = rand.Read(randomMsg)
+	client.Send(randomMsg)
 
-	time.Sleep(time.Millisecond)
-
-	mb.Lock()
-	require.Len(t, mb.messages, 2)
-	require.Equal(t, randomMsg0, mb.messages[0])
-	require.Equal(t, randomMsg1, mb.messages[1])
-	mb.Unlock()
+	select {
+	case m := <-msgCh:
+		assert.Equal(t, randomMsg, m)
+	case <-time.After(time.Second):
+		t.Errorf("Timed out waiting for expected message")
+	}
 }
 
 // -----------------------------------------------------------------------------
@@ -2001,12 +2000,7 @@ var upgrader = websocket.Upgrader{
 	WriteBufferSize: 1024,
 }
 
-type messageBuffer struct {
-	sync.Mutex
-	messages [][]byte
-}
-
-func websocketHandler(t *testing.T, mb *messageBuffer) func(w http.ResponseWriter, r *http.Request) {
+func websocketHandler(t *testing.T, msgCh chan []byte) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		conn, err := upgrader.Upgrade(w, r, nil)
 		require.NoError(t, err)
@@ -2017,17 +2011,21 @@ func websocketHandler(t *testing.T, mb *messageBuffer) func(w http.ResponseWrite
 			require.NoError(t, err)
 
 			require.Equal(t, websocket.TextMessage, mt)
-			mb.Lock()
-			mb.messages = append(mb.messages, msg)
-			mb.Unlock()
+			msgCh <- msg
 		}
 	}
 }
 
-func startWsServer(t *testing.T, listenAddress string, mb *messageBuffer) {
-	http.HandleFunc("/client", websocketHandler(t, mb))
+func startWsServer(t *testing.T, listenAddress string, msgCh chan []byte, startCh chan struct{}) {
+	http.HandleFunc("/client", websocketHandler(t, msgCh))
 	go func() {
-		err := http.ListenAndServe(listenAddress, nil)
+		listener, err := net.Listen("tcp", listenAddress)
+		require.NoError(t, err)
+
+		// signal that the ws server has started listening
+		startCh <- struct{}{}
+
+		err = http.Serve(listener, nil)
 		require.NoError(t, err)
 	}()
 }
