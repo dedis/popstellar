@@ -80,7 +80,7 @@ const LaoDrawerContent = ({ descriptors, navigation, state }: DrawerContentCompo
     <View style={styles.drawerWapper}>
       <DrawerContentScrollView style={styles.drawerContentWrapper}>
         <View style={styles.drawerHeader}>
-          <Text style={[Typography.base, Typography.important]}>{lao.name}</Text>
+          <Text style={[Typography.base, Typography.important]} testID="lao_name_text">{lao.name}</Text>
         </View>
         <DrawerItemList navigation={navigation} descriptors={descriptors} state={state} />
         <DrawerItem

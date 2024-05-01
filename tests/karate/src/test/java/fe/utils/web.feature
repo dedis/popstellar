@@ -21,6 +21,7 @@ Feature: web page object
     * def lao_enter_manually_server_input = "input[placeholder='Server URI']"
     * def lao_enter_manually_lao_input = "input[placeholder='LAO ID']"
     * def lao_enter_manually_submit_button = "[data-testid='connect-button']"
+    * def lao_name = "[data-testid='lao_name_text']"
 
     # Event screen
     * def event_create_button = "[data-testid='create_event_selector']"
@@ -32,6 +33,9 @@ Feature: web page object
     * def event_rollcall_pop_token = "div[data-testid='roll_call_pop_token']"
     * def event_rollcall_first_attendee = "div[data-testid='attendee_0']"
     * def event_first_current_event = "[data-testid='current_event_selector_0']"
+
+    # Drawer menu
+    * def drawer_menu_button = "[data-testid='drawer_menu_button']"
 
   @name=open_app
   Scenario:
