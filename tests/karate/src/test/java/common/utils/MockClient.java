@@ -207,4 +207,15 @@ public class MockClient extends MultiMsgWebSocketClient {
     this.publish(request, lao.channel);
     this.getBackendResponse(request);
   }
+
+  public void sendChirp(Lao lao, String text) {
+    Map<String, Object> request = new HashMap<>();
+    request.put("object", "chirp");
+    request.put("action", "add");
+    request.put("text", text);
+    request.put("timestamp", Instant.now().getEpochSecond());
+
+    this.publish(request, lao.channel + "/social/" + publicKey);
+    this.getBackendResponse(request);
+  }
 }

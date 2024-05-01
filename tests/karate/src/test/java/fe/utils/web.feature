@@ -106,5 +106,12 @@ Feature: web page object
     And waitFor(event_rollcall_pop_token)
     And delay(1000)
     And def popToken = text(event_rollcall_pop_token)
-    And organizer.closeRollCall(lao, rollCall, [popToken])
+    And organizer.closeRollCall(lao, rollCall, [popToken, organizer.publicKey])
     Then waitForText(event_rollcall_first_attendee, popToken)
+
+  @name=switch_to_social_page
+  Scenario:
+    Given waitFor(drawer_menu_button).click()
+    And waitFor(drawer_menu_social).click()
+    And waitFor(social_home_page)
+    And delay(500)
