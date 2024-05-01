@@ -43,7 +43,7 @@ const SocialUserProfile = () => {
 
   if (!userPublicKey) {
     return (
-      <ScreenWrapper testID="social_user_profile_page">
+      <ScreenWrapper containerTestID="social_user_profile_page">
         <Text style={Typography.base}>
           Impossible to load profile of user: public key not provided.
         </Text>
@@ -52,7 +52,7 @@ const SocialUserProfile = () => {
   }
 
   return (
-    <ScreenWrapper testID="social_user_profile_page">
+    <ScreenWrapper containerTestID="social_user_profile_page">
       <Profile publicKey={userPublicKey} />
     </ScreenWrapper>
   );
