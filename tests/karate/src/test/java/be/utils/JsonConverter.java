@@ -4,6 +4,7 @@ import com.google.crypto.tink.PublicKeySign;
 import com.google.crypto.tink.subtle.Ed25519Sign;
 import com.intuit.karate.Json;
 import common.utils.Base64Utils;
+import common.utils.Hash;
 
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;

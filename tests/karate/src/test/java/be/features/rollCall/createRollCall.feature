@@ -8,8 +8,8 @@ Feature: Create a Roll Call
     * call read(serverFeature)
     * call read(mockClientFeature)
     * def organizer = call createMockFrontend
-    * def lao = organizer.createValidLao()
-    * def validRollCall = organizer.createValidRollCall(lao)
+    * def lao = organizer.generateValidLao()
+    * def validRollCall = organizer.generateValidRollCall(lao)
 
     # This call executes all the steps to create a valid lao on the server before every scenario
     # (lao creation, subscribe, catchup)
@@ -213,8 +213,8 @@ Feature: Create a Roll Call
   # in an error message from the backend.
   @createRollCall9
   Scenario: Roll Call Creation for non existent lao should return an error
-    Given def randomLao = organizer.createValidLao()
-    And def randomRollCall = organizer.createValidRollCall(randomLao)
+    Given def randomLao = organizer.generateValidLao()
+    And def randomRollCall = organizer.generateValidRollCall(randomLao)
     Given def validCreateRollCall =
       """
         {

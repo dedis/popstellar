@@ -1,4 +1,4 @@
-package be.utils;
+package common.utils;
 
 import common.utils.Base64Utils;
 
