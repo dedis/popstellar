@@ -4,7 +4,7 @@ import akka.NotUsed
 import akka.actor.{Actor, ActorRef, Props}
 import akka.pattern.AskableActorRef
 import akka.stream.scaladsl.Flow
-import ch.epfl.pop.decentralized.GossipManager.{MonitoredRumor, SUCCESS}
+import ch.epfl.pop.decentralized.GossipManager.MonitoredRumor
 import ch.epfl.pop.decentralized.{ConnectionMediator, GossipManager}
 import ch.epfl.pop.model.network.method.{GreetServer, Rumor}
 import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse, MethodType}
@@ -70,7 +70,7 @@ final case class GossipManager(
     // response is expected because only one entry exists
     if (activeGossipPeers.size == 1) {
       activeGossipPeers.foreach { (rumorRpc, _) =>
-        if (response.id.get == SUCCESS && Random.nextDouble() < stopProbability) {
+        if (response.result.isEmpty && Random.nextDouble() < stopProbability) {
           activeGossipProtocol -= rumorRpc
         } else {
           sendRumorToRandomPeer(rumorRpc)
@@ -109,8 +109,6 @@ object GossipManager extends AskPatternConstants {
       Right(jsonRpcResponse)
     case graphMessage @ _ => graphMessage
   }
-
-  private final val SUCCESS = 0
 
   sealed trait Event
   final case class MonitoredRumor(jsonRpcRumor: JsonRpcRequest)

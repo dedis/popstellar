@@ -5,12 +5,12 @@ import akka.actor.ActorRef
 import akka.pattern.AskableActorRef
 import akka.stream.scaladsl.Flow
 import ch.epfl.pop.decentralized.ConnectionMediator
-import ch.epfl.pop.model.network.MethodType
+import ch.epfl.pop.model.network.{ErrorObject, JsonRpcRequest, JsonRpcResponse, MethodType, ResultObject}
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.{GreetServer, Rumor}
-import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse}
 import ch.epfl.pop.model.objects.{Channel, PublicKey}
 import ch.epfl.pop.pubsub.ClientActor.ClientAnswer
+import ch.epfl.pop.pubsub.graph.validators.RpcValidator
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
 import ch.epfl.pop.pubsub.{AskPatternConstants, ClientActor, PubSubMediator}
 import ch.epfl.pop.storage.DbActor.{DbActorReadRumors, ReadRumors, WriteRumor}
@@ -102,13 +102,21 @@ object ParamsHandler extends AskPatternConstants {
           val readRumorDb = dbActorRef ? ReadRumors(Map(senderPk -> List(rumorId)))
           Await.result(readRumorDb, duration) match {
             // already present
-            case DbActorReadRumors(foundRumors) => // do nothing
+            case DbActorReadRumors(foundRumors) =>
+              Right(JsonRpcResponse(
+                RpcValidator.JSON_RPC_VERSION,
+                ErrorObject(-3, s"rumor $rumorId already present"),
+                jsonRpcMessage.id
+              ))
             // absent
             case failure =>
-              val writeRumor = dbActorRef ? WriteRumor(rumor)
-
+              dbActorRef ? WriteRumor(rumor)
+              Right(JsonRpcResponse(
+                RpcValidator.JSON_RPC_VERSION,
+                ResultObject(0),
+                jsonRpcMessage.id
+              ))
           }
-          Right(jsonRpcMessage)
         case _ => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, "RumorHandler received a non expected jsonRpcRequest", jsonRpcMessage.id))
       }
     case graphMessage @ _ => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, "RumorHandler received an unexpected message:" + graphMessage, None))

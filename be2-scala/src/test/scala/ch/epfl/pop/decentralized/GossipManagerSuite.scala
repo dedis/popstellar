@@ -12,7 +12,7 @@ import org.scalatest.matchers.should.Matchers
 import akka.pattern.ask
 import akka.stream.scaladsl.{Flow, Sink, Source}
 import ch.epfl.pop.IOHelper.readJsonFromPath
-import ch.epfl.pop.model.network.{ErrorObject, JsonRpcRequest, JsonRpcResponse}
+import ch.epfl.pop.model.network.{ErrorObject, JsonRpcRequest, JsonRpcResponse, ResultObject}
 import ch.epfl.pop.model.network.method.{GreetServer, Rumor}
 import ch.epfl.pop.model.objects.{Base64Data, PublicKey}
 import ch.epfl.pop.pubsub.ClientActor.ClientAnswer
@@ -111,7 +111,7 @@ class GossipManagerSuite extends TestKit(ActorSystem("GossipManagerSuiteActorSys
 
     val response = Right(JsonRpcResponse(
       RpcValidator.JSON_RPC_VERSION,
-      ErrorObject(0, "received new Rumor"),
+      ResultObject(0),
       rumorRequest.id
     ))
 

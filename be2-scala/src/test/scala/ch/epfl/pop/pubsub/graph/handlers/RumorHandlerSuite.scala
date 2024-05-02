@@ -12,7 +12,7 @@ import akka.stream.scaladsl.{Flow, Sink, Source}
 import ch.epfl.pop.IOHelper.readJsonFromPath
 import ch.epfl.pop.config.RuntimeEnvironment
 import ch.epfl.pop.decentralized.{ConnectionMediator, Monitor}
-import ch.epfl.pop.model.network.JsonRpcRequest
+import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse}
 import ch.epfl.pop.model.network.method.{GreetServer, Rumor}
 import ch.epfl.pop.model.objects.{Base64Data, PublicKey}
 import ch.epfl.pop.pubsub.ClientActor.ClientAnswer
@@ -71,4 +71,32 @@ class RumorHandlerSuite extends TestKit(ActorSystem("RumorActorSuiteActorSystem"
 
   }
 
+  test("rumor handler should output a success response if rumor is a new rumor") {
+
+    val output = Source.single(Right(rumorRequest)).via(rumorHandler).runWith(Sink.head)
+
+    val outputResult = Await.result(output, duration)
+
+    outputResult shouldBe a[Right[_, JsonRpcResponse]]
+
+    outputResult match
+      case Right(jsonRpcResponse: JsonRpcResponse) => jsonRpcResponse.result.isDefined shouldBe true
+      case _                                       => 1 shouldBe 0
+
+  }
+
+  test("rumor handler should output a error response if rumor is a old rumor") {
+    val dbWrite = dbActorRef ? DbActor.WriteRumor(rumor)
+    Await.result(dbWrite, duration)
+
+    val output = Source.single(Right(rumorRequest)).via(rumorHandler).runWith(Sink.head)
+
+    val outputResult = Await.result(output, duration)
+
+    outputResult shouldBe a[Right[_, JsonRpcResponse]]
+
+    outputResult match
+      case Right(jsonRpcResponse: JsonRpcResponse) => jsonRpcResponse.error.isDefined shouldBe true
+      case _                                       => 1 shouldBe 0
+  }
 }
