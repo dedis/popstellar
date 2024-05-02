@@ -97,10 +97,9 @@ Here are the existing `Message data`, identified by their unique
 * consensus#learn
 * consensus#failure
 * federation#challenge_request
-* federation#challengre_response
+* federation#challenge
 * federation#expect
 * federation#init
-* federation#authenticate
 * federation#result
 
 ## Creating a LAO (lao#create)
@@ -3239,7 +3238,15 @@ This message is used to know the status of the connection, whether it was a succ
 {
   "object": "federation",
   "action": "result",
-  "status": "success"
+  "status": "success",
+  "public_key": "UvViTxoKsB3XVP_ctkmOKCJpMWb7fCzrcb1XDmhNe7Q=",
+  "challenge": {
+    "data": "eyJvYmplY3QiOiJmZWRlcmF0aW9uIiwiYWN0aW9uIjoiY2hhbGxlbmdlIiwidmFsdWUiOiJlYmEzZTI0ZWZjZDBiNTNmYTY5OTA4YmFkNWQxY2I2OTlkNzk4MGQ5MzEwOWRhMGIyYmZkNTAzN2MyYzg5ZWUwIiwidGltZXN0YW1wIjoxNzEzMzg1NTY4fQ==",
+    "sender": "zXgzQaa_NpUe-v0Zk_4q8k184ohQ5nTQhBDKgncHzq4=",
+    "signature": "BILYwYkT5tOBL4rCD7yvhBkhAYqRXOI3ajQ2uJ1gAk-g6nRc38vMMnlHShuNCQ3dQFXYZPn37cCFelhWGjY8Bg==",
+    "message_id": "sD_PdryBuOr14_65h8L-e1lzdQpDWxUAngtu1uwqgEI=",
+    "witness_signatures": []
+  }
 }
 ```
 </details>
@@ -3251,27 +3258,72 @@ This message is used to know the status of the connection, whether it was a succ
   "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataFederationResult.json",
   "description": "Sent by an server to a remote server, to inform them about the result of the authentication procedure",
   "type": "object",
-  "properties": {
-    "object": {
-      "const": "federation"
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "object": {
+          "const": "federation"
+        },
+        "action": {
+          "const": "result"
+        },
+        "status": {
+          "type": "string",
+          "pattern": "^failure$",
+          "$comment": "status of the authentication attempt"
+        },
+        "reason": {
+          "type": "string",
+          "$comment": "to be used in failures, describing the error that happened"
+        },
+        "challenge": {
+          "$ref": "../message.json",
+          "$comment": "message/message containing a FederationChallenge data"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "object",
+        "action",
+        "status",
+        "reason",
+        "challenge"
+      ]
     },
-    "action": {
-      "const": "result"
-    },
-    "status": {
-      "type": "string",
-      "$comment": "status of the authentication attempt"
-    },
-    "reason": {
-      "type": "string",
-      "$comment": "to be used in failures, describing the error that happened"
+    {
+      "type": "object",
+      "properties": {
+        "object": {
+          "const": "federation"
+        },
+        "action": {
+          "const": "result"
+        },
+        "status": {
+          "type": "string",
+          "pattern": "^success$",
+          "$comment": "status of the authentication attempt"
+        },
+        "public_key": {
+          "type": "string",
+          "contentEncoding": "base64",
+          "$comment": "public key of the remote organizer"
+        },
+        "challenge": {
+          "$ref": "../message.json",
+          "$comment": "message/message containing a FederationChallenge data"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "object",
+        "action",
+        "status",
+        "public_key",
+        "challenge"
+      ]
     }
-  },
-  "additionalProperties": false,
-  "required": [
-    "object",
-    "action",
-    "status"
   ]
 }
 ```
