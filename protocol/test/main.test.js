@@ -6,6 +6,7 @@ const ajv = require("./main");
 
 const rootSchema =
     "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/jsonRPC.json";
+
 const messageDataSchema =
     "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/data.json";
 
@@ -262,6 +263,9 @@ test("message data: federation", () => {
 
     federation_challenge = require("../examples/messageData/federation_challenge/federation_challenge.json");
     expect(federation_challenge).toBeValid(messageDataSchema);
+
+    federation_result = require("../examples/messageData/federation_result/federation_result.json");
+    expect(federation_result).toBeValid(messageDataSchema);
 
 });
 
