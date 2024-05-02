@@ -71,7 +71,9 @@ object PublishSubscribe {
         ))
 
         val requestPartition = builder.add(validateRequests(clientActorRef, messageRegistry))
-        val responsePartition = builder.add(GetMessagesByIdResponseHandler.responseHandler(messageRegistry))
+
+        val gossipMonitorPartition = builder.add(GossipManager.monitorResponse(gossipManager))
+        val getMsgByIdResponsePartition = builder.add(GetMessagesByIdResponseHandler.responseHandler(messageRegistry))
 
         // ResponseHandler messages do not go in the merger
         val merger = builder.add(Merge[GraphMessage](totalPorts - 1))
@@ -90,7 +92,7 @@ object PublishSubscribe {
 
         methodPartitioner.out(portPipelineError) ~> merger
         methodPartitioner.out(portRpcRequest) ~> requestPartition ~> merger
-        methodPartitioner.out(portRpcResponse) ~> responsePartition ~> droppingSink
+        methodPartitioner.out(portRpcResponse) ~> gossipMonitorPartition ~> getMsgByIdResponsePartition ~> droppingSink
 
         merger ~> broadcast
         broadcast ~> jsonRpcAnswerGenerator ~> jsonRpcAnswerer ~> output
