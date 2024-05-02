@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto">
+
+  <androidx.constraintlayout.widget.ConstraintLayout
+    android:id="@+id/fragment_linked_organizations_invite"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ScrollView
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:scrollbarFadeDuration="0">
+
+      <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+          android:id="@+id/scan_qr_text"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginTop="@dimen/margin_top"
+          android:text="@string/scan_qr_code"
+          app:layout_constraintStart_toStartOf="parent"
+          app:layout_constraintTop_toTopOf="parent"
+          style="@style/explication_welcome_style" />
+
+        <ImageView
+          android:id="@+id/federation_qr_code"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:contentDescription="@string/qr_code_image_description"
+          app:layout_constraintEnd_toEndOf="parent"
+          app:layout_constraintStart_toStartOf="parent"
+          app:layout_constraintTop_toBottomOf="@id/scan_qr_text" />
+
+        <TextView
+          android:id="@+id/linked_organizations_name_title"
+          style="@style/properties_section_title"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginTop="0dp"
+          android:text="@string/identity_name"
+          app:layout_constraintStart_toStartOf="parent"
+          app:layout_constraintTop_toBottomOf="@id/federation_qr_code" />
+
+        <TextView
+          android:id="@+id/linked_organizations_name_text"
+          style="@style/properties_section_text"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:gravity="start"
+          app:layout_constraintStart_toStartOf="parent"
+          app:layout_constraintTop_toBottomOf="@id/linked_organizations_name_title" />
+
+        <TextView
+          android:id="@+id/linked_organizations_server_title"
+          style="@style/properties_section_title"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="@string/lao_properties_server_title"
+          app:layout_constraintStart_toStartOf="parent"
+          app:layout_constraintTop_toBottomOf="@id/linked_organizations_name_text" />
+
+        <TextView
+          android:id="@+id/linked_organizations_server_text"
+          style="@style/properties_section_text"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:gravity="start"
+          app:layout_constraintStart_toStartOf="parent"
+          app:layout_constraintTop_toBottomOf="@id/linked_organizations_server_title" />
+
+      </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </ScrollView>
+
+    <com.google.android.material.button.MaterialButton
+      android:id="@+id/next_step_button"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:textAllCaps="false"
+      app:cornerRadius="@dimen/corner_radius_small"
+      app:layout_constraintBottom_toBottomOf="parent"
+      android:layout_margin="@dimen/main_horizontal_margin" />
+
+  </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

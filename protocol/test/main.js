@@ -43,6 +43,7 @@ const message_data_federation_init_schema = require("../query/method/message/dat
 const message_data_federation_expect_schema = require("../query/method/message/data/dataFederationExpect.json")
 const message_data_federation_challenge_request_schema = require("../query/method/message/data/dataFederationChallengeRequest.json")
 const message_data_federation_challenge_schema = require("../query/method/message/data/dataFederationChallenge.json")
+const message_data_federation_result_schema = require("../query/method/message/data/dataFederationResult.json")
 
 const message_data_chirp_add_schema = require("../query/method/message/data/dataAddChirp.json");
 const message_data_chirp_notify_add_schema = require("../query/method/message/data/dataNotifyAddChirp.json");
@@ -112,6 +113,7 @@ ajv.addSchema([
     message_data_federation_expect_schema,
     message_data_federation_challenge_request_schema,
     message_data_federation_challenge_schema,
+    message_data_federation_result_schema,
 
     message_data_chirp_notify_add_schema,
     message_data_chirp_add_schema,
