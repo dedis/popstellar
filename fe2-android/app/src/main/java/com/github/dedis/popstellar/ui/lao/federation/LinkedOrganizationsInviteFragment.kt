@@ -19,7 +19,6 @@ import com.github.dedis.popstellar.utility.error.ErrorUtils.logAndShow
 import com.github.dedis.popstellar.utility.error.UnknownLaoException
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
-import io.reactivex.Completable
 import java.time.Instant
 import javax.inject.Inject
 import net.glxn.qrgen.android.QRCode
@@ -31,7 +30,6 @@ class LinkedOrganizationsInviteFragment : Fragment() {
 
   private lateinit var laoViewModel: LaoViewModel
   private lateinit var linkedOrganizationsViewModel: LinkedOrganizationsViewModel
-  private lateinit var challengeRequest: Completable
 
   override fun onCreateView(
       inflater: LayoutInflater,
@@ -43,14 +41,19 @@ class LinkedOrganizationsInviteFragment : Fragment() {
     linkedOrganizationsViewModel =
         obtainLinkedOrganizationsViewModel(requireActivity(), laoViewModel.laoId)
 
-    binding.linkedOrganizationsServerText.text = networkManager.currentUrl
-
     if (CREATES_INVITATION) {
-      challengeRequest =
-          linkedOrganizationsViewModel.sendChallengeRequest(Instant.now().epochSecond).doOnError {
-            binding.nextStepButton.setText(R.string.finish)
-          }
       binding.nextStepButton.setText(R.string.next_step)
+      binding.nextStepButton.visibility = View.GONE
+      laoViewModel.addDisposable(
+          linkedOrganizationsViewModel
+              .sendChallengeRequest(Instant.now().epochSecond)
+              .subscribe(
+                  { binding.nextStepButton.visibility = View.VISIBLE },
+                  { error: Throwable ->
+                    logAndShow(
+                        requireContext(), TAG, error, R.string.error_sending_challenge_request)
+                  },
+              ))
     } else {
       binding.nextStepButton.setText(R.string.finish)
     }
@@ -68,6 +71,7 @@ class LinkedOrganizationsInviteFragment : Fragment() {
 
         binding.federationQrCode.setImageBitmap(myBitmap)
         binding.linkedOrganizationsNameText.text = laoView.name
+        binding.linkedOrganizationsServerText.text = networkManager.currentUrl
       } catch (e: UnknownLaoException) {
         logAndShow(requireContext(), TAG, e, R.string.unknown_lao_exception)
       }

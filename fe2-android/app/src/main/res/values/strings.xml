@@ -367,6 +367,7 @@
   <string name="error_election_duplicate_question_name">Two different questions can\'t have the same name</string>
   <string name="error_election_duplicate_ballot_name">Two different ballot options can\'t have the same name</string>
   <string name="error_settings_url_server">Invalid URL! Please insert a valid one (http, https, ws, wss are supported)</string>
+  <string name="error_sending_challenge_request">Could not send the challenge request</string>
 
   <!-- Exception -->
   <string name="json_rpc_exception">An error response was replied by the server\nError %1$d - %2$s</string>
