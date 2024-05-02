@@ -38,15 +38,20 @@
   - [Accepting a value during a Consensus (consensus#accept)](#accepting-a-value-during-a-consensus-consensusaccept)
   - [Sending the result of a Consensus (consensus#learn)](#sending-the-result-of-a-consensus-consensuslearn)
   - [Sending the failure of a Consensus (consensus#failure)](#sending-the-failure-of-a-consensus-consensusfailure)
+  - [Federation (introduction)](#federation-introduction)
   - [Federation (Authentication Protocol)](#federation-authentication-protocol)
-  - [Federation expect](#federation-expect)
-  - [Federation init](#federation-init)
+  - [Requesting a challenge (federation#challenge_request)](#requesting-a-challenge-federationchallenge_request)
+  - [Answering the challenge request (federation#challenge)](#answering-the-challenge-request-federationchallenge)
+  - [Expecting a connection (federation#expect)](#expecting-a-connection-federationexpect)
+  - [Initiating a connection (federation#init)](#initiating-a-connection-federationinit)
+  - [Establishing or Aborting the connection (federation#result)](#establishing-or-aborting-the-connection-federationresult)
+
 
 <!-- END doctoc.sh generated TOC please keep comment here to allow auto update -->
 
 **Note**: do not edit JSON messages directly. Those are automatically embedded
-from `../protocol`. Use 
-[embedme](https://github.com/dedis/popstellar/blob/master/docs/embedme.sh) to 
+from `../protocol`. Use
+[embedme](https://github.com/dedis/popstellar/blob/master/docs/embedme.sh) to
 make an update.
 
 # Introduction
@@ -65,6 +70,7 @@ Here are the existing `Message data`, identified by their unique
 * lao#create
 * lao#update_properties
 * lao#state
+* lao#greet
 * message#witness
 * meeting#create
 * meeting#state
@@ -73,9 +79,28 @@ Here are the existing `Message data`, identified by their unique
 * roll_call#close
 * roll_call#reopen
 * election#setup
+* election#key
+* election#open
 * election#cast_vote
 * election#end
 * election#result
+* chirp#add
+* chirp#delete
+* reaction#add
+* reaction#delete
+* consensus#elect
+* consensus#elect_accept
+* consensus#prepare
+* consensus#promise
+* consensus#propose
+* consensus#accept
+* consensus#learn
+* consensus#failure
+* federation#challenge_request
+* federation#challenge
+* federation#expect
+* federation#init
+* federation#result
 
 ## Creating a LAO (lao#create)
 
@@ -496,14 +521,14 @@ Last but not least, the greeting message contains a list of peers that tells cli
 
 ```
 
-</details>
+
 
 ## Witness a message (message#witness)
 
 By sending the message/witness message to the LAO’s main channel (LAO's “id”), a
 witness can attest to the message. Upon reception, the server and the witnesses
 add this signature to the existing message’s `witness_signatures` field. It also save the signature message in its database and broadcast it on the channel.
-The witness message is saved in the database so that it appears in the heartbeat leading to the signature being propagated among servers. 
+The witness message is saved in the database so that it appears in the heartbeat leading to the signature being propagated among servers.
 When a new client retrieves this message, the `witness_signatures` field will be
 populated with all the witness signatures received by the server.
 
@@ -667,7 +692,7 @@ is expected to broadcast the Meeting state to all witnesses and clients (see
 
 When a meeting is created, modified or attested to by a witness, the server is
 expected to publish the meeting/state message to the LAO’s main channel (LAO's
-“id”). 
+“id”).
 
 <details>
 <summary>
@@ -814,7 +839,7 @@ roll call.
 **Opened**: This state denotes that the roll call is open and the organizer and
 **witnesses** are ready to scan the QR code(s) of the attendees.  
 **Closed**: This state denotes the closing of a roll call and contains all the
-**attendee** public keys scanned during the roll call process.  
+**attendee** public keys scanned during the roll call process.
 
 ## Creating a Roll-Call (roll_call#create)
 
@@ -993,7 +1018,7 @@ message on the LAO channel.
 
 A roll-call may be closed by the organizer by publishing a roll_call/close
 message on the LAO channel. This is effectively the message that will be sent by
-the organizer after scanning all attendees’ public key. 
+the organizer after scanning all attendees’ public key.
 
 ![](assets/close_roll_call.png)
 
@@ -1486,7 +1511,7 @@ The election can be opened by publishing an election/open message on the electio
     ]
 }
 ```
-</details>
+
 
 ## Casting a vote (election#cast_vote)
 
@@ -1829,18 +1854,18 @@ and has received the witness signatures on the result.
 
 ## Publishing a Chirp (chirp#add)
 
-A user that owns a PoP token can publish a chirp by sending a chirp/add message 
+A user that owns a PoP token can publish a chirp by sending a chirp/add message
 to his/her chirp channel ("/root/lao_id/social/sender_id").
 
 Each Chirp data object consists of the following:
-- Text: Max 300 characters (i.e., Unicode code points). The UI needs to enforce 
-this rule. The organizer + witness servers also need to enforce this restriction, 
-rejecting the publication of a chirp.
+- Text: Max 300 characters (i.e., Unicode code points). The UI needs to enforce
+  this rule. The organizer + witness servers also need to enforce this restriction,
+  rejecting the publication of a chirp.
 - Parent ID: The parent chirp’s message id if it is not the top level chirp.
-- Timestamp: UNIX timestamp in UTC of the time that the chirp is published; 
-2 chirps cannot be posted on the same second; The organizer + witness servers 
-enforce that the timestamp field is valid (by verifying the timestamp against 
-the server’s time +/- a threshold).
+- Timestamp: UNIX timestamp in UTC of the time that the chirp is published;
+  2 chirps cannot be posted on the same second; The organizer + witness servers
+  enforce that the timestamp field is valid (by verifying the timestamp against
+  the server’s time +/- a threshold).
 
 <details>
 <summary>
@@ -1897,8 +1922,8 @@ the server’s time +/- a threshold).
 
 ```
 
-After validating the chirp, the organizer’s server propagates the above message 
-on the channel it is meant for (like usual) but it also creates the following 
+After validating the chirp, the organizer’s server propagates the above message
+on the channel it is meant for (like usual) but it also creates the following
 message and sends it to a universal chirp channel ("/root/lao_id/social/chirps"):
 
 <details>
@@ -1958,9 +1983,9 @@ message and sends it to a universal chirp channel ("/root/lao_id/social/chirps")
 
 ## Removing a Chirp (chirp#delete)
 
-A user that has published a chirp in the past can remove the chirp by sending a 
-chirp/delete message to his/her chirp channel ("/root/lao_id/social/sender_id"). 
-Although a chirp can be removed from the UI, by design of the pub-sub communication 
+A user that has published a chirp in the past can remove the chirp by sending a
+chirp/delete message to his/her chirp channel ("/root/lao_id/social/sender_id").
+Although a chirp can be removed from the UI, by design of the pub-sub communication
 protocol, the chirp will always exist in historical records of the users’ channel.
 
 <details>
@@ -2012,8 +2037,8 @@ protocol, the chirp will always exist in historical records of the users’ chan
 }
 ```
 
-After validating the removal of the chirp, the organizer’s server propagates the above message 
-on the channel it is meant for (like usual) but it also creates the following message and sends 
+After validating the removal of the chirp, the organizer’s server propagates the above message
+on the channel it is meant for (like usual) but it also creates the following message and sends
 it to a universal chirp channel ("/root/lao_id/social/chirps"):
 
 <details>
@@ -2074,8 +2099,8 @@ it to a universal chirp channel ("/root/lao_id/social/chirps"):
 
 ## Publishing a reaction (reaction#add)
 
-Anyone with an active PoP token for that LAO may react (like/dislike/heart/etc...) to a chirp. 
-All reactions are posted in a single channel: "root/lao_id/social/reactions" to enable users 
+Anyone with an active PoP token for that LAO may react (like/dislike/heart/etc...) to a chirp.
+All reactions are posted in a single channel: "root/lao_id/social/reactions" to enable users
 to see what is being popular.
 
 Each reaction contains the following:
@@ -2141,9 +2166,9 @@ Each reaction contains the following:
 
 ## Removing a reaction (reaction#delete)
 
-A user that has published a reaction in the past can remove the reaction by sending 
-a reaction/delete message to the reaction channel ("/root/lao_id/social/reactions"). 
-Although a reaction can be removed from the UI, by design of the pub-sub communication 
+A user that has published a reaction in the past can remove the reaction by sending
+a reaction/delete message to the reaction channel ("/root/lao_id/social/reactions").
+Although a reaction can be removed from the UI, by design of the pub-sub communication
 protocol, the reaction will always exist in historical records of the reactions’ channel.
 
 <details>
@@ -2906,6 +2931,8 @@ a consensus/failure message is sent informing the system of the failure.
 ```
 
 
+## Federation introduction
+This feature will allow both LAOs to establish a connection between each other, send and receive data from one another, enhancing the existing functionalities like roll calls, events, and social media interactions, all while maintaining their autonomy.
 
 ## Federation (Authentication Protocol)
 
@@ -2920,8 +2947,107 @@ The two organizers meet in person to exchange the federation_details message (th
 
 They also decide on a time slot to perform their next roll-calls---these have to happen simultaneously.
 
+## Requesting a challenge (federation#challenge_request)
+The organizer of one of the two LAOs will request a challenge from his server.
+This challenge will be then used by the other server to authenticate itself.
 
-## Federation expect
+<details>
+<summary>
+💡 See an example
+</summary>
+
+```json5
+// ../protocol/examples/messageData/federation_challenge_request/federation_challenge_request.json
+{
+  "object": "federation",
+  "action": "challenge_request",
+  "timestamp": 1712854874
+}
+
+```
+</details>
+
+```json5
+// ../protocol/query/method/message/data/dataFederationChallengeRequest.json
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataFederationChallengeRequest.json",
+  "description": "Sent by an organizer client to its server, to retrieve a challenge object",
+  "type": "object",
+  "properties": {
+    "object": {
+      "const": "federation"
+    },
+    "action": {
+      "const": "challenge_request"
+    },
+    "timestamp": {
+      "type": "integer",
+      "description": "[Timestamp] of the request",
+      "minimum": 0
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "timestamp"
+  ]
+}
+
+```
+
+## Answering the challenge request (federation#challenge)
+The server will provide his corresponding organizer with the requested challenge.
+<details>
+<summary>
+💡 See an example
+</summary>
+
+```json5
+{
+    "object": "federation",
+    "action": "challenge",
+    "value": "82eadde2a4ba832518b90bb93c8480ee1ae16a91d5efe9281e91e2ec11da03e4",
+    "valid_until": 1712854874
+}
+```
+</details>
+
+```json5
+// ../protocol/query/method/message/data/dataFederationChallenge.json
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataFederationChallenge.json",
+  "description": "Challenge object in the context of federation authentication",
+  "type": "object",
+  "properties": {
+    "object": {
+      "const": "federation"
+    },
+    "action": {
+      "const": "challenge"
+    },
+    "value": {
+      "type": "string",
+      "contentEncoding": "hex",
+      "pattern": "^[0-9a-fA-F]{64}$",
+      "$comment": "A 32 bytes array encoded in hexadecimal"
+    },
+    "valid_until": {
+      "type": "integer",
+      "description": "[Timestamp] of the expiration time",
+      "minimum": 0
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "value",
+    "valid_until"
+  ]
+}
+
+```
+
+## Expecting a connection (federation#expect)
 With this message the organizer lets the server know to expect a federation_init message from the remote party idetailed in the message body.
 
 <details>
@@ -3011,7 +3137,7 @@ With this message the organizer lets the server know to expect a federation_init
 
 
 
-## Federation init
+## Initiating a connection (federation#init)
 This message is used to let a server know to initiate a connection with a remote server.
 
 It contains the necessary connection details, and a challenge which the remote party will expect to receive and the server will use to authenticate himself.
@@ -3098,5 +3224,107 @@ It contains the necessary connection details, and a challenge which the remote p
     ]
 }
 
+```
+
+## Establishing or Aborting the connection (federation#result)
+This message is used to know the status of the connection, whether it was a success and a connection between the two LAOs was established or it was a failure.
+<details>
+<summary>
+💡 See an example
+</summary>
+
+```json5
+// ../protocol/examples/messageData/federation_init/federation_init.json
+{
+  "object": "federation",
+  "action": "result",
+  "status": "success",
+  "public_key": "UvViTxoKsB3XVP_ctkmOKCJpMWb7fCzrcb1XDmhNe7Q=",
+  "challenge": {
+    "data": "eyJvYmplY3QiOiJmZWRlcmF0aW9uIiwiYWN0aW9uIjoiY2hhbGxlbmdlIiwidmFsdWUiOiJlYmEzZTI0ZWZjZDBiNTNmYTY5OTA4YmFkNWQxY2I2OTlkNzk4MGQ5MzEwOWRhMGIyYmZkNTAzN2MyYzg5ZWUwIiwidGltZXN0YW1wIjoxNzEzMzg1NTY4fQ==",
+    "sender": "zXgzQaa_NpUe-v0Zk_4q8k184ohQ5nTQhBDKgncHzq4=",
+    "signature": "BILYwYkT5tOBL4rCD7yvhBkhAYqRXOI3ajQ2uJ1gAk-g6nRc38vMMnlHShuNCQ3dQFXYZPn37cCFelhWGjY8Bg==",
+    "message_id": "sD_PdryBuOr14_65h8L-e1lzdQpDWxUAngtu1uwqgEI=",
+    "witness_signatures": []
+  }
+}
+```
+</details>
+
+```json5
+// ../protocol/query/method/message/data/dataFederationResult.json
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataFederationResult.json",
+  "description": "Sent by an server to a remote server, to inform them about the result of the authentication procedure",
+  "type": "object",
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "object": {
+          "const": "federation"
+        },
+        "action": {
+          "const": "result"
+        },
+        "status": {
+          "type": "string",
+          "pattern": "^failure$",
+          "$comment": "status of the authentication attempt"
+        },
+        "reason": {
+          "type": "string",
+          "$comment": "to be used in failures, describing the error that happened"
+        },
+        "challenge": {
+          "$ref": "../message.json",
+          "$comment": "message/message containing a FederationChallenge data"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "object",
+        "action",
+        "status",
+        "reason",
+        "challenge"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "object": {
+          "const": "federation"
+        },
+        "action": {
+          "const": "result"
+        },
+        "status": {
+          "type": "string",
+          "pattern": "^success$",
+          "$comment": "status of the authentication attempt"
+        },
+        "public_key": {
+          "type": "string",
+          "contentEncoding": "base64",
+          "$comment": "public key of the remote organizer"
+        },
+        "challenge": {
+          "$ref": "../message.json",
+          "$comment": "message/message containing a FederationChallenge data"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "object",
+        "action",
+        "status",
+        "public_key",
+        "challenge"
+      ]
+    }
+  ]
+}
 ```
 
