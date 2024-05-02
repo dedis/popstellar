@@ -99,23 +99,25 @@ object ParamsHandler extends AskPatternConstants {
           val messages: Map[Channel, List[Message]] = rumor.messages
 
           // check if rumor already received
-          val readRumorDb = dbActorRef ? ReadRumors(Map(senderPk -> List(rumorId)))
+          val readRumorDb = dbActorRef ? ReadRumors(senderPk -> rumorId)
           Await.result(readRumorDb, duration) match {
             // already present
-            case DbActorReadRumors(foundRumors) =>
-              Right(JsonRpcResponse(
-                RpcValidator.JSON_RPC_VERSION,
-                ErrorObject(-3, s"rumor $rumorId already present"),
-                jsonRpcMessage.id
-              ))
-            // absent
-            case failure =>
-              dbActorRef ? WriteRumor(rumor)
-              Right(JsonRpcResponse(
-                RpcValidator.JSON_RPC_VERSION,
-                ResultObject(0),
-                jsonRpcMessage.id
-              ))
+            case DbActorReadRumors(foundRumor) =>
+              foundRumor match
+                case Some(_) =>
+                  Right(JsonRpcResponse(
+                    RpcValidator.JSON_RPC_VERSION,
+                    ErrorObject(-3, s"rumor $rumorId already present"),
+                    jsonRpcMessage.id
+                  ))
+                // absent
+                case None =>
+                  dbActorRef ? WriteRumor(rumor)
+                  Right(JsonRpcResponse(
+                    RpcValidator.JSON_RPC_VERSION,
+                    ResultObject(0),
+                    jsonRpcMessage.id
+                  ))
           }
         case _ => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, "RumorHandler received a non expected jsonRpcRequest", jsonRpcMessage.id))
       }

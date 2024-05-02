@@ -32,10 +32,12 @@ final case class GossipManager(
   private var activeGossipProtocol: Map[JsonRpcRequest, List[ServerInfos]] = Map.empty
 
   private def isRumorNew(rumor: Rumor): Boolean = {
-    val readRumorDb = dbActorRef ? DbActor.ReadRumors(Map(rumor.senderPk -> List(rumor.rumorId)))
+    val readRumorDb = dbActorRef ? DbActor.ReadRumors(rumor.senderPk -> rumor.rumorId)
     Await.result(readRumorDb, duration) match
-      case DbActorReadRumors(foundRumors) => false
-      case failure                        => true
+      case DbActorReadRumors(foundRumors) =>
+        foundRumors match
+          case Some(_) => false
+          case None    => true
   }
 
   private def getPeersForRumor(jsonRpcRequest: JsonRpcRequest): List[ServerInfos] = {
