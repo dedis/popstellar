@@ -404,17 +404,12 @@ final case class DbActor(
   }
 
   @throws[DbActorNAckException]
-  private def readRumors(desiredRumors: Map[PublicKey, List[Int]]): Map[PublicKey, List[Rumor]] = {
-    desiredRumors.map { case (senderPk, rumorIds) =>
-      val rumorsForSender: List[Rumor] = rumorIds.flatMap { rumorId =>
-        val rumorKey = generateRumorKey(senderPk, rumorId)
-        Try(storage.read(rumorKey)) match {
-          case Success(Some(json)) => Some(Rumor.buildFromJson(json))
-          case Success(None)       => None
-          case Failure(ex)         => throw ex
-        }
-      }
-      senderPk -> rumorsForSender
+  private def readRumor(desiredRumor: (PublicKey, Int)): Option[Rumor] = {
+    val rumorKey = generateRumorKey(desiredRumor._1, desiredRumor._2)
+    Try(storage.read(rumorKey)) match {
+      case Success(Some(json)) => Some(Rumor.buildFromJson(json))
+      case Success(None)       => None
+      case Failure(ex)         => throw ex
     }
   }
 
@@ -618,11 +613,11 @@ final case class DbActor(
         case failure    => sender() ! failure.recover(Status.Failure(_))
       }
 
-    case ReadRumors(desiredRumors) =>
+    case ReadRumors(desiredRumor) =>
       log.info(s"Actor $self (db) received a ReadRumor request")
-      Try(readRumors(desiredRumors)) match {
-        case Success(foundRumors) => sender() ! DbActorReadRumors(foundRumors)
-        case failure              => sender() ! failure.recover(Status.Failure(_))
+      Try(readRumor(desiredRumor)) match {
+        case Success(foundRumor) => sender() ! DbActorReadRumors(foundRumor)
+        case failure             => sender() ! failure.recover(Status.Failure(_))
       }
 
     case ReadRumorData(senderPk) =>
@@ -857,10 +852,10 @@ object DbActor {
   final case class WriteRumor(rumor: Rumor) extends Event
 
   /** Requests the Db for rumors corresponding to keys {server public key:rumor id}
-    * @param desiredRumors
+    * @param desiredRumor
     *   Map of server public keys and list of desired rumor id for each
     */
-  final case class ReadRumors(desiredRumors: Map[PublicKey, List[Int]]) extends Event
+  final case class ReadRumors(desiredRumor: (PublicKey, Int)) extends Event
 
   /** Requests the Db for the list of rumorId received for a senderPk
     * @param senderPk
@@ -951,7 +946,7 @@ object DbActor {
 
   /** Response for a [[ReadRumors]]
     */
-  final case class DbActorReadRumors(foundRumors: Map[PublicKey, List[Rumor]]) extends DbActorMessage
+  final case class DbActorReadRumors(foundRumor: Option[Rumor]) extends DbActorMessage
 
   /** Response for a [[ReadRumorData]]
     */
