@@ -10,6 +10,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.federation.
 import com.github.dedis.popstellar.model.network.method.message.data.federation.FederationInit
 import com.github.dedis.popstellar.model.objects.view.LaoView
 import com.github.dedis.popstellar.repository.LAORepository
+import com.github.dedis.popstellar.repository.LinkedOrganizationsRepository
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager
 import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningViewModel
 import com.github.dedis.popstellar.utility.error.ErrorUtils
@@ -25,11 +26,18 @@ class LinkedOrganizationsViewModel
 constructor(
     application: Application,
     private val laoRepo: LAORepository,
+    private val linkedOrgRepo: LinkedOrganizationsRepository,
     private val networkManager: GlobalNetworkManager,
     private val keyManager: KeyManager,
 ) : AndroidViewModel(application), QRCodeScanningViewModel {
   private lateinit var laoId: String
   override val nbScanned = MutableLiveData<Int>()
+
+  fun setLaoId(laoId: String?) {
+    if (laoId != null) {
+      this.laoId = laoId
+    }
+  }
 
   /**
    * Sends a Challenge Request data
@@ -110,8 +118,8 @@ constructor(
     )
   }
 
-  fun receiveChallenge() {
-    TODO("Not yet implemented")
+  fun doWhenChallengeIsReceived(function: (Challenge) -> Unit) {
+    linkedOrgRepo.setOnChallengeUpdatedCallback(function)
   }
 
   override fun handleData(data: String?) {

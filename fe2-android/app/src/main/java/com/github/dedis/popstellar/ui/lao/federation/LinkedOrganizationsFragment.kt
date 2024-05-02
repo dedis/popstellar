@@ -9,6 +9,7 @@ import com.github.dedis.popstellar.R
 import com.github.dedis.popstellar.databinding.LinkedOrganizationsFragmentBinding
 import com.github.dedis.popstellar.model.Role
 import com.github.dedis.popstellar.ui.lao.LaoActivity
+import com.github.dedis.popstellar.ui.lao.LaoActivity.Companion.obtainLinkedOrganizationsViewModel
 import com.github.dedis.popstellar.ui.lao.LaoActivity.Companion.obtainViewModel
 import com.github.dedis.popstellar.ui.lao.LaoViewModel
 import com.github.dedis.popstellar.ui.lao.event.LaoDetailAnimation.rotateFab
@@ -23,6 +24,7 @@ class LinkedOrganizationsFragment : Fragment() {
 
   private lateinit var binding: LinkedOrganizationsFragmentBinding
   private lateinit var laoViewModel: LaoViewModel
+  private lateinit var linkedOrganizationsViewModel: LinkedOrganizationsViewModel
 
   private var buttonClicked = false
 
@@ -34,6 +36,8 @@ class LinkedOrganizationsFragment : Fragment() {
     // Inflate the layout for this fragment
     binding = LinkedOrganizationsFragmentBinding.inflate(inflater, container, false)
     laoViewModel = obtainViewModel(requireActivity())
+    linkedOrganizationsViewModel =
+        obtainLinkedOrganizationsViewModel(requireActivity(), laoViewModel.laoId)
 
     // Sets the text and the button depending on the user's role
     laoViewModel.role.observe(viewLifecycleOwner) { role: Role ->
