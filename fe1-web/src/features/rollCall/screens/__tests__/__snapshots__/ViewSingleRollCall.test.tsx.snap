@@ -512,6 +512,7 @@ exports[`EventRollCall render correctly no duplicate attendees opened roll calls
                                     },
                                   ]
                                 }
+                                testID="roll_call_pop_token"
                               />
                               <View
                                 accessible={true}
@@ -871,7 +872,7 @@ exports[`EventRollCall render correctly no duplicate attendees opened roll calls
                                             "textAlign": "left",
                                           }
                                         }
-                                        testID="listItemTitle"
+                                        testID="attendee_0"
                                       >
                                         attendee1
                                       </Text>
@@ -1018,7 +1019,7 @@ exports[`EventRollCall render correctly no duplicate attendees opened roll calls
                                             "textAlign": "left",
                                           }
                                         }
-                                        testID="listItemTitle"
+                                        testID="attendee_1"
                                       >
                                         attendee2
                                       </Text>
@@ -1555,6 +1556,7 @@ exports[`EventRollCall render correctly no duplicate attendees re-opened roll ca
                                     },
                                   ]
                                 }
+                                testID="roll_call_pop_token"
                               />
                               <View
                                 accessible={true}
@@ -1914,7 +1916,7 @@ exports[`EventRollCall render correctly no duplicate attendees re-opened roll ca
                                             "textAlign": "left",
                                           }
                                         }
-                                        testID="listItemTitle"
+                                        testID="attendee_0"
                                       >
                                         attendee1
                                       </Text>
@@ -2061,7 +2063,7 @@ exports[`EventRollCall render correctly no duplicate attendees re-opened roll ca
                                             "textAlign": "left",
                                           }
                                         }
-                                        testID="listItemTitle"
+                                        testID="attendee_1"
                                       >
                                         attendee2
                                       </Text>
@@ -2801,7 +2803,7 @@ exports[`EventRollCall render correctly non organizers closed roll calls 1`] = `
                                             "textAlign": "left",
                                           }
                                         }
-                                        testID="listItemTitle"
+                                        testID="attendee_0"
                                       >
                                         attendee1
                                       </Text>
@@ -2948,7 +2950,7 @@ exports[`EventRollCall render correctly non organizers closed roll calls 1`] = `
                                             "textAlign": "left",
                                           }
                                         }
-                                        testID="listItemTitle"
+                                        testID="attendee_1"
                                       >
                                         attendee2
                                       </Text>
@@ -3911,6 +3913,7 @@ exports[`EventRollCall render correctly non organizers opened roll calls 1`] = `
                                     },
                                   ]
                                 }
+                                testID="roll_call_pop_token"
                               />
                               <View
                                 accessible={true}
@@ -4270,7 +4273,7 @@ exports[`EventRollCall render correctly non organizers opened roll calls 1`] = `
                                             "textAlign": "left",
                                           }
                                         }
-                                        testID="listItemTitle"
+                                        testID="attendee_0"
                                       >
                                         attendee1
                                       </Text>
@@ -4417,7 +4420,7 @@ exports[`EventRollCall render correctly non organizers opened roll calls 1`] = `
                                             "textAlign": "left",
                                           }
                                         }
-                                        testID="listItemTitle"
+                                        testID="attendee_1"
                                       >
                                         attendee2
                                       </Text>
@@ -4954,6 +4957,7 @@ exports[`EventRollCall render correctly non organizers re-opened roll calls 1`] 
                                     },
                                   ]
                                 }
+                                testID="roll_call_pop_token"
                               />
                               <View
                                 accessible={true}
@@ -5313,7 +5317,7 @@ exports[`EventRollCall render correctly non organizers re-opened roll calls 1`] 
                                             "textAlign": "left",
                                           }
                                         }
-                                        testID="listItemTitle"
+                                        testID="attendee_0"
                                       >
                                         attendee1
                                       </Text>
@@ -5460,7 +5464,7 @@ exports[`EventRollCall render correctly non organizers re-opened roll calls 1`] 
                                             "textAlign": "left",
                                           }
                                         }
-                                        testID="listItemTitle"
+                                        testID="attendee_1"
                                       >
                                         attendee2
                                       </Text>
@@ -6200,7 +6204,7 @@ exports[`EventRollCall render correctly organizers closed roll calls 1`] = `
                                             "textAlign": "left",
                                           }
                                         }
-                                        testID="listItemTitle"
+                                        testID="attendee_0"
                                       >
                                         attendee1
                                       </Text>
@@ -6347,7 +6351,7 @@ exports[`EventRollCall render correctly organizers closed roll calls 1`] = `
                                             "textAlign": "left",
                                           }
                                         }
-                                        testID="listItemTitle"
+                                        testID="attendee_1"
                                       >
                                         attendee2
                                       </Text>
@@ -7645,7 +7649,7 @@ exports[`EventRollCall render correctly organizers opened roll calls 1`] = `
                                             "textAlign": "left",
                                           }
                                         }
-                                        testID="listItemTitle"
+                                        testID="attendee_0"
                                       >
                                         attendee1
                                       </Text>
@@ -7792,7 +7796,7 @@ exports[`EventRollCall render correctly organizers opened roll calls 1`] = `
                                             "textAlign": "left",
                                           }
                                         }
-                                        testID="listItemTitle"
+                                        testID="attendee_1"
                                       >
                                         attendee2
                                       </Text>
@@ -8656,7 +8660,7 @@ exports[`EventRollCall render correctly organizers re-opened roll calls 1`] = `
                                             "textAlign": "left",
                                           }
                                         }
-                                        testID="listItemTitle"
+                                        testID="attendee_0"
                                       >
                                         attendee1
                                       </Text>
@@ -8803,7 +8807,7 @@ exports[`EventRollCall render correctly organizers re-opened roll calls 1`] = `
                                             "textAlign": "left",
                                           }
                                         }
-                                        testID="listItemTitle"
+                                        testID="attendee_1"
                                       >
                                         attendee2
                                       </Text>

@@ -166,7 +166,7 @@ class MonitorSuite extends TestKit(ActorSystem("MonitorSuiteActorSystem")) with 
     mockConnectionMediator.expectTerminated(monitorRef)
   }
 
-  test("monitor should send ConnectTo() requests to ConnectionMediator upon relevant config file change besides first read") {
+test("monitor should send ConnectTo() requests to ConnectionMediator upon relevant config file change besides first read") {
     val mockConnectionMediator = TestProbe()
 
     // Write to mock server peers config file
