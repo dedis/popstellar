@@ -66,7 +66,7 @@ final case class Monitor(
       val heartbeat: HashMap[Channel, Set[Hash]] =
         Await.ready(askForHeartbeat, duration).value.get match
           case Success(DbActor.DbActorGenerateHeartbeatAck(map)) => map
-          case _ => HashMap.empty[Channel, Set[Hash]] // Handle anything else
+          case _                                                 => HashMap.empty[Channel, Set[Hash]] // Handle anything else
 
       if (heartbeat.nonEmpty)
         connectionMediatorRef ! Heartbeat(heartbeat)
@@ -94,11 +94,11 @@ final case class Monitor(
 
   override def postStop(): Unit = {
     if (fileMonitor != null) {
-      if(!fileMonitor.running.compareAndSet(true, false)) {
+      if (!fileMonitor.running.compareAndSet(true, false)) {
         log.error("Couldn't stop file monitor")
       }
-      }
     }
+  }
 }
 
 object Monitor {
