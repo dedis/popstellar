@@ -1,7 +1,7 @@
 package ch.epfl.pop.decentralized
 
 import akka.NotUsed
-import akka.actor.{Actor, ActorLogging, ActorRef, Props, Timers}
+import akka.actor.{Actor, ActorLogging, ActorRef, PoisonPill, Props, Timers}
 import akka.event.LoggingReceive
 import akka.pattern.{AskableActorRef, ask}
 import akka.stream.scaladsl.Sink
@@ -16,6 +16,7 @@ import ch.epfl.pop.storage.DbActor
 
 import java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY
 import java.nio.file.{Path, WatchService}
+import java.util.concurrent.atomic.AtomicBoolean
 import scala.collection.immutable.HashMap
 import scala.concurrent.Await
 import scala.concurrent.duration.{DurationInt, FiniteDuration}
@@ -36,12 +37,14 @@ final case class Monitor(
   private val periodicHbKey = 0
   private val singleHbKey = 1
 
-  // State of connected servers
+  // State of connected servSers
   private var someServerConnected = false
 
   // Monitor is self-contained,
   // To that end it doesn't know the ref of the connectionMediator
   private var connectionMediatorRef = ActorRef.noSender
+
+  private var fileMonitor: FileMonitor = _
 
   override def receive: Receive = LoggingReceive {
 
@@ -63,7 +66,7 @@ final case class Monitor(
       val heartbeat: HashMap[Channel, Set[Hash]] =
         Await.ready(askForHeartbeat, duration).value.get match
           case Success(DbActor.DbActorGenerateHeartbeatAck(map)) => map
-          case _                                                 => HashMap.empty[Channel, Set[Hash]] // Handle anything else
+          case _ => HashMap.empty[Channel, Set[Hash]] // Handle anything else
 
       if (heartbeat.nonEmpty)
         connectionMediatorRef ! Heartbeat(heartbeat)
@@ -82,10 +85,20 @@ final case class Monitor(
     case ConnectionMediator.Ping() =>
       log.info("Received ConnectionMediator ping")
       connectionMediatorRef = sender()
-      new Thread(new FileMonitor(connectionMediatorRef)).start()
+      fileMonitor = new FileMonitor(this.self)
+      new Thread(fileMonitor).start()
 
-    case _ => /* DO NOTHING */
+    case msg: ConnectionMediator.ConnectTo =>
+      connectionMediatorRef ! msg
   }
+
+  override def postStop(): Unit = {
+    if (fileMonitor != null) {
+      if(!fileMonitor.running.compareAndSet(true, false)) {
+        log.error("Couldn't stop file monitor")
+      }
+      }
+    }
 }
 
 object Monitor {
@@ -118,33 +131,42 @@ private class FileMonitor(mediatorRef: ActorRef) extends Runnable {
   private val watchService: WatchService = directory.getFileSystem.newWatchService()
   directory.register(watchService, ENTRY_MODIFY)
   var sendConnectToMessage = false
+  var running: AtomicBoolean = AtomicBoolean(true)
+  private var serverPeers: List[String] = _
 
   override def run(): Unit = {
+
+    var sendConnectToMessage = false
     // Upon start, we connect to the servers
-    mediatorRef ! ConnectionMediator.ConnectTo(readServerPeers())
-    try {
-      while (!Thread.currentThread().isInterrupted) {
-        // Blocks until an event happen
-        val watchKey = watchService.take()
-
-        // For any event, read the file and send it
-        for (event <- watchKey.pollEvents().asScala.toList) {
-          if (serverPeersListPath.endsWith(event.context().toString)) {
-            sendConnectToMessage = true
-          }
-        }
-
-        if (sendConnectToMessage) {
-          mediatorRef ! ConnectionMediator.ConnectTo(readServerPeers())
-          sendConnectToMessage = false
-        }
-        watchKey.reset()
+    serverPeers = readServerPeers()
+    mediatorRef ! ConnectionMediator.ConnectTo(serverPeers)
+    while (running.get()) {
+      // Blocks until an event happen
+      val watchKey = watchService.take()
+      if (!running.get()) {
+        return
       }
-    } catch {
-      case _: InterruptedException =>
-        println("File watch service interrupted")
-    } finally {
-      watchService.close()
+      sendConnectToMessage = false
+
+      // For any event, read the file and send it
+      for (event <- watchKey.pollEvents().asScala.toList) {
+        if (serverPeersListPath.endsWith(event.context().toString)) {
+          sendConnectToMessage = true
+        }
+      }
+
+      if (running.get() && sendConnectToMessage) {
+        val newPeers = readServerPeers()
+        if (newPeers != serverPeers) {
+          serverPeers = newPeers
+          mediatorRef ! ConnectionMediator.ConnectTo(serverPeers)
+        }
+      }
+      watchKey.reset()
+      if (!watchKey.isValid) {
+        return
+      }
     }
+    watchService.close()
   }
 }
