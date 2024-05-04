@@ -3,14 +3,36 @@ package message
 import (
 	"encoding/base64"
 	"encoding/json"
+	"fmt"
+	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/require"
+	"io"
+	"os"
 	"popstellar/internal/popserver"
+	"popstellar/internal/popserver/utils"
 	jsonrpc "popstellar/message"
 	"popstellar/message/query"
 	"popstellar/message/query/method"
 	"popstellar/message/query/method/message"
+	"popstellar/validation"
 	"testing"
 )
+
+var noLog = zerolog.New(io.Discard)
+
+func TestMain(m *testing.M) {
+	schemaValidator, err := validation.NewSchemaValidator()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "error: %v\n", err)
+		os.Exit(1)
+	}
+
+	utils.InitUtils(&noLog, schemaValidator)
+
+	exitVal := m.Run()
+
+	os.Exit(exitVal)
+}
 
 func Test_handleMessage(t *testing.T) {
 	type input struct {

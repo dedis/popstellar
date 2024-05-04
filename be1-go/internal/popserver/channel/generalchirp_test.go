@@ -6,8 +6,12 @@ import (
 	"github.com/stretchr/testify/require"
 	"os"
 	"path/filepath"
+	"popstellar/crypto"
 	"popstellar/internal/popserver"
-	database2 "popstellar/internal/popserver/database"
+	"popstellar/internal/popserver/config"
+	"popstellar/internal/popserver/database"
+	"popstellar/internal/popserver/state"
+	"popstellar/internal/popserver/types"
 	"popstellar/message/messagedata"
 	"popstellar/message/query/method"
 	"popstellar/message/query/method/message"
@@ -25,7 +29,27 @@ type inputTestHandleChannelGeneralChirp struct {
 }
 
 func Test_handleChannelGeneralChirp(t *testing.T) {
-	mockRepo, err := database2.SetDatabase(t)
+	subs := types.NewSubscribers()
+	queries := types.NewQueries(&noLog)
+	peers := types.NewPeers()
+
+	err := state.SetState(t, subs, peers, queries)
+	require.NoError(t, err)
+
+	organizerBuf, err := base64.URLEncoding.DecodeString(ownerPubBuf64)
+	require.NoError(t, err)
+
+	ownerPublicKey := crypto.Suite.Point()
+	err = ownerPublicKey.UnmarshalBinary(organizerBuf)
+	require.NoError(t, err)
+
+	serverSecretKey := crypto.Suite.Scalar().Pick(crypto.Suite.RandomStream())
+	serverPublicKey := crypto.Suite.Point().Mul(serverSecretKey, nil)
+
+	err = config.SetConfig(t, ownerPublicKey, serverPublicKey, serverSecretKey, "clientAddress", "serverAddress")
+	require.NoError(t, err)
+
+	mockRepo, err := database.SetDatabase(t)
 	require.NoError(t, err)
 
 	inputs := make([]inputTestHandleChannelGeneralChirp, 0)
@@ -87,13 +111,16 @@ func Test_handleChannelGeneralChirp(t *testing.T) {
 
 }
 
-func newSuccessTestHandleChannelGeneralChirp(t *testing.T, filename string, name string, mockRepo *database2.MockRepository) inputTestHandleChannelGeneralChirp {
+func newSuccessTestHandleChannelGeneralChirp(t *testing.T, filename string, name string, mockRepo *database.MockRepository) inputTestHandleChannelGeneralChirp {
 	laoID := messagedata.Hash(name)
 	var channelID = "/root/" + laoID + "/social/chirps"
 
 	file := filepath.Join(messageDataPath, filename)
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
+
+	serverPublicKey, ok := config.GetServerPublicKeyInstance()
+	require.True(t, ok)
 
 	pubKeyBuf, err := serverPublicKey.MarshalBinary()
 	require.NoError(t, err)
@@ -117,6 +144,9 @@ func newSuccessTestHandleChannelGeneralChirp(t *testing.T, filename string, name
 		{Id: "2"},
 		{Id: "3"},
 	}
+
+	subs, ok := state.GetSubsInstance()
+	require.True(t, ok)
 
 	subs.AddChannel(channelID)
 
@@ -142,6 +172,9 @@ func newFailTestHandleChannelGeneralChirp(t *testing.T, filename string, name st
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
 
+	serverPublicKey, ok := config.GetServerPublicKeyInstance()
+	require.True(t, ok)
+
 	pubKeyBuf, err := serverPublicKey.MarshalBinary()
 	require.NoError(t, err)
 	sender64 := base64.URLEncoding.EncodeToString(pubKeyBuf)
@@ -155,6 +188,9 @@ func newFailTestHandleChannelGeneralChirp(t *testing.T, filename string, name st
 		MessageID:         messagedata.Hash(buf64, "h"),
 		WitnessSignatures: []message.WitnessSignature{},
 	}
+
+	subs, ok := state.GetSubsInstance()
+	require.True(t, ok)
 
 	subs.AddChannel(channelID)
 

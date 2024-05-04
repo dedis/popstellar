@@ -3,13 +3,37 @@ package channel
 import (
 	"encoding/base64"
 	"github.com/stretchr/testify/require"
+	"popstellar/crypto"
+	"popstellar/internal/popserver/config"
 	"popstellar/internal/popserver/database"
+	"popstellar/internal/popserver/state"
+	"popstellar/internal/popserver/types"
 	"popstellar/message/messagedata"
 	"testing"
 	"time"
 )
 
 func Test_handleChannelLao(t *testing.T) {
+	subs := types.NewSubscribers()
+	queries := types.NewQueries(&noLog)
+	peers := types.NewPeers()
+
+	err := state.SetState(t, subs, peers, queries)
+	require.NoError(t, err)
+
+	organizerBuf, err := base64.URLEncoding.DecodeString(ownerPubBuf64)
+	require.NoError(t, err)
+
+	ownerPublicKey := crypto.Suite.Point()
+	err = ownerPublicKey.UnmarshalBinary(organizerBuf)
+	require.NoError(t, err)
+
+	serverSecretKey := crypto.Suite.Scalar().Pick(crypto.Suite.RandomStream())
+	serverPublicKey := crypto.Suite.Point().Mul(serverSecretKey, nil)
+
+	err = config.SetConfig(t, ownerPublicKey, serverPublicKey, serverSecretKey, "clientAddress", "serverAddress")
+	require.NoError(t, err)
+
 	var args []input
 	mockRepo, err := database.SetDatabase(t)
 	require.NoError(t, err)

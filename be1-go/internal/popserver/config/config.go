@@ -2,7 +2,9 @@ package config
 
 import (
 	"go.dedis.ch/kyber/v3"
+	"golang.org/x/xerrors"
 	"sync"
+	"testing"
 )
 
 var once sync.Once
@@ -27,6 +29,23 @@ func InitConfig(ownerPubKey, serverPubKey kyber.Point, serverSecretKey kyber.Sca
 			serverServerAddress: serverServerAddress,
 		}
 	})
+}
+
+func SetConfig(t *testing.T, ownerPubKey, serverPubKey kyber.Point, serverSecretKey kyber.Scalar,
+	clientServerAddress, serverServerAddress string) error {
+	if t == nil {
+		return xerrors.Errorf("only for tests")
+	}
+
+	instance = &config{
+		ownerPubKey:         ownerPubKey,
+		serverPubKey:        serverPubKey,
+		serverSecretKey:     serverSecretKey,
+		clientServerAddress: clientServerAddress,
+		serverServerAddress: serverServerAddress,
+	}
+
+	return nil
 }
 
 func GetOwnerPublicKeyInstance() (kyber.Point, bool) {

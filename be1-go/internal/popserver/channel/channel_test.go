@@ -6,18 +6,13 @@ import (
 	"fmt"
 	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/require"
-	"go.dedis.ch/kyber/v3"
 	"go.dedis.ch/kyber/v3/sign/schnorr"
 	"golang.org/x/xerrors"
 	"io"
 	"os"
 	"popstellar/crypto"
-	"popstellar/hub/standard_hub/hub_state"
 	"popstellar/internal/popserver"
-	"popstellar/internal/popserver/config"
 	"popstellar/internal/popserver/database"
-	"popstellar/internal/popserver/state"
-	"popstellar/internal/popserver/types"
 	"popstellar/internal/popserver/utils"
 	"popstellar/message/messagedata"
 	"popstellar/message/query/method/message"
@@ -29,47 +24,16 @@ import (
 // the public key used in every lao_create json files in the test_data/root folder
 const ownerPubBuf64 = "3yPmdBu8DM7jT30IKqkPjuFFIHnubO0z4E0dV7dR4sY="
 
-var subs *types.Subscribers
-var queries hub_state.Queries
-var peers hub_state.Peers
-
-var ownerPublicKey kyber.Point
-var serverPublicKey kyber.Point
-var serverSecretKey kyber.Scalar
+var noLog = zerolog.New(io.Discard)
 
 func TestMain(m *testing.M) {
-
-	subs = types.NewSubscribers()
-	queries = hub_state.NewQueries(zerolog.New(io.Discard))
-	peers = hub_state.NewPeers()
-
-	state.InitState(subs, &peers, &queries)
-
-	log := zerolog.New(io.Discard)
 	schemaValidator, err := validation.NewSchemaValidator()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "error: %v\n", err)
 		os.Exit(1)
 	}
 
-	utils.InitUtils(&log, schemaValidator)
-	organizerBuf, err := base64.URLEncoding.DecodeString(ownerPubBuf64)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "error: %v\n", err)
-		os.Exit(1)
-	}
-
-	ownerPublicKey = crypto.Suite.Point()
-	err = ownerPublicKey.UnmarshalBinary(organizerBuf)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "error: %v\n", err)
-		os.Exit(1)
-	}
-
-	serverSecretKey = crypto.Suite.Scalar().Pick(crypto.Suite.RandomStream())
-	serverPublicKey = crypto.Suite.Point().Mul(serverSecretKey, nil)
-
-	config.InitConfig(ownerPublicKey, serverPublicKey, serverSecretKey, "clientAddress", "serverAddress")
+	utils.InitUtils(&noLog, schemaValidator)
 
 	exitVal := m.Run()
 

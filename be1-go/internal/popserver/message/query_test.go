@@ -3,62 +3,29 @@ package message
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/require"
-	"go.dedis.ch/kyber/v3"
 	"golang.org/x/xerrors"
-	"io"
-	"os"
 	"popstellar/crypto"
-	"popstellar/hub/standard_hub/hub_state"
 	"popstellar/internal/popserver"
 	"popstellar/internal/popserver/config"
 	"popstellar/internal/popserver/database"
 	"popstellar/internal/popserver/state"
 	"popstellar/internal/popserver/types"
-	"popstellar/internal/popserver/utils"
 	jsonrpc "popstellar/message"
 	"popstellar/message/query"
 	"popstellar/message/query/method"
 	"popstellar/message/query/method/message"
-	"popstellar/validation"
 	"testing"
 )
 
-var subs *types.Subscribers
-var queries hub_state.Queries
-var peers hub_state.Peers
-
-var serverPublicKey kyber.Point
-var serverSecretKey kyber.Scalar
-
-func TestMain(m *testing.M) {
-	subs = types.NewSubscribers()
-	queries = hub_state.NewQueries(zerolog.New(io.Discard))
-	peers = hub_state.NewPeers()
-
-	state.InitState(subs, &peers, &queries)
-
-	log := zerolog.New(io.Discard)
-	schemaValidator, err := validation.NewSchemaValidator()
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "error: %v\n", err)
-		os.Exit(1)
-	}
-
-	utils.InitUtils(&log, schemaValidator)
-
-	serverSecretKey = crypto.Suite.Scalar().Pick(crypto.Suite.RandomStream())
-	serverPublicKey = crypto.Suite.Point().Mul(serverSecretKey, nil)
-
-	config.InitConfig(nil, serverPublicKey, serverSecretKey, "clientAddress", "serverAddress")
-
-	exitVal := m.Run()
-
-	os.Exit(exitVal)
-}
-
 func Test_handleCatchUp(t *testing.T) {
+	subs := types.NewSubscribers()
+	queries := types.NewQueries(&noLog)
+	peers := types.NewPeers()
+
+	err := state.SetState(t, subs, peers, queries)
+	require.NoError(t, err)
+
 	mockRepo, err := database.SetDatabase(t)
 	require.NoError(t, err)
 
@@ -159,6 +126,13 @@ func Test_handleCatchUp(t *testing.T) {
 }
 
 func Test_handleGetMessagesByID(t *testing.T) {
+	subs := types.NewSubscribers()
+	queries := types.NewQueries(&noLog)
+	peers := types.NewPeers()
+
+	err := state.SetState(t, subs, peers, queries)
+	require.NoError(t, err)
+
 	mockRepository, err := database.SetDatabase(t)
 	require.NoError(t, err)
 
@@ -255,6 +229,19 @@ func Test_handleGetMessagesByID(t *testing.T) {
 }
 
 func Test_handleGreetServer(t *testing.T) {
+	subs := types.NewSubscribers()
+	queries := types.NewQueries(&noLog)
+	peers := types.NewPeers()
+
+	err := state.SetState(t, subs, peers, queries)
+	require.NoError(t, err)
+
+	serverSecretKey := crypto.Suite.Scalar().Pick(crypto.Suite.RandomStream())
+	serverPublicKey := crypto.Suite.Point().Mul(serverSecretKey, nil)
+
+	err = config.SetConfig(t, nil, serverPublicKey, serverSecretKey, "clientAddress", "serverAddress")
+	require.NoError(t, err)
+
 	type input struct {
 		name        string
 		message     []byte
@@ -385,6 +372,13 @@ func Test_handleGreetServer(t *testing.T) {
 }
 
 func Test_handleHeartbeat(t *testing.T) {
+	subs := types.NewSubscribers()
+	queries := types.NewQueries(&noLog)
+	peers := types.NewPeers()
+
+	err := state.SetState(t, subs, peers, queries)
+	require.NoError(t, err)
+
 	mockRepository, err := database.SetDatabase(t)
 	require.NoError(t, err)
 
@@ -534,6 +528,13 @@ func Test_handleHeartbeat(t *testing.T) {
 }
 
 func Test_handleSubscribe(t *testing.T) {
+	subs := types.NewSubscribers()
+	queries := types.NewQueries(&noLog)
+	peers := types.NewPeers()
+
+	err := state.SetState(t, subs, peers, queries)
+	require.NoError(t, err)
+
 	type input struct {
 		name        string
 		socket      *popserver.FakeSocket
@@ -647,6 +648,13 @@ func Test_handleSubscribe(t *testing.T) {
 }
 
 func Test_handleUnsubscribe(t *testing.T) {
+	subs := types.NewSubscribers()
+	queries := types.NewQueries(&noLog)
+	peers := types.NewPeers()
+
+	err := state.SetState(t, subs, peers, queries)
+	require.NoError(t, err)
+
 	type input struct {
 		name        string
 		socket      *popserver.FakeSocket
