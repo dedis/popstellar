@@ -3,6 +3,7 @@ package channel
 import (
 	"encoding/base64"
 	"encoding/json"
+	"fmt"
 	"popstellar/internal/popserver/config"
 	"popstellar/internal/popserver/database"
 	"popstellar/message/answer"
@@ -31,6 +32,18 @@ func handleChannelChirp(channelID string, msg message.Message) *answer.Error {
 		return errAnswer
 	}
 
+	generalMsg, errAnswer := createChirpNotify(channelID, msg)
+	if errAnswer != nil {
+		errAnswer = errAnswer.Wrap("handleChannelChirp")
+		return errAnswer
+	}
+
+	generalChirpsChannelID, errAnswer := getGeneralChirpsChannel(channelID)
+	if errAnswer != nil {
+		errAnswer = errAnswer.Wrap("handleChannelChirp")
+		return errAnswer
+	}
+
 	db, ok := database.GetChirpRepositoryInstance()
 	if !ok {
 		errAnswer := answer.NewInternalServerError("failed to get database").Wrap("handleChannelChirp")
@@ -44,15 +57,22 @@ func handleChannelChirp(channelID string, msg message.Message) *answer.Error {
 		return errAnswer
 	}
 
-	errAnswer = copyToGeneral(channelID, msg)
-	if errAnswer != nil {
-		errAnswer = errAnswer.Wrap("handleChannelGeneralChirp")
+	err = db.StoreMessage(generalChirpsChannelID, generalMsg)
+	if err != nil {
+		errAnswer = answer.NewInternalServerError("failed to store message: %v", err)
+		errAnswer = errAnswer.Wrap("handleChannelChirp")
 		return errAnswer
 	}
 
 	errAnswer = broadcastToAllClients(msg, channelID)
 	if errAnswer != nil {
-		errAnswer = errAnswer.Wrap("handleChannelGeneralChirp")
+		errAnswer = errAnswer.Wrap("handleChannelChirp")
+		return errAnswer
+	}
+
+	errAnswer = broadcastToAllClients(generalMsg, generalChirpsChannelID)
+	if errAnswer != nil {
+		errAnswer = errAnswer.Wrap("handleChannelChirp")
 		return errAnswer
 	}
 
@@ -128,27 +148,27 @@ func verifyChirpMessage(channelID string, msg message.Message, chirpMsg messaged
 	return nil
 }
 
-func copyToGeneral(channelID string, msg message.Message) *answer.Error {
+func createChirpNotify(channelID string, msg message.Message) (message.Message, *answer.Error) {
 	jsonData, err := base64.URLEncoding.DecodeString(msg.Data)
 	if err != nil {
 		errAnswer := answer.NewInvalidMessageFieldError("failed to decode the data: %v", err)
-		errAnswer = errAnswer.Wrap("copyToGeneral")
-		return errAnswer
+		errAnswer = errAnswer.Wrap("createChirpNotify")
+		return message.Message{}, errAnswer
 	}
 
 	object, action, err := messagedata.GetObjectAndAction(jsonData)
 	action = "notify_" + action
 	if err != nil {
 		errAnswer := answer.NewInvalidMessageFieldError("failed to read the data: %v", err)
-		errAnswer = errAnswer.Wrap("copyToGeneral")
-		return errAnswer
+		errAnswer = errAnswer.Wrap("createChirpNotify")
+		return message.Message{}, errAnswer
 	}
 
 	timestamp, err := messagedata.GetTime(jsonData)
 	if err != nil {
 		errAnswer := answer.NewInvalidMessageFieldError("failed to read the data: %v", err)
-		errAnswer = errAnswer.Wrap("copyToGeneral")
-		return errAnswer
+		errAnswer = errAnswer.Wrap("createChirpNotify")
+		return message.Message{}, errAnswer
 	}
 
 	newData := messagedata.ChirpBroadcast{
@@ -162,30 +182,30 @@ func copyToGeneral(channelID string, msg message.Message) *answer.Error {
 	dataBuf, err := json.Marshal(newData)
 	if err != nil {
 		errAnswer := answer.NewInvalidMessageFieldError("failed to marshal: %v", err)
-		errAnswer = errAnswer.Wrap("copyToGeneral")
-		return errAnswer
+		errAnswer = errAnswer.Wrap("createChirpNotify")
+		return message.Message{}, errAnswer
 	}
 
 	data64 := base64.URLEncoding.EncodeToString(dataBuf)
 
 	serverPublicKey, ok := config.GetServerPublicKeyInstance()
 	if !ok {
-		errAnswer := answer.NewInternalServerError("failed to get config").Wrap("copyToGeneral")
-		return errAnswer
+		errAnswer := answer.NewInternalServerError("failed to get config").Wrap("createChirpNotify")
+		return message.Message{}, errAnswer
 	}
 
 	pkBuf, err := serverPublicKey.MarshalBinary()
 	if err != nil {
 		errAnswer := answer.NewInternalServerError("failed to unmarshall server public key", err)
-		errAnswer = errAnswer.Wrap("copyToGeneral")
-		return errAnswer
+		errAnswer = errAnswer.Wrap("createChirpNotify")
+		return message.Message{}, errAnswer
 	}
 	pk64 := base64.URLEncoding.EncodeToString(pkBuf)
 
 	signatureBuf, errAnswer := Sign(dataBuf)
 	if errAnswer != nil {
-		errAnswer := errAnswer.Wrap("copyToGeneral")
-		return errAnswer
+		errAnswer := errAnswer.Wrap("createChirpNotify")
+		return message.Message{}, errAnswer
 	}
 	signature64 := base64.URLEncoding.EncodeToString(signatureBuf)
 
@@ -199,14 +219,23 @@ func copyToGeneral(channelID string, msg message.Message) *answer.Error {
 		WitnessSignatures: make([]message.WitnessSignature, 0),
 	}
 
-	splitChannelID := strings.Split(channelID, "/")
-	generalChirpsChannelID := "/root" + splitChannelID[1] + "/social/chirps"
+	return newMsg, nil
+}
 
-	errAnswer = HandleChannel(nil, generalChirpsChannelID, newMsg)
-	if errAnswer != nil {
-		errAnswer = errAnswer.Wrap("copyToGeneral")
-		return errAnswer
+func getGeneralChirpsChannel(channelID string) (string, *answer.Error) {
+	channelID, _ = strings.CutPrefix(channelID, "/")
+	splitChannelID := strings.Split(channelID, "/")
+
+	if len(splitChannelID) != 4 || splitChannelID[0] != "root" || splitChannelID[2] != "social" {
+		fmt.Println(len(splitChannelID) != 4)
+		fmt.Println(len(splitChannelID))
+		fmt.Println(splitChannelID[0] != "root")
+		fmt.Println(splitChannelID[2] != "social")
+		fmt.Println(splitChannelID)
+		return "", answer.NewInvalidMessageFieldError("invalid channel").Wrap("getGeneralChirpsChannel")
 	}
 
-	return nil
+	generalChirpsChannelID := "/root/" + splitChannelID[1] + "/social/chirps"
+
+	return generalChirpsChannelID, nil
 }

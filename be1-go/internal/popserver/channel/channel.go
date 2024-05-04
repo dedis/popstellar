@@ -83,8 +83,6 @@ func HandleChannel(socket socket.Socket, channelID string, msg message.Message) 
 		errAnswer = handleChannelLao(channelID, msg)
 	case channelElection:
 		errAnswer = handleChannelElection(channelID, msg)
-	case channelGeneralChirp:
-		errAnswer = handleChannelGeneralChirp(channelID, msg)
 	case ChannelChirp:
 		errAnswer = handleChannelChirp(channelID, msg)
 	case ChannelReaction:
@@ -206,14 +204,13 @@ func broadcastToAllClients(msg message.Message, channel string) *answer.Error {
 }
 
 const (
-	channelRoot         = "root"
-	channelLao          = "lao"
-	channelElection     = "election"
-	channelGeneralChirp = "generalchirp"
-	ChannelChirp        = "chirp"
-	ChannelReaction     = "reaction"
-	ChannelConsensus    = "consensus"
-	channelPopCha       = "popcha"
-	ChannelCoin         = "coin"
-	ChannelAuth         = "auth"
+	channelRoot      = "root"
+	channelLao       = "lao"
+	channelElection  = "election"
+	ChannelChirp     = "chirp"
+	ChannelReaction  = "reaction"
+	ChannelConsensus = "consensus"
+	channelPopCha    = "popcha"
+	ChannelCoin      = "coin"
+	ChannelAuth      = "auth"
 )
