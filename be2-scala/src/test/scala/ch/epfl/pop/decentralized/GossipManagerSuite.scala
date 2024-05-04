@@ -31,7 +31,7 @@ class GossipManagerSuite extends TestKit(ActorSystem("GossipManagerSuiteActorSys
   private var securityModuleActorRef: AskableActorRef = _
   private var monitorRef: ActorRef = _
   private var connectionMediatorRef: AskableActorRef = _
-  
+
   override def beforeEach(): Unit = {
     inMemoryStorage = InMemoryStorage()
     messageRegistry = MessageRegistry()
