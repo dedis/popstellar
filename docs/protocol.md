@@ -1149,7 +1149,7 @@ Response (in case of success)
                     "type": "integer"
                 },
                 "before_message_id": {
-                    "description": "[Base64String] final message id on the client : HashLen(data, signature)",
+                    "description": "[Base64String] id of a message where the client requests messages that precede the specified message : HashLen(data, signature)",
                     "type": "string",
                     "contentEncoding": "base64",
                     "$comment": "Note: the string is encoded in Base64"
