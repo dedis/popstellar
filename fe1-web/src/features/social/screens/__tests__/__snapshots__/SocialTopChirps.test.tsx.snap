@@ -333,6 +333,7 @@ exports[`SocialTopChirps renders correctly 1`] = `
                             "flex": 1,
                           }
                         }
+                        testID="social_top_chirps_page"
                       >
                         <RCTScrollView
                           collapsable={false}
