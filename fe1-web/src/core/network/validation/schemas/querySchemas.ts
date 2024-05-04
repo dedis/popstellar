@@ -21,7 +21,7 @@ const querySchemas = [
   greet_server,
   query,
   rumor,
-  paged_catchup
+  paged_catchup,
 ];
 
 export default querySchemas;
