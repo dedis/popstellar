@@ -6,6 +6,7 @@ import (
 	"popstellar/crypto"
 	"popstellar/internal/popserver/config"
 	"popstellar/internal/popserver/database"
+	"popstellar/internal/popserver/generator"
 	"popstellar/internal/popserver/state"
 	"popstellar/internal/popserver/types"
 	"testing"
@@ -49,7 +50,7 @@ func Test_handleChannelChirp(t *testing.T) {
 	args = append(args, input{
 		name:     "Test 1",
 		channel:  channelID,
-		msg:      NewChirpAddMsg(t, channelID, sender, nil, time.Now().Unix(), mockRepo, false),
+		msg:      generator.NewChirpAddMsg(t, channelID, sender, nil, time.Now().Unix(), mockRepo, false),
 		isError:  false,
 		contains: "",
 	})
@@ -61,7 +62,7 @@ func Test_handleChannelChirp(t *testing.T) {
 	args = append(args, input{
 		name:     "Test 2",
 		channel:  channelID,
-		msg:      NewChirpAddMsg(t, channelID, wrongSender, nil, time.Now().Unix(), mockRepo, true),
+		msg:      generator.NewChirpAddMsg(t, channelID, wrongSender, nil, time.Now().Unix(), mockRepo, true),
 		isError:  true,
 		contains: "only the owner of the channel can post chirps",
 	})
@@ -73,7 +74,7 @@ func Test_handleChannelChirp(t *testing.T) {
 	args = append(args, input{
 		name:     "Test 3",
 		channel:  channelID,
-		msg:      NewChirpAddMsg(t, channelID, sender, nil, -1, mockRepo, true),
+		msg:      generator.NewChirpAddMsg(t, channelID, sender, nil, -1, mockRepo, true),
 		isError:  true,
 		contains: "invalid message field",
 	})
@@ -85,7 +86,7 @@ func Test_handleChannelChirp(t *testing.T) {
 	args = append(args, input{
 		name:     "Test 4",
 		channel:  channelID,
-		msg:      NewChirpDeleteMsg(t, channelID, sender, nil, chirpID, time.Now().Unix(), mockRepo, false),
+		msg:      generator.NewChirpDeleteMsg(t, channelID, sender, nil, chirpID, time.Now().Unix(), mockRepo, false),
 		isError:  false,
 		contains: "",
 	})
@@ -97,7 +98,7 @@ func Test_handleChannelChirp(t *testing.T) {
 	args = append(args, input{
 		name:     "Test 5",
 		channel:  channelID,
-		msg:      NewChirpDeleteMsg(t, channelID, wrongSender, nil, chirpID, time.Now().Unix(), mockRepo, true),
+		msg:      generator.NewChirpDeleteMsg(t, channelID, wrongSender, nil, chirpID, time.Now().Unix(), mockRepo, true),
 		isError:  true,
 		contains: "only the owner of the channel can post chirps",
 	})
@@ -109,7 +110,7 @@ func Test_handleChannelChirp(t *testing.T) {
 	args = append(args, input{
 		name:     "Test 6",
 		channel:  channelID,
-		msg:      NewChirpDeleteMsg(t, channelID, sender, nil, chirpID, -1, mockRepo, true),
+		msg:      generator.NewChirpDeleteMsg(t, channelID, sender, nil, chirpID, -1, mockRepo, true),
 		isError:  true,
 		contains: "invalid message field",
 	})

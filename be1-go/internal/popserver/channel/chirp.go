@@ -3,7 +3,6 @@ package channel
 import (
 	"encoding/base64"
 	"encoding/json"
-	"fmt"
 	"popstellar/internal/popserver/config"
 	"popstellar/internal/popserver/database"
 	"popstellar/message/answer"
@@ -227,11 +226,6 @@ func getGeneralChirpsChannel(channelID string) (string, *answer.Error) {
 	splitChannelID := strings.Split(channelID, "/")
 
 	if len(splitChannelID) != 4 || splitChannelID[0] != "root" || splitChannelID[2] != "social" {
-		fmt.Println(len(splitChannelID) != 4)
-		fmt.Println(len(splitChannelID))
-		fmt.Println(splitChannelID[0] != "root")
-		fmt.Println(splitChannelID[2] != "social")
-		fmt.Println(splitChannelID)
 		return "", answer.NewInvalidMessageFieldError("invalid channel").Wrap("getGeneralChirpsChannel")
 	}
 

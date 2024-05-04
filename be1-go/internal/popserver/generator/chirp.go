@@ -1,17 +1,16 @@
-package channel
+package generator
 
 import (
-	"encoding/base64"
 	"encoding/json"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 	"go.dedis.ch/kyber/v3"
-	"go.dedis.ch/kyber/v3/sign/schnorr"
-	"popstellar/crypto"
+	"golang.org/x/xerrors"
 	"popstellar/internal/popserver/database"
 	"popstellar/internal/popserver/state"
 	"popstellar/message/messagedata"
 	"popstellar/message/query/method/message"
+	"strings"
 	"testing"
 )
 
@@ -45,8 +44,8 @@ func NewChirpAddMsg(t *testing.T, channelID string, sender string, senderPK kybe
 
 	mockRepo.On("StoreMessage", channelID, msg).Return(nil)
 
-	chirpNotifyChannelID, errAnswer := getGeneralChirpsChannel(channelID)
-	require.Nil(t, errAnswer)
+	chirpNotifyChannelID, err := getGeneralChirpsChannel(channelID)
+	require.NoError(t, err)
 
 	subs.AddChannel(chirpNotifyChannelID)
 
@@ -86,8 +85,8 @@ func NewChirpDeleteMsg(t *testing.T, channelID string, sender string, senderPK k
 	mockRepo.On("HasMessage", chirpID).Return(true, nil)
 	mockRepo.On("StoreMessage", channelID, msg).Return(nil)
 
-	chirpNotifyChannelID, errAnswer := getGeneralChirpsChannel(channelID)
-	require.Nil(t, errAnswer)
+	chirpNotifyChannelID, err := getGeneralChirpsChannel(channelID)
+	require.NoError(t, err)
 
 	subs.AddChannel(chirpNotifyChannelID)
 
@@ -96,25 +95,15 @@ func NewChirpDeleteMsg(t *testing.T, channelID string, sender string, senderPK k
 	return msg
 }
 
-func newMessage(t *testing.T, sender string, senderPK kyber.Scalar, data []byte) message.Message {
-	data64 := base64.URLEncoding.EncodeToString(data)
+func getGeneralChirpsChannel(channelID string) (string, error) {
+	channelID, _ = strings.CutPrefix(channelID, "/")
+	splitChannelID := strings.Split(channelID, "/")
 
-	signature64 := "Signature"
-
-	if senderPK != nil {
-		signatureBuf, err := schnorr.Sign(crypto.Suite, senderPK, data)
-		require.NoError(t, err)
-
-		signature64 = base64.URLEncoding.EncodeToString(signatureBuf)
+	if len(splitChannelID) != 4 || splitChannelID[0] != "root" || splitChannelID[2] != "social" {
+		return "", xerrors.Errorf("invalid channel")
 	}
 
-	messageID64 := messagedata.Hash(data64, signature64)
+	generalChirpsChannelID := "/root/" + splitChannelID[1] + "/social/chirps"
 
-	return message.Message{
-		Data:              data64,
-		Sender:            sender,
-		Signature:         signature64,
-		MessageID:         messageID64,
-		WitnessSignatures: nil,
-	}
+	return generalChirpsChannelID, nil
 }
