@@ -18,18 +18,30 @@ import ch.epfl.pop.model.objects.{Base64Data, PublicKey}
 import ch.epfl.pop.pubsub.ClientActor.ClientAnswer
 import ch.epfl.pop.pubsub.graph.GraphMessage
 import ch.epfl.pop.pubsub.graph.validators.RpcValidator
+import org.scalatest.BeforeAndAfterEach
 
 import scala.concurrent.Await
 
-class GossipManagerSuite extends TestKit(ActorSystem("GossipManagerSuiteActorSystem")) with AnyFunSuiteLike with AskPatternConstants with Matchers {
+class GossipManagerSuite extends TestKit(ActorSystem("GossipManagerSuiteActorSystem")) with AnyFunSuiteLike with AskPatternConstants with Matchers with BeforeAndAfterEach {
 
-  val inMemoryStorage: InMemoryStorage = InMemoryStorage()
-  val messageRegistry: MessageRegistry = MessageRegistry()
-  val pubSubMediatorRef: ActorRef = system.actorOf(PubSubMediator.props, "PubSubMediator")
-  val dbActorRef: AskableActorRef = system.actorOf(Props(DbActor(pubSubMediatorRef, messageRegistry, inMemoryStorage)), "DbActor")
-  val securityModuleActorRef: AskableActorRef = system.actorOf(Props(SecurityModuleActor(RuntimeEnvironment.securityPath)))
-  val monitorRef: ActorRef = system.actorOf(Monitor.props(dbActorRef))
-  val connectionMediatorRef: AskableActorRef = system.actorOf(ConnectionMediator.props(monitorRef, pubSubMediatorRef, dbActorRef, securityModuleActorRef, messageRegistry))
+  private var inMemoryStorage: InMemoryStorage = _
+  private var messageRegistry: MessageRegistry = _
+  private var pubSubMediatorRef: ActorRef = _
+  private var dbActorRef: AskableActorRef = _
+  private var securityModuleActorRef: AskableActorRef = _
+  private var monitorRef: ActorRef = _
+  private var connectionMediatorRef: AskableActorRef = _
+  
+  override def beforeEach(): Unit = {
+    inMemoryStorage = InMemoryStorage()
+    messageRegistry = MessageRegistry()
+    pubSubMediatorRef = system.actorOf(PubSubMediator.props)
+    dbActorRef = system.actorOf(Props(DbActor(pubSubMediatorRef, messageRegistry, inMemoryStorage)))
+    securityModuleActorRef = system.actorOf(Props(SecurityModuleActor(RuntimeEnvironment.securityPath)))
+    monitorRef = system.actorOf(Monitor.props(dbActorRef))
+    connectionMediatorRef = system.actorOf(ConnectionMediator.props(monitorRef, pubSubMediatorRef, dbActorRef, securityModuleActorRef, messageRegistry))
+
+  }
 
   val pathCorrectRumor: String = "src/test/scala/util/examples/json/rumor/rumor.json"
 
