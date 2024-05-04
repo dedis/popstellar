@@ -10,7 +10,7 @@ import ch.epfl.pop.decentralized.{GossipManager, Monitor}
 import ch.epfl.pop.model.network.MethodType.*
 import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse, MethodType}
 import ch.epfl.pop.pubsub.graph.*
-import ch.epfl.pop.pubsub.graph.handlers.{GetMessagesByIdResponseHandler, ParamsHandler, ParamsWithMapHandler, ParamsWithMessageHandler}
+import ch.epfl.pop.pubsub.graph.handlers.{ProcessMessagesHandler, ParamsHandler, ParamsWithMapHandler, ParamsWithMessageHandler}
 
 object PublishSubscribe {
 
@@ -73,7 +73,7 @@ object PublishSubscribe {
         val requestPartition = builder.add(validateRequests(clientActorRef, messageRegistry))
 
         val gossipMonitorPartition = builder.add(GossipManager.monitorResponse(gossipManager))
-        val getMsgByIdResponsePartition = builder.add(GetMessagesByIdResponseHandler.responseHandler(messageRegistry))
+        val getMsgByIdResponsePartition = builder.add(ProcessMessagesHandler.getMsgByIdResponseHandler(messageRegistry))
 
         // ResponseHandler messages do not go in the merger
         val merger = builder.add(Merge[GraphMessage](totalPorts - 1))
@@ -103,7 +103,7 @@ object PublishSubscribe {
       }
   })
 
-  def validateRequests(clientActorRef: ActorRef, messageRegistry: MessageRegistry): Flow[GraphMessage, GraphMessage, NotUsed] =
+  def validateRequests(clientActorRef: ActorRef, messageRegistry: MessageRegistry)(implicit system: ActorSystem): Flow[GraphMessage, GraphMessage, NotUsed] =
     Flow.fromGraph(GraphDSL.create() {
       implicit builder: GraphDSL.Builder[NotUsed] =>
         {
@@ -152,7 +152,7 @@ object PublishSubscribe {
           val heartbeatPartition = builder.add(ParamsWithMapHandler.heartbeatHandler(dbActorRef))
           val getMessagesByIdPartition = builder.add(ParamsWithMapHandler.getMessagesByIdHandler(dbActorRef))
           val greetServerPartition = builder.add(ParamsHandler.greetServerHandler(clientActorRef))
-          val rumorPartition = builder.add(ParamsHandler.rumorHandler(dbActorRef, connectionMediatorRef))
+          val rumorPartition = builder.add(ParamsHandler.rumorHandler(dbActorRef, messageRegistry))
           val gossipManagerPartition = builder.add(GossipManager.gossipHandler(gossipManager))
 
           val merger = builder.add(Merge[GraphMessage](totalPorts))

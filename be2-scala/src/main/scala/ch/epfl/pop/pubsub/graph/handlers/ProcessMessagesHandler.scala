@@ -3,7 +3,7 @@ package ch.epfl.pop.pubsub.graph.handlers
 import akka.NotUsed
 import akka.actor.{ActorRef, ActorSystem}
 import akka.stream.scaladsl.{Flow, Sink, Source}
-import ch.epfl.pop.model.network.method.Publish
+import ch.epfl.pop.model.network.method.{Publish, Rumor}
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse, MethodType, ResultObject}
 import ch.epfl.pop.model.objects.Channel
@@ -17,7 +17,7 @@ import scala.concurrent.Await
 
 //This object's job is to handle responses it receives from other servers after sending a heartbeat.
 // When receiving the missing messages, the server's job is to write them on the database.
-object GetMessagesByIdResponseHandler extends AskPatternConstants {
+object ProcessMessagesHandler extends AskPatternConstants {
 
   private val MAX_RETRY_PER_MESSAGE = 10
   private val SUCCESS = 0
@@ -31,13 +31,11 @@ object GetMessagesByIdResponseHandler extends AskPatternConstants {
     * @return
     *   Left if some messages couldn't be validated after MAX_RETRY_PER_MESSAGE times, Right for success
     */
-  def responseHandler(messageRegistry: MessageRegistry)(implicit system: ActorSystem): Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map {
+  def getMsgByIdResponseHandler(messageRegistry: MessageRegistry)(implicit system: ActorSystem): Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map {
     case Right(JsonRpcResponse(_, Some(resultObject), None, _)) =>
       resultObject.resultMap match {
         case Some(resultMap) =>
-          val receivedResponse = wrapMsgInPublish(resultMap, MAX_RETRY_PER_MESSAGE)
-          val validator = PublishSubscribe.validateRequests(ActorRef.noSender, messageRegistry)
-          val success: Boolean = passThroughPipeline(receivedResponse, validator)
+          val success: Boolean = processMsgMap(resultMap, messageRegistry)
           if (success) {
             Right(JsonRpcResponse(RpcValidator.JSON_RPC_VERSION, new ResultObject(SUCCESS), None))
           } else {
@@ -49,6 +47,17 @@ object GetMessagesByIdResponseHandler extends AskPatternConstants {
 
     // Will end up in a Sink.ignore, safe to let through
     case value @ _ => value
+  }
+
+  def rumorHandler(messageRegistry: MessageRegistry, rumor: Rumor)(implicit system: ActorSystem): Boolean = {
+    val msgMap = rumor.messages.map((k, v) => (k, v.toSet))
+    processMsgMap(msgMap, messageRegistry)
+  }
+
+  private def processMsgMap(msgMap: Map[Channel, Set[Message]], messageRegistry: MessageRegistry)(implicit system: ActorSystem): Boolean = {
+    val receivedResponse = wrapMsgInPublish(msgMap, MAX_RETRY_PER_MESSAGE)
+    val validator = PublishSubscribe.validateRequests(ActorRef.noSender, messageRegistry)
+    passThroughPipeline(receivedResponse, validator)
   }
 
   /** Will try to digest each GraphMessage until their retry-counter reaches 0 or they all get validated

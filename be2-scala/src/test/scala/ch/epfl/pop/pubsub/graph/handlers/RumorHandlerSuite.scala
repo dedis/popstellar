@@ -44,7 +44,7 @@ class RumorHandlerSuite extends TestKit(ActorSystem("RumorActorSuiteActorSystem"
     monitorRef = system.actorOf(Monitor.props(dbActorRef))
     connectionMediatorRef = system.actorOf(ConnectionMediator.props(monitorRef, pubSubMediatorRef, dbActorRef, securityModuleActorRef, messageRegistry))
 
-    rumorHandler = ParamsHandler.rumorHandler(dbActorRef, connectionMediatorRef)
+    rumorHandler = ParamsHandler.rumorHandler(dbActorRef, messageRegistry)
   }
 
   val pathCorrectRumor: String = "src/test/scala/util/examples/json/rumor/rumor.json"
@@ -110,4 +110,6 @@ class RumorHandlerSuite extends TestKit(ActorSystem("RumorActorSuiteActorSystem"
       case Right(jsonRpcResponse: JsonRpcResponse) => jsonRpcResponse.error.isDefined shouldBe true
       case _                                       => 1 shouldBe 0
   }
+
+  test("rumor handler should process messages received in a rumor") {}
 }

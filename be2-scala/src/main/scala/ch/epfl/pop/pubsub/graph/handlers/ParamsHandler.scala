@@ -1,7 +1,7 @@
 package ch.epfl.pop.pubsub.graph.handlers
 
 import akka.NotUsed
-import akka.actor.ActorRef
+import akka.actor.{ActorRef, ActorSystem}
 import akka.pattern.AskableActorRef
 import akka.stream.scaladsl.Flow
 import ch.epfl.pop.decentralized.ConnectionMediator
@@ -12,7 +12,7 @@ import ch.epfl.pop.model.objects.{Channel, PublicKey}
 import ch.epfl.pop.pubsub.ClientActor.ClientAnswer
 import ch.epfl.pop.pubsub.graph.validators.RpcValidator
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
-import ch.epfl.pop.pubsub.{AskPatternConstants, ClientActor, PubSubMediator}
+import ch.epfl.pop.pubsub.{AskPatternConstants, ClientActor, MessageRegistry, PubSubMediator}
 import ch.epfl.pop.storage.DbActor.{DbActorReadRumors, ReadRumors, WriteRumor}
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -89,7 +89,7 @@ object ParamsHandler extends AskPatternConstants {
     case graphMessage @ _ => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, "GreetServerHandler received an unexpected message:" + graphMessage, None))
   }.filter(_ => false)
 
-  def rumorHandler(dbActorRef: AskableActorRef, connectionMediatorRef: AskableActorRef): Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map {
+  def rumorHandler(dbActorRef: AskableActorRef, messageRegistry: MessageRegistry)(implicit system: ActorSystem): Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map {
     case Right(jsonRpcMessage: JsonRpcRequest) =>
       jsonRpcMessage.method match {
         case MethodType.rumor =>
@@ -113,6 +113,12 @@ object ParamsHandler extends AskPatternConstants {
                 // absent
                 case None =>
                   dbActorRef ? WriteRumor(rumor)
+                  val success = ProcessMessagesHandler.rumorHandler(messageRegistry, rumor)
+                  if (success) {
+                    system.log.info(s"All messages from rumor $rumorId were processed correctly")
+                  } else {
+                    system.log.info(s"Some messages from rumor $rumorId were not processed")
+                  }
                   Right(JsonRpcResponse(
                     RpcValidator.JSON_RPC_VERSION,
                     ResultObject(0),
