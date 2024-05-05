@@ -456,6 +456,34 @@ func (_m *MockRepository) GetParamsForGetMessageByID(params map[string][]string)
 	return r0, r1
 }
 
+// GetReaction provides a mock function with given fields: ID
+func (_m *MockRepository) GetReaction(ID string) (message.Message, error) {
+	ret := _m.Called(ID)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetReaction")
+	}
+
+	var r0 message.Message
+	var r1 error
+	if rf, ok := ret.Get(0).(func(string) (message.Message, error)); ok {
+		return rf(ID)
+	}
+	if rf, ok := ret.Get(0).(func(string) message.Message); ok {
+		r0 = rf(ID)
+	} else {
+		r0 = ret.Get(0).(message.Message)
+	}
+
+	if rf, ok := ret.Get(1).(func(string) error); ok {
+		r1 = rf(ID)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // GetResultForGetMessagesByID provides a mock function with given fields: params
 func (_m *MockRepository) GetResultForGetMessagesByID(params map[string][]string) (map[string][]message.Message, error) {
 	ret := _m.Called(params)

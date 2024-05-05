@@ -170,11 +170,11 @@ type PopChaRepository interface {
 }
 
 type ReactionRepository interface {
-	// IsAttendee return if the user has participated in the last roll-call from the LAO
+	// IsAttendee returns if the user has participated in the last roll-call from the LAO
 	IsAttendee(laoID string, userID string) (bool, error)
 
-	// HasMessage returns true if the message already exists.
-	HasMessage(messageID string) (bool, error)
+	// GetReaction returns a reaction
+	GetReaction(ID string) (message.Message, error)
 
 	// StoreMessage stores a message inside the database.
 	StoreMessage(channelID string, msg message.Message) error
