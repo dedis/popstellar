@@ -22,6 +22,7 @@ import (
 	"popstellar/network/socket"
 	"popstellar/validation"
 	"strconv"
+	"sync"
 	"time"
 )
 
@@ -40,6 +41,21 @@ const (
 	Connected
 )
 
+type remoteOrganization struct {
+	laoId       string
+	fedChannel  string
+	organizerPk string
+
+	// store the pop tokens of the other lao
+	// popTokens map[string]struct{}
+
+	challenge messagedata.Challenge
+	socket    socket.Socket
+
+	state State
+	sync.Mutex
+}
+
 // Channel is used to handle federation messages.
 type Channel struct {
 	sockets   channel.Sockets
@@ -49,15 +65,15 @@ type Channel struct {
 	log       zerolog.Logger
 	registry  registry.MessageRegistry
 
-	localOrganizerPk  string
-	remoteOrganizerPk string
+	localOrganizerPk string
 
-	remoteChannel string
-	remoteServer  socket.Socket
+	// map challenge -> remoteOrganization
+	remoteOrganizations map[string]*remoteOrganization
 
-	challenge messagedata.Challenge
+	// list of challenge requested but not used yet
+	challenges map[messagedata.Challenge]struct{}
 
-	state State
+	sync.Mutex
 }
 
 // NewChannel returns a new initialized federation channel
@@ -67,13 +83,14 @@ func NewChannel(channelID string, hub channel.HubFunctionalities,
 	log = log.With().Str("channel", "federation").Logger()
 
 	newChannel := &Channel{
-		sockets:          channel.NewSockets(),
-		inbox:            box,
-		channelID:        channelID,
-		hub:              hub,
-		log:              log,
-		localOrganizerPk: organizerPk,
-		state:            None,
+		sockets:             channel.NewSockets(),
+		inbox:               box,
+		channelID:           channelID,
+		hub:                 hub,
+		log:                 log,
+		localOrganizerPk:    organizerPk,
+		remoteOrganizations: make(map[string]*remoteOrganization),
+		challenges:          make(map[messagedata.Challenge]struct{}),
 	}
 
 	newChannel.registry = newChannel.NewFederationRegistry()
@@ -191,33 +208,45 @@ func (c *Channel) processFederationInit(msg message.Message,
 			"Only local organizer is allowed to send federation#init")
 	}
 
-	if c.state != None {
-		return answer.NewInternalServerError(invalidStateError, c.state, msg)
-	}
-	c.state = Initiating
-
 	var federationInit messagedata.FederationInit
 
 	err := msg.UnmarshalData(&federationInit)
 	if err != nil {
-		c.state = None
 		return xerrors.Errorf("failed to unmarshal FederationInit data: %v", err)
 	}
 
-	// set remote organizer public key
-	c.remoteOrganizerPk = federationInit.PublicKey
-
-	c.remoteServer, err = c.hub.ConnectToServerAsClient(federationInit.ServerAddress)
+	var federationChallenge messagedata.FederationChallenge
+	err = federationInit.ChallengeMsg.UnmarshalData(&federationChallenge)
 	if err != nil {
-		c.state = None
+		return xerrors.Errorf("failed to unmarshal FederationChallenge data: %v", err)
+	}
+
+	remoteOrg := c.getRemoteOrganization(federationChallenge.Value)
+	remoteOrg.Lock()
+	defer remoteOrg.Unlock()
+
+	if remoteOrg.state != None {
+		return answer.NewInternalServerError(invalidStateError, remoteOrg.state, msg)
+	}
+
+	remoteOrg.state = Initiating
+	remoteOrg.organizerPk = federationInit.PublicKey
+	remoteOrg.laoId = federationInit.LaoId
+	remoteOrg.fedChannel = fmt.Sprintf("/root/%s/federation", federationInit.LaoId)
+	remoteOrg.challenge = messagedata.Challenge{
+		Value:      federationChallenge.Value,
+		ValidUntil: federationChallenge.Timestamp,
+	}
+
+	remoteOrg.socket, err = c.hub.ConnectToServerAsClient(federationInit.ServerAddress)
+	if err != nil {
+		remoteOrg.state = None
 		return answer.NewInternalServerError(
 			"failed to connect to server %v: %v",
 			federationInit.ServerAddress, err)
 	}
 
 	// send the challenge to the other server
-	c.remoteChannel = fmt.Sprintf("/root/%s/federation", federationInit.LaoId)
-
 	challengePublish := method.Publish{
 		Base: query.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
@@ -230,20 +259,18 @@ func (c *Channel) processFederationInit(msg message.Message,
 			Channel string          `json:"channel"`
 			Message message.Message `json:"message"`
 		}{
-			Channel: c.remoteChannel,
+			Channel: remoteOrg.fedChannel,
 			Message: federationInit.ChallengeMsg,
 		},
 	}
 
 	buf, err := json.Marshal(challengePublish)
 	if err != nil {
-		c.state = None
+		remoteOrg.state = None
 		return xerrors.Errorf("failed to marshal challenge: %v", err)
 	}
 
-	c.remoteServer.Send(buf)
-
-	c.state = WaitResult
+	remoteOrg.socket.Send(buf)
 
 	return nil
 }
@@ -263,10 +290,6 @@ func (c *Channel) processFederationExpect(msg message.Message,
 			"Only local organizer is allowed to send federation#expect")
 	}
 
-	if c.state != None {
-		return answer.NewInternalServerError(invalidStateError, c.state, msg)
-	}
-
 	var federationExpect messagedata.FederationExpect
 
 	err := msg.UnmarshalData(&federationExpect)
@@ -274,14 +297,30 @@ func (c *Channel) processFederationExpect(msg message.Message,
 		return xerrors.Errorf("failed to unmarshal federationExpect data: %v", err)
 	}
 
-	if federationExpect.Challenge != c.challenge {
+	remoteOrg := c.getRemoteOrganization(federationExpect.Challenge.Value)
+	remoteOrg.Lock()
+	defer remoteOrg.Unlock()
+
+	if remoteOrg.state != None {
+		return answer.NewInternalServerError(invalidStateError, remoteOrg.state, msg)
+	}
+
+	c.Lock()
+	_, ok = c.challenges[federationExpect.Challenge]
+	// always remove the challenge, if present, to avoid challenge reuse
+	delete(c.challenges, federationExpect.Challenge)
+	c.Unlock()
+
+	if !ok {
 		return answer.NewAccessDeniedError("Invalid challenge %v",
 			federationExpect.Challenge)
 	}
 
-	c.state = ExpectConnect
-	c.remoteOrganizerPk = federationExpect.PublicKey
-	c.remoteChannel = fmt.Sprintf("/root/%s/federation", federationExpect.LaoId)
+	remoteOrg.state = ExpectConnect
+	remoteOrg.challenge = federationExpect.Challenge
+	remoteOrg.organizerPk = federationExpect.PublicKey
+	remoteOrg.laoId = federationExpect.LaoId
+	remoteOrg.fedChannel = fmt.Sprintf("/root/%s/federation", federationExpect.LaoId)
 
 	return nil
 }
@@ -295,16 +334,6 @@ func (c *Channel) processFederationChallenge(msg message.Message,
 			"message %v is not a federation#challenge message", msgData)
 	}
 
-	// check if it is from the remote organizer
-	if c.remoteOrganizerPk != msg.Sender {
-		return answer.NewAccessDeniedError(
-			"Only remote organizer is allowed to send federation#challenge")
-	}
-
-	if c.state != ExpectConnect {
-		return answer.NewInternalServerError(invalidStateError, c.state, msg)
-	}
-
 	var federationChallenge messagedata.FederationChallenge
 
 	err := msg.UnmarshalData(&federationChallenge)
@@ -313,20 +342,36 @@ func (c *Channel) processFederationChallenge(msg message.Message,
 			"failed to unmarshal federationChallenge data: %v", err)
 	}
 
-	if c.challenge.Value != federationChallenge.Value {
+	// If not present, no FederationExpect was received for this organizer pk
+	remoteOrg, ok := c.remoteOrganizations[msg.Sender]
+	if !ok {
+		return answer.NewAccessDeniedError("Unexpected challenge")
+	}
+	remoteOrg.Lock()
+	defer remoteOrg.Unlock()
+
+	// check if it is from the remote organizer
+	if remoteOrg.organizerPk != msg.Sender {
+		return answer.NewAccessDeniedError(
+			"Only remote organizer is allowed to send federation#challenge")
+	}
+
+	if remoteOrg.state != ExpectConnect {
+		return answer.NewInternalServerError(invalidStateError, remoteOrg, msg)
+	}
+
+	if remoteOrg.challenge.Value != federationChallenge.Value {
 		return answer.NewAccessDeniedError("Invalid challenge %v",
 			federationChallenge.Value)
 	}
 
-	if c.challenge.ValidUntil < time.Now().Unix() {
+	if remoteOrg.challenge.ValidUntil < time.Now().Unix() {
 		return answer.NewAccessDeniedError("This challenge has expired: %v",
 			federationChallenge)
 	}
 
-	c.state = Connected
-	c.remoteServer = s
-	// Send Federation result to S1
-
+	remoteOrg.state = WaitResult
+	remoteOrg.socket = s
 	federationResultData := messagedata.FederationResult{
 		Object: messagedata.FederationObject,
 		Action: messagedata.FederationActionResult,
@@ -365,7 +410,7 @@ func (c *Channel) processFederationChallenge(msg message.Message,
 			Channel string          `json:"channel"`
 			Message message.Message `json:"message"`
 		}{
-			Channel: c.remoteChannel,
+			Channel: remoteOrg.fedChannel,
 			Message: federationResultMsg,
 		},
 	}
@@ -374,8 +419,7 @@ func (c *Channel) processFederationChallenge(msg message.Message,
 		return xerrors.Errorf("failed to marshal publish query: %v", err)
 	}
 
-	c.remoteServer.Send(buf)
-
+	remoteOrg.socket.Send(buf)
 	return nil
 }
 
@@ -394,10 +438,6 @@ func (c *Channel) processChallengeRequest(msg message.Message,
 			"Only local organizer is allowed to send federation#challenge_request")
 	}
 
-	if c.state != None && c.state != ExpectConnect {
-		return answer.NewInternalServerError(invalidStateError, c.state, msg)
-	}
-
 	var federationChallengeRequest messagedata.FederationChallengeRequest
 
 	err := msg.UnmarshalData(&federationChallengeRequest)
@@ -413,18 +453,20 @@ func (c *Channel) processChallengeRequest(msg message.Message,
 	}
 	challengeValue := hex.EncodeToString(randomBytes)
 	expirationTime := time.Now().Add(time.Minute * 5).Unix()
-
-	c.challenge = messagedata.Challenge{
+	challenge := messagedata.Challenge{
 		Value:      challengeValue,
 		ValidUntil: expirationTime,
 	}
-	c.state = None
+
+	c.Lock()
+	c.challenges[challenge] = struct{}{}
+	c.Unlock()
 
 	federationChallenge := messagedata.FederationChallenge{
-		Object:    "federation",
-		Action:    "challenge",
-		Value:     c.challenge.Value,
-		Timestamp: c.challenge.ValidUntil,
+		Object:    messagedata.FederationObject,
+		Action:    messagedata.FederationActionChallenge,
+		Value:     challengeValue,
+		Timestamp: expirationTime,
 	}
 
 	challengeData, err := json.Marshal(federationChallenge)
@@ -500,7 +542,6 @@ func (c *Channel) processFederationResult(msg message.Message,
 
 	err := msg.UnmarshalData(&federationResult)
 	if err != nil {
-		c.state = None
 		return xerrors.Errorf("failed to unmarshal FederationResult data: %v", err)
 	}
 
@@ -509,6 +550,12 @@ func (c *Channel) processFederationResult(msg message.Message,
 			return xerrors.Errorf("failed to establish federated connection: %v", federationResult.Reason)
 		}
 		return xerrors.Errorf("failed to establish federated connection")
+	}
+
+	var federationChallenge messagedata.FederationChallenge
+	err = federationResult.ChallengeMsg.UnmarshalData(&federationChallenge)
+	if err != nil {
+		return xerrors.Errorf("failed to unmarshal challenge from FederationResult data: %v", err)
 	}
 
 	challengeDataBytes, err := base64.URLEncoding.DecodeString(federationResult.ChallengeMsg.Data)
@@ -523,7 +570,10 @@ func (c *Channel) processFederationResult(msg message.Message,
 
 	}
 
-	pkBytes, err := base64.URLEncoding.DecodeString(c.remoteOrganizerPk)
+	remoteOrg := c.getRemoteOrganization(federationChallenge.Value)
+	remoteOrg.Lock()
+	defer remoteOrg.Unlock()
+	pkBytes, err := base64.URLEncoding.DecodeString(remoteOrg.organizerPk)
 	if err != nil {
 		return xerrors.Errorf("failed to decode remote organizers public key: %v", err)
 
@@ -559,7 +609,22 @@ func (c *Channel) processFederationResult(msg message.Message,
 
 	}
 
-	c.state = Connected
+	remoteOrg.state = Connected
 
 	return nil
+}
+
+// getRemoteOrganization get the remoteOrganization for a given challenge
+// or return a new empty one.
+func (c *Channel) getRemoteOrganization(challenge string) *remoteOrganization {
+	c.Lock()
+	defer c.Unlock()
+
+	org, ok := c.remoteOrganizations[challenge]
+	if !ok {
+		org = &remoteOrganization{state: None}
+		c.remoteOrganizations[challenge] = org
+	}
+
+	return org
 }

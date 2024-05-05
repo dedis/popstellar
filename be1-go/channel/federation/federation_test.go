@@ -360,16 +360,27 @@ func Test_FederationResult(t *testing.T) {
 	// having to go through the init process
 
 	box := inbox.NewInbox(localFedChannel)
-	newChannel := &Channel{
-		sockets:           channel.NewSockets(),
-		inbox:             box,
-		channelID:         localFedChannel,
-		hub:               fakeHub,
-		log:               nolog,
-		localOrganizerPk:  organizerKeypair.publicKey,
-		remoteOrganizerPk: remoteOrganizerKeypair.publicKey,
-		state:             None,
+
+	remoteOrg := &remoteOrganization{
+		organizerPk: remoteOrganizerKeypair.publicKey,
+		state:       None,
 	}
+	remoteOrg.organizerPk = remoteOrganizerKeypair.publicKey
+
+	var remoteOrgs = map[string]*remoteOrganization{
+		"82eadde2a4ba832518b90bb93c8480ee1ae16a91d5efe9281e91e2ec11da03e4": remoteOrg,
+	}
+
+	newChannel := &Channel{
+		sockets:             channel.NewSockets(),
+		inbox:               box,
+		channelID:           localFedChannel,
+		hub:                 fakeHub,
+		log:                 nolog,
+		localOrganizerPk:    organizerKeypair.publicKey,
+		remoteOrganizations: remoteOrgs,
+	}
+
 	newChannel.registry = newChannel.NewFederationRegistry()
 
 	publicKeyBytes, err := organizerKeypair.public.MarshalBinary()
@@ -377,14 +388,14 @@ func Test_FederationResult(t *testing.T) {
 	signedPublicKey, err := schnorr.Sign(crypto.Suite, remoteOrganizerKeypair.private, publicKeyBytes)
 	require.NoError(t, err)
 
-	signedPublicKeyBase64 := base64.URLEncoding.EncodeToString(signedPublicKey)
-
 	challengeFile := filepath.Join(relativeMsgDataExamplePath,
 		"federation_challenge",
 		"federation_challenge.json")
 	challengeBytes, err := os.ReadFile(challengeFile)
 	challengeBase64 := base64.URLEncoding.EncodeToString(challengeBytes)
 	require.NoError(t, err)
+
+	signedPublicKeyBase64 := base64.URLEncoding.EncodeToString(signedPublicKey)
 	signedChallengeBytes, err := schnorr.Sign(crypto.Suite, remoteOrganizerKeypair.private, challengeBytes)
 	require.NoError(t, err)
 	signedChallengeBase64 := base64.URLEncoding.EncodeToString(signedChallengeBytes)
