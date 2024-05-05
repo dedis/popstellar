@@ -21,6 +21,7 @@ Feature: web page object
     * def lao_enter_manually_server_input = "input[placeholder='Server URI']"
     * def lao_enter_manually_lao_input = "input[placeholder='LAO ID']"
     * def lao_enter_manually_submit_button = "[data-testid='connect-button']"
+    * def lao_name = "[data-testid='lao_name_text']"
 
     # Event screen
     * def event_create_button = "[data-testid='create_event_selector']"
@@ -32,6 +33,34 @@ Feature: web page object
     * def event_rollcall_pop_token = "div[data-testid='roll_call_pop_token']"
     * def event_rollcall_first_attendee = "div[data-testid='attendee_0']"
     * def event_first_current_event = "[data-testid='current_event_selector_0']"
+
+    # Drawer menu
+    * def drawer_menu_button = "[data-testid='drawer_menu_button']"
+    * def drawer_menu_container = "[data-testid='drawer_menu_container']"
+    * def drawer_menu_social = "[data-testid='drawer_menu_social_media']"
+    * def drawer_menu_disconnect = "[data-testid='drawer_menu_disconnect_button']"
+    * def drawer_menu_digital_cash = "[data-testid='drawer_menu_digital_cash']"
+
+    # Social screen
+    * def social_home_page = "[data-testid='social_home_page']"
+    * def social_menu_home_button = "[data-testid='social_menu_home_button']"
+    * def social_profile_page = "[data-testid='social_profile_page']"
+    * def social_menu_profile_button = "[data-testid='social_menu_profile_button']"
+    * def social_search_page = "[data-testid='social_search_page']"
+    * def social_menu_search_button = "[data-testid='social_menu_search_button']"
+    * def social_top_chirps_page = "[data-testid='social_top_chirps_page']"
+    * def social_menu_top_chirps_button = "[data-testid='social_menu_top_chirps_button']"
+    * def social_user_profile_page = "[data-testid='social_user_profile_page']"
+    * def social_chirp_input = "textarea[data-testid='new_chirp_input']"
+    * def social_chirp_publish_button = "[data-testid='new_chirp_publish']"
+    * def social_chirp_message = "[data-testid='chirp_message']"
+    * def social_chirp_like_button = "[data-testid='thumbs-up']"
+    * def social_chirp_like_count = "[data-testid='thumbs-up-count']"
+    * def social_chirp_dislike_button = "[data-testid='thumbs-down']"
+    * def social_chirp_dislike_count = "[data-testid='thumbs-down-count']"
+    * def social_chirp_love_button = "[data-testid='heart']"
+    * def social_chirp_love_count = "[data-testid='heart-count']"
+    * def social_chirp_delete = "[data-testid='delete_chirp']"
 
   @name=open_app
   Scenario:
@@ -74,3 +103,25 @@ Feature: web page object
   @name=click_rollcall_create
   Scenario:
     * actionSheetClick(event_create_rollcall)
+
+  @name=user_click
+  Scenario:
+    * waitFor("[data-testid='user_list_item_" + params.token + "']").click()
+
+  @name=join_rollcall
+  Scenario:
+    Given def rollCall = params.organizer.createRollCall(lao)
+    And organizer.openRollCall(lao, rollCall)
+    And call read(PLATFORM_FEATURE) { name: '#(JOIN_LAO)', params: { lao: '#(params.lao)' } }
+    When waitFor(event_first_current_event).click()
+    And waitFor(event_rollcall_pop_token)
+    And delay(1000)
+    And def popToken = text(event_rollcall_pop_token)
+    And organizer.closeRollCall(lao, rollCall, [popToken, organizer.publicKey])
+    And delay(1000)
+
+  @name=switch_to_social_page
+  Scenario:
+    Given waitFor(drawer_menu_button).click()
+    And waitFor(drawer_menu_social).click()
+    And delay(500)

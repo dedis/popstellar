@@ -333,6 +333,7 @@ exports[`SocialTopChirps renders correctly 1`] = `
                             "flex": 1,
                           }
                         }
+                        testID="social_top_chirps_page"
                       >
                         <RCTScrollView
                           collapsable={false}
@@ -558,7 +559,7 @@ exports[`SocialTopChirps renders correctly 1`] = `
                                           "overflow": "hidden",
                                         }
                                       }
-                                      testID="listItemTitle"
+                                      testID="chirp_message"
                                     >
                                       <Text
                                         style={
@@ -649,6 +650,7 @@ exports[`SocialTopChirps renders correctly 1`] = `
                                               },
                                             ]
                                           }
+                                          testID="thumbs-up-count"
                                         >
                                           1
                                         </Text>
@@ -720,6 +722,7 @@ exports[`SocialTopChirps renders correctly 1`] = `
                                               },
                                             ]
                                           }
+                                          testID="thumbs-down-count"
                                         >
                                           0
                                         </Text>
@@ -791,6 +794,7 @@ exports[`SocialTopChirps renders correctly 1`] = `
                                               },
                                             ]
                                           }
+                                          testID="heart-count"
                                         >
                                           1
                                         </Text>
@@ -1029,7 +1033,7 @@ exports[`SocialTopChirps renders correctly 1`] = `
                                           "overflow": "hidden",
                                         }
                                       }
-                                      testID="listItemTitle"
+                                      testID="chirp_message"
                                     >
                                       <Text
                                         style={
@@ -1120,6 +1124,7 @@ exports[`SocialTopChirps renders correctly 1`] = `
                                               },
                                             ]
                                           }
+                                          testID="thumbs-up-count"
                                         >
                                           1
                                         </Text>
@@ -1191,6 +1196,7 @@ exports[`SocialTopChirps renders correctly 1`] = `
                                               },
                                             ]
                                           }
+                                          testID="thumbs-down-count"
                                         >
                                           0
                                         </Text>
@@ -1262,6 +1268,7 @@ exports[`SocialTopChirps renders correctly 1`] = `
                                               },
                                             ]
                                           }
+                                          testID="heart-count"
                                         >
                                           0
                                         </Text>
@@ -1506,7 +1513,7 @@ exports[`SocialTopChirps renders correctly 1`] = `
                                           "overflow": "hidden",
                                         }
                                       }
-                                      testID="listItemTitle"
+                                      testID="chirp_message"
                                     >
                                       <Text
                                         style={
@@ -1597,6 +1604,7 @@ exports[`SocialTopChirps renders correctly 1`] = `
                                               },
                                             ]
                                           }
+                                          testID="thumbs-up-count"
                                         >
                                           0
                                         </Text>
@@ -1668,6 +1676,7 @@ exports[`SocialTopChirps renders correctly 1`] = `
                                               },
                                             ]
                                           }
+                                          testID="thumbs-down-count"
                                         >
                                           0
                                         </Text>
@@ -1739,6 +1748,7 @@ exports[`SocialTopChirps renders correctly 1`] = `
                                               },
                                             ]
                                           }
+                                          testID="heart-count"
                                         >
                                           0
                                         </Text>
