@@ -7,7 +7,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/rs/zerolog"
-	"go.dedis.ch/kyber/v3"
 	"go.dedis.ch/kyber/v3/sign/schnorr"
 	"golang.org/x/xerrors"
 	"popstellar/channel"
@@ -204,6 +203,9 @@ func (c *Channel) processFederationInit(msg message.Message,
 		c.state = None
 		return xerrors.Errorf("failed to unmarshal FederationInit data: %v", err)
 	}
+
+	// set remote organizer public key
+	c.remoteOrganizerPk = federationInit.PublicKey
 
 	c.remoteServer, err = c.hub.ConnectToServerAsClient(federationInit.ServerAddress)
 	if err != nil {
@@ -526,8 +528,10 @@ func (c *Channel) processFederationResult(msg message.Message,
 		return xerrors.Errorf("failed to decode remote organizers public key: %v", err)
 
 	}
-	var remotePk kyber.Point
-	err = kyber.Point.UnmarshalBinary(remotePk, pkBytes)
+
+	remotePk := crypto.Suite.Point()
+
+	err = remotePk.UnmarshalBinary(pkBytes)
 	if err != nil {
 		return xerrors.Errorf("failed to decode remote organizers public key: %v", err)
 
@@ -537,6 +541,25 @@ func (c *Channel) processFederationResult(msg message.Message,
 		return xerrors.Errorf("failed to verify signature on challenge in FederationResult message: %v", err)
 
 	}
+
+	pkSignatureBytes, err := base64.URLEncoding.DecodeString(federationResult.PublicKey)
+	if err != nil {
+		return xerrors.Errorf("failed to decode signature on local public key in FederationResult message: %v", err)
+
+	}
+	localPkBinary, err := c.hub.GetPubKeyOwner().MarshalBinary()
+	if err != nil {
+		return xerrors.Errorf("failed to marshal local organizer public key: %v", err)
+
+	}
+
+	err = schnorr.Verify(crypto.Suite, remotePk, localPkBinary, pkSignatureBytes)
+	if err != nil {
+		return xerrors.Errorf("failed to verify remote signature on local organizer public key: %v", err)
+
+	}
+
+	c.state = Connected
 
 	return nil
 }

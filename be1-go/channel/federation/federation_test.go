@@ -5,17 +5,12 @@ import (
 	"encoding/base64"
 	"encoding/hex"
 	"encoding/json"
-	"github.com/rs/zerolog"
-	"github.com/stretchr/testify/require"
-	"go.dedis.ch/kyber/v3"
-	"go.dedis.ch/kyber/v3/sign/schnorr"
-	"golang.org/x/sync/semaphore"
-	"golang.org/x/xerrors"
 	"io"
 	"os"
 	"path/filepath"
 	"popstellar/channel"
 	"popstellar/crypto"
+	"popstellar/inbox"
 	jsonrpc "popstellar/message"
 	"popstellar/message/messagedata"
 	"popstellar/message/query"
@@ -26,6 +21,13 @@ import (
 	"sync"
 	"testing"
 	"time"
+
+	"github.com/rs/zerolog"
+	"github.com/stretchr/testify/require"
+	"go.dedis.ch/kyber/v3"
+	"go.dedis.ch/kyber/v3/sign/schnorr"
+	"golang.org/x/sync/semaphore"
+	"golang.org/x/xerrors"
 )
 
 const (
@@ -354,15 +356,28 @@ func Test_FederationResult(t *testing.T) {
 	fakeHub, err := NewFakeHub("", organizerKeypair.public, nolog, nil)
 	require.NoError(t, err)
 
-	fedChannel := NewChannel(localFedChannel, fakeHub, nolog,
-		organizerKeypair.publicKey)
+	// dirty hack to manually create a channel, so we can then add the remote organizer pk without
+	// having to go through the init process
 
-	remotePublicKeyBytes, err := remoteOrganizerKeypair.public.MarshalBinary()
+	box := inbox.NewInbox(localFedChannel)
+	newChannel := &Channel{
+		sockets:           channel.NewSockets(),
+		inbox:             box,
+		channelID:         localFedChannel,
+		hub:               fakeHub,
+		log:               nolog,
+		localOrganizerPk:  organizerKeypair.publicKey,
+		remoteOrganizerPk: remoteOrganizerKeypair.publicKey,
+		state:             None,
+	}
+	newChannel.registry = newChannel.NewFederationRegistry()
+
+	publicKeyBytes, err := organizerKeypair.public.MarshalBinary()
 	require.NoError(t, err)
-	signedRemotePublicKey, err := schnorr.Sign(crypto.Suite, organizerKeypair.private, remotePublicKeyBytes)
+	signedPublicKey, err := schnorr.Sign(crypto.Suite, remoteOrganizerKeypair.private, publicKeyBytes)
 	require.NoError(t, err)
 
-	signedRemotePublicKeyBase64 := base64.URLEncoding.EncodeToString(signedRemotePublicKey)
+	signedPublicKeyBase64 := base64.URLEncoding.EncodeToString(signedPublicKey)
 
 	challengeFile := filepath.Join(relativeMsgDataExamplePath,
 		"federation_challenge",
@@ -370,7 +385,7 @@ func Test_FederationResult(t *testing.T) {
 	challengeBytes, err := os.ReadFile(challengeFile)
 	challengeBase64 := base64.URLEncoding.EncodeToString(challengeBytes)
 	require.NoError(t, err)
-	signedChallengeBytes, err := schnorr.Sign(crypto.Suite, organizerKeypair.private, challengeBytes)
+	signedChallengeBytes, err := schnorr.Sign(crypto.Suite, remoteOrganizerKeypair.private, challengeBytes)
 	require.NoError(t, err)
 	signedChallengeBase64 := base64.URLEncoding.EncodeToString(signedChallengeBytes)
 
@@ -378,7 +393,7 @@ func Test_FederationResult(t *testing.T) {
 		Object:    messagedata.FederationObject,
 		Action:    messagedata.FederationActionResult,
 		Status:    "success",
-		PublicKey: signedRemotePublicKeyBase64,
+		PublicKey: signedPublicKeyBase64,
 		ChallengeMsg: message.Message{
 			Data:              challengeBase64,
 			Sender:            organizerKeypair.publicKey,
@@ -391,7 +406,7 @@ func Test_FederationResult(t *testing.T) {
 	publishMsg := generatePublish(t, localFedChannel, resultMsg)
 	socket := &fakeSocket{id: "sockSocket"}
 
-	err = fedChannel.Publish(publishMsg, socket)
+	err = newChannel.Publish(publishMsg, socket)
 	require.NoError(t, err)
 }
 
