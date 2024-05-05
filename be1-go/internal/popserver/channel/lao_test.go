@@ -328,7 +328,7 @@ func newRollCallCloseMsg(t *testing.T, sender, laoID, closes, prevID string, clo
 
 	attendees := []string{base64.URLEncoding.EncodeToString([]byte("a")), base64.URLEncoding.EncodeToString([]byte("b"))}
 
-	msg := generator.NewRollCallCloseMsg(t, sender, closeID, closes, prevID, closedAt, attendees, nil)
+	msg := generator.NewRollCallCloseMsg(t, sender, closeID, closes, closedAt, attendees, nil)
 
 	if !isError {
 		var channels []string

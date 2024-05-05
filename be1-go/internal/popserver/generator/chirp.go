@@ -9,7 +9,7 @@ import (
 	"testing"
 )
 
-func NewChirpAddMsg(t *testing.T, sender string, senderPK kyber.Scalar, timestamp int64) message.Message {
+func NewChirpAddMsg(t *testing.T, sender string, senderSK kyber.Scalar, timestamp int64) message.Message {
 
 	chirpAdd := messagedata.ChirpAdd{
 		Object:    messagedata.ChirpObject,
@@ -21,12 +21,12 @@ func NewChirpAddMsg(t *testing.T, sender string, senderPK kyber.Scalar, timestam
 	dataBuf, err := json.Marshal(chirpAdd)
 	require.NoError(t, err)
 
-	msg := newMessage(t, sender, senderPK, dataBuf)
+	msg := newMessage(t, sender, senderSK, dataBuf)
 
 	return msg
 }
 
-func NewChirpDeleteMsg(t *testing.T, sender string, senderPK kyber.Scalar, chirpID string,
+func NewChirpDeleteMsg(t *testing.T, sender string, senderSK kyber.Scalar, chirpID string,
 	timestamp int64) message.Message {
 
 	chirpAdd := messagedata.ChirpDelete{
@@ -39,7 +39,7 @@ func NewChirpDeleteMsg(t *testing.T, sender string, senderPK kyber.Scalar, chirp
 	dataBuf, err := json.Marshal(chirpAdd)
 	require.NoError(t, err)
 
-	msg := newMessage(t, sender, senderPK, dataBuf)
+	msg := newMessage(t, sender, senderSK, dataBuf)
 
 	return msg
 }
