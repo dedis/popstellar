@@ -61,41 +61,80 @@
           app:layout_constraintStart_toStartOf="parent"
           app:layout_constraintTop_toBottomOf="@id/lao_properties_role_title" />
 
-        <TextView
-          android:id="@+id/lao_properties_server_title"
-          style="@style/properties_section_title"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:text="@string/lao_properties_server_title"
-          app:layout_constraintStart_toStartOf="parent"
-          app:layout_constraintTop_toBottomOf="@id/lao_properties_role_text" />
+        <LinearLayout
+            android:id="@+id/lao_properties_server_container"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:baselineAligned="false"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lao_properties_role_text">
+
+          <TextView
+              android:id="@+id/lao_properties_server_title"
+              style="@style/properties_section_title"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:text="@string/lao_properties_server_title" />
+
+          <ImageButton
+              android:id="@+id/copy_server_button"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_gravity="bottom"
+              android:background="?android:attr/selectableItemBackgroundBorderless"
+              app:srcCompat="@drawable/ic_content_copy"
+              android:contentDescription="@string/copy_to_clipboard_server"
+              android:layout_marginStart="8dp"/>
+        </LinearLayout>
 
         <TextView
-          android:id="@+id/lao_properties_server_text"
-          style="@style/properties_section_text"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:gravity="start"
-          app:layout_constraintStart_toStartOf="parent"
-          app:layout_constraintTop_toBottomOf="@id/lao_properties_server_title" />
+            android:id="@+id/lao_properties_server_text"
+            style="@style/properties_section_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="start"
+            android:textIsSelectable="true"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lao_properties_server_container" />
+
+        <LinearLayout
+            android:id="@+id/lao_properties_identifier_container"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lao_properties_server_text">
+
+          <TextView
+              android:id="@+id/lao_properties_identifier_title"
+              style="@style/properties_section_title"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:textIsSelectable="true"
+              android:text="@string/lao_properties_identifier_title" />
+
+          <ImageButton
+              android:id="@+id/copy_identifier_button"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              app:srcCompat="@drawable/ic_content_copy"
+              android:layout_gravity="bottom"
+              android:contentDescription="@string/copy_to_clipboard_lao_id"
+              android:background="?android:attr/selectableItemBackgroundBorderless"
+              android:layout_marginStart="8dp"/>
+        </LinearLayout>
 
         <TextView
-          android:id="@+id/lao_properties_identifier_title"
-          style="@style/properties_section_title"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:text="@string/lao_properties_identifier_title"
-          app:layout_constraintStart_toStartOf="parent"
-          app:layout_constraintTop_toBottomOf="@id/lao_properties_server_text" />
+            android:id="@+id/lao_properties_identifier_text"
+            style="@style/properties_section_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textIsSelectable="true"
+            android:gravity="start"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lao_properties_identifier_container" />
 
-        <TextView
-          android:id="@+id/lao_properties_identifier_text"
-          style="@style/properties_section_text"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:gravity="start"
-          app:layout_constraintStart_toStartOf="parent"
-          app:layout_constraintTop_toBottomOf="@id/lao_properties_identifier_title" />
 
       </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -12,6 +12,7 @@ import com.github.dedis.popstellar.model.Role
 import com.github.dedis.popstellar.model.qrcode.ConnectToLao
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager
 import com.github.dedis.popstellar.utility.ActivityUtils.getQRCodeColor
+import com.github.dedis.popstellar.utility.GeneralUtils
 import com.github.dedis.popstellar.utility.error.ErrorUtils.logAndShow
 import com.github.dedis.popstellar.utility.error.UnknownLaoException
 import com.google.gson.Gson
@@ -25,14 +26,17 @@ class InviteFragment : Fragment() {
   @Inject lateinit var networkManager: GlobalNetworkManager
 
   private lateinit var laoViewModel: LaoViewModel
+  private lateinit var binding: InviteFragmentBinding
+  private lateinit var clipboardManager: GeneralUtils.ClipboardUtil
 
   override fun onCreateView(
       inflater: LayoutInflater,
       container: ViewGroup?,
       savedInstanceState: Bundle?
   ): View? {
-    val binding = InviteFragmentBinding.inflate(inflater, container, false)
+    binding = InviteFragmentBinding.inflate(inflater, container, false)
     laoViewModel = LaoActivity.obtainViewModel(requireActivity())
+    clipboardManager = GeneralUtils.ClipboardUtil(requireActivity())
 
     // Display the LAO identifier, not the device public key
     binding.laoPropertiesIdentifierText.text = laoViewModel.laoId
@@ -59,6 +63,10 @@ class InviteFragment : Fragment() {
     }
 
     handleBackNav()
+    clipboardManager.setupCopyButton(
+        binding.copyServerButton, binding.laoPropertiesServerText, "Server Address")
+    clipboardManager.setupCopyButton(
+        binding.copyIdentifierButton, binding.laoPropertiesIdentifierText, "LAO ID")
 
     return binding.root
   }
