@@ -1156,7 +1156,7 @@ Response (in case of success)
                 }
             },
 
-            "required": ["channel", "before_message_id"]
+            "required": ["channel", "number_of_messages"]
         },
 
         "jsonrpc": {
