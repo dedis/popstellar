@@ -133,24 +133,24 @@ func createInbox(tx *sql.Tx) error {
 
 func createChannel(tx *sql.Tx) error {
 	_, err := tx.Exec("CREATE TABLE IF NOT EXISTS channel (" +
-		"channelID TEXT, " +
+		"channelPath TEXT, " +
 		"typeID TEXT, " +
 		"laoID TEXT NULL, " +
-		"FOREIGN KEY (laoID) REFERENCES channel(channelID), " +
+		"FOREIGN KEY (laoID) REFERENCES channel(channelPath), " +
 		"FOREIGN KEY (typeID) REFERENCES channelType(ID), " +
-		"PRIMARY KEY (channelID) " +
+		"PRIMARY KEY (channelPath) " +
 		")")
 	return err
 }
 
 func createChannelMessage(tx *sql.Tx) error {
 	_, err := tx.Exec("CREATE TABLE IF NOT EXISTS channelMessage (" +
-		"channelID TEXT, " +
+		"channelPath TEXT, " +
 		"messageID TEXT, " +
 		"isBaseChannel BOOLEAN, " +
 		"FOREIGN KEY (messageID) REFERENCES inbox(messageID), " +
-		"FOREIGN KEY (channelID) REFERENCES channel(channelID), " +
-		"PRIMARY KEY (channelID, messageID) " +
+		"FOREIGN KEY (channelPath) REFERENCES channel(channelPath), " +
+		"PRIMARY KEY (channelPath, messageID) " +
 		")")
 	return err
 }
@@ -182,11 +182,11 @@ func createChannelType(tx *sql.Tx) error {
 
 func createKey(tx *sql.Tx) error {
 	_, err := tx.Exec("CREATE TABLE IF NOT EXISTS key (" +
-		"channelID TEXT, " +
+		"channelPath TEXT, " +
 		"publicKey BLOB NULL, " +
 		"privateKey BLOB NULL, " +
-		"FOREIGN KEY (channelID) REFERENCES channel(channelID), " +
-		"PRIMARY KEY (channelID) " +
+		"FOREIGN KEY (channelPath) REFERENCES channel(channelPath), " +
+		"PRIMARY KEY (channelPath) " +
 		")")
 	return err
 }
@@ -223,7 +223,7 @@ func (s *SQLite) StoreMessage(channel string, msg message.Message) error {
 		return err
 	}
 	_, err = tx.Exec("INSERT INTO channelMessage "+
-		"(channelID, messageID, isBaseChannel) VALUES "+
+		"(channelPath, messageID, isBaseChannel) VALUES "+
 		"(?, ?, ?)", channel, msg.MessageID, true)
 	if err != nil {
 		return err
@@ -231,7 +231,7 @@ func (s *SQLite) StoreMessage(channel string, msg message.Message) error {
 	return tx.Commit()
 }
 
-func (s *SQLite) StoreMessageAndData(channelID string, msg message.Message) error {
+func (s *SQLite) StoreMessageAndData(channelPath string, msg message.Message) error {
 	tx, err := s.database.Begin()
 	if err != nil {
 		return err
@@ -259,8 +259,8 @@ func (s *SQLite) StoreMessageAndData(channelID string, msg message.Message) erro
 
 	}
 	_, err = tx.Exec("INSERT INTO channelMessage "+
-		"(channelID, messageID, isBaseChannel) VALUES "+
-		"(?, ?, ?)", channelID, msg.MessageID, true)
+		"(channelPath, messageID, isBaseChannel) VALUES "+
+		"(?, ?, ?)", channelPath, msg.MessageID, true)
 	if err != nil {
 		return err
 
@@ -386,9 +386,9 @@ func (s *SQLite) AddWitnessSignature(messageID string, witness string, signature
 }
 
 // StoreChannel mainly used for testing and storing the root channel
-func (s *SQLite) StoreChannel(channelID, typeName, laoID string) error {
-	_, err := s.database.Exec("INSERT INTO channel (channelID, typeID, laoID) VALUES (?, ?, ?)",
-		channelID, channelTypeNameToID[typeName], laoID)
+func (s *SQLite) StoreChannel(channelPath, typeName, laoID string) error {
+	_, err := s.database.Exec("INSERT INTO channel (channelPath, typeID, laoID) VALUES (?, ?, ?)",
+		channelPath, channelTypeNameToID[typeName], laoID)
 	return err
 }
 
@@ -401,18 +401,18 @@ func (s *SQLite) GetChannelType(channel string) (string, error) {
 	var name string
 	err := s.database.QueryRow("SELECT name FROM channelType "+
 		"JOIN channel on channel.typeID = channelType.ID "+
-		"WHERE channelID = ?", channel).Scan(&name)
+		"WHERE channelPath = ?", channel).Scan(&name)
 	return name, err
 }
 
 // GetAllMessagesFromChannel returns all the messages received + sent on a channel sorted by stored time.
-func (s *SQLite) GetAllMessagesFromChannel(channelID string) ([]message.Message, error) {
+func (s *SQLite) GetAllMessagesFromChannel(channelPath string) ([]message.Message, error) {
 
 	rows, err := s.database.Query("SELECT inbox.message "+
 		"FROM inbox "+
 		"JOIN channelMessage ON inbox.messageID = channelMessage.messageID "+
-		"WHERE channelMessage.channelID = ? "+
-		"ORDER BY inbox.storedTime DESC", channelID)
+		"WHERE channelMessage.channelPath = ? "+
+		"ORDER BY inbox.storedTime DESC", channelPath)
 	if err != nil {
 		return nil, err
 	}
@@ -447,7 +447,7 @@ func (s *SQLite) GetResultForGetMessagesByID(params map[string][]string) (map[st
 		}
 	}
 
-	rows, err := s.database.Query("SELECT message, channelID "+
+	rows, err := s.database.Query("SELECT message, channelPath "+
 		"FROM inbox JOIN channelMessage on inbox.messageID = channelMessage.messageID "+
 		"WHERE isBaseChannel = ? "+
 		"AND inbox.messageID IN ("+strings.Repeat("?,", len(interfaces)-2)+"?"+") ", interfaces...)
@@ -486,7 +486,7 @@ func (s *SQLite) GetParamsForGetMessageByID(params map[string][]string) (map[str
 		}
 	}
 
-	rows, err := s.database.Query("SELECT inbox.messageID, channelID "+
+	rows, err := s.database.Query("SELECT inbox.messageID, channelPath "+
 		"FROM inbox JOIN channelMessage on inbox.messageID = channelMessage.messageID "+
 		"WHERE isBaseChannel = ? "+
 		"AND inbox.messageID IN ("+strings.Repeat("?,", len(interfaces)-2)+"?"+") ", interfaces...)
@@ -525,7 +525,7 @@ func (s *SQLite) GetParamsForGetMessageByID(params map[string][]string) (map[str
 
 func (s *SQLite) HasChannel(channel string) (bool, error) {
 	var c string
-	err := s.database.QueryRow("SELECT channelID from channel WHERE channelID = ?", channel).Scan(&c)
+	err := s.database.QueryRow("SELECT channelPath from channel WHERE channelPath = ?", channel).Scan(&c)
 	if err != nil && errors.Is(err, sql.ErrNoRows) {
 		return false, nil
 	} else if err != nil && !errors.Is(err, sql.ErrNoRows) {
@@ -582,25 +582,26 @@ func (s *SQLite) StoreChannelsAndMessageWithLaoGreet(
 	if err != nil {
 		return err
 	}
-	_, err = tx.Exec("INSERT INTO channelMessage (channelID, messageID, isBaseChannel) VALUES (?, ?, ?)", "/root", msg.MessageID, true)
+	_, err = tx.Exec("INSERT INTO channelMessage (channelPath, messageID, isBaseChannel) VALUES (?, ?, ?)", "/root", msg.MessageID, true)
 	if err != nil {
 		return err
 	}
-	_, err = tx.Exec("INSERT INTO channel (channelID, typeID, laoID) VALUES (?, ?, ?)", laoID, "lao", laoID)
+	_, err = tx.Exec("INSERT INTO channel (channelPath, typeID, laoID) VALUES (?, ?, ?)", laoID, "lao", laoID)
 	if err != nil {
 		return err
 	}
-	_, err = tx.Exec("INSERT INTO channelMessage (channelID, messageID, isBaseChannel) VALUES (?, ?, ?)", laoID, msg.MessageID, false)
+	_, err = tx.Exec("INSERT INTO channelMessage (channelPath, messageID, isBaseChannel) VALUES (?, ?, ?)", laoID, msg.MessageID, false)
 	if err != nil {
 		return err
 	}
 	for channel, channelType := range channels {
-		_, err = tx.Exec("INSERT INTO channel (channelID, typeID, laoID) VALUES (?, ?, ?)", channel, channelTypeNameToID[channelType], laoID)
+		_, err = tx.Exec("INSERT INTO channel (channelPath, typeID, laoID) VALUES (?, ?, ?)",
+			channel, channelTypeNameToID[channelType], laoID)
 		if err != nil {
 			return err
 		}
 	}
-	_, err = tx.Exec("INSERT INTO key (channelID, publicKey) VALUES (?, ?)", laoID, organizerPubBuf)
+	_, err = tx.Exec("INSERT INTO key (channelPath, publicKey) VALUES (?, ?)", laoID, organizerPubBuf)
 	if err != nil {
 		return err
 	}
@@ -608,7 +609,7 @@ func (s *SQLite) StoreChannelsAndMessageWithLaoGreet(
 	if err != nil {
 		return err
 	}
-	_, err = tx.Exec("INSERT INTO channelMessage (channelID, messageID, isBaseChannel) VALUES (?, ?, ?)", laoID, laoGreetMsg.MessageID, true)
+	_, err = tx.Exec("INSERT INTO channelMessage (channelPath, messageID, isBaseChannel) VALUES (?, ?, ?)", laoID, laoGreetMsg.MessageID, true)
 	if err != nil {
 		return err
 	}
@@ -628,7 +629,7 @@ func (s *SQLite) StoreChannelsAndMessageWithLaoGreet(
 
 func (s *SQLite) GetOrganizerPubKey(laoID string) (kyber.Point, error) {
 	var organizerPubBuf []byte
-	err := s.database.QueryRow("SELECT publicKey FROM key WHERE channelID = ?", laoID).Scan(&organizerPubBuf)
+	err := s.database.QueryRow("SELECT publicKey FROM key WHERE channelPath = ?", laoID).Scan(&organizerPubBuf)
 	organizerPubKey := crypto.Suite.Point()
 	err = organizerPubKey.UnmarshalBinary(organizerPubBuf)
 	if err != nil {
@@ -644,7 +645,8 @@ func (s *SQLite) GetRollCallState(channel string) (string, error) {
 			" FROM inbox"+
 			" WHERE storedTime = (SELECT MAX(storedTime)"+
 			" FROM (SELECT * FROM inbox JOIN channelMessage ON inbox.messageID = channelMessage.messageID)"+
-			" WHERE json_extract(messageData, '$.object') = ? AND channelID = ?)", messagedata.RollCallObject, channel).Scan(&state)
+			" WHERE json_extract(messageData, '$.object') = ? AND channelPath= ?)",
+		messagedata.RollCallObject, channel).Scan(&state)
 	if err != nil {
 		return "", err
 	}
@@ -657,7 +659,7 @@ func (s *SQLite) CheckPrevID(channel, nextID, expectedState string) (bool, error
 		" FROM inbox"+
 		" WHERE storedTime= (SELECT MAX(storedTime)"+
 		" FROM (SELECT * FROM inbox JOIN channelMessage ON inbox.messageID = channelMessage.messageID)"+
-		" WHERE json_extract(messageData, '$.object') = ? AND channelID = ?)", messagedata.RollCallObject, channel).Scan(&lastMsg)
+		" WHERE json_extract(messageData, '$.object') = ? AND channelPath = ?)", messagedata.RollCallObject, channel).Scan(&lastMsg)
 
 	if err != nil {
 		return false, err
@@ -710,7 +712,7 @@ func (s *SQLite) GetLaoWitnesses(laoID string) (map[string]struct{}, error) {
 	var witnesses []string
 	err := s.database.QueryRow("SELECT json_extract(messageData, '$.witnesses')"+
 		" FROM (select * FROM inbox JOIN channelMessage ON inbox.messageID = channelMessage.messageID)"+
-		" WHERE channelID = ? AND json_extract(messageData, '$.object') = ? AND json_extract(messageData, '$.action') = ?",
+		" WHERE channelPath = ? AND json_extract(messageData, '$.object') = ? AND json_extract(messageData, '$.action') = ?",
 		laoID, messagedata.LAOObject, messagedata.LAOActionCreate).Scan(&witnesses)
 	if err != nil {
 		return nil, err
@@ -746,13 +748,13 @@ func (s *SQLite) StoreChannelsAndMessage(channels []string, laoID string, msg me
 	if err != nil {
 		return err
 	}
-	_, err = tx.Exec("INSERT INTO channelMessage (channelID, messageID, isBaseChannel) VALUES (?, ?, ?)",
+	_, err = tx.Exec("INSERT INTO channelMessage (channelPath, messageID, isBaseChannel) VALUES (?, ?, ?)",
 		laoID, msg.MessageID, true)
 	if err != nil {
 		return err
 	}
 	for _, channel := range channels {
-		_, err = tx.Exec("INSERT INTO channel (channelID, typeID, laoID) VALUES (?, ?, ?)",
+		_, err = tx.Exec("INSERT INTO channel (channelPath, typeID, laoID) VALUES (?, ?, ?)",
 			channel, "channel", laoID)
 		if err != nil {
 			return err
@@ -783,6 +785,10 @@ func (s *SQLite) StoreMessageWithElectionKey(
 	if err != nil {
 		return err
 	}
+	electionKey, err := base64.URLEncoding.DecodeString(electionKeyMsg.Data)
+	if err != nil {
+		return err
+	}
 	electionKeyMsgBytes, err := json.Marshal(electionKeyMsg)
 	if err != nil {
 		return err
@@ -803,32 +809,32 @@ func (s *SQLite) StoreMessageWithElectionKey(
 	if err != nil {
 		return err
 	}
-	_, err = tx.Exec("INSERT INTO channelMessage (channelID, messageID, isBaseChannel) VALUES (?, ?, ?)",
+	_, err = tx.Exec("INSERT INTO channelMessage (channelPath, messageID, isBaseChannel) VALUES (?, ?, ?)",
 		laoID, msg.MessageID, true)
 	if err != nil {
 		return err
 	}
-	_, err = tx.Exec("INSERT INTO channel (channelID, typeID, laoID) VALUES (?, ?, ?)",
+	_, err = tx.Exec("INSERT INTO channel (channelPath, typeID, laoID) VALUES (?, ?, ?)",
 		electionID, "election", laoID)
 	if err != nil {
 		return err
 	}
-	_, err = tx.Exec("INSERT INTO channelMessage (channelID, messageID, isBaseChannel) VALUES (?, ?, ?)",
+	_, err = tx.Exec("INSERT INTO channelMessage (channelPath, messageID, isBaseChannel) VALUES (?, ?, ?)",
 		electionID, msg.MessageID, false)
 	if err != nil {
 		return err
 	}
-	_, err = tx.Exec("INSERT INTO key (channelID, publicKey, privateKey) VALUES (?, ?, ?)",
+	_, err = tx.Exec("INSERT INTO key (channelPath, publicKey, privateKey) VALUES (?, ?, ?)",
 		electionID, electionPubBuf, electionSecretBuf)
 	if err != nil {
 		return err
 	}
-	_, err = tx.Exec("INSERT INTO inbox (messageID, message, storedTime) VALUES (?, ?, ?)",
-		electionKeyMsg.MessageID, electionKeyMsgBytes, storedTime)
+	_, err = tx.Exec("INSERT INTO inbox (messageID, message, messageData, storedTime) VALUES (?, ?, ?, ?)",
+		electionKeyMsg.MessageID, electionKeyMsgBytes, electionKey, storedTime)
 	if err != nil {
 		return err
 	}
-	_, err = tx.Exec("INSERT INTO channelMessage (channelID, messageID) VALUES (?, ?)",
+	_, err = tx.Exec("INSERT INTO channelMessage (channelPath, messageID) VALUES (?, ?)",
 		electionID, electionKeyMsg.MessageID)
 	if err != nil {
 		return err
@@ -849,13 +855,13 @@ func (s *SQLite) GetLAOOrganizerPubKey(electionID string) (kyber.Point, error) {
 	defer tx.Rollback()
 
 	var laoID string
-	err = tx.QueryRow("SELECT laoID FROM channel WHERE channelID = ?", electionID).Scan(&laoID)
+	err = tx.QueryRow("SELECT laoID FROM channel WHERE channelPath = ?", electionID).Scan(&laoID)
 	if err != nil {
 		return nil, err
 	}
 
 	var electionPubBuf []byte
-	err = tx.QueryRow("SELECT publicKey FROM key WHERE channelID = ?", laoID).Scan(&electionPubBuf)
+	err = tx.QueryRow("SELECT publicKey FROM key WHERE channelPath = ?", laoID).Scan(&electionPubBuf)
 	electionPubKey := crypto.Suite.Point()
 	err = electionPubKey.UnmarshalBinary(electionPubBuf)
 	if err != nil {
@@ -872,7 +878,7 @@ func (s *SQLite) GetLAOOrganizerPubKey(electionID string) (kyber.Point, error) {
 
 func (s *SQLite) GetElectionSecretKey(electionID string) (kyber.Scalar, error) {
 	var electionSecretBuf []byte
-	err := s.database.QueryRow("SELECT privateKey FROM key WHERE channelID = ?", electionID).Scan(&electionSecretBuf)
+	err := s.database.QueryRow("SELECT privateKey FROM key WHERE channelPath = ?", electionID).Scan(&electionSecretBuf)
 	if err != nil {
 		return nil, err
 	}
@@ -885,66 +891,51 @@ func (s *SQLite) GetElectionSecretKey(electionID string) (kyber.Scalar, error) {
 	return electionSecretKey, nil
 }
 
-func (s *SQLite) getElectiontSateCounter(electionID string) (int, error) {
-	rows, err := s.database.Query("SELECT json_extract(messageData, '$.started')"+
+func (s *SQLite) getElectionStateCounter(electionID string) (string, error) {
+	var state string
+	err := s.database.QueryRow("SELECT json_extract(messageData, '$.action')"+
 		" FROM inbox"+
 		" WHERE storedTime = (SELECT MAX(storedTime)"+
 		" FROM (SELECT * FROM inbox JOIN channelMessage ON inbox.messageID = channelMessage.messageID)"+
-		" WHERE channelID = ? AND json_extract(messageData, '$.object') = ?"+
-		" AND (json_extract(messageData, '$.action') = ? OR json_extract(messageData, '$.action') = ?))",
-		electionID, messagedata.ElectionObject, messagedata.ElectionActionOpen, messagedata.ElectionActionEnd)
+		" WHERE channelPath = ?)", electionID).Scan(&state)
 
-	if err != nil {
-		return -1, err
+	if err != nil && !errors.Is(err, sql.ErrNoRows) {
+		return "", err
 	}
-	count := 0
-	for rows.Next() {
-		count++
-	}
-	if rows.Err() != nil {
-		return -1, err
-	}
-	return count, nil
+	return state, nil
 }
 
-func (s *SQLite) IsElectionStartedOrTerminated(electionID string) (bool, error) {
-	count, err := s.getElectiontSateCounter(electionID)
+func (s *SQLite) IsElectionStartedOrEnded(electionID string) (bool, error) {
+	state, err := s.getElectionStateCounter(electionID)
 	if err != nil {
 		return false, err
 	}
-	if count >= 1 {
-		return true, nil
-	}
-	return false, nil
+
+	return state == messagedata.ElectionActionOpen || state == messagedata.ElectionActionEnd, nil
 }
 
 func (s *SQLite) IsElectionStarted(electionID string) (bool, error) {
-	count, err := s.getElectiontSateCounter(electionID)
+	state, err := s.getElectionStateCounter(electionID)
 	if err != nil {
 		return false, err
 	}
-	if count == 1 {
-		return true, nil
-	}
-	return false, nil
+	return state == messagedata.ElectionActionOpen, nil
 }
 
-func (s *SQLite) IsElectionTerminated(electionID string) (bool, error) {
-	count, err := s.getElectiontSateCounter(electionID)
+func (s *SQLite) IsElectionEnded(electionID string) (bool, error) {
+	state, err := s.getElectionStateCounter(electionID)
 	if err != nil {
 		return false, err
 	}
-	if count == 2 {
-		return true, nil
-	}
-	return false, nil
+
+	return state == messagedata.ElectionActionEnd, nil
 }
 
 func (s *SQLite) GetElectionCreationTime(electionID string) (int64, error) {
 	var creationTime int64
 	err := s.database.QueryRow("SELECT json_extract(messageData, '$.created_at')"+
 		"FROM (SELECT * FROM inbox JOIN channelMessage ON inbox.messageID = channelMessage.messageID)"+
-		"WHERE channelID = ? AND json_extract(messageData, '$.object') = ? AND json_extract(messageData, '$.action') = ?",
+		"WHERE channelPath = ? AND json_extract(messageData, '$.object') = ? AND json_extract(messageData, '$.action') = ?",
 		electionID, messagedata.ElectionObject, messagedata.ElectionActionSetup).Scan(&creationTime)
 
 	if err != nil {
@@ -957,7 +948,7 @@ func (s *SQLite) GetElectionType(electionID string) (string, error) {
 	var electionType string
 	err := s.database.QueryRow("SELECT json_extract(messageData, '$.version')"+
 		"FROM (SELECT * FROM inbox JOIN channelMessage ON inbox.messageID = channelMessage.messageID)"+
-		"WHERE channelID = ? AND json_extract(messageData, '$.object') = ? AND json_extract(messageData, '$.action') = ?",
+		"WHERE channelPath = ? AND json_extract(messageData, '$.object') = ? AND json_extract(messageData, '$.action') = ?",
 		electionID, messagedata.ElectionObject, messagedata.ElectionActionSetup).Scan(&electionType)
 
 	if err != nil {
@@ -969,13 +960,13 @@ func (s *SQLite) GetElectionType(electionID string) (string, error) {
 func (s *SQLite) GetElectionAttendees(electionID string) (map[string]struct{}, error) {
 	var rollCallCloseBytes []byte
 	err := s.database.QueryRow(`
-	SELECT i.messageData
+	SELECT joined.messageData
 	FROM (
 		SELECT * FROM inbox
 		JOIN channelMessage ON inbox.messageID = channelMessage.messageID
 	) joined
-	JOIN channel c ON joined.channelID = c.laoID
-	WHERE c.channelID = ? 
+	JOIN channel c ON joined.channelPath = c.laoID
+	WHERE c.channelPath = ? 
 	AND json_extract(joined.messageData, '$.object') = ? 
 	AND json_extract(joined.messageData, '$.action') = ?
 	AND joined.storedTime = (
@@ -984,7 +975,7 @@ func (s *SQLite) GetElectionAttendees(electionID string) (map[string]struct{}, e
 			SELECT * FROM inbox
 			JOIN channelMessage ON inbox.messageID = channelMessage.messageID
 		)
-		WHERE channelID = c.laoID 
+		WHERE channelPath = c.laoID 
 		AND json_extract(messageData, '$.object') = ? 
 		AND json_extract(messageData, '$.action') = ?
 	)`,
@@ -1015,7 +1006,7 @@ func (s *SQLite) getElectionSetup(electionID string, tx *sql.Tx) (messagedata.El
 	var electionSetupBytes []byte
 	err := tx.QueryRow("SELECT messageData"+
 		" FROM (SELECT * FROM inbox JOIN channelMessage ON inbox.messageID = channelMessage.messageID)"+
-		" WHERE channelID = ? AND json_extract(messageData, '$.object') = ? AND json_extract(messageData, '$.action') = ?",
+		" WHERE channelPath = ? AND json_extract(messageData, '$.object') = ? AND json_extract(messageData, '$.action') = ?",
 		electionID, messagedata.ElectionObject, messagedata.ElectionActionSetup).Scan(&electionSetupBytes)
 	if err != nil {
 		return messagedata.ElectionSetup{}, err
@@ -1075,7 +1066,7 @@ func (s *SQLite) GetElectionQuestionsWithValidVotes(electionID string) (map[stri
 
 	rows, err := tx.Query("SELECT messageData, messageID, json_extract(message, '$.sender')"+
 		" FROM (SELECT * FROM inbox JOIN channelMessage ON inbox.messageID = channelMessage.messageID)"+
-		" WHERE channelID = ? AND json_extract(messageData, '$.object') = ? AND json_extract(messageData, '$.action') = ?",
+		" WHERE channelPath = ? AND json_extract(messageData, '$.object') = ? AND json_extract(messageData, '$.action') = ?",
 		electionID, messagedata.ElectionObject, messagedata.VoteActionCastVote)
 
 	if err != nil {
@@ -1121,7 +1112,7 @@ func getQuestionsFromMessage(electionSetup messagedata.ElectionSetup) (map[strin
 		questions[question.ID] = types.Question{
 			ID:            []byte(question.ID),
 			BallotOptions: ballotOptions,
-			ValidVotes:    nil,
+			ValidVotes:    make(map[string]types.ValidVote),
 			Method:        question.VotingMethod,
 		}
 	}
@@ -1147,7 +1138,7 @@ func updateVote(msgID, sender string, castVote messagedata.VoteCastVote, questio
 	return nil
 }
 
-func (s *SQLite) StoreMessageAndElectionResult(channelID string, msg, electionResultMsg message.Message) error {
+func (s *SQLite) StoreMessageAndElectionResult(channelPath string, msg, electionResultMsg message.Message) error {
 	tx, err := s.database.Begin()
 	if err != nil {
 		return err
@@ -1177,8 +1168,8 @@ func (s *SQLite) StoreMessageAndElectionResult(channelID string, msg, electionRe
 	if err != nil {
 		return err
 	}
-	_, err = tx.Exec("INSERT INTO channelMessage (channelID, messageID, isBaseChannel) VALUES (?, ?, ?)",
-		channelID, msg.MessageID, true)
+	_, err = tx.Exec("INSERT INTO channelMessage (channelPath, messageID, isBaseChannel) VALUES (?, ?, ?)",
+		channelPath, msg.MessageID, true)
 	if err != nil {
 		return err
 	}
@@ -1187,8 +1178,8 @@ func (s *SQLite) StoreMessageAndElectionResult(channelID string, msg, electionRe
 	if err != nil {
 		return err
 	}
-	_, err = tx.Exec("INSERT INTO channelMessage (channelID, messageID) VALUES (?, ?)",
-		channelID, electionResultMsg.MessageID)
+	_, err = tx.Exec("INSERT INTO channelMessage (channelPath, messageID) VALUES (?, ?)",
+		channelPath, electionResultMsg.MessageID)
 	if err != nil {
 		return err
 	}

@@ -599,11 +599,11 @@ func (_m *MockRepository) IsElectionStarted(electionID string) (bool, error) {
 }
 
 // IsElectionStartedOrTerminated provides a mock function with given fields: electionID
-func (_m *MockRepository) IsElectionStartedOrTerminated(electionID string) (bool, error) {
+func (_m *MockRepository) IsElectionStartedOrEnded(electionID string) (bool, error) {
 	ret := _m.Called(electionID)
 
 	if len(ret) == 0 {
-		panic("no return value specified for IsElectionStartedOrTerminated")
+		panic("no return value specified for IsElectionStartedOrEnded")
 	}
 
 	var r0 bool
@@ -627,11 +627,11 @@ func (_m *MockRepository) IsElectionStartedOrTerminated(electionID string) (bool
 }
 
 // IsElectionTerminated provides a mock function with given fields: electionID
-func (_m *MockRepository) IsElectionTerminated(electionID string) (bool, error) {
+func (_m *MockRepository) IsElectionEnded(electionID string) (bool, error) {
 	ret := _m.Called(electionID)
 
 	if len(ret) == 0 {
-		panic("no return value specified for IsElectionTerminated")
+		panic("no return value specified for IsElectionEnded")
 	}
 
 	var r0 bool

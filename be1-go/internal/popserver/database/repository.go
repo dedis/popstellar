@@ -116,10 +116,10 @@ type ElectionRepository interface {
 	GetElectionSecretKey(electionID string) (kyber.Scalar, error)
 
 	// IsElectionStartedOrTerminated returns true if the election is started or terminated.
-	IsElectionStartedOrTerminated(electionID string) (bool, error)
+	IsElectionStartedOrEnded(electionID string) (bool, error)
 
 	// IsElectionTerminated returns true if the election is terminated.
-	IsElectionTerminated(electionID string) (bool, error)
+	IsElectionEnded(electionID string) (bool, error)
 
 	//IsElectionStarted returns true if the election is started.
 	IsElectionStarted(electionID string) (bool, error)

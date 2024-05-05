@@ -9,6 +9,7 @@ import (
 	"os"
 	"path/filepath"
 	"popstellar/crypto"
+	"popstellar/internal/popserver/types"
 	"popstellar/message/messagedata"
 	"popstellar/message/query/method/message"
 	"testing"
@@ -498,6 +499,10 @@ func Test_SQLite_StoreMessageWithElectionKey(t *testing.T) {
 	messages, err = lite.GetAllMessagesFromChannel(electionID)
 	require.NoError(t, err)
 	require.Equal(t, expected, messages)
+
+	returnedSecretKey, err := lite.GetElectionSecretKey(electionID)
+	require.NoError(t, err)
+	require.True(t, secret.Equal(returnedSecretKey))
 }
 
 //======================================================================================================================
@@ -512,13 +517,13 @@ func Test_SQLite_IsElectionStartedOrTerminated(t *testing.T) {
 
 	electionID := "electionID"
 	laoID := "laoID"
-	ok, err := lite.IsElectionStartedOrTerminated(electionID)
+	ok, err := lite.IsElectionStartedOrEnded(electionID)
 	require.NoError(t, err)
 	require.False(t, ok)
 
 	electionOpen := messagedata.ElectionOpen{
-		Object:   "election",
-		Action:   "open",
+		Object:   messagedata.ElectionObject,
+		Action:   messagedata.ElectionActionOpen,
 		Election: electionID,
 		Lao:      laoID,
 		OpenedAt: 123456789,
@@ -536,13 +541,21 @@ func Test_SQLite_IsElectionStartedOrTerminated(t *testing.T) {
 
 	err = lite.StoreMessageAndData(electionID, electionOpenMsg)
 	require.NoError(t, err)
-	ok, err = lite.IsElectionStartedOrTerminated(electionID)
+	ok, err = lite.IsElectionStartedOrEnded(electionID)
 	require.NoError(t, err)
 	require.True(t, ok)
 
+	ok, err = lite.IsElectionStarted(electionID)
+	require.NoError(t, err)
+	require.True(t, ok)
+
+	ok, err = lite.IsElectionEnded(electionID)
+	require.NoError(t, err)
+	require.False(t, ok)
+
 	electionClose := messagedata.ElectionEnd{
-		Object:          "election",
-		Action:          "end",
+		Object:          messagedata.ElectionObject,
+		Action:          messagedata.ElectionActionEnd,
 		Election:        electionID,
 		Lao:             laoID,
 		CreatedAt:       123456789,
@@ -561,12 +574,20 @@ func Test_SQLite_IsElectionStartedOrTerminated(t *testing.T) {
 
 	err = lite.StoreMessageAndData(electionID, electionCloseMsg)
 	require.NoError(t, err)
-	ok, err = lite.IsElectionStartedOrTerminated(electionID)
+	ok, err = lite.IsElectionStartedOrEnded(electionID)
 	require.NoError(t, err)
 	require.True(t, ok)
+
+	ok, err = lite.IsElectionEnded(electionID)
+	require.NoError(t, err)
+	require.True(t, ok)
+
+	ok, err = lite.IsElectionStarted(electionID)
+	require.NoError(t, err)
+	require.False(t, ok)
 }
 
-func Test_SQLite_GetElectionCreationTime(t *testing.T) {
+func Test_SQLite_GetElectionCreationTimeAndType(t *testing.T) {
 	lite, dir, err := newFakeSQLite(t)
 	require.NoError(t, err)
 	defer lite.Close()
@@ -580,6 +601,7 @@ func Test_SQLite_GetElectionCreationTime(t *testing.T) {
 		Action:    "setup",
 		ID:        "electionSetupID",
 		CreatedAt: creationTime,
+		Version:   messagedata.OpenBallot,
 	}
 
 	electionSetupBytes, err := json.Marshal(electionSetup)
@@ -599,6 +621,205 @@ func Test_SQLite_GetElectionCreationTime(t *testing.T) {
 	returnedTime, err := lite.GetElectionCreationTime(electionID)
 	require.NoError(t, err)
 	require.Equal(t, creationTime, returnedTime)
+
+	electionType, err := lite.GetElectionType(electionID)
+	require.NoError(t, err)
+	require.Equal(t, messagedata.OpenBallot, electionType)
+}
+
+func Test_SQLite_GetElectionAttendees(t *testing.T) {
+	lite, dir, err := newFakeSQLite(t)
+	require.NoError(t, err)
+	defer lite.Close()
+	defer os.RemoveAll(dir)
+
+	electionID := "electionID"
+	laoID := "laoID"
+	attendees := []string{"attendee1", "attendee2", "attendee3"}
+	expected := map[string]struct{}{"attendee1": {}, "attendee2": {}, "attendee3": {}}
+
+	rollCallClose := messagedata.RollCallClose{
+		Object:    messagedata.RollCallObject,
+		Action:    messagedata.RollCallActionClose,
+		UpdateID:  "updateID",
+		Closes:    "closes",
+		ClosedAt:  123456789,
+		Attendees: attendees,
+	}
+
+	rollCallCloseBytes, err := json.Marshal(rollCallClose)
+	require.NoError(t, err)
+
+	rollCallCloseMsg := message.Message{
+		Data:              base64.URLEncoding.EncodeToString(rollCallCloseBytes),
+		Sender:            "sender1",
+		Signature:         "sig1",
+		MessageID:         "ID1",
+		WitnessSignatures: []message.WitnessSignature{},
+	}
+
+	err = lite.StoreMessageAndData(laoID, rollCallCloseMsg)
+	require.NoError(t, err)
+
+	err = lite.StoreChannel(electionID, "election", laoID)
+
+	returnedAttendees, err := lite.GetElectionAttendees(electionID)
+	require.NoError(t, err)
+	require.Equal(t, expected, returnedAttendees)
+}
+
+func Test_SQLite_GetElectionQuestionsWithVotes(t *testing.T) {
+	lite, dir, err := newFakeSQLite(t)
+	require.NoError(t, err)
+	defer lite.Close()
+	defer os.RemoveAll(dir)
+
+	electionID := "electionID"
+	laoID := "laoID"
+
+	electionSetup := messagedata.ElectionSetup{
+		Object:    "election",
+		Action:    "setup",
+		ID:        "electionSetupID",
+		CreatedAt: 123456789,
+		Version:   messagedata.OpenBallot,
+		Questions: []messagedata.ElectionSetupQuestion{
+			{
+				ID:            "questionID1",
+				Question:      "question1",
+				VotingMethod:  "Plurality",
+				BallotOptions: []string{"Option1", "Option2"},
+			},
+			{
+				ID:            "questionID2",
+				Question:      "question2",
+				VotingMethod:  "Plurality",
+				BallotOptions: []string{"Options1", "Options2", "Options3"},
+			},
+		},
+	}
+
+	expected, err := getQuestionsFromMessage(electionSetup)
+
+	electionSetupBytes, err := json.Marshal(electionSetup)
+	require.NoError(t, err)
+
+	electionSetupMsg := newSQLiteMsg(electionSetupBytes, "sender", "messageID")
+
+	err = lite.StoreMessageAndData(electionID, electionSetupMsg)
+	require.NoError(t, err)
+
+	questions, err := lite.GetElectionQuestions(electionID)
+	require.NoError(t, err)
+	require.Equal(t, expected, questions)
+
+	// Add votes to the election
+	var castVotes []messagedata.VoteCastVote
+	var votes []messagedata.Vote
+	votes = append(votes, messagedata.Vote{ID: "voteID1", Question: "questionID1", Vote: "option1"})
+	votes = append(votes, messagedata.Vote{ID: "voteID2", Question: "questionID2", Vote: "option1"})
+	castVotes = append(castVotes, newVoteCastVote(laoID, electionID, 1, votes))
+
+	votes = nil
+	votes = append(votes, messagedata.Vote{ID: "voteID3", Question: "questionID1", Vote: "option1"})
+	votes = append(votes, messagedata.Vote{ID: "voteID4", Question: "questionID2", Vote: "option3"})
+	castVotes = append(castVotes, newVoteCastVote(laoID, electionID, 2, votes))
+
+	votes = nil
+	votes = append(votes, messagedata.Vote{ID: "voteID5", Question: "questionID1", Vote: "option2"})
+	votes = append(votes, messagedata.Vote{ID: "voteID6", Question: "questionID2", Vote: "option2"})
+	castVotes = append(castVotes, newVoteCastVote(laoID, electionID, 3, votes))
+
+	for i, castVote := range castVotes {
+		castVoteBytes, err := json.Marshal(castVote)
+		require.NoError(t, err)
+		err = lite.StoreMessageAndData(electionID, newSQLiteMsg(castVoteBytes, "sender", "messageID"+fmt.Sprint(i)))
+		require.NoError(t, err)
+	}
+
+	votes = nil
+	votes = append(votes, messagedata.Vote{ID: "voteID7", Question: "questionID1", Vote: "option1"})
+	votes = append(votes, messagedata.Vote{ID: "voteID8", Question: "questionID2", Vote: "option3"})
+	castVote := newVoteCastVote(laoID, electionID, 4, votes)
+	castVoteBytes, err := json.Marshal(castVote)
+	require.NoError(t, err)
+	err = lite.StoreMessageAndData(electionID, newSQLiteMsg(castVoteBytes, "sender2", "messageID3"))
+
+	question1 := expected["questionID1"]
+	question1.ValidVotes = map[string]types.ValidVote{
+		"sender":  {"messageID2", "voteID5", 3, "option2"},
+		"sender2": {"messageID3", "voteID7", 4, "option1"},
+	}
+
+	question2 := expected["questionID2"]
+	question2.ValidVotes = map[string]types.ValidVote{
+		"sender":  {"messageID2", "voteID6", 3, "option2"},
+		"sender2": {"messageID3", "voteID8", 4, "option3"},
+	}
+
+	expected["questionID1"] = question1
+	expected["questionID2"] = question2
+
+	questions, err = lite.GetElectionQuestionsWithValidVotes(electionID)
+	require.NoError(t, err)
+	require.Equal(t, expected, questions)
+}
+
+func Test_SQLite_StoreMessageAndElectionResults(t *testing.T) {
+	lite, dir, err := newFakeSQLite(t)
+	require.NoError(t, err)
+	defer lite.Close()
+	defer os.RemoveAll(dir)
+
+	electionID := "electionID"
+	laoID := "laoID"
+
+	electionSetup := messagedata.ElectionSetup{
+		Object:    "election",
+		Action:    "setup",
+		ID:        "electionSetupID",
+		CreatedAt: 123456789,
+		Version:   messagedata.OpenBallot,
+		Questions: []messagedata.ElectionSetupQuestion{},
+	}
+
+	electionSetupBytes, err := json.Marshal(electionSetup)
+	require.NoError(t, err)
+	electionSetupMsg := newSQLiteMsg(electionSetupBytes, "sender", "messageID")
+
+	electionKey := messagedata.ElectionKey{
+		Object:   messagedata.ElectionObject,
+		Action:   messagedata.ElectionActionKey,
+		Election: electionID,
+		Key:      "key",
+	}
+
+	electionKeyBytes, err := json.Marshal(electionKey)
+	require.NoError(t, err)
+	electionKeyMsg := newSQLiteMsg(electionKeyBytes, "sender2", "messageID2")
+
+	err = lite.StoreChannel(laoID, "election", "")
+	require.NoError(t, err)
+
+	secret := crypto.Suite.Scalar().Pick(crypto.Suite.RandomStream())
+	point := crypto.Suite.Point().Mul(secret, nil)
+
+	err = lite.StoreMessageWithElectionKey(laoID, electionID, point, secret, electionSetupMsg, electionKeyMsg)
+	require.NoError(t, err)
+
+	expected := []message.Message{electionSetupMsg, electionKeyMsg}
+	messages, err := lite.GetAllMessagesFromChannel(electionID)
+	require.NoError(t, err)
+	require.Equal(t, expected, messages)
+
+	expected = []message.Message{electionSetupMsg}
+	messages, err = lite.GetAllMessagesFromChannel(laoID)
+	require.NoError(t, err)
+	require.Equal(t, expected, messages)
+
+	returnedKey, err := lite.GetElectionSecretKey(electionID)
+	require.NoError(t, err)
+	require.True(t, secret.Equal(returnedKey))
 
 }
 
@@ -674,4 +895,33 @@ func readJSON(t *testing.T, fileName string) []byte {
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
 	return buf
+}
+
+func newVote(voteID, questionID, vote string) messagedata.Vote {
+	return messagedata.Vote{
+		ID:       voteID,
+		Question: questionID,
+		Vote:     vote,
+	}
+}
+
+func newVoteCastVote(electionID, laoID string, createdAt int64, votes []messagedata.Vote) messagedata.VoteCastVote {
+	return messagedata.VoteCastVote{
+		Object:    messagedata.ElectionObject,
+		Action:    messagedata.VoteActionCastVote,
+		Lao:       laoID,
+		Election:  electionID,
+		CreatedAt: createdAt,
+		Votes:     votes,
+	}
+}
+
+func newSQLiteMsg(data []byte, sender string, messageID string) message.Message {
+	return message.Message{
+		Data:              base64.URLEncoding.EncodeToString(data),
+		Sender:            sender,
+		Signature:         "signature",
+		MessageID:         messageID,
+		WitnessSignatures: []message.WitnessSignature{},
+	}
 }

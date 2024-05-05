@@ -14,7 +14,6 @@ import (
 	"popstellar/message/messagedata"
 	"popstellar/message/query/method/message"
 	"sort"
-	"strings"
 )
 
 const (
@@ -28,6 +27,8 @@ func handleChannelElection(channel string, msg message.Message) *answer.Error {
 		return errAnswer
 	}
 
+	storeMessage := true
+
 	switch object + "#" + action {
 	case messagedata.ElectionObject + "#" + messagedata.VoteActionCastVote:
 		errAnswer = handleVoteCastVote(msg, channel)
@@ -35,6 +36,7 @@ func handleChannelElection(channel string, msg message.Message) *answer.Error {
 		errAnswer = handleElectionOpen(msg, channel)
 	case messagedata.ElectionObject + "#" + messagedata.ElectionActionEnd:
 		errAnswer = handleElectionEnd(msg, channel)
+		storeMessage = false
 	case messagedata.ElectionObject + "#" + messagedata.ElectionActionResult:
 		errAnswer = handleElectionResult(msg)
 	default:
@@ -45,17 +47,20 @@ func handleChannelElection(channel string, msg message.Message) *answer.Error {
 		return errAnswer
 	}
 
-	db, ok := database.GetElectionRepositoryInstance()
-	if !ok {
-		errAnswer := answer.NewInternalServerError("failed to get database").Wrap("handleChannelElection")
-		return errAnswer
-	}
+	if storeMessage {
+		db, ok := database.GetElectionRepositoryInstance()
+		if !ok {
+			errAnswer := answer.NewInternalServerError("failed to get database")
+			errAnswer = errAnswer.Wrap("handleChannelElection")
+			return errAnswer
+		}
 
-	err := db.StoreMessage(channel, msg)
-	if err != nil {
-		errAnswer = answer.NewInternalServerError("failed to store message: %v", err)
-		errAnswer = errAnswer.Wrap("handleChannelElection")
-		return errAnswer
+		err := db.StoreMessage(channel, msg)
+		if err != nil {
+			errAnswer = answer.NewInternalServerError("failed to store message: %v", err)
+			errAnswer = errAnswer.Wrap("handleChannelElection")
+			return errAnswer
+		}
 	}
 
 	return nil
@@ -113,56 +118,13 @@ func handleVoteCastVote(msg message.Message, channel string) *answer.Error {
 	}
 
 	//verify message data
+	errAnswer = voteCastVote.Verify(channel)
+	if errAnswer != nil {
+		errAnswer = errAnswer.Wrap("handleVoteCastVote")
+		return errAnswer
+	}
 
-	// verify lao id is base64URL encoded
-	_, err = base64.URLEncoding.DecodeString(voteCastVote.Lao)
-	if err != nil {
-		errAnswer = answer.NewInvalidMessageFieldError("failed to decode lao: %v", err)
-		errAnswer = errAnswer.Wrap("handleVoteCastVote")
-		return errAnswer
-	}
-	// verify election id is base64URL encoded
-	_, err = base64.URLEncoding.DecodeString(voteCastVote.Election)
-	if err != nil {
-		errAnswer = answer.NewInvalidMessageFieldError("failed to decode election: %v", err)
-		errAnswer = errAnswer.Wrap("handleVoteCastVote")
-		return errAnswer
-	}
-	// split channel to [lao id, election id]
-	noRoot := strings.ReplaceAll(channel, messagedata.RootPrefix, "")
-	IDs := strings.Split(noRoot, "/")
-	if len(IDs) != 2 {
-		errAnswer = answer.NewInvalidMessageFieldError("failed to split channel: %v", channel)
-		errAnswer = errAnswer.Wrap("handleVoteCastVote")
-		return errAnswer
-	}
-	laoID := IDs[0]
-	electionID := IDs[1]
-	// verify if lao id is the same as the channel
-	if voteCastVote.Lao != laoID {
-		errAnswer = answer.NewInvalidMessageFieldError("lao id is not the same as the channel")
-		errAnswer = errAnswer.Wrap("handleVoteCastVote")
-		return errAnswer
-	}
-	// verify if election id is the same as the channel
-	if voteCastVote.Election != electionID {
-		errAnswer = answer.NewInvalidMessageFieldError("election id is not the same as the channel")
-		errAnswer = errAnswer.Wrap("handleVoteCastVote")
-		return errAnswer
-	}
-	// verify if election is terminated
-	terminated, err := db.IsElectionTerminated(channel)
-	if err != nil {
-		errAnswer = answer.NewInternalServerError("failed to get election termination status: %v", err)
-		errAnswer = errAnswer.Wrap("handleVoteCastVote")
-		return errAnswer
-	}
-	if terminated {
-		errAnswer = answer.NewInvalidMessageFieldError("election was already terminated")
-		errAnswer = errAnswer.Wrap("handleVoteCastVote")
-		return errAnswer
-	}
-	// verify that the election is  open
+	// verify that the election is open
 	started, err := db.IsElectionStarted(channel)
 	if err != nil {
 		errAnswer = answer.NewInternalServerError("failed to get election start status: %v", err)
@@ -195,7 +157,7 @@ func handleVoteCastVote(msg message.Message, channel string) *answer.Error {
 	}
 	// verify votes
 	for i, vote := range voteCastVote.Votes {
-		err := verifyVote(vote, channel, electionID)
+		err := verifyVote(vote, channel, voteCastVote.Election)
 		if err != nil {
 			errAnswer = answer.NewInvalidMessageFieldError("failed to validate vote %d: %v", i, err)
 			errAnswer = errAnswer.Wrap("handleVoteCastVote")
@@ -315,65 +277,28 @@ func handleElectionOpen(msg message.Message, channel string) *answer.Error {
 		return errAnswer
 	}
 
-	_, err = base64.URLEncoding.DecodeString(electionOpen.Lao)
-	if err != nil {
-		errAnswer = answer.NewInvalidMessageFieldError("failed to decode lao: %v", err)
-		errAnswer = errAnswer.Wrap("handleElectionOpen")
-		return errAnswer
-	}
-
-	_, err = base64.URLEncoding.DecodeString(electionOpen.Election)
-	if err != nil {
-		errAnswer = answer.NewInvalidMessageFieldError("failed to decode election: %v", err)
-		errAnswer = errAnswer.Wrap("handleElectionOpen")
-		return errAnswer
-	}
-	noRoot := strings.ReplaceAll(channel, messagedata.RootPrefix, "")
-
-	IDs := strings.Split(noRoot, "/")
-	if len(IDs) != 2 {
-		errAnswer = answer.NewInvalidMessageFieldError("failed to split channel: %v", channel)
-		errAnswer = errAnswer.Wrap("handleElectionOpen")
-		return errAnswer
-	}
-	laoID := IDs[0]
-	electionID := IDs[1]
-
-	// verify if lao id is the same as the channel
-	if electionOpen.Lao != laoID {
-		errAnswer = answer.NewInvalidMessageFieldError("lao id is not the same as the channel")
-		errAnswer = errAnswer.Wrap("handleElectionOpen")
-		return errAnswer
-	}
-
-	// verify if election id is the same as the channel
-	if electionOpen.Election != electionID {
-		errAnswer = answer.NewInvalidMessageFieldError("election id is not the same as the channel")
-		errAnswer = errAnswer.Wrap("handleElectionOpen")
-		return errAnswer
-	}
-
-	// verify opened at is positive
-	if electionOpen.OpenedAt < 0 {
-		errAnswer = answer.NewInvalidMessageFieldError("opened at is negative")
+	// verify message data
+	errAnswer = electionOpen.Verify(channel)
+	if errAnswer != nil {
 		errAnswer = errAnswer.Wrap("handleElectionOpen")
 		return errAnswer
 	}
 
 	// verify if the election was already started or terminated
-	ok, err = db.IsElectionStartedOrTerminated(electionID)
+	ok, err = db.IsElectionStartedOrEnded(channel)
 	if err != nil {
 		errAnswer = answer.NewInternalServerError("failed to get election start or termination status: %v", err)
 		errAnswer = errAnswer.Wrap("handleElectionOpen")
 		return errAnswer
 	}
+
 	if ok {
-		errAnswer = answer.NewInvalidMessageFieldError("election was already started or terminated")
+		errAnswer = answer.NewInvalidMessageFieldError("election is already started or ended")
 		errAnswer = errAnswer.Wrap("handleElectionOpen")
 		return errAnswer
 	}
 
-	createdAt, err := db.GetElectionCreationTime(electionID)
+	createdAt, err := db.GetElectionCreationTime(channel)
 	if err != nil {
 		errAnswer = answer.NewInternalServerError("failed to get election creation time: %v", err)
 		errAnswer = errAnswer.Wrap("handleElectionOpen")
@@ -424,7 +349,7 @@ func handleElectionEnd(msg message.Message, channel string) *answer.Error {
 		return errAnswer
 	}
 
-	organizerPubKey, err := db.GetLAOOrganizerPubKey(electionEnd.Election)
+	organizerPubKey, err := db.GetLAOOrganizerPubKey(channel)
 	if err != nil {
 		errAnswer := answer.NewInternalServerError("failed to get config").Wrap("handleElectionEnd")
 		return errAnswer
@@ -438,62 +363,11 @@ func handleElectionEnd(msg message.Message, channel string) *answer.Error {
 	}
 
 	// verify message data
-	_, err = base64.URLEncoding.DecodeString(electionEnd.Lao)
-	if err != nil {
-		errAnswer = answer.NewInvalidMessageFieldError("failed to decode lao: %v", err)
+	errAnswer = electionEnd.Verify(channel)
+	if errAnswer != nil {
 		errAnswer = errAnswer.Wrap("handleElectionEnd")
 		return errAnswer
-	}
 
-	_, err = base64.URLEncoding.DecodeString(electionEnd.Election)
-	if err != nil {
-		errAnswer = answer.NewInvalidMessageFieldError("failed to decode election: %v", err)
-		errAnswer = errAnswer.Wrap("handleElectionEnd")
-		return errAnswer
-	}
-
-	noRoot := strings.ReplaceAll(channel, messagedata.RootPrefix, "")
-	IDs := strings.Split(noRoot, "/")
-	if len(IDs) != 2 {
-		errAnswer = answer.NewInvalidMessageFieldError("failed to split channel: %v", channel)
-		errAnswer = errAnswer.Wrap("handleElectionEnd")
-		return errAnswer
-	}
-	laoID := IDs[0]
-	electionID := IDs[1]
-
-	// verify if lao id is the same as the channel
-	if electionEnd.Lao != laoID {
-		errAnswer = answer.NewInvalidMessageFieldError("lao id is not the same as the channel")
-		errAnswer = errAnswer.Wrap("handleElectionEnd")
-		return errAnswer
-	}
-
-	// verify if election id is the same as the channel
-	if electionEnd.Election != electionID {
-		errAnswer = answer.NewInvalidMessageFieldError("election id is not the same as the channel")
-		errAnswer = errAnswer.Wrap("handleElectionEnd")
-		return errAnswer
-	}
-
-	// verify message created at is positive
-	if electionEnd.CreatedAt < 0 {
-		errAnswer = answer.NewInvalidMessageFieldError("message created at is negative")
-		errAnswer = errAnswer.Wrap("handleElectionEnd")
-		return errAnswer
-	}
-
-	// verify if the election was already terminated
-	terminated, err := db.IsElectionTerminated(channel)
-	if err != nil {
-		errAnswer = answer.NewInternalServerError("failed to get election termination status: %v", err)
-		errAnswer = errAnswer.Wrap("handleElectionEnd")
-		return errAnswer
-	}
-	if terminated {
-		errAnswer = answer.NewInvalidMessageFieldError("election was already terminated")
-		errAnswer = errAnswer.Wrap("handleElectionEnd")
-		return errAnswer
 	}
 
 	// verify if the election is started
@@ -505,13 +379,6 @@ func handleElectionEnd(msg message.Message, channel string) *answer.Error {
 	}
 	if !started {
 		errAnswer = answer.NewInvalidMessageFieldError("election was not started")
-		errAnswer = errAnswer.Wrap("handleElectionEnd")
-		return errAnswer
-	}
-
-	// verify registered votes are base64URL encoded
-	if _, err := base64.URLEncoding.DecodeString(electionEnd.RegisteredVotes); err != nil {
-		errAnswer = answer.NewInvalidMessageFieldError("registered votes are not base64 encoded")
 		errAnswer = errAnswer.Wrap("handleElectionEnd")
 		return errAnswer
 	}
@@ -587,6 +454,10 @@ func verifyRegisteredVotes(electionEnd messagedata.ElectionEnd, questions map[st
 	validVotesHash := messagedata.Hash(voteIDs...)
 
 	// compare registered votes with local saved votes
+	a, _ := base64.URLEncoding.DecodeString(electionEnd.RegisteredVotes)
+	fmt.Println(string(a))
+	fmt.Println(electionEnd.RegisteredVotes)
+
 	if electionEnd.RegisteredVotes != validVotesHash {
 		errAnswer = answer.NewInvalidMessageFieldError("registered votes is %s, should be sorted and equal to %s", electionEnd.RegisteredVotes, validVotesHash)
 		errAnswer = errAnswer.Wrap("verifyRegisteredVotes")

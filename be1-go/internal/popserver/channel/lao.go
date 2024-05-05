@@ -66,6 +66,12 @@ func handleChannelLao(channel string, msg message.Message) *answer.Error {
 			return errAnswer
 		}
 	}
+
+	errAnswer = broadcastToAllClients(msg, channel)
+	if errAnswer != nil {
+		errAnswer = errAnswer.Wrap("handleChannelLao")
+		return errAnswer
+	}
 	return nil
 }
 

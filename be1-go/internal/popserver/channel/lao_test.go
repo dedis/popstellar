@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"github.com/stretchr/testify/require"
 	"popstellar/internal/popserver/database"
+	state "popstellar/internal/popserver/state"
 	"popstellar/message/messagedata"
 	"testing"
 	"time"
@@ -18,6 +19,10 @@ func Test_handleChannelLao(t *testing.T) {
 	require.NoError(t, err)
 	owner := base64.URLEncoding.EncodeToString(ownerPubBuf)
 	laoID := base64.URLEncoding.EncodeToString([]byte("laoID"))
+
+	subs, ok := state.GetSubsInstance()
+	require.True(t, ok)
+	subs.AddChannel(laoID)
 
 	// Test 1:Success For LaoState message
 	args = append(args, input{
@@ -89,8 +94,10 @@ func Test_handleChannelLao(t *testing.T) {
 		contains: "previous id does not exist",
 	})
 
-	// Test 8: Success for RollCallOpen message
 	laoID = base64.URLEncoding.EncodeToString([]byte("laoID2"))
+	subs.AddChannel(laoID)
+
+	// Test 8: Success for RollCallOpen message
 	args = append(args, input{
 		name:     "Test 8",
 		msg:      NewRollCallOpenMsg(t, owner, laoID, opens, opens, time.Now().Unix(), false, mockRepo),
@@ -120,8 +127,10 @@ func Test_handleChannelLao(t *testing.T) {
 		contains: "previous id does not exist",
 	})
 
-	// Test 11: Success for RollCallClose message
 	laoID = base64.URLEncoding.EncodeToString([]byte("laoID3"))
+	subs.AddChannel(laoID)
+
+	// Test 11: Success for RollCallClose message
 	args = append(args, input{
 		name:     "Test 11",
 		msg:      NewRollCallCloseMsg(t, owner, laoID, closes, closes, time.Now().Unix(), false, mockRepo),
@@ -204,8 +213,10 @@ func Test_handleChannelLao(t *testing.T) {
 		contains: "Question id is",
 	})
 
-	// Test 19: Success for ElectionSetup message
 	laoID = base64.URLEncoding.EncodeToString([]byte("laoID4"))
+	subs.AddChannel(laoID)
+
+	// Test 19: Success for ElectionSetup message
 	args = append(args, input{
 		name: "Test 19",
 		msg: NewElectionSetupMsg(t, ownerPublicKey, owner, laoID, laoID, electionsName, question, messagedata.OpenBallot,
