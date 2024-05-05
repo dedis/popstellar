@@ -15,7 +15,7 @@ import (
 func newMessage(t *testing.T, sender string, senderPK kyber.Scalar, data []byte) message.Message {
 	data64 := base64.URLEncoding.EncodeToString(data)
 
-	signature64 := "Signature"
+	signature64 := base64.URLEncoding.EncodeToString([]byte("Signature"))
 
 	if senderPK != nil {
 		signatureBuf, err := schnorr.Sign(crypto.Suite, senderPK, data)
