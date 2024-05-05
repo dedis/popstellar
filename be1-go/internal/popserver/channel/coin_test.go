@@ -6,13 +6,13 @@ import (
 	"github.com/stretchr/testify/require"
 	"os"
 	"path/filepath"
-	"popstellar/internal/popserver"
 	database2 "popstellar/internal/popserver/database"
 	"popstellar/internal/popserver/state"
 	"popstellar/internal/popserver/types"
 	"popstellar/message/messagedata"
 	"popstellar/message/query/method"
 	"popstellar/message/query/method/message"
+	"popstellar/network/socket"
 	"testing"
 )
 
@@ -23,7 +23,7 @@ type inputTestHandleChannelCoin struct {
 	channelID string
 	message   message.Message
 	hasError  bool
-	sockets   []*popserver.FakeSocket
+	sockets   []*socket.FakeSocket
 }
 
 func Test_handleChannelCoin(t *testing.T) {
@@ -137,7 +137,7 @@ func newSuccessTestHandleChannelCoin(t *testing.T, filename string, name string,
 
 	mockRepo.On("StoreMessage", channelID, m).Return(nil)
 
-	sockets := []*popserver.FakeSocket{
+	sockets := []*socket.FakeSocket{
 		{Id: laoID + "0"},
 		{Id: laoID + "1"},
 		{Id: laoID + "2"},

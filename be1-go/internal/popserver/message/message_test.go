@@ -8,12 +8,12 @@ import (
 	"github.com/stretchr/testify/require"
 	"io"
 	"os"
-	"popstellar/internal/popserver"
 	"popstellar/internal/popserver/utils"
 	jsonrpc "popstellar/message"
 	"popstellar/message/query"
 	"popstellar/message/query/method"
 	"popstellar/message/query/method/message"
+	"popstellar/network/socket"
 	"popstellar/validation"
 	"testing"
 )
@@ -94,7 +94,7 @@ func Test_handleMessage(t *testing.T) {
 
 	for _, i := range inputs {
 		t.Run(i.name, func(t *testing.T) {
-			fakeSocket := popserver.FakeSocket{Id: "fakesocket"}
+			fakeSocket := socket.FakeSocket{Id: "fakesocket"}
 			err := HandleMessage(&fakeSocket, i.message)
 			require.Error(t, err)
 		})
@@ -137,7 +137,7 @@ func Test_handleQuery(t *testing.T) {
 
 	for _, i := range inputs {
 		t.Run(i.name, func(t *testing.T) {
-			fakeSocket := popserver.FakeSocket{Id: "fakesocket"}
+			fakeSocket := socket.FakeSocket{Id: "fakesocket"}
 			_, errAnswer := handleQuery(&fakeSocket, i.message)
 			require.NotNil(t, errAnswer)
 		})

@@ -16,6 +16,7 @@ import (
 	"popstellar/internal/popserver/utils"
 	"popstellar/message/messagedata"
 	"popstellar/message/query/method/message"
+	"popstellar/network/socket"
 	"popstellar/validation"
 	"testing"
 	"time"
@@ -214,7 +215,7 @@ func Test_handleChannel(t *testing.T) {
 
 	for _, i := range inputs {
 		t.Run(i.name, func(t *testing.T) {
-			fakeSocket := popserver.FakeSocket{Id: "fakesocket"}
+			fakeSocket := socket.FakeSocket{Id: "fakesocket"}
 			errAnswer := HandleChannel(&fakeSocket, i.channelID, i.message)
 			require.Error(t, errAnswer)
 		})

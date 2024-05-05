@@ -6,7 +6,6 @@ import (
 	"github.com/stretchr/testify/require"
 	"golang.org/x/xerrors"
 	"popstellar/crypto"
-	"popstellar/internal/popserver"
 	"popstellar/internal/popserver/config"
 	"popstellar/internal/popserver/database"
 	"popstellar/internal/popserver/state"
@@ -15,6 +14,7 @@ import (
 	"popstellar/message/query"
 	"popstellar/message/query/method"
 	"popstellar/message/query/method/message"
+	"popstellar/network/socket"
 	"testing"
 )
 
@@ -32,7 +32,7 @@ func Test_handleCatchUp(t *testing.T) {
 	type input struct {
 		name        string
 		message     []byte
-		socket      *popserver.FakeSocket
+		socket      *socket.FakeSocket
 		result      []message.Message
 		isErrorTest bool
 	}
@@ -70,7 +70,7 @@ func Test_handleCatchUp(t *testing.T) {
 
 	mockRepo.On("GetAllMessagesFromChannel", catchup.Params.Channel).Return(messagesToCatchUp, nil)
 
-	s := &popserver.FakeSocket{Id: "fakesocket"}
+	s := &socket.FakeSocket{Id: "fakesocket"}
 
 	inputs = append(inputs, input{
 		name:        "catch up three messages",
@@ -139,7 +139,7 @@ func Test_handleGetMessagesByID(t *testing.T) {
 	type input struct {
 		name        string
 		message     []byte
-		socket      *popserver.FakeSocket
+		socket      *socket.FakeSocket
 		result      map[string][]message.Message
 		isErrorTest bool
 	}
@@ -184,7 +184,7 @@ func Test_handleGetMessagesByID(t *testing.T) {
 
 	mockRepository.On("GetResultForGetMessagesByID", paramsGetMessagesByID2).Return(result, nil)
 
-	s := &popserver.FakeSocket{Id: "fakesocket"}
+	s := &socket.FakeSocket{Id: "fakesocket"}
 
 	inputs = append(inputs, input{
 		name:        "get one message",
@@ -245,7 +245,7 @@ func Test_handleGreetServer(t *testing.T) {
 	type input struct {
 		name        string
 		message     []byte
-		socket      *popserver.FakeSocket
+		socket      *socket.FakeSocket
 		needSend    bool
 		isErrorTest bool
 	}
@@ -274,7 +274,7 @@ func Test_handleGreetServer(t *testing.T) {
 	greetServerBuf, err := json.Marshal(&greetServer1)
 	require.NoError(t, err)
 
-	s := &popserver.FakeSocket{Id: "fakesocket1"}
+	s := &socket.FakeSocket{Id: "fakesocket1"}
 
 	inputs = append(inputs, input{
 		name:        "reply with greetServer",
@@ -306,7 +306,7 @@ func Test_handleGreetServer(t *testing.T) {
 	greetServerBuf, err = json.Marshal(&greetServer2)
 	require.NoError(t, err)
 
-	s = &popserver.FakeSocket{Id: "fakesocket2"}
+	s = &socket.FakeSocket{Id: "fakesocket2"}
 
 	peers.AddPeerGreeted(s.Id)
 
@@ -340,7 +340,7 @@ func Test_handleGreetServer(t *testing.T) {
 	greetServerBuf, err = json.Marshal(&greetServer4)
 	require.NoError(t, err)
 
-	s = &popserver.FakeSocket{Id: "fakesocket4"}
+	s = &socket.FakeSocket{Id: "fakesocket4"}
 
 	err = peers.AddPeerInfo(s.Id, serverInfo4)
 	require.NoError(t, err)
@@ -385,7 +385,7 @@ func Test_handleHeartbeat(t *testing.T) {
 	type input struct {
 		name        string
 		message     []byte
-		socket      *popserver.FakeSocket
+		socket      *socket.FakeSocket
 		needSend    bool
 		isErrorTest bool
 		expected    map[string][]string
@@ -455,7 +455,7 @@ func Test_handleHeartbeat(t *testing.T) {
 
 	mockRepository.On("GetParamsForGetMessageByID", listMsg).Return(expected, nil)
 
-	s := &popserver.FakeSocket{Id: "fakesocket"}
+	s := &socket.FakeSocket{Id: "fakesocket"}
 
 	inputs = append(inputs, input{
 		name:        "reply with missingIDs",
@@ -476,7 +476,7 @@ func Test_handleHeartbeat(t *testing.T) {
 
 	mockRepository.On("GetParamsForGetMessageByID", listMsg2).Return(nil, nil)
 
-	s = &popserver.FakeSocket{Id: "fakesocket"}
+	s = &socket.FakeSocket{Id: "fakesocket"}
 
 	inputs = append(inputs, input{
 		name:        "already up to date",
@@ -537,7 +537,7 @@ func Test_handleSubscribe(t *testing.T) {
 
 	type input struct {
 		name        string
-		socket      *popserver.FakeSocket
+		socket      *socket.FakeSocket
 		message     []byte
 		isErrorTest bool
 		subscribe   method.Subscribe
@@ -564,7 +564,7 @@ func Test_handleSubscribe(t *testing.T) {
 	subscribeBuf, err := json.Marshal(&subscribe1)
 	require.NoError(t, err)
 
-	fakeSocket := popserver.FakeSocket{Id: "fakesocket1"}
+	fakeSocket := socket.FakeSocket{Id: "fakesocket1"}
 
 	subs.AddChannel("/root/lao1")
 
@@ -657,7 +657,7 @@ func Test_handleUnsubscribe(t *testing.T) {
 
 	type input struct {
 		name        string
-		socket      *popserver.FakeSocket
+		socket      *socket.FakeSocket
 		message     []byte
 		isErrorTest bool
 		unsubscribe method.Unsubscribe
@@ -684,7 +684,7 @@ func Test_handleUnsubscribe(t *testing.T) {
 	unsubscribeBuf, err := json.Marshal(&unsubscribe1)
 	require.NoError(t, err)
 
-	fakeSocket := popserver.FakeSocket{Id: "fakesocket1"}
+	fakeSocket := socket.FakeSocket{Id: "fakesocket1"}
 	subs.AddChannel("/root/lao1")
 	errAnswer := subs.Subscribe("/root/lao1", &fakeSocket)
 	require.Nil(t, errAnswer)
@@ -713,7 +713,7 @@ func Test_handleUnsubscribe(t *testing.T) {
 		},
 	}
 
-	s := &popserver.FakeSocket{Id: "fakesocket2"}
+	s := &socket.FakeSocket{Id: "fakesocket2"}
 
 	unsubscribeBuf, err = json.Marshal(&unsubscribe2)
 	require.NoError(t, err)
@@ -744,7 +744,7 @@ func Test_handleUnsubscribe(t *testing.T) {
 		},
 	}
 
-	s = &popserver.FakeSocket{Id: "fakesocket3"}
+	s = &socket.FakeSocket{Id: "fakesocket3"}
 
 	unsubscribeBuf, err = json.Marshal(&unsubscribe3)
 	require.NoError(t, err)
@@ -773,7 +773,7 @@ func Test_handleUnsubscribe(t *testing.T) {
 		},
 	}
 
-	s = &popserver.FakeSocket{Id: "fakesocket4"}
+	s = &socket.FakeSocket{Id: "fakesocket4"}
 
 	unsubscribeRootBuf, err := json.Marshal(&unsubscribe4)
 	require.NoError(t, err)
