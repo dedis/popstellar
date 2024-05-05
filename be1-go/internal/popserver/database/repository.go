@@ -173,6 +173,9 @@ type ReactionRepository interface {
 	// IsAttendee return if the user has participated in the last roll-call from the LAO
 	IsAttendee(laoID string, userID string) (bool, error)
 
+	// HasMessage returns true if the message already exists.
+	HasMessage(messageID string) (bool, error)
+
 	// StoreMessage stores a message inside the database.
 	StoreMessage(channelID string, msg message.Message) error
 }
