@@ -456,23 +456,23 @@ func (_m *MockRepository) GetParamsForGetMessageByID(params map[string][]string)
 	return r0, r1
 }
 
-// GetReaction provides a mock function with given fields: ID
-func (_m *MockRepository) GetReaction(ID string) (message.Message, error) {
+// GetReactionSender provides a mock function with given fields: ID
+func (_m *MockRepository) GetReactionSender(ID string) (string, error) {
 	ret := _m.Called(ID)
 
 	if len(ret) == 0 {
-		panic("no return value specified for GetReaction")
+		panic("no return value specified for GetReactionSender")
 	}
 
-	var r0 message.Message
+	var r0 string
 	var r1 error
-	if rf, ok := ret.Get(0).(func(string) (message.Message, error)); ok {
+	if rf, ok := ret.Get(0).(func(string) (string, error)); ok {
 		return rf(ID)
 	}
-	if rf, ok := ret.Get(0).(func(string) message.Message); ok {
+	if rf, ok := ret.Get(0).(func(string) string); ok {
 		r0 = rf(ID)
 	} else {
-		r0 = ret.Get(0).(message.Message)
+		r0 = ret.Get(0).(string)
 	}
 
 	if rf, ok := ret.Get(1).(func(string) error); ok {

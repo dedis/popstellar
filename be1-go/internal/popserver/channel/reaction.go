@@ -96,13 +96,17 @@ func handleReactionDelete(msg message.Message) *answer.Error {
 		errAnswer := answer.NewInternalServerError("failed to get database").Wrap("handleReactionDelete")
 		return errAnswer
 	}
-	react, err := db.GetReaction(delReactMsg.ReactionID)
+	reactSender, err := db.GetReactionSender(delReactMsg.ReactionID)
 	if err != nil {
 		errAnswer := answer.NewInternalServerError("failed to query DB: %v", err).Wrap("handleReactionDelete")
 		return errAnswer
 	}
+	if reactSender == "" {
+		errAnswer := answer.NewInvalidResourceError("unknown reaction").Wrap("handleReactionDelete")
+		return errAnswer
+	}
 
-	if msg.Sender != react.Sender {
+	if msg.Sender != reactSender {
 		errAnswer := answer.NewAccessDeniedError("only the owner of the reaction can delete it").Wrap("handleReactionDelete")
 		return errAnswer
 	}
