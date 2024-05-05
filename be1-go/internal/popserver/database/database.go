@@ -40,14 +40,6 @@ func GetQueryRepositoryInstance() (QueryRepository, bool) {
 	return instance, true
 }
 
-func GetAnswerRepositoryInstance() (AnswerRepository, bool) {
-	if instance == nil {
-		return nil, false
-	}
-
-	return instance, true
-}
-
 func GetChannelRepositoryInstance() (ChannelRepository, bool) {
 	if instance == nil {
 		return nil, false
@@ -97,14 +89,6 @@ func GetConsensusRepositoryInstance() (ConsensusRepository, bool) {
 }
 
 func GetElectionRepositoryInstance() (ElectionRepository, bool) {
-	if instance == nil {
-		return nil, false
-	}
-
-	return instance, true
-}
-
-func GetGeneralChirpRepositoryInstance() (GeneralChirpRepository, bool) {
 	if instance == nil {
 		return nil, false
 	}

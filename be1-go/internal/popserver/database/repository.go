@@ -16,8 +16,8 @@ type Repository interface {
 	ChirpRepository
 	CoinRepository
 	ConsensusRepository
-	GeneralChirpRepository
 	PopChaRepository
+	ReactionRepository
 
 	// StoreMessageAndData stores a message with an object and an action inside the database.
 	StoreMessageAndData(channelID string, msg message.Message) error
@@ -164,17 +164,15 @@ type ConsensusRepository interface {
 	StoreMessage(channelID string, msg message.Message) error
 }
 
-type GeneralChirpRepository interface {
-	// StoreMessage stores a message inside the database.
-	StoreMessage(channelID string, msg message.Message) error
-}
-
 type PopChaRepository interface {
 	// StoreMessage stores a message inside the database.
 	StoreMessage(channelID string, msg message.Message) error
 }
 
 type ReactionRepository interface {
+	// IsAttendee return if the user has participated in the last roll-call from the LAO
+	IsAttendee(laoID string, userID string) (bool, error)
+
 	// StoreMessage stores a message inside the database.
 	StoreMessage(channelID string, msg message.Message) error
 }
