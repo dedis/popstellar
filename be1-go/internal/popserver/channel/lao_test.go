@@ -65,7 +65,7 @@ func Test_handleChannelLao(t *testing.T) {
 	// Test 2: Error when RollCallCreate ID is not the expected hash
 	args = append(args, input{
 		name:     "Test 2",
-		msg:      newRollCallCreateMsg(t, owner, laoID, WrongLaoName, creation, start, end, true, mockRepo),
+		msg:      newRollCallCreateMsg(t, owner, laoID, wrongLaoName, creation, start, end, true, mockRepo),
 		channel:  laoID,
 		isError:  true,
 		contains: "roll call id is",
@@ -74,7 +74,7 @@ func Test_handleChannelLao(t *testing.T) {
 	// Test 3: Error when RollCallCreate proposed start is before creation
 	args = append(args, input{
 		name:     "Test 3",
-		msg:      newRollCallCreateMsg(t, owner, laoID, GoodLaoName, creation, creation-1, end, true, mockRepo),
+		msg:      newRollCallCreateMsg(t, owner, laoID, goodLaoName, creation, creation-1, end, true, mockRepo),
 		channel:  laoID,
 		isError:  true,
 		contains: "roll call proposed start time should be greater than creation time",
@@ -83,7 +83,7 @@ func Test_handleChannelLao(t *testing.T) {
 	// Test 4: Error when RollCallCreate proposed end is before proposed start
 	args = append(args, input{
 		name:     "Test 4",
-		msg:      newRollCallCreateMsg(t, owner, laoID, GoodLaoName, creation, start, start-1, true, mockRepo),
+		msg:      newRollCallCreateMsg(t, owner, laoID, goodLaoName, creation, start, start-1, true, mockRepo),
 		channel:  laoID,
 		isError:  true,
 		contains: "roll call proposed end should be greater than proposed start",
@@ -92,7 +92,7 @@ func Test_handleChannelLao(t *testing.T) {
 	// Test 5: Success for RollCallCreate message
 	args = append(args, input{
 		name:     "Test 5",
-		msg:      newRollCallCreateMsg(t, owner, laoID, GoodLaoName, creation, start, end, false, mockRepo),
+		msg:      newRollCallCreateMsg(t, owner, laoID, goodLaoName, creation, start, end, false, mockRepo),
 		channel:  laoID,
 		isError:  false,
 		contains: "",
@@ -166,7 +166,7 @@ func Test_handleChannelLao(t *testing.T) {
 	// Test 12: Error when sender is not the organizer of the lao for ElectionSetup
 	args = append(args, input{
 		name: "Test 12",
-		msg: newElectionSetupMsg(t, ownerPublicKey, WrongSender, laoID, laoID, electionsName, question, messagedata.OpenBallot,
+		msg: newElectionSetupMsg(t, ownerPublicKey, wrongSender, laoID, laoID, electionsName, question, messagedata.OpenBallot,
 			creation, start, end, true, mockRepo),
 		channel:  laoID,
 		isError:  true,
@@ -282,7 +282,7 @@ func newRollCallCreateMsg(t *testing.T, sender, laoID, laoName string, creation,
 		messagedata.RollCallFlag,
 		strings.ReplaceAll(laoID, RootPrefix, ""),
 		strconv.Itoa(int(creation)),
-		GoodLaoName,
+		goodLaoName,
 	)
 
 	msg := generator.NewRollCallCreateMsg(t, sender, laoName, createID, creation, start, end, nil)

@@ -2,6 +2,7 @@ package generator
 
 import (
 	"encoding/base64"
+	"encoding/json"
 	"github.com/stretchr/testify/require"
 	"go.dedis.ch/kyber/v3"
 	"go.dedis.ch/kyber/v3/sign/schnorr"
@@ -32,4 +33,20 @@ func newMessage(t *testing.T, sender string, senderPK kyber.Scalar, data []byte)
 		MessageID:         messageID64,
 		WitnessSignatures: nil,
 	}
+}
+
+func NewNothingMsg(t *testing.T, sender string, senderPK kyber.Scalar) message.Message {
+	data := struct {
+		Object string `json:"object"`
+		Action string `json:"action"`
+		Not    string `json:"not"`
+	}{
+		Object: "lao",
+		Action: "nothing",
+		Not:    "no",
+	}
+	buf, err := json.Marshal(data)
+	require.NoError(t, err)
+
+	return newMessage(t, sender, senderPK, buf)
 }
