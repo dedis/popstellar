@@ -1068,11 +1068,25 @@ RPC
 🧭 **RPC Message** > **Query** > **Paged Catchup**
 
 By executing a paged catchup action, a client can ask the server to receive a specified number of
-past messages on a specific channel.
+past messages sorted by timestamps from oldest to newest on a specific channel. When a message ID 
+is provided, the server returns the requested number of messages on the specified channel that precede
+this message. Otherwise, the server returns the latest messages it has on that channel taking into 
+account the requested number of messages. If the specified number of messages is greater than what 
+is on the server in the current page, then the server only returns the messages it has on that page.
 
-For now, it is to be used to retrieve chirps on the social media channel by paging when a new client joins the LAO instead of getting all chirps at once. This is done in an effort to reduce network traffic at catchup.
+For now, this message is to be used to retrieve chirps on the social media channel (/root/lao_id/social/user_public_key) 
+by paging when a new client joins the LAO instead of getting all the chirps at once. The user's public key is used
+to have a separate paging channel for each user to avoid sending irrelevant messages to other users. This paging is 
+done in an effort to reduce network traffic at catchup.
+This message is also to be used to retrieve top chirps from a subchannel "/root/lao_id/social/top_chirps" and chirps
+of a specific user profile from a subchannel "/root/lao_id/social/profile/user_public_key/specific_user_public_key" 
+where "user_public_key" is the same as before and "specific_user_public_key" is the public key of the user whose messages
+the client wants to retrieve.
 
 This may serve as a starting point for the paging of messages in other channels as a future optimization.
+
+For now, if this message gets accidentally sent to a non-chirp channel, we return an error with a -1 code indicating that
+it is an invalid action and a description saying that paging is not supported on non-chirp channels.
 
 RPC 
 
