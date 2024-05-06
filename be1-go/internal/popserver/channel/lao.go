@@ -434,6 +434,7 @@ func compareLaoUpdateAndState(update messagedata.LaoUpdate, state messagedata.La
 	if update.Name != state.Name {
 		errAnswer = answer.NewInvalidMessageFieldError("mismatch between name: expected %s got %s", update.Name, state.Name)
 		errAnswer = errAnswer.Wrap("compareLaoUpdateAndState")
+		return errAnswer
 	}
 
 	numUpdateWitnesses := len(update.Witnesses)

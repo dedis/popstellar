@@ -575,6 +575,9 @@ func (s *SQLite) StoreChannelsAndMessageWithLaoGreet(
 		return err
 	}
 	laoGreetData, err := base64.URLEncoding.DecodeString(laoGreetMsg.Data)
+	if err != nil {
+		return err
+	}
 
 	storedTime := time.Now().UnixNano()
 	_, err = tx.Exec("INSERT INTO inbox (messageID, message, messageData, storedTime) VALUES (?, ?, ?, ?)", msg.MessageID, msgByte, messageData, storedTime)
@@ -629,6 +632,9 @@ func (s *SQLite) StoreChannelsAndMessageWithLaoGreet(
 func (s *SQLite) GetOrganizerPubKey(laoID string) (kyber.Point, error) {
 	var organizerPubBuf []byte
 	err := s.database.QueryRow("SELECT publicKey FROM key WHERE channelPath = ?", laoID).Scan(&organizerPubBuf)
+	if err != nil {
+		return nil, err
+	}
 	organizerPubKey := crypto.Suite.Point()
 	err = organizerPubKey.UnmarshalBinary(organizerPubBuf)
 	if err != nil {
@@ -760,6 +766,9 @@ func (s *SQLite) StoreChannelsAndMessage(channels []string, laoID string, msg me
 		}
 	}
 	err = tx.Commit()
+	if err != nil {
+		return err
+	}
 	return nil
 
 }
@@ -839,6 +848,9 @@ func (s *SQLite) StoreMessageWithElectionKey(
 		return err
 	}
 	err = tx.Commit()
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -861,6 +873,9 @@ func (s *SQLite) GetLAOOrganizerPubKey(electionID string) (kyber.Point, error) {
 
 	var electionPubBuf []byte
 	err = tx.QueryRow("SELECT publicKey FROM key WHERE channelPath = ?", laoID).Scan(&electionPubBuf)
+	if err != nil {
+		return nil, err
+	}
 	electionPubKey := crypto.Suite.Point()
 	err = electionPubKey.UnmarshalBinary(electionPubBuf)
 	if err != nil {

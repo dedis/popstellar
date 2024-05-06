@@ -79,11 +79,8 @@ func (s *Subscribers) HasChannel(channel string) bool {
 	defer s.RUnlock()
 
 	_, ok := s.list[channel]
-	if !ok {
-		return false
-	}
 
-	return true
+	return ok
 }
 
 func (s *Subscribers) IsSubscribed(channel string, socket socket.Socket) (bool, error) {
