@@ -117,6 +117,7 @@
   <string name="qrcode_scanning_add_witness">Scan personal QR code of the witness to add</string>
   <string name="qrcode_scanning_add_popcha">Scan the PoPCHA QR code to log in</string>
   <string name="qrcode_scanning_connect_lao">Scan the invite QR code to join the LAO</string>
+  <string name="qrcode_scanning_federation">Scan the other organizer QR code to link the LAOs</string>
   <string name="event_description">Event Description</string>
   <string name="rc_location_title">Location*</string>
   <string name="qrcode_scanning_add_attendee">Scan each participant’s Roll-call QR code</string>
@@ -126,6 +127,7 @@
   <string name="no_camera">No Camera ? -  </string>
   <string name="scanned_tokens">Scanned tokens: </string>
   <string name="scanned_witness">Scanned witnesses: </string>
+  <string name="scanned_organizer">Scanned organizer: </string>
   <string name="attendee_already_scanned_warning">Attendee was already scanned</string>
   <string name="witness_already_scanned_warning">"This key already belongs to a witness"</string>
   <string name="attendee_scan_success">Attendee successfully scanned</string>
@@ -302,6 +304,9 @@
   <string name="scan_qr_code">Scan the QR code with the other organizers device</string>
   <string name="next_step">Next step</string>
   <string name="finish">Finish</string>
+  <string name="other_organizer_info">Other organizer information</string>
+  <string name="add_other_organizer_info">Add the other organizer information</string>
+  <string name="loading_text">Loading…</string>
 
   <!--  Storage-->
   <string name="nothing_stored">No stored data found</string>

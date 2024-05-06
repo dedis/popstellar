@@ -11,6 +11,8 @@ import com.github.dedis.popstellar.ui.home.HomeFragment
 import com.github.dedis.popstellar.ui.home.LaoCreateFragment
 import com.github.dedis.popstellar.ui.lao.LaoActivity
 import com.github.dedis.popstellar.ui.lao.event.rollcall.RollCallFragment
+import com.github.dedis.popstellar.ui.lao.federation.LinkedOrganizationsFragment
+import com.github.dedis.popstellar.ui.lao.federation.LinkedOrganizationsInviteFragment
 import java.util.function.BiConsumer
 import java.util.function.Function
 
@@ -102,6 +104,38 @@ enum class ScanningAction(
       { manager: FragmentManager, _: Array<String> ->
         LaoActivity.setCurrentFragment(manager, R.id.fragment_popcha_home) {
           com.github.dedis.popstellar.ui.lao.popcha.PoPCHAHomeFragment()
+        }
+      },
+      false),
+  FEDERATION_INVITE(
+      R.string.qrcode_scanning_federation,
+      R.string.scanned_organizer,
+      R.string.invite_other_organization,
+      R.string.other_organizer_info,
+      R.string.add_other_organizer_info,
+      { activity: FragmentActivity, laoId: String? ->
+        LaoActivity.obtainLinkedOrganizationsViewModel(activity, laoId)
+      },
+      { activity: FragmentActivity -> LaoActivity.obtainViewModel(activity) },
+      { manager: FragmentManager, _: Array<String> ->
+        LaoActivity.setCurrentFragment(manager, R.id.fragment_linked_organizations_home) {
+          LinkedOrganizationsFragment.newInstance()
+        }
+      },
+      false),
+  FEDERATION_JOIN(
+      R.string.qrcode_scanning_federation,
+      R.string.scanned_organizer,
+      R.string.join_other_organization_invitation,
+      R.string.other_organizer_info,
+      R.string.add_other_organizer_info,
+      { activity: FragmentActivity, laoId: String? ->
+        LaoActivity.obtainLinkedOrganizationsViewModel(activity, laoId)
+      },
+      { activity: FragmentActivity -> LaoActivity.obtainViewModel(activity) },
+      { manager: FragmentManager, _: Array<String> ->
+        LaoActivity.setCurrentFragment(manager, R.id.fragment_linked_organizations_invite) {
+          LinkedOrganizationsInviteFragment.newInstance(false)
         }
       },
       false);

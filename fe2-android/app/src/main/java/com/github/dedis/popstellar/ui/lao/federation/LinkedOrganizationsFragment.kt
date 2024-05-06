@@ -15,6 +15,8 @@ import com.github.dedis.popstellar.ui.lao.LaoViewModel
 import com.github.dedis.popstellar.ui.lao.event.LaoDetailAnimation.rotateFab
 import com.github.dedis.popstellar.ui.lao.event.LaoDetailAnimation.showIn
 import com.github.dedis.popstellar.ui.lao.event.LaoDetailAnimation.showOut
+import com.github.dedis.popstellar.ui.qrcode.QrScannerFragment
+import com.github.dedis.popstellar.ui.qrcode.ScanningAction
 
 /**
  * A simple [Fragment] subclass. Use the [LinkedOrganizationsFragment.newInstance] factory method to
@@ -52,6 +54,7 @@ class LinkedOrganizationsFragment : Fragment() {
 
     binding.addLinkedOrganization.setOnClickListener(observeButton)
     binding.inviteOtherOrganization.setOnClickListener(invitationPage)
+    binding.joinOtherOrganizationInvitation.setOnClickListener(joinButton)
 
     handleBackNav()
 
@@ -87,6 +90,14 @@ class LinkedOrganizationsFragment : Fragment() {
             parentFragmentManager, R.id.fragment_linked_organizations_invite) {
               LinkedOrganizationsInviteFragment.newInstance(true)
             }
+      }
+
+  private var joinButton =
+      View.OnClickListener {
+        laoViewModel.setIsTab(false)
+        LaoActivity.setCurrentFragment(parentFragmentManager, R.id.fragment_qr_scanner) {
+          QrScannerFragment.newInstance(ScanningAction.FEDERATION_JOIN)
+        }
       }
 
   private fun handleBackNav() {

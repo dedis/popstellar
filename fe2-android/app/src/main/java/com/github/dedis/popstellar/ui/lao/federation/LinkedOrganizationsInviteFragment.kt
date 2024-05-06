@@ -13,6 +13,8 @@ import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager
 import com.github.dedis.popstellar.ui.lao.LaoActivity
 import com.github.dedis.popstellar.ui.lao.LaoActivity.Companion.obtainLinkedOrganizationsViewModel
 import com.github.dedis.popstellar.ui.lao.LaoViewModel
+import com.github.dedis.popstellar.ui.qrcode.QrScannerFragment
+import com.github.dedis.popstellar.ui.qrcode.ScanningAction
 import com.github.dedis.popstellar.utility.ActivityUtils
 import com.github.dedis.popstellar.utility.ActivityUtils.getQRCodeColor
 import com.github.dedis.popstellar.utility.error.ErrorUtils.logAndShow
@@ -42,8 +44,14 @@ class LinkedOrganizationsInviteFragment : Fragment() {
         obtainLinkedOrganizationsViewModel(requireActivity(), laoViewModel.laoId)
 
     if (CREATES_INVITATION) {
+      // When the user creates the invitation
       binding.nextStepButton.setText(R.string.next_step)
       binding.nextStepButton.visibility = View.GONE
+      binding.nextStepButton.setOnClickListener { openScanner() }
+      binding.scanQrText.visibility = View.GONE
+      binding.loadingText.visibility = View.VISIBLE
+      binding.linkedOrganizationsNameTitle.visibility = View.GONE
+      binding.linkedOrganizationsServerTitle.visibility = View.GONE
       laoViewModel.addDisposable(
           linkedOrganizationsViewModel
               .sendChallengeRequest(Instant.now().epochSecond)
@@ -55,7 +63,17 @@ class LinkedOrganizationsInviteFragment : Fragment() {
                   },
               ))
     } else {
+      // When the user joins an invitation
+      binding.loadingText.visibility = View.GONE
       binding.nextStepButton.setText(R.string.finish)
+      binding.nextStepButton.setOnClickListener {
+        LaoActivity.setCurrentFragment(
+            parentFragmentManager,
+            R.id.fragment_linked_organizations_home,
+        ) {
+          LinkedOrganizationsFragment.newInstance()
+        }
+      }
     }
 
     // TODO adapt this to real QR code data
@@ -70,6 +88,10 @@ class LinkedOrganizationsInviteFragment : Fragment() {
                 .bitmap()
 
         binding.federationQrCode.setImageBitmap(myBitmap)
+        binding.loadingText.visibility = View.GONE
+        binding.scanQrText.visibility = View.VISIBLE
+        binding.linkedOrganizationsNameTitle.visibility = View.VISIBLE
+        binding.linkedOrganizationsServerTitle.visibility = View.VISIBLE
         binding.linkedOrganizationsNameText.text = laoView.name
         binding.linkedOrganizationsServerText.text = networkManager.currentUrl
       } catch (e: UnknownLaoException) {
@@ -84,7 +106,11 @@ class LinkedOrganizationsInviteFragment : Fragment() {
 
   override fun onResume() {
     super.onResume()
-    laoViewModel.setPageTitle(R.string.invite_other_organization)
+    if (CREATES_INVITATION) {
+      laoViewModel.setPageTitle(R.string.invite_other_organization)
+    } else {
+      laoViewModel.setPageTitle(R.string.join_other_organization_invitation)
+    }
     laoViewModel.setIsTab(false)
   }
 
@@ -102,6 +128,13 @@ class LinkedOrganizationsInviteFragment : Fragment() {
           }
         },
     )
+  }
+
+  private fun openScanner() {
+    laoViewModel.setIsTab(false)
+    LaoActivity.setCurrentFragment(parentFragmentManager, R.id.fragment_qr_scanner) {
+      QrScannerFragment.newInstance(ScanningAction.FEDERATION_INVITE)
+    }
   }
 
   companion object {
