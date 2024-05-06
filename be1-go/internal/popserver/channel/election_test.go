@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"github.com/stretchr/testify/require"
+	"popstellar/crypto"
 	"popstellar/internal/popserver/database"
 	state "popstellar/internal/popserver/state"
 	"popstellar/message/messagedata"
@@ -16,9 +17,11 @@ func Test_handleChannelElection(t *testing.T) {
 	mockRepo, err := database.SetDatabase(t)
 	require.NoError(t, err)
 
-	ownerPubBuf, err := ownerPublicKey.MarshalBinary()
+	organizerBuf, err := base64.URLEncoding.DecodeString(ownerPubBuf64)
 	require.NoError(t, err)
-	owner := base64.URLEncoding.EncodeToString(ownerPubBuf)
+	ownerPublicKey := crypto.Suite.Point()
+	err = ownerPublicKey.UnmarshalBinary(organizerBuf)
+	require.NoError(t, err)
 
 	laoID := base64.URLEncoding.EncodeToString([]byte("laoID"))
 	electionID := base64.URLEncoding.EncodeToString([]byte("electionID"))
@@ -27,7 +30,7 @@ func Test_handleChannelElection(t *testing.T) {
 	// Test 1 Error when ElectionOpen sender is not the same as the lao organizer
 	args = append(args, input{
 		name: "Test 1",
-		msg: newElectionOpenMsg(t, ownerPublicKey, WrongSender, laoID, electionID, channelPath, "",
+		msg: newElectionOpenMsg(t, ownerPublicKey, wrongSender, laoID, electionID, channelPath, "",
 			-1, true, mockRepo),
 		channel:  channelPath,
 		isError:  true,
@@ -39,7 +42,7 @@ func Test_handleChannelElection(t *testing.T) {
 	// Test 2 Error when ElectionOpen lao id is not the same as the channel
 	args = append(args, input{
 		name: "Test 2",
-		msg: newElectionOpenMsg(t, ownerPublicKey, owner, laoID, electionID, wrongChannelPath, "",
+		msg: newElectionOpenMsg(t, ownerPublicKey, ownerPubBuf64, laoID, electionID, wrongChannelPath, "",
 			-1, true, mockRepo),
 		channel:  wrongChannelPath,
 		isError:  true,
@@ -51,7 +54,7 @@ func Test_handleChannelElection(t *testing.T) {
 	// Test 3 Error when ElectionOpen election id is not the same as the channel
 	args = append(args, input{
 		name: "Test 3",
-		msg: newElectionOpenMsg(t, ownerPublicKey, owner, laoID, electionID, wrongChannelPath, "",
+		msg: newElectionOpenMsg(t, ownerPublicKey, ownerPubBuf64, laoID, electionID, wrongChannelPath, "",
 			-1, true, mockRepo),
 		channel:  wrongChannelPath,
 		isError:  true,
@@ -61,7 +64,7 @@ func Test_handleChannelElection(t *testing.T) {
 	// Test 4 Error when Election is already started or ended
 	args = append(args, input{
 		name: "Test 4",
-		msg: newElectionOpenMsg(t, ownerPublicKey, owner, laoID, electionID, channelPath, messagedata.ElectionActionOpen,
+		msg: newElectionOpenMsg(t, ownerPublicKey, ownerPubBuf64, laoID, electionID, channelPath, messagedata.ElectionActionOpen,
 			-1, true, mockRepo),
 		channel:  channelPath,
 		isError:  true,
@@ -74,7 +77,7 @@ func Test_handleChannelElection(t *testing.T) {
 	// Test 5 Error when ElectionOpen opened at before createdAt
 	args = append(args, input{
 		name: "Test 5",
-		msg: newElectionOpenMsg(t, ownerPublicKey, owner, laoID, electionID, channelPath, messagedata.ElectionActionSetup,
+		msg: newElectionOpenMsg(t, ownerPublicKey, ownerPubBuf64, laoID, electionID, channelPath, messagedata.ElectionActionSetup,
 			2, true, mockRepo),
 		channel:  channelPath,
 		isError:  true,
@@ -92,7 +95,7 @@ func Test_handleChannelElection(t *testing.T) {
 	// Test 6: Success when ElectionOpen is valid
 	args = append(args, input{
 		name: "Test 6",
-		msg: newElectionOpenMsg(t, ownerPublicKey, owner, laoID, electionID, channelPath, messagedata.ElectionActionSetup,
+		msg: newElectionOpenMsg(t, ownerPublicKey, ownerPubBuf64, laoID, electionID, channelPath, messagedata.ElectionActionSetup,
 			1, false, mockRepo),
 		channel:  channelPath,
 		isError:  false,
@@ -105,7 +108,7 @@ func Test_handleChannelElection(t *testing.T) {
 	// Test 7 Error when ElectionEnd sender is not the same as the lao organizer
 	args = append(args, input{
 		name: "Test 7",
-		msg: newElectionEndMsg(t, ownerPublicKey, WrongSender, laoID, electionID, channelPath, "", "",
+		msg: newElectionEndMsg(t, ownerPublicKey, wrongSender, laoID, electionID, channelPath, "", "",
 			-1, true, mockRepo),
 		channel:  channelPath,
 		isError:  true,
@@ -117,7 +120,7 @@ func Test_handleChannelElection(t *testing.T) {
 	// Test 8 Error when ElectionEnd lao id is not the same as the channel
 	args = append(args, input{
 		name: "Test 8",
-		msg: newElectionEndMsg(t, ownerPublicKey, owner, laoID, electionID, wrongChannelPath, "", "",
+		msg: newElectionEndMsg(t, ownerPublicKey, ownerPubBuf64, laoID, electionID, wrongChannelPath, "", "",
 			-1, true, mockRepo),
 		channel:  wrongChannelPath,
 		isError:  true,
@@ -129,7 +132,7 @@ func Test_handleChannelElection(t *testing.T) {
 	// Test 9 Error when ElectionEnd election id is not the same as the channel
 	args = append(args, input{
 		name: "Test 9",
-		msg: newElectionEndMsg(t, ownerPublicKey, owner, laoID, electionID, wrongChannelPath, "", "",
+		msg: newElectionEndMsg(t, ownerPublicKey, ownerPubBuf64, laoID, electionID, wrongChannelPath, "", "",
 			-1, true, mockRepo),
 		channel:  wrongChannelPath,
 		isError:  true,
@@ -139,7 +142,7 @@ func Test_handleChannelElection(t *testing.T) {
 	// Test 10 Error when ElectionEnd is not started
 	args = append(args, input{
 		name: "Test 10",
-		msg: newElectionEndMsg(t, ownerPublicKey, owner, laoID, electionID, channelPath, messagedata.ElectionActionEnd, "",
+		msg: newElectionEndMsg(t, ownerPublicKey, ownerPubBuf64, laoID, electionID, channelPath, messagedata.ElectionActionEnd, "",
 			-1, true, mockRepo),
 		channel:  channelPath,
 		isError:  true,
@@ -153,7 +156,7 @@ func Test_handleChannelElection(t *testing.T) {
 	// Test 11 Error when ElectionEnd creation time is before ElectionSetup creation time
 	args = append(args, input{
 		name: "Test 11",
-		msg: newElectionEndMsg(t, ownerPublicKey, owner, laoID, electionID, channelPath, messagedata.ElectionActionOpen, "",
+		msg: newElectionEndMsg(t, ownerPublicKey, ownerPubBuf64, laoID, electionID, channelPath, messagedata.ElectionActionOpen, "",
 			2, true, mockRepo),
 		channel:  channelPath,
 		isError:  true,
@@ -169,7 +172,7 @@ func Test_handleChannelElection(t *testing.T) {
 	// Test 12 Error when ElectionEnd is not the expected hash
 	args = append(args, input{
 		name: "Test 12",
-		msg: newElectionEndMsg(t, ownerPublicKey, owner, laoID, electionID, channelPath, messagedata.ElectionActionOpen, wrongVotes,
+		msg: newElectionEndMsg(t, ownerPublicKey, ownerPubBuf64, laoID, electionID, channelPath, messagedata.ElectionActionOpen, wrongVotes,
 			1, true, mockRepo),
 		channel:  channelPath,
 		isError:  true,
@@ -187,7 +190,7 @@ func Test_handleChannelElection(t *testing.T) {
 	// Test 13: Success when ElectionEnd is valid
 	args = append(args, input{
 		name: "Test 13",
-		msg: newElectionEndMsg(t, ownerPublicKey, owner, laoID, electionID, channelPath, messagedata.ElectionActionOpen, votes,
+		msg: newElectionEndMsg(t, ownerPublicKey, ownerPubBuf64, laoID, electionID, channelPath, messagedata.ElectionActionOpen, votes,
 			1, false, mockRepo),
 		channel:  channelPath,
 		isError:  false,
@@ -201,7 +204,7 @@ func Test_handleChannelElection(t *testing.T) {
 
 	args = append(args, input{
 		name:     "Test 14",
-		msg:      newElectionResultMsg(t, owner, channelPath, questions, true, mockRepo),
+		msg:      newElectionResultMsg(t, ownerPubBuf64, channelPath, questions, true, mockRepo),
 		channel:  channelPath,
 		isError:  true,
 		contains: "failed to decode question id",
@@ -214,7 +217,7 @@ func Test_handleChannelElection(t *testing.T) {
 	}
 	args = append(args, input{
 		name:     "Test 15",
-		msg:      newElectionResultMsg(t, owner, channelPath, questions, false, mockRepo),
+		msg:      newElectionResultMsg(t, ownerPubBuf64, channelPath, questions, false, mockRepo),
 		channel:  channelPath,
 		isError:  false,
 		contains: "",
