@@ -21,6 +21,7 @@ func GenerateKeyPair(t *testing.T) Keypair {
 	publicBuf, err := point.MarshalBinary()
 	require.NoError(t, err)
 	privateBuf, err := secret.MarshalBinary()
+	require.NoError(t, err)
 
 	return Keypair{point, publicBuf, secret, privateBuf}
 }
