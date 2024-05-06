@@ -9,6 +9,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.federation.
 import com.github.dedis.popstellar.model.network.method.message.data.federation.FederationExpect
 import com.github.dedis.popstellar.model.network.method.message.data.federation.FederationInit
 import com.github.dedis.popstellar.model.objects.view.LaoView
+import com.github.dedis.popstellar.model.qrcode.FederationDetails
 import com.github.dedis.popstellar.repository.LAORepository
 import com.github.dedis.popstellar.repository.LinkedOrganizationsRepository
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager
@@ -16,8 +17,11 @@ import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningViewModel
 import com.github.dedis.popstellar.utility.error.ErrorUtils
 import com.github.dedis.popstellar.utility.error.UnknownLaoException
 import com.github.dedis.popstellar.utility.security.KeyManager
+import com.google.gson.Gson
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.Completable
+import io.reactivex.disposables.CompositeDisposable
+import java.util.concurrent.atomic.AtomicBoolean
 import javax.inject.Inject
 
 @HiltViewModel
@@ -29,8 +33,11 @@ constructor(
     private val linkedOrgRepo: LinkedOrganizationsRepository,
     private val networkManager: GlobalNetworkManager,
     private val keyManager: KeyManager,
+    private val gson: Gson,
 ) : AndroidViewModel(application), QRCodeScanningViewModel {
   private lateinit var laoId: String
+  private val connecting = AtomicBoolean(false)
+  private val disposables = CompositeDisposable()
   override val nbScanned = MutableLiveData<Int>()
 
   fun setLaoId(laoId: String?) {
@@ -118,12 +125,61 @@ constructor(
     )
   }
 
+  fun getRepository(): LinkedOrganizationsRepository {
+    return linkedOrgRepo
+  }
+
   fun doWhenChallengeIsReceived(function: (Challenge) -> Unit) {
     linkedOrgRepo.setOnChallengeUpdatedCallback(function)
   }
 
   override fun handleData(data: String?) {
-    TODO("Not yet implemented")
+    // Don't process another data from the scanner if I'm already trying to scan
+    if (connecting.get()) {
+      return
+    }
+
+    connecting.set(true)
+    val federationDetails: FederationDetails =
+        try {
+          FederationDetails.extractFrom(gson, data)
+        } catch (e: Exception) {
+          ErrorUtils.logAndShow(
+              getApplication<Application>().applicationContext,
+              TAG,
+              R.string.qr_code_not_federation_details)
+          connecting.set(false)
+          return
+        }
+
+    if (federationDetails.challenge == null) {
+      // The federationDetails object is sent by the invitation creator
+      disposables.add(
+          sendFederationExpect(
+                  federationDetails.laoId,
+                  federationDetails.serverAddress,
+                  federationDetails.publicKey,
+                  linkedOrgRepo.getChallenge()!!)
+              .subscribe(
+                  { linkedOrgRepo.flush() },
+                  { error: Throwable ->
+                    ErrorUtils.logAndShow(
+                        getApplication(), TAG, error, R.string.error_sending_federation_expect)
+                  },
+              ))
+    } else {
+      // The federationDetails object is sent by the one who joins the invitation
+      linkedOrgRepo.otherLaoId = federationDetails.laoId
+      linkedOrgRepo.otherServerAddr = federationDetails.serverAddress
+      linkedOrgRepo.otherPublicKey = federationDetails.publicKey
+      linkedOrgRepo.updateChallenge(federationDetails.challenge)
+    }
+    connecting.set(false)
+  }
+
+  override fun onCleared() {
+    super.onCleared()
+    disposables.dispose()
   }
 
   companion object {

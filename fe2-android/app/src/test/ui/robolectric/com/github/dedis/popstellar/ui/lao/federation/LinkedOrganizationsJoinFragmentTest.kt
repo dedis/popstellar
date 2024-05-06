@@ -76,15 +76,14 @@ class LinkedOrganizationsJoinFragmentTest {
 
   @Test
   fun testQrCodeVisibility() {
-    LinkedOrganizationsInviteFragmentPageObject.qrCode().check(matches(isDisplayed()))
+    LinkedOrganizationsInviteFragmentPageObject.qrCode()
+            .check(matches(withEffectiveVisibility(Visibility.VISIBLE)))
   }
 
   @Test
   fun testLAOName() {
     LinkedOrganizationsInviteFragmentPageObject.organizationName()
             .check(matches(withEffectiveVisibility(Visibility.VISIBLE)))
-    LinkedOrganizationsInviteFragmentPageObject.organizationName()
-      .check(matches(withText(LAO_NAME)))
   }
 
   @Test

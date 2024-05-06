@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.github.dedis.popstellar.R
 import com.github.dedis.popstellar.databinding.LinkedOrganizationsInviteFragmentBinding
+import com.github.dedis.popstellar.model.network.method.message.data.federation.Challenge
 import com.github.dedis.popstellar.model.qrcode.ConnectToLao
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager
 import com.github.dedis.popstellar.ui.lao.LaoActivity
@@ -62,41 +63,15 @@ class LinkedOrganizationsInviteFragment : Fragment() {
                         requireContext(), TAG, error, R.string.error_sending_challenge_request)
                   },
               ))
+      linkedOrganizationsViewModel.doWhenChallengeIsReceived { challenge ->
+        displayQrCodeAndInfo(binding, challenge)
+      }
     } else {
       // When the user joins an invitation
       binding.loadingText.visibility = View.GONE
       binding.nextStepButton.setText(R.string.finish)
-      binding.nextStepButton.setOnClickListener {
-        LaoActivity.setCurrentFragment(
-            parentFragmentManager,
-            R.id.fragment_linked_organizations_home,
-        ) {
-          LinkedOrganizationsFragment.newInstance()
-        }
-      }
-    }
-
-    // TODO adapt this to real QR code data
-    linkedOrganizationsViewModel.doWhenChallengeIsReceived { challenge ->
-      try {
-        val laoView = laoViewModel.lao
-        val data = ConnectToLao(networkManager.currentUrl!!, laoView.id)
-        val myBitmap =
-            QRCode.from(gson.toJson(data))
-                .withSize(QR_SIDE, QR_SIDE)
-                .withColor(getQRCodeColor(requireContext()), Color.TRANSPARENT)
-                .bitmap()
-
-        binding.federationQrCode.setImageBitmap(myBitmap)
-        binding.loadingText.visibility = View.GONE
-        binding.scanQrText.visibility = View.VISIBLE
-        binding.linkedOrganizationsNameTitle.visibility = View.VISIBLE
-        binding.linkedOrganizationsServerTitle.visibility = View.VISIBLE
-        binding.linkedOrganizationsNameText.text = laoView.name
-        binding.linkedOrganizationsServerText.text = networkManager.currentUrl
-      } catch (e: UnknownLaoException) {
-        logAndShow(requireContext(), TAG, e, R.string.unknown_lao_exception)
-      }
+      binding.nextStepButton.setOnClickListener { finishButton() }
+      displayQrCodeAndInfo(binding, linkedOrganizationsViewModel.getRepository().getChallenge())
     }
 
     handleBackNav()
@@ -114,6 +89,31 @@ class LinkedOrganizationsInviteFragment : Fragment() {
     laoViewModel.setIsTab(false)
   }
 
+  private fun displayQrCodeAndInfo(
+      binding: LinkedOrganizationsInviteFragmentBinding,
+      challenge: Challenge?
+  ) {
+    try {
+      val laoView = laoViewModel.lao
+      val data = ConnectToLao(networkManager.currentUrl!!, laoView.id)
+      val myBitmap =
+          QRCode.from(gson.toJson(data))
+              .withSize(QR_SIDE, QR_SIDE)
+              .withColor(getQRCodeColor(requireContext()), Color.TRANSPARENT)
+              .bitmap()
+
+      binding.federationQrCode.setImageBitmap(myBitmap)
+      binding.loadingText.visibility = View.GONE
+      binding.scanQrText.visibility = View.VISIBLE
+      binding.linkedOrganizationsNameTitle.visibility = View.VISIBLE
+      binding.linkedOrganizationsServerTitle.visibility = View.VISIBLE
+      binding.linkedOrganizationsNameText.text = laoView.name
+      binding.linkedOrganizationsServerText.text = networkManager.currentUrl
+    } catch (e: UnknownLaoException) {
+      logAndShow(requireContext(), TAG, e, R.string.unknown_lao_exception)
+    }
+  }
+
   private fun handleBackNav() {
     val activity = requireActivity()
     LaoActivity.addBackNavigationCallback(
@@ -128,6 +128,30 @@ class LinkedOrganizationsInviteFragment : Fragment() {
           }
         },
     )
+  }
+
+  private fun finishButton() {
+    val repo = linkedOrganizationsViewModel.getRepository()
+    laoViewModel.addDisposable(
+        linkedOrganizationsViewModel
+            .sendFederationInit(
+                repo.otherLaoId!!,
+                repo.otherServerAddr!!,
+                repo.otherPublicKey!!,
+                repo.getChallenge()!!)
+            .subscribe(
+                {},
+                { error: Throwable ->
+                  logAndShow(requireContext(), TAG, error, R.string.error_sending_federation_init)
+                },
+            ))
+    repo.flush()
+    LaoActivity.setCurrentFragment(
+        parentFragmentManager,
+        R.id.fragment_linked_organizations_home,
+    ) {
+      LinkedOrganizationsFragment.newInstance()
+    }
   }
 
   private fun openScanner() {

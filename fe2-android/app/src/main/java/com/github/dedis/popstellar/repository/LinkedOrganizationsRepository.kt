@@ -13,6 +13,9 @@ import javax.inject.Singleton
 class LinkedOrganizationsRepository @Inject constructor() {
   private var challenge: Challenge? = null
   private var onChallengeUpdatedCallback: ((Challenge) -> Unit)? = null
+  var otherLaoId: String? = null
+  var otherServerAddr: String? = null
+  var otherPublicKey: String? = null
 
   /**
    * Updates the challenge
@@ -26,5 +29,17 @@ class LinkedOrganizationsRepository @Inject constructor() {
 
   fun setOnChallengeUpdatedCallback(callback: (Challenge) -> Unit) {
     onChallengeUpdatedCallback = callback
+  }
+
+  fun getChallenge(): Challenge? {
+    return challenge
+  }
+
+  fun flush() {
+    otherLaoId = null
+    otherServerAddr = null
+    otherPublicKey = null
+    challenge = null
+    onChallengeUpdatedCallback = null
   }
 }

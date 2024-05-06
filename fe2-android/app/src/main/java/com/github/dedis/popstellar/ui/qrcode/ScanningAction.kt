@@ -12,7 +12,6 @@ import com.github.dedis.popstellar.ui.home.LaoCreateFragment
 import com.github.dedis.popstellar.ui.lao.LaoActivity
 import com.github.dedis.popstellar.ui.lao.event.rollcall.RollCallFragment
 import com.github.dedis.popstellar.ui.lao.federation.LinkedOrganizationsFragment
-import com.github.dedis.popstellar.ui.lao.federation.LinkedOrganizationsInviteFragment
 import java.util.function.BiConsumer
 import java.util.function.Function
 
@@ -134,8 +133,8 @@ enum class ScanningAction(
       },
       { activity: FragmentActivity -> LaoActivity.obtainViewModel(activity) },
       { manager: FragmentManager, _: Array<String> ->
-        LaoActivity.setCurrentFragment(manager, R.id.fragment_linked_organizations_invite) {
-          LinkedOrganizationsInviteFragment.newInstance(false)
+        LaoActivity.setCurrentFragment(manager, R.id.fragment_linked_organizations_home) {
+          LinkedOrganizationsFragment.newInstance()
         }
       },
       false);
