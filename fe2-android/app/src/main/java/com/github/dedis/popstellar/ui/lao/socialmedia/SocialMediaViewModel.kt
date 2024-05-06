@@ -23,6 +23,7 @@ import com.github.dedis.popstellar.utility.error.ErrorUtils.logAndShow
 import com.github.dedis.popstellar.utility.error.UnknownChirpException
 import com.github.dedis.popstellar.utility.error.UnknownLaoException
 import com.github.dedis.popstellar.utility.error.UnknownReactionException
+import com.github.dedis.popstellar.utility.error.keys.InvalidPoPTokenException
 import com.github.dedis.popstellar.utility.error.keys.KeyException
 import com.github.dedis.popstellar.utility.scheduler.SchedulerProvider
 import com.github.dedis.popstellar.utility.security.KeyManager
@@ -268,6 +269,7 @@ constructor(
 
     return try {
       val token = validPoPToken
+
       sender == token.publicKey.encoded
     } catch (e: KeyException) {
       logAndShow(getApplication(), TAG, e, R.string.error_retrieve_own_token)
@@ -286,6 +288,11 @@ constructor(
       val token = validPoPToken
       val toSearch = token.publicKey.encoded
       senders.contains(toSearch)
+    } catch (e: InvalidPoPTokenException) {
+      // InvalidPoPTokenException means the user did not attend any roll calls and had no token.
+      // This is not an issue worth displaying the error for every single chirps.
+      // This error will already show once in isOwner.
+      return false
     } catch (e: KeyException) {
       logAndShow(getApplication(), TAG, e, R.string.error_retrieve_own_token)
       false
@@ -305,6 +312,7 @@ constructor(
     get() = laoRepo.getLaoView(laoId)
 
   companion object {
+    // TODO : looks like those constants need to be moved to resources
     val TAG: String = SocialMediaViewModel::class.java.simpleName
     private const val LAO_FAILURE_MESSAGE = "failed to retrieve lao"
     private const val SOCIAL = "social"
