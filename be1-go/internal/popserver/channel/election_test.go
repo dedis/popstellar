@@ -3,11 +3,16 @@ package channel
 import (
 	"encoding/base64"
 	"fmt"
+	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
+	"go.dedis.ch/kyber/v3"
 	"popstellar/crypto"
 	"popstellar/internal/popserver/database"
+	"popstellar/internal/popserver/generator"
 	state "popstellar/internal/popserver/state"
+	"popstellar/internal/popserver/types"
 	"popstellar/message/messagedata"
+	"popstellar/message/query/method/message"
 	"testing"
 )
 
@@ -233,4 +238,90 @@ func Test_handleChannelElection(t *testing.T) {
 			}
 		})
 	}
+}
+
+func newElectionOpenMsg(t *testing.T, owner kyber.Point, sender, laoID, electionID, channelPath, state string,
+	createdAt int64, isError bool, mockRepo *database.MockRepository) message.Message {
+
+	msg := generator.NewElectionOpenMsg(t, sender, laoID, electionID, 1, nil)
+
+	mockRepo.On("GetLAOOrganizerPubKey", channelPath).Return(owner, nil)
+
+	if createdAt >= 0 {
+		mockRepo.On("GetElectionCreationTime", channelPath).Return(createdAt, nil)
+	}
+
+	if state != "" {
+		mockRepo.On("IsElectionStartedOrEnded", channelPath).
+			Return(state == messagedata.ElectionActionOpen || state == messagedata.ElectionActionEnd, nil)
+	}
+
+	if !isError {
+		mockRepo.On("StoreMessage", channelPath, msg).Return(nil)
+	}
+
+	return msg
+}
+
+func newElectionEndMsg(t *testing.T, owner kyber.Point, sender, laoID, electionID, channelPath, state, votes string,
+	createdAt int64, isError bool, mockRepo *database.MockRepository) message.Message {
+
+	msg := generator.NewElectionCloseMsg(t, sender, laoID, electionID, votes, 1, nil)
+
+	mockRepo.On("GetLAOOrganizerPubKey", channelPath).Return(owner, nil)
+
+	if state != "" {
+		mockRepo.On("IsElectionStarted", channelPath).
+			Return(state == messagedata.ElectionActionOpen, nil)
+	}
+
+	if createdAt >= 0 {
+		mockRepo.On("GetElectionCreationTime", channelPath).Return(createdAt, nil)
+	}
+
+	if votes != "" {
+		questions := map[string]types.Question{
+			"questionID1": {
+				ID: []byte("questionID1"),
+				ValidVotes: map[string]types.ValidVote{
+					"voteID1": {
+						ID: "voteID1",
+					},
+					"VoteID2": {
+						ID: "voteID2",
+					},
+				},
+			},
+			"questionID2": {
+				ID: []byte("questionID2"),
+				ValidVotes: map[string]types.ValidVote{
+					"voteID3": {
+						ID: "voteID3",
+					},
+				},
+			},
+		}
+
+		mockRepo.On("GetElectionQuestionsWithValidVotes", channelPath).Return(questions, nil)
+	}
+
+	if !isError {
+		mockRepo.On("GetElectionType", channelPath).Return(messagedata.OpenBallot, nil)
+		mockRepo.On("StoreMessageAndElectionResult", channelPath, msg, mock.AnythingOfType("message.Message")).
+			Return(nil)
+	}
+
+	return msg
+}
+
+func newElectionResultMsg(t *testing.T, sender, channelPath string, questions []messagedata.ElectionResultQuestion,
+	isError bool, mockRepo *database.MockRepository) message.Message {
+
+	msg := generator.NewElectionResultMsg(t, sender, questions, nil)
+
+	if !isError {
+		mockRepo.On("StoreMessage", channelPath, msg).Return(nil)
+	}
+
+	return msg
 }

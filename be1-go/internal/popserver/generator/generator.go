@@ -31,7 +31,7 @@ func newMessage(t *testing.T, sender string, senderSK kyber.Scalar, data []byte)
 		Sender:            sender,
 		Signature:         signature64,
 		MessageID:         messageID64,
-		WitnessSignatures: nil,
+		WitnessSignatures: []message.WitnessSignature{},
 	}
 }
 
