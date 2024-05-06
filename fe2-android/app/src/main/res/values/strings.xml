@@ -376,6 +376,7 @@
   <string name="error_sending_challenge_request">Could not send the challenge request</string>
   <string name="error_sending_federation_expect">Could not send the federation expect message</string>
   <string name="error_sending_federation_init">Could not send the federation init message</string>
+  <string name="error_invalid_federation_info">Invalid federation information</string>
 
   <!-- Exception -->
   <string name="json_rpc_exception">An error response was replied by the server\nError %1$d - %2$s</string>

@@ -19,6 +19,7 @@ import com.github.dedis.popstellar.ui.PopViewModel
 import com.github.dedis.popstellar.ui.lao.LaoActivity
 import com.github.dedis.popstellar.ui.lao.federation.LinkedOrganizationsFragment
 import com.github.dedis.popstellar.ui.lao.federation.LinkedOrganizationsInviteFragment
+import com.github.dedis.popstellar.ui.lao.federation.LinkedOrganizationsViewModel
 import com.google.mlkit.vision.barcode.BarcodeScanner
 import com.google.mlkit.vision.barcode.BarcodeScannerOptions
 import com.google.mlkit.vision.barcode.BarcodeScanning
@@ -185,19 +186,22 @@ class QrScannerFragment : Fragment() {
     scanningViewModel.handleData(data)
 
     // Special case for federation
-    if (scanningAction == ScanningAction.FEDERATION_INVITE) {
-      LaoActivity.setCurrentFragment(
-          parentFragmentManager,
-          R.id.fragment_linked_organizations_home,
-      ) {
-        LinkedOrganizationsFragment.newInstance()
-      }
-    } else if (scanningAction == ScanningAction.FEDERATION_JOIN) {
-      LaoActivity.setCurrentFragment(
-          parentFragmentManager,
-          R.id.fragment_linked_organizations_invite,
-      ) {
-        LinkedOrganizationsInviteFragment.newInstance(false)
+    val linkedOrganisationsViewModel = scanningViewModel
+    if (linkedOrganisationsViewModel is LinkedOrganizationsViewModel) {
+      if (scanningAction == ScanningAction.FEDERATION_INVITE) {
+        LaoActivity.setCurrentFragment(
+            linkedOrganisationsViewModel.manager!!,
+            R.id.fragment_linked_organizations_home,
+        ) {
+          LinkedOrganizationsFragment.newInstance()
+        }
+      } else if (scanningAction == ScanningAction.FEDERATION_JOIN) {
+        LaoActivity.setCurrentFragment(
+            linkedOrganisationsViewModel.manager!!,
+            R.id.fragment_linked_organizations_invite,
+        ) {
+          LinkedOrganizationsInviteFragment.newInstance(false)
+        }
       }
     }
   }

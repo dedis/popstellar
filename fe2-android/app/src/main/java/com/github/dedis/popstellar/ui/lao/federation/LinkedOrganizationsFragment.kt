@@ -95,6 +95,7 @@ class LinkedOrganizationsFragment : Fragment() {
   private var joinButton =
       View.OnClickListener {
         laoViewModel.setIsTab(false)
+        linkedOrganizationsViewModel.manager = parentFragmentManager
         LaoActivity.setCurrentFragment(parentFragmentManager, R.id.fragment_qr_scanner) {
           QrScannerFragment.newInstance(ScanningAction.FEDERATION_JOIN)
         }

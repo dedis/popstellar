@@ -9,7 +9,7 @@ import androidx.fragment.app.Fragment
 import com.github.dedis.popstellar.R
 import com.github.dedis.popstellar.databinding.LinkedOrganizationsInviteFragmentBinding
 import com.github.dedis.popstellar.model.network.method.message.data.federation.Challenge
-import com.github.dedis.popstellar.model.qrcode.ConnectToLao
+import com.github.dedis.popstellar.model.qrcode.FederationDetails
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager
 import com.github.dedis.popstellar.ui.lao.LaoActivity
 import com.github.dedis.popstellar.ui.lao.LaoActivity.Companion.obtainLinkedOrganizationsViewModel
@@ -91,11 +91,16 @@ class LinkedOrganizationsInviteFragment : Fragment() {
 
   private fun displayQrCodeAndInfo(
       binding: LinkedOrganizationsInviteFragmentBinding,
-      challenge: Challenge?
+      challenge: Challenge?,
   ) {
     try {
       val laoView = laoViewModel.lao
-      val data = ConnectToLao(networkManager.currentUrl!!, laoView.id)
+      val data =
+          FederationDetails(
+              laoView.id,
+              networkManager.currentUrl!!,
+              laoViewModel.getPublicKey().encoded,
+              challenge)
       val myBitmap =
           QRCode.from(gson.toJson(data))
               .withSize(QR_SIDE, QR_SIDE)
@@ -132,30 +137,36 @@ class LinkedOrganizationsInviteFragment : Fragment() {
 
   private fun finishButton() {
     val repo = linkedOrganizationsViewModel.getRepository()
-    laoViewModel.addDisposable(
-        linkedOrganizationsViewModel
-            .sendFederationInit(
-                repo.otherLaoId!!,
-                repo.otherServerAddr!!,
-                repo.otherPublicKey!!,
-                repo.getChallenge()!!)
-            .subscribe(
-                {},
-                { error: Throwable ->
-                  logAndShow(requireContext(), TAG, error, R.string.error_sending_federation_init)
-                },
-            ))
+    if (repo.otherLaoId == null ||
+        repo.otherServerAddr == null ||
+        repo.otherPublicKey == null ||
+        repo.getChallenge() == null) {
+      logAndShow(requireContext(), TAG, R.string.error_invalid_federation_info)
+    } else {
+      laoViewModel.addDisposable(
+          linkedOrganizationsViewModel
+              .sendFederationInit(
+                  repo.otherLaoId!!,
+                  repo.otherServerAddr!!,
+                  repo.otherPublicKey!!,
+                  repo.getChallenge()!!,
+              )
+              .subscribe(
+                  {},
+                  { error: Throwable ->
+                    logAndShow(requireContext(), TAG, error, R.string.error_sending_federation_init)
+                  },
+              ))
+    }
     repo.flush()
-    LaoActivity.setCurrentFragment(
-        parentFragmentManager,
-        R.id.fragment_linked_organizations_home,
-    ) {
+    LaoActivity.setCurrentFragment(parentFragmentManager, R.id.fragment_linked_organizations_home) {
       LinkedOrganizationsFragment.newInstance()
     }
   }
 
   private fun openScanner() {
     laoViewModel.setIsTab(false)
+    linkedOrganizationsViewModel.manager = parentFragmentManager
     LaoActivity.setCurrentFragment(parentFragmentManager, R.id.fragment_qr_scanner) {
       QrScannerFragment.newInstance(ScanningAction.FEDERATION_INVITE)
     }

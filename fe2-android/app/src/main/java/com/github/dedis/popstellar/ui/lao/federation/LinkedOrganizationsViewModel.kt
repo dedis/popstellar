@@ -1,6 +1,7 @@
 package com.github.dedis.popstellar.ui.lao.federation
 
 import android.app.Application
+import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import com.github.dedis.popstellar.R
@@ -38,6 +39,7 @@ constructor(
   private lateinit var laoId: String
   private val connecting = AtomicBoolean(false)
   private val disposables = CompositeDisposable()
+  var manager: FragmentManager? = null
   override val nbScanned = MutableLiveData<Int>()
 
   fun setLaoId(laoId: String?) {
@@ -147,6 +149,7 @@ constructor(
           ErrorUtils.logAndShow(
               getApplication<Application>().applicationContext,
               TAG,
+              e,
               R.string.qr_code_not_federation_details)
           connecting.set(false)
           return
