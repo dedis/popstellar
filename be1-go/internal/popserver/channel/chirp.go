@@ -49,14 +49,7 @@ func handleChannelChirp(channelID string, msg message.Message) *answer.Error {
 		return errAnswer
 	}
 
-	err := db.StoreMessage(channelID, msg)
-	if err != nil {
-		errAnswer = answer.NewInternalServerError("failed to store message: %v", err)
-		errAnswer = errAnswer.Wrap("handleChannelChirp")
-		return errAnswer
-	}
-
-	err = db.StoreMessage(generalChirpsChannelID, generalMsg)
+	err := db.StoreChirpMessages(channelID, generalChirpsChannelID, msg, generalMsg)
 	if err != nil {
 		errAnswer = answer.NewInternalServerError("failed to store message: %v", err)
 		errAnswer = errAnswer.Wrap("handleChannelChirp")

@@ -28,7 +28,7 @@ func Test_SQLite_GetMessageByID(t *testing.T) {
 
 	testMessages := initMessages()
 	for _, m := range testMessages {
-		err = lite.StoreMessage(m.channel, m.msg)
+		err = lite.StoreMessageAndData(m.channel, m.msg)
 		require.NoError(t, err)
 	}
 
@@ -52,7 +52,7 @@ func Test_SQLite_GetMessagesByID(t *testing.T) {
 
 	testMessages := initMessages()
 	for _, m := range testMessages {
-		err = lite.StoreMessage(m.channel, m.msg)
+		err = lite.StoreMessageAndData(m.channel, m.msg)
 		require.NoError(t, err)
 	}
 
@@ -75,7 +75,7 @@ func Test_SQLite_AddWitnessSignature(t *testing.T) {
 
 	testMessages := initMessages()
 	for _, m := range testMessages {
-		err = lite.StoreMessage(m.channel, m.msg)
+		err = lite.StoreMessageAndData(m.channel, m.msg)
 		require.NoError(t, err)
 	}
 	// Add signatures to message1
@@ -102,7 +102,7 @@ func Test_SQLite_AddWitnessSignature(t *testing.T) {
 	require.NoError(t, err)
 
 	//Verify that the signature has been added to the message
-	err = lite.StoreMessage("channel1", message5)
+	err = lite.StoreMessageAndData("channel1", message5)
 	require.NoError(t, err)
 	expected = []message.WitnessSignature{{Witness: "witness2", Signature: "sig3"}}
 	msg4, err := lite.GetMessageByID("ID5")
@@ -122,7 +122,7 @@ func Test_SQLite_GetAllMessagesFromChannel(t *testing.T) {
 
 	testMessages := initMessages()
 	for _, m := range testMessages {
-		err = lite.StoreMessage(m.channel, m.msg)
+		err = lite.StoreMessageAndData(m.channel, m.msg)
 		require.NoError(t, err)
 	}
 
@@ -154,7 +154,7 @@ func Test_SQLite_GetResultForGetMessagesByID(t *testing.T) {
 
 	testMessages := initMessages()
 	for _, m := range testMessages {
-		err = lite.StoreMessage(m.channel, m.msg)
+		err = lite.StoreMessageAndData(m.channel, m.msg)
 		require.NoError(t, err)
 	}
 
@@ -179,7 +179,7 @@ func Test_SQLite_GetParamsForGetMessageByID(t *testing.T) {
 
 	testMessages := initMessages()
 	for _, m := range testMessages {
-		err = lite.StoreMessage(m.channel, m.msg)
+		err = lite.StoreMessageAndData(m.channel, m.msg)
 		require.NoError(t, err)
 	}
 	params := map[string][]string{
@@ -236,7 +236,7 @@ func TestSQLite_HasMessage(t *testing.T) {
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
-	err = lite.StoreMessage("channel1", message5)
+	err = lite.StoreMessageAndData("channel1", message5)
 	require.NoError(t, err)
 
 	ok, err := lite.HasMessage("ID5")

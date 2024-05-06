@@ -135,7 +135,7 @@ func newSuccessTestHandleChannelCoin(t *testing.T, filename string, name string,
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
-	mockRepo.On("StoreMessage", channelID, m).Return(nil)
+	mockRepo.On("StoreMessageAndData", channelID, m).Return(nil)
 
 	sockets := []*socket.FakeSocket{
 		{Id: laoID + "0"},

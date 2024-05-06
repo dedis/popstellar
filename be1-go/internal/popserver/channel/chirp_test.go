@@ -147,14 +147,13 @@ func newChirpAddMsg(t *testing.T, channelID string, sender string, timestamp int
 		return msg
 	}
 
-	mockRepo.On("StoreMessage", channelID, msg).Return(nil)
-
 	chirpNotifyChannelID, err := getGeneralChirpsChannel(channelID)
 	require.Nil(t, err)
 
 	subs.AddChannel(chirpNotifyChannelID)
 
-	mockRepo.On("StoreMessage", chirpNotifyChannelID, mock.AnythingOfType("message.Message")).Return(nil)
+	mockRepo.On("StoreChirpMessages", channelID, chirpNotifyChannelID, mock.AnythingOfType("message.Message"),
+		mock.AnythingOfType("message.Message")).Return(nil)
 
 	return msg
 }
@@ -174,14 +173,14 @@ func newChirpDeleteMsg(t *testing.T, channelID string, sender string, chirpID st
 	}
 
 	mockRepo.On("HasMessage", chirpID).Return(true, nil)
-	mockRepo.On("StoreMessage", channelID, msg).Return(nil)
 
 	chirpNotifyChannelID, err := getGeneralChirpsChannel(channelID)
 	require.Nil(t, err)
 
 	subs.AddChannel(chirpNotifyChannelID)
 
-	mockRepo.On("StoreMessage", chirpNotifyChannelID, mock.AnythingOfType("message.Message")).Return(nil)
+	mockRepo.On("StoreChirpMessages", channelID, chirpNotifyChannelID, mock.AnythingOfType("message.Message"),
+		mock.AnythingOfType("message.Message")).Return(nil)
 
 	return msg
 }

@@ -80,23 +80,7 @@ func GetCoinRepositoryInstance() (CoinRepository, bool) {
 	return instance, true
 }
 
-func GetConsensusRepositoryInstance() (ConsensusRepository, bool) {
-	if instance == nil {
-		return nil, false
-	}
-
-	return instance, true
-}
-
 func GetElectionRepositoryInstance() (ElectionRepository, bool) {
-	if instance == nil {
-		return nil, false
-	}
-
-	return instance, true
-}
-
-func GetPopChaRepositoryInstance() (PopChaRepository, bool) {
 	if instance == nil {
 		return nil, false
 	}

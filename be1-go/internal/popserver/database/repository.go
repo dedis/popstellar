@@ -15,8 +15,6 @@ type Repository interface {
 	LAORepository
 	ChirpRepository
 	CoinRepository
-	ConsensusRepository
-	PopChaRepository
 	ReactionRepository
 
 	// StoreMessageAndData stores a message with an object and an action inside the database.
@@ -70,8 +68,8 @@ type RootRepository interface {
 		organizerPubBuf []byte,
 		msg, laoGreetMsg message.Message) error
 
-	// StoreMessage stores a message inside the database.
-	StoreMessage(channelID string, msg message.Message) error
+	// StoreMessageAndData stores a message inside the database.
+	StoreMessageAndData(channelID string, msg message.Message) error
 
 	// HasChannel returns true if the channel already exists.
 	HasChannel(channel string) (bool, error)
@@ -100,8 +98,8 @@ type LAORepository interface {
 		electionSecretKey kyber.Scalar,
 		msg, electionKeyMsg message.Message) error
 
-	// StoreMessage stores a message inside the database.
-	StoreMessage(channelID string, msg message.Message) error
+	// StoreMessageAndData stores a message with an object and an action inside the database.
+	StoreMessageAndData(channelID string, msg message.Message) error
 
 	// HasMessage returns true if the message already exists.
 	HasMessage(messageID string) (bool, error)
@@ -142,14 +140,11 @@ type ElectionRepository interface {
 	// StoreMessageAndElectionResult stores a message and an election result message inside the database.
 	StoreMessageAndElectionResult(channelID string, msg, electionResultMsg message.Message) error
 
-	// StoreMessage stores a message inside the database.
-	StoreMessage(channelID string, msg message.Message) error
+	// StoreMessageAndData stores a message with an object and an action inside the database.
+	StoreMessageAndData(channelID string, msg message.Message) error
 }
 
 type ChirpRepository interface {
-	// StoreMessage stores a message inside the database.
-	StoreMessage(channelID string, msg message.Message) error
-
 	// HasMessage returns true if the message already exists.
 	HasMessage(messageID string) (bool, error)
 
@@ -158,18 +153,8 @@ type ChirpRepository interface {
 }
 
 type CoinRepository interface {
-	// StoreMessage stores a message inside the database.
-	StoreMessage(channelID string, msg message.Message) error
-}
-
-type ConsensusRepository interface {
-	// StoreMessage stores a message inside the database.
-	StoreMessage(channelID string, msg message.Message) error
-}
-
-type PopChaRepository interface {
-	// StoreMessage stores a message inside the database.
-	StoreMessage(channelID string, msg message.Message) error
+	// StoreMessageAndData stores a message with an object and an action inside the database.
+	StoreMessageAndData(channelID string, msg message.Message) error
 }
 
 type ReactionRepository interface {
@@ -179,6 +164,6 @@ type ReactionRepository interface {
 	// GetReactionSender returns a reaction sender
 	GetReactionSender(messageID string) (string, error)
 
-	// StoreMessage stores a message inside the database.
-	StoreMessage(channelID string, msg message.Message) error
+	// StoreMessageAndData stores a message with an object and an action inside the database.
+	StoreMessageAndData(channelID string, msg message.Message) error
 }
