@@ -50,3 +50,18 @@ func NewNothingMsg(t *testing.T, sender string, senderSK kyber.Scalar) message.M
 
 	return newMessage(t, sender, senderSK, buf)
 }
+
+func NewNothingQuery(t *testing.T, id int) []byte {
+	wrongQuery := struct {
+		Jsonrpc string `json:"Jsonrpc"`
+		ID      int    `json:"ID"`
+	}{
+		Jsonrpc: "2.0",
+		ID:      id,
+	}
+
+	wrongQueryBuf, err := json.Marshal(&wrongQuery)
+	require.NoError(t, err)
+
+	return wrongQueryBuf
+}
