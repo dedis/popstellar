@@ -19,6 +19,182 @@ import (
 	"testing"
 )
 
+func Test_handleGreetServer(t *testing.T) {
+	subs := types.NewSubscribers()
+	queries := types.NewQueries(&noLog)
+	peers := types.NewPeers()
+
+	err := state.SetState(t, subs, peers, queries)
+	require.NoError(t, err)
+
+	serverSecretKey := crypto.Suite.Scalar().Pick(crypto.Suite.RandomStream())
+	serverPublicKey := crypto.Suite.Point().Mul(serverSecretKey, nil)
+
+	err = config.SetConfig(t, nil, serverPublicKey, serverSecretKey, "clientAddress", "serverAddress")
+	require.NoError(t, err)
+
+	type input struct {
+		name      string
+		socket    *socket.FakeSocket
+		message   []byte
+		needGreet bool
+		isError   bool
+		contains  string
+	}
+
+	args := make([]input, 0)
+
+	greetServer := generator.NewGreetServerQuery(t, "pk", "client", "server")
+
+	// Test 1: reply with greet server when receiving a greet server from a new server
+
+	s := &socket.FakeSocket{Id: "1"}
+
+	args = append(args, input{
+		name:      "Test 1",
+		socket:    s,
+		message:   greetServer,
+		needGreet: true,
+		isError:   false,
+	})
+
+	// Test 2: doesn't reply with greet server when already greeted the server
+
+	s = &socket.FakeSocket{Id: "2"}
+
+	peers.AddPeerGreeted(s.Id)
+
+	args = append(args, input{
+		name:      "Test 2",
+		message:   greetServer,
+		socket:    s,
+		needGreet: false,
+		isError:   false,
+	})
+
+	// Test 3: return an error if the socket ID is already used by another server
+
+	s = &socket.FakeSocket{Id: "3"}
+
+	err = peers.AddPeerInfo(s.Id, method.GreetServerParams{})
+	require.NoError(t, err)
+
+	args = append(args, input{
+		name:     "Test 3",
+		socket:   s,
+		message:  greetServer,
+		isError:  true,
+		contains: "failed to add peer",
+	})
+
+	// run all tests
+
+	for _, arg := range args {
+		t.Run(arg.name, func(t *testing.T) {
+			id, errAnswer := handleGreetServer(arg.socket, arg.message)
+			if arg.isError {
+				require.NotNil(t, errAnswer)
+				require.Contains(t, errAnswer.Error(), arg.contains)
+				require.Nil(t, id)
+			} else if arg.needGreet {
+				require.Nil(t, errAnswer)
+				require.NotNil(t, arg.socket.Msg)
+			} else {
+				require.Nil(t, errAnswer)
+				require.Nil(t, arg.socket.Msg)
+			}
+		})
+	}
+}
+
+func Test_handleSubscribe(t *testing.T) {
+	subs := types.NewSubscribers()
+	queries := types.NewQueries(&noLog)
+	peers := types.NewPeers()
+
+	err := state.SetState(t, subs, peers, queries)
+	require.NoError(t, err)
+
+	type input struct {
+		name     string
+		socket   *socket.FakeSocket
+		ID       int
+		channel  string
+		message  []byte
+		isError  bool
+		contains string
+	}
+
+	args := make([]input, 0)
+
+	// Test 1: successfully subscribe to a channel
+
+	fakeSocket := socket.FakeSocket{Id: "1"}
+	ID := 1
+	channel := "/root/lao1"
+
+	subs.AddChannel(channel)
+
+	args = append(args, input{
+		name:    "Test 1",
+		socket:  &fakeSocket,
+		ID:      ID,
+		channel: channel,
+		message: generator.NewSubscribeQuery(t, ID, channel),
+		isError: false,
+	})
+
+	// Test 2: failed to subscribe to an unknown channel
+
+	fakeSocket = socket.FakeSocket{Id: "2"}
+	ID = 2
+	channel = "/root/lao2"
+
+	args = append(args, input{
+		name:     "Test 2",
+		socket:   &fakeSocket,
+		ID:       ID,
+		channel:  channel,
+		message:  generator.NewSubscribeQuery(t, ID, channel),
+		isError:  true,
+		contains: "cannot Subscribe to unknown channel",
+	})
+
+	// cannot Subscribe to root
+
+	fakeSocket = socket.FakeSocket{Id: "3"}
+	ID = 3
+	channel = "/root"
+
+	args = append(args, input{
+		name:     "Test 3",
+		socket:   &fakeSocket,
+		ID:       ID,
+		channel:  channel,
+		message:  generator.NewSubscribeQuery(t, ID, channel),
+		isError:  true,
+		contains: "cannot Subscribe to root channel",
+	})
+
+	// run all tests
+
+	for _, arg := range args {
+		t.Run(arg.name, func(t *testing.T) {
+			id, errAnswer := handleSubscribe(arg.socket, arg.message)
+			if arg.isError {
+				require.NotNil(t, errAnswer)
+				require.Contains(t, errAnswer.Error(), arg.contains)
+				require.Equal(t, arg.ID, *id)
+			} else {
+				require.Nil(t, errAnswer)
+				isSubscribed, err := subs.IsSubscribed(arg.channel, arg.socket)
+				require.NoError(t, err)
+				require.True(t, isSubscribed)
+			}
+		})
+	}
+}
+
 func Test_handleCatchUp(t *testing.T) {
 	subs := types.NewSubscribers()
 	queries := types.NewQueries(&noLog)
@@ -229,94 +405,6 @@ func Test_handleGetMessagesByID(t *testing.T) {
 	}
 }
 
-func Test_handleGreetServer(t *testing.T) {
-	subs := types.NewSubscribers()
-	queries := types.NewQueries(&noLog)
-	peers := types.NewPeers()
-
-	err := state.SetState(t, subs, peers, queries)
-	require.NoError(t, err)
-
-	serverSecretKey := crypto.Suite.Scalar().Pick(crypto.Suite.RandomStream())
-	serverPublicKey := crypto.Suite.Point().Mul(serverSecretKey, nil)
-
-	err = config.SetConfig(t, nil, serverPublicKey, serverSecretKey, "clientAddress", "serverAddress")
-	require.NoError(t, err)
-
-	type input struct {
-		name      string
-		socket    *socket.FakeSocket
-		message   []byte
-		needGreet bool
-		isError   bool
-		contains  string
-	}
-
-	args := make([]input, 0)
-
-	greetServer := generator.NewGreetServerQuery(t, "pk", "client", "server")
-
-	// Test 1: reply with greet server when receiving a greet server from a new server
-
-	s := &socket.FakeSocket{Id: "1"}
-
-	args = append(args, input{
-		name:      "Test 1",
-		socket:    s,
-		message:   greetServer,
-		needGreet: true,
-		isError:   false,
-	})
-
-	// Test 2: doesn't reply with greet server when already greeted the server
-
-	s = &socket.FakeSocket{Id: "2"}
-
-	peers.AddPeerGreeted(s.Id)
-
-	args = append(args, input{
-		name:      "Test 2",
-		message:   greetServer,
-		socket:    s,
-		needGreet: false,
-		isError:   false,
-	})
-
-	// Test 3: return an error if the socket ID is already used by another server
-
-	s = &socket.FakeSocket{Id: "3"}
-
-	err = peers.AddPeerInfo(s.Id, method.GreetServerParams{})
-	require.NoError(t, err)
-
-	args = append(args, input{
-		name:     "Test 3",
-		socket:   s,
-		message:  greetServer,
-		isError:  true,
-		contains: "failed to add peer",
-	})
-
-	// run all tests
-
-	for _, arg := range args {
-		t.Run(arg.name, func(t *testing.T) {
-			id, errAnswer := handleGreetServer(arg.socket, arg.message)
-			if arg.isError {
-				require.NotNil(t, errAnswer)
-				require.Contains(t, errAnswer.Error(), arg.contains)
-				require.Nil(t, id)
-			} else if arg.needGreet {
-				require.Nil(t, errAnswer)
-				require.NotNil(t, arg.socket.Msg)
-			} else {
-				require.Nil(t, errAnswer)
-				require.Nil(t, arg.socket.Msg)
-			}
-		})
-	}
-}
-
 func Test_handleHeartbeat(t *testing.T) {
 	subs := types.NewSubscribers()
 	queries := types.NewQueries(&noLog)
@@ -468,126 +556,6 @@ func Test_handleHeartbeat(t *testing.T) {
 			} else {
 				require.Nil(t, errAnswer)
 				require.Nil(t, i.socket.Msg)
-			}
-		})
-	}
-}
-
-func Test_handleSubscribe(t *testing.T) {
-	subs := types.NewSubscribers()
-	queries := types.NewQueries(&noLog)
-	peers := types.NewPeers()
-
-	err := state.SetState(t, subs, peers, queries)
-	require.NoError(t, err)
-
-	type input struct {
-		name        string
-		socket      *socket.FakeSocket
-		message     []byte
-		isErrorTest bool
-		subscribe   method.Subscribe
-	}
-
-	inputs := make([]input, 0)
-
-	// Subscribe to channel
-
-	subscribe1 := method.Subscribe{
-		Base: query.Base{
-			JSONRPCBase: jsonrpc.JSONRPCBase{
-				JSONRPC: "2.0",
-			},
-
-			Method: query.MethodSubscribe,
-		},
-		ID: 1,
-		Params: method.SubscribeParams{
-			Channel: "/root/lao1",
-		},
-	}
-
-	subscribeBuf, err := json.Marshal(&subscribe1)
-	require.NoError(t, err)
-
-	fakeSocket := socket.FakeSocket{Id: "fakesocket1"}
-
-	subs.AddChannel("/root/lao1")
-
-	inputs = append(inputs, input{
-		name:        "Subscribe to channel",
-		socket:      &fakeSocket,
-		message:     subscribeBuf,
-		isErrorTest: false,
-		subscribe:   subscribe1,
-	})
-
-	// unknown channel
-
-	subscribe2 := method.Subscribe{
-		Base: query.Base{
-			JSONRPCBase: jsonrpc.JSONRPCBase{
-				JSONRPC: "2.0",
-			},
-
-			Method: query.MethodSubscribe,
-		},
-		ID: 1,
-		Params: method.SubscribeParams{
-			Channel: "/root/lao2",
-		},
-	}
-
-	subscribeBuf, err = json.Marshal(&subscribe2)
-	require.NoError(t, err)
-
-	inputs = append(inputs, input{
-		name:        "unknown channel",
-		message:     subscribeBuf,
-		isErrorTest: true,
-		subscribe:   subscribe2,
-	})
-
-	// cannot Subscribe to root
-
-	subscribe3 := method.Subscribe{
-		Base: query.Base{
-			JSONRPCBase: jsonrpc.JSONRPCBase{
-				JSONRPC: "2.0",
-			},
-
-			Method: query.MethodSubscribe,
-		},
-		ID: 1,
-		Params: method.SubscribeParams{
-			Channel: "/root",
-		},
-	}
-
-	subscribeRootBuf, err := json.Marshal(&subscribe3)
-	require.NoError(t, err)
-
-	inputs = append(inputs, input{
-		name:        "cannot Subscribe to root",
-		message:     subscribeRootBuf,
-		isErrorTest: true,
-		subscribe:   subscribe3,
-	})
-
-	// run all tests
-
-	for _, i := range inputs {
-		t.Run(i.name, func(t *testing.T) {
-			id, errAnswer := handleSubscribe(i.socket, i.message)
-			if i.isErrorTest {
-				require.NotNil(t, errAnswer)
-				require.Equal(t, i.subscribe.ID, *id)
-			} else {
-				require.Nil(t, errAnswer)
-
-				isSubscribed, err := subs.IsSubscribed(i.subscribe.Params.Channel, i.socket)
-				require.NoError(t, err)
-				require.True(t, isSubscribed)
 			}
 		})
 	}

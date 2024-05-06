@@ -32,3 +32,22 @@ func NewGreetServerQuery(t *testing.T, publicKey, clientAddress, serverAddress s
 
 	return greetServerBuf
 }
+
+func NewSubscribeQuery(t *testing.T, queryID int, channel string) []byte {
+	subscribe := method.Subscribe{
+		Base: query.Base{
+			JSONRPCBase: jsonrpc.JSONRPCBase{
+				JSONRPC: "2.0",
+			},
+
+			Method: query.MethodSubscribe,
+		},
+		ID:     queryID,
+		Params: method.SubscribeParams{Channel: channel},
+	}
+
+	subscribeBuf, err := json.Marshal(&subscribe)
+	require.NoError(t, err)
+
+	return subscribeBuf
+}
