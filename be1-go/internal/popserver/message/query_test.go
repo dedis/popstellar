@@ -2,7 +2,6 @@ package message
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/stretchr/testify/require"
 	"golang.org/x/xerrors"
 	"popstellar/crypto"
@@ -316,96 +315,71 @@ func Test_handleCatchUp(t *testing.T) {
 	require.NoError(t, err)
 
 	type input struct {
-		name        string
-		message     []byte
-		socket      *socket.FakeSocket
-		result      []message.Message
-		isErrorTest bool
+		name     string
+		socket   socket.FakeSocket
+		ID       int
+		message  []byte
+		result   []message.Message
+		isError  bool
+		contains string
 	}
 
-	msg := message.Message{
-		Data:              "data",
-		Sender:            "sender",
-		Signature:         "signature",
-		MessageID:         "messageID",
-		WitnessSignatures: []message.WitnessSignature{},
+	args := make([]input, 0)
+
+	// Test 1: successfully catchup 4 messages on a channel
+
+	fakeSocket := socket.FakeSocket{Id: "1"}
+	ID := 1
+	channel := "/root/lao1"
+	messagesToCatchUp := []message.Message{
+		generator.NewNothingMsg(t, "sender1", nil),
+		generator.NewNothingMsg(t, "sender2", nil),
+		generator.NewNothingMsg(t, "sender3", nil),
+		generator.NewNothingMsg(t, "sender4", nil),
 	}
 
-	inputs := make([]input, 0)
+	mockRepo.On("GetAllMessagesFromChannel", channel).Return(messagesToCatchUp, nil)
 
-	// catch up three messages
-
-	catchup := method.Catchup{
-		Base: query.Base{
-			JSONRPCBase: jsonrpc.JSONRPCBase{
-				JSONRPC: "2.0",
-			},
-
-			Method: query.MethodCatchUp,
-		},
-		ID: 1,
-		Params: method.CatchupParams{
-			Channel: "/root",
-		},
-	}
-
-	catchupBuf, err := json.Marshal(&catchup)
-	require.NoError(t, err)
-
-	messagesToCatchUp := []message.Message{msg, msg, msg}
-
-	mockRepo.On("GetAllMessagesFromChannel", catchup.Params.Channel).Return(messagesToCatchUp, nil)
-
-	s := &socket.FakeSocket{Id: "fakesocket"}
-
-	inputs = append(inputs, input{
-		name:        "catch up three messages",
-		message:     catchupBuf,
-		socket:      s,
-		result:      messagesToCatchUp,
-		isErrorTest: false,
+	args = append(args, input{
+		name:    "Test 1",
+		socket:  fakeSocket,
+		ID:      ID,
+		message: generator.NewCatchupQuery(t, ID, channel),
+		result:  messagesToCatchUp,
+		isError: false,
 	})
 
-	// failed to query DB
+	// Test 2: failed to catchup because DB is disconnected
 
-	catchup2 := method.Catchup{
-		Base: query.Base{
-			JSONRPCBase: jsonrpc.JSONRPCBase{
-				JSONRPC: "2.0",
-			},
+	fakeSocket = socket.FakeSocket{Id: "2"}
+	ID = 2
+	channel = "/root/lao2"
 
-			Method: query.MethodCatchUp,
-		},
-		ID: 1,
-		Params: method.CatchupParams{
-			Channel: "/root2",
-		},
-	}
+	mockRepo.On("GetAllMessagesFromChannel", channel).
+		Return(nil, xerrors.Errorf("DB is disconnected"))
 
-	catchupBuf, err = json.Marshal(&catchup2)
-	require.NoError(t, err)
-
-	mockRepo.On("GetAllMessagesFromChannel", catchup2.Params.Channel).Return(nil, xerrors.Errorf("DB is disconnected"))
-
-	inputs = append(inputs, input{
-		name:        "failed to query DB",
-		message:     catchupBuf,
-		isErrorTest: true,
+	args = append(args, input{
+		name:     "Test 2",
+		socket:   fakeSocket,
+		ID:       ID,
+		message:  generator.NewCatchupQuery(t, ID, channel),
+		isError:  true,
+		contains: "DB is disconnected",
 	})
 
 	// run all tests
 
-	for _, i := range inputs {
-		t.Run(i.name, func(t *testing.T) {
-			id, errAnswer := handleCatchUp(i.socket, i.message)
-			if i.isErrorTest {
-				fmt.Println(errAnswer)
+	for _, arg := range args {
+		t.Run(arg.name, func(t *testing.T) {
+			id, errAnswer := handleCatchUp(&arg.socket, arg.message)
+			if arg.isError {
 				require.NotNil(t, errAnswer)
+				require.Contains(t, errAnswer.Error(), arg.contains)
 				require.NotNil(t, id)
+				require.Equal(t, arg.ID, *id)
 			} else {
-				fmt.Println(errAnswer)
 				require.Nil(t, errAnswer)
-				require.Equal(t, i.result, i.socket.Res)
+				require.Equal(t, arg.result, arg.socket.Res)
 			}
 		})
 	}

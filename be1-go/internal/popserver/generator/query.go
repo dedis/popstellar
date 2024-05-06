@@ -79,7 +79,7 @@ func NewPublishQuery(t *testing.T, queryID int, channel string, msg message.Mess
 				JSONRPC: "2.0",
 			},
 
-			Method: query.MethodUnsubscribe,
+			Method: query.MethodPublish,
 		},
 		ID: queryID,
 		Params: method.PublishParams{
@@ -92,4 +92,23 @@ func NewPublishQuery(t *testing.T, queryID int, channel string, msg message.Mess
 	require.NoError(t, err)
 
 	return publishBuf
+}
+
+func NewCatchupQuery(t *testing.T, queryID int, channel string) []byte {
+	catchup := method.Catchup{
+		Base: query.Base{
+			JSONRPCBase: jsonrpc.JSONRPCBase{
+				JSONRPC: "2.0",
+			},
+
+			Method: query.MethodCatchUp,
+		},
+		ID:     queryID,
+		Params: method.CatchupParams{Channel: channel},
+	}
+
+	catchupBuf, err := json.Marshal(&catchup)
+	require.NoError(t, err)
+
+	return catchupBuf
 }
