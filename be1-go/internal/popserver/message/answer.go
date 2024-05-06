@@ -6,13 +6,12 @@ import (
 	"popstellar/internal/popserver/utils"
 	"popstellar/message/answer"
 	"popstellar/message/query/method/message"
-	"popstellar/network/socket"
 	"sort"
 )
 
 const maxRetry = 10
 
-func handleGetMessagesByIDAnswer(socket socket.Socket, msg answer.Answer) *answer.Error {
+func handleGetMessagesByIDAnswer(msg answer.Answer) *answer.Error {
 	result := msg.Result.GetMessagesByChannel()
 	msgsByChan := make(map[string]map[string]message.Message)
 
@@ -43,12 +42,12 @@ func handleGetMessagesByIDAnswer(socket socket.Socket, msg answer.Answer) *answe
 	}
 
 	// Handle every message and discard them if handled without error
-	handleMessagesByChannel(socket, msgsByChan)
+	handleMessagesByChannel(msgsByChan)
 
 	return nil
 }
 
-func handleMessagesByChannel(socket socket.Socket, msgsByChannel map[string]map[string]message.Message) {
+func handleMessagesByChannel(msgsByChannel map[string]map[string]message.Message) {
 	log, ok := utils.GetLogInstance()
 	if !ok {
 		return
@@ -68,7 +67,7 @@ func handleMessagesByChannel(socket socket.Socket, msgsByChannel map[string]map[
 		for _, channelID := range sortedChannelIDs {
 			msgs := msgsByChannel[channelID]
 			for msgID, msg := range msgs {
-				errAnswer := channel.HandleChannel(socket, channelID, msg)
+				errAnswer := channel.HandleChannel(channelID, msg)
 				if errAnswer == nil {
 					delete(msgsByChannel[channelID], msgID)
 					continue

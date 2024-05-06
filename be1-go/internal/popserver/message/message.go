@@ -39,7 +39,7 @@ func HandleMessage(socket socket.Socket, msg []byte) error {
 	case jsonrpc.RPCTypeQuery:
 		id, errAnswer = handleQuery(socket, msg)
 	case jsonrpc.RPCTypeAnswer:
-		id, errAnswer = handleAnswer(socket, msg)
+		id, errAnswer = handleAnswer(msg)
 	default:
 		id = nil
 		errAnswer = answer.NewInvalidMessageFieldError("jsonRPC is of unknown type")
@@ -76,7 +76,7 @@ func handleQuery(socket socket.Socket, msg []byte) (*int, *answer.Error) {
 	case query.MethodHeartbeat:
 		id, errAnswer = handleHeartbeat(socket, msg)
 	case query.MethodPublish:
-		id, errAnswer = handlePublish(socket, msg)
+		id, errAnswer = handlePublish(msg)
 	case query.MethodSubscribe:
 		id, errAnswer = handleSubscribe(socket, msg)
 	case query.MethodUnsubscribe:
@@ -94,7 +94,7 @@ func handleQuery(socket socket.Socket, msg []byte) (*int, *answer.Error) {
 	return id, nil
 }
 
-func handleAnswer(socket socket.Socket, msg []byte) (*int, *answer.Error) {
+func handleAnswer(msg []byte) (*int, *answer.Error) {
 	var answerMsg answer.Answer
 
 	err := json.Unmarshal(msg, &answerMsg)
@@ -132,7 +132,7 @@ func handleAnswer(socket socket.Socket, msg []byte) (*int, *answer.Error) {
 		return answerMsg.ID, errAnswer
 	}
 
-	errAnswer := handleGetMessagesByIDAnswer(socket, answerMsg)
+	errAnswer := handleGetMessagesByIDAnswer(answerMsg)
 	if errAnswer != nil {
 		errAnswer = errAnswer.Wrap("handleAnswer")
 		return answerMsg.ID, errAnswer

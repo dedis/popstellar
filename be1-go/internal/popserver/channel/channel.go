@@ -16,11 +16,10 @@ import (
 	"popstellar/message/query"
 	"popstellar/message/query/method"
 	"popstellar/message/query/method/message"
-	"popstellar/network/socket"
 	"popstellar/validation"
 )
 
-func HandleChannel(socket socket.Socket, channelID string, msg message.Message) *answer.Error {
+func HandleChannel(channelID string, msg message.Message) *answer.Error {
 	dataBytes, err := base64.URLEncoding.DecodeString(msg.Data)
 	if err != nil {
 		errAnswer := answer.NewInvalidMessageFieldError("failed to decode data: %v", err).Wrap("HandleChannel")
@@ -47,7 +46,7 @@ func HandleChannel(socket socket.Socket, channelID string, msg message.Message) 
 
 	expectedMessageID := messagedata.Hash(msg.Data, msg.Signature)
 	if expectedMessageID != msg.MessageID {
-		errAnswer := answer.NewInvalidActionError("messageID is wrong: expected %q found %q",
+		errAnswer := answer.NewInvalidActionError("messageID is wrong: expected %s found %s",
 			expectedMessageID, msg.MessageID).Wrap("HandleChannel")
 		return errAnswer
 	}
@@ -90,7 +89,7 @@ func HandleChannel(socket socket.Socket, channelID string, msg message.Message) 
 	case ChannelCoin:
 		errAnswer = handleChannelCoin(channelID, msg)
 	default:
-		errAnswer = answer.NewInvalidResourceError("unknown channel type %s", channelType)
+		errAnswer = answer.NewInvalidResourceError("unknown channel type for %s", channelID)
 	}
 
 	if errAnswer != nil {
@@ -206,7 +205,7 @@ const (
 	ChannelChirp     = "chirp"
 	ChannelReaction  = "reaction"
 	ChannelConsensus = "consensus"
-	channelPopCha    = "popcha"
-	ChannelCoin      = "coin"
-	ChannelAuth      = "auth"
+	//channelPopCha    = "popcha"
+	ChannelCoin = "coin"
+	ChannelAuth = "auth"
 )

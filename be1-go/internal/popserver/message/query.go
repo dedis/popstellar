@@ -141,7 +141,7 @@ func handleUnsubscribe(socket socket.Socket, msg []byte) (*int, *answer.Error) {
 	return &unsubscribe.ID, nil
 }
 
-func handlePublish(socket socket.Socket, msg []byte) (*int, *answer.Error) {
+func handlePublish(msg []byte) (*int, *answer.Error) {
 	var publish method.Publish
 
 	err := json.Unmarshal(msg, &publish)
@@ -150,7 +150,7 @@ func handlePublish(socket socket.Socket, msg []byte) (*int, *answer.Error) {
 		return nil, errAnswer
 	}
 
-	errAnswer := channel.HandleChannel(socket, publish.Params.Channel, publish.Params.Message)
+	errAnswer := channel.HandleChannel(publish.Params.Channel, publish.Params.Message)
 	if errAnswer != nil {
 		errAnswer = errAnswer.Wrap("handlePublish")
 		return &publish.ID, errAnswer
