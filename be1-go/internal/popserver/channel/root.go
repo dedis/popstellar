@@ -189,6 +189,7 @@ func createLaoAndChannels(msg, laoGreetMsg message.Message, organizerPubBuf []by
 	if err != nil {
 		errAnswer = answer.NewInternalServerError("failed to store lao and sub channels: %v", err)
 		errAnswer = errAnswer.Wrap("createLaoAndSubChannels")
+		return errAnswer
 	}
 
 	subs, ok := state.GetSubsInstance()

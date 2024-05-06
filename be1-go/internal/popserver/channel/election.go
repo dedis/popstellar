@@ -115,6 +115,7 @@ func handleVoteCastVote(msg message.Message, channel string) *answer.Error {
 	_, ok = attendees[msg.Sender]
 	if !senderPubKey.Equal(organizerPubKey) || !ok {
 		errAnswer = answer.NewInvalidMessageFieldError("sender is not an attendee or the organizer of the election")
+		return errAnswer
 	}
 
 	//verify message data
@@ -535,6 +536,11 @@ func createElectionResult(questions map[string]types.Question, channel string) (
 		return message.Message{}, errAnswer
 	}
 	signatureBuf, errAnswer := Sign(buf)
+	if errAnswer != nil {
+		errAnswer = errAnswer.Wrap("createElectionResult")
+		return message.Message{}, errAnswer
+	}
+
 	signature := base64.URLEncoding.EncodeToString(signatureBuf)
 	electionResultMsg := message.Message{
 		Data:              buf64,
