@@ -9,13 +9,16 @@ import (
 	"net/url"
 	"os"
 	popstellar "popstellar"
-	"popstellar/channel/lao"
 	"popstellar/crypto"
 	"popstellar/hub"
-	"popstellar/hub/standard_hub"
+	"popstellar/internal/popserver"
+	"popstellar/internal/popserver/config"
+	"popstellar/internal/popserver/database"
+	"popstellar/internal/popserver/state"
+	"popstellar/internal/popserver/utils"
 	"popstellar/network"
 	"popstellar/network/socket"
-	"popstellar/popcha"
+	"popstellar/validation"
 	"sync"
 	"time"
 
@@ -85,9 +88,37 @@ func Serve(cliCtx *cli.Context) error {
 	var point kyber.Point = nil
 	ownerKey(serverConfig.PublicKey, &point)
 
-	// create user hub
-	h, err := standard_hub.NewHub(point, serverConfig.ClientAddress, serverConfig.ServerAddress, log.With().Str("role", "server").Logger(),
-		lao.NewChannel)
+	schemaValidator, err := validation.NewSchemaValidator()
+	if err != nil {
+		_, _ = fmt.Fprintf(os.Stderr, "error: %v\n", err)
+		os.Exit(1)
+	}
+
+	utils.InitUtils(&log, schemaValidator)
+
+	state.InitState(&log)
+
+	serverSecretKey := crypto.Suite.Scalar().Pick(crypto.Suite.RandomStream())
+	serverPublicKey := crypto.Suite.Point().Mul(serverSecretKey, nil)
+
+	config.InitConfig(point, serverPublicKey, serverSecretKey, serverConfig.ClientAddress, serverConfig.ServerAddress)
+
+	db, err := database.NewSQLite("sqllite.db", false)
+	if err != nil {
+		panic("Failed to init db")
+	}
+
+	database.InitDatabase(&db)
+
+	err = db.StoreChannel("/root", "root", "")
+	if err != nil {
+		panic("failed to store /root")
+	}
+
+	//// create user hub
+	//h, err := standard_hub.NewHub(point, serverConfig.ClientAddress, serverConfig.ServerAddress, log.With().Str("role", "server").Logger(),
+	//	lao.NewChannel)
+	h := popserver.NewPopServer()
 	if err != nil {
 		return xerrors.Errorf("failed create the hub: %v", err)
 	}
@@ -95,15 +126,15 @@ func Serve(cliCtx *cli.Context) error {
 	// start the processing loop
 	h.Start()
 
-	// Start the PoPCHA Authorization Server. It will run internally on localhost, the address of the server given in
-	// the config file will be the one used externally.
-	authorizationSrv, err := popcha.NewAuthServer(h, "localhost", serverConfig.AuthPort,
-		log.With().Str("role", "authorization server").Logger())
-	if err != nil {
-		return xerrors.Errorf("Error while starting the PoPCHA server: %v", err)
-	}
-	authorizationSrv.Start()
-	<-authorizationSrv.Started
+	//// Start the PoPCHA Authorization Server. It will run internally on localhost, the address of the server given in
+	//// the config file will be the one used externally.
+	//authorizationSrv, err := popcha.NewAuthServer(h, "localhost", serverConfig.AuthPort,
+	//	log.With().Str("role", "authorization server").Logger())
+	//if err != nil {
+	//	return xerrors.Errorf("Error while starting the PoPCHA server: %v", err)
+	//}
+	//authorizationSrv.Start()
+	//<-authorizationSrv.Started
 
 	// Start websocket server for clients
 	clientSrv := network.NewServer(h, serverConfig.PrivateAddress, serverConfig.ClientPort, socket.ClientSocketType,
@@ -150,7 +181,12 @@ func Serve(cliCtx *cli.Context) error {
 	go serverConnectionLoop(h, wg, done, serverConfig.OtherServers, updatedServersChan, &connectedServers)
 
 	// Wait for a Ctrl-C
-	err = network.WaitAndShutdownServers(cliCtx.Context, authorizationSrv, clientSrv, serverSrv)
+	//err = network.WaitAndShutdownServers(cliCtx.Context, authorizationSrv, clientSrv, serverSrv)
+	//if err != nil {
+	//	return err
+	//}
+
+	err = network.WaitAndShutdownServers(cliCtx.Context, nil, clientSrv, serverSrv)
 	if err != nil {
 		return err
 	}
@@ -158,7 +194,7 @@ func Serve(cliCtx *cli.Context) error {
 	h.Stop()
 	<-clientSrv.Stopped
 	<-serverSrv.Stopped
-	<-authorizationSrv.Stopped
+	//<-authorizationSrv.Stopped
 
 	// notify channs to stop
 	close(done)
