@@ -27,26 +27,27 @@ type SQLite struct {
 }
 
 var channelTypeNameToID = map[string]string{
-	"root":      "1",
-	"lao":       "2",
-	"election":  "3",
-	"chirp":     "4",
-	"reaction":  "5",
-	"consensus": "6",
-	"popcha":    "7",
-	"coin":      "8",
-	"auth":      "9",
+	"root":         "1",
+	"lao":          "2",
+	"election":     "3",
+	"chirp":        "4",
+	"reaction":     "5",
+	"consensus":    "6",
+	"popcha":       "7",
+	"coin":         "8",
+	"auth":         "9",
+	"generalChirp": "10",
 }
 var channelTypeNames = []string{"root",
 	"lao",
 	"election",
-	"generalchirp",
 	"chirp",
 	"reaction",
 	"consensus",
 	"popcha",
 	"coin",
-	"auth"}
+	"auth",
+	"generalChirp"}
 
 //======================================================================================================================
 // Database initialization
@@ -1187,7 +1188,10 @@ func (s *SQLite) StoreMessageAndElectionResult(channelPath string, msg, election
 }
 
 //======================================================================================================================
-// RollCallRepository interface implementation
+// ChirpRepository interface implementation
+
+//======================================================================================================================
+// ReactionRepository interface implementation
 //======================================================================================================================
 
 func (s *SQLite) IsAttendee(laoPath, poptoken string) (bool, error) {

@@ -976,14 +976,6 @@ func readJSON(t *testing.T, fileName string) []byte {
 	return buf
 }
 
-func newVote(voteID, questionID, vote string) messagedata.Vote {
-	return messagedata.Vote{
-		ID:       voteID,
-		Question: questionID,
-		Vote:     vote,
-	}
-}
-
 func newVoteCastVote(electionID, laoID string, createdAt int64, votes []messagedata.Vote) messagedata.VoteCastVote {
 	return messagedata.VoteCastVote{
 		Object:    messagedata.ElectionObject,
