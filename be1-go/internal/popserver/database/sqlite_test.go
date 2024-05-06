@@ -662,6 +662,7 @@ func Test_SQLite_GetElectionAttendees(t *testing.T) {
 	require.NoError(t, err)
 
 	err = lite.StoreChannel(electionID, "election", laoID)
+	require.NoError(t, err)
 
 	returnedAttendees, err := lite.GetElectionAttendees(electionID)
 	require.NoError(t, err)
@@ -700,6 +701,7 @@ func Test_SQLite_GetElectionQuestionsWithVotes(t *testing.T) {
 	}
 
 	expected, err := getQuestionsFromMessage(electionSetup)
+	require.NoError(t, err)
 
 	electionSetupBytes, err := json.Marshal(electionSetup)
 	require.NoError(t, err)
@@ -744,6 +746,7 @@ func Test_SQLite_GetElectionQuestionsWithVotes(t *testing.T) {
 	castVoteBytes, err := json.Marshal(castVote)
 	require.NoError(t, err)
 	err = lite.StoreMessageAndData(electionID, newSQLiteMsg(castVoteBytes, "sender2", "messageID3"))
+	require.NoError(t, err)
 
 	question1 := expected["questionID1"]
 	question1.ValidVotes = map[string]types.ValidVote{
@@ -940,6 +943,7 @@ func Test_SQLite_GetReactionSender(t *testing.T) {
 	require.Equal(t, "", sender)
 
 	err = lite.StoreMessageAndData("channel1", reactionAddMsg)
+	require.NoError(t, err)
 	sender, err = lite.GetReactionSender("ID1")
 	require.NoError(t, err)
 	require.Equal(t, "sender1", sender)

@@ -16,9 +16,9 @@ import (
 	"time"
 )
 
-const (
-	defaultPath = "sqlite.DB"
-)
+//const (
+//	defaultPath = "sqlite.DB"
+//)
 
 // SQLite is a wrapper around the SQLite database.
 type SQLite struct {
