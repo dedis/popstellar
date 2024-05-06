@@ -385,6 +385,139 @@ func Test_handleCatchUp(t *testing.T) {
 	}
 }
 
+func Test_handleHeartbeat(t *testing.T) {
+	subs := types.NewSubscribers()
+	queries := types.NewQueries(&noLog)
+	peers := types.NewPeers()
+
+	err := state.SetState(t, subs, peers, queries)
+	require.NoError(t, err)
+
+	mockRepository, err := database.SetDatabase(t)
+	require.NoError(t, err)
+
+	type input struct {
+		name     string
+		socket   socket.FakeSocket
+		message  []byte
+		expected map[string][]string
+		isError  bool
+		contains string
+	}
+
+	msgIDs := []string{"msg0", "msg1", "msg2", "msg3", "msg4", "msg5", "msg6"}
+
+	args := make([]input, 0)
+
+	// Test 1: successfully handled heartbeat with some messages to catching up
+
+	fakeSocket := socket.FakeSocket{Id: "1"}
+
+	heartbeatMsgIDs1 := make(map[string][]string)
+	heartbeatMsgIDs1["/root"] = []string{
+		msgIDs[0],
+		msgIDs[1],
+		msgIDs[2],
+	}
+	heartbeatMsgIDs1["root/lao1"] = []string{
+		msgIDs[3],
+		msgIDs[4],
+	}
+	heartbeatMsgIDs1["root/lao2"] = []string{
+		msgIDs[5],
+		msgIDs[6],
+	}
+
+	expected := make(map[string][]string)
+	expected["/root"] = []string{
+		msgIDs[1],
+		msgIDs[2],
+	}
+	expected["root/lao1"] = []string{
+		msgIDs[4],
+	}
+
+	mockRepository.On("GetParamsForGetMessageByID", heartbeatMsgIDs1).Return(expected, nil)
+
+	args = append(args, input{
+		name:     "Test 1",
+		socket:   fakeSocket,
+		message:  generator.NewHeartbeatQuery(t, heartbeatMsgIDs1),
+		expected: expected,
+		isError:  false,
+	})
+
+	// Test 2: successfully handled heartbeat with nothing to catching up
+
+	fakeSocket = socket.FakeSocket{Id: "2"}
+
+	heartbeatMsgIDs2 := make(map[string][]string)
+	heartbeatMsgIDs2["/root"] = []string{
+		msgIDs[0],
+		msgIDs[1],
+		msgIDs[2],
+	}
+
+	mockRepository.On("GetParamsForGetMessageByID", heartbeatMsgIDs2).Return(nil, nil)
+
+	args = append(args, input{
+		name:    "Test 2",
+		socket:  fakeSocket,
+		message: generator.NewHeartbeatQuery(t, heartbeatMsgIDs2),
+		isError: false,
+	})
+
+	// Test 3: failed to handled heartbeat because DB is disconnected
+
+	fakeSocket = socket.FakeSocket{Id: "3"}
+
+	heartbeatMsgIDs3 := make(map[string][]string)
+	heartbeatMsgIDs3["/root"] = []string{
+		msgIDs[0],
+		msgIDs[1],
+		msgIDs[2],
+	}
+	heartbeatMsgIDs3["root/lao1"] = []string{
+		msgIDs[3],
+		msgIDs[4],
+	}
+
+	mockRepository.On("GetParamsForGetMessageByID", heartbeatMsgIDs3).
+		Return(nil, xerrors.Errorf("DB is disconnected"))
+
+	args = append(args, input{
+		name:     "failed to query DB",
+		socket:   fakeSocket,
+		message:  generator.NewHeartbeatQuery(t, heartbeatMsgIDs3),
+		isError:  true,
+		contains: "DB is disconnected",
+	})
+
+	// run all tests
+
+	for _, arg := range args {
+		t.Run(arg.name, func(t *testing.T) {
+			id, errAnswer := handleHeartbeat(&arg.socket, arg.message)
+			if arg.isError {
+				require.NotNil(t, errAnswer)
+				require.Nil(t, id)
+			} else if arg.expected != nil {
+				require.Nil(t, errAnswer)
+				require.NotNil(t, arg.socket.Msg)
+
+				var getMessageByID method.GetMessagesById
+				err := json.Unmarshal(arg.socket.Msg, &getMessageByID)
+				require.NoError(t, err)
+
+				require.Equal(t, arg.expected, getMessageByID.Params)
+			} else {
+				require.Nil(t, errAnswer)
+				require.Nil(t, arg.socket.Msg)
+			}
+		})
+	}
+}
+
 func Test_handleGetMessagesByID(t *testing.T) {
 	subs := types.NewSubscribers()
 	queries := types.NewQueries(&noLog)
@@ -483,162 +616,6 @@ func Test_handleGetMessagesByID(t *testing.T) {
 			} else {
 				require.Nil(t, errAnswer)
 				require.Equal(t, i.result, i.socket.MissingMsgs)
-			}
-		})
-	}
-}
-
-func Test_handleHeartbeat(t *testing.T) {
-	subs := types.NewSubscribers()
-	queries := types.NewQueries(&noLog)
-	peers := types.NewPeers()
-
-	err := state.SetState(t, subs, peers, queries)
-	require.NoError(t, err)
-
-	mockRepository, err := database.SetDatabase(t)
-	require.NoError(t, err)
-
-	type input struct {
-		name        string
-		message     []byte
-		socket      *socket.FakeSocket
-		needSend    bool
-		isErrorTest bool
-		expected    map[string][]string
-	}
-
-	msgIDs := []string{"msg0", "msg1", "msg2", "msg3", "msg4", "msg5", "msg6"}
-
-	listMsg := make(map[string][]string)
-	listMsg["/root"] = []string{
-		msgIDs[0],
-		msgIDs[1],
-		msgIDs[2],
-	}
-	listMsg["root/lao1"] = []string{
-		msgIDs[3],
-		msgIDs[4],
-	}
-	listMsg["root/lao2"] = []string{
-		msgIDs[5],
-		msgIDs[6],
-	}
-
-	listMsg2 := make(map[string][]string)
-	listMsg2["/root"] = []string{
-		msgIDs[0],
-		msgIDs[1],
-		msgIDs[2],
-	}
-
-	listMsg3 := make(map[string][]string)
-	listMsg3["/root"] = []string{
-		msgIDs[0],
-		msgIDs[1],
-		msgIDs[2],
-	}
-	listMsg3["root/lao1"] = []string{
-		msgIDs[3],
-		msgIDs[4],
-	}
-
-	heartbeat := method.Heartbeat{
-		Base: query.Base{
-			JSONRPCBase: jsonrpc.JSONRPCBase{
-				JSONRPC: "2.0",
-			},
-
-			Method: query.MethodHeartbeat,
-		},
-		Params: listMsg,
-	}
-
-	inputs := make([]input, 0)
-
-	// reply with missingIDs
-
-	heartbeatBuf, err := json.Marshal(&heartbeat)
-	require.NoError(t, err)
-
-	expected := make(map[string][]string)
-	expected["/root"] = []string{
-		msgIDs[1],
-		msgIDs[2],
-	}
-	expected["root/lao1"] = []string{
-		msgIDs[4],
-	}
-
-	mockRepository.On("GetParamsForGetMessageByID", listMsg).Return(expected, nil)
-
-	s := &socket.FakeSocket{Id: "fakesocket"}
-
-	inputs = append(inputs, input{
-		name:        "reply with missingIDs",
-		message:     heartbeatBuf,
-		socket:      s,
-		needSend:    true,
-		isErrorTest: false,
-		expected:    expected,
-	})
-
-	// already up to date
-
-	heartbeat2 := heartbeat
-	heartbeat2.Params = listMsg2
-
-	heartbeatBuf, err = json.Marshal(&heartbeat2)
-	require.NoError(t, err)
-
-	mockRepository.On("GetParamsForGetMessageByID", listMsg2).Return(nil, nil)
-
-	s = &socket.FakeSocket{Id: "fakesocket"}
-
-	inputs = append(inputs, input{
-		name:        "already up to date",
-		message:     heartbeatBuf,
-		socket:      s,
-		needSend:    false,
-		isErrorTest: false,
-	})
-
-	// failed to query DB
-
-	heartbeat3 := heartbeat
-	heartbeat3.Params = listMsg3
-
-	heartbeatBuf, err = json.Marshal(&heartbeat3)
-	require.NoError(t, err)
-
-	mockRepository.On("GetParamsForGetMessageByID", listMsg3).Return(nil, xerrors.Errorf("DB is disconnected"))
-
-	inputs = append(inputs, input{
-		name:        "failed to query DB",
-		message:     heartbeatBuf,
-		isErrorTest: true,
-	})
-
-	// run all tests
-
-	for _, i := range inputs {
-		t.Run(i.name, func(t *testing.T) {
-			id, errAnswer := handleHeartbeat(i.socket, i.message)
-			if i.isErrorTest {
-				require.NotNil(t, errAnswer)
-				require.Nil(t, id)
-			} else if i.needSend {
-				require.Nil(t, errAnswer)
-				require.NotNil(t, i.socket.Msg)
-
-				var getMessageByID method.GetMessagesById
-				err := json.Unmarshal(i.socket.Msg, &getMessageByID)
-				require.NoError(t, err)
-
-				require.Equal(t, i.expected, getMessageByID.Params)
-			} else {
-				require.Nil(t, errAnswer)
-				require.Nil(t, i.socket.Msg)
 			}
 		})
 	}

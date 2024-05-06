@@ -185,33 +185,6 @@ func handleCatchUp(socket socket.Socket, msg []byte) (*int, *answer.Error) {
 	return &catchup.ID, nil
 }
 
-func handleGetMessagesByID(socket socket.Socket, msg []byte) (*int, *answer.Error) {
-	var getMessagesById method.GetMessagesById
-
-	err := json.Unmarshal(msg, &getMessagesById)
-	if err != nil {
-		errAnswer := answer.NewInvalidMessageFieldError("failed to unmarshal message: %v",
-			err).Wrap("handleGetMessageByID")
-		return nil, errAnswer
-	}
-
-	db, ok := database.GetQueryRepositoryInstance()
-	if !ok {
-		errAnswer := answer.NewInternalServerError("failed to get database").Wrap("handleGetMessageByID")
-		return &getMessagesById.ID, errAnswer
-	}
-
-	result, err := db.GetResultForGetMessagesByID(getMessagesById.Params)
-	if err != nil {
-		errAnswer := answer.NewInternalServerError("failed to query DB: %v", err).Wrap("handleGetMessageByID")
-		return &getMessagesById.ID, errAnswer
-	}
-
-	socket.SendResult(getMessagesById.ID, nil, result)
-
-	return &getMessagesById.ID, nil
-}
-
 func handleHeartbeat(socket socket.Socket, byteMessage []byte) (*int, *answer.Error) {
 	var heartbeat method.Heartbeat
 
@@ -267,4 +240,31 @@ func handleHeartbeat(socket socket.Socket, byteMessage []byte) (*int, *answer.Er
 	queries.AddQuery(queryId, getMessagesById)
 
 	return nil, nil
+}
+
+func handleGetMessagesByID(socket socket.Socket, msg []byte) (*int, *answer.Error) {
+	var getMessagesById method.GetMessagesById
+
+	err := json.Unmarshal(msg, &getMessagesById)
+	if err != nil {
+		errAnswer := answer.NewInvalidMessageFieldError("failed to unmarshal message: %v",
+			err).Wrap("handleGetMessageByID")
+		return nil, errAnswer
+	}
+
+	db, ok := database.GetQueryRepositoryInstance()
+	if !ok {
+		errAnswer := answer.NewInternalServerError("failed to get database").Wrap("handleGetMessageByID")
+		return &getMessagesById.ID, errAnswer
+	}
+
+	result, err := db.GetResultForGetMessagesByID(getMessagesById.Params)
+	if err != nil {
+		errAnswer := answer.NewInternalServerError("failed to query DB: %v", err).Wrap("handleGetMessageByID")
+		return &getMessagesById.ID, errAnswer
+	}
+
+	socket.SendResult(getMessagesById.ID, nil, result)
+
+	return &getMessagesById.ID, nil
 }

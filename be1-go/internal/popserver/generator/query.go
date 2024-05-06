@@ -112,3 +112,21 @@ func NewCatchupQuery(t *testing.T, queryID int, channel string) []byte {
 
 	return catchupBuf
 }
+
+func NewHeartbeatQuery(t *testing.T, msgIDsByChannel map[string][]string) []byte {
+	heartbeat := method.Heartbeat{
+		Base: query.Base{
+			JSONRPCBase: jsonrpc.JSONRPCBase{
+				JSONRPC: "2.0",
+			},
+
+			Method: query.MethodHeartbeat,
+		},
+		Params: msgIDsByChannel,
+	}
+
+	heartbeatBuf, err := json.Marshal(&heartbeat)
+	require.NoError(t, err)
+
+	return heartbeatBuf
+}
