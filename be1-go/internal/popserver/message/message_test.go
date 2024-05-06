@@ -23,7 +23,7 @@ var noLog = zerolog.New(io.Discard)
 func TestMain(m *testing.M) {
 	schemaValidator, err := validation.NewSchemaValidator()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "error: %v\n", err)
+		_, _ = fmt.Fprintf(os.Stderr, "error: %v\n", err)
 		os.Exit(1)
 	}
 
