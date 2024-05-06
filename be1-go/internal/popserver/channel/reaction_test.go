@@ -210,6 +210,7 @@ func Test_handleChannelReaction(t *testing.T) {
 		t.Run(arg.name, func(t *testing.T) {
 			errAnswer := handleChannelReaction(arg.channel, arg.msg)
 			if arg.isError {
+				require.NotNil(t, errAnswer)
 				require.Contains(t, errAnswer.Error(), arg.contains)
 			} else {
 				require.Nil(t, errAnswer)
