@@ -27,16 +27,15 @@ type SQLite struct {
 }
 
 var channelTypeNameToID = map[string]string{
-	"root":         "1",
-	"lao":          "2",
-	"election":     "3",
-	"generalchirp": "4",
-	"chirp":        "5",
-	"reaction":     "6",
-	"consensus":    "7",
-	"popcha":       "8",
-	"coin":         "9",
-	"auth":         "10",
+	"root":      "1",
+	"lao":       "2",
+	"election":  "3",
+	"chirp":     "4",
+	"reaction":  "5",
+	"consensus": "6",
+	"popcha":    "7",
+	"coin":      "8",
+	"auth":      "9",
 }
 var channelTypeNames = []string{"root",
 	"lao",
@@ -1185,4 +1184,58 @@ func (s *SQLite) StoreMessageAndElectionResult(channelPath string, msg, election
 	}
 	err = tx.Commit()
 	return err
+}
+
+//======================================================================================================================
+// RollCallRepository interface implementation
+//======================================================================================================================
+
+func (s *SQLite) IsAttendee(laoPath, poptoken string) (bool, error) {
+
+	var rollCallCloseBytes []byte
+
+	err := s.database.QueryRow("SELECT messageData"+
+		" FROM inbox"+
+		" WHERE storedTime = (SELECT MAX(storedTime)"+
+		" FROM (SELECT * FROM inbox JOIN channelMessage ON inbox.messageID = channelMessage.messageID)"+
+		" WHERE channelPath = ? AND json_extract(messageData, '$.object') = ? AND json_extract(messageData, '$.action') = ?)",
+		laoPath, messagedata.RollCallObject, messagedata.RollCallActionClose).Scan(&rollCallCloseBytes)
+
+	if err != nil {
+		return false, err
+	}
+
+	var rollCallClose messagedata.RollCallClose
+	err = json.Unmarshal(rollCallCloseBytes, &rollCallClose)
+	if err != nil {
+		return false, err
+	}
+
+	for _, attendee := range rollCallClose.Attendees {
+		if attendee == poptoken {
+			return true, nil
+		}
+	}
+
+	return false, nil
+}
+
+func (s *SQLite) GetReactionSender(messageID string) (string, error) {
+	var sender string
+	var object string
+	var action string
+	err := s.database.QueryRow("SELECT json_extract(message, '$.sender'), json_extract(messageData, '$.object'), json_extract(messageData, '$.action')"+
+		" FROM inbox"+
+		" WHERE messageID = ?", messageID).Scan(&sender, &object, &action)
+	if err != nil && errors.Is(err, sql.ErrNoRows) {
+		return "", nil
+	} else if err != nil {
+		return "", err
+
+	}
+
+	if object != messagedata.ReactionObject || action != messagedata.ReactionActionAdd {
+		return "", xerrors.New("unexpected object or action")
+	}
+	return sender, nil
 }

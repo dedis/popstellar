@@ -171,10 +171,10 @@ type PopChaRepository interface {
 
 type ReactionRepository interface {
 	// IsAttendee returns if the user has participated in the last roll-call from the LAO
-	IsAttendee(laoID string, userID string) (bool, error)
+	IsAttendee(laoPath string, poptoken string) (bool, error)
 
 	// GetReactionSender returns a reaction sender
-	GetReactionSender(ID string) (string, error)
+	GetReactionSender(messageID string) (string, error)
 
 	// StoreMessage stores a message inside the database.
 	StoreMessage(channelID string, msg message.Message) error

@@ -410,8 +410,8 @@ func Test_SQLite_StoreChannelsAndMessage(t *testing.T) {
 	laoID := "laoID"
 
 	rollCallClose := messagedata.RollCallClose{
-		Object:    "rollCall",
-		Action:    "close",
+		Object:    messagedata.RollCallObject,
+		Action:    messagedata.RollCallActionClose,
 		UpdateID:  "updateID",
 		Closes:    "closes",
 		ClosedAt:  123456789,
@@ -821,6 +821,85 @@ func Test_SQLite_StoreMessageAndElectionResults(t *testing.T) {
 	require.NoError(t, err)
 	require.True(t, secret.Equal(returnedKey))
 
+}
+
+//======================================================================================================================
+// RollCallRepository interface implementation tests
+//======================================================================================================================
+
+func Test_SQLite_IsAttendee(t *testing.T) {
+	lite, dir, err := newFakeSQLite(t)
+	require.NoError(t, err)
+	defer lite.Close()
+	defer os.RemoveAll(dir)
+
+	attendees := []string{"attendee1", "attendee2", "attendee3"}
+	laoID := "laoID"
+
+	rollCallClose := messagedata.RollCallClose{
+		Object:    messagedata.RollCallObject,
+		Action:    messagedata.RollCallActionClose,
+		UpdateID:  "updateID",
+		Closes:    "closes",
+		ClosedAt:  123456789,
+		Attendees: attendees,
+	}
+
+	rollCallCloseBytes, err := json.Marshal(rollCallClose)
+	require.NoError(t, err)
+
+	rollCallCloseMsg := message.Message{
+		Data:              base64.URLEncoding.EncodeToString(rollCallCloseBytes),
+		Sender:            "sender1",
+		Signature:         "sig1",
+		MessageID:         "ID1",
+		WitnessSignatures: []message.WitnessSignature{},
+	}
+
+	err = lite.StoreMessageAndData(laoID, rollCallCloseMsg)
+
+	require.NoError(t, err)
+
+	ok, err := lite.IsAttendee(laoID, "attendee1")
+	require.NoError(t, err)
+	require.True(t, ok)
+
+	ok, err = lite.IsAttendee(laoID, "attendee4")
+	require.NoError(t, err)
+	require.False(t, ok)
+}
+
+func Test_SQLite_GetReactionSender(t *testing.T) {
+
+	lite, dir, err := newFakeSQLite(t)
+	require.NoError(t, err)
+	defer lite.Close()
+	defer os.RemoveAll(dir)
+
+	var reactionAdd = messagedata.ReactionAdd{
+		Object: messagedata.ReactionObject,
+		Action: messagedata.ReactionActionAdd,
+	}
+
+	reactionAddBytes, err := json.Marshal(reactionAdd)
+	require.NoError(t, err)
+
+	reactionAddMsg := message.Message{
+		Data:              base64.URLEncoding.EncodeToString(reactionAddBytes),
+		Sender:            "sender1",
+		Signature:         "sig1",
+		MessageID:         "ID1",
+		WitnessSignatures: []message.WitnessSignature{},
+	}
+
+	sender, err := lite.GetReactionSender("ID1")
+	require.NoError(t, err)
+	require.Equal(t, "", sender)
+
+	err = lite.StoreMessageAndData("channel1", reactionAddMsg)
+	sender, err = lite.GetReactionSender("ID1")
+	require.NoError(t, err)
+	require.Equal(t, "sender1", sender)
 }
 
 //======================================================================================================================
