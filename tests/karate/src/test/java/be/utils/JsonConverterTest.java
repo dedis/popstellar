@@ -2,6 +2,7 @@ package be.utils;
 
 import com.intuit.karate.Json;
 import common.utils.Base64Utils;
+import common.utils.Hash;
 import org.junit.jupiter.api.Test;
 
 import java.security.GeneralSecurityException;

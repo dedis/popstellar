@@ -28,4 +28,18 @@ public class InviteFragmentPageObject {
   public static ViewInteraction channelQRCode() {
     return onView(withId(R.id.channel_qr_code));
   }
+
+  public static ViewInteraction copyIdentifierButton() {
+    return onView(withId(R.id.copy_identifier_button));
+  }
+
+  public static ViewInteraction copyServerButton() {
+      return onView(withId(R.id.copy_server_button));
+  }
+
+  public static ViewInteraction serverText() {
+    return onView(withId(R.id.lao_properties_server_text));
+  }
 }
+
+

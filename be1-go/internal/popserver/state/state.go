@@ -1,10 +1,14 @@
 package state
 
 import (
+	"github.com/rs/zerolog"
+	"golang.org/x/xerrors"
+	"popstellar/internal/popserver/types"
 	"popstellar/message/answer"
 	"popstellar/message/query/method"
 	"popstellar/network/socket"
 	"sync"
+	"testing"
 )
 
 var once sync.Once
@@ -25,7 +29,7 @@ type Subscriber interface {
 
 type Peerer interface {
 	AddPeerInfo(socketID string, info method.GreetServerParams) error
-	AddPeerGreeted(sockerID string)
+	AddPeerGreeted(socketID string)
 	GetAllPeersInfo() []method.GreetServerParams
 	IsPeerGreeted(socketID string) bool
 }
@@ -37,14 +41,28 @@ type Querier interface {
 	AddQuery(ID int, query method.GetMessagesById)
 }
 
-func InitState(subs Subscriber, peers Peerer, queries Querier) {
+func InitState(log *zerolog.Logger) {
 	once.Do(func() {
 		instance = &state{
-			subs:    subs,
-			peers:   peers,
-			queries: queries,
+			subs:    types.NewSubscribers(),
+			peers:   types.NewPeers(),
+			queries: types.NewQueries(log),
 		}
 	})
+}
+
+func SetState(t *testing.T, subs Subscriber, peers Peerer, queries Querier) error {
+	if t == nil {
+		return xerrors.Errorf("only for tests")
+	}
+
+	instance = &state{
+		subs:    subs,
+		peers:   peers,
+		queries: queries,
+	}
+
+	return nil
 }
 
 func GetSubsInstance() (Subscriber, bool) {

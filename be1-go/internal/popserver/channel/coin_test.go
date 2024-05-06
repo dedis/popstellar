@@ -8,6 +8,8 @@ import (
 	"path/filepath"
 	"popstellar/internal/popserver"
 	database2 "popstellar/internal/popserver/database"
+	"popstellar/internal/popserver/state"
+	"popstellar/internal/popserver/types"
 	"popstellar/message/messagedata"
 	"popstellar/message/query/method"
 	"popstellar/message/query/method/message"
@@ -25,6 +27,13 @@ type inputTestHandleChannelCoin struct {
 }
 
 func Test_handleChannelCoin(t *testing.T) {
+	subs := types.NewSubscribers()
+	queries := types.NewQueries(&noLog)
+	peers := types.NewPeers()
+
+	err := state.SetState(t, subs, peers, queries)
+	require.NoError(t, err)
+
 	mockRepo, err := database2.SetDatabase(t)
 	require.NoError(t, err)
 
@@ -135,6 +144,9 @@ func newSuccessTestHandleChannelCoin(t *testing.T, filename string, name string,
 		{Id: laoID + "3"},
 	}
 
+	subs, ok := state.GetSubsInstance()
+	require.True(t, ok)
+
 	subs.AddChannel(channelID)
 
 	for _, s := range sockets {
@@ -169,6 +181,9 @@ func newFailTestHandleChannelCoin(t *testing.T, filename string, name string) in
 		MessageID:         messagedata.Hash(buf64, "h"),
 		WitnessSignatures: []message.WitnessSignature{},
 	}
+
+	subs, ok := state.GetSubsInstance()
+	require.True(t, ok)
 
 	subs.AddChannel(channelID)
 
