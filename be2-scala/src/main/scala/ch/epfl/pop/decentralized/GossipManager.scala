@@ -12,7 +12,7 @@ import ch.epfl.pop.pubsub.AskPatternConstants
 import ch.epfl.pop.pubsub.ClientActor.ClientAnswer
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
 import ch.epfl.pop.storage.DbActor
-import ch.epfl.pop.storage.DbActor.DbActorReadRumors
+import ch.epfl.pop.storage.DbActor.DbActorReadRumor
 
 import scala.concurrent.Await
 import scala.util.Random
@@ -32,9 +32,9 @@ final case class GossipManager(
   private var activeGossipProtocol: Map[JsonRpcRequest, List[ServerInfos]] = Map.empty
 
   private def isRumorNew(rumor: Rumor): Boolean = {
-    val readRumorDb = dbActorRef ? DbActor.ReadRumors(rumor.senderPk -> rumor.rumorId)
+    val readRumorDb = dbActorRef ? DbActor.ReadRumor(rumor.senderPk -> rumor.rumorId)
     Await.result(readRumorDb, duration) match
-      case DbActorReadRumors(foundRumors) =>
+      case DbActorReadRumor(foundRumors) =>
         foundRumors match
           case Some(_) => false
           case None    => true

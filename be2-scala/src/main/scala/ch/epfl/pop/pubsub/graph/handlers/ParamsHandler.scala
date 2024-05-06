@@ -13,7 +13,7 @@ import ch.epfl.pop.pubsub.ClientActor.ClientAnswer
 import ch.epfl.pop.pubsub.graph.validators.RpcValidator
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
 import ch.epfl.pop.pubsub.{AskPatternConstants, ClientActor, MessageRegistry, PubSubMediator}
-import ch.epfl.pop.storage.DbActor.{DbActorReadRumors, ReadRumors, WriteRumor}
+import ch.epfl.pop.storage.DbActor.{DbActorReadRumor, ReadRumor, WriteRumor}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
@@ -99,10 +99,10 @@ object ParamsHandler extends AskPatternConstants {
           val messages: Map[Channel, List[Message]] = rumor.messages
 
           // check if rumor already received
-          val readRumorDb = dbActorRef ? ReadRumors(senderPk -> rumorId)
+          val readRumorDb = dbActorRef ? ReadRumor(senderPk -> rumorId)
           Await.result(readRumorDb, duration) match {
             // already present
-            case DbActorReadRumors(foundRumor) =>
+            case DbActorReadRumor(foundRumor) =>
               foundRumor match
                 case Some(_) =>
                   Right(JsonRpcResponse(
