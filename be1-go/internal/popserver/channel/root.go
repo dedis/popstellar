@@ -199,7 +199,7 @@ func createLaoAndChannels(msg, laoGreetMsg message.Message, organizerPubBuf []by
 		return errAnswer
 	}
 
-	for _, channelPath := range channels {
+	for channelPath := range channels {
 		subs.AddChannel(channelPath)
 	}
 	return nil
