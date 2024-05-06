@@ -74,7 +74,7 @@ $(document).ready(function() {
   <tbody>
     <tr class="info">
       <td>scala</td>
-      <td>05 May 2024, 04:21</td>
+      <td>06 May 2024, 04:20</td>
     </tr>
   </tbody>
 </table>
@@ -138,7 +138,7 @@ $(document).ready(function() {
           <td  class="failed"    >1</td>
           <td class="total">5</td>
 
-          <td class="duration" data-value="60156524852">1:0.156</td>
+          <td class="duration" data-value="59049489080">59.049</td>
           <td class="failed">Failed</td>
         </tr>
         </tbody>
@@ -191,7 +191,7 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">7.647</span>
+  <span class="lead-duration duration">7.567</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-1">
@@ -234,7 +234,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/features/utils/constants.feature')</span>
 
-  <span class="lead-duration duration">0.003</span>
+  <span class="lead-duration duration">0.007</span>
 
 </div>
 
@@ -288,7 +288,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read(serverFeature)</span>
 
-  <span class="lead-duration duration">6.762</span>
+  <span class="lead-duration duration">6.767</span>
 
 </div>
 
@@ -341,294 +341,6 @@ $(document).ready(function() {
 <div class="brief step-name-* passed">
   <span class="keyword indention">*</span>
   <span class="name">call read(mockClientFeature)</span>
-
-  <span class="lead-duration duration">0.003</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name- passed">
-  <span class="keyword indention"></span>
-  <span class="name">be/features/utils/mockClient.feature</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* passed">
-  <span class="keyword indention">*</span>
-  <span class="name">def organizer = call createMockFrontend</span>
-
-  <span class="lead-duration duration">0.135</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* passed">
-  <span class="keyword indention">*</span>
-  <span class="name">def recipient = call createMockFrontend</span>
-
-  <span class="lead-duration duration">0.016</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* passed">
-  <span class="keyword indention">*</span>
-  <span class="name">def lao = organizer.generateValidLao()</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* passed">
-  <span class="keyword indention">*</span>
-  <span class="name">def rollCall = organizer.generateValidRollCall(lao)</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* passed">
-  <span class="keyword indention">*</span>
-  <span class="name">call read(setupCoinChannelScenario) { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)' }</span>
-
-  <span class="lead-duration duration">0.724</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name- passed">
-  <span class="keyword indention"></span>
-  <span class="name">be/features/utils/simpleScenarios.feature</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-  <div class="inner-level">
-    <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-3">
-          <a>Doc string</a>
-      </div>
-      <div id="msg-3" class="collapse collapsable-details">
-        <pre>{
-  &quot;organizer&quot;: &quot;common.utils.MockClient@57bac3f0&quot;,
-  &quot;lao&quot;: &quot;common.model.Lao@55f6f965&quot;,
-  &quot;rollCall&quot;: &quot;common.model.RollCall@40ddf339&quot;
-}
-</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-
-
-
-      </div>
-  </div>
-</div>
-
-
-
-
-
-  </div>
-</div>
-
-
-<div class="element">
-
-
-<div class="tags indention">
-    <b>Tags:</b>
-       <a href="report-tag_524961969.html">@env=go,scala</a>
-       <a href="report-tag_2503682386.html">@transaction1</a>
-</div>
-
-
-  <span class="lead-duration duration">5.037</span>
-
-
-  <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-4">
-
-<div class="brief passed">
-  <span class="keyword indention">Scenario</span>
-  <span class="name">Valid transaction: issue 32 mini-Laos to an attendee</span>
-
-
-     <i class="chevron fa fa-fw"></i>
-</div>
-
-  </span>
-  <div class="description indention"></div>
-
-  <div id="element-4" class="collapse collapsable-details ">
-
-
-
-
-
-<div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-5">
-
-<div class="brief passed">
-  <span class="keyword indention">Steps</span>
-  <span class="name"></span>
-
-
-     <i class="chevron fa fa-fw"></i>
-</div>
-
-  </div>
-
-  <div id="steps-5" class="inner-level collapse collapsable-details ">
-      <div class="step">
-
-
-<div class="brief step-name-Given passed">
-  <span class="keyword indention">Given</span>
-  <span class="name">def transaction = organizer.issueCoins(recipient, 32);</span>
 
   <span class="lead-duration duration">0.005</span>
 
@@ -653,445 +365,6 @@ $(document).ready(function() {
       <div class="step">
 
 
-<div class="brief step-name-And passed">
-  <span class="keyword indention">And</span>
-  <span class="name">def postTransaction = transaction.post()</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And passed">
-  <span class="keyword indention">And</span>
-  <span class="name">def input = transaction.inputs[0]</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And passed">
-  <span class="keyword indention">And</span>
-  <span class="name">def output = transaction.outputs[0]</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And passed">
-  <span class="keyword indention">And</span>
-  <span class="name">def validTransaction =</span>
-
-  <span class="lead-duration duration">0.003</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-  <div class="inner-level">
-    <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-6">
-          <a>Doc string</a>
-      </div>
-      <div id="msg-6" class="collapse collapsable-details">
-        <pre>{
-    &quot;object&quot;: &quot;coin&quot;,
-    &quot;action&quot;: &quot;post_transaction&quot;,
-    &quot;transaction_id&quot;: '#(postTransaction.transactionId)',
-    &quot;transaction&quot;: {
-      &quot;version&quot;: '#(transaction.version)',
-      &quot;inputs&quot;: [{
-        &quot;tx_out_hash&quot;: '#(input.txOutHash)',
-        &quot;tx_out_index&quot;: '#(input.txOutIndex)',
-        &quot;script&quot;: {
-          &quot;type&quot;: '#(input.script.type)',
-          &quot;pubkey&quot;: '#(input.script.pubKeyRecipient)',
-          &quot;sig&quot;: '#(input.script.sig)'
-        }
-      }],
-      &quot;outputs&quot;: [{
-        &quot;value&quot;: '#(output.value)',
-        &quot;script&quot;: {
-          &quot;type&quot;: '#(output.script.type)',
-          &quot;pubkey_hash&quot;: '#(output.script.pubKeyHash)',
-        }
-      }],
-      &quot;lock_time&quot;: '#(transaction.lockTime)',
-    }
-}</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-When passed">
-  <span class="keyword indention">When</span>
-  <span class="name">organizer.publish(validTransaction, lao.cashChannel)</span>
-
-  <span class="lead-duration duration">0.001</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And passed">
-  <span class="keyword indention">And</span>
-  <span class="name">json answer = organizer.getBackendResponse(validTransaction)</span>
-
-  <span class="lead-duration duration">0.024</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-Then passed">
-  <span class="keyword indention">Then</span>
-  <span class="name">match answer contains VALID_MESSAGE</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And passed">
-  <span class="keyword indention">And</span>
-  <span class="name">match organizer.receiveNoMoreResponses() == true</span>
-
-  <span class="lead-duration duration">5.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-  </div>
-</div>
-
-
-
-
-
-  </div>
-</div>
-
-
-<div class="element">
-
-
-<div class="tags indention">
-</div>
-
-
-  <span class="lead-duration duration">7.630</span>
-
-
-  <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-7">
-
-<div class="brief passed">
-  <span class="keyword indention">Background</span>
-  <span class="name"></span>
-
-
-     <i class="chevron fa fa-fw"></i>
-</div>
-
-  </span>
-  <div class="description indention"></div>
-
-  <div id="element-7" class="collapse collapsable-details ">
-
-
-
-
-
-<div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-8">
-
-<div class="brief passed">
-  <span class="keyword indention">Steps</span>
-  <span class="name"></span>
-
-
-     <i class="chevron fa fa-fw"></i>
-</div>
-
-  </div>
-
-  <div id="steps-8" class="inner-level collapse collapsable-details ">
-      <div class="step">
-
-
-<div class="brief step-name-* passed">
-  <span class="keyword indention">*</span>
-  <span class="name">call read('classpath:be/features/utils/constants.feature')</span>
-
-  <span class="lead-duration duration">0.002</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name- passed">
-  <span class="keyword indention"></span>
-  <span class="name">be/features/utils/constants.feature</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* passed">
-  <span class="keyword indention">*</span>
-  <span class="name">call read(serverFeature)</span>
-
-  <span class="lead-duration duration">6.762</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name- passed">
-  <span class="keyword indention"></span>
-  <span class="name">be/features/utils/server.feature</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* passed">
-  <span class="keyword indention">*</span>
-  <span class="name">call read(mockClientFeature)</span>
-
-  <span class="lead-duration duration">0.003</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
 <div class="brief step-name- passed">
   <span class="keyword indention"></span>
   <span class="name">be/features/utils/mockClient.feature</span>
@@ -1123,7 +396,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">def organizer = call createMockFrontend</span>
 
-  <span class="lead-duration duration">0.134</span>
+  <span class="lead-duration duration">0.144</span>
 
 </div>
 
@@ -1231,7 +504,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read(setupCoinChannelScenario) { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)' }</span>
 
-  <span class="lead-duration duration">0.711</span>
+  <span class="lead-duration duration">0.625</span>
 
 </div>
 
@@ -1272,10 +545,10 @@ $(document).ready(function() {
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-9">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-3">
           <a>Doc string</a>
       </div>
-      <div id="msg-9" class="collapse collapsable-details">
+      <div id="msg-3" class="collapse collapsable-details">
         <pre>{
   &quot;organizer&quot;: &quot;common.utils.MockClient@c83ed77&quot;,
   &quot;lao&quot;: &quot;common.model.Lao@d271a54&quot;,
@@ -1310,18 +583,18 @@ $(document).ready(function() {
 <div class="tags indention">
     <b>Tags:</b>
        <a href="report-tag_524961969.html">@env=go,scala</a>
-       <a href="report-tag_2503682387.html">@transaction2</a>
+       <a href="report-tag_2503682386.html">@transaction1</a>
 </div>
 
 
-  <span class="lead-duration duration">0.204</span>
+  <span class="lead-duration duration">5.028</span>
 
 
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-10">
+  <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-4">
 
-<div class="brief failed">
+<div class="brief passed">
   <span class="keyword indention">Scenario</span>
-  <span class="name">Transfer valid amount should work</span>
+  <span class="name">Valid transaction: issue 32 mini-Laos to an attendee</span>
 
 
      <i class="chevron fa fa-fw"></i>
@@ -1330,16 +603,16 @@ $(document).ready(function() {
   </span>
   <div class="description indention"></div>
 
-  <div id="element-10" class="collapse collapsable-details  in ">
+  <div id="element-4" class="collapse collapsable-details ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-11">
+  <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-5">
 
-<div class="brief failed">
+<div class="brief passed">
   <span class="keyword indention">Steps</span>
   <span class="name"></span>
 
@@ -1349,113 +622,15 @@ $(document).ready(function() {
 
   </div>
 
-  <div id="steps-11" class="inner-level collapse collapsable-details  in ">
+  <div id="steps-5" class="inner-level collapse collapsable-details ">
       <div class="step">
 
 
 <div class="brief step-name-Given passed">
   <span class="keyword indention">Given</span>
-  <span class="name">def initialAmount = 32</span>
+  <span class="name">def transaction = organizer.issueCoins(recipient, 32);</span>
 
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And passed">
-  <span class="keyword indention">And</span>
-  <span class="name">call read(validCoinIssuanceScenario) { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)', recipient: '#(recipient)', amount: '#(initialAmount)' }</span>
-
-  <span class="lead-duration duration">0.192</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name- passed">
-  <span class="keyword indention"></span>
-  <span class="name">be/features/utils/simpleScenarios.feature</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-  <div class="inner-level">
-    <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-12">
-          <a>Doc string</a>
-      </div>
-      <div id="msg-12" class="collapse collapsable-details">
-        <pre>{
-  &quot;organizer&quot;: &quot;common.utils.MockClient@c83ed77&quot;,
-  &quot;lao&quot;: &quot;common.model.Lao@d271a54&quot;,
-  &quot;rollCall&quot;: &quot;common.model.RollCall@6ff8e744&quot;,
-  &quot;recipient&quot;: &quot;common.utils.MockClient@409395b9&quot;,
-  &quot;amount&quot;: 32
-}
-</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And passed">
-  <span class="keyword indention">And</span>
-  <span class="name">def transaction = organizer.issueCoins(recipient, 20);</span>
-
-  <span class="lead-duration duration">0.001</span>
+  <span class="lead-duration duration">0.004</span>
 
 </div>
 
@@ -1507,7 +682,7 @@ $(document).ready(function() {
 
 <div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
-  <span class="name">def input = transaction.inputs[1]</span>
+  <span class="name">def input = transaction.inputs[0]</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -1534,7 +709,7 @@ $(document).ready(function() {
 
 <div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
-  <span class="name">def output = transaction.outputs[1]</span>
+  <span class="name">def output = transaction.outputs[0]</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -1561,9 +736,9 @@ $(document).ready(function() {
 
 <div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
-  <span class="name">def validTransfer =</span>
+  <span class="name">def validTransaction =</span>
 
-  <span class="lead-duration duration">0.001</span>
+  <span class="lead-duration duration">0.002</span>
 
 </div>
 
@@ -1577,10 +752,10 @@ $(document).ready(function() {
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-13">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-6">
           <a>Doc string</a>
       </div>
-      <div id="msg-13" class="collapse collapsable-details">
+      <div id="msg-6" class="collapse collapsable-details">
         <pre>{
     &quot;object&quot;: &quot;coin&quot;,
     &quot;action&quot;: &quot;post_transaction&quot;,
@@ -1622,7 +797,7 @@ $(document).ready(function() {
 
 <div class="brief step-name-When passed">
   <span class="keyword indention">When</span>
-  <span class="name">organizer.publish(validTransfer, lao.cashChannel)</span>
+  <span class="name">organizer.publish(validTransaction, lao.cashChannel)</span>
 
   <span class="lead-duration duration">0.001</span>
 
@@ -1649,9 +824,9 @@ $(document).ready(function() {
 
 <div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
-  <span class="name">json answer = organizer.getBackendResponse(validTransfer)</span>
+  <span class="name">json answer = organizer.getBackendResponse(validTransaction)</span>
 
-  <span class="lead-duration duration">0.005</span>
+  <span class="lead-duration duration">0.018</span>
 
 </div>
 
@@ -1674,7 +849,7 @@ $(document).ready(function() {
       <div class="step">
 
 
-<div class="brief step-name-Then failed">
+<div class="brief step-name-Then passed">
   <span class="keyword indention">Then</span>
   <span class="name">match answer contains VALID_MESSAGE</span>
 
@@ -1687,45 +862,9 @@ $(document).ready(function() {
 
 
 
-  <div class="inner-level">
-    <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-14">
-          <a>match</a>
-      </div>
-      <div id="msg-14" class="collapse collapsable-details  in ">
-        <pre>match failed: CONTAINS
-  $ | actual does not contain expected | actual does not contain key - 'result' (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:428675780,&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;Invalid data: $.transaction.inputs[0].tx_out_index: string found, integer expected; $.transaction.outputs[0].value: string found, integer expected&quot;}}
-  {&quot;result&quot;:0}
-
-
-classpath:be/features/digitalCash/transaction.feature:97</pre>
-      </div>
-    </div>
-  </div>
 
 
 
-
-  <div class="inner-level">
-    <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-15">
-          <a>Doc string</a>
-      </div>
-      <div id="msg-15" class="collapse collapsable-details">
-        <pre>04:11:49.381 classpath:be/features/digitalCash/transaction.feature:97
-Then match answer contains VALID_MESSAGE
-match failed: CONTAINS
-  $ | actual does not contain expected | actual does not contain key - 'result' (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:428675780,&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;Invalid data: $.transaction.inputs[0].tx_out_index: string found, integer expected; $.transaction.outputs[0].value: string found, integer expected&quot;}}
-  {&quot;result&quot;:0}
-
-
-classpath:be/features/digitalCash/transaction.feature:97
-</pre>
-      </div>
-    </div>
-  </div>
 
 
 
@@ -1737,11 +876,11 @@ classpath:be/features/digitalCash/transaction.feature:97
       <div class="step">
 
 
-<div class="brief step-name-And skipped">
+<div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
   <span class="name">match organizer.receiveNoMoreResponses() == true</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">5.000</span>
 
 </div>
 
@@ -1779,10 +918,10 @@ classpath:be/features/digitalCash/transaction.feature:97
 </div>
 
 
-  <span class="lead-duration duration">9.257</span>
+  <span class="lead-duration duration">7.538</span>
 
 
-  <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-16">
+  <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-7">
 
 <div class="brief passed">
   <span class="keyword indention">Background</span>
@@ -1795,14 +934,14 @@ classpath:be/features/digitalCash/transaction.feature:97
   </span>
   <div class="description indention"></div>
 
-  <div id="element-16" class="collapse collapsable-details ">
+  <div id="element-7" class="collapse collapsable-details ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-17">
+  <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-8">
 
 <div class="brief passed">
   <span class="keyword indention">Steps</span>
@@ -1814,7 +953,7 @@ classpath:be/features/digitalCash/transaction.feature:97
 
   </div>
 
-  <div id="steps-17" class="inner-level collapse collapsable-details ">
+  <div id="steps-8" class="inner-level collapse collapsable-details ">
       <div class="step">
 
 
@@ -1984,7 +1123,7 @@ classpath:be/features/digitalCash/transaction.feature:97
   <span class="keyword indention">*</span>
   <span class="name">def organizer = call createMockFrontend</span>
 
-  <span class="lead-duration duration">0.140</span>
+  <span class="lead-duration duration">0.138</span>
 
 </div>
 
@@ -2092,7 +1231,868 @@ classpath:be/features/digitalCash/transaction.feature:97
   <span class="keyword indention">*</span>
   <span class="name">call read(setupCoinChannelScenario) { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)' }</span>
 
-  <span class="lead-duration duration">2.329</span>
+  <span class="lead-duration duration">0.614</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name- passed">
+  <span class="keyword indention"></span>
+  <span class="name">be/features/utils/simpleScenarios.feature</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+  <div class="inner-level">
+    <div class="docstring indention">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-9">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-9" class="collapse collapsable-details">
+        <pre>{
+  &quot;organizer&quot;: &quot;common.utils.MockClient@409395b9&quot;,
+  &quot;lao&quot;: &quot;common.model.Lao@53e82089&quot;,
+  &quot;rollCall&quot;: &quot;common.model.RollCall@66a8751a&quot;
+}
+</pre>
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+
+
+      </div>
+  </div>
+</div>
+
+
+
+
+
+  </div>
+</div>
+
+
+<div class="element">
+
+
+<div class="tags indention">
+    <b>Tags:</b>
+       <a href="report-tag_524961969.html">@env=go,scala</a>
+       <a href="report-tag_2503682387.html">@transaction2</a>
+</div>
+
+
+  <span class="lead-duration duration">0.258</span>
+
+
+  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-10">
+
+<div class="brief failed">
+  <span class="keyword indention">Scenario</span>
+  <span class="name">Transfer valid amount should work</span>
+
+
+     <i class="chevron fa fa-fw"></i>
+</div>
+
+  </span>
+  <div class="description indention"></div>
+
+  <div id="element-10" class="collapse collapsable-details  in ">
+
+
+
+
+
+<div class="steps inner-level">
+  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-11">
+
+<div class="brief failed">
+  <span class="keyword indention">Steps</span>
+  <span class="name"></span>
+
+
+     <i class="chevron fa fa-fw"></i>
+</div>
+
+  </div>
+
+  <div id="steps-11" class="inner-level collapse collapsable-details  in ">
+      <div class="step">
+
+
+<div class="brief step-name-Given passed">
+  <span class="keyword indention">Given</span>
+  <span class="name">def initialAmount = 32</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And passed">
+  <span class="keyword indention">And</span>
+  <span class="name">call read(validCoinIssuanceScenario) { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)', recipient: '#(recipient)', amount: '#(initialAmount)' }</span>
+
+  <span class="lead-duration duration">0.242</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name- passed">
+  <span class="keyword indention"></span>
+  <span class="name">be/features/utils/simpleScenarios.feature</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+  <div class="inner-level">
+    <div class="docstring indention">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-12">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-12" class="collapse collapsable-details">
+        <pre>{
+  &quot;organizer&quot;: &quot;common.utils.MockClient@409395b9&quot;,
+  &quot;lao&quot;: &quot;common.model.Lao@53e82089&quot;,
+  &quot;rollCall&quot;: &quot;common.model.RollCall@66a8751a&quot;,
+  &quot;recipient&quot;: &quot;common.utils.MockClient@4ec27c4c&quot;,
+  &quot;amount&quot;: 32
+}
+</pre>
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And passed">
+  <span class="keyword indention">And</span>
+  <span class="name">def transaction = organizer.issueCoins(recipient, 20);</span>
+
+  <span class="lead-duration duration">0.001</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And passed">
+  <span class="keyword indention">And</span>
+  <span class="name">def postTransaction = transaction.post()</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And passed">
+  <span class="keyword indention">And</span>
+  <span class="name">def input = transaction.inputs[1]</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And passed">
+  <span class="keyword indention">And</span>
+  <span class="name">def output = transaction.outputs[1]</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And passed">
+  <span class="keyword indention">And</span>
+  <span class="name">def validTransfer =</span>
+
+  <span class="lead-duration duration">0.002</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+  <div class="inner-level">
+    <div class="docstring indention">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-13">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-13" class="collapse collapsable-details">
+        <pre>{
+    &quot;object&quot;: &quot;coin&quot;,
+    &quot;action&quot;: &quot;post_transaction&quot;,
+    &quot;transaction_id&quot;: '#(postTransaction.transactionId)',
+    &quot;transaction&quot;: {
+      &quot;version&quot;: '#(transaction.version)',
+      &quot;inputs&quot;: [{
+        &quot;tx_out_hash&quot;: '#(input.txOutHash)',
+        &quot;tx_out_index&quot;: '#(input.txOutIndex)',
+        &quot;script&quot;: {
+          &quot;type&quot;: '#(input.script.type)',
+          &quot;pubkey&quot;: '#(input.script.pubKeyRecipient)',
+          &quot;sig&quot;: '#(input.script.sig)'
+        }
+      }],
+      &quot;outputs&quot;: [{
+        &quot;value&quot;: '#(output.value)',
+        &quot;script&quot;: {
+          &quot;type&quot;: '#(output.script.type)',
+          &quot;pubkey_hash&quot;: '#(output.script.pubKeyHash)',
+        }
+      }],
+      &quot;lock_time&quot;: '#(transaction.lockTime)',
+    }
+}</pre>
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-When passed">
+  <span class="keyword indention">When</span>
+  <span class="name">organizer.publish(validTransfer, lao.cashChannel)</span>
+
+  <span class="lead-duration duration">0.004</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And passed">
+  <span class="keyword indention">And</span>
+  <span class="name">json answer = organizer.getBackendResponse(validTransfer)</span>
+
+  <span class="lead-duration duration">0.005</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-Then failed">
+  <span class="keyword indention">Then</span>
+  <span class="name">match answer contains VALID_MESSAGE</span>
+
+  <span class="lead-duration duration">0.001</span>
+
+</div>
+
+
+
+
+
+
+  <div class="inner-level">
+    <div class="message indention">
+      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-14">
+          <a>match</a>
+      </div>
+      <div id="msg-14" class="collapse collapsable-details  in ">
+        <pre>match failed: CONTAINS
+  $ | actual does not contain expected | actual does not contain key - 'result' (MAP:MAP)
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:1261825647,&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;Invalid data: $.transaction.inputs[0].tx_out_index: string found, integer expected; $.transaction.outputs[0].value: string found, integer expected&quot;}}
+  {&quot;result&quot;:0}
+
+
+classpath:be/features/digitalCash/transaction.feature:97</pre>
+      </div>
+    </div>
+  </div>
+
+
+
+
+  <div class="inner-level">
+    <div class="docstring indention">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-15">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-15" class="collapse collapsable-details">
+        <pre>04:11:08.188 classpath:be/features/digitalCash/transaction.feature:97
+Then match answer contains VALID_MESSAGE
+match failed: CONTAINS
+  $ | actual does not contain expected | actual does not contain key - 'result' (MAP:MAP)
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:1261825647,&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;Invalid data: $.transaction.inputs[0].tx_out_index: string found, integer expected; $.transaction.outputs[0].value: string found, integer expected&quot;}}
+  {&quot;result&quot;:0}
+
+
+classpath:be/features/digitalCash/transaction.feature:97
+</pre>
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And skipped">
+  <span class="keyword indention">And</span>
+  <span class="name">match organizer.receiveNoMoreResponses() == true</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+  </div>
+</div>
+
+
+
+
+
+  </div>
+</div>
+
+
+<div class="element">
+
+
+<div class="tags indention">
+</div>
+
+
+  <span class="lead-duration duration">8.450</span>
+
+
+  <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-16">
+
+<div class="brief passed">
+  <span class="keyword indention">Background</span>
+  <span class="name"></span>
+
+
+     <i class="chevron fa fa-fw"></i>
+</div>
+
+  </span>
+  <div class="description indention"></div>
+
+  <div id="element-16" class="collapse collapsable-details ">
+
+
+
+
+
+<div class="steps inner-level">
+  <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-17">
+
+<div class="brief passed">
+  <span class="keyword indention">Steps</span>
+  <span class="name"></span>
+
+
+     <i class="chevron fa fa-fw"></i>
+</div>
+
+  </div>
+
+  <div id="steps-17" class="inner-level collapse collapsable-details ">
+      <div class="step">
+
+
+<div class="brief step-name-* passed">
+  <span class="keyword indention">*</span>
+  <span class="name">call read('classpath:be/features/utils/constants.feature')</span>
+
+  <span class="lead-duration duration">0.002</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name- passed">
+  <span class="keyword indention"></span>
+  <span class="name">be/features/utils/constants.feature</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-* passed">
+  <span class="keyword indention">*</span>
+  <span class="name">call read(serverFeature)</span>
+
+  <span class="lead-duration duration">6.762</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name- passed">
+  <span class="keyword indention"></span>
+  <span class="name">be/features/utils/server.feature</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-* passed">
+  <span class="keyword indention">*</span>
+  <span class="name">call read(mockClientFeature)</span>
+
+  <span class="lead-duration duration">0.003</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name- passed">
+  <span class="keyword indention"></span>
+  <span class="name">be/features/utils/mockClient.feature</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-* passed">
+  <span class="keyword indention">*</span>
+  <span class="name">def organizer = call createMockFrontend</span>
+
+  <span class="lead-duration duration">0.136</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-* passed">
+  <span class="keyword indention">*</span>
+  <span class="name">def recipient = call createMockFrontend</span>
+
+  <span class="lead-duration duration">0.026</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-* passed">
+  <span class="keyword indention">*</span>
+  <span class="name">def lao = organizer.generateValidLao()</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-* passed">
+  <span class="keyword indention">*</span>
+  <span class="name">def rollCall = organizer.generateValidRollCall(lao)</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-* passed">
+  <span class="keyword indention">*</span>
+  <span class="name">call read(setupCoinChannelScenario) { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)' }</span>
+
+  <span class="lead-duration duration">1.519</span>
 
 </div>
 
@@ -2138,9 +2138,9 @@ classpath:be/features/digitalCash/transaction.feature:97
       </div>
       <div id="msg-18" class="collapse collapsable-details">
         <pre>{
-  &quot;organizer&quot;: &quot;common.utils.MockClient@53e82089&quot;,
-  &quot;lao&quot;: &quot;common.model.Lao@66a8751a&quot;,
-  &quot;rollCall&quot;: &quot;common.model.RollCall@4ec27c4c&quot;
+  &quot;organizer&quot;: &quot;common.utils.MockClient@12200670&quot;,
+  &quot;lao&quot;: &quot;common.model.Lao@5e80d5&quot;,
+  &quot;rollCall&quot;: &quot;common.model.RollCall@257b3561&quot;
 }
 </pre>
       </div>
@@ -2175,7 +2175,7 @@ classpath:be/features/digitalCash/transaction.feature:97
 </div>
 
 
-  <span class="lead-duration duration">5.022</span>
+  <span class="lead-duration duration">5.020</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-19">
@@ -2414,7 +2414,7 @@ classpath:be/features/digitalCash/transaction.feature:97
   <span class="keyword indention">And</span>
   <span class="name">json answer = organizer.getBackendResponse(invalidTransaction)</span>
 
-  <span class="lead-duration duration">0.017</span>
+  <span class="lead-duration duration">0.016</span>
 
 </div>
 
@@ -2506,7 +2506,7 @@ classpath:be/features/digitalCash/transaction.feature:97
 </div>
 
 
-  <span class="lead-duration duration">7.682</span>
+  <span class="lead-duration duration">7.589</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-22">
@@ -2549,7 +2549,7 @@ classpath:be/features/digitalCash/transaction.feature:97
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/features/utils/constants.feature')</span>
 
-  <span class="lead-duration duration">0.002</span>
+  <span class="lead-duration duration">0.003</span>
 
 </div>
 
@@ -2603,7 +2603,7 @@ classpath:be/features/digitalCash/transaction.feature:97
   <span class="keyword indention">*</span>
   <span class="name">call read(serverFeature)</span>
 
-  <span class="lead-duration duration">6.760</span>
+  <span class="lead-duration duration">6.761</span>
 
 </div>
 
@@ -2711,7 +2711,7 @@ classpath:be/features/digitalCash/transaction.feature:97
   <span class="keyword indention">*</span>
   <span class="name">def organizer = call createMockFrontend</span>
 
-  <span class="lead-duration duration">0.150</span>
+  <span class="lead-duration duration">0.136</span>
 
 </div>
 
@@ -2738,7 +2738,7 @@ classpath:be/features/digitalCash/transaction.feature:97
   <span class="keyword indention">*</span>
   <span class="name">def recipient = call createMockFrontend</span>
 
-  <span class="lead-duration duration">0.016</span>
+  <span class="lead-duration duration">0.050</span>
 
 </div>
 
@@ -2819,7 +2819,7 @@ classpath:be/features/digitalCash/transaction.feature:97
   <span class="keyword indention">*</span>
   <span class="name">call read(setupCoinChannelScenario) { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)' }</span>
 
-  <span class="lead-duration duration">0.749</span>
+  <span class="lead-duration duration">0.633</span>
 
 </div>
 
@@ -2865,9 +2865,9 @@ classpath:be/features/digitalCash/transaction.feature:97
       </div>
       <div id="msg-24" class="collapse collapsable-details">
         <pre>{
-  &quot;organizer&quot;: &quot;common.utils.MockClient@12200670&quot;,
-  &quot;lao&quot;: &quot;common.model.Lao@5e80d5&quot;,
-  &quot;rollCall&quot;: &quot;common.model.RollCall@257b3561&quot;
+  &quot;organizer&quot;: &quot;common.utils.MockClient@78861d9e&quot;,
+  &quot;lao&quot;: &quot;common.model.Lao@6a878778&quot;,
+  &quot;rollCall&quot;: &quot;common.model.RollCall@1eabfad5&quot;
 }
 </pre>
       </div>
@@ -2902,7 +2902,7 @@ classpath:be/features/digitalCash/transaction.feature:97
 </div>
 
 
-  <span class="lead-duration duration">5.021</span>
+  <span class="lead-duration duration">5.019</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-25">
@@ -3141,7 +3141,7 @@ classpath:be/features/digitalCash/transaction.feature:97
   <span class="keyword indention">And</span>
   <span class="name">json answer = organizer.getBackendResponse(invalidTransaction)</span>
 
-  <span class="lead-duration duration">0.016</span>
+  <span class="lead-duration duration">0.015</span>
 
 </div>
 
@@ -3233,7 +3233,7 @@ classpath:be/features/digitalCash/transaction.feature:97
 </div>
 
 
-  <span class="lead-duration duration">7.635</span>
+  <span class="lead-duration duration">7.556</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-28">
@@ -3438,7 +3438,7 @@ classpath:be/features/digitalCash/transaction.feature:97
   <span class="keyword indention">*</span>
   <span class="name">def organizer = call createMockFrontend</span>
 
-  <span class="lead-duration duration">0.149</span>
+  <span class="lead-duration duration">0.161</span>
 
 </div>
 
@@ -3546,7 +3546,7 @@ classpath:be/features/digitalCash/transaction.feature:97
   <span class="keyword indention">*</span>
   <span class="name">call read(setupCoinChannelScenario) { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)' }</span>
 
-  <span class="lead-duration duration">0.699</span>
+  <span class="lead-duration duration">0.608</span>
 
 </div>
 
@@ -3592,9 +3592,9 @@ classpath:be/features/digitalCash/transaction.feature:97
       </div>
       <div id="msg-30" class="collapse collapsable-details">
         <pre>{
-  &quot;organizer&quot;: &quot;common.utils.MockClient@78861d9e&quot;,
-  &quot;lao&quot;: &quot;common.model.Lao@6a878778&quot;,
-  &quot;rollCall&quot;: &quot;common.model.RollCall@1eabfad5&quot;
+  &quot;organizer&quot;: &quot;common.utils.MockClient@6207145c&quot;,
+  &quot;lao&quot;: &quot;common.model.Lao@2a259f6f&quot;,
+  &quot;rollCall&quot;: &quot;common.model.RollCall@7ccf6114&quot;
 }
 </pre>
       </div>
@@ -3629,7 +3629,7 @@ classpath:be/features/digitalCash/transaction.feature:97
 </div>
 
 
-  <span class="lead-duration duration">5.018</span>
+  <span class="lead-duration duration">5.019</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-31">
@@ -3841,7 +3841,7 @@ classpath:be/features/digitalCash/transaction.feature:97
   <span class="keyword indention">When</span>
   <span class="name">organizer.publish(invalidTransaction, lao.cashChannel)</span>
 
-  <span class="lead-duration duration">0.001</span>
+  <span class="lead-duration duration">0.002</span>
 
 </div>
 
@@ -3868,7 +3868,7 @@ classpath:be/features/digitalCash/transaction.feature:97
   <span class="keyword indention">And</span>
   <span class="name">json answer = organizer.getBackendResponse(invalidTransaction)</span>
 
-  <span class="lead-duration duration">0.015</span>
+  <span class="lead-duration duration">0.014</span>
 
 </div>
 
