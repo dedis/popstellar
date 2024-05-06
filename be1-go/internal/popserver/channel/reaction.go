@@ -5,12 +5,33 @@ import (
 	"popstellar/message/answer"
 	"popstellar/message/messagedata"
 	"popstellar/message/query/method/message"
+	"strings"
 )
 
 func handleChannelReaction(channel string, msg message.Message) *answer.Error {
 	object, action, errAnswer := verifyDataAndGetObjectAction(msg)
 	if errAnswer != nil {
 		errAnswer = errAnswer.Wrap("handleChannelReaction")
+		return errAnswer
+	}
+
+	db, ok := database.GetReactionRepositoryInstance()
+	if !ok {
+		errAnswer := answer.NewInternalServerError("failed to get database").Wrap("handleChannelReaction")
+		return errAnswer
+	}
+
+	channelID, _ := strings.CutPrefix(channel, "/")
+	splitChannelID := strings.Split(channelID, "/")
+	laoID := splitChannelID[1]
+
+	isAttendee, err := db.IsAttendee(laoID, msg.Sender)
+	if err != nil {
+		errAnswer := answer.NewInternalServerError("failed to query DB: %v", err).Wrap("handleChannelReaction")
+		return errAnswer
+	}
+	if !isAttendee {
+		errAnswer := answer.NewAccessDeniedError("user not inside roll-call").Wrap("handleChannelReaction")
 		return errAnswer
 	}
 
@@ -27,13 +48,7 @@ func handleChannelReaction(channel string, msg message.Message) *answer.Error {
 		return errAnswer
 	}
 
-	db, ok := database.GetReactionRepositoryInstance()
-	if !ok {
-		errAnswer := answer.NewInternalServerError("failed to get database").Wrap("handleChannelReaction")
-		return errAnswer
-	}
-
-	err := db.StoreMessage(channel, msg)
+	err = db.StoreMessage(channel, msg)
 	if err != nil {
 		errAnswer = answer.NewInternalServerError("failed to store message: %v", err)
 		errAnswer = errAnswer.Wrap("handleChannelReaction")
@@ -44,9 +59,57 @@ func handleChannelReaction(channel string, msg message.Message) *answer.Error {
 }
 
 func handleReactionAdd(msg message.Message) *answer.Error {
+	var reactMsg messagedata.ReactionAdd
+
+	err := msg.UnmarshalData(&reactMsg)
+	if err != nil {
+		errAnswer := answer.NewInvalidMessageFieldError("failed to unmarshal: %v", err).Wrap("handleReactionAdd")
+		return errAnswer
+	}
+
+	err = reactMsg.Verify()
+	if err != nil {
+		errAnswer := answer.NewInvalidMessageFieldError("invalid message: %v", err).Wrap("handleReactionAdd")
+		return errAnswer
+	}
+
 	return nil
 }
 
 func handleReactionDelete(msg message.Message) *answer.Error {
+	var delReactMsg messagedata.ReactionDelete
+
+	err := msg.UnmarshalData(&delReactMsg)
+	if err != nil {
+		errAnswer := answer.NewInvalidMessageFieldError("failed to unmarshal: %v", err).Wrap("handleReactionDelete")
+		return errAnswer
+	}
+
+	err = delReactMsg.Verify()
+	if err != nil {
+		errAnswer := answer.NewInvalidMessageFieldError("invalid message: %v", err).Wrap("handleReactionDelete")
+		return errAnswer
+	}
+
+	db, ok := database.GetReactionRepositoryInstance()
+	if !ok {
+		errAnswer := answer.NewInternalServerError("failed to get database").Wrap("handleReactionDelete")
+		return errAnswer
+	}
+	reactSender, err := db.GetReactionSender(delReactMsg.ReactionID)
+	if err != nil {
+		errAnswer := answer.NewInternalServerError("failed to query DB: %v", err).Wrap("handleReactionDelete")
+		return errAnswer
+	}
+	if reactSender == "" {
+		errAnswer := answer.NewInvalidResourceError("unknown reaction").Wrap("handleReactionDelete")
+		return errAnswer
+	}
+
+	if msg.Sender != reactSender {
+		errAnswer := answer.NewAccessDeniedError("only the owner of the reaction can delete it").Wrap("handleReactionDelete")
+		return errAnswer
+	}
+
 	return nil
 }

@@ -4,7 +4,6 @@ import (
 	"encoding/base64"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
-	"go.dedis.ch/kyber/v3"
 	"popstellar/crypto"
 	"popstellar/internal/popserver/config"
 	"popstellar/internal/popserver/database"
@@ -53,7 +52,7 @@ func Test_handleChannelChirp(t *testing.T) {
 	args = append(args, input{
 		name:     "Test 1",
 		channel:  channelID,
-		msg:      newChirpAddMsg(t, channelID, sender, nil, time.Now().Unix(), mockRepo, false),
+		msg:      newChirpAddMsg(t, channelID, sender, time.Now().Unix(), mockRepo, false),
 		isError:  false,
 		contains: "",
 	})
@@ -65,7 +64,7 @@ func Test_handleChannelChirp(t *testing.T) {
 	args = append(args, input{
 		name:     "Test 2",
 		channel:  channelID,
-		msg:      newChirpAddMsg(t, channelID, wrongSender, nil, time.Now().Unix(), mockRepo, true),
+		msg:      newChirpAddMsg(t, channelID, wrongSender, time.Now().Unix(), mockRepo, true),
 		isError:  true,
 		contains: "only the owner of the channel can post chirps",
 	})
@@ -77,7 +76,7 @@ func Test_handleChannelChirp(t *testing.T) {
 	args = append(args, input{
 		name:     "Test 3",
 		channel:  channelID,
-		msg:      newChirpAddMsg(t, channelID, sender, nil, -1, mockRepo, true),
+		msg:      newChirpAddMsg(t, channelID, sender, -1, mockRepo, true),
 		isError:  true,
 		contains: "invalid message field",
 	})
@@ -89,7 +88,7 @@ func Test_handleChannelChirp(t *testing.T) {
 	args = append(args, input{
 		name:     "Test 4",
 		channel:  channelID,
-		msg:      newChirpDeleteMsg(t, channelID, sender, nil, chirpID, time.Now().Unix(), mockRepo, false),
+		msg:      newChirpDeleteMsg(t, channelID, sender, chirpID, time.Now().Unix(), mockRepo, false),
 		isError:  false,
 		contains: "",
 	})
@@ -101,7 +100,7 @@ func Test_handleChannelChirp(t *testing.T) {
 	args = append(args, input{
 		name:     "Test 5",
 		channel:  channelID,
-		msg:      newChirpDeleteMsg(t, channelID, wrongSender, nil, chirpID, time.Now().Unix(), mockRepo, true),
+		msg:      newChirpDeleteMsg(t, channelID, wrongSender, chirpID, time.Now().Unix(), mockRepo, true),
 		isError:  true,
 		contains: "only the owner of the channel can post chirps",
 	})
@@ -113,7 +112,7 @@ func Test_handleChannelChirp(t *testing.T) {
 	args = append(args, input{
 		name:     "Test 6",
 		channel:  channelID,
-		msg:      newChirpDeleteMsg(t, channelID, sender, nil, chirpID, -1, mockRepo, true),
+		msg:      newChirpDeleteMsg(t, channelID, sender, chirpID, -1, mockRepo, true),
 		isError:  true,
 		contains: "invalid message field",
 	})
@@ -124,6 +123,7 @@ func Test_handleChannelChirp(t *testing.T) {
 		t.Run(arg.name, func(t *testing.T) {
 			errAnswer := handleChannelChirp(arg.channel, arg.msg)
 			if arg.isError {
+				require.NotNil(t, errAnswer)
 				require.Contains(t, errAnswer.Error(), arg.contains)
 			} else {
 				require.Nil(t, errAnswer)
@@ -133,10 +133,10 @@ func Test_handleChannelChirp(t *testing.T) {
 
 }
 
-func newChirpAddMsg(t *testing.T, channelID string, sender string, senderPK kyber.Scalar, timestamp int64,
+func newChirpAddMsg(t *testing.T, channelID string, sender string, timestamp int64,
 	mockRepo *database.MockRepository, isError bool) message.Message {
 
-	msg := generator.NewChirpAddMsg(t, sender, senderPK, timestamp)
+	msg := generator.NewChirpAddMsg(t, sender, nil, timestamp)
 
 	subs, ok := state.GetSubsInstance()
 	require.True(t, ok)
@@ -159,10 +159,10 @@ func newChirpAddMsg(t *testing.T, channelID string, sender string, senderPK kybe
 	return msg
 }
 
-func newChirpDeleteMsg(t *testing.T, channelID string, sender string, senderPK kyber.Scalar, chirpID string,
+func newChirpDeleteMsg(t *testing.T, channelID string, sender string, chirpID string,
 	timestamp int64, mockRepo *database.MockRepository, isError bool) message.Message {
 
-	msg := generator.NewChirpDeleteMsg(t, sender, senderPK, chirpID, timestamp)
+	msg := generator.NewChirpDeleteMsg(t, sender, nil, chirpID, timestamp)
 
 	subs, ok := state.GetSubsInstance()
 	require.True(t, ok)

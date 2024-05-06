@@ -12,13 +12,13 @@ import (
 	"testing"
 )
 
-func newMessage(t *testing.T, sender string, senderPK kyber.Scalar, data []byte) message.Message {
+func newMessage(t *testing.T, sender string, senderSK kyber.Scalar, data []byte) message.Message {
 	data64 := base64.URLEncoding.EncodeToString(data)
 
-	signature64 := base64.URLEncoding.EncodeToString([]byte("Signature"))
+	signature64 := base64.URLEncoding.EncodeToString([]byte(sender))
 
-	if senderPK != nil {
-		signatureBuf, err := schnorr.Sign(crypto.Suite, senderPK, data)
+	if senderSK != nil {
+		signatureBuf, err := schnorr.Sign(crypto.Suite, senderSK, data)
 		require.NoError(t, err)
 
 		signature64 = base64.URLEncoding.EncodeToString(signatureBuf)
@@ -35,7 +35,7 @@ func newMessage(t *testing.T, sender string, senderPK kyber.Scalar, data []byte)
 	}
 }
 
-func NewNothingMsg(t *testing.T, sender string, senderPK kyber.Scalar) message.Message {
+func NewNothingMsg(t *testing.T, sender string, senderSK kyber.Scalar) message.Message {
 	data := struct {
 		Object string `json:"object"`
 		Action string `json:"action"`
@@ -48,5 +48,20 @@ func NewNothingMsg(t *testing.T, sender string, senderPK kyber.Scalar) message.M
 	buf, err := json.Marshal(data)
 	require.NoError(t, err)
 
-	return newMessage(t, sender, senderPK, buf)
+	return newMessage(t, sender, senderSK, buf)
+}
+
+func NewNothingQuery(t *testing.T, id int) []byte {
+	wrongQuery := struct {
+		Jsonrpc string `json:"Jsonrpc"`
+		ID      int    `json:"ID"`
+	}{
+		Jsonrpc: "2.0",
+		ID:      id,
+	}
+
+	wrongQueryBuf, err := json.Marshal(&wrongQuery)
+	require.NoError(t, err)
+
+	return wrongQueryBuf
 }

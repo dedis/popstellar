@@ -253,6 +253,7 @@ func Test_handleChannelLao(t *testing.T) {
 		t.Run(arg.name, func(t *testing.T) {
 			errAnswer := handleChannelLao(arg.channel, arg.msg)
 			if arg.isError {
+				require.NotNil(t, errAnswer)
 				require.Contains(t, errAnswer.Error(), arg.contains)
 			} else {
 				require.Nil(t, errAnswer)
@@ -332,7 +333,7 @@ func newRollCallCloseMsg(t *testing.T, sender, laoID, closes, prevID string, clo
 
 	attendees := []string{base64.URLEncoding.EncodeToString([]byte("a")), base64.URLEncoding.EncodeToString([]byte("b"))}
 
-	msg := generator.NewRollCallCloseMsg(t, sender, closeID, closes, prevID, closedAt, attendees, nil)
+	msg := generator.NewRollCallCloseMsg(t, sender, closeID, closes, closedAt, attendees, nil)
 
 	if !isError {
 		var channels []string

@@ -95,8 +95,7 @@ func Test_handleMessagesByChannel(t *testing.T) {
 
 	for _, i := range inputs {
 		t.Run(i.name, func(t *testing.T) {
-			fakeSocket := popserver.FakeSocket{Id: "fakesocket"}
-			handleMessagesByChannel(&fakeSocket, i.messages)
+			handleMessagesByChannel(i.messages)
 
 			for k0, v0 := range i.expected {
 				for k1 := range v0 {

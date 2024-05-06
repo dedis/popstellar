@@ -10,7 +10,7 @@ import (
 )
 
 func NewLaoStateMsg(t *testing.T, organizer, laoID, name, modificationID string, creation, lastModified int64,
-	organizerPK kyber.Scalar) message.Message {
+	organizerSK kyber.Scalar) message.Message {
 	laoState := messagedata.LaoState{
 		Object:                 messagedata.LAOObject,
 		Action:                 messagedata.LAOActionState,
@@ -27,13 +27,13 @@ func NewLaoStateMsg(t *testing.T, organizer, laoID, name, modificationID string,
 	buf, err := json.Marshal(laoState)
 	require.NoError(t, err)
 
-	msg := newMessage(t, organizer, organizerPK, buf)
+	msg := newMessage(t, organizer, organizerSK, buf)
 
 	return msg
 }
 
 func NewRollCallCreateMsg(t *testing.T, sender, laoName, createID string, creation, start, end int64,
-	senderPK kyber.Scalar) message.Message {
+	senderSK kyber.Scalar) message.Message {
 	rollCallCreate := messagedata.RollCallCreate{
 		Object:        messagedata.RollCallObject,
 		Action:        messagedata.RollCallActionCreate,
@@ -49,13 +49,13 @@ func NewRollCallCreateMsg(t *testing.T, sender, laoName, createID string, creati
 	buf, err := json.Marshal(rollCallCreate)
 	require.NoError(t, err)
 
-	msg := newMessage(t, sender, senderPK, buf)
+	msg := newMessage(t, sender, senderSK, buf)
 
 	return msg
 }
 
 func NewRollCallOpenMsg(t *testing.T, sender, updateID, opens string, openedAt int64,
-	senderPK kyber.Scalar) message.Message {
+	senderSK kyber.Scalar) message.Message {
 
 	rollCallOpen := messagedata.RollCallOpen{
 		Object:   messagedata.RollCallObject,
@@ -68,13 +68,13 @@ func NewRollCallOpenMsg(t *testing.T, sender, updateID, opens string, openedAt i
 	buf, err := json.Marshal(rollCallOpen)
 	require.NoError(t, err)
 
-	msg := newMessage(t, sender, senderPK, buf)
+	msg := newMessage(t, sender, senderSK, buf)
 
 	return msg
 }
 
-func NewRollCallCloseMsg(t *testing.T, sender, updateID, closes, prevID string, closedAt int64, attendees []string,
-	senderPK kyber.Scalar) message.Message {
+func NewRollCallCloseMsg(t *testing.T, sender, updateID, closes string, closedAt int64, attendees []string,
+	senderSK kyber.Scalar) message.Message {
 
 	rollCallClose := messagedata.RollCallClose{
 		Object:    messagedata.RollCallObject,
@@ -88,13 +88,13 @@ func NewRollCallCloseMsg(t *testing.T, sender, updateID, closes, prevID string, 
 	buf, err := json.Marshal(rollCallClose)
 	require.NoError(t, err)
 
-	msg := newMessage(t, sender, senderPK, buf)
+	msg := newMessage(t, sender, senderSK, buf)
 
 	return msg
 }
 
 func NewElectionSetupMsg(t *testing.T, sender, ID, setupLao, electionName, version string,
-	createdAt, start, end int64, questions []messagedata.ElectionSetupQuestion, senderPK kyber.Scalar) message.Message {
+	createdAt, start, end int64, questions []messagedata.ElectionSetupQuestion, senderSK kyber.Scalar) message.Message {
 
 	electionSetup := messagedata.ElectionSetup{
 		Object:    messagedata.ElectionObject,
@@ -112,7 +112,7 @@ func NewElectionSetupMsg(t *testing.T, sender, ID, setupLao, electionName, versi
 	buf, err := json.Marshal(electionSetup)
 	require.NoError(t, err)
 
-	msg := newMessage(t, sender, senderPK, buf)
+	msg := newMessage(t, sender, senderSK, buf)
 
 	return msg
 }

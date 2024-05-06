@@ -10,7 +10,7 @@ import (
 )
 
 func NewLaoCreateMsg(t *testing.T, sender string, ID string, laoName string, creation int64, organizer string,
-	senderPK kyber.Scalar) message.Message {
+	senderSK kyber.Scalar) message.Message {
 	laoCreate := messagedata.LaoCreate{
 		Object:    messagedata.LAOObject,
 		Action:    messagedata.LAOActionCreate,
@@ -24,7 +24,7 @@ func NewLaoCreateMsg(t *testing.T, sender string, ID string, laoName string, cre
 	buf, err := json.Marshal(laoCreate)
 	require.NoError(t, err)
 
-	msg := newMessage(t, sender, senderPK, buf)
+	msg := newMessage(t, sender, senderSK, buf)
 
 	return msg
 }

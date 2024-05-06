@@ -2,231 +2,19 @@ package message
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/stretchr/testify/require"
 	"golang.org/x/xerrors"
 	"popstellar/crypto"
-	"popstellar/internal/popserver"
 	"popstellar/internal/popserver/config"
 	"popstellar/internal/popserver/database"
+	"popstellar/internal/popserver/generator"
 	"popstellar/internal/popserver/state"
 	"popstellar/internal/popserver/types"
-	jsonrpc "popstellar/message"
-	"popstellar/message/query"
 	"popstellar/message/query/method"
 	"popstellar/message/query/method/message"
+	"popstellar/network/socket"
 	"testing"
 )
-
-func Test_handleCatchUp(t *testing.T) {
-	subs := types.NewSubscribers()
-	queries := types.NewQueries(&noLog)
-	peers := types.NewPeers()
-
-	err := state.SetState(t, subs, peers, queries)
-	require.NoError(t, err)
-
-	mockRepo, err := database.SetDatabase(t)
-	require.NoError(t, err)
-
-	type input struct {
-		name        string
-		message     []byte
-		socket      *popserver.FakeSocket
-		result      []message.Message
-		isErrorTest bool
-	}
-
-	msg := message.Message{
-		Data:              "data",
-		Sender:            "sender",
-		Signature:         "signature",
-		MessageID:         "messageID",
-		WitnessSignatures: []message.WitnessSignature{},
-	}
-
-	inputs := make([]input, 0)
-
-	// catch up three messages
-
-	catchup := method.Catchup{
-		Base: query.Base{
-			JSONRPCBase: jsonrpc.JSONRPCBase{
-				JSONRPC: "2.0",
-			},
-
-			Method: query.MethodCatchUp,
-		},
-		ID: 1,
-		Params: method.CatchupParams{
-			Channel: "/root",
-		},
-	}
-
-	catchupBuf, err := json.Marshal(&catchup)
-	require.NoError(t, err)
-
-	messagesToCatchUp := []message.Message{msg, msg, msg}
-
-	mockRepo.On("GetAllMessagesFromChannel", catchup.Params.Channel).Return(messagesToCatchUp, nil)
-
-	s := &popserver.FakeSocket{Id: "fakesocket"}
-
-	inputs = append(inputs, input{
-		name:        "catch up three messages",
-		message:     catchupBuf,
-		socket:      s,
-		result:      messagesToCatchUp,
-		isErrorTest: false,
-	})
-
-	// failed to query DB
-
-	catchup2 := method.Catchup{
-		Base: query.Base{
-			JSONRPCBase: jsonrpc.JSONRPCBase{
-				JSONRPC: "2.0",
-			},
-
-			Method: query.MethodCatchUp,
-		},
-		ID: 1,
-		Params: method.CatchupParams{
-			Channel: "/root2",
-		},
-	}
-
-	catchupBuf, err = json.Marshal(&catchup2)
-	require.NoError(t, err)
-
-	mockRepo.On("GetAllMessagesFromChannel", catchup2.Params.Channel).Return(nil, xerrors.Errorf("DB is disconnected"))
-
-	inputs = append(inputs, input{
-		name:        "failed to query DB",
-		message:     catchupBuf,
-		isErrorTest: true,
-	})
-
-	// run all tests
-
-	for _, i := range inputs {
-		t.Run(i.name, func(t *testing.T) {
-			id, errAnswer := handleCatchUp(i.socket, i.message)
-			if i.isErrorTest {
-				fmt.Println(errAnswer)
-				require.NotNil(t, errAnswer)
-				require.NotNil(t, id)
-			} else {
-				fmt.Println(errAnswer)
-				require.Nil(t, errAnswer)
-				require.Equal(t, i.result, i.socket.Res)
-			}
-		})
-	}
-}
-
-func Test_handleGetMessagesByID(t *testing.T) {
-	subs := types.NewSubscribers()
-	queries := types.NewQueries(&noLog)
-	peers := types.NewPeers()
-
-	err := state.SetState(t, subs, peers, queries)
-	require.NoError(t, err)
-
-	mockRepository, err := database.SetDatabase(t)
-	require.NoError(t, err)
-
-	type input struct {
-		name        string
-		message     []byte
-		socket      *popserver.FakeSocket
-		result      map[string][]message.Message
-		isErrorTest bool
-	}
-
-	msg := message.Message{
-		Data:              "data",
-		Sender:            "sender",
-		Signature:         "signature",
-		MessageID:         "messageID",
-		WitnessSignatures: []message.WitnessSignature{},
-	}
-
-	paramsGetMessagesByID := make(map[string][]string)
-	paramsGetMessagesByID["/root"] = []string{msg.MessageID}
-
-	getMessagesByID := method.GetMessagesById{
-		Base: query.Base{
-			JSONRPCBase: jsonrpc.JSONRPCBase{
-				JSONRPC: "2.0",
-			},
-
-			Method: query.MethodCatchUp,
-		},
-		ID:     1,
-		Params: paramsGetMessagesByID,
-	}
-
-	inputs := make([]input, 0)
-
-	// get one message
-
-	getMessagesByID2 := getMessagesByID
-	paramsGetMessagesByID2 := make(map[string][]string)
-	paramsGetMessagesByID2["/root2"] = []string{msg.MessageID}
-	getMessagesByID2.Params = paramsGetMessagesByID2
-
-	getMessagesByIDBuf, err := json.Marshal(&getMessagesByID2)
-	require.NoError(t, err)
-
-	result := make(map[string][]message.Message)
-	result["/root"] = []message.Message{msg}
-
-	mockRepository.On("GetResultForGetMessagesByID", paramsGetMessagesByID2).Return(result, nil)
-
-	s := &popserver.FakeSocket{Id: "fakesocket"}
-
-	inputs = append(inputs, input{
-		name:        "get one message",
-		message:     getMessagesByIDBuf,
-		socket:      s,
-		result:      result,
-		isErrorTest: false,
-	})
-
-	// failed to query DB
-
-	getMessagesByID3 := getMessagesByID
-	paramsGetMessagesByID3 := make(map[string][]string)
-	paramsGetMessagesByID3["/root3"] = []string{msg.MessageID}
-	getMessagesByID3.Params = paramsGetMessagesByID3
-
-	getMessagesByIDBuf, err = json.Marshal(&getMessagesByID3)
-	require.NoError(t, err)
-
-	mockRepository.On("GetResultForGetMessagesByID", paramsGetMessagesByID3).Return(nil, xerrors.Errorf("DB is disconnected"))
-
-	inputs = append(inputs, input{
-		name:        "failed to query DB",
-		message:     getMessagesByIDBuf,
-		isErrorTest: true,
-	})
-
-	// run all tests
-
-	for _, i := range inputs {
-		t.Run(i.name, func(t *testing.T) {
-			id, errAnswer := handleGetMessagesByID(i.socket, i.message)
-			if i.isErrorTest {
-				require.NotNil(t, errAnswer)
-				require.NotNil(t, id)
-			} else {
-				require.Nil(t, errAnswer)
-				require.Equal(t, i.result, i.socket.MissingMsgs)
-			}
-		})
-	}
-}
 
 func Test_handleGreetServer(t *testing.T) {
 	subs := types.NewSubscribers()
@@ -243,129 +31,353 @@ func Test_handleGreetServer(t *testing.T) {
 	require.NoError(t, err)
 
 	type input struct {
-		name        string
-		message     []byte
-		socket      *popserver.FakeSocket
-		needSend    bool
-		isErrorTest bool
+		name      string
+		socket    socket.FakeSocket
+		message   []byte
+		needGreet bool
+		isError   bool
+		contains  string
 	}
 
-	inputs := make([]input, 0)
+	args := make([]input, 0)
 
-	// reply with greetServer
+	greetServer := generator.NewGreetServerQuery(t, "pk", "client", "server")
 
-	serverInfo1 := method.GreetServerParams{
-		PublicKey:     "pk1",
-		ServerAddress: "srvAddr1",
-		ClientAddress: "cltAddr1",
-	}
+	// Test 1: reply with greet server when receiving a greet server from a new server
 
-	greetServer1 := method.GreetServer{
-		Base: query.Base{
-			JSONRPCBase: jsonrpc.JSONRPCBase{
-				JSONRPC: "2.0",
-			},
+	fakeSocket := socket.FakeSocket{Id: "1"}
 
-			Method: query.MethodGreetServer,
-		},
-		Params: serverInfo1,
-	}
-
-	greetServerBuf, err := json.Marshal(&greetServer1)
-	require.NoError(t, err)
-
-	s := &popserver.FakeSocket{Id: "fakesocket1"}
-
-	inputs = append(inputs, input{
-		name:        "reply with greetServer",
-		message:     greetServerBuf,
-		socket:      s,
-		needSend:    true,
-		isErrorTest: false,
+	args = append(args, input{
+		name:      "Test 1",
+		socket:    fakeSocket,
+		message:   greetServer,
+		needGreet: true,
+		isError:   false,
 	})
 
-	// do not reply with greetServer
+	// Test 2: doesn't reply with greet server when already greeted the server
 
-	serverInfo2 := method.GreetServerParams{
-		PublicKey:     "pk1",
-		ServerAddress: "srvAddr1",
-		ClientAddress: "cltAddr1",
-	}
+	fakeSocket = socket.FakeSocket{Id: "2"}
 
-	greetServer2 := method.GreetServer{
-		Base: query.Base{
-			JSONRPCBase: jsonrpc.JSONRPCBase{
-				JSONRPC: "2.0",
-			},
+	peers.AddPeerGreeted(fakeSocket.Id)
 
-			Method: query.MethodGreetServer,
-		},
-		Params: serverInfo2,
-	}
-
-	greetServerBuf, err = json.Marshal(&greetServer2)
-	require.NoError(t, err)
-
-	s = &popserver.FakeSocket{Id: "fakesocket2"}
-
-	peers.AddPeerGreeted(s.Id)
-
-	inputs = append(inputs, input{
-		name:        "server already greeted",
-		message:     greetServerBuf,
-		socket:      s,
-		needSend:    false,
-		isErrorTest: false,
+	args = append(args, input{
+		name:      "Test 2",
+		message:   greetServer,
+		socket:    fakeSocket,
+		needGreet: false,
+		isError:   false,
 	})
 
-	// Socket already used
+	// Test 3: return an error if the socket ID is already used by another server
 
-	serverInfo4 := method.GreetServerParams{
-		PublicKey:     "pk1",
-		ServerAddress: "srvAddr1",
-		ClientAddress: "cltAddr1",
-	}
+	fakeSocket = socket.FakeSocket{Id: "3"}
 
-	greetServer4 := method.GreetServer{
-		Base: query.Base{
-			JSONRPCBase: jsonrpc.JSONRPCBase{
-				JSONRPC: "2.0",
-			},
-
-			Method: query.MethodGreetServer,
-		},
-		Params: serverInfo4,
-	}
-
-	greetServerBuf, err = json.Marshal(&greetServer4)
+	err = peers.AddPeerInfo(fakeSocket.Id, method.GreetServerParams{})
 	require.NoError(t, err)
 
-	s = &popserver.FakeSocket{Id: "fakesocket4"}
-
-	err = peers.AddPeerInfo(s.Id, serverInfo4)
-	require.NoError(t, err)
-
-	inputs = append(inputs, input{
-		name:        "Socket already used",
-		socket:      s,
-		message:     greetServerBuf,
-		isErrorTest: true,
+	args = append(args, input{
+		name:     "Test 3",
+		socket:   fakeSocket,
+		message:  greetServer,
+		isError:  true,
+		contains: "failed to add peer",
 	})
 
 	// run all tests
 
-	for _, i := range inputs {
-		t.Run(i.name, func(t *testing.T) {
-			id, errAnswer := handleGreetServer(i.socket, i.message)
-			if i.isErrorTest {
+	for _, arg := range args {
+		t.Run(arg.name, func(t *testing.T) {
+			id, errAnswer := handleGreetServer(&arg.socket, arg.message)
+			if arg.isError {
 				require.NotNil(t, errAnswer)
+				require.Contains(t, errAnswer.Error(), arg.contains)
 				require.Nil(t, id)
-			} else if i.needSend {
+			} else if arg.needGreet {
 				require.Nil(t, errAnswer)
-				require.NotNil(t, i.socket.Msg)
+				require.NotNil(t, arg.socket.Msg)
 			} else {
 				require.Nil(t, errAnswer)
-				require.Nil(t, i.socket.Msg)
+				require.Nil(t, arg.socket.Msg)
+			}
+		})
+	}
+}
+
+func Test_handleSubscribe(t *testing.T) {
+	subs := types.NewSubscribers()
+	queries := types.NewQueries(&noLog)
+	peers := types.NewPeers()
+
+	err := state.SetState(t, subs, peers, queries)
+	require.NoError(t, err)
+
+	type input struct {
+		name     string
+		socket   socket.FakeSocket
+		ID       int
+		channel  string
+		message  []byte
+		isError  bool
+		contains string
+	}
+
+	args := make([]input, 0)
+
+	// Test 1: successfully subscribe to a channel
+
+	fakeSocket := socket.FakeSocket{Id: "1"}
+	ID := 1
+	channel := "/root/lao1"
+
+	subs.AddChannel(channel)
+
+	args = append(args, input{
+		name:    "Test 1",
+		socket:  fakeSocket,
+		ID:      ID,
+		channel: channel,
+		message: generator.NewSubscribeQuery(t, ID, channel),
+		isError: false,
+	})
+
+	// Test 2: failed to subscribe to an unknown channel
+
+	fakeSocket = socket.FakeSocket{Id: "2"}
+	ID = 2
+	channel = "/root/lao2"
+
+	args = append(args, input{
+		name:     "Test 2",
+		socket:   fakeSocket,
+		ID:       ID,
+		channel:  channel,
+		message:  generator.NewSubscribeQuery(t, ID, channel),
+		isError:  true,
+		contains: "cannot Subscribe to unknown channel",
+	})
+
+	// cannot Subscribe to root
+
+	fakeSocket = socket.FakeSocket{Id: "3"}
+	ID = 3
+	channel = "/root"
+
+	args = append(args, input{
+		name:     "Test 3",
+		socket:   fakeSocket,
+		ID:       ID,
+		channel:  channel,
+		message:  generator.NewSubscribeQuery(t, ID, channel),
+		isError:  true,
+		contains: "cannot Subscribe to root channel",
+	})
+
+	// run all tests
+
+	for _, arg := range args {
+		t.Run(arg.name, func(t *testing.T) {
+			id, errAnswer := handleSubscribe(&arg.socket, arg.message)
+			if arg.isError {
+				require.NotNil(t, errAnswer)
+				require.Contains(t, errAnswer.Error(), arg.contains)
+				require.Equal(t, arg.ID, *id)
+			} else {
+				require.Nil(t, errAnswer)
+				isSubscribed, err := subs.IsSubscribed(arg.channel, &arg.socket)
+				require.NoError(t, err)
+				require.True(t, isSubscribed)
+			}
+		})
+	}
+}
+
+func Test_handleUnsubscribe(t *testing.T) {
+	subs := types.NewSubscribers()
+	queries := types.NewQueries(&noLog)
+	peers := types.NewPeers()
+
+	err := state.SetState(t, subs, peers, queries)
+	require.NoError(t, err)
+
+	type input struct {
+		name     string
+		socket   socket.FakeSocket
+		ID       int
+		channel  string
+		message  []byte
+		isError  bool
+		contains string
+	}
+
+	args := make([]input, 0)
+
+	// Test 1: successfully unsubscribe from a subscribed channel
+
+	fakeSocket := socket.FakeSocket{Id: "1"}
+	ID := 1
+	channel := "/root/lao1"
+
+	subs.AddChannel(channel)
+	errAnswer := subs.Subscribe(channel, &fakeSocket)
+	require.Nil(t, errAnswer)
+
+	args = append(args, input{
+		name:    "Test 1",
+		socket:  fakeSocket,
+		ID:      ID,
+		channel: channel,
+		message: generator.NewUnsubscribeQuery(t, ID, channel),
+		isError: false,
+	})
+
+	// Test 2: failed to unsubscribe because not subscribed to channel
+
+	fakeSocket = socket.FakeSocket{Id: "2"}
+	ID = 2
+	channel = "/root/lao2"
+
+	subs.AddChannel(channel)
+
+	args = append(args, input{
+		name:     "Test 2",
+		socket:   fakeSocket,
+		ID:       ID,
+		channel:  channel,
+		message:  generator.NewUnsubscribeQuery(t, ID, channel),
+		isError:  true,
+		contains: "cannot Unsubscribe from a channel not subscribed",
+	})
+
+	// Test 3: failed to unsubscribe because unknown channel
+
+	fakeSocket = socket.FakeSocket{Id: "3"}
+	ID = 3
+	channel = "/root/lao3"
+
+	args = append(args, input{
+		name:     "Test 3",
+		socket:   fakeSocket,
+		ID:       ID,
+		channel:  channel,
+		message:  generator.NewUnsubscribeQuery(t, ID, channel),
+		isError:  true,
+		contains: "cannot Unsubscribe from unknown channel",
+	})
+
+	// Test 3: failed to unsubscribe because cannot unsubscribe from root channel
+
+	fakeSocket = socket.FakeSocket{Id: "4"}
+	ID = 4
+	channel = "/root"
+
+	args = append(args, input{
+		name:     "Test 4",
+		socket:   fakeSocket,
+		ID:       ID,
+		channel:  channel,
+		message:  generator.NewUnsubscribeQuery(t, ID, channel),
+		isError:  true,
+		contains: "cannot Unsubscribe from root channel",
+	})
+
+	// run all tests
+
+	for _, arg := range args {
+		t.Run(arg.name, func(t *testing.T) {
+			id, errAnswer := handleUnsubscribe(&arg.socket, arg.message)
+			if arg.isError {
+				require.NotNil(t, errAnswer)
+				require.Contains(t, errAnswer.Error(), arg.contains)
+				require.Equal(t, arg.ID, *id)
+			} else {
+				require.Nil(t, errAnswer)
+
+				isSubscribe, err := subs.IsSubscribed(arg.channel, &arg.socket)
+				require.NoError(t, err)
+				require.False(t, isSubscribe)
+			}
+		})
+	}
+}
+
+func Test_handleCatchUp(t *testing.T) {
+	subs := types.NewSubscribers()
+	queries := types.NewQueries(&noLog)
+	peers := types.NewPeers()
+
+	err := state.SetState(t, subs, peers, queries)
+	require.NoError(t, err)
+
+	mockRepo, err := database.SetDatabase(t)
+	require.NoError(t, err)
+
+	type input struct {
+		name     string
+		socket   socket.FakeSocket
+		ID       int
+		message  []byte
+		expected []message.Message
+		isError  bool
+		contains string
+	}
+
+	args := make([]input, 0)
+
+	// Test 1: successfully catchup 4 messages on a channel
+
+	fakeSocket := socket.FakeSocket{Id: "1"}
+	ID := 1
+	channel := "/root/lao1"
+	messagesToCatchUp := []message.Message{
+		generator.NewNothingMsg(t, "sender1", nil),
+		generator.NewNothingMsg(t, "sender2", nil),
+		generator.NewNothingMsg(t, "sender3", nil),
+		generator.NewNothingMsg(t, "sender4", nil),
+	}
+
+	mockRepo.On("GetAllMessagesFromChannel", channel).Return(messagesToCatchUp, nil)
+
+	args = append(args, input{
+		name:     "Test 1",
+		socket:   fakeSocket,
+		ID:       ID,
+		message:  generator.NewCatchupQuery(t, ID, channel),
+		expected: messagesToCatchUp,
+		isError:  false,
+	})
+
+	// Test 2: failed to catchup because DB is disconnected
+
+	fakeSocket = socket.FakeSocket{Id: "2"}
+	ID = 2
+	channel = "/root/lao2"
+
+	mockRepo.On("GetAllMessagesFromChannel", channel).
+		Return(nil, xerrors.Errorf("DB is disconnected"))
+
+	args = append(args, input{
+		name:     "Test 2",
+		socket:   fakeSocket,
+		ID:       ID,
+		message:  generator.NewCatchupQuery(t, ID, channel),
+		isError:  true,
+		contains: "DB is disconnected",
+	})
+
+	// run all tests
+
+	for _, arg := range args {
+		t.Run(arg.name, func(t *testing.T) {
+			id, errAnswer := handleCatchUp(&arg.socket, arg.message)
+			if arg.isError {
+				require.NotNil(t, errAnswer)
+				require.Contains(t, errAnswer.Error(), arg.contains)
+				require.NotNil(t, id)
+				require.Equal(t, arg.ID, *id)
+			} else {
+				require.Nil(t, errAnswer)
+				require.Equal(t, arg.expected, arg.socket.Res)
 			}
 		})
 	}
@@ -383,151 +395,128 @@ func Test_handleHeartbeat(t *testing.T) {
 	require.NoError(t, err)
 
 	type input struct {
-		name        string
-		message     []byte
-		socket      *popserver.FakeSocket
-		needSend    bool
-		isErrorTest bool
-		expected    map[string][]string
+		name     string
+		socket   socket.FakeSocket
+		message  []byte
+		expected map[string][]string
+		isError  bool
+		contains string
 	}
 
 	msgIDs := []string{"msg0", "msg1", "msg2", "msg3", "msg4", "msg5", "msg6"}
 
-	listMsg := make(map[string][]string)
-	listMsg["/root"] = []string{
+	args := make([]input, 0)
+
+	// Test 1: successfully handled heartbeat with some messages to catching up
+
+	fakeSocket := socket.FakeSocket{Id: "1"}
+
+	heartbeatMsgIDs1 := make(map[string][]string)
+	heartbeatMsgIDs1["/root"] = []string{
 		msgIDs[0],
 		msgIDs[1],
 		msgIDs[2],
 	}
-	listMsg["root/lao1"] = []string{
+	heartbeatMsgIDs1["root/lao1"] = []string{
 		msgIDs[3],
 		msgIDs[4],
 	}
-	listMsg["root/lao2"] = []string{
+	heartbeatMsgIDs1["root/lao2"] = []string{
 		msgIDs[5],
 		msgIDs[6],
 	}
 
-	listMsg2 := make(map[string][]string)
-	listMsg2["/root"] = []string{
+	expected1 := make(map[string][]string)
+	expected1["/root"] = []string{
+		msgIDs[1],
+		msgIDs[2],
+	}
+	expected1["root/lao1"] = []string{
+		msgIDs[4],
+	}
+
+	mockRepository.On("GetParamsForGetMessageByID", heartbeatMsgIDs1).Return(expected1, nil)
+
+	args = append(args, input{
+		name:     "Test 1",
+		socket:   fakeSocket,
+		message:  generator.NewHeartbeatQuery(t, heartbeatMsgIDs1),
+		expected: expected1,
+		isError:  false,
+	})
+
+	// Test 2: successfully handled heartbeat with nothing to catching up
+
+	fakeSocket = socket.FakeSocket{Id: "2"}
+
+	heartbeatMsgIDs2 := make(map[string][]string)
+	heartbeatMsgIDs2["/root"] = []string{
 		msgIDs[0],
 		msgIDs[1],
 		msgIDs[2],
 	}
 
-	listMsg3 := make(map[string][]string)
-	listMsg3["/root"] = []string{
+	mockRepository.On("GetParamsForGetMessageByID", heartbeatMsgIDs2).Return(nil, nil)
+
+	args = append(args, input{
+		name:    "Test 2",
+		socket:  fakeSocket,
+		message: generator.NewHeartbeatQuery(t, heartbeatMsgIDs2),
+		isError: false,
+	})
+
+	// Test 3: failed to handled heartbeat because DB is disconnected
+
+	fakeSocket = socket.FakeSocket{Id: "3"}
+
+	heartbeatMsgIDs3 := make(map[string][]string)
+	heartbeatMsgIDs3["/root"] = []string{
 		msgIDs[0],
 		msgIDs[1],
 		msgIDs[2],
 	}
-	listMsg3["root/lao1"] = []string{
+	heartbeatMsgIDs3["root/lao1"] = []string{
 		msgIDs[3],
 		msgIDs[4],
 	}
 
-	heartbeat := method.Heartbeat{
-		Base: query.Base{
-			JSONRPCBase: jsonrpc.JSONRPCBase{
-				JSONRPC: "2.0",
-			},
+	mockRepository.On("GetParamsForGetMessageByID", heartbeatMsgIDs3).
+		Return(nil, xerrors.Errorf("DB is disconnected"))
 
-			Method: query.MethodHeartbeat,
-		},
-		Params: listMsg,
-	}
-
-	inputs := make([]input, 0)
-
-	// reply with missingIDs
-
-	heartbeatBuf, err := json.Marshal(&heartbeat)
-	require.NoError(t, err)
-
-	expected := make(map[string][]string)
-	expected["/root"] = []string{
-		msgIDs[1],
-		msgIDs[2],
-	}
-	expected["root/lao1"] = []string{
-		msgIDs[4],
-	}
-
-	mockRepository.On("GetParamsForGetMessageByID", listMsg).Return(expected, nil)
-
-	s := &popserver.FakeSocket{Id: "fakesocket"}
-
-	inputs = append(inputs, input{
-		name:        "reply with missingIDs",
-		message:     heartbeatBuf,
-		socket:      s,
-		needSend:    true,
-		isErrorTest: false,
-		expected:    expected,
-	})
-
-	// already up to date
-
-	heartbeat2 := heartbeat
-	heartbeat2.Params = listMsg2
-
-	heartbeatBuf, err = json.Marshal(&heartbeat2)
-	require.NoError(t, err)
-
-	mockRepository.On("GetParamsForGetMessageByID", listMsg2).Return(nil, nil)
-
-	s = &popserver.FakeSocket{Id: "fakesocket"}
-
-	inputs = append(inputs, input{
-		name:        "already up to date",
-		message:     heartbeatBuf,
-		socket:      s,
-		needSend:    false,
-		isErrorTest: false,
-	})
-
-	// failed to query DB
-
-	heartbeat3 := heartbeat
-	heartbeat3.Params = listMsg3
-
-	heartbeatBuf, err = json.Marshal(&heartbeat3)
-	require.NoError(t, err)
-
-	mockRepository.On("GetParamsForGetMessageByID", listMsg3).Return(nil, xerrors.Errorf("DB is disconnected"))
-
-	inputs = append(inputs, input{
-		name:        "failed to query DB",
-		message:     heartbeatBuf,
-		isErrorTest: true,
+	args = append(args, input{
+		name:     "failed to query DB",
+		socket:   fakeSocket,
+		message:  generator.NewHeartbeatQuery(t, heartbeatMsgIDs3),
+		isError:  true,
+		contains: "DB is disconnected",
 	})
 
 	// run all tests
 
-	for _, i := range inputs {
-		t.Run(i.name, func(t *testing.T) {
-			id, errAnswer := handleHeartbeat(i.socket, i.message)
-			if i.isErrorTest {
+	for _, arg := range args {
+		t.Run(arg.name, func(t *testing.T) {
+			id, errAnswer := handleHeartbeat(&arg.socket, arg.message)
+			if arg.isError {
 				require.NotNil(t, errAnswer)
 				require.Nil(t, id)
-			} else if i.needSend {
+			} else if arg.expected != nil {
 				require.Nil(t, errAnswer)
-				require.NotNil(t, i.socket.Msg)
+				require.NotNil(t, arg.socket.Msg)
 
 				var getMessageByID method.GetMessagesById
-				err := json.Unmarshal(i.socket.Msg, &getMessageByID)
+				err := json.Unmarshal(arg.socket.Msg, &getMessageByID)
 				require.NoError(t, err)
 
-				require.Equal(t, i.expected, getMessageByID.Params)
+				require.Equal(t, arg.expected, getMessageByID.Params)
 			} else {
 				require.Nil(t, errAnswer)
-				require.Nil(t, i.socket.Msg)
+				require.Nil(t, arg.socket.Msg)
 			}
 		})
 	}
 }
 
-func Test_handleSubscribe(t *testing.T) {
+func Test_handleGetMessagesByID(t *testing.T) {
 	subs := types.NewSubscribers()
 	queries := types.NewQueries(&noLog)
 	peers := types.NewPeers()
@@ -535,271 +524,90 @@ func Test_handleSubscribe(t *testing.T) {
 	err := state.SetState(t, subs, peers, queries)
 	require.NoError(t, err)
 
+	mockRepository, err := database.SetDatabase(t)
+	require.NoError(t, err)
+
 	type input struct {
-		name        string
-		socket      *popserver.FakeSocket
-		message     []byte
-		isErrorTest bool
-		subscribe   method.Subscribe
+		name     string
+		socket   socket.FakeSocket
+		ID       int
+		message  []byte
+		expected map[string][]message.Message
+		isError  bool
+		contains string
 	}
 
-	inputs := make([]input, 0)
+	args := make([]input, 0)
 
-	// Subscribe to channel
+	// Test 1: successfully handled getMessagesByID and sent the result
 
-	subscribe1 := method.Subscribe{
-		Base: query.Base{
-			JSONRPCBase: jsonrpc.JSONRPCBase{
-				JSONRPC: "2.0",
-			},
+	fakeSocket := socket.FakeSocket{Id: "1"}
+	ID := 1
 
-			Method: query.MethodSubscribe,
-		},
-		ID: 1,
-		Params: method.SubscribeParams{
-			Channel: "/root/lao1",
-		},
+	expected1 := make(map[string][]message.Message)
+	expected1["/root"] = []message.Message{
+		generator.NewNothingMsg(t, "sender1", nil),
+		generator.NewNothingMsg(t, "sender2", nil),
+		generator.NewNothingMsg(t, "sender3", nil),
+		generator.NewNothingMsg(t, "sender4", nil),
+	}
+	expected1["/root/lao1"] = []message.Message{
+		generator.NewNothingMsg(t, "sender5", nil),
+		generator.NewNothingMsg(t, "sender6", nil),
 	}
 
-	subscribeBuf, err := json.Marshal(&subscribe1)
-	require.NoError(t, err)
+	paramsGetMessagesByID1 := make(map[string][]string)
+	for k, v := range expected1 {
+		paramsGetMessagesByID1[k] = make([]string, 0)
+		for _, w := range v {
+			paramsGetMessagesByID1[k] = append(paramsGetMessagesByID1[k], w.MessageID)
+		}
+	}
 
-	fakeSocket := popserver.FakeSocket{Id: "fakesocket1"}
+	mockRepository.On("GetResultForGetMessagesByID", paramsGetMessagesByID1).Return(expected1, nil)
 
-	subs.AddChannel("/root/lao1")
-
-	inputs = append(inputs, input{
-		name:        "Subscribe to channel",
-		socket:      &fakeSocket,
-		message:     subscribeBuf,
-		isErrorTest: false,
-		subscribe:   subscribe1,
+	args = append(args, input{
+		name:     "Test 1",
+		socket:   fakeSocket,
+		ID:       ID,
+		message:  generator.NewGetMessagesByIDQuery(t, ID, paramsGetMessagesByID1),
+		expected: expected1,
+		isError:  false,
 	})
 
-	// unknown channel
+	// Test 2: failed to handled getMessagesByID because DB is disconnected
 
-	subscribe2 := method.Subscribe{
-		Base: query.Base{
-			JSONRPCBase: jsonrpc.JSONRPCBase{
-				JSONRPC: "2.0",
-			},
+	fakeSocket = socket.FakeSocket{Id: "2"}
+	ID = 2
 
-			Method: query.MethodSubscribe,
-		},
-		ID: 1,
-		Params: method.SubscribeParams{
-			Channel: "/root/lao2",
-		},
-	}
+	paramsGetMessagesByID2 := make(map[string][]string)
 
-	subscribeBuf, err = json.Marshal(&subscribe2)
-	require.NoError(t, err)
+	mockRepository.On("GetResultForGetMessagesByID", paramsGetMessagesByID2).
+		Return(nil, xerrors.Errorf("DB is disconnected"))
 
-	inputs = append(inputs, input{
-		name:        "unknown channel",
-		message:     subscribeBuf,
-		isErrorTest: true,
-		subscribe:   subscribe2,
-	})
-
-	// cannot Subscribe to root
-
-	subscribe3 := method.Subscribe{
-		Base: query.Base{
-			JSONRPCBase: jsonrpc.JSONRPCBase{
-				JSONRPC: "2.0",
-			},
-
-			Method: query.MethodSubscribe,
-		},
-		ID: 1,
-		Params: method.SubscribeParams{
-			Channel: "/root",
-		},
-	}
-
-	subscribeRootBuf, err := json.Marshal(&subscribe3)
-	require.NoError(t, err)
-
-	inputs = append(inputs, input{
-		name:        "cannot Subscribe to root",
-		message:     subscribeRootBuf,
-		isErrorTest: true,
-		subscribe:   subscribe3,
+	args = append(args, input{
+		name:     "Test 2",
+		socket:   fakeSocket,
+		ID:       ID,
+		message:  generator.NewGetMessagesByIDQuery(t, ID, paramsGetMessagesByID2),
+		isError:  true,
+		contains: "DB is disconnected",
 	})
 
 	// run all tests
 
-	for _, i := range inputs {
-		t.Run(i.name, func(t *testing.T) {
-			id, errAnswer := handleSubscribe(i.socket, i.message)
-			if i.isErrorTest {
+	for _, arg := range args {
+		t.Run(arg.name, func(t *testing.T) {
+			id, errAnswer := handleGetMessagesByID(&arg.socket, arg.message)
+			if arg.isError {
 				require.NotNil(t, errAnswer)
-				require.Equal(t, i.subscribe.ID, *id)
+				require.NotNil(t, id)
+				require.Contains(t, errAnswer.Error(), arg.contains)
+				require.Equal(t, arg.ID, *id)
 			} else {
 				require.Nil(t, errAnswer)
-
-				isSubscribed, err := subs.IsSubscribed(i.subscribe.Params.Channel, i.socket)
-				require.NoError(t, err)
-				require.True(t, isSubscribed)
-			}
-		})
-	}
-}
-
-func Test_handleUnsubscribe(t *testing.T) {
-	subs := types.NewSubscribers()
-	queries := types.NewQueries(&noLog)
-	peers := types.NewPeers()
-
-	err := state.SetState(t, subs, peers, queries)
-	require.NoError(t, err)
-
-	type input struct {
-		name        string
-		socket      *popserver.FakeSocket
-		message     []byte
-		isErrorTest bool
-		unsubscribe method.Unsubscribe
-	}
-
-	inputs := make([]input, 0)
-
-	// Unsubscribe from channel
-
-	unsubscribe1 := method.Unsubscribe{
-		Base: query.Base{
-			JSONRPCBase: jsonrpc.JSONRPCBase{
-				JSONRPC: "2.0",
-			},
-
-			Method: query.MethodUnsubscribe,
-		},
-		ID: 1,
-		Params: method.UnsubscribeParams{
-			Channel: "/root/lao1",
-		},
-	}
-
-	unsubscribeBuf, err := json.Marshal(&unsubscribe1)
-	require.NoError(t, err)
-
-	fakeSocket := popserver.FakeSocket{Id: "fakesocket1"}
-	subs.AddChannel("/root/lao1")
-	errAnswer := subs.Subscribe("/root/lao1", &fakeSocket)
-	require.Nil(t, errAnswer)
-
-	inputs = append(inputs, input{
-		name:        "Unsubscribe from channel",
-		socket:      &fakeSocket,
-		message:     unsubscribeBuf,
-		isErrorTest: false,
-		unsubscribe: unsubscribe1,
-	})
-
-	// cannot Unsubscribe without being subscribed
-
-	unsubscribe2 := method.Unsubscribe{
-		Base: query.Base{
-			JSONRPCBase: jsonrpc.JSONRPCBase{
-				JSONRPC: "2.0",
-			},
-
-			Method: query.MethodUnsubscribe,
-		},
-		ID: 1,
-		Params: method.UnsubscribeParams{
-			Channel: "/root/lao2",
-		},
-	}
-
-	s := &popserver.FakeSocket{Id: "fakesocket2"}
-
-	unsubscribeBuf, err = json.Marshal(&unsubscribe2)
-	require.NoError(t, err)
-
-	subs.AddChannel("/root/lao2")
-
-	inputs = append(inputs, input{
-		name:        "cannot Unsubscribe without being subscribed",
-		message:     unsubscribeBuf,
-		socket:      s,
-		isErrorTest: true,
-		unsubscribe: unsubscribe2,
-	})
-
-	// unknown channel
-
-	unsubscribe3 := method.Unsubscribe{
-		Base: query.Base{
-			JSONRPCBase: jsonrpc.JSONRPCBase{
-				JSONRPC: "2.0",
-			},
-
-			Method: query.MethodUnsubscribe,
-		},
-		ID: 1,
-		Params: method.UnsubscribeParams{
-			Channel: "/root/lao3",
-		},
-	}
-
-	s = &popserver.FakeSocket{Id: "fakesocket3"}
-
-	unsubscribeBuf, err = json.Marshal(&unsubscribe3)
-	require.NoError(t, err)
-
-	inputs = append(inputs, input{
-		name:        "unknown channel",
-		message:     unsubscribeBuf,
-		socket:      s,
-		isErrorTest: true,
-		unsubscribe: unsubscribe1,
-	})
-
-	// cannot Unsubscribe from root
-
-	unsubscribe4 := method.Unsubscribe{
-		Base: query.Base{
-			JSONRPCBase: jsonrpc.JSONRPCBase{
-				JSONRPC: "2.0",
-			},
-
-			Method: query.MethodUnsubscribe,
-		},
-		ID: 1,
-		Params: method.UnsubscribeParams{
-			Channel: "/root",
-		},
-	}
-
-	s = &popserver.FakeSocket{Id: "fakesocket4"}
-
-	unsubscribeRootBuf, err := json.Marshal(&unsubscribe4)
-	require.NoError(t, err)
-
-	inputs = append(inputs, input{
-		name:        "cannot Unsubscribe from root",
-		message:     unsubscribeRootBuf,
-		socket:      s,
-		isErrorTest: true,
-		unsubscribe: unsubscribe4,
-	})
-
-	// run all tests
-
-	for _, i := range inputs {
-		t.Run(i.name, func(t *testing.T) {
-			id, errAnswer := handleUnsubscribe(i.socket, i.message)
-			if i.isErrorTest {
-				require.NotNil(t, errAnswer)
-				require.Equal(t, i.unsubscribe.ID, *id)
-			} else {
-				require.Nil(t, errAnswer)
-
-				isSubscribe, err := subs.IsSubscribed(i.unsubscribe.Params.Channel, i.socket)
-				require.NoError(t, err)
-				require.False(t, isSubscribe)
+				require.NotNil(t, arg.expected)
+				require.Equal(t, arg.expected, arg.socket.MissingMsgs)
 			}
 		})
 	}

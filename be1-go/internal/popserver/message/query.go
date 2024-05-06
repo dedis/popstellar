@@ -16,59 +16,6 @@ import (
 
 const rootChannel = "/root"
 
-func handleCatchUp(socket socket.Socket, msg []byte) (*int, *answer.Error) {
-	var catchup method.Catchup
-
-	err := json.Unmarshal(msg, &catchup)
-	if err != nil {
-		errAnswer := answer.NewInvalidMessageFieldError("failed to unmarshal: %v", err).Wrap("handleCatchUp")
-		return nil, errAnswer
-	}
-
-	db, ok := database.GetQueryRepositoryInstance()
-	if !ok {
-		errAnswer := answer.NewInternalServerError("failed to get database").Wrap("handleCatchUp")
-		return &catchup.ID, errAnswer
-	}
-
-	result, err := db.GetAllMessagesFromChannel(catchup.Params.Channel)
-	if err != nil {
-		errAnswer := answer.NewInternalServerError("failed to query DB: %v", err).Wrap("handleCatchUp")
-		return &catchup.ID, errAnswer
-	}
-
-	socket.SendResult(catchup.ID, result, nil)
-
-	return &catchup.ID, nil
-}
-
-func handleGetMessagesByID(socket socket.Socket, msg []byte) (*int, *answer.Error) {
-	var getMessagesById method.GetMessagesById
-
-	err := json.Unmarshal(msg, &getMessagesById)
-	if err != nil {
-		errAnswer := answer.NewInvalidMessageFieldError("failed to unmarshal message: %v",
-			err).Wrap("handleGetMessageByID")
-		return nil, errAnswer
-	}
-
-	db, ok := database.GetQueryRepositoryInstance()
-	if !ok {
-		errAnswer := answer.NewInternalServerError("failed to get database").Wrap("handleGetMessageByID")
-		return &getMessagesById.ID, errAnswer
-	}
-
-	result, err := db.GetResultForGetMessagesByID(getMessagesById.Params)
-	if err != nil {
-		errAnswer := answer.NewInternalServerError("failed to query DB: %v", err).Wrap("handleGetMessageByID")
-		return &getMessagesById.ID, errAnswer
-	}
-
-	socket.SendResult(getMessagesById.ID, nil, result)
-
-	return &getMessagesById.ID, nil
-}
-
 func handleGreetServer(socket socket.Socket, byteMessage []byte) (*int, *answer.Error) {
 	var greetServer method.GreetServer
 
@@ -136,6 +83,108 @@ func handleGreetServer(socket socket.Socket, byteMessage []byte) (*int, *answer.
 	return nil, nil
 }
 
+func handleSubscribe(socket socket.Socket, msg []byte) (*int, *answer.Error) {
+	var subscribe method.Subscribe
+
+	err := json.Unmarshal(msg, &subscribe)
+	if err != nil {
+		errAnswer := answer.NewInvalidMessageFieldError("failed to unmarshal: %v", err).Wrap("handleSubscribe")
+		return nil, errAnswer
+	}
+
+	if rootChannel == subscribe.Params.Channel {
+		errAnswer := answer.NewInvalidActionError("cannot Subscribe to root channel").Wrap("handleSubscribe")
+		return &subscribe.ID, errAnswer
+	}
+
+	subs, ok := state.GetSubsInstance()
+	if !ok {
+		errAnswer := answer.NewInternalServerError("failed to get state").Wrap("handleSubscribe")
+		return &subscribe.ID, errAnswer
+	}
+
+	errAnswer := subs.Subscribe(subscribe.Params.Channel, socket)
+	if errAnswer != nil {
+		errAnswer = errAnswer.Wrap("handleSubscribe")
+		return &subscribe.ID, errAnswer
+	}
+
+	return &subscribe.ID, nil
+}
+
+func handleUnsubscribe(socket socket.Socket, msg []byte) (*int, *answer.Error) {
+	var unsubscribe method.Unsubscribe
+
+	err := json.Unmarshal(msg, &unsubscribe)
+	if err != nil {
+		errAnswer := answer.NewInvalidMessageFieldError("failed to unmarshal: %v", err).Wrap("handleUnsubscribe")
+		return nil, errAnswer
+	}
+
+	if rootChannel == unsubscribe.Params.Channel {
+		errAnswer := answer.NewInvalidActionError("cannot Unsubscribe from root channel").Wrap("handleUnsubscribe")
+		return &unsubscribe.ID, errAnswer
+	}
+
+	subs, ok := state.GetSubsInstance()
+	if !ok {
+		errAnswer := answer.NewInternalServerError("failed to get state").Wrap("handleUnsubscribe")
+		return &unsubscribe.ID, errAnswer
+	}
+
+	errAnswer := subs.Unsubscribe(unsubscribe.Params.Channel, socket)
+	if errAnswer != nil {
+		errAnswer = errAnswer.Wrap("handleUnsubscribe")
+		return &unsubscribe.ID, errAnswer
+	}
+
+	return &unsubscribe.ID, nil
+}
+
+func handlePublish(msg []byte) (*int, *answer.Error) {
+	var publish method.Publish
+
+	err := json.Unmarshal(msg, &publish)
+	if err != nil {
+		errAnswer := answer.NewInvalidMessageFieldError("failed to unmarshal: %v", err).Wrap("handlePublish")
+		return nil, errAnswer
+	}
+
+	errAnswer := channel.HandleChannel(publish.Params.Channel, publish.Params.Message)
+	if errAnswer != nil {
+		errAnswer = errAnswer.Wrap("handlePublish")
+		return &publish.ID, errAnswer
+	}
+
+	return &publish.ID, nil
+}
+
+func handleCatchUp(socket socket.Socket, msg []byte) (*int, *answer.Error) {
+	var catchup method.Catchup
+
+	err := json.Unmarshal(msg, &catchup)
+	if err != nil {
+		errAnswer := answer.NewInvalidMessageFieldError("failed to unmarshal: %v", err).Wrap("handleCatchUp")
+		return nil, errAnswer
+	}
+
+	db, ok := database.GetQueryRepositoryInstance()
+	if !ok {
+		errAnswer := answer.NewInternalServerError("failed to get database").Wrap("handleCatchUp")
+		return &catchup.ID, errAnswer
+	}
+
+	result, err := db.GetAllMessagesFromChannel(catchup.Params.Channel)
+	if err != nil {
+		errAnswer := answer.NewInternalServerError("failed to query DB: %v", err).Wrap("handleCatchUp")
+		return &catchup.ID, errAnswer
+	}
+
+	socket.SendResult(catchup.ID, result, nil)
+
+	return &catchup.ID, nil
+}
+
 func handleHeartbeat(socket socket.Socket, byteMessage []byte) (*int, *answer.Error) {
 	var heartbeat method.Heartbeat
 
@@ -193,78 +242,29 @@ func handleHeartbeat(socket socket.Socket, byteMessage []byte) (*int, *answer.Er
 	return nil, nil
 }
 
-func handlePublish(socket socket.Socket, msg []byte) (*int, *answer.Error) {
-	var publish method.Publish
+func handleGetMessagesByID(socket socket.Socket, msg []byte) (*int, *answer.Error) {
+	var getMessagesById method.GetMessagesById
 
-	err := json.Unmarshal(msg, &publish)
+	err := json.Unmarshal(msg, &getMessagesById)
 	if err != nil {
-		errAnswer := answer.NewInvalidMessageFieldError("failed to unmarshal: %v", err).Wrap("handlePublish")
+		errAnswer := answer.NewInvalidMessageFieldError("failed to unmarshal message: %v",
+			err).Wrap("handleGetMessageByID")
 		return nil, errAnswer
 	}
 
-	errAnswer := channel.HandleChannel(socket, publish.Params.Channel, publish.Params.Message)
-	if errAnswer != nil {
-		errAnswer = errAnswer.Wrap("handlePublish")
-		return &publish.ID, errAnswer
-	}
-
-	return &publish.ID, nil
-}
-
-func handleSubscribe(socket socket.Socket, msg []byte) (*int, *answer.Error) {
-	var subscribe method.Subscribe
-
-	err := json.Unmarshal(msg, &subscribe)
-	if err != nil {
-		errAnswer := answer.NewInvalidMessageFieldError("failed to unmarshal: %v", err).Wrap("handleSubscribe")
-		return nil, errAnswer
-	}
-
-	if rootChannel == subscribe.Params.Channel {
-		errAnswer := answer.NewInvalidActionError("cannot Subscribe to root channel").Wrap("handleSubscribe")
-		return &subscribe.ID, errAnswer
-	}
-
-	subs, ok := state.GetSubsInstance()
+	db, ok := database.GetQueryRepositoryInstance()
 	if !ok {
-		errAnswer := answer.NewInternalServerError("failed to get state").Wrap("handleGreetServer")
-		return &subscribe.ID, errAnswer
+		errAnswer := answer.NewInternalServerError("failed to get database").Wrap("handleGetMessageByID")
+		return &getMessagesById.ID, errAnswer
 	}
 
-	errAnswer := subs.Subscribe(subscribe.Params.Channel, socket)
-	if errAnswer != nil {
-		errAnswer = errAnswer.Wrap("handleSubscribe")
-		return &subscribe.ID, errAnswer
-	}
-
-	return &subscribe.ID, nil
-}
-
-func handleUnsubscribe(socket socket.Socket, msg []byte) (*int, *answer.Error) {
-	var unsubscribe method.Unsubscribe
-
-	err := json.Unmarshal(msg, &unsubscribe)
+	result, err := db.GetResultForGetMessagesByID(getMessagesById.Params)
 	if err != nil {
-		errAnswer := answer.NewInvalidMessageFieldError("failed to unmarshal: %v", err).Wrap("handleUnsubscribe")
-		return nil, errAnswer
+		errAnswer := answer.NewInternalServerError("failed to query DB: %v", err).Wrap("handleGetMessageByID")
+		return &getMessagesById.ID, errAnswer
 	}
 
-	if rootChannel == unsubscribe.Params.Channel {
-		errAnswer := answer.NewInvalidActionError("cannot Unsubscribe from root channel").Wrap("handleUnsubscribe")
-		return &unsubscribe.ID, errAnswer
-	}
+	socket.SendResult(getMessagesById.ID, nil, result)
 
-	subs, ok := state.GetSubsInstance()
-	if !ok {
-		errAnswer := answer.NewInternalServerError("failed to get state").Wrap("handleGreetServer")
-		return &unsubscribe.ID, errAnswer
-	}
-
-	errAnswer := subs.Unsubscribe(unsubscribe.Params.Channel, socket)
-	if errAnswer != nil {
-		errAnswer = errAnswer.Wrap("handleUnsubscribe")
-		return &unsubscribe.ID, errAnswer
-	}
-
-	return &unsubscribe.ID, nil
+	return &getMessagesById.ID, nil
 }

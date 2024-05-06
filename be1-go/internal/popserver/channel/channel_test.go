@@ -2,19 +2,16 @@ package channel
 
 import (
 	"encoding/base64"
-	"encoding/json"
 	"fmt"
 	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/require"
-	"go.dedis.ch/kyber/v3/sign/schnorr"
 	"golang.org/x/xerrors"
 	"io"
 	"os"
-	"popstellar/crypto"
 	"popstellar/internal/popserver"
 	"popstellar/internal/popserver/database"
+	"popstellar/internal/popserver/generator"
 	"popstellar/internal/popserver/utils"
-	"popstellar/message/messagedata"
 	"popstellar/message/query/method/message"
 	"popstellar/validation"
 	"testing"
@@ -29,7 +26,7 @@ var noLog = zerolog.New(io.Discard)
 func TestMain(m *testing.M) {
 	schemaValidator, err := validation.NewSchemaValidator()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "error: %v\n", err)
+		_, _ = fmt.Fprintf(os.Stderr, "error: %v\n", err)
 		os.Exit(1)
 	}
 
@@ -40,183 +37,161 @@ func TestMain(m *testing.M) {
 	os.Exit(exitVal)
 }
 
-type handleChannelInput struct {
-	name      string
-	channelID string
-	message   message.Message
-}
-
 func Test_handleChannel(t *testing.T) {
 	mockRepository, err := database.SetDatabase(t)
 	require.NoError(t, err)
 
 	keypair := popserver.GenerateKeyPair(t)
-	now := time.Now().Unix()
-	name := "LAO X"
+	sender := base64.URLEncoding.EncodeToString(keypair.PublicBuf)
 
-	laoID := messagedata.Hash(base64.URLEncoding.EncodeToString(keypair.PublicBuf), fmt.Sprintf("%d", now), name)
-
-	data := messagedata.LaoCreate{
-		Object:    messagedata.LAOObject,
-		Action:    messagedata.LAOActionCreate,
-		ID:        laoID,
-		Name:      name,
-		Creation:  now,
-		Organizer: base64.URLEncoding.EncodeToString(keypair.PublicBuf),
-		Witnesses: []string{},
+	type input struct {
+		name     string
+		channel  string
+		message  message.Message
+		contains string
 	}
 
-	dataBuf, err := json.Marshal(data)
-	require.NoError(t, err)
-	signature, err := schnorr.Sign(crypto.Suite, keypair.Private, dataBuf)
-	require.NoError(t, err)
+	args := make([]input, 0)
 
-	dataBase64 := base64.URLEncoding.EncodeToString(dataBuf)
-	signatureBase64 := base64.URLEncoding.EncodeToString(signature)
+	// Test 1: failed to handled message because unknown channel type
 
-	msg := message.Message{
-		Data:              dataBase64,
-		Sender:            base64.URLEncoding.EncodeToString(keypair.PublicBuf),
-		Signature:         signatureBase64,
-		MessageID:         messagedata.Hash(dataBase64, signatureBase64),
-		WitnessSignatures: []message.WitnessSignature{},
-	}
-
-	inputs := make([]handleChannelInput, 0)
-
-	// unknown channelType
-
-	wrongChannelID := "wrongChannelID"
+	channel := "unknown"
+	msg := generator.NewChirpAddMsg(t, sender, keypair.Private, time.Now().Unix())
 
 	mockRepository.On("HasMessage", msg.MessageID).Return(false, nil)
-	mockRepository.On("GetChannelType", wrongChannelID).Return("", nil)
+	mockRepository.On("GetChannelType", channel).Return("", nil)
 
-	inputs = append(inputs, handleChannelInput{
-		name:      "unknown channelType",
-		channelID: wrongChannelID,
-		message:   msg,
+	args = append(args, input{
+		name:     "Test 1",
+		channel:  channel,
+		message:  msg,
+		contains: "unknown channel type for " + channel,
 	})
 
-	// error while querying the channelType
+	// Test 2: failed to handled message because db is disconnected when querying the channel type
 
-	problemDBChannelID := "problemDBChannelID"
+	channel = "disconnectedDB"
+	msg = generator.NewChirpAddMsg(t, sender, keypair.Private, time.Now().Unix())
 
 	mockRepository.On("HasMessage", msg.MessageID).Return(false, nil)
-	mockRepository.On("GetChannelType", problemDBChannelID).Return("", xerrors.Errorf("DB disconnected"))
+	mockRepository.On("GetChannelType", channel).
+		Return("", xerrors.Errorf("DB is disconnected"))
 
-	inputs = append(inputs, handleChannelInput{
-		name:      "failed to query channelType",
-		channelID: problemDBChannelID,
-		message:   msg,
+	args = append(args, input{
+		name:     "Test 2",
+		channel:  channel,
+		message:  msg,
+		contains: "DB is disconnected",
 	})
 
-	// message already received
+	// Test 3: failed to handled message because message already exists
+
+	msg = generator.NewChirpAddMsg(t, sender, keypair.Private, time.Now().Unix())
 
 	mockRepository.On("HasMessage", msg.MessageID).Return(true, nil)
 
-	inputs = append(inputs, handleChannelInput{
-		name:      "message already received",
-		channelID: wrongChannelID,
-		message:   msg,
+	args = append(args, input{
+		name:     "Test 3",
+		message:  msg,
+		contains: "message " + msg.MessageID + " was already received",
 	})
 
-	// error while querying if the message already exists
+	// Test 4: failed to handled message because db is disconnected when querying if the message already exists
 
-	mockRepository.On("HasMessage", msg.MessageID).Return(false, xerrors.Errorf("DB disconnected"))
+	msg = generator.NewChirpAddMsg(t, sender, keypair.Private, time.Now().Unix())
 
-	inputs = append(inputs, handleChannelInput{
-		name:      "failed to query message",
-		channelID: wrongChannelID,
-		message:   msg,
+	mockRepository.On("HasMessage", msg.MessageID).
+		Return(false, xerrors.Errorf("DB is disconnected"))
+
+	args = append(args, input{
+		name:     "Test 4",
+		message:  msg,
+		contains: "DB is disconnected",
 	})
 
-	// wrong messageID
+	// Test 5: failed to handled message because the format of messageID
 
-	msgWrongID := msg
-	msgWrongID.MessageID = messagedata.Hash("wrong messageID")
+	msg = generator.NewChirpAddMsg(t, sender, keypair.Private, time.Now().Unix())
+	expectedMsgID := msg.MessageID
+	msg.MessageID = base64.URLEncoding.EncodeToString([]byte("wrong messageID"))
 
-	inputs = append(inputs, handleChannelInput{
-		name:      "wrong messageID",
-		channelID: "",
-		message:   msgWrongID,
+	args = append(args, input{
+		name:     "Test 5",
+		message:  msg,
+		contains: "messageID is wrong: expected " + expectedMsgID + " found " + msg.MessageID,
 	})
 
-	// failed signature check because wrong sender
+	// Test 6: failed to handled message because wrong sender
 
-	wrongKeypair := popserver.GenerateKeyPair(t)
-	msgWrongSender := msg
-	msgWrongSender.Sender = base64.URLEncoding.EncodeToString(wrongKeypair.PublicBuf)
+	msg = generator.NewChirpAddMsg(t, sender, keypair.Private, time.Now().Unix())
+	msg.Sender = base64.URLEncoding.EncodeToString([]byte("wrong sender"))
 
-	inputs = append(inputs, handleChannelInput{
-		name:      "failed signature check wrong sender",
-		channelID: "",
-		message:   msgWrongSender,
+	args = append(args, input{
+		name:     "Test 6",
+		message:  msg,
+		contains: "failed to verify signature",
 	})
 
-	// failed signature check because wrong data
+	// Test 7: failed to handled message because wrong data
 
-	msgWrongData := msg
-	msgWrongData.Data = base64.URLEncoding.EncodeToString([]byte("wrong data"))
+	msg = generator.NewChirpAddMsg(t, sender, keypair.Private, time.Now().Unix())
+	msg.Data = base64.URLEncoding.EncodeToString([]byte("wrong data"))
 
-	inputs = append(inputs, handleChannelInput{
-		name:      "failed signature check wrong data",
-		channelID: "",
-		message:   msgWrongData,
+	args = append(args, input{
+		name:     "Test 7",
+		message:  msg,
+		contains: "failed to verify signature",
 	})
 
-	// failed signature check because wrong signature
+	// Test 8: failed to handled message because wrong signature
 
-	wrongKeypair = popserver.GenerateKeyPair(t)
-	wrongSignature, err := schnorr.Sign(crypto.Suite, wrongKeypair.Private, dataBuf)
-	require.NoError(t, err)
+	msg = generator.NewChirpAddMsg(t, sender, keypair.Private, time.Now().Unix())
+	msg.Data = base64.URLEncoding.EncodeToString([]byte("wrong signature"))
 
-	msgWrongSign := msg
-	msgWrongSign.Signature = base64.URLEncoding.EncodeToString(wrongSignature)
-
-	inputs = append(inputs, handleChannelInput{
-		name:      "failed signature check wrong signature",
-		channelID: "",
-		message:   msgWrongSign,
+	args = append(args, input{
+		name:     "Test 8",
+		message:  msg,
+		contains: "failed to verify signature",
 	})
 
-	// wrong signature encoding
+	// Test 9: failed to handled message because wrong signature encoding
 
-	msgWrongSignEncoding := msg
-	msgWrongSignEncoding.Signature = "wrong encoding"
+	msg = generator.NewChirpAddMsg(t, sender, keypair.Private, time.Now().Unix())
+	msg.Signature = "wrong signature"
 
-	inputs = append(inputs, handleChannelInput{
-		name:      "wrong signature encoding",
-		channelID: "",
-		message:   msgWrongSignEncoding,
+	args = append(args, input{
+		name:     "Test 9",
+		message:  msg,
+		contains: "failed to decode signature",
 	})
 
-	// wrong sender encoding
+	// Test 10: failed to handled message because wrong signature encoding
 
-	msgWrongSenderEncoding := msg
-	msgWrongSenderEncoding.Sender = "wrong encoding"
+	msg = generator.NewChirpAddMsg(t, sender, keypair.Private, time.Now().Unix())
+	msg.Sender = "wrong sender"
 
-	inputs = append(inputs, handleChannelInput{
-		name:      "wrong sender encoding",
-		channelID: "",
-		message:   msgWrongSenderEncoding,
+	args = append(args, input{
+		name:     "Test 10",
+		message:  msg,
+		contains: "failed to decode public key",
 	})
 
-	// wrong data encoding
+	// Test 11: failed to handled message because wrong signature encoding
 
-	msgWrongDataEncoding := msg
-	msgWrongDataEncoding.Data = "wrong encoding"
+	msg = generator.NewChirpAddMsg(t, sender, keypair.Private, time.Now().Unix())
+	msg.Data = "wrong data"
 
-	inputs = append(inputs, handleChannelInput{
-		name:      "wrong data encoding",
-		channelID: "",
-		message:   msgWrongDataEncoding,
+	args = append(args, input{
+		name:     "Test 11",
+		message:  msg,
+		contains: "failed to decode data",
 	})
 
-	for _, i := range inputs {
-		t.Run(i.name, func(t *testing.T) {
-			fakeSocket := popserver.FakeSocket{Id: "fakesocket"}
-			errAnswer := HandleChannel(&fakeSocket, i.channelID, i.message)
-			require.Error(t, errAnswer)
+	for _, arg := range args {
+		t.Run(arg.name, func(t *testing.T) {
+			errAnswer := HandleChannel(arg.channel, arg.message)
+			require.NotNil(t, errAnswer)
+			require.Contains(t, errAnswer.Error(), arg.contains)
 		})
 	}
 
