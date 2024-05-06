@@ -141,6 +141,24 @@ func handleUnsubscribe(socket socket.Socket, msg []byte) (*int, *answer.Error) {
 	return &unsubscribe.ID, nil
 }
 
+func handlePublish(socket socket.Socket, msg []byte) (*int, *answer.Error) {
+	var publish method.Publish
+
+	err := json.Unmarshal(msg, &publish)
+	if err != nil {
+		errAnswer := answer.NewInvalidMessageFieldError("failed to unmarshal: %v", err).Wrap("handlePublish")
+		return nil, errAnswer
+	}
+
+	errAnswer := channel.HandleChannel(socket, publish.Params.Channel, publish.Params.Message)
+	if errAnswer != nil {
+		errAnswer = errAnswer.Wrap("handlePublish")
+		return &publish.ID, errAnswer
+	}
+
+	return &publish.ID, nil
+}
+
 func handleCatchUp(socket socket.Socket, msg []byte) (*int, *answer.Error) {
 	var catchup method.Catchup
 
@@ -249,22 +267,4 @@ func handleHeartbeat(socket socket.Socket, byteMessage []byte) (*int, *answer.Er
 	queries.AddQuery(queryId, getMessagesById)
 
 	return nil, nil
-}
-
-func handlePublish(socket socket.Socket, msg []byte) (*int, *answer.Error) {
-	var publish method.Publish
-
-	err := json.Unmarshal(msg, &publish)
-	if err != nil {
-		errAnswer := answer.NewInvalidMessageFieldError("failed to unmarshal: %v", err).Wrap("handlePublish")
-		return nil, errAnswer
-	}
-
-	errAnswer := channel.HandleChannel(socket, publish.Params.Channel, publish.Params.Message)
-	if errAnswer != nil {
-		errAnswer = errAnswer.Wrap("handlePublish")
-		return &publish.ID, errAnswer
-	}
-
-	return &publish.ID, nil
 }

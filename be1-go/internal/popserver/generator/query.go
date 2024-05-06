@@ -6,6 +6,7 @@ import (
 	jsonrpc "popstellar/message"
 	"popstellar/message/query"
 	"popstellar/message/query/method"
+	"popstellar/message/query/method/message"
 	"testing"
 )
 
@@ -69,4 +70,26 @@ func NewUnsubscribeQuery(t *testing.T, queryID int, channel string) []byte {
 	require.NoError(t, err)
 
 	return unsubscribeBuf
+}
+
+func NewPublishQuery(t *testing.T, queryID int, channel string, msg message.Message) []byte {
+	publish := method.Publish{
+		Base: query.Base{
+			JSONRPCBase: jsonrpc.JSONRPCBase{
+				JSONRPC: "2.0",
+			},
+
+			Method: query.MethodUnsubscribe,
+		},
+		ID: queryID,
+		Params: method.PublishParams{
+			Channel: channel,
+			Message: msg,
+		},
+	}
+
+	publishBuf, err := json.Marshal(&publish)
+	require.NoError(t, err)
+
+	return publishBuf
 }
