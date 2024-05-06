@@ -37,16 +37,8 @@
                 }
             },
             "additionalProperties": false,
-            "required": [
-                "value",
-                "valid_until"
-            ]
+            "required": ["value", "valid_until"]
         }
     },
-    "required": [
-        "lao_id",
-        "server_address",
-        "public_key",
-        "challenge"
-    ]
+    "required": ["lao_id", "server_address", "public_key", "challenge"]
 }
