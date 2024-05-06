@@ -8,6 +8,7 @@ import (
 	"popstellar/crypto"
 	"popstellar/internal/popserver/config"
 	"popstellar/internal/popserver/database"
+	"popstellar/internal/popserver/generator"
 	"popstellar/internal/popserver/state"
 	"popstellar/internal/popserver/types"
 	jsonrpc "popstellar/message"
@@ -243,129 +244,74 @@ func Test_handleGreetServer(t *testing.T) {
 	require.NoError(t, err)
 
 	type input struct {
-		name        string
-		message     []byte
-		socket      *socket.FakeSocket
-		needSend    bool
-		isErrorTest bool
+		name      string
+		socket    *socket.FakeSocket
+		message   []byte
+		needGreet bool
+		isError   bool
+		contains  string
 	}
 
-	inputs := make([]input, 0)
+	args := make([]input, 0)
 
-	// reply with greetServer
+	greetServer := generator.NewGreetServerQuery(t, "pk", "client", "server")
 
-	serverInfo1 := method.GreetServerParams{
-		PublicKey:     "pk1",
-		ServerAddress: "srvAddr1",
-		ClientAddress: "cltAddr1",
-	}
+	// Test 1: reply with greet server when receiving a greet server from a new server
 
-	greetServer1 := method.GreetServer{
-		Base: query.Base{
-			JSONRPCBase: jsonrpc.JSONRPCBase{
-				JSONRPC: "2.0",
-			},
+	s := &socket.FakeSocket{Id: "1"}
 
-			Method: query.MethodGreetServer,
-		},
-		Params: serverInfo1,
-	}
-
-	greetServerBuf, err := json.Marshal(&greetServer1)
-	require.NoError(t, err)
-
-	s := &socket.FakeSocket{Id: "fakesocket1"}
-
-	inputs = append(inputs, input{
-		name:        "reply with greetServer",
-		message:     greetServerBuf,
-		socket:      s,
-		needSend:    true,
-		isErrorTest: false,
+	args = append(args, input{
+		name:      "Test 1",
+		socket:    s,
+		message:   greetServer,
+		needGreet: true,
+		isError:   false,
 	})
 
-	// do not reply with greetServer
+	// Test 2: doesn't reply with greet server when already greeted the server
 
-	serverInfo2 := method.GreetServerParams{
-		PublicKey:     "pk1",
-		ServerAddress: "srvAddr1",
-		ClientAddress: "cltAddr1",
-	}
-
-	greetServer2 := method.GreetServer{
-		Base: query.Base{
-			JSONRPCBase: jsonrpc.JSONRPCBase{
-				JSONRPC: "2.0",
-			},
-
-			Method: query.MethodGreetServer,
-		},
-		Params: serverInfo2,
-	}
-
-	greetServerBuf, err = json.Marshal(&greetServer2)
-	require.NoError(t, err)
-
-	s = &socket.FakeSocket{Id: "fakesocket2"}
+	s = &socket.FakeSocket{Id: "2"}
 
 	peers.AddPeerGreeted(s.Id)
 
-	inputs = append(inputs, input{
-		name:        "server already greeted",
-		message:     greetServerBuf,
-		socket:      s,
-		needSend:    false,
-		isErrorTest: false,
+	args = append(args, input{
+		name:      "Test 2",
+		message:   greetServer,
+		socket:    s,
+		needGreet: false,
+		isError:   false,
 	})
 
-	// Socket already used
+	// Test 3: return an error if the socket ID is already used by another server
 
-	serverInfo4 := method.GreetServerParams{
-		PublicKey:     "pk1",
-		ServerAddress: "srvAddr1",
-		ClientAddress: "cltAddr1",
-	}
+	s = &socket.FakeSocket{Id: "3"}
 
-	greetServer4 := method.GreetServer{
-		Base: query.Base{
-			JSONRPCBase: jsonrpc.JSONRPCBase{
-				JSONRPC: "2.0",
-			},
-
-			Method: query.MethodGreetServer,
-		},
-		Params: serverInfo4,
-	}
-
-	greetServerBuf, err = json.Marshal(&greetServer4)
+	err = peers.AddPeerInfo(s.Id, method.GreetServerParams{})
 	require.NoError(t, err)
 
-	s = &socket.FakeSocket{Id: "fakesocket4"}
-
-	err = peers.AddPeerInfo(s.Id, serverInfo4)
-	require.NoError(t, err)
-
-	inputs = append(inputs, input{
-		name:        "Socket already used",
-		socket:      s,
-		message:     greetServerBuf,
-		isErrorTest: true,
+	args = append(args, input{
+		name:     "Test 3",
+		socket:   s,
+		message:  greetServer,
+		isError:  true,
+		contains: "failed to add peer",
 	})
 
 	// run all tests
 
-	for _, i := range inputs {
-		t.Run(i.name, func(t *testing.T) {
-			id, errAnswer := handleGreetServer(i.socket, i.message)
-			if i.isErrorTest {
+	for _, arg := range args {
+		t.Run(arg.name, func(t *testing.T) {
+			id, errAnswer := handleGreetServer(arg.socket, arg.message)
+			if arg.isError {
 				require.NotNil(t, errAnswer)
+				require.Contains(t, errAnswer.Error(), arg.contains)
 				require.Nil(t, id)
-			} else if i.needSend {
+			} else if arg.needGreet {
 				require.Nil(t, errAnswer)
-				require.NotNil(t, i.socket.Msg)
+				require.NotNil(t, arg.socket.Msg)
 			} else {
 				require.Nil(t, errAnswer)
-				require.Nil(t, i.socket.Msg)
+				require.Nil(t, arg.socket.Msg)
 			}
 		})
 	}
