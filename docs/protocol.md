@@ -1166,7 +1166,7 @@ Response (in case of success)
                     "description": "[Base64String] id of a message where the client requests messages that precede the specified message : HashLen(data, signature)",
                     "type": "string",
                     "contentEncoding": "base64",
-                    "$comment": "Note: the string is encoded in Base64"
+                    "$comment": "Note: the string is encoded in Base64 and it is optional"
                 }
             },
 
