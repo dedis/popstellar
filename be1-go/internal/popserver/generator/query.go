@@ -130,3 +130,22 @@ func NewHeartbeatQuery(t *testing.T, msgIDsByChannel map[string][]string) []byte
 
 	return heartbeatBuf
 }
+
+func NewGetMessagesByIDQuery(t *testing.T, queryID int, msgIDsByChannel map[string][]string) []byte {
+	getMessagesByID := method.GetMessagesById{
+		Base: query.Base{
+			JSONRPCBase: jsonrpc.JSONRPCBase{
+				JSONRPC: "2.0",
+			},
+
+			Method: query.MethodGetMessagesById,
+		},
+		ID:     queryID,
+		Params: msgIDsByChannel,
+	}
+
+	getMessagesByIDBuf, err := json.Marshal(&getMessagesByID)
+	require.NoError(t, err)
+
+	return getMessagesByIDBuf
+}

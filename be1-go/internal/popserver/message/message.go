@@ -116,7 +116,7 @@ func handleAnswer(socket socket.Socket, msg []byte) (*int, *answer.Error) {
 		return nil, nil
 	}
 	if answerMsg.Result.IsEmpty() {
-		log.Info().Msg("result isn't an answer to a query, nothing to handle")
+		log.Info().Msg("expected isn't an answer to a query, nothing to handle")
 		return nil, nil
 	}
 

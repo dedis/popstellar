@@ -10,8 +10,6 @@ import (
 	"popstellar/internal/popserver/generator"
 	"popstellar/internal/popserver/state"
 	"popstellar/internal/popserver/types"
-	jsonrpc "popstellar/message"
-	"popstellar/message/query"
 	"popstellar/message/query/method"
 	"popstellar/message/query/method/message"
 	"popstellar/network/socket"
@@ -319,7 +317,7 @@ func Test_handleCatchUp(t *testing.T) {
 		socket   socket.FakeSocket
 		ID       int
 		message  []byte
-		result   []message.Message
+		expected []message.Message
 		isError  bool
 		contains string
 	}
@@ -341,12 +339,12 @@ func Test_handleCatchUp(t *testing.T) {
 	mockRepo.On("GetAllMessagesFromChannel", channel).Return(messagesToCatchUp, nil)
 
 	args = append(args, input{
-		name:    "Test 1",
-		socket:  fakeSocket,
-		ID:      ID,
-		message: generator.NewCatchupQuery(t, ID, channel),
-		result:  messagesToCatchUp,
-		isError: false,
+		name:     "Test 1",
+		socket:   fakeSocket,
+		ID:       ID,
+		message:  generator.NewCatchupQuery(t, ID, channel),
+		expected: messagesToCatchUp,
+		isError:  false,
 	})
 
 	// Test 2: failed to catchup because DB is disconnected
@@ -379,7 +377,7 @@ func Test_handleCatchUp(t *testing.T) {
 				require.Equal(t, arg.ID, *id)
 			} else {
 				require.Nil(t, errAnswer)
-				require.Equal(t, arg.result, arg.socket.Res)
+				require.Equal(t, arg.expected, arg.socket.Res)
 			}
 		})
 	}
@@ -428,22 +426,22 @@ func Test_handleHeartbeat(t *testing.T) {
 		msgIDs[6],
 	}
 
-	expected := make(map[string][]string)
-	expected["/root"] = []string{
+	expected1 := make(map[string][]string)
+	expected1["/root"] = []string{
 		msgIDs[1],
 		msgIDs[2],
 	}
-	expected["root/lao1"] = []string{
+	expected1["root/lao1"] = []string{
 		msgIDs[4],
 	}
 
-	mockRepository.On("GetParamsForGetMessageByID", heartbeatMsgIDs1).Return(expected, nil)
+	mockRepository.On("GetParamsForGetMessageByID", heartbeatMsgIDs1).Return(expected1, nil)
 
 	args = append(args, input{
 		name:     "Test 1",
 		socket:   fakeSocket,
 		message:  generator.NewHeartbeatQuery(t, heartbeatMsgIDs1),
-		expected: expected,
+		expected: expected1,
 		isError:  false,
 	})
 
@@ -530,92 +528,86 @@ func Test_handleGetMessagesByID(t *testing.T) {
 	require.NoError(t, err)
 
 	type input struct {
-		name        string
-		message     []byte
-		socket      *socket.FakeSocket
-		result      map[string][]message.Message
-		isErrorTest bool
+		name     string
+		socket   socket.FakeSocket
+		ID       int
+		message  []byte
+		expected map[string][]message.Message
+		isError  bool
+		contains string
 	}
 
-	msg := message.Message{
-		Data:              "data",
-		Sender:            "sender",
-		Signature:         "signature",
-		MessageID:         "messageID",
-		WitnessSignatures: []message.WitnessSignature{},
+	args := make([]input, 0)
+
+	// Test 1: successfully handled getMessagesByID and sent the result
+
+	fakeSocket := socket.FakeSocket{Id: "1"}
+	ID := 1
+
+	expected1 := make(map[string][]message.Message)
+	expected1["/root"] = []message.Message{
+		generator.NewNothingMsg(t, "sender1", nil),
+		generator.NewNothingMsg(t, "sender2", nil),
+		generator.NewNothingMsg(t, "sender3", nil),
+		generator.NewNothingMsg(t, "sender4", nil),
+	}
+	expected1["/root/lao1"] = []message.Message{
+		generator.NewNothingMsg(t, "sender5", nil),
+		generator.NewNothingMsg(t, "sender6", nil),
 	}
 
-	paramsGetMessagesByID := make(map[string][]string)
-	paramsGetMessagesByID["/root"] = []string{msg.MessageID}
-
-	getMessagesByID := method.GetMessagesById{
-		Base: query.Base{
-			JSONRPCBase: jsonrpc.JSONRPCBase{
-				JSONRPC: "2.0",
-			},
-
-			Method: query.MethodCatchUp,
-		},
-		ID:     1,
-		Params: paramsGetMessagesByID,
+	paramsGetMessagesByID1 := make(map[string][]string)
+	for k, v := range expected1 {
+		paramsGetMessagesByID1[k] = make([]string, 0)
+		for _, w := range v {
+			paramsGetMessagesByID1[k] = append(paramsGetMessagesByID1[k], w.MessageID)
+		}
 	}
 
-	inputs := make([]input, 0)
+	mockRepository.On("GetResultForGetMessagesByID", paramsGetMessagesByID1).Return(expected1, nil)
 
-	// get one message
-
-	getMessagesByID2 := getMessagesByID
-	paramsGetMessagesByID2 := make(map[string][]string)
-	paramsGetMessagesByID2["/root2"] = []string{msg.MessageID}
-	getMessagesByID2.Params = paramsGetMessagesByID2
-
-	getMessagesByIDBuf, err := json.Marshal(&getMessagesByID2)
-	require.NoError(t, err)
-
-	result := make(map[string][]message.Message)
-	result["/root"] = []message.Message{msg}
-
-	mockRepository.On("GetResultForGetMessagesByID", paramsGetMessagesByID2).Return(result, nil)
-
-	s := &socket.FakeSocket{Id: "fakesocket"}
-
-	inputs = append(inputs, input{
-		name:        "get one message",
-		message:     getMessagesByIDBuf,
-		socket:      s,
-		result:      result,
-		isErrorTest: false,
+	args = append(args, input{
+		name:     "Test 1",
+		socket:   fakeSocket,
+		ID:       ID,
+		message:  generator.NewGetMessagesByIDQuery(t, ID, paramsGetMessagesByID1),
+		expected: expected1,
+		isError:  false,
 	})
 
-	// failed to query DB
+	// Test 2: failed to handled getMessagesByID because DB is disconnected
 
-	getMessagesByID3 := getMessagesByID
-	paramsGetMessagesByID3 := make(map[string][]string)
-	paramsGetMessagesByID3["/root3"] = []string{msg.MessageID}
-	getMessagesByID3.Params = paramsGetMessagesByID3
+	fakeSocket = socket.FakeSocket{Id: "2"}
+	ID = 2
 
-	getMessagesByIDBuf, err = json.Marshal(&getMessagesByID3)
-	require.NoError(t, err)
+	paramsGetMessagesByID2 := make(map[string][]string)
 
-	mockRepository.On("GetResultForGetMessagesByID", paramsGetMessagesByID3).Return(nil, xerrors.Errorf("DB is disconnected"))
+	mockRepository.On("GetResultForGetMessagesByID", paramsGetMessagesByID2).
+		Return(nil, xerrors.Errorf("DB is disconnected"))
 
-	inputs = append(inputs, input{
-		name:        "failed to query DB",
-		message:     getMessagesByIDBuf,
-		isErrorTest: true,
+	args = append(args, input{
+		name:     "Test 2",
+		socket:   fakeSocket,
+		ID:       ID,
+		message:  generator.NewGetMessagesByIDQuery(t, ID, paramsGetMessagesByID2),
+		isError:  true,
+		contains: "DB is disconnected",
 	})
 
 	// run all tests
 
-	for _, i := range inputs {
-		t.Run(i.name, func(t *testing.T) {
-			id, errAnswer := handleGetMessagesByID(i.socket, i.message)
-			if i.isErrorTest {
+	for _, arg := range args {
+		t.Run(arg.name, func(t *testing.T) {
+			id, errAnswer := handleGetMessagesByID(&arg.socket, arg.message)
+			if arg.isError {
 				require.NotNil(t, errAnswer)
 				require.NotNil(t, id)
+				require.Contains(t, errAnswer.Error(), arg.contains)
+				require.Equal(t, arg.ID, *id)
 			} else {
 				require.Nil(t, errAnswer)
-				require.Equal(t, i.result, i.socket.MissingMsgs)
+				require.NotNil(t, arg.expected)
+				require.Equal(t, arg.expected, arg.socket.MissingMsgs)
 			}
 		})
 	}
