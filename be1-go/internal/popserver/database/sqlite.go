@@ -763,7 +763,7 @@ func (s *SQLite) StoreChannelsAndMessage(channels []string, laoID string, msg me
 	}
 	for _, channel := range channels {
 		_, err = tx.Exec("INSERT INTO channel (channelPath, typeID, laoID) VALUES (?, ?, ?)",
-			channel, "channel", laoID)
+			channel, channelTypeNameToID["chirp"], laoID)
 		if err != nil {
 			return err
 		}
@@ -826,7 +826,7 @@ func (s *SQLite) StoreMessageWithElectionKey(
 		return err
 	}
 	_, err = tx.Exec("INSERT INTO channel (channelPath, typeID, laoID) VALUES (?, ?, ?)",
-		electionID, "election", laoID)
+		electionID, channelTypeNameToID["election"], laoID)
 	if err != nil {
 		return err
 	}

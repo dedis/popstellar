@@ -201,12 +201,23 @@ func handleRollCallClose(msg message.Message, channel string) *answer.Error {
 		channels = append(channels, chirpingChannelPath)
 	}
 
+	subs, ok := state.GetSubsInstance()
+	if !ok {
+		errAnswer := answer.NewInternalServerError("failed to get state").Wrap("handleRollCallClose")
+		return errAnswer
+	}
+
+	for _, channelPath := range channels {
+		subs.AddChannel(channelPath)
+	}
+
 	err = db.StoreChannelsAndMessage(channels, channel, msg)
 	if err != nil {
 		errAnswer = answer.NewInternalServerError("failed to store channels and message: %v", err)
 		errAnswer = errAnswer.Wrap("handleRollCallClose")
 		return errAnswer
 	}
+
 	return nil
 }
 
