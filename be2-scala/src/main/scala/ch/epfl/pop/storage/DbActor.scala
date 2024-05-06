@@ -613,10 +613,10 @@ final case class DbActor(
         case failure    => sender() ! failure.recover(Status.Failure(_))
       }
 
-    case ReadRumors(desiredRumor) =>
+    case ReadRumor(desiredRumor) =>
       log.info(s"Actor $self (db) received a ReadRumor request")
       Try(readRumor(desiredRumor)) match {
-        case Success(foundRumor) => sender() ! DbActorReadRumors(foundRumor)
+        case Success(foundRumor) => sender() ! DbActorReadRumor(foundRumor)
         case failure             => sender() ! failure.recover(Status.Failure(_))
       }
 
@@ -855,7 +855,7 @@ object DbActor {
     * @param desiredRumor
     *   Map of server public keys and list of desired rumor id for each
     */
-  final case class ReadRumors(desiredRumor: (PublicKey, Int)) extends Event
+  final case class ReadRumor(desiredRumor: (PublicKey, Int)) extends Event
 
   /** Requests the Db for the list of rumorId received for a senderPk
     * @param senderPk
@@ -944,9 +944,9 @@ object DbActor {
     */
   final case class DbActorGenerateHeartbeatAck(heartbeatMap: HashMap[Channel, Set[Hash]]) extends DbActorMessage
 
-  /** Response for a [[ReadRumors]]
+  /** Response for a [[ReadRumor]]
     */
-  final case class DbActorReadRumors(foundRumor: Option[Rumor]) extends DbActorMessage
+  final case class DbActorReadRumor(foundRumor: Option[Rumor]) extends DbActorMessage
 
   /** Response for a [[ReadRumorData]]
     */

@@ -246,12 +246,13 @@ type IconPropTypes = ExtendType<
     name: PopIconName;
     color: string;
     size: number;
+    testID?: string;
   }
 >;
 
 export default PoPIcon;
 
-export const makeIcon = (name: PopIconName) => {
+export const makeIcon = (name: PopIconName, defaultTestID?: string) => {
   // we need to cast it here to a more generic type due to limitations
   // in the static type checking
   const Entry = iconNameMap[name] as {
@@ -263,8 +264,8 @@ export const makeIcon = (name: PopIconName) => {
     throw new Error(`Unkown icon name ${name}`);
   }
 
-  return ({ color, size, focused }: Omit<IconPropTypes, 'name'>) => (
-    <View style={focused ? styles.focused : undefined}>
+  return ({ color, size, focused, testID }: Omit<IconPropTypes, 'name'>) => (
+    <View style={focused ? styles.focused : undefined} testID={testID || defaultTestID}>
       <Entry.IconFamily name={Entry.iconName} size={size} color={color} />
     </View>
   );

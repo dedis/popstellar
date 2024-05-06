@@ -29,3 +29,4 @@ Feature: Event
     And organizer.closeRollCall(lao, rollCall, [popToken])
     Then waitForText(event_rollcall_first_attendee, popToken)
     And screenshot()
+

@@ -955,8 +955,8 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
     val write = dbActor ? DbActor.WriteRumor(rumor)
     Await.result(write, duration) shouldBe a[DbActor.DbActorAck]
 
-    val read = dbActor ? DbActor.ReadRumors(rumor.senderPk -> rumor.rumorId)
-    val foundRumor = Await.result(read, duration).asInstanceOf[DbActorReadRumors].foundRumor
+    val read = dbActor ? DbActor.ReadRumor(rumor.senderPk -> rumor.rumorId)
+    val foundRumor = Await.result(read, duration).asInstanceOf[DbActorReadRumor].foundRumor
 
     foundRumor.isDefined shouldBe true
 
@@ -985,8 +985,8 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
     val dbActor: AskableActorRef = system.actorOf(Props(DbActor(mediatorRef, MessageRegistry(), initialStorage)))
 
     val rumor: Rumor = RumorExample.rumorExample
-    val read = dbActor ? DbActor.ReadRumors(rumor.senderPk -> rumor.rumorId)
-    Await.result(read, duration) shouldBe DbActorReadRumors(None)
+    val read = dbActor ? DbActor.ReadRumor(rumor.senderPk -> rumor.rumorId)
+    Await.result(read, duration) shouldBe DbActorReadRumor(None)
   }
 
 }

@@ -721,6 +721,7 @@ exports[`EventsScreenHeaderLeft renders correctly 1`] = `
                               "opacity": 1,
                             }
                           }
+                          testID="drawer_menu_button"
                         >
                           <View>
                             {"name":"ios-menu","size":25,"color":"#8E8E8E"}

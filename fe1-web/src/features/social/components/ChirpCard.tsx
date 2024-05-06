@@ -208,7 +208,7 @@ const ChirpCard = ({ chirp, isFirstItem, isLastItem }: IPropTypes) => {
         </View>
       </PoPTouchableOpacity>
       <ListItem.Content>
-        <ListItem.Subtitle style={styles.noOverflow}>
+        <ListItem.Subtitle style={styles.noOverflow} testID="chirp_message">
           {chirp.isDeleted ? (
             <Text style={[Typography.base, Typography.inactive]}>{STRINGS.deleted_chirp}</Text>
           ) : (
@@ -228,7 +228,9 @@ const ChirpCard = ({ chirp, isFirstItem, isLastItem }: IPropTypes) => {
                   buttonStyle={reacted['👍'] ? 'primary' : 'secondary'}
                   toolbar
                 />
-                <Text style={[Typography.base, Typography.small, styles.reactionCounter]}>
+                <Text
+                  style={[Typography.base, Typography.small, styles.reactionCounter]}
+                  testID="thumbs-up-count">
                   {thumbsUp}
                 </Text>
               </View>
@@ -242,7 +244,9 @@ const ChirpCard = ({ chirp, isFirstItem, isLastItem }: IPropTypes) => {
                   buttonStyle={reacted['👎'] ? 'primary' : 'secondary'}
                   toolbar
                 />
-                <Text style={[Typography.base, Typography.small, styles.reactionCounter]}>
+                <Text
+                  style={[Typography.base, Typography.small, styles.reactionCounter]}
+                  testID="thumbs-down-count">
                   {thumbsDown}
                 </Text>
               </View>
@@ -258,7 +262,9 @@ const ChirpCard = ({ chirp, isFirstItem, isLastItem }: IPropTypes) => {
                   buttonStyle={reacted['❤️'] ? 'primary' : 'secondary'}
                   toolbar
                 />
-                <Text style={[Typography.base, Typography.small, styles.reactionCounter]}>
+                <Text
+                  style={[Typography.base, Typography.small, styles.reactionCounter]}
+                  testID="heart-count">
                   {heart}
                 </Text>
               </View>
