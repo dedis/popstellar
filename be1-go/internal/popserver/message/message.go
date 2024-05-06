@@ -91,6 +91,10 @@ func handleQuery(socket socket.Socket, msg []byte) (*int, *answer.Error) {
 		return id, errAnswer
 	}
 
+	if id != nil {
+		socket.SendResult(*id, nil, nil)
+	}
+
 	return id, nil
 }
 
