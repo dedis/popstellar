@@ -13,6 +13,7 @@ import (
 	"popstellar/message/answer"
 	"popstellar/message/messagedata"
 	"popstellar/message/query/method/message"
+	"strings"
 )
 
 func handleChannelLao(channel string, msg message.Message) *answer.Error {
@@ -59,7 +60,7 @@ func handleChannelLao(channel string, msg message.Message) *answer.Error {
 			return errAnswer
 		}
 
-		err := db.StoreMessage(channel, msg)
+		err := db.StoreMessageAndData(channel, msg)
 		if err != nil {
 			errAnswer = answer.NewInternalServerError("failed to store message: %v", err)
 			errAnswer = errAnswer.Wrap("handleChannelLao")
@@ -265,7 +266,11 @@ func handleElectionSetup(msg message.Message, channel string) *answer.Error {
 		return errAnswer
 	}
 
-	errAnswer = electionSetup.Verify(channel)
+	//TODO clean this quick fix
+	channelID, _ := strings.CutPrefix(channel, "/")
+	splitChannelID := strings.Split(channelID, "/")
+
+	errAnswer = electionSetup.Verify(splitChannelID[1])
 	if errAnswer != nil {
 		errAnswer = errAnswer.Wrap("handleElectionSetup")
 		return errAnswer

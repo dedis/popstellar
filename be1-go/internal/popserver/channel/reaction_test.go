@@ -232,7 +232,7 @@ func newReactionAddMsg(t *testing.T, channelID, laoID string, sender string, rea
 
 	if !hasInvalidField && !isNotAttendee {
 		mockRepo.On("IsAttendee", laoID, sender).Return(true, nil)
-		mockRepo.On("StoreMessage", channelID, msg).Return(nil)
+		mockRepo.On("StoreMessageAndData", channelID, msg).Return(nil)
 	}
 
 	if isNotAttendee {
@@ -257,7 +257,7 @@ func newReactionDeleteMsg(t *testing.T, channelID, laoID string, sender string, 
 
 		mockRepo.On("GetReactionSender", reactionID).Return(sender, nil)
 
-		mockRepo.On("StoreMessage", channelID, msg).Return(nil)
+		mockRepo.On("StoreMessageAndData", channelID, msg).Return(nil)
 	}
 
 	if hasNotReaction {

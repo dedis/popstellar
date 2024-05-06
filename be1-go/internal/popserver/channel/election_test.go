@@ -257,7 +257,7 @@ func newElectionOpenMsg(t *testing.T, owner kyber.Point, sender, laoID, election
 	}
 
 	if !isError {
-		mockRepo.On("StoreMessage", channelPath, msg).Return(nil)
+		mockRepo.On("StoreMessageAndData", channelPath, msg).Return(nil)
 	}
 
 	return msg
@@ -320,7 +320,7 @@ func newElectionResultMsg(t *testing.T, sender, channelPath string, questions []
 	msg := generator.NewElectionResultMsg(t, sender, questions, nil)
 
 	if !isError {
-		mockRepo.On("StoreMessage", channelPath, msg).Return(nil)
+		mockRepo.On("StoreMessageAndData", channelPath, msg).Return(nil)
 	}
 
 	return msg

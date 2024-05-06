@@ -202,37 +202,6 @@ func (s *SQLite) Close() error {
 // Repository interface implementation
 //======================================================================================================================
 
-// StoreMessage stores a message inside the SQLite database.
-func (s *SQLite) StoreMessage(channel string, msg message.Message) error {
-	tx, err := s.database.Begin()
-	if err != nil {
-		return err
-	}
-	defer tx.Rollback()
-
-	if err = addPendingSignatures(tx, &msg); err != nil {
-		return err
-	}
-
-	msgByte, err := json.Marshal(msg)
-	if err != nil {
-		return err
-	}
-	_, err = tx.Exec("INSERT INTO inbox "+
-		"(messageID, message, storedTime) VALUES "+
-		"(?, ?, ?)", msg.MessageID, msgByte, time.Now().UnixNano())
-	if err != nil {
-		return err
-	}
-	_, err = tx.Exec("INSERT INTO channelMessage "+
-		"(channelPath, messageID, isBaseChannel) VALUES "+
-		"(?, ?, ?)", channel, msg.MessageID, true)
-	if err != nil {
-		return err
-	}
-	return tx.Commit()
-}
-
 func (s *SQLite) StoreMessageAndData(channelPath string, msg message.Message) error {
 	tx, err := s.database.Begin()
 	if err != nil {

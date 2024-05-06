@@ -274,7 +274,7 @@ func newLaoStateMsg(t *testing.T, organizer, laoID string, mockRepo *database.Mo
 		Return(true, nil)
 	mockRepo.On("GetLaoWitnesses", laoID).
 		Return(map[string]struct{}{}, nil)
-	mockRepo.On("StoreMessage", laoID, msg).
+	mockRepo.On("StoreMessageAndData", laoID, msg).
 		Return(nil)
 
 	return msg
@@ -293,7 +293,7 @@ func newRollCallCreateMsg(t *testing.T, sender, laoID, laoName string, creation,
 	msg := generator.NewRollCallCreateMsg(t, sender, laoName, createID, creation, start, end, nil)
 
 	if !isError {
-		mockRepo.On("StoreMessage", laoID, msg).Return(nil)
+		mockRepo.On("StoreMessageAndData", laoID, msg).Return(nil)
 	}
 
 	return msg
@@ -312,7 +312,7 @@ func newRollCallOpenMsg(t *testing.T, sender, laoID, opens, prevID string, opene
 	msg := generator.NewRollCallOpenMsg(t, sender, openID, opens, openedAt, nil)
 
 	if !isError {
-		mockRepo.On("StoreMessage", laoID, msg).Return(nil)
+		mockRepo.On("StoreMessageAndData", laoID, msg).Return(nil)
 	}
 	if prevID != "" {
 		mockRepo.On("CheckPrevID", laoID, opens, messagedata.RollCallActionCreate).Return(opens == prevID, nil)
