@@ -583,6 +583,15 @@ func (s *SQLite) StoreChannelsAndMessageWithLaoGreet(
 	}
 
 	storedTime := time.Now().UnixNano()
+
+	for channel, channelType := range channels {
+		_, err = tx.Exec("INSERT INTO channel (channelPath, typeID, laoID) VALUES (?, ?, ?)",
+			channel, channelTypeNameToID[channelType], laoID)
+		if err != nil {
+			return err
+		}
+	}
+
 	_, err = tx.Exec("INSERT INTO inbox (messageID, message, messageData, storedTime) VALUES (?, ?, ?, ?)", msg.MessageID, msgByte, messageData, storedTime)
 	if err != nil {
 		return err
@@ -591,21 +600,12 @@ func (s *SQLite) StoreChannelsAndMessageWithLaoGreet(
 	if err != nil {
 		return err
 	}
-	_, err = tx.Exec("INSERT INTO channel (channelPath, typeID, laoID) VALUES (?, ?, ?)", laoID, "lao", laoID)
-	if err != nil {
-		return err
-	}
+
 	_, err = tx.Exec("INSERT INTO channelMessage (channelPath, messageID, isBaseChannel) VALUES (?, ?, ?)", laoID, msg.MessageID, false)
 	if err != nil {
 		return err
 	}
-	for channel, channelType := range channels {
-		_, err = tx.Exec("INSERT INTO channel (channelPath, typeID, laoID) VALUES (?, ?, ?)",
-			channel, channelTypeNameToID[channelType], laoID)
-		if err != nil {
-			return err
-		}
-	}
+
 	_, err = tx.Exec("INSERT INTO key (channelPath, publicKey) VALUES (?, ?)", laoID, organizerPubBuf)
 	if err != nil {
 		return err
