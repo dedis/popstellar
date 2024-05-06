@@ -172,6 +172,7 @@ func createLaoAndChannels(msg, laoGreetMsg message.Message, organizerPubBuf []by
 	var errAnswer *answer.Error
 
 	channels := map[string]string{
+		laoPath:                      channelLao,
 		laoPath + Social + Chirps:    ChannelChirp,
 		laoPath + Social + Reactions: ChannelReaction,
 		laoPath + Consensus:          ChannelConsensus,

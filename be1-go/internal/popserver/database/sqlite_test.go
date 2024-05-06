@@ -958,7 +958,7 @@ func newFakeSQLite(t *testing.T) (SQLite, string, error) {
 	require.NoError(t, err)
 
 	fn := filepath.Join(dir, "test.DB")
-	lite, err := NewSQLite(fn, false)
+	lite, err := NewSQLite(fn, true)
 	require.NoError(t, err)
 
 	return lite, dir, nil
