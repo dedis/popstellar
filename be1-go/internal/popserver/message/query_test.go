@@ -35,7 +35,7 @@ func Test_handleGreetServer(t *testing.T) {
 
 	type input struct {
 		name      string
-		socket    *socket.FakeSocket
+		socket    socket.FakeSocket
 		message   []byte
 		needGreet bool
 		isError   bool
@@ -48,11 +48,11 @@ func Test_handleGreetServer(t *testing.T) {
 
 	// Test 1: reply with greet server when receiving a greet server from a new server
 
-	s := &socket.FakeSocket{Id: "1"}
+	fakeSocket := socket.FakeSocket{Id: "1"}
 
 	args = append(args, input{
 		name:      "Test 1",
-		socket:    s,
+		socket:    fakeSocket,
 		message:   greetServer,
 		needGreet: true,
 		isError:   false,
@@ -60,28 +60,28 @@ func Test_handleGreetServer(t *testing.T) {
 
 	// Test 2: doesn't reply with greet server when already greeted the server
 
-	s = &socket.FakeSocket{Id: "2"}
+	fakeSocket = socket.FakeSocket{Id: "2"}
 
-	peers.AddPeerGreeted(s.Id)
+	peers.AddPeerGreeted(fakeSocket.Id)
 
 	args = append(args, input{
 		name:      "Test 2",
 		message:   greetServer,
-		socket:    s,
+		socket:    fakeSocket,
 		needGreet: false,
 		isError:   false,
 	})
 
 	// Test 3: return an error if the socket ID is already used by another server
 
-	s = &socket.FakeSocket{Id: "3"}
+	fakeSocket = socket.FakeSocket{Id: "3"}
 
-	err = peers.AddPeerInfo(s.Id, method.GreetServerParams{})
+	err = peers.AddPeerInfo(fakeSocket.Id, method.GreetServerParams{})
 	require.NoError(t, err)
 
 	args = append(args, input{
 		name:     "Test 3",
-		socket:   s,
+		socket:   fakeSocket,
 		message:  greetServer,
 		isError:  true,
 		contains: "failed to add peer",
@@ -91,7 +91,7 @@ func Test_handleGreetServer(t *testing.T) {
 
 	for _, arg := range args {
 		t.Run(arg.name, func(t *testing.T) {
-			id, errAnswer := handleGreetServer(arg.socket, arg.message)
+			id, errAnswer := handleGreetServer(&arg.socket, arg.message)
 			if arg.isError {
 				require.NotNil(t, errAnswer)
 				require.Contains(t, errAnswer.Error(), arg.contains)
@@ -117,7 +117,7 @@ func Test_handleSubscribe(t *testing.T) {
 
 	type input struct {
 		name     string
-		socket   *socket.FakeSocket
+		socket   socket.FakeSocket
 		ID       int
 		channel  string
 		message  []byte
@@ -137,7 +137,7 @@ func Test_handleSubscribe(t *testing.T) {
 
 	args = append(args, input{
 		name:    "Test 1",
-		socket:  &fakeSocket,
+		socket:  fakeSocket,
 		ID:      ID,
 		channel: channel,
 		message: generator.NewSubscribeQuery(t, ID, channel),
@@ -152,7 +152,7 @@ func Test_handleSubscribe(t *testing.T) {
 
 	args = append(args, input{
 		name:     "Test 2",
-		socket:   &fakeSocket,
+		socket:   fakeSocket,
 		ID:       ID,
 		channel:  channel,
 		message:  generator.NewSubscribeQuery(t, ID, channel),
@@ -168,7 +168,7 @@ func Test_handleSubscribe(t *testing.T) {
 
 	args = append(args, input{
 		name:     "Test 3",
-		socket:   &fakeSocket,
+		socket:   fakeSocket,
 		ID:       ID,
 		channel:  channel,
 		message:  generator.NewSubscribeQuery(t, ID, channel),
@@ -180,16 +180,125 @@ func Test_handleSubscribe(t *testing.T) {
 
 	for _, arg := range args {
 		t.Run(arg.name, func(t *testing.T) {
-			id, errAnswer := handleSubscribe(arg.socket, arg.message)
+			id, errAnswer := handleSubscribe(&arg.socket, arg.message)
 			if arg.isError {
 				require.NotNil(t, errAnswer)
 				require.Contains(t, errAnswer.Error(), arg.contains)
 				require.Equal(t, arg.ID, *id)
 			} else {
 				require.Nil(t, errAnswer)
-				isSubscribed, err := subs.IsSubscribed(arg.channel, arg.socket)
+				isSubscribed, err := subs.IsSubscribed(arg.channel, &arg.socket)
 				require.NoError(t, err)
 				require.True(t, isSubscribed)
+			}
+		})
+	}
+}
+
+func Test_handleUnsubscribe(t *testing.T) {
+	subs := types.NewSubscribers()
+	queries := types.NewQueries(&noLog)
+	peers := types.NewPeers()
+
+	err := state.SetState(t, subs, peers, queries)
+	require.NoError(t, err)
+
+	type input struct {
+		name     string
+		socket   socket.FakeSocket
+		ID       int
+		channel  string
+		message  []byte
+		isError  bool
+		contains string
+	}
+
+	args := make([]input, 0)
+
+	// Test 1: successfully unsubscribe from a subscribed channel
+
+	fakeSocket := socket.FakeSocket{Id: "1"}
+	ID := 1
+	channel := "/root/lao1"
+
+	subs.AddChannel(channel)
+	errAnswer := subs.Subscribe(channel, &fakeSocket)
+	require.Nil(t, errAnswer)
+
+	args = append(args, input{
+		name:    "Test 1",
+		socket:  fakeSocket,
+		ID:      ID,
+		channel: channel,
+		message: generator.NewUnsubscribeQuery(t, ID, channel),
+		isError: false,
+	})
+
+	// Test 2: failed to unsubscribe because not subscribed to channel
+
+	fakeSocket = socket.FakeSocket{Id: "2"}
+	ID = 2
+	channel = "/root/lao2"
+
+	subs.AddChannel(channel)
+
+	args = append(args, input{
+		name:     "Test 2",
+		socket:   fakeSocket,
+		ID:       ID,
+		channel:  channel,
+		message:  generator.NewUnsubscribeQuery(t, ID, channel),
+		isError:  true,
+		contains: "cannot Unsubscribe from a channel not subscribed",
+	})
+
+	// Test 3: failed to unsubscribe because unknown channel
+
+	fakeSocket = socket.FakeSocket{Id: "3"}
+	ID = 3
+	channel = "/root/lao3"
+
+	args = append(args, input{
+		name:     "Test 3",
+		socket:   fakeSocket,
+		ID:       ID,
+		channel:  channel,
+		message:  generator.NewUnsubscribeQuery(t, ID, channel),
+		isError:  true,
+		contains: "cannot Unsubscribe from unknown channel",
+	})
+
+	// Test 3: failed to unsubscribe because cannot unsubscribe from root channel
+
+	fakeSocket = socket.FakeSocket{Id: "4"}
+	ID = 4
+	channel = "/root"
+
+	args = append(args, input{
+		name:     "Test 4",
+		socket:   fakeSocket,
+		ID:       ID,
+		channel:  channel,
+		message:  generator.NewUnsubscribeQuery(t, ID, channel),
+		isError:  true,
+		contains: "cannot Unsubscribe from root channel",
+	})
+
+	// run all tests
+
+	for _, arg := range args {
+		t.Run(arg.name, func(t *testing.T) {
+			id, errAnswer := handleUnsubscribe(&arg.socket, arg.message)
+			if arg.isError {
+				require.NotNil(t, errAnswer)
+				require.Contains(t, errAnswer.Error(), arg.contains)
+				require.Equal(t, arg.ID, *id)
+			} else {
+				require.Nil(t, errAnswer)
+
+				isSubscribe, err := subs.IsSubscribed(arg.channel, &arg.socket)
+				require.NoError(t, err)
+				require.False(t, isSubscribe)
 			}
 		})
 	}
@@ -556,164 +665,6 @@ func Test_handleHeartbeat(t *testing.T) {
 			} else {
 				require.Nil(t, errAnswer)
 				require.Nil(t, i.socket.Msg)
-			}
-		})
-	}
-}
-
-func Test_handleUnsubscribe(t *testing.T) {
-	subs := types.NewSubscribers()
-	queries := types.NewQueries(&noLog)
-	peers := types.NewPeers()
-
-	err := state.SetState(t, subs, peers, queries)
-	require.NoError(t, err)
-
-	type input struct {
-		name        string
-		socket      *socket.FakeSocket
-		message     []byte
-		isErrorTest bool
-		unsubscribe method.Unsubscribe
-	}
-
-	inputs := make([]input, 0)
-
-	// Unsubscribe from channel
-
-	unsubscribe1 := method.Unsubscribe{
-		Base: query.Base{
-			JSONRPCBase: jsonrpc.JSONRPCBase{
-				JSONRPC: "2.0",
-			},
-
-			Method: query.MethodUnsubscribe,
-		},
-		ID: 1,
-		Params: method.UnsubscribeParams{
-			Channel: "/root/lao1",
-		},
-	}
-
-	unsubscribeBuf, err := json.Marshal(&unsubscribe1)
-	require.NoError(t, err)
-
-	fakeSocket := socket.FakeSocket{Id: "fakesocket1"}
-	subs.AddChannel("/root/lao1")
-	errAnswer := subs.Subscribe("/root/lao1", &fakeSocket)
-	require.Nil(t, errAnswer)
-
-	inputs = append(inputs, input{
-		name:        "Unsubscribe from channel",
-		socket:      &fakeSocket,
-		message:     unsubscribeBuf,
-		isErrorTest: false,
-		unsubscribe: unsubscribe1,
-	})
-
-	// cannot Unsubscribe without being subscribed
-
-	unsubscribe2 := method.Unsubscribe{
-		Base: query.Base{
-			JSONRPCBase: jsonrpc.JSONRPCBase{
-				JSONRPC: "2.0",
-			},
-
-			Method: query.MethodUnsubscribe,
-		},
-		ID: 1,
-		Params: method.UnsubscribeParams{
-			Channel: "/root/lao2",
-		},
-	}
-
-	s := &socket.FakeSocket{Id: "fakesocket2"}
-
-	unsubscribeBuf, err = json.Marshal(&unsubscribe2)
-	require.NoError(t, err)
-
-	subs.AddChannel("/root/lao2")
-
-	inputs = append(inputs, input{
-		name:        "cannot Unsubscribe without being subscribed",
-		message:     unsubscribeBuf,
-		socket:      s,
-		isErrorTest: true,
-		unsubscribe: unsubscribe2,
-	})
-
-	// unknown channel
-
-	unsubscribe3 := method.Unsubscribe{
-		Base: query.Base{
-			JSONRPCBase: jsonrpc.JSONRPCBase{
-				JSONRPC: "2.0",
-			},
-
-			Method: query.MethodUnsubscribe,
-		},
-		ID: 1,
-		Params: method.UnsubscribeParams{
-			Channel: "/root/lao3",
-		},
-	}
-
-	s = &socket.FakeSocket{Id: "fakesocket3"}
-
-	unsubscribeBuf, err = json.Marshal(&unsubscribe3)
-	require.NoError(t, err)
-
-	inputs = append(inputs, input{
-		name:        "unknown channel",
-		message:     unsubscribeBuf,
-		socket:      s,
-		isErrorTest: true,
-		unsubscribe: unsubscribe1,
-	})
-
-	// cannot Unsubscribe from root
-
-	unsubscribe4 := method.Unsubscribe{
-		Base: query.Base{
-			JSONRPCBase: jsonrpc.JSONRPCBase{
-				JSONRPC: "2.0",
-			},
-
-			Method: query.MethodUnsubscribe,
-		},
-		ID: 1,
-		Params: method.UnsubscribeParams{
-			Channel: "/root",
-		},
-	}
-
-	s = &socket.FakeSocket{Id: "fakesocket4"}
-
-	unsubscribeRootBuf, err := json.Marshal(&unsubscribe4)
-	require.NoError(t, err)
-
-	inputs = append(inputs, input{
-		name:        "cannot Unsubscribe from root",
-		message:     unsubscribeRootBuf,
-		socket:      s,
-		isErrorTest: true,
-		unsubscribe: unsubscribe4,
-	})
-
-	// run all tests
-
-	for _, i := range inputs {
-		t.Run(i.name, func(t *testing.T) {
-			id, errAnswer := handleUnsubscribe(i.socket, i.message)
-			if i.isErrorTest {
-				require.NotNil(t, errAnswer)
-				require.Equal(t, i.unsubscribe.ID, *id)
-			} else {
-				require.Nil(t, errAnswer)
-
-				isSubscribe, err := subs.IsSubscribed(i.unsubscribe.Params.Channel, i.socket)
-				require.NoError(t, err)
-				require.False(t, isSubscribe)
 			}
 		})
 	}

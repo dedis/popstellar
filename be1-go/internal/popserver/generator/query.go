@@ -51,3 +51,22 @@ func NewSubscribeQuery(t *testing.T, queryID int, channel string) []byte {
 
 	return subscribeBuf
 }
+
+func NewUnsubscribeQuery(t *testing.T, queryID int, channel string) []byte {
+	unsubscribe := method.Unsubscribe{
+		Base: query.Base{
+			JSONRPCBase: jsonrpc.JSONRPCBase{
+				JSONRPC: "2.0",
+			},
+
+			Method: query.MethodUnsubscribe,
+		},
+		ID:     queryID,
+		Params: method.UnsubscribeParams{Channel: channel},
+	}
+
+	unsubscribeBuf, err := json.Marshal(&unsubscribe)
+	require.NoError(t, err)
+
+	return unsubscribeBuf
+}

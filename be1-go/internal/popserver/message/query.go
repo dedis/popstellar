@@ -99,7 +99,7 @@ func handleSubscribe(socket socket.Socket, msg []byte) (*int, *answer.Error) {
 
 	subs, ok := state.GetSubsInstance()
 	if !ok {
-		errAnswer := answer.NewInternalServerError("failed to get state").Wrap("handleGreetServer")
+		errAnswer := answer.NewInternalServerError("failed to get state").Wrap("handleSubscribe")
 		return &subscribe.ID, errAnswer
 	}
 
@@ -110,6 +110,35 @@ func handleSubscribe(socket socket.Socket, msg []byte) (*int, *answer.Error) {
 	}
 
 	return &subscribe.ID, nil
+}
+
+func handleUnsubscribe(socket socket.Socket, msg []byte) (*int, *answer.Error) {
+	var unsubscribe method.Unsubscribe
+
+	err := json.Unmarshal(msg, &unsubscribe)
+	if err != nil {
+		errAnswer := answer.NewInvalidMessageFieldError("failed to unmarshal: %v", err).Wrap("handleUnsubscribe")
+		return nil, errAnswer
+	}
+
+	if rootChannel == unsubscribe.Params.Channel {
+		errAnswer := answer.NewInvalidActionError("cannot Unsubscribe from root channel").Wrap("handleUnsubscribe")
+		return &unsubscribe.ID, errAnswer
+	}
+
+	subs, ok := state.GetSubsInstance()
+	if !ok {
+		errAnswer := answer.NewInternalServerError("failed to get state").Wrap("handleUnsubscribe")
+		return &unsubscribe.ID, errAnswer
+	}
+
+	errAnswer := subs.Unsubscribe(unsubscribe.Params.Channel, socket)
+	if errAnswer != nil {
+		errAnswer = errAnswer.Wrap("handleUnsubscribe")
+		return &unsubscribe.ID, errAnswer
+	}
+
+	return &unsubscribe.ID, nil
 }
 
 func handleCatchUp(socket socket.Socket, msg []byte) (*int, *answer.Error) {
@@ -238,33 +267,4 @@ func handlePublish(socket socket.Socket, msg []byte) (*int, *answer.Error) {
 	}
 
 	return &publish.ID, nil
-}
-
-func handleUnsubscribe(socket socket.Socket, msg []byte) (*int, *answer.Error) {
-	var unsubscribe method.Unsubscribe
-
-	err := json.Unmarshal(msg, &unsubscribe)
-	if err != nil {
-		errAnswer := answer.NewInvalidMessageFieldError("failed to unmarshal: %v", err).Wrap("handleUnsubscribe")
-		return nil, errAnswer
-	}
-
-	if rootChannel == unsubscribe.Params.Channel {
-		errAnswer := answer.NewInvalidActionError("cannot Unsubscribe from root channel").Wrap("handleUnsubscribe")
-		return &unsubscribe.ID, errAnswer
-	}
-
-	subs, ok := state.GetSubsInstance()
-	if !ok {
-		errAnswer := answer.NewInternalServerError("failed to get state").Wrap("handleGreetServer")
-		return &unsubscribe.ID, errAnswer
-	}
-
-	errAnswer := subs.Unsubscribe(unsubscribe.Params.Channel, socket)
-	if errAnswer != nil {
-		errAnswer = errAnswer.Wrap("handleUnsubscribe")
-		return &unsubscribe.ID, errAnswer
-	}
-
-	return &unsubscribe.ID, nil
 }
