@@ -750,14 +750,14 @@ func Test_SQLite_GetElectionQuestionsWithVotes(t *testing.T) {
 
 	question1 := expected["questionID1"]
 	question1.ValidVotes = map[string]types.ValidVote{
-		"sender":  {"messageID2", "voteID5", 3, "option2"},
-		"sender2": {"messageID3", "voteID7", 4, "option1"},
+		"sender":  {MsgID: "messageID2", ID: "voteID5", VoteTime: 3, Index: "option2"},
+		"sender2": {MsgID: "messageID3", ID: "voteID7", VoteTime: 4, Index: "option1"},
 	}
 
 	question2 := expected["questionID2"]
 	question2.ValidVotes = map[string]types.ValidVote{
-		"sender":  {"messageID2", "voteID6", 3, "option2"},
-		"sender2": {"messageID3", "voteID8", 4, "option3"},
+		"sender":  {MsgID: "messageID2", ID: "voteID6", VoteTime: 3, Index: "option2"},
+		"sender2": {MsgID: "messageID3", ID: "voteID8", VoteTime: 4, Index: "option3"},
 	}
 
 	expected["questionID1"] = question1
