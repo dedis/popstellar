@@ -143,7 +143,7 @@ func handleVoteCastVote(msg message.Message, channel string) *answer.Error {
 		return errAnswer
 	}
 
-	// verify created at is positive
+	// verify VoteCastVote created after election createdAt
 	createdAt, err := db.GetElectionCreationTime(channel)
 	if err != nil {
 		errAnswer = answer.NewInternalServerError("failed to get election creation time: %v", err)
@@ -455,10 +455,6 @@ func verifyRegisteredVotes(electionEnd messagedata.ElectionEnd, questions map[st
 	validVotesHash := messagedata.Hash(voteIDs...)
 
 	// compare registered votes with local saved votes
-	a, _ := base64.URLEncoding.DecodeString(electionEnd.RegisteredVotes)
-	fmt.Println(string(a))
-	fmt.Println(electionEnd.RegisteredVotes)
-
 	if electionEnd.RegisteredVotes != validVotesHash {
 		errAnswer = answer.NewInvalidMessageFieldError("registered votes is %s, should be sorted and equal to %s", electionEnd.RegisteredVotes, validVotesHash)
 		errAnswer = errAnswer.Wrap("verifyRegisteredVotes")

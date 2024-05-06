@@ -152,6 +152,9 @@ type ChirpRepository interface {
 
 	// HasMessage returns true if the message already exists.
 	HasMessage(messageID string) (bool, error)
+
+	// StoreChirpMessages stores a chirp message and a generalChirp broadcast inside the database.
+	StoreChirpMessages(channel, generalChannel string, msg, generalMsg message.Message) error
 }
 
 type CoinRepository interface {

@@ -824,7 +824,50 @@ func Test_SQLite_StoreMessageAndElectionResults(t *testing.T) {
 }
 
 //======================================================================================================================
-// RollCallRepository interface implementation tests
+// ChildRepository interface implementation tests
+//======================================================================================================================
+
+func Test_SQLite_StoreChirpMessages(t *testing.T) {
+	lite, dir, err := newFakeSQLite(t)
+	require.NoError(t, err)
+	defer lite.Close()
+	defer os.RemoveAll(dir)
+
+	message1 := message.Message{
+		Data:              base64.URLEncoding.EncodeToString([]byte("data1")),
+		Sender:            "sender1",
+		Signature:         "sig1",
+		MessageID:         "ID1",
+		WitnessSignatures: []message.WitnessSignature{},
+	}
+
+	message2 := message.Message{
+		Data:              base64.URLEncoding.EncodeToString([]byte("data2")),
+		Sender:            "sender2",
+		Signature:         "sig2",
+		MessageID:         "ID2",
+		WitnessSignatures: []message.WitnessSignature{},
+	}
+
+	chirpID := "chirpID"
+	generalChirpID := "generalChirpID"
+
+	err = lite.StoreChirpMessages(chirpID, generalChirpID, message1, message2)
+	require.NoError(t, err)
+
+	expected := []message.Message{message1}
+	messages, err := lite.GetAllMessagesFromChannel(chirpID)
+	require.NoError(t, err)
+	require.Equal(t, expected, messages)
+
+	expected = []message.Message{message2}
+	messages, err = lite.GetAllMessagesFromChannel(generalChirpID)
+	require.NoError(t, err)
+	require.Equal(t, expected, messages)
+}
+
+//======================================================================================================================
+// ReactionRepository interface implementation tests
 //======================================================================================================================
 
 func Test_SQLite_IsAttendee(t *testing.T) {

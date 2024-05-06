@@ -38,7 +38,8 @@ var channelTypeNameToID = map[string]string{
 	"auth":         "9",
 	"generalChirp": "10",
 }
-var channelTypeNames = []string{"root",
+var channelTypeNames = []string{
+	"root",
 	"lao",
 	"election",
 	"chirp",
@@ -47,7 +48,8 @@ var channelTypeNames = []string{"root",
 	"popcha",
 	"coin",
 	"auth",
-	"generalChirp"}
+	"generalChirp",
+}
 
 //======================================================================================================================
 // Database initialization
@@ -1204,6 +1206,56 @@ func (s *SQLite) StoreMessageAndElectionResult(channelPath string, msg, election
 
 //======================================================================================================================
 // ChirpRepository interface implementation
+//======================================================================================================================
+
+func (s *SQLite) StoreChirpMessages(channel, generalChannel string, msg, generalMsg message.Message) error {
+	tx, err := s.database.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+
+	msgBytes, err := json.Marshal(msg)
+	if err != nil {
+		return err
+	}
+	messageData, err := base64.URLEncoding.DecodeString(msg.Data)
+	if err != nil {
+		return err
+	}
+	generalMsgBytes, err := json.Marshal(generalMsg)
+	if err != nil {
+		return err
+	}
+	generalMessageData, err := base64.URLEncoding.DecodeString(generalMsg.Data)
+	if err != nil {
+		return err
+	}
+	storedTime := time.Now().UnixNano()
+
+	_, err = tx.Exec("INSERT INTO inbox (messageID, message, messageData, storedTime) VALUES (?, ?, ?, ?)",
+		msg.MessageID, msgBytes, messageData, storedTime)
+	if err != nil {
+		return err
+	}
+	_, err = tx.Exec("INSERT INTO channelMessage (channelPath, messageID, isBaseChannel) VALUES (?, ?, ?)",
+		channel, msg.MessageID, true)
+	if err != nil {
+		return err
+	}
+	_, err = tx.Exec("INSERT INTO inbox (messageID, message, messageData, storedTime) VALUES (?, ?, ?, ?)",
+		generalMsg.MessageID, generalMsgBytes, generalMessageData, storedTime)
+	if err != nil {
+		return err
+	}
+	_, err = tx.Exec("INSERT INTO channelMessage (channelPath, messageID) VALUES (?, ?)",
+		generalChannel, generalMsg.MessageID)
+	if err != nil {
+		return err
+	}
+	err = tx.Commit()
+	return err
+}
 
 //======================================================================================================================
 // ReactionRepository interface implementation
