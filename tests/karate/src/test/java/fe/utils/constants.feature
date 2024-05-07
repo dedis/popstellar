@@ -17,3 +17,5 @@ Feature: Constants
     * def CLICK_CREATE_ROLLCALL = 'click_rollcall_create'
     * def JOIN_ROLLCALL = 'join_rollcall'
     * def SWITCH_TO_SOCIAL_PAGE = 'switch_to_social_page'
+    # Digital Cash
+    * def SWITCH_TO_DIGITAL_CASH_PAGE = 'switch_to_digital_cash_page'

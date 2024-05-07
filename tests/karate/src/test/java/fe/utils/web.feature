@@ -62,6 +62,13 @@ Feature: web page object
     * def social_chirp_love_count = "[data-testid='heart-count']"
     * def social_chirp_delete = "[data-testid='delete_chirp']"
 
+    # Digital Cash screen
+    * def digital_cash_coin_issuance_button = "[data-testid='digital-cash-coin-issuance']"
+    * def digital_cash_first_roll_call_button = "[data-testid='digital-cash-roll-call-token-0']"
+    * def digital_cash_amount_input = "input[data-testid='digital-cash-send-amount']"
+    * def digital_cash_beneficiary_input = "input[data-testid='digital-cash-send-beneficiary']"
+    * def digital_cash_send_button = "[data-testid='digital-cash-send-button']"
+
   @name=open_app
   Scenario:
     Given driver webDriverOptions
@@ -124,4 +131,10 @@ Feature: web page object
   Scenario:
     Given waitFor(drawer_menu_button).click()
     And waitFor(drawer_menu_social).click()
+    And delay(500)
+
+  @name=switch_to_digital_cash_page
+  Scenario:
+    Given waitFor(drawer_menu_button).click()
+    And waitFor(drawer_menu_digital_cash).click()
     And delay(500)
