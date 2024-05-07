@@ -110,6 +110,20 @@ func Serve(cliCtx *cli.Context) error {
 
 	database.InitDatabase(&db)
 
+	channels, err := db.GetAllChannels()
+	if err != nil {
+		fmt.Println("Failed to get channels")
+	}
+
+	subs, ok := state.GetSubsInstance()
+	if !ok {
+		panic("failed to get subscriber instance")
+	}
+
+	for _, v := range channels {
+		subs.AddChannel(v)
+	}
+
 	//// create user hub
 	//h, err := standard_hub.NewHub(point, serverConfig.ClientAddress, serverConfig.ServerAddress, log.With().Str("role", "server").Logger(),
 	//	lao.NewChannel)
