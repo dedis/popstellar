@@ -371,6 +371,28 @@ func (s *SQLite) StoreChannel(channelPath, typeName, laoID string) error {
 	return err
 }
 
+func (s *SQLite) GetAllChannels() ([]string, error) {
+	rows, err := s.database.Query("SELECT channelPath FROM channel")
+	if err != nil {
+		return nil, err
+	}
+
+	var channels []string
+	for rows.Next() {
+		var channel string
+		if err = rows.Scan(&channel); err != nil {
+			return nil, err
+		}
+		channels = append(channels, channel)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return channels, nil
+}
+
 //======================================================================================================================
 // QueryRepository interface implementation
 //======================================================================================================================
