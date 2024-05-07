@@ -396,7 +396,7 @@ const LinkedOrganizationsScreen = () => {
                       public_key: new Hash(manualPublicKey),
                       server_address: manualServerAddress,
                       challenge: new Challenge({
-                        value: manualChallengeValue,
+                        value: new Hash(manualChallengeValue),
                         valid_until: manualChallengeValidUntil,
                       }),
                     });
