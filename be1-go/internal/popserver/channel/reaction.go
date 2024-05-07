@@ -54,6 +54,13 @@ func handleChannelReaction(channel string, msg message.Message) *answer.Error {
 		errAnswer = errAnswer.Wrap("handleChannelReaction")
 		return errAnswer
 	}
+
+	errAnswer = broadcastToAllClients(msg, channel)
+	if errAnswer != nil {
+		errAnswer = errAnswer.Wrap("handleChannelChirp")
+		return errAnswer
+	}
+
 	return nil
 
 }
