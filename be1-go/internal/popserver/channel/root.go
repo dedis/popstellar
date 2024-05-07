@@ -10,6 +10,7 @@ import (
 	"popstellar/message/answer"
 	"popstellar/message/messagedata"
 	"popstellar/message/query/method/message"
+	"strings"
 )
 
 const (
@@ -77,7 +78,7 @@ func handleLaoCreate(msg message.Message) *answer.Error {
 		errAnswer = errAnswer.Wrap("handleLaoCreate")
 		return errAnswer
 	}
-	laoGreetMsg, errAnswer := createLaoGreet(laoPath, msg.Sender)
+	laoGreetMsg, errAnswer := createLaoGreet(organizerPubBuf, laoPath)
 	if errAnswer != nil {
 		errAnswer = errAnswer.Wrap("handleLaoCreate")
 		return errAnswer
@@ -87,7 +88,6 @@ func handleLaoCreate(msg message.Message) *answer.Error {
 		errAnswer = errAnswer.Wrap("handleLaoCreate")
 		return errAnswer
 	}
-
 	return nil
 }
 
@@ -206,7 +206,7 @@ func createLaoAndChannels(msg, laoGreetMsg message.Message, organizerPubBuf []by
 	return nil
 }
 
-func createLaoGreet(laoPath, sender string) (message.Message, *answer.Error) {
+func createLaoGreet(organizerBuf []byte, laoPath string) (message.Message, *answer.Error) {
 	peers, ok := state.GetPeersInstance()
 	if !ok {
 		errAnswer := answer.NewInternalServerError("failed to get state").Wrap("createAndSendLaoGreet")
@@ -227,25 +227,14 @@ func createLaoGreet(laoPath, sender string) (message.Message, *answer.Error) {
 		return message.Message{}, errAnswer
 	}
 
-	serverPublicKey, ok := config.GetServerPublicKeyInstance()
-	if !ok {
-		errAnswer := answer.NewInternalServerError("failed to get config").Wrap("createAndSendLaoGreet")
-		return message.Message{}, errAnswer
-	}
-
-	// Marshall the server public key
-	serverPubBuf, err := serverPublicKey.MarshalBinary()
-	if err != nil {
-		errAnswer = answer.NewInternalServerError("failed to marshal server public key: %v", err)
-		errAnswer = errAnswer.Wrap("createAndSendLaoGreet")
-		return message.Message{}, errAnswer
-	}
+	channelID, _ := strings.CutPrefix(laoPath, "/")
+	splitChannelID := strings.Split(channelID, "/")
 
 	msgData := messagedata.LaoGreet{
 		Object:   messagedata.LAOObject,
 		Action:   messagedata.LAOActionGreet,
-		LaoID:    laoPath,
-		Frontend: sender,
+		LaoID:    splitChannelID[1],
+		Frontend: base64.URLEncoding.EncodeToString(organizerBuf),
 		Address:  clientServerAddress,
 		Peers:    knownPeers,
 	}
@@ -259,6 +248,20 @@ func createLaoGreet(laoPath, sender string) (message.Message, *answer.Error) {
 	}
 
 	newData64 := base64.URLEncoding.EncodeToString(dataBuf)
+
+	serverPublicKey, ok := config.GetServerPublicKeyInstance()
+	if !ok {
+		errAnswer := answer.NewInternalServerError("failed to get config").Wrap("createAndSendLaoGreet")
+		return message.Message{}, errAnswer
+	}
+
+	// Marshall the server public key
+	serverPubBuf, err := serverPublicKey.MarshalBinary()
+	if err != nil {
+		errAnswer = answer.NewInternalServerError("failed to marshal server public key: %v", err)
+		errAnswer = errAnswer.Wrap("createAndSendLaoGreet")
+		return message.Message{}, errAnswer
+	}
 
 	// Sign the data
 	signatureBuf, errAnswer := Sign(dataBuf)
