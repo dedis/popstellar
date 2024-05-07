@@ -2,6 +2,7 @@ package message
 
 import (
 	"encoding/json"
+	"fmt"
 	"popstellar/internal/popserver/state"
 	"popstellar/internal/popserver/utils"
 	jsonrpc "popstellar/message"
@@ -66,6 +67,8 @@ func handleQuery(socket socket.Socket, msg []byte) (*int, *answer.Error) {
 	var id *int
 	var errAnswer *answer.Error
 
+	fmt.Println("Received query of type " + queryBase.Method)
+
 	switch queryBase.Method {
 	case query.MethodCatchUp:
 		id, errAnswer = handleCatchUp(socket, msg)
@@ -76,7 +79,7 @@ func handleQuery(socket socket.Socket, msg []byte) (*int, *answer.Error) {
 	case query.MethodHeartbeat:
 		id, errAnswer = handleHeartbeat(socket, msg)
 	case query.MethodPublish:
-		id, errAnswer = handlePublish(msg)
+		id, errAnswer = handlePublish(socket, msg)
 	case query.MethodSubscribe:
 		id, errAnswer = handleSubscribe(socket, msg)
 	case query.MethodUnsubscribe:
@@ -89,10 +92,6 @@ func handleQuery(socket socket.Socket, msg []byte) (*int, *answer.Error) {
 	if errAnswer != nil {
 		errAnswer = errAnswer.Wrap("handleQuery")
 		return id, errAnswer
-	}
-
-	if id != nil {
-		socket.SendResult(*id, nil, nil)
 	}
 
 	return id, nil
