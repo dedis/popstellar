@@ -5,7 +5,17 @@
     "public_key": "UvViTxoKsB3XVP_ctkmOKCJpMWb7fCzrcb1XDmhNe7Q=",
     "server_address": "wss://ethz.ch:9000/server",
     "challenge": {
+<<<<<<< Updated upstream
         "value": "82eadde2a4ba832518b90bb93c8480ee1ae16a91d5efe9281e91e2ec11da03e4",
         "valid_until": 1712854874
     }
 }
+=======
+        "data": "eyJvYmplY3QiOiJmZWRlcmF0aW9uIiwiYWN0aW9uIjoiY2hhbGxlbmdlIiwidmFsdWUiOiI4MmVhZGRlMmE0YmE4MzI1MThiOTBiYjkzYzg0ODBlZTFhZTE2YTkxZDVlZmU5MjgxZTkxZTJlYzExZGEwM2U0IiwidmFsaWRfdW50aWwiOjE3MTI4NTQ4NzR9",
+        "sender": "zXgzQaa_NpUe-v0Zk_4q8k184ohQ5nTQhBDKgncHzq4=",
+        "signature": "BILYwYkT5tOBL4rCD7yvhBkhAYqRXOI3ajQ2uJ1gAk-g6nRc38vMMnlHShuNCQ3dQFXYZPn37cCFelhWGjY8Bg==",
+        "message_id": "sD_PdryBuOr14_65h8L-e1lzdQpDWxUAngtu1uwqgEI=",
+        "witness_signatures": []
+    }
+}
+>>>>>>> Stashed changes

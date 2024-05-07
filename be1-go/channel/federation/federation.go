@@ -42,15 +42,17 @@ const (
 )
 
 type remoteOrganization struct {
-	laoId       string
-	fedChannel  string
-	organizerPk string
+	laoId             string
+	fedChannel        string
+	organizerPk       string
+	signedOrganizerPk string
 
 	// store the pop tokens of the other lao
 	// popTokens map[string]struct{}
 
-	challenge messagedata.Challenge
-	socket    socket.Socket
+	challenge    messagedata.FederationChallenge
+	challengeMsg message.Message
+	socket       socket.Socket
 
 	state State
 	sync.Mutex
@@ -67,11 +69,11 @@ type Channel struct {
 
 	localOrganizerPk string
 
-	// map challenge -> remoteOrganization
+	// map remoteOrganizerPk -> remoteOrganization
 	remoteOrganizations map[string]*remoteOrganization
 
 	// list of challenge requested but not used yet
-	challenges map[messagedata.Challenge]struct{}
+	challenges map[messagedata.FederationChallenge]struct{}
 
 	sync.Mutex
 }
@@ -90,7 +92,7 @@ func NewChannel(channelID string, hub channel.HubFunctionalities,
 		log:                 log,
 		localOrganizerPk:    organizerPk,
 		remoteOrganizations: make(map[string]*remoteOrganization),
-		challenges:          make(map[messagedata.Challenge]struct{}),
+		challenges:          make(map[messagedata.FederationChallenge]struct{}),
 	}
 
 	newChannel.registry = newChannel.NewFederationRegistry()
@@ -221,7 +223,7 @@ func (c *Channel) processFederationInit(msg message.Message,
 		return xerrors.Errorf("failed to unmarshal FederationChallenge data: %v", err)
 	}
 
-	remoteOrg := c.getRemoteOrganization(federationChallenge.Value)
+	remoteOrg := c.getRemoteOrganization(federationInit.PublicKey)
 	remoteOrg.Lock()
 	defer remoteOrg.Unlock()
 
@@ -233,10 +235,7 @@ func (c *Channel) processFederationInit(msg message.Message,
 	remoteOrg.organizerPk = federationInit.PublicKey
 	remoteOrg.laoId = federationInit.LaoId
 	remoteOrg.fedChannel = fmt.Sprintf("/root/%s/federation", federationInit.LaoId)
-	remoteOrg.challenge = messagedata.Challenge{
-		Value:      federationChallenge.Value,
-		ValidUntil: federationChallenge.Timestamp,
-	}
+	remoteOrg.challenge = federationChallenge
 
 	remoteOrg.socket, err = c.hub.ConnectToServerAsClient(federationInit.ServerAddress)
 	if err != nil {
@@ -297,30 +296,36 @@ func (c *Channel) processFederationExpect(msg message.Message,
 		return xerrors.Errorf("failed to unmarshal federationExpect data: %v", err)
 	}
 
-	remoteOrg := c.getRemoteOrganization(federationExpect.Challenge.Value)
+	remoteOrg := c.getRemoteOrganization(federationExpect.PublicKey)
 	remoteOrg.Lock()
 	defer remoteOrg.Unlock()
 
 	if remoteOrg.state != None {
 		return answer.NewInternalServerError(invalidStateError, remoteOrg.state, msg)
 	}
+	var federationChallenge messagedata.FederationChallenge
+	err = msg.UnmarshalData(&federationChallenge)
+	if err != nil {
+		return xerrors.Errorf("failed to unmarshal federationChallenge data: %v", err)
+	}
 
 	c.Lock()
-	_, ok = c.challenges[federationExpect.Challenge]
+	_, ok = c.challenges[federationChallenge]
 	// always remove the challenge, if present, to avoid challenge reuse
-	delete(c.challenges, federationExpect.Challenge)
+	delete(c.challenges, federationChallenge)
 	c.Unlock()
 
 	if !ok {
 		return answer.NewAccessDeniedError("Invalid challenge %v",
-			federationExpect.Challenge)
+			federationChallenge)
 	}
 
 	remoteOrg.state = ExpectConnect
-	remoteOrg.challenge = federationExpect.Challenge
+	remoteOrg.challenge = federationChallenge
 	remoteOrg.organizerPk = federationExpect.PublicKey
 	remoteOrg.laoId = federationExpect.LaoId
 	remoteOrg.fedChannel = fmt.Sprintf("/root/%s/federation", federationExpect.LaoId)
+	remoteOrg.challengeMsg = federationExpect.ChallengeMsg
 
 	return nil
 }
@@ -372,10 +377,13 @@ func (c *Channel) processFederationChallenge(msg message.Message,
 
 	remoteOrg.state = WaitResult
 	remoteOrg.socket = s
+
 	federationResultData := messagedata.FederationResult{
-		Object: messagedata.FederationObject,
-		Action: messagedata.FederationActionResult,
-		Status: "success",
+		Object:       messagedata.FederationObject,
+		Action:       messagedata.FederationActionResult,
+		Status:       "success",
+		PublicKey:    remoteOrg.signedOrganizerPk,
+		ChallengeMsg: remoteOrg.challengeMsg,
 	}
 
 	dataBytes, err := json.Marshal(federationResultData)
@@ -453,21 +461,16 @@ func (c *Channel) processChallengeRequest(msg message.Message,
 	}
 	challengeValue := hex.EncodeToString(randomBytes)
 	expirationTime := time.Now().Add(time.Minute * 5).Unix()
-	challenge := messagedata.Challenge{
+	federationChallenge := messagedata.FederationChallenge{
+		Object:     messagedata.FederationObject,
+		Action:     messagedata.FederationActionChallenge,
 		Value:      challengeValue,
 		ValidUntil: expirationTime,
 	}
 
 	c.Lock()
-	c.challenges[challenge] = struct{}{}
+	c.challenges[federationChallenge] = struct{}{}
 	c.Unlock()
-
-	federationChallenge := messagedata.FederationChallenge{
-		Object:    messagedata.FederationObject,
-		Action:    messagedata.FederationActionChallenge,
-		Value:     challengeValue,
-		Timestamp: expirationTime,
-	}
 
 	challengeData, err := json.Marshal(federationChallenge)
 	if err != nil {
@@ -614,16 +617,16 @@ func (c *Channel) processFederationResult(msg message.Message,
 	return nil
 }
 
-// getRemoteOrganization get the remoteOrganization for a given challenge
+// getRemoteOrganization get the remoteOrganization for the given organizerPk
 // or return a new empty one.
-func (c *Channel) getRemoteOrganization(challenge string) *remoteOrganization {
+func (c *Channel) getRemoteOrganization(organizerPk string) *remoteOrganization {
 	c.Lock()
 	defer c.Unlock()
 
-	org, ok := c.remoteOrganizations[challenge]
+	org, ok := c.remoteOrganizations[organizerPk]
 	if !ok {
 		org = &remoteOrganization{state: None}
-		c.remoteOrganizations[challenge] = org
+		c.remoteOrganizations[organizerPk] = org
 	}
 
 	return org

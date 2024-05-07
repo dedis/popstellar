@@ -26,6 +26,7 @@
             "$comment": "public key of the remote organizer"
         },
         "challenge": {
+<<<<<<< Updated upstream
             "type": "object",
             "properties": {
                 "value": {
@@ -42,6 +43,10 @@
             },
             "additionalProperties": false,
             "required": ["value", "valid_until"]
+=======
+            "$ref": "../message.json",
+            "$comment": "message/message containing a FederationChallenge data"
+>>>>>>> Stashed changes
         }
     },
     "additionalProperties": false,
@@ -53,4 +58,8 @@
         "public_key",
         "challenge"
     ]
+<<<<<<< Updated upstream
 }
+=======
+}
+>>>>>>> Stashed changes

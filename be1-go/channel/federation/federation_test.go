@@ -89,7 +89,7 @@ func Test_FederationRequestChallenge(t *testing.T) {
 
 	require.Equal(t, messagedata.FederationObject, challenge.Object)
 	require.Equal(t, messagedata.FederationActionChallenge, challenge.Action)
-	require.Greater(t, challenge.Timestamp, time.Now().Unix())
+	require.Greater(t, challenge.ValidUntil, time.Now().Unix())
 	bytes, err := hex.DecodeString(challenge.Value)
 	require.NoError(t, err)
 	require.Len(t, bytes, 32)
@@ -163,10 +163,7 @@ func Test_FederationExpect(t *testing.T) {
 		LaoId:         remoteLaoId,
 		ServerAddress: remoteServerAddress,
 		PublicKey:     remoteOrganizerKeypair.publicKey,
-		Challenge: messagedata.Challenge{
-			Value:      challenge.Value,
-			ValidUntil: challenge.Timestamp,
-		},
+		ChallengeMsg:  challengeMsg,
 	}
 
 	federationMsg := generateMessage(t, organizerKeypair, federationExpect)
@@ -214,9 +211,12 @@ func Test_FederationExpect_with_invalid_challenge(t *testing.T) {
 		LaoId:         remoteLaoId,
 		ServerAddress: remoteServerAddress,
 		PublicKey:     remoteOrganizerKeypair.publicKey,
-		Challenge: messagedata.Challenge{
-			Value:      hex.EncodeToString(valueBytes),
-			ValidUntil: time.Now().Unix(),
+		ChallengeMsg: message.Message{
+			Data:              "aaaaaaaaaaa",
+			Sender:            organizerKeypair.publicKey,
+			Signature:         "bbbbbbbbbbb",
+			MessageID:         messagedata.Hash("aaaaaaaaaaa", "bbbbbbbbbbb"),
+			WitnessSignatures: []message.WitnessSignature{},
 		},
 	}
 
@@ -271,10 +271,7 @@ func Test_FederationChallenge_not_organizer(t *testing.T) {
 		LaoId:         remoteLaoId,
 		ServerAddress: remoteServerAddress,
 		PublicKey:     remoteOrganizerKeypair.publicKey,
-		Challenge: messagedata.Challenge{
-			Value:      challenge.Value,
-			ValidUntil: challenge.Timestamp,
-		},
+		ChallengeMsg:  challengeMsg,
 	}
 
 	federationMsg := generateMessage(t, notOrganizerKeypair, federationExpect)
@@ -407,7 +404,7 @@ func Test_FederationResult(t *testing.T) {
 		PublicKey: signedPublicKeyBase64,
 		ChallengeMsg: message.Message{
 			Data:              challengeBase64,
-			Sender:            organizerKeypair.publicKey,
+			Sender:            remoteOrganizerKeypair.publicKey,
 			Signature:         signedChallengeBase64,
 			MessageID:         messagedata.Hash(challengeBase64, signedChallengeBase64),
 			WitnessSignatures: []message.WitnessSignature{},
