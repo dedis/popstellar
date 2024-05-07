@@ -227,6 +227,7 @@ func createLaoGreet(organizerBuf []byte, laoPath string) (message.Message, *answ
 		return message.Message{}, errAnswer
 	}
 
+	// TODO clean this quick fix
 	channelID, _ := strings.CutPrefix(laoPath, "/")
 	splitChannelID := strings.Split(channelID, "/")
 
