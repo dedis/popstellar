@@ -77,7 +77,7 @@ func handleLaoCreate(msg message.Message) *answer.Error {
 		errAnswer = errAnswer.Wrap("handleLaoCreate")
 		return errAnswer
 	}
-	laoGreetMsg, errAnswer := createLaoGreet(organizerPubBuf, laoPath)
+	laoGreetMsg, errAnswer := createLaoGreet(laoPath, msg.Sender)
 	if errAnswer != nil {
 		errAnswer = errAnswer.Wrap("handleLaoCreate")
 		return errAnswer
@@ -87,6 +87,7 @@ func handleLaoCreate(msg message.Message) *answer.Error {
 		errAnswer = errAnswer.Wrap("handleLaoCreate")
 		return errAnswer
 	}
+
 	return nil
 }
 
@@ -205,7 +206,7 @@ func createLaoAndChannels(msg, laoGreetMsg message.Message, organizerPubBuf []by
 	return nil
 }
 
-func createLaoGreet(organizerBuf []byte, laoPath string) (message.Message, *answer.Error) {
+func createLaoGreet(laoPath, sender string) (message.Message, *answer.Error) {
 	peers, ok := state.GetPeersInstance()
 	if !ok {
 		errAnswer := answer.NewInternalServerError("failed to get state").Wrap("createAndSendLaoGreet")
@@ -226,25 +227,6 @@ func createLaoGreet(organizerBuf []byte, laoPath string) (message.Message, *answ
 		return message.Message{}, errAnswer
 	}
 
-	msgData := messagedata.LaoGreet{
-		Object:   messagedata.LAOObject,
-		Action:   messagedata.LAOActionGreet,
-		LaoID:    laoPath,
-		Frontend: base64.URLEncoding.EncodeToString(organizerBuf),
-		Address:  clientServerAddress,
-		Peers:    knownPeers,
-	}
-
-	// Marshall the message data
-	dataBuf, err := json.Marshal(&msgData)
-	if err != nil {
-		errAnswer = answer.NewInternalServerError("failed to marshal message data: %v", err)
-		errAnswer = errAnswer.Wrap("createAndSendLaoGreet")
-		return message.Message{}, errAnswer
-	}
-
-	newData64 := base64.URLEncoding.EncodeToString(dataBuf)
-
 	serverPublicKey, ok := config.GetServerPublicKeyInstance()
 	if !ok {
 		errAnswer := answer.NewInternalServerError("failed to get config").Wrap("createAndSendLaoGreet")
@@ -258,6 +240,25 @@ func createLaoGreet(organizerBuf []byte, laoPath string) (message.Message, *answ
 		errAnswer = errAnswer.Wrap("createAndSendLaoGreet")
 		return message.Message{}, errAnswer
 	}
+
+	msgData := messagedata.LaoGreet{
+		Object:   messagedata.LAOObject,
+		Action:   messagedata.LAOActionGreet,
+		LaoID:    laoPath,
+		Frontend: sender,
+		Address:  clientServerAddress,
+		Peers:    knownPeers,
+	}
+
+	// Marshall the message data
+	dataBuf, err := json.Marshal(&msgData)
+	if err != nil {
+		errAnswer = answer.NewInternalServerError("failed to marshal message data: %v", err)
+		errAnswer = errAnswer.Wrap("createAndSendLaoGreet")
+		return message.Message{}, errAnswer
+	}
+
+	newData64 := base64.URLEncoding.EncodeToString(dataBuf)
 
 	// Sign the data
 	signatureBuf, errAnswer := Sign(dataBuf)
