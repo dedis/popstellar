@@ -287,8 +287,10 @@ func (s *SQLite) GetMessagesByID(IDs []string) (map[string]message.Message, erro
 	rows, err := s.database.Query("SELECT messageID, message "+
 		"FROM inbox "+
 		"WHERE messageID IN ("+strings.Repeat("?,", len(IDs)-1)+"?"+")", IDsInterface...)
-	if err != nil {
+	if err != nil && !errors.Is(err, sql.ErrNoRows) {
 		return nil, err
+	} else if errors.Is(err, sql.ErrNoRows) {
+		return make(map[string]message.Message), nil
 	}
 
 	messagesByID := make(map[string]message.Message, len(IDs))
