@@ -915,7 +915,8 @@ func (s *SQLite) getElectionState(electionID string) (string, error) {
 		" FROM inbox"+
 		" WHERE storedTime = (SELECT MAX(storedTime)"+
 		" FROM (SELECT * FROM inbox JOIN channelMessage ON inbox.messageID = channelMessage.messageID)"+
-		" WHERE channelPath = ? AND json_extract(messageData, '$.object') = ?)", electionID, messagedata.ElectionObject).Scan(&state)
+		" WHERE channelPath = ? AND json_extract(messageData, '$.object') = ? AND json_extract(messageData, '$.action') != ?)",
+		electionID, messagedata.ElectionObject, messagedata.VoteActionCastVote).Scan(&state)
 
 	if err != nil && !errors.Is(err, sql.ErrNoRows) {
 		return "", err
