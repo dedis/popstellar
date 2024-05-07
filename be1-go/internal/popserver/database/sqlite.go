@@ -797,14 +797,7 @@ func (s *SQLite) StoreMessageWithElectionKey(
 	if err != nil {
 		return err
 	}
-	electionKey, err := base64.URLEncoding.DecodeString(electionKeyMsg.Data)
-	if err != nil {
-		return err
-	}
-	electionKeyMsgBytes, err := json.Marshal(electionKeyMsg)
-	if err != nil {
-		return err
-	}
+
 	electionPubBuf, err := electionPubKey.MarshalBinary()
 	if err != nil {
 		return err
@@ -841,6 +834,20 @@ func (s *SQLite) StoreMessageWithElectionKey(
 	if err != nil {
 		return err
 	}
+
+	if electionKeyMsg.MessageID == "" {
+		return tx.Commit()
+	}
+
+	electionKey, err := base64.URLEncoding.DecodeString(electionKeyMsg.Data)
+	if err != nil {
+		return err
+	}
+	electionKeyMsgBytes, err := json.Marshal(electionKeyMsg)
+	if err != nil {
+		return err
+	}
+
 	_, err = tx.Exec("INSERT INTO inbox (messageID, message, messageData, storedTime) VALUES (?, ?, ?, ?)",
 		electionKeyMsg.MessageID, electionKeyMsgBytes, electionKey, storedTime)
 	if err != nil {
@@ -851,11 +858,8 @@ func (s *SQLite) StoreMessageWithElectionKey(
 	if err != nil {
 		return err
 	}
-	err = tx.Commit()
-	if err != nil {
-		return err
-	}
-	return nil
+
+	return tx.Commit()
 }
 
 //======================================================================================================================
@@ -1109,6 +1113,8 @@ func (s *SQLite) GetElectionQuestionsWithValidVotes(electionID string) (map[stri
 		if err != nil {
 			return nil, err
 		}
+
+		fmt.Println("Vote: ", vote)
 	}
 	if err = rows.Err(); err != nil {
 		return nil, err

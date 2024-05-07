@@ -284,11 +284,16 @@ func handleElectionSetup(msg message.Message, channel string) *answer.Error {
 		}
 	}
 	electionPubKey, electionSecretKey := generateKeys()
-	electionKeyMsg, errAnswer := createElectionKey(electionSetup.ID, electionPubKey)
-	if errAnswer != nil {
-		errAnswer = errAnswer.Wrap("handleElectionSetup")
-		return errAnswer
+	var electionKeyMsg message.Message
+
+	if electionSetup.Version == messagedata.SecretBallot {
+		electionKeyMsg, errAnswer = createElectionKey(electionSetup.ID, electionPubKey)
+		if errAnswer != nil {
+			errAnswer = errAnswer.Wrap("handleElectionSetup")
+			return errAnswer
+		}
 	}
+
 	electionPath := channel + "/" + electionSetup.ID
 	err = db.StoreMessageWithElectionKey(channel, electionPath, electionPubKey, electionSecretKey, msg, electionKeyMsg)
 	if err != nil {

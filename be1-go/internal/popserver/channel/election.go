@@ -37,8 +37,6 @@ func handleChannelElection(channel string, msg message.Message) *answer.Error {
 	case messagedata.ElectionObject + "#" + messagedata.ElectionActionEnd:
 		errAnswer = handleElectionEnd(msg, channel)
 		storeMessage = false
-	case messagedata.ElectionObject + "#" + messagedata.ElectionActionResult:
-		errAnswer = handleElectionResult(msg)
 	default:
 		errAnswer = answer.NewInvalidMessageFieldError("failed to handle %s#%s, invalid object#action", object, action)
 	}
@@ -164,6 +162,12 @@ func handleVoteCastVote(msg message.Message, channel string) *answer.Error {
 			errAnswer = errAnswer.Wrap("handleVoteCastVote")
 			return errAnswer
 		}
+	}
+
+	errAnswer = broadcastToAllClients(msg, channel)
+	if errAnswer != nil {
+		errAnswer = errAnswer.Wrap("handleVoteCastVote")
+		return errAnswer
 	}
 
 	return nil
@@ -446,6 +450,7 @@ func verifyRegisteredVotes(electionEnd messagedata.ElectionEnd, questions map[st
 	for _, question := range questions {
 		for _, validVote := range question.ValidVotes {
 			voteIDs = append(voteIDs, validVote.ID)
+			fmt.Println("valid vote: ", validVote.ID)
 		}
 	}
 	// sort vote IDs
@@ -630,26 +635,4 @@ func decryptVote(vote, channel string) (int, *answer.Error) {
 		return -1, errAnswer
 	}
 	return int(index), nil
-}
-
-func handleElectionResult(msg message.Message) *answer.Error {
-	var errAnswer *answer.Error
-	var electionResult messagedata.ElectionResult
-	err := msg.UnmarshalData(&electionResult)
-	if err != nil {
-		errAnswer = answer.NewInvalidActionError("failed to unmarshal message data: %v", err)
-		errAnswer = errAnswer.Wrap("handleElectionResult")
-		return errAnswer
-	}
-
-	// verify that the election ids are base64URL encoded
-	for _, question := range electionResult.Questions {
-		_, err := base64.URLEncoding.DecodeString(question.ID)
-		if err != nil {
-			errAnswer = answer.NewInvalidMessageFieldError("failed to decode question id: %v", err)
-			errAnswer = errAnswer.Wrap("handleElectionResult")
-			return errAnswer
-		}
-	}
-	return nil
 }
