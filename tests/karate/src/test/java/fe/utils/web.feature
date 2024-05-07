@@ -33,6 +33,8 @@ Feature: web page object
     * def event_rollcall_pop_token = "div[data-testid='roll_call_pop_token']"
     * def event_rollcall_first_attendee = "div[data-testid='attendee_0']"
     * def event_first_current_event = "[data-testid='current_event_selector_0']"
+    * def event_open_rollcall_button = "{}Open Roll-Call"
+    * def event_close_rollcall_button = "{}Close Roll-Call"
 
     # Drawer menu
     * def drawer_menu_button = "[data-testid='drawer_menu_button']"
@@ -126,6 +128,20 @@ Feature: web page object
     And def popToken = text(event_rollcall_pop_token)
     And organizer.closeRollCall(lao, rollCall, [popToken, organizer.publicKey])
     And delay(1000)
+
+  @name=organizer_with_pop_token
+  Scenario:
+    Given call read(PLATFORM_FEATURE) { name: '#(CREATE_LAO)', params: { organization_name: 'Join roll call' } }
+    And def rollCallName = 'My Roll-Call'
+    When waitFor(event_create_button).click()
+    And call read(PLATFORM_FEATURE) { name: '#(CLICK_CREATE_ROLLCALL)' }
+    And waitFor(event_rollcall_name_input).input(rollCallName)
+    And waitFor(event_rollcall_location_input).input('Between 1 and 0s')
+    And waitFor(event_rollcall_confirm_button).click()
+    Then waitForText(event_first_current_event, rollCallName)
+    When waitFor(event_first_current_event).click()
+    And waitFor(event_open_rollcall_button).click()
+    And waitFor(event_close_rollcall_button).click()
 
   @name=switch_to_social_page
   Scenario:
