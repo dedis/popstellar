@@ -7,7 +7,7 @@ import {
 import { LinkedOrganizationsLaoScreen } from './navigation/LinkedOrganizationsNavigation';
 
 /**
- * Configures the wallet feature
+ * Configures the linked organizations feature
  */
 export function configure(): LinkedOrganizationsInterface {
   return {

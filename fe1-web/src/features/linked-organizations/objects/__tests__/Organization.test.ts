@@ -9,7 +9,7 @@ import { Organization, OrganizationState } from '../Organization';
 
 const VALID_LAO_ID: Hash = mockLaoId;
 const VALID_PUBLIC_KEY: PublicKey = new PublicKey(mockPublicKey);
-const VALID_HASH_VALUE = '82520f235f413b26571529f69d53d751335873efca97e15cd7c47d063ead830d';
+const VALID_HASH_VALUE = new Hash('82520f235f413b26571529f69d53d751335873efca97e15cd7c47d063ead830d');
 const VALID_TIMESTAMP = new Timestamp(123456789);
 const VALID_CHALLENGE: Challenge = new Challenge({
   value: VALID_HASH_VALUE,

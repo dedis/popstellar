@@ -104,7 +104,6 @@ const LinkedOrganizationsScreen = () => {
   const [showScanner, setShowScanner] = useState(false);
 
   const onScanData = (qrCode: string | null) => {
-    console.log(qrCode);
     const qrcode1 = qrCode ?? '';
     try {
       const org1 = Organization.fromJson(JSON.parse(qrcode1));
