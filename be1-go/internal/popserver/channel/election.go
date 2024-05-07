@@ -113,7 +113,7 @@ func handleVoteCastVote(msg message.Message, channel string) *answer.Error {
 	}
 
 	_, ok = attendees[msg.Sender]
-	if !senderPubKey.Equal(organizerPubKey) || !ok {
+	if !senderPubKey.Equal(organizerPubKey) && !ok {
 		errAnswer = answer.NewInvalidMessageFieldError("sender is not an attendee or the organizer of the election")
 		return errAnswer
 	}

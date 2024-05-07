@@ -5,6 +5,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"go.dedis.ch/kyber/v3"
 	"golang.org/x/xerrors"
 	_ "modernc.org/sqlite"
@@ -877,13 +878,13 @@ func (s *SQLite) GetElectionSecretKey(electionID string) (kyber.Scalar, error) {
 	return electionSecretKey, nil
 }
 
-func (s *SQLite) getElectionStateCounter(electionID string) (string, error) {
+func (s *SQLite) getElectionState(electionID string) (string, error) {
 	var state string
 	err := s.database.QueryRow("SELECT json_extract(messageData, '$.action')"+
 		" FROM inbox"+
 		" WHERE storedTime = (SELECT MAX(storedTime)"+
 		" FROM (SELECT * FROM inbox JOIN channelMessage ON inbox.messageID = channelMessage.messageID)"+
-		" WHERE channelPath = ?)", electionID).Scan(&state)
+		" WHERE channelPath = ? AND json_extract(messageData, '$.object') = ?)", electionID, messagedata.ElectionObject).Scan(&state)
 
 	if err != nil && !errors.Is(err, sql.ErrNoRows) {
 		return "", err
@@ -892,7 +893,7 @@ func (s *SQLite) getElectionStateCounter(electionID string) (string, error) {
 }
 
 func (s *SQLite) IsElectionStartedOrEnded(electionID string) (bool, error) {
-	state, err := s.getElectionStateCounter(electionID)
+	state, err := s.getElectionState(electionID)
 	if err != nil {
 		return false, err
 	}
@@ -901,15 +902,16 @@ func (s *SQLite) IsElectionStartedOrEnded(electionID string) (bool, error) {
 }
 
 func (s *SQLite) IsElectionStarted(electionID string) (bool, error) {
-	state, err := s.getElectionStateCounter(electionID)
+	state, err := s.getElectionState(electionID)
 	if err != nil {
 		return false, err
 	}
+	fmt.Printf("Election state: %s\n", state)
 	return state == messagedata.ElectionActionOpen, nil
 }
 
 func (s *SQLite) IsElectionEnded(electionID string) (bool, error) {
-	state, err := s.getElectionStateCounter(electionID)
+	state, err := s.getElectionState(electionID)
 	if err != nil {
 		return false, err
 	}
