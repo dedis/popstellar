@@ -143,6 +143,13 @@ func createChannel(tx *sql.Tx) error {
 		"FOREIGN KEY (typeID) REFERENCES channelType(ID), " +
 		"PRIMARY KEY (channelPath) " +
 		")")
+
+	if err != nil {
+		return err
+	}
+
+	_, err = tx.Exec("INSERT OR IGNORE INTO channel (channelPath, typeID) VALUES (?, ?)",
+		"/root", channelTypeNameToID["root"])
 	return err
 }
 

@@ -105,15 +105,10 @@ func Serve(cliCtx *cli.Context) error {
 
 	db, err := database.NewSQLite("sqllite.db", false)
 	if err != nil {
-		panic("Failed to init db")
+		fmt.Println("Failed to init db")
 	}
 
 	database.InitDatabase(&db)
-
-	err = db.StoreChannel("/root", "root", "")
-	if err != nil {
-		fmt.Println("/root already exists")
-	}
 
 	//// create user hub
 	//h, err := standard_hub.NewHub(point, serverConfig.ClientAddress, serverConfig.ServerAddress, log.With().Str("role", "server").Logger(),
