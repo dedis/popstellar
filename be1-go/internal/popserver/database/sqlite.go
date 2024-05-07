@@ -389,7 +389,7 @@ func (s *SQLite) GetAllMessagesFromChannel(channelPath string) ([]message.Messag
 		return nil, err
 	}
 
-	var messages []message.Message
+	messages := make([]message.Message, 0)
 	for rows.Next() {
 		var messageByte []byte
 		if err = rows.Scan(&messageByte); err != nil {

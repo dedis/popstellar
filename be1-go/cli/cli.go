@@ -110,10 +110,10 @@ func Serve(cliCtx *cli.Context) error {
 
 	database.InitDatabase(&db)
 
-	/*err = db.StoreChannel("/root", "root", "")
+	err = db.StoreChannel("/root", "root", "")
 	if err != nil {
-		panic("failed to store /root")
-	}*/
+		fmt.Println("/root already exists")
+	}
 
 	//// create user hub
 	//h, err := standard_hub.NewHub(point, serverConfig.ClientAddress, serverConfig.ServerAddress, log.With().Str("role", "server").Logger(),

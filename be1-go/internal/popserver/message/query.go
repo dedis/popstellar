@@ -109,6 +109,8 @@ func handleSubscribe(socket socket.Socket, msg []byte) (*int, *answer.Error) {
 		return &subscribe.ID, errAnswer
 	}
 
+	socket.SendResult(subscribe.ID, nil, nil)
+
 	return &subscribe.ID, nil
 }
 
@@ -138,10 +140,12 @@ func handleUnsubscribe(socket socket.Socket, msg []byte) (*int, *answer.Error) {
 		return &unsubscribe.ID, errAnswer
 	}
 
+	socket.SendResult(unsubscribe.ID, nil, nil)
+
 	return &unsubscribe.ID, nil
 }
 
-func handlePublish(msg []byte) (*int, *answer.Error) {
+func handlePublish(socket socket.Socket, msg []byte) (*int, *answer.Error) {
 	var publish method.Publish
 
 	err := json.Unmarshal(msg, &publish)
@@ -155,6 +159,8 @@ func handlePublish(msg []byte) (*int, *answer.Error) {
 		errAnswer = errAnswer.Wrap("handlePublish")
 		return &publish.ID, errAnswer
 	}
+
+	socket.SendResult(publish.ID, nil, nil)
 
 	return &publish.ID, nil
 }
