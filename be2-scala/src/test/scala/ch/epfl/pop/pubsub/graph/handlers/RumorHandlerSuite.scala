@@ -123,5 +123,5 @@ class RumorHandlerSuite extends TestKit(ActorSystem("RumorActorSuiteActorSystem"
       case Right(jsonRpcResponse: JsonRpcResponse) => jsonRpcResponse.error.isDefined shouldBe true
       case _                                       => 1 shouldBe 0
   }
-  
+
 }
