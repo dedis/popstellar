@@ -19,3 +19,14 @@ Feature:
     Then assert exists(digital_cash_coin_issuance_button)
     And screenshot()
 
+  @name=digital_cash_initial_issuance_one_address
+  Scenario:
+    Given call read(PLATFORM_FEATURE) { name: '#(ORGANIZER_WITH_POP_TOKEN)' }
+    And call read(PLATFORM_FEATURE) { name: '#(SWITCH_TO_DIGITAL_CASH_PAGE)' }
+    And waitFor(digital_cash_coin_issuance_button).click()
+    And def amount = '1337'
+    When waitFor(digital_cash_beneficiary_input).input(popToken)
+    And waitFor(digital_cash_amount_input).input(amount)
+    And screenshot()
+    And waitFor(digital_cash_send_button).click()
+    Then screenshot()

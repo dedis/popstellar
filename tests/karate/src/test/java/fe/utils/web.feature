@@ -69,7 +69,8 @@ Feature: web page object
     * def digital_cash_first_roll_call_button = "[data-testid='digital-cash-roll-call-token-0']"
     * def digital_cash_amount_input = "input[data-testid='digital-cash-send-amount']"
     * def digital_cash_beneficiary_input = "input[data-testid='digital-cash-send-beneficiary']"
-    * def digital_cash_send_button = "[data-testid='digital-cash-send-button']"
+    * def digital_cash_beneficiary_select = "select"
+    * def digital_cash_send_button = "{}Send Transaction"
 
   @name=open_app
   Scenario:
@@ -141,6 +142,8 @@ Feature: web page object
     Then waitForText(event_first_current_event, rollCallName)
     When waitFor(event_first_current_event).click()
     And waitFor(event_open_rollcall_button).click()
+    And delay(500)
+    And def popToken = text(event_rollcall_first_attendee)
     And waitFor(event_close_rollcall_button).click()
 
   @name=switch_to_social_page
