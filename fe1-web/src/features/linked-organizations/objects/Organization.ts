@@ -21,6 +21,24 @@ export class Organization {
   public readonly challenge: Challenge;
 
   constructor(org: OmitMethods<Organization>) {
+    if (org === undefined || org === null) {
+      throw new Error(
+        'Error encountered while creating an Organization object: undefined/null parameters',
+      );
+    }
+    if (org.lao_id === undefined) {
+      throw new Error("Undefined 'lao_id' when creating 'Organization'");
+    }
+    if (org.server_address === undefined) {
+      throw new Error("Undefined 'server_address' when creating 'Organization'");
+    }
+    if (org.public_key === undefined) {
+      throw new Error("Undefined 'public_key' when creating 'Organization'");
+    }
+    if (org.challenge === undefined) {
+      throw new Error("Undefined 'challenge' when creating 'Organization'");
+    }
+
     this.lao_id = org.lao_id;
     this.server_address = org.server_address;
     this.public_key = org.public_key;

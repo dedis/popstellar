@@ -16,8 +16,8 @@ export interface LinkedOrganizationsCompositionConfiguration {
   /* lao */
 
   /**
-   * A hook returning the current lao id
-   * @returns The current lao id
+   * Returns the currently active lao. Should be used outside react components
+   * @returns The current lao
    */
   useCurrentLaoId: () => Hash;
 
@@ -29,7 +29,7 @@ export interface LinkedOrganizationsCompositionConfiguration {
 }
 
 /**
- * The type of the context that is provided to react digital cash components
+ * The type of the context that is provided to react linked organizations components
  */
 export type LinkedOrganizationsReactContext = Pick<
   LinkedOrganizationsCompositionConfiguration,

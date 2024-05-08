@@ -104,7 +104,6 @@ const LinkedOrganizationsScreen = () => {
   const [showScanner, setShowScanner] = useState(false);
 
   const onScanData = (qrCode: string | null) => {
-    console.log(qrCode);
     const qrcode1 = qrCode ?? '';
     try {
       const org1 = Organization.fromJson(JSON.parse(qrcode1));
@@ -397,7 +396,7 @@ const LinkedOrganizationsScreen = () => {
                       public_key: new Hash(manualPublicKey),
                       server_address: manualServerAddress,
                       challenge: new Challenge({
-                        value: manualChallengeValue,
+                        value: new Hash(manualChallengeValue),
                         valid_until: manualChallengeValidUntil,
                       }),
                     });
