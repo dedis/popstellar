@@ -1078,10 +1078,8 @@ For now, this message is to be used to retrieve chirps on the social media chann
 by paging when a new client joins the LAO instead of getting all the chirps at once. The user's public key is used
 to have a separate paging subchannel for each user to avoid sending irrelevant messages to other users. This paging is 
 done in an effort to reduce network traffic at catchup.
-This message is also to be used to retrieve top chirps from a subchannel "/root/lao_id/social/top_chirps" and chirps
-of a specific user profile from a subchannel "/root/lao_id/social/profile/user_public_key/specific_user_public_key" 
-where "user_public_key" is the same as before and "specific_user_public_key" is the public key of the user whose messages
-the client wants to retrieve.
+
+This message is also to be used to retrieve chirps of a specific user profile from a subchannel "/root/lao_id/social/profile/user_public_key/specific_user_public_key"  where "user_public_key" is the same as before and "specific_user_public_key" is the public key of the user whose messages the client wants to retrieve. Paging is not deemed necessary for retrieving top chirps for now and can be done with the regular catchup message from a subchannel "/root/lao_id/social/top_chirps".
 
 This may serve as a starting point for the paging of messages in other channels as a future optimization.
 
