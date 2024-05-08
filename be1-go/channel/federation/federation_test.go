@@ -154,6 +154,7 @@ func Test_FederationExpect(t *testing.T) {
 	var challenge messagedata.FederationChallenge
 	err = challengeMsg.UnmarshalData(&challenge)
 	require.NoError(t, err)
+	t.Log(challengeMsg)
 
 	remoteOrganizerKeypair := generateKeyPair(t)
 

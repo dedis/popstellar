@@ -295,7 +295,6 @@ func (c *Channel) processFederationExpect(msg message.Message,
 	if err != nil {
 		return xerrors.Errorf("failed to unmarshal federationExpect data: %v", err)
 	}
-
 	remoteOrg := c.getRemoteOrganization(federationExpect.PublicKey)
 	remoteOrg.Lock()
 	defer remoteOrg.Unlock()
@@ -304,7 +303,7 @@ func (c *Channel) processFederationExpect(msg message.Message,
 		return answer.NewInternalServerError(invalidStateError, remoteOrg.state, msg)
 	}
 	var federationChallenge messagedata.FederationChallenge
-	err = msg.UnmarshalData(&federationChallenge)
+	err = federationExpect.ChallengeMsg.UnmarshalData(&federationChallenge)
 	if err != nil {
 		return xerrors.Errorf("failed to unmarshal federationChallenge data: %v", err)
 	}
