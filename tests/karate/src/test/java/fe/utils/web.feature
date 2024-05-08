@@ -3,7 +3,7 @@ Feature: web page object
   Background:
     # Functions
     * def actionSheetClick = (text) => script("setTimeout(() => document.evaluate('//div[text()=\\'" + text + "\\']', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.click(), 1000)")
-
+    * def selectOption = (selector, option) => select(selector, option).script("_.dispatchEvent(new Event('change', {bubbles: true}))")
     # Wallet screen
     * def wallet_seed_wallet_text = "[data-testid='seed_wallet_text']"
     * def wallet_new_wallet_button = "[data-testid='exploring_selector']"
