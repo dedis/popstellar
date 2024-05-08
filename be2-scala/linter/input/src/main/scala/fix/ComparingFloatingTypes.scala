@@ -19,7 +19,8 @@ object ComparingFloatingTypes {
     } else {
       print("Not equal!")
     }
-    f1 == f2 // assert: ComparingFloatingTypes
+    f1 == d1 // assert: ComparingFloatingTypes
+    f1.equals(f2) // assert: ComparingFloatingTypes
   }
 
 }

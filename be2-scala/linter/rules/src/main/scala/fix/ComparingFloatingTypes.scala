@@ -25,21 +25,30 @@ class ComparingFloatingTypes extends SemanticRule("ComparingFloatingTypes") {
       term.symbol.info match {
         case Some(symInfo) => symInfo.signature match {
             case ValueSignature(TypeRef(_, symbol, _)) => symbol
+            case _ => null
           }
         case _ => null
       }
     }
 
+    def isFloatOrDouble(term: Term): Boolean = {
+      val floatOrDoubleMatcher = SymbolMatcher.exact("scala/Float#", "scala/Double#")
+      floatOrDoubleMatcher.matches(getType(term))
+    }
+
     doc.tree.collect {
       case t @ Term.ApplyInfix.After_4_6_0(lhs, op, _, Term.ArgClause(List(right), _)) =>
-        val floatOrDoubleMatcher = SymbolMatcher.exact("scala/Float#", "scala/Double#")
-        val leftIsFloat = floatOrDoubleMatcher.matches(getType(lhs))
-        val rightIsFloat = floatOrDoubleMatcher.matches(getType(right))
-        if (leftIsFloat && rightIsFloat) {
+        if (isFloatOrDouble(lhs) && isFloatOrDouble(right)) {
           op match {
-            case (Term.Name("==") | Term.Name("!=")) => Patch.lint(ComparingFloatingTypesDiag(t))
+            case Term.Name("==") | Term.Name("!=") => Patch.lint(ComparingFloatingTypesDiag(t))
             case _                                   => Patch.empty
           }
+        } else {
+          Patch.empty
+        }
+      case t @ Term.Apply.After_4_6_0(Term.Select(lhs, Term.Name("equals")), Term.ArgClause(List(right), _)) =>
+        if (isFloatOrDouble(lhs) && isFloatOrDouble(right)) {
+          Patch.lint(ComparingFloatingTypesDiag(t))
         } else {
           Patch.empty
         }
