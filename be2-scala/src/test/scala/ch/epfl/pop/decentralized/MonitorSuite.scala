@@ -181,7 +181,7 @@ class MonitorSuite extends TestKit(ActorSystem("MonitorSuiteActorSystem")) with 
     mockConnectionMediator.send(monitorRef, ConnectionMediator.Ping())
 
     // Expect first read of the server peers list
-    mockConnectionMediator.expectMsgType[ConnectionMediator.ConnectTo](20.seconds)
+    mockConnectionMediator.expectMsgType[ConnectionMediator.ConnectTo](timeout)
 
     // Expect no message as long as the server peers list is untouched
     mockConnectionMediator.expectNoMessage(timeout)

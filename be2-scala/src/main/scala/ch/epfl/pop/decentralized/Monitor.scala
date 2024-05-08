@@ -90,6 +90,8 @@ final case class Monitor(
 
     case msg: ConnectionMediator.ConnectTo =>
       connectionMediatorRef ! msg
+    /* ConnectTo message is sent by FileMonitor thread, which is not an actor, we thus forward it with a real actor to
+    avoid sending with dead letters */
   }
 
   override def postStop(): Unit = {
@@ -139,13 +141,10 @@ private class FileMonitor(mediatorRef: ActorRef) extends Runnable {
     var sendConnectToMessage = false
     // Upon start, we connect to the servers
     serverPeers = readServerPeers()
-    mediatorRef ! ConnectionMediator.ConnectTo(serverPeers)
+    mediatorRef ! ConnectionMediator.ConnectTo(serverPeers) // forwarded to Monitor as explained above
     while (running.get()) {
       // Blocks until an event happen
       val watchKey = watchService.take()
-      if (!running.get()) {
-        return
-      }
       sendConnectToMessage = false
 
       // For any event, read the file and send it
