@@ -86,12 +86,14 @@ func Serve(cliCtx *cli.Context) error {
 	computeAddresses(&serverConfig)
 
 	var point kyber.Point = nil
-	ownerKey(serverConfig.PublicKey, &point)
+	err = ownerKey(serverConfig.PublicKey, &point)
+	if err != nil {
+		return err
+	}
 
 	schemaValidator, err := validation.NewSchemaValidator()
 	if err != nil {
-		_, _ = fmt.Fprintf(os.Stderr, "error: %v\n", err)
-		os.Exit(1)
+		return err
 	}
 
 	utils.InitUtils(&poplog, schemaValidator)
@@ -105,7 +107,7 @@ func Serve(cliCtx *cli.Context) error {
 
 	db, err := database.NewSQLite("sqllite.db", false)
 	if err != nil {
-		fmt.Println("Failed to init db")
+		return err
 	}
 
 	database.InitDatabase(&db)
@@ -122,9 +124,6 @@ func Serve(cliCtx *cli.Context) error {
 		}
 	}
 
-	//// create user hub
-	//h, err := standard_hub.NewHub(point, serverConfig.ClientAddress, serverConfig.ServerAddress, poplog.With().Str("role", "server").Logger(),
-	//	lao.NewChannel)
 	h := popserver.NewHub()
 	if err != nil {
 		return xerrors.Errorf("failed create the hub: %v", err)
@@ -132,16 +131,6 @@ func Serve(cliCtx *cli.Context) error {
 
 	// start the processing loop
 	h.Start()
-
-	//// Start the PoPCHA Authorization Server. It will run internally on localhost, the address of the server given in
-	//// the config file will be the one used externally.
-	//authorizationSrv, err := popcha.NewAuthServer(h, "localhost", serverConfig.AuthPort,
-	//	poplog.With().Str("role", "authorization server").Logger())
-	//if err != nil {
-	//	return xerrors.Errorf("Error while starting the PoPCHA server: %v", err)
-	//}
-	//authorizationSrv.Start()
-	//<-authorizationSrv.Started
 
 	// Start websocket server for clients
 	clientSrv := network.NewServer(h, serverConfig.PrivateAddress, serverConfig.ClientPort, socket.ClientSocketType,
@@ -188,11 +177,6 @@ func Serve(cliCtx *cli.Context) error {
 	go serverConnectionLoop(h, wg, done, serverConfig.OtherServers, updatedServersChan, &connectedServers)
 
 	// Wait for a Ctrl-C
-	//err = network.WaitAndShutdownServers(cliCtx.Context, authorizationSrv, clientSrv, serverSrv)
-	//if err != nil {
-	//	return err
-	//}
-
 	err = network.WaitAndShutdownServers(cliCtx.Context, nil, clientSrv, serverSrv)
 	if err != nil {
 		return err
@@ -201,7 +185,6 @@ func Serve(cliCtx *cli.Context) error {
 	h.Stop()
 	<-clientSrv.Stopped
 	<-serverSrv.Stopped
-	//<-authorizationSrv.Stopped
 
 	// notify channs to stop
 	close(done)
