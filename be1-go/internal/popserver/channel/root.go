@@ -201,16 +201,12 @@ func createLaoAndChannels(msg, laoGreetMsg message.Message, organizerPubBuf []by
 }
 
 func createLaoGreet(organizerBuf []byte, laoPath string) (message.Message, *answer.Error) {
-	peers, ok := state.GetPeersInstance()
-	if !ok {
-		errAnswer := answer.NewInternalServerError("failed to get state").Wrap("createAndSendLaoGreet")
-		return message.Message{}, errAnswer
+	peersInfo, errAnswer := state.GetAllPeersInfo()
+	if errAnswer != nil {
+		return message.Message{}, errAnswer.Wrap("createAndSendLaoGreet")
 	}
 
-	peersInfo := peers.GetAllPeersInfo()
 	knownPeers := make([]messagedata.Peer, 0, len(peersInfo))
-	var errAnswer *answer.Error
-
 	for _, info := range peersInfo {
 		knownPeers = append(knownPeers, messagedata.Peer{Address: info.ClientAddress})
 	}

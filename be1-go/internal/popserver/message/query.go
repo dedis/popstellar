@@ -25,19 +25,16 @@ func handleGreetServer(socket socket.Socket, byteMessage []byte) (*int, *answer.
 		return nil, errAnswer
 	}
 
-	peers, ok := state.GetPeersInstance()
-	if !ok {
-		errAnswer := answer.NewInternalServerError("failed to get state").Wrap("handleGreetServer")
-		return nil, errAnswer
+	errAnswer := state.AddPeerInfo(socket.ID(), greetServer.Params)
+	if errAnswer != nil {
+		return nil, errAnswer.Wrap("handleGreetServer")
 	}
 
-	err = peers.AddPeerInfo(socket.ID(), greetServer.Params)
-	if err != nil {
-		errAnswer := answer.NewInvalidActionError("failed to add peer: %v", err).Wrap("handleGreetServer")
-		return nil, errAnswer
+	isGreeted, errAnswer := state.IsPeerGreeted(socket.ID())
+	if errAnswer != nil {
+		return nil, errAnswer.Wrap("handleGreetServer")
 	}
-
-	if peers.IsPeerGreeted(socket.ID()) {
+	if isGreeted {
 		return nil, nil
 	}
 
@@ -78,7 +75,10 @@ func handleGreetServer(socket socket.Socket, byteMessage []byte) (*int, *answer.
 
 	socket.Send(buf)
 
-	peers.AddPeerGreeted(socket.ID())
+	errAnswer = state.AddPeerGreeted(socket.ID())
+	if errAnswer != nil {
+		return nil, errAnswer.Wrap("handleGreetServer")
+	}
 
 	return nil, nil
 }

@@ -99,12 +99,5 @@ func (p *PopServer) SendGreetServer(socket socket.Socket) error {
 
 	socket.Send(buf)
 
-	peers, ok := state.GetPeersInstance()
-	if !ok {
-		return xerrors.Errorf("failed to get state")
-	}
-
-	peers.AddPeerGreeted(socket.ID())
-
-	return nil
+	return state.AddPeerGreeted(socket.ID())
 }
