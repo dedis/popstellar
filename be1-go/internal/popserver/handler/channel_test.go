@@ -2,41 +2,19 @@ package handler
 
 import (
 	"encoding/base64"
-	"fmt"
-	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/require"
 	"go.dedis.ch/kyber/v3"
 	"golang.org/x/xerrors"
-	"io"
-	"os"
 	"popstellar/crypto"
 	"popstellar/internal/popserver/database"
 	"popstellar/internal/popserver/generator"
-	"popstellar/internal/popserver/utils"
 	"popstellar/message/query/method/message"
-	"popstellar/validation"
 	"testing"
 	"time"
 )
 
 // the public key used in every lao_create json files in the test_data/root folder
 const ownerPubBuf64 = "3yPmdBu8DM7jT30IKqkPjuFFIHnubO0z4E0dV7dR4sY="
-
-var noLog = zerolog.New(io.Discard)
-
-func TestMain(m *testing.M) {
-	schemaValidator, err := validation.NewSchemaValidator()
-	if err != nil {
-		_, _ = fmt.Fprintf(os.Stderr, "error: %v\n", err)
-		os.Exit(1)
-	}
-
-	utils.InitUtils(&noLog, schemaValidator)
-
-	exitVal := m.Run()
-
-	os.Exit(exitVal)
-}
 
 func Test_handleChannel(t *testing.T) {
 	mockRepository, err := database.SetDatabase(t)

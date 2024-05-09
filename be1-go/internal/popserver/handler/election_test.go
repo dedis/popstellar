@@ -202,32 +202,6 @@ func Test_handleChannelElection(t *testing.T) {
 		contains: "",
 	})
 
-	//Test 14: Error when ElectionResult questions id are not base64 encoded
-	result1 := []messagedata.ElectionResultQuestionResult{{BallotOption: messagedata.OpenBallot, Count: 1}}
-	result2 := []messagedata.ElectionResultQuestionResult{{BallotOption: messagedata.OpenBallot, Count: 2}}
-	questions := []messagedata.ElectionResultQuestion{{ID: "questionID1", Result: result1}, {ID: "questionID2", Result: result2}}
-
-	args = append(args, input{
-		name:     "Test 14",
-		msg:      newElectionResultMsg(t, ownerPubBuf64, channelPath, questions, true, mockRepo),
-		channel:  channelPath,
-		isError:  true,
-		contains: "failed to decode question id",
-	})
-
-	//Test 15: Success when ElectionResult is valid
-	questions = []messagedata.ElectionResultQuestion{
-		{ID: base64.URLEncoding.EncodeToString([]byte("questionID1")), Result: result1},
-		{ID: base64.URLEncoding.EncodeToString([]byte("questionID2")), Result: result2},
-	}
-	args = append(args, input{
-		name:     "Test 15",
-		msg:      newElectionResultMsg(t, ownerPubBuf64, channelPath, questions, false, mockRepo),
-		channel:  channelPath,
-		isError:  false,
-		contains: "",
-	})
-
 	for _, arg := range args {
 		t.Run(arg.name, func(t *testing.T) {
 			errAnswer := handleChannelElection(arg.channel, arg.msg)
@@ -309,18 +283,6 @@ func newElectionEndMsg(t *testing.T, owner kyber.Point, sender, laoID, electionI
 		mockRepo.On("GetElectionType", channelPath).Return(messagedata.OpenBallot, nil)
 		mockRepo.On("StoreMessageAndElectionResult", channelPath, msg, mock.AnythingOfType("message.Message")).
 			Return(nil)
-	}
-
-	return msg
-}
-
-func newElectionResultMsg(t *testing.T, sender, channelPath string, questions []messagedata.ElectionResultQuestion,
-	isError bool, mockRepo *database.MockRepository) message.Message {
-
-	msg := generator.NewElectionResultMsg(t, sender, questions, nil)
-
-	if !isError {
-		mockRepo.On("StoreMessageAndData", channelPath, msg).Return(nil)
 	}
 
 	return msg

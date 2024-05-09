@@ -37,11 +37,7 @@ func handleChannelChirp(channelID string, msg message.Message) *answer.Error {
 		return errAnswer
 	}
 
-	generalChirpsChannelID, errAnswer := getGeneralChirpsChannel(channelID)
-	if errAnswer != nil {
-		errAnswer = errAnswer.Wrap("handleChannelChirp")
-		return errAnswer
-	}
+	generalChirpsChannelID, _ := strings.CutSuffix(channelID, Social+"/"+msg.Sender)
 
 	db, errAnswer := database.GetChirpRepositoryInstance()
 	if errAnswer != nil {
@@ -210,17 +206,4 @@ func createChirpNotify(channelID string, msg message.Message) (message.Message, 
 	}
 
 	return newMsg, nil
-}
-
-func getGeneralChirpsChannel(channelID string) (string, *answer.Error) {
-	channelID, _ = strings.CutPrefix(channelID, "/")
-	splitChannelID := strings.Split(channelID, "/")
-
-	if len(splitChannelID) != 4 || splitChannelID[0] != "root" || splitChannelID[2] != "social" {
-		return "", answer.NewInvalidMessageFieldError("invalid channel").Wrap("getGeneralChirpsChannel")
-	}
-
-	generalChirpsChannelID := "/root/" + splitChannelID[1] + "/social/chirps"
-
-	return generalChirpsChannelID, nil
 }

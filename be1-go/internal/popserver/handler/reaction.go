@@ -20,11 +20,8 @@ func handleChannelReaction(channel string, msg message.Message) *answer.Error {
 		return errAnswer.Wrap("handleChannelReaction")
 	}
 
-	channelID, _ := strings.CutPrefix(channel, "/")
-	splitChannelID := strings.Split(channelID, "/")
-	laoID := splitChannelID[1]
-
-	isAttendee, err := db.IsAttendee(RootPrefix+laoID, msg.Sender)
+	laoPath, _ := strings.CutSuffix(channel, Social+Reactions)
+	isAttendee, err := db.IsAttendee(laoPath, msg.Sender)
 	if err != nil {
 		errAnswer := answer.NewInternalServerError("failed to query DB: %v", err).Wrap("handleChannelReaction")
 		return errAnswer

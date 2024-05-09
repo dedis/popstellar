@@ -9,11 +9,9 @@ import (
 	"popstellar/internal/popserver/state"
 	"popstellar/internal/popserver/utils"
 	jsonrpc "popstellar/message"
-	"popstellar/message/answer"
 	"popstellar/message/query"
 	"popstellar/message/query/method"
 	"popstellar/network/socket"
-	"popstellar/validation"
 )
 
 type Hub struct {
@@ -40,7 +38,7 @@ func (h *Hub) Start() {
 		for {
 			select {
 			case incomingMessage := <-h.messageChan:
-				err := handleMessage(incomingMessage.Socket, incomingMessage.Message)
+				err := handler.HandleIncomingMessage(incomingMessage.Socket, incomingMessage.Message)
 				if err != nil {
 					utils.LogError(err)
 				}
@@ -102,36 +100,4 @@ func (h *Hub) SendGreetServer(socket socket.Socket) error {
 	socket.Send(buf)
 
 	return state.AddPeerGreeted(socket.ID())
-}
-
-func handleMessage(socket socket.Socket, msg []byte) error {
-	errAnswer := utils.VerifyJSON(msg, validation.GenericMessage)
-	if errAnswer != nil {
-		errAnswer = errAnswer.Wrap("handleMessage")
-		socket.SendError(nil, errAnswer)
-		return errAnswer
-	}
-
-	rpcType, err := jsonrpc.GetType(msg)
-	if err != nil {
-		errAnswer := answer.NewInvalidMessageFieldError("failed to get rpc type: %v", err).Wrap("handleMessage")
-		socket.SendError(nil, errAnswer)
-		return errAnswer
-	}
-
-	switch rpcType {
-	case jsonrpc.RPCTypeQuery:
-		errAnswer = handler.HandleQuery(socket, msg)
-	case jsonrpc.RPCTypeAnswer:
-		errAnswer = handler.HandleAnswer(msg)
-	default:
-		errAnswer = answer.NewInvalidMessageFieldError("jsonRPC is of unknown type")
-	}
-
-	if errAnswer != nil {
-		errAnswer = errAnswer.Wrap("handleMessage")
-		return errAnswer
-	}
-
-	return nil
 }

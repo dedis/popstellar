@@ -29,7 +29,7 @@ type ElectionSetup struct {
 
 const ElectionFlag = "Election"
 
-func (message ElectionSetup) Verify(laoPath string) *answer.Error {
+func (message ElectionSetup) Verify(laoID string) *answer.Error {
 	var errAnswer *answer.Error
 	_, err := base64.URLEncoding.DecodeString(message.Lao)
 	if err != nil {
@@ -37,8 +37,8 @@ func (message ElectionSetup) Verify(laoPath string) *answer.Error {
 		return errAnswer
 	}
 
-	if message.Lao != laoPath {
-		errAnswer = answer.NewInvalidMessageFieldError("lao id is %s, should be %s", message.Lao, laoPath)
+	if message.Lao != laoID {
+		errAnswer = answer.NewInvalidMessageFieldError("lao id is %s, should be %s", message.Lao, laoID)
 		return errAnswer
 	}
 
@@ -51,7 +51,7 @@ func (message ElectionSetup) Verify(laoPath string) *answer.Error {
 	// verify election setup message id
 	expectedID := Hash(
 		ElectionFlag,
-		laoPath,
+		laoID,
 		strconv.Itoa(int(message.CreatedAt)),
 		message.Name,
 	)

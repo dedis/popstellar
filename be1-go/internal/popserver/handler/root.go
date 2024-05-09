@@ -10,7 +10,6 @@ import (
 	"popstellar/message/answer"
 	"popstellar/message/messagedata"
 	"popstellar/message/query/method/message"
-	"strings"
 )
 
 const (
@@ -77,7 +76,7 @@ func handleLaoCreate(msg message.Message) *answer.Error {
 		errAnswer = errAnswer.Wrap("handleLaoCreate")
 		return errAnswer
 	}
-	laoGreetMsg, errAnswer := createLaoGreet(organizerPubBuf, laoPath)
+	laoGreetMsg, errAnswer := createLaoGreet(organizerPubBuf, laoCreate.ID)
 	if errAnswer != nil {
 		errAnswer = errAnswer.Wrap("handleLaoCreate")
 		return errAnswer
@@ -200,7 +199,7 @@ func createLaoAndChannels(msg, laoGreetMsg message.Message, organizerPubBuf []by
 	return nil
 }
 
-func createLaoGreet(organizerBuf []byte, laoPath string) (message.Message, *answer.Error) {
+func createLaoGreet(organizerBuf []byte, laoID string) (message.Message, *answer.Error) {
 	peersInfo, errAnswer := state.GetAllPeersInfo()
 	if errAnswer != nil {
 		return message.Message{}, errAnswer.Wrap("createAndSendLaoGreet")
@@ -217,14 +216,10 @@ func createLaoGreet(organizerBuf []byte, laoPath string) (message.Message, *answ
 		return message.Message{}, errAnswer
 	}
 
-	// TODO clean this quick fix
-	channelID, _ := strings.CutPrefix(laoPath, "/")
-	splitChannelID := strings.Split(channelID, "/")
-
 	msgData := messagedata.LaoGreet{
 		Object:   messagedata.LAOObject,
 		Action:   messagedata.LAOActionGreet,
-		LaoID:    splitChannelID[1],
+		LaoID:    laoID,
 		Frontend: base64.URLEncoding.EncodeToString(organizerBuf),
 		Address:  clientServerAddress,
 		Peers:    knownPeers,

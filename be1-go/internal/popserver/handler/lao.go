@@ -257,11 +257,9 @@ func handleElectionSetup(msg message.Message, channel string) *answer.Error {
 		return errAnswer
 	}
 
-	//TODO clean this quick fix
-	channelID, _ := strings.CutPrefix(channel, "/")
-	splitChannelID := strings.Split(channelID, "/")
+	laoID, _ := strings.CutPrefix(channel, RootPrefix)
 
-	errAnswer = electionSetup.Verify(splitChannelID[1])
+	errAnswer = electionSetup.Verify(laoID)
 	if errAnswer != nil {
 		errAnswer = errAnswer.Wrap("handleElectionSetup")
 		return errAnswer

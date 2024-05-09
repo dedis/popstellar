@@ -10,6 +10,7 @@ import (
 	"popstellar/internal/popserver/state"
 	"popstellar/internal/popserver/types"
 	"popstellar/message/query/method/message"
+	"strings"
 	"testing"
 	"time"
 )
@@ -48,12 +49,12 @@ func Test_handleChannelReaction(t *testing.T) {
 	// Test 1: successfully add a reaction 👍
 
 	laoID := "lao1"
-	channelID := "/root/" + laoID + "/social/" + sender
+	channelID := RootPrefix + laoID + Social + Reactions
 
 	args = append(args, input{
 		name:    "Test 1",
 		channel: channelID,
-		msg: newReactionAddMsg(t, channelID, laoID, sender, "👍", chirpID, time.Now().Unix(), mockRepo,
+		msg: newReactionAddMsg(t, channelID, sender, "👍", chirpID, time.Now().Unix(), mockRepo,
 			false, false),
 		isError:  false,
 		contains: "",
@@ -62,12 +63,12 @@ func Test_handleChannelReaction(t *testing.T) {
 	// Test 2: successfully add a reaction 👎
 
 	laoID = "lao2"
-	channelID = "/root/" + laoID + "/social/" + sender
+	channelID = RootPrefix + laoID + Social + Reactions
 
 	args = append(args, input{
 		name:    "Test 2",
 		channel: channelID,
-		msg: newReactionAddMsg(t, channelID, laoID, sender, "👎", chirpID, time.Now().Unix(), mockRepo,
+		msg: newReactionAddMsg(t, channelID, sender, "👎", chirpID, time.Now().Unix(), mockRepo,
 			false, false),
 		isError:  false,
 		contains: "",
@@ -76,12 +77,12 @@ func Test_handleChannelReaction(t *testing.T) {
 	// Test 3: successfully add a reaction ❤️
 
 	laoID = "lao3"
-	channelID = "/root/" + laoID + "/social/" + sender
+	channelID = RootPrefix + laoID + Social + Reactions
 
 	args = append(args, input{
 		name:    "Test 3",
 		channel: channelID,
-		msg: newReactionAddMsg(t, channelID, laoID, sender, "❤️", chirpID, time.Now().Unix(), mockRepo,
+		msg: newReactionAddMsg(t, channelID, sender, "❤️", chirpID, time.Now().Unix(), mockRepo,
 			false, false),
 		isError:  false,
 		contains: "",
@@ -90,12 +91,12 @@ func Test_handleChannelReaction(t *testing.T) {
 	// Test 4: failed to add a reaction because wrong chirpID
 
 	laoID = "lao4"
-	channelID = "/root/" + laoID + "/social/" + sender
+	channelID = RootPrefix + laoID + Social + Reactions
 
 	args = append(args, input{
 		name:    "Test 4",
 		channel: channelID,
-		msg: newReactionAddMsg(t, channelID, laoID, sender, "👍", invalidChirpID, time.Now().Unix(), mockRepo,
+		msg: newReactionAddMsg(t, channelID, sender, "👍", invalidChirpID, time.Now().Unix(), mockRepo,
 			true, false),
 		isError:  true,
 		contains: "invalid message field",
@@ -104,12 +105,12 @@ func Test_handleChannelReaction(t *testing.T) {
 	// Test 5: failed to add a reaction because negative timestamp
 
 	laoID = "lao5"
-	channelID = "/root/" + laoID + "/social/" + sender
+	channelID = RootPrefix + laoID + Social + Reactions
 
 	args = append(args, input{
 		name:    "Test 5",
 		channel: channelID,
-		msg: newReactionAddMsg(t, channelID, laoID, sender, "👍", chirpID, -1, mockRepo,
+		msg: newReactionAddMsg(t, channelID, sender, "👍", chirpID, -1, mockRepo,
 			true, false),
 		isError:  true,
 		contains: "invalid message field",
@@ -118,12 +119,12 @@ func Test_handleChannelReaction(t *testing.T) {
 	// Test 6: failed to add a reaction because didn't participate in roll-call
 
 	laoID = "lao6"
-	channelID = "/root/" + laoID + "/social/" + sender
+	channelID = RootPrefix + laoID + Social + Reactions
 
 	args = append(args, input{
 		name:    "Test 6",
 		channel: channelID,
-		msg: newReactionAddMsg(t, channelID, laoID, sender, "👍", chirpID, time.Now().Unix(), mockRepo,
+		msg: newReactionAddMsg(t, channelID, sender, "👍", chirpID, time.Now().Unix(), mockRepo,
 			false, true),
 		isError:  true,
 		contains: "user not inside roll-call",
@@ -132,13 +133,13 @@ func Test_handleChannelReaction(t *testing.T) {
 	// Test 7: successfully delete a reaction
 
 	laoID = "lao7"
-	channelID = "/root/" + laoID + "/social/" + sender
+	channelID = RootPrefix + laoID + Social + Reactions
 	reactionID := "AAAAdBu8DM7jT30IKqkPjuFFIHnubO0z4E0dV7dR4sK="
 
 	args = append(args, input{
 		name:    "Test 7",
 		channel: channelID,
-		msg: newReactionDeleteMsg(t, channelID, laoID, sender, reactionID, time.Now().Unix(), mockRepo,
+		msg: newReactionDeleteMsg(t, channelID, sender, reactionID, time.Now().Unix(), mockRepo,
 			false, false, false, false),
 		isError:  false,
 		contains: "",
@@ -147,13 +148,13 @@ func Test_handleChannelReaction(t *testing.T) {
 	// Test 8: failed to delete a reaction because negative timestamp
 
 	laoID = "lao8"
-	channelID = "/root/" + laoID + "/social/" + sender
+	channelID = RootPrefix + laoID + Social + Reactions
 	reactionID = "AAAAABu8DM7jT30IKqkPjuFFIHnubO0z4E0dV7dR4sK="
 
 	args = append(args, input{
 		name:    "Test 8",
 		channel: channelID,
-		msg: newReactionDeleteMsg(t, channelID, laoID, sender, reactionID, -1, mockRepo,
+		msg: newReactionDeleteMsg(t, channelID, sender, reactionID, -1, mockRepo,
 			true, false, false, false),
 		isError:  true,
 		contains: "invalid message field",
@@ -162,13 +163,13 @@ func Test_handleChannelReaction(t *testing.T) {
 	// Test 9: failed to delete a reaction because reaction doesn't exist
 
 	laoID = "lao9"
-	channelID = "/root/" + laoID + "/social/" + sender
+	channelID = RootPrefix + laoID + Social + Reactions
 	reactionID = "AAAAdBB8DM7jT30IKqkPjuFFIHnubO0z4E0dV7dR4sK="
 
 	args = append(args, input{
 		name:    "Test 9",
 		channel: channelID,
-		msg: newReactionDeleteMsg(t, channelID, laoID, sender, reactionID, time.Now().Unix(), mockRepo,
+		msg: newReactionDeleteMsg(t, channelID, sender, reactionID, time.Now().Unix(), mockRepo,
 			false, true, false, false),
 		isError:  true,
 		contains: "unknown reaction",
@@ -177,13 +178,13 @@ func Test_handleChannelReaction(t *testing.T) {
 	// Test 10: failed to delete a reaction because not owner
 
 	laoID = "lao10"
-	channelID = "/root/" + laoID + "/social/" + sender
+	channelID = RootPrefix + laoID + Social + Reactions
 	reactionID = "AAAAdBB8DM7jT30IKqkPjuFFIHnubO0z4E0dV7dR4KK="
 
 	args = append(args, input{
 		name:    "Test 10",
 		channel: channelID,
-		msg: newReactionDeleteMsg(t, channelID, laoID, sender, reactionID, time.Now().Unix(), mockRepo,
+		msg: newReactionDeleteMsg(t, channelID, sender, reactionID, time.Now().Unix(), mockRepo,
 			false, false, true, false),
 		isError:  true,
 		contains: "only the owner of the reaction can delete it",
@@ -192,13 +193,13 @@ func Test_handleChannelReaction(t *testing.T) {
 	// Test 11: failed to delete a reaction because didn't participate in roll-call
 
 	laoID = "lao11"
-	channelID = "/root/" + laoID + "/social/" + sender
+	channelID = RootPrefix + laoID + Social + Reactions
 	reactionID = "AAAAdBB8DM7jT30IKqkPjuFFIHnubO0z4E0dV7dRYKK="
 
 	args = append(args, input{
 		name:    "Test 11",
 		channel: channelID,
-		msg: newReactionDeleteMsg(t, channelID, laoID, sender, reactionID, time.Now().Unix(), mockRepo,
+		msg: newReactionDeleteMsg(t, channelID, sender, reactionID, time.Now().Unix(), mockRepo,
 			false, false, false, true),
 		isError:  true,
 		contains: "user not inside roll-call",
@@ -220,7 +221,7 @@ func Test_handleChannelReaction(t *testing.T) {
 
 }
 
-func newReactionAddMsg(t *testing.T, channelID, laoID string, sender string, reactionCodePoint, chirpID string, timestamp int64,
+func newReactionAddMsg(t *testing.T, channelID string, sender string, reactionCodePoint, chirpID string, timestamp int64,
 	mockRepo *database.MockRepository, hasInvalidField, isNotAttendee bool) message.Message {
 
 	msg := generator.NewReactionAddMsg(t, sender, nil, reactionCodePoint, chirpID, timestamp)
@@ -228,19 +229,21 @@ func newReactionAddMsg(t *testing.T, channelID, laoID string, sender string, rea
 	errAnswer := state.AddChannel(channelID)
 	require.Nil(t, errAnswer)
 
+	laoPath, _ := strings.CutSuffix(channelID, Social+Reactions)
+
 	if !hasInvalidField && !isNotAttendee {
-		mockRepo.On("IsAttendee", laoID, sender).Return(true, nil)
+		mockRepo.On("IsAttendee", laoPath, sender).Return(true, nil)
 		mockRepo.On("StoreMessageAndData", channelID, msg).Return(nil)
 	}
 
 	if isNotAttendee {
-		mockRepo.On("IsAttendee", laoID, sender).Return(false, nil)
+		mockRepo.On("IsAttendee", laoPath, sender).Return(false, nil)
 	}
 
 	return msg
 }
 
-func newReactionDeleteMsg(t *testing.T, channelID, laoID string, sender string, reactionID string, timestamp int64,
+func newReactionDeleteMsg(t *testing.T, channelID string, sender string, reactionID string, timestamp int64,
 	mockRepo *database.MockRepository, hasInvalidField, hasNotReaction, isNotOwner, isNotAttendee bool) message.Message {
 
 	msg := generator.NewReactionDeleteMsg(t, sender, nil, reactionID, timestamp)
@@ -248,8 +251,10 @@ func newReactionDeleteMsg(t *testing.T, channelID, laoID string, sender string, 
 	errAnswer := state.AddChannel(channelID)
 	require.Nil(t, errAnswer)
 
+	laoPath, _ := strings.CutSuffix(channelID, Social+Reactions)
+
 	if !hasInvalidField && !hasNotReaction && !isNotOwner && !isNotAttendee {
-		mockRepo.On("IsAttendee", laoID, sender).Return(true, nil)
+		mockRepo.On("IsAttendee", laoPath, sender).Return(true, nil)
 
 		mockRepo.On("GetReactionSender", reactionID).Return(sender, nil)
 
@@ -257,19 +262,19 @@ func newReactionDeleteMsg(t *testing.T, channelID, laoID string, sender string, 
 	}
 
 	if hasNotReaction {
-		mockRepo.On("IsAttendee", laoID, sender).Return(true, nil)
+		mockRepo.On("IsAttendee", laoPath, sender).Return(true, nil)
 
 		mockRepo.On("GetReactionSender", reactionID).Return("", nil)
 	}
 
 	if isNotOwner {
-		mockRepo.On("IsAttendee", laoID, sender).Return(true, nil)
+		mockRepo.On("IsAttendee", laoPath, sender).Return(true, nil)
 
 		mockRepo.On("GetReactionSender", reactionID).Return("notSender", nil)
 	}
 
 	if isNotAttendee {
-		mockRepo.On("IsAttendee", laoID, sender).Return(false, nil)
+		mockRepo.On("IsAttendee", laoPath, sender).Return(false, nil)
 	}
 
 	return msg

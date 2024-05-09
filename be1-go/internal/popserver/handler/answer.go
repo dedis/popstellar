@@ -11,12 +11,12 @@ import (
 
 const maxRetry = 10
 
-func HandleAnswer(msg []byte) *answer.Error {
+func handleAnswer(msg []byte) *answer.Error {
 	var answerMsg answer.Answer
 
 	err := json.Unmarshal(msg, &answerMsg)
 	if err != nil {
-		errAnswer := answer.NewInvalidMessageFieldError("failed to unmarshal: %v", err).Wrap("HandleAnswer")
+		errAnswer := answer.NewInvalidMessageFieldError("failed to unmarshal: %v", err).Wrap("handleAnswer")
 		return errAnswer
 	}
 
@@ -33,12 +33,12 @@ func HandleAnswer(msg []byte) *answer.Error {
 
 	errAnswer := state.SetQueryReceived(*answerMsg.ID)
 	if errAnswer != nil {
-		return errAnswer.Wrap("HandleAnswer")
+		return errAnswer.Wrap("handleAnswer")
 	}
 
 	errAnswer = handleGetMessagesByIDAnswer(answerMsg)
 	if errAnswer != nil {
-		errAnswer = errAnswer.Wrap("HandleAnswer")
+		errAnswer = errAnswer.Wrap("handleAnswer")
 		return errAnswer
 	}
 

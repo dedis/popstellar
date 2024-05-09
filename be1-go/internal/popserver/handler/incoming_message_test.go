@@ -1,4 +1,4 @@
-package popserver
+package handler
 
 import (
 	"encoding/base64"
@@ -30,7 +30,7 @@ func TestMain(m *testing.M) {
 	os.Exit(exitVal)
 }
 
-func Test_handleMessage(t *testing.T) {
+func Test_handleIncomingMessage(t *testing.T) {
 	type input struct {
 		name     string
 		message  []byte
@@ -63,7 +63,7 @@ func Test_handleMessage(t *testing.T) {
 	for _, arg := range args {
 		t.Run(arg.name, func(t *testing.T) {
 			fakeSocket := socket.FakeSocket{Id: "1"}
-			err := handleMessage(&fakeSocket, arg.message)
+			err := HandleIncomingMessage(&fakeSocket, arg.message)
 			require.Error(t, err)
 			require.Contains(t, err.Error(), arg.contains)
 		})

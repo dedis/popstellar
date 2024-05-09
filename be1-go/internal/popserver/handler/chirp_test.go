@@ -11,6 +11,7 @@ import (
 	"popstellar/internal/popserver/state"
 	"popstellar/internal/popserver/types"
 	"popstellar/message/query/method/message"
+	"strings"
 	"testing"
 	"time"
 )
@@ -145,8 +146,7 @@ func newChirpAddMsg(t *testing.T, channelID string, sender string, timestamp int
 		return msg
 	}
 
-	chirpNotifyChannelID, err := getGeneralChirpsChannel(channelID)
-	require.Nil(t, err)
+	chirpNotifyChannelID, _ := strings.CutSuffix(channelID, Social+"/"+msg.Sender)
 
 	errAnswer = state.AddChannel(chirpNotifyChannelID)
 	require.Nil(t, errAnswer)
@@ -171,8 +171,7 @@ func newChirpDeleteMsg(t *testing.T, channelID string, sender string, chirpID st
 
 	mockRepo.On("HasMessage", chirpID).Return(true, nil)
 
-	chirpNotifyChannelID, err := getGeneralChirpsChannel(channelID)
-	require.Nil(t, err)
+	chirpNotifyChannelID, _ := strings.CutSuffix(channelID, Social+"/"+msg.Sender)
 
 	errAnswer = state.AddChannel(chirpNotifyChannelID)
 	require.Nil(t, errAnswer)
