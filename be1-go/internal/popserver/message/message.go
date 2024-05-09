@@ -3,9 +3,8 @@ package message
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/rs/zerolog/log"
 	"popstellar/internal/popserver/state"
-	"popstellar/internal/popserver/utils"
+	"popstellar/internal/popserver/util"
 	jsonrpc "popstellar/message"
 	"popstellar/message/answer"
 	"popstellar/message/query"
@@ -14,13 +13,7 @@ import (
 )
 
 func HandleMessage(socket socket.Socket, msg []byte) error {
-	schemaValidator, ok := utils.GetSchemaValidatorInstance()
-	if !ok {
-		errAnswer := answer.NewInternalServerError("failed to get utils").Wrap("HandleMessage")
-		return errAnswer
-	}
-
-	err := schemaValidator.VerifyJSON(msg, validation.GenericMessage)
+	err := util.VerifyJSON(msg, validation.GenericMessage)
 	if err != nil {
 		errAnswer := answer.NewInvalidMessageFieldError("invalid json: %v", err).Wrap("HandleMessage")
 		socket.SendError(nil, errAnswer)
@@ -107,13 +100,13 @@ func handleAnswer(msg []byte) *answer.Error {
 	}
 
 	if answerMsg.Result == nil {
-		log.Warn().Msg("received an error, nothing to handle")
+		util.LogInfo("received an error, nothing to handle")
 		// don't send any error to avoid infinite error loop as a server will
 		// send an error to another server that will create another error
 		return nil
 	}
 	if answerMsg.Result.IsEmpty() {
-		log.Info().Msg("expected isn't an answer to a query, nothing to handle")
+		util.LogInfo("expected isn't an answer to a query, nothing to handle")
 		return nil
 	}
 

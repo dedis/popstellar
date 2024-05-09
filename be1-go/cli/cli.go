@@ -15,7 +15,7 @@ import (
 	"popstellar/internal/popserver/config"
 	"popstellar/internal/popserver/database"
 	"popstellar/internal/popserver/state"
-	"popstellar/internal/popserver/utils"
+	"popstellar/internal/popserver/util"
 	"popstellar/network"
 	"popstellar/network/socket"
 	"popstellar/validation"
@@ -94,7 +94,7 @@ func Serve(cliCtx *cli.Context) error {
 		os.Exit(1)
 	}
 
-	utils.InitUtils(&log, schemaValidator)
+	util.InitUtils(&log, schemaValidator)
 
 	state.InitState(&log)
 

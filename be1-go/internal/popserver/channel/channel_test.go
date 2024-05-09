@@ -12,7 +12,7 @@ import (
 	"popstellar/crypto"
 	"popstellar/internal/popserver/database"
 	"popstellar/internal/popserver/generator"
-	"popstellar/internal/popserver/utils"
+	"popstellar/internal/popserver/util"
 	"popstellar/message/query/method/message"
 	"popstellar/validation"
 	"testing"
@@ -31,7 +31,7 @@ func TestMain(m *testing.M) {
 		os.Exit(1)
 	}
 
-	utils.InitUtils(&noLog, schemaValidator)
+	util.InitUtils(&noLog, schemaValidator)
 
 	exitVal := m.Run()
 

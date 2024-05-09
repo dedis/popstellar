@@ -9,7 +9,7 @@ import (
 	"popstellar/internal/popserver/config"
 	"popstellar/internal/popserver/database"
 	"popstellar/internal/popserver/state"
-	"popstellar/internal/popserver/utils"
+	"popstellar/internal/popserver/util"
 	jsonrpc "popstellar/message"
 	"popstellar/message/answer"
 	"popstellar/message/messagedata"
@@ -100,7 +100,7 @@ func HandleChannel(channelID string, msg message.Message) *answer.Error {
 	return nil
 }
 
-// utils for the channels
+// util for the channels
 
 func verifyDataAndGetObjectAction(msg message.Message) (object string, action string, errAnswer *answer.Error) {
 	jsonData, err := base64.URLEncoding.DecodeString(msg.Data)
@@ -110,14 +110,8 @@ func verifyDataAndGetObjectAction(msg message.Message) (object string, action st
 		return "", "", errAnswer
 	}
 
-	schemaValidator, ok := utils.GetSchemaValidatorInstance()
-	if !ok {
-		errAnswer := answer.NewInternalServerError("failed to get utils").Wrap("verifyDataAndGetObjectAction")
-		return "", "", errAnswer
-	}
-
 	// validate message data against the json schema
-	err = schemaValidator.VerifyJSON(jsonData, validation.Data)
+	err = util.VerifyJSON(jsonData, validation.Data)
 	if err != nil {
 		errAnswer = answer.NewInvalidMessageFieldError("failed to validate message against json schema: %v", err)
 		errAnswer = errAnswer.Wrap("verifyDataAndGetObjectAction")
@@ -139,7 +133,7 @@ func Sign(data []byte) ([]byte, *answer.Error) {
 
 	serverSecretKey, ok := config.GetServerSecretKeyInstance()
 	if !ok {
-		errAnswer := answer.NewInternalServerError("failed to get utils").Wrap("Sign")
+		errAnswer := answer.NewInternalServerError("failed to get util").Wrap("Sign")
 		return nil, errAnswer
 	}
 

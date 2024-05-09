@@ -7,7 +7,7 @@ import (
 	"popstellar/internal/popserver/config"
 	"popstellar/internal/popserver/message"
 	"popstellar/internal/popserver/state"
-	"popstellar/internal/popserver/utils"
+	"popstellar/internal/popserver/util"
 	jsonrpc "popstellar/message"
 	"popstellar/message/query"
 	"popstellar/message/query/method"
@@ -34,24 +34,19 @@ func (p *PopServer) NotifyNewServer(socket socket.Socket) {
 
 func (p *PopServer) Start() {
 	go func() {
-		log, ok := utils.GetLogInstance()
-		if !ok {
-			panic("Missing log")
-		}
-
-		log.Info().Msg("Start check messages")
+		util.LogInfo("Start check messages")
 		for {
 			select {
 			case incomingMessage := <-p.messageChan:
 				err := message.HandleMessage(incomingMessage.Socket, incomingMessage.Message)
 				if err != nil {
-					log.Error().Msg(err.Error())
+					util.LogError(err)
 				}
 			case <-p.closedSockets:
-				log.Info().Msg("stopping the sockets")
+				util.LogInfo("Start check messages")
 				return
 			case <-p.stop:
-				log.Info().Msg("stopping the hub")
+				util.LogInfo("Start check messages")
 				return
 			}
 		}

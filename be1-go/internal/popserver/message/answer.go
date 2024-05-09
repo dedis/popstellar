@@ -3,7 +3,7 @@ package message
 import (
 	"encoding/json"
 	"popstellar/internal/popserver/channel"
-	"popstellar/internal/popserver/utils"
+	"popstellar/internal/popserver/util"
 	"popstellar/message/answer"
 	"popstellar/message/query/method/message"
 	"sort"
@@ -14,12 +14,6 @@ const maxRetry = 10
 func handleGetMessagesByIDAnswer(msg answer.Answer) *answer.Error {
 	result := msg.Result.GetMessagesByChannel()
 	msgsByChan := make(map[string]map[string]message.Message)
-
-	log, ok := utils.GetLogInstance()
-	if !ok {
-		errAnswer := answer.NewInternalServerError("failed to get utils").Wrap("handleGetMessagesByIDAnswer")
-		return errAnswer
-	}
 
 	// Unmarshal each message
 	for channelID, rawMsgs := range result {
@@ -33,7 +27,7 @@ func handleGetMessagesByIDAnswer(msg answer.Answer) *answer.Error {
 			}
 
 			errAnswer := answer.NewInvalidMessageFieldError("failed to unmarshal: %v", err).Wrap("handleGetMessagesByIDAnswer")
-			log.Error().Msg(errAnswer.Error())
+			util.LogError(errAnswer)
 		}
 
 		if len(msgsByChan[channelID]) == 0 {
@@ -48,11 +42,6 @@ func handleGetMessagesByIDAnswer(msg answer.Answer) *answer.Error {
 }
 
 func handleMessagesByChannel(msgsByChannel map[string]map[string]message.Message) {
-	log, ok := utils.GetLogInstance()
-	if !ok {
-		return
-	}
-
 	// Handle every messages
 	for i := 0; i < maxRetry; i++ {
 		// Sort by channelID length
@@ -78,7 +67,7 @@ func handleMessagesByChannel(msgsByChannel map[string]map[string]message.Message
 				}
 
 				errAnswer = errAnswer.Wrap(msgID).Wrap("handleGetMessagesByIDAnswer")
-				log.Error().Msg(errAnswer.Error())
+				util.LogError(errAnswer)
 			}
 
 			if len(msgsByChannel[channelID]) == 0 {
