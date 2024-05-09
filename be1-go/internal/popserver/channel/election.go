@@ -46,11 +46,9 @@ func handleChannelElection(channel string, msg message.Message) *answer.Error {
 	}
 
 	if storeMessage {
-		db, ok := database.GetElectionRepositoryInstance()
-		if !ok {
-			errAnswer := answer.NewInternalServerError("failed to get database")
-			errAnswer = errAnswer.Wrap("handleChannelElection")
-			return errAnswer
+		db, errAnswer := database.GetElectionRepositoryInstance()
+		if errAnswer != nil {
+			return errAnswer.Wrap("handleChannelElection")
 		}
 
 		err := db.StoreMessageAndData(channel, msg)
@@ -91,10 +89,9 @@ func handleVoteCastVote(msg message.Message, channel string) *answer.Error {
 		return errAnswer
 	}
 
-	db, ok := database.GetElectionRepositoryInstance()
-	if !ok {
-		errAnswer := answer.NewInternalServerError("failed to get database").Wrap("handleElectionOpen")
-		return errAnswer
+	db, errAnswer := database.GetElectionRepositoryInstance()
+	if errAnswer != nil {
+		return errAnswer.Wrap("handleElectionOpen")
 	}
 
 	attendees, err := db.GetElectionAttendees(channel)
@@ -110,7 +107,7 @@ func handleVoteCastVote(msg message.Message, channel string) *answer.Error {
 		return errAnswer
 	}
 
-	_, ok = attendees[msg.Sender]
+	_, ok := attendees[msg.Sender]
 	if !senderPubKey.Equal(organizerPubKey) && !ok {
 		errAnswer = answer.NewInvalidMessageFieldError("sender is not an attendee or the organizer of the election")
 		return errAnswer
@@ -176,10 +173,9 @@ func handleVoteCastVote(msg message.Message, channel string) *answer.Error {
 func verifyVote(vote messagedata.Vote, channel, electionID string) *answer.Error {
 	var errAnswer *answer.Error
 
-	db, ok := database.GetElectionRepositoryInstance()
-	if !ok {
-		errAnswer := answer.NewInternalServerError("failed to get database").Wrap("handleElectionOpen")
-		return errAnswer
+	db, errAnswer := database.GetElectionRepositoryInstance()
+	if errAnswer != nil {
+		return errAnswer.Wrap("handleElectionOpen")
 	}
 
 	questions, err := db.GetElectionQuestions(channel)
@@ -263,10 +259,9 @@ func handleElectionOpen(msg message.Message, channel string) *answer.Error {
 		return errAnswer
 	}
 
-	db, ok := database.GetElectionRepositoryInstance()
-	if !ok {
-		errAnswer := answer.NewInternalServerError("failed to get database").Wrap("handleElectionOpen")
-		return errAnswer
+	db, errAnswer := database.GetElectionRepositoryInstance()
+	if errAnswer != nil {
+		return errAnswer.Wrap("handleElectionOpen")
 	}
 
 	organizerPubKey, err := db.GetLAOOrganizerPubKey(channel)
@@ -290,7 +285,7 @@ func handleElectionOpen(msg message.Message, channel string) *answer.Error {
 	}
 
 	// verify if the election was already started or terminated
-	ok, err = db.IsElectionStartedOrEnded(channel)
+	ok, err := db.IsElectionStartedOrEnded(channel)
 	if err != nil {
 		errAnswer = answer.NewInternalServerError("failed to get election start or termination status: %v", err)
 		errAnswer = errAnswer.Wrap("handleElectionOpen")
@@ -348,10 +343,9 @@ func handleElectionEnd(msg message.Message, channel string) *answer.Error {
 		return errAnswer
 	}
 
-	db, ok := database.GetElectionRepositoryInstance()
-	if !ok {
-		errAnswer := answer.NewInternalServerError("failed to get database").Wrap("handleElectionEnd")
-		return errAnswer
+	db, errAnswer := database.GetElectionRepositoryInstance()
+	if errAnswer != nil {
+		return errAnswer.Wrap("handleElectionEnd")
 	}
 
 	organizerPubKey, err := db.GetLAOOrganizerPubKey(channel)
@@ -469,18 +463,15 @@ func verifyRegisteredVotes(electionEnd messagedata.ElectionEnd, questions map[st
 }
 
 func createElectionResult(questions map[string]types.Question, channel string) (message.Message, *answer.Error) {
-	var errAnswer *answer.Error
-	db, ok := database.GetElectionRepositoryInstance()
-	if !ok {
-		errAnswer = answer.NewInternalServerError("failed to get database")
-		errAnswer = errAnswer.Wrap("broadcastElectionResult")
-		return message.Message{}, errAnswer
+	db, errAnswer := database.GetElectionRepositoryInstance()
+	if errAnswer != nil {
+		return message.Message{}, errAnswer.Wrap("createElectionResult")
 	}
 
 	electionType, err := db.GetElectionType(channel)
 	if err != nil {
 		errAnswer = answer.NewInternalServerError("failed to get election type: %v", err)
-		errAnswer = errAnswer.Wrap("broadcastElectionResult")
+		errAnswer = errAnswer.Wrap("createElectionResult")
 		return message.Message{}, errAnswer
 	}
 
@@ -519,7 +510,7 @@ func createElectionResult(questions map[string]types.Question, channel string) (
 	buf, err := json.Marshal(resultElection)
 	if err != nil {
 		errAnswer = answer.NewInternalServerError("failed to marshal election result: %v", err)
-		errAnswer = errAnswer.Wrap("broadcastElectionResult")
+		errAnswer = errAnswer.Wrap("createElectionResult")
 		return message.Message{}, errAnswer
 	}
 	buf64 := base64.URLEncoding.EncodeToString(buf)
@@ -602,11 +593,9 @@ func decryptVote(vote, channel string) (int, *answer.Error) {
 		return -1, errAnswer
 	}
 
-	db, ok := database.GetElectionRepositoryInstance()
-	if !ok {
-		errAnswer = answer.NewInternalServerError("failed to get database")
-		errAnswer = errAnswer.Wrap("decryptVote")
-		return -1, errAnswer
+	db, errAnswer := database.GetElectionRepositoryInstance()
+	if errAnswer != nil {
+		return -1, errAnswer.Wrap("decryptVote")
 	}
 	electionSecretKey, err := db.GetElectionSecretKey(channel)
 	if err != nil {

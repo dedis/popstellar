@@ -25,10 +25,9 @@ func handleChannelCoin(channel string, msg message.Message) *answer.Error {
 		return errAnswer
 	}
 
-	db, ok := database.GetCoinRepositoryInstance()
-	if !ok {
-		errAnswer := answer.NewInternalServerError("failed to get database").Wrap("handleChannelCoin")
-		return errAnswer
+	db, errAnswer := database.GetCoinRepositoryInstance()
+	if errAnswer != nil {
+		return errAnswer.Wrap("handleChannelCoin")
 	}
 
 	err := db.StoreMessageAndData(channel, msg)

@@ -174,9 +174,9 @@ func handleCatchUp(socket socket.Socket, msg []byte) (*int, *answer.Error) {
 		return nil, errAnswer
 	}
 
-	db, ok := database.GetQueryRepositoryInstance()
-	if !ok {
-		errAnswer := answer.NewInternalServerError("failed to get database").Wrap("handleCatchUp")
+	db, errAnswer := database.GetQueryRepositoryInstance()
+	if errAnswer != nil {
+		errAnswer = errAnswer.Wrap("handleCatchUp")
 		return &catchup.ID, errAnswer
 	}
 
@@ -200,9 +200,9 @@ func handleHeartbeat(socket socket.Socket, byteMessage []byte) (*int, *answer.Er
 		return nil, errAnswer
 	}
 
-	db, ok := database.GetQueryRepositoryInstance()
-	if !ok {
-		errAnswer := answer.NewInternalServerError("failed to get database").Wrap("handleHeartbeat")
+	db, errAnswer := database.GetQueryRepositoryInstance()
+	if errAnswer != nil {
+		errAnswer = errAnswer.Wrap("handleHeartbeat")
 		return nil, errAnswer
 	}
 
@@ -258,9 +258,9 @@ func handleGetMessagesByID(socket socket.Socket, msg []byte) (*int, *answer.Erro
 		return nil, errAnswer
 	}
 
-	db, ok := database.GetQueryRepositoryInstance()
-	if !ok {
-		errAnswer := answer.NewInternalServerError("failed to get database").Wrap("handleGetMessageByID")
+	db, errAnswer := database.GetQueryRepositoryInstance()
+	if errAnswer != nil {
+		errAnswer = errAnswer.Wrap("handleGetMessageByID")
 		return &getMessagesById.ID, errAnswer
 	}
 

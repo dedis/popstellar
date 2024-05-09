@@ -54,10 +54,9 @@ func handleChannelLao(channel string, msg message.Message) *answer.Error {
 	}
 
 	if storeMessage {
-		db, ok := database.GetLAORepositoryInstance()
-		if !ok {
-			errAnswer := answer.NewInternalServerError("failed to get database").Wrap("handleChannelLao")
-			return errAnswer
+		db, errAnswer := database.GetLAORepositoryInstance()
+		if errAnswer != nil {
+			return errAnswer.Wrap("handleChannelLao")
 		}
 
 		err := db.StoreMessageAndData(channel, msg)
@@ -113,14 +112,12 @@ func handleRollCallOpen(msg message.Message, channel string) *answer.Error {
 		return errAnswer
 	}
 
-	db, ok := database.GetLAORepositoryInstance()
-	if !ok {
-		errAnswer := answer.NewInternalServerError("failed to get database")
-		errAnswer = errAnswer.Wrap("handleRollCallOpen")
-		return errAnswer
+	db, errAnswer := database.GetLAORepositoryInstance()
+	if errAnswer != nil {
+		return errAnswer.Wrap("handleRollCallOpen")
 	}
 
-	ok, err = db.CheckPrevID(channel, rollCallOpen.Opens, messagedata.RollCallActionCreate)
+	ok, err := db.CheckPrevID(channel, rollCallOpen.Opens, messagedata.RollCallActionCreate)
 
 	if err != nil {
 		errAnswer = answer.NewInternalServerError("failed to check if previous id exists: %v", err)
@@ -171,14 +168,12 @@ func handleRollCallClose(msg message.Message, channel string) *answer.Error {
 		return errAnswer
 	}
 
-	db, ok := database.GetLAORepositoryInstance()
-	if !ok {
-		errAnswer := answer.NewInternalServerError("failed to get database")
-		errAnswer = errAnswer.Wrap("handleRollCallClose")
-		return errAnswer
+	db, errAnswer := database.GetLAORepositoryInstance()
+	if errAnswer != nil {
+		return errAnswer.Wrap("handleRollCallClose")
 	}
 
-	ok, err = db.CheckPrevID(channel, rollCallClose.Closes, messagedata.RollCallActionOpen)
+	ok, err := db.CheckPrevID(channel, rollCallClose.Closes, messagedata.RollCallActionOpen)
 	if err != nil {
 		errAnswer = answer.NewInternalServerError("failed to check if previous id exists: %v", err)
 		errAnswer = errAnswer.Wrap("handleRollCallClose")
@@ -247,10 +242,9 @@ func handleElectionSetup(msg message.Message, channel string) *answer.Error {
 		return errAnswer
 	}
 
-	db, ok := database.GetLAORepositoryInstance()
-	if !ok {
-		errAnswer := answer.NewInternalServerError("failed to get database").Wrap("handleElectionSetup")
-		return errAnswer
+	db, errAnswer := database.GetLAORepositoryInstance()
+	if errAnswer != nil {
+		return errAnswer.Wrap("handleElectionSetup")
 	}
 
 	organizePubKey, err := db.GetOrganizerPubKey(channel)
@@ -374,13 +368,12 @@ func handleLaoState(msg message.Message, channel string) *answer.Error {
 		return errAnswer
 	}
 
-	db, ok := database.GetLAORepositoryInstance()
-	if !ok {
-		errAnswer := answer.NewInternalServerError("failed to get database").Wrap("handleLaoState")
-		return errAnswer
+	db, errAnswer := database.GetLAORepositoryInstance()
+	if errAnswer != nil {
+		return errAnswer.Wrap("handleLaoState")
 	}
 
-	ok, err = db.HasMessage(laoState.ModificationID)
+	ok, err := db.HasMessage(laoState.ModificationID)
 	if err != nil {
 		errAnswer = answer.NewInternalServerError("failed to get check if message exists: %v", err)
 		errAnswer = errAnswer.Wrap("handleLaoState")

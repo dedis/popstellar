@@ -13,9 +13,9 @@ import (
 )
 
 func HandleMessage(socket socket.Socket, msg []byte) error {
-	err := util.VerifyJSON(msg, validation.GenericMessage)
-	if err != nil {
-		errAnswer := answer.NewInvalidMessageFieldError("invalid json: %v", err).Wrap("HandleMessage")
+	errAnswer := util.VerifyJSON(msg, validation.GenericMessage)
+	if errAnswer != nil {
+		errAnswer = errAnswer.Wrap("HandleMessage")
 		socket.SendError(nil, errAnswer)
 		return errAnswer
 	}
@@ -26,8 +26,6 @@ func HandleMessage(socket socket.Socket, msg []byte) error {
 		socket.SendError(nil, errAnswer)
 		return errAnswer
 	}
-
-	var errAnswer *answer.Error
 
 	switch rpcType {
 	case jsonrpc.RPCTypeQuery:

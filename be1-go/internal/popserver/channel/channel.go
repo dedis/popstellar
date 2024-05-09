@@ -25,10 +25,9 @@ func HandleChannel(channelID string, msg message.Message) *answer.Error {
 		return errAnswer.Wrap("HandleChannel")
 	}
 
-	db, ok := database.GetChannelRepositoryInstance()
-	if !ok {
-		errAnswer := answer.NewInternalServerError("failed to get database").Wrap("HandleChannel")
-		return errAnswer
+	db, errAnswer := database.GetChannelRepositoryInstance()
+	if errAnswer != nil {
+		return errAnswer.Wrap("HandleChannel")
 	}
 
 	msgAlreadyExists, err := db.HasMessage(msg.MessageID)
@@ -108,26 +107,25 @@ func verifyMessage(msg message.Message) *answer.Error {
 	return nil
 }
 
-func verifyDataAndGetObjectAction(msg message.Message) (object string, action string, errAnswer *answer.Error) {
+func verifyDataAndGetObjectAction(msg message.Message) (string, string, *answer.Error) {
 	jsonData, err := base64.URLEncoding.DecodeString(msg.Data)
 	if err != nil {
-		errAnswer = answer.NewInvalidMessageFieldError("failed to decode message data: %v", err)
+		errAnswer := answer.NewInvalidMessageFieldError("failed to decode message data: %v", err)
 		errAnswer = errAnswer.Wrap("verifyDataAndGetObjectAction")
 		return "", "", errAnswer
 	}
 
 	// validate message data against the json schema
-	err = util.VerifyJSON(jsonData, validation.Data)
-	if err != nil {
-		errAnswer = answer.NewInvalidMessageFieldError("failed to validate message against json schema: %v", err)
+	errAnswer := util.VerifyJSON(jsonData, validation.Data)
+	if errAnswer != nil {
 		errAnswer = errAnswer.Wrap("verifyDataAndGetObjectAction")
 		return "", "", errAnswer
 	}
 
 	// get object#action
-	object, action, err = messagedata.GetObjectAndAction(jsonData)
+	object, action, err := messagedata.GetObjectAndAction(jsonData)
 	if err != nil {
-		errAnswer = answer.NewInvalidMessageFieldError("failed to get object#action: %v", err)
+		errAnswer := answer.NewInvalidMessageFieldError("failed to get object#action: %v", err)
 		errAnswer = errAnswer.Wrap("verifyDataAndGetObjectAction")
 		return "", "", errAnswer
 	}

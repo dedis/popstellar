@@ -45,10 +45,9 @@ func handleChannelRoot(channel string, msg message.Message) *answer.Error {
 		return errAnswer
 	}
 	if storeMessage {
-		db, ok := database.GetRootRepositoryInstance()
-		if !ok {
-			errAnswer := answer.NewInternalServerError("failed to get database").Wrap("handleChannelRoot")
-			return errAnswer
+		db, errAnswer := database.GetRootRepositoryInstance()
+		if errAnswer != nil {
+			return errAnswer.Wrap("handleChannelRoot")
 		}
 
 		err := db.StoreMessageAndData(channel, msg)
@@ -94,10 +93,9 @@ func handleLaoCreate(msg message.Message) *answer.Error {
 func verifyLaoCreation(msg message.Message, laoCreate messagedata.LaoCreate, laoPath string) ([]byte, *answer.Error) {
 	var errAnswer *answer.Error
 
-	db, ok := database.GetRootRepositoryInstance()
-	if !ok {
-		errAnswer := answer.NewInternalServerError("failed to get database").Wrap("verifyLAOCreation")
-		return nil, errAnswer
+	db, errAnswer := database.GetRootRepositoryInstance()
+	if errAnswer != nil {
+		return nil, errAnswer.Wrap("verifyLAOCreation")
 	}
 
 	ok, err := db.HasChannel(laoPath)
@@ -181,10 +179,9 @@ func createLaoAndChannels(msg, laoGreetMsg message.Message, organizerPubBuf []by
 		laoPath + Auth:               ChannelAuth,
 	}
 
-	db, ok := database.GetRootRepositoryInstance()
-	if !ok {
-		errAnswer := answer.NewInternalServerError("failed to get database").Wrap("createLaoAndSubChannels")
-		return errAnswer
+	db, errAnswer := database.GetRootRepositoryInstance()
+	if errAnswer != nil {
+		return errAnswer.Wrap("createLaoAndSubChannels")
 	}
 
 	err := db.StoreChannelsAndMessageWithLaoGreet(channels, laoPath, organizerPubBuf, msg, laoGreetMsg)

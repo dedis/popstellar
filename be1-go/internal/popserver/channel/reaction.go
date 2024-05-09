@@ -15,10 +15,9 @@ func handleChannelReaction(channel string, msg message.Message) *answer.Error {
 		return errAnswer
 	}
 
-	db, ok := database.GetReactionRepositoryInstance()
-	if !ok {
-		errAnswer := answer.NewInternalServerError("failed to get database").Wrap("handleChannelReaction")
-		return errAnswer
+	db, errAnswer := database.GetReactionRepositoryInstance()
+	if errAnswer != nil {
+		return errAnswer.Wrap("handleChannelReaction")
 	}
 
 	channelID, _ := strings.CutPrefix(channel, "/")
@@ -98,10 +97,9 @@ func handleReactionDelete(msg message.Message) *answer.Error {
 		return errAnswer
 	}
 
-	db, ok := database.GetReactionRepositoryInstance()
-	if !ok {
-		errAnswer := answer.NewInternalServerError("failed to get database").Wrap("handleReactionDelete")
-		return errAnswer
+	db, errAnswer := database.GetReactionRepositoryInstance()
+	if errAnswer != nil {
+		return errAnswer.Wrap("handleReactionDelete")
 	}
 	reactSender, err := db.GetReactionSender(delReactMsg.ReactionID)
 	if err != nil {

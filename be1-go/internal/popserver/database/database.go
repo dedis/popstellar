@@ -2,6 +2,7 @@ package database
 
 import (
 	"golang.org/x/xerrors"
+	"popstellar/message/answer"
 	"sync"
 	"testing"
 )
@@ -32,66 +33,43 @@ func SetDatabase(t *testing.T) (*MockRepository, error) {
 	return mockRepository, nil
 }
 
-func GetQueryRepositoryInstance() (QueryRepository, bool) {
+func getInstance() (Repository, *answer.Error) {
 	if instance == nil {
-		return nil, false
+		errAnswer := answer.NewInternalServerError("database was not instantiated")
+		return nil, errAnswer
 	}
 
-	return instance, true
+	return instance, nil
 }
 
-func GetChannelRepositoryInstance() (ChannelRepository, bool) {
-	if instance == nil {
-		return nil, false
-	}
-
-	return instance, true
+func GetQueryRepositoryInstance() (QueryRepository, *answer.Error) {
+	return getInstance()
 }
 
-func GetRootRepositoryInstance() (RootRepository, bool) {
-	if instance == nil {
-		return nil, false
-	}
-
-	return instance, true
+func GetChannelRepositoryInstance() (ChannelRepository, *answer.Error) {
+	return getInstance()
 }
 
-func GetLAORepositoryInstance() (LAORepository, bool) {
-	if instance == nil {
-		return nil, false
-	}
-
-	return instance, true
+func GetRootRepositoryInstance() (RootRepository, *answer.Error) {
+	return getInstance()
 }
 
-func GetChirpRepositoryInstance() (ChirpRepository, bool) {
-	if instance == nil {
-		return nil, false
-	}
-
-	return instance, true
+func GetLAORepositoryInstance() (LAORepository, *answer.Error) {
+	return getInstance()
 }
 
-func GetCoinRepositoryInstance() (CoinRepository, bool) {
-	if instance == nil {
-		return nil, false
-	}
-
-	return instance, true
+func GetChirpRepositoryInstance() (ChirpRepository, *answer.Error) {
+	return getInstance()
 }
 
-func GetElectionRepositoryInstance() (ElectionRepository, bool) {
-	if instance == nil {
-		return nil, false
-	}
-
-	return instance, true
+func GetCoinRepositoryInstance() (CoinRepository, *answer.Error) {
+	return getInstance()
 }
 
-func GetReactionRepositoryInstance() (ReactionRepository, bool) {
-	if instance == nil {
-		return nil, false
-	}
+func GetElectionRepositoryInstance() (ElectionRepository, *answer.Error) {
+	return getInstance()
+}
 
-	return instance, true
+func GetReactionRepositoryInstance() (ReactionRepository, *answer.Error) {
+	return getInstance()
 }
