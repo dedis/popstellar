@@ -3,6 +3,7 @@ package message
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/rs/zerolog/log"
 	"popstellar/internal/popserver/state"
 	"popstellar/internal/popserver/utils"
 	jsonrpc "popstellar/message"
@@ -33,35 +34,33 @@ func HandleMessage(socket socket.Socket, msg []byte) error {
 		return errAnswer
 	}
 
-	var id *int
 	var errAnswer *answer.Error
 
 	switch rpcType {
 	case jsonrpc.RPCTypeQuery:
-		id, errAnswer = handleQuery(socket, msg)
+		errAnswer = handleQuery(socket, msg)
 	case jsonrpc.RPCTypeAnswer:
-		id, errAnswer = handleAnswer(msg)
+		errAnswer = handleAnswer(msg)
 	default:
-		id = nil
 		errAnswer = answer.NewInvalidMessageFieldError("jsonRPC is of unknown type")
 	}
 
 	if errAnswer != nil {
 		errAnswer = errAnswer.Wrap("HandleMessage")
-		socket.SendError(id, errAnswer)
 		return errAnswer
 	}
 
 	return nil
 }
 
-func handleQuery(socket socket.Socket, msg []byte) (*int, *answer.Error) {
+func handleQuery(socket socket.Socket, msg []byte) *answer.Error {
 	var queryBase query.Base
 
 	err := json.Unmarshal(msg, &queryBase)
 	if err != nil {
 		errAnswer := answer.NewInvalidMessageFieldError("failed to unmarshal: %v", err).Wrap("handleQuery")
-		return nil, errAnswer
+		socket.SendError(nil, errAnswer)
+		return errAnswer
 	}
 
 	var id *int
@@ -91,55 +90,50 @@ func handleQuery(socket socket.Socket, msg []byte) (*int, *answer.Error) {
 
 	if errAnswer != nil {
 		errAnswer = errAnswer.Wrap("handleQuery")
-		return id, errAnswer
+		socket.SendError(id, errAnswer)
+		return errAnswer
 	}
 
-	return id, nil
+	return nil
 }
 
-func handleAnswer(msg []byte) (*int, *answer.Error) {
+func handleAnswer(msg []byte) *answer.Error {
 	var answerMsg answer.Answer
 
 	err := json.Unmarshal(msg, &answerMsg)
 	if err != nil {
 		errAnswer := answer.NewInvalidMessageFieldError("failed to unmarshal: %v", err).Wrap("handleAnswer")
-		return nil, errAnswer
-	}
-
-	log, ok := utils.GetLogInstance()
-	if !ok {
-		errAnswer := answer.NewInternalServerError("failed to get utils").Wrap("handleAnswer")
-		return answerMsg.ID, errAnswer
+		return errAnswer
 	}
 
 	if answerMsg.Result == nil {
 		log.Warn().Msg("received an error, nothing to handle")
 		// don't send any error to avoid infinite error loop as a server will
 		// send an error to another server that will create another error
-		return nil, nil
+		return nil
 	}
 	if answerMsg.Result.IsEmpty() {
 		log.Info().Msg("expected isn't an answer to a query, nothing to handle")
-		return nil, nil
+		return nil
 	}
 
 	queries, ok := state.GetQueriesInstance()
 	if !ok {
 		errAnswer := answer.NewInternalServerError("failed to get state").Wrap("handleAnswer")
-		return answerMsg.ID, errAnswer
+		return errAnswer
 	}
 
 	err = queries.SetQueryReceived(*answerMsg.ID)
 	if err != nil {
 		errAnswer := answer.NewInternalServerError("failed to set query state: %v", err).Wrap("handleAnswer")
-		return answerMsg.ID, errAnswer
+		return errAnswer
 	}
 
 	errAnswer := handleGetMessagesByIDAnswer(answerMsg)
 	if errAnswer != nil {
 		errAnswer = errAnswer.Wrap("handleAnswer")
-		return answerMsg.ID, errAnswer
+		return errAnswer
 	}
 
-	return answerMsg.ID, nil
+	return nil
 }
