@@ -1,4 +1,4 @@
-package channel
+package handler
 
 import (
 	"encoding/base64"
@@ -12,7 +12,7 @@ import (
 	"popstellar/crypto"
 	"popstellar/internal/popserver/database"
 	"popstellar/internal/popserver/generator"
-	"popstellar/internal/popserver/util"
+	"popstellar/internal/popserver/utils"
 	"popstellar/message/query/method/message"
 	"popstellar/validation"
 	"testing"
@@ -31,7 +31,7 @@ func TestMain(m *testing.M) {
 		os.Exit(1)
 	}
 
-	util.InitUtils(&noLog, schemaValidator)
+	utils.InitUtils(&noLog, schemaValidator)
 
 	exitVal := m.Run()
 
@@ -190,7 +190,7 @@ func Test_handleChannel(t *testing.T) {
 
 	for _, arg := range args {
 		t.Run(arg.name, func(t *testing.T) {
-			errAnswer := HandleChannel(arg.channel, arg.message)
+			errAnswer := handleChannel(arg.channel, arg.message)
 			require.NotNil(t, errAnswer)
 			require.Contains(t, errAnswer.Error(), arg.contains)
 		})

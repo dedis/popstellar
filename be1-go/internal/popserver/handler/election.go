@@ -1,4 +1,4 @@
-package channel
+package handler
 
 import (
 	"bytes"

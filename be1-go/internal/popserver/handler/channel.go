@@ -1,4 +1,4 @@
-package channel
+package handler
 
 import (
 	"encoding/base64"
@@ -9,7 +9,7 @@ import (
 	"popstellar/internal/popserver/config"
 	"popstellar/internal/popserver/database"
 	"popstellar/internal/popserver/state"
-	"popstellar/internal/popserver/util"
+	"popstellar/internal/popserver/utils"
 	jsonrpc "popstellar/message"
 	"popstellar/message/answer"
 	"popstellar/message/messagedata"
@@ -19,30 +19,30 @@ import (
 	"popstellar/validation"
 )
 
-func HandleChannel(channelID string, msg message.Message) *answer.Error {
+func handleChannel(channelID string, msg message.Message) *answer.Error {
 	errAnswer := verifyMessage(msg)
 	if errAnswer != nil {
-		return errAnswer.Wrap("HandleChannel")
+		return errAnswer.Wrap("handleChannel")
 	}
 
 	db, errAnswer := database.GetChannelRepositoryInstance()
 	if errAnswer != nil {
-		return errAnswer.Wrap("HandleChannel")
+		return errAnswer.Wrap("handleChannel")
 	}
 
 	msgAlreadyExists, err := db.HasMessage(msg.MessageID)
 	if err != nil {
-		errAnswer := answer.NewInternalServerError("failed to query DB: %v", err).Wrap("HandleChannel")
+		errAnswer := answer.NewInternalServerError("failed to query DB: %v", err).Wrap("handleChannel")
 		return errAnswer
 	}
 	if msgAlreadyExists {
-		errAnswer := answer.NewInvalidActionError("message %s was already received", msg.MessageID).Wrap("HandleChannel")
+		errAnswer := answer.NewInvalidActionError("message %s was already received", msg.MessageID).Wrap("handleChannel")
 		return errAnswer
 	}
 
 	channelType, err := db.GetChannelType(channelID)
 	if err != nil {
-		errAnswer := answer.NewInvalidResourceError("failed to query DB: %v", err).Wrap("HandleChannel")
+		errAnswer := answer.NewInvalidResourceError("failed to query DB: %v", err).Wrap("handleChannel")
 		return errAnswer
 	}
 
@@ -64,7 +64,7 @@ func HandleChannel(channelID string, msg message.Message) *answer.Error {
 	}
 
 	if errAnswer != nil {
-		errAnswer = errAnswer.Wrap("HandleChannel")
+		errAnswer = errAnswer.Wrap("handleChannel")
 		return errAnswer
 	}
 
@@ -116,7 +116,7 @@ func verifyDataAndGetObjectAction(msg message.Message) (string, string, *answer.
 	}
 
 	// validate message data against the json schema
-	errAnswer := util.VerifyJSON(jsonData, validation.Data)
+	errAnswer := utils.VerifyJSON(jsonData, validation.Data)
 	if errAnswer != nil {
 		errAnswer = errAnswer.Wrap("verifyDataAndGetObjectAction")
 		return "", "", errAnswer

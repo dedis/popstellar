@@ -1,4 +1,4 @@
-package message
+package popserver
 
 import (
 	"encoding/base64"
@@ -8,7 +8,7 @@ import (
 	"io"
 	"os"
 	"popstellar/internal/popserver/generator"
-	"popstellar/internal/popserver/util"
+	"popstellar/internal/popserver/utils"
 	"popstellar/network/socket"
 	"popstellar/validation"
 	"testing"
@@ -23,7 +23,7 @@ func TestMain(m *testing.M) {
 		os.Exit(1)
 	}
 
-	util.InitUtils(&noLog, schemaValidator)
+	utils.InitUtils(&noLog, schemaValidator)
 
 	exitVal := m.Run()
 
@@ -39,7 +39,7 @@ func Test_handleMessage(t *testing.T) {
 
 	args := make([]input, 0)
 
-	// Test 1: failed to handled message because wrong json
+	// Test 1: failed to handled popanswer because wrong json
 
 	args = append(args, input{
 		name:     "Test 1",
@@ -47,7 +47,7 @@ func Test_handleMessage(t *testing.T) {
 		contains: "invalid json",
 	})
 
-	// Test 2: failed to handled message because wrong publish message format
+	// Test 2: failed to handled popanswer because wrong publish popanswer format
 
 	msg := generator.NewNothingMsg(t, base64.URLEncoding.EncodeToString([]byte("sender")), nil)
 	msg.MessageID = "wrong messageID"
@@ -63,40 +63,9 @@ func Test_handleMessage(t *testing.T) {
 	for _, arg := range args {
 		t.Run(arg.name, func(t *testing.T) {
 			fakeSocket := socket.FakeSocket{Id: "1"}
-			err := HandleMessage(&fakeSocket, arg.message)
+			err := handleMessage(&fakeSocket, arg.message)
 			require.Error(t, err)
 			require.Contains(t, err.Error(), arg.contains)
-		})
-	}
-}
-
-func Test_handleQuery(t *testing.T) {
-	type input struct {
-		name     string
-		message  []byte
-		contains string
-	}
-
-	args := make([]input, 0)
-
-	// Test 1: failed to handled query because unknown method
-
-	msg := generator.NewNothingQuery(t, 999)
-
-	args = append(args, input{
-		name:     "Test 1",
-		message:  msg,
-		contains: "unexpected method",
-	})
-
-	// run all tests
-
-	for _, arg := range args {
-		t.Run(arg.name, func(t *testing.T) {
-			fakeSocket := socket.FakeSocket{Id: "fakesocket"}
-			errAnswer := handleQuery(&fakeSocket, arg.message)
-			require.NotNil(t, errAnswer)
-			require.Contains(t, errAnswer.Error(), arg.contains)
 		})
 	}
 }

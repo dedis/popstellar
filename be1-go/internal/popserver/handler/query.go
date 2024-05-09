@@ -1,9 +1,8 @@
-package message
+package handler
 
 import (
 	"encoding/base64"
 	"encoding/json"
-	"popstellar/internal/popserver/channel"
 	"popstellar/internal/popserver/config"
 	"popstellar/internal/popserver/database"
 	"popstellar/internal/popserver/state"
@@ -14,7 +13,46 @@ import (
 	"popstellar/network/socket"
 )
 
-const rootChannel = "/root"
+func HandleQuery(socket socket.Socket, msg []byte) *answer.Error {
+	var queryBase query.Base
+
+	err := json.Unmarshal(msg, &queryBase)
+	if err != nil {
+		errAnswer := answer.NewInvalidMessageFieldError("failed to unmarshal: %v", err).Wrap("HandleQuery")
+		socket.SendError(nil, errAnswer)
+		return errAnswer
+	}
+
+	var id *int = nil
+	var errAnswer *answer.Error
+
+	switch queryBase.Method {
+	case query.MethodCatchUp:
+		id, errAnswer = handleCatchUp(socket, msg)
+	case query.MethodGetMessagesById:
+		id, errAnswer = handleGetMessagesByID(socket, msg)
+	case query.MethodGreetServer:
+		id, errAnswer = handleGreetServer(socket, msg)
+	case query.MethodHeartbeat:
+		errAnswer = handleHeartbeat(socket, msg)
+	case query.MethodPublish:
+		id, errAnswer = handlePublish(socket, msg)
+	case query.MethodSubscribe:
+		id, errAnswer = handleSubscribe(socket, msg)
+	case query.MethodUnsubscribe:
+		id, errAnswer = handleUnsubscribe(socket, msg)
+	default:
+		errAnswer = answer.NewInvalidResourceError("unexpected method: '%s'", queryBase.Method)
+	}
+
+	if errAnswer != nil {
+		errAnswer = errAnswer.Wrap("HandleQuery")
+		socket.SendError(id, errAnswer)
+		return errAnswer
+	}
+
+	return nil
+}
 
 func handleGreetServer(socket socket.Socket, byteMessage []byte) (*int, *answer.Error) {
 	var greetServer method.GreetServer
@@ -140,7 +178,7 @@ func handlePublish(socket socket.Socket, msg []byte) (*int, *answer.Error) {
 		return nil, errAnswer
 	}
 
-	errAnswer := channel.HandleChannel(publish.Params.Channel, publish.Params.Message)
+	errAnswer := handleChannel(publish.Params.Channel, publish.Params.Message)
 	if errAnswer != nil {
 		errAnswer = errAnswer.Wrap("handlePublish")
 		return &publish.ID, errAnswer
@@ -168,7 +206,7 @@ func handleCatchUp(socket socket.Socket, msg []byte) (*int, *answer.Error) {
 
 	result, err := db.GetAllMessagesFromChannel(catchup.Params.Channel)
 	if err != nil {
-		errAnswer := answer.NewInternalServerError("failed to query DB: %v", err).Wrap("handleCatchUp")
+		errAnswer := answer.NewInternalServerError("failed to popquery DB: %v", err).Wrap("handleCatchUp")
 		return &catchup.ID, errAnswer
 	}
 
@@ -194,7 +232,7 @@ func handleHeartbeat(socket socket.Socket, byteMessage []byte) *answer.Error {
 
 	result, err := db.GetParamsForGetMessageByID(heartbeat.Params)
 	if err != nil {
-		errAnswer := answer.NewInternalServerError("failed to query DB: %v", err).Wrap("handleHeartbeat")
+		errAnswer := answer.NewInternalServerError("failed to popquery DB: %v", err).Wrap("handleHeartbeat")
 		return errAnswer
 	}
 
@@ -252,7 +290,7 @@ func handleGetMessagesByID(socket socket.Socket, msg []byte) (*int, *answer.Erro
 
 	result, err := db.GetResultForGetMessagesByID(getMessagesById.Params)
 	if err != nil {
-		errAnswer := answer.NewInternalServerError("failed to query DB: %v", err).Wrap("handleGetMessageByID")
+		errAnswer := answer.NewInternalServerError("failed to popquery DB: %v", err).Wrap("handleGetMessageByID")
 		return &getMessagesById.ID, errAnswer
 	}
 

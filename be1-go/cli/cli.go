@@ -15,7 +15,7 @@ import (
 	"popstellar/internal/popserver/config"
 	"popstellar/internal/popserver/database"
 	"popstellar/internal/popserver/state"
-	"popstellar/internal/popserver/util"
+	"popstellar/internal/popserver/utils"
 	"popstellar/network"
 	"popstellar/network/socket"
 	"popstellar/validation"
@@ -60,7 +60,7 @@ type ServerConfig struct {
 // Serve parses the CLI arguments and spawns a hub and a websocket server for
 // the server
 func Serve(cliCtx *cli.Context) error {
-	log := popstellar.Logger
+	poplog := popstellar.Logger
 
 	configFilePath := cliCtx.String("config-file")
 	var serverConfig ServerConfig
@@ -94,9 +94,9 @@ func Serve(cliCtx *cli.Context) error {
 		os.Exit(1)
 	}
 
-	util.InitUtils(&log, schemaValidator)
+	utils.InitUtils(&poplog, schemaValidator)
 
-	state.InitState(&log)
+	state.InitState(&poplog)
 
 	serverSecretKey := crypto.Suite.Scalar().Pick(crypto.Suite.RandomStream())
 	serverPublicKey := crypto.Suite.Point().Mul(serverSecretKey, nil)
@@ -123,9 +123,9 @@ func Serve(cliCtx *cli.Context) error {
 	}
 
 	//// create user hub
-	//h, err := standard_hub.NewHub(point, serverConfig.ClientAddress, serverConfig.ServerAddress, log.With().Str("role", "server").Logger(),
+	//h, err := standard_hub.NewHub(point, serverConfig.ClientAddress, serverConfig.ServerAddress, poplog.With().Str("role", "server").Logger(),
 	//	lao.NewChannel)
-	h := popserver.NewPopServer()
+	h := popserver.NewHub()
 	if err != nil {
 		return xerrors.Errorf("failed create the hub: %v", err)
 	}
@@ -136,7 +136,7 @@ func Serve(cliCtx *cli.Context) error {
 	//// Start the PoPCHA Authorization Server. It will run internally on localhost, the address of the server given in
 	//// the config file will be the one used externally.
 	//authorizationSrv, err := popcha.NewAuthServer(h, "localhost", serverConfig.AuthPort,
-	//	log.With().Str("role", "authorization server").Logger())
+	//	poplog.With().Str("role", "authorization server").Logger())
 	//if err != nil {
 	//	return xerrors.Errorf("Error while starting the PoPCHA server: %v", err)
 	//}
@@ -145,12 +145,12 @@ func Serve(cliCtx *cli.Context) error {
 
 	// Start websocket server for clients
 	clientSrv := network.NewServer(h, serverConfig.PrivateAddress, serverConfig.ClientPort, socket.ClientSocketType,
-		log.With().Str("role", "client websocket").Logger())
+		poplog.With().Str("role", "client websocket").Logger())
 	clientSrv.Start()
 
 	// Start a websocket server for remote servers
 	serverSrv := network.NewServer(h, serverConfig.PrivateAddress, serverConfig.ServerPort, socket.ServerSocketType,
-		log.With().Str("role", "server websocket").Logger())
+		poplog.With().Str("role", "server websocket").Logger())
 	serverSrv.Start()
 
 	// create wait group which waits for goroutines to finish
@@ -216,7 +216,7 @@ func Serve(cliCtx *cli.Context) error {
 	select {
 	case <-channsClosed:
 	case <-time.After(time.Second * 10):
-		log.Error().Msg("channs didn't close after timeout, exiting")
+		poplog.Error().Msg("channs didn't close after timeout, exiting")
 	}
 
 	return nil
@@ -284,7 +284,7 @@ func connectToServers(h hub.Hub, wg *sync.WaitGroup, done chan struct{}, servers
 func connectToSocket(address string, h hub.Hub,
 	wg *sync.WaitGroup, done chan struct{}) error {
 
-	log := popstellar.Logger
+	poplog := popstellar.Logger
 
 	urlString := fmt.Sprintf("ws://%s/server", address)
 	u, err := url.Parse(urlString)
@@ -297,10 +297,10 @@ func connectToSocket(address string, h hub.Hub,
 		return xerrors.Errorf("failed to dial to %s: %v", u.String(), err)
 	}
 
-	log.Info().Msgf("connected to server at %s", urlString)
+	poplog.Info().Msgf("connected to server at %s", urlString)
 
 	remoteSocket := socket.NewServerSocket(h.Receiver(),
-		h.OnSocketClose(), ws, wg, done, log)
+		h.OnSocketClose(), ws, wg, done, poplog)
 	wg.Add(2)
 
 	go remoteSocket.WritePump()
@@ -350,20 +350,20 @@ func startWithConfigFile(configFilename string) (ServerConfig, error) {
 func loadConfig(configFilename string) (ServerConfig, error) {
 	bytes, err := os.ReadFile(configFilename)
 	if err != nil {
-		return ServerConfig{}, xerrors.Errorf("could not read config file: %w", err)
+		return ServerConfig{}, xerrors.Errorf("could not read serverConfig file: %w", err)
 	}
-	var config ServerConfig
-	err = json.Unmarshal(bytes, &config)
+	var serverConfig ServerConfig
+	err = json.Unmarshal(bytes, &serverConfig)
 	if err != nil {
-		return ServerConfig{}, xerrors.Errorf("could not unmarshal config file: %w", err)
+		return ServerConfig{}, xerrors.Errorf("could not unmarshal serverConfig file: %w", err)
 	}
-	if config.ServerPort == config.ClientPort {
+	if serverConfig.ServerPort == serverConfig.ClientPort {
 		return ServerConfig{}, xerrors.Errorf("client and server ports must be different")
 
-	} else if config.ServerPort == config.AuthPort || config.ClientPort == config.AuthPort {
+	} else if serverConfig.ServerPort == serverConfig.AuthPort || serverConfig.ClientPort == serverConfig.AuthPort {
 		return ServerConfig{}, xerrors.Errorf("PoPCHA Authentication port must be unique\"")
 	}
-	return config, nil
+	return serverConfig, nil
 }
 
 // startWithFlags returns the ServerConfig using the command line flags

@@ -1,4 +1,4 @@
-package message
+package handler
 
 import (
 	"encoding/json"
@@ -15,6 +15,37 @@ import (
 	"popstellar/network/socket"
 	"testing"
 )
+
+func Test_handleQuery(t *testing.T) {
+	type input struct {
+		name     string
+		message  []byte
+		contains string
+	}
+
+	args := make([]input, 0)
+
+	// Test 1: failed to handled popquery because unknown method
+
+	msg := generator.NewNothingQuery(t, 999)
+
+	args = append(args, input{
+		name:     "Test 1",
+		message:  msg,
+		contains: "unexpected method",
+	})
+
+	// run all tests
+
+	for _, arg := range args {
+		t.Run(arg.name, func(t *testing.T) {
+			fakeSocket := socket.FakeSocket{Id: "fakesocket"}
+			errAnswer := HandleQuery(&fakeSocket, arg.message)
+			require.NotNil(t, errAnswer)
+			require.Contains(t, errAnswer.Error(), arg.contains)
+		})
+	}
+}
 
 func Test_handleGreetServer(t *testing.T) {
 	subs := types.NewSubscribers()
@@ -484,7 +515,7 @@ func Test_handleHeartbeat(t *testing.T) {
 		Return(nil, xerrors.Errorf("DB is disconnected"))
 
 	args = append(args, input{
-		name:     "failed to query DB",
+		name:     "failed to popquery DB",
 		socket:   fakeSocket,
 		message:  generator.NewHeartbeatQuery(t, heartbeatMsgIDs3),
 		isError:  true,

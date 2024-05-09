@@ -1,15 +1,49 @@
-package message
+package handler
 
 import (
 	"encoding/json"
-	"popstellar/internal/popserver/channel"
-	"popstellar/internal/popserver/util"
+	"popstellar/internal/popserver/state"
+	"popstellar/internal/popserver/utils"
 	"popstellar/message/answer"
 	"popstellar/message/query/method/message"
 	"sort"
 )
 
 const maxRetry = 10
+
+func HandleAnswer(msg []byte) *answer.Error {
+	var answerMsg answer.Answer
+
+	err := json.Unmarshal(msg, &answerMsg)
+	if err != nil {
+		errAnswer := answer.NewInvalidMessageFieldError("failed to unmarshal: %v", err).Wrap("HandleAnswer")
+		return errAnswer
+	}
+
+	if answerMsg.Result == nil {
+		utils.LogInfo("received an error, nothing to handle")
+		// don't send any error to avoid infinite error loop as a server will
+		// send an error to another server that will create another error
+		return nil
+	}
+	if answerMsg.Result.IsEmpty() {
+		utils.LogInfo("expected isn't an answer to a popquery, nothing to handle")
+		return nil
+	}
+
+	errAnswer := state.SetQueryReceived(*answerMsg.ID)
+	if errAnswer != nil {
+		return errAnswer.Wrap("HandleAnswer")
+	}
+
+	errAnswer = handleGetMessagesByIDAnswer(answerMsg)
+	if errAnswer != nil {
+		errAnswer = errAnswer.Wrap("HandleAnswer")
+		return errAnswer
+	}
+
+	return nil
+}
 
 func handleGetMessagesByIDAnswer(msg answer.Answer) *answer.Error {
 	result := msg.Result.GetMessagesByChannel()
@@ -27,7 +61,7 @@ func handleGetMessagesByIDAnswer(msg answer.Answer) *answer.Error {
 			}
 
 			errAnswer := answer.NewInvalidMessageFieldError("failed to unmarshal: %v", err).Wrap("handleGetMessagesByIDAnswer")
-			util.LogError(errAnswer)
+			utils.LogError(errAnswer)
 		}
 
 		if len(msgsByChan[channelID]) == 0 {
@@ -56,7 +90,7 @@ func handleMessagesByChannel(msgsByChannel map[string]map[string]message.Message
 		for _, channelID := range sortedChannelIDs {
 			msgs := msgsByChannel[channelID]
 			for msgID, msg := range msgs {
-				errAnswer := channel.HandleChannel(channelID, msg)
+				errAnswer := handleChannel(channelID, msg)
 				if errAnswer == nil {
 					delete(msgsByChannel[channelID], msgID)
 					continue
@@ -67,7 +101,7 @@ func handleMessagesByChannel(msgsByChannel map[string]map[string]message.Message
 				}
 
 				errAnswer = errAnswer.Wrap(msgID).Wrap("handleGetMessagesByIDAnswer")
-				util.LogError(errAnswer)
+				utils.LogError(errAnswer)
 			}
 
 			if len(msgsByChannel[channelID]) == 0 {
