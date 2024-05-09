@@ -2,7 +2,6 @@ package message
 
 import (
 	"encoding/json"
-	"fmt"
 	"popstellar/internal/popserver/state"
 	"popstellar/internal/popserver/util"
 	jsonrpc "popstellar/message"
@@ -54,10 +53,8 @@ func handleQuery(socket socket.Socket, msg []byte) *answer.Error {
 		return errAnswer
 	}
 
-	var id *int
+	var id *int = nil
 	var errAnswer *answer.Error
-
-	fmt.Println("Received query of type " + queryBase.Method)
 
 	switch queryBase.Method {
 	case query.MethodCatchUp:
@@ -67,7 +64,7 @@ func handleQuery(socket socket.Socket, msg []byte) *answer.Error {
 	case query.MethodGreetServer:
 		id, errAnswer = handleGreetServer(socket, msg)
 	case query.MethodHeartbeat:
-		id, errAnswer = handleHeartbeat(socket, msg)
+		errAnswer = handleHeartbeat(socket, msg)
 	case query.MethodPublish:
 		id, errAnswer = handlePublish(socket, msg)
 	case query.MethodSubscribe:
@@ -75,7 +72,6 @@ func handleQuery(socket socket.Socket, msg []byte) *answer.Error {
 	case query.MethodUnsubscribe:
 		id, errAnswer = handleUnsubscribe(socket, msg)
 	default:
-		id = nil
 		errAnswer = answer.NewInvalidResourceError("unexpected method: '%s'", queryBase.Method)
 	}
 
@@ -108,19 +104,12 @@ func handleAnswer(msg []byte) *answer.Error {
 		return nil
 	}
 
-	queries, ok := state.GetQueriesInstance()
-	if !ok {
-		errAnswer := answer.NewInternalServerError("failed to get state").Wrap("handleAnswer")
-		return errAnswer
+	errAnswer := state.SetQueryReceived(*answerMsg.ID)
+	if errAnswer != nil {
+		return errAnswer.Wrap("handleAnswer")
 	}
 
-	err = queries.SetQueryReceived(*answerMsg.ID)
-	if err != nil {
-		errAnswer := answer.NewInternalServerError("failed to set query state: %v", err).Wrap("handleAnswer")
-		return errAnswer
-	}
-
-	errAnswer := handleGetMessagesByIDAnswer(answerMsg)
+	errAnswer = handleGetMessagesByIDAnswer(answerMsg)
 	if errAnswer != nil {
 		errAnswer = errAnswer.Wrap("handleAnswer")
 		return errAnswer

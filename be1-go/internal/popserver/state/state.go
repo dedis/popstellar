@@ -163,10 +163,45 @@ func IsPeerGreeted(socketID string) (bool, *answer.Error) {
 	return peers.IsPeerGreeted(socketID), nil
 }
 
-func GetQueriesInstance() (Querier, bool) {
+func getQueries() (Querier, *answer.Error) {
 	if instance == nil || instance.queries == nil {
-		return nil, false
+		return nil, answer.NewInternalServerError("querier was not instantiated")
 	}
 
-	return instance.queries, true
+	return instance.queries, nil
+}
+
+func GetNextID() (int, *answer.Error) {
+	queries, errAnswer := getQueries()
+	if errAnswer != nil {
+		return -1, errAnswer
+	}
+
+	return queries.GetNextID(), nil
+}
+
+func SetQueryReceived(ID int) *answer.Error {
+	queries, errAnswer := getQueries()
+	if errAnswer != nil {
+		return errAnswer
+	}
+
+	err := queries.SetQueryReceived(ID)
+	if err != nil {
+		errAnswer := answer.NewInvalidActionError("%v", err)
+		return errAnswer
+	}
+
+	return nil
+}
+
+func AddQuery(ID int, query method.GetMessagesById) *answer.Error {
+	queries, errAnswer := getQueries()
+	if errAnswer != nil {
+		return errAnswer
+	}
+
+	queries.AddQuery(ID, query)
+
+	return nil
 }

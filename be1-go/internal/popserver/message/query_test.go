@@ -495,10 +495,9 @@ func Test_handleHeartbeat(t *testing.T) {
 
 	for _, arg := range args {
 		t.Run(arg.name, func(t *testing.T) {
-			id, errAnswer := handleHeartbeat(&arg.socket, arg.message)
+			errAnswer := handleHeartbeat(&arg.socket, arg.message)
 			if arg.isError {
 				require.NotNil(t, errAnswer)
-				require.Nil(t, id)
 			} else if arg.expected != nil {
 				require.Nil(t, errAnswer)
 				require.NotNil(t, arg.socket.Msg)

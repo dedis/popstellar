@@ -177,38 +177,35 @@ func handleCatchUp(socket socket.Socket, msg []byte) (*int, *answer.Error) {
 	return &catchup.ID, nil
 }
 
-func handleHeartbeat(socket socket.Socket, byteMessage []byte) (*int, *answer.Error) {
+func handleHeartbeat(socket socket.Socket, byteMessage []byte) *answer.Error {
 	var heartbeat method.Heartbeat
 
 	err := json.Unmarshal(byteMessage, &heartbeat)
 	if err != nil {
 		errAnswer := answer.NewInvalidMessageFieldError("failed to unmarshal: %v", err).Wrap("handleHeartbeat")
-		return nil, errAnswer
+		return errAnswer
 	}
 
 	db, errAnswer := database.GetQueryRepositoryInstance()
 	if errAnswer != nil {
 		errAnswer = errAnswer.Wrap("handleHeartbeat")
-		return nil, errAnswer
+		return errAnswer
 	}
 
 	result, err := db.GetParamsForGetMessageByID(heartbeat.Params)
 	if err != nil {
 		errAnswer := answer.NewInternalServerError("failed to query DB: %v", err).Wrap("handleHeartbeat")
-		return nil, errAnswer
+		return errAnswer
 	}
 
 	if len(result) == 0 {
-		return nil, nil
+		return nil
 	}
 
-	queries, ok := state.GetQueriesInstance()
-	if !ok {
-		errAnswer := answer.NewInternalServerError("failed to get state").Wrap("handleHeartbeat")
-		return nil, errAnswer
+	queryId, errAnswer := state.GetNextID()
+	if errAnswer != nil {
+		return errAnswer.Wrap("handleHeartbeat")
 	}
-
-	queryId := queries.GetNextID()
 
 	getMessagesById := method.GetMessagesById{
 		Base: query.Base{
@@ -224,14 +221,17 @@ func handleHeartbeat(socket socket.Socket, byteMessage []byte) (*int, *answer.Er
 	buf, err := json.Marshal(getMessagesById)
 	if err != nil {
 		errAnswer := answer.NewInternalServerError("failed to marshal: %v", err).Wrap("handleHeartbeat")
-		return nil, errAnswer
+		return errAnswer
 	}
 
 	socket.Send(buf)
 
-	queries.AddQuery(queryId, getMessagesById)
+	errAnswer = state.AddQuery(queryId, getMessagesById)
+	if errAnswer != nil {
+		return errAnswer.Wrap("handleHeartbeat")
+	}
 
-	return nil, nil
+	return nil
 }
 
 func handleGetMessagesByID(socket socket.Socket, msg []byte) (*int, *answer.Error) {
