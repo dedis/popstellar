@@ -632,6 +632,7 @@ exports[`LaoNavigation renders correctly 1`] = `
                                                                 "opacity": 1,
                                                               }
                                                             }
+                                                            testID="drawer_menu_button"
                                                           >
                                                             <View>
                                                               {"name":"ios-menu","size":25,"color":"#8E8E8E"}
@@ -998,6 +999,7 @@ exports[`LaoNavigation renders correctly 1`] = `
                                     "margin": 16,
                                   }
                                 }
+                                testID="drawer_menu_container"
                               >
                                 <RCTScrollView
                                   contentContainerStyle={
@@ -1043,6 +1045,7 @@ exports[`LaoNavigation renders correctly 1`] = `
                                             },
                                           ]
                                         }
+                                        testID="lao_name_text"
                                       >
                                         MyLao
                                       </Text>
@@ -1195,7 +1198,9 @@ exports[`LaoNavigation renders correctly 1`] = `
                                             ]
                                           }
                                         >
-                                          <View>
+                                          <View
+                                            testID="drawer_menu_invite"
+                                          >
                                             {"name":"adduser","size":24,"color":"#8E8E8E"}
                                           </View>
                                           <View
@@ -1290,6 +1295,7 @@ exports[`LaoNavigation renders correctly 1`] = `
                                         >
                                           <View
                                             style={{}}
+                                            testID="drawer_menu_events"
                                           >
                                             {"name":"ios-calendar","size":24,"color":"#3742fa"}
                                           </View>
@@ -1473,7 +1479,9 @@ exports[`LaoNavigation renders correctly 1`] = `
                                             ]
                                           }
                                         >
-                                          <View>
+                                          <View
+                                            testID="menu_drawer_disconnect_button"
+                                          >
                                             {"name":"logout","size":24,"color":"#8E8E8E"}
                                           </View>
                                           <View
