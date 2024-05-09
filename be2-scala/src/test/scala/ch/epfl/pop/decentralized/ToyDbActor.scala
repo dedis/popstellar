@@ -1,14 +1,19 @@
 package ch.epfl.pop.decentralized
 
-import akka.actor.{Actor, ActorLogging}
+import akka.actor.Actor
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.objects.{Base64Data, Channel, ChannelData, Hash}
 import ch.epfl.pop.storage.DbActor
+
+import scala.collection.immutable.HashMap
 final case class ToyDbActor() extends Actor {
 
   final val CHANNEL1_NAME: String = "/root/wex/lao1Id"
   final val CHANNEL2_NAME: String = "/root/wex/lao2Id"
+  final val CHANNEL1 = new Channel(CHANNEL1_NAME)
+  final val CHANNEL2 = new Channel(CHANNEL2_NAME)
+
   final val MESSAGE1_ID: Hash = Hash(Base64Data.encode("message1Id"))
   final val MESSAGE2_ID: Hash = Hash(Base64Data.encode("message2Id"))
   final val MESSAGE3_ID: Hash = Hash(Base64Data.encode("message3Id"))
@@ -31,5 +36,7 @@ final case class ToyDbActor() extends Actor {
       } else {
         sender() ! DbActor.DbActorCatchupAck(List(MESSAGE4))
       }
+    case DbActor.GenerateHeartbeat() =>
+      sender() ! DbActor.DbActorGenerateHeartbeatAck(HashMap(CHANNEL1 -> Set(MESSAGE1_ID), CHANNEL2 -> Set(MESSAGE4_ID)))
   }
 }

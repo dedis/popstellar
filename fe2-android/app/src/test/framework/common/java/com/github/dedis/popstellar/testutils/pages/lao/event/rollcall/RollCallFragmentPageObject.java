@@ -50,6 +50,10 @@ public class RollCallFragmentPageObject {
     return onView(withId(R.id.roll_call_pk_qr_code));
   }
 
+  public static ViewInteraction rollCallPopTokenText() {
+    return onView(withId(R.id.roll_call_pop_token_text));
+  }
+
   public static ViewInteraction rollCallLocationCard() {
     return onView(withId(R.id.roll_call_location_card));
   }

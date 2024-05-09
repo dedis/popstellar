@@ -1,10 +1,9 @@
-package be.utils;
+package common.utils;
 
-import be.model.Election;
-import be.model.KeyPair;
-import be.model.Lao;
-import be.model.RollCall;
-import common.utils.Base64Utils;
+import common.model.Election;
+import common.model.KeyPair;
+import common.model.Lao;
+import common.model.RollCall;
 
 import java.time.Instant;
 

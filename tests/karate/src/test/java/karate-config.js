@@ -33,6 +33,8 @@ function fn() {
     config.frontendWsURL = `ws://${config.host}:${config.frontendPort}/${config.frontendPath}`;
     config.backendWsURL = `ws://${config.host}:${config.backendPort}/${config.backendPath}`;
   } else if (env === 'web') {
+    config.serverURL = karate.properties['serverURL'] || 'ws://localhost:9000/client';
+    config.platformServerURL = karate.properties['platformServerURL'] || 'ws://localhost:9000/client';
     config.frontendURL = karate.properties['url'] || `file://${karate.toAbsolutePath('file:../../fe1-web/web-build/index.html')}`;
     config.screenWidth = karate.properties['screenWidth'] || 1920;
     config.screenHeight = karate.properties['screenHeight'] || 1080;
@@ -97,6 +99,8 @@ function fn() {
       }
     };
   } else if (env === 'android') {
+    config.serverURL = karate.properties['serverURL'] || 'ws://localhost:9000/client';
+    config.platformServerURL = karate.properties['platformServerURL'] || 'ws://10.0.2.2:9000/client';
     karate.configure('driver', { type: 'android', webDriverPath : "/", start: false });
     const app = karate.properties['app'] || '../../fe2-android/app/build/outputs/apk/debug/app-debug.apk';
     config.webDriverOptions = {

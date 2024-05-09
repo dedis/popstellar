@@ -511,7 +511,7 @@ exports[`ChirpCard for deletion render correct for a deleted chirp 1`] = `
                                   "overflow": "hidden",
                                 }
                               }
-                              testID="listItemTitle"
+                              testID="chirp_message"
                             >
                               <Text
                                 style={
@@ -1108,7 +1108,7 @@ exports[`ChirpCard for deletion renders correctly for non-sender 1`] = `
                                   "overflow": "hidden",
                                 }
                               }
-                              testID="listItemTitle"
+                              testID="chirp_message"
                             >
                               <Text
                                 style={
@@ -1199,6 +1199,7 @@ exports[`ChirpCard for deletion renders correctly for non-sender 1`] = `
                                       },
                                     ]
                                   }
+                                  testID="thumbs-up-count"
                                 >
                                   0
                                 </Text>
@@ -1270,6 +1271,7 @@ exports[`ChirpCard for deletion renders correctly for non-sender 1`] = `
                                       },
                                     ]
                                   }
+                                  testID="thumbs-down-count"
                                 >
                                   0
                                 </Text>
@@ -1341,6 +1343,7 @@ exports[`ChirpCard for deletion renders correctly for non-sender 1`] = `
                                       },
                                     ]
                                   }
+                                  testID="heart-count"
                                 >
                                   0
                                 </Text>
@@ -1913,7 +1916,7 @@ exports[`ChirpCard for deletion renders correctly for sender 1`] = `
                                   "overflow": "hidden",
                                 }
                               }
-                              testID="listItemTitle"
+                              testID="chirp_message"
                             >
                               <Text
                                 style={
@@ -2004,6 +2007,7 @@ exports[`ChirpCard for deletion renders correctly for sender 1`] = `
                                       },
                                     ]
                                   }
+                                  testID="thumbs-up-count"
                                 >
                                   0
                                 </Text>
@@ -2075,6 +2079,7 @@ exports[`ChirpCard for deletion renders correctly for sender 1`] = `
                                       },
                                     ]
                                   }
+                                  testID="thumbs-down-count"
                                 >
                                   0
                                 </Text>
@@ -2146,6 +2151,7 @@ exports[`ChirpCard for deletion renders correctly for sender 1`] = `
                                       },
                                     ]
                                   }
+                                  testID="heart-count"
                                 >
                                   0
                                 </Text>
@@ -2774,7 +2780,7 @@ exports[`ChirpCard for reaction renders correctly with reaction 1`] = `
                                   "overflow": "hidden",
                                 }
                               }
-                              testID="listItemTitle"
+                              testID="chirp_message"
                             >
                               <Text
                                 style={
@@ -2865,6 +2871,7 @@ exports[`ChirpCard for reaction renders correctly with reaction 1`] = `
                                       },
                                     ]
                                   }
+                                  testID="thumbs-up-count"
                                 >
                                   1
                                 </Text>
@@ -2936,6 +2943,7 @@ exports[`ChirpCard for reaction renders correctly with reaction 1`] = `
                                       },
                                     ]
                                   }
+                                  testID="thumbs-down-count"
                                 >
                                   0
                                 </Text>
@@ -3007,6 +3015,7 @@ exports[`ChirpCard for reaction renders correctly with reaction 1`] = `
                                       },
                                     ]
                                   }
+                                  testID="heart-count"
                                 >
                                   0
                                 </Text>
@@ -3579,7 +3588,7 @@ exports[`ChirpCard for reaction renders correctly without reaction 1`] = `
                                   "overflow": "hidden",
                                 }
                               }
-                              testID="listItemTitle"
+                              testID="chirp_message"
                             >
                               <Text
                                 style={
@@ -3670,6 +3679,7 @@ exports[`ChirpCard for reaction renders correctly without reaction 1`] = `
                                       },
                                     ]
                                   }
+                                  testID="thumbs-up-count"
                                 >
                                   0
                                 </Text>
@@ -3741,6 +3751,7 @@ exports[`ChirpCard for reaction renders correctly without reaction 1`] = `
                                       },
                                     ]
                                   }
+                                  testID="thumbs-down-count"
                                 >
                                   0
                                 </Text>
@@ -3812,6 +3823,7 @@ exports[`ChirpCard for reaction renders correctly without reaction 1`] = `
                                       },
                                     ]
                                   }
+                                  testID="heart-count"
                                 >
                                   0
                                 </Text>
