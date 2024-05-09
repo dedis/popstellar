@@ -36,37 +36,37 @@ The project is organized into different modules as follows
 
 ```
 .
-├── channel             # contains the abstract definition of a channel
-│   ├── authentication  # channel implementation for an authentication channel
-│   ├── chirp           # channel implementation for a chirp channel
-│   ├── coin            # channel implementation for a coin channel
-│   ├── consensus       # channel implementation for a consensus channel
-│   ├── election        # channel implementation for an election channel
-│   ├── generalChirping # channel implementation for a universal post channel
-│   ├── lao             # channel implementation for a LAO channel
-│   ├── reaction        # channel implementation for a reaction channel
-│   └── registry        # helper for registry
-├── cli                 # command line interface
-├── crypto              # defines the cryptographic suite 
+├── channel                   # contains the abstract definition of a channel NEED TO BE DELETED
+├── cli                       # command line interface
+├── crypto                    # defines the cryptographic suite
 ├── docs
-├── hub                 # contains the abstract definition of a hub
-│   ├── standard_hub    # hub implementation 
-├── inbox               # helper to store messages used by channels
-├── message             # message types and marshaling/unmarshaling logic
-├── network             # module to set up Websocket connections
+├── hub                       # contains the abstract definition of a hub NEED TO BE DELETED
+├── inbox                     # helper to store messages used by channels NEED TO BE DELETED
+├── internal
+│   ├── depgraph
+│   └── popserver
+│       ├── channel     # handlers for each channel type
+│       ├── config      # singleton with the server config informations and server keys
+│       ├── database    # singleton with the database + implementations of the database
+│       ├── generator   # query and message generators only use for the tests
+│       ├── message     # handlers for each query type and answer type
+│       ├── state       # singleton with the temporary states of the server (peers, queries, and subscriptions)
+│       ├── type        # every types use in the implementation
+│       └── utils       # singleton with the log instance and the schema validator
+├── message                   # message types and marshaling/unmarshaling logic
+├── network                   # module to set up Websocket connections
 │   └── socket          # module to send/receive data over the wire
-├── popcha              # HTTP server and back-end logic for PoPCHA
-└── validation          # module to validate incoming/outgoing messages
+├── popcha                    # HTTP server and back-end logic for PoPCHA NEED TO BE REFACTOR
+└── validation                # module to validate incoming/outgoing messages
 ```
 
-The entry point is the cli with bulk of the implementation logic in the hub
-module.
+The entry point is the `cli` with bulk of the implementation logic in the `popserver` package.
 
 The following diagram represents the relations between the packages in the
 application.
 
 <div align="center">
-  <img alt="Global architecture" src="images/global architecture.png" width="600" />
+  <img alt="Global architecture" src="images/dependencies/dependencies.png" width="600" />
 </div>
 
 #### Architecture
