@@ -18,7 +18,8 @@ import (
 )
 
 const (
-	defaultPath = "sqlite.DB"
+	defaultPath    = "sqlite.DB"
+	serverKeysPath = "server_keys"
 )
 
 // SQLite is a wrapper around the SQLite database.
@@ -199,6 +200,7 @@ func createKey(tx *sql.Tx) error {
 		"PRIMARY KEY (channelPath) " +
 		")")
 	return err
+
 }
 
 // Close closes the SQLite database.
@@ -209,6 +211,52 @@ func (s *SQLite) Close() error {
 //======================================================================================================================
 // Repository interface implementation
 //======================================================================================================================
+
+func (s *SQLite) StoreServerKeys(electionPubKey kyber.Point, electionSecretKey kyber.Scalar) error {
+	tx, err := s.database.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+
+	electionPubBuf, err := electionPubKey.MarshalBinary()
+	if err != nil {
+		return err
+	}
+	electionSecretBuf, err := electionSecretKey.MarshalBinary()
+	if err != nil {
+		return err
+	}
+
+	_, err = tx.Exec("INSERT INTO key (channelPath, publicKey, privateKey) VALUES (?, ?, ?)",
+		serverKeysPath, electionPubBuf, electionSecretBuf)
+	if err != nil {
+		return err
+	}
+
+	return tx.Commit()
+}
+
+func (s *SQLite) GetServerKeys() (kyber.Point, kyber.Scalar, error) {
+	var serverPubBuf []byte
+	var serverSecBuf []byte
+	err := s.database.QueryRow("SELECT publicKey, privateKey FROM key WHERE channelPath = ?", serverKeysPath).Scan(&serverPubBuf, &serverSecBuf)
+	if err != nil {
+		return nil, nil, err
+	}
+	serverPubKey := crypto.Suite.Point()
+	err = serverPubKey.UnmarshalBinary(serverPubBuf)
+	if err != nil {
+		return nil, nil, err
+	}
+	serverSecKey := crypto.Suite.Scalar()
+	err = serverSecKey.UnmarshalBinary(serverSecBuf)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return serverPubKey, serverSecKey, nil
+}
 
 func (s *SQLite) StoreMessageAndData(channelPath string, msg message.Message) error {
 	tx, err := s.database.Begin()

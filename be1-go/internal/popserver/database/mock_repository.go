@@ -542,6 +542,45 @@ func (_m *MockRepository) GetRollCallState(channel string) (string, error) {
 	return r0, r1
 }
 
+// GetServerKeys provides a mock function with given fields:
+func (_m *MockRepository) GetServerKeys() (kyber.Point, kyber.Scalar, error) {
+	ret := _m.Called()
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetServerKeys")
+	}
+
+	var r0 kyber.Point
+	var r1 kyber.Scalar
+	var r2 error
+	if rf, ok := ret.Get(0).(func() (kyber.Point, kyber.Scalar, error)); ok {
+		return rf()
+	}
+	if rf, ok := ret.Get(0).(func() kyber.Point); ok {
+		r0 = rf()
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(kyber.Point)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func() kyber.Scalar); ok {
+		r1 = rf()
+	} else {
+		if ret.Get(1) != nil {
+			r1 = ret.Get(1).(kyber.Scalar)
+		}
+	}
+
+	if rf, ok := ret.Get(2).(func() error); ok {
+		r2 = rf()
+	} else {
+		r2 = ret.Error(2)
+	}
+
+	return r0, r1, r2
+}
+
 // HasChannel provides a mock function with given fields: channel
 func (_m *MockRepository) HasChannel(channel string) (bool, error) {
 	ret := _m.Called(channel)
@@ -829,6 +868,24 @@ func (_m *MockRepository) StoreMessageWithElectionKey(laoID string, electionID s
 	var r0 error
 	if rf, ok := ret.Get(0).(func(string, string, kyber.Point, kyber.Scalar, message.Message, message.Message) error); ok {
 		r0 = rf(laoID, electionID, electionPubKey, electionSecretKey, msg, electionKeyMsg)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// StoreServerKeys provides a mock function with given fields: electionPubKey, electionSecretKey
+func (_m *MockRepository) StoreServerKeys(electionPubKey kyber.Point, electionSecretKey kyber.Scalar) error {
+	ret := _m.Called(electionPubKey, electionSecretKey)
+
+	if len(ret) == 0 {
+		panic("no return value specified for StoreServerKeys")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(kyber.Point, kyber.Scalar) error); ok {
+		r0 = rf(electionPubKey, electionSecretKey)
 	} else {
 		r0 = ret.Error(0)
 	}

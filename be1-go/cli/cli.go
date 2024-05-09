@@ -5,6 +5,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"github.com/rs/zerolog"
 	"golang.org/x/exp/slices"
 	"net/url"
 	"os"
@@ -57,6 +58,66 @@ type ServerConfig struct {
 	OtherServers   []string `json:"other-servers"`
 }
 
+func (s *ServerConfig) newHub(l *zerolog.Logger) (hub.Hub, error) {
+	// compute the client server address if it wasn't provided
+	if s.ClientAddress == "" {
+		s.ClientAddress = fmt.Sprintf("ws://%s:%d/client", s.PublicAddress, s.ClientPort)
+	}
+	// compute the server server address if it wasn't provided
+	if s.ServerAddress == "" {
+		s.ServerAddress = fmt.Sprintf("ws://%s:%d/server", s.PublicAddress, s.ServerPort)
+	}
+
+	var point kyber.Point = nil
+	err := ownerKey(s.PublicKey, &point)
+	if err != nil {
+		return nil, err
+	}
+
+	schemaValidator, err := validation.NewSchemaValidator()
+	if err != nil {
+		return nil, err
+	}
+
+	db, err := database.NewSQLite("sqllite.db", false)
+	if err != nil {
+		return nil, err
+	}
+
+	database.InitDatabase(&db)
+
+	serverPublicKey, serverSecretKey, err := db.GetServerKeys()
+	if err != nil {
+		serverSecretKey = crypto.Suite.Scalar().Pick(crypto.Suite.RandomStream())
+		serverPublicKey = crypto.Suite.Point().Mul(serverSecretKey, nil)
+
+		err := db.StoreServerKeys(serverPublicKey, serverSecretKey)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	utils.InitUtils(l, schemaValidator)
+
+	state.InitState(l)
+
+	config.InitConfig(point, serverPublicKey, serverSecretKey, s.ClientAddress, s.ServerAddress)
+
+	channels, err := db.GetAllChannels()
+	if err != nil {
+		return nil, err
+	}
+
+	for _, v := range channels {
+		errAnswer := state.AddChannel(v)
+		if errAnswer != nil {
+			return nil, errAnswer
+		}
+	}
+
+	return popserver.NewHub(), nil
+}
+
 // Serve parses the CLI arguments and spawns a hub and a websocket server for
 // the server
 func Serve(cliCtx *cli.Context) error {
@@ -83,50 +144,9 @@ func Serve(cliCtx *cli.Context) error {
 		}
 	}
 
-	computeAddresses(&serverConfig)
-
-	var point kyber.Point = nil
-	err = ownerKey(serverConfig.PublicKey, &point)
+	h, err := serverConfig.newHub(&poplog)
 	if err != nil {
 		return err
-	}
-
-	schemaValidator, err := validation.NewSchemaValidator()
-	if err != nil {
-		return err
-	}
-
-	utils.InitUtils(&poplog, schemaValidator)
-
-	state.InitState(&poplog)
-
-	serverSecretKey := crypto.Suite.Scalar().Pick(crypto.Suite.RandomStream())
-	serverPublicKey := crypto.Suite.Point().Mul(serverSecretKey, nil)
-
-	config.InitConfig(point, serverPublicKey, serverSecretKey, serverConfig.ClientAddress, serverConfig.ServerAddress)
-
-	db, err := database.NewSQLite("sqllite.db", false)
-	if err != nil {
-		return err
-	}
-
-	database.InitDatabase(&db)
-
-	channels, err := db.GetAllChannels()
-	if err != nil {
-		fmt.Println("Failed to get channels")
-	}
-
-	for _, v := range channels {
-		errAnswer := state.AddChannel(v)
-		if errAnswer != nil {
-			panic(errAnswer.Error())
-		}
-	}
-
-	h := popserver.NewHub()
-	if err != nil {
-		return xerrors.Errorf("failed create the hub: %v", err)
 	}
 
 	// start the processing loop
@@ -423,17 +443,5 @@ func updateServersState(servers []string, connectedServers *map[string]bool) {
 		if _, ok := (*connectedServers)[server]; !ok {
 			(*connectedServers)[server] = false
 		}
-	}
-}
-
-// computeAddresses computes the client and server addresses if they were not provided
-func computeAddresses(serverConfig *ServerConfig) {
-	// compute the client server address if it wasn't provided
-	if serverConfig.ClientAddress == "" {
-		serverConfig.ClientAddress = fmt.Sprintf("ws://%s:%d/client", serverConfig.PublicAddress, serverConfig.ClientPort)
-	}
-	// compute the server server address if it wasn't provided
-	if serverConfig.ServerAddress == "" {
-		serverConfig.ServerAddress = fmt.Sprintf("ws://%s:%d/server", serverConfig.PublicAddress, serverConfig.ServerPort)
 	}
 }

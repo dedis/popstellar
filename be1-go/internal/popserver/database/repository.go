@@ -17,6 +17,12 @@ type Repository interface {
 	CoinRepository
 	ReactionRepository
 
+	// StoreServerKeys stores the keys of the server
+	StoreServerKeys(electionPubKey kyber.Point, electionSecretKey kyber.Scalar) error
+
+	// GetServerKeys get the keys of the server
+	GetServerKeys() (kyber.Point, kyber.Scalar, error)
+
 	// StoreMessageAndData stores a message with an object and an action inside the database.
 	StoreMessageAndData(channelID string, msg message.Message) error
 
