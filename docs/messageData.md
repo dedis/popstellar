@@ -3065,8 +3065,11 @@ With this message the organizer lets the server know to expect a federation_init
     "public_key": "UvViTxoKsB3XVP_ctkmOKCJpMWb7fCzrcb1XDmhNe7Q=",
     "server_address": "wss://ethz.ch:9000/server",
     "challenge": {
-        "value": "82eadde2a4ba832518b90bb93c8480ee1ae16a91d5efe9281e91e2ec11da03e4",
-        "valid_until": 1712854874
+      "data": "eyJvYmplY3QiOiJmZWRlcmF0aW9uIiwiYWN0aW9uIjoiY2hhbGxlbmdlIiwidmFsdWUiOiJlYmEzZTI0ZWZjZDBiNTNmYTY5OTA4YmFkNWQxY2I2OTlkNzk4MGQ5MzEwOWRhMGIyYmZkNTAzN2MyYzg5ZWUwIiwidGltZXN0YW1wIjoxNzEzMzg1NTY4fQ==",
+      "sender": "zXgzQaa_NpUe-v0Zk_4q8k184ohQ5nTQhBDKgncHzq4=",
+      "signature": "BILYwYkT5tOBL4rCD7yvhBkhAYqRXOI3ajQ2uJ1gAk-g6nRc38vMMnlHShuNCQ3dQFXYZPn37cCFelhWGjY8Bg==",
+      "message_id": "sD_PdryBuOr14_65h8L-e1lzdQpDWxUAngtu1uwqgEI=",
+      "witness_signatures": []
     }
 }
 
@@ -3104,24 +3107,10 @@ With this message the organizer lets the server know to expect a federation_init
             "$comment": "public key of the remote organizer"
         },
         "challenge": {
-            "type": "object",
-            "properties": {
-                "value": {
-                    "type": "string",
-                    "contentEncoding": "hex",
-                    "pattern": "^[0-9a-fA-F]{64}$",
-                    "$comment": "A 32 bytes array encoded in hexadecimal"
-                },
-                "valid_until": {
-                    "type": "integer",
-                    "description": "[Timestamp] of the expiration time",
-                    "minimum": 0
-                }
-            },
-            "additionalProperties": false,
-            "required": ["value", "valid_until"]
-        }
-    },
+          "$ref": "../message.json",
+          "$comment": "message/message containing a FederationChallenge data"
+            }
+        },
     "additionalProperties": false,
     "required": [
         "object",
@@ -3150,15 +3139,18 @@ It contains the necessary connection details, and a challenge which the remote p
 // ../protocol/examples/messageData/federation_init/federation_init.json
 
 {
-    "object": "federation",
-    "action": "init",
-    "lao_id": "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=",
-    "public_key": "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=",
-    "server_address": "wss://epfl.ch:9000/server",
-    "challenge": {
-        "value": "82eadde2a4ba832518b90bb93c8480ee1ae16a91d5efe9281e91e2ec11da03e4",
-        "valid_until": 1712854874
-    }
+  "object": "federation",
+  "action": "init",
+  "lao_id": "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=",
+  "public_key": "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=",
+  "server_address": "wss://epfl.ch:9000/server",
+  "challenge": {
+    "data": "eyJvYmplY3QiOiJmZWRlcmF0aW9uIiwiYWN0aW9uIjoiY2hhbGxlbmdlIiwidmFsdWUiOiJlYmEzZTI0ZWZjZDBiNTNmYTY5OTA4YmFkNWQxY2I2OTlkNzk4MGQ5MzEwOWRhMGIyYmZkNTAzN2MyYzg5ZWUwIiwidGltZXN0YW1wIjoxNzEzMzg1NTY4fQ==",
+    "sender": "zXgzQaa_NpUe-v0Zk_4q8k184ohQ5nTQhBDKgncHzq4=",
+    "signature": "BILYwYkT5tOBL4rCD7yvhBkhAYqRXOI3ajQ2uJ1gAk-g6nRc38vMMnlHShuNCQ3dQFXYZPn37cCFelhWGjY8Bg==",
+    "message_id": "sD_PdryBuOr14_65h8L-e1lzdQpDWxUAngtu1uwqgEI=",
+    "witness_signatures": []
+  }
 }
 
 ```
@@ -3166,63 +3158,50 @@ It contains the necessary connection details, and a challenge which the remote p
 
 ```json5
 // ../protocol/query/method/message/data/dataFederationInit.json
-
 {
-    "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataFederationInit.json",
-    "description": "Sent by an organizer client to its server, initiates a connection to a remote LAO",
-    "type": "object",
-    "properties": {
-        "object": {
-            "const": "federation"
-        },
-        "action": {
-            "const": "init"
-        },
-        "lao_id": {
-            "type": "string",
-            "contentEncoding": "base64",
-            "$comment": "ID of the remote LAO"
-        },
-        "server_address": {
-            "type": "string",
-            "pattern": "^(ws|wss):\/\/.*(:\\d{0,5})?\/.*$",
-            "$comment": "public address of the remote organizer server"
-        },
-        "public_key": {
-            "type": "string",
-            "contentEncoding": "base64",
-            "$comment": "public key of the remote organizer"
-        },
-        "challenge": {
-            "type": "object",
-            "properties": {
-                "value": {
-                    "type": "string",
-                    "contentEncoding": "hex",
-                    "pattern": "^[0-9a-fA-F]{64}$",
-                    "$comment": "A 32 bytes array encoded in hexadecimal"
-                },
-                "valid_until": {
-                    "type": "integer",
-                    "description": "[Timestamp] of the expiration time",
-                    "minimum": 0
-                }
-            },
-            "additionalProperties": false,
-            "required": ["value", "valid_until"]
-        }
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataFederationInit.json",
+  "description": "Sent by an organizer client to its server, initiates a connection to a remote LAO",
+  "type": "object",
+  "properties": {
+    "object": {
+      "const": "federation"
     },
-    "additionalProperties": false,
-    "required": [
-        "object",
-        "action",
-        "lao_id",
-        "server_address",
-        "public_key",
-        "challenge"
-    ]
+    "action": {
+      "const": "init"
+    },
+    "lao_id": {
+      "type": "string",
+      "contentEncoding": "base64",
+      "$comment": "ID of the remote LAO"
+    },
+    "server_address": {
+      "type": "string",
+      "pattern": "^(ws|wss):\/\/.*(:\\d{0,5})?\/.*$",
+      "$comment": "public address of the remote organizer server"
+    },
+    "public_key": {
+      "type": "string",
+      "contentEncoding": "base64",
+      "$comment": "public key of the remote organizer"
+    },
+    "challenge": {
+      "$ref": "../message.json",
+      "$comment": "message/message containing a FederationChallenge data"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "object",
+    "action",
+    "lao_id",
+    "server_address",
+    "public_key",
+    "challenge"
+  ]
 }
+
+
 
 ```
 
