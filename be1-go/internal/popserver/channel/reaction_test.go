@@ -225,10 +225,8 @@ func newReactionAddMsg(t *testing.T, channelID, laoID string, sender string, rea
 
 	msg := generator.NewReactionAddMsg(t, sender, nil, reactionCodePoint, chirpID, timestamp)
 
-	subs, ok := state.GetSubsInstance()
-	require.True(t, ok)
-
-	subs.AddChannel(channelID)
+	errAnswer := state.AddChannel(channelID)
+	require.Nil(t, errAnswer)
 
 	if !hasInvalidField && !isNotAttendee {
 		mockRepo.On("IsAttendee", laoID, sender).Return(true, nil)
@@ -247,10 +245,8 @@ func newReactionDeleteMsg(t *testing.T, channelID, laoID string, sender string, 
 
 	msg := generator.NewReactionDeleteMsg(t, sender, nil, reactionID, timestamp)
 
-	subs, ok := state.GetSubsInstance()
-	require.True(t, ok)
-
-	subs.AddChannel(channelID)
+	errAnswer := state.AddChannel(channelID)
+	require.Nil(t, errAnswer)
 
 	if !hasInvalidField && !hasNotReaction && !isNotOwner && !isNotAttendee {
 		mockRepo.On("IsAttendee", laoID, sender).Return(true, nil)

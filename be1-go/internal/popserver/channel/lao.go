@@ -197,14 +197,11 @@ func handleRollCallClose(msg message.Message, channel string) *answer.Error {
 		channels = append(channels, chirpingChannelPath)
 	}
 
-	subs, ok := state.GetSubsInstance()
-	if !ok {
-		errAnswer := answer.NewInternalServerError("failed to get state").Wrap("handleRollCallClose")
-		return errAnswer
-	}
-
 	for _, channelPath := range channels {
-		subs.AddChannel(channelPath)
+		errAnswer := state.AddChannel(channelPath)
+		if errAnswer != nil {
+			return errAnswer.Wrap("handleRollCallClose")
+		}
 	}
 
 	err = db.StoreChannelsAndMessage(channels, channel, msg)
@@ -296,13 +293,11 @@ func handleElectionSetup(msg message.Message, channel string) *answer.Error {
 		return errAnswer
 	}
 
-	subs, ok := state.GetSubsInstance()
-	if !ok {
-		errAnswer := answer.NewInternalServerError("failed to get state").Wrap("handleGreetServer")
-		return errAnswer
+	errAnswer = state.AddChannel(electionPath)
+	if errAnswer != nil {
+		return errAnswer.Wrap("handleElectionSetup")
 	}
 
-	subs.AddChannel(electionPath)
 	return nil
 }
 

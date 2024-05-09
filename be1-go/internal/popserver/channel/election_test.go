@@ -93,9 +93,8 @@ func Test_handleChannelElection(t *testing.T) {
 	electionID = base64.URLEncoding.EncodeToString([]byte("electionID3"))
 	channelPath = "/root/" + laoID + "/" + electionID
 
-	subs, ok := state.GetSubsInstance()
-	require.True(t, ok)
-	subs.AddChannel(channelPath)
+	errAnswer := state.AddChannel(channelPath)
+	require.Nil(t, errAnswer)
 
 	// Test 6: Success when ElectionOpen is valid
 	args = append(args, input{
@@ -190,7 +189,8 @@ func Test_handleChannelElection(t *testing.T) {
 
 	votes := messagedata.Hash("voteID1", "voteID2", "voteID3")
 
-	subs.AddChannel(channelPath)
+	errAnswer = state.AddChannel(channelPath)
+	require.Nil(t, errAnswer)
 
 	// Test 13: Success when ElectionEnd is valid
 	args = append(args, input{

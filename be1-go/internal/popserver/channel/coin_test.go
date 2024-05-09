@@ -144,14 +144,12 @@ func newSuccessTestHandleChannelCoin(t *testing.T, filename string, name string,
 		{Id: laoID + "3"},
 	}
 
-	subs, ok := state.GetSubsInstance()
-	require.True(t, ok)
-
-	subs.AddChannel(channelID)
+	errAnswer := state.AddChannel(channelID)
+	require.Nil(t, errAnswer)
 
 	for _, s := range sockets {
-		err := subs.Subscribe(channelID, s)
-		require.Nil(t, err)
+		errAnswer := state.Subscribe(s, channelID)
+		require.Nil(t, errAnswer)
 	}
 
 	return inputTestHandleChannelCoin{
@@ -182,10 +180,8 @@ func newFailTestHandleChannelCoin(t *testing.T, filename string, name string) in
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
-	subs, ok := state.GetSubsInstance()
-	require.True(t, ok)
-
-	subs.AddChannel(channelID)
+	errAnswer := state.AddChannel(channelID)
+	require.Nil(t, errAnswer)
 
 	return inputTestHandleChannelCoin{
 		name:      name,

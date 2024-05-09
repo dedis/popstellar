@@ -138,10 +138,8 @@ func newChirpAddMsg(t *testing.T, channelID string, sender string, timestamp int
 
 	msg := generator.NewChirpAddMsg(t, sender, nil, timestamp)
 
-	subs, ok := state.GetSubsInstance()
-	require.True(t, ok)
-
-	subs.AddChannel(channelID)
+	errAnswer := state.AddChannel(channelID)
+	require.Nil(t, errAnswer)
 
 	if isError {
 		return msg
@@ -150,7 +148,8 @@ func newChirpAddMsg(t *testing.T, channelID string, sender string, timestamp int
 	chirpNotifyChannelID, err := getGeneralChirpsChannel(channelID)
 	require.Nil(t, err)
 
-	subs.AddChannel(chirpNotifyChannelID)
+	errAnswer = state.AddChannel(chirpNotifyChannelID)
+	require.Nil(t, errAnswer)
 
 	mockRepo.On("StoreChirpMessages", channelID, chirpNotifyChannelID, mock.AnythingOfType("message.Message"),
 		mock.AnythingOfType("message.Message")).Return(nil)
@@ -163,10 +162,8 @@ func newChirpDeleteMsg(t *testing.T, channelID string, sender string, chirpID st
 
 	msg := generator.NewChirpDeleteMsg(t, sender, nil, chirpID, timestamp)
 
-	subs, ok := state.GetSubsInstance()
-	require.True(t, ok)
-
-	subs.AddChannel(channelID)
+	errAnswer := state.AddChannel(channelID)
+	require.Nil(t, errAnswer)
 
 	if isError {
 		return msg
@@ -177,7 +174,8 @@ func newChirpDeleteMsg(t *testing.T, channelID string, sender string, chirpID st
 	chirpNotifyChannelID, err := getGeneralChirpsChannel(channelID)
 	require.Nil(t, err)
 
-	subs.AddChannel(chirpNotifyChannelID)
+	errAnswer = state.AddChannel(chirpNotifyChannelID)
+	require.Nil(t, errAnswer)
 
 	mockRepo.On("StoreChirpMessages", channelID, chirpNotifyChannelID, mock.AnythingOfType("message.Message"),
 		mock.AnythingOfType("message.Message")).Return(nil)

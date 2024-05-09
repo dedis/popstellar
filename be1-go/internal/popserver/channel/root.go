@@ -191,14 +191,11 @@ func createLaoAndChannels(msg, laoGreetMsg message.Message, organizerPubBuf []by
 		return errAnswer
 	}
 
-	subs, ok := state.GetSubsInstance()
-	if !ok {
-		errAnswer := answer.NewInternalServerError("failed to get state").Wrap("createLaoAndSubChannels")
-		return errAnswer
-	}
-
 	for channelPath := range channels {
-		subs.AddChannel(channelPath)
+		errAnswer := state.AddChannel(channelPath)
+		if errAnswer != nil {
+			return errAnswer.Wrap("createLaoAndSubChannels")
+		}
 	}
 	return nil
 }

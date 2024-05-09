@@ -115,13 +115,11 @@ func Serve(cliCtx *cli.Context) error {
 		fmt.Println("Failed to get channels")
 	}
 
-	subs, ok := state.GetSubsInstance()
-	if !ok {
-		panic("failed to get subscriber instance")
-	}
-
 	for _, v := range channels {
-		subs.AddChannel(v)
+		errAnswer := state.AddChannel(v)
+		if errAnswer != nil {
+			panic(errAnswer.Error())
+		}
 	}
 
 	//// create user hub

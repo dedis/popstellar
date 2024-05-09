@@ -181,13 +181,7 @@ func broadcastToAllClients(msg message.Message, channel string) *answer.Error {
 		return errAnswer
 	}
 
-	subs, ok := state.GetSubsInstance()
-	if !ok {
-		errAnswer := answer.NewInternalServerError("failed to get state").Wrap("handleGreetServer")
-		return errAnswer
-	}
-
-	errAnswer = subs.SendToAll(buf, channel)
+	errAnswer = state.SendToAll(buf, channel)
 	if errAnswer != nil {
 		errAnswer = errAnswer.Wrap("broadcastToAllClients")
 		return errAnswer

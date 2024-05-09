@@ -97,16 +97,9 @@ func handleSubscribe(socket socket.Socket, msg []byte) (*int, *answer.Error) {
 		return &subscribe.ID, errAnswer
 	}
 
-	subs, ok := state.GetSubsInstance()
-	if !ok {
-		errAnswer := answer.NewInternalServerError("failed to get state").Wrap("handleSubscribe")
-		return &subscribe.ID, errAnswer
-	}
-
-	errAnswer := subs.Subscribe(subscribe.Params.Channel, socket)
+	errAnswer := state.Subscribe(socket, subscribe.Params.Channel)
 	if errAnswer != nil {
-		errAnswer = errAnswer.Wrap("handleSubscribe")
-		return &subscribe.ID, errAnswer
+		return &subscribe.ID, errAnswer.Wrap("handleSubscribe")
 	}
 
 	socket.SendResult(subscribe.ID, nil, nil)
@@ -128,16 +121,9 @@ func handleUnsubscribe(socket socket.Socket, msg []byte) (*int, *answer.Error) {
 		return &unsubscribe.ID, errAnswer
 	}
 
-	subs, ok := state.GetSubsInstance()
-	if !ok {
-		errAnswer := answer.NewInternalServerError("failed to get state").Wrap("handleUnsubscribe")
-		return &unsubscribe.ID, errAnswer
-	}
-
-	errAnswer := subs.Unsubscribe(unsubscribe.Params.Channel, socket)
+	errAnswer := state.Unsubscribe(socket, unsubscribe.Params.Channel)
 	if errAnswer != nil {
-		errAnswer = errAnswer.Wrap("handleUnsubscribe")
-		return &unsubscribe.ID, errAnswer
+		return &unsubscribe.ID, errAnswer.Wrap("handleUnsubscribe")
 	}
 
 	socket.SendResult(unsubscribe.ID, nil, nil)

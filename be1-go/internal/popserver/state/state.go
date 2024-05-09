@@ -65,12 +65,50 @@ func SetState(t *testing.T, subs Subscriber, peers Peerer, queries Querier) erro
 	return nil
 }
 
-func GetSubsInstance() (Subscriber, bool) {
+func getSubs() (Subscriber, *answer.Error) {
 	if instance == nil || instance.subs == nil {
-		return nil, false
+		return nil, answer.NewInternalServerError("subscriber was not instantiated")
 	}
 
-	return instance.subs, true
+	return instance.subs, nil
+}
+
+func AddChannel(channel string) *answer.Error {
+	subs, errAnswer := getSubs()
+	if errAnswer != nil {
+		return errAnswer
+	}
+
+	subs.AddChannel(channel)
+
+	return nil
+}
+
+func Subscribe(socket socket.Socket, channel string) *answer.Error {
+	subs, errAnswer := getSubs()
+	if errAnswer != nil {
+		return errAnswer
+	}
+
+	return subs.Subscribe(channel, socket)
+}
+
+func Unsubscribe(socket socket.Socket, channel string) *answer.Error {
+	subs, errAnswer := getSubs()
+	if errAnswer != nil {
+		return errAnswer
+	}
+
+	return subs.Unsubscribe(channel, socket)
+}
+
+func SendToAll(buf []byte, channel string) *answer.Error {
+	subs, errAnswer := getSubs()
+	if errAnswer != nil {
+		return errAnswer
+	}
+
+	return subs.SendToAll(buf, channel)
 }
 
 func GetPeersInstance() (Peerer, bool) {
