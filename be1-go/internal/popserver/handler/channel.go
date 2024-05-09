@@ -197,7 +197,6 @@ const (
 	ChannelChirp     = "chirp"
 	ChannelReaction  = "reaction"
 	ChannelConsensus = "consensus"
-	//channelPopCha    = "popcha"
-	ChannelCoin = "coin"
-	ChannelAuth = "auth"
+	ChannelCoin      = "coin"
+	ChannelAuth      = "auth"
 )
