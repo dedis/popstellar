@@ -2,6 +2,8 @@ package ch.epfl.pop.json
 
 import ch.epfl.pop.json.MessageDataProtocol.PARAM_ACTION
 import ch.epfl.pop.json.ObjectProtocol.*
+import ch.epfl.pop.json.HighLevelProtocol.messageFormat
+import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.coin.*
 import ch.epfl.pop.model.network.method.message.data.election.VersionType
 import ch.epfl.pop.model.network.method.message.data.election.*
@@ -18,6 +20,7 @@ import spray.json.*
 
 import scala.collection.immutable.ListMap
 import scala.util.Try
+import scala.util.matching.Regex
 
 object MessageDataProtocol extends DefaultJsonProtocol {
   final private val PARAM_OBJECT = "object"
@@ -496,8 +499,9 @@ object MessageDataProtocol extends DefaultJsonProtocol {
           laoId.convertTo[Hash],
           serverAddress,
           other_organizer.convertTo[PublicKey],
-          challenge.convertTo[FederationChallenge]
+          challenge.convertTo[Message]
         )
+      case _ => throw new IllegalArgumentException(s"Can't parse json value $json to a FederationExpect object")
     }
 
     override def write(obj: FederationExpect): JsValue = {
@@ -524,7 +528,7 @@ object MessageDataProtocol extends DefaultJsonProtocol {
           laoId.convertTo[Hash],
           serverAddress,
           other_organizer.convertTo[PublicKey],
-          challenge.convertTo[FederationChallenge] // challenge is itself a message, can we do this ?
+          challenge.convertTo[Message]
         )
       case _ => throw new IllegalArgumentException(s"Can't parse json value $json to a FederationInit object")
     }
@@ -561,16 +565,35 @@ object MessageDataProtocol extends DefaultJsonProtocol {
       JsObject(jsObjectContent)
     }
   }
-  
-  implicit object FederationResultFormat extends JsonFormat[FederationResult]{
-    final private val
 
-    override def read(json: JsValue): FederationResult = {
-      ???
+  implicit object FederationResultFormat extends JsonFormat[FederationResult]{
+    final private val PARAM_STATUS: String = "status"
+    final private val PARAM_REASON: String = "reason"
+    final private val PARAM_ORGANIZER: String = "organizer"
+    final private val PARAM_CHALLENGE_MESSAGE = "challenge_message"
+    final private val pattern_success: Regex = "^success$".r
+    final private val pattern_failure : Regex = "^failure$".r
+
+    override def read(json: JsValue): FederationResult = json.asJsObject.getFields(PARAM_STATUS, PARAM_REASON, PARAM_ORGANIZER, PARAM_CHALLENGE_MESSAGE) match {
+      case Seq(JsString(status), reason @ JsString(_), organizer @ JsString(_), challenge_message@JsString(_)) => status match {
+        case pattern_success() => FederationResult(status,organizer.convertTo[PublicKey], challenge_message.convertTo[FederationChallenge])
+        case pattern_failure() => FederationResult(status, reason.convertTo[String], challenge_message.convertTo[FederationChallenge])
+        case _ => throw new IllegalArgumentException(s"Unexpected behavior, can't parse json value $json to a FederationResult object")
+      }
+      case _ => throw new IllegalArgumentException(s"Can't parse json value $json to a FederationResult object")
     }
 
+
     override def write(obj: FederationResult): JsValue = {
-      ???
+      var jsObjectContent: ListMap[String, JsValue] = ListMap[String, JsValue](
+        PARAM_OBJECT -> JsString(obj._object.toString),
+        PARAM_ACTION -> JsString(obj.action.toString),
+        PARAM_STATUS -> obj.status.toJson,
+        PARAM_REASON -> obj.reason.toJson,
+        PARAM_ORGANIZER -> obj.organizer.toJson,
+        PARAM_CHALLENGE_MESSAGE -> obj.challenge_message.toJson
+      )
+      JsObject(jsObjectContent)
     }
   }
 
