@@ -21,6 +21,7 @@ object ComparingFloatingTypes {
     }
     f1 == d1 // assert: ComparingFloatingTypes
     f1.equals(f2) // assert: ComparingFloatingTypes
+    d1.equals(d2) // assert: ComparingFloatingTypes
   }
 
 }
