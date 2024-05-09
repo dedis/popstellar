@@ -42,20 +42,20 @@ The project is organized into different modules as follows
 ├── docs
 ├── hub                       # contains the abstract definition of a hub NEED TO BE DELETED
 ├── inbox                     # helper to store messages used by channels NEED TO BE DELETED
-├── internal
-│   ├── depgraph
-│   └── popserver
-│       ├── channel     # handlers for each channel type
-│       ├── config      # singleton with the server config informations and server keys
-│       ├── database    # singleton with the database + implementations of the database
-│       ├── generator   # query and message generators only use for the tests
-│       ├── message     # handlers for each query type and answer type
-│       ├── state       # singleton with the temporary states of the server (peers, queries, and subscriptions)
-│       ├── type        # every types use in the implementation
-│       └── utils       # singleton with the log instance and the schema validator
+├── internal                  
+│   ├── depgraph              # tool to generate the dependencies graph
+│   └── popserver             # entry point of the messages received by the sockets
+│       ├── channel           # handlers for each channel type
+│       ├── config            # singleton with the server config informations and server keys
+│       ├── database          # singleton with the database + implementations of the database
+│       ├── generator         # query and message generators only use for the tests
+│       ├── message           # handlers for each query type and answer type
+│       ├── state             # singleton with the temporary states of the server (peers, queries, and subscriptions)
+│       ├── type              # every types use in the implementation
+│       └── utils             # singleton with the log instance and the schema validator
 ├── message                   # message types and marshaling/unmarshaling logic
 ├── network                   # module to set up Websocket connections
-│   └── socket          # module to send/receive data over the wire
+│   └── socket                # module to send/receive data over the wire
 ├── popcha                    # HTTP server and back-end logic for PoPCHA NEED TO BE REFACTOR
 └── validation                # module to validate incoming/outgoing messages
 ```
