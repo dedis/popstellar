@@ -189,37 +189,13 @@ func handleElectionEnd(msg message.Message, channel string) *answer.Error {
 		return errAnswer.Wrap("handleElectionEnd")
 	}
 
-	// verify message data
-	errAnswer = electionEnd.Verify(channel)
+	errAnswer = verifyElectionEnd(electionEnd, channel)
 	if errAnswer != nil {
 		return errAnswer.Wrap("handleElectionEnd")
-
 	}
 
 	db, errAnswer := database.GetElectionRepositoryInstance()
 	if errAnswer != nil {
-		return errAnswer.Wrap("handleElectionEnd")
-	}
-
-	// verify if the election is started
-	started, err := db.IsElectionStarted(channel)
-	if err != nil {
-		errAnswer := answer.NewQueryDatabaseError("election start status: %v", err)
-		return errAnswer.Wrap("handleElectionEnd")
-	}
-	if !started {
-		errAnswer := answer.NewInvalidMessageFieldError("election was not started")
-		return errAnswer.Wrap("handleElectionEnd")
-	}
-
-	// verify if the timestamp is stale
-	createdAt, err := db.GetElectionCreationTime(channel)
-	if err != nil {
-		errAnswer := answer.NewInternalServerError("failed to get election creation time: %v", err)
-		return errAnswer.Wrap("handleElectionEnd")
-	}
-	if electionEnd.CreatedAt < createdAt {
-		errAnswer := answer.NewInvalidMessageFieldError("election end cannot have a creation time prior to election setup")
 		return errAnswer.Wrap("handleElectionEnd")
 	}
 
@@ -253,6 +229,44 @@ func handleElectionEnd(msg message.Message, channel string) *answer.Error {
 	}
 	errAnswer = broadcastToAllClients(electionResultMsg, channel)
 	if errAnswer != nil {
+		return errAnswer.Wrap("handleElectionEnd")
+	}
+
+	return nil
+}
+
+func verifyElectionEnd(electionEnd messagedata.ElectionEnd, channel string) *answer.Error {
+	// verify message data
+	errAnswer := electionEnd.Verify(channel)
+	if errAnswer != nil {
+		return errAnswer.Wrap("handleElectionEnd")
+
+	}
+
+	db, errAnswer := database.GetElectionRepositoryInstance()
+	if errAnswer != nil {
+		return errAnswer.Wrap("handleElectionEnd")
+	}
+
+	// verify if the election is started
+	started, err := db.IsElectionStarted(channel)
+	if err != nil {
+		errAnswer := answer.NewQueryDatabaseError("election start status: %v", err)
+		return errAnswer.Wrap("handleElectionEnd")
+	}
+	if !started {
+		errAnswer := answer.NewInvalidMessageFieldError("election was not started")
+		return errAnswer.Wrap("handleElectionEnd")
+	}
+
+	// verify if the timestamp is stale
+	createdAt, err := db.GetElectionCreationTime(channel)
+	if err != nil {
+		errAnswer := answer.NewQueryDatabaseError("election creation time: %v", err)
+		return errAnswer.Wrap("handleElectionEnd")
+	}
+	if electionEnd.CreatedAt < createdAt {
+		errAnswer := answer.NewInvalidMessageFieldError("election end cannot have a creation time prior to election setup")
 		return errAnswer.Wrap("handleElectionEnd")
 	}
 
@@ -384,47 +398,9 @@ func verifyRegisteredVotes(electionEnd messagedata.ElectionEnd, questions map[st
 }
 
 func createElectionResult(questions map[string]types.Question, channel string) (message.Message, *answer.Error) {
-	db, errAnswer := database.GetElectionRepositoryInstance()
+	resultElection, errAnswer := computeElectionResult(questions, channel)
 	if errAnswer != nil {
 		return message.Message{}, errAnswer.Wrap("createElectionResult")
-	}
-
-	electionType, err := db.GetElectionType(channel)
-	if err != nil {
-		errAnswer := answer.NewQueryDatabaseError("election type: %v", err)
-		return message.Message{}, errAnswer.Wrap("createElectionResult")
-	}
-
-	resultElection := messagedata.ElectionResult{
-		Object:    messagedata.ElectionObject,
-		Action:    messagedata.ElectionActionResult,
-		Questions: []messagedata.ElectionResultQuestion{},
-	}
-
-	for id, question := range questions {
-		if question.Method != messagedata.PluralityMethod {
-			continue
-		}
-		votesPerBallotOption := make([]int, len(question.BallotOptions))
-		for _, validVote := range question.ValidVotes {
-			index, ok := getVoteIndex(validVote, electionType, channel)
-			if ok && index >= 0 && index < len(question.BallotOptions) {
-				votesPerBallotOption[index]++
-			}
-		}
-		var questionResults []messagedata.ElectionResultQuestionResult
-		for i, options := range question.BallotOptions {
-			questionResults = append(questionResults, messagedata.ElectionResultQuestionResult{
-				BallotOption: options,
-				Count:        votesPerBallotOption[i],
-			})
-		}
-
-		electionResult := messagedata.ElectionResultQuestion{
-			ID:     id,
-			Result: questionResults,
-		}
-		resultElection.Questions = append(resultElection.Questions, electionResult)
 	}
 
 	buf, err := json.Marshal(resultElection)
@@ -459,6 +435,56 @@ func createElectionResult(questions map[string]types.Question, channel string) (
 	}
 
 	return electionResultMsg, nil
+}
+
+func computeElectionResult(questions map[string]types.Question, channel string) (
+	messagedata.ElectionResult, *answer.Error) {
+	db, errAnswer := database.GetElectionRepositoryInstance()
+	if errAnswer != nil {
+		return messagedata.ElectionResult{}, errAnswer.Wrap("computeElectionResult")
+	}
+
+	electionType, err := db.GetElectionType(channel)
+	if err != nil {
+		errAnswer := answer.NewQueryDatabaseError("election type: %v", err)
+		return messagedata.ElectionResult{}, errAnswer.Wrap("computeElectionResult")
+	}
+
+	result := make([]messagedata.ElectionResultQuestion, 0)
+
+	for id, question := range questions {
+		if question.Method != messagedata.PluralityMethod {
+			continue
+		}
+		votesPerBallotOption := make([]int, len(question.BallotOptions))
+		for _, validVote := range question.ValidVotes {
+			index, ok := getVoteIndex(validVote, electionType, channel)
+			if ok && index >= 0 && index < len(question.BallotOptions) {
+				votesPerBallotOption[index]++
+			}
+		}
+		var questionResults []messagedata.ElectionResultQuestionResult
+		for i, options := range question.BallotOptions {
+			questionResults = append(questionResults, messagedata.ElectionResultQuestionResult{
+				BallotOption: options,
+				Count:        votesPerBallotOption[i],
+			})
+		}
+
+		electionResult := messagedata.ElectionResultQuestion{
+			ID:     id,
+			Result: questionResults,
+		}
+		result = append(result, electionResult)
+	}
+
+	resultElection := messagedata.ElectionResult{
+		Object:    messagedata.ElectionObject,
+		Action:    messagedata.ElectionActionResult,
+		Questions: result,
+	}
+
+	return resultElection, nil
 }
 
 func getVoteIndex(vote types.ValidVote, electionType, channel string) (int, bool) {
