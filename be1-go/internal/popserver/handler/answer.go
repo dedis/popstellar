@@ -102,7 +102,7 @@ func TryToHandleMessages(msgsByChannel map[string]map[string]message.Message, so
 				delete(msgsByChannel[channelID], msgID)
 			}
 
-			errAnswer = errAnswer.Wrap(msgID).Wrap("handleGetMessagesByIDAnswer")
+			errAnswer = errAnswer.Wrap(msgID).Wrap("TryToHandleMessages")
 			utils.LogError(errAnswer)
 		}
 
