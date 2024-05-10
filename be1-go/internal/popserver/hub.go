@@ -33,19 +33,22 @@ func (h *Hub) NotifyNewServer(socket socket.Socket) {
 
 func (h *Hub) Start() {
 	go func() {
-		utils.LogInfo("Start check messages")
+		utils.LogInfo("start the Hub")
 		for {
 			select {
 			case incomingMessage := <-h.messageChan:
+				utils.LogInfo("start handling a message")
 				err := handler.HandleIncomingMessage(incomingMessage.Socket, incomingMessage.Message)
 				if err != nil {
 					utils.LogError(err)
+				} else {
+					utils.LogInfo("successfully handled a message")
 				}
 			case <-h.closedSockets:
-				utils.LogInfo("Start check messages")
+				utils.LogInfo("stopping the sockets")
 				return
 			case <-h.stop:
-				utils.LogInfo("Start check messages")
+				utils.LogInfo("stopping the Hub")
 				return
 			}
 		}
