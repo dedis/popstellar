@@ -55,8 +55,9 @@
   <string name="stored_channels">stored channels</string>
   <string name="creating_new_lao">Creating new LAO</string>
   <string name="join_lao_title">Join LAO</string>
-  <string name="join_manual_hint">Lao information</string>
+  <string name="join_manual_hint"></string>
   <string name="add_lao_participant_title">Add LAO participant</string>
+    <string name="manual_lao_join_title">Manually Connect to a LAO</string>
 
   <!-- Lao Create -->
   <string name="lao_create_title">Create LAO</string>
@@ -129,6 +130,9 @@
   <string name="witness_already_scanned_warning">"This key already belongs to a witness"</string>
   <string name="attendee_scan_success">Attendee successfully scanned</string>
   <string name="witness_scan_success">Witness successfully scanned</string>
+    <string name="server_uri_hint">Server URI</string>
+    <string name="lao_id_hint">LAO ID</string>
+    <string name="qrcode_scanning_manual_entry_error">Both fields are required</string>
 
   <!--  Witnessing-->
   <string name="messages">Messages</string>

@@ -61,7 +61,7 @@
           android:textAllCaps="false"
           app:layout_constraintEnd_toEndOf="parent"
           app:layout_constraintStart_toStartOf="parent"
-          app:layout_constraintTop_toBottomOf="@id/manual_add_input_layout" />
+          app:layout_constraintTop_toBottomOf="@id/manual_lao_id_input_layout" />
 
         <ImageView
           android:id="@+id/add_manual_close"
@@ -85,21 +85,40 @@
           app:layout_constraintStart_toStartOf="parent"
           app:layout_constraintTop_toTopOf="parent" />
 
+        <!-- Server URI Input -->
         <com.google.android.material.textfield.TextInputLayout
-          android:id="@+id/manual_add_input_layout"
-          style="@style/text_field_standard"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:layout_margin="@dimen/main_horizontal_margin"
-          app:endIconMode="clear_text"
-          app:layout_constraintTop_toBottomOf="@id/add_manual_title">
-          <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/manual_add_edit_text"
+            android:id="@+id/manual_server_uri_input_layout"
+            style="@style/text_field_standard"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_gravity="start"/>
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/main_horizontal_margin"
+            app:endIconMode="clear_text"
+            app:layout_constraintTop_toBottomOf="@id/add_manual_title">
 
+          <com.google.android.material.textfield.TextInputEditText
+              android:id="@+id/manual_server_uri_edit_text"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:hint="@string/server_uri_hint"/>
         </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- LAO ID Input -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/manual_lao_id_input_layout"
+            style="@style/text_field_standard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            app:endIconMode="clear_text"
+            app:layout_constraintTop_toBottomOf="@id/manual_server_uri_input_layout">
+
+          <com.google.android.material.textfield.TextInputEditText
+              android:id="@+id/manual_lao_id_edit_text"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:hint="@string/lao_id_hint"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
 
       </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.card.MaterialCardView>

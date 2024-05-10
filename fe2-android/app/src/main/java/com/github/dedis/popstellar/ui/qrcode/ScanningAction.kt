@@ -82,7 +82,7 @@ enum class ScanningAction(
       R.string.scanned_tokens,
       R.string.join_lao_title,
       R.string.join_manual_hint,
-      R.string.add_lao_participant_title,
+      R.string.manual_lao_join_title,
       { activity: FragmentActivity, _: String? -> HomeActivity.obtainViewModel(activity) },
       { activity: FragmentActivity -> HomeActivity.obtainViewModel(activity) },
       { manager: FragmentManager, _: Array<String> ->
