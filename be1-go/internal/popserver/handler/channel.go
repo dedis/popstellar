@@ -32,18 +32,18 @@ func handleChannel(channelID string, msg message.Message) *answer.Error {
 
 	msgAlreadyExists, err := db.HasMessage(msg.MessageID)
 	if err != nil {
-		errAnswer := answer.NewInternalServerError("failed to query DB: %v", err).Wrap("handleChannel")
-		return errAnswer
+		errAnswer := answer.NewInternalServerError("failed to query DB: %v", err)
+		return errAnswer.Wrap("handleChannel")
 	}
 	if msgAlreadyExists {
-		errAnswer := answer.NewInvalidActionError("message %s was already received", msg.MessageID).Wrap("handleChannel")
-		return errAnswer
+		errAnswer := answer.NewInvalidActionError("message %s was already received", msg.MessageID)
+		return errAnswer.Wrap("handleChannel")
 	}
 
 	channelType, err := db.GetChannelType(channelID)
 	if err != nil {
-		errAnswer := answer.NewInvalidResourceError("failed to query DB: %v", err).Wrap("handleChannel")
-		return errAnswer
+		errAnswer := answer.NewInvalidResourceError("failed to query DB: %v", err)
+		return errAnswer.Wrap("handleChannel")
 	}
 
 	switch channelType {
@@ -64,8 +64,7 @@ func handleChannel(channelID string, msg message.Message) *answer.Error {
 	}
 
 	if errAnswer != nil {
-		errAnswer = errAnswer.Wrap("handleChannel")
-		return errAnswer
+		return errAnswer.Wrap("handleChannel")
 	}
 
 	return nil
@@ -76,33 +75,33 @@ func handleChannel(channelID string, msg message.Message) *answer.Error {
 func verifyMessage(msg message.Message) *answer.Error {
 	dataBytes, err := base64.URLEncoding.DecodeString(msg.Data)
 	if err != nil {
-		errAnswer := answer.NewInvalidMessageFieldError("failed to decode data: %v", err).Wrap("verifyMessage")
-		return errAnswer
+		errAnswer := answer.NewInvalidMessageFieldError("failed to decode data: %v", err)
+		return errAnswer.Wrap("verifyMessage")
 	}
 
 	publicKeySender, err := base64.URLEncoding.DecodeString(msg.Sender)
 	if err != nil {
-		errAnswer := answer.NewInvalidMessageFieldError("failed to decode public key: %v", err).Wrap("verifyMessage")
-		return errAnswer
+		errAnswer := answer.NewInvalidMessageFieldError("failed to decode public key: %v", err)
+		return errAnswer.Wrap("verifyMessage")
 	}
 
 	signatureBytes, err := base64.URLEncoding.DecodeString(msg.Signature)
 	if err != nil {
-		errAnswer := answer.NewInvalidMessageFieldError("failed to decode signature: %v", err).Wrap("verifyMessage")
-		return errAnswer
+		errAnswer := answer.NewInvalidMessageFieldError("failed to decode signature: %v", err)
+		return errAnswer.Wrap("verifyMessage")
 	}
 
 	err = schnorr.VerifyWithChecks(crypto.Suite, publicKeySender, dataBytes, signatureBytes)
 	if err != nil {
-		errAnswer := answer.NewInvalidMessageFieldError("failed to verify signature : %v", err).Wrap("verifyMessage")
-		return errAnswer
+		errAnswer := answer.NewInvalidMessageFieldError("failed to verify signature : %v", err)
+		return errAnswer.Wrap("verifyMessage")
 	}
 
 	expectedMessageID := messagedata.Hash(msg.Data, msg.Signature)
 	if expectedMessageID != msg.MessageID {
 		errAnswer := answer.NewInvalidActionError("messageID is wrong: expected %s found %s",
-			expectedMessageID, msg.MessageID).Wrap("verifyMessage")
-		return errAnswer
+			expectedMessageID, msg.MessageID)
+		return errAnswer.Wrap("verifyMessage")
 	}
 	return nil
 }
@@ -111,23 +110,20 @@ func verifyDataAndGetObjectAction(msg message.Message) (string, string, *answer.
 	jsonData, err := base64.URLEncoding.DecodeString(msg.Data)
 	if err != nil {
 		errAnswer := answer.NewInvalidMessageFieldError("failed to decode message data: %v", err)
-		errAnswer = errAnswer.Wrap("verifyDataAndGetObjectAction")
-		return "", "", errAnswer
+		return "", "", errAnswer.Wrap("verifyDataAndGetObjectAction")
 	}
 
 	// validate message data against the json schema
 	errAnswer := utils.VerifyJSON(jsonData, validation.Data)
 	if errAnswer != nil {
-		errAnswer = errAnswer.Wrap("verifyDataAndGetObjectAction")
-		return "", "", errAnswer
+		return "", "", errAnswer.Wrap("verifyDataAndGetObjectAction")
 	}
 
 	// get object#action
 	object, action, err := messagedata.GetObjectAndAction(jsonData)
 	if err != nil {
 		errAnswer := answer.NewInvalidMessageFieldError("failed to get object#action: %v", err)
-		errAnswer = errAnswer.Wrap("verifyDataAndGetObjectAction")
-		return "", "", errAnswer
+		return "", "", errAnswer.Wrap("verifyDataAndGetObjectAction")
 	}
 	return object, action, nil
 }
@@ -143,8 +139,7 @@ func Sign(data []byte) ([]byte, *answer.Error) {
 	signatureBuf, err := schnorr.Sign(crypto.Suite, serverSecretKey, data)
 	if err != nil {
 		errAnswer = answer.NewInternalServerError("failed to sign the data: %v", err)
-		errAnswer = errAnswer.Wrap("Sign")
-		return nil, errAnswer
+		return nil, errAnswer.Wrap("Sign")
 	}
 	return signatureBuf, nil
 }
@@ -172,18 +167,16 @@ func broadcastToAllClients(msg message.Message, channel string) *answer.Error {
 			msg,
 		},
 	}
-	var errAnswer *answer.Error
+
 	buf, err := json.Marshal(&rpcMessage)
 	if err != nil {
-		errAnswer = answer.NewInternalServerError("failed to marshal broadcast query: %v", err)
-		errAnswer = errAnswer.Wrap("broadcastToAllClients")
-		return errAnswer
+		errAnswer := answer.NewInternalServerError("failed to marshal broadcast query: %v", err)
+		return errAnswer.Wrap("broadcastToAllClients")
 	}
 
-	errAnswer = state.SendToAll(buf, channel)
+	errAnswer := state.SendToAll(buf, channel)
 	if errAnswer != nil {
-		errAnswer = errAnswer.Wrap("broadcastToAllClients")
-		return errAnswer
+		return errAnswer.Wrap("broadcastToAllClients")
 	}
 
 	return nil

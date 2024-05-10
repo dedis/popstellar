@@ -19,8 +19,7 @@ import (
 func handleChannelLao(channel string, msg message.Message) *answer.Error {
 	object, action, errAnswer := verifyDataAndGetObjectAction(msg)
 	if errAnswer != nil {
-		errAnswer = errAnswer.Wrap("handleChannelLao")
-		return errAnswer
+		return errAnswer.Wrap("handleChannelLao")
 	}
 
 	storeMessage := true
@@ -49,8 +48,7 @@ func handleChannelLao(channel string, msg message.Message) *answer.Error {
 		errAnswer = answer.NewInvalidMessageFieldError("failed to handle %s#%s, invalid object#action", object, action)
 	}
 	if errAnswer != nil {
-		errAnswer = errAnswer.Wrap("handleChannelLao")
-		return errAnswer
+		return errAnswer.Wrap("handleChannelLao")
 	}
 
 	if storeMessage {
@@ -62,34 +60,27 @@ func handleChannelLao(channel string, msg message.Message) *answer.Error {
 		err := db.StoreMessageAndData(channel, msg)
 		if err != nil {
 			errAnswer = answer.NewInternalServerError("failed to store message: %v", err)
-			errAnswer = errAnswer.Wrap("handleChannelLao")
-			return errAnswer
+			return errAnswer.Wrap("handleChannelLao")
 		}
 	}
 
 	errAnswer = broadcastToAllClients(msg, channel)
 	if errAnswer != nil {
-		errAnswer = errAnswer.Wrap("handleChannelLao")
-		return errAnswer
+		return errAnswer.Wrap("handleChannelLao")
 	}
 	return nil
 }
 
 func handleRollCallCreate(msg message.Message, channel string) *answer.Error {
 	var rollCallCreate messagedata.RollCallCreate
-	err := msg.UnmarshalData(&rollCallCreate)
-	var errAnswer *answer.Error
-
-	if err != nil {
-		errAnswer = answer.NewInvalidActionError("failed to unmarshal message data: %v", err)
-		errAnswer = errAnswer.Wrap("handleRollCallCreate")
-		return errAnswer
+	errAnswer := msg.UnmarshalMsgData(&rollCallCreate)
+	if errAnswer != nil {
+		return errAnswer.Wrap("handleRollCallCreate")
 	}
 
 	errAnswer = rollCallCreate.Verify(channel)
 	if errAnswer != nil {
-		errAnswer = errAnswer.Wrap("handleRollCallCreate")
-		return errAnswer
+		return errAnswer.Wrap("handleRollCallCreate")
 	}
 
 	return nil
@@ -97,19 +88,14 @@ func handleRollCallCreate(msg message.Message, channel string) *answer.Error {
 
 func handleRollCallOpen(msg message.Message, channel string) *answer.Error {
 	var rollCallOpen messagedata.RollCallOpen
-	err := msg.UnmarshalData(&rollCallOpen)
-	var errAnswer *answer.Error
-
-	if err != nil {
-		errAnswer = answer.NewInvalidActionError("failed to unmarshal message data: %v", err)
-		errAnswer = errAnswer.Wrap("handleRollCallOpen")
-		return errAnswer
+	errAnswer := msg.UnmarshalMsgData(&rollCallOpen)
+	if errAnswer != nil {
+		return errAnswer.Wrap("handleRollCallOpen")
 	}
 
 	errAnswer = rollCallOpen.Verify(channel)
 	if errAnswer != nil {
-		errAnswer = errAnswer.Wrap("handleRollCallOpen")
-		return errAnswer
+		return errAnswer.Wrap("handleRollCallOpen")
 	}
 
 	db, errAnswer := database.GetLAORepositoryInstance()
@@ -121,31 +107,24 @@ func handleRollCallOpen(msg message.Message, channel string) *answer.Error {
 
 	if err != nil {
 		errAnswer = answer.NewInternalServerError("failed to check if previous id exists: %v", err)
-		errAnswer = errAnswer.Wrap("handleRollCallOpen")
-		return errAnswer
+		return errAnswer.Wrap("handleRollCallOpen")
 	} else if !ok {
 		errAnswer = answer.NewInvalidMessageFieldError("previous id does not exist")
-		errAnswer = errAnswer.Wrap("handleRollCallOpen")
-		return errAnswer
+		return errAnswer.Wrap("handleRollCallOpen")
 	}
 	return nil
 }
 
 func handleRollCallReOpen(msg message.Message, channel string) *answer.Error {
 	var rollCallReOpen messagedata.RollCallReOpen
-	err := msg.UnmarshalData(&rollCallReOpen)
-	var errAnswer *answer.Error
-
-	if err != nil {
-		errAnswer = answer.NewInvalidActionError("failed to unmarshal message data: %v", err)
-		errAnswer = errAnswer.Wrap("handleRollCallReOpen")
-		return errAnswer
+	errAnswer := msg.UnmarshalMsgData(&rollCallReOpen)
+	if errAnswer != nil {
+		return errAnswer.Wrap("handleRollCallReOpen")
 	}
 
 	errAnswer = handleRollCallOpen(msg, channel)
 	if errAnswer != nil {
-		errAnswer = errAnswer.Wrap("handleRollCallReOpen")
-		return errAnswer
+		return errAnswer.Wrap("handleRollCallReOpen")
 	}
 
 	return nil
@@ -153,19 +132,14 @@ func handleRollCallReOpen(msg message.Message, channel string) *answer.Error {
 
 func handleRollCallClose(msg message.Message, channel string) *answer.Error {
 	var rollCallClose messagedata.RollCallClose
-	err := msg.UnmarshalData(&rollCallClose)
-	var errAnswer *answer.Error
-
-	if err != nil {
-		errAnswer = answer.NewInvalidActionError("failed to unmarshal message data: %v", err)
-		errAnswer = errAnswer.Wrap("handleRollCallClose")
-		return errAnswer
+	errAnswer := msg.UnmarshalMsgData(&rollCallClose)
+	if errAnswer != nil {
+		return errAnswer.Wrap("handleRollCallClose")
 	}
 
 	errAnswer = rollCallClose.Verify(channel)
 	if errAnswer != nil {
-		errAnswer = errAnswer.Wrap("handleRollCallClose")
-		return errAnswer
+		return errAnswer.Wrap("handleRollCallClose")
 	}
 
 	db, errAnswer := database.GetLAORepositoryInstance()
@@ -176,12 +150,10 @@ func handleRollCallClose(msg message.Message, channel string) *answer.Error {
 	ok, err := db.CheckPrevID(channel, rollCallClose.Closes, messagedata.RollCallActionOpen)
 	if err != nil {
 		errAnswer = answer.NewInternalServerError("failed to check if previous id exists: %v", err)
-		errAnswer = errAnswer.Wrap("handleRollCallClose")
-		return errAnswer
+		return errAnswer.Wrap("handleRollCallClose")
 	} else if !ok {
 		errAnswer = answer.NewInvalidMessageFieldError("previous id does not exist")
-		errAnswer = errAnswer.Wrap("handleRollCallClose")
-		return errAnswer
+		return errAnswer.Wrap("handleRollCallClose")
 	}
 
 	channels := make([]string, 0, len(rollCallClose.Attendees))
@@ -190,8 +162,7 @@ func handleRollCallClose(msg message.Message, channel string) *answer.Error {
 		_, err = base64.URLEncoding.DecodeString(popToken)
 		if err != nil {
 			errAnswer = answer.NewInvalidMessageFieldError("failed to decode poptoken: %v", err)
-			errAnswer = errAnswer.Wrap("handleRollCallClose")
-			return errAnswer
+			return errAnswer.Wrap("handleRollCallClose")
 		}
 		chirpingChannelPath := channel + Social + "/" + popToken
 		channels = append(channels, chirpingChannelPath)
@@ -207,8 +178,7 @@ func handleRollCallClose(msg message.Message, channel string) *answer.Error {
 	err = db.StoreChannelsAndMessage(channels, channel, msg)
 	if err != nil {
 		errAnswer = answer.NewInternalServerError("failed to store channels and message: %v", err)
-		errAnswer = errAnswer.Wrap("handleRollCallClose")
-		return errAnswer
+		return errAnswer.Wrap("handleRollCallClose")
 	}
 
 	return nil
@@ -216,27 +186,21 @@ func handleRollCallClose(msg message.Message, channel string) *answer.Error {
 
 func handleElectionSetup(msg message.Message, channel string) *answer.Error {
 	var electionSetup messagedata.ElectionSetup
-	err := msg.UnmarshalData(&electionSetup)
-	var errAnswer *answer.Error
-
-	if err != nil {
-		errAnswer = answer.NewInvalidActionError("failed to unmarshal message data: %v", err)
-		errAnswer = errAnswer.Wrap("handleElectionSetup")
-		return errAnswer
+	errAnswer := msg.UnmarshalMsgData(&electionSetup)
+	if errAnswer != nil {
+		return errAnswer.Wrap("handleElectionSetup")
 	}
 
 	senderBuf, err := base64.URLEncoding.DecodeString(msg.Sender)
 	if err != nil {
-		errAnswer = answer.NewInvalidMessageFieldError("failed to decode sender public key: %v", err)
-		errAnswer = errAnswer.Wrap("handleElectionSetup")
-		return errAnswer
+		errAnswer := answer.NewInvalidMessageFieldError("failed to decode sender public key: %v", err)
+		return errAnswer.Wrap("handleElectionSetup")
 	}
 	senderPubKey := crypto.Suite.Point()
 	err = senderPubKey.UnmarshalBinary(senderBuf)
 	if err != nil {
-		errAnswer = answer.NewInvalidMessageFieldError("failed to unmarshal sender public key: %v", err)
-		errAnswer = errAnswer.Wrap("handleElectionSetup")
-		return errAnswer
+		errAnswer := answer.NewInvalidMessageFieldError("failed to unmarshal sender public key: %v", err)
+		return errAnswer.Wrap("handleElectionSetup")
 	}
 
 	db, errAnswer := database.GetLAORepositoryInstance()
@@ -247,29 +211,26 @@ func handleElectionSetup(msg message.Message, channel string) *answer.Error {
 	organizePubKey, err := db.GetOrganizerPubKey(channel)
 	if err != nil {
 		errAnswer = answer.NewInternalServerError("failed to get organizer public key: %v", err)
-		errAnswer = errAnswer.Wrap("handleElectionSetup")
-		return errAnswer
+		return errAnswer.Wrap("handleElectionSetup")
 	}
 
 	if !organizePubKey.Equal(senderPubKey) {
-		errAnswer = answer.NewAccessDeniedError("sender public key does not match organizer public key: %s != %s", senderPubKey, organizePubKey)
-		errAnswer = errAnswer.Wrap("handleElectionSetup")
-		return errAnswer
+		errAnswer = answer.NewAccessDeniedError("sender public key does not match organizer public key: %s != %s",
+			senderPubKey, organizePubKey)
+		return errAnswer.Wrap("handleElectionSetup")
 	}
 
 	laoID, _ := strings.CutPrefix(channel, RootPrefix)
 
 	errAnswer = electionSetup.Verify(laoID)
 	if errAnswer != nil {
-		errAnswer = errAnswer.Wrap("handleElectionSetup")
-		return errAnswer
+		return errAnswer.Wrap("handleElectionSetup")
 	}
 
 	for _, question := range electionSetup.Questions {
 		errAnswer = question.Verify(electionSetup.ID)
 		if errAnswer != nil {
-			errAnswer = errAnswer.Wrap("handleElectionSetup")
-			return errAnswer
+			return errAnswer.Wrap("handleElectionSetup")
 		}
 	}
 	electionPubKey, electionSecretKey := generateKeys()
@@ -278,8 +239,7 @@ func handleElectionSetup(msg message.Message, channel string) *answer.Error {
 	if electionSetup.Version == messagedata.SecretBallot {
 		electionKeyMsg, errAnswer = createElectionKey(electionSetup.ID, electionPubKey)
 		if errAnswer != nil {
-			errAnswer = errAnswer.Wrap("handleElectionSetup")
-			return errAnswer
+			return errAnswer.Wrap("handleElectionSetup")
 		}
 	}
 
@@ -287,8 +247,7 @@ func handleElectionSetup(msg message.Message, channel string) *answer.Error {
 	err = db.StoreMessageWithElectionKey(channel, electionPath, electionPubKey, electionSecretKey, msg, electionKeyMsg)
 	if err != nil {
 		errAnswer = answer.NewInternalServerError("failed to store election setup message: %v", err)
-		errAnswer = errAnswer.Wrap("handleElectionSetup")
-		return errAnswer
+		return errAnswer.Wrap("handleElectionSetup")
 	}
 
 	errAnswer = state.AddChannel(electionPath)
@@ -303,8 +262,7 @@ func createElectionKey(electionID string, electionPubKey kyber.Point) (message.M
 	electionPubBuf, err := electionPubKey.MarshalBinary()
 	if err != nil {
 		errAnswer := answer.NewInternalServerError("failed to marshal election public key: %v", err)
-		errAnswer = errAnswer.Wrap("createAndSendElectionKey")
-		return message.Message{}, errAnswer
+		return message.Message{}, errAnswer.Wrap("createAndSendElectionKey")
 	}
 	msgData := messagedata.ElectionKey{
 		Object:   messagedata.ElectionObject,
@@ -316,8 +274,7 @@ func createElectionKey(electionID string, electionPubKey kyber.Point) (message.M
 	dataBuf, err := json.Marshal(&msgData)
 	if err != nil {
 		errAnswer := answer.NewInternalServerError("failed to marshal message data: %v", err)
-		errAnswer = errAnswer.Wrap("createAndSendElectionKey")
-		return message.Message{}, errAnswer
+		return message.Message{}, errAnswer.Wrap("createAndSendElectionKey")
 	}
 	newData64 := base64.URLEncoding.EncodeToString(dataBuf)
 
@@ -329,13 +286,11 @@ func createElectionKey(electionID string, electionPubKey kyber.Point) (message.M
 	serverPubBuf, err := serverPublicKey.MarshalBinary()
 	if err != nil {
 		errAnswer := answer.NewInternalServerError("failed to unmarshall server secret key", err)
-		errAnswer = errAnswer.Wrap("createAndSendElectionKey")
-		return message.Message{}, errAnswer
+		return message.Message{}, errAnswer.Wrap("createAndSendElectionKey")
 	}
 	signatureBuf, errAnswer := Sign(dataBuf)
 	if errAnswer != nil {
-		errAnswer = errAnswer.Wrap("createAndSendElectionKey")
-		return message.Message{}, errAnswer
+		return message.Message{}, errAnswer.Wrap("createAndSendElectionKey")
 	}
 	signature := base64.URLEncoding.EncodeToString(signatureBuf)
 	electionKeyMsg := message.Message{
@@ -351,13 +306,9 @@ func createElectionKey(electionID string, electionPubKey kyber.Point) (message.M
 // Not working
 func handleLaoState(msg message.Message, channel string) *answer.Error {
 	var laoState messagedata.LaoState
-	err := msg.UnmarshalData(&laoState)
-	var errAnswer *answer.Error
-
-	if err != nil {
-		errAnswer = answer.NewInvalidActionError("failed to unmarshal message data: %v", err)
-		errAnswer = errAnswer.Wrap("handleLaoState")
-		return errAnswer
+	errAnswer := msg.UnmarshalMsgData(&laoState)
+	if errAnswer != nil {
+		return errAnswer.Wrap("handleLaoState")
 	}
 
 	db, errAnswer := database.GetLAORepositoryInstance()
@@ -367,20 +318,17 @@ func handleLaoState(msg message.Message, channel string) *answer.Error {
 
 	ok, err := db.HasMessage(laoState.ModificationID)
 	if err != nil {
-		errAnswer = answer.NewInternalServerError("failed to get check if message exists: %v", err)
-		errAnswer = errAnswer.Wrap("handleLaoState")
-		return errAnswer
+		errAnswer := answer.NewInternalServerError("failed to get check if message exists: %v", err)
+		return errAnswer.Wrap("handleLaoState")
 	} else if !ok {
-		errAnswer = answer.NewInvalidMessageFieldError("message corresponding to modificationID %s does not exist", laoState.ModificationID)
-		errAnswer = errAnswer.Wrap("handleLaoState")
-		return errAnswer
+		errAnswer := answer.NewInvalidMessageFieldError("message corresponding to modificationID %s does not exist", laoState.ModificationID)
+		return errAnswer.Wrap("handleLaoState")
 	}
 
 	witnesses, err := db.GetLaoWitnesses(channel)
 	if err != nil {
-		errAnswer = answer.NewInternalServerError("failed to get lao witnesses: %v", err)
-		errAnswer = errAnswer.Wrap("handleLaoState")
-		return errAnswer
+		errAnswer := answer.NewInternalServerError("failed to get lao witnesses: %v", err)
+		return errAnswer.Wrap("handleLaoState")
 	}
 
 	// Check if the signatures match
@@ -390,9 +338,8 @@ func handleLaoState(msg message.Message, channel string) *answer.Error {
 		err = schnorr.VerifyWithChecks(crypto.Suite, []byte(modificationSignature.Witness),
 			[]byte(laoState.ModificationID), []byte(modificationSignature.Signature))
 		if err != nil {
-			errAnswer = answer.NewInvalidMessageFieldError("failed to verify signature for witness: %s", modificationSignature.Witness)
-			errAnswer = errAnswer.Wrap("handleLaoState")
-			return errAnswer
+			errAnswer := answer.NewInvalidMessageFieldError("failed to verify signature for witness: %s", modificationSignature.Witness)
+			return errAnswer.Wrap("handleLaoState")
 		}
 		if _, ok := witnesses[modificationSignature.Witness]; ok {
 			match++
@@ -400,56 +347,50 @@ func handleLaoState(msg message.Message, channel string) *answer.Error {
 	}
 
 	if match != expected {
-		errAnswer = answer.NewInvalidMessageFieldError("not enough witness signatures provided. Needed %d got %d", expected, match)
-		errAnswer = errAnswer.Wrap("handleLaoState")
-		return errAnswer
+		errAnswer := answer.NewInvalidMessageFieldError("not enough witness signatures provided. Needed %d got %d", expected, match)
+		return errAnswer.Wrap("handleLaoState")
 	}
 
 	var updateMsgData messagedata.LaoUpdate
 
 	err = msg.UnmarshalData(&updateMsgData)
 	if err != nil {
-		errAnswer = answer.NewInvalidMessageFieldError("failed to unmarshal update message data: %v", err)
-		errAnswer = errAnswer.Wrap("handleLaoState")
-		return errAnswer
+		errAnswer := answer.NewInvalidMessageFieldError("failed to unmarshal update message data: %v", err)
+		return errAnswer.Wrap("handleLaoState")
 	}
 
 	err = updateMsgData.Verify()
 	if err != nil {
-		errAnswer = answer.NewInvalidMessageFieldError("failed to verify update message data: %v", err)
-		errAnswer = errAnswer.Wrap("handleLaoState")
-		return errAnswer
+		errAnswer := answer.NewInvalidMessageFieldError("failed to verify update message data: %v", err)
+		return errAnswer.Wrap("handleLaoState")
 	}
 
 	errAnswer = compareLaoUpdateAndState(updateMsgData, laoState)
 	if errAnswer != nil {
-		errAnswer = errAnswer.Wrap("handleLaoState")
-		return errAnswer
+		return errAnswer.Wrap("handleLaoState")
 	}
 	return nil
 }
 
 func compareLaoUpdateAndState(update messagedata.LaoUpdate, state messagedata.LaoState) *answer.Error {
-	var errAnswer *answer.Error
 	if update.LastModified != state.LastModified {
-		errAnswer = answer.NewInvalidMessageFieldError("mismatch between last modified: expected %d got %d", update.LastModified, state.LastModified)
-		errAnswer = errAnswer.Wrap("compareLaoUpdateAndState")
-		return errAnswer
+		errAnswer := answer.NewInvalidMessageFieldError("mismatch between last modified: expected %d got %d",
+			update.LastModified, state.LastModified)
+		return errAnswer.Wrap("compareLaoUpdateAndState")
 	}
 
 	if update.Name != state.Name {
-		errAnswer = answer.NewInvalidMessageFieldError("mismatch between name: expected %s got %s", update.Name, state.Name)
-		errAnswer = errAnswer.Wrap("compareLaoUpdateAndState")
-		return errAnswer
+		errAnswer := answer.NewInvalidMessageFieldError("mismatch between name: expected %s got %s",
+			update.Name, state.Name)
+		return errAnswer.Wrap("compareLaoUpdateAndState")
 	}
 
 	numUpdateWitnesses := len(update.Witnesses)
 	numStateWitnesses := len(state.Witnesses)
 
 	if numUpdateWitnesses != numStateWitnesses {
-		errAnswer = answer.NewInvalidMessageFieldError("mismatch between witness count")
-		errAnswer = errAnswer.Wrap("compareLaoUpdateAndState")
-		return errAnswer
+		errAnswer := answer.NewInvalidMessageFieldError("mismatch between witness count")
+		return errAnswer.Wrap("compareLaoUpdateAndState")
 	}
 
 	match := 0
@@ -459,9 +400,8 @@ func compareLaoUpdateAndState(update messagedata.LaoUpdate, state messagedata.La
 		}
 	}
 	if match != numUpdateWitnesses {
-		errAnswer = answer.NewInvalidMessageFieldError("mismatch between witness keys")
-		errAnswer = errAnswer.Wrap("compareLaoUpdateAndState")
-		return errAnswer
+		errAnswer := answer.NewInvalidMessageFieldError("mismatch between witness keys")
+		return errAnswer.Wrap("compareLaoUpdateAndState")
 	}
 	return nil
 }

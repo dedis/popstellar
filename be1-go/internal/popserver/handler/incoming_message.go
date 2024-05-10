@@ -33,8 +33,7 @@ func HandleIncomingMessage(socket socket.Socket, msg []byte) error {
 	}
 
 	if errAnswer != nil {
-		errAnswer = errAnswer.Wrap("handleMessage")
-		return errAnswer
+		return errAnswer.Wrap("handleMessage")
 	}
 
 	return nil

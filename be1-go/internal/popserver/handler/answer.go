@@ -16,8 +16,8 @@ func handleAnswer(msg []byte) *answer.Error {
 
 	err := json.Unmarshal(msg, &answerMsg)
 	if err != nil {
-		errAnswer := answer.NewInvalidMessageFieldError("failed to unmarshal: %v", err).Wrap("handleAnswer")
-		return errAnswer
+		errAnswer := answer.NewInvalidMessageFieldError("failed to unmarshal: %v", err)
+		return errAnswer.Wrap("handleAnswer")
 	}
 
 	if answerMsg.Result == nil {
@@ -38,8 +38,7 @@ func handleAnswer(msg []byte) *answer.Error {
 
 	errAnswer = handleGetMessagesByIDAnswer(answerMsg)
 	if errAnswer != nil {
-		errAnswer = errAnswer.Wrap("handleAnswer")
-		return errAnswer
+		return errAnswer.Wrap("handleAnswer")
 	}
 
 	return nil
@@ -60,8 +59,8 @@ func handleGetMessagesByIDAnswer(msg answer.Answer) *answer.Error {
 				continue
 			}
 
-			errAnswer := answer.NewInvalidMessageFieldError("failed to unmarshal: %v", err).Wrap("handleGetMessagesByIDAnswer")
-			utils.LogError(errAnswer)
+			errAnswer := answer.NewInvalidMessageFieldError("failed to unmarshal: %v", err)
+			utils.LogError(errAnswer.Wrap("handleGetMessagesByIDAnswer"))
 		}
 
 		if len(msgsByChan[channelID]) == 0 {

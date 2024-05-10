@@ -10,8 +10,7 @@ import (
 func handleChannelCoin(channel string, msg message.Message) *answer.Error {
 	object, action, errAnswer := verifyDataAndGetObjectAction(msg)
 	if errAnswer != nil {
-		errAnswer = errAnswer.Wrap("handleChannelCoin")
-		return errAnswer
+		return errAnswer.Wrap("handleChannelCoin")
 	}
 
 	switch object + "#" + action {
@@ -21,8 +20,7 @@ func handleChannelCoin(channel string, msg message.Message) *answer.Error {
 		errAnswer = answer.NewInvalidMessageFieldError("failed to handle %s#%s, invalid object#action", object, action)
 	}
 	if errAnswer != nil {
-		errAnswer = errAnswer.Wrap("handleChannelCoin")
-		return errAnswer
+		return errAnswer.Wrap("handleChannelCoin")
 	}
 
 	db, errAnswer := database.GetCoinRepositoryInstance()
@@ -33,14 +31,12 @@ func handleChannelCoin(channel string, msg message.Message) *answer.Error {
 	err := db.StoreMessageAndData(channel, msg)
 	if err != nil {
 		errAnswer = answer.NewInternalServerError("failed to store message: %v", err)
-		errAnswer = errAnswer.Wrap("handleChannelCoin")
-		return errAnswer
+		return errAnswer.Wrap("handleChannelCoin")
 	}
 
 	errAnswer = broadcastToAllClients(msg, channel)
 	if errAnswer != nil {
-		errAnswer = errAnswer.Wrap("handleChannelCoin")
-		return errAnswer
+		return errAnswer.Wrap("handleChannelCoin")
 	}
 
 	return nil
@@ -49,18 +45,15 @@ func handleChannelCoin(channel string, msg message.Message) *answer.Error {
 func handleCoinPostTransaction(msg message.Message) *answer.Error {
 	var data messagedata.PostTransaction
 
-	err := msg.UnmarshalData(&data)
-	if err != nil {
-		errAnswer := answer.NewInvalidMessageFieldError("failed to unmarshal: %v", err).
-			Wrap("handleCoinPostTransaction")
-		return errAnswer
+	errAnswer := msg.UnmarshalMsgData(&data)
+	if errAnswer != nil {
+		return errAnswer.Wrap("handleCoinPostTransaction")
 	}
 
-	err = data.Verify()
+	err := data.Verify()
 	if err != nil {
-		errAnswer := answer.NewInvalidMessageFieldError("invalid data: %v", err).
-			Wrap("handleCoinPostTransaction")
-		return errAnswer
+		errAnswer := answer.NewInvalidMessageFieldError("invalid data: %v", err)
+		return errAnswer.Wrap("handleCoinPostTransaction")
 	}
 
 	return nil
