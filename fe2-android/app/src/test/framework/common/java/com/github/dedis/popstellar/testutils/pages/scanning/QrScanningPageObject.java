@@ -12,8 +12,12 @@ public class QrScanningPageObject {
     return onView(withId(R.id.manual_add_button));
   }
 
-  public static ViewInteraction manualAddEditText() {
-    return onView(withId(R.id.manual_add_edit_text));
+  public static ViewInteraction manualAddEditServerUri() {
+    return onView(withId(R.id.manual_server_uri_edit_text));
+  }
+
+  public static ViewInteraction manualAddEditLaoId() {
+    return onView(withId(R.id.manual_lao_id_edit_text));
   }
 
   public static ViewInteraction openManualButton() {

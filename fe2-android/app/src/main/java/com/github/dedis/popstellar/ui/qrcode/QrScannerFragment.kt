@@ -7,14 +7,18 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.mlkit.vision.MlKitAnalyzer
 import androidx.camera.view.CameraController
 import androidx.camera.view.LifecycleCameraController
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import com.github.dedis.popstellar.R
 import com.github.dedis.popstellar.databinding.QrScannerFragmentBinding
 import com.github.dedis.popstellar.ui.PopViewModel
+import com.github.dedis.popstellar.utility.ActivityUtils.hideKeyboard
+import com.github.dedis.popstellar.utility.error.ErrorUtils.logAndShow
 import com.google.mlkit.vision.barcode.BarcodeScanner
 import com.google.mlkit.vision.barcode.BarcodeScannerOptions
 import com.google.mlkit.vision.barcode.BarcodeScanning
@@ -44,7 +48,8 @@ class QrScannerFragment : Fragment() {
 
     binding.scannedTitle.setText(scanningAction.scanTitle)
     binding.addManualTitle.setText(scanningAction.manualAddTitle)
-    binding.manualAddEditText.setHint(scanningAction.hint)
+    binding.manualLaoIdEditText.setHint(scanningAction.hint)
+    binding.manualServerUriEditText.setHint(scanningAction.hint)
     binding.scannerInstructionText.setText(scanningAction.instruction)
 
     setupNbScanned()
@@ -156,13 +161,28 @@ class QrScannerFragment : Fragment() {
       binding.enterManuallyCard.visibility = View.VISIBLE
     }
     binding.addManualClose.setOnClickListener { _: View? ->
+      hideKeyboard(requireContext(), binding.root)
       binding.scannerBottomTexts.visibility = View.VISIBLE
       binding.enterManuallyCard.visibility = View.GONE
     }
-    binding.manualAddButton.setOnClickListener { _: View? ->
-      val input = Objects.requireNonNull(binding.manualAddEditText.text).toString()
-      onResult(input)
+    binding.manualAddButton.setOnClickListener {
+      val serverUri = binding.manualServerUriEditText.text.toString().trim()
+      val laoId = binding.manualLaoIdEditText.text.toString().trim()
+      if (serverUri.isNotEmpty() && laoId.isNotEmpty()) {
+        handleManualEntry(serverUri, laoId)
+      } else {
+        logAndShow(
+            requireContext(),
+            TAG,
+            IllegalArgumentException("Server URI or LAO ID is empty"),
+            R.string.qrcode_scanning_manual_entry_error)
+      }
     }
+  }
+
+  private fun handleManualEntry(serverUri: String, laoId: String) {
+    val connectionDetails = "{\"server\":\"$serverUri\", \"lao\":\"$laoId\"}"
+    onResult(connectionDetails)
   }
 
   private fun displayCounter() {
