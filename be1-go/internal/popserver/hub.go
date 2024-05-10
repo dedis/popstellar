@@ -1,7 +1,6 @@
 package popserver
 
 import (
-	"encoding/base64"
 	"encoding/json"
 	"golang.org/x/xerrors"
 	"popstellar/internal/popserver/config"
@@ -66,18 +65,13 @@ func (h *Hub) OnSocketClose() chan<- string {
 }
 
 func (h *Hub) SendGreetServer(socket socket.Socket) error {
-	pk, clientAddress, serverAddress, ok := config.GetServerInfo()
-	if !ok {
-		return xerrors.Errorf("failed to get config")
-	}
-
-	pkBuf, err := pk.MarshalBinary()
-	if err != nil {
-		return xerrors.Errorf("failed to unmarshall server public key: %v", err)
+	serverPublicKey, clientAddress, serverAddress, errAnswer := config.GetServerInfo()
+	if errAnswer != nil {
+		return xerrors.Errorf(errAnswer.Error())
 	}
 
 	greetServerParams := method.GreetServerParams{
-		PublicKey:     base64.URLEncoding.EncodeToString(pkBuf),
+		PublicKey:     serverPublicKey,
 		ServerAddress: serverAddress,
 		ClientAddress: clientAddress,
 	}

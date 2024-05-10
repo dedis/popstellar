@@ -515,11 +515,9 @@ func createElectionResult(questions map[string]types.Question, channel string) (
 	}
 	buf64 := base64.URLEncoding.EncodeToString(buf)
 
-	serverPubKey, ok := config.GetServerPublicKeyInstance()
-	if !ok {
-		errAnswer = answer.NewInternalServerError("failed to get server public key")
-		errAnswer = errAnswer.Wrap("createElectionResult")
-		return message.Message{}, errAnswer
+	serverPubKey, errAnswer := config.GetServerPublicKeyInstance()
+	if errAnswer != nil {
+		return message.Message{}, errAnswer.Wrap("createElectionResult")
 	}
 	serverPubBuf, err := serverPubKey.MarshalBinary()
 	if err != nil {

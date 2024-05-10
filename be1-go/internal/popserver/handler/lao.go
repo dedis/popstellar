@@ -321,10 +321,9 @@ func createElectionKey(electionID string, electionPubKey kyber.Point) (message.M
 	}
 	newData64 := base64.URLEncoding.EncodeToString(dataBuf)
 
-	serverPublicKey, ok := config.GetServerPublicKeyInstance()
-	if !ok {
-		errAnswer := answer.NewInternalServerError("failed to get config").Wrap("createAndSendElectionKey")
-		return message.Message{}, errAnswer
+	serverPublicKey, errAnswer := config.GetServerPublicKeyInstance()
+	if errAnswer != nil {
+		return message.Message{}, errAnswer.Wrap("createAndSendElectionKey")
 	}
 
 	serverPubBuf, err := serverPublicKey.MarshalBinary()

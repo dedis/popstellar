@@ -174,10 +174,9 @@ func createChirpNotify(channelID string, msg message.Message) (message.Message, 
 
 	data64 := base64.URLEncoding.EncodeToString(dataBuf)
 
-	serverPublicKey, ok := config.GetServerPublicKeyInstance()
-	if !ok {
-		errAnswer := answer.NewInternalServerError("failed to get config").Wrap("createChirpNotify")
-		return message.Message{}, errAnswer
+	serverPublicKey, errAnswer := config.GetServerPublicKeyInstance()
+	if errAnswer != nil {
+		return message.Message{}, errAnswer.Wrap("createChirpNotify")
 	}
 
 	pkBuf, err := serverPublicKey.MarshalBinary()

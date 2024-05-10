@@ -151,10 +151,9 @@ func verifyLaoCreation(msg message.Message, laoCreate messagedata.LaoCreate, lao
 		return nil, errAnswer
 	}
 
-	ownerPublicKey, ok := config.GetOwnerPublicKeyInstance()
-	if !ok {
-		errAnswer := answer.NewInternalServerError("failed to get config").Wrap("verifyLAOCreation")
-		return nil, errAnswer
+	ownerPublicKey, errAnswer := config.GetOwnerPublicKeyInstance()
+	if errAnswer != nil {
+		return nil, errAnswer.Wrap("verifyLAOCreation")
 	}
 
 	// Check if the sender of the LAO creation message is the owner
@@ -210,10 +209,9 @@ func createLaoGreet(organizerBuf []byte, laoID string) (message.Message, *answer
 		knownPeers = append(knownPeers, messagedata.Peer{Address: info.ClientAddress})
 	}
 
-	_, clientServerAddress, _, ok := config.GetServerInfo()
-	if !ok {
-		errAnswer := answer.NewInternalServerError("failed to get config").Wrap("createAndSendLaoGreet")
-		return message.Message{}, errAnswer
+	_, clientServerAddress, _, errAnswer := config.GetServerInfo()
+	if errAnswer != nil {
+		return message.Message{}, errAnswer.Wrap("createAndSendLaoGreet")
 	}
 
 	msgData := messagedata.LaoGreet{
@@ -235,10 +233,9 @@ func createLaoGreet(organizerBuf []byte, laoID string) (message.Message, *answer
 
 	newData64 := base64.URLEncoding.EncodeToString(dataBuf)
 
-	serverPublicKey, ok := config.GetServerPublicKeyInstance()
-	if !ok {
-		errAnswer := answer.NewInternalServerError("failed to get config").Wrap("createAndSendLaoGreet")
-		return message.Message{}, errAnswer
+	serverPublicKey, errAnswer := config.GetServerPublicKeyInstance()
+	if errAnswer != nil {
+		return message.Message{}, errAnswer.Wrap("createAndSendLaoGreet")
 	}
 
 	// Marshall the server public key

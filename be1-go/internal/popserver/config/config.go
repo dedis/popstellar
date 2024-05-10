@@ -1,8 +1,10 @@
 package config
 
 import (
+	"encoding/base64"
 	"go.dedis.ch/kyber/v3"
 	"golang.org/x/xerrors"
+	"popstellar/message/answer"
 	"sync"
 	"testing"
 )
@@ -48,34 +50,53 @@ func SetConfig(t *testing.T, ownerPubKey, serverPubKey kyber.Point, serverSecret
 	return nil
 }
 
-func GetOwnerPublicKeyInstance() (kyber.Point, bool) {
+func getConfig() (*config, *answer.Error) {
 	if instance == nil {
-		return nil, false
+		errAnswer := answer.NewInternalServerError("config was not instantiated")
+		return nil, errAnswer
 	}
 
-	return instance.ownerPubKey, true
+	return instance, nil
 }
 
-func GetServerPublicKeyInstance() (kyber.Point, bool) {
-	if instance == nil || instance.serverPubKey == nil {
-		return nil, false
+func GetOwnerPublicKeyInstance() (kyber.Point, *answer.Error) {
+	config, errAnswer := getConfig()
+	if errAnswer != nil {
+		return nil, errAnswer
 	}
 
-	return instance.serverPubKey, true
+	return config.ownerPubKey, nil
 }
 
-func GetServerSecretKeyInstance() (kyber.Scalar, bool) {
-	if instance == nil || instance.serverPubKey == nil {
-		return nil, false
+func GetServerPublicKeyInstance() (kyber.Point, *answer.Error) {
+	config, errAnswer := getConfig()
+	if errAnswer != nil {
+		return nil, errAnswer
 	}
 
-	return instance.serverSecretKey, true
+	return config.serverPubKey, nil
 }
 
-func GetServerInfo() (kyber.Point, string, string, bool) {
-	if instance == nil {
-		return nil, "", "", false
+func GetServerSecretKeyInstance() (kyber.Scalar, *answer.Error) {
+	config, errAnswer := getConfig()
+	if errAnswer != nil {
+		return nil, errAnswer
 	}
 
-	return instance.serverPubKey, instance.clientServerAddress, instance.serverServerAddress, true
+	return config.serverSecretKey, nil
+}
+
+func GetServerInfo() (string, string, string, *answer.Error) {
+	config, errAnswer := getConfig()
+	if errAnswer != nil {
+		return "", "", "", errAnswer
+	}
+
+	pkBuf, err := config.serverPubKey.MarshalBinary()
+	if err != nil {
+		errAnswer := answer.NewInternalServerError("failed to unmarshall server public key", err)
+		return "", "", "", errAnswer
+	}
+
+	return base64.URLEncoding.EncodeToString(pkBuf), instance.clientServerAddress, instance.serverServerAddress, nil
 }

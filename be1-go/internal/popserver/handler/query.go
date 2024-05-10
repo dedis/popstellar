@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"encoding/base64"
 	"encoding/json"
 	"popstellar/internal/popserver/config"
 	"popstellar/internal/popserver/database"
@@ -76,21 +75,13 @@ func handleGreetServer(socket socket.Socket, byteMessage []byte) (*int, *answer.
 		return nil, nil
 	}
 
-	pk, clientAddress, serverAddress, ok := config.GetServerInfo()
-	if !ok {
-		errAnswer := answer.NewInternalServerError("failed to get config").Wrap("handleGreetServer")
-		return nil, errAnswer
-	}
-
-	pkBuf, err := pk.MarshalBinary()
-	if err != nil {
-		errAnswer := answer.NewInternalServerError("failed to unmarshall server public key", err)
-		errAnswer = errAnswer.Wrap("handleGreetServer")
-		return nil, errAnswer
+	serverPublicKey, clientAddress, serverAddress, errAnswer := config.GetServerInfo()
+	if errAnswer != nil {
+		return nil, errAnswer.Wrap("handleGreetServer")
 	}
 
 	greetServerParams := method.GreetServerParams{
-		PublicKey:     base64.URLEncoding.EncodeToString(pkBuf),
+		PublicKey:     serverPublicKey,
 		ServerAddress: serverAddress,
 		ClientAddress: clientAddress,
 	}

@@ -135,10 +135,9 @@ func verifyDataAndGetObjectAction(msg message.Message) (string, string, *answer.
 func Sign(data []byte) ([]byte, *answer.Error) {
 	var errAnswer *answer.Error
 
-	serverSecretKey, ok := config.GetServerSecretKeyInstance()
-	if !ok {
-		errAnswer := answer.NewInternalServerError("failed to get util").Wrap("Sign")
-		return nil, errAnswer
+	serverSecretKey, errAnswer := config.GetServerSecretKeyInstance()
+	if errAnswer != nil {
+		return nil, errAnswer.Wrap("Sign")
 	}
 
 	signatureBuf, err := schnorr.Sign(crypto.Suite, serverSecretKey, data)
