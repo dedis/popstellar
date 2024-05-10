@@ -3,8 +3,6 @@ rule = ArraysInFormat
  */
 package fix
 
-import java.io.FileNotFoundException
-
 object ArraysInFormat {
   def test() = {
     val array = new Array[String](3)
