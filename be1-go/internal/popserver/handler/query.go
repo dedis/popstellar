@@ -58,7 +58,7 @@ func handleGreetServer(socket socket.Socket, byteMessage []byte) (*int, *answer.
 
 	err := json.Unmarshal(byteMessage, &greetServer)
 	if err != nil {
-		errAnswer := answer.NewInternalServerError("failed to unmarshal: %v", err)
+		errAnswer := answer.NewJsonUnmarshalError(err.Error())
 		return nil, errAnswer.Wrap("handleGreetServer")
 	}
 
@@ -117,7 +117,7 @@ func handleSubscribe(socket socket.Socket, msg []byte) (*int, *answer.Error) {
 
 	err := json.Unmarshal(msg, &subscribe)
 	if err != nil {
-		errAnswer := answer.NewInvalidMessageFieldError("failed to unmarshal: %v", err)
+		errAnswer := answer.NewJsonUnmarshalError(err.Error())
 		return nil, errAnswer.Wrap("handleSubscribe")
 	}
 
@@ -141,7 +141,7 @@ func handleUnsubscribe(socket socket.Socket, msg []byte) (*int, *answer.Error) {
 
 	err := json.Unmarshal(msg, &unsubscribe)
 	if err != nil {
-		errAnswer := answer.NewInvalidMessageFieldError("failed to unmarshal: %v", err)
+		errAnswer := answer.NewJsonUnmarshalError(err.Error())
 		return nil, errAnswer.Wrap("handleUnsubscribe")
 	}
 
@@ -165,7 +165,7 @@ func handlePublish(socket socket.Socket, msg []byte) (*int, *answer.Error) {
 
 	err := json.Unmarshal(msg, &publish)
 	if err != nil {
-		errAnswer := answer.NewInvalidMessageFieldError("failed to unmarshal: %v", err)
+		errAnswer := answer.NewJsonUnmarshalError(err.Error())
 		return nil, errAnswer.Wrap("handlePublish")
 	}
 
@@ -184,7 +184,7 @@ func handleCatchUp(socket socket.Socket, msg []byte) (*int, *answer.Error) {
 
 	err := json.Unmarshal(msg, &catchup)
 	if err != nil {
-		errAnswer := answer.NewInvalidMessageFieldError("failed to unmarshal: %v", err)
+		errAnswer := answer.NewJsonUnmarshalError(err.Error())
 		return nil, errAnswer.Wrap("handleCatchUp")
 	}
 
@@ -209,7 +209,7 @@ func handleHeartbeat(socket socket.Socket, byteMessage []byte) *answer.Error {
 
 	err := json.Unmarshal(byteMessage, &heartbeat)
 	if err != nil {
-		errAnswer := answer.NewInvalidMessageFieldError("failed to unmarshal: %v", err)
+		errAnswer := answer.NewJsonUnmarshalError(err.Error())
 		return errAnswer.Wrap("handleHeartbeat")
 	}
 
@@ -265,7 +265,7 @@ func handleGetMessagesByID(socket socket.Socket, msg []byte) (*int, *answer.Erro
 
 	err := json.Unmarshal(msg, &getMessagesById)
 	if err != nil {
-		errAnswer := answer.NewInvalidMessageFieldError("failed to unmarshal message: %v", err)
+		errAnswer := answer.NewJsonUnmarshalError(err.Error())
 		return nil, errAnswer.Wrap("handleGetMessageByID")
 	}
 

@@ -16,7 +16,7 @@ func handleAnswer(msg []byte) *answer.Error {
 
 	err := json.Unmarshal(msg, &answerMsg)
 	if err != nil {
-		errAnswer := answer.NewInvalidMessageFieldError("failed to unmarshal: %v", err)
+		errAnswer := answer.NewJsonUnmarshalError(err.Error())
 		return errAnswer.Wrap("handleAnswer")
 	}
 

@@ -65,6 +65,11 @@ func NewInvalidMessageFieldError(format string, a ...interface{}) *Error {
 	return NewErrorf(InvalidMessageFieldErrorCode, "invalid message field: "+format, a...)
 }
 
+// NewJsonUnmarshalError returns an error with -4 when it is impossible to unmarshal a json message
+func NewJsonUnmarshalError(format string, a ...interface{}) *Error {
+	return NewErrorf(InvalidMessageFieldErrorCode, "failed to unmarshal JSON: "+format, a...)
+}
+
 // NewAccessDeniedError returns an error with -5 when an access is denied for the sender
 func NewAccessDeniedError(format string, a ...interface{}) *Error {
 	return NewErrorf(AccessDeniedErrorCode, "access denied: "+format, a...)
