@@ -16,7 +16,7 @@ import (
 	"strings"
 )
 
-func handleChannelLao(channel string, msg message.Message) *answer.Error {
+func handleChannelLao(channelPath string, msg message.Message) *answer.Error {
 	object, action, errAnswer := verifyDataAndGetObjectAction(msg)
 	if errAnswer != nil {
 		return errAnswer.Wrap("handleChannelLao")
@@ -25,7 +25,7 @@ func handleChannelLao(channel string, msg message.Message) *answer.Error {
 	storeMessage := true
 	switch object + "#" + action {
 	case messagedata.LAOObject + "#" + messagedata.LAOActionState:
-		errAnswer = handleLaoState(msg, channel)
+		errAnswer = handleLaoState(msg, channelPath)
 	case messagedata.LAOObject + "#" + messagedata.LAOActionUpdate:
 		errAnswer = handleLaoUpdate(msg)
 	case messagedata.MeetingObject + "#" + messagedata.MeetingActionCreate:
@@ -34,16 +34,16 @@ func handleChannelLao(channel string, msg message.Message) *answer.Error {
 		errAnswer = handleMeetingState(msg)
 	case messagedata.RollCallObject + "#" + messagedata.RollCallActionClose:
 		storeMessage = false
-		errAnswer = handleRollCallClose(msg, channel)
+		errAnswer = handleRollCallClose(msg, channelPath)
 	case messagedata.RollCallObject + "#" + messagedata.RollCallActionCreate:
-		errAnswer = handleRollCallCreate(msg, channel)
+		errAnswer = handleRollCallCreate(msg, channelPath)
 	case messagedata.RollCallObject + "#" + messagedata.RollCallActionOpen:
-		errAnswer = handleRollCallOpen(msg, channel)
+		errAnswer = handleRollCallOpen(msg, channelPath)
 	case messagedata.RollCallObject + "#" + messagedata.RollCallActionReOpen:
-		errAnswer = handleRollCallReOpen(msg, channel)
+		errAnswer = handleRollCallReOpen(msg, channelPath)
 	case messagedata.ElectionObject + "#" + messagedata.ElectionActionSetup:
 		storeMessage = false
-		errAnswer = handleElectionSetup(msg, channel)
+		errAnswer = handleElectionSetup(msg, channelPath)
 	default:
 		errAnswer = answer.NewInvalidMessageFieldError("failed to handle %s#%s, invalid object#action", object, action)
 	}
@@ -57,14 +57,14 @@ func handleChannelLao(channel string, msg message.Message) *answer.Error {
 			return errAnswer.Wrap("handleChannelLao")
 		}
 
-		err := db.StoreMessageAndData(channel, msg)
+		err := db.StoreMessageAndData(channelPath, msg)
 		if err != nil {
 			errAnswer = answer.NewStoreDatabaseError("message: %v", err)
 			return errAnswer.Wrap("handleChannelLao")
 		}
 	}
 
-	errAnswer = broadcastToAllClients(msg, channel)
+	errAnswer = broadcastToAllClients(msg, channelPath)
 	if errAnswer != nil {
 		return errAnswer.Wrap("handleChannelLao")
 	}
@@ -174,7 +174,7 @@ func handleRollCallClose(msg message.Message, channel string) *answer.Error {
 		}
 	}
 
-	err = db.StoreChannelsAndMessage(channels, channel, msg)
+	err = db.StoreRollCallClose(channels, channel, msg)
 	if err != nil {
 		errAnswer = answer.NewStoreDatabaseError("channels and message: %v", err)
 		return errAnswer.Wrap("handleRollCallClose")
@@ -234,19 +234,24 @@ func handleElectionSetup(msg message.Message, channel string) *answer.Error {
 	}
 	electionPubKey, electionSecretKey := generateKeys()
 	var electionKeyMsg message.Message
+	electionPath := channel + "/" + electionSetup.ID
 
 	if electionSetup.Version == messagedata.SecretBallot {
 		electionKeyMsg, errAnswer = createElectionKey(electionSetup.ID, electionPubKey)
 		if errAnswer != nil {
 			return errAnswer.Wrap("handleElectionSetup")
 		}
-	}
-
-	electionPath := channel + "/" + electionSetup.ID
-	err = db.StoreMessageWithElectionKey(channel, electionPath, electionPubKey, electionSecretKey, msg, electionKeyMsg)
-	if err != nil {
-		errAnswer = answer.NewStoreDatabaseError("election setup message: %v", err)
-		return errAnswer.Wrap("handleElectionSetup")
+		err = db.StoreElectionWithElectionKey(channel, electionPath, electionPubKey, electionSecretKey, msg, electionKeyMsg)
+		if err != nil {
+			errAnswer = answer.NewStoreDatabaseError("election setup message: %v", err)
+			return errAnswer.Wrap("handleElectionSetup")
+		}
+	} else {
+		err = db.StoreElection(channel, electionPath, electionPubKey, electionSecretKey, msg)
+		if err != nil {
+			errAnswer = answer.NewStoreDatabaseError("election setup message: %v", err)
+			return errAnswer.Wrap("handleElectionSetup")
+		}
 	}
 
 	errAnswer = state.AddChannel(electionPath)

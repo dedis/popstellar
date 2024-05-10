@@ -20,7 +20,7 @@ const (
 	voteFlag = "Vote"
 )
 
-func handleChannelElection(channel string, msg message.Message) *answer.Error {
+func handleChannelElection(channelPath string, msg message.Message) *answer.Error {
 	object, action, errAnswer := verifyDataAndGetObjectAction(msg)
 	if errAnswer != nil {
 		return errAnswer.Wrap("handleChannelElection")
@@ -30,11 +30,11 @@ func handleChannelElection(channel string, msg message.Message) *answer.Error {
 
 	switch object + "#" + action {
 	case messagedata.ElectionObject + "#" + messagedata.VoteActionCastVote:
-		errAnswer = handleVoteCastVote(msg, channel)
+		errAnswer = handleVoteCastVote(msg, channelPath)
 	case messagedata.ElectionObject + "#" + messagedata.ElectionActionOpen:
-		errAnswer = handleElectionOpen(msg, channel)
+		errAnswer = handleElectionOpen(msg, channelPath)
 	case messagedata.ElectionObject + "#" + messagedata.ElectionActionEnd:
-		errAnswer = handleElectionEnd(msg, channel)
+		errAnswer = handleElectionEnd(msg, channelPath)
 		storeMessage = false
 	default:
 		errAnswer = answer.NewInvalidMessageFieldError("failed to handle %s#%s, invalid object#action", object, action)
@@ -49,7 +49,7 @@ func handleChannelElection(channel string, msg message.Message) *answer.Error {
 			return errAnswer.Wrap("handleChannelElection")
 		}
 
-		err := db.StoreMessageAndData(channel, msg)
+		err := db.StoreMessageAndData(channelPath, msg)
 		if err != nil {
 			errAnswer = answer.NewStoreDatabaseError(err.Error())
 			return errAnswer.Wrap("handleChannelElection")
@@ -241,7 +241,7 @@ func handleElectionEnd(msg message.Message, channel string) *answer.Error {
 		return errAnswer.Wrap("handleElectionEnd")
 	}
 
-	err = db.StoreMessageAndElectionResult(channel, msg, electionResultMsg)
+	err = db.StoreElectionEndWithResult(channel, msg, electionResultMsg)
 	if err != nil {
 		errAnswer := answer.NewStoreDatabaseError("election end and election result: %v", err)
 		return errAnswer.Wrap("handleElectionEnd")

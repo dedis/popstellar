@@ -61,3 +61,20 @@ func NewElectionResultMsg(t *testing.T, sender string, questions []messagedata.E
 
 	return msg
 }
+
+func NewVoteCastVoteMsg(t *testing.T, sender, lao, election string, createdAt int64, votes []messagedata.Vote,
+	senderSK kyber.Scalar) message.Message {
+	castVote := messagedata.VoteCastVote{
+		Object:    messagedata.ElectionObject,
+		Action:    messagedata.VoteActionCastVote,
+		Lao:       lao,
+		Election:  election,
+		CreatedAt: createdAt,
+		Votes:     votes,
+	}
+
+	castVoteBuf, err := json.Marshal(castVote)
+	require.NoError(t, err)
+
+	return newMessage(t, sender, senderSK, castVoteBuf)
+}

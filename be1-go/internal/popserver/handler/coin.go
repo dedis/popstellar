@@ -7,7 +7,7 @@ import (
 	"popstellar/message/query/method/message"
 )
 
-func handleChannelCoin(channel string, msg message.Message) *answer.Error {
+func handleChannelCoin(channelPath string, msg message.Message) *answer.Error {
 	object, action, errAnswer := verifyDataAndGetObjectAction(msg)
 	if errAnswer != nil {
 		return errAnswer.Wrap("handleChannelCoin")
@@ -28,13 +28,13 @@ func handleChannelCoin(channel string, msg message.Message) *answer.Error {
 		return errAnswer.Wrap("handleChannelCoin")
 	}
 
-	err := db.StoreMessageAndData(channel, msg)
+	err := db.StoreMessageAndData(channelPath, msg)
 	if err != nil {
 		errAnswer = answer.NewStoreDatabaseError(err.Error())
 		return errAnswer.Wrap("handleChannelCoin")
 	}
 
-	errAnswer = broadcastToAllClients(msg, channel)
+	errAnswer = broadcastToAllClients(msg, channelPath)
 	if errAnswer != nil {
 		return errAnswer.Wrap("handleChannelCoin")
 	}

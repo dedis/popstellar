@@ -11,7 +11,7 @@ import (
 	"strings"
 )
 
-func handleChannelChirp(channelID string, msg message.Message) *answer.Error {
+func handleChannelChirp(channelPath string, msg message.Message) *answer.Error {
 	object, action, errAnswer := verifyDataAndGetObjectAction(msg)
 	if errAnswer != nil {
 		return errAnswer.Wrap("handleChannelChirp")
@@ -19,9 +19,9 @@ func handleChannelChirp(channelID string, msg message.Message) *answer.Error {
 
 	switch object + "#" + action {
 	case messagedata.ChirpObject + "#" + messagedata.ChirpActionAdd:
-		errAnswer = handleChirpAdd(channelID, msg)
+		errAnswer = handleChirpAdd(channelPath, msg)
 	case messagedata.ChirpObject + "#" + messagedata.ChirpActionDelete:
-		errAnswer = handleChirpDelete(channelID, msg)
+		errAnswer = handleChirpDelete(channelPath, msg)
 	default:
 		errAnswer = answer.NewInvalidMessageFieldError("failed to handle %s#%s, invalid object#action", object, action)
 	}
@@ -29,14 +29,14 @@ func handleChannelChirp(channelID string, msg message.Message) *answer.Error {
 		return errAnswer.Wrap("handleChannelChirp")
 	}
 
-	generalMsg, errAnswer := createChirpNotify(channelID, msg)
+	generalMsg, errAnswer := createChirpNotify(channelPath, msg)
 	if errAnswer != nil {
 		return errAnswer.Wrap("handleChannelChirp")
 	}
 
-	generalChirpsChannelID, ok := strings.CutSuffix(channelID, Social+"/"+msg.Sender)
+	generalChirpsChannelID, ok := strings.CutSuffix(channelPath, Social+"/"+msg.Sender)
 	if !ok {
-		errAnswer := answer.NewInvalidMessageFieldError("invalid channel path %s", channelID)
+		errAnswer := answer.NewInvalidMessageFieldError("invalid channel path %s", channelPath)
 		return errAnswer.Wrap("handleChannelChirp")
 	}
 
@@ -45,13 +45,13 @@ func handleChannelChirp(channelID string, msg message.Message) *answer.Error {
 		return errAnswer.Wrap("handleChannelChirp")
 	}
 
-	err := db.StoreChirpMessages(channelID, generalChirpsChannelID, msg, generalMsg)
+	err := db.StoreChirpMessages(channelPath, generalChirpsChannelID, msg, generalMsg)
 	if err != nil {
 		errAnswer = answer.NewStoreDatabaseError(err.Error())
 		return errAnswer.Wrap("handleChannelChirp")
 	}
 
-	errAnswer = broadcastToAllClients(msg, channelID)
+	errAnswer = broadcastToAllClients(msg, channelPath)
 	if errAnswer != nil {
 		return errAnswer.Wrap("handleChannelChirp")
 	}

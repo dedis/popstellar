@@ -340,7 +340,7 @@ func newRollCallCloseMsg(t *testing.T, sender, laoID, closes, prevID string, clo
 		for _, attendee := range attendees {
 			channels = append(channels, laoID+Social+"/"+attendee)
 		}
-		mockRepo.On("StoreChannelsAndMessage", channels, laoID, msg).Return(nil)
+		mockRepo.On("StoreRollCallClose", channels, laoID, msg).Return(nil)
 	}
 	if prevID != "" {
 		mockRepo.On("CheckPrevID", laoID, closes, messagedata.RollCallActionOpen).Return(closes == prevID, nil)
@@ -388,13 +388,12 @@ func newElectionSetupMsg(t *testing.T, organizer kyber.Point, sender,
 	mockRepo.On("GetOrganizerPubKey", laoID).Return(organizer, nil)
 
 	if !isError {
-		mockRepo.On("StoreMessageWithElectionKey",
+		mockRepo.On("StoreElection",
 			laoID,
 			laoID+"/"+electionSetupID,
 			mock.AnythingOfType("*edwards25519.point"),
 			mock.AnythingOfType("*edwards25519.scalar"),
-			msg,
-			mock.AnythingOfType("message.Message")).Return(nil)
+			msg).Return(nil)
 	}
 
 	return msg

@@ -121,7 +121,7 @@ func handleSubscribe(socket socket.Socket, msg []byte) (*int, *answer.Error) {
 		return nil, errAnswer.Wrap("handleSubscribe")
 	}
 
-	if rootChannel == subscribe.Params.Channel {
+	if Root == subscribe.Params.Channel {
 		errAnswer := answer.NewInvalidActionError("cannot Subscribe to root channel")
 		return &subscribe.ID, errAnswer.Wrap("handleSubscribe")
 	}
@@ -145,7 +145,7 @@ func handleUnsubscribe(socket socket.Socket, msg []byte) (*int, *answer.Error) {
 		return nil, errAnswer.Wrap("handleUnsubscribe")
 	}
 
-	if rootChannel == unsubscribe.Params.Channel {
+	if Root == unsubscribe.Params.Channel {
 		errAnswer := answer.NewInvalidActionError("cannot Unsubscribe from root channel")
 		return &unsubscribe.ID, errAnswer.Wrap("handleUnsubscribe")
 	}

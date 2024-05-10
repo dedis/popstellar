@@ -7,6 +7,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.dedis.ch/kyber/v3"
 	"popstellar/crypto"
+	"popstellar/internal/popserver/config"
 	"popstellar/internal/popserver/database"
 	"popstellar/internal/popserver/generator"
 	state "popstellar/internal/popserver/state"
@@ -22,10 +23,24 @@ func Test_handleChannelElection(t *testing.T) {
 	mockRepo, err := database.SetDatabase(t)
 	require.NoError(t, err)
 
-	organizerBuf, err := base64.URLEncoding.DecodeString(ownerPubBuf64)
+	subs := types.NewSubscribers()
+	queries := types.NewQueries(&noLog)
+	peers := types.NewPeers()
+
+	ownerPubBuf, err := base64.URLEncoding.DecodeString(ownerPubBuf64)
 	require.NoError(t, err)
+
 	ownerPublicKey := crypto.Suite.Point()
-	err = ownerPublicKey.UnmarshalBinary(organizerBuf)
+	err = ownerPublicKey.UnmarshalBinary(ownerPubBuf)
+	require.NoError(t, err)
+
+	serverSecretKey := crypto.Suite.Scalar().Pick(crypto.Suite.RandomStream())
+	serverPublicKey := crypto.Suite.Point().Mul(serverSecretKey, nil)
+
+	err = config.SetConfig(t, ownerPublicKey, serverPublicKey, serverSecretKey, "clientAddress", "serverAddress")
+	require.NoError(t, err)
+
+	err = state.SetState(t, subs, peers, queries)
 	require.NoError(t, err)
 
 	laoID := base64.URLEncoding.EncodeToString([]byte("laoID"))
@@ -187,7 +202,7 @@ func Test_handleChannelElection(t *testing.T) {
 	electionID = base64.URLEncoding.EncodeToString([]byte("electionID7"))
 	channelPath = "/root/" + laoID + "/" + electionID
 
-	votes := messagedata.Hash("voteID1", "voteID2", "voteID3")
+	registeredVotes := messagedata.Hash("voteID1", "voteID2", "voteID3")
 
 	errAnswer = state.AddChannel(channelPath)
 	require.Nil(t, errAnswer)
@@ -195,11 +210,28 @@ func Test_handleChannelElection(t *testing.T) {
 	// Test 13: Success when ElectionEnd is valid
 	args = append(args, input{
 		name: "Test 13",
-		msg: newElectionEndMsg(t, ownerPublicKey, ownerPubBuf64, laoID, electionID, channelPath, messagedata.ElectionActionOpen, votes,
+		msg: newElectionEndMsg(t, ownerPublicKey, ownerPubBuf64, laoID, electionID, channelPath, messagedata.ElectionActionOpen, registeredVotes,
 			1, false, mockRepo),
 		channel:  channelPath,
 		isError:  false,
 		contains: "",
+	})
+
+	votes := []messagedata.Vote{
+		{
+			ID:       base64.URLEncoding.EncodeToString([]byte("voteID1")),
+			Question: base64.URLEncoding.EncodeToString([]byte("questionID1")),
+			Vote:     1,
+		},
+	}
+
+	// Test 14 Error when VoteCastVote sender is not the same as the lao organizer
+	args = append(args, input{
+		name:     "Test 14",
+		msg:      newVoteCastVoteMsg(t, wrongSender, laoID, electionID, 1, votes),
+		channel:  channelPath,
+		isError:  true,
+		contains: "sender is not the organizer of the channel",
 	})
 
 	for _, arg := range args {
@@ -281,9 +313,14 @@ func newElectionEndMsg(t *testing.T, owner kyber.Point, sender, laoID, electionI
 
 	if !isError {
 		mockRepo.On("GetElectionType", channelPath).Return(messagedata.OpenBallot, nil)
-		mockRepo.On("StoreMessageAndElectionResult", channelPath, msg, mock.AnythingOfType("message.Message")).
+		mockRepo.On("StoreElectionEndWithResult", channelPath, msg, mock.AnythingOfType("message.Message")).
 			Return(nil)
 	}
 
+	return msg
+}
+
+func newVoteCastVoteMsg(t *testing.T, sender, laoID, electionID string, createdAt int64, votes []messagedata.Vote) message.Message {
+	msg := generator.NewVoteCastVoteMsg(t, sender, laoID, electionID, createdAt, votes, nil)
 	return msg
 }

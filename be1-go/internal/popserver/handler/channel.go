@@ -19,7 +19,7 @@ import (
 	"popstellar/validation"
 )
 
-func handleChannel(channelID string, msg message.Message) *answer.Error {
+func handleChannel(channelPath string, msg message.Message) *answer.Error {
 	errAnswer := verifyMessage(msg)
 	if errAnswer != nil {
 		return errAnswer.Wrap("handleChannel")
@@ -40,27 +40,27 @@ func handleChannel(channelID string, msg message.Message) *answer.Error {
 		return errAnswer.Wrap("handleChannel")
 	}
 
-	channelType, err := db.GetChannelType(channelID)
+	channelType, err := db.GetChannelType(channelPath)
 	if err != nil {
 		errAnswer := answer.NewQueryDatabaseError("channel type: %v", err)
 		return errAnswer.Wrap("handleChannel")
 	}
 
 	switch channelType {
-	case channelRoot:
-		errAnswer = handleChannelRoot(channelID, msg)
-	case channelLao:
-		errAnswer = handleChannelLao(channelID, msg)
-	case channelElection:
-		errAnswer = handleChannelElection(channelID, msg)
-	case ChannelChirp:
-		errAnswer = handleChannelChirp(channelID, msg)
-	case ChannelReaction:
-		errAnswer = handleChannelReaction(channelID, msg)
-	case ChannelCoin:
-		errAnswer = handleChannelCoin(channelID, msg)
+	case database.RootType:
+		errAnswer = handleChannelRoot(msg)
+	case database.LaoType:
+		errAnswer = handleChannelLao(channelPath, msg)
+	case database.ElectionType:
+		errAnswer = handleChannelElection(channelPath, msg)
+	case database.ChirpType:
+		errAnswer = handleChannelChirp(channelPath, msg)
+	case database.ReactionType:
+		errAnswer = handleChannelReaction(channelPath, msg)
+	case database.CoinType:
+		errAnswer = handleChannelCoin(channelPath, msg)
 	default:
-		errAnswer = answer.NewInvalidResourceError("unknown channel type for %s", channelID)
+		errAnswer = answer.NewInvalidResourceError("unknown channel type for %s", channelPath)
 	}
 
 	if errAnswer != nil {
@@ -181,14 +181,3 @@ func broadcastToAllClients(msg message.Message, channel string) *answer.Error {
 
 	return nil
 }
-
-const (
-	channelRoot      = "root"
-	channelLao       = "lao"
-	channelElection  = "election"
-	ChannelChirp     = "chirp"
-	ChannelReaction  = "reaction"
-	ChannelConsensus = "consensus"
-	ChannelCoin      = "coin"
-	ChannelAuth      = "auth"
-)

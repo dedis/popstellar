@@ -85,25 +85,25 @@ func Test_handleChannelRoot(t *testing.T) {
 		contains: "failed to verify message data: invalid message field: lao id",
 	})
 
-	//// Test 4: error when message data is not lao_create
-	//args = append(args, input{
-	//	name:     "Test 4",
-	//	msg:      generator.NewNothingMsg(t, owner, nil),
-	//	isError:  true,
-	//	contains: "failed to validate message against json schema",
-	//})
-	//
-	//// Test 5: success
-	//args = append(args, input{
-	//	name:     "Test 5",
-	//	msg:      newLaoCreateMsg(t, owner, owner, goodLaoName, mockRepo, false),
-	//	isError:  false,
-	//	contains: "",
-	//})
+	// Test 4: error when message data is not lao_create
+	args = append(args, input{
+		name:     "Test 4",
+		msg:      generator.NewNothingMsg(t, owner, nil),
+		isError:  true,
+		contains: "failed to validate schema",
+	})
+
+	// Test 5: success
+	args = append(args, input{
+		name:     "Test 5",
+		msg:      newLaoCreateMsg(t, owner, owner, goodLaoName, mockRepo, false),
+		isError:  false,
+		contains: "",
+	})
 
 	for _, arg := range args {
 		t.Run(arg.name, func(t *testing.T) {
-			errAnswer := handleChannelRoot(rootChannel, arg.msg)
+			errAnswer := handleChannelRoot(arg.msg)
 			if arg.isError {
 				require.NotNil(t, errAnswer)
 				require.Contains(t, errAnswer.Error(), arg.contains)
@@ -130,13 +130,14 @@ func newLaoCreateMsg(t *testing.T, organizer, sender, laoName string, mockRepo *
 		organizerBuf, err := base64.URLEncoding.DecodeString(organizer)
 		require.NoError(t, err)
 		channels := map[string]string{
-			laoPath + Social + Chirps:    ChannelChirp,
-			laoPath + Social + Reactions: ChannelReaction,
-			laoPath + Consensus:          ChannelConsensus,
-			laoPath + Coin:               ChannelCoin,
-			laoPath + Auth:               ChannelAuth,
+			laoPath:                      database.LaoType,
+			laoPath + Social + Chirps:    database.ChirpType,
+			laoPath + Social + Reactions: database.ReactionType,
+			laoPath + Consensus:          database.ConsensusType,
+			laoPath + Coin:               database.CoinType,
+			laoPath + Auth:               database.AuthType,
 		}
-		mockRepo.On("StoreChannelsAndMessageWithLaoGreet",
+		mockRepo.On("StoreLaoWithLaoGreet",
 			channels,
 			laoPath,
 			organizerBuf,

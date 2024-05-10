@@ -13,26 +13,24 @@ import (
 )
 
 const (
-	rootChannel = "/root"
-	RootPrefix  = "/root/"
-	Social      = "/social"
-	Chirps      = "/chirps"
-	Reactions   = "/reactions"
-	Consensus   = "/consensus"
-	Coin        = "/coin"
-	Auth        = "/authentication"
+	Root       = "/root"
+	RootPrefix = "/root/"
+	Social     = "/social"
+	Chirps     = "/chirps"
+	Reactions  = "/reactions"
+	Consensus  = "/consensus"
+	Coin       = "/coin"
+	Auth       = "/authentication"
 )
 
-func handleChannelRoot(channel string, msg message.Message) *answer.Error {
+func handleChannelRoot(msg message.Message) *answer.Error {
 	object, action, errAnswer := verifyDataAndGetObjectAction(msg)
 	if errAnswer != nil {
 		return errAnswer.Wrap("handleChannelRoot")
 	}
 
-	storeMessage := true
 	switch object + "#" + action {
 	case messagedata.LAOObject + "#" + messagedata.LAOActionCreate:
-		storeMessage = false
 		errAnswer = handleLaoCreate(msg)
 	default:
 		errAnswer = answer.NewInvalidMessageFieldError("failed to handle %s#%s, invalid object#action", object, action)
@@ -40,18 +38,6 @@ func handleChannelRoot(channel string, msg message.Message) *answer.Error {
 
 	if errAnswer != nil {
 		return errAnswer.Wrap("handleChannelRoot")
-	}
-	if storeMessage {
-		db, errAnswer := database.GetRootRepositoryInstance()
-		if errAnswer != nil {
-			return errAnswer.Wrap("handleChannelRoot")
-		}
-
-		err := db.StoreMessageAndData(channel, msg)
-		if err != nil {
-			errAnswer := answer.NewStoreDatabaseError(err.Error())
-			return errAnswer.Wrap("handleChannelRoot")
-		}
 	}
 
 	return nil
@@ -149,12 +135,12 @@ func verifyLaoCreation(msg message.Message, laoCreate messagedata.LaoCreate, lao
 
 func createLaoAndChannels(msg, laoGreetMsg message.Message, organizerPubBuf []byte, laoPath string) *answer.Error {
 	channels := map[string]string{
-		laoPath:                      channelLao,
-		laoPath + Social + Chirps:    ChannelChirp,
-		laoPath + Social + Reactions: ChannelReaction,
-		laoPath + Consensus:          ChannelConsensus,
-		laoPath + Coin:               ChannelCoin,
-		laoPath + Auth:               ChannelAuth,
+		laoPath:                      database.LaoType,
+		laoPath + Social + Chirps:    database.ChirpType,
+		laoPath + Social + Reactions: database.ReactionType,
+		laoPath + Consensus:          database.ConsensusType,
+		laoPath + Coin:               database.CoinType,
+		laoPath + Auth:               database.AuthType,
 	}
 
 	db, errAnswer := database.GetRootRepositoryInstance()
@@ -162,7 +148,7 @@ func createLaoAndChannels(msg, laoGreetMsg message.Message, organizerPubBuf []by
 		return errAnswer.Wrap("createLaoAndSubChannels")
 	}
 
-	err := db.StoreChannelsAndMessageWithLaoGreet(channels, laoPath, organizerPubBuf, msg, laoGreetMsg)
+	err := db.StoreLaoWithLaoGreet(channels, laoPath, organizerPubBuf, msg, laoGreetMsg)
 	if err != nil {
 		errAnswer := answer.NewStoreDatabaseError("lao and sub channels: %v", err)
 		return errAnswer.Wrap("createLaoAndSubChannels")

@@ -79,7 +79,7 @@ func (s *ServerConfig) newHub(l *zerolog.Logger) (hub.Hub, error) {
 		return nil, err
 	}
 
-	db, err := database.NewSQLite("sqllite.db", false)
+	db, err := database.NewSQLite(database.DefaultPath, true)
 	if err != nil {
 		return nil, err
 	}

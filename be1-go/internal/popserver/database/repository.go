@@ -26,8 +26,6 @@ type Repository interface {
 	// StoreMessageAndData stores a message with an object and an action inside the database.
 	StoreMessageAndData(channelID string, msg message.Message) error
 
-	// StoreMessage stores a message inside the database.
-	StoreMessage(channelID string, msg message.Message) error
 	// GetMessagesByID returns a set of messages by their IDs.
 	GetMessagesByID(IDs []string) (map[string]message.Message, error)
 
@@ -45,6 +43,8 @@ type QueryRepository interface {
 
 	// GetAllMessagesFromChannel return all the messages received + sent on a channel
 	GetAllMessagesFromChannel(channelID string) ([]message.Message, error)
+
+	GetParamsHeartbeat() (map[string][]string, error)
 }
 
 // ======================= Answer ==========================
@@ -67,8 +67,8 @@ type ChannelRepository interface {
 
 type RootRepository interface {
 
-	// StoreChannelsAndMessageWithLaoGreet stores a list of "sub" channels, a message and a lao greet message inside the database.
-	StoreChannelsAndMessageWithLaoGreet(
+	// StoreLaoWithLaoGreet stores a list of "sub" channels, a message and a lao greet message inside the database.
+	StoreLaoWithLaoGreet(
 		channels map[string]string,
 		laoID string,
 		organizerPubBuf []byte,
@@ -94,15 +94,22 @@ type LAORepository interface {
 	// CheckPrevID returns true if the previous roll call message ID is the same as the next roll call message ID.
 	CheckPrevID(channel, nextID, expectedState string) (bool, error)
 
-	// StoreChannelsAndMessage stores a list of "sub" channels and a message inside the database.
-	StoreChannelsAndMessage(channels []string, laoID string, msg message.Message) error
+	// StoreRollCallClose stores a list of chirp channels and a rollCallClose message inside the database.
+	StoreRollCallClose(channels []string, laoID string, msg message.Message) error
 
-	// StoreMessageWithElectionKey stores a message and a election key message inside the database.
-	StoreMessageWithElectionKey(
-		laoID, electionID string,
+	// StoreElectionWithElectionKey stores an electionSetup message and an election key message inside the database.
+	StoreElectionWithElectionKey(
+		laoPath, electionPath string,
 		electionPubKey kyber.Point,
 		electionSecretKey kyber.Scalar,
 		msg, electionKeyMsg message.Message) error
+
+	//StoreElection stores an electionSetup message inside the database.
+	StoreElection(
+		laopath, electionPath string,
+		electionPubKey kyber.Point,
+		electionSecretKey kyber.Scalar,
+		msg message.Message) error
 
 	// StoreMessageAndData stores a message with an object and an action inside the database.
 	StoreMessageAndData(channelID string, msg message.Message) error
@@ -119,10 +126,10 @@ type ElectionRepository interface {
 	// GetElectionSecretKey returns the secret key of an election.
 	GetElectionSecretKey(electionID string) (kyber.Scalar, error)
 
-	// IsElectionStartedOrTerminated returns true if the election is started or terminated.
+	// IsElectionStartedOrEnded returns true if the election is started or ended.
 	IsElectionStartedOrEnded(electionID string) (bool, error)
 
-	// IsElectionTerminated returns true if the election is terminated.
+	// IsElectionEnded returns true if the election is ended.
 	IsElectionEnded(electionID string) (bool, error)
 
 	//IsElectionStarted returns true if the election is started.
@@ -143,8 +150,8 @@ type ElectionRepository interface {
 	//GetElectionQuestionsWithValidVotes returns the questions of an election with valid votes.
 	GetElectionQuestionsWithValidVotes(electionID string) (map[string]types.Question, error)
 
-	// StoreMessageAndElectionResult stores a message and an election result message inside the database.
-	StoreMessageAndElectionResult(channelID string, msg, electionResultMsg message.Message) error
+	// StoreElectionEndWithResult stores a message and an election result message inside the database.
+	StoreElectionEndWithResult(channelID string, msg, electionResultMsg message.Message) error
 
 	// StoreMessageAndData stores a message with an object and an action inside the database.
 	StoreMessageAndData(channelID string, msg message.Message) error
