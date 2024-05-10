@@ -22,7 +22,7 @@ func handleChannelReaction(channel string, msg message.Message) *answer.Error {
 	laoPath, _ := strings.CutSuffix(channel, Social+Reactions)
 	isAttendee, err := db.IsAttendee(laoPath, msg.Sender)
 	if err != nil {
-		errAnswer := answer.NewInternalServerError("failed to query DB: %v", err)
+		errAnswer := answer.NewQueryDatabaseError("if is attendee: %v", err)
 		return errAnswer.Wrap("handleChannelReaction")
 	}
 	if !isAttendee {
@@ -44,7 +44,7 @@ func handleChannelReaction(channel string, msg message.Message) *answer.Error {
 
 	err = db.StoreMessageAndData(channel, msg)
 	if err != nil {
-		errAnswer := answer.NewInternalServerError("failed to store message: %v", err)
+		errAnswer := answer.NewStoreDatabaseError(err.Error())
 		return errAnswer.Wrap("handleChannelReaction")
 	}
 
@@ -92,7 +92,7 @@ func handleReactionDelete(msg message.Message) *answer.Error {
 	}
 	reactSender, err := db.GetReactionSender(delReactMsg.ReactionID)
 	if err != nil {
-		errAnswer := answer.NewInternalServerError("failed to query DB: %v", err)
+		errAnswer := answer.NewQueryDatabaseError("sender of the reaction %s: %v", delReactMsg.ReactionID, err)
 		return errAnswer.Wrap("handleReactionDelete")
 	}
 	if reactSender == "" {

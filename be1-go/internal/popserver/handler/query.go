@@ -195,7 +195,7 @@ func handleCatchUp(socket socket.Socket, msg []byte) (*int, *answer.Error) {
 
 	result, err := db.GetAllMessagesFromChannel(catchup.Params.Channel)
 	if err != nil {
-		errAnswer := answer.NewInternalServerError("failed to popquery DB: %v", err)
+		errAnswer := answer.NewQueryDatabaseError("all message from channel %s: %v", catchup.Params.Channel, err)
 		return &catchup.ID, errAnswer.Wrap("handleCatchUp")
 	}
 
@@ -220,7 +220,7 @@ func handleHeartbeat(socket socket.Socket, byteMessage []byte) *answer.Error {
 
 	result, err := db.GetParamsForGetMessageByID(heartbeat.Params)
 	if err != nil {
-		errAnswer := answer.NewInternalServerError("failed to popquery DB: %v", err)
+		errAnswer := answer.NewQueryDatabaseError("params for get messages by id: %v", err)
 		return errAnswer.Wrap("handleHeartbeat")
 	}
 
@@ -276,7 +276,7 @@ func handleGetMessagesByID(socket socket.Socket, msg []byte) (*int, *answer.Erro
 
 	result, err := db.GetResultForGetMessagesByID(getMessagesById.Params)
 	if err != nil {
-		errAnswer := answer.NewInternalServerError("failed to popquery DB: %v", err)
+		errAnswer := answer.NewQueryDatabaseError("result for get messages by id: %v", err)
 		return &getMessagesById.ID, errAnswer.Wrap("handleGetMessageByID")
 	}
 

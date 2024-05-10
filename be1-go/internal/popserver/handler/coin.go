@@ -30,7 +30,7 @@ func handleChannelCoin(channel string, msg message.Message) *answer.Error {
 
 	err := db.StoreMessageAndData(channel, msg)
 	if err != nil {
-		errAnswer = answer.NewInternalServerError("failed to store message: %v", err)
+		errAnswer = answer.NewStoreDatabaseError(err.Error())
 		return errAnswer.Wrap("handleChannelCoin")
 	}
 

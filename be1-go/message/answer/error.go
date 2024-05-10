@@ -74,3 +74,13 @@ func NewAccessDeniedError(format string, a ...interface{}) *Error {
 func NewInternalServerError(format string, a ...interface{}) *Error {
 	return NewErrorf(InternalServerErrorCode, "internal server error: "+format, a...)
 }
+
+// NewQueryDatabaseError returns an error with -6 when there is an error with a database query
+func NewQueryDatabaseError(format string, a ...interface{}) *Error {
+	return NewErrorf(InternalServerErrorCode, "failed to query from database: "+format, a...)
+}
+
+// NewStoreDatabaseError returns an error with -6 when there is an error with a database store
+func NewStoreDatabaseError(format string, a ...interface{}) *Error {
+	return NewErrorf(InternalServerErrorCode, "failed to store inside database: "+format, a...)
+}

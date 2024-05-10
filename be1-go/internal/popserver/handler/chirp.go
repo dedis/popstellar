@@ -47,7 +47,7 @@ func handleChannelChirp(channelID string, msg message.Message) *answer.Error {
 
 	err := db.StoreChirpMessages(channelID, generalChirpsChannelID, msg, generalMsg)
 	if err != nil {
-		errAnswer = answer.NewInternalServerError("failed to store chirp and notify chirp: %v", err)
+		errAnswer = answer.NewStoreDatabaseError(err.Error())
 		return errAnswer.Wrap("handleChannelChirp")
 	}
 
@@ -98,7 +98,7 @@ func handleChirpDelete(channelID string, msg message.Message) *answer.Error {
 
 	msgToDeleteExists, err := db.HasMessage(data.ChirpID)
 	if err != nil {
-		errAnswer := answer.NewInternalServerError("failed to query DB: %v", err)
+		errAnswer := answer.NewQueryDatabaseError("if message exists: %v", err)
 		return errAnswer.Wrap("handleChirpDelete")
 	}
 	if !msgToDeleteExists {

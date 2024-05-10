@@ -51,7 +51,7 @@ func handleChannelElection(channel string, msg message.Message) *answer.Error {
 
 		err := db.StoreMessageAndData(channel, msg)
 		if err != nil {
-			errAnswer = answer.NewInternalServerError("failed to store message: %v", err)
+			errAnswer = answer.NewStoreDatabaseError(err.Error())
 			return errAnswer.Wrap("handleChannelElection")
 		}
 	}
@@ -87,13 +87,13 @@ func handleVoteCastVote(msg message.Message, channel string) *answer.Error {
 
 	attendees, err := db.GetElectionAttendees(channel)
 	if err != nil {
-		errAnswer := answer.NewInternalServerError("failed to get election attendees: %v", err)
+		errAnswer := answer.NewQueryDatabaseError("election attendees: %v", err)
 		return errAnswer.Wrap("handleVoteCastVote")
 	}
 
 	organizerPubKey, err := db.GetLAOOrganizerPubKey(channel)
 	if err != nil {
-		errAnswer := answer.NewInternalServerError("failed to get lao organizer pk: %v", err)
+		errAnswer := answer.NewQueryDatabaseError("lao organizer pk: %v", err)
 		return errAnswer.Wrap("handleElectionOpen")
 	}
 
@@ -112,7 +112,7 @@ func handleVoteCastVote(msg message.Message, channel string) *answer.Error {
 	// verify that the election is open
 	started, err := db.IsElectionStarted(channel)
 	if err != nil {
-		errAnswer := answer.NewInternalServerError("failed to get election start status: %v", err)
+		errAnswer := answer.NewQueryDatabaseError("election start status: %v", err)
 		return errAnswer.Wrap("handleVoteCastVote")
 	}
 	if !started {
@@ -127,7 +127,7 @@ func handleVoteCastVote(msg message.Message, channel string) *answer.Error {
 	// verify VoteCastVote created after election createdAt
 	createdAt, err := db.GetElectionCreationTime(channel)
 	if err != nil {
-		errAnswer := answer.NewInternalServerError("failed to get election creation time: %v", err)
+		errAnswer := answer.NewQueryDatabaseError("election creation time: %v", err)
 		return errAnswer.Wrap("handleVoteCastVote")
 	}
 	if createdAt > voteCastVote.CreatedAt {
@@ -160,7 +160,7 @@ func verifyVote(vote messagedata.Vote, channel, electionID string) *answer.Error
 
 	questions, err := db.GetElectionQuestions(channel)
 	if err != nil {
-		errAnswer := answer.NewInternalServerError("failed to get election questions: %v", err)
+		errAnswer := answer.NewQueryDatabaseError("election questions: %v", err)
 		return errAnswer.Wrap("verifyVote")
 	}
 	question, ok := questions[vote.Question]
@@ -170,7 +170,7 @@ func verifyVote(vote messagedata.Vote, channel, electionID string) *answer.Error
 	}
 	electionType, err := db.GetElectionType(channel)
 	if err != nil {
-		errAnswer := answer.NewInternalServerError("failed to get election type: %v", err)
+		errAnswer := answer.NewQueryDatabaseError("election type: %v", err)
 		return errAnswer.Wrap("verifyVote")
 	}
 	var voteString string
@@ -233,7 +233,7 @@ func handleElectionOpen(msg message.Message, channel string) *answer.Error {
 
 	organizerPubKey, err := db.GetLAOOrganizerPubKey(channel)
 	if err != nil {
-		errAnswer := answer.NewInternalServerError("failed to get lao organizer pk: %v", err)
+		errAnswer := answer.NewQueryDatabaseError("lao organizer pk: %v", err)
 		return errAnswer.Wrap("handleElectionOpen")
 	}
 
@@ -252,7 +252,7 @@ func handleElectionOpen(msg message.Message, channel string) *answer.Error {
 	// verify if the election was already started or terminated
 	ok, err := db.IsElectionStartedOrEnded(channel)
 	if err != nil {
-		errAnswer := answer.NewInternalServerError("failed to get election start or termination status: %v", err)
+		errAnswer := answer.NewQueryDatabaseError("election start or termination status: %v", err)
 		return errAnswer.Wrap("handleElectionOpen")
 	}
 	if ok {
@@ -262,7 +262,7 @@ func handleElectionOpen(msg message.Message, channel string) *answer.Error {
 
 	createdAt, err := db.GetElectionCreationTime(channel)
 	if err != nil {
-		errAnswer := answer.NewInternalServerError("failed to get election creation time: %v", err)
+		errAnswer := answer.NewQueryDatabaseError("election creation time: %v", err)
 		return errAnswer.Wrap("handleElectionOpen")
 	}
 	if electionOpen.OpenedAt < createdAt {
@@ -305,7 +305,7 @@ func handleElectionEnd(msg message.Message, channel string) *answer.Error {
 
 	organizerPubKey, err := db.GetLAOOrganizerPubKey(channel)
 	if err != nil {
-		errAnswer := answer.NewInternalServerError("failed to get lao organizer pk: %v", err)
+		errAnswer := answer.NewQueryDatabaseError("lao organizer pk: %v", err)
 		return errAnswer.Wrap("handleElectionEnd")
 	}
 
@@ -325,7 +325,7 @@ func handleElectionEnd(msg message.Message, channel string) *answer.Error {
 	// verify if the election is started
 	started, err := db.IsElectionStarted(channel)
 	if err != nil {
-		errAnswer := answer.NewInternalServerError("failed to get election start status: %v", err)
+		errAnswer := answer.NewQueryDatabaseError("election start status: %v", err)
 		return errAnswer.Wrap("handleElectionEnd")
 	}
 	if !started {
@@ -346,7 +346,7 @@ func handleElectionEnd(msg message.Message, channel string) *answer.Error {
 
 	questions, err := db.GetElectionQuestionsWithValidVotes(channel)
 	if err != nil {
-		errAnswer := answer.NewInternalServerError("failed to get election questions: %v", err)
+		errAnswer := answer.NewQueryDatabaseError("election questions: %v", err)
 		return errAnswer.Wrap("handleElectionEnd")
 	}
 
@@ -364,7 +364,7 @@ func handleElectionEnd(msg message.Message, channel string) *answer.Error {
 
 	err = db.StoreMessageAndElectionResult(channel, msg, electionResultMsg)
 	if err != nil {
-		errAnswer := answer.NewInternalServerError("failed to store message and election result: %v", err)
+		errAnswer := answer.NewStoreDatabaseError("election end and election result: %v", err)
 		return errAnswer.Wrap("handleElectionEnd")
 	}
 
@@ -411,7 +411,7 @@ func createElectionResult(questions map[string]types.Question, channel string) (
 
 	electionType, err := db.GetElectionType(channel)
 	if err != nil {
-		errAnswer := answer.NewInternalServerError("failed to get election type: %v", err)
+		errAnswer := answer.NewQueryDatabaseError("election type: %v", err)
 		return message.Message{}, errAnswer.Wrap("createElectionResult")
 	}
 
@@ -449,7 +449,7 @@ func createElectionResult(questions map[string]types.Question, channel string) (
 
 	buf, err := json.Marshal(resultElection)
 	if err != nil {
-		errAnswer := answer.NewInternalServerError("failed to marshal election result: %v", err)
+		errAnswer := answer.NewQueryDatabaseError("marshal election result: %v", err)
 		return message.Message{}, errAnswer.Wrap("createElectionResult")
 	}
 	buf64 := base64.URLEncoding.EncodeToString(buf)

@@ -32,7 +32,7 @@ func handleChannel(channelID string, msg message.Message) *answer.Error {
 
 	msgAlreadyExists, err := db.HasMessage(msg.MessageID)
 	if err != nil {
-		errAnswer := answer.NewInternalServerError("failed to query DB: %v", err)
+		errAnswer := answer.NewQueryDatabaseError("if message exists: %v", err)
 		return errAnswer.Wrap("handleChannel")
 	}
 	if msgAlreadyExists {
@@ -42,7 +42,7 @@ func handleChannel(channelID string, msg message.Message) *answer.Error {
 
 	channelType, err := db.GetChannelType(channelID)
 	if err != nil {
-		errAnswer := answer.NewInvalidResourceError("failed to query DB: %v", err)
+		errAnswer := answer.NewQueryDatabaseError("channel type: %v", err)
 		return errAnswer.Wrap("handleChannel")
 	}
 

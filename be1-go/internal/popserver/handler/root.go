@@ -49,7 +49,7 @@ func handleChannelRoot(channel string, msg message.Message) *answer.Error {
 
 		err := db.StoreMessageAndData(channel, msg)
 		if err != nil {
-			errAnswer := answer.NewInternalServerError("failed to store message in root channel: %v", err)
+			errAnswer := answer.NewStoreDatabaseError(err.Error())
 			return errAnswer.Wrap("handleChannelRoot")
 		}
 	}
@@ -88,7 +88,7 @@ func verifyLaoCreation(msg message.Message, laoCreate messagedata.LaoCreate, lao
 
 	ok, err := db.HasChannel(laoPath)
 	if err != nil {
-		errAnswer := answer.NewInternalServerError("failed to check if lao already exists: %v", err)
+		errAnswer := answer.NewQueryDatabaseError("if lao already exists: %v", err)
 		return nil, errAnswer.Wrap("verifyLAOCreation")
 	} else if ok {
 		errAnswer := answer.NewDuplicateResourceError("failed to create lao: duplicate lao path: %s", laoPath)
@@ -164,7 +164,7 @@ func createLaoAndChannels(msg, laoGreetMsg message.Message, organizerPubBuf []by
 
 	err := db.StoreChannelsAndMessageWithLaoGreet(channels, laoPath, organizerPubBuf, msg, laoGreetMsg)
 	if err != nil {
-		errAnswer := answer.NewInternalServerError("failed to store lao and sub channels: %v", err)
+		errAnswer := answer.NewStoreDatabaseError("lao and sub channels: %v", err)
 		return errAnswer.Wrap("createLaoAndSubChannels")
 	}
 

@@ -59,7 +59,7 @@ func handleChannelLao(channel string, msg message.Message) *answer.Error {
 
 		err := db.StoreMessageAndData(channel, msg)
 		if err != nil {
-			errAnswer = answer.NewInternalServerError("failed to store message: %v", err)
+			errAnswer = answer.NewStoreDatabaseError("message: %v", err)
 			return errAnswer.Wrap("handleChannelLao")
 		}
 	}
@@ -104,9 +104,8 @@ func handleRollCallOpen(msg message.Message, channel string) *answer.Error {
 	}
 
 	ok, err := db.CheckPrevID(channel, rollCallOpen.Opens, messagedata.RollCallActionCreate)
-
 	if err != nil {
-		errAnswer = answer.NewInternalServerError("failed to check if previous id exists: %v", err)
+		errAnswer = answer.NewQueryDatabaseError("if previous id exists: %v", err)
 		return errAnswer.Wrap("handleRollCallOpen")
 	} else if !ok {
 		errAnswer = answer.NewInvalidMessageFieldError("previous id does not exist")
@@ -149,7 +148,7 @@ func handleRollCallClose(msg message.Message, channel string) *answer.Error {
 
 	ok, err := db.CheckPrevID(channel, rollCallClose.Closes, messagedata.RollCallActionOpen)
 	if err != nil {
-		errAnswer = answer.NewInternalServerError("failed to check if previous id exists: %v", err)
+		errAnswer = answer.NewQueryDatabaseError("if previous id exists: %v", err)
 		return errAnswer.Wrap("handleRollCallClose")
 	} else if !ok {
 		errAnswer = answer.NewInvalidMessageFieldError("previous id does not exist")
@@ -177,7 +176,7 @@ func handleRollCallClose(msg message.Message, channel string) *answer.Error {
 
 	err = db.StoreChannelsAndMessage(channels, channel, msg)
 	if err != nil {
-		errAnswer = answer.NewInternalServerError("failed to store channels and message: %v", err)
+		errAnswer = answer.NewStoreDatabaseError("channels and message: %v", err)
 		return errAnswer.Wrap("handleRollCallClose")
 	}
 
@@ -210,7 +209,7 @@ func handleElectionSetup(msg message.Message, channel string) *answer.Error {
 
 	organizePubKey, err := db.GetOrganizerPubKey(channel)
 	if err != nil {
-		errAnswer = answer.NewInternalServerError("failed to get organizer public key: %v", err)
+		errAnswer = answer.NewQueryDatabaseError("organizer public key: %v", err)
 		return errAnswer.Wrap("handleElectionSetup")
 	}
 
@@ -246,7 +245,7 @@ func handleElectionSetup(msg message.Message, channel string) *answer.Error {
 	electionPath := channel + "/" + electionSetup.ID
 	err = db.StoreMessageWithElectionKey(channel, electionPath, electionPubKey, electionSecretKey, msg, electionKeyMsg)
 	if err != nil {
-		errAnswer = answer.NewInternalServerError("failed to store election setup message: %v", err)
+		errAnswer = answer.NewStoreDatabaseError("election setup message: %v", err)
 		return errAnswer.Wrap("handleElectionSetup")
 	}
 
@@ -318,7 +317,7 @@ func handleLaoState(msg message.Message, channel string) *answer.Error {
 
 	ok, err := db.HasMessage(laoState.ModificationID)
 	if err != nil {
-		errAnswer := answer.NewInternalServerError("failed to get check if message exists: %v", err)
+		errAnswer := answer.NewQueryDatabaseError("if message exists: %v", err)
 		return errAnswer.Wrap("handleLaoState")
 	} else if !ok {
 		errAnswer := answer.NewInvalidMessageFieldError("message corresponding to modificationID %s does not exist", laoState.ModificationID)
@@ -327,7 +326,7 @@ func handleLaoState(msg message.Message, channel string) *answer.Error {
 
 	witnesses, err := db.GetLaoWitnesses(channel)
 	if err != nil {
-		errAnswer := answer.NewInternalServerError("failed to get lao witnesses: %v", err)
+		errAnswer := answer.NewQueryDatabaseError("lao witnesses: %v", err)
 		return errAnswer.Wrap("handleLaoState")
 	}
 
