@@ -15,8 +15,8 @@
 
       <ListView
         android:id="@+id/chirps_list"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
         android:divider="@color/categoryTab"
         android:dividerHeight="@dimen/social_media_divider_height"
         tools:listitem="@layout/chirp_card" />

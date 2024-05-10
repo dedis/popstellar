@@ -60,6 +60,9 @@ constructor(
   private val mNumberCharsLeft = MutableLiveData<Int>()
   val bottomNavigationTab = MutableLiveData(SocialMediaTab.HOME)
 
+  val canLoadMoreChirps: Boolean
+    get() = socialMediaRepository.canQueryMoreChirps(laoId)
+
   private val disposables: CompositeDisposable = CompositeDisposable()
 
   override fun onCleared() {
@@ -249,6 +252,10 @@ constructor(
             // to
             // the view are done on the thread. Otherwise, the app might crash
             .observeOn(schedulerProvider.mainThread())
+
+  fun loadMoreChirps() {
+    socialMediaRepository.queryMoreChirps(laoId)
+  }
 
   @Throws(UnknownChirpException::class)
   fun getReactions(chirpId: MessageID): Observable<Set<Reaction>> {

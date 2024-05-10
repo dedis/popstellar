@@ -21,6 +21,7 @@ import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.Subject
 import java.util.EnumMap
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.atomic.AtomicInteger
 import java.util.function.Consumer
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -102,6 +103,14 @@ constructor(appDatabase: AppDatabase, application: Application) {
     return getLaoChirps(laoId).reactionByChirpId[chirpId] ?: emptySet()
   }
 
+  fun queryMoreChirps(laoId: String) {
+    getLaoChirps(laoId).queryMoreChirps()
+  }
+
+  fun canQueryMoreChirps(laoId: String): Boolean {
+    return !getLaoChirps(laoId).isEndOfChirps()
+  }
+
   /**
    * @param laoId of the lao we want to observe the chirp list
    * @return an observable set of message ids whose correspond to the set of chirp published on the
@@ -132,7 +141,6 @@ constructor(appDatabase: AppDatabase, application: Application) {
                 { err: Throwable ->
                   Timber.tag(TAG).e(err, "Error in persisting reaction %s", reaction.id)
                 }))
-
     // Retrieve Lao data and add the reaction to it
     return getLaoChirps(laoId).addReaction(reaction)
   }
@@ -171,6 +179,11 @@ constructor(appDatabase: AppDatabase, application: Application) {
     private val chirps = ConcurrentHashMap<MessageID, Chirp>()
     private val chirpSubjects = ConcurrentHashMap<MessageID, Subject<Chirp>>()
     private val chirpsSubject: Subject<Set<MessageID>> = BehaviorSubject.createDefault(emptySet())
+    // TODO : used to fake page loading, to be removed when we will be able to request only wanted
+    // chirps. Maxime Teuber @Kaz-ookid - April 2024
+    private var chirpsLoaded: AtomicInteger = AtomicInteger(0)
+    private var storageIsLoaded: Boolean = false
+    private var reachedEndOfChirps: Boolean = false
 
     // Reactions
     val reactionByChirpId = ConcurrentHashMap<MessageID, MutableSet<Reaction>>()
@@ -179,6 +192,7 @@ constructor(appDatabase: AppDatabase, application: Application) {
 
     init {
       loadStorage()
+      chirpsLoaded.set(CHIRPS_PAGE_SIZE)
     }
 
     fun add(chirp: Chirp) {
@@ -187,6 +201,11 @@ constructor(appDatabase: AppDatabase, application: Application) {
       if (old != null) {
         Timber.tag(TAG).w("A chirp with id %s already exist : %s", id, old)
         return
+      }
+      if (storageIsLoaded) {
+        // TODO : used to fake page loading, to be removed when we will be able to request only
+        // wanted chirps. Maxime Teuber @Kaz-ookid - April 2024
+        chirpsLoaded.incrementAndGet()
       }
 
       // Update repository data
@@ -197,6 +216,23 @@ constructor(appDatabase: AppDatabase, application: Application) {
       // Publish new values on subjects
       chirpSubjects[id] = BehaviorSubject.createDefault(chirp)
       chirpsSubject.toSerialized().onNext(HashSet(chirps.keys))
+    }
+
+    // TODO : used to fake page loading, to be removed when we will be able to request only wanted
+    // chirps. Maxime Teuber @Kaz-ookid - April 2024
+    // Either here or directly in DB, we should query to servers the CHIRPS_PAGE_SIZE next chirps,
+    // and not all of them.
+    fun queryMoreChirps() {
+      val previousSize = getChirpsSubject().blockingFirst().size
+      chirpsLoaded.addAndGet(CHIRPS_PAGE_SIZE)
+      chirpsSubject.onNext(
+          chirps.keys.sortedByDescending { chirps[it]?.timestamp }.take(chirpsLoaded.get()).toSet())
+      val newSize = getChirpsSubject().blockingFirst().size
+      // if did not load CHIRPS_PAGE_SIZE chirps, then we reached the end of the chirps.
+      if (newSize - previousSize != CHIRPS_PAGE_SIZE) {
+        chirpsLoaded.set(newSize)
+        reachedEndOfChirps = true
+      }
     }
 
     fun addReaction(reaction: Reaction): Boolean {
@@ -279,7 +315,17 @@ constructor(appDatabase: AppDatabase, application: Application) {
     }
 
     fun getChirpsSubject(): Observable<Set<MessageID>> {
-      return chirpsSubject
+      // TODO : used to fake page loading, to be removed when we will be able to request only wanted
+      // chirps. Maxime Teuber @Kaz-ookid - April 2024
+      // would normally return chirpsSubject directly
+      return chirpsSubject.map {
+        chirps.keys.sortedByDescending { chirps[it]?.timestamp }.take(chirpsLoaded.get()).toSet()
+      }
+    }
+
+    /** Check if the end of the chirps history has been reached */
+    fun isEndOfChirps(): Boolean {
+      return reachedEndOfChirps
     }
 
     @Throws(UnknownChirpException::class)
@@ -342,6 +388,7 @@ constructor(appDatabase: AppDatabase, application: Application) {
                                                 chirp.id)
                                       }))
                         })
+                    storageIsLoaded = true
                   },
                   { err: Throwable ->
                     Timber.tag(TAG).e(err, "No chirp found in the storage for lao %s", laoId)
@@ -350,6 +397,7 @@ constructor(appDatabase: AppDatabase, application: Application) {
   }
 
   companion object {
+    private const val CHIRPS_PAGE_SIZE: Int = 10
     private val TAG = SocialMediaRepository::class.java.simpleName
   }
 }
