@@ -25,6 +25,9 @@ import com.github.dedis.popstellar.testutils.Base64DataUtils
 import com.github.dedis.popstellar.testutils.BundleBuilder
 import com.github.dedis.popstellar.testutils.MessageSenderHelper
 import com.github.dedis.popstellar.testutils.MockitoKotlinHelpers
+import com.github.dedis.popstellar.testutils.UITestUtils.assertToastIsDisplayedContainsText
+import com.github.dedis.popstellar.testutils.UITestUtils.assertToastIsDisplayedOnlyOnce
+import com.github.dedis.popstellar.testutils.UITestUtils.assertToastIsDisplayedWithText
 import com.github.dedis.popstellar.testutils.fragment.ActivityFragmentScenarioRule
 import com.github.dedis.popstellar.testutils.pages.lao.LaoActivityPageObject
 import com.github.dedis.popstellar.ui.lao.LaoActivity
@@ -37,6 +40,7 @@ import com.github.dedis.popstellar.utility.security.KeyManager
 import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import java.security.InvalidKeyException
 import java.time.Instant
 import javax.inject.Inject
 import org.junit.Assert
@@ -64,7 +68,7 @@ class ChirpListAdapterTest {
       EventState.CLOSED,
       HashSet(),
       "",
-      ""
+      "",
     )
   private val REACTION_ID = Base64DataUtils.generateMessageID()
   private val REACTION =
@@ -75,7 +79,7 @@ class ChirpListAdapterTest {
       SENDER_1,
       Reaction.ReactionEmoji.DOWNVOTE.code,
       CHIRP_1.id,
-      TIMESTAMP
+      TIMESTAMP,
     )
   private val REACTION3 =
     Reaction(
@@ -83,7 +87,7 @@ class ChirpListAdapterTest {
       SENDER_1,
       Reaction.ReactionEmoji.HEART.code,
       CHIRP_1.id,
-      TIMESTAMP
+      TIMESTAMP,
     )
 
   @Inject lateinit var socialMediaRepository: SocialMediaRepository
@@ -131,7 +135,7 @@ class ChirpListAdapterTest {
       LaoActivity::class.java,
       BundleBuilder().putString(Constants.LAO_ID_EXTRA, LAO_ID).build(),
       LaoActivityPageObject.containerId(),
-      ChirpListFragment::class.java
+      ChirpListFragment::class.java,
     ) {
       ChirpListFragment()
     }
@@ -226,7 +230,7 @@ class ChirpListAdapterTest {
       Assert.assertNotNull(time)
       Assert.assertEquals(
         DateUtils.getRelativeTimeSpanString(TIMESTAMP_1 * 1000),
-        time.text.toString()
+        time.text.toString(),
       )
 
       // Ensure that the buttons are visible
@@ -248,7 +252,7 @@ class ChirpListAdapterTest {
       Assert.assertNotNull(textView2)
       Assert.assertEquals(
         activity.applicationContext.getString(R.string.deleted_chirp_2),
-        textView2.text.toString()
+        textView2.text.toString(),
       )
 
       // Assert that the bin is not visible
@@ -301,13 +305,25 @@ class ChirpListAdapterTest {
     }
   }
 
+  //@Test
+  //fun testErrorToastDisplayedOnce() {
+  //  // error shows since tests LAO are not fully initialized ("user" participated in no roll calls)
+  //  itemTest()
+//
+  //  Thread.sleep(3500)
+  //  assertToastIsDisplayedWithText(R.string.error_retrieve_own_token, "")
+  //  assertToastIsDisplayedOnlyOnce()
+  //}
+
   companion object {
     private const val CREATION_TIME: Long = 1631280815
     private const val LAO_NAME = "laoName"
     private val SENDER_KEY_1: KeyPair = Base64DataUtils.generatePoPToken()
     private val SENDER_KEY_2: KeyPair = Base64DataUtils.generatePoPToken()
+    private val SENDER_KEY_3: KeyPair = Base64DataUtils.generatePoPToken()
     private val SENDER_1 = SENDER_KEY_1.publicKey
     private val SENDER_2 = SENDER_KEY_2.publicKey
+    private val SENDER_3 = SENDER_KEY_3.publicKey
     private val LAO_ID = generateLaoId(SENDER_1, CREATION_TIME, LAO_NAME)
     private val MESSAGE_ID_1 = Base64DataUtils.generateMessageID()
     private val MESSAGE_ID_2 = Base64DataUtils.generateMessageID()
@@ -328,7 +344,7 @@ class ChirpListAdapterTest {
       activity: FragmentActivity,
       viewModel: LaoViewModel,
       socialMediaViewModel: SocialMediaViewModel,
-      chirps: List<Chirp>?
+      chirps: List<Chirp>?,
     ): ChirpListAdapter {
       val adapter = ChirpListAdapter(activity, socialMediaViewModel, viewModel)
       adapter.replaceList(chirps)

@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import android.widget.TimePicker
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
 import androidx.test.core.app.ApplicationProvider
@@ -41,6 +42,23 @@ object UITestUtils {
 
     val expected = ApplicationProvider.getApplicationContext<Context>().getString(resId, *args)
     Assert.assertEquals(expected, ShadowToast.getTextOfLatestToast())
+  }
+
+  @JvmStatic
+  fun assertToastIsDisplayedContainsText(@StringRes resId: Int, vararg args: Any?) {
+    MatcherAssert.assertThat(
+      "No toast was displayed",
+      ShadowToast.getLatestToast(),
+      Matchers.notNullValue()
+    )
+
+    val expected = ApplicationProvider.getApplicationContext<Context>().getString(resId, *args)
+    Assert.assertTrue(ShadowToast.getTextOfLatestToast().contains(expected))
+  }
+
+  @JvmStatic
+  fun assertToastIsDisplayedOnlyOnce() {
+    Assert.assertEquals(1, ShadowToast.shownToastCount())
   }
 
   /**
