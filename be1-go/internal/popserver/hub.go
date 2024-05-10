@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"golang.org/x/xerrors"
 	"popstellar/internal/popserver/config"
+	"popstellar/internal/popserver/database"
 	"popstellar/internal/popserver/handler"
 	"popstellar/internal/popserver/state"
 	"popstellar/internal/popserver/utils"
@@ -11,12 +12,17 @@ import (
 	"popstellar/message/query"
 	"popstellar/message/query/method"
 	"popstellar/network/socket"
+	"sync"
+	"time"
 )
+
+const heartbeatDelay = 30 * time.Second
 
 type Hub struct {
 	messageChan   chan socket.IncomingMessage
 	stop          chan struct{}
 	closedSockets chan string
+	serverSockets sockets
 }
 
 func NewHub() *Hub {
@@ -24,14 +30,29 @@ func NewHub() *Hub {
 		messageChan:   make(chan socket.IncomingMessage),
 		stop:          make(chan struct{}),
 		closedSockets: make(chan string),
+		serverSockets: newSockets(),
 	}
 }
 
 func (h *Hub) NotifyNewServer(socket socket.Socket) {
-	return
+	h.serverSockets.Upsert(socket)
 }
 
 func (h *Hub) Start() {
+	go func() {
+		ticker := time.NewTicker(heartbeatDelay)
+		defer ticker.Stop()
+
+		for {
+			select {
+			case <-ticker.C:
+				h.sendHeartbeatToServers()
+			case <-h.stop:
+				utils.LogInfo("stopping the hub")
+				return
+			}
+		}
+	}()
 	go func() {
 		utils.LogInfo("start the Hub")
 		for {
@@ -97,4 +118,87 @@ func (h *Hub) SendGreetServer(socket socket.Socket) error {
 	socket.Send(buf)
 
 	return state.AddPeerGreeted(socket.ID())
+}
+
+// sendHeartbeatToServers sends a heartbeat message to all servers
+func (h *Hub) sendHeartbeatToServers() {
+
+	db, errAnswer := database.GetQueryRepositoryInstance()
+	if errAnswer != nil {
+		return
+	}
+
+	params, err := db.GetParamsHeartbeat()
+	if err != nil {
+		return
+	}
+
+	heartbeatMessage := method.Heartbeat{
+		Base: query.Base{
+			JSONRPCBase: jsonrpc.JSONRPCBase{
+				JSONRPC: "2.0",
+			},
+			Method: "heartbeat",
+		},
+		Params: params,
+	}
+
+	buf, err := json.Marshal(heartbeatMessage)
+	if err != nil {
+		utils.LogError(err)
+	}
+	h.serverSockets.SendToAll(buf)
+}
+
+// newSockets returns a new initialized sockets
+func newSockets() sockets {
+	return sockets{
+		store: make(map[string]socket.Socket),
+	}
+}
+
+// sockets provides thread-functionalities around a socket store.
+type sockets struct {
+	sync.RWMutex
+	store map[string]socket.Socket
+}
+
+// Len returns the number of sockets.
+func (s *sockets) Len() int {
+	return len(s.store)
+}
+
+// SendToAll sends a message to all sockets.
+func (s *sockets) SendToAll(buf []byte) {
+	s.RLock()
+	defer s.RUnlock()
+
+	for _, s := range s.store {
+		s.Send(buf)
+	}
+}
+
+// Upsert upserts a socket into the sockets store.
+func (s *sockets) Upsert(socket socket.Socket) {
+	s.Lock()
+	defer s.Unlock()
+
+	s.store[socket.ID()] = socket
+}
+
+// Delete deletes a socket from the store. Returns false
+// if the socket is not present in the store and true
+// on success.
+func (s *sockets) Delete(ID string) bool {
+	s.Lock()
+	defer s.Unlock()
+
+	_, ok := s.store[ID]
+	if !ok {
+		return false
+	}
+
+	delete(s.store, ID)
+
+	return true
 }
