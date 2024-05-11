@@ -345,8 +345,11 @@ func (s *SQLite) GetParamsHeartbeat() (map[string][]string, error) {
 	for rows.Next() {
 		var channelPath string
 		var messageID string
-		if err = rows.Scan(&channelPath, &messageID); err != nil {
+		if err = rows.Scan(&messageID, &channelPath); err != nil {
 			return nil, err
+		}
+		if _, ok := result[channelPath]; !ok {
+			result[channelPath] = make([]string, 0)
 		}
 		result[channelPath] = append(result[channelPath], messageID)
 	}
