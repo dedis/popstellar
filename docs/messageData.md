@@ -44,7 +44,7 @@
   - [Answering the challenge request (federation#challenge)](#answering-the-challenge-request-federationchallenge)
   - [Expecting a connection (federation#expect)](#expecting-a-connection-federationexpect)
   - [Initiating a connection (federation#init)](#initiating-a-connection-federationinit)
-  - [Establishing or Aborting the connection (federation#result)](#establishing-or-aborting-the-connection-federationresult)
+  - [Confirming or Aborting the connection attempt (federation#result)](#confirming-or-aborting-the-connection-attempt-federationresult)
 
 
 <!-- END doctoc.sh generated TOC please keep comment here to allow auto update -->
@@ -2933,7 +2933,7 @@ a consensus/failure message is sent informing the system of the failure.
 
 ## Federation introduction
 This feature will allow both LAOs to establish a connection between each other, send and receive data from one another, enhancing the existing functionalities like roll calls, events, and social media interactions, all while maintaining their autonomy.
-
+For clearer understanding, we define "Alice" as the "local organizer" and "Alice's server" as the "local server." These terms refer to the entities that initiate the federation process. On the other hand, "Bob" is referred to as the "remote organizer" and "Bob's server" as the "remote server." These are the entities that join or collaborate in the federation.
 ## Federation (Authentication Protocol)
 
 Schematic Illustration
@@ -2948,8 +2948,8 @@ The two organizers meet in person to exchange the federation_details message (th
 They also decide on a time slot to perform their next roll-calls---these have to happen simultaneously.
 
 ## Requesting a challenge (federation#challenge_request)
-The organizer of one of the two LAOs will request a challenge from his server.
-This challenge will be then used by the other server to authenticate itself.
+Bob will request a challenge from his server.
+This challenge will be then used by Alice's server to authenticate itself.
 
 <details>
 <summary>
@@ -2996,7 +2996,7 @@ This challenge will be then used by the other server to authenticate itself.
 ```
 
 ## Answering the challenge request (federation#challenge)
-The server will provide his corresponding organizer with the requested challenge.
+Bob's server will provide him with the requested challenge.
 <details>
 <summary>
 💡 See an example
@@ -3048,7 +3048,7 @@ The server will provide his corresponding organizer with the requested challenge
 ```
 
 ## Expecting a connection (federation#expect)
-With this message the organizer lets the server know to expect a federation_init message from the remote party idetailed in the message body.
+With this message, Bob informs his server that it should expect a federation invitation message from Alice's server detailed in the message body.
 
 <details>
 <summary>
@@ -3108,7 +3108,7 @@ With this message the organizer lets the server know to expect a federation_init
         },
         "challenge": {
           "$ref": "../message.json",
-          "$comment": "message/message containing a FederationChallenge data"
+          "$comment": "message containing a FederationChallenge data"
             }
         },
     "additionalProperties": false,
@@ -3127,9 +3127,9 @@ With this message the organizer lets the server know to expect a federation_init
 
 
 ## Initiating a connection (federation#init)
-This message is used to let a server know to initiate a connection with a remote server.
+This message from Alice instructs her server to initiate a connection with Bob's server.
 
-It contains the necessary connection details, and a challenge which the remote party will expect to receive and the server will use to authenticate himself.
+It contains the necessary connection details, and a challenge which Bob's server will expect to receive and Alice's server will use to authenticate itself.
 <details>
 <summary>
 💡 See an example
@@ -3205,8 +3205,8 @@ It contains the necessary connection details, and a challenge which the remote p
 
 ```
 
-## Establishing or Aborting the connection (federation#result)
-This message is used to know the status of the connection, whether it was a success and a connection between the two LAOs was established or it was a failure.
+## Confirming or Aborting the connection attempt (federation#result)
+This message is sent by Bob's server. The purpose of this message is to provide Alice's server with a final status of the connection, whether it was a success and a connection between the two LAOs is now established or there was a failure (In this case the `reason` field may be used to provide further details).
 <details>
 <summary>
 💡 See an example
@@ -3235,7 +3235,7 @@ This message is used to know the status of the connection, whether it was a succ
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataFederationResult.json",
-  "description": "Sent by an server to a remote server, to inform them about the result of the authentication procedure",
+  "description": "Sent by a server to a remote server, to inform them about the result of the authentication procedure",
   "type": "object",
   "oneOf": [
     {
