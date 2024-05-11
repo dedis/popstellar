@@ -3,6 +3,7 @@ package com.github.dedis.popstellar.utility
 import android.app.Activity
 import android.app.Application
 import android.content.ClipData
+import android.content.ClipDescription
 import android.content.ClipboardManager
 import android.content.Context
 import android.os.Bundle
@@ -88,10 +89,24 @@ object GeneralUtils {
       }
     }
 
+    fun setupPasteButton(button: View, textView: TextView) {
+      button.setOnClickListener { pasteTextFromClipboard(context, textView) }
+    }
+
     private fun copyTextToClipboard(label: String, content: String) {
       val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
       val clip = ClipData.newPlainText(label, content)
       clipboard.setPrimaryClip(clip)
+    }
+
+    private fun pasteTextFromClipboard(context: Context, textView: TextView) {
+      val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+      if (clipboard.hasPrimaryClip() &&
+          clipboard.primaryClipDescription?.hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN) ==
+              true) {
+        val item = clipboard.primaryClip?.getItemAt(0)
+        textView.text = item?.text.toString()
+      }
     }
   }
 
