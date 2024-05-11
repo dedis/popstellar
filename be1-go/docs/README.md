@@ -131,7 +131,7 @@ In parallel, the `Hub` will send a `Heartbeat` every 30 seconds to all the conne
 The flowchart below describes all the possible way for a message inside the handlers from package `handler`.
 
 <div align="center">
-  <img src="images/dependencies/handler.png" alt="Flowchart"/>
+  <img src="images/handler/handler.png" alt="Flowchart"/>
 </div>
 
 <p align="center"><i>
