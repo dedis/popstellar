@@ -17,6 +17,10 @@
   <string name="copy_to_clipboard_server">Copy to Clipboard Server Address</string>
   <string name="copy_to_clipboard_lao_id">Copy to Clipboard Lao ID</string>
 
+  <!--  Paste From Clipboard -->
+    <string name="paste_from_clipboard_server">Paste from Clipboard Server Address</string>
+    <string name="paste_from_clipboard_lao_id">Paste from Clipboard Lao ID</string>
+
   <!-- bottom nav -->
   <string name="tab_social_media">Social Media</string>
   <string name="tab_digital_cash">Digital Cash</string>
@@ -130,7 +134,7 @@
   <string name="witness_already_scanned_warning">"This key already belongs to a witness"</string>
   <string name="attendee_scan_success">Attendee successfully scanned</string>
   <string name="witness_scan_success">Witness successfully scanned</string>
-    <string name="server_uri_hint">Server URI</string>
+    <string name="server_uri_hint">Server Address</string>
     <string name="lao_id_hint">LAO ID</string>
     <string name="qrcode_scanning_manual_entry_error">Both fields are required</string>
 
@@ -234,6 +238,7 @@
   <string name="token">Token</string>
   <string name="copy_to_clipboard">Copy to Clipboard</string>
   <string name="successful_copy">Copied with success to clipboard !</string>
+  <string name="successful_paste">Copied with success to clipboard !</string>
 
   <!-- Digital Cash -->
   <string name="digital_cash_send">Send</string>

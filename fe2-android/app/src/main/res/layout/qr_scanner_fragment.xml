@@ -85,42 +85,79 @@
           app:layout_constraintStart_toStartOf="parent"
           app:layout_constraintTop_toTopOf="parent" />
 
-        <!-- Server URI Input -->
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/manual_server_uri_input_layout"
-            style="@style/text_field_standard"
+        <!-- Server URI Input with Paste Button -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/main_horizontal_margin"
-            app:endIconMode="clear_text"
-            app:layout_constraintTop_toBottomOf="@id/add_manual_title">
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:id="@+id/manual_server_uri_input_layout"
+        app:layout_constraintTop_toBottomOf="@id/add_manual_title"
+        android:layout_margin="@dimen/main_horizontal_margin">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            style="@style/text_field_standard"
+            app:endIconMode="clear_text">
 
           <com.google.android.material.textfield.TextInputEditText
               android:id="@+id/manual_server_uri_edit_text"
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
-              android:hint="@string/server_uri_hint"/>
+              android:hint="@string/server_uri_hint"
+              android:maxWidth="200dp"
+          android:scrollHorizontally="true"
+          android:inputType="text"/>
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- LAO ID Input -->
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/manual_lao_id_input_layout"
-            style="@style/text_field_standard"
+        <ImageButton
+            android:id="@+id/paste_server_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            app:srcCompat="@drawable/ic_content_paste"
+            android:contentDescription="@string/paste_from_clipboard_server"/>
+      </LinearLayout>
+
+    <!-- LAO ID Input with Paste Button -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:id="@+id/manual_lao_id_input_layout"
+        app:layout_constraintTop_toBottomOf="@id/manual_server_uri_input_layout"
+        android:layout_margin="@dimen/main_horizontal_margin">
+
+      <com.google.android.material.textfield.TextInputLayout
+          android:layout_width="0dp"
+          android:layout_height="wrap_content"
+          android:layout_weight="1"
+          style="@style/text_field_standard"
+          app:endIconMode="clear_text">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/manual_lao_id_edit_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            app:endIconMode="clear_text"
-            app:layout_constraintTop_toBottomOf="@id/manual_server_uri_input_layout">
+            android:hint="@string/lao_id_hint"
+            android:maxWidth="200dp"
+            android:scrollHorizontally="true"
+            android:inputType="text"/>
+      </com.google.android.material.textfield.TextInputLayout>
 
-          <com.google.android.material.textfield.TextInputEditText
-              android:id="@+id/manual_lao_id_edit_text"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:hint="@string/lao_id_hint"/>
-        </com.google.android.material.textfield.TextInputLayout>
+      <ImageButton
+          android:id="@+id/paste_lao_id_button"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:background="?attr/selectableItemBackgroundBorderless"
+          app:srcCompat="@drawable/ic_content_paste"
+          android:contentDescription="@string/paste_from_clipboard_lao_id"/>
+    </LinearLayout>
 
-
-      </androidx.constraintlayout.widget.ConstraintLayout>
+  </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.card.MaterialCardView>
 
     <ImageView
