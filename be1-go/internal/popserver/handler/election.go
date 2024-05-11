@@ -82,6 +82,16 @@ func handleVoteCastVote(msg message.Message, channelPath string) *answer.Error {
 		return errAnswer.Wrap("handleVoteCastVote")
 	}
 
+	// Just store the vote cast if the election has ended because will not have any influence on the result
+	ended, err := db.IsElectionEnded(channelPath)
+	if err != nil {
+		errAnswer := answer.NewQueryDatabaseError("election end status: %v", err)
+		return errAnswer.Wrap("handleVoteCastVote")
+	}
+	if ended {
+		return nil
+	}
+
 	// verify that the election is open
 	started, err := db.IsElectionStarted(channelPath)
 	if err != nil {
