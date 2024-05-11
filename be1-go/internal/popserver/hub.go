@@ -117,7 +117,11 @@ func (h *Hub) SendGreetServer(socket socket.Socket) error {
 
 	socket.Send(buf)
 
-	return state.AddPeerGreeted(socket.ID())
+	errAnswer = state.AddPeerGreeted(socket.ID())
+	if errAnswer != nil {
+		return xerrors.Errorf(errAnswer.Error())
+	}
+	return nil
 }
 
 // sendHeartbeatToServers sends a heartbeat message to all servers
