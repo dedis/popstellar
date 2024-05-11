@@ -7,6 +7,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
+import android.widget.LinearLayout
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.mlkit.vision.MlKitAnalyzer
 import androidx.camera.view.CameraController
@@ -15,10 +17,12 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.github.dedis.popstellar.R
 import com.github.dedis.popstellar.databinding.QrScannerFragmentBinding
+import com.github.dedis.popstellar.databinding.ReusableTextInputLayoutBinding
 import com.github.dedis.popstellar.ui.PopViewModel
 import com.github.dedis.popstellar.utility.ActivityUtils.hideKeyboard
 import com.github.dedis.popstellar.utility.GeneralUtils
 import com.github.dedis.popstellar.utility.error.ErrorUtils.logAndShow
+import com.google.android.material.textfield.TextInputEditText
 import com.google.mlkit.vision.barcode.BarcodeScanner
 import com.google.mlkit.vision.barcode.BarcodeScannerOptions
 import com.google.mlkit.vision.barcode.BarcodeScanning
@@ -31,7 +35,7 @@ class QrScannerFragment : Fragment() {
   private lateinit var scanningViewModel: QRCodeScanningViewModel
   private lateinit var popViewModel: PopViewModel
   private lateinit var clipboardManager: GeneralUtils.ClipboardUtil
-
+  private lateinit var inputLayouts: Array<ReusableTextInputLayoutBinding>
   override fun onCreateView(
       inflater: LayoutInflater,
       container: ViewGroup?,
@@ -49,8 +53,8 @@ class QrScannerFragment : Fragment() {
 
     binding.scannedTitle.setText(scanningAction.scanTitle)
     binding.addManualTitle.setText(scanningAction.manualAddTitle)
-    binding.manualLaoIdEditText.setHint(scanningAction.hint)
-    binding.manualServerUriEditText.setHint(scanningAction.hint)
+    initializeInputLayouts()
+    configureActionBasedInputs()
     binding.scannerInstructionText.setText(scanningAction.instruction)
 
     setupNbScanned()
@@ -156,39 +160,6 @@ class QrScannerFragment : Fragment() {
     binding.scannerCamera.controller = cameraController
   }
 
-  private fun setupManualAdd() {
-    binding.scannerEnterManually.setOnClickListener {
-      binding.scannerBottomTexts.visibility = View.GONE
-      binding.enterManuallyCard.visibility = View.VISIBLE
-    }
-    binding.addManualClose.setOnClickListener {
-      hideKeyboard(requireContext(), binding.root)
-      binding.scannerBottomTexts.visibility = View.VISIBLE
-      binding.enterManuallyCard.visibility = View.GONE
-    }
-    binding.manualAddButton.setOnClickListener {
-      val serverUri = binding.manualServerUriEditText.text.toString().trim()
-      val laoId = binding.manualLaoIdEditText.text.toString().trim()
-      if (serverUri.isNotEmpty() && laoId.isNotEmpty()) {
-        handleManualEntry(serverUri, laoId)
-      } else {
-        logAndShow(
-            requireContext(),
-            TAG,
-            IllegalArgumentException("Server URI or LAO ID is empty"),
-            R.string.qrcode_scanning_manual_entry_error)
-      }
-    }
-
-    clipboardManager.setupPasteButton(binding.pasteServerButton, binding.manualServerUriEditText)
-    clipboardManager.setupPasteButton(binding.pasteLaoIdButton, binding.manualLaoIdEditText)
-  }
-
-  private fun handleManualEntry(serverUri: String, laoId: String) {
-    val connectionDetails = "{\"server\":\"$serverUri\", \"lao\":\"$laoId\"}"
-    onResult(connectionDetails)
-  }
-
   private fun displayCounter() {
     binding.scannedTitle.visibility = View.VISIBLE
     binding.scannedNumber.visibility = View.VISIBLE
@@ -200,6 +171,72 @@ class QrScannerFragment : Fragment() {
 
   private fun onResult(data: String?) {
     scanningViewModel.handleData(data)
+  }
+
+  private fun initializeInputLayouts() {
+    inputLayouts = arrayOf(
+      binding.inputLayout1,
+      binding.inputLayout2,
+      binding.inputLayout3,
+      binding.inputLayout4
+    )
+  }
+
+  private fun configureActionBasedInputs() {
+    val action = scanningAction
+    action.getInputFields().forEachIndexed { index, fieldConfig ->
+      if (index < inputLayouts.size) {
+        val layout = inputLayouts[index]
+        val editText = layout.textInput
+        val pasteButton = layout.pasteButton
+
+        layout.container.visibility = View.VISIBLE
+        editText.hint = fieldConfig.hint
+
+        if (fieldConfig.needsPasteButton) {
+          pasteButton.visibility = View.VISIBLE
+          clipboardManager.setupPasteButton(pasteButton, editText)
+        } else {
+          pasteButton.visibility = View.GONE
+        }
+      }
+    }
+
+    // Hide unused input layouts
+    for (i in action.getInputFields().size until inputLayouts.size) {
+      inputLayouts[i].container.visibility = View.GONE
+    }
+  }
+
+  private fun setupManualAdd() {
+    binding.scannerEnterManually.setOnClickListener {
+      binding.scannerBottomTexts.visibility = View.GONE
+      binding.enterManuallyCard.visibility = View.VISIBLE
+    }
+
+    binding.addManualClose.setOnClickListener {
+      hideKeyboard(requireContext(), binding.root)
+      binding.scannerBottomTexts.visibility = View.VISIBLE
+      binding.enterManuallyCard.visibility = View.GONE
+    }
+
+    binding.manualAddButton.setOnClickListener {
+      val inputs = scanningAction.getInputFields().mapIndexed { index, config ->
+        config.hint to inputLayouts[index].textInput.text.toString().trim()
+      }.toMap()
+
+      val json = scanningAction.formatJson(inputs)
+      if (json.isNotBlank()) {
+        onResult(json)
+      } else {
+        logAndShow(
+          requireContext(),
+          TAG,
+          IllegalArgumentException("Required fields are empty"),
+          R.string.qrcode_scanning_manual_entry_error
+        )
+      }
+    }
   }
 
   companion object {
