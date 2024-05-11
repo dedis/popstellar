@@ -7,8 +7,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageButton
-import android.widget.LinearLayout
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.mlkit.vision.MlKitAnalyzer
 import androidx.camera.view.CameraController
@@ -22,7 +20,6 @@ import com.github.dedis.popstellar.ui.PopViewModel
 import com.github.dedis.popstellar.utility.ActivityUtils.hideKeyboard
 import com.github.dedis.popstellar.utility.GeneralUtils
 import com.github.dedis.popstellar.utility.error.ErrorUtils.logAndShow
-import com.google.android.material.textfield.TextInputEditText
 import com.google.mlkit.vision.barcode.BarcodeScanner
 import com.google.mlkit.vision.barcode.BarcodeScannerOptions
 import com.google.mlkit.vision.barcode.BarcodeScanning
@@ -36,6 +33,7 @@ class QrScannerFragment : Fragment() {
   private lateinit var popViewModel: PopViewModel
   private lateinit var clipboardManager: GeneralUtils.ClipboardUtil
   private lateinit var inputLayouts: Array<ReusableTextInputLayoutBinding>
+
   override fun onCreateView(
       inflater: LayoutInflater,
       container: ViewGroup?,
@@ -173,15 +171,25 @@ class QrScannerFragment : Fragment() {
     scanningViewModel.handleData(data)
   }
 
+  /**
+   * Initializes the input layouts
+   * If you need more inputs for an action, you can add more TextInputLayouts in the qr_scanner_fragment.xml
+   * Then you can add them to the inputLayouts array
+   * TODO: need to find a better solution using a constant MAX_INPUT_FIELDS. findViewByID can't help to find inputLayout$i as it takes an int, not a string.
+   * Maxime Teuber @kaz-ookid | May 2024
+   */
   private fun initializeInputLayouts() {
     inputLayouts = arrayOf(
-      binding.inputLayout1,
-      binding.inputLayout2,
-      binding.inputLayout3,
-      binding.inputLayout4
-    )
+        binding.inputLayout1,
+        binding.inputLayout2,
+        binding.inputLayout3,
+        binding.inputLayout4)
   }
 
+  /**
+   * Configures the input fields based on the scanning action
+   * If the action requires less inputs than all of those available, the extra inputs will be hidden
+   */
   private fun configureActionBasedInputs() {
     val action = scanningAction
     action.getInputFields().forEachIndexed { index, fieldConfig ->
@@ -202,7 +210,6 @@ class QrScannerFragment : Fragment() {
       }
     }
 
-    // Hide unused input layouts
     for (i in action.getInputFields().size until inputLayouts.size) {
       inputLayouts[i].container.visibility = View.GONE
     }

@@ -17,6 +17,17 @@ import java.util.function.Function
 /**
  * Enum class modeling the the action we want to do when using the QR code fragment. It provides
  * strings to display, UI, Input elements and functions, i.e. to obtain view models and on back press behaviour
+ *
+ * @param instruction the instruction to display to the user
+ * @param scanTitle the title to display when scanning
+ * @param pageTitle the title to display on the page
+ * @param manualAddTitle the title to display when manually adding
+ * @param inputFields the input fields to display
+ * @param jsonFormatter the function to format the input fields into a JSON string
+ * @param scannerViewModelProvider the function to obtain the scanner view model
+ * @param popViewModelProvider the function to obtain the PoP view model
+ * @param onBackPressed the function to call when the back button is pressed
+ * @param displayCounter whether to display the counter (i.e. number of scanned items)
  */
 enum class ScanningAction(
     @StringRes val instruction: Int,
@@ -126,10 +137,21 @@ enum class ScanningAction(
     fun apply(t: T, u: U): V
   }
 
+    /**
+     * Returns the input fields for the scanning action
+     */
     fun getInputFields(): Array<InputFieldConfig> = inputFields
 
+    /**
+     * Formats the input fields into a JSON string
+     */
     fun formatJson(inputs: Map<String, String>): String = jsonFormatter(inputs)
 
+    /**
+     * Data class modeling the configuration of an input field
+     * @param hint the hint to display in the input field
+     * @param needsPasteButton whether the input field needs a paste button
+     */
     data class InputFieldConfig(
         val hint: String,
         val needsPasteButton: Boolean
