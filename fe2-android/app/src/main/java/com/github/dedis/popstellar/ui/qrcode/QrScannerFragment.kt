@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.mlkit.vision.MlKitAnalyzer
 import androidx.camera.view.CameraController
@@ -18,12 +17,12 @@ import com.github.dedis.popstellar.R
 import com.github.dedis.popstellar.databinding.QrScannerFragmentBinding
 import com.github.dedis.popstellar.ui.PopViewModel
 import com.github.dedis.popstellar.utility.ActivityUtils.hideKeyboard
+import com.github.dedis.popstellar.utility.GeneralUtils
 import com.github.dedis.popstellar.utility.error.ErrorUtils.logAndShow
 import com.google.mlkit.vision.barcode.BarcodeScanner
 import com.google.mlkit.vision.barcode.BarcodeScannerOptions
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.barcode.common.Barcode
-import java.util.Objects
 import timber.log.Timber
 
 class QrScannerFragment : Fragment() {
@@ -31,6 +30,7 @@ class QrScannerFragment : Fragment() {
   private var barcodeScanner: BarcodeScanner? = null
   private lateinit var scanningViewModel: QRCodeScanningViewModel
   private lateinit var popViewModel: PopViewModel
+  private lateinit var clipboardManager: GeneralUtils.ClipboardUtil
 
   override fun onCreateView(
       inflater: LayoutInflater,
@@ -45,6 +45,7 @@ class QrScannerFragment : Fragment() {
     if (scanningAction.displayCounter) {
       displayCounter()
     }
+    clipboardManager = GeneralUtils.ClipboardUtil(requireActivity())
 
     binding.scannedTitle.setText(scanningAction.scanTitle)
     binding.addManualTitle.setText(scanningAction.manualAddTitle)
@@ -156,11 +157,11 @@ class QrScannerFragment : Fragment() {
   }
 
   private fun setupManualAdd() {
-    binding.scannerEnterManually.setOnClickListener { _: View? ->
+    binding.scannerEnterManually.setOnClickListener {
       binding.scannerBottomTexts.visibility = View.GONE
       binding.enterManuallyCard.visibility = View.VISIBLE
     }
-    binding.addManualClose.setOnClickListener { _: View? ->
+    binding.addManualClose.setOnClickListener {
       hideKeyboard(requireContext(), binding.root)
       binding.scannerBottomTexts.visibility = View.VISIBLE
       binding.enterManuallyCard.visibility = View.GONE
@@ -178,6 +179,9 @@ class QrScannerFragment : Fragment() {
             R.string.qrcode_scanning_manual_entry_error)
       }
     }
+
+    clipboardManager.setupPasteButton(binding.pasteServerButton, binding.manualServerUriEditText)
+    clipboardManager.setupPasteButton(binding.pasteLaoIdButton, binding.manualLaoIdEditText)
   }
 
   private fun handleManualEntry(serverUri: String, laoId: String) {
