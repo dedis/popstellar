@@ -20,6 +20,7 @@ import (
 const (
 	insertChannelMessage = "INSERT INTO channelMessage (channelPath, messageID, isBaseChannel) VALUES (?, ?, ?)"
 	insertMessage        = "INSERT INTO message (messageID, message, messageData, storedTime) VALUES (?, ?, ?, ?)"
+	insertChannel        = "INSERT INTO channel (channelPath, typeID, laoPath) VALUES (?, ?, ?)"
 )
 
 func (s *SQLite) StoreServerKeys(electionPubKey kyber.Point, electionSecretKey kyber.Scalar) error {
@@ -222,8 +223,7 @@ func (s *SQLite) AddWitnessSignature(messageID string, witness string, signature
 
 // StoreChannel mainly used for testing and storing the root channel
 func (s *SQLite) StoreChannel(channelPath, channelType, laoPath string) error {
-	_, err := s.database.Exec("INSERT INTO channel (channelPath, typeID, laoPath) VALUES (?, ?, ?)",
-		channelPath, channelTypeToID[channelType], laoPath)
+	_, err := s.database.Exec(insertChannel, channelPath, channelTypeToID[channelType], laoPath)
 	return err
 }
 
@@ -465,8 +465,7 @@ func (s *SQLite) StoreLaoWithLaoGreet(
 	storedTime := time.Now().UnixNano()
 
 	for channel, channelType := range channels {
-		_, err = tx.Exec("INSERT INTO channel (channelPath, typeID, laoPath) VALUES (?, ?, ?)",
-			channel, channelTypeToID[channelType], laoPath)
+		_, err = tx.Exec(insertChannel, channel, channelTypeToID[channelType], laoPath)
 		if err != nil {
 			return err
 		}
@@ -640,8 +639,7 @@ func (s *SQLite) StoreRollCallClose(channels []string, laoPath string, msg messa
 		return err
 	}
 	for _, channel := range channels {
-		_, err = tx.Exec("INSERT INTO channel (channelPath, typeID, laoPath) VALUES (?, ?, ?)",
-			channel, channelTypeToID[ChirpType], laoPath)
+		_, err = tx.Exec(insertChannel, channel, channelTypeToID[ChirpType], laoPath)
 		if err != nil {
 			return err
 		}
@@ -688,8 +686,7 @@ func (s *SQLite) storeElectionHelper(
 	if err != nil {
 		return err
 	}
-	_, err = tx.Exec("INSERT INTO channel (channelPath, typeID, laoPath) VALUES (?, ?, ?)",
-		electionPath, channelTypeToID[ElectionType], laoPath)
+	_, err = tx.Exec(insertChannel, electionPath, channelTypeToID[ElectionType], laoPath)
 	if err != nil {
 		return err
 	}
