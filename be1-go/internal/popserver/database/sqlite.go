@@ -17,6 +17,11 @@ import (
 	"time"
 )
 
+const (
+	insertChannelMessage = "INSERT INTO channelMessage (channelPath, messageID, isBaseChannel) VALUES (?, ?, ?)"
+	insertMessage        = "INSERT INTO message (messageID, message, messageData, storedTime) VALUES (?, ?, ?, ?)"
+)
+
 func (s *SQLite) StoreServerKeys(electionPubKey kyber.Point, electionSecretKey kyber.Scalar) error {
 	tx, err := s.database.Begin()
 	if err != nil {
@@ -83,16 +88,12 @@ func (s *SQLite) StoreMessageAndData(channelPath string, msg message.Message) er
 	if err != nil {
 		return err
 	}
-	_, err = tx.Exec("INSERT INTO message "+
-		"(messageID, message, messageData, storedTime) VALUES "+
-		"(?, ?, ?, ?)", msg.MessageID, msgByte, messageData, time.Now().UnixNano())
+	_, err = tx.Exec(insertMessage, msg.MessageID, msgByte, messageData, time.Now().UnixNano())
 	if err != nil {
 		return err
 
 	}
-	_, err = tx.Exec("INSERT INTO channelMessage "+
-		"(channelPath, messageID, isBaseChannel) VALUES "+
-		"(?, ?, ?)", channelPath, msg.MessageID, true)
+	_, err = tx.Exec(insertChannelMessage, channelPath, msg.MessageID, true)
 	if err != nil {
 		return err
 
@@ -471,16 +472,16 @@ func (s *SQLite) StoreLaoWithLaoGreet(
 		}
 	}
 
-	_, err = tx.Exec("INSERT INTO message (messageID, message, messageData, storedTime) VALUES (?, ?, ?, ?)", msg.MessageID, msgByte, messageData, storedTime)
+	_, err = tx.Exec(insertMessage, msg.MessageID, msgByte, messageData, storedTime)
 	if err != nil {
 		return err
 	}
-	_, err = tx.Exec("INSERT INTO channelMessage (channelPath, messageID, isBaseChannel) VALUES (?, ?, ?)", "/root", msg.MessageID, true)
+	_, err = tx.Exec(insertChannelMessage, "/root", msg.MessageID, true)
 	if err != nil {
 		return err
 	}
 
-	_, err = tx.Exec("INSERT INTO channelMessage (channelPath, messageID, isBaseChannel) VALUES (?, ?, ?)", laoPath, msg.MessageID, false)
+	_, err = tx.Exec(insertChannelMessage, laoPath, msg.MessageID, false)
 	if err != nil {
 		return err
 	}
@@ -489,11 +490,11 @@ func (s *SQLite) StoreLaoWithLaoGreet(
 	if err != nil {
 		return err
 	}
-	_, err = tx.Exec("INSERT INTO message (messageID, message, messageData, storedTime) VALUES (?, ?, ?, ?)", laoGreetMsg.MessageID, laoGreetMsgByte, laoGreetData, storedTime)
+	_, err = tx.Exec(insertMessage, laoGreetMsg.MessageID, laoGreetMsgByte, laoGreetData, storedTime)
 	if err != nil {
 		return err
 	}
-	_, err = tx.Exec("INSERT INTO channelMessage (channelPath, messageID, isBaseChannel) VALUES (?, ?, ?)", laoPath, laoGreetMsg.MessageID, false)
+	_, err = tx.Exec(insertChannelMessage, laoPath, laoGreetMsg.MessageID, false)
 	if err != nil {
 		return err
 	}
@@ -630,13 +631,11 @@ func (s *SQLite) StoreRollCallClose(channels []string, laoPath string, msg messa
 		return err
 	}
 
-	_, err = tx.Exec("INSERT INTO message (messageID, message, messageData, storedTime) VALUES (?, ?, ?, ?)",
-		msg.MessageID, msgBytes, messageData, time.Now().UnixNano())
+	_, err = tx.Exec(insertMessage, msg.MessageID, msgBytes, messageData, time.Now().UnixNano())
 	if err != nil {
 		return err
 	}
-	_, err = tx.Exec("INSERT INTO channelMessage (channelPath, messageID, isBaseChannel) VALUES (?, ?, ?)",
-		laoPath, msg.MessageID, true)
+	_, err = tx.Exec(insertChannelMessage, laoPath, msg.MessageID, true)
 	if err != nil {
 		return err
 	}
@@ -681,13 +680,11 @@ func (s *SQLite) storeElectionHelper(
 		return err
 	}
 
-	_, err = tx.Exec("INSERT INTO message (messageID, message, messageData, storedTime) VALUES (?, ?, ?, ?)",
-		msg.MessageID, msgBytes, messageData, storedTime)
+	_, err = tx.Exec(insertMessage, msg.MessageID, msgBytes, messageData, storedTime)
 	if err != nil {
 		return err
 	}
-	_, err = tx.Exec("INSERT INTO channelMessage (channelPath, messageID, isBaseChannel) VALUES (?, ?, ?)",
-		laoPath, msg.MessageID, true)
+	_, err = tx.Exec(insertChannelMessage, laoPath, msg.MessageID, true)
 	if err != nil {
 		return err
 	}
@@ -696,8 +693,7 @@ func (s *SQLite) storeElectionHelper(
 	if err != nil {
 		return err
 	}
-	_, err = tx.Exec("INSERT INTO channelMessage (channelPath, messageID, isBaseChannel) VALUES (?, ?, ?)",
-		electionPath, msg.MessageID, false)
+	_, err = tx.Exec(insertChannelMessage, electionPath, msg.MessageID, false)
 	if err != nil {
 		return err
 	}
@@ -760,13 +756,11 @@ func (s *SQLite) StoreElectionWithElectionKey(
 		return err
 	}
 
-	_, err = tx.Exec("INSERT INTO message (messageID, message, messageData, storedTime) VALUES (?, ?, ?, ?)",
-		electionKeyMsg.MessageID, electionKeyMsgBytes, electionKey, storedTime)
+	_, err = tx.Exec(insertMessage, electionKeyMsg.MessageID, electionKeyMsgBytes, electionKey, storedTime)
 	if err != nil {
 		return err
 	}
-	_, err = tx.Exec("INSERT INTO channelMessage (channelPath, messageID) VALUES (?, ?)",
-		electionPath, electionKeyMsg.MessageID)
+	_, err = tx.Exec(insertChannelMessage, electionPath, electionKeyMsg.MessageID, false)
 	if err != nil {
 		return err
 	}
@@ -1099,23 +1093,19 @@ func (s *SQLite) StoreElectionEndWithResult(channelPath string, msg, electionRes
 	}
 	storedTime := time.Now().UnixNano()
 
-	_, err = tx.Exec("INSERT INTO message (messageID, message, messageData, storedTime) VALUES (?, ?, ?, ?)",
-		msg.MessageID, msgBytes, messageData, storedTime)
+	_, err = tx.Exec(insertMessage, msg.MessageID, msgBytes, messageData, storedTime)
 	if err != nil {
 		return err
 	}
-	_, err = tx.Exec("INSERT INTO channelMessage (channelPath, messageID, isBaseChannel) VALUES (?, ?, ?)",
-		channelPath, msg.MessageID, true)
+	_, err = tx.Exec(insertChannelMessage, channelPath, msg.MessageID, true)
 	if err != nil {
 		return err
 	}
-	_, err = tx.Exec("INSERT INTO message (messageID, message, messageData, storedTime) VALUES (?, ?, ?, ?)",
-		electionResultMsg.MessageID, electionResultMsgBytes, electionResult, storedTime)
+	_, err = tx.Exec(insertMessage, electionResultMsg.MessageID, electionResultMsgBytes, electionResult, storedTime)
 	if err != nil {
 		return err
 	}
-	_, err = tx.Exec("INSERT INTO channelMessage (channelPath, messageID, isBaseChannel) VALUES (?, ?, ?)",
-		channelPath, electionResultMsg.MessageID, false)
+	_, err = tx.Exec(insertChannelMessage, channelPath, electionResultMsg.MessageID, false)
 	if err != nil {
 		return err
 	}
@@ -1152,23 +1142,19 @@ func (s *SQLite) StoreChirpMessages(channel, generalChannel string, msg, general
 	}
 	storedTime := time.Now().UnixNano()
 
-	_, err = tx.Exec("INSERT INTO message (messageID, message, messageData, storedTime) VALUES (?, ?, ?, ?)",
-		msg.MessageID, msgBytes, messageData, storedTime)
+	_, err = tx.Exec(insertMessage, msg.MessageID, msgBytes, messageData, storedTime)
 	if err != nil {
 		return err
 	}
-	_, err = tx.Exec("INSERT INTO channelMessage (channelPath, messageID, isBaseChannel) VALUES (?, ?, ?)",
-		channel, msg.MessageID, true)
+	_, err = tx.Exec(insertChannelMessage, channel, msg.MessageID, true)
 	if err != nil {
 		return err
 	}
-	_, err = tx.Exec("INSERT INTO message (messageID, message, messageData, storedTime) VALUES (?, ?, ?, ?)",
-		generalMsg.MessageID, generalMsgBytes, generalMessageData, storedTime)
+	_, err = tx.Exec(insertMessage, generalMsg.MessageID, generalMsgBytes, generalMessageData, storedTime)
 	if err != nil {
 		return err
 	}
-	_, err = tx.Exec("INSERT INTO channelMessage (channelPath, messageID) VALUES (?, ?)",
-		generalChannel, generalMsg.MessageID)
+	_, err = tx.Exec(insertChannelMessage, generalChannel, generalMsg.MessageID, true)
 	if err != nil {
 		return err
 	}
