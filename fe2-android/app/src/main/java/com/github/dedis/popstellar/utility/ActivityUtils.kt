@@ -125,13 +125,12 @@ object ActivityUtils {
             })
   }
 
-    /**
-     * This function hides the keyboard when called.
-     */
-    fun hideKeyboard(context : Context?, binding : View) {
-        val inputMethodManager = context?.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
-        inputMethodManager?.hideSoftInputFromWindow(binding.windowToken, 0)
-    }
+  /** This function hides the keyboard when called. */
+  fun hideKeyboard(context: Context?, binding: View) {
+    val inputMethodManager =
+        context?.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+    inputMethodManager?.hideSoftInputFromWindow(binding.windowToken, 0)
+  }
 
   /**
    * The following function creates an object of type OnBackPressedCallback given a specific
