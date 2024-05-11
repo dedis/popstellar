@@ -542,56 +542,38 @@ func (s *SQLite) GetRollCallState(channelPath string) (string, error) {
 
 func (s *SQLite) CheckPrevID(channel, nextID, expectedState string) (bool, error) {
 	var lastMsg []byte
-	err := s.database.QueryRow("SELECT messageData"+
+	var lastAction string
+	err := s.database.QueryRow("SELECT messageData, json_extract(messageData, '$.action')"+
 		" FROM message"+
 		" WHERE storedTime= (SELECT MAX(storedTime)"+
 		" FROM (SELECT * FROM message JOIN channelMessage ON message.messageID = channelMessage.messageID)"+
-		" WHERE json_extract(messageData, '$.object') = ? AND channelPath = ?)", messagedata.RollCallObject, channel).Scan(&lastMsg)
+		" WHERE json_extract(messageData, '$.object') = ? AND channelPath = ?)", messagedata.RollCallObject, channel).Scan(&lastMsg, &lastAction)
 
-	if err != nil {
+	if err != nil && errors.Is(err, sql.ErrNoRows) {
+		return false, nil
+	} else if err != nil {
 		return false, err
+	} else if lastAction != expectedState {
+		return false, nil
 	}
 
 	switch expectedState {
-	case messagedata.LAOActionCreate:
-		var laoCreate messagedata.LaoCreate
-		err = json.Unmarshal(lastMsg, &laoCreate)
-		if err != nil {
-			var unmarshalTypeError *json.UnmarshalTypeError
-			if errors.As(err, &unmarshalTypeError) {
-				return false, nil
-			}
+	case messagedata.RollCallActionCreate:
+		var rollCallCreate messagedata.RollCallCreate
+		if err = json.Unmarshal(lastMsg, &rollCallCreate); err != nil {
 			return false, err
 		}
-		return laoCreate.ID == nextID, nil
+		return rollCallCreate.ID == nextID, nil
 
 	case messagedata.RollCallActionOpen:
 		var rollCallOpen messagedata.RollCallOpen
-		err = json.Unmarshal(lastMsg, &rollCallOpen)
-		if err != nil {
-			var unmarshalTypeError *json.UnmarshalTypeError
-			if errors.As(err, &unmarshalTypeError) {
-				return false, nil
-			}
+		if err = json.Unmarshal(lastMsg, &rollCallOpen); err != nil {
 			return false, err
 		}
 		return rollCallOpen.UpdateID == nextID, nil
-
-	case messagedata.RollCallActionClose:
-		var rollCallClose messagedata.RollCallClose
-		err = json.Unmarshal(lastMsg, &rollCallClose)
-		if err != nil {
-			var unmarshalTypeError *json.UnmarshalTypeError
-			if errors.As(err, &unmarshalTypeError) {
-				return false, nil
-			}
-			return false, err
-		}
-		return rollCallClose.UpdateID == nextID, nil
-
-	default:
-		return false, xerrors.New("unexpected state")
 	}
+
+	return false, nil
 }
 
 func (s *SQLite) GetLaoWitnesses(laoPath string) (map[string]struct{}, error) {
