@@ -135,7 +135,7 @@ The flowchart below describes all the possible way for a message inside the hand
 </div>
 
 <p align="center"><i>
-  Flowchart last updated at 11.05.2024
+  Flowchart last updated at 11.05.2024 and everything in red is still missing in the refactoring
 </i></p>
 
 We use `Socket.SendError` to send an `Error` back to the client. We use this function only in two places, inside `HandleIncomingMessage` 
