@@ -136,7 +136,7 @@
   <string name="witness_scan_success">Witness successfully scanned</string>
     <string name="server_uri_hint">Server Address</string>
     <string name="lao_id_hint">LAO ID</string>
-    <string name="qrcode_scanning_manual_entry_error">Both fields are required</string>
+    <string name="qrcode_scanning_manual_entry_error">All fields are required</string>
 
   <!--  Witnessing-->
   <string name="messages">Messages</string>
@@ -148,6 +148,7 @@
   <string name="submit">Submit</string>
   <string name="manual_witness_hint">Witness public key</string>
   <string name="add_witness_title">Add Witness</string>
+  <string name="manual_add_witness_title">Manually Add Witness</string>
   <string name="sign_message">Sign message</string>
   <string name="confirm_to_sign">Are you sure you want to sign message with ID : %1$s</string>
   <string name="message_description_title">Description</string>
@@ -161,6 +162,7 @@
   <string name="roll_call_setup_title">Roll Call Setup</string>
   <string name="roll_call_title">Roll Call</string>
   <string name="add_attendee_title">Add Attendee</string>
+  <string name="manual_add_attendee_title">Manually Add Attendee</string>
   <string name="roll_call_attendees">Attendees : %1$d</string>
   <string name="roll_call_scanned">Scanned tokens : %1$d</string>
   <string name="roll_call_description_title">Description</string>
@@ -298,8 +300,8 @@
   <!-- PoPCHA -->
   <string name="popcha">PoPCHA</string>
   <string name="popcha_header">Welcome to the PoPCHA tab, you\'re currently in the LAO:\n%1$s</string>
-  <string name="popcha_add">Log in through PoPCHA</string>
-  <string name="popcha_scan_title">Enter PoPCHA URL to log in</string>
+  <string name="popcha_add_title">Log in through PoPCHA</string>
+  <string name="manual_popcha_add_title">Manually Enter PoPCHA URL</string>
   <string name="manual_popcha_hint">PoPCHA URL</string>
 
   <!--  Storage-->
@@ -328,6 +330,7 @@
   <string name="receive_button_content_desc">Receive button</string>
   <string name="qr_sight_content_desc">The sight on top of camera</string>
   <string name="add_manual_close_button_desc">Close button for manual add window</string>
+  <string name="manual_add_edit_text">Enter Text Manually</string>
 
   <!-- Error Messages -->
   <string name="error_no_lao">You are not in a LAO</string>

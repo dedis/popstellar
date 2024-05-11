@@ -61,7 +61,7 @@
           android:textAllCaps="false"
           app:layout_constraintEnd_toEndOf="parent"
           app:layout_constraintStart_toStartOf="parent"
-          app:layout_constraintTop_toBottomOf="@id/manual_lao_id_input_layout" />
+          app:layout_constraintTop_toBottomOf="@id/dynamic_inputs_container" />
 
         <ImageView
           android:id="@+id/add_manual_close"
@@ -85,77 +85,33 @@
           app:layout_constraintStart_toStartOf="parent"
           app:layout_constraintTop_toTopOf="parent" />
 
-        <!-- Server URI Input with Paste Button -->
+        <!-- Dynamic Input Fields Container -->
+        <!-- 4 inputs have been created, add more if a new scanning action requires more -->
         <LinearLayout
+            android:id="@+id/dynamic_inputs_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:id="@+id/manual_server_uri_input_layout"
-        app:layout_constraintTop_toBottomOf="@id/add_manual_title"
-        android:layout_margin="@dimen/main_horizontal_margin">
+            android:orientation="vertical"
+            android:layout_margin="@dimen/main_horizontal_margin"
+            app:layout_constraintTop_toBottomOf="@id/add_manual_title">
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            style="@style/text_field_standard"
-            app:endIconMode="clear_text">
+          <include layout="@layout/reusable_text_input_layout"
+              android:id="@+id/input_layout_1"
+              android:visibility="gone"/>
 
-          <com.google.android.material.textfield.TextInputEditText
-              android:id="@+id/manual_server_uri_edit_text"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:hint="@string/server_uri_hint"
-              android:maxWidth="200dp"
-          android:scrollHorizontally="true"
-          android:inputType="text"/>
-        </com.google.android.material.textfield.TextInputLayout>
+          <include layout="@layout/reusable_text_input_layout"
+              android:id="@+id/input_layout_2"
+              android:visibility="gone"/>
 
-        <ImageButton
-            android:id="@+id/paste_server_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            app:srcCompat="@drawable/ic_content_paste"
-            android:contentDescription="@string/paste_from_clipboard_server"/>
-      </LinearLayout>
+          <include layout="@layout/reusable_text_input_layout"
+              android:id="@+id/input_layout_3"
+              android:visibility="gone"/>
 
-    <!-- LAO ID Input with Paste Button -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:id="@+id/manual_lao_id_input_layout"
-        app:layout_constraintTop_toBottomOf="@id/manual_server_uri_input_layout"
-        android:layout_margin="@dimen/main_horizontal_margin">
+          <include layout="@layout/reusable_text_input_layout"
+              android:id="@+id/input_layout_4"
+              android:visibility="gone"/>
+        </LinearLayout>
 
-      <com.google.android.material.textfield.TextInputLayout
-          android:layout_width="0dp"
-          android:layout_height="wrap_content"
-          android:layout_weight="1"
-          style="@style/text_field_standard"
-          app:endIconMode="clear_text">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/manual_lao_id_edit_text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/lao_id_hint"
-            android:maxWidth="200dp"
-            android:scrollHorizontally="true"
-            android:inputType="text"/>
-      </com.google.android.material.textfield.TextInputLayout>
-
-      <ImageButton
-          android:id="@+id/paste_lao_id_button"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:background="?attr/selectableItemBackgroundBorderless"
-          app:srcCompat="@drawable/ic_content_paste"
-          android:contentDescription="@string/paste_from_clipboard_lao_id"/>
-    </LinearLayout>
 
   </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.card.MaterialCardView>
