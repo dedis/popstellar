@@ -155,20 +155,17 @@ jobs:
 
       - name: Format
         if: ${{ matrix.platform == 'ubuntu-latest' }}
-        continue-on-error: true # todo remove
         run: |
           make check-fmt
           if [ "$(gofmt -s -l ./ | wc -l)" -gt 0 ]; then exit 1; fi
 
       - name: Run check target
         if: ${{ matrix.platform == 'ubuntu-latest' }}
-        continue-on-error: true # todo remove
         run: |
           make check
 
       - name: Run test target
         if: ${{ matrix.platform == 'windows-latest' }}
-        continue-on-error: true # todo remove
         run: |
           make test
 

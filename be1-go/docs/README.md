@@ -45,11 +45,10 @@ The project is organized into different modules as follows
 ├── internal                  
 │   ├── depgraph              # tool to generate the dependencies graph
 │   └── popserver             # entry point of the messages received by the sockets
-│       ├── channel           # handlers for each channel type
 │       ├── config            # singleton with the server config informations and server keys
 │       ├── database          # singleton with the database + implementations of the database
 │       ├── generator         # query and message generators only use for the tests
-│       ├── message           # handlers for each query type and answer type
+│       ├── handler           # handlers for each query, answer and channel type (entry point is func HandleIncomingMessage)
 │       ├── state             # singleton with the temporary states of the server (peers, queries, and subscriptions)
 │       ├── type              # every types use in the implementation
 │       └── utils             # singleton with the log instance and the schema validator
@@ -125,42 +124,26 @@ websocket connections.
 
 ##### Processing messages in the application layer
 
-The incoming messages received by the `ReadPump` are propagated up the stack to
-the `Hub` which is responsible for processing it and sending, depending on the message's nature, a: 
-- `Result` to the request.
-- `Error`
-- `Broadcast`
-- `GreetServer` back to a server that has not been greeted yet.
-- `GetMessagesById` in response to a heartbeat if it is missing some messages.
+The incoming messages received by the `ReadPump` are propagated up the stack to the `Hub`. The `Hub`, on receiving a message,
+processes it by invoking the `HandleIncomingMessage` method from the package `handler` and in case of `Error`, while processing the message, it will log it.
+In parallel, the `Hub` will send a `Heartbeat` every 30 seconds to all the connected servers.
 
-A hub, on receiving a message, processes it by invoking the
-`handleIncomingMessage` method where its handled depending on which `Socket` the
-message originates from.
-
-The flowchart below describes the flow of data and how messages are processed.
+The flowchart below describes all the possible way for a message inside the handlers from package `handler`.
 
 <div align="center">
-  <img src="images/flowchart/flowchart.png" alt="Flowchart"/>
+  <img src="images/handler/handler.png" alt="Flowchart"/>
 </div>
 
 <p align="center"><i>
-  Flowchart last updated at the end of Spring 2023
+  Flowchart last updated at 11.05.2024 and everything in red is still missing in the refactoring
 </i></p>
 
-The hubs themselves contain multiple `Channels` with the `Root` channel being
-the default one, where messages for creation of new LAOs may be published for
-instance. Another example of a channel would be one for an `Election` which
-would be a sub-channel within the LAO channel.
+We use `Socket.SendError` to send an `Error` back to the client. We use this function only in two places, inside `HandleIncomingMessage` 
+in case the format of message is wrong or inside `handleQuery` because we should never answer an error to an answer to avoid loops.
 
-The hubs use `Socket.SendError` to send an `Error` back to the client. We
-suggest using `message.NewError` and `message.NewErrorf` to create these error
-messages and wrap them using `xerrors.Errorf` with the `%w` format specifier if
-required. The rule of thumb is the leaf/last method called from the hub should
-create/return a `message.Error` and intermediate methods should propagate it up
-by wrapping it until it reaches a point where `Socket.SendError` is invoked.
+We use `Socket.SendResult` to send a `Result` back to the client when there is no error after processing its query. We use it only inside `query.go` at the end of each method.
 
-The hubs have a separate goroutine that is not shown in the flowchart and that 
-sends a `Heartbeat` message to the servers every 30 seconds. 
+We check the Mid-level communication inside `channel.go`.
 
 ##### Message definitions
 

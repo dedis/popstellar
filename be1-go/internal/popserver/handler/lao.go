@@ -28,6 +28,8 @@ func handleChannelLao(channelPath string, msg message.Message) *answer.Error {
 		errAnswer = handleLaoState(msg, channelPath)
 	case messagedata.LAOObject + "#" + messagedata.LAOActionUpdate:
 		errAnswer = handleLaoUpdate(msg)
+	case messagedata.MessageObject + "#" + messagedata.MessageActionWitness:
+		errAnswer = handleMessageWitness(msg)
 	case messagedata.MeetingObject + "#" + messagedata.MeetingActionCreate:
 		errAnswer = handleMeetingCreate(msg)
 	case messagedata.MeetingObject + "#" + messagedata.MeetingActionState:
@@ -449,3 +451,6 @@ func handleMeetingCreate(msg message.Message) *answer.Error {
 func handleMeetingState(msg message.Message) *answer.Error {
 	return nil
 }
+
+// Not implemented yet
+func handleMessageWitness(msg message.Message) *answer.Error { return nil }
