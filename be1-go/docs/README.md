@@ -145,6 +145,21 @@ We use `Socket.SendResult` to send a `Result` back to the client when there is n
 
 We check the Mid-level communication inside `channel.go`.
 
+##### Database
+<div align="center">
+  <img src="images/database.png" alt="Flowchart"/>
+</div>
+
+<p align="center"><i>
+ SQL database schema last updated at 11.05.2024
+</i></p>
+
+The database is used to store the state of the server. It is implemented in the `database` package.
+We use the Repository pattern to interact with the database. 
+The current implementation uses a SQLite database.
+For testing we use [https://github.com/vektra/mockery](github.com/vektra/mockery)  to mock the database.
+
+
 ##### Message definitions
 
 All messages are defined in the `message` package. Please note that the JSON-RPC
