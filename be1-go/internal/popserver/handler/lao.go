@@ -208,38 +208,11 @@ func handleElectionSetup(msg message.Message, channelPath string) *answer.Error 
 			return errAnswer.Wrap("handleElectionSetup")
 		}
 	}
-	electionPubKey, electionSecretKey := generateKeys()
-	var electionKeyMsg message.Message
-	electionPath := channelPath + "/" + electionSetup.ID
 
-	db, errAnswer := database.GetLAORepositoryInstance()
+	errAnswer = storeElection(msg, electionSetup, channelPath)
 	if errAnswer != nil {
 		return errAnswer.Wrap("handleElectionSetup")
 	}
-
-	if electionSetup.Version == messagedata.SecretBallot {
-		electionKeyMsg, errAnswer = createElectionKey(electionSetup.ID, electionPubKey)
-		if errAnswer != nil {
-			return errAnswer.Wrap("handleElectionSetup")
-		}
-		err := db.StoreElectionWithElectionKey(channelPath, electionPath, electionPubKey, electionSecretKey, msg, electionKeyMsg)
-		if err != nil {
-			errAnswer = answer.NewStoreDatabaseError("election setup message: %v", err)
-			return errAnswer.Wrap("handleElectionSetup")
-		}
-	} else {
-		err := db.StoreElection(channelPath, electionPath, electionPubKey, electionSecretKey, msg)
-		if err != nil {
-			errAnswer = answer.NewStoreDatabaseError("election setup message: %v", err)
-			return errAnswer.Wrap("handleElectionSetup")
-		}
-	}
-
-	errAnswer = state.AddChannel(electionPath)
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleElectionSetup")
-	}
-
 	return nil
 }
 
@@ -270,6 +243,44 @@ func verifySenderLao(channelPath string, msg message.Message) *answer.Error {
 	if !organizePubKey.Equal(senderPubKey) {
 		errAnswer = answer.NewAccessDeniedError("sender public key does not match organizer public key: %s != %s",
 			senderPubKey, organizePubKey)
+		return errAnswer
+	}
+
+	return nil
+}
+
+func storeElection(msg message.Message, electionSetup messagedata.ElectionSetup, channelPath string) *answer.Error {
+	var errAnswer *answer.Error
+
+	electionPubKey, electionSecretKey := generateKeys()
+	var electionKeyMsg message.Message
+	electionPath := channelPath + "/" + electionSetup.ID
+
+	db, errAnswer := database.GetLAORepositoryInstance()
+	if errAnswer != nil {
+		return errAnswer
+	}
+
+	if electionSetup.Version == messagedata.SecretBallot {
+		electionKeyMsg, errAnswer = createElectionKey(electionSetup.ID, electionPubKey)
+		if errAnswer != nil {
+			return errAnswer
+		}
+		err := db.StoreElectionWithElectionKey(channelPath, electionPath, electionPubKey, electionSecretKey, msg, electionKeyMsg)
+		if err != nil {
+			errAnswer = answer.NewStoreDatabaseError("election setup message: %v", err)
+			return errAnswer
+		}
+	} else {
+		err := db.StoreElection(channelPath, electionPath, electionPubKey, electionSecretKey, msg)
+		if err != nil {
+			errAnswer = answer.NewStoreDatabaseError("election setup message: %v", err)
+			return errAnswer
+		}
+	}
+
+	errAnswer = state.AddChannel(electionPath)
+	if errAnswer != nil {
 		return errAnswer
 	}
 
