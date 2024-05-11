@@ -1136,7 +1136,7 @@ func (s *SQLite) StoreChirpMessages(channel, generalChannel string, msg, general
 	if err != nil {
 		return err
 	}
-	_, err = tx.Exec(insertChannelMessage, generalChannel, generalMsg.MessageID, true)
+	_, err = tx.Exec(insertChannelMessage, generalChannel, generalMsg.MessageID, false)
 	if err != nil {
 		return err
 	}
