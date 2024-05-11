@@ -71,14 +71,14 @@ func handleChannelLao(channelPath string, msg message.Message) *answer.Error {
 	return nil
 }
 
-func handleRollCallCreate(msg message.Message, channel string) *answer.Error {
+func handleRollCallCreate(msg message.Message, channelPath string) *answer.Error {
 	var rollCallCreate messagedata.RollCallCreate
 	errAnswer := msg.UnmarshalMsgData(&rollCallCreate)
 	if errAnswer != nil {
 		return errAnswer.Wrap("handleRollCallCreate")
 	}
 
-	errAnswer = rollCallCreate.Verify(channel)
+	errAnswer = rollCallCreate.Verify(channelPath)
 	if errAnswer != nil {
 		return errAnswer.Wrap("handleRollCallCreate")
 	}
@@ -86,14 +86,14 @@ func handleRollCallCreate(msg message.Message, channel string) *answer.Error {
 	return nil
 }
 
-func handleRollCallOpen(msg message.Message, channel string) *answer.Error {
+func handleRollCallOpen(msg message.Message, channelPath string) *answer.Error {
 	var rollCallOpen messagedata.RollCallOpen
 	errAnswer := msg.UnmarshalMsgData(&rollCallOpen)
 	if errAnswer != nil {
 		return errAnswer.Wrap("handleRollCallOpen")
 	}
 
-	errAnswer = rollCallOpen.Verify(channel)
+	errAnswer = rollCallOpen.Verify(channelPath)
 	if errAnswer != nil {
 		return errAnswer.Wrap("handleRollCallOpen")
 	}
@@ -103,7 +103,7 @@ func handleRollCallOpen(msg message.Message, channel string) *answer.Error {
 		return errAnswer.Wrap("handleRollCallOpen")
 	}
 
-	ok, err := db.CheckPrevID(channel, rollCallOpen.Opens, messagedata.RollCallActionCreate)
+	ok, err := db.CheckPrevID(channelPath, rollCallOpen.Opens, messagedata.RollCallActionCreate)
 	if err != nil {
 		errAnswer = answer.NewQueryDatabaseError("if previous id exists: %v", err)
 		return errAnswer.Wrap("handleRollCallOpen")
@@ -114,14 +114,14 @@ func handleRollCallOpen(msg message.Message, channel string) *answer.Error {
 	return nil
 }
 
-func handleRollCallReOpen(msg message.Message, channel string) *answer.Error {
+func handleRollCallReOpen(msg message.Message, channelPath string) *answer.Error {
 	var rollCallReOpen messagedata.RollCallReOpen
 	errAnswer := msg.UnmarshalMsgData(&rollCallReOpen)
 	if errAnswer != nil {
 		return errAnswer.Wrap("handleRollCallReOpen")
 	}
 
-	errAnswer = handleRollCallOpen(msg, channel)
+	errAnswer = handleRollCallOpen(msg, channelPath)
 	if errAnswer != nil {
 		return errAnswer.Wrap("handleRollCallReOpen")
 	}
@@ -129,14 +129,14 @@ func handleRollCallReOpen(msg message.Message, channel string) *answer.Error {
 	return nil
 }
 
-func handleRollCallClose(msg message.Message, channel string) *answer.Error {
+func handleRollCallClose(msg message.Message, channelPath string) *answer.Error {
 	var rollCallClose messagedata.RollCallClose
 	errAnswer := msg.UnmarshalMsgData(&rollCallClose)
 	if errAnswer != nil {
 		return errAnswer.Wrap("handleRollCallClose")
 	}
 
-	errAnswer = rollCallClose.Verify(channel)
+	errAnswer = rollCallClose.Verify(channelPath)
 	if errAnswer != nil {
 		return errAnswer.Wrap("handleRollCallClose")
 	}
@@ -146,7 +146,7 @@ func handleRollCallClose(msg message.Message, channel string) *answer.Error {
 		return errAnswer.Wrap("handleRollCallClose")
 	}
 
-	ok, err := db.CheckPrevID(channel, rollCallClose.Closes, messagedata.RollCallActionOpen)
+	ok, err := db.CheckPrevID(channelPath, rollCallClose.Closes, messagedata.RollCallActionOpen)
 	if err != nil {
 		errAnswer = answer.NewQueryDatabaseError("if previous id exists: %v", err)
 		return errAnswer.Wrap("handleRollCallClose")
@@ -163,7 +163,7 @@ func handleRollCallClose(msg message.Message, channel string) *answer.Error {
 			errAnswer = answer.NewInvalidMessageFieldError("failed to decode poptoken: %v", err)
 			return errAnswer.Wrap("handleRollCallClose")
 		}
-		chirpingChannelPath := channel + Social + "/" + popToken
+		chirpingChannelPath := channelPath + Social + "/" + popToken
 		channels = append(channels, chirpingChannelPath)
 	}
 
@@ -174,7 +174,7 @@ func handleRollCallClose(msg message.Message, channel string) *answer.Error {
 		}
 	}
 
-	err = db.StoreRollCallClose(channels, channel, msg)
+	err = db.StoreRollCallClose(channels, channelPath, msg)
 	if err != nil {
 		errAnswer = answer.NewStoreDatabaseError("channels and message: %v", err)
 		return errAnswer.Wrap("handleRollCallClose")
@@ -183,43 +183,19 @@ func handleRollCallClose(msg message.Message, channel string) *answer.Error {
 	return nil
 }
 
-func handleElectionSetup(msg message.Message, channel string) *answer.Error {
+func handleElectionSetup(msg message.Message, channelPath string) *answer.Error {
 	var electionSetup messagedata.ElectionSetup
 	errAnswer := msg.UnmarshalMsgData(&electionSetup)
 	if errAnswer != nil {
 		return errAnswer.Wrap("handleElectionSetup")
 	}
 
-	senderBuf, err := base64.URLEncoding.DecodeString(msg.Sender)
-	if err != nil {
-		errAnswer := answer.NewInvalidMessageFieldError("failed to decode sender public key: %v", err)
-		return errAnswer.Wrap("handleElectionSetup")
-	}
-	senderPubKey := crypto.Suite.Point()
-	err = senderPubKey.UnmarshalBinary(senderBuf)
-	if err != nil {
-		errAnswer := answer.NewInvalidMessageFieldError("failed to unmarshal sender public key: %v", err)
-		return errAnswer.Wrap("handleElectionSetup")
-	}
-
-	db, errAnswer := database.GetLAORepositoryInstance()
+	errAnswer = verifySenderLao(channelPath, msg)
 	if errAnswer != nil {
 		return errAnswer.Wrap("handleElectionSetup")
 	}
 
-	organizePubKey, err := db.GetOrganizerPubKey(channel)
-	if err != nil {
-		errAnswer = answer.NewQueryDatabaseError("organizer public key: %v", err)
-		return errAnswer.Wrap("handleElectionSetup")
-	}
-
-	if !organizePubKey.Equal(senderPubKey) {
-		errAnswer = answer.NewAccessDeniedError("sender public key does not match organizer public key: %s != %s",
-			senderPubKey, organizePubKey)
-		return errAnswer.Wrap("handleElectionSetup")
-	}
-
-	laoID, _ := strings.CutPrefix(channel, RootPrefix)
+	laoID, _ := strings.CutPrefix(channelPath, RootPrefix)
 
 	errAnswer = electionSetup.Verify(laoID)
 	if errAnswer != nil {
@@ -234,20 +210,25 @@ func handleElectionSetup(msg message.Message, channel string) *answer.Error {
 	}
 	electionPubKey, electionSecretKey := generateKeys()
 	var electionKeyMsg message.Message
-	electionPath := channel + "/" + electionSetup.ID
+	electionPath := channelPath + "/" + electionSetup.ID
+
+	db, errAnswer := database.GetLAORepositoryInstance()
+	if errAnswer != nil {
+		return errAnswer.Wrap("handleElectionSetup")
+	}
 
 	if electionSetup.Version == messagedata.SecretBallot {
 		electionKeyMsg, errAnswer = createElectionKey(electionSetup.ID, electionPubKey)
 		if errAnswer != nil {
 			return errAnswer.Wrap("handleElectionSetup")
 		}
-		err = db.StoreElectionWithElectionKey(channel, electionPath, electionPubKey, electionSecretKey, msg, electionKeyMsg)
+		err := db.StoreElectionWithElectionKey(channelPath, electionPath, electionPubKey, electionSecretKey, msg, electionKeyMsg)
 		if err != nil {
 			errAnswer = answer.NewStoreDatabaseError("election setup message: %v", err)
 			return errAnswer.Wrap("handleElectionSetup")
 		}
 	} else {
-		err = db.StoreElection(channel, electionPath, electionPubKey, electionSecretKey, msg)
+		err := db.StoreElection(channelPath, electionPath, electionPubKey, electionSecretKey, msg)
 		if err != nil {
 			errAnswer = answer.NewStoreDatabaseError("election setup message: %v", err)
 			return errAnswer.Wrap("handleElectionSetup")
@@ -257,6 +238,39 @@ func handleElectionSetup(msg message.Message, channel string) *answer.Error {
 	errAnswer = state.AddChannel(electionPath)
 	if errAnswer != nil {
 		return errAnswer.Wrap("handleElectionSetup")
+	}
+
+	return nil
+}
+
+func verifySenderLao(channelPath string, msg message.Message) *answer.Error {
+	senderBuf, err := base64.URLEncoding.DecodeString(msg.Sender)
+	if err != nil {
+		errAnswer := answer.NewInvalidMessageFieldError("failed to decode sender public key: %v", err)
+		return errAnswer
+	}
+	senderPubKey := crypto.Suite.Point()
+	err = senderPubKey.UnmarshalBinary(senderBuf)
+	if err != nil {
+		errAnswer := answer.NewInvalidMessageFieldError("failed to unmarshal sender public key: %v", err)
+		return errAnswer
+	}
+
+	db, errAnswer := database.GetLAORepositoryInstance()
+	if errAnswer != nil {
+		return errAnswer
+	}
+
+	organizePubKey, err := db.GetOrganizerPubKey(channelPath)
+	if err != nil {
+		errAnswer = answer.NewQueryDatabaseError("organizer public key: %v", err)
+		return errAnswer
+	}
+
+	if !organizePubKey.Equal(senderPubKey) {
+		errAnswer = answer.NewAccessDeniedError("sender public key does not match organizer public key: %s != %s",
+			senderPubKey, organizePubKey)
+		return errAnswer
 	}
 
 	return nil
@@ -308,7 +322,7 @@ func createElectionKey(electionID string, electionPubKey kyber.Point) (message.M
 }
 
 // Not working
-func handleLaoState(msg message.Message, channel string) *answer.Error {
+func handleLaoState(msg message.Message, channelPath string) *answer.Error {
 	var laoState messagedata.LaoState
 	errAnswer := msg.UnmarshalMsgData(&laoState)
 	if errAnswer != nil {
@@ -329,7 +343,7 @@ func handleLaoState(msg message.Message, channel string) *answer.Error {
 		return errAnswer.Wrap("handleLaoState")
 	}
 
-	witnesses, err := db.GetLaoWitnesses(channel)
+	witnesses, err := db.GetLaoWitnesses(channelPath)
 	if err != nil {
 		errAnswer := answer.NewQueryDatabaseError("lao witnesses: %v", err)
 		return errAnswer.Wrap("handleLaoState")

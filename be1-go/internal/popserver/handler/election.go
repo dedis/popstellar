@@ -59,20 +59,20 @@ func handleChannelElection(channelPath string, msg message.Message) *answer.Erro
 	return nil
 }
 
-func handleVoteCastVote(msg message.Message, channel string) *answer.Error {
+func handleVoteCastVote(msg message.Message, channelPath string) *answer.Error {
 	var voteCastVote messagedata.VoteCastVote
 	errAnswer := msg.UnmarshalMsgData(&voteCastVote)
 	if errAnswer != nil {
 		return errAnswer.Wrap("handleVoteCastVote")
 	}
 
-	errAnswer = verifySender(msg, channel, false)
+	errAnswer = verifySenderElection(msg, channelPath, false)
 	if errAnswer != nil {
 		return errAnswer.Wrap("handleVoteCastVote")
 	}
 
 	//verify message data
-	errAnswer = voteCastVote.Verify(channel)
+	errAnswer = voteCastVote.Verify(channelPath)
 	if errAnswer != nil {
 		return errAnswer.Wrap("handleVoteCastVote")
 	}
@@ -83,7 +83,7 @@ func handleVoteCastVote(msg message.Message, channel string) *answer.Error {
 	}
 
 	// verify that the election is open
-	started, err := db.IsElectionStarted(channel)
+	started, err := db.IsElectionStarted(channelPath)
 	if err != nil {
 		errAnswer := answer.NewQueryDatabaseError("election start status: %v", err)
 		return errAnswer.Wrap("handleVoteCastVote")
@@ -98,7 +98,7 @@ func handleVoteCastVote(msg message.Message, channel string) *answer.Error {
 	}
 
 	// verify VoteCastVote created after election createdAt
-	createdAt, err := db.GetElectionCreationTime(channel)
+	createdAt, err := db.GetElectionCreationTime(channelPath)
 	if err != nil {
 		errAnswer := answer.NewQueryDatabaseError("election creation time: %v", err)
 		return errAnswer.Wrap("handleVoteCastVote")
@@ -111,14 +111,14 @@ func handleVoteCastVote(msg message.Message, channel string) *answer.Error {
 
 	// verify votes
 	for i, vote := range voteCastVote.Votes {
-		err := verifyVote(vote, channel, voteCastVote.Election)
+		err := verifyVote(vote, channelPath, voteCastVote.Election)
 		if err != nil {
 			errAnswer := answer.NewInvalidMessageFieldError("failed to validate vote %d: %v", i, err)
 			return errAnswer.Wrap("handleVoteCastVote")
 		}
 	}
 
-	errAnswer = broadcastToAllClients(msg, channel)
+	errAnswer = broadcastToAllClients(msg, channelPath)
 	if errAnswer != nil {
 		return errAnswer.Wrap("handleVoteCastVote")
 	}
@@ -126,20 +126,20 @@ func handleVoteCastVote(msg message.Message, channel string) *answer.Error {
 	return nil
 }
 
-func handleElectionOpen(msg message.Message, channel string) *answer.Error {
+func handleElectionOpen(msg message.Message, channelPath string) *answer.Error {
 	var electionOpen messagedata.ElectionOpen
 	errAnswer := msg.UnmarshalMsgData(&electionOpen)
 	if errAnswer != nil {
 		return errAnswer.Wrap("handleElectionOpen")
 	}
 
-	errAnswer = verifySender(msg, channel, true)
+	errAnswer = verifySenderElection(msg, channelPath, true)
 	if errAnswer != nil {
 		return errAnswer.Wrap("handleElectionOpen")
 	}
 
 	// verify message data
-	errAnswer = electionOpen.Verify(channel)
+	errAnswer = electionOpen.Verify(channelPath)
 	if errAnswer != nil {
 		return errAnswer.Wrap("handleElectionOpen")
 	}
@@ -150,7 +150,7 @@ func handleElectionOpen(msg message.Message, channel string) *answer.Error {
 	}
 
 	// verify if the election was already started or terminated
-	ok, err := db.IsElectionStartedOrEnded(channel)
+	ok, err := db.IsElectionStartedOrEnded(channelPath)
 	if err != nil {
 		errAnswer := answer.NewQueryDatabaseError("election start or termination status: %v", err)
 		return errAnswer.Wrap("handleElectionOpen")
@@ -160,7 +160,7 @@ func handleElectionOpen(msg message.Message, channel string) *answer.Error {
 		return errAnswer.Wrap("handleElectionOpen")
 	}
 
-	createdAt, err := db.GetElectionCreationTime(channel)
+	createdAt, err := db.GetElectionCreationTime(channelPath)
 	if err != nil {
 		errAnswer := answer.NewQueryDatabaseError("election creation time: %v", err)
 		return errAnswer.Wrap("handleElectionOpen")
@@ -170,7 +170,7 @@ func handleElectionOpen(msg message.Message, channel string) *answer.Error {
 		return errAnswer.Wrap("handleElectionOpen")
 	}
 
-	errAnswer = broadcastToAllClients(msg, channel)
+	errAnswer = broadcastToAllClients(msg, channelPath)
 	if errAnswer != nil {
 		return errAnswer.Wrap("handleElectionOpen")
 	}
@@ -178,19 +178,19 @@ func handleElectionOpen(msg message.Message, channel string) *answer.Error {
 	return nil
 }
 
-func handleElectionEnd(msg message.Message, channel string) *answer.Error {
+func handleElectionEnd(msg message.Message, channelPath string) *answer.Error {
 	var electionEnd messagedata.ElectionEnd
 	errAnswer := msg.UnmarshalMsgData(&electionEnd)
 	if errAnswer != nil {
 		return errAnswer.Wrap("handleElectionEnd")
 	}
 
-	errAnswer = verifySender(msg, channel, true)
+	errAnswer = verifySenderElection(msg, channelPath, true)
 	if errAnswer != nil {
 		return errAnswer.Wrap("handleElectionEnd")
 	}
 
-	errAnswer = verifyElectionEnd(electionEnd, channel)
+	errAnswer = verifyElectionEnd(electionEnd, channelPath)
 	if errAnswer != nil {
 		return errAnswer.Wrap("handleElectionEnd")
 	}
@@ -200,7 +200,7 @@ func handleElectionEnd(msg message.Message, channel string) *answer.Error {
 		return errAnswer.Wrap("handleElectionEnd")
 	}
 
-	questions, err := db.GetElectionQuestionsWithValidVotes(channel)
+	questions, err := db.GetElectionQuestionsWithValidVotes(channelPath)
 	if err != nil {
 		errAnswer := answer.NewQueryDatabaseError("election questions: %v", err)
 		return errAnswer.Wrap("handleElectionEnd")
@@ -213,22 +213,22 @@ func handleElectionEnd(msg message.Message, channel string) *answer.Error {
 		}
 	}
 
-	electionResultMsg, errAnswer := createElectionResult(questions, channel)
+	electionResultMsg, errAnswer := createElectionResult(questions, channelPath)
 	if errAnswer != nil {
 		return errAnswer.Wrap("handleElectionEnd")
 	}
 
-	err = db.StoreElectionEndWithResult(channel, msg, electionResultMsg)
+	err = db.StoreElectionEndWithResult(channelPath, msg, electionResultMsg)
 	if err != nil {
 		errAnswer := answer.NewStoreDatabaseError("election end and election result: %v", err)
 		return errAnswer.Wrap("handleElectionEnd")
 	}
 
-	errAnswer = broadcastToAllClients(msg, channel)
+	errAnswer = broadcastToAllClients(msg, channelPath)
 	if errAnswer != nil {
 		return errAnswer.Wrap("handleElectionEnd")
 	}
-	errAnswer = broadcastToAllClients(electionResultMsg, channel)
+	errAnswer = broadcastToAllClients(electionResultMsg, channelPath)
 	if errAnswer != nil {
 		return errAnswer.Wrap("handleElectionEnd")
 	}
@@ -236,9 +236,9 @@ func handleElectionEnd(msg message.Message, channel string) *answer.Error {
 	return nil
 }
 
-func verifyElectionEnd(electionEnd messagedata.ElectionEnd, channel string) *answer.Error {
+func verifyElectionEnd(electionEnd messagedata.ElectionEnd, channelPath string) *answer.Error {
 	// verify message data
-	errAnswer := electionEnd.Verify(channel)
+	errAnswer := electionEnd.Verify(channelPath)
 	if errAnswer != nil {
 		return errAnswer.Wrap("handleElectionEnd")
 
@@ -250,7 +250,7 @@ func verifyElectionEnd(electionEnd messagedata.ElectionEnd, channel string) *ans
 	}
 
 	// verify if the election is started
-	started, err := db.IsElectionStarted(channel)
+	started, err := db.IsElectionStarted(channelPath)
 	if err != nil {
 		errAnswer := answer.NewQueryDatabaseError("election start status: %v", err)
 		return errAnswer.Wrap("handleElectionEnd")
@@ -261,7 +261,7 @@ func verifyElectionEnd(electionEnd messagedata.ElectionEnd, channel string) *ans
 	}
 
 	// verify if the timestamp is stale
-	createdAt, err := db.GetElectionCreationTime(channel)
+	createdAt, err := db.GetElectionCreationTime(channelPath)
 	if err != nil {
 		errAnswer := answer.NewQueryDatabaseError("election creation time: %v", err)
 		return errAnswer.Wrap("handleElectionEnd")
@@ -274,7 +274,7 @@ func verifyElectionEnd(electionEnd messagedata.ElectionEnd, channel string) *ans
 	return nil
 }
 
-func verifySender(msg message.Message, channel string, onlyOrganizer bool) *answer.Error {
+func verifySenderElection(msg message.Message, channelPath string, onlyOrganizer bool) *answer.Error {
 	senderBuf, err := base64.URLEncoding.DecodeString(msg.Sender)
 	if err != nil {
 		errAnswer := answer.NewInvalidMessageFieldError("failed to decode sender: %v", err)
@@ -292,7 +292,7 @@ func verifySender(msg message.Message, channel string, onlyOrganizer bool) *answ
 		return errAnswer.Wrap("verifySender")
 	}
 
-	organizerPubKey, err := db.GetLAOOrganizerPubKey(channel)
+	organizerPubKey, err := db.GetLAOOrganizerPubKey(channelPath)
 	if err != nil {
 		errAnswer := answer.NewQueryDatabaseError("lao organizer pk: %v", err)
 		return errAnswer.Wrap("verifySender")
@@ -307,7 +307,7 @@ func verifySender(msg message.Message, channel string, onlyOrganizer bool) *answ
 		return nil
 	}
 
-	attendees, err := db.GetElectionAttendees(channel)
+	attendees, err := db.GetElectionAttendees(channelPath)
 	if err != nil {
 		errAnswer := answer.NewQueryDatabaseError("election attendees: %v", err)
 		return errAnswer.Wrap("verifySender")
@@ -322,13 +322,13 @@ func verifySender(msg message.Message, channel string, onlyOrganizer bool) *answ
 	return nil
 }
 
-func verifyVote(vote messagedata.Vote, channel, electionID string) *answer.Error {
+func verifyVote(vote messagedata.Vote, channelPath, electionID string) *answer.Error {
 	db, errAnswer := database.GetElectionRepositoryInstance()
 	if errAnswer != nil {
 		return errAnswer.Wrap("handleElectionOpen")
 	}
 
-	questions, err := db.GetElectionQuestions(channel)
+	questions, err := db.GetElectionQuestions(channelPath)
 	if err != nil {
 		errAnswer := answer.NewQueryDatabaseError("election questions: %v", err)
 		return errAnswer.Wrap("verifyVote")
@@ -338,7 +338,7 @@ func verifyVote(vote messagedata.Vote, channel, electionID string) *answer.Error
 		errAnswer := answer.NewInvalidMessageFieldError("Question does not exist")
 		return errAnswer.Wrap("verifyVote")
 	}
-	electionType, err := db.GetElectionType(channel)
+	electionType, err := db.GetElectionType(channelPath)
 	if err != nil {
 		errAnswer := answer.NewQueryDatabaseError("election type: %v", err)
 		return errAnswer.Wrap("verifyVote")
@@ -401,8 +401,8 @@ func verifyRegisteredVotes(electionEnd messagedata.ElectionEnd, questions map[st
 	return nil
 }
 
-func createElectionResult(questions map[string]types.Question, channel string) (message.Message, *answer.Error) {
-	resultElection, errAnswer := computeElectionResult(questions, channel)
+func createElectionResult(questions map[string]types.Question, channelPath string) (message.Message, *answer.Error) {
+	resultElection, errAnswer := computeElectionResult(questions, channelPath)
 	if errAnswer != nil {
 		return message.Message{}, errAnswer.Wrap("createElectionResult")
 	}
@@ -441,14 +441,14 @@ func createElectionResult(questions map[string]types.Question, channel string) (
 	return electionResultMsg, nil
 }
 
-func computeElectionResult(questions map[string]types.Question, channel string) (
+func computeElectionResult(questions map[string]types.Question, channelPath string) (
 	messagedata.ElectionResult, *answer.Error) {
 	db, errAnswer := database.GetElectionRepositoryInstance()
 	if errAnswer != nil {
 		return messagedata.ElectionResult{}, errAnswer.Wrap("computeElectionResult")
 	}
 
-	electionType, err := db.GetElectionType(channel)
+	electionType, err := db.GetElectionType(channelPath)
 	if err != nil {
 		errAnswer := answer.NewQueryDatabaseError("election type: %v", err)
 		return messagedata.ElectionResult{}, errAnswer.Wrap("computeElectionResult")
@@ -462,7 +462,7 @@ func computeElectionResult(questions map[string]types.Question, channel string) 
 		}
 		votesPerBallotOption := make([]int, len(question.BallotOptions))
 		for _, validVote := range question.ValidVotes {
-			index, ok := getVoteIndex(validVote, electionType, channel)
+			index, ok := getVoteIndex(validVote, electionType, channelPath)
 			if ok && index >= 0 && index < len(question.BallotOptions) {
 				votesPerBallotOption[index]++
 			}
@@ -491,7 +491,7 @@ func computeElectionResult(questions map[string]types.Question, channel string) 
 	return resultElection, nil
 }
 
-func getVoteIndex(vote types.ValidVote, electionType, channel string) (int, bool) {
+func getVoteIndex(vote types.ValidVote, electionType, channelPath string) (int, bool) {
 	switch electionType {
 	case messagedata.OpenBallot:
 		index, _ := vote.Index.(int)
@@ -499,7 +499,7 @@ func getVoteIndex(vote types.ValidVote, electionType, channel string) (int, bool
 
 	case messagedata.SecretBallot:
 		encryptedVote, _ := vote.Index.(string)
-		index, err := decryptVote(encryptedVote, channel)
+		index, err := decryptVote(encryptedVote, channelPath)
 		if err != nil {
 			return index, false
 		}
@@ -508,7 +508,7 @@ func getVoteIndex(vote types.ValidVote, electionType, channel string) (int, bool
 	return -1, false
 }
 
-func decryptVote(vote, channel string) (int, *answer.Error) {
+func decryptVote(vote, channelPath string) (int, *answer.Error) {
 	voteBuff, err := base64.URLEncoding.DecodeString(vote)
 	if err != nil {
 		errAnswer := answer.NewInvalidMessageFieldError("failed to decode vote: %v", err)
@@ -539,7 +539,7 @@ func decryptVote(vote, channel string) (int, *answer.Error) {
 		return -1, errAnswer.Wrap("decryptVote")
 	}
 
-	electionSecretKey, err := db.GetElectionSecretKey(channel)
+	electionSecretKey, err := db.GetElectionSecretKey(channelPath)
 	if err != nil {
 		errAnswer := answer.NewQueryDatabaseError("election secret key: %v", err)
 		return -1, errAnswer.Wrap("decryptVote")
