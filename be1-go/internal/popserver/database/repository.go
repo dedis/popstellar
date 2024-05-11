@@ -106,7 +106,7 @@ type LAORepository interface {
 
 	//StoreElection stores an electionSetup message inside the database.
 	StoreElection(
-		laopath, electionPath string,
+		laoPath, electionPath string,
 		electionPubKey kyber.Point,
 		electionSecretKey kyber.Scalar,
 		msg message.Message) error

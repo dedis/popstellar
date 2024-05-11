@@ -839,7 +839,7 @@ func (s *SQLite) StoreRollCallClose(channels []string, laoPath string, msg messa
 		return err
 	}
 
-	_, err = tx.Exec("INSERT INTO INBOX (messageID, message, messageData, storedTime) VALUES (?, ?, ?, ?)",
+	_, err = tx.Exec("INSERT INTO message (messageID, message, messageData, storedTime) VALUES (?, ?, ?, ?)",
 		msg.MessageID, msgBytes, messageData, time.Now().UnixNano())
 	if err != nil {
 		return err
@@ -1234,8 +1234,6 @@ func (s *SQLite) GetElectionQuestionsWithValidVotes(electionPath string) (map[st
 		if err != nil {
 			return nil, err
 		}
-
-		fmt.Println("Vote: ", vote)
 	}
 	if err = rows.Err(); err != nil {
 		return nil, err
@@ -1325,7 +1323,7 @@ func (s *SQLite) StoreElectionEndWithResult(channelPath string, msg, electionRes
 	if err != nil {
 		return err
 	}
-	_, err = tx.Exec("INSERT INTO channelMessage (channelPath, messageID) VALUES (?, ?, ?)",
+	_, err = tx.Exec("INSERT INTO channelMessage (channelPath, messageID, isBaseChannel) VALUES (?, ?, ?)",
 		channelPath, electionResultMsg.MessageID, false)
 	if err != nil {
 		return err
@@ -1426,8 +1424,7 @@ func (s *SQLite) GetReactionSender(messageID string) (string, error) {
 	var object string
 	var action string
 	err := s.database.QueryRow("SELECT json_extract(message, '$.sender'), json_extract(messageData, '$.object'), json_extract(messageData, '$.action')"+
-		" FROM message"+
-		" WHERE messageID = ?", messageID).Scan(&sender, &object, &action)
+		" FROM message WHERE messageID = ?", messageID).Scan(&sender, &object, &action)
 	if err != nil && errors.Is(err, sql.ErrNoRows) {
 		return "", nil
 	} else if err != nil {
