@@ -82,26 +82,6 @@ func handleVoteCastVote(msg message.Message, channelPath string) *answer.Error {
 		return errAnswer.Wrap("handleVoteCastVote")
 	}
 
-	// Just store the vote cast if the election has ended because will not have any influence on the result
-	ended, err := db.IsElectionEnded(channelPath)
-	if err != nil {
-		errAnswer := answer.NewQueryDatabaseError("election end status: %v", err)
-		return errAnswer.Wrap("handleVoteCastVote")
-	}
-	if ended {
-		return nil
-	}
-
-	// verify that the election is open
-	started, err := db.IsElectionStarted(channelPath)
-	if err != nil {
-		errAnswer := answer.NewQueryDatabaseError("election start status: %v", err)
-		return errAnswer.Wrap("handleVoteCastVote")
-	}
-	if !started {
-		errAnswer := answer.NewInvalidMessageFieldError("election is not started")
-		return errAnswer.Wrap("handleVoteCastVote")
-	}
 	if voteCastVote.CreatedAt < 0 {
 		errAnswer := answer.NewInvalidMessageFieldError("cast vote created at is negative")
 		return errAnswer.Wrap("handleVoteCastVote")
@@ -126,6 +106,28 @@ func handleVoteCastVote(msg message.Message, channelPath string) *answer.Error {
 			errAnswer := answer.NewInvalidMessageFieldError("failed to validate vote %d: %v", i, err)
 			return errAnswer.Wrap("handleVoteCastVote")
 		}
+	}
+
+	// Just store the vote cast if the election has ended because will not have any influence on the result
+	ended, err := db.IsElectionEnded(channelPath)
+	if err != nil {
+		errAnswer := answer.NewQueryDatabaseError("election end status: %v", err)
+		return errAnswer.Wrap("handleVoteCastVote")
+	}
+	if ended {
+		return nil
+	}
+
+	// verify that the election is open
+	started, err := db.IsElectionStarted(channelPath)
+	if err != nil {
+		errAnswer := answer.NewQueryDatabaseError("election start status: %v", err)
+		return errAnswer.Wrap("handleVoteCastVote")
+	}
+
+	if !started {
+		errAnswer := answer.NewInvalidMessageFieldError("election is not started")
+		return errAnswer.Wrap("handleVoteCastVote")
 	}
 
 	errAnswer = broadcastToAllClients(msg, channelPath)

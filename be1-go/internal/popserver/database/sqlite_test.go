@@ -11,6 +11,7 @@ import (
 	"popstellar/internal/popserver/types"
 	"popstellar/message/messagedata"
 	"popstellar/message/query/method/message"
+	"sort"
 	"testing"
 )
 
@@ -338,8 +339,16 @@ func Test_SQLite_StoreLaoWithLaoGreet(t *testing.T) {
 	require.NoError(t, err)
 
 	expected := []message.Message{laoGreetMsg, laoCreateMsg}
+
+	sort.Slice(expected, func(i, j int) bool {
+		return expected[i].MessageID < expected[j].MessageID
+	})
 	messages, err := lite.GetAllMessagesFromChannel(laoID)
 	require.NoError(t, err)
+
+	sort.Slice(expected, func(i, j int) bool {
+		return messages[i].MessageID < messages[j].MessageID
+	})
 	require.Equal(t, expected, messages)
 
 	expected = []message.Message{laoCreateMsg}
