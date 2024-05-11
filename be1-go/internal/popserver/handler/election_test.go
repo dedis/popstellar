@@ -217,7 +217,7 @@ func Test_handleChannelElection(t *testing.T) {
 		contains: "",
 	})
 
-	votes := []messagedata.Vote{
+	votes := []generator.VoteInt{
 		{
 			ID:       base64.URLEncoding.EncodeToString([]byte("voteID1")),
 			Question: base64.URLEncoding.EncodeToString([]byte("questionID1")),
@@ -227,11 +227,169 @@ func Test_handleChannelElection(t *testing.T) {
 
 	// Test 14 Error when VoteCastVote sender is not the same as the lao organizer
 	args = append(args, input{
-		name:     "Test 14",
-		msg:      newVoteCastVoteMsg(t, wrongSender, laoID, electionID, 1, votes),
+		name: "Test 14",
+		msg: newVoteCastVoteIntMsg(t, wrongSender, laoID, electionID, channelPath, "", "",
+			-1, votes, nil, ownerPublicKey, mockRepo, true),
 		channel:  channelPath,
 		isError:  true,
-		contains: "sender is not the organizer of the channel",
+		contains: "sender is not an attendee or the organizer of the election",
+	})
+
+	// Test 15 Error when VoteCastVote lao id is not the same as the channel
+	wrongChannelPath = "/root/" + base64.URLEncoding.EncodeToString([]byte("wrongLaoID3")) + "/" + electionID
+
+	args = append(args, input{
+		name: "Test 15",
+		msg: newVoteCastVoteIntMsg(t, ownerPubBuf64, laoID, electionID, wrongChannelPath, "", "",
+			-1, votes, nil, ownerPublicKey, mockRepo, true),
+		channel:  wrongChannelPath,
+		isError:  true,
+		contains: "lao id is not the same as the channel",
+	})
+
+	// Test 16 Error when VoteCastVote election id is not the same as the channel
+	wrongChannelPath = "/root/" + laoID + "/" + base64.URLEncoding.EncodeToString([]byte("wrongElectionID3"))
+
+	args = append(args, input{
+		name: "Test 16",
+		msg: newVoteCastVoteIntMsg(t, ownerPubBuf64, laoID, electionID, wrongChannelPath, "", "",
+			-1, votes, nil, ownerPublicKey, mockRepo, true),
+		channel:  wrongChannelPath,
+		isError:  true,
+		contains: "election id is not the same as the channel",
+	})
+
+	//to avoid conflicts with the previous test
+	electionID = base64.URLEncoding.EncodeToString([]byte("electionID8"))
+	channelPath = "/root/" + laoID + "/" + electionID
+
+	//Test 17 Error when Election is not started
+	args = append(args, input{
+		name: "Test 17",
+		msg: newVoteCastVoteIntMsg(t, ownerPubBuf64, laoID, electionID, channelPath, messagedata.ElectionActionEnd, "",
+			-1, votes, nil, ownerPublicKey, mockRepo, true),
+		channel:  channelPath,
+		isError:  true,
+		contains: "election is not started",
+	})
+
+	//to avoid conflicts with the previous test
+	electionID = base64.URLEncoding.EncodeToString([]byte("electionID9"))
+	channelPath = "/root/" + laoID + "/" + electionID
+
+	//Test 18 Error when VoteCastVote createdAt is before electionSetup createdAt
+	args = append(args, input{
+		name: "Test 18",
+		msg: newVoteCastVoteIntMsg(t, ownerPubBuf64, laoID, electionID, channelPath, messagedata.ElectionActionOpen, "",
+			2, votes, nil, ownerPublicKey, mockRepo, true),
+		channel:  channelPath,
+		isError:  true,
+		contains: "cast vote cannot have a creation time prior to election setup",
+	})
+
+	//to avoid conflicts with the previous test
+	electionID = base64.URLEncoding.EncodeToString([]byte("electionID10"))
+	channelPath = "/root/" + laoID + "/" + electionID
+
+	//Test 19 Error when VoteCastVote question is not present in election setup
+	questions := map[string]types.Question{
+		base64.URLEncoding.EncodeToString([]byte("questionID2")): {ID: []byte(base64.URLEncoding.EncodeToString([]byte("questionID2")))},
+		base64.URLEncoding.EncodeToString([]byte("questionID3")): {ID: []byte(base64.URLEncoding.EncodeToString([]byte("questionID3")))},
+	}
+
+	args = append(args, input{
+		name: "Test 19",
+		msg: newVoteCastVoteIntMsg(t, ownerPubBuf64, laoID, electionID, channelPath, messagedata.ElectionActionOpen, "",
+			0, votes, questions, ownerPublicKey, mockRepo, true),
+		channel:  channelPath,
+		isError:  true,
+		contains: "Question does not exist",
+	})
+
+	//to avoid conflicts with the previous test
+	electionID = base64.URLEncoding.EncodeToString([]byte("electionID11"))
+	channelPath = "/root/" + laoID + "/" + electionID
+
+	//Test 20 Error when VoteCastVote contains a string vote in an OpenBallot election
+	stringVotes := []generator.VoteString{
+		{
+			ID:       base64.URLEncoding.EncodeToString([]byte("voteID1")),
+			Question: base64.URLEncoding.EncodeToString([]byte("questionID2")),
+			Vote:     base64.URLEncoding.EncodeToString([]byte("1")),
+		},
+	}
+
+	args = append(args, input{
+		name: "Test 20",
+		msg: newVoteCastVoteStringMsg(t, ownerPubBuf64, laoID, electionID, channelPath, messagedata.ElectionActionOpen, messagedata.OpenBallot,
+			0, stringVotes, questions, ownerPublicKey, mockRepo),
+		channel:  channelPath,
+		isError:  true,
+		contains: "vote in open ballot should be an integer",
+	})
+
+	//to avoid conflicts with the previous test
+	electionID = base64.URLEncoding.EncodeToString([]byte("electionID12"))
+	channelPath = "/root/" + laoID + "/" + electionID
+
+	//Test 21 Error when VoteCastVote contains a int vote in an SecretBallot election
+	intVotes := []generator.VoteInt{
+		{
+			ID:       base64.URLEncoding.EncodeToString([]byte("voteID1")),
+			Question: base64.URLEncoding.EncodeToString([]byte("questionID2")),
+			Vote:     1,
+		},
+	}
+
+	args = append(args, input{
+		name: "Test 21",
+		msg: newVoteCastVoteIntMsg(t, ownerPubBuf64, laoID, electionID, channelPath, messagedata.ElectionActionOpen, messagedata.SecretBallot,
+			0, intVotes, questions, ownerPublicKey, mockRepo, true),
+		channel:  channelPath,
+		isError:  true,
+		contains: "vote in secret ballot should be a string",
+	})
+
+	//to avoid conflicts with the previous test
+	electionID = base64.URLEncoding.EncodeToString([]byte("electionID13"))
+	channelPath = "/root/" + laoID + "/" + electionID
+
+	//Test 22 Error when a vote ID in VoteCastVote is not the expected hash
+
+	args = append(args, input{
+		name: "Test 22",
+		msg: newVoteCastVoteIntMsg(t, ownerPubBuf64, laoID, electionID, channelPath, messagedata.ElectionActionOpen, messagedata.OpenBallot,
+			0, intVotes, questions, ownerPublicKey, mockRepo, true),
+		channel:  channelPath,
+		isError:  true,
+		contains: "vote ID is not the expected hash",
+	})
+
+	//to avoid conflicts with the previous test
+	electionID = base64.URLEncoding.EncodeToString([]byte("electionID14"))
+	channelPath = "/root/" + laoID + "/" + electionID
+
+	//Test 23 Success
+	questionID := base64.URLEncoding.EncodeToString([]byte("questionID2"))
+	voteID := messagedata.Hash(voteFlag, electionID, questionID, "1")
+
+	votes = []generator.VoteInt{
+		{
+			ID:       voteID,
+			Question: questionID,
+			Vote:     1,
+		},
+	}
+
+	subs.AddChannel(channelPath)
+
+	args = append(args, input{
+		name: "Test 23",
+		msg: newVoteCastVoteIntMsg(t, ownerPubBuf64, laoID, electionID, channelPath, messagedata.ElectionActionOpen, messagedata.OpenBallot,
+			0, votes, questions, ownerPublicKey, mockRepo, false),
+		channel:  channelPath,
+		isError:  false,
+		contains: "",
 	})
 
 	for _, arg := range args {
@@ -320,7 +478,61 @@ func newElectionEndMsg(t *testing.T, owner kyber.Point, sender, laoID, electionI
 	return msg
 }
 
-func newVoteCastVoteMsg(t *testing.T, sender, laoID, electionID string, createdAt int64, votes []messagedata.Vote) message.Message {
-	msg := generator.NewVoteCastVoteMsg(t, sender, laoID, electionID, createdAt, votes, nil)
+func newVoteCastVoteIntMsg(t *testing.T, sender, laoID, electionID, electionPath, state, electionType string,
+	createdAt int64, votes []generator.VoteInt, questions map[string]types.Question, owner kyber.Point,
+	mockRepo *database.MockRepository, isEroor bool) message.Message {
+
+	msg := generator.NewVoteCastVoteIntMsg(t, sender, laoID, electionID, 1, votes, nil)
+	mockRepo.On("GetLAOOrganizerPubKey", electionPath).Return(owner, nil)
+	mockRepo.On("GetElectionAttendees", electionPath).Return(map[string]struct{}{ownerPubBuf64: {}}, nil)
+
+	if state != "" {
+		mockRepo.On("IsElectionStarted", electionPath).
+			Return(state == messagedata.ElectionActionOpen, nil)
+	}
+
+	if createdAt >= 0 {
+		mockRepo.On("GetElectionCreationTime", electionPath).Return(createdAt, nil)
+	}
+
+	if electionType != "" {
+		mockRepo.On("GetElectionType", electionPath).Return(electionType, nil)
+	}
+
+	if questions != nil {
+		mockRepo.On("GetElectionQuestions", electionPath).Return(questions, nil)
+	}
+
+	if !isEroor {
+		mockRepo.On("StoreMessageAndData", electionPath, msg).Return(nil)
+	}
+	return msg
+}
+
+func newVoteCastVoteStringMsg(t *testing.T, sender, laoID, electionID, electionPath, state, electionType string,
+	createdAt int64, votes []generator.VoteString, questions map[string]types.Question, owner kyber.Point,
+	mockRepo *database.MockRepository) message.Message {
+
+	msg := generator.NewVoteCastVoteStringMsg(t, sender, laoID, electionID, 1, votes, nil)
+	mockRepo.On("GetLAOOrganizerPubKey", electionPath).Return(owner, nil)
+	mockRepo.On("GetElectionAttendees", electionPath).Return(map[string]struct{}{ownerPubBuf64: {}}, nil)
+
+	if state != "" {
+		mockRepo.On("IsElectionStarted", electionPath).
+			Return(state == messagedata.ElectionActionOpen, nil)
+	}
+
+	if createdAt >= 0 {
+		mockRepo.On("GetElectionCreationTime", electionPath).Return(createdAt, nil)
+	}
+
+	if electionType != "" {
+		mockRepo.On("GetElectionType", electionPath).Return(electionType, nil)
+	}
+
+	if questions != nil {
+		mockRepo.On("GetElectionQuestions", electionPath).Return(questions, nil)
+	}
+
 	return msg
 }

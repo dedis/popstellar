@@ -62,9 +62,9 @@ func NewElectionResultMsg(t *testing.T, sender string, questions []messagedata.E
 	return msg
 }
 
-func NewVoteCastVoteMsg(t *testing.T, sender, lao, election string, createdAt int64, votes []messagedata.Vote,
+func NewVoteCastVoteIntMsg(t *testing.T, sender, lao, election string, createdAt int64, votes []VoteInt,
 	senderSK kyber.Scalar) message.Message {
-	castVote := messagedata.VoteCastVote{
+	castVote := VoteCastVoteInt{
 		Object:    messagedata.ElectionObject,
 		Action:    messagedata.VoteActionCastVote,
 		Lao:       lao,
@@ -77,4 +77,57 @@ func NewVoteCastVoteMsg(t *testing.T, sender, lao, election string, createdAt in
 	require.NoError(t, err)
 
 	return newMessage(t, sender, senderSK, castVoteBuf)
+}
+
+func NewVoteCastVoteStringMsg(t *testing.T, sender, lao, election string, createdAt int64, votes []VoteString,
+	senderSK kyber.Scalar) message.Message {
+	castVote := VoteCastVoteString{
+		Object:    messagedata.ElectionObject,
+		Action:    messagedata.VoteActionCastVote,
+		Lao:       lao,
+		Election:  election,
+		CreatedAt: createdAt,
+		Votes:     votes,
+	}
+
+	castVoteBuf, err := json.Marshal(castVote)
+	require.NoError(t, err)
+
+	return newMessage(t, sender, senderSK, castVoteBuf)
+}
+
+type VoteCastVoteInt struct {
+	Object   string `json:"object"`
+	Action   string `json:"action"`
+	Lao      string `json:"lao"`
+	Election string `json:"election"`
+
+	// CreatedAt is a Unix timestamp
+	CreatedAt int64 `json:"created_at"`
+
+	Votes []VoteInt `json:"votes"`
+}
+
+type VoteInt struct {
+	ID       string `json:"id"`
+	Question string `json:"question"`
+	Vote     int    `json:"vote"`
+}
+
+type VoteCastVoteString struct {
+	Object   string `json:"object"`
+	Action   string `json:"action"`
+	Lao      string `json:"lao"`
+	Election string `json:"election"`
+
+	// CreatedAt is a Unix timestamp
+	CreatedAt int64 `json:"created_at"`
+
+	Votes []VoteString `json:"votes"`
+}
+
+type VoteString struct {
+	ID       string `json:"id"`
+	Question string `json:"question"`
+	Vote     string `json:"vote"`
 }

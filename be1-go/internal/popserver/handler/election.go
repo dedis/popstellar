@@ -89,7 +89,7 @@ func handleVoteCastVote(msg message.Message, channel string) *answer.Error {
 		return errAnswer.Wrap("handleVoteCastVote")
 	}
 	if !started {
-		errAnswer := answer.NewInvalidMessageFieldError("election was already terminated")
+		errAnswer := answer.NewInvalidMessageFieldError("election is not started")
 		return errAnswer.Wrap("handleVoteCastVote")
 	}
 	if voteCastVote.CreatedAt < 0 {
@@ -103,6 +103,7 @@ func handleVoteCastVote(msg message.Message, channel string) *answer.Error {
 		errAnswer := answer.NewQueryDatabaseError("election creation time: %v", err)
 		return errAnswer.Wrap("handleVoteCastVote")
 	}
+
 	if createdAt > voteCastVote.CreatedAt {
 		errAnswer := answer.NewInvalidMessageFieldError("cast vote cannot have a creation time prior to election setup")
 		return errAnswer.Wrap("handleVoteCastVote")
@@ -296,6 +297,7 @@ func verifySender(msg message.Message, channel string, onlyOrganizer bool) *answ
 		errAnswer := answer.NewQueryDatabaseError("lao organizer pk: %v", err)
 		return errAnswer.Wrap("verifySender")
 	}
+
 	if onlyOrganizer && !senderPubKey.Equal(organizerPubKey) {
 		errAnswer := answer.NewInvalidMessageFieldError("sender is not the organizer of the channel")
 		return errAnswer.Wrap("verifySender")
@@ -365,10 +367,13 @@ func verifyVote(vote messagedata.Vote, channel, electionID string) *answer.Error
 			errAnswer := answer.NewInvalidMessageFieldError("vote should be 64 bytes long")
 			return errAnswer.Wrap("verifyVote")
 		}
+	default:
+		errAnswer := answer.NewInvalidMessageFieldError("invalid election type: %s", electionType)
+		return errAnswer.Wrap("verifyVote")
 	}
 	hash := messagedata.Hash(voteFlag, electionID, string(question.ID), voteString)
 	if vote.ID != hash {
-		errAnswer := answer.NewInvalidMessageFieldError("vote ID is incorrect")
+		errAnswer := answer.NewInvalidMessageFieldError("vote ID is not the expected hash")
 		return errAnswer.Wrap("verifyVote")
 	}
 	return nil
@@ -379,7 +384,6 @@ func verifyRegisteredVotes(electionEnd messagedata.ElectionEnd, questions map[st
 	for _, question := range questions {
 		for _, validVote := range question.ValidVotes {
 			voteIDs = append(voteIDs, validVote.ID)
-			fmt.Println("valid vote: ", validVote.ID)
 		}
 	}
 	// sort vote IDs
