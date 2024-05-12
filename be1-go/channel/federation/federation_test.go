@@ -154,7 +154,6 @@ func Test_FederationExpect(t *testing.T) {
 	var challenge messagedata.FederationChallenge
 	err = challengeMsg.UnmarshalData(&challenge)
 	require.NoError(t, err)
-	t.Log(challengeMsg)
 
 	remoteOrganizerKeypair := generateKeyPair(t)
 
@@ -364,9 +363,10 @@ func Test_FederationResult(t *testing.T) {
 		state:       None,
 	}
 	remoteOrg.organizerPk = remoteOrganizerKeypair.publicKey
+	remoteOrg.state = WaitResult
 
 	var remoteOrgs = map[string]*remoteOrganization{
-		"82eadde2a4ba832518b90bb93c8480ee1ae16a91d5efe9281e91e2ec11da03e4": remoteOrg,
+		remoteOrganizerKeypair.publicKey: remoteOrg,
 	}
 
 	newChannel := &Channel{
@@ -383,7 +383,7 @@ func Test_FederationResult(t *testing.T) {
 
 	publicKeyBytes, err := organizerKeypair.public.MarshalBinary()
 	require.NoError(t, err)
-	signedPublicKey, err := schnorr.Sign(crypto.Suite, remoteOrganizerKeypair.private, publicKeyBytes)
+	//signedPublicKey, err := schnorr.Sign(crypto.Suite, remoteOrganizerKeypair.private, publicKeyBytes)
 	require.NoError(t, err)
 
 	challengeFile := filepath.Join(relativeMsgDataExamplePath,
@@ -393,7 +393,7 @@ func Test_FederationResult(t *testing.T) {
 	challengeBase64 := base64.URLEncoding.EncodeToString(challengeBytes)
 	require.NoError(t, err)
 
-	signedPublicKeyBase64 := base64.URLEncoding.EncodeToString(signedPublicKey)
+	//signedPublicKeyBase64 := base64.URLEncoding.EncodeToString(signedPublicKey)
 	signedChallengeBytes, err := schnorr.Sign(crypto.Suite, remoteOrganizerKeypair.private, challengeBytes)
 	require.NoError(t, err)
 	signedChallengeBase64 := base64.URLEncoding.EncodeToString(signedChallengeBytes)
@@ -402,7 +402,7 @@ func Test_FederationResult(t *testing.T) {
 		Object:    messagedata.FederationObject,
 		Action:    messagedata.FederationActionResult,
 		Status:    "success",
-		PublicKey: signedPublicKeyBase64,
+		PublicKey: base64.URLEncoding.EncodeToString(publicKeyBytes),
 		ChallengeMsg: message.Message{
 			Data:              challengeBase64,
 			Sender:            remoteOrganizerKeypair.publicKey,

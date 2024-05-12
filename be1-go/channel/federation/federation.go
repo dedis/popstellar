@@ -1,14 +1,12 @@
 package federation
 
 import (
+	"bytes"
 	"crypto/rand"
 	"encoding/base64"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"github.com/rs/zerolog"
-	"go.dedis.ch/kyber/v3/sign/schnorr"
-	"golang.org/x/xerrors"
 	"popstellar/channel"
 	"popstellar/channel/registry"
 	"popstellar/crypto"
@@ -24,6 +22,10 @@ import (
 	"strconv"
 	"sync"
 	"time"
+
+	"github.com/rs/zerolog"
+	"go.dedis.ch/kyber/v3/sign/schnorr"
+	"golang.org/x/xerrors"
 )
 
 const (
@@ -42,10 +44,9 @@ const (
 )
 
 type remoteOrganization struct {
-	laoId             string
-	fedChannel        string
-	organizerPk       string
-	signedOrganizerPk string
+	laoId       string
+	fedChannel  string
+	organizerPk string
 
 	// store the pop tokens of the other lao
 	// popTokens map[string]struct{}
@@ -270,6 +271,7 @@ func (c *Channel) processFederationInit(msg message.Message,
 	}
 
 	remoteOrg.socket.Send(buf)
+	remoteOrg.state = WaitResult
 
 	return nil
 }
@@ -381,7 +383,7 @@ func (c *Channel) processFederationChallenge(msg message.Message,
 		Object:       messagedata.FederationObject,
 		Action:       messagedata.FederationActionResult,
 		Status:       "success",
-		PublicKey:    remoteOrg.signedOrganizerPk,
+		PublicKey:    remoteOrg.organizerPk,
 		ChallengeMsg: remoteOrg.challengeMsg,
 	}
 
@@ -397,9 +399,15 @@ func (c *Channel) processFederationChallenge(msg message.Message,
 	}
 	signatureBase64 := base64.URLEncoding.EncodeToString(signatureBytes)
 
+	serverPubKey, err := c.hub.GetPubKeyServ().MarshalBinary()
+	if err != nil {
+		return xerrors.Errorf("failed to marshal public key of server: %v", err)
+
+	}
+
 	federationResultMsg := message.Message{
 		Data:              dataBase64,
-		Sender:            c.hub.GetPubKeyServ().String(),
+		Sender:            base64.URLEncoding.EncodeToString(serverPubKey),
 		Signature:         signatureBase64,
 		MessageID:         messagedata.Hash(dataBase64, signatureBase64),
 		WitnessSignatures: []message.WitnessSignature{},
@@ -427,6 +435,7 @@ func (c *Channel) processFederationChallenge(msg message.Message,
 	}
 
 	remoteOrg.socket.Send(buf)
+
 	return nil
 }
 
@@ -533,13 +542,6 @@ func (c *Channel) processFederationResult(msg message.Message,
 			msgData)
 	}
 
-	/*
-	   This state should probably be set after sending the FederationInit message?
-	*/
-	//if c.state != WaitResult {
-	//	return answer.NewInternalServerError(invalidStateError, c.state, msg)
-	//}
-
 	var federationResult messagedata.FederationResult
 
 	err := msg.UnmarshalData(&federationResult)
@@ -572,9 +574,15 @@ func (c *Channel) processFederationResult(msg message.Message,
 
 	}
 
-	remoteOrg := c.getRemoteOrganization(federationChallenge.Value)
+	remoteOrg := c.getRemoteOrganization(federationResult.ChallengeMsg.Sender)
 	remoteOrg.Lock()
 	defer remoteOrg.Unlock()
+
+	if remoteOrg.state != WaitResult {
+		return answer.NewInternalServerError(invalidStateError, remoteOrg.state, msg)
+
+	}
+
 	pkBytes, err := base64.URLEncoding.DecodeString(remoteOrg.organizerPk)
 	if err != nil {
 		return xerrors.Errorf("failed to decode remote organizers public key: %v", err)
@@ -594,22 +602,26 @@ func (c *Channel) processFederationResult(msg message.Message,
 
 	}
 
-	pkSignatureBytes, err := base64.URLEncoding.DecodeString(federationResult.PublicKey)
+	resultPkBytes, err := base64.URLEncoding.DecodeString(federationResult.PublicKey)
 	if err != nil {
-		return xerrors.Errorf("failed to decode signature on local public key in FederationResult message: %v", err)
+		return xerrors.Errorf("failed to decode local public key in FederationResult message: %v", err)
 
 	}
-	localPkBinary, err := c.hub.GetPubKeyOwner().MarshalBinary()
+	localPkBytes, err := c.hub.GetPubKeyOwner().MarshalBinary()
 	if err != nil {
 		return xerrors.Errorf("failed to marshal local organizer public key: %v", err)
 
 	}
-
-	err = schnorr.Verify(crypto.Suite, remotePk, localPkBinary, pkSignatureBytes)
-	if err != nil {
-		return xerrors.Errorf("failed to verify remote signature on local organizer public key: %v", err)
+	if !(bytes.Equal(resultPkBytes, localPkBytes)) {
+		return xerrors.Errorf("invalid public key contained in FederationResult message")
 
 	}
+
+	//err = schnorr.Verify(crypto.Suite, remotePk, localPkBinary, pkSignatureBytes)
+	//if err != nil {
+	//	return xerrors.Errorf("failed to verify remote signature on local organizer public key: %v", err)
+
+	//}
 
 	remoteOrg.state = Connected
 
