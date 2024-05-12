@@ -78,10 +78,9 @@ class GossipManagerSuite extends TestKit(ActorSystem("GossipManagerSuiteActorSys
     val peers = List(peerServer1, peerServer2, peerServer3, peerServer4)
 
     // register server
-    connectionMediatorRef ? ConnectionMediator.NewServerConnected(peerServer1.ref, GreetServer(PublicKey(Base64Data("")), "", ""))
-    connectionMediatorRef ? ConnectionMediator.NewServerConnected(peerServer2.ref, GreetServer(PublicKey(Base64Data("")), "", ""))
-    connectionMediatorRef ? ConnectionMediator.NewServerConnected(peerServer3.ref, GreetServer(PublicKey(Base64Data("")), "", ""))
-    connectionMediatorRef ? ConnectionMediator.NewServerConnected(peerServer4.ref, GreetServer(PublicKey(Base64Data("")), "", ""))
+    for (peer <- peers) {
+      connectionMediatorRef ? ConnectionMediator.NewServerConnected(peer.ref, GreetServer(PublicKey(Base64Data("")), "", ""))
+    }
 
     val output = Source.single(Right(rumorRequest)).via(gossipHandler).runWith(Sink.head)
 
@@ -104,10 +103,9 @@ class GossipManagerSuite extends TestKit(ActorSystem("GossipManagerSuiteActorSys
     val peers = List(peerServer1, peerServer2, peerServer3, peerServer4)
 
     // register server
-    connectionMediatorRef ? ConnectionMediator.NewServerConnected(peerServer1.ref, GreetServer(PublicKey(Base64Data("")), "", ""))
-    connectionMediatorRef ? ConnectionMediator.NewServerConnected(peerServer2.ref, GreetServer(PublicKey(Base64Data("")), "", ""))
-    connectionMediatorRef ? ConnectionMediator.NewServerConnected(peerServer3.ref, GreetServer(PublicKey(Base64Data("")), "", ""))
-    connectionMediatorRef ? ConnectionMediator.NewServerConnected(peerServer4.ref, GreetServer(PublicKey(Base64Data("")), "", ""))
+    for (peer <- peers) {
+      connectionMediatorRef ? ConnectionMediator.NewServerConnected(peer.ref, GreetServer(PublicKey(Base64Data("")), "", ""))
+    }
 
     val outputRumor = Source.single(Right(rumorRequest)).via(gossipHandler).runWith(Sink.head)
 

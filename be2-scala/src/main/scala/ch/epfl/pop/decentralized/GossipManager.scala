@@ -1,7 +1,8 @@
 package ch.epfl.pop.decentralized
 
 import akka.NotUsed
-import akka.actor.{Actor, ActorRef, Props}
+import akka.actor.{Actor, ActorLogging, ActorRef, Props}
+import akka.event.slf4j.Logger
 import akka.pattern.AskableActorRef
 import akka.stream.scaladsl.Flow
 import ch.epfl.pop.decentralized.GossipManager.MonitoredRumor
@@ -22,12 +23,12 @@ final case class GossipManager(
     monitorRef: ActorRef,
     connectionMediator: AskableActorRef,
     stopProbability: Double = 0.5
-) extends Actor with AskPatternConstants {
+) extends Actor with AskPatternConstants with ActorLogging {
 
   private type ServerInfos = (ActorRef, GreetServer)
 
   monitorRef ! GossipManager.Ping()
-  connectionMediator ? ConnectionMediator.Ping()
+  connectionMediator ? GossipManager.Ping()
 
   private var activeGossipProtocol: Map[JsonRpcRequest, List[ServerInfos]] = Map.empty
 
@@ -35,9 +36,7 @@ final case class GossipManager(
     val readRumorDb = dbActorRef ? DbActor.ReadRumor(rumor.senderPk -> rumor.rumorId)
     Await.result(readRumorDb, duration) match
       case DbActorReadRumor(foundRumors) =>
-        foundRumors match
-          case Some(_) => false
-          case None    => true
+        foundRumors.isEmpty
   }
 
   private def getPeersForRumor(jsonRpcRequest: JsonRpcRequest): List[ServerInfos] = {
@@ -64,11 +63,14 @@ final case class GossipManager(
       // else remove entry
       case ConnectionMediator.NoPeer =>
         activeGossipProtocol = activeGossipProtocol.removed(rumorRpc)
+      case _ =>
+        log.info(s"Actor $self received an unexpected message waiting for a random peer")
     }
   }
 
   private def processResponse(response: JsonRpcResponse): Unit = {
     val activeGossipPeers = activeGossipProtocol.filter((k, _) => k.id == response.id)
+
     // response is expected because only one entry exists
     if (activeGossipPeers.size == 1) {
       activeGossipPeers.foreach { (rumorRpc, _) =>
@@ -78,14 +80,14 @@ final case class GossipManager(
           sendRumorToRandomPeer(rumorRpc)
         }
       }
-    }
+    } else if (activeGossipPeers.size > 1) {}
   }
 
   override def receive: Receive = {
     case GossipManager.SendRumorToRandomPeer(rumorRpc) =>
       sendRumorToRandomPeer(rumorRpc)
 
-    case GossipManager.ProcessResponse(jsonRpcResponse) =>
+    case GossipManager.ManageGossipResponse(jsonRpcResponse) =>
       processResponse(jsonRpcResponse)
   }
 
@@ -107,7 +109,7 @@ object GossipManager extends AskPatternConstants {
 
   def monitorResponse(gossipManager: AskableActorRef): Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map {
     case Right(jsonRpcResponse: JsonRpcResponse) =>
-      gossipManager ? ProcessResponse(jsonRpcResponse)
+      gossipManager ? ManageGossipResponse(jsonRpcResponse)
       Right(jsonRpcResponse)
     case graphMessage @ _ => graphMessage
   }
@@ -115,7 +117,7 @@ object GossipManager extends AskPatternConstants {
   sealed trait Event
   final case class MonitoredRumor(jsonRpcRumor: JsonRpcRequest)
   final case class SendRumorToRandomPeer(jsonRpcRequest: JsonRpcRequest)
-  final case class ProcessResponse(jsonRpcResponse: JsonRpcResponse)
+  final case class ManageGossipResponse(jsonRpcResponse: JsonRpcResponse)
 
   sealed trait GossipManagerMessage
   final case class Ping() extends GossipManagerMessage
