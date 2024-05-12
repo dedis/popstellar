@@ -20,8 +20,8 @@ const styles = StyleSheet.create({
  * Wraps react components in a screen wrapper that adds a scroll view
  * and thus makes sure that all content can be accessed
  */
-const ScreenWrapper = ({ children, toolbarItems }: IPropTypes) => (
-  <View style={styles.container}>
+const ScreenWrapper = ({ children, toolbarItems, containerTestID }: IPropTypes) => (
+  <View style={styles.container} testID={containerTestID}>
     <ScrollView style={styles.view}>{children}</ScrollView>
     {toolbarItems && <Toolbar items={toolbarItems} />}
   </View>
@@ -35,8 +35,11 @@ const propTypes = {
 ScreenWrapper.propTypes = propTypes;
 ScreenWrapper.defaultProps = {
   toolbarItems: undefined,
+  containerTestID: undefined,
 };
 
-type IPropTypes = PropTypes.InferProps<typeof propTypes>;
+type IPropTypes = PropTypes.InferProps<typeof propTypes> & {
+  containerTestID?: string;
+};
 
 export default ScreenWrapper;

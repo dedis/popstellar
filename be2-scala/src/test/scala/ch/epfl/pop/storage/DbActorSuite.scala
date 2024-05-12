@@ -955,18 +955,12 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
     val write = dbActor ? DbActor.WriteRumor(rumor)
     Await.result(write, duration) shouldBe a[DbActor.DbActorAck]
 
-    val desiredRumors: Map[PublicKey, List[Int]] = Map(rumor.senderPk -> List(rumor.rumorId))
+    val read = dbActor ? DbActor.ReadRumor(rumor.senderPk -> rumor.rumorId)
+    val foundRumor = Await.result(read, duration).asInstanceOf[DbActorReadRumor].foundRumor
 
-    val read = dbActor ? DbActor.ReadRumors(desiredRumors)
-    val foundRumors = Await.result(read, duration).asInstanceOf[DbActorReadRumors].foundRumors
+    foundRumor.isDefined shouldBe true
 
-    foundRumors.foreach { (serverPk, rumorList) =>
-      desiredRumors.keys should contain(serverPk)
-      desiredRumors(serverPk) should equal(rumorList.map(_.rumorId))
-      rumorList.foreach { rumorFromDb =>
-        rumorFromDb should equal(rumor)
-      }
-    }
+    foundRumor.get shouldBe rumor
   }
 
   test("can recover list of rumorId received for a senderPk") {
@@ -984,6 +978,15 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
     val rumorData = foundRumorData.asInstanceOf[DbActorReadRumorData].rumorIds
 
     rumorData.rumorIds should equal(List(rumor.rumorId))
+  }
+
+  test("read of absent rumor should fail") {
+    val initialStorage = InMemoryStorage()
+    val dbActor: AskableActorRef = system.actorOf(Props(DbActor(mediatorRef, MessageRegistry(), initialStorage)))
+
+    val rumor: Rumor = RumorExample.rumorExample
+    val read = dbActor ? DbActor.ReadRumor(rumor.senderPk -> rumor.rumorId)
+    Await.result(read, duration) shouldBe DbActorReadRumor(None)
   }
 
 }
