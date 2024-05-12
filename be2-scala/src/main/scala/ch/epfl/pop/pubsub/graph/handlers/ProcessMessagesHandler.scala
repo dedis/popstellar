@@ -10,6 +10,8 @@ import ch.epfl.pop.model.objects.Channel
 import ch.epfl.pop.pubsub.graph.validators.RpcValidator
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError, prettyPrinter}
 import ch.epfl.pop.pubsub.{AskPatternConstants, MessageRegistry, PublishSubscribe}
+import spray.json._
+import ch.epfl.pop.json.HighLevelProtocol._
 
 import scala.annotation.tailrec
 import scala.util.Success
@@ -85,7 +87,9 @@ object ProcessMessagesHandler extends AskPatternConstants {
       }
       return logListFailure.isEmpty
     }
-
+    println(receivedResponse.map(x => x._1 match
+      case Right(jsonRpcRequest: JsonRpcRequest) => (jsonRpcRequest.toJson, x._2)
+      case _ => ("", -1)) )
     var failedMessages: List[(GraphMessage, Int)] = Nil
     var logs: List[String] = logListFailure
     receivedResponse.foreach {
@@ -104,6 +108,7 @@ object ProcessMessagesHandler extends AskPatternConstants {
           }
         }
     }
+    
 
     passThroughPipeline(failedMessages, validatorFlow, logs)
   }
