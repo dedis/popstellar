@@ -7,12 +7,12 @@ import (
 	"popstellar/internal/popserver/database"
 	"popstellar/internal/popserver/handler"
 	"popstellar/internal/popserver/state"
+	"popstellar/internal/popserver/types"
 	"popstellar/internal/popserver/utils"
 	jsonrpc "popstellar/message"
 	"popstellar/message/query"
 	"popstellar/message/query/method"
 	"popstellar/network/socket"
-	"sync"
 	"time"
 )
 
@@ -22,7 +22,7 @@ type Hub struct {
 	messageChan   chan socket.IncomingMessage
 	stop          chan struct{}
 	closedSockets chan string
-	serverSockets sockets
+	serverSockets types.Sockets
 }
 
 func NewHub() *Hub {
@@ -30,7 +30,7 @@ func NewHub() *Hub {
 		messageChan:   make(chan socket.IncomingMessage),
 		stop:          make(chan struct{}),
 		closedSockets: make(chan string),
-		serverSockets: newSockets(),
+		serverSockets: types.NewSockets(),
 	}
 }
 
@@ -66,7 +66,7 @@ func (h *Hub) Start() {
 					utils.LogInfo("successfully handled a message")
 				}
 			case <-h.closedSockets:
-				utils.LogInfo("stopping the sockets")
+				utils.LogInfo("stopping the Sockets")
 				return
 			case <-h.stop:
 				utils.LogInfo("stopping the Hub")
@@ -152,57 +152,4 @@ func (h *Hub) sendHeartbeatToServers() {
 		utils.LogError(err)
 	}
 	h.serverSockets.SendToAll(buf)
-}
-
-// newSockets returns a new initialized sockets
-func newSockets() sockets {
-	return sockets{
-		store: make(map[string]socket.Socket),
-	}
-}
-
-// sockets provides thread-functionalities around a socket store.
-type sockets struct {
-	sync.RWMutex
-	store map[string]socket.Socket
-}
-
-// Len returns the number of sockets.
-func (s *sockets) Len() int {
-	return len(s.store)
-}
-
-// SendToAll sends a message to all sockets.
-func (s *sockets) SendToAll(buf []byte) {
-	s.RLock()
-	defer s.RUnlock()
-
-	for _, s := range s.store {
-		s.Send(buf)
-	}
-}
-
-// Upsert upserts a socket into the sockets store.
-func (s *sockets) Upsert(socket socket.Socket) {
-	s.Lock()
-	defer s.Unlock()
-
-	s.store[socket.ID()] = socket
-}
-
-// Delete deletes a socket from the store. Returns false
-// if the socket is not present in the store and true
-// on success.
-func (s *sockets) Delete(ID string) bool {
-	s.Lock()
-	defer s.Unlock()
-
-	_, ok := s.store[ID]
-	if !ok {
-		return false
-	}
-
-	delete(s.store, ID)
-
-	return true
 }
