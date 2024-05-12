@@ -117,6 +117,7 @@ object HighLevelProtocol extends DefaultJsonProtocol {
         case paramsWithMap: ParamsWithMap         => paramsWithMap.toJson
         case greetServer: GreetServer             => greetServer.toJson(GreetServerFormat)
         case rumor: Rumor                         => rumor.toJson(RumorFormat)
+        case pagedCatchup: PagedCatchup           => pagedCatchup.toJson(PagedCatchupFormat)
       }
 
   }
@@ -227,6 +228,43 @@ object HighLevelProtocol extends DefaultJsonProtocol {
 
   }
 
+  implicit object PagedCatchupFormat extends RootJsonFormat[PagedCatchup] {
+    final private val PARAM_CHANNEL: String = "channel"
+    final private val PARAM_NUMBER_OF_MESSAGES: String = "number_of_messages"
+    final private val PARAM_BEFORE_MESSAGE_ID: String = "before_message_id"
+
+    override def read(json: JsValue): PagedCatchup = {
+      json.asJsObject.getFields(PARAM_CHANNEL, PARAM_NUMBER_OF_MESSAGES, PARAM_BEFORE_MESSAGE_ID) match {
+        case Seq(channel @ JsString(_), numberOfMessages @ JsNumber(_), beforeMessageID @ JsString(_)) =>
+          PagedCatchup(
+            channel.convertTo[Channel],
+            numberOfMessages.convertTo[String],
+            beforeMessageID.convertTo[String]
+          )
+        case _ => throw new IllegalArgumentException(s"Can't parse json value $json to a PagedCatchup object")
+      }
+    }
+
+    override def write(obj: PagedCatchup): JsValue = {
+      if(obj.beforeMessageID) {
+        val jsObjContent: ListMap[String, JsValue] = ListMap[String, JsValue](
+          PARAM_CHANNEL -> obj.channel.toJson,
+          PARAM_NUMBER_OF_MESSAGES -> obj.numberOfMessages.toJson,
+          PARAM_BEFORE_MESSAGE_ID -> obj.beforeMessageID.toJson
+        )
+      }
+      else {
+        val jsObjContent: ListMap[String, JsValue] = ListMap[String, JsValue](
+          PARAM_CHANNEL -> obj.channel.toJson,
+          PARAM_NUMBER_OF_MESSAGES -> obj.numberOfMessages.toJson
+        )
+      }
+
+      JsObject(jsObjContent)
+    }
+
+  }
+
   implicit val errorObjectFormat: JsonFormat[ErrorObject] = jsonFormat2(ErrorObject.apply)
 
   implicit object ResultObjectFormat extends RootJsonFormat[ResultObject] {
@@ -264,6 +302,7 @@ object HighLevelProtocol extends DefaultJsonProtocol {
           case MethodType.catchup            => paramsJsObject.convertTo[Catchup]
           case MethodType.get_messages_by_id => paramsJsObject.convertTo[GetMessagesById]
           case MethodType.rumor              => paramsJsObject.convertTo[Rumor]
+          case MethodType.paged_catchup      => paramsJsObject.convertTo[PagedCatchup]
           case _                             => throw new IllegalArgumentException(s"Can't parse json value $json with unknown method ${method.toString}")
         }
 
