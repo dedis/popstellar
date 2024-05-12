@@ -114,6 +114,7 @@ object PublishSubscribe {
           val portGetMessagesById = 6
           val portGreetServer = 7
           val totalPorts = 8
+          val portPagedCatchup = 9
 
           /* building blocks */
           val input = builder.add(Flow[GraphMessage].collect { case msg: GraphMessage => msg })
@@ -131,6 +132,7 @@ object PublishSubscribe {
                   case MethodType.heartbeat          => portHeartbeat
                   case MethodType.get_messages_by_id => portGetMessagesById
                   case MethodType.greet_server       => portGreetServer
+                  case MethodType.paged_catchup      => portPagedCatchup
                   case _                             => portPipelineError
                 }
 
@@ -145,6 +147,7 @@ object PublishSubscribe {
           val heartbeatPartition = builder.add(ParamsWithMapHandler.heartbeatHandler(dbActorRef))
           val getMessagesByIdPartition = builder.add(ParamsWithMapHandler.getMessagesByIdHandler(dbActorRef))
           val greetServerPartition = builder.add(ParamsHandler.greetServerHandler(clientActorRef))
+          val pagedCatchupPartition = builder.add(ParamsHandler.pagedCatchupHandler(clientActorRef))
 
           val merger = builder.add(Merge[GraphMessage](totalPorts))
 
@@ -159,6 +162,7 @@ object PublishSubscribe {
           methodPartitioner.out(portHeartbeat) ~> heartbeatPartition ~> merger
           methodPartitioner.out(portGetMessagesById) ~> getMessagesByIdPartition ~> merger
           methodPartitioner.out(portGreetServer) ~> greetServerPartition ~> merger
+          methodPartitioner.out(portPagedCatchup) ~> pagedCatchupPartition ~> merger
 
           /* close the shape */
           FlowShape(input.in, merger.out)
