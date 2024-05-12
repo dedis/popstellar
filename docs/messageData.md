@@ -2989,6 +2989,8 @@ This challenge will be then used by Alice's server to authenticate itself.
   },
   "additionalProperties": false,
   "required": [
+    "object",
+    "action",
     "timestamp"
   ]
 }
@@ -3040,6 +3042,8 @@ Bob's server will provide him with the requested challenge.
   },
   "additionalProperties": false,
   "required": [
+    "object",
+    "action",
     "value",
     "valid_until"
   ]
@@ -3108,7 +3112,7 @@ With this message, Bob informs his server that it should expect a federation inv
         },
         "challenge": {
           "$ref": "../message.json",
-          "$comment": "message containing a FederationChallenge data"
+          "$comment": "message containing a FederationChallenge"
             }
         },
     "additionalProperties": false,
@@ -3187,7 +3191,7 @@ It contains the necessary connection details, and a challenge which Bob's server
     },
     "challenge": {
       "$ref": "../message.json",
-      "$comment": "message/message containing a FederationChallenge data"
+      "$comment": "message containing a FederationChallenge"
     }
   },
   "additionalProperties": false,
@@ -3213,7 +3217,7 @@ This message is sent by Bob's server. The purpose of this message is to provide 
 </summary>
 
 ```json5
-// ../protocol/examples/messageData/federation_init/federation_init.json
+// ../protocol/examples/messageData/federation_result/federation_result.json
 {
   "object": "federation",
   "action": "result",
@@ -3258,7 +3262,7 @@ This message is sent by Bob's server. The purpose of this message is to provide 
         },
         "challenge": {
           "$ref": "../message.json",
-          "$comment": "message/message containing a FederationChallenge data"
+          "$comment": "message containing a FederationChallenge"
         }
       },
       "additionalProperties": false,
