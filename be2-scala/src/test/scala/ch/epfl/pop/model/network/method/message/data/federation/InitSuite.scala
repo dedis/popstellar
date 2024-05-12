@@ -34,7 +34,7 @@ class InitSuite extends FunSuite with Matchers {
 
   test("The system only accepts valid server addresses") {
     val WRONG_ADDRESS: String = "ss:/epfl.ch:9000/server"
-    an[IllegalArgumentException] should be thrownBy FederationExpect(LAO_ID, WRONG_ADDRESS, OTHER_ORGANIZER, CHALLENGE)
+    an[IllegalArgumentException] should be thrownBy FederationInit(LAO_ID, WRONG_ADDRESS, OTHER_ORGANIZER, CHALLENGE)
   }
 
 }

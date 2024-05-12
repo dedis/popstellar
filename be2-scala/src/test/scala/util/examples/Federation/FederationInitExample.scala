@@ -20,7 +20,7 @@ object FederationInitExample {
   final val INIT: FederationInit = FederationInit(LAO_ID, SERVER_ADDRESS, OTHER_ORGANIZER, CHALLENGE)
 
   final val DATA_INIT_MESSAGE: Hash = Hash(Base64Data.encode(INIT.toJson.toString))
-  final val EXPECT_MESSAGE: Message = Message(
+  final val INIT_MESSAGE: Message = Message(
     DATA_INIT_MESSAGE.base64Data,
     SENDER,
     SIGNATURE,

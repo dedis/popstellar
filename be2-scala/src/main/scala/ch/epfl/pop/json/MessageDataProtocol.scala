@@ -584,7 +584,7 @@ object MessageDataProtocol extends DefaultJsonProtocol {
       val organizer = jsObj.fields.get(PARAM_ORGANIZER).flatMap(_.convertTo[Option[PublicKey]])
 
       val challengeMessage = jsObj.fields.get(PARAM_CHALLENGE_MESSAGE).collect {
-        case jsObj: JsObject => jsObj.convertTo[FederationChallenge]
+        case jsObj: JsObject => jsObj.convertTo[Message]
       }.getOrElse(throw new IllegalArgumentException(s"Can't parse json value $json to a FederationResult object"))
 
       (reason, organizer) match {
@@ -600,7 +600,7 @@ object MessageDataProtocol extends DefaultJsonProtocol {
 
       obj.reason.foreach(r => fields += PARAM_REASON -> JsString(r))
       obj.organizer.foreach(o => fields += PARAM_ORGANIZER -> o.toJson)
-
+      print(JsObject(fields.toMap))
       JsObject(fields.toMap)
 
     }
