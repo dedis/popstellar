@@ -18,11 +18,18 @@ func NewSubscribers() *Subscribers {
 	}
 }
 
-func (s *Subscribers) AddChannel(channel string) {
+func (s *Subscribers) AddChannel(channel string) *answer.Error {
 	s.Lock()
 	defer s.Unlock()
 
+	_, ok := s.list[channel]
+	if ok {
+		return answer.NewInvalidActionError("channel %s already exists", channel)
+	}
+
 	s.list[channel] = make(map[string]socket.Socket)
+
+	return nil
 }
 
 func (s *Subscribers) Subscribe(channel string, socket socket.Socket) *answer.Error {

@@ -157,7 +157,7 @@ We check the Mid-level communication inside `channel.go`.
 The database is used to store the state of the server. It is implemented in the `database` package.
 We use the Repository pattern to interact with the database. 
 The current implementation uses a SQLite database.
-For testing we use [https://github.com/vektra/mockery](github.com/vektra/mockery)  to mock the database.
+For testing we use [github.com/vektra/mockery](https://github.com/vektra/mockery)  to mock the database.
 
 
 ##### Message definitions

@@ -45,7 +45,8 @@ func Test_handleChannelLao(t *testing.T) {
 	require.NoError(t, err)
 
 	laoID := base64.URLEncoding.EncodeToString([]byte("laoID"))
-	subs.AddChannel(laoID)
+	errAnswer := subs.AddChannel(laoID)
+	require.Nil(t, errAnswer)
 
 	// Test 1:Success For LaoState message
 	args = append(args, input{
@@ -118,7 +119,8 @@ func Test_handleChannelLao(t *testing.T) {
 	})
 
 	laoID = base64.URLEncoding.EncodeToString([]byte("laoID2"))
-	subs.AddChannel(laoID)
+	errAnswer = subs.AddChannel(laoID)
+	require.Nil(t, errAnswer)
 
 	// Test 8: Success for RollCallOpen message
 	args = append(args, input{
@@ -151,7 +153,8 @@ func Test_handleChannelLao(t *testing.T) {
 	})
 
 	laoID = base64.URLEncoding.EncodeToString([]byte("laoID3"))
-	subs.AddChannel(laoID)
+	errAnswer = subs.AddChannel(laoID)
+	require.Nil(t, errAnswer)
 
 	// Test 11: Success for RollCallClose message
 	args = append(args, input{
@@ -237,7 +240,8 @@ func Test_handleChannelLao(t *testing.T) {
 	})
 
 	laoID = base64.URLEncoding.EncodeToString([]byte("laoID4"))
-	subs.AddChannel(laoID)
+	errAnswer = subs.AddChannel(laoID)
+	require.Nil(t, errAnswer)
 
 	// Test 19: Success for ElectionSetup message
 	args = append(args, input{

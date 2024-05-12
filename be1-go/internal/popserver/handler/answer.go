@@ -80,7 +80,7 @@ func handleMessagesByChannel(msgsByChannel map[string]map[string]message.Message
 		// Sort by channelID length
 		sortedChannelIDs := getSortedChannels(msgsByChannel)
 
-		TryToHandleMessages(msgsByChannel, sortedChannelIDs)
+		tryToHandleMessages(msgsByChannel, sortedChannelIDs)
 
 		if len(msgsByChannel) == 0 {
 			return
@@ -88,7 +88,7 @@ func handleMessagesByChannel(msgsByChannel map[string]map[string]message.Message
 	}
 }
 
-func TryToHandleMessages(msgsByChannel map[string]map[string]message.Message, sortedChannelIDs []string) {
+func tryToHandleMessages(msgsByChannel map[string]map[string]message.Message, sortedChannelIDs []string) {
 	for _, channelID := range sortedChannelIDs {
 		msgs := msgsByChannel[channelID]
 		for msgID, msg := range msgs {
@@ -102,7 +102,7 @@ func TryToHandleMessages(msgsByChannel map[string]map[string]message.Message, so
 				delete(msgsByChannel[channelID], msgID)
 			}
 
-			errAnswer = errAnswer.Wrap(msgID).Wrap("TryToHandleMessages")
+			errAnswer = errAnswer.Wrap(msgID).Wrap("tryToHandleMessages")
 			utils.LogError(errAnswer)
 		}
 

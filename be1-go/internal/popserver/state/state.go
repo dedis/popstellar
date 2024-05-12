@@ -21,7 +21,7 @@ type state struct {
 }
 
 type Subscriber interface {
-	AddChannel(channel string)
+	AddChannel(channel string) *answer.Error
 	Subscribe(channel string, socket socket.Socket) *answer.Error
 	Unsubscribe(channel string, socket socket.Socket) *answer.Error
 	SendToAll(buf []byte, channel string) *answer.Error
@@ -79,9 +79,7 @@ func AddChannel(channel string) *answer.Error {
 		return errAnswer
 	}
 
-	subs.AddChannel(channel)
-
-	return nil
+	return subs.AddChannel(channel)
 }
 
 func Subscribe(socket socket.Socket, channel string) *answer.Error {

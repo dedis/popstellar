@@ -161,7 +161,8 @@ func Test_handleSubscribe(t *testing.T) {
 	ID := 1
 	channel := "/root/lao1"
 
-	subs.AddChannel(channel)
+	errAnswer := subs.AddChannel(channel)
+	require.Nil(t, errAnswer)
 
 	args = append(args, input{
 		name:    "Test 1",
@@ -249,8 +250,10 @@ func Test_handleUnsubscribe(t *testing.T) {
 	ID := 1
 	channel := "/root/lao1"
 
-	subs.AddChannel(channel)
-	errAnswer := subs.Subscribe(channel, &fakeSocket)
+	errAnswer := subs.AddChannel(channel)
+	require.Nil(t, errAnswer)
+
+	errAnswer = subs.Subscribe(channel, &fakeSocket)
 	require.Nil(t, errAnswer)
 
 	args = append(args, input{
@@ -268,7 +271,8 @@ func Test_handleUnsubscribe(t *testing.T) {
 	ID = 2
 	channel = "/root/lao2"
 
-	subs.AddChannel(channel)
+	errAnswer = subs.AddChannel(channel)
+	require.Nil(t, errAnswer)
 
 	args = append(args, input{
 		name:     "Test 2",

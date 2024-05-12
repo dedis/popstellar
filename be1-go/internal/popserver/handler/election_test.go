@@ -307,7 +307,7 @@ func Test_handleChannelElection(t *testing.T) {
 
 	args = append(args, input{
 		name: "Test 19",
-		msg: newVoteCastVoteStringMsg(t, ownerPubBuf64, laoID, electionID, channelPath, "", messagedata.OpenBallot,
+		msg: newVoteCastVoteStringMsg(t, ownerPubBuf64, laoID, electionID, channelPath, messagedata.OpenBallot,
 			0, stringVotes, questions, ownerPublicKey, mockRepo),
 		channel:  channelPath,
 		isError:  true,
@@ -366,7 +366,9 @@ func Test_handleChannelElection(t *testing.T) {
 			Vote:     1,
 		},
 	}
-	subs.AddChannel(channelPath)
+
+	errAnswer = subs.AddChannel(channelPath)
+	require.Nil(t, errAnswer)
 
 	args = append(args, input{
 		name: "Test 22",
@@ -515,7 +517,7 @@ func newVoteCastVoteIntMsg(t *testing.T, sender, laoID, electionID, electionPath
 	return msg
 }
 
-func newVoteCastVoteStringMsg(t *testing.T, sender, laoID, electionID, electionPath, state, electionType string,
+func newVoteCastVoteStringMsg(t *testing.T, sender, laoID, electionID, electionPath, electionType string,
 	createdAt int64, votes []generator.VoteString, questions map[string]types.Question, owner kyber.Point,
 	mockRepo *database.MockRepository) message.Message {
 
