@@ -48,7 +48,7 @@ func (h *Hub) Start() {
 			case <-ticker.C:
 				h.sendHeartbeatToServers()
 			case <-h.stop:
-				utils.LogInfo("stopping the hub")
+				utils.LogInfo("stopping the heartbeat")
 				return
 			}
 		}
