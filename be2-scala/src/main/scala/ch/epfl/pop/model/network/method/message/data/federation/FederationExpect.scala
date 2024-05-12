@@ -13,6 +13,7 @@ final case class FederationExpect(
     other_organizer: PublicKey,
     challenge: Message
 ) extends MessageData {
+  require(serverAddress.matches("^(ws|wss):\\/\\/.*(:\\\\d{0,5})?\\/.*$"), s"This is an invalid server address")
   override val _object: ObjectType = ObjectType.federation
   override val action: ActionType = ActionType.expect
 }
