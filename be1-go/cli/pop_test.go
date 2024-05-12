@@ -2,7 +2,12 @@ package main
 
 import (
 	"context"
+	"github.com/rs/zerolog"
+	"github.com/stretchr/testify/require"
+	"io"
 	"os"
+	"popstellar/internal/popserver/state"
+	"popstellar/internal/popserver/types"
 	"sync"
 	"testing"
 	"time"
@@ -12,8 +17,12 @@ const waitUp = time.Second * 2
 
 func TestConnectMultipleServers(t *testing.T) {
 
+	noLog := zerolog.New(io.Discard)
 	ctx, cancel := context.WithCancel(context.Background())
 	wait := sync.WaitGroup{}
+
+	err := state.SetState(t, types.NewSubscribers(), types.NewPeers(), types.NewQueries(&noLog))
+	require.NoError(t, err)
 
 	wait.Add(1)
 	go func() {
@@ -29,6 +38,9 @@ func TestConnectMultipleServers(t *testing.T) {
 	time.Sleep(waitUp)
 	t.Log("server 1 up")
 
+	err = state.SetState(t, types.NewSubscribers(), types.NewPeers(), types.NewQueries(&noLog))
+	require.NoError(t, err)
+
 	wait.Add(1)
 	go func() {
 		defer wait.Done()
@@ -43,6 +55,9 @@ func TestConnectMultipleServers(t *testing.T) {
 
 	time.Sleep(waitUp)
 	t.Log("server 2 up")
+
+	err = state.SetState(t, types.NewSubscribers(), types.NewPeers(), types.NewQueries(&noLog))
+	require.NoError(t, err)
 
 	wait.Add(1)
 	go func() {
@@ -64,8 +79,12 @@ func TestConnectMultipleServers(t *testing.T) {
 
 func TestConnectMultipleServersWithoutPK(t *testing.T) {
 
+	noLog := zerolog.New(io.Discard)
 	ctx, cancel := context.WithCancel(context.Background())
 	wait := sync.WaitGroup{}
+
+	err := state.SetState(t, types.NewSubscribers(), types.NewPeers(), types.NewQueries(&noLog))
+	require.NoError(t, err)
 
 	wait.Add(1)
 	go func() {
@@ -81,6 +100,9 @@ func TestConnectMultipleServersWithoutPK(t *testing.T) {
 	time.Sleep(waitUp)
 	t.Log("server 1 up")
 
+	err = state.SetState(t, types.NewSubscribers(), types.NewPeers(), types.NewQueries(&noLog))
+	require.NoError(t, err)
+
 	wait.Add(1)
 	go func() {
 		defer wait.Done()
@@ -94,6 +116,9 @@ func TestConnectMultipleServersWithoutPK(t *testing.T) {
 
 	time.Sleep(waitUp)
 	t.Log("server 2 up")
+
+	err = state.SetState(t, types.NewSubscribers(), types.NewPeers(), types.NewQueries(&noLog))
+	require.NoError(t, err)
 
 	wait.Add(1)
 	go func() {
