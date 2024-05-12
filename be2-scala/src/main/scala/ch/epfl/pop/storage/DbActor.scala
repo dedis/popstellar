@@ -223,6 +223,42 @@ final case class DbActor(
   }
 
   @throws[DbActorNAckException]
+  private def pagedCatchupChannel(channel: Channel, numberOfMessages: Int, beforeMessageID: String): List[Message] = {
+
+    @scala.annotation.tailrec
+    def buildPagedCatchupList(msgIds: List[Hash], acc: List[Message]): List[Message] = {
+      msgIds match {
+        case Nil => acc
+        case head :: tail =>
+          Try(read(channel, head)).recover(_ => None) match {
+            case Success(Some(msg)) => buildPagedCatchupList(tail, msg :: acc)
+            case _ =>
+              log.error(s"/!\\ Critical error encountered: message_id '$head' is listed in channel '$channel' but not stored in db")
+              buildCatchupList(tail, acc)
+          }
+      }
+    }
+
+    val channelData: ChannelData = readChannelData(channel)
+
+    val pagedCatchupList = readCreateLao(channel) match {
+      case Some(msg) =>
+        msg :: buildPagedCatchupList(channelData.messages, Nil)
+
+      case None =>
+        if (channel.isMainLaoChannel) {
+          log.error("Critical error encountered: no create_lao message was found in the db")
+        }
+        buildPagedCatchupList(channelData.messages, Nil)
+    }
+
+    readGreetLao(channel) match {
+      case Some(msg) => msg :: pagedCatchupList
+      case None => pagedCatchupList
+    }
+  }
+
+  @throws[DbActorNAckException]
   private def getAllChannels: Set[Channel] = {
     storage.filterKeysByPrefix(storage.CHANNEL_DATA_KEY)
       .map(key => Channel(key.replaceFirst(storage.CHANNEL_DATA_KEY, "")))
@@ -455,6 +491,13 @@ final case class DbActor(
         case failure           => sender() ! failure.recover(Status.Failure(_))
       }
 
+    case PagedCatchup(channel, numberOfMessages, beforeMessageID) =>
+      log.info(s"Actor $self (db) received a PagedCatchup request for channel '$channel' for '$numberOfMessages' messages before message ID: '$beforeMessageID")
+      Try(pagedCatchupChannel(channel, numberOfMessages, beforeMessageID)) match {
+        case Success(messages) => sender() ! DbActorCatchupAck(messages)
+        case failure => sender() ! failure.recover(Status.Failure(_))
+      }
+
     case GetAllChannels() =>
       log.info(s"Actor $self (db) receveid a GetAllChannels request")
       Try(getAllChannels) match {
@@ -659,6 +702,15 @@ object DbActor {
     *   the channel where the messages should be fetched
     */
   final case class Catchup(channel: Channel) extends Event
+
+  /** Request to read a number of messages (<numberOfMessages>) messages from a specific <channel>
+   * before a certain message ID <beforeMessageID> or the latest messages if <beforeMessageID> is
+   * not specified
+   *
+   * @param channel
+   * the channel where the messages should be fetched
+   */
+  final case class PagedCatchup(channel: Channel, numberOfMessages: Int, beforeMessageID: String) extends Event
 
   /** Request to get all locally stored channels
     */

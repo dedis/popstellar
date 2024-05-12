@@ -3,7 +3,7 @@ package ch.epfl.pop.pubsub.graph
 import akka.NotUsed
 import akka.pattern.AskableActorRef
 import akka.stream.scaladsl.Flow
-import ch.epfl.pop.model.network.method.{Broadcast, Catchup, GetMessagesById}
+import ch.epfl.pop.model.network.method.{Broadcast, Catchup, GetMessagesById, PagedCatchup}
 import ch.epfl.pop.model.network._
 import ch.epfl.pop.model.objects.DbActorNAckException
 import ch.epfl.pop.pubsub.AskPatternConstants
@@ -50,6 +50,16 @@ class AnswerGenerator(dbActor: => AskableActorRef) extends AskPatternConstants {
 
         // Let get_messages_by_id request go through
         case GetMessagesById(_) => graphMessage
+
+        case PagedCatchup(channel, numberOfMessages, beforeMessageID) =>
+          val askPagedCatchup = dbActor ? DbActor.PagedCatchup(channel, numberOfMessages, beforeMessageID)
+          Await.ready(askPagedCatchup, duration).value match {
+            case Some(Success(DbActor.DbActorCatchupAck(messages))) =>
+              val resultObject: ResultObject = new ResultObject(messages)
+              Right(JsonRpcResponse(RpcValidator.JSON_RPC_VERSION, Some(resultObject), None, rpcRequest.id))
+            case Some(Failure(ex: DbActorNAckException)) => Left(PipelineError(ex.code, s"AnswerGenerator failed : ${ex.message}", rpcRequest.getId))
+            case reply => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"AnswerGenerator failed : unexpected DbActor reply '$reply'", rpcRequest.getId))
+          }
 
         // Standard answer res == 0
         case _ => Right(JsonRpcResponse(
