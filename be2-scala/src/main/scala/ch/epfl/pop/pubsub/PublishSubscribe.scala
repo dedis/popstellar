@@ -33,7 +33,7 @@ object PublishSubscribe {
       messageRegistry: MessageRegistry,
       monitorRef: ActorRef,
       connectionMediatorRefT: ActorRef,
-      gossipManager: AskableActorRef,
+      gossipManagerT: AskableActorRef,
       isServer: Boolean,
       initGreetServer: Boolean = false
   )(implicit system: ActorSystem): Flow[Message, Message, NotUsed] = Flow.fromGraph(GraphDSL.create() {
@@ -46,6 +46,7 @@ object PublishSubscribe {
         connectionMediatorRef = connectionMediatorRefT
         mediatorActorRef = mediatorActorRefT
         securityModuleActorRef = securityModuleActorRefT
+        gossipManager = gossipManagerT
 
         /* partitioner port numbers */
         val portPipelineError = 0

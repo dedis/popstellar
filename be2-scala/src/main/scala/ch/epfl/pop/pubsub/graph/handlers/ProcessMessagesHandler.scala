@@ -99,7 +99,7 @@ object ProcessMessagesHandler extends AskPatternConstants {
             case Left(err) =>
               println(s"failedMessage : ${
                 graphMessage match
-                  case Right(jsonRpcRequest: JsonRpcRequest) => s"${jsonRpcRequest.toJson}, err : $err "
+                  case Right(jsonRpcRequest: JsonRpcRequest) => s"${jsonRpcRequest.toJson}"
                   case _ => "Left"
               }")
               if (retry == 1) {

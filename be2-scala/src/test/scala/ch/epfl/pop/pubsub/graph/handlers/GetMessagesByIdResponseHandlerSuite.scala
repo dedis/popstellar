@@ -7,6 +7,7 @@ import akka.stream.scaladsl.{Flow, Sink, Source}
 import akka.testkit.TestKit
 import akka.util.Timeout
 import ch.epfl.pop.IOHelper.readJsonFromPath
+import ch.epfl.pop.decentralized.{ConnectionMediator, GossipManager, Monitor}
 import ch.epfl.pop.model.network.JsonRpcResponse
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.objects.Channel
@@ -14,16 +15,16 @@ import ch.epfl.pop.pubsub.graph.GraphMessage
 import ch.epfl.pop.pubsub.{AskPatternConstants, MessageRegistry, PubSubMediator, PublishSubscribe}
 import ch.epfl.pop.storage.SecurityModuleActorSuite.testSecurityDirectory
 import ch.epfl.pop.storage.{DbActor, InMemoryStorage, SecurityModuleActor}
-import org.scalatest.BeforeAndAfterAll
+import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach}
 import org.scalatest.funsuite.AnyFunSuiteLike
 import org.scalatest.matchers.should.Matchers
-import org.scalatest.matchers.should.Matchers._
+import org.scalatest.matchers.should.Matchers.*
 
 import scala.concurrent.Await
 import scala.concurrent.duration.{DurationInt, FiniteDuration}
 import scala.util.Success
 
-class GetMessagesByIdResponseHandlerSuite extends TestKit(ActorSystem("GetMessagesByIdResponseHandlerSuiteSystem")) with AnyFunSuiteLike with AskPatternConstants with BeforeAndAfterAll {
+class GetMessagesByIdResponseHandlerSuite extends TestKit(ActorSystem("GetMessagesByIdResponseHandlerSuiteSystem")) with AnyFunSuiteLike with AskPatternConstants with BeforeAndAfterAll with BeforeAndAfterEach{
 
   // Implicit for system actors
   implicit val timeout: Timeout = Timeout(1.seconds)
@@ -34,9 +35,14 @@ class GetMessagesByIdResponseHandlerSuite extends TestKit(ActorSystem("GetMessag
   val pubSubMediatorRef: ActorRef = system.actorOf(PubSubMediator.props, "PubSubMediator")
   val dbActorRef: AskableActorRef = system.actorOf(Props(DbActor(pubSubMediatorRef, messageRegistry, inMemoryStorage)), "DbActor")
   val securityModuleActorRef: AskableActorRef = system.actorOf(Props(SecurityModuleActor(testSecurityDirectory)))
+  private val monitorRef: ActorRef = system.actorOf(Monitor.props(dbActorRef))
+  private val connectionMediatorRef: ActorRef = system.actorOf(ConnectionMediator.props(monitorRef, pubSubMediatorRef, dbActorRef, securityModuleActorRef, messageRegistry))
+  private val gossipManager: AskableActorRef = system.actorOf(GossipManager.props(dbActorRef, monitorRef, connectionMediatorRef))
 
-  // Inject dbActor above
-  PublishSubscribe.buildGraph(pubSubMediatorRef, dbActorRef, securityModuleActorRef, messageRegistry, ActorRef.noSender, ActorRef.noSender, ActorRef.noSender, isServer = false)
+  override def beforeEach(): Unit = {
+    // Inject dbActor above
+    PublishSubscribe.buildGraph(pubSubMediatorRef, dbActorRef, securityModuleActorRef, messageRegistry, monitorRef, connectionMediatorRef, gossipManager, isServer = false)
+  }
 
   // handler we want to test
   val responseHandler: Flow[GraphMessage, GraphMessage, NotUsed] = ProcessMessagesHandler.getMsgByIdResponseHandler(MessageRegistry())

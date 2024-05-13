@@ -30,7 +30,6 @@ case object LaoHandler extends MessageHandler {
         popchaChannel: Channel = Channel(s"$laoChannel${Channel.POPCHA_CHANNEL_PREFIX}")
         // we get access to the canonical address of the server
         address: Option[String] = Some(s"${serverConf.externalAddress}/${serverConf.clientPath}")
-
         // check whether the lao already exists in db
         _ <- dbActor ? DbActor.AssertChannelMissing(laoChannel)
         // create lao channels

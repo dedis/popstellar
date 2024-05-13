@@ -11,7 +11,7 @@ import akka.pattern.ask
 import akka.stream.scaladsl.{Flow, Sink, Source}
 import ch.epfl.pop.IOHelper.readJsonFromPath
 import ch.epfl.pop.config.RuntimeEnvironment
-import ch.epfl.pop.decentralized.{ConnectionMediator, Monitor}
+import ch.epfl.pop.decentralized.{ConnectionMediator, GossipManager, Monitor}
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse}
 import ch.epfl.pop.model.network.method.{GreetServer, Rumor}
@@ -34,15 +34,16 @@ class RumorHandlerSuite extends TestKit(ActorSystem("RumorActorSuiteActorSystem"
   private val inMemoryStorage: InMemoryStorage = InMemoryStorage()
   private val messageRegistry: MessageRegistry = MessageRegistry()
   private val pubSubMediatorRef: ActorRef = system.actorOf(PubSubMediator.props)
-  private val dbActorRef: AskableActorRef = system.actorOf(Props(DbActor(pubSubMediatorRef, messageRegistry, inMemoryStorage)))
+  private val dbActorRef: AskableActorRef = system.actorOf(Props(DbActor(pubSubMediatorRef, messageRegistry, inMemoryStorage)), "DbActor")
   private val securityModuleActorRef: AskableActorRef = system.actorOf(Props(SecurityModuleActor(RuntimeEnvironment.securityPath)))
   private val monitorRef: ActorRef = system.actorOf(Monitor.props(dbActorRef))
-  private var connectionMediatorRef: AskableActorRef = system.actorOf(ConnectionMediator.props(monitorRef, pubSubMediatorRef, dbActorRef, securityModuleActorRef, messageRegistry))
+  private val connectionMediatorRef: ActorRef = system.actorOf(ConnectionMediator.props(monitorRef, pubSubMediatorRef, dbActorRef, securityModuleActorRef, messageRegistry))
+  private val gossipManager: AskableActorRef = system.actorOf(GossipManager.props(dbActorRef, monitorRef, connectionMediatorRef))
   private val rumorHandler: Flow[GraphMessage, GraphMessage, NotUsed] = ParamsHandler.rumorHandler(dbActorRef, messageRegistry)
-  // Inject dbActor above
-  PublishSubscribe.buildGraph(pubSubMediatorRef, dbActorRef, securityModuleActorRef, messageRegistry, ActorRef.noSender, ActorRef.noSender, ActorRef.noSender, isServer = false)
 
-  val pathCorrectRumor: String = "src/test/scala/util/examples/json/rumor/rumor_correct_msg.json"
+  PublishSubscribe.buildGraph(pubSubMediatorRef, dbActorRef, securityModuleActorRef, messageRegistry, monitorRef, connectionMediatorRef, gossipManager, isServer = false)
+
+  val pathCorrectRumor: String = "src/test/scala/util/examples/json/rumor/rumor_correct_msg_create_rollcall.json"
 
   val rumorRequest: JsonRpcRequest = JsonRpcRequest.buildFromJson(readJsonFromPath(pathCorrectRumor))
 
@@ -52,6 +53,7 @@ class RumorHandlerSuite extends TestKit(ActorSystem("RumorActorSuiteActorSystem"
   private var processDuration: FiniteDuration = duration.mul(nbMessages)
 
   override def beforeEach(): Unit = {
+    PublishSubscribe.buildGraph(pubSubMediatorRef, dbActorRef, securityModuleActorRef, messageRegistry, monitorRef, connectionMediatorRef, gossipManager, isServer = false)
     inMemoryStorage.elements = Map.empty
   }
 

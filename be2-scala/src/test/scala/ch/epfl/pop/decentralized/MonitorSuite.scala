@@ -1,6 +1,7 @@
 package ch.epfl.pop.decentralized
 
 import akka.actor.{ActorRef, ActorSystem, PoisonPill, Props}
+import akka.pattern.ask
 import akka.stream.scaladsl.Source
 import akka.testkit.{TestKit, TestProbe}
 import ch.epfl.pop.config.RuntimeEnvironment.serverPeersListPath
@@ -9,15 +10,13 @@ import ch.epfl.pop.model.network.method.{Heartbeat, ParamsWithMap}
 import ch.epfl.pop.model.network.{JsonRpcRequest, MethodType}
 import ch.epfl.pop.model.objects.{Base64Data, Channel, Hash}
 import ch.epfl.pop.pubsub.graph.validators.RpcValidator
+import ch.epfl.pop.storage.DbActor
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.funsuite.AnyFunSuiteLike as FunSuiteLike
 import org.scalatest.matchers.should.Matchers
 import util.examples.JsonRpcRequestExample
-import ch.epfl.pop.storage.DbActor
-import akka.pattern.ask
 
 import java.io.{File, PrintWriter}
-import java.lang.Thread.sleep
 import java.nio.file.Path
 import scala.collection.immutable.HashMap
 import scala.concurrent.duration.DurationInt
