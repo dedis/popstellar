@@ -602,26 +602,9 @@ func (c *Channel) processFederationResult(msg message.Message,
 
 	}
 
-	resultPkBytes, err := base64.URLEncoding.DecodeString(federationResult.PublicKey)
-	if err != nil {
-		return xerrors.Errorf("failed to decode local public key in FederationResult message: %v", err)
-
-	}
-	localPkBytes, err := c.hub.GetPubKeyOwner().MarshalBinary()
-	if err != nil {
-		return xerrors.Errorf("failed to marshal local organizer public key: %v", err)
-
-	}
-	if !(bytes.Equal(resultPkBytes, localPkBytes)) {
+	if c.localOrganizerPk != federationResult.PublicKey {
 		return xerrors.Errorf("invalid public key contained in FederationResult message")
-
 	}
-
-	//err = schnorr.Verify(crypto.Suite, remotePk, localPkBinary, pkSignatureBytes)
-	//if err != nil {
-	//	return xerrors.Errorf("failed to verify remote signature on local organizer public key: %v", err)
-
-	//}
 
 	remoteOrg.state = Connected
 
