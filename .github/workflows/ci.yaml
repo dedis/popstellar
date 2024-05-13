@@ -10,6 +10,7 @@ on:
       - opened
       - synchronize
       - reopened
+  merge_group:
 
 jobs:
   fe1-web:

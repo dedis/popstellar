@@ -14,6 +14,7 @@ import (
 	"golang.org/x/sync/semaphore"
 	"golang.org/x/xerrors"
 	"io"
+	"net"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -108,25 +109,22 @@ func Test_Authenticate_User(t *testing.T) {
 	_, found := fakeHub.channelByID[name]
 	require.True(t, found)
 
-	time.Sleep(time.Millisecond)
-
 	// Create the message
 	file := filepath.Join(relativeMsgDataExamplePath, "popcha_authenticate",
 		"popcha_authenticate.json")
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
 
-	// struct checking that the ws server received a message from the pop backend
-	rb := &receivedBuffer{
-		received: false,
-		once:     sync.Once{},
-		mutex:    sync.Mutex{},
-	}
+	// channel where the ws server signals when it has started listening
+	msgCh := make(chan []byte, 1)
+	// channel where the ws server put message it received from the pop backend
+	startCh := make(chan struct{}, 1)
 
 	// creating dummy websocket server
-	newWSServer(t, "localhost:19006", rb)
+	newWSServer(t, "localhost:19006", msgCh, startCh)
 
-	time.Sleep(time.Millisecond)
+	// wait that the ws server has started listening
+	<-startCh
 
 	buf64 := base64.URLEncoding.EncodeToString(buf)
 
@@ -158,7 +156,12 @@ func Test_Authenticate_User(t *testing.T) {
 	err = authCha.Publish(msg, socket.ClientSocket{})
 	require.NoError(t, err)
 
-	require.True(t, rb.get())
+	select {
+	case m := <-msgCh:
+		require.NotNil(t, m)
+	case <-time.After(time.Second):
+		t.Errorf("No message received after 1 sec")
+	}
 }
 
 // -----------------------------------------------------------------------------
@@ -309,58 +312,32 @@ var upgrader = websocket.Upgrader{
 	WriteBufferSize: 1024,
 }
 
-func websocketHandler(rb *receivedBuffer) func(http.ResponseWriter, *http.Request) {
+func websocketHandler(t *testing.T, msgCh chan []byte) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		upgrader.CheckOrigin = func(r *http.Request) bool { return true }
 
 		conn, err := upgrader.Upgrade(w, r, nil)
-		if err != nil {
-			log.Error().Msgf("error while upgrading: %v", err)
-			return
-		}
+		require.NoError(t, err)
 
-		// mark the boolean received as true
-		rb.recv()
+		// receive the message and send it to the message channel
+		_, msg, err := conn.ReadMessage()
+		require.NoError(t, err)
+
+		msgCh <- msg
 		conn.Close()
 	}
 }
 
-func newWSServer(t *testing.T, addr string, rb *receivedBuffer) {
-	http.HandleFunc("/", websocketHandler(rb))
+func newWSServer(t *testing.T, addr string, msgCh chan []byte, startCh chan struct{}) {
+	http.HandleFunc("/", websocketHandler(t, msgCh))
 	go func() {
-		err := http.ListenAndServe(addr, nil)
-		if err != nil {
-			require.NoError(t, err)
-		}
+		listener, err := net.Listen("tcp", addr)
+		require.NoError(t, err)
+
+		// signal that the ws server has started listening
+		startCh <- struct{}{}
+
+		err = http.Serve(listener, nil)
+		require.NoError(t, err)
 	}()
-}
-
-/*
-	Atomic Read/Write boolean, to check that the dummy WS server correctly received the request
-
-*/
-
-// receivedBuffer contains a Mutex, a "once" object allowing to perform one flip only, and the boolean
-type receivedBuffer struct {
-	received bool
-	once     sync.Once
-	mutex    sync.Mutex
-}
-
-// recv flips the boolean. It can only be done once
-func (rb *receivedBuffer) recv() {
-	rb.once.Do(func() {
-		rb.mutex.Lock()
-		defer rb.mutex.Unlock()
-		if !rb.received {
-			rb.received = true
-		}
-	})
-}
-
-// get performs an atomic read on the boolean
-func (rb *receivedBuffer) get() bool {
-	rb.mutex.Lock()
-	defer rb.mutex.Unlock()
-	return rb.received
 }

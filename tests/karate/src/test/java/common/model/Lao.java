@@ -1,6 +1,6 @@
-package be.model;
+package common.model;
 
-import be.utils.Hash;
+import common.utils.Hash;
 
 import java.util.ArrayList;
 import java.util.List;
