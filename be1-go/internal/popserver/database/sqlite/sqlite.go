@@ -768,14 +768,8 @@ func (s *SQLite) GetLAOOrganizerPubKey(electionPath string) (kyber.Point, error)
 	}
 	defer tx.Rollback()
 
-	var laoPath string
-	err = tx.QueryRow(selectLAOPathFromChannelPath, electionPath).Scan(&laoPath)
-	if err != nil {
-		return nil, err
-	}
-
 	var electionPubBuf []byte
-	err = tx.QueryRow(selectPublicKey, laoPath).Scan(&electionPubBuf)
+	err = tx.QueryRow(selectLaoOrganizerKey, electionPath).Scan(&electionPubBuf)
 	if err != nil {
 		return nil, err
 	}

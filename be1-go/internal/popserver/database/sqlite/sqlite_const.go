@@ -171,7 +171,15 @@ const (
       AND json_extract(messageData, '$.object') = ?
       AND json_extract(messageData, '$.action') = ?`
 
-	selectLAOPathFromChannelPath = `SELECT laoPath FROM channel WHERE channelPath = ?`
+	selectLaoOrganizerKey = `
+    SELECT publicKey 
+    FROM key 
+    WHERE channelPath = (
+        SELECT laoPath 
+        FROM channel 
+        WHERE channelPath = ?
+    )
+`
 
 	selectLastElectionMessage = `
     SELECT json_extract(messageData, '$.action')
