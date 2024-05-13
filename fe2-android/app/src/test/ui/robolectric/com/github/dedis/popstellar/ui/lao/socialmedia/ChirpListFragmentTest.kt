@@ -11,6 +11,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.github.dedis.popstellar.R
 import com.github.dedis.popstellar.model.objects.Chirp
+import com.github.dedis.popstellar.model.objects.Lao
 import com.github.dedis.popstellar.model.objects.Lao.Companion.generateLaoId
 import com.github.dedis.popstellar.model.objects.Reaction
 import com.github.dedis.popstellar.model.objects.RollCall
@@ -18,6 +19,7 @@ import com.github.dedis.popstellar.model.objects.event.EventState
 import com.github.dedis.popstellar.model.objects.security.KeyPair
 import com.github.dedis.popstellar.model.objects.security.MessageID
 import com.github.dedis.popstellar.model.objects.security.PoPToken
+import com.github.dedis.popstellar.repository.LAORepository
 import com.github.dedis.popstellar.repository.RollCallRepository
 import com.github.dedis.popstellar.repository.SocialMediaRepository
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager
@@ -106,6 +108,9 @@ class ChirpListFragmentTest {
     @Rule
     var rule = InstantTaskExecutorRule()
 
+    @Inject
+    lateinit var laoRepository: LAORepository
+
     @JvmField
     @Rule(order = 0)
     val mockitoRule: MockitoTestRule = MockitoJUnit.testRule(this)
@@ -121,7 +126,7 @@ class ChirpListFragmentTest {
                 @Throws(KeyException::class)
                 override fun before() {
                     hiltRule.inject()
-
+                    laoRepository.updateLao(LAO)
                     rollCallRepository.updateRollCall(LAO_ID, ROLL_CALL)
                     socialMediaRepository.addChirp(LAO_ID, CHIRP_1)
                     socialMediaRepository.addChirp(LAO_ID, CHIRP_2)
@@ -267,8 +272,69 @@ class ChirpListFragmentTest {
             val bin2 = view2.findViewById<ImageButton>(R.id.delete_chirp_button)
             Assert.assertNotNull(bin2)
             Assert.assertEquals(View.GONE.toLong(), bin2.visibility.toLong())
+
+            // remove the first chirp
+            bin.callOnClick()
         }
     }
+
+    //@Test
+    //fun testAddingAndDeletingReaction(){
+    //    val chirps = createChirpList()
+    //    activityScenarioRule.scenario.onActivity { activity: LaoActivity ->
+    //        val socialMediaViewModel = obtainSocialMediaViewModel(activity, LAO_ID)
+//
+    //        val viewModel = obtainViewModel(activity)
+    //        val chirpListAdapter =
+    //                createChirpListAdapter(activity, viewModel, socialMediaViewModel, chirps)
+//
+    //        // Use a non null ViewGroup to inflate the card
+    //        val layout = LinearLayout(activity.applicationContext)
+    //        val parent = TextView(activity.applicationContext)
+    //        parent.text = "Mock Title"
+    //        layout.addView(parent)
+//
+    //        // Get the view for the first chirp in the list.
+    //        val view1 = chirpListAdapter.getView(0, null, layout)
+    //        Assert.assertNotNull(view1)
+//
+    //        // Verify the upvote is not set
+    //        var upvoteButton = view1.findViewById<ImageButton>(R.id.upvote_button)
+    //        Assert.assertNotNull(upvoteButton)
+    //        Assert.assertFalse(upvoteButton.isSelected)
+    //        upvoteButton.callOnClick()
+    //        InstrumentationRegistry.getInstrumentation().waitForIdleSync()
+    //        Assert.assertTrue(upvoteButton.isSelected)
+    //        upvoteButton.callOnClick()
+    //        InstrumentationRegistry.getInstrumentation().waitForIdleSync()
+    //        Assert.assertFalse(upvoteButton.isSelected)
+//
+    //        // Verify the downvote is not set
+    //        val downvoteButton = view1.findViewById<ImageButton>(R.id.downvote_button)
+    //        Assert.assertNotNull(downvoteButton)
+    //        Assert.assertFalse(downvoteButton.isSelected)
+    //        downvoteButton.callOnClick()
+    //        InstrumentationRegistry.getInstrumentation().waitForIdleSync()
+    //        Assert.assertTrue(downvoteButton.isSelected)
+    //        InstrumentationRegistry.getInstrumentation().waitForIdleSync()
+    //        upvoteButton.callOnClick()
+    //        InstrumentationRegistry.getInstrumentation().waitForIdleSync()
+    //        Assert.assertFalse(downvoteButton.isSelected)
+    //        Assert.assertTrue(upvoteButton.isSelected)
+//
+//
+    //        // Verify the heart is not set
+    //        val heartButton = view1.findViewById<ImageButton>(R.id.heart_button)
+    //        Assert.assertNotNull(heartButton)
+    //        Assert.assertFalse(heartButton.isSelected)
+    //        heartButton.callOnClick()
+    //        InstrumentationRegistry.getInstrumentation().waitForIdleSync()
+    //        Assert.assertTrue(heartButton.isSelected)
+    //        heartButton.callOnClick()
+    //        InstrumentationRegistry.getInstrumentation().waitForIdleSync()
+    //        Assert.assertFalse(heartButton.isSelected)
+    //    }
+    //}
 
     @Test
     fun viewButtonTest() {
@@ -293,7 +359,6 @@ class ChirpListFragmentTest {
             val upvoteButton = view1.findViewById<ImageButton>(R.id.upvote_button)
             Assert.assertNotNull(upvoteButton)
             upvoteButton.callOnClick()
-            // Remove the upvote reaction
             socialMediaRepository.deleteReaction(LAO_ID, REACTION_ID)
             // Wait for the observable to be notified
             InstrumentationRegistry.getInstrumentation().waitForIdleSync()
@@ -323,6 +388,7 @@ class ChirpListFragmentTest {
         private val SENDER_2 = SENDER_KEY_2.publicKey
         private val SENDER_3 = SENDER_KEY_3.publicKey
         private val LAO_ID = generateLaoId(SENDER_1, CREATION_TIME, LAO_NAME)
+        private val LAO = Lao(LAO_ID)
         private val MESSAGE_ID_1 = Base64DataUtils.generateMessageID()
         private val MESSAGE_ID_2 = Base64DataUtils.generateMessageID()
         private const val TEXT_1 = "text1"

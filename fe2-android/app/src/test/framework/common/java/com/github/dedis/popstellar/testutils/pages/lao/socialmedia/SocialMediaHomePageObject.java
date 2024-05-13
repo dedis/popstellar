@@ -1,12 +1,12 @@
 package com.github.dedis.popstellar.testutils.pages.lao.socialmedia;
 
-import androidx.test.espresso.ViewInteraction;
-
-import com.github.dedis.popstellar.R;
-
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+
+import androidx.test.espresso.ViewInteraction;
+
+import com.github.dedis.popstellar.R;
 
 /**
  * This is the page object of SocialMediaHomeFragment
@@ -41,6 +41,10 @@ public class SocialMediaHomePageObject {
 
     public static ViewInteraction getSearchFragment() {
         return onView(withId(R.id.fragment_social_media_search));
+    }
+
+    public static ViewInteraction getUpVoteButton() {
+        return onView(withId(R.id.upvote_button));
     }
 
     public static ViewInteraction getSocialMediaFragment() {
