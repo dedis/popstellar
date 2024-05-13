@@ -1,4 +1,4 @@
-import { AnyAction, Reducer } from 'redux';
+import { AnyAction, Dispatch, Reducer } from 'redux';
 
 import { MessageRegistry } from 'core/network/jsonrpc/messages';
 import { Hash } from 'core/objects';
@@ -91,7 +91,7 @@ export interface WitnessInterface extends FeatureInterface {
       notification: WitnessFeature.Notification | WitnessFeature.NotificationState,
     ) => boolean;
 
-    delete?: (notification: WitnessFeature.NotificationState) => void;
+    delete?: (notification: WitnessFeature.NotificationState, dispatch: Dispatch) => void;
 
     Component: React.ComponentType<{
       notification: WitnessFeature.Notification;
