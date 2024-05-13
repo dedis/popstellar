@@ -3087,7 +3087,7 @@ With this message, Bob informs his server that it should expect a federation inv
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
     "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataFederationExpect.json",
-    "description": "Sent by an organizer client to its server, signals that a connection from a remote LAO is expected",
+    "description": "Sent by an organizer client to its server, signals that a connection from another LAO is expected",
     "type": "object",
     "properties": {
         "object": {
@@ -3099,17 +3099,17 @@ With this message, Bob informs his server that it should expect a federation inv
         "lao_id": {
             "type": "string",
             "contentEncoding": "base64",
-            "$comment": "ID of the remote LAO"
+            "$comment": "ID of the other LAO"
         },
         "server_address": {
             "type": "string",
             "pattern": "^(ws|wss):\/\/.*(:\\d{0,5})?\/.*$",
-            "$comment": "public address of the remote organizer server"
+            "$comment": "public address of the other organizer server"
         },
         "public_key": {
             "type": "string",
             "contentEncoding": "base64",
-            "$comment": "public key of the remote organizer"
+            "$comment": "public key of the other organizer"
         },
         "challenge": {
           "$ref": "../message.json",
@@ -3166,7 +3166,7 @@ It contains the necessary connection details, and a challenge which Bob's server
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataFederationInit.json",
-  "description": "Sent by an organizer client to its server, initiates a connection to a remote LAO",
+  "description": "Sent by an organizer client to its server, initiates a connection to another LAO",
   "type": "object",
   "properties": {
     "object": {
@@ -3178,17 +3178,17 @@ It contains the necessary connection details, and a challenge which Bob's server
     "lao_id": {
       "type": "string",
       "contentEncoding": "base64",
-      "$comment": "ID of the remote LAO"
+      "$comment": "ID of the other LAO"
     },
     "server_address": {
       "type": "string",
       "pattern": "^(ws|wss):\/\/.*(:\\d{0,5})?\/.*$",
-      "$comment": "public address of the remote organizer server"
+      "$comment": "public address of the other organizer server"
     },
     "public_key": {
       "type": "string",
       "contentEncoding": "base64",
-      "$comment": "public key of the remote organizer"
+      "$comment": "public key of the other organizer"
     },
     "challenge": {
       "$ref": "../message.json",
@@ -3240,7 +3240,7 @@ This message is sent by Bob's server. The purpose of this message is to provide 
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataFederationResult.json",
-  "description": "Sent by a server to a remote server, to inform them about the result of the authentication procedure",
+  "description": "Sent by a server to the other server, to inform them about the result of the authentication procedure",
   "type": "object",
   "oneOf": [
     {
@@ -3292,7 +3292,7 @@ This message is sent by Bob's server. The purpose of this message is to provide 
         "public_key": {
           "type": "string",
           "contentEncoding": "base64",
-          "$comment": "public key of the remote organizer"
+          "$comment": "public key of the other organizer"
         },
         "challenge": {
           "$ref": "../message.json",
