@@ -54,6 +54,7 @@ const (
 	FederationActionChallenge        = "challenge"
 	FederationActionInit             = "init"
 	FederationActionExpect           = "expect"
+	FederationActionResult           = "result"
 
 	ChirpObject             = "chirp"
 	ChirpActionAdd          = "add"

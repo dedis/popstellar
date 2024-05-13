@@ -1,0 +1,73 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataFederationResult.json",
+    "description": "Sent by an server to a remote server, to inform them about the result of the authentication procedure",
+    "type": "object",
+    "oneOf": [
+        {
+            "type": "object",
+            "properties": {
+                "object": {
+                    "const": "federation"
+                },
+                "action": {
+                    "const": "result"
+                },
+                "status": {
+                    "type": "string",
+                    "pattern": "^failure$",
+                    "$comment": "status of the authentication attempt"
+                },
+                "reason": {
+                    "type": "string",
+                    "$comment": "to be used in failures, describing the error that happened"
+                },
+                "challenge": {
+                    "$ref": "../message.json",
+                    "$comment": "message/message containing a FederationChallenge data"
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "object",
+                "action",
+                "status",
+                "reason",
+                "challenge"
+            ]
+        },
+        {
+            "type": "object",
+            "properties": {
+                "object": {
+                    "const": "federation"
+                },
+                "action": {
+                    "const": "result"
+                },
+                "status": {
+                    "type": "string",
+                    "pattern": "^success$",
+                    "$comment": "status of the authentication attempt"
+                },
+                "public_key": {
+                    "type": "string",
+                    "contentEncoding": "base64",
+                    "$comment": "public key of the remote organizer"
+                },
+                "challenge": {
+                    "$ref": "../message.json",
+                    "$comment": "message/message containing a FederationChallenge data"
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "object",
+                "action",
+                "status",
+                "public_key",
+                "challenge"
+            ]
+        }
+    ]
+}

@@ -5,17 +5,12 @@ import (
 	"encoding/base64"
 	"encoding/hex"
 	"encoding/json"
-	"github.com/rs/zerolog"
-	"github.com/stretchr/testify/require"
-	"go.dedis.ch/kyber/v3"
-	"go.dedis.ch/kyber/v3/sign/schnorr"
-	"golang.org/x/sync/semaphore"
-	"golang.org/x/xerrors"
 	"io"
 	"os"
 	"path/filepath"
 	"popstellar/channel"
 	"popstellar/crypto"
+	"popstellar/inbox"
 	jsonrpc "popstellar/message"
 	"popstellar/message/messagedata"
 	"popstellar/message/query"
@@ -26,6 +21,13 @@ import (
 	"sync"
 	"testing"
 	"time"
+
+	"github.com/rs/zerolog"
+	"github.com/stretchr/testify/require"
+	"go.dedis.ch/kyber/v3"
+	"go.dedis.ch/kyber/v3/sign/schnorr"
+	"golang.org/x/sync/semaphore"
+	"golang.org/x/xerrors"
 )
 
 const (
@@ -87,7 +89,7 @@ func Test_FederationRequestChallenge(t *testing.T) {
 
 	require.Equal(t, messagedata.FederationObject, challenge.Object)
 	require.Equal(t, messagedata.FederationActionChallenge, challenge.Action)
-	require.Greater(t, challenge.Timestamp, time.Now().Unix())
+	require.Greater(t, challenge.ValidUntil, time.Now().Unix())
 	bytes, err := hex.DecodeString(challenge.Value)
 	require.NoError(t, err)
 	require.Len(t, bytes, 32)
@@ -161,10 +163,7 @@ func Test_FederationExpect(t *testing.T) {
 		LaoId:         remoteLaoId,
 		ServerAddress: remoteServerAddress,
 		PublicKey:     remoteOrganizerKeypair.publicKey,
-		Challenge: messagedata.Challenge{
-			Value:      challenge.Value,
-			ValidUntil: challenge.Timestamp,
-		},
+		ChallengeMsg:  challengeMsg,
 	}
 
 	federationMsg := generateMessage(t, organizerKeypair, federationExpect)
@@ -212,9 +211,12 @@ func Test_FederationExpect_with_invalid_challenge(t *testing.T) {
 		LaoId:         remoteLaoId,
 		ServerAddress: remoteServerAddress,
 		PublicKey:     remoteOrganizerKeypair.publicKey,
-		Challenge: messagedata.Challenge{
-			Value:      hex.EncodeToString(valueBytes),
-			ValidUntil: time.Now().Unix(),
+		ChallengeMsg: message.Message{
+			Data:              "aaaaaaaaaaa",
+			Sender:            organizerKeypair.publicKey,
+			Signature:         "bbbbbbbbbbb",
+			MessageID:         messagedata.Hash("aaaaaaaaaaa", "bbbbbbbbbbb"),
+			WitnessSignatures: []message.WitnessSignature{},
 		},
 	}
 
@@ -269,10 +271,7 @@ func Test_FederationChallenge_not_organizer(t *testing.T) {
 		LaoId:         remoteLaoId,
 		ServerAddress: remoteServerAddress,
 		PublicKey:     remoteOrganizerKeypair.publicKey,
-		Challenge: messagedata.Challenge{
-			Value:      challenge.Value,
-			ValidUntil: challenge.Timestamp,
-		},
+		ChallengeMsg:  challengeMsg,
 	}
 
 	federationMsg := generateMessage(t, notOrganizerKeypair, federationExpect)
@@ -346,6 +345,78 @@ func Test_FederationInit(t *testing.T) {
 	require.NoError(t, socket.err)
 	//require.NotNil(t, socket.msg)
 
+}
+
+func Test_FederationResult(t *testing.T) {
+	organizerKeypair := generateKeyPair(t)
+	remoteOrganizerKeypair := generateKeyPair(t)
+	fakeHub, err := NewFakeHub("", organizerKeypair.public, nolog, nil)
+	require.NoError(t, err)
+
+	// dirty hack to manually create a channel, so we can then add the remote organizer pk without
+	// having to go through the init process
+
+	box := inbox.NewInbox(localFedChannel)
+
+	remoteOrg := &remoteOrganization{
+		organizerPk: remoteOrganizerKeypair.publicKey,
+		state:       None,
+	}
+	remoteOrg.organizerPk = remoteOrganizerKeypair.publicKey
+	remoteOrg.state = WaitResult
+
+	var remoteOrgs = map[string]*remoteOrganization{
+		remoteOrganizerKeypair.publicKey: remoteOrg,
+	}
+
+	newChannel := &Channel{
+		sockets:             channel.NewSockets(),
+		inbox:               box,
+		channelID:           localFedChannel,
+		hub:                 fakeHub,
+		log:                 nolog,
+		localOrganizerPk:    organizerKeypair.publicKey,
+		remoteOrganizations: remoteOrgs,
+	}
+
+	newChannel.registry = newChannel.NewFederationRegistry()
+
+	publicKeyBytes, err := organizerKeypair.public.MarshalBinary()
+	require.NoError(t, err)
+	//signedPublicKey, err := schnorr.Sign(crypto.Suite, remoteOrganizerKeypair.private, publicKeyBytes)
+	require.NoError(t, err)
+
+	challengeFile := filepath.Join(relativeMsgDataExamplePath,
+		"federation_challenge",
+		"federation_challenge.json")
+	challengeBytes, err := os.ReadFile(challengeFile)
+	challengeBase64 := base64.URLEncoding.EncodeToString(challengeBytes)
+	require.NoError(t, err)
+
+	//signedPublicKeyBase64 := base64.URLEncoding.EncodeToString(signedPublicKey)
+	signedChallengeBytes, err := schnorr.Sign(crypto.Suite, remoteOrganizerKeypair.private, challengeBytes)
+	require.NoError(t, err)
+	signedChallengeBase64 := base64.URLEncoding.EncodeToString(signedChallengeBytes)
+
+	federationResultData := messagedata.FederationResult{
+		Object:    messagedata.FederationObject,
+		Action:    messagedata.FederationActionResult,
+		Status:    "success",
+		PublicKey: base64.URLEncoding.EncodeToString(publicKeyBytes),
+		ChallengeMsg: message.Message{
+			Data:              challengeBase64,
+			Sender:            remoteOrganizerKeypair.publicKey,
+			Signature:         signedChallengeBase64,
+			MessageID:         messagedata.Hash(challengeBase64, signedChallengeBase64),
+			WitnessSignatures: []message.WitnessSignature{},
+		},
+	}
+	resultMsg := generateMessage(t, organizerKeypair, federationResultData)
+	publishMsg := generatePublish(t, localFedChannel, resultMsg)
+	socket := &fakeSocket{id: "sockSocket"}
+
+	err = newChannel.Publish(publishMsg, socket)
+	require.NoError(t, err)
 }
 
 // -----------------------------------------------------------------------------

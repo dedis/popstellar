@@ -6,15 +6,14 @@ type FederationChallenge struct {
 	Action string `json:"action"`
 
 	// Value is a 32 bytes array encoded in hexadecimal
-	Value string `json:"value"`
-	// Timestamp is a Unix timestamp
-	Timestamp int64 `json:"timestamp"`
+	Value      string `json:"value"`
+	ValidUntil int64  `json:"timestamp"`
 }
 
-type Challenge struct {
-	Value      string `json:"value"`
-	ValidUntil int64  `json:"valid_until"`
-}
+//type Challenge struct {
+//	Value      string `json:"value"`
+//	ValidUntil int64  `json:"valid_until"`
+//}
 
 // GetObject implements MessageData
 func (FederationChallenge) GetObject() string {
