@@ -27,7 +27,43 @@ public class SocialMediaHomePageObject {
     return onView(withId(R.id.fragment_event_list));
   }
 
+  public static ViewInteraction getHomeFeedFragment() {
+    return onView(withId(R.id.fragment_social_media_home));
+  }
+
+  public static ViewInteraction getFollowingFragment() {
+    return onView(withId(R.id.fragment_social_media_following));
+  }
+
+    public static ViewInteraction getProfileFragment() {
+        return onView(withId(R.id.fragment_social_media_profile));
+    }
+
+    public static ViewInteraction getSearchFragment() {
+        return onView(withId(R.id.fragment_social_media_search));
+    }
+
+    public static ViewInteraction getSocialMediaFragment() {
+        return onView(withId(R.id.main_menu_social_media));
+    }
+
   public static ViewInteraction getAddChirpButton() {
     return onView(withId(R.id.social_media_send_fragment_button));
   }
+
+  public static ViewInteraction getProfileButton() {
+    return onView(withId(R.id.social_media_profile_menu));
+  }
+
+    public static ViewInteraction getSearchButton() {
+        return onView(withId(R.id.social_media_search_menu));
+    }
+
+    public static ViewInteraction getFollowingButton() {
+        return onView(withId(R.id.social_media_following_menu));
+    }
+
+    public static ViewInteraction getHomeButton() {
+        return onView(withId(R.id.social_media_home_menu));
+    }
 }

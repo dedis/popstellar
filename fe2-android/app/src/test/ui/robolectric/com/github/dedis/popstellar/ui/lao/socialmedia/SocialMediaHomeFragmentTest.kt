@@ -135,6 +135,30 @@ class SocialMediaHomeFragmentTest {
   }
 
   @Test
+  fun testTabsButtons(){
+    val homeButton = SocialMediaHomePageObject.getHomeButton()
+    val profileButton = SocialMediaHomePageObject.getProfileButton()
+    val searchButton = SocialMediaHomePageObject.getSearchButton()
+    val followingButton = SocialMediaHomePageObject.getFollowingButton()
+
+    homeButton.perform(ViewActions.click())
+    SocialMediaHomePageObject.getHomeFeedFragment()
+      .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+
+    profileButton.perform(ViewActions.click())
+    SocialMediaHomePageObject.getProfileFragment()
+      .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+
+    searchButton.perform(ViewActions.click())
+    SocialMediaHomePageObject.getSearchFragment()
+      .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+
+    followingButton.perform(ViewActions.click())
+    SocialMediaHomePageObject.getFollowingFragment()
+      .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+  }
+
+  @Test
   fun testPoPTokenToastError() {
     Mockito.`when`(
       keyManager.getValidPoPToken(ArgumentMatchers.anyString(), MockitoKotlinHelpers.any())
@@ -159,6 +183,12 @@ class SocialMediaHomeFragmentTest {
 
       UITestUtils.assertLatestToastContent(true, R.string.error_retrieve_own_token, "")
     }
+  }
+
+  fun testFromEventListToSocialMediaHome() {
+    SocialMediaHomePageObject.getHomeFeedFragment().perform(ViewActions.click())
+    SocialMediaHomePageObject.getSocialMediaFragment()
+      .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
   }
 
   companion object {
