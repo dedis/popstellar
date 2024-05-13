@@ -543,37 +543,85 @@ func (s *SQLite) GetRollCallState(channelPath string) (string, error) {
 	return state, nil
 }
 
-func (s *SQLite) CheckPrevID(channel, nextID, expectedState string) (bool, error) {
+func (s *SQLite) CheckPrevOpenOrReopenID(channel, nextID string) (bool, error) {
 	var lastMsg []byte
 	var lastAction string
-	err := s.database.QueryRow("SELECT messageData, json_extract(messageData, '$.action')"+
-		" FROM message"+
-		" WHERE storedTime= (SELECT MAX(storedTime)"+
-		" FROM (SELECT * FROM message JOIN channelMessage ON message.messageID = channelMessage.messageID)"+
-		" WHERE json_extract(messageData, '$.object') = ? AND channelPath = ?)", messagedata.RollCallObject, channel).Scan(&lastMsg, &lastAction)
+
+	query := "SELECT message.messageData, json_extract(message.messageData, '$.action') AS action " +
+		"FROM message " +
+		"JOIN channelMessage ON message.messageID = channelMessage.messageID " +
+		"WHERE channelMessage.channelPath = ? " +
+		"AND json_extract(message.messageData, '$.object') = ? " +
+		"AND json_extract(message.messageData, '$.action') IN (?, ?) " +
+		"ORDER BY message.storedTime DESC " +
+		"LIMIT 1"
+
+	err := s.database.QueryRow(query, channel, messagedata.RollCallObject,
+		messagedata.RollCallActionOpen, messagedata.RollCallActionReOpen).Scan(&lastMsg, &lastAction)
 
 	if err != nil && errors.Is(err, sql.ErrNoRows) {
 		return false, nil
 	} else if err != nil {
 		return false, err
-	} else if lastAction != expectedState {
-		return false, nil
 	}
 
-	switch expectedState {
-	case messagedata.RollCallActionCreate:
-		var rollCallCreate messagedata.RollCallCreate
-		if err = json.Unmarshal(lastMsg, &rollCallCreate); err != nil {
-			return false, err
-		}
-		return rollCallCreate.ID == nextID, nil
-
+	switch lastAction {
 	case messagedata.RollCallActionOpen:
 		var rollCallOpen messagedata.RollCallOpen
-		if err = json.Unmarshal(lastMsg, &rollCallOpen); err != nil {
+		err = json.Unmarshal(lastMsg, &rollCallOpen)
+		if err != nil {
 			return false, err
 		}
 		return rollCallOpen.UpdateID == nextID, nil
+	case messagedata.RollCallActionReOpen:
+		var rollCallReOpen messagedata.RollCallReOpen
+		err = json.Unmarshal(lastMsg, &rollCallReOpen)
+		if err != nil {
+			return false, err
+		}
+		return rollCallReOpen.UpdateID == nextID, nil
+	}
+
+	return false, nil
+}
+
+func (s *SQLite) CheckPrevCreateOrCloseID(channel, nextID string) (bool, error) {
+	var lastMsg []byte
+	var lastAction string
+
+	query := "SELECT message.messageData, json_extract(message.messageData, '$.action') AS action " +
+		"FROM message " +
+		"JOIN channelMessage ON message.messageID = channelMessage.messageID " +
+		"WHERE channelMessage.channelPath = ? " +
+		"AND json_extract(message.messageData, '$.object') = ? " +
+		"AND json_extract(message.messageData, '$.action') IN (?, ?) " +
+		"ORDER BY message.storedTime DESC " +
+		"LIMIT 1"
+
+	err := s.database.QueryRow(query, channel, messagedata.RollCallObject,
+		messagedata.RollCallActionCreate, messagedata.RollCallActionClose).Scan(&lastMsg, &lastAction)
+
+	if err != nil && errors.Is(err, sql.ErrNoRows) {
+		return false, nil
+	} else if err != nil {
+		return false, err
+	}
+
+	switch lastAction {
+	case messagedata.RollCallActionCreate:
+		var rollCallCreate messagedata.RollCallCreate
+		err = json.Unmarshal(lastMsg, &rollCallCreate)
+		if err != nil {
+			return false, err
+		}
+		return rollCallCreate.ID == nextID, nil
+	case messagedata.RollCallActionClose:
+		var rollCallClose messagedata.RollCallClose
+		err = json.Unmarshal(lastMsg, &rollCallClose)
+		if err != nil {
+			return false, err
+		}
+		return rollCallClose.UpdateID == nextID, nil
 	}
 
 	return false, nil

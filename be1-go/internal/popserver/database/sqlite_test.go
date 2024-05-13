@@ -401,29 +401,52 @@ func Test_SQLite_GetRollCallState(t *testing.T) {
 	}
 }
 
-func Test_SQLite_CheckPrevID(t *testing.T) {
+func Test_SQLite_CheckPrevOpenOrReopenID(t *testing.T) {
+	lite, dir, err := newFakeSQLite(t)
+	require.NoError(t, err)
+	defer lite.Close()
+	defer os.RemoveAll(dir)
+
+	rollCallOpen := generator.NewRollCallOpenMsg(t, "sender1", "openID", "createID", 4, nil)
+	rollCallReopen := generator.NewRollCallReOpenMsg(t, "sender1", "reopenID", "closeID", 12, nil)
+
+	err = lite.StoreMessageAndData("channel1", rollCallOpen)
+	require.NoError(t, err)
+
+	ok, err := lite.CheckPrevOpenOrReopenID("channel1", "openID")
+	require.NoError(t, err)
+	require.True(t, ok)
+
+	err = lite.StoreMessageAndData("channel1", rollCallReopen)
+	require.NoError(t, err)
+
+	ok, err = lite.CheckPrevOpenOrReopenID("channel1", "reopenID")
+	require.NoError(t, err)
+	require.True(t, ok)
+}
+
+func Test_SQLite_CheckPrevCreateOrCloseID(t *testing.T) {
 	lite, dir, err := newFakeSQLite(t)
 	require.NoError(t, err)
 	defer lite.Close()
 	defer os.RemoveAll(dir)
 
 	rollCallCreate := generator.NewRollCallCreateMsg(t, "sender1", "name", "createID", 1, 2, 10, nil)
-	rollCallOpen := generator.NewRollCallOpenMsg(t, "sender1", "openID", "createID", 4, nil)
 	rollCallClose := generator.NewRollCallCloseMsg(t, "sender1", "closeID", "openID", 8, nil, nil)
-	states := []string{"create", "open"}
-	messages := []message.Message{rollCallOpen, rollCallClose}
-	prevID := []string{"createID", "openID"}
 
 	err = lite.StoreMessageAndData("channel1", rollCallCreate)
 	require.NoError(t, err)
 
-	for i, msg := range messages {
-		ok, err := lite.CheckPrevID("channel1", prevID[i], states[i])
-		require.NoError(t, err)
-		require.True(t, ok)
-		err = lite.StoreMessageAndData("channel1", msg)
-		require.NoError(t, err)
-	}
+	ok, err := lite.CheckPrevCreateOrCloseID("channel1", "createID")
+	require.NoError(t, err)
+	require.True(t, ok)
+
+	err = lite.StoreMessageAndData("channel1", rollCallClose)
+	require.NoError(t, err)
+
+	ok, err = lite.CheckPrevCreateOrCloseID("channel1", "closeID")
+	require.NoError(t, err)
+	require.True(t, ok)
 }
 
 func Test_SQLite_StoreRollCallClose(t *testing.T) {

@@ -319,7 +319,7 @@ func newRollCallOpenMsg(t *testing.T, sender, laoID, opens, prevID string, opene
 		mockRepo.On("StoreMessageAndData", laoID, msg).Return(nil)
 	}
 	if prevID != "" {
-		mockRepo.On("CheckPrevID", laoID, opens, messagedata.RollCallActionCreate).Return(opens == prevID, nil)
+		mockRepo.On("CheckPrevCreateOrCloseID", laoID, opens).Return(opens == prevID, nil)
 	}
 
 	return msg
@@ -347,7 +347,7 @@ func newRollCallCloseMsg(t *testing.T, sender, laoID, closes, prevID string, clo
 		mockRepo.On("StoreRollCallClose", channels, laoID, msg).Return(nil)
 	}
 	if prevID != "" {
-		mockRepo.On("CheckPrevID", laoID, closes, messagedata.RollCallActionOpen).Return(closes == prevID, nil)
+		mockRepo.On("CheckPrevOpenOrReopenID", laoID, closes).Return(closes == prevID, nil)
 	}
 
 	return msg

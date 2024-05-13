@@ -105,7 +105,7 @@ func handleRollCallOpen(msg message.Message, channelPath string) *answer.Error {
 		return errAnswer.Wrap("handleRollCallOpen")
 	}
 
-	ok, err := db.CheckPrevID(channelPath, rollCallOpen.Opens, messagedata.RollCallActionCreate)
+	ok, err := db.CheckPrevCreateOrCloseID(channelPath, rollCallOpen.Opens)
 	if err != nil {
 		errAnswer = answer.NewQueryDatabaseError("if previous id exists: %v", err)
 		return errAnswer.Wrap("handleRollCallOpen")
@@ -148,7 +148,7 @@ func handleRollCallClose(msg message.Message, channelPath string) *answer.Error 
 		return errAnswer.Wrap("handleRollCallClose")
 	}
 
-	ok, err := db.CheckPrevID(channelPath, rollCallClose.Closes, messagedata.RollCallActionOpen)
+	ok, err := db.CheckPrevOpenOrReopenID(channelPath, rollCallClose.Closes)
 	if err != nil {
 		errAnswer = answer.NewQueryDatabaseError("if previous id exists: %v", err)
 		return errAnswer.Wrap("handleRollCallClose")
@@ -169,14 +169,25 @@ func handleRollCallClose(msg message.Message, channelPath string) *answer.Error 
 		channels = append(channels, chirpingChannelPath)
 	}
 
+	newChannels := make([]string, 0)
+
 	for _, channelPath := range channels {
-		errAnswer := state.AddChannel(channelPath)
+		alreadyExists, errAnswer := state.HasChannel(channelPath)
+		if errAnswer != nil {
+			return errAnswer
+		}
+		if alreadyExists {
+			continue
+		}
+		errAnswer = state.AddChannel(channelPath)
 		if errAnswer != nil {
 			return errAnswer.Wrap("handleRollCallClose")
 		}
+
+		newChannels = append(newChannels, channelPath)
 	}
 
-	err = db.StoreRollCallClose(channels, channelPath, msg)
+	err = db.StoreRollCallClose(newChannels, channelPath, msg)
 	if err != nil {
 		errAnswer = answer.NewStoreDatabaseError("channels and message: %v", err)
 		return errAnswer.Wrap("handleRollCallClose")

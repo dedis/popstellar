@@ -73,6 +73,25 @@ func NewRollCallOpenMsg(t *testing.T, sender, updateID, opens string, openedAt i
 	return msg
 }
 
+func NewRollCallReOpenMsg(t *testing.T, sender, updateID, opens string, openedAt int64,
+	senderSK kyber.Scalar) message.Message {
+
+	rollCallReOpen := messagedata.RollCallOpen{
+		Object:   messagedata.RollCallObject,
+		Action:   messagedata.RollCallActionReOpen,
+		UpdateID: updateID,
+		Opens:    opens,
+		OpenedAt: openedAt,
+	}
+
+	buf, err := json.Marshal(rollCallReOpen)
+	require.NoError(t, err)
+
+	msg := newMessage(t, sender, senderSK, buf)
+
+	return msg
+}
+
 func NewRollCallCloseMsg(t *testing.T, sender, updateID, closes string, closedAt int64, attendees []string,
 	senderSK kyber.Scalar) message.Message {
 

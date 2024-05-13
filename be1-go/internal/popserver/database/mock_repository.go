@@ -16,27 +16,55 @@ type MockRepository struct {
 	mock.Mock
 }
 
-// CheckPrevID provides a mock function with given fields: channel, nextID, expectedState
-func (_m *MockRepository) CheckPrevID(channel string, nextID string, expectedState string) (bool, error) {
-	ret := _m.Called(channel, nextID, expectedState)
+// CheckPrevCreateOrCloseID provides a mock function with given fields: channel, nextID
+func (_m *MockRepository) CheckPrevCreateOrCloseID(channel string, nextID string) (bool, error) {
+	ret := _m.Called(channel, nextID)
 
 	if len(ret) == 0 {
-		panic("no return value specified for CheckPrevID")
+		panic("no return value specified for CheckPrevCreateOrCloseID")
 	}
 
 	var r0 bool
 	var r1 error
-	if rf, ok := ret.Get(0).(func(string, string, string) (bool, error)); ok {
-		return rf(channel, nextID, expectedState)
+	if rf, ok := ret.Get(0).(func(string, string) (bool, error)); ok {
+		return rf(channel, nextID)
 	}
-	if rf, ok := ret.Get(0).(func(string, string, string) bool); ok {
-		r0 = rf(channel, nextID, expectedState)
+	if rf, ok := ret.Get(0).(func(string, string) bool); ok {
+		r0 = rf(channel, nextID)
 	} else {
 		r0 = ret.Get(0).(bool)
 	}
 
-	if rf, ok := ret.Get(1).(func(string, string, string) error); ok {
-		r1 = rf(channel, nextID, expectedState)
+	if rf, ok := ret.Get(1).(func(string, string) error); ok {
+		r1 = rf(channel, nextID)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// CheckPrevOpenOrReopenID provides a mock function with given fields: channel, nextID
+func (_m *MockRepository) CheckPrevOpenOrReopenID(channel string, nextID string) (bool, error) {
+	ret := _m.Called(channel, nextID)
+
+	if len(ret) == 0 {
+		panic("no return value specified for CheckPrevOpenOrReopenID")
+	}
+
+	var r0 bool
+	var r1 error
+	if rf, ok := ret.Get(0).(func(string, string) (bool, error)); ok {
+		return rf(channel, nextID)
+	}
+	if rf, ok := ret.Get(0).(func(string, string) bool); ok {
+		r0 = rf(channel, nextID)
+	} else {
+		r0 = ret.Get(0).(bool)
+	}
+
+	if rf, ok := ret.Get(1).(func(string, string) error); ok {
+		r1 = rf(channel, nextID)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -797,9 +825,9 @@ func (_m *MockRepository) StoreChirpMessages(channel string, generalChannel stri
 	return r0
 }
 
-// StoreElection provides a mock function with given fields: laopath, electionPath, electionPubKey, electionSecretKey, msg
-func (_m *MockRepository) StoreElection(laopath string, electionPath string, electionPubKey kyber.Point, electionSecretKey kyber.Scalar, msg message.Message) error {
-	ret := _m.Called(laopath, electionPath, electionPubKey, electionSecretKey, msg)
+// StoreElection provides a mock function with given fields: laoPath, electionPath, electionPubKey, electionSecretKey, msg
+func (_m *MockRepository) StoreElection(laoPath string, electionPath string, electionPubKey kyber.Point, electionSecretKey kyber.Scalar, msg message.Message) error {
+	ret := _m.Called(laoPath, electionPath, electionPubKey, electionSecretKey, msg)
 
 	if len(ret) == 0 {
 		panic("no return value specified for StoreElection")
@@ -807,7 +835,7 @@ func (_m *MockRepository) StoreElection(laopath string, electionPath string, ele
 
 	var r0 error
 	if rf, ok := ret.Get(0).(func(string, string, kyber.Point, kyber.Scalar, message.Message) error); ok {
-		r0 = rf(laopath, electionPath, electionPubKey, electionSecretKey, msg)
+		r0 = rf(laoPath, electionPath, electionPubKey, electionSecretKey, msg)
 	} else {
 		r0 = ret.Error(0)
 	}

@@ -91,8 +91,11 @@ type LAORepository interface {
 	// GetRollCallState returns the state of th lao roll call.
 	GetRollCallState(channel string) (string, error)
 
-	// CheckPrevID returns true if the previous roll call message ID is the same as the next roll call message ID.
-	CheckPrevID(channel, nextID, expectedState string) (bool, error)
+	// CheckPrevOpenOrReopenID returns true if the previous roll call open or reopen has the same ID
+	CheckPrevOpenOrReopenID(channel, nextID string) (bool, error)
+
+	// CheckPrevCreateOrCloseID returns true if the previous roll call create or close has the same ID
+	CheckPrevCreateOrCloseID(channel, nextID string) (bool, error)
 
 	// StoreRollCallClose stores a list of chirp channels and a rollCallClose message inside the database.
 	StoreRollCallClose(channels []string, laoID string, msg message.Message) error
@@ -147,7 +150,7 @@ type ElectionRepository interface {
 	// GetElectionQuestions returns the questions of an election.
 	GetElectionQuestions(electionID string) (map[string]types.Question, error)
 
-	//GetElectionQuestionsWithValidVotes returns the questions of an election with valid votes.
+	// GetElectionQuestionsWithValidVotes returns the questions of an election with valid votes.
 	GetElectionQuestionsWithValidVotes(electionID string) (map[string]types.Question, error)
 
 	// StoreElectionEndWithResult stores a message and an election result message inside the database.
