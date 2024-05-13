@@ -49,12 +49,10 @@ func NewSQLite(path string, foreignKeyOn bool) (SQLite, error) {
 		return SQLite{}, err
 	}
 
-	for _, channelType := range channelTypes {
-		_, err = tx.Exec("INSERT INTO channelType (type) VALUES (?)", channelType)
-		if err != nil {
-			db.Close()
-			return SQLite{}, err
-		}
+	err = fillChannelTypes(tx)
+	if err != nil {
+		db.Close()
+		return SQLite{}, err
 	}
 
 	_, err = tx.Exec(createKey)
@@ -99,4 +97,14 @@ func NewSQLite(path string, foreignKeyOn bool) (SQLite, error) {
 // Close closes the SQLite database.
 func (s *SQLite) Close() error {
 	return s.database.Close()
+}
+
+func fillChannelTypes(tx *sql.Tx) error {
+	for _, channelType := range channelTypes {
+		_, err := tx.Exec("INSERT INTO channelType (type) VALUES (?)", channelType)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
