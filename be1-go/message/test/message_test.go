@@ -49,4 +49,3 @@ func Test_UnmarshalData(t *testing.T) {
 
 	require.Len(t, laoCreate.Witnesses, 0)
 }
-

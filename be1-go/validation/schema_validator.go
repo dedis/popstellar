@@ -145,4 +145,3 @@ func loadHttpURL(s string) (io.ReadCloser, error) {
 	// so that only local file is loaded.
 	return loadFileURL(strings.ReplaceAll(s, baseURL, "file://"))
 }
-
