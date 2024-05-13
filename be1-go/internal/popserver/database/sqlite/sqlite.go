@@ -1,11 +1,10 @@
-package database
+package sqlite
 
 import (
 	"database/sql"
 	"encoding/base64"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"go.dedis.ch/kyber/v3"
 	"golang.org/x/xerrors"
 	_ "modernc.org/sqlite"
@@ -15,12 +14,6 @@ import (
 	"popstellar/message/query/method/message"
 	"strings"
 	"time"
-)
-
-const (
-	insertChannelMessage = "INSERT INTO channelMessage (channelPath, messageID, isBaseChannel) VALUES (?, ?, ?)"
-	insertMessage        = "INSERT INTO message (messageID, message, messageData, storedTime) VALUES (?, ?, ?, ?)"
-	insertChannel        = "INSERT INTO channel (channelPath, typeID, laoPath) VALUES (?, ?, ?)"
 )
 
 func (s *SQLite) StoreServerKeys(electionPubKey kyber.Point, electionSecretKey kyber.Scalar) error {
@@ -39,8 +32,7 @@ func (s *SQLite) StoreServerKeys(electionPubKey kyber.Point, electionSecretKey k
 		return err
 	}
 
-	_, err = tx.Exec("INSERT INTO key (channelPath, publicKey, secretKey) VALUES (?, ?, ?)",
-		serverKeysPath, electionPubBuf, electionSecBuf)
+	_, err = tx.Exec(insertKeys, serverKeysPath, electionPubBuf, electionSecBuf)
 	if err != nil {
 		return err
 	}
@@ -51,7 +43,7 @@ func (s *SQLite) StoreServerKeys(electionPubKey kyber.Point, electionSecretKey k
 func (s *SQLite) GetServerKeys() (kyber.Point, kyber.Scalar, error) {
 	var serverPubBuf []byte
 	var serverSecBuf []byte
-	err := s.database.QueryRow("SELECT publicKey, secretKey FROM key WHERE channelPath = ?", serverKeysPath).Scan(&serverPubBuf, &serverSecBuf)
+	err := s.database.QueryRow(selectKeys, serverKeysPath).Scan(&serverPubBuf, &serverSecBuf)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -103,9 +95,7 @@ func (s *SQLite) StoreMessageAndData(channelPath string, msg message.Message) er
 }
 
 func addPendingSignatures(tx *sql.Tx, msg *message.Message) error {
-	rows, err := tx.Query("SELECT witness, signature "+
-		"FROM pendingSignatures "+
-		"WHERE messageID = ?", msg.MessageID)
+	rows, err := tx.Query(selectPendingSignatures, msg.MessageID)
 	if err != nil {
 		return err
 	}
@@ -126,14 +116,15 @@ func addPendingSignatures(tx *sql.Tx, msg *message.Message) error {
 		return err
 	}
 
-	_, err = tx.Exec("DELETE "+
-		"FROM pendingSignatures "+
-		"WHERE messageID = ?", msg.MessageID)
+	_, err = tx.Exec(deletePendingSignatures, msg.MessageID)
 	return err
 }
 
 // GetMessagesByID returns a set of messages by their IDs.
 func (s *SQLite) GetMessagesByID(IDs []string) (map[string]message.Message, error) {
+	if len(IDs) == 0 {
+		return make(map[string]message.Message), nil
+	}
 
 	IDsInterface := make([]interface{}, len(IDs))
 	for i, v := range IDs {
@@ -172,7 +163,7 @@ func (s *SQLite) GetMessagesByID(IDs []string) (map[string]message.Message, erro
 // GetMessageByID returns a message by its ID.
 func (s *SQLite) GetMessageByID(ID string) (message.Message, error) {
 	var messageByte []byte
-	err := s.database.QueryRow("SELECT message FROM message WHERE messageID = ?", ID).Scan(&messageByte)
+	err := s.database.QueryRow(selectMessage, ID).Scan(&messageByte)
 	if err != nil {
 		return message.Message{}, err
 	}
@@ -200,9 +191,7 @@ func (s *SQLite) AddWitnessSignature(messageID string, witness string, signature
 		return err
 	}
 
-	res, err := tx.Exec("UPDATE OR IGNORE message "+
-		"SET message = json_insert(message,'$.witness_signatures[#]', json(?)) "+
-		"WHERE messageID = ?", witnessSignature, messageID)
+	res, err := tx.Exec(updateMsg, witnessSignature, messageID)
 	if err != nil {
 		return err
 	}
@@ -211,9 +200,7 @@ func (s *SQLite) AddWitnessSignature(messageID string, witness string, signature
 		return err
 	}
 	if changes == 0 {
-		_, err := tx.Exec("INSERT INTO pendingSignatures "+
-			"(messageID, witness, signature) VALUES "+
-			"(?, ?, ?)", messageID, witness, signature)
+		_, err := tx.Exec(insertPendingSignatures, messageID, witness, signature)
 		if err != nil {
 			return err
 		}
@@ -228,7 +215,7 @@ func (s *SQLite) StoreChannel(channelPath, channelType, laoPath string) error {
 }
 
 func (s *SQLite) GetAllChannels() ([]string, error) {
-	rows, err := s.database.Query("SELECT channelPath FROM channel")
+	rows, err := s.database.Query(selectAllChannels)
 	if err != nil {
 		return nil, err
 	}
@@ -256,20 +243,14 @@ func (s *SQLite) GetAllChannels() ([]string, error) {
 // GetChannelType returns the type of the channelPath.
 func (s *SQLite) GetChannelType(channelPath string) (string, error) {
 	var channelType string
-	err := s.database.QueryRow("SELECT type FROM channelType "+
-		"JOIN channel on channel.typeID = channelType.ID "+
-		"WHERE channelPath = ?", channelPath).Scan(&channelType)
+	err := s.database.QueryRow(selectChannelType, channelPath).Scan(&channelType)
 	return channelType, err
 }
 
 // GetAllMessagesFromChannel returns all the messages received + sent on a channel sorted by stored time.
 func (s *SQLite) GetAllMessagesFromChannel(channelPath string) ([]message.Message, error) {
 
-	rows, err := s.database.Query("SELECT message.message "+
-		"FROM message "+
-		"JOIN channelMessage ON message.messageID = channelMessage.messageID "+
-		"WHERE channelMessage.channelPath = ? "+
-		"ORDER BY message.storedTime DESC", channelPath)
+	rows, err := s.database.Query(selectAllMessagesFromChannel, channelPath)
 	if err != nil {
 		return nil, err
 	}
@@ -334,9 +315,7 @@ func (s *SQLite) GetResultForGetMessagesByID(params map[string][]string) (map[st
 }
 
 func (s *SQLite) GetParamsHeartbeat() (map[string][]string, error) {
-	rows, err := s.database.Query("SELECT messageID, channelPath "+
-		"FROM channelMessage "+
-		"WHERE isBaseChannel = ?", true)
+	rows, err := s.database.Query(selectBaseChannelMessages, true)
 	if err != nil {
 		return nil, err
 	}
@@ -410,7 +389,7 @@ func (s *SQLite) GetParamsForGetMessageByID(params map[string][]string) (map[str
 
 func (s *SQLite) HasChannel(channelPath string) (bool, error) {
 	var c string
-	err := s.database.QueryRow("SELECT channelPath from channel WHERE channelPath = ?", channelPath).Scan(&c)
+	err := s.database.QueryRow(selectChannelPath, channelPath).Scan(&c)
 	if err != nil && errors.Is(err, sql.ErrNoRows) {
 		return false, nil
 	} else if err != nil && !errors.Is(err, sql.ErrNoRows) {
@@ -422,7 +401,7 @@ func (s *SQLite) HasChannel(channelPath string) (bool, error) {
 
 func (s *SQLite) HasMessage(messageID string) (bool, error) {
 	var msgID string
-	err := s.database.QueryRow("SELECT messageID from message WHERE messageID = ?", messageID).Scan(&msgID)
+	err := s.database.QueryRow(selectMessageID, messageID).Scan(&msgID)
 	if err != nil && errors.Is(err, sql.ErrNoRows) {
 		return false, nil
 	} else if err != nil && !errors.Is(err, sql.ErrNoRows) {
@@ -488,7 +467,7 @@ func (s *SQLite) StoreLaoWithLaoGreet(
 		return err
 	}
 
-	_, err = tx.Exec("INSERT INTO key (channelPath, publicKey) VALUES (?, ?)", laoPath, organizerPubBuf)
+	_, err = tx.Exec(insertPublicKey, laoPath, organizerPubBuf)
 	if err != nil {
 		return err
 	}
@@ -530,13 +509,7 @@ func (s *SQLite) GetOrganizerPubKey(laoPath string) (kyber.Point, error) {
 
 func (s *SQLite) GetRollCallState(channelPath string) (string, error) {
 	var state string
-	err := s.database.QueryRow(
-		"SELECT json_extract(messageData, '$.action')"+
-			" FROM message"+
-			" WHERE storedTime = (SELECT MAX(storedTime)"+
-			" FROM (SELECT * FROM message JOIN channelMessage ON message.messageID = channelMessage.messageID)"+
-			" WHERE json_extract(messageData, '$.object') = ? AND channelPath= ?)",
-		messagedata.RollCallObject, channelPath).Scan(&state)
+	err := s.database.QueryRow(selectLastRollCallMessage, messagedata.RollCallObject, channelPath).Scan(&state)
 	if err != nil {
 		return "", err
 	}
@@ -547,16 +520,7 @@ func (s *SQLite) CheckPrevOpenOrReopenID(channel, nextID string) (bool, error) {
 	var lastMsg []byte
 	var lastAction string
 
-	query := "SELECT message.messageData, json_extract(message.messageData, '$.action') AS action " +
-		"FROM message " +
-		"JOIN channelMessage ON message.messageID = channelMessage.messageID " +
-		"WHERE channelMessage.channelPath = ? " +
-		"AND json_extract(message.messageData, '$.object') = ? " +
-		"AND json_extract(message.messageData, '$.action') IN (?, ?) " +
-		"ORDER BY message.storedTime DESC " +
-		"LIMIT 1"
-
-	err := s.database.QueryRow(query, channel, messagedata.RollCallObject,
+	err := s.database.QueryRow(selectLastRollCallMessageInList, channel, messagedata.RollCallObject,
 		messagedata.RollCallActionOpen, messagedata.RollCallActionReOpen).Scan(&lastMsg, &lastAction)
 
 	if err != nil && errors.Is(err, sql.ErrNoRows) {
@@ -589,16 +553,7 @@ func (s *SQLite) CheckPrevCreateOrCloseID(channel, nextID string) (bool, error) 
 	var lastMsg []byte
 	var lastAction string
 
-	query := "SELECT message.messageData, json_extract(message.messageData, '$.action') AS action " +
-		"FROM message " +
-		"JOIN channelMessage ON message.messageID = channelMessage.messageID " +
-		"WHERE channelMessage.channelPath = ? " +
-		"AND json_extract(message.messageData, '$.object') = ? " +
-		"AND json_extract(message.messageData, '$.action') IN (?, ?) " +
-		"ORDER BY message.storedTime DESC " +
-		"LIMIT 1"
-
-	err := s.database.QueryRow(query, channel, messagedata.RollCallObject,
+	err := s.database.QueryRow(selectLastRollCallMessageInList, channel, messagedata.RollCallObject,
 		messagedata.RollCallActionCreate, messagedata.RollCallActionClose).Scan(&lastMsg, &lastAction)
 
 	if err != nil && errors.Is(err, sql.ErrNoRows) {
@@ -630,10 +585,7 @@ func (s *SQLite) CheckPrevCreateOrCloseID(channel, nextID string) (bool, error) 
 func (s *SQLite) GetLaoWitnesses(laoPath string) (map[string]struct{}, error) {
 
 	var witnesses []string
-	err := s.database.QueryRow("SELECT json_extract(messageData, '$.witnesses')"+
-		" FROM (select * FROM message JOIN channelMessage ON message.messageID = channelMessage.messageID)"+
-		" WHERE channelPath = ? AND json_extract(messageData, '$.object') = ? AND json_extract(messageData, '$.action') = ?",
-		laoPath, messagedata.LAOObject, messagedata.LAOActionCreate).Scan(&witnesses)
+	err := s.database.QueryRow(selectLaoWitnesses, laoPath, messagedata.LAOObject, messagedata.LAOActionCreate).Scan(&witnesses)
 	if err != nil {
 		return nil, err
 	}
@@ -727,8 +679,7 @@ func (s *SQLite) storeElectionHelper(
 	if err != nil {
 		return err
 	}
-	_, err = tx.Exec("INSERT INTO key (channelPath, publicKey, secretKey) VALUES (?, ?, ?)",
-		electionPath, electionPubBuf, electionSecretBuf)
+	_, err = tx.Exec(insertKeys, electionPath, electionPubBuf, electionSecretBuf)
 	if err != nil {
 		return err
 	}
@@ -810,13 +761,13 @@ func (s *SQLite) GetLAOOrganizerPubKey(electionPath string) (kyber.Point, error)
 	defer tx.Rollback()
 
 	var laoPath string
-	err = tx.QueryRow("SELECT laoPath FROM channel WHERE channelPath = ?", electionPath).Scan(&laoPath)
+	err = tx.QueryRow(selectLAOPathFromChannelPath, electionPath).Scan(&laoPath)
 	if err != nil {
 		return nil, err
 	}
 
 	var electionPubBuf []byte
-	err = tx.QueryRow("SELECT publicKey FROM key WHERE channelPath = ?", laoPath).Scan(&electionPubBuf)
+	err = tx.QueryRow(selectPublicKey, laoPath).Scan(&electionPubBuf)
 	if err != nil {
 		return nil, err
 	}
@@ -836,7 +787,7 @@ func (s *SQLite) GetLAOOrganizerPubKey(electionPath string) (kyber.Point, error)
 
 func (s *SQLite) GetElectionSecretKey(electionPath string) (kyber.Scalar, error) {
 	var electionSecretBuf []byte
-	err := s.database.QueryRow("SELECT secretKey FROM key WHERE channelPath = ?", electionPath).Scan(&electionSecretBuf)
+	err := s.database.QueryRow(selectSecretKey, electionPath).Scan(&electionSecretBuf)
 	if err != nil {
 		return nil, err
 	}
@@ -851,13 +802,7 @@ func (s *SQLite) GetElectionSecretKey(electionPath string) (kyber.Scalar, error)
 
 func (s *SQLite) getElectionState(electionPath string) (string, error) {
 	var state string
-	err := s.database.QueryRow("SELECT json_extract(messageData, '$.action')"+
-		" FROM message"+
-		" WHERE storedTime = (SELECT MAX(storedTime)"+
-		" FROM (SELECT * FROM message JOIN channelMessage ON message.messageID = channelMessage.messageID)"+
-		" WHERE channelPath = ? AND json_extract(messageData, '$.object') = ? AND json_extract(messageData, '$.action') != ?)",
-		electionPath, messagedata.ElectionObject, messagedata.VoteActionCastVote).Scan(&state)
-
+	err := s.database.QueryRow(selectLastElectionMessage, electionPath, messagedata.ElectionObject, messagedata.VoteActionCastVote).Scan(&state)
 	if err != nil && !errors.Is(err, sql.ErrNoRows) {
 		return "", err
 	}
@@ -878,7 +823,6 @@ func (s *SQLite) IsElectionStarted(electionPath string) (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	fmt.Printf("Election state: %s\n", state)
 	return state == messagedata.ElectionActionOpen, nil
 }
 
@@ -887,17 +831,12 @@ func (s *SQLite) IsElectionEnded(electionPath string) (bool, error) {
 	if err != nil {
 		return false, err
 	}
-
 	return state == messagedata.ElectionActionEnd, nil
 }
 
 func (s *SQLite) GetElectionCreationTime(electionPath string) (int64, error) {
 	var creationTime int64
-	err := s.database.QueryRow("SELECT json_extract(messageData, '$.created_at')"+
-		"FROM (SELECT * FROM message JOIN channelMessage ON message.messageID = channelMessage.messageID)"+
-		"WHERE channelPath = ? AND json_extract(messageData, '$.object') = ? AND json_extract(messageData, '$.action') = ?",
-		electionPath, messagedata.ElectionObject, messagedata.ElectionActionSetup).Scan(&creationTime)
-
+	err := s.database.QueryRow(selectElectionCreationTime, electionPath, messagedata.ElectionObject, messagedata.ElectionActionSetup).Scan(&creationTime)
 	if err != nil {
 		return 0, err
 	}
@@ -906,11 +845,7 @@ func (s *SQLite) GetElectionCreationTime(electionPath string) (int64, error) {
 
 func (s *SQLite) GetElectionType(electionPath string) (string, error) {
 	var electionType string
-	err := s.database.QueryRow("SELECT json_extract(messageData, '$.version')"+
-		"FROM (SELECT * FROM message JOIN channelMessage ON message.messageID = channelMessage.messageID)"+
-		"WHERE channelPath = ? AND json_extract(messageData, '$.object') = ? AND json_extract(messageData, '$.action') = ?",
-		electionPath, messagedata.ElectionObject, messagedata.ElectionActionSetup).Scan(&electionType)
-
+	err := s.database.QueryRow(selectElectionType, electionPath, messagedata.ElectionObject, messagedata.ElectionActionSetup).Scan(&electionType)
 	if err != nil {
 		return "", err
 	}
@@ -919,26 +854,7 @@ func (s *SQLite) GetElectionType(electionPath string) (string, error) {
 
 func (s *SQLite) GetElectionAttendees(electionPath string) (map[string]struct{}, error) {
 	var rollCallCloseBytes []byte
-	err := s.database.QueryRow(`
-	SELECT joined.messageData
-	FROM (
-		SELECT * FROM message
-		JOIN channelMessage ON message.messageID = channelMessage.messageID
-	) joined
-	JOIN channel c ON joined.channelPath = c.laoPath
-	WHERE c.channelPath = ? 
-	AND json_extract(joined.messageData, '$.object') = ? 
-	AND json_extract(joined.messageData, '$.action') = ?
-	AND joined.storedTime = (
-		SELECT MAX(storedTime)
-		FROM (
-			SELECT * FROM message
-			JOIN channelMessage ON message.messageID = channelMessage.messageID
-		)
-		WHERE channelPath = c.laoPath 
-		AND json_extract(messageData, '$.object') = ? 
-		AND json_extract(messageData, '$.action') = ?
-	)`,
+	err := s.database.QueryRow(selectElectionAttendees,
 		electionPath,
 		messagedata.RollCallObject,
 		messagedata.RollCallActionClose,
@@ -964,10 +880,7 @@ func (s *SQLite) GetElectionAttendees(electionPath string) (map[string]struct{},
 
 func (s *SQLite) getElectionSetup(electionPath string, tx *sql.Tx) (messagedata.ElectionSetup, error) {
 	var electionSetupBytes []byte
-	err := tx.QueryRow("SELECT messageData"+
-		" FROM (SELECT * FROM message JOIN channelMessage ON message.messageID = channelMessage.messageID)"+
-		" WHERE channelPath = ? AND json_extract(messageData, '$.object') = ? AND json_extract(messageData, '$.action') = ?",
-		electionPath, messagedata.ElectionObject, messagedata.ElectionActionSetup).Scan(&electionSetupBytes)
+	err := tx.QueryRow(selectElectionSetup, electionPath, messagedata.ElectionObject, messagedata.ElectionActionSetup).Scan(&electionSetupBytes)
 	if err != nil {
 		return messagedata.ElectionSetup{}, err
 	}
@@ -1024,11 +937,7 @@ func (s *SQLite) GetElectionQuestionsWithValidVotes(electionPath string) (map[st
 		return nil, err
 	}
 
-	rows, err := tx.Query("SELECT messageData, messageID, json_extract(message, '$.sender')"+
-		" FROM (SELECT * FROM message JOIN channelMessage ON message.messageID = channelMessage.messageID)"+
-		" WHERE channelPath = ? AND json_extract(messageData, '$.object') = ? AND json_extract(messageData, '$.action') = ?",
-		electionPath, messagedata.ElectionObject, messagedata.VoteActionCastVote)
-
+	rows, err := tx.Query(selectCastVotes, electionPath, messagedata.ElectionObject, messagedata.VoteActionCastVote)
 	if err != nil {
 		return nil, err
 	}
@@ -1199,14 +1108,7 @@ func (s *SQLite) StoreChirpMessages(channel, generalChannel string, msg, general
 func (s *SQLite) IsAttendee(laoPath, poptoken string) (bool, error) {
 
 	var rollCallCloseBytes []byte
-
-	err := s.database.QueryRow("SELECT messageData"+
-		" FROM message"+
-		" WHERE storedTime = (SELECT MAX(storedTime)"+
-		" FROM (SELECT * FROM message JOIN channelMessage ON message.messageID = channelMessage.messageID)"+
-		" WHERE channelPath = ? AND json_extract(messageData, '$.object') = ? AND json_extract(messageData, '$.action') = ?)",
-		laoPath, messagedata.RollCallObject, messagedata.RollCallActionClose).Scan(&rollCallCloseBytes)
-
+	err := s.database.QueryRow(selectLastRollCallClose, laoPath, messagedata.RollCallObject, messagedata.RollCallActionClose).Scan(&rollCallCloseBytes)
 	if err != nil {
 		return false, err
 	}
@@ -1230,8 +1132,7 @@ func (s *SQLite) GetReactionSender(messageID string) (string, error) {
 	var sender string
 	var object string
 	var action string
-	err := s.database.QueryRow("SELECT json_extract(message, '$.sender'), json_extract(messageData, '$.object'), json_extract(messageData, '$.action')"+
-		" FROM message WHERE messageID = ?", messageID).Scan(&sender, &object, &action)
+	err := s.database.QueryRow(selectSender, messageID).Scan(&sender, &object, &action)
 	if err != nil && errors.Is(err, sql.ErrNoRows) {
 		return "", nil
 	} else if err != nil {

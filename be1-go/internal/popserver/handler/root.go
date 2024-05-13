@@ -6,6 +6,7 @@ import (
 	"popstellar/crypto"
 	"popstellar/internal/popserver/config"
 	"popstellar/internal/popserver/database"
+	"popstellar/internal/popserver/database/sqlite"
 	"popstellar/internal/popserver/state"
 	"popstellar/message/answer"
 	"popstellar/message/messagedata"
@@ -135,12 +136,12 @@ func verifyLaoCreation(msg message.Message, laoCreate messagedata.LaoCreate, lao
 
 func createLaoAndChannels(msg, laoGreetMsg message.Message, organizerPubBuf []byte, laoPath string) *answer.Error {
 	channels := map[string]string{
-		laoPath:                      database.LaoType,
-		laoPath + Social + Chirps:    database.ChirpType,
-		laoPath + Social + Reactions: database.ReactionType,
-		laoPath + Consensus:          database.ConsensusType,
-		laoPath + Coin:               database.CoinType,
-		laoPath + Auth:               database.AuthType,
+		laoPath:                      sqlite.LaoType,
+		laoPath + Social + Chirps:    sqlite.ChirpType,
+		laoPath + Social + Reactions: sqlite.ReactionType,
+		laoPath + Consensus:          sqlite.ConsensusType,
+		laoPath + Coin:               sqlite.CoinType,
+		laoPath + Auth:               sqlite.AuthType,
 	}
 
 	db, errAnswer := database.GetRootRepositoryInstance()

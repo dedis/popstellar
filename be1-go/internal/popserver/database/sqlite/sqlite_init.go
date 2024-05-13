@@ -1,55 +1,14 @@
-package database
+package sqlite
 
-import "database/sql"
-
-const (
-	DefaultPath    = "sqlite.DB"
-	serverKeysPath = "server_keys"
+import (
+	"database/sql"
+	database2 "popstellar/internal/popserver/database"
 )
 
 // SQLite is a wrapper around the SQLite database.
 type SQLite struct {
-	Repository
+	database2.Repository
 	database *sql.DB
-}
-
-const (
-	RootType         = "root"
-	LaoType          = "lao"
-	ElectionType     = "election"
-	ChirpType        = "chirp"
-	ReactionType     = "reaction"
-	ConsensusType    = "consensus"
-	CoinType         = "coin"
-	AuthType         = "auth"
-	PopChaType       = "popcha"
-	GeneralChirpType = "generalChirp"
-)
-
-var channelTypeToID = map[string]string{
-	RootType:         "1",
-	LaoType:          "2",
-	ElectionType:     "3",
-	ChirpType:        "4",
-	ReactionType:     "5",
-	ConsensusType:    "6",
-	PopChaType:       "7",
-	CoinType:         "8",
-	AuthType:         "9",
-	GeneralChirpType: "10",
-}
-
-var channelTypes = []string{
-	RootType,
-	LaoType,
-	ElectionType,
-	ChirpType,
-	ReactionType,
-	ConsensusType,
-	PopChaType,
-	CoinType,
-	AuthType,
-	GeneralChirpType,
 }
 
 //======================================================================================================================

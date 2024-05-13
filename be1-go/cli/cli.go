@@ -15,6 +15,7 @@ import (
 	"popstellar/internal/popserver"
 	"popstellar/internal/popserver/config"
 	"popstellar/internal/popserver/database"
+	"popstellar/internal/popserver/database/sqlite"
 	"popstellar/internal/popserver/state"
 	"popstellar/internal/popserver/utils"
 	"popstellar/network"
@@ -79,7 +80,7 @@ func (s *ServerConfig) newHub(l *zerolog.Logger) (hub.Hub, error) {
 		return nil, err
 	}
 
-	db, err := database.NewSQLite(database.DefaultPath, true)
+	db, err := sqlite.NewSQLite(sqlite.DefaultPath, true)
 	if err != nil {
 		return nil, err
 	}

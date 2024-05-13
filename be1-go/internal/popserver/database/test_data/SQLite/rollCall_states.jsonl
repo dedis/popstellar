@@ -1,3 +1,0 @@
-{"object": "roll_call", "action": "create", "id": "fEvAfdtNrykd9NPYl9ReHLX-6IP6SFLKTZJLeGUHZ_U=", "name": "Roll Call ", "creation": 1633098853, "proposed_start": 1633099125, "proposed_end": 1633099140, "location": "EPFL", "description": "Food is welcome!"}
-{"object": "roll_call", "action": "open", "update_id": "krCHh6OFWIjSHQiUSrWyx1FV0Jp8deC3zUyelhPG-Yk=", "opens": "fEvAfdtNrykd9NPYl9ReHLX-6IP6SFLKTZJLeGUHZ_U=", "opened_at": 1633099127}
-{"object": "roll_call", "action": "close", "update_id": "WxoPg4wLpmog0Q5eQewQ5AAD19RW-8-6aSZ2mGIJRO8=", "closes": "krCHh6OFWIjSHQiUSrWyx1FV0Jp8deC3zUyelhPG-Yk=", "closed_at": 1633099135, "attendees": ["M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU="]}

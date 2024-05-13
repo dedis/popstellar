@@ -8,6 +8,7 @@ import (
 	"popstellar/crypto"
 	"popstellar/internal/popserver/config"
 	"popstellar/internal/popserver/database"
+	"popstellar/internal/popserver/database/sqlite"
 	"popstellar/internal/popserver/state"
 	"popstellar/internal/popserver/utils"
 	jsonrpc "popstellar/message"
@@ -47,17 +48,17 @@ func handleChannel(channelPath string, msg message.Message) *answer.Error {
 	}
 
 	switch channelType {
-	case database.RootType:
+	case sqlite.RootType:
 		errAnswer = handleChannelRoot(msg)
-	case database.LaoType:
+	case sqlite.LaoType:
 		errAnswer = handleChannelLao(channelPath, msg)
-	case database.ElectionType:
+	case sqlite.ElectionType:
 		errAnswer = handleChannelElection(channelPath, msg)
-	case database.ChirpType:
+	case sqlite.ChirpType:
 		errAnswer = handleChannelChirp(channelPath, msg)
-	case database.ReactionType:
+	case sqlite.ReactionType:
 		errAnswer = handleChannelReaction(channelPath, msg)
-	case database.CoinType:
+	case sqlite.CoinType:
 		errAnswer = handleChannelCoin(channelPath, msg)
 	default:
 		errAnswer = answer.NewInvalidResourceError("unknown channel type for %s", channelPath)

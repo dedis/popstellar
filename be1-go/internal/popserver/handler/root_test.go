@@ -8,6 +8,7 @@ import (
 	"popstellar/crypto"
 	"popstellar/internal/popserver/config"
 	"popstellar/internal/popserver/database"
+	"popstellar/internal/popserver/database/sqlite"
 	"popstellar/internal/popserver/generator"
 	"popstellar/internal/popserver/state"
 	"popstellar/internal/popserver/types"
@@ -130,12 +131,12 @@ func newLaoCreateMsg(t *testing.T, organizer, sender, laoName string, mockRepo *
 		organizerBuf, err := base64.URLEncoding.DecodeString(organizer)
 		require.NoError(t, err)
 		channels := map[string]string{
-			laoPath:                      database.LaoType,
-			laoPath + Social + Chirps:    database.ChirpType,
-			laoPath + Social + Reactions: database.ReactionType,
-			laoPath + Consensus:          database.ConsensusType,
-			laoPath + Coin:               database.CoinType,
-			laoPath + Auth:               database.AuthType,
+			laoPath:                      sqlite.LaoType,
+			laoPath + Social + Chirps:    sqlite.ChirpType,
+			laoPath + Social + Reactions: sqlite.ReactionType,
+			laoPath + Consensus:          sqlite.ConsensusType,
+			laoPath + Coin:               sqlite.CoinType,
+			laoPath + Auth:               sqlite.AuthType,
 		}
 		mockRepo.On("StoreLaoWithLaoGreet",
 			channels,
