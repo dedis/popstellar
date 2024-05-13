@@ -64,7 +64,7 @@ constructor(
     val challengeRequest = ChallengeRequest(timestamp)
     return networkManager.messageSender.publish(
         keyManager.mainKeyPair,
-        laoView.channel,
+        laoView.channel.subChannel(FEDERATION),
         challengeRequest,
     )
   }
@@ -93,7 +93,7 @@ constructor(
     val federationInit = FederationInit(remoteLaoId, serverAddress, publicKey, challenge)
     return networkManager.messageSender.publish(
         keyManager.mainKeyPair,
-        laoView.channel,
+        laoView.channel.subChannel(FEDERATION),
         federationInit,
     )
   }
@@ -122,7 +122,7 @@ constructor(
     val federationExpect = FederationExpect(remoteLaoId, serverAddress, publicKey, challenge)
     return networkManager.messageSender.publish(
         keyManager.mainKeyPair,
-        laoView.channel,
+        laoView.channel.subChannel(FEDERATION),
         federationExpect,
     )
   }
@@ -187,5 +187,6 @@ constructor(
 
   companion object {
     val TAG: String = LinkedOrganizationsViewModel::class.java.simpleName
+    val FEDERATION = "federation"
   }
 }
