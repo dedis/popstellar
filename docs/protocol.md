@@ -1074,7 +1074,7 @@ this message. Otherwise, the server returns the latest messages it has on that c
 account the requested number of messages. If the specified number of messages is greater than what 
 is on the server in the current page, then the server only returns the messages it has on that page.
 
-For now, this message is to be used to retrieve chirps on the social media channel (/root/lao_id/social/user_public_key) 
+For now, this message is to be used to retrieve chirps on the social media channel (/root/lao_id/social/chirps/user_public_key) 
 by paging when a new client joins the LAO instead of getting all the chirps at once. The user's public key is used
 to have a separate paging subchannel for each user to avoid sending irrelevant messages to other users. This paging is 
 done in an effort to reduce network traffic at catchup.
@@ -1096,7 +1096,7 @@ RPC
     "id": 3,
     "method": "paged_catchup",
     "params": {
-        "channel": "/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=/social/chirps",
+        "channel": "/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=/social/chirps/8qlv4aUT5-tBodKp4RszY284CFYVaoDZK6XKiw9isSw=",
         "number_of_messages": 10,
         "before_message_id": "DCBX48EuNO6q-Sr42ONqsj7opKiNeXyRzrjqTbZ_aMI="
     }
