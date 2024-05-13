@@ -26,4 +26,8 @@ public class SocialMediaHomePageObject {
   public static ViewInteraction getEventListFragment() {
     return onView(withId(R.id.fragment_event_list));
   }
+
+  public static ViewInteraction getAddChirpButton() {
+    return onView(withId(R.id.social_media_send_fragment_button));
+  }
 }
