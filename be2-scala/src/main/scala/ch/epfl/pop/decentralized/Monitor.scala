@@ -37,7 +37,7 @@ final case class Monitor(
   private val periodicHbKey = 0
   private val singleHbKey = 1
 
-  // State of connected servSers
+  // State of connected servers
   private var someServerConnected = false
 
   // Monitor is self-contained,
