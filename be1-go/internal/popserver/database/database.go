@@ -2,15 +2,16 @@ package database
 
 import (
 	"golang.org/x/xerrors"
+	"popstellar/internal/popserver/database/repository"
 	"popstellar/message/answer"
 	"sync"
 	"testing"
 )
 
 var once sync.Once
-var instance Repository
+var instance repository.Repository
 
-func InitDatabase(db Repository) bool {
+func InitDatabase(db repository.Repository) bool {
 	hasInit := false
 
 	once.Do(func() {
@@ -21,19 +22,19 @@ func InitDatabase(db Repository) bool {
 	return hasInit
 }
 
-func SetDatabase(t *testing.T) (*MockRepository, error) {
+func SetDatabase(t *testing.T) (*repository.MockRepository, error) {
 	if t == nil {
 		return nil, xerrors.Errorf("only for tests")
 	}
 
-	mockRepository := NewMockRepository(t)
+	mockRepository := repository.NewMockRepository(t)
 
 	instance = mockRepository
 
 	return mockRepository, nil
 }
 
-func getInstance() (Repository, *answer.Error) {
+func getInstance() (repository.Repository, *answer.Error) {
 	if instance == nil {
 		errAnswer := answer.NewInternalServerError("database was not instantiated")
 		return nil, errAnswer
@@ -42,34 +43,34 @@ func getInstance() (Repository, *answer.Error) {
 	return instance, nil
 }
 
-func GetQueryRepositoryInstance() (QueryRepository, *answer.Error) {
+func GetQueryRepositoryInstance() (repository.QueryRepository, *answer.Error) {
 	return getInstance()
 }
 
-func GetChannelRepositoryInstance() (ChannelRepository, *answer.Error) {
+func GetChannelRepositoryInstance() (repository.ChannelRepository, *answer.Error) {
 	return getInstance()
 }
 
-func GetRootRepositoryInstance() (RootRepository, *answer.Error) {
+func GetRootRepositoryInstance() (repository.RootRepository, *answer.Error) {
 	return getInstance()
 }
 
-func GetLAORepositoryInstance() (LAORepository, *answer.Error) {
+func GetLAORepositoryInstance() (repository.LAORepository, *answer.Error) {
 	return getInstance()
 }
 
-func GetChirpRepositoryInstance() (ChirpRepository, *answer.Error) {
+func GetChirpRepositoryInstance() (repository.ChirpRepository, *answer.Error) {
 	return getInstance()
 }
 
-func GetCoinRepositoryInstance() (CoinRepository, *answer.Error) {
+func GetCoinRepositoryInstance() (repository.CoinRepository, *answer.Error) {
 	return getInstance()
 }
 
-func GetElectionRepositoryInstance() (ElectionRepository, *answer.Error) {
+func GetElectionRepositoryInstance() (repository.ElectionRepository, *answer.Error) {
 	return getInstance()
 }
 
-func GetReactionRepositoryInstance() (ReactionRepository, *answer.Error) {
+func GetReactionRepositoryInstance() (repository.ReactionRepository, *answer.Error) {
 	return getInstance()
 }

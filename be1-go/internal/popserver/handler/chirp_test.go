@@ -7,6 +7,7 @@ import (
 	"popstellar/crypto"
 	"popstellar/internal/popserver/config"
 	"popstellar/internal/popserver/database"
+	"popstellar/internal/popserver/database/repository"
 	"popstellar/internal/popserver/generator"
 	"popstellar/internal/popserver/state"
 	"popstellar/internal/popserver/types"
@@ -135,7 +136,7 @@ func Test_handleChannelChirp(t *testing.T) {
 }
 
 func newChirpAddMsg(t *testing.T, channelID string, sender string, timestamp int64,
-	mockRepo *database.MockRepository, isError bool) message.Message {
+	mockRepo *repository.MockRepository, isError bool) message.Message {
 
 	msg := generator.NewChirpAddMsg(t, sender, nil, timestamp)
 
@@ -158,7 +159,7 @@ func newChirpAddMsg(t *testing.T, channelID string, sender string, timestamp int
 }
 
 func newChirpDeleteMsg(t *testing.T, channelID string, sender string, chirpID string,
-	timestamp int64, mockRepo *database.MockRepository, isError bool) message.Message {
+	timestamp int64, mockRepo *repository.MockRepository, isError bool) message.Message {
 
 	msg := generator.NewChirpDeleteMsg(t, sender, nil, chirpID, timestamp)
 

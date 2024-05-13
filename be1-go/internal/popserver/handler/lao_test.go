@@ -8,6 +8,7 @@ import (
 	"popstellar/crypto"
 	"popstellar/internal/popserver/config"
 	"popstellar/internal/popserver/database"
+	"popstellar/internal/popserver/database/repository"
 	"popstellar/internal/popserver/generator"
 	"popstellar/internal/popserver/state"
 	"popstellar/internal/popserver/types"
@@ -266,7 +267,7 @@ func Test_handleChannelLao(t *testing.T) {
 	}
 }
 
-func newLaoStateMsg(t *testing.T, organizer, laoID string, mockRepo *database.MockRepository) message.Message {
+func newLaoStateMsg(t *testing.T, organizer, laoID string, mockRepo *repository.MockRepository) message.Message {
 	modificationID := base64.URLEncoding.EncodeToString([]byte("modificationID"))
 	name := "laoName"
 	creation := time.Now().Unix()
@@ -285,7 +286,7 @@ func newLaoStateMsg(t *testing.T, organizer, laoID string, mockRepo *database.Mo
 }
 
 func newRollCallCreateMsg(t *testing.T, sender, laoID, laoName string, creation, start, end int64, isError bool,
-	mockRepo *database.MockRepository) message.Message {
+	mockRepo *repository.MockRepository) message.Message {
 
 	createID := messagedata.Hash(
 		messagedata.RollCallFlag,
@@ -304,7 +305,7 @@ func newRollCallCreateMsg(t *testing.T, sender, laoID, laoName string, creation,
 }
 
 func newRollCallOpenMsg(t *testing.T, sender, laoID, opens, prevID string, openedAt int64, isError bool,
-	mockRepo *database.MockRepository) message.Message {
+	mockRepo *repository.MockRepository) message.Message {
 
 	openID := messagedata.Hash(
 		messagedata.RollCallFlag,
@@ -326,7 +327,7 @@ func newRollCallOpenMsg(t *testing.T, sender, laoID, opens, prevID string, opene
 }
 
 func newRollCallCloseMsg(t *testing.T, sender, laoID, closes, prevID string, closedAt int64, isError bool,
-	mockRepo *database.MockRepository) message.Message {
+	mockRepo *repository.MockRepository) message.Message {
 
 	closeID := messagedata.Hash(
 		messagedata.RollCallFlag,
@@ -356,7 +357,7 @@ func newRollCallCloseMsg(t *testing.T, sender, laoID, closes, prevID string, clo
 func newElectionSetupMsg(t *testing.T, organizer kyber.Point, sender,
 	setupLao, laoID, electionName, question, version string,
 	createdAt, start, end int64,
-	isError bool, mockRepo *database.MockRepository) message.Message {
+	isError bool, mockRepo *repository.MockRepository) message.Message {
 
 	electionSetupID := messagedata.Hash(
 		messagedata.ElectionFlag,

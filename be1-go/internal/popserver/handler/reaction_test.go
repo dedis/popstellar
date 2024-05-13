@@ -6,6 +6,7 @@ import (
 	"popstellar/crypto"
 	"popstellar/internal/popserver/config"
 	"popstellar/internal/popserver/database"
+	"popstellar/internal/popserver/database/repository"
 	"popstellar/internal/popserver/generator"
 	"popstellar/internal/popserver/state"
 	"popstellar/internal/popserver/types"
@@ -222,7 +223,7 @@ func Test_handleChannelReaction(t *testing.T) {
 }
 
 func newReactionAddMsg(t *testing.T, channelID string, sender string, reactionCodePoint, chirpID string, timestamp int64,
-	mockRepo *database.MockRepository, hasInvalidField, isNotAttendee bool) message.Message {
+	mockRepo *repository.MockRepository, hasInvalidField, isNotAttendee bool) message.Message {
 
 	msg := generator.NewReactionAddMsg(t, sender, nil, reactionCodePoint, chirpID, timestamp)
 
@@ -244,7 +245,7 @@ func newReactionAddMsg(t *testing.T, channelID string, sender string, reactionCo
 }
 
 func newReactionDeleteMsg(t *testing.T, channelID string, sender string, reactionID string, timestamp int64,
-	mockRepo *database.MockRepository, hasInvalidField, hasNotReaction, isNotOwner, isNotAttendee bool) message.Message {
+	mockRepo *repository.MockRepository, hasInvalidField, hasNotReaction, isNotOwner, isNotAttendee bool) message.Message {
 
 	msg := generator.NewReactionDeleteMsg(t, sender, nil, reactionID, timestamp)
 

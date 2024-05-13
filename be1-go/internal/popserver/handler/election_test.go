@@ -9,6 +9,7 @@ import (
 	"popstellar/crypto"
 	"popstellar/internal/popserver/config"
 	"popstellar/internal/popserver/database"
+	"popstellar/internal/popserver/database/repository"
 	"popstellar/internal/popserver/generator"
 	state "popstellar/internal/popserver/state"
 	"popstellar/internal/popserver/types"
@@ -406,7 +407,7 @@ func Test_handleChannelElection(t *testing.T) {
 }
 
 func newElectionOpenMsg(t *testing.T, owner kyber.Point, sender, laoID, electionID, channelPath, state string,
-	createdAt int64, isError bool, mockRepo *database.MockRepository) message.Message {
+	createdAt int64, isError bool, mockRepo *repository.MockRepository) message.Message {
 
 	msg := generator.NewElectionOpenMsg(t, sender, laoID, electionID, 1, nil)
 
@@ -429,7 +430,7 @@ func newElectionOpenMsg(t *testing.T, owner kyber.Point, sender, laoID, election
 }
 
 func newElectionEndMsg(t *testing.T, owner kyber.Point, sender, laoID, electionID, channelPath, state, votes string,
-	createdAt int64, isError bool, mockRepo *database.MockRepository) message.Message {
+	createdAt int64, isError bool, mockRepo *repository.MockRepository) message.Message {
 
 	msg := generator.NewElectionCloseMsg(t, sender, laoID, electionID, votes, 1, nil)
 
@@ -481,7 +482,7 @@ func newElectionEndMsg(t *testing.T, owner kyber.Point, sender, laoID, electionI
 
 func newVoteCastVoteIntMsg(t *testing.T, sender, laoID, electionID, electionPath, state, electionType string,
 	createdAt int64, votes []generator.VoteInt, questions map[string]types.Question, owner kyber.Point,
-	mockRepo *database.MockRepository, isEroor bool) message.Message {
+	mockRepo *repository.MockRepository, isEroor bool) message.Message {
 
 	msg := generator.NewVoteCastVoteIntMsg(t, sender, laoID, electionID, 1, votes, nil)
 	mockRepo.On("GetLAOOrganizerPubKey", electionPath).Return(owner, nil)
@@ -519,7 +520,7 @@ func newVoteCastVoteIntMsg(t *testing.T, sender, laoID, electionID, electionPath
 
 func newVoteCastVoteStringMsg(t *testing.T, sender, laoID, electionID, electionPath, electionType string,
 	createdAt int64, votes []generator.VoteString, questions map[string]types.Question, owner kyber.Point,
-	mockRepo *database.MockRepository) message.Message {
+	mockRepo *repository.MockRepository) message.Message {
 
 	msg := generator.NewVoteCastVoteStringMsg(t, sender, laoID, electionID, 1, votes, nil)
 	mockRepo.On("GetLAOOrganizerPubKey", electionPath).Return(owner, nil)

@@ -1,7 +1,7 @@
 package sqlite
 
 const (
-	DefaultPath    = "sqlite.DB"
+	DefaultPath    = "sqlite.db"
 	serverKeysPath = "server_keys"
 )
 

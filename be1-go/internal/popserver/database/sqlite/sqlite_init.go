@@ -2,7 +2,7 @@ package sqlite
 
 import (
 	"database/sql"
-	database2 "popstellar/internal/popserver/database"
+	database2 "popstellar/internal/popserver/database/repository"
 )
 
 // SQLite is a wrapper around the SQLite database.

@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	database2 "popstellar/internal/popserver/database"
+	"popstellar/internal/popserver/database/repository"
 	"popstellar/internal/popserver/state"
 	"popstellar/internal/popserver/types"
 	"popstellar/message/messagedata"
@@ -116,7 +117,7 @@ func Test_handleChannelCoin(t *testing.T) {
 
 }
 
-func newSuccessTestHandleChannelCoin(t *testing.T, filename string, name string, mockRepo *database2.MockRepository) inputTestHandleChannelCoin {
+func newSuccessTestHandleChannelCoin(t *testing.T, filename string, name string, mockRepo *repository.MockRepository) inputTestHandleChannelCoin {
 	laoID := messagedata.Hash(name)
 	var sender = "M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU="
 	var channelID = "/root/" + laoID + "/coin"

@@ -1,4 +1,4 @@
-package database
+package repository
 
 import (
 	"go.dedis.ch/kyber/v3"

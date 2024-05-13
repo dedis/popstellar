@@ -8,6 +8,7 @@ import (
 	"popstellar/crypto"
 	"popstellar/internal/popserver/config"
 	"popstellar/internal/popserver/database"
+	"popstellar/internal/popserver/database/repository"
 	"popstellar/internal/popserver/database/sqlite"
 	"popstellar/internal/popserver/generator"
 	"popstellar/internal/popserver/state"
@@ -115,7 +116,7 @@ func Test_handleChannelRoot(t *testing.T) {
 	}
 }
 
-func newLaoCreateMsg(t *testing.T, organizer, sender, laoName string, mockRepo *database.MockRepository, isError bool) message.Message {
+func newLaoCreateMsg(t *testing.T, organizer, sender, laoName string, mockRepo *repository.MockRepository, isError bool) message.Message {
 	creation := time.Now().Unix()
 	laoID := messagedata.Hash(
 		organizer,
