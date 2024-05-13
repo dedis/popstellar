@@ -92,7 +92,7 @@ object ConnectionMediator {
   final case class ServerLeft(serverRef: ActorRef) extends Event
   final case class Ping() extends Event
   final case class ReadPeersClientAddress() extends Event
-
+  
   sealed trait ConnectionMediatorMessage
   final case class ReadPeersClientAddressAck(list: List[String]) extends ConnectionMediatorMessage
 }
