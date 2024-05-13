@@ -285,7 +285,7 @@ func (s *SQLite) GetResultForGetMessagesByID(params map[string][]string) (map[st
 		}
 	}
 
-	if len(interfaces) == 0 {
+	if len(interfaces) == 1 {
 		return make(map[string][]message.Message), nil
 	}
 
@@ -354,7 +354,7 @@ func (s *SQLite) GetParamsForGetMessageByID(params map[string][]string) (map[str
 		}
 	}
 
-	if len(interfaces) == 0 {
+	if len(interfaces) == 1 {
 		return make(map[string][]string), nil
 	}
 
