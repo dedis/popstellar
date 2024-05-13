@@ -3,12 +3,14 @@ package sqlite
 import (
 	"database/sql"
 	database2 "popstellar/internal/popserver/database/repository"
+	"sync"
 )
 
 // SQLite is a wrapper around the SQLite database.
 type SQLite struct {
 	database2.Repository
 	database *sql.DB
+	sync.RWMutex
 }
 
 //======================================================================================================================
@@ -96,6 +98,8 @@ func NewSQLite(path string, foreignKeyOn bool) (SQLite, error) {
 
 // Close closes the SQLite database.
 func (s *SQLite) Close() error {
+	s.Lock()
+	defer s.Unlock()
 	return s.database.Close()
 }
 
