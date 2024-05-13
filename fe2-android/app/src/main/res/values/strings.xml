@@ -20,6 +20,7 @@
   <!--  Paste From Clipboard -->
     <string name="paste_from_clipboard_server">Paste from Clipboard Server Address</string>
     <string name="paste_from_clipboard_lao_id">Paste from Clipboard Lao ID</string>
+    <string name="paste_from_clipboard_description">Paste from Clipboard</string>
 
   <!-- bottom nav -->
   <string name="tab_social_media">Social Media</string>
@@ -59,9 +60,7 @@
   <string name="stored_channels">stored channels</string>
   <string name="creating_new_lao">Creating new LAO</string>
   <string name="join_lao_title">Join LAO</string>
-  <string name="join_manual_hint"></string>
   <string name="add_lao_participant_title">Add LAO participant</string>
-    <string name="manual_lao_join_title">Manually Connect to a LAO</string>
 
   <!-- Lao Create -->
   <string name="lao_create_title">Create LAO</string>
@@ -111,7 +110,6 @@
   <!-- Roll-Call Event -->
   <string name="roll_call_title_required">Roll Call Title*</string>
   <string name="reopen_rollcall">REOPEN</string>
-  <string name="rc_manual_hint">Attendee token</string>
 
   <!-- Meeting Event -->
   <string name="meeting_title_required">Meeting Title*</string>
@@ -134,9 +132,22 @@
   <string name="witness_already_scanned_warning">"This key already belongs to a witness"</string>
   <string name="attendee_scan_success">Attendee successfully scanned</string>
   <string name="witness_scan_success">Witness successfully scanned</string>
-    <string name="server_uri_hint">Server Address</string>
-    <string name="lao_id_hint">LAO ID</string>
     <string name="qrcode_scanning_manual_entry_error">All fields are required</string>
+  <string name="manual_add_close_button_desc">Close button for manual add window</string>
+
+  <!-- Manual Add Entry -->
+  <string name="manual_add_lao_join_title">Manually Connect to a LAO</string>
+  <string name="manual_add_server_url_hint">Server URL</string>
+  <string name="manual_add_lao_id_hint">LAO ID</string>
+
+  <string name="manual_add_witness_title">Manually Add Witness</string>
+  <string name="manual_add_witness_hint">Witness Public Key</string>
+
+  <string name="manual_add_rc_title">Manually Add Attendee</string>
+  <string name="manual_add_rc_add_hint">Attendee Token</string>
+
+  <string name="manual_add_popcha_title">Manually Enter PoPCHA URL</string>
+  <string name="manual_add_popcha_hint">PoPCHA URL</string>
 
   <!--  Witnessing-->
   <string name="messages">Messages</string>
@@ -146,9 +157,7 @@
   <!-- Witness -->
   <string name="button_text">Cast Vote</string>
   <string name="submit">Submit</string>
-  <string name="manual_witness_hint">Witness public key</string>
   <string name="add_witness_title">Add Witness</string>
-  <string name="manual_add_witness_title">Manually Add Witness</string>
   <string name="sign_message">Sign message</string>
   <string name="confirm_to_sign">Are you sure you want to sign message with ID : %1$s</string>
   <string name="message_description_title">Description</string>
@@ -162,7 +171,6 @@
   <string name="roll_call_setup_title">Roll Call Setup</string>
   <string name="roll_call_title">Roll Call</string>
   <string name="add_attendee_title">Add Attendee</string>
-  <string name="manual_add_attendee_title">Manually Add Attendee</string>
   <string name="roll_call_attendees">Attendees : %1$d</string>
   <string name="roll_call_scanned">Scanned tokens : %1$d</string>
   <string name="roll_call_description_title">Description</string>
@@ -301,8 +309,6 @@
   <string name="popcha">PoPCHA</string>
   <string name="popcha_header">Welcome to the PoPCHA tab, you\'re currently in the LAO:\n%1$s</string>
   <string name="popcha_add_title">Log in through PoPCHA</string>
-  <string name="manual_popcha_add_title">Manually Enter PoPCHA URL</string>
-  <string name="manual_popcha_hint">PoPCHA URL</string>
 
   <!--  Storage-->
   <string name="nothing_stored">No stored data found</string>
@@ -329,8 +335,6 @@
   <string name="send_button_content_desc">Send button</string>
   <string name="receive_button_content_desc">Receive button</string>
   <string name="qr_sight_content_desc">The sight on top of camera</string>
-  <string name="add_manual_close_button_desc">Close button for manual add window</string>
-  <string name="manual_add_edit_text">Enter Text Manually</string>
 
   <!-- Error Messages -->
   <string name="error_no_lao">You are not in a LAO</string>

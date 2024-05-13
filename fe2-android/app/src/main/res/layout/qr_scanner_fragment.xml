@@ -67,7 +67,7 @@
           android:id="@+id/add_manual_close"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
-          android:contentDescription="@string/add_manual_close_button_desc"
+          android:contentDescription="@string/manual_add_close_button_desc"
           android:src="@drawable/close_icon"
           app:layout_constraintBottom_toBottomOf="@+id/add_manual_title"
           app:layout_constraintEnd_toEndOf="parent"
@@ -85,31 +85,15 @@
           app:layout_constraintStart_toStartOf="parent"
           app:layout_constraintTop_toTopOf="parent" />
 
-        <!-- Dynamic Input Fields Container -->
-        <!-- 4 inputs have been created, add more if a new scanning action requires more -->
-        <LinearLayout
+        <!-- Dynamic Input Fields Container with RecyclerView -->
+        <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/dynamic_inputs_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
             android:layout_margin="@dimen/main_horizontal_margin"
-            app:layout_constraintTop_toBottomOf="@id/add_manual_title">
+            app:layout_constraintTop_toBottomOf="@id/add_manual_title"/>
 
-          <include layout="@layout/reusable_text_input_layout"
-              android:id="@+id/input_layout_1"/>
-
-          <include layout="@layout/reusable_text_input_layout"
-              android:id="@+id/input_layout_2"/>
-
-          <include layout="@layout/reusable_text_input_layout"
-              android:id="@+id/input_layout_3"/>
-
-          <include layout="@layout/reusable_text_input_layout"
-              android:id="@+id/input_layout_4"/>
-        </LinearLayout>
-
-
-  </androidx.constraintlayout.widget.ConstraintLayout>
+      </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.card.MaterialCardView>
 
     <ImageView
