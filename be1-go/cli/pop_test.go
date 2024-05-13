@@ -35,7 +35,6 @@ func TestConnectMultipleServers(t *testing.T) {
 		t.Log("server 1 done")
 	}()
 
-	time.Sleep(waitUp)
 	t.Log("server 1 up")
 
 	err = state.SetState(t, types.NewSubscribers(), types.NewPeers(), types.NewQueries(&noLog))
@@ -53,7 +52,6 @@ func TestConnectMultipleServers(t *testing.T) {
 		t.Log("server 2 done")
 	}()
 
-	time.Sleep(waitUp)
 	t.Log("server 2 up")
 
 	err = state.SetState(t, types.NewSubscribers(), types.NewPeers(), types.NewQueries(&noLog))
@@ -70,7 +68,6 @@ func TestConnectMultipleServers(t *testing.T) {
 		t.Log("server 3 done")
 	}()
 
-	time.Sleep(waitUp)
 	t.Log("server 3 up")
 
 	cancel()
@@ -97,7 +94,6 @@ func TestConnectMultipleServersWithoutPK(t *testing.T) {
 		t.Log("server 1 done")
 	}()
 
-	time.Sleep(waitUp)
 	t.Log("server 1 up")
 
 	err = state.SetState(t, types.NewSubscribers(), types.NewPeers(), types.NewQueries(&noLog))
@@ -114,7 +110,6 @@ func TestConnectMultipleServersWithoutPK(t *testing.T) {
 		t.Log("server 2 done")
 	}()
 
-	time.Sleep(waitUp)
 	t.Log("server 2 up")
 
 	err = state.SetState(t, types.NewSubscribers(), types.NewPeers(), types.NewQueries(&noLog))
@@ -131,7 +126,6 @@ func TestConnectMultipleServersWithoutPK(t *testing.T) {
 		t.Log("server 3 done")
 	}()
 
-	time.Sleep(waitUp)
 	t.Log("server 3 up")
 
 	cancel()

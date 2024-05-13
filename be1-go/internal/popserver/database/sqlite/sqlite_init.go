@@ -6,11 +6,12 @@ import (
 	"sync"
 )
 
+var dbLock sync.RWMutex
+
 // SQLite is a wrapper around the SQLite database.
 type SQLite struct {
 	database2.Repository
 	database *sql.DB
-	sync.RWMutex
 }
 
 //======================================================================================================================
@@ -19,6 +20,9 @@ type SQLite struct {
 
 // NewSQLite returns a new SQLite instance.
 func NewSQLite(path string, foreignKeyOn bool) (SQLite, error) {
+	dbLock.Lock()
+	defer dbLock.Unlock()
+
 	db, err := sql.Open("sqlite", path)
 	if err != nil {
 		return SQLite{}, err
@@ -98,8 +102,9 @@ func NewSQLite(path string, foreignKeyOn bool) (SQLite, error) {
 
 // Close closes the SQLite database.
 func (s *SQLite) Close() error {
-	s.Lock()
-	defer s.Unlock()
+	dbLock.Lock()
+	defer dbLock.Unlock()
+
 	return s.database.Close()
 }
 

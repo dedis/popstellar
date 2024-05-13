@@ -17,8 +17,8 @@ import (
 )
 
 func (s *SQLite) StoreServerKeys(electionPubKey kyber.Point, electionSecretKey kyber.Scalar) error {
-	s.Lock()
-	defer s.Unlock()
+	dbLock.Lock()
+	defer dbLock.Unlock()
 
 	tx, err := s.database.Begin()
 	if err != nil {
@@ -44,8 +44,8 @@ func (s *SQLite) StoreServerKeys(electionPubKey kyber.Point, electionSecretKey k
 }
 
 func (s *SQLite) GetServerKeys() (kyber.Point, kyber.Scalar, error) {
-	s.RLock()
-	defer s.RUnlock()
+	dbLock.RLock()
+	defer dbLock.RUnlock()
 
 	var serverPubBuf []byte
 	var serverSecBuf []byte
@@ -68,8 +68,8 @@ func (s *SQLite) GetServerKeys() (kyber.Point, kyber.Scalar, error) {
 }
 
 func (s *SQLite) StoreMessageAndData(channelPath string, msg message.Message) error {
-	s.Lock()
-	defer s.Unlock()
+	dbLock.Lock()
+	defer dbLock.Unlock()
 
 	tx, err := s.database.Begin()
 	if err != nil {
@@ -131,8 +131,8 @@ func addPendingSignatures(tx *sql.Tx, msg *message.Message) error {
 
 // GetMessagesByID returns a set of messages by their IDs.
 func (s *SQLite) GetMessagesByID(IDs []string) (map[string]message.Message, error) {
-	s.RLock()
-	defer s.RUnlock()
+	dbLock.RLock()
+	defer dbLock.RUnlock()
 
 	if len(IDs) == 0 {
 		return make(map[string]message.Message), nil
@@ -174,8 +174,8 @@ func (s *SQLite) GetMessagesByID(IDs []string) (map[string]message.Message, erro
 
 // GetMessageByID returns a message by its ID.
 func (s *SQLite) GetMessageByID(ID string) (message.Message, error) {
-	s.RLock()
-	defer s.RUnlock()
+	dbLock.RLock()
+	defer dbLock.RUnlock()
 
 	var messageByte []byte
 	err := s.database.QueryRow(selectMessage, ID).Scan(&messageByte)
@@ -192,8 +192,8 @@ func (s *SQLite) GetMessageByID(ID string) (message.Message, error) {
 
 // AddWitnessSignature stores a pending signature inside the SQLite database.
 func (s *SQLite) AddWitnessSignature(messageID string, witness string, signature string) error {
-	s.Lock()
-	defer s.Unlock()
+	dbLock.Lock()
+	defer dbLock.Unlock()
 
 	tx, err := s.database.Begin()
 	if err != nil {
@@ -228,16 +228,16 @@ func (s *SQLite) AddWitnessSignature(messageID string, witness string, signature
 
 // StoreChannel mainly used for testing and storing the root channel
 func (s *SQLite) StoreChannel(channelPath, channelType, laoPath string) error {
-	s.Lock()
-	defer s.Unlock()
+	dbLock.Lock()
+	defer dbLock.Unlock()
 
 	_, err := s.database.Exec(insertChannel, channelPath, channelTypeToID[channelType], laoPath)
 	return err
 }
 
 func (s *SQLite) GetAllChannels() ([]string, error) {
-	s.RLock()
-	defer s.RUnlock()
+	dbLock.RLock()
+	defer dbLock.RUnlock()
 
 	rows, err := s.database.Query(selectAllChannels)
 	if err != nil {
@@ -266,8 +266,8 @@ func (s *SQLite) GetAllChannels() ([]string, error) {
 
 // GetChannelType returns the type of the channelPath.
 func (s *SQLite) GetChannelType(channelPath string) (string, error) {
-	s.RLock()
-	defer s.RUnlock()
+	dbLock.RLock()
+	defer dbLock.RUnlock()
 
 	var channelType string
 	err := s.database.QueryRow(selectChannelType, channelPath).Scan(&channelType)
@@ -276,8 +276,8 @@ func (s *SQLite) GetChannelType(channelPath string) (string, error) {
 
 // GetAllMessagesFromChannel returns all the messages received + sent on a channel sorted by stored time.
 func (s *SQLite) GetAllMessagesFromChannel(channelPath string) ([]message.Message, error) {
-	s.RLock()
-	defer s.RUnlock()
+	dbLock.RLock()
+	defer dbLock.RUnlock()
 
 	rows, err := s.database.Query(selectAllMessagesFromChannel, channelPath)
 	if err != nil {
@@ -305,8 +305,8 @@ func (s *SQLite) GetAllMessagesFromChannel(channelPath string) ([]message.Messag
 }
 
 func (s *SQLite) GetResultForGetMessagesByID(params map[string][]string) (map[string][]message.Message, error) {
-	s.RLock()
-	defer s.RUnlock()
+	dbLock.RLock()
+	defer dbLock.RUnlock()
 
 	var interfaces []interface{}
 	// isBaseChannel must be true
@@ -351,8 +351,8 @@ func (s *SQLite) GetResultForGetMessagesByID(params map[string][]string) (map[st
 }
 
 func (s *SQLite) GetParamsHeartbeat() (map[string][]string, error) {
-	s.RLock()
-	defer s.RUnlock()
+	dbLock.RLock()
+	defer dbLock.RUnlock()
 
 	rows, err := s.database.Query(selectBaseChannelMessages, true)
 	if err != nil {
@@ -380,8 +380,8 @@ func (s *SQLite) GetParamsHeartbeat() (map[string][]string, error) {
 }
 
 func (s *SQLite) GetParamsForGetMessageByID(params map[string][]string) (map[string][]string, error) {
-	s.RLock()
-	defer s.RUnlock()
+	dbLock.RLock()
+	defer dbLock.RUnlock()
 
 	var interfaces []interface{}
 	// isBaseChannel must be true
@@ -434,8 +434,8 @@ func (s *SQLite) GetParamsForGetMessageByID(params map[string][]string) (map[str
 //======================================================================================================================
 
 func (s *SQLite) HasChannel(channelPath string) (bool, error) {
-	s.RLock()
-	defer s.RUnlock()
+	dbLock.RLock()
+	defer dbLock.RUnlock()
 
 	var c string
 	err := s.database.QueryRow(selectChannelPath, channelPath).Scan(&c)
@@ -449,8 +449,8 @@ func (s *SQLite) HasChannel(channelPath string) (bool, error) {
 }
 
 func (s *SQLite) HasMessage(messageID string) (bool, error) {
-	s.RLock()
-	defer s.RUnlock()
+	dbLock.RLock()
+	defer dbLock.RUnlock()
 
 	var msgID string
 	err := s.database.QueryRow(selectMessageID, messageID).Scan(&msgID)
@@ -473,8 +473,8 @@ func (s *SQLite) StoreLaoWithLaoGreet(
 	organizerPubBuf []byte,
 	msg, laoGreetMsg message.Message) error {
 
-	s.Lock()
-	defer s.Unlock()
+	dbLock.Lock()
+	defer dbLock.Unlock()
 
 	tx, err := s.database.Begin()
 	if err != nil {
@@ -549,8 +549,8 @@ func (s *SQLite) StoreLaoWithLaoGreet(
 //======================================================================================================================
 
 func (s *SQLite) GetOrganizerPubKey(laoPath string) (kyber.Point, error) {
-	s.RLock()
-	defer s.RUnlock()
+	dbLock.RLock()
+	defer dbLock.RUnlock()
 
 	var organizerPubBuf []byte
 	err := s.database.QueryRow(selectPublicKey, laoPath).Scan(&organizerPubBuf)
@@ -566,8 +566,8 @@ func (s *SQLite) GetOrganizerPubKey(laoPath string) (kyber.Point, error) {
 }
 
 func (s *SQLite) GetRollCallState(channelPath string) (string, error) {
-	s.RLock()
-	defer s.RUnlock()
+	dbLock.RLock()
+	defer dbLock.RUnlock()
 
 	var state string
 	err := s.database.QueryRow(selectLastRollCallMessage, messagedata.RollCallObject, channelPath).Scan(&state)
@@ -578,8 +578,8 @@ func (s *SQLite) GetRollCallState(channelPath string) (string, error) {
 }
 
 func (s *SQLite) CheckPrevOpenOrReopenID(channel, nextID string) (bool, error) {
-	s.RLock()
-	defer s.RUnlock()
+	dbLock.RLock()
+	defer dbLock.RUnlock()
 
 	var lastMsg []byte
 	var lastAction string
@@ -614,8 +614,8 @@ func (s *SQLite) CheckPrevOpenOrReopenID(channel, nextID string) (bool, error) {
 }
 
 func (s *SQLite) CheckPrevCreateOrCloseID(channel, nextID string) (bool, error) {
-	s.RLock()
-	defer s.RUnlock()
+	dbLock.RLock()
+	defer dbLock.RUnlock()
 
 	var lastMsg []byte
 	var lastAction string
@@ -650,8 +650,8 @@ func (s *SQLite) CheckPrevCreateOrCloseID(channel, nextID string) (bool, error) 
 }
 
 func (s *SQLite) GetLaoWitnesses(laoPath string) (map[string]struct{}, error) {
-	s.RLock()
-	defer s.RUnlock()
+	dbLock.RLock()
+	defer dbLock.RUnlock()
 
 	var witnesses []string
 	err := s.database.QueryRow(selectLaoWitnesses, laoPath, messagedata.LAOObject, messagedata.LAOActionCreate).Scan(&witnesses)
@@ -668,8 +668,8 @@ func (s *SQLite) GetLaoWitnesses(laoPath string) (map[string]struct{}, error) {
 }
 
 func (s *SQLite) StoreRollCallClose(channels []string, laoPath string, msg message.Message) error {
-	s.Lock()
-	defer s.Unlock()
+	dbLock.Lock()
+	defer dbLock.Unlock()
 
 	tx, err := s.database.Begin()
 	if err != nil {
@@ -765,8 +765,8 @@ func (s *SQLite) StoreElection(
 	electionSecretKey kyber.Scalar,
 	msg message.Message) error {
 
-	s.Lock()
-	defer s.Unlock()
+	dbLock.Lock()
+	defer dbLock.Unlock()
 
 	tx, err := s.database.Begin()
 	if err != nil {
@@ -790,8 +790,8 @@ func (s *SQLite) StoreElectionWithElectionKey(
 	electionSecretKey kyber.Scalar,
 	msg, electionKeyMsg message.Message) error {
 
-	s.Lock()
-	defer s.Unlock()
+	dbLock.Lock()
+	defer dbLock.Unlock()
 
 	tx, err := s.database.Begin()
 	if err != nil {
@@ -832,8 +832,8 @@ func (s *SQLite) StoreElectionWithElectionKey(
 //======================================================================================================================
 
 func (s *SQLite) GetLAOOrganizerPubKey(electionPath string) (kyber.Point, error) {
-	s.RLock()
-	defer s.RUnlock()
+	dbLock.RLock()
+	defer dbLock.RUnlock()
 
 	tx, err := s.database.Begin()
 	if err != nil {
@@ -861,8 +861,8 @@ func (s *SQLite) GetLAOOrganizerPubKey(electionPath string) (kyber.Point, error)
 }
 
 func (s *SQLite) GetElectionSecretKey(electionPath string) (kyber.Scalar, error) {
-	s.RLock()
-	defer s.RUnlock()
+	dbLock.RLock()
+	defer dbLock.RUnlock()
 
 	var electionSecretBuf []byte
 	err := s.database.QueryRow(selectSecretKey, electionPath).Scan(&electionSecretBuf)
@@ -879,8 +879,8 @@ func (s *SQLite) GetElectionSecretKey(electionPath string) (kyber.Scalar, error)
 }
 
 func (s *SQLite) getElectionState(electionPath string) (string, error) {
-	s.RLock()
-	defer s.RUnlock()
+	dbLock.RLock()
+	defer dbLock.RUnlock()
 
 	var state string
 	err := s.database.QueryRow(selectLastElectionMessage, electionPath, messagedata.ElectionObject, messagedata.VoteActionCastVote).Scan(&state)
@@ -891,8 +891,8 @@ func (s *SQLite) getElectionState(electionPath string) (string, error) {
 }
 
 func (s *SQLite) IsElectionStartedOrEnded(electionPath string) (bool, error) {
-	s.RLock()
-	defer s.RUnlock()
+	dbLock.RLock()
+	defer dbLock.RUnlock()
 
 	state, err := s.getElectionState(electionPath)
 	if err != nil {
@@ -903,8 +903,8 @@ func (s *SQLite) IsElectionStartedOrEnded(electionPath string) (bool, error) {
 }
 
 func (s *SQLite) IsElectionStarted(electionPath string) (bool, error) {
-	s.RLock()
-	defer s.RUnlock()
+	dbLock.RLock()
+	defer dbLock.RUnlock()
 
 	state, err := s.getElectionState(electionPath)
 	if err != nil {
@@ -914,8 +914,8 @@ func (s *SQLite) IsElectionStarted(electionPath string) (bool, error) {
 }
 
 func (s *SQLite) IsElectionEnded(electionPath string) (bool, error) {
-	s.RLock()
-	defer s.RUnlock()
+	dbLock.RLock()
+	defer dbLock.RUnlock()
 
 	state, err := s.getElectionState(electionPath)
 	if err != nil {
@@ -925,8 +925,8 @@ func (s *SQLite) IsElectionEnded(electionPath string) (bool, error) {
 }
 
 func (s *SQLite) GetElectionCreationTime(electionPath string) (int64, error) {
-	s.RLock()
-	defer s.RUnlock()
+	dbLock.RLock()
+	defer dbLock.RUnlock()
 
 	var creationTime int64
 	err := s.database.QueryRow(selectElectionCreationTime, electionPath, messagedata.ElectionObject, messagedata.ElectionActionSetup).Scan(&creationTime)
@@ -937,8 +937,8 @@ func (s *SQLite) GetElectionCreationTime(electionPath string) (int64, error) {
 }
 
 func (s *SQLite) GetElectionType(electionPath string) (string, error) {
-	s.RLock()
-	defer s.RUnlock()
+	dbLock.RLock()
+	defer dbLock.RUnlock()
 
 	var electionType string
 	err := s.database.QueryRow(selectElectionType, electionPath, messagedata.ElectionObject, messagedata.ElectionActionSetup).Scan(&electionType)
@@ -949,8 +949,8 @@ func (s *SQLite) GetElectionType(electionPath string) (string, error) {
 }
 
 func (s *SQLite) GetElectionAttendees(electionPath string) (map[string]struct{}, error) {
-	s.RLock()
-	defer s.RUnlock()
+	dbLock.RLock()
+	defer dbLock.RUnlock()
 
 	var rollCallCloseBytes []byte
 	err := s.database.QueryRow(selectElectionAttendees,
@@ -978,8 +978,8 @@ func (s *SQLite) GetElectionAttendees(electionPath string) (map[string]struct{},
 }
 
 func (s *SQLite) getElectionSetup(electionPath string, tx *sql.Tx) (messagedata.ElectionSetup, error) {
-	s.RLock()
-	defer s.RUnlock()
+	dbLock.RLock()
+	defer dbLock.RUnlock()
 
 	var electionSetupBytes []byte
 	err := tx.QueryRow(selectElectionSetup, electionPath, messagedata.ElectionObject, messagedata.ElectionActionSetup).Scan(&electionSetupBytes)
@@ -997,8 +997,8 @@ func (s *SQLite) getElectionSetup(electionPath string, tx *sql.Tx) (messagedata.
 }
 
 func (s *SQLite) GetElectionQuestions(electionPath string) (map[string]types.Question, error) {
-	s.RLock()
-	defer s.RUnlock()
+	dbLock.RLock()
+	defer dbLock.RUnlock()
 
 	tx, err := s.database.Begin()
 	if err != nil {
@@ -1026,8 +1026,8 @@ func (s *SQLite) GetElectionQuestions(electionPath string) (map[string]types.Que
 }
 
 func (s *SQLite) GetElectionQuestionsWithValidVotes(electionPath string) (map[string]types.Question, error) {
-	s.RLock()
-	defer s.RUnlock()
+	dbLock.RLock()
+	defer dbLock.RUnlock()
 
 	tx, err := s.database.Begin()
 	if err != nil {
@@ -1115,8 +1115,8 @@ func updateVote(msgID, sender string, castVote messagedata.VoteCastVote, questio
 }
 
 func (s *SQLite) StoreElectionEndWithResult(channelPath string, msg, electionResultMsg message.Message) error {
-	s.Lock()
-	defer s.Unlock()
+	dbLock.Lock()
+	defer dbLock.Unlock()
 
 	tx, err := s.database.Begin()
 	if err != nil {
@@ -1167,8 +1167,8 @@ func (s *SQLite) StoreElectionEndWithResult(channelPath string, msg, electionRes
 //======================================================================================================================
 
 func (s *SQLite) StoreChirpMessages(channel, generalChannel string, msg, generalMsg message.Message) error {
-	s.Lock()
-	defer s.Unlock()
+	dbLock.Lock()
+	defer dbLock.Unlock()
 
 	tx, err := s.database.Begin()
 	if err != nil {
@@ -1219,8 +1219,8 @@ func (s *SQLite) StoreChirpMessages(channel, generalChannel string, msg, general
 //======================================================================================================================
 
 func (s *SQLite) IsAttendee(laoPath, poptoken string) (bool, error) {
-	s.RLock()
-	defer s.RUnlock()
+	dbLock.RLock()
+	defer dbLock.RUnlock()
 
 	var rollCallCloseBytes []byte
 	err := s.database.QueryRow(selectLastRollCallClose, laoPath, messagedata.RollCallObject, messagedata.RollCallActionClose).Scan(&rollCallCloseBytes)
@@ -1244,8 +1244,8 @@ func (s *SQLite) IsAttendee(laoPath, poptoken string) (bool, error) {
 }
 
 func (s *SQLite) GetReactionSender(messageID string) (string, error) {
-	s.RLock()
-	defer s.RUnlock()
+	dbLock.RLock()
+	defer dbLock.RUnlock()
 
 	var sender string
 	var object string

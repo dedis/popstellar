@@ -109,8 +109,16 @@ func (s *ServerConfig) newHub(l *zerolog.Logger) (hub.Hub, error) {
 		return nil, err
 	}
 
-	for _, v := range channels {
-		errAnswer := state.AddChannel(v)
+	for _, channel := range channels {
+		alreadyExist, errAnswer := state.HasChannel(channel)
+		if errAnswer != nil {
+			return nil, errAnswer
+		}
+		if alreadyExist {
+			continue
+		}
+
+		errAnswer = state.AddChannel(channel)
 		if errAnswer != nil {
 			return nil, errAnswer
 		}
