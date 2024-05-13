@@ -2934,6 +2934,7 @@ a consensus/failure message is sent informing the system of the failure.
 ## Federation introduction
 This feature will allow both LAOs to establish a connection between each other, send and receive data from one another, enhancing the existing functionalities like roll calls, events, and social media interactions, all while maintaining their autonomy.
 For clearer understanding, we define "Alice" as the "local organizer" and "Alice's server" as the "local server." These terms refer to the entities that initiate the federation process. On the other hand, "Bob" is referred to as the "remote organizer" and "Bob's server" as the "remote server." These are the entities that join or collaborate in the federation.
+Upon creation of a lao channel, a federation channel is created as well : /root/lao_id/federation.  
 ## Federation (Authentication Protocol)
 
 Schematic Illustration
