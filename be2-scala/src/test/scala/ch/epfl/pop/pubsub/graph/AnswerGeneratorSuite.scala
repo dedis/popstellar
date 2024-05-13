@@ -20,6 +20,8 @@ import scala.concurrent.duration.FiniteDuration
 class AnswerGeneratorSuite extends TestKit(ActorSystem("Test")) with FunSuiteLike with ImplicitSender with Matchers with BeforeAndAfterAll {
 
   final val pathCatchupJson = "../protocol/examples/query/catchup/catchup.json"
+  final val pathPagedCatchupJson = "../protocol/examples/query/paged_catchup/paged_catchup.json"
+  final val pathPagedCatchupNonChirpsChannelJson = "../protocol/examples/query/paged_catchup/paged_catchup_non_chirps_channel.json"
   final val pathPublishJson = "../protocol/examples/query/publish/publish.json"
   final val pathBroadcastJson = "../protocol/examples/query/broadcast/broadcast.json"
 
@@ -32,7 +34,7 @@ class AnswerGeneratorSuite extends TestKit(ActorSystem("Test")) with FunSuiteLik
     TestKit.shutdownActorSystem(system)
   }
 
-  /** Creates and spawns a mocked version of DbActor with special behavior when receiving Catchup
+  /** Creates and spawns a mocked version of DbActor with special behavior when receiving Catchup or PagedCatchup
     *
     * @param messages
     *   messages to send back as result
@@ -44,12 +46,14 @@ class AnswerGeneratorSuite extends TestKit(ActorSystem("Test")) with FunSuiteLik
       override def receive: Receive = {
         case DbActor.Catchup(_) =>
           sender() ! DbActor.DbActorCatchupAck(messages)
+        case DbActor.PagedCatchup(_) =>
+          sender() ! DbActor.DbActorCatchupAck(messages)
       }
     })
     system.actorOf(dbActorMock)
   }
 
-  /** Creates and spawns with NAck response for a catchup
+  /** Creates and spawns with NAck response for a catchup or paged catchup
     *
     * @param code
     *   error code
@@ -62,6 +66,8 @@ class AnswerGeneratorSuite extends TestKit(ActorSystem("Test")) with FunSuiteLik
     val dbActorMock = Props(new Actor() {
       override def receive: Receive = {
         case DbActor.Catchup(_) =>
+          sender() ! Status.Failure(DbActorNAckException(code, description))
+        case DbActor.PagedCatchup(_) =>
           sender() ! Status.Failure(DbActorNAckException(code, description))
       }
     })
@@ -133,6 +139,72 @@ class AnswerGeneratorSuite extends TestKit(ActorSystem("Test")) with FunSuiteLik
 
     val gmsg: GraphMessage = new AnswerGenerator(dbActorRef).generateAnswer(Right(rpcCatchupReq))
     val expected = Left(PipelineError(ErrorCodes.INVALID_RESOURCE.id, "AnswerGenerator failed : error (mock)", rpcCatchupReq.id))
+
+    gmsg should be(expected)
+    system.stop(dbActorRef.actorRef)
+  }
+
+  lazy val rpcPagedCatchupReq: JsonRpcRequest = getJsonRPC(pathPagedCatchupJson)
+  test("PagedCatchup: correct response test for Nil Messages") {
+
+    lazy val dbActorRef = mockDbWithMessages(Nil)
+    val message: GraphMessage = new AnswerGenerator(dbActorRef).generateAnswer(Right(rpcPagedCatchupReq))
+
+    def resultObject: ResultObject = new ResultObject(Nil)
+
+    val expected = Right(JsonRpcResponse(
+      RpcValidator.JSON_RPC_VERSION,
+      Some(resultObject),
+      None,
+      rpcPagedCatchupReq.id
+    ))
+
+    message should be(expected)
+    system.stop(dbActorRef.actorRef)
+  }
+
+  test("PagedCatchup: correct response test for one Message") {
+
+    val messages = MessageExample.MESSAGE :: Nil
+    lazy val dbActorRef = mockDbWithMessages(messages)
+    val gmsg: GraphMessage = new AnswerGenerator(dbActorRef).generateAnswer(Right(rpcPagedCatchupReq))
+
+    def resultObject: ResultObject = new ResultObject(messages)
+
+    val expected = Right(JsonRpcResponse(
+      RpcValidator.JSON_RPC_VERSION,
+      Some(resultObject),
+      None,
+      rpcPagedCatchupReq.id
+    ))
+
+    gmsg should be(expected)
+    system.stop(dbActorRef.actorRef)
+  }
+
+  test("PagedCatchup: error on non existing channel test") {
+
+    lazy val dbActorRef =
+      mockDbWithNack(ErrorCodes.INVALID_RESOURCE.id, "error (mock)")
+
+    val gmsg: GraphMessage = new AnswerGenerator(dbActorRef).generateAnswer(Right(rpcPagedCatchupReq))
+    val expected = Left(PipelineError(ErrorCodes.INVALID_RESOURCE.id, "AnswerGenerator failed : error (mock)", rpcPagedCatchupReq.id))
+
+    gmsg should be(expected)
+    system.stop(dbActorRef.actorRef)
+  }
+
+  /** Omar Majzoub May 2024: Paging is not supported on non-chirps channels yet. You can remove this test
+   *  after support has been added.
+   */
+  lazy val rpcPagedCatchupNonChirpsChannelReq: JsonRpcRequest = getJsonRPC(pathPagedCatchupNonChirpsChannelJson)
+  test("PagedCatchup: error on non-chirps channel test") {
+
+    lazy val dbActorRef =
+      mockDbWithNack(ErrorCodes.INVALID_ACTION.id, "error (mock) paging is not supported on non-chirp channels")
+
+    val gmsg: GraphMessage = new AnswerGenerator(dbActorRef).generateAnswer(Right(rpcPagedCatchupNonChirpsChannelReq))
+    val expected = Left(PipelineError(ErrorCodes.INVALID_ACTION.id, "AnswerGenerator failed : error (mock) paging is not supported on non-chirp channels", rpcPagedCatchupNonChirpsChannelReq.id))
 
     gmsg should be(expected)
     system.stop(dbActorRef.actorRef)
