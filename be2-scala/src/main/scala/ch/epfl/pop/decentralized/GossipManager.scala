@@ -80,7 +80,9 @@ final case class GossipManager(
           sendRumorToRandomPeer(rumorRpc)
         }
       }
-    } else if (activeGossipPeers.size > 1) {}
+    } else {
+      log.info(s"Unexpected match for active gossip. Response with id ${response.id} matched with ${activeGossipPeers.size} entries")
+    }
   }
 
   override def receive: Receive = {
@@ -89,6 +91,9 @@ final case class GossipManager(
 
     case GossipManager.ManageGossipResponse(jsonRpcResponse) =>
       processResponse(jsonRpcResponse)
+
+    case _ =>
+      log.info(s"Actor $self received an unexpected message")
   }
 
 }
