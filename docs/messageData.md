@@ -3296,7 +3296,7 @@ This message is sent by Bob's server. The purpose of this message is to provide 
         },
         "challenge": {
           "$ref": "../message.json",
-          "$comment": "message/message containing a FederationChallenge data"
+          "$comment": "message containing a FederationChallenge"
         }
       },
       "additionalProperties": false,
