@@ -27,7 +27,7 @@
         },
         "challenge": {
             "$ref": "../message.json",
-            "$comment": "message/message containing a FederationChallenge data"
+            "$comment": "message containing a FederationChallenge"
         }
     },
     "additionalProperties": false,

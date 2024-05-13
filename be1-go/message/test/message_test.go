@@ -1,17 +1,18 @@
-package message
+package test
 
 import (
 	"encoding/base64"
 	"os"
 	"path/filepath"
 	"popstellar/message/messagedata"
+	"popstellar/message/query/method/message"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 )
 
 func Test_UnmarshalData(t *testing.T) {
-	messageDataPath := filepath.Join("..", "..", "..", "..", "..", "protocol",
+	messageDataPath := filepath.Join("..", "..", "..", "protocol",
 		"examples", "messageData", "lao_create", "lao_create.json")
 
 	messageDataBuf, err := os.ReadFile(messageDataPath)
@@ -20,23 +21,23 @@ func Test_UnmarshalData(t *testing.T) {
 	laoCreate := messagedata.LaoCreate{}
 	electionSetup := messagedata.ElectionSetup{}
 
-	message := Message{
+	msg := message.Message{
 		Data: string(messageDataBuf),
 	}
 
-	err = message.UnmarshalData(&laoCreate)
+	err = msg.UnmarshalData(&laoCreate)
 	require.Error(t, err)
 
-	err = message.UnmarshalData(&electionSetup)
+	err = msg.UnmarshalData(&electionSetup)
 	require.Error(t, err)
 
 	messageData := base64.URLEncoding.EncodeToString(messageDataBuf)
 
-	message = Message{
+	msg = message.Message{
 		Data: messageData,
 	}
 
-	err = message.UnmarshalData(&laoCreate)
+	err = msg.UnmarshalData(&laoCreate)
 	require.NoError(t, err)
 
 	require.Equal(t, "lao", laoCreate.Object)
@@ -48,3 +49,4 @@ func Test_UnmarshalData(t *testing.T) {
 
 	require.Len(t, laoCreate.Witnesses, 0)
 }
+
