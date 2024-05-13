@@ -25,9 +25,8 @@ import com.github.dedis.popstellar.testutils.Base64DataUtils
 import com.github.dedis.popstellar.testutils.BundleBuilder
 import com.github.dedis.popstellar.testutils.MessageSenderHelper
 import com.github.dedis.popstellar.testutils.MockitoKotlinHelpers
+import com.github.dedis.popstellar.testutils.UITestUtils.assertToastContainsTextIsNotDisplayed
 import com.github.dedis.popstellar.testutils.UITestUtils.assertToastIsDisplayedContainsText
-import com.github.dedis.popstellar.testutils.UITestUtils.assertToastIsDisplayedOnlyOnce
-import com.github.dedis.popstellar.testutils.UITestUtils.assertToastIsDisplayedWithText
 import com.github.dedis.popstellar.testutils.fragment.ActivityFragmentScenarioRule
 import com.github.dedis.popstellar.testutils.pages.lao.LaoActivityPageObject
 import com.github.dedis.popstellar.ui.lao.LaoActivity
@@ -40,9 +39,6 @@ import com.github.dedis.popstellar.utility.security.KeyManager
 import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import java.security.InvalidKeyException
-import java.time.Instant
-import javax.inject.Inject
 import org.junit.Assert
 import org.junit.Rule
 import org.junit.Test
@@ -53,6 +49,8 @@ import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.junit.MockitoJUnit
 import org.mockito.junit.MockitoTestRule
+import java.time.Instant
+import javax.inject.Inject
 
 @HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
@@ -305,20 +303,46 @@ class ChirpListAdapterTest {
     }
   }
 
-  //@Test
-  //fun testErrorToastDisplayedOnce() {
-  //  // error shows since tests LAO are not fully initialized ("user" participated in no roll calls)
-  //  itemTest()
-//
-  //  Thread.sleep(3500)
-  //  assertToastIsDisplayedWithText(R.string.error_retrieve_own_token, "")
-  //  assertToastIsDisplayedOnlyOnce()
-  //}
+  @Test
+  fun testNoTokenErrorToastDoesNotDisplayOnLaunch() {
+    Mockito.`when`(
+        keyManager.getValidPoPToken(ArgumentMatchers.anyString(), MockitoKotlinHelpers.any())
+      )
+      .thenReturn(SENDER_KEY_3 as PoPToken)
+
+    activityScenarioRule.scenario.onActivity { activity: LaoActivity ->
+      assertToastContainsTextIsNotDisplayed(R.string.error_retrieve_own_token, "")
+
+      val socialMediaViewModel = obtainSocialMediaViewModel(activity, LAO_ID)
+      val viewModel = obtainViewModel(activity)
+      val chirpListAdapter =
+        createChirpListAdapter(activity, viewModel, socialMediaViewModel, createChirpList())
+
+      val layout = LinearLayout(activity.applicationContext)
+      val parent = TextView(activity.applicationContext)
+      parent.text = "Mock Title"
+      layout.addView(parent)
+
+      val view1 = chirpListAdapter.getView(0, null, layout)
+      Assert.assertNotNull(view1)
+
+      val addChirpButton = view1.findViewById<ImageButton>(R.id.social_media_send_fragment_button)
+      Assert.assertNotNull(addChirpButton)
+      addChirpButton.callOnClick()
+
+        val chirpText = activity.findViewById<TextView>(R.id.entry_box_chirp)
+        chirpText.text = "test chirp"
+        val sendButton = activity.findViewById<ImageButton>(R.id.send_chirp_button)
+        sendButton.callOnClick()
+
+        assertToastIsDisplayedContainsText(R.string.error_retrieve_own_token, "")
+    }
+  }
 
   companion object {
     private const val CREATION_TIME: Long = 1631280815
     private const val LAO_NAME = "laoName"
-    private val SENDER_KEY_1: KeyPair = Base64DataUtils.generatePoPToken()
+    private var SENDER_KEY_1: KeyPair = Base64DataUtils.generatePoPToken()
     private val SENDER_KEY_2: KeyPair = Base64DataUtils.generatePoPToken()
     private val SENDER_KEY_3: KeyPair = Base64DataUtils.generatePoPToken()
     private val SENDER_1 = SENDER_KEY_1.publicKey

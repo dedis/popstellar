@@ -61,9 +61,9 @@ constructor(
   private val mNumberCharsLeft = MutableLiveData<Int>()
   val bottomNavigationTab = MutableLiveData(SocialMediaTab.HOME)
 
-    private val _hasValidToken = MutableLiveData<Boolean>()
+  private val _hasValidToken = MutableLiveData<Boolean>()
 
-    private val disposables: CompositeDisposable = CompositeDisposable()
+  private val disposables: CompositeDisposable = CompositeDisposable()
 
   override fun onCleared() {
     super.onCleared()
@@ -75,7 +75,6 @@ constructor(
      * Getters for MutableLiveData instances declared above
      */
     get() = mNumberCharsLeft
-
 
   /*
    * Methods that modify the state or post an Event to update the UI.
@@ -275,10 +274,10 @@ constructor(
 
       sender == token.publicKey.encoded
     } catch (e: KeyException) {
-        if (_hasValidToken.value == true) {
-            logAndShow(getApplication(), TAG, e, R.string.error_retrieve_own_token)
-        }
-        false
+      if (_hasValidToken.value == true) {
+        logAndShow(getApplication(), TAG, e, R.string.error_retrieve_own_token)
+      }
+      false
     }
   }
 
@@ -289,19 +288,17 @@ constructor(
    * @return true if we have sent such reaction, false otherwise
    */
   fun isReactionPresent(senders: Set<String?>): Boolean {
-      return try {
-          val token = validPoPToken
-          val toSearch = token.publicKey.encoded
-          senders.contains(toSearch)
-      } catch (e: KeyException) {
-          if (_hasValidToken.value == true) {
-              logAndShow(getApplication(), TAG, e, R.string.error_retrieve_own_token)
-          }
-          false
+    return try {
+      val token = validPoPToken
+      val toSearch = token.publicKey.encoded
+      senders.contains(toSearch)
+    } catch (e: KeyException) {
+      if (_hasValidToken.value == true) {
+        logAndShow(getApplication(), TAG, e, R.string.error_retrieve_own_token)
       }
+      false
+    }
   }
-
-
 
   fun setLaoId(laoId: String) {
     this.laoId = laoId
@@ -315,26 +312,25 @@ constructor(
   private val lao: LaoView
     get() = laoRepo.getLaoView(laoId)
 
-    fun checkValidPoPToken() {
-        disposables.add(
-            Single.fromCallable { keyManager.getValidPoPToken(laoId, rollCallRepo.getLastClosedRollCall(laoId)) }
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.mainThread())
-                .subscribe({ _ ->
-                    _hasValidToken.postValue(true)
-                }, { error ->
-                    if (error is InvalidPoPTokenException) {
-                        _hasValidToken.postValue(false)
-                    } else {
-                        Timber.tag(TAG).e(error, "Error checking PoPToken validity")
-                    }
-                })
-        )
-    }
+  fun checkValidPoPToken() {
+    disposables.add(
+        Single.fromCallable {
+              keyManager.getValidPoPToken(laoId, rollCallRepo.getLastClosedRollCall(laoId))
+            }
+            .subscribeOn(schedulerProvider.io())
+            .observeOn(schedulerProvider.mainThread())
+            .subscribe(
+                { _ -> _hasValidToken.postValue(true) },
+                { error ->
+                  if (error is InvalidPoPTokenException) {
+                    _hasValidToken.postValue(false)
+                  } else {
+                    Timber.tag(TAG).e(error, "Error checking PoPToken validity")
+                  }
+                }))
+  }
 
-
-
-    companion object {
+  companion object {
     // TODO : looks like those constants need to be moved to resources
     val TAG: String = SocialMediaViewModel::class.java.simpleName
     private const val LAO_FAILURE_MESSAGE = "failed to retrieve lao"
