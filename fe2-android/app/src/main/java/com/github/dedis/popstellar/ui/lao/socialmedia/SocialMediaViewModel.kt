@@ -198,7 +198,7 @@ constructor(
         }
 
     return Single.fromCallable { validPoPToken }
-        .doOnSuccess { token: PoPToken ->
+        .doOnSuccess { token: PoPToken? ->
           Timber.tag(TAG).d("Retrieved PoPToken to delete Reaction : %s", token)
         }
         .flatMap { token: PoPToken ->
