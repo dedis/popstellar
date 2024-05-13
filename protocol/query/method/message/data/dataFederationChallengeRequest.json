@@ -18,6 +18,8 @@
     },
     "additionalProperties": false,
     "required": [
+        "object",
+        "action",
         "timestamp"
     ]
 }
