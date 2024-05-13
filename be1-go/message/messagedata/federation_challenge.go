@@ -7,13 +7,8 @@ type FederationChallenge struct {
 
 	// Value is a 32 bytes array encoded in hexadecimal
 	Value      string `json:"value"`
-	ValidUntil int64  `json:"timestamp"`
+	ValidUntil int64  `json:"valid_until"`
 }
-
-//type Challenge struct {
-//	Value      string `json:"value"`
-//	ValidUntil int64  `json:"valid_until"`
-//}
 
 // GetObject implements MessageData
 func (FederationChallenge) GetObject() string {
