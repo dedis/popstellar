@@ -103,6 +103,7 @@ const (
 	insertChannelMessage    = `INSERT INTO channelMessage (channelPath, messageID, isBaseChannel) VALUES (?, ?, ?)`
 	insertMessage           = `INSERT INTO message (messageID, message, messageData, storedTime) VALUES (?, ?, ?, ?)`
 	insertChannel           = `INSERT INTO channel (channelPath, typeID, laoPath) VALUES (?, ?, ?)`
+	insertOrIgnoreChannel   = `INSERT OR IGNORE INTO channel (channelPath, typeID, laoPath) VALUES (?, ?, ?)`
 	insertKeys              = `INSERT INTO key (channelPath, publicKey, secretKey) VALUES (?, ?, ?)`
 	insertPublicKey         = `INSERT INTO key (channelPath, publicKey) VALUES (?, ?)`
 	insertPendingSignatures = `INSERT INTO pendingSignatures (messageID, witness, signature) VALUES (?, ?, ?)`

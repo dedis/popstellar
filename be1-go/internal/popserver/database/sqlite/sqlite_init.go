@@ -69,7 +69,7 @@ func NewSQLite(path string, foreignKeyOn bool) (SQLite, error) {
 		return SQLite{}, err
 	}
 
-	_, err = tx.Exec(insertChannel, "/root", channelTypeToID[RootType], "")
+	_, err = tx.Exec(insertOrIgnoreChannel, "/root", channelTypeToID[RootType], "")
 	if err != nil {
 		db.Close()
 		return SQLite{}, err
