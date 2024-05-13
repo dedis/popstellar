@@ -126,8 +126,6 @@ export function validateScannablePopToken(obj: any): ValidationResult {
 }
 
 export function validateFederationExchange(obj: any): ValidationResult {
-  // TODO change URL before merging to master
-  // also in federation_exchange.json
   return validate(
     `https://raw.githubusercontent.com/dedis/popstellar/master/protocol/qrcode/federation_exchange.json`,
     obj,
