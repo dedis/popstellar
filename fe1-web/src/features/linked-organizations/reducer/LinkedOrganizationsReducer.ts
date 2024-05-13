@@ -67,16 +67,16 @@ export const getOrganizationState = (state: any): OrganizationReducerState =>
   state[LINKEDORGANIZATIONS_REDUCER_PATH];
 
 /**
- * Retrives a single notification state by id
+ * Retrives a linked organization state by id
  * @param laoId The id of the lao
- * @param notificationId The id of the notification to retrieve
- * @returns A single notification state
+ * @param linked_lao_id The lao id of the linked organization to retrieve
+ * @returns A linked organization state
  */
 export const makeLinkedOrganizationSelector = (laoId: Hash, linked_lao_id: string) => {
   return createSelector(
-    // First input: a map containing all notifications
+    // First input: a map containing all linked organizations
     (state: any) => getOrganizationState(state),
-    // Selector: returns the notification for a specific lao and notification id
+    // Selector: returns the linked organization for a specific lao and linked_lao_id
     (organizationState: OrganizationReducerState): OrganizationState | undefined => {
       const serializedLaoId = laoId.valueOf();
       return organizationState.byLaoId[serializedLaoId]?.byLaoId[linked_lao_id];
