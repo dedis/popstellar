@@ -22,6 +22,9 @@ import com.github.dedis.popstellar.utility.error.ErrorUtils.logAndShow
 import com.github.dedis.popstellar.utility.error.UnknownLaoException
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.time.Instant
 import javax.inject.Inject
 import net.glxn.qrgen.android.QRCode
@@ -71,7 +74,7 @@ class LinkedOrganizationsInviteFragment : Fragment() {
       binding.loadingText.visibility = View.GONE
       binding.nextStepButton.setText(R.string.finish)
       binding.nextStepButton.setOnClickListener { finishButton() }
-      displayQrCodeAndInfo(binding, linkedOrganizationsViewModel.getRepository().getChallenge())
+      displayQrCodeAndInfo(binding, null)
     }
 
     handleBackNav()
@@ -107,13 +110,15 @@ class LinkedOrganizationsInviteFragment : Fragment() {
               .withColor(getQRCodeColor(requireContext()), Color.TRANSPARENT)
               .bitmap()
 
-      binding.federationQrCode.setImageBitmap(myBitmap)
-      binding.loadingText.visibility = View.GONE
-      binding.scanQrText.visibility = View.VISIBLE
-      binding.linkedOrganizationsNameTitle.visibility = View.VISIBLE
-      binding.linkedOrganizationsServerTitle.visibility = View.VISIBLE
-      binding.linkedOrganizationsNameText.text = laoView.name
-      binding.linkedOrganizationsServerText.text = networkManager.currentUrl
+      CoroutineScope(Dispatchers.Main).launch {
+        binding.federationQrCode.setImageBitmap(myBitmap)
+        binding.loadingText.visibility = View.GONE
+        binding.scanQrText.visibility = View.VISIBLE
+        binding.linkedOrganizationsNameTitle.visibility = View.VISIBLE
+        binding.linkedOrganizationsServerTitle.visibility = View.VISIBLE
+        binding.linkedOrganizationsNameText.text = laoView.name
+        binding.linkedOrganizationsServerText.text = networkManager.currentUrl
+      }
     } catch (e: UnknownLaoException) {
       logAndShow(requireContext(), TAG, e, R.string.unknown_lao_exception)
     }
