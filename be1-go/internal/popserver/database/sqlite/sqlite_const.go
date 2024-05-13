@@ -45,6 +45,61 @@ var channelTypes = []string{
 }
 
 const (
+	createMessage = `
+	CREATE TABLE IF NOT EXISTS message (
+	    		messageID TEXT,
+	    		message TEXT,
+	    		messageData TEXT NULL,
+	    		storedTime BIGINT,
+	    		PRIMARY KEY (messageID)
+	            )`
+
+	createChannelType = `
+	CREATE TABLE IF NOT EXISTS channelType (
+	    		ID INTEGER,
+	    		type TEXT,
+	    		PRIMARY KEY (ID)
+	    		)`
+
+	createChannel = `
+	CREATE TABLE IF NOT EXISTS channel (
+	    		channelPath TEXT,
+	    		typeID TEXT,
+	    		laoPath TEXT NULL,
+	    		FOREIGN KEY (laoPath) REFERENCES channel(channelPath),
+	    		FOREIGN KEY (typeID) REFERENCES channelType(ID),
+	    		PRIMARY KEY (channelPath)
+	            )`
+
+	createKey = `
+	CREATE TABLE IF NOT EXISTS key (
+	    		channelPath TEXT,
+	    		publicKey TEXT,
+	    		secretKey TEXT NULL,
+	    		FOREIGN KEY (channelPath) REFERENCES channel(channelPath),
+	    		PRIMARY KEY (channelPath)
+	            )`
+
+	createChannelMessage = `
+	CREATE TABLE IF NOT EXISTS channelMessage (
+	    		channelPath TEXT,
+	    		messageID TEXT,
+	    		isBaseChannel BOOLEAN,
+	    		FOREIGN KEY (messageID) REFERENCES message(messageID),
+	    		FOREIGN KEY (channelPath) REFERENCES channel(channelPath),
+	    		PRIMARY KEY (channelPath, messageID)
+	            )`
+
+	createPendingSignatures = `
+	CREATE TABLE IF NOT EXISTS pendingSignatures (
+	    		messageID TEXT,
+	    		witness TEXT,
+	    		signature TEXT UNIQUE,
+	    		PRIMARY KEY (messageID, witness)
+	            )`
+)
+
+const (
 	insertChannelMessage    = `INSERT INTO channelMessage (channelPath, messageID, isBaseChannel) VALUES (?, ?, ?)`
 	insertMessage           = `INSERT INTO message (messageID, message, messageData, storedTime) VALUES (?, ?, ?, ?)`
 	insertChannel           = `INSERT INTO channel (channelPath, typeID, laoPath) VALUES (?, ?, ?)`

@@ -37,37 +37,51 @@ func NewSQLite(path string, foreignKeyOn bool) (SQLite, error) {
 	}
 	defer tx.Rollback()
 
-	err = createMessage(tx)
+	_, err = tx.Exec(createMessage)
 	if err != nil {
 		db.Close()
 		return SQLite{}, err
 	}
 
-	err = createChannelType(tx)
+	_, err = tx.Exec(createChannelType)
 	if err != nil {
 		db.Close()
 		return SQLite{}, err
 	}
 
-	err = createKey(tx)
+	for _, channelType := range channelTypes {
+		_, err = tx.Exec("INSERT INTO channelType (type) VALUES (?)", channelType)
+		if err != nil {
+			db.Close()
+			return SQLite{}, err
+		}
+	}
+
+	_, err = tx.Exec(createKey)
 	if err != nil {
 		db.Close()
 		return SQLite{}, err
 	}
 
-	err = createChannel(tx)
+	_, err = tx.Exec(createChannel)
 	if err != nil {
 		db.Close()
 		return SQLite{}, err
 	}
 
-	err = createChannelMessage(tx)
+	_, err = tx.Exec(insertChannel, "/root", channelTypeToID[RootType], "")
 	if err != nil {
 		db.Close()
 		return SQLite{}, err
 	}
 
-	err = createPendingSignatures(tx)
+	_, err = tx.Exec(createChannelMessage)
+	if err != nil {
+		db.Close()
+		return SQLite{}, err
+	}
+
+	_, err = tx.Exec(createPendingSignatures)
 	if err != nil {
 		db.Close()
 		return SQLite{}, err
@@ -80,85 +94,6 @@ func NewSQLite(path string, foreignKeyOn bool) (SQLite, error) {
 	}
 
 	return SQLite{database: db}, nil
-}
-
-func createMessage(tx *sql.Tx) error {
-	_, err := tx.Exec("CREATE TABLE IF NOT EXISTS message (" +
-		"messageID TEXT, " +
-		"message TEXT, " +
-		"messageData TEXT NULL, " +
-		"storedTime BIGINT, " +
-		"PRIMARY KEY (messageID) " +
-		")")
-	return err
-}
-
-func createChannel(tx *sql.Tx) error {
-	_, err := tx.Exec("CREATE TABLE IF NOT EXISTS channel (" +
-		"channelPath TEXT, " +
-		"typeID TEXT, " +
-		"laoPath TEXT NULL, " +
-		"FOREIGN KEY (laoPath) REFERENCES channel(channelPath), " +
-		"FOREIGN KEY (typeID) REFERENCES channelType(ID), " +
-		"PRIMARY KEY (channelPath) " +
-		")")
-
-	if err != nil {
-		return err
-	}
-
-	_, err = tx.Exec("INSERT OR IGNORE INTO channel (channelPath, typeID) VALUES (?, ?)",
-		"/root", channelTypeToID[RootType])
-	return err
-}
-
-func createChannelMessage(tx *sql.Tx) error {
-	_, err := tx.Exec("CREATE TABLE IF NOT EXISTS channelMessage (" +
-		"channelPath TEXT, " +
-		"messageID TEXT, " +
-		"isBaseChannel BOOLEAN, " +
-		"FOREIGN KEY (messageID) REFERENCES message(messageID), " +
-		"FOREIGN KEY (channelPath) REFERENCES channel(channelPath), " +
-		"PRIMARY KEY (channelPath, messageID) " +
-		")")
-	return err
-}
-
-func createPendingSignatures(tx *sql.Tx) error {
-	_, err := tx.Exec("CREATE TABLE IF NOT EXISTS pendingSignatures (" +
-		"messageID TEXT, " +
-		"witness TEXT, " +
-		"signature TEXT UNIQUE, " +
-		"PRIMARY KEY (messageID, witness) " +
-		")")
-	return err
-}
-
-func createChannelType(tx *sql.Tx) error {
-	_, err := tx.Exec("CREATE TABLE IF NOT EXISTS channelType (" +
-		"ID INTEGER PRIMARY KEY, " +
-		"type TEXT" +
-		")")
-
-	for _, channelType := range channelTypes {
-		_, err = tx.Exec("INSERT INTO channelType (type) VALUES (?)", channelType)
-		if err != nil {
-			return err
-		}
-	}
-	return err
-}
-
-func createKey(tx *sql.Tx) error {
-	_, err := tx.Exec("CREATE TABLE IF NOT EXISTS key (" +
-		"channelPath TEXT, " +
-		"publicKey BLOB NULL, " +
-		"secretKey BLOB NULL, " +
-		"FOREIGN KEY (channelPath) REFERENCES channel(channelPath), " +
-		"PRIMARY KEY (channelPath) " +
-		")")
-	return err
-
 }
 
 // Close closes the SQLite database.
