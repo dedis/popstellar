@@ -169,22 +169,9 @@ func handleRollCallClose(msg message.Message, channelPath string) *answer.Error 
 		channels = append(channels, chirpingChannelPath)
 	}
 
-	newChannels := make([]string, 0)
-
-	for _, channelPath := range channels {
-		alreadyExists, errAnswer := state.HasChannel(channelPath)
-		if errAnswer != nil {
-			return errAnswer
-		}
-		if alreadyExists {
-			continue
-		}
-		errAnswer = state.AddChannel(channelPath)
-		if errAnswer != nil {
-			return errAnswer.Wrap("handleRollCallClose")
-		}
-
-		newChannels = append(newChannels, channelPath)
+	newChannels, errAnswer := createOnlyNewChannels(channels)
+	if errAnswer != nil {
+		return errAnswer.Wrap("handleRollCallClose")
 	}
 
 	err = db.StoreRollCallClose(newChannels, channelPath, msg)
@@ -194,6 +181,26 @@ func handleRollCallClose(msg message.Message, channelPath string) *answer.Error 
 	}
 
 	return nil
+}
+
+func createOnlyNewChannels(channels []string) ([]string, *answer.Error) {
+	newChannels := make([]string, 0)
+	for _, channelPath := range channels {
+		alreadyExists, errAnswer := state.HasChannel(channelPath)
+		if errAnswer != nil {
+			return nil, errAnswer
+		}
+		if alreadyExists {
+			continue
+		}
+		errAnswer = state.AddChannel(channelPath)
+		if errAnswer != nil {
+			return nil, errAnswer
+		}
+
+		newChannels = append(newChannels, channelPath)
+	}
+	return newChannels, nil
 }
 
 func handleElectionSetup(msg message.Message, channelPath string) *answer.Error {
