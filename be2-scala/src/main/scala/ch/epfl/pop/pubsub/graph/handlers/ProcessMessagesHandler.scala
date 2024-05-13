@@ -88,7 +88,7 @@ object ProcessMessagesHandler extends AskPatternConstants {
       return logListFailure.isEmpty
     }
     println(receivedResponse.map(x => x._1 match
-      case Right(jsonRpcRequest: JsonRpcRequest) => (jsonRpcRequest.toJson, x._2)
+      case Right(jsonRpcRequest: JsonRpcRequest) => s"processRumor : ${(jsonRpcRequest.toJson, x._2)}"
       case _ => ("", -1)) )
     var failedMessages: List[(GraphMessage, Int)] = Nil
     var logs: List[String] = logListFailure
@@ -97,6 +97,11 @@ object ProcessMessagesHandler extends AskPatternConstants {
         if (retry > 0) {
           messagesThroughPipeline(validatorFlow, graphMessage) match {
             case Left(err) =>
+              println(s"failedMessage : ${
+                graphMessage match
+                  case Right(jsonRpcRequest: JsonRpcRequest) => s"${jsonRpcRequest.toJson}, err : $err "
+                  case _ => "Left"
+              }")
               if (retry == 1) {
                 // only log a during last attempt
                 logs ::= "Errors: " + err.toString + "\n On:\n" + prettyPrinter(graphMessage)
@@ -104,11 +109,21 @@ object ProcessMessagesHandler extends AskPatternConstants {
                 failedMessages ::= graphMessage -> (retry - 1)
               }
 
-            case _ => /* DO NOTHING */
+            case _ => println(s"processedMessage : ${
+              graphMessage match
+                case Right(jsonRpcRequest: JsonRpcRequest) => jsonRpcRequest.toJson
+                case _ => "Left"
+            }")/* DO NOTHING */
           }
+
         }
     }
-    
+      failedMessages = failedMessages
+        .sortWith {
+          case ((Right(msg1 : JsonRpcRequest), _), (Right(msg2 : JsonRpcRequest), _)) => msg1.getParamsChannel.channel.split('/').length <= msg2.getParamsChannel.channel.split('/').length
+          case _ => true
+        }
+
 
     passThroughPipeline(failedMessages, validatorFlow, logs)
   }
