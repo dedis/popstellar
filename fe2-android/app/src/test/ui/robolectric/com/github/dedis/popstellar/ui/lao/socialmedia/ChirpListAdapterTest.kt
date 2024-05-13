@@ -25,8 +25,6 @@ import com.github.dedis.popstellar.testutils.Base64DataUtils
 import com.github.dedis.popstellar.testutils.BundleBuilder
 import com.github.dedis.popstellar.testutils.MessageSenderHelper
 import com.github.dedis.popstellar.testutils.MockitoKotlinHelpers
-import com.github.dedis.popstellar.testutils.UITestUtils.assertToastContainsTextIsNotDisplayed
-import com.github.dedis.popstellar.testutils.UITestUtils.assertToastIsDisplayedContainsText
 import com.github.dedis.popstellar.testutils.fragment.ActivityFragmentScenarioRule
 import com.github.dedis.popstellar.testutils.pages.lao.LaoActivityPageObject
 import com.github.dedis.popstellar.ui.lao.LaoActivity
@@ -303,51 +301,13 @@ class ChirpListAdapterTest {
     }
   }
 
-  @Test
-  fun testNoTokenErrorToastDoesNotDisplayOnLaunch() {
-    Mockito.`when`(
-        keyManager.getValidPoPToken(ArgumentMatchers.anyString(), MockitoKotlinHelpers.any())
-      )
-      .thenReturn(SENDER_KEY_3 as PoPToken)
-
-    activityScenarioRule.scenario.onActivity { activity: LaoActivity ->
-      assertToastContainsTextIsNotDisplayed(R.string.error_retrieve_own_token, "")
-
-      val socialMediaViewModel = obtainSocialMediaViewModel(activity, LAO_ID)
-      val viewModel = obtainViewModel(activity)
-      val chirpListAdapter =
-        createChirpListAdapter(activity, viewModel, socialMediaViewModel, createChirpList())
-
-      val layout = LinearLayout(activity.applicationContext)
-      val parent = TextView(activity.applicationContext)
-      parent.text = "Mock Title"
-      layout.addView(parent)
-
-      val view1 = chirpListAdapter.getView(0, null, layout)
-      Assert.assertNotNull(view1)
-
-      val addChirpButton = view1.findViewById<ImageButton>(R.id.social_media_send_fragment_button)
-      Assert.assertNotNull(addChirpButton)
-      addChirpButton.callOnClick()
-
-        val chirpText = activity.findViewById<TextView>(R.id.entry_box_chirp)
-        chirpText.text = "test chirp"
-        val sendButton = activity.findViewById<ImageButton>(R.id.send_chirp_button)
-        sendButton.callOnClick()
-
-        assertToastIsDisplayedContainsText(R.string.error_retrieve_own_token, "")
-    }
-  }
-
   companion object {
     private const val CREATION_TIME: Long = 1631280815
     private const val LAO_NAME = "laoName"
     private var SENDER_KEY_1: KeyPair = Base64DataUtils.generatePoPToken()
     private val SENDER_KEY_2: KeyPair = Base64DataUtils.generatePoPToken()
-    private val SENDER_KEY_3: KeyPair = Base64DataUtils.generatePoPToken()
     private val SENDER_1 = SENDER_KEY_1.publicKey
     private val SENDER_2 = SENDER_KEY_2.publicKey
-    private val SENDER_3 = SENDER_KEY_3.publicKey
     private val LAO_ID = generateLaoId(SENDER_1, CREATION_TIME, LAO_NAME)
     private val MESSAGE_ID_1 = Base64DataUtils.generateMessageID()
     private val MESSAGE_ID_2 = Base64DataUtils.generateMessageID()

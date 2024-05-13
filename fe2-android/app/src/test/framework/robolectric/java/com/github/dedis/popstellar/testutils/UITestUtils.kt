@@ -56,9 +56,10 @@ object UITestUtils {
   }
 
   @JvmStatic
-  fun assertToastContainsTextIsNotDisplayed(@StringRes resId: Int, vararg args: Any?) {
+  fun assertLatestToastContent(isContained: Boolean, @StringRes resId: Int, vararg args: Any?) {
     val expected = ApplicationProvider.getApplicationContext<Context>().getString(resId, *args)
-    Assert.assertFalse(ShadowToast.getTextOfLatestToast().contains(expected))
+    Assert.assertEquals(isContained, ShadowToast.getTextOfLatestToast()?.contains(expected)
+      ?: false)
   }
 
   /**
