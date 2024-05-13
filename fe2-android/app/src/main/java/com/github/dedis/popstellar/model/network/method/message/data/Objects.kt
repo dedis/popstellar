@@ -23,7 +23,8 @@ enum class Objects
   REACTION("reaction"),
   COIN("coin"),
   POPCHA("popcha"),
-  FEDERATION("federation");
+  FEDERATION("federation"),
+  GOSSIP("gossip");
 
   /**
    * Function that tells whether the given object type has to be persisted.

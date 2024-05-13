@@ -1,6 +1,6 @@
-package be.model;
+package common.model;
 
-import be.utils.Hash;
+import common.utils.Hash;
 import com.google.crypto.tink.PublicKeySign;
 import com.google.crypto.tink.subtle.Ed25519Sign;
 import common.utils.Base64Utils;

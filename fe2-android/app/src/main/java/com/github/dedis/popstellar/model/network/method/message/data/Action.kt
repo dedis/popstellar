@@ -43,7 +43,8 @@ enum class Action
   CHALLENGE_REQUEST("challenge_request"),
   CHALLENGE("challenge"),
   INIT("init"),
-  EXPECT("expect");
+  EXPECT("expect"),
+  RUMOR("rumor");
 
   /**
    * Field to decide whether to store the message content. This is used to save memory, as some

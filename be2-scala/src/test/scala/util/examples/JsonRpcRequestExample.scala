@@ -5,22 +5,22 @@ import ch.epfl.pop.model.network.method.{GetMessagesById, Heartbeat, ParamsWithC
 import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse, MethodType, ResultObject}
 import ch.epfl.pop.model.objects.{Base64Data, Channel, Hash}
 import ch.epfl.pop.pubsub.graph.validators.RpcValidator
-import util.examples.Election.CastVoteElectionExamples._
-import util.examples.Election.OpenElectionExamples._
-import util.examples.Election.SetupElectionExamples._
-import util.examples.Election.EndElectionExamples._
-import util.examples.Election.KeyElectionExamples._
+import util.examples.Election.CastVoteElectionExamples.*
+import util.examples.Election.OpenElectionExamples.*
+import util.examples.Election.SetupElectionExamples.*
+import util.examples.Election.EndElectionExamples.*
+import util.examples.Election.KeyElectionExamples.*
 import util.examples.Election.{ResultElectionExamples, SetupElectionExamples}
-import util.examples.Lao.GreetLaoExamples._
-import util.examples.MessageExample._
-import util.examples.Witness.WitnessMessageExamples._
-import util.examples.RollCall.CloseRollCallExamples._
-import util.examples.RollCall.CreateRollCallExamples._
-import util.examples.RollCall.OpenRollCallExamples._
-import util.examples.socialMedia.AddChirpExamples._
-import util.examples.socialMedia.AddReactionExamples._
-import util.examples.socialMedia.DeleteChirpExamples._
-import util.examples.socialMedia.DeleteReactionExamples._
+import util.examples.Lao.GreetLaoExamples.*
+import util.examples.MessageExample.*
+import util.examples.Witness.WitnessMessageExamples.*
+import util.examples.RollCall.CloseRollCallExamples.*
+import util.examples.RollCall.CreateRollCallExamples.*
+import util.examples.RollCall.OpenRollCallExamples.*
+import util.examples.socialMedia.AddChirpExamples.*
+import util.examples.socialMedia.AddReactionExamples.*
+import util.examples.socialMedia.DeleteChirpExamples.*
+import util.examples.socialMedia.DeleteReactionExamples.*
 
 /** Holds json rpc response examples of various kinds for testing purpose in validators' test suites
   */
