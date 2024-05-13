@@ -53,6 +53,21 @@
             "$ref": "dataUpdateLao.json"
         },
         {
+            "$ref": "dataFederationInit.json"
+        },
+        {
+            "$ref": "dataFederationExpect.json"
+        },
+        {
+            "$ref": "dataFederationChallengeRequest.json"
+        },
+        {
+            "$ref": "dataFederationChallenge.json"
+        },
+        {
+            "$ref": "dataFederationResult.json"
+        },
+        {
             "$ref": "dataWitnessMessage.json"
         },
         {
