@@ -312,7 +312,7 @@ class HighLevelProtocolSuite extends FunSuite with Matchers {
     val jsonRpcRequest: JsonRpcRequest = JsonRpcRequest.buildFromJson(jsonPagedCatchup)
     val pagedCatchup: PagedCatchup = jsonRpcRequest.getParams.asInstanceOf[PagedCatchup]
 
-    pagedCatchup.channel should equal("/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=/social/chirps")
+    pagedCatchup.channel should equal("/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=/social/chirps/8qlv4aUT5-tBodKp4RszY284CFYVaoDZK6XKiw9isSw=")
     pagedCatchup.numberOfMessages should equal(10)
     rumor.messages.beforeMessageId should equal(Base64Data("DCBX48EuNO6q-Sr42ONqsj7opKiNeXyRzrjqTbZ_aMI="))
   }
