@@ -285,6 +285,10 @@ func (s *SQLite) GetResultForGetMessagesByID(params map[string][]string) (map[st
 		}
 	}
 
+	if len(interfaces) == 0 {
+		return make(map[string][]message.Message), nil
+	}
+
 	rows, err := s.database.Query("SELECT message, channelPath "+
 		"FROM message JOIN channelMessage on message.messageID = channelMessage.messageID "+
 		"WHERE isBaseChannel = ? "+
@@ -348,6 +352,10 @@ func (s *SQLite) GetParamsForGetMessageByID(params map[string][]string) (map[str
 		for _, v := range value {
 			interfaces = append(interfaces, v)
 		}
+	}
+
+	if len(interfaces) == 0 {
+		return make(map[string][]string), nil
 	}
 
 	rows, err := s.database.Query("SELECT message.messageID, channelPath "+
