@@ -10,7 +10,7 @@ import (
 // Hub defines the methods a PoP server must implement to receive messages
 // and handle clients.
 type Hub interface {
-	// NotifyNewServer add a Socket for the hub to send message to other servers
+	// NotifyNewServer adds a Socket for the hub to send message to other servers
 	NotifyNewServer(socket.Socket)
 
 	// Start invokes the processing loop for the hub.

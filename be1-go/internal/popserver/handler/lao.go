@@ -157,21 +157,12 @@ func handleRollCallClose(msg message.Message, channelPath string) *answer.Error 
 		return errAnswer.Wrap("handleRollCallClose")
 	}
 
-	channels := make([]string, 0, len(rollCallClose.Attendees))
-
-	for _, popToken := range rollCallClose.Attendees {
-		_, err = base64.URLEncoding.DecodeString(popToken)
-		if err != nil {
-			errAnswer = answer.NewInvalidMessageFieldError("failed to decode poptoken: %v", err)
-			return errAnswer.Wrap("handleRollCallClose")
-		}
-		chirpingChannelPath := channelPath + Social + "/" + popToken
-		channels = append(channels, chirpingChannelPath)
-	}
-
-	newChannels, errAnswer := createOnlyNewChannels(channels)
+	newChannels, errAnswer := createNewAttendeeChannels(channelPath, rollCallClose)
 	if errAnswer != nil {
 		return errAnswer.Wrap("handleRollCallClose")
+	}
+	if len(newChannels) == 0 {
+		return nil
 	}
 
 	err = db.StoreRollCallClose(newChannels, channelPath, msg)
@@ -183,7 +174,19 @@ func handleRollCallClose(msg message.Message, channelPath string) *answer.Error 
 	return nil
 }
 
-func createOnlyNewChannels(channels []string) ([]string, *answer.Error) {
+func createNewAttendeeChannels(channelPath string, rollCallClose messagedata.RollCallClose) ([]string, *answer.Error) {
+	channels := make([]string, 0, len(rollCallClose.Attendees))
+
+	for _, popToken := range rollCallClose.Attendees {
+		_, err := base64.URLEncoding.DecodeString(popToken)
+		if err != nil {
+			errAnswer := answer.NewInvalidMessageFieldError("failed to decode poptoken: %v", err)
+			return nil, errAnswer.Wrap("handleRollCallClose")
+		}
+		chirpingChannelPath := channelPath + Social + "/" + popToken
+		channels = append(channels, chirpingChannelPath)
+	}
+
 	newChannels := make([]string, 0)
 	for _, channelPath := range channels {
 		alreadyExists, errAnswer := state.HasChannel(channelPath)
@@ -200,6 +203,7 @@ func createOnlyNewChannels(channels []string) ([]string, *answer.Error) {
 
 		newChannels = append(newChannels, channelPath)
 	}
+
 	return newChannels, nil
 }
 
