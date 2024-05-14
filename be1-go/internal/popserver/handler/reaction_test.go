@@ -7,7 +7,7 @@ import (
 	"popstellar/internal/popserver/config"
 	"popstellar/internal/popserver/database"
 	"popstellar/internal/popserver/database/repository"
-	"popstellar/internal/popserver/generator"
+	"popstellar/internal/popserver/generatortest"
 	"popstellar/internal/popserver/state"
 	"popstellar/internal/popserver/types"
 	"popstellar/message/query/method/message"
@@ -223,7 +223,7 @@ func Test_handleChannelReaction(t *testing.T) {
 func newReactionAddMsg(t *testing.T, channelID string, sender string, reactionCodePoint, chirpID string, timestamp int64,
 	mockRepository *repository.MockRepository, hasInvalidField, isNotAttendee bool) message.Message {
 
-	msg := generator.NewReactionAddMsg(t, sender, nil, reactionCodePoint, chirpID, timestamp)
+	msg := generatortest.NewReactionAddMsg(t, sender, nil, reactionCodePoint, chirpID, timestamp)
 
 	errAnswer := state.AddChannel(channelID)
 	require.Nil(t, errAnswer)
@@ -245,7 +245,7 @@ func newReactionAddMsg(t *testing.T, channelID string, sender string, reactionCo
 func newReactionDeleteMsg(t *testing.T, channelID string, sender string, reactionID string, timestamp int64,
 	mockRepository *repository.MockRepository, hasInvalidField, hasNotReaction, isNotOwner, isNotAttendee bool) message.Message {
 
-	msg := generator.NewReactionDeleteMsg(t, sender, nil, reactionID, timestamp)
+	msg := generatortest.NewReactionDeleteMsg(t, sender, nil, reactionID, timestamp)
 
 	errAnswer := state.AddChannel(channelID)
 	require.Nil(t, errAnswer)

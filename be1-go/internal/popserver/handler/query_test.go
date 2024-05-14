@@ -8,7 +8,7 @@ import (
 	"popstellar/internal/popserver/config"
 	"popstellar/internal/popserver/database"
 	"popstellar/internal/popserver/database/repository"
-	"popstellar/internal/popserver/generator"
+	"popstellar/internal/popserver/generatortest"
 	"popstellar/internal/popserver/state"
 	"popstellar/internal/popserver/types"
 	"popstellar/message/query/method"
@@ -28,7 +28,7 @@ func Test_handleQuery(t *testing.T) {
 
 	// Test 1: failed to handled popquery because unknown method
 
-	msg := generator.NewNothingQuery(t, 999)
+	msg := generatortest.NewNothingQuery(t, 999)
 
 	args = append(args, input{
 		name:     "Test 1",
@@ -71,7 +71,7 @@ func Test_handleGreetServer(t *testing.T) {
 
 	args := make([]input, 0)
 
-	greetServer := generator.NewGreetServerQuery(t, "pk", "client", "server")
+	greetServer := generatortest.NewGreetServerQuery(t, "pk", "client", "server")
 
 	// Test 1: reply with greet server when receiving a greet server from a new server
 
@@ -167,7 +167,7 @@ func Test_handleSubscribe(t *testing.T) {
 		socket:  fakeSocket,
 		ID:      ID,
 		channel: channel,
-		message: generator.NewSubscribeQuery(t, ID, channel),
+		message: generatortest.NewSubscribeQuery(t, ID, channel),
 		isError: false,
 	})
 
@@ -182,7 +182,7 @@ func Test_handleSubscribe(t *testing.T) {
 		socket:   fakeSocket,
 		ID:       ID,
 		channel:  channel,
-		message:  generator.NewSubscribeQuery(t, ID, channel),
+		message:  generatortest.NewSubscribeQuery(t, ID, channel),
 		isError:  true,
 		contains: "cannot Subscribe to unknown channel",
 	})
@@ -198,7 +198,7 @@ func Test_handleSubscribe(t *testing.T) {
 		socket:   fakeSocket,
 		ID:       ID,
 		channel:  channel,
-		message:  generator.NewSubscribeQuery(t, ID, channel),
+		message:  generatortest.NewSubscribeQuery(t, ID, channel),
 		isError:  true,
 		contains: "cannot Subscribe to root channel",
 	})
@@ -258,7 +258,7 @@ func Test_handleUnsubscribe(t *testing.T) {
 		socket:  fakeSocket,
 		ID:      ID,
 		channel: channel,
-		message: generator.NewUnsubscribeQuery(t, ID, channel),
+		message: generatortest.NewUnsubscribeQuery(t, ID, channel),
 		isError: false,
 	})
 
@@ -276,7 +276,7 @@ func Test_handleUnsubscribe(t *testing.T) {
 		socket:   fakeSocket,
 		ID:       ID,
 		channel:  channel,
-		message:  generator.NewUnsubscribeQuery(t, ID, channel),
+		message:  generatortest.NewUnsubscribeQuery(t, ID, channel),
 		isError:  true,
 		contains: "cannot Unsubscribe from a channel not subscribed",
 	})
@@ -292,7 +292,7 @@ func Test_handleUnsubscribe(t *testing.T) {
 		socket:   fakeSocket,
 		ID:       ID,
 		channel:  channel,
-		message:  generator.NewUnsubscribeQuery(t, ID, channel),
+		message:  generatortest.NewUnsubscribeQuery(t, ID, channel),
 		isError:  true,
 		contains: "cannot Unsubscribe from unknown channel",
 	})
@@ -308,7 +308,7 @@ func Test_handleUnsubscribe(t *testing.T) {
 		socket:   fakeSocket,
 		ID:       ID,
 		channel:  channel,
-		message:  generator.NewUnsubscribeQuery(t, ID, channel),
+		message:  generatortest.NewUnsubscribeQuery(t, ID, channel),
 		isError:  true,
 		contains: "cannot Unsubscribe from root channel",
 	})
@@ -361,10 +361,10 @@ func Test_handleCatchUp(t *testing.T) {
 	ID := 1
 	channel := "/root/lao1"
 	messagesToCatchUp := []message.Message{
-		generator.NewNothingMsg(t, "sender1", nil),
-		generator.NewNothingMsg(t, "sender2", nil),
-		generator.NewNothingMsg(t, "sender3", nil),
-		generator.NewNothingMsg(t, "sender4", nil),
+		generatortest.NewNothingMsg(t, "sender1", nil),
+		generatortest.NewNothingMsg(t, "sender2", nil),
+		generatortest.NewNothingMsg(t, "sender3", nil),
+		generatortest.NewNothingMsg(t, "sender4", nil),
 	}
 
 	mockRepository.On("GetAllMessagesFromChannel", channel).Return(messagesToCatchUp, nil)
@@ -373,7 +373,7 @@ func Test_handleCatchUp(t *testing.T) {
 		name:     "Test 1",
 		socket:   fakeSocket,
 		ID:       ID,
-		message:  generator.NewCatchupQuery(t, ID, channel),
+		message:  generatortest.NewCatchupQuery(t, ID, channel),
 		expected: messagesToCatchUp,
 		isError:  false,
 	})
@@ -391,7 +391,7 @@ func Test_handleCatchUp(t *testing.T) {
 		name:     "Test 2",
 		socket:   fakeSocket,
 		ID:       ID,
-		message:  generator.NewCatchupQuery(t, ID, channel),
+		message:  generatortest.NewCatchupQuery(t, ID, channel),
 		isError:  true,
 		contains: "DB is disconnected",
 	})
@@ -470,7 +470,7 @@ func Test_handleHeartbeat(t *testing.T) {
 	args = append(args, input{
 		name:     "Test 1",
 		socket:   fakeSocket,
-		message:  generator.NewHeartbeatQuery(t, heartbeatMsgIDs1),
+		message:  generatortest.NewHeartbeatQuery(t, heartbeatMsgIDs1),
 		expected: expected1,
 		isError:  false,
 	})
@@ -491,7 +491,7 @@ func Test_handleHeartbeat(t *testing.T) {
 	args = append(args, input{
 		name:    "Test 2",
 		socket:  fakeSocket,
-		message: generator.NewHeartbeatQuery(t, heartbeatMsgIDs2),
+		message: generatortest.NewHeartbeatQuery(t, heartbeatMsgIDs2),
 		isError: false,
 	})
 
@@ -516,7 +516,7 @@ func Test_handleHeartbeat(t *testing.T) {
 	args = append(args, input{
 		name:     "failed to popquery DB",
 		socket:   fakeSocket,
-		message:  generator.NewHeartbeatQuery(t, heartbeatMsgIDs3),
+		message:  generatortest.NewHeartbeatQuery(t, heartbeatMsgIDs3),
 		isError:  true,
 		contains: "DB is disconnected",
 	})
@@ -574,14 +574,14 @@ func Test_handleGetMessagesByID(t *testing.T) {
 
 	expected1 := make(map[string][]message.Message)
 	expected1["/root"] = []message.Message{
-		generator.NewNothingMsg(t, "sender1", nil),
-		generator.NewNothingMsg(t, "sender2", nil),
-		generator.NewNothingMsg(t, "sender3", nil),
-		generator.NewNothingMsg(t, "sender4", nil),
+		generatortest.NewNothingMsg(t, "sender1", nil),
+		generatortest.NewNothingMsg(t, "sender2", nil),
+		generatortest.NewNothingMsg(t, "sender3", nil),
+		generatortest.NewNothingMsg(t, "sender4", nil),
 	}
 	expected1["/root/lao1"] = []message.Message{
-		generator.NewNothingMsg(t, "sender5", nil),
-		generator.NewNothingMsg(t, "sender6", nil),
+		generatortest.NewNothingMsg(t, "sender5", nil),
+		generatortest.NewNothingMsg(t, "sender6", nil),
 	}
 
 	paramsGetMessagesByID1 := make(map[string][]string)
@@ -598,7 +598,7 @@ func Test_handleGetMessagesByID(t *testing.T) {
 		name:     "Test 1",
 		socket:   fakeSocket,
 		ID:       ID,
-		message:  generator.NewGetMessagesByIDQuery(t, ID, paramsGetMessagesByID1),
+		message:  generatortest.NewGetMessagesByIDQuery(t, ID, paramsGetMessagesByID1),
 		expected: expected1,
 		isError:  false,
 	})
@@ -617,7 +617,7 @@ func Test_handleGetMessagesByID(t *testing.T) {
 		name:     "Test 2",
 		socket:   fakeSocket,
 		ID:       ID,
-		message:  generator.NewGetMessagesByIDQuery(t, ID, paramsGetMessagesByID2),
+		message:  generatortest.NewGetMessagesByIDQuery(t, ID, paramsGetMessagesByID2),
 		isError:  true,
 		contains: "DB is disconnected",
 	})

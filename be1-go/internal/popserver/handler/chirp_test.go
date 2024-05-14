@@ -8,7 +8,7 @@ import (
 	"popstellar/internal/popserver/config"
 	"popstellar/internal/popserver/database"
 	"popstellar/internal/popserver/database/repository"
-	"popstellar/internal/popserver/generator"
+	"popstellar/internal/popserver/generatortest"
 	"popstellar/internal/popserver/state"
 	"popstellar/internal/popserver/types"
 	"popstellar/message/query/method/message"
@@ -136,7 +136,7 @@ func Test_handleChannelChirp(t *testing.T) {
 func newChirpAddMsg(t *testing.T, channelID string, sender string, timestamp int64,
 	mockRepository *repository.MockRepository, isError bool) message.Message {
 
-	msg := generator.NewChirpAddMsg(t, sender, nil, timestamp)
+	msg := generatortest.NewChirpAddMsg(t, sender, nil, timestamp)
 
 	errAnswer := state.AddChannel(channelID)
 	require.Nil(t, errAnswer)
@@ -159,7 +159,7 @@ func newChirpAddMsg(t *testing.T, channelID string, sender string, timestamp int
 func newChirpDeleteMsg(t *testing.T, channelID string, sender string, chirpID string,
 	timestamp int64, mockRepository *repository.MockRepository, isError bool) message.Message {
 
-	msg := generator.NewChirpDeleteMsg(t, sender, nil, chirpID, timestamp)
+	msg := generatortest.NewChirpDeleteMsg(t, sender, nil, chirpID, timestamp)
 
 	errAnswer := state.AddChannel(channelID)
 	require.Nil(t, errAnswer)

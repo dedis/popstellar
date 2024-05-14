@@ -10,7 +10,7 @@ import (
 	"popstellar/internal/popserver/config"
 	"popstellar/internal/popserver/database"
 	"popstellar/internal/popserver/database/repository"
-	"popstellar/internal/popserver/generator"
+	"popstellar/internal/popserver/generatortest"
 	state "popstellar/internal/popserver/state"
 	"popstellar/internal/popserver/types"
 	"popstellar/message/messagedata"
@@ -216,7 +216,7 @@ func Test_handleChannelElection(t *testing.T) {
 		contains: "",
 	})
 
-	votes := []generator.VoteInt{
+	votes := []generatortest.VoteInt{
 		{
 			ID:       base64.URLEncoding.EncodeToString([]byte("voteID1")),
 			Question: base64.URLEncoding.EncodeToString([]byte("questionID1")),
@@ -296,7 +296,7 @@ func Test_handleChannelElection(t *testing.T) {
 	channelPath = "/root/" + laoID + "/" + electionID
 
 	//Test 19 Error when VoteCastVote contains a string vote in an OpenBallot election
-	stringVotes := []generator.VoteString{
+	stringVotes := []generatortest.VoteString{
 		{
 			ID:       base64.URLEncoding.EncodeToString([]byte("voteID1")),
 			Question: base64.URLEncoding.EncodeToString([]byte("questionID2")),
@@ -318,7 +318,7 @@ func Test_handleChannelElection(t *testing.T) {
 	channelPath = "/root/" + laoID + "/" + electionID
 
 	//Test 20 Error when VoteCastVote contains a int vote in an SecretBallot election
-	intVotes := []generator.VoteInt{
+	intVotes := []generatortest.VoteInt{
 		{
 			ID:       base64.URLEncoding.EncodeToString([]byte("voteID1")),
 			Question: base64.URLEncoding.EncodeToString([]byte("questionID2")),
@@ -358,7 +358,7 @@ func Test_handleChannelElection(t *testing.T) {
 	questionID := base64.URLEncoding.EncodeToString([]byte("questionID2"))
 	voteID := messagedata.Hash(voteFlag, electionID, questionID, "1")
 
-	votes = []generator.VoteInt{
+	votes = []generatortest.VoteInt{
 		{
 			ID:       voteID,
 			Question: questionID,
@@ -407,7 +407,7 @@ func Test_handleChannelElection(t *testing.T) {
 func newElectionOpenMsg(t *testing.T, owner kyber.Point, sender, laoID, electionID, channelPath, state string,
 	createdAt int64, isError bool, mockRepository *repository.MockRepository) message.Message {
 
-	msg := generator.NewElectionOpenMsg(t, sender, laoID, electionID, 1, nil)
+	msg := generatortest.NewElectionOpenMsg(t, sender, laoID, electionID, 1, nil)
 
 	mockRepository.On("GetLAOOrganizerPubKey", channelPath).Return(owner, nil)
 
@@ -430,7 +430,7 @@ func newElectionOpenMsg(t *testing.T, owner kyber.Point, sender, laoID, election
 func newElectionEndMsg(t *testing.T, owner kyber.Point, sender, laoID, electionID, channelPath, state, votes string,
 	createdAt int64, isError bool, mockRepository *repository.MockRepository) message.Message {
 
-	msg := generator.NewElectionCloseMsg(t, sender, laoID, electionID, votes, 1, nil)
+	msg := generatortest.NewElectionCloseMsg(t, sender, laoID, electionID, votes, 1, nil)
 
 	mockRepository.On("GetLAOOrganizerPubKey", channelPath).Return(owner, nil)
 
@@ -479,10 +479,10 @@ func newElectionEndMsg(t *testing.T, owner kyber.Point, sender, laoID, electionI
 }
 
 func newVoteCastVoteIntMsg(t *testing.T, sender, laoID, electionID, electionPath, state, electionType string,
-	createdAt int64, votes []generator.VoteInt, questions map[string]types.Question, owner kyber.Point,
+	createdAt int64, votes []generatortest.VoteInt, questions map[string]types.Question, owner kyber.Point,
 	mockRepository *repository.MockRepository, isEroor bool) message.Message {
 
-	msg := generator.NewVoteCastVoteIntMsg(t, sender, laoID, electionID, 1, votes, nil)
+	msg := generatortest.NewVoteCastVoteIntMsg(t, sender, laoID, electionID, 1, votes, nil)
 	mockRepository.On("GetLAOOrganizerPubKey", electionPath).Return(owner, nil)
 	mockRepository.On("GetElectionAttendees", electionPath).Return(map[string]struct{}{ownerPubBuf64: {}}, nil)
 
@@ -517,10 +517,10 @@ func newVoteCastVoteIntMsg(t *testing.T, sender, laoID, electionID, electionPath
 }
 
 func newVoteCastVoteStringMsg(t *testing.T, sender, laoID, electionID, electionPath, electionType string,
-	createdAt int64, votes []generator.VoteString, questions map[string]types.Question, owner kyber.Point,
+	createdAt int64, votes []generatortest.VoteString, questions map[string]types.Question, owner kyber.Point,
 	mockRepository *repository.MockRepository) message.Message {
 
-	msg := generator.NewVoteCastVoteStringMsg(t, sender, laoID, electionID, 1, votes, nil)
+	msg := generatortest.NewVoteCastVoteStringMsg(t, sender, laoID, electionID, 1, votes, nil)
 	mockRepository.On("GetLAOOrganizerPubKey", electionPath).Return(owner, nil)
 	mockRepository.On("GetElectionAttendees", electionPath).Return(map[string]struct{}{ownerPubBuf64: {}}, nil)
 

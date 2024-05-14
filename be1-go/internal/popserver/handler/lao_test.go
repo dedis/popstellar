@@ -9,7 +9,7 @@ import (
 	"popstellar/internal/popserver/config"
 	"popstellar/internal/popserver/database"
 	"popstellar/internal/popserver/database/repository"
-	"popstellar/internal/popserver/generator"
+	"popstellar/internal/popserver/generatortest"
 	"popstellar/internal/popserver/state"
 	"popstellar/internal/popserver/types"
 	"popstellar/message/messagedata"
@@ -271,7 +271,7 @@ func newLaoStateMsg(t *testing.T, organizer, laoID string, mockRepository *repos
 	creation := time.Now().Unix()
 	lastModified := time.Now().Unix()
 
-	msg := generator.NewLaoStateMsg(t, organizer, laoID, name, modificationID, creation, lastModified, nil)
+	msg := generatortest.NewLaoStateMsg(t, organizer, laoID, name, modificationID, creation, lastModified, nil)
 
 	mockRepository.On("HasMessage", modificationID).
 		Return(true, nil)
@@ -293,7 +293,7 @@ func newRollCallCreateMsg(t *testing.T, sender, laoID, laoName string, creation,
 		goodLaoName,
 	)
 
-	msg := generator.NewRollCallCreateMsg(t, sender, laoName, createID, creation, start, end, nil)
+	msg := generatortest.NewRollCallCreateMsg(t, sender, laoName, createID, creation, start, end, nil)
 
 	if !isError {
 		mockRepository.On("StoreMessageAndData", laoID, msg).Return(nil)
@@ -312,7 +312,7 @@ func newRollCallOpenMsg(t *testing.T, sender, laoID, opens, prevID string, opene
 		strconv.Itoa(int(openedAt)),
 	)
 
-	msg := generator.NewRollCallOpenMsg(t, sender, openID, opens, openedAt, nil)
+	msg := generatortest.NewRollCallOpenMsg(t, sender, openID, opens, openedAt, nil)
 
 	if !isError {
 		mockRepository.On("StoreMessageAndData", laoID, msg).Return(nil)
@@ -336,7 +336,7 @@ func newRollCallCloseMsg(t *testing.T, sender, laoID, closes, prevID string, clo
 
 	attendees := []string{base64.URLEncoding.EncodeToString([]byte("a")), base64.URLEncoding.EncodeToString([]byte("b"))}
 
-	msg := generator.NewRollCallCloseMsg(t, sender, closeID, closes, closedAt, attendees, nil)
+	msg := generatortest.NewRollCallCloseMsg(t, sender, closeID, closes, closedAt, attendees, nil)
 
 	if !isError {
 		var channels []string
@@ -385,7 +385,7 @@ func newElectionSetupMsg(t *testing.T, organizer kyber.Point, sender,
 		})
 	}
 
-	msg := generator.NewElectionSetupMsg(t, sender, electionSetupID, setupLao, electionName, version, createdAt, start,
+	msg := generatortest.NewElectionSetupMsg(t, sender, electionSetupID, setupLao, electionName, version, createdAt, start,
 		end, questions, nil)
 
 	mockRepository.On("GetOrganizerPubKey", laoID).Return(organizer, nil)

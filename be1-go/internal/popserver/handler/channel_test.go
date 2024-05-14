@@ -8,7 +8,7 @@ import (
 	"popstellar/crypto"
 	"popstellar/internal/popserver/database"
 	"popstellar/internal/popserver/database/repository"
-	"popstellar/internal/popserver/generator"
+	"popstellar/internal/popserver/generatortest"
 	"popstellar/message/query/method/message"
 	"testing"
 	"time"
@@ -36,7 +36,7 @@ func Test_handleChannel(t *testing.T) {
 	// Test 1: failed to handled message because unknown channel type
 
 	channel := "unknown"
-	msg := generator.NewChirpAddMsg(t, sender, keypair.Private, time.Now().Unix())
+	msg := generatortest.NewChirpAddMsg(t, sender, keypair.Private, time.Now().Unix())
 
 	mockRepository.On("HasMessage", msg.MessageID).Return(false, nil)
 	mockRepository.On("GetChannelType", channel).Return("", nil)
@@ -51,7 +51,7 @@ func Test_handleChannel(t *testing.T) {
 	// Test 2: failed to handled message because db is disconnected when querying the channel type
 
 	channel = "disconnectedDB"
-	msg = generator.NewChirpAddMsg(t, sender, keypair.Private, time.Now().Unix())
+	msg = generatortest.NewChirpAddMsg(t, sender, keypair.Private, time.Now().Unix())
 
 	mockRepository.On("HasMessage", msg.MessageID).Return(false, nil)
 	mockRepository.On("GetChannelType", channel).
@@ -66,7 +66,7 @@ func Test_handleChannel(t *testing.T) {
 
 	// Test 3: failed to handled message because message already exists
 
-	msg = generator.NewChirpAddMsg(t, sender, keypair.Private, time.Now().Unix())
+	msg = generatortest.NewChirpAddMsg(t, sender, keypair.Private, time.Now().Unix())
 
 	mockRepository.On("HasMessage", msg.MessageID).Return(true, nil)
 
@@ -78,7 +78,7 @@ func Test_handleChannel(t *testing.T) {
 
 	// Test 4: failed to handled message because db is disconnected when querying if the message already exists
 
-	msg = generator.NewChirpAddMsg(t, sender, keypair.Private, time.Now().Unix())
+	msg = generatortest.NewChirpAddMsg(t, sender, keypair.Private, time.Now().Unix())
 
 	mockRepository.On("HasMessage", msg.MessageID).
 		Return(false, xerrors.Errorf("DB is disconnected"))
@@ -91,7 +91,7 @@ func Test_handleChannel(t *testing.T) {
 
 	// Test 5: failed to handled message because the format of messageID
 
-	msg = generator.NewChirpAddMsg(t, sender, keypair.Private, time.Now().Unix())
+	msg = generatortest.NewChirpAddMsg(t, sender, keypair.Private, time.Now().Unix())
 	expectedMsgID := msg.MessageID
 	msg.MessageID = base64.URLEncoding.EncodeToString([]byte("wrong messageID"))
 
@@ -103,7 +103,7 @@ func Test_handleChannel(t *testing.T) {
 
 	// Test 6: failed to handled message because wrong sender
 
-	msg = generator.NewChirpAddMsg(t, sender, keypair.Private, time.Now().Unix())
+	msg = generatortest.NewChirpAddMsg(t, sender, keypair.Private, time.Now().Unix())
 	msg.Sender = base64.URLEncoding.EncodeToString([]byte("wrong sender"))
 
 	args = append(args, input{
@@ -114,7 +114,7 @@ func Test_handleChannel(t *testing.T) {
 
 	// Test 7: failed to handled message because wrong data
 
-	msg = generator.NewChirpAddMsg(t, sender, keypair.Private, time.Now().Unix())
+	msg = generatortest.NewChirpAddMsg(t, sender, keypair.Private, time.Now().Unix())
 	msg.Data = base64.URLEncoding.EncodeToString([]byte("wrong data"))
 
 	args = append(args, input{
@@ -125,7 +125,7 @@ func Test_handleChannel(t *testing.T) {
 
 	// Test 8: failed to handled message because wrong signature
 
-	msg = generator.NewChirpAddMsg(t, sender, keypair.Private, time.Now().Unix())
+	msg = generatortest.NewChirpAddMsg(t, sender, keypair.Private, time.Now().Unix())
 	msg.Data = base64.URLEncoding.EncodeToString([]byte("wrong signature"))
 
 	args = append(args, input{
@@ -136,7 +136,7 @@ func Test_handleChannel(t *testing.T) {
 
 	// Test 9: failed to handled message because wrong signature encoding
 
-	msg = generator.NewChirpAddMsg(t, sender, keypair.Private, time.Now().Unix())
+	msg = generatortest.NewChirpAddMsg(t, sender, keypair.Private, time.Now().Unix())
 	msg.Signature = "wrong signature"
 
 	args = append(args, input{
@@ -147,7 +147,7 @@ func Test_handleChannel(t *testing.T) {
 
 	// Test 10: failed to handled message because wrong signature encoding
 
-	msg = generator.NewChirpAddMsg(t, sender, keypair.Private, time.Now().Unix())
+	msg = generatortest.NewChirpAddMsg(t, sender, keypair.Private, time.Now().Unix())
 	msg.Sender = "wrong sender"
 
 	args = append(args, input{
@@ -158,7 +158,7 @@ func Test_handleChannel(t *testing.T) {
 
 	// Test 11: failed to handled message because wrong signature encoding
 
-	msg = generator.NewChirpAddMsg(t, sender, keypair.Private, time.Now().Unix())
+	msg = generatortest.NewChirpAddMsg(t, sender, keypair.Private, time.Now().Unix())
 	msg.Data = "wrong data"
 
 	args = append(args, input{
