@@ -107,26 +107,26 @@ class GossipManagerSuite extends TestKit(ActorSystem("GossipManagerSuiteActorSys
       connectionMediatorRef ? ConnectionMediator.NewServerConnected(peer.ref, GreetServer(PublicKey(Base64Data("")), "", ""))
     }
 
+    // processes the rumor => sends to random peer
     val outputRumor = Source.single(Right(rumorRequest)).via(gossipHandler).runWith(Sink.head)
 
     Await.result(outputRumor, duration)
 
+    //checks that only one peers received the rumor
     val received = peers.map(_.receiveOne(duration))
-
     received.count(_ != null) shouldBe 1
-
     val remainingPeers = peers.lazyZip(received).filter((_, recv) => recv == null).map(_._1)
-
     remainingPeers.size shouldBe peers.size - 1
 
+    // sends back to the gossipManager a response that the rumor is new
     val response = Right(JsonRpcResponse(
       RpcValidator.JSON_RPC_VERSION,
       ResultObject(0),
       rumorRequest.id
     ))
 
+    // by processing the reponse, gossipManager should send again a rumor to a new peer
     val outputResponse = Source.single(response).via(gossipMonitor).runWith(Sink.head)
-
     Await.result(outputResponse, duration)
     remainingPeers.map(_.receiveOne(duration)).count(_ != null) shouldBe 1
 
