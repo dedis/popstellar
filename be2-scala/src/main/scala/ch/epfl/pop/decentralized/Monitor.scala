@@ -147,20 +147,14 @@ private class FileMonitor(mediatorRef: ActorRef) extends Runnable {
       val watchKey = watchService.take()
       sendConnectToMessage = false
 
-      // For any event, read the file and send it
-      for (event <- watchKey.pollEvents().asScala.toList) {
-        if (serverPeersListPath.endsWith(event.context().toString)) {
-          sendConnectToMessage = true
-        }
-      }
+      val newPeers = readServerPeers()
+      sendConnectToMessage = newPeers != serverPeers // only send if the list has changed
+      if (sendConnectToMessage) serverPeers = newPeers
 
       if (running.get() && sendConnectToMessage) {
-        val newPeers = readServerPeers()
-        if (newPeers != serverPeers) {
-          serverPeers = newPeers
           mediatorRef ! ConnectionMediator.ConnectTo(serverPeers)
-        }
       }
+
       watchKey.reset()
       if (!watchKey.isValid) {
         return
