@@ -51,6 +51,7 @@ const (
 	    		message TEXT,
 	    		messageData TEXT NULL,
 	    		storedTime BIGINT,
+	    		processed BOOLEAN DEFAULT FALSE,
 	    		PRIMARY KEY (messageID)
 	            )`
 
@@ -97,11 +98,28 @@ const (
 	    		signature TEXT UNIQUE,
 	    		PRIMARY KEY (messageID, witness)
 	            )`
+
+	createRumor = `
+	CREATE TABLE IF NOT EXISTS rumor ( 
+    			ID INTEGER, 
+    			sender TEXT, 
+    			PRIMARY KEY (ID, sender) 
+                )`
+
+	createMessageRumor = `
+	CREATE TABLE IF NOT EXISTS messageRumor (
+				messageID TEXT,
+				rumorID INTEGER,
+				sender TEXT,
+				FOREIGN KEY (messageID) REFERENCES message(messageID),
+				FOREIGN KEY (rumorID, sender) REFERENCES rumor(ID, sender),
+				PRIMARY KEY (messageID, rumorID, sender)
+	            )`
 )
 
 const (
 	insertChannelMessage    = `INSERT INTO channelMessage (channelPath, messageID, isBaseChannel) VALUES (?, ?, ?)`
-	insertMessage           = `INSERT INTO message (messageID, message, messageData, storedTime) VALUES (?, ?, ?, ?)`
+	insertProcessedMessage  = `INSERT OR REPLACE INTO message (messageID, message, messageData, storedTime, processed) VALUES (?, ?, ?, ?, ?)`
 	insertChannel           = `INSERT INTO channel (channelPath, typeID, laoPath) VALUES (?, ?, ?)`
 	insertOrIgnoreChannel   = `INSERT OR IGNORE INTO channel (channelPath, typeID, laoPath) VALUES (?, ?, ?)`
 	insertKeys              = `INSERT INTO key (channelPath, publicKey, secretKey) VALUES (?, ?, ?)`
@@ -118,7 +136,7 @@ const (
 
 	selectPendingSignatures = `SELECT witness, signature FROM pendingSignatures WHERE messageID = ?`
 
-	selectMessage = `SELECT message FROM message WHERE messageID = ?`
+	selectMessage = `SELECT message FROM message WHERE messageID = ? AND processed = ?`
 
 	selectAllChannels = `SELECT channelPath FROM channel`
 
@@ -147,7 +165,7 @@ const (
             FROM message 
             JOIN channelMessage ON message.messageID = channelMessage.messageID
         ) 
-        WHERE json_extract(messageData, '$.object') = ? AND channelPath = ?
+        WHERE json_extract(messageData, '$.object') = ? AND channelPath = ? AND processed = ?
     )`
 
 	selectLastRollCallMessageInList = `
@@ -157,6 +175,7 @@ const (
     WHERE channelMessage.channelPath = ?
       AND json_extract(message.messageData, '$.object') = ?
       AND json_extract(message.messageData, '$.action') IN (?, ?)
+      AND processed = ?
     ORDER BY message.storedTime DESC
     LIMIT 1`
 
@@ -169,7 +188,8 @@ const (
     )
     WHERE channelPath = ?
       AND json_extract(messageData, '$.object') = ?
-      AND json_extract(messageData, '$.action') = ?`
+      AND json_extract(messageData, '$.action') = ?
+      AND processed = True`
 
 	selectLaoOrganizerKey = `
     SELECT publicKey 
@@ -194,6 +214,7 @@ const (
         WHERE channelPath = ?
           AND json_extract(messageData, '$.object') = ?
           AND json_extract(messageData, '$.action') != ?
+          AND processed = True
     )`
 
 	selectElectionCreationTime = `
@@ -205,7 +226,8 @@ const (
     )
     WHERE channelPath = ?
       AND json_extract(messageData, '$.object') = ?
-      AND json_extract(messageData, '$.action') = ?`
+      AND json_extract(messageData, '$.action') = ?
+      AND processed = True`
 
 	selectElectionType = `
     SELECT json_extract(messageData, '$.version')
@@ -216,7 +238,8 @@ const (
     )
     WHERE channelPath = ?
       AND json_extract(messageData, '$.object') = ?
-      AND json_extract(messageData, '$.action') = ?`
+      AND json_extract(messageData, '$.action') = ?
+      AND processed = True`
 
 	selectElectionAttendees = `
     SELECT joined.messageData
@@ -239,6 +262,7 @@ const (
         WHERE channelPath = c.laoPath 
           AND json_extract(messageData, '$.object') = ?
           AND json_extract(messageData, '$.action') = ?
+          AND processed = True
     )`
 
 	selectElectionSetup = `
@@ -261,7 +285,8 @@ const (
     )
     WHERE channelPath = ?
       AND json_extract(messageData, '$.object') = ?
-      AND json_extract(messageData, '$.action') = ?`
+      AND json_extract(messageData, '$.action') = ?
+      AND processed = True`
 
 	selectLastRollCallClose = `
     SELECT messageData
@@ -276,6 +301,7 @@ const (
         WHERE channelPath = ?
           AND json_extract(messageData, '$.object') = ?
           AND json_extract(messageData, '$.action') = ?
+          AND processed = True
     )`
 
 	selectSender = `
@@ -283,7 +309,8 @@ const (
            json_extract(messageData, '$.object'), 
            json_extract(messageData, '$.action') 
     FROM message 
-    WHERE messageID = ?`
+    WHERE messageID = ?
+        AND processed = ?`
 )
 
 const (
@@ -291,5 +318,5 @@ const (
 )
 
 const (
-	updateMsg = `UPDATE OR IGNORE message SET message = json_insert(message,'$.witness_signatures[#]', json(?)) WHERE messageID = ?`
+	updateMessage = `UPDATE OR IGNORE message SET message = json_insert(message,'$.witness_signatures[#]', json(?)) WHERE messageID = ? AND processed = ?`
 )
