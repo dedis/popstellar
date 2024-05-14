@@ -115,7 +115,6 @@ class MonitorSuite extends TestKit(ActorSystem("MonitorSuiteActorSystem")) with 
   }
 
   test("monitor should send heartbeats if and only if servers are connected") {
-
     val testProbe = TestProbe()
     val monitorRef = system.actorOf(
       Monitor.props(testProbe.ref, heartbeatRate = fastRate, messageDelay = fastRate)
@@ -146,7 +145,6 @@ class MonitorSuite extends TestKit(ActorSystem("MonitorSuiteActorSystem")) with 
   }
 
   test("monitor should send a ConnectTo() upon creation") {
-
     val mockConnectionMediator = TestProbe()
 
     // Write to mock server peers config file
@@ -167,9 +165,7 @@ class MonitorSuite extends TestKit(ActorSystem("MonitorSuiteActorSystem")) with 
     mockConnectionMediator.expectTerminated(monitorRef)
   }
 
-  // https://github.com/dedis/popstellar/issues/1821
-  /*test("monitor should send ConnectTo() requests to ConnectionMediator upon relevant config file change besides first read") {
-
+  test("monitor should send ConnectTo() requests to ConnectionMediator upon relevant config file change besides first read") {
     val mockConnectionMediator = TestProbe()
 
     // Write to mock server peers config file
@@ -189,18 +185,16 @@ class MonitorSuite extends TestKit(ActorSystem("MonitorSuiteActorSystem")) with 
     // Expect no message as long as the server peers list is untouched
     mockConnectionMediator.expectNoMessage(timeout)
 
-    val newContent = List("some", "strings")
+    val newContent = List("wss://be1.personhood.online/olivia", "wss://be1.personhood.online/layla")
     testWriteToServerPeersConfig(newContent)
-    sleep(1)
 
     mockConnectionMediator.expectMsgType[ConnectionMediator.ConnectTo](timeout)
 
     monitorRef ! PoisonPill
     mockConnectionMediator.expectTerminated(monitorRef)
-  }*/
+  }
 
   test("monitor should not react upon non relevant events in config directory besides first read") {
-
     val mockConnectionMediator = TestProbe()
     val monitorRef = system.actorOf(Monitor.props(ActorRef.noSender))
 
@@ -232,7 +226,6 @@ class MonitorSuite extends TestKit(ActorSystem("MonitorSuiteActorSystem")) with 
   }
 
   test("monitor should send a result to the connectionMediator") {
-
     val mockConnectionMediator = TestProbe()
     val monitorRef = system.actorOf(
       Monitor.props(toyDbActorRef, heartbeatRate = fastRate, messageDelay = fastRate)
@@ -253,7 +246,6 @@ class MonitorSuite extends TestKit(ActorSystem("MonitorSuiteActorSystem")) with 
   }
 
   test("monitor should send nothing when failing to query the data base") {
-
     val mockConnectionMediator = TestProbe()
     val monitorRef = system.actorOf(
       Monitor.props(failingToyDbActorRef, heartbeatRate = fastRate, messageDelay = fastRate)

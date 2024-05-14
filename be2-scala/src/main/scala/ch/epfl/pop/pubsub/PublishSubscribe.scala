@@ -92,7 +92,7 @@ object PublishSubscribe {
         input ~> schemaVerifier ~> jsonRpcDecoder ~> methodPartitioner
 
         methodPartitioner.out(portPipelineError) ~> merger
-        methodPartitioner.out(portRpcRequest) ~> requestPartition ~> merger
+        methodPartitioner.out(portRpcRequest) ~> GossipManager.gossip(gossipManager) ~> requestPartition ~> merger
         methodPartitioner.out(portRpcResponse) ~> gossipMonitorPartition ~> getMsgByIdResponsePartition ~> droppingSink
 
         merger ~> broadcast

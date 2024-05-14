@@ -7,6 +7,8 @@ import akka.testkit.{TestKit, TestProbe}
 import ch.epfl.pop.IOHelper.readJsonFromPath
 import ch.epfl.pop.config.RuntimeEnvironment
 import ch.epfl.pop.decentralized.{ConnectionMediator, GossipManager, Monitor}
+import ch.epfl.pop.model.network.MethodType.rumor
+import ch.epfl.pop.model.network.{ErrorObject, JsonRpcRequest, JsonRpcResponse, MethodType, ResultObject}
 import ch.epfl.pop.model.network.method.{GreetServer, Rumor}
 import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse, ResultObject}
 import ch.epfl.pop.model.objects.{Base64Data, PublicKey}
@@ -49,8 +51,10 @@ class GossipManagerSuite extends TestKit(ActorSystem("GossipManagerSuiteActorSys
   }
 
   val pathCorrectRumor: String = "src/test/scala/util/examples/json/rumor/rumor.json"
+  val pathCorrectCastVote: String = "src/test/scala/util/examples/json/election/cast_vote1.json"
 
   val rumorRequest: JsonRpcRequest = JsonRpcRequest.buildFromJson(readJsonFromPath(pathCorrectRumor))
+  val castVoteRequest: JsonRpcRequest = JsonRpcRequest.buildFromJson(readJsonFromPath(pathCorrectCastVote))
 
   val rumor: Rumor = rumorRequest.getParams.asInstanceOf[Rumor]
 
@@ -88,26 +92,29 @@ class GossipManagerSuite extends TestKit(ActorSystem("GossipManagerSuiteActorSys
       connectionMediatorRef ? ConnectionMediator.NewServerConnected(peer.ref, GreetServer(PublicKey(Base64Data("")), "", ""))
     }
 
+    // processes the rumor => sends to random peer
     val outputRumor = Source.single(Right(rumorRequest)).via(gossipHandler).runWith(Sink.head)
 
     Await.result(outputRumor, duration.mul(2))
 
     var remainingPeers: List[TestProbe] = List.empty
 
+    // checks that only one peers received the rumor
     peers.foreach { peer =>
       peer.receiveOne(duration.mul(2)) match
         case ClientAnswer(_) =>
         case null => remainingPeers :+= peer
     }
-
     remainingPeers.size shouldBe peers.size - 1
 
+    // sends back to the gossipManager a response that the rumor is new
     val response = Right(JsonRpcResponse(
       RpcValidator.JSON_RPC_VERSION,
       ResultObject(0),
       rumorRequest.id
     ))
 
+    // by processing the reponse, gossipManager should send again a rumor to a new peer
     val outputResponse = Source.single(response).via(gossipMonitor).runWith(Sink.head)
 
     Await.result(outputResponse, duration.mul(2))
@@ -120,6 +127,33 @@ class GossipManagerSuite extends TestKit(ActorSystem("GossipManagerSuiteActorSys
         case null => remainingPeers2 :+= peer
     }
     remainingPeers2.size shouldBe remainingPeers.size-1
+
+  }
+
+  test("When receiving a message, gossip manager should create and send a rumor") {
+    val gossipManager: ActorRef = system.actorOf(GossipManager.props(dbActorRef, monitorRef, connectionMediatorRef))
+
+    val gossip = GossipManager.gossip(gossipManager)
+
+    val peerServer = TestProbe()
+
+    connectionMediatorRef ? ConnectionMediator.NewServerConnected(peerServer.ref, GreetServer(PublicKey(Base64Data("")), "", ""))
+
+    val outputCreateRumor = Source.single(Right(castVoteRequest)).via(gossip).runWith(Sink.head)
+
+    Await.result(outputCreateRumor, duration)
+
+    val rumor = Rumor(PublicKey(Base64Data("blabla")), 0, Map(castVoteRequest.getParamsChannel -> List(castVoteRequest.getParamsMessage.get)))
+
+    val receivedMsg = peerServer.receiveOne(duration).asInstanceOf[ClientAnswer]
+
+    receivedMsg.graphMessage match
+      case Right(jsonRpcRequest: JsonRpcRequest) =>
+        jsonRpcRequest.method shouldBe MethodType.rumor
+        jsonRpcRequest.id shouldBe Some(0)
+        val jsonRumor = jsonRpcRequest.getParams.asInstanceOf[Rumor]
+        jsonRumor shouldBe rumor
+      case _ => 0 shouldBe 1
 
   }
 
