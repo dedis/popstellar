@@ -3,10 +3,12 @@
 package repository
 
 import (
+	method "popstellar/message/query/method"
 	message "popstellar/message/query/method/message"
 
-	mock "github.com/stretchr/testify/mock"
 	kyber "go.dedis.ch/kyber/v3"
+
+	mock "github.com/stretchr/testify/mock"
 
 	types "popstellar/internal/popserver/types"
 )
@@ -695,6 +697,34 @@ func (_m *MockRepository) HasMessage(messageID string) (bool, error) {
 	return r0, r1
 }
 
+// HasRumor provides a mock function with given fields: senderID, rumorID
+func (_m *MockRepository) HasRumor(senderID string, rumorID int) (bool, error) {
+	ret := _m.Called(senderID, rumorID)
+
+	if len(ret) == 0 {
+		panic("no return value specified for HasRumor")
+	}
+
+	var r0 bool
+	var r1 error
+	if rf, ok := ret.Get(0).(func(string, int) (bool, error)); ok {
+		return rf(senderID, rumorID)
+	}
+	if rf, ok := ret.Get(0).(func(string, int) bool); ok {
+		r0 = rf(senderID, rumorID)
+	} else {
+		r0 = ret.Get(0).(bool)
+	}
+
+	if rf, ok := ret.Get(1).(func(string, int) error); ok {
+		r1 = rf(senderID, rumorID)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // IsAttendee provides a mock function with given fields: laoPath, poptoken
 func (_m *MockRepository) IsAttendee(laoPath string, poptoken string) (bool, error) {
 	ret := _m.Called(laoPath, poptoken)
@@ -908,6 +938,24 @@ func (_m *MockRepository) StoreMessageAndData(channelID string, msg message.Mess
 	var r0 error
 	if rf, ok := ret.Get(0).(func(string, message.Message) error); ok {
 		r0 = rf(channelID, msg)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// StoreNewRumor provides a mock function with given fields: rumor
+func (_m *MockRepository) StoreNewRumor(rumor method.Rumor) error {
+	ret := _m.Called(rumor)
+
+	if len(ret) == 0 {
+		panic("no return value specified for StoreNewRumor")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(method.Rumor) error); ok {
+		r0 = rf(rumor)
 	} else {
 		r0 = ret.Error(0)
 	}
