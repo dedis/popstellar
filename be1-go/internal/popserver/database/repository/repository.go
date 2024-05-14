@@ -3,6 +3,7 @@ package repository
 import (
 	"go.dedis.ch/kyber/v3"
 	"popstellar/internal/popserver/types"
+	"popstellar/message/query/method"
 	"popstellar/message/query/method/message"
 )
 
@@ -45,6 +46,12 @@ type QueryRepository interface {
 	GetAllMessagesFromChannel(channelID string) ([]message.Message, error)
 
 	GetParamsHeartbeat() (map[string][]string, error)
+
+	// HasRumor returns true if the rumor already exists
+	HasRumor(senderID string, rumorID int) (bool, error)
+
+	// StoreNewRumor stores the new rumor with all messages in state not processed
+	StoreNewRumor(rumor method.Rumor) error
 }
 
 // ======================= Answer ==========================
