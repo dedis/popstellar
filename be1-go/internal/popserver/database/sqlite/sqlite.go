@@ -90,7 +90,7 @@ func (s *SQLite) StoreMessageAndData(channelPath string, msg message.Message) er
 	if err != nil {
 		return err
 	}
-	_, err = tx.Exec(insertProcessedMessage, msg.MessageID, msgByte, messageData, time.Now().UnixNano(), true)
+	_, err = tx.Exec(insertMessage, msg.MessageID, msgByte, messageData, time.Now().UnixNano())
 	if err != nil {
 		return err
 
@@ -178,7 +178,7 @@ func (s *SQLite) GetMessageByID(ID string) (message.Message, error) {
 	defer dbLock.RUnlock()
 
 	var messageByte []byte
-	err := s.database.QueryRow(selectMessage, ID, true).Scan(&messageByte)
+	err := s.database.QueryRow(selectMessage, ID).Scan(&messageByte)
 	if err != nil {
 		return message.Message{}, err
 	}
@@ -209,7 +209,7 @@ func (s *SQLite) AddWitnessSignature(messageID string, witness string, signature
 		return err
 	}
 
-	res, err := tx.Exec(updateMessage, witnessSignature, messageID, true)
+	res, err := tx.Exec(updateMsg, witnessSignature, messageID)
 	if err != nil {
 		return err
 	}
@@ -279,7 +279,7 @@ func (s *SQLite) GetAllMessagesFromChannel(channelPath string) ([]message.Messag
 	dbLock.RLock()
 	defer dbLock.RUnlock()
 
-	rows, err := s.database.Query(selectAllMessagesFromChannel, channelPath, true)
+	rows, err := s.database.Query(selectAllMessagesFromChannel, channelPath)
 	if err != nil {
 		return nil, err
 	}
@@ -453,7 +453,7 @@ func (s *SQLite) HasMessage(messageID string) (bool, error) {
 	defer dbLock.RUnlock()
 
 	var msgID string
-	err := s.database.QueryRow(selectMessageID, messageID, true).Scan(&msgID)
+	err := s.database.QueryRow(selectMessageID, messageID).Scan(&msgID)
 	if err != nil && errors.Is(err, sql.ErrNoRows) {
 		return false, nil
 	} else if err != nil && !errors.Is(err, sql.ErrNoRows) {
@@ -508,7 +508,7 @@ func (s *SQLite) StoreLaoWithLaoGreet(
 		}
 	}
 
-	_, err = tx.Exec(insertProcessedMessage, msg.MessageID, msgByte, messageData, storedTime, true)
+	_, err = tx.Exec(insertMessage, msg.MessageID, msgByte, messageData, storedTime)
 	if err != nil {
 		return err
 	}
@@ -526,7 +526,7 @@ func (s *SQLite) StoreLaoWithLaoGreet(
 	if err != nil {
 		return err
 	}
-	_, err = tx.Exec(insertProcessedMessage, laoGreetMsg.MessageID, laoGreetMsgByte, laoGreetData, storedTime, true)
+	_, err = tx.Exec(insertMessage, laoGreetMsg.MessageID, laoGreetMsgByte, laoGreetData, storedTime)
 	if err != nil {
 		return err
 	}
@@ -570,7 +570,7 @@ func (s *SQLite) GetRollCallState(channelPath string) (string, error) {
 	defer dbLock.RUnlock()
 
 	var state string
-	err := s.database.QueryRow(selectLastRollCallMessage, messagedata.RollCallObject, channelPath, true).Scan(&state)
+	err := s.database.QueryRow(selectLastRollCallMessage, messagedata.RollCallObject, channelPath).Scan(&state)
 	if err != nil {
 		return "", err
 	}
@@ -585,7 +585,7 @@ func (s *SQLite) CheckPrevOpenOrReopenID(channel, nextID string) (bool, error) {
 	var lastAction string
 
 	err := s.database.QueryRow(selectLastRollCallMessageInList, channel, messagedata.RollCallObject,
-		messagedata.RollCallActionOpen, messagedata.RollCallActionReOpen, true).Scan(&lastMsg, &lastAction)
+		messagedata.RollCallActionOpen, messagedata.RollCallActionReOpen).Scan(&lastMsg, &lastAction)
 
 	if err != nil && errors.Is(err, sql.ErrNoRows) {
 		return false, nil
@@ -621,7 +621,7 @@ func (s *SQLite) CheckPrevCreateOrCloseID(channel, nextID string) (bool, error) 
 	var lastAction string
 
 	err := s.database.QueryRow(selectLastRollCallMessageInList, channel, messagedata.RollCallObject,
-		messagedata.RollCallActionCreate, messagedata.RollCallActionClose, true).Scan(&lastMsg, &lastAction)
+		messagedata.RollCallActionCreate, messagedata.RollCallActionClose).Scan(&lastMsg, &lastAction)
 
 	if err != nil && errors.Is(err, sql.ErrNoRows) {
 		return false, nil
@@ -654,7 +654,7 @@ func (s *SQLite) GetLaoWitnesses(laoPath string) (map[string]struct{}, error) {
 	defer dbLock.RUnlock()
 
 	var witnesses []string
-	err := s.database.QueryRow(selectLaoWitnesses, laoPath, messagedata.LAOObject, messagedata.LAOActionCreate, true).Scan(&witnesses)
+	err := s.database.QueryRow(selectLaoWitnesses, laoPath, messagedata.LAOObject, messagedata.LAOActionCreate).Scan(&witnesses)
 	if err != nil {
 		return nil, err
 	}
@@ -687,7 +687,7 @@ func (s *SQLite) StoreRollCallClose(channels []string, laoPath string, msg messa
 		return err
 	}
 
-	_, err = tx.Exec(insertProcessedMessage, msg.MessageID, msgBytes, messageData, time.Now().UnixNano(), true)
+	_, err = tx.Exec(insertMessage, msg.MessageID, msgBytes, messageData, time.Now().UnixNano())
 	if err != nil {
 		return err
 	}
@@ -735,7 +735,7 @@ func (s *SQLite) storeElectionHelper(
 		return err
 	}
 
-	_, err = tx.Exec(insertProcessedMessage, msg.MessageID, msgBytes, messageData, storedTime, true)
+	_, err = tx.Exec(insertMessage, msg.MessageID, msgBytes, messageData, storedTime)
 	if err != nil {
 		return err
 	}
@@ -815,7 +815,7 @@ func (s *SQLite) StoreElectionWithElectionKey(
 		return err
 	}
 
-	_, err = tx.Exec(insertProcessedMessage, electionKeyMsg.MessageID, electionKeyMsgBytes, electionKey, storedTime, true)
+	_, err = tx.Exec(insertMessage, electionKeyMsg.MessageID, electionKeyMsgBytes, electionKey, storedTime)
 	if err != nil {
 		return err
 	}
@@ -842,7 +842,7 @@ func (s *SQLite) GetLAOOrganizerPubKey(electionPath string) (kyber.Point, error)
 	defer tx.Rollback()
 
 	var electionPubBuf []byte
-	err = tx.QueryRow(selectLaoOrganizerKey, electionPath, true).Scan(&electionPubBuf)
+	err = tx.QueryRow(selectLaoOrganizerKey, electionPath).Scan(&electionPubBuf)
 	if err != nil {
 		return nil, err
 	}
@@ -883,7 +883,7 @@ func (s *SQLite) getElectionState(electionPath string) (string, error) {
 	defer dbLock.RUnlock()
 
 	var state string
-	err := s.database.QueryRow(selectLastElectionMessage, electionPath, messagedata.ElectionObject, messagedata.VoteActionCastVote, true).Scan(&state)
+	err := s.database.QueryRow(selectLastElectionMessage, electionPath, messagedata.ElectionObject, messagedata.VoteActionCastVote).Scan(&state)
 	if err != nil && !errors.Is(err, sql.ErrNoRows) {
 		return "", err
 	}
@@ -929,7 +929,7 @@ func (s *SQLite) GetElectionCreationTime(electionPath string) (int64, error) {
 	defer dbLock.RUnlock()
 
 	var creationTime int64
-	err := s.database.QueryRow(selectElectionCreationTime, electionPath, messagedata.ElectionObject, messagedata.ElectionActionSetup, true).Scan(&creationTime)
+	err := s.database.QueryRow(selectElectionCreationTime, electionPath, messagedata.ElectionObject, messagedata.ElectionActionSetup).Scan(&creationTime)
 	if err != nil {
 		return 0, err
 	}
@@ -941,7 +941,7 @@ func (s *SQLite) GetElectionType(electionPath string) (string, error) {
 	defer dbLock.RUnlock()
 
 	var electionType string
-	err := s.database.QueryRow(selectElectionType, electionPath, messagedata.ElectionObject, messagedata.ElectionActionSetup, true).Scan(&electionType)
+	err := s.database.QueryRow(selectElectionType, electionPath, messagedata.ElectionObject, messagedata.ElectionActionSetup).Scan(&electionType)
 	if err != nil {
 		return "", err
 	}
@@ -959,7 +959,6 @@ func (s *SQLite) GetElectionAttendees(electionPath string) (map[string]struct{},
 		messagedata.RollCallActionClose,
 		messagedata.RollCallObject,
 		messagedata.RollCallActionClose,
-		true,
 	).Scan(&rollCallCloseBytes)
 	if err != nil {
 		return nil, err
@@ -983,7 +982,7 @@ func (s *SQLite) getElectionSetup(electionPath string, tx *sql.Tx) (messagedata.
 	defer dbLock.RUnlock()
 
 	var electionSetupBytes []byte
-	err := tx.QueryRow(selectElectionSetup, electionPath, messagedata.ElectionObject, messagedata.ElectionActionSetup, true).Scan(&electionSetupBytes)
+	err := tx.QueryRow(selectElectionSetup, electionPath, messagedata.ElectionObject, messagedata.ElectionActionSetup).Scan(&electionSetupBytes)
 	if err != nil {
 		return messagedata.ElectionSetup{}, err
 	}
@@ -1045,7 +1044,7 @@ func (s *SQLite) GetElectionQuestionsWithValidVotes(electionPath string) (map[st
 		return nil, err
 	}
 
-	rows, err := tx.Query(selectCastVotes, electionPath, messagedata.ElectionObject, messagedata.VoteActionCastVote, true)
+	rows, err := tx.Query(selectCastVotes, electionPath, messagedata.ElectionObject, messagedata.VoteActionCastVote)
 	if err != nil {
 		return nil, err
 	}
@@ -1143,7 +1142,7 @@ func (s *SQLite) StoreElectionEndWithResult(channelPath string, msg, electionRes
 	}
 	storedTime := time.Now().UnixNano()
 
-	_, err = tx.Exec(insertProcessedMessage, msg.MessageID, msgBytes, messageData, storedTime, true)
+	_, err = tx.Exec(insertMessage, msg.MessageID, msgBytes, messageData, storedTime)
 	if err != nil {
 		return err
 	}
@@ -1151,7 +1150,7 @@ func (s *SQLite) StoreElectionEndWithResult(channelPath string, msg, electionRes
 	if err != nil {
 		return err
 	}
-	_, err = tx.Exec(insertProcessedMessage, electionResultMsg.MessageID, electionResultMsgBytes, electionResult, storedTime, true)
+	_, err = tx.Exec(insertMessage, electionResultMsg.MessageID, electionResultMsgBytes, electionResult, storedTime)
 	if err != nil {
 		return err
 	}
@@ -1195,7 +1194,7 @@ func (s *SQLite) StoreChirpMessages(channel, generalChannel string, msg, general
 	}
 	storedTime := time.Now().UnixNano()
 
-	_, err = tx.Exec(insertProcessedMessage, msg.MessageID, msgBytes, messageData, storedTime, true)
+	_, err = tx.Exec(insertMessage, msg.MessageID, msgBytes, messageData, storedTime)
 	if err != nil {
 		return err
 	}
@@ -1203,7 +1202,7 @@ func (s *SQLite) StoreChirpMessages(channel, generalChannel string, msg, general
 	if err != nil {
 		return err
 	}
-	_, err = tx.Exec(insertProcessedMessage, generalMsg.MessageID, generalMsgBytes, generalMessageData, storedTime, true)
+	_, err = tx.Exec(insertMessage, generalMsg.MessageID, generalMsgBytes, generalMessageData, storedTime)
 	if err != nil {
 		return err
 	}
@@ -1224,7 +1223,7 @@ func (s *SQLite) IsAttendee(laoPath, poptoken string) (bool, error) {
 	defer dbLock.RUnlock()
 
 	var rollCallCloseBytes []byte
-	err := s.database.QueryRow(selectLastRollCallClose, laoPath, messagedata.RollCallObject, messagedata.RollCallActionClose, true).Scan(&rollCallCloseBytes)
+	err := s.database.QueryRow(selectLastRollCallClose, laoPath, messagedata.RollCallObject, messagedata.RollCallActionClose).Scan(&rollCallCloseBytes)
 	if err != nil {
 		return false, err
 	}
@@ -1251,7 +1250,7 @@ func (s *SQLite) GetReactionSender(messageID string) (string, error) {
 	var sender string
 	var object string
 	var action string
-	err := s.database.QueryRow(selectSender, messageID, true).Scan(&sender, &object, &action)
+	err := s.database.QueryRow(selectSender, messageID).Scan(&sender, &object, &action)
 	if err != nil && errors.Is(err, sql.ErrNoRows) {
 		return "", nil
 	} else if err != nil {
