@@ -8,11 +8,14 @@ import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.github.dedis.popstellar.R
+import com.github.dedis.popstellar.model.objects.Chirp
 import com.github.dedis.popstellar.model.objects.Lao
 import com.github.dedis.popstellar.model.objects.Lao.Companion.generateLaoId
+import com.github.dedis.popstellar.model.objects.Reaction
 import com.github.dedis.popstellar.model.objects.RollCall
 import com.github.dedis.popstellar.model.objects.event.EventState
 import com.github.dedis.popstellar.model.objects.security.KeyPair
+import com.github.dedis.popstellar.model.objects.security.MessageID
 import com.github.dedis.popstellar.model.objects.security.PoPToken
 import com.github.dedis.popstellar.repository.LAORepository
 import com.github.dedis.popstellar.repository.RollCallRepository
@@ -41,6 +44,7 @@ import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.junit.MockitoJUnit
 import org.mockito.junit.MockitoTestRule
+import java.time.Instant
 import javax.inject.Inject
 
 @HiltAndroidTest
@@ -182,6 +186,22 @@ class SocialMediaHomeFragmentTest {
       InstrumentationRegistry.getInstrumentation().waitForIdleSync()
 
       UITestUtils.assertLatestToastContent(true, R.string.error_retrieve_own_token, "")
+    }
+  }
+
+  @Test
+  fun testAddingAndDeletingReaction(){
+    activityScenarioRule.scenario.onActivity { activity ->
+
+      val socialMediaViewModel =
+        LaoActivity.obtainSocialMediaViewModel(activity, LAO_ID)
+
+      val chirp = Chirp(Base64DataUtils.generateMessageID(), SENDER_1, "text", Instant.now().epochSecond,  MessageID(""))
+      socialMediaViewModel.sendChirp(chirp.text, chirp.parentId, chirp.timestamp)
+
+      socialMediaViewModel.sendReaction(Reaction.ReactionEmoji.UPVOTE.code, chirp.id, Instant.now().epochSecond)
+
+      socialMediaViewModel.deleteReaction(chirp.id, Instant.now().epochSecond, Reaction.ReactionEmoji.UPVOTE.code)
     }
   }
 
