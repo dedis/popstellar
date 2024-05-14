@@ -93,7 +93,7 @@ final case class GossipManager(
     }
   }
 
-  private def gossip(messages : Map[Channel, List[Message]]): Unit = {
+  private def gossip(messages: Map[Channel, List[Message]]): Unit = {
     val rumor: Rumor = Rumor(PublicKey(Base64Data("blabla")), rumorId, messages)
     val jsonRpcRequest = JsonRpcRequest(
       RpcValidator.JSON_RPC_VERSION,
@@ -142,11 +142,11 @@ object GossipManager extends AskPatternConstants {
     case graphMessage @ _ => graphMessage
   }
 
-  def gossip(gossipManager: AskableActorRef): Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map{
+  def gossip(gossipManager: AskableActorRef): Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map {
     case Right(jsonRpcRequest: JsonRpcRequest) =>
       jsonRpcRequest.getParamsMessage match
         case Some(message) => gossipManager ? Gossip(Map(jsonRpcRequest.getParamsChannel -> List(message)))
-        case None => /* Do nothing */
+        case None          => /* Do nothing */
       Right(jsonRpcRequest)
     case graphMessage @ _ => graphMessage
   }
@@ -155,7 +155,7 @@ object GossipManager extends AskPatternConstants {
   final case class MonitoredRumor(jsonRpcRumor: JsonRpcRequest)
   final case class SendRumorToRandomPeer(jsonRpcRequest: JsonRpcRequest)
   final case class ManageGossipResponse(jsonRpcResponse: JsonRpcResponse)
-  final case class Gossip(messages : Map[Channel, List[Message]])
+  final case class Gossip(messages: Map[Channel, List[Message]])
 
   sealed trait GossipManagerMessage
   final case class Ping() extends GossipManagerMessage

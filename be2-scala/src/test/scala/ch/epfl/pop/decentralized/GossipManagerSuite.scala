@@ -45,10 +45,10 @@ class GossipManagerSuite extends TestKit(ActorSystem("GossipManagerSuiteActorSys
   }
 
   val pathCorrectRumor: String = "src/test/scala/util/examples/json/rumor/rumor.json"
-  val pathCorrectCastVote : String = "src/test/scala/util/examples/json/election/cast_vote1.json"
+  val pathCorrectCastVote: String = "src/test/scala/util/examples/json/election/cast_vote1.json"
 
   val rumorRequest: JsonRpcRequest = JsonRpcRequest.buildFromJson(readJsonFromPath(pathCorrectRumor))
-  val castVoteRequest : JsonRpcRequest = JsonRpcRequest.buildFromJson(readJsonFromPath(pathCorrectCastVote))
+  val castVoteRequest: JsonRpcRequest = JsonRpcRequest.buildFromJson(readJsonFromPath(pathCorrectCastVote))
 
   val rumor: Rumor = rumorRequest.getParams.asInstanceOf[Rumor]
 

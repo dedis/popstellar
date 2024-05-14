@@ -71,7 +71,7 @@ final case class ConnectionMediator(
       serverMap += ((serverRef, greetServer))
 
     case Heartbeat(map) =>
-      log.info("Sending a heartbeat to the servers")
+    /*log.info("Sending a heartbeat to the servers")
       serverMap.keys.map(server =>
         server ! ClientAnswer(
           Right(JsonRpcRequest(
@@ -81,7 +81,7 @@ final case class ConnectionMediator(
             None
           ))
         )
-      )
+      )*/
 
     case ConnectionMediator.GetRandomPeer(excludes) =>
       if (serverMap.isEmpty)
