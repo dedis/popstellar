@@ -10,6 +10,7 @@ import com.github.dedis.popstellar.R
 import com.github.dedis.popstellar.databinding.QrFragmentBinding
 import com.github.dedis.popstellar.model.qrcode.MainPublicKeyData
 import com.github.dedis.popstellar.utility.ActivityUtils.getQRCodeColor
+import com.github.dedis.popstellar.utility.GeneralUtils
 import com.github.dedis.popstellar.utility.security.KeyManager
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
@@ -25,6 +26,7 @@ class QrFragment : Fragment() {
 
   private lateinit var binding: QrFragmentBinding
   private lateinit var viewModel: HomeViewModel
+  private lateinit var clipboardManager: GeneralUtils.ClipboardUtil
 
   override fun onCreateView(
       inflater: LayoutInflater,
@@ -34,6 +36,7 @@ class QrFragment : Fragment() {
     // Inflate the layout for this fragment
     binding = QrFragmentBinding.inflate(inflater, container, false)
     binding.lifecycleOwner = activity
+    clipboardManager = GeneralUtils.ClipboardUtil(requireActivity())
 
     viewModel = HomeActivity.obtainViewModel(requireActivity())
 
@@ -42,6 +45,16 @@ class QrFragment : Fragment() {
     handleBackNav()
 
     return binding.root
+  }
+
+  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    super.onViewCreated(view, savedInstanceState)
+    setupCopyButton()
+  }
+
+  private fun setupCopyButton() {
+    clipboardManager.setupCopyButton(
+      binding.copyServerButton, binding.pkText, "Public Key")
   }
 
   override fun onResume() {
