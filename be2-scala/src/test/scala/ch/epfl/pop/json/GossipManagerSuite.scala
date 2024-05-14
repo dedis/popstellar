@@ -29,7 +29,12 @@ class GossipManagerSuite extends TestKit(ActorSystem("GossipManagerSuiteActorSys
   private val securityModuleActorRef: AskableActorRef = system.actorOf(Props(SecurityModuleActor(RuntimeEnvironment.securityPath)))
   private val monitorRef: ActorRef = system.actorOf(Monitor.props(dbActorRef))
   private val connectionMediatorRef: ActorRef = system.actorOf(ConnectionMediator.props(monitorRef, pubSubMediatorRef, dbActorRef, securityModuleActorRef, messageRegistry))
-  private val gossipManager: AskableActorRef = system.actorOf(GossipManager.props(dbActorRef, monitorRef, connectionMediatorRef))
+  private var gossipManager: AskableActorRef = _
+
+  override def beforeEach(): Unit = {
+    inMemoryStorage.elements = Map.empty
+    gossipManager = system.actorOf(GossipManager.props(dbActorRef, monitorRef, connectionMediatorRef))
+  }
 
 
   override def afterAll(): Unit = {
@@ -60,32 +65,9 @@ class GossipManagerSuite extends TestKit(ActorSystem("GossipManagerSuiteActorSys
     peerServer.expectMsg(duration, ClientAnswer(Right(rumorRequest)))
   }
 
-  test("gossip handler should send to only one server if multiples are present") {
-    val gossipManager: ActorRef = system.actorOf(GossipManager.props(dbActorRef, monitorRef, connectionMediatorRef))
-    val gossipHandler = GossipManager.gossipHandler(gossipManager)
-
-    val peerServer1 = TestProbe()
-    val peerServer2 = TestProbe()
-    val peerServer3 = TestProbe()
-    val peerServer4 = TestProbe()
-
-    val peers = List(peerServer1, peerServer2, peerServer3, peerServer4)
-
-    // register server
-    connectionMediatorRef ? ConnectionMediator.NewServerConnected(peerServer1.ref, GreetServer(PublicKey(Base64Data("")), "", ""))
-    connectionMediatorRef ? ConnectionMediator.NewServerConnected(peerServer2.ref, GreetServer(PublicKey(Base64Data("")), "", ""))
-    connectionMediatorRef ? ConnectionMediator.NewServerConnected(peerServer3.ref, GreetServer(PublicKey(Base64Data("")), "", ""))
-    connectionMediatorRef ? ConnectionMediator.NewServerConnected(peerServer4.ref, GreetServer(PublicKey(Base64Data("")), "", ""))
-
-    val output = Source.single(Right(rumorRequest)).via(gossipHandler).runWith(Sink.head)
-
-    Await.result(output, duration)
-
-    peers.map(_.receiveOne(duration)).count(_ != null) shouldBe 1
-
-  }
 
   test("gossip handler should send rumor if there is an ongoing gossip protocol") {
+    val gossipManager: ActorRef = system.actorOf(GossipManager.props(dbActorRef, monitorRef, connectionMediatorRef))
     val gossipHandler = GossipManager.gossipHandler(gossipManager)
     val gossipMonitor = GossipManager.monitorResponse(gossipManager)
 
@@ -95,21 +77,23 @@ class GossipManagerSuite extends TestKit(ActorSystem("GossipManagerSuiteActorSys
     val peerServer4 = TestProbe()
 
     val peers = List(peerServer1, peerServer2, peerServer3, peerServer4)
-    // register server
 
-    connectionMediatorRef ? ConnectionMediator.NewServerConnected(peerServer1.ref, GreetServer(PublicKey(Base64Data("")), "", ""))
-    connectionMediatorRef ? ConnectionMediator.NewServerConnected(peerServer2.ref, GreetServer(PublicKey(Base64Data("")), "", ""))
-    connectionMediatorRef ? ConnectionMediator.NewServerConnected(peerServer3.ref, GreetServer(PublicKey(Base64Data("")), "", ""))
-    connectionMediatorRef ? ConnectionMediator.NewServerConnected(peerServer4.ref, GreetServer(PublicKey(Base64Data("")), "", ""))
+    // register server
+    for (peer <- peers) {
+      connectionMediatorRef ? ConnectionMediator.NewServerConnected(peer.ref, GreetServer(PublicKey(Base64Data("")), "", ""))
+    }
+
     val outputRumor = Source.single(Right(rumorRequest)).via(gossipHandler).runWith(Sink.head)
 
     Await.result(outputRumor, duration)
 
-    val received = peers.map(_.receiveOne(duration))
+    var remainingPeers: List[TestProbe] = List.empty
 
-    received.count(_ != null) shouldBe 1
-
-    val remainingPeers = peers.lazyZip(received).filter((_, recv) => recv == null).map(_._1)
+    peers.foreach { peer =>
+      peer.receiveOne(duration) match
+        case ClientAnswer(_) =>
+        case null => remainingPeers :+= peer
+    }
 
     remainingPeers.size shouldBe peers.size - 1
 
@@ -122,11 +106,16 @@ class GossipManagerSuite extends TestKit(ActorSystem("GossipManagerSuiteActorSys
     val outputResponse = Source.single(response).via(gossipMonitor).runWith(Sink.head)
 
     Await.result(outputResponse, duration)
-    remainingPeers.map(_.receiveOne(duration)).count(_ != null) shouldBe 1
+
+    var remainingPeers2: List[TestProbe] = List.empty
+
+    remainingPeers.foreach { peer =>
+      peer.receiveOne(duration) match
+        case ClientAnswer(_) =>
+        case null => remainingPeers2 :+= peer
+    }
+    remainingPeers2.size shouldBe remainingPeers.size-1
 
   }
-
-
-
 
 }
