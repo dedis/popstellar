@@ -152,7 +152,7 @@ private class FileMonitor(mediatorRef: ActorRef) extends Runnable {
       if (sendConnectToMessage) serverPeers = newPeers
 
       if (running.get() && sendConnectToMessage) {
-          mediatorRef ! ConnectionMediator.ConnectTo(serverPeers)
+        mediatorRef ! ConnectionMediator.ConnectTo(serverPeers)
       }
 
       watchKey.reset()
