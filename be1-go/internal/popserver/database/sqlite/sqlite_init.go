@@ -91,6 +91,30 @@ func NewSQLite(path string, foreignKeyOn bool) (SQLite, error) {
 		return SQLite{}, err
 	}
 
+	_, err = tx.Exec(createRumor)
+	if err != nil {
+		db.Close()
+		return SQLite{}, err
+	}
+
+	_, err = tx.Exec(createMessageRumor)
+	if err != nil {
+		db.Close()
+		return SQLite{}, err
+	}
+
+	_, err = tx.Exec(createUnprocessedMessage)
+	if err != nil {
+		db.Close()
+		return SQLite{}, err
+	}
+
+	_, err = tx.Exec(createUnprocessedMessageRumor)
+	if err != nil {
+		db.Close()
+		return SQLite{}, err
+	}
+
 	err = tx.Commit()
 	if err != nil {
 		db.Close()

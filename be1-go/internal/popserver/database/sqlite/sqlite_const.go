@@ -97,16 +97,55 @@ const (
 	    		signature TEXT UNIQUE,
 	    		PRIMARY KEY (messageID, witness)
 	            )`
+
+	createRumor = `
+	CREATE TABLE IF NOT EXISTS rumor ( 
+    			ID INTEGER, 
+    			sender TEXT, 
+    			PRIMARY KEY (ID, sender) 
+                )`
+
+	createMessageRumor = `
+	CREATE TABLE IF NOT EXISTS messageRumor (
+				messageID TEXT,
+				rumorID INTEGER,
+				sender TEXT,
+				FOREIGN KEY (messageID) REFERENCES message(messageID),
+				FOREIGN KEY (rumorID, sender) REFERENCES rumor(ID, sender),
+				PRIMARY KEY (messageID, rumorID, sender)
+	            )`
+
+	createUnprocessedMessage = `
+	CREATE TABLE IF NOT EXISTS unprocessedMessage (
+	    				messageID TEXT,
+	    				channelPath TEXT,
+	    				message TEXT,
+	    				PRIMARY KEY (messageID)
+	)`
+
+	createUnprocessedMessageRumor = `
+	CREATE TABLE IF NOT EXISTS unprocessedMessageRumor (
+	    				messageID TEXT,
+	    				rumorID INTEGER,
+	    				sender TEXT,
+	    				FOREIGN KEY (messageID) REFERENCES unprocessedMessage(messageID),
+	    				FOREIGN KEY (rumorID, sender) REFERENCES rumor(ID, sender),
+	    				PRIMARY KEY (messageID, rumorID, sender)
+	)`
 )
 
 const (
-	insertChannelMessage    = `INSERT INTO channelMessage (channelPath, messageID, isBaseChannel) VALUES (?, ?, ?)`
-	insertMessage           = `INSERT INTO message (messageID, message, messageData, storedTime) VALUES (?, ?, ?, ?)`
-	insertChannel           = `INSERT INTO channel (channelPath, typeID, laoPath) VALUES (?, ?, ?)`
-	insertOrIgnoreChannel   = `INSERT OR IGNORE INTO channel (channelPath, typeID, laoPath) VALUES (?, ?, ?)`
-	insertKeys              = `INSERT INTO key (channelPath, publicKey, secretKey) VALUES (?, ?, ?)`
-	insertPublicKey         = `INSERT INTO key (channelPath, publicKey) VALUES (?, ?)`
-	insertPendingSignatures = `INSERT INTO pendingSignatures (messageID, witness, signature) VALUES (?, ?, ?)`
+	insertChannelMessage          = `INSERT INTO channelMessage (channelPath, messageID, isBaseChannel) VALUES (?, ?, ?)`
+	insertMessage                 = `INSERT INTO message (messageID, message, messageData, storedTime) VALUES (?, ?, ?, ?)`
+	insertChannel                 = `INSERT INTO channel (channelPath, typeID, laoPath) VALUES (?, ?, ?)`
+	insertOrIgnoreChannel         = `INSERT OR IGNORE INTO channel (channelPath, typeID, laoPath) VALUES (?, ?, ?)`
+	insertKeys                    = `INSERT INTO key (channelPath, publicKey, secretKey) VALUES (?, ?, ?)`
+	insertPublicKey               = `INSERT INTO key (channelPath, publicKey) VALUES (?, ?)`
+	insertPendingSignatures       = `INSERT INTO pendingSignatures (messageID, witness, signature) VALUES (?, ?, ?)`
+	insertRumor                   = `INSERT INTO rumor (ID, sender) VALUES (?, ?)`
+	insertUnprocessedMessage      = `INSERT INTO unprocessedMessage (messageID, channelPath, message) VALUES (?, ?, ?)`
+	insertUnprocessedMessageRumor = `INSERT INTO unprocessedMessageRumor (messageID, rumorID, sender) VALUES (?, ?, ?)`
+	insertMessageRumor            = `INSERT INTO messageRumor (messageID, rumorID, sender) VALUES (?, ?, ?)`
 )
 
 const (
@@ -284,6 +323,10 @@ const (
            json_extract(messageData, '$.action') 
     FROM message 
     WHERE messageID = ?`
+
+	selectRumor = `SELECT ID FROM rumor WHERE ID = ? AND sender = ?`
+
+	selectAllUnprocessedMessages = `SELECT messageID, channelPath, message FROM unprocessedMessage`
 )
 
 const (

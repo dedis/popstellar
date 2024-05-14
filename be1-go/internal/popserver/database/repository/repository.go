@@ -71,6 +71,7 @@ type ChannelRepository interface {
 	// HasMessage returns true if the message already exists.
 	HasMessage(messageID string) (bool, error)
 
+	GetUnprocessedMessagesByChannel() (map[string]map[string]message.Message, error)
 	// GetChannelType returns the type of the channel.
 	GetChannelType(channel string) (string, error)
 }
