@@ -22,20 +22,26 @@ import scala.concurrent.Await
 
 class GossipManagerSuite extends TestKit(ActorSystem("GossipManagerSuiteActorSystem")) with AnyFunSuiteLike with AskPatternConstants with Matchers with BeforeAndAfterEach with BeforeAndAfterAll{
 
-  private val inMemoryStorage: InMemoryStorage = InMemoryStorage()
-  private val messageRegistry: MessageRegistry = MessageRegistry()
-  private val pubSubMediatorRef: ActorRef = system.actorOf(PubSubMediator.props)
-  private val dbActorRef: AskableActorRef = system.actorOf(Props(DbActor(pubSubMediatorRef, messageRegistry, inMemoryStorage)))
-  private val securityModuleActorRef: AskableActorRef = system.actorOf(Props(SecurityModuleActor(RuntimeEnvironment.securityPath)))
-  private val monitorRef: ActorRef = system.actorOf(Monitor.props(dbActorRef))
-  private val connectionMediatorRef: ActorRef = system.actorOf(ConnectionMediator.props(monitorRef, pubSubMediatorRef, dbActorRef, securityModuleActorRef, messageRegistry))
+  private var inMemoryStorage: InMemoryStorage = _
+  private var messageRegistry: MessageRegistry = _
+  private var pubSubMediatorRef: ActorRef = _
+  private var dbActorRef: AskableActorRef = _
+  private var securityModuleActorRef: AskableActorRef = _
+  private var monitorRef: ActorRef = _
+  private var connectionMediatorRef: ActorRef = _
   private var gossipManager: AskableActorRef = _
 
   override def beforeEach(): Unit = {
-    inMemoryStorage.elements = Map.empty
+    inMemoryStorage = InMemoryStorage()
+    messageRegistry = MessageRegistry()
+    pubSubMediatorRef = system.actorOf(PubSubMediator.props)
+    dbActorRef = system.actorOf(Props(DbActor(pubSubMediatorRef, messageRegistry, inMemoryStorage)))
+    securityModuleActorRef = system.actorOf(Props(SecurityModuleActor(RuntimeEnvironment.securityPath)))
+    monitorRef = system.actorOf(Monitor.props(dbActorRef))
+    connectionMediatorRef = system.actorOf(ConnectionMediator.props(monitorRef, pubSubMediatorRef, dbActorRef, securityModuleActorRef, messageRegistry))
+
     gossipManager = system.actorOf(GossipManager.props(dbActorRef, monitorRef, connectionMediatorRef))
   }
-
 
   override def afterAll(): Unit = {
     // Stops the testKit
