@@ -149,3 +149,25 @@ func NewGetMessagesByIDQuery(t *testing.T, queryID int, msgIDsByChannel map[stri
 
 	return getMessagesByIDBuf
 }
+
+func NewRumorQuery(t *testing.T, queryID int, senderID string, rumorID int, messages map[string][]message.Message) []byte {
+	rumor := method.Rumor{
+		Base: query.Base{
+			JSONRPCBase: jsonrpc.JSONRPCBase{
+				JSONRPC: "2.0",
+			},
+			Method: query.MethodRumor,
+		},
+		ID: queryID,
+		Params: method.ParamsRumor{
+			SenderID: senderID,
+			RumorID:  rumorID,
+			Messages: messages,
+		},
+	}
+
+	rumorBuf, err := json.Marshal(&rumor)
+	require.NoError(t, err)
+
+	return rumorBuf
+}
