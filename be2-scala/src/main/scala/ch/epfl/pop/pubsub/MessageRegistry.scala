@@ -243,7 +243,7 @@ object MessageRegistry {
       PopchaValidator.validateAuthenticateRequest,
       PopchaHandler.handleAuthentication
     )
-    
+
     // data federation
     register.add(
       (ObjectType.federation, ActionType.challenge),
