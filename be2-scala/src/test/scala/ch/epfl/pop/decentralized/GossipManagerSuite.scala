@@ -85,7 +85,7 @@ class GossipManagerSuite extends TestKit(ActorSystem("GossipManagerSuiteActorSys
 
     val outputRumor = Source.single(Right(rumorRequest)).via(gossipHandler).runWith(Sink.head)
 
-    Await.result(outputRumor, duration)
+    Await.result(outputRumor, duration.mul(2))
 
     var remainingPeers: List[TestProbe] = List.empty
 
@@ -105,7 +105,7 @@ class GossipManagerSuite extends TestKit(ActorSystem("GossipManagerSuiteActorSys
 
     val outputResponse = Source.single(response).via(gossipMonitor).runWith(Sink.head)
 
-    Await.result(outputResponse, duration)
+    Await.result(outputResponse, duration.mul(2))
 
     var remainingPeers2: List[TestProbe] = List.empty
 

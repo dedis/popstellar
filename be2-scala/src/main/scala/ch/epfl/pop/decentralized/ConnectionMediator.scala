@@ -85,7 +85,7 @@ final case class ConnectionMediator(
 
     case ConnectionMediator.GetRandomPeer(excludes) =>
       if (serverMap.isEmpty)
-        sender() ! ConnectionMediator.NoPeer
+        sender() ! ConnectionMediator.NoPeer()
       else
         val serverRefs = serverMap.filter((k, _) => !excludes.contains(k))
         val randomKey = serverRefs.keys.toList(Random.nextInt(serverRefs.size))
