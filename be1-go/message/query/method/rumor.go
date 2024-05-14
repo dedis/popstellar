@@ -6,9 +6,9 @@ import (
 )
 
 type ParamsRumor struct {
-	SenderID string                     `json:"sender_id"`
-	RumorID  int                        `json:"rumor_id"`
-	Messages map[string]message.Message `json:"messages"`
+	SenderID string                       `json:"sender_id"`
+	RumorID  int                          `json:"rumor_id"`
+	Messages map[string][]message.Message `json:"messages"`
 }
 
 // Rumor defines a JSON RPC rumor message
