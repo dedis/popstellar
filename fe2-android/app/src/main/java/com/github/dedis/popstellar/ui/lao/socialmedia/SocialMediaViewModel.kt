@@ -274,7 +274,7 @@ constructor(
 
       sender == token.publicKey.encoded
     } catch (e: KeyException) {
-      if (_hasValidToken.value == true) {
+      if (hasValidToken()) {
         logAndShow(getApplication(), TAG, e, R.string.error_retrieve_own_token)
       }
       false
@@ -293,7 +293,7 @@ constructor(
       val toSearch = token.publicKey.encoded
       senders.contains(toSearch)
     } catch (e: KeyException) {
-      if (_hasValidToken.value == true) {
+      if (hasValidToken()) {
         logAndShow(getApplication(), TAG, e, R.string.error_retrieve_own_token)
       }
       false
@@ -311,6 +311,10 @@ constructor(
   @get:Throws(UnknownLaoException::class)
   private val lao: LaoView
     get() = laoRepo.getLaoView(laoId)
+
+    fun hasValidToken(): Boolean {
+        return _hasValidToken.value == true
+    }
 
   fun checkValidPoPToken() {
     disposables.add(
