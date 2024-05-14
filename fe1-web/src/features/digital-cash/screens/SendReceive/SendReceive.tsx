@@ -321,7 +321,7 @@ export const SendReceiveHeaderRight = () => {
     return null;
   }
 
-  if (rollCallId === null) {
+  if (!serializedRollCallId) {
     toast.show(STRINGS.digital_cash_error_rollcall_not_defined, {
       type: 'warning',
       placement: 'bottom',
