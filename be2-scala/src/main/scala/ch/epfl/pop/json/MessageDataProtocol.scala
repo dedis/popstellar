@@ -464,12 +464,12 @@ object MessageDataProtocol extends DefaultJsonProtocol {
 
   implicit object FederationChallengeFormat extends JsonFormat[FederationChallenge] {
     final private val PARAM_CHALLENGE_VALUE: String = "value"
-    final private val PARAM_CHALLENGE_VALID_UNTIL: String = "validUntil"
+    final private val PARAM_CHALLENGE_VALID_UNTIL: String = "valid_until"
 
     override def read(json: JsValue): FederationChallenge = json.asJsObject().getFields(PARAM_CHALLENGE_VALUE, PARAM_CHALLENGE_VALID_UNTIL) match {
-      case Seq(value @ JsString(_), validUntil @ JsNumber(_)) => FederationChallenge(
+      case Seq(value @ JsString(_), valid_until @ JsNumber(_)) => FederationChallenge(
           value.convertTo[Base16Data],
-          validUntil.convertTo[Timestamp]
+          valid_until.convertTo[Timestamp]
         )
       case _ => throw new IllegalArgumentException(s"Can't parse json value $json to a FederationChallenge object")
     }
@@ -479,24 +479,24 @@ object MessageDataProtocol extends DefaultJsonProtocol {
         PARAM_OBJECT -> JsString(obj._object.toString),
         PARAM_ACTION -> JsString(obj.action.toString),
         PARAM_CHALLENGE_VALUE -> obj.value.toJson,
-        PARAM_CHALLENGE_VALID_UNTIL -> obj.validUntil.toJson
+        PARAM_CHALLENGE_VALID_UNTIL -> obj.valid_until.toJson
       )
       JsObject(jsObjectContent)
     }
   }
 
   implicit object FederationExpectFormat extends JsonFormat[FederationExpect] {
-    final private val PARAM_ID: String = "laoId"
-    final private val PARAM_SERVER_ADDRESS: String = "serverAddress"
-    final private val PARAM_OTHER_ORGANIZER: String = "other_organizer"
+    final private val PARAM_ID: String = "lao_id"
+    final private val PARAM_SERVER_ADDRESS: String = "server_address"
+    final private val PARAM_PUBLIC_KEY: String = "public_key"
     final private val PARAM_CHALLENGE: String = "challenge"
 
-    override def read(json: JsValue): FederationExpect = json.asJsObject().getFields(PARAM_ID, PARAM_SERVER_ADDRESS, PARAM_OTHER_ORGANIZER, PARAM_CHALLENGE) match {
-      case Seq(laoId @ JsString(_), JsString(serverAddress), other_organizer @ JsString(_), challenge @ JsObject(_)) =>
+    override def read(json: JsValue): FederationExpect = json.asJsObject().getFields(PARAM_ID, PARAM_SERVER_ADDRESS, PARAM_PUBLIC_KEY, PARAM_CHALLENGE) match {
+      case Seq(lao_id @ JsString(_), JsString(server_address), public_key @ JsString(_), challenge @ JsObject(_)) =>
         FederationExpect(
-          laoId.convertTo[Hash],
-          serverAddress,
-          other_organizer.convertTo[PublicKey],
+          lao_id.convertTo[Hash],
+          server_address,
+          public_key.convertTo[PublicKey],
           challenge.convertTo[Message]
         )
       case _ => throw new IllegalArgumentException(s"Can't parse json value $json to a FederationExpect object")
@@ -506,9 +506,9 @@ object MessageDataProtocol extends DefaultJsonProtocol {
       var jsObjectContent: ListMap[String, JsValue] = ListMap[String, JsValue](
         PARAM_OBJECT -> JsString(obj._object.toString),
         PARAM_ACTION -> JsString(obj.action.toString),
-        PARAM_ID -> obj.laoId.toJson,
-        PARAM_SERVER_ADDRESS -> obj.serverAddress.toJson,
-        PARAM_OTHER_ORGANIZER -> obj.other_organizer.toJson,
+        PARAM_ID -> obj.lao_id.toJson,
+        PARAM_SERVER_ADDRESS -> obj.server_address.toJson,
+        PARAM_PUBLIC_KEY -> obj.public_key.toJson,
         PARAM_CHALLENGE -> obj.challenge.toJson
       )
       JsObject(jsObjectContent)
@@ -516,17 +516,17 @@ object MessageDataProtocol extends DefaultJsonProtocol {
   }
 
   implicit object FederationInitFormat extends JsonFormat[FederationInit] {
-    final private val PARAM_ID: String = "laoId"
-    final private val PARAM_SERVER_ADDRESS: String = "serverAddress"
-    final private val PARAM_OTHER_ORGANIZER: String = "other_organizer"
+    final private val PARAM_ID: String = "lao_id"
+    final private val PARAM_SERVER_ADDRESS: String = "server_address"
+    final private val PARAM_PUBLIC_KEY: String = "public_key"
     final private val PARAM_CHALLENGE: String = "challenge"
 
-    override def read(json: JsValue): FederationInit = json.asJsObject().getFields(PARAM_ID, PARAM_SERVER_ADDRESS, PARAM_OTHER_ORGANIZER, PARAM_CHALLENGE) match {
-      case Seq(laoId @ JsString(_), JsString(serverAddress), other_organizer @ JsString(_), challenge @ JsObject(_)) =>
+    override def read(json: JsValue): FederationInit = json.asJsObject().getFields(PARAM_ID, PARAM_SERVER_ADDRESS, PARAM_PUBLIC_KEY, PARAM_CHALLENGE) match {
+      case Seq(lao_id @ JsString(_), JsString(server_address), public_key @ JsString(_), challenge @ JsObject(_)) =>
         FederationInit(
-          laoId.convertTo[Hash],
-          serverAddress,
-          other_organizer.convertTo[PublicKey],
+          lao_id.convertTo[Hash],
+          server_address,
+          public_key.convertTo[PublicKey],
           challenge.convertTo[Message]
         )
       case _ => throw new IllegalArgumentException(s"Can't parse json value $json to a FederationInit object")
@@ -536,26 +536,26 @@ object MessageDataProtocol extends DefaultJsonProtocol {
       var jsObjectContent: ListMap[String, JsValue] = ListMap[String, JsValue](
         PARAM_OBJECT -> JsString(obj._object.toString),
         PARAM_ACTION -> JsString(obj.action.toString),
-        PARAM_ID -> obj.laoId.toJson,
-        PARAM_SERVER_ADDRESS -> obj.serverAddress.toJson,
-        PARAM_OTHER_ORGANIZER -> obj.other_organizer.toJson,
+        PARAM_ID -> obj.lao_id.toJson,
+        PARAM_SERVER_ADDRESS -> obj.server_address.toJson,
+        PARAM_PUBLIC_KEY -> obj.public_key.toJson,
         PARAM_CHALLENGE -> obj.challenge.toJson
       )
       JsObject(jsObjectContent)
     }
   }
 
-  implicit object FederationRequestChallengeFormat extends JsonFormat[FederationRequestChallenge] {
+  implicit object FederationChallengeRequestFormat extends JsonFormat[FederationChallengeRequest] {
     final private val PARAM_TIMESTAMP: String = "timestamp"
 
-    override def read(json: JsValue): FederationRequestChallenge = json.asJsObject().getFields(PARAM_TIMESTAMP) match {
-      case Seq(timestamp @ JsNumber(_)) => FederationRequestChallenge(
+    override def read(json: JsValue): FederationChallengeRequest = json.asJsObject().getFields(PARAM_TIMESTAMP) match {
+      case Seq(timestamp @ JsNumber(_)) => FederationChallengeRequest(
           timestamp.convertTo[Timestamp]
         )
       case _ => throw new IllegalArgumentException(s"Can't parse json value $json to a FederationChallengeRequest object")
     }
 
-    override def write(obj: FederationRequestChallenge): JsValue = {
+    override def write(obj: FederationChallengeRequest): JsValue = {
       var jsObjectContent: ListMap[String, JsValue] = ListMap[String, JsValue](
         PARAM_OBJECT -> JsString(obj._object.toString),
         PARAM_ACTION -> JsString(obj.action.toString),
@@ -568,8 +568,8 @@ object MessageDataProtocol extends DefaultJsonProtocol {
   implicit object FederationResultFormat extends JsonFormat[FederationResult] {
     final private val PARAM_STATUS: String = "status"
     final private val PARAM_REASON: String = "reason"
-    final private val PARAM_ORGANIZER: String = "organizer"
-    final private val PARAM_CHALLENGE_MESSAGE = "challenge_message"
+    final private val PARAM_PUBLIC_KEY: String = "public_key"
+    final private val PARAM_CHALLENGE = "challenge"
 
     override def read(json: JsValue): FederationResult =
       val jsObj = json.asJsObject
@@ -581,26 +581,27 @@ object MessageDataProtocol extends DefaultJsonProtocol {
         case JsString(r) => r
       }
 
-      val organizer = jsObj.fields.get(PARAM_ORGANIZER).flatMap(_.convertTo[Option[PublicKey]])
+      val public_key = jsObj.fields.get(PARAM_PUBLIC_KEY).collect {
+        case key @ JsString(_) => key.convertTo[PublicKey]
+      }
 
-      val challengeMessage = jsObj.fields.get(PARAM_CHALLENGE_MESSAGE).collect {
+      val challengeMessage = jsObj.fields.get(PARAM_CHALLENGE).collect {
         case jsObj: JsObject => jsObj.convertTo[Message]
       }.getOrElse(throw new IllegalArgumentException(s"Can't parse json value $json to a FederationResult object"))
 
-      (reason, organizer) match {
-        case (None, Some(o)) => FederationResult(status, o, challengeMessage)
-        case (Some(r), None) => FederationResult(status, r, challengeMessage)
-        case _               => throw new IllegalArgumentException(s"Can't parse json value $json to a FederationResult object")
+      (reason, public_key) match {
+        case (None, Some(key)) => FederationResult(status, key, challengeMessage)
+        case (Some(r), None)   => FederationResult(status, r, challengeMessage)
+        case _                 => throw new IllegalArgumentException(s"Can't parse json value $json to a FederationResult object")
       }
 
     override def write(obj: FederationResult): JsValue = {
       val fields = scala.collection.mutable.Map[String, JsValue]()
       fields += PARAM_STATUS -> obj.status.toJson
-      fields += PARAM_CHALLENGE_MESSAGE -> obj.challenge_message.toJson
+      fields += PARAM_CHALLENGE -> obj.challenge.toJson
 
       obj.reason.foreach(r => fields += PARAM_REASON -> JsString(r))
-      obj.organizer.foreach(o => fields += PARAM_ORGANIZER -> o.toJson)
-      print(JsObject(fields.toMap))
+      obj.public_key.foreach(key => fields += PARAM_PUBLIC_KEY -> key.toJson)
       JsObject(fields.toMap)
 
     }
