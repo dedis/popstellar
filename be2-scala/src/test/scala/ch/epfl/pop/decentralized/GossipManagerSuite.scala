@@ -1,4 +1,4 @@
-package ch.epfl.pop.json
+package ch.epfl.pop.decentralized
 
 import akka.actor.{ActorRef, ActorSystem, Props}
 import akka.pattern.{AskableActorRef, ask}
