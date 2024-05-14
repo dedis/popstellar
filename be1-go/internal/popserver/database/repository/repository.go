@@ -52,6 +52,9 @@ type QueryRepository interface {
 
 	// StoreNewRumor stores the new rumor with all messages in state not processed
 	StoreNewRumor(rumor method.Rumor) error
+
+	// GetUnprocessedMessagesByChannel returns all the unprocessed messages by channel
+	GetUnprocessedMessagesByChannel() (map[string]map[string]message.Message, error)
 }
 
 // ======================= Answer ==========================

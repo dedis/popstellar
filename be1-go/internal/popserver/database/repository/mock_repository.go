@@ -641,6 +641,36 @@ func (_m *MockRepository) GetServerKeys() (kyber.Point, kyber.Scalar, error) {
 	return r0, r1, r2
 }
 
+// GetUnprocessedMessagesByChannel provides a mock function with given fields:
+func (_m *MockRepository) GetUnprocessedMessagesByChannel() (map[string]map[string]message.Message, error) {
+	ret := _m.Called()
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetUnprocessedMessagesByChannel")
+	}
+
+	var r0 map[string]map[string]message.Message
+	var r1 error
+	if rf, ok := ret.Get(0).(func() (map[string]map[string]message.Message, error)); ok {
+		return rf()
+	}
+	if rf, ok := ret.Get(0).(func() map[string]map[string]message.Message); ok {
+		r0 = rf()
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(map[string]map[string]message.Message)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func() error); ok {
+		r1 = rf()
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // HasChannel provides a mock function with given fields: channel
 func (_m *MockRepository) HasChannel(channel string) (bool, error) {
 	ret := _m.Called(channel)
