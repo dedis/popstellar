@@ -82,8 +82,8 @@ final case class GossipManager(
       }
     } else {
       log.info(s"Unexpected match for active gossip. Response with id ${response.id} matched with ${activeGossipPeers.size} entries")
-      //removes duplicate entries to come back to a stable state
-      activeGossipPeers.foreach{ (rumorRpc, _) =>
+      // removes duplicate entries to come back to a stable state
+      activeGossipPeers.foreach { (rumorRpc, _) =>
         activeGossipProtocol -= rumorRpc
       }
     }

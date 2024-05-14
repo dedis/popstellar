@@ -112,7 +112,7 @@ class GossipManagerSuite extends TestKit(ActorSystem("GossipManagerSuiteActorSys
 
     Await.result(outputRumor, duration)
 
-    //checks that only one peers received the rumor
+    // checks that only one peers received the rumor
     val received = peers.map(_.receiveOne(duration))
     received.count(_ != null) shouldBe 1
     val remainingPeers = peers.lazyZip(received).filter((_, recv) => recv == null).map(_._1)
