@@ -47,7 +47,7 @@ The project is organized into different modules as follows
 │   └── popserver             # entry point of the messages received by the sockets
 │       ├── config            # singleton with the server config informations and server keys
 │       ├── database          # singleton with the database + implementations of the database
-│       ├── generator         # query and message generators only use for the tests
+│       ├── generatortest     # query and message generators only use for the tests
 │       ├── handler           # handlers for each query, answer and channel type (entry point is func HandleIncomingMessage)
 │       ├── state             # singleton with the temporary states of the server (peers, queries, and subscriptions)
 │       ├── type              # every types use in the implementation
