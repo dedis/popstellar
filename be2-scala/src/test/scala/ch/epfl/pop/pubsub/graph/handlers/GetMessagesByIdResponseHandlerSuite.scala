@@ -36,10 +36,10 @@ class GetMessagesByIdResponseHandlerSuite extends TestKit(ActorSystem("GetMessag
   val securityModuleActorRef: AskableActorRef = system.actorOf(Props(SecurityModuleActor(testSecurityDirectory)))
 
   // Inject dbActor above
-  PublishSubscribe.buildGraph(pubSubMediatorRef, dbActorRef, securityModuleActorRef, messageRegistry, ActorRef.noSender, ActorRef.noSender, isServer = false)
+  PublishSubscribe.buildGraph(pubSubMediatorRef, dbActorRef, securityModuleActorRef, messageRegistry, ActorRef.noSender, ActorRef.noSender, ActorRef.noSender, isServer = false)
 
   // handler we want to test
-  val responseHandler: Flow[GraphMessage, GraphMessage, NotUsed] = GetMessagesByIdResponseHandler.responseHandler(MessageRegistry())
+  val responseHandler: Flow[GraphMessage, GraphMessage, NotUsed] = ProcessMessagesHandler.getMsgByIdResponseHandler(MessageRegistry())
 
   // loading the files
   val pathIncorrectGetMessageById: String = "src/test/scala/util/examples/json/get_messages_by_id_answer_with_wrong_messages.json"
