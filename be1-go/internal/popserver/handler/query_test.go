@@ -7,6 +7,7 @@ import (
 	"popstellar/crypto"
 	"popstellar/internal/popserver/config"
 	"popstellar/internal/popserver/database"
+	"popstellar/internal/popserver/database/repository"
 	"popstellar/internal/popserver/generator"
 	"popstellar/internal/popserver/state"
 	"popstellar/internal/popserver/types"
@@ -52,14 +53,12 @@ func Test_handleGreetServer(t *testing.T) {
 	queries := types.NewQueries(&noLog)
 	peers := types.NewPeers()
 
-	err := state.SetState(t, subs, peers, queries)
-	require.NoError(t, err)
+	state.SetState(subs, peers, queries)
 
 	serverSecretKey := crypto.Suite.Scalar().Pick(crypto.Suite.RandomStream())
 	serverPublicKey := crypto.Suite.Point().Mul(serverSecretKey, nil)
 
-	err = config.SetConfig(t, nil, serverPublicKey, serverSecretKey, "clientAddress", "serverAddress")
-	require.NoError(t, err)
+	config.SetConfig(nil, serverPublicKey, serverSecretKey, "clientAddress", "serverAddress")
 
 	type input struct {
 		name      string
@@ -104,7 +103,7 @@ func Test_handleGreetServer(t *testing.T) {
 
 	fakeSocket = socket.FakeSocket{Id: "3"}
 
-	err = peers.AddPeerInfo(fakeSocket.Id, method.GreetServerParams{})
+	err := peers.AddPeerInfo(fakeSocket.Id, method.GreetServerParams{})
 	require.NoError(t, err)
 
 	args = append(args, input{
@@ -140,8 +139,7 @@ func Test_handleSubscribe(t *testing.T) {
 	queries := types.NewQueries(&noLog)
 	peers := types.NewPeers()
 
-	err := state.SetState(t, subs, peers, queries)
-	require.NoError(t, err)
+	state.SetState(subs, peers, queries)
 
 	type input struct {
 		name     string
@@ -229,8 +227,7 @@ func Test_handleUnsubscribe(t *testing.T) {
 	queries := types.NewQueries(&noLog)
 	peers := types.NewPeers()
 
-	err := state.SetState(t, subs, peers, queries)
-	require.NoError(t, err)
+	state.SetState(subs, peers, queries)
 
 	type input struct {
 		name     string
@@ -341,11 +338,10 @@ func Test_handleCatchUp(t *testing.T) {
 	queries := types.NewQueries(&noLog)
 	peers := types.NewPeers()
 
-	err := state.SetState(t, subs, peers, queries)
-	require.NoError(t, err)
+	state.SetState(subs, peers, queries)
 
-	mockRepo, err := database.SetDatabase(t)
-	require.NoError(t, err)
+	mockRepository := repository.NewMockRepository(t)
+	database.SetDatabase(mockRepository)
 
 	type input struct {
 		name     string
@@ -371,7 +367,7 @@ func Test_handleCatchUp(t *testing.T) {
 		generator.NewNothingMsg(t, "sender4", nil),
 	}
 
-	mockRepo.On("GetAllMessagesFromChannel", channel).Return(messagesToCatchUp, nil)
+	mockRepository.On("GetAllMessagesFromChannel", channel).Return(messagesToCatchUp, nil)
 
 	args = append(args, input{
 		name:     "Test 1",
@@ -388,7 +384,7 @@ func Test_handleCatchUp(t *testing.T) {
 	ID = 2
 	channel = "/root/lao2"
 
-	mockRepo.On("GetAllMessagesFromChannel", channel).
+	mockRepository.On("GetAllMessagesFromChannel", channel).
 		Return(nil, xerrors.Errorf("DB is disconnected"))
 
 	args = append(args, input{
@@ -423,11 +419,10 @@ func Test_handleHeartbeat(t *testing.T) {
 	queries := types.NewQueries(&noLog)
 	peers := types.NewPeers()
 
-	err := state.SetState(t, subs, peers, queries)
-	require.NoError(t, err)
+	state.SetState(subs, peers, queries)
 
-	mockRepository, err := database.SetDatabase(t)
-	require.NoError(t, err)
+	mockRepository := repository.NewMockRepository(t)
+	database.SetDatabase(mockRepository)
 
 	type input struct {
 		name     string
@@ -555,11 +550,10 @@ func Test_handleGetMessagesByID(t *testing.T) {
 	queries := types.NewQueries(&noLog)
 	peers := types.NewPeers()
 
-	err := state.SetState(t, subs, peers, queries)
-	require.NoError(t, err)
+	state.SetState(subs, peers, queries)
 
-	mockRepository, err := database.SetDatabase(t)
-	require.NoError(t, err)
+	mockRepository := repository.NewMockRepository(t)
+	database.SetDatabase(mockRepository)
 
 	type input struct {
 		name     string

@@ -8,6 +8,7 @@ import (
 	"go.dedis.ch/kyber/v3/sign/schnorr"
 	"popstellar/crypto"
 	"popstellar/internal/popserver/database"
+	"popstellar/internal/popserver/database/repository"
 	"popstellar/message/messagedata"
 	"popstellar/message/query/method/message"
 	"testing"
@@ -15,8 +16,8 @@ import (
 )
 
 func Test_handleMessagesByChannel(t *testing.T) {
-	mockRepository, err := database.SetDatabase(t)
-	require.NoError(t, err)
+	mockRepository := repository.NewMockRepository(t)
+	database.SetDatabase(mockRepository)
 
 	type input struct {
 		name     string

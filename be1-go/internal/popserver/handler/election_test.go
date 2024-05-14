@@ -21,8 +21,8 @@ import (
 func Test_handleChannelElection(t *testing.T) {
 	var args []input
 
-	mockRepo, err := database.SetDatabase(t)
-	require.NoError(t, err)
+	mockRepository := repository.NewMockRepository(t)
+	database.SetDatabase(mockRepository)
 
 	subs := types.NewSubscribers()
 	queries := types.NewQueries(&noLog)
@@ -38,11 +38,9 @@ func Test_handleChannelElection(t *testing.T) {
 	serverSecretKey := crypto.Suite.Scalar().Pick(crypto.Suite.RandomStream())
 	serverPublicKey := crypto.Suite.Point().Mul(serverSecretKey, nil)
 
-	err = config.SetConfig(t, ownerPublicKey, serverPublicKey, serverSecretKey, "clientAddress", "serverAddress")
-	require.NoError(t, err)
+	config.SetConfig(ownerPublicKey, serverPublicKey, serverSecretKey, "clientAddress", "serverAddress")
 
-	err = state.SetState(t, subs, peers, queries)
-	require.NoError(t, err)
+	state.SetState(subs, peers, queries)
 
 	laoID := base64.URLEncoding.EncodeToString([]byte("laoID"))
 	electionID := base64.URLEncoding.EncodeToString([]byte("electionID"))
@@ -52,7 +50,7 @@ func Test_handleChannelElection(t *testing.T) {
 	args = append(args, input{
 		name: "Test 1",
 		msg: newElectionOpenMsg(t, ownerPublicKey, wrongSender, laoID, electionID, channelPath, "",
-			-1, true, mockRepo),
+			-1, true, mockRepository),
 		channel:  channelPath,
 		isError:  true,
 		contains: "sender is not the organizer of the channel",
@@ -64,7 +62,7 @@ func Test_handleChannelElection(t *testing.T) {
 	args = append(args, input{
 		name: "Test 2",
 		msg: newElectionOpenMsg(t, ownerPublicKey, ownerPubBuf64, laoID, electionID, wrongChannelPath, "",
-			-1, true, mockRepo),
+			-1, true, mockRepository),
 		channel:  wrongChannelPath,
 		isError:  true,
 		contains: "lao id is not the same as the channel",
@@ -76,7 +74,7 @@ func Test_handleChannelElection(t *testing.T) {
 	args = append(args, input{
 		name: "Test 3",
 		msg: newElectionOpenMsg(t, ownerPublicKey, ownerPubBuf64, laoID, electionID, wrongChannelPath, "",
-			-1, true, mockRepo),
+			-1, true, mockRepository),
 		channel:  wrongChannelPath,
 		isError:  true,
 		contains: "election id is not the same as the channel",
@@ -86,7 +84,7 @@ func Test_handleChannelElection(t *testing.T) {
 	args = append(args, input{
 		name: "Test 4",
 		msg: newElectionOpenMsg(t, ownerPublicKey, ownerPubBuf64, laoID, electionID, channelPath, messagedata.ElectionActionOpen,
-			-1, true, mockRepo),
+			-1, true, mockRepository),
 		channel:  channelPath,
 		isError:  true,
 		contains: "election is already started or ended",
@@ -99,7 +97,7 @@ func Test_handleChannelElection(t *testing.T) {
 	args = append(args, input{
 		name: "Test 5",
 		msg: newElectionOpenMsg(t, ownerPublicKey, ownerPubBuf64, laoID, electionID, channelPath, messagedata.ElectionActionSetup,
-			2, true, mockRepo),
+			2, true, mockRepository),
 		channel:  channelPath,
 		isError:  true,
 		contains: "election open cannot have a creation time prior to election setup",
@@ -116,7 +114,7 @@ func Test_handleChannelElection(t *testing.T) {
 	args = append(args, input{
 		name: "Test 6",
 		msg: newElectionOpenMsg(t, ownerPublicKey, ownerPubBuf64, laoID, electionID, channelPath, messagedata.ElectionActionSetup,
-			1, false, mockRepo),
+			1, false, mockRepository),
 		channel:  channelPath,
 		isError:  false,
 		contains: "",
@@ -129,7 +127,7 @@ func Test_handleChannelElection(t *testing.T) {
 	args = append(args, input{
 		name: "Test 7",
 		msg: newElectionEndMsg(t, ownerPublicKey, wrongSender, laoID, electionID, channelPath, "", "",
-			-1, true, mockRepo),
+			-1, true, mockRepository),
 		channel:  channelPath,
 		isError:  true,
 		contains: "sender is not the organizer of the channel",
@@ -141,7 +139,7 @@ func Test_handleChannelElection(t *testing.T) {
 	args = append(args, input{
 		name: "Test 8",
 		msg: newElectionEndMsg(t, ownerPublicKey, ownerPubBuf64, laoID, electionID, wrongChannelPath, "", "",
-			-1, true, mockRepo),
+			-1, true, mockRepository),
 		channel:  wrongChannelPath,
 		isError:  true,
 		contains: "lao id is not the same as the channel",
@@ -153,7 +151,7 @@ func Test_handleChannelElection(t *testing.T) {
 	args = append(args, input{
 		name: "Test 9",
 		msg: newElectionEndMsg(t, ownerPublicKey, ownerPubBuf64, laoID, electionID, wrongChannelPath, "", "",
-			-1, true, mockRepo),
+			-1, true, mockRepository),
 		channel:  wrongChannelPath,
 		isError:  true,
 		contains: "election id is not the same as the channel",
@@ -163,7 +161,7 @@ func Test_handleChannelElection(t *testing.T) {
 	args = append(args, input{
 		name: "Test 10",
 		msg: newElectionEndMsg(t, ownerPublicKey, ownerPubBuf64, laoID, electionID, channelPath, messagedata.ElectionActionEnd, "",
-			-1, true, mockRepo),
+			-1, true, mockRepository),
 		channel:  channelPath,
 		isError:  true,
 		contains: "election was not started",
@@ -177,7 +175,7 @@ func Test_handleChannelElection(t *testing.T) {
 	args = append(args, input{
 		name: "Test 11",
 		msg: newElectionEndMsg(t, ownerPublicKey, ownerPubBuf64, laoID, electionID, channelPath, messagedata.ElectionActionOpen, "",
-			2, true, mockRepo),
+			2, true, mockRepository),
 		channel:  channelPath,
 		isError:  true,
 		contains: "election end cannot have a creation time prior to election setup",
@@ -193,7 +191,7 @@ func Test_handleChannelElection(t *testing.T) {
 	args = append(args, input{
 		name: "Test 12",
 		msg: newElectionEndMsg(t, ownerPublicKey, ownerPubBuf64, laoID, electionID, channelPath, messagedata.ElectionActionOpen, wrongVotes,
-			1, true, mockRepo),
+			1, true, mockRepository),
 		channel:  channelPath,
 		isError:  true,
 		contains: fmt.Sprintf("registered votes is %s, should be sorted and equal to", wrongVotes),
@@ -212,7 +210,7 @@ func Test_handleChannelElection(t *testing.T) {
 	args = append(args, input{
 		name: "Test 13",
 		msg: newElectionEndMsg(t, ownerPublicKey, ownerPubBuf64, laoID, electionID, channelPath, messagedata.ElectionActionOpen, registeredVotes,
-			1, false, mockRepo),
+			1, false, mockRepository),
 		channel:  channelPath,
 		isError:  false,
 		contains: "",
@@ -230,7 +228,7 @@ func Test_handleChannelElection(t *testing.T) {
 	args = append(args, input{
 		name: "Test 14",
 		msg: newVoteCastVoteIntMsg(t, wrongSender, laoID, electionID, channelPath, "", "",
-			-1, votes, nil, ownerPublicKey, mockRepo, true),
+			-1, votes, nil, ownerPublicKey, mockRepository, true),
 		channel:  channelPath,
 		isError:  true,
 		contains: "sender is not an attendee or the organizer of the election",
@@ -242,7 +240,7 @@ func Test_handleChannelElection(t *testing.T) {
 	args = append(args, input{
 		name: "Test 15",
 		msg: newVoteCastVoteIntMsg(t, ownerPubBuf64, laoID, electionID, wrongChannelPath, "", "",
-			-1, votes, nil, ownerPublicKey, mockRepo, true),
+			-1, votes, nil, ownerPublicKey, mockRepository, true),
 		channel:  wrongChannelPath,
 		isError:  true,
 		contains: "lao id is not the same as the channel",
@@ -254,7 +252,7 @@ func Test_handleChannelElection(t *testing.T) {
 	args = append(args, input{
 		name: "Test 16",
 		msg: newVoteCastVoteIntMsg(t, ownerPubBuf64, laoID, electionID, wrongChannelPath, "", "",
-			-1, votes, nil, ownerPublicKey, mockRepo, true),
+			-1, votes, nil, ownerPublicKey, mockRepository, true),
 		channel:  wrongChannelPath,
 		isError:  true,
 		contains: "election id is not the same as the channel",
@@ -268,7 +266,7 @@ func Test_handleChannelElection(t *testing.T) {
 	args = append(args, input{
 		name: "Test 17",
 		msg: newVoteCastVoteIntMsg(t, ownerPubBuf64, laoID, electionID, channelPath, "", "",
-			2, votes, nil, ownerPublicKey, mockRepo, true),
+			2, votes, nil, ownerPublicKey, mockRepository, true),
 		channel:  channelPath,
 		isError:  true,
 		contains: "cast vote cannot have a creation time prior to election setup",
@@ -287,7 +285,7 @@ func Test_handleChannelElection(t *testing.T) {
 	args = append(args, input{
 		name: "Test 18",
 		msg: newVoteCastVoteIntMsg(t, ownerPubBuf64, laoID, electionID, channelPath, "", "",
-			0, votes, questions, ownerPublicKey, mockRepo, true),
+			0, votes, questions, ownerPublicKey, mockRepository, true),
 		channel:  channelPath,
 		isError:  true,
 		contains: "Question does not exist",
@@ -309,7 +307,7 @@ func Test_handleChannelElection(t *testing.T) {
 	args = append(args, input{
 		name: "Test 19",
 		msg: newVoteCastVoteStringMsg(t, ownerPubBuf64, laoID, electionID, channelPath, messagedata.OpenBallot,
-			0, stringVotes, questions, ownerPublicKey, mockRepo),
+			0, stringVotes, questions, ownerPublicKey, mockRepository),
 		channel:  channelPath,
 		isError:  true,
 		contains: "vote in open ballot should be an integer",
@@ -331,7 +329,7 @@ func Test_handleChannelElection(t *testing.T) {
 	args = append(args, input{
 		name: "Test 20",
 		msg: newVoteCastVoteIntMsg(t, ownerPubBuf64, laoID, electionID, channelPath, "", messagedata.SecretBallot,
-			0, intVotes, questions, ownerPublicKey, mockRepo, true),
+			0, intVotes, questions, ownerPublicKey, mockRepository, true),
 		channel:  channelPath,
 		isError:  true,
 		contains: "vote in secret ballot should be a string",
@@ -346,7 +344,7 @@ func Test_handleChannelElection(t *testing.T) {
 	args = append(args, input{
 		name: "Test 21",
 		msg: newVoteCastVoteIntMsg(t, ownerPubBuf64, laoID, electionID, channelPath, "", messagedata.OpenBallot,
-			0, intVotes, questions, ownerPublicKey, mockRepo, true),
+			0, intVotes, questions, ownerPublicKey, mockRepository, true),
 		channel:  channelPath,
 		isError:  true,
 		contains: "vote ID is not the expected hash",
@@ -374,7 +372,7 @@ func Test_handleChannelElection(t *testing.T) {
 	args = append(args, input{
 		name: "Test 22",
 		msg: newVoteCastVoteIntMsg(t, ownerPubBuf64, laoID, electionID, channelPath, messagedata.ElectionActionEnd, messagedata.OpenBallot,
-			0, votes, questions, ownerPublicKey, mockRepo, false),
+			0, votes, questions, ownerPublicKey, mockRepository, false),
 		channel:  channelPath,
 		isError:  false,
 		contains: "",
@@ -388,7 +386,7 @@ func Test_handleChannelElection(t *testing.T) {
 	args = append(args, input{
 		name: "Test 23",
 		msg: newVoteCastVoteIntMsg(t, ownerPubBuf64, laoID, electionID, channelPath, messagedata.ElectionActionOpen, "",
-			-1, votes, nil, ownerPublicKey, mockRepo, true),
+			-1, votes, nil, ownerPublicKey, mockRepository, true),
 		channel:  channelPath,
 		isError:  false,
 		contains: "",
@@ -407,42 +405,42 @@ func Test_handleChannelElection(t *testing.T) {
 }
 
 func newElectionOpenMsg(t *testing.T, owner kyber.Point, sender, laoID, electionID, channelPath, state string,
-	createdAt int64, isError bool, mockRepo *repository.MockRepository) message.Message {
+	createdAt int64, isError bool, mockRepository *repository.MockRepository) message.Message {
 
 	msg := generator.NewElectionOpenMsg(t, sender, laoID, electionID, 1, nil)
 
-	mockRepo.On("GetLAOOrganizerPubKey", channelPath).Return(owner, nil)
+	mockRepository.On("GetLAOOrganizerPubKey", channelPath).Return(owner, nil)
 
 	if createdAt >= 0 {
-		mockRepo.On("GetElectionCreationTime", channelPath).Return(createdAt, nil)
+		mockRepository.On("GetElectionCreationTime", channelPath).Return(createdAt, nil)
 	}
 
 	if state != "" {
-		mockRepo.On("IsElectionStartedOrEnded", channelPath).
+		mockRepository.On("IsElectionStartedOrEnded", channelPath).
 			Return(state == messagedata.ElectionActionOpen || state == messagedata.ElectionActionEnd, nil)
 	}
 
 	if !isError {
-		mockRepo.On("StoreMessageAndData", channelPath, msg).Return(nil)
+		mockRepository.On("StoreMessageAndData", channelPath, msg).Return(nil)
 	}
 
 	return msg
 }
 
 func newElectionEndMsg(t *testing.T, owner kyber.Point, sender, laoID, electionID, channelPath, state, votes string,
-	createdAt int64, isError bool, mockRepo *repository.MockRepository) message.Message {
+	createdAt int64, isError bool, mockRepository *repository.MockRepository) message.Message {
 
 	msg := generator.NewElectionCloseMsg(t, sender, laoID, electionID, votes, 1, nil)
 
-	mockRepo.On("GetLAOOrganizerPubKey", channelPath).Return(owner, nil)
+	mockRepository.On("GetLAOOrganizerPubKey", channelPath).Return(owner, nil)
 
 	if state != "" {
-		mockRepo.On("IsElectionStarted", channelPath).
+		mockRepository.On("IsElectionStarted", channelPath).
 			Return(state == messagedata.ElectionActionOpen, nil)
 	}
 
 	if createdAt >= 0 {
-		mockRepo.On("GetElectionCreationTime", channelPath).Return(createdAt, nil)
+		mockRepository.On("GetElectionCreationTime", channelPath).Return(createdAt, nil)
 	}
 
 	if votes != "" {
@@ -468,12 +466,12 @@ func newElectionEndMsg(t *testing.T, owner kyber.Point, sender, laoID, electionI
 			},
 		}
 
-		mockRepo.On("GetElectionQuestionsWithValidVotes", channelPath).Return(questions, nil)
+		mockRepository.On("GetElectionQuestionsWithValidVotes", channelPath).Return(questions, nil)
 	}
 
 	if !isError {
-		mockRepo.On("GetElectionType", channelPath).Return(messagedata.OpenBallot, nil)
-		mockRepo.On("StoreElectionEndWithResult", channelPath, msg, mock.AnythingOfType("message.Message")).
+		mockRepository.On("GetElectionType", channelPath).Return(messagedata.OpenBallot, nil)
+		mockRepository.On("StoreElectionEndWithResult", channelPath, msg, mock.AnythingOfType("message.Message")).
 			Return(nil)
 	}
 
@@ -482,60 +480,60 @@ func newElectionEndMsg(t *testing.T, owner kyber.Point, sender, laoID, electionI
 
 func newVoteCastVoteIntMsg(t *testing.T, sender, laoID, electionID, electionPath, state, electionType string,
 	createdAt int64, votes []generator.VoteInt, questions map[string]types.Question, owner kyber.Point,
-	mockRepo *repository.MockRepository, isEroor bool) message.Message {
+	mockRepository *repository.MockRepository, isEroor bool) message.Message {
 
 	msg := generator.NewVoteCastVoteIntMsg(t, sender, laoID, electionID, 1, votes, nil)
-	mockRepo.On("GetLAOOrganizerPubKey", electionPath).Return(owner, nil)
-	mockRepo.On("GetElectionAttendees", electionPath).Return(map[string]struct{}{ownerPubBuf64: {}}, nil)
+	mockRepository.On("GetLAOOrganizerPubKey", electionPath).Return(owner, nil)
+	mockRepository.On("GetElectionAttendees", electionPath).Return(map[string]struct{}{ownerPubBuf64: {}}, nil)
 
 	if state == messagedata.ElectionActionOpen {
-		mockRepo.On("IsElectionStarted", electionPath).
+		mockRepository.On("IsElectionStarted", electionPath).
 			Return(true, nil)
 	}
 
 	if state == messagedata.ElectionActionEnd {
-		mockRepo.On("IsElectionEnded", electionPath).
+		mockRepository.On("IsElectionEnded", electionPath).
 			Return(false, nil)
-		mockRepo.On("IsElectionStarted", electionPath).
+		mockRepository.On("IsElectionStarted", electionPath).
 			Return(true, nil)
 	}
 
 	if createdAt >= 0 {
-		mockRepo.On("GetElectionCreationTime", electionPath).Return(createdAt, nil)
+		mockRepository.On("GetElectionCreationTime", electionPath).Return(createdAt, nil)
 	}
 
 	if electionType != "" {
-		mockRepo.On("GetElectionType", electionPath).Return(electionType, nil)
+		mockRepository.On("GetElectionType", electionPath).Return(electionType, nil)
 	}
 
 	if questions != nil {
-		mockRepo.On("GetElectionQuestions", electionPath).Return(questions, nil)
+		mockRepository.On("GetElectionQuestions", electionPath).Return(questions, nil)
 	}
 
 	if !isEroor {
-		mockRepo.On("StoreMessageAndData", electionPath, msg).Return(nil)
+		mockRepository.On("StoreMessageAndData", electionPath, msg).Return(nil)
 	}
 	return msg
 }
 
 func newVoteCastVoteStringMsg(t *testing.T, sender, laoID, electionID, electionPath, electionType string,
 	createdAt int64, votes []generator.VoteString, questions map[string]types.Question, owner kyber.Point,
-	mockRepo *repository.MockRepository) message.Message {
+	mockRepository *repository.MockRepository) message.Message {
 
 	msg := generator.NewVoteCastVoteStringMsg(t, sender, laoID, electionID, 1, votes, nil)
-	mockRepo.On("GetLAOOrganizerPubKey", electionPath).Return(owner, nil)
-	mockRepo.On("GetElectionAttendees", electionPath).Return(map[string]struct{}{ownerPubBuf64: {}}, nil)
+	mockRepository.On("GetLAOOrganizerPubKey", electionPath).Return(owner, nil)
+	mockRepository.On("GetElectionAttendees", electionPath).Return(map[string]struct{}{ownerPubBuf64: {}}, nil)
 
 	if createdAt >= 0 {
-		mockRepo.On("GetElectionCreationTime", electionPath).Return(createdAt, nil)
+		mockRepository.On("GetElectionCreationTime", electionPath).Return(createdAt, nil)
 	}
 
 	if electionType != "" {
-		mockRepo.On("GetElectionType", electionPath).Return(electionType, nil)
+		mockRepository.On("GetElectionType", electionPath).Return(electionType, nil)
 	}
 
 	if questions != nil {
-		mockRepo.On("GetElectionQuestions", electionPath).Return(questions, nil)
+		mockRepository.On("GetElectionQuestions", electionPath).Return(questions, nil)
 	}
 
 	return msg

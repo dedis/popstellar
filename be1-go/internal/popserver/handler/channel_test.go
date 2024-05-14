@@ -7,6 +7,7 @@ import (
 	"golang.org/x/xerrors"
 	"popstellar/crypto"
 	"popstellar/internal/popserver/database"
+	"popstellar/internal/popserver/database/repository"
 	"popstellar/internal/popserver/generator"
 	"popstellar/message/query/method/message"
 	"testing"
@@ -17,8 +18,8 @@ import (
 const ownerPubBuf64 = "3yPmdBu8DM7jT30IKqkPjuFFIHnubO0z4E0dV7dR4sY="
 
 func Test_handleChannel(t *testing.T) {
-	mockRepository, err := database.SetDatabase(t)
-	require.NoError(t, err)
+	mockRepository := repository.NewMockRepository(t)
+	database.SetDatabase(mockRepository)
 
 	keypair := GenerateKeyPair(t)
 	sender := base64.URLEncoding.EncodeToString(keypair.PublicBuf)

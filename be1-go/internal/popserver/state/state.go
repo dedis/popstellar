@@ -2,13 +2,11 @@ package state
 
 import (
 	"github.com/rs/zerolog"
-	"golang.org/x/xerrors"
 	"popstellar/internal/popserver/types"
 	"popstellar/message/answer"
 	"popstellar/message/query/method"
 	"popstellar/network/socket"
 	"sync"
-	"testing"
 )
 
 var once sync.Once
@@ -52,18 +50,14 @@ func InitState(log *zerolog.Logger) {
 	})
 }
 
-func SetState(t *testing.T, subs Subscriber, peers Peerer, queries Querier) error {
-	if t == nil {
-		return xerrors.Errorf("only for tests")
-	}
-
+// ONLY FOR TEST PURPOSE
+// SetState is only here to be used to reset the state before each test
+func SetState(subs Subscriber, peers Peerer, queries Querier) {
 	instance = &state{
 		subs:    subs,
 		peers:   peers,
 		queries: queries,
 	}
-
-	return nil
 }
 
 func getSubs() (Subscriber, *answer.Error) {

@@ -3,10 +3,8 @@ package config
 import (
 	"encoding/base64"
 	"go.dedis.ch/kyber/v3"
-	"golang.org/x/xerrors"
 	"popstellar/message/answer"
 	"sync"
-	"testing"
 )
 
 var once sync.Once
@@ -33,12 +31,10 @@ func InitConfig(ownerPubKey, serverPubKey kyber.Point, serverSecretKey kyber.Sca
 	})
 }
 
-func SetConfig(t *testing.T, ownerPubKey, serverPubKey kyber.Point, serverSecretKey kyber.Scalar,
-	clientServerAddress, serverServerAddress string) error {
-	if t == nil {
-		return xerrors.Errorf("only for tests")
-	}
-
+// ONLY FOR TEST PURPOSE
+// SetConfig is only here to be used to reset the config before each test
+func SetConfig(ownerPubKey, serverPubKey kyber.Point, serverSecretKey kyber.Scalar,
+	clientServerAddress, serverServerAddress string) {
 	instance = &config{
 		ownerPubKey:         ownerPubKey,
 		serverPubKey:        serverPubKey,
@@ -46,8 +42,6 @@ func SetConfig(t *testing.T, ownerPubKey, serverPubKey kyber.Point, serverSecret
 		clientServerAddress: clientServerAddress,
 		serverServerAddress: serverServerAddress,
 	}
-
-	return nil
 }
 
 func getConfig() (*config, *answer.Error) {

@@ -1,37 +1,24 @@
 package database
 
 import (
-	"golang.org/x/xerrors"
 	"popstellar/internal/popserver/database/repository"
 	"popstellar/message/answer"
 	"sync"
-	"testing"
 )
 
 var once sync.Once
 var instance repository.Repository
 
-func InitDatabase(db repository.Repository) bool {
-	hasInit := false
-
+func InitDatabase(db repository.Repository) {
 	once.Do(func() {
 		instance = db
-		hasInit = true
 	})
-
-	return hasInit
 }
 
-func SetDatabase(t *testing.T) (*repository.MockRepository, error) {
-	if t == nil {
-		return nil, xerrors.Errorf("only for tests")
-	}
-
-	mockRepository := repository.NewMockRepository(t)
-
-	instance = mockRepository
-
-	return mockRepository, nil
+// ONLY FOR TEST PURPOSE
+// SetDatabase is only here to be used to reset the database before each test
+func SetDatabase(mockRepo *repository.MockRepository) {
+	instance = mockRepo
 }
 
 func getInstance() (repository.Repository, *answer.Error) {

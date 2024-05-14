@@ -22,8 +22,7 @@ func Test_handleChannelChirp(t *testing.T) {
 	queries := types.NewQueries(&noLog)
 	peers := types.NewPeers()
 
-	err := state.SetState(t, subs, peers, queries)
-	require.NoError(t, err)
+	state.SetState(subs, peers, queries)
 
 	organizerBuf, err := base64.URLEncoding.DecodeString(ownerPubBuf64)
 	require.NoError(t, err)
@@ -35,11 +34,10 @@ func Test_handleChannelChirp(t *testing.T) {
 	serverSecretKey := crypto.Suite.Scalar().Pick(crypto.Suite.RandomStream())
 	serverPublicKey := crypto.Suite.Point().Mul(serverSecretKey, nil)
 
-	err = config.SetConfig(t, ownerPublicKey, serverPublicKey, serverSecretKey, "clientAddress", "serverAddress")
-	require.NoError(t, err)
+	config.SetConfig(ownerPublicKey, serverPublicKey, serverSecretKey, "clientAddress", "serverAddress")
 
-	mockRepo, err := database.SetDatabase(t)
-	require.NoError(t, err)
+	mockRepository := repository.NewMockRepository(t)
+	database.SetDatabase(mockRepository)
 
 	sender := "3yPmdBu8DM7jT30IKqkPjuFFIHnubO0z4E0dV7dR4sY="
 	wrongSender := "3yPmdBu8DM7jT30IKqkPjuFFIHnubO0z4E0dV7dR4sK="
@@ -54,7 +52,7 @@ func Test_handleChannelChirp(t *testing.T) {
 	args = append(args, input{
 		name:     "Test 1",
 		channel:  channelID,
-		msg:      newChirpAddMsg(t, channelID, sender, time.Now().Unix(), mockRepo, false),
+		msg:      newChirpAddMsg(t, channelID, sender, time.Now().Unix(), mockRepository, false),
 		isError:  false,
 		contains: "",
 	})
@@ -66,7 +64,7 @@ func Test_handleChannelChirp(t *testing.T) {
 	args = append(args, input{
 		name:     "Test 2",
 		channel:  channelID,
-		msg:      newChirpAddMsg(t, channelID, wrongSender, time.Now().Unix(), mockRepo, true),
+		msg:      newChirpAddMsg(t, channelID, wrongSender, time.Now().Unix(), mockRepository, true),
 		isError:  true,
 		contains: "only the owner of the channel can post chirps",
 	})
@@ -78,7 +76,7 @@ func Test_handleChannelChirp(t *testing.T) {
 	args = append(args, input{
 		name:     "Test 3",
 		channel:  channelID,
-		msg:      newChirpAddMsg(t, channelID, sender, -1, mockRepo, true),
+		msg:      newChirpAddMsg(t, channelID, sender, -1, mockRepository, true),
 		isError:  true,
 		contains: "invalid message field",
 	})
@@ -90,7 +88,7 @@ func Test_handleChannelChirp(t *testing.T) {
 	args = append(args, input{
 		name:     "Test 4",
 		channel:  channelID,
-		msg:      newChirpDeleteMsg(t, channelID, sender, chirpID, time.Now().Unix(), mockRepo, false),
+		msg:      newChirpDeleteMsg(t, channelID, sender, chirpID, time.Now().Unix(), mockRepository, false),
 		isError:  false,
 		contains: "",
 	})
@@ -102,7 +100,7 @@ func Test_handleChannelChirp(t *testing.T) {
 	args = append(args, input{
 		name:     "Test 5",
 		channel:  channelID,
-		msg:      newChirpDeleteMsg(t, channelID, wrongSender, chirpID, time.Now().Unix(), mockRepo, true),
+		msg:      newChirpDeleteMsg(t, channelID, wrongSender, chirpID, time.Now().Unix(), mockRepository, true),
 		isError:  true,
 		contains: "only the owner of the channel can post chirps",
 	})
@@ -114,7 +112,7 @@ func Test_handleChannelChirp(t *testing.T) {
 	args = append(args, input{
 		name:     "Test 6",
 		channel:  channelID,
-		msg:      newChirpDeleteMsg(t, channelID, sender, chirpID, -1, mockRepo, true),
+		msg:      newChirpDeleteMsg(t, channelID, sender, chirpID, -1, mockRepository, true),
 		isError:  true,
 		contains: "invalid message field",
 	})
@@ -136,7 +134,7 @@ func Test_handleChannelChirp(t *testing.T) {
 }
 
 func newChirpAddMsg(t *testing.T, channelID string, sender string, timestamp int64,
-	mockRepo *repository.MockRepository, isError bool) message.Message {
+	mockRepository *repository.MockRepository, isError bool) message.Message {
 
 	msg := generator.NewChirpAddMsg(t, sender, nil, timestamp)
 
@@ -152,14 +150,14 @@ func newChirpAddMsg(t *testing.T, channelID string, sender string, timestamp int
 	errAnswer = state.AddChannel(chirpNotifyChannelID)
 	require.Nil(t, errAnswer)
 
-	mockRepo.On("StoreChirpMessages", channelID, chirpNotifyChannelID, mock.AnythingOfType("message.Message"),
+	mockRepository.On("StoreChirpMessages", channelID, chirpNotifyChannelID, mock.AnythingOfType("message.Message"),
 		mock.AnythingOfType("message.Message")).Return(nil)
 
 	return msg
 }
 
 func newChirpDeleteMsg(t *testing.T, channelID string, sender string, chirpID string,
-	timestamp int64, mockRepo *repository.MockRepository, isError bool) message.Message {
+	timestamp int64, mockRepository *repository.MockRepository, isError bool) message.Message {
 
 	msg := generator.NewChirpDeleteMsg(t, sender, nil, chirpID, timestamp)
 
@@ -170,14 +168,14 @@ func newChirpDeleteMsg(t *testing.T, channelID string, sender string, chirpID st
 		return msg
 	}
 
-	mockRepo.On("HasMessage", chirpID).Return(true, nil)
+	mockRepository.On("HasMessage", chirpID).Return(true, nil)
 
 	chirpNotifyChannelID, _ := strings.CutSuffix(channelID, Social+"/"+msg.Sender)
 
 	errAnswer = state.AddChannel(chirpNotifyChannelID)
 	require.Nil(t, errAnswer)
 
-	mockRepo.On("StoreChirpMessages", channelID, chirpNotifyChannelID, mock.AnythingOfType("message.Message"),
+	mockRepository.On("StoreChirpMessages", channelID, chirpNotifyChannelID, mock.AnythingOfType("message.Message"),
 		mock.AnythingOfType("message.Message")).Return(nil)
 
 	return msg

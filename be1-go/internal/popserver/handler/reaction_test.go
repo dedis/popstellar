@@ -21,8 +21,7 @@ func Test_handleChannelReaction(t *testing.T) {
 	queries := types.NewQueries(&noLog)
 	peers := types.NewPeers()
 
-	err := state.SetState(t, subs, peers, queries)
-	require.NoError(t, err)
+	state.SetState(subs, peers, queries)
 
 	organizerBuf, err := base64.URLEncoding.DecodeString(ownerPubBuf64)
 	require.NoError(t, err)
@@ -34,11 +33,10 @@ func Test_handleChannelReaction(t *testing.T) {
 	serverSecretKey := crypto.Suite.Scalar().Pick(crypto.Suite.RandomStream())
 	serverPublicKey := crypto.Suite.Point().Mul(serverSecretKey, nil)
 
-	err = config.SetConfig(t, ownerPublicKey, serverPublicKey, serverSecretKey, "clientAddress", "serverAddress")
-	require.NoError(t, err)
+	config.SetConfig(ownerPublicKey, serverPublicKey, serverSecretKey, "clientAddress", "serverAddress")
 
-	mockRepo, err := database.SetDatabase(t)
-	require.NoError(t, err)
+	mockRepository := repository.NewMockRepository(t)
+	database.SetDatabase(mockRepository)
 
 	sender := "3yPmdBu8DM7jT30IKqkPjuFFIHnubO0z4E0dV7dR4sY="
 	//wrongSender := "3yPmdBu8DM7jT30IKqkPjuFFIHnubO0z4E0dV7dR4sK="
@@ -55,7 +53,7 @@ func Test_handleChannelReaction(t *testing.T) {
 	args = append(args, input{
 		name:    "Test 1",
 		channel: channelID,
-		msg: newReactionAddMsg(t, channelID, sender, "👍", chirpID, time.Now().Unix(), mockRepo,
+		msg: newReactionAddMsg(t, channelID, sender, "👍", chirpID, time.Now().Unix(), mockRepository,
 			false, false),
 		isError:  false,
 		contains: "",
@@ -69,7 +67,7 @@ func Test_handleChannelReaction(t *testing.T) {
 	args = append(args, input{
 		name:    "Test 2",
 		channel: channelID,
-		msg: newReactionAddMsg(t, channelID, sender, "👎", chirpID, time.Now().Unix(), mockRepo,
+		msg: newReactionAddMsg(t, channelID, sender, "👎", chirpID, time.Now().Unix(), mockRepository,
 			false, false),
 		isError:  false,
 		contains: "",
@@ -83,7 +81,7 @@ func Test_handleChannelReaction(t *testing.T) {
 	args = append(args, input{
 		name:    "Test 3",
 		channel: channelID,
-		msg: newReactionAddMsg(t, channelID, sender, "❤️", chirpID, time.Now().Unix(), mockRepo,
+		msg: newReactionAddMsg(t, channelID, sender, "❤️", chirpID, time.Now().Unix(), mockRepository,
 			false, false),
 		isError:  false,
 		contains: "",
@@ -97,7 +95,7 @@ func Test_handleChannelReaction(t *testing.T) {
 	args = append(args, input{
 		name:    "Test 4",
 		channel: channelID,
-		msg: newReactionAddMsg(t, channelID, sender, "👍", invalidChirpID, time.Now().Unix(), mockRepo,
+		msg: newReactionAddMsg(t, channelID, sender, "👍", invalidChirpID, time.Now().Unix(), mockRepository,
 			true, false),
 		isError:  true,
 		contains: "invalid message field",
@@ -111,7 +109,7 @@ func Test_handleChannelReaction(t *testing.T) {
 	args = append(args, input{
 		name:    "Test 5",
 		channel: channelID,
-		msg: newReactionAddMsg(t, channelID, sender, "👍", chirpID, -1, mockRepo,
+		msg: newReactionAddMsg(t, channelID, sender, "👍", chirpID, -1, mockRepository,
 			true, false),
 		isError:  true,
 		contains: "invalid message field",
@@ -125,7 +123,7 @@ func Test_handleChannelReaction(t *testing.T) {
 	args = append(args, input{
 		name:    "Test 6",
 		channel: channelID,
-		msg: newReactionAddMsg(t, channelID, sender, "👍", chirpID, time.Now().Unix(), mockRepo,
+		msg: newReactionAddMsg(t, channelID, sender, "👍", chirpID, time.Now().Unix(), mockRepository,
 			false, true),
 		isError:  true,
 		contains: "user not inside roll-call",
@@ -140,7 +138,7 @@ func Test_handleChannelReaction(t *testing.T) {
 	args = append(args, input{
 		name:    "Test 7",
 		channel: channelID,
-		msg: newReactionDeleteMsg(t, channelID, sender, reactionID, time.Now().Unix(), mockRepo,
+		msg: newReactionDeleteMsg(t, channelID, sender, reactionID, time.Now().Unix(), mockRepository,
 			false, false, false, false),
 		isError:  false,
 		contains: "",
@@ -155,7 +153,7 @@ func Test_handleChannelReaction(t *testing.T) {
 	args = append(args, input{
 		name:    "Test 8",
 		channel: channelID,
-		msg: newReactionDeleteMsg(t, channelID, sender, reactionID, -1, mockRepo,
+		msg: newReactionDeleteMsg(t, channelID, sender, reactionID, -1, mockRepository,
 			true, false, false, false),
 		isError:  true,
 		contains: "invalid message field",
@@ -170,7 +168,7 @@ func Test_handleChannelReaction(t *testing.T) {
 	args = append(args, input{
 		name:    "Test 9",
 		channel: channelID,
-		msg: newReactionDeleteMsg(t, channelID, sender, reactionID, time.Now().Unix(), mockRepo,
+		msg: newReactionDeleteMsg(t, channelID, sender, reactionID, time.Now().Unix(), mockRepository,
 			false, true, false, false),
 		isError:  true,
 		contains: "unknown reaction",
@@ -185,7 +183,7 @@ func Test_handleChannelReaction(t *testing.T) {
 	args = append(args, input{
 		name:    "Test 10",
 		channel: channelID,
-		msg: newReactionDeleteMsg(t, channelID, sender, reactionID, time.Now().Unix(), mockRepo,
+		msg: newReactionDeleteMsg(t, channelID, sender, reactionID, time.Now().Unix(), mockRepository,
 			false, false, true, false),
 		isError:  true,
 		contains: "only the owner of the reaction can delete it",
@@ -200,7 +198,7 @@ func Test_handleChannelReaction(t *testing.T) {
 	args = append(args, input{
 		name:    "Test 11",
 		channel: channelID,
-		msg: newReactionDeleteMsg(t, channelID, sender, reactionID, time.Now().Unix(), mockRepo,
+		msg: newReactionDeleteMsg(t, channelID, sender, reactionID, time.Now().Unix(), mockRepository,
 			false, false, false, true),
 		isError:  true,
 		contains: "user not inside roll-call",
@@ -223,7 +221,7 @@ func Test_handleChannelReaction(t *testing.T) {
 }
 
 func newReactionAddMsg(t *testing.T, channelID string, sender string, reactionCodePoint, chirpID string, timestamp int64,
-	mockRepo *repository.MockRepository, hasInvalidField, isNotAttendee bool) message.Message {
+	mockRepository *repository.MockRepository, hasInvalidField, isNotAttendee bool) message.Message {
 
 	msg := generator.NewReactionAddMsg(t, sender, nil, reactionCodePoint, chirpID, timestamp)
 
@@ -233,19 +231,19 @@ func newReactionAddMsg(t *testing.T, channelID string, sender string, reactionCo
 	laoPath, _ := strings.CutSuffix(channelID, Social+Reactions)
 
 	if !hasInvalidField && !isNotAttendee {
-		mockRepo.On("IsAttendee", laoPath, sender).Return(true, nil)
-		mockRepo.On("StoreMessageAndData", channelID, msg).Return(nil)
+		mockRepository.On("IsAttendee", laoPath, sender).Return(true, nil)
+		mockRepository.On("StoreMessageAndData", channelID, msg).Return(nil)
 	}
 
 	if isNotAttendee {
-		mockRepo.On("IsAttendee", laoPath, sender).Return(false, nil)
+		mockRepository.On("IsAttendee", laoPath, sender).Return(false, nil)
 	}
 
 	return msg
 }
 
 func newReactionDeleteMsg(t *testing.T, channelID string, sender string, reactionID string, timestamp int64,
-	mockRepo *repository.MockRepository, hasInvalidField, hasNotReaction, isNotOwner, isNotAttendee bool) message.Message {
+	mockRepository *repository.MockRepository, hasInvalidField, hasNotReaction, isNotOwner, isNotAttendee bool) message.Message {
 
 	msg := generator.NewReactionDeleteMsg(t, sender, nil, reactionID, timestamp)
 
@@ -255,27 +253,27 @@ func newReactionDeleteMsg(t *testing.T, channelID string, sender string, reactio
 	laoPath, _ := strings.CutSuffix(channelID, Social+Reactions)
 
 	if !hasInvalidField && !hasNotReaction && !isNotOwner && !isNotAttendee {
-		mockRepo.On("IsAttendee", laoPath, sender).Return(true, nil)
+		mockRepository.On("IsAttendee", laoPath, sender).Return(true, nil)
 
-		mockRepo.On("GetReactionSender", reactionID).Return(sender, nil)
+		mockRepository.On("GetReactionSender", reactionID).Return(sender, nil)
 
-		mockRepo.On("StoreMessageAndData", channelID, msg).Return(nil)
+		mockRepository.On("StoreMessageAndData", channelID, msg).Return(nil)
 	}
 
 	if hasNotReaction {
-		mockRepo.On("IsAttendee", laoPath, sender).Return(true, nil)
+		mockRepository.On("IsAttendee", laoPath, sender).Return(true, nil)
 
-		mockRepo.On("GetReactionSender", reactionID).Return("", nil)
+		mockRepository.On("GetReactionSender", reactionID).Return("", nil)
 	}
 
 	if isNotOwner {
-		mockRepo.On("IsAttendee", laoPath, sender).Return(true, nil)
+		mockRepository.On("IsAttendee", laoPath, sender).Return(true, nil)
 
-		mockRepo.On("GetReactionSender", reactionID).Return("notSender", nil)
+		mockRepository.On("GetReactionSender", reactionID).Return("notSender", nil)
 	}
 
 	if isNotAttendee {
-		mockRepo.On("IsAttendee", laoPath, sender).Return(false, nil)
+		mockRepository.On("IsAttendee", laoPath, sender).Return(false, nil)
 	}
 
 	return msg

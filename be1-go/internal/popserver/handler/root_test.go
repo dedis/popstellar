@@ -39,8 +39,7 @@ func Test_handleChannelRoot(t *testing.T) {
 	queries := types.NewQueries(&noLog)
 	peers := types.NewPeers()
 
-	err := state.SetState(t, subs, peers, queries)
-	require.NoError(t, err)
+	state.SetState(subs, peers, queries)
 
 	organizerBuf, err := base64.URLEncoding.DecodeString(ownerPubBuf64)
 	require.NoError(t, err)
@@ -52,12 +51,11 @@ func Test_handleChannelRoot(t *testing.T) {
 	serverSecretKey := crypto.Suite.Scalar().Pick(crypto.Suite.RandomStream())
 	serverPublicKey := crypto.Suite.Point().Mul(serverSecretKey, nil)
 
-	err = config.SetConfig(t, ownerPublicKey, serverPublicKey, serverSecretKey, "clientAddress", "serverAddress")
-	require.NoError(t, err)
+	config.SetConfig(ownerPublicKey, serverPublicKey, serverSecretKey, "clientAddress", "serverAddress")
 
 	var args []input
-	mockRepo, err := database.SetDatabase(t)
-	require.NoError(t, err)
+	mockRepository := repository.NewMockRepository(t)
+	database.SetDatabase(mockRepository)
 
 	ownerPubBuf, err := ownerPublicKey.MarshalBinary()
 	require.NoError(t, err)
@@ -66,7 +64,7 @@ func Test_handleChannelRoot(t *testing.T) {
 	// Test 1: error when different organizer and sender keys
 	args = append(args, input{
 		name:     "Test 1",
-		msg:      newLaoCreateMsg(t, owner, wrongSender, goodLaoName, mockRepo, true),
+		msg:      newLaoCreateMsg(t, owner, wrongSender, goodLaoName, mockRepository, true),
 		isError:  true,
 		contains: "sender's public key does not match the organizer public key",
 	})
@@ -74,7 +72,7 @@ func Test_handleChannelRoot(t *testing.T) {
 	// Test 2: error when different sender and owner keys
 	args = append(args, input{
 		name:     "Test 2",
-		msg:      newLaoCreateMsg(t, wrongSender, wrongSender, goodLaoName, mockRepo, true),
+		msg:      newLaoCreateMsg(t, wrongSender, wrongSender, goodLaoName, mockRepository, true),
 		isError:  true,
 		contains: "sender's public key does not match the owner public key",
 	})
@@ -82,7 +80,7 @@ func Test_handleChannelRoot(t *testing.T) {
 	// Test 3: error when the lao name is not the same as the one used for the laoID
 	args = append(args, input{
 		name:     "Test 3",
-		msg:      newLaoCreateMsg(t, owner, owner, wrongLaoName, mockRepo, true),
+		msg:      newLaoCreateMsg(t, owner, owner, wrongLaoName, mockRepository, true),
 		isError:  true,
 		contains: "failed to verify message data: invalid message field: lao id",
 	})
@@ -98,7 +96,7 @@ func Test_handleChannelRoot(t *testing.T) {
 	// Test 5: success
 	args = append(args, input{
 		name:     "Test 5",
-		msg:      newLaoCreateMsg(t, owner, owner, goodLaoName, mockRepo, false),
+		msg:      newLaoCreateMsg(t, owner, owner, goodLaoName, mockRepository, false),
 		isError:  false,
 		contains: "",
 	})
@@ -116,7 +114,7 @@ func Test_handleChannelRoot(t *testing.T) {
 	}
 }
 
-func newLaoCreateMsg(t *testing.T, organizer, sender, laoName string, mockRepo *repository.MockRepository, isError bool) message.Message {
+func newLaoCreateMsg(t *testing.T, organizer, sender, laoName string, mockRepository *repository.MockRepository, isError bool) message.Message {
 	creation := time.Now().Unix()
 	laoID := messagedata.Hash(
 		organizer,
@@ -126,7 +124,7 @@ func newLaoCreateMsg(t *testing.T, organizer, sender, laoName string, mockRepo *
 
 	msg := generator.NewLaoCreateMsg(t, sender, laoID, laoName, creation, organizer, nil)
 
-	mockRepo.On("HasChannel", RootPrefix+laoID).Return(false, nil)
+	mockRepository.On("HasChannel", RootPrefix+laoID).Return(false, nil)
 	if !isError {
 		laoPath := RootPrefix + laoID
 		organizerBuf, err := base64.URLEncoding.DecodeString(organizer)
@@ -139,7 +137,7 @@ func newLaoCreateMsg(t *testing.T, organizer, sender, laoName string, mockRepo *
 			laoPath + Coin:               sqlite.CoinType,
 			laoPath + Auth:               sqlite.AuthType,
 		}
-		mockRepo.On("StoreLaoWithLaoGreet",
+		mockRepository.On("StoreLaoWithLaoGreet",
 			channels,
 			laoPath,
 			organizerBuf,

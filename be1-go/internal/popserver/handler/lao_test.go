@@ -25,8 +25,7 @@ func Test_handleChannelLao(t *testing.T) {
 	queries := types.NewQueries(&noLog)
 	peers := types.NewPeers()
 
-	err := state.SetState(t, subs, peers, queries)
-	require.NoError(t, err)
+	state.SetState(subs, peers, queries)
 
 	ownerPubBuf, err := base64.URLEncoding.DecodeString(ownerPubBuf64)
 	require.NoError(t, err)
@@ -38,12 +37,11 @@ func Test_handleChannelLao(t *testing.T) {
 	serverSecretKey := crypto.Suite.Scalar().Pick(crypto.Suite.RandomStream())
 	serverPublicKey := crypto.Suite.Point().Mul(serverSecretKey, nil)
 
-	err = config.SetConfig(t, ownerPublicKey, serverPublicKey, serverSecretKey, "clientAddress", "serverAddress")
-	require.NoError(t, err)
+	config.SetConfig(ownerPublicKey, serverPublicKey, serverSecretKey, "clientAddress", "serverAddress")
 
 	var args []input
-	mockRepo, err := database.SetDatabase(t)
-	require.NoError(t, err)
+	mockRepository := repository.NewMockRepository(t)
+	database.SetDatabase(mockRepository)
 
 	laoID := base64.URLEncoding.EncodeToString([]byte("laoID"))
 	errAnswer := subs.AddChannel(laoID)
@@ -52,7 +50,7 @@ func Test_handleChannelLao(t *testing.T) {
 	// Test 1:Success For LaoState message
 	args = append(args, input{
 		name:     "Test 1",
-		msg:      newLaoStateMsg(t, ownerPubBuf64, laoID, mockRepo),
+		msg:      newLaoStateMsg(t, ownerPubBuf64, laoID, mockRepository),
 		channel:  laoID,
 		isError:  false,
 		contains: "",
@@ -65,7 +63,7 @@ func Test_handleChannelLao(t *testing.T) {
 	// Test 2: Error when RollCallCreate ID is not the expected hash
 	args = append(args, input{
 		name:     "Test 2",
-		msg:      newRollCallCreateMsg(t, ownerPubBuf64, laoID, wrongLaoName, creation, start, end, true, mockRepo),
+		msg:      newRollCallCreateMsg(t, ownerPubBuf64, laoID, wrongLaoName, creation, start, end, true, mockRepository),
 		channel:  laoID,
 		isError:  true,
 		contains: "roll call id is",
@@ -74,7 +72,7 @@ func Test_handleChannelLao(t *testing.T) {
 	// Test 3: Error when RollCallCreate proposed start is before creation
 	args = append(args, input{
 		name:     "Test 3",
-		msg:      newRollCallCreateMsg(t, ownerPubBuf64, laoID, goodLaoName, creation, creation-1, end, true, mockRepo),
+		msg:      newRollCallCreateMsg(t, ownerPubBuf64, laoID, goodLaoName, creation, creation-1, end, true, mockRepository),
 		channel:  laoID,
 		isError:  true,
 		contains: "roll call proposed start time should be greater than creation time",
@@ -83,7 +81,7 @@ func Test_handleChannelLao(t *testing.T) {
 	// Test 4: Error when RollCallCreate proposed end is before proposed start
 	args = append(args, input{
 		name:     "Test 4",
-		msg:      newRollCallCreateMsg(t, ownerPubBuf64, laoID, goodLaoName, creation, start, start-1, true, mockRepo),
+		msg:      newRollCallCreateMsg(t, ownerPubBuf64, laoID, goodLaoName, creation, start, start-1, true, mockRepository),
 		channel:  laoID,
 		isError:  true,
 		contains: "roll call proposed end should be greater than proposed start",
@@ -92,7 +90,7 @@ func Test_handleChannelLao(t *testing.T) {
 	// Test 5: Success for RollCallCreate message
 	args = append(args, input{
 		name:     "Test 5",
-		msg:      newRollCallCreateMsg(t, ownerPubBuf64, laoID, goodLaoName, creation, start, end, false, mockRepo),
+		msg:      newRollCallCreateMsg(t, ownerPubBuf64, laoID, goodLaoName, creation, start, end, false, mockRepository),
 		channel:  laoID,
 		isError:  false,
 		contains: "",
@@ -104,7 +102,7 @@ func Test_handleChannelLao(t *testing.T) {
 	// Test 6: Error when RollCallOpen ID is not the expected hash
 	args = append(args, input{
 		name:     "Test 6",
-		msg:      newRollCallOpenMsg(t, ownerPubBuf64, laoID, wrongOpens, "", time.Now().Unix(), true, mockRepo),
+		msg:      newRollCallOpenMsg(t, ownerPubBuf64, laoID, wrongOpens, "", time.Now().Unix(), true, mockRepository),
 		channel:  laoID,
 		isError:  true,
 		contains: "roll call update id is",
@@ -113,7 +111,7 @@ func Test_handleChannelLao(t *testing.T) {
 	// Test 7: Error when RollCallOpen opens is not the same as previous RollCallCreate
 	args = append(args, input{
 		name:     "Test 7",
-		msg:      newRollCallOpenMsg(t, ownerPubBuf64, laoID, opens, wrongOpens, time.Now().Unix(), true, mockRepo),
+		msg:      newRollCallOpenMsg(t, ownerPubBuf64, laoID, opens, wrongOpens, time.Now().Unix(), true, mockRepository),
 		channel:  laoID,
 		isError:  true,
 		contains: "previous id does not exist",
@@ -126,7 +124,7 @@ func Test_handleChannelLao(t *testing.T) {
 	// Test 8: Success for RollCallOpen message
 	args = append(args, input{
 		name:     "Test 8",
-		msg:      newRollCallOpenMsg(t, ownerPubBuf64, laoID, opens, opens, time.Now().Unix(), false, mockRepo),
+		msg:      newRollCallOpenMsg(t, ownerPubBuf64, laoID, opens, opens, time.Now().Unix(), false, mockRepository),
 		channel:  laoID,
 		isError:  false,
 		contains: "",
@@ -138,7 +136,7 @@ func Test_handleChannelLao(t *testing.T) {
 	// Test 9: Error when RollCallClose ID is not the expected hash
 	args = append(args, input{
 		name:     "Test 9",
-		msg:      newRollCallCloseMsg(t, ownerPubBuf64, laoID, wrongCloses, "", time.Now().Unix(), true, mockRepo),
+		msg:      newRollCallCloseMsg(t, ownerPubBuf64, laoID, wrongCloses, "", time.Now().Unix(), true, mockRepository),
 		channel:  laoID,
 		isError:  true,
 		contains: "roll call update id is",
@@ -147,7 +145,7 @@ func Test_handleChannelLao(t *testing.T) {
 	// Test 10: Error when RollCallClose closes is not the same as previous RollCallOpen
 	args = append(args, input{
 		name:     "Test 10",
-		msg:      newRollCallCloseMsg(t, ownerPubBuf64, laoID, closes, wrongCloses, time.Now().Unix(), true, mockRepo),
+		msg:      newRollCallCloseMsg(t, ownerPubBuf64, laoID, closes, wrongCloses, time.Now().Unix(), true, mockRepository),
 		channel:  laoID,
 		isError:  true,
 		contains: "previous id does not exist",
@@ -160,7 +158,7 @@ func Test_handleChannelLao(t *testing.T) {
 	// Test 11: Success for RollCallClose message
 	args = append(args, input{
 		name:     "Test 11",
-		msg:      newRollCallCloseMsg(t, ownerPubBuf64, laoID, closes, closes, time.Now().Unix(), false, mockRepo),
+		msg:      newRollCallCloseMsg(t, ownerPubBuf64, laoID, closes, closes, time.Now().Unix(), false, mockRepository),
 		channel:  laoID,
 		isError:  false,
 		contains: "",
@@ -173,7 +171,7 @@ func Test_handleChannelLao(t *testing.T) {
 	args = append(args, input{
 		name: "Test 12",
 		msg: newElectionSetupMsg(t, ownerPublicKey, wrongSender, laoID, laoID, electionsName, question, messagedata.OpenBallot,
-			creation, start, end, true, mockRepo),
+			creation, start, end, true, mockRepository),
 		channel:  laoID,
 		isError:  true,
 		contains: "sender public key does not match organizer public key",
@@ -184,7 +182,7 @@ func Test_handleChannelLao(t *testing.T) {
 	args = append(args, input{
 		name: "Test 13",
 		msg: newElectionSetupMsg(t, ownerPublicKey, ownerPubBuf64, wrongLaoID, laoID, electionsName, question, messagedata.OpenBallot,
-			creation, start, end, true, mockRepo),
+			creation, start, end, true, mockRepository),
 		channel:  laoID,
 		isError:  true,
 		contains: "lao id is",
@@ -194,7 +192,7 @@ func Test_handleChannelLao(t *testing.T) {
 	args = append(args, input{
 		name: "Test 14",
 		msg: newElectionSetupMsg(t, ownerPublicKey, ownerPubBuf64, laoID, laoID, "wrongName", question, messagedata.OpenBallot,
-			creation, start, end, true, mockRepo),
+			creation, start, end, true, mockRepository),
 		channel:  laoID,
 		isError:  true,
 		contains: "election id is",
@@ -204,7 +202,7 @@ func Test_handleChannelLao(t *testing.T) {
 	args = append(args, input{
 		name: "Test 15",
 		msg: newElectionSetupMsg(t, ownerPublicKey, ownerPubBuf64, laoID, laoID, electionsName, question, messagedata.OpenBallot,
-			creation, creation-1, end, true, mockRepo),
+			creation, creation-1, end, true, mockRepository),
 		channel:  laoID,
 		isError:  true,
 		contains: "election start should be greater that creation time",
@@ -214,7 +212,7 @@ func Test_handleChannelLao(t *testing.T) {
 	args = append(args, input{
 		name: "Test 16",
 		msg: newElectionSetupMsg(t, ownerPublicKey, ownerPubBuf64, laoID, laoID, electionsName, question, messagedata.OpenBallot,
-			creation, start, start-1, true, mockRepo),
+			creation, start, start-1, true, mockRepository),
 		channel:  laoID,
 		isError:  true,
 		contains: "election end should be greater that start time",
@@ -224,7 +222,7 @@ func Test_handleChannelLao(t *testing.T) {
 	args = append(args, input{
 		name: "Test 17",
 		msg: newElectionSetupMsg(t, ownerPublicKey, ownerPubBuf64, laoID, laoID, electionsName, "", messagedata.OpenBallot,
-			creation, start, end, true, mockRepo),
+			creation, start, end, true, mockRepository),
 		channel:  laoID,
 		isError:  true,
 		contains: "Question is empty",
@@ -234,7 +232,7 @@ func Test_handleChannelLao(t *testing.T) {
 	args = append(args, input{
 		name: "Test 18",
 		msg: newElectionSetupMsg(t, ownerPublicKey, ownerPubBuf64, laoID, laoID, electionsName, wrongQuestion, messagedata.OpenBallot,
-			creation, start, end, true, mockRepo),
+			creation, start, end, true, mockRepository),
 		channel:  laoID,
 		isError:  true,
 		contains: "Question id is",
@@ -248,7 +246,7 @@ func Test_handleChannelLao(t *testing.T) {
 	args = append(args, input{
 		name: "Test 19",
 		msg: newElectionSetupMsg(t, ownerPublicKey, ownerPubBuf64, laoID, laoID, electionsName, question, messagedata.OpenBallot,
-			creation, start, end, false, mockRepo),
+			creation, start, end, false, mockRepository),
 		channel:  laoID,
 		isError:  false,
 		contains: "",
@@ -267,7 +265,7 @@ func Test_handleChannelLao(t *testing.T) {
 	}
 }
 
-func newLaoStateMsg(t *testing.T, organizer, laoID string, mockRepo *repository.MockRepository) message.Message {
+func newLaoStateMsg(t *testing.T, organizer, laoID string, mockRepository *repository.MockRepository) message.Message {
 	modificationID := base64.URLEncoding.EncodeToString([]byte("modificationID"))
 	name := "laoName"
 	creation := time.Now().Unix()
@@ -275,18 +273,18 @@ func newLaoStateMsg(t *testing.T, organizer, laoID string, mockRepo *repository.
 
 	msg := generator.NewLaoStateMsg(t, organizer, laoID, name, modificationID, creation, lastModified, nil)
 
-	mockRepo.On("HasMessage", modificationID).
+	mockRepository.On("HasMessage", modificationID).
 		Return(true, nil)
-	mockRepo.On("GetLaoWitnesses", laoID).
+	mockRepository.On("GetLaoWitnesses", laoID).
 		Return(map[string]struct{}{}, nil)
-	mockRepo.On("StoreMessageAndData", laoID, msg).
+	mockRepository.On("StoreMessageAndData", laoID, msg).
 		Return(nil)
 
 	return msg
 }
 
 func newRollCallCreateMsg(t *testing.T, sender, laoID, laoName string, creation, start, end int64, isError bool,
-	mockRepo *repository.MockRepository) message.Message {
+	mockRepository *repository.MockRepository) message.Message {
 
 	createID := messagedata.Hash(
 		messagedata.RollCallFlag,
@@ -298,14 +296,14 @@ func newRollCallCreateMsg(t *testing.T, sender, laoID, laoName string, creation,
 	msg := generator.NewRollCallCreateMsg(t, sender, laoName, createID, creation, start, end, nil)
 
 	if !isError {
-		mockRepo.On("StoreMessageAndData", laoID, msg).Return(nil)
+		mockRepository.On("StoreMessageAndData", laoID, msg).Return(nil)
 	}
 
 	return msg
 }
 
 func newRollCallOpenMsg(t *testing.T, sender, laoID, opens, prevID string, openedAt int64, isError bool,
-	mockRepo *repository.MockRepository) message.Message {
+	mockRepository *repository.MockRepository) message.Message {
 
 	openID := messagedata.Hash(
 		messagedata.RollCallFlag,
@@ -317,17 +315,17 @@ func newRollCallOpenMsg(t *testing.T, sender, laoID, opens, prevID string, opene
 	msg := generator.NewRollCallOpenMsg(t, sender, openID, opens, openedAt, nil)
 
 	if !isError {
-		mockRepo.On("StoreMessageAndData", laoID, msg).Return(nil)
+		mockRepository.On("StoreMessageAndData", laoID, msg).Return(nil)
 	}
 	if prevID != "" {
-		mockRepo.On("CheckPrevCreateOrCloseID", laoID, opens).Return(opens == prevID, nil)
+		mockRepository.On("CheckPrevCreateOrCloseID", laoID, opens).Return(opens == prevID, nil)
 	}
 
 	return msg
 }
 
 func newRollCallCloseMsg(t *testing.T, sender, laoID, closes, prevID string, closedAt int64, isError bool,
-	mockRepo *repository.MockRepository) message.Message {
+	mockRepository *repository.MockRepository) message.Message {
 
 	closeID := messagedata.Hash(
 		messagedata.RollCallFlag,
@@ -345,10 +343,10 @@ func newRollCallCloseMsg(t *testing.T, sender, laoID, closes, prevID string, clo
 		for _, attendee := range attendees {
 			channels = append(channels, laoID+Social+"/"+attendee)
 		}
-		mockRepo.On("StoreRollCallClose", channels, laoID, msg).Return(nil)
+		mockRepository.On("StoreRollCallClose", channels, laoID, msg).Return(nil)
 	}
 	if prevID != "" {
-		mockRepo.On("CheckPrevOpenOrReopenID", laoID, closes).Return(closes == prevID, nil)
+		mockRepository.On("CheckPrevOpenOrReopenID", laoID, closes).Return(closes == prevID, nil)
 	}
 
 	return msg
@@ -357,7 +355,7 @@ func newRollCallCloseMsg(t *testing.T, sender, laoID, closes, prevID string, clo
 func newElectionSetupMsg(t *testing.T, organizer kyber.Point, sender,
 	setupLao, laoID, electionName, question, version string,
 	createdAt, start, end int64,
-	isError bool, mockRepo *repository.MockRepository) message.Message {
+	isError bool, mockRepository *repository.MockRepository) message.Message {
 
 	electionSetupID := messagedata.Hash(
 		messagedata.ElectionFlag,
@@ -390,10 +388,10 @@ func newElectionSetupMsg(t *testing.T, organizer kyber.Point, sender,
 	msg := generator.NewElectionSetupMsg(t, sender, electionSetupID, setupLao, electionName, version, createdAt, start,
 		end, questions, nil)
 
-	mockRepo.On("GetOrganizerPubKey", laoID).Return(organizer, nil)
+	mockRepository.On("GetOrganizerPubKey", laoID).Return(organizer, nil)
 
 	if !isError {
-		mockRepo.On("StoreElection",
+		mockRepository.On("StoreElection",
 			laoID,
 			laoID+"/"+electionSetupID,
 			mock.AnythingOfType("*edwards25519.point"),
