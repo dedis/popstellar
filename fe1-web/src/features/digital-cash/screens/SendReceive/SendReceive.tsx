@@ -321,12 +321,15 @@ export const SendReceiveHeaderRight = () => {
     return null;
   }
 
-  if (serializedPopToken === null) {
+  if (rollCallId === null) {
     toast.show(STRINGS.digital_cash_error_rollcall_not_defined, {
       type: 'warning',
       placement: 'bottom',
       duration: FOUR_SECONDS,
     });
+  }
+
+  if (serializedPopToken === null) {
     return null;
   }
 
