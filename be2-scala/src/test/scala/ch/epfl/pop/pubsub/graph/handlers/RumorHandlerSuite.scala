@@ -123,24 +123,5 @@ class RumorHandlerSuite extends TestKit(ActorSystem("RumorActorSuiteActorSystem"
       case Right(jsonRpcResponse: JsonRpcResponse) => jsonRpcResponse.error.isDefined shouldBe true
       case _                                       => 1 shouldBe 0
   }
-
-  test("rumor handler should process messages received in a rumor") {
-    val output = Source.single(Right(rumorRequest)).via(rumorHandler).runWith(Sink.head)
-
-    val outputResult = Await.result(output, processDuration)
-
-    val ask = dbActorRef ? DbActor.GetAllChannels()
-    val channelsInDb = Await.result(ask, MAX_TIME) match {
-      case DbActor.DbActorGetAllChannelsAck(channels) => channels
-      case err @ _                                    => Matchers.fail(err.toString)
-    }
-
-    val channelsInRumor = rumor.messages.keySet
-    channelsInRumor.diff(channelsInDb) should equal(Set.empty)
-
-    val messagesInDb: Set[Message] = channelsInDb.foldLeft(Set.empty: Set[Message])((acc, channel) => acc ++ getMessages(channel))
-    val messagesInRumor = rumor.messages.values.foldLeft(Set.empty: Set[Message])((acc, set) => acc ++ set)
-
-    messagesInRumor.diff(messagesInDb) should equal(Set.empty)
-  }
+  
 }

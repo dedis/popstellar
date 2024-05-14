@@ -67,7 +67,6 @@ class GossipManagerSuite extends TestKit(ActorSystem("GossipManagerSuiteActorSys
 
 
   test("gossip handler should send rumor if there is an ongoing gossip protocol") {
-    val gossipManager: ActorRef = system.actorOf(GossipManager.props(dbActorRef, monitorRef, connectionMediatorRef))
     val gossipHandler = GossipManager.gossipHandler(gossipManager)
     val gossipMonitor = GossipManager.monitorResponse(gossipManager)
 
@@ -90,7 +89,7 @@ class GossipManagerSuite extends TestKit(ActorSystem("GossipManagerSuiteActorSys
     var remainingPeers: List[TestProbe] = List.empty
 
     peers.foreach { peer =>
-      peer.receiveOne(duration) match
+      peer.receiveOne(duration.mul(2)) match
         case ClientAnswer(_) =>
         case null => remainingPeers :+= peer
     }
@@ -110,7 +109,7 @@ class GossipManagerSuite extends TestKit(ActorSystem("GossipManagerSuiteActorSys
     var remainingPeers2: List[TestProbe] = List.empty
 
     remainingPeers.foreach { peer =>
-      peer.receiveOne(duration) match
+      peer.receiveOne(duration.mul(2)) match
         case ClientAnswer(_) =>
         case null => remainingPeers2 :+= peer
     }

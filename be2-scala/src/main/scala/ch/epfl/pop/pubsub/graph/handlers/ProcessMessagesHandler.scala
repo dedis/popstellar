@@ -52,7 +52,8 @@ object ProcessMessagesHandler extends AskPatternConstants {
   }
 
   def rumorHandler(messageRegistry: MessageRegistry, rumor: Rumor)(implicit system: ActorSystem): Boolean = {
-    true
+    val msgMap = rumor.messages.map((k, v) => (k, v.toSet))
+    processMsgMap(msgMap, messageRegistry)
   }
 
   private def processMsgMap(msgMap: Map[Channel, Set[Message]], messageRegistry: MessageRegistry)(implicit system: ActorSystem): Boolean = {
@@ -98,7 +99,7 @@ object ProcessMessagesHandler extends AskPatternConstants {
             case Left(err) =>
               println(s"failedMessage : ${
                 graphMessage match
-                  case Right(jsonRpcRequest: JsonRpcRequest) => s"${jsonRpcRequest.toJson}"
+                  case Right(jsonRpcRequest: JsonRpcRequest) => s"${jsonRpcRequest.toJson}, err : $err"
                   case _ => "Left"
               }")
               if (retry == 1) {

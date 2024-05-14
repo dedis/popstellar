@@ -18,11 +18,7 @@ trait MessageHandler extends AskPatternConstants {
 
   /** May be overridden by the reference of the used DbActor
     */
-  def dbActor: AskableActorRef = {
-    val toReturn = PublishSubscribe.getDbActorRef
-    println(s"dbRef : ${toReturn.actorRef}")
-    toReturn
-  }
+  def dbActor: AskableActorRef = PublishSubscribe.getDbActorRef
   def securityModuleActor: AskableActorRef = PublishSubscribe.getSecurityModuleActorRef
   def connectionMediator: AskableActorRef = PublishSubscribe.getConnectionMediatorRef
   def mediator: AskableActorRef = PublishSubscribe.getMediatorActorRef
