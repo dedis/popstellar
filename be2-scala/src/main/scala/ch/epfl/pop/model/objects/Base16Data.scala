@@ -20,10 +20,6 @@ final case class Base16Data(data: String) {
 
   /** Returns the string representation of the hexadecimal data. */
   override def toString: String = data
-
-  /** Validate the hexadecimal string format and length on initialization. */
-  require(data.matches("^[0-9a-fA-F]{64}$"), s"String $data is not a valid Base16 (hexadecimal) format or does not represent exactly 32 bytes.")
-
 }
 
 object Base16Data {

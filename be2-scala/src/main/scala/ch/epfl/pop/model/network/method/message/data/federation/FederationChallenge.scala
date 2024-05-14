@@ -8,15 +8,15 @@ import spray.json.*
 
 final case class FederationChallenge(
     value: Base16Data,
-    validUntil: Timestamp
+    valid_until: Timestamp
 ) extends MessageData {
   override val _object: ObjectType = ObjectType.federation
   override val action: ActionType = ActionType.challenge
 }
 
 object FederationChallenge extends Parsable {
-  def apply(value: Base16Data, validUntil: Timestamp): FederationChallenge = {
-    new FederationChallenge(value, validUntil)
+  def apply(value: Base16Data, valid_until: Timestamp): FederationChallenge = {
+    new FederationChallenge(value, valid_until)
   }
   override def buildFromJson(payload: String): FederationChallenge = payload.parseJson.asJsObject.convertTo[FederationChallenge]
 }

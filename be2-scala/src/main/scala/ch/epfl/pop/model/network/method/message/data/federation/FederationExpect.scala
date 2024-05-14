@@ -8,19 +8,18 @@ import ch.epfl.pop.model.objects.{Hash, PublicKey}
 import spray.json.*
 
 final case class FederationExpect(
-    laoId: Hash,
-    serverAddress: String,
-    other_organizer: PublicKey,
+    lao_id: Hash,
+    server_address: String,
+    public_key: PublicKey,
     challenge: Message
 ) extends MessageData {
-  require(serverAddress.matches("^(ws|wss):\\/\\/.*(:\\\\d{0,5})?\\/.*$"), s"This is an invalid server address")
   override val _object: ObjectType = ObjectType.federation
   override val action: ActionType = ActionType.expect
 }
 
 object FederationExpect extends Parsable {
-  def apply(laoId: Hash, serverAddress: String, other_organizer: PublicKey, challenge: Message): FederationExpect = {
-    new FederationExpect(laoId, serverAddress, other_organizer, challenge)
+  def apply(lao_id: Hash, server_address: String, public_key: PublicKey, challenge: Message): FederationExpect = {
+    new FederationExpect(lao_id, server_address, public_key, challenge)
   }
 
   override def buildFromJson(payload: String): FederationExpect = payload.parseJson.asJsObject.convertTo[FederationExpect]

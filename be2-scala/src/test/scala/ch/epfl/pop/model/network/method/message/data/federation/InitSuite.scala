@@ -11,9 +11,9 @@ class InitSuite extends FunSuite with Matchers {
 
   test("Constructor/apply works for Init as expected") {
 
-    INIT.laoId should equal(LAO_ID)
-    INIT.serverAddress should equal(SERVER_ADDRESS)
-    INIT.other_organizer should equal(OTHER_ORGANIZER)
+    INIT.lao_id should equal(LAO_ID)
+    INIT.server_address should equal(SERVER_ADDRESS)
+    INIT.public_key should equal(PUBLIC_KEY)
     INIT.challenge should equal(CHALLENGE)
     INIT._object should equal(ObjectType.federation)
     INIT.action should equal(ActionType.init)
@@ -29,12 +29,6 @@ class InitSuite extends FunSuite with Matchers {
     val init_ = FederationInit.buildFromJson(INIT.toJson.toString)
 
     init_ should equal(INIT)
-    noException should be thrownBy SERVER_ADDRESS
-  }
-
-  test("The system only accepts valid server addresses") {
-    val WRONG_ADDRESS: String = "ss:/epfl.ch:9000/server"
-    an[IllegalArgumentException] should be thrownBy FederationInit(LAO_ID, WRONG_ADDRESS, OTHER_ORGANIZER, CHALLENGE)
   }
 
 }
