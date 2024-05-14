@@ -7,8 +7,8 @@ import akka.pattern.{AskableActorRef, ask}
 import akka.stream.scaladsl.Sink
 import ch.epfl.pop.config.RuntimeEnvironment.{readServerPeers, serverPeersListPath}
 import ch.epfl.pop.decentralized.Monitor.TriggerHeartbeat
-import ch.epfl.pop.model.network.JsonRpcRequest
-import ch.epfl.pop.model.network.method.{Heartbeat, ParamsWithMap}
+import ch.epfl.pop.model.network.{JsonRpcRequest, MethodType}
+import ch.epfl.pop.model.network.method.{Heartbeat, Params, ParamsWithMap}
 import ch.epfl.pop.model.objects.{Channel, Hash}
 import ch.epfl.pop.pubsub.AskPatternConstants
 import ch.epfl.pop.pubsub.graph.GraphMessage
@@ -43,6 +43,7 @@ final case class Monitor(
   // Monitor is self-contained,
   // To that end it doesn't know the ref of the connectionMediator
   private var connectionMediatorRef = ActorRef.noSender
+  private var gossipManagerRef = ActorRef.noSender
 
   private var fileMonitor: FileMonitor = _
 
@@ -75,7 +76,11 @@ final case class Monitor(
       jsonRpcMessage.getParams match {
         case _: ParamsWithMap => /* Actively ignoring this specific message */
         // For any other message, we schedule a single heartbeat to reduce messages propagation delay
+
         case _ =>
+          if (jsonRpcMessage.method == MethodType.rumor) {
+            gossipManagerRef ! GossipManager.MonitoredRumor(jsonRpcMessage)
+          }
           if (someServerConnected && !timers.isTimerActive(singleHbKey)) {
             log.info(s"Scheduling single heartbeat")
             timers.startSingleTimer(singleHbKey, TriggerHeartbeat, messageDelay)
@@ -87,6 +92,10 @@ final case class Monitor(
       connectionMediatorRef = sender()
       fileMonitor = new FileMonitor(this.self)
       new Thread(fileMonitor).start()
+
+    case GossipManager.Ping() =>
+      log.info("Received GossipManager Ping")
+      gossipManagerRef = sender()
 
     case msg: ConnectionMediator.ConnectTo =>
       connectionMediatorRef ! msg
