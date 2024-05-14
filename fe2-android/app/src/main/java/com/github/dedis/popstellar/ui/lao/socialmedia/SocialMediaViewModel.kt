@@ -112,7 +112,7 @@ constructor(
     val addChirp = AddChirp(text, parentId, timestamp)
 
     return Single.fromCallable { validPoPToken }
-        .doOnSuccess { token: PoPToken ->
+        .doOnSuccess { token: PoPToken? ->
           Timber.tag(TAG).d("Retrieved PoPToken to send Chirp : %s", token)
         }
         .flatMap { token: PoPToken ->
@@ -145,7 +145,7 @@ constructor(
     val addReaction = AddReaction(codepoint, chirpId, timestamp)
 
     return Single.fromCallable { validPoPToken }
-        .doOnSuccess { token: PoPToken ->
+        .doOnSuccess { token: PoPToken? ->
           Timber.tag(TAG).d("Retrieved PoPToken to send Reaction : %s", token)
         }
         .flatMap { token: PoPToken ->

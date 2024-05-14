@@ -278,64 +278,6 @@ class ChirpListFragmentTest {
         }
     }
 
-    //@Test
-    //fun testAddingAndDeletingReaction(){
-    //    val chirps = createChirpList()
-    //    activityScenarioRule.scenario.onActivity { activity: LaoActivity ->
-    //        val socialMediaViewModel = obtainSocialMediaViewModel(activity, LAO_ID)
-//
-    //        val viewModel = obtainViewModel(activity)
-    //        val chirpListAdapter =
-    //                createChirpListAdapter(activity, viewModel, socialMediaViewModel, chirps)
-//
-    //        // Use a non null ViewGroup to inflate the card
-    //        val layout = LinearLayout(activity.applicationContext)
-    //        val parent = TextView(activity.applicationContext)
-    //        parent.text = "Mock Title"
-    //        layout.addView(parent)
-//
-    //        // Get the view for the first chirp in the list.
-    //        val view1 = chirpListAdapter.getView(0, null, layout)
-    //        Assert.assertNotNull(view1)
-//
-    //        // Verify the upvote is not set
-    //        var upvoteButton = view1.findViewById<ImageButton>(R.id.upvote_button)
-    //        Assert.assertNotNull(upvoteButton)
-    //        Assert.assertFalse(upvoteButton.isSelected)
-    //        upvoteButton.callOnClick()
-    //        InstrumentationRegistry.getInstrumentation().waitForIdleSync()
-    //        Assert.assertTrue(upvoteButton.isSelected)
-    //        upvoteButton.callOnClick()
-    //        InstrumentationRegistry.getInstrumentation().waitForIdleSync()
-    //        Assert.assertFalse(upvoteButton.isSelected)
-//
-    //        // Verify the downvote is not set
-    //        val downvoteButton = view1.findViewById<ImageButton>(R.id.downvote_button)
-    //        Assert.assertNotNull(downvoteButton)
-    //        Assert.assertFalse(downvoteButton.isSelected)
-    //        downvoteButton.callOnClick()
-    //        InstrumentationRegistry.getInstrumentation().waitForIdleSync()
-    //        Assert.assertTrue(downvoteButton.isSelected)
-    //        InstrumentationRegistry.getInstrumentation().waitForIdleSync()
-    //        upvoteButton.callOnClick()
-    //        InstrumentationRegistry.getInstrumentation().waitForIdleSync()
-    //        Assert.assertFalse(downvoteButton.isSelected)
-    //        Assert.assertTrue(upvoteButton.isSelected)
-//
-//
-    //        // Verify the heart is not set
-    //        val heartButton = view1.findViewById<ImageButton>(R.id.heart_button)
-    //        Assert.assertNotNull(heartButton)
-    //        Assert.assertFalse(heartButton.isSelected)
-    //        heartButton.callOnClick()
-    //        InstrumentationRegistry.getInstrumentation().waitForIdleSync()
-    //        Assert.assertTrue(heartButton.isSelected)
-    //        heartButton.callOnClick()
-    //        InstrumentationRegistry.getInstrumentation().waitForIdleSync()
-    //        Assert.assertFalse(heartButton.isSelected)
-    //    }
-    //}
-
     @Test
     fun viewButtonTest() {
         val chirps = createChirpList()
@@ -359,7 +301,8 @@ class ChirpListFragmentTest {
             val upvoteButton = view1.findViewById<ImageButton>(R.id.upvote_button)
             Assert.assertNotNull(upvoteButton)
             upvoteButton.callOnClick()
-            socialMediaRepository.deleteReaction(LAO_ID, REACTION_ID)
+            // click again to deselect
+            upvoteButton.callOnClick()
             // Wait for the observable to be notified
             InstrumentationRegistry.getInstrumentation().waitForIdleSync()
             Assert.assertFalse(upvoteButton.isSelected)
