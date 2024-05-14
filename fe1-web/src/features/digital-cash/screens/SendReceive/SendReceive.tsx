@@ -317,15 +317,16 @@ export const SendReceiveHeaderRight = () => {
     }
   }, [popToken]);
 
+  if (isCoinbase) {
+    return null;
+  }
+
   if (serializedPopToken === null) {
     toast.show(STRINGS.digital_cash_error_rollcall_not_defined, {
       type: 'warning',
       placement: 'bottom',
       duration: FOUR_SECONDS,
     });
-    return null;
-  }
-  if (isCoinbase) {
     return null;
   }
 
