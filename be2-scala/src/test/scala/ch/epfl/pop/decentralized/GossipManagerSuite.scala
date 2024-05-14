@@ -12,7 +12,8 @@ import org.scalatest.matchers.should.Matchers
 import akka.pattern.ask
 import akka.stream.scaladsl.{Flow, Sink, Source}
 import ch.epfl.pop.IOHelper.readJsonFromPath
-import ch.epfl.pop.model.network.{ErrorObject, JsonRpcRequest, JsonRpcResponse, ResultObject}
+import ch.epfl.pop.model.network.MethodType.rumor
+import ch.epfl.pop.model.network.{ErrorObject, JsonRpcRequest, JsonRpcResponse, MethodType, ResultObject}
 import ch.epfl.pop.model.network.method.{GreetServer, Rumor}
 import ch.epfl.pop.model.objects.{Base64Data, PublicKey}
 import ch.epfl.pop.pubsub.ClientActor.ClientAnswer
@@ -44,8 +45,10 @@ class GossipManagerSuite extends TestKit(ActorSystem("GossipManagerSuiteActorSys
   }
 
   val pathCorrectRumor: String = "src/test/scala/util/examples/json/rumor/rumor.json"
+  val pathCorrectCastVote : String = "src/test/scala/util/examples/json/election/cast_vote1.json"
 
   val rumorRequest: JsonRpcRequest = JsonRpcRequest.buildFromJson(readJsonFromPath(pathCorrectRumor))
+  val castVoteRequest : JsonRpcRequest = JsonRpcRequest.buildFromJson(readJsonFromPath(pathCorrectCastVote))
 
   val rumor: Rumor = rumorRequest.getParams.asInstanceOf[Rumor]
 
@@ -129,6 +132,33 @@ class GossipManagerSuite extends TestKit(ActorSystem("GossipManagerSuiteActorSys
     val outputResponse = Source.single(response).via(gossipMonitor).runWith(Sink.head)
     Await.result(outputResponse, duration)
     remainingPeers.map(_.receiveOne(duration)).count(_ != null) shouldBe 1
+
+  }
+
+  test("When receiving a message, gossip manager should create and send a rumor") {
+    val gossipManager: ActorRef = system.actorOf(GossipManager.props(dbActorRef, monitorRef, connectionMediatorRef))
+
+    val gossip = GossipManager.gossip(gossipManager)
+
+    val peerServer = TestProbe()
+
+    connectionMediatorRef ? ConnectionMediator.NewServerConnected(peerServer.ref, GreetServer(PublicKey(Base64Data("")), "", ""))
+
+    val outputCreateRumor = Source.single(Right(castVoteRequest)).via(gossip).runWith(Sink.head)
+
+    Await.result(outputCreateRumor, duration)
+
+    val rumor = Rumor(PublicKey(Base64Data("blabla")), 0, Map(castVoteRequest.getParamsChannel -> List(castVoteRequest.getParamsMessage.get)))
+
+    val receivedMsg = peerServer.receiveOne(duration).asInstanceOf[ClientAnswer]
+
+    receivedMsg.graphMessage match
+      case Right(jsonRpcRequest: JsonRpcRequest) =>
+        jsonRpcRequest.method shouldBe MethodType.rumor
+        jsonRpcRequest.id shouldBe Some(0)
+        val jsonRumor = jsonRpcRequest.getParams.asInstanceOf[Rumor]
+        jsonRumor shouldBe rumor
+      case _ => 0 shouldBe 1
 
   }
 

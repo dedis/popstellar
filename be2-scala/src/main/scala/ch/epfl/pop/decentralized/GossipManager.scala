@@ -7,10 +7,13 @@ import akka.pattern.AskableActorRef
 import akka.stream.scaladsl.Flow
 import ch.epfl.pop.decentralized.GossipManager.MonitoredRumor
 import ch.epfl.pop.decentralized.{ConnectionMediator, GossipManager}
+import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.{GreetServer, Rumor}
 import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse, MethodType}
+import ch.epfl.pop.model.objects.{Base64Data, Channel, PublicKey}
 import ch.epfl.pop.pubsub.AskPatternConstants
 import ch.epfl.pop.pubsub.ClientActor.ClientAnswer
+import ch.epfl.pop.pubsub.graph.validators.RpcValidator
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
 import ch.epfl.pop.storage.DbActor
 import ch.epfl.pop.storage.DbActor.DbActorReadRumor
@@ -26,6 +29,7 @@ final case class GossipManager(
 ) extends Actor with AskPatternConstants with ActorLogging {
 
   private type ServerInfos = (ActorRef, GreetServer)
+  private var rumorId = 0
 
   monitorRef ! GossipManager.Ping()
   connectionMediator ? GossipManager.Ping()
@@ -89,12 +93,27 @@ final case class GossipManager(
     }
   }
 
+  private def gossip(messages : Map[Channel, List[Message]]): Unit = {
+    val rumor: Rumor = Rumor(PublicKey(Base64Data("blabla")), rumorId, messages)
+    val jsonRpcRequest = JsonRpcRequest(
+      RpcValidator.JSON_RPC_VERSION,
+      MethodType.rumor,
+      rumor,
+      Some(rumorId)
+    )
+    rumorId += 1
+    sendRumorToRandomPeer(jsonRpcRequest)
+  }
+
   override def receive: Receive = {
     case GossipManager.SendRumorToRandomPeer(rumorRpc) =>
       sendRumorToRandomPeer(rumorRpc)
 
     case GossipManager.ManageGossipResponse(jsonRpcResponse) =>
       processResponse(jsonRpcResponse)
+
+    case GossipManager.Gossip(messages) =>
+      gossip(messages)
 
     case _ =>
       log.info(s"Actor $self received an unexpected message")
@@ -123,10 +142,20 @@ object GossipManager extends AskPatternConstants {
     case graphMessage @ _ => graphMessage
   }
 
+  def gossip(gossipManager: AskableActorRef): Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map{
+    case Right(jsonRpcRequest: JsonRpcRequest) =>
+      jsonRpcRequest.getParamsMessage match
+        case Some(message) => gossipManager ? Gossip(Map(jsonRpcRequest.getParamsChannel -> List(message)))
+        case None => /* Do nothing */
+      Right(jsonRpcRequest)
+    case graphMessage @ _ => graphMessage
+  }
+
   sealed trait Event
   final case class MonitoredRumor(jsonRpcRumor: JsonRpcRequest)
   final case class SendRumorToRandomPeer(jsonRpcRequest: JsonRpcRequest)
   final case class ManageGossipResponse(jsonRpcResponse: JsonRpcResponse)
+  final case class Gossip(messages : Map[Channel, List[Message]])
 
   sealed trait GossipManagerMessage
   final case class Ping() extends GossipManagerMessage
