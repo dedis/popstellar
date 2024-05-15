@@ -3,7 +3,6 @@ package ch.epfl.pop.pubsub
 import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.data.coin.PostTransaction
 import ch.epfl.pop.model.network.method.message.data.election.*
-import ch.epfl.pop.model.network.method.message.data.federation.{FederationChallenge, FederationExpect, FederationInit, FederationRequestChallenge, FederationResult}
 import ch.epfl.pop.model.network.method.message.data.lao.{CreateLao, GreetLao, StateLao, UpdateLao}
 import ch.epfl.pop.model.network.method.message.data.meeting.{CreateMeeting, StateMeeting}
 import ch.epfl.pop.model.network.method.message.data.popcha.Authenticate
@@ -243,48 +242,6 @@ object MessageRegistry {
       PopchaValidator.validateAuthenticateRequest,
       PopchaHandler.handleAuthentication
     )
-
-    // data federation
-    register.add(
-      (ObjectType.federation, ActionType.challenge),
-      createSchemaVerifier("dataFederationChallenge.json"),
-      FederationChallenge.buildFromJson,
-      FederationValidator.validateFederationChallenge,
-      FederationHandler.handleFederationChallenge
-    )
-
-    register.add(
-      (ObjectType.federation, ActionType.challenge_request),
-      createSchemaVerifier("dataFederationChallengeRequest.json"),
-      FederationRequestChallenge.buildFromJson,
-      FederationValidator.validateFederationRequestChallenge,
-      FederationHandler.handleFederationRequestChallenge
-    )
-
-    register.add(
-      (ObjectType.federation, ActionType.init),
-      createSchemaVerifier("dataFederationInit.json"),
-      FederationInit.buildFromJson,
-      FederationValidator.validateFederationInit,
-      FederationHandler.handleFederationInit
-    )
-
-    register.add(
-      (ObjectType.federation, ActionType.expect),
-      createSchemaVerifier("dataFederationExpect.json"),
-      FederationExpect.buildFromJson,
-      FederationValidator.validateFederationExpect,
-      FederationHandler.handleFederationExpect
-    )
-
-    register.add(
-      (ObjectType.federation, ActionType.federation_result),
-      createSchemaVerifier("dataFederationResult.json"),
-      FederationResult.buildFromJson,
-      FederationValidator.validateFederationResult,
-      FederationHandler.handleFederationResult
-    )
-
     new MessageRegistry(register.get)
   }
 }
