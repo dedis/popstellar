@@ -61,7 +61,7 @@ constructor(
   private val mNumberCharsLeft = MutableLiveData<Int>()
   val bottomNavigationTab = MutableLiveData(SocialMediaTab.HOME)
 
-  private val _hasValidToken = MutableLiveData<Boolean>()
+  private val hasValidToken = MutableLiveData<Boolean>()
 
   private val disposables: CompositeDisposable = CompositeDisposable()
 
@@ -274,7 +274,7 @@ constructor(
 
       sender == token.publicKey.encoded
     } catch (e: KeyException) {
-      if (hasValidToken()) {
+      if (hasValidToken.value == true) {
         logAndShow(getApplication(), TAG, e, R.string.error_retrieve_own_token)
       }
       false
@@ -293,7 +293,7 @@ constructor(
       val toSearch = token.publicKey.encoded
       senders.contains(toSearch)
     } catch (e: KeyException) {
-      if (hasValidToken()) {
+      if (hasValidToken.value == true) {
         logAndShow(getApplication(), TAG, e, R.string.error_retrieve_own_token)
       }
       false
@@ -312,10 +312,6 @@ constructor(
   private val lao: LaoView
     get() = laoRepo.getLaoView(laoId)
 
-    fun hasValidToken(): Boolean {
-        return _hasValidToken.value == true
-    }
-
   fun checkValidPoPToken() {
     disposables.add(
         Single.fromCallable {
@@ -324,10 +320,10 @@ constructor(
             .subscribeOn(schedulerProvider.io())
             .observeOn(schedulerProvider.mainThread())
             .subscribe(
-                { _ -> _hasValidToken.postValue(true) },
+                { hasValidToken.postValue(true) },
                 { error ->
                   if (error is InvalidPoPTokenException) {
-                    _hasValidToken.postValue(false)
+                    hasValidToken.postValue(false)
                   } else {
                     Timber.tag(TAG).e(error, "Error checking PoPToken validity")
                   }
