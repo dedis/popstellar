@@ -111,8 +111,10 @@ class GossipManagerSuite extends TestKit(ActorSystem("GossipManagerSuiteActorSys
     val peers = List(peerServer1, peerServer2, peerServer3, peerServer4)
 
     // register server
+    var n = 0
     for (peer <- peers) {
-      connectionMediatorRef ? ConnectionMediator.NewServerConnected(peer.ref, GreetServer(PublicKey(Base64Data("")), "", ""))
+      connectionMediatorRef ? ConnectionMediator.NewServerConnected(peer.ref, GreetServer(PublicKey(Base64Data.encode(s"$n")), "", ""))
+      n += 1
     }
 
     // processes the rumor => sends to random peer
@@ -165,8 +167,15 @@ class GossipManagerSuite extends TestKit(ActorSystem("GossipManagerSuiteActorSys
     val outputCreateRumor = Source.single(Right(castVoteRequest)).via(gossip).runWith(Sink.head)
     Await.result(outputCreateRumor, duration)
 
+    val publicKey: Option[PublicKey] = {
+      val readPk = dbActorRef ? DbActor.ReadServerPublicKey()
+      Await.result(readPk, duration) match
+        case DbActor.DbActorReadServerPublicKeyAck(pk) => Some(pk)
+        case _                                         => None
+    }
+
     // checks that created a correct rumor from that message and was received by other server
-    val rumor = Rumor(PublicKey(Base64Data("blabla")), 0, Map(castVoteRequest.getParamsChannel -> List(castVoteRequest.getParamsMessage.get)))
+    val rumor = Rumor(publicKey.get, 0, Map(castVoteRequest.getParamsChannel -> List(castVoteRequest.getParamsMessage.get)))
     val receivedMsg = peerServer.receiveOne(duration).asInstanceOf[ClientAnswer]
     receivedMsg.graphMessage match
       case Right(jsonRpcRequest: JsonRpcRequest) =>

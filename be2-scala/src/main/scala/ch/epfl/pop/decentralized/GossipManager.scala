@@ -18,7 +18,7 @@ import ch.epfl.pop.storage.DbActor
 import ch.epfl.pop.storage.DbActor.DbActorReadRumor
 
 import scala.concurrent.Await
-import scala.util.Random
+import scala.util.{Random, Success}
 
 final case class GossipManager(
     dbActorRef: AskableActorRef,
@@ -28,6 +28,12 @@ final case class GossipManager(
 ) extends Actor with AskPatternConstants with ActorLogging {
 
   private type ServerInfos = (ActorRef, GreetServer)
+  private val publicKey: Option[PublicKey] = {
+    val readPk = dbActorRef ? DbActor.ReadServerPublicKey()
+    Await.result(readPk, duration) match
+      case DbActor.DbActorReadServerPublicKeyAck(pk) => Some(pk)
+      case _                                         => None
+  }
   private var rumorId = 0
   private var jsonId = 0
 
@@ -64,14 +70,17 @@ final case class GossipManager(
   private def updateGossip(rumorRpc: JsonRpcRequest): Boolean = {
     // checks the peers to which we already forwarded the message
     val activeGossip: List[ServerInfos] = getPeersForRumor(rumorRpc)
+    // get senderpk to avoid sending rumor back
+    val senderPk: PublicKey = rumorRpc.getParams.asInstanceOf[Rumor].senderPk
     // selects a random peer from remaining peers
-    val randomPeer = connectionMediator ? ConnectionMediator.GetRandomPeer(activeGossip.map(_._1))
+    val randomPeer = connectionMediator ? ConnectionMediator.GetRandomPeer(activeGossip.map(_._2.publicKey).appended(senderPk))
     Await.result(randomPeer, duration) match {
       // updates the list based on response
       // if some peers are available we send
       case ConnectionMediator.GetRandomPeerAck(serverRef, greetServer) =>
         val alreadySent: List[ServerInfos] = activeGossip :+ (serverRef -> greetServer)
         activeGossipProtocol += (rumorRpc -> alreadySent)
+        log.info(s"rumorSent > dest : ${greetServer.clientAddress}, rumor : $rumorRpc")
         serverRef ! ClientAnswer(
           Right(rumorRpc)
         )
@@ -115,7 +124,7 @@ final case class GossipManager(
   }
 
   private def gossip(messages: Map[Channel, List[Message]]): Unit = {
-    val rumor: Rumor = Rumor(PublicKey(Base64Data("blabla")), rumorId, messages)
+    val rumor: Rumor = Rumor(publicKey.get, rumorId, messages)
     val jsonRpcRequest = prepareRumor(rumor)
     rumorId += 1
     updateGossip(jsonRpcRequest)

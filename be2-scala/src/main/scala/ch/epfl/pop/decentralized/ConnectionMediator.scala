@@ -11,6 +11,7 @@ import ch.epfl.pop.pubsub.ClientActor.ClientAnswer
 import ch.epfl.pop.pubsub.graph.validators.RpcValidator
 import ch.epfl.pop.pubsub.{AskPatternConstants, MessageRegistry, PublishSubscribe}
 import akka.pattern.ask
+import ch.epfl.pop.model.objects.PublicKey
 
 import scala.collection.immutable.HashMap
 import scala.util.Random
@@ -71,7 +72,6 @@ final case class ConnectionMediator(
       serverMap += ((serverRef, greetServer))
 
     case Heartbeat(map) =>
-    /*log.info("Sending a heartbeat to the servers")
       serverMap.keys.map(server =>
         server ! ClientAnswer(
           Right(JsonRpcRequest(
@@ -81,13 +81,13 @@ final case class ConnectionMediator(
             None
           ))
         )
-      )*/
+      )
 
     case ConnectionMediator.GetRandomPeer(excludes) =>
       if (serverMap.isEmpty)
         sender() ! ConnectionMediator.NoPeer()
       else
-        val serverRefs = serverMap.filter((k, _) => !excludes.contains(k))
+        val serverRefs = serverMap.filter((_, greetServer) => !excludes.contains(greetServer.publicKey))
         val randomKey = serverRefs.keys.toList(Random.nextInt(serverRefs.size))
         sender() ! ConnectionMediator.GetRandomPeerAck(randomKey, serverRefs(randomKey))
 
@@ -108,7 +108,7 @@ object ConnectionMediator {
   final case class ServerLeft(serverRef: ActorRef) extends Event
   final case class Ping() extends Event
   final case class ReadPeersClientAddress() extends Event
-  final case class GetRandomPeer(excludes: List[ActorRef] = List.empty) extends Event
+  final case class GetRandomPeer(excludes: List[PublicKey] = List.empty) extends Event
 
   sealed trait ConnectionMediatorMessage
   final case class ReadPeersClientAddressAck(list: List[String]) extends ConnectionMediatorMessage
