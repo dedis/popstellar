@@ -1083,8 +1083,9 @@ This message is also to be used to retrieve chirps of a specific user profile fr
 
 This may serve as a starting point for the paging of messages in other channels as a future optimization.
 
-For now, if this message gets accidentally sent to a non-chirp channel, we return an error with a -1 code indicating that
-it is an invalid action and a description saying that paging is not supported on non-chirp channels.
+Paged catchup messages must not be sent on any other channel than the aforementioned chirp channels (global chirp timeline and profile chirp timelines).
+If a paged catchup message is sent on another channel, the backend returns an error with a `-1` code indicating that this is an invalid action and a description saying that paging is not supported on this channel.
+If at any point a frontend receives a paged catchup message, it must treat it as a no-op and is ignore it.
 
 RPC 
 
