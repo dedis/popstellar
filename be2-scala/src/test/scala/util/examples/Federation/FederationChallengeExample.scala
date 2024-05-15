@@ -9,7 +9,7 @@ import spray.json.*
 object FederationChallengeExample {
 
   final val VALUE: Base16Data = Base16Data("82eadde2a4ba832518b90bb93c8480ee1ae16a91d5efe9281e91e2ec11da03e4")
-  final val VALID_UNTIL: Timestamp = Timestamp(1647303889997L)
+  final val VALID_UNTIL: Timestamp = Timestamp(1712854874)
   final val CHALLENGE: FederationChallenge = FederationChallenge(VALUE, VALID_UNTIL)
 
   final val SENDER: PublicKey = PublicKey(Base64Data("zXgzQaa_NpUe-v0Zk_4q8k184ohQ5nTQhBDKgncHzq4="))

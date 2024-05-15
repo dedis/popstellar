@@ -7,11 +7,11 @@ import ch.epfl.pop.model.objects.{Base64Data, Hash, PublicKey, Signature, Witnes
 import spray.json.*
 
 object FederationExpectExample {
-  final val LAO_ID: Hash = Hash(Base64Data.encode("laoId"))
+  final val LAO_ID: Hash = Hash(Base64Data("lsWUv1bKBQ0t1DqWZTFwb0nhLsP_EtfGoXHny4hsrwA="))
   final val SERVER_ADDRESS: String = "wss://ethz.ch:9000/server"
-  final val PUBLIC_KEY: PublicKey = PublicKey(Base64Data("jsNj23IHALvppqV1xQfP71_3IyAHzivxiCz236_zzQc="))
+  final val PUBLIC_KEY: PublicKey = PublicKey(Base64Data("UvViTxoKsB3XVP_ctkmOKCJpMWb7fCzrcb1XDmhNe7Q="))
 
-  final val DATA: Base64Data = Base64Data("eyJvYmplY3QiOiJmZWRlcmF0aW9uIiwiYWN0aW9uIjoiY2hhbGxlbmdlIiwidmFsdWUiOiJlYmEzZTI0ZWZjZDBiNTNmYTY5OTA4YmFkNWQxY2I2OTlkNzk4MGQ5MzEwOWRhMGIyYmZkNTAzN2MyYzg5ZWUwIiwidmFsaWRVbnRpbCI6MTcxMzM4NTU2OH0=")
+  final val DATA: Base64Data = Base64Data("eyJvYmplY3QiOiJmZWRlcmF0aW9uIiwiYWN0aW9uIjoiY2hhbGxlbmdlIiwidmFsdWUiOiJlYmEzZTI0ZWZjZDBiNTNmYTY5OTA4YmFkNWQxY2I2OTlkNzk4MGQ5MzEwOWRhMGIyYmZkNTAzN2MyYzg5ZWUwIiwidGltZXN0YW1wIjoxNzEzMzg1NTY4fQ==")
   final val SENDER: PublicKey = PublicKey(Base64Data("zXgzQaa_NpUe-v0Zk_4q8k184ohQ5nTQhBDKgncHzq4="))
   final val SIGNATURE: Signature = Signature(Base64Data("BILYwYkT5tOBL4rCD7yvhBkhAYqRXOI3ajQ2uJ1gAk-g6nRc38vMMnlHShuNCQ3dQFXYZPn37cCFelhWGjY8Bg=="))
   final val MESSAGE_ID: Hash = Hash(Base64Data("sD_PdryBuOr14_65h8L-e1lzdQpDWxUAngtu1uwqgEI="))
