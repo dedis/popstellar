@@ -22,19 +22,19 @@ import scala.concurrent.Await
 import scala.util.Random
 
 final case class GossipManager(
-    dbActorRef: AskableActorRef,
-    monitorRef: ActorRef,
-    connectionMediator: AskableActorRef,
-    stopProbability: Double = 0.5
-) extends Actor with AskPatternConstants with ActorLogging {
+                                dbActorRef: AskableActorRef,
+                                monitorRef: ActorRef,
+                                connectionMediator: AskableActorRef,
+                                stopProbability: Double = 0.5
+                              ) extends Actor with AskPatternConstants with ActorLogging {
 
   private type ServerInfos = (ActorRef, GreetServer)
-  private var rumorId = 0
+  private val rumorId = 0
 
   monitorRef ! GossipManager.Ping()
   connectionMediator ? GossipManager.Ping()
 
-  private var activeGossipProtocol: Map[JsonRpcRequest, List[ServerInfos]] = Map.empty
+  private val activeGossipProtocol: Map[JsonRpcRequest, List[ServerInfos]] = Map.empty
 
   private def isRumorNew(rumor: Rumor): Boolean = {
     val readRumorDb = dbActorRef ? DbActor.ReadRumor(rumor.senderPk -> rumor.rumorId)
@@ -60,13 +60,13 @@ final case class GossipManager(
       // if some peers are available we send
       case ConnectionMediator.GetRandomPeerAck(serverRef, greetServer) =>
         val alreadySent: List[ServerInfos] = activeGossip :+ (serverRef -> greetServer)
-        activeGossipProtocol += (rumorRpc -> alreadySent)
+        context.become(onMessage(rumorId, activeGossipProtocol + (rumorRpc -> alreadySent)))
         serverRef ! ClientAnswer(
           Right(rumorRpc)
         )
       // else remove entry
       case ConnectionMediator.NoPeer =>
-        activeGossipProtocol = activeGossipProtocol.removed(rumorRpc)
+        context.become(onMessage(rumorId, activeGossipProtocol - rumorRpc))
       case _ =>
         log.info(s"Actor $self received an unexpected message waiting for a random peer")
     }
@@ -79,7 +79,7 @@ final case class GossipManager(
     if (activeGossipPeers.size == 1) {
       activeGossipPeers.foreach { (rumorRpc, _) =>
         if (response.result.isEmpty && Random.nextDouble() < stopProbability) {
-          activeGossipProtocol -= rumorRpc
+          context.become(onMessage(rumorId, activeGossipProtocol - rumorRpc))
         } else {
           sendRumorToRandomPeer(rumorRpc)
         }
@@ -88,7 +88,7 @@ final case class GossipManager(
       log.info(s"Unexpected match for active gossip. Response with id ${response.id} matched with ${activeGossipPeers.size} entries")
       // removes duplicate entries to come back to a stable state
       activeGossipPeers.foreach { (rumorRpc, _) =>
-        activeGossipProtocol -= rumorRpc
+        context.become(onMessage(rumorId, activeGossipProtocol - rumorRpc))
       }
     }
   }
@@ -101,11 +101,13 @@ final case class GossipManager(
       rumor,
       Some(rumorId)
     )
-    rumorId += 1
+    context.become(onMessage(rumorId + 1, activeGossipProtocol))
     sendRumorToRandomPeer(jsonRpcRequest)
   }
 
-  override def receive: Receive = {
+  override def receive: Receive = onMessage(rumorId, activeGossipProtocol)
+
+  private def onMessage(rumorId: Int, activeGossipProtocol: Map[JsonRpcRequest, List[ServerInfos]]): Receive = {
     case GossipManager.SendRumorToRandomPeer(rumorRpc) =>
       sendRumorToRandomPeer(rumorRpc)
 
@@ -113,12 +115,12 @@ final case class GossipManager(
       processResponse(jsonRpcResponse)
 
     case GossipManager.Gossip(messages) =>
+      log.info(s"Actor $self starts gossiping $messages")
       gossip(messages)
 
     case _ =>
       log.info(s"Actor $self received an unexpected message")
   }
-
 }
 
 object GossipManager extends AskPatternConstants {

@@ -51,7 +51,7 @@ final case class Monitor(
 
     case Monitor.AtLeastOneServerConnected =>
       if (!someServerConnected) {
-        timers.startTimerWithFixedDelay(periodicHbKey, TriggerHeartbeat, heartbeatRate)
+        //timers.startTimerWithFixedDelay(periodicHbKey, TriggerHeartbeat, heartbeatRate)
         someServerConnected = true
       }
 

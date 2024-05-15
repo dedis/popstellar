@@ -11,7 +11,7 @@ import akka.pattern.ask
 import akka.stream.scaladsl.{Flow, Sink, Source}
 import ch.epfl.pop.IOHelper.readJsonFromPath
 import ch.epfl.pop.config.RuntimeEnvironment
-import ch.epfl.pop.decentralized.{ConnectionMediator, GossipManager, Monitor}
+import ch.epfl.pop.decentralized.{ConnectionMediator, Monitor}
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse}
 import ch.epfl.pop.model.network.method.{GreetServer, Rumor}
@@ -33,13 +33,14 @@ class RumorHandlerSuite extends TestKit(ActorSystem("RumorActorSuiteActorSystem"
 
   private val inMemoryStorage: InMemoryStorage = InMemoryStorage()
   private val messageRegistry: MessageRegistry = MessageRegistry()
-  private val pubSubMediatorRef: ActorRef = system.actorOf(PubSubMediator.props)
-  private val dbActorRef: AskableActorRef = system.actorOf(Props(DbActor(pubSubMediatorRef, messageRegistry, inMemoryStorage)), "DbActor")
-  private val securityModuleActorRef: AskableActorRef = system.actorOf(Props(SecurityModuleActor(RuntimeEnvironment.securityPath)))
-  private val monitorRef: ActorRef = system.actorOf(Monitor.props(dbActorRef))
-  private val connectionMediatorRef: ActorRef = system.actorOf(ConnectionMediator.props(monitorRef, pubSubMediatorRef, dbActorRef, securityModuleActorRef, messageRegistry))
-  private val gossipManager: AskableActorRef = system.actorOf(GossipManager.props(dbActorRef, monitorRef, connectionMediatorRef))
+  private val pubSubMediatorRef: ActorRef = system.actorOf(PubSubMediator.props, "pubSubRumor")
+  private val dbActorRef: AskableActorRef = system.actorOf(Props(DbActor(pubSubMediatorRef, messageRegistry, inMemoryStorage)), "dbRumor")
+  private val securityModuleActorRef: AskableActorRef = system.actorOf(Props(SecurityModuleActor(RuntimeEnvironment.securityPath)), "securityRumor")
+  private val monitorRef: ActorRef = system.actorOf(Monitor.props(dbActorRef), "monitorRumor")
+  private var connectionMediatorRef: AskableActorRef = system.actorOf(ConnectionMediator.props(monitorRef, pubSubMediatorRef, dbActorRef, securityModuleActorRef, messageRegistry), "connMediatorRumor")
   private val rumorHandler: Flow[GraphMessage, GraphMessage, NotUsed] = ParamsHandler.rumorHandler(dbActorRef, messageRegistry)
+  // Inject dbActor above
+  PublishSubscribe.buildGraph(pubSubMediatorRef, dbActorRef, securityModuleActorRef, messageRegistry, ActorRef.noSender, ActorRef.noSender, ActorRef.noSender, isServer = false)
 
   val pathCorrectRumor: String = "src/test/scala/util/examples/json/rumor/rumor_correct_msg.json"
 
@@ -51,7 +52,6 @@ class RumorHandlerSuite extends TestKit(ActorSystem("RumorActorSuiteActorSystem"
   private var processDuration: FiniteDuration = duration.mul(nbMessages)
 
   override def beforeEach(): Unit = {
-    PublishSubscribe.buildGraph(pubSubMediatorRef, dbActorRef, securityModuleActorRef, messageRegistry, monitorRef, connectionMediatorRef, gossipManager, isServer = false)
     inMemoryStorage.elements = Map.empty
   }
 
@@ -125,23 +125,33 @@ class RumorHandlerSuite extends TestKit(ActorSystem("RumorActorSuiteActorSystem"
   }
 
   test("rumor handler should process messages received in a rumor") {
-    val dbRef = PublishSubscribe.getDbActorRef
+    
     val output = Source.single(Right(rumorRequest)).via(rumorHandler).runWith(Sink.head)
-
+      
+      
     val outputResult = Await.result(output, processDuration)
-
+      
+      
     val ask = dbActorRef ? DbActor.GetAllChannels()
+    
     val channelsInDb = Await.result(ask, MAX_TIME) match {
-      case DbActor.DbActorGetAllChannelsAck(channels) => channels
-      case err @ _                                    => Matchers.fail(err.toString)
+     case DbActor.DbActorGetAllChannelsAck(channels) => channels
+        
+      case err@_ => Matchers.fail(err.toString)
+        
     }
-
+     
     val channelsInRumor = rumor.messages.keySet
-    channelsInRumor.diff(channelsInDb) should equal(Set.empty)
-
+       channelsInRumor.diff(channelsInDb) should equal(Set.empty)
+      
+      
     val messagesInDb: Set[Message] = channelsInDb.foldLeft(Set.empty: Set[Message])((acc, channel) => acc ++ getMessages(channel))
+    
     val messagesInRumor = rumor.messages.values.foldLeft(Set.empty: Set[Message])((acc, set) => acc ++ set)
-
-    messagesInRumor.diff(messagesInDb) should equal(Set.empty)
+      
+      messagesInRumor.diff(messagesInDb) should equal(Set.empty)
+    
   }
+
+
 }
