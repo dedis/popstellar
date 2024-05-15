@@ -66,7 +66,12 @@ class GossipManagerSuite extends TestKit(ActorSystem("GossipManagerSuiteActorSys
 
     Await.result(output, duration)
 
-    peerServer.expectMsg(duration, ClientAnswer(Right(rumorRequest)))
+    peerServer.receiveOne(duration) match
+      case ClientAnswer(Right(jsonRpcRequest: JsonRpcRequest)) =>
+        jsonRpcRequest.method shouldBe MethodType.rumor
+        jsonRpcRequest.id shouldBe Some(0)
+        jsonRpcRequest.getParams.asInstanceOf[Rumor] shouldBe rumor
+      case _ => 0 shouldBe 1
   }
 
   test("gossip handler should send to only one server if multiples are present") {
@@ -113,45 +118,56 @@ class GossipManagerSuite extends TestKit(ActorSystem("GossipManagerSuiteActorSys
     // processes the rumor => sends to random peer
     val outputRumor = Source.single(Right(rumorRequest)).via(gossipHandler).runWith(Sink.head)
 
-    Await.result(outputRumor, duration)
+    Await.result(outputRumor, duration.mul(2))
+
+    var remainingPeers: List[TestProbe] = List.empty
 
     // checks that only one peers received the rumor
-    val received = peers.map(_.receiveOne(duration))
-    received.count(_ != null) shouldBe 1
-    val remainingPeers = peers.lazyZip(received).filter((_, recv) => recv == null).map(_._1)
+    peers.foreach { peer =>
+      peer.receiveOne(duration.mul(2)) match
+        case ClientAnswer(_) =>
+        case null            => remainingPeers :+= peer
+    }
     remainingPeers.size shouldBe peers.size - 1
 
     // sends back to the gossipManager a response that the rumor is new
     val response = Right(JsonRpcResponse(
       RpcValidator.JSON_RPC_VERSION,
       ResultObject(0),
-      rumorRequest.id
+      Some(0)
     ))
 
     // by processing the reponse, gossipManager should send again a rumor to a new peer
     val outputResponse = Source.single(response).via(gossipMonitor).runWith(Sink.head)
+
     Await.result(outputResponse, duration)
-    remainingPeers.map(_.receiveOne(duration)).count(_ != null) shouldBe 1
+
+    var remainingPeers2: List[TestProbe] = List.empty
+
+    remainingPeers.foreach { peer =>
+      peer.receiveOne(duration) match
+        case ClientAnswer(_) =>
+        case null            => remainingPeers2 :+= peer
+    }
+    remainingPeers2.size shouldBe remainingPeers.size - 1
 
   }
 
   test("When receiving a message, gossip manager should create and send a rumor") {
     val gossipManager: ActorRef = system.actorOf(GossipManager.props(dbActorRef, monitorRef, connectionMediatorRef))
-
     val gossip = GossipManager.gossip(gossipManager)
-
     val peerServer = TestProbe()
 
+    // registers a new server
     connectionMediatorRef ? ConnectionMediator.NewServerConnected(peerServer.ref, GreetServer(PublicKey(Base64Data("")), "", ""))
 
+    // emulates receiving a castVote and processes it
     val outputCreateRumor = Source.single(Right(castVoteRequest)).via(gossip).runWith(Sink.head)
-
     Await.result(outputCreateRumor, duration)
 
+    // checks that created a correct rumor from that message and was received by other server
     val rumor = Rumor(PublicKey(Base64Data("blabla")), 0, Map(castVoteRequest.getParamsChannel -> List(castVoteRequest.getParamsMessage.get)))
-
     val receivedMsg = peerServer.receiveOne(duration).asInstanceOf[ClientAnswer]
-
     receivedMsg.graphMessage match
       case Right(jsonRpcRequest: JsonRpcRequest) =>
         jsonRpcRequest.method shouldBe MethodType.rumor
@@ -159,7 +175,52 @@ class GossipManagerSuite extends TestKit(ActorSystem("GossipManagerSuiteActorSys
         val jsonRumor = jsonRpcRequest.getParams.asInstanceOf[Rumor]
         jsonRumor shouldBe rumor
       case _ => 0 shouldBe 1
+  }
 
+  test("Gossip manager increments jsonRpcId and rumorID when starting a gossip from message") {
+    val gossipManager: ActorRef = system.actorOf(GossipManager.props(dbActorRef, monitorRef, connectionMediatorRef))
+    val gossip = GossipManager.gossip(gossipManager)
+    val peerServer = TestProbe()
+
+    // registers a new server
+    connectionMediatorRef ? ConnectionMediator.NewServerConnected(peerServer.ref, GreetServer(PublicKey(Base64Data("")), "", ""))
+
+    // emulates receiving a castVote and processes it
+    for (id <- 0 to 4) {
+      // emulates receiving a castVote and processes it
+      val outputCreateRumor = Source.single(Right(castVoteRequest)).via(gossip).runWith(Sink.head)
+      Await.result(outputCreateRumor, duration)
+      // checks that created a correct rumor from that message and was received by other server
+      val rumor = Rumor(PublicKey(Base64Data("blabla")), id, Map(castVoteRequest.getParamsChannel -> List(castVoteRequest.getParamsMessage.get)))
+      val receivedMsg = peerServer.receiveOne(duration).asInstanceOf[ClientAnswer]
+      receivedMsg.graphMessage match
+        case Right(jsonRpcRequest: JsonRpcRequest) =>
+          jsonRpcRequest.id shouldBe Some(id)
+          jsonRpcRequest.getParams.asInstanceOf[Rumor].rumorId shouldBe id
+        case _ => 0 shouldBe 1
+    }
+
+  }
+
+  test("Gossip manager should increment jsonRpcId but not rumor when starting gossip from rumor") {
+    val gossipManager: ActorRef = system.actorOf(GossipManager.props(dbActorRef, monitorRef, connectionMediatorRef))
+    val gossipHandler = GossipManager.gossipHandler(gossipManager)
+
+    val peerServer = TestProbe()
+    connectionMediatorRef ? ConnectionMediator.NewServerConnected(peerServer.ref, GreetServer(PublicKey(Base64Data("")), "", ""))
+
+    for (id <- 0 to 4) {
+      // emulates receiving a castVote and processes it
+      val outputCreateRumor = Source.single(Right(rumorRequest)).via(gossipHandler).runWith(Sink.head)
+      Await.result(outputCreateRumor, duration)
+      // checks that created a correct rumor from that message and was received by other server
+      val receivedMsg = peerServer.receiveOne(duration).asInstanceOf[ClientAnswer]
+      receivedMsg.graphMessage match
+        case Right(jsonRpcRequest: JsonRpcRequest) =>
+          jsonRpcRequest.id shouldBe Some(id)
+          jsonRpcRequest.getParams.asInstanceOf[Rumor].rumorId shouldBe rumor.rumorId
+        case _ => 0 shouldBe 1
+    }
   }
 
 }
