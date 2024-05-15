@@ -213,7 +213,7 @@ type fakeHub struct {
 // newFakeHub returns a fake Hub.
 func newFakeHub(publicOrg kyber.Point, log zerolog.Logger, laoFac channel.LaoFactory) (*fakeHub, error) {
 
-	schemaValidator, err := validation.NewSchemaValidator(log)
+	schemaValidator, err := validation.NewSchemaValidator()
 	if err != nil {
 		return nil, xerrors.Errorf("failed to create the schema validator: %v", err)
 	}
@@ -285,7 +285,7 @@ func (h *fakeHub) Sign(data []byte) ([]byte, error) {
 func (h *fakeHub) NotifyWitnessMessage(_ string, _ string, _ string) {}
 
 // GetPeersInfo implements channel.HubFunctionalities
-func (h *fakeHub) GetPeersInfo() []method.ServerInfo {
+func (h *fakeHub) GetPeersInfo() []method.GreetServerParams {
 	return nil
 }
 

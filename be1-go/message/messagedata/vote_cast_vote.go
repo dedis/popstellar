@@ -1,8 +1,10 @@
 package messagedata
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"popstellar/message/answer"
+	"strings"
 )
 
 // VoteCastVote defines a message data
@@ -57,6 +59,42 @@ func (v *Vote) UnmarshalJSON(b []byte) error {
 		return answer.NewErrorf(-4, "invalid vote type, should be int or string but was %v", t)
 	}
 
+	return nil
+}
+
+func (message VoteCastVote) Verify(electionPath string) *answer.Error {
+	var errAnswer *answer.Error
+	// verify lao id is base64URL encoded
+	_, err := base64.URLEncoding.DecodeString(message.Lao)
+	if err != nil {
+		errAnswer = answer.NewInvalidMessageFieldError("failed to decode lao: %v", err)
+		return errAnswer
+	}
+	// verify election id is base64URL encoded
+	_, err = base64.URLEncoding.DecodeString(message.Election)
+	if err != nil {
+		errAnswer = answer.NewInvalidMessageFieldError("failed to decode election: %v", err)
+		return errAnswer
+	}
+	// split channel to [lao id, election id]
+	noRoot := strings.ReplaceAll(electionPath, RootPrefix, "")
+	IDs := strings.Split(noRoot, "/")
+	if len(IDs) != 2 {
+		errAnswer = answer.NewInvalidMessageFieldError("failed to split channel: %v", electionPath)
+		return errAnswer
+	}
+	laoID := IDs[0]
+	electionID := IDs[1]
+	// verify if lao id is the same as the channel
+	if message.Lao != laoID {
+		errAnswer = answer.NewInvalidMessageFieldError("lao id is not the same as the channel")
+		return errAnswer
+	}
+	// verify if election id is the same as the channel
+	if message.Election != electionID {
+		errAnswer = answer.NewInvalidMessageFieldError("election id is not the same as the channel")
+		return errAnswer
+	}
 	return nil
 }
 
