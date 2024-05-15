@@ -5,6 +5,7 @@ import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import com.github.dedis.popstellar.R
+import com.github.dedis.popstellar.model.network.method.message.MessageGeneral
 import com.github.dedis.popstellar.model.network.method.message.data.federation.Challenge
 import com.github.dedis.popstellar.model.network.method.message.data.federation.ChallengeRequest
 import com.github.dedis.popstellar.model.network.method.message.data.federation.FederationExpect
@@ -90,7 +91,9 @@ constructor(
           ErrorUtils.logAndShow(getApplication(), TAG, e, R.string.unknown_lao_exception)
           return Completable.error(UnknownLaoException())
         }
-    val federationInit = FederationInit(remoteLaoId, serverAddress, publicKey, challenge)
+    val federationInit =
+        FederationInit(
+            remoteLaoId, serverAddress, publicKey, getMessageGeneralFromChallenge(challenge))
     return networkManager.messageSender.publish(
         keyManager.mainKeyPair,
         laoView.channel.subChannel(FEDERATION),
@@ -110,7 +113,7 @@ constructor(
       remoteLaoId: String,
       serverAddress: String,
       publicKey: String,
-      challenge: Challenge
+      challenge: MessageGeneral
   ): Completable {
     val laoView: LaoView =
         try {
@@ -129,6 +132,10 @@ constructor(
 
   fun getRepository(): LinkedOrganizationsRepository {
     return linkedOrgRepo
+  }
+
+  private fun getMessageGeneralFromChallenge(challenge: Challenge): MessageGeneral {
+    return MessageGeneral(keyManager.mainKeyPair, challenge, gson)
   }
 
   fun doWhenChallengeIsReceived(function: (Challenge) -> Unit) {
@@ -162,9 +169,9 @@ constructor(
                   federationDetails.laoId,
                   federationDetails.serverAddress,
                   federationDetails.publicKey,
-                  linkedOrgRepo.getChallenge()!!)
+                  getMessageGeneralFromChallenge(linkedOrgRepo.getChallenge()!!))
               .subscribe(
-                  { linkedOrgRepo.flush() },
+                  { ErrorUtils.logAndShow(getApplication(), TAG, R.string.expect_sent) },
                   { error: Throwable ->
                     ErrorUtils.logAndShow(
                         getApplication(), TAG, error, R.string.error_sending_federation_expect)

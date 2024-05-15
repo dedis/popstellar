@@ -1,5 +1,6 @@
 package com.github.dedis.popstellar.model.network.method.message.data.federation
 
+import com.github.dedis.popstellar.model.network.method.message.MessageGeneral
 import com.github.dedis.popstellar.model.network.method.message.data.Action
 import com.github.dedis.popstellar.model.network.method.message.data.Data
 import com.github.dedis.popstellar.model.network.method.message.data.Objects
@@ -10,7 +11,7 @@ class FederationExpect : Data {
   @SerializedName("lao_id") val laoId: String
   @SerializedName("server_address") val serverAddress: String
   @SerializedName("public_key") val publicKey: String
-  val challenge: Challenge
+  val challenge: MessageGeneral
 
   /**
    * Constructor for a data Federation Expect
@@ -20,7 +21,7 @@ class FederationExpect : Data {
    * @param publicKey public key of the remote organizer
    * @param challenge challenge for the server
    */
-  constructor(laoId: String, serverAddress: String, publicKey: String, challenge: Challenge) {
+  constructor(laoId: String, serverAddress: String, publicKey: String, challenge: MessageGeneral) {
     this.laoId = laoId
     this.serverAddress = serverAddress
     this.publicKey = publicKey
@@ -40,7 +41,7 @@ class FederationExpect : Data {
     if (other == null || javaClass != other.javaClass) {
       return false
     }
-    val that = other as FederationInit
+    val that = other as FederationExpect
     return laoId == that.laoId &&
         serverAddress == that.serverAddress &&
         publicKey == that.publicKey &&

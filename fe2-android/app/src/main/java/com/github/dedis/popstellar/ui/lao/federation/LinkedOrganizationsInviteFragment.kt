@@ -22,11 +22,11 @@ import com.github.dedis.popstellar.utility.error.ErrorUtils.logAndShow
 import com.github.dedis.popstellar.utility.error.UnknownLaoException
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
+import java.time.Instant
+import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.time.Instant
-import javax.inject.Inject
 import net.glxn.qrgen.android.QRCode
 
 @AndroidEntryPoint
@@ -157,13 +157,12 @@ class LinkedOrganizationsInviteFragment : Fragment() {
                   repo.getChallenge()!!,
               )
               .subscribe(
-                  {},
+                  { logAndShow(requireContext(), TAG, R.string.init_sent) },
                   { error: Throwable ->
                     logAndShow(requireContext(), TAG, error, R.string.error_sending_federation_init)
                   },
               ))
     }
-    repo.flush()
     LaoActivity.setCurrentFragment(parentFragmentManager, R.id.fragment_linked_organizations_home) {
       LinkedOrganizationsFragment.newInstance()
     }

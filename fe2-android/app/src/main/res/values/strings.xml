@@ -313,6 +313,8 @@
   <string name="clear_text">Clear all storage</string>
   <string name="clear_confirmation_text">Are you sure you want to clear stored data ? This action is irreversible</string>
   <string name="clear_success">Clearing was successful</string>
+  <string name="init_sent">Federation init sent successfully</string>
+  <string name="expect_sent">Federation expect sent successfully</string>
 
   <!--  Content description -->
   <string name="qr_code_image_description">Qr code image to display LAO connecting information</string>
