@@ -44,7 +44,7 @@ func handleQuery(socket socket.Socket, msg []byte) *answer.Error {
 		errAnswer = answer.NewInvalidResourceError("unexpected method: '%s'", queryBase.Method)
 	}
 
-	if errAnswer != nil {
+	if errAnswer != nil && queryBase.Method != query.MethodGreetServer && queryBase.Method != query.MethodHeartbeat {
 		errAnswer = errAnswer.Wrap("handleQuery")
 		socket.SendError(id, errAnswer)
 		return errAnswer
