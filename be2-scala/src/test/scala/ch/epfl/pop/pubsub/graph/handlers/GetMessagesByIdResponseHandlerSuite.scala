@@ -24,7 +24,7 @@ import scala.concurrent.Await
 import scala.concurrent.duration.{DurationInt, FiniteDuration}
 import scala.util.Success
 
-class GetMessagesByIdResponseHandlerSuite extends TestKit(ActorSystem("GetMessagesByIdResponseHandlerSuiteSystem")) with AnyFunSuiteLike with AskPatternConstants with BeforeAndAfterAll with BeforeAndAfterEach{
+class GetMessagesByIdResponseHandlerSuite extends TestKit(ActorSystem("GetMessagesByIdResponseHandlerSuiteSystem")) with AnyFunSuiteLike with AskPatternConstants with BeforeAndAfterAll with BeforeAndAfterEach {
 
   // Implicit for system actors
   implicit val timeout: Timeout = Timeout(1.seconds)

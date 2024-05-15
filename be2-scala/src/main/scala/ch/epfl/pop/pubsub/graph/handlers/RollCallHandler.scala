@@ -38,7 +38,6 @@ class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
     */
   override final val dbActor: AskableActorRef = dbRef
 
-
   private val serverUnexpectedAnswer: String = "The server is doing something unexpected"
 
   def handleCreateRollCall(rpcRequest: JsonRpcRequest): GraphMessage = {
