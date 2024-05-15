@@ -16,8 +16,8 @@ import androidx.fragment.app.Fragment
 import com.github.dedis.popstellar.R
 import com.github.dedis.popstellar.databinding.QrScannerFragmentBinding
 import com.github.dedis.popstellar.ui.PopViewModel
-import com.github.dedis.popstellar.utility.ActivityUtils.hideKeyboard
-import com.github.dedis.popstellar.utility.GeneralUtils
+import com.github.dedis.popstellar.utility.UIUtils
+import com.github.dedis.popstellar.utility.UIUtils.hideKeyboard
 import com.github.dedis.popstellar.utility.error.ErrorUtils.logAndShow
 import com.google.mlkit.vision.barcode.BarcodeScanner
 import com.google.mlkit.vision.barcode.BarcodeScannerOptions
@@ -30,7 +30,7 @@ class QrScannerFragment : Fragment() {
   private var barcodeScanner: BarcodeScanner? = null
   private lateinit var scanningViewModel: QRCodeScanningViewModel
   private lateinit var popViewModel: PopViewModel
-  private lateinit var clipboardManager: GeneralUtils.ClipboardUtil
+  private lateinit var clipboardManager: UIUtils.ClipboardUtil
 
   override fun onCreateView(
       inflater: LayoutInflater,
@@ -45,9 +45,9 @@ class QrScannerFragment : Fragment() {
     if (scanningAction.displayCounter) {
       displayCounter()
     }
-    clipboardManager = GeneralUtils.ClipboardUtil(requireActivity())
+    clipboardManager = UIUtils.ClipboardUtil(requireActivity())
 
-    GeneralUtils.setupInputFields(
+    UIUtils.setupInputFields(
         recyclerView = binding.dynamicInputsContainer,
         inputFields = scanningAction.getInputFields().toList(),
         context = requireContext(),
@@ -186,7 +186,7 @@ class QrScannerFragment : Fragment() {
     }
 
     binding.manualAddButton.setOnClickListener {
-      val adapter = binding.dynamicInputsContainer.adapter as GeneralUtils.InputFieldsAdapter
+      val adapter = binding.dynamicInputsContainer.adapter as UIUtils.InputFieldsAdapter
       val inputs = adapter.getCurrentInputData()
 
       val json = scanningAction.formatJson(inputs)

@@ -11,7 +11,7 @@ import com.github.dedis.popstellar.ui.home.HomeFragment
 import com.github.dedis.popstellar.ui.home.LaoCreateFragment
 import com.github.dedis.popstellar.ui.lao.LaoActivity
 import com.github.dedis.popstellar.ui.lao.event.rollcall.RollCallFragment
-import com.github.dedis.popstellar.utility.GeneralUtils.InputFieldConfig
+import com.github.dedis.popstellar.utility.UIUtils.InputFieldConfig
 import java.util.function.BiConsumer
 import java.util.function.Function
 

@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.res.Configuration
 import android.graphics.Color
 import android.view.View
-import android.view.inputmethod.InputMethodManager
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
@@ -123,13 +122,6 @@ object ActivityUtils {
             { err: Throwable ->
               Timber.tag(TAG).e(err, "Error persisting the connections for lao %s", laoId)
             })
-  }
-
-  /** This function hides the keyboard when called. */
-  fun hideKeyboard(context: Context?, binding: View) {
-    val inputMethodManager =
-        context?.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
-    inputMethodManager?.hideSoftInputFromWindow(binding.windowToken, 0)
   }
 
   /**
