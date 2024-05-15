@@ -1,0 +1,27 @@
+strict digraph {
+labelloc="t";
+label = <Modules dependencies of popstellar <font point-size='10'><br/>(generated 10 May 24 - 08:56:20)</font>>;
+graph [fontname = "helvetica"];
+graph [fontname = "helvetica"];
+node [fontname = "helvetica"];
+edge [fontname = "helvetica"];
+node [shape=box,style=rounded];
+start=0;
+ratio = fill;
+rankdir="LR";
+"internal/popserver" -> "internal/popserver/config" [minlen=1];
+"internal/popserver" -> "internal/popserver/handler" [minlen=1];
+"internal/popserver" -> "internal/popserver/state" [minlen=1];
+"internal/popserver" -> "internal/popserver/utils" [minlen=1];
+"internal/popserver" -> "network/socket" [minlen=1];
+"internal/popserver/database" -> "internal/popserver/types" [minlen=1];
+"internal/popserver/handler" -> "internal/popserver/config" [minlen=1];
+"internal/popserver/handler" -> "internal/popserver/database" [minlen=1];
+"internal/popserver/handler" -> "internal/popserver/state" [minlen=1];
+"internal/popserver/handler" -> "internal/popserver/types" [minlen=1];
+"internal/popserver/handler" -> "internal/popserver/utils" [minlen=1];
+"internal/popserver/handler" -> "network/socket" [minlen=1];
+"internal/popserver/state" -> "internal/popserver/types" [minlen=1];
+"internal/popserver/state" -> "network/socket" [minlen=1];
+"internal/popserver/types" -> "network/socket" [minlen=1];
+}

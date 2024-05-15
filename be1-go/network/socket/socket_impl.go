@@ -99,8 +99,7 @@ func (s *baseSocket) ReadPump() {
 		select {
 		case <-s.done:
 			return
-		default:
-			s.receiver <- msg
+		case s.receiver <- msg:
 		}
 	}
 }
