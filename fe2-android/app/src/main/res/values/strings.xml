@@ -249,7 +249,7 @@
   <string name="token">Token</string>
   <string name="copy_to_clipboard">Copy to Clipboard</string>
   <string name="successful_copy">Copied with success to clipboard !</string>
-  <string name="successful_paste">Copied with success to clipboard !</string>
+  <string name="successful_paste">Pasted with success from clipboard !</string>
 
   <!-- Digital Cash -->
   <string name="digital_cash_send">Send</string>
