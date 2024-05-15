@@ -69,6 +69,12 @@ func (s *ServerConfig) newHub(l *zerolog.Logger) (hub.Hub, error) {
 		s.ServerAddress = fmt.Sprintf("ws://%s:%d/server", s.PublicAddress, s.ServerPort)
 	}
 
+	path := "./database-a/" + sqlite.DefaultPath
+
+	if s.ClientPort == 9002 {
+		path = "./database-b/" + sqlite.DefaultPath
+	}
+
 	var point kyber.Point = nil
 	err := ownerKey(s.PublicKey, &point)
 	if err != nil {
@@ -80,7 +86,7 @@ func (s *ServerConfig) newHub(l *zerolog.Logger) (hub.Hub, error) {
 		return nil, err
 	}
 
-	db, err := sqlite.NewSQLite(sqlite.DefaultPath, true)
+	db, err := sqlite.NewSQLite(path, true)
 	if err != nil {
 		return nil, err
 	}
