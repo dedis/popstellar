@@ -263,14 +263,13 @@ object GeneralUtils {
 
         binding.textInput.addTextChangedListener(
             object : TextWatcher {
-              override fun beforeTextChanged(
-                  s: CharSequence?,
-                  start: Int,
-                  count: Int,
-                  after: Int
-              ) {}
+              override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                // Not needed
+              }
 
-              override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+              override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                // Not needed
+              }
 
               override fun afterTextChanged(editable: Editable?) {
                 if (editable != null) {

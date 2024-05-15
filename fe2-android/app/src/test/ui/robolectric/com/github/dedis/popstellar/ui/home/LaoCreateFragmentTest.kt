@@ -324,6 +324,20 @@ class LaoCreateFragmentTest {
     LaoCreatePageObject.witnessTitle().check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
   }
 
+  @Test
+  fun addPasteFromClipboardWithEmptyClipboardTest(){
+    LaoCreatePageObject.witnessingSwitch().perform(ViewActions.click())
+
+    LaoCreatePageObject.addWitnessButton().perform(ViewActions.click())
+    QrScanningPageObject.openManualButton().perform(ViewActions.click())
+
+    QrScanningPageObject.getPasteFromClipboardButton().perform(ViewActions.click())
+    QrScanningPageObject.manualInputWithHintRes(R.string.manual_add_witness_hint).check(ViewAssertions.matches(ViewMatchers.withText("")))
+
+    QrScanningPageObject.manualAddConfirm().perform(ViewActions.click())
+    assertToastIsDisplayedWithText(R.string.qrcode_scanning_manual_entry_error)
+  }
+
   companion object {
     private const val LAO_NAME = "LAO"
     private const val SERVER_URL = "localhost"
