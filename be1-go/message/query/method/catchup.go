@@ -8,7 +8,9 @@ type Catchup struct {
 
 	ID int `json:"id"`
 
-	Params struct {
-		Channel string `json:"channel"`
-	} `json:"params"`
+	Params CatchupParams `json:"params"`
+}
+
+type CatchupParams struct {
+	Channel string `json:"channel"`
 }

@@ -95,6 +95,7 @@ function fn() {
     config.webDriverOptions = {
       webDriverSession: {
         capabilities,
+        // desiredCapabilities is there for compatibility with karate
         desiredCapabilities: {}
       }
     };
@@ -114,6 +115,7 @@ function fn() {
             'appium:avd': karate.properties['avd'],
           }
         },
+        // desiredCapabilities is there for compatibility with karate
         desiredCapabilities: {
         }
       }

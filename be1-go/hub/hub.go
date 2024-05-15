@@ -10,7 +10,7 @@ import (
 // Hub defines the methods a PoP server must implement to receive messages
 // and handle clients.
 type Hub interface {
-	// NotifyNewServer add a socket for the hub to send message to other servers
+	// NotifyNewServer adds a Socket for the hub to send message to other servers
 	NotifyNewServer(socket.Socket)
 
 	// Start invokes the processing loop for the hub.
@@ -22,11 +22,11 @@ type Hub interface {
 	// Receiver returns a channel that may be used to process incoming messages
 	Receiver() chan<- socket.IncomingMessage
 
-	// OnSocketClose returns a channel which accepts socket ids on connection
+	// OnSocketClose returns a channel which accepts Socket ids on connection
 	// close events. This allows the hub to cleanup clients which close without
-	// sending an unsubscribe message
+	// sending an Unsubscribe message
 	OnSocketClose() chan<- string
 
-	// SendGreetServer sends a greet server message in the socket
+	// SendGreetServer sends a greet server message in the Socket
 	SendGreetServer(socket.Socket) error
 }
