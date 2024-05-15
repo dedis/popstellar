@@ -1074,12 +1074,12 @@ this message. Otherwise, the server returns the latest messages it has on that c
 account the requested number of messages. If the specified number of messages is greater than what 
 is on the server in the current page, then the server only returns the messages it has on that page.
 
-For now, this message is to be used to retrieve chirps from a social media channel specific for a given user (e.g. `/root/lao_id/social/chirps/{user_public_key}`) 
+For now, this message is to be used to retrieve chirps from a social media channel specific for a given user (e.g. `/root/lao_id/social/chirps/{send_public_key}`) 
 by paging when a new client joins the LAO instead of getting all the chirps at once. The user's public key is used
 to have a separate paging subchannel for each user to avoid sending irrelevant messages to other users. This paging is 
 done in an effort to reduce network traffic at catchup.
 
-This message is also to be used to retrieve chirps of a specific user profile from a subchannel "/root/lao_id/social/profile/user_public_key/specific_user_public_key"  where "user_public_key" is the same as before and "specific_user_public_key" is the public key of the user whose messages the client wants to retrieve. Paging is not deemed necessary for retrieving top chirps for now and can be done with the regular catchup message from a subchannel "/root/lao_id/social/top_chirps".
+This message is also to be used to retrieve chirps of a specific user profile from a subchannel `/root/lao_id/social/profile/{profile_public_key}/{sender_public_key}`  where `sender_public_key` is the same as before and `profile_public_key` is the public key of the user whose messages the client wants to retrieve. Paging is not deemed necessary for retrieving top chirps for now and can be done with the regular catchup message from a subchannel `/root/lao_id/social/top_chirps`.
 
 This may serve as a starting point for the paging of messages in other channels as a future optimization.
 
