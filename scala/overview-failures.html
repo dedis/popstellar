@@ -75,7 +75,7 @@ $(document).ready(function() {
   <tbody>
     <tr class="info">
       <td>scala</td>
-      <td>14 May 2024, 04:20</td>
+      <td>15 May 2024, 04:20</td>
     </tr>
   </tbody>
 </table>
@@ -205,7 +205,7 @@ classpath:be/features/election/castVote.feature:156</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-4" class="collapse collapsable-details">
-        <pre>04:12:57.695 classpath:be/features/election/castVote.feature:156
+        <pre>04:13:10.503 classpath:be/features/election/castVote.feature:156
 Given def nonAttendee = call createMockClient
 js failed:
 &gt;&gt;&gt;&gt;
@@ -489,7 +489,7 @@ classpath:be/features/rollCall/closeRollCall.feature:42</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-9" class="collapse collapsable-details">
-        <pre>04:16:59.109 classpath:be/features/rollCall/closeRollCall.feature:42
+        <pre>04:17:09.887 classpath:be/features/rollCall/closeRollCall.feature:42
 Given def notOrganizer = call createMockClient
 js failed:
 &gt;&gt;&gt;&gt;
@@ -815,7 +815,7 @@ classpath:be/features/decentralizedCom/heartbeat.feature:26</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-14" class="collapse collapsable-details">
-        <pre>04:10:28.738 classpath:be/features/decentralizedCom/heartbeat.feature:26
+        <pre>04:10:41.035 classpath:be/features/decentralizedCom/heartbeat.feature:26
 Then assert heartbeatMessages.length == 2
 did not evaluate to 'true': heartbeatMessages.length == 2
 classpath:be/features/decentralizedCom/heartbeat.feature:26
@@ -856,7 +856,7 @@ classpath:be/features/decentralizedCom/heartbeat.feature:26
 </div>
 
 
-  <span class="lead-duration duration">5.004</span>
+  <span class="lead-duration duration">5.005</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-15">
@@ -946,7 +946,7 @@ classpath:be/features/decentralizedCom/heartbeat.feature:26
   <span class="keyword indention">When</span>
   <span class="name">mockFrontend.publish(validCreateRollCall, lao.channel)</span>
 
-  <span class="lead-duration duration">0.001</span>
+  <span class="lead-duration duration">0.002</span>
 
 </div>
 
@@ -1000,7 +1000,7 @@ classpath:be/features/decentralizedCom/heartbeat.feature:26
   <span class="keyword indention">Then</span>
   <span class="name">assert mockBackend.receivedHeartbeatWithSubstring(message_id)</span>
 
-  <span class="lead-duration duration">5.001</span>
+  <span class="lead-duration duration">5.002</span>
 
 </div>
 
@@ -1030,7 +1030,7 @@ classpath:be/features/decentralizedCom/heartbeat.feature:49</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-19" class="collapse collapsable-details">
-        <pre>04:10:41.565 classpath:be/features/decentralizedCom/heartbeat.feature:49
+        <pre>04:10:53.727 classpath:be/features/decentralizedCom/heartbeat.feature:49
 Then assert mockBackend.receivedHeartbeatWithSubstring(message_id)
 did not evaluate to 'true': mockBackend.receivedHeartbeatWithSubstring(message_id)
 classpath:be/features/decentralizedCom/heartbeat.feature:49
@@ -1071,7 +1071,7 @@ classpath:be/features/decentralizedCom/heartbeat.feature:49
 </div>
 
 
-  <span class="lead-duration duration">0.253</span>
+  <span class="lead-duration duration">0.208</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-20">
@@ -1141,7 +1141,7 @@ classpath:be/features/decentralizedCom/heartbeat.feature:49
   <span class="keyword indention">And</span>
   <span class="name">call read(validCoinIssuanceScenario) { organizer: '#(organizer)', lao: '#(lao)', rollCall: '#(rollCall)', recipient: '#(recipient)', amount: '#(initialAmount)' }</span>
 
-  <span class="lead-duration duration">0.240</span>
+  <span class="lead-duration duration">0.196</span>
 
 </div>
 
@@ -1187,10 +1187,10 @@ classpath:be/features/decentralizedCom/heartbeat.feature:49
       </div>
       <div id="msg-22" class="collapse collapsable-details">
         <pre>{
-  &quot;organizer&quot;: &quot;common.utils.MockClient@d271a54&quot;,
-  &quot;lao&quot;: &quot;common.model.Lao@6ff8e744&quot;,
-  &quot;rollCall&quot;: &quot;common.model.RollCall@409395b9&quot;,
-  &quot;recipient&quot;: &quot;common.utils.MockClient@53e82089&quot;,
+  &quot;organizer&quot;: &quot;common.utils.MockClient@40ddf339&quot;,
+  &quot;lao&quot;: &quot;common.model.Lao@c83ed77&quot;,
+  &quot;rollCall&quot;: &quot;common.model.RollCall@d271a54&quot;,
+  &quot;recipient&quot;: &quot;common.utils.MockClient@6ff8e744&quot;,
   &quot;amount&quot;: 32
 }
 </pre>
@@ -1212,7 +1212,7 @@ classpath:be/features/decentralizedCom/heartbeat.feature:49
   <span class="keyword indention">And</span>
   <span class="name">def transaction = organizer.issueCoins(recipient, 20);</span>
 
-  <span class="lead-duration duration">0.001</span>
+  <span class="lead-duration duration">0.000</span>
 
 </div>
 
@@ -1320,7 +1320,7 @@ classpath:be/features/decentralizedCom/heartbeat.feature:49
   <span class="keyword indention">And</span>
   <span class="name">def validTransfer =</span>
 
-  <span class="lead-duration duration">0.001</span>
+  <span class="lead-duration duration">0.002</span>
 
 </div>
 
@@ -1381,7 +1381,7 @@ classpath:be/features/decentralizedCom/heartbeat.feature:49
   <span class="keyword indention">When</span>
   <span class="name">organizer.publish(validTransfer, lao.cashChannel)</span>
 
-  <span class="lead-duration duration">0.001</span>
+  <span class="lead-duration duration">0.002</span>
 
 </div>
 
@@ -1408,7 +1408,7 @@ classpath:be/features/decentralizedCom/heartbeat.feature:49
   <span class="keyword indention">And</span>
   <span class="name">json answer = organizer.getBackendResponse(validTransfer)</span>
 
-  <span class="lead-duration duration">0.005</span>
+  <span class="lead-duration duration">0.004</span>
 
 </div>
 
@@ -1452,7 +1452,7 @@ classpath:be/features/decentralizedCom/heartbeat.feature:49
       <div id="msg-24" class="collapse collapsable-details  in ">
         <pre>match failed: CONTAINS
   $ | actual does not contain expected | actual does not contain key - 'result' (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:1721381029,&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;Invalid data: $.transaction.inputs[0].tx_out_index: string found, integer expected; $.transaction.outputs[0].value: string found, integer expected&quot;}}
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:82122903,&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;Invalid data: $.transaction.inputs[0].tx_out_index: string found, integer expected; $.transaction.outputs[0].value: string found, integer expected&quot;}}
   {&quot;result&quot;:0}
 
 
@@ -1470,11 +1470,11 @@ classpath:be/features/digitalCash/transaction.feature:97</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-25" class="collapse collapsable-details">
-        <pre>04:11:02.908 classpath:be/features/digitalCash/transaction.feature:97
+        <pre>04:11:14.908 classpath:be/features/digitalCash/transaction.feature:97
 Then match answer contains VALID_MESSAGE
 match failed: CONTAINS
   $ | actual does not contain expected | actual does not contain key - 'result' (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:1721381029,&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;Invalid data: $.transaction.inputs[0].tx_out_index: string found, integer expected; $.transaction.outputs[0].value: string found, integer expected&quot;}}
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:82122903,&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;Invalid data: $.transaction.inputs[0].tx_out_index: string found, integer expected; $.transaction.outputs[0].value: string found, integer expected&quot;}}
   {&quot;result&quot;:0}
 
 
@@ -1622,7 +1622,7 @@ classpath:be/features/rollCall/openRollCall.feature:41</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-29" class="collapse collapsable-details">
-        <pre>04:19:37.174 classpath:be/features/rollCall/openRollCall.feature:41
+        <pre>04:19:47.190 classpath:be/features/rollCall/openRollCall.feature:41
 Given def notOrganizer = call createMockClient
 js failed:
 &gt;&gt;&gt;&gt;
@@ -1899,7 +1899,7 @@ classpath:be/features/election/electionOpen.feature:81</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-34" class="collapse collapsable-details">
-        <pre>04:15:05.760 classpath:be/features/election/electionOpen.feature:81
+        <pre>04:15:16.861 classpath:be/features/election/electionOpen.feature:81
 Given def notOrganizer = call createMockClient
 js failed:
 &gt;&gt;&gt;&gt;
@@ -2097,7 +2097,7 @@ classpath:be/features/election/electionOpen.feature:81
 </div>
 
 
-  <span class="lead-duration duration">5.327</span>
+  <span class="lead-duration duration">5.300</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-36">
@@ -2230,7 +2230,7 @@ classpath:be/features/election/electionOpen.feature:81
           <a>Doc string</a>
       </div>
       <div id="msg-39" class="collapse collapsable-details">
-        <pre>04:09:05.536 sending a greetServer :
+        <pre>04:09:17.622 sending a greetServer :
  {
   &quot;jsonrpc&quot;: &quot;2.0&quot;,
   &quot;method&quot;: &quot;greet_server&quot;,
@@ -2260,7 +2260,7 @@ classpath:be/features/election/electionOpen.feature:81
   <span class="keyword indention">And</span>
   <span class="name">def greetServers = mockBackend.getGreetServer()</span>
 
-  <span class="lead-duration duration">5.325</span>
+  <span class="lead-duration duration">5.298</span>
 
 </div>
 
@@ -2317,7 +2317,7 @@ classpath:be/features/decentralizedCom/greetServer.feature:47</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-41" class="collapse collapsable-details">
-        <pre>04:09:10.862 classpath:be/features/decentralizedCom/greetServer.feature:47
+        <pre>04:09:22.922 classpath:be/features/decentralizedCom/greetServer.feature:47
 Then assert greetServers.length == 0
 did not evaluate to 'true': greetServers.length == 0
 classpath:be/features/decentralizedCom/greetServer.feature:47
@@ -2358,7 +2358,7 @@ classpath:be/features/decentralizedCom/greetServer.feature:47
 </div>
 
 
-  <span class="lead-duration duration">5.009</span>
+  <span class="lead-duration duration">5.011</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-42">
@@ -2401,7 +2401,7 @@ classpath:be/features/decentralizedCom/greetServer.feature:47
   <span class="keyword indention">Given</span>
   <span class="name">def updateLaoRequest =</span>
 
-  <span class="lead-duration duration">0.002</span>
+  <span class="lead-duration duration">0.003</span>
 
 </div>
 
@@ -2445,7 +2445,7 @@ classpath:be/features/decentralizedCom/greetServer.feature:47
   <span class="keyword indention">When</span>
   <span class="name">organizer.publish(updateLaoRequest, lao.channel)</span>
 
-  <span class="lead-duration duration">0.003</span>
+  <span class="lead-duration duration">0.004</span>
 
 </div>
 
@@ -2509,7 +2509,7 @@ classpath:be/features/LAO/update.feature:30</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-46" class="collapse collapsable-details">
-        <pre>04:07:26.443 classpath:be/features/LAO/update.feature:30
+        <pre>04:07:40.610 classpath:be/features/LAO/update.feature:30
 And json answer = organizer.getBackendResponse(updateLaoRequest)
 js failed:
 &gt;&gt;&gt;&gt;
@@ -2611,7 +2611,7 @@ classpath:be/features/LAO/update.feature:30
 </div>
 
 
-  <span class="lead-duration duration">5.011</span>
+  <span class="lead-duration duration">5.006</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-47">
@@ -2698,7 +2698,7 @@ classpath:be/features/LAO/update.feature:30
   <span class="keyword indention">When</span>
   <span class="name">organizer.publish(badUpdateLaoReq, lao.channel)</span>
 
-  <span class="lead-duration duration">0.008</span>
+  <span class="lead-duration duration">0.004</span>
 
 </div>
 
@@ -2725,7 +2725,7 @@ classpath:be/features/LAO/update.feature:30
   <span class="keyword indention">And</span>
   <span class="name">json answer = organizer.getBackendResponse(badUpdateLaoReq)</span>
 
-  <span class="lead-duration duration">5.001</span>
+  <span class="lead-duration duration">5.002</span>
 
 </div>
 
@@ -2762,7 +2762,7 @@ classpath:be/features/LAO/update.feature:48</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-51" class="collapse collapsable-details">
-        <pre>04:07:40.817 classpath:be/features/LAO/update.feature:48
+        <pre>04:07:53.373 classpath:be/features/LAO/update.feature:48
 And json answer = organizer.getBackendResponse(badUpdateLaoReq)
 js failed:
 &gt;&gt;&gt;&gt;
@@ -2864,7 +2864,7 @@ classpath:be/features/LAO/update.feature:48
 </div>
 
 
-  <span class="lead-duration duration">5.017</span>
+  <span class="lead-duration duration">5.007</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-52">
@@ -2951,7 +2951,7 @@ classpath:be/features/LAO/update.feature:48
   <span class="keyword indention">When</span>
   <span class="name">organizer.publish(badUpdateLaoReq, lao.channel)</span>
 
-  <span class="lead-duration duration">0.013</span>
+  <span class="lead-duration duration">0.002</span>
 
 </div>
 
@@ -3015,7 +3015,7 @@ classpath:be/features/LAO/update.feature:66</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-56" class="collapse collapsable-details">
-        <pre>04:07:53.668 classpath:be/features/LAO/update.feature:66
+        <pre>04:08:06.077 classpath:be/features/LAO/update.feature:66
 And json answer = organizer.getBackendResponse(badUpdateLaoReq)
 js failed:
 &gt;&gt;&gt;&gt;
@@ -3196,7 +3196,7 @@ classpath:be/features/rollCall/createRollCall.feature:70</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-60" class="collapse collapsable-details">
-        <pre>04:17:58.416 classpath:be/features/rollCall/createRollCall.feature:70
+        <pre>04:18:10.340 classpath:be/features/rollCall/createRollCall.feature:70
 Given def notOrganizer = call createMockClient
 js failed:
 &gt;&gt;&gt;&gt;
@@ -3477,7 +3477,7 @@ classpath:be/features/LAO/create.feature:113</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-65" class="collapse collapsable-details">
-        <pre>04:07:12.583 classpath:be/features/LAO/create.feature:113
+        <pre>04:07:26.819 classpath:be/features/LAO/create.feature:113
 Given def notOrganizer = call createMockClient
 js failed:
 &gt;&gt;&gt;&gt;
