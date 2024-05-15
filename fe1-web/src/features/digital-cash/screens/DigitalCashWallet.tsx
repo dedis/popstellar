@@ -52,6 +52,7 @@ const DigitalCashWallet = () => {
             containerStyle={List.getListItemStyles(true, rollCallTokens.length === 0)}
             style={List.getListItemStyles(true, rollCallTokens.length === 0)}
             bottomDivider
+            testID="digital-cash-coin-issuance"
             onPress={() => {
               navigation.navigate(STRINGS.navigation_digital_cash_send_receive, {
                 isCoinbase: true,
@@ -82,6 +83,7 @@ const DigitalCashWallet = () => {
               containerStyle={listStyle}
               style={listStyle}
               bottomDivider
+              testID={`digital-cash-roll-call-token-${idx}`}
               onPress={() => {
                 navigation.navigate(STRINGS.navigation_digital_cash_send_receive, {
                   rollCallId: rollCallToken.rollCallId.valueOf(),

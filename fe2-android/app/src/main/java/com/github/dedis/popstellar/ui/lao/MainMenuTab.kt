@@ -11,6 +11,7 @@ enum class MainMenuTab(@get:IdRes val menuId: Int) {
   POPCHA(R.id.main_menu_popcha),
   WITNESSING(R.id.main_menu_witnessing),
   TOKENS(R.id.main_menu_tokens),
+  LINKED_ORGANIZATIONS(R.id.main_menu_linked_organizations),
   DISCONNECT(R.id.main_menu_disconnect);
 
   companion object {

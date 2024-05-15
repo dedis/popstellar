@@ -6,6 +6,7 @@ const ajv = require("./main");
 
 const rootSchema =
     "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/jsonRPC.json";
+
 const messageDataSchema =
     "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/data.json";
 
@@ -248,6 +249,24 @@ test("message data: election", () => {
 test("message data: message", () => {
     message_witness = require("../examples/messageData/message_witness.json");
     expect(message_witness).toBeValid(messageDataSchema);
+});
+
+test("message data: federation", () => {
+    federation_init = require("../examples/messageData/federation_init/federation_init.json");
+    expect(federation_init).toBeValid(messageDataSchema);
+
+    federation_expect = require("../examples/messageData/federation_expect/federation_expect.json");
+    expect(federation_expect).toBeValid(messageDataSchema);
+
+    federation_challenge_request = require("../examples/messageData/federation_challenge_request/federation_challenge_request.json");
+    expect(federation_challenge_request).toBeValid(messageDataSchema);
+
+    federation_challenge = require("../examples/messageData/federation_challenge/federation_challenge.json");
+    expect(federation_challenge).toBeValid(messageDataSchema);
+
+    federation_result = require("../examples/messageData/federation_result/federation_result.json");
+    expect(federation_result).toBeValid(messageDataSchema);
+
 });
 
 test("message data: chirp", () => {
