@@ -1156,7 +1156,7 @@ Response (in case of success)
                 "channel": {
                     "description": "[String] name of the channel",
                     "type": "string",
-                    "pattern": "^/root(/[^/]+)*$"
+                    "pattern": "^/root(/[^/]+)/social/(chirps(/[^/]+)|profile(/[^/]+){2})$"
                 },
                 "number_of_messages": {
                     "description": "[Integer] Number of messages requested",
