@@ -123,7 +123,7 @@ final case class GossipManager(
     }
   }
 
-  private def startGossip(messages: Map[Channel, List[Message]]): Unit = {
+  private def gossip(messages: Map[Channel, List[Message]]): Unit = {
     val rumor: Rumor = Rumor(publicKey.get, rumorId, messages)
     val jsonRpcRequest = prepareRumor(rumor)
     rumorId += 1
@@ -137,8 +137,8 @@ final case class GossipManager(
     case GossipManager.ManageGossipResponse(jsonRpcResponse) =>
       processResponse(jsonRpcResponse)
 
-    case GossipManager.StartGossip(messages) =>
-      startGossip(messages)
+    case GossipManager.Gossip(messages) =>
+      gossip(messages)
 
     case _ =>
       log.info(s"Actor $self received an unexpected message")
@@ -167,10 +167,10 @@ object GossipManager extends AskPatternConstants {
     case graphMessage @ _ => graphMessage
   }
 
-  def startGossip(gossipManager: AskableActorRef): Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map {
+  def gossip(gossipManager: AskableActorRef): Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map {
     case Right(jsonRpcRequest: JsonRpcRequest) =>
       jsonRpcRequest.getParamsMessage match
-        case Some(message) => gossipManager ? StartGossip(Map(jsonRpcRequest.getParamsChannel -> List(message)))
+        case Some(message) => gossipManager ? Gossip(Map(jsonRpcRequest.getParamsChannel -> List(message)))
         case None          => /* Do nothing */
       Right(jsonRpcRequest)
     case graphMessage @ _ => graphMessage
@@ -179,7 +179,7 @@ object GossipManager extends AskPatternConstants {
   sealed trait Event
   final case class HandleRumor(jsonRpcRequest: JsonRpcRequest)
   final case class ManageGossipResponse(jsonRpcResponse: JsonRpcResponse)
-  final case class StartGossip(messages: Map[Channel, List[Message]])
+  final case class Gossip(messages: Map[Channel, List[Message]])
 
   sealed trait GossipManagerMessage
   final case class Ping() extends GossipManagerMessage
