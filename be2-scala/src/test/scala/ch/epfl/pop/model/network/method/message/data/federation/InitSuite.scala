@@ -11,9 +11,9 @@ class InitSuite extends FunSuite with Matchers {
 
   test("Constructor/apply works for Init as expected") {
 
-    INIT.lao_id should equal(LAO_ID)
-    INIT.server_address should equal(SERVER_ADDRESS)
-    INIT.public_key should equal(PUBLIC_KEY)
+    INIT.laoId should equal(LAO_ID)
+    INIT.serverAddress should equal(SERVER_ADDRESS)
+    INIT.publicKey should equal(PUBLIC_KEY)
     INIT.challenge should equal(CHALLENGE)
     INIT._object should equal(ObjectType.federation)
     INIT.action should equal(ActionType.init)
