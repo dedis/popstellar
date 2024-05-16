@@ -61,13 +61,13 @@
           android:textAllCaps="false"
           app:layout_constraintEnd_toEndOf="parent"
           app:layout_constraintStart_toStartOf="parent"
-          app:layout_constraintTop_toBottomOf="@id/manual_add_input_layout" />
+          app:layout_constraintTop_toBottomOf="@id/dynamic_inputs_container" />
 
         <ImageView
           android:id="@+id/add_manual_close"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
-          android:contentDescription="@string/add_manual_close_button_desc"
+          android:contentDescription="@string/manual_add_close_button_desc"
           android:src="@drawable/close_icon"
           app:layout_constraintBottom_toBottomOf="@+id/add_manual_title"
           app:layout_constraintEnd_toEndOf="parent"
@@ -85,21 +85,13 @@
           app:layout_constraintStart_toStartOf="parent"
           app:layout_constraintTop_toTopOf="parent" />
 
-        <com.google.android.material.textfield.TextInputLayout
-          android:id="@+id/manual_add_input_layout"
-          style="@style/text_field_standard"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:layout_margin="@dimen/main_horizontal_margin"
-          app:endIconMode="clear_text"
-          app:layout_constraintTop_toBottomOf="@id/add_manual_title">
-          <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/manual_add_edit_text"
+        <!-- Dynamic Input Fields Container with RecyclerView -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/dynamic_inputs_container"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_gravity="start"/>
-
-        </com.google.android.material.textfield.TextInputLayout>
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/main_horizontal_margin"
+            app:layout_constraintTop_toBottomOf="@id/add_manual_title"/>
 
       </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.card.MaterialCardView>
