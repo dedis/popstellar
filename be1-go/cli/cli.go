@@ -5,8 +5,6 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"github.com/rs/zerolog"
-	"golang.org/x/exp/slices"
 	"net/url"
 	"os"
 	popstellar "popstellar"
@@ -23,6 +21,9 @@ import (
 	"popstellar/validation"
 	"sync"
 	"time"
+
+	"github.com/rs/zerolog"
+	"golang.org/x/exp/slices"
 
 	"github.com/rs/zerolog/log"
 	"go.dedis.ch/kyber/v3"
@@ -60,15 +61,6 @@ type ServerConfig struct {
 }
 
 func (s *ServerConfig) newHub(l *zerolog.Logger) (hub.Hub, error) {
-	// compute the client server address if it wasn't provided
-	if s.ClientAddress == "" {
-		s.ClientAddress = fmt.Sprintf("ws://%s:%d/client", s.PublicAddress, s.ClientPort)
-	}
-	// compute the server server address if it wasn't provided
-	if s.ServerAddress == "" {
-		s.ServerAddress = fmt.Sprintf("ws://%s:%d/server", s.PublicAddress, s.ServerPort)
-	}
-
 	path := "./database-a/" + sqlite.DefaultPath
 
 	if s.ClientPort == 9002 {
@@ -172,10 +164,20 @@ func Serve(cliCtx *cli.Context) error {
 		poplog.With().Str("role", "client websocket").Logger())
 	clientSrv.Start()
 
+	// compute the client server address if it wasn't provided
+	if serverConfig.ClientAddress == "" {
+		serverConfig.ClientAddress = fmt.Sprintf("ws://%s/client", clientSrv.Addr())
+	}
+
 	// Start a websocket server for remote servers
 	serverSrv := network.NewServer(h, serverConfig.PrivateAddress, serverConfig.ServerPort, socket.ServerSocketType,
 		poplog.With().Str("role", "server websocket").Logger())
 	serverSrv.Start()
+
+	// compute the server server address if it wasn't provided
+	if serverConfig.ServerAddress == "" {
+		serverConfig.ServerAddress = fmt.Sprintf("ws://%s/server", serverSrv.Addr())
+	}
 
 	// create wait group which waits for goroutines to finish
 	wg := &sync.WaitGroup{}
@@ -356,6 +358,16 @@ func ownerKey(pk string, point *kyber.Point) error {
 	return nil
 }
 
+// validateServerConfig validates the server configuration
+func validateServerConfig(serverConfig ServerConfig) error {
+	if serverConfig.ServerPort != 0 && serverConfig.ServerPort == serverConfig.ClientPort {
+		return xerrors.Errorf("client and server ports must be different")
+	} else if serverConfig.AuthPort != 0 && (serverConfig.ClientPort == serverConfig.AuthPort || serverConfig.ServerPort == serverConfig.AuthPort) {
+		return xerrors.Errorf("PoPCHA Authentication port must be unique")
+	}
+	return nil
+}
+
 // startWithConfigFile returns the ServerConfig from the config file
 func startWithConfigFile(configFilename string) (ServerConfig, error) {
 	if configFilename == "" {
@@ -375,12 +387,12 @@ func loadConfig(configFilename string) (ServerConfig, error) {
 	if err != nil {
 		return ServerConfig{}, xerrors.Errorf("could not unmarshal serverConfig file: %w", err)
 	}
-	if serverConfig.ServerPort == serverConfig.ClientPort {
-		return ServerConfig{}, xerrors.Errorf("client and server ports must be different")
 
-	} else if serverConfig.ServerPort == serverConfig.AuthPort || serverConfig.ClientPort == serverConfig.AuthPort {
-		return ServerConfig{}, xerrors.Errorf("PoPCHA Authentication port must be unique\"")
+	err = validateServerConfig(serverConfig)
+	if err != nil {
+		return ServerConfig{}, err
 	}
+
 	return serverConfig, nil
 }
 
@@ -388,26 +400,25 @@ func loadConfig(configFilename string) (ServerConfig, error) {
 func startWithFlags(cliCtx *cli.Context) (ServerConfig, error) {
 	// get command line args which specify public key, addresses, port to use for clients
 	// and servers, remote servers address
-	clientPort := cliCtx.Int("client-port")
-	serverPort := cliCtx.Int("server-port")
-	authPort := cliCtx.Int("auth-port")
-	if clientPort == serverPort {
-		return ServerConfig{}, xerrors.Errorf("client and server ports must be different")
-	} else if clientPort == authPort || serverPort == authPort {
-		return ServerConfig{}, xerrors.Errorf("PoPCHA Authentication port must be unique")
-	}
-	return ServerConfig{
+	serverConfig := ServerConfig{
 		PublicKey:      cliCtx.String("public-key"),
 		ClientAddress:  cliCtx.String("client-address"),
 		ServerAddress:  cliCtx.String("server-address"),
 		PublicAddress:  cliCtx.String("server-public-address"),
 		PrivateAddress: cliCtx.String("server-listen-address"),
 		AuthAddress:    cliCtx.String("auth-server-address"),
-		ClientPort:     clientPort,
-		ServerPort:     serverPort,
-		AuthPort:       authPort,
+		ClientPort:     cliCtx.Int("client-port"),
+		ServerPort:     cliCtx.Int("server-port"),
+		AuthPort:       cliCtx.Int("auth-port"),
 		OtherServers:   cliCtx.StringSlice("other-servers"),
-	}, nil
+	}
+
+	err := validateServerConfig(serverConfig)
+	if err != nil {
+		return ServerConfig{}, err
+	}
+
+	return serverConfig, nil
 }
 
 // watchConfigFile watches the config file for changes, updates the other servers list in the config if necessary

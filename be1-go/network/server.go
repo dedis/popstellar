@@ -3,6 +3,7 @@ package network
 import (
 	"context"
 	"fmt"
+	"net"
 	"net/http"
 	"popstellar"
 	"popstellar/hub"
@@ -77,7 +78,7 @@ func NewServer(hub hub.Hub, addr string, port int, st socket.SocketType, log zer
 		Handler: tracing(nextRequestID)(logging(log)(mux)),
 	}
 
-	log.Info().Msgf("setting handler at %s for port %d", path, port)
+	log.Info().Msgf("setting handler for %s", path)
 
 	server.srv = httpServer
 
@@ -87,9 +88,17 @@ func NewServer(hub hub.Hub, addr string, port int, st socket.SocketType, log zer
 // Start spawns a new go-routine which invokes ListenAndServe on the http.Server
 func (s *Server) Start() {
 	go func() {
-		s.log.Info().Msgf("starting to listen at: %s", s.srv.Addr)
+		listener, err := net.Listen("tcp", s.srv.Addr)
+		if err != nil {
+			s.log.Fatal().Err(err).Msgf("failed to start listening on %s", s.srv.Addr)
+		}
+
+		// Overwrite the address with the actual address we are listening on (in case we are using port 0)
+		s.srv.Addr = listener.Addr().String()
+
+		s.log.Info().Msgf("%s starting to listen at: %s", s.st, s.srv.Addr)
 		s.Started <- struct{}{}
-		err := s.srv.ListenAndServe()
+		err = s.srv.Serve(listener)
 		if err != nil && err != http.ErrServerClosed {
 			s.log.Fatal().Err(err).Msg("failed to start the server")
 		}
@@ -208,4 +217,9 @@ func tracing(nextRequestID func() string) func(http.Handler) http.Handler {
 			next.ServeHTTP(w, r.WithContext(ctx))
 		})
 	}
+}
+
+// GetAddr returns the address of the server
+func (s *Server) Addr() string {
+	return s.srv.Addr
 }
