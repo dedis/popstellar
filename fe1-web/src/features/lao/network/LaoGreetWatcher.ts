@@ -1,6 +1,7 @@
 import { Store } from 'redux';
 
-import { getNetworkManager } from 'core/network';
+// TODO: Commented in order to quickly test server to server communication. Uncomment this once done as well as the code below.
+// import { getNetworkManager } from 'core/network';
 import { getMessagesState } from 'core/network/ingestion';
 import { ExtendedMessage } from 'core/network/ingestion/ExtendedMessage';
 import { Hash, PublicKey, WitnessSignature, WitnessSignatureState } from 'core/objects';
