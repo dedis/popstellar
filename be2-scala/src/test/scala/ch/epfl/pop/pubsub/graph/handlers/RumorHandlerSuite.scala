@@ -133,7 +133,7 @@ class RumorHandlerSuite extends TestKit(ActorSystem("RumorActorSuiteActorSystem"
     val ask = dbActorRef ? DbActor.GetAllChannels()
     val channelsInDb = Await.result(ask, MAX_TIME) match {
       case DbActor.DbActorGetAllChannelsAck(channels) => channels
-      case err@_ => Matchers.fail(err.toString)
+      case err @ _                                    => Matchers.fail(err.toString)
     }
 
     val channelsInRumor = rumor.messages.keySet
