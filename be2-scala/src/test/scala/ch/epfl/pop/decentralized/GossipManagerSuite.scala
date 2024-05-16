@@ -157,8 +157,8 @@ class GossipManagerSuite extends TestKit(ActorSystem("GossipManagerSuiteActorSys
 
   test("When receiving a message, gossip manager should create and send a rumor") {
     val gossipManager: ActorRef = system.actorOf(GossipManager.props(dbActorRef, monitorRef, connectionMediatorRef))
-    val gossip = GossipManager.gossip(gossipManager)
     val peerServer = TestProbe()
+    val gossip = GossipManager.startGossip(gossipManager, peerServer.ref)
 
     // registers a new server
     connectionMediatorRef ? ConnectionMediator.NewServerConnected(peerServer.ref, GreetServer(PublicKey(Base64Data("")), "", ""))
@@ -188,8 +188,8 @@ class GossipManagerSuite extends TestKit(ActorSystem("GossipManagerSuiteActorSys
 
   test("Gossip manager increments jsonRpcId and rumorID when starting a gossip from message") {
     val gossipManager: ActorRef = system.actorOf(GossipManager.props(dbActorRef, monitorRef, connectionMediatorRef))
-    val gossip = GossipManager.gossip(gossipManager)
     val peerServer = TestProbe()
+    val gossip = GossipManager.startGossip(gossipManager, peerServer.ref)
 
     // registers a new server
     connectionMediatorRef ? ConnectionMediator.NewServerConnected(peerServer.ref, GreetServer(PublicKey(Base64Data("")), "", ""))
@@ -230,6 +230,39 @@ class GossipManagerSuite extends TestKit(ActorSystem("GossipManagerSuiteActorSys
           jsonRpcRequest.getParams.asInstanceOf[Rumor].rumorId shouldBe rumor.rumorId
         case _ => 0 shouldBe 1
     }
+  }
+
+  test("Gossip should stop when there is no peers left") {
+    val gossipManager: ActorRef = system.actorOf(GossipManager.props(dbActorRef, monitorRef, connectionMediatorRef))
+    val peerServer = TestProbe()
+    val gossip = GossipManager.startGossip(gossipManager, peerServer.ref)
+    val gossipMonitor = GossipManager.monitorResponse(gossipManager)
+
+    // registers a new server
+    connectionMediatorRef ? ConnectionMediator.NewServerConnected(peerServer.ref, GreetServer(PublicKey(Base64Data.encode("publicKey")), "", ""))
+
+    // emulates receiving a castVote and processes it
+    val outputCreateRumor = Source.single(Right(castVoteRequest)).via(gossip).runWith(Sink.head)
+    Await.result(outputCreateRumor, duration)
+
+    peerServer.receiveOne(duration) match
+      case ClientAnswer(_) =>
+      case _               => 0 shouldBe 1
+
+    // sends back to the gossipManager a response that the rumor is new
+    val response = Right(JsonRpcResponse(
+      RpcValidator.JSON_RPC_VERSION,
+      ResultObject(0),
+      Some(0)
+    ))
+
+    // by processing the reponse, gossipManager should not send again a rumor to a peer
+    val outputResponse = Source.single(response).via(gossipMonitor).runWith(Sink.head)
+
+    Await.result(outputResponse, duration)
+
+    peerServer.expectNoMessage(duration)
+
   }
 
 }

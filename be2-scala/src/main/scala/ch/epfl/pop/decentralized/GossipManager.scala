@@ -167,11 +167,13 @@ object GossipManager extends AskPatternConstants {
     case graphMessage @ _ => graphMessage
   }
 
-  def startGossip(gossipManager: AskableActorRef): Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map {
+  def startGossip(gossipManager: AskableActorRef, actorRef: ActorRef): Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map {
     case Right(jsonRpcRequest: JsonRpcRequest) =>
       jsonRpcRequest.getParamsMessage match
-        case Some(message) => gossipManager ? StartGossip(Map(jsonRpcRequest.getParamsChannel -> List(message)))
-        case None          => /* Do nothing */
+        case Some(message) =>
+          if (actorRef != Actor.noSender)
+            gossipManager ? StartGossip(Map(jsonRpcRequest.getParamsChannel -> List(message)))
+        case None => /* Do nothing */
       Right(jsonRpcRequest)
     case graphMessage @ _ => graphMessage
   }

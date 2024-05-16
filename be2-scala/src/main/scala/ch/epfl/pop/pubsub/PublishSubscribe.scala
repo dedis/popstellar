@@ -47,7 +47,6 @@ object PublishSubscribe {
         mediatorActorRef = mediatorActorRefT
         securityModuleActorRef = securityModuleActorRefT
         gossipManager = gossipManagerT
-        
 
         /* partitioner port numbers */
         val portPipelineError = 0
@@ -156,7 +155,7 @@ object PublishSubscribe {
           val greetServerPartition = builder.add(ParamsHandler.greetServerHandler(clientActorRef))
           val rumorPartition = builder.add(ParamsHandler.rumorHandler(dbActorRef, messageRegistry))
           val gossipManagerPartition = builder.add(GossipManager.gossipHandler(gossipManager))
-          val gossipStartPartition = builder.add(GossipManager.startGossip(gossipManager))
+          val gossipStartPartition = builder.add(GossipManager.startGossip(gossipManager, clientActorRef))
 
           val merger = builder.add(Merge[GraphMessage](totalPorts))
 
