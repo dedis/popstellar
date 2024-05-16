@@ -38,21 +38,23 @@ export const storeBackendAndConnectToPeers = async (
     ),
   );
 
-  // connect to all received peer addresses
-  // after connecting to each peer, we will send a catchup which contains the lao#create message
-  // as soon as we have parsed this message, we will connect to the LAO on the new connection as well
-  // which will trigger another lao#greet message
-  // IMPORTANT: The network manager deduplicates connections to the same address (string)
-  // and the received peer addresses are supposed to be the canonical ones.
-  // Hence we just have to make sure that the first connection is also to the canonical
-  // address, otherwise a client will connect to the same server twice (e.g. using its IP and then
-  // then using the canonical domain address)
-  const networkManager = getNetworkManager();
-
   try {
-    await Promise.all(
-      greetLaoMsg.peers.map((peerAddress) => networkManager.connect(peerAddress.address)),
-    );
+    // TODO: Commented in order to quickly test server to server communication. Uncomment once done.
+    /*
+      // connect to all received peer addresses
+      // after connecting to each peer, we will send a catchup which contains the lao#create message
+      // as soon as we have parsed this message, we will connect to the LAO on the new connection as well
+      // which will trigger another lao#greet message
+      // IMPORTANT: The network manager deduplicates connections to the same address (string)
+      // and the received peer addresses are supposed to be the canonical ones.
+      // Hence we just have to make sure that the first connection is also to the canonical
+      // address, otherwise a client will connect to the same server twice (e.g. using its IP and then
+      // then using the canonical domain address)
+      const networkManager = getNetworkManager();
+      await Promise.all(
+        greetLaoMsg.peers.map((peerAddress) => networkManager.connect(peerAddress.address)),
+      );
+    */
 
     // mark the lao#greet message as handled
     dispatch(
