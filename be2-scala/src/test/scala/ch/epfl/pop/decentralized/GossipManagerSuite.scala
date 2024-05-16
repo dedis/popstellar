@@ -161,7 +161,7 @@ class GossipManagerSuite extends TestKit(ActorSystem("GossipManagerSuiteActorSys
 
   test("When receiving a message, gossip manager should create and send a rumor") {
     val gossipManager: ActorRef = system.actorOf(GossipManager.props(dbActorRef, monitorRef, connectionMediatorRef))
-    val gossip = GossipManager.gossip(gossipManager)
+    val gossip = GossipManager.startGossip(gossipManager)
     val peerServer = TestProbe()
 
     // registers a new server
@@ -185,7 +185,7 @@ class GossipManagerSuite extends TestKit(ActorSystem("GossipManagerSuiteActorSys
 
   test("Gossip manager increments jsonRpcId and rumorID when starting a gossip from message") {
     val gossipManager: ActorRef = system.actorOf(GossipManager.props(dbActorRef, monitorRef, connectionMediatorRef))
-    val gossip = GossipManager.gossip(gossipManager)
+    val gossip = GossipManager.startGossip(gossipManager)
     val peerServer = TestProbe()
 
     // registers a new server

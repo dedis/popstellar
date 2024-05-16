@@ -92,7 +92,7 @@ object PublishSubscribe {
         input ~> schemaVerifier ~> jsonRpcDecoder ~> methodPartitioner
 
         methodPartitioner.out(portPipelineError) ~> merger
-        methodPartitioner.out(portRpcRequest) ~> GossipManager.gossip(gossipManager) ~> requestPartition ~> merger
+        methodPartitioner.out(portRpcRequest) ~> requestPartition ~> merger
         methodPartitioner.out(portRpcResponse) ~> gossipMonitorPartition ~> getMsgByIdResponsePartition ~> droppingSink
 
         merger ~> broadcast
@@ -155,6 +155,7 @@ object PublishSubscribe {
           val greetServerPartition = builder.add(ParamsHandler.greetServerHandler(clientActorRef))
           val rumorPartition = builder.add(ParamsHandler.rumorHandler(dbActorRef, messageRegistry))
           val gossipManagerPartition = builder.add(GossipManager.gossipHandler(gossipManager))
+          val gossipStartPartition = builder.add(GossipManager.startGossip(gossipManager))
 
           val merger = builder.add(Merge[GraphMessage](totalPorts))
 
@@ -162,7 +163,7 @@ object PublishSubscribe {
           input ~> jsonRpcContentValidator ~> methodPartitioner
 
           methodPartitioner.out(portPipelineError) ~> merger
-          methodPartitioner.out(portParamsWithMessage) ~> hasMessagePartition ~> merger
+          methodPartitioner.out(portParamsWithMessage) ~> gossipStartPartition ~> hasMessagePartition ~> merger
           methodPartitioner.out(portSubscribe) ~> subscribePartition ~> merger
           methodPartitioner.out(portUnsubscribe) ~> unsubscribePartition ~> merger
           methodPartitioner.out(portCatchup) ~> catchupPartition ~> merger

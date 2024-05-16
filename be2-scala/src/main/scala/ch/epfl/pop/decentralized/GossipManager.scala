@@ -18,7 +18,7 @@ import ch.epfl.pop.storage.DbActor
 import ch.epfl.pop.storage.DbActor.DbActorReadRumor
 
 import scala.concurrent.Await
-import scala.util.Random
+import scala.util.{Random, Success}
 
 final case class GossipManager(
     dbActorRef: AskableActorRef,
@@ -28,6 +28,12 @@ final case class GossipManager(
 ) extends Actor with AskPatternConstants with ActorLogging {
 
   private type ServerInfos = (ActorRef, GreetServer)
+  private val publicKey: Option[PublicKey] = {
+    val readPk = dbActorRef ? DbActor.ReadServerPublicKey()
+    Await.result(readPk, duration) match
+      case DbActor.DbActorReadServerPublicKeyAck(pk) => Some(pk)
+      case _                                         => None
+  }
   private var rumorId = 0
   private var jsonId = 0
 
@@ -64,20 +70,23 @@ final case class GossipManager(
   private def updateGossip(rumorRpc: JsonRpcRequest): Boolean = {
     // checks the peers to which we already forwarded the message
     val activeGossip: List[ServerInfos] = getPeersForRumor(rumorRpc)
+    // get senderpk to avoid sending rumor back
+    val senderPk: PublicKey = rumorRpc.getParams.asInstanceOf[Rumor].senderPk
     // selects a random peer from remaining peers
-    val randomPeer = connectionMediator ? ConnectionMediator.GetRandomPeer(activeGossip.map(_._1))
+    val randomPeer = connectionMediator ? ConnectionMediator.GetRandomPeer(activeGossip.map(_._2.publicKey).appended(senderPk))
     Await.result(randomPeer, duration) match {
       // updates the list based on response
       // if some peers are available we send
       case ConnectionMediator.GetRandomPeerAck(serverRef, greetServer) =>
         val alreadySent: List[ServerInfos] = activeGossip :+ (serverRef -> greetServer)
         activeGossipProtocol += (rumorRpc -> alreadySent)
+        log.info(s"rumorSent > dest : ${greetServer.clientAddress}, rumor : $rumorRpc")
         serverRef ! ClientAnswer(
           Right(rumorRpc)
         )
         true
       // else remove entry
-      case ConnectionMediator.NoPeer =>
+      case ConnectionMediator.NoPeer() =>
         activeGossipProtocol = activeGossipProtocol.removed(rumorRpc)
         false
       case _ =>
@@ -114,8 +123,8 @@ final case class GossipManager(
     }
   }
 
-  private def gossip(messages: Map[Channel, List[Message]]): Unit = {
-    val rumor: Rumor = Rumor(PublicKey(Base64Data("blabla")), rumorId, messages)
+  private def startGossip(messages: Map[Channel, List[Message]]): Unit = {
+    val rumor: Rumor = Rumor(publicKey.get, rumorId, messages)
     val jsonRpcRequest = prepareRumor(rumor)
     rumorId += 1
     updateGossip(jsonRpcRequest)
@@ -128,9 +137,9 @@ final case class GossipManager(
     case GossipManager.ManageGossipResponse(jsonRpcResponse) =>
       processResponse(jsonRpcResponse)
 
-    case GossipManager.Gossip(messages) =>
-      log.info(s"Actor $self starts gossiping $messages")
-      gossip(messages)
+    case GossipManager.StartGossip(messages) =>
+      println(s"startingGossip")
+      startGossip(messages)
 
     case _ =>
       log.info(s"Actor $self received an unexpected message")
@@ -159,10 +168,10 @@ object GossipManager extends AskPatternConstants {
     case graphMessage @ _ => graphMessage
   }
 
-  def gossip(gossipManager: AskableActorRef): Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map {
+  def startGossip(gossipManager: AskableActorRef): Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map {
     case Right(jsonRpcRequest: JsonRpcRequest) =>
       jsonRpcRequest.getParamsMessage match
-        case Some(message) => gossipManager ? Gossip(Map(jsonRpcRequest.getParamsChannel -> List(message)))
+        case Some(message) => gossipManager ? StartGossip(Map(jsonRpcRequest.getParamsChannel -> List(message)))
         case None          => /* Do nothing */
       Right(jsonRpcRequest)
     case graphMessage @ _ => graphMessage
@@ -171,7 +180,7 @@ object GossipManager extends AskPatternConstants {
   sealed trait Event
   final case class HandleRumor(jsonRpcRequest: JsonRpcRequest)
   final case class ManageGossipResponse(jsonRpcResponse: JsonRpcResponse)
-  final case class Gossip(messages: Map[Channel, List[Message]])
+  final case class StartGossip(messages: Map[Channel, List[Message]])
 
   sealed trait GossipManagerMessage
   final case class Ping() extends GossipManagerMessage
