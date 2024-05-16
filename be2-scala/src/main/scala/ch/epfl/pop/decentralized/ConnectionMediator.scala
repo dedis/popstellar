@@ -88,8 +88,11 @@ final case class ConnectionMediator(
         sender() ! ConnectionMediator.NoPeer()
       else
         val serverRefs = serverMap.filter((_, greetServer) => !excludes.contains(greetServer.publicKey))
-        val randomKey = serverRefs.keys.toList(Random.nextInt(serverRefs.size))
-        sender() ! ConnectionMediator.GetRandomPeerAck(randomKey, serverRefs(randomKey))
+        if (serverRefs.isEmpty)
+          sender() ! ConnectionMediator.NoPeer()
+        else
+          val randomKey = serverRefs.keys.toList(Random.nextInt(serverRefs.size))
+          sender() ! ConnectionMediator.GetRandomPeerAck(randomKey, serverRefs(randomKey))
 
     case GossipManager.Ping() =>
       gossipManagerRef = sender()

@@ -86,7 +86,7 @@ final case class GossipManager(
         )
         true
       // else remove entry
-      case ConnectionMediator.NoPeer =>
+      case ConnectionMediator.NoPeer() =>
         activeGossipProtocol = activeGossipProtocol.removed(rumorRpc)
         false
       case _ =>
