@@ -5,7 +5,7 @@ import ch.epfl.pop.model.network.Parsable
 import ch.epfl.pop.model.objects.{Channel}
 import spray.json._
 
-final case class PagedCatchup(channel: Channel, numberOfMessages: Int, beforeMessageID: String) extends Params {
+final case class PagedCatchup(channel: Channel, numberOfMessages: Int, beforeMessageID: Option[String]) extends Params {
 
   override def hasChannel: Boolean = true
 
@@ -15,7 +15,7 @@ final case class PagedCatchup(channel: Channel, numberOfMessages: Int, beforeMes
 
 object PagedCatchup extends Parsable {
 
-  def apply(channel: Channel, numberOfMessages: Int, beforeMessageID: String): PagedCatchup = {
+  def apply(channel: Channel, numberOfMessages: Int, beforeMessageID: Option[String]): PagedCatchup = {
     new PagedCatchup(channel, numberOfMessages, beforeMessageID)
   }
 

@@ -223,8 +223,7 @@ final case class DbActor(
   }
 
   @throws[DbActorNAckException]
-  private def pagedCatchupChannel(channel: Channel, numberOfMessages: Int, beforeMessageID: String): List[Message] = {
-
+  private def pagedCatchupChannel(channel: Channel, numberOfMessages: Int, beforeMessageID: Option[String]): List[Message] = {
     @scala.annotation.tailrec
     def buildPagedCatchupList(msgIds: List[Hash], acc: List[Message]): List[Message] = {
       msgIds match {
@@ -710,7 +709,7 @@ object DbActor {
    * @param channel
    * the channel where the messages should be fetched
    */
-  final case class PagedCatchup(channel: Channel, numberOfMessages: Int, beforeMessageID: String) extends Event
+  final case class PagedCatchup(channel: Channel, numberOfMessages: Int, beforeMessageID: Option[String]) extends Event
 
   /** Request to get all locally stored channels
     */
