@@ -152,6 +152,13 @@
   <string name="manual_add_popcha_title">Manually Enter PoPCHA URL</string>
   <string name="manual_add_popcha_hint">PoPCHA URL</string>
 
+  <string name="manual_add_organization_title">Invite an organization</string>
+  <string name="manual_add_organization_lao_id_hint">Other LAO\'s ID</string>
+  <string name="manual_add_organization_server_ulr_hint">Other LAO\'s Server URL</string>
+  <string name="manual_add_organization_organizer_public_key_hint">Other Organizer\'s Public Key</string>
+  <string name="manual_add_organization_challenge_hint">Other Organizer\'s Public Key</string>
+
+
   <!--  Witnessing-->
   <string name="messages">Messages</string>
   <string name="witnesses">Witnesses</string>
@@ -321,8 +328,7 @@
   <string name="scan_qr_code">Scan the QR code with the other organizers device</string>
   <string name="next_step">Next step</string>
   <string name="finish">Finish</string>
-  <string name="other_organizer_info">Other organizer information</string>
-  <string name="add_other_organizer_info">Add the other organizer information</string>
+  <string name="other_organisation_add_title">Link with another Organization</string>
   <string name="loading_text">Loading…</string>
   <string name="expect_sent">Federation expect sent successfully</string>
   <string name="init_sent">Federation init sent successfully</string>
