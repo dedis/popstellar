@@ -1,6 +1,7 @@
 package types
 
 import (
+	"fmt"
 	"golang.org/x/xerrors"
 	"popstellar/message/answer"
 	"popstellar/network/socket"
@@ -63,6 +64,20 @@ func (s *Subscribers) Unsubscribe(channel string, socket socket.Socket) *answer.
 	delete(s.list[channel], socket.ID())
 
 	return nil
+}
+
+func (s *Subscribers) UnsubscribeFromAll(socketID string) {
+	s.Lock()
+	defer s.Unlock()
+
+	for channel, subs := range s.list {
+		_, ok := subs[socketID]
+		if !ok {
+			continue
+		}
+		delete(s.list[channel], socketID)
+		fmt.Println("unsubscribe from " + channel)
+	}
 }
 
 // SendToAll sends a message to all sockets.

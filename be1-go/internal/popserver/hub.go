@@ -56,6 +56,7 @@ func (h *Hub) Start() {
 	go func() {
 		utils.LogInfo("start the Hub")
 		for {
+			utils.LogInfo("waiting for a new message")
 			select {
 			case incomingMessage := <-h.messageChan:
 				utils.LogInfo("start handling a message")
@@ -65,9 +66,9 @@ func (h *Hub) Start() {
 				} else {
 					utils.LogInfo("successfully handled a message")
 				}
-			case <-h.closedSockets:
-				utils.LogInfo("stopping the Sockets")
-				return
+			case socketID := <-h.closedSockets:
+				utils.LogInfo("stopping the Socket " + socketID)
+				state.UnsubscribeFromAll(socketID)
 			case <-h.stop:
 				utils.LogInfo("stopping the Hub")
 				return
