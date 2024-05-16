@@ -256,7 +256,7 @@
   <string name="digital_cash_issue">Issue</string>
   <string name="digital_cash_history">Transaction History</string>
   <string name="digital_cash_receive">Receive</string>
-  <string name="digital_cash_home">Home</string>
+  <string name="digital_cash_home">Digital Cash</string>
   <string name="digital_cash_receipt">Receipt</string>
   <string name="digital_cash_send_button">Send</string>
   <string name="digital_cash_amount">Amount</string>
