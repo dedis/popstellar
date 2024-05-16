@@ -8,7 +8,9 @@ type Subscribe struct {
 
 	ID int `json:"id"`
 
-	Params struct {
-		Channel string `json:"channel"`
-	} `json:"params"`
+	Params SubscribeParams `json:"params"`
+}
+
+type SubscribeParams struct {
+	Channel string `json:"channel"`
 }

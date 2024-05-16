@@ -16,15 +16,13 @@ import androidx.fragment.app.Fragment
 import com.github.dedis.popstellar.R
 import com.github.dedis.popstellar.databinding.QrScannerFragmentBinding
 import com.github.dedis.popstellar.ui.PopViewModel
-import com.github.dedis.popstellar.ui.lao.LaoActivity
-import com.github.dedis.popstellar.ui.lao.federation.LinkedOrganizationsFragment
-import com.github.dedis.popstellar.ui.lao.federation.LinkedOrganizationsInviteFragment
-import com.github.dedis.popstellar.ui.lao.federation.LinkedOrganizationsViewModel
+import com.github.dedis.popstellar.utility.UIUtils
+import com.github.dedis.popstellar.utility.UIUtils.hideKeyboard
+import com.github.dedis.popstellar.utility.error.ErrorUtils.logAndShow
 import com.google.mlkit.vision.barcode.BarcodeScanner
 import com.google.mlkit.vision.barcode.BarcodeScannerOptions
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.barcode.common.Barcode
-import java.util.Objects
 import timber.log.Timber
 
 class QrScannerFragment : Fragment() {
@@ -32,6 +30,7 @@ class QrScannerFragment : Fragment() {
   private var barcodeScanner: BarcodeScanner? = null
   private lateinit var scanningViewModel: QRCodeScanningViewModel
   private lateinit var popViewModel: PopViewModel
+  private lateinit var clipboardManager: UIUtils.ClipboardUtil
 
   override fun onCreateView(
       inflater: LayoutInflater,
@@ -46,10 +45,16 @@ class QrScannerFragment : Fragment() {
     if (scanningAction.displayCounter) {
       displayCounter()
     }
+    clipboardManager = UIUtils.ClipboardUtil(requireActivity())
+
+    UIUtils.setupInputFields(
+        recyclerView = binding.dynamicInputsContainer,
+        inputFields = scanningAction.getInputFields().toList(),
+        context = requireContext(),
+        clipboardManager = clipboardManager)
 
     binding.scannedTitle.setText(scanningAction.scanTitle)
     binding.addManualTitle.setText(scanningAction.manualAddTitle)
-    binding.manualAddEditText.setHint(scanningAction.hint)
     binding.scannerInstructionText.setText(scanningAction.instruction)
 
     setupNbScanned()
@@ -158,21 +163,6 @@ class QrScannerFragment : Fragment() {
     binding.scannerCamera.controller = cameraController
   }
 
-  private fun setupManualAdd() {
-    binding.scannerEnterManually.setOnClickListener { _: View? ->
-      binding.scannerBottomTexts.visibility = View.GONE
-      binding.enterManuallyCard.visibility = View.VISIBLE
-    }
-    binding.addManualClose.setOnClickListener { _: View? ->
-      binding.scannerBottomTexts.visibility = View.VISIBLE
-      binding.enterManuallyCard.visibility = View.GONE
-    }
-    binding.manualAddButton.setOnClickListener { _: View? ->
-      val input = Objects.requireNonNull(binding.manualAddEditText.text).toString()
-      onResult(input)
-    }
-  }
-
   private fun displayCounter() {
     binding.scannedTitle.visibility = View.VISIBLE
     binding.scannedNumber.visibility = View.VISIBLE
@@ -202,6 +192,36 @@ class QrScannerFragment : Fragment() {
         ) {
           LinkedOrganizationsInviteFragment.newInstance(false)
         }
+      }
+    }
+  }
+
+  private fun setupManualAdd() {
+    binding.scannerEnterManually.setOnClickListener {
+      binding.scannerBottomTexts.visibility = View.GONE
+      binding.enterManuallyCard.visibility = View.VISIBLE
+    }
+
+    binding.addManualClose.setOnClickListener {
+      hideKeyboard(requireContext(), binding.root)
+      binding.scannerBottomTexts.visibility = View.VISIBLE
+      binding.enterManuallyCard.visibility = View.GONE
+    }
+
+    binding.manualAddButton.setOnClickListener {
+      val adapter = binding.dynamicInputsContainer.adapter as UIUtils.InputFieldsAdapter
+      val inputs = adapter.getCurrentInputData()
+
+      val json = scanningAction.formatJson(inputs)
+      Timber.tag(TAG).d("Manual add json: %s", json)
+      if (json.isNotBlank()) {
+        onResult(json)
+      } else {
+        logAndShow(
+            requireContext(),
+            TAG,
+            IllegalArgumentException("Required fields are empty"),
+            R.string.qrcode_scanning_manual_entry_error)
       }
     }
   }

@@ -99,7 +99,7 @@ type Hub struct {
 func NewHub(pubKeyOwner kyber.Point, clientServerAddress string, serverServerAddress string, log zerolog.Logger,
 	laoFac channel.LaoFactory,
 ) (*Hub, error) {
-	schemaValidator, err := validation.NewSchemaValidator(log)
+	schemaValidator, err := validation.NewSchemaValidator()
 	if err != nil {
 		return nil, xerrors.Errorf("failed to create the schema validator: %v", err)
 	}
@@ -236,7 +236,7 @@ func (h *Hub) SendGreetServer(socket socket.Socket) error {
 		return xerrors.Errorf("failed to marshal server public key: %v", err)
 	}
 
-	serverInfo := method.ServerInfo{
+	serverInfo := method.GreetServerParams{
 		PublicKey:     base64.URLEncoding.EncodeToString(pk),
 		ServerAddress: h.serverServerAddress,
 		ClientAddress: h.clientServerAddress,
@@ -594,7 +594,7 @@ func (h *Hub) NotifyWitnessMessage(messageId string, publicKey string, signature
 	h.hubInbox.AddWitnessSignature(messageId, publicKey, signature)
 }
 
-func (h *Hub) GetPeersInfo() []method.ServerInfo {
+func (h *Hub) GetPeersInfo() []method.GreetServerParams {
 	return h.peers.GetAllPeersInfo()
 }
 

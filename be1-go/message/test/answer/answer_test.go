@@ -51,10 +51,6 @@ func Test_Error_functions(t *testing.T) {
 	require.Equal(t, -1, invalidAction.Code)
 	require.Equal(t, "invalid action: "+formatString, invalidAction.Description)
 
-	invalidObject := answer.NewInvalidObjectError(formatString)
-	require.Equal(t, -1, invalidObject.Code)
-	require.Equal(t, "invalid object: "+formatString, invalidObject.Description)
-
 	invalidResource := answer.NewInvalidResourceError(formatString)
 	require.Equal(t, -2, invalidResource.Code)
 	require.Equal(t, "invalid resource: "+formatString, invalidResource.Description)
