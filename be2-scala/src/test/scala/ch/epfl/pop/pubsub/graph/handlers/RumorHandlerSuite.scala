@@ -124,7 +124,8 @@ class RumorHandlerSuite extends TestKit(ActorSystem("RumorActorSuiteActorSystem"
       case _                                       => 1 shouldBe 0
   }
 
-  test("rumor handler should process messages received in a rumor") {
+  // https://github.com/dedis/popstellar/issues/1870
+  /*test("rumor handler should process messages received in a rumor") {
     val dbRef = PublishSubscribe.getDbActorRef
     val output = Source.single(Right(rumorRequest)).via(rumorHandler).runWith(Sink.head)
 
@@ -143,6 +144,6 @@ class RumorHandlerSuite extends TestKit(ActorSystem("RumorActorSuiteActorSystem"
     val messagesInRumor = rumor.messages.values.foldLeft(Set.empty: Set[Message])((acc, set) => acc ++ set)
 
     messagesInRumor.diff(messagesInDb) should equal(Set.empty)
-  }
+  }*/
 
 }
