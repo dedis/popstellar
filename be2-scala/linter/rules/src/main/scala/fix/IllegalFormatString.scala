@@ -26,8 +26,7 @@ class IllegalFormatString extends SemanticRule("IllegalFormatString") {
 
     //Term parameter is simply used to display the rule at the correct place
     def rule(term: Term, value: String, args: List[Any]): Patch = {
-      try String.format(value, args.map(_.asInstanceOf[Object]): _*)
-        //cast is necessary since String.format() takes varargs of type Object and Any != Object
+      try value.format(args: _*)
       catch {
         case _: IllegalFormatException | _: MissingFormatArgumentException | _: UnknownFormatConversionException => return Patch.lint(IllegalFormatStringDiag(term))
       }
@@ -36,8 +35,8 @@ class IllegalFormatString extends SemanticRule("IllegalFormatString") {
 
 
     doc.tree.collect {
-      case t @ Term.Apply.After_4_6_0(Term.Select(qual, Term.Name("format")), Term.ArgClause(args, mod)) =>
-        val mappedArgs = findDefinitionsOrdered(doc.tree, args)
+      case t @ Term.Apply.After_4_6_0(Term.Select(qual, Term.Name("format")), Term.ArgClause(args, _)) =>
+        val mappedArgs = findDefinitionsOrdered(doc.tree, args) ++ args.collect { case Lit(value) => value } //literals will not be found in the tree
         qual match {
           case Term.Name("String") =>
             //This case corresponds to String.format(format, args)
