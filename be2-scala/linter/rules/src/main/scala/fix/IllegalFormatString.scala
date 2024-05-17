@@ -3,6 +3,7 @@ rule = IllegalFormatString
  */
 package fix
 
+import fix.Util.{findDefinition, findDefinitions, findDefinitionsOrdered}
 import scalafix.lint.LintSeverity
 
 import scala.meta._
@@ -22,18 +23,43 @@ case class IllegalFormatStringDiag(string: Tree) extends Diagnostic {
 
 class IllegalFormatString extends SemanticRule("IllegalFormatString") {
   override def fix(implicit doc: SemanticDocument): Patch = {
+
+    //Term parameter is simply used to display the rule at the correct place
+    def rule(term: Term, value: String, args: List[Any]): Patch = {
+      try String.format(value, args.map(_.asInstanceOf[Object]): _*)
+        //cast is necessary since String.format() takes varargs of type Object and Any != Object
+      catch {
+        case _: IllegalFormatException | _: MissingFormatArgumentException | _: UnknownFormatConversionException => return Patch.lint(IllegalFormatStringDiag(term))
+      }
+      Patch.empty
+    }
+
+
     doc.tree.collect {
-      case t @ Term.Apply.After_4_6_0(Term.Select(qual, Term.Name("format")), Term.ArgClause(_, _)) =>
-        println(qual.symbol.value)
-        //TODO see if worth implementing, since we would also have to handle cases:
-        // 1. String.format(format, args)
-        // 2. mystr.format(args)
-        // 3. "str".format(args)
-//        try String.format(format, args: _*)
-//        catch {
-//          case _: IllegalFormatException | _: MissingFormatArgumentException | _: UnknownFormatConversionException => Patch.lint(IllegalFormatStringDiag(t))
-//        }
-        Patch.empty
+      case t @ Term.Apply.After_4_6_0(Term.Select(qual, Term.Name("format")), Term.ArgClause(args, mod)) =>
+        val mappedArgs = findDefinitionsOrdered(doc.tree, args)
+        qual match {
+          case Term.Name("String") =>
+            //This case corresponds to String.format(format, args)
+            //String.format argclause has format string as first argument and rest are arguments,
+            // we can safely assume first argument is a string if we are doing a String.format()
+            rule(t, mappedArgs.head.toString, mappedArgs.tail)
+          case strName @ Term.Name(_) =>
+            //This case corresponds to a string declared as a val or var and used in a format call, e.g.
+            // val myStr = "Hello %s"
+            // myStr.format("world")
+            val str = findDefinition(doc.tree, strName)
+            str match {
+              case value: String => rule(t, value, mappedArgs)
+              case _ => Patch.empty
+            }
+          case Lit.String(value) =>
+            //This case corresponds to a string literal used in a format call, e.g. "Hello %s".format("world")
+            rule(t, value, mappedArgs)
+          case _ => Patch.empty
+        }
     }
   }.asPatch
+
+
 }

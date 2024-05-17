@@ -3,6 +3,7 @@ rule = CatchNpe
  */
 package fix
 
+import fix.Util.getType
 import scalafix.lint.LintSeverity
 
 import scala.meta._
@@ -21,18 +22,10 @@ case class ComparingFloatingTypesDiag(floats: Tree) extends Diagnostic {
 class ComparingFloatingTypes extends SemanticRule("ComparingFloatingTypes") {
 
   override def fix(implicit doc: SemanticDocument): Patch = {
-    def getType(term: Term): Symbol = {
-      term.symbol.info match {
-        case Some(symInfo) => symInfo.signature match {
-            case ValueSignature(TypeRef(_, symbol, _)) => symbol
-            case _ => null
-          }
-        case _ => null
-      }
-    }
 
     def isFloatOrDouble(term: Term): Boolean = {
       val floatOrDoubleMatcher = SymbolMatcher.exact("scala/Float#", "scala/Double#")
+      val t = getType(term)
       floatOrDoubleMatcher.matches(getType(term))
     }
 
