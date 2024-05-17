@@ -29,7 +29,7 @@ class IncorrectNumberOfArgsToFormat extends SemanticRule("IncorrectNumberOfArgsT
       .matchData
       .count(m => !doesNotTakeArguments(m.matched))
 
-    if (argCount != args.size) Patch.lint(IncorrectNumberOfArgsToFormatDiag(t)) else Patch.empty //TODO test with !=
+    if (argCount != args.size) Patch.lint(IncorrectNumberOfArgsToFormatDiag(t)) else Patch.empty
   }
 
   override def fix(implicit doc: SemanticDocument): Patch = {
