@@ -25,7 +25,10 @@ import scala.util.{Failure, Success, Try}
 /** Handler for Popcha related messages
   */
 object PopchaHandler extends MessageHandler {
-  final lazy val handlerInstance = new PopchaHandler(super.dbActor, super.securityModuleActor)
+  final lazy val handlerInstance = {
+    println(s"new WitnessHandler ${super.dbActor.actorRef}")
+    new PopchaHandler(super.dbActor, super.securityModuleActor)
+  }
 
   def handleAuthentication(rpcMessage: JsonRpcRequest): GraphMessage = handlerInstance.handleAuthentication(rpcMessage)
 }

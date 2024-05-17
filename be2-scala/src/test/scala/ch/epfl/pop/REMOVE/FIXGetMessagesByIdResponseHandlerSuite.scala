@@ -1,4 +1,4 @@
-package ch.epfl.pop.pubsub.graph.handlers
+package ch.epfl.pop.REMOVE
 
 import akka.NotUsed
 import akka.actor.{ActorRef, ActorSystem, Props}
@@ -11,6 +11,7 @@ import ch.epfl.pop.model.network.JsonRpcResponse
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.objects.Channel
 import ch.epfl.pop.pubsub.graph.GraphMessage
+import ch.epfl.pop.pubsub.graph.handlers.ProcessMessagesHandler
 import ch.epfl.pop.pubsub.{AskPatternConstants, MessageRegistry, PubSubMediator, PublishSubscribe}
 import ch.epfl.pop.storage.SecurityModuleActorSuite.testSecurityDirectory
 import ch.epfl.pop.storage.{DbActor, InMemoryStorage, SecurityModuleActor}
@@ -23,10 +24,9 @@ import scala.concurrent.Await
 import scala.concurrent.duration.{DurationInt, FiniteDuration}
 import scala.util.Success
 
-class GetMessagesByIdResponseHandlerSuite extends TestKitBase with AnyFunSuiteLike with AskPatternConstants with BeforeAndAfterAll {
+class FIXGetMessagesByIdResponseHandlerSuite extends TestKitBase with AnyFunSuiteLike with AskPatternConstants with BeforeAndAfterAll {
 
-  implicit val system: ActorSystem = ActorSystem("GetMessagesByIdResponseHandlerSuiteSystem")
-
+  implicit val system: ActorSystem = ActorSystem("FIXGetMessagesByIdResponseHandlerSuiteSystem")
   // Implicit for system actors
   implicit val timeout: Timeout = Timeout(1.seconds)
 
@@ -38,10 +38,9 @@ class GetMessagesByIdResponseHandlerSuite extends TestKitBase with AnyFunSuiteLi
   val securityModuleActorRef: AskableActorRef = system.actorOf(Props(SecurityModuleActor(testSecurityDirectory)))
 
   override def beforeAll(): Unit = {
-    println("beforeAll GetMessage")
+    println("beforeAll FIXGet")
     // Inject dbActor above
     PublishSubscribe.buildGraph(pubSubMediatorRef, dbActorRef, securityModuleActorRef, messageRegistry, ActorRef.noSender, ActorRef.noSender, ActorRef.noSender, isServer = false)
-
   }
 
   // handler we want to test
@@ -72,8 +71,8 @@ class GetMessagesByIdResponseHandlerSuite extends TestKitBase with AnyFunSuiteLi
   }
 
   override def afterAll(): Unit = {
+    println("afterAll FIXGet")
     // Stops the testKit
-    println("afterAll GetMsg")
     TestKit.shutdownActorSystem(system)
   }
 

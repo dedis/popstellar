@@ -16,7 +16,10 @@ import scala.util.{Failure, Success}
 /** RollCallHandler object uses the db instance from the MessageHandler (i.e PublishSubscribe)
   */
 object RollCallHandler extends MessageHandler {
-  final lazy val handlerInstance = new RollCallHandler(super.dbActor)
+  final lazy val handlerInstance = {
+    println(s"new RollCallHandler ${super.dbActor.actorRef}")
+    new RollCallHandler(super.dbActor)
+  }
 
   def handleCreateRollCall(rpcMessage: JsonRpcRequest): GraphMessage = handlerInstance.handleCreateRollCall(rpcMessage)
 

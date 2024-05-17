@@ -150,7 +150,7 @@ private class FileMonitor(mediatorRef: ActorRef) extends Runnable {
     var sendConnectToMessage = false
     // Upon start, we connect to the servers
     serverPeers = readServerPeers()
-    mediatorRef ! ConnectionMediator.ConnectTo(serverPeers) // forwarded to Monitor as explained above
+    mediatorRef ! ConnectionMediator.ConnecqqtTo(serverPeers) // forwarded to Monitor as explained above
     while (running.get()) {
       // Blocks until an event happen
       val watchKey = watchService.take()

@@ -1,35 +1,35 @@
-package ch.epfl.pop.pubsub.graph.handlers
+package ch.epfl.pop.REMOVE
 
 import akka.NotUsed
 import akka.actor.Status.Failure
 import akka.actor.{ActorRef, ActorSystem, Props}
-import akka.pattern.AskableActorRef
-import akka.testkit.{TestKit, TestKitBase, TestProbe}
-import ch.epfl.pop.pubsub.{AskPatternConstants, MessageRegistry, PubSubMediator, PublishSubscribe}
-import ch.epfl.pop.storage.{DbActor, InMemoryStorage, SecurityModuleActor}
-import akka.pattern.ask
+import akka.pattern.{AskableActorRef, ask}
 import akka.stream.scaladsl.{Flow, Sink, Source}
+import akka.testkit.{TestKit, TestKitBase, TestProbe}
 import ch.epfl.pop.IOHelper.readJsonFromPath
 import ch.epfl.pop.config.RuntimeEnvironment
 import ch.epfl.pop.decentralized.{ConnectionMediator, Monitor}
 import ch.epfl.pop.model.network.method.message.Message
-import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse}
 import ch.epfl.pop.model.network.method.{GreetServer, Rumor}
+import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse}
 import ch.epfl.pop.model.objects.{Base64Data, Channel, PublicKey}
 import ch.epfl.pop.pubsub.ClientActor.ClientAnswer
 import ch.epfl.pop.pubsub.graph.GraphMessage
+import ch.epfl.pop.pubsub.graph.handlers.ParamsHandler
+import ch.epfl.pop.pubsub.{AskPatternConstants, MessageRegistry, PubSubMediator, PublishSubscribe}
 import ch.epfl.pop.storage.DbActor.{DbActorReadRumor, ReadRumor}
-import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach}
+import ch.epfl.pop.storage.{DbActor, InMemoryStorage, SecurityModuleActor}
 import org.scalatest.funsuite.AnyFunSuiteLike
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.matchers.should.Matchers.{a, equal, should, shouldBe}
+import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach}
 
 import scala.concurrent.Await
 import scala.concurrent.duration.FiniteDuration
 
-class RumorHandlerSuite extends TestKitBase with AnyFunSuiteLike with AskPatternConstants with BeforeAndAfterAll with BeforeAndAfterEach {
+class FIXRumorHandlerSuite extends TestKitBase with AnyFunSuiteLike with AskPatternConstants with BeforeAndAfterAll with BeforeAndAfterEach {
+  implicit lazy val system: ActorSystem = ActorSystem("FIXRumorActorSuiteActorSystem")
 
-  implicit val system: ActorSystem = ActorSystem("RumorActorSuiteActorSystem")
   val MAX_TIME: FiniteDuration = duration.mul(2)
 
   private val inMemoryStorage: InMemoryStorage = InMemoryStorage()
@@ -42,10 +42,9 @@ class RumorHandlerSuite extends TestKitBase with AnyFunSuiteLike with AskPattern
   private val rumorHandler: Flow[GraphMessage, GraphMessage, NotUsed] = ParamsHandler.rumorHandler(dbActorRef, messageRegistry)
 
   override def beforeAll(): Unit = {
-    println("beforeAll Rumor")
+    println("beforeAll FIXRumor")
     // Inject dbActor above
     PublishSubscribe.buildGraph(pubSubMediatorRef, dbActorRef, securityModuleActorRef, messageRegistry, ActorRef.noSender, ActorRef.noSender, ActorRef.noSender, isServer = false)
-
   }
 
   val pathCorrectRumor: String = "src/test/scala/util/examples/json/rumor/rumor_correct_msg.json"
@@ -73,7 +72,7 @@ class RumorHandlerSuite extends TestKitBase with AnyFunSuiteLike with AskPattern
   }
 
   override def afterAll(): Unit = {
-    println("afterAll rumor")
+    println("afterAll FIXRumor")
     // Stops the testKit
     TestKit.shutdownActorSystem(system)
   }

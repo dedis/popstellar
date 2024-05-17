@@ -15,7 +15,10 @@ import scala.concurrent.{Await, Future}
 import scala.util.{Failure, Success}
 
 object SocialMediaHandler extends MessageHandler {
-  final lazy val handlerInstance = new SocialMediaHandler(super.dbActor, super.mediator)
+  final lazy val handlerInstance = {
+    println(s"new SocialMediaHandler ${super.dbActor.actorRef}")
+    new SocialMediaHandler(super.dbActor, super.mediator)
+  }
 
   def handleAddChirp(rpcMessage: JsonRpcRequest): GraphMessage = handlerInstance.handleAddChirp(rpcMessage)
 

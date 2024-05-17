@@ -19,7 +19,10 @@ import scala.util.{Failure, Success}
 /** ElectionHandler object uses the db instance from the MessageHandler
   */
 object ElectionHandler extends MessageHandler {
-  final lazy val handlerInstance = new ElectionHandler(super.dbActor)
+  final lazy val handlerInstance = {
+    println(s"new ElectionHandler ${super.dbActor.actorRef}")
+    new ElectionHandler(super.dbActor)
+  }
 
   def handleSetupElection(rpcMessage: JsonRpcRequest): GraphMessage = handlerInstance.handleSetupElection(rpcMessage)
 
