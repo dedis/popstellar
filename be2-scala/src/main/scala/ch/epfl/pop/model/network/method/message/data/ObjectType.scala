@@ -11,3 +11,4 @@ enum ObjectType(val objectType: String):
   case reaction extends ObjectType("reaction")
   case coin extends ObjectType("coin")
   case popcha extends ObjectType("popcha")
+  case federation extends ObjectType("federation")

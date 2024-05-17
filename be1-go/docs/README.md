@@ -36,37 +36,36 @@ The project is organized into different modules as follows
 
 ```
 .
-├── channel             # contains the abstract definition of a channel
-│   ├── authentication  # channel implementation for an authentication channel
-│   ├── chirp           # channel implementation for a chirp channel
-│   ├── coin            # channel implementation for a coin channel
-│   ├── consensus       # channel implementation for a consensus channel
-│   ├── election        # channel implementation for an election channel
-│   ├── generalChirping # channel implementation for a universal post channel
-│   ├── lao             # channel implementation for a LAO channel
-│   ├── reaction        # channel implementation for a reaction channel
-│   └── registry        # helper for registry
-├── cli                 # command line interface
-├── crypto              # defines the cryptographic suite 
+├── channel                   # contains the abstract definition of a channel NEED TO BE DELETED
+├── cli                       # command line interface
+├── crypto                    # defines the cryptographic suite
 ├── docs
-├── hub                 # contains the abstract definition of a hub
-│   ├── standard_hub    # hub implementation 
-├── inbox               # helper to store messages used by channels
-├── message             # message types and marshaling/unmarshaling logic
-├── network             # module to set up Websocket connections
-│   └── socket          # module to send/receive data over the wire
-├── popcha              # HTTP server and back-end logic for PoPCHA
-└── validation          # module to validate incoming/outgoing messages
+├── hub                       # contains the abstract definition of a hub NEED TO BE DELETED
+├── inbox                     # helper to store messages used by channels NEED TO BE DELETED
+├── internal                  
+│   ├── depgraph              # tool to generate the dependencies graph
+│   └── popserver             # entry point of the messages received by the sockets
+│       ├── config            # singleton with the server config informations and server keys
+│       ├── database          # singleton with the database + implementations of the database
+│       ├── generatortest     # query and message generators only use for the tests
+│       ├── handler           # handlers for each query, answer and channel type (entry point is func HandleIncomingMessage)
+│       ├── state             # singleton with the temporary states of the server (peers, queries, and subscriptions)
+│       ├── type              # every types use in the implementation
+│       └── utils             # singleton with the log instance and the schema validator
+├── message                   # message types and marshaling/unmarshaling logic
+├── network                   # module to set up Websocket connections
+│   └── socket                # module to send/receive data over the wire
+├── popcha                    # HTTP server and back-end logic for PoPCHA NEED TO BE REFACTOR
+└── validation                # module to validate incoming/outgoing messages
 ```
 
-The entry point is the cli with bulk of the implementation logic in the hub
-module.
+The entry point is the `cli` with bulk of the implementation logic in the `popserver` package.
 
 The following diagram represents the relations between the packages in the
 application.
 
 <div align="center">
-  <img alt="Global architecture" src="images/global architecture.png" width="600" />
+  <img alt="Global architecture" src="images/dependencies/dependencies.png" width="600" />
 </div>
 
 #### Architecture
@@ -125,42 +124,41 @@ websocket connections.
 
 ##### Processing messages in the application layer
 
-The incoming messages received by the `ReadPump` are propagated up the stack to
-the `Hub` which is responsible for processing it and sending, depending on the message's nature, a: 
-- `Result` to the request.
-- `Error`
-- `Broadcast`
-- `GreetServer` back to a server that has not been greeted yet.
-- `GetMessagesById` in response to a heartbeat if it is missing some messages.
+The incoming messages received by the `ReadPump` are propagated up the stack to the `Hub`. The `Hub`, on receiving a message,
+processes it by invoking the `HandleIncomingMessage` method from the package `handler` and in case of `Error`, while processing the message, it will log it.
+In parallel, the `Hub` will send a `Heartbeat` every 30 seconds to all the connected servers.
 
-A hub, on receiving a message, processes it by invoking the
-`handleIncomingMessage` method where its handled depending on which `Socket` the
-message originates from.
-
-The flowchart below describes the flow of data and how messages are processed.
+The flowchart below describes all the possible way for a message inside the handlers from package `handler`.
 
 <div align="center">
-  <img src="images/flowchart/flowchart.png" alt="Flowchart"/>
+  <img src="images/handler/handler.png" alt="Flowchart"/>
 </div>
 
 <p align="center"><i>
-  Flowchart last updated at the end of Spring 2023
+  Flowchart last updated on 11.05.2024 and everything in red is still missing in the refactoring
 </i></p>
 
-The hubs themselves contain multiple `Channels` with the `Root` channel being
-the default one, where messages for creation of new LAOs may be published for
-instance. Another example of a channel would be one for an `Election` which
-would be a sub-channel within the LAO channel.
+We use `Socket.SendError` to send an `Error` back to the client. We use this function only in two places, inside `HandleIncomingMessage` 
+in case the format of message is wrong or inside `handleQuery` because we should never answer an error to an answer to avoid loops.
 
-The hubs use `Socket.SendError` to send an `Error` back to the client. We
-suggest using `message.NewError` and `message.NewErrorf` to create these error
-messages and wrap them using `xerrors.Errorf` with the `%w` format specifier if
-required. The rule of thumb is the leaf/last method called from the hub should
-create/return a `message.Error` and intermediate methods should propagate it up
-by wrapping it until it reaches a point where `Socket.SendError` is invoked.
+We use `Socket.SendResult` to send a `Result` back to the client when there is no error after processing its query. We use it only inside `query.go` at the end of each method.
 
-The hubs have a separate goroutine that is not shown in the flowchart and that 
-sends a `Heartbeat` message to the servers every 30 seconds. 
+We check the Mid-level communication inside `channel.go`.
+
+##### Database
+<div align="center">
+  <img src="images/database.png" alt="Flowchart"/>
+</div>
+
+<p align="center"><i>
+ SQL database schema last updated at 11.05.2024
+</i></p>
+
+The database is used to store the state of the server. It is implemented in the `database` package.
+We use the Repository pattern to interact with the database. 
+The current implementation uses a SQLite database.
+For testing we use [github.com/vektra/mockery](https://github.com/vektra/mockery)  to mock the database.
+
 
 ##### Message definitions
 

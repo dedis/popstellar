@@ -1,0 +1,199 @@
+strict digraph {
+node [shape=box,style=rounded];
+start=0;
+ratio = fill;
+rankdir="LR";
+
+subgraph cluster_incoming_message {
+node [shape=box,style=rounded];
+label = "incoming_message.go";
+"HandleIncomingMessage";
+
+}
+
+subgraph cluster_query {
+node [shape=box,style=rounded];
+label = "query.go";
+"handleQuery";
+"handleGetMessagesByID";
+"handleHeartbeat";
+"handleCatchup";
+"handlePublish";
+"handleUnsubscribe";
+"handleSubscribe";
+"handleGreetserver";
+}
+
+subgraph cluster_answer{
+node [shape=box,style=rounded];
+label = "answer.go";
+"handleGetMessagesByIDAnswer";
+"handleAnswer";
+}
+
+subgraph cluster_channel{
+node [shape=box,style=rounded];
+label = "channel.go";
+"handleChannel";
+}
+
+subgraph cluster_root{
+node [shape=box,style=rounded];
+label = "root.go";
+"handleChannelRoot";
+"handleLaoCreate";
+}
+
+subgraph cluster_lao{
+node [shape=box,style=rounded];
+label = "lao.go";
+"handleElectionSetup";
+"handleRollCallReOpen";
+"handleRollCallClose";
+"handleRollCallOpen";
+"handleRollCallCreate";
+"handleMeetingState" [ fillcolor="1 0.2 1" style=filled];
+"handleMeetingCreate" [ fillcolor="1 0.2 1" style=filled];
+"handleMessageWitness" [ fillcolor="1 0.2 1" style=filled];
+"handleLaoState" [ fillcolor="1 0.2 1" style=filled];
+"handleLaoUpdate" [ fillcolor="1 0.2 1" style=filled];
+"handleChannelLao";
+}
+
+subgraph cluster_election{
+node [shape=box,style=rounded];
+label = "election.go";
+"handleElectionEnd";
+"handleVoteCastVote"
+"handleElectionOpen";
+"handleChannelElection";
+}
+
+subgraph cluster_chirp{
+node [shape=box,style=rounded];
+label = "chirp.go";
+"handleChirpDelete";
+"handleChirpAdd";
+"handleChannelChirp";
+}
+
+subgraph cluster_reaction{
+node [shape=box,style=rounded];
+label = "reaction.go";
+"handleReactionDelete";
+"handleReactionAdd";
+"handleChannelReaction";
+}
+
+subgraph cluster_coin{
+node [shape=box,style=rounded];
+label = "coin.go";
+"handleCoinPostTransaction";
+"handleChannelCoin";
+}
+
+subgraph cluster_consensus{
+node [shape=box,fillcolor="1 0.2 1" style=filled];
+label = "consensus.go";
+"handleConsensusFailure";
+"handleConsensusLearn";
+"handleConsensusAccept";
+"handleConsensusPropose";
+"handleConsensusPromise";
+"handleConsensusPrepare";
+"handleConsensusElectAccept";
+"handleConsensusElect";
+"handleChannelConsensus";
+}
+
+subgraph cluster_authentification{
+node [shape=box,fillcolor="1 0.2 1" style=filled];
+label = "authentification.go";
+"handleAuthenticateUser";
+"handleChannelAuthentication";
+}
+
+"HandleIncomingMessage" -> {
+"handleQuery"
+"handleAnswer"
+}
+
+"handleQuery" -> {
+"handleGreetserver"
+"handleSubscribe"
+"handleUnsubscribe"
+"handlePublish"
+"handleCatchup"
+"handleHeartbeat"
+"handleGetMessagesByID"
+}
+
+"handleAnswer" -> {
+"handleGetMessagesByIDAnswer";
+}
+
+"handlePublish" -> "handleChannel";
+"handleGetMessagesByIDAnswer" -> "handleChannel";
+
+"handleChannel" -> {
+"handleChannelRoot";
+"handleChannelLao";
+"handleChannelElection";
+"handleChannelChirp";
+"handleChannelReaction";
+"handleChannelCoin";
+"handleChannelConsensus";
+"handleChannelAuthentication";
+}
+
+"handleChannelRoot" -> "handleLaoCreate";
+
+"handleChannelLao" -> {
+"handleElectionSetup"
+"handleRollCallReOpen"
+"handleRollCallClose"
+"handleRollCallOpen"
+"handleRollCallCreate"
+"handleMeetingState"
+"handleMeetingCreate"
+"handleMessageWitness"
+"handleLaoState"
+"handleLaoUpdate"
+}
+
+"handleChannelElection" -> {
+"handleElectionEnd";
+"handleVoteCastVote"
+"handleElectionOpen";
+}
+
+"handleChannelChirp" -> {
+"handleChirpDelete";
+"handleChirpAdd";
+}
+
+"handleChannelReaction" -> {
+"handleReactionDelete";
+"handleReactionAdd";
+}
+
+"handleChannelCoin" -> {
+"handleCoinPostTransaction";
+}
+
+"handleChannelConsensus" -> {
+"handleConsensusFailure";
+"handleConsensusLearn";
+"handleConsensusAccept";
+"handleConsensusPropose";
+"handleConsensusPromise";
+"handleConsensusPrepare";
+"handleConsensusElectAccept";
+"handleConsensusElect";
+}
+
+"handleChannelAuthentication" -> {
+"handleAuthenticateUser";
+}
+
+}

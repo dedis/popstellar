@@ -101,7 +101,7 @@ type HubFunctionalities interface {
 	SendAndHandleMessage(method.Broadcast) error
 	NotifyWitnessMessage(messageId string, publicKey string, signature string)
 	GetClientServerAddress() string
-	GetPeersInfo() []method.ServerInfo
+	GetPeersInfo() []method.GreetServerParams
 }
 
 // Broadcastable defines a channel that can broadcast

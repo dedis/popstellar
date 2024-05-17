@@ -473,6 +473,7 @@ exports[`SendReceive renders correctly 1`] = `
                                               },
                                             ]
                                           }
+                                          testID="digital-cash-send-beneficiary"
                                           value=""
                                         />
                                       </View>
@@ -574,6 +575,7 @@ exports[`SendReceive renders correctly 1`] = `
                                       },
                                     ]
                                   }
+                                  testID="digital-cash-send-amount"
                                   value=""
                                 />
                               </View>
@@ -594,6 +596,7 @@ exports[`SendReceive renders correctly 1`] = `
                                   "opacity": 1,
                                 }
                               }
+                              testID="digital-cash-send-button"
                             >
                               <View
                                 style={
@@ -1123,6 +1126,7 @@ exports[`SendReceive renders correctly with passed scanned pop token 1`] = `
                                               },
                                             ]
                                           }
+                                          testID="digital-cash-send-beneficiary"
                                           value="some pop token"
                                         />
                                       </View>
@@ -1224,6 +1228,7 @@ exports[`SendReceive renders correctly with passed scanned pop token 1`] = `
                                       },
                                     ]
                                   }
+                                  testID="digital-cash-send-amount"
                                   value=""
                                 />
                               </View>
@@ -1244,6 +1249,7 @@ exports[`SendReceive renders correctly with passed scanned pop token 1`] = `
                                   "opacity": 1,
                                 }
                               }
+                              testID="digital-cash-send-button"
                             >
                               <View
                                 style={

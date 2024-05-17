@@ -1,0 +1,15 @@
+{
+  "jsonrpc": "2.0",
+  "id": 4,
+  "method": "publish",
+  "params": {
+    "channel": "/root/lsWUv1bKBQ0t1DqWZTFwb0nhLsP_EtfGoXHny4hsrwA=/federation",
+    "message": {
+      "data": "eyJvYmplY3QiOiJmZWRlcmF0aW9uIiwiYWN0aW9uIjoiaW5pdCIsImxhb19pZCI6ImZ6SlNaaktmLTJjYlhIN2tkczlIOE5PUnV1RklSTGtldkpsTjdxUWVtam89IiwicHVibGljX2tleSI6Iko5ZkJ6SlY3MEprNWMtaTMyNzdVcTRDbWVMNHQ1M1dEZlVnaGFLMEhwZU09Iiwic2VydmVyX2FkZHJlc3MiOiJ3c3M6Ly9lcGZsLmNoOjkwMDAvc2VydmVyIiwiY2hhbGxlbmdlIjp7ImRhdGEiOiJleUp2WW1wbFkzUWlPaUptWldSbGNtRjBhVzl1SWl3aVlXTjBhVzl1SWpvaVkyaGhiR3hsYm1kbElpd2lkbUZzZFdVaU9pSmxZbUV6WlRJMFpXWmpaREJpTlRObVlUWTVPVEE0WW1Ga05XUXhZMkkyT1Rsa056azRNR1E1TXpFd09XUmhNR0l5WW1aa05UQXpOMk15WXpnNVpXVXdJaXdpZEdsdFpYTjBZVzF3SWpveE56RXpNemcxTlRZNGZRPT0iLCJzZW5kZXIiOiJ6WGd6UWFhX05wVWUtdjBaa180cThrMTg0b2hRNW5UUWhCREtnbmNIenE0PSIsInNpZ25hdHVyZSI6IkJJTFl3WWtUNXRPQkw0ckNEN3l2aEJraEFZcVJYT0kzYWpRMnVKMWdBay1nNm5SYzM4dk1NbmxIU2h1TkNRM2RRRlhZWlBuMzdjQ0ZlbGhXR2pZOEJnPT0iLCJtZXNzYWdlX2lkIjoic0RfUGRyeUJ1T3IxNF82NWg4TC1lMWx6ZFFwRFd4VUFuZ3R1MXV3cWdFST0iLCJ3aXRuZXNzX3NpZ25hdHVyZXMiOltdfX0=",
+      "message_id": "sD_PdryBuOr14_65h8L-e1lzdQpDWxUAngtu1uwqgEI=",
+      "sender": "zXgzQaa_NpUe-v0Zk_4q8k184ohQ5nTQhBDKgncHzq4=",
+      "signature": "BILYwYkT5tOBL4rCD7yvhBkhAYqRXOI3ajQ2uJ1gAk-g6nRc38vMMnlHShuNCQ3dQFXYZPn37cCFelhWGjY8Bg==",
+      "witness_signatures": []
+    }
+  }
+}
