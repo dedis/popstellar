@@ -3,6 +3,7 @@ rule = ImpossibleOptionSizeCondition
  */
 package fix
 
+import fix.Util.getType
 import scalafix.lint.LintSeverity
 
 import scala.meta._
@@ -21,16 +22,6 @@ case class ImpossibleOptionSizeConditionDiag(option: Tree) extends Diagnostic {
 class ImpossibleOptionSizeCondition extends SemanticRule("ImpossibleOptionSizeCondition") {
 
   override def fix(implicit doc: SemanticDocument): Patch = {
-
-    def getType(term: Term): Symbol = {
-      term.symbol.info match {
-        case Some(symInfo) => symInfo.signature match {
-          case ValueSignature(TypeRef(_, symbol, _)) => symbol
-          case _ => null
-        }
-        case _ => null
-      }
-    }
 
     doc.tree.collect {
       case t @ Term.ApplyInfix.After_4_6_0(Term.Select(qual, Term.Name("size")), Term.Name(">") | Term.Name(">="),
