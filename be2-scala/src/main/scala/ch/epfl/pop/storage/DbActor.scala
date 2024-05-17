@@ -251,6 +251,9 @@ final case class DbActor(
         buildPagedCatchupList(channelData.messages, Nil)
     }
 
+    pagedCatchupList.sortBy(msg => )
+
+
     readGreetLao(channel) match {
       case Some(msg) => msg :: pagedCatchupList
       case None => pagedCatchupList
