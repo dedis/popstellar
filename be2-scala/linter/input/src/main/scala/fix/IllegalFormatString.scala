@@ -29,6 +29,8 @@ object IllegalFormatString {
     "%.2f %s".format(14.5, "sammmmmmmmm") // scalafix: ok;
     "%010d".format(0) // scalafix: ok;
 
+    "%s is %d years old, %d".format(name, age, 145) // scalafix: ok;
+
 
   }
 }

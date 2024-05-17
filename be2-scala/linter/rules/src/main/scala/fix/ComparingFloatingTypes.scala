@@ -25,7 +25,6 @@ class ComparingFloatingTypes extends SemanticRule("ComparingFloatingTypes") {
 
     def isFloatOrDouble(term: Term): Boolean = {
       val floatOrDoubleMatcher = SymbolMatcher.exact("scala/Float#", "scala/Double#")
-      val t = getType(term)
       floatOrDoubleMatcher.matches(getType(term))
     }
 
