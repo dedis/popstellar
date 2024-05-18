@@ -235,13 +235,17 @@ object HighLevelProtocol extends DefaultJsonProtocol {
 
     override def read(json: JsValue): PagedCatchup = {
       json.asJsObject.getFields(PARAM_CHANNEL, PARAM_NUMBER_OF_MESSAGES, PARAM_BEFORE_MESSAGE_ID) match {
-        case Seq(channel @ JsString(_), numberOfMessages @ JsNumber(_), beforeMessageID @ JsString(_)) => {
+        case Seq(channel @ JsString(_), numberOfMessages @ JsNumber(_), beforeMessageID @ JsString(_)) =>
           PagedCatchup(
             channel.convertTo[Channel],
             numberOfMessages.convertTo[String],
             beforeMessageID.convertTo[Option[String]]
           )
-        }
+        case Seq(channel@JsString(_), numberOfMessages@JsNumber(_)) =>
+          PagedCatchup(
+            channel.convertTo[Channel],
+            numberOfMessages.convertTo[String],
+          )
         case _ => throw new IllegalArgumentException(s"Can't parse json value $json to a PagedCatchup object")
       }
     }
