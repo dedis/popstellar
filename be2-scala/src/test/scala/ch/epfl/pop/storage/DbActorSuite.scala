@@ -17,6 +17,8 @@ import org.scalatest.funsuite.AnyFunSuiteLike as FunSuiteLike
 import org.scalatest.matchers.should.Matchers
 import util.examples.MessageExample
 import util.examples.RollCall.{CreateRollCallExamples, OpenRollCallExamples}
+import util.examples.Rumor.RumorExample
+import ch.epfl.pop.model.network.method.Rumor
 
 import scala.collection.immutable.HashMap
 import scala.concurrent.Await
@@ -917,6 +919,74 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
     val expected = HashMap.empty[Channel, Set[Hash]]
 
     heartbeat should equal(expected)
+  }
+
+  test("writeRumor() writes correctly rumor") {
+
+    val initialStorage = InMemoryStorage()
+    val dbActor: AskableActorRef = system.actorOf(Props(DbActor(mediatorRef, MessageRegistry(), initialStorage)))
+
+    val rumor: Rumor = RumorExample.rumorExample
+
+    val write = dbActor ? DbActor.WriteRumor(rumor)
+    Await.result(write, duration) shouldBe a[DbActor.DbActorAck]
+
+    initialStorage.size should equal(2)
+
+    val rumorDataKey = s"${initialStorage.RUMOR_DATA_KEY}${rumor.senderPk.base64Data.data}"
+    val rumorDataFound = initialStorage.read(rumorDataKey)
+    val expectedRumorData = RumorData(List(rumor.rumorId))
+
+    rumorDataFound shouldBe Some(expectedRumorData.toJsonString)
+
+    val rumorKey = s"${initialStorage.RUMOR_KEY}${rumor.senderPk.base64Data.data}${Channel.DATA_SEPARATOR}${rumor.rumorId}"
+    val rumorFound = initialStorage.read(rumorKey)
+
+    rumorFound shouldBe Some(rumor.toJsonString)
+  }
+
+  test("can writeRumor() and then readRumors() correctly from storage") {
+
+    val initialStorage = InMemoryStorage()
+    val dbActor: AskableActorRef = system.actorOf(Props(DbActor(mediatorRef, MessageRegistry(), initialStorage)))
+
+    val rumor: Rumor = RumorExample.rumorExample
+
+    val write = dbActor ? DbActor.WriteRumor(rumor)
+    Await.result(write, duration) shouldBe a[DbActor.DbActorAck]
+
+    val read = dbActor ? DbActor.ReadRumor(rumor.senderPk -> rumor.rumorId)
+    val foundRumor = Await.result(read, duration).asInstanceOf[DbActorReadRumor].foundRumor
+
+    foundRumor.isDefined shouldBe true
+
+    foundRumor.get shouldBe rumor
+  }
+
+  test("can recover list of rumorId received for a senderPk") {
+    val initialStorage = InMemoryStorage()
+    val dbActor: AskableActorRef = system.actorOf(Props(DbActor(mediatorRef, MessageRegistry(), initialStorage)))
+
+    val rumor: Rumor = RumorExample.rumorExample
+
+    val write = dbActor ? DbActor.WriteRumor(rumor)
+    Await.result(write, duration) shouldBe a[DbActor.DbActorAck]
+
+    val desiredRumorDataKey: PublicKey = rumor.senderPk
+    val readRumorData = dbActor ? DbActor.ReadRumorData(desiredRumorDataKey)
+    val foundRumorData = Await.result(readRumorData, duration)
+    val rumorData = foundRumorData.asInstanceOf[DbActorReadRumorData].rumorIds
+
+    rumorData.rumorIds should equal(List(rumor.rumorId))
+  }
+
+  test("read of absent rumor should fail") {
+    val initialStorage = InMemoryStorage()
+    val dbActor: AskableActorRef = system.actorOf(Props(DbActor(mediatorRef, MessageRegistry(), initialStorage)))
+
+    val rumor: Rumor = RumorExample.rumorExample
+    val read = dbActor ? DbActor.ReadRumor(rumor.senderPk -> rumor.rumorId)
+    Await.result(read, duration) shouldBe DbActorReadRumor(None)
   }
 
 }

@@ -12,5 +12,11 @@ Feature: Constants
     # Lao
     * def JOIN_LAO = 'lao_join'
     * def CREATE_LAO = 'lao_create'
+    * def CLICK_USER = 'user_click'
     # Event
     * def CLICK_CREATE_ROLLCALL = 'click_rollcall_create'
+    * def JOIN_ROLLCALL = 'join_rollcall'
+    * def ORGANIZER_WITH_POP_TOKEN = 'organizer_with_pop_token'
+    * def SWITCH_TO_SOCIAL_PAGE = 'switch_to_social_page'
+    # Digital Cash
+    * def SWITCH_TO_DIGITAL_CASH_PAGE = 'switch_to_digital_cash_page'

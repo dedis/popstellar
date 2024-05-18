@@ -10,7 +10,6 @@ import (
 	"popstellar/message/answer"
 	"strings"
 
-	"github.com/rs/zerolog"
 	"github.com/santhosh-tekuri/jsonschema/v3"
 	"golang.org/x/xerrors"
 )
@@ -19,7 +18,6 @@ import (
 type SchemaValidator struct {
 	genericMessageSchema *jsonschema.Schema
 	dataSchema           *jsonschema.Schema
-	log                  zerolog.Logger
 }
 
 // SchemaType denotes the type of schema.
@@ -49,6 +47,7 @@ func init() {
 	// Override the defaults for loading files and decoding base64 encoded data
 	jsonschema.Loaders["file"] = loadFileURL
 	jsonschema.Decoders["base64"] = base64.URLEncoding.DecodeString
+	jsonschema.Loaders["https"] = loadHttpURL
 }
 
 // VerifyJSON verifies that the `msg` follow the schema protocol of name
@@ -56,8 +55,6 @@ func init() {
 func (s SchemaValidator) VerifyJSON(msg []byte, st SchemaType) error {
 	reader := bytes.NewBuffer(msg[:])
 	var schema *jsonschema.Schema
-
-	s.log.Info().Msg("verifying msg follows the schema")
 
 	switch st {
 	case GenericMessage:
@@ -70,7 +67,6 @@ func (s SchemaValidator) VerifyJSON(msg []byte, st SchemaType) error {
 
 	err := schema.Validate(reader)
 	if err != nil {
-		s.log.Err(err).Msg("failed to validate schema")
 		return answer.NewErrorf(-4, "failed to validate schema: %v", err)
 	}
 
@@ -78,10 +74,9 @@ func (s SchemaValidator) VerifyJSON(msg []byte, st SchemaType) error {
 }
 
 // NewSchemaValidator returns a Schema Validator
-func NewSchemaValidator(log zerolog.Logger) (*SchemaValidator, error) {
+func NewSchemaValidator() (*SchemaValidator, error) {
 	gmCompiler := jsonschema.NewCompiler()
 	dataCompiler := jsonschema.NewCompiler()
-	log = log.With().Str("role", "base hub").Logger()
 
 	// recurse over the protocol directory and load all the files
 	err := fs.WalkDir(protocolFS, "protocol", func(path string, d fs.DirEntry, err error) error {
@@ -128,7 +123,6 @@ func NewSchemaValidator(log zerolog.Logger) (*SchemaValidator, error) {
 	return &SchemaValidator{
 		genericMessageSchema: gmSchema,
 		dataSchema:           dataSchema,
-		log:                  log,
 	}, nil
 }
 
@@ -136,4 +130,11 @@ func loadFileURL(s string) (io.ReadCloser, error) {
 	path := strings.TrimPrefix(s, "file://")
 
 	return protocolFS.Open(path)
+}
+
+func loadHttpURL(s string) (io.ReadCloser, error) {
+	// If for example a message data use a $ref to ../message.json,
+	// it will try to load using the baseURL => replace path,
+	// so that only local file is loaded.
+	return loadFileURL(strings.ReplaceAll(s, baseURL, "file://"))
 }

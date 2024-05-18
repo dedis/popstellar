@@ -54,7 +54,7 @@ export const DigitalCashLaoScreen: DigitalCashFeature.LaoScreen = {
   id: STRINGS.navigation_lao_digital_cash,
   title: STRINGS.navigation_lao_digital_cash_title,
   Component: DigitalCashNavigation,
-  Icon: makeIcon('digitalCash'),
+  Icon: makeIcon('digitalCash', 'drawer_menu_digital_cash'),
   headerShown: false,
   order: 10000000,
 };

@@ -745,7 +745,7 @@ type fakeHub struct {
 // NewFakeHub returns a fake Hub.
 func NewFakeHub(clientAddress string, publicOrg kyber.Point, log zerolog.Logger, laoFac channel.LaoFactory) (*fakeHub, error) {
 
-	schemaValidator, err := validation.NewSchemaValidator(log)
+	schemaValidator, err := validation.NewSchemaValidator()
 	if err != nil {
 		return nil, xerrors.Errorf("failed to create the schema validator: %v", err)
 	}
@@ -809,19 +809,19 @@ func (h *fakeHub) Sign(data []byte) ([]byte, error) {
 func (h *fakeHub) NotifyWitnessMessage(messageId string, publicKey string, signature string) {}
 
 // GetPeersInfo implements channel.HubFunctionalities
-func (h *fakeHub) GetPeersInfo() []method.ServerInfo {
-	peer1 := method.ServerInfo{
+func (h *fakeHub) GetPeersInfo() []method.GreetServerParams {
+	peer1 := method.GreetServerParams{
 		PublicKey:     "",
 		ClientAddress: "wss://localhost:9002/client",
 		ServerAddress: "",
 	}
 
-	peer2 := method.ServerInfo{
+	peer2 := method.GreetServerParams{
 		PublicKey:     "",
 		ClientAddress: "wss://localhost:9004/client",
 		ServerAddress: "",
 	}
-	return []method.ServerInfo{peer1, peer2}
+	return []method.GreetServerParams{peer1, peer2}
 }
 
 func (h *fakeHub) GetSchemaValidator() validation.SchemaValidator {

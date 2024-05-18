@@ -5,17 +5,22 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"github.com/rs/zerolog"
 	"golang.org/x/exp/slices"
 	"net/url"
 	"os"
 	popstellar "popstellar"
-	"popstellar/channel/lao"
 	"popstellar/crypto"
 	"popstellar/hub"
-	"popstellar/hub/standard_hub"
+	"popstellar/internal/popserver"
+	"popstellar/internal/popserver/config"
+	"popstellar/internal/popserver/database"
+	"popstellar/internal/popserver/database/sqlite"
+	"popstellar/internal/popserver/state"
+	"popstellar/internal/popserver/utils"
 	"popstellar/network"
 	"popstellar/network/socket"
-	"popstellar/popcha"
+	"popstellar/validation"
 	"sync"
 	"time"
 
@@ -54,10 +59,84 @@ type ServerConfig struct {
 	OtherServers   []string `json:"other-servers"`
 }
 
+func (s *ServerConfig) newHub(l *zerolog.Logger) (hub.Hub, error) {
+	// compute the client server address if it wasn't provided
+	if s.ClientAddress == "" {
+		s.ClientAddress = fmt.Sprintf("ws://%s:%d/client", s.PublicAddress, s.ClientPort)
+	}
+	// compute the server server address if it wasn't provided
+	if s.ServerAddress == "" {
+		s.ServerAddress = fmt.Sprintf("ws://%s:%d/server", s.PublicAddress, s.ServerPort)
+	}
+
+	path := "./database-a/" + sqlite.DefaultPath
+
+	if s.ClientPort == 9002 {
+		path = "./database-b/" + sqlite.DefaultPath
+	}
+
+	var point kyber.Point = nil
+	err := ownerKey(s.PublicKey, &point)
+	if err != nil {
+		return nil, err
+	}
+
+	schemaValidator, err := validation.NewSchemaValidator()
+	if err != nil {
+		return nil, err
+	}
+
+	db, err := sqlite.NewSQLite(path, true)
+	if err != nil {
+		return nil, err
+	}
+
+	database.InitDatabase(&db)
+
+	serverPublicKey, serverSecretKey, err := db.GetServerKeys()
+	if err != nil {
+		serverSecretKey = crypto.Suite.Scalar().Pick(crypto.Suite.RandomStream())
+		serverPublicKey = crypto.Suite.Point().Mul(serverSecretKey, nil)
+
+		err := db.StoreServerKeys(serverPublicKey, serverSecretKey)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	utils.InitUtils(l, schemaValidator)
+
+	state.InitState(l)
+
+	config.InitConfig(point, serverPublicKey, serverSecretKey, s.ClientAddress, s.ServerAddress)
+
+	channels, err := db.GetAllChannels()
+	if err != nil {
+		return nil, err
+	}
+
+	for _, channel := range channels {
+		alreadyExist, errAnswer := state.HasChannel(channel)
+		if errAnswer != nil {
+			return nil, errAnswer
+		}
+		if alreadyExist {
+			continue
+		}
+
+		errAnswer = state.AddChannel(channel)
+		if errAnswer != nil {
+			return nil, errAnswer
+		}
+	}
+
+	return popserver.NewHub(), nil
+}
+
 // Serve parses the CLI arguments and spawns a hub and a websocket server for
 // the server
 func Serve(cliCtx *cli.Context) error {
-	log := popstellar.Logger
+	poplog := popstellar.Logger
 
 	configFilePath := cliCtx.String("config-file")
 	var serverConfig ServerConfig
@@ -80,39 +159,22 @@ func Serve(cliCtx *cli.Context) error {
 		}
 	}
 
-	computeAddresses(&serverConfig)
-
-	var point kyber.Point = nil
-	ownerKey(serverConfig.PublicKey, &point)
-
-	// create user hub
-	h, err := standard_hub.NewHub(point, serverConfig.ClientAddress, serverConfig.ServerAddress, log.With().Str("role", "server").Logger(),
-		lao.NewChannel)
+	h, err := serverConfig.newHub(&poplog)
 	if err != nil {
-		return xerrors.Errorf("failed create the hub: %v", err)
+		return err
 	}
 
 	// start the processing loop
 	h.Start()
 
-	// Start the PoPCHA Authorization Server. It will run internally on localhost, the address of the server given in
-	// the config file will be the one used externally.
-	authorizationSrv, err := popcha.NewAuthServer(h, "localhost", serverConfig.AuthPort,
-		log.With().Str("role", "authorization server").Logger())
-	if err != nil {
-		return xerrors.Errorf("Error while starting the PoPCHA server: %v", err)
-	}
-	authorizationSrv.Start()
-	<-authorizationSrv.Started
-
 	// Start websocket server for clients
 	clientSrv := network.NewServer(h, serverConfig.PrivateAddress, serverConfig.ClientPort, socket.ClientSocketType,
-		log.With().Str("role", "client websocket").Logger())
+		poplog.With().Str("role", "client websocket").Logger())
 	clientSrv.Start()
 
 	// Start a websocket server for remote servers
 	serverSrv := network.NewServer(h, serverConfig.PrivateAddress, serverConfig.ServerPort, socket.ServerSocketType,
-		log.With().Str("role", "server websocket").Logger())
+		poplog.With().Str("role", "server websocket").Logger())
 	serverSrv.Start()
 
 	// create wait group which waits for goroutines to finish
@@ -150,7 +212,7 @@ func Serve(cliCtx *cli.Context) error {
 	go serverConnectionLoop(h, wg, done, serverConfig.OtherServers, updatedServersChan, &connectedServers)
 
 	// Wait for a Ctrl-C
-	err = network.WaitAndShutdownServers(cliCtx.Context, authorizationSrv, clientSrv, serverSrv)
+	err = network.WaitAndShutdownServers(cliCtx.Context, nil, clientSrv, serverSrv)
 	if err != nil {
 		return err
 	}
@@ -158,7 +220,6 @@ func Serve(cliCtx *cli.Context) error {
 	h.Stop()
 	<-clientSrv.Stopped
 	<-serverSrv.Stopped
-	<-authorizationSrv.Stopped
 
 	// notify channs to stop
 	close(done)
@@ -173,7 +234,7 @@ func Serve(cliCtx *cli.Context) error {
 	select {
 	case <-channsClosed:
 	case <-time.After(time.Second * 10):
-		log.Error().Msg("channs didn't close after timeout, exiting")
+		poplog.Error().Msg("channs didn't close after timeout, exiting")
 	}
 
 	return nil
@@ -241,7 +302,7 @@ func connectToServers(h hub.Hub, wg *sync.WaitGroup, done chan struct{}, servers
 func connectToSocket(address string, h hub.Hub,
 	wg *sync.WaitGroup, done chan struct{}) error {
 
-	log := popstellar.Logger
+	poplog := popstellar.Logger
 
 	urlString := fmt.Sprintf("ws://%s/server", address)
 	u, err := url.Parse(urlString)
@@ -254,10 +315,10 @@ func connectToSocket(address string, h hub.Hub,
 		return xerrors.Errorf("failed to dial to %s: %v", u.String(), err)
 	}
 
-	log.Info().Msgf("connected to server at %s", urlString)
+	poplog.Info().Msgf("connected to server at %s", urlString)
 
 	remoteSocket := socket.NewServerSocket(h.Receiver(),
-		h.OnSocketClose(), ws, wg, done, log)
+		h.OnSocketClose(), ws, wg, done, poplog)
 	wg.Add(2)
 
 	go remoteSocket.WritePump()
@@ -307,20 +368,20 @@ func startWithConfigFile(configFilename string) (ServerConfig, error) {
 func loadConfig(configFilename string) (ServerConfig, error) {
 	bytes, err := os.ReadFile(configFilename)
 	if err != nil {
-		return ServerConfig{}, xerrors.Errorf("could not read config file: %w", err)
+		return ServerConfig{}, xerrors.Errorf("could not read serverConfig file: %w", err)
 	}
-	var config ServerConfig
-	err = json.Unmarshal(bytes, &config)
+	var serverConfig ServerConfig
+	err = json.Unmarshal(bytes, &serverConfig)
 	if err != nil {
-		return ServerConfig{}, xerrors.Errorf("could not unmarshal config file: %w", err)
+		return ServerConfig{}, xerrors.Errorf("could not unmarshal serverConfig file: %w", err)
 	}
-	if config.ServerPort == config.ClientPort {
+	if serverConfig.ServerPort == serverConfig.ClientPort {
 		return ServerConfig{}, xerrors.Errorf("client and server ports must be different")
 
-	} else if config.ServerPort == config.AuthPort || config.ClientPort == config.AuthPort {
+	} else if serverConfig.ServerPort == serverConfig.AuthPort || serverConfig.ClientPort == serverConfig.AuthPort {
 		return ServerConfig{}, xerrors.Errorf("PoPCHA Authentication port must be unique\"")
 	}
-	return config, nil
+	return serverConfig, nil
 }
 
 // startWithFlags returns the ServerConfig using the command line flags
@@ -397,17 +458,5 @@ func updateServersState(servers []string, connectedServers *map[string]bool) {
 		if _, ok := (*connectedServers)[server]; !ok {
 			(*connectedServers)[server] = false
 		}
-	}
-}
-
-// computeAddresses computes the client and server addresses if they were not provided
-func computeAddresses(serverConfig *ServerConfig) {
-	// compute the client server address if it wasn't provided
-	if serverConfig.ClientAddress == "" {
-		serverConfig.ClientAddress = fmt.Sprintf("ws://%s:%d/client", serverConfig.PublicAddress, serverConfig.ClientPort)
-	}
-	// compute the server server address if it wasn't provided
-	if serverConfig.ServerAddress == "" {
-		serverConfig.ServerAddress = fmt.Sprintf("ws://%s:%d/server", serverConfig.PublicAddress, serverConfig.ServerPort)
 	}
 }

@@ -39,7 +39,8 @@ enum class Action
   NOTIFY_DELETE("notify_delete"),
   KEY("key"),
   POST_TRANSACTION("post_transaction"),
-  AUTH("authenticate");
+  AUTH("authenticate"),
+  RUMOR("rumor");
 
   /**
    * Field to decide whether to store the message content. This is used to save memory, as some

@@ -43,6 +43,25 @@ object UITestUtils {
     Assert.assertEquals(expected, ShadowToast.getTextOfLatestToast())
   }
 
+  @JvmStatic
+  fun assertToastIsDisplayedContainsText(@StringRes resId: Int, vararg args: Any?) {
+    MatcherAssert.assertThat(
+      "No toast was displayed",
+      ShadowToast.getLatestToast(),
+      Matchers.notNullValue()
+    )
+
+    val expected = ApplicationProvider.getApplicationContext<Context>().getString(resId, *args)
+    Assert.assertTrue(ShadowToast.getTextOfLatestToast().contains(expected))
+  }
+
+  @JvmStatic
+  fun assertLatestToastContent(isContained: Boolean, @StringRes resId: Int, vararg args: Any?) {
+    val expected = ApplicationProvider.getApplicationContext<Context>().getString(resId, *args)
+    Assert.assertEquals(isContained, ShadowToast.getTextOfLatestToast()?.contains(expected)
+      ?: false)
+  }
+
   /**
    * Retrieve the last opened dialog expecting it to be of the provided type
    *

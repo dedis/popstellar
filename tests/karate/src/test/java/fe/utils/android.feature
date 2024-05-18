@@ -73,3 +73,13 @@ Feature: android page object
   @name=click_rollcall_create
   Scenario:
     * waitFor(event_create_rollcall).click()
+
+  @name=join_rollcall
+  Scenario:
+    # Not implemented yet
+    * assert false
+
+  @name=switch_to_social_page
+  Scenario:
+    # Not implemented yet
+    * assert false

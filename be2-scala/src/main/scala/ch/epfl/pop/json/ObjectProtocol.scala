@@ -23,6 +23,15 @@ object ObjectProtocol extends DefaultJsonProtocol {
     override def write(obj: Base64Data): JsValue = JsString(obj.data)
   }
 
+  implicit object Base16DataFormat extends JsonFormat[Base16Data] {
+    override def read(json: JsValue): Base16Data = json match {
+      case JsString(data) => Base16Data(data)
+      case _              => throw new IllegalArgumentException(s"Can't parse json value $json to a Base16Data object")
+    }
+
+    override def write(obj: Base16Data): JsValue = JsString(obj.data)
+  }
+
   implicit object ChannelFormat extends JsonFormat[Channel] {
     override def read(json: JsValue): Channel = json match {
       case JsString(value) => Channel(value)
@@ -92,6 +101,19 @@ object ObjectProtocol extends DefaultJsonProtocol {
     override def write(obj: WitnessSignaturePair): JsValue = JsObject(
       PARAM_WITNESS -> JsString(obj.witness.base64Data.data),
       PARAM_SIGNATURE -> JsString(obj.signature.signature.data)
+    )
+  }
+
+  implicit object RumorDataFormat extends JsonFormat[RumorData] {
+    final private val PARAM_RUMOR_IDS: String = "rumor_ids"
+
+    override def read(json: JsValue): RumorData = json.asJsObject.getFields(PARAM_RUMOR_IDS) match {
+      case Seq(rumorIds @ JsArray(_)) => RumorData(rumorIds.convertTo[List[Int]])
+      case _                          => throw new IllegalArgumentException(s"Can't parse json value $json to a RumorData object")
+    }
+
+    override def write(obj: RumorData): JsValue = JsObject(
+      PARAM_RUMOR_IDS -> obj.rumorIds.toJson
     )
   }
 

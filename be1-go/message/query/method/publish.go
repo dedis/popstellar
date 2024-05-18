@@ -11,8 +11,10 @@ type Publish struct {
 
 	ID int `json:"id"`
 
-	Params struct {
-		Channel string          `json:"channel"`
-		Message message.Message `json:"message"`
-	} `json:"params"`
+	Params PublishParams `json:"params"`
+}
+
+type PublishParams struct {
+	Channel string          `json:"channel"`
+	Message message.Message `json:"message"`
 }

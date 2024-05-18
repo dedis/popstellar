@@ -1,0 +1,15 @@
+{
+  "jsonrpc": "2.0",
+  "id": 4,
+  "method": "publish",
+  "params": {
+    "channel": "/root/fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=/federation",
+    "message": {
+      "data": "eyJvYmplY3QiOiJmZWRlcmF0aW9uIiwiYWN0aW9uIjoiY2hhbGxlbmdlIiwidmFsdWUiOiI4MmVhZGRlMmE0YmE4MzI1MThiOTBiYjkzYzg0ODBlZTFhZTE2YTkxZDVlZmU5MjgxZTkxZTJlYzExZGEwM2U0IiwidGltZXN0YW1wIjoxNzEyODU0ODc0fQ==",
+      "message_id": "sD_PdryBuOr14_65h8L-e1lzdQpDWxUAngtu1uwqgEI=",
+      "sender": "zXgzQaa_NpUe-v0Zk_4q8k184ohQ5nTQhBDKgncHzq4=",
+      "signature": "BILYwYkT5tOBL4rCD7yvhBkhAYqRXOI3ajQ2uJ1gAk-g6nRc38vMMnlHShuNCQ3dQFXYZPn37cCFelhWGjY8Bg==",
+      "witness_signatures": []
+    }
+  }
+}

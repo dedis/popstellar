@@ -2,15 +2,8 @@ package com.github.dedis.popstellar.utility
 
 import android.app.Activity
 import android.app.Application
-import android.content.ClipData
-import android.content.ClipboardManager
-import android.content.Context
 import android.os.Bundle
-import android.view.View
-import android.widget.TextView
-import android.widget.Toast
 import androidx.lifecycle.Lifecycle
-import com.github.dedis.popstellar.R
 import com.github.dedis.popstellar.model.objects.security.Base64URLData
 import io.github.novacrypto.bip39.MnemonicGenerator
 import io.github.novacrypto.bip39.wordlists.English
@@ -69,29 +62,6 @@ object GeneralUtils {
         val consumer = consumers[Lifecycle.Event.ON_DESTROY]
         consumer?.accept(activity)
       }
-    }
-  }
-
-  /**
-   * This class is a utility to setup a copy button that copies the text of a TextView to the
-   * clipboard.
-   *
-   * @param context the context of the application
-   */
-  class ClipboardUtil(val context: Context) {
-
-    fun setupCopyButton(button: View, textView: TextView, label: String) {
-      button.setOnClickListener {
-        val text = textView.text.toString()
-        copyTextToClipboard(label, text)
-        Toast.makeText(context, R.string.successful_copy, Toast.LENGTH_SHORT).show()
-      }
-    }
-
-    private fun copyTextToClipboard(label: String, content: String) {
-      val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-      val clip = ClipData.newPlainText(label, content)
-      clipboard.setPrimaryClip(clip)
     }
   }
 

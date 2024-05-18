@@ -34,7 +34,7 @@ const SocialHome = () => {
 
   if (chirpList.length === 0) {
     return (
-      <ScreenWrapper>
+      <ScreenWrapper containerTestID="social_home_page">
         <Text style={[Typography.base, Typography.paragraph]}>
           {STRINGS.social_media_create_chirps_yet}
         </Text>
@@ -49,7 +49,7 @@ const SocialHome = () => {
   }
 
   return (
-    <ScreenWrapper>
+    <ScreenWrapper containerTestID="social_home_page">
       <NewChirp />
       <View style={List.container}>
         <FlatList

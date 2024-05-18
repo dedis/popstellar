@@ -1,7 +1,7 @@
 package hub_state
 
 import (
-	"golang.org/x/xerrors"
+	"popstellar/message/answer"
 	"popstellar/message/query/method"
 	"sync"
 
@@ -13,7 +13,7 @@ import (
 type Peers struct {
 	sync.RWMutex
 	// peersInfo stores the info of the peers: public key, client and server endpoints associated with the socket ID
-	peersInfo map[string]method.ServerInfo
+	peersInfo map[string]method.GreetServerParams
 	// peersGreeted stores the peers that were greeted by the socket ID
 	peersGreeted map[string]struct{}
 }
@@ -21,19 +21,19 @@ type Peers struct {
 // NewPeers creates a new Peers structure
 func NewPeers() Peers {
 	return Peers{
-		peersInfo:    make(map[string]method.ServerInfo),
+		peersInfo:    make(map[string]method.GreetServerParams),
 		peersGreeted: make(map[string]struct{}),
 	}
 }
 
 // AddPeerInfo adds a peer's info to the table
-func (p *Peers) AddPeerInfo(socketId string, info method.ServerInfo) error {
+func (p *Peers) AddPeerInfo(socketId string, info method.GreetServerParams) error {
 	p.Lock()
 	defer p.Unlock()
 
 	currentInfo, ok := p.peersInfo[socketId]
 	if ok {
-		return xerrors.Errorf(
+		return answer.NewInvalidActionError(
 			"cannot add %s because peersInfo[%s] already contains %s",
 			info, socketId, currentInfo)
 	}
@@ -50,10 +50,10 @@ func (p *Peers) AddPeerGreeted(socketId string) {
 }
 
 // GetAllPeersInfo returns a copy of the peers' info slice
-func (p *Peers) GetAllPeersInfo() []method.ServerInfo {
+func (p *Peers) GetAllPeersInfo() []method.GreetServerParams {
 	p.RLock()
 	defer p.RUnlock()
-	peersInfo := make([]method.ServerInfo, 0, len(p.peersInfo))
+	peersInfo := make([]method.GreetServerParams, 0, len(p.peersInfo))
 	for _, info := range p.peersInfo {
 		if !slices.Contains(peersInfo, info) {
 			peersInfo = append(peersInfo, info)
