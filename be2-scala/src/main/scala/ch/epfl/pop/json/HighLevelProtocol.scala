@@ -231,22 +231,23 @@ object HighLevelProtocol extends DefaultJsonProtocol {
   implicit object PagedCatchupFormat extends RootJsonFormat[PagedCatchup] {
     final private val PARAM_CHANNEL: String = "channel"
     final private val PARAM_NUMBER_OF_MESSAGES: String = "number_of_messages"
-    final private val PARAM_BEFORE_MESSAGE_ID: Option[String] = "before_message_id"
+    final private val PARAM_BEFORE_MESSAGE_ID: String = "before_message_id"
 
     override def read(json: JsValue): PagedCatchup = {
       json.asJsObject.getFields(PARAM_CHANNEL, PARAM_NUMBER_OF_MESSAGES, PARAM_BEFORE_MESSAGE_ID) match {
-        case Seq(channel @ JsString(_), numberOfMessages @ JsNumber(_), beforeMessageID @ Option[JsString(_)]) =>
+        case Seq(channel @ JsString(_), numberOfMessages @ JsNumber(_), beforeMessageID @ JsString(_)) => {
           PagedCatchup(
             channel.convertTo[Channel],
             numberOfMessages.convertTo[String],
             beforeMessageID.convertTo[Option[String]]
           )
+        }
         case _ => throw new IllegalArgumentException(s"Can't parse json value $json to a PagedCatchup object")
       }
     }
 
     override def write(obj: PagedCatchup): JsValue = {
-      if(obj.beforeMessageID) {
+      if(obj.beforeMessageID.nonEmpty) {
         val jsObjContent: ListMap[String, JsValue] = ListMap[String, JsValue](
           PARAM_CHANNEL -> obj.channel.toJson,
           PARAM_NUMBER_OF_MESSAGES -> obj.numberOfMessages.toJson,
