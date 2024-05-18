@@ -285,7 +285,7 @@ final case class DbActor(
         }
         readGreetLao(chirpsChannel) match {
           case Some(msg) => msg :: sortedPagedList
-          case None => sortedPagedList
+          case None      => sortedPagedList
         }
       }
     }
@@ -332,7 +332,7 @@ final case class DbActor(
         }
         readGreetLao(profileChannel) match {
           case Some(msg) => msg :: sortedPagedList
-          case None => sortedPagedList
+          case None      => sortedPagedList
         }
       }
     }
@@ -614,7 +614,7 @@ final case class DbActor(
       log.info(s"Actor $self (db) received a PagedCatchup request for channel '$channel' for '$numberOfMessages' messages before message ID: '$beforeMessageID")
       Try(pagedCatchupChannel(channel, numberOfMessages, beforeMessageID)) match {
         case Success(messages) => sender() ! DbActorCatchupAck(messages)
-        case failure => sender() ! failure.recover(Status.Failure(_))
+        case failure           => sender() ! failure.recover(Status.Failure(_))
       }
 
     case GetAllChannels() =>
@@ -843,13 +843,11 @@ object DbActor {
     */
   final case class Catchup(channel: Channel) extends Event
 
-  /** Request to read a number of messages (<numberOfMessages>) messages from a specific <channel>
-   * before a certain message ID <beforeMessageID> or the latest messages if <beforeMessageID> is
-   * not specified
-   *
-   * @param channel
-   * the channel where the messages should be fetched
-   */
+  /** Request to read a number of messages (<numberOfMessages>) messages from a specific <channel> before a certain message ID <beforeMessageID> or the latest messages if <beforeMessageID> is not specified
+    *
+    * @param channel
+    *   the channel where the messages should be fetched
+    */
   final case class PagedCatchup(channel: Channel, numberOfMessages: Int, beforeMessageID: Option[String]) extends Event
 
   /** Request to get all locally stored channels

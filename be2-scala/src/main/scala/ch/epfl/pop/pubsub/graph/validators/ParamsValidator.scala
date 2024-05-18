@@ -23,8 +23,7 @@ object ParamsValidator extends MethodContentValidator {
       val pattern: Regex = "^/root(/[^/]+)/social/(chirps(/[^/]+)|profile(/[^/]+){2})$".r
 
       pattern.findFirstMatchIn(rpcMessage.getParamsChannel.toString) match {
-        case Some(_)
-        => Right(rpcMessage)
+        case Some(_) => Right(rpcMessage)
         case None =>
           Left(PipelineError(ErrorCodes.INVALID_ACTION.id, "Paging is not supported on this channel", rpcMessage.id))
       }

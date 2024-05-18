@@ -194,9 +194,8 @@ class AnswerGeneratorSuite extends TestKit(ActorSystem("Test")) with FunSuiteLik
     system.stop(dbActorRef.actorRef)
   }
 
-  /** Omar Majzoub May 2024: Paging is not supported on non-chirps channels yet. You can remove this test
-   *  after support has been added.
-   */
+  /** Omar Majzoub May 2024: Paging is not supported on non-chirps channels yet. You can remove this test after support has been added.
+    */
   lazy val rpcPagedCatchupNonChirpsChannelReq: JsonRpcRequest = getJsonRPC(pathPagedCatchupNonChirpsChannelJson)
   test("PagedCatchup: error on non-chirps channel test") {
 

@@ -58,7 +58,7 @@ class AnswerGenerator(dbActor: => AskableActorRef) extends AskPatternConstants {
               val resultObject: ResultObject = new ResultObject(messages)
               Right(JsonRpcResponse(RpcValidator.JSON_RPC_VERSION, Some(resultObject), None, rpcRequest.id))
             case Some(Failure(ex: DbActorNAckException)) => Left(PipelineError(ex.code, s"AnswerGenerator failed : ${ex.message}", rpcRequest.getId))
-            case reply => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"AnswerGenerator failed : unexpected DbActor reply '$reply'", rpcRequest.getId))
+            case reply                                   => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"AnswerGenerator failed : unexpected DbActor reply '$reply'", rpcRequest.getId))
           }
 
         // Standard answer res == 0

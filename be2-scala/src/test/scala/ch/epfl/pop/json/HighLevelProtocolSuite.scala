@@ -293,7 +293,6 @@ class HighLevelProtocolSuite extends FunSuite with Matchers {
     val numberOfMessages: Int = 10
     val beforeMessageId: String = "f1jTxH8TU2UGUBnikGU3wRTHjhOmIEQVmxZBK55QpsE="
 
-
     val pagedCatchupJsValue = HighLevelProtocol.jsonRpcRequestFormat.write(JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, MethodType.paged_catchup, new PagedCatchup(channel, numberOfMessages, beforeMessageID), rpcId))
     val pagedCatchupFromJson = JsonRpcRequest.buildFromJson(pagedCatchupJsValue.prettyPrint)
 
