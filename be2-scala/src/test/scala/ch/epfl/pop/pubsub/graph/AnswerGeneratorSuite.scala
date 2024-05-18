@@ -201,10 +201,10 @@ class AnswerGeneratorSuite extends TestKit(ActorSystem("Test")) with FunSuiteLik
   test("PagedCatchup: error on non-chirps channel test") {
 
     lazy val dbActorRef =
-      mockDbWithNack(ErrorCodes.INVALID_ACTION.id, "error (mock) paging is not supported on non-chirp channels")
+      mockDbWithNack(ErrorCodes.INVALID_ACTION.id, "error (mock) paging is not supported on this channel")
 
     val gmsg: GraphMessage = new AnswerGenerator(dbActorRef).generateAnswer(Right(rpcPagedCatchupNonChirpsChannelReq))
-    val expected = Left(PipelineError(ErrorCodes.INVALID_ACTION.id, "AnswerGenerator failed : error (mock) paging is not supported on non-chirp channels", rpcPagedCatchupNonChirpsChannelReq.id))
+    val expected = Left(PipelineError(ErrorCodes.INVALID_ACTION.id, "AnswerGenerator failed : error (mock) paging is not supported on this channel", rpcPagedCatchupNonChirpsChannelReq.id))
 
     gmsg should be(expected)
     system.stop(dbActorRef.actorRef)

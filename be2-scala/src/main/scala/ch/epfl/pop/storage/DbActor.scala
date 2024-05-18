@@ -1,13 +1,11 @@
 package ch.epfl.pop.storage
 
-import akka.actor.{Actor, ActorLogging, ActorRef, Status}
-import akka.event.LoggingReceive
-import akka.pattern.AskableActorRef
 import ch.epfl.pop.decentralized.ConnectionMediator
 import ch.epfl.pop.json.MessageDataProtocol
 import ch.epfl.pop.json.MessageDataProtocol.GreetLaoFormat
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.lao.GreetLao
+import ch.epfl.pop.model.network.method.message.data.socialMedia.AddChirp
 import ch.epfl.pop.model.network.method.message.data.{ActionType, ObjectType}
 import ch.epfl.pop.model.objects.*
 import ch.epfl.pop.model.objects.Channel.{LAO_DATA_LOCATION, ROOT_CHANNEL_PREFIX}
@@ -22,6 +20,7 @@ import scala.collection.immutable.HashMap
 import scala.concurrent.Await
 import scala.concurrent.duration.{Duration, FiniteDuration}
 import scala.util.{Failure, Success, Try}
+import scala.util.matching.Regex
 
 final case class DbActor(
     private val mediatorRef: ActorRef,
@@ -224,39 +223,71 @@ final case class DbActor(
 
   @throws[DbActorNAckException]
   private def pagedCatchupChannel(channel: Channel, numberOfMessages: Int, beforeMessageID: Option[String]): List[Message] = {
+
+    val chirpsChannel = s"/root/${channel.decodeChannelLaoId}/social/chirps"
+
     @scala.annotation.tailrec
     def buildPagedCatchupList(msgIds: List[Hash], acc: List[Message]): List[Message] = {
       msgIds match {
         case Nil => acc
         case head :: tail =>
-          Try(read(channel, head)).recover(_ => None) match {
+          Try(read(chirpsChannel, head)).recover(_ => None) match {
             case Success(Some(msg)) => buildPagedCatchupList(tail, msg :: acc)
             case _ =>
-              log.error(s"/!\\ Critical error encountered: message_id '$head' is listed in channel '$channel' but not stored in db")
-              buildCatchupList(tail, acc)
+              log.error(s"/!\\ Critical error encountered: message_id '$head' is listed in channel '$chirpsChannel' but not stored in db")
+              buildPagedCatchupList(tail, acc)
           }
       }
     }
 
-    val channelData: ChannelData = readChannelData(channel)
+    val channelData: ChannelData = readChannelData(chirpsChannel)
 
-    val pagedCatchupList = readCreateLao(channel) match {
+    val pagedCatchupList = readCreateLao(chirpsChannel) match {
       case Some(msg) =>
         msg :: buildPagedCatchupList(channelData.messages, Nil)
 
       case None =>
-        if (channel.isMainLaoChannel) {
+        if (chirpsChannel.isMainLaoChannel) {
           log.error("Critical error encountered: no create_lao message was found in the db")
         }
         buildPagedCatchupList(channelData.messages, Nil)
     }
 
-    pagedCatchupList.sortBy(msg => )
+    // sort from oldest to newest message
+    val sortedPagedList = pagedCatchupList.sortBy(msg => - AddChirp.buildFromJson(msg.toJsonString).timestamp)
 
+    val chirpsPattern: Regex = "^/root(/[^/]+)/social/chirps(/[^/]+)$".r
 
-    readGreetLao(channel) match {
-      case Some(msg) => msg :: pagedCatchupList
-      case None => pagedCatchupList
+    val profilePattern: Regex = "^/root(/[^/]+)/social/profile(/[^/]+){2}$".r
+
+    chirpsPattern.findFirstMatchIn(channel.toString) match {
+      case Some(_)
+      => beforeMessageID match {
+          case Some(msgID) => {
+            val indexOfMessage = sortedPagedList.indexOf(msgID)
+            if (indexOfMessage != -1 && indexOfMessage != 0) {
+              val startingIndex = indexOfMessage - numberOfMessages
+              if (startingIndex < 0) {
+                startingIndex = 0
+              }
+              sortedPagedList = sortedPagedList.slice(startingIndex, indexOfMessage)
+            }
+          }
+          case None => {
+            val startingIndex = (sortedPagedList.length - 1) - numberOfMessages
+            if (startingIndex < 0) {
+              startingIndex = 0
+            }
+            sortedPagedList = sortedPagedList.slice(startingIndex, sortedPagedList.length)
+          }
+        }
+      case None =>
+        Left(PipelineError(ErrorCodes.INVALID_ACTION.id, "Paging is not supported on this channel", rpcMessage.id))
+    }
+
+    readGreetLao(chirpsChannel) match {
+      case Some(msg) => msg :: sortedPagedList
+      case None => sortedPagedList
     }
   }
 
