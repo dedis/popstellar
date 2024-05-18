@@ -224,45 +224,45 @@ final case class DbActor(
   @throws[DbActorNAckException]
   private def pagedCatchupChannel(channel: Channel, numberOfMessages: Int, beforeMessageID: Option[String]): List[Message] = {
 
-    val chirpsChannel = s"/root/${channel.decodeChannelLaoId}/social/chirps"
-
     @scala.annotation.tailrec
-    def buildPagedCatchupList(msgIds: List[Hash], acc: List[Message]): List[Message] = {
+    def buildPagedCatchupList(msgIds: List[Hash], acc: List[Message], channelToPage: channel): List[Message] = {
       msgIds match {
         case Nil => acc
         case head :: tail =>
-          Try(read(chirpsChannel, head)).recover(_ => None) match {
-            case Success(Some(msg)) => buildPagedCatchupList(tail, msg :: acc)
+          Try(read(channelToPage, head)).recover(_ => None) match {
+            case Success(Some(msg)) => buildPagedCatchupList(tail, msg :: acc, channelToPage)
             case _ =>
-              log.error(s"/!\\ Critical error encountered: message_id '$head' is listed in channel '$chirpsChannel' but not stored in db")
-              buildPagedCatchupList(tail, acc)
+              log.error(s"/!\\ Critical error encountered: message_id '$head' is listed in channel '$channelToPage' but not stored in db")
+              buildPagedCatchupList(tail, acc, channelToPage)
           }
       }
     }
-
-    val channelData: ChannelData = readChannelData(chirpsChannel)
-
-    val pagedCatchupList = readCreateLao(chirpsChannel) match {
-      case Some(msg) =>
-        msg :: buildPagedCatchupList(channelData.messages, Nil)
-
-      case None =>
-        if (chirpsChannel.isMainLaoChannel) {
-          log.error("Critical error encountered: no create_lao message was found in the db")
-        }
-        buildPagedCatchupList(channelData.messages, Nil)
-    }
-
-    // sort from oldest to newest message
-    val sortedPagedList = pagedCatchupList.sortBy(msg => - AddChirp.buildFromJson(msg.toJsonString).timestamp)
 
     val chirpsPattern: Regex = "^/root(/[^/]+)/social/chirps(/[^/]+)$".r
 
     val profilePattern: Regex = "^/root(/[^/]+)/social/profile(/[^/]+){2}$".r
 
     chirpsPattern.findFirstMatchIn(channel.toString) match {
-      case Some(_)
-      => beforeMessageID match {
+      case Some(_) => {
+        val chirpsChannel = s"/root/${channel.decodeChannelLaoId}/social/chirps"
+
+        val channelData: ChannelData = readChannelData(chirpsChannel)
+
+        val pagedCatchupList = readCreateLao(chirpsChannel) match {
+          case Some(msg) =>
+            msg :: buildPagedCatchupList(channelData.messages, Nil, chirpsChannel)
+
+          case None =>
+            if (chirpsChannel.isMainLaoChannel) {
+              log.error("Critical error encountered: no create_lao message was found in the db")
+            }
+            buildPagedCatchupList(channelData.messages, Nil, chirpsChannel)
+        }
+
+        // sort from oldest to newest message
+        val sortedPagedList = pagedCatchupList.sortBy(msg => -AddChirp.buildFromJson(msg.toJsonString).timestamp)
+
+        beforeMessageID match {
           case Some(msgID) => {
             val indexOfMessage = sortedPagedList.indexOf(msgID)
             if (indexOfMessage != -1 && indexOfMessage != 0) {
@@ -281,13 +281,58 @@ final case class DbActor(
             sortedPagedList = sortedPagedList.slice(startingIndex, sortedPagedList.length)
           }
         }
-      case None =>
-        Left(PipelineError(ErrorCodes.INVALID_ACTION.id, "Paging is not supported on this channel", rpcMessage.id))
+        readGreetLao(chirpsChannel) match {
+          case Some(msg) => msg :: sortedPagedList
+          case None => sortedPagedList
+        }
+      }
     }
 
-    readGreetLao(chirpsChannel) match {
-      case Some(msg) => msg :: sortedPagedList
-      case None => sortedPagedList
+    profilePattern.findFirstMatchIn(channel.toString) match {
+      case Some(_) => {
+        val profilePublicKey = channel.toString.split("/")(5)
+        val profileChannel = s"/root/${channel.decodeChannelLaoId}/social/${profilePublicKey}"
+
+        val channelData: ChannelData = readChannelData(profileChannel)
+
+        val pagedCatchupList = readCreateLao(profileChannel) match {
+          case Some(msg) =>
+            msg :: buildPagedCatchupList(channelData.messages, Nil, profileChannel)
+
+          case None =>
+            if (profileChannel.isMainLaoChannel) {
+              log.error("Critical error encountered: no create_lao message was found in the db")
+            }
+            buildPagedCatchupList(channelData.messages, Nil, profileChannel)
+        }
+
+        // sort from oldest to newest message
+        val sortedPagedList = pagedCatchupList.sortBy(msg => -AddChirp.buildFromJson(msg.toJsonString).timestamp)
+
+        beforeMessageID match {
+          case Some(msgID) => {
+            val indexOfMessage = sortedPagedList.indexOf(msgID)
+            if (indexOfMessage != -1 && indexOfMessage != 0) {
+              val startingIndex = indexOfMessage - numberOfMessages
+              if (startingIndex < 0) {
+                startingIndex = 0
+              }
+              sortedPagedList = sortedPagedList.slice(startingIndex, indexOfMessage)
+            }
+          }
+          case None => {
+            val startingIndex = sortedPagedList.length - numberOfMessages
+            if (startingIndex < 0) {
+              startingIndex = 0
+            }
+            sortedPagedList = sortedPagedList.slice(startingIndex, sortedPagedList.length)
+          }
+        }
+        readGreetLao(profileChannel) match {
+          case Some(msg) => msg :: sortedPagedList
+          case None => sortedPagedList
+        }
+      }
     }
   }
 
