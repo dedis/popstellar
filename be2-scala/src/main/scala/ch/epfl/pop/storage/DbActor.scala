@@ -274,7 +274,7 @@ final case class DbActor(
             }
           }
           case None => {
-            val startingIndex = (sortedPagedList.length - 1) - numberOfMessages
+            val startingIndex = sortedPagedList.length - numberOfMessages
             if (startingIndex < 0) {
               startingIndex = 0
             }
