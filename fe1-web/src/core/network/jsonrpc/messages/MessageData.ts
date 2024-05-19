@@ -12,6 +12,7 @@ export enum ObjectType {
   REACTION = 'reaction',
   COIN = 'coin',
   POPCHA = 'popcha',
+  FEDERATION = 'federation',
 }
 
 /** Enumeration of all possible "action" field values in MessageData */
@@ -38,6 +39,8 @@ export enum ActionType {
   GREET = 'greet',
   KEY = 'key',
   AUTH = 'authenticate',
+  CHALLENGE_REQUEST = 'challenge_request',
+  CHALLENGE = 'challenge',
 }
 
 /** Enumeration of all possible signatures of a message */

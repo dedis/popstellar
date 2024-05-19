@@ -1,2 +1,3 @@
 export { default as linkedOrganizationsReducer } from './LinkedOrganizationsReducer';
-export * from './LinkedOrganizationsReducer';
+export { default as challengeReducer } from './ChallengeReducer';
+export * from './ChallengeReducer';

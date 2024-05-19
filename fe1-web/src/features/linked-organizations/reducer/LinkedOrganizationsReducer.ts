@@ -11,7 +11,7 @@ import { OrganizationState } from '../objects/Organization';
 
 export const LINKEDORGANIZATIONS_REDUCER_PATH = 'linked_organizations';
 
-export interface OrganizationReducerState {
+export interface LinkedOrganizationReducerState {
   byLaoId: {
     [laoId: string]: {
       byLaoId: Record<string, OrganizationState>;
@@ -20,11 +20,11 @@ export interface OrganizationReducerState {
   };
 }
 
-const initialState: OrganizationReducerState = {
+const initialState: LinkedOrganizationReducerState = {
   byLaoId: {},
 };
 
-const organizationSlice = createSlice({
+const linkedOrganizationSlice = createSlice({
   name: LINKEDORGANIZATIONS_REDUCER_PATH,
   initialState,
   reducers: {
@@ -61,9 +61,9 @@ const organizationSlice = createSlice({
   },
 });
 
-export const { addOrganization } = organizationSlice.actions;
+export const { addOrganization } = linkedOrganizationSlice.actions;
 
-export const getOrganizationState = (state: any): OrganizationReducerState =>
+export const getLinkedOrganizationState = (state: any): LinkedOrganizationReducerState =>
   state[LINKEDORGANIZATIONS_REDUCER_PATH];
 
 /**
@@ -75,17 +75,17 @@ export const getOrganizationState = (state: any): OrganizationReducerState =>
 export const makeLinkedOrganizationSelector = (laoId: Hash, linked_lao_id: string) => {
   return createSelector(
     // First input: a map containing all linked organizations
-    (state: any) => getOrganizationState(state),
+    (state: any) => getLinkedOrganizationState(state),
     // Selector: returns the linked organization for a specific lao and linked_lao_id
-    (organizationState: OrganizationReducerState): OrganizationState | undefined => {
+    (linkedOrganizationState: LinkedOrganizationReducerState): OrganizationState | undefined => {
       const serializedLaoId = laoId.valueOf();
-      return organizationState.byLaoId[serializedLaoId]?.byLaoId[linked_lao_id];
+      return linkedOrganizationState.byLaoId[serializedLaoId]?.byLaoId[linked_lao_id];
     },
   );
 };
 
-export const linkedOrganizationsReduce = organizationSlice.reducer;
+export const linkedOrganizationsReduce = linkedOrganizationSlice.reducer;
 
 export default {
-  [LINKEDORGANIZATIONS_REDUCER_PATH]: organizationSlice.reducer,
+  [LINKEDORGANIZATIONS_REDUCER_PATH]: linkedOrganizationSlice.reducer,
 };

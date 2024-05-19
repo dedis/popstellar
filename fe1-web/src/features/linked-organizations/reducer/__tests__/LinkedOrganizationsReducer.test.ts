@@ -2,20 +2,20 @@ import { describe } from '@jest/globals';
 import { AnyAction } from 'redux';
 
 import { mockLaoId, mockLaoId2, mockPublicKey, serializedMockLaoId } from '__tests__/utils';
-import { PublicKey, Timestamp } from 'core/objects';
+import { Hash, PublicKey, Timestamp } from 'core/objects';
 import { Challenge } from 'features/linked-organizations/objects/Challenge';
 import { OrganizationState } from 'features/linked-organizations/objects/Organization';
 
 import {
   addOrganization,
-  OrganizationReducerState,
+  LinkedOrganizationReducerState,
   LINKEDORGANIZATIONS_REDUCER_PATH,
   linkedOrganizationsReduce,
   makeLinkedOrganizationSelector,
 } from '../LinkedOrganizationsReducer';
 
 const mockChallenge: Challenge = new Challenge({
-  value: '82520f235f413b26571529f69d53d751335873efca97e15cd7c47d063ead830d',
+  value: new Hash('82520f235f413b26571529f69d53d751335873efca97e15cd7c47d063ead830d'),
   valid_until: Timestamp.EpochNow().addSeconds(86400),
 });
 
@@ -31,17 +31,17 @@ describe('LinkedOrganizationReducer', () => {
     it('returns a valid initial state', () => {
       expect(linkedOrganizationsReduce(undefined, {} as AnyAction)).toEqual({
         byLaoId: {},
-      } as OrganizationReducerState);
+      } as LinkedOrganizationReducerState);
     });
   });
 
-  describe('addMeeting', () => {
-    it('adds new meetings to the state', () => {
+  describe('addLinkedOrganization', () => {
+    it('adds new linked organization to the state', () => {
       const serializedMockLaoId2 = mockLaoId2.valueOf();
       const newState = linkedOrganizationsReduce(
         {
           byLaoId: {},
-        } as OrganizationReducerState,
+        } as LinkedOrganizationReducerState,
         addOrganization(mockLaoId2, mockOrganizationState),
       );
       expect(newState.byLaoId[serializedMockLaoId2].allLaoIds).toEqual([serializedMockLaoId]);
@@ -51,12 +51,12 @@ describe('LinkedOrganizationReducer', () => {
       );
     });
 
-    it('throws an error if the store already contains an meeting with the same id', () => {
+    it('throws an error if the store already contains an linked organization with the same id', () => {
       const serializedMockLaoId2 = mockLaoId2.valueOf();
       const newState = linkedOrganizationsReduce(
         {
           byLaoId: {},
-        } as OrganizationReducerState,
+        } as LinkedOrganizationReducerState,
         addOrganization(mockLaoId2, mockOrganizationState),
       );
       expect(newState.byLaoId[serializedMockLaoId2].allLaoIds).toEqual([serializedMockLaoId]);
@@ -72,12 +72,12 @@ describe('LinkedOrganizationReducer', () => {
 });
 
 describe('makeLinkedOrganizationsSelector', () => {
-  it('returns the correct organization', () => {
+  it('returns the correct linked organization', () => {
     const serializedMockLaoId2 = mockLaoId2.valueOf();
     const newState = linkedOrganizationsReduce(
       {
         byLaoId: {},
-      } as OrganizationReducerState,
+      } as LinkedOrganizationReducerState,
       addOrganization(mockLaoId2, mockOrganizationState),
     );
     expect(newState.byLaoId[serializedMockLaoId2].allLaoIds).toEqual([serializedMockLaoId]);
@@ -97,17 +97,17 @@ describe('makeLinkedOrganizationsSelector', () => {
               byLaoId: { [serializedMockLaoId]: mockOrganizationState },
             },
           },
-        } as OrganizationReducerState,
+        } as LinkedOrganizationReducerState,
       }),
     ).toEqual(mockOrganizationState);
   });
 
-  it('returns undefined if the organization  is not in the store', () => {
+  it('returns undefined if the linked organization  is not in the store', () => {
     const serializedMockLaoId2 = mockLaoId2.valueOf();
     const newState = linkedOrganizationsReduce(
       {
         byLaoId: {},
-      } as OrganizationReducerState,
+      } as LinkedOrganizationReducerState,
       addOrganization(mockLaoId2, mockOrganizationState),
     );
     expect(newState.byLaoId[serializedMockLaoId2].allLaoIds).toEqual([serializedMockLaoId]);
@@ -127,7 +127,7 @@ describe('makeLinkedOrganizationsSelector', () => {
               byLaoId: { [serializedMockLaoId]: mockOrganizationState },
             },
           },
-        } as OrganizationReducerState,
+        } as LinkedOrganizationReducerState,
       }),
     ).toBeUndefined();
   });
