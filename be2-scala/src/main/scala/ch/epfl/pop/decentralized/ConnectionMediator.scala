@@ -109,7 +109,7 @@ object ConnectionMediator {
   final case class Ping() extends Event
   final case class ReadPeersClientAddress() extends Event
   final case class GetRandomPeer(excludes: List[ActorRef] = List.empty) extends Event
-   
+
   sealed trait ConnectionMediatorMessage
   final case class ReadPeersClientAddressAck(list: List[String]) extends ConnectionMediatorMessage
   final case class GetRandomPeerAck(serverRef: ActorRef, greetServer: GreetServer) extends ConnectionMediatorMessage

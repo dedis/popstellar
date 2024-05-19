@@ -89,11 +89,11 @@ trait MessageDataContentValidator extends ContentValidator with AskPatternConsta
       Left(error)
   }
 
-  def checkDifferentId(rpcMessage: JsonRpcRequest, expectedId: Hash, id:Hash, error : PipelineError) : GraphMessage = {
+  def checkDifferentId(rpcMessage: JsonRpcRequest, expectedId: Hash, id: Hash, error: PipelineError): GraphMessage = {
     if (expectedId != id)
       Right(rpcMessage)
     else
-    Left(error)
+      Left(error)
   }
 
   /** Check if all witnesses are distinct
@@ -213,5 +213,5 @@ trait MessageDataContentValidator extends ContentValidator with AskPatternConsta
     if (expectedKey != key)
       Right(rpcMessage)
     else
-      Left(error)  
+      Left(error)
 }

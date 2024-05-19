@@ -178,21 +178,21 @@ object MessageValidator extends ContentValidator with AskPatternConstants {
       expectedKey: PublicKey,
       msgSenderKey: PublicKey,
       error: PipelineError
-   ): GraphMessage = {
-     if (expectedKey == msgSenderKey)
-       Right(rpcMessage)
-   else
-     Left(error)
-   }
-  
+  ): GraphMessage = {
+    if (expectedKey == msgSenderKey)
+      Right(rpcMessage)
+    else
+      Left(error)
+  }
+
   def validateMsgServerKey(senderKey: PublicKey, dbActor: AskableActorRef = DbActor.getInstance): Boolean = {
     val ask = dbActor ? DbActor.ReadServerPublicKey()
     Await.ready(ask, duration).value.get match {
-      case Success(DbActor.DbActorReadServerPublicKeyAck(publicKey)) => senderKey.equals(publicKey) 
-      case _ => false
+      case Success(DbActor.DbActorReadServerPublicKeyAck(publicKey)) => senderKey.equals(publicKey)
+      case _                                                         => false
     }
   }
-  
+
   def checkMsgServerKey(
       rpcMessage: JsonRpcRequest,
       senderKey: PublicKey,
@@ -203,6 +203,5 @@ object MessageValidator extends ContentValidator with AskPatternConstants {
     else
       Left(error)
   }
-  
 
 }
