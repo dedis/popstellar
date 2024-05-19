@@ -5,7 +5,6 @@ import (
 	"popstellar/internal/popserver/config"
 	"popstellar/internal/popserver/database"
 	"popstellar/internal/popserver/state"
-	"popstellar/internal/popserver/utils"
 	jsonrpc "popstellar/message"
 	"popstellar/message/answer"
 	"popstellar/message/query"
@@ -172,7 +171,7 @@ func handlePublish(socket socket.Socket, msg []byte) (*int, *answer.Error) {
 		return nil, errAnswer.Wrap("handlePublish")
 	}
 
-	errAnswer := handleChannel(publish.Params.Channel, publish.Params.Message)
+	errAnswer := handleChannel(publish.Params.Channel, publish.Params.Message, false)
 	if errAnswer != nil {
 		return &publish.ID, errAnswer.Wrap("handlePublish")
 	}
@@ -286,48 +285,4 @@ func handleGetMessagesByID(socket socket.Socket, msg []byte) (*int, *answer.Erro
 	socket.SendResult(getMessagesById.ID, nil, result)
 
 	return &getMessagesById.ID, nil
-}
-
-func handleRumor(socket socket.Socket, msg []byte) (*int, *answer.Error) {
-	var rumor method.Rumor
-
-	err := json.Unmarshal(msg, &rumor)
-	if err != nil {
-		errAnswer := answer.NewJsonUnmarshalError(err.Error())
-		return nil, errAnswer.Wrap("handleRumor")
-	}
-
-	db, errAnswer := database.GetQueryRepositoryInstance()
-	if errAnswer != nil {
-		return &rumor.ID, errAnswer.Wrap("handleRumor")
-	}
-
-	alreadyExists, err := db.HasRumor(rumor.Params.SenderID, rumor.Params.RumorID)
-	if err != nil {
-		errAnswer := answer.NewQueryDatabaseError("if rumor exists: %v", err)
-		return &rumor.ID, errAnswer.Wrap("handleRumor")
-	}
-	if alreadyExists {
-		errAnswer := answer.NewInvalidResourceError("rumor %s-%v already exists",
-			rumor.Params.SenderID, rumor.Params.RumorID)
-		return &rumor.ID, errAnswer
-	}
-
-	socket.SendResult(rumor.ID, nil, nil)
-
-	err = db.StoreNewRumor(rumor)
-	if err != nil {
-		utils.LogError(err)
-		return &rumor.ID, nil
-	}
-
-	messages, err := db.GetUnprocessedMessagesByChannel()
-	if err != nil {
-		errAnswer := answer.NewQueryDatabaseError("unprocessed messages: %v", err)
-		return &rumor.ID, errAnswer.Wrap("handleRumor")
-	}
-
-	handleMessagesByChannel(messages)
-
-	return &rumor.ID, nil
 }

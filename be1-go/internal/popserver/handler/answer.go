@@ -92,7 +92,7 @@ func tryToHandleMessages(msgsByChannel map[string]map[string]message.Message, so
 	for _, channelID := range sortedChannelIDs {
 		msgs := msgsByChannel[channelID]
 		for msgID, msg := range msgs {
-			errAnswer := handleChannel(channelID, msg)
+			errAnswer := handleChannel(channelID, msg, false)
 			if errAnswer == nil {
 				delete(msgsByChannel[channelID], msgID)
 				continue
