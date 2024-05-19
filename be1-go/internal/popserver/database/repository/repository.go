@@ -3,7 +3,6 @@ package repository
 import (
 	"go.dedis.ch/kyber/v3"
 	"popstellar/internal/popserver/types"
-	"popstellar/message/query/method"
 	"popstellar/message/query/method/message"
 )
 
@@ -50,11 +49,14 @@ type QueryRepository interface {
 	// HasRumor returns true if the rumor already exists
 	HasRumor(senderID string, rumorID int) (bool, error)
 
-	// StoreNewRumor stores the new rumor with all messages in state not processed
-	StoreNewRumor(rumor method.Rumor) error
+	// StoreNewRumor stores the new rumor with its processed and unprocessed messages
+	StoreNewRumor(
+		senderID string, rumorID int,
+		processedMessages []string,
+		unprocessedMessages map[string][]message.Message) error
 
 	// GetUnprocessedMessagesByChannel returns all the unprocessed messages by channel
-	GetUnprocessedMessagesByChannel() (map[string]map[string]message.Message, error)
+	GetUnprocessedMessagesByChannel() (map[string][]message.Message, error)
 }
 
 // ======================= Answer ==========================
@@ -71,7 +73,6 @@ type ChannelRepository interface {
 	// HasMessage returns true if the message already exists.
 	HasMessage(messageID string) (bool, error)
 
-	GetUnprocessedMessagesByChannel() (map[string]map[string]message.Message, error)
 	// GetChannelType returns the type of the channel.
 	GetChannelType(channel string) (string, error)
 }

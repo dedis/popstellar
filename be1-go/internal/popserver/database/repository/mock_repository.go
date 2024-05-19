@@ -3,12 +3,10 @@
 package repository
 
 import (
-	method "popstellar/message/query/method"
 	message "popstellar/message/query/method/message"
 
-	kyber "go.dedis.ch/kyber/v3"
-
 	mock "github.com/stretchr/testify/mock"
+	kyber "go.dedis.ch/kyber/v3"
 
 	types "popstellar/internal/popserver/types"
 )
@@ -642,23 +640,23 @@ func (_m *MockRepository) GetServerKeys() (kyber.Point, kyber.Scalar, error) {
 }
 
 // GetUnprocessedMessagesByChannel provides a mock function with given fields:
-func (_m *MockRepository) GetUnprocessedMessagesByChannel() (map[string]map[string]message.Message, error) {
+func (_m *MockRepository) GetUnprocessedMessagesByChannel() (map[string][]message.Message, error) {
 	ret := _m.Called()
 
 	if len(ret) == 0 {
 		panic("no return value specified for GetUnprocessedMessagesByChannel")
 	}
 
-	var r0 map[string]map[string]message.Message
+	var r0 map[string][]message.Message
 	var r1 error
-	if rf, ok := ret.Get(0).(func() (map[string]map[string]message.Message, error)); ok {
+	if rf, ok := ret.Get(0).(func() (map[string][]message.Message, error)); ok {
 		return rf()
 	}
-	if rf, ok := ret.Get(0).(func() map[string]map[string]message.Message); ok {
+	if rf, ok := ret.Get(0).(func() map[string][]message.Message); ok {
 		r0 = rf()
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(map[string]map[string]message.Message)
+			r0 = ret.Get(0).(map[string][]message.Message)
 		}
 	}
 
@@ -975,17 +973,17 @@ func (_m *MockRepository) StoreMessageAndData(channelID string, msg message.Mess
 	return r0
 }
 
-// StoreNewRumor provides a mock function with given fields: rumor
-func (_m *MockRepository) StoreNewRumor(rumor method.Rumor) error {
-	ret := _m.Called(rumor)
+// StoreNewRumor provides a mock function with given fields: senderID, rumorID, processedMessages, unprocessedMessages
+func (_m *MockRepository) StoreNewRumor(senderID string, rumorID int, processedMessages []string, unprocessedMessages map[string][]message.Message) error {
+	ret := _m.Called(senderID, rumorID, processedMessages, unprocessedMessages)
 
 	if len(ret) == 0 {
 		panic("no return value specified for StoreNewRumor")
 	}
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(method.Rumor) error); ok {
-		r0 = rf(rumor)
+	if rf, ok := ret.Get(0).(func(string, int, []string, map[string][]message.Message) error); ok {
+		r0 = rf(senderID, rumorID, processedMessages, unprocessedMessages)
 	} else {
 		r0 = ret.Error(0)
 	}

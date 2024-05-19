@@ -1317,34 +1317,36 @@ func (s *SQLite) StoreRumor(rumorID, sender string, unprocessed []message.Messag
 	return tx.Commit()
 }
 
-func (s *SQLite) GetUnprocessedMessagesByChannel() (map[string]map[string]message.Message, error) {
-	dbLock.RLock()
-	defer dbLock.RUnlock()
+func (s *SQLite) GetUnprocessedMessagesByChannel() (map[string][]message.Message, error) {
+	//dbLock.RLock()
+	//defer dbLock.RUnlock()
+	//
+	//rows, err := s.database.Query(selectAllUnprocessedMessages)
+	//if err != nil {
+	//	return nil, err
+	//}
+	//
+	//result := make(map[string]map[string]message.Message)
+	//
+	//for rows.Next() {
+	//	var channelPath string
+	//	var messageID string
+	//	var messageByte []byte
+	//	if err = rows.Scan(&channelPath, &messageID, &messageByte); err != nil {
+	//		return nil, err
+	//	}
+	//	var msg message.Message
+	//	if err = json.Unmarshal(messageByte, &msg); err != nil {
+	//		return nil, err
+	//	}
+	//	if _, ok := result[channelPath]; !ok {
+	//		result[channelPath] = make(map[string]message.Message)
+	//	}
+	//	result[channelPath][messageID] = msg
+	//}
+	//return result, nil
 
-	rows, err := s.database.Query(selectAllUnprocessedMessages)
-	if err != nil {
-		return nil, err
-	}
-
-	result := make(map[string]map[string]message.Message)
-
-	for rows.Next() {
-		var channelPath string
-		var messageID string
-		var messageByte []byte
-		if err = rows.Scan(&channelPath, &messageID, &messageByte); err != nil {
-			return nil, err
-		}
-		var msg message.Message
-		if err = json.Unmarshal(messageByte, &msg); err != nil {
-			return nil, err
-		}
-		if _, ok := result[channelPath]; !ok {
-			result[channelPath] = make(map[string]message.Message)
-		}
-		result[channelPath][messageID] = msg
-	}
-	return result, nil
+	return nil, nil
 }
 
 func (s *SQLite) StoreMessageRumor(messageID string) error {
