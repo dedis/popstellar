@@ -6,7 +6,11 @@ import FeatureInterface from 'core/objects/FeatureInterface';
 
 import { LinkedOrganizationsFeature } from './Feature';
 import { CHALLENGE_REDUCER_PATH, ChallengeReducerState } from '../reducer';
-import { LinkedOrganizationReducerState, LINKEDORGANIZATIONS_REDUCER_PATH } from '../reducer/LinkedOrganizationsReducer';
+import {
+  LinkedOrganizationReducerState,
+  LINKEDORGANIZATIONS_REDUCER_PATH,
+} from '../reducer/LinkedOrganizationsReducer';
+import { Lao } from 'features/lao/objects';
 
 export const LINKED_ORGANIZATIONS_FEATURE_IDENTIFIER = 'linked-organizations';
 
@@ -36,12 +40,19 @@ export interface LinkedOrganizationsCompositionConfiguration {
    */
   useIsLaoOrganizer: (laoId: Hash) => boolean;
 
-    /**
+  /**
    * Given a lao id, this function returns the public key of the backend
    * @param laoId The id of the lao
    * @returns The public key or undefined if none is known
    */
-    getLaoOrganizerBackendPublicKey: (laoId: Hash) => PublicKey | undefined;
+  getLaoOrganizerBackendPublicKey: (laoId: Hash) => PublicKey | undefined;
+
+  /**
+ * Gets the current lao
+ * @returns The current lao
+ */
+  useCurrentLao: () => Lao;
+
 }
 
 /**
@@ -49,7 +60,7 @@ export interface LinkedOrganizationsCompositionConfiguration {
  */
 export type LinkedOrganizationsReactContext = Pick<
   LinkedOrganizationsCompositionConfiguration,
-  'useCurrentLaoId' | 'useIsLaoOrganizer'
+  'useCurrentLaoId' | 'useIsLaoOrganizer' | 'useCurrentLao'
 >;
 
 /**

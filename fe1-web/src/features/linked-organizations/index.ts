@@ -31,6 +31,7 @@ export function compose(
     context: {
       useCurrentLaoId: configuration.useCurrentLaoId,
       useIsLaoOrganizer: configuration.useIsLaoOrganizer,
+      useCurrentLao: configuration.useCurrentLao,
     },
   };
 }

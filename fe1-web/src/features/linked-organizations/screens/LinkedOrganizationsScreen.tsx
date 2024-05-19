@@ -1,5 +1,5 @@
 import { ListItem, FAB } from '@rneui/themed';
-import React, { useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { Text, View, Modal, StyleSheet, ViewStyle, ScrollView } from 'react-native';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import { useToast } from 'react-native-toast-notifications';
@@ -20,6 +20,10 @@ import STRINGS from 'resources/strings';
 import { LinkedOrganizationsHooks } from '../hooks';
 import { Challenge } from '../objects/Challenge';
 import { Organization } from '../objects/Organization';
+import { Lao } from 'features/lao/objects';
+import { requestChallenge } from '../network';
+import { makeChallengeSelector } from '../reducer';
+import { useSelector } from 'react-redux';
 
 const initialOrganizations: Organization[] = [];
 
@@ -69,8 +73,9 @@ const styles = StyleSheet.create({
 const LinkedOrganizationsScreen = () => {
   const toast = useToast();
   const laoId = LinkedOrganizationsHooks.useCurrentLaoId();
-
   const isOrganizer = LinkedOrganizationsHooks.useIsLaoOrganizer(laoId);
+  const lao = LinkedOrganizationsHooks.useCurrentLao();
+  
 
   const [organizations, setOrganizations] = useState<Organization[]>(initialOrganizations);
   const [showModal, setShowModal] = useState<boolean>(false);
@@ -80,16 +85,8 @@ const LinkedOrganizationsScreen = () => {
 
   const [inputModalIsVisible, setInputModalIsVisible] = useState(false);
 
-  const sampleJsonString = `{
-    "lao_id": "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=",
-    "public_key": "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=",
-    "server_address": "wss://epfl.ch:9000/server",
-    "challenge": {
-      "value": "82520f235f413b26571529f69d53d751335873efca97e15cd7c47d063ead830d",
-      "valid_until": 1714491502
-  }
-}`;
-  const genQrCodeData = JSON.parse(sampleJsonString);
+
+  const [qrCodeData, setQRCodeData] = useState<string>('');
   const [isClientA, setIsClientA] = useState<boolean>(false);
   const [manualLaoId, setManualLaoID] = useState<string>('');
   const [manualPublicKey, setManualPublicKey] = useState<string>('');
@@ -126,6 +123,47 @@ const LinkedOrganizationsScreen = () => {
       });
     }
   };
+
+  const onRequestChallenge = useCallback(() => {
+    console.log('Requesting challenge');
+    requestChallenge(laoId)
+      .then(() => {
+        console.log('Success: Requesting challenge');
+      })
+      .catch((err) => {
+        console.error('Could not cast Vote, error:', err);
+      });
+  }, [laoId]);
+
+  const getQRCodeData = () => {
+    if (isClientA) {
+      onRequestChallenge();
+      const challengeSelector = useMemo(() => makeChallengeSelector(laoId), [laoId]);
+      const challengeState = useSelector(challengeSelector);
+      console.log(challengeState);
+      if(!challengeState) {
+        console.error('Challenge State was invalid');
+        return false;
+      }
+      const challenge = Challenge.fromState(challengeState);
+      const jsonObj = {
+        lao_id: laoId,
+        server_address: lao.server_addresses.at(0),
+        public_key: lao.organizer,
+        challenge: {
+          value: challenge.value.toString(),
+          valid_until: challenge.valid_until.valueOf(),
+        },
+      };
+      setQRCodeData(JSON.stringify(jsonObj));
+    } 
+    const jsonObj = {
+      lao_id: laoId,
+      server_address: lao.server_addresses.at(0),
+      public_key: lao.organizer,
+    };
+    setQRCodeData(JSON.stringify(jsonObj));
+  }
 
   return (
     <View style={styles.flex1}>
@@ -188,6 +226,7 @@ const LinkedOrganizationsScreen = () => {
                       setShowQRCodeModal(!showQRCodeModal);
                       setShowModal(!showModal);
                       setIsClientA(true);
+                      getQRCodeData();
                     }}
                     buttonStyle="primary"
                     disabled={false}>
@@ -282,7 +321,7 @@ const LinkedOrganizationsScreen = () => {
                   {STRINGS.linked_organizations_addlinkedorg_QRCode_info}
                 </Text>
                 <QRCode
-                  value={JSON.stringify(genQrCodeData)}
+                  value={qrCodeData}
                   overlayText={STRINGS.linked_organizations_addlinkedorg_QRCode_overlay}
                 />
                 <View style={styles.marginT15}>
