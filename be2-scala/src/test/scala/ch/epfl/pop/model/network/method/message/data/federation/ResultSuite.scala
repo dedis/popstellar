@@ -12,7 +12,7 @@ class ResultSuite extends FunSuite with Matchers {
 
   test("Constructor/apply works for Result as expected") {
     RESULT_1.status should equal(STATUS_1)
-    RESULT_1.public_key should equal(Some(PUBLIC_KEY))
+    RESULT_1.publicKey should equal(Some(PUBLIC_KEY))
     RESULT_1.challenge should equal(CHALLENGE)
     RESULT_1._object should equal(ObjectType.federation)
     RESULT_1.action should equal(ActionType.result)

@@ -6,6 +6,7 @@ import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import com.github.dedis.popstellar.R
 import com.github.dedis.popstellar.model.objects.Channel.Companion.getLaoChannel
 import com.github.dedis.popstellar.model.objects.Lao
 import com.github.dedis.popstellar.model.objects.RollCall
@@ -21,6 +22,7 @@ import com.github.dedis.popstellar.testutils.Base64DataUtils
 import com.github.dedis.popstellar.testutils.BundleBuilder
 import com.github.dedis.popstellar.testutils.MessageSenderHelper
 import com.github.dedis.popstellar.testutils.MockitoKotlinHelpers
+import com.github.dedis.popstellar.testutils.UITestUtils
 import com.github.dedis.popstellar.testutils.UITestUtils.forceTypeText
 import com.github.dedis.popstellar.testutils.fragment.ActivityFragmentScenarioRule
 import com.github.dedis.popstellar.testutils.pages.lao.LaoActivityPageObject
@@ -35,7 +37,7 @@ import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.reactivex.subjects.BehaviorSubject
-import javax.inject.Inject
+import org.junit.Assert
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.ExternalResource
@@ -45,6 +47,7 @@ import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.junit.MockitoJUnit
 import org.mockito.junit.MockitoTestRule
+import javax.inject.Inject
 
 @HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
@@ -145,16 +148,11 @@ class PoPCHAHomeFragmentTest {
 
   @Test
   fun testScanValidPoPCHAUrlSendMessage() {
-    val validPopchaUrl =
-      ("http://localhost:9100/authorize?response_mode=query&response_type=id_token&client_id=" +
-        "WAsabGuEe5m1KpqOZQKgmO7UShX84Jmd_eaenOZ32wU&redirect_uri=" +
-        "http%3A%2F%2Flocalhost%3A8000%2Fcb&scope=openid+profile&login_hint=${LAO.id}" +
-        "&nonce=frXgNl-IxJPzsNia07f_3yV0ECYlWOb2RXG_SGvATKcJ7-s0LthmboTrnMqlQS1RnzmV9hW0ium" +
-        "u_5NwAqXwGA&state=m_9r5sPUD8NoRIdVVYFMyYCOb-8xh1d2q8l-pKDXO0sn9TWnR_2nmC8MfVj1CO" +
-        "HZsh1rElqimOTLAp3CbhbYJQ")
     PoPCHAHomePageObject.getScanner().perform(ViewActions.click())
     QrScanningPageObject.openManualButton().perform(ViewActions.click())
-    QrScanningPageObject.manualAddEditText().perform(forceTypeText(validPopchaUrl))
+    val input = QrScanningPageObject.manualInputWithHintRes(R.string.manual_add_popcha_hint)
+    Assert.assertNotNull(input)
+    input.perform(forceTypeText(VALID_POPCHA_URL))
     QrScanningPageObject.manualAddConfirm().perform(ViewActions.click())
 
     InstrumentationRegistry.getInstrumentation().waitForIdleSync()
@@ -169,22 +167,30 @@ class PoPCHAHomeFragmentTest {
 
   @Test
   fun testScanInvalidPoPCHAUrlFails() {
-    val validPopchaUrl =
-      "http://localhost:9100/authorize?response_mode=query&response_type=id_token&client_id=" +
-        "WAsabGuEe5m1KpqOZQKgmO7UShX84Jmd_eaenOZ32wU&redirect_uri=" +
-        "http%3A%2F%2Flocalhost%3A8000%2Fcb&scope=openid+profile&login_hint=" +
-        "random_invalid_lao_id" +
-        "&nonce=frXgNl-IxJPzsNia07f_3yV0ECYlWOb2RXG_SGvATKcJ7-s0LthmboTrnMqlQS1RnzmV9hW0ium" +
-        "u_5NwAqXwGA&state=m_9r5sPUD8NoRIdVVYFMyYCOb-8xh1d2q8l-pKDXO0sn9TWnR_2nmC8MfVj1CO" +
-        "HZsh1rElqimOTLAp3CbhbYJQ"
+
     PoPCHAHomePageObject.getScanner().perform(ViewActions.click())
     QrScanningPageObject.openManualButton().perform(ViewActions.click())
-    QrScanningPageObject.manualAddEditText().perform(forceTypeText(validPopchaUrl))
+    val input = QrScanningPageObject.manualInputWithHintRes(R.string.manual_add_popcha_hint)
+    Assert.assertNotNull(input)
+    input.perform(forceTypeText(INVALID_POPCHA_URL))
     QrScanningPageObject.manualAddConfirm().perform(ViewActions.click())
 
     InstrumentationRegistry.getInstrumentation().waitForIdleSync()
 
     Mockito.verifyNoInteractions(messageSenderHelper.mockedSender)
+    UITestUtils.assertToastIsDisplayedWithText(R.string.invalid_qrcode_popcha_data)
+  }
+
+  @Test
+  fun addingEmptyURLDoesNotAddAttendees() {
+    PoPCHAHomePageObject.getScanner().perform(ViewActions.click())
+    QrScanningPageObject.openManualButton().perform(ViewActions.click())
+    val input = QrScanningPageObject.manualInputWithHintRes(R.string.manual_add_popcha_hint)
+    Assert.assertNotNull(input)
+    input.perform(forceTypeText(EMPTY_POPCHA_URL))
+    QrScanningPageObject.manualAddConfirm().perform(ViewActions.click())
+
+    UITestUtils.assertToastIsDisplayedWithText(R.string.qrcode_scanning_manual_entry_error)
   }
 
   @Test
@@ -197,5 +203,20 @@ class PoPCHAHomeFragmentTest {
   companion object {
     private val SENDER_KEY = Base64DataUtils.generateKeyPair()
     private val LAO = Lao("laoName", SENDER_KEY.publicKey, 1612204910)
+    private val VALID_POPCHA_URL =
+      ("http://localhost:9100/authorize?response_mode=query&response_type=id_token&client_id=" +
+              "WAsabGuEe5m1KpqOZQKgmO7UShX84Jmd_eaenOZ32wU&redirect_uri=" +
+              "http%3A%2F%2Flocalhost%3A8000%2Fcb&scope=openid+profile&login_hint=${LAO.id}" +
+              "&nonce=frXgNl-IxJPzsNia07f_3yV0ECYlWOb2RXG_SGvATKcJ7-s0LthmboTrnMqlQS1RnzmV9hW0ium" +
+              "u_5NwAqXwGA&state=m_9r5sPUD8NoRIdVVYFMyYCOb-8xh1d2q8l-pKDXO0sn9TWnR_2nmC8MfVj1CO" +
+              "HZsh1rElqimOTLAp3CbhbYJQ")
+    private val INVALID_POPCHA_URL = "http://localhost:9100/authorize?response_mode=query&response_type=id_token&client_id=" +
+            "WAsabGuEe5m1KpqOZQKgmO7UShX84Jmd_eaenOZ32wU&redirect_uri=" +
+            "http%3A%2F%2Flocalhost%3A8000%2Fcb&scope=openid+profile&login_hint=" +
+            "random_invalid_lao_id" +
+            "&nonce=frXgNl-IxJPzsNia07f_3yV0ECYlWOb2RXG_SGvATKcJ7-s0LthmboTrnMqlQS1RnzmV9hW0ium" +
+            "u_5NwAqXwGA&state=m_9r5sPUD8NoRIdVVYFMyYCOb-8xh1d2q8l-pKDXO0sn9TWnR_2nmC8MfVj1CO" +
+            "HZsh1rElqimOTLAp3CbhbYJQ"
+    private val EMPTY_POPCHA_URL = ""
   }
 }

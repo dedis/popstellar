@@ -11,7 +11,7 @@ class ChallengeSuite extends FunSuite with Matchers {
 
   test("Constructor/apply works for Challenge as expected") {
     CHALLENGE.value should equal(VALUE)
-    CHALLENGE.valid_until should equal(VALID_UNTIL)
+    CHALLENGE.validUntil should equal(VALID_UNTIL)
     CHALLENGE._object should equal(ObjectType.federation)
     CHALLENGE.action should equal(ActionType.challenge)
 

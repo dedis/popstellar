@@ -50,7 +50,8 @@ object ProcessMessagesHandler extends AskPatternConstants {
   }
 
   def rumorHandler(messageRegistry: MessageRegistry, rumor: Rumor)(implicit system: ActorSystem): Boolean = {
-    true
+    val msgMap = rumor.messages.map((chan, list) => (chan, list.toSet))
+    processMsgMap(msgMap, messageRegistry)
   }
 
   private def processMsgMap(msgMap: Map[Channel, Set[Message]], messageRegistry: MessageRegistry)(implicit system: ActorSystem): Boolean = {

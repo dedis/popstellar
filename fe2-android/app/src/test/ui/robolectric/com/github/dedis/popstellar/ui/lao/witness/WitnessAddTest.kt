@@ -28,7 +28,7 @@ import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.reactivex.subjects.BehaviorSubject
-import java.time.Instant
+import org.junit.Assert
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.ExternalResource
@@ -38,6 +38,7 @@ import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.junit.MockitoJUnit
 import org.mockito.junit.MockitoTestRule
+import java.time.Instant
 
 @LargeTest
 @HiltAndroidTest
@@ -90,7 +91,9 @@ class WitnessAddTest {
   @Test
   fun addingValidManualEntry() {
     QrScanningPageObject.openManualButton().perform(ViewActions.click())
-    QrScanningPageObject.manualAddEditText().perform(forceTypeText(VALID_WITNESS_MANUAL_INPUT))
+    val input = QrScanningPageObject.manualInputWithHintRes(R.string.manual_add_witness_hint)
+    Assert.assertNotNull(input)
+    input.perform(forceTypeText(VALID_WITNESS_MANUAL_INPUT))
     QrScanningPageObject.manualAddConfirm().perform(ViewActions.click())
 
     assertToastIsDisplayedWithText(R.string.witness_scan_success)
@@ -99,28 +102,23 @@ class WitnessAddTest {
   @Test
   fun addingInvalidJsonFormatDoesNotAddAttendees() {
     QrScanningPageObject.openManualButton().perform(ViewActions.click())
-    QrScanningPageObject.manualAddEditText().perform(forceTypeText(JSON_INVALID_INPUT))
+    val input = QrScanningPageObject.manualInputWithHintRes(R.string.manual_add_witness_hint)
+    Assert.assertNotNull(input)
+    input.perform(forceTypeText(INVALID_INPUT))
     QrScanningPageObject.manualAddConfirm().perform(ViewActions.click())
 
     assertToastIsDisplayedWithText(R.string.qr_code_not_main_pk)
   }
 
   @Test
-  fun addingValidNonRcFormatDoesNotAddAttendees() {
+  fun addingEmptyKeyDoesNotAddAttendees() {
     QrScanningPageObject.openManualButton().perform(ViewActions.click())
-    QrScanningPageObject.manualAddEditText().perform(forceTypeText(VALID_RC_MANUAL_INPUT))
+    val input = QrScanningPageObject.manualInputWithHintRes(R.string.manual_add_witness_hint)
+    Assert.assertNotNull(input)
+    input.perform(forceTypeText(EMPTY_KEY_FORMAT_INPUT))
     QrScanningPageObject.manualAddConfirm().perform(ViewActions.click())
 
-    assertToastIsDisplayedWithText(R.string.qr_code_not_main_pk)
-  }
-
-  @Test
-  fun addingKeyFormatDoesNotAddAttendees() {
-    QrScanningPageObject.openManualButton().perform(ViewActions.click())
-    QrScanningPageObject.manualAddEditText().perform(forceTypeText(INVALID_KEY_FORMAT_INPUT))
-    QrScanningPageObject.manualAddConfirm().perform(ViewActions.click())
-
-    assertToastIsDisplayedWithText(R.string.qr_code_not_main_pk)
+    assertToastIsDisplayedWithText(R.string.qrcode_scanning_manual_entry_error)
   }
 
   companion object {
@@ -131,10 +129,9 @@ class WitnessAddTest {
     private val LAO = Lao(LAO_NAME, SENDER, CREATION)
     private val LAO_ID = LAO.id
     private val POP_TOKEN = Base64DataUtils.generatePoPToken().publicKey.encoded
-    private val VALID_RC_MANUAL_INPUT = "{\"pop_token\": \"$POP_TOKEN\"}"
-    val JSON_INVALID_INPUT = "{pop_token:$POP_TOKEN"
-    val VALID_WITNESS_MANUAL_INPUT = "{\"main_public_key\": \"$POP_TOKEN\"}"
-    const val INVALID_KEY_FORMAT_INPUT = "{\"pop_token\": \"invalid_key\"}"
+    private val INVALID_INPUT = "invalid for sure"
+    private val VALID_WITNESS_MANUAL_INPUT = POP_TOKEN
+    private val EMPTY_KEY_FORMAT_INPUT = ""
     private val laoSubject = BehaviorSubject.createDefault(LaoView(LAO))
   }
 }

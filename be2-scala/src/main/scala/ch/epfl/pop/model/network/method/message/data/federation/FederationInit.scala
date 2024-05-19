@@ -8,9 +8,9 @@ import ch.epfl.pop.model.objects.{Hash, PublicKey}
 import spray.json.*
 
 final case class FederationInit(
-    lao_id: Hash,
-    server_address: String,
-    public_key: PublicKey,
+    laoId: Hash,
+    serverAddress: String,
+    publicKey: PublicKey,
     challenge: Message
 ) extends MessageData {
   override val _object: ObjectType = ObjectType.federation
@@ -18,8 +18,8 @@ final case class FederationInit(
 }
 
 object FederationInit extends Parsable {
-  def apply(lao_id: Hash, server_address: String, public_key: PublicKey, challenge: Message): FederationInit = {
-    new FederationInit(lao_id, server_address, public_key, challenge)
+  def apply(laoId: Hash, serverAddress: String, publicKey: PublicKey, challenge: Message): FederationInit = {
+    new FederationInit(laoId, serverAddress, publicKey, challenge)
   }
 
   override def buildFromJson(payload: String): FederationInit = payload.parseJson.asJsObject.convertTo[FederationInit]

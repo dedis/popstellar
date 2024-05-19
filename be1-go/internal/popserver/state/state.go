@@ -23,6 +23,7 @@ type Subscriber interface {
 	HasChannel(channel string) bool
 	Subscribe(channel string, socket socket.Socket) *answer.Error
 	Unsubscribe(channel string, socket socket.Socket) *answer.Error
+	UnsubscribeFromAll(socketID string)
 	SendToAll(buf []byte, channel string) *answer.Error
 }
 
@@ -102,6 +103,17 @@ func Unsubscribe(socket socket.Socket, channel string) *answer.Error {
 	}
 
 	return subs.Unsubscribe(channel, socket)
+}
+
+func UnsubscribeFromAll(socketID string) *answer.Error {
+	subs, errAnswer := getSubs()
+	if errAnswer != nil {
+		return errAnswer
+	}
+
+	subs.UnsubscribeFromAll(socketID)
+
+	return nil
 }
 
 func SendToAll(buf []byte, channel string) *answer.Error {

@@ -10,9 +10,9 @@ import util.examples.Federation.FederationExpectExample.*
 class ExpectSuite extends FunSuite with Matchers {
 
   test("Constructor/apply works for Expect as expected") {
-    EXPECT.lao_id should equal(LAO_ID)
-    EXPECT.server_address should equal(SERVER_ADDRESS)
-    EXPECT.public_key should equal(PUBLIC_KEY)
+    EXPECT.laoId should equal(LAO_ID)
+    EXPECT.serverAddress should equal(SERVER_ADDRESS)
+    EXPECT.publicKey should equal(PUBLIC_KEY)
     EXPECT.challenge should equal(CHALLENGE)
     EXPECT._object should equal(ObjectType.federation)
     EXPECT.action should equal(ActionType.expect)

@@ -35,13 +35,11 @@ object Base16Data {
   /** Create a Base16Data instance from a string, ensuring it represents exactly 32 bytes when decoded. */
   def encode(data: String): Base16Data = {
     val hexString = stringToHexString(data)
-    if (hexString.length != 64) throw new IllegalArgumentException("Encoded data must represent exactly 64 hexadecimal characters (32 bytes).")
     Base16Data(hexString)
   }
 
   /** Create a Base16Data instance from a byte array, ensuring it is exactly 32 bytes long. */
   def encode(data: Array[Byte]): Base16Data = {
-    if (data.length != 32) throw new IllegalArgumentException("Byte array must be exactly 32 bytes long.")
     Base16Data(byteArrayToHexString(data))
   }
 
