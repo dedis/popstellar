@@ -13,9 +13,11 @@ var once sync.Once
 var instance *state
 
 type state struct {
-	subs    Subscriber
-	peers   Peerer
-	queries Querier
+	subs            Subscriber
+	peers           Peerer
+	queries         Querier
+	cSendRumor      chan string
+	cSendAgainRumor chan int
 }
 
 type Subscriber interface {
@@ -39,14 +41,19 @@ type Querier interface {
 	GetNextID() int
 	SetQueryReceived(ID int) error
 	AddQuery(ID int, query method.GetMessagesById)
+	AddRumorQuery(id int, query method.Rumor)
+	IsRumorQuery(queryID int) bool
+	GetRumorFromPastQuery(queryID int) (method.Rumor, bool)
 }
 
 func InitState(log *zerolog.Logger) {
 	once.Do(func() {
 		instance = &state{
-			subs:    types.NewSubscribers(),
-			peers:   types.NewPeers(),
-			queries: types.NewQueries(log),
+			subs:            types.NewSubscribers(),
+			peers:           types.NewPeers(),
+			queries:         types.NewQueries(log),
+			cSendRumor:      make(chan string),
+			cSendAgainRumor: make(chan int),
 		}
 	})
 }
@@ -216,6 +223,75 @@ func AddQuery(ID int, query method.GetMessagesById) *answer.Error {
 	}
 
 	queries.AddQuery(ID, query)
+
+	return nil
+}
+
+func AddRumorQuery(ID int, query method.Rumor) *answer.Error {
+	queries, errAnswer := getQueries()
+	if errAnswer != nil {
+		return errAnswer
+	}
+
+	queries.AddRumorQuery(ID, query)
+
+	return nil
+}
+
+func IsRumorQuery(ID int) (bool, *answer.Error) {
+	queries, errAnswer := getQueries()
+	if errAnswer != nil {
+		return false, errAnswer
+	}
+
+	return queries.IsRumorQuery(ID), nil
+}
+
+func GetRumorFromPastQuery(ID int) (method.Rumor, bool, *answer.Error) {
+	queries, errAnswer := getQueries()
+	if errAnswer != nil {
+		return method.Rumor{}, false, errAnswer
+	}
+
+	rumor, ok := queries.GetRumorFromPastQuery(ID)
+
+	return rumor, ok, nil
+}
+
+func GetChanSendRumor() (chan string, *answer.Error) {
+	if instance == nil || instance.cSendRumor == nil {
+		return nil, answer.NewInternalServerError("cSendRumor was not instantiated")
+	}
+
+	return instance.cSendRumor, nil
+}
+
+func NotifyRumorSenderForNewMessage(msgID string) *answer.Error {
+	cSendRumor, errAnswer := GetChanSendRumor()
+	if errAnswer != nil {
+		return errAnswer
+	}
+
+	cSendRumor <- msgID
+
+	return nil
+}
+
+func GetChanSendAgainRumor() (chan int, *answer.Error) {
+	if instance == nil || instance.cSendRumor == nil {
+		return nil, answer.NewInternalServerError("cSendRumor was not instantiated")
+	}
+
+	return instance.cSendAgainRumor, nil
+}
+
+func NotifyRumorSenderForAgain(queryID int) *answer.Error {
+	cSendAgainRumor, errAnswer := GetChanSendAgainRumor()
+	if errAnswer != nil {
+		return errAnswer
+	}
+
+	cSendAgainRumor <- queryID
 
 	return nil
 }

@@ -8,14 +8,18 @@ import (
 // NewSockets returns a new initialized Sockets
 func NewSockets() Sockets {
 	return Sockets{
-		store: make(map[string]socket.Socket),
+		nextSocketToSendRumor: 0,
+		socketIDs:             make([]string, 0),
+		store:                 make(map[string]socket.Socket),
 	}
 }
 
 // Sockets provides thread-functionalities around a socket store.
 type Sockets struct {
 	sync.RWMutex
-	store map[string]socket.Socket
+	nextSocketToSendRumor int
+	socketIDs             []string
+	store                 map[string]socket.Socket
 }
 
 // Len returns the number of Sockets.
@@ -28,9 +32,23 @@ func (s *Sockets) SendToAll(buf []byte) {
 	s.RLock()
 	defer s.RUnlock()
 
-	for _, s := range s.store {
-		s.Send(buf)
+	for _, v := range s.store {
+		v.Send(buf)
 	}
+}
+
+func (s *Sockets) SendRumor(buf []byte) {
+	s.Lock()
+	defer s.Unlock()
+
+	if len(s.store) == 0 {
+		return
+	}
+
+	socketID := s.socketIDs[s.nextSocketToSendRumor]
+	s.nextSocketToSendRumor = (s.nextSocketToSendRumor + 1) % len(s.socketIDs)
+
+	s.store[socketID].Send(buf)
 }
 
 // Upsert upserts a socket into the Sockets store.
@@ -38,6 +56,7 @@ func (s *Sockets) Upsert(socket socket.Socket) {
 	s.Lock()
 	defer s.Unlock()
 
+	s.socketIDs = append(s.socketIDs, socket.ID())
 	s.store[socket.ID()] = socket
 }
 
@@ -54,6 +73,22 @@ func (s *Sockets) Delete(ID string) bool {
 	}
 
 	delete(s.store, ID)
+
+	index := -1
+
+	for i, socketID := range s.socketIDs {
+		if socketID == ID {
+			index = i
+		}
+	}
+
+	if index == -1 {
+		return false
+	}
+
+	socketIDs := make([]string, 0)
+	socketIDs = append(socketIDs, s.socketIDs[:index]...)
+	s.socketIDs = append(socketIDs, s.socketIDs[index+1:]...)
 
 	return true
 }

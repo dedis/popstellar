@@ -13,16 +13,22 @@ import (
 	"popstellar/message/query"
 	"popstellar/message/query/method"
 	"popstellar/network/socket"
+	"sync"
 	"time"
 )
 
-const heartbeatDelay = 30 * time.Second
+const (
+	heartbeatDelay           = 30 * time.Second
+	rumorDelay               = 2 * time.Second
+	thresholdMessagesByRumor = 30
+)
 
 type Hub struct {
 	messageChan   chan socket.IncomingMessage
 	stop          chan struct{}
 	closedSockets chan string
 	serverSockets types.Sockets
+	wg            sync.WaitGroup
 }
 
 func NewHub() *Hub {
@@ -39,9 +45,11 @@ func (h *Hub) NotifyNewServer(socket socket.Socket) {
 }
 
 func (h *Hub) Start() {
+	h.wg.Add(3)
 	go func() {
 		ticker := time.NewTicker(heartbeatDelay)
 		defer ticker.Stop()
+		defer h.wg.Done()
 
 		for {
 			select {
@@ -54,6 +62,64 @@ func (h *Hub) Start() {
 		}
 	}()
 	go func() {
+		ticker := time.NewTicker(rumorDelay)
+		defer ticker.Stop()
+		defer h.wg.Done()
+		defer utils.LogInfo("stopping rumor sender")
+
+		cSendRumor, errAnswer := state.GetChanSendRumor()
+		if errAnswer != nil {
+			utils.LogError(xerrors.New("failed to get channel send rumor"))
+			utils.LogError(errAnswer)
+			return
+		}
+
+		cSendAgainRumor, errAnswer := state.GetChanSendAgainRumor()
+		if errAnswer != nil {
+			utils.LogError(xerrors.New("failed to get channel send again rumor"))
+			utils.LogError(errAnswer)
+			return
+		}
+
+		db, errAnswer := database.GetRumorSenderRepositoryInstance()
+		if errAnswer != nil {
+			utils.LogError(xerrors.New("failed to get rumor sender database"))
+			utils.LogError(errAnswer)
+			return
+		}
+
+		for {
+			select {
+			case <-ticker.C:
+				h.tryToSendRumor()
+			case msgID := <-cSendRumor:
+				nbMessagesInsideRumor := db.AddMessageToMyRumor(msgID)
+
+				if nbMessagesInsideRumor < thresholdMessagesByRumor {
+					break
+				}
+
+				ticker.Reset(rumorDelay)
+				h.tryToSendRumor()
+			case queryID := <-cSendAgainRumor:
+				rumor, ok, errAnswer := state.GetRumorFromPastQuery(queryID)
+				if errAnswer != nil {
+					utils.LogError(errAnswer)
+					break
+				}
+				if !ok {
+					break
+				}
+
+				h.sendRumor(rumor)
+			case <-h.stop:
+				return
+			}
+		}
+	}()
+	go func() {
+		defer h.wg.Done()
+
 		utils.LogInfo("start the Hub")
 		for {
 			utils.LogInfo("waiting for a new message")
@@ -79,6 +145,7 @@ func (h *Hub) Start() {
 
 func (h *Hub) Stop() {
 	close(h.stop)
+	h.wg.Wait()
 }
 
 func (h *Hub) Receiver() chan<- socket.IncomingMessage {
@@ -153,4 +220,51 @@ func (h *Hub) sendHeartbeatToServers() {
 		utils.LogError(err)
 	}
 	h.serverSockets.SendToAll(buf)
+}
+
+func (h *Hub) tryToSendRumor() {
+	db, errAnswer := database.GetRumorSenderRepositoryInstance()
+	if errAnswer != nil {
+		utils.LogError(xerrors.New("was not able to get db instance"))
+		utils.LogError(errAnswer)
+		return
+	}
+
+	ok, rumor, err := db.GetAndIncrementMyRumor()
+	if err != nil {
+		utils.LogError(xerrors.New("was not able to query new rumor to send"))
+		utils.LogError(err)
+		return
+	}
+	if !ok {
+		utils.LogInfo("no new rumor to send")
+		return
+	}
+
+	h.sendRumor(rumor)
+}
+
+func (h *Hub) sendRumor(rumor method.Rumor) {
+	id, errAnswer := state.GetNextID()
+	if errAnswer != nil {
+		utils.LogError(xerrors.New("was not able get new query ID"))
+		utils.LogError(errAnswer)
+		return
+	}
+
+	rumor.ID = id
+
+	errAnswer = state.AddRumorQuery(id, rumor)
+	if errAnswer != nil {
+		utils.LogError(errAnswer)
+		return
+	}
+
+	buf, err := json.Marshal(rumor)
+	if err != nil {
+		utils.LogError(err)
+		return
+	}
+
+	h.serverSockets.SendRumor(buf)
 }
