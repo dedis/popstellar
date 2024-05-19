@@ -3,6 +3,7 @@ package repository
 import (
 	"go.dedis.ch/kyber/v3"
 	"popstellar/internal/popserver/types"
+	"popstellar/message/query/method"
 	"popstellar/message/query/method/message"
 )
 
@@ -16,6 +17,7 @@ type Repository interface {
 	ChirpRepository
 	CoinRepository
 	ReactionRepository
+	RumorSenderRepository
 
 	// StoreServerKeys stores the keys of the server
 	StoreServerKeys(electionPubKey kyber.Point, electionSecretKey kyber.Scalar) error
@@ -31,6 +33,14 @@ type Repository interface {
 
 	// GetMessageByID returns a message by its ID.
 	GetMessageByID(ID string) (message.Message, error)
+}
+
+type RumorSenderRepository interface {
+	// AddMessageToMyRumor adds the message to the last rumor of the server and returns the current number of message inside the last rumor
+	AddMessageToMyRumor(messageID string) int
+
+	// GetAndIncrementMyRumor return false if the last rumor is empty otherwise returns the new rumor to send and create the next rumor
+	GetAndIncrementMyRumor() (bool, method.Rumor, error)
 }
 
 // ======================= Query ==========================

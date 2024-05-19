@@ -43,6 +43,10 @@ func getInstance() (repository.Repository, *answer.Error) {
 	return instance, nil
 }
 
+func GetRumorSenderRepositoryInstance() (repository.RumorSenderRepository, *answer.Error) {
+	return getInstance()
+}
+
 func GetQueryRepositoryInstance() (repository.QueryRepository, *answer.Error) {
 	return getInstance()
 }

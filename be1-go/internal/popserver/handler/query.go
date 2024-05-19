@@ -162,25 +162,6 @@ func handleUnsubscribe(socket socket.Socket, msg []byte) (*int, *answer.Error) {
 	return &unsubscribe.ID, nil
 }
 
-func handlePublish(socket socket.Socket, msg []byte) (*int, *answer.Error) {
-	var publish method.Publish
-
-	err := json.Unmarshal(msg, &publish)
-	if err != nil {
-		errAnswer := answer.NewJsonUnmarshalError(err.Error())
-		return nil, errAnswer.Wrap("handlePublish")
-	}
-
-	errAnswer := handleChannel(publish.Params.Channel, publish.Params.Message, false)
-	if errAnswer != nil {
-		return &publish.ID, errAnswer.Wrap("handlePublish")
-	}
-
-	socket.SendResult(publish.ID, nil, nil)
-
-	return &publish.ID, nil
-}
-
 func handleCatchUp(socket socket.Socket, msg []byte) (*int, *answer.Error) {
 	var catchup method.Catchup
 
