@@ -43,6 +43,8 @@ func handleChannelFederation(channelPath string, msg message.Message) *answer.Er
 		errAnswer = handleExpect(msg, channelPath)
 	case messagedata.FederationActionChallenge:
 		errAnswer = handleChallenge(msg, channelPath)
+	case messagedata.FederationActionResult:
+		errAnswer = handleResult(msg, channelPath)
 
 	default:
 		errAnswer = answer.NewInvalidMessageFieldError("failed to handle %s#%s, invalid object#action", object, action)
@@ -312,6 +314,68 @@ func handleChallenge(msg message.Message, channelPath string) *answer.Error {
 	//if errAnswer != nil {
 	//	return errAnswer.Wrap("handleFederationChallenge")
 	//}
+
+	return nil
+}
+
+func handleResult(msg message.Message, channelPath string) *answer.Error {
+	var result messagedata.FederationResult
+	errAnswer := msg.UnmarshalMsgData(&result)
+	if errAnswer != nil {
+		return errAnswer.Wrap("handleFederationResult")
+	}
+
+	// verify that the embedded challenge is correctly signed,
+	// we compare the sender field of the challenge later
+	errAnswer = verifyMessage(result.ChallengeMsg)
+	if errAnswer != nil {
+		return errAnswer.Wrap("handleFederationResult")
+	}
+
+	if result.Status != "success" {
+		errAnswer = answer.NewInternalServerError(
+			"failed to establish federated connection: %s", result.Reason)
+		return errAnswer.Wrap("handleFederationResult")
+	}
+
+	db, errAnswer := database.GetFederationRepositoryInstance()
+	if errAnswer != nil {
+		return errAnswer.Wrap("handleFederationResult")
+	}
+
+	organizerPk, errAnswer := getOrganizerPk(channelPath)
+	if errAnswer != nil {
+		return errAnswer.Wrap("handleFederationResult")
+	}
+
+	// the result is from the other server if publicKey == organizer
+	if result.PublicKey != organizerPk {
+		errAnswer = answer.NewInvalidMessageFieldError(
+			"invalid public key contained in FederationResult message")
+		return errAnswer.Wrap("handleFederationResult")
+	}
+
+	var federationChallenge messagedata.FederationChallenge
+	errAnswer = result.ChallengeMsg.UnmarshalMsgData(&federationChallenge)
+	if errAnswer != nil {
+		return errAnswer.Wrap("handleFederationResult")
+	}
+
+	// try to get a matching FederationInit, if found then we know that
+	// the local organizer was waiting this result
+	_, err := db.GetFederationInit(organizerPk,
+		result.ChallengeMsg.Sender, federationChallenge)
+	if err != nil {
+		errAnswer = answer.NewQueryDatabaseError(
+			"failed to get federation init: %v", err)
+		return errAnswer.Wrap("handleFederationResult")
+	}
+
+	err = db.StoreMessageAndData(channelPath, msg)
+	if err != nil {
+		errAnswer = answer.NewStoreDatabaseError(err.Error())
+		return errAnswer.Wrap("handleFederationResult")
+	}
 
 	return nil
 }
