@@ -3,6 +3,7 @@ package popserver
 import (
 	"encoding/json"
 	"golang.org/x/xerrors"
+	"popstellar"
 	"popstellar/internal/popserver/config"
 	"popstellar/internal/popserver/database"
 	"popstellar/internal/popserver/handler"
@@ -13,12 +14,14 @@ import (
 	"popstellar/message/query"
 	"popstellar/message/query/method"
 	"popstellar/network/socket"
+	"sync"
 	"time"
 )
 
 const heartbeatDelay = 30 * time.Second
 
 type Hub struct {
+	wg            *sync.WaitGroup
 	messageChan   chan socket.IncomingMessage
 	stop          chan struct{}
 	closedSockets chan string
@@ -26,10 +29,35 @@ type Hub struct {
 }
 
 func NewHub() *Hub {
+	wg, errAnswer := state.GetWaitGroup()
+	if errAnswer != nil {
+		popstellar.Logger.Err(errAnswer)
+		return nil
+	}
+
+	messageChan, errAnswer := state.GetMessageChan()
+	if errAnswer != nil {
+		popstellar.Logger.Err(errAnswer)
+		return nil
+	}
+
+	stop, errAnswer := state.GetStopChan()
+	if errAnswer != nil {
+		popstellar.Logger.Err(errAnswer)
+		return nil
+	}
+
+	closedSockets, errAnswer := state.GetClosedSockets()
+	if errAnswer != nil {
+		popstellar.Logger.Err(errAnswer)
+		return nil
+	}
+
 	return &Hub{
-		messageChan:   make(chan socket.IncomingMessage),
-		stop:          make(chan struct{}),
-		closedSockets: make(chan string),
+		wg:            wg,
+		messageChan:   messageChan,
+		stop:          stop,
+		closedSockets: closedSockets,
 		serverSockets: types.NewSockets(),
 	}
 }
@@ -39,7 +67,9 @@ func (h *Hub) NotifyNewServer(socket socket.Socket) {
 }
 
 func (h *Hub) Start() {
+	h.wg.Add(2)
 	go func() {
+		defer h.wg.Done()
 		ticker := time.NewTicker(heartbeatDelay)
 		defer ticker.Stop()
 
@@ -54,6 +84,7 @@ func (h *Hub) Start() {
 		}
 	}()
 	go func() {
+		defer h.wg.Done()
 		utils.LogInfo("start the Hub")
 		for {
 			utils.LogInfo("waiting for a new message")
@@ -79,6 +110,7 @@ func (h *Hub) Start() {
 
 func (h *Hub) Stop() {
 	close(h.stop)
+	h.wg.Wait()
 }
 
 func (h *Hub) Receiver() chan<- socket.IncomingMessage {
