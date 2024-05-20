@@ -18,7 +18,7 @@ import ch.epfl.pop.storage.DbActor
 import ch.epfl.pop.storage.DbActor.DbActorReadRumor
 
 import scala.concurrent.Await
-import scala.util.{Random, Success}
+import scala.util.{Failure, Random, Success}
 
 final case class GossipManager(
     dbActorRef: AskableActorRef,
@@ -42,13 +42,6 @@ final case class GossipManager(
 
   private var activeGossipProtocol: Map[JsonRpcRequest, List[ServerInfos]] = Map.empty
 
-  private def isRumorNew(rumor: Rumor): Boolean = {
-    val readRumorDb = dbActorRef ? DbActor.ReadRumor(rumor.senderPk -> rumor.rumorId)
-    Await.result(readRumorDb, duration) match
-      case DbActorReadRumor(foundRumors) =>
-        foundRumors.isEmpty
-  }
-
   private def getPeersForRumor(jsonRpcRequest: JsonRpcRequest): List[ServerInfos] = {
     val activeGossip = activeGossipProtocol.get(jsonRpcRequest)
     activeGossip match
@@ -67,7 +60,7 @@ final case class GossipManager(
     request
   }
 
-  private def updateGossip(rumorRpc: JsonRpcRequest): Boolean = {
+  private def updateGossip(rumorRpc: JsonRpcRequest): Unit = {
     // checks the peers to which we already forwarded the message
     val activeGossip: List[ServerInfos] = getPeersForRumor(rumorRpc)
     // get senderpk to avoid sending rumor back
@@ -84,14 +77,11 @@ final case class GossipManager(
         serverRef ! ClientAnswer(
           Right(rumorRpc)
         )
-        true
       // else remove entry
       case ConnectionMediator.NoPeer() =>
         activeGossipProtocol = activeGossipProtocol.removed(rumorRpc)
-        false
       case _ =>
         log.info(s"Actor $self received an unexpected message waiting for a random peer")
-        false
     }
   }
 
@@ -99,7 +89,6 @@ final case class GossipManager(
     val rcvRumor = request.getParams.asInstanceOf[Rumor]
     val newRumorRequest = prepareRumor(rcvRumor)
     updateGossip(newRumorRequest)
-
   }
 
   private def processResponse(response: JsonRpcResponse): Unit = {
@@ -164,18 +153,19 @@ object GossipManager extends AskPatternConstants {
     case Right(jsonRpcResponse: JsonRpcResponse) =>
       gossipManager ? ManageGossipResponse(jsonRpcResponse)
       Right(jsonRpcResponse)
-    case graphMessage @ _ => graphMessage
+    case graphMessage @ _ => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"GossipManager received an unexpected message:$graphMessage while monitoring responses", None))
   }
 
   def startGossip(gossipManager: AskableActorRef, actorRef: ActorRef): Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map {
     case Right(jsonRpcRequest: JsonRpcRequest) =>
       jsonRpcRequest.getParamsMessage match
         case Some(message) =>
+          // Start gossiping only if message comes from a real actor (and not from processing pipeline)
           if (actorRef != Actor.noSender)
             gossipManager ? StartGossip(Map(jsonRpcRequest.getParamsChannel -> List(message)))
         case None => /* Do nothing */
       Right(jsonRpcRequest)
-    case graphMessage @ _ => graphMessage
+    case graphMessage @ _ => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"GossipManager received an unexpected message:$graphMessage while starting gossiping", None))
   }
 
   sealed trait Event
