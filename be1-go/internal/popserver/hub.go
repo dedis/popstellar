@@ -19,7 +19,7 @@ import (
 )
 
 const (
-	heartbeatDelay           = time.Second * 30
+	heartbeatDelay           = time.Second * 1000
 	rumorDelay               = time.Second * 30
 	thresholdMessagesByRumor = 3
 )
