@@ -1,6 +1,6 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/answer/result/messages_by_channel.json",
+    "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/object/rumor_state.json",
     "title": "State of received rumors",
     "description": "An object containing key-value pairs where each key is a server public key and each value is the last rumor_id it received from this server",
     "type": "object",

@@ -1,6 +1,6 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/rumor.json",
+    "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/rumor_state.json",
     "description": "Match sharing state of last rumor seen per sender",
     "type": "object",
     "additionalProperties": false,
