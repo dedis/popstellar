@@ -346,7 +346,8 @@ const (
 	selectMyRumorMessages = `
 	select message, channelPath
 	FROM message JOIN channelMessage ON message.messageID = channelMessage.messageID
-		WHERE message.messageID IN 
+		WHERE isBaseChannel = ? 
+		AND message.messageID IN 
 		      (SELECT messageID 
 		       FROM messageRumor 
 		       WHERE rumorID = (SELECT max(ID) FROM rumor 

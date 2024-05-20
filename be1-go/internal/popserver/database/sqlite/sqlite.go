@@ -522,7 +522,7 @@ func (s *SQLite) StoreLaoWithLaoGreet(
 	if err != nil {
 		return err
 	}
-	err = s.insertMessageHelper(tx, laoGreetMsg.MessageID, laoGreetMsgByte, laoGreetData, storedTime)
+	_, err = tx.Exec(insertMessage, laoGreetMsg.MessageID, laoGreetMsgByte, laoGreetData, storedTime)
 	if err != nil {
 		return err
 	}
@@ -811,7 +811,7 @@ func (s *SQLite) StoreElectionWithElectionKey(
 		return err
 	}
 
-	err = s.insertMessageHelper(tx, electionKeyMsg.MessageID, electionKeyMsgBytes, electionKey, storedTime)
+	_, err = tx.Exec(insertMessage, electionKeyMsg.MessageID, electionKeyMsgBytes, electionKey, storedTime)
 	if err != nil {
 		return err
 	}
@@ -1147,10 +1147,7 @@ func (s *SQLite) StoreElectionEndWithResult(channelPath string, msg, electionRes
 	if err != nil {
 		return err
 	}
-	err = s.insertMessageHelper(tx, electionResultMsg.MessageID, electionResultMsgBytes, electionResult, storedTime)
-	if err != nil {
-		return err
-	}
+	_, err = tx.Exec(insertMessage, electionResultMsg.MessageID, electionResultMsgBytes, electionResult, storedTime)
 	_, err = tx.Exec(insertChannelMessage, channelPath, electionResultMsg.MessageID, false)
 	if err != nil {
 		return err
@@ -1199,7 +1196,7 @@ func (s *SQLite) StoreChirpMessages(channel, generalChannel string, msg, general
 	if err != nil {
 		return err
 	}
-	err = s.insertMessageHelper(tx, generalMsg.MessageID, generalMsgBytes, generalMessageData, storedTime)
+	_, err = tx.Exec(insertMessage, generalMsg.MessageID, generalMsgBytes, generalMessageData, storedTime)
 	if err != nil {
 		return err
 	}
@@ -1375,7 +1372,7 @@ func (s *SQLite) GetAndIncrementMyRumor() (bool, method.Rumor, error) {
 	}
 	defer tx.Rollback()
 
-	rows, err := s.database.Query(selectMyRumorMessages, serverKeysPath)
+	rows, err := s.database.Query(selectMyRumorMessages, true, serverKeysPath)
 	if err != nil {
 		popstellar.Logger.Error().Msg("1")
 		return false, method.Rumor{}, err
