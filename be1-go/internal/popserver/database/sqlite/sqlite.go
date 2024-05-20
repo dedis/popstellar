@@ -67,8 +67,13 @@ func (s *SQLite) GetServerKeys() (kyber.Point, kyber.Scalar, error) {
 	return serverPubKey, serverSecKey, nil
 }
 
-func (s *SQLite) transferUnprocessedMessageHelper(tx *sql.Tx, messageID string) error {
-	_, err := tx.Exec(tranferUnprocessedMessageRumor, messageID)
+func (s *SQLite) insertMessageHelper(tx *sql.Tx, messageID string, msg, messageData []byte, storedTime int64) error {
+	_, err := tx.Exec(insertMessage, messageID, msg, messageData, storedTime)
+	if err != nil {
+		return err
+
+	}
+	_, err = tx.Exec(tranferUnprocessedMessageRumor, messageID)
 	if err != nil {
 		return err
 	}
@@ -103,12 +108,7 @@ func (s *SQLite) StoreMessageAndData(channelPath string, msg message.Message) er
 	if err != nil {
 		return err
 	}
-	_, err = tx.Exec(insertMessage, msg.MessageID, msgByte, messageData, time.Now().UnixNano())
-	if err != nil {
-		return err
-
-	}
-	err = s.transferUnprocessedMessageHelper(tx, msg.MessageID)
+	err = s.insertMessageHelper(tx, msg.MessageID, msgByte, messageData, time.Now().UnixNano())
 	if err != nil {
 		return err
 	}
@@ -117,10 +117,6 @@ func (s *SQLite) StoreMessageAndData(channelPath string, msg message.Message) er
 	if err != nil {
 		return err
 
-	}
-	err = s.transferUnprocessedMessageHelper(tx, msg.MessageID)
-	if err != nil {
-		return err
 	}
 
 	return tx.Commit()
@@ -531,11 +527,7 @@ func (s *SQLite) StoreLaoWithLaoGreet(
 		}
 	}
 
-	_, err = tx.Exec(insertMessage, msg.MessageID, msgByte, messageData, storedTime)
-	if err != nil {
-		return err
-	}
-	err = s.transferUnprocessedMessageHelper(tx, msg.MessageID)
+	err = s.insertMessageHelper(tx, msg.MessageID, msgByte, messageData, storedTime)
 	if err != nil {
 		return err
 	}
@@ -553,11 +545,7 @@ func (s *SQLite) StoreLaoWithLaoGreet(
 	if err != nil {
 		return err
 	}
-	_, err = tx.Exec(insertMessage, laoGreetMsg.MessageID, laoGreetMsgByte, laoGreetData, storedTime)
-	if err != nil {
-		return err
-	}
-	err = s.transferUnprocessedMessageHelper(tx, msg.MessageID)
+	err = s.insertMessageHelper(tx, laoGreetMsg.MessageID, laoGreetMsgByte, laoGreetData, storedTime)
 	if err != nil {
 		return err
 	}
@@ -718,11 +706,7 @@ func (s *SQLite) StoreRollCallClose(channels []string, laoPath string, msg messa
 		return err
 	}
 
-	_, err = tx.Exec(insertMessage, msg.MessageID, msgBytes, messageData, time.Now().UnixNano())
-	if err != nil {
-		return err
-	}
-	err = s.transferUnprocessedMessageHelper(tx, msg.MessageID)
+	err = s.insertMessageHelper(tx, msg.MessageID, msgBytes, messageData, time.Now().UnixNano())
 	if err != nil {
 		return err
 	}
@@ -770,11 +754,7 @@ func (s *SQLite) storeElectionHelper(
 		return err
 	}
 
-	_, err = tx.Exec(insertMessage, msg.MessageID, msgBytes, messageData, storedTime)
-	if err != nil {
-		return err
-	}
-	err = s.transferUnprocessedMessageHelper(tx, msg.MessageID)
+	err = s.insertMessageHelper(tx, msg.MessageID, msgBytes, messageData, storedTime)
 	if err != nil {
 		return err
 	}
@@ -854,11 +834,7 @@ func (s *SQLite) StoreElectionWithElectionKey(
 		return err
 	}
 
-	_, err = tx.Exec(insertMessage, electionKeyMsg.MessageID, electionKeyMsgBytes, electionKey, storedTime)
-	if err != nil {
-		return err
-	}
-	err = s.transferUnprocessedMessageHelper(tx, msg.MessageID)
+	err = s.insertMessageHelper(tx, electionKeyMsg.MessageID, electionKeyMsgBytes, electionKey, storedTime)
 	if err != nil {
 		return err
 	}
@@ -1185,23 +1161,16 @@ func (s *SQLite) StoreElectionEndWithResult(channelPath string, msg, electionRes
 	}
 	storedTime := time.Now().UnixNano()
 
-	_, err = tx.Exec(insertMessage, msg.MessageID, msgBytes, messageData, storedTime)
+	err = s.insertMessageHelper(tx, msg.MessageID, msgBytes, messageData, storedTime)
 	if err != nil {
 		return err
-	}
-	err = s.transferUnprocessedMessageHelper(tx, msg.MessageID)
-	if err != nil {
-		return err
+
 	}
 	_, err = tx.Exec(insertChannelMessage, channelPath, msg.MessageID, true)
 	if err != nil {
 		return err
 	}
-	_, err = tx.Exec(insertMessage, electionResultMsg.MessageID, electionResultMsgBytes, electionResult, storedTime)
-	if err != nil {
-		return err
-	}
-	err = s.transferUnprocessedMessageHelper(tx, msg.MessageID)
+	err = s.insertMessageHelper(tx, electionResultMsg.MessageID, electionResultMsgBytes, electionResult, storedTime)
 	if err != nil {
 		return err
 	}
@@ -1245,11 +1214,7 @@ func (s *SQLite) StoreChirpMessages(channel, generalChannel string, msg, general
 	}
 	storedTime := time.Now().UnixNano()
 
-	_, err = tx.Exec(insertMessage, msg.MessageID, msgBytes, messageData, storedTime)
-	if err != nil {
-		return err
-	}
-	err = s.transferUnprocessedMessageHelper(tx, msg.MessageID)
+	err = s.insertMessageHelper(tx, msg.MessageID, msgBytes, messageData, storedTime)
 	if err != nil {
 		return err
 	}
@@ -1257,11 +1222,7 @@ func (s *SQLite) StoreChirpMessages(channel, generalChannel string, msg, general
 	if err != nil {
 		return err
 	}
-	_, err = tx.Exec(insertMessage, generalMsg.MessageID, generalMsgBytes, generalMessageData, storedTime)
-	if err != nil {
-		return err
-	}
-	err = s.transferUnprocessedMessageHelper(tx, msg.MessageID)
+	err = s.insertMessageHelper(tx, generalMsg.MessageID, generalMsgBytes, generalMessageData, storedTime)
 	if err != nil {
 		return err
 	}
