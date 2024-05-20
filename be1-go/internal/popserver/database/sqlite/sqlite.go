@@ -1144,6 +1144,9 @@ func (s *SQLite) StoreElectionEndWithResult(channelPath string, msg, electionRes
 		return err
 	}
 	_, err = tx.Exec(insertMessage, electionResultMsg.MessageID, electionResultMsgBytes, electionResult, storedTime)
+	if err != nil {
+		return err
+	}
 	_, err = tx.Exec(insertChannelMessage, channelPath, electionResultMsg.MessageID, false)
 	if err != nil {
 		return err
