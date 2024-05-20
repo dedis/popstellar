@@ -147,8 +147,20 @@ const (
 	insertUnprocessedMessageRumor  = `INSERT INTO unprocessedMessageRumor (messageID, rumorID, sender) VALUES (?, ?, ?)`
 	insertMessageRumor             = `INSERT INTO messageRumor (messageID, rumorID, sender) VALUES (?, ?, ?)`
 	tranferUnprocessedMessageRumor = `INSERT INTO messageRumor (messageID, rumorID, sender) SELECT messageID, rumorID, sender FROM unprocessedMessageRumor WHERE messageID = ?`
-	deleteUnprocessedMessage       = `DELETE FROM unprocessedMessage WHERE messageID = ?`
-	deleteUnprocessedMessageRumor  = `DELETE FROM unprocessedMessageRumor WHERE messageID = ?`
+	insertMessageToMyRumor         = `
+    INSERT INTO messageRumor (messageID, rumorID, sender) 
+    SELECT ?, rumorID, sender 
+    FROM unprocessedMessageRumor 
+    WHERE rumorID = (
+            SELECT max(ID) 
+            FROM rumor 
+            WHERE sender = (
+                    SELECT publicKey 
+                 	FROM key 
+                    WHERE channelPath = ?
+            )
+        ) 
+    LIMIT 1`
 )
 
 const (
@@ -330,10 +342,14 @@ const (
 	selectRumor = `SELECT ID FROM rumor WHERE ID = ? AND sender = ?`
 
 	selectAllUnprocessedMessages = `SELECT channelPath, message FROM unprocessedMessage`
+
+	selectCountMyRumor = `SELECT count(*) FROM messageRumor WHERE rumorID = (SELECT max(ID) FROM rumor WHERE sender = (SELECT publicKey FROM key WHERE channelPath = ?))`
 )
 
 const (
-	deletePendingSignatures = `DELETE FROM pendingSignatures WHERE messageID = ?`
+	deletePendingSignatures       = `DELETE FROM pendingSignatures WHERE messageID = ?`
+	deleteUnprocessedMessage      = `DELETE FROM unprocessedMessage WHERE messageID = ?`
+	deleteUnprocessedMessageRumor = `DELETE FROM unprocessedMessageRumor WHERE messageID = ?`
 )
 
 const (

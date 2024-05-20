@@ -37,7 +37,7 @@ type Repository interface {
 
 type RumorSenderRepository interface {
 	// AddMessageToMyRumor adds the message to the last rumor of the server and returns the current number of message inside the last rumor
-	AddMessageToMyRumor(messageID string) int
+	AddMessageToMyRumor(messageID string) (int, error)
 
 	// GetAndIncrementMyRumor return false if the last rumor is empty otherwise returns the new rumor to send and create the next rumor
 	GetAndIncrementMyRumor() (bool, method.Rumor, error)

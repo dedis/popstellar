@@ -1360,3 +1360,30 @@ func (s *SQLite) GetUnprocessedMessagesByChannel() (map[string][]message.Message
 	}
 	return result, nil
 }
+
+func (s *SQLite) AddMessageToMyRumor(messageID string) (int, error) {
+	dbLock.Lock()
+	defer dbLock.Unlock()
+
+	tx, err := s.database.Begin()
+	if err != nil {
+		return -1, err
+	}
+	defer tx.Rollback()
+
+	_, err = s.database.Exec(insertMessageToMyRumor, messageID, serverKeysPath)
+	if err != nil {
+		return -1, err
+	}
+	var count int
+	err = s.database.QueryRow(selectCountMyRumor, serverKeysPath).Scan(&count)
+	if err != nil {
+		return -1, err
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		return -1, err
+	}
+	return count, nil
+}
