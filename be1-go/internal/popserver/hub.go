@@ -3,6 +3,7 @@ package popserver
 import (
 	"encoding/json"
 	"golang.org/x/xerrors"
+	"popstellar"
 	"popstellar/internal/popserver/config"
 	"popstellar/internal/popserver/database"
 	"popstellar/internal/popserver/handler"
@@ -65,49 +66,51 @@ func (h *Hub) Start() {
 		ticker := time.NewTicker(rumorDelay)
 		defer ticker.Stop()
 		defer h.wg.Done()
-		defer utils.LogInfo("stopping rumor sender")
+		defer popstellar.Logger.Info().Msg("stopping rumor sender")
 
 		cSendRumor, errAnswer := state.GetChanSendRumor()
 		if errAnswer != nil {
-			utils.LogError(xerrors.New("failed to get channel send rumor"))
-			utils.LogError(errAnswer)
+			popstellar.Logger.Error().Err(errAnswer)
 			return
 		}
 
 		cSendAgainRumor, errAnswer := state.GetChanSendAgainRumor()
 		if errAnswer != nil {
-			utils.LogError(xerrors.New("failed to get channel send again rumor"))
-			utils.LogError(errAnswer)
+			popstellar.Logger.Error().Err(errAnswer)
 			return
 		}
 
 		db, errAnswer := database.GetRumorSenderRepositoryInstance()
 		if errAnswer != nil {
-			utils.LogError(xerrors.New("failed to get rumor sender database"))
-			utils.LogError(errAnswer)
+			popstellar.Logger.Error().Err(errAnswer)
 			return
 		}
 
 		for {
 			select {
 			case <-ticker.C:
+				popstellar.Logger.Debug().Msgf("sender rumor trigerred")
 				h.tryToSendRumor()
 			case msgID := <-cSendRumor:
+				popstellar.Logger.Debug().Msgf("sender rumor need to add message %s", msgID)
 				nbMessagesInsideRumor := db.AddMessageToMyRumor(msgID)
 
 				if nbMessagesInsideRumor < thresholdMessagesByRumor {
+					popstellar.Logger.Debug().Msgf("sender rumor need to add message %s", msgID)
 					break
 				}
 
 				ticker.Reset(rumorDelay)
 				h.tryToSendRumor()
 			case queryID := <-cSendAgainRumor:
+				popstellar.Logger.Debug().Msgf("sender rumor need to continue sending query %d", queryID)
 				rumor, ok, errAnswer := state.GetRumorFromPastQuery(queryID)
 				if errAnswer != nil {
-					utils.LogError(errAnswer)
+					popstellar.Logger.Error().Err(errAnswer)
 					break
 				}
 				if !ok {
+					popstellar.Logger.Debug().Msgf("rumor query %d doesn't exist", queryID)
 					break
 				}
 
@@ -225,19 +228,17 @@ func (h *Hub) sendHeartbeatToServers() {
 func (h *Hub) tryToSendRumor() {
 	db, errAnswer := database.GetRumorSenderRepositoryInstance()
 	if errAnswer != nil {
-		utils.LogError(xerrors.New("was not able to get db instance"))
-		utils.LogError(errAnswer)
+		popstellar.Logger.Error().Err(errAnswer)
 		return
 	}
 
 	ok, rumor, err := db.GetAndIncrementMyRumor()
 	if err != nil {
-		utils.LogError(xerrors.New("was not able to query new rumor to send"))
-		utils.LogError(err)
+		popstellar.Logger.Error().Err(err)
 		return
 	}
 	if !ok {
-		utils.LogInfo("no new rumor to send")
+		popstellar.Logger.Info().Msg("no new ")
 		return
 	}
 
@@ -247,8 +248,7 @@ func (h *Hub) tryToSendRumor() {
 func (h *Hub) sendRumor(rumor method.Rumor) {
 	id, errAnswer := state.GetNextID()
 	if errAnswer != nil {
-		utils.LogError(xerrors.New("was not able get new query ID"))
-		utils.LogError(errAnswer)
+		popstellar.Logger.Error().Err(errAnswer)
 		return
 	}
 
@@ -256,15 +256,16 @@ func (h *Hub) sendRumor(rumor method.Rumor) {
 
 	errAnswer = state.AddRumorQuery(id, rumor)
 	if errAnswer != nil {
-		utils.LogError(errAnswer)
+		popstellar.Logger.Error().Err(errAnswer)
 		return
 	}
 
 	buf, err := json.Marshal(rumor)
 	if err != nil {
-		utils.LogError(err)
+		popstellar.Logger.Error().Err(err)
 		return
 	}
 
+	popstellar.Logger.Debug().Msgf("sending rumor %s-%d query %d", rumor.Params.SenderID, rumor.Params.RumorID, rumor.ID)
 	h.serverSockets.SendRumor(buf)
 }

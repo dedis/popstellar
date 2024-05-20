@@ -3,8 +3,8 @@ package handler
 import (
 	"encoding/json"
 	"math/rand"
+	"popstellar"
 	"popstellar/internal/popserver/state"
-	"popstellar/internal/popserver/utils"
 	"popstellar/message/answer"
 	"popstellar/message/query/method/message"
 	"sort"
@@ -33,14 +33,14 @@ func handleAnswer(msg []byte) *answer.Error {
 	}
 
 	if answerMsg.Result == nil {
-		utils.LogInfo("received an error, nothing to handle")
+		popstellar.Logger.Info().Msg("received an error, nothing to handle")
 		// don't send any error to avoid infinite error loop as a server will
 		// send an error to another server that will create another error
 		return nil
 	}
 
 	if answerMsg.Result.IsEmpty() {
-		utils.LogInfo("expected isn't an answer to a popquery, nothing to handle")
+		popstellar.Logger.Info().Msg("expected isn't an answer to a popquery, nothing to handle")
 		return nil
 	}
 
@@ -63,16 +63,23 @@ func handleRumorAnswer(msg answer.Answer) *answer.Error {
 		return errAnswer
 	}
 
+	popstellar.Logger.Debug().Msgf("received an answer to rumor query %d", *msg.ID)
+
 	if msg.Error != nil {
+		popstellar.Logger.Debug().Msgf("received an answer error to rumor query %d", *msg.ID)
 		if msg.Error.Code != answer.DuplicateResourceErrorCode {
+			popstellar.Logger.Debug().Msgf("invalid error code to rumor query %d", *msg.ID)
 			return nil
 		}
 
 		stop := rand.Float64() < ContinueMongering
 
 		if stop {
+			popstellar.Logger.Debug().Msgf("stop mongering rumor query %d", *msg.ID)
 			return nil
 		}
+
+		popstellar.Logger.Debug().Msgf("continue mongering rumor query %d", *msg.ID)
 	}
 
 	return state.NotifyRumorSenderForAgain(*msg.ID)
@@ -94,7 +101,7 @@ func handleGetMessagesByIDAnswer(msg answer.Answer) *answer.Error {
 			}
 
 			errAnswer := answer.NewInvalidMessageFieldError("failed to unmarshal: %v", err)
-			utils.LogError(errAnswer.Wrap("handleGetMessagesByIDAnswer"))
+			popstellar.Logger.Error().Err(errAnswer)
 		}
 
 		if len(msgsByChan[channelID]) == 0 {
@@ -137,7 +144,7 @@ func tryToHandleMessages(msgsByChannel map[string]map[string]message.Message, so
 			}
 
 			errAnswer = errAnswer.Wrap(msgID).Wrap("tryToHandleMessages")
-			utils.LogError(errAnswer)
+			popstellar.Logger.Error().Err(errAnswer)
 		}
 
 		if len(msgsByChannel[channelID]) == 0 {
