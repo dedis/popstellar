@@ -2,6 +2,7 @@ package sqlite
 
 import (
 	"database/sql"
+	"go.dedis.ch/kyber/v3"
 	database2 "popstellar/internal/popserver/database/repository"
 	"sync"
 )
@@ -130,6 +131,40 @@ func (s *SQLite) Close() error {
 	defer dbLock.Unlock()
 
 	return s.database.Close()
+}
+
+func (s *SQLite) StoreServerKeys(electionPubKey kyber.Point, electionSecretKey kyber.Scalar) error {
+	dbLock.Lock()
+	defer dbLock.Unlock()
+
+	tx, err := s.database.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+
+	electionPubBuf, err := electionPubKey.MarshalBinary()
+	if err != nil {
+		return err
+	}
+	electionSecBuf, err := electionSecretKey.MarshalBinary()
+	if err != nil {
+		return err
+	}
+
+	_, err = tx.Exec(insertKeys, serverKeysPath, electionPubBuf, electionSecBuf)
+	if err != nil {
+		return err
+	}
+
+	return tx.Commit()
+}
+
+func (s *SQLite) StoreFirstRumor() error {
+	dbLock.Lock()
+	defer dbLock.Unlock()
+	_, err := s.database.Exec(insertFirstRumor, 0, serverKeysPath)
+	return err
 }
 
 func fillChannelTypes(tx *sql.Tx) error {

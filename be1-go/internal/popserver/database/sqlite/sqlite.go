@@ -20,33 +20,6 @@ import (
 	"time"
 )
 
-func (s *SQLite) StoreServerKeys(electionPubKey kyber.Point, electionSecretKey kyber.Scalar) error {
-	dbLock.Lock()
-	defer dbLock.Unlock()
-
-	tx, err := s.database.Begin()
-	if err != nil {
-		return err
-	}
-	defer tx.Rollback()
-
-	electionPubBuf, err := electionPubKey.MarshalBinary()
-	if err != nil {
-		return err
-	}
-	electionSecBuf, err := electionSecretKey.MarshalBinary()
-	if err != nil {
-		return err
-	}
-
-	_, err = tx.Exec(insertKeys, serverKeysPath, electionPubBuf, electionSecBuf)
-	if err != nil {
-		return err
-	}
-
-	return tx.Commit()
-}
-
 func (s *SQLite) GetServerKeys() (kyber.Point, kyber.Scalar, error) {
 	dbLock.RLock()
 	defer dbLock.RUnlock()

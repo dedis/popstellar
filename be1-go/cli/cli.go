@@ -104,6 +104,11 @@ func (s *ServerConfig) newHub(l *zerolog.Logger) (hub.Hub, error) {
 		}
 	}
 
+	err = db.StoreFirstRumor()
+	if err != nil {
+		return nil, err
+	}
+
 	utils.InitUtils(l, schemaValidator)
 
 	state.InitState(l)

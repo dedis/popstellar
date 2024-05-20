@@ -161,6 +161,8 @@ const (
             )
         ) 
     LIMIT 1`
+
+	insertFirstRumor = `INSERT OR IGNORE INTO rumor (ID, sender) SELECT ?, publicKey FROM key WHERE channelPath = ?`
 )
 
 const (
