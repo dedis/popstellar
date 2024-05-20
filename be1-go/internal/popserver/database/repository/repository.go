@@ -59,11 +59,8 @@ type QueryRepository interface {
 	// HasRumor returns true if the rumor already exists
 	HasRumor(senderID string, rumorID int) (bool, error)
 
-	// StoreNewRumor stores the new rumor with its processed and unprocessed messages
-	StoreNewRumor(
-		senderID string, rumorID int,
-		processedMessages []string,
-		unprocessedMessages map[string][]message.Message) error
+	// StoreRumor stores the new rumor with its processed and unprocessed messages
+	StoreRumor(rumorID, sender string, unprocessed map[string][]message.Message, processed []string) error
 
 	// GetUnprocessedMessagesByChannel returns all the unprocessed messages by channel
 	GetUnprocessedMessagesByChannel() (map[string][]message.Message, error)

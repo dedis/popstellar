@@ -329,7 +329,7 @@ const (
 
 	selectRumor = `SELECT ID FROM rumor WHERE ID = ? AND sender = ?`
 
-	selectAllUnprocessedMessages = `SELECT messageID, channelPath, message FROM unprocessedMessage`
+	selectAllUnprocessedMessages = `SELECT channelPath, message FROM unprocessedMessage`
 )
 
 const (

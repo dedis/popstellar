@@ -1298,7 +1298,7 @@ func (s *SQLite) HasRumor(senderID string, rumorID int) (bool, error) {
 	return true, nil
 }
 
-func (s *SQLite) StoreRumor(rumorID, sender string, unprocessed []message.Message, processed []string) error {
+func (s *SQLite) StoreRumor(rumorID, sender string, unprocessed map[string][]message.Message, processed []string) error {
 	dbLock.Lock()
 	defer dbLock.Unlock()
 
@@ -1307,83 +1307,56 @@ func (s *SQLite) StoreRumor(rumorID, sender string, unprocessed []message.Messag
 		return err
 	}
 
-	for _, msg := range unprocessed {
-		_, err = tx.Exec(insertUnprocessedMessage, msg.MessageID, msg)
-		if err != nil {
-			return err
-		}
-		_, err = tx.Exec(insertUnprocessedMessageRumor, msg.MessageID, rumorID, sender)
-		if err != nil {
-			return err
-		}
-	}
-
-	var processedIDs []interface{}
-	for _, msgID := range processed {
-		_, err = tx.Exec(insertMessageRumor, msgID, rumorID, sender)
-		processedIDs = append(processedIDs, msgID)
-		if err != nil {
-			return err
-		}
-	}
-
-	_, err = tx.Exec("DELETE FROM unprocessedMessage  WHERE messageID IN ("+
-		strings.Repeat("?,", len(processed)-1)+"?)", processedIDs...)
-
+	_, err = tx.Exec(insertRumor, rumorID, sender)
 	if err != nil {
 		return err
+	}
+
+	for channelPath, messages := range unprocessed {
+		for _, msg := range messages {
+			_, err = tx.Exec(insertUnprocessedMessage, msg.MessageID, channelPath, msg)
+			if err != nil {
+				return err
+			}
+			_, err = tx.Exec(insertUnprocessedMessageRumor, msg.MessageID, rumorID, sender)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	for _, msgID := range processed {
+		_, err = tx.Exec(insertMessageRumor, msgID, rumorID, sender)
+		if err != nil {
+			return err
+		}
 	}
 
 	return tx.Commit()
 }
 
 func (s *SQLite) GetUnprocessedMessagesByChannel() (map[string][]message.Message, error) {
-	//dbLock.RLock()
-	//defer dbLock.RUnlock()
-	//
-	//rows, err := s.database.Query(selectAllUnprocessedMessages)
-	//if err != nil {
-	//	return nil, err
-	//}
-	//
-	//result := make(map[string]map[string]message.Message)
-	//
-	//for rows.Next() {
-	//	var channelPath string
-	//	var messageID string
-	//	var messageByte []byte
-	//	if err = rows.Scan(&channelPath, &messageID, &messageByte); err != nil {
-	//		return nil, err
-	//	}
-	//	var msg message.Message
-	//	if err = json.Unmarshal(messageByte, &msg); err != nil {
-	//		return nil, err
-	//	}
-	//	if _, ok := result[channelPath]; !ok {
-	//		result[channelPath] = make(map[string]message.Message)
-	//	}
-	//	result[channelPath][messageID] = msg
-	//}
-	//return result, nil
+	dbLock.RLock()
+	defer dbLock.RUnlock()
 
-	return nil, nil
-}
-
-func (s *SQLite) StoreMessageRumor(messageID string) error {
-	dbLock.Lock()
-	defer dbLock.Unlock()
-
-	_, err := s.database.Exec(`
-	WITH myKey AS (
-    SELECT publicKey FROM key WHERE channelPath = ?
-	)
-	INSERT INTO messageRumor (messageID, rumorID, sender)
-			SELECT ?, (SELECT max(id) FROM rumor where sender = (SELECT publicKey FROM myKey)),
-			(SELECT publicKey FROM myKey)`, messageID, serverKeysPath)
-
+	rows, err := s.database.Query(selectAllUnprocessedMessages)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	return err
+	result := make(map[string][]message.Message)
+
+	for rows.Next() {
+		var channelPath string
+		var messageByte []byte
+		if err = rows.Scan(&channelPath, &messageByte); err != nil {
+			return nil, err
+		}
+		var msg message.Message
+		if err = json.Unmarshal(messageByte, &msg); err != nil {
+			return nil, err
+		}
+		result[channelPath] = append(result[channelPath], msg)
+	}
+	return result, nil
 }
