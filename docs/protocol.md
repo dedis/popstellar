@@ -1077,7 +1077,7 @@ is on the server in the current page, then the server only returns the messages 
 
 For now, this message is to be used to retrieve chirps from a social media channel specific for a given user (e.g. `/root/{lao_id}/social/chirps/{sender_public_key}`) 
 by paging when a new client joins the LAO instead of getting all the chirps at once. The user's public key is used
-to have a separate paging subchannel for each user to avoid sending irrelevant messages to other users. This paging is 
+to denote a separate paging subchannel for each user to be consistent with the publish/subscribe model. This paging is 
 done in an effort to reduce network traffic at catchup.
 
 This message is also to be used to retrieve chirps of a specific user profile from a subchannel `/root/{lao_id}/social/profile/{profile_public_key}/{sender_public_key}`  where `sender_public_key` is the same as before and `profile_public_key` is the public key of the user whose messages the client wants to retrieve. Paging is not deemed necessary for retrieving top chirps for now and can be done with the subscribe message to a subchannel `/root/{lao_id}/social/top_chirps`. More information on that can be found in the [Subscribing to a channel](#subscribing-to-a-channel) section.
