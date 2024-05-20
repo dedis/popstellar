@@ -164,91 +164,91 @@ func handleExpect(msg message.Message, channelPath string) *answer.Error {
 }
 
 func handleInit(msg message.Message, channelPath string) *answer.Error {
-	var federationInit messagedata.FederationInit
-	errAnswer := msg.UnmarshalMsgData(&federationInit)
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleFederationInit")
-	}
-
-	errAnswer = verifyLocalOrganizer(msg, channelPath)
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleFederationInit")
-	}
-
-	// Both the FederationInit and the embedded FederationChallenge need to
-	// be signed by the local organizer
-	errAnswer = verifyLocalOrganizer(federationInit.ChallengeMsg, channelPath)
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleFederationInit")
-	}
-
-	var challenge messagedata.FederationChallenge
-	errAnswer = federationInit.ChallengeMsg.UnmarshalMsgData(challenge)
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleFederationInit")
-	}
-
-	db, errAnswer := database.GetFederationRepositoryInstance()
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleFederationInit")
-	}
-
-	err := db.IsChallengeValid(channelPath, challenge)
-	if err != nil {
-		errAnswer = answer.NewQueryDatabaseError("No valid challenge: %v", err)
-		return errAnswer.Wrap("handleFederationInit")
-	}
-
-	err = db.StoreMessageAndData(channelPath, msg)
-	if err != nil {
-		errAnswer = answer.NewStoreDatabaseError(err.Error())
-		return errAnswer.Wrap("handleFederationInit")
-	}
-
-	// TODO fix
-	remote, err := state.ConnectTo(federationInit.ServerAddress)
-	if err != nil {
-		errAnswer = answer.NewInternalServerError(
-			"failed to connect to %s: %v", federationInit.ServerAddress, err)
-		return errAnswer.Wrap("handleFederationInit")
-	}
-
-	//Force the remote server to be subscribed to /root/<remote_lao>/federation
-	remoteChannel := fmt.Sprintf("/root/%s/federation", federationInit.LaoId)
-	_ = state.AddChannel(remoteChannel)
-	errAnswer = state.Subscribe(remote, remoteChannel)
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleFederationInit")
-	}
-
-	subscribeMsg := method.Subscribe{
-		Base: query.Base{
-			JSONRPCBase: jsonrpc.JSONRPCBase{
-				JSONRPC: "2.0",
-			},
-			Method: "subscribe",
-		},
-		Params: method.SubscribeParams{Channel: channelPath},
-	}
-
-	subscribeBytes, err := json.Marshal(subscribeMsg)
-	if err != nil {
-		errAnswer = answer.NewInternalServerError(
-			"failed to marshal subscribe: %v", err)
-		return errAnswer.Wrap("handleFederationInit")
-	}
-
-	// Subscribe to /root/<local_lao>/federation on the remote server
-	errAnswer = state.SendToAll(subscribeBytes, remoteChannel)
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleFederationInit")
-	}
-
-	// send the challenge to a channel where the remote server is subscribed to
-	errAnswer = publishTo(federationInit.ChallengeMsg, remoteChannel)
-	if errAnswer != nil {
-		return errAnswer.Wrap("handleFederationInit")
-	}
+	//var federationInit messagedata.FederationInit
+	//errAnswer := msg.UnmarshalMsgData(&federationInit)
+	//if errAnswer != nil {
+	//	return errAnswer.Wrap("handleFederationInit")
+	//}
+	//
+	//errAnswer = verifyLocalOrganizer(msg, channelPath)
+	//if errAnswer != nil {
+	//	return errAnswer.Wrap("handleFederationInit")
+	//}
+	//
+	//// Both the FederationInit and the embedded FederationChallenge need to
+	//// be signed by the local organizer
+	//errAnswer = verifyLocalOrganizer(federationInit.ChallengeMsg, channelPath)
+	//if errAnswer != nil {
+	//	return errAnswer.Wrap("handleFederationInit")
+	//}
+	//
+	//var challenge messagedata.FederationChallenge
+	//errAnswer = federationInit.ChallengeMsg.UnmarshalMsgData(challenge)
+	//if errAnswer != nil {
+	//	return errAnswer.Wrap("handleFederationInit")
+	//}
+	//
+	//db, errAnswer := database.GetFederationRepositoryInstance()
+	//if errAnswer != nil {
+	//	return errAnswer.Wrap("handleFederationInit")
+	//}
+	//
+	//err := db.IsChallengeValid(channelPath, challenge)
+	//if err != nil {
+	//	errAnswer = answer.NewQueryDatabaseError("No valid challenge: %v", err)
+	//	return errAnswer.Wrap("handleFederationInit")
+	//}
+	//
+	//err = db.StoreMessageAndData(channelPath, msg)
+	//if err != nil {
+	//	errAnswer = answer.NewStoreDatabaseError(err.Error())
+	//	return errAnswer.Wrap("handleFederationInit")
+	//}
+	//
+	//// TODO fix
+	//remote, err := state.ConnectTo(federationInit.ServerAddress)
+	//if err != nil {
+	//	errAnswer = answer.NewInternalServerError(
+	//		"failed to connect to %s: %v", federationInit.ServerAddress, err)
+	//	return errAnswer.Wrap("handleFederationInit")
+	//}
+	//
+	////Force the remote server to be subscribed to /root/<remote_lao>/federation
+	//remoteChannel := fmt.Sprintf("/root/%s/federation", federationInit.LaoId)
+	//_ = state.AddChannel(remoteChannel)
+	//errAnswer = state.Subscribe(remote, remoteChannel)
+	//if errAnswer != nil {
+	//	return errAnswer.Wrap("handleFederationInit")
+	//}
+	//
+	//subscribeMsg := method.Subscribe{
+	//	Base: query.Base{
+	//		JSONRPCBase: jsonrpc.JSONRPCBase{
+	//			JSONRPC: "2.0",
+	//		},
+	//		Method: "subscribe",
+	//	},
+	//	Params: method.SubscribeParams{Channel: channelPath},
+	//}
+	//
+	//subscribeBytes, err := json.Marshal(subscribeMsg)
+	//if err != nil {
+	//	errAnswer = answer.NewInternalServerError(
+	//		"failed to marshal subscribe: %v", err)
+	//	return errAnswer.Wrap("handleFederationInit")
+	//}
+	//
+	//// Subscribe to /root/<local_lao>/federation on the remote server
+	//errAnswer = state.SendToAll(subscribeBytes, remoteChannel)
+	//if errAnswer != nil {
+	//	return errAnswer.Wrap("handleFederationInit")
+	//}
+	//
+	//// send the challenge to a channel where the remote server is subscribed to
+	//errAnswer = publishTo(federationInit.ChallengeMsg, remoteChannel)
+	//if errAnswer != nil {
+	//	return errAnswer.Wrap("handleFederationInit")
+	//}
 
 	return nil
 }
