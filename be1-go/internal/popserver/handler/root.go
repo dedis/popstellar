@@ -186,7 +186,8 @@ func createLaoGreet(organizerBuf []byte, laoID string) (message.Message, *answer
 		LaoID:    laoID,
 		Frontend: base64.URLEncoding.EncodeToString(organizerBuf),
 		Address:  clientServerAddress,
-		Peers:    knownPeers,
+		//		Peers:    knownPeers,
+		Peers: make([]messagedata.Peer, 0),
 	}
 
 	// Marshall the message data
