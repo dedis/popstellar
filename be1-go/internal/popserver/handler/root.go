@@ -22,6 +22,7 @@ const (
 	Consensus  = "/consensus"
 	Coin       = "/coin"
 	Auth       = "/authentication"
+	Federation = "/federation"
 )
 
 func handleChannelRoot(msg message.Message) *answer.Error {

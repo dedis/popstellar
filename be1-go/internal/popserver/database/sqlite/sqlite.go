@@ -1263,3 +1263,87 @@ func (s *SQLite) GetReactionSender(messageID string) (string, error) {
 	}
 	return sender, nil
 }
+
+//======================================================================================================================
+// FederationRepository interface implementation
+//======================================================================================================================
+
+func (s *SQLite) IsChallengeValid(senderPk string, challenge messagedata.FederationChallenge) error {
+	dbLock.RLock()
+	defer dbLock.RUnlock()
+
+	var federationChallenge messagedata.FederationChallenge
+
+	err := s.database.QueryRow(selectValidFederationChallenges,
+		senderPk, messagedata.FederationObject,
+		messagedata.FederationActionChallenge,
+		challenge.Value, challenge.ValidUntil).Scan(&federationChallenge)
+	if err != nil {
+		return err
+	}
+
+	if federationChallenge != challenge {
+		return xerrors.New("the federation challenge doesn't match")
+	}
+
+	return nil
+}
+
+func (s *SQLite) RemoveChallenge(challenge messagedata.FederationChallenge) error {
+	dbLock.Lock()
+	defer dbLock.Unlock()
+
+	result, err := s.database.Exec(deleteFederationChallenge,
+		messagedata.FederationObject,
+		messagedata.FederationActionChallenge, challenge.Value,
+		challenge.ValidUntil)
+	if err != nil {
+		return err
+	}
+
+	nb, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if nb != 1 {
+		return xerrors.New("unexpected number of rows affected")
+	}
+
+	return nil
+}
+
+func (s *SQLite) GetFederationExpect(senderPk string, remotePk string, challenge messagedata.FederationChallenge) (messagedata.FederationExpect, error) {
+	dbLock.RLock()
+	defer dbLock.RUnlock()
+
+	rows, err := s.database.Query(selectFederationExpects, senderPk,
+		messagedata.FederationObject, messagedata.FederationActionExpect,
+		remotePk)
+	if err != nil {
+		return messagedata.FederationExpect{}, err
+	}
+
+	// iterate over all FederationExpect sent from the given sender pk,
+	// and search the one matching the given FederationChallenge
+	for rows.Next() {
+		var federationExpect messagedata.FederationExpect
+
+		err = rows.Scan(&federationExpect)
+		if err != nil {
+			continue
+		}
+
+		var federationChallenge messagedata.FederationChallenge
+		errAnswer := federationExpect.ChallengeMsg.UnmarshalMsgData(federationChallenge)
+		if errAnswer != nil {
+			return messagedata.FederationExpect{}, errAnswer
+		}
+
+		if federationChallenge == challenge {
+			return federationExpect, nil
+		}
+	}
+
+	return messagedata.FederationExpect{}, sql.ErrNoRows
+}
