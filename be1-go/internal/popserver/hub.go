@@ -93,7 +93,11 @@ func (h *Hub) Start() {
 				h.tryToSendRumor()
 			case msgID := <-cSendRumor:
 				popstellar.Logger.Debug().Msgf("sender rumor need to add message %s", msgID)
-				nbMessagesInsideRumor := db.AddMessageToMyRumor(msgID)
+				nbMessagesInsideRumor, err := db.AddMessageToMyRumor(msgID)
+				if err != nil {
+					popstellar.Logger.Error().Err(err)
+					break
+				}
 
 				if nbMessagesInsideRumor < thresholdMessagesByRumor {
 					popstellar.Logger.Debug().Msgf("sender rumor need to add message %s", msgID)
