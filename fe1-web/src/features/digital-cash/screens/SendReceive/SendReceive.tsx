@@ -261,6 +261,7 @@ const SendReceive = () => {
             onFocus={() => setBeneficiaryFocused(true)}
             placeholder={STRINGS.digital_cash_wallet_beneficiary_placeholder}
             isMonospaced
+            testID="digital-cash-send-beneficiary"
           />
         )}
         <Text style={[Typography.paragraph, Typography.important]}>
@@ -270,10 +271,14 @@ const SendReceive = () => {
           value={amount}
           onChange={setAmount}
           placeholder={STRINGS.digital_cash_wallet_amount_placeholder}
+          testID="digital-cash-send-amount"
         />
       </View>
       {error !== '' && <Text style={[Typography.paragraph, Typography.error]}>{error}</Text>}
-      <PoPTextButton disabled={cannotSendTransaction} onPress={onSendTransaction}>
+      <PoPTextButton
+        disabled={cannotSendTransaction}
+        onPress={onSendTransaction}
+        testID="digital-cash-send-button">
         {STRINGS.digital_cash_wallet_send_transaction}
       </PoPTextButton>
     </ScreenWrapper>
@@ -312,15 +317,19 @@ export const SendReceiveHeaderRight = () => {
     }
   }, [popToken]);
 
-  if (serializedPopToken === null) {
+  if (isCoinbase) {
+    return null;
+  }
+
+  if (!serializedRollCallId) {
     toast.show(STRINGS.digital_cash_error_rollcall_not_defined, {
       type: 'warning',
       placement: 'bottom',
       duration: FOUR_SECONDS,
     });
-    return null;
   }
-  if (isCoinbase) {
+
+  if (serializedPopToken === null) {
     return null;
   }
 

@@ -23,6 +23,7 @@ import com.github.dedis.popstellar.utility.error.ErrorUtils.logAndShow
 import com.github.dedis.popstellar.utility.error.UnknownChirpException
 import com.github.dedis.popstellar.utility.error.UnknownLaoException
 import com.github.dedis.popstellar.utility.error.UnknownReactionException
+import com.github.dedis.popstellar.utility.error.keys.InvalidPoPTokenException
 import com.github.dedis.popstellar.utility.error.keys.KeyException
 import com.github.dedis.popstellar.utility.scheduler.SchedulerProvider
 import com.github.dedis.popstellar.utility.security.KeyManager
@@ -59,6 +60,8 @@ constructor(
    */
   private val mNumberCharsLeft = MutableLiveData<Int>()
   val bottomNavigationTab = MutableLiveData(SocialMediaTab.HOME)
+
+  private val hasValidToken = MutableLiveData<Boolean>()
 
   private val disposables: CompositeDisposable = CompositeDisposable()
 
@@ -109,7 +112,7 @@ constructor(
     val addChirp = AddChirp(text, parentId, timestamp)
 
     return Single.fromCallable { validPoPToken }
-        .doOnSuccess { token: PoPToken ->
+        .doOnSuccess { token: PoPToken? ->
           Timber.tag(TAG).d("Retrieved PoPToken to send Chirp : %s", token)
         }
         .flatMap { token: PoPToken ->
@@ -142,7 +145,7 @@ constructor(
     val addReaction = AddReaction(codepoint, chirpId, timestamp)
 
     return Single.fromCallable { validPoPToken }
-        .doOnSuccess { token: PoPToken ->
+        .doOnSuccess { token: PoPToken? ->
           Timber.tag(TAG).d("Retrieved PoPToken to send Reaction : %s", token)
         }
         .flatMap { token: PoPToken ->
@@ -195,7 +198,7 @@ constructor(
         }
 
     return Single.fromCallable { validPoPToken }
-        .doOnSuccess { token: PoPToken ->
+        .doOnSuccess { token: PoPToken? ->
           Timber.tag(TAG).d("Retrieved PoPToken to delete Reaction : %s", token)
         }
         .flatMap { token: PoPToken ->
@@ -268,9 +271,12 @@ constructor(
 
     return try {
       val token = validPoPToken
+
       sender == token.publicKey.encoded
     } catch (e: KeyException) {
-      logAndShow(getApplication(), TAG, e, R.string.error_retrieve_own_token)
+      if (hasValidToken.value == true) {
+        logAndShow(getApplication(), TAG, e, R.string.error_retrieve_own_token)
+      }
       false
     }
   }
@@ -287,7 +293,9 @@ constructor(
       val toSearch = token.publicKey.encoded
       senders.contains(toSearch)
     } catch (e: KeyException) {
-      logAndShow(getApplication(), TAG, e, R.string.error_retrieve_own_token)
+      if (hasValidToken.value == true) {
+        logAndShow(getApplication(), TAG, e, R.string.error_retrieve_own_token)
+      }
       false
     }
   }
@@ -304,7 +312,26 @@ constructor(
   private val lao: LaoView
     get() = laoRepo.getLaoView(laoId)
 
+  fun checkValidPoPToken() {
+    disposables.add(
+        Single.fromCallable {
+              keyManager.getValidPoPToken(laoId, rollCallRepo.getLastClosedRollCall(laoId))
+            }
+            .subscribeOn(schedulerProvider.io())
+            .observeOn(schedulerProvider.mainThread())
+            .subscribe(
+                { hasValidToken.postValue(true) },
+                { error ->
+                  if (error is InvalidPoPTokenException) {
+                    hasValidToken.postValue(false)
+                  } else {
+                    Timber.tag(TAG).e(error, "Error checking PoPToken validity")
+                  }
+                }))
+  }
+
   companion object {
+    // TODO : looks like those constants need to be moved to resources
     val TAG: String = SocialMediaViewModel::class.java.simpleName
     private const val LAO_FAILURE_MESSAGE = "failed to retrieve lao"
     private const val SOCIAL = "social"

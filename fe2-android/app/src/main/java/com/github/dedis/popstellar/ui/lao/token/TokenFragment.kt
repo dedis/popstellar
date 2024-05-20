@@ -18,7 +18,7 @@ import com.github.dedis.popstellar.ui.lao.LaoViewModel
 import com.github.dedis.popstellar.utility.ActivityUtils.buildBackButtonCallback
 import com.github.dedis.popstellar.utility.ActivityUtils.getQRCodeColor
 import com.github.dedis.popstellar.utility.Constants
-import com.github.dedis.popstellar.utility.GeneralUtils
+import com.github.dedis.popstellar.utility.UIUtils
 import com.github.dedis.popstellar.utility.error.ErrorUtils.logAndShow
 import com.github.dedis.popstellar.utility.error.UnknownRollCallException
 import com.github.dedis.popstellar.utility.error.keys.KeyException
@@ -39,7 +39,7 @@ class TokenFragment : Fragment() {
 
   private lateinit var laoViewModel: LaoViewModel
 
-  private lateinit var clipboardManager: GeneralUtils.ClipboardUtil
+  private lateinit var clipboardManager: UIUtils.ClipboardUtil
 
   override fun onResume() {
     super.onResume()
@@ -54,7 +54,7 @@ class TokenFragment : Fragment() {
   ): View? {
     val binding = TokenFragmentBinding.inflate(inflater, container, false)
     laoViewModel = obtainViewModel(requireActivity())
-    clipboardManager = GeneralUtils.ClipboardUtil(requireActivity())
+    clipboardManager = UIUtils.ClipboardUtil(requireActivity())
 
     try {
       val laoId = laoViewModel.laoId!!

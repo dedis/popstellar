@@ -39,6 +39,7 @@ class SocialMediaHomeFragment : Fragment() {
 
     val viewModel = obtainViewModel(requireActivity())
     socialMediaViewModel = obtainSocialMediaViewModel(requireActivity(), viewModel.laoId!!)
+    socialMediaViewModel.checkValidPoPToken()
 
     setupBottomNavBar()
     openChirpList()

@@ -1805,7 +1805,7 @@ func Test_Handle_GreetServer_First_Time(t *testing.T) {
 
 	sock := &fakeSocket{}
 
-	serverInfo := method.ServerInfo{
+	serverInfo := method.GreetServerParams{
 		PublicKey:     "",
 		ServerAddress: "ws://localhost:9003/server",
 		ClientAddress: "ws://localhost:9002/client",
@@ -1860,7 +1860,7 @@ func Test_Handle_GreetServer_Already_Greeted(t *testing.T) {
 	// reset socket message
 	sock.msg = nil
 
-	serverInfo := method.ServerInfo{
+	serverInfo := method.GreetServerParams{
 		PublicKey:     "",
 		ServerAddress: "ws://localhost:9003/server",
 		ClientAddress: "ws://localhost:9002/client",
@@ -1898,13 +1898,13 @@ func Test_Handle_GreetServer_Already_Received(t *testing.T) {
 	hub, err := NewHub(keypair.public, "", "", nolog, nil)
 	require.NoError(t, err)
 
-	serverInfo1 := method.ServerInfo{
+	serverInfo1 := method.GreetServerParams{
 		PublicKey:     "",
 		ServerAddress: "ws://localhost:9003/server",
 		ClientAddress: "ws://localhost:9002/client",
 	}
 
-	serverInfo2 := method.ServerInfo{
+	serverInfo2 := method.GreetServerParams{
 		PublicKey:     "",
 		ServerAddress: "ws://localhost:9005/server",
 		ClientAddress: "ws://localhost:9004/client",

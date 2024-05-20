@@ -3,7 +3,7 @@ Feature: web page object
   Background:
     # Functions
     * def actionSheetClick = (text) => script("setTimeout(() => document.evaluate('//div[text()=\\'" + text + "\\']', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.click(), 1000)")
-
+    * def selectOption = (selector, option) => select(selector, option).script("_.dispatchEvent(new Event('change', {bubbles: true}))")
     # Wallet screen
     * def wallet_seed_wallet_text = "[data-testid='seed_wallet_text']"
     * def wallet_new_wallet_button = "[data-testid='exploring_selector']"
@@ -33,6 +33,8 @@ Feature: web page object
     * def event_rollcall_pop_token = "div[data-testid='roll_call_pop_token']"
     * def event_rollcall_first_attendee = "div[data-testid='attendee_0']"
     * def event_first_current_event = "[data-testid='current_event_selector_0']"
+    * def event_open_rollcall_button = "{}Open Roll-Call"
+    * def event_close_rollcall_button = "{}Close Roll-Call"
 
     # Drawer menu
     * def drawer_menu_button = "[data-testid='drawer_menu_button']"
@@ -61,6 +63,14 @@ Feature: web page object
     * def social_chirp_love_button = "[data-testid='heart']"
     * def social_chirp_love_count = "[data-testid='heart-count']"
     * def social_chirp_delete = "[data-testid='delete_chirp']"
+
+    # Digital Cash screen
+    * def digital_cash_coin_issuance_button = "[data-testid='digital-cash-coin-issuance']"
+    * def digital_cash_first_roll_call_button = "[data-testid='digital-cash-roll-call-token-0']"
+    * def digital_cash_amount_input = "input[data-testid='digital-cash-send-amount']"
+    * def digital_cash_beneficiary_input = "input[data-testid='digital-cash-send-beneficiary']"
+    * def digital_cash_beneficiary_select = "select"
+    * def digital_cash_send_button = "{}Send Transaction"
 
   @name=open_app
   Scenario:
@@ -120,8 +130,30 @@ Feature: web page object
     And organizer.closeRollCall(lao, rollCall, [popToken, organizer.publicKey])
     And delay(1000)
 
+  @name=organizer_with_pop_token
+  Scenario:
+    Given call read(PLATFORM_FEATURE) { name: '#(CREATE_LAO)', params: { organization_name: 'Join roll call' } }
+    And def rollCallName = 'My Roll-Call'
+    When waitFor(event_create_button).click()
+    And call read(PLATFORM_FEATURE) { name: '#(CLICK_CREATE_ROLLCALL)' }
+    And waitFor(event_rollcall_name_input).input(rollCallName)
+    And waitFor(event_rollcall_location_input).input('Between 1 and 0s')
+    And waitFor(event_rollcall_confirm_button).click()
+    Then waitForText(event_first_current_event, rollCallName)
+    When waitFor(event_first_current_event).click()
+    And waitFor(event_open_rollcall_button).click()
+    And delay(500)
+    And def popToken = text(event_rollcall_first_attendee)
+    And waitFor(event_close_rollcall_button).click()
+
   @name=switch_to_social_page
   Scenario:
     Given waitFor(drawer_menu_button).click()
     And waitFor(drawer_menu_social).click()
+    And delay(500)
+
+  @name=switch_to_digital_cash_page
+  Scenario:
+    Given waitFor(drawer_menu_button).click()
+    And waitFor(drawer_menu_digital_cash).click()
     And delay(500)
