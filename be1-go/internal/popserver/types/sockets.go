@@ -1,6 +1,7 @@
 package types
 
 import (
+	"popstellar"
 	"popstellar/network/socket"
 	"sync"
 )
@@ -8,6 +9,7 @@ import (
 // NewSockets returns a new initialized Sockets
 func NewSockets() Sockets {
 	return Sockets{
+		rumorFirstSocket:      make(map[int]string),
 		nextSocketToSendRumor: 0,
 		socketIDs:             make([]string, 0),
 		store:                 make(map[string]socket.Socket),
@@ -17,6 +19,7 @@ func NewSockets() Sockets {
 // Sockets provides thread-functionalities around a socket store.
 type Sockets struct {
 	sync.RWMutex
+	rumorFirstSocket      map[int]string
 	nextSocketToSendRumor int
 	socketIDs             []string
 	store                 map[string]socket.Socket
@@ -37,7 +40,7 @@ func (s *Sockets) SendToAll(buf []byte) {
 	}
 }
 
-func (s *Sockets) SendRumor(buf []byte) {
+func (s *Sockets) SendRumor(rumorID int, buf []byte) {
 	s.Lock()
 	defer s.Unlock()
 
@@ -46,6 +49,15 @@ func (s *Sockets) SendRumor(buf []byte) {
 	}
 
 	socketID := s.socketIDs[s.nextSocketToSendRumor]
+
+	firstSocketID, ok := s.rumorFirstSocket[rumorID]
+	if !ok {
+		s.rumorFirstSocket[rumorID] = socketID
+	} else if firstSocketID == socketID {
+		popstellar.Logger.Debug().Msgf("stop sending rumor because completed cycle")
+		return
+	}
+
 	s.nextSocketToSendRumor = (s.nextSocketToSendRumor + 1) % len(s.socketIDs)
 
 	s.store[socketID].Send(buf)

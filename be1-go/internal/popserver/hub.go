@@ -273,5 +273,5 @@ func (h *Hub) sendRumor(rumor method.Rumor) {
 	}
 
 	popstellar.Logger.Debug().Msgf("sending rumor %s-%d query %d", rumor.Params.SenderID, rumor.Params.RumorID, rumor.ID)
-	h.serverSockets.SendRumor(buf)
+	h.serverSockets.SendRumor(rumor.Params.RumorID, buf)
 }
