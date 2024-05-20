@@ -1028,24 +1028,6 @@ func (_m *MockRepository) StoreMessageAndData(channelID string, msg message.Mess
 	return r0
 }
 
-// StoreNewRumor provides a mock function with given fields: senderID, rumorID, processedMessages, unprocessedMessages
-func (_m *MockRepository) StoreNewRumor(senderID string, rumorID int, processedMessages []string, unprocessedMessages map[string][]message.Message) error {
-	ret := _m.Called(senderID, rumorID, processedMessages, unprocessedMessages)
-
-	if len(ret) == 0 {
-		panic("no return value specified for StoreNewRumor")
-	}
-
-	var r0 error
-	if rf, ok := ret.Get(0).(func(string, int, []string, map[string][]message.Message) error); ok {
-		r0 = rf(senderID, rumorID, processedMessages, unprocessedMessages)
-	} else {
-		r0 = ret.Error(0)
-	}
-
-	return r0
-}
-
 // StoreRollCallClose provides a mock function with given fields: channels, laoID, msg
 func (_m *MockRepository) StoreRollCallClose(channels []string, laoID string, msg message.Message) error {
 	ret := _m.Called(channels, laoID, msg)
@@ -1057,6 +1039,24 @@ func (_m *MockRepository) StoreRollCallClose(channels []string, laoID string, ms
 	var r0 error
 	if rf, ok := ret.Get(0).(func([]string, string, message.Message) error); ok {
 		r0 = rf(channels, laoID, msg)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// StoreRumor provides a mock function with given fields: rumorID, sender, unprocessed, processed
+func (_m *MockRepository) StoreRumor(rumorID string, sender string, unprocessed map[string][]message.Message, processed []string) error {
+	ret := _m.Called(rumorID, sender, unprocessed, processed)
+
+	if len(ret) == 0 {
+		panic("no return value specified for StoreRumor")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(string, string, map[string][]message.Message, []string) error); ok {
+		r0 = rf(rumorID, sender, unprocessed, processed)
 	} else {
 		r0 = ret.Error(0)
 	}
