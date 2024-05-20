@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"popstellar"
 	"popstellar/internal/popserver/database"
 	"popstellar/internal/popserver/utils"
 	"popstellar/message/answer"
@@ -19,6 +20,9 @@ func handleRumor(socket socket.Socket, msg []byte) (*int, *answer.Error) {
 		errAnswer := answer.NewJsonUnmarshalError(err.Error())
 		return nil, errAnswer.Wrap("handleRumor")
 	}
+
+	popstellar.Logger.Debug().Msgf("received rumor %s-%d from query %d",
+		rumor.Params.SenderID, rumor.Params.RumorID, rumor.ID)
 
 	db, errAnswer := database.GetQueryRepositoryInstance()
 	if errAnswer != nil {
@@ -94,7 +98,7 @@ func tryHandlingMessages(channel string, unprocessedMsgs []message.Message) ([]m
 			}
 
 			errAnswer = errAnswer.Wrap(msg.MessageID).Wrap("tryHandlingMessages")
-			utils.LogError(errAnswer)
+			popstellar.Logger.Error().Err(errAnswer)
 		}
 
 		if len(unprocessedMsgs) == 0 {
