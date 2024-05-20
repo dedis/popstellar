@@ -25,18 +25,43 @@ const (
 )
 
 type Hub struct {
+	wg            *sync.WaitGroup
 	messageChan   chan socket.IncomingMessage
 	stop          chan struct{}
 	closedSockets chan string
 	serverSockets types.Sockets
-	wg            sync.WaitGroup
 }
 
 func NewHub() *Hub {
+	wg, errAnswer := state.GetWaitGroup()
+	if errAnswer != nil {
+		popstellar.Logger.Err(errAnswer)
+		return nil
+	}
+
+	messageChan, errAnswer := state.GetMessageChan()
+	if errAnswer != nil {
+		popstellar.Logger.Err(errAnswer)
+		return nil
+	}
+
+	stop, errAnswer := state.GetStopChan()
+	if errAnswer != nil {
+		popstellar.Logger.Err(errAnswer)
+		return nil
+	}
+
+	closedSockets, errAnswer := state.GetClosedSockets()
+	if errAnswer != nil {
+		popstellar.Logger.Err(errAnswer)
+		return nil
+	}
+
 	return &Hub{
-		messageChan:   make(chan socket.IncomingMessage),
-		stop:          make(chan struct{}),
-		closedSockets: make(chan string),
+		wg:            wg,
+		messageChan:   messageChan,
+		stop:          stop,
+		closedSockets: closedSockets,
 		serverSockets: types.NewSockets(),
 	}
 }
