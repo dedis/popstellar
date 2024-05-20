@@ -20,7 +20,7 @@ import (
 
 const (
 	heartbeatDelay           = time.Second * 30
-	rumorDelay               = time.Second * 30
+	rumorDelay               = time.Second * 2
 	thresholdMessagesByRumor = 30
 )
 
@@ -67,6 +67,8 @@ func (h *Hub) Start() {
 		defer ticker.Stop()
 		defer h.wg.Done()
 		defer popstellar.Logger.Info().Msg("stopping rumor sender")
+
+		popstellar.Logger.Debug().Msg("starting rumor sender")
 
 		cSendRumor, errAnswer := state.GetChanSendRumor()
 		if errAnswer != nil {
