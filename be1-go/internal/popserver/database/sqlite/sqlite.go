@@ -16,7 +16,6 @@ import (
 	"popstellar/message/query"
 	"popstellar/message/query/method"
 	"popstellar/message/query/method/message"
-	"strconv"
 	"strings"
 	"time"
 )
@@ -1377,12 +1376,9 @@ func (s *SQLite) GetAndIncrementMyRumor() (bool, method.Rumor, error) {
 	defer tx.Rollback()
 
 	rows, err := s.database.Query(selectMyRumorMessages, serverKeysPath)
-	if err != nil && !errors.Is(err, sql.ErrNoRows) {
+	if err != nil {
 		popstellar.Logger.Error().Msg("1")
 		return false, method.Rumor{}, err
-	} else if errors.Is(err, sql.ErrNoRows) {
-		popstellar.Logger.Error().Msg("2")
-		return false, method.Rumor{}, nil
 	}
 
 	messages := make(map[string][]message.Message)
@@ -1401,25 +1397,23 @@ func (s *SQLite) GetAndIncrementMyRumor() (bool, method.Rumor, error) {
 		messages[channelPath] = append(messages[channelPath], msg)
 	}
 
-	var rumorID string
-	var sender string
+	if len(messages) == 0 {
+		return false, method.Rumor{}, nil
+	}
+
+	var rumorID int
+	var sender []byte
 	err = tx.QueryRow(selectMyRumorInfos, serverKeysPath).Scan(&rumorID, &sender)
 	if err != nil {
 		popstellar.Logger.Error().Msg("5")
 		return false, method.Rumor{}, err
 	}
 
-	popstellar.Logger.Info().Msg(sender)
-
-	rumorIDInt, err := strconv.Atoi(rumorID)
-	if err != nil {
-		popstellar.Logger.Error().Msg("6")
-		return false, method.Rumor{}, err
-	}
+	popstellar.Logger.Info().Msg(string(sender))
 
 	params := method.ParamsRumor{
-		RumorID:  rumorIDInt,
-		SenderID: sender,
+		RumorID:  rumorID,
+		SenderID: base64.URLEncoding.EncodeToString(sender),
 		Messages: messages,
 	}
 
@@ -1433,7 +1427,7 @@ func (s *SQLite) GetAndIncrementMyRumor() (bool, method.Rumor, error) {
 		Params: params,
 	}
 
-	_, err = tx.Exec(insertRumor, strconv.Itoa(rumorIDInt+1), sender)
+	_, err = tx.Exec(insertRumor, rumorID+1, sender)
 	if err != nil {
 		return false, method.Rumor{}, err
 	}
