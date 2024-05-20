@@ -1275,7 +1275,7 @@ func (s *SQLite) HasRumor(senderID string, rumorID int) (bool, error) {
 	return true, nil
 }
 
-func (s *SQLite) StoreRumor(rumorID, sender string, unprocessed map[string][]message.Message, processed []string) error {
+func (s *SQLite) StoreRumor(rumorID int, sender string, unprocessed map[string][]message.Message, processed []string) error {
 	dbLock.Lock()
 	defer dbLock.Unlock()
 

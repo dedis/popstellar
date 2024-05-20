@@ -1057,7 +1057,7 @@ func (_m *MockRepository) StoreRollCallClose(channels []string, laoID string, ms
 }
 
 // StoreRumor provides a mock function with given fields: rumorID, sender, unprocessed, processed
-func (_m *MockRepository) StoreRumor(rumorID string, sender string, unprocessed map[string][]message.Message, processed []string) error {
+func (_m *MockRepository) StoreRumor(rumorID int, sender string, unprocessed map[string][]message.Message, processed []string) error {
 	ret := _m.Called(rumorID, sender, unprocessed, processed)
 
 	if len(ret) == 0 {
@@ -1065,7 +1065,7 @@ func (_m *MockRepository) StoreRumor(rumorID string, sender string, unprocessed 
 	}
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(string, string, map[string][]message.Message, []string) error); ok {
+	if rf, ok := ret.Get(0).(func(int, string, map[string][]message.Message, []string) error); ok {
 		r0 = rf(rumorID, sender, unprocessed, processed)
 	} else {
 		r0 = ret.Error(0)

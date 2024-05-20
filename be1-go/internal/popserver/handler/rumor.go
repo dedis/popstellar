@@ -9,7 +9,6 @@ import (
 	"popstellar/message/query/method/message"
 	"popstellar/network/socket"
 	"sort"
-	"strconv"
 )
 
 func handleRumor(socket socket.Socket, msg []byte) (*int, *answer.Error) {
@@ -41,7 +40,7 @@ func handleRumor(socket socket.Socket, msg []byte) (*int, *answer.Error) {
 
 	processedMsgs := tryHandlingMessagesByChannel(rumor.Params.Messages)
 
-	err = db.StoreRumor(rumor.Params.SenderID, strconv.Itoa(rumor.Params.RumorID), rumor.Params.Messages, processedMsgs)
+	err = db.StoreRumor(rumor.Params.RumorID, rumor.Params.SenderID, rumor.Params.Messages, processedMsgs)
 	if err != nil {
 		utils.LogError(err)
 		return &rumor.ID, nil
