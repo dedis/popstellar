@@ -9,13 +9,13 @@ import ch.epfl.pop.decentralized.{ConnectionMediator, GossipManager}
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.{GreetServer, Rumor}
 import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse, MethodType}
-import ch.epfl.pop.model.objects.{Base64Data, Channel, PublicKey}
+import ch.epfl.pop.model.objects.{Base64Data, Channel, PublicKey, RumorData}
 import ch.epfl.pop.pubsub.AskPatternConstants
 import ch.epfl.pop.pubsub.ClientActor.ClientAnswer
 import ch.epfl.pop.pubsub.graph.validators.RpcValidator
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
 import ch.epfl.pop.storage.DbActor
-import ch.epfl.pop.storage.DbActor.DbActorReadRumor
+import ch.epfl.pop.storage.DbActor.{DbActorAck, DbActorReadRumor, DbActorReadRumorData}
 
 import scala.concurrent.Await
 import scala.util.{Failure, Random, Success}
@@ -28,19 +28,31 @@ final case class GossipManager(
 ) extends Actor with AskPatternConstants with ActorLogging {
 
   private type ServerInfos = (ActorRef, GreetServer)
-  private val publicKey: Option[PublicKey] = {
+  private var activeGossipProtocol: Map[JsonRpcRequest, List[ServerInfos]] = Map.empty
+  private var jsonId = 0
+  private var rumorId = 0
+  private var publicKey: Option[PublicKey] = None
+
+  publicKey = {
     val readPk = dbActorRef ? DbActor.ReadServerPublicKey()
     Await.result(readPk, duration) match
       case DbActor.DbActorReadServerPublicKeyAck(pk) => Some(pk)
-      case _                                         => None
+      case _ =>
+        log.info(s"Actor (gossip) $self will not be able to create rumors because it has no publicKey")
+        None
   }
-  private var rumorId = 0
-  private var jsonId = 0
+
+  rumorId =
+    publicKey match
+      case Some(pk: PublicKey) =>
+        val readRumorData = dbActorRef ? DbActor.ReadRumorData(pk)
+        Await.result(readRumorData, duration) match
+          case DbActorReadRumorData(foundRumorIds: RumorData) => foundRumorIds.lastRumorId() + 1
+          case failure                                        => 0
+      case None => 0
 
   monitorRef ! GossipManager.Ping()
   connectionMediator ? GossipManager.Ping()
-
-  private var activeGossipProtocol: Map[JsonRpcRequest, List[ServerInfos]] = Map.empty
 
   private def getPeersForRumor(jsonRpcRequest: JsonRpcRequest): List[ServerInfos] = {
     val activeGossip = activeGossipProtocol.get(jsonRpcRequest)
@@ -113,10 +125,16 @@ final case class GossipManager(
   }
 
   private def startGossip(messages: Map[Channel, List[Message]]): Unit = {
-    val rumor: Rumor = Rumor(publicKey.get, rumorId, messages)
-    val jsonRpcRequest = prepareRumor(rumor)
-    rumorId += 1
-    updateGossip(jsonRpcRequest)
+    if (publicKey.isDefined)
+      val rumor: Rumor = Rumor(publicKey.get, rumorId, messages)
+      val jsonRpcRequest = prepareRumor(rumor)
+      rumorId += 1
+      val writeRumor = dbActorRef ? DbActor.WriteRumor(rumor)
+      Await.result(writeRumor, duration) match
+        case DbActorAck() => updateGossip(jsonRpcRequest)
+        case _            => log.info(s"Actor (gossip) $self was not able to write rumor in memory. Gossip has not started.")
+    else
+      log.info(s"Actor (gossip) $self will not be able to start rumors because it has no publicKey")
   }
 
   override def receive: Receive = {

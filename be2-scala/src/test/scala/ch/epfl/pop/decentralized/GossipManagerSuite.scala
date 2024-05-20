@@ -15,10 +15,11 @@ import ch.epfl.pop.IOHelper.readJsonFromPath
 import ch.epfl.pop.model.network.MethodType.rumor
 import ch.epfl.pop.model.network.{ErrorObject, JsonRpcRequest, JsonRpcResponse, MethodType, ResultObject}
 import ch.epfl.pop.model.network.method.{GreetServer, Rumor}
-import ch.epfl.pop.model.objects.{Base64Data, PublicKey}
+import ch.epfl.pop.model.objects.{Base64Data, PublicKey, RumorData}
 import ch.epfl.pop.pubsub.ClientActor.ClientAnswer
 import ch.epfl.pop.pubsub.graph.GraphMessage
 import ch.epfl.pop.pubsub.graph.validators.RpcValidator
+import ch.epfl.pop.storage.DbActor.DbActorReadRumorData
 import org.scalatest.BeforeAndAfterEach
 
 import scala.concurrent.Await
@@ -263,6 +264,34 @@ class GossipManagerSuite extends TestKit(ActorSystem("GossipManagerSuiteActorSys
 
     peerServer.expectNoMessage(duration)
 
+  }
+
+  test("Gossip should write in memory new rumors sent") {
+    val gossipManager: ActorRef = system.actorOf(GossipManager.props(dbActorRef, monitorRef, connectionMediatorRef))
+    val peerServer = TestProbe()
+    val gossip = GossipManager.startGossip(gossipManager, peerServer.ref)
+
+    // registers a new server
+    connectionMediatorRef ? ConnectionMediator.NewServerConnected(peerServer.ref, GreetServer(PublicKey(Base64Data.encode("publicKey")), "", ""))
+
+    // emulates receiving a castVote and processes it
+    val outputCreateRumor = Source.single(Right(castVoteRequest)).via(gossip).runWith(Sink.head)
+    Await.result(outputCreateRumor, duration)
+
+    val readGossipPk = dbActorRef ? DbActor.ReadServerPublicKey()
+    val gossipPk =
+      Await.result(readGossipPk, duration) match
+        case DbActor.DbActorReadServerPublicKeyAck(pk) => pk
+        case _                                         => 0 shouldBe 1
+
+    peerServer.receiveOne(duration)
+
+    val readRumorId = dbActorRef ? DbActor.ReadRumorData(gossipPk.asInstanceOf[PublicKey])
+    val rumorId =
+      Await.result(readRumorId, duration) match
+        case DbActorReadRumorData(foundRumorIds: RumorData) =>
+          foundRumorIds.lastRumorId() shouldBe 0
+        case _ => 0 shouldBe 1
   }
 
 }
