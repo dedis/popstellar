@@ -1069,7 +1069,7 @@ RPC
 🧭 **RPC Message** > **Query** > **Paged Catchup**
 
 By executing a paged catchup action, a client can ask the server to receive a specified number of
-past messages sorted by timestamps from oldest to newest on a specific channel. When a message ID 
+past messages sorted by timestamps from oldest to newest on a specific channel, using the message ID as a tiebreaker (descending order as for the timestamps). When a message ID 
 is provided, the server returns the requested number of messages on the specified channel that precede
 this message. Otherwise, the server returns the latest messages it has on that channel taking into 
 account the requested number of messages. If the specified number of messages is greater than what 
