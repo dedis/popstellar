@@ -348,8 +348,8 @@ const (
 	selectCountMyRumor = `SELECT count(*) FROM messageRumor WHERE rumorID = (SELECT max(ID) FROM rumor WHERE sender = (SELECT publicKey FROM key WHERE channelPath = ?))`
 
 	selectMyRumorMessages = `
-	select message, channelPath, rumorID, sender
-	FROM message JOIN channelMessage ON message.messageID = channelMessage.messageID JOIN messageRumor ON message.messageID = messageRumor.messageID
+	select message, channelPath
+	FROM message JOIN channelMessage ON message.messageID = channelMessage.messageID
 		WHERE message.messageID IN 
 		      (SELECT messageID 
 		       FROM messageRumor 
