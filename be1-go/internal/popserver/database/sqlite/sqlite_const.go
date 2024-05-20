@@ -135,17 +135,20 @@ const (
 )
 
 const (
-	insertChannelMessage          = `INSERT INTO channelMessage (channelPath, messageID, isBaseChannel) VALUES (?, ?, ?)`
-	insertMessage                 = `INSERT INTO message (messageID, message, messageData, storedTime) VALUES (?, ?, ?, ?)`
-	insertChannel                 = `INSERT INTO channel (channelPath, typeID, laoPath) VALUES (?, ?, ?)`
-	insertOrIgnoreChannel         = `INSERT OR IGNORE INTO channel (channelPath, typeID, laoPath) VALUES (?, ?, ?)`
-	insertKeys                    = `INSERT INTO key (channelPath, publicKey, secretKey) VALUES (?, ?, ?)`
-	insertPublicKey               = `INSERT INTO key (channelPath, publicKey) VALUES (?, ?)`
-	insertPendingSignatures       = `INSERT INTO pendingSignatures (messageID, witness, signature) VALUES (?, ?, ?)`
-	insertRumor                   = `INSERT INTO rumor (ID, sender) VALUES (?, ?)`
-	insertUnprocessedMessage      = `INSERT INTO unprocessedMessage (messageID, channelPath, message) VALUES (?, ?, ?)`
-	insertUnprocessedMessageRumor = `INSERT INTO unprocessedMessageRumor (messageID, rumorID, sender) VALUES (?, ?, ?)`
-	insertMessageRumor            = `INSERT INTO messageRumor (messageID, rumorID, sender) VALUES (?, ?, ?)`
+	insertChannelMessage           = `INSERT INTO channelMessage (channelPath, messageID, isBaseChannel) VALUES (?, ?, ?)`
+	insertMessage                  = `INSERT INTO message (messageID, message, messageData, storedTime) VALUES (?, ?, ?, ?)`
+	insertChannel                  = `INSERT INTO channel (channelPath, typeID, laoPath) VALUES (?, ?, ?)`
+	insertOrIgnoreChannel          = `INSERT OR IGNORE INTO channel (channelPath, typeID, laoPath) VALUES (?, ?, ?)`
+	insertKeys                     = `INSERT INTO key (channelPath, publicKey, secretKey) VALUES (?, ?, ?)`
+	insertPublicKey                = `INSERT INTO key (channelPath, publicKey) VALUES (?, ?)`
+	insertPendingSignatures        = `INSERT INTO pendingSignatures (messageID, witness, signature) VALUES (?, ?, ?)`
+	insertRumor                    = `INSERT INTO rumor (ID, sender) VALUES (?, ?)`
+	insertUnprocessedMessage       = `INSERT INTO unprocessedMessage (messageID, channelPath, message) VALUES (?, ?, ?)`
+	insertUnprocessedMessageRumor  = `INSERT INTO unprocessedMessageRumor (messageID, rumorID, sender) VALUES (?, ?, ?)`
+	insertMessageRumor             = `INSERT INTO messageRumor (messageID, rumorID, sender) VALUES (?, ?, ?)`
+	tranferUnprocessedMessageRumor = `INSERT INTO messageRumor (messageID, rumorID, sender) SELECT messageID, rumorID, sender FROM unprocessedMessageRumor WHERE messageID = ?`
+	deleteUnprocessedMessage       = `DELETE FROM unprocessedMessage WHERE messageID = ?`
+	deleteUnprocessedMessageRumor  = `DELETE FROM unprocessedMessageRumor WHERE messageID = ?`
 )
 
 const (
