@@ -281,7 +281,10 @@ func NotifyRumorSenderForNewMessage(msgID string) *answer.Error {
 		return errAnswer
 	}
 
-	cSendRumor <- msgID
+	select {
+	case cSendRumor <- msgID:
+	case <-instance.hubParams.GetStopChan():
+	}
 
 	return nil
 }
@@ -300,7 +303,10 @@ func NotifyRumorSenderForAgain(queryID int) *answer.Error {
 		return errAnswer
 	}
 
-	cSendAgainRumor <- queryID
+	select {
+	case cSendAgainRumor <- queryID:
+	case <-instance.hubParams.GetStopChan():
+	}
 
 	return nil
 }
