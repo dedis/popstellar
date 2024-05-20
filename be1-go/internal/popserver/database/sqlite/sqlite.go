@@ -10,8 +10,12 @@ import (
 	_ "modernc.org/sqlite"
 	"popstellar/crypto"
 	"popstellar/internal/popserver/types"
+	jsonrpc "popstellar/message"
 	"popstellar/message/messagedata"
+	"popstellar/message/query"
+	"popstellar/message/query/method"
 	"popstellar/message/query/method/message"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -1386,4 +1390,76 @@ func (s *SQLite) AddMessageToMyRumor(messageID string) (int, error) {
 		return -1, err
 	}
 	return count, nil
+}
+
+func (s *SQLite) GetAndIncrementMyRumor() (bool, method.Rumor, error) {
+	dbLock.Lock()
+	defer dbLock.Unlock()
+
+	tx, err := s.database.Begin()
+	if err != nil {
+		return false, method.Rumor{}, err
+	}
+	defer tx.Rollback()
+
+	rows, err := s.database.Query(selectMyRumorMessages, serverKeysPath)
+	if err != nil && !errors.Is(err, sql.ErrNoRows) {
+		return false, method.Rumor{}, err
+	} else if errors.Is(err, sql.ErrNoRows) {
+		return false, method.Rumor{}, nil
+	}
+
+	messages := make(map[string][]message.Message)
+	for rows.Next() {
+		var msgBytes []byte
+		var channelPath string
+		if err = rows.Scan(&msgBytes, &channelPath); err != nil {
+			return false, method.Rumor{}, err
+		}
+		var msg message.Message
+		if err = json.Unmarshal(msgBytes, &msg); err != nil {
+			return false, method.Rumor{}, err
+		}
+		messages[channelPath] = append(messages[channelPath], msg)
+	}
+
+	var rumorID string
+	var sender string
+	err = tx.QueryRow(selectMyRumorInfos, serverKeysPath).Scan(&rumorID, &sender)
+	if err != nil {
+		return false, method.Rumor{}, err
+	}
+
+	rumorIDInt, err := strconv.Atoi(rumorID)
+	if err != nil {
+		return false, method.Rumor{}, err
+	}
+
+	params := method.ParamsRumor{
+		RumorID:  rumorIDInt,
+		SenderID: sender,
+		Messages: messages,
+	}
+
+	rumor := method.Rumor{
+		Base: query.Base{
+			JSONRPCBase: jsonrpc.JSONRPCBase{
+				JSONRPC: "2.0",
+			},
+			Method: "rumor",
+		},
+		Params: params,
+	}
+
+	_, err = tx.Exec(insertRumor, strconv.Itoa(rumorIDInt+1), sender)
+	if err != nil {
+		return false, method.Rumor{}, err
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		return false, method.Rumor{}, err
+	}
+
+	return true, rumor, nil
 }
