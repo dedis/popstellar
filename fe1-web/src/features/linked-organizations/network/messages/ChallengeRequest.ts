@@ -23,8 +23,6 @@ export class ChallengeRequest implements MessageData {
    * @param obj
    */
   public static fromJson(obj: any): ChallengeRequest {
-    console.log("obj:");
-    console.log(obj);
     const { errors } = validateDataObject(ObjectType.FEDERATION, ActionType.CHALLENGE_REQUEST, obj);
     //TODO: figure out why validate throws error?
     if (errors !== null) {

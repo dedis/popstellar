@@ -77,6 +77,7 @@ const LinkedOrganizationsScreen = () => {
   const lao = LinkedOrganizationsHooks.useCurrentLao();
   const challengeSelector = useMemo(() => makeChallengeSelector(laoId), [laoId]);
   const challengeState = useSelector(challengeSelector);
+  const [isRequested, setIsRequested] = useState<boolean>(false);
 
   const [organizations, setOrganizations] = useState<Organization[]>(initialOrganizations);
   const [showModal, setShowModal] = useState<boolean>(false);
@@ -130,6 +131,7 @@ const LinkedOrganizationsScreen = () => {
     requestChallenge(laoId)
       .then(() => {
         console.log('Success: Requesting challenge');
+        setIsRequested(true);
       })
       .catch((err) => {
         console.error('Could not request Challenge, error:', err);
@@ -137,7 +139,7 @@ const LinkedOrganizationsScreen = () => {
   }, [laoId]);
 
   useEffect(() => {
-    if (challengeState) {
+    if (challengeState && isRequested) {
       console.log("challengeState:", challengeState);
       const challenge = Challenge.fromState(challengeState);
       const jsonObj = {

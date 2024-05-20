@@ -67,7 +67,6 @@ export const handleChallengeRequestMessage =
       console.warn('handleRequestChallengeMessage was called to process an unsupported message');
       return false;
     }
-    console.log("here");
 
     const makeErr = (err: string) => `challenge/request was not processed: ${err}`;
 
