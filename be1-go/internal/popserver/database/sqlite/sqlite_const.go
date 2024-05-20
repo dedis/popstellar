@@ -149,17 +149,13 @@ const (
 	tranferUnprocessedMessageRumor = `INSERT INTO messageRumor (messageID, rumorID, sender) SELECT messageID, rumorID, sender FROM unprocessedMessageRumor WHERE messageID = ?`
 	insertMessageToMyRumor         = `
     INSERT INTO messageRumor (messageID, rumorID, sender) 
-    SELECT ?, rumorID, sender 
-    FROM unprocessedMessageRumor 
-    WHERE rumorID = (
-            SELECT max(ID) 
-            FROM rumor 
-            WHERE sender = (
+    SELECT ?, max(ID), sender 
+    FROM rumor 
+    WHERE sender = (
                     SELECT publicKey 
                  	FROM key 
                     WHERE channelPath = ?
             )
-        ) 
     LIMIT 1`
 
 	insertFirstRumor = `INSERT OR IGNORE INTO rumor (ID, sender) SELECT ?, publicKey FROM key WHERE channelPath = ?`

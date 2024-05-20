@@ -20,8 +20,8 @@ import (
 
 const (
 	heartbeatDelay           = time.Second * 30
-	rumorDelay               = time.Second * 2
-	thresholdMessagesByRumor = 30
+	rumorDelay               = time.Second * 30
+	thresholdMessagesByRumor = 3
 )
 
 type Hub struct {
