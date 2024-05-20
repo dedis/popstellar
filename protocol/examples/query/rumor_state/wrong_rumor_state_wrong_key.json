@@ -1,13 +1,13 @@
 {
-  "jsonrpc": "2.0",
-  "id": 4,
-  "method": "rumor_state",
-  "params" : {
-    "rumor_state" : {
-      "notInBase64": 3,
-      "RZOPi59Iy5gkpS2mkpfQJNl44HKc2jVbF0iTGm0RvfU=": 5,
-      "CfG2ByLhtLJH--T2BL9hZ6eGm11tpkE-5KuvysSCY0I=" : 1,
-      "r8cG9HyJ1FGBke_5IblCdH19mvy39MvLFSArVmY3FpY=" : 10
+    "jsonrpc": "2.0",
+    "id": 4,
+    "method": "rumor_state",
+    "params": {
+        "rumor_state": {
+            "notInBase64": 3,
+            "RZOPi59Iy5gkpS2mkpfQJNl44HKc2jVbF0iTGm0RvfU=": 5,
+            "CfG2ByLhtLJH--T2BL9hZ6eGm11tpkE-5KuvysSCY0I=": 1,
+            "r8cG9HyJ1FGBke_5IblCdH19mvy39MvLFSArVmY3FpY=": 10
+        }
     }
-  }
 }
