@@ -1347,3 +1347,38 @@ func (s *SQLite) GetFederationExpect(senderPk string, remotePk string, challenge
 
 	return messagedata.FederationExpect{}, sql.ErrNoRows
 }
+
+func (s *SQLite) GetFederationInit(senderPk string, remotePk string, challenge messagedata.FederationChallenge) (messagedata.FederationInit, error) {
+	dbLock.RLock()
+	defer dbLock.RUnlock()
+
+	rows, err := s.database.Query(selectFederationExpects, senderPk,
+		messagedata.FederationObject, messagedata.FederationActionInit,
+		remotePk)
+	if err != nil {
+		return messagedata.FederationInit{}, err
+	}
+
+	// iterate over all FederationInit sent from the given sender pk,
+	// and search the one matching the given FederationChallenge
+	for rows.Next() {
+		var federationInit messagedata.FederationInit
+
+		err = rows.Scan(&federationInit)
+		if err != nil {
+			continue
+		}
+
+		var federationChallenge messagedata.FederationChallenge
+		errAnswer := federationInit.ChallengeMsg.UnmarshalMsgData(federationChallenge)
+		if errAnswer != nil {
+			return messagedata.FederationInit{}, errAnswer
+		}
+
+		if federationChallenge == challenge {
+			return federationInit, nil
+		}
+	}
+
+	return messagedata.FederationInit{}, sql.ErrNoRows
+}

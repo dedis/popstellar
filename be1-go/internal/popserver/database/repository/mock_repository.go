@@ -336,6 +336,35 @@ func (_m *MockRepository) GetFederationExpect(senderPk string, remotePk string, 
 	return r0, r1
 }
 
+// GetFederationInit provides a mock function with given fields: senderPk, remotePk, Challenge
+func (_m *MockRepository) GetFederationInit(senderPk string, remotePk string, Challenge messagedata.FederationChallenge) (messagedata.FederationInit,
+	error) {
+	ret := _m.Called(senderPk, remotePk, Challenge)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetFederationInit")
+	}
+
+	var r0 messagedata.FederationInit
+	var r1 error
+	if rf, ok := ret.Get(0).(func(string, string, messagedata.FederationChallenge) (messagedata.FederationInit, error)); ok {
+		return rf(senderPk, remotePk, Challenge)
+	}
+	if rf, ok := ret.Get(0).(func(string, string, messagedata.FederationChallenge) messagedata.FederationInit); ok {
+		r0 = rf(senderPk, remotePk, Challenge)
+	} else {
+		r0 = ret.Get(0).(messagedata.FederationInit)
+	}
+
+	if rf, ok := ret.Get(1).(func(string, string, messagedata.FederationChallenge) error); ok {
+		r1 = rf(senderPk, remotePk, Challenge)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // GetLAOOrganizerPubKey provides a mock function with given fields: electionID
 func (_m *MockRepository) GetLAOOrganizerPubKey(electionID string) (kyber.Point, error) {
 	ret := _m.Called(electionID)

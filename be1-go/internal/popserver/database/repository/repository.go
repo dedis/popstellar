@@ -200,6 +200,10 @@ type FederationRepository interface {
 	// the given public keys
 	GetFederationExpect(senderPk string, remotePk string, Challenge messagedata.FederationChallenge) (messagedata.FederationExpect, error)
 
+	// GetFederationInit return a FederationExpect where the organizer is
+	// the given public keys
+	GetFederationInit(senderPk string, remotePk string, Challenge messagedata.FederationChallenge) (messagedata.FederationInit, error)
+
 	// GetServerKeys get the keys of the server
 	GetServerKeys() (kyber.Point, kyber.Scalar, error)
 
