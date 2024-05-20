@@ -18,7 +18,7 @@ import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
 
 import { LinkedOrganizationsHooks } from '../hooks';
-import { Challenge } from '../objects/Challenge';
+import { Challenge, ChallengeState } from '../objects/Challenge';
 import { Organization } from '../objects/Organization';
 import { Lao } from 'features/lao/objects';
 import { requestChallenge } from '../network';
@@ -77,7 +77,6 @@ const LinkedOrganizationsScreen = () => {
   const lao = LinkedOrganizationsHooks.useCurrentLao();
   const challengeSelector = useMemo(() => makeChallengeSelector(laoId), [laoId]);
   const challengeState = useSelector(challengeSelector);
-  const [isRequested, setIsRequested] = useState<boolean>(false);
 
   const [organizations, setOrganizations] = useState<Organization[]>(initialOrganizations);
   const [showModal, setShowModal] = useState<boolean>(false);
@@ -109,7 +108,8 @@ const LinkedOrganizationsScreen = () => {
       setOrganizations([...organizations, org1]);
       setShowScanner(false);
       setShowQRScannerModal(!showQRScannerModal);
-      if (!isClientA) {
+      if (isClientA) {
+        getQRCodeData()
         setShowQRCodeModal(!showQRCodeModal);
       }
       toast.show(`QR Code successfully scanned`, {
@@ -131,7 +131,6 @@ const LinkedOrganizationsScreen = () => {
     requestChallenge(laoId)
       .then(() => {
         console.log('Success: Requesting challenge');
-        setIsRequested(true);
       })
       .catch((err) => {
         console.error('Could not request Challenge, error:', err);
@@ -139,8 +138,7 @@ const LinkedOrganizationsScreen = () => {
   }, [laoId]);
 
   useEffect(() => {
-    if (challengeState && isRequested) {
-      console.log("challengeState:", challengeState);
+    if (challengeState) {
       const challenge = Challenge.fromState(challengeState);
       const jsonObj = {
         lao_id: laoId,
@@ -166,8 +164,7 @@ const LinkedOrganizationsScreen = () => {
         public_key: lao.organizer,
       };
       setQRCodeData(JSON.stringify(jsonObj));
-      console.log("qrCodeData:")
-      console.log(jsonObj);
+      console.log("qrCodeData:", jsonObj);
     }
   }
 
@@ -216,6 +213,7 @@ const LinkedOrganizationsScreen = () => {
                 containerStyle={ModalStyles.modalBackground}
                 onPress={() => {
                   setShowModal(!showModal);
+                  setIsClientA(false);
                 }}
               />
               <View style={ModalStyles.modalContainer}>
@@ -231,7 +229,7 @@ const LinkedOrganizationsScreen = () => {
                     onPress={() => {
                       setShowQRCodeModal(!showQRCodeModal);
                       setShowModal(!showModal);
-                      setIsClientA(!isClientA);
+                      setIsClientA(false);
                       getQRCodeData();
                     }}
                     buttonStyle="primary"
@@ -248,7 +246,7 @@ const LinkedOrganizationsScreen = () => {
                     setShowQRScannerModal(!showQRScannerModal);
                     setShowModal(!showModal);
                     setShowScanner(!showScanner);
-                    setIsClientA(!isClientA);
+                    setIsClientA(true);
                   }}
                   disabled={false}>
                   <Text style={styles.infoText}>
@@ -272,6 +270,7 @@ const LinkedOrganizationsScreen = () => {
                 onPress={() => {
                   setShowQRScannerModal(!showQRScannerModal);
                   setShowScanner(false);
+                  setIsClientA(false);
                 }}
               />
               <View style={{ ...ModalStyles.modalContainer, ...styles.flex1 }}>
@@ -317,6 +316,7 @@ const LinkedOrganizationsScreen = () => {
                 containerStyle={ModalStyles.modalBackground}
                 onPress={() => {
                   setShowQRCodeModal(!showQRCodeModal);
+                  setIsClientA(false);
                 }}
               />
               <View style={ModalStyles.modalContainer}>
@@ -336,14 +336,15 @@ const LinkedOrganizationsScreen = () => {
                     buttonStyle="primary"
                     onPress={() => {
                       setShowQRCodeModal(!showQRCodeModal);
-                      if (isClientA) {
+                      if (!isClientA) {
                         setShowQRScannerModal(!showQRScannerModal);
                         setShowScanner(!showScanner);
                       }
+                      setIsClientA(false);
                     }}
                     disabled={false}>
                     <Text style={{ color: contrast, ...styles.textAlignCenter }}>
-                      {isClientA
+                      {!isClientA
                         ? STRINGS.linked_organizations_addlinkedorg_next
                         : STRINGS.linked_organizations_addlinkedorg_finished}
                     </Text>

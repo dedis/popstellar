@@ -5,7 +5,6 @@ import { LinkedOrganizationsCompositionConfiguration } from '../interface';
 import { handleChallengeMessage, handleChallengeRequestMessage } from './LinkedOrgHandler';
 import { ChallengeMessage } from './messages/ChallengeMessage';
 import { ChallengeRequest } from './messages';
-
 export * from './LinkedOrgMessageApi';
 
 /**
@@ -15,11 +14,10 @@ export * from './LinkedOrgMessageApi';
  */
 export function configureNetwork(configuration: LinkedOrganizationsCompositionConfiguration
 ) {
-
   configuration.messageRegistry.add(
     ObjectType.FEDERATION,
     ActionType.CHALLENGE,
-    handleChallengeMessage(configuration.getLaoOrganizerBackendPublicKey),
+    handleChallengeMessage(),
     ChallengeMessage.fromJson,
   );
   configuration.messageRegistry.add(

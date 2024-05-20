@@ -3,8 +3,7 @@ import { dispatch } from 'core/redux';
 
 import { LinkedOrganizationsCompositionConfiguration } from '../interface';
 import { ChallengeRequest } from './messages/ChallengeRequest';
-import { Challenge, ChallengeState } from '../objects/Challenge';
-import { requestChallenge } from './LinkedOrgMessageApi';
+import { Challenge } from '../objects/Challenge';
 import { addChallenge } from '../reducer';
 import { ChallengeMessage } from './messages/ChallengeMessage';
 
@@ -16,7 +15,7 @@ import { ChallengeMessage } from './messages/ChallengeMessage';
  * Handles an ChallengeRequest message.
  */
 export const handleChallengeMessage =
-  (getLaoOrganizerBackendPublicKey: LinkedOrganizationsCompositionConfiguration['getLaoOrganizerBackendPublicKey']) => (msg: ProcessableMessage) => {
+  () => (msg: ProcessableMessage) => {
     if (msg.messageData.object !== ObjectType.FEDERATION || msg.messageData.action !== ActionType.CHALLENGE) {
       console.warn('handleRequestChallengeMessage was called to process an unsupported message');
       return false;
@@ -44,13 +43,12 @@ export const handleChallengeMessage =
       console.warn(makeErr("the senders' public key does not match the organizer backend's"));
       return false;
     }*/
-
-    const challengeState: ChallengeState = {
-      value: challengeMessage.value.toState(),
-      valid_until: challengeMessage.valid_until,
+    const jsonObj = {
+      value: challengeMessage.value.toString(),
+      valid_until: challengeMessage.valid_until.valueOf(),
     };
-
-    dispatch(addChallenge(msg.laoId, challengeState));
+    const challenge = Challenge.fromJson(jsonObj);
+    dispatch(addChallenge(msg.laoId, challenge.toState()));
     return true;
   };
 

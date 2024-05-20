@@ -92,9 +92,7 @@ export interface ValidationResult {
 }
 
 function validate(schemaId: string, data: any): ValidationResult {
-  console.log("here4");
   const valid = ajv.validate(schemaId, data);
-  console.log("here5");
   return {
     errors: valid ? null : ajv.errorsText(ajv.errors),
   };
@@ -116,8 +114,6 @@ export function validateDataObject(
   data: any,
 ): ValidationResult {
   const schemaId = getSchema(obj, action);
-  console.log(schemaId);
-  console.log("here3");
   return schemaId !== null
     ? validate(schemaId, data)
     : { errors: 'Unsupported data object - schema not found' };

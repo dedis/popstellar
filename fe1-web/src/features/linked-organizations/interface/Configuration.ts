@@ -1,4 +1,4 @@
-import { Reducer } from 'redux';
+import { AnyAction, Reducer } from 'redux';
 import { KeyPairRegistry } from 'core/keypair';
 import { MessageRegistry } from 'core/network/jsonrpc/messages';
 import { Hash, PublicKey } from 'core/objects';
@@ -52,7 +52,6 @@ export interface LinkedOrganizationsCompositionConfiguration {
  * @returns The current lao
  */
   useCurrentLao: () => Lao;
-
 }
 
 /**

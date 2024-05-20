@@ -30,11 +30,9 @@ export class ChallengeMessage implements MessageData {
    */
   public static fromJson(obj: any): ChallengeMessage {
     const { errors } = validateDataObject(ObjectType.FEDERATION, ActionType.CHALLENGE, obj);
-    console.log("here2");
     if (errors !== null) {
       throw new ProtocolError(`Invalid challenge\n\n${errors}`);
     }
-    console.log("here1");
     return new ChallengeMessage({
       value: obj.value,
       valid_until: obj.valid_until,

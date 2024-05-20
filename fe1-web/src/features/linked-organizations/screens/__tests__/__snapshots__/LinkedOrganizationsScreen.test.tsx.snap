@@ -721,234 +721,8 @@ exports[`LinkedOrganizationsScreen input of correct organization details manuall
                                 onRequestClose={[Function]}
                                 testID="modal-show-qr-code"
                                 transparent={true}
-                                visible={true}
-                              >
-                                <RNGestureHandlerButton
-                                  collapsable={false}
-                                  delayLongPress={600}
-                                  enabled={true}
-                                  exclusive={true}
-                                  handlerTag={25}
-                                  handlerType="NativeViewGestureHandler"
-                                  onGestureEvent={[Function]}
-                                  onGestureHandlerEvent={[Function]}
-                                  onGestureHandlerStateChange={[Function]}
-                                  onHandlerStateChange={[Function]}
-                                  rippleColor={0}
-                                  style={
-                                    {
-                                      "backgroundColor": "rgba(0,0,0,0.25)",
-                                      "bottom": 0,
-                                      "flex": 1,
-                                      "left": 0,
-                                      "padding": 32,
-                                      "position": "absolute",
-                                      "right": 0,
-                                      "top": 0,
-                                    }
-                                  }
-                                  touchSoundDisabled={false}
-                                >
-                                  <View
-                                    accessible={true}
-                                    collapsable={false}
-                                    style={{}}
-                                  />
-                                </RNGestureHandlerButton>
-                                <View
-                                  style={
-                                    {
-                                      "backgroundColor": "rgb(242, 242, 242)",
-                                      "borderRadius": 8,
-                                      "margin": 32,
-                                      "padding": 32,
-                                    }
-                                  }
-                                >
-                                  <View
-                                    style={
-                                      {
-                                        "alignItems": "center",
-                                        "flexDirection": "row",
-                                        "justifyContent": "space-between",
-                                        "marginBottom": 16,
-                                        "width": "100%",
-                                      }
-                                    }
-                                  >
-                                    <View />
-                                    <Text
-                                      numberOfLines={1}
-                                      style={
-                                        {
-                                          "color": "#000",
-                                          "fontSize": 20,
-                                          "fontWeight": "500",
-                                          "lineHeight": 26,
-                                          "textAlign": "left",
-                                        }
-                                      }
-                                    >
-                                      Join Organization
-                                    </Text>
-                                    <View
-                                      accessible={true}
-                                      collapsable={false}
-                                      focusable={true}
-                                      onClick={[Function]}
-                                      onResponderGrant={[Function]}
-                                      onResponderMove={[Function]}
-                                      onResponderRelease={[Function]}
-                                      onResponderTerminate={[Function]}
-                                      onResponderTerminationRequest={[Function]}
-                                      onStartShouldSetResponder={[Function]}
-                                      style={
-                                        {
-                                          "opacity": 1,
-                                        }
-                                      }
-                                      testID="modal-header-close"
-                                    >
-                                      <View>
-                                        {"name":"ios-close","size":25,"color":"#000"}
-                                      </View>
-                                    </View>
-                                  </View>
-                                  <Text
-                                    style={
-                                      {
-                                        "color": "#000",
-                                        "fontSize": 20,
-                                        "lineHeight": 26,
-                                        "marginBottom": 16,
-                                        "textAlign": "center",
-                                      }
-                                    }
-                                  >
-                                    Scan the QR Code with the other organizers device.
-                                  </Text>
-                                  <View
-                                    style={
-                                      {
-                                        "flexDirection": "row",
-                                        "justifyContent": "center",
-                                      }
-                                    }
-                                  >
-                                    <View
-                                      style={
-                                        {
-                                          "position": "relative",
-                                        }
-                                      }
-                                    >
-                                      <qrcode
-                                        level="H"
-                                        size={256}
-                                        style={
-                                          {
-                                            "height": "auto",
-                                            "maxWidth": "300px",
-                                            "width": "100%",
-                                          }
-                                        }
-                                        value="{"lao_id":"fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=","public_key":"J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=","server_address":"wss://epfl.ch:9000/server","challenge":{"value":"82520f235f413b26571529f69d53d751335873efca97e15cd7c47d063ead830d","valid_until":1714491502}}"
-                                        viewBox="0 0 256 256"
-                                      />
-                                      <View
-                                        style={
-                                          {
-                                            "alignItems": "center",
-                                            "backgroundColor": "#3742fa",
-                                            "borderRadius": 100,
-                                            "bottom": "27.9%",
-                                            "display": "flex",
-                                            "justifyContent": "center",
-                                            "left": "27.9%",
-                                            "overflow": "hidden",
-                                            "padding": "4",
-                                            "position": "absolute",
-                                            "right": "27.9%",
-                                            "top": "27.9%",
-                                          }
-                                        }
-                                      >
-                                        <Text
-                                          style={
-                                            [
-                                              {
-                                                "color": "#000",
-                                                "fontSize": 20,
-                                                "lineHeight": 26,
-                                                "textAlign": "left",
-                                              },
-                                              {
-                                                "textAlign": "center",
-                                              },
-                                              {
-                                                "color": "#fff",
-                                              },
-                                            ]
-                                          }
-                                        >
-                                          Scan to exchange info
-                                        </Text>
-                                      </View>
-                                    </View>
-                                  </View>
-                                  <View
-                                    style={
-                                      {
-                                        "marginTop": 15,
-                                      }
-                                    }
-                                  >
-                                    <View
-                                      accessible={true}
-                                      collapsable={false}
-                                      focusable={true}
-                                      onClick={[Function]}
-                                      onResponderGrant={[Function]}
-                                      onResponderMove={[Function]}
-                                      onResponderRelease={[Function]}
-                                      onResponderTerminate={[Function]}
-                                      onResponderTerminationRequest={[Function]}
-                                      onStartShouldSetResponder={[Function]}
-                                      style={
-                                        {
-                                          "opacity": 1,
-                                        }
-                                      }
-                                      testID="button-next-finish"
-                                    >
-                                      <View
-                                        style={
-                                          [
-                                            {
-                                              "backgroundColor": "#3742fa",
-                                              "borderColor": "#3742fa",
-                                              "borderRadius": 8,
-                                              "borderWidth": 1,
-                                              "padding": 8,
-                                            },
-                                          ]
-                                        }
-                                      >
-                                        <Text
-                                          style={
-                                            {
-                                              "color": "#fff",
-                                              "textAlign": "center",
-                                            }
-                                          }
-                                        >
-                                          Finish
-                                        </Text>
-                                      </View>
-                                    </View>
-                                  </View>
-                                </View>
-                              </Modal>
+                                visible={false}
+                              />
                               <Modal
                                 hardwareAccelerated={false}
                                 onRequestClose={[Function]}
@@ -1333,7 +1107,7 @@ exports[`LinkedOrganizationsScreen input of wrong organization details manually 
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
-                handlerTag={26}
+                handlerTag={25}
                 handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}
@@ -1400,7 +1174,7 @@ exports[`LinkedOrganizationsScreen input of wrong organization details manually 
                         >
                           <RCTScrollView
                             collapsable={false}
-                            handlerTag={27}
+                            handlerTag={26}
                             handlerType="NativeViewGestureHandler"
                             onGestureHandlerEvent={[Function]}
                             onGestureHandlerStateChange={[Function]}
@@ -1463,7 +1237,7 @@ exports[`LinkedOrganizationsScreen input of wrong organization details manually 
                                   delayLongPress={600}
                                   enabled={true}
                                   exclusive={true}
-                                  handlerTag={29}
+                                  handlerTag={28}
                                   handlerType="NativeViewGestureHandler"
                                   onGestureEvent={[Function]}
                                   onGestureHandlerEvent={[Function]}
@@ -3108,7 +2882,7 @@ exports[`LinkedOrganizationsScreen opens modal on press join org 1`] = `
                                             "width": "100%",
                                           }
                                         }
-                                        value="{"lao_id":"fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=","public_key":"J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=","server_address":"wss://epfl.ch:9000/server","challenge":{"value":"82520f235f413b26571529f69d53d751335873efca97e15cd7c47d063ead830d","valid_until":1714491502}}"
+                                        value=""
                                         viewBox="0 0 256 256"
                                       />
                                       <View

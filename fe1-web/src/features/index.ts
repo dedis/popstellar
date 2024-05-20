@@ -16,6 +16,7 @@ import * as rollCall from './rollCall';
 import * as social from './social';
 import * as wallet from './wallet';
 import * as witness from './witness';
+import { getCurrentLaoId } from './lao/functions/lao';
 
 export function configureFeatures() {
   const messageRegistry = new MessageRegistry();
@@ -175,6 +176,8 @@ export function configureFeatures() {
     useCurrentLaoId: laoConfiguration.hooks.useCurrentLaoId,
     useIsLaoOrganizer: laoConfiguration.hooks.useIsLaoOrganizer,
     useCurrentLao: laoConfiguration.hooks.useCurrentLao,
+    getCurrentLaoId: laoConfiguration.functions.getCurrentLaoId,
+    getLaoOrganizerBackendPublicKey: laoConfiguration.functions.getLaoOrganizerBackendPublicKey,
   });
 
   const laoComposition = lao.compose({
@@ -217,6 +220,7 @@ export function configureFeatures() {
     ...evotingConfiguration.reducers,
     ...walletComposition.reducers,
     ...witnessConfiguration.reducers,
+    ...linkedOrganizationsComposition.reducers,
   });
 
   return {

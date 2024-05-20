@@ -33,5 +33,6 @@ export function compose(
       useIsLaoOrganizer: configuration.useIsLaoOrganizer,
       useCurrentLao: configuration.useCurrentLao,
     },
+
   };
 }
