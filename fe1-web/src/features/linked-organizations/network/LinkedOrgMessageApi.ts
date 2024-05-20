@@ -1,7 +1,7 @@
 import { publish } from 'core/network';
 import { getFederationChannel, Hash, Timestamp } from 'core/objects';
 
-import { RequestChallenge } from './messages';
+import { ChallengeRequest } from './messages';
 
 /**
  * Contains all functions to send social media related messages.
@@ -15,9 +15,8 @@ export function requestChallenge(
   laoId: Hash,
 ): Promise<void> {
   const timestamp = Timestamp.EpochNow();
-  const message = new RequestChallenge({
+  const message = new ChallengeRequest({
     timestamp: timestamp,
   });
-
   return publish(getFederationChannel(laoId), message);
 }

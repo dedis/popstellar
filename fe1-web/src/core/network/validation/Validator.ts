@@ -74,9 +74,14 @@ const schemaIds: Record<ObjectType, Record<string, string>> = {
   [ObjectType.POPCHA]: {
     [ActionType.AUTH]: 'dataAuthenticateUser',
   },
+  [ObjectType.FEDERATION]: {
+    [ActionType.CHALLENGE_REQUEST]: 'dataFederationChallengeRequest',
+    [ActionType.CHALLENGE]: 'dataFederationChallenge',
+  },
 };
 
 function getSchema(obj: ObjectType, action: ActionType): string | null {
+  console.log(`${schemaPrefix}/query/method/message/data/${schemaIds[obj][action]}.json`);
   if (obj in schemaIds && action in schemaIds[obj]) {
     return `${schemaPrefix}/query/method/message/data/${schemaIds[obj][action]}.json`;
   }
@@ -88,7 +93,12 @@ export interface ValidationResult {
 }
 
 function validate(schemaId: string, data: any): ValidationResult {
+  console.log("schemaId");
+  console.log(schemaId);
+  console.log(data);
   const valid = ajv.validate(schemaId, data);
+  console.log("valid");
+  console.log(valid);
   return {
     errors: valid ? null : ajv.errorsText(ajv.errors),
   };
@@ -110,6 +120,8 @@ export function validateDataObject(
   data: any,
 ): ValidationResult {
   const schemaId = getSchema(obj, action);
+  console.log("schemaId");
+  console.log(schemaId);
   return schemaId !== null
     ? validate(schemaId, data)
     : { errors: 'Unsupported data object - schema not found' };

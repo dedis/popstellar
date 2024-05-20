@@ -28,7 +28,7 @@ export namespace LinkedOrganizationsHooks {
     /**
    * Gets the current lao , throws an error if there is none
    */
-    export const useCurrentLao = () => useLinkedOrganizationsContext().useCurrentLao();
+  export const useCurrentLao = () => useLinkedOrganizationsContext().useCurrentLao();
 
   /**
    * Gets whether the current user is organizer of the given lao

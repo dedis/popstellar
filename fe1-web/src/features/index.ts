@@ -174,6 +174,7 @@ export function configureFeatures() {
     keyPairRegistry: keyPairRegistry,
     useCurrentLaoId: laoConfiguration.hooks.useCurrentLaoId,
     useIsLaoOrganizer: laoConfiguration.hooks.useIsLaoOrganizer,
+    useCurrentLao: laoConfiguration.hooks.useCurrentLao,
   });
 
   const laoComposition = lao.compose({

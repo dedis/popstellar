@@ -1,1 +1,1 @@
-export * from './RequestChallenge';
+export * from './ChallengeRequest';

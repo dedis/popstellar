@@ -2,9 +2,9 @@ import { ActionType, MessageRegistry, ObjectType } from 'core/network/jsonrpc/me
 import { Hash, PublicKey } from 'core/objects';
 import { dispatch } from 'core/redux';
 import { LinkedOrganizationsCompositionConfiguration } from '../interface';
-import { handleChallengeMessage, handleRequestChallengeMessage } from './LinkedOrgHandler';
+import { handleChallengeMessage, handleChallengeRequestMessage } from './LinkedOrgHandler';
 import { ChallengeMessage } from './messages/ChallengeMessage';
-import { RequestChallenge } from './messages';
+import { ChallengeRequest } from './messages';
 
 export * from './LinkedOrgMessageApi';
 
@@ -25,7 +25,7 @@ export function configureNetwork(configuration: LinkedOrganizationsCompositionCo
   configuration.messageRegistry.add(
     ObjectType.FEDERATION,
     ActionType.CHALLENGE_REQUEST,
-    handleRequestChallengeMessage(configuration.getCurrentLaoId),
-    RequestChallenge.fromJson,
+    handleChallengeRequestMessage(configuration.getCurrentLaoId),
+    ChallengeRequest.fromJson,
   );
 }

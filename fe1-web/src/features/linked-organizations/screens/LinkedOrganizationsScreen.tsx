@@ -1,5 +1,5 @@
 import { ListItem, FAB } from '@rneui/themed';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Text, View, Modal, StyleSheet, ViewStyle, ScrollView } from 'react-native';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import { useToast } from 'react-native-toast-notifications';
@@ -75,7 +75,8 @@ const LinkedOrganizationsScreen = () => {
   const laoId = LinkedOrganizationsHooks.useCurrentLaoId();
   const isOrganizer = LinkedOrganizationsHooks.useIsLaoOrganizer(laoId);
   const lao = LinkedOrganizationsHooks.useCurrentLao();
-  
+  const challengeSelector = useMemo(() => makeChallengeSelector(laoId), [laoId]);
+  const challengeState = useSelector(challengeSelector);
 
   const [organizations, setOrganizations] = useState<Organization[]>(initialOrganizations);
   const [showModal, setShowModal] = useState<boolean>(false);
@@ -131,38 +132,41 @@ const LinkedOrganizationsScreen = () => {
         console.log('Success: Requesting challenge');
       })
       .catch((err) => {
-        console.error('Could not cast Vote, error:', err);
+        console.error('Could not request Challenge, error:', err);
       });
   }, [laoId]);
 
-  const getQRCodeData = () => {
-    if (isClientA) {
-      onRequestChallenge();
-      const challengeSelector = useMemo(() => makeChallengeSelector(laoId), [laoId]);
-      const challengeState = useSelector(challengeSelector);
-      console.log(challengeState);
-      if(!challengeState) {
-        console.error('Challenge State was invalid');
-        return false;
-      }
+  useEffect(() => {
+    if (challengeState) {
+      console.log("challengeState:", challengeState);
       const challenge = Challenge.fromState(challengeState);
       const jsonObj = {
         lao_id: laoId,
         server_address: lao.server_addresses.at(0),
         public_key: lao.organizer,
         challenge: {
-          value: challenge.value.toString(),
-          valid_until: challenge.valid_until.valueOf(),
+          value: challenge.value,
+          valid_until: challenge.valid_until,
         },
       };
       setQRCodeData(JSON.stringify(jsonObj));
-    } 
-    const jsonObj = {
-      lao_id: laoId,
-      server_address: lao.server_addresses.at(0),
-      public_key: lao.organizer,
-    };
-    setQRCodeData(JSON.stringify(jsonObj));
+      console.log("qrCodeData:", jsonObj);
+    }
+  }, [challengeState, laoId]);
+
+  const getQRCodeData = () => {
+    if (!isClientA) {
+      onRequestChallenge();
+    } else {
+      const jsonObj = {
+        lao_id: laoId,
+        server_address: lao.server_addresses.at(0),
+        public_key: lao.organizer,
+      };
+      setQRCodeData(JSON.stringify(jsonObj));
+      console.log("qrCodeData:")
+      console.log(jsonObj);
+    }
   }
 
   return (
@@ -225,7 +229,7 @@ const LinkedOrganizationsScreen = () => {
                     onPress={() => {
                       setShowQRCodeModal(!showQRCodeModal);
                       setShowModal(!showModal);
-                      setIsClientA(true);
+                      setIsClientA(!isClientA);
                       getQRCodeData();
                     }}
                     buttonStyle="primary"
@@ -242,7 +246,7 @@ const LinkedOrganizationsScreen = () => {
                     setShowQRScannerModal(!showQRScannerModal);
                     setShowModal(!showModal);
                     setShowScanner(!showScanner);
-                    setIsClientA(false);
+                    setIsClientA(!isClientA);
                   }}
                   disabled={false}>
                   <Text style={styles.infoText}>

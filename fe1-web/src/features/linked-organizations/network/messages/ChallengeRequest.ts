@@ -3,7 +3,7 @@ import { validateDataObject } from 'core/network/validation';
 import { ProtocolError, Timestamp } from 'core/objects';
 
 /** Data sent to request a challenge */
-export class RequestChallenge implements MessageData {
+export class ChallengeRequest implements MessageData {
   public readonly object: ObjectType = ObjectType.FEDERATION;
 
   public readonly action: ActionType = ActionType.CHALLENGE_REQUEST;
@@ -11,7 +11,7 @@ export class RequestChallenge implements MessageData {
   // The timestamp
   public readonly timestamp: Timestamp;
 
-  constructor(msg: Partial<RequestChallenge>) {
+  constructor(msg: Partial<ChallengeRequest>) {
     if (!msg.timestamp) {
       throw new ProtocolError("Undefined 'timestamp' parameter encountered during 'RequestChallenge'");
     }
@@ -22,14 +22,16 @@ export class RequestChallenge implements MessageData {
    * Creates an RequestChallenge object from a given object
    * @param obj
    */
-  public static fromJson(obj: any): RequestChallenge {
+  public static fromJson(obj: any): ChallengeRequest {
+    console.log("obj:");
+    console.log(obj);
     const { errors } = validateDataObject(ObjectType.FEDERATION, ActionType.CHALLENGE_REQUEST, obj);
-
+    //TODO: figure out why validate throws error?
     if (errors !== null) {
       throw new ProtocolError(`Invalid challenge request\n\n${errors}`);
     }
 
-    return new RequestChallenge({
+    return new ChallengeRequest({
       timestamp: obj.timestamp,
     });
   }

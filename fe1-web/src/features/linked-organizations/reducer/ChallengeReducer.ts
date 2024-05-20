@@ -58,6 +58,9 @@ export const makeChallengeSelector = (laoId: Hash) => {
     // Selector: returns the challenge for a specific lao
     (challengeState: ChallengeReducerState): ChallengeState | undefined => {
       const serializedLaoId = laoId.valueOf();
+      if (!challengeState) {
+        return undefined;
+      }
       return challengeState.byLaoId[serializedLaoId];
     },
   );

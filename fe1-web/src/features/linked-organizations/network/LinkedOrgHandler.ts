@@ -2,7 +2,7 @@ import { ActionType, ObjectType, ProcessableMessage } from 'core/network/jsonrpc
 import { dispatch } from 'core/redux';
 
 import { LinkedOrganizationsCompositionConfiguration } from '../interface';
-import { RequestChallenge } from './messages/RequestChallenge';
+import { ChallengeRequest } from './messages/ChallengeRequest';
 import { Challenge, ChallengeState } from '../objects/Challenge';
 import { requestChallenge } from './LinkedOrgMessageApi';
 import { addChallenge } from '../reducer';
@@ -31,6 +31,7 @@ export const handleChallengeMessage =
     }
 
     const challengeMessage = msg.messageData as ChallengeMessage;
+    /*
     // for now *ALL* election#key messages *MUST* be sent by the backend of the organizer
     const organizerBackendPublicKey = getLaoOrganizerBackendPublicKey(msg.laoId);
 
@@ -42,7 +43,7 @@ export const handleChallengeMessage =
     if (organizerBackendPublicKey.valueOf() !== msg.sender.valueOf()) {
       console.warn(makeErr("the senders' public key does not match the organizer backend's"));
       return false;
-    }
+    }*/
 
     const challengeState: ChallengeState = {
       value: challengeMessage.value.toState(),
@@ -57,7 +58,7 @@ export const handleChallengeMessage =
 /**
  * Handles an requestChallenge message.
  */
-export const handleRequestChallengeMessage =
+export const handleChallengeRequestMessage =
   (getCurrentLaoId: LinkedOrganizationsCompositionConfiguration['getCurrentLaoId']) => (msg: ProcessableMessage) => {
     if (
       msg.messageData.object !== ObjectType.FEDERATION ||
@@ -66,6 +67,7 @@ export const handleRequestChallengeMessage =
       console.warn('handleRequestChallengeMessage was called to process an unsupported message');
       return false;
     }
+    console.log("here");
 
     const makeErr = (err: string) => `challenge/request was not processed: ${err}`;
 
@@ -77,7 +79,7 @@ export const handleRequestChallengeMessage =
 
     const messageId = msg.message_id;
     const { sender } = msg;
-    const requestChallenge = msg.messageData as RequestChallenge;
+    const requestChallenge = msg.messageData as ChallengeRequest;
 
     return true;
   };
