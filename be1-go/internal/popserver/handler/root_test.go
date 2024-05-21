@@ -136,6 +136,7 @@ func newLaoCreateMsg(t *testing.T, organizer, sender, laoName string, mockReposi
 			laoPath + Consensus:          sqlite.ConsensusType,
 			laoPath + Coin:               sqlite.CoinType,
 			laoPath + Auth:               sqlite.AuthType,
+			laoPath + Federation:         sqlite.FederationType,
 		}
 		mockRepository.On("StoreLaoWithLaoGreet",
 			channels,

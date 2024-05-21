@@ -143,6 +143,7 @@ func createLaoAndChannels(msg, laoGreetMsg message.Message, organizerPubBuf []by
 		laoPath + Consensus:          sqlite.ConsensusType,
 		laoPath + Coin:               sqlite.CoinType,
 		laoPath + Auth:               sqlite.AuthType,
+		laoPath + Federation:         sqlite.FederationType,
 	}
 
 	db, errAnswer := database.GetRootRepositoryInstance()

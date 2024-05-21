@@ -1335,7 +1335,7 @@ func (s *SQLite) GetFederationExpect(senderPk string, remotePk string, challenge
 		}
 
 		var federationChallenge messagedata.FederationChallenge
-		errAnswer := federationExpect.ChallengeMsg.UnmarshalMsgData(federationChallenge)
+		errAnswer := federationExpect.ChallengeMsg.UnmarshalMsgData(&federationChallenge)
 		if errAnswer != nil {
 			return messagedata.FederationExpect{}, errAnswer
 		}
@@ -1370,7 +1370,7 @@ func (s *SQLite) GetFederationInit(senderPk string, remotePk string, challenge m
 		}
 
 		var federationChallenge messagedata.FederationChallenge
-		errAnswer := federationInit.ChallengeMsg.UnmarshalMsgData(federationChallenge)
+		errAnswer := federationInit.ChallengeMsg.UnmarshalMsgData(&federationChallenge)
 		if errAnswer != nil {
 			return messagedata.FederationInit{}, errAnswer
 		}

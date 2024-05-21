@@ -138,7 +138,12 @@ func handleExpect(msg message.Message, channelPath string) *answer.Error {
 	}
 
 	var challenge messagedata.FederationChallenge
-	errAnswer = federationExpect.ChallengeMsg.UnmarshalMsgData(challenge)
+	errAnswer = federationExpect.ChallengeMsg.UnmarshalMsgData(&challenge)
+	if errAnswer != nil {
+		return errAnswer.Wrap("handleFederationExpect")
+	}
+
+	errAnswer = challenge.Verify()
 	if errAnswer != nil {
 		return errAnswer.Wrap("handleFederationExpect")
 	}
@@ -188,9 +193,14 @@ func handleInit(msg message.Message, channelPath string) *answer.Error {
 	}
 
 	var challenge messagedata.FederationChallenge
-	errAnswer = federationInit.ChallengeMsg.UnmarshalMsgData(challenge)
+	errAnswer = federationInit.ChallengeMsg.UnmarshalMsgData(&challenge)
 	if errAnswer != nil {
 		return errAnswer.Wrap("handleFederationInit")
+	}
+
+	errAnswer = challenge.Verify()
+	if errAnswer != nil {
+		return errAnswer.Wrap("handleFederationExpect")
 	}
 
 	db, errAnswer := database.GetFederationRepositoryInstance()

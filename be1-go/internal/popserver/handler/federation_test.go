@@ -141,7 +141,7 @@ func Test_handleChannelFederation(t *testing.T) {
 				validUntil, organizerSk),
 			organizerSk),
 		isError:  true,
-		contains: "failed to unmarshal jsonData",
+		contains: "invalid message",
 	})
 
 	// Test 8 Error when FederationExpect challenge is not from organizer
@@ -220,7 +220,7 @@ func Test_handleChannelFederation(t *testing.T) {
 				validUntil, organizerSk),
 			organizerSk),
 		isError:  true,
-		contains: "failed to unmarshal jsonData",
+		contains: "invalid message",
 	})
 
 	// Test 14 Error when FederationInit challenge is not from organizer
