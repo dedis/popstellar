@@ -29,6 +29,8 @@ const {
   AUTH,
   CHALLENGE_REQUEST,
   CHALLENGE,
+  FEDERATION_INIT,
+  //FEDERATION_EXPECT,
 } = ActionType;
 const { KEYPAIR, POP_TOKEN } = SignatureType;
 
@@ -101,7 +103,9 @@ export class MessageRegistry {
 
     // Linked Organizations
     [k(FEDERATION, CHALLENGE_REQUEST), {signature: KEYPAIR}],
-    [k(FEDERATION, CHALLENGE), {signature: KEYPAIR}]
+    [k(FEDERATION, CHALLENGE), {signature: KEYPAIR}],
+    [k(FEDERATION, FEDERATION_INIT), {signature: KEYPAIR}],
+    //[k(FEDERATION, FEDERATION_EXPECT), {signature: KEYPAIR}],
   ]);
 
   /**

@@ -81,3 +81,27 @@ export const handleChallengeRequestMessage =
     return true;
   };
 
+/**
+ * Handles an federationInit message.
+ */
+export const handleFederationInitMessage =
+  (getCurrentLaoId: LinkedOrganizationsCompositionConfiguration['getCurrentLaoId']) => (msg: ProcessableMessage) => {
+    if (
+      msg.messageData.object !== ObjectType.FEDERATION ||
+      msg.messageData.action !== ActionType.FEDERATION_INIT
+    ) {
+      console.warn('handleFederationInitMessage was called to process an unsupported message');
+      return false;
+    }
+
+    const makeErr = (err: string) => `federation/init was not processed: ${err}`;
+
+    const laoId = getCurrentLaoId();
+    if (!laoId) {
+      console.warn(makeErr('no Lao is currently active'));
+      return false;
+    }
+
+    return true;
+  };
+

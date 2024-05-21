@@ -77,6 +77,7 @@ const schemaIds: Record<ObjectType, Record<string, string>> = {
   [ObjectType.FEDERATION]: {
     [ActionType.CHALLENGE_REQUEST]: 'dataFederationChallengeRequest',
     [ActionType.CHALLENGE]: 'dataFederationChallenge',
+    [ActionType.FEDERATION_INIT]: 'dataFederationInit',
   },
 };
 

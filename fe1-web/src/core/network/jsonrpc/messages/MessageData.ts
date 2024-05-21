@@ -41,6 +41,8 @@ export enum ActionType {
   AUTH = 'authenticate',
   CHALLENGE_REQUEST = 'challenge_request',
   CHALLENGE = 'challenge',
+  FEDERATION_INIT = 'init',
+  //FEDERATION_EXPECT = 'expect',
 }
 
 /** Enumeration of all possible signatures of a message */

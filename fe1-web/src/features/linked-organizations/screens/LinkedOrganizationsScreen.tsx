@@ -21,7 +21,7 @@ import { LinkedOrganizationsHooks } from '../hooks';
 import { Challenge, ChallengeState } from '../objects/Challenge';
 import { Organization } from '../objects/Organization';
 import { Lao } from 'features/lao/objects';
-import { requestChallenge } from '../network';
+import { initFederation, requestChallenge } from '../network';
 import { makeChallengeSelector } from '../reducer';
 import { useSelector } from 'react-redux';
 
@@ -113,6 +113,7 @@ const LinkedOrganizationsScreen = () => {
         getQRCodeData()
         setShowQRCodeModal(!showQRCodeModal);
       }
+      onFederationInit(org1);
       toast.show(`QR Code successfully scanned`, {
         type: 'success',
         placement: 'bottom',
@@ -127,6 +128,27 @@ const LinkedOrganizationsScreen = () => {
       console.log(error);
     }
   };
+
+  const onFederationInit = useCallback((org: Organization) => {
+    console.log('Init Federation');
+    if (org.challenge) {
+      initFederation(laoId, org.lao_id, org.server_address, org.public_key, org.challenge)
+      .then(() => {
+        console.log('Success: Init Federation');
+      })
+      .catch((err) => {
+        console.error('Could not init Federation, error:', err);
+      });
+    } else if (challengeState) {
+      initFederation(laoId, org.lao_id, org.server_address, org.public_key, Challenge.fromState(challengeState))
+      .then(() => {
+        console.log('Success: Init Federation');
+      })
+      .catch((err) => {
+        console.error('Could not init Federation, error:', err);
+      });
+    }
+  }, [laoId]);
 
   const onRequestChallenge = useCallback(() => {
     console.log('Requesting challenge');

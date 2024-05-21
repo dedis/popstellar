@@ -19,6 +19,7 @@ const {
   NOTIFY_DELETE,
   CHALLENGE,
   CHALLENGE_REQUEST,
+  FEDERATION_INIT,
 } = ActionType;
 
 export enum WitnessingType {
@@ -72,6 +73,7 @@ const WITNESSING_TYPE_MAP = new Map<string, WitnessEntry>([
   // Linked Organizations
   [k(FEDERATION, CHALLENGE), { type: WitnessingType.NO_WITNESSING }],
   [k(FEDERATION, CHALLENGE_REQUEST), { type: WitnessingType.NO_WITNESSING }],
+  [k(FEDERATION, FEDERATION_INIT), { type: WitnessingType.NO_WITNESSING }],
 ]);
 
 const getWitnessRegistryEntry = (data: MessageData): WitnessEntry | undefined => {
