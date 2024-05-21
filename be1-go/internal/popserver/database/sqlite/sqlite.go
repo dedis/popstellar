@@ -1294,7 +1294,7 @@ func (s *SQLite) IsChallengeValid(senderPk string, challenge messagedata.Federat
 	return nil
 }
 
-func (s *SQLite) RemoveChallenge(challenge messagedata.FederationChallenge, channelPath string) error {
+func (s *SQLite) RemoveChallenge(challenge messagedata.FederationChallenge) error {
 	dbLock.Lock()
 	defer dbLock.Unlock()
 
