@@ -164,6 +164,12 @@ func handleExpect(msg message.Message, channelPath string) *answer.Error {
 		return errAnswer.Wrap("handleFederationExpect")
 	}
 
+	remoteChannel := fmt.Sprintf("/root/%s/federation", federationExpect.LaoId)
+	errAnswer = state.AddChannel(remoteChannel)
+	if errAnswer != nil {
+		return errAnswer.Wrap("handleFederationExpect")
+	}
+
 	err = db.StoreMessageAndData(channelPath, msg)
 	if err != nil {
 		errAnswer = answer.NewStoreDatabaseError(err.Error())
@@ -314,10 +320,10 @@ func handleChallenge(msg message.Message, channelPath string) *answer.Error {
 	}
 
 	// broadcast the FederationResult to the local organizer ?
-	//errAnswer = broadcastToAllClients(resultMsg, channelPath)
-	//if errAnswer != nil {
-	//	return errAnswer.Wrap("handleFederationChallenge")
-	//}
+	errAnswer = broadcastToAllClients(resultMsg, channelPath)
+	if errAnswer != nil {
+		return errAnswer.Wrap("handleFederationChallenge")
+	}
 
 	return nil
 }
