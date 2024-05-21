@@ -1269,8 +1269,8 @@ func (s *SQLite) GetReactionSender(messageID string) (string, error) {
 //======================================================================================================================
 
 func (s *SQLite) IsChallengeValid(senderPk string, challenge messagedata.FederationChallenge, channelPath string) error {
-	dbLock.RLock()
-	defer dbLock.RUnlock()
+	dbLock.Lock()
+	defer dbLock.Unlock()
 
 	var federationChallengeBytes []byte
 	err := s.database.QueryRow(selectValidFederationChallenges, channelPath,
@@ -1319,8 +1319,8 @@ func (s *SQLite) RemoveChallenge(challenge messagedata.FederationChallenge) erro
 }
 
 func (s *SQLite) GetFederationExpect(senderPk string, remotePk string, challenge messagedata.FederationChallenge, channelPath string) (messagedata.FederationExpect, error) {
-	dbLock.RLock()
-	defer dbLock.RUnlock()
+	dbLock.Lock()
+	defer dbLock.Unlock()
 
 	rows, err := s.database.Query(selectFederationExpects, channelPath,
 		senderPk, messagedata.FederationObject,
@@ -1359,8 +1359,8 @@ func (s *SQLite) GetFederationExpect(senderPk string, remotePk string, challenge
 }
 
 func (s *SQLite) GetFederationInit(senderPk string, remotePk string, challenge messagedata.FederationChallenge, channelPath string) (messagedata.FederationInit, error) {
-	dbLock.RLock()
-	defer dbLock.RUnlock()
+	dbLock.Lock()
+	defer dbLock.Unlock()
 
 	rows, err := s.database.Query(selectFederationExpects, channelPath,
 		senderPk, messagedata.FederationObject,
