@@ -300,7 +300,7 @@ func Test_handleRequestChallenge(t *testing.T) {
 	channelPath := fmt.Sprintf("/root/%s/federation", laoID)
 
 	errAnswer := subs.AddChannel(channelPath)
-	require.Nil(t, err)
+	require.Nil(t, errAnswer)
 
 	fakeSocket := socket.FakeSocket{Id: "1"}
 	errAnswer = subs.Subscribe(channelPath, &fakeSocket)
