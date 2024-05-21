@@ -3,7 +3,9 @@ package handler
 import (
 	"database/sql"
 	"encoding/base64"
+	"encoding/json"
 	"fmt"
+	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 	"popstellar/internal/popserver/config"
 	"popstellar/internal/popserver/database"
@@ -12,6 +14,8 @@ import (
 	"popstellar/internal/popserver/state"
 	"popstellar/internal/popserver/types"
 	"popstellar/message/messagedata"
+	"popstellar/message/query/method"
+	"popstellar/network/socket"
 	"testing"
 	"time"
 )
@@ -244,7 +248,7 @@ func Test_handleChannelFederation(t *testing.T) {
 	}
 
 	mockRepository.On("GetFederationExpect", organizer,
-		notOrganizer, federationChallenge1).Return(messagedata.
+		notOrganizer, federationChallenge1, channelPath).Return(messagedata.
 		FederationExpect{}, sql.ErrNoRows)
 
 	// Test 15 Error when FederationChallenge is received without any
@@ -270,4 +274,119 @@ func Test_handleChannelFederation(t *testing.T) {
 			}
 		})
 	}
+}
+
+func Test_handleRequestChallenge(t *testing.T) {
+	mockRepository := repository.NewMockRepository(t)
+	database.SetDatabase(mockRepository)
+
+	subs := types.NewSubscribers()
+	queries := types.NewQueries(&noLog)
+	peers := types.NewPeers()
+
+	organizerPk, organizerSk := generateKeys()
+	serverPk, serverSk := generateKeys()
+
+	config.SetConfig(organizerPk, serverPk, serverSk, "client", "server")
+
+	state.SetState(subs, peers, queries)
+
+	organizerBuf, err := organizerPk.MarshalBinary()
+	require.NoError(t, err)
+	organizer := base64.URLEncoding.EncodeToString(organizerBuf)
+
+	laoID := "lsWUv1bKBQ0t1DqWZTFwb0nhLsP_EtfGoXHny4hsrwA="
+	laoPath := fmt.Sprintf("/root/%s", laoID)
+	channelPath := fmt.Sprintf("/root/%s/federation", laoID)
+
+	errAnswer := subs.AddChannel(channelPath)
+	require.Nil(t, err)
+
+	fakeSocket := socket.FakeSocket{Id: "1"}
+	errAnswer = subs.Subscribe(channelPath, &fakeSocket)
+	require.Nil(t, errAnswer)
+
+	mockRepository.On("GetOrganizerPubKey", laoPath).Return(organizerPk, nil)
+	mockRepository.On("GetServerKeys").Return(serverPk, serverSk, nil)
+	mockRepository.On("StoreMessageAndData", channelPath,
+		mock.AnythingOfType("message.Message")).Return(nil)
+
+	errAnswer = handleRequestChallenge(generatortest.
+		NewFederationChallengeRequest(t, organizer, time.Now().Unix(),
+			organizerSk), channelPath)
+	require.Nil(t, errAnswer)
+
+	require.NotNil(t, fakeSocket.Msg)
+	var broadcastMsg method.Broadcast
+	err = json.Unmarshal(fakeSocket.Msg, &broadcastMsg)
+	require.NoError(t, err)
+
+	require.Equal(t, "broadcast", broadcastMsg.Method)
+	require.Equal(t, channelPath, broadcastMsg.Params.Channel)
+
+	var challenge messagedata.FederationChallenge
+	errAnswer = broadcastMsg.Params.Message.UnmarshalMsgData(&challenge)
+	require.Nil(t, errAnswer)
+
+	errAnswer = challenge.Verify()
+	require.Nil(t, errAnswer)
+}
+
+func Test_handleFederationExpect(t *testing.T) {
+	mockRepository := repository.NewMockRepository(t)
+	database.SetDatabase(mockRepository)
+
+	subs := types.NewSubscribers()
+	queries := types.NewQueries(&noLog)
+	peers := types.NewPeers()
+
+	organizerPk, organizerSk := generateKeys()
+	organizer2Pk, _ := generateKeys()
+	serverPk, serverSk := generateKeys()
+
+	config.SetConfig(organizerPk, serverPk, serverSk, "client", "server")
+
+	state.SetState(subs, peers, queries)
+
+	organizerBuf, err := organizerPk.MarshalBinary()
+	require.NoError(t, err)
+	organizer := base64.URLEncoding.EncodeToString(organizerBuf)
+
+	organizer2Buf, err := organizer2Pk.MarshalBinary()
+	require.NoError(t, err)
+	organizer2 := base64.URLEncoding.EncodeToString(organizer2Buf)
+
+	serverBuf, err := serverPk.MarshalBinary()
+	require.NoError(t, err)
+	server := base64.URLEncoding.EncodeToString(serverBuf)
+
+	laoID := "lsWUv1bKBQ0t1DqWZTFwb0nhLsP_EtfGoXHny4hsrwA="
+	laoPath := fmt.Sprintf("/root/%s", laoID)
+	channelPath := fmt.Sprintf("/root/%s/federation", laoID)
+
+	serverAddressA := "ws://localhost:9801/client"
+	value := "82eadde2a4ba832518b90bb93c8480ee1ae16a91d5efe9281e91e2ec11da03e4"
+	validUntil := time.Now().Add(5 * time.Minute).Unix()
+
+	federationChallenge := messagedata.FederationChallenge{
+		Object:     messagedata.FederationObject,
+		Action:     messagedata.FederationActionChallenge,
+		Value:      value,
+		ValidUntil: validUntil,
+	}
+
+	mockRepository.On("GetOrganizerPubKey", laoPath).Return(organizerPk, nil)
+	mockRepository.On("GetServerKeys").Return(serverPk, serverSk, nil)
+	mockRepository.On("StoreMessageAndData", channelPath,
+		mock.AnythingOfType("message.Message")).Return(nil)
+
+	mockRepository.On("IsChallengeValid", server, federationChallenge,
+		channelPath).Return(nil)
+
+	federationExpect := generatortest.NewFederationExpect(t, organizer, laoID,
+		serverAddressA, organizer2, generatortest.NewFederationChallenge(t,
+			organizer, value, validUntil, organizerSk), organizerSk)
+
+	errAnswer := handleExpect(federationExpect, channelPath)
+	require.Nil(t, errAnswer)
 }
