@@ -301,7 +301,7 @@ const (
 		AND json_extract(messageData, '$.action') = ?
 		AND json_extract(messageData, '$.value') = ?
 		AND json_extract(messageData, '$.valid_until') = ?
-	ORDER BY message.storedTime DESC
+	ORDER BY storedTime DESC
 	`
 
 	deleteFederationChallenge = `
@@ -325,7 +325,7 @@ const (
 		AND json_extract(messageData, '$.object') = ?
 		AND json_extract(messageData, '$.action') = ?
 		AND json_extract(messageData, '$.public_key') = ?
-	ORDER BY message.storedTime DESC
+	ORDER BY storedTime DESC
 	`
 )
 
