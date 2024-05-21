@@ -298,6 +298,12 @@ func handleChallenge(msg message.Message, channelPath string) *answer.Error {
 		return errAnswer.Wrap("handleFederationChallenge")
 	}
 
+	if federationChallenge.ValidUntil < time.Now().Unix() {
+		errAnswer = answer.NewAccessDeniedError(
+			"This challenge has expired: %v", federationChallenge)
+		return errAnswer.Wrap("handleFederationChallenge")
+	}
+
 	result := messagedata.FederationResult{
 		Object:       messagedata.FederationObject,
 		Action:       messagedata.FederationActionResult,
