@@ -107,7 +107,7 @@ object ParamsHandler extends AskPatternConstants {
                 case Some(_) =>
                   Right(JsonRpcResponse(
                     RpcValidator.JSON_RPC_VERSION,
-                    ErrorObject(-3, s"rumor $rumorId already present"),
+                    ErrorObject(ErrorCodes.ALREADY_EXISTS.id, s"rumor $rumorId already present"),
                     jsonRpcMessage.id
                   ))
                 // absent
