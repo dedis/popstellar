@@ -102,6 +102,7 @@ const LinkedOrganizationsScreen = () => {
   const [showScanner, setShowScanner] = useState(false);
 
   const onScanData = (qrCode: string | null) => {
+    console.log(qrCode);
     const qrcode1 = qrCode ?? '';
     try {
       const org1 = Organization.fromJson(JSON.parse(qrcode1));
@@ -123,6 +124,7 @@ const LinkedOrganizationsScreen = () => {
         placement: 'bottom',
         duration: FOUR_SECONDS,
       });
+      console.log(error);
     }
   };
 
@@ -193,8 +195,8 @@ const LinkedOrganizationsScreen = () => {
                       <ListItem.Subtitle>
                         Public Key: {organization.public_key}, Server Address:{' '}
                         {organization.server_address}, Challenge Value:{' '}
-                        {organization.challenge.value}, Challenge Valid_until:{' '}
-                        {organization.challenge.valid_until.valueOf()}
+                        {organization.challenge?.value}, Challenge Valid_until:{' '}
+                        {organization.challenge?.valid_until.valueOf()}
                       </ListItem.Subtitle>
                     </ListItem.Content>
                   </ListItem>
@@ -419,13 +421,19 @@ const LinkedOrganizationsScreen = () => {
                 <PoPTextButton
                   testID="add-manually"
                   onPress={() => {
-                    if (
+                    if ((
+                      isClientA && (
                       !manualLaoId ||
                       !manualPublicKey ||
                       !manualServerAddress ||
                       !manualChallengeValue ||
-                      manualChallengeValidUntil <= Timestamp.EpochNow()
-                    ) {
+                      manualChallengeValidUntil <= Timestamp.EpochNow())) ||
+                      (
+                        !isClientA && (
+                        !manualLaoId ||
+                        !manualPublicKey ||
+                        !manualServerAddress)
+                    )) {
                       toast.show(
                         `All fields are required and Valid Until has to be in the Future`,
                         {
@@ -437,7 +445,7 @@ const LinkedOrganizationsScreen = () => {
                       return;
                     }
 
-                    const tmpOrg = new Organization({
+                    const tmpOrg = isClientA ? {
                       lao_id: new Hash(manualLaoId),
                       public_key: new Hash(manualPublicKey),
                       server_address: manualServerAddress,
@@ -445,8 +453,13 @@ const LinkedOrganizationsScreen = () => {
                         value: new Hash(manualChallengeValue),
                         valid_until: manualChallengeValidUntil,
                       }),
-                    });
-                    onScanData(tmpOrg.toJson());
+                    } :
+                    {
+                      lao_id: new Hash(manualLaoId),
+                      public_key: new Hash(manualPublicKey),
+                      server_address: manualServerAddress
+                    };
+                    onScanData(JSON.stringify(tmpOrg));
                     setInputModalIsVisible(!inputModalIsVisible);
                     setManualLaoID('');
                     setManualPublicKey('');

@@ -28,10 +28,10 @@ const styles = StyleSheet.create({
     */
     position: 'absolute',
     padding: '4',
-    top: '27.9%',
-    left: '27.9%',
-    right: '27.9%',
-    bottom: '27.9%',
+    top: '32.4%',
+    left: '32.4%',
+    right: '32.4%',
+    bottom: '32.4%',
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
@@ -77,7 +77,7 @@ const QRCode = ({ value, visible, overlayText }: IPropTypes) => {
         />
         {overlayText && (
           <View style={styles.overlay}>
-            <Text style={[Typography.base, Typography.centered, Typography.negative]}>
+            <Text style={[Typography.small, Typography.centered, Typography.negative]}>
               {overlayText}
             </Text>
           </View>
