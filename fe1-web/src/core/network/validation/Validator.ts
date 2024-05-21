@@ -78,6 +78,7 @@ const schemaIds: Record<ObjectType, Record<string, string>> = {
     [ActionType.CHALLENGE_REQUEST]: 'dataFederationChallengeRequest',
     [ActionType.CHALLENGE]: 'dataFederationChallenge',
     [ActionType.FEDERATION_INIT]: 'dataFederationInit',
+    [ActionType.FEDERATION_EXPECT]: 'dataFederationExpect',
   },
 };
 
@@ -131,8 +132,5 @@ export function validateScannablePopToken(obj: any): ValidationResult {
 }
 
 export function validateFederationExchange(obj: any): ValidationResult {
-  return validate(
-    `https://raw.githubusercontent.com/dedis/popstellar/master/protocol/qrcode/federation_exchange.json`,
-    obj,
-  );
+  return validate(`${schemaPrefix}/qrcode/federation_exchange.json`, obj);
 }

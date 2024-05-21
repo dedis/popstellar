@@ -21,7 +21,7 @@ import { LinkedOrganizationsHooks } from '../hooks';
 import { Challenge, ChallengeState } from '../objects/Challenge';
 import { Organization } from '../objects/Organization';
 import { Lao } from 'features/lao/objects';
-import { initFederation, requestChallenge } from '../network';
+import { expectFederation, initFederation, requestChallenge } from '../network';
 import { makeChallengeSelector } from '../reducer';
 import { useSelector } from 'react-redux';
 
@@ -112,8 +112,10 @@ const LinkedOrganizationsScreen = () => {
       if (isClientA) {
         getQRCodeData()
         setShowQRCodeModal(!showQRCodeModal);
+        onFederationInit(org1);
+      } else {
+        onFederationExpect(org1);
       }
-      onFederationInit(org1);
       toast.show(`QR Code successfully scanned`, {
         type: 'success',
         placement: 'bottom',
@@ -129,25 +131,29 @@ const LinkedOrganizationsScreen = () => {
     }
   };
 
-  const onFederationInit = useCallback((org: Organization) => {
-    console.log('Init Federation');
-    if (org.challenge) {
-      initFederation(laoId, org.lao_id, org.server_address, org.public_key, org.challenge)
+  const onFederationExpect = useCallback((org: Organization) => {
+    console.log('Expect Federation');
+    if (challengeState) {
+      expectFederation(laoId, org.lao_id, org.server_address, org.public_key, Challenge.fromState(challengeState))
       .then(() => {
-        console.log('Success: Init Federation');
+        console.log('Success: Expect Federation');
       })
       .catch((err) => {
-        console.error('Could not init Federation, error:', err);
-      });
-    } else if (challengeState) {
-      initFederation(laoId, org.lao_id, org.server_address, org.public_key, Challenge.fromState(challengeState))
-      .then(() => {
-        console.log('Success: Init Federation');
-      })
-      .catch((err) => {
-        console.error('Could not init Federation, error:', err);
+        console.error('Could not expect Federation, error:', err);
       });
     }
+  }, [laoId]);
+
+
+  const onFederationInit = useCallback((org: Organization) => {
+    console.log('Init Federation');
+    initFederation(laoId, org.lao_id, org.server_address, org.public_key, org.challenge!)
+    .then(() => {
+      console.log('Success: Init Federation');
+    })
+    .catch((err) => {
+      console.error('Could not init Federation, error:', err);
+    });
   }, [laoId]);
 
   const onRequestChallenge = useCallback(() => {

@@ -105,3 +105,28 @@ export const handleFederationInitMessage =
     return true;
   };
 
+
+  /**
+ * Handles an federationExpect message.
+ */
+export const handleFederationExpectMessage =
+(getCurrentLaoId: LinkedOrganizationsCompositionConfiguration['getCurrentLaoId']) => (msg: ProcessableMessage) => {
+  if (
+    msg.messageData.object !== ObjectType.FEDERATION ||
+    msg.messageData.action !== ActionType.FEDERATION_EXPECT
+  ) {
+    console.warn('handleFederationExpectMessage was called to process an unsupported message');
+    return false;
+  }
+
+  const makeErr = (err: string) => `federation/expect was not processed: ${err}`;
+
+  const laoId = getCurrentLaoId();
+  if (!laoId) {
+    console.warn(makeErr('no Lao is currently active'));
+    return false;
+  }
+
+  return true;
+};
+

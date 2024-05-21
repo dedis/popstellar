@@ -20,6 +20,7 @@ const {
   CHALLENGE,
   CHALLENGE_REQUEST,
   FEDERATION_INIT,
+  FEDERATION_EXPECT
 } = ActionType;
 
 export enum WitnessingType {
@@ -74,6 +75,7 @@ const WITNESSING_TYPE_MAP = new Map<string, WitnessEntry>([
   [k(FEDERATION, CHALLENGE), { type: WitnessingType.NO_WITNESSING }],
   [k(FEDERATION, CHALLENGE_REQUEST), { type: WitnessingType.NO_WITNESSING }],
   [k(FEDERATION, FEDERATION_INIT), { type: WitnessingType.NO_WITNESSING }],
+  [k(FEDERATION, FEDERATION_EXPECT), { type: WitnessingType.NO_WITNESSING }],
 ]);
 
 const getWitnessRegistryEntry = (data: MessageData): WitnessEntry | undefined => {

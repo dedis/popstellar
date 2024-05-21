@@ -19,12 +19,11 @@ export class ChallengeRequest implements MessageData {
   }
 
   /**
-   * Creates an RequestChallenge object from a given object
+   * Creates an ChallengeRequest object from a given object
    * @param obj
    */
   public static fromJson(obj: any): ChallengeRequest {
     const { errors } = validateDataObject(ObjectType.FEDERATION, ActionType.CHALLENGE_REQUEST, obj);
-    //TODO: figure out why validate throws error?
     if (errors !== null) {
       throw new ProtocolError(`Invalid challenge request\n\n${errors}`);
     }

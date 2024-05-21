@@ -2,10 +2,11 @@ import { ActionType, MessageRegistry, ObjectType } from 'core/network/jsonrpc/me
 import { Hash, PublicKey } from 'core/objects';
 import { dispatch } from 'core/redux';
 import { LinkedOrganizationsCompositionConfiguration } from '../interface';
-import { handleChallengeMessage, handleChallengeRequestMessage, handleFederationInitMessage } from './LinkedOrgHandler';
+import { handleChallengeMessage, handleChallengeRequestMessage, handleFederationExpectMessage, handleFederationInitMessage } from './LinkedOrgHandler';
 import { ChallengeMessage } from './messages/ChallengeMessage';
 import { ChallengeRequest } from './messages';
 import { FederationInit } from './messages/FederationInit';
+import { FederationExpect } from './messages/FederationExpect';
 export * from './LinkedOrgMessageApi';
 
 /**
@@ -32,5 +33,11 @@ export function configureNetwork(configuration: LinkedOrganizationsCompositionCo
     ActionType.FEDERATION_INIT,
     handleFederationInitMessage(configuration.getCurrentLaoId),
     FederationInit.fromJson,
+  );
+  configuration.messageRegistry.add(
+    ObjectType.FEDERATION,
+    ActionType.FEDERATION_EXPECT,
+    handleFederationExpectMessage(configuration.getCurrentLaoId),
+    FederationExpect.fromJson,
   );
 }

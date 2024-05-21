@@ -1,7 +1,6 @@
 import { ActionType, Message, MessageData, ObjectType } from 'core/network/jsonrpc/messages';
 import { validateDataObject } from 'core/network/validation';
 import { Hash, ProtocolError, PublicKey, Timestamp } from 'core/objects';
-import { Challenge } from 'features/linked-organizations/objects/Challenge';
 
 /** Data sent to initialize the Federation */
 export class FederationInit implements MessageData {
@@ -38,12 +37,11 @@ export class FederationInit implements MessageData {
   }
 
   /**
-   * Creates an RequestChallenge object from a given object
+   * Creates an FederationInit object from a given object
    * @param obj
    */
   public static fromJson(obj: any): FederationInit {
     const { errors } = validateDataObject(ObjectType.FEDERATION, ActionType.FEDERATION_INIT, obj);
-    //TODO: figure out why validate throws error?
     if (errors !== null) {
       throw new ProtocolError(`Invalid federation init\n\n${errors}`);
     }
