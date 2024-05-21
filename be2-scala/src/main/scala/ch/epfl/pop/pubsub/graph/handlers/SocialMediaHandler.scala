@@ -49,7 +49,7 @@ class SocialMediaHandler(dbRef: => AskableActorRef, mediatorRef: => AskableActor
       for {
         _ <- extractLaoChannel(rpcMessage, "Server failed to extract LAO id for the broadcast")
         _ <- extractParameters[AddChirp](rpcMessage, "Server failed to extract chirp id for the broadcast")
-        _ <- dbActor ? DbActor.WriteAndPropagate(rpcMessage.getParamsChannel, rpcMessage.getParamsMessage.get)
+        _ <- dbRef ? DbActor.WriteAndPropagate(rpcMessage.getParamsChannel, rpcMessage.getParamsMessage.get)
       } yield ()
 
     Await.ready(ask, duration).value match {
@@ -81,7 +81,7 @@ class SocialMediaHandler(dbRef: => AskableActorRef, mediatorRef: => AskableActor
       for {
         _ <- extractLaoChannel(rpcMessage, "Server failed to extract LAO id for the broadcast")
         _ <- extractParameters(rpcMessage, "Server failed to extract chirp id for the broadcast")
-        _ <- dbActor ? DbActor.WriteAndPropagate(rpcMessage.getParamsChannel, rpcMessage.getParamsMessage.get)
+        _ <- dbRef ? DbActor.WriteAndPropagate(rpcMessage.getParamsChannel, rpcMessage.getParamsMessage.get)
       } yield ()
 
     Await.ready(ask, duration).value match {

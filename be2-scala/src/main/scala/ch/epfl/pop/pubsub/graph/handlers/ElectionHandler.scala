@@ -53,8 +53,8 @@ class ElectionHandler(dbRef: => AskableActorRef) extends MessageHandler {
       electionId: Hash = data.id
       electionChannel: Channel = Channel(s"${rpcMessage.getParamsChannel.channel}${Channel.CHANNEL_SEPARATOR}$electionId")
       keyPair = KeyPair()
-      _ <- dbActor ? DbActor.WriteSetupElectionMessage(electionChannel, message)
-      _ <- dbActor ? DbActor.CreateElectionData(rpcMessage.extractLaoId, electionId, keyPair)
+      _ <- dbRef ? DbActor.WriteSetupElectionMessage(electionChannel, message)
+      _ <- dbRef ? DbActor.CreateElectionData(rpcMessage.extractLaoId, electionId, keyPair)
     } yield (data, electionId, keyPair, electionChannel)
 
     Await.ready(combined, duration).value match {
@@ -83,7 +83,7 @@ class ElectionHandler(dbRef: => AskableActorRef) extends MessageHandler {
   def handleOpenElection(rpcMessage: JsonRpcRequest): GraphMessage = {
     // checks first if the election is created (i.e. if the channel election exists)
     val combined = for {
-      _ <- dbActor ? DbActor.ChannelExists(rpcMessage.getParamsChannel)
+      _ <- dbRef ? DbActor.ChannelExists(rpcMessage.getParamsChannel)
       _ <- dbAskWritePropagate(rpcMessage)
     } yield ()
     Await.ready(combined, duration).value.get match {
@@ -136,12 +136,12 @@ class ElectionHandler(dbRef: => AskableActorRef) extends MessageHandler {
   private def createElectionQuestionResults(electionChannel: Channel, laoId: Hash): Future[List[ElectionQuestionResult]] = {
     for {
       // get the last votes of the CastVotes messages
-      castsVotesElections <- electionChannel.getLastVotes(dbActor)
+      castsVotesElections <- electionChannel.getLastVotes(dbRef)
       // get the setupElection message of the channel
-      setupMessage <- electionChannel.getSetupMessage(dbActor)
+      setupMessage <- electionChannel.getSetupMessage(dbRef)
       // associate the questions ids to their ballots
       questionToBallots = setupMessage.questions.map(question => question.id -> question.ballot_options).toMap
-      case DbActorReadElectionDataAck(electionData) <- dbActor ? DbActor.ReadElectionData(laoId, setupMessage.id)
+      case DbActorReadElectionDataAck(electionData) <- dbRef ? DbActor.ReadElectionData(laoId, setupMessage.id)
     } yield {
       // set up the table of results
       val resultsTable = mutable.HashMap.from(for {

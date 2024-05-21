@@ -38,11 +38,11 @@ class WitnessHandler(dbRef: => AskableActorRef) extends MessageHandler {
         signature: Signature = decodedData.get.signature
         channel: Channel = rpcMessage.getParamsChannel
         // add new witness signature to existing ones
-        case DbActorAddWitnessSignatureAck(witnessMessage) <- dbActor ? DbActor.AddWitnessSignature(channel, messageId, signature)
+        case DbActorAddWitnessSignatureAck(witnessMessage) <- dbRef ? DbActor.AddWitnessSignature(channel, messageId, signature)
         // overwrites the message containing now the witness signature in the db
-        _ <- dbActor ? DbActor.Write(channel, witnessMessage)
+        _ <- dbRef ? DbActor.Write(channel, witnessMessage)
         // propagate signature message only
-        _ <- dbActor ? DbActor.WriteAndPropagate(channel, rpcMessage.getParamsMessage.get)
+        _ <- dbRef ? DbActor.WriteAndPropagate(channel, rpcMessage.getParamsMessage.get)
       } yield ()
 
     Await.ready(combined, duration).value.get match {
