@@ -289,13 +289,13 @@ const (
     WHERE messageID = ?`
 
 	selectValidFederationChallenges = `
-	SELECT message
+	SELECT messageData
 	FROM message
 	WHERE json_extract(message, '$.sender') = ?
 		AND json_extract(messageData, '$.object') = ?
 		AND json_extract(messageData, '$.action') = ?
-		AND json_extract(messageData, '$.challenge.value') = ?
-		AND json_extract(messageData, '$.challenge.valid_until') = ?
+		AND json_extract(messageData, '$.value') = ?
+		AND json_extract(messageData, '$.valid_until') = ?
 	ORDER BY message.storedTime DESC
 	`
 
@@ -304,8 +304,8 @@ const (
 	FROM message
 	WHERE json_extract(messageData, '$.object') = ?
 		AND json_extract(messageData, '$.action') = ?
-		AND json_extract(messageData, '$.challenge.value') = ?
-		AND json_extract(messageData, '$.challenge.valid_until') = ?
+		AND json_extract(messageData, '$.value') = ?
+		AND json_extract(messageData, '$.valid_until') = ?
 	`
 
 	selectFederationExpects = `
