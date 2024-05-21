@@ -1,0 +1,29 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/object/rumor.json",
+  "title": "State of received rumors",
+  "description": "An object containing key-value pairs where each key is a server public key and each value is the last rumor_id it received from this server",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "sender_id": {
+      "description": "[String] publish key of the sender's server",
+      "type": "string",
+      "contentEncoding": "base64"
+    },
+    "rumor_id": {
+      "description": "[Integer] ID of the rumor",
+      "type": "integer"
+    },
+    "messages": {
+      "description": "Key-value of channels and messages per channel",
+      "type": "object",
+      "$ref": "../../../answer/result/messages_by_channel.json"
+    }
+  },
+  "required": [
+    "sender_id",
+    "rumor_id",
+    "messages"
+  ]
+}

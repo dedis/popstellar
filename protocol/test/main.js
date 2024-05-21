@@ -18,6 +18,7 @@ const method_get_messages_by_id_schema = require("../query/method/get_messages_b
 const method_greet_server_schema = require("../query/method/greet_server.json");
 
 const method_rumor_schema = require("../query/method/rumor.json")
+const object_rumor_schema = require("../query/method/object/rumor.json")
 const method_rumor_state_schema = require("../query/method/rumor_state.json")
 const object_rumor_state_schema = require("../query/method/object/rumor_state.json")
 
@@ -85,6 +86,7 @@ ajv.addSchema([
     method_greet_server_schema,
 
     method_rumor_schema,
+    object_rumor_schema,
     method_rumor_state_schema,
     object_rumor_state_schema,
 

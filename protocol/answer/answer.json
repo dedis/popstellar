@@ -25,6 +25,14 @@
                 {
                     "$ref": "result/messages_by_channel.json",
                     "$comment": "Return value for a `get_messages_by_id` request"
+                },
+                {
+                    "type": "array",
+                    "items": {
+                        "$ref": "../query/method/object/rumor.json"
+                    },
+                    "minItems": 0,
+                    "$comment": "Return value for a `rumor_state` request"
                 }
             ],
             "$comment": "Note: this field is absent if there is an error"
