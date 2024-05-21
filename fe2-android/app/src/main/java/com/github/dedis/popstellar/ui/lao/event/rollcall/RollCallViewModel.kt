@@ -36,6 +36,7 @@ import java.time.Instant
 import java.util.stream.Collectors
 import javax.inject.Inject
 import timber.log.Timber
+import java.util.TreeSet
 
 @HiltViewModel
 class RollCallViewModel
@@ -52,7 +53,7 @@ constructor(
 ) : AndroidViewModel(application), QRCodeScanningViewModel {
   private lateinit var laoId: String
 
-  private val attendees: MutableSet<PublicKey> = HashSet()
+private val attendees: TreeSet<PublicKey> = TreeSet(Comparator.comparing { it.toString() })
   override val nbScanned = MutableLiveData<Int>()
   lateinit var attendedRollCalls: Observable<List<RollCall>>
     private set
