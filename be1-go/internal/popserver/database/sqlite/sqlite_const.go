@@ -290,8 +290,13 @@ const (
 
 	selectValidFederationChallenges = `
 	SELECT messageData
-	FROM message
-	WHERE json_extract(message, '$.sender') = ?
+	FROM (
+	    SELECT *
+		FROM message
+		JOIN channelMessage ON message.messageID = channelMessage.messageID
+	)
+	WHERE channelPath = ?
+		AND json_extract(message, '$.sender') = ?
 		AND json_extract(messageData, '$.object') = ?
 		AND json_extract(messageData, '$.action') = ?
 		AND json_extract(messageData, '$.value') = ?
@@ -310,8 +315,13 @@ const (
 
 	selectFederationExpects = `
 	SELECT messageData
-	FROM message
-	WHERE json_extract(message, '$.sender') = ?
+	FROM (
+	    SELECT *
+		FROM message
+		JOIN channelMessage ON message.messageID = channelMessage.messageID
+	)
+	WHERE channelPath = ?
+	    AND json_extract(message, '$.sender') = ?
 		AND json_extract(messageData, '$.object') = ?
 		AND json_extract(messageData, '$.action') = ?
 		AND json_extract(messageData, '$.public_key') = ?

@@ -158,7 +158,7 @@ func handleExpect(msg message.Message, channelPath string) *answer.Error {
 		return errAnswer.Wrap("handleFederationExpect")
 	}
 
-	err := db.IsChallengeValid(serverPk, challenge)
+	err := db.IsChallengeValid(serverPk, challenge, channelPath)
 	if err != nil {
 		errAnswer = answer.NewQueryDatabaseError("No valid challenge: %v", err)
 		return errAnswer.Wrap("handleFederationExpect")
@@ -208,20 +208,14 @@ func handleInit(msg message.Message, channelPath string) *answer.Error {
 		return errAnswer.Wrap("handleFederationInit")
 	}
 
-	err := db.IsChallengeValid(channelPath, challenge)
-	if err != nil {
-		errAnswer = answer.NewQueryDatabaseError("No valid challenge: %v", err)
-		return errAnswer.Wrap("handleFederationInit")
-	}
-
-	err = db.StoreMessageAndData(channelPath, msg)
+	err := db.StoreMessageAndData(channelPath, msg)
 	if err != nil {
 		errAnswer = answer.NewStoreDatabaseError(err.Error())
 		return errAnswer.Wrap("handleFederationInit")
 	}
 
-	remote, err := connectTo(federationInit.ServerAddress)
-	if err != nil {
+	remote, errAnswer := connectTo(federationInit.ServerAddress)
+	if errAnswer != nil {
 		errAnswer = answer.NewInternalServerError(
 			"failed to connect to %s: %v", federationInit.ServerAddress, err)
 		return errAnswer.Wrap("handleFederationInit")
@@ -285,7 +279,7 @@ func handleChallenge(msg message.Message, channelPath string) *answer.Error {
 	}
 
 	federationExpect, err := db.GetFederationExpect(organizerPk, msg.Sender,
-		federationChallenge)
+		federationChallenge, channelPath)
 	if err != nil {
 		errAnswer = answer.NewQueryDatabaseError(
 			"failed to get federation expect: %v", err)
@@ -374,7 +368,7 @@ func handleResult(msg message.Message, channelPath string) *answer.Error {
 	// try to get a matching FederationInit, if found then we know that
 	// the local organizer was waiting this result
 	_, err := db.GetFederationInit(organizerPk,
-		result.ChallengeMsg.Sender, federationChallenge)
+		result.ChallengeMsg.Sender, federationChallenge, channelPath)
 	if err != nil {
 		errAnswer = answer.NewQueryDatabaseError(
 			"failed to get federation init: %v", err)

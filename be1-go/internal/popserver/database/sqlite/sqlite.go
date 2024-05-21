@@ -1268,16 +1268,21 @@ func (s *SQLite) GetReactionSender(messageID string) (string, error) {
 // FederationRepository interface implementation
 //======================================================================================================================
 
-func (s *SQLite) IsChallengeValid(senderPk string, challenge messagedata.FederationChallenge) error {
+func (s *SQLite) IsChallengeValid(senderPk string, challenge messagedata.FederationChallenge, channelPath string) error {
 	dbLock.RLock()
 	defer dbLock.RUnlock()
 
-	var federationChallenge messagedata.FederationChallenge
-
-	err := s.database.QueryRow(selectValidFederationChallenges,
+	var federationChallengeBytes []byte
+	err := s.database.QueryRow(selectValidFederationChallenges, channelPath,
 		senderPk, messagedata.FederationObject,
-		messagedata.FederationActionChallenge,
-		challenge.Value, challenge.ValidUntil).Scan(&federationChallenge)
+		messagedata.FederationActionChallenge, challenge.Value,
+		challenge.ValidUntil).Scan(&federationChallengeBytes)
+	if err != nil {
+		return err
+	}
+
+	var federationChallenge messagedata.FederationChallenge
+	err = json.Unmarshal(federationChallengeBytes, &federationChallenge)
 	if err != nil {
 		return err
 	}
@@ -1289,7 +1294,7 @@ func (s *SQLite) IsChallengeValid(senderPk string, challenge messagedata.Federat
 	return nil
 }
 
-func (s *SQLite) RemoveChallenge(challenge messagedata.FederationChallenge) error {
+func (s *SQLite) RemoveChallenge(challenge messagedata.FederationChallenge, channelPath string) error {
 	dbLock.Lock()
 	defer dbLock.Unlock()
 
@@ -1313,13 +1318,13 @@ func (s *SQLite) RemoveChallenge(challenge messagedata.FederationChallenge) erro
 	return nil
 }
 
-func (s *SQLite) GetFederationExpect(senderPk string, remotePk string, challenge messagedata.FederationChallenge) (messagedata.FederationExpect, error) {
+func (s *SQLite) GetFederationExpect(senderPk string, remotePk string, challenge messagedata.FederationChallenge, channelPath string) (messagedata.FederationExpect, error) {
 	dbLock.RLock()
 	defer dbLock.RUnlock()
 
-	rows, err := s.database.Query(selectFederationExpects, senderPk,
-		messagedata.FederationObject, messagedata.FederationActionExpect,
-		remotePk)
+	rows, err := s.database.Query(selectFederationExpects, channelPath,
+		senderPk, messagedata.FederationObject,
+		messagedata.FederationActionExpect, remotePk)
 	if err != nil {
 		return messagedata.FederationExpect{}, err
 	}
@@ -1327,9 +1332,14 @@ func (s *SQLite) GetFederationExpect(senderPk string, remotePk string, challenge
 	// iterate over all FederationExpect sent from the given sender pk,
 	// and search the one matching the given FederationChallenge
 	for rows.Next() {
-		var federationExpect messagedata.FederationExpect
+		var federationExpectBytes []byte
+		err = rows.Scan(&federationExpectBytes)
+		if err != nil {
+			continue
+		}
 
-		err = rows.Scan(&federationExpect)
+		var federationExpect messagedata.FederationExpect
+		err = json.Unmarshal(federationExpectBytes, &federationExpect)
 		if err != nil {
 			continue
 		}
@@ -1348,13 +1358,13 @@ func (s *SQLite) GetFederationExpect(senderPk string, remotePk string, challenge
 	return messagedata.FederationExpect{}, sql.ErrNoRows
 }
 
-func (s *SQLite) GetFederationInit(senderPk string, remotePk string, challenge messagedata.FederationChallenge) (messagedata.FederationInit, error) {
+func (s *SQLite) GetFederationInit(senderPk string, remotePk string, challenge messagedata.FederationChallenge, channelPath string) (messagedata.FederationInit, error) {
 	dbLock.RLock()
 	defer dbLock.RUnlock()
 
-	rows, err := s.database.Query(selectFederationExpects, senderPk,
-		messagedata.FederationObject, messagedata.FederationActionInit,
-		remotePk)
+	rows, err := s.database.Query(selectFederationExpects, channelPath,
+		senderPk, messagedata.FederationObject,
+		messagedata.FederationActionInit, remotePk)
 	if err != nil {
 		return messagedata.FederationInit{}, err
 	}
@@ -1362,9 +1372,14 @@ func (s *SQLite) GetFederationInit(senderPk string, remotePk string, challenge m
 	// iterate over all FederationInit sent from the given sender pk,
 	// and search the one matching the given FederationChallenge
 	for rows.Next() {
-		var federationInit messagedata.FederationInit
+		var federationInitBytes []byte
+		err = rows.Scan(&federationInitBytes)
+		if err != nil {
+			continue
+		}
 
-		err = rows.Scan(&federationInit)
+		var federationInit messagedata.FederationInit
+		err = json.Unmarshal(federationInitBytes, &federationInit)
 		if err != nil {
 			continue
 		}
