@@ -20,6 +20,7 @@
     - [Sending a heartbeat message to servers](#sending-a-heartbeat-message-to-servers)
     - [Retrieving messages from server using ids ](#retrieving-messages-from-server-using-ids-)
     - [Spreading a Rumor](#spreading-a-rumor)
+    - [Catching up on past messages on a channel using paging](#catching-up-on-past-messages-on-a-channel-using-paging)
   - [Answer](#answer)
     - [RPC answer error](#rpc-answer-error)
 - [Mid-level (message) communication](#mid-level-message-communication)
@@ -301,6 +302,8 @@ communication simple, it is assumed that channel “/root” always exists, and 
 the server is allowed to subscribe to it. Clients can then publish on channel
 "/root" to create and bootstrap their Local Autonomous Organizer (LAO) (cf
 High-level communication).
+
+To request top chirps, a subscribe message should be sent to the subchannel `/root/{lao_id}/social/top_chirps`. The server should respond with the top 3 chirps they have sorted by reactions. After receiving these top chirps, the user sends an unsubscibe message to this subchannel. This process repeats upon a new request for top chirps.
 
 RPC 
 
@@ -663,8 +666,7 @@ Notification
 
 By executing a catchup action, a client can ask the server to receive *all*
 past messages on a specific channel.
-This could be optimized to include some form of pagination, but the system
-hasn't yet been scaled to the extent of needing such features.
+This could be optimized to include some form of pagination. Check the [Paged Catchup](#catching-up-on-past-messages-on-a-channel-using-paging) section for more information.
 
 A server can also execute a catchup action, and ask another server to receive
 *all* past messages on the root or on a specific channel.
@@ -1060,6 +1062,131 @@ RPC
 }
 
 ```
+</details>
+
+### Catching up on past messages on a channel using paging
+
+🧭 **RPC Message** > **Query** > **Paged Catchup**
+
+By executing a paged catchup action, a client can ask the server to receive a specified number of
+past messages sorted by timestamps from oldest to newest on a specific channel, using the message ID as a tiebreaker (descending order as for the timestamps). When a message ID 
+is provided, the server returns the requested number of messages on the specified channel that precede
+this message. Otherwise, the server returns the latest messages it has on that channel taking into 
+account the requested number of messages. If the specified number of messages is greater than what 
+is on the server in the current page, then the server only returns the messages it has on that page.
+
+For now, this message is to be used to retrieve chirps from a social media channel specific for a given user (e.g. `/root/{lao_id}/social/chirps/{sender_public_key}`) 
+by paging when a new client joins the LAO instead of getting all the chirps at once. The user's public key is used
+to denote a separate paging subchannel for each user to be consistent with the publish/subscribe model. This paging is 
+done in an effort to reduce network traffic at catchup.
+
+This message is also to be used to retrieve chirps of a specific user profile from a subchannel `/root/{lao_id}/social/profile/{profile_public_key}/{sender_public_key}`  where `sender_public_key` is the same as before and `profile_public_key` is the public key of the user whose messages the client wants to retrieve. Paging is not deemed necessary for retrieving top chirps for now and can be done with the subscribe message to a subchannel `/root/{lao_id}/social/top_chirps`. More information on that can be found in the [Subscribing to a channel](#subscribing-to-a-channel) section.
+
+This may serve as a starting point for the paging of messages in other channels as a future optimization.
+
+Paged catchup messages must not be sent on any other channel than the aforementioned chirp channels (global chirp timeline and profile chirp timelines).
+If a paged catchup message is sent on another channel, the backend returns an error with a `-1` code indicating that this is an invalid action and a description saying that paging is not supported on this channel.
+If at any point a frontend receives a paged catchup message, it must treat it as a no-op and is ignore it.
+
+RPC 
+
+```json5
+// ../protocol/examples/query/paged_catchup/paged_catchup.json
+
+{
+    "jsonrpc": "2.0",
+    "id": 3,
+    "method": "paged_catchup",
+    "params": {
+        "channel": "/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=/social/chirps/8qlv4aUT5-tBodKp4RszY284CFYVaoDZK6XKiw9isSw=",
+        "number_of_messages": 10,
+        "before_message_id": "DCBX48EuNO6q-Sr42ONqsj7opKiNeXyRzrjqTbZ_aMI="
+    }
+}
+
+```
+
+Response (in case of success)
+
+
+```json5
+// ../protocol/examples/answer/general_message.json
+
+{
+    "jsonrpc": "2.0",
+    "id": 3,
+    "result": [
+        {
+            "data": "eyJvYmplY3QiOiJsYW8iLCJhY3Rpb24iOiJjcmVhdGUiLCJuYW1lIjoiTEFPIiwiY3JlYXRpb24iOjE2MzMwMzU3MjEsIm9yZ2FuaXplciI6Iko5ZkJ6SlY3MEprNWMtaTMyNzdVcTRDbWVMNHQ1M1dEZlVnaGFLMEhwZU09Iiwid2l0bmVzc2VzIjpbXSwiaWQiOiJwX0VZYkh5TXY2c29wSTVRaEVYQmY0ME1PX2VOb3E3Vl9MeWdCZDRjOVJBPSJ9",
+            "sender": "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=",
+            "signature": "ONylxgHA9cbsB_lwdfbn3iyzRd4aTpJhBMnvEKhmJF_niE_pUHdmjxDXjEwFyvo5WiH1NZXWyXG27SYEpkasCA==",
+            "message_id": "2mAAevx61TZJi4groVGqqkeLEQq0e-qM6PGmTWuShyY=",
+            "witness_signatures": []
+        },
+        // ...9 other messages
+    ]
+}
+
+```
+  
+<details>
+<summary>
+💡 See the full specification
+</summary>
+  
+```json5
+// ../protocol/query/method/paged_catchup.json
+
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/paged_catchup.json",
+    "description": "Match catchup on past message on a channel query",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "method": {
+            "description": "[String] operation to be performed by the query",
+            "const": "paged_catchup"
+        },
+
+        "params": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "channel": {
+                    "description": "[String] name of the channel",
+                    "type": "string",
+                    "pattern": "^/root(/[^/]+)/social/(chirps(/[^/]+)|profile(/[^/]+){2})$"
+                },
+                "number_of_messages": {
+                    "description": "[Integer] Number of messages requested",
+                    "type": "integer"
+                },
+                "before_message_id": {
+                    "description": "[Base64String] id of a message where the client requests messages that precede the specified message : HashLen(data, signature)",
+                    "type": "string",
+                    "contentEncoding": "base64",
+                    "$comment": "Note: the string is encoded in Base64 and it is optional"
+                }
+            },
+
+            "required": ["channel", "number_of_messages"]
+        },
+
+        "jsonrpc": {
+            "$comment": "Defined by the parent, but needed here for the validation"
+        },
+
+        "id": {
+            "type": "integer"
+        }
+    },
+
+    "required": ["method", "params", "id", "jsonrpc"]
+}
+
+```
+
 </details>
 
 ## Answer
